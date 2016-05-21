@@ -1,0 +1,151 @@
+#include "pch.h"
+#include <Limits.h>
+#include <Float.h>
+#include <Random.h>
+
+#ifndef LONGDOUBLE
+
+Real ator(const char *str) {
+  char *endPtr;
+  return strtod(str, &endPtr);
+}
+
+Real ttor(const TCHAR *str) {
+  TCHAR *endPtr;
+  return _tcstod(str, &endPtr);
+}
+
+#else
+
+Real cosh(const Real &x) {
+  return (exp(x) + exp(-x))/2;
+}
+
+Real sinh(const Real &x) {
+  return (exp(x) - exp(-x))/2;
+}
+
+Real tanh(const Real &x) {
+  Real e1 = exp(x);
+  Real e2 = 1.0/e1;
+  return (e1 - e2)/(e1+e2);
+}
+
+Real ator(const char *str) {
+  return Real(str);
+}
+
+Real ttor(const TCHAR *str) {
+  return Real(str);
+}
+
+#endif
+
+int getExpo10(double x) {
+  return (x == 0) ? 0 : (int)floor(log10(fabs(x)));
+}
+
+bool isNan(double x) {
+  return _isnan(x) ? true : false;
+}
+
+bool isPInfinity(double x) {
+  return _fpclass(x) == _FPCLASS_PINF;
+}
+
+bool isNInfinity(double x) {
+  return _fpclass(x) == _FPCLASS_NINF;
+}
+
+bool isInfinity(double x) {
+  return !_finite(x) && !_isnan(x);
+}
+
+Real dsign(const Real &x) {
+  return (x < 0) ? -1 : (x > 0) ? 1 : 0;
+}
+
+Real mypow(const Real &x, const Real &y) {
+  if(x > 0) {
+    return pow(x, y);
+  } else if(y == floor(y)) {
+    const int d = getInt(y);
+    return (d & 1) ? -pow(-x,y) : pow(-x,y);
+  }
+  return pow(x, y); // nan
+}
+
+double root(double x, double y) { // must be double. not real
+  if(x >= 0) {
+    return getDouble(mypow(x, 1.0/y));
+  } else if(y == floor(y)) {
+    const int d = getInt(y);
+    if((d & 1)) {
+      return -root(-x, y);
+    }
+  }
+  return pow(x, 1.0/y);
+}
+
+#define M_PI_2_60 7.244019458077122842384326056985109887461e+018 // pow(2,60) * 2*pi
+void sincos(double &c, double &s) {
+  double r = fmod(c, M_PI_2_60);
+  __asm {
+    fld r
+    fsincos
+    mov eax, DWORD PTR c
+    fstp QWORD PTR [eax]
+    mov eax, DWORD PTR s
+    fstp QWORD PTR [eax]
+  }
+
+}
+
+Real binomial(const Real &n, const Real &k) {
+  return fac(n)/(fac(k)*fac(n-k));
+}
+
+Real dmax(const Real &x1, const Real &x2) {
+  return (x1 > x2) ? x1 : x2;
+}
+
+Real dmin(const Real &x1, const Real &x2) {
+  return (x1 < x2) ? x1 : x2;
+}
+
+int dmax(int x1, int x2) {
+  return (x1 > x2) ? x1 : x2;
+}
+
+int dmin(int x1, int x2) {
+  return (x1 < x2) ? x1 : x2;
+}
+
+Real random(const Real &lower, const Real &upper) {
+  return _standardRandomGenerator.nextDouble() * (upper-lower) + lower;
+}
+
+Real randomGaussian(const Real &mean, const Real &s) { 
+  return _standardRandomGenerator.nextGaussian(getDouble(mean),getDouble(s));
+}
+
+void setToRandom(Real &r) {
+  r = _standardRandomGenerator.nextDouble();
+}
+
+Real poly(const Real &x, int degree, const Real *coef) {
+  Real result = 0;
+  for(int i = degree; i >= 0; i--) {
+    result = result * x + coef[i];
+  }
+  return result;
+}
+
+Real poly1(const Real &x, int degree, const Real *coef) {
+  Real result = coef[0];
+  for(int i = 1; i <= degree;) {
+    result = result * x + coef[i++];
+  }
+  return result;
+}
+

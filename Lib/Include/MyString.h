@@ -1,0 +1,174 @@
+#pragma once
+
+#include "Unicode.h"
+#include <stdarg.h>
+#include "PragmaLib.h"
+
+#define DEFINEMETHODNAME(name)      static const TCHAR *method = _T(#name)
+#define DECLARECLASSNAME            static const TCHAR *s_className
+#define DEFINECLASSNAME(className)  const TCHAR *className::s_className = _T(#className)
+
+class String {
+private:
+  DECLARECLASSNAME;
+  unsigned long m_len, m_capacity;
+  TCHAR *m_buf;
+  static TCHAR *newCharBuffer(const TCHAR *s, unsigned long &length, unsigned long &capacity);
+  void indexError(unsigned int index) const;
+public:
+  String();
+  String(const String &s);
+  String(const TCHAR  *s);
+#ifdef UNICODE
+  String(            const char *s);
+  String &operator=( const char *s);
+  String &operator+=(const char *rhs);
+#endif
+  explicit String(char             ch);
+  explicit String(short            n );
+  explicit String(unsigned short   n );
+  explicit String(int              n );
+  explicit String(unsigned int     n );
+  explicit String(long             n );
+  explicit String(unsigned long    n );
+  explicit String(__int64          n );
+  explicit String(unsigned __int64 n );
+  explicit String(float            x );
+  explicit String(double           x );
+
+  ~String();
+  String      &operator=(const String &rhs);
+  String      &operator=(const TCHAR *s);
+  TCHAR       &operator[](unsigned int index);                    // Returns TCHAR at position index
+  const TCHAR &operator[](unsigned int index) const;              // Returns TCHAR at position index
+  inline TCHAR last() const { return m_len ? m_buf[m_len-1] : 0; }
+  TCHAR       *cstr()       { return m_buf; }
+  const TCHAR *cstr() const { return m_buf; }
+  String &remove(int pos, int length = 1);                        // Remove characters at position pos, pos+1, ...pos+length-1
+  String &removeLast();                                           // Remove the last character if any.
+  String &insert(int pos, TCHAR ch);                              // Insert ch into String at position pos
+  String &insert(int pos, const String &s);                       // Insert s into String at position pos
+  friend bool    operator==( const String &lhs, const String &rhs);
+  friend bool    operator==( const String &lhs, const TCHAR  *rhs);
+  friend bool    operator!=( const String &lhs, const String &rhs);
+  friend bool    operator!=( const String &lhs, const TCHAR  *rhs);
+
+  friend bool    operator> ( const String &lhs, const String &rhs);
+  friend bool    operator< ( const String &lhs, const String &rhs);
+  friend bool    operator>=( const String &lhs, const String &rhs);
+  friend bool    operator<=( const String &lhs, const String &rhs);
+  friend String  operator+ ( const String &lhs, const String &rhs);
+         String &operator+=( const String &rhs);                  // Append rhs to this
+         String &operator+=( const TCHAR *rhs);                   // Append rhs to this
+         String &operator+=( TCHAR ch);
+  bool equalsIgnoreCase(const String &s) const;
+  String &replace(  TCHAR         from, TCHAR         to);        // Substitute every occurrence of from in s with to. Return this
+  String &replace(  TCHAR         from, const TCHAR  *to);        // Substitute every occurrence of from in s with to. Return this
+  String &replace(  const TCHAR  *from, TCHAR         to);
+  String &replace(  const TCHAR  *from, const TCHAR  *to);        // Substitute every occurrence of from in s with to. Return this
+  String &replace(  TCHAR         from, const String &to);
+  String &replace(  const String &from, TCHAR         to);
+  String &replace(  const String &from, const String &to);
+
+  String &trim();                                                 // Remove leading and trailing spaces. Return this
+  String &trimLeft();                                             // Remove leading spaces. Return this
+  String &trimRight();                                            // Remove trailing spaces. Return this
+  int     find(const TCHAR  *str, int from = 0) const;            // Return index of first occurrence of str starting at position from, -1 if not found
+  int     find(const String &str, int from = 0) const;
+  int     find(TCHAR         ch , int from = 0) const;            // Return index of first occurrence of ch starting at position from, -1 if not found
+  int    rfind(TCHAR         ch               ) const;            // Return index of last occurrence of ch, -1 if not found
+
+  inline int length() const { return (int)m_len; }                // Return length og String
+  inline bool isEmpty() const { return m_len == 0; }
+  friend String left(  const String &str, int length);            // Return substring "s[0]s[1]...s[length]"
+  friend String right( const String &str, int length);            // Return substring s[s.length-length],s[s.length-length+1]...s[s.length]
+  friend String substr(const String &str, int from, int length);  // Return substring "str[from]str[from+1]...str[from+length]"
+  friend String rev(   const String &str);                        // Return reverse String
+  friend String spaceString(int length, TCHAR ch = _T(' '));      // Return String with length length, filled with ch. return "" if length <= 0
+
+  friend tostream &operator<<(tostream &f, const String &str);
+  friend tistream &operator>>(tistream &f, String &str);
+  String &vprintf(const TCHAR *format, va_list argptr);           // Same as vsprintf. Return *this
+  String &printf( const TCHAR *format, ...);                      // Same as sprintf. Return *this
+
+  const String &toString() const {
+    return *this;
+  }
+
+  unsigned long hashCode() const;
+
+  // works only for characters [0..255] 
+  static const unsigned char  upperCaseTranslate[256];
+  static const unsigned char *lowerCaseTranslate;
+  static const unsigned char  upperCaseAccentTranslate[256];
+};
+
+String trim(       const String &str);                         // Return copy of str, without leading and trailing spaces
+String trimLeft(   const String &str);                         // Return copy og str, without leading spaces
+String trimRight(  const String &str);                         // Return copy of str, without trailing spaces
+String toUpperCase(const String &str);                         // Return an uppercase copy of str
+String toLowerCase(const String &str);                         // Return a lowercase copy of str
+String firstLetterToUpperCase(const String &str);              // Return a copy of str, with first non-space letter changed to uppercase.
+
+String format1000(int              n);
+String format1000(unsigned int     n);
+String format1000(long             n);
+String format1000(unsigned long    n);
+String format1000(__int64          n);
+String format1000(unsigned __int64 n);
+
+unsigned long stringHash(    const String &str);                    // Very common used hashfunction
+int           stringHashCmp( const String &key, const String &elem);
+unsigned long stringiHash(   const String &str);                    // Very common used hashfunction
+int           stringiHashCmp(const String &key, const String &elem);
+String vformat(const TCHAR *format, va_list argptr);                // Same arguments as vprintf,vsprintf
+String format( const TCHAR *format, ...);                           // Same arguments as printf,sprintf
+
+String toString(char             ch, int width = 0, int flags = 0  );
+String toString(short            n , int precision = 0, int width = 0, int flags = 0);
+String toString(unsigned short   n , int precision = 0, int width = 0, int flags = 0);
+String toString(int              n , int precision = 0, int width = 0, int flags = 0);
+String toString(unsigned int     n , int precision = 0, int width = 0, int flags = 0);
+String toString(long             n , int precision = 0, int width = 0, int flags = 0);
+String toString(unsigned long    n , int precision = 0, int width = 0, int flags = 0);
+String toString(__int64          n , int precision = 0, int width = 0, int flags = 0);
+String toString(unsigned __int64 n , int precision = 0, int width = 0, int flags = 0);
+String toString(float            x , int precision = 6, int width = 0, int flags = 0);
+String toString(double           x , int precision = 6, int width = 0, int flags = 0);
+
+TCHAR *strRemove(       TCHAR *s  , TCHAR ch);              // Remove any occurence of ch in s
+TCHAR *strReplace(      TCHAR *s  , TCHAR from, TCHAR to);  // Substitute every occurence of from in s with to, return s.
+TCHAR *strReplace(      TCHAR *dst, const TCHAR *src,       TCHAR  from, const TCHAR *to);
+TCHAR *strReplace(      TCHAR *dst, const TCHAR *src, const TCHAR *from, const TCHAR *to);
+TCHAR *strTrimRight(    TCHAR *s); // Remove any trailing white characters from s. Return s
+TCHAR *strTrimLeft(     TCHAR *s); // Remove any leading  white characters from s. Return s
+TCHAR *strTrim(         TCHAR *s); // Remove any leading and trailing white characters from s. Return s
+TCHAR *strToLowerCase(  TCHAR *s);
+TCHAR *strToUpperCase(  TCHAR *s);
+TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst = _T(' '));
+int    findMatchingpParanthes(const TCHAR *str, int pos);
+
+
+int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,        const unsigned char translateTable[256]);
+int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, int n, const unsigned char translateTable[256]);
+TCHAR *streToUpperCase( TCHAR *s);
+TCHAR *streToLowerCase( TCHAR *s);
+int    streicmp(       const TCHAR *s1, const TCHAR *s2);
+int    strneicmp(      const TCHAR *s1, const TCHAR *s2, int n);
+int    streaicmp(      const TCHAR *s1, const TCHAR *s2);        // ignore case and accents
+int    strneaicmp(     const TCHAR *s1, const TCHAR *s2, int n); // ignore case and accents
+
+String loadString(int id);
+String loadString(int id, const String &defaultValue);
+
+int eIsalpha( int c);
+int eIsupper( int c);
+int eIslower( int c);
+int eIsdigit( int c);
+int eIsxdigit(int c);
+int eIsspace( int c);
+int eIspunct( int c);
+int eIsalnum( int c);
+int eIsprint( int c);
+int eIsgraph( int c);
+int eIscntrl( int c);

@@ -1,0 +1,40 @@
+#pragma once
+
+#include "LinkedList.h"
+
+template <class T> class QueueList : private LinkedList<T> {
+public:
+  void put(const T &e) {
+    LinkedList<T>::add(e);
+  }
+
+  T get() {
+    T e = first();
+    removeFirst();
+    return e;
+  }
+
+  void clear() {
+    LinkedList<T>::clear();
+  }
+  
+  bool isEmpty() const {
+    return size() == 0;
+  }
+  
+  int size() const {
+    return LinkedList<T>::size();
+  }
+  
+  T &operator[](int index) {
+    return LinkedList<T>::operator[](index);
+  }
+  
+  const T &operator[](int index) const {
+    return LinkedList<T>::operator[](index);
+  }
+
+  Iterator<T> getIterator() {
+    return LinkedList<T>::getIterator();
+  }
+};

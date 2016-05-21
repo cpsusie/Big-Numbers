@@ -1,0 +1,448 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{da57b57f-cff3-4620-87ae-69d3598b492d}</ProjectGuid>
+    <Keyword>StaticLibrary</Keyword>
+    <RootNamespace>Util</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\MTDebug32\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
+    <OutDir>..\..\..\MTRelease32\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>c:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <ExcludePath />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <GenerateManifest>false</GenerateManifest>
+    <IncludePath>c:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <BrowseInformation>true</BrowseInformation>
+      <ExceptionHandling>Async</ExceptionHandling>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <DisableSpecificWarnings>
+      </DisableSpecificWarnings>
+      <WarningVersion>
+      </WarningVersion>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;_WRL_NO_DEFAULT_LIB_</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_WRL_NO_DEFAULT_LIB_</PreprocessorDefinitions>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <BrowseInformation>true</BrowseInformation>
+      <ExceptionHandling>Async</ExceptionHandling>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>C:\mytools2015\Lib\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <SDLCheck>true</SDLCheck>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Array.h" />
+    <ClInclude Include="..\..\..\Include\BitSet.h" />
+    <ClInclude Include="..\..\..\Include\BitStream.h" />
+    <ClInclude Include="..\..\..\Include\ByteArray.h" />
+    <ClInclude Include="..\..\..\Include\ByteFile.h" />
+    <ClInclude Include="..\..\..\Include\ByteMemoryStream.h" />
+    <ClInclude Include="..\..\..\Include\ByteStream.h" />
+    <ClInclude Include="..\..\..\Include\CallCounter.h" />
+    <ClInclude Include="..\..\..\Include\Collection.h" />
+    <ClInclude Include="..\..\..\Include\CompactArray.h" />
+    <ClInclude Include="..\..\..\Include\CompactHashMap.h" />
+    <ClInclude Include="..\..\..\Include\CompactHashSet.h" />
+    <ClInclude Include="..\..\..\Include\CompactKeyType.h" />
+    <ClInclude Include="..\..\..\Include\CompactStack.h" />
+    <ClInclude Include="..\..\..\Include\Comparator.h" />
+    <ClInclude Include="..\..\..\Include\CompressFilter.h" />
+    <ClInclude Include="..\..\..\Include\Console.h" />
+    <ClInclude Include="..\..\..\Include\CountedByteStream.h" />
+    <ClInclude Include="..\..\..\Include\CPUInfo.h" />
+    <ClInclude Include="..\..\..\Include\Date.h" />
+    <ClInclude Include="..\..\..\Include\Exception.h" />
+    <ClInclude Include="..\..\..\Include\FileContent.h" />
+    <ClInclude Include="..\..\..\Include\FileNameSplitter.h" />
+    <ClInclude Include="..\..\..\Include\FileTreeWalker.h" />
+    <ClInclude Include="..\..\..\Include\HashMap.h" />
+    <ClInclude Include="..\..\..\Include\HashSet.h" />
+    <ClInclude Include="..\..\..\Include\Iterator.h" />
+    <ClInclude Include="..\..\..\Include\LineTracer.h" />
+    <ClInclude Include="..\..\..\Include\LinkedList.h" />
+    <ClInclude Include="..\..\..\Include\Map.h" />
+    <ClInclude Include="..\..\..\Include\MatrixTemplate.h" />
+    <ClInclude Include="..\..\..\Include\MyAssert.h" />
+    <ClInclude Include="..\..\..\Include\MyString.h" />
+    <ClInclude Include="..\..\..\Include\MyUtil.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\NumberInterval.h" />
+    <ClInclude Include="..\..\..\Include\ObjectManager.h" />
+    <ClInclude Include="..\..\..\Include\PackedArray.h" />
+    <ClInclude Include="..\..\..\Include\Packer.h" />
+    <ClInclude Include="..\..\..\Include\Point2D.h" />
+    <ClInclude Include="..\..\..\Include\PragmaLib.h" />
+    <ClInclude Include="..\..\..\Include\ProcessTools.h" />
+    <ClInclude Include="..\..\..\Include\PropertyChangeListener.h" />
+    <ClInclude Include="..\..\..\Include\QueueList.h" />
+    <ClInclude Include="..\..\..\Include\Random.h" />
+    <ClInclude Include="..\..\..\Include\Rectangle2D.h" />
+    <ClInclude Include="..\..\..\Include\Regex.h" />
+    <ClInclude Include="..\..\..\Include\Registry.h" />
+    <ClInclude Include="..\..\..\Include\Runnable.h" />
+    <ClInclude Include="..\..\..\Include\Scandir.h" />
+    <ClInclude Include="..\..\..\Include\Semaphore.h" />
+    <ClInclude Include="..\..\..\Include\Set.h" />
+    <ClInclude Include="..\..\..\Include\Stack.h" />
+    <ClInclude Include="..\..\..\Include\StreamParameters.h" />
+    <ClInclude Include="..\..\..\Include\StringPool.h" />
+    <ClInclude Include="..\..\..\Include\StrStream.h" />
+    <ClInclude Include="..\..\..\Include\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\..\Include\Tcp.h" />
+    <ClInclude Include="..\..\..\Include\TextRect.h" />
+    <ClInclude Include="..\..\..\Include\TextWin.h" />
+    <ClInclude Include="..\..\..\Include\Thread.h" />
+    <ClInclude Include="..\..\..\Include\TimeMeasure.h" />
+    <ClInclude Include="..\..\..\Include\Timer.h" />
+    <ClInclude Include="..\..\..\Include\TinyBitSet.h" />
+    <ClInclude Include="..\..\..\Include\Tokenizer.h" />
+    <ClInclude Include="..\..\..\Include\TreeMap.h" />
+    <ClInclude Include="..\..\..\Include\TreeSet.h" />
+    <ClInclude Include="..\..\..\Include\Unicode.h" />
+    <ClInclude Include="..\..\..\Include\VectorTemplate.h" />
+    <ClInclude Include="..\..\..\Include\WildCardRegex.h" />
+    <ClInclude Include="pch.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AbstractIterator.cpp" />
+    <ClCompile Include="access.cpp" />
+    <ClCompile Include="ArrayImpl.cpp" />
+    <ClCompile Include="ArraySort.cpp" />
+    <ClCompile Include="BitInputStream.cpp" />
+    <ClCompile Include="BitMatrix.cpp" />
+    <ClCompile Include="BitOutputStream.cpp" />
+    <ClCompile Include="BitSet.cpp" />
+    <ClCompile Include="BitSetFileIndex.cpp" />
+    <ClCompile Include="BitSetIndex.cpp" />
+    <ClCompile Include="BitSetIterator.cpp" />
+    <ClCompile Include="BitSetPacker.cpp" />
+    <ClCompile Include="BitSetStream.cpp" />
+    <ClCompile Include="BitSetToStringIntervals.cpp" />
+    <ClCompile Include="ByteArray.cpp" />
+    <ClCompile Include="ByteFile.cpp" />
+    <ClCompile Include="ByteInputFile.cpp" />
+    <ClCompile Include="ByteInputStream.cpp" />
+    <ClCompile Include="ByteMemoryInputStream.cpp" />
+    <ClCompile Include="ByteMemoryOutputStream.cpp" />
+    <ClCompile Include="ByteOutputFile.cpp" />
+    <ClCompile Include="CallCounter.cpp" />
+    <ClCompile Include="CharBitSetToString.cpp" />
+    <ClCompile Include="chdir.cpp" />
+    <ClCompile Include="chmod.cpp" />
+    <ClCompile Include="CompressFilter.cpp" />
+    <ClCompile Include="Console.cpp" />
+    <ClCompile Include="Constants.cpp" />
+    <ClCompile Include="CountedByteInputStream.cpp" />
+    <ClCompile Include="CountedByteOutputStream.cpp" />
+    <ClCompile Include="CPUInfo.cpp" />
+    <ClCompile Include="Date.cpp" />
+    <ClCompile Include="DatePacker.cpp" />
+    <ClCompile Include="DebugLog.cpp" />
+    <ClCompile Include="DecompressFilter.cpp" />
+    <ClCompile Include="dup.cpp" />
+    <ClCompile Include="dup2.cpp" />
+    <ClCompile Include="ErrorText.cpp" />
+    <ClCompile Include="Exception.cpp" />
+    <ClCompile Include="fgets.cpp" />
+    <ClCompile Include="FileContent.cpp" />
+    <ClCompile Include="FileNameSplitter.cpp" />
+    <ClCompile Include="FileTreeWalker.cpp" />
+    <ClCompile Include="FindDataComp.cpp" />
+    <ClCompile Include="FindDataCompCommon.cpp" />
+    <ClCompile Include="fopen.cpp" />
+    <ClCompile Include="format1000.cpp" />
+    <ClCompile Include="fraction.cpp" />
+    <ClCompile Include="fread.cpp" />
+    <ClCompile Include="fseek.cpp" />
+    <ClCompile Include="fwrite.cpp" />
+    <ClCompile Include="GetCommandline.cpp" />
+    <ClCompile Include="getcwd.cpp" />
+    <ClCompile Include="GetModuleFileName.cpp" />
+    <ClCompile Include="GetPos.cpp" />
+    <ClCompile Include="GetProcessHandle.cpp" />
+    <ClCompile Include="GetProcessIds.cpp" />
+    <ClCompile Include="GetProcessModules.cpp" />
+    <ClCompile Include="GetProcessorCount.cpp" />
+    <ClCompile Include="GetProcessResources.cpp" />
+    <ClCompile Include="gets.cpp" />
+    <ClCompile Include="HashMapImpl.cpp" />
+    <ClCompile Include="HashSetImpl.cpp" />
+    <ClCompile Include="HashSetIterator.cpp" />
+    <ClCompile Include="isatty.cpp" />
+    <ClCompile Include="LineTracer.cpp" />
+    <ClCompile Include="ListImpl.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MinMax.cpp" />
+    <ClCompile Include="mkfopen.cpp" />
+    <ClCompile Include="MyAssert.cpp" />
+    <ClCompile Include="MyString.cpp" />
+    <ClCompile Include="MyStringA2W.cpp" />
+    <ClCompile Include="Packer.cpp" />
+    <ClCompile Include="Pause.cpp" />
+    <ClCompile Include="pipe.cpp" />
+    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="PrimitiveToString.cpp" />
+    <ClCompile Include="ProcessInfo.cpp" />
+    <ClCompile Include="ProcessTime.cpp" />
+    <ClCompile Include="QuickSort.cpp" />
+    <ClCompile Include="RandInt.cpp" />
+    <ClCompile Include="Random.cpp" />
+    <ClCompile Include="Randomize.cpp" />
+    <ClCompile Include="ReadFile.cpp" />
+    <ClCompile Include="Rectangle2D.cpp" />
+    <ClCompile Include="Regex.cpp" />
+    <ClCompile Include="RegexHelp.cpp" />
+    <ClCompile Include="Registry.cpp" />
+    <ClCompile Include="Rename.cpp" />
+    <ClCompile Include="rmdir.cpp" />
+    <ClCompile Include="Round.cpp" />
+    <ClCompile Include="Scandir.cpp" />
+    <ClCompile Include="Semaphore.cpp" />
+    <ClCompile Include="SetFileMode.cpp" />
+    <ClCompile Include="SocketErrorMessage.cpp" />
+    <ClCompile Include="sprintbin.cpp" />
+    <ClCompile Include="Stat.cpp" />
+    <ClCompile Include="stat64.cpp" />
+    <ClCompile Include="straccent.cpp" />
+    <ClCompile Include="StreamParameters.cpp" />
+    <ClCompile Include="StrHash.cpp" />
+    <ClCompile Include="StrIHash.cpp" />
+    <ClCompile Include="StringArray.cpp" />
+    <ClCompile Include="StringHash.cpp" />
+    <ClCompile Include="StringIHash.cpp" />
+    <ClCompile Include="StringIO.cpp" />
+    <ClCompile Include="StringPool.cpp" />
+    <ClCompile Include="StrRemove.cpp" />
+    <ClCompile Include="StrReplace1.cpp" />
+    <ClCompile Include="StrReplace2.cpp" />
+    <ClCompile Include="StrReplace3.cpp" />
+    <ClCompile Include="StrStream.cpp" />
+    <ClCompile Include="strtabcmp.cpp" />
+    <ClCompile Include="StrTabExp.cpp" />
+    <ClCompile Include="StrToLower.cpp" />
+    <ClCompile Include="StrToUpper.cpp" />
+    <ClCompile Include="StrTrim.cpp" />
+    <ClCompile Include="StrTrimLeft.cpp" />
+    <ClCompile Include="StrTrimRight.cpp" />
+    <ClCompile Include="StrUpper.cpp" />
+    <ClCompile Include="SysErrorText.cpp" />
+    <ClCompile Include="Tcp.cpp" />
+    <ClCompile Include="TcpString.cpp" />
+    <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimeMeasure.cpp" />
+    <ClCompile Include="Timer.cpp" />
+    <ClCompile Include="Timestamp.cpp" />
+    <ClCompile Include="TimestampPacker.cpp" />
+    <ClCompile Include="Tokenizer.cpp" />
+    <ClCompile Include="pch.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TreeMapImpl.cpp" />
+    <ClCompile Include="TreeSetImpl.cpp" />
+    <ClCompile Include="TreeSetIterator.cpp" />
+    <ClCompile Include="Unlink.cpp" />
+    <ClCompile Include="xfree.cpp" />
+    <ClCompile Include="xmalloc.cpp" />
+    <ClCompile Include="xrealloc.cpp" />
+    <ClCompile Include="xstrdup.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
