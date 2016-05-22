@@ -115,9 +115,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <OutDir>..\..\..\MTDebug64\</OutDir>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
+    <OutDir>..\..\..\MTRelease64\</OutDir>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -193,28 +197,52 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Math\AlgorithmHandler.h" />
+    <ClInclude Include="..\..\..\Include\Math\BigReal.h" />
     <ClInclude Include="..\..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\..\Include\Math\Double80.h" />
+    <ClInclude Include="..\..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\..\Include\Math\MathFunctions.h" />
     <ClInclude Include="..\..\..\Include\Math\MathLib.h" />
     <ClInclude Include="..\..\..\Include\Math\Matrix.h" />
+    <ClInclude Include="..\..\..\Include\Math\MRisprime.h" />
+    <ClInclude Include="..\..\..\Include\Math\Polynomial.h" />
     <ClInclude Include="..\..\..\Include\Math\PragmaLib.h" />
+    <ClInclude Include="..\..\..\Include\Math\Rational.h" />
     <ClInclude Include="..\..\..\Include\Math\Real.h" />
+    <ClInclude Include="..\..\..\Include\Math\SigmoidIterator.h" />
+    <ClInclude Include="..\..\..\Include\Math\Simplex.h" />
+    <ClInclude Include="..\..\..\Include\Math\Statistic.h" />
+    <ClInclude Include="..\..\..\Include\Math\Transformation.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AkimaSpline.cpp" />
+    <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
+    <ClCompile Include="ComplexMatrix.cpp" />
+    <ClCompile Include="ComplexMatrixSvd.cpp" />
+    <ClCompile Include="CubicSpline.cpp" />
+    <ClCompile Include="DataFit.cpp" />
     <ClCompile Include="Double80.cpp" />
     <ClCompile Include="Double80io.cpp" />
     <ClCompile Include="Double80Random.cpp" />
+    <ClCompile Include="fft.cpp" />
+    <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
+    <ClCompile Include="GaussDistribution.cpp" />
+    <ClCompile Include="Gradient.cpp" />
+    <ClCompile Include="Jacobi.cpp" />
+    <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
     <ClCompile Include="MathFunctions.cpp" />
     <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="MatrixSvd.cpp" />
+    <ClCompile Include="Newton.cpp" />
+    <ClCompile Include="ParseReal.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -223,10 +251,24 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Polar.cpp" />
+    <ClCompile Include="Polynomial.cpp" />
+    <ClCompile Include="QRMatrix.cpp" />
+    <ClCompile Include="Rational.cpp" />
+    <ClCompile Include="RationalIO.cpp" />
+    <ClCompile Include="Rungekutta.cpp" />
+    <ClCompile Include="SigmoidIterator.cpp" />
+    <ClCompile Include="Simplex.cpp" />
+    <ClCompile Include="SolveTriDiag.cpp" />
+    <ClCompile Include="Statistic.cpp" />
+    <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="TrigonometricFunctions.cpp" />
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
     <ClCompile Include="TrigonometricFunctionsR.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
