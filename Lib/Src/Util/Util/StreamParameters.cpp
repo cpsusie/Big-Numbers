@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <StreamParameters.h>
 
+using namespace std;
+
 StreamParameters::StreamParameters(int precision, int width, int flags) {
   m_precision = precision;
   m_width     = width;
@@ -21,13 +23,13 @@ tostream &operator<<(tostream &out, const StreamParameters &p) {
 }
 
 TCHAR *StreamParameters::addModifier(TCHAR *dst) const {
-  if(m_flags & std::ios::left) {
+  if(m_flags & ios::left) {
     *(dst++) = _T('-');
   }
-  if(m_flags & std::ios::showpos) {
+  if(m_flags & ios::showpos) {
     *(dst++) = _T('+');
   }
-  if(m_flags & std::ios::showbase) {
+  if(m_flags & ios::showbase) {
     *(dst++) = _T('#');
   }
   return dst;
@@ -61,12 +63,12 @@ TCHAR *StreamParameters::addPrefix(TCHAR *dst, bool withPrecision) const {
 }
 
 TCHAR *StreamParameters::addIntSpecifier(TCHAR *dst, bool isSigned) const {
-  if(m_flags & std::ios::dec) {
+  if(m_flags & ios::dec) {
     *(dst++) = isSigned ? _T('d') : _T('u');
-  } else if(m_flags & std::ios::oct) {
+  } else if(m_flags & ios::oct) {
     *(dst++) = _T('o');
-  } else if(m_flags & std::ios::hex) {
-    *(dst++) = (m_flags & std::ios::uppercase) ? _T('X') : _T('x');
+  } else if(m_flags & ios::hex) {
+    *(dst++) = (m_flags & ios::uppercase) ? _T('X') : _T('x');
   } else {
     *(dst++) = isSigned ? _T('d') : _T('u');
   }
@@ -74,12 +76,12 @@ TCHAR *StreamParameters::addIntSpecifier(TCHAR *dst, bool isSigned) const {
 }
 
 TCHAR *StreamParameters::addFloatSpecifier(TCHAR *dst) const {
-  if(m_flags & std::ios::scientific) {
-    *(dst++) = (m_flags & std::ios::uppercase) ? _T('E') : _T('e');
-  } else if(m_flags & std::ios::fixed) {
+  if(m_flags & ios::scientific) {
+    *(dst++) = (m_flags & ios::uppercase) ? _T('E') : _T('e');
+  } else if(m_flags & ios::fixed) {
     *(dst++) = _T('f');
   } else {
-    *(dst++) = (m_flags & std::ios::uppercase) ? _T('G') : _T('g');
+    *(dst++) = (m_flags & ios::uppercase) ? _T('G') : _T('g');
   }
   return dst;
 }

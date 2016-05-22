@@ -2,11 +2,7 @@
 #include <zlib.h>
 #include <CompressFilter.h>
 
-#ifdef _DEBUG
-#pragma comment(lib,"c:/mytools2015/lib/MTDebug32/zlib.lib")
-#else
-#pragma comment(lib,"c:/mytools2015/lib/MTRelease32/zlib.lib")
-#endif
+#pragma comment(lib, LIB_VERSION "zlib.lib")
 
 #define MAX_BUFFERSIZE 8192
 

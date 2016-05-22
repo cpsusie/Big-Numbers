@@ -120,7 +120,7 @@ void StrStream::formatZero(String &result, int precision, long flags, int maxPre
       } 
     }
     addExponentChar(result);
-    result += _T("+000"); 
+    result += _T("+00"); 
   } else if((flags & (std::ios::scientific|std::ios::fixed)) == std::ios::fixed) {
     result += _T("0");
     if((flags & std::ios::showpoint) || (precision > 0)) {
@@ -138,4 +138,3 @@ void StrStream::formatZero(String &result, int precision, long flags, int maxPre
     }
   }
 }
-

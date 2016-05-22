@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="String">
+    <DisplayString>{m_buf,su}</DisplayString>
+  </Type>
+  <Type Name="CPoint">
+    <DisplayString>{{x={x} y={y}}}</DisplayString>
+  </Type>
+  <Type Name="CSize">
+    <DisplayString>{{cx={cx} cy={cy}}}</DisplayString>
+  </Type>
+  <Type Name="CRect">
+    <DisplayString>{{top={top} bottom={bottom} left={left} right={right}}}</DisplayString>
+    <Expand>
+      <Item Name="Width">right - left</Item>
+      <Item Name="Height">bottom - top</Item>
+    </Expand>
+  </Type>
+</AutoVisualizer>

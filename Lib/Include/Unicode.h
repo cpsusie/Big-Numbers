@@ -6,10 +6,9 @@
 #include <istream>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 #ifdef UNICODE
-
-#include <iosfwd>
 
 #define tfilebuf    std::wfilebuf
 #define tistream    std::wistream
@@ -21,15 +20,17 @@
 #define tistrstream std::wistringstream
 #define tostrstream std::wostringstream
 
-#define tcin      std::wcin
-#define tcout     std::wcout
-#define tcerr     std::wcerr
-#define tclog     std::wclog
+#define tcin        std::wcin
+#define tcout       std::wcout
+#define tcerr       std::wcerr
+#define tclog       std::wclog
 
 #define MEMSET( dst, v  , count)             wmemset( dst, v  , count)
 #define MEMCPY( dst, src, count)             wmemcpy( dst, src, count)
 #define MEMMOVE(dst, src, count)             wmemmove(dst, src, count)
 #define MEMCMP( s1 , s2 , count)             wmemcmp( s1 , s2 , count)
+
+#define tstring std::wstring
 
 #else
 
@@ -52,6 +53,8 @@
 #define MEMCPY( dst, src, count)             memcpy( dst, src, count)
 #define MEMMOVE(dst, src, count)             memmove(dst, src, count)
 #define MEMCMP( s1 , s2 , count)             memcmp( s1 , s2 , count)
+
+#define tstring std::string
 
 #endif
 

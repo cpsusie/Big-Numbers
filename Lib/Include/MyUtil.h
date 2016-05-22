@@ -8,6 +8,14 @@
 #undef WINAPI_FAMILY
 #endif
 
+#if _WIN32 || _WIN64
+#ifdef _WIN64
+#define IS64BIT
+#else
+#define IS32BIT
+#endif
+#endif
+
 #define WINAPI_FAMILY WINAPI_FAMILY_DESKTOP_APP
 
 #include <Windows.h>

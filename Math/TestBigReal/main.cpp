@@ -23,13 +23,13 @@ static void testShortProd() {
     const FullFormatBigReal x = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter x:"));
     const FullFormatBigReal y = BigReal(spaceString(14700,'9')); // inputBigReal(pool, _T("Enter y:"));
 
-    printf(_T("X:%s\nY:%s\n"), x.toString().cstr(), y.toString().cstr());
+    _tprintf(_T("X:%s\nY:%s\n"), x.toString().cstr(), y.toString().cstr());
 
     FullFormatBigReal p1(&pool), p2(&pool);
 
     p1 = BigReal::shortProd(x, y, BIGREAL_0, &pool);
 
-    printf(_T("p1:%s\n"), p1.toString().cstr());
+    _tprintf(_T("p1:%s\n"), p1.toString().cstr());
 
     BigReal::setUseShortProdRefenceVersion(false);
 
@@ -37,17 +37,17 @@ static void testShortProd() {
 
     BigReal::setUseShortProdRefenceVersion(true);
 
-    printf(_T("p2:%s\n"), p2.toString().cstr());
+    _tprintf(_T("p2:%s\n"), p2.toString().cstr());
 
     try {
       p1.assertIsValidBigReal();
     } catch(Exception e) {
-      printf(_T("p1 failed:%s\n"), e.what());
+      _tprintf(_T("p1 failed:%s\n"), e.what());
     }
     try {
       p2.assertIsValidBigReal();
     } catch(Exception e) {
-      printf(_T("p2 failed:%s\n"), e.what());
+      _tprintf(_T("p2 failed:%s\n"), e.what());
     }
 //  }
 }

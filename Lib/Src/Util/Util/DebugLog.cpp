@@ -9,6 +9,9 @@ typedef enum {
  ,FLAG_STDOUTISCHECKED
 } DebugLogFlags;
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 static FILE    *traceFile        = stdout;
 static BitSet8  traceFlags;
 static TCHAR   *redirectFileName = NULL; // has to be a pointer, so it will not be deallocated before any
@@ -89,6 +92,7 @@ static bool stdoutAtty() {
 }
 
 void debugLog(const TCHAR *format,...) {
+  if (traceFile == NULL) traceFile = stdout;
   if(!traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout) && !stdoutAtty()) {
     redirectDebugLog();
   }

@@ -1444,20 +1444,9 @@ void traceRecursion(int level, const TCHAR *format,...);
 BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|))
 BigReal newModulusOperator(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 
-#ifdef _DEBUG
-
 #ifdef LONGDOUBLE
-#pragma comment(lib,"c:/mytools2015/lib/MTDebug32/LDBigReal.lib")
+#pragma comment(lib, LIB_VERSION "LDBigReal.lib")
 #else
-#pragma comment(lib,"c:/mytools2015/lib/MTDebug32/BigReal.lib")
+#pragma comment(lib,  LIB_VERSION "BigReal.lib")
 #endif
 
-#else
-
-#ifdef LONGDOUBLE
-#pragma comment(lib,"c:/mytools2015/lib/MTRelease32/LDBigReal.lib")
-#else
-#pragma comment(lib,"c:/mytools2015/lib/MTRelease32/BigReal.lib")
-#endif
-
-#endif

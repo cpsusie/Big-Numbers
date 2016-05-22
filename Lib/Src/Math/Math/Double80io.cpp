@@ -197,10 +197,10 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
     } // x defined && x != 0
   } // end x defined
 
-  int fillerLength = stream.getWidth() - result.length();
+  const int fillerLength = stream.getWidth() - result.length();
   if(fillerLength <= 0) {
     stream.append(result);
-  } else if(flags & ios::left) {
+  } else if((flags & (ios::left|ios::right)) == ios::left) { // adjust left iff only ios::left is set
     stream.append(result).append(spaceString(fillerLength));
   } else {// right align
     stream.append(spaceString(fillerLength)).append(result);
