@@ -6,8 +6,6 @@
 #include <Math/BigReal.h>
 #include "TestToString.h"
 
-#include <MyAssert.h>
-
 using namespace std;
 
 static const double defaultTestValues[] = {
@@ -63,7 +61,7 @@ private:
 
   void resetValueIndex()         { m_nextValueIndex = 0; }
   void resetFlagIndex()          { m_nextFlagIndex  = 0; }
-  void resetPrecision()          { m_nextPrecision  = 0; }
+  void resetPrecision()          { m_nextPrecision  = 1; }
   void resetWidth()              { m_nextWidth      = 0; }
 
   void nextValueIndex()          { m_nextValueIndex++;   }
@@ -158,11 +156,11 @@ void StringParametersIterator::initFlagCombinations() {
       flags |= ios::uppercase;
     } else {
       flags &= ~ios::uppercase;
-      if(!(flags & ios::fixed)) {
+      if(!(flags & ios::floatfield)) {
         flags |= ios::fixed;
       } else {
-        flags &= ~ios::fixed;
-        if(!(flags & ios::scientific)) {
+        if(flags & ios::fixed) {
+          flags &= ~ios::fixed;
           flags |= ios::scientific;
         } else {
           flags &= ~ios::scientific;
@@ -273,20 +271,14 @@ static void testToString(StringParametersIterator &it) {
 
   while(it.hasNext()) {
     it.next();
-    TCHAR buf64[200],buf80[200],bufN[200];
-    MEMSET(buf64,0,ARRAYSIZE(buf64));
-    MEMSET(buf80,0,ARRAYSIZE(buf80));
-    MEMSET(bufN ,0,ARRAYSIZE(bufN ));
-    StrStream s64;
-    StrStream s80;
-    BigRealStream sN;
+    tostrstream s64,s80,sN;
 
     if(((it.getFlags() & (ios::fixed|ios::scientific)) == ios::fixed) && it.getPrecision() + Double80::getExpo10(it.getValue80()) > 26) {
       continue; // Skip this check and get an uncatchable "access-violation"-Exception from ostrstream << it.getValue64() !!!
     }
 
     if(++totalCounter % 4095 == 0) {
-      tcout << _T("Count:") << totalCounter << _T(" ") << it.toString() << buf64 << _T("\r");
+      tcout << _T("Count:") << totalCounter << _T(" ") << it.toString() << _T("          \r");
       tcout.flush();
     }
     const double d64 = it.getValue64();
@@ -295,45 +287,43 @@ static void testToString(StringParametersIterator &it) {
     s80 << it << it.getValue80();
     sN  << it << it.getValueBigReal();
 
-    bool equal80 = _tcscmp(buf80,buf64) == 0;
-    bool equalN  = _tcscmp(bufN,buf64)  == 0;
+    tstring buf64 = s64.str();
+    tstring buf80 = s80.str();
+    tstring bufN  = sN.str();
+
+    const bool equal80 = buf80 == buf64;
+    const bool equalN = bufN == buf64;
 
     if(!equal80 || !equalN) {
-
 /*
-          cout << it.toString() << "\tbuf64:<" << buf64 << ">\tbuf80:<" << buf80 << ">\tbufN:<" << bufN << ">" << endl; cout.flush();
-          char Buf80[200];
-          memset(Buf80,0,sizeof(Buf80));
-          ostrstream S80(Buf80,sizeof(Buf80));
+          tcout << it.toString() << _T("\tbuf64:<") << buf64 << _T(">\tbuf80:<") << buf80 << _T(">\tbufN:<") << bufN << _T(">") << endl; tcout.flush();
+          tostrstream S80;
           S80 << it << it.getValue80();
 
-          char BufN[200];
-          memset(BufN,0,sizeof(BufN));
-          ostrstream SN(BufN,sizeof(BufN));
+          tostrstream SN;
           SN << it << it.getValueBigReal();
 */
-
       if(!equal80) {
         mismatchDouble80++;
-        if(_tcslen(buf80) != _tcslen(buf64)) {
+        if(buf80.length() != buf64.length()) {
           lengthMismatchDouble80++;
         }
       }
 
       if(!equalN) {
         mismatchBigReal++;
-        if(_tcslen(bufN) != _tcslen(buf64)) {
+        if(bufN.length() != buf64.length()) {
           lengthMismatchBigReal++;
         }
       }
     }
   }
   tcout << spaceString(60) << endl;
-  tcout << "Total Count                 :" << iparam(8) << totalCounter << "." << endl;
-  tcout << "Format mismatch for Double80:" << iparam(8) << mismatchDouble80       << " " << ufparam(2) << ((double)mismatchDouble80      / totalCounter * 100) << "%." << endl;
-  tcout << "Format mismatch for BigReal :" << iparam(8) << mismatchBigReal        << " " << ufparam(2) << ((double)mismatchBigReal       / totalCounter * 100) << "%." << endl;
-  tcout << "Length mismatch for Double80:" << iparam(8) << lengthMismatchDouble80 << " " << ufparam(2) << ((double)lengthMismatchDouble80/ totalCounter * 100) << "%." << endl;
-  tcout << "Length mismatch for BigReal :" << iparam(8) << lengthMismatchBigReal  << " " << ufparam(2) << ((double)lengthMismatchBigReal / totalCounter * 100) << "%." << endl;
+  tcout << _T("Total Count                 :") << iparam(8) << totalCounter << _T(".") << endl;
+  tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchDouble80       << _T(" ") << ufparam(2) << ((double)mismatchDouble80      / totalCounter * 100) << _T("%.") << endl;
+  tcout << _T("Format mismatch for BigReal :") << iparam(8) << mismatchBigReal        << _T(" ") << ufparam(2) << ((double)mismatchBigReal       / totalCounter * 100) << _T("%.") << endl;
+  tcout << _T("Length mismatch for Double80:") << iparam(8) << lengthMismatchDouble80 << _T(" ") << ufparam(2) << ((double)lengthMismatchDouble80/ totalCounter * 100) << _T("%.") << endl;
+  tcout << _T("Length mismatch for BigReal :") << iparam(8) << lengthMismatchBigReal  << _T(" ") << ufparam(2) << ((double)lengthMismatchBigReal / totalCounter * 100) << _T("%.") << endl;
 }
 
 static int doubleCompare(const double &d1, const double &d2) {
@@ -343,7 +333,7 @@ static int doubleCompare(const double &d1, const double &d2) {
 void testToString() {
 
   double startTime = getProcessTime();
-  cout << "Testing operator<<(ostream &stream, BigReal/Double80/double)" << endl;
+  tcout << _T("Testing operator<<(ostream &stream, BigReal/Double80/double)") << endl;
 
   StringParametersIterator it1;
   testToString(it1);
@@ -366,5 +356,5 @@ void testToString() {
 
   double timeUsage = getProcessTime() - startTime;
 
-  tcout << "Total time usage:" << ufparam(3) << ((getProcessTime() - startTime) / 1e6) << " sec." << endl;
+  tcout << _T("Total time usage:") << ufparam(3) << ((getProcessTime() - startTime) / 1e6) << _T(" sec.") << endl;
 }
