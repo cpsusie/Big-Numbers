@@ -34,9 +34,9 @@ Real csc(                 const Real &x);
 Real sec(                 const Real &x);
 Real acsc(                const Real &x);
 Real asec(                const Real &x);
-Real acosh(               const Real &x);
-Real asinh(               const Real &x);
-Real atanh(               const Real &x);
+//Real acosh(               const Real &x);
+//Real asinh(               const Real &x);
+//Real atanh(               const Real &x);
 
 Real sinDegrees(          const Real &x);
 Real cosDegrees(          const Real &x);
