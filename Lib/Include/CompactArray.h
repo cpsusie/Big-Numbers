@@ -579,7 +579,7 @@ typedef CompactArray<double> CompactDoubleArray;
 
 template <class T> class CompactFileArray {
 private:
-  ByteInputFile          m_f;
+  mutable ByteInputFile  m_f;
   const unsigned __int64 m_dataStartOffset;
   unsigned int           m_size;
 

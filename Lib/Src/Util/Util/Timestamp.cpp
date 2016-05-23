@@ -44,7 +44,7 @@ Timestamp::Timestamp(time_t tt) {
 }
 
 Timestamp::Timestamp(const Date &src) {
-  m_factor = src.m_factor * Time::getMaxFactor();
+  m_factor = (__int64)src.m_factor * Time::getMaxFactor();
 }
 
 Timestamp::Timestamp(double d) { // ie type DATE
@@ -339,11 +339,11 @@ void Timestamp::getHMS(int &hour, int &minute, int &second, int &millisecond) co
 }
 
 Date Timestamp::getDate() const {
-  return Date(m_factor/Time::getMaxFactor());
+  return Date((int)(m_factor/Time::getMaxFactor()));
 }
 
 Time Timestamp::getTime() const {
-  return Time(m_factor % Time::getMaxFactor());
+  return Time((int)(m_factor % Time::getMaxFactor()));
 }
 
 double Timestamp::getDATE() const {

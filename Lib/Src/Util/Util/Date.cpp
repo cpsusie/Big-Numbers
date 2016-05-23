@@ -52,12 +52,11 @@ Date::Date(const TCHAR *src) {
   init(src);
 }
 
-/*
-Date::Date(__int64 factor) {
+Date::Date(int factor) {
   checkFactor(factor);
-  m_factor = (int)factor;
+  m_factor = factor;
 }
-*/
+
 
 int Date::adjustYear100(int year) { // static
   static const int thisYear = Date().getYear();

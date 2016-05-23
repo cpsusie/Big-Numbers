@@ -37,12 +37,10 @@ Time::Time(const TCHAR *src) {
   init(src);
 }
 
-/*
-Time::Time(__int64 factor) {
+Time::Time(int factor) {
   checkFactor(factor);
   m_factor = factor;
 }
-*/
 
 void Time::checkFactor(__int64 factor) {
   if(factor < 0 || factor >= getMaxFactor()) {

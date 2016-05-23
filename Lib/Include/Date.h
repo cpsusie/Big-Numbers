@@ -43,7 +43,7 @@ class Date {
 private:
   int m_factor;
   void init(const TCHAR *src);
-//  Date(__int64 factor);
+  Date(int factor);
   static void checkFactor(__int64 factor);
   static int getDATE0Factor();
 public:
@@ -127,7 +127,7 @@ private:
   explicit Time(double msec); // msec:milliseconds from midnight
   void init(const TCHAR *src);
   static int getFactor(time_t tt);
-//  Time(__int64 factor);
+  Time(int factor);
   static void checkFactor(__int64 factor);
 public:
 
