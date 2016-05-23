@@ -16,14 +16,14 @@ public:
 #define INITPRIMEFACTORDEBUGSTRING(p)
 #endif
 public:
-  unsigned int m_prime;
+  unsigned __int64 m_prime;
   unsigned int m_multiplicity;
   inline PrimeFactor() : m_prime(0), m_multiplicity(0) {
   }
-  inline PrimeFactor(unsigned int prime) : m_prime(prime), m_multiplicity(1) {
+  inline PrimeFactor(unsigned __int64 prime) : m_prime(prime), m_multiplicity(1) {
   }
   inline String toString() const {
-    return (m_multiplicity==1) ? format(_T("%lu"), m_prime) : format(_T("%lu^%lu"), m_prime, m_multiplicity);
+    return (m_multiplicity==1) ? format(_T("%I64u"), m_prime) : format(_T("%I64u^%lu"), m_prime, m_multiplicity);
   }
 };
 

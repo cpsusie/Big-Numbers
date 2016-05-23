@@ -101,11 +101,14 @@
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <OutDir>..\..\..\MTDebug32\</OutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>C:\mytools\parsergen\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\..\..\MTRelease32\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\mytools\parsergen\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
@@ -201,6 +204,18 @@
     <ClInclude Include="..\..\..\Include\Math\BigRealMatrix.h" />
     <ClInclude Include="..\..\..\Include\Math\Complex.h" />
     <ClInclude Include="..\..\..\Include\Math\Double80.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\Expression.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionFactor.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionGraphics.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionLex.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionNode.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionParser.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionSymbol.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\Number.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\OpCodes.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\ParserTree.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\PrimeFactors.h" />
+    <ClInclude Include="..\..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\..\Include\Math\MathException.h" />
@@ -230,6 +245,43 @@
     <ClCompile Include="Double80.cpp" />
     <ClCompile Include="Double80io.cpp" />
     <ClCompile Include="Double80Random.cpp" />
+    <ClCompile Include="Expression\AddentArray.cpp" />
+    <ClCompile Include="Expression\Expression.cpp" />
+    <ClCompile Include="Expression\ExpressionAction.cpp" />
+    <ClCompile Include="Expression\ExpressionCompare.cpp" />
+    <ClCompile Include="Expression\ExpressionCompile.cpp" />
+    <ClCompile Include="Expression\ExpressionDerive.cpp" />
+    <ClCompile Include="Expression\ExpressionEvaluate.cpp" />
+    <ClCompile Include="Expression\ExpressionFactor.cpp" />
+    <ClCompile Include="Expression\ExpressionHelp.cpp" />
+    <ClCompile Include="Expression\ExpressionLex.cpp" />
+    <ClCompile Include="Expression\ExpressionNode.cpp" />
+    <ClCompile Include="Expression\ExpressionNodeNumber.cpp" />
+    <ClCompile Include="Expression\ExpressionNodePolynomial.cpp" />
+    <ClCompile Include="Expression\ExpressionNodeProduct.cpp" />
+    <ClCompile Include="Expression\ExpressionNodeSum.cpp" />
+    <ClCompile Include="Expression\ExpressionNodeTree.cpp" />
+    <ClCompile Include="Expression\ExpressionNodeVariable.cpp" />
+    <ClCompile Include="Expression\ExpressionReduce.cpp" />
+    <ClCompile Include="Expression\ExpressionReplacePowers.cpp" />
+    <ClCompile Include="Expression\ExpressionTables.cpp" />
+    <ClCompile Include="Expression\ExpressionToCForm.cpp" />
+    <ClCompile Include="Expression\ExpressionToNForm.cpp" />
+    <ClCompile Include="Expression\ExpressionToSForm.cpp" />
+    <ClCompile Include="Expression\ExpressionVariable.cpp" />
+    <ClCompile Include="Expression\FactorArray.cpp" />
+    <ClCompile Include="Expression\Number.cpp" />
+    <ClCompile Include="Expression\ParserTree.cpp" />
+    <ClCompile Include="Expression\ParserTreeComplexity.cpp" />
+    <ClCompile Include="Expression\ParserTreeGarbageCollect.cpp" />
+    <ClCompile Include="Expression\ParserTreeOpCForm.cpp" />
+    <ClCompile Include="Expression\ParserTreeOpCommon.cpp" />
+    <ClCompile Include="Expression\ParserTreeOpSForm.cpp" />
+    <ClCompile Include="Expression\ParserTreeSymbolTable.cpp" />
+    <ClCompile Include="Expression\PrimeFactors.cpp" />
+    <ClCompile Include="Expression\SNode.cpp" />
+    <ClCompile Include="Expression\SumElement.cpp" />
+    <ClCompile Include="Expression\TestMachineCode.cpp" />
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
@@ -269,6 +321,39 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Expression\Expression.lex">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen  -v -OExpression,..\..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expression\ExpressionLex.cpp;..\..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -OExpression,..\..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating Expression lexer </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Expression\ExpressionLex.cpp;..\..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="Expression\Expression.y">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsegen -OExpression,..\..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\include\Math\Expression\ExpressionParser.h;..\..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsegen -OExpression,..\..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Analyzing Expression Grammar</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\include\Math\Expression\ExpressionParser.h;..\..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Expression\Expression.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

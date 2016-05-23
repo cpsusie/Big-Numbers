@@ -5,7 +5,7 @@
 
 const extern ParserTables *ExpressionTables;
 
-#line 3 "C:\\mytools\\Lib\\src\\Math\\Expression\\Expression.y"
+#line 3 "C:\\mytools2015\\Lib\\Src\\Math\\Math\\Expression\\Expression.y"
 #include <Math/Expression/ExpressionSymbol.h>
 #include <Math/Expression/ExpressionLex.h>
 #include <Math/Expression/ParserTree.h>
@@ -28,5 +28,5 @@ private:
 };
 
 
-#line 18 "C:\\MYTOOLS\\PARSERGEN\\LIB\\parsegencpp.par"
+#line 18 "C:\\mytools\\parsergen\\lib\\parsegencpp.par"
 

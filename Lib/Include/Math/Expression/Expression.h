@@ -37,7 +37,7 @@ public:
   }
 };
 
-class MachineCode : public ByteArray {
+class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   CompactArray<ExternalReference> m_externals;
@@ -193,9 +193,9 @@ private:
   SNode toCFormPoly(           const ExpressionNode *n) const;
   SNode toCFormTreeNode(       const ExpressionNode *n) const;
   AddentArray &toCFormSum(     AddentArray &result, const ExpressionNode *n, bool positive) const;
-  FactorArray &toCFormProduct( FactorArray &result, const ExpressionNode *n, const const SNode &exponent) const;
-  FactorArray &toCFormPower(   FactorArray &result, const ExpressionNode *n, const const SNode &exponent) const;
-  FactorArray &toCFormRoot(    FactorArray &result, const ExpressionNode *n, const const SNode &exponent) const;
+  FactorArray &toCFormProduct( FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
+  FactorArray &toCFormPower(   FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
+  FactorArray &toCFormRoot(    FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
 
   SNode toNForm(               const ExpressionNode *n) const;
   SNode toNFormBoolExp(        const ExpressionNode *n) const;
