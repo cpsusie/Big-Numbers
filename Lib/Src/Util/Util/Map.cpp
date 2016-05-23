@@ -179,7 +179,8 @@ public:
 
 bool ValueCollection::contains(const void *e) const {
   bool result = false;
-  for(AbstractIterator *it = ((ValueCollection*)this)->getIterator(); it->hasNext();) {
+  AbstractIterator *it = ((ValueCollection*)this)->getIterator();
+  while(it->hasNext()) {
     void *e1 = it->next();
     if(m_cmp(e,e1) == 0) {
       result = true;

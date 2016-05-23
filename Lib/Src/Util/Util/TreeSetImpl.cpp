@@ -21,7 +21,8 @@ TreeSetImpl::~TreeSetImpl() {
 AbstractCollection *TreeSetImpl::clone(bool cloneData) const {
   TreeSetImpl *clone = new TreeSetImpl(*m_objectManager, *m_comparator);
   if(cloneData) {
-    for(AbstractIterator *it = ((TreeSetImpl*)this)->getIterator(); it->hasNext();) {
+    AbstractIterator *it = ((TreeSetImpl*)this)->getIterator();
+    while(it->hasNext()) {
       clone->add(it->next());
     }
     delete it;

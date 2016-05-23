@@ -44,14 +44,14 @@ void registryLog(const TCHAR *format,...) {
 
 const TCHAR *RegistryKey::getRootName(HKEY key) { // static
   switch((unsigned long)key) {
-  case HKEY_CLASSES_ROOT    : return _T("HKEY_CLASSES_ROOT");
-  case HKEY_CURRENT_USER    : return _T("HKEY_CURRENT_USER");
-  case HKEY_LOCAL_MACHINE   : return _T("HKEY_LOCAL_MACHINE");
-  case HKEY_USERS           : return _T("HKEY_USERS");
-  case HKEY_PERFORMANCE_DATA: return _T("HKEY_PERFORMANCE_DATA");
-  case HKEY_CURRENT_CONFIG  : return _T("HKEY_CURRENT_CONFIG");
-  case HKEY_DYN_DATA        : return _T("HKEY_DYN_DATA");
-  default                   : return EMPTYSTRING;
+  case (unsigned long)HKEY_CLASSES_ROOT    : return _T("HKEY_CLASSES_ROOT");
+  case (unsigned long)HKEY_CURRENT_USER    : return _T("HKEY_CURRENT_USER");
+  case (unsigned long)HKEY_LOCAL_MACHINE   : return _T("HKEY_LOCAL_MACHINE");
+  case (unsigned long)HKEY_USERS           : return _T("HKEY_USERS");
+  case (unsigned long)HKEY_PERFORMANCE_DATA: return _T("HKEY_PERFORMANCE_DATA");
+  case (unsigned long)HKEY_CURRENT_CONFIG  : return _T("HKEY_CURRENT_CONFIG");
+  case (unsigned long)HKEY_DYN_DATA        : return _T("HKEY_DYN_DATA");
+  default                                  : return EMPTYSTRING;
   }
 }
 
@@ -594,7 +594,7 @@ static TCHAR *stringArrayToCharPointer(const StringArray &strings, unsigned long
   TCHAR *result = new TCHAR[charCount];
   MEMSET(result,0,charCount);
   TCHAR *cp = result;;
-  for(i = 0; i < strings.size(); i++) {
+  for(int i = 0; i < strings.size(); i++) {
     _tcscpy(cp,strings[i].cstr());
     cp += strings[i].length() + 1;
   }

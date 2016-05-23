@@ -33,7 +33,8 @@ AbstractIterator *TreeMapImpl::getIterator() {
 AbstractMap *TreeMapImpl::cloneMap(bool cloneData) const {
   TreeMapImpl *clone = new TreeMapImpl(*TreeSetImpl::getObjectManager(),*m_dataManager,*getComparator());
   if(cloneData) {
-    for(AbstractIterator *it = ((TreeMapImpl*)this)->getIterator(); it->hasNext();) {
+    AbstractIterator *it = ((TreeMapImpl*)this)->getIterator();
+    while(it->hasNext()) {
       AbstractEntry *n = (AbstractEntry*)it->next();
       clone->put(n->key(), n->value());
     }

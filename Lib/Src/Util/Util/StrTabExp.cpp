@@ -2,9 +2,9 @@
 #include <String.h>
 
 TCHAR *strTabExpand(TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst) {
-  int l = _tcsclen(src);
+  int l = _tcsclen(src), j = 0;
 
-  for(int i=0, j=0; i < l; i++) {
+  for(int i=0; i < l; i++) {
     if(src[i] != _T('\t')) {
       dst[j++] = src[i];
     } else {

@@ -112,11 +112,11 @@ String getProcessCommandLine(HANDLE hProcess) {
     // make sure the path is null-terminted
     wCmdLine[MAX_PATH-1] = L'\0';
 
-    char result[MAX_PATH+1];
+    char result[MAX_PATH+1], *dst = result;
     for(int i = 0; wCmdLine[i]; i++) {
-      result[i] = (unsigned char)wCmdLine[i];
+      *(dst++) = (unsigned char)wCmdLine[i];
     }
-    result[i] = '\0';
+    *dst = '\0';
     delete[] lpBuffer;
     return result;
   } catch(...) {

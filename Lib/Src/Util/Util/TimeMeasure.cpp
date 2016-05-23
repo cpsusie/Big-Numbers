@@ -29,9 +29,10 @@ double static getTime(TimeMeasureType timeType) {
 
 double measureTime(MeasurableFunction &ftm, TimeMeasureType timeType) {
   double totalUsage;
-  for(double count = 1;;) {
+  double count = 1;
+  for(;;) {
 StartMeasure:
-  double startTime = getTime(timeType);
+    double startTime = getTime(timeType);
     for(double j = 0; j < count; j++) {
       ftm.f();
     }

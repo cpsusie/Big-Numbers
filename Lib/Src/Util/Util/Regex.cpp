@@ -1238,7 +1238,8 @@ BitSet Regex::first(int pcStart,int pcEnd, bool *matchEmpty) const {  // in rang
     *matchEmpty = false;
   }
   BitSet result(MAXCHARSETSIZE);
-  for(int iter = 0; iter < maxIteration; iter++) {
+  int iter;
+  for(iter = 0; iter < maxIteration; iter++) {
     if(pc < pc0) {
       throwException(illegalJumpMsg, pcStart,pcEnd, pc - pc0);
     }
@@ -1386,7 +1387,8 @@ BitSet Regex::first(int pcStart,int pcEnd, bool *matchEmpty) const {  // in rang
 // Get here means we have successfully found the possible starting characters
 // of one path of the pattern. We need not follow this path any farther.
 // Instead, look at the next alternative remembered in the stack.
-    for(bool found = false; !stack.isEmpty();) {
+    bool found = false;
+    while(!stack.isEmpty()) {
       if((pc = stack.pop()) <= pcend) {
         found = true;
         break;
@@ -2287,7 +2289,7 @@ BitSet Regex::getPossibleBreakPointLines() const {
     }
   }
   BitSet result(maxLine+1);
-  for(i = 0; i < m_PCToLineArray.size(); i++) {
+  for(int i = 0; i < m_PCToLineArray.size(); i++) {
     result.add(m_PCToLineArray[i] >> 16);
   }
   return result;

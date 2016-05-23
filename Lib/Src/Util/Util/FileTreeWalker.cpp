@@ -80,7 +80,8 @@ Argv::Argv(const StringArray &a) : m_a(a) {
     m_argv = NULL;
   } else {
     m_argv = new TCHAR*[m_a.size()+1];
-    for(int i = 0; i < m_a.size(); i++) {
+    int i;
+    for(i = 0; i < m_a.size(); i++) {
       m_argv[i] = m_a[i].cstr();
     }
     m_argv[i] = NULL;

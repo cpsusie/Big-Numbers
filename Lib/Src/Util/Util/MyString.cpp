@@ -298,7 +298,8 @@ String &String::replace(const String &from, TCHAR to) {
   const TCHAR *last        = m_buf + m_len - fromLength;
   const int    newCapacity = m_len + 1;
   TCHAR       *newBuf      = new TCHAR[newCapacity];
-  for(TCHAR *s = m_buf, *d = newBuf; s <= last;) {
+  TCHAR       *s, *d;
+  for(s = m_buf, d = newBuf; s <= last;) {
     if(MEMCMP(s,from.m_buf, fromLength)) {
       *(d++) = *(s++);
     } else { // replace
@@ -402,7 +403,8 @@ String &String::replace(const String &from, const String &to) {
   m_len += count * (toLength - fromLength);
   m_capacity = m_len + 1;
   TCHAR *newBuf = new TCHAR[m_capacity];
-  for(TCHAR *s = m_buf, *d = newBuf; s <= last;) {
+  TCHAR *s, *d;
+  for(s = m_buf, d = newBuf; s <= last;) {
     if(MEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     } else { // replace

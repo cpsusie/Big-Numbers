@@ -216,7 +216,7 @@ void Console::clearRect(int left, int top, int right, int bottom, WORD attr, int
   HANDLE h = getHandle(fileNo);
   COORD coord;
   coord.X = left;
-  for(i = top; i <= bottom; i++) {
+  for(int i = top; i <= bottom; i++) {
     DWORD res;
     coord.Y = i;
     CHECK(FillConsoleOutputCharacter( h,  ' ' , width, coord, &res));
@@ -336,7 +336,7 @@ void Console::setColor(int left, int top, int right, int bottom, WORD color, int
   }
   s_gate.wait();
   coord.X = left;
-  for(i = top; i <= bottom; i++) {
+  for(int i = top; i <= bottom; i++) {
     coord.Y = i;
     DWORD res;
     CHECK(WriteConsoleOutputAttribute(getHandle(fileNo), attrs, width, coord, &res));

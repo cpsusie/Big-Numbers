@@ -205,8 +205,9 @@ unsigned int BitSet::select() const {
   Atom p = m_p[i];
   unsigned char bits[BITSINATOM];
   Atom mask;
-  for (int j = 0, count = 0; p; j++) {
-	if(mask = p & ATOMBIT(j)) {
+  int count = 0;
+  for (int j = 0; p; j++) {
+    if(mask = p & ATOMBIT(j)) {
       bits[count++] = j;
       p &= ~mask;
     }
@@ -261,8 +262,9 @@ BitSet compl(const BitSet &s) {
 
 unsigned long BitSet::oldsize() const {
   const Atom *p = m_p;
-  for (unsigned long result = 0, i = ATOMCOUNT(m_capacity); i--;) {
-	for(Atom a = *(p++); a; a &= (a-1)) {
+  unsigned long result = 0;
+  for (unsigned long i = ATOMCOUNT(m_capacity); i--;) {
+	  for(Atom a = *(p++); a; a &= (a-1)) {
       result++;
     }
   }
@@ -439,7 +441,7 @@ BitSet &BitSet::operator*=(const BitSet &rhs) { // this = this and rhs (intersec
   for(unsigned long i = minAtomCount; i--;) {
     *(p++) &= *(rp++);
   }
-  for(i = ATOMCOUNT(m_capacity) - minAtomCount; i--;) {
+  for(unsigned long i = ATOMCOUNT(m_capacity) - minAtomCount; i--;) {
     *(p++) = 0;
   }
   return *this;
@@ -511,7 +513,8 @@ bool operator<=(const BitSet &lts, const BitSet &rhs) {
     }
   } else { // lts.m_capacity > rhs.m_capacity
     unsigned long atomCount = ATOMCOUNT(rhs.m_capacity);
-    for(unsigned long i = 0; i < atomCount; i++) {
+    unsigned long i;
+    for(i = 0; i < atomCount; i++) {
       if((lts.m_p[i] & rhs.m_p[i]) != lts.m_p[i]) {
         return false;
       }

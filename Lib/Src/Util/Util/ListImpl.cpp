@@ -60,16 +60,17 @@ void ListImpl::deleteNode(ListNode *n) {
 }
 
 const ListNode *ListImpl::findNode(unsigned int index) const {
+  const ListNode *n;
   if(index <= (unsigned int)size()/2) {
     unsigned int i = 0;
-    for(ListNode *n = m_first; n && i++ < index; n = n->m_next);
+    for(n = m_first; n && i++ < index; n = n->m_next);
     return n;
   } else {
     if(size() == 0) {
       return NULL;
     }
     unsigned int i = size()-1;
-    for(ListNode *n = m_last; n && i-- > index; n = n->m_prev);
+    for(n = m_last; n && i-- > index; n = n->m_prev);
     return n;
   }
 }
@@ -77,7 +78,8 @@ const ListNode *ListImpl::findNode(unsigned int index) const {
 AbstractCollection *ListImpl::clone(bool cloneData) const {
   ListImpl *copy = new ListImpl(*m_objectManager);
   if(cloneData) {
-    for(AbstractIterator *it = ((ListImpl*)this)->getIterator(); it->hasNext();) {
+    AbstractIterator *it = ((ListImpl*)this)->getIterator();
+    while(it->hasNext()) {
       copy->add(it->next());
     }
     delete it;

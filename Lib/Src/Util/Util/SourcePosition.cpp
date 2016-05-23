@@ -28,7 +28,8 @@ String SourcePosition::toString() const {
 int SourcePosition::findCharIndex(const TCHAR *s, const SourcePosition &pos) { // static
   int lineCount = 0;
   int col       = 0;
-  for(int i = 0; *s; i++, s++) {
+  int i;
+  for(i = 0; *s; i++, s++) {
     if(lineCount == pos.getLineNumber() && col == pos.getColumn() ) {
       break;
     }

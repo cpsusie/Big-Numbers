@@ -270,7 +270,8 @@ void Scanner::less(int count) { // protected
 }
 
 static unsigned short findColumn(const TCHAR *s, const TCHAR *first) { // search backwards for the the first '\n'
-  for(unsigned short count = 0; s >= first && *s != NEWLINE; s--) {
+  unsigned int count;
+  for(count = 0; s >= first && *s != NEWLINE; s--) {
     count++;
   }
   return count - 1;
@@ -420,7 +421,8 @@ SourcePosition Scanner::getPos() const {
     return SourcePosition(m_pos.getFileName(),m_pos.getLineNumber(),m_pos.getColumn() - length);
   } else { // we have one or more newlines in the lexeme
     SourcePosition p(m_pos);
-    for(const TCHAR *s = (const TCHAR*)getText() + length; length > 0; s--, length--) {
+    const TCHAR *s;
+    for(s = (const TCHAR*)getText() + length; length > 0; s--, length--) {
       if(*s == NEWLINE) {
         p.m_lineNumber--;
       }

@@ -151,7 +151,7 @@ CompactIntArray HashSetTable::getLength() const {
   for(int i = 0; i <= m; i++) {
     result.add(0);
   }
-  for(index = 0; index < capacity; index++) {
+  for(unsigned long index = 0; index < capacity; index++) {
     result[tmp[index]]++;
   }
   return result;
@@ -183,7 +183,8 @@ AbstractCollection *HashSetImpl::clone(bool cloneData) const {
   HashSetImpl *clone = new HashSetImpl(*m_objectManager, m_hash, *m_comparator, getCapacity());
   TRACE_NEW(clone);
   if(cloneData) {
-    for(AbstractIterator *it = ((HashSetImpl*)this)->getIterator(); it->hasNext();) {
+    AbstractIterator *it = ((HashSetImpl*)this)->getIterator();
+    while(it->hasNext()) {
       clone->add(it->next());
     }
     TRACE_DELETE(it);

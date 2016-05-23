@@ -13,8 +13,9 @@ String toLowerCase(const String &str) {
 }
 
 String firstLetterToUpperCase(const String &str) { // Return a copy of str, with first non-space letter changed to uppercase.
-  String result(str);
-  for(_TUCHAR *s = (_TUCHAR*)result.cstr(); _istspace(*s); s++);
+  String  result(str);
+  _TUCHAR *s;
+  for(s = (_TUCHAR*)result.cstr(); _istspace(*s); s++);
   if(_istascii(*s) && _istlower(*s)) {
     *s = _totupper(*s);
   }

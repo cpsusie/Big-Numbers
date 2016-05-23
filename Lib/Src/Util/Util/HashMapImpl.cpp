@@ -36,7 +36,8 @@ AbstractIterator *HashMapImpl::getIterator() {
 AbstractMap *HashMapImpl::cloneMap(bool cloneData) const {
   HashMapImpl *clone = new HashMapImpl(*getKeyManager(), *getDataManager(), getHashFunction(),*getComparator(),getCapacity());
   if(cloneData) {
-    for(AbstractIterator *it = ((HashMapImpl*)this)->getIterator(); it->hasNext();) {
+    AbstractIterator *it = ((HashMapImpl*)this)->getIterator();
+    while(it->hasNext()) {
       const AbstractEntry *n = (AbstractEntry*)it->next();
       clone->put(n->key(), n->value());
     }
