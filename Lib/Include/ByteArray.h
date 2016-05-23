@@ -10,15 +10,21 @@ private:
   unsigned int  m_capacity;
   unsigned int  m_size;
 
-  void init();
   void cleanup();
   void indexError(unsigned int i) const;
+protected:
+  void init();
+  virtual BYTE *allocateBytes( size_t size);
+  virtual void  deallocateBytes(BYTE *buffer);
+  virtual size_t getCapacityCeil(size_t capacity) const {
+    return capacity;
+  }
 public:
   ByteArray();
   ByteArray(const BYTE *data, unsigned int size);
   ByteArray(const ByteArray &src);
   explicit ByteArray(unsigned int capacity);
- ~ByteArray();
+  virtual ~ByteArray();
   ByteArray &operator=( const ByteArray &src);
   ByteArray  operator+( const ByteArray &d) const;
   ByteArray &operator+=(const ByteArray &d);
@@ -80,6 +86,23 @@ public:
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
   ByteArray &loadFromResource(int resId, const TCHAR *typeName); // return *this. typeName cannot be String, because of MAKEINTRESOURCE
+};
+
+class ExecutableByteArray : public ByteArray {
+private:
+  DECLARECLASSNAME;
+protected:
+  BYTE *allocateBytes(size_t size);
+  void  deallocateBytes(BYTE *buffer);
+  size_t getCapacityCeil(size_t capacity) const;
+public:
+  inline ExecutableByteArray() {
+  }
+  ExecutableByteArray(const BYTE *data, unsigned int size);
+  ExecutableByteArray(const ByteArray &src);
+  explicit ExecutableByteArray(unsigned int capacity);
+  ~ExecutableByteArray();
+  static size_t getSystemPageSize();
 };
 
 class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, instead of loading 

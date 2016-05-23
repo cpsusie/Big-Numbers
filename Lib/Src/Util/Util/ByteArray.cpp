@@ -9,19 +9,15 @@ ByteArray::ByteArray() {
 
 ByteArray::ByteArray(const BYTE *data, unsigned int size) {
   init();
-  setCapacity(size);
-  m_size = size;
-  if(m_size) {
-    memcpy(m_data, data, m_size);
+  if (size > 0) {
+    setData(data, size);
   }
 }
 
 ByteArray::ByteArray(const ByteArray &src) {
   init();
-  setCapacity(src.m_size);
-  m_size = src.m_size;
-  if(m_size) {
-    memcpy(m_data,src.m_data,m_size);
+  if(!src.isEmpty()) {
+    setData(src.getData(), src.size());
   }
 }
 
@@ -73,14 +69,14 @@ ByteArray &ByteArray::append(const BYTE *data, unsigned int size) {
   if(size) {
     const unsigned int newSize = m_size + size;
     if(newSize > m_capacity) {     // Careful here!!! data and m_data might overlap!!
-      const unsigned int newCapacity = 2 * newSize; // > 0
-      BYTE *newData = new BYTE[newCapacity];
+      const unsigned int newCapacity = getCapacityCeil(2 * newSize); // > 0
+      BYTE *newData = allocateBytes(newCapacity);
       if(m_size > 0) {
         memcpy(newData, m_data, m_size);
       }
       memcpy(newData + m_size, data, size);
       if(m_data != NULL) { // Now we can safely delete m_data.
-        delete[] m_data;
+        deallocateBytes(m_data);
       }
       m_data     = newData;
       m_capacity = newCapacity;
@@ -101,8 +97,8 @@ ByteArray &ByteArray::insertConstant(unsigned int index, BYTE b, unsigned int co
   }
   const unsigned int newSize = m_size + count;
   if(newSize > m_capacity) {
-    const unsigned int newCapacity = 2 * newSize;
-    BYTE *newData = new BYTE[newCapacity];
+    const unsigned int newCapacity = getCapacityCeil(2 * newSize);
+    BYTE *newData = allocateBytes(newCapacity);
     if(index > 0) {
       memcpy(newData, m_data, index);
     }
@@ -110,7 +106,7 @@ ByteArray &ByteArray::insertConstant(unsigned int index, BYTE b, unsigned int co
       memcpy(newData+index+count, m_data+index, m_size-index);
     }
     if(m_data != NULL) {
-      delete[] m_data;
+      deallocateBytes(m_data);
     }
     m_data = newData;
     m_capacity = newCapacity;
@@ -124,8 +120,7 @@ ByteArray &ByteArray::insertConstant(unsigned int index, BYTE b, unsigned int co
 
 ByteArray ByteArray::operator+(const ByteArray &d) const {
   ByteArray result(*this);
-  result.append(d);
-  return result;
+  return result.append(d);
 }
 
 ByteArray &ByteArray::operator+=(const ByteArray &d) {
@@ -171,9 +166,17 @@ void ByteArray::init() {
   m_size     = 0;
 }
 
+BYTE *ByteArray::allocateBytes(size_t size) {
+  return new BYTE[size];
+}
+
+void  ByteArray::deallocateBytes(BYTE *buffer) {
+  delete[] buffer;
+}
+
 void ByteArray::cleanup() {
   if(m_data != NULL) {
-    delete[] m_data;
+    deallocateBytes(m_data);
   }
   init();
 }
@@ -182,13 +185,14 @@ void ByteArray::setCapacity(unsigned int capacity) {
   if(capacity < m_size) {
     capacity = m_size;
   }
+  capacity = getCapacityCeil(capacity);
   if(capacity == 0) {
     cleanup();
   } else if(capacity != m_capacity) {
-    BYTE *newData = new BYTE[capacity];
+    BYTE *newData = allocateBytes(capacity);
     if(m_size > 0) {
       memcpy(newData, m_data, m_size);
-      delete[] m_data;
+      deallocateBytes(m_data);
     }
     m_data     = newData;
     m_capacity = capacity;
@@ -229,23 +233,4 @@ void ByteArray::load(ByteInputStream &s) {
     s.getBytesForced(m_data, size);
     m_size = size;
   }
-}
-
-ByteFileArray::ByteFileArray(const String &fileName, unsigned int startOffset) : m_startOffset(startOffset) {
-  m_f = FOPEN(fileName, _T("rb"));
-  FSEEK(m_f, m_startOffset);
-  unsigned int size;
-  FREAD(&size, sizeof(size), 1, m_f);
-  m_size = size;
-}
-
-ByteFileArray::~ByteFileArray() {
-  fclose(m_f);
-}
-
-BYTE ByteFileArray::operator[](unsigned int i) const {
-  FSEEK(m_f, m_startOffset + sizeof(unsigned int) + i);
-  BYTE result;
-  FREAD(&result, 1, 1, m_f);
-  return result;
 }
