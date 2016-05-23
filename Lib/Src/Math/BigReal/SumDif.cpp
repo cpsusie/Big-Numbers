@@ -6,16 +6,15 @@
 Digit *BigReal::findDigit(const int exponent) const { 
   int fwd = m_expo - exponent;
   int bwd = exponent - m_low;
-  
+  Digit *p;
   if(bwd < 0 || fwd < 0) {
     return NULL;
   } else if(bwd < fwd) { // count backward
-    for(Digit *p = m_last;  bwd--; p = p->prev);
-    return p;
+    for(p = m_last;  bwd--; p = p->prev);
   } else {               // count forward
-    for(Digit *p = m_first; fwd--; p = p->next);
-    return p;
+    for(p = m_first; fwd--; p = p->next);
   }
+  return p;
 }
 
 // Assume *this != 0.
@@ -43,13 +42,13 @@ Digit *BigReal::findDigitAdd(const BigReal &f, int &low) const {
 
     int bwd = fexpo  - m_low;
     int fwd = m_expo - fexpo;
+    Digit *p;
     if(bwd < fwd) { // count backward
-      for(Digit *p = m_last;  bwd--; p = p->prev);
-      return p;
+      for(p = m_last;  bwd--; p = p->prev);
     } else {        // count forward
-      for(Digit *p = m_first; fwd--; p = p->next);
-      return p;
+      for(p = m_first; fwd--; p = p->next);
     }
+    return p;
   }
 }
 
@@ -66,13 +65,13 @@ Digit *BigReal::findDigitSubtract(const BigReal &f) const {
   } else {
     int bwd = f.m_expo - m_low;
     int fwd = m_expo   - f.m_expo;
+    Digit *p;
     if(bwd < fwd) { // count backward
-      for(Digit *p = m_last;  bwd--; p = p->prev);
-      return p;
+      for(p = m_last;  bwd--; p = p->prev);
     } else {        // count forward
-      for(Digit *p = m_first; fwd--; p = p->next);
-      return p;
+      for(p = m_first; fwd--; p = p->next);
     }
+    return p;
   }
 }
 
@@ -98,22 +97,20 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
     m_expo = x.m_expo;
     m_low  = xLow;
   } else { // xp != NULL && yp != NULL
+    int d;
     if(xLow < yLow) {
-      for(int d = yLow - xLow; xp && d--; xp = xp->prev) {
+      for(d = yLow - xLow; xp && d--; xp = xp->prev) {
         insertDigit(xp->n);
       }          
-      if(d > 0) {
-        insertZeroDigits(d);
-      }
+      if(d > 0) insertZeroDigits(d);
     } else if(yLow < xLow) {
-      for(int d = xLow - yLow; yp && d--; yp = yp->prev) {
+      for(d = xLow - yLow; yp && d--; yp = yp->prev) {
         insertDigit(yp->n);
       }
-      if(d > 0) {
-        insertZeroDigits(d);
-      }
+      if(d > 0) insertZeroDigits(d);
     }
-    for(unsigned long carry = 0; xp && yp; xp = xp->prev, yp = yp->prev) {
+    unsigned long carry;
+    for(carry = 0; xp && yp; xp = xp->prev, yp = yp->prev) {
       carry += xp->n + yp->n;
       insertDigit(carry % BIGREALBASE);
       carry /= BIGREALBASE;
@@ -153,7 +150,8 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     p  = m_last;
     xp = x.m_last;
     const int t = min(m_low-1, x.m_expo);
-    for(int d = x.m_low; d <= t; d++, xp = xp->prev) {
+    int d;
+    for(d = x.m_low; d <= t; d++, xp = xp->prev) {
       insertAfter(p, xp->n);
     }
     if(d < m_low) {
@@ -223,7 +221,8 @@ BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
     insertAfter(p, BIGREALBASE - xp->n);
     xp = xp->prev;
     m_low--;
-    for(int d = k - (last+1); xp && (d-- > 0); xp = xp->prev) {
+    int d;
+    for(d = k - (last+1); xp && (d-- > 0); xp = xp->prev) {
       insertAfter(p, BIGREALBASE - 1 - xp->n);
       m_low--;
     }

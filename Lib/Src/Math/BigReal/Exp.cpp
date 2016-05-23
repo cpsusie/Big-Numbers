@@ -104,7 +104,7 @@ BigReal exp( const BigReal &x, const BigReal &f) {
       for(int i = k; i <= j; i++) {
         s = prod(s,s,g);
       }
-      for(i = 2; i <= k; i++) {
+      for(int i = 2; i <= k; i++) {
         s = prod(s,s,PAPCprod(#,g,PAPCprod(#,s,s,pool),pool), pool);
       }
       return s;

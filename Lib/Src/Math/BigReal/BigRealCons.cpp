@@ -122,11 +122,13 @@ BigReal &BigReal::operator=(const BigReal &x) {
     } else {                   // x != 0 && *this != 0
       const int missing = x.getLength() - getLength();
       if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
-        for(Digit *sd = x.m_first, *dd = m_first; dd; sd = sd->next, dd = dd->next) {
+        Digit *sd, *dd;
+        for(sd = x.m_first, dd = m_first; dd; sd = sd->next, dd = dd->next) {
           dd->n = sd->n;
         }
         if(sd) {               // We have more digits to copy
-          for(Digit *p = m_last; sd; sd = sd->next, p = dd) {
+          Digit *p;
+          for(p = m_last; sd; sd = sd->next, p = dd) {
             (dd = newDigit())->prev = p;
             dd->n   = sd->n;
             p->next = dd;
@@ -134,7 +136,8 @@ BigReal &BigReal::operator=(const BigReal &x) {
           (m_last = p)->next = NULL;
         }
       } else {                 // Missing < 0. First copy and then delete excess digits
-        for(Digit *sd = x.m_first, *dd = m_first; sd; sd = sd->next, dd = dd->next) {
+        Digit *sd, *dd;
+        for(sd = x.m_first, dd = m_first; sd; sd = sd->next, dd = dd->next) {
           dd->n = sd->n;
         }
         Digit *saveLast = m_last;
@@ -275,7 +278,8 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       } else if(*t == _T('+')) {
         t++;
       }
-      for(int exponent = 0; _istdigit(*t); t++) {
+      int exponent;
+      for(exponent = 0; _istdigit(*t); t++) {
         exponent = 10 * exponent + (*t - '0');
         if(exponent > LOG10_BIGREALBASE*BIGREAL_MAXEXPO || exponent < 0) { // max. exponent in base 10
           throwBigRealException(_T("Exponent too big. Max:%d"),LOG10_BIGREALBASE*BIGREAL_MAXEXPO);

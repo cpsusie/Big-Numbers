@@ -67,7 +67,8 @@ void BigReal::formatFixed(String &result, int precision, long flags, bool remove
         result += spaceString(precision-decimalsDone,'0');
       }
       if(removeTrailingZeroes) {
-        for(int i = result.length()-1; i >= 0 && result[i]=='0';) {
+        int i;
+        for(i = result.length()-1; i >= 0 && result[i]=='0';) {
           result.remove(i--);
         }
         if(!(flags & ios::showpoint) && result[i] == _T('.')) {
@@ -118,7 +119,8 @@ void BigReal::formatScientific(String &result, int precision, long flags, int ex
         result += spaceString(precision-decimalsDone,'0');
       }
       if(removeTrailingZeroes) {
-        for(int i = result.length()-1; i >= 0 && result[i]=='0';) {
+        int i;
+        for(i = result.length()-1; i >= 0 && result[i]=='0';) {
           result.remove(i--);
         }
         if(!(flags & ios::showpoint) && result[i] == _T('.')) {

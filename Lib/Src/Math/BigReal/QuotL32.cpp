@@ -41,7 +41,8 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   const unsigned long yFirst = y.getFirst32(MAXDIGITS_DIVISOR32,&scale);
 
   BigReal result(pool), t(pool), tmp(pool);
-  for(bool loopDone = false; compareAbs(z,v) > 0; loopDone = true) {
+  bool loopDone = false;
+  for(; compareAbs(z,v) > 0; loopDone = true) {
     t.approxQuot32Abs(z, yFirst, scale).m_negative = z.m_negative;
     result += t;
     z -= product(tmp, t, y, u, 0);

@@ -9,7 +9,7 @@ BigRealThreadPool::BigRealThreadPool() {
   for(int i = 0; i < 8; i++) {
     poolArray.add(m_digitPool.fetchResource());
   }
-  for(i = 0; i < poolArray.size(); i++) {
+  for(int i = 0; i < poolArray.size(); i++) {
     m_digitPool.releaseResource(poolArray[i]);
   }
   m_activeThreads  = m_maxActiveThreads = 1;
@@ -161,7 +161,7 @@ void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // st
     threads.add(instance.m_threadPool.fetchResource());
   }
   SynchronizedStringQueue *queue = instance.m_queuePool.fetchResource();
-  for(i = 0; i < jobs.size(); i++) {
+  for(int i = 0; i < jobs.size(); i++) {
     threads[i]->execute(*jobs[i], *queue);
   }
   instance.m_gate.signal(); // open gate for other threads

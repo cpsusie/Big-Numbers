@@ -37,7 +37,8 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, int fexpo) {
 // Assume a == b == 0. Dont care about sign of f
 void BigReal::split(BigReal &a, BigReal &b, int n, const BigReal &f) const {
   int i = n;
-  for(const Digit *p = m_first; i-- && p; p = p->next) {
+  const Digit *p;
+  for(p = m_first; i-- && p; p = p->next) {
     a.appendDigit(p->n);
   }
   a.m_expo     = m_expo;

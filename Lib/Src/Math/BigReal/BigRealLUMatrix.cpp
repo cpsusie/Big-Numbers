@@ -139,7 +139,7 @@ BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const {
     z[i] = rQuot(rDif(y[m_permut[i]],sum,digits),a(m_permut[i],i),digits);
   }
   BigRealVector x(n);
-  for(i = n-1; i >= 0; i--) {
+  for(int i = n-1; i >= 0; i--) {
     BigReal sum = 0;
     for(int j = i+1; j < n; j++) {
       sum = rSum(sum,rProd(a(m_permut[i],j),x[j],digits),digits);

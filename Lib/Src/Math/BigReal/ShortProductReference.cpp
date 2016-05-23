@@ -18,7 +18,8 @@ BigReal &BigReal::shortProductNoZeroCheckReference(const BigReal &x, const BigRe
   clearDigits();
 
   int digitsAdded = 0;
-  for(Digit *xk = x.m_first, *yk = y.m_first;;) { // loopcondition at the end
+  Digit *xk, *yk;
+  for(xk = x.m_first, yk = y.m_first;;) { // loopcondition at the end
     appendZero();
     digitsAdded++;
     Digit *tp = m_last;

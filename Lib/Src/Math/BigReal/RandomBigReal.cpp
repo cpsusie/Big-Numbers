@@ -7,9 +7,10 @@ BigReal BigReal::random(int length, Random *rnd, DigitPool *digitPool) { // stat
   if(length == 0) {
     return pool->get0();
   }
-  BigReal result(pool);
+  BigReal   result(pool);
   const int wholeDigits = length/LOG10_BIGREALBASE;
-  for(int i = 0; i < wholeDigits; i++) {
+  int       i;
+  for(i = 0; i < wholeDigits; i++) {
     result.appendDigit(r.nextInt(BIGREALBASE));
   }
 

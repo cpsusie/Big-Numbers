@@ -30,7 +30,8 @@ int BigReal::getDecimalDigits() const { // BigReal of decimal digits. 0 has leng
   } else if(m_expo == m_low) {
     return getDecimalDigitCount(m_first->n);
   } else {
-    for(unsigned long last = m_last->n, lastDigitCount = LOG10_BIGREALBASE; last % 10 == 0;) {
+    int lastDigitCount = LOG10_BIGREALBASE;
+    for(unsigned long last = m_last->n; last % 10 == 0;) {
       lastDigitCount--;
       last /= 10;
     }
@@ -172,7 +173,8 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     intPart.m_low      = 0;
 
     Digit *dd = intPart.m_first;
-    for(int expo = m_expo; dd && (expo-- >= 0); sd = sd->next, dd = dd->next) {
+    int expo = m_expo;
+    for(; dd && (expo-- >= 0); sd = sd->next, dd = dd->next) {
       dd->n = sd->n;
     }
     if(dd) {                        // remove axcess digits from integerPart
@@ -200,7 +202,8 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
     fractionPart->m_negative = m_negative;
     fractionPart->m_expo     = -1;
     fractionPart->m_low      = m_low;
-    for(Digit *dd = fractionPart->m_first; dd && sd; dd = dd->next, sd = sd->next) {
+    Digit *dd;
+    for(dd = fractionPart->m_first; dd && sd; dd = dd->next, sd = sd->next) {
       dd->n = sd->n;
     }
     if(dd) { // remove excess digits from fractionPart
@@ -253,7 +256,8 @@ BigReal cut(const BigReal &x, unsigned int digits, DigitPool *digitPool) { // x 
     result.m_expo = result.m_low = x.m_expo;
     result.appendDigit(x.m_first->n);
     digits -= k;
-    for(Digit *p = x.m_first->next; p && (digits >= LOG10_BIGREALBASE); p = p->next, digits -= LOG10_BIGREALBASE) {
+    const Digit *p;
+    for(p = x.m_first->next; p && (digits >= LOG10_BIGREALBASE); p = p->next, digits -= LOG10_BIGREALBASE) {
       result.appendDigit(p->n);
       result.m_low--;
     }

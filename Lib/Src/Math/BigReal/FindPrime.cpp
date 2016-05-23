@@ -161,7 +161,7 @@ BigInt findRandomPrime(int digitCount, int threadCount, DigitPool *pool, MillerR
   const BigInt n = resultQueue.get();
   BigReal::terminateCalculation();
 
-  for(i = 0; i < threadCount; i++) {
+  for(int i = 0; i < threadCount; i++) {
     delete jobs[i];
   }
 

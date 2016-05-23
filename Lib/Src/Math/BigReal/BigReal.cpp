@@ -48,7 +48,8 @@ void BigReal::insertZeroDigits(unsigned int count) {
 
   COUNTKEYCALL(count);
 
-  for(Digit *p = m_first; count--;) {
+  Digit *p;
+  for(p = m_first; count--;) {
     Digit *q = newDigit();
     q->n    = 0;
     q->next = p;
@@ -115,7 +116,8 @@ void BigReal::insertBorrowDigitsAfter(Digit *p, unsigned int count) {
 
 void BigReal::trimHead() { // assume m_first && m_first == 0
   m_expo--;
-  for(Digit *p = m_first->next; p && (p->n == 0); p = p->next, m_expo--);
+  Digit *p;
+  for(p = m_first->next; p && (p->n == 0); p = p->next, m_expo--);
 
   if(p == NULL) { // all digits were 0 => *this = zero
     setToZero();
@@ -133,7 +135,8 @@ void BigReal::trimHead() { // assume m_first && m_first == 0
 
 void BigReal::trimTail() { // assume m_first != NULL => m_last != NULL and m_last->n == 0
   m_low++;
-  for(Digit *p = m_last->prev; p && (p->n == 0); p = p->prev, m_low++);
+  Digit *p;
+  for(p = m_last->prev; p && (p->n == 0); p = p->prev, m_low++);
   deleteDigits(p->next, m_last); // we know that there is at least one digit != 0 => p != NULL
   (m_last = p)->next = NULL;
 }
@@ -350,7 +353,8 @@ int compare(const BigReal &x, const BigReal &y) {
 
   // Compare digits
   const int s = x.m_negative ? -1 : 1;
-  for(const Digit *xp = x.m_first, *yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
+  const Digit *xp, *yp;
+  for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
     const long d = long(xp->n - yp->n);
     if(d) {
       return sign(d) * s;
@@ -381,7 +385,8 @@ int compareAbs(const BigReal &x, const BigReal &y) {
   }
 
   // Compare digits
-  for(const Digit *xp = x.m_first, *yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
+  const Digit *xp, *yp;
+  for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
     const long d = long(xp->n - yp->n);
     if(d) {
       return sign(d);
