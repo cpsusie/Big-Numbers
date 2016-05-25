@@ -31,15 +31,15 @@ public :
 
   void reset(); // m_name = "", m_type = REG_NONE
 
-  const String &getName() const {
+  inline const String &getName() const {
     return m_name;
   }
 
-  unsigned long getType() const {
+  inline unsigned long getType() const {
     return m_type;
   }
 
-  String getTypeString() const {
+  inline String getTypeString() const {
     return typeAsString(m_type);
   }
 
@@ -47,11 +47,11 @@ public :
   operator String() const;           // type must be REG_EXPAND_SZ, REG_SZ
   operator StringArray() const;      // type must be REG_MULTI_SZ
 
-  unsigned long getBufSize() const {
+  inline unsigned long getBufSize() const {
     return m_bufSize;
   }
 
-  const BYTE *getBuffer() const {
+  inline const BYTE *getBuffer() const {
     return m_buffer;
   }
 
@@ -59,7 +59,7 @@ public :
   static String typeAsString(unsigned long type);
 
   RegistryValue();
-  RegistryValue(const String &name, BYTE  *bytes, unsigned long size,         unsigned long type = REG_BINARY);
+  RegistryValue(const String &name, const BYTE    *bytes, unsigned long size, unsigned long type = REG_BINARY);
   RegistryValue(const String &name, const String  &str  ,                     unsigned long type = REG_SZ    );
   RegistryValue(const String &name, unsigned long  value,                     unsigned long type = REG_DWORD );
   RegistryValue(const String &name, const StringArray &strings); // type = REG_MULTI_SZ

@@ -19,12 +19,15 @@ template <class T> class Iterator {
 protected:
   AbstractIterator *m_it;
 public:
+  Iterator() {
+    m_it = NULL;
+  }
   Iterator(AbstractIterator *it) {
     m_it = it;
   }
 
   Iterator(const Iterator<T> &src) {
-    m_it = src.m_it->clone();
+    m_it = src.m_it ? src.m_it->clone() : NULL;
   }
 
   Iterator<T> &operator=(const Iterator<T> &src) {
@@ -32,7 +35,7 @@ public:
       return *this;
     }
     delete m_it;
-    m_it = src.m_it->clone();
+    m_it = src.m_it ? src.m_it->clone() : NULL;
     return *this;
   }
 
@@ -41,14 +44,17 @@ public:
   }
 
   inline bool hasNext() const {
+    assert(m_it != NULL);
     return m_it->hasNext();
   }
 
   inline T &next() {
+    assert(m_it != NULL);
     return *(T*)m_it->next();
   }
 
   inline void remove() {
+    assert(m_it != NULL);
     m_it->remove();
   }
 };

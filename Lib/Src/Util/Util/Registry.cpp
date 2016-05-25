@@ -558,7 +558,7 @@ RegistryValue::RegistryValue() {
   init(_T(""), REG_NONE, 0);
 }
 
-RegistryValue::RegistryValue(const String &name, BYTE *bytes, unsigned long size, unsigned long type) {
+RegistryValue::RegistryValue(const String &name, const BYTE *bytes, unsigned long size, unsigned long type) {
   init(name, type, size);
   setBuffer(bytes);
 }

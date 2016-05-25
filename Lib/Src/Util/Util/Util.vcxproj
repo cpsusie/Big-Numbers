@@ -228,6 +228,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Array.h" />
+    <ClInclude Include="..\..\..\Include\BigArray.h" />
     <ClInclude Include="..\..\..\Include\BitSet.h" />
     <ClInclude Include="..\..\..\Include\BitStream.h" />
     <ClInclude Include="..\..\..\Include\ByteArray.h" />
