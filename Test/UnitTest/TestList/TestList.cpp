@@ -1,123 +1,143 @@
 #include "stdafx.h"
+#include "CppUnitTest.h"
 #include <LinkedList.h>
 #include <TreeSet.h>
-#include "TestList.h"
 
-class ListElement {
-private:
-  String m_s;
-public:
-  ListElement(int i) {
-    m_s = format(_T("List element %d"),i);
-  }
-  const String &toString() const {
-    return m_s;
-  }
-};
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-bool operator==(const ListElement &e1, const ListElement &e2) {
-  return e1.toString() == e2.toString();
-}
+#ifdef verify
+#undef verify
+#endif
+#define verify(expr) Assert::IsTrue(expr, _T(#expr))
 
-class ElementComparator : public Comparator<ListElement> {
-public:
-  int compare(const ListElement &e1, const ListElement &e2) {
-    return _tcscmp(e1.toString().cstr(),e2.toString().cstr());
-  }
-  AbstractComparator *clone() const {
-    return new ElementComparator();
-  }
-};
+namespace TestList
+{		
 
-void testList() {
-  const static TCHAR *objectToTest = _T("LinkedList");
-
-  _tprintf(_T("Testing %s%s"),objectToTest,spaceString(15-_tcsclen(objectToTest),_T('.')).cstr());
-
-  Array<ListElement>      array;
-  LinkedList<ListElement> list;
-  ElementComparator       elementComparator;
-  TreeSet<ListElement>    set(elementComparator);
-
-
-  for(int i = 0; i < 20; i++) {
-    list.add(i);
-    array.add(i);
+  void OUTPUT(const TCHAR *format, ...) {
+    va_list argptr;
+    va_start(argptr, format);
+    const String msg = vformat(format, argptr);
+    va_end(argptr);
+    Logger::WriteMessage(msg.cstr());
   }
 
-
-  verify(list.size() == array.size());
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
-    verify(it.next() == it1.next());
-  }
-
-  for (int i = 0; i < array.size(); i++) {
-    verify(array[i] == list[i]);
-  }
-
-  list.removeIndex(4);
-  array.removeIndex(4);
-  list.removeIndex(13);
-  array.removeIndex(13);
-  list.remove(6);
-  array.remove(6);
-  verify(list.size() == array.size());
-
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
-    verify(it.next() == it1.next());
-  }
-
-  int i = 0;
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
-    if(++i == 5) {
-      it.remove();
-      it1.remove();
-      break;
+  class ListElement {
+  private:
+    String m_s;
+  public:
+    ListElement(int i) {
+      m_s = format(_T("List element %d"), i);
     }
+    const String &toString() const {
+      return m_s;
+    }
+  };
+
+  bool operator==(const ListElement &e1, const ListElement &e2) {
+    return e1.toString() == e2.toString();
   }
 
-  verify(list.size() == array.size());
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
-    verify(it.next() == it1.next());
-  }
+  class ElementComparator : public Comparator<ListElement> {
+  public:
+    int compare(const ListElement &e1, const ListElement &e2) {
+      return _tcscmp(e1.toString().cstr(), e2.toString().cstr());
+    }
+    AbstractComparator *clone() const {
+      return new ElementComparator();
+    }
+  };
 
-  array = list;
-  verify(list.size() == array.size());
-  array.removeIndex(0);
-  list.removeFirst();
 
-  verify(list.size() == array.size());
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
-    verify(it.next() == it1.next());
-  }
+	TEST_CLASS(TestList)
+	{
+    public:
 
-  array.removeLast();
-  list.removeLast();
+    TEST_METHOD(testList) {
 
-  verify(list.size() == array.size());
-  for(Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
-    verify(it.next() == it1.next());
-  }
+      Array<ListElement>      array;
+      LinkedList<ListElement> list;
+      ElementComparator       elementComparator;
+      TreeSet<ListElement>    set(elementComparator);
 
-  LinkedList<ListElement> list1(array);
+      for (int i = 0; i < 20; i++) {
+        list.add(i);
+        array.add(i);
+      }
 
-  verify(list1 == list);
 
-  for(Iterator<ListElement> it = list.getIterator(); it.hasNext();)
-    verify(list1.contains(it.next()));
+      verify(list.size() == array.size());
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+        verify(it.next() == it1.next());
+      }
 
-  verify(list1.toString() == list.toString());
+      for (int i = 0; i < array.size(); i++) {
+        verify(array[i] == list[i]);
+      }
 
-  set = array;
+      list.removeIndex(4);
+      array.removeIndex(4);
+      list.removeIndex(13);
+      array.removeIndex(13);
+      list.remove(6);
+      array.remove(6);
+      verify(list.size() == array.size());
 
-  verify(set.containsAll(array));
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+        verify(it.next() == it1.next());
+      }
 
-  array.sort(elementComparator);
+      int i = 0;
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext(); it.next(), it1.next()) {
+        if (++i == 5) {
+          it.remove();
+          it1.remove();
+          break;
+        }
+      }
 
-  verify(set.toString() == array.toString());
+      verify(list.size() == array.size());
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+        verify(it.next() == it1.next());
+      }
 
-  list.clear();
-  verify(list.size() == 0);
+      array = list;
+      verify(list.size() == array.size());
+      array.removeIndex(0);
+      list.removeFirst();
 
-  _tprintf(_T("%s ok!\n"),objectToTest);
+      verify(list.size() == array.size());
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+        verify(it.next() == it1.next());
+      }
+
+      array.removeLast();
+      list.removeLast();
+
+      verify(list.size() == array.size());
+      for (Iterator<ListElement> it = list.getIterator(), it1 = array.getIterator(); it.hasNext();) {
+        verify(it.next() == it1.next());
+      }
+
+      LinkedList<ListElement> list1(array);
+
+      verify(list1 == list);
+
+      for (Iterator<ListElement> it = list.getIterator(); it.hasNext();)
+        verify(list1.contains(it.next()));
+
+      verify(list1.toString() == list.toString());
+
+      set = array;
+
+      verify(set.containsAll(array));
+
+      array.sort(elementComparator);
+
+      verify(set.toString() == array.toString());
+
+      list.clear();
+      verify(list.size() == 0);
+    }
+
+  };
 }

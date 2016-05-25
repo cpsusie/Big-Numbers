@@ -1,113 +1,125 @@
 #include "stdafx.h"
-#include <MyUtil.h>
+#include "CppUnitTest.h"
 #include <Random.h>
 #include <ByteArray.h>
 #include <Bytefile.h>
 
-static void testSaveLoad(const ByteArray &a, const TCHAR *fileName) {
-  const static TCHAR *objectToTest = _T("Save/Load/ByteFileArray");
+using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-  _tprintf(_T("  Testing %s%s"),objectToTest,spaceString(15-_tcslen(objectToTest),_T('.')).cstr());
+#ifdef verify
+#undef verify
+#endif
+#define verify(expr) Assert::IsTrue(expr, _T(#expr))
 
-  a.save(ByteOutputFile(fileName));
-
-  ByteArray loaded;
-  loaded.load(ByteInputFile(fileName));
-
-
-  verify(loaded == a);
-  loaded.load(ByteInputFile(fileName));
-  verify(loaded == a);
-
-  ByteFileArray bfArray(fileName, 0);
-  verify(bfArray.size() == loaded.size());
-
-  for(int i = 0; i < 1000; i++) {
-    const int index = randInt(bfArray.size());
-    const BYTE bfElement = bfArray[index];
-    const BYTE element   = loaded[index];
-    verify(bfElement == element);
+namespace TestByteArray
+{		
+  void OUTPUT(const TCHAR *format, ...) {
+    va_list argptr;
+    va_start(argptr, format);
+    const String msg = vformat(format, argptr);
+    va_end(argptr);
+    Logger::WriteMessage(msg.cstr());
   }
-}
-
-
-void testByteArray() {
-  const static TCHAR *objectToTest = _T("ByteArray");
-
-  _tprintf(_T("Testing %s%s"),objectToTest,spaceString(15-_tcslen(objectToTest),_T('.')).cstr());
-
-  const double startTime = getProcessTime();
-
-  ByteArray a;
   
-  BYTE data[200000];
-  for(unsigned int i = 0; i < ARRAYSIZE(data); i++) {
-    data[i] = i % 256;
-  }
+  TEST_CLASS(TestByteArray)	{
 
-  a.setData(data, ARRAYSIZE(data));
-  verify(a.size() == ARRAYSIZE(data));
+	public:
+		
+    static void testSaveLoad(const ByteArray &a, const TCHAR *fileName) {
+      a.save(ByteOutputFile(fileName));
 
-  for(unsigned int i = 0; i < a.size(); i++) {
-    verify(a[i] == data[i]);
-  }
+      ByteArray loaded;
+      loaded.load(ByteInputFile(fileName));
 
-  ByteArray b = a;
-  verify(b.size() == ARRAYSIZE(data));
+      verify(loaded == a);
+      loaded.load(ByteInputFile(fileName));
+      verify(loaded == a);
 
-  for(unsigned int i = 0; i < a.size(); i++) {
-    verify(b[i] == data[i]);
-  }
+      ByteFileArray bfArray(fileName, 0);
+      verify(bfArray.size() == loaded.size());
 
-  const TCHAR *fileName = _T("c:\\temp\\TestByteArray.tmp");
-  testSaveLoad(a, fileName);
-  unlink(fileName);
+      for (int i = 0; i < 1000; i++) {
+        const int index = randInt(bfArray.size());
+        const BYTE bfElement = bfArray[index];
+        const BYTE element = loaded[index];
+        verify(bfElement == element);
+      }
+    }
 
-  b = b;
+    TEST_METHOD(testByteArrayPrimitiveOperations) {
+      const double startTime = getProcessTime();
 
-  verify(b.size() == ARRAYSIZE(data));
-  for(unsigned int i = 0; i < a.size(); i++) {
-    verify(b[i] == data[i]);
-  }
+      ByteArray a;
 
-  verify(a == b);
+      BYTE data[200000];
+      for (unsigned int i = 0; i < ARRAYSIZE(data); i++) {
+        data[i] = i % 256;
+      }
 
-  b[0] = 1;
+      a.setData(data, ARRAYSIZE(data));
+      verify(a.size() == ARRAYSIZE(data));
 
-  verify(a != b);
+      for (unsigned int i = 0; i < a.size(); i++) {
+        verify(a[i] == data[i]);
+      }
 
-  a = b;
+      ByteArray b = a;
+      verify(b.size() == ARRAYSIZE(data));
 
-  verify(a == b);
+      for (unsigned int i = 0; i < a.size(); i++) {
+        verify(b[i] == data[i]);
+      }
 
-  a += b;
+      const TCHAR *fileName = _T("c:\\temp\\TestByteArray.tmp");
+      testSaveLoad(a, fileName);
+      unlink(fileName);
 
-  ByteArray c = a;
+      b = b;
 
-  verify(a.size() == 2*b.size());
+      verify(b.size() == ARRAYSIZE(data));
+      for (unsigned int i = 0; i < a.size(); i++) {
+        verify(b[i] == data[i]);
+      }
 
-  a = b;
+      verify(a == b);
 
-  verify(a == b);
+      b[0] = 1;
 
-  a += a;
+      verify(a != b);
 
-  verify(a == c);
+      a = b;
 
-  a = b + b;
+      verify(a == b);
 
-  verify(a == c);
+      a += b;
 
-  c.clear();
-  verify(c.size() == 0);
-  c.clear();
-  verify(c.size() == 0);
+      ByteArray c = a;
 
-  try {
-    BYTE byte = c[0];
-    verify(false);
-  } catch(Exception e) {
-    // ignore
-  }
-  _tprintf(_T("%s ok!\n"),objectToTest);
+      verify(a.size() == 2 * b.size());
+
+      a = b;
+
+      verify(a == b);
+
+      a += a;
+
+      verify(a == c);
+
+      a = b + b;
+
+      verify(a == c);
+
+      c.clear();
+      verify(c.size() == 0);
+      c.clear();
+      verify(c.size() == 0);
+
+      try {
+        BYTE byte = c[0];
+        verify(false);
+      }  catch (Exception e) {
+        // ignore
+      }
+    }
+	};
 }

@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{6E5B3D66-DC08-4060-959F-E48B6AD7F7ED}</ProjectGuid>
+    <ProjectGuid>{35D3CEB9-8BB9-4748-9AA5-D52DFE8BA4F1}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>TestByteArray</RootNamespace>
+    <RootNamespace>TestCompactArray</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -166,7 +166,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="TestByteArray.cpp" />
+    <ClCompile Include="TestCompactArray.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

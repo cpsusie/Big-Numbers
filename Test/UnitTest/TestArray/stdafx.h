@@ -7,7 +7,7 @@
 
 #include "targetver.h"
 
-#define _CRT_SECURE_NO_WARNINGS 1
-
+// Headers for CppUnitTest
+#include "CppUnitTest.h"
 #include <MyUtil.h>
 

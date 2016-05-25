@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <LineTracer.h>
 #include "MemBtree.h"
-#include <Unicode.h>
 
 // ------------------------------------BTreePage----------------------------------------------------
 
