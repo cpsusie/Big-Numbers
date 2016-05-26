@@ -73,7 +73,7 @@ namespace TestDate {
   TEST_CLASS(TestDate) {
   public:
 
-    TEST_METHOD(testDateFactor) {
+    TEST_METHOD(DateTestFactor) {
       int year1 = 1582, month1 = 1, day1 = 1;
       int year2 = 1582, month2 = 1, day2 = 1;
       int daysBetween = 0;
@@ -90,7 +90,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testSetComponent) {
+    TEST_METHOD(DateSetComponent) {
       String format = ddMMyyyyhhmm + _T(".SSS");
 
       Timestamp endDate = Date(1, 1, 2011);
@@ -215,7 +215,7 @@ namespace TestDate {
       } // for (Timestamp ts
     } // method
 
-    TEST_METHOD(testGetYear) {
+    TEST_METHOD(DateGetYear) {
       for (int y = 1582;y < 10000;y++) {
         Date d(1, 1, y);
         int y2 = d.getYear();
@@ -229,7 +229,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testGetMonth) {
+    TEST_METHOD(DateGetMonth) {
       int y = 1582, m = 1, d = 1;
 
       for (;y < 2000; nextDate(d, m, y)) {
@@ -240,7 +240,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testGetDay) {
+    TEST_METHOD(DateGetDay) {
       int y = 1582, m = 1, d = 1;
 
       for (;y < 2000;nextDate(d, m, y)) {
@@ -252,7 +252,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testGetTime_t) {
+    TEST_METHOD(DateGetTime_t) {
       int year = 1970;
       int month = 1;
       int day = 2;
@@ -276,7 +276,7 @@ namespace TestDate {
       }
     } // method
 
-    TEST_METHOD(testDateGetDATE) {
+    TEST_METHOD(DateGetDATE) {
       Date date;
       for (int i = 0; i < 1000; i++) {
         double d = date.getDATE();
@@ -303,7 +303,7 @@ namespace TestDate {
 */
     }
 
-    TEST_METHOD(testGetWeek) {
+    TEST_METHOD(DateGetWeek) {
       testGetWeek(29, 12, 2002, 52);
       testGetWeek(30, 12, 2002, 1);
       testGetWeek(31, 12, 2002, 1);
@@ -420,7 +420,7 @@ namespace TestDate {
       testGetWeek(1, 1, 2019, 1);
     }
 
-    TEST_METHOD(testConvertionSYSTEMTIME) {
+    TEST_METHOD(DateConvertionSYSTEMTIME) {
       Timestamp ts;
       for (int i = 0; i < 1000; i++) {
         SYSTEMTIME sysTime = ts;
@@ -435,7 +435,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testTimestampGetDATE) {
+    TEST_METHOD(DateTimestampGetDATE) {
       Timestamp ts;
       for (int i = 0; i < 1000; i++) {
         double d = ts.getDATE();
@@ -450,7 +450,7 @@ namespace TestDate {
       }
     }
 
-    TEST_METHOD(testTimestamp) {
+    TEST_METHOD(DateTimestamp) {
       int day, month, year, hour, minute, second, millisecond;
       Timestamp ts(_T("28.2.2008 23:59:59:999"));
       ts.getDMY(day, month, year);
@@ -508,7 +508,7 @@ namespace TestDate {
     } // method
 
 
-    TEST_METHOD(testToString) {
+    TEST_METHOD(DateToString) {
       Date date;
       String s = date.toString();
       Time time;

@@ -335,7 +335,7 @@ namespace TestPackedArray {
 	{
     public:
 
-    TEST_METHOD(testPackedArray) {
+    TEST_METHOD(PackedArrayPrimitiveOperations) {
       const static TCHAR *objectToTest = _T("PackedArray");
 
       const String verboseStr = format(_T("Testing %s%s"), objectToTest, spaceString(15 - _tcsclen(objectToTest), '.').cstr());

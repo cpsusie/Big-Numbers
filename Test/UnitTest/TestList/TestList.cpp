@@ -52,7 +52,7 @@ namespace TestList
 	{
     public:
 
-    TEST_METHOD(testList) {
+    TEST_METHOD(LinkedListPrimitiveOperations) {
 
       Array<ListElement>      array;
       LinkedList<ListElement> list;

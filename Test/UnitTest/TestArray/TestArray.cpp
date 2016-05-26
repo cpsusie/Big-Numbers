@@ -125,7 +125,7 @@ namespace TestArray
 	{
 	  public:
 		
-    TEST_METHOD(testArrayPrimitiveOperations) {
+    TEST_METHOD(ArrayPrimitiveOperations) {
       IntArray a;
 
       for (int i = 0; i < 100; i++) {
@@ -229,7 +229,7 @@ namespace TestArray
       }
     }
 
-    TEST_METHOD(testArrayStream) {
+    TEST_METHOD(ArrayStream) {
       ArrayType a;
       for (int i = 0; i < 10000; i++) {
         a.add(randInt(1000000));
@@ -241,7 +241,7 @@ namespace TestArray
       verify(tmp == a);
     }
 
-    TEST_METHOD(testArraySort) {
+    TEST_METHOD(ArraySort) {
       const int size = 70000;
 
       ArrayType a, b;
@@ -317,7 +317,7 @@ namespace TestArray
       delete[] ca;
     }
 
-    TEST_METHOD(testPermuations) {
+    TEST_METHOD(ArrayPermuations) {
       IntArray a;
       for (int i = 0; i < 4; i++) {
         a.add(i);

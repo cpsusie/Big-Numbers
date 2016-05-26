@@ -83,7 +83,7 @@ namespace TestPtQueue {
 	TEST_CLASS(TestPtQueue)	{
     public:
 
-    TEST_METHOD(testPtQueue) {
+    TEST_METHOD(PtQueuePrimitiveOperations) {
       int i;
       TestElement x;
       PriorityQueue<TestElement> ptq1(testElementCmp, true);

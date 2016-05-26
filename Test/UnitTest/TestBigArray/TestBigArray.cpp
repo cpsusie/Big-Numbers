@@ -160,7 +160,7 @@ namespace TestBigArray {
 	TEST_CLASS(TestBigArray) {
     public:
 
-      TEST_METHOD(testBigArray) {
+      TEST_METHOD(BigArrayTest) {
         try {
           TestArray ba;
 

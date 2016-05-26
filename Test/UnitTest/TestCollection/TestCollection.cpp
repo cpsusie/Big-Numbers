@@ -794,42 +794,42 @@ namespace TestBitSet
 	TEST_CLASS(TestCollection) {
     public:
 
-      TEST_METHOD(testArray) {
+      TEST_METHOD(CollectionArray) {
         Array<Key> keyArray;
         testRandomSample(keyArray);
       }
 
-      TEST_METHOD(testHashSet) {
+      TEST_METHOD(CollectionHashSet) {
         KeyHashSet s1;
         setTestSuite(_T("HashSet"), s1);
         KeyHashSet hs(s1);
       }
  
-      TEST_METHOD(testTreeSet) {
+      TEST_METHOD(CollectionTreeSet) {
         KeyTreeSet s2;
         setTestSuite(_T("TreeSet"), s2);
         KeyTreeSet ts(s2);
       }
 
-      TEST_METHOD(testBTreeSet) {
+      TEST_METHOD(CollectionBTreeSet) {
         KeyBTreeSet s3;
         setTestSuite(_T("BTreeSet"), s3);
         KeyBTreeSet bts(s3);
       }
 
-      TEST_METHOD(testHashMap) {
+      TEST_METHOD(CollectionHashMap) {
         KeyElementHashMap m1;
         mapTestSuite(_T("HashMap"), m1);
         KeyElementHashMap hm(m1);
       }
 
-      TEST_METHOD(testTreeMap) {
+      TEST_METHOD(CollectionTreeMap) {
         KeyElementTreeMap m2;
         mapTestSuite(_T("TreeMap"), m2);
         KeyElementTreeMap tm(m2);
       }
 
-      TEST_METHOD(testBTreeMap) {
+      TEST_METHOD(CollectionBTreeMap) {
         KeyElementBTreeMap m3;
         mapTestSuite(_T("BTreeMap"), m3);
         KeyElementBTreeMap btm(m3);

@@ -59,7 +59,7 @@ namespace TestCompressFilter
 	TEST_CLASS(TestCompressFilter) {
     public:
 
-    TEST_METHOD(testCompressFilter) {
+    TEST_METHOD(CompressFilterPrimitiveOperations) {
       const double startTime = getProcessTime();
       bool ok = true;
       const String fileName = _T("c:\\temp\\compressedData.dat");

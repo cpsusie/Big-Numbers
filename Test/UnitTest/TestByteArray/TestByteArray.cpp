@@ -22,7 +22,6 @@ namespace TestByteArray
   }
   
   TEST_CLASS(TestByteArray)	{
-
 	public:
 		
     static void testSaveLoad(const ByteArray &a, const TCHAR *fileName) {
@@ -46,7 +45,7 @@ namespace TestByteArray
       }
     }
 
-    TEST_METHOD(testByteArrayPrimitiveOperations) {
+    TEST_METHOD(ByteArrayPrimitiveOperations) {
       const double startTime = getProcessTime();
 
       ByteArray a;

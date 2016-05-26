@@ -79,7 +79,7 @@ namespace TestBitSet
 	{
     public:
 
-    TEST_METHOD(testBitSetPrimiteveOperations) {
+    TEST_METHOD(BitSetPrimiteveOperations) {
       BitSet a(33);
       verify(a.size() == 0);
       verify(a.isEmpty());
@@ -141,7 +141,7 @@ namespace TestBitSet
       verify(a.toString() == _T("(1,10,31,32)"));
     }
 
-    TEST_METHOD(testBitSetIterator)
+    TEST_METHOD(BitSetTestIterator)
     {
 #define ANTALITERATIONER 1000
       int s;
@@ -183,7 +183,7 @@ namespace TestBitSet
       }
     }
 
-    TEST_METHOD(MeasureTimeBitSet) {
+    TEST_METHOD(BitSetMeasureIteratorTime) {
       randomize();
       BitSetTimeTester bstt;
 
@@ -192,7 +192,7 @@ namespace TestBitSet
       OUTPUT(_T("BitSetIterator time:%.3le msec"), msec * 1000);
     }
 
-    TEST_METHOD(testBitSetSize) {
+    TEST_METHOD(BitSetTestSize) {
       for (int test = 0; test < 40; test++) {
         BitSet s(genRandomSet(test + 300));
         const int oldSize = s.oldsize();
@@ -214,14 +214,14 @@ namespace TestBitSet
       return -1;
     }
 
-    TEST_METHOD(testGetIndex) {
+    TEST_METHOD(BitSetGetIndex) {
       for (int i = 0; i < 40; i++) {
         BitSet s(genRandomSet(200));
         //    OUTPUT(_T("set:%s"), s.toString().cstr());
         for (Iterator<unsigned int> it = s.getIterator(); it.hasNext();) {
-          unsigned int e = it.next();
-          int index1 = getIntIndex(s, e);
-          int index2 = s.getIndex(e);
+          const unsigned int e = it.next();
+          const int index1 = getIntIndex(s, e);
+          const int index2 = s.getIndex(e);
           //      OUTPUT(_T("e:%3d. index1:%3d, index2:%3d"), e, index1, index2);
           verify(index1 == index2);
         }
@@ -238,7 +238,7 @@ namespace TestBitSet
       return count;
     }
 
-    TEST_METHOD(testBitSetGetCount) {
+    TEST_METHOD(BitSetGetCount) {
       for (int test = 0; test < 30; test++) {
         const BitSet s(genRandomSet(200));
         //    OUTPUT(_T("set:%s"), s.toString().cstr());
@@ -287,7 +287,7 @@ namespace TestBitSet
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
-    TEST_METHOD(testBitSetIndex) {
+    TEST_METHOD(BitSetTestIndex) {
       /*
       {
       for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
@@ -345,7 +345,7 @@ namespace TestBitSet
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
-    TEST_METHOD(testBitFileSetIndex) {
+    TEST_METHOD(BitSetFileIndexTest) {
       /*
       {
       for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
@@ -366,7 +366,7 @@ namespace TestBitSet
       testAllBitSetFileIndices(6600000);
     }
 
-    TEST_METHOD(testBitSetIndexTimes) {
+    TEST_METHOD(BitSetIndexTimes) {
       const int capacity = 3000000;
       randomize();
       BitSet s(10);

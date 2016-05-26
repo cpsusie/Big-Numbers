@@ -145,7 +145,7 @@ namespace TestCompactArray {
       }
     }
 
-    TEST_METHOD(testRandomSample) {
+    TEST_METHOD(CompactArrayRandomSample) {
       CompactIntArray S;
       CompactIntArray counters;
       randomize();
@@ -175,7 +175,7 @@ namespace TestCompactArray {
       */
     }
 
-    TEST_METHOD(testSort) {
+    TEST_METHOD(CompactArraySort) {
 
       const int size = 50000;
 
@@ -271,7 +271,7 @@ namespace TestCompactArray {
       return i;
     }
 
-    TEST_METHOD(testBinarySearch) {
+    TEST_METHOD(CompactArrayBinarySearch) {
       CompactIntArray a;
       for (int i = 0; i < 40; i++) {
         a.add(i / 3);
@@ -314,7 +314,7 @@ namespace TestCompactArray {
       verify(a.binarySearch(v, intHashCmp) < 0);
     }
 
-    TEST_METHOD(testPacking) {
+    TEST_METHOD(CompactArrayPacking) {
       CompactArrayType a, b;
       const String fileName = _T("c:\\temp\\testCompactArray\\compactArray.dat");
       for (int i = 0; i < 1000; i++) {
@@ -330,7 +330,7 @@ namespace TestCompactArray {
       verify(a == b);
     }
 
-    TEST_METHOD(testPermutations) {
+    TEST_METHOD(CompactArrayPermutations) {
       CompactIntArray a;
       for (int i = 0; i < 4; i++) {
         a.add(i);
@@ -340,7 +340,7 @@ namespace TestCompactArray {
       verify(permArray.getPermutationCount() == 24);
     }
 
-    TEST_METHOD(testIterator) {
+    TEST_METHOD(CompactArrayIterator) {
       CompactIntArray a;
 
       for (int i = 0; i < 20; i++) {
@@ -369,13 +369,13 @@ namespace TestCompactArray {
       }
     }
 
-    TEST_METHOD(testCompactArraySaveLoad) {
+    TEST_METHOD(CompactArraySaveLoad) {
       const TCHAR *fileName = _T("c:\\temp\\TestCompactArray.tmp");
       testSaveLoad(fileName);
       unlink(fileName);
     }
 
-    TEST_METHOD(testCompactArray) {
+    TEST_METHOD(CompactArrayPrimitiveOperations) {
 
       CompactIntArray a;
 
@@ -484,7 +484,7 @@ namespace TestCompactArray {
 
 #pragma warning(disable : 4244)
 
-    TEST_METHOD(measureCompactArraySort) {
+    TEST_METHOD(CompactArrayMeasureSort) {
       OUTPUT(_T("%7s SortTime (compare1)"), _T("Size"));
       for (int size = 100; size < 3000000; size *= 1.07) {
         CompactArrayType a;
