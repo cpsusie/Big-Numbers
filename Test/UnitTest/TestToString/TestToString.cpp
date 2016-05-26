@@ -262,22 +262,26 @@ int getLastMantissaDigit(const char *s) {
     return -2;
 }
     
-static void testToString(StringParametersIterator &it) {
+static void testToString(const String &errorName, StringParametersIterator &it) {
   unsigned int totalCounter  = 0;
   int mismatchDouble80       = 0;
   int mismatchBigReal        = 0;
   int lengthMismatchDouble80 = 0;
   int lengthMismatchBigReal  = 0;
 
+  tofstream errorLog(errorName.cstr());
+
   while(it.hasNext()) {
     it.next();
     tostrstream s64,s80,sN;
 
+/*
     if(((it.getFlags() & (ios::fixed|ios::scientific)) == ios::fixed) && it.getPrecision() + Double80::getExpo10(it.getValue80()) > 26) {
       continue; // Skip this check and get an uncatchable "access-violation"-Exception from ostrstream << it.getValue64() !!!
     }
+*/
 
-    if(++totalCounter % 4095 == 0) {
+    if(++totalCounter % 10000 == 0) {
       tcout << _T("Count:") << totalCounter << _T(" ") << it.toString() << _T("          \r");
       tcout.flush();
     }
@@ -295,14 +299,8 @@ static void testToString(StringParametersIterator &it) {
     const bool equalN = bufN == buf64;
 
     if(!equal80 || !equalN) {
-/*
-          tcout << it.toString() << _T("\tbuf64:<") << buf64 << _T(">\tbuf80:<") << buf80 << _T(">\tbufN:<") << bufN << _T(">") << endl; tcout.flush();
-          tostrstream S80;
-          S80 << it << it.getValue80();
-
-          tostrstream SN;
-          SN << it << it.getValueBigReal();
-*/
+      errorLog << it.toString() << _T("\tbuf64:<") << buf64 << _T(">\tbuf80:<") << buf80 << _T(">\tbufN:<") << bufN << _T(">") << endl;
+    
       if(!equal80) {
         mismatchDouble80++;
         if(buf80.length() != buf64.length()) {
@@ -318,6 +316,7 @@ static void testToString(StringParametersIterator &it) {
       }
     }
   }
+
   tcout << spaceString(60) << endl;
   tcout << _T("Total Count                 :") << iparam(8) << totalCounter << _T(".") << endl;
   tcout << _T("Format mismatch for Double80:") << iparam(8) << mismatchDouble80       << _T(" ") << ufparam(2) << ((double)mismatchDouble80      / totalCounter * 100) << _T("%.") << endl;
@@ -332,17 +331,17 @@ static int doubleCompare(const double &d1, const double &d2) {
 
 void testToString() {
 
-  double startTime = getProcessTime();
+  const double startTime = getProcessTime();
   tcout << _T("Testing operator<<(ostream &stream, BigReal/Double80/double)") << endl;
 
   StringParametersIterator it1;
-  testToString(it1);
+  testToString(_T("c:\\temp\\toStringErrorsStd.log"), it1);
 
   Array<double> values;
   Random random;
   for(int i = 0; i < 32; i++) {
-    double e = pow(10,random.nextDouble(-200,200));
-    double t = random.nextDouble();
+    const double e = pow(10,random.nextDouble(-200,200));
+    const double t = random.nextDouble();
     values.add(t * e);
   }
 
@@ -352,9 +351,9 @@ void testToString() {
 //  }
 
   StringParametersIterator it2(values);
-  testToString(it2);
+  testToString(_T("c:\\temp\\toStringErrorsRnd.log"), it2);
 
-  double timeUsage = getProcessTime() - startTime;
+  const double timeUsage = getProcessTime() - startTime;
 
   tcout << _T("Total time usage:") << ufparam(3) << ((getProcessTime() - startTime) / 1e6) << _T(" sec.") << endl;
 }
