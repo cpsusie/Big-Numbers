@@ -266,9 +266,10 @@ namespace TestDate {
           continue; // skip the special hour when changing to/from summertime<->wintertime
         }
         time_t tt = timestamp.gettime_t();
-        struct tm *tm = localtime(&tt);
-        verify(tm->tm_year == year - 1900 && tm->tm_mon == month - 1 && tm->tm_mday == day
-             && tm->tm_hour == hour && tm->tm_min == minute && tm->tm_sec == second);
+        struct tm tm;
+        localtime_s(&tm, &tt);
+        verify(tm.tm_year == year - 1900 && tm.tm_mon == month - 1 && tm.tm_mday == day
+             && tm.tm_hour == hour && tm.tm_min == minute && tm.tm_sec == second);
 /*          _tprintf(_T("time(%s) != localtime(%02d.%02d.%d %02d:%02d:%02d)\n"),
             timestamp.toString().cstr(),
             tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
