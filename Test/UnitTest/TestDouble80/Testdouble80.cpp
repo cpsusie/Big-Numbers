@@ -8,12 +8,14 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+using namespace std;
+
+#define endl _T("\n")
+
 #ifdef verify
 #undef verify
 #endif
 #define verify(expr) Assert::IsTrue(expr, _T(#expr))
-
-using namespace std;
 
 static const double EPS = 3e-14;
 
@@ -26,6 +28,13 @@ namespace TestDouble80 {
     va_end(argptr);
     Logger::WriteMessage(msg.cstr());
   }
+
+  class LOG : public StrStream {
+  public:
+    ~LOG() {
+      OUTPUT(_T("%s"), cstr());
+    }
+  };
 
   static double getRelativeError(double x64, const Double80 &x80) {
     const double relativeError = fabs(x64 - getDouble(x80));
@@ -49,18 +58,19 @@ namespace TestDouble80 {
       const double relativeError = getRelativeError(y64, y80);
 
       if (x64 != getDouble(x80) || relativeError > EPS) {
-        OUTPUT(_T("Function %s failed"), name.cstr());
-        OUTPUT(_T("(x64,y64):(%.16le,%.16le)"), x64, y64);
-        OUTPUT(_T("x64 - getDouble(x80):%.16le"), x64 - getDouble(x80));
-        OUTPUT(_T("y64 - getDouble(y80):%.16le"), y64 - getDouble(y80));
-        OUTPUT(_T("RelativeError:%.16le"), relativeError);
+        LOG log;
+        log  << _T("Function ") << name << _T(" failed.") << endl
+             << _T("(x64,y64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(").") << endl
+             << _T("x64 - getDouble(x80):") << dparam(16) << (x64 - getDouble(x80)) << _T(".") << endl
+             << _T("y64 - getdouble(y80):") << dparam(16) << (y64 - getDouble(y80)) << _T(".") << endl
+             << _T("RelativeError:") << dparam(16) << relativeError << endl;
         verify(false);
       }
       if (relativeError > maxRelativeError) {
         maxRelativeError = relativeError;
       }
     }
-    OUTPUT(_T("Max relative error:%.16le"), maxRelativeError);
+    OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
   static double Max(double x, double y) {
@@ -124,12 +134,13 @@ namespace TestDouble80 {
         const double relativeError = getRelativeError(z64, z80);
 
         if (x64 != getDouble(x80) || y64 != getDouble(y80) || relativeError > EPS) {
-          OUTPUT(_T("Function %s failed"), name.cstr());
-          OUTPUT(_T("(x64,y64,z64):(%.16le,%.16le,%.16le)"), x64, y64, z64);
-          OUTPUT(_T("x64 - getDouble(x80):%.16le"), x64 - getDouble(x80));
-          OUTPUT(_T("y64 - getDouble(y80):%.16le"), y64 - getDouble(y80));
-          OUTPUT(_T("z64 - getDouble(z80):%.16le"), z64 - getDouble(z80));
-          OUTPUT(_T("RelativeError:%.16le"), relativeError);
+          LOG log;
+          log << _T("Function ") << name << _T(" failed.") << endl
+              << _T("(x64,y64,z64):(") << dparam(16) << x64 << _T(",") << dparam(16) << y64 << _T(",") << dparam(16) << z64 << _T(").") << endl
+              << _T("x64 - getDouble(x80):") << dparam(16) << (x64 - getDouble(x80)) << _T(".") << endl
+              << _T("y64 - getdouble(y80):") << dparam(16) << (y64 - getDouble(y80)) << _T(".") << endl
+              << _T("z64 - getdouble(z80):") << dparam(16) << (z64 - getDouble(z80)) << _T(".") << endl
+              << _T("RelativeError:") << dparam(16) << relativeError << endl;
           verify(false);
         }
         if (relativeError > maxRelativeError) {
@@ -156,8 +167,7 @@ namespace TestDouble80 {
         }
       }
     }
-
-    OUTPUT(_T("Max relative error:%.16le"), maxRelativeError);
+    OUTPUT(_T("%-10s:Max relative error:%.16le"), name.cstr(), maxRelativeError);
   }
 
   static double(*currentRefFunction)(const double &, const double &);
@@ -309,8 +319,9 @@ namespace TestDouble80 {
           double t = x * pow(10, dec);
           for (int j = 0; j < 10; j++, t *= 10) {
             const double error = testRound(t, dec);
-            if (error > maxRelativeError)
+            if (error > maxRelativeError) {
               maxRelativeError = error;
+            }
           }
         }
       }
