@@ -1,0 +1,62 @@
+// Colormap.idl : type library source for ActiveX Control project.
+
+// This file will be processed by the MIDL compiler tool to
+// produce the type library (Colormap.tlb) that will become a resource in
+// Colormap.ocx.
+
+#include <olectl.h>
+#include <idispids.h>
+
+[ uuid(60305F72-C994-4F73-B8C3-D36A9D543C67), version(1.0),
+  control ]
+library ColormapLib
+{
+	importlib(STDOLE_TLB);
+
+	//  Primary dispatch interface for CColormapCtrl
+	[ 
+		uuid(5C84D2A7-5B07-4B1E-934B-B1A3089A79F1)	
+	]
+	dispinterface _DColormap
+	{
+		properties:
+      [id(1)] long Color;
+      [id(2)] boolean Sunken;
+      [id(3)] boolean Border;
+      [id(4)] BSTR Caption;
+      [id(DISPID_FONT), bindable] IFontDisp* Font;
+      [id(DISPID_ENABLED), bindable, requestedit] boolean Enabled;
+      [id(5)] boolean ClientEdge;
+      [id(6)] boolean StaticEdge;
+      [id(7)] boolean ModalFrame;
+      [id(8)] long TextAlignment;
+  methods:
+
+			[id(DISPID_ABOUTBOX)] void AboutBox();
+	};
+
+	//  Event dispatch interface for CColormapCtrl
+
+	[ 
+		uuid(0CE00D37-27E5-4C2E-A641-A578BE2344BF)	
+	]
+	dispinterface _DColormapEvents
+	{
+		properties:
+			//  Event interface has no properties
+
+		methods:
+      [id(1)] void ColorChanged();
+  };
+
+	//  Class information for CColormapCtrl
+	[
+		uuid(B4097DDA-446A-4AB9-B210-3AF19276DF6C)
+	]
+	coclass Colormap
+	{
+		[default] dispinterface _DColormap;
+		[default, source] dispinterface _DColormapEvents;
+	};
+
+};
