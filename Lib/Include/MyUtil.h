@@ -1,14 +1,12 @@
 #pragma once
 
-#define _AFXDLL
-
 #define _CRT_SECURE_NO_WARNINGS 1
 
 #ifdef WINAPI_FAMILY
 #undef WINAPI_FAMILY
 #endif
 
-#if _WIN32 || _WIN64
+#if _WIN32 || _WIN64 || WIN32
 #ifdef _WIN64
 #define IS64BIT
 #else
@@ -28,73 +26,6 @@
 #include "Comparator.h"
 #include "FileNameSplitter.h"
 #include "Exception.h"
-
-class CPoint {
-public:
-	int x, y;
-  inline CPoint() {
-  }
-	inline CPoint(int _x, int _y) : x(_x), y(_y) {
-	}
-  inline bool operator==(const CPoint &p) const {
-    return (x == p.x) && (y == p.y);
-  }
-  inline bool operator!=(const CPoint &p) const {
-    return (x != p.x) || (y != p.y);
-  }
-};
-
-class CSize {
-public:
-	int cx, cy;
-  inline CSize() {
-  }
-	inline CSize(int _cx, int _cy) : cx(_cx), cy(_cy) {
-	}
-  inline bool operator==(const CSize &s) const {
-    return (cx == s.cx) && (cy == s.cy);
-  }
-  inline bool operator!=(const CSize &s) const {
-    return (cx != s.cx) || (cy != s.cy);
-  }
-};
-
-class CRect {
-public:
-  int left, top, right, bottom;
-  inline CRect() {
-  }
-  // from left, top, right, and bottom
-  inline CRect(int l, int t, int r, int b) : left(l), top(t), right(r), bottom(b) {
-  }
-  // retrieves the width
-  inline int Width() const {
-    return right - left;
-  }
-  // returns the height
-  int Height() const {
-    return bottom - top;
-  }
-  // returns the size
-  CSize Size() const {
-    return CSize(Width(), Height());
-  }
-  // reference to the top-left point
-  CPoint TopLeft() const {
-    return CPoint(left, top);
-  }
-  // reference to the bottom-right point
-  CPoint BottomRight() const {
-    return CPoint(right, bottom);
-  }
-  // the geometric center point of the rectangle
-  CPoint CenterPoint() const {
-    return CPoint((left + right) / 2, (top + bottom) / 2);
-  }
-  bool PtInRect(POINT point) const {
-    return (left <= point.x) && (point.x < right) && (top <= point.y) && (point.y < bottom);
-  }
-};
 
 void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
 void unredirectDebugLog();
@@ -179,6 +110,11 @@ bool   readLine(FILE *f, String &str);
 void pause();
 void pause(const TCHAR *format, ...);
 #define PAUSE() pause(_T("%s line %d"), __FILE__, __LINE__)
+
+bool keyPressed(int vk);
+bool shiftKeyPressed();
+bool ctrlKeyPressed();
+unsigned char toAscii(unsigned int virtualCode);
 
 String  inputPassword(TCHAR *format, ...); // read password from console
 int     inputInt(     TCHAR *format, ...); // read an integer from stdin

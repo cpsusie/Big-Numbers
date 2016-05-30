@@ -3,6 +3,7 @@
 #include "CompactArray.h"
 #include "Iterator.h"
 #include "Packer.h"
+#include "MatrixDimension.h"
 
 #define _BITSET_ATOMSIZE 32
 
@@ -199,37 +200,37 @@ public:
 
 class BitMatrix : private BitSet {
 private:
-  unsigned int m_rowCount, m_columnCount;
+  MatrixDimension m_dim;
   inline unsigned int getIndex(unsigned int r, unsigned int c) const {
-    assert((r < m_rowCount) && (c < m_columnCount));
-    return r*m_columnCount + c;
+    assert(m_dim.isLegalIndex(r, c));
+    return r*m_dim.columnCount + c;
   }
-  inline CPoint indexToPoint(unsigned int index) const {
-    return CPoint(index % m_columnCount, index / m_columnCount);
+  inline MatrixIndex indexToPoint(unsigned int index) const {
+    return MatrixIndex(index / m_dim.columnCount, index % m_dim.columnCount);
   }
   void checkSameDimension(const BitMatrix &m) const;
   friend class BitMatrixIterator;
   
 public:
   BitMatrix(unsigned int rowCount, int columnCount) 
-    : m_rowCount(rowCount), m_columnCount(columnCount)
+    : m_dim(rowCount, columnCount)
     , BitSet(rowCount*columnCount)
   {
   }
-  BitMatrix(const CSize &size) 
-    : m_rowCount(size.cy), m_columnCount(size.cx)
-    , BitSet(size.cx*size.cy)
+  BitMatrix(const MatrixDimension &dim) 
+    : m_dim(dim)
+    , BitSet(m_dim.getElementCount())
   {
   }
   void set(unsigned int r, unsigned int c, bool v);
-  inline void set(const CPoint &p, bool v) {
-    set(p.y,p.x,v);
+  inline void set(const MatrixIndex &i, bool v) {
+    set(i.r,i.c,v);
   }
   inline bool get(unsigned int r, unsigned int c) const {
     return contains(getIndex(r,c));
   }
-  inline bool get(const CPoint &p) const {
-    return contains(getIndex(p.y,p.x));
+  inline bool get(const MatrixIndex &i) const {
+    return contains(getIndex(i.r,i.c));
   }
   inline void clear() {
     BitSet::clear();
@@ -238,13 +239,13 @@ public:
     BitSet::invert();
   }
   inline unsigned int getRowCount() const {
-    return m_rowCount;
+    return m_dim.rowCount;
   }
   inline unsigned int getColumnCount() const {
-    return m_columnCount;
+    return m_dim.columnCount;
   }
-  inline CSize getDimension() const {
-    return CSize(m_columnCount, m_rowCount);
+  inline const MatrixDimension &getDimension() const {
+    return m_dim;
   }
 
   BitSet getRow(   unsigned int r) const;
@@ -258,7 +259,7 @@ public:
   BitMatrix &operator^=(const BitMatrix &m);
   BitMatrix &operator-=(const BitMatrix &m);
 
-  Iterator<CPoint> getIterator();
+  Iterator<MatrixIndex> getIterator();
 
   String toString() const;
 };

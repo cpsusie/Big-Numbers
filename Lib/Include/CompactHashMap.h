@@ -265,7 +265,7 @@ public:
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
-    for(index = 0; index < capacity; index++) {
+    for(unsigned long index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;

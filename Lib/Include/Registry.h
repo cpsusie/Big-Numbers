@@ -1,9 +1,7 @@
 #pragma once
 
-#include "MyString.h"
-#include "Array.h"
+#include "MyUtil.h"
 #include "Iterator.h"
-#include <Windows.h>
 
 #ifdef DEBUG_REGISTRY
 

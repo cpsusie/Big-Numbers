@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 String loadString(int id) {
   TCHAR buffer[4096];

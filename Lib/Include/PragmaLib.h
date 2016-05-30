@@ -4,7 +4,7 @@
 
 #define LIBROOT "c:/mytools2015/lib/"
 
-#ifdef IS32BIT
+#ifndef _M_X64
 #ifdef _DEBUG
 #define LIB_VERSION LIBROOT "MTDebug32/"
 #else

@@ -10,23 +10,25 @@ void BitMatrix::set(unsigned int r, unsigned int c, bool v) {
 }
 
 BitSet BitMatrix::getRow(unsigned int r) const {
-  BitSet result(m_columnCount);
-  for(unsigned int c = 0, index = r*m_columnCount; c < m_columnCount; c++) {
+  const unsigned int count = getColumnCount();
+  BitSet result(count);
+  for(unsigned int c = 0, index = r*count; c < count; c++) {
     if(contains(index++)) result.add(c);
   }
   return result;
 }
 
 BitSet BitMatrix::getColumn(unsigned int c) const {
-  BitSet result(m_rowCount);
-  for(unsigned int r = 0, index = c; r < m_rowCount; r++, index += m_columnCount) {
+  const unsigned int count = getRowCount();
+  BitSet result(count);
+  for(unsigned int r = 0, index = c; r < count; r++, index += getColumnCount()) {
     if(contains(index)) result.add(r);
   }
   return result;
 }
 
 bool BitMatrix::operator==(const BitMatrix &m) const {
-  if((m_rowCount != m.m_rowCount) || (m_columnCount != m.m_columnCount)) {
+  if(getDimension() != m.getDimension()) {
     return false;
   }
   return ((BitSet&)*this) == m;
@@ -58,8 +60,8 @@ BitMatrix &BitMatrix::operator-=(const BitMatrix &m) {
 
 class BitMatrixIterator : public BitSetIterator {
 private:
-  BitMatrix &m_matrix;
-  CPoint     m_p;
+  BitMatrix  &m_matrix;
+  MatrixIndex m_p;
 public:
   BitMatrixIterator(BitMatrix &m) : BitSetIterator(m), m_matrix(m) {
   }
@@ -76,22 +78,22 @@ void *BitMatrixIterator::next() {
   return &m_p;
 }
 
-Iterator<CPoint> BitMatrix::getIterator() {
-  return Iterator<CPoint>(new BitMatrixIterator(*this));
+Iterator<MatrixIndex> BitMatrix::getIterator() {
+  return Iterator<MatrixIndex>(new BitMatrixIterator(*this));
 }
 
 void BitMatrix::checkSameDimension(const BitMatrix &m) const {
-  if((m_rowCount != m.m_rowCount) || (m_columnCount != m.m_columnCount)) {
-    throwException(_T("BitMatrices must have the same dimensions. dim(this)=(%d,%d), dim(m)=(%d,%d)")
-                  ,m_rowCount, m_columnCount, m.m_rowCount, m.m_columnCount
+  if(getDimension() != m.getDimension()) {
+    throwException(_T("BitMatrices must have the same dimensions. dim(this)=%s, dim(m)=%s")
+                  ,getDimension().toString().cstr(), m.getDimension().toString().cstr()
                   );
   }
 }
 
 String BitMatrix::toString() const {
   String result;
-  for(unsigned int r = 0; r < m_rowCount; r++) {
-    for(unsigned int c = 0; c < m_columnCount; c++) {
+  for(unsigned int r = 0; r < getRowCount(); r++) {
+    for(unsigned int c = 0; c < getColumnCount(); c++) {
       result += get(r,c)?_T("1"):_T("0");
     }
     result += _T("\n");

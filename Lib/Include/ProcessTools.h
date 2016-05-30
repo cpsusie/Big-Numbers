@@ -1,8 +1,7 @@
 #pragma once
 
+#include "MyUtil.h"
 #include <psapi.h>
-#include <windows.h>
-#include "CompactArray.h"
 
 HANDLE                  getProcessHandle(     DWORD processID = -1);
 PROCESS_MEMORY_COUNTERS getProcessMemoryUsage(DWORD processID = -1); // processID == -1 gives Usage for current process

@@ -4,11 +4,12 @@
 #include "MyString.h"
 #include "StreamParameters.h"
 #include "VectorTemplate.h"
+#include "MatrixDimension.h"
 
 template <class T> class MatrixTemplate {
 private:
-  T          **m_a;
-  unsigned int m_rowCount, m_columnCount;
+  T             **m_a;
+  MatrixDimension m_dim;
 
   static void vthrowMatrixException(const TCHAR *format, va_list argptr) {
     throwException(_T("MatrixTemplate:%s."), vformat(format, argptr).cstr());
@@ -40,7 +41,7 @@ private:
   }
 
   void checkIndex(unsigned int r, unsigned int c) const {
-    if(r >= m_rowCount || c >= m_columnCount) {
+    if(!m_dim.isLegalIndex(r,c)) {
       throwIndexException(_T("Index (%u, %u) out of range"), r, c);
     }
   }
@@ -66,7 +67,7 @@ private:
   }
 
   void cleanup() {
-    for(unsigned int r = 0; r < m_rowCount; r++) {
+    for(int r = 0; r < getRowCount(); r++) {
       delete[] m_a[r];
     }
     delete[] m_a;
@@ -74,9 +75,8 @@ private:
 
 protected:
   void init(unsigned int rows, unsigned int columns, bool initialize) {
-    m_a       = allocate(rows, columns, initialize);
-    m_rowCount    = rows;
-    m_columnCount = columns;
+    m_a   = allocate(rows, columns, initialize);
+    m_dim = MatrixDimension(rows, columns);
   }
 
 public:
@@ -93,14 +93,14 @@ public:
     init(rows, columns, true);
   }
 
-  explicit MatrixTemplate(const CSize &size) {
-    init(size.cy, size.cx, true);
+  explicit MatrixTemplate(const MatrixDimension &dim) {
+    init(dim.rowCount, dim.columnCount, true);
   }
 
   MatrixTemplate(const MatrixTemplate<T> &src) {
-    init(src.m_rowCount, src.m_columnCount, false);
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    init(src.getRowCount(), src.getColumnCount(), false);
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] = src.m_a[r][c];
       }
     }
@@ -120,11 +120,11 @@ public:
     }
     if(!hasSameDimension(src)) {
       cleanup();
-      init(src.m_rowCount, src.m_columnCount, false);
+      init(src.getRowCount(), src.getColumnCount(), false);
     }
 
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] = src.m_a[r][c];
       }
     }
@@ -136,27 +136,26 @@ public:
   }
 
   void clear() {
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] = T(0);
       }
     }
   }
 
   MatrixTemplate<T> &setDimension(unsigned int rows, unsigned int columns) {
-    if(rows != m_rowCount || columns != m_columnCount) {
+    if(rows != getRowCount() || columns != getColumnCount()) {
       T **newa = allocate(rows, columns, true);
-      const unsigned int copyr = __min(rows, m_rowCount);
-      const unsigned int copyc = __min(columns, m_columnCount);
+      const unsigned int copyr = __min(rows, (unsigned int)getRowCount());
+      const unsigned int copyc = __min(columns, (unsigned int)getColumnCount());
       for(unsigned int r = 0; r < copyr; r++) {
         for(unsigned int c = 0; c < copyc; c++) {
           newa[r][c] = m_a[r][c];
         }
       }
       cleanup();
-      m_a       = newa;
-      m_rowCount    = rows;
-      m_columnCount = columns;
+      m_a   = newa;
+      m_dim = MatrixDimension(rows, columns);
     }
     return *this;
   }
@@ -166,31 +165,31 @@ public:
   }
 
   inline int getRowCount() const {
-    return m_rowCount;
+    return m_dim.rowCount;
   }
 
   inline int getColumnCount() const {
-    return m_columnCount;
+    return m_dim.columnCount;
   }
 
-  inline CSize getDimension() const {
-    return CSize(m_columnCount, m_rowCount);
+  inline const MatrixDimension &getDimension() const {
+    return m_dim;
   }
 
   inline bool hasSameDimension(const MatrixTemplate<T> &m) const {
-    return (m_rowCount == m.m_rowCount) && (m_columnCount == m.m_columnCount);
+    return m_dim == m.m_dim;
   }
 
   inline bool isSquare() const {
-    return m_rowCount == m_columnCount;
+    return m_dim.rowCount == m_dim.columnCount;
   }
 
   bool isSymmetric() const {
     if(!isSquare()) {
       return false;
     }
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = r+1; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = r+1; c < getColumnCount(); c++) {
         if(m_a[r][c] != m_a[c][r]) {
           return false;
         }
@@ -209,7 +208,7 @@ public:
     return m_a[r][c];
   }
 
-  T &subDiagonal(unsigned int row) { // row must be [1..m_rowCount-1]
+  T &subDiagonal(unsigned int row) { // row must be [1..getRowCount()-1]
     if(!isSquare()) {
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
@@ -217,7 +216,7 @@ public:
     return m_a[row][row-1];
   }
 
-  const T &subDiagonal(unsigned int row) const { // row must be [1..m_rowCount-1]
+  const T &subDiagonal(unsigned int row) const { // row must be [1..getRowCount()-1]
     if(!isSquare()) {
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
@@ -226,58 +225,58 @@ public:
   }
 
   VectorTemplate<T> getRow(unsigned int row) const {
-    if(row >= m_rowCount) {
+    if(row >= (unsigned int)getRowCount()) {
       throwIndexException(_T("getRow:Row %u out of range"), row);
     }
-    VectorTemplate<T> result(m_columnCount);
-    for(unsigned int c = 0; c < m_columnCount; c++) {
+    VectorTemplate<T> result(getColumnCount());
+    for(int c = 0; c < getColumnCount(); c++) {
       result[c] = m_a[row][c];
     }
     return result;
   }
 
   VectorTemplate<T> getColumn(unsigned int column) const {
-    if(column >= m_columnCount) {
+    if(column >= (unsigned int)getColumnCount()) {
       throwIndexException(_T("getColumn:Column %u out of range"), column);
     }
-    VectorTemplate<T> result(m_rowCount);
-    for(unsigned int r = 0; r < m_rowCount; r++) {
+    VectorTemplate<T> result(getRowCount());
+    for(int r = 0; r < getRowCount(); r++) {
       result[r] = m_a[r][column];
     }
     return result;
   }
 
   MatrixTemplate<T> &setRow(unsigned int row, const VectorTemplate<T> &v) {
-    if(row >= m_rowCount) {
+    if(row >= (unsigned int)getRowCount()) {
       throwIndexException(_T("setRow:Row %u out of range"), row);
     }
-    if(v.getDimension() != m_columnCount) {
+    if(v.getDimension() != getColumnCount()) {
       throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.Dimension=%u"), getDimensionString().cstr(), v.getDimension());
     }
-    for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int c = 0; c < getColumnCount(); c++) {
       m_a[row][c] = v(c);
     }
     return *this;
   }
 
   MatrixTemplate<T> &setColumn(unsigned int column, const VectorTemplate<T> &v) {
-    if(column >= m_columnCount) {
+    if(column >= (unsigned int)getColumnCount()) {
       throwIndexException(_T("setColumn:Column %u out of range"), column);
     }
-    if(v.getDimension() != m_rowCount) {
+    if(v.getDimension() != getRowCount()) {
       throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.Dimension=%u"), getDimensionString().cstr(), v.getDimension());
     }
-    for(unsigned int r = 0; r < m_rowCount; r++) {
+    for(int r = 0; r < getRowCount(); r++) {
       m_a[r][column] = v(r);
     }
     return *this;
   }
 
   MatrixTemplate<T> &swapRows(unsigned int r1, unsigned int r2) {
-    if(r1 >= m_rowCount) {
+    if(r1 >= (unsigned int)getRowCount()) {
       throwIndexException(_T("swapRows:r1=%u out of range"), r1);
     }
-    if(r2 >= m_rowCount) {
+    if(r2 >= (unsigned int)getRowCount()) {
       throwIndexException(_T("swapRows:r2=%u out of range"), r2);
     }
     T *tmp  = m_a[r1];
@@ -290,8 +289,8 @@ public:
     if(!isSquare()) {
       throwIndexException(_T("getDiagonal:Matrix not square"));
     }
-    VectorTemplate<T> result(m_columnCount);
-    for(unsigned int r = 0; r < m_columnCount; r++) {
+    VectorTemplate<T> result(getColumnCount());
+    for(int r = 0; r < getColumnCount(); r++) {
       result(r) = m_a[r][r];
     }
     return result;
@@ -394,8 +393,8 @@ public:
   MatrixTemplate<T> &operator+=(const MatrixTemplate<T> &rhs) {
     checkSameDimension(_T("operator+="), rhs);
 
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] += rhs.m_a[r][c];
       }
     }
@@ -405,8 +404,8 @@ public:
   MatrixTemplate<T> &operator-=(const MatrixTemplate<T> &rhs) {
     checkSameDimension(_T("operator-="), rhs);
 
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] -= rhs.m_a[r][c];
       }
     }
@@ -515,8 +514,8 @@ public:
   }
 
   MatrixTemplate<T> &operator*=(const T &d) {
-    for(int r = 0; r < m_rowCount; r++) {
-      for(int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] *= d;
       }
     }
@@ -524,8 +523,8 @@ public:
   }
 
   MatrixTemplate<T> &operator/=(const T &d) {
-    for(unsigned int r = 0; r < m_rowCount; r++) {
-      for(unsigned int c = 0; c < m_columnCount; c++) {
+    for(int r = 0; r < getRowCount(); r++) {
+      for(int c = 0; c < getColumnCount(); c++) {
         m_a[r][c] /= d;
       }
     }
@@ -533,9 +532,9 @@ public:
   }
 
   friend MatrixTemplate<T> transpose(const MatrixTemplate<T> &a) {
-    MatrixTemplate<T> result(a.m_columnCount, a.m_rowCount);
-    for(unsigned int r = 0; r < a.m_rowCount; r++) {
-      for(unsigned int c = 0; c < a.m_columnCount; c++) {
+    MatrixTemplate<T> result(a.getColumnCount(), a.getRowCount());
+    for(int r = 0; r < a.getRowCount(); r++) {
+      for(int c = 0; c < a.getColumnCount(); c++) {
         result.m_a[c][r] = a.m_a[r][c];
       }
     }
@@ -579,8 +578,8 @@ public:
     if(!m1.hasSameDimension(m2)) {
       return false;
     }
-    for(unsigned int r = 0; r < m1.m_rowCount; r++) {
-      for(unsigned int c = 0; c < m1.m_columnCount; c++) {
+    for(int r = 0; r < m1.getRowCount(); r++) {
+      for(int c = 0; c < m1.getColumnCount(); c++) {
         if(!(m1.m_a[r][c] == m2.m_a[r][c])) {
           return false;
         }
@@ -595,7 +594,7 @@ public:
 
   virtual String toString() const {
     String result;
-    for(unsigned int r = 0; r < m_rowCount; r++) {
+    for(int r = 0; r < getRowCount(); r++) {
       result += getRow(r).toString() + _T("\n");
     }
     return result;
@@ -603,8 +602,8 @@ public:
 
   friend tostream &operator<<(tostream &out, const MatrixTemplate<T> &a) {
     StreamParameters p(out);
-    for(unsigned int r = 0; r < a.m_rowCount; r++) {
-      for(unsigned int c = 0; c < a.m_columnCount; c++) {
+    for(int r = 0; r < a.getRowCount(); r++) {
+      for(int c = 0; c < a.getColumnCount(); c++) {
         out << p << a.m_a[r][c] << _T(" ");
       }
       out << _T("\n");
@@ -613,8 +612,8 @@ public:
   }
 
   friend tistream &operator>>(tistream &in, MatrixTemplate<T> &a) {
-    for(unsigned int r = 0; r < a.m_rowCount; r++) {
-      for(unsigned int c = 0; c < a.m_columnCount; c++) {
+    for(int r = 0; r < a.getRowCount(); r++) {
+      for(int c = 0; c < a.getColumnCount(); c++) {
         in >> a.m_a[r][c];
       }
     }
@@ -622,6 +621,6 @@ public:
   }
 
   String getDimensionString() const {
-    return format(_T("Dimension=(%u, %u)"), m_rowCount, m_columnCount);
+    return format(_T("Dimension=%s"), m_dim.toString().cstr());
   }
 };

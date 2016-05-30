@@ -157,7 +157,7 @@ public:
     m_buffer   = allocateBuffer(capacity);
 
     for(CompactHashElementPage<K> *page = m_firstPage; page; page = page->m_next) {
-      for(int i = 0; i < page->m_count; i++) {
+      for(unsigned int i = 0; i < page->m_count; i++) {
         CompactHashElement<K> *n = page->m_elements+i;
         const unsigned long index = n->m_key.hashCode() % m_capacity;
         n->m_next = m_buffer[index];
@@ -251,7 +251,7 @@ public:
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
-    for(index = 0; index < capacity; index++) {
+    for(unsigned long index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;

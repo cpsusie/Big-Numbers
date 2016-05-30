@@ -100,12 +100,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
-    <OutDir>..\..\..\MTDebug32\</OutDir>
+    <OutDir>..\..\MTDebug32\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
-    <OutDir>..\..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\MTRelease32\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
@@ -138,7 +138,8 @@
       </DisableSpecificWarnings>
       <WarningVersion>
       </WarningVersion>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG;WINAPI_FAMILY=WINAPI_FAMILY_DESKTOP_APP;_WRL_NO_DEFAULT_LIB_</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;_DEBUG</PreprocessorDefinitions>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -152,10 +153,11 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;_WRL_NO_DEFAULT_LIB_</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE</PreprocessorDefinitions>
       <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
       <BrowseInformation>true</BrowseInformation>
       <ExceptionHandling>Async</ExceptionHandling>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -227,81 +229,88 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Array.h" />
-    <ClInclude Include="..\..\..\Include\BigArray.h" />
-    <ClInclude Include="..\..\..\Include\BitSet.h" />
-    <ClInclude Include="..\..\..\Include\BitStream.h" />
-    <ClInclude Include="..\..\..\Include\ByteArray.h" />
-    <ClInclude Include="..\..\..\Include\ByteFile.h" />
-    <ClInclude Include="..\..\..\Include\ByteMemoryStream.h" />
-    <ClInclude Include="..\..\..\Include\ByteStream.h" />
-    <ClInclude Include="..\..\..\Include\CallCounter.h" />
-    <ClInclude Include="..\..\..\Include\Collection.h" />
-    <ClInclude Include="..\..\..\Include\CompactArray.h" />
-    <ClInclude Include="..\..\..\Include\CompactHashMap.h" />
-    <ClInclude Include="..\..\..\Include\CompactHashSet.h" />
-    <ClInclude Include="..\..\..\Include\CompactKeyType.h" />
-    <ClInclude Include="..\..\..\Include\CompactStack.h" />
-    <ClInclude Include="..\..\..\Include\Comparator.h" />
-    <ClInclude Include="..\..\..\Include\CompressFilter.h" />
-    <ClInclude Include="..\..\..\Include\Console.h" />
-    <ClInclude Include="..\..\..\Include\CountedByteStream.h" />
-    <ClInclude Include="..\..\..\Include\CPUInfo.h" />
-    <ClInclude Include="..\..\..\Include\Date.h" />
-    <ClInclude Include="..\..\..\Include\Exception.h" />
-    <ClInclude Include="..\..\..\Include\FileContent.h" />
-    <ClInclude Include="..\..\..\Include\FileNameSplitter.h" />
-    <ClInclude Include="..\..\..\Include\FileTreeWalker.h" />
-    <ClInclude Include="..\..\..\Include\HashMap.h" />
-    <ClInclude Include="..\..\..\Include\HashSet.h" />
-    <ClInclude Include="..\..\..\Include\Iterator.h" />
-    <ClInclude Include="..\..\..\Include\LineTracer.h" />
-    <ClInclude Include="..\..\..\Include\LinkedList.h" />
-    <ClInclude Include="..\..\..\Include\LRparser.h" />
-    <ClInclude Include="..\..\..\Include\Map.h" />
-    <ClInclude Include="..\..\..\Include\MatrixTemplate.h" />
-    <ClInclude Include="..\..\..\Include\MyAssert.h" />
-    <ClInclude Include="..\..\..\Include\MyString.h" />
-    <ClInclude Include="..\..\..\Include\MyUtil.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\NumberInterval.h" />
-    <ClInclude Include="..\..\..\Include\ObjectManager.h" />
-    <ClInclude Include="..\..\..\Include\PackedArray.h" />
-    <ClInclude Include="..\..\..\Include\Packer.h" />
-    <ClInclude Include="..\..\..\Include\Point2D.h" />
-    <ClInclude Include="..\..\..\Include\PragmaLib.h" />
-    <ClInclude Include="..\..\..\Include\PriorityQueue.h" />
-    <ClInclude Include="..\..\..\Include\ProcessTools.h" />
-    <ClInclude Include="..\..\..\Include\PropertyChangeListener.h" />
-    <ClInclude Include="..\..\..\Include\QueueList.h" />
-    <ClInclude Include="..\..\..\Include\Random.h" />
-    <ClInclude Include="..\..\..\Include\Rectangle2D.h" />
-    <ClInclude Include="..\..\..\Include\Regex.h" />
-    <ClInclude Include="..\..\..\Include\Registry.h" />
-    <ClInclude Include="..\..\..\Include\Runnable.h" />
-    <ClInclude Include="..\..\..\Include\Scandir.h" />
-    <ClInclude Include="..\..\..\Include\Scanner.h" />
-    <ClInclude Include="..\..\..\Include\Semaphore.h" />
-    <ClInclude Include="..\..\..\Include\Set.h" />
-    <ClInclude Include="..\..\..\Include\Stack.h" />
-    <ClInclude Include="..\..\..\Include\StreamParameters.h" />
-    <ClInclude Include="..\..\..\Include\StringPool.h" />
-    <ClInclude Include="..\..\..\Include\StrStream.h" />
-    <ClInclude Include="..\..\..\Include\SynchronizedQueue.h" />
-    <ClInclude Include="..\..\..\Include\Tcp.h" />
-    <ClInclude Include="..\..\..\Include\TextRect.h" />
-    <ClInclude Include="..\..\..\Include\TextWin.h" />
-    <ClInclude Include="..\..\..\Include\Thread.h" />
-    <ClInclude Include="..\..\..\Include\TimeMeasure.h" />
-    <ClInclude Include="..\..\..\Include\Timer.h" />
-    <ClInclude Include="..\..\..\Include\TinyBitSet.h" />
-    <ClInclude Include="..\..\..\Include\Tokenizer.h" />
-    <ClInclude Include="..\..\..\Include\TreeMap.h" />
-    <ClInclude Include="..\..\..\Include\TreeSet.h" />
-    <ClInclude Include="..\..\..\Include\Unicode.h" />
-    <ClInclude Include="..\..\..\Include\VectorTemplate.h" />
-    <ClInclude Include="..\..\..\Include\WildCardRegex.h" />
+    <ClInclude Include="..\..\Include\Array.h" />
+    <ClInclude Include="..\..\Include\BigArray.h" />
+    <ClInclude Include="..\..\Include\BitSet.h" />
+    <ClInclude Include="..\..\Include\BitStream.h" />
+    <ClInclude Include="..\..\Include\BMAutomate.h" />
+    <ClInclude Include="..\..\Include\Bpn.h" />
+    <ClInclude Include="..\..\Include\ByteArray.h" />
+    <ClInclude Include="..\..\Include\ByteFile.h" />
+    <ClInclude Include="..\..\Include\ByteMemoryStream.h" />
+    <ClInclude Include="..\..\Include\ByteStream.h" />
+    <ClInclude Include="..\..\Include\CallCounter.h" />
+    <ClInclude Include="..\..\Include\Collection.h" />
+    <ClInclude Include="..\..\Include\CompactArray.h" />
+    <ClInclude Include="..\..\Include\CompactHashMap.h" />
+    <ClInclude Include="..\..\Include\CompactHashSet.h" />
+    <ClInclude Include="..\..\Include\CompactKeyType.h" />
+    <ClInclude Include="..\..\Include\CompactStack.h" />
+    <ClInclude Include="..\..\Include\Comparator.h" />
+    <ClInclude Include="..\..\Include\CompressFilter.h" />
+    <ClInclude Include="..\..\Include\Console.h" />
+    <ClInclude Include="..\..\Include\CountedByteStream.h" />
+    <ClInclude Include="..\..\Include\CPUInfo.h" />
+    <ClInclude Include="..\..\Include\Date.h" />
+    <ClInclude Include="..\..\Include\Exception.h" />
+    <ClInclude Include="..\..\Include\FileContent.h" />
+    <ClInclude Include="..\..\Include\FileNameSplitter.h" />
+    <ClInclude Include="..\..\Include\FileTreeWalker.h" />
+    <ClInclude Include="..\..\Include\FileVersion.h" />
+    <ClInclude Include="..\..\Include\HashMap.h" />
+    <ClInclude Include="..\..\Include\HashSet.h" />
+    <ClInclude Include="..\..\Include\Iterator.h" />
+    <ClInclude Include="..\..\Include\KMPAutomate.h" />
+    <ClInclude Include="..\..\Include\Language.h" />
+    <ClInclude Include="..\..\Include\LineTracer.h" />
+    <ClInclude Include="..\..\Include\LinkedList.h" />
+    <ClInclude Include="..\..\Include\LRparser.h" />
+    <ClInclude Include="..\..\Include\Map.h" />
+    <ClInclude Include="..\..\Include\MarginFile.h" />
+    <ClInclude Include="..\..\Include\MatrixDimension.h" />
+    <ClInclude Include="..\..\Include\MatrixTemplate.h" />
+    <ClInclude Include="..\..\Include\md5.h" />
+    <ClInclude Include="..\..\Include\MyAssert.h" />
+    <ClInclude Include="..\..\Include\MyString.h" />
+    <ClInclude Include="..\..\Include\MyUtil.h" />
+    <ClInclude Include="..\..\Include\NullOutputStream.h" />
+    <ClInclude Include="..\..\Include\NumberInterval.h" />
+    <ClInclude Include="..\..\Include\ObjectManager.h" />
+    <ClInclude Include="..\..\Include\PackedArray.h" />
+    <ClInclude Include="..\..\Include\Packer.h" />
+    <ClInclude Include="..\..\Include\PragmaLib.h" />
+    <ClInclude Include="..\..\Include\PriorityQueue.h" />
+    <ClInclude Include="..\..\Include\ProcessTools.h" />
+    <ClInclude Include="..\..\Include\PropertyChangeListener.h" />
+    <ClInclude Include="..\..\Include\QueueList.h" />
+    <ClInclude Include="..\..\Include\Random.h" />
+    <ClInclude Include="..\..\Include\Regex.h" />
+    <ClInclude Include="..\..\Include\Registry.h" />
+    <ClInclude Include="..\..\Include\Runnable.h" />
+    <ClInclude Include="..\..\Include\Scandir.h" />
+    <ClInclude Include="..\..\Include\Scanner.h" />
+    <ClInclude Include="..\..\Include\Semaphore.h" />
+    <ClInclude Include="..\..\Include\Set.h" />
+    <ClInclude Include="..\..\Include\Stack.h" />
+    <ClInclude Include="..\..\Include\StreamParameters.h" />
+    <ClInclude Include="..\..\Include\StringPool.h" />
+    <ClInclude Include="..\..\Include\StrStream.h" />
+    <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
+    <ClInclude Include="..\..\Include\Tcp.h" />
+    <ClInclude Include="..\..\Include\TeeOutputStream.h" />
+    <ClInclude Include="..\..\Include\TextRect.h" />
+    <ClInclude Include="..\..\Include\TextWin.h" />
+    <ClInclude Include="..\..\Include\Thread.h" />
+    <ClInclude Include="..\..\Include\TimeMeasure.h" />
+    <ClInclude Include="..\..\Include\Timer.h" />
+    <ClInclude Include="..\..\Include\TinyBitSet.h" />
+    <ClInclude Include="..\..\Include\Tokenizer.h" />
+    <ClInclude Include="..\..\Include\TreeMap.h" />
+    <ClInclude Include="..\..\Include\TreeSet.h" />
+    <ClInclude Include="..\..\Include\Unicode.h" />
+    <ClInclude Include="..\..\Include\VectorTemplate.h" />
+    <ClInclude Include="..\..\Include\WildCardRegex.h" />
+    <ClInclude Include="..\..\Include\XmlDoc.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -310,6 +319,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />
     <ClCompile Include="access.cpp" />
+    <ClCompile Include="ArgvExpand.cpp" />
     <ClCompile Include="ArrayImpl.cpp" />
     <ClCompile Include="ArraySort.cpp" />
     <ClCompile Include="BitInputStream.cpp" />
@@ -322,6 +332,9 @@
     <ClCompile Include="BitSetPacker.cpp" />
     <ClCompile Include="BitSetStream.cpp" />
     <ClCompile Include="BitSetToStringIntervals.cpp" />
+    <ClCompile Include="BMAutomate.cpp" />
+    <ClCompile Include="Bpn.cpp" />
+    <ClCompile Include="BSTRToString.cpp" />
     <ClCompile Include="ByteArray.cpp" />
     <ClCompile Include="ByteFile.cpp" />
     <ClCompile Include="ByteFileArray.cpp" />
@@ -334,8 +347,10 @@
     <ClCompile Include="CharBitSetToString.cpp" />
     <ClCompile Include="chdir.cpp" />
     <ClCompile Include="chmod.cpp" />
+    <ClCompile Include="ComboBox.cpp" />
     <ClCompile Include="CompressFilter.cpp" />
     <ClCompile Include="Console.cpp" />
+    <ClCompile Include="ConsoleWindow.cpp" />
     <ClCompile Include="Constants.cpp" />
     <ClCompile Include="CountedByteInputStream.cpp" />
     <ClCompile Include="CountedByteOutputStream.cpp" />
@@ -344,8 +359,13 @@
     <ClCompile Include="DatePacker.cpp" />
     <ClCompile Include="DebugLog.cpp" />
     <ClCompile Include="DecompressFilter.cpp" />
+    <ClCompile Include="Dialog.cpp" />
+    <ClCompile Include="DialogField.cpp" />
+    <ClCompile Include="DialogFields.cpp" />
+    <ClCompile Include="DrawRect.cpp" />
     <ClCompile Include="dup.cpp" />
     <ClCompile Include="dup2.cpp" />
+    <ClCompile Include="ectype.cpp" />
     <ClCompile Include="ErrorText.cpp" />
     <ClCompile Include="Exception.cpp" />
     <ClCompile Include="ExecutableByteArray.cpp" />
@@ -353,39 +373,60 @@
     <ClCompile Include="FileContent.cpp" />
     <ClCompile Include="FileNameSplitter.cpp" />
     <ClCompile Include="FileTreeWalker.cpp" />
+    <ClCompile Include="FileVersion.cpp" />
     <ClCompile Include="FindDataComp.cpp" />
     <ClCompile Include="FindDataCompCommon.cpp" />
     <ClCompile Include="fopen.cpp" />
     <ClCompile Include="format1000.cpp" />
     <ClCompile Include="fraction.cpp" />
+    <ClCompile Include="FrameChars.cpp" />
     <ClCompile Include="fread.cpp" />
     <ClCompile Include="fseek.cpp" />
+    <ClCompile Include="fstat.cpp" />
+    <ClCompile Include="fstat64.cpp" />
     <ClCompile Include="fwrite.cpp" />
     <ClCompile Include="GetCommandline.cpp" />
     <ClCompile Include="getcwd.cpp" />
+    <ClCompile Include="GetLockedResource.cpp" />
     <ClCompile Include="GetModuleFileName.cpp" />
     <ClCompile Include="GetPos.cpp" />
     <ClCompile Include="GetProcessHandle.cpp" />
     <ClCompile Include="GetProcessIds.cpp" />
+    <ClCompile Include="GetProcessMemoryCounters.cpp" />
     <ClCompile Include="GetProcessModules.cpp" />
     <ClCompile Include="GetProcessorCount.cpp" />
     <ClCompile Include="GetProcessResources.cpp" />
     <ClCompile Include="gets.cpp" />
+    <ClCompile Include="GetSize.cpp" />
+    <ClCompile Include="GetUserName.cpp" />
+    <ClCompile Include="guid.cpp" />
     <ClCompile Include="HashMapImpl.cpp" />
     <ClCompile Include="HashSetImpl.cpp" />
     <ClCompile Include="HashSetIterator.cpp" />
     <ClCompile Include="HexDump.cpp" />
+    <ClCompile Include="InputDouble.cpp" />
     <ClCompile Include="InputInt.cpp" />
     <ClCompile Include="InputInt64.cpp" />
     <ClCompile Include="InputPassword.cpp" />
     <ClCompile Include="isatty.cpp" />
+    <ClCompile Include="KeepAlive.cpp" />
+    <ClCompile Include="KeyPressed.cpp" />
+    <ClCompile Include="KmpAutomate.cpp" />
+    <ClCompile Include="Language.cpp" />
     <ClCompile Include="LexFileStream.cpp" />
     <ClCompile Include="LexStringStream.cpp" />
     <ClCompile Include="LineTracer.cpp" />
+    <ClCompile Include="ListBox.cpp" />
     <ClCompile Include="ListImpl.cpp" />
+    <ClCompile Include="LoadString.cpp" />
     <ClCompile Include="LRparser.cpp" />
     <ClCompile Include="lucase.cpp" />
     <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MarginFile.cpp" />
+    <ClCompile Include="MatchParanthes.cpp" />
+    <ClCompile Include="md5c.cpp" />
+    <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MessageBox.cpp" />
     <ClCompile Include="MinMax.cpp" />
     <ClCompile Include="mkfopen.cpp" />
     <ClCompile Include="MyAssert.cpp" />
@@ -396,27 +437,30 @@
     <ClCompile Include="Packer.cpp" />
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="pipe.cpp" />
-    <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />
     <ClCompile Include="ProcessInfo.cpp" />
     <ClCompile Include="ProcessTime.cpp" />
+    <ClCompile Include="ProgressBar.cpp" />
     <ClCompile Include="PropertyContainer.cpp" />
     <ClCompile Include="QuickSort.cpp" />
     <ClCompile Include="RandInt.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Randomize.cpp" />
     <ClCompile Include="ReadFile.cpp" />
-    <ClCompile Include="Rectangle2D.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexHelp.cpp" />
     <ClCompile Include="Registry.cpp" />
     <ClCompile Include="Rename.cpp" />
     <ClCompile Include="rmdir.cpp" />
     <ClCompile Include="Round.cpp" />
+    <ClCompile Include="safenew.cpp" />
     <ClCompile Include="Scandir.cpp" />
     <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="ScrollBar.cpp" />
+    <ClCompile Include="searchenv.cpp" />
     <ClCompile Include="Semaphore.cpp" />
     <ClCompile Include="SetFileMode.cpp" />
+    <ClCompile Include="Sleep.cpp" />
     <ClCompile Include="SocketErrorMessage.cpp" />
     <ClCompile Include="SourcePosition.cpp" />
     <ClCompile Include="sprintbin.cpp" />
@@ -447,12 +491,17 @@
     <ClCompile Include="SysErrorText.cpp" />
     <ClCompile Include="Tcp.cpp" />
     <ClCompile Include="TcpString.cpp" />
+    <ClCompile Include="TeeOutputStream.cpp" />
+    <ClCompile Include="TextRect.cpp" />
+    <ClCompile Include="TextWin.cpp" />
     <ClCompile Include="Thread.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
+    <ClCompile Include="TimePacker.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="Timestamp.cpp" />
     <ClCompile Include="TimestampPacker.cpp" />
+    <ClCompile Include="ToAscii.cpp" />
     <ClCompile Include="Tokenizer.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -467,8 +516,10 @@
     <ClCompile Include="TreeSetImpl.cpp" />
     <ClCompile Include="TreeSetIterator.cpp" />
     <ClCompile Include="Unlink.cpp" />
+    <ClCompile Include="WildCardRegex.cpp" />
     <ClCompile Include="xfree.cpp" />
     <ClCompile Include="xmalloc.cpp" />
+    <ClCompile Include="XmlDoc.cpp" />
     <ClCompile Include="xrealloc.cpp" />
     <ClCompile Include="xstrdup.cpp" />
   </ItemGroup>
