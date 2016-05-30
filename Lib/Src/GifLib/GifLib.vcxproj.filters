@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ef5831b2-c6d3-4ad4-987c-91963439215b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="giflib-5.1.1\lib\dgif_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\egif_lib.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\gif_err.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\gif_font.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\gif_hash.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\gifalloc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="giflib-5.1.1\lib\quantize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="giflib-5.1.1\lib\getopt.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\gif_hash.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\gif_lib.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\gif_lib_private.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\stdbool.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\stdint.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\unistd.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
