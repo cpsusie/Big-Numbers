@@ -137,6 +137,7 @@ void MachineCode::linkExternals() {
   }
 }
 
+#pragma warning(disable:4717)
 void Expression::compile(const String &expr, bool machineCode) {
   compile(expr.cstr(),machineCode);
 }

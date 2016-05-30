@@ -3,5 +3,11 @@
   <Type Name="Double80">
     <DisplayString>{m_debugString,s}</DisplayString>
   </Type>
+  <Type Name="Point2D">
+    <DisplayString>{{x={x} y={Y}}}</DisplayString>
+  </Type>
+  <Type Name="Point3D">
+    <DisplayString>{{x={x} y={Y} z={z}}}</DisplayString>
+  </Type>
 
 </AutoVisualizer>

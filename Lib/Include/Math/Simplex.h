@@ -2,6 +2,7 @@
 
 #include <HashSet.h>
 #include <BitSet.h>
+#include "AlgorithmHandler.h"
 
 typedef enum {
   SIMPLEX_SOLUTION_OK        =  0,

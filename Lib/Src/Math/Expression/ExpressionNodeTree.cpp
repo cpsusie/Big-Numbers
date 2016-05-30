@@ -3,6 +3,7 @@
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
   initChildArray(argptr);
+#pragma warning(disable:4390)
   if(m_childArray.size() > 0) INITEXPRESSIONNODEDEBUGSTRING();
 }
 

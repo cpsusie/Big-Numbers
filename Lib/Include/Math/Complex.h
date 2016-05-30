@@ -1,7 +1,7 @@
 #pragma once
 
 #include <StrStream.h>
-#include <Point2D.h>
+#include "Point2D.h"
 #include "Real.h"
 
 class Complex {

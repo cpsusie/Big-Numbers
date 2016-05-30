@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Point2D.h>
+#include "Point2D.h"
 
 #define MAXDEGREE 30
 #define MAXM (MAXDEGREE+2)

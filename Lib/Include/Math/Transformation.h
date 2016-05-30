@@ -1,8 +1,8 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include <Point2D.h>
-#include <Rectangle2D.h>
+#include "Point2D.h"
+#include "Rectangle2D.h"
 #include "PragmaLib.h"
 
 typedef enum {

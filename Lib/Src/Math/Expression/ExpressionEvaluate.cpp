@@ -155,10 +155,10 @@ Real Expression::evaluatePow(const ExpressionNode *n) const {
     Rational expoR;
     if(Rational::isRealRational(expo, &expoR)) {
       if(expoR.getNumerator() != 1) {
-        base = mypow(base, expoR.getNumerator());
+        base = mypow(base, (Real)expoR.getNumerator());
       }
       if(expoR.getDenominator() != 1) {
-        base = root(base, expoR.getDenominator());
+        base = root(base, (Real)expoR.getDenominator());
       }
       return base;
     } else {
@@ -176,10 +176,10 @@ Real Expression::evaluateRoot(const ExpressionNode *n) const {
     Rational rootR;
     if(Rational::isRealRational(rt, &rootR)) {
       if(rootR.getNumerator() != 1) {
-        rad = root(rad, rootR.getNumerator());
+        rad = root(rad, (Real)rootR.getNumerator());
       }
       if(rootR.getDenominator() != 1) {
-        rad = mypow(rad, rootR.getDenominator());
+        rad = mypow(rad, (Real)rootR.getDenominator());
       }
       return rad;
     } else {

@@ -100,13 +100,13 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\..\MTDebug32\</OutDir>
+    <OutDir>..\..\MTDebug32\</OutDir>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LibraryPath>C:\mytools\parsergen\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <OutDir>..\..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\MTRelease32\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\mytools\parsergen\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -199,42 +199,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Math\AlgorithmHandler.h" />
-    <ClInclude Include="..\..\..\Include\Math\BigReal.h" />
-    <ClInclude Include="..\..\..\Include\Math\BigRealMatrix.h" />
-    <ClInclude Include="..\..\..\Include\Math\Complex.h" />
-    <ClInclude Include="..\..\..\Include\Math\Double80.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\Expression.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionFactor.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionGraphics.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionLex.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionNode.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionParser.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionSymbol.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\Number.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\OpCodes.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\ParserTree.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\PrimeFactors.h" />
-    <ClInclude Include="..\..\..\Include\Math\Expression\SumElement.h" />
-    <ClInclude Include="..\..\..\Include\Math\fft.h" />
-    <ClInclude Include="..\..\..\Include\Math\LUMatrixTemplate.h" />
-    <ClInclude Include="..\..\..\Include\Math\MathException.h" />
-    <ClInclude Include="..\..\..\Include\Math\MathFunctions.h" />
-    <ClInclude Include="..\..\..\Include\Math\MathLib.h" />
-    <ClInclude Include="..\..\..\Include\Math\Matrix.h" />
-    <ClInclude Include="..\..\..\Include\Math\MRisprime.h" />
-    <ClInclude Include="..\..\..\Include\Math\Polynomial.h" />
-    <ClInclude Include="..\..\..\Include\Math\PragmaLib.h" />
-    <ClInclude Include="..\..\..\Include\Math\Rational.h" />
-    <ClInclude Include="..\..\..\Include\Math\Real.h" />
-    <ClInclude Include="..\..\..\Include\Math\SigmoidIterator.h" />
-    <ClInclude Include="..\..\..\Include\Math\Simplex.h" />
-    <ClInclude Include="..\..\..\Include\Math\Statistic.h" />
-    <ClInclude Include="..\..\..\Include\Math\Transformation.h" />
-    <ClInclude Include="pch.h" />
-    <ClInclude Include="targetver.h" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="AkimaSpline.cpp" />
     <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
@@ -303,11 +267,16 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Point2D.cpp" />
+    <ClCompile Include="Point2DTransformations.cpp" />
+    <ClCompile Include="Point3D.cpp" />
     <ClCompile Include="Polar.cpp" />
+    <ClCompile Include="Polygon2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
     <ClCompile Include="RationalIO.cpp" />
+    <ClCompile Include="Rectangle2D.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />
     <ClCompile Include="Simplex.cpp" />
@@ -327,13 +296,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen  -v -OExpression,..\..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen  -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expression\ExpressionLex.cpp;..\..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -OExpression,..\..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating Expression lexer </Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Expression\ExpressionLex.cpp;..\..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Expression\Expression.y">
@@ -342,18 +311,59 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsegen -OExpression,..\..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\include\Math\Expression\ExpressionParser.h;..\..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsegen -OExpression,..\..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Analyzing Expression Grammar</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\include\Math\Expression\ExpressionParser.h;..\..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression\Expression.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h" />
+    <ClInclude Include="..\..\Include\Math\BigReal.h" />
+    <ClInclude Include="..\..\Include\Math\BigRealMatrix.h" />
+    <ClInclude Include="..\..\Include\Math\Complex.h" />
+    <ClInclude Include="..\..\Include\Math\Double80.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\Expression.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionGraphics.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\Number.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\OpCodes.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\PrimeFactors.h" />
+    <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
+    <ClInclude Include="..\..\Include\Math\fft.h" />
+    <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
+    <ClInclude Include="..\..\Include\Math\MathException.h" />
+    <ClInclude Include="..\..\Include\Math\MathFunctions.h" />
+    <ClInclude Include="..\..\Include\Math\MathLib.h" />
+    <ClInclude Include="..\..\Include\Math\Matrix.h" />
+    <ClInclude Include="..\..\Include\Math\MRisprime.h" />
+    <ClInclude Include="..\..\Include\Math\Point2D.h" />
+    <ClInclude Include="..\..\Include\Math\Point2DTransformations.h" />
+    <ClInclude Include="..\..\Include\Math\Point3D.h" />
+    <ClInclude Include="..\..\Include\Math\Polygon2D.h" />
+    <ClInclude Include="..\..\Include\Math\Polynomial.h" />
+    <ClInclude Include="..\..\Include\Math\PragmaLib.h" />
+    <ClInclude Include="..\..\Include\Math\Rational.h" />
+    <ClInclude Include="..\..\Include\Math\Real.h" />
+    <ClInclude Include="..\..\Include\Math\Rectangle2D.h" />
+    <ClInclude Include="..\..\Include\Math\SigmoidIterator.h" />
+    <ClInclude Include="..\..\Include\Math\Simplex.h" />
+    <ClInclude Include="..\..\Include\Math\Statistic.h" />
+    <ClInclude Include="..\..\Include\Math\Transformation.h" />
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

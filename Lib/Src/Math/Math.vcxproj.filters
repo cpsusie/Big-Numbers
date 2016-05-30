@@ -250,110 +250,21 @@
     <ClCompile Include="Expression\TestMachineCode.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\Include\Math\AlgorithmHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\BigRealMatrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Complex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Double80.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\LUMatrixTemplate.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\MathException.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\MathFunctions.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\MathLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\PragmaLib.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Real.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\BigReal.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\fft.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\MRisprime.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Polynomial.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Rational.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\SigmoidIterator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Simplex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Statistic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Transformation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\Expression.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionFactor.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionGraphics.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionLex.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionNode.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionParser.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ExpressionSymbol.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\Number.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\OpCodes.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\ParserTree.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\PrimeFactors.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\Include\Math\Expression\SumElement.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
+    <ClCompile Include="Point2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2DTransformations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Point3D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Polygon2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rectangle2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -370,5 +281,124 @@
     <CustomBuild Include="Expression\Expression.lex">
       <Filter>Source Files\Expression\Expression Grammar</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionGraphics.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionNode.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionParser.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionSymbol.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\Number.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\OpCodes.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\PrimeFactors.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\SumElement.h">
+      <Filter>Header Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigReal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\BigRealMatrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Complex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Double80.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\fft.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\MathException.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\MathFunctions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\MathLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\MRisprime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Polynomial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\PragmaLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Rational.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Real.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\SigmoidIterator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Simplex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Statistic.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Transformation.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Rectangle2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Point2DTransformations.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Polygon2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
