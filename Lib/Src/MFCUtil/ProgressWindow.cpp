@@ -1,0 +1,45 @@
+#include "stdafx.h"
+#include <MyUtil.h>
+#include <Thread.h>
+#include <Date.h>
+#include <MFCUtil/WinTools.h>
+#include <MFCUtil/ProgressWindow.h>
+#include <MFCUtil/resource.h>
+#include <MFCUtil/ProgressDlg.h>
+
+ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, unsigned int delay, unsigned int updateRate) {
+  Thread jobExecutor(jobToDo);
+
+  jobToDo.m_jobStartTime = Timestamp();
+  jobExecutor.start();
+
+  while(delay) {
+    const int sleepTime = min(delay, 150);
+    Sleep(sleepTime);
+    if(!jobExecutor.stillActive()) {
+      return;
+    }
+    delay -= sleepTime;
+  }
+
+  CProgressDlg dlg(parent, jobExecutor, jobToDo, updateRate);
+  int ret;
+  switch(ret = dlg.DoModal()) {
+  case IDOK:
+  case IDCANCEL:
+    break;
+  default:
+    { const String programName = FileNameSplitter(getModuleFileName()).getFileName();
+      MessageBox(NULL
+                ,format(_T("Cannot open CProgressDlg. Add \"#include <MFCUtil/MFCUtil.rc>\" to \"%s\\res\\%s.rc2\"")
+                       ,programName.cstr()
+                       ,programName.cstr()).cstr()
+                ,_T("Error")
+                ,MB_OK | MB_ICONERROR);
+  
+      while(jobExecutor.stillActive()) {
+        Sleep(200);
+      }
+    }
+  }
+}
