@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <Math/BigReal.h>
-#include <Math.h>
 
 void plot(DigitPool *pool) {
   FILE *ff = fopen("fisk","w");

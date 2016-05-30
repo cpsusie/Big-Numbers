@@ -3,7 +3,6 @@
 #include <TreeMap.h>
 #include <TinyBitSet.h>
 #include <Timer.h>
-#include "TestUtil.h"
 #include "AllTime.h"
 
 #define LOOPXPOS        93

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <CPUInfo.h>
 #include <Console.h>
-#include <Math/MathLib.h>
 #include "FunctionTest.h"
 #include "TestBigReal.h"
 
