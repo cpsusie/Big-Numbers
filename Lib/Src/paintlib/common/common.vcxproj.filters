@@ -1,0 +1,479 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{71d3bade-9aec-45f7-8473-2d3bf6f5c961}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{22738d2b-d75f-426c-814b-81596f1276db}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Filter">
+      <UniqueIdentifier>{16e68b84-13f3-43da-90fa-75cd0292cbec}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="jmemdest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="jmemsrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="planybmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plbitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plbmpbase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plbmpdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plbmpenc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plbmpinfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pldatasink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pldatasrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plexcept.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plexif.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plfilesink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plfilesrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pliff85dec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pljpegdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pljpegenc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plmemsink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plmemsrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plobject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpcxdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpgmdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpicdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpicenc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpictdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpixelformat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpngdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpngenc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plppmdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plpsddec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plressrc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plsgidec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plsubbmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pltgadec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pltiffdec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pltiffenc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pltiffencex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="plwinbmp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tif_msrc.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilter.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltercolorize.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltercontrast.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltercrop.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterflip.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterfliprgb.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltergetalpha.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltergrayscale.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterintensity.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterlightness.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltermirror.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterquantize.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterresize.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterresizebilinear.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterresizebox.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterresizegaussian.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterresizehamming.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterrotate.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfilterthreshold.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plfiltervideoinvert.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plhsvconvert.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="Filter\plinplacefilter.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmemdest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="jmemsrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="planybmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="planydec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plbitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plbmpbase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plbmpdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plbmpenc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plbmpinfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plcountedpointer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pldatasink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pldatasrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pldebug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pldecoderfactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plexcept.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plexif.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plfilesink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plfilesrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plgifdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pliff85.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pliff85dec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pljpegdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pljpegenc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plmemsink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plmemsrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plobject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ploptable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpaintlibdefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpcx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpcxdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpgm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpgmdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpicdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpicenc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpictdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixel16.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixel24.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixel32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixel8.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixeldefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpixelformat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpngdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpngenc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plppm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plppmdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plprognot.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plpsddec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plrect.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plressrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plsdlbmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plsgidec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plstdpch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plsubbmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pltga.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pltgadec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pltiffdec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pltiffenc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pltiffencex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plurlsrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plwinbmp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="plwindefs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="qdraw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tif_msrc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\pl2passscale.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plcontribdefs.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilter.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltercolorize.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltercontrast.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltercrop.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterfill.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterfillrect.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterflip.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterfliprgb.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltergetalpha.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltergrayscale.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterintensity.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterlightness.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltermirror.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterpixel.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterquantize.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterresize.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterresizebilinear.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterresizebox.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterresizegaussian.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterresizehamming.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterrotate.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfilterthreshold.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plfiltervideoinvert.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plhsvconvert.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+    <ClInclude Include="Filter\plinplacefilter.h">
+      <Filter>Filter</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

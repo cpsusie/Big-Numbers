@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug Unicode|Win32">
+      <Configuration>Debug Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release Unicode|Win32">
+      <Configuration>Release Unicode</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{6B52C566-6C03-476D-B214-F2CAA4734E16}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\MTDebug32\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <OutDir>.\Release_Unicode\</OutDir>
+    <IntDir>.\Release_Unicode\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\..\..\MTRelease32\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <OutDir>.\Debug_Unicode\</OutDir>
+    <IntDir>.\Debug_Unicode\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\otherlib\libjpeg;..\otherlib\libtiff;..\otherlib\libpng;filter;..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug\common.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\common.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>
+      </TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>..\otherlib\libjpeg;..\otherlib\libtiff;..\otherlib\libpng;filter;..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release_Unicode\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release_Unicode\common.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release_Unicode\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release_Unicode\</ProgramDataBaseFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release_Unicode\common.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>c:\mytools\lib\MTURelease\\common.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>..\otherlib\libjpeg;..\otherlib\libtiff;..\otherlib\libpng;filter;..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\common.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\common.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>
+      </TargetMachine>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <AdditionalIncludeDirectories>..\otherlib\libjpeg;..\otherlib\libtiff;..\otherlib\libpng;filter;..\..\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug_Unicode\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug_Unicode\common.pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>.\Debug_Unicode\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug_Unicode\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug_Unicode\common.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>c:\mytools\lib\MTUDebug\common.lib</OutputFile>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="Filter\plfilter.cpp" />
+    <ClCompile Include="Filter\plfiltercolorize.cpp" />
+    <ClCompile Include="Filter\plfiltercontrast.cpp" />
+    <ClCompile Include="Filter\plfiltercrop.cpp" />
+    <ClCompile Include="Filter\plfilterflip.cpp" />
+    <ClCompile Include="Filter\plfilterfliprgb.cpp" />
+    <ClCompile Include="Filter\plfiltergetalpha.cpp" />
+    <ClCompile Include="Filter\plfiltergrayscale.cpp" />
+    <ClCompile Include="Filter\plfilterintensity.cpp" />
+    <ClCompile Include="Filter\plfilterlightness.cpp" />
+    <ClCompile Include="Filter\plfiltermirror.cpp" />
+    <ClCompile Include="Filter\plfilterquantize.cpp" />
+    <ClCompile Include="Filter\plfilterresize.cpp" />
+    <ClCompile Include="Filter\plfilterresizebilinear.cpp" />
+    <ClCompile Include="Filter\plfilterresizebox.cpp" />
+    <ClCompile Include="Filter\plfilterresizegaussian.cpp" />
+    <ClCompile Include="Filter\plfilterresizehamming.cpp" />
+    <ClCompile Include="Filter\plfilterrotate.cpp" />
+    <ClCompile Include="Filter\plfilterthreshold.cpp" />
+    <ClCompile Include="Filter\plfiltervideoinvert.cpp" />
+    <ClCompile Include="Filter\plhsvconvert.cpp" />
+    <ClCompile Include="Filter\plinplacefilter.cpp" />
+    <ClCompile Include="jmemdest.cpp" />
+    <ClCompile Include="jmemsrc.cpp" />
+    <ClCompile Include="planybmp.cpp" />
+    <ClCompile Include="plbitmap.cpp" />
+    <ClCompile Include="plbmpbase.cpp" />
+    <ClCompile Include="plbmpdec.cpp" />
+    <ClCompile Include="plbmpenc.cpp" />
+    <ClCompile Include="plbmpinfo.cpp" />
+    <ClCompile Include="pldatasink.cpp" />
+    <ClCompile Include="pldatasrc.cpp" />
+    <ClCompile Include="plexcept.cpp" />
+    <ClCompile Include="plexif.cpp" />
+    <ClCompile Include="plfilesink.cpp" />
+    <ClCompile Include="plfilesrc.cpp" />
+    <ClCompile Include="pliff85dec.cpp" />
+    <ClCompile Include="pljpegdec.cpp" />
+    <ClCompile Include="pljpegenc.cpp" />
+    <ClCompile Include="plmemsink.cpp" />
+    <ClCompile Include="plmemsrc.cpp" />
+    <ClCompile Include="plobject.cpp" />
+    <ClCompile Include="plpcxdec.cpp" />
+    <ClCompile Include="plpgmdec.cpp" />
+    <ClCompile Include="plpicdec.cpp" />
+    <ClCompile Include="plpicenc.cpp" />
+    <ClCompile Include="plpictdec.cpp" />
+    <ClCompile Include="plpixelformat.cpp" />
+    <ClCompile Include="plpngdec.cpp" />
+    <ClCompile Include="plpngenc.cpp" />
+    <ClCompile Include="plppmdec.cpp" />
+    <ClCompile Include="plpsddec.cpp" />
+    <ClCompile Include="plressrc.cpp" />
+    <ClCompile Include="plsgidec.cpp" />
+    <ClCompile Include="plsubbmp.cpp" />
+    <ClCompile Include="pltgadec.cpp" />
+    <ClCompile Include="pltiffdec.cpp" />
+    <ClCompile Include="pltiffenc.cpp" />
+    <ClCompile Include="pltiffencex.cpp" />
+    <ClCompile Include="plwinbmp.cpp" />
+    <ClCompile Include="tif_msrc.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="config.h" />
+    <ClInclude Include="Filter\pl2passscale.h" />
+    <ClInclude Include="Filter\plcontribdefs.h" />
+    <ClInclude Include="Filter\plfilter.h" />
+    <ClInclude Include="Filter\plfiltercolorize.h" />
+    <ClInclude Include="Filter\plfiltercontrast.h" />
+    <ClInclude Include="Filter\plfiltercrop.h" />
+    <ClInclude Include="Filter\plfilterfill.h" />
+    <ClInclude Include="Filter\plfilterfillrect.h" />
+    <ClInclude Include="Filter\plfilterflip.h" />
+    <ClInclude Include="Filter\plfilterfliprgb.h" />
+    <ClInclude Include="Filter\plfiltergetalpha.h" />
+    <ClInclude Include="Filter\plfiltergrayscale.h" />
+    <ClInclude Include="Filter\plfilterintensity.h" />
+    <ClInclude Include="Filter\plfilterlightness.h" />
+    <ClInclude Include="Filter\plfiltermirror.h" />
+    <ClInclude Include="Filter\plfilterpixel.h" />
+    <ClInclude Include="Filter\plfilterquantize.h" />
+    <ClInclude Include="Filter\plfilterresize.h" />
+    <ClInclude Include="Filter\plfilterresizebilinear.h" />
+    <ClInclude Include="Filter\plfilterresizebox.h" />
+    <ClInclude Include="Filter\plfilterresizegaussian.h" />
+    <ClInclude Include="Filter\plfilterresizehamming.h" />
+    <ClInclude Include="Filter\plfilterrotate.h" />
+    <ClInclude Include="Filter\plfilterthreshold.h" />
+    <ClInclude Include="Filter\plfiltervideoinvert.h" />
+    <ClInclude Include="Filter\plhsvconvert.h" />
+    <ClInclude Include="Filter\plinplacefilter.h" />
+    <ClInclude Include="jmemdest.h" />
+    <ClInclude Include="jmemsrc.h" />
+    <ClInclude Include="planybmp.h" />
+    <ClInclude Include="planydec.h" />
+    <ClInclude Include="plbitmap.h" />
+    <ClInclude Include="plbmpbase.h" />
+    <ClInclude Include="plbmpdec.h" />
+    <ClInclude Include="plbmpenc.h" />
+    <ClInclude Include="plbmpinfo.h" />
+    <ClInclude Include="plcountedpointer.h" />
+    <ClInclude Include="pldatasink.h" />
+    <ClInclude Include="pldatasrc.h" />
+    <ClInclude Include="pldebug.h" />
+    <ClInclude Include="pldecoderfactory.h" />
+    <ClInclude Include="plexcept.h" />
+    <ClInclude Include="plexif.h" />
+    <ClInclude Include="plfilesink.h" />
+    <ClInclude Include="plfilesrc.h" />
+    <ClInclude Include="plgifdec.h" />
+    <ClInclude Include="pliff85.h" />
+    <ClInclude Include="pliff85dec.h" />
+    <ClInclude Include="pljpegdec.h" />
+    <ClInclude Include="pljpegenc.h" />
+    <ClInclude Include="plmemsink.h" />
+    <ClInclude Include="plmemsrc.h" />
+    <ClInclude Include="plobject.h" />
+    <ClInclude Include="ploptable.h" />
+    <ClInclude Include="plpaintlibdefs.h" />
+    <ClInclude Include="plpcx.h" />
+    <ClInclude Include="plpcxdec.h" />
+    <ClInclude Include="plpgm.h" />
+    <ClInclude Include="plpgmdec.h" />
+    <ClInclude Include="plpicdec.h" />
+    <ClInclude Include="plpicenc.h" />
+    <ClInclude Include="plpictdec.h" />
+    <ClInclude Include="plpixel16.h" />
+    <ClInclude Include="plpixel24.h" />
+    <ClInclude Include="plpixel32.h" />
+    <ClInclude Include="plpixel8.h" />
+    <ClInclude Include="plpixeldefs.h" />
+    <ClInclude Include="plpixelformat.h" />
+    <ClInclude Include="plpngdec.h" />
+    <ClInclude Include="plpngenc.h" />
+    <ClInclude Include="plpoint.h" />
+    <ClInclude Include="plppm.h" />
+    <ClInclude Include="plppmdec.h" />
+    <ClInclude Include="plprognot.h" />
+    <ClInclude Include="plpsddec.h" />
+    <ClInclude Include="plrect.h" />
+    <ClInclude Include="plressrc.h" />
+    <ClInclude Include="plsdlbmp.h" />
+    <ClInclude Include="plsgidec.h" />
+    <ClInclude Include="plstdpch.h" />
+    <ClInclude Include="plsubbmp.h" />
+    <ClInclude Include="pltga.h" />
+    <ClInclude Include="pltgadec.h" />
+    <ClInclude Include="pltiffdec.h" />
+    <ClInclude Include="pltiffenc.h" />
+    <ClInclude Include="pltiffencex.h" />
+    <ClInclude Include="plurlsrc.h" />
+    <ClInclude Include="plwinbmp.h" />
+    <ClInclude Include="plwindefs.h" />
+    <ClInclude Include="qdraw.h" />
+    <ClInclude Include="tif_msrc.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
