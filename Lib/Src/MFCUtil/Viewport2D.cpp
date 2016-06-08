@@ -193,15 +193,3 @@ void Viewport2D::paintDragRect(const Rectangle2D &rect, SIZE size, const Rectang
   CRect lastr = forwardTransform(lastRect);
   m_dc->DrawDragRect(r,size,lastr,lastSize,brush,lastBrush);
 }
-
-CRect makePositiveRect(const CRect &r) {
-  CRect result = r;
-  if (result.Width() < 0) {
-    swap(result.left, result.right);
-  }
-  if (result.Height() < 0) {
-    swap(result.top, result.bottom);
-  }
-  return result;
-}
-

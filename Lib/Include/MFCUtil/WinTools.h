@@ -159,6 +159,8 @@ inline CSize operator/(const CSize &s1, const CSize &s2) {
 
 #pragma warning(disable : 4244)
 
+#define ORIGIN CPoint(0,0)
+
 inline CSize operator*(const CSize &sz, double factor) {
   return CSize(sz.cx*factor, sz.cy*factor);
 }
@@ -168,6 +170,16 @@ inline CSize operator/(const CSize &sz, double factor) {
 }
 
 #pragma warning(pop)
+
+inline int getArea(const CSize &sz) {
+  return sz.cx * sz.cy;
+}
+
+inline int getArea(const CRect &r) {
+  return getArea(r.Size());
+}
+
+CRect makePositiveRect(const CRect &r);
 
 bool isBorderHit(UINT hitTestCode); // hitTestCode comes from OnNcLButtonDown(UINT nHitTest, CPoint point)
 

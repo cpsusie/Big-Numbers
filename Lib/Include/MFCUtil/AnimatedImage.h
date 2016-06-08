@@ -56,7 +56,8 @@ private:
   D3DCOLOR               m_backgroundColor;
   CompactArray<GifFrame> m_frameTable;
   CompactArray<PixRect*> m_disposeTable;
-  CWnd                  *m_wnd;
+  CWnd                  *m_parent;
+  PixRectDevice          m_device;
   PixRect               *m_workPr, *m_background;
   const GifFrame        *m_lastPaintedFrame;
   CPoint                 m_savedPosition;
@@ -65,7 +66,7 @@ private:
   void parseApplicationBlock(const unsigned char *bytes, int n);
   void extractGifData(const GifFileType *gifFile);                           // gifFile actually GifFileType
   void releaseBackground();
-  void saveBackground(CWnd *wnd, const CPoint &p, const CSize *size = NULL); // if size=NULL, then m_size
+  void saveBackground(const CPoint &p, const CSize *size = NULL); // if size=NULL, then m_size
   void restoreBackground();
   bool hasSavedBackground() const;
   inline void flushWork(const CPoint &p) const {
@@ -85,17 +86,17 @@ private:
 public:
   AnimatedImage();
   virtual ~AnimatedImage();
-  void load(const String &fileName);
-  void loadFromResource(int resId, const String &typeName);
-  void load(ByteInputStream &in);
-  void createFromGifFile(const GifFileType *gifFile);
+  void load(CWnd *parent, const String &fileName);
+  void loadFromResource(CWnd *parent, int resId, const String &typeName);
+  void load(CWnd *parent, ByteInputStream &in);
+  void createFromGifFile(CWnd *parent, const GifFileType *gifFile);
   void unload();
-  void startAnimation(CWnd *wnd, const CPoint &p);
+  void startAnimation(const CPoint &p);
   void stopAnimation();
-  void paintFrames(   CWnd *wnd, const CPoint &p, unsigned int last);
+  void paintFrames(   const CPoint &p, unsigned int last);
   // do internal paint of frame 0..last on m_workPr (without delays) so we can call paintWork and show the specified frame
   void paintWork(     CDC  &dc,  const CPoint &p);
-  void paintAllFrames(CWnd *wnd, const CRect  &r);
+  void paintAllFrames(const CRect  &r);
   void hide();
   inline int getFrameCount() const {
     return m_frameTable.size();

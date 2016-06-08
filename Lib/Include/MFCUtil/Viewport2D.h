@@ -35,17 +35,6 @@ public:
   }
 };
 
-
-CRect makePositiveRect(const CRect &r);
-
-inline int getArea(const CSize &sz) {
-  return sz.cx * sz.cy;
-}
-
-inline int getArea(const CRect &r) {
-  return getArea(r.Size());
-}
-
 class Viewport2D {
 private:
   CDC                     *m_dc;

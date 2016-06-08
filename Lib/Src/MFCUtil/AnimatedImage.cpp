@@ -4,7 +4,7 @@
 #include <ByteFile.h>
 #include <ByteMemoryStream.h>
 #include "MFCUtil/AnimatedImage.h"
-#include <gif_lib.h>
+#include <..\..\GifLib\giflib-5.1.1\lib\gif_lib.h>
 
 #pragma warning(disable : 4244)
 
@@ -29,7 +29,7 @@ void throwGifErrorCode(int errorCode, const TCHAR *fileName, int line) {
 
 AnimatedImage::AnimatedImage() {
   m_size              = CSize(0,0);
-  m_wnd               = NULL;
+  m_parent            = NULL;
   m_workPr            = NULL;
   m_background        = NULL;
   m_lastPaintedFrame  = NULL;
@@ -40,16 +40,18 @@ AnimatedImage::~AnimatedImage() {
   m_animator.kill();
 }
 
-void AnimatedImage::load(const String &fileName) {
-  load(ByteInputFile(fileName));
+void AnimatedImage::load(CWnd *parent, const String &fileName) {
+  load(parent, ByteInputFile(fileName));
 }
 
-void AnimatedImage::loadFromResource(int resId, const String &typeName) {
-  load(ByteMemoryInputStream(ByteArray().loadFromResource(resId, typeName.cstr())));
+void AnimatedImage::loadFromResource(CWnd *parent, int resId, const String &typeName) {
+  load(parent, ByteMemoryInputStream(ByteArray().loadFromResource(resId, typeName.cstr())));
 }
 
-void AnimatedImage::createFromGifFile(const GifFileType *gifFile) {
+void AnimatedImage::createFromGifFile(CWnd *parent, const GifFileType *gifFile) {
   unload();
+  m_parent = parent;
+  m_device.attach(*m_parent);
   extractGifData(gifFile);
 }
 
@@ -57,7 +59,7 @@ static int readGifStreamFunction(GifFileType *gifFile, GifByteType *buffer, int 
   return ((ByteInputStream*)gifFile->UserData)->getBytes((BYTE*)buffer, n);
 }
 
-void AnimatedImage::load(ByteInputStream &in) {
+void AnimatedImage::load(CWnd *parent, ByteInputStream &in) {
   int error;
   GifFileType *gifFile = DGifOpen(&in, readGifStreamFunction, &error);
   if(gifFile == NULL) {
@@ -67,7 +69,7 @@ void AnimatedImage::load(ByteInputStream &in) {
     if(DGifSlurp(gifFile) != GIF_OK) {
       THROWGIFERROR(gifFile->Error);
     }
-    createFromGifFile(gifFile);
+    createFromGifFile(parent, gifFile);
     DGifCloseFile(gifFile, &error);
   } catch(...) {
     DGifCloseFile(gifFile, &error);
@@ -81,14 +83,14 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
   try {
     m_size.cx = gifFile->SWidth;
     m_size.cy = gifFile->SHeight;
-    m_workPr  = new PixRect(m_size);
+    m_workPr  = new PixRect(m_device, m_size);
 
     const int           imageCount   = gifFile->ImageCount;
     ColorMapObject     *gfColorMap   = gifFile->SColorMap;
     const GifColorType &colorType    = gfColorMap->Colors[gifFile->SBackGroundColor];
     const int           bitsPerPixel = gfColorMap->BitsPerPixel;
 
-    m_backgroundColor      = RGBA_MAKE(colorType.Red, colorType.Green, colorType.Blue,255);
+    m_backgroundColor      = D3DCOLOR_RGBA(colorType.Red, colorType.Green, colorType.Blue,255);
 
     for(int k = 0; k < gifFile->ExtensionBlockCount; k++) {
       const ExtensionBlock &block = gifFile->ExtensionBlocks[k];
@@ -108,7 +110,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
       GifFrame &frame = m_frameTable.last();
 
       String imageComment;
-      for(k = 0; k < image.ExtensionBlockCount; k++) {
+      for(int k = 0; k < image.ExtensionBlockCount; k++) {
         const ExtensionBlock &block = image.ExtensionBlocks[k];
         switch(block.Function) {
         case COMMENT_EXT_FUNC_CODE:
@@ -121,7 +123,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
         }
       }
       if(imageComment.length() > 0) {
-        m_comment += "\n" + imageComment;
+        m_comment += _T("\n") + imageComment;
       }
 
       frame.m_owner        = this;
@@ -143,21 +145,21 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
       }
 
       const CSize sz = frame.m_rect.Size();
-      frame.m_pr = new PixRect(sz);
+      frame.m_pr = new PixRect(m_device, sz);
 
       const ColorMapObject *colorMap = image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap : gfColorMap;
       const GifColorType   *colors   = colorMap->Colors;
-      const unsigned char *pixelp = image.RasterBits;
+      const GifPixelType   *pixelp   = image.RasterBits;
 
-      pa = frame.m_pr->getPixelAccessor();
+      pa = frame.m_pr->getPixelAccessor( );
       for(CPoint p(0,0); p.y < sz.cy; p.y++) {
         for(p.x = 0; p.x < sz.cx; p.x++) {
           const int entry = *(pixelp++);
           if((entry == transparentColor) && frame.m_useTransparency) {
-            pa->setPixel(p, RGBA_MAKE(0,0,0,0));
+            pa->setPixel(p, D3DCOLOR_RGBA(0,0,0,0));
           } else {
             const GifColorType &mapEntry = colors[entry];
-            pa->setPixel(p, RGBA_MAKE(mapEntry.Red, mapEntry.Green, mapEntry.Blue, 255));
+            pa->setPixel(p, D3DCOLOR_RGBA(mapEntry.Red, mapEntry.Green, mapEntry.Blue, 255));
           }
         }
       }
@@ -185,18 +187,15 @@ void AnimatedImage::parseApplicationBlock(const unsigned char *bytes, int n) {
 */
 }
 
-#define ORIGIN CPoint(0,0)
-
 bool AnimatedImage::hasSavedBackground() const {
-  return (m_background != NULL) && (m_wnd != NULL);
+  return (m_background != NULL) && (m_parent != NULL);
 }
 
-void AnimatedImage::saveBackground(CWnd *wnd, const CPoint &p, const CSize *size) {
+void AnimatedImage::saveBackground(const CPoint &p, const CSize *size) {
   releaseBackground();
-  m_wnd = wnd;
   const CSize sz = size ? *size : m_size;
-  m_background = new PixRect(sz);
-  CClientDC dc(wnd);
+  m_background = new PixRect(m_device, sz);
+  CClientDC dc(m_parent);
   PixRect::bitBlt(m_background, ORIGIN, sz, SRCCOPY, dc, p);
   m_savedPosition = p;
   m_workPr->rop(ORIGIN, m_size, SRCCOPY, m_background, ORIGIN);
@@ -214,12 +213,11 @@ void AnimatedImage::releaseBackground() {
   if(m_background) {
     delete m_background;
     m_background = NULL;
-    m_wnd        = NULL;
   }
 }
 
 void AnimatedImage::flushPr(const CPoint &p, PixRect *src, double scaleFactor) const {
-  flushPr(CClientDC(m_wnd), p, src, scaleFactor);
+  flushPr(CClientDC(m_parent), p, src, scaleFactor);
 }
   
 void AnimatedImage::flushPr(CDC &dc, const CPoint &p, PixRect *src, double scaleFactor) const {
@@ -292,7 +290,7 @@ void AnimatedImage::clearDisposeTable() {
   m_disposeTable.clear();
 }
 
-void AnimatedImage::paintFrames(CWnd *wnd, const CPoint &p, unsigned int last) {
+void AnimatedImage::paintFrames(const CPoint &p, unsigned int last) {
   if(!isLoaded() || isPlaying()) {
     return;
   }
@@ -303,7 +301,7 @@ void AnimatedImage::paintFrames(CWnd *wnd, const CPoint &p, unsigned int last) {
     hide();
   }
   if(!hasSavedBackground()) {
-    saveBackground(wnd, p);
+    saveBackground(p);
   }
   if(m_lastPaintedFrame != NULL) {
     m_lastPaintedFrame->dispose();
@@ -324,7 +322,7 @@ void AnimatedImage::paintWork(CDC &dc, const CPoint &p) {
   flushPr(dc, p, m_workPr, 1.0);
 }
 
-void AnimatedImage::paintAllFrames(CWnd *wnd, const CRect &r) {
+void AnimatedImage::paintAllFrames(const CRect &r) {
   if(!isLoaded()) {
     return;
   }
@@ -379,7 +377,7 @@ void AnimatedImage::paintAllFrames(CWnd *wnd, const CRect &r) {
   }
  
   CPoint p = r.TopLeft();
-  saveBackground(wnd, p, &rSize);
+  saveBackground(p, &rSize);
   for(int i = 0, lc = 0; i < n; i++) {
     const GifFrame &frame = m_frameTable[i];
     if(lc == fpl) {
@@ -395,12 +393,12 @@ void AnimatedImage::paintAllFrames(CWnd *wnd, const CRect &r) {
   }
 }
 
-void AnimatedImage::startAnimation(CWnd *wnd, const CPoint &p) {
+void AnimatedImage::startAnimation(const CPoint &p) {
   if(!isLoaded()) {
     throwException("No images loaded");
   }
   hide();
-  saveBackground(wnd, p);
+  saveBackground(p);
   m_animator.startAnimation(this, p);
 }
 

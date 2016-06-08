@@ -144,6 +144,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -191,6 +192,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AnimatedImage.cpp" />
     <ClCompile Include="BitmapBits.cpp" />
     <ClCompile Include="BitmapIO.cpp" />
     <ClCompile Include="BitmapToByteArray.cpp" />
@@ -208,6 +210,7 @@
     <ClCompile Include="FileSrc.cpp" />
     <ClCompile Include="GetMessageName.cpp" />
     <ClCompile Include="GetTabOrderArray.cpp" />
+    <ClCompile Include="GifCtrl.cpp" />
     <ClCompile Include="IconInfo.cpp" />
     <ClCompile Include="IconTools.cpp" />
     <ClCompile Include="InteractiveRunnable.cpp" />
@@ -222,6 +225,9 @@
     <ClCompile Include="NofifyIcon.cpp" />
     <ClCompile Include="OBMButton.cpp" />
     <ClCompile Include="Picture.cpp" />
+    <ClCompile Include="PixRect.cpp" />
+    <ClCompile Include="PixRectBlend.cpp" />
+    <ClCompile Include="PixRectError.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
@@ -246,6 +252,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\AbstractMouseHandler.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\AnimatedImage.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Clipboard.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColoredStatic.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColorSpace.h" />
@@ -258,6 +265,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\LayoutManager.h" />
     <ClInclude Include="..\..\Include\MFCUtil\OBMButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Picture.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />

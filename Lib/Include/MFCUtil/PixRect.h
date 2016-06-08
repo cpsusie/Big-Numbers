@@ -1,14 +1,19 @@
 #pragma once
 
-#include <ddraw.h>
-#include <d3drm.h>
+#include <d3d9.h>
 #include <vfw.h>
-#include "Array.h"
-#include "Math/Point2D.h"
-#include "Math/Rectangle2D.h"
+#include <Array.h>
+#include <Math/Point2D.h>
+#include <Math/Rectangle2D.h>
 
-#define WHITE RGB_MAKE(255, 255, 255)
-#define BLACK RGB_MAKE(0, 0, 0)
+#define WHITE D3DCOLOR_XRGB(255, 255, 255)
+#define BLACK D3DCOLOR_XRGB(0, 0, 0)
+
+typedef LPDIRECT3D9        LPDIRECT3D;
+typedef LPDIRECT3DDEVICE9  LPDIRECT3DDEVICE;
+typedef LPDIRECT3DSURFACE9 LPDIRECT3DSURFACE;
+typedef LPDIRECT3DTEXTURE9 LPDIRECT3DTEXTURE;
+typedef D3DCAPS9           D3DCAPS;
 
 class PixRect;
 class PixRectFont;
@@ -24,7 +29,7 @@ public:
   virtual bool equals(const D3DCOLOR &c1, const D3DCOLOR &c2) = 0;
 };
 
-double colorDistance(const D3DCOLOR &c1, const D3DCOLOR &c2);
+double colorDistance(D3DCOLOR c1, D3DCOLOR c2);
 
 class CurveOperator : public Point2DOperator {
 private:
@@ -70,19 +75,44 @@ public:
   };
 };
 
-class PixelAccessor {
-protected:
-  PixRect      *m_pixRect;
-  DDSURFACEDESC m_ddsd;
-public:
-  PixelAccessor(PixRect *pixRect);
-  virtual ~PixelAccessor();
-  static PixelAccessor *createPixelAccessor(PixRect *pixRect);
+#ifdef _DEBUG
 
-  virtual void setPixel(unsigned int x, unsigned int y, D3DCOLOR color) = 0;
-  virtual D3DCOLOR getPixel(unsigned int x, unsigned int y)             = 0;
-  virtual void setPixel(const CPoint &p, D3DCOLOR color)                = 0;
-  virtual D3DCOLOR getPixel(const CPoint &p)                            = 0;
+void check3DResult(TCHAR *fileName, int line, HRESULT hr);
+
+#define CHECK3DRESULT(hr) check3DResult(_T(__FILE__),__LINE__,hr)
+
+#else
+
+void check3DResult(HRESULT hr);
+
+#define CHECK3DRESULT(hr) check3DResult(hr)
+
+#endif
+
+class PixelAccessor {
+private:
+  static D3DLOCKED_RECT  lockRect(  LPDIRECT3DSURFACE surface, DWORD Flags);
+  static void            unlockRect(LPDIRECT3DSURFACE surface);
+protected:
+  PixRect         *m_pixRect;
+  D3DLOCKED_RECT   m_lockedRect;
+  D3DSURFACE_DESC  m_desc;
+#ifdef _DEBUG
+  void inline checkPoint(const TCHAR *className, const TCHAR *function, UINT x, UINT y) const {
+    if (x >= m_desc.Width || y >= m_desc.Height) {
+      throwException(_T("%s::%s(%u,%u) outside pixRect. Size=(%d,%d)"), className, function, x, y, m_desc.Width, m_desc.Height);
+    }
+  }
+#endif
+public:
+  PixelAccessor(PixRect *pixRect, DWORD flags = 0);
+  virtual ~PixelAccessor();
+  static PixelAccessor *createPixelAccessor(PixRect *pixRect, DWORD flags = 0);
+
+  virtual void     setPixel(unsigned int x, unsigned int y, D3DCOLOR color) = 0;
+  virtual D3DCOLOR getPixel(unsigned int x, unsigned int y)                 = 0;
+  virtual void     setPixel(const CPoint &p, D3DCOLOR color)                = 0;
+  virtual D3DCOLOR getPixel(const CPoint &p)                                = 0;
 
   const PixRect *getPixRect() const {
     return m_pixRect;
@@ -128,9 +158,9 @@ public:
 
 class SetAlpha : public PixRectOperator {
 private:
-  const unsigned char m_alpha;
+  const D3DCOLOR m_alphaMask;
 public:
-  SetAlpha(unsigned char alpha, PixRect *pr = NULL) : m_alpha(alpha), PixRectOperator(pr) {
+  SetAlpha(unsigned char alpha, PixRect *pr = NULL) : m_alphaMask(D3DCOLOR_ARGB(alpha,0,0,0)), PixRectOperator(pr) {
   }
   void apply(const CPoint &p);
 };
@@ -230,7 +260,7 @@ public:
   void applyToEdge(PointOperator &f, bool closingEdge = true) const;
   bool add(const CPoint &p);
 };
-
+/*
 class PixRectClipper {
 private:
   LPDIRECTDRAWCLIPPER m_clipper;
@@ -239,72 +269,103 @@ public:
   PixRectClipper(HWND hwnd);
  ~PixRectClipper();
 };
+*/
 
-class PixRect {
+class PixRectDevice {
 private:
-  static LPDIRECTDRAW  directDraw;
-  static DDPIXELFORMAT defaultPixelFormat; // same format as the screen
+  DECLARECLASSNAME;
+  static LPDIRECT3D  s_direct3d;
 
   static void initialize();
   static void uninitialize();
+  friend class InitDirectX;
 
-  friend class InitPixRect;
+  LPDIRECT3DDEVICE   m_device;
+  LPDIRECT3DSURFACE  m_renderTarget;
+  D3DFORMAT          m_defaultPixelFormat; // same format as the screen
+  float              m_appScaleX, m_appScaleY;
+  void set2DTransform(const CSize &size);
+
+public:
+  PixRectDevice();
+  ~PixRectDevice();
+  void attach(HWND hwnd, bool windowed = true, const CSize *size = NULL);
+  void detach();
+  void render(const PixRect *pr);
+  LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, D3DPOOL pool     = D3DPOOL_DEFAULT);
+  LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, bool    lockable = false); // always in D3DPOOL_DEFAULT 
+  LPDIRECT3DSURFACE createOffscreenPlainSurface(const CSize &size, D3DFORMAT format = D3DFMT_FORCE_DWORD, D3DPOOL pool     = D3DPOOL_DEFAULT);
+  inline D3DFORMAT getDefaultPixelFormat() const {
+    return m_defaultPixelFormat;
+  }
+  LPDIRECT3DDEVICE &getD3Device() {
+    return m_device;
+  }
+  static Array<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
+  D3DCAPS getDeviceCaps();
+};
+
+class PixRect {
+private:
+  DECLARECLASSNAME;
   friend class PixelAccessor;;
   friend class PixRectOperator;
   friend class PixRectClipper;
+  friend class PixRectDevice;
 
-  DDSURFACEDESC       m_ddsd;
-  LPDIRECTDRAWSURFACE m_surface;
+  PixRectDevice    &m_device;
+  D3DSURFACE_DESC   m_desc;
+  LPDIRECT3DSURFACE m_surface;
 
-  static LPDIRECTDRAWSURFACE newSurface(DDSURFACEDESC &ddsd);
-  void createSurface(int width, int height, const DDPIXELFORMAT &pixelFormat);
+  void createSurface(UINT width, UINT  height, D3DFORMAT pixelFormat, D3DPOOL pool = D3DPOOL_DEFAULT);
   void destroySurface();
 
   void drawEllipsePart(const CPoint &start, const CPoint &end, CPoint &center, D3DCOLOR color, bool invert);
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
-  void init(HBITMAP src, const DDPIXELFORMAT &pixelFormat);
+  void init(HBITMAP src, const D3DFORMAT pixelFormat);
   void checkHasAlphaChannel() const; // throw Exception if no alpha-channel
 public:
-  static void reOpenDirectDraw();
-  PixRect();                              // create a PixRect to draw directly on the screen
+  static void reOpenDirectX();
+  PixRect(PixRectDevice &device);                              // create a PixRect to draw directly on the screen
   PixRect(const PixRect &src);            // not defined
   PixRect &operator=(const PixRect &src); // do
-  PixRect(unsigned int width, unsigned int height);
-  PixRect(unsigned int width, unsigned int height, const DDPIXELFORMAT &pixelFormat);
-  PixRect(const CSize &size);
-  PixRect(const CSize &size, const DDPIXELFORMAT &pixelFormat);
-  PixRect(HBITMAP src);
-  PixRect(HBITMAP src, const DDPIXELFORMAT &pixelFormat);
+  PixRect(PixRectDevice &device, unsigned int width, unsigned int height, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
+  PixRect(PixRectDevice &device, const CSize &size, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
+  PixRect(PixRectDevice &device, HBITMAP src, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
+
   virtual ~PixRect();
   PixRect *clone(bool cloneImage=false) const;
   static void PixRect::showPixRect(PixRect *pr);
 
-  Array<DDSURFACEDESC> getDisplayModes() const;
-  static DDCAPS getDriverCaps();
-  static DDCAPS getEmulatorCaps();
-  PixelAccessor *getPixelAccessor() {
-    return PixelAccessor::createPixelAccessor(this);
+//  static DDCAPS getEmulatorCaps();
+  PixelAccessor *getPixelAccessor(DWORD flags = 0) {
+    return PixelAccessor::createPixelAccessor(this, flags);
   }
 
-  static const DDPIXELFORMAT &getDefaultPixelFormat() {
-    return defaultPixelFormat;
-  }
+  LPDIRECT3DSURFACE cloneSurface() const;
 
-  LPDIRECTDRAWSURFACE cloneSurface() const;
-
-  int getWidth()  const {
-    return m_ddsd.dwWidth;
+  inline int getWidth()  const {
+    return m_desc.Width;
   }
   
-  int getHeight() const {
-    return m_ddsd.dwHeight;
+  inline int getHeight() const {
+    return m_desc.Height;
   }
   
-  CSize getSize() const {
+  inline CSize getSize() const {
     return CSize(getWidth(), getHeight());
   }
 
   void setSize(const CSize &size); // in pixels
+
+  inline D3DFORMAT getPixelFormat() const {
+    return m_desc.Format;
+  }
+  inline D3DPOOL getPool() const {
+    return m_desc.Pool;
+  }
+
+  static D3DFORMAT getPixelFormat(const BITMAP &bm);
 
   CSize getSizeInMillimeters(HDC hdc = NULL) const;
 
@@ -344,11 +405,11 @@ public:
   void copy(VIDEOHDR &videoHeader);  
 
   inline bool contains(const CPoint &p) const {
-    return (unsigned long)p.x < m_ddsd.dwWidth && (unsigned long)p.y < m_ddsd.dwHeight;
+    return (UINT)p.x < m_desc.Width && (UINT)p.y < m_desc.Height;
   }
 
   inline bool contains(unsigned int x, unsigned int y) const {
-    return x < m_ddsd.dwWidth && y < m_ddsd.dwHeight;
+    return x < m_desc.Width && y < m_desc.Height;
   }
   bool contains(        const Point2D &p) const;
   bool containsExtended(const Point2D &p) const;
@@ -385,9 +446,6 @@ public:
   void preMultiplyAlpha();
   PixRect &apply(PixRectOperator &op    );                                                // return *this
   PixRect &apply(PixRectFilter   &filter);                                                // return *this
-
-  const DDPIXELFORMAT &getPixelFormat() const;
-  static DDPIXELFORMAT getPixelFormat(const BITMAP &bm);
 
   void setClipper(PixRectClipper *clipper);
 

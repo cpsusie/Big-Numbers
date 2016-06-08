@@ -4,7 +4,7 @@ TCHAR *getErrorText(TCHAR *text, int size, HRESULT hr) {
   TCHAR tmp[1024];
   if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM, NULL, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), tmp, ARRAYSIZE(tmp), NULL) == 0) {
 //    if(FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_FROM_HMODULE, NULL, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL), text, size, NULL) == 0) {
-    _stprintf(text,_T("Error %d"),hr);
+    _stprintf(text,_T("Error %#08X"),hr);
     return text;
   }
   _stprintf(text, _T("Error %d:%s"), hr, tmp);

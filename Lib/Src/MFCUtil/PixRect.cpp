@@ -1,41 +1,43 @@
 #include "stdafx.h"
+#include <MyUtil.h>
 #include <Math.h>
 #include <float.h>
 #include <Stack.h>
-#include <PixRect.h>
-#include <WinTools.h>
+#include <MFCUtil/WinTools.h>
+#include <MFCUtil/ColorSpace.h>
+#include <MFCUtil/PixRect.h>
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-#pragma comment(lib,"ddraw.lib")
+#pragma comment(lib,"d3d9.lib")
 
-class InitPixRect {
+class InitDirectX {
 public:
-  InitPixRect();
-  ~InitPixRect();
+  InitDirectX();
+  ~InitDirectX();
 };
 
-InitPixRect::InitPixRect() {
-  PixRect::initialize();
+InitDirectX::InitDirectX() {
+  PixRectDevice::initialize();
 }
 
-InitPixRect::~InitPixRect() {
-  PixRect::uninitialize();
+InitDirectX::~InitDirectX() {
+  PixRectDevice::uninitialize();
 }
 
-static InitPixRect initPixRect;
+static InitDirectX initDirectX;
 
+LPDIRECT3D         PixRectDevice::s_direct3d = NULL;
+DEFINECLASSNAME(PixRectDevice);
 
-LPDIRECTDRAW   PixRect::directDraw = NULL;
-DDPIXELFORMAT  PixRect::defaultPixelFormat; // same format as the screen
-
-void PixRect::initialize() { // static
+void PixRectDevice::initialize() { // static
   try {
-    CHECKRESULT(DirectDrawCreate(NULL, &directDraw, NULL));
-    CHECKRESULT(directDraw->SetCooperativeLevel(NULL, DDSCL_NORMAL));
-    PixRect pr;
-    defaultPixelFormat = pr.getPixelFormat();
+    s_direct3d = Direct3DCreate9(D3D_SDK_VERSION);
+    if (s_direct3d == NULL) {
+      throwException(_T("%s::%s. Failed to create Direct3D object"), s_className, _T(__FUNCTION__));
+    }
+//    CHECK3DRESULT(directDraw->SetCooperativeLevel(NULL, DDSCL_NORMAL));
   } catch(Exception e) {
     MessageBox(NULL, e.what(), _T("Error"), MB_OK|MB_ICONSTOP);
     abort();
@@ -45,14 +47,197 @@ void PixRect::initialize() { // static
   }
 }
 
-void PixRect::uninitialize() { // static
-  CHECKRESULT(directDraw->Release());
-  directDraw = NULL;
+void PixRectDevice::uninitialize() { // static
+  CHECK3DRESULT(s_direct3d->Release());
+  s_direct3d = NULL;
 }
 
-void PixRect::reOpenDirectDraw() { // static 
-  uninitialize();
-  initialize();
+PixRectDevice::PixRectDevice() {
+  m_device = NULL;
+}
+
+PixRectDevice::~PixRectDevice() {
+  detach();
+}
+
+void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
+  detach();
+
+  CSize sz;
+  if(!windowed) {
+    sz = getScreenSize(false);
+  } else {
+    if(size == NULL) {
+      sz = getClientRect(hwnd).Size();
+    }
+    else {
+      sz = *size;
+    }
+  }
+
+  HDC screenDC = getScreenDC();
+  m_appScaleX = (float)(GetDeviceCaps(screenDC, LOGPIXELSX) / 96.0);
+  m_appScaleY = (float)(GetDeviceCaps(screenDC, LOGPIXELSX) / 96.0);
+  DeleteDC(screenDC);
+
+  D3DPRESENT_PARAMETERS param;
+  ZeroMemory(&param, sizeof(param));
+
+  param.Windowed               = windowed ? TRUE : FALSE;
+  param.MultiSampleType        = D3DMULTISAMPLE_NONE;
+  param.SwapEffect             = D3DSWAPEFFECT_DISCARD;
+  param.EnableAutoDepthStencil = FALSE;
+  param.BackBufferFormat       = D3DFMT_X8R8G8B8;
+  param.hDeviceWindow          = hwnd;
+  param.Flags                  = D3DPRESENTFLAG_LOCKABLE_BACKBUFFER;
+  param.BackBufferCount        = 1;
+  param.BackBufferWidth        = sz.cx;
+  param.BackBufferHeight       = sz.cy;
+  param.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
+
+  CHECK3DRESULT(s_direct3d->CreateDevice(
+                         D3DADAPTER_DEFAULT
+                        ,D3DDEVTYPE_HAL
+                        ,hwnd
+                        ,D3DCREATE_FPU_PRESERVE | D3DCREATE_SOFTWARE_VERTEXPROCESSING
+                        ,&param
+                        ,&m_device));
+
+  D3DDISPLAYMODE displayMode;
+  CHECK3DRESULT(m_device->GetDisplayMode(0, &displayMode));
+  m_defaultPixelFormat = displayMode.Format;
+}
+
+void PixRectDevice::detach() {
+  if (m_device != NULL) {
+    m_device->Release();
+    m_device = NULL;
+  }
+}
+
+LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
+  LPDIRECT3DTEXTURE texture;
+
+  // Create an alpha texture
+  if (format == D3DFMT_FORCE_DWORD) {
+    format = getDefaultPixelFormat();
+  }
+  CHECK3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, D3DUSAGE_DYNAMIC, format, pool, &texture, NULL));
+  int levels = texture->GetLevelCount();
+  D3DSURFACE_DESC desc;
+  CHECK3DRESULT(texture->GetLevelDesc(0, &desc));
+  return texture;
+}
+
+LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT format, bool lockable) {
+  LPDIRECT3DSURFACE surface;
+
+  LPDIRECT3DSURFACE oldRenderTarget;
+  CHECK3DRESULT(m_device->GetRenderTarget(0, &oldRenderTarget));
+  D3DSURFACE_DESC desc;
+  CHECK3DRESULT(oldRenderTarget->GetDesc(&desc));
+  oldRenderTarget->Release();
+  if(format == D3DFMT_FORCE_DWORD) {
+    format = desc.Format;
+  }
+  CHECK3DRESULT(m_device->CreateRenderTarget(size.cx, size.cy, format, desc.MultiSampleType, desc.MultiSampleQuality, lockable, &surface, NULL));
+  return surface;
+}
+
+LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
+  if (format == D3DFMT_FORCE_DWORD) {
+    format = getDefaultPixelFormat();
+  }
+  LPDIRECT3DSURFACE surface;
+  CHECK3DRESULT(m_device->CreateOffscreenPlainSurface(size.cx, size.cy, format, pool, &surface, NULL));
+  return surface;
+}
+
+Array<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // static
+  Array<D3DDISPLAYMODE> result;
+  D3DDISPLAYMODE adapterMode;
+  CHECK3DRESULT(s_direct3d->GetAdapterDisplayMode(adapter, &adapterMode));
+  const UINT modeCount = s_direct3d->GetAdapterModeCount(adapter, adapterMode.Format);
+  for (UINT mode = 0; mode < modeCount; mode++) {
+    D3DDISPLAYMODE dp;
+    CHECK3DRESULT(s_direct3d->EnumAdapterModes(adapter, adapterMode.Format, mode, &dp));
+    result.add(dp);
+  };
+  return result;
+}
+
+D3DCAPS9 PixRectDevice::getDeviceCaps() {
+  D3DCAPS9 caps;
+  CHECK3DRESULT(m_device->GetDeviceCaps(&caps));
+  return caps;
+}
+
+/*
+DDCAPS PixRect::getEmulatorCaps() { // static
+  DDCAPS result;
+  result.dwSize = sizeof(DDCAPS);
+  CHECK3DRESULT(directDraw->GetCaps(NULL, &result));
+  return result;
+}
+*/
+
+void PixRectDevice::render(const PixRect *pr) {
+  if(!m_device) {
+    return;  // Haven't been initialized yet!
+  }
+
+  CHECK3DRESULT(m_device->BeginScene());
+
+  LPDIRECT3DSURFACE renderTarget;
+  CHECK3DRESULT(m_device->GetRenderTarget(0, &renderTarget));
+//  CHECK3DRESULT(m_device->SetRenderTarget(0, m_renderTarget));
+
+//  unsigned long clear_color = 0xffffffff;
+//  CHECK3DRESULT(m_device->Clear(0, NULL, D3DCLEAR_TARGET, clear_color, 1.0f, 0));
+
+//  CHECK3DRESULT(m_device->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE));
+//  CHECK3DRESULT(m_device->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE));
+//  CHECK3DRESULT(m_device->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1));
+//  CHECK3DRESULT(m_device->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_DIFFUSE));
+  CHECK3DRESULT(m_device->SetRenderState(D3DRS_LIGHTING, FALSE));
+
+//  const CSize winSize = getSize(m_boardSurface); //getGraphicsSize();
+//  render2d(winSize);
+
+  CHECK3DRESULT(m_device->UpdateSurface(pr->m_surface, NULL, renderTarget, NULL));
+  CHECK3DRESULT(m_device->EndScene());
+//  CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
+//  CHECK3DRESULT(m_device->SetRenderTarget(0, oldRenderTarget));
+  renderTarget->Release();
+  CHECK3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
+}
+
+void PixRectDevice::set2DTransform(const CSize &size) {
+  D3DMATRIX projection;
+  memset(&projection, 0, sizeof(D3DMATRIX));
+
+  projection._11 = 2.0f * m_appScaleX / (float)size.cx;
+  projection._41 = -m_appScaleX;
+  projection._22 = -2.0f * m_appScaleY / (float)size.cy;
+  projection._42 = m_appScaleY;
+
+  projection._33 = 1;
+  projection._43 = 0;
+
+  projection._34 = 0;
+  projection._44 = 1;
+/*
+  CHECK3DRESULT(m_device->SetTransform(D3DTS_PROJECTION, &projection));
+  const CSize sz = getSize(m_someTexture);
+  const D3DXVECTOR2 rotationCenter(37,37);
+  D3DXMATRIX matWorld;
+  CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), NULL)));
+*/
+}
+
+void PixRect::reOpenDirectX() { // static 
+//  uninitialize();
+//  initialize();
 }
 
 #define ASM_OPTIMIZED
@@ -77,17 +262,17 @@ static WORD D3DColorToShortColor(D3DCOLOR color) {
 #else
   WORD result;
   __asm {
-	mov	eax, color
+    mov	eax, color
     mov ebx, eax
     mov ecx, eax
-	shr	eax, 8
-	and	eax, 0xf800
+    shr	eax, 8
+    and	eax, 0xf800
     shr ebx, 5
     and ebx, 0x07e0
     or  eax, ebx
     shr ecx, 3
     and ecx, 0x001f
-	or  eax, ecx
+    or  eax, ecx
     mov result,ax
   }
   return result;
@@ -104,15 +289,15 @@ static D3DCOLOR shortColorToD3DColor(WORD color) {
 #else
   D3DCOLOR result;
   __asm {
-	mov	ax, color
-	and	eax, 0xffff
+    mov	ax, color
+    and	eax, 0xffff
     mov ebx, eax
     mov ecx, eax
-	and eax, 0xf800
-	shl eax, 8
-	and ebx, 0x07e0
+    and eax, 0xf800
+    shl eax, 8
+    and ebx, 0x07e0
     shl	ebx, 5
-	or  eax, ebx
+    or  eax, ebx
     and ecx, 0x001f
     shl ecx, 3
     or  eax, ecx
@@ -130,10 +315,10 @@ static BYTE D3DColorToByteColor(D3DCOLOR color) {
   return 0;
 }
 
-double colorDistance(const D3DCOLOR &c1, const D3DCOLOR &c2) { // value between [0..1]
-  int r = RGB_GETRED(  c1) - RGB_GETRED(  c2);
-  int g = RGB_GETGREEN(c1) - RGB_GETGREEN(c2);
-  int b = RGB_GETBLUE( c1) - RGB_GETBLUE( c2);
+double colorDistance(D3DCOLOR c1, D3DCOLOR c2) { // value between [0..1]
+  const int r = GetRValue(c1) - GetRValue( c2);
+  const int g = GetGValue(c1) - GetGValue(c2);
+  const int b = GetBValue(c1) - GetBValue(c2);
   return sqrt((double)r*r + g*g + b*b)/441.67295593;
 }
 
@@ -141,6 +326,8 @@ class SimpleColorComparator : public ColorComparator {
 public:
   bool equals(const D3DCOLOR &c1, const D3DCOLOR &c2);
 };
+
+#define RGBA_TORGB(d3c) ((d3c) & 0x00ffffff)
 
 bool SimpleColorComparator::equals(const D3DCOLOR &c1, const D3DCOLOR &c2) {
   return RGBA_TORGB(c1) == RGBA_TORGB(c2);
@@ -161,19 +348,27 @@ bool ApproximateColorComparator::equals(const D3DCOLOR &c1, const D3DCOLOR &c2) 
   return colorDistance(c1,c2) < m_tolerance;
 }
 
-PixelAccessor::PixelAccessor(PixRect *pixRect) : m_pixRect(pixRect) {
-  ZeroMemory(&m_ddsd, sizeof(m_ddsd));
-  m_ddsd.dwSize = sizeof(m_ddsd);
+/*static*/ D3DLOCKED_RECT PixelAccessor::lockRect(LPDIRECT3DSURFACE surface, DWORD flags) {
+  D3DLOCKED_RECT lr;
+  CHECK3DRESULT(surface->LockRect(&lr, NULL, flags));
+  return lr;
+}
 
-  CHECKRESULT(pixRect->m_surface->Lock(NULL, &m_ddsd, DDLOCK_WAIT, NULL));
+/*static*/ void PixelAccessor::unlockRect(LPDIRECT3DSURFACE surface) {
+  CHECK3DRESULT(surface->UnlockRect());
+}
+
+PixelAccessor::PixelAccessor(PixRect *pixRect, DWORD flags) : m_pixRect(pixRect) {
+  m_desc = pixRect->m_desc;
+  m_lockedRect = lockRect(m_pixRect->m_surface, flags);
 }
 
 PixelAccessor::~PixelAccessor() {
-  CHECKRESULT(m_pixRect->m_surface->Unlock(NULL));
+  unlockRect(m_pixRect->m_surface);
 }
 
 void PixelAccessor::fill(const CPoint &p, D3DCOLOR color) {
-  fill(p,color,SimpleColorComparator());
+  fill(p, color, SimpleColorComparator());
 }
 
 void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) {
@@ -181,7 +376,7 @@ void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) 
     return;
   }
   D3DCOLOR oldColor = getPixel(p);
-  if(cmp.equals(color,oldColor)) {
+  if(cmp.equals(color, oldColor)) {
     return;
   }
   const int width  = m_pixRect->getWidth();
@@ -246,6 +441,7 @@ void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) 
   }
 }
 
+#ifdef __NEVER__
 class BytePixelAccessor : public PixelAccessor {
 private:
   BYTE *m_pixels;
@@ -347,15 +543,17 @@ D3DCOLOR WordPixelAccessor::getPixel(const CPoint &p) {
 #endif
   return shortColorToD3DColor(m_pixels[m_pixelsPerLine * p.y + p.x]);
 }
+#endif
 
 class DWordPixelAccessor : public PixelAccessor {
 private:
-  DWORD *m_pixels;
+  DECLARECLASSNAME;
+  DWORD       *m_pixels;
   unsigned int m_pixelsPerLine;
 public:
-  DWordPixelAccessor(PixRect *pixRect) : PixelAccessor(pixRect) {
-    m_pixels = (DWORD*)m_ddsd.lpSurface;
-    m_pixelsPerLine = m_ddsd.lPitch / sizeof(m_pixels[0]);
+  DWordPixelAccessor(PixRect *pixRect, DWORD flags) : PixelAccessor(pixRect, flags) {
+    m_pixels        = (DWORD*)m_lockedRect.pBits;
+    m_pixelsPerLine = m_lockedRect.Pitch / sizeof(m_pixels[0]);
   }
   void     setPixel(unsigned int x, unsigned int y, D3DCOLOR color);
   D3DCOLOR getPixel(unsigned int x, unsigned int y);
@@ -363,48 +561,44 @@ public:
   D3DCOLOR getPixel(const CPoint &p);
 };
 
+DEFINECLASSNAME(DWordPixelAccessor);
+
 void DWordPixelAccessor::setPixel(unsigned int x, unsigned int y, D3DCOLOR color) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("DWordPixelAccessor::setPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(s_className, _T(__FUNCTION__), x, y);
 #endif
   m_pixels[m_pixelsPerLine * y + x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(unsigned int x, unsigned int y) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("DWordPixelAccessor::getPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(s_className, _T(__FUNCTION__), x, y);
 #endif
   return m_pixels[m_pixelsPerLine * y + x];
 }
 
 void DWordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
 #ifdef _DEBUG
-  if(((unsigned int)p.x >= m_ddsd.dwWidth) || ((unsigned int)p.y >= m_ddsd.dwHeight)) {
-    throwException(_T("DWordPixelAccessor::setPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(s_className, _T(__FUNCTION__), p.x, p.y);
 #endif
   m_pixels[m_pixelsPerLine * p.y + p.x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(const CPoint &p) {
 #ifdef _DEBUG
-  if(((unsigned int)p.x >= m_ddsd.dwWidth) || ((unsigned int)p.y >= m_ddsd.dwHeight)) {
-    throwException(_T("DWordPixelAccessor::getPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(s_className, _T(__FUNCTION__), p.x, p.y);
 #endif
   return m_pixels[m_pixelsPerLine * p.y + p.x];
 }
 
-PixelAccessor *PixelAccessor::createPixelAccessor(PixRect *pixRect) {
-  switch(pixRect->m_ddsd.ddpfPixelFormat.dwRGBBitCount) {
-  case 8 : return new BytePixelAccessor(pixRect);
-  case 16: return new WordPixelAccessor(pixRect);
-  case 32: return new DWordPixelAccessor(pixRect);
-  default: throwException(_T("Unknown pixelsize:%d. Must be 8, 16 or 32"),pixRect->m_ddsd.ddpfPixelFormat.dwRGBBitCount);
+PixelAccessor *PixelAccessor::createPixelAccessor(PixRect *pixRect, DWORD flags) {
+  switch(pixRect->getPixelFormat()) {
+    //  case 8 : return new BytePixelAccessor(pixRect);
+    //  case 16: return new WordPixelAccessor(pixRect);
+  case D3DFMT_A8R8G8B8:
+  case D3DFMT_X8R8G8B8:
+    return new DWordPixelAccessor(pixRect, flags);
+  default: throwException(_T("Unknown pixel format:%d. Must be 8, 16 or 32"),pixRect->getPixelFormat());
            return NULL;
   }
 }
@@ -450,58 +644,34 @@ CRect PixRectFilter::getRect() const {
   return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(0,0,m_pixRect->getWidth(),m_pixRect->getHeight());
 }
 
-PixRect::PixRect() {
-  // Create primary surface
-  memset(&m_ddsd, 0, sizeof(m_ddsd));
-  m_ddsd.dwSize          = sizeof(m_ddsd);
-  m_ddsd.dwFlags         = DDSD_CAPS;
-  m_ddsd.ddsCaps.dwCaps  = DDSCAPS_PRIMARYSURFACE;
+DEFINECLASSNAME(PixRect);
 
-  CHECKRESULT(directDraw->CreateSurface(&m_ddsd, &m_surface, NULL));
-  memset(&m_ddsd, 0, sizeof(m_ddsd));
-  m_ddsd.dwSize = sizeof(m_ddsd);
-  CHECKRESULT(m_surface->GetSurfaceDesc(&m_ddsd));
+PixRect::PixRect(PixRectDevice &device) : m_device(device) {
+  m_surface = NULL;
 }
 
-PixRect::PixRect(const CSize &size) {
-  createSurface(size.cx,size.cy, defaultPixelFormat);
-  fillRect(0,0,size.cx,size.cy,WHITE);
-}
-
-PixRect::PixRect(unsigned int width, unsigned int height) {
-  createSurface(width, height, defaultPixelFormat);
-  fillRect(0,0,width,height, WHITE);
-}
-
-PixRect::PixRect(unsigned int width, unsigned int height, const DDPIXELFORMAT &pixelFormat) {
+PixRect::PixRect(PixRectDevice &device, unsigned int width, unsigned int height, D3DFORMAT pixelFormat) : m_device(device) {
   createSurface(width,height, pixelFormat);
   fillRect(0,0,width,height, WHITE);
 }
 
-PixRect::PixRect(const CSize &size, const DDPIXELFORMAT &pixelFormat) {
-  createSurface(size.cx,size.cy,pixelFormat);
+PixRect::PixRect(PixRectDevice &device, const CSize &size, D3DFORMAT pixelFormat) : m_device(device) {
+  createSurface(size.cx,size.cy, pixelFormat);
   fillRect(0,0,size.cx,size.cy,WHITE);
 }
 
 PixRect *PixRect::clone(bool cloneImage) const {
-  PixRect *copy = new PixRect(getWidth(),getHeight(),getPixelFormat());
+  PixRect *copy = new PixRect(m_device, getWidth(),getHeight(),getPixelFormat());
   if(cloneImage) {
-    copy->fastCopy(CRect(0,0,getWidth(),getHeight()),this);
+    m_device.getD3Device()->UpdateSurface(m_surface, NULL, copy->m_surface, NULL);
   }
   return copy;
 }
 
-LPDIRECTDRAWSURFACE PixRect::cloneSurface() const {
-  DDSURFACEDESC ddsd = m_ddsd;;
-
-  LPDIRECTDRAWSURFACE s = newSurface(ddsd);
-  DDBLTFX ddbfx;
-  ZeroMemory(&ddbfx, sizeof(DDBLTFX));
-  ddbfx.dwSize = sizeof(DDBLTFX);
-  ddbfx.dwROP  = SRCCOPY;
-  CRect rect(0,0,getWidth(),getHeight());
-  CHECKRESULT(s->Blt(&(CRect&)rect, m_surface, NULL, DDBLT_ROP | DDBLT_WAIT, &ddbfx));
-  return s;
+LPDIRECT3DSURFACE PixRect::cloneSurface() const {
+  LPDIRECT3DSURFACE result = m_device.createOffscreenPlainSurface(getSize(), getPixelFormat(), getPool());
+  CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(m_surface, NULL, result, NULL));
+  return result;
 }
 
 void PixRect::showPixRect(PixRect *pr) { // static
@@ -514,36 +684,7 @@ void PixRect::showPixRect(PixRect *pr) { // static
 void PixRect::checkHasAlphaChannel() const { // throw Exception if no alpha-channel
 }
 
-DDCAPS PixRect::getDriverCaps() {   // static
-  DDCAPS result;
-  result.dwSize = sizeof(DDCAPS);
-  CHECKRESULT(directDraw->GetCaps(&result, NULL));
-  return result;
-}
-
-DDCAPS PixRect::getEmulatorCaps() { // static
-  DDCAPS result;
-  result.dwSize = sizeof(DDCAPS);
-  CHECKRESULT(directDraw->GetCaps(NULL, &result));
-  return result;
-}
-
-
-static HRESULT WINAPI displayModesCallBack(LPDDSURFACEDESC desc, void *context) {
-  Array<DDSURFACEDESC> *a = (Array<DDSURFACEDESC>*)context;
-  a->add(*desc);
-  return DDENUMRET_OK;
-}
-
-Array<DDSURFACEDESC> PixRect::getDisplayModes() const {
-  Array<DDSURFACEDESC> result;
-  CHECKRESULT(directDraw->EnumDisplayModes(0, &((PixRect*)this)->m_ddsd, &result, displayModesCallBack));
-  return result;
-}
-
 void PixRect::setSize(const CSize &size) {
-//  if(m_ddsd.ddsCaps.dwCaps  = DDSCAPS_OFFSCREENPLAIN;
-
   const CSize oldSize = getSize();
   CSize areaToCopy;
   if(size == oldSize) {
@@ -551,7 +692,7 @@ void PixRect::setSize(const CSize &size) {
   }
   areaToCopy.cx = min(oldSize.cx, size.cx);
   areaToCopy.cy = min(oldSize.cy, size.cy);
-  PixRect copy(areaToCopy, getPixelFormat());
+  PixRect copy(m_device, areaToCopy, getPixelFormat());
   copy.rop(0, 0, areaToCopy.cx, areaToCopy.cy, SRCCOPY, this, 0,0);
   destroySurface();
   createSurface(size.cx, size.cy, copy.getPixelFormat());
@@ -564,23 +705,17 @@ CSize PixRect::getSizeInMillimeters(HDC hdc) const {
     return pixelsToMillimeters(hdc,getSize());
   } else {
     HDC screenDC = getScreenDC();
-    CSize result = pixelsToMillimeters(screenDC,getSize());
+    const CSize result = pixelsToMillimeters(screenDC,getSize());
     DeleteDC(screenDC);
     return result;
   }
 }
 
-PixRect::PixRect(HBITMAP src) {
-  BITMAP bm;
-  GetObject(src,sizeof(bm), &bm);
-  init(src, getPixelFormat(bm));
-}
-
-PixRect::PixRect(HBITMAP src, const DDPIXELFORMAT &pixelFormat) {
+PixRect::PixRect(PixRectDevice &device, HBITMAP src, D3DFORMAT pixelFormat) : m_device(device) {
   init(src, pixelFormat);
 }
 
-void PixRect::init(HBITMAP src, const DDPIXELFORMAT &pixelFormat) {
+void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat) {
   String errMsg;
   BITMAP bm;
   GetObject(src,sizeof(bm),&bm);
@@ -599,7 +734,7 @@ void PixRect::init(HBITMAP src, const DDPIXELFORMAT &pixelFormat) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("PixRect::init failed:%s"), errMsg.cstr());
+    throwException(_T("%s::init failed:%s"), s_className, errMsg.cstr());
   }
 }
 
@@ -607,39 +742,26 @@ PixRect::~PixRect() {
   destroySurface();
 }
 
-void PixRect::createSurface(int width, int height, const DDPIXELFORMAT &pixelFormat) {
-  memset(&m_ddsd, 0, sizeof(m_ddsd));
-  m_ddsd.dwSize          = sizeof(m_ddsd);
-  m_ddsd.dwFlags         = DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH | DDSD_PIXELFORMAT;
-  m_ddsd.ddsCaps.dwCaps  = DDSCAPS_OFFSCREENPLAIN;
-  m_ddsd.dwWidth         = width;
-  m_ddsd.dwHeight        = height;
-  m_ddsd.ddpfPixelFormat = pixelFormat;
-
-  m_surface = newSurface(m_ddsd);
-}
-
-LPDIRECTDRAWSURFACE PixRect::newSurface(DDSURFACEDESC &ddsd) { // static
-  LPDIRECTDRAWSURFACE surface;
-  CHECKRESULT(directDraw->CreateSurface(&ddsd, &surface, NULL));
-  return surface;
+void PixRect::createSurface(UINT width, UINT height, D3DFORMAT format, D3DPOOL pool) {
+  m_surface = m_device.createOffscreenPlainSurface(CSize(width,height), format, pool);
+  CHECK3DRESULT(m_surface->GetDesc(&m_desc));
 }
 
 void PixRect::destroySurface() {
-  CHECKRESULT(m_surface->Release());
+  CHECK3DRESULT(m_surface->Release());
 }
 
 PixRect &PixRect::operator=(HBITMAP src) {
   String errMsg;
   BITMAP bm;
   GetObject(src,sizeof(bm),&bm);
-  const DDPIXELFORMAT pixelFormat = getPixelFormat();
+  const D3DFORMAT pixelFormat = getPixelFormat();
 
   destroySurface();
   createSurface(bm.bmWidth,bm.bmHeight, pixelFormat);
 
   HDC prDC = getDC();
-  HDC bmDC = CreateCompatibleDC(prDC);;
+  HDC bmDC = CreateCompatibleDC(prDC);
   HGDIOBJ gdi1 = SelectObject(bmDC,src);
   BOOL ok = BitBlt(prDC,0,0,getWidth(),getHeight(),bmDC,0,0,SRCCOPY);
   if(!ok) {
@@ -649,39 +771,24 @@ PixRect &PixRect::operator=(HBITMAP src) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("PixRect::operator=(HBITMAP) failed:%s"), errMsg.cstr());
+    throwException(_T("%s::operator=(HBITMAP) failed:%s"), s_className, errMsg.cstr());
   }
-
   return *this;
 }
 
-const DDPIXELFORMAT &PixRect::getPixelFormat() const {
-  return m_ddsd.ddpfPixelFormat;
-}
-
-DDPIXELFORMAT PixRect::getPixelFormat(const BITMAP &bm) { // static
-  DDPIXELFORMAT pf;
-  pf.dwSize            = sizeof(DDPIXELFORMAT);
-  pf.dwFlags           = 0x40; // DDPF_FOURCC;
-  pf.dwFourCC          = bm.bmType;
-  pf.dwRGBBitCount     = bm.bmBitsPixel;
+D3DFORMAT PixRect::getPixelFormat(const BITMAP &bm) { // static
   switch(bm.bmBitsPixel) {
   case 32:
-    pf.dwRBitMask        = 0x00ff0000;
-    pf.dwGBitMask        = 0x0000ff00;
-    pf.dwBBitMask        = 0x000000ff;
-    pf.dwRGBAlphaBitMask = 0;
-    break;
+    return D3DFMT_X8B8G8R8;
   default:
-    throwException(_T("PixRect::getPixelFormat():BITMAP.bmBitsPixel=%d. Must be 32"), bm.bmBitsPixel);
+    throwException(_T("%s::getPixelFormat(BITMAP):BITMAP.bmBitsPixel=%d. Must be 32"), s_className, bm.bmBitsPixel);
+    return D3DFMT_X8B8G8R8;
   }
-  return pf;
 }
 
 PixRect::operator HBITMAP() const {
   String errMsg;
-  DDPIXELFORMAT pf     = getPixelFormat();
-  HBITMAP       result = CreateBitmap(getWidth(), getHeight(), 1, pf.dwRGBBitCount, NULL);
+  HBITMAP result = CreateBitmap( getWidth(), getHeight(), 1, 32, NULL);
 
   HDC     prDC = getDC();
   HDC     bmDC = CreateCompatibleDC(prDC);
@@ -693,40 +800,27 @@ PixRect::operator HBITMAP() const {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("PixRect::operator HBITMAP failed:%s"), errMsg.cstr());
+    throwException(_T("%s::operator HBITMAP failed:%s"), s_className, errMsg.cstr());
   }
 
   return result;
 }
 
-static bool operator==(const DDPIXELFORMAT &pf1, const DDPIXELFORMAT &pf2) {
-  return pf1.dwRGBBitCount == pf2.dwRGBBitCount
-      && pf1.dwRBitMask    == pf2.dwRBitMask
-      && pf1.dwGBitMask    == pf2.dwGBitMask
-      && pf1.dwBBitMask    == pf2.dwBBitMask
-      && pf1.dwRGBZBitMask == pf2.dwRGBZBitMask;
-}
-
-static bool operator!=(const DDPIXELFORMAT &pf1, const DDPIXELFORMAT &pf2) {
-  return !(pf1 == pf2);
-}
-
 void PixRect::fromBitmap(CBitmap &src) {
   String errMsg;
-  BITMAP bm;
-  src.GetObject(sizeof(bm),&bm);
-  DDPIXELFORMAT bmpf = getPixelFormat(bm);
-  DDPIXELFORMAT ppf  = getPixelFormat();
+  const CSize bmSize = ::getBitmapSize(src);
+  const CSize prSize = getSize();
 
-  if(bm.bmWidth != getWidth() || bm.bmHeight != getHeight() || bmpf != ppf) {
+  if(bmSize != prSize) {
+    const D3DFORMAT pixelFormat = getPixelFormat();
     destroySurface();
-    createSurface(bm.bmWidth,bm.bmHeight,bmpf);
+    createSurface( bmSize.cx, bmSize.cy, pixelFormat);
   }
 
   HDC     prDC = getDC();
   HDC     bmDC = CreateCompatibleDC(prDC);
   HGDIOBJ gdi1 = SelectObject(bmDC,(HBITMAP)src);
-  BOOL    ok   = BitBlt(prDC,0,0,bm.bmWidth,bm.bmHeight,bmDC,0,0,SRCCOPY);
+  BOOL    ok   = BitBlt(prDC,0,0,bmSize.cx,bmSize.cy,bmDC,0,0,SRCCOPY);
   if(!ok) {
     errMsg = getLastErrorText();
   }
@@ -734,22 +828,21 @@ void PixRect::fromBitmap(CBitmap &src) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("PixRect::fromBitmap failed:%s"), errMsg.cstr());
+    throwException(_T("%s::fromBitmap failed:%s"), s_className, errMsg.cstr());
   }
 }
 
 void PixRect::toBitmap(CBitmap &dst) const {
   String errMsg;
-  DDPIXELFORMAT ppf  = getPixelFormat();
   if(dst.m_hObject == NULL) {
-    dst.CreateBitmap(getWidth(),getHeight(),1,ppf.dwRGBBitCount,NULL);
+    dst.CreateBitmap(getWidth(),getHeight(),1,32,NULL);
   } else {
-    BITMAP bm;
-    dst.GetObject(sizeof(bm),&bm);
-    DDPIXELFORMAT bmpf = getPixelFormat(bm);
-    if(bm.bmWidth != getWidth() || bm.bmHeight != getHeight() || bmpf != ppf) {
+    const CSize bmSize = getBitmapSize(dst);
+    const CSize prSize = getSize();
+
+    if(bmSize != prSize) {
       dst.DeleteObject();
-      dst.CreateBitmap(getWidth(),getHeight(),1,ppf.dwRGBBitCount,NULL);
+      dst.CreateBitmap(prSize.cx, prSize.cy, 1, 32, NULL);
     }
   }
   HDC     prDC = getDC();
@@ -764,25 +857,25 @@ void PixRect::toBitmap(CBitmap &dst) const {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("PixRect::toBitmap failed:%s"), errMsg.cstr());
+    throwException(_T("%s::toBitmap failed:%s"), s_className, errMsg.cstr());
   }
 }
 
 bool PixRect::contains(const Point2D &p) const {
-  return p.x >= 0 && p.x < m_ddsd.dwWidth && p.y >= 0 && p.y < m_ddsd.dwHeight;
+  return p.x >= 0 && p.x < m_desc.Width && p.y >= 0 && p.y < m_desc.Height;
 }
 
 bool PixRect::containsExtended(const Point2D &p) const {
-  return p.x > -1 && p.x < m_ddsd.dwWidth && p.y > -1 && p.y < m_ddsd.dwHeight;
+  return p.x > -1 && p.x < m_desc.Width && p.y > -1 && p.y < m_desc.Height;
 }
 
-bool operator==(const DDSURFACEDESC &d1, const DDSURFACEDESC &d2) {
-  return d1.dwWidth         == d2.dwWidth
-      && d1.dwHeight        == d2.dwHeight
-      && d1.ddpfPixelFormat == d2.ddpfPixelFormat;
+bool operator==(const D3DSURFACE_DESC &d1, const D3DSURFACE_DESC &d2) {
+  return d1.Width  == d2.Width
+      && d1.Height == d2.Height
+      && d1.Format == d2.Format;
 }
 
-bool operator!=(const DDSURFACEDESC &d1, const DDSURFACEDESC &d2) {
+bool operator!=(const D3DSURFACE_DESC &d1, const D3DSURFACE_DESC &d2) {
   return !(d1 == d2);
 }
 
@@ -790,7 +883,7 @@ bool operator==(const PixRect &p1, const PixRect &p2) {
   if(&p1 == &p2) {
     return true;
   }
-  if(p1.m_ddsd != p2.m_ddsd) {
+  if(p1.m_desc != p2.m_desc) {
     return false;
   }
   PixelAccessor *pa1 = PixelAccessor::createPixelAccessor(&(PixRect&)p1);
@@ -872,15 +965,8 @@ void PixRect::rop(int x, int y, int w, int h, unsigned long op, const PixRect *s
 }
 
 void PixRect::rop(const CRect &dr, unsigned long op, const PixRect *src, const CRect &sr) {
-  DDBLTFX bltFunc;
-  memset(&bltFunc, 0, sizeof(DDBLTFX));
-  bltFunc.dwSize = sizeof(DDBLTFX);
-//  bltFunc.dwDDROP = 4;
-  bltFunc.dwROP  = SRCCOPY;
-  CRect dstRect  = dr;
-  CRect srcRect  = sr;
-
-  CHECKRESULT(m_surface->Blt(&dstRect, src->m_surface, &srcRect, DDBLT_ROP | DDBLT_WAIT, &bltFunc));
+  AfxMessageBox(_T("PixRect::rop no implemented yet"));
+//  CHECK3DRESULT(m_surface->Blt(&dstRect, src->m_surface, &srcRect, DDBLT_ROP | DDBLT_WAIT, &bltFunc));
 }
 
 void PixRect::bitBlt(HDC dst, const CPoint &p, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp) { // static
@@ -903,7 +989,7 @@ void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, unsigned long op, cons
     src->releaseDC(srcDC);
   }
   if(!ok) {
-    throwException(_T("PixRect::bitBlt failed:%s"), errorMsg.cstr());
+    throwException(_T("%s::bitBlt failed:%s"), s_className, errorMsg.cstr());
   }
 }
 
@@ -918,7 +1004,7 @@ void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, unsigned long op,
   }
   dst->releaseDC(dstDC);
   if(!ok) {
-    throwException(_T("PixRect::bitBlt failed:%s"), errorMsg.cstr());
+    throwException(_T("%s::bitBlt failed:%s"), s_className, errorMsg.cstr());
   }
 }
 
@@ -934,7 +1020,7 @@ void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, unsigned long op, 
     src->releaseDC(srcDC);
   }
   if(!ok) {
-    throwException(_T("PixRect::stretchBlt failed:%s"), errorMsg.cstr());
+    throwException(_T("%s::stretchBlt failed:%s"), s_className, errorMsg.cstr());
   }
 }
 
@@ -948,7 +1034,7 @@ void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, unsigned long
   }
   dst->releaseDC(dstDC);
   if(!ok) {
-    throwException(_T("PixRect::stretchBlt failed:%s"), errorMsg.cstr());
+    throwException(_T("%s::stretchBlt failed:%s"), s_className, errorMsg.cstr());
   }
 }
 
@@ -1020,7 +1106,7 @@ void PixRect::mask(int x, int y, int w, int h, unsigned long op, const PixRect *
     throwException(_T("PixRect::mask failed:%s"), errorMsg.cstr());
   }
 }
-
+/*
 void PixRect::fastCopy(const CRect &rect, const PixRect *src) {
   DDBLTFX ddbfx;
   ZeroMemory(&ddbfx, sizeof(DDBLTFX));
@@ -1028,32 +1114,33 @@ void PixRect::fastCopy(const CRect &rect, const PixRect *src) {
   ddbfx.dwROP  = SRCCOPY;
 
   if(getArea(rect) != 0) {
-    CHECKRESULT(m_surface->Blt(&(CRect&)rect, src->m_surface, NULL, DDBLT_ROP | DDBLT_WAIT, &ddbfx));
+    CHECK3DRESULT(m_surface->Blt(&(CRect&)rect, src->m_surface, NULL, DDBLT_ROP | DDBLT_WAIT, &ddbfx));
   }
 }
 
 PixRectClipper::PixRectClipper(HWND hwnd) {
-  CHECKRESULT(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
-  CHECKRESULT(m_clipper->SetHWnd(0, hwnd));
+  CHECK3DRESULT(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
+  CHECK3DRESULT(m_clipper->SetHWnd(0, hwnd));
 }
 
 PixRectClipper::~PixRectClipper() {
-  CHECKRESULT(m_clipper->Release());
+  CHECK3DRESULT(m_clipper->Release());
 }
 
 void PixRect::setClipper(PixRectClipper *clipper) {
   if(clipper != NULL) {
-    CHECKRESULT(m_surface->SetClipper(clipper->m_clipper));
+    CHECK3DRESULT(m_surface->SetClipper(clipper->m_clipper));
   } else {
-    CHECKRESULT(m_surface->SetClipper(NULL));
+    CHECK3DRESULT(m_surface->SetClipper(NULL));
   }
 }
 
 void PixRect::copy(VIDEOHDR &videoHeader) {
-  CHECKRESULT(m_surface->Lock(NULL, &m_ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, NULL));
+  CHECK3DRESULT(m_surface->Lock(NULL, &m_ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, NULL));
   memcpy(m_ddsd.lpSurface, videoHeader.lpData, videoHeader.dwBytesUsed); 
-  CHECKRESULT(m_surface->Unlock(NULL));
+  CHECK3DRESULT(m_surface->Unlock(NULL));
 }
+*/
 
 void PixRect::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) {
   PixelAccessor *pa = getPixelAccessor();
@@ -1081,10 +1168,12 @@ void PixRect::fillTransparent(const CPoint &p, unsigned char alpha) { // alpha =
   PixelAccessor *cpa = copy->getPixelAccessor();
 
   CPoint sp;
+  const D3DCOLOR alphaMask = D3DCOLOR_ARGB(alpha, 0, 0, 0);
   for(sp.x = 0; sp.x < width; sp.x++) {
     for(sp.y = 0; sp.y < height; sp.y++) {
       if(cpa->getPixel(p)) {
-        pa->setPixel(sp,RGBA_SETALPHA(pa->getPixel(sp),alpha));
+        D3DCOLOR c = pa->getPixel(sp) & 0x00ffffff;
+        pa->setPixel(sp, c | alphaMask);
       }
     }
   }
@@ -1160,17 +1249,14 @@ void PixRect::fillRect(const CRect &rect, D3DCOLOR color, bool invert) {
   if(rect.Width() == 0 || rect.Height() == 0) {
     return;
   }
-  DDBLTFX ddbfx;
-  ddbfx.dwSize = sizeof(DDBLTFX);
-  ddbfx.dwFillColor = color;
-
   CRect dstRect = makePositiveRect(rect);
-  dstRect.right  = min(dstRect.right ,(long)m_ddsd.dwWidth); 
-  dstRect.bottom = min(dstRect.bottom,(long)m_ddsd.dwHeight);
-  if(dstRect.Width() <= 0 ||dstRect.Height() <= 0) {
-    return;
+  HDC hdc = getDC();
+  if (invert) {
+    BitBlt(hdc, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), NULL, 0, 0, DSTINVERT);
   }
-  CHECKRESULT(m_surface->Blt(&dstRect, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbfx));
+  else {
+    FillRect(hdc, &dstRect, CreateSolidBrush(D3DCOLOR2COLORREF(color)));
+  }
 }
 
 void PixRect::fillRect(const CPoint &p0, const CSize &size, D3DCOLOR color, bool invert) {
@@ -1358,9 +1444,8 @@ void SetColor::apply(const CPoint &p) {
 
 void SetAlpha::apply(const CPoint &p) {
   if(m_pixRect->contains(p)) {
-    const D3DCOLOR color  = RGBA_TORGB(m_pixelAccessor->getPixel(p));
-    const D3DCOLOR aColor = RGBA_SETALPHA(color, m_alpha);
-    m_pixelAccessor->setPixel(p, aColor);
+    const D3DCOLOR color  = RGBA_TORGB(m_pixelAccessor->getPixel(p)) | m_alphaMask;
+    m_pixelAccessor->setPixel(p, color);
   }
 }
 
@@ -1415,7 +1500,7 @@ void PolygonFiller::checkAndFill(const CPoint &p) {
       m_pixelAccessor->fill(p,WHITE);
       break;
     case -1:
-      m_pixelAccessor->fill(p,RGB_MAKE(255,0,0));
+      m_pixelAccessor->fill(p,D3DCOLOR_XRGB(255,0,0));
       m_pointsOutside.add(p);
       break;
     case 0:
@@ -1440,8 +1525,8 @@ void PixRect::fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert)
   CRect rect = polygon.getBoundsRect();
   MyPolygon poly = polygon;
   poly.move(-rect.TopLeft());
-  PixRect *psrc  = new PixRect(rect.Width(),rect.Height(),getPixelFormat());
-  PixRect *pmask = new PixRect(rect.Width(),rect.Height(),getPixelFormat());
+  PixRect *psrc  = new PixRect(m_device, rect.Size(), getPixelFormat());
+  PixRect *pmask = new PixRect(m_device, rect.Size(), getPixelFormat());
   psrc->fillRect(0,0,rect.Width(),rect.Height(),color);
   pmask->fillRect(0,0,rect.Width(),rect.Height(),0);   // set mask to black
   pmask->polygon(poly,WHITE);                          // draw white frame around polygon on mask
@@ -1464,8 +1549,8 @@ void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
     return;
   }
   r -= rect.TopLeft();
-  PixRect *psrc  = new PixRect(r.Width(),r.Height(),getPixelFormat());
-  PixRect *pmask = new PixRect(r.Width(),r.Height(),getPixelFormat());
+  PixRect *psrc  = new PixRect(m_device, r.Size(), getPixelFormat());
+  PixRect *pmask = new PixRect(m_device, r.Size(), getPixelFormat());
   psrc->fillRect(0,0,r.Width(),r.Height(),color);
   pmask->fillRect(0,0,r.Width(),r.Height(),BLACK);  // set mask to black
   pmask->ellipse(r,WHITE);                          // draw white ellipse on mask
@@ -1511,7 +1596,7 @@ PixRectTextMaker::PixRectTextMaker(PixRect *pixRect, const Point2D &textPos, D3D
 }
 
 void PixRectTextMaker::line(const Point2D &from, const Point2D &to) {
-  m_pixRect->line(m_glyphPos%from,m_glyphPos%to,m_color,m_invert);
+//  m_pixRect->line(m_glyphPos%from,m_glyphPos%to,m_color,m_invert);
 }
 
 void PixRectTextMaker::beginGlyph(const Point2D &offset) {

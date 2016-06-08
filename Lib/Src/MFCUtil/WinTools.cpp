@@ -322,3 +322,15 @@ CSize pixelsToMillimeters(HDC hdc, const CSize &size) { // convert size in pixel
 
   return CSize((size.cx * 25.4) / xPixPerInch, (size.cy * 25.4) / yPixPerInch);
 }
+
+CRect makePositiveRect(const CRect &r) {
+  CRect result = r;
+  if (result.Width() < 0) {
+    swap(result.left, result.right);
+  }
+  if (result.Height() < 0) {
+    swap(result.top, result.bottom);
+  }
+  return result;
+}
+
