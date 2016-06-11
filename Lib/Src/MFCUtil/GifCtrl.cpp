@@ -56,7 +56,7 @@ void CGifCtrl::OnPaint() {
     if(m_paintedIndex == -1) {
       m_image.paintAllFrames(getClientRect(this));
     } else {
-      m_image.paintWork(CClientDC(this), CPoint(0,0));
+      m_image.paintWork(CClientDC(this), ORIGIN);
     }
   }
 }
@@ -118,7 +118,7 @@ void CGifCtrl::play(bool force) {
   if(isLoaded() && !isPlaying()) {
     if(force || IsWindowVisible()) {
       hide();
-      m_image.startAnimation(CPoint(0,0));
+      m_image.startAnimation(ORIGIN);
     } else {
       m_suspended = true;
     }
@@ -152,8 +152,8 @@ void CGifCtrl::paintFrame(unsigned int index) {
     m_isPainted    = true;
     m_suspended    = false;
     m_paintedIndex = index;
-    m_image.paintFrames(CPoint(0,0), index);
-    m_image.paintWork(CClientDC(this), CPoint(0,0));
+    m_image.paintFrames(ORIGIN, index);
+    m_image.paintWork(CClientDC(this), ORIGIN);
   }
 }
 

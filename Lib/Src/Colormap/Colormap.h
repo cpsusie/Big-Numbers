@@ -1,15 +1,11 @@
 #pragma once
 
-// Colormap.h : main header file for Colormap.DLL
-
 #if !defined( __AFXCTL_H__ )
 #error "include 'afxctl.h' before including this file"
 #endif
 
 #include "resource.h"       // main symbols
 
-
-// CColormapApp : See Colormap.cpp for implementation.
 
 class CColormapApp : public COleControlModule
 {

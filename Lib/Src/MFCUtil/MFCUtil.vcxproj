@@ -225,6 +225,7 @@
     <ClCompile Include="NofifyIcon.cpp" />
     <ClCompile Include="OBMButton.cpp" />
     <ClCompile Include="Picture.cpp" />
+    <ClCompile Include="PixelAccessor.cpp" />
     <ClCompile Include="PixRect.cpp" />
     <ClCompile Include="PixRectBlend.cpp" />
     <ClCompile Include="PixRectError.cpp" />

@@ -62,15 +62,30 @@ D3DCOLOR getGrayColor(     D3DCOLOR  c);
 //#define D3DCOLOR_ARGB(a,r,g,b) \
 //    ((D3DCOLOR)((((a)&0xff)<<24)|(((r)&0xff)<<16)|(((g)&0xff)<<8)|((b)&0xff)))
 
-#define RGBA_GETALPHA(d3c)      ( (d3c) >> 24)
-#define RGBA_GETRED(  d3c)      (((d3c) >> 16) & 0xff)
-#define RGBA_GETGREEN(d3c)      (((d3c) >>  8) & 0xff)
-#define RGBA_GETBLUE( d3c)      ( (d3c)        & 0xff)
+#define ARGB_GETALPHA(d3c)      ( (d3c) >> 24)
+#define ARGB_GETRED(  d3c)      (((d3c) >> 16) & 0xff)
+#define ARGB_GETGREEN(d3c)      (((d3c) >>  8) & 0xff)
+#define ARGB_GETBLUE( d3c)      ( (d3c)        & 0xff)
 
-#define GETLUMINANCE(d3c) (0.2126*RGBA_GETRED(d3c) + 0.7152*RGBA_GETGREEN(d3c) + 0.0722*RGBA_GETBLUE(d3c))
+#define ARGB_TORGB(d3c) ((d3c) & 0x00ffffff)
 
-#define D3DCOLOR2COLORREF(d3c) RGB(RGBA_GETRED(d3c), RGBA_GETGREEN(d3c), RGBA_GETBLUE(d3c))
+#define GETLUMINANCE(d3c) (0.2126*ARGB_GETRED(d3c) + 0.7152*ARGB_GETGREEN(d3c) + 0.0722*ARGB_GETBLUE(d3c))
+
+#define D3DCOLOR2COLORREF(d3c) RGB(ARGB_GETRED(d3c), ARGB_GETGREEN(d3c), ARGB_GETBLUE(d3c))
 #define COLORREF2D3DCOLOR(cr) D3DCOLOR_XRGB(GetRValue(cr), GetGValue(cr), GetBValue(cr))
+
+class ColorComparator {
+public:
+  virtual bool equals(const D3DCOLOR &c1, const D3DCOLOR &c2) = 0;
+};
+
+double colorDistance(D3DCOLOR c1, D3DCOLOR c2);
+
+class SimpleColorComparator : public ColorComparator {
+public:
+  bool equals(const D3DCOLOR &c1, const D3DCOLOR &c2);
+};
+
 
 class CIERGB1931Color {
 public:

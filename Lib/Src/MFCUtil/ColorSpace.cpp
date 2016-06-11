@@ -11,9 +11,9 @@ RGBColor::RGBColor(float red, float green, float blue) {
 }
 
 RGBColor::RGBColor(const D3DCOLOR c) {
-  m_red   = (float)RGBA_GETRED(c)   / 255;
-  m_green = (float)RGBA_GETGREEN(c) / 255;
-  m_blue  = (float)RGBA_GETBLUE(c)  / 255;
+  m_red   = (float)ARGB_GETRED(c)   / 255;
+  m_green = (float)ARGB_GETGREEN(c) / 255;
+  m_blue  = (float)ARGB_GETBLUE(c)  / 255;
 }
 
 RGBColor::operator D3DCOLOR() const {
@@ -233,8 +233,8 @@ LSHColor getLSHColor(const RGBColor &c) { // getLSH(getColor(lsh)) = lsh; getCol
 
 LumaChromColor::LumaChromColor(D3DCOLOR c) {
   m_y = GETLUMINANCE(c);         // encodes luminance
-  m_u = RGBA_GETBLUE(c) - m_y;    // u
-  m_v = RGBA_GETRED(c)  - m_y;    // v
+  m_u = ARGB_GETBLUE(c) - m_y;    // u
+  m_v = ARGB_GETRED(c)  - m_y;    // v
 }
 
 LumaChromColor::operator D3DCOLOR() const {
@@ -247,4 +247,15 @@ LumaChromColor::operator D3DCOLOR() const {
 D3DCOLOR getGrayColor(D3DCOLOR c) {
   const int lum = GETLUMINANCE(c);
   return D3DCOLOR_XRGB(lum, lum, lum);
+}
+
+bool SimpleColorComparator::equals(const D3DCOLOR &c1, const D3DCOLOR &c2) {
+  return ARGB_TORGB(c1) == ARGB_TORGB(c2);
+}
+
+double colorDistance(D3DCOLOR c1, D3DCOLOR c2) { // value between [0..1]
+  const int r = GetRValue(c1) - GetRValue( c2);
+  const int g = GetGValue(c1) - GetGValue(c2);
+  const int b = GetBValue(c1) - GetBValue(c2);
+  return sqrt((double)r*r + g*g + b*b)/441.67295593;
 }

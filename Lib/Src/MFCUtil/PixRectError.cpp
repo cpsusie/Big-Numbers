@@ -44,8 +44,7 @@ String get3DErrorMsg(HRESULT hr) {
 
 void check3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {
-    AfxMessageBox(format(_T("D3D-error %s in %s, line %d"), get3DErrorMsg(hr).cstr(), fileName, line).cstr(), MB_ICONSTOP);
-    exit(-1);
+    throwException(_T("D3D-error %s in %s, line %d"), get3DErrorMsg(hr).cstr(), fileName, line);
   }
 }
 

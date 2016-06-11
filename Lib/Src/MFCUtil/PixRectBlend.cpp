@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MFCUtil/ColorSpace.h>
 #include <MFCUtil/PixRect.h>
 
 #pragma warning(disable : 4244)
@@ -48,7 +47,7 @@ void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &sr
   }
 }
 
-#define PM(c, alpha, channel) (int)RGBA_GET##channel(c)*(alpha)/255
+#define PM(c, alpha, channel) (int)ARGB_GET##channel(c)*(alpha)/255
 #define SETALPHA(c, alpha)    D3DCOLOR_ARGB(alpha, PM(c, alpha, RED), PM(c, alpha, GREEN), PM(c, alpha, BLUE))
 
 void PixRect::preMultiplyAlpha() {
@@ -58,7 +57,7 @@ void PixRect::preMultiplyAlpha() {
   for(CPoint sp(0,0); sp.y < size.cy; sp.y++) {
     for(sp.x = 0; sp.x < size.cx; sp.x++) {
       D3DCOLOR pixel = pa->getPixel(sp);
-      const BYTE alpha = RGBA_GETALPHA(pixel);
+      const BYTE alpha = ARGB_GETALPHA(pixel);
       if(alpha != 255) {
         pixel = SETALPHA(pixel, alpha);
         pa->setPixel(sp, pixel);

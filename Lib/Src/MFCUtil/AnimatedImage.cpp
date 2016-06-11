@@ -83,7 +83,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
   try {
     m_size.cx = gifFile->SWidth;
     m_size.cy = gifFile->SHeight;
-    m_workPr  = new PixRect(m_device, m_size);
+    m_workPr  = new PixRect(m_device, PIXRECT_TEXTURE, m_size);
 
     const int           imageCount   = gifFile->ImageCount;
     ColorMapObject     *gfColorMap   = gifFile->SColorMap;
@@ -145,13 +145,13 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
       }
 
       const CSize sz = frame.m_rect.Size();
-      frame.m_pr = new PixRect(m_device, sz);
+      frame.m_pr = new PixRect(m_device, PIXRECT_TEXTURE, sz, D3DPOOL_SYSTEMMEM, D3DFMT_A8R8G8B8);
 
       const ColorMapObject *colorMap = image.ImageDesc.ColorMap ? image.ImageDesc.ColorMap : gfColorMap;
       const GifColorType   *colors   = colorMap->Colors;
       const GifPixelType   *pixelp   = image.RasterBits;
 
-      pa = frame.m_pr->getPixelAccessor( );
+      pa = frame.m_pr->getPixelAccessor(0 /*D3DLOCK_NOSYSLOCK | D3DLOCK_NO_DIRTY_UPDATE | D3DLOCK_NOOVERWRITE*/);
       for(CPoint p(0,0); p.y < sz.cy; p.y++) {
         for(p.x = 0; p.x < sz.cx; p.x++) {
           const int entry = *(pixelp++);
@@ -165,6 +165,7 @@ void AnimatedImage::extractGifData(const GifFileType *gifFile) {
       }
       delete pa;
       pa = NULL;
+//      frame.m_pr->moveToPool(D3DPOOL_DEFAULT);
     }
   } catch(...) {
     if(pa) {
@@ -194,7 +195,7 @@ bool AnimatedImage::hasSavedBackground() const {
 void AnimatedImage::saveBackground(const CPoint &p, const CSize *size) {
   releaseBackground();
   const CSize sz = size ? *size : m_size;
-  m_background = new PixRect(m_device, sz);
+  m_background = new PixRect(m_device, PIXRECT_PLAINSURFACE, sz);
   CClientDC dc(m_parent);
   PixRect::bitBlt(m_background, ORIGIN, sz, SRCCOPY, dc, p);
   m_savedPosition = p;
