@@ -97,6 +97,7 @@
       <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -204,6 +205,15 @@
     <ClCompile Include="ColorSpace.cpp" />
     <ClCompile Include="ComboBoxWithHistory.cpp" />
     <ClCompile Include="ConfirmDlg.cpp" />
+    <ClCompile Include="CoordinateSystem\AbstractAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\AxisType.cpp" />
+    <ClCompile Include="CoordinateSystem\CoordinateSystem.cpp" />
+    <ClCompile Include="CoordinateSystem\DataRange.cpp" />
+    <ClCompile Include="CoordinateSystem\DateAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\LinearAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\LogarithmicAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\NormalDistributionAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
     <ClCompile Include="FileSink.cpp" />
@@ -259,6 +269,15 @@
     <ClInclude Include="..\..\Include\MFCUtil\ColorSpace.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ComboBoxWithHistory.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ConfirmDlg.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AbstractAxisPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AxisType.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\CoordinateSystem.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DataRange.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\DateAxisPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LinearAxisPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LogarithmicAxisPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditWithSpinButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />
@@ -275,6 +294,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\StaticBottomAligned.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />
+    <ClInclude Include="CoordinateSystem\stdafx.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
