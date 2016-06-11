@@ -6,6 +6,8 @@
 
 #define MAX_BUFFERSIZE 8192
 
+DEFINECLASSNAME(DecompressFilter);
+
 DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
   m_zStreamp  = NULL;
   m_buffer    = NULL;
@@ -18,7 +20,7 @@ DecompressFilter::DecompressFilter(ByteInputStream &src) : m_src(src) {
   int err = inflateInit(zStream);
   if(err != Z_OK) {
     delete zStream;
-    throwException(_T("DecompressFilter:inflateInit:returncode=%d"), err);
+    throwException(_T("%s:inflateInit:returncode=%d"), s_className, err);
   }
   m_zStreamp  = zStream;
   m_buffer    = new BYTE[MAX_BUFFERSIZE];
@@ -98,7 +100,7 @@ void DecompressFilter::decompress() {
   if(err == Z_STREAM_END) {
     m_eoz = true;
   } else if(err != Z_OK) {
-    throwException(_T("inflate returncode:%d"), err);
+    throwException(_T("%s::%s:inflate returncode:%d"), s_className, _T(__FUNCTION__), err);
   }
 }
 

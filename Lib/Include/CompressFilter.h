@@ -20,6 +20,7 @@ typedef enum {
 
 class CompressFilter : public ByteOutputStream {
 private:
+  DECLARECLASSNAME;
   ByteOutputStream &m_dst;
   ByteArray         m_inputBuffer;
   ByteArray         m_outputBuffer;
@@ -44,6 +45,7 @@ public:
 
 class DecompressFilter : public ByteInputStream {
 private:
+  DECLARECLASSNAME;
   ByteInputStream  &m_src;
   ByteArray         m_inputBuffer;
   ByteArray         m_outputBuffer;
