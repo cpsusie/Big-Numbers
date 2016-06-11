@@ -65,9 +65,9 @@ BOOL CTestGIFDlg::OnInitDialog() {
 
 void CTestGIFDlg::OnButtonLoadGif() {
   CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrTitle      = "Load GIF";
-  dlg.m_ofn.lpstrFilter     = "Gif files (*.gif)\0*.gif\0"
-                              "All files (*.*)\0*.*\0\0";
+  dlg.m_ofn.lpstrTitle      = _T("Load GIF");
+  dlg.m_ofn.lpstrFilter     = _T("Gif files (*.gif)\0*.gif\0"
+                                 "All files (*.*)\0*.*\0\0");
   if(dlg.DoModal() != IDOK) {
     return;
   }
@@ -79,7 +79,7 @@ void CTestGIFDlg::OnButtonLoadGif() {
     updateState();
   } catch(Exception e) {
     updateState();
-    MessageBox(e.what(), "Error", MB_ICONWARNING);
+    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
 }
 
@@ -93,12 +93,12 @@ void CTestGIFDlg::OnButtonLoadResroucEerror() {
 
 void CTestGIFDlg::loadGifResource(int resId) {
   try {
-    m_gif.loadFromResource(resId, "GIF");
+    m_gif.loadFromResource(resId, _T("GIF"));
     m_frameIndex = 0;
     updateState();
   } catch(Exception e) {
     updateState();
-    MessageBox(e.what(), "Error", MB_ICONWARNING);
+    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
 }
 
@@ -167,10 +167,10 @@ void CTestGIFDlg::OnButtonClear() {
 void CTestGIFDlg::OnButtonHide() {
   if(m_gif.IsWindowVisible()) {
     m_gif.ShowWindow(SW_HIDE);
-    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText("Show");
+    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText(_T("Show"));
   } else {
     m_gif.ShowWindow(SW_SHOW);
-    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText("Hide");
+    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText(_T("Hide"));
   }
   updateState();
 }
@@ -179,13 +179,13 @@ void CTestGIFDlg::updateState() {
   const CSize &sz = m_gif.getImageSize();
 
 //  const String comment = m_ai.isLoaded() ? m_ai.getComment().cstr() : "";
-  GetDlgItem(IDC_STATICSTATE)->SetWindowText(format("Loaded   :%s\r\n"
-                                                    "Suspended:%s\r\n"
-                                                    "Painted  :%s\r\n"
-                                                    "Playing  :%s\r\n"
-                                                    "Visible  :%s\r\n"
-                                                    "Size:(%d,%d)\r\n"
-                                                    "Current frame:%d\r\n"
+  GetDlgItem(IDC_STATICSTATE)->SetWindowText(format(_T("Loaded   :%s\r\n"
+                                                      "Suspended:%s\r\n"
+                                                      "Painted  :%s\r\n"
+                                                      "Playing  :%s\r\n"
+                                                      "Visible  :%s\r\n"
+                                                      "Size:(%d,%d)\r\n"
+                                                      "Current frame:%d\r\n")
                                                     ,boolToStr(m_gif.isLoaded())
                                                     ,boolToStr(m_gif.isSuspended())
                                                     ,boolToStr(m_gif.isPainted())

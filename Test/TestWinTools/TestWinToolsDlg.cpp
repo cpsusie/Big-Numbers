@@ -1,7 +1,3 @@
-
-// TestWinToolsDlg.cpp : implementation file
-//
-
 #include "stdafx.h"
 #include "TestWinTools.h"
 #include "TestWinToolsDlg.h"
@@ -16,7 +12,7 @@
 #include "TestMouseDlg.h"
 #include "TestOBMBitmapsDlg.h"
 #include "TestObmButtonDlg.h"
-//#include "TestGIFDlg.h"
+#include "TestGIFDlg.h"
 #include "TestColorControlDlg.h"
 #include <MFCUtil/SelectDirDlg.h>
 
@@ -225,9 +221,9 @@ void CTestWinToolsDlg::OnTestOBMButton() {
 }
 
 void CTestWinToolsDlg::OnTestGif() {
-//  CTestGIFDlg dlg;
-//  dlg.DoModal();
-//  showInfo();
+  CTestGIFDlg dlg;
+  dlg.DoModal();
+  showInfo();
 }
 
 void CTestWinToolsDlg::OnTestColorControl() {

@@ -215,6 +215,7 @@
     </ClCompile>
     <ClCompile Include="TestColorControlDlg.cpp" />
     <ClCompile Include="TestConfirmDlg.cpp" />
+    <ClCompile Include="TestGIFDlg.cpp" />
     <ClCompile Include="TestLayoutManagerDlg.cpp" />
     <ClCompile Include="TestMouseDlg.cpp" />
     <ClCompile Include="TestOBMBitmapsDlg.cpp" />

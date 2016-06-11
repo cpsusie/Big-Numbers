@@ -1,7 +1,8 @@
 #pragma once
 
-#include <LayoutManager.h>
-#include <GifCtrl.h>
+#include <MyUtil.h>
+#include <MFCUtil/LayoutManager.h>
+#include <MFCUtil/GifCtrl.h>
 
 class CTestGIFDlg : public CDialog {
 private:
