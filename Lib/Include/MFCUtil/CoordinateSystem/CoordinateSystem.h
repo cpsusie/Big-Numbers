@@ -1,8 +1,8 @@
 #pragma once
 
 #include <Math/MathLib.h>
-#include <Math/Viewport2D.h>
-#include <Math/CoordinateSystem/AxisType.h>
+#include <MFCUtil/Viewport2D.h>
+#include "AxisType.h"
 #include "DataRange.h"
 
 class CCoordinateSystem;
@@ -76,7 +76,7 @@ public:
   }
   
   void zoom(const CPoint &p, bool in, int flags) {
-    getTransformation().zoom(p, in, flags);
+    getTransformation().zoom(Point2DP(p), in, flags);
   }
 
   void setGrid(bool grid) {

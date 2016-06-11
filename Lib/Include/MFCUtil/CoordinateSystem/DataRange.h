@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Point2D.h>
-#include <Rectangle2D.h>
 #include <NumberInterval.h>
+#include <Math/Point2D.h>
+#include <Math/Rectangle2D.h>
 
 class DataRange {
 private:

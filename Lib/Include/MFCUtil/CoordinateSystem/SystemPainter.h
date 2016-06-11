@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Math/Viewport2D.h>
-#include <Math/Coordinatesystem/AbstractAxisPainter.h>
+#include <MFCUtil/Viewport2D.h>
+#include <MFCUtil/Coordinatesystem/AbstractAxisPainter.h>
 
 class SystemPainter {
 private:

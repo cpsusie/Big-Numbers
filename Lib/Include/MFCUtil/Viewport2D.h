@@ -33,6 +33,15 @@ public:
   inline operator CRect() const {
     return CRect((int)m_x,(int)m_y,(int)(m_x+m_w),(int)(m_y+m_h));
   }
+  inline Point2DP getProjection(const Point2DP &p) const {
+    return Rectangle2D::getProjection(p);
+  }
+  inline static Rectangle2DR makeBottomUpRectangle(const Rectangle2DR &rect) {
+    return Rectangle2D::makeBottomUpRectangle(rect);
+  }
+  inline static Rectangle2DR makePositiveRectangle(const Rectangle2DR &rect) {
+    return Rectangle2D::makePositiveRectangle(rect);
+  }
 };
 
 class Viewport2D {
