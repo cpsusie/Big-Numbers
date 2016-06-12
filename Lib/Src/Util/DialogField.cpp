@@ -32,11 +32,11 @@ void DialogField::draw() {
 void DialogField::setSel(int start, int end) {
   if(start < 0) start = 0;
   if(start >= (int)m_str.length()) {
-    start = m_str.length() - 1;
+    start = (int)m_str.length() - 1;
   }
   if(end < 0  ) end   = -1;
   if(end > (int)m_str.length()) {
-    end   = m_str.length();
+    end   = (int)m_str.length();
   }
 
   m_selStart = start;
@@ -58,7 +58,7 @@ String DialogField::getSelText() {
 }
 
 void DialogField::setCursorPos() {
-  Console::setCursorPos(getDialog().getLeft() + getLeft() + m_label.length() + m_cursorPos, getDialog().getTop() + getTop());
+  Console::setCursorPos(getDialog().getLeft() + getLeft() + (int)m_label.length() + m_cursorPos, getDialog().getTop() + getTop());
 }
 
 void DialogField::setCursorPos(int x) {
@@ -155,12 +155,12 @@ void DialogField::copyFromClipboard() {
     s.remove(m_selStart,m_selEnd - m_selStart + 1);
     s.insert(m_selStart,cb);
     setBuffer(s.cstr());
-    setCursorPos(m_cursorPos + cb.length());
+    setCursorPos(m_cursorPos + (int)cb.length());
   } else {
     String s = getBuffer();
     s.insert(getCursorPos(),cb);
     setBuffer(s.cstr());
-    setCursorPos(m_cursorPos + cb.length());
+    setCursorPos(m_cursorPos + (int)cb.length());
   }
   if(getDialog().isVisible()) {
     draw();

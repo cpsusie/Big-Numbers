@@ -56,7 +56,7 @@ SNode Expression::toSFormSum(const ExpressionNode *n) const {
     sortAddentArrayStdForm(a);
     SNode result = toSForm(a[0]->getNode()); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0]->isPositive()) result = -result;
-    for(int i = 1; i < a.size(); i++) {
+    for(size_t i = 1; i < a.size(); i++) {
       const SumElement *e = a[i];
       SNode ne = toSForm(e->getNode());
       if(e->isPositive()) result += ne; else result -= ne;
@@ -70,7 +70,7 @@ SNode Expression::toSFormProduct(const ExpressionNode *n) const {
 
   const FactorArray &a = n->getFactorArray();
   FactorArray        newArray;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const ExpressionFactor *f = a[i];
     Rational r;
     if(reducesToRationalConstant(f, &r)) {
@@ -96,7 +96,7 @@ SNode Expression::toSFormProduct(const ExpressionNode *n) const {
 
 SNode Expression::toSFormFactorArray(const FactorArray &a, bool changeExponentSign) const {
   SNodeArray a1;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const ExpressionFactor *f = a[i];
     if(changeExponentSign) {
       a1.add(reciprocal(toSFormPow(f)));
@@ -108,7 +108,7 @@ SNode Expression::toSFormFactorArray(const FactorArray &a, bool changeExponentSi
     return getOne();
   } else {
     SNode result = a1[0];
-    for(int i = 1; i < a1.size(); i++) result *= a1[i];
+    for(size_t i = 1; i < a1.size(); i++) result *= a1[i];
     return result;
   }
 }
@@ -178,7 +178,7 @@ SNode Expression::toSFormPoly(const ExpressionNode *n) const {
   const ExpressionNode *argument         = n->getArgument();
 
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
-  for(int i = 0; i < coefficientArray.size(); i++) {
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
     newCoefficientArray.add(toSForm(coefficientArray[i]));
   }
   return getPoly(n, newCoefficientArray, toSForm(argument));
@@ -187,7 +187,7 @@ SNode Expression::toSFormPoly(const ExpressionNode *n) const {
 SNode Expression::toSFormTreeNode(const ExpressionNode *n) const {
   const ExpressionNodeArray &a = n->getChildArray();
   ExpressionNodeArray newChildArray(a.size());
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(toSForm(a[i]));
   }
   return getTree(n, newChildArray);

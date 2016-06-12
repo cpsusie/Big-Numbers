@@ -16,8 +16,8 @@ String charBitSetToString(const BitSet &set, CharacterFormater *charFormater) {
   String result = _T("[");
   _TUCHAR first=1,last=0;
   const TCHAR *delim = NULL;
-  for(Iterator<unsigned int> it = ((BitSet&)set).getIterator(); it.hasNext();) {
-    const _TUCHAR ch = it.next();
+  for(Iterator<size_t> it = ((BitSet&)set).getIterator(); it.hasNext();) {
+    const _TUCHAR ch = (_TUCHAR)it.next();
     if(first > last) {
       first = last = ch;
     } else if(ch == last+1) {

@@ -64,7 +64,7 @@ void LexFileStream::initQueues() {
   m_convertedQueue.clear();
 }
 
-int LexFileStream::getChars(_TUCHAR *dst, unsigned int n) {
+intptr_t LexFileStream::getChars(_TUCHAR *dst, size_t n) {
   _TUCHAR *d = dst;
 
   while((m_convertedQueue.size() < n) && !(m_rawQueue.isEmpty() && feof(m_f))) {
@@ -72,8 +72,8 @@ int LexFileStream::getChars(_TUCHAR *dst, unsigned int n) {
   }
 
   while((d - dst < (int)n) && !eof()) {
-    const int rest = n - (d-dst);
-    const int got  = m_convertedQueue.get(d, rest);
+    const intptr_t rest = n - (d-dst);
+    const intptr_t got  = m_convertedQueue.get(d, rest);
     if(got) {
       d += got;
     }
@@ -104,11 +104,11 @@ const BYTE *ByteQueue::findLastNewLine() const {
   return isEmpty() ? NULL : memrchr(getData(), '\n', size());
 }
 
-int ByteQueue::readUntilHasNewLine(FILE *f) {
+size_t ByteQueue::readUntilHasNewLine(FILE *f) {
   const BYTE *nl = findLastNewLine();;
   while((nl == NULL) && !feof(f)) {
     BYTE tmp[4096];
-    const int n = fread(tmp, 1, sizeof(tmp), f);
+    const size_t n = fread(tmp, 1, sizeof(tmp), f);
     if(n > 0) {
       const size_t oldSize = size();
       append(tmp, n);
@@ -121,12 +121,12 @@ int ByteQueue::readUntilHasNewLine(FILE *f) {
   return nl ? (nl - getData() + 1) : size();
 }
 
-String ByteQueue::getConvertedString(int count) {
+String ByteQueue::getConvertedString(size_t count) {
   TCHAR tmp[4096];
   TCHAR *buffer     = tmp;
   int    bufferSize = ARRAYSIZE(tmp);
   try {
-    const int requiredSize = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), count, NULL, 0);
+    const int requiredSize = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), (int)count, NULL, 0);
     if(requiredSize == 0) {
       throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
     }
@@ -137,7 +137,7 @@ String ByteQueue::getConvertedString(int count) {
       bufferSize = requiredSize + 1;
       buffer = new TCHAR[bufferSize];
     }
-    const int ret = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), count, buffer, requiredSize);
+    const int ret = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), (int)count, buffer, requiredSize);
     if(ret == 0) {
       throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
     }
@@ -156,11 +156,10 @@ String ByteQueue::getConvertedString(int count) {
   }
 }
 
-
-int CharQueue::get(_TUCHAR *dst, int n) {
+intptr_t CharQueue::get(_TUCHAR *dst, size_t n) {
   n = min(length(), n);
   MEMCPY(dst, cstr(), n);
-  remove(0, n);
+  remove(0, (int)n);
   return n;
 }
 

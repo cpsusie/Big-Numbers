@@ -49,7 +49,7 @@ void CColoredStatic::repaint(CDC &dc) {
   int y = 0;
   switch(textAlign) {
   case SS_LEFT:
-    { for(int i = 0; i < lineArray.size(); i++) {
+    { for(size_t i = 0; i < lineArray.size(); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(0,y,line.cstr());
@@ -59,7 +59,7 @@ void CColoredStatic::repaint(CDC &dc) {
     break;
   case SS_RIGHT:
     { const CSize winSize = getWindowSize(this);
-      for(int i = 0; i < lineArray.size(); i++) {
+      for(size_t i = 0; i < lineArray.size(); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(max(0, winSize.cx - lineSize.cx), y, line.cstr());
@@ -69,7 +69,7 @@ void CColoredStatic::repaint(CDC &dc) {
     break;
   case SS_CENTER:
     { const CSize winSize = getWindowSize(this);
-      for(int i = 0; i < lineArray.size(); i++) {
+      for(size_t i = 0; i < lineArray.size(); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(max(0, (winSize.cx - lineSize.cx)/2), y, line.cstr());

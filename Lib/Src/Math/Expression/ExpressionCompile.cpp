@@ -103,13 +103,19 @@ int MachineCode::emitShortJmp(const IntelInstruction &ins) {
   return addBytes(&addr,1);
 }
 
-void MachineCode::fixupShortJump(int addr, BYTE jmpAddr) {
-  const BYTE pcRelativAddr = jmpAddr - addr - 1;
+void MachineCode::fixupShortJump(int addr, int jmpAddr) {
+  const int v = jmpAddr - addr - 1;
+  if (!ISBYTE(v)) {
+    throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__)
+      ,_T("shortJump from %d to %d too long. offset=%d (must be in range [-128,127]")
+      ,addr, jmpAddr, v);
+  }
+  const BYTE pcRelativAddr = (BYTE)v;
   setBytes(addr,&pcRelativAddr,1);
 }
 
 void MachineCode::fixupShortJumps(const CompactIntArray &jumps, int jmpAddr) {
-  for(int i = 0; i < jumps.size(); i++) {
+  for(size_t i = 0; i < jumps.size(); i++) {
     fixupShortJump(jumps[i],jmpAddr);
   }
 }
@@ -132,7 +138,7 @@ void MachineCode::emitCall(function p) {
 }
 
 void MachineCode::linkExternals() {
-  for(int i = 0; i < m_externals.size(); i++) {
+  for(size_t i = 0; i < m_externals.size(); i++) {
     fixupCall(m_externals[i]);
   }
 }

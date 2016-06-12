@@ -234,7 +234,7 @@ void AnimatedImage::flushPr(CDC &dc, const CPoint &p, PixRect *src, double scale
 
 void AnimatedImage::unload() {
   hide();
-  for(int i = 0; i < m_frameTable.size(); i++) {
+  for(size_t i = 0; i < m_frameTable.size(); i++) {
     m_frameTable[i].cleanup();
   }
   m_frameTable.clear();
@@ -284,7 +284,7 @@ const PixRect *AnimatedImage::findLastNonDisposed() const {
 }
 
 void AnimatedImage::clearDisposeTable() {
-  for(int i = 0; i < m_disposeTable.size(); i++) {
+  for(size_t i = 0; i < m_disposeTable.size(); i++) {
     PixRect *pr = m_disposeTable[i];
     if(pr) delete pr;
   }

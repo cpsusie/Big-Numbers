@@ -20,10 +20,10 @@ const ExpressionNodeSum *ExpressionNodeSum::multiply(const ExpressionNodeSum *n1
 
   const ParserTree *tree = n1->getTree();
   const bool oldEnable = AddentArray::enableDebugString(false);
-  for(int i = 0; i < aa1.size(); i++) {
+  for(size_t i = 0; i < aa1.size(); i++) {
     const SumElement *e1 = aa1[i];
     const SNode       s1 = e1->getNode();
-    for(int j = 0; j < aa2.size(); j++) {
+    for(size_t j = 0; j < aa2.size(); j++) {
       const SumElement *e2 = aa2[j];
       const SNode       s2 = e2->getNode();
       newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
@@ -54,7 +54,7 @@ int ExpressionNodeSum::compare(const ExpressionNode *n) const {
 
 const ExpressionNode *ExpressionNodeSum::clone(const ParserTree *tree) const {
   AddentArray a(m_elements.size());
-  for(int i = 0; i < m_elements.size(); i++) {
+  for(size_t i = 0; i < m_elements.size(); i++) {
     a.add(m_elements[i]->clone(tree));
   }
   return new ExpressionNodeSum(tree, a);
@@ -74,7 +74,7 @@ bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int l
   if(!handler.handleNode(this, level)) return false;
   const AddentArray &a = getAddentArray();
   level++;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     if(!a[i]->getNode()->traverseExpression(handler, level)) return false;
   }
   return true;
@@ -82,7 +82,7 @@ bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int l
 
 void ExpressionNodeSum::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
-  for(int i = 0; i < m_elements.size(); i++) {
+  for(size_t i = 0; i < m_elements.size(); i++) {
     const SumElement *e = m_elements[i];
     addLeftMargin(s, level+1) += e->isPositive() ? _T("+\n") : _T("\x96\n");
     e->getNode()->dumpNode(s, level+2);

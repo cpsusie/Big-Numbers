@@ -9,7 +9,7 @@ public:
   virtual void close()                                = NULL; // Close stream
   virtual bool eof()                                  = NULL;
   virtual bool ok()                                   = NULL;
-  virtual int  getChars(_TUCHAR *dst, unsigned int n) = NULL;
+  virtual intptr_t getChars(_TUCHAR *dst, size_t n)   = NULL;
 };
 
 #ifdef UNICODE
@@ -26,15 +26,15 @@ public:
   inline void clear() {
     ByteArray::clear();
   }
-  inline unsigned int size() const {
+  inline size_t size() const {
     return ByteArray::size();
   }
   inline bool isEmpty() const {
     return size() == 0;
   }
     
-  String getConvertedString(int count); // count is the number of bytes to convert
-  int readUntilHasNewLine(FILE *f);
+  String getConvertedString(size_t count); // count is the number of bytes to convert
+  size_t readUntilHasNewLine(FILE *f);
 };
 
 class CharQueue : private String {
@@ -44,8 +44,8 @@ public:
   void clear() {
     (String&)(*this) = _T("");
   };
-  unsigned int size() const {
-    return (unsigned int)length();
+  size_t size() const {
+    return (size_t)length();
   }
   bool isEmpty() const {
     return size() == 0;
@@ -54,7 +54,7 @@ public:
   void put(const String &s) {
     *this += s;
   }
-  int get(_TUCHAR *dst, int n);
+  intptr_t get(_TUCHAR *dst, size_t n);
 };
 
 #endif
@@ -86,7 +86,7 @@ public:
 
   bool open(const String &s);
   void close();
-  int  getChars(_TUCHAR *dst, unsigned int n);
+  intptr_t getChars(_TUCHAR *dst, size_t n);
   bool eof();
 
   bool ok() {
@@ -96,8 +96,8 @@ public:
 
 class LexStringStream : public LexStream {
 private:
-  String m_string;
-  int m_pos;
+  String   m_string;
+  intptr_t m_pos;
 public:
   LexStringStream() {
     open("");
@@ -109,10 +109,10 @@ public:
   void close() {
     open("");
   }
-  int getChars(_TUCHAR *dst, unsigned int n);
+  intptr_t getChars(_TUCHAR *dst, size_t n);
 
   bool eof() {
-    return m_pos >= m_string.length();
+    return m_pos >= (intptr_t)m_string.length();
   }
 
   bool ok() {
@@ -181,7 +181,7 @@ private:
   _TUCHAR        *m_endMark;                     // End of current lexeme
   _TUCHAR        *m_previousMark;                // Start of previous lexeme
   SourcePosition  m_previousPos;                 // Position of previous lexeme
-  int             m_previousLength;              // Length of previous lexeme
+  intptr_t        m_previousLength;              // Length of previous lexeme
   SourcePosition  m_pos;                         // Position of current lexeme
   SourcePosition  m_markPos;                     // Position when markEnd() called
   _TUCHAR         m_termchar;                    // Holds the TCHAR that was overwritten by a 0.
@@ -193,7 +193,7 @@ private:
 
   void init(LexStream *stream, const SourcePosition &pos);
 
-  int fillBuf(_TUCHAR *start);
+  intptr_t fillBuf(_TUCHAR *start);
 
   bool noMoreChars() const {
     return m_eofRead && (m_nextChar >= m_endBuf);
@@ -238,7 +238,7 @@ public:
     return m_startMark;
   }
 
-  inline int getLength() const {
+  inline intptr_t getLength() const {
     return m_endMark - m_startMark;
   }
 
@@ -252,7 +252,7 @@ public:
     return m_previousMark;
   }
 
-  inline int getPreviousLength() const {
+  inline intptr_t getPreviousLength() const {
     return m_previousLength;
   }
 

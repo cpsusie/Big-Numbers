@@ -1238,9 +1238,9 @@ template <class T> class ResourcePool : public CompactArray<T*> {
 private:
   CompactStack<int> m_freeId;
 protected:
-  virtual void allocateNewResources(int count) {
-    int id = size();
-    for(int i = 0; i < count; i++, id++) {
+  virtual void allocateNewResources(size_t count) {
+    int id = (int)size();
+    for(size_t i = 0; i < count; i++, id++) {
       m_freeId.push(id);
       add(new T(id));
     }
@@ -1262,7 +1262,7 @@ public:
   }
 
   void deleteAll() {
-    for(int i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       delete (*this)[i];
     }
     clear();
@@ -1335,10 +1335,10 @@ private:
   }
 
 protected:
-  void allocateNewResources(int count) {
-    const int oldSize = size();
+  void allocateNewResources(size_t count) {
+    const size_t oldSize = size();
     ResourcePool<T>::allocateNewResources(count);
-    for(int i = oldSize; i < size(); i++) {
+    for(size_t i = oldSize; i < size(); i++) {
       Thread &thr = get(i);
       thr.setPriority(m_threadPriority);
       thr.setPriorityBoost(m_disablePriorityBoost);
@@ -1352,7 +1352,7 @@ public:
   void setPriority(int priority) {
     if(priority == m_threadPriority) return;
     m_threadPriority = priority;
-    for(int i = 0; i < size(); i++) get(i).setPriority(priority);
+    for(size_t i = 0; i < size(); i++) get(i).setPriority(priority);
   }
   int getPriority() const {
     return m_threadPriority;
@@ -1360,7 +1360,7 @@ public:
   void setPriorityBoost(bool disablePriorityBoost) {
     if(disablePriorityBoost == m_disablePriorityBoost) return;
     m_disablePriorityBoost = disablePriorityBoost;
-    for(int i = 0; i < size(); i++) get(i).setPriorityBoost(disablePriorityBoost);
+    for(size_t i = 0; i < size(); i++) get(i).setPriorityBoost(disablePriorityBoost);
   }
 
   bool getPriorityBoost() const {

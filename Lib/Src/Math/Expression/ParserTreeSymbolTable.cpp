@@ -11,7 +11,7 @@ void ParserTree::buildSymbolTable() {
   allocateConstant(NULL, "e" , M_E);
   buildSymbolTable(m_root);
 
-  for(int i = 0; i < oldVariables.size(); i++) {
+  for(size_t i = 0; i < oldVariables.size(); i++) {
     const ExpressionVariable &oldVar = oldVariables[i];
     if(oldVar.isInput()) {
       ExpressionVariable *newVar = getVariable(oldVar.getName());
@@ -39,17 +39,17 @@ void ParserTree::buildSymbolTable(const ExpressionNode *n) {
 
   case SUM    :
     { const AddentArray &a = n->getAddentArray();
-      for(int i = 0; i < a.size(); i++) buildSymbolTable(a[i]->getNode());
+      for(size_t i = 0; i < a.size(); i++) buildSymbolTable(a[i]->getNode());
     }
     break;
   case PRODUCT:
     { const FactorArray &a = n->getFactorArray();
-      for(int i = 0; i < a.size(); i++) buildSymbolTable(a[i]);
+      for(size_t i = 0; i < a.size(); i++) buildSymbolTable(a[i]);
     }
     break;
   case POLY   :
     { const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
-      for(int i = 0; i < coefficientArray.size(); i++) {
+      for(size_t i = 0; i < coefficientArray.size(); i++) {
         buildSymbolTable(coefficientArray[i]);
       }
       buildSymbolTable(n->getArgument());
@@ -65,7 +65,7 @@ void ParserTree::buildSymbolTable(const ExpressionNode *n) {
 
   default:
     { const ExpressionNodeArray &a = n->getChildArray();
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         buildSymbolTable(a[i]);
       }
     }

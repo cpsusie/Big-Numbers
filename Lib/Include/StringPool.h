@@ -5,7 +5,7 @@
 
 class StringPoolNode {
 public:
-  unsigned int    m_offset;
+  size_t          m_offset;
   StringPoolNode *m_next;
 };
 
@@ -35,15 +35,15 @@ public:
 
 class StringPool {
 private:
-  unsigned int         m_size;
-  unsigned int         m_indexCapacity;
+  size_t               m_size;
+  size_t               m_indexCapacity;
   StringPoolNode     **m_index;
   StringPoolNodePage  *m_firstPage;
   CompactArray<TCHAR>  m_textData;
 
   StringPoolNode *fetchNode();
-  static StringPoolNode **allocateIndex( unsigned long capacity); // if capacity == 0, NULL is returned, else a zero-filled array of pointers
-  void init(unsigned long indexCapacity, unsigned long textCapacity);
+  static StringPoolNode **allocateIndex( size_t capacity); // if capacity == 0, NULL is returned, else a zero-filled array of pointers
+  void init(size_t indexCapacity, size_t textCapacity);
   void copy(const StringPool &src);
   void buildPageList();
   inline const TCHAR *getNodeString(const StringPoolNode *n) const {
@@ -51,39 +51,39 @@ private:
   }
 
 public:
-  StringPool(unsigned long indexCapacity = 100, unsigned long textCapacity = 1000);
+  StringPool(size_t indexCapacity = 100, size_t textCapacity = 1000);
   StringPool(           const StringPool &src);
   StringPool &operator=(const StringPool &src);
   ~StringPool();
 
-  void setIndexCapacity(unsigned long capacity);
-  void setTextCapacity(unsigned long capacity);
+  void setIndexCapacity(size_t capacity);
+  void setTextCapacity(size_t capacity);
 
-  inline unsigned long getIndexCapacity() const {
+  inline size_t getIndexCapacity() const {
     return m_indexCapacity;
   }
 
-  inline unsigned long getTextCapacity() const {
+  inline size_t getTextCapacity() const {
     return m_textData.getCapacity();
   }
 
-  inline unsigned long getUniqueStringCount() const {
+  inline size_t getUniqueStringCount() const {
     return m_size;
   }
 
-  inline unsigned long getTextSize() const {
+  inline size_t getTextSize() const {
     return m_textData.size();
   }
 
-  unsigned int addString(const TCHAR *s); // return index to be used when lookup string using getString
+  size_t addString(const TCHAR *s); // return index to be used when lookup string using getString
                                           // If the string already exist in the pool, the index of this will be returned
                                           // instead of adding the new copy
 
 #ifdef UNICODE
-  unsigned int addString(const char *s);
+  size_t addString(const char *s);
 #endif
 
-  inline const TCHAR *getString(unsigned int index) const {
+  inline const TCHAR *getString(size_t index) const {
     return (const TCHAR*)m_textData.getBuffer() + index;
   }
 

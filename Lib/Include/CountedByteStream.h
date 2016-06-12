@@ -4,7 +4,7 @@
 
 class ByteCounter {
 public:
-  virtual void incrCount(unsigned int n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
+  virtual void incrCount(size_t n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
   virtual unsigned int getMaxChunkSize() const {
     return 500000;
   }
@@ -12,14 +12,14 @@ public:
 
 class CountFileOffset : public ByteCounter {
 private:
-  int m_counter;
+  size_t m_counter;
 public:
   CountFileOffset() : m_counter(0) {
   }
-  void incrCount(unsigned int n) {
+  void incrCount(size_t n) {
     m_counter += n;
   }
-  unsigned int getByteOffset() const {
+  inline size_t getByteOffset() const {
     return m_counter;
   }
 };
@@ -31,7 +31,7 @@ private:
 public:
   CountedByteOutputStream(ByteCounter &counter, ByteOutputStream &dst);
 
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, size_t n);
   void putByte(BYTE b);
 };
 
@@ -42,6 +42,6 @@ private:
 public:
   CountedByteInputStream(ByteCounter &counter, ByteInputStream &src);
 
-  int getBytes(BYTE *dst, unsigned int n);
+  intptr_t getBytes(BYTE *dst, size_t n);
   int getByte();
 };

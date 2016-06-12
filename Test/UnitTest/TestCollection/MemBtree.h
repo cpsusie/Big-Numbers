@@ -102,8 +102,8 @@ private:
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
   BTreePage             *m_root;
-  unsigned long          m_updateCount;
-  int                    m_size;
+  size_t                 m_updateCount;
+  size_t                 m_size;
   Array<BTreePageItem>   m_passupItems;
 
   BTreePageItem *pageSearch(const void *key) const;
@@ -147,7 +147,7 @@ public:
   bool contains( const void *key) const;
   const void *select() const; // returns key*
   void *select();
-  int  size() const {
+  size_t size() const {
     return m_size;
   }
   void clear();
@@ -195,7 +195,7 @@ public:
   AbstractEntry *selectEntry() const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
-  int size() const {
+  size_t size() const {
     return BTreeSetImpl::size();
   }
 

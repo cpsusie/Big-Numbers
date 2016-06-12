@@ -11,7 +11,7 @@ KMPAutomate::KMPAutomate(const String &pattern, bool forwardSearch, const unsign
   compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
 }
 
-KMPAutomate::KMPAutomate(const TCHAR *pattern, int patternLength, bool forwardSearch, const unsigned char *translateTable) {
+KMPAutomate::KMPAutomate(const TCHAR *pattern, intptr_t patternLength, bool forwardSearch, const unsigned char *translateTable) {
   initPointers();
   compilePattern(pattern, patternLength, forwardSearch, translateTable);
 }
@@ -41,7 +41,7 @@ void KMPAutomate::compilePattern(const String &pattern, bool forwardSearch, cons
   compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
 }
 
-void KMPAutomate::compilePattern(const TCHAR *pattern, int patternLength, bool forwardSearch, const unsigned char *translateTable) {
+void KMPAutomate::compilePattern(const TCHAR *pattern, intptr_t patternLength, bool forwardSearch, const unsigned char *translateTable) {
   if(patternLength < 0) {
     patternLength = _tcsclen(pattern);
   }
@@ -65,7 +65,7 @@ void KMPAutomate::compilePattern(const TCHAR *pattern, int patternLength, bool f
 void KMPAutomate::compileForward() {
   m_next[0] = -1;
   int j = -1;
-  int i = 0;
+  size_t i = 0;
   do { 
     if(j == -1 || CHAREQUALS(m_pattern[i], m_pattern[j])) {
       i++;
@@ -78,7 +78,7 @@ void KMPAutomate::compileForward() {
   while(i < m_patternLength);
 }
 
-static TCHAR *reversebuf(TCHAR *s, int size) {
+static TCHAR *reversebuf(TCHAR *s, size_t size) {
   TCHAR tmp,*l = s, *r = s + size - 1;
   while(l < r) {
     tmp = *l; *(l++) = *r; *(r--) = tmp;
@@ -91,11 +91,11 @@ void KMPAutomate::compileBackward() {
   compileForward();
 }
 
-int KMPAutomate::search(const String &text) const {
+intptr_t KMPAutomate::search(const String &text) const {
   return search(text.cstr(), text.length());
 }
 
-int KMPAutomate::search(const TCHAR *text, int textLength) const {
+intptr_t KMPAutomate::search(const TCHAR *text, intptr_t textLength) const {
   if(textLength < 0) {
     textLength = _tcsclen(text);
   }
@@ -106,8 +106,8 @@ int KMPAutomate::search(const TCHAR *text, int textLength) const {
 // if length is < 0 the length is determined by strlen(text)
 // searchForward finds the first occurence of the pattern in text
 // searchBackward finds the last occurence of the pattern in text
-int KMPAutomate::searchForward(const TCHAR *text, int textLength) const {
-  for(int i = 0, j = 0; i < textLength; ) {
+intptr_t KMPAutomate::searchForward(const TCHAR *text, size_t textLength) const {
+  for(intptr_t i = 0, j = 0; i < (intptr_t)textLength; ) {
     if(j == -1 || CHAREQUALS(m_pattern[j], text[i])) { 
       i++; j++;
       if(j == m_patternLength) {
@@ -120,8 +120,8 @@ int KMPAutomate::searchForward(const TCHAR *text, int textLength) const {
   return -1;
 }
 
-int KMPAutomate::searchBackward(const TCHAR *text, int textLength) const {
-  for(int i = textLength - 1, j = 0; i >= 0;) {
+intptr_t KMPAutomate::searchBackward(const TCHAR *text, size_t textLength) const {
+  for(intptr_t i = textLength - 1, j = 0; i >= 0;) {
     if(j == -1 || CHAREQUALS(m_pattern[j], text[i])) { 
       i--; j++;
       if(j == m_patternLength) {
@@ -134,7 +134,7 @@ int KMPAutomate::searchBackward(const TCHAR *text, int textLength) const {
   return -1;
 }
 
-void KMPAutomate::allocate(int patternLength) {
+void KMPAutomate::allocate(size_t patternLength) {
   m_tableSize = (m_patternLength = patternLength) + 1;
   m_next      = new int[  m_tableSize];
   m_pattern   = new TCHAR[m_tableSize];
@@ -165,4 +165,3 @@ void KMPAutomate::copyFrom(const KMPAutomate &src) {
   m_forwardSearch  = src.m_forwardSearch;
   m_translateTable = src.m_translateTable;
 }
-

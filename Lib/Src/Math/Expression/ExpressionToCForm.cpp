@@ -57,7 +57,7 @@ AddentArray &Expression::toCFormSum(AddentArray &result, const ExpressionNode *n
   switch(n->getSymbol()) {
   case SUM:
     { const AddentArray &a = n->getAddentArray();
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const SumElement *e = a[i];
         toCFormSum(result, e->getNode(), e->isPositive() == positive);
       }
@@ -92,7 +92,7 @@ FactorArray &Expression::toCFormProduct(FactorArray &result, const ExpressionNod
       if(exponent.isOne()) {
         result.addAll(a);
       } else {
-        for(int i = 0; i < a.size(); i++) toCFormProduct(result, a[i], exponent);
+        for(size_t i = 0; i < a.size(); i++) toCFormProduct(result, a[i], exponent);
       }
     }
     break;
@@ -143,7 +143,7 @@ FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode 
   case PRODUCT:
     { const FactorArray &factors = base.getFactorArray();
       const SNode        newExpo = exponent * expo;
-      for(int i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
+      for(size_t i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
     }
     break;
   default                   :
@@ -169,7 +169,7 @@ FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *
   case PRODUCT:
     { const FactorArray &factors = rad.getFactorArray();
       const SNode        newExpo = exponent / root;
-      for(int i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
+      for(size_t i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
     }
     break;
   default                   :
@@ -182,7 +182,7 @@ FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *
 SNode Expression::toCFormPoly(const ExpressionNode *n) const {
   const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
-  for(int i = 0; i < coefficientArray.size(); i++) {
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
     newCoefficientArray.add(toCForm(coefficientArray[i]));
   }
   const ExpressionNode *newArgument = toCForm(n->getArgument());
@@ -192,7 +192,7 @@ SNode Expression::toCFormPoly(const ExpressionNode *n) const {
 SNode Expression::toCFormTreeNode(const ExpressionNode *n) const {
   const ExpressionNodeArray &a = n->getChildArray();
   ExpressionNodeArray newChildArray(a.size());
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(toCForm(a[i]));
   }
   return getTree(n, newChildArray);

@@ -235,7 +235,7 @@ void Console::vprintf(int x, int y, const TCHAR *format, va_list argptr) {
   s_gate.wait();
 
   DWORD res;
-  CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), tmp.length(), coord, &res));
+  CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), (int)tmp.length(), coord, &res));
 
   s_gate.signal();
 }
@@ -243,7 +243,7 @@ void Console::vprintf(int x, int y, const TCHAR *format, va_list argptr) {
 void Console::vprintf(int x, int y, WORD color, const TCHAR *format, va_list argptr) {
   const String tmp = vformat(format, argptr);
 
-  const int length = tmp.length();
+  const int length = (int)tmp.length();
   WORD *attr = new WORD[length];
 
   for(int i = 0; i < length; i++) {
@@ -257,7 +257,7 @@ void Console::vprintf(int x, int y, WORD color, const TCHAR *format, va_list arg
   s_gate.wait();
 
   DWORD res;
-  CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), tmp.length(), coord, &res));
+  CHECK(WriteConsoleOutputCharacter(s_hStdOut, tmp.cstr(), (int)tmp.length(), coord, &res));
   CHECK(WriteConsoleOutputAttribute(s_hStdOut, attr, length, coord, &res));
 
   s_gate.signal();

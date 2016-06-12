@@ -86,7 +86,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     // read memory begining at the start of the page
     // after that, we know that the env strings block
     // will be 0x498 bytes after the start of the page
-    DWORD dwBytesRead;
+    SIZE_T dwBytesRead;
     if(!ReadProcessMemory(hProcess, mbi.BaseAddress, (LPVOID)lpBuffer, sysInfo.dwPageSize, &dwBytesRead)) {
       throwLastErrorOnSysCallException(_T("ReadProcessMemory"));
     }
@@ -94,11 +94,11 @@ String getProcessCommandLine(HANDLE hProcess) {
     // now we've got the buffer on our side of the fence.
     // first, lpPos points to a string containing the current directory
     /// plus the path.
-    LPBYTE lpPos = lpBuffer + ((DWORD)BLOCK_ADDRESS - (DWORD)mbi.BaseAddress);
+    LPBYTE lpPos = lpBuffer + ((size_t)BLOCK_ADDRESS - (size_t)mbi.BaseAddress);
     lpPos = lpPos + (wcslen ( (LPWSTR)lpPos ) + 1) * sizeof(WCHAR);
     // now goes full path an filename, aligned on a DWORD boundary
     // skip it
-    lpPos = (LPBYTE)ALIGN_DWORD((DWORD)lpPos);
+    lpPos = (LPBYTE)ALIGN_DWORD((size_t)lpPos);
     lpPos = lpPos + (wcslen ( (LPWSTR)lpPos ) + 1) * sizeof(WCHAR);
     // hack: Sometimes, there will be another '\0' at this position
     // if that's so, skip it

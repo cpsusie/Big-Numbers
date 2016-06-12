@@ -113,7 +113,7 @@ void CSelectDirDlg::fillTree(const TCHAR *path) {
     p = ctrl->InsertItem(tok.next().cstr(), 1, 0, p);
   }
   HTREEITEM selecteditem = p;
-  for(int i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     ctrl->InsertItem(list[i].name, 0, 0, p);
   }
 

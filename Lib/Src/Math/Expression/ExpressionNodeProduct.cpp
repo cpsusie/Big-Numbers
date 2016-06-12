@@ -41,7 +41,7 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
 const ExpressionNode *ExpressionNodeProduct::clone(const ParserTree *tree) const {
   FactorArray factors(m_factors.size());
   const bool oldEnable = FactorArray::enableDebugString(false);
-  for(int i = 0; i < m_factors.size(); i++) {
+  for(size_t i = 0; i < m_factors.size(); i++) {
     factors.add(m_factors[i]->clone(tree));
   }
   FactorArray::enableDebugString(oldEnable); INITFACTORARRAYEBUGSTRING(&factors);
@@ -63,7 +63,7 @@ bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, i
   if(!handler.handleNode(this, level)) return false;
   const FactorArray &a = getFactorArray();
   level++;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     if(!a[i]->traverseExpression(handler, level)) return false;
   }
   return true;
@@ -72,7 +72,7 @@ bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, i
 
 void ExpressionNodeProduct::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
-  for(int i = 0; i < m_factors.size(); i++) {
+  for(size_t i = 0; i < m_factors.size(); i++) {
     m_factors[i]->dumpNode(s, level+1);
   }
 }
@@ -82,7 +82,7 @@ String ExpressionNodeProduct::toString() const {
     return _T("1");
   } else {
     String result = m_factors[0]->parenthesizedExpressionToString(this);
-    for(int i = 1; i < m_factors.size(); i++) {
+    for(size_t i = 1; i < m_factors.size(); i++) {
       result += _T("*");
       result += m_factors[i]->parenthesizedExpressionToString(this);
     }

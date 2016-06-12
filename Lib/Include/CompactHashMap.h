@@ -72,8 +72,8 @@ public:
 
 template <class K, class V> class CompactHashMap {
 private:
-  unsigned int               m_size;
-  unsigned int               m_capacity;
+  size_t                     m_size;
+  size_t                     m_capacity;
   CompactHashNode<K, V>    **m_buffer;
   CompactHashNodePage<K, V> *m_firstPage;
 
@@ -90,7 +90,7 @@ private:
     return m_firstPage;
   }
 
-  CompactHashNode<K, V> **allocateBuffer(unsigned long capacity) {
+  CompactHashNode<K, V> **allocateBuffer(size_t capacity) {
     CompactHashNode<K, V> **result = capacity ? new CompactHashNode<K, V>*[capacity] : NULL;
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
@@ -98,14 +98,14 @@ private:
     return result;
   }
 
-  void init(unsigned long capacity) {
+  void init(size_t capacity) {
     m_size       = 0;
     m_capacity   = capacity;
     m_buffer     = allocateBuffer(capacity);
     m_firstPage  = NULL;
   }
 
-  int getChainLength(unsigned long index) const {
+  int getChainLength(size_t index) const {
     int count = 0;
     for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
       count++;
@@ -118,7 +118,7 @@ public:
     init(0);
   }
 
-  explicit CompactHashMap(unsigned long capacity) {
+  explicit CompactHashMap(size_t capacity) {
     init(capacity);
   }
 
@@ -141,7 +141,7 @@ public:
     clear();
   }
 
-  void setCapacity(unsigned long capacity) {
+  void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
@@ -167,7 +167,7 @@ public:
     }
   }
 
-  unsigned long getCapacity() const {
+  size_t getCapacity() const {
     return m_capacity;
   }
 
@@ -242,7 +242,7 @@ public:
     setCapacity(0);
   }
 
-  unsigned __int64 size() const {
+  size_t size() const {
     return m_size;
   }
 
@@ -253,10 +253,10 @@ public:
   CompactIntArray getLength() const {
     CompactIntArray result;
     CompactIntArray tmp;
-    const unsigned long capacity = getCapacity();
+    const size_t capacity = getCapacity();
     int m = 0;
-    for(unsigned long index = 0; index < capacity; index++) {
-      int l = getChainLength(index);
+    for(size_t index = 0; index < capacity; index++) {
+      const int l = getChainLength(index);
       tmp.add(l);
       if(l > m) {
         m = l;
@@ -265,7 +265,7 @@ public:
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
-    for(unsigned long index = 0; index < capacity; index++) {
+    for(size_t index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;
@@ -273,9 +273,9 @@ public:
 
   int getMaxChainLength() const {
     int m = 0;
-    const unsigned long capacity = getCapacity();
-    for(unsigned long i = 0; i < capacity; i++) {
-      int l = getChainLength(i);
+    const size_t capacity = getCapacity();
+    for(size_t i = 0; i < capacity; i++) {
+      const int l = getChainLength(i);
       if(l > m) {
         m = l;
       }

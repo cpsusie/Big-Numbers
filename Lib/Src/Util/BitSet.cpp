@@ -11,7 +11,9 @@
 #define ATOM(p,i)       p[ATOMINDEX(i)]
 #define ATOMBIT(i)      ((BitSet::Atom)1<< ((i)%BITSINATOM))
 
+#ifdef IS32BIT
 #define ASM_OPTIMIZED
+#endif
 
 DEFINECLASSNAME(BitSet);
 
@@ -48,25 +50,25 @@ static InitBitSetMask maskInitializer;
 
 #define MASKATOM(i) mask[i]
 
-int BitSet::getAtomCount() const {
+size_t BitSet::getAtomCount() const {
   return ATOMCOUNT(m_capacity);
 }
 
-unsigned long BitSet::getAtomIndex(unsigned long i) const {
+size_t BitSet::getAtomIndex(size_t i) const {
   return ATOMINDEX(i);
 }
 
-int BitSet::getAtomCount(unsigned long capacity) { // static
+size_t BitSet::getAtomCount(size_t capacity) { // static
   return ATOMCOUNT(capacity);
 }
 
 
-BitSet::BitSet(unsigned long capacity) {
+BitSet::BitSet(size_t capacity) {
   if(capacity == 0) {
     throwMethodInvalidArgumentException(s_className, _T("BitSet"), _T("Capacity=%d"),capacity);
   }
   m_capacity = capacity;
-  const unsigned long atomCount = ATOMCOUNT(m_capacity);
+  const size_t atomCount = ATOMCOUNT(m_capacity);
   m_p = new Atom[atomCount];
   memset(m_p,0,atomCount * sizeof(Atom));
 }
@@ -77,7 +79,7 @@ BitSet::~BitSet() {
 
 BitSet::BitSet(const BitSet &set) {
   m_capacity = set.m_capacity;
-  const unsigned long atomCount = ATOMCOUNT(m_capacity);
+  const size_t atomCount = ATOMCOUNT(m_capacity);
   m_p = new Atom[atomCount];
   memcpy(m_p,set.m_p,atomCount * sizeof(Atom)); 
 }
@@ -86,7 +88,7 @@ BitSet &BitSet::operator=(const BitSet &rhs) {
   if(this == &rhs) {
     return *this;
   }
-  const unsigned long atomCount = ATOMCOUNT(rhs.m_capacity);
+  const size_t atomCount = ATOMCOUNT(rhs.m_capacity);
   if(rhs.m_capacity != m_capacity) {
     delete[] m_p;
     m_capacity = rhs.m_capacity;
@@ -97,9 +99,9 @@ BitSet &BitSet::operator=(const BitSet &rhs) {
   return *this;
 }
 
-void BitSet::setCapacity(unsigned long newCapacity) {
-  const unsigned long newAtomCount = ATOMCOUNT(newCapacity);
-  const unsigned long oldAtomCount = ATOMCOUNT(m_capacity );
+void BitSet::setCapacity(size_t newCapacity) {
+  const size_t newAtomCount = ATOMCOUNT(newCapacity);
+  const size_t oldAtomCount = ATOMCOUNT(m_capacity );
   if(newAtomCount != oldAtomCount) {
     Atom *p = new Atom[newAtomCount];
     if(newAtomCount > oldAtomCount) {
@@ -115,12 +117,12 @@ void BitSet::setCapacity(unsigned long newCapacity) {
 }
 
 BitSet &BitSet::clear() {
-  const unsigned long atomCount = ATOMCOUNT(m_capacity);
+  const size_t atomCount = ATOMCOUNT(m_capacity);
   memset(m_p,0,atomCount * sizeof(Atom));
   return *this;
 }
 
-BitSet &BitSet::remove(unsigned long i) {
+BitSet &BitSet::remove(size_t i) {
   if(i >= m_capacity) {
     throwMethodInvalidArgumentException(s_className, _T("remove"), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
@@ -128,7 +130,7 @@ BitSet &BitSet::remove(unsigned long i) {
   return *this;
 }
 
-BitSet &BitSet::add(unsigned long i) {
+BitSet &BitSet::add(size_t i) {
   if(i >= m_capacity) {
     throwMethodInvalidArgumentException(s_className, _T("add"), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
@@ -136,15 +138,15 @@ BitSet &BitSet::add(unsigned long i) {
   return *this;
 }
 
-BitSet &BitSet::remove(unsigned long a, unsigned long b) {
+BitSet &BitSet::remove(size_t a, size_t b) {
   if(b >= m_capacity) {
     throwMethodInvalidArgumentException(s_className, _T("remove"), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;
   }
-  unsigned long aIndex = ATOMINDEX(a);
-  unsigned long bIndex = ATOMINDEX(b);
+  size_t aIndex = ATOMINDEX(a);
+  size_t bIndex = ATOMINDEX(b);
 
   if(aIndex < bIndex) {
     if(a % BITSINATOM) { 
@@ -164,15 +166,15 @@ BitSet &BitSet::remove(unsigned long a, unsigned long b) {
   return *this;
 }
 
-BitSet &BitSet::add(unsigned long a, unsigned long b) {
+BitSet &BitSet::add(size_t a, size_t b) {
   if(b >= m_capacity) {
     throwMethodInvalidArgumentException(s_className, _T("add"), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;
   }
-  unsigned long aIndex = ATOMINDEX(a);
-  unsigned long bIndex = ATOMINDEX(b);
+  size_t aIndex = ATOMINDEX(a);
+  size_t bIndex = ATOMINDEX(b);
 
   if(aIndex < bIndex) {
     if(a % BITSINATOM) { 
@@ -193,15 +195,15 @@ BitSet &BitSet::add(unsigned long a, unsigned long b) {
   return *this;
 }
 
-bool BitSet::contains(unsigned long i) const {
+bool BitSet::contains(size_t i) const {
   if(i >= m_capacity) {
     return false;
   }
   return (ATOM(m_p,i) & ATOMBIT(i)) ? true : false;
 }
 
-unsigned int BitSet::select() const {
-  const unsigned int i = selectRandomNonEmptyAtom();
+size_t BitSet::select() const {
+  const size_t i = selectRandomNonEmptyAtom();
   Atom p = m_p[i];
   unsigned char bits[BITSINATOM];
   Atom mask;
@@ -215,16 +217,16 @@ unsigned int BitSet::select() const {
   return i * BITSINATOM + bits[randInt() % count];
 }
 
-unsigned int BitSet::selectRandomNonEmptyAtom() const {
-  const unsigned int a = ATOMCOUNT(m_capacity);
+size_t BitSet::selectRandomNonEmptyAtom() const {
+  const size_t a = ATOMCOUNT(m_capacity);
   if(randInt() % 2) {
-    for(unsigned long c = a, i = randInt() % a; c--; i = (i+1) % a) {
+    for(size_t c = a, i = randSizet() % a; c--; i = (i+1) % a) {
       if(m_p[i]) {
         return i;
       }
     }
   } else {
-    for(unsigned long c = a, i = randInt() % a; c--;) {
+    for(size_t c = a, i = randSizet() % a; c--;) {
       if(m_p[i]) {
         return i;
       }
@@ -237,7 +239,7 @@ unsigned int BitSet::selectRandomNonEmptyAtom() const {
 
 BitSet &BitSet::invert() {
   Atom *p = m_p;
-  for(unsigned long i = ATOMCOUNT(m_capacity); i--; p++) {
+  for(size_t i = ATOMCOUNT(m_capacity); i--; p++) {
     *p = ~*p;
   }
 
@@ -260,10 +262,10 @@ BitSet compl(const BitSet &s) {
                      2 times slower for empty sets.
 */
 
-unsigned long BitSet::oldsize() const {
+size_t BitSet::oldsize() const {
   const Atom *p = m_p;
-  unsigned long result = 0;
-  for (unsigned long i = ATOMCOUNT(m_capacity); i--;) {
+  size_t result = 0;
+  for (size_t i = ATOMCOUNT(m_capacity); i--;) {
 	  for(Atom a = *(p++); a; a &= (a-1)) {
       result++;
     }
@@ -290,23 +292,23 @@ const char BitSet::setBitsCount[256] = { // Number of set bits for each bytevalu
   4,5,5,6,5,6,6,7,5,6,6,7,6,7,7,8
 };
 
-unsigned long BitSet::size() const {
-  const unsigned char *p = (const unsigned char*)m_p;
-  unsigned long result = 0;
-  for(unsigned long i = BYTECOUNT(m_capacity); i--;) {
+size_t BitSet::size() const {
+  const BYTE *p = (const BYTE*)m_p;
+  size_t result = 0;
+  for(size_t i = BYTECOUNT(m_capacity); i--;) {
     result += setBitsCount[*(p++)];
   }
   return result;
 }
 
-int BitSet::getIndex(unsigned long i) const {
+intptr_t BitSet::getIndex(size_t i) const {
   if(!contains(i)) {
     return -1;
   }
-  const unsigned char *p = (const unsigned char*)m_p;
+  const BYTE *p = (const BYTE*)m_p;
   const bool frac = (i%8) ? true : false;
   long result = 0;
-  for(unsigned long j = BYTEINDEX(i)+(frac?1:0); j--;) {
+  for(size_t j = BYTEINDEX(i)+(frac?1:0); j--;) {
     result += setBitsCount[*(p++)];
   }
   if(frac) {
@@ -316,19 +318,19 @@ int BitSet::getIndex(unsigned long i) const {
   return result;
 }
 
-unsigned int BitSet::getCount(unsigned int from, unsigned int to) const {
+size_t BitSet::getCount(size_t from, size_t to) const {
   if(to >= m_capacity) {
     to = m_capacity;
   }
   if(from > to) {
     return 0;
   }
-  unsigned long fromIndex = BYTEINDEX(from);
-  unsigned long toIndex   = BYTEINDEX(to  );
-  const unsigned char *p = (const unsigned char*)m_p;
+  size_t fromIndex = BYTEINDEX(from);
+  size_t toIndex   = BYTEINDEX(to  );
+  const BYTE *p = (const BYTE*)m_p;
 
   if(fromIndex < toIndex) {
-    unsigned long result;
+    size_t result;
     if(from % 8) {
       result = setBitsCount[p[fromIndex] & ~MASKATOM(from%8)];
       fromIndex++;
@@ -341,7 +343,7 @@ unsigned int BitSet::getCount(unsigned int from, unsigned int to) const {
       toIndex--;
     }
 
-    int j = toIndex - fromIndex + 1;
+    intptr_t j = toIndex - fromIndex + 1;
     if(j > 0) {
       for(p += fromIndex; j--;) {
         result += setBitsCount[*(p++)];
@@ -355,7 +357,7 @@ unsigned int BitSet::getCount(unsigned int from, unsigned int to) const {
 
 bool BitSet::isEmpty() const {
   Atom *p = m_p;
-  unsigned long i = ATOMCOUNT(m_capacity);
+  size_t i = ATOMCOUNT(m_capacity);
 #ifndef ASM_OPTIMIZED
   for(; i--;) {
     if(*(p++)) {
@@ -408,40 +410,40 @@ end:
 }
 
 BitSet &BitSet::operator+=(const BitSet &rhs) { // this = this union rhs
-  const unsigned long ratomCount = ATOMCOUNT(rhs.m_capacity);
+  const size_t ratomCount = ATOMCOUNT(rhs.m_capacity);
 
   if(ATOMCOUNT(m_capacity) < ratomCount) {
     setCapacity(rhs.m_capacity);
   }
   Atom *p        = m_p;
   const Atom *rp = rhs.m_p;
-  for(unsigned long i = ratomCount; i--;) {
+  for(size_t i = ratomCount; i--;) {
     *(p++) |= *(rp++);
   }
   return *this;
 }
 
 BitSet &BitSet::operator-=(const BitSet &rhs) { // this = this - rhs
-  const unsigned long minCapacity  = min(m_capacity,rhs.m_capacity);
-  const unsigned long minAtomCount = ATOMCOUNT(minCapacity);
+  const size_t minCapacity  = min(m_capacity,rhs.m_capacity);
+  const size_t minAtomCount = ATOMCOUNT(minCapacity);
 
-  Atom *p        = m_p;
+  Atom       *p  = m_p;
   const Atom *rp = rhs.m_p;
-  for(unsigned long i = minAtomCount; i--;) {
+  for(size_t i = minAtomCount; i--;) {
     *(p++) &= ~*(rp++);
   }
   return *this;
 }
 
 BitSet &BitSet::operator*=(const BitSet &rhs) { // this = this and rhs (intersection)
-  const unsigned long minCapacity  = min(m_capacity, rhs.m_capacity);
-  const unsigned long minAtomCount = ATOMCOUNT(minCapacity);
+  const size_t minCapacity  = min(m_capacity, rhs.m_capacity);
+  const size_t minAtomCount = ATOMCOUNT(minCapacity);
   Atom *p  = m_p;
   Atom *rp = rhs.m_p;
-  for(unsigned long i = minAtomCount; i--;) {
+  for(size_t i = minAtomCount; i--;) {
     *(p++) &= *(rp++);
   }
-  for(unsigned long i = ATOMCOUNT(m_capacity) - minAtomCount; i--;) {
+  for(size_t i = ATOMCOUNT(m_capacity) - minAtomCount; i--;) {
     *(p++) = 0;
   }
   return *this;
@@ -452,10 +454,10 @@ BitSet &BitSet::operator^=(const BitSet &rhs) { // this = this xor rhs
     setCapacity(rhs.m_capacity);
   }
 
-  const unsigned long atomCount = ATOMCOUNT(rhs.m_capacity);
+  const size_t atomCount = ATOMCOUNT(rhs.m_capacity);
   Atom *p  = m_p;
   Atom *rp = rhs.m_p;
-  for(unsigned long i = atomCount; i--;) {
+  for(size_t i = atomCount; i--;) {
     *(p++) ^= *(rp++);
   }
   return *this;
@@ -505,15 +507,15 @@ BitSet operator^(const BitSet &lts, const BitSet &rhs) { // xor, ie symmetric di
 
 bool operator<=(const BitSet &lts, const BitSet &rhs) {
   if(lts.m_capacity <= rhs.m_capacity) {
-    const unsigned long atomCount = ATOMCOUNT(lts.m_capacity);
-    for(unsigned long i = 0; i < atomCount; i++) {
+    const size_t atomCount = ATOMCOUNT(lts.m_capacity);
+    for(size_t i = 0; i < atomCount; i++) {
       if((lts.m_p[i] & rhs.m_p[i]) != lts.m_p[i]) {
         return false;
       }
     }
   } else { // lts.m_capacity > rhs.m_capacity
-    unsigned long atomCount = ATOMCOUNT(rhs.m_capacity);
-    unsigned long i;
+    size_t atomCount = ATOMCOUNT(rhs.m_capacity);
+    size_t i;
     for(i = 0; i < atomCount; i++) {
       if((lts.m_p[i] & rhs.m_p[i]) != lts.m_p[i]) {
         return false;
@@ -542,9 +544,13 @@ bool operator>(const BitSet &lts, const BitSet &rhs) {
 }
 
 unsigned long BitSet::hashCode() const {
+#ifdef IS64BIT
+  unsigned long v = (m_capacity >> 32) ^ (m_capacity & 0xffffffff);
+#else
   unsigned long v = m_capacity;
+#endif
   const Atom *p = m_p;
-  for(unsigned long i = ATOMCOUNT(m_capacity); i--;) {
+  for(size_t i = ATOMCOUNT(m_capacity); i--;) {
     v ^= *(p++);
   }
   return v;
@@ -559,20 +565,20 @@ bool operator!=(const BitSet &lts, const BitSet &rhs) {
 }
 
 int bitSetCmp(const BitSet &i1, const BitSet &i2) {
-  const unsigned long atomcount1 = ATOMCOUNT(i1.m_capacity);
-  const unsigned long atomcount2 = ATOMCOUNT(i2.m_capacity);
+  const size_t atomcount1 = ATOMCOUNT(i1.m_capacity);
+  const size_t atomcount2 = ATOMCOUNT(i2.m_capacity);
   if(atomcount1 == atomcount2) {
     return memcmp(i1.m_p,i2.m_p,atomcount1 * sizeof(BitSet::Atom));
   } else {
-    const unsigned long minAtomCount = min(atomcount1,atomcount2);
-    const unsigned long maxAtomCount = max(atomcount1,atomcount2);
+    const size_t minAtomCount = min(atomcount1,atomcount2);
+    const size_t maxAtomCount = max(atomcount1,atomcount2);
     int c = memcmp(i1.m_p,i2.m_p,minAtomCount * sizeof(BitSet::Atom));
     if(c) {
       return c;
     }
     // the rest must be 0
     const BitSet::Atom *p = (minAtomCount == atomcount1) ? i2.m_p+minAtomCount : i1.m_p+minAtomCount;
-    for(unsigned long i = maxAtomCount - minAtomCount; i--;) {
+    for(size_t i = maxAtomCount - minAtomCount; i--;) {
       if(*(p++)) {
         return (minAtomCount == atomcount1) ? -1 : 1;
       }
@@ -587,7 +593,7 @@ tostream& operator<<(tostream &s, const BitSet &rhs) {
 
 String BitSet::toString() const {
   String result = "(";
-  Iterator<unsigned int> it = ((BitSet*)this)->getIterator();
+  Iterator<size_t> it = ((BitSet*)this)->getIterator();
   if(it.hasNext()) {
     result += format(_T("%lu"), it.next());
     while(it.hasNext()) {
@@ -612,7 +618,7 @@ static char *sprintbin(char *s, BitSet::Atom p) {
 tostream &BitSet::dump(tostream &s) {
   Atom *p = m_p;
   char tmp[BITSINATOM+1];
-  for(unsigned long i = ATOMCOUNT(m_capacity); i--;) {
+  for(size_t i = ATOMCOUNT(m_capacity); i--;) {
     s << sprintbin(tmp, *(p++)) << " ";
   }
   s.flush();
@@ -622,19 +628,19 @@ tostream &BitSet::dump(tostream &s) {
 void BitSet::dump(FILE *f) {
   Atom *p = m_p;
   char tmp[BITSINATOM+1];
-  for(unsigned long i = ATOMCOUNT(m_capacity); i--;) {
+  for(size_t i = ATOMCOUNT(m_capacity); i--;) {
     fprintf(f,"%s ",sprintbin(tmp, *(p++)));
   }
   fprintf(f,"\n");
 }
 
-void BitSet::getRangeTable(CompactArray<unsigned int> &rangeTable, unsigned char shift) const {
+void BitSet::getRangeTable(CompactArray<size_t> &rangeTable, unsigned char shift) const {
   rangeTable.clear();
   const unsigned int stepSize     = 1 << shift;
-  unsigned int       currentLimit = stepSize;
-  unsigned int       counter      = 0;
+  size_t             currentLimit = stepSize;
+  size_t             counter      = 0;
   for(BitSetIterator it((BitSet&)(*this)); it.hasNext();) {
-    const unsigned int &e = *(const unsigned int*)it.next();
+    const size_t &e = *(const size_t*)it.next();
     if(++counter >= currentLimit) {
   
 //      printf("hashTable[%3d]:%11s -> %s\n", m_rangeTable.size(), format1000(currentLimit).cstr(), format1000(e).cstr());

@@ -14,7 +14,7 @@ CompoundFindDataComparator::CompoundFindDataComparator(FindDataField field, ...)
 }
 
 int CompoundFindDataComparator::compare(const DirListEntry &e1, const DirListEntry &e2) {
-  for(int i = 0; i < m_sortDefinition.size(); i++) {
+  for(int i = 0; i < (int)m_sortDefinition.size(); i++) {
     FindDataFieldSortDefinition &s = m_sortDefinition[i];
     long long c;
     switch(s.m_field) {

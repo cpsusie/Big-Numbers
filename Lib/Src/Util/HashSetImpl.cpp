@@ -34,7 +34,7 @@ static FileInitializer initFile;
 
 DEFINECLASSNAME(HashSetTable);
 
-HashSetTable::HashSetTable(const HashSetImpl &owner, unsigned long capacity) : m_owner(owner), m_capacity(max(5, capacity)) {
+HashSetTable::HashSetTable(const HashSetImpl &owner, size_t capacity) : m_owner(owner), m_capacity(max(5, capacity)) {
   m_size        = 0;
   m_updateCount = 0;
   m_table       = new HashSetNode*[m_capacity];
@@ -49,7 +49,7 @@ HashSetTable::~HashSetTable() {
   delete[] m_table;
 }
 
-void HashSetTable::insert(unsigned long index, HashSetNode *n) {
+void HashSetTable::insert(size_t index, HashSetNode *n) {
   HashSetNode *q = m_table[index];
   m_table[index] = n;
   n->m_next      = q;
@@ -128,7 +128,7 @@ void HashSetTable::clear() {
   m_updateCount++;
 }
 
-int HashSetTable::chainLength(unsigned long index) const {
+int HashSetTable::chainLength(size_t index) const {
   int count = 0;
   for(HashSetNode *p = m_table[index]; p; p = p->m_next) {
     count++;
@@ -139,10 +139,10 @@ int HashSetTable::chainLength(unsigned long index) const {
 CompactIntArray HashSetTable::getLength() const {
   CompactIntArray result;
   CompactIntArray tmp;
-  const unsigned long capacity = getCapacity();
+  const size_t capacity = getCapacity();
   int m = 0;
-  for(unsigned long index = 0; index < capacity; index++) {
-    int l = chainLength(index);
+  for(size_t index = 0; index < capacity; index++) {
+    const int l = chainLength(index);
     tmp.add(l);
     if(l > m) {
       m = l;
@@ -151,7 +151,7 @@ CompactIntArray HashSetTable::getLength() const {
   for(int i = 0; i <= m; i++) {
     result.add(0);
   }
-  for(unsigned long index = 0; index < capacity; index++) {
+  for(size_t index = 0; index < capacity; index++) {
     result[tmp[index]]++;
   }
   return result;
@@ -159,9 +159,9 @@ CompactIntArray HashSetTable::getLength() const {
 
 int HashSetTable::getMaxChainLength() const {
   int m = 0;
-  const unsigned long capacity = getCapacity();
-  for(unsigned long i = 0; i < capacity; i++) {
-    int l = chainLength(i);
+  const size_t capacity = getCapacity();
+  for(size_t i = 0; i < capacity; i++) {
+    const int l = chainLength(i);
     if(l > m) {
       m = l;
     }
@@ -171,7 +171,7 @@ int HashSetTable::getMaxChainLength() const {
 
 DEFINECLASSNAME(HashSetImpl);
 
-HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, unsigned long capacity) {
+HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity) {
   m_objectManager = objectManager.clone();
   m_comparator    = comparator.clone();
   m_hash          = hash;
@@ -232,11 +232,11 @@ void HashSetImpl::deleteNode(HashSetNode *n) const {
   delete n;
 }
 
-void HashSetImpl::resize(unsigned long newCapacity) {
+void HashSetImpl::resize(size_t newCapacity) {
   HashSetTable *newTable = new HashSetTable(*this, newCapacity);
   TRACE_NEW(newTable);
   try {
-    unsigned long capacity = newTable->getCapacity();
+    size_t capacity = newTable->getCapacity();
     for(HashSetNode *p = m_table->m_firstLink; p; p = p->m_nextLink) {
       unsigned long hashIndex = m_hash(p->m_key) % capacity;
       newTable->insert(hashIndex, cloneNode(p));
@@ -259,8 +259,8 @@ bool HashSetImpl::insertNode(HashSetNode *n) {
     }
   }
 
-  if((unsigned long)size() > 5 * getCapacity()) {
-    unsigned long newCapacity = 5 * size();
+  if(size() > 5 * getCapacity()) {
+    size_t newCapacity = 5 * size();
     if(newCapacity % 2 == 0) {
       newCapacity++;
     }
@@ -351,9 +351,9 @@ HashSetNode *HashSetImpl::findNode(const void *key) {
 static int countcall = 0;
 void HashSetImpl::checktable(const char *label) const {
   countcall++;
-  unsigned long n = getCapacity();
-  int count = 0;
-  for(unsigned long i = 0; i < n; i++) {
+  size_t n = getCapacity();
+  size_t count = 0;
+  for(size_t i = 0; i < n; i++) {
     const HashSetNode * const *last = &m_table->m_table[i];
     for(const HashSetNode *p = m_table->m_table[i]; p; p = p->m_next) {
       if(p->m_prev != last) {

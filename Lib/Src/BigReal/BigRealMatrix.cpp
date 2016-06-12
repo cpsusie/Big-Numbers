@@ -21,8 +21,8 @@ BigRealMatrix::BigRealMatrix(unsigned int rows, unsigned int cols, unsigned int 
 
 BigRealMatrix::BigRealMatrix(const BigRealMatrix &a) {
   init(a.getRowCount(),a.getColumnCount(),false,a.getPrecision());
-  for(int r = 0; r < getRowCount(); r++) {
-    for(int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       (*this)(r,c) = a(r,c);
     }
   }
@@ -35,31 +35,31 @@ unsigned int BigRealMatrix::setPrecision(unsigned int digits) {
   return oldDigits;
 }
 
-BigRealMatrix BigRealMatrix::one(unsigned int dim, unsigned int digits) {
+BigRealMatrix BigRealMatrix::one(size_t dim, size_t digits) {
   BigRealMatrix result(dim,dim,digits);
-  for(unsigned int i = 0; i < dim; i++) {
+  for(size_t i = 0; i < dim; i++) {
     result(i,i) = 1;
   }
   return result;
 }
 
-BigRealMatrix BigRealMatrix::zero(unsigned int rows, unsigned int columns, unsigned int digits) {
+BigRealMatrix BigRealMatrix::zero(size_t rows, size_t columns, unsigned int digits) {
   return BigRealMatrix(rows,columns,digits);
 }
 
-BigRealVector BigRealMatrix::getRow(unsigned int row) const {
+BigRealVector BigRealMatrix::getRow(size_t row) const {
   return BigRealVector(MatrixTemplate<BigReal>::getRow(row),getPrecision());
 }
 
-BigRealVector BigRealMatrix::getColumn(unsigned int column) const {
+BigRealVector BigRealMatrix::getColumn(size_t column) const {
   return BigRealVector(MatrixTemplate<BigReal>::getColumn(column),getPrecision());
 }
 
 // Frobenius norm
 BigReal normf(const BigRealMatrix &a) {
   BigReal sum = 0;
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       sum += a(r,c)*a(r,c);
     }
   }
@@ -69,14 +69,14 @@ BigReal normf(const BigRealMatrix &a) {
 BigRealVector operator*(const BigRealMatrix &lts, const BigRealVector& rhs) {
   const int digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if((unsigned int)lts.getColumnCount() != rhs.getDimension()) {
-    throwBigRealException(_T("operator*(BigRealMatrix,BigRealVector):Invalid dimension. Matrix.dimension=(%u,%u), Vector.dimension=%u."),lts.getRowCount(),lts.getColumnCount(),rhs.getDimension());
+  if(lts.getColumnCount() != rhs.getDimension()) {
+    throwBigRealException(_T("operator*(BigRealMatrix,BigRealVector):Invalid dimension. Matrix.%s, Vector.dimension=%s."),lts.getDimensionString().cstr(),format1000(rhs.getDimension()).cstr());
   }
   
   BigRealVector result(lts.getRowCount(),digits);
-  for(int r = 0; r < lts.getRowCount(); r++) {
+  for(size_t r = 0; r < lts.getRowCount(); r++) {
     BigReal sum = 0;
-    for(int c = 0; c < lts.getColumnCount(); c++) {
+    for(size_t c = 0; c < lts.getColumnCount(); c++) {
       sum = rSum(sum,rProd(lts(r,c),rhs[c],digits),digits);
     }
     result[r] = sum;
@@ -87,14 +87,14 @@ BigRealVector operator*(const BigRealMatrix &lts, const BigRealVector& rhs) {
 BigRealVector operator*(const BigRealVector &lts, const BigRealMatrix& rhs) {
   const int digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if(lts.getDimension() != (unsigned int)rhs.getRowCount()) {
-    throwBigRealException(_T("operator*(BigRealVector,BigRealMatrix):Invalid dimension. Vector.dimension=%u, Matrix.dimension=(%u,%u)."), lts.getDimension(),rhs.getRowCount(), rhs.getColumnCount());
+  if(lts.getDimension() != rhs.getRowCount()) {
+    throwBigRealException(_T("operator*(BigRealVector,BigRealMatrix):Invalid dimension. Vector.dimension=%s, Matrix.%s."), format1000(lts.getDimension()).cstr(),rhs.getDimensionString().cstr());
   }
 
   BigRealVector result(rhs.getColumnCount(),digits);
-  for(int c = 0; c < rhs.getColumnCount(); c++) {
+  for(size_t c = 0; c < rhs.getColumnCount(); c++) {
     BigReal sum = 0;
-    for(int r = 0; r < rhs.getColumnCount(); r++) {
+    for(size_t r = 0; r < rhs.getColumnCount(); r++) {
       sum = rSum(sum,rProd(lts(r),rhs(r,c),digits),digits);
     }
     result[c] = sum;
@@ -106,14 +106,14 @@ BigRealMatrix operator*(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
   const int digits = min(lts.getPrecision(),rhs.getPrecision());
 
   if(lts.getColumnCount() != rhs.getRowCount()) {
-    throwBigRealException(_T("operator*(BigRealMatrix,BigRealMatrix):Invalid dimension. left.dimension=(%u,%u), right.dimension=(%u,%u)"), lts.getRowCount(), lts.getColumnCount(), rhs.getRowCount(), rhs.getColumnCount());
+    throwBigRealException(_T("operator*(BigRealMatrix,BigRealMatrix):Invalid dimension. left:%s, right:%s"), lts.getDimensionString().cstr(), rhs.getDimensionString().cstr());
   }
 
   BigRealMatrix result(lts.getRowCount(),rhs.getColumnCount(),digits);
-  for(int r = 0; r < lts.getRowCount(); r++) {
-    for(int c = 0; c < rhs.getColumnCount(); c++) {
+  for(size_t r = 0; r < lts.getRowCount(); r++) {
+    for(size_t c = 0; c < rhs.getColumnCount(); c++) {
       BigReal sum = 0;
-      for(int k = 0; k < lts.getColumnCount(); k++) {
+      for(size_t k = 0; k < lts.getColumnCount(); k++) {
         sum = rSum(sum,rProd(lts(r,k),rhs(k,c),digits),digits);
       }
       result(r,c) = sum;
@@ -123,17 +123,15 @@ BigRealMatrix operator*(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
 }
 
 BigRealMatrix operator+(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
-  const int rows = lts.getRowCount();
-  const int cols = lts.getColumnCount();
+  const size_t rows = lts.getRowCount();
+  const size_t cols = lts.getColumnCount();
   const int digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if(rows != rhs.getRowCount() || cols != rhs.getColumnCount()) {
-    throwBigRealException(_T("operator+(BigRealMatrix,BigRealMatrix):Invalid dimension. left.dimension=(%u,%u), right.dimension=(%u,%u)"), lts.getRowCount(), lts.getColumnCount(), rhs.getRowCount(), rhs.getColumnCount());
-  }
-
+  lts.checkSameDimension(_T("operator+"), rhs);
+  
   BigRealMatrix result(rows,cols,digits);
-  for(int r = 0; r < rows; r++) {
-    for(int c = 0; c < cols; c++) {
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
       result(r,c) = rSum(lts(r,c),rhs(r,c),digits);
     }
   }
@@ -141,17 +139,15 @@ BigRealMatrix operator+(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
 }
 
 BigRealMatrix operator-(const BigRealMatrix& lts, const BigRealMatrix& rhs) {
-  const int rows = lts.getRowCount();
-  const int cols = lts.getColumnCount();
+  const size_t rows = lts.getRowCount();
+  const size_t cols = lts.getColumnCount();
   const int digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if(rows != rhs.getRowCount() || cols != rhs.getColumnCount()) {
-    throwBigRealException(_T("operator-(BigRealMatrix,BigRealMatrix):Invalid dimension. left.dimension=(%u,%u), right.dimension=(%u,%u)"), lts.getRowCount(), lts.getColumnCount(), rhs.getRowCount(), rhs.getColumnCount());
-  }
-  
+  lts.checkSameDimension(_T("operator-"), rhs);
+
   BigRealMatrix result(rows,cols,digits);
-  for(int r = 0; r < rows; r++) {
-    for(int c = 0; c < cols; c++) {
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
       result(r,c) = rDif(lts(r,c),rhs(r,c),digits);
     }
   }
@@ -192,13 +188,13 @@ double norm00( const BigRealMatrix& a) {
 }
 */
 BigRealMatrix operator*(const BigRealMatrix &lts, const BigReal &d) {
-  const int rows = lts.getRowCount();
-  const int cols = lts.getColumnCount();
+  const size_t rows = lts.getRowCount();
+  const size_t cols = lts.getColumnCount();
   const int digits = lts.getPrecision();
 
   BigRealMatrix result(rows,cols,digits);
-  for(int r = 0; r < rows; r++) {
-    for(int c = 0; c < cols; c++) {
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
       result(r,c) = rProd(lts(r,c),d,digits);
     }
   }
@@ -210,13 +206,13 @@ BigRealMatrix operator*(const BigReal &d, const BigRealMatrix &rhs) {
 }
 
 BigRealMatrix operator/(const BigRealMatrix &lts, const BigReal &d) {
-  const int rows    = lts.getRowCount();
-  const int cols    = lts.getColumnCount();
-  const int digits = lts.getPrecision();
+  const size_t rows    = lts.getRowCount();
+  const size_t cols    = lts.getColumnCount();
+  const int    digits  = lts.getPrecision();
 
   BigRealMatrix result(rows,cols,digits);
-  for(int r = 0; r < rows; r++) {
-    for(int c = 0; c < cols; c++) {
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < cols; c++) {
       result(r,c) = rQuot(lts(r,c),d,digits);
     }
   }
@@ -225,7 +221,7 @@ BigRealMatrix operator/(const BigRealMatrix &lts, const BigReal &d) {
 
 BigRealMatrix inverse(const BigRealMatrix &a) {
   if(!a.isSquare()) {
-    throwBigRealException(_T("inverse(BigRealMatrix):Matrix not square. Dimension = (%u,%u)"), a.getRowCount(), a.getColumnCount());
+    throwBigRealException(_T("inverse(BigRealMatrix):Matrix not square. %s"), a.getDimensionString().cstr());
   }
 
   BigRealLUMatrix lu(a);
@@ -234,8 +230,8 @@ BigRealMatrix inverse(const BigRealMatrix &a) {
 
 BigRealMatrix transpose(const BigRealMatrix &a) {
   BigRealMatrix result(a.getColumnCount(),a.getRowCount(),a.getPrecision());
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       result(c,r) = a(r,c);
     }
   }

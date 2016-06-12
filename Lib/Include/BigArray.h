@@ -39,6 +39,8 @@ private:
 
 #define _ELEMENTS_PER_PAGE (MAX_PAGESIZE / sizeof(T))
 
+#pragma warning(disable:4200 4723 4724)
+
   class ArrayPage {
   public:
     T m_element[_ELEMENTS_PER_PAGE];
@@ -86,11 +88,11 @@ private:
       deallocate();
     }
 
-    T &operator[](unsigned int index) {
+    T &operator[](size_t index) {
       return m_page->m_element[index % _ELEMENTS_PER_PAGE];
     }
 
-    const T &operator[](unsigned int index) const {
+    const T &operator[](size_t index) const {
       return m_page->m_element[index % _ELEMENTS_PER_PAGE];
     }
 
@@ -106,7 +108,7 @@ private:
 
   };
 
-  unsigned int                         m_size;              // total number of elements in array
+  size_t                               m_size;              // total number of elements in array
   mutable CompactArray<PageMapElement> m_pageMap;           // size = number of pages
   mutable BitSet                       m_freeFilePages;
   mutable unsigned int                 m_pageFileSize;      // In pages. NOT bytes
@@ -117,16 +119,16 @@ private:
   mutable FILE                        *m_pageFile;          // An ArrayPage is swapped out to m_pageFile, when not accessed for some time,
                                                             // and there are more than 1024 pages. It's loaded again if any of its elements are needed.
 
-  unsigned int getPageIndex(unsigned int index) const {
+  size_t getPageIndex(size_t index) const {
     return index / _ELEMENTS_PER_PAGE;
   }
 
-  unsigned int getPageOffset(unsigned int index) const {
+  unsigned int getPageOffset(size_t index) const {
     return index % _ELEMENTS_PER_PAGE;
   }
 
-  void indexError(unsigned int index) const {
-    throwException(_T("BigArray::Index %lu out of range. size=%lu, elementSize=%d"), index, m_size, sizeof(T));
+  void indexError(size_t index) const {
+    throwException(_T("BigArray::Index %s out of range. size=%s, elementSize=%d"), format1000(index).cstr(), format1000(m_size).cstr(), sizeof(T));
   }
 
   String getPageFileName() const {
@@ -169,14 +171,14 @@ private:
     m_freeFilePages.add(newPageIndex);
   }
 
-  unsigned int findFreeFilePage() const {
+  size_t findFreeFilePage() const {
     if(m_freeFilePages.isEmpty()) {
       addFilePage();
     }
     return m_freeFilePages.select();
   }
 
-  void readPage(unsigned int index, ArrayPage *a) const {
+  void readPage(size_t index, ArrayPage *a) const {
     assert(a != NULL);
     assert( index < m_pageFileSize);
     assert((index < m_freeFilePages.getCapacity()) && (!m_freeFilePages.contains(index)));
@@ -187,7 +189,7 @@ private:
     m_freeFilePages.add(index);
   }
 
-  void writePage(unsigned int index, const ArrayPage *a) const {
+  void writePage(size_t index, const ArrayPage *a) const {
     assert(a != NULL);
     if(index == m_pageFileSize) {
       addFilePage();
@@ -210,7 +212,7 @@ private:
     setUnloaded(pageIndex);
 
     pm.m_loaded = 1;
-    m_memoryPage[pm.m_pageIndex = pageIndex].m_mapIndex = &pm - &m_pageMap[0]; // m_pageMap not empty !!
+    m_memoryPage[pm.m_pageIndex = pageIndex].m_mapIndex = (UINT)(&pm - &m_pageMap[0]); // m_pageMap not empty !!
     allocatePage(pageIndex);
   }
 
@@ -228,8 +230,8 @@ private:
 // If NULL is returned, unusedPageIndex is the index into m_memoryPage
 // of an unused page, which can be used without saving it first
   PageMapElement *findPageToSwap(int &unusedPageIndex) const {
-    const unsigned int lastPageIndex = m_size ? getPageIndex(m_size-1) : 0; // m_size always > 0
-    PageMapElement    *result        = NULL;
+    const size_t    lastPageIndex = m_size ? getPageIndex(m_size-1) : 0; // m_size always > 0
+    PageMapElement *result        = NULL;
 
     for(int i = 0; i < ARRAYSIZE(m_memoryPage); i++) {
       const int t = m_memoryPage[i].m_mapIndex;
@@ -283,14 +285,14 @@ private:
 
   void incrementSize() {
     if(getPageOffset(m_size) == 0) { // Need a new page
-      const unsigned int pageIndex = getPageIndex(m_size);
-      if(pageIndex >= (unsigned int)m_pageMap.size()) {
+      const size_t pageIndex = getPageIndex(m_size);
+      if(pageIndex >= m_pageMap.size()) {
         m_pageMap.add(PageMapElement());
         PageMapElement &pmi = m_pageMap.last();
         int unusedPageIndex;
         PageMapElement *pmo = findPageToSwap(unusedPageIndex);
         if(pmo) {
-          const unsigned int filePageIndex = findFreeFilePage();
+          const size_t filePageIndex = findFreeFilePage();
           writePage(filePageIndex, m_memoryPage[pmo->m_pageIndex].m_page);
           setLoaded(pmi, pmo->m_pageIndex);
           pmo->m_pageIndex = filePageIndex;
@@ -303,16 +305,16 @@ private:
     m_size++;
   }
 
-  void decrementSize(unsigned int count) {
+  void decrementSize(size_t count) {
     assert(m_freeFilePages.getCapacity() > m_pageFileSize);
 
     if((m_size -= count) == 0) {
       cleanup();
     } else {
-      const unsigned int newPageCount = m_size ? (getPageIndex(m_size-1) + 1) : 0;
-      const unsigned int del          = m_pageMap.size() - newPageCount;
+      const size_t newPageCount = m_size ? (getPageIndex(m_size-1) + 1) : 0;
+      const size_t del          = m_pageMap.size() - newPageCount;
       if(del > 0) {
-        for(int pi = newPageCount; pi < m_pageMap.size(); pi++) {
+        for(size_t pi = newPageCount; pi < m_pageMap.size(); pi++) {
           PageMapElement &pm = m_pageMap[pi];
           if(pm.m_loaded) {
             setUnloaded(pm.m_pageIndex);
@@ -354,7 +356,7 @@ public:
 
   BigArray(const BigArray<T> &src) : m_freeFilePages(src.m_freeFilePages.getCapacity()){
     init();
-    for(unsigned int i = 0; i < src.m_size; i++) {
+    for(size_t i = 0; i < src.m_size; i++) {
       add(src[i]);
     }
   }
@@ -364,18 +366,18 @@ public:
       return *this;
     }
     clear();
-    for(unsigned int i = 0; i < src.m_size; i++) {
+    for(size_t i = 0; i < src.m_size; i++) {
       add(src[i]);
     }
     return *this;
   }
 
-  T &operator[](unsigned int i) {
+  T &operator[](size_t i) {
     CHECK_BIGARRAY_INVARIANT();
     if(i >= m_size) {
       indexError(i);
     }
-    unsigned int pageIndex;
+    size_t pageIndex;
     PageMapElement &pm = m_pageMap[pageIndex = getPageIndex(i)];
     if(!pm.m_loaded) {
       loadPage(pm);
@@ -386,12 +388,12 @@ public:
     return page[i];
   }
   
-  const T &operator[](unsigned int i) const {
+  const T &operator[](size_t i) const {
     CHECK_BIGARRAY_INVARIANT();
     if(i >= m_size) {
       indexError(i);
     }
-    unsigned int pageIndex;
+    size_t pageIndex;
     PageMapElement &pm = m_pageMap[pageIndex = getPageIndex(i)];
     if(!pm.m_loaded) {
       ((BigArray<T>*)this)->loadPage(pm);
@@ -402,14 +404,14 @@ public:
     return page[i];
   }
   
-  void add(unsigned int i, const T &e) {
+  void add(size_t i, const T &e) {
     CHECK_BIGARRAY_INVARIANT();
     if(i > m_size) {
       indexError(i);
     }
 
     incrementSize();
-    for(unsigned int j = m_size-1; j > i; j--) {
+    for(size_t j = m_size-1; j > i; j--) {
       (*this)[j+1] = (*this)[j];
     }
     (*this)[i] = e;
@@ -420,14 +422,17 @@ public:
     add(m_size, e);
   }
 
-  void remove(unsigned int i, unsigned int count=1) {
+  void remove(size_t i, size_t count=1) {
     CHECK_BIGARRAY_INVARIANT();
     if(count == 0) {
       return;
     }
-    unsigned int j = i+count;
+    size_t j = i+count;
     if(j > m_size) {
-      throwException(_T("BigArray::remove(%lu,%lu):Index %lu out of range. size=%lu, elementSize=%d"), i, count, j, m_size, sizeof(T));
+      throwException(_T("BigArray::remove(%s,%%s):Index %s out of range. size=%s, elementSize=%d")
+                    ,format1000(i).cstr(), format1000(count).cstr()
+                    ,format1000(j).cstr(), format1000(m_size).cstr()
+                    ,sizeof(T));
     }
     while(j < m_size) {
       (*this)[i++] = (*this)[j++];
@@ -441,10 +446,10 @@ public:
       throwException(_T("BigArray::Cannot select element from empty array"));
     }
 
-    return (*this)[randInt() % m_size];
+    return (*this)[randSizet(m_size)];
   }
 
-  unsigned int size() const {
+  size_t size() const {
     return m_size;
   }
 
@@ -465,7 +470,7 @@ public:
 
   void save(FILE *f) const {
     FWRITE(&m_size, sizeof(m_size), 1, f);
-    for(unsigned int i = 0; i < m_size;) {
+    for(size_t i = 0; i < m_size;) {
       ArrayPage tmpPage;
       for(int j = 0; j < _ELEMENTS_PER_PAGE && i < m_size; j++, i++) {
         tmpPage.m_element[j] = (*this)[i];
@@ -476,16 +481,17 @@ public:
 
   void load(FILE *f) {
     clear();
-    unsigned int size;
+    size_t size;
     FREAD(&size, sizeof(size), 1, f);
-    for(unsigned int i = 0; i < size;) {
+    for(size_t i = 0; i < size;) {
       ArrayPage tmpPage;
-      int rest = min(_ELEMENTS_PER_PAGE, size - i);
-      int got;
+      intptr_t rest = min(_ELEMENTS_PER_PAGE, size - i);
+      intptr_t got;
       if((got = FREAD(&tmpPage, sizeof(T), rest, f)) != rest) {
-        throwException(_T("Expected number of elements in file is %d. Can only read %d elements"), size, i + got);
+        throwException(_T("Expected number of elements in file is %s. Can only read %s elements")
+                      ,format1000(size).cstr(), format1000(i + got).cstr());
       }
-      for(int j = 0; j < rest;) {
+      for(intptr_t j = 0; j < rest;) {
         add(tmpPage.m_element[j++]);
       }
       i += rest;
@@ -493,11 +499,11 @@ public:
   }
 
   friend bool operator==(const BigArray<T> &a1, const BigArray<T> &a2) {
-    const unsigned int count = a1.size();
+    const size_t count = a1.size();
     if(count != a2.size()) {
       return false;
     }
-    for(unsigned int i = 0; i < count; i++) {
+    for(size_t i = 0; i < count; i++) {
       if(!(a1[i] == a2[i])) {
         return false;
       }
@@ -518,25 +524,31 @@ public:
             throwException(_T("size=0, memoryPage[%d].m_mapIndex=%d (!= -1)"), i, m_memoryPage[i].m_mapIndex);
           }
           if(m_pageMap.size() != 0) {
-            throwException(_T("size=0, pageTable.size=%d"), m_pageMap.size());
+            throwException(_T("size=0, pageTable.size=%s"), m_pageMap.size());
           }
         }
       } else {
-        unsigned int lastPageIndex = getPageIndex(m_size-1);
+        size_t lastPageIndex = getPageIndex(m_size-1);
         BitSet loadedPages(ARRAYSIZE(m_memoryPage));
-        for(unsigned int i = 0; i <= lastPageIndex; i++) {
+        for(size_t i = 0; i <= lastPageIndex; i++) {
           const PageMapElement &pm = m_pageMap[i];
           if(pm.m_loaded) {
             const int pageIndex = pm.m_pageIndex;
             if(pageIndex >= ARRAYSIZE(m_memoryPage)) {
-              throwException(_T("pageMap[%d].m_pageIndex=%d (should be < %d)"), i, pageIndex, ARRAYSIZE(m_memoryPage));
+              throwException(_T("pageMap[%s].m_pageIndex=%d (should be < %d)")
+                            ,format1000(i).cstr()
+                            ,pageIndex
+                            ,ARRAYSIZE(m_memoryPage));
             }
             if(loadedPages.contains(pageIndex)) {
               throwException(_T("loadedPages already contains %d"), pageIndex);
             }
             loadedPages.add(pageIndex);
             if(m_memoryPage[pageIndex].m_mapIndex != i) {
-              throwException(_T("memoryPage[%d].m_mapIndex = %d (!= %d = pageMap[%d].m_pageIndex)"), pageIndex, m_memoryPage[pageIndex].m_mapIndex, i);
+              throwException(_T("memoryPage[%d].m_mapIndex = %d (!= %d = pageMap[%s].m_pageIndex)")
+                            ,pageIndex
+                            ,m_memoryPage[pageIndex].m_mapIndex
+                            ,format1000(i).cstr());
             }
           }
         }
@@ -580,11 +592,18 @@ public:
       Console::clearLine(l);
     }
     Console::setCursorPos(0,0);
-    unsigned int lastPageIndex = (m_size == 0) ? 0 : getPageIndex(m_size-1);
+    size_t lastPageIndex = (m_size == 0) ? 0 : getPageIndex(m_size-1);
 
-    _tprintf(_T("Size=%d. PageCount=%d. PageFileSize=%d\n"), m_size, m_pageMap.size(), m_pageFileSize);
-    for(int i = 0; i < m_pageMap.size(); i++) {
-      _tprintf(_T("pageTable[%2d]:[%2d-%2d]%s\n"), i, i * _ELEMENTS_PER_PAGE, (i+1)*_ELEMENTS_PER_PAGE-1, m_pageMap[i].toString().cstr());
+    _tprintf(_T("Size=%s. PageCount=%s. PageFileSize=%u\n")
+            ,format1000(m_size).cstr()
+            ,format1000(m_pageMap.size()).cstr()
+            ,m_pageFileSize);
+    for(size_t i = 0; i < m_pageMap.size(); i++) {
+      _tprintf(_T("pageTable[%s]:[%2s-%2s]%s\n")
+              ,format1000(i).cstr()
+              ,format1000(i * _ELEMENTS_PER_PAGE).cstr()
+              ,format1000((i+1)*_ELEMENTS_PER_PAGE-1).cstr()
+              ,m_pageMap[i].toString().cstr());
     }
 
     for(int i = 0; i < ARRAYSIZE(m_memoryPage); i++) {

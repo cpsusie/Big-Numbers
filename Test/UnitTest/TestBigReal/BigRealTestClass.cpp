@@ -174,7 +174,7 @@ void BigRealTestClass::measureQuot() {
       const int expo10x0 = BigReal::getExpo10(xArray[0]);
       const int expo10y0 = BigReal::getExpo10(yArray[0]);
 
-      for(int i = 1; i < xArray.size(); i++) {
+      for(size_t i = 1; i < xArray.size(); i++) {
         const int expo10xi = BigReal::getExpo10(xArray[i]);
         if(expo10xi != expo10x0) {
           throwException(_T("expo10(x[%d]=%s)=%d != expo10(x[0]=%s)=%d\n"),i,xArray[i].toString().cstr(),expo10xi,xArray[0].toString().cstr(),expo10x0);

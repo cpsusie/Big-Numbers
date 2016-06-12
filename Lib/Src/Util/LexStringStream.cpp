@@ -7,9 +7,9 @@ bool LexStringStream::open(const String &str) {
   return true;
 }
 
-int LexStringStream::getChars(_TUCHAR *dst, unsigned int n) {
-  const unsigned int rest = m_string.length() - m_pos;
-  if(n > rest) {
+intptr_t LexStringStream::getChars(_TUCHAR *dst, size_t n) {
+  const intptr_t rest = m_string.length() - m_pos;
+  if((intptr_t)n > rest) {
     n = rest;
   }
   MEMCPY(dst, m_string.cstr()+m_pos, n);

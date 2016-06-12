@@ -17,7 +17,7 @@ Packer &operator<<(Packer &p, const BitSet &s) {
     const BitSet::Atom *src = s.m_p;
     BitSet::Atom *dst = buffer;
 
-    for(int c = atomCount; c--;) {
+    for(intptr_t c = atomCount; c--;) {
       *(dst++) = htonl(*(src++));
     }
     p.addElement(Packer::E_VOID, buffer, byteCount);
@@ -61,7 +61,7 @@ Packer &operator>>(Packer &p, BitSet &s) {
     const BitSet::Atom *src = buffer;
     BitSet::Atom *dst = s.m_p;
 
-    for(int c = atomCount; c--;) {
+    for(size_t c = atomCount; c--;) {
       *(dst++) = ntohl(*(src++));
     }
     delete[] buffer;

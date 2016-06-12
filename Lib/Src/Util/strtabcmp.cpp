@@ -22,7 +22,7 @@ int strtabcmp(const TCHAR *s1, const TCHAR *s2, const unsigned char translateTab
   }
 }
 
-int strntabcmp(const TCHAR *s1, const TCHAR *s2, int n, const unsigned char translateTable[256]) {
+int strntabcmp(const TCHAR *s1, const TCHAR *s2, size_t n, const unsigned char translateTable[256]) {
   const _TUCHAR *t1 = (const _TUCHAR*)s1;
   const _TUCHAR *t2 = (const _TUCHAR*)s2;
   int c = 0;

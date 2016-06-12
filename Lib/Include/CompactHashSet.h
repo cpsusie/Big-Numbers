@@ -71,8 +71,8 @@ public:
 
 template <class K> class CompactHashSet {
 private:
-  unsigned int               m_size;
-  unsigned int               m_capacity;
+  size_t                     m_size;
+  size_t                     m_capacity;
   CompactHashElement<K>    **m_buffer;
   CompactHashElementPage<K> *m_firstPage;
 
@@ -89,7 +89,7 @@ private:
     return m_firstPage;
   }
 
-  CompactHashElement<K> **allocateBuffer(unsigned long capacity) {
+  CompactHashElement<K> **allocateBuffer(size_t capacity) {
     CompactHashElement<K> **result = capacity ? new CompactHashElement<K>*[capacity] : NULL;
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
@@ -97,14 +97,14 @@ private:
     return result;
   }
 
-  void init(unsigned long capacity) {
+  void init(size_t capacity) {
     m_size       = 0;
     m_capacity   = capacity;
     m_buffer     = allocateBuffer(capacity);
     m_firstPage  = NULL;
   }
 
-  int getChainLength(unsigned long index) const {
+  int getChainLength(size_t index) const {
     int count = 0;
     for(CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
       count++;
@@ -117,7 +117,7 @@ public:
     init(0);
   }
 
-  explicit CompactHashSet(unsigned long capacity) {
+  explicit CompactHashSet(size_t capacity) {
     init(capacity);
   }
 
@@ -140,7 +140,7 @@ public:
     clear();
   }
 
-  void setCapacity(unsigned long capacity) {
+  void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
@@ -157,7 +157,7 @@ public:
     m_buffer   = allocateBuffer(capacity);
 
     for(CompactHashElementPage<K> *page = m_firstPage; page; page = page->m_next) {
-      for(unsigned int i = 0; i < page->m_count; i++) {
+      for(size_t i = 0; i < page->m_count; i++) {
         CompactHashElement<K> *n = page->m_elements+i;
         const unsigned long index = n->m_key.hashCode() % m_capacity;
         n->m_next = m_buffer[index];
@@ -166,7 +166,7 @@ public:
     }
   }
 
-  unsigned long getCapacity() const {
+  size_t getCapacity() const {
     return m_capacity;
   }
 
@@ -228,7 +228,7 @@ public:
     setCapacity(0);
   }
 
-  unsigned __int64 size() const {
+  size_t size() const {
     return m_size;
   }
 
@@ -239,9 +239,9 @@ public:
   CompactIntArray getLength() const {
     CompactIntArray result;
     CompactIntArray tmp;
-    const unsigned long capacity = getCapacity();
+    const size_t capacity = getCapacity();
     int m = 0;
-    for(unsigned long index = 0; index < capacity; index++) {
+    for(size_t index = 0; index < capacity; index++) {
       int l = getChainLength(index);
       tmp.add(l);
       if(l > m) {
@@ -259,9 +259,9 @@ public:
 
   int getMaxChainLength() const {
     int m = 0;
-    const unsigned long capacity = getCapacity();
-    for(unsigned long i = 0; i < capacity; i++) {
-      int l = getChainLength(i);
+    const size_t capacity = getCapacity();
+    for(size_t i = 0; i < capacity; i++) {
+      const int l = getChainLength(i);
       if(l > m) {
         m = l;
       }

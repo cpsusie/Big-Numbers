@@ -39,7 +39,7 @@ public:
   AbstractEntry *selectEntry() const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
-  int size() const {
+  size_t size() const {
     return TreeSetImpl::size();
   }
   void clear() {

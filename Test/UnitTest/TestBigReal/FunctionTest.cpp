@@ -12,7 +12,7 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
   Array<BigReal>    testData       = generateTestData(from,to, m_xexponentialStep);
   TestStatistic    stat(threadId, m_functionName, pool, XF, testData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
-  for(int i = 0; i < testData.size(); i++) {
+  for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
     const BigReal  exactResult = m_f1(x, maxTolerance);
   
@@ -46,9 +46,9 @@ void FunctionTest2ArgND64D80::runTest(int threadId, DigitPool *pool) {
   const Array<BigReal>    yTestData      = generateTestData(yfrom,yto, m_yexponentialStep,10);
   TestStatistic          stat(threadId, m_functionName, pool, XYF, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
-  for(int i = 0; i < xTestData.size(); i++) {
+  for(size_t i = 0; i < xTestData.size(); i++) {
     const BigReal &x = xTestData[i];
-    for(int j = 0; j < yTestData.size(); j++) {
+    for(size_t j = 0; j < yTestData.size(); j++) {
       const BigReal &y           = yTestData[j];
       const BigReal  exactResult = m_f2( x, y, maxTolerance);
 
@@ -188,7 +188,7 @@ void FunctionTest1ArgRelative::runTest(int threadId, DigitPool *pool) {
   const Array<BigReal> testData = generateTestData(from,to, m_xexponentialStep);
   TestStatistic       stat(threadId, m_functionName, pool, XD, testData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
 
-  for(int i = 0; i < testData.size(); i++) {
+  for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
     const BigReal  exactResult = m_rf1(x, MAXDIGITS);
   
@@ -213,9 +213,9 @@ void FunctionTest2ArgRelative::runTest(int threadId, DigitPool *pool) {
   const Array<BigReal> yTestData      = generateTestData(yfrom,yto, m_yexponentialStep,10);
   TestStatistic       stat(threadId, m_functionName, pool, XYD, xTestData.size() * yTestData.size() * MAXDIGITS / DIGITSTEP, MAXDIGITS);
 
-  for(int i = 0; i < xTestData.size(); i++) {
+  for(size_t i = 0; i < xTestData.size(); i++) {
     const BigReal &x = xTestData[i];
-    for(int j = 0; j < yTestData.size(); j++) {
+    for(size_t j = 0; j < yTestData.size(); j++) {
       const BigReal &y           = yTestData[j];
       const BigReal  exactResult = m_rf2(x, y, MAXDIGITS);
 
@@ -510,12 +510,12 @@ void testGetFirst(TestStatistic &stat) {
 }
 
 void testReadWriteBigReal(TestStatistic &stat) {
-  const char   *fileName = "numbers.dat";
-  const int     count    = 500;
-  tofstream     out(fileName);
-  int           i;
+  const char    *fileName = "numbers.dat";
+  const int      count    = 500;
+  tofstream      out(fileName);
+  size_t         i;
   Array<BigReal> list;
-  DigitPool    *pool = stat.getDigitPool();
+  DigitPool     *pool = stat.getDigitPool();
 
   for(i = 0; i < count; i++) {
     int          xlen  = rand() % 6000 + 500;
@@ -550,8 +550,8 @@ void testReadWriteInteger(TestStatistic &stat) {
   const char    *fileName = "integers.dat";
   const int      count    = 500;
   tofstream      out(fileName);
-  int            i;
-  Array<BigInt> list;
+  size_t         i;
+  Array<BigInt>  list;
   DigitPool     *pool = stat.getDigitPool();
 
   for(i = 0; i < count; i++) {

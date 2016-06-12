@@ -229,7 +229,7 @@ void RollingAverageQueue::add(double n) {
 }
 
 void RollingAverageQueue::decrementMaxSize(unsigned int amount) {
-  const int newMaxSize = (amount >= m_maxQueueSize) ? 1 : m_maxQueueSize - amount;
+  const unsigned int newMaxSize = (amount >= m_maxQueueSize) ? 1 : m_maxQueueSize - amount;
   while(m_queue.size() > newMaxSize) {
     m_currentSum -= m_queue.get();
   }

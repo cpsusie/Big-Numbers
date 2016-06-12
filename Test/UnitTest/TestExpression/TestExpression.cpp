@@ -1340,7 +1340,7 @@ namespace TestExpression {
             const String tmp = expr;
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, tmp.cstr());
             const StringArray &errors = compiledExpr.getErrors();
-            for (int i = 0; i < errors.size(); i++) {
+            for (size_t i = 0; i < errors.size(); i++) {
               OUTPUT(_T("%s"), errors[i].cstr());
             }
             verify(false);

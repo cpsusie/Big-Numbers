@@ -2,7 +2,7 @@
 #include <Scandir.h>
 
 DirList scandir(const TCHAR *pattern, FindDataSelector *selector, FindDataComparator *comparator) {
-  long          nameIterator;
+  intptr_t      nameIterator;
   int           done;
   DirListEntry  entry;
   DirList       list;

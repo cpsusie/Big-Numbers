@@ -58,7 +58,7 @@ String FileNameSplitter::getAbsolutePath() const {
 }
 
 TCHAR *FileNameSplitter::getChildName(TCHAR *dst, const TCHAR *dir, const TCHAR *fileName) { // static
-  int l = _tcsclen(dir);
+  int l = (int)_tcsclen(dir);
   String tmp;
   if(l == 0 || dir[l-1] == _T('\\')) {
     tmp = format(_T("%s%s"), dir, fileName);

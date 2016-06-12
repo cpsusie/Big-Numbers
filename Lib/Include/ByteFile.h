@@ -5,6 +5,7 @@
 
 class ByteInputFile : public ResetableByteInputStream {
 private:
+  DECLARECLASSNAME;
   FILE            *m_file;
   unsigned __int64 m_startPos;
   int              m_oldMode;
@@ -27,10 +28,10 @@ public:
   }
 
   int getByte();
-  int getBytes(BYTE *dst, unsigned int n);
+  intptr_t getBytes(BYTE *dst, size_t n);
   void reset();
 
-  __int64 getPos() {
+  inline __int64 getPos() {
     return GETPOS(m_file);
   }
 
@@ -43,6 +44,7 @@ public:
 
 class ByteOutputFile : public ByteOutputStream {
 private:
+  DECLARECLASSNAME;
   FILE  *m_file;
   int    m_oldMode;
   String m_name;
@@ -64,9 +66,9 @@ public:
   }
 
   void putByte(BYTE c);
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, size_t n);
 
-  __int64 getPos() {
+  inline __int64 getPos() {
     return GETPOS(m_file);
   }
 
@@ -84,6 +86,7 @@ typedef enum {
 
 class ByteFile : public ResetableByteInputOutputStream {
 private:
+  DECLARECLASSNAME;
   FILE            *m_file;
   unsigned __int64 m_startPos;
   int              m_oldMode;
@@ -104,13 +107,13 @@ public:
   virtual void close();
 
   void putByte(BYTE c);
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, size_t n);
 
   int getByte();
-  int getBytes(BYTE *dst, unsigned int n);
+  intptr_t getBytes(BYTE *dst, size_t n);
   void reset();
 
-  __int64 getPos() {
+  inline __int64 getPos() {
     return GETPOS(m_file);
   }
 

@@ -40,13 +40,13 @@ int DecompressFilter::getByte() {
   return (getBytes(&b,1) == 1) ? b : EOF;
 }
 
-int DecompressFilter::getBytes(BYTE *dst, unsigned int n) {
-  int bytesDone = 0;
-  while(bytesDone < (int)n && !m_eos) {
+intptr_t DecompressFilter::getBytes(BYTE *dst, size_t n) {
+  size_t bytesDone = 0;
+  while(bytesDone < n && !m_eos) {
     if(m_pos == (int)m_outputBuffer.size()) {
       fillOutputBuffer();
     }
-    const int toCopy = min(m_outputBuffer.size() - m_pos, n - bytesDone);
+    const size_t toCopy = min(m_outputBuffer.size() - m_pos, n - bytesDone);
     if(toCopy > 0) {
       memcpy(dst + bytesDone, m_outputBuffer.getData() + m_pos, toCopy);
       m_pos     += toCopy;
@@ -82,7 +82,7 @@ void DecompressFilter::fillInputBuffer() {
   m_inputBuffer.clear();
   while(m_inputBuffer.size() < MAX_BUFFERSIZE) {
     BYTE tmp[MAX_BUFFERSIZE];
-    const int n = m_src.getBytes(tmp,sizeof(tmp));
+    const intptr_t n = m_src.getBytes(tmp,sizeof(tmp));
     if(n > 0) {
       m_inputBuffer.append(tmp,n);
     }
@@ -91,8 +91,8 @@ void DecompressFilter::fillInputBuffer() {
     }
   }
   z_streamp zStreamp = (z_streamp)m_zStreamp;
-  zStreamp->next_in  = (unsigned char*)m_inputBuffer.getData();
-  zStreamp->avail_in = m_inputBuffer.size();
+  zStreamp->next_in  = (BYTE*)m_inputBuffer.getData();
+  zStreamp->avail_in = (UINT)m_inputBuffer.size();
 }
 
 void DecompressFilter::decompress() {

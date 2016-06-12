@@ -17,7 +17,7 @@ void FactorArray::add(const ExpressionFactor *f) {
       addAll(a);
     } else {
       const ParserTree *tree = f->getTree();
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const ExpressionFactor *f = a[i];
         add(tree->fetchFactorNode(f->base(), tree->productC(f->exponent(), exponent)));
       }
@@ -31,7 +31,7 @@ void FactorArray::add(const ExpressionNode *base, const ExpressionNode *exponent
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
   FactorArray result;
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const ExpressionFactor *f = (*this)[i];
     if(f->exponent()->isPositive()) {
       result.add(f);
@@ -42,7 +42,7 @@ FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
 
 FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
   FactorArray result;
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const ExpressionFactor *f = (*this)[i];
     if(f->exponent()->isNegative()) {
       result.add(f);
@@ -53,7 +53,7 @@ FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
 
 FactorArray FactorArray::selectNonConstantExponentFactors() const {
   FactorArray result;
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const ExpressionFactor *f = (*this)[i];
     if(!f->exponent()->isNumber()) {
       result.add(f);
@@ -63,14 +63,14 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
 }
 
 int FactorArray::findFactorWithChangeableSign() const {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if((*this)[i]->isConstant()) return i;
   }
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const ExpressionFactor *f = (*this)[i];
     if(f->hasOddExponent() && f->exponent()->isPositive()) return i;
   }
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if((*this)[i]->hasOddExponent()) return i;
   }
   return -1;
@@ -81,7 +81,7 @@ String FactorArray::toString() const {
     return _T("1");
   }
   String result = format(_T("(%s)"), (*this)[0]->toString().cstr());;
-  for(int i = 1; i < size(); i++) {
+  for(size_t i = 1; i < size(); i++) {
     result += format(_T("*(%s)"), (*this)[i]->toString().cstr());
   }
   return result;

@@ -70,7 +70,7 @@ D3DPRESENT_PARAMETERS Cdx9_rectDemoDlg::getPresentParameters() const {
 
   CWnd *frameWnd = getGraphicsFrame();
   const CSize sz = getClientRect(frameWnd).Size();
-
+//  frameWnd->m_h
   param.Windowed               = TRUE;
   param.MultiSampleType        = D3DMULTISAMPLE_NONE;
   param.SwapEffect             = D3DSWAPEFFECT_DISCARD;

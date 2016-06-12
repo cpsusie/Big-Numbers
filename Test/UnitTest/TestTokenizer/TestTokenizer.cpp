@@ -29,7 +29,7 @@ namespace TestTokenizer {
         expected.add(ex);
       }
 
-      int i = 0;
+      size_t i = 0;
 
       Tokenizer assignTok(str, del, tq, flags);
 

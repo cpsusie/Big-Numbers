@@ -467,7 +467,7 @@ void Tableau::addConstraint(unsigned int xIndex, SimplexRelation relation, const
   Real currentValue = 0;
   int  bvRow        = -1;
 
-  for(int i = 1; i < m_table.size(); i++) {
+  for(size_t i = 1; i < m_table.size(); i++) {
     if(m_table[i].m_basisVariable == (int)xIndex) {
       currentValue = getRightSide(i);
       bvRow = i;
@@ -558,7 +558,7 @@ void Tableau::setConstraint(unsigned int row, const CompactArray<Real> &leftSide
                   ,leftSide.size(),getXCount());
   }
 
-  for(int col = 0; col < leftSide.size(); col++) {
+  for(size_t col = 0; col < leftSide.size(); col++) {
     setLeftSide(row,col+1,leftSide[col]);
   }
   setRelation(row,relation);
@@ -760,7 +760,7 @@ CompactArray<BasisVariable> Tableau::getBasisVariables() const {
 void Tableau::checkInvariant() const {
   const CompactArray<BasisVariable> bv = getBasisVariables();
   const int constraintCount = getConstraintCount();
-  for(int row = 0; row < bv.size(); row++) {
+  for(size_t row = 0; row < bv.size(); row++) {
     const BasisVariable &v       = bv[row];
     const int            col     = v.m_index;
     const String         varName = v.getName();
@@ -929,7 +929,7 @@ SimplexSolution::SimplexSolution() : m_totalCost(0) {
 String SimplexSolution::toString() const {
   String result;
   Real sum = 0;
-  for(int i = 0; i < m_variables.size(); i++) {
+  for(size_t i = 0; i < m_variables.size(); i++) {
     const BasisVariable &v = m_variables[i];
     result += format(_T("%s\n"),v.toString().cstr());
     sum += v.m_value * v.m_costFactor;

@@ -32,8 +32,8 @@ private:
   AbstractComparator    *m_comparator;
   TreeSetNode           *m_root;
   TreeSetNode           *m_deleteHelper;
-  unsigned long          m_updateCount;
-  unsigned long          m_size;
+  size_t                 m_updateCount;
+  size_t                 m_size;
 
   bool nodeInsert(TreeSetNode *&pp, TreeSetNode *n);
   bool balanceL(  TreeSetNode *&pp);
@@ -76,7 +76,7 @@ public:
   bool add(const void *key);
   bool remove(const void *key);
   bool contains(const void *e) const;
-  int size() const {
+  size_t size() const {
     return m_size;
   }
   void clear();
@@ -117,7 +117,7 @@ private:
   TreeSetImpl                       &m_set;
   Stack<TreeSetIteratorStackElement> m_stack;
   TreeSetNode                       *m_next, *m_current;
-  unsigned long                      m_updateCount;
+  size_t                             m_updateCount;
 
   void push(TreeSetNode *node, char state);
   void pop() {

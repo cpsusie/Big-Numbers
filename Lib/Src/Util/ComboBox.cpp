@@ -47,7 +47,7 @@ bool ComboBox::key(int event) {
     case SCAN_END     :
       if(isDropDownVisible()) {
         setScrollOffset(getMaxScrollOffset());
-        setSel(m_list.size()-1);
+        setSel((int)m_list.size()-1);
         return true;
       }
       break;
@@ -149,7 +149,7 @@ void ComboBox::draw() {
 
 int ComboBox::getRealDropDownHeight() {
   if((int)m_list.size() < m_dropDownHeight) {
-    return m_list.size() + 1;
+    return (int)m_list.size() + 1;
   } else {
     return m_dropDownHeight;
   }
@@ -171,8 +171,8 @@ void ComboBox::setDropDownHeight(int newvalue) {
 
 void ComboBox::beginDropDown() {
   int w = getWidth() - 2;
-  for(int i = 0; i < m_list.size(); i++) {
-    int l = m_list[i].length();
+  for(size_t i = 0; i < m_list.size(); i++) {
+    int l = (int)m_list[i].length();
     if(l > w) w = l;
   }
 
@@ -213,22 +213,22 @@ void ComboBox::drawItem(int i) {
 }
 
 void ComboBox::setSel(int i) {
-  if(i < 0)
+  if (i < 0) {
     i = 0;
-  else
-    if(i >= (int)m_list.size())
-      i = m_list.size() - 1;
+  } else if (i >= (int)m_list.size()) {
+    i = (int)m_list.size() - 1;
+  }
   if(i != m_currentSel) {
-    if(!getDialog().isVisible())
+    if (!getDialog().isVisible()) {
       m_currentSel = i;
-    else {
+    } else {
       if(!isDropDownVisible()) {
         m_currentSel = i;
         setBuffer(m_list[i].cstr());
-      }
-      else {
-        if(m_currentSel >= 0)
-          drawItem(m_currentSel,false);
+      } else {
+        if (m_currentSel >= 0) {
+          drawItem(m_currentSel, false);
+        }
         m_currentSel = i;
         drawItem(m_currentSel,true);
         setBuffer(m_list[i].cstr());
@@ -239,20 +239,22 @@ void ComboBox::setSel(int i) {
 }
 
 int ComboBox::getMaxScrollOffset() {
-  int m = m_list.size() - getNoOfVisibleItems();
+  int m = (int)m_list.size() - getNoOfVisibleItems();
   return m < 0 ? 0 : m;
 }
 
 void ComboBox::setScrollOffset(int i) {
   int m = getMaxScrollOffset();
-  if(i > m)
+  if (i > m) {
     m_scrollOffset = m;
-  else if(i < 0)
+  } else if (i < 0) {
     m_scrollOffset = 0;
-  else
+  } else {
     m_scrollOffset = i;
-  if(isDropDownVisible()) 
+  }
+  if (isDropDownVisible()) {
     drawDropDown();
+  }
 }
 
 
@@ -260,21 +262,23 @@ void ComboBox::drawScrollBar() {
   int left     = m_dropDownWidth - 1;
   int top      = 0;
   WORD attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
-  ScrollBar::drawvScrollBar( m_tw, left, top, getRealDropDownHeight(), getNoOfVisibleItems(), m_list.size(), getMaxScrollOffset(), m_scrollOffset, attr, attr, SINGLE_FRAME);
+  ScrollBar::drawvScrollBar( m_tw, left, top, getRealDropDownHeight(), getNoOfVisibleItems(), (int)m_list.size(), getMaxScrollOffset(), m_scrollOffset, attr, attr, SINGLE_FRAME);
 }
 
 void ComboBox::drawBorder() {
   WORD attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
   m_tw->rectangle(0, 0, m_dropDownWidth - 1, getRealDropDownHeight() - 1,SINGLE_FRAME,attr);
-  if(getMaxScrollOffset() > 0)
+  if (getMaxScrollOffset() > 0) {
     drawScrollBar();
+  }
 }
 
 void ComboBox::drawDropDown() {
   drawBorder();
   int n = getNoOfVisibleItems();
-  for(int i = m_scrollOffset; i < m_scrollOffset + n; i++)
+  for (int i = m_scrollOffset; i < m_scrollOffset + n; i++) {
     drawItem(i);
+  }
 }
 
 void ComboBox::hideDropDown() {

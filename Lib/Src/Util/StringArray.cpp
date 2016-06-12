@@ -12,13 +12,13 @@ StringArray::StringArray(Tokenizer &tok) {
   }
 }
 
-int StringArray::maxLength() const {
+size_t StringArray::maxLength() const {
   if(size() == 0) {
     return 0;
   }
-  int result = (*this)[0].length();
-  for(int i = 1; i < size(); i++) {
-    const int l = (*this)[i].length();
+  size_t result = (*this)[0].length();
+  for(size_t i = 1; i < size(); i++) {
+    const size_t l = (*this)[i].length();
     if(l > result) {
       result = l;
     }
@@ -26,13 +26,13 @@ int StringArray::maxLength() const {
   return result;
 }
 
-int StringArray::minLength() const {
+size_t StringArray::minLength() const {
   if(size() == 0) {
     return 0;
   }
-  int result = (*this)[0].length();
-  for(int i = 1; i < size(); i++) {
-    const int l = (*this)[i].length();
+  size_t result = (*this)[0].length();
+  for(size_t i = 1; i < size(); i++) {
+    const size_t l = (*this)[i].length();
     if(l < result) {
       result = l;
     }
@@ -43,9 +43,8 @@ int StringArray::minLength() const {
 String StringArray::getAsDoubleNullTerminatedString() const { // return a double 0-terminated string containing all strings of the array, each 0-terminated
   const String zeroString = spaceString(1, _T('\0'));
   String result;
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     result = result + (*this)[i] + zeroString;
   }
   return result + zeroString;
 }
-

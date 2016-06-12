@@ -142,20 +142,24 @@ void tcpClose(SOCKET s) {
   closesocket(s);
 }
 
-int tcpRead(SOCKET s, void *buffer, int size) {
+#define MAXBLOCKSIZE 0x7fffffff
+
+size_t tcpRead(SOCKET s, void *buffer, size_t size) {
   int n;
-  for(int i = 0; i < size; i += n) {
-    if((n = recv(s, (char*)buffer + i, size - i, 0)) <= 0) {
+  for(size_t i = 0; i < size; i += n) {
+    const UINT blockSize = (size - i > MAXBLOCKSIZE) ? MAXBLOCKSIZE : (UINT)(size - i);
+    if((n = recv(s, (char*)buffer + i, blockSize, 0)) <= 0) {
       throwLastWSAErrorText();
-;   }
+    }
   }
   return size;
 } 
 
-int tcpWrite(SOCKET s, const void *buffer, int size) {
+size_t tcpWrite(SOCKET s, const void *buffer, size_t size) {
   int n;
-  for(int i = 0; i < size; i += n) {
-    if((n = send(s, (char*)buffer + i, size - i, 0)) <= 0) {
+  for(size_t i = 0; i < size; i += n) {
+    const UINT blockSize = (size - i > MAXBLOCKSIZE) ? MAXBLOCKSIZE : (UINT)(size - i);
+    if((n = send(s, (char*)buffer + i, blockSize, 0)) <= 0) {
       throwLastWSAErrorText();
     }
   }

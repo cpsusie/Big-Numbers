@@ -32,5 +32,13 @@ __int64 getRandomSeed();                       // gets a random seed to randomiz
 unsigned int randInt();                        // use _standardRandomGenerator
 unsigned int randInt(unsigned int n);          // use _standardRandomGenerator. return random int in range [0..n-1]
 int          randInt(int from, int to);        // use _standardRandomGenerator. return random int in range [from..to]
+__int64      randInt64();                      // use _standardRandomGenerator
+__int64      randInt64(unsigned __int64 n);
+
+#ifdef IS64BIT
+#define randSizet  randInt64
+#else
+#define randSizet  randInt
+#endif
 
 extern Random _standardRandomGenerator;

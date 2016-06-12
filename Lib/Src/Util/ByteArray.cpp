@@ -7,7 +7,7 @@ ByteArray::ByteArray() {
   init();
 }
 
-ByteArray::ByteArray(const BYTE *data, unsigned int size) {
+ByteArray::ByteArray(const BYTE *data, size_t size) {
   init();
   if (size > 0) {
     setData(data, size);
@@ -21,7 +21,7 @@ ByteArray::ByteArray(const ByteArray &src) {
   }
 }
 
-ByteArray::ByteArray(unsigned int capacity) {
+ByteArray::ByteArray(size_t capacity) {
   init();
   setCapacity(capacity);
 }
@@ -65,11 +65,11 @@ ByteArray &ByteArray::append(const ByteArray &d) {
   return append(d.m_data, d.size());
 }
 
-ByteArray &ByteArray::append(const BYTE *data, unsigned int size) {
+ByteArray &ByteArray::append(const BYTE *data, size_t size) {
   if(size) {
-    const unsigned int newSize = m_size + size;
+    const size_t newSize = m_size + size;
     if(newSize > m_capacity) {     // Careful here!!! data and m_data might overlap!!
-      const unsigned int newCapacity = getCapacityCeil(2 * newSize); // > 0
+      const size_t newCapacity = getCapacityCeil(2 * newSize); // > 0
       BYTE *newData = allocateBytes(newCapacity);
       if(m_size > 0) {
         memcpy(newData, m_data, m_size);
@@ -88,16 +88,16 @@ ByteArray &ByteArray::append(const BYTE *data, unsigned int size) {
   return *this;
 }
 
-ByteArray &ByteArray::insertConstant(unsigned int index, BYTE b, unsigned int count) {
+ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
   if(count == 0) {
     return *this;
   }
   if(index > m_size) {
     indexError(index);
   }
-  const unsigned int newSize = m_size + count;
+  const size_t newSize = m_size + count;
   if(newSize > m_capacity) {
-    const unsigned int newCapacity = getCapacityCeil(2 * newSize);
+    const size_t newCapacity = getCapacityCeil(2 * newSize);
     BYTE *newData = allocateBytes(newCapacity);
     if(index > 0) {
       memcpy(newData, m_data, index);
@@ -127,7 +127,7 @@ ByteArray &ByteArray::operator+=(const ByteArray &d) {
   return append(d);
 }
 
-ByteArray &ByteArray::setData(const BYTE *data, unsigned int size) {
+ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
   cleanup();
   if(size > 0) {
     setCapacity(size);
@@ -137,12 +137,12 @@ ByteArray &ByteArray::setData(const BYTE *data, unsigned int size) {
   return *this;
 }
 
-ByteArray &ByteArray::remove(unsigned int index, unsigned int count) {
+ByteArray &ByteArray::remove(size_t index, size_t count) {
   DEFINEMETHODNAME(remove);
   if(count == 0) {
     return *this;
   }
-  const unsigned int j = index+count;
+  const size_t j = index+count;
   if(j > m_size) {
     throwException(_T("%s::%s(%lu,%lu): Invalid index. size=%u"), s_className, method, index, count, m_size);
   }
@@ -156,7 +156,7 @@ ByteArray &ByteArray::remove(unsigned int index, unsigned int count) {
   return *this;
 }
 
-void ByteArray::indexError(unsigned int i) const {
+void ByteArray::indexError(size_t i) const {
   throwException(_T("%s:Index %u out of range. Size=%u"), s_className, i, m_size);
 }
 
@@ -181,7 +181,7 @@ void ByteArray::cleanup() {
   init();
 }
 
-void ByteArray::setCapacity(unsigned int capacity) {
+void ByteArray::setCapacity(size_t capacity) {
   if(capacity < m_size) {
     capacity = m_size;
   }
@@ -217,8 +217,8 @@ bool ByteArray::operator!=(const ByteArray &a) const {
 }
 
 void ByteArray::save(ByteOutputStream &s) const {
-  const unsigned int size = m_size; // if modified, => take care of ByteFileArray
-  s.putBytes((const BYTE *)&size, sizeof(size));
+  const size_t size = m_size; // if modified, => take care of ByteFileArray
+  s.putBytes((const BYTE*)&size, sizeof(size));
   if(size) {
     s.putBytes(m_data, size);
   }
@@ -226,8 +226,8 @@ void ByteArray::save(ByteOutputStream &s) const {
 
 void ByteArray::load(ByteInputStream &s) {
   clear();
-  unsigned int size;
-  s.getBytesForced((BYTE *)&size, sizeof(size));
+  size_t size;
+  s.getBytesForced((BYTE*)&size, sizeof(size));
   if(size) {
     setCapacity(size);
     s.getBytesForced(m_data, size);

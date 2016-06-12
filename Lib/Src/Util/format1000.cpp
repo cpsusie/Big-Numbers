@@ -1,7 +1,7 @@
 #include "pch.h"
 
 #define DECORATEWITHDOTS(result, temp, n)     \
-{ const int l = _tcsclen(temp);               \
+{ const int l = (int)_tcsclen(temp);          \
   int digitCount = (n < 0) ? (l-1) : l;       \
   if(digitCount <= 3) {                       \
     return temp;                              \

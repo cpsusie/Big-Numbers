@@ -19,8 +19,8 @@ ComplexMatrix::ComplexMatrix(const VectorTemplate<Complex> &diagonal) : MatrixTe
 }
 
 ComplexMatrix::ComplexMatrix(const Matrix &src) : MatrixTemplate<Complex>(src.getRowCount(),src.getColumnCount()) {
-  for(int r = 0; r < getRowCount(); r++) {
-    for(int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       (*this)(r,c) = src(r,c);
     }
   }
@@ -28,8 +28,8 @@ ComplexMatrix::ComplexMatrix(const Matrix &src) : MatrixTemplate<Complex>(src.ge
 
 ComplexMatrix &ComplexMatrix::operator=(const Matrix &src) {
   setDimension(src.getRowCount(),src.getColumnCount());
-  for(int r = 0; r < getRowCount(); r++) {
-    for(int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       (*this)(r,c) = src(r,c);
     }
   }
@@ -37,15 +37,15 @@ ComplexMatrix &ComplexMatrix::operator=(const Matrix &src) {
 }
 
 ComplexMatrix::ComplexMatrix(const Vector &diagonal) : MatrixTemplate<Complex>(diagonal.getDimension(),diagonal.getDimension()) {
-  for(int i = 0; i < getRowCount(); i++) {
+  for(size_t i = 0; i < getRowCount(); i++) {
     (*this)(i,i) = diagonal(i);
   }
 }
 
 Matrix ComplexMatrix::getRealPart() const {
   Matrix result(getRowCount(),getColumnCount());
-  for(int r = 0; r < getRowCount(); r++) {
-    for(int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       result(r,c) = (*this)(r,c).re;
     }
   }
@@ -54,8 +54,8 @@ Matrix ComplexMatrix::getRealPart() const {
 
 Matrix ComplexMatrix::getImaginaryPart() const {
   Matrix result(getRowCount(),getColumnCount());
-  for(int r = 0; r < getRowCount(); r++) {
-    for(int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       result(r,c) = (*this)(r,c).im;
     }
   }
@@ -63,14 +63,14 @@ Matrix ComplexMatrix::getImaginaryPart() const {
 }
 
 void setToRandom(ComplexVector &v) {
-  for(unsigned int i = 0; i < v.getDimension(); i++) {
+  for(size_t i = 0; i < v.getDimension(); i++) {
     setToRandom(v[i]);
   }
 }
 
 void setToRandom(ComplexMatrix &a) {
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       setToRandom(a(r,c));
     }
   }
@@ -78,7 +78,7 @@ void setToRandom(ComplexMatrix &a) {
 
 Real fabs(const ComplexVector &v) {
   Real sum = 0;
-  for(unsigned int i = 0; i < v.getDimension(); i++) {
+  for(size_t i = 0; i < v.getDimension(); i++) {
     sum += arg2(v[i]);
   }
   return sqrt(sum);
@@ -90,8 +90,8 @@ Real fabs(const ComplexMatrix &a) {
 
 Real normf(const ComplexMatrix &a) {
   Real sum = 0;
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       sum += arg2(a(r,c));
     }
   }
@@ -100,7 +100,7 @@ Real normf(const ComplexMatrix &a) {
 
 ComplexMatrix inverse(const ComplexMatrix &a) {
   if(!a.isSquare()) {
-    throwMathException(_T("inverse(ComplexMatrix):Matrix not square. Dimension = (%u,%u)"), a.getRowCount(), a.getColumnCount());
+    throwMathException(_T("inverse(ComplexMatrix):Matrix not square. %s"), a.getDimensionString().cstr());
   }
 
   ComplexLUMatrix lu(a);
@@ -117,30 +117,30 @@ Complex det(const ComplexMatrix &a) {
 }
 
 ComplexVector operator*(const Matrix &lts, const ComplexVector &rhs) {
-  const int rows    = lts.getRowCount();
-  const int columns = lts.getColumnCount();
+  const size_t rows    = lts.getRowCount();
+  const size_t columns = lts.getColumnCount();
 
-  if((unsigned int)columns != rhs.getDimension()) {
-    throwException(_T("operator*(Matrix,ComplexVector):Invalid dimension. Matrix.dimension = (%u,%u), Vector.dimension = %u."), lts.getRowCount(), lts.getColumnCount(), rhs.getDimension());
+  if(columns != rhs.getDimension()) {
+    throwException(_T("operator*(Matrix,ComplexVector):Invalid dimension. Matrix.%s, Vector.dimension = %s."), lts.getDimensionString().cstr(), format1000(rhs.getDimension()).cstr());
   }
   ComplexVector result(rows);
-  for(int r = 0; r < rows; r++) {
-	Complex sum = 0;
-    for(int c = 0; c < columns; c++) {
+  for(size_t r = 0; r < rows; r++) {
+	  Complex sum = 0;
+    for(size_t c = 0; c < columns; c++) {
       sum += lts(r,c) * rhs[c];
     }
-	result[r] = sum;
+	  result[r] = sum;
   }
   return result;
 }
 
 ComplexMatrix operator*(const Complex &lts, const Matrix &rhs) {
-  const int rows    = rhs.getRowCount();
-  const int columns = rhs.getColumnCount();
+  const size_t rows    = rhs.getRowCount();
+  const size_t columns = rhs.getColumnCount();
 
   ComplexMatrix result(rows,columns);
-  for(int r = 0; r < rows; r++) {
-    for(int c = 0; c < columns; c++) {
+  for(size_t r = 0; r < rows; r++) {
+    for(size_t c = 0; c < columns; c++) {
       result(r,c) = lts * rhs(r,c);
     }
   }

@@ -191,13 +191,13 @@ SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) const {
     return SNode();
   }
   ExpressionNodeArray tmp(size());
-  for(int i = 0; i < size(); i++) tmp.add((*this)[i].node());
+  for(size_t i = 0; i < size(); i++) tmp.add((*this)[i].node());
   return tmp.toTree(delimiter);
 }
 
 SStmtList::SStmtList(SNode n) {
   ExpressionNodeArray stmtList = getStatementList(n.node());
-  for(int i = 0; i < stmtList.size(); i++) {
+  for(size_t i = 0; i < stmtList.size(); i++) {
     add(stmtList[i]);
   }
 }
@@ -207,7 +207,7 @@ SStmtList &SStmtList::removeUnusedAssignments() {
     const SNode &stmt = (*this)[i];
     const String &varName = stmt.left().name();
     bool isUsed = false;
-    for(int j = i+1; j < size(); j++) {
+    for(size_t j = i+1; j < size(); j++) {
       if((*this)[j].node()->dependsOn(varName)) {
         isUsed = true;
         break;
@@ -221,14 +221,14 @@ SStmtList &SStmtList::removeUnusedAssignments() {
 }
 
 SExprList::SExprList(const ExpressionNodeArray &a) {
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     add(a[i]);
   }
 }
 
 SExprList::operator ExpressionNodeArray() const {
   ExpressionNodeArray result(size());
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     result.add((*this)[i].node());
   }
   return result;

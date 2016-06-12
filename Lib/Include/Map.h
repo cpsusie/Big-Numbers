@@ -34,7 +34,7 @@ public:
   virtual bool remove(const void *key) = 0;
   virtual const void *get(const void *key) const = 0;
   virtual       void *get(const void *key) = 0;
-  virtual int size() const = 0;
+  virtual size_t size() const = 0;
   virtual AbstractEntry *selectEntry() const = 0;
   virtual const AbstractEntry *getMinEntry() const = 0;
   virtual const AbstractEntry *getMaxEntry() const = 0;
@@ -97,7 +97,7 @@ public:
     return m_map->remove(&key);
   }
 
-  int size() const {
+  size_t size() const {
     return m_map->size();
   }
 
@@ -175,13 +175,13 @@ public:
   }
 
   bool operator==(const Map<K, V> &m) const {
-    const int n = size();
+    const size_t n = size();
     if(n != m.size()) {
       return false;
     }
     Iterator<Entry<K, V> > it1 = ((Map<K, V>*)this)->entrySet().getIterator();
     Iterator<Entry<K, V> > it2 = ((Map<K, V>&)m).entrySet().getIterator();
-    int count = 0;
+    size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const Entry<K, V> &e1 = it1.next();
       const Entry<K, V> &e2 = it2.next();
@@ -203,11 +203,10 @@ public:
     return !(*this == m);
   }
 
-
-  void save(ByteOutputStream &s) const {
-    const int keySize   = sizeof(K);
-    const int valueSize = sizeof(V);
-    const int n         = size();
+    void save(ByteOutputStream &s) const {
+    const int    keySize   = sizeof(K);
+    const int    valueSize = sizeof(V);
+    const size_t n         = size();
     Packer header;
     header << keySize << valueSize << n;
     header.write(s);
@@ -221,7 +220,8 @@ public:
 
   void load(ByteInputStream &s) {
     Packer header;
-    int keySize, valueSize, size;
+    int keySize, valueSize;
+    size_t size;
     if(!header.read(s)) {
       throwException("Map.load:Couldn't read header");
     }
@@ -233,7 +233,7 @@ public:
       throwException(_T("Map.load:Invalid valuesize:%d bytes. Expected valuesize = %d bytes"), valueSize, sizeof(V));
     }
     clear();
-    for(int i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
       Packer p;
       if(!p.read(s)) {
         throwException(_T("Map.load:Unexpected eos. Expected %d entries. got %d"), size, i);
@@ -246,7 +246,7 @@ public:
   }
 
   friend Packer &operator<<(Packer &p, const Map<K, V> &m) {
-    const int size = m.size();
+    const size_t size = m.size();
     p << size;
     for(Iterator<Entry<K, V> > it = ((Map<K, V>&)m).getIterator(); it.hasNext();) {
       const Entry<K, V> &entry = it.next();
@@ -256,9 +256,9 @@ public:
   }
 
   friend Packer &operator>>(Packer &p, Map<K, V> &m) {
-    int size;
+    size_t size;
     p >> size;
-    for(int i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
       K key;
       V value;
       p >> key >> value;
@@ -269,7 +269,7 @@ public:
 
   String toString() const {
     String result = _T("(");
-    int count = 0;
+    size_t count = 0;
     for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->getIterator(); it.hasNext();) {
       const Entry<K, V> &entry = it.next();
       if(count++) {

@@ -97,7 +97,7 @@ namespace TestCompactArray {
   bool PrintCompactIntArray::handlePermutation(const CompactIntArray &a) {
     m_counter++;
     String line = format(_T("%2d:"), m_counter);
-    for (int i = 0; i < a.size(); i++) {
+    for (size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);
     }
     OUTPUT(_T("%s"), line.cstr());
@@ -159,7 +159,7 @@ namespace TestCompactArray {
       }
       for (int e = 0; e < SAMPLE_COUNT; e++) {
         CompactIntArray sample = S.getRandomSample(SAMPLE_SIZE);
-        for (int j = 0; j < sample.size(); j++) {
+        for (size_t j = 0; j < sample.size(); j++) {
           counters[sample[j]]++;
         }
       }
@@ -205,7 +205,7 @@ namespace TestCompactArray {
       OUTPUT(_T("  sort(compare1)  :%.3lf"), (getProcessTime() - start) / 1000000);
       start = getProcessTime();
 
-      for (int i = 1; i < a.size(); i++) {
+      for (size_t i = 1; i < a.size(); i++) {
         verify(comparator.compare(a[i - 1], a[i]) <= 0);
       }
 
@@ -261,8 +261,8 @@ namespace TestCompactArray {
       return -1;
     }
 
-    static int linearSearchGE(const CompactIntArray &a, int e) {
-      int i;
+    static size_t linearSearchGE(const CompactIntArray &a, int e) {
+      size_t i;
       for (i = 0; i < a.size(); i++) {
         if (a[i] >= e) {
           return i;
@@ -303,7 +303,7 @@ namespace TestCompactArray {
       _tprintf(_T("%2d:%d\n"), i,a[i]);
       }
       */
-      for (int i = 0; i < a.size(); i++) {
+      for (size_t i = 0; i < a.size(); i++) {
         const int v = a[i];
         const int index = a.binarySearch(v, intHashCmp);
         verify(index == i);
@@ -455,7 +455,7 @@ namespace TestCompactArray {
       a = b;
       verify(a.size() == b.size());
       a.sort(intReverseCompare);
-      for (int i = 0; i < a.size(); i++) {
+      for (size_t i = 0; i < a.size(); i++) {
         verify(a[i] == b[b.size() - i - 1]);
       }
       verify(a != b);
@@ -496,7 +496,7 @@ namespace TestCompactArray {
         a.sort(compare1);
         OUTPUT(_T("%7d %.3lf"), size, (getProcessTime() - start) / 1000000);
 
-        for (int i = 1; i < a.size(); i++) {
+        for (size_t i = 1; i < a.size(); i++) {
           if (comparator.compare(a[i - 1], a[i]) > 0) {
             OUTPUT(_T("Array not sorted. a[%d] = %d, a[%d] = %d"), i - 1, a[i - 1].n, i, a[i].n);
             verify(false);

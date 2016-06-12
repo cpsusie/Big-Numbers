@@ -126,10 +126,10 @@ void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
 }
 
 void ParserTree::releaseAll() {
-  for(int i = 0; i < m_nodeTable.size(); i++) {
+  for(size_t i = 0; i < m_nodeTable.size(); i++) {
     delete m_nodeTable[i];
   }
-  for(int i = 0; i < m_addentTable.size(); i++) {
+  for(size_t i = 0; i < m_addentTable.size(); i++) {
     delete m_addentTable[i];
   }
   resetSimpleConstants();
@@ -192,14 +192,14 @@ int ParserTree::decodeErrorString(const String &expr, String &error) { // static
 }
 
 void ParserTree::listErrors(FILE *f) const {
-  for(int i = 0; i < m_errors.size();i++) {
+  for(size_t i = 0; i < m_errors.size();i++) {
     _ftprintf(f,_T("%s\n"), m_errors[i].cstr());
   }
   fflush(f);
 }
 
 void ParserTree::listErrors(tostream &out) const {
-  for(int i = 0; i < m_errors.size();i++) {
+  for(size_t i = 0; i < m_errors.size();i++) {
     out << m_errors[i] << endl;
   }
   out.flush();
@@ -330,13 +330,13 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
   case EXPRESSIONNODETREE      :
     { const ExpressionNodeArray  &a = n->getChildArray();
       ExpressionNodeArray         newChildArray(a.size());
-      for(int i = 0; i < a.size(); i++) newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
+      for(size_t i = 0; i < a.size(); i++) newChildArray.add(traverseSubstituteNodes(a[i], nodeMap));
       return getTree(n, newChildArray);
     }
   case EXPRESSIONNODESUM       :
     { const AddentArray          &a = n->getAddentArray();
       AddentArray                 newAddentArray(a.size());
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const SumElement           *e    = a[i];
         const ExpressionNode *oldNode = e->getNode();
         const ExpressionNode *newNode = traverseSubstituteNodes(oldNode, nodeMap);
@@ -351,7 +351,7 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
   case EXPRESSIONNODEPRODUCT   :
     { const FactorArray           &a = n->getFactorArray();
       FactorArray                  newFactorArray(a.size());
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const ExpressionNode *newNode = traverseSubstituteNodes(a[i], nodeMap);
         if(newNode->getNodeType() == EXPRESSIONNODEFACTOR) {
           newFactorArray.add((ExpressionFactor*)newNode);
@@ -363,10 +363,10 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
     }
   case EXPRESSIONNODEPOLYNOMIAL:
     { const ExpressionNodeArray  &coef = n->getCoefficientArray();
-      const ExpressionNode *arg  = n->getArgument();
+      const ExpressionNode       *arg  = n->getArgument();
       ExpressionNodeArray         newCoef(coef.size());
-      const ExpressionNode *newArg  = traverseSubstituteNodes(arg, nodeMap);
-      for(int i = 0; i < coef.size(); i++) newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
+      const ExpressionNode       *newArg  = traverseSubstituteNodes(arg, nodeMap);
+      for(size_t i = 0; i < coef.size(); i++) newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
       return getPoly(n, newCoef, newArg);
     }
   default:
@@ -381,7 +381,6 @@ void ParserTree::substituteNodes(const CompactNodeHashMap<const ExpressionNode*>
     setRoot(traverseSubstituteNodes(root, nodeMap));
   }
 }
-
 
 void ParserTree::traverseTree(ExpressionNodeHandler &handler) const {
   const ExpressionNode *root = getRoot();

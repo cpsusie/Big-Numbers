@@ -67,7 +67,7 @@ BOOL CConfirmDlg::OnInitDialog() {
   StringArray lineArray(Tokenizer(tmp, _T("\n")));
 
   CSize textSize(0,0);
-  for(int i = 0; i < lineArray.size(); i++) {
+  for(size_t i = 0; i < lineArray.size(); i++) {
     const String &line = lineArray[i];
     const CSize lineSize = dc.GetTextExtent(line.cstr(), line.length());
     if(lineSize.cx > textSize.cx) {

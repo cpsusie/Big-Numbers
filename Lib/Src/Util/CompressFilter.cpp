@@ -38,9 +38,9 @@ void CompressFilter::putByte(BYTE b) {
   putBytes(&b, 1);
 }
 
-void CompressFilter::putBytes(const BYTE *src, unsigned int n) {
+void CompressFilter::putBytes(const BYTE *src, size_t n) {
   while(n > 0) {
-    const int size = min(n, MAX_BUFFERSIZE - m_inputBuffer.size());
+    const size_t size = min(n, MAX_BUFFERSIZE - m_inputBuffer.size());
     if(m_inputBuffer.append(src, size).size() >= MAX_BUFFERSIZE) {
       flushInput();
     }
@@ -65,7 +65,7 @@ void CompressFilter::flush() {
 void CompressFilter::flushInput() {
   z_streamp zStreamp = (z_streamp)m_zStreamp;
   zStreamp->next_in  = (BYTE*)m_inputBuffer.getData();
-  zStreamp->avail_in = m_inputBuffer.size();
+  zStreamp->avail_in = (UINT)m_inputBuffer.size();
 
   while(zStreamp->avail_in > 0) {
     int err = deflate(zStreamp, Z_NO_FLUSH);

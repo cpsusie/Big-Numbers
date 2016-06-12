@@ -7,11 +7,11 @@ class ByteArray {
 private:
   DECLARECLASSNAME;
   BYTE         *m_data;
-  unsigned int  m_capacity;
-  unsigned int  m_size;
+  size_t        m_capacity;
+  size_t        m_size;
 
   void cleanup();
-  void indexError(unsigned int i) const;
+  void indexError(size_t i) const;
 protected:
   void init();
   virtual BYTE *allocateBytes( size_t size);
@@ -21,9 +21,9 @@ protected:
   }
 public:
   ByteArray();
-  ByteArray(const BYTE *data, unsigned int size);
+  ByteArray(const BYTE *data, size_t size);
   ByteArray(const ByteArray &src);
-  explicit ByteArray(unsigned int capacity);
+  explicit ByteArray(size_t capacity);
   virtual ~ByteArray();
   ByteArray &operator=( const ByteArray &src);
   ByteArray  operator+( const ByteArray &d) const;
@@ -34,26 +34,26 @@ public:
 
   ByteArray &clear(int newCapacity = 0);                   // return this, if newCapcity == -1 it will not be changed
   ByteArray &append( const ByteArray &d);
-  ByteArray &append( const BYTE *data, unsigned int size);
+  ByteArray &append( const BYTE *data, size_t size);
   inline ByteArray &append(BYTE byte) {
     return appendConstant(byte, 1);
   }
-  inline ByteArray &appendZeroes(unsigned int count) {
+  inline ByteArray &appendZeroes(size_t count) {
     return appendConstant(0, count);
   }
-  inline ByteArray &insertZeroes(unsigned int index, unsigned int count) {
+  inline ByteArray &insertZeroes(size_t index, size_t count) {
     return insertConstant(index, 0, count);
   }
-  inline ByteArray &appendConstant(BYTE b, unsigned int count) {
+  inline ByteArray &appendConstant(BYTE b, size_t count) {
     return insertConstant(size(), b, count);
   }
 
-  ByteArray &insertConstant(unsigned int index, BYTE c, unsigned int count);
-  ByteArray &setData(const BYTE *data, unsigned int size); // return this
+  ByteArray &insertConstant(size_t index, BYTE c, size_t count);
+  ByteArray &setData(const BYTE *data, size_t size); // return this
 
-  ByteArray &remove(unsigned int index, unsigned int count);
+  ByteArray &remove(size_t index, size_t count);
 
-  inline unsigned int size() const {
+  inline size_t size() const {
     return m_size;
   }
 
@@ -61,8 +61,8 @@ public:
     return m_size == 0;
   }
 
-  void setCapacity(unsigned int capacity);
-  inline unsigned int getCapacity() const {
+  void setCapacity(size_t capacity);
+  inline size_t getCapacity() const {
     return m_capacity;
   }
 
@@ -70,12 +70,12 @@ public:
     return m_data;
   }
 
-  inline const BYTE &operator[](unsigned int i) const {
+  inline const BYTE &operator[](size_t i) const {
     if(i >= m_size) indexError(i);
     return m_data[i];
   }
 
-  inline BYTE &operator[](unsigned int i) {
+  inline BYTE &operator[](size_t i) {
     if(i >= m_size) indexError(i);
     return m_data[i];
   }
@@ -109,18 +109,18 @@ class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, in
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by ByteArray.save
 private:
-  FILE              *m_f;
-  unsigned int       m_size;
-  const unsigned int m_startOffset;
+  FILE         *m_f;
+  size_t        m_size;
+  const size_t  m_startOffset;
 
 public:
-  ByteFileArray(const String &fileName, unsigned int startOffset);
+  ByteFileArray(const String &fileName, size_t startOffset);
   ByteFileArray(const ByteFileArray &src);            // not defined
   ByteFileArray &operator=(const ByteFileArray &src); // not defined
   ~ByteFileArray();
 
-  inline unsigned int size() const {
+  inline size_t size() const {
     return m_size;
   }
-  BYTE operator[](unsigned int i) const;
+  BYTE operator[](size_t i) const;
 };

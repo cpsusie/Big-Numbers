@@ -56,12 +56,12 @@ namespace TestBigArray {
     BigArray<BigElement> m_bigArray;
     CompactIntArray      m_refArray;
   public:
-    void remove(unsigned int index, unsigned int count = 1);
+    void remove(size_t index, size_t count = 1);
     void add(int value);
-    void set(unsigned int index, int value);
+    void set(size_t index, int value);
     void clear();
     void check(const TCHAR *function) const;
-    int size() const {
+    size_t size() const {
       return m_bigArray.size();
     }
 
@@ -93,7 +93,7 @@ namespace TestBigArray {
 #endif
   }
 
-  void TestArray::set(unsigned int index, int value) {
+  void TestArray::set(size_t index, int value) {
     m_bigArray[index] = BigElement(value);
     m_refArray[index] = value;
 #ifdef _DEBUG
@@ -102,7 +102,7 @@ namespace TestBigArray {
 #endif
   }
 
-  void TestArray::remove(unsigned int index, unsigned int count) {
+  void TestArray::remove(size_t index, size_t count) {
     m_bigArray.remove(index, count);
     m_refArray.remove(index, count);
 #ifdef _DEBUG
@@ -126,16 +126,21 @@ namespace TestBigArray {
     Console::clearLine(20);
 #endif
     if (m_bigArray.size() != m_refArray.size()) {
-      throwException(_T("%s:BigArray.size=%d != refArray.size=%d"), function, m_bigArray.size(), m_refArray.size());
+      throwException(_T("%s:BigArray.size=%s != refArray.size=%s")
+                    ,function
+                    ,format1000(m_bigArray.size()).cstr()
+                    ,format1000(m_refArray.size()));
     }
-    for (unsigned int i = 0; i < m_bigArray.size(); i++) {
+    for (size_t i = 0; i < m_bigArray.size(); i++) {
       BigElement e(m_refArray[i]);
       if (m_bigArray[i] != e) {
-        const String msg = format(_T("Fejl i %s. size=%d\nBigArray[%d]=<%s>,\nRefArray[%d]=<%s>")
+        const String msg = format(_T("Fejl i %s. size=%s\nBigArray[%s]=<%s>,\nRefArray[%s]=<%s>")
                                  , function
-                                 , size()
-                                 , i, m_bigArray[i].toString().cstr()
-                                 , i, e.toString().cstr()
+                                 , format1000(size()).cstr()
+                                 , format1000(i).cstr()
+                                 , m_bigArray[i].toString().cstr()
+                                 , format1000(i).cstr()
+                                 , e.toString().cstr()
                                  );
         OUTPUT(_T("%s"), msg.cstr());
 #ifdef _DEBUG
@@ -150,8 +155,11 @@ namespace TestBigArray {
 
   void TestArray::list() const {
     int line = 30;
-    for (unsigned int i = 0; i < m_bigArray.size(); i++) {
-      Console::printf(110, line++, _T("[%2d]:%s   %d     "), i, m_bigArray[i].toString().cstr(), m_refArray[i]);
+    for (size_t i = 0; i < m_bigArray.size(); i++) {
+      Console::printf(110, line++, _T("[%2s]:%s   %d     ")
+                     ,format1000(i).cstr()
+                     ,m_bigArray[i].toString().cstr()
+                     ,m_refArray[i]);
     }
     COORD ws = Console::getWindowSize();
     Console::clearRect(110, line, ws.X, ws.Y - 1);
@@ -186,19 +194,23 @@ namespace TestBigArray {
               if (i % 10000 == 0) {
                 OUTPUT(_T("set(%7d). pageFileSize:%11s"), i, format1000(ba.getPageFileSize()).cstr());
               }
-              const unsigned int index = randInt(ba.size());
-              const int          value = randInt(1000000);
+              const size_t index = randSizet(ba.size());
+              const int    value = randInt(1000000);
               ba.set(index, value);
             }
             ba.check(_T("after set-loop"));
 
-            for (int i = 0; ba.size() > 0; i++) {
-              const int index = randInt(ba.size());
-              const int count = randInt(ba.size() - index) / 10 + 1;
+            for (size_t i = 0; ba.size() > 0; i++) {
+              const size_t index = randSizet(ba.size());
+              const size_t count = randSizet(ba.size() - index) / 6 + 1;
 
-              if (i % 4 == 0) {
-                OUTPUT(_T("ba.size=%7d. remove(%7d,%6d). pageFileSize:%11s"), ba.size(), index, count, format1000(ba.getPageFileSize()).cstr());
-              }
+//            if (i % 4 == 0) {
+                OUTPUT(_T("ba.size=%8s. remove(%7s,%7s). pageFileSize:%11s")
+                      ,format1000(ba.size()).cstr()
+                      ,format1000(index).cstr()
+                      ,format1000(count).cstr()
+                      ,format1000(ba.getPageFileSize()).cstr());
+  //          }
               if ((i % 20 == 0) && (ba.size() < 30000)) {
                 ba.check(_T("remove"));
               }

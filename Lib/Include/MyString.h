@@ -11,10 +11,10 @@
 class String {
 private:
   DECLARECLASSNAME;
-  unsigned long m_len, m_capacity;
+  size_t m_len, m_capacity;
   TCHAR *m_buf;
-  static TCHAR *newCharBuffer(const TCHAR *s, unsigned long &length, unsigned long &capacity);
-  void indexError(unsigned int index) const;
+  static TCHAR *newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity);
+  void indexError(size_t index) const;
 public:
   String();
   String(const String &s);
@@ -39,15 +39,15 @@ public:
   ~String();
   String      &operator=(const String &rhs);
   String      &operator=(const TCHAR *s);
-  TCHAR       &operator[](unsigned int index);                    // Returns TCHAR at position index
-  const TCHAR &operator[](unsigned int index) const;              // Returns TCHAR at position index
+  TCHAR       &operator[](size_t index);                    // Returns TCHAR at position index
+  const TCHAR &operator[](size_t index) const;              // Returns TCHAR at position index
   inline TCHAR last() const { return m_len ? m_buf[m_len-1] : 0; }
   TCHAR       *cstr()       { return m_buf; }
   const TCHAR *cstr() const { return m_buf; }
-  String &remove(int pos, int length = 1);                        // Remove characters at position pos, pos+1, ...pos+length-1
+  String &remove(size_t pos, size_t length = 1);                        // Remove characters at position pos, pos+1, ...pos+length-1
   String &removeLast();                                           // Remove the last character if any.
-  String &insert(int pos, TCHAR ch);                              // Insert ch into String at position pos
-  String &insert(int pos, const String &s);                       // Insert s into String at position pos
+  String &insert(size_t pos, TCHAR ch);                              // Insert ch into String at position pos
+  String &insert(size_t pos, const String &s);                       // Insert s into String at position pos
   friend bool    operator==( const String &lhs, const String &rhs);
   friend bool    operator==( const String &lhs, const TCHAR  *rhs);
   friend bool    operator!=( const String &lhs, const String &rhs);
@@ -72,19 +72,19 @@ public:
 
   String &trim();                                                 // Remove leading and trailing spaces. Return this
   String &trimLeft();                                             // Remove leading spaces. Return this
-  String &trimRight();                                            // Remove trailing spaces. Return this
-  int     find(const TCHAR  *str, int from = 0) const;            // Return index of first occurrence of str starting at position from, -1 if not found
-  int     find(const String &str, int from = 0) const;
-  int     find(TCHAR         ch , int from = 0) const;            // Return index of first occurrence of ch starting at position from, -1 if not found
-  int    rfind(TCHAR         ch               ) const;            // Return index of last occurrence of ch, -1 if not found
+  String &trimRight();                                                     // Remove trailing spaces. Return this
+  intptr_t     find(const TCHAR  *str, size_t from = 0) const;             // Return index of first occurrence of str starting at position from, -1 if not found
+  intptr_t     find(const String &str, size_t from = 0) const;
+  intptr_t     find(TCHAR         ch , size_t from = 0) const;             // Return index of first occurrence of ch starting at position from, -1 if not found
+  intptr_t    rfind(TCHAR         ch                  ) const;             // Return index of last occurrence of ch, -1 if not found
 
-  inline int length() const { return (int)m_len; }                // Return length og String
+  inline size_t length() const { return m_len; }                           // Return length og String
   inline bool isEmpty() const { return m_len == 0; }
-  friend String left(  const String &str, int length);            // Return substring "s[0]s[1]...s[length]"
-  friend String right( const String &str, int length);            // Return substring s[s.length-length],s[s.length-length+1]...s[s.length]
-  friend String substr(const String &str, int from, int length);  // Return substring "str[from]str[from+1]...str[from+length]"
-  friend String rev(   const String &str);                        // Return reverse String
-  friend String spaceString(int length, TCHAR ch = _T(' '));      // Return String with length length, filled with ch. return "" if length <= 0
+  friend String left(  const String &str, intptr_t length);                 // Return substring "s[0]s[1]...s[len-1]".                          ex. left("abc"  ,2)   = "ab"
+  friend String right( const String &str, intptr_t length);                 // Return substring s[s.len-length],s[s.len-length+1]...s[s.len-1]. ex. right("abc" ,2)   = "bc"
+  friend String substr(const String &str, intptr_t from, intptr_t length);  // Return substring "str[from]str[from+1]...str[from+length-1]"     ex. substr(abcd",1,2) = "bc"
+  friend String rev(   const String &str);                                  // Return reverse String
+  friend String spaceString(intptr_t length, TCHAR ch = _T(' '));           // Return String with length length, filled with ch. return "" if length <= 0
 
   friend tostream &operator<<(tostream &f, const String &str);
   friend tistream &operator>>(tistream &f, String &str);
@@ -149,14 +149,14 @@ TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst =
 int    findMatchingpParanthes(const TCHAR *str, int pos);
 
 
-int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,        const unsigned char translateTable[256]);
-int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, int n, const unsigned char translateTable[256]);
+int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,           const unsigned char translateTable[256]);
+int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, size_t n, const unsigned char translateTable[256]);
 TCHAR *streToUpperCase( TCHAR *s);
 TCHAR *streToLowerCase( TCHAR *s);
 int    streicmp(       const TCHAR *s1, const TCHAR *s2);
-int    strneicmp(      const TCHAR *s1, const TCHAR *s2, int n);
+int    strneicmp(      const TCHAR *s1, const TCHAR *s2, size_t n);
 int    streaicmp(      const TCHAR *s1, const TCHAR *s2);        // ignore case and accents
-int    strneaicmp(     const TCHAR *s1, const TCHAR *s2, int n); // ignore case and accents
+int    strneaicmp(     const TCHAR *s1, const TCHAR *s2, size_t n); // ignore case and accents
 
 String loadString(int id);
 String loadString(int id, const String &defaultValue);

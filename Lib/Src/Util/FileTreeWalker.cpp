@@ -7,7 +7,7 @@ static void traverseDir(const String &path, FileNameHandler &nameHandler, WildCa
   DirList list = scandir(FileNameSplitter::getChildName(path,_T("*.*")),SELECTALLBUTDOT,SORTDIRLASTALPHA);
 
   nameHandler.handleStartDir(path.cstr());
-  for(int i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     DirListEntry &e = list[i];
     if(e.attrib & _A_SUBDIR) {
       if(recurse) {
@@ -25,7 +25,7 @@ static void traverseDir(const String &path, FileNameHandler &nameHandler, WildCa
 
 static void handleSingleFile(const String &fileName, FileNameHandler &nameHandler) {
   DirList list = scandir(fileName,SELECTALLBUTDOT,SORTDIRLASTALPHA);
-  for(int i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     DirListEntry &e = list[i];
     nameHandler.handleFileName(fileName.cstr(),e);
   }
@@ -67,7 +67,7 @@ public:
     return m_argv;
   }
   int getArgc() {
-    return m_a.size();
+    return (int)m_a.size();
   }
 };
 
@@ -80,7 +80,7 @@ Argv::Argv(const StringArray &a) : m_a(a) {
     m_argv = NULL;
   } else {
     m_argv = new TCHAR*[m_a.size()+1];
-    int i;
+    size_t i;
     for(i = 0; i < m_a.size(); i++) {
       m_argv[i] = m_a[i].cstr();
     }
@@ -149,7 +149,7 @@ void FileTreeWalker::traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bo
   }
 
   a.sort(compareByIndex);
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     IndexedStringArray *ia = a[i];
     if(ia->m_isDir) {
       handleDir(ia->m_path, nameHandler, Argv(*ia), recurse);

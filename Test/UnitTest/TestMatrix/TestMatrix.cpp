@@ -217,8 +217,8 @@ namespace TestMatrix {
       verify(v2 == v);
       Matrix D(v);
       verify(D.getDiagonal() == v);
-      for (int i = 0; i < D.getRowCount(); i++) {
-        for (int j = 0; j < D.getColumnCount(); j++) {
+      for (size_t i = 0; i < D.getRowCount(); i++) {
+        for (size_t j = 0; j < D.getColumnCount(); j++) {
           if (i == j) {
             verify(D(i, j) == i);
           }
@@ -255,8 +255,8 @@ namespace TestMatrix {
       verify(v2 == v);
       ComplexMatrix D(v);
       verify(D.getDiagonal() == v);
-      for (int i = 0; i < D.getRowCount(); i++) {
-        for (int j = 0; j < D.getColumnCount(); j++) {
+      for (size_t i = 0; i < D.getRowCount(); i++) {
+        for (size_t j = 0; j < D.getColumnCount(); j++) {
           if (i == j) {
             verify(D(i, j) == i);
           }
@@ -344,8 +344,8 @@ namespace TestMatrix {
       const Matrix        T = randomIntMatrix(4, 5);
       const Complex       factor(1, 1);
       const ComplexMatrix Tc = factor * T;
-      for (int i = 0; i < Tc.getRowCount(); i++) {
-        for (int j = 0; j < Tc.getColumnCount(); j++) {
+      for (size_t i = 0; i < Tc.getRowCount(); i++) {
+        for (size_t j = 0; j < Tc.getColumnCount(); j++) {
           verify(Tc(i, j) == factor * T(i, j));
         }
       }

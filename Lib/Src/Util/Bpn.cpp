@@ -7,6 +7,10 @@
 #define DEBUG_BPN
 */
 
+#ifdef IS32BIT
+#define ASM_OPTIMIZED
+#endif
+
 #pragma warning(disable : 4244)
 
 static float frandom(float from, float to) {
@@ -46,8 +50,6 @@ void Bpn::layerPropagate(BpnLayer *lower, BpnLayer *upper) {
   for(int i = 0; i < noutputs; i++ ) {
     float sum = 0;
     float *weights = upper->m_weights[i];
-
-#define ASM_OPTIMIZED
 
 #ifndef ASM_OPTIMIZED
     for(int j = 0; j < ninputs; j++ )
@@ -350,7 +352,7 @@ double Bpn::getPatternError(const Array<double> &target) const {
 }
 
 void Bpn::allocateLayers(const Array<int> &layerunits, bool bias) {
-  const int layerCount = layerunits.size();
+  const int layerCount = (int)layerunits.size();
   if(layerCount > MAXLAYERCOUNT) {
     throwException(_T("Bpn::allocateLayers called with %d layers. max=%d"), layerCount, MAXLAYERCOUNT);
   }

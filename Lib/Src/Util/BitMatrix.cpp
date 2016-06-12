@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <BitSet.h>
 
-void BitMatrix::set(unsigned int r, unsigned int c, bool v) {
+void BitMatrix::set(size_t r, size_t c, bool v) {
   if(v) {
     add(getIndex(r,c));
   } else {
@@ -9,19 +9,19 @@ void BitMatrix::set(unsigned int r, unsigned int c, bool v) {
   }
 }
 
-BitSet BitMatrix::getRow(unsigned int r) const {
-  const unsigned int count = getColumnCount();
+BitSet BitMatrix::getRow(size_t r) const {
+  const size_t count = getColumnCount();
   BitSet result(count);
-  for(unsigned int c = 0, index = r*count; c < count; c++) {
+  for(size_t c = 0, index = r*count; c < count; c++) {
     if(contains(index++)) result.add(c);
   }
   return result;
 }
 
-BitSet BitMatrix::getColumn(unsigned int c) const {
-  const unsigned int count = getRowCount();
+BitSet BitMatrix::getColumn(size_t c) const {
+  const size_t count = getRowCount();
   BitSet result(count);
-  for(unsigned int r = 0, index = c; r < count; r++, index += getColumnCount()) {
+  for(size_t r = 0, index = c; r < count; r++, index += getColumnCount()) {
     if(contains(index)) result.add(r);
   }
   return result;
@@ -74,7 +74,7 @@ AbstractIterator *BitMatrixIterator::clone() {
 }
 
 void *BitMatrixIterator::next() {
-  m_p = m_matrix.indexToPoint(*(unsigned int*)(BitSetIterator::next()));
+  m_p = m_matrix.indexToPoint(*(size_t*)(BitSetIterator::next()));
   return &m_p;
 }
 
@@ -92,8 +92,8 @@ void BitMatrix::checkSameDimension(const BitMatrix &m) const {
 
 String BitMatrix::toString() const {
   String result;
-  for(unsigned int r = 0; r < getRowCount(); r++) {
-    for(unsigned int c = 0; c < getColumnCount(); c++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
+    for(size_t c = 0; c < getColumnCount(); c++) {
       result += get(r,c)?_T("1"):_T("0");
     }
     result += _T("\n");

@@ -2,7 +2,7 @@
 #include <Math/Polygon2D.h>
 
 void Polygon2D::move(const Point2D &dp) {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     (*this)[i] += dp;
   }
 }
@@ -10,7 +10,7 @@ void Polygon2D::move(const Point2D &dp) {
 Rectangle2D Polygon2D::getBoundingBox() const {
   const Point2DArray &a = *this;
   double minx,maxx,miny,maxy;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const Point2D &p = a[i];
     if(i == 0) {
       minx = maxx = p.x;

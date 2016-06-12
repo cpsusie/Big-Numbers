@@ -54,14 +54,14 @@ namespace TestFFT {
         fft(data, true);
 
         verify(data.size() == expected.size());
-        for (int i = 0; i < data.size(); i++) {
+        for (size_t i = 0; i < data.size(); i++) {
           verify(arg(data[i] - expected[i]) < EPS);
         }
 
         fft(data, false);
 
         verify(data.size() == copy.size());
-        for (int i = 0; i < data.size(); i++) {
+        for (size_t i = 0; i < data.size(); i++) {
           verify(arg(data[i] - copy[i]) < EPS);
         }
 
@@ -71,14 +71,14 @@ namespace TestFFT {
         dft(data, true);
 
         verify(data.size() == expected.size());
-        for (int i = 0; i < data.size(); i++) {
+        for (size_t i = 0; i < data.size(); i++) {
           verify(arg(data[i] - expected[i]) < EPS);
         }
 
         dft(data, false);
 
         verify(data.size() == copy.size());
-        for (int i = 0; i < data.size(); i++) {
+        for (size_t i = 0; i < data.size(); i++) {
           verify(arg(data[i] - copy[i]) < EPS);
         }
       }

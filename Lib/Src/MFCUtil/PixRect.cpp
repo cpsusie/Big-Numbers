@@ -1346,7 +1346,7 @@ void PolygonFiller::checkAndFill(const CPoint &p) {
 }
 
 void PolygonFiller::restoreBlackOutSideRegion() {
-  for(int i = 0; i < m_pointsOutside.size(); i++) {
+  for(size_t i = 0; i < m_pointsOutside.size(); i++) {
     m_pixelAccessor->fill(m_pointsOutside[i],BLACK);
   }
 }
@@ -1445,7 +1445,7 @@ void PixRect::bezier(const Point2D &start, const Point2D &cp1, const Point2D &cp
 }
 
 void MyPolygon::move(const CPoint &dp) {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     (*this)[i] += dp;
   }
 }
@@ -1456,7 +1456,7 @@ CRect MyPolygon::getBoundsRect() const {
     return CRect(0,0,0,0);
   }
   CRect result(a[0],a[0]);
-  for(int i = 1; i < a.size(); i++) {
+  for(size_t i = 1; i < a.size(); i++) {
     const CPoint &p = a[i];
     if(p.x < result.left  ) result.left   = p.x;
     if(p.x > result.right ) result.right  = p.x;

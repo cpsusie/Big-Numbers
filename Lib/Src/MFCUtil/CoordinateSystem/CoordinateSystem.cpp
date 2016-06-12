@@ -76,7 +76,7 @@ void CCoordinateSystem::removeObject(CoordinateSystemObject *object) {
 }
 
 int CCoordinateSystem::findObject(const CoordinateSystemObject *object) const {
-  for(int i = 0; i < m_objectArray.size(); i++) {
+  for(size_t i = 0; i < m_objectArray.size(); i++) {
     if(m_objectArray[i] == object) {
       return i;
     }
@@ -94,7 +94,7 @@ void CCoordinateSystem::paint(CDC &dc) {
   m_vp.setClipping(true);
   SystemPainter painter(m_vp, GetFont(), m_backgroundColor, m_axisColor, m_xAxisType, m_yAxisType, hasGrid());
   painter.paint();
-  for(int i = 0; i < m_objectArray.size(); i++) {
+  for(size_t i = 0; i < m_objectArray.size(); i++) {
     m_objectArray[i]->paint(m_vp);
   }
   m_vp.setClipping(false);

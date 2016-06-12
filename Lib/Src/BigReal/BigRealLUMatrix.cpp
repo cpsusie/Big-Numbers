@@ -4,14 +4,14 @@
 // Implementation of BigRealLUMatrix
 
 void BigRealLUMatrix::initPermut() {
-  for(int r = 0; r < getRowCount(); r++) {
+  for(size_t r = 0; r < getRowCount(); r++) {
     m_permut[r] = r;
   }
   m_detsign = 1;
 }
 
 void BigRealLUMatrix::allocPermut() {
-  m_permut = new unsigned int[getRowCount()];
+  m_permut = new size_t[getRowCount()];
 }
 
 BigRealLUMatrix::BigRealLUMatrix() {
@@ -54,11 +54,11 @@ BigRealLUMatrix& BigRealLUMatrix::operator=(const BigRealMatrix& src) { // assig
 
 BigRealVector BigRealLUMatrix::evald() const {
   const BigRealLUMatrix &a = *this;
-  const int             n = getRowCount();
+  const size_t           n = getRowCount();
   BigRealVector d(n);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     BigReal max,tmp;
-    for(int j = 0; j < n; j++) {
+    for(size_t j = 0; j < n; j++) {
       if(max<(tmp = fabs(a(i,j)))) {
         max = tmp;
       }
@@ -70,11 +70,11 @@ BigRealVector BigRealLUMatrix::evald() const {
 
 void BigRealLUMatrix::pivot(const BigRealVector &d, unsigned int k) {
   BigRealLUMatrix &a      = *this;
-  const int       n      = getRowCount();
-  const int       digits = getPrecision();
+  const size_t     n      = getRowCount();
+  const int        digits = getPrecision();
   BigReal          max    = 0;
-  int             current;
-  for(int i = k; i < n; i++) {
+  size_t           current;
+  for(size_t i = k; i < n; i++) {
     BigReal tmp(rQuot(a(m_permut[i],k),d[m_permut[i]],digits));
     tmp = fabs(tmp);
     if(tmp > max) {
@@ -87,32 +87,32 @@ void BigRealLUMatrix::pivot(const BigRealVector &d, unsigned int k) {
   }
 
   if(current != (int)k) {
-    int itmp          = m_permut[current];
+    size_t itmp       = m_permut[current];
     m_permut[current] = m_permut[k];
     m_permut[k]       = itmp;
-    m_detsign = -m_detsign; // remember how many permutations made
+    m_detsign         = -m_detsign; // remember how many permutations made
   }
 }
 
 void BigRealLUMatrix::lowerUpper() {
-  BigRealLUMatrix &a      = *this;
-  const int       n      = getRowCount();
+  BigRealLUMatrix &a     = *this;
+  const intptr_t  n      = getRowCount();
   const int       digits = getPrecision();
-  BigRealVector    d      = evald();
+  BigRealVector   d      = evald();
 
   initPermut();
-  for(int k = 0; k < n; k++) {
-    for(int i = k; i < n; i++) {
+  for(intptr_t k = 0; k < (intptr_t)n; k++) {
+    for(intptr_t i = k; i < n; i++) {
       BigReal sum;
-      for(int l = 0; l <= k-1; l++) {
+      for(intptr_t l = 0; l <= k-1; l++) {
         sum = rSum(sum,rProd(a(m_permut[i],l),a(m_permut[l],k),digits),digits);
       }
       a(m_permut[i],k) = rDif(a(m_permut[i],k),sum,digits);
     }
     pivot(d,k);
-    for(int j = k+1; j < n; j++) {
+    for(intptr_t j = k+1; j < n; j++) {
       BigReal sum;
-      for(signed int l = 0; l <= k-1; l++) {
+      for(intptr_t l = 0; l <= k-1; l++) {
         sum = rSum(sum,rProd(a(m_permut[k],l),a(m_permut[l],j),digits),digits);
       }
       a(m_permut[k],j) = rQuot(rDif(a(m_permut[k],j),sum,digits),a(m_permut[k],k),digits);
@@ -123,25 +123,25 @@ void BigRealLUMatrix::lowerUpper() {
 // Computes x so that A*x=y. Assumes A has been LU decomposed with lowerupper
 BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const { 
   const BigRealLUMatrix &a      = *this;
-  const int             n      = getRowCount();
-  const int             digits = getPrecision();
+  const intptr_t         n      = getRowCount();
+  const int              digits = getPrecision();
 
-  if(y.getDimension() != (unsigned int)n) {
-    throwBigRealException(_T("BigRealLUMatrix::solve:Invalid dimension. y.dimension=%d, LU.dimension=(%d,%d)"),y.getDimension(),n,n);
+  if(y.getDimension() != n) {
+    throwBigRealException(_T("BigRealLUMatrix::solve:Invalid dimension. y.dimension=%d, LU.%s"),format1000(y.getDimension()).cstr(), getDimensionString().cstr());
   }
 
   BigRealVector z(n);
-  for(int i = 0; i < n; i++) {
+  for(intptr_t i = 0; i < n; i++) {
     BigReal sum = 0;
-    for(int j = 0; j <= i-1; j++) {
+    for(intptr_t j = 0; j <= i-1; j++) {
       sum = rSum(sum,rProd(a(m_permut[i],j),z[j],digits),digits);
     }
     z[i] = rQuot(rDif(y[m_permut[i]],sum,digits),a(m_permut[i],i),digits);
   }
   BigRealVector x(n);
-  for(int i = n-1; i >= 0; i--) {
+  for(intptr_t i = n-1; i >= 0; i--) {
     BigReal sum = 0;
-    for(int j = i+1; j < n; j++) {
+    for(intptr_t j = i+1; j < n; j++) {
       sum = rSum(sum,rProd(a(m_permut[i],j),x[j],digits),digits);
     }
     x[i] = rDif(z[i],sum,digits);
@@ -150,10 +150,10 @@ BigRealVector BigRealLUMatrix::solve(const BigRealVector &y) const {
 }
 
 BigRealMatrix BigRealLUMatrix::getInverse() const {
-  const int n = getRowCount();
+  const size_t n = getRowCount();
   BigRealMatrix result(n,n,getPrecision());
   BigRealVector e(n);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     e[i] = 1;
     result.setColumn(i,solve(e));
     e[i] = 0;
@@ -164,10 +164,10 @@ BigRealMatrix BigRealLUMatrix::getInverse() const {
 BigReal BigRealLUMatrix::getDeterminant() const {
   const BigRealLUMatrix &a      = *this;
   BigReal                d      = m_detsign;
-  const int             n      = getRowCount();
-  const int             digits = getPrecision();
+  const size_t           n      = getRowCount();
+  const int              digits = getPrecision();
 
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     d = rProd(d,a(a.m_permut[i],i),digits);
   }
   return d;
@@ -176,7 +176,7 @@ BigReal BigRealLUMatrix::getDeterminant() const {
 tostream& operator<<(tostream& out, const BigRealLUMatrix &a) {
   out << BigRealMatrix(a);
   out << _T("Permut:(");
-  for(int r = 0; r < a.getRowCount(); r++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
     out << a.m_permut[r] << _T(" ");
   }
   out << _T("). determinant sign:") << a.m_detsign << _T('\n');

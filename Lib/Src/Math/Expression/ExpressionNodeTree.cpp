@@ -9,7 +9,7 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSy
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, const ExpressionNodeArray &childArray) : ExpressionNode(tree, symbol) {
   m_childArray.setCapacity(childArray.size());
-  for(int i = 0; i < childArray.size(); i++) {
+  for(size_t i = 0; i < childArray.size(); i++) {
     m_childArray.add((ExpressionNode*)childArray[i]);
   }
   INITEXPRESSIONNODEDEBUGSTRING();
@@ -18,7 +18,7 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSy
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
   const ExpressionNodeArray &sa = src->getChildArray();
   m_childArray.setCapacity(sa.size());
-  for(int i = 0; i < sa.size(); i++) {
+  for(size_t i = 0; i < sa.size(); i++) {
     m_childArray.add(sa[i]->clone(tree));
   }
   INITEXPRESSIONNODEDEBUGSTRING();
@@ -122,7 +122,7 @@ int ExpressionNodeTree::compare(const ExpressionNode *n) const {
   } else {
     const ExpressionNodeArray &a1 = getChildArray();
     const ExpressionNodeArray &a2 = n->getChildArray();
-    for(int i = 0; i < a1.size(); i++) { // the have the same symbol => a1.size() == a2.size()
+    for(size_t i = 0; i < a1.size(); i++) { // the have the same symbol => a1.size() == a2.size()
       const int c = a1[i]->compare(a2[i]);
       if(c) return c;
     }
@@ -191,7 +191,7 @@ bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int 
   if(!handler.handleNode(this, level)) return false;
   const ExpressionNodeArray &a = getChildArray();
   level++;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     if(!a[i]->traverseExpression(handler, level)) return false;
   }
   return true;
@@ -200,7 +200,7 @@ bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int 
 
 void ExpressionNodeTree::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
-  for(int i = 0; i < m_childArray.size(); i++) {
+  for(size_t i = 0; i < m_childArray.size(); i++) {
     m_childArray[i]->dumpNode(s, level+1);
   }
 }

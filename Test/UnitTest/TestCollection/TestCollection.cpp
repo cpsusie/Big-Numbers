@@ -255,7 +255,7 @@ namespace TestBitSet
       }
       verify(i == set.size());
     } else {
-      for (int i = 0; i < list.size(); i++) {
+      for (size_t i = 0; i < list.size(); i++) {
         const Key &key = list[i];
         verify(set.contains(key));
       }
@@ -395,7 +395,7 @@ namespace TestBitSet
     } else {
       CompactIntArray a = ((HashSet<Key>&)set).getLength();
       String line;
-      for (int i = 0; i < a.size(); i++) {
+      for (size_t i = 0; i < a.size(); i++) {
         line += format(_T("Count(%d):%d "), i, a[i]);
       }
       OUTPUT(_T("%s"), line.cstr());
@@ -414,7 +414,7 @@ namespace TestBitSet
     }
 
     OUTPUT(_T("Testing set.contains"));
-    for (int i = 0; i < list.size(); i++) {
+    for (size_t i = 0; i < list.size(); i++) {
       const Key &key = list[i];
       verify(set.contains(key));
     }
@@ -474,7 +474,7 @@ namespace TestBitSet
     verify(!(set < bigset));
     verify(!(set > bigset));
 
-    for (int i = 0; i < list.size() / 2; i++) {
+    for (size_t i = 0; i < list.size() / 2; i++) {
       set.remove(list[i]);
     }
 
@@ -560,7 +560,7 @@ namespace TestBitSet
       }
       verify(i == map.size());
     } else {
-      for (int i = 0; i < list.size(); i++) {
+      for (size_t i = 0; i < list.size(); i++) {
         const KeyElement &listElement = list[i];
         const Element &e = *map.get(listElement.m_key);
         verify(e == listElement.m_elem);
@@ -670,7 +670,7 @@ namespace TestBitSet
       }
     }
 
-    for (int i = 0; i < list.size(); i++) {
+    for (size_t i = 0; i < list.size(); i++) {
       const KeyElement &e = list[i];
       verify(map.get(e.m_key) != NULL);
     }

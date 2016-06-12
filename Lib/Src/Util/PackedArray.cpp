@@ -563,8 +563,8 @@ String PackedArray::toString() const {
                         ,m_bitsPerItem, size(), m_firstFreeBit, m_data.size());
   TCHAR tmp[40];
   int l = getBitsPerItem();
-  int n = m_data.size() * 32 / l;
-  for(int i = 0, bitCount = 0; i < n; i++) { // print indices
+  size_t n = m_data.size() * 32 / l;
+  for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
       result += " ";
@@ -577,7 +577,7 @@ String PackedArray::toString() const {
     }
   }
   result += _T("\n");
-  for(int i = 0, bitCount = 0; i < n; i++) { // print indices
+  for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
       result += ":";
@@ -587,7 +587,7 @@ String PackedArray::toString() const {
   }
   result += _T("\n");
 
-  for(int i = 0, bitCount = 0; i < size(); i++) { // print member of the array
+  for(size_t i = 0, bitCount = 0; i < size(); i++) { // print member of the array
     bitCount += l;
     if(bitCount > 32) {
       result += ":";
@@ -596,14 +596,14 @@ String PackedArray::toString() const {
     result += format(_T("%*d"), l, get(i));
   }
   result += _T("\n");
-  for(int i = 0; i < m_data.size(); i++) { // print all integers of m_data
+  for(size_t i = 0; i < m_data.size(); i++) { // print all integers of m_data
     result += format(_T("%s:"), sprintbin(tmp, m_data[i]));
   }
   result += _T("\n");
 
   n = m_data.size() * 32;
   l = 1;
-  for(int i = 0, bitCount = 0; i < n; i++) { // print indices
+  for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
       result += " ";
@@ -616,7 +616,7 @@ String PackedArray::toString() const {
     }
   }
   result += _T("\n");
-  for(int i = 0, bitCount = 0; i < n; i++) { // print indices
+  for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
       result += ":";

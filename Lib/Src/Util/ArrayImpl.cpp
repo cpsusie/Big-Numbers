@@ -21,13 +21,13 @@ static AutoCounter initcounter(      _T("init"       ));
 
 #endif
 
-static unsigned int _max(unsigned int a, unsigned int b) { 
+static size_t _max(size_t a, size_t b) { 
   return a > b ? a : b;
 }
 
 DEFINECLASSNAME(ArrayImpl);
 
-ArrayImpl::ArrayImpl(AbstractObjectManager &objectManager, unsigned long capacity) {
+ArrayImpl::ArrayImpl(AbstractObjectManager &objectManager, size_t capacity) {
   init(objectManager,0,_max(1,capacity));
 }
 
@@ -35,7 +35,7 @@ void ArrayImpl::resize() {
   setCapacity(_max(2 * m_size,m_capacity));
 }
 
-void ArrayImpl::setCapacity(unsigned long capacity) {
+void ArrayImpl::setCapacity(size_t capacity) {
   if(capacity != m_capacity) {
     if((int)capacity < m_size) {
       capacity = m_size;
@@ -60,7 +60,7 @@ void ArrayImpl::setCapacity(unsigned long capacity) {
   }
 }
 
-void ArrayImpl::init(const AbstractObjectManager &objectManager, int size, unsigned long capacity) {
+void ArrayImpl::init(const AbstractObjectManager &objectManager, size_t size, size_t capacity) {
   m_objectManager = objectManager.clone();
   m_capacity = capacity;
 
@@ -89,7 +89,7 @@ AbstractCollection *ArrayImpl::clone(bool cloneData) const {
   ArrayImpl *copy = new ArrayImpl(*m_objectManager,m_capacity);
   if(cloneData) {
     copy->m_size = m_size;
-    for(unsigned int i = 0; i < m_size;i++) {
+    for(size_t i = 0; i < m_size;i++) {
       copy->m_elem[i] = m_objectManager->cloneObject(m_elem[i]);
     }
   }
@@ -97,7 +97,7 @@ AbstractCollection *ArrayImpl::clone(bool cloneData) const {
 }
 
 void ArrayImpl::clear() {
-  for(unsigned int i = 0; i < m_size; i++) {
+  for(size_t i = 0; i < m_size; i++) {
     m_objectManager->deleteObject(m_elem[i]);
   }
 //  memset(m_elem,0,m_size * sizeof(m_elem[0]));
@@ -106,7 +106,7 @@ void ArrayImpl::clear() {
   m_updateCount++;
 }
 
-void ArrayImpl::indexError(const TCHAR *method, int index) const {
+void ArrayImpl::indexError(const TCHAR *method, size_t index) const {
   throwMethodInvalidArgumentException(s_className, method, _T("Index %d out of range. Arraysize=%d."), index, m_size);
 }
 
@@ -127,7 +127,7 @@ bool ArrayImpl::add(const void *e) {
   return true;
 }
 
-bool ArrayImpl::add(unsigned int i, const void *e, unsigned int count) {
+bool ArrayImpl::add(size_t i, const void *e, size_t count) {
   if(i > m_size) {
     indexError(_T("add"), i);
   }
@@ -148,15 +148,15 @@ bool ArrayImpl::add(unsigned int i, const void *e, unsigned int count) {
   return true;
 }
 
-void ArrayImpl::removeIndex(unsigned int i, unsigned int count) {
+void ArrayImpl::removeIndex(size_t i, size_t count) {
   if(count == 0) {
     return;
   }
-  unsigned int j = i + count;
+  size_t j = i + count;
   if(j > m_size) {
     indexError(_T("removeIndex"),j);
   }
-  for(unsigned int k = i; k < j; k++) {
+  for(size_t k = i; k < j; k++) {
     m_objectManager->deleteObject(m_elem[k]);
   }
   if(j < m_size) {
@@ -175,7 +175,7 @@ bool ArrayImpl::remove(const void *e) {
   return false;
 }
 
-void ArrayImpl::swap(unsigned int i1, unsigned int i2) {
+void ArrayImpl::swap(size_t i1, size_t i2) {
   if(i1 >= m_size) {
     indexError(_T("swap"),i1);
   }
@@ -205,7 +205,7 @@ void *ArrayImpl::select() {
   if(m_size == 0) {
     selectError();
   }
-  return m_elem[randInt() % m_size];
+  return m_elem[randSizet(m_size)];
 }
 
 // -------------------------------------------------------------------------------
@@ -214,9 +214,9 @@ class ArrayIterator : public AbstractIterator {
 private:
   DECLARECLASSNAME;
   ArrayImpl          &m_a;
-  int                 m_next;
-  int                 m_current;
-  unsigned long       m_updateCount;
+  size_t              m_next;
+  intptr_t            m_current;
+  size_t              m_updateCount;
   void checkUpdateCount() const;
 public:
   AbstractIterator *clone();

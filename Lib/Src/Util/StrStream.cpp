@@ -99,7 +99,7 @@ StrStream &StrStream::operator<<(const StreamParameters &param) {
 
 TCHAR StrStream::unputc() {
   TCHAR ch = 0;
-  const int l = length();
+  const size_t l = length();
   if(l > 0) {
     ch = (*this)[l-1];
     remove(l-1);

@@ -123,7 +123,7 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
 String ExpressionNode::statementListToString(bool dbg) const {
   String result;
   ExpressionNodeArray list = getStatementList(this);
-  for(int i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     result += TOSTRING(list[i]);
     result += _T(";\n");
   }
@@ -366,14 +366,14 @@ String &ExpressionNode::addLeftMargin(String &s, int level) { // static
 const ExpressionNode *ExpressionNodeArray::toTree(ExpressionInputSymbol delimiter) const {
   const ExpressionNode *result = (*this)[0];
   const ParserTree *tree = result->getTree();
-  for(int i = 1; i < size(); i++) {
+  for(size_t i = 1; i < size(); i++) {
     result = tree->binaryExpression(delimiter, result, (*this)[i]);
   }
   return result;
 }
 
 bool ExpressionNodeArray::isConstant() const {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if(!(*this)[i]->isConstant()) return false;
   }
   return true;
@@ -384,7 +384,7 @@ String ExpressionNodeArray::toString() const {
     return _T("");
   } else {
     String result = format(_T("(%s)"), (*this)[0]->toString().cstr());
-    for(int i = 1; i < size(); i++) {
+    for(size_t i = 1; i < size(); i++) {
       result += format(_T(",(%s)"), (*this)[i]->toString().cstr());
     }
     return result;

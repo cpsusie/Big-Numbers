@@ -3,8 +3,10 @@
 #include <ByteArray.h>
 
 static String typeNameToString(const TCHAR *typeName) {
-  switch((int)typeName) {
-#define caseStr(s) case s: return _T(#s)
+  switch((int)((size_t)((ULONG_PTR)typeName))) {
+
+#define caseStr(s) case ((int)((size_t)(ULONG_PTR)s)): return _T(#s)
+
   caseStr(RT_CURSOR      );
   caseStr(RT_BITMAP      );
   caseStr(RT_ICON        );

@@ -202,7 +202,7 @@ int Scanner::flush(bool force) { // protected
 
   if(m_nextChar >= SCANNERDANGER || force) {
     _TUCHAR *leftEdge = m_previousMark ? min(m_startMark, m_previousMark) : m_startMark;
-    int shiftAmount = leftEdge - m_inputBuffer ;
+    intptr_t shiftAmount = leftEdge - m_inputBuffer ;
 
     if(shiftAmount < SCANNERMAXLEX) {               // if(not enough room)
       if(!force) {
@@ -215,7 +215,7 @@ int Scanner::flush(bool force) { // protected
       shiftAmount = leftEdge - m_inputBuffer ;
     }
 
-    const int copyAmount = m_endBuf - leftEdge;
+    const intptr_t copyAmount = m_endBuf - leftEdge;
     MEMMOVE(m_inputBuffer, leftEdge, copyAmount);
 
     if(!fillBuf(m_inputBuffer + copyAmount)) {
@@ -338,7 +338,7 @@ bool Scanner::isWrap() {
 
 //----------------------------------------------------------------------------------------------
 
-int Scanner::fillBuf(_TUCHAR *start) { // private
+intptr_t Scanner::fillBuf(_TUCHAR *start) { // private
   // Fill the input buffer from start to the end of the buffer.
   // The input file is not closed when EOF is reached. Buffers are read
   // in units of SCANNERMAXLEX characters; it's an error if that many characters
@@ -346,7 +346,7 @@ int Scanner::fillBuf(_TUCHAR *start) { // private
   // is 1024, then 1024 characters will be read at a time. The number of
   // characters read is returned. m_eofRead is set to true as soon as the last buffer is read.
 
-  const int need = ((end() - start) / SCANNERMAXLEX) * SCANNERMAXLEX; // Number of bytes required from input.
+  const intptr_t need = ((end() - start) / SCANNERMAXLEX) * SCANNERMAXLEX; // Number of bytes required from input.
 
   if(need == 0) {
     return 0;
@@ -356,7 +356,7 @@ int Scanner::fillBuf(_TUCHAR *start) { // private
     throwException(_T("Scanner::fillBuf():INTERNAL ERROR: Bad starting address. need=%d, start=%p, end=%p"), need, start, end());
   }
 
-  int got; // Number of bytes actually read.
+  intptr_t got; // Number of bytes actually read.
   if( (got = m_inputStream->getChars(start, need)) == -1 ) {
     error(getPos(),_T("Can't read input stream"));
     m_endBuf = start;
@@ -416,7 +416,7 @@ void Scanner::debugState(const TCHAR *label, int state, int lookahead) {
 }
 
 SourcePosition Scanner::getPos() const {
-  int length = getLength();
+  int length = (int)getLength();
   if(length <= m_pos.getColumn()) {
     return SourcePosition(m_pos.getFileName(),m_pos.getLineNumber(),m_pos.getColumn() - length);
   } else { // we have one or more newlines in the lexeme

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <StringPool.h>
 
-StringPool::StringPool(unsigned long indexCapacity, unsigned long textCapacity) {
+StringPool::StringPool(size_t indexCapacity, size_t textCapacity) {
   init(indexCapacity, textCapacity);
 }
 
@@ -22,7 +22,7 @@ StringPool::~StringPool() {
   clear();
 }
 
-void StringPool::init(unsigned long indexCapacity, unsigned long textCapacity) {
+void StringPool::init(size_t indexCapacity, size_t textCapacity) {
   m_size          = 0;
   m_indexCapacity = indexCapacity;
   m_index         = allocateIndex(indexCapacity);
@@ -37,7 +37,7 @@ StringPoolNode *StringPool::fetchNode() {
   return m_firstPage->fetchNode();
 }
 
-StringPoolNode **StringPool::allocateIndex(unsigned long capacity) { // static
+StringPoolNode **StringPool::allocateIndex(size_t capacity) { // static
   StringPoolNode **result = capacity ? new StringPoolNode*[capacity] : NULL;
   if(result) {
     memset(result, 0, sizeof(result[0])*capacity);
@@ -58,7 +58,7 @@ void StringPool::copy(const StringPool &src) {
   setIndexCapacity(src.getIndexCapacity());
 }
 
-unsigned int StringPool::addString(const TCHAR *s) {
+size_t StringPool::addString(const TCHAR *s) {
   unsigned long hashCode;
   if(*s == 0) {
     return 0; // offset 0 is a 0-byte. see setTextCapacity
@@ -77,7 +77,7 @@ unsigned int StringPool::addString(const TCHAR *s) {
     }
     setIndexCapacity(m_size*3+5);
   }
-  const unsigned int stringOffset = m_textData.size();
+  const size_t stringOffset = m_textData.size();
   m_textData.append(s, _tcsclen(s) + 1);
 
   StringPoolNode *n = fetchNode();
@@ -101,14 +101,14 @@ void StringPool::clearIndex() {
     delete p;
   }
   m_firstPage = NULL;
-  const unsigned long tmp = m_size;
+  const size_t tmp = m_size;
   m_size = 0;
   setIndexCapacity(0);
   m_size = tmp;
 }
 
 class StringPoolIterator : public AbstractIterator {
-  unsigned int                   m_currentOffset;
+  size_t                    m_currentOffset;
   const CompactArray<TCHAR> &m_textData;
   const TCHAR               *m_result;
 private:
@@ -129,7 +129,7 @@ AbstractIterator *StringPoolIterator::clone() {
 }
 
 bool StringPoolIterator::hasNext() const {
-  return m_currentOffset < (unsigned int)m_textData.size();
+  return m_currentOffset < m_textData.size();
 }
 
 void *StringPoolIterator::next() {
@@ -147,14 +147,14 @@ Iterator<const TCHAR*> StringPool::getIterator() const {
   return Iterator<const TCHAR*>(new StringPoolIterator(m_textData));
 }
 
-void StringPool::setTextCapacity(unsigned long capacity) {
+void StringPool::setTextCapacity(size_t capacity) {
   m_textData.setCapacity(capacity);
   if(m_textData.size() == 0) {
     m_textData.add(0); // first byte of m_textData will always contain the empty string
   }
 }
 
-void StringPool::setIndexCapacity(unsigned long capacity) {
+void StringPool::setIndexCapacity(size_t capacity) {
   if(capacity < m_size) {
     capacity = m_size;
   }
@@ -203,14 +203,14 @@ bool StringPool::operator!=(const StringPool &sp) const {
 }
 
 void StringPool::save(ByteOutputStream &s) const {
-  const unsigned int size = m_size;
+  const size_t size = m_size;
   s.putBytes((const BYTE*)&size, sizeof(size));
   m_textData.save(s);
 }
 
 void StringPool::load(ByteInputStream &s) {
   clear();
-  unsigned int size;
+  size_t size;
   s.getBytesForced((BYTE*)&size, sizeof(size));
   m_size = size;
   m_textData.load(s);

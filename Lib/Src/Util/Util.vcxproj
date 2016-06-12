@@ -117,14 +117,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>c:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <IncludePath>c:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
     <ExcludePath />
-    <OutDir>..\..\..\MTDebug64\</OutDir>
+    <OutDir>..\..\MTDebug64\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>c:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\..\MTRelease64\</OutDir>
+    <IncludePath>c:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
+    <OutDir>..\..\MTRelease64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -200,7 +200,8 @@
       <BrowseInformation>true</BrowseInformation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -215,12 +216,14 @@
       <SDLCheck>true</SDLCheck>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <ExceptionHandling>Async</ExceptionHandling>
-      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
-      <OpenMPSupport>true</OpenMPSupport>
+      <ForceConformanceInForLoopScope>true</ForceConformanceInForLoopScope>
+      <OpenMPSupport>
+      </OpenMPSupport>
       <AssemblerOutput>NoListing</AssemblerOutput>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <ExpandAttributedSource>false</ExpandAttributedSource>
+      <MultiProcessorCompilation>false</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

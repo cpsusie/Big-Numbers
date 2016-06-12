@@ -24,7 +24,7 @@ void DialogControl::setTabIndex(int tabIndex) {
   if(tabIndex < 0)
     return;
   if(m_tabIndex != -1) {
-    int n = m_dlg.m_controls.size();
+    int n = (int)m_dlg.m_controls.size();
     if(m_tabIndex < tabIndex) {
       for(int i = 0; i < n; i++) {
         DialogControl *c = m_dlg.m_controls[i];
@@ -44,7 +44,7 @@ void DialogControl::setTabIndex(int tabIndex) {
     m_tabIndex = tabIndex;
   }
   else {
-    int n = m_dlg.m_controls.size();
+    int n = (int)m_dlg.m_controls.size();
     for(int i = 0; i < n; i++) {
       DialogControl *c = m_dlg.m_controls[i];
       if(c->m_tabIndex >= tabIndex)
@@ -93,7 +93,7 @@ Dialog::Dialog(const String &title, int left, int top, int width, int height) {
 }
 
 Dialog::~Dialog() {
-  for(int i = 0; i < m_controls.size(); i++)
+  for(size_t i = 0; i < m_controls.size(); i++)
     delete m_controls[i];
 }
 
@@ -152,21 +152,23 @@ void Dialog::addListBox(      int id, int left, int top, int width, int height, 
 }
 
 int Dialog::findControlIndex(int id) {
-  for(int i = 0; i < m_controls.size(); i++)
-    if(m_controls[i]->getid() == id)
-      return i;
+  for (size_t i = 0; i < m_controls.size(); i++) {
+    if (m_controls[i]->getid() == id) {
+      return (int)i;
+    }
+  }
   return -1;
 }
 
 void Dialog::checkIdUnique(int id) {
-  for(int i = 0; i < m_controls.size(); i++)
+  for(int i = 0; i < (int)m_controls.size(); i++)
     if(m_controls[i]->getid() == id)
       throwException(_T("field %d already exist"),id);
 }
 
 int Dialog::findNextTabIndex() {
   int v = -1;
-  for(int i = 0; i < m_controls.size(); i++) {
+  for(int i = 0; i < (int)m_controls.size(); i++) {
     int t = m_controls[i]->getTabIndex();
     if(t > v) v = t;
   }
@@ -180,7 +182,7 @@ void Dialog::addControl(DialogControl *control) {
 }
 
 DialogControl *Dialog::getDlgItem(int id) {
-  for(int i = 0; i < m_controls.size(); i++)
+  for(int i = 0; i < (int)m_controls.size(); i++)
     if(m_controls[i]->getid() == id)
       return m_controls[i];
   throwException(_T("Control %d doesnt exist"),id);
@@ -246,18 +248,18 @@ void Dialog::printf(int x, int y, const TCHAR *format,...) {
 void Dialog::drawBorder() {
   getWin()->rectangle( 0, 0, m_width, m_height, m_borderType, m_borderColor);
   if(m_title.length() > 0) {
-    int t = (m_width - m_title.length()) / 2;
+    int t = (m_width - (int)m_title.length()) / 2;
     getWin()->printf(t, 0, m_borderColor, _T(" %s "), m_title.cstr());
   }
 }
 
 void Dialog::drawStrings() {
-  for(int i = 0; i < m_strings.size(); i++)
+  for(int i = 0; i < (int)m_strings.size(); i++)
     getWin()->printf(m_strings[i].m_left, m_strings[i].m_top, m_color, _T("%s"), m_strings[i].m_str.cstr());
 }
 
 void Dialog::drawControls() {
-  for(int i = 0; i < m_controls.size(); i++) {
+  for(int i = 0; i < (int)m_controls.size(); i++) {
     m_controls[i]->draw();
   }
 }
@@ -289,7 +291,7 @@ static int tabIndexCmp(DialogControl * const &c1, DialogControl * const &c2) {
 }
 
 int Dialog::domodal() {
-  int i;
+  size_t i;
   int cx,cy;
   bool cursorWasVisible = Console::isCursorVisible();
   Console::getCursorPos(cx,cy);
@@ -353,7 +355,7 @@ void Dialog::firstField() {
 }
 
 void Dialog::lastField() {
-  for(int i = m_controls.size() - 1; i >= 0; i--) {
+  for(int i = (int)m_controls.size() - 1; i >= 0; i--) {
     if(m_controls[i]->isEnabled()) {
       gotoField(i);
       break;
@@ -377,7 +379,7 @@ void Dialog::prevField() {
   if(m_controls.size() == 0) {
     return;
   }
-  for(int i = (m_currentField == 0)? (m_controls.size()-1):(m_currentField-1); i != m_currentField; i = (i==0)?(m_controls.size()-1):(i-1)) {
+  for(int i = (m_currentField == 0) ? ((int)m_controls.size()-1):(m_currentField-1); i != m_currentField; i = (i==0)?((int)m_controls.size()-1):(i-1)) {
     if(m_controls[i]->isEnabled()) {
       gotoField(i);
       break;
@@ -478,7 +480,7 @@ bool Dialog::fieldLeft() {
 }
 
 bool Dialog::gotoField(int index) {
-  if(index < 0 || index >= m_controls.size() || !m_controls[index]->isEnabled()) {
+  if(index < 0 || index >= (int)m_controls.size() || !m_controls[index]->isEnabled()) {
     return false;
   }
   DialogControl *ff = NULL;

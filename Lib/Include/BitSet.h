@@ -10,7 +10,7 @@
 class BitSet {
 private:
   DECLARECLASSNAME;
-  unsigned int selectRandomNonEmptyAtom() const;
+  size_t selectRandomNonEmptyAtom() const;
 public:
 #if _BITSET_ATOMSIZE == 32
   typedef unsigned long  Atom;
@@ -22,16 +22,16 @@ public:
 
   friend class BitSetIndex;
   friend class BitSetFileIndex;
-  void getRangeTable(CompactArray<unsigned int> &rangeTable, unsigned char shift) const;
+  void getRangeTable(CompactArray<size_t> &rangeTable, unsigned char shift) const;
 private:
   static Atom mask[_BITSET_ATOMSIZE+1];
   friend class InitBitSetMask;
 protected:
-  Atom         *m_p;
-  unsigned long m_capacity;
-  static int getAtomCount(unsigned long capacity);
+  Atom   *m_p;
+  size_t  m_capacity;
+  static size_t getAtomCount(size_t capacity);
 public:
-  explicit BitSet(unsigned long capacity); // can store integers from [0..capacity-1]
+  explicit BitSet(size_t capacity); // can store integers from [0..capacity-1]
   BitSet(const BitSet &set);
   ~BitSet();
   BitSet &operator=(const BitSet &rhs);
@@ -48,11 +48,11 @@ public:
     return lts * rhs;
   }
 
-  BitSet &operator+=(unsigned long i) {                                 // Add i to the set, if it's not already there
+  BitSet &operator+=(size_t i) {                                 // Add i to the set, if it's not already there
     return add(i);
   }
 
-  BitSet &operator-=(unsigned long i) {                                 // Remove i from the set if it's there
+  BitSet &operator-=(size_t i) {                                 // Remove i from the set if it's there
     return remove(i);
   }
 
@@ -77,28 +77,28 @@ public:
   friend bool    operator!=(const BitSet &lts, const BitSet &rhs);      // Same as !(lts == rhs)
   friend int     bitSetCmp( const BitSet &i1, const BitSet &i2);            // NB! NOT the same as relational operators subset,pure subset.
   friend BitSet  compl(const BitSet &s);                                // Complementset
-  unsigned long  oldsize() const;                                       // Number of elements, slow version
-  unsigned long  size() const;                                          // Number of elements. fast version
+  size_t         oldsize() const;                                       // Number of elements, slow version
+  size_t         size() const;                                          // Number of elements. fast version
   bool           isEmpty() const;                                       // Return true if set is empty
-  BitSet &remove(unsigned long i);                                      // Remove i from set
-  BitSet &add(   unsigned long i);                                      // Insert i into set
-  BitSet &remove(unsigned long a, unsigned long b);                     // Remove interval [a;b] from set
-  BitSet &add(   unsigned long a, unsigned long b);                     // Insert interval [a;b] into set
-  bool    contains(unsigned long i) const;                              // Return if set contains i
-  int     getIndex(unsigned long i) const;                              // Return number of elements < i. if i not in set -1 is returned
-  unsigned int getCount(unsigned int from, unsigned int to) const;      // Return number of elements between from and to. both included.
-  unsigned int select() const;                                          // Returns a random element from non empty set. throws Exception if set is empty
+  BitSet &remove(size_t i);                                      // Remove i from set
+  BitSet &add(   size_t i);                                      // Insert i into set
+  BitSet &remove(size_t a, size_t b);                     // Remove interval [a;b] from set
+  BitSet &add(   size_t a, size_t b);                     // Insert interval [a;b] into set
+  bool    contains(size_t i) const;                              // Return if set contains i
+  intptr_t     getIndex(size_t i) const;                              // Return number of elements < i. if i not in set -1 is returned
+  size_t getCount(size_t from, size_t to) const;      // Return number of elements between from and to. both included.
+  size_t select() const;                                          // Returns a random element from non empty set. throws Exception if set is empty
   BitSet &clear();                                                      // Remove all elements from set
   BitSet &invert();                                                     // Complementset
-  unsigned long getCapacity() const {                                   // Return number of bits in set = maximum number of elements in set
+  inline size_t getCapacity() const {                                   // Return number of bits in set = maximum number of elements in set
     return m_capacity;
   }
-  void setCapacity(unsigned long newCapacity);
-  int getAtomCount() const;
+  void setCapacity(size_t newCapacity);
+  size_t getAtomCount() const;
   const Atom *getFirstAtom() const {
     return m_p;
   }
-  unsigned long getAtomIndex(unsigned long i) const;
+  size_t getAtomIndex(size_t i) const;
   String toString() const;
   String toStringIntervals() const;
 
@@ -106,8 +106,8 @@ public:
   tostream &dump(tostream &s = tcout);
   friend tostream &operator<<(tostream &s, const BitSet &rhs);
   void dump(FILE *f = stdout);
-  Iterator<unsigned int> getIterator();        // iterator that iterates elements of bitset in ascending  order
-  Iterator<unsigned int> getReverseIterator(); // iterator that iterates elements of bitset in descending order
+  Iterator<size_t> getIterator();        // iterator that iterates elements of bitset in ascending  order
+  Iterator<size_t> getReverseIterator(); // iterator that iterates elements of bitset in descending order
   friend class BitSetIterator;
   friend class BitSetReverseIterator;
 
@@ -122,10 +122,10 @@ public:
 
 class BitSetIterator : public AbstractIterator {
 private:
-  BitSet      &m_s;
-  unsigned int m_next;
-  unsigned int m_current;
-  bool         m_hasNext;
+  BitSet &m_s;
+  size_t  m_next;
+  size_t  m_current;
+  bool    m_hasNext;
   void first();
 public:
   AbstractIterator *clone();
@@ -137,10 +137,10 @@ public:
 
 class BitSetReverseIterator : public AbstractIterator {
 private:
-  BitSet      &m_s;
-  unsigned int m_next;
-  unsigned int m_current;
-  bool         m_hasNext;
+  BitSet &m_s;
+  size_t  m_next;
+  size_t  m_current;
+  bool    m_hasNext;
   void first();
 public:
   AbstractIterator *clone();
@@ -165,17 +165,17 @@ String charBitSetToString(const BitSet &set, CharacterFormater *charFormater = C
 
 class BitSetIndex {
 private:
-  const BitSet              &m_bitSet;
-  unsigned char              m_shift;
-  CompactArray<unsigned int> m_rangeTable;
+  const BitSet        &m_bitSet;
+  unsigned char        m_shift;
+  CompactArray<size_t> m_rangeTable;
 public:
   BitSetIndex(const BitSet &src);
-  void rebuildRangeTable();            // should be called whenever bitset is changed
-  int getIndex(unsigned long i) const; // faster than Bitset.getIndex(i)
+  void rebuildRangeTable();          // should be called whenever bitset is changed
+  intptr_t getIndex(size_t i) const; // faster than Bitset.getIndex(i)
   String getInfoString() const;
 
   void save(ByteOutputStream &s) const; // also save bitset. to be used in BitSetFileIndex
-  const CompactArray<unsigned int> &getRangeTable() const {
+  inline const CompactArray<size_t> &getRangeTable() const {
     return m_rangeTable;
   }
 };
@@ -185,15 +185,15 @@ private:
   mutable ByteInputFile      m_f;
   const unsigned long long   m_startOffset;
   unsigned char              m_shift;
-  CompactArray<unsigned int> m_rangeTable;
+  CompactArray<size_t>       m_rangeTable;
   unsigned __int64           m_bitsStartOffset; // offset to the first byte in bit-array. not bitset.capacity
   BitSet                    *m_loadedIntervals; // contains intervals already loaded. start as empty, and works as a cache
   BitSet                    *m_bitSet;
 public:
   BitSetFileIndex(const String &fileName, unsigned __int64 startOffset); // load rangetable
   ~BitSetFileIndex();
-  int getIndex(unsigned long i) const;          // lazy-read bitset, saved with BitSetIndex.save
-  const CompactArray<unsigned int> &getRangeTable() const {
+  intptr_t getIndex(size_t i) const;          // lazy-read bitset, saved with BitSetIndex.save
+  inline const CompactArray<size_t> &getRangeTable() const {
     return m_rangeTable;
   }
 };
@@ -201,18 +201,18 @@ public:
 class BitMatrix : private BitSet {
 private:
   MatrixDimension m_dim;
-  inline unsigned int getIndex(unsigned int r, unsigned int c) const {
+  inline size_t getIndex(size_t r, size_t c) const {
     assert(m_dim.isLegalIndex(r, c));
     return r*m_dim.columnCount + c;
   }
-  inline MatrixIndex indexToPoint(unsigned int index) const {
+  inline MatrixIndex indexToPoint(size_t index) const {
     return MatrixIndex(index / m_dim.columnCount, index % m_dim.columnCount);
   }
   void checkSameDimension(const BitMatrix &m) const;
   friend class BitMatrixIterator;
   
 public:
-  BitMatrix(unsigned int rowCount, int columnCount) 
+  BitMatrix(size_t rowCount, size_t columnCount) 
     : m_dim(rowCount, columnCount)
     , BitSet(rowCount*columnCount)
   {
@@ -222,11 +222,11 @@ public:
     , BitSet(m_dim.getElementCount())
   {
   }
-  void set(unsigned int r, unsigned int c, bool v);
+  void set(size_t r, size_t c, bool v);
   inline void set(const MatrixIndex &i, bool v) {
     set(i.r,i.c,v);
   }
-  inline bool get(unsigned int r, unsigned int c) const {
+  inline bool get(size_t r, size_t c) const {
     return contains(getIndex(r,c));
   }
   inline bool get(const MatrixIndex &i) const {
@@ -238,18 +238,18 @@ public:
   inline void invert() {
     BitSet::invert();
   }
-  inline unsigned int getRowCount() const {
+  inline size_t getRowCount() const {
     return m_dim.rowCount;
   }
-  inline unsigned int getColumnCount() const {
+  inline size_t getColumnCount() const {
     return m_dim.columnCount;
   }
   inline const MatrixDimension &getDimension() const {
     return m_dim;
   }
 
-  BitSet getRow(   unsigned int r) const;
-  BitSet getColumn(unsigned int c) const;
+  BitSet getRow(   size_t r) const;
+  BitSet getColumn(size_t c) const;
   bool operator==(const BitMatrix &m) const;
   inline bool operator!=(const BitMatrix &m) const {
     return !(*this == m);

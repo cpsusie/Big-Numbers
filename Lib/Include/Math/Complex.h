@@ -14,9 +14,21 @@ public:
   Complex(double r, double i = 0) { re = r; im = i; }
 #endif
 
-  Complex() { re = im = 0; }
-  Complex(int         r) { re = r; im = 0; }
-  Complex(const Real &r, const Real &i = 0) { re = r; im = i; }
+  Complex() { 
+    re = im = 0;
+  }
+  Complex(int r) {
+    re = r;
+    im = 0;
+  }
+  Complex(unsigned int r) {
+    re = r;
+    im = 0;
+  }
+  Complex(const Real &r, const Real &i = 0) { 
+    re = r;
+    im = i;
+  }
   explicit inline Complex(const String &s) {
     init((_TUCHAR*)(s.cstr()));
   }

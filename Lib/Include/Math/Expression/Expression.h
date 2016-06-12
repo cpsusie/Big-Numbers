@@ -63,7 +63,7 @@ public:
   void emitTestEAX( unsigned long         n);
   void emitTestSP(  unsigned short        n);
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
-  void fixupShortJump(int addr, BYTE jmpAddr);
+  void fixupShortJump(int addr, int jmpAddr);
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
   void fixupCall(const ExternalReference &ref);
   void emitBinaryOp(const IntelInstruction &ins, const ExpressionNode *n) { emitBinaryOp(ins,getValueAddr(n)); }

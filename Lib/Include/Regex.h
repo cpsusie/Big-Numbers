@@ -10,8 +10,8 @@
 
 class RegexRegisters {
 public:
-  int start[RE_NREGS];
-  int end[RE_NREGS];
+  intptr_t start[RE_NREGS];
+  intptr_t end[RE_NREGS];
   void clear() {
     memset(this, 0, sizeof(RegexRegisters));
   }
@@ -88,7 +88,7 @@ public:
   }
 };
 
-#define SIZE_JUMP         (1 + sizeof(short))
+#define SIZE_JUMP         (1 + (BYTE)sizeof(short))
 #define SIZE_COUNTINGJUMP (1 + SIZE_JUMP)
 #define RE_MAXCOUNTER     20
 
@@ -139,7 +139,7 @@ private:
   _RegexStateRegister                   m_register[RE_NREGS];
   _RegexCounterTable                   &m_counterTable;
   const Regex                          &m_regex;
-  const int                             m_pos;                  // Index of first character in targetstring we try to match
+  const intptr_t                        m_pos;                  // Index of first character in targetstring we try to match
 
   inline void push(const BYTE *ip, const TCHAR *sp) {
     m_stack.push(_RegexMatchStackElement(ip,sp));
@@ -183,9 +183,9 @@ public:
   const TCHAR *m_endMatch1, *m_endMatch2;
   const TCHAR *m_sp, *m_spEnd;
 
-  _RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, int pos);
+  _RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, intptr_t pos);
   
-  inline int getPos() const {
+  inline intptr_t getPos() const {
     return m_pos;
   }
 
@@ -266,9 +266,9 @@ public:
   bool handleCounterFailure(); // return true if handled. false if another pop is required
 
   void convertRegisters(const TCHAR    *string1
-                       ,int             size1
+                       ,intptr_t        size1
                        ,const TCHAR    *string2
-                       ,int             size2
+                       ,intptr_t        size2
                        ,RegexRegisters *registers);
 
   inline const _RegexStateRegister &getRegister(int regno) const {
@@ -292,10 +292,10 @@ public:
 #ifdef _DEBUG
 class _RegexSearchState {
 public:
-  const Regex &m_regex;
-  const int    m_startPos;
-  const int    m_charIndex;
-  _RegexSearchState(const Regex *regex, int startPos, int charIndex) 
+  const Regex   &m_regex;
+  const intptr_t m_startPos;
+  const intptr_t m_charIndex;
+  _RegexSearchState(const Regex *regex, intptr_t startPos, intptr_t charIndex) 
     : m_regex(*regex)
     , m_startPos(startPos)
     , m_charIndex(charIndex)
@@ -305,15 +305,15 @@ public:
 
 class _RegexCompilerState {
 public:
-  const Regex  &m_regex;
-  const String &m_codeText;
-  const String &m_compilerStack;
-  const String &m_currentState;
-  const String &m_usedCharSets;
-  const String &m_registerInfo;
-  const String &m_fastMap;
-  const int     m_scannerIndex;
-  const int     m_pendingExact;
+  const Regex   &m_regex;
+  const String  &m_codeText;
+  const String  &m_compilerStack;
+  const String  &m_currentState;
+  const String  &m_usedCharSets;
+  const String  &m_registerInfo;
+  const String  &m_fastMap;
+  const intptr_t m_scannerIndex;
+  const intptr_t m_pendingExact;
   _RegexCompilerState(const Regex  *regex 
                      ,const String &codeText
                      ,const String &compilerStack
@@ -321,8 +321,8 @@ public:
                      ,const String &usedCharSets
                      ,const String &registerInfo
                      ,const String &fastMap
-                     ,int           scannerIndex
-                     ,int           pendingExact
+                     ,intptr_t      scannerIndex
+                     ,intptr_t      pendingExact
                      )
     : m_regex(       *regex        )
     , m_codeText(     codeText     )
@@ -369,7 +369,7 @@ private:
                                                  // and to data when it is matched.
   bool                       m_matchEmpty;       // Set to true in compilePattern, if the compiled pattern match the empty string
   bool                       m_hasCompiled;
-  mutable int                m_resultLength;     // Length of tha text-segment that match the pattern
+  mutable intptr_t           m_resultLength;     // Length of tha text-segment that match the pattern
   _RegexByteInsertHandler   *m_insertHandler;    // call this each time bytes are inserted (not appended) to adjust references to bytes into m_buffer
 
 #ifdef _DEBUG
@@ -383,34 +383,34 @@ private:
 
   void compilePattern1(   const TCHAR    *pattern);
 
-  int  search1(           const TCHAR    *string
-                         ,int             size
-                         ,int             startPos
-                         ,int             range
+  intptr_t  search1(      const TCHAR    *string
+                         ,size_t          size
+                         ,intptr_t        startPos
+                         ,intptr_t        range
                          ,RegexRegisters *registers) const;
 
-  int  search2(           const TCHAR    *string1
-                         ,int             size1
+  intptr_t  search2(      const TCHAR    *string1
+                         ,size_t          size1
                          ,const TCHAR    *string2
-                         ,int             size2
-                         ,int             startPos
-                         ,int             range
+                         ,size_t          size2
+                         ,intptr_t        startPos
+                         ,intptr_t        range
                          ,RegexRegisters *registers
-                         ,int             mstop) const;
+                         ,size_t          mstop) const;
 
-  int  match(             const TCHAR    *string
-                         ,int             size
-                         ,int             pos
+  intptr_t match(         const TCHAR    *string
+                         ,size_t          size
+                         ,intptr_t        pos
                          ,RegexRegisters *registers) const;
 
-  int  match2(            const TCHAR    *string1
-                         ,int             size1
+  intptr_t  match2(       const TCHAR    *string1
+                         ,size_t          size1
                          ,const TCHAR    *string2
-                         ,int             size2
-                         ,int             pos
+                         ,size_t          size2
+                         ,intptr_t        pos
                          ,RegexRegisters *registers
-                         ,int             mstop) const;
-  int  compareStrings(const TCHAR *s1, const TCHAR *s2, register int length) const;
+                         ,size_t          mstop) const;
+  int  compareStrings(const TCHAR *s1, const TCHAR *s2, register size_t length) const;
   void init();
   void insertZeroes(unsigned int addr,   unsigned int count); // Always call this. instead of m_buffer.insertZeroes
   void storeData(                        unsigned int addr, const void *data, unsigned int size);
@@ -423,7 +423,7 @@ private:
   void storeResetCounter(                unsigned int addr,         BYTE counterIndex);
   void storeCountingJump( BYTE opcode,   unsigned int addr, int to, BYTE counterIndex);
   void storeShort(                       unsigned int addr, short s                  );
-  void appendUShort(                     unsigned short s                             );
+  void appendUShort(                     unsigned short s                            );
   void appendCharacter(TCHAR ch);
   void assertHasSpace(unsigned int addr, unsigned int count); // extend m_buffer if needed
 public:
@@ -432,12 +432,12 @@ public:
   Regex(const TCHAR  *pattern, const unsigned char *translateTable = NULL);
   void compilePattern(const String &pattern, const unsigned char *translateTable = NULL);
   void compilePattern(const TCHAR  *pattern, const unsigned char *translateTable = NULL);
-  int  search(        const String &text, bool forward = true, int startPos = -1, RegexRegisters *registers = NULL) const; // search for the compiled expression in text
-  int  search(        const TCHAR  *text, bool forward = true, int startPos = -1, RegexRegisters *registers = NULL) const;
-  bool match(         const String &text, RegexRegisters *registers = NULL) const;  // check for exact match
-  bool match(         const TCHAR  *text, RegexRegisters *registers = NULL) const;
+  intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const; // search for the compiled expression in text
+  intptr_t search(    const TCHAR  *text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
+  bool     match(     const String &text, RegexRegisters *registers = NULL) const;  // check for exact match
+  bool     match(     const TCHAR  *text, RegexRegisters *registers = NULL) const;
 
-  inline int getResultLength() const {
+  inline intptr_t getResultLength() const {
     return m_resultLength;
   }
   
@@ -461,7 +461,7 @@ public:
     return m_codeSize;
   }
 
-  BitSet first(int pcStart, int pcEnd, bool *matchEmpty = NULL) const;
+  BitSet first(intptr_t pcStart, intptr_t pcEnd, bool *matchEmpty = NULL) const;
   // Return set of characters that can possibly begin a string matching 
   // the commands in range [pcStart;pcEnd[. pcStart inclusive, pcEnd exclusive
 

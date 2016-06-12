@@ -23,8 +23,8 @@ void argvExpand(int &argc, TCHAR **&argv) {
         last = path;
       }
 
-      long    namecurs;
-      int     done;
+      intptr_t namecurs;
+      int      done;
 #ifdef UNICODE
       struct _wfinddata_t finddata;
 #else
@@ -41,9 +41,9 @@ void argvExpand(int &argc, TCHAR **&argv) {
     }
   }
 
-  argc = list.size();
+  argc = (int)list.size();
   argv = new TCHAR*[list.size()+1];
-  int i;
+  size_t i;
   for(i = 0; i < list.size(); i++) {
     argv[i] = STRDUP(list[i].cstr());
   }

@@ -1,7 +1,7 @@
 #include "pch.h"
 
 int findMatchingpParanthes(const TCHAR *str,int pos) {
-  const int length = _tcsclen(str);
+  const int length = (int)_tcsclen(str);
   if(pos < 0 || pos >= length) {
     return -1;
   }

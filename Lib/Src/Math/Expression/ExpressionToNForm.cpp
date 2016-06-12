@@ -103,7 +103,7 @@ SNode Expression::toNFormSum(const ExpressionNode *n) const {
   } else {
     Real constant = 0;
     AddentArray newArray;
-    for(int i = 0; i < a.size(); i++) {
+    for(size_t i = 0; i < a.size(); i++) {
       const SumElement *e = a[i];
       SNode tmp = toNFormRealExp(e->getNode());
       if(tmp.isNumber()) {
@@ -115,7 +115,7 @@ SNode Expression::toNFormSum(const ExpressionNode *n) const {
     if(newArray.size() == 0) return numberExpression(constant);
     SNode result = newArray[0]->getNode();
     if(!newArray[0]->isPositive()) result = -result;
-    for(int i = 1; i < newArray.size(); i++) {
+    for(size_t i = 1; i < newArray.size(); i++) {
       const SumElement *e  = newArray[i];
       const SNode       ne = e->getNode();
       if(e->isPositive()) result += ne; else result -= ne;
@@ -130,7 +130,7 @@ SNode Expression::toNFormProduct(const ExpressionNode *n) const {
   Real constant = 1;
   const FactorArray &a = n->getFactorArray();
   FactorArray newArray;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const ExpressionFactor     *f        = a[i];
     const ExpressionNode *base     = toNFormRealExp(f->base());
     const ExpressionNode *exponent = toNFormRealExp(f->exponent());
@@ -149,7 +149,7 @@ SNode Expression::toNFormProduct(const ExpressionNode *n) const {
   SNode result;
   if(p.size() > 0) {
     result = newArray[0];
-    for(int i = 1; i < p.size(); i++) {
+    for(size_t i = 1; i < p.size(); i++) {
       result *= p[i];
     }
   }
@@ -158,7 +158,7 @@ SNode Expression::toNFormProduct(const ExpressionNode *n) const {
   } else {
     if(constant != 1) result *= numberExpression(constant);
   }
-  for(int i = 0; i < q.size(); i++) {
+  for(size_t i = 0; i < q.size(); i++) {
     result /= reciprocal(q[i]);
   }
   return result;
@@ -169,7 +169,7 @@ SNode Expression::toNFormPoly(const ExpressionNode *n) const {
   const ExpressionNode *argument         = n->getArgument();
 
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
-  for(int i = 0; i < coefficientArray.size(); i++) {
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
     newCoefficientArray.add(toNFormRealExp(coefficientArray[i]));
   }
   return getPoly(n, newCoefficientArray, toNFormRealExp(argument));
@@ -190,7 +190,7 @@ SNode Expression::toNFormTreeNode(const ExpressionNode *n) const {
   default:
     { const ExpressionNodeArray &a = n->getChildArray();
       ExpressionNodeArray        newChildArray(a.size());
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(toNFormRealExp(a[i]));
       }
       return getTree(n, newChildArray);

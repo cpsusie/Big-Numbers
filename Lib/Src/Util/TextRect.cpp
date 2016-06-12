@@ -315,7 +315,7 @@ int TextRect::text(int x, int y, WORD color, const TCHAR *text) {
   if(y < 0 || y >= getHeight()) {
     return 0;
   }
-  int length = _tcsclen(text);
+  int length = (int)_tcsclen(text);
   if(x < 0) {
     length  += x;
     text -= x;

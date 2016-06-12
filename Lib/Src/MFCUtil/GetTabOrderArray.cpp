@@ -17,7 +17,7 @@ CompactIntArray getTabOrder(CWnd *wnd) {
 void setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray) {
   if(tabOrderArray.size() > 1) {
     const CWnd *prev = &CWnd::wndTop;
-    for(int i = 0; i < tabOrderArray.size(); i++) {
+    for(size_t i = 0; i < tabOrderArray.size(); i++) {
       CWnd *next = wnd->GetDlgItem(tabOrderArray[i]);
       if(next) {
         next->SetWindowPos(prev, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);

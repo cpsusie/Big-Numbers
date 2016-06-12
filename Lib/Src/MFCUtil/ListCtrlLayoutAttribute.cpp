@@ -68,7 +68,7 @@ void ListCtrlHeaderInfo::adjustColumnWidthArray(const ColumnWeightArray &wa) {
   clear();
   const double newSum = wa.getColumnWidthSum() * m_clientRectWidth / wa.getClientWidth();
   m_columnWidthSum = 0;
-  for(int i = 0; i < wa.size(); i++) {
+  for(size_t i = 0; i < wa.size(); i++) {
     const int cw = newSum * wa[i];
     add(cw);
     m_columnWidthSum += cw;
@@ -78,11 +78,11 @@ void ListCtrlHeaderInfo::adjustColumnWidthArray(const ColumnWeightArray &wa) {
 ColumnWeightArray ListCtrlHeaderInfo::getColumnWeightArray() const {
   ColumnWeightArray result(*this);
   if(m_columnWidthSum == 0) {
-    for(int i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       result.add(0);
     }
   } else {
-    for(int i = 0; i < size(); i++) {
+    for(size_t i = 0; i < size(); i++) {
       result.add((float)((*this)[i]) / m_columnWidthSum);
     }
   }

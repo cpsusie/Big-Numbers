@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include "ByteFile.h"
 
+DEFINECLASSNAME(ByteFile);
+
 ByteFile::ByteFile() {
   m_file  = NULL;
 }
@@ -13,7 +15,7 @@ ByteFile::ByteFile(const String &name, FileMode mode) {
 
 ByteFile::ByteFile(FILE *f, FileMode mode) {
   if(f == NULL) {
-    throwInvalidArgumentException(_T("ByteFile"), _T("f=NULL"));
+    throwInvalidArgumentException(s_className, _T("f=NULL"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -73,7 +75,7 @@ int ByteFile::getByte() {
   return getc(m_file);
 }
 
-void ByteFile::putBytes(const BYTE *src, unsigned int n) {
+void ByteFile::putBytes(const BYTE *src, size_t n) {
 #ifdef _DEBUG
   if(m_mode != WRITEMODE) {
     throwException("ByteFile::putBytes:File is readonly");
@@ -82,7 +84,7 @@ void ByteFile::putBytes(const BYTE *src, unsigned int n) {
   FWRITE(src, 1, n, m_file);
 }
 
-int ByteFile::getBytes(BYTE *dst, unsigned int n) {
+intptr_t ByteFile::getBytes(BYTE *dst, size_t n) {
 #ifdef _DEBUG
   if(m_mode != READMODE) {
     throwException("ByteFile::getBytes:File is writeonly");

@@ -7,15 +7,15 @@
 template <class T> class LUMatrixTemplate : private MatrixTemplate<T> {
 private:
 
-  unsigned int *m_permut;
-  int           m_detsign;
+  size_t *m_permut;
+  int     m_detsign;
 
   void allocPermut() {
-    m_permut = new unsigned int[getRowCount()];
+    m_permut = new size_t[getRowCount()];
   }
 
   void initPermut() {
-    for(int r = 0; r < getRowCount(); r++) {
+    for(size_t r = 0; r < getRowCount(); r++) {
       m_permut[r] = r;
     }
     m_detsign = 1;
@@ -23,11 +23,11 @@ private:
 
   VectorTemplate<T> evald() const {
     const LUMatrixTemplate<T> &a = *this;
-    const int                  n = getRowCount();
+    const size_t               n = getRowCount();
     VectorTemplate<T> d(n);
-    for(int i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       T max = 0;
-      for(int j = 0; j < n; j++) {
+      for(size_t j = 0; j < n; j++) {
         if(fabs(a(i,j)) > fabs(max)) {
           max = a(i,j);
         }
@@ -37,12 +37,12 @@ private:
     return d;
   }
 
-  void pivot(const VectorTemplate<T> &d, unsigned int k) {
+  void pivot(const VectorTemplate<T> &d, size_t k) {
     LUMatrixTemplate<T> &a = *this;
-    const int            n = getRowCount();
-    int current;
+    const size_t         n = getRowCount();
+    size_t current;
     T max = 0;
-    for(int i = k; i < n; i++) {
+    for(size_t i = k; i < n; i++) {
       T tmp = a(m_permut[i],k)/d[m_permut[i]];
       if(fabs(tmp) > fabs(max)) {
         max = tmp;
@@ -52,8 +52,8 @@ private:
     if(fabs(max) == 0) {
       throwMathException(_T("LUMatrixTemplate::pivot:The matrix is singular"));
     }
-    if(current != (int)k) {
-      int itmp          = m_permut[current];
+    if(current != k) {
+      size_t itmp       = m_permut[current];
       m_permut[current] = m_permut[k];
       m_permut[k]       = itmp;
       m_detsign         = -m_detsign; // remember how many permutations made
@@ -67,22 +67,22 @@ private:
   void lowerUpper() { // Makes this = L * p * U. where L is lower triangular, U is upper triangular, and p interchange rows
     initPermut();
     LUMatrixTemplate<T> &a = *this;
-    const int            n = getRowCount();
+    const intptr_t       n = getRowCount();
     VectorTemplate<T>    d = evald();
     initPermut();
 
-    for(int k = 0; k < n; k++) {
-      for(int i = k; i < n; i++) {
+    for(intptr_t k = 0; k < n; k++) {
+      for(intptr_t i = k; i < n; i++) {
         T sum = 0;
-        for(int l = 0; l <= k-1; l++) {
+        for(intptr_t l = 0; l <= k-1; l++) {
           sum += a(m_permut[i],l) * a(m_permut[l],k);
         }
         a(m_permut[i],k) -= sum;
       }
       a.pivot(d,k);
-      for(int j = k + 1; j < n; j++) {
+      for(intptr_t j = k + 1; j < n; j++) {
         T sum = 0;
-        for(int l = 0; l <= k - 1; l++) {
+        for(intptr_t l = 0; l <= k - 1; l++) {
           sum += a(m_permut[k],l) * a(m_permut[l],j);
         }
         a(m_permut[k],j) = (a(m_permut[k],j)-sum)/a(m_permut[k],k);
@@ -92,7 +92,7 @@ private:
 
   LUMatrixTemplate(const LUMatrixTemplate<T> &src);               // not defined
   LUMatrixTemplate<T> &operator=(const LUMatrixTemplate<T> &src); // not defined
-  void setDimension(int rows, int columns);                       // not defined
+  void setDimension(size_t rows, size_t columns);                 // not defined
 public:
   LUMatrixTemplate() : MatrixTemplate<T>(one(1)) {
     allocPermut();
@@ -129,25 +129,25 @@ public:
   // Computes x so that this*x=y. Assumes this has been LU decomposed with lowerupper
   VectorTemplate<T> solve(const VectorTemplate<T> &y) const { 
     const LUMatrixTemplate<T> &a = *this;
-    const int                  n = getRowCount();
+    const intptr_t             n = getRowCount();
 
-    if(y.getDimension() != (unsigned int)n) {
-      throwMathException(_T("LUMatrixTemplate::solveLU:Invalid dimension. y.dimension=%u, LU.%s"), y.getDimension(), getDimensionString().cstr());
+    if(y.getDimension() != n) {
+      throwMathException(_T("LUMatrixTemplate::solveLU:Invalid dimension. y.dimension=%s, LU.%s"), format1000(y.getDimension()).cstr(), getDimensionString().cstr());
     }
 
     VectorTemplate<T> z(n);
-    for(int i = 0; i < n; i++) {
+    for(intptr_t i = 0; i < n; i++) {
       T sum = 0;
-      for(int j = 0; j <= i-1; j++) {
+      for(intptr_t j = 0; j <= i-1; j++) {
         sum += a(m_permut[i],j) * z[j];
       }
       z[i] = (y[m_permut[i]]-sum)/a(m_permut[i],i);
     }
 
     VectorTemplate<T> x(n);
-    for(int i = n - 1; i >= 0; i--) {
+    for(intptr_t i = n - 1; i >= 0; i--) {
       T sum = 0;
-      for(int j = i+1; j < n; j++) {
+      for(intptr_t j = i+1; j < n; j++) {
         sum += a(m_permut[i],j) * x[j];
       }
       x[i] = z[i] - sum;
@@ -156,10 +156,10 @@ public:
   }
 
   MatrixTemplate<T> getInverse() const {
-    const int n = getRowCount();
+    const size_t n = getRowCount();
     MatrixTemplate<T> result(n,n);
     VectorTemplate<T> e(n);
-    for(int i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       e[i] = T(1);
       result.setColumn(i,solve(e));
       e[i] = T(0);
@@ -169,9 +169,9 @@ public:
 
   T getDeterminant() const {
     const LUMatrixTemplate<T> &a = *this;
-    const int                  n = getRowCount();
+    const size_t               n = getRowCount();
     T d = a.m_detsign;
-    for(int i = 0; i < n; i++) {
+    for(size_t i = 0; i < n; i++) {
       d *= a(a.m_permut[i],i);
     }
     return d;
@@ -180,10 +180,10 @@ public:
   friend tostream &operator<<(tostream &out, const LUMatrixTemplate<T> &a) {
     out << MatrixTemplate<T>(a);
     out << _T("Permut:(");
-    for(unsigned int r = 0; r < a.getRowCount(); r++) {
+    for(size_t  r = 0; r < a.getRowCount(); r++) {
       out << a.m_permut[r] << _T(" ");
     }
-    out << _T("). determinant sign:") << a.m_detsign << endl;
+    out << _T("). determinant sign:") << a.m_detsign << std::endl;
     return out;
   }
 };

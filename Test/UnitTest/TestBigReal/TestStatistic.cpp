@@ -298,7 +298,7 @@ void TestStatistic::screenlog(const TCHAR *format,...) {
   va_end(argptr);
   StringArray lines(Tokenizer(str,_T("\n")));
   s_gate.wait();
-  for(int i = 0; i < lines.size(); i++) {
+  for(size_t i = 0; i < lines.size(); i++) {
     Console::printf(0,s_logypos++, _T("%s"), lines[i].cstr());
   }
   if(s_logypos >= getScreenHeight()) {

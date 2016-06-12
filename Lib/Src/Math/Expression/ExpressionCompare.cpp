@@ -21,7 +21,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
     { const AddentArray &a1 = n1->getAddentArray(); // they have been sorted
       const AddentArray &a2 = n2->getAddentArray();
       if(a1.size() != a2.size()) return false;
-      for(int i = 0; i < a1.size(); i++) {
+      for(size_t i = 0; i < a1.size(); i++) {
         const SumElement *e1 = a1[i];
         const SumElement *e2 = a2[i];
         if((e1->isPositive() != e2->isPositive()) || !treesEqual(e1->getNode(), e2->getNode())) return false;
@@ -38,7 +38,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
     { const FactorArray &a1 = n1->getFactorArray(); // they have been sorted
       const FactorArray &a2 = n2->getFactorArray();
       if(a1.size() != a2.size()) return false;
-      for(int i = 0; i < a1.size(); i++) {
+      for(size_t i = 0; i < a1.size(); i++) {
         if(!treesEqual(a1[i], a2[i])) return false;
       }
     }
@@ -54,7 +54,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
       const ExpressionNode      *arg1  = n1->getArgument();
       const ExpressionNode      *arg2  = n2->getArgument();
       if(coef1.size() != coef2.size()) return false;
-      for(int i = 0; i < coef1.size(); i++) {
+      for(size_t i = 0; i < coef1.size(); i++) {
         if(!treesEqual(coef1[i], coef2[i])) return false;
       }
       return treesEqual(arg1, arg2);
@@ -76,7 +76,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
     { const ExpressionNodeArray &a1 = n1->getChildArray();
       const ExpressionNodeArray &a2 = n2->getChildArray();
       if(a1.size() != a2.size()) return false;
-      for(int i = 0; i < a1.size(); i++) {
+      for(size_t i = 0; i < a1.size(); i++) {
         if(!treesEqual(a1[i], a2[i])) return false;
       }
     }
@@ -107,7 +107,7 @@ bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
     { const AddentArray &a1 = n1.getAddentArray(); // they have been sorted
       const AddentArray &a2 = n2.getAddentArray();
       if(a1.size() != a2.size()) return false;
-      for(int i = 0; i < a1.size(); i++) {
+      for(size_t i = 0; i < a1.size(); i++) {
         const SumElement *e1 = a1[i];
         const SumElement *e2 = a2[i];
         if(e1->isPositive() == e2->isPositive()) {
@@ -128,7 +128,7 @@ bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
       const FactorArray &a2 = n2.getFactorArray();
       if(a1.size() != a2.size()) return false;
       int signShiftCount = 0;
-      for(int i = 0; i < a1.size(); i++) {
+      for(size_t i = 0; i < a1.size(); i++) {
         if(treesEqual(a1[i], a2[i])) continue;
         if(treesEqualMinus(a1[i], a2[i])) {
           signShiftCount++;
@@ -164,7 +164,7 @@ bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
       const SNode                 x2        = n2.getArgument();
       if(coefList1.size() != coefList2.size()) return false;
       if(x1 != x2) return false;
-      for(int i = 0; i < coefList1.size(); i++) {
+      for(size_t i = 0; i < coefList1.size(); i++) {
         if(!treesEqualMinus(coefList1[i], coefList2[i])) return false;
       }
       return true;

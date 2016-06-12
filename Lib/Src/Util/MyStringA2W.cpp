@@ -15,7 +15,7 @@ String &String::operator=(const char *s) {
   USES_CONVERSION;
   TCHAR *ms = A2WNULL(s);
 
-  unsigned long length = _tcsclen(ms);
+  const size_t length = _tcsclen(ms);
   if(length < m_capacity && length + 100 > m_capacity) {
     _tcscpy(m_buf, ms);
     m_len = length;
@@ -31,11 +31,11 @@ String &String::operator+=(const char *rhs) {
   USES_CONVERSION;
   TCHAR *mrhs = A2WNULL(rhs);
 
-  const int length = _tcsclen(mrhs);
+  const size_t length = _tcsclen(mrhs);
   if(length == 0) {
     return *this;
   }
-  const unsigned long newLength = m_len + length;
+  const size_t newLength = m_len + length;
   if(m_capacity < newLength + 1) {
     TCHAR *old = m_buf;
     m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];

@@ -93,7 +93,7 @@ namespace TestArray
 
   void listArray(const TCHAR *name, ArrayType &a) {
     OUTPUT(_T("%s:"), name);
-    for (int i = 0; i < a.size(); i++) {
+    for (size_t i = 0; i < a.size(); i++) {
       OUTPUT(_T("%2d "), a[i].n);
     }
   }
@@ -114,7 +114,7 @@ namespace TestArray
     m_counter++;
     String line;
     line += format(_T("%2d:"), m_counter);
-    for (int i = 0; i < a.size(); i++) {
+    for (size_t i = 0; i < a.size(); i++) {
       line += format(_T("%d "), a[i]);
     }
     OUTPUT(_T("%s"), line.cstr());
@@ -204,7 +204,7 @@ namespace TestArray
       a = b;
       verify(a.size() == b.size());
       a.sort(intReverseCompare);
-      for (int i = 0; i < a.size(); i++) {
+      for (size_t i = 0; i < a.size(); i++) {
         verify(a[i] == b[b.size() - i - 1]);
       }
       verify(a != b);
@@ -275,7 +275,7 @@ namespace TestArray
       c.sort(compare2);
       OUTPUT(_T("  sort(compare2)  :%.3lf"), (getProcessTime() - start) / 1000000);
 
-      for (int i = 1; i < a.size(); i++) {
+      for (size_t i = 1; i < a.size(); i++) {
         verify(comparator.compare(a[i - 1], a[i]) <= 0);
       }
 

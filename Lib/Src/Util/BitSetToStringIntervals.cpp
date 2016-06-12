@@ -2,7 +2,11 @@
 #include <String.h>
 #include <BitSet.h>
 
+#ifdef ISBIT64
+#define FORMATUINT(v) format(_T("%I64u"), v)
+#else
 #define FORMATUINT(v) format(_T("%u"), v)
+#endif
 
 #define FLUSHRANGE()                                                                \
 { if(delim) result += delim; else delim = _T(",");                                  \
@@ -16,10 +20,10 @@
 
 String BitSet::toStringIntervals() const {
   String result = _T("(");
-  unsigned int first=1,last=0;
+  size_t first=1,last=0;
   const TCHAR *delim = NULL;
-  for(Iterator<unsigned int> it = ((BitSet&)*this).getIterator(); it.hasNext();) {
-    const unsigned int v = it.next();
+  for(Iterator<size_t> it = ((BitSet&)*this).getIterator(); it.hasNext();) {
+    const size_t v = it.next();
     if(first > last) {
       first = last = v;
     } else if(v == last+1) {

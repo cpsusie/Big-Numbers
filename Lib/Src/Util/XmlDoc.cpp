@@ -65,9 +65,9 @@ void XMLDoc::loadFromString(const String &XML) {
   clear();
   String str(XML);
   
-  long start = str.find("encoding");
+  intptr_t start = str.find("encoding");
   if(start >= 0) {
-    long slut=str.find(" ?",start);
+    intptr_t slut=str.find(" ?",start);
     str.remove(start,slut-start);
   }
 
@@ -172,7 +172,7 @@ XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, b
 
   // Create path if we got any dots
   XMLNodePtr node = parent;
-  int i;
+  size_t i;
   for(i = 0; i < tokens.size() - 1; i++) {
     XMLNodePtr tmp = findChild(node,tokens[i].cstr());
     if(tmp == NULL) {
@@ -224,7 +224,7 @@ XMLNodePtr XMLDoc::findNode(const XMLNodePtr &node, const TCHAR *nodeName) {
   StringArray tokens(Tokenizer(nodeName,_T(".")));
 
   XMLNodePtr result = node;
-  for(int i = 0; i < tokens.size() && result != NULL; result = result->nextSibling) {
+  for(size_t i = 0; i < tokens.size() && result != NULL; result = result->nextSibling) {
 //    String sss = BSTRToString(node->GetbaseName());
 //    printf("tagName:%s\n",sss.cstr());
     if(_tcsicmp(result->nodeName,tokens[i].cstr())==0) {

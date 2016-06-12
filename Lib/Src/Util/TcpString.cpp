@@ -2,7 +2,7 @@
 #include <Tcp.h>
 
 String tcpReadString(SOCKET s) {
-  int len;
+  size_t len;
   tcpRead(s, &len, sizeof(len));
   if(len == 0) {
     return "";
@@ -24,9 +24,9 @@ String tcpReadString(SOCKET s) {
 }
 
 void tcpWriteString(SOCKET s, const String &str) {
-  const int len = str.length();
+  const size_t len = str.length();
   tcpWrite(s, &len, sizeof(len));
-  if(str.length() > 0) {
+  if(len > 0) {
     tcpWrite(s, str.cstr(), len*sizeof(TCHAR));
   }
 }

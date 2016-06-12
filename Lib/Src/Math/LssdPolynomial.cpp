@@ -9,7 +9,7 @@ int LssdPolynomial::countDistinct(const CompactArray<DataPoint> &data) {
   CompactArray<DataPoint> tmp = data;
   tmp.sort(dataPointCompare);
   int count = 1;
-  for(int i = 1; i < tmp.size(); i++) {
+  for(size_t i = 1; i < tmp.size(); i++) {
     if(tmp[i].x != tmp[i-1].x) {
       count++;
     }

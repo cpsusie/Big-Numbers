@@ -124,6 +124,8 @@ String FeatureInfo::toString(bool longDescription) const {
   return result;
 }
 
+#ifdef IS32BIT
+
 static char *getProcessorBrandString(char *dst) {
   unsigned int eax_return;
   __asm {
@@ -243,3 +245,4 @@ bool CPUInfo::CPUSupportsId() { // static
 
   return true;
 }
+#endif

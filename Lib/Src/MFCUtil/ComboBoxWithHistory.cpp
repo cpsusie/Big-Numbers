@@ -65,7 +65,7 @@ void CComboBoxWithHistory::updateList() {
   GetWindowText(current);
   m_history.add((LPCTSTR)current);
   load();
-  for(int i = 0; i < m_history.size(); i++) {
+  for(size_t i = 0; i < m_history.size(); i++) {
     if(m_history[i].cstr() == current) {
       SetCurSel(i);
       return;
@@ -75,7 +75,7 @@ void CComboBoxWithHistory::updateList() {
 
 void CComboBoxWithHistory::fillDropdownList() {
   ResetContent();
-  for(int i = 0; i < m_history.size(); i++) {
+  for(size_t i = 0; i < m_history.size(); i++) {
     AddString(m_history[i].cstr());
   }
 }
@@ -160,7 +160,7 @@ void ComboBoxHistory::save() {
 }
 
 bool ComboBoxHistory::add(const String &s) {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if((*this)[i] == s) {
       removeIndex(i);
       break;
@@ -174,7 +174,7 @@ bool ComboBoxHistory::add(const String &s) {
 }
 
 void ComboBoxHistory::removeString(const String &str) {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if((*this)[i] == str) {
       removeIndex(i);
       return;

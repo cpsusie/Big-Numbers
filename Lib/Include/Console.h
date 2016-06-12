@@ -429,7 +429,7 @@ public:
   }
 
   void end() {
-    setCursorPos(m_str.length());
+    setCursorPos((int)m_str.length());
   }
 
   void setSel(int  start, int  end);
@@ -437,7 +437,7 @@ public:
   String getSelText();
   
   int getFieldPos() const {
-    return getLeft() + m_label.length();
+    return getLeft() + (int)m_label.length();
   } 
 
   bool isSelected()  const {
@@ -665,7 +665,7 @@ public:
   }
 
   int getCount() const {
-    return m_strings.size();
+    return (int)m_strings.size();
   }
 
   void setSel(int i);

@@ -8,10 +8,10 @@ BitSetIndex::BitSetIndex(const BitSet &src) : m_bitSet(src) {
 
 void BitSetIndex::rebuildRangeTable() {
   m_rangeTable.clear();
-  const unsigned int capacity = m_bitSet.getCapacity();
+  const size_t capacity = m_bitSet.getCapacity();
   m_shift = 0;
   if(capacity >= 256) {
-    for(unsigned int t = capacity>>8; t && m_shift < 12; m_shift++, t >>= 1);
+    for(size_t t = capacity>>8; t && m_shift < 12; m_shift++, t >>= 1);
     m_bitSet.getRangeTable(m_rangeTable, m_shift);
   }
 
@@ -25,11 +25,11 @@ void BitSetIndex::rebuildRangeTable() {
 
 }
 
-int BitSetIndex::getIndex(unsigned long i) const {
+intptr_t BitSetIndex::getIndex(size_t i) const {
   if(!m_bitSet.contains(i)) {
     return -1;
   }
-  const long rangeIndex = m_rangeTable.binarySearchLE(i, uintHashCmp);
+  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, sizetHashCmp);
   if(rangeIndex < 0) {
     return m_bitSet.getCount(0, i) - 1;
   } else {

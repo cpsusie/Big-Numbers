@@ -174,14 +174,14 @@ Packer &Packer::operator>>(unsigned __int64 &n) {
 // --------------------------------- String --------------------------
 
 Packer &Packer::operator<<(const char * const s) {
-  const unsigned int l = strlen(s);
+  const size_t l = strlen(s);
   *this << l;
   addElement(E_STR,s,l);
   return *this;
 }
 
 Packer &Packer::operator>>(char *s) {
-  unsigned int l;
+  size_t l;
   *this >> l;
   getElement(E_STR,s,l);
   s[l] = 0;
@@ -189,14 +189,14 @@ Packer &Packer::operator>>(char *s) {
 }
 
 Packer &Packer::operator<<( const wchar_t * const s) {
-  const unsigned int l = wcslen(s);
+  const size_t l = wcslen(s);
   *this << l;
   addElement(E_WSTR,s,l*sizeof(wchar_t));
   return *this;
 }
 
 Packer &Packer::operator<<(wchar_t *s) {
-  unsigned int l;
+  size_t l;
   *this >> l;
   getElement(E_WSTR,s,l*sizeof(wchar_t));
   s[l] = 0;
@@ -210,14 +210,14 @@ Packer &Packer::operator<<(wchar_t *s) {
 #endif
 
 Packer &Packer::operator<<(const String &s) {
-  const unsigned int l = s.length();
+  const size_t l = s.length();
   *this << l;
   addElement(E_STRING,s.cstr(),l*sizeof(TCHAR));
   return *this;
 }
 
 Packer &Packer::operator>>(String &s) {
-  unsigned int l;
+  size_t l;
   *this >> l;
   TCHAR *tmp = new TCHAR[l+1];
   getElement(E_STRING, tmp, l*sizeof(TCHAR));
@@ -228,7 +228,7 @@ Packer &Packer::operator>>(String &s) {
 }
 
 Packer &Packer::operator<<(const ByteArray &a) {
-  const unsigned int l = a.size();
+  const size_t l = a.size();
   *this << l;
   if(l) {
     addElement(E_CHAR, a.getData(), l);
@@ -237,7 +237,7 @@ Packer &Packer::operator<<(const ByteArray &a) {
 }
 
 Packer &Packer::operator>>(ByteArray &a) {
-  unsigned int l;
+  size_t l;
   *this >> l;
   a.clear();
   if(l) {

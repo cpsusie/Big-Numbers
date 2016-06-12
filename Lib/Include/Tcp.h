@@ -9,8 +9,8 @@ SOCKET tcpCreate( unsigned short portnr);
 SOCKET tcpAccept( SOCKET listener);
 void   tcpClose(  SOCKET socket);
 
-int    tcpRead(  SOCKET s,       void *buffer, int size);
-int    tcpWrite( SOCKET s, const void *buffer, int size);
+size_t tcpRead(  SOCKET s,       void *buffer, size_t size);
+size_t tcpWrite( SOCKET s, const void *buffer, size_t size);
 bool   tcpPoll(  SOCKET s);
 
 String tcpReadString( SOCKET s);

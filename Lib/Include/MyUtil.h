@@ -303,6 +303,14 @@ inline int uint64HashCmp(const unsigned __int64 &n1, const unsigned __int64 &n2)
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
+#ifdef IS64BIT
+#define sizetHash    uint64Hash
+#define sizetHashCmp uint64HashCmp
+#else
+#define sizetHash    uintHash
+#define sizetHashCmp uintHashCmp
+#endif
+
 inline unsigned long floatHash(const float &f) {
   return (unsigned long)f;
 }

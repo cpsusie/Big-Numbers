@@ -9,7 +9,7 @@ BigRealThreadPool::BigRealThreadPool() {
   for(int i = 0; i < 8; i++) {
     poolArray.add(m_digitPool.fetchResource());
   }
-  for(int i = 0; i < poolArray.size(); i++) {
+  for(size_t i = 0; i < poolArray.size(); i++) {
     m_digitPool.releaseResource(poolArray[i]);
   }
   m_activeThreads  = m_maxActiveThreads = 1;
@@ -70,7 +70,7 @@ void BigRealThreadPool::releaseMTThreadArray(MThreadArray &threads) { // static
 
   if(threads.size() > 0) {
     instance.m_queuePool.releaseResource(threads[0]->m_resultQueue);
-    for(int i = 0; i < threads.size(); i++) {
+    for(size_t i = 0; i < threads.size(); i++) {
       MultiplierThread *thread = threads[i];
       instance.m_digitPool.releaseResource(thread->m_digitPool);
       thread->m_digitPool   = NULL;
@@ -157,11 +157,11 @@ void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // st
   BigRealThreadPool &instance = getInstance();
   instance.m_gate.wait();  // get exclusive access to BigRealThreadPool
   CompactArray<BigRealThread*> threads(jobs.size());;
-  for(int i = 0; i < jobs.size(); i++) {
+  for(size_t i = 0; i < jobs.size(); i++) {
     threads.add(instance.m_threadPool.fetchResource());
   }
   SynchronizedStringQueue *queue = instance.m_queuePool.fetchResource();
-  for(int i = 0; i < jobs.size(); i++) {
+  for(size_t i = 0; i < jobs.size(); i++) {
     threads[i]->execute(*jobs[i], *queue);
   }
   instance.m_gate.signal(); // open gate for other threads
@@ -169,12 +169,12 @@ void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // st
   try {
     queue->waitForResults(jobs.size());
     instance.m_gate.wait();
-      for(int i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
+      for(size_t i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
       instance.m_queuePool.releaseResource(queue);
     instance.m_gate.signal();
   } catch(...) {
     instance.m_gate.wait();
-      for(int i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
+      for(size_t i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
       instance.m_queuePool.releaseResource(queue);
     instance.m_gate.signal();
     throw;

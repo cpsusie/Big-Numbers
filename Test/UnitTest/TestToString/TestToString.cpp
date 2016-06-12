@@ -123,7 +123,7 @@ void StringParametersIterator::init(const Array<double> &values) {
   }
   m_values = values;
 
-  for(int i = 0; i < values.size(); i++) {
+  for(size_t i = 0; i < values.size(); i++) {
     double   d64 = values[i];
     Double80 d80 = values[i];
     BigReal   n   = values[i];

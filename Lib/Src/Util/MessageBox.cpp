@@ -77,15 +77,15 @@ int messageBox(const String &str, int msgtype) {
   StringArray lines;
   String copy(str);
   StringToLines(copy.cstr(),lines);
-  for(int i = 0; i < lines.size(); i++) {
-    int length = lines[i].length();
+  for(int i = 0; i < (int)lines.size(); i++) {
+    int length = (int)lines[i].length();
     if(length > width) {
       width = length;
     }
   }
 
   width += 6;
-  int height = lines.size() + 5;
+  int height = (int)lines.size() + 5;
   int scrwidth,scrheight;
   int minwidth;
 
@@ -118,7 +118,7 @@ int messageBox(const String &str, int msgtype) {
   dlg.setColor(attr);
   dlg.setBorderColor(attr);
 
-  for(int i = 0; i < lines.size(); i++) {
+  for(int i = 0; i < (int)lines.size(); i++) {
     dlg.printf(3, i + 2, _T("%s"),lines[i].cstr());
   }
 

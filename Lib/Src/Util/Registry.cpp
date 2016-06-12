@@ -43,15 +43,17 @@ void registryLog(const TCHAR *format,...) {
 #endif
 
 const TCHAR *RegistryKey::getRootName(HKEY key) { // static
-  switch((unsigned long)key) {
-  case (unsigned long)HKEY_CLASSES_ROOT    : return _T("HKEY_CLASSES_ROOT");
-  case (unsigned long)HKEY_CURRENT_USER    : return _T("HKEY_CURRENT_USER");
-  case (unsigned long)HKEY_LOCAL_MACHINE   : return _T("HKEY_LOCAL_MACHINE");
-  case (unsigned long)HKEY_USERS           : return _T("HKEY_USERS");
-  case (unsigned long)HKEY_PERFORMANCE_DATA: return _T("HKEY_PERFORMANCE_DATA");
-  case (unsigned long)HKEY_CURRENT_CONFIG  : return _T("HKEY_CURRENT_CONFIG");
-  case (unsigned long)HKEY_DYN_DATA        : return _T("HKEY_DYN_DATA");
-  default                                  : return EMPTYSTRING;
+  switch((LONG)((ULONG_PTR)key)) {
+#define caseKey(k) case ((LONG)((ULONG_PTR)k)): return _T(#k)
+
+  caseKey(HKEY_CLASSES_ROOT     );
+  caseKey(HKEY_CURRENT_USER);
+  caseKey(HKEY_LOCAL_MACHINE);
+  caseKey(HKEY_USERS);
+  caseKey(HKEY_PERFORMANCE_DATA);
+  caseKey(HKEY_CURRENT_CONFIG);
+  caseKey(HKEY_DYN_DATA);
+  default: return EMPTYSTRING;
   }
 }
 
@@ -499,7 +501,7 @@ void RegistryKey::setValue(const String &valueName, const String &value, unsigne
     throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_SZ,REG_EXPAND_SZ}"), type);
   }
 
-  long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)value.cstr(), sizeof(TCHAR)*(value.length()+1));
+  long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)value.cstr(), sizeof(TCHAR)*((DWORD)value.length()+1));
   checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
 }
 
@@ -568,7 +570,7 @@ RegistryValue::RegistryValue(const String &name, const String &str, unsigned lon
     throwException(_T("RegistryValue::Illegal type=%d for value <%s>. Must be {REG_EXPAND_SZ, REG_SZ}. Str=<%s>")
                   ,type, name.cstr(), str.cstr());
   }
-  init(name, type, sizeof(TCHAR)*(str.length() + 1));
+  init(name, type, sizeof(TCHAR)*((DWORD)str.length() + 1));
   setBuffer(str.cstr());
 }
 
@@ -584,8 +586,8 @@ RegistryValue::RegistryValue(const String &name, unsigned long value,  unsigned 
 // After use of result returned by stringArrayToCharPointer, call delete.
 static TCHAR *stringArrayToCharPointer(const StringArray &strings, unsigned long &charCount) {
   charCount = 0;
-  for(int i = 0; i < strings.size(); i++) {
-    charCount += strings[i].length() + 1;
+  for(int i = 0; i < (int)strings.size(); i++) {
+    charCount += (int)strings[i].length() + 1;
   }
   charCount++;
   if(charCount== 1) {
@@ -594,7 +596,7 @@ static TCHAR *stringArrayToCharPointer(const StringArray &strings, unsigned long
   TCHAR *result = new TCHAR[charCount];
   MEMSET(result,0,charCount);
   TCHAR *cp = result;;
-  for(int i = 0; i < strings.size(); i++) {
+  for(int i = 0; i < (int)strings.size(); i++) {
     _tcscpy(cp,strings[i].cstr());
     cp += strings[i].length() + 1;
   }

@@ -14,7 +14,7 @@ TCHAR *getErrorText(TCHAR *text, int size, HRESULT hr) {
 String getErrorText(HRESULT hr) {
   TCHAR tmp[2000];
   getErrorText(tmp,ARRAYSIZE(tmp),hr);
-  int l = _tcsclen(tmp);
+  size_t l = _tcsclen(tmp);
   if(l >= 1 && tmp[l-1] == 10) {
     tmp[l-1] = 0;
     if(l >= 2 && tmp[l-2] == 13) {

@@ -27,7 +27,7 @@ FileContent &FileContent::load(FILE *f) {
   clear();
 
   BYTE buffer[4096];
-  int n;
+  intptr_t n;
   while((n = FREAD(buffer,1,sizeof(buffer),f)) > 0) {
     append(buffer, n);
   }
@@ -35,7 +35,7 @@ FileContent &FileContent::load(FILE *f) {
 }
 
 FileContent &FileContent::save(FILE *f) {
-  unsigned int s = size();
+  size_t s = size();
   if(s > 0) {
     FWRITE(getData(), 1, s, f);
   }
@@ -69,7 +69,7 @@ String FileContent::converToString(UINT codePage) const {
   }
 
   const BYTE *data      = getData();
-  int         byteCount = size();
+  int         byteCount = (int)size();
   int         requiredSize;
 
   if(hasUTF8BOM()) {

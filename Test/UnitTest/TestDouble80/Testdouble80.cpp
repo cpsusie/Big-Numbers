@@ -383,10 +383,10 @@ namespace TestDouble80 {
     TEST_METHOD(Double80TestReadWrite) {
       const char *fileName = "double80.dat";
 
-      const int count = 500;
+      const size_t count = 500;
       tofstream out(fileName);
       StreamParameters param(-1);
-      int i;
+      size_t i;
       Array<Double80> list;
       RandomD80 rnd;
       for (i = 0; i < count; i++) {
@@ -543,8 +543,8 @@ namespace TestDouble80 {
 
       hashCodes.add(dui64.hashCode());
 
-      for (int i = 0; i < hashCodes.size(); i++) {
-        for (int j = 0; j < i; j++) {
+      for (size_t i = 0; i < hashCodes.size(); i++) {
+        for (size_t j = 0; j < i; j++) {
           verify(hashCodes[i] != hashCodes[j]);
         }
       }

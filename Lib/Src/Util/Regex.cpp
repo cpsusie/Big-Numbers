@@ -3,7 +3,6 @@
 #include <TreeMap.h>
 #include <Regex.h>
 
-
 //NOTRACEFILE
 //TRACEFILE
 
@@ -326,12 +325,12 @@ void ByteBitSet::stopAdding() {
 }
 
 void ByteBitSet::append(ByteArray &buffer) const {
-  const int size0 = buffer.size();
+  const int size0 = (int)buffer.size();
   buffer.append((BYTE*)&m_min, sizeof(m_min)); // unpacked by CharSet
   buffer.append((BYTE*)&m_max, sizeof(m_max));
   const BYTE *firstByte = GETBITADDRESS(m_min);
   const BYTE *lastByte  = GETBITADDRESS(m_max);
-  const unsigned short byteCount = lastByte - firstByte + 1;
+  const unsigned short byteCount = (unsigned short)(lastByte - firstByte + 1);
   buffer.append(firstByte, byteCount);
 }
 
@@ -371,7 +370,7 @@ public:
 void CharSetMap::incrAddresses(unsigned int addr, unsigned int incr) { // called when instructions are inserted before the charset
   for(Iterator<CompactIntArray> it = values().getIterator(); it.hasNext();) {
     CompactIntArray &fixupArray = it.next();
-    for(int i = 0; i < fixupArray.size(); i++) {
+    for(int i = 0; i < (int)fixupArray.size(); i++) {
       int &fixupAddr = fixupArray[i];
       if(fixupAddr > (int)addr) {
         fixupAddr += incr;
@@ -428,13 +427,13 @@ public:
 };
 
 void RegisterInfoTable::incrAddresses(unsigned int addr, unsigned int incr) {
-  for(int i = 0; i < size(); i++) {
+  for(int i = 0; i < (int)size(); i++) {
     (*this)[i].incrAddresses(addr, incr);
   }
 }
 
 RegisterInfo &RegisterInfoTable::findByRegno(BYTE regno) {
-  for(int i = 0; i < size(); i++) {
+  for(int i = 0; i < (int)size(); i++) {
     RegisterInfo &ri = (*this)[i];
     if(ri.m_regno == regno) {
       return ri;
@@ -445,7 +444,7 @@ RegisterInfo &RegisterInfoTable::findByRegno(BYTE regno) {
 }
 
 const RegisterInfo *RegisterInfoTable::findLastRegisterInCountingLoop(BYTE level, unsigned short loopStart) const {
-  for(int i = size(); i--;) {
+  for(int i = (int)size(); i--;) {
     const RegisterInfo &ri = (*this)[i];
     if((ri.m_level == level) 
     && (ri.m_addressStartMemory < loopStart) && (ri.m_addressStopMemory > loopStart)) {
@@ -485,7 +484,7 @@ public:
   _TUCHAR        fetch();
   _TUCHAR        look(unsigned int lookahead = 0) const;
   inline bool    eos() const { return m_current == m_end; }
-  inline int     getIndex() const { return m_current - m_source; }
+  inline int     getIndex() const { return (int)(m_current - m_source); }
   unsigned short fetchShort();
   void           error(const TCHAR *format,...);
   static void    error(int index, const TCHAR *format,...);
@@ -668,7 +667,7 @@ void Regex::init() {
   DBG_setCodeDirty(false);
 }
 
-int Regex::compareStrings(const TCHAR *s1, const TCHAR *s2, register int length) const {
+int Regex::compareStrings(const TCHAR *s1, const TCHAR *s2, size_t length) const {
   return m_translateTable ? strntabcmp(s1,s2,length, m_translateTable) : _tcsnccmp(s1, s2, length);
 }
 
@@ -745,10 +744,10 @@ void Regex::assertHasSpace(unsigned int addr, unsigned int count) { // extend m_
 }
 
 #define appendByte(        b         )               m_buffer.append(b)
-#define appendShort(       s         )               storeShort(m_buffer.size(), s)
+#define appendShort(       s         )               storeShort((int)m_buffer.size(), s)
 #define appendOpcode(      opcode    )               appendByte((BYTE)(opcode))
-#define appendJump(        opcode, to)               storeJump(        opcode, m_buffer.size(), to)
-#define appendCountingJump(opcode, to, counterIndex) storeCountingJump(opcode, m_buffer.size(), to, counterIndex)
+#define appendJump(        opcode, to)               storeJump(        opcode, (int)m_buffer.size(), to)
+#define appendCountingJump(opcode, to, counterIndex) storeCountingJump(opcode, (int)m_buffer.size(), to, counterIndex)
 
 // --------------------------------- Compile Pattern ---------------------------------------------------
 
@@ -843,7 +842,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
 
   DBG_setCodeDirty(true);
 
-#define pc               m_buffer.size()
+#define pc               ((unsigned short)m_buffer.size())
 #define LASTSTART        state.m_lastStart
 #define REGNUM           state.m_regno
 #define BEGINALTERNATIVE state.m_beginAlternative
@@ -1062,7 +1061,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
               scanner.error(commandStartIndex, unmatchedRPMsg);
             }
             const ParStackElement e = stack.pop();
-            for(int i = 0; i < e.m_jumpFixups.size(); i++) {
+            for(int i = 0; i < (int)e.m_jumpFixups.size(); i++) {
               const short jumpIns = e.m_jumpFixups[i];
               storeJump(jump, jumpIns, pc);
             }
@@ -1201,7 +1200,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
     const short addr = pc;
     e.getKey().append(m_buffer);
     const CompactIntArray &fixupArray = e.getValue();
-    for(int i = 0; i < fixupArray.size(); i++) {
+    for(int i = 0; i < (int)fixupArray.size(); i++) {
       const short setEntry = fixupArray[i];
       storeShort(setEntry, addr - setEntry - sizeof(short));
     }
@@ -1226,7 +1225,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
 
 #define DUMPSTACK { int n = stack.getHeight(); for(int i=0;i<n;i++){debugLog("%d ",stack.top(n-i-1)-m_buffer.getData());} debugLog("\n"); }
 
-BitSet Regex::first(int pcStart,int pcEnd, bool *matchEmpty) const {  // in range [pcstart;pcend[. pcstart inclusive, pcend exclusive
+BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  // in range [pcstart;pcend[. pcstart inclusive, pcend exclusive
   CompactStack<const BYTE*> stack;
   const BYTE               *codeStart = m_buffer.getData();
   const BYTE               *pc0       = codeStart + pcStart;
@@ -1417,16 +1416,16 @@ Return:
 #define DBG_incrCycleCount()
 #endif
 
-int Regex::search(const String &text, bool forward, int startPos, RegexRegisters *registers) const {
+intptr_t Regex::search(const String &text, bool forward, intptr_t startPos, RegexRegisters *registers) const {
   return search(text.cstr(), forward, startPos, registers);
 }
 
-int Regex::search(const TCHAR *text, bool forward, int startPos, RegexRegisters *registers) const {
+intptr_t Regex::search(const TCHAR *text, bool forward, intptr_t startPos, RegexRegisters *registers) const {
   if(!m_hasCompiled) {
     throwException(noRegExpressionMsg);
   }
   DBG_resetCycleCount();
-  const int length = _tcsclen(text);
+  const int length = (int)_tcsclen(text);
   if(startPos < 0) {
     startPos = forward ? 0 : length;
   } else if(startPos > length) {
@@ -1441,11 +1440,11 @@ int Regex::search(const TCHAR *text, bool forward, int startPos, RegexRegisters 
 
 // Like search2, below, but only one String is specified.
 
-int Regex::search1(const TCHAR     *string
-                  ,int              size
-                  ,int              startPos
-                  ,int              range
-                  ,RegexRegisters  *registers) const {
+intptr_t Regex::search1(const TCHAR     *string
+                       ,size_t           size
+                       ,intptr_t         startPos
+                       ,intptr_t         range
+                       ,RegexRegisters  *registers) const {
 
   return search2(0, 0, string, size, startPos, range, registers, size);
 }
@@ -1461,17 +1460,17 @@ int Regex::search1(const TCHAR     *string
 // The value returned is the position at which the match was found,
 // or -1 if no match was found.
 
-int Regex::search2(const TCHAR     *string1
-                  ,int              size1
-                  ,const TCHAR     *string2
-                  ,int              size2
-                  ,int              startPos
-                  ,int              range
-                  ,RegexRegisters  *registers
-                  ,int              mstop) const {
-  const int total = size1 + size2;
+intptr_t Regex::search2(const TCHAR     *string1
+                       ,size_t           size1
+                       ,const TCHAR     *string2
+                       ,size_t           size2
+                       ,intptr_t         startPos
+                       ,intptr_t         range
+                       ,RegexRegisters  *registers
+                       ,size_t           mstop) const {
+  const intptr_t total = size1 + size2;
 
-#define GETCP(pos) (((pos) >= size1) ? (string2 + (pos) - size1) : (string1 + (pos)))
+#define GETCP(pos) (((pos) >= (intptr_t)size1) ? (string2 + (pos) - size1) : (string1 + (pos)))
 
   for(;;) {
     // skip quickly over characters that cannot possibly be the start of a match.
@@ -1481,10 +1480,10 @@ int Regex::search2(const TCHAR     *string1
 
     if((startPos < total) && !m_matchEmpty) {
       if(range > 0) {
-        int lim    = 0;
-        int irange = range;
-        if((startPos < size1) && (startPos + range >= size1)) {
-          lim = range - (size1 - startPos);
+        intptr_t lim    = 0;
+        intptr_t irange = range;
+        if((startPos < (intptr_t)size1) && (startPos + range >= (intptr_t)size1)) {
+          lim = range - ((intptr_t)size1 - startPos);
         }
 
         const TCHAR *p = GETCP(startPos);
@@ -1542,26 +1541,26 @@ bool Regex::match(const TCHAR *text, RegexRegisters *registers) const {
   if(!m_hasCompiled) {
     throwException(noRegExpressionMsg);
   }
-  const int len = _tcsclen(text);
+  const size_t len = _tcsclen(text);
   return (match(text, len, 0, registers) >= 0) && (m_resultLength == len);
 }
 
-int Regex::match(const TCHAR     *string
-                ,int              size
-                ,int              pos
-                ,RegexRegisters  *registers) const {
+intptr_t Regex::match(const TCHAR     *string
+                     ,size_t           size
+                     ,intptr_t         pos
+                     ,RegexRegisters  *registers) const {
   DBG_resetCycleCount();
   m_resultLength = match2(0, 0, string, size, pos, registers, size);
   return m_resultLength;
 }
 
-int Regex::match2(const TCHAR    *string1
-                 ,int             size1
-                 ,const TCHAR    *string2
-                 ,int             size2
-                 ,int             pos
-                 ,RegexRegisters *registers
-                 ,int             mstop) const {
+intptr_t Regex::match2(const TCHAR    *string1
+                      ,size_t          size1
+                      ,const TCHAR    *string2
+                      ,size_t          size2
+                      ,intptr_t        pos
+                      ,RegexRegisters *registers
+                      ,size_t          mstop) const {
 
   _RegexMatchState state(this, m_counterTable, pos);
 
@@ -1588,7 +1587,7 @@ int Regex::match2(const TCHAR    *string1
 // but this happens before fetching; therefore, at the beginning of the loop,
 // d can be pointing at the end of a String, but it cannot equal string2.
 
-  if(pos <= size1) {
+  if(pos <= (intptr_t)size1) {
     state.m_sp    = string1 + pos;
     state.m_spEnd = state.m_endMatch1;
   } else {
@@ -1616,7 +1615,7 @@ while(state.m_sp == state.m_spEnd) {       \
       if(registers) {                 // If caller wants register contents data back, convert it to indices
         state.convertRegisters(string1, size1, string2, size2, registers);
       }
-      if((state.m_sp - string1) >= 0 && (state.m_sp - string1 <= size1)) {
+      if((state.m_sp - string1) >= 0 && (state.m_sp - string1 <= (intptr_t)size1)) {
         return state.m_sp - string1 - pos;
       } else {
         return state.m_sp - string2 + size1 - pos;
@@ -1722,7 +1721,7 @@ while(state.m_sp == state.m_spEnd) {       \
            
           PREFETCH;                                                             // Advance to next segment in data being matched, if necessary
            
-          int count = state.m_spEnd - state.m_sp;                               // count gets # consecutive chars to compare
+          intptr_t count = state.m_spEnd - state.m_sp;                          // count gets # consecutive chars to compare
           if(count > dend2 - d2) {
             count = dend2 - d2;
           }
@@ -1875,7 +1874,7 @@ while(state.m_sp == state.m_spEnd) {       \
 
 // --------------------------------------------- _RegexMatchState --------------------------------------------
 
-_RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, int pos) 
+_RegexMatchState::_RegexMatchState(const Regex *regex, _RegexCounterTable &counterTable, intptr_t pos) 
 : m_regex(*regex)
 , m_pos(pos)
 , m_ip(regex->getCodeStart())
@@ -1919,13 +1918,13 @@ void _RegexMatchState::doMaybePopAndJump() {
 // Compare what follows with the begining of the repeat.
 // If we can establish that there is nothing that they would both match, we can change to popAndJump/popCountAndJump
 
-  const BYTE  *codeStart      = m_regex.getCodeStart();
-  const int    startLoop      = (m_ip + jumpCount) - codeStart;
-  const int    endLoop        =  m_ip - codeStart;
-  const int    startFollow    = endLoop;
-  const int    endFollow      = m_regex.getCodeSize();
-  const BitSet loopFirstSet   = m_regex.first(startLoop  , endLoop  );
-  const BitSet followSet      = m_regex.first(startFollow, endFollow);
+  const BYTE    *codeStart      = m_regex.getCodeStart();
+  const intptr_t startLoop      = (m_ip + jumpCount) - codeStart;
+  const intptr_t endLoop        =  m_ip - codeStart;
+  const intptr_t startFollow    = endLoop;
+  const int      endFollow      = m_regex.getCodeSize();
+  const BitSet   loopFirstSet   = m_regex.first(startLoop  , endLoop  );
+  const BitSet   followSet      = m_regex.first(startFollow, endFollow);
 
 #ifdef _DEBUG
   debugLog(_T("loopFirstSet(%d-%d):%s\nfollowSet(%d,%d):%s\n")
@@ -1984,9 +1983,9 @@ bool _RegexMatchState::handleCounterFailure() { // Called when failure and stack
 }
 
 void _RegexMatchState::convertRegisters(const TCHAR   *string1
-                                      ,int             size1
+                                      ,intptr_t        size1
                                       ,const TCHAR    *string2
-                                      ,int             size2
+                                      ,intptr_t        size2
                                       ,RegexRegisters *registers) {
   registers->clear();
 
@@ -2013,12 +2012,12 @@ void _RegexMatchState::convertRegisters(const TCHAR   *string1
 }
 
 String RegexRegisters::toString(const String &text) const {
-  const int length = text.length();
+  const intptr_t length = text.length();
   String result;
   for(int i = 0; i < RE_NREGS; i++) {
-    const int textstart = start[i];
-    const int textend   = end[i];
-    const int len       = textend - textstart;
+    const intptr_t textstart = start[i];
+    const intptr_t textend   = end[i];
+    const intptr_t len       = textend - textstart;
     if((0 <= textstart) && (len > 0) && (textend <= length)) {
       result += format(_T("%d:\"%-*.*s\"\n"), i, len,len, text.cstr()+textstart);
     }
@@ -2043,7 +2042,7 @@ RegexStepHandler *Regex::setHandler(RegexStepHandler *handler) {
 #define ADDNEWLINE     ADD(_T("\n"))
 
 #define SETLINENUMBERS     { for(;lastp < p; lastp++) m_PCToLineArray[lastp - start] |= (lineCount<<16); lineCount++; }
-#define CLEARLINENUMBERS() { for(int n = m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):NULL; n--;) *(lp++) &= 0x0000ffff; }
+#define CLEARLINENUMBERS() { for(int n = (int)m_PCToLineArray.size(), *lp = n?(&m_PCToLineArray.first()):NULL; n--;) *(lp++) &= 0x0000ffff; }
 
 String Regex::toString() const {
   String result;
@@ -2053,9 +2052,9 @@ String Regex::toString() const {
 
   const BYTE *start = m_buffer.getData();
   const BYTE *lastp = start;
-  const int maxAddress = m_codeSize ? m_codeSize : m_buffer.size();
+  const int maxAddress = m_codeSize ? m_codeSize : (int)m_buffer.size();
   for(const BYTE *p = start;;) {
-    const unsigned int address = p - start;
+    const UINT address = (UINT)(p - start);
     ADD(format(_T("%4u: "), address));
     if((int)address >= maxAddress) {
       ADDOPCODE(end);
@@ -2296,7 +2295,7 @@ BitSet Regex::getPossibleBreakPointLines() const {
 }
 
 unsigned int _RegexMatchState::getDBGIpElement() const {
-  const unsigned int     ipIndex = m_ip - m_regex.getCodeStart();
+  const UINT             ipIndex = (UINT)(m_ip - m_regex.getCodeStart());
   const CompactIntArray &dbg     = m_regex.getDebugInfo();
   return ((int)ipIndex >= dbg.size()) ? 0 : dbg[ipIndex];
 }
@@ -2357,9 +2356,9 @@ String _RegexStateRegister::toString(const _RegexMatchState *state) const {
     return _T("\"\"");
   }
   if(m_regStartSegEnd == state->m_spEnd) {
-    len = m_regStartSegEnd - m_regStart;
+    len = (int)(m_regStartSegEnd - m_regStart);
   } else {
-    len = m_regEnd - m_regStart;
+    len = (int)(m_regEnd - m_regStart);
   }
   return format(_T("\"%-*.*s\""), len, len, m_regStart);
 }

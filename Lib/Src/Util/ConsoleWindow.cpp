@@ -95,7 +95,7 @@ void ConsoleWindow::create(bool shadowed, int left, int top, int right, int bott
 
 void ConsoleWindow::destroy() {
   if(m_parent) {
-    for(int i = 0; i < m_parent->m_children.size(); i++) {
+    for(size_t i = 0; i < m_parent->m_children.size(); i++) {
       if(m_parent->m_children[i] == this) {
         m_parent->m_children.removeIndex(i);
         break;
@@ -122,7 +122,7 @@ void ConsoleWindow::postEvent(int event) {
 }
 
 bool ConsoleWindow::translateEvent(int event) {
-  for(int i = 0; i < m_accel.size(); i++) {
+  for(size_t i = 0; i < m_accel.size(); i++) {
     if(EVENTDOWN(event) && m_accel[i].catchevent(event)) {
       postEvent(m_accel[i].m_command);
       return true;

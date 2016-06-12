@@ -318,7 +318,7 @@ void TreeSetImpl::clear() {
 }
 
 bool TreeSetImpl::insertNode(TreeSetNode *n) {
-  const unsigned long size = m_size;
+  const size_t size = m_size;
   nodeInsert(m_root, n);
   return size != m_size;
 }
@@ -333,7 +333,7 @@ bool TreeSetImpl::add(const void *key) {
 }
 
 bool TreeSetImpl::remove(const void *key) {
-  const unsigned long size = m_size;
+  const size_t size = m_size;
   nodeDelete(m_root, key);
   return size != m_size;
 }

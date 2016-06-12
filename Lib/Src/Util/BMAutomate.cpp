@@ -11,7 +11,7 @@ BMAutomate::BMAutomate(const String &pattern, bool forwardSearch, const unsigned
   compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
 }
 
-BMAutomate::BMAutomate(const TCHAR *pattern, int patternLength, bool forwardSearch, const unsigned char *translateTable) {
+BMAutomate::BMAutomate(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const unsigned char *translateTable) {
   initPointers();
   compilePattern(pattern, patternLength, forwardSearch, translateTable);
 }
@@ -41,7 +41,7 @@ void BMAutomate::compilePattern(const String &pattern, bool forwardSearch, const
   compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
 }
 
-void BMAutomate::compilePattern(const TCHAR *pattern, int patternLength, bool forwardSearch, const unsigned char *translateTable) {
+void BMAutomate::compilePattern(const TCHAR *pattern, size_t patternLength, bool forwardSearch, const unsigned char *translateTable) {
   if(patternLength < 0) {
     patternLength = _tcsclen(pattern);
   }
@@ -67,7 +67,7 @@ void BMAutomate::compileForward() {
   makeDelta2();
 }
 
-static TCHAR *reversebuf(TCHAR *s, int size) {
+static TCHAR *reversebuf(TCHAR *s, size_t size) {
   TCHAR tmp,*l = s, *r = s + size - 1;
   while(l < r) {
     tmp = *l; *(l++) = *r; *(r--) = tmp;
@@ -80,21 +80,21 @@ void BMAutomate::compileBackward() {
   compileForward();
 }
 
-int BMAutomate::search(const String &text) const {
+intptr_t BMAutomate::search(const String &text) const {
   return (this->*m_search)(text.cstr(), text.length());
 }
 
-int BMAutomate::search(const TCHAR *text, int textLength) const {
+intptr_t BMAutomate::search(const TCHAR *text, size_t textLength) const {
   if(textLength < 0) {
     textLength = _tcsclen(text);
   }
   return (this->*m_search)(text, textLength);
 }
 
-int BMAutomate::searchForwardNoTranslate(const TCHAR *text, int textLength) const {
-  int d1,d2;
-  for(int i = m_plm1; i < textLength; i += max(d1, d2)) {
-    int j;
+intptr_t BMAutomate::searchForwardNoTranslate(const TCHAR *text, size_t textLength) const {
+  intptr_t d1,d2;
+  for(intptr_t i = m_plm1; i < (intptr_t)textLength; i += max(d1, d2)) {
+    intptr_t j;
     for(j = m_plm1; (j >= 0) && (text[i] == m_pattern[j]); i--, j--);
     if(j < 0) {
       return i + 1;
@@ -105,10 +105,10 @@ int BMAutomate::searchForwardNoTranslate(const TCHAR *text, int textLength) cons
   return -1;
 }
 
-int BMAutomate::searchBackwardNoTranslate(const TCHAR *text, int textLength) const {
-  int d1,d2;
-  for(int i = textLength - m_patternLength; i >= 0; i -= max(d1, d2)) {
-    int j;
+intptr_t BMAutomate::searchBackwardNoTranslate(const TCHAR *text, size_t textLength) const {
+  intptr_t d1,d2;
+  for(intptr_t i = textLength - m_patternLength; i >= 0; i -= max(d1, d2)) {
+    intptr_t j;
     for(j = m_plm1; (j >= 0) && (text[i] == m_pattern[j]); i++, j--);
     if(j < 0) {
       return i - m_patternLength;
@@ -124,10 +124,10 @@ int BMAutomate::searchBackwardNoTranslate(const TCHAR *text, int textLength) con
 #define CHAREQUALS( c1,c2) (TRANSLATE(c1) == TRANSLATE(c2))
 #define CHAREQUALS1(c1,c2) (m_translateTable ? CHAREQUALS(c1, c2) : (c1 == c2))
 
-int BMAutomate::searchForwardTranslate(const TCHAR *text, int textLength) const {
-  int d1,d2;
-  for(int i = m_plm1; i < textLength; i += max(d1, d2)) {
-    int j;
+intptr_t BMAutomate::searchForwardTranslate(const TCHAR *text, size_t textLength) const {
+  intptr_t d1,d2;
+  for(intptr_t i = m_plm1; i < (intptr_t)textLength; i += max(d1, d2)) {
+    intptr_t j;
     for(j = m_plm1; (j >= 0) && CHAREQUALS(text[i], m_pattern[j]); i--, j--);
     if(j < 0) {
       return i + 1;
@@ -138,10 +138,10 @@ int BMAutomate::searchForwardTranslate(const TCHAR *text, int textLength) const 
   return -1;
 }
 
-int BMAutomate::searchBackwardTranslate(const TCHAR *text, int textLength) const {
-  int d1,d2;
-  for(int i = textLength - m_patternLength; i >= 0; i -= max(d1, d2)) {
-    int j;
+intptr_t BMAutomate::searchBackwardTranslate(const TCHAR *text, size_t textLength) const {
+  intptr_t d1,d2;
+  for(intptr_t i = textLength - m_patternLength; i >= 0; i -= max(d1, d2)) {
+    intptr_t j;
     for(j = m_plm1; (j >= 0) && CHAREQUALS(text[i], m_pattern[j]); i++, j--);
     if(j < 0) {
       return i - m_patternLength;
@@ -152,10 +152,10 @@ int BMAutomate::searchBackwardTranslate(const TCHAR *text, int textLength) const
   return -1;
 }
 
-void BMAutomate::allocate(int patternLength) {
+void BMAutomate::allocate(size_t patternLength) {
   m_plm1    = (m_patternLength = patternLength) - 1;
   m_pattern = new TCHAR[patternLength+1];
-  m_delta2  = new int[ patternLength];
+  m_delta2  = new intptr_t[ patternLength];
 }
 
 void BMAutomate::deallocate() {
@@ -195,7 +195,7 @@ void BMAutomate::makeDelta1() {
   for(int i = 0; i < 256; i++) {
     m_delta1[i] = m_patternLength;
   }
-  for(int i = 0; i < m_patternLength-1; i++) {
+  for(size_t i = 0; i < m_patternLength-1; i++) {
     m_delta1[TRANSLATE1(m_pattern[i])] = m_plm1 - i;
   }
 }
@@ -236,17 +236,17 @@ void BMAutomate::makeDelta1() {
 // unique, we want to take the minimum value, which will tell us
 // how far away the closest potential match is.
 void BMAutomate::makeDelta2() {
-  int lastPrefixIndex = m_plm1;
+  intptr_t lastPrefixIndex = m_plm1;
 
-  for(int p = m_plm1; p >= 0; p--) {
+  for(intptr_t p = m_plm1; p >= 0; p--) {
     if(isPrefix(m_pattern, m_patternLength, p+1)) {
       lastPrefixIndex = p+1;
     }
     m_delta2[p] = lastPrefixIndex + (m_plm1 - p);
   }
 
-  for(int p = 0; p < m_plm1; p++) {
-    const int slen = getSuffixLength(m_pattern, m_patternLength, p);
+  for(size_t p = 0; p < m_plm1; p++) {
+    const size_t slen = getSuffixLength(m_pattern, m_patternLength, p);
     if(!CHAREQUALS1(m_pattern[p - slen], m_pattern[m_plm1 - slen])) {
       m_delta2[m_plm1 - slen] = m_plm1 - p + slen;
     }
@@ -254,10 +254,10 @@ void BMAutomate::makeDelta2() {
 }
 
 // true if the suffix of word starting from word[pos] is a prefix of word
-bool BMAutomate::isPrefix(const TCHAR *word, int wordLength, int pos) const {
-  const int suffixLength = wordLength - pos;
+bool BMAutomate::isPrefix(const TCHAR *word, intptr_t wordLength, intptr_t pos) const {
+  const intptr_t suffixLength = wordLength - pos;
   // could also use the strncmp() library function here
-  for(int i = 0; i < suffixLength; i++) {
+  for(intptr_t i = 0; i < suffixLength; i++) {
     if(!CHAREQUALS1(word[i], word[pos+i])) {
       return false;
     }
@@ -267,9 +267,9 @@ bool BMAutomate::isPrefix(const TCHAR *word, int wordLength, int pos) const {
  
 // length of the longest suffix of word ending on word[pos].
 // getSuffixLength("dddbcabc", 8, 4) = 2
-int BMAutomate::getSuffixLength(const TCHAR *word, int wordLength, int pos) const {
+size_t BMAutomate::getSuffixLength(const TCHAR *word, intptr_t wordLength, intptr_t pos) const {
   // increment suffix length i to the first mismatch or beginning of the word
-  int i;
+  intptr_t i;
   for(i = 0; CHAREQUALS1(word[pos-i], word[wordLength-1-i]) && (i < pos); i++);
   return i;
 }

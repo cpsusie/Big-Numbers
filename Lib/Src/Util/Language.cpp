@@ -4,7 +4,7 @@
 #include <Language.h>
 
 String Language::getLanguageName() const { // strip country-name enclosed by (..)
-  const int index = m_langName.find('(');
+  const int index = (int)m_langName.find('(');
   return (index >= 0) ? left(m_langName, index) : m_langName;
 }
 
@@ -65,7 +65,7 @@ const Array<Language> &Language::getSupportedLanguages() { // static
     if(result.size() == 0) {
       const String fileName = getModuleFileName(NULL);
       FileVersion version(fileName);
-      for(int i = 0; i < version.m_fileInfo.size(); i++) {
+      for(int i = 0; i < (int)version.m_fileInfo.size(); i++) {
         const VarFileInfoTranslation &vfit = version.m_fileInfo[i].getFileInfoTranslation();
         Language language;
         language.m_langID   = vfit.languageID;
@@ -84,7 +84,7 @@ const Array<Language> &Language::getSupportedLanguages() { // static
 const Language &Language::getBestSupportedLanguage(LANGID langID) { // static
   int englishIndex = 0;    
   const Array<Language> &supportedLanguages = getSupportedLanguages();
-  for(int i = 0; i < supportedLanguages.size(); i++) {
+  for(int i = 0; i < (int)supportedLanguages.size(); i++) {
     const Language &language = supportedLanguages[i]; 
     if(PRIMARYLANGID(language.m_langID) == PRIMARYLANGID(langID)) {
       return language;

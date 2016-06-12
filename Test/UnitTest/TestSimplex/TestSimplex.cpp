@@ -93,7 +93,7 @@ namespace TestSimplex {
       verify(xCount == costFactors.size());
 
       Tableau tab(xCount, constraintCount, &tracer, 0 /*TRACE_ALL*/);
-      for (int i = 0; i < constraints.size(); i++) {
+      for (size_t i = 0; i < constraints.size(); i++) {
         const TableauConstraint &con = constraints[i];
         verify(xCount == con.getXCount());
         tab.setConstraint(i + 1, con);

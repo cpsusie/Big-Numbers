@@ -70,7 +70,7 @@ namespace TestList
         verify(it.next() == it1.next());
       }
 
-      for (int i = 0; i < array.size(); i++) {
+      for (size_t i = 0; i < array.size(); i++) {
         verify(array[i] == list[i]);
       }
 

@@ -15,7 +15,7 @@ ByteMemoryOutputStream::ByteMemoryOutputStream(ByteArray &dst) {
   m_dstArray = &dst;
 }
 
-void ByteMemoryOutputStream::putBytes(const BYTE *src, unsigned int n) {
+void ByteMemoryOutputStream::putBytes(const BYTE *src, size_t n) {
   if(m_p) {
     memcpy(m_p+m_pos, src, n);
     m_pos += n;

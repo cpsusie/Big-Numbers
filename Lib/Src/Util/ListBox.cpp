@@ -41,7 +41,7 @@ void ListBox::drawScrollBar() {
   int Left = getLeft() + getWidth() - 1;
   int Top  = getTop();
   int attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
-  ScrollBar::drawvScrollBar(tw,Left,Top,getHeight(), getVisibleItemCount(), m_strings.size(), getMaxScrollOffset(), m_scrollOffset, attr, attr, SINGLE_FRAME);
+  ScrollBar::drawvScrollBar(tw,Left,Top,getHeight(), getVisibleItemCount(), (int)m_strings.size(), getMaxScrollOffset(), m_scrollOffset, attr, attr, SINGLE_FRAME);
 }
 
 void ListBox::drawBorder() {
@@ -55,7 +55,7 @@ void ListBox::drawBorder() {
 
 void ListBox::setSel(int i) {
   if(i >= (int)m_strings.size()) {
-    i = m_strings.size() - 1;
+    i = (int)m_strings.size() - 1;
   }
   if(i < 0) {
     i = 0;
@@ -75,7 +75,7 @@ void ListBox::setSel(int i) {
 }
 
 int ListBox::getMaxScrollOffset() {
-  const int m = m_strings.size() - getVisibleItemCount();
+  const int m = (int)m_strings.size() - getVisibleItemCount();
   return m < 0 ? 0 : m;
 }
 
@@ -99,7 +99,7 @@ void ListBox::addString(const String &str) {
 }
 
 void ListBox::insertString(int i, const String &str) {
-  if(i < 0 || i > m_strings.size()) {
+  if(i < 0 || i > (int)m_strings.size()) {
     return;
   }
   m_strings.add(i,str);
@@ -109,12 +109,12 @@ void ListBox::insertString(int i, const String &str) {
 }
 
 void ListBox::removeString(int i) {
-  if(i < 0 || i >= m_strings.size()) {
+  if(i < 0 || i >= (int)m_strings.size()) {
     return;
   }
   m_strings.removeIndex(i);
-  if(m_currentSel >= m_strings.size()) {
-    m_currentSel = m_strings.size() - 1;
+  if(m_currentSel >= (int)m_strings.size()) {
+    m_currentSel = (int)m_strings.size() - 1;
   }
   if(m_scrollOffset > getMaxScrollOffset()) {
     m_scrollOffset = getMaxScrollOffset();
@@ -169,7 +169,7 @@ bool ListBox::key(int event) {
 
   case SCAN_END   :
     setScrollOffset(getMaxScrollOffset());
-    setSel(m_strings.size() - 1);
+    setSel((int)m_strings.size() - 1);
     return true;
 
   case SCAN_HOME  :

@@ -51,15 +51,15 @@ void ParserTree::markSimpleConstants() {
 }
 
 void ParserTree::unmarkAll() const {
-  for(int i = 0; i < m_nodeTable.size()  ; i++) m_nodeTable[i]->unMark();
-  for(int i = 0; i < m_addentTable.size(); i++) m_addentTable[i]->unMark();
-  for(int i = 0; i < m_variables.size()  ; i++) m_variables[i].unMark();
+  for(size_t i = 0; i < m_nodeTable.size()  ; i++) m_nodeTable[i]->unMark();
+  for(size_t i = 0; i < m_addentTable.size(); i++) m_addentTable[i]->unMark();
+  for(size_t i = 0; i < m_variables.size()  ; i++) m_variables[i].unMark();
 }
 
 void ParserTree::deleteUnmarked() {
   CompactArray<ExpressionNode*> tmp = m_nodeTable;
   m_nodeTable.clear();
-  for(int i = 0; i < tmp.size(); i++) {
+  for(size_t i = 0; i < tmp.size(); i++) {
     ExpressionNode *n = tmp[i];
     if(n->isMarked()) {
       m_nodeTable.add(n);
@@ -70,7 +70,7 @@ void ParserTree::deleteUnmarked() {
   tmp.clear();
   CompactArray<SumElement*> tmp1 = m_addentTable;
   m_addentTable.clear();
-  for(int i = 0; i < tmp1.size(); i++) {
+  for(size_t i = 0; i < tmp1.size(); i++) {
     SumElement *e = tmp1[i];
     if(e->isMarked()) {
       m_addentTable.add(e);

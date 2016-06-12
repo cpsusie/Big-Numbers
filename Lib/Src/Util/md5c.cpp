@@ -318,11 +318,13 @@ char *MD5Context::strFinal(char *dst) {
 /* Digests a String (src) and returns the result */
 char *MD5Context::digest(const char *src) {
   init();
-  unsigned int length = strlen(src);
+  unsigned int length = (UINT)strlen(src);
   update(src, length);
   return strFinal(m_strDigest);
 }
 
 String MD5Context::digest(const String &s) {
-  return digest(s.cstr());
+  throwException(_T("MD5Context::digest:Not implemented"));
+  return _T("");
+//  return digest(s.cstr());
 }

@@ -16,7 +16,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
   case SUM       :
     { const AddentArray &a = n->getAddentArray();
       AddentArray newAddentArray(a.size());
-      for(int i = 0; i < a.size(); i++) { // change sign for all elements in list
+      for(size_t i = 0; i < a.size(); i++) { // change sign for all elements in list
         const SumElement *e = a[i]; 
         newAddentArray.add(e->getNode(),!e->isPositive());
       }
@@ -27,7 +27,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
     { const FactorArray &factors = n->getFactorArray();
       const int          index   = factors.findFactorWithChangeableSign();
       FactorArray        newFactors(factors.size());
-      for(int i = 0; i < factors.size(); i++) {
+      for(size_t i = 0; i < factors.size(); i++) {
         const ExpressionFactor *factor = factors[i];
         if(i != index) {
           newFactors.add(factor);
@@ -44,7 +44,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
   case POLY      :
     { const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
       ExpressionNodeArray       newCoefficientArray(coefficientArray.size());
-      for(int i = 0; i < coefficientArray.size(); i++) {
+      for(size_t i = 0; i < coefficientArray.size(); i++) {
         newCoefficientArray.add(minusC(coefficientArray[i]));
       }
       const ExpressionNode *x = n->getArgument();
@@ -69,7 +69,7 @@ const ExpressionNode *ParserTree::reciprocalC(const ExpressionNode *n) const {
   case PRODUCT       :
     { const FactorArray &factors = n->getFactorArray();
       FactorArray newFactors;
-      for(int i = 0; i < factors.size(); i++) {
+      for(size_t i = 0; i < factors.size(); i++) {
         const ExpressionFactor *factor = factors[i];
         newFactors.add(factor->base(), minusC(factor->exponent()));
       }
@@ -139,7 +139,7 @@ const ExpressionNode *ParserTree::quotientC(const ExpressionNode *n1, const Expr
     a.add((n2->getSymbol() == POW) ? fetchFactorNode(n2->left(), minusC(n2->right())) : fetchFactorNode(n2, getMinusOne()));
   } else {
     const FactorArray &a2 = n2->getFactorArray();
-    for(int i = 0; i < a2.size(); i++) {
+    for(size_t i = 0; i < a2.size(); i++) {
       const ExpressionFactor *f = a2[i];
       a.add(f->base(), minusC(f->exponent()));
     }

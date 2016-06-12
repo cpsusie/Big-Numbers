@@ -9,8 +9,8 @@ void setToRandom(Vector &v) {
 }
 
 void setToRandom(Matrix &a) {
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       setToRandom(a(r,c));
     }
   }
@@ -27,8 +27,8 @@ Real fabs(const Matrix &a) {
 // Frobenius norm
 Real normf(const Matrix &a) {
   Real sum = 0;
-  for(int r = 0; r < a.getRowCount(); r++) {
-    for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       sum += sqr(a(r,c));
     }
   }
@@ -37,9 +37,9 @@ Real normf(const Matrix &a) {
 
 Real norm1(const Matrix &a) {
   Real m = 0;
-  for(int c = 0; c < a.getColumnCount(); c++) {
+  for(size_t c = 0; c < a.getColumnCount(); c++) {
     Real sum = 0;
-    for(int r = 0; r < a.getRowCount(); r++) {
+    for(size_t r = 0; r < a.getRowCount(); r++) {
       sum += fabs(a(r,c));
     }
     if(sum > m) {
@@ -51,9 +51,9 @@ Real norm1(const Matrix &a) {
 
 Real norm00(const Matrix &a) {
   Real m = 0;
-  for(int r = 0; r < a.getRowCount(); r++) {
+  for(size_t r = 0; r < a.getRowCount(); r++) {
     Real sum = 0;
-    for(int c = 0; c < a.getColumnCount(); c++) {
+    for(size_t c = 0; c < a.getColumnCount(); c++) {
       sum += fabs(a(r,c));
     }
     if(sum > m) {

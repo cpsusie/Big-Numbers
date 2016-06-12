@@ -34,8 +34,8 @@ static inline void swap(register char *p1, register char *p2, size_t w) {
 #define EPTR(n) ((char*)base+width*(n))
 
 static void quickSortAnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
-  void  *baseStack[40];
-  size_t sizeStack[40];
+  void  *baseStack[50];
+  size_t sizeStack[50];
   int    stackTop = 0;
   char  *ip,*jp;
 
@@ -108,19 +108,19 @@ tailrecurse:
         jp -= width;
       }
     } while(ip <= jp);
-    int i = (ip - (char*)base) / width;
-    int j = (jp - (char*)base) / width;
-    if(j > (int)nelem - i) {         // Sort the smallest partition first, to save stackspace
+    intptr_t i = (ip - (char*)base) / width;
+    intptr_t j = (jp - (char*)base) / width;
+    if(j > (intptr_t)nelem - i) {    // Sort the smallest partition first, to save stackspace
       if(j > 0) {
         PUSH(base, j+1);             // Sort(base,j+1,width, comparator,pivot);
       }
-      if(i < (int)nelem-1) {         // Sort(ip,nelem-i, width, comparator,pivot);
+      if(i < (intptr_t)nelem-1) {         // Sort(ip,nelem-i, width, comparator,pivot);
         base = ip;
         nelem -= i;
         goto tailrecurse;
       }
     } else {
-      if(i < (int)nelem - 1) {
+      if(i < (intptr_t)nelem - 1) {
         PUSH(ip, nelem-i);           // Sort(ip,nelem-i, width, comparator,pivot);
       }
       if(j > 0) {                    // Sort(base,j+1,width, comparator,pivot);
@@ -167,8 +167,8 @@ template <class T> class QuicksortClass {
 // where <primitive type> is on of <char>,<short>,<long> and <double>.
 // For all other values of width, we call the general quicksortNoRecursionAnyWidth
 template <class T> void QuicksortClass<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
-  T     *baseStack[40];
-  size_t sizeStack[40];
+  T     *baseStack[50];
+  size_t sizeStack[50];
   int    stackTop = 0;
   T     *ip, *jp;
 
@@ -241,22 +241,22 @@ tailrecurse:
         jp--;
       }
     } while(ip <= jp);
-    const size_t i = ip - base;
-    const size_t j = jp - base;
-    if(j > nelem - i) {       // Sort the smallest partition first, to save stackspace
+    const intptr_t i = ip - base;
+    const intptr_t j = jp - base;
+    if(j > (intptr_t)nelem - i) {  // Sort the smallest partition first, to save stackspace
       if(j > 0) {
-        PUSH(base, j+1);      // Save start, count of elements to be sorted later. ie. Sort(base,j+1,width, comparator);
+        PUSH(base, j+1);           // Save start, count of elements to be sorted later. ie. Sort(base,j+1,width, comparator);
       }
-      if(i < nelem-1) {       // Sort(ip, nelem-i, width, comparator);
+      if(i < (intptr_t)nelem-1) {  // Sort(ip, nelem-i, width, comparator);
         base  = ip;
         nelem -= i;
         goto tailrecurse;
       }
     } else {
-      if(i < nelem-1) {       // Save start,count of elements to be sorted later. ie Sort(ip,nelem-i, width, comparator);
+      if(i < (intptr_t)nelem-1) {  // Save start,count of elements to be sorted later. ie Sort(ip,nelem-i, width, comparator);
         PUSH(ip, nelem-i); 
       }
-      if(j > 0) {             // Sort(base,j+1,width, comparator);
+      if(j > 0) {                  // Sort(base,j+1,width, comparator);
         nelem = j+1;
         goto tailrecurse;
       }

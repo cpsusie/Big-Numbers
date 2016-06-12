@@ -125,7 +125,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
 Real Expression::evaluateProduct(const ExpressionNode *n) const {
   Real prod = 1;
   const FactorArray &factors = n->getFactorArray();
-  for(int i = 0; i < factors.size(); i++) {
+  for(size_t i = 0; i < factors.size(); i++) {
     prod *= evaluateRealExpr(factors[i]);
   }
   return prod;
@@ -134,7 +134,7 @@ Real Expression::evaluateProduct(const ExpressionNode *n) const {
 Real Expression::evaluateSum(const ExpressionNode *n) const {
   Real sum = 0;
   const AddentArray &a = n->getAddentArray();
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const SumElement *e = a[i];
     const Real v = evaluateRealExpr(e->getNode());
     if(e->isPositive()) {
@@ -197,7 +197,7 @@ Real Expression::evaluatePolynomial(const ExpressionNode *n) const {
   CompactArray<Real> coef;
   getCoefficients(coef, n->getCoefficientArray());
   Real result = 0;
-  for(int i = 0; i < coef.size(); i++) {
+  for(size_t i = 0; i < coef.size(); i++) {
     result = result * x + coef[i];
   }
   return result;
@@ -205,7 +205,7 @@ Real Expression::evaluatePolynomial(const ExpressionNode *n) const {
 
 void Expression::getCoefficients(CompactArray<Real> &dst, const ExpressionNodeArray &coefficientArray) const {
   dst.setCapacity(coefficientArray.size());
-  for(int i = 0; i < coefficientArray.size(); i++) {
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
     dst.add(evaluateRealExpr(coefficientArray[i]));
   }
 }

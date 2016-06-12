@@ -22,7 +22,7 @@ public:
     return size() == 0;
   }
   
-  int size() const {
+  size_t size() const {
     return LinkedList<T>::size();
   }
   
@@ -30,7 +30,7 @@ public:
     return LinkedList<T>::operator[](index);
   }
   
-  const T &operator[](int index) const {
+  const T &operator[](size_t index) const {
     return LinkedList<T>::operator[](index);
   }
 

@@ -732,7 +732,7 @@ void BTreeSetImpl::checkTree() {
     list.add(it->next());
   }
   delete it;
-  for(int i = 1; i < list.size(); i++) {
+  for(size_t i = 1; i < list.size(); i++) {
     if(m_comparator->cmp(list[i-1],list[i]) >= 0) {
       throwException(_T("Order not maintained"));
     }

@@ -67,8 +67,8 @@ BigReal       normf(    const BigRealMatrix &a); // Frobenius norm
 
 class BigRealLUMatrix : private BigRealMatrix {
 private:
-  unsigned int *m_permut;
-  int           m_detsign;
+  size_t  *m_permut;
+  int      m_detsign;
 
   void allocPermut();
   void initPermut();

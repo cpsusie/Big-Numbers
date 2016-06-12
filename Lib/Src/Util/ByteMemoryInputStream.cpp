@@ -15,8 +15,8 @@ ByteMemoryInputStream::ByteMemoryInputStream(const ByteArray &src) {
   m_pos      = 0;
 }
 
-int ByteMemoryInputStream::getBytes(BYTE *dst, unsigned int n) {
-  const unsigned int rest = m_size - m_pos;
+intptr_t ByteMemoryInputStream::getBytes(BYTE *dst, size_t n) {
+  const size_t rest = m_size - m_pos;
   n = min(rest, n);
   memcpy(dst, m_p+m_pos, n);
   m_pos += n;

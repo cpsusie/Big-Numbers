@@ -10,7 +10,7 @@ ProcessInfo::ProcessInfo(DWORD processId) {
   m_commandLine = getProcessCommandLine(hProcess);
   try {
     CompactArray<HMODULE> moduleArray = getModules(hProcess);
-    for(int i = 0; i < moduleArray.size(); i++ ) {
+    for(int i = 0; i < (int)moduleArray.size(); i++ ) {
       TCHAR name[MAX_PATH];
       if(GetModuleFileNameEx(hProcess, moduleArray[i], name, ARRAYSIZE(name))) {
         struct _stat st;

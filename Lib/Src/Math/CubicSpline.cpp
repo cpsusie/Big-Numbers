@@ -17,7 +17,7 @@ CubicSpline::CubicSpline(FittingType type, const CompactArray<DataPoint> &data, 
   CompactArray<DataPoint> copy;
   copy.add(tmp[0]);
   int c = 1;
-  for(int i = 1; i < tmp.size(); i++) {
+  for(size_t i = 1; i < tmp.size(); i++) {
     if(tmp[i].x == copy.last().x) {
       copy.last().y += tmp[i].y;
       c++;
@@ -29,18 +29,18 @@ CubicSpline::CubicSpline(FittingType type, const CompactArray<DataPoint> &data, 
   }
   copy.last().y /= c;
 
-  const int n = copy.size();
+  const size_t n = copy.size();
   if(n < 2)
     return;
 
   a.setDimension(n);
   y.setDimension(n);
   h.setDimension(n);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     a[i] = copy[i].x;
     y[i] = copy[i].y;
   }
-  for(int i = 1; i < n; i++)
+  for(size_t i = 1; i < n; i++)
     h[i] = a[i] - a[i-1];
 
   Vector sigma(n);
@@ -48,11 +48,11 @@ CubicSpline::CubicSpline(FittingType type, const CompactArray<DataPoint> &data, 
   Vector my(n);
   Vector d(n);
 
-  for(int i = 1; i < n; i++) {
+  for(size_t i = 1; i < n; i++) {
     sigma[i] = (y[i] - y[i-1]) / h[i];
   }
 
-  for(int i = 1; i < n-1; i++) {
+  for(size_t i = 1; i < n-1; i++) {
     lambda[i] = h[i+1] /(h[i] + h[i+1]);
     my[i] = 1 - lambda[i];
     d[i] = 6.0 * (sigma[i+1] - sigma[i]) / (h[i] + h[i+1]);
@@ -72,7 +72,7 @@ CubicSpline::CubicSpline(FittingType type, const CompactArray<DataPoint> &data, 
   }
 
   Vector diag(n);
-  for(int i = 0 ; i < n; i++) {
+  for(size_t i = 0 ; i < n; i++) {
     diag[i] = 2;
   }
 

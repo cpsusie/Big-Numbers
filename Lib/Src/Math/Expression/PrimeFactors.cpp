@@ -92,7 +92,7 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
 
 PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int m) const {
   PrimeFactorSet result(size() + 1);
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
     if(pf.m_multiplicity >= m) {
       result.add(i);
@@ -104,7 +104,7 @@ PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int
 
 __int64 PrimeFactorArray::getProduct() const {
   __int64 result = m_positive ? 1 : -1;
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
     for(unsigned int j = 0; j < pf.m_multiplicity; j++) {
       result *= pf.m_prime;
@@ -118,7 +118,7 @@ String PrimeFactorArray::toString() const {
     return _T("1");
   } else {
     String result = (*this)[0].toString();
-    for(int i = 1; i < size(); i++) {
+    for(size_t i = 1; i < size(); i++) {
       result += format(_T("*%s"), (*this)[i].toString().cstr());
     }
     return m_positive ? result : format(_T("-%s"), result.cstr());

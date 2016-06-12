@@ -24,7 +24,7 @@ bool readLine(FILE *f, String &str) {
   while(_fgetts(line, ARRAYSIZE(line), f)) {
     result = true;
     str += line;
-    int last = str.length()-1;
+    int last = (int)str.length()-1;
     if((last > 0) && str[last] == _T('\n')) {
       str.remove(last--);
       if((last > 0) && str[last] == _T('\r')) {

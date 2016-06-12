@@ -291,7 +291,7 @@ SNode Expression::reduceSum(const SNode n) const {
   const AddentArray &a = n.getAddentArray();
 
   AddentArray reduced;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const SumElement *e = a[i];
     const ExpressionNode *reducedNode = reduceRealExp(e->getNode());
     if(reducedNode != e->getNode()) anyChanges = true;
@@ -311,9 +311,9 @@ SNode Expression::reduceSum(const SNode n) const {
     done.setCapacity(tmp.size());
     done.clear();
     SumElement *sqrSinOrCos = NULL;
-    for(int i1 = 1; i1 < tmp.size(); i1++) {
+    for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       const SumElement *e1 = tmp[i1];
-      for(int i2 = 0; i2 < i1; i2++) {
+      for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
         const SumElement *e2 = tmp[i2];
@@ -321,7 +321,7 @@ SNode Expression::reduceSum(const SNode n) const {
           done.add(i1);
           done.add(i2);
           int factor = (e1->isPositive() == e2->isPositive()) ? 2 : 0;
-          for(int i3 = i2+1; i3 < tmp.size(); i3++) { // check if there are more copies
+          for(size_t i3 = i2+1; i3 < tmp.size(); i3++) { // check if there are more copies
             if(done.contains(i3)) continue;
             const SumElement *e3 = tmp[i3];
             if(treesEqual(e1->getNode(), e3->getNode())) {
@@ -372,7 +372,7 @@ SNode Expression::reduceSum(const SNode n) const {
               if(cf->isPositive()) {
                 reduced.addAll(a);
               } else {
-                for(int j = 0; j < a.size(); j++) {
+                for(size_t j = 0; j < a.size(); j++) {
                   const SumElement *e = a[j];
                   reduced.add(e->getNode(), !e->isPositive());
                 }
@@ -384,7 +384,7 @@ SNode Expression::reduceSum(const SNode n) const {
         }
       }
     }
-    for(int i = 0; i < tmp.size(); i++) { // now add the untouched
+    for(size_t i = 0; i < tmp.size(); i++) { // now add the untouched
       if(!done.contains(i)) {
         reduced.add(tmp[i]);
       }
@@ -394,7 +394,7 @@ SNode Expression::reduceSum(const SNode n) const {
 
   AddentArray tmp = reduced;
   reduced.clear();
-  for(int i = 0; i < tmp.size(); i++) {
+  for(size_t i = 0; i < tmp.size(); i++) {
     const SumElement           *e  = tmp[i];
     const ExpressionNode *n  = e->getNode();
     const ExpressionNode *n1 = changeFirstNegativeFactor(n);
@@ -410,7 +410,7 @@ SNode Expression::reduceSum(const SNode n) const {
   reduced.clear();
   Rational constantElements = 0;
   int constAdditionCount = 0;
-  for(int i = 0; i < tmp.size(); i++) { // then remove all rational constants, added together in constantElements
+  for(size_t i = 0; i < tmp.size(); i++) { // then remove all rational constants, added together in constantElements
     const SumElement           *e = tmp[i];
     const ExpressionNode *a = e->getNode();
     Rational r;
@@ -562,9 +562,9 @@ const SumElement *Expression::getCommonFactor(const SumElement &e1, const SumEle
   int signShiftCount = 0;
 
 StartSearch:
-  for(int i1 = 0; i1 < fl1.size(); i1++) {
+  for(size_t i1 = 0; i1 < fl1.size(); i1++) {
     const ExpressionFactor *factor1 = fl1[i1];
-    for(int i2 = 0; i2 < fl2.size(); i2++) {
+    for(size_t i2 = 0; i2 < fl2.size(); i2++) {
       const ExpressionFactor *factor2 = fl2[i2];
 
       if(treesEqual(factor1, factor2)) {
@@ -666,7 +666,7 @@ SNode Expression::changeFirstNegativeFactor(const SNode n) const {
       const ExpressionFactor *f0 = factorArray[0];
       if(f0->base()->isNegative() && f0->exponent()->isOdd()) {
         newFactorArray.add(minusC(f0->base()), f0->exponent());
-        for(int i = 1; i < factorArray.size(); i++) newFactorArray.add(factorArray[i]);
+        for(size_t i = 1; i < factorArray.size(); i++) newFactorArray.add(factorArray[i]);
         RETURNNODE( factorsToNode(newFactorArray) );
       }
     }
@@ -697,7 +697,7 @@ SNode Expression::reduceProduct(const SNode n) const {
   FactorArray unreducedFactors, nonConstantFactors, constantFactors;
   getFactors(unreducedFactors, n);
 
-  for(int i = 0; i < unreducedFactors.size(); i++) { // first remove all number factors, multiplied together in constantFactor
+  for(size_t i = 0; i < unreducedFactors.size(); i++) { // first remove all number factors, multiplied together in constantFactor
     const ExpressionFactor *f = unreducedFactors[i];
     if(!f->isConstant()) {
       nonConstantFactors.add(f); // contains non-constant factors
@@ -723,9 +723,9 @@ SNode Expression::reduceProduct(const SNode n) const {
       reduced.clear();
       done.setCapacity(tmp.size());
       done.clear();
-      for(int i1 = 1; i1 < tmp.size(); i1++) {
+      for(size_t i1 = 1; i1 < tmp.size(); i1++) {
         const ExpressionFactor *f1 = tmp[i1];
-        for(int i2 = 0; i2 < i1; i2++) {
+        for(size_t i2 = 0; i2 < i1; i2++) {
           if(done.contains(i1)) break;
           if(done.contains(i2)) continue;
           const ExpressionFactor *f2 = tmp[i2];
@@ -757,7 +757,7 @@ SNode Expression::reduceProduct(const SNode n) const {
           }
         }
       }
-      for(int i = 0; i < tmp.size(); i++) {
+      for(size_t i = 0; i < tmp.size(); i++) {
         if(!done.contains(i)) {
           reduced.add(tmp[i]);
         }
@@ -797,7 +797,7 @@ FactorArray &Expression::getFactors(FactorArray &result, const SNode n, const SN
     break;
   case PRODUCT:
     { const FactorArray &a = n.getFactorArray();
-      for(int i = 0; i < a.size(); i++) getFactors(result, a[i], exponent);
+      for(size_t i = 0; i < a.size(); i++) getFactors(result, a[i], exponent);
     }
     break;
   case POW :
@@ -876,7 +876,7 @@ FactorArray &Expression::multiplyExponents(FactorArray &result, const FactorArra
   Rational   exponentR                  = 1;
   const bool exponentIsRationalConstant = reducesToRationalConstant(exponent, &exponentR);
 
-  for(int i = 0; i < factors.size(); i++) {
+  for(size_t i = 0; i < factors.size(); i++) {
     const ExpressionFactor     *f  = factors[i];
     const SNode                 e  = f->exponent();
     Rational                    eR = 1;
@@ -953,7 +953,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
     const FactorArray tmp = reduced;
     reduced.clear();
     BitSet done(tmp.size());
-    for(int i1 = 1; i1 < tmp.size(); i1++) {
+    for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
       const ExpressionFactor     *f1                   = tmp[i1];
       const ExpressionNode *base1                = f1->base();
@@ -963,7 +963,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
       const bool                  e1IsRationalConstant = reducesToRationalConstant(expo1, &E1R);
       const ExpressionNode *reducedBase1         = b1IsRationalConstant ? numberExpression(B1R) : base1;
 
-      for(int i2 = 0; i2 < i1; i2++) {
+      for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
         const ExpressionFactor     *f2                   = tmp[i2];
@@ -999,7 +999,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
         }
       }
     }
-    for(int i = 0; i < tmp.size(); i++) {
+    for(size_t i = 0; i < tmp.size(); i++) {
       if(!done.contains(i)) {
         reduced.add(tmp[i]);
       }
@@ -1012,7 +1012,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
   Rational    rationalPart = 1;
   FactorArray fa;
 
-  for(int i = 0; i < reduced.size(); i++) {
+  for(size_t i = 0; i < reduced.size(); i++) {
     const ExpressionFactor *f = reduced[i];
     Rational r;
     if(reducesToRationalConstant(f, &r)) {
@@ -1154,7 +1154,7 @@ bool Expression::reducesToRational(const SNode n, Rational *r) const {
   case SUM            :
     { const AddentArray &a = n.getAddentArray();
       Rational sum = 0, tmp, *tmpp = r ? &tmp : NULL;
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const SumElement *e = a[i];
         if(!reducesToRational(e->getNode(), tmpp)) {
           RETURNBOOL( false );
@@ -1170,7 +1170,7 @@ bool Expression::reducesToRational(const SNode n, Rational *r) const {
   case PRODUCT        :
     { const FactorArray &a = n.getFactorArray();
       Rational product = 1, tmp, *tmpp = r ? &tmp : NULL;
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         if(!reducesToRational(a[i], tmpp)) {
           RETURNBOOL( false );
         }
@@ -1239,7 +1239,7 @@ SNode Expression::multiplyParenthesesInSum(const SNode n) const {
 
   const AddentArray &a = n.getAddentArray();
   AddentArray        newAddentArray(a.size());
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const SumElement *e = a[i];
     newAddentArray.add(multiplyParentheses(e->getNode()), e->isPositive());
   }
@@ -1253,7 +1253,7 @@ SNode Expression::multiplyParenthesesInProduct(const SNode n) const {
 
   const FactorArray &a = n.getFactorArray();
   FactorArray        newFactorArray;
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const ExpressionFactor *f = a[i];
     newFactorArray.add(multiplyParentheses(f->base()), multiplyParentheses(f->exponent()));
   }
@@ -1264,13 +1264,13 @@ SNode Expression::multiplyParenthesesInProduct(const SNode n) const {
     newFactorArray.clear();
     done.setCapacity(tmp.size() + 1);
     done.clear();
-    for(int i1 = 1; i1 < tmp.size(); i1++) {
+    for(size_t i1 = 1; i1 < tmp.size(); i1++) {
       if(done.contains(i1)) continue;
       const ExpressionFactor *f1 = tmp[i1];
       if((f1->base()->getSymbol() == SUM) && !f1->exponent()->isOne()) {
         continue;
       }
-      for(int i2 = 0; i2 < i1; i2++) {
+      for(size_t i2 = 0; i2 < i1; i2++) {
         if(done.contains(i1)) break;
         if(done.contains(i2)) continue;
         const ExpressionFactor *f2 = tmp[i2];
@@ -1288,7 +1288,7 @@ SNode Expression::multiplyParenthesesInProduct(const SNode n) const {
         }
       }
     }
-    for(int i = 0; i < tmp.size(); i++) {
+    for(size_t i = 0; i < tmp.size(); i++) {
       if(!done.contains(i)) {
         newFactorArray.add(tmp[i]);
       }
@@ -1305,7 +1305,7 @@ SNode Expression::multiplyParenthesesInPoly(const SNode n) const {
   SNode                      newArg  = multiplyParentheses(n.getArgument());
 
   ExpressionNodeArray newCoef(coef.size());
-  for(int i = 0; i < coef.size(); i++) {
+  for(size_t i = 0; i < coef.size(); i++) {
     newCoef.add(multiplyParentheses(coef[i]));
   }
   SNode result = getPoly(n, newCoef, newArg);
@@ -1321,7 +1321,7 @@ SNode Expression::multiply(const ExpressionFactor *a, const ExpressionNodeSum *s
   } else {
     AddentArray        tmp;
     const AddentArray &sa = s->getAddentArray();
-    for(int i = 0; i < sa.size(); i++) {
+    for(size_t i = 0; i < sa.size(); i++) {
       const SumElement *e = sa[i];
       tmp.add(productC(a, e->getNode()),e->isPositive());
     }
@@ -1335,7 +1335,7 @@ SNode Expression::multiplyTreeNode(const SNode n) const {
 
   const ExpressionNodeArray &a = n.getChildArray();
   ExpressionNodeArray newChildArray(a.size());
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(multiplyParentheses(a[i]));
   }
   SNode result = getTree(n, newChildArray);
@@ -1454,7 +1454,7 @@ SNode Expression::reducePolynomial(const SNode n) const {
 
   SExprList newCoefficients;
   bool leadingCoef = true;
-  for(int i = 0; i < coefficients.size(); i++) {
+  for(size_t i = 0; i < coefficients.size(); i++) {
     const SNode &coef = coefficients[i];
     if(!coef.isConstant()) {     // coef not constant
       newCoefficients.add(reduceRealExp(coef));
@@ -1506,7 +1506,7 @@ SNode Expression::reduceTreeNode(const SNode n) const {
   default:
     { const ExpressionNodeArray &a = n.getChildArray();
       ExpressionNodeArray newChildArray(a.size());
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         newChildArray.add(reduceRealExp(a[i]));
       }
       SNode result = getTree(n, newChildArray);

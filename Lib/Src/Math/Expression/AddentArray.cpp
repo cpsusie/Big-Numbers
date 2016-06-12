@@ -14,7 +14,7 @@ void AddentArray::add(const ExpressionNode *n, bool positive) {
       addAll(n->getAddentArray());
     } else {
       const AddentArray &a = n->getAddentArray();
-      for(int i = 0; i < a.size(); i++) {
+      for(size_t i = 0; i < a.size(); i++) {
         const SumElement *e = a[i];
         add(e->getNode(), !e->isPositive());
       }
@@ -31,7 +31,7 @@ String AddentArray::toString() const {
     return _T("0");
   }
   String result = (*this)[0]->toString();
-  for(int i = 1; i < size(); i++) {
+  for(size_t i = 1; i < size(); i++) {
     const SumElement *e = (*this)[i];
     result += e->isPositive() ? _T("+") : _T("-");
     result += e->getNode()->toString();

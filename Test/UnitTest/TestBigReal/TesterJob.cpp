@@ -88,7 +88,7 @@ void TesterJob::releaseAll() { // static
     AbstractFunctionTest *test = s_doneQueue.get();
     delete test;
   }
-  for(int i = 0; i < s_testerJobs.size(); i++) {
+  for(size_t i = 0; i < s_testerJobs.size(); i++) {
     delete s_testerJobs[i];
   }
   s_testerJobs.clear();
@@ -102,7 +102,7 @@ void TesterJob::shuffleTestOrder() { // static
     testArray.add(s_testQueue.get());
   }
   testArray.shuffle();
-  for(int i = 0; i < testArray.size(); i++) {
+  for(size_t i = 0; i < testArray.size(); i++) {
     s_testQueue.put(testArray[i]);
   }
   testArray.clear();

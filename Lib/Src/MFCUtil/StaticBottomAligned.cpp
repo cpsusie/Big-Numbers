@@ -85,7 +85,7 @@ void CStaticBottomAligned::repaint(CDC &dc) {
   int y = topPos;
   switch(textAlign) {
   case SS_LEFT:
-    { for(int i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
+    { for(size_t i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(0, y, line.cstr());
@@ -94,7 +94,7 @@ void CStaticBottomAligned::repaint(CDC &dc) {
     }
     break;
   case SS_RIGHT:
-    { for(int i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
+    { for(size_t i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(max(0, clientSize.cx - lineSize.cx), y, line.cstr());
@@ -103,7 +103,7 @@ void CStaticBottomAligned::repaint(CDC &dc) {
     }
     break;
   case SS_CENTER:
-    { for(int i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
+    { for(size_t i = 0; (i < lineArray.size()) && (y < clientSize.cy); i++) {
         const String &line = lineArray[i];
         const CSize lineSize = getTextExtent(dc, line);
         dc.TextOut(max(0, (clientSize.cx - lineSize.cx)/2), y, line.cstr());

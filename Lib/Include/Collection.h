@@ -11,7 +11,7 @@ public:
   virtual bool contains(const void *e) const = 0;
   virtual const void *select() const = 0;
   virtual void *select() = 0;
-  virtual int size() const = 0;
+  virtual size_t size() const = 0;
   virtual void clear() = 0;
   virtual AbstractCollection *clone(bool cloneData) const = 0;
   virtual AbstractIterator *getIterator() = 0;
@@ -63,8 +63,8 @@ public:
     return *(T*)m_collection->select();
   }
 
-  Collection<T> getRandomSample(unsigned int k) const {
-    if(k > (unsigned int)size()) {
+  Collection<T> getRandomSample(size_t k) const {
+    if(k > size()) {
       throwInvalidArgumentException(_T("getRandomSample"), _T("k(=%u) > size(=%d)"), k, size());
     }
     CompactArray<const T*> tmp;
@@ -74,22 +74,22 @@ public:
       tmp.add(&it.next());
     }
     if(k > 0) {
-      for(int i = k+1; it.hasNext(); i++) {
-        const unsigned int j = randInt(i);
-        const T           &e = it.next();
+      for(size_t i = k+1; it.hasNext(); i++) {
+        const size_t j = randSizet(i);
+        const T     &e = it.next();
         if(j < k) {
           tmp[j] = &e;
         }
       }
     }
     Collection<T> result(m_collection->clone(false));
-    for(int i = 0; i < (int)k; i++) {
+    for(size_t i = 0; i < k; i++) {
       result.add(*tmp[i]);
     }
     return result;
   }
 
-  int size() const {
+  size_t size() const {
     return m_collection->size();
   }
 
@@ -158,13 +158,13 @@ public:
 
   bool operator==(const Collection<T> &c) const {
     if(this == &c) return true;
-    const int n = size();
+    const size_t n = size();
     if(n != c.size()) {
       return false;
     }
     Iterator<T> it1 = ((Collection<T>&)*this).getIterator();
     Iterator<T> it2 = ((Collection<T>&)c).getIterator();
-    int count = 0;
+    size_t count = 0;
     while(it1.hasNext() && it2.hasNext()) {
       const T &e1 = it1.next();
       const T &e2 = it2.next();
@@ -187,8 +187,8 @@ public:
   }
 
   void save(ByteOutputStream &s) const {
-    const int esize = sizeof(T);
-    const int n     = size();
+    const int    esize = sizeof(T);
+    const size_t n     = size();
     Packer header;
     header << esize << n;
     header.write(s);
@@ -201,7 +201,8 @@ public:
 
   void load(ByteInputStream &s) {
     Packer header;
-    int esize, size;
+    int esize;
+    size_t size;
     if(!header.read(s)) {
       throwException("Collection.load:Couldn't read header");
     }
@@ -210,7 +211,7 @@ public:
       throwException(_T("Collection.load:Invalid element size:%d bytes. Expected %d bytes"), esize, sizeof(T));
     }
     clear();
-    for(int i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
       Packer p;
       if(!p.read(s)) {
         throwException(_T("Collection.load:Unexpected eos. Expected %d elements. got %d"), size, i);
@@ -222,7 +223,7 @@ public:
   }
 
   friend Packer &operator<<(Packer &p, const Collection<T> &c) {
-    const int size = c.size();
+    const size_t size = c.size();
     p << size;
     for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
       const T &e = it.next();
@@ -232,9 +233,9 @@ public:
   }
 
   friend Packer &operator>>(Packer &p, Collection<T> &c) {
-    int size;
+    size_t size;
     p >> size;
-    for(int i = 0; i < size; i++) {
+    for(size_t i = 0; i < size; i++) {
       T e;
       p >> e;
       c.add(e);

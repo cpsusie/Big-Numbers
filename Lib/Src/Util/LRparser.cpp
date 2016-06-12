@@ -203,7 +203,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
     bool gotptoken;
     m_pos = m_scanner->getPreviousPos();
     if(m_text = (TCHAR*)m_scanner->getPreviousText()) {
-      m_textLength = m_scanner->getPreviousLength();
+      m_textLength = (int)m_scanner->getPreviousLength();
       termchar     = m_text[m_textLength];
       m_text[m_textLength] = 0;
       gotptoken    = true;

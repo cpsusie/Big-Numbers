@@ -42,7 +42,7 @@ String CallCounter::mapToString() {
   }
   entryArray.sort(callEntryCmp);
 
-  const int n = entryArray.size();
+  const int n = (int)entryArray.size();
   String result;
   for(int i = 0; i < n; i++) {
     const CallEntry &e = entryArray[i];

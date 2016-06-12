@@ -45,7 +45,7 @@ protected:
   virtual HashSetNode *cloneNode(HashSetNode *n) const;
   virtual void deleteNode(HashSetNode *n) const;
 public:
-  HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, unsigned long capacity);
+  HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
   virtual ~HashMapImpl();
   bool put(const void *key, void *value);
   bool put(const void *key, const void *value);
@@ -55,7 +55,7 @@ public:
   AbstractEntry *selectEntry() const;
   const AbstractEntry *getMinEntry() const;
   const AbstractEntry *getMaxEntry() const;
-  int size() const;
+  size_t size() const;
   void clear();
   bool hasOrder() const {
     return HashSetImpl::hasOrder();
@@ -79,15 +79,15 @@ public:
 
 template <class K, class V> class HashMap : public Map<K, V> {
 public:
-  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K &key1, const K &key2), unsigned long capacity = 31)
+  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K &key1, const K &key2), size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, FunctionComparator<K>(comparator), capacity))
   {
   }
-  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K *key1, const K *key2), unsigned long capacity = 31)
+  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K *key1, const K *key2), size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, FunctionComparator<K>(comparator), capacity))
   {
   }
-  HashMap(unsigned long (*hash)(const K &key), Comparator<K> &comparator, unsigned long capacity = 31)
+  HashMap(unsigned long (*hash)(const K &key), Comparator<K> &comparator, size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, comparator, capacity))
   {
   }
@@ -97,7 +97,7 @@ public:
   CompactIntArray getLength() const {
     return ((HashMapImpl*)m_map)->getLength();
   }
-  int getCapacity() const {
+  size_t getCapacity() const {
     return ((HashMapImpl*)m_map)->getCapacity();
   }
   int getMaxChainLength() const {
@@ -107,84 +107,84 @@ public:
 
 template <class T> class ShortHashMap      : public HashMap<short, T> {
 public:
-  ShortHashMap(unsigned long capacity=31)  : HashMap<short, T>(shortHash, shortHashCmp, capacity) {
+  ShortHashMap(size_t capacity=31)  : HashMap<short, T>(shortHash, shortHashCmp, capacity) {
   }
 };
 
 template <class T> class UShortHashMap     : public HashMap<unsigned short, T> {
 public:
-  UShortHashMap(unsigned long capacity=31) : HashMap<unsigned short, T>(ushortHash, ushortHashCmp, capacity) {
+  UShortHashMap(size_t capacity=31) : HashMap<unsigned short, T>(ushortHash, ushortHashCmp, capacity) {
   }
 };
 
 template <class T> class IntHashMap        : public HashMap<int, T> {
 public:
-  IntHashMap(unsigned long capacity=31)    : HashMap<int, T>(intHash, intHashCmp, capacity) {
+  IntHashMap(size_t capacity=31)    : HashMap<int, T>(intHash, intHashCmp, capacity) {
   }
 };
 
 template <class T> class UIntHashMap       : public HashMap<unsigned int, T> {
 public:
-  UIntHashMap(unsigned long capacity=31)   : HashMap<unsigned int, T>(uintHash, uintHashCmp, capacity) {
+  UIntHashMap(size_t capacity=31)   : HashMap<unsigned int, T>(uintHash, uintHashCmp, capacity) {
   }
 };
 
 template <class T> class LongHashMap       : public HashMap<long, T> {
 public:
-  LongHashMap(unsigned long capacity=31)   : HashMap<long, T>(longHash, longHashCmp, capacity) {
+  LongHashMap(size_t capacity=31)   : HashMap<long, T>(longHash, longHashCmp, capacity) {
   }
 };
 
 template <class T> class ULongHashMap      : public HashMap<unsigned long, T> {
 public:
-  ULongHashMap(unsigned long capacity=31)  : HashMap<unsigned long, T>(ulongHash, ulongHashCmp, capacity) {
+  ULongHashMap(size_t capacity=31)  : HashMap<unsigned long, T>(ulongHash, ulongHashCmp, capacity) {
   }
 };
 
 template <class T> class Int64HashMap      : public HashMap<__int64, T> {
 public:
-  Int64HashMap(unsigned long capacity=31)  : HashMap<__int64, T>(int64Hash, int64HashCmp, capacity) {
+  Int64HashMap(size_t capacity=31)  : HashMap<__int64, T>(int64Hash, int64HashCmp, capacity) {
   }
 };
 
 template <class T> class UInt64HashMap     : public HashMap<unsigned __int64, T> {
 public:
-  UInt64HashMap(unsigned long capacity=31) : HashMap<unsigned __int64, T>(uint64Hash, uint64HashCmp, capacity) {
+  UInt64HashMap(size_t capacity=31) : HashMap<unsigned __int64, T>(uint64Hash, uint64HashCmp, capacity) {
   }
 };
 
 template <class T> class FloatHashMap      : public HashMap<float, T> {
 public:
-  FloatHashMap(unsigned long capacity=31)  : HashMap<float, T>(floatHash, floatHashCmp, capacity) {
+  FloatHashMap(size_t capacity=31)  : HashMap<float, T>(floatHash, floatHashCmp, capacity) {
   }
 };
 
 template <class T> class DoubleHashMap      : public HashMap<double, T> {
 public:
-  DoubleHashMap(unsigned long capacity=31)  : HashMap<double, T>(doubleHash, doubleHashCmp, capacity) {
+  DoubleHashMap(size_t capacity=31)  : HashMap<double, T>(doubleHash, doubleHashCmp, capacity) {
   }
 };
 
 template <class T> class StrHashMap        : public HashMap<const TCHAR*, T> {
 public:
-  StrHashMap(unsigned long capacity=31)    : HashMap<const TCHAR*, T>(strHash, strHashCmp, capacity) {
+  StrHashMap(size_t capacity=31)    : HashMap<const TCHAR*, T>(strHash, strHashCmp, capacity) {
   }
 };
 
 template <class T> class StrIHashMap       : public HashMap<const TCHAR*, T> {
 public:
-  StrIHashMap(unsigned long capacity=31)   : HashMap<const TCHAR*, T>(striHash, striHashCmp, capacity) {
+  StrIHashMap(size_t capacity=31)   : HashMap<const TCHAR*, T>(striHash, striHashCmp, capacity) {
   }
 };
 
 template <class T> class StringHashMap     : public HashMap<String, T> {
 public:
-  StringHashMap(unsigned long capacity=31) : HashMap<String, T>(stringHash, stringHashCmp, capacity) {
+  StringHashMap(size_t capacity=31) : HashMap<String, T>(stringHash, stringHashCmp, capacity) {
   }
 };
 
 template <class T> class StringIHashMap    : public HashMap<String, T> {
 public:
-  StringIHashMap(unsigned long capacity=31): HashMap<String, T>(stringiHash, stringiHashCmp, capacity) {
+  StringIHashMap(size_t capacity=31): HashMap<String, T>(stringiHash, stringiHashCmp, capacity) {
   }
 };

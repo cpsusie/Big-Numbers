@@ -23,7 +23,7 @@ public:
   }
   const void *select() const;
   void *select();
-  int size() const {
+  size_t size() const {
     return m_map->size();
   }
   void clear() {
@@ -91,7 +91,7 @@ public:
   const void *select() const;
   void *select();
 
-  int size() const {
+  size_t size() const {
     return m_map->size();
   }
   void clear() {
@@ -157,7 +157,7 @@ public:
   const void *select() const;
   void *select();
 
-  int size() const {
+  size_t size() const {
     return m_map->size();
   }
   void clear() {

@@ -28,8 +28,8 @@ private:
   ListNodePage          *m_firstPage;
   ListNode              *m_freeList;
   ListNode              *m_first, *m_last;
-  unsigned int           m_size;
-  unsigned long          m_updateCount;
+  size_t                 m_size;
+  size_t                 m_updateCount;
 
   inline void allocatePage() { // m_freeList is always NULL when this is called
     m_firstPage = new ListNodePage(m_firstPage);
@@ -50,9 +50,9 @@ private:
   void init(AbstractObjectManager &objectManager);
   ListNode *createNode(const void *e);
   void deleteNode(ListNode *n);
-  const ListNode *findNode(unsigned int index) const;
+  const ListNode *findNode(size_t index) const;
   void removeNode(ListNode *n);
-  void throwOutOfRangeException(const TCHAR *method, unsigned int index) const;
+  void throwOutOfRangeException(const TCHAR *method, size_t index) const;
   friend class ListIterator;
 public:
   ListImpl(AbstractObjectManager &objectManager);
@@ -60,8 +60,8 @@ public:
   AbstractCollection *clone(bool cloneData) const;
   ListImpl &operator=(const ListImpl &src);
   bool add(const void *e);
-  bool add(unsigned int i, const void *e);
-  void removeIndex(unsigned int i);
+  bool add(size_t i, const void *e);
+  void removeIndex(size_t i);
   bool remove(const void *e);
   void removeFirst();
   void removeLast();
@@ -69,11 +69,11 @@ public:
   const void *select() const ;
   void *select();
   void clear();
-  int size() const {
+  size_t size() const {
     return m_size;
   }
-        void *getElement(unsigned int index);
-  const void *getElement(unsigned int index) const;
+        void *getElement(size_t index);
+  const void *getElement(size_t index) const;
         void *first();
   const void *first() const;
         void *last();
@@ -100,11 +100,11 @@ public:
     return *this;
   }
 
-  inline T &operator[](unsigned int i) {
+  inline T &operator[](size_t i) {
     return *(T*)(((ListImpl*)m_collection)->getElement(i));
   }
 
-  inline const T &operator[](unsigned int i) const {
+  inline const T &operator[](size_t i) const {
     return *(T*)(((ListImpl*)m_collection)->getElement(i));
   }
 
@@ -146,7 +146,7 @@ public:
     return !(operator==(rhs));
   }
 
-  bool add(unsigned int i, const T &e) {
+  bool add(size_t i, const T &e) {
     return ((ListImpl*)m_collection)->add(i, &e);
   }
 
@@ -165,7 +165,7 @@ public:
   }
 
 
-  bool removeIndex(unsigned int i) {
+  bool removeIndex(size_t i) {
     ((ListImpl*)m_collection)->removeIndex(i);
     return true;
   }

@@ -11,12 +11,12 @@ extern const TCHAR *_compactArrayClassName;
 
 template <class T> class CompactArray {
 private:
-  unsigned int  m_capacity;
-  unsigned int  m_size;
-  unsigned long m_updateCount;
-  T            *m_array;
+  size_t  m_capacity;
+  size_t  m_size;
+  size_t  m_updateCount;
+  T      *m_array;
 
-  void indexError(unsigned int index, const TCHAR *label=_T("")) const {
+  void indexError(size_t index, const TCHAR *label=_T("")) const {
     throwException(_T("%s:%sIndex %lu out of range. size=%lu"), _compactArrayClassName, label, index, m_size);
   }
 
@@ -24,19 +24,19 @@ private:
     throwException(_T("%s:Cannot select from empty array"), _compactArrayClassName);
   }
 
-  int getSortCount(int from, int count) const {
-    const int length = size() - from;
-    return min(count, length);
+  size_t getSortCount(size_t from, size_t count) const {
+    const intptr_t length = size() - from;
+    return min((intptr_t)count, length);
   }
 
-  void init(unsigned int capacity, unsigned int size) {
+  void init(size_t capacity, size_t size) {
     m_size        = size;
     m_updateCount = 0;
     m_capacity    = capacity;
     m_array       = m_capacity ? new T[m_capacity] : NULL;
   }
 
-  void setCapacityNoCopy(unsigned int capacity) {
+  void setCapacityNoCopy(size_t capacity) {
     if(capacity == m_capacity) return;
     if(m_array) {
       delete[] m_array;
@@ -50,7 +50,7 @@ public:
     init(0, 0);
   }
   
-  explicit CompactArray(unsigned int capacity) {
+  explicit CompactArray(size_t capacity) {
     init(capacity, 0);
   }
 
@@ -80,7 +80,7 @@ public:
     }
   }
   
-  void setCapacity(unsigned int capacity) {
+  void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
@@ -95,41 +95,41 @@ public:
     m_capacity = capacity;
   }
 
-  inline unsigned int getCapacity() const {
+  inline size_t getCapacity() const {
     return m_capacity;
   }
 
-  inline T &operator[](unsigned int index) {
+  inline T &operator[](size_t index) {
     if(index >= m_size) indexError(index, _T("operator[]"));
     return m_array[index];
   }
 
-  inline const T &operator[](unsigned int index) const {
+  inline const T &operator[](size_t index) const {
     if(index >= m_size) indexError(index, _T("operator[]"));
     return m_array[index];
   }
   
   inline const T &select() const {
     if(m_size == 0) selectError();
-    return m_array[randInt() % m_size];
+    return m_array[randSizet() % m_size];
   }
 
   inline T &select() {
     if(m_size == 0) selectError();
-    return m_array[randInt() % m_size];
+    return m_array[randSizet() % m_size];
   }
 
-  CompactArray<T> getRandomSample(unsigned int k) const {
+  CompactArray<T> getRandomSample(size_t k) const {
     if(k > m_size) {
       throwInvalidArgumentException(_T("getRandomSample"), _T("k(=%u) > size(=%u)"), k, m_size);
     }
     CompactArray<T> result(k);
-    for(unsigned int i = 0; i < k; i++) {
+    for(size_t i = 0; i < k; i++) {
       result.add(m_array[i]);
     }
     if(k > 0) {
-      for(unsigned int i = k; i < m_size; i++) {
-        const unsigned int j = randInt(i+1);
+      for(size_t i = k; i < m_size; i++) {
+        const size_t j = randSizet(i+1);
         if(j < k) {
           result[j] = m_array[i];
         }
@@ -162,7 +162,7 @@ public:
     return getFirstIndex(e) >= 0;
   }
 
-  int getFirstIndex(const T &e) const {
+  intptr_t getFirstIndex(const T &e) const {
     if(m_size == 0) {
       return -1;
     }
@@ -182,10 +182,10 @@ public:
     m_updateCount++;
   }
 
-  void add(unsigned int index, const T &e, unsigned int count = 1) {
+  void add(size_t index, const T &e, size_t count = 1) {
     if(index > m_size) indexError(index, _T("add"));
     if(count == 0) return;
-    const unsigned int newSize = m_size + count;
+    const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
       setCapacity(2*(newSize) + 5);
     }
@@ -199,10 +199,10 @@ public:
     m_updateCount++;
   }
 
-  void add(unsigned int index, const T *ep, unsigned int count) {
+  void add(size_t index, const T *ep, size_t count) {
     if(index > m_size) indexError(index, _T("add"));
     if(count == 0) return;
-    const unsigned int newSize = m_size + count;
+    const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
       setCapacity(2*(newSize) + 5);
     }
@@ -216,7 +216,7 @@ public:
     m_updateCount++;
   }
 
-  void append(const T *ep, unsigned int count) {
+  void append(const T *ep, size_t count) {
     add(size(), ep, count);
   }
 
@@ -224,7 +224,7 @@ public:
     if(src.isEmpty()) {
       return false;
     }
-    const unsigned int newSize = m_size + src.m_size;
+    const size_t newSize = m_size + src.m_size;
     if(newSize > m_capacity) {
       setCapacity(2*(newSize) + 5);
     }
@@ -234,11 +234,11 @@ public:
     return true;
   }
 
-  void remove(unsigned int index, unsigned int count = 1) {
+  void remove(size_t index, size_t count = 1) {
     if(count == 0) {
       return;
     }
-    const unsigned int j = index+count;
+    const size_t j = index+count;
     if(j > m_size) indexError(j, format(_T("remove(%lu,%lu):"), index, count).cstr());
     if(j < m_size) {
       memmove(m_array+index, m_array+j, (m_size-j) * sizeof(T));
@@ -255,7 +255,7 @@ public:
     remove(m_size-1);
   }
 
-  CompactArray<T> &swap(unsigned int i1, unsigned int i2) {
+  CompactArray<T> &swap(size_t i1, size_t i2) {
     if(i1 >= m_size) indexError(i1, _T("swap"));
     if(i2 >= m_size) indexError(i2, _T("swap"));
     const T tmp = m_array[i1];
@@ -265,13 +265,13 @@ public:
     return *this;
   }
 
-  CompactArray<T> &shuffle(unsigned int from, unsigned int count) {
-    if(from >= (unsigned int)size()) {
+  CompactArray<T> &shuffle(size_t from, size_t count) {
+    if(from >= (size_t)size()) {
       return *this;
     }
     if((count = getSortCount(from, count)) > 1) {
-      for(unsigned int i = 0; i < count; i++ ) {
-        swap(from + i, from + randInt() % count);
+      for(size_t i = 0; i < count; i++ ) {
+        swap(from + i, from + randSizet() % count);
       }
     }
     m_updateCount++;
@@ -284,7 +284,7 @@ public:
   };
 
 private:
-  bool permuter(int n, PermutationHandler &handler) {
+  bool permuter(size_t n, PermutationHandler &handler) {
     if(n <= 1) {
       return handler.handlePermutation(*this);
     } else {
@@ -292,7 +292,7 @@ private:
       if(!permuter(n, handler)) {
         return false;
       }
-      for(int i = 0; i < n; i++) {
+      for(size_t i = 0; i < n; i++) {
         swap(i, n);
         if(!permuter(n, handler)) {
           return false;
@@ -312,7 +312,7 @@ public:
     return permuter(size(), handler);
   }
 
-  CompactArray<T> &clear(int capacity=0) { // if capacity < 0, it's left unchanged
+  CompactArray<T> &clear(intptr_t capacity=0) { // if capacity < 0, it's left unchanged
     if(m_size != 0) {
       m_updateCount++;
     }
@@ -323,8 +323,8 @@ public:
     return *this;
   }
 
-  CompactArray<T> &sort(unsigned int from, unsigned int count, Comparator<T> &cmp) {
-    if(from >= (unsigned int)size()) {
+  CompactArray<T> &sort(size_t from, size_t count, Comparator<T> &cmp) {
+    if(from >= (size_t)size()) {
       return *this;
     }
     if((count = getSortCount(from, count)) > 1) {
@@ -338,7 +338,7 @@ public:
     return sort(0, size(), cmp);
   }
 
-  CompactArray<T> &sort(unsigned int from, unsigned int count, int (*cmp)(const T &e1, const T &e2)) {
+  CompactArray<T> &sort(size_t from, size_t count, int (*cmp)(const T &e1, const T &e2)) {
     return sort(from, count, FunctionComparator<T>(cmp));
   }
 
@@ -347,10 +347,10 @@ public:
   }
     
   // Return index i so a[i] == key. If none exist, return -1
-  int binarySearch(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
-    int l = 0, r = m_size-1;
+  intptr_t binarySearch(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
+    intptr_t l = 0, r = m_size-1;
     while(l <= r) {
-      const int m = (l + r) / 2;
+      const intptr_t m = (l + r) / 2;
       const int c = cmp.compare(m_array[m], key);
       if(c < 0) {
         l = m + 1;
@@ -363,15 +363,15 @@ public:
     return -1;
   }
 
-  int binarySearch(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
+  intptr_t binarySearch(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
     return binarySearch(key, FunctionComparator<T>(cmp));
   }
 
   // Return largest index i so a[i] <= key. If none exist, return -1
-  int binarySearchLE(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
-    int l = 0, r = m_size;
+  intptr_t binarySearchLE(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
+    intptr_t l = 0, r = m_size;
     while(l < r) {
-      const int m = (l + r) / 2;
+      const intptr_t m = (l + r) / 2;
       if(cmp.compare(m_array[m], key) <= 0) {
         l = m + 1;
       } else {
@@ -381,15 +381,15 @@ public:
     return r - 1;
   }
 
-  int binarySearchLE(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
+  intptr_t binarySearchLE(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
     return binarySearchLE(key, FunctionComparator<T>(cmp));
   }
 
   // Return smallest index i so a[i] >= key. If none exist, return size
-  int binarySearchGE(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
-    int l = 0, r = m_size;
+  intptr_t binarySearchGE(const T &key, Comparator<T> &cmp) const { // Assume array is sorted
+    intptr_t l = 0, r = m_size;
     while(l < r) {
-      const int m = (l + r) / 2;
+      const intptr_t m = (l + r) / 2;
       if(cmp.compare(m_array[m], key) < 0) {
         l = m + 1;
       } else {
@@ -399,12 +399,12 @@ public:
     return r;
   }
 
-  int binarySearchGE(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
+  intptr_t binarySearchGE(const T &key, int (*cmp)(const T &e1, const T &e2)) const { // Assume array is sorted
     return binarySearchGE(key, FunctionComparator<T>(cmp));
   }
 
   bool operator==(const CompactArray<T> &a) const {
-    int count = size();
+    size_t count = size();
     if(count != a.size()) {
       return false;
     }
@@ -421,7 +421,8 @@ public:
   }
 
   unsigned long hashCode() const {
-    unsigned long sum = 0, count = size();
+    unsigned long sum = 0;
+    size_t count = size();
     for(const T *p = m_array; count--;) {
       sum = sum * 31 + (p++)->hashCode();
     }
@@ -432,7 +433,7 @@ public:
     return m_size == 0;;
   };
 
-  inline int size() const {
+  inline size_t size() const {
     return m_size;
   }
 
@@ -449,7 +450,7 @@ public:
 
   void load(ByteInputStream &s) {
     clear();
-    unsigned int size;
+    size_t size;
     s.getBytesForced((BYTE*)&size, sizeof(size));
     setCapacity(size);
     if(size) {
@@ -462,7 +463,7 @@ public:
     const unsigned int elemSize = sizeof(T);
     p << elemSize << s.m_size;
     const T *q = s.m_array;
-    for(int i = s.m_size; i--;) {
+    for(size_t i = s.m_size; i--;) {
       p << *(q++);
     }
     return p;
@@ -474,11 +475,11 @@ public:
     if(elemSize != sizeof(T)) {
       throwException(_T("Invalid element size:%d bytes. Expected %d bytes"), elemSize, sizeof(T));
     }
-    unsigned int size;
+    size_t size;
     s.clear();
     p >> size;
     s.setCapacity(size);
-    for(int i = size; i--;) {
+    for(size_t i = size; i--;) {
       T e;
       p >> e;
       s.add(e);
@@ -491,8 +492,8 @@ public:
     if(m_size) {
       const T *p = m_array;
       result += (p++)->toString();
-      for(int i = m_size-1; i--;) {
-        result += ",";
+      for(size_t i = m_size-1; i--;) {
+        result += _T(",");
         result += (p++)->toString();
       }
     }
@@ -505,8 +506,8 @@ public:
     if(m_size) {
       const T *p = m_array;
       result += ::toString(*(p++));
-      for(int i = m_size-1; i--;) {
-        result += ",";
+      for(size_t i = m_size-1; i--;) {
+        result += _T(",");
         result += ::toString(*(p++));
       }
     }
@@ -514,16 +515,16 @@ public:
     return result;
   }
 
-  inline unsigned long getUpdateCount() const {
+  inline size_t getUpdateCount() const {
     return m_updateCount;
   }
 
   class CompactArrayIterator : public AbstractIterator {
   private:
     CompactArray<T> &m_a;
-    int              m_next;
-    int              m_current;
-    unsigned long    m_updateCount;
+    size_t           m_next;
+    intptr_t         m_current;
+    size_t           m_updateCount;
     void checkUpdateCount() const {
       if(m_updateCount != m_a.getUpdateCount()) {
         concurrentModificationError(_compactArrayIteratorClassName);
@@ -581,9 +582,9 @@ template <class T> class CompactFileArray {
 private:
   mutable ByteInputFile  m_f;
   const unsigned __int64 m_dataStartOffset;
-  unsigned int           m_size;
+  size_t                 m_size;
 
-  void indexError(unsigned int index, const TCHAR *label=_T("")) const {
+  void indexError(size_t index, const TCHAR *label=_T("")) const {
     throwException(_T("CompactArray::%sIndex %lu out of range. Size=%lu, elementSize:%d")
                   ,label, index, m_size, sizeof(T));
   }
@@ -604,11 +605,11 @@ public:
     return *this;
   }
 
-  inline unsigned int size() const {
+  inline size_t size() const {
     return m_size;
   }
 
-  T operator[](unsigned int index) const {
+  T operator[](size_t index) const {
     if(index >= m_size) indexError(index, _T("operator[]"));
 
     m_f.seek(m_dataStartOffset + index * sizeof(T));

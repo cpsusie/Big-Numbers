@@ -40,7 +40,7 @@ namespace TestStringPool {
       for (int i = 0; i < 10000; i++) {
         offsets.add(sp.addString(generateTestString(i).cstr()));
       }
-      for (int i = 0; i < offsets.size(); i++) {
+      for (size_t i = 0; i < offsets.size(); i++) {
         const TCHAR *str = sp.getString(offsets[i]);
         verify(generateTestString(i) == str);
       }
@@ -49,7 +49,7 @@ namespace TestStringPool {
       verify(sp.getIndexCapacity() == 0);
       verify(sp.getTextCapacity() >= (unsigned int)offsets.last());
 
-      for (int i = 0; i < offsets.size(); i++) {
+      for (size_t i = 0; i < offsets.size(); i++) {
         const TCHAR *str = sp.getString(offsets[i]);
         verify(generateTestString(i) == str);
       }
@@ -87,7 +87,7 @@ namespace TestStringPool {
         str1Array.add(s);
       }
 
-      for (int i = 0; i < offsets.size(); i++) {
+      for (size_t i = 0; i < offsets.size(); i++) {
         str2Array.add(loaded.getString(offsets[i]));
       }
       str1Array.sort(strCompare);

@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include "ByteFile.h"
 
+DEFINECLASSNAME(ByteOutputFile);
+
 void ByteOutputFile::init(const String &name) {
   m_name  = name;
 }
@@ -17,7 +19,7 @@ ByteOutputFile::ByteOutputFile(const String &name) {
 
 ByteOutputFile::ByteOutputFile(FILE *f) {
   if(f == NULL) {
-    throwException("ByteOutputFile:Illegal argument(NULL)");
+    throwInvalidArgumentException(s_className, _T("Illegal argument(NULL)"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -51,11 +53,11 @@ void ByteOutputFile::close() {
 
 void ByteOutputFile::putByte(BYTE c) {
   if(putc(c, m_file) != c) {
-    throwException("Error write byte");
+    throwException(_T("Error write byte"));
   }
 }
 
-void ByteOutputFile::putBytes(const BYTE *src, unsigned int n) {
+void ByteOutputFile::putBytes(const BYTE *src, size_t n) {
   FWRITE(src, 1, n, m_file);
 }
 

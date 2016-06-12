@@ -4,39 +4,39 @@
 class BMAutomate {
 private:
 
-typedef int (BMAutomate::*SearchFunction)(const TCHAR *text, int textLength) const;
+typedef intptr_t (BMAutomate::*SearchFunction)(const TCHAR *text, size_t textLength) const;
 
   TCHAR     *m_pattern;
-  int        m_delta1[256];
-  int       *m_delta2;
-  int        m_patternLength;
-  int        m_plm1; // = m_patternLength-1
+  size_t     m_delta1[256];
+  intptr_t  *m_delta2;
+  size_t     m_patternLength;
+  size_t     m_plm1; // = m_patternLength-1
   bool       m_forwardSearch;
   const unsigned char *m_translateTable;
   SearchFunction m_search;
-  void  allocate(int patternLength);
+  void  allocate(size_t patternLength);
   void  deallocate();
   void  initPointers();
   void  makeDelta1();
   void  makeDelta2();
-  bool  isPrefix(       const TCHAR *word, int wordLength, int pos) const;
-  int   getSuffixLength(const TCHAR *word, int wordLength, int pos) const;
+  bool  isPrefix(       const TCHAR *word, intptr_t wordLength, intptr_t pos) const;
+  size_t getSuffixLength(const TCHAR *word, intptr_t wordLength, intptr_t pos) const;
   void  copyFrom(const BMAutomate &src);
   void  compileForward();
   void  compileBackward();
-  int   searchForwardTranslate(   const TCHAR *text, int textLength) const;
-  int   searchBackwardTranslate(  const TCHAR *text, int textLength) const;
-  int   searchForwardNoTranslate( const TCHAR *text, int textLength) const;
-  int   searchBackwardNoTranslate(const TCHAR *text, int textLength) const;
+  intptr_t searchForwardTranslate(   const TCHAR *text, size_t textLength) const;
+  intptr_t searchBackwardTranslate(  const TCHAR *text, size_t textLength) const;
+  intptr_t searchForwardNoTranslate( const TCHAR *text, size_t textLength) const;
+  intptr_t searchBackwardNoTranslate(const TCHAR *text, size_t textLength) const;
 public:
   BMAutomate();
-  BMAutomate(const String &pattern                                 , bool forwardSearch = true, const unsigned char *translateTable = NULL);
-  BMAutomate(const TCHAR  *pattern,          int patternLength = -1, bool forwardSearch = true, const unsigned char *translateTable = NULL);
+  BMAutomate(const String &pattern                                    , bool forwardSearch = true, const unsigned char *translateTable = NULL);
+  BMAutomate(const TCHAR  *pattern,          size_t patternLength = -1, bool forwardSearch = true, const unsigned char *translateTable = NULL);
   BMAutomate(const BMAutomate &src);
   ~BMAutomate();
   BMAutomate &operator=(const BMAutomate &rsc);
-  void compilePattern(const String &pattern,                         bool forwardSearch = true, const unsigned char *translateTable = NULL);
-  void compilePattern(const TCHAR  *pattern, int patternLength = -1, bool forwardSearch = true, const unsigned char *translateTable = NULL);
-  int  search(        const String &text   ) const;
-  int  search(        const TCHAR  *text   , int textLength    = -1) const;
+  void compilePattern(const String &pattern,                            bool forwardSearch = true, const unsigned char *translateTable = NULL);
+  void compilePattern(const TCHAR  *pattern, size_t patternLength = -1, bool forwardSearch = true, const unsigned char *translateTable = NULL);
+  intptr_t search(    const String &text   ) const;
+  intptr_t search(    const TCHAR  *text   , size_t textLength    = -1) const;
 };

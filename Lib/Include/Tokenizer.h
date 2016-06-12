@@ -8,24 +8,24 @@
 
 class StringIndex {
 private:
-  int m_start;
-  int m_length;
+  size_t m_start;
+  size_t m_length;
   friend class Tokenizer;
 public:
-  unsigned int getStart() const {
+  inline size_t getStart() const {
     return m_start;
   }
 
-  unsigned int getEnd() const {
+  inline size_t getEnd() const {
     return m_start + m_length - 1;
   }
 
-  unsigned int getLength() const {
+  inline size_t getLength() const {
     return m_length;
   }
 
-  bool contains(int index) const {
-    return (m_start <= index) && (index < m_start + m_length);
+  inline bool contains(intptr_t index) const {
+    return ((intptr_t)m_start <= index) && (index < (intptr_t)m_start + (intptr_t)m_length);
   }
 };
 
@@ -38,7 +38,7 @@ private:
   bool                m_singleDelimiter;
   const TCHAR        *m_next;
   TCHAR              *m_stringBuffer;
-  int                 m_stringBufferSize; // in characters. not bytes
+  size_t              m_stringBufferSize; // in characters. not bytes
   void init(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualifier, int flags);
   StringIndex &nextIndex(StringIndex &tIndex);
   void cleanup();

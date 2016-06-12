@@ -237,7 +237,7 @@ SNode Expression::DPolynomial(const SNode &n, const String &name) const {
   SExprList newCoefficients;
   const int degree = n.getDegree();
   newCoefficients.add(D(coefficients[0], name));
-  for(int i = 1; i < coefficients.size(); i++) {
+  for(size_t i = 1; i < coefficients.size(); i++) {
     newCoefficients.add(SNode(this, degree-i+1) * coefficients[i-1] * dudx + D(coefficients[i], name));
   }
   if(newCoefficients.size() == 0) {
@@ -251,7 +251,7 @@ SNode Expression::DStatementList(const SNode &n, const String &name) const {
 
   SStmtList stmtList(n);
   SStmtList d;
-  for(int i = 0; i < stmtList.size(); i++) {
+  for(size_t i = 0; i < stmtList.size(); i++) {
     const SNode &stmt = stmtList[i];
     switch(stmt.getSymbol()) {
     case ASSIGN:

@@ -27,7 +27,7 @@ MenuItem::MenuItem(MenuItemType type, const String &text, int command) {
         cp++;
       } else {
         cp++;
-        m_highlite = dst - tmp.cstr();
+        m_highlite = (int)(dst - tmp.cstr());
       }
       break;
 
@@ -64,7 +64,7 @@ int Menu::runSubMenu(int i) {
 int Menu::findFirstItem(int start, int dir) {
   if(dir > 0) {
     for(int i = start + 1; i != start; i++) {
-      if(i >= m_items.size()) {
+      if(i >= (int)m_items.size()) {
         if(start == -1) {
           return -1;
         }
@@ -77,7 +77,7 @@ int Menu::findFirstItem(int start, int dir) {
   } else {
     for(int i = start - 1; i != start; i--) {
       if(i < 0) {
-        i = m_items.size();
+        i = (int)m_items.size();
       } else if(m_items[i]->m_type != MENUITEMSEPARATOR && m_items[i]->m_enabled) {
         return i;
       }
@@ -232,13 +232,13 @@ startloop:
       break;
 
     case SCAN_END   :
-      selected = findFirstItem(m_items.size(),-1);
+      selected = findFirstItem((int)m_items.size(),-1);
       break;
 
     default         :
       { int ch = EVENTASCII(event);
         if(EVENTSTATE(event) & ALT_PRESSED || m_isSubMenu) {
-          for(i = 0; i < m_items.size(); i++) {
+          for(i = 0; i < (int)m_items.size(); i++) {
             MenuItem *item = m_items[i];
             if(item->m_highlite >= 0 && tolower(ch) == tolower(item->m_text[item->m_highlite]) && item->m_enabled) {
               if(item->m_type == MENUITEMPOPUP) {
@@ -281,7 +281,7 @@ bool Menu::wantEvent(int event) {
   }
   if(EVENTSTATE(event) & ALT_PRESSED) {
     int ch = EVENTASCII(event);
-    for(int i = 0; i < m_items.size(); i++) {
+    for(int i = 0; i < (int)m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_highlite >= 0 && tolower(ch) == tolower(item->m_text[item->m_highlite]) && item->m_enabled) {
         return true;
@@ -297,7 +297,7 @@ bool Menu::handleEvent(int event) {
   }
   if(EVENTSTATE(event) & ALT_PRESSED) {
     int ch = EVENTASCII(event);
-    for(int i = 0; i < m_items.size(); i++) {
+    for(int i = 0; i < (int)m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_highlite >= 0 && tolower(ch) == tolower(item->m_text[item->m_highlite]) && item->m_enabled) {
         m_startmenu = i;
@@ -320,7 +320,7 @@ void Menu::findSize() {
     for(int i = 0; i < (int)m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_type == MENUITEMTEXT || item->m_type == MENUITEMPOPUP) {
-        int l = item->m_text.length();
+        int l = (int)item->m_text.length();
         if(l > m_width) {
           m_width = l;
         }
@@ -328,7 +328,7 @@ void Menu::findSize() {
     }
 
     m_width += 5;
-    m_height = m_items.size() + 1;
+    m_height = (int)m_items.size() + 1;
   } else {
     m_width = 0;
     for(int i = 0; i < (int)m_items.size(); i++) {
@@ -348,7 +348,7 @@ void Menu::findSize() {
 }
 
 int MenuItem::getItemWidth() {
-  return m_text.length() + 4;
+  return (int)m_text.length() + 4;
 }
 
 int Menu::findItemPos(int i) {
@@ -422,7 +422,7 @@ void Menu::draw(int left, int top) {
 
     getWin()->rectangle(0, 0, m_width, m_height, DOUBLE_FRAME, m_borderColor);
 
-    for(int i = 0; i < m_items.size(); i++) {
+    for(int i = 0; i < (int)m_items.size(); i++) {
       MenuItem *item = m_items[i];
       switch(item->m_type) {
       case MENUITEMTEXT     :
@@ -437,7 +437,7 @@ void Menu::draw(int left, int top) {
       create(false, m_left, m_top, m_left + m_width, m_top + m_height-1);
     }
     getWin()->set(0,0, m_width, m_height-1, TR_ALL,' ',m_textColor);
-    for(int i = 0; i < m_items.size(); i++) {
+    for(int i = 0; i < (int)m_items.size(); i++) {
       drawItem(i, false);
     }
   }
@@ -445,7 +445,7 @@ void Menu::draw(int left, int top) {
 }
 
 bool Menu::deleteItem(int id) {
-  for(int i = 0; i < m_items.size(); i++) {
+  for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_command == id) {
       if(item->m_subMenu) {
@@ -456,7 +456,7 @@ bool Menu::deleteItem(int id) {
       return true;
     }
   }
-  for(int i = 0; i < m_items.size(); i++) {
+  for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_subMenu) {
       if(item->m_subMenu->deleteItem(id)) {
@@ -472,7 +472,7 @@ void Menu::removeMenuItem(int id) {
 }
 
 MenuItem *Menu::findMenuItem(int id) {
-  for(int i = 0; i < m_items.size(); i++) {
+  for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_type == MENUITEMPOPUP) {
       MenuItem *si = item->m_subMenu->findMenuItem(id);
@@ -517,7 +517,7 @@ int Menu::totalItems() {
       sum += m_items[i]->m_subMenu->totalItems();
     }
   }
-  return sum + m_items.size() + 1;
+  return sum + (int)m_items.size() + 1;
 }
 
 Menu::Menu(StaticMenuItem *items) {
@@ -560,9 +560,9 @@ Menu::Menu(StaticMenuItem *items) {
     TCHAR *tab = _tcschr(item->m_text.cstr(),_T('\t'));
     int p;
     if(tab != NULL) {
-      p = tab - item->m_text.cstr();
+      p = (int)(tab - item->m_text.cstr());
     } else {
-      p = item->m_text.length();
+      p = (int)item->m_text.length();
     }
     if(p > tabulatorPosition) {
       tabulatorPosition = p;
@@ -575,7 +575,7 @@ Menu::Menu(StaticMenuItem *items) {
       MenuItem *item = m_items[i];
       TCHAR *tab = _tcschr(item->m_text.cstr(),_T('\t'));
       if(tab != NULL) {
-        int p = tab - item->m_text.cstr();
+        int p = (int)(tab - item->m_text.cstr());
         item->m_text = left(item->m_text,p) + spaceString(tabulatorPosition - p) + substr(item->m_text, p + 1, item->m_text.length());
       }
     }
@@ -583,7 +583,7 @@ Menu::Menu(StaticMenuItem *items) {
 }
 
 Menu::~Menu() {
-  for(int i = 0; i < m_items.size(); i++) {
+  for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_subMenu != NULL) {
       delete item->m_subMenu;
@@ -623,7 +623,7 @@ void Menu::traverse(WORD c1, WORD c2, WORD c3, WORD c4, bool sh) {
   m_highLiteColor = c4;
   m_shadowed      = sh;
 
-  for(int i = 0; i < m_items.size(); i++) {
+  for(int i = 0; i < (int)m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_subMenu != NULL) {
       item->m_subMenu->traverse(c1,c2,c3,c4,sh);

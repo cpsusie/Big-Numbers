@@ -549,7 +549,7 @@ if(traceQR) {
       a(k+3,k) = 0;
     }
 
-    for(int j = k+1; j < getColumnCount(); j++) { // 3 Premultiply
+    for(size_t j = k+1; j < getColumnCount(); j++) { // 3 Premultiply
       reflector.preMultiply(a,k+1,j);
 
 #if DEBUG>1
@@ -559,7 +559,7 @@ if(traceQR) {
 #endif
 
     }
-    for(int i = 0; i < getRowCount(); i++) { // 4 Postmultiply
+    for(size_t i = 0; i < getRowCount(); i++) { // 4 Postmultiply
       reflector.postMultiply(a  ,i,k+1);
       reflector.postMultiply(m_Q,i,k+1);
 
@@ -584,7 +584,7 @@ if(traceQR) {
   cout << rotation << endl;
 }
 #endif
-  for(int j = m_deflatedSize-2; j < getColumnCount(); j++) {
+  for(size_t j = m_deflatedSize-2; j < getColumnCount(); j++) {
     rotation.preMultiply(a,m_deflatedSize-2,j);
 #if DEBUG>1
 if(traceQR) {
@@ -593,7 +593,7 @@ if(traceQR) {
 #endif
   }
 
-  for(int i = 0; i < getRowCount(); i++) {
+  for(size_t i = 0; i < getRowCount(); i++) {
     rotation.postMultiply(a  ,i,m_deflatedSize-2);
     rotation.postMultiply(m_Q,i,m_deflatedSize-2);
 #if DEBUG>1

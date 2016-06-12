@@ -49,8 +49,8 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
     ciphers += decimals;
   }
   if(exponent >= 0) {
-    if(exponent >= ciphers.length()) {
-      result += ciphers + spaceString(exponent - ciphers.length() + 1,_T('0'));
+    if(exponent >= (int)ciphers.length()) {
+      result += ciphers + spaceString(exponent - (int)ciphers.length() + 1,_T('0'));
       if(flags & ios::showpoint || precision > 0) {
         addDecimalPoint(result);
       }
@@ -112,7 +112,7 @@ static void formatScientific(String &result, const Double80 &x, int precision, l
   if(comma != NULL) {
     decimals = comma + 1;
     *comma = 0;
-    if(precision+1 < decimals.length()) {
+    if(precision+1 < (int)decimals.length()) {
       decimals = substr(decimals,0,precision+1);
       if(decimals[precision] >= _T('5')) {
         decimals[precision] = _T('0');
@@ -140,7 +140,7 @@ static void formatScientific(String &result, const Double80 &x, int precision, l
 
   result += mantissa;
 
-  if(removeTrailingZeroes && precision < decimals.length()) {
+  if(removeTrailingZeroes && precision < (int)decimals.length()) {
     for(; precision > 0 && decimals[precision-1] == _T('0'); precision--) { // remove trailing zeroes from decimals
       decimals.remove(precision-1);
     }

@@ -59,17 +59,17 @@ void ListImpl::deleteNode(ListNode *n) {
   releaseNode(n);
 }
 
-const ListNode *ListImpl::findNode(unsigned int index) const {
+const ListNode *ListImpl::findNode(size_t index) const {
   const ListNode *n;
-  if(index <= (unsigned int)size()/2) {
-    unsigned int i = 0;
+  if(index <= size()/2) {
+    size_t i = 0;
     for(n = m_first; n && i++ < index; n = n->m_next);
     return n;
   } else {
     if(size() == 0) {
       return NULL;
     }
-    unsigned int i = size()-1;
+    size_t i = size()-1;
     for(n = m_last; n && i-- > index; n = n->m_prev);
     return n;
   }
@@ -107,18 +107,18 @@ void ListImpl::releaseAllPages() {
   m_freeList  = NULL;
 }
 
-void ListImpl::throwOutOfRangeException(const TCHAR *method, unsigned int index) const {
+void ListImpl::throwOutOfRangeException(const TCHAR *method, size_t index) const {
   throwMethodInvalidArgumentException(s_className, method, _T("index %u out of range. Size=%lu."), index, m_size);
 }
 
-void *ListImpl::getElement(unsigned int index) {
+void *ListImpl::getElement(size_t index) {
   if(index >= m_size) { 
     throwOutOfRangeException(_T("getElement"), index);
   }
   return (void*)findNode(index)->m_data;
 }
 
-const void *ListImpl::getElement(unsigned int index) const {
+const void *ListImpl::getElement(size_t index) const {
   if(index >= m_size) {
     throwOutOfRangeException(_T("const getElement"), index);
   }
@@ -139,7 +139,7 @@ bool ListImpl::add(const void *e) {
   return true;
 }
 
-bool ListImpl::add(unsigned int i, const void *e) {
+bool ListImpl::add(size_t i, const void *e) {
   if(i > m_size) {
     throwOutOfRangeException(_T("add"), i);
   }
@@ -207,7 +207,7 @@ void ListImpl::removeLast() {
   removeNode(m_last);
 }
 
-void ListImpl::removeIndex(unsigned int i) {
+void ListImpl::removeIndex(size_t i) {
   if(i >= m_size) {
     throwOutOfRangeException(_T("removeIndex"), i);
   }
@@ -228,14 +228,14 @@ const void *ListImpl::select() const {
   if(size() == 0) {
     throwException(getElementeErrorText, s_className, _T("select"));
   }
-  return findNode(randInt() % size())->m_data;
+  return findNode(randSizet(size()))->m_data;
 }
 
 void *ListImpl::select() {
   if(size() == 0) {
     throwException(getElementeErrorText, s_className, _T("select"));
   }
-  return findNode(randInt() % size())->m_data;
+  return findNode(randSizet(size()))->m_data;
 }
 
 void *ListImpl::first() {
@@ -274,7 +274,7 @@ private:
   ListImpl           &m_list;
   ListNode           *m_next;
   ListNode           *m_current;
-  unsigned long       m_updateCount;
+  size_t              m_updateCount;
 public:
   AbstractIterator *clone();
   ListIterator(ListImpl &list);

@@ -3,7 +3,7 @@
 
 DEFINECLASSNAME(HashMapImpl);
 
-HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, unsigned long capacity)
+HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity)
 : HashSetImpl(keyManager, hash, comparator, capacity)
 {
   m_dataManager = dataManager.clone();
@@ -126,7 +126,7 @@ const AbstractEntry *HashMapImpl::getMaxEntry() const {
   return NULL;
 }
 
-int HashMapImpl::size() const {
+size_t HashMapImpl::size() const {
   return HashSetImpl::size();
 }
 

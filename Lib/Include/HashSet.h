@@ -25,25 +25,25 @@ class HashSetTable {
 private:
   DECLARECLASSNAME;
   const HashSetImpl  &m_owner;
-  const unsigned long m_capacity;
+  const size_t        m_capacity;
   HashSetNode       **m_table;
   HashSetNode        *m_firstLink, *m_lastLink;
-  unsigned long       m_size;
-  unsigned long       m_updateCount;
-  int chainLength(unsigned long index) const;
+  size_t              m_size;
+  size_t              m_updateCount;
+  int chainLength(size_t index) const;
   int getMaxChainLength() const;
   CompactIntArray getLength() const;
 public:
-  HashSetTable(const HashSetImpl &owner, unsigned long capacity);
+  HashSetTable(const HashSetImpl &owner, size_t capacity);
   ~HashSetTable();
-  void insert(unsigned long index, HashSetNode *n);
+  void insert(size_t index, HashSetNode *n);
   void remove(HashSetNode *n);
   void clear();
   const AbstractKey *select() const;
-  unsigned long getCapacity() const {
+  size_t getCapacity() const {
     return m_capacity;
   }
-  int size() const {
+  size_t size() const {
     return m_size;
   }
   friend class HashSetImpl;
@@ -65,7 +65,7 @@ protected:
   virtual bool insertNode(HashSetNode *n);
   const void  *select() const; // return key*
   void *select();
-  void resize(unsigned long newCapacity);
+  void resize(size_t newCapacity);
 
   HashSetNode *findNode(const void *key);
   const HashSetNode *findNode(const void *key) const;
@@ -78,7 +78,7 @@ protected:
   }
 //  void checktable(const char *label) const;
 public:
-  HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, unsigned long capacity);
+  HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity);
   virtual ~HashSetImpl();
   HashFunction getHashFunction() const {
     return m_hash;
@@ -86,7 +86,7 @@ public:
   bool add(const void *key);
   bool remove(const void *key);
   bool contains(const void *key) const;
-  int  size() const {  // return number of elements
+  size_t size() const {  // return number of elements
     return m_table->size();
   }
   void clear() {
@@ -110,7 +110,7 @@ public:
   CompactIntArray getLength() const {
     return m_table->getLength();
   }
-  unsigned long getCapacity() const {  // return capacity, NOT number of elements
+  size_t getCapacity() const {  // return capacity, NOT number of elements
     return m_table->getCapacity();
   }
   int getMaxChainLength() const {
@@ -126,7 +126,7 @@ private:
   DECLARECLASSNAME;
   HashSetImpl        *m_set;
   HashSetNode        *m_next, *m_current;
-  unsigned long       m_updateCount;
+  size_t              m_updateCount;
 
   void checkUpdateCount() const;
 protected:
@@ -146,15 +146,15 @@ public:
 
 template <class T> class HashSet : public Set<T> {
 public:
-  HashSet(unsigned long (*hash)(const T &key), int (*comparator)(const T &key1, const T &key2), unsigned long capacity = 31)
+  HashSet(unsigned long (*hash)(const T &key), int (*comparator)(const T &key1, const T &key2), size_t capacity = 31)
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, FunctionComparator<T>(comparator), capacity))
   {
   }
-  HashSet(unsigned long (*hash)(const T &key), int (*comparator)(const T *key1, const T *key2), unsigned long capacity = 31)
+  HashSet(unsigned long (*hash)(const T &key), int (*comparator)(const T *key1, const T *key2), size_t capacity = 31)
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, FunctionComparator<T>(comparator), capacity))
   {
   }
-  HashSet(unsigned long (*hash)(const T &key), Comparator<T> &comparator, unsigned long capacity = 31)
+  HashSet(unsigned long (*hash)(const T &key), Comparator<T> &comparator, size_t capacity = 31)
     : Set<T>(new HashSetImpl(ObjectManager<T>(), (HashFunction)hash, comparator, capacity))
   {
   }
@@ -175,7 +175,7 @@ public:
     return ((HashSetImpl*)m_collection)->getLength();
   }
 
-  int getCapacity() const {
+  size_t getCapacity() const {
     return ((HashSetImpl*)m_collection)->getCapacity();
   }
 
@@ -186,85 +186,84 @@ public:
 
 class ShortHashSet : public HashSet<short> {
 public:
-  ShortHashSet(unsigned long capacity=31) : HashSet<short>(shortHash, shortHashCmp, capacity) {
+  ShortHashSet(size_t capacity=31) : HashSet<short>(shortHash, shortHashCmp, capacity) {
   }
 };
 
 class UShortHashSet : public HashSet<unsigned short> {
 public:
-  UShortHashSet(unsigned long capacity=31) : HashSet<unsigned short>(ushortHash, ushortHashCmp, capacity) {
+  UShortHashSet(size_t capacity=31) : HashSet<unsigned short>(ushortHash, ushortHashCmp, capacity) {
   }
 };
 
 class IntHashSet : public HashSet<int> {
 public:
-  IntHashSet(unsigned long capacity=31) : HashSet<int>(intHash, intHashCmp, capacity) {
+  IntHashSet(size_t capacity=31) : HashSet<int>(intHash, intHashCmp, capacity) {
   }
 };
 
 class UIntHashSet : public HashSet<unsigned int> {
 public:
-  UIntHashSet(unsigned long capacity=31) : HashSet<unsigned int>(uintHash, uintHashCmp, capacity) {
+  UIntHashSet(size_t capacity=31) : HashSet<unsigned int>(uintHash, uintHashCmp, capacity) {
   }
 };
 
 class LongHashSet : public HashSet<long> {
 public:
-  LongHashSet(unsigned long capacity=31) : HashSet<long>(longHash, longHashCmp, capacity) {
+  LongHashSet(size_t capacity=31) : HashSet<long>(longHash, longHashCmp, capacity) {
   }
 };
 
 class ULongHashSet : public HashSet<unsigned long> {
 public:
-  ULongHashSet(unsigned long capacity=31) : HashSet<unsigned long>(ulongHash, ulongHashCmp, capacity) {
+  ULongHashSet(size_t capacity=31) : HashSet<unsigned long>(ulongHash, ulongHashCmp, capacity) {
   }
 };
 
 class Int64HashSet : public HashSet<__int64> {
 public:
-  Int64HashSet(unsigned long capacity=31) : HashSet<__int64>(int64Hash, int64HashCmp, capacity) {
+  Int64HashSet(size_t capacity=31) : HashSet<__int64>(int64Hash, int64HashCmp, capacity) {
   }
 };
 
 class UInt64HashSet : public HashSet<unsigned __int64> {
 public:
-  UInt64HashSet(unsigned long capacity=31) : HashSet<unsigned __int64>(uint64Hash, uint64HashCmp, capacity) {
+  UInt64HashSet(size_t capacity=31) : HashSet<unsigned __int64>(uint64Hash, uint64HashCmp, capacity) {
   }
 };
 
 class FloatHashSet : public HashSet<float> {
 public:
-  FloatHashSet(unsigned long capacity=31)  : HashSet<float>(floatHash, floatHashCmp, capacity) {
+  FloatHashSet(size_t capacity=31)  : HashSet<float>(floatHash, floatHashCmp, capacity) {
   }
 };
 
 class DoubleHashSet : public HashSet<double> {
 public:
-  DoubleHashSet(unsigned long capacity=31)  : HashSet<double>(doubleHash, doubleHashCmp, capacity) {
+  DoubleHashSet(size_t capacity=31)  : HashSet<double>(doubleHash, doubleHashCmp, capacity) {
   }
 };
 
-
 class StrHashSet : public HashSet<const TCHAR*> {
 public:
-  StrHashSet(unsigned long capacity=31) : HashSet<const TCHAR*>(strHash, strHashCmp, capacity) {
+  StrHashSet(size_t capacity=31) : HashSet<const TCHAR*>(strHash, strHashCmp, capacity) {
   }
 };
 
 class StrIHashSet : public HashSet<const TCHAR*> {
 public:
-  StrIHashSet(unsigned long capacity=31) : HashSet<const TCHAR*>(striHash, striHashCmp, capacity) {
+  StrIHashSet(size_t capacity=31) : HashSet<const TCHAR*>(striHash, striHashCmp, capacity) {
   }
 };
 
 class StringHashSet : public HashSet<String> {
 public:
-  StringHashSet(unsigned long capacity=31) : HashSet<String>(stringHash, stringHashCmp, capacity) {
+  StringHashSet(size_t capacity=31) : HashSet<String>(stringHash, stringHashCmp, capacity) {
   }
 };
 
 class StringIHashSet : public HashSet<String> {
 public:
-  StringIHashSet(unsigned long capacity=31) : HashSet<String>(stringiHash, stringiHashCmp, capacity) {
+  StringIHashSet(size_t capacity=31) : HashSet<String>(stringiHash, stringiHashCmp, capacity) {
   }
 };

@@ -2,7 +2,7 @@
 
 DEFINECLASSNAME(String);
 
-TCHAR *String::newCharBuffer(const TCHAR *s, unsigned long &length, unsigned long &capacity) { // static
+TCHAR *String::newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity) { // static
   length = _tcsclen(s);
   TCHAR *result = new TCHAR[capacity = length + 1];
   if(result == NULL) {
@@ -111,7 +111,7 @@ String &String::operator=(const TCHAR *s) {
   if(s == NULL) {
     s = _T("null");
   }
-  unsigned long length = _tcsclen(s);
+  size_t length = _tcsclen(s);
   if(length < m_capacity && length + 100 > m_capacity) {
     _tcscpy(m_buf, s);
     m_len = length;
@@ -130,7 +130,7 @@ String &String::operator+=(const String &rhs) {
     if(rhs.m_len == 0) {
       return *this;
     }
-    const unsigned long newLength = m_len + rhs.m_len;
+    const size_t newLength = m_len + rhs.m_len;
     if(m_capacity < newLength + 1) {
       TCHAR *old = m_buf;
       m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];
@@ -147,11 +147,11 @@ String &String::operator+=(const TCHAR *rhs) {
   if(rhs == NULL) {
     rhs = _T("null");
   }
-  const int length = _tcsclen(rhs);
+  const size_t length = _tcsclen(rhs);
   if(length == 0) {
     return *this;
   }
-  const unsigned long newLength = m_len + length;
+  const size_t newLength = m_len + length;
   if(m_capacity < newLength + 1) {
     TCHAR *old = m_buf;
     m_buf = new TCHAR[m_capacity = (newLength + 1) * 3];
@@ -183,32 +183,32 @@ String operator+(const String &lhs, const String &rhs) {
   return result;
 }
 
-int String::find(TCHAR ch, int from) const {
-  if(from >= (int)m_len) {
+intptr_t String::find(TCHAR ch, size_t from) const {
+  if(from >= m_len) {
     return -1;
   }
   TCHAR *s = _tcschr(m_buf + from, ch);
   return s ? s - m_buf : -1;
 }
 
-int String::find(const String &str, int from) const {
-  if(str.length() > (int)m_len - from) {
+intptr_t String::find(const String &str, size_t from) const {
+  if(str.length() + from > m_len) {
     return -1;
   }
   TCHAR *s = _tcsstr(m_buf + from, str.m_buf);
   return s ? (s - m_buf) : -1;
 }
 
-int String::find(const TCHAR *str, int from) const {
-  if(from > (int)m_len) {
+intptr_t String::find(const TCHAR *str, size_t from) const {
+  if(from > m_len) {
     return -1;
   }
   TCHAR *s = _tcsstr(m_buf + from, str);
   return s ? (s - m_buf) : -1;
 }
 
-String &String::insert(int pos, TCHAR ch) {
-  if(pos >= 0 && pos <= (int)m_len) {
+String &String::insert(size_t pos, TCHAR ch) {
+  if(pos <= m_len) {
     if(m_capacity < m_len + 2) {
       m_capacity = (m_len + 2) * 2;
       TCHAR *tmp = new TCHAR[m_capacity];
@@ -225,8 +225,8 @@ String &String::insert(int pos, TCHAR ch) {
   return *this;
 }
 
-String &String::insert(int pos, const String &s) {
-  if((pos >= 0) && (pos <= (int)m_len) && (s.m_len > 0)) {
+String &String::insert(size_t pos, const String &s) {
+  if((pos <= m_len) && (s.m_len > 0)) {
     if(m_capacity < m_len + s.m_len + 1) {
       TCHAR *tmp = new TCHAR[m_capacity = (m_len + s.m_len + 1) * 2];
       if(pos) {
@@ -246,9 +246,9 @@ String &String::insert(int pos, const String &s) {
   return *this;
 }
 
-String &String::remove(int pos, int length) {
-  if((pos >= 0) && (pos < (int)m_len)) {
-    if((int)m_len - pos < length) {
+String &String::remove(size_t pos, size_t length) {
+  if(pos < m_len) {
+    if(m_len < pos + length) {
       length = m_len - pos;
     }
     MEMMOVE(m_buf + pos, m_buf + pos + length, m_len - pos);
@@ -287,7 +287,7 @@ String &String::replace(const TCHAR *from, const TCHAR *to) {
 }
 
 String &String::replace(const String &from, TCHAR to) {
-  const int fromLength = from.length();
+  const size_t fromLength = from.length();
   if(fromLength == 0) {
     return *this;
   }
@@ -296,7 +296,7 @@ String &String::replace(const String &from, TCHAR to) {
   }
   // fromLength > 1 => string will bnot grow
   const TCHAR *last        = m_buf + m_len - fromLength;
-  const int    newCapacity = m_len + 1;
+  const size_t newCapacity = m_len + 1;
   TCHAR       *newBuf      = new TCHAR[newCapacity];
   TCHAR       *s, *d;
   for(s = m_buf, d = newBuf; s <= last;) {
@@ -307,7 +307,7 @@ String &String::replace(const String &from, TCHAR to) {
       s += fromLength;
     }
   }
-  const int rest = m_len - (s - m_buf);
+  const intptr_t rest = m_len - (s - m_buf);
   if(rest > 0) {
     MEMCPY(d, s, rest);
     d += rest;
@@ -322,7 +322,7 @@ String &String::replace(const String &from, TCHAR to) {
 }
 
 String &String::replace(TCHAR from, const String &to) {
-  const int toLength = to.length();
+  const size_t toLength = to.length();
   if(toLength == 1) {
     return replace(from, to[0]);
   }
@@ -349,10 +349,10 @@ String &String::replace(TCHAR from, const String &to) {
   if(count == 0) {
     return *this; // nothing to do
   }
-  const int newLength   = m_len + count * (toLength-1);
-  const int newCapacity = (newLength + 1) * 2;
-  TCHAR     *newBuf     = new TCHAR[newCapacity];
-  TCHAR     *dst        = newBuf;
+  const size_t newLength   = m_len + count * (toLength-1);
+  const size_t newCapacity = (newLength + 1) * 2;
+  TCHAR       *newBuf      = new TCHAR[newCapacity];
+  TCHAR       *dst         = newBuf;
 
   // dont worry about overlap. copying to a new string
   for(const TCHAR *s = m_buf; s <= last;) {
@@ -373,8 +373,8 @@ String &String::replace(TCHAR from, const String &to) {
 }
 
 String &String::replace(const String &from, const String &to) {
-  const int fromLength = from.length();
-  const int toLength   = to.length();
+  const intptr_t fromLength = from.length();
+  const intptr_t toLength   = to.length();
   if(fromLength == 0) {
     return *this;
   }
@@ -415,7 +415,7 @@ String &String::replace(const String &from, const String &to) {
       s += fromLength;
     }
   }
-  const int tail = m_len - (d - newBuf);
+  const intptr_t tail = m_len - (d - newBuf);
   if(tail > 0) {
     MEMCPY(d, s, tail);
     d += tail;
@@ -436,12 +436,12 @@ String rev(const String &str) {
   return result;
 }
 
-int String::rfind(TCHAR ch) const {
+intptr_t String::rfind(TCHAR ch) const {
   TCHAR *s = _tcsrchr(m_buf, ch);
   return s ? s - m_buf : -1;
 }
 
-String spaceString(int length, TCHAR ch) {
+String spaceString(intptr_t length, TCHAR ch) {
   if(length <= 0) {
     return EMPTYSTRING;
   }
@@ -453,8 +453,8 @@ String spaceString(int length, TCHAR ch) {
   return result;
 }
 
-String left(const String &str, int length) {
-  if(length >= (long)str.m_len) {
+String left(const String &str, intptr_t length) {
+  if(length >= (intptr_t)str.m_len) {
     return str;
   } else if(length <= 0) {
     return EMPTYSTRING;
@@ -465,21 +465,21 @@ String left(const String &str, int length) {
   }
 }
 
-String right(const String &str, int length) {
-  if(length >= (long)str.m_len) {
+String right(const String &str, intptr_t length) {
+  if(length >= (intptr_t)str.m_len) {
     return str;
   } else if(length <= 0) {
     return EMPTYSTRING;
   } else {
-    return String(str.m_buf + str.m_len - length);
+    return String(str.m_buf + (intptr_t)str.m_len - length);
   }
 }
 
-String substr(const String &str, int from, int length) {
-  if(from < 0 || from >= (int)str.m_len || length <= 0) {
+String substr(const String &str, intptr_t from, intptr_t length) {
+  if((from < 0) || (from >= (intptr_t)str.m_len) || (length <= 0)) {
     return EMPTYSTRING;
   } else {
-    if(length > (int)str.m_len - from) {
+    if(length > (intptr_t)str.m_len - from) {
       length = str.m_len - from;
     }
     String result;
@@ -511,7 +511,6 @@ String &String::trim() {
   return *this;
 }
 
-
 String &String::trimLeft() {
   strTrimLeft(m_buf);
   m_len = _tcsclen(m_buf);
@@ -524,16 +523,16 @@ String &String::trimRight() {
   return *this;
 }
 
-void String::indexError(unsigned int index) const {
+void String::indexError(size_t index) const {
   throwMethodInvalidArgumentException(s_className, _T("operator[]"), _T("Index %u out of range in string <%s>. length=%d"), index, m_buf, m_len);
 }
 
-TCHAR &String::operator[](unsigned int index) {
+TCHAR &String::operator[](size_t index) {
   if(index >= m_len) indexError(index);
   return m_buf[index];
 }
 
-const TCHAR &String::operator[](unsigned int index) const {
+const TCHAR &String::operator[](size_t index) const {
   if(index >= m_len) indexError(index);
   return m_buf[index];
 }

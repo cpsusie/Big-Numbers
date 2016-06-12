@@ -14,3 +14,11 @@ unsigned int randInt(unsigned int n) {
 int randInt(int from, int to) {
   return randInt() % (to-from+1) + from;
 }
+
+__int64 randInt64() {
+  return _standardRandomGenerator.nextInt64();
+}
+
+__int64 randInt64(unsigned __int64 n) {
+  return randInt64() % n;
+}

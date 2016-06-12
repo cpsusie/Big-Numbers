@@ -98,7 +98,7 @@ namespace TestRegistry
       RegistryKey thisKey = key.createOrOpenKey(_T("Test"));
 
       thisKey.deleteValues();
-      for (int i = 0; i < size(); i++) {
+      for (size_t i = 0; i < size(); i++) {
         thisKey.setValue((*this)[i]);
       }
     }  catch (Exception e) {

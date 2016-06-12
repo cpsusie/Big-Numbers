@@ -7,7 +7,7 @@
 DEFINECLASSNAME(SimpleLayoutManager);
 
 SimpleLayoutManager::~SimpleLayoutManager() {
-  for(int i = 0; i < m_attributes.size(); i++) {
+  for(size_t i = 0; i < m_attributes.size(); i++) {
     delete m_attributes[i];
   }
   m_attributes.clear();
@@ -64,7 +64,7 @@ void SimpleLayoutManager::addControl(int ctrlId, int flags) {
 }
 
 bool SimpleLayoutManager::isAnyChildrenChanged() const {
-  for(int i = 0; i < m_attributes.size(); i++) {
+  for(size_t i = 0; i < m_attributes.size(); i++) {
     if(m_attributes[i]->isControlWindowChanged()) {
       const LayoutAttribute *attr = m_attributes[i];
       return true;
@@ -78,13 +78,13 @@ void SimpleLayoutManager::OnSize(UINT nType, int cx, int cy) {
   if(nType == SIZE_MINIMIZED) return;
 
   if(isAnyChildrenChanged()) {
-    for(int i = 0; i < m_attributes.size(); i++) {
+    for(size_t i = 0; i < m_attributes.size(); i++) {
       m_attributes[i]->resetStartRect();
     }
     resetWinStartSize();
   } else {
     const CSize currentWinSize = getClientRect(getWindow()).Size();
-    for(int i = 0; i < m_attributes.size(); i++) {
+    for(size_t i = 0; i < m_attributes.size(); i++) {
       updateChildRect(*m_attributes[i], currentWinSize);
     }
   }
@@ -212,7 +212,7 @@ void SimpleLayoutManager ::scaleFont(double scale, bool redraw) {
 //  CMenu *menu = getWindow()->GetMenu();
 //}
   const CSize currentWinSize = getClientRect(getWindow()).Size();
-  for(int i = 0; i < m_attributes.size(); i++) {
+  for(size_t i = 0; i < m_attributes.size(); i++) {
     LayoutAttribute &attr = *m_attributes[i];
     if(attr.getFlags() & ALL_CHILDFONTFLAGS) {
       updateFontScale(attr, scale, redraw, currentWinSize);

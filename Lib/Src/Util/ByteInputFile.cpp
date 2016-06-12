@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include "ByteFile.h"
 
+DEFINECLASSNAME(ByteInputFile);
+
 ByteInputFile::ByteInputFile() {
   m_file  = NULL;
 }
@@ -13,7 +15,7 @@ ByteInputFile::ByteInputFile(const String &name) {
 
 ByteInputFile::ByteInputFile(FILE *f) {
   if(f == NULL) {
-    throwInvalidArgumentException(_T("ByteInputFile"), _T("f=NULL"));
+    throwInvalidArgumentException(s_className, _T("f=NULL"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -52,7 +54,7 @@ int ByteInputFile::getByte() {
   return getc(m_file);
 }
 
-int ByteInputFile::getBytes(BYTE *dst, unsigned int n) {
+intptr_t ByteInputFile::getBytes(BYTE *dst, size_t n) {
   return fread(dst, 1, n, m_file);
 }
 

@@ -37,7 +37,7 @@ public:
   CompressFilter(const CompressFilter &src);            // not defined. CompressFilter not cloneable
   CompressFilter &operator=(const CompressFilter &src); // not defined. CompressFilter not cloneable
 
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, size_t n);
   void putByte(BYTE b);
 
   void flush();
@@ -49,7 +49,7 @@ private:
   ByteInputStream  &m_src;
   ByteArray         m_inputBuffer;
   ByteArray         m_outputBuffer;
-  int               m_pos;
+  intptr_t          m_pos;
   BYTE             *m_buffer;
   void             *m_zStreamp; // Actually z_stream*. Need zlib.h to get definition right. See DecompressFilter.cpp
   bool              m_eos, m_eoz;
@@ -64,6 +64,6 @@ public:
   virtual ~DecompressFilter();
   DecompressFilter(const DecompressFilter &src);            // not defined. DecompressFilter not cloneable
   DecompressFilter &operator=(const DecompressFilter &src); // not defined. DecompressFilter not cloneable
-  int getBytes(BYTE *dst, unsigned int n);
+  intptr_t getBytes(BYTE *dst, size_t n);
   int getByte();
 };

@@ -38,7 +38,7 @@ CSize getTextExtent(HDC hdc, const String &s) {
 
 CSize getTextExtent1(HDC hdc, const StringArray &a) {
   CSize result(0,0);
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const CSize lineSize = getTextExtent(hdc, a[i]);
     result.cy += lineSize.cy;
     result.cx = max(result.cx, lineSize.cx);
@@ -48,7 +48,7 @@ CSize getTextExtent1(HDC hdc, const StringArray &a) {
 
 CSize getMaxTextExtent(HDC hdc, const StringArray &a) {
   CSize result(0,0);
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const CSize sz = getTextExtent(hdc, a[i]);
     result.cx = max(result.cx, sz.cx);
     result.cy = max(result.cy, sz.cy);
