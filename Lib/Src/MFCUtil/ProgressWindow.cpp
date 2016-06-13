@@ -23,7 +23,7 @@ ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, unsig
   }
 
   CProgressDlg dlg(parent, jobExecutor, jobToDo, updateRate);
-  int ret;
+  INT_PTR ret;
   switch(ret = dlg.DoModal()) {
   case IDOK:
   case IDCANCEL:

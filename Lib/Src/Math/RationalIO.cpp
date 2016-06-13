@@ -11,7 +11,7 @@ StrStream &operator<<(StrStream &stream, const Rational &r) {
     result = _T("+") + result;
   }
 
-  int fillerLength = stream.getWidth() - result.length();
+  int fillerLength = stream.getWidth() - (int)result.length();
   if(fillerLength <= 0) {
     stream.append(result);
   } else if(flags & ios::left) {

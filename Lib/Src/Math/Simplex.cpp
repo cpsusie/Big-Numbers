@@ -467,7 +467,7 @@ void Tableau::addConstraint(unsigned int xIndex, SimplexRelation relation, const
   Real currentValue = 0;
   int  bvRow        = -1;
 
-  for(size_t i = 1; i < m_table.size(); i++) {
+  for(int i = 1; i < (int)m_table.size(); i++) {
     if(m_table[i].m_basisVariable == (int)xIndex) {
       currentValue = getRightSide(i);
       bvRow = i;
@@ -558,7 +558,7 @@ void Tableau::setConstraint(unsigned int row, const CompactArray<Real> &leftSide
                   ,leftSide.size(),getXCount());
   }
 
-  for(size_t col = 0; col < leftSide.size(); col++) {
+  for(int col = 0; col < (int)leftSide.size(); col++) {
     setLeftSide(row,col+1,leftSide[col]);
   }
   setRelation(row,relation);
@@ -898,7 +898,7 @@ DictionaryKeySet::DictionaryKeySet() : HashSet<DictionaryKey>(dictionaryHash,dic
 
 DictionaryKey::DictionaryKey(const Tableau *tableau) : BitSet(tableau->getWidth()+1) {
   const Array<TableauRow> &t = tableau->m_table;
-  const int n = t.size();
+  const int n = (int)t.size();
   for(int i = 0; i < n; i++) {
     add(t[i].m_basisVariable);
   }

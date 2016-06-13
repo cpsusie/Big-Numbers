@@ -256,7 +256,7 @@ void CPicture::loadAsFormat(const ByteArray &bytes, PictureFormatType ft) {
       if(bm) {
         try {
           createPictureFromBitmap(bm);
-          m_weight = bytes.size();
+          m_weight = (int)bytes.size();
         } catch(...) {
           DeleteObject(bm);
           throw;
@@ -269,7 +269,7 @@ void CPicture::loadAsFormat(const ByteArray &bytes, PictureFormatType ft) {
       if(bm) {
         try {
           createPictureFromBitmap(bm);
-          m_weight = bytes.size();
+          m_weight = (LONG)bytes.size();
         } catch(...) {
           DeleteObject(bm);
           throw;
@@ -291,7 +291,7 @@ void CPicture::loadPicture(const ByteArray &bytes) {
     throwException(_T("No data"));
   } else  {
     freePictureData();
-    loadPictureData(bytes.getData(), bytes.size());
+    loadPictureData(bytes.getData(), (int)bytes.size());
     m_hasAlpha = false;
   }
 }

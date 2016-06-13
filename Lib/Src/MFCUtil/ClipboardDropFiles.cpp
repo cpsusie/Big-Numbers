@@ -21,7 +21,7 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
     df.fWide  = 0;
 
     const String str = fnames.getAsDoubleNullTerminatedString();
-    const int strLength = str.length() + 1;
+    const int strLength = (int)str.length() + 1;
     const int nbytes = sizeof(df) + strLength*sizeof(TCHAR);
 
     HLOCAL buf = LocalAlloc(0, nbytes);

@@ -32,7 +32,7 @@ void setWindowText(CWnd *wnd, int id, const String &str) {
 
 CSize getTextExtent(HDC hdc, const String &s) {
   CSize size;
-  GetTextExtentPoint32(hdc, s.cstr(),s.length(), &size);
+  GetTextExtentPoint32(hdc, s.cstr(),(int)s.length(), &size);
   return size;
 }
 

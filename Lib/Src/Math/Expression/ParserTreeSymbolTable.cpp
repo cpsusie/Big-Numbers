@@ -187,7 +187,7 @@ ExpressionVariable *ParserTree::allocateSymbol(const ExpressionNode *n, bool isC
 }
 
 ExpressionVariable *ParserTree::allocateSymbol(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) const {
-  const int index = m_variables.size();
+  const int index = (int)m_variables.size();
   m_variables.add(ExpressionVariable(name, value, isConstant, isLeftSide, isLoopVar));
   m_symbolTable.put(name, index);
   return (ExpressionVariable*)getVariable(name);

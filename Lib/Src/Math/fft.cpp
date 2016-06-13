@@ -19,7 +19,7 @@ return i;
 // forward = true  => forward transform. ie. time-domain -> frequens-domain.
 // forward = false => reverse transform  ie. frequens-domain -> time-domain.
 void dft(Array<Complex> &data, bool forward) {
-  const int n = data.size();
+  const int n = (int)data.size();
   Real *x2 = new Real[n];
   Real *y2 = new Real[n];
 
@@ -106,7 +106,7 @@ static int log2(unsigned int n) {
 // forward = true  => forward transform. ie. time-domain -> frequens-domain.
 // forward = false => reverse transform  ie. frequens-domain -> time-domain.
 void fft(Array<Complex> &data, bool forward) {
-  const int n = data.size();
+  const int n = (int)data.size();
   const int t = log2((unsigned int)n);
 
   // Do the bit reversal

@@ -175,7 +175,7 @@ Rational::Rational(const char *s) {
 void Rational::init(const String &s) {
   DEFINEMETHODNAME(init);
   String tmp(s);
-  const int slash = tmp.find(_T('/'));
+  const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
     throwMethodInvalidArgumentException(s_className, method, _T("s=%s"), s.cstr());
   }

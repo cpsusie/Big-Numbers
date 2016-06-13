@@ -64,14 +64,14 @@ FactorArray FactorArray::selectNonConstantExponentFactors() const {
 
 int FactorArray::findFactorWithChangeableSign() const {
   for(size_t i = 0; i < size(); i++) {
-    if((*this)[i]->isConstant()) return i;
+    if((*this)[i]->isConstant()) return (int)i;
   }
   for(size_t i = 0; i < size(); i++) {
     const ExpressionFactor *f = (*this)[i];
-    if(f->hasOddExponent() && f->exponent()->isPositive()) return i;
+    if(f->hasOddExponent() && f->exponent()->isPositive()) return (int)i;
   }
   for(size_t i = 0; i < size(); i++) {
-    if((*this)[i]->hasOddExponent()) return i;
+    if((*this)[i]->hasOddExponent()) return (int)i;
   }
   return -1;
 }

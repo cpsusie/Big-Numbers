@@ -26,7 +26,7 @@ Rectangle2D Polygon2D::getBoundingBox() const {
 }
 
 int Polygon2D::contains(const Point2D &p) const { // 1=inside, -1=outside, 0=edge
-  unsigned int n = size();
+  unsigned int n = (int)size();
   if(n < 3) return -1;
   Point2D v = (*this)[0] - p;
   if(v.x == 0 && v.y == 0) {

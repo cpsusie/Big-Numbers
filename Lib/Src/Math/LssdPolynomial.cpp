@@ -26,7 +26,7 @@ LssdPolynomial::LssdPolynomial(const CompactArray<DataPoint> &data) {
   memset(beta,0,sizeof(beta));
   memset(b,0,sizeof(b));
 
-  int n = data.size();
+  int n = (int)data.size();
   if(n == 0) {
     return;
   }

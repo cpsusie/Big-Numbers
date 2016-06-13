@@ -17,7 +17,7 @@ Rectangle2D Point2DArray::getBoundingBox() const {
   const Point2D *p = &first();
   double minX=p->x, maxX=minX, minY=p->y, maxY=minY;
   p++;
-  for(int i = size(); --i; p++) {
+  for(size_t i = size(); --i; p++) {
     if(p->x < minX) minX = p->x; else if(p->x > maxX) maxX = p->x;
     if(p->y < minY) minY = p->y; else if(p->y > maxY) maxY = p->y;
   }
@@ -29,7 +29,7 @@ String Point2DRefArray::toString(int dec) const {
   if(size()) {
     const Point2D * const *p = &first();
     result += (*(p++))->toString(dec);
-    for(int i = size()-1; i--;) {
+    for(size_t i = size()-1; i--;) {
       result += ",";
       result += (*(p++))->toString(dec);
     }

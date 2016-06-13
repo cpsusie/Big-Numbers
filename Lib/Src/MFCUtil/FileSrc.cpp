@@ -8,7 +8,7 @@ FileSource::FileSource(FILE *f) {
   int bufferSize = sizeof(buffer);
   m_dataBuffer   = MALLOC(PLBYTE,bufferSize);
   int n;
-  for(m_bufferSize = 0; (n = fread(buffer,1,sizeof(buffer),f)) > 0; m_bufferSize += n) {
+  for(m_bufferSize = 0; (n = (int)fread(buffer,1,sizeof(buffer),f)) > 0; m_bufferSize += n) {
     if(m_bufferSize + n > bufferSize) {
       if(n == sizeof(buffer)) {
         bufferSize *= 2;

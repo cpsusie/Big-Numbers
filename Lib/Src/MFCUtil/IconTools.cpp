@@ -53,7 +53,7 @@ HICON createIcon(HINSTANCE hInstance, int colorResId, int maskResId) {
 }
 
 HICON createIcon(const ByteArray &bytes) {
-  HICON icon = CreateIconFromResource((BYTE*)bytes.getData(), bytes.size(), TRUE, 0x00030000);
+  HICON icon = CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), TRUE, 0x00030000);
   if(icon == NULL) {
     throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
   }

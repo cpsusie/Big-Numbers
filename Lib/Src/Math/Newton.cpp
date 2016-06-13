@@ -14,7 +14,7 @@
 /* computes x so that f(x) = 0 */
 Vector newton(VectorFunction &f, const Vector &x0, int maxit, Real tolerance) {
   const int scaletimes = 5;
-  int n = x0.getDimension();
+  int n = (int)x0.getDimension();
   Vector result(x0);
 
   Vector y  = f(result);

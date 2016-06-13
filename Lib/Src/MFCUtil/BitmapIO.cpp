@@ -61,7 +61,7 @@ static HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, boo
   try {
     try {
       PLWinBmp winBmp;
-      decoder.MakeBmpFromMemory((unsigned char*)bytes.getData(), bytes.size(),&winBmp);
+      decoder.MakeBmpFromMemory((unsigned char*)bytes.getData(), (int)bytes.size(),&winBmp);
       const int width      = winBmp.GetWidth();
       const int height     = winBmp.GetHeight();
       const int totalBytes = winBmp.GetBytesPerLine() * height;

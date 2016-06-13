@@ -12,8 +12,8 @@ FileSink::FileSink(FILE *file) {
 }
 
 FileSink::~FileSink() {
-  const int towrite = GetDataSize();
-  const int written = fwrite(m_pStartData, 1, towrite, m_file );
+  const int towrite = (int)GetDataSize();
+  const int written = (int)fwrite(m_pStartData, 1, towrite, m_file );
   PLASSERT(written == towrite );
   PLDataSink::Close();
   delete[] m_dataBuffer;
@@ -25,7 +25,7 @@ ByteStreamSink::ByteStreamSink(ByteOutputStream &stream) : m_stream(stream) {
 }
 
 ByteStreamSink::~ByteStreamSink() {
-  const int towrite = GetDataSize();
+  const int towrite = (int)GetDataSize();
   m_stream.putBytes(m_dataBuffer, towrite);
   PLDataSink::Close();
   delete[] m_dataBuffer;

@@ -275,7 +275,7 @@ void AnimatedImage::addToDisposeTable(PixRect *pr) {
 }
 
 const PixRect *AnimatedImage::findLastNonDisposed() const {
-  for(int i = m_disposeTable.size()-1; i >= 0; i--) {
+  for(int i = (int)m_disposeTable.size()-1; i >= 0; i--) {
     if(m_disposeTable[i] != NULL) {
       return m_disposeTable[i];
     }
@@ -296,7 +296,7 @@ void AnimatedImage::paintFrames(const CPoint &p, unsigned int last) {
     return;
   }
   if(last >= (unsigned int)m_frameTable.size()) {
-    last = m_frameTable.size()-1;
+    last = (int)m_frameTable.size()-1;
   }
   if(hasSavedBackground() && (m_background->getSize() != m_size)) {
     hide();

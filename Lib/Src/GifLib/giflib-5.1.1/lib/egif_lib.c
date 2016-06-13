@@ -217,9 +217,9 @@ void EGifSetGifVersion(GifFileType *GifFile, const bool gif89) {
 static int InternalWrite(GifFileType *GifFileOut, const unsigned char *buf, size_t len) {
   GifFilePrivateType *Private = GETPRIVATE(GifFileOut);
   if(Private->Write) {
-    return Private->Write(GifFileOut,buf,len);
+    return Private->Write(GifFileOut,buf,(int)len);
   } else {
-    return fwrite(buf, 1, len, Private->File);
+    return (int)fwrite(buf, 1, len, Private->File);
   }
 }
 
@@ -439,7 +439,7 @@ int EGifPutComment(GifFileType *GifFile, const char *Comment) {
   unsigned int length;
   char *buf;
 
-  length = strlen(Comment);
+  length = (unsigned int)strlen(Comment);
   if(length <= 255) {
     return EGifPutExtension(GifFile, COMMENT_EXT_FUNC_CODE, length, Comment);
   } else {
@@ -587,7 +587,7 @@ int EGifGCBToSavedExtension(const GraphicsControlBlock *GCB, GifFileType *GifFil
   if(GifAddExtensionBlock(&GifFile->SavedImages[ImageIndex].ExtensionBlockCount,
                           &GifFile->SavedImages[ImageIndex].ExtensionBlocks,
                           GRAPHICS_EXT_FUNC_CODE,
-                          Len,
+                          (int)Len,
                           (unsigned char *)buf) == GIF_ERROR) {
     return GIF_ERROR;
   }

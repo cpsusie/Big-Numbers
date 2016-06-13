@@ -92,7 +92,7 @@ public:
   TableauConstraint(const CompactArray<Real> &leftSide, SimplexRelation relation, const Real &rightSide);
 
   int getXCount() const {
-    return m_leftSide.size();
+    return (int)m_leftSide.size();
   }
 
   void addLeftSideCoefficient(const Real &a) {
@@ -115,7 +115,7 @@ public:
     return CompactArray<Real>::operator[](index-1);
   }
   int size() const {
-    return CompactArray<Real>::size();
+    return (int)CompactArray<Real>::size();
   }
   void add(const Real &x) {
     CompactArray<Real>::add(x);
@@ -167,7 +167,7 @@ private:
   }
 
   int getRowCount() const {
-    return m_table.size();
+    return (int)m_table.size();
   }
 
   int getMaxColumnCount() const {
@@ -247,7 +247,7 @@ public:
   }
 
   int getConstraintCount() const {
-    return m_table.size()-1;
+    return (int)m_table.size()-1;
   }
 
   const Real &getCostFactor(unsigned int column) const {

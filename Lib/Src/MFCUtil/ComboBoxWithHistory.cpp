@@ -65,7 +65,7 @@ void CComboBoxWithHistory::updateList() {
   GetWindowText(current);
   m_history.add((LPCTSTR)current);
   load();
-  for(size_t i = 0; i < m_history.size(); i++) {
+  for(int i = 0; i < (int)m_history.size(); i++) {
     if(m_history[i].cstr() == current) {
       SetCurSel(i);
       return;
@@ -150,7 +150,7 @@ void ComboBoxHistory::save() {
   try {
     RegistryKey key = getKey();
     key.deleteValues();
-    const int n = min((int)m_maxHistoryLength, size());
+    const int n = min(m_maxHistoryLength, (UINT)size());
     for(int i = 0; i < n; i++) {
       key.setValue(format(_T("s%02d"),i),(*this)[i]);
     }

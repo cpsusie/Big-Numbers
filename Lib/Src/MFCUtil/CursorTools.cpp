@@ -12,7 +12,7 @@ void setWindowCursor(CWnd *wnd, int resId) {
 }
 
 void setWindowCursor(CWnd *wnd, HCURSOR cursor) {
-  SetClassLong(wnd->m_hWnd,GCL_HCURSOR,(long)cursor);
+  SetClassLongPtr(wnd->m_hWnd,GCLP_HCURSOR,(LONG_PTR)cursor);
 }
 
 void setSystemCursor(int id, const TCHAR *name) {
@@ -28,7 +28,7 @@ void setSystemCursor(int id, HCURSOR cursor) {
 }
 
 HCURSOR createCursor(const ByteArray &bytes) {
-  HCURSOR cursor = (HCURSOR)CreateIconFromResource((BYTE*)bytes.getData(), bytes.size(), FALSE, 0x00030000);
+  HCURSOR cursor = (HCURSOR)CreateIconFromResource((BYTE*)bytes.getData(), (DWORD)bytes.size(), FALSE, 0x00030000);
   if(cursor == NULL) {
     throwLastErrorOnSysCallException(_T("CreateIconFromResource"));
   }

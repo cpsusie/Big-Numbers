@@ -86,7 +86,7 @@ BOOL CTestMouseDlg::OnInitDialog() {
 
 void CTestMouseDlg::showFlags(const TCHAR *function, UINT flags) {
   const String s = format(_T("%-13s:flags:%3d (%02x) [%s]"), function, flags, flags, sprintbin((unsigned char)flags).cstr()).cstr();
-  CClientDC(this).TextOut(10,10,s.cstr(), s.length());
+  CClientDC(this).TextOut(10,10,s.cstr(), (int)s.length());
 }
 
 #define SHOWFLAGS() showFlags(_T(__FUNCTION__), nFlags)
@@ -288,7 +288,7 @@ void CTestMouseDlg::OnLoadAnimatedCursor() {
     ByteArray cursorData;
     cursorData.loadFromResource(IDR_ANICURSOR1, _T("ANICURSORS"));
     releaseCreatedCursor();
-    m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
+    m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), (DWORD)cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
 //    m_createdCursor = (HCURSOR)CreateIconFromResource((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000);
     if (m_createdCursor == NULL) {
       throwLastErrorOnSysCallException(_T(__FUNCTION__));

@@ -99,7 +99,7 @@ public:
   void paintAllFrames(const CRect  &r);
   void hide();
   inline int getFrameCount() const {
-    return m_frameTable.size();
+    return (int)m_frameTable.size();
   }
   inline const GifFrame &getFrame(int index) const {
     return m_frameTable[index];

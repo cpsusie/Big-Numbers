@@ -76,7 +76,7 @@ void CCoordinateSystem::removeObject(CoordinateSystemObject *object) {
 }
 
 int CCoordinateSystem::findObject(const CoordinateSystemObject *object) const {
-  for(size_t i = 0; i < m_objectArray.size(); i++) {
+  for(int i = 0; i < (int)m_objectArray.size(); i++) {
     if(m_objectArray[i] == object) {
       return i;
     }
@@ -120,7 +120,7 @@ DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType)
 }
 
 void CCoordinateSystem::paintCurve(CDC &dc, const Point2DArray &a, COLORREF color) {
-  const int n = a.size();
+  const int n = (int)a.size();
   if(n > 1) {
     Viewport2D *vp = getViewport(dc);
     CPen pen;

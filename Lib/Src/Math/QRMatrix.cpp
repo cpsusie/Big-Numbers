@@ -229,7 +229,7 @@ void PlaneRotation::check(const Vector &v) const {
 
 QRMatrix::QRMatrix(QRTracer *tracer) {
   m_tracer       = tracer;
-  m_deflatedSize = getRowCount();
+  m_deflatedSize = (int)getRowCount();
 }
 
 QRMatrix::QRMatrix(const Matrix &src, QRTracer *tracer)
@@ -244,7 +244,7 @@ QRMatrix::QRMatrix(const Matrix &src, QRTracer *tracer)
   }
 
   m_tracer       = tracer;
-  m_deflatedSize = getRowCount();
+  m_deflatedSize = (int)getRowCount();
   solve();
 }
 
@@ -258,7 +258,7 @@ QRMatrix &QRMatrix::operator=(const Matrix &src) {
   }
 
   ((Matrix&)(*this)) = src;
-  const int n = getRowCount();
+  const int n = (int)getRowCount();
   m_pi.setDimension(n);
   m_u0.setDimension(n);
   m_eigenValues.setDimension(n);
@@ -297,7 +297,7 @@ void QRMatrix::solve() {
 // Algorithm 1.1 page 332
 void QRMatrix::reduceToHessenberg() {
   QRMatrix &a = *this;
-  const int n = a.getRowCount();
+  const int n = (int)a.getRowCount();
 
   for(int k = 0; k < n-2; k++) {
                                                       // 1 determine the transformation
@@ -359,7 +359,7 @@ void QRMatrix::reduceToHessenberg() {
 // set all elements below subdiagonal to 0
 void QRMatrix::resetToHessenberg() {
   QRMatrix &a = *this;
-  const int n = getRowCount();
+  const int n = (int)getRowCount();
   for(int j = 0; j < n; j++) {
     for(int i = j+2; i < n; i++) {
       a(i,j) = 0;
@@ -444,7 +444,7 @@ static String genUProductString(int k) {
 
 Vector QRMatrix::getUk(int k) const {
   const QRMatrix &a = *this;
-  const int       n = getRowCount();
+  const int       n = (int)getRowCount();
 
   Vector u(n-k-1);
   u[0] = m_u0[k];
@@ -455,7 +455,7 @@ Vector QRMatrix::getUk(int k) const {
 }
 
 void QRMatrix::createUMatrix() {
-  const int n = getRowCount();
+  const int n = (int)getRowCount();
 
   m_U = Matrix::one(n);
 
@@ -481,7 +481,7 @@ void QRMatrix::createUMatrix() {
 // Algorithm 3.5 Page 360
 void QRMatrix::singleQRStep(int iteration, const Real &shift) {
   QRMatrix &a = *this;
-  const int n = a.getRowCount();
+  const int n = (int)a.getRowCount();
 
   checkIsUnitary(_T("Q"), m_Q);
 #if DEBUG>0
@@ -549,7 +549,7 @@ if(traceQR) {
       a(k+3,k) = 0;
     }
 
-    for(size_t j = k+1; j < getColumnCount(); j++) { // 3 Premultiply
+    for(int j = k+1; j < (int)getColumnCount(); j++) { // 3 Premultiply
       reflector.preMultiply(a,k+1,j);
 
 #if DEBUG>1
@@ -559,7 +559,7 @@ if(traceQR) {
 #endif
 
     }
-    for(size_t i = 0; i < getRowCount(); i++) { // 4 Postmultiply
+    for(int i = 0; i < (int)getRowCount(); i++) { // 4 Postmultiply
       reflector.postMultiply(a  ,i,k+1);
       reflector.postMultiply(m_Q,i,k+1);
 
@@ -584,7 +584,7 @@ if(traceQR) {
   cout << rotation << endl;
 }
 #endif
-  for(size_t j = m_deflatedSize-2; j < getColumnCount(); j++) {
+  for(int j = m_deflatedSize-2; j < (int)getColumnCount(); j++) {
     rotation.preMultiply(a,m_deflatedSize-2,j);
 #if DEBUG>1
 if(traceQR) {
@@ -593,7 +593,7 @@ if(traceQR) {
 #endif
   }
 
-  for(size_t i = 0; i < getRowCount(); i++) {
+  for(int i = 0; i < (int)getRowCount(); i++) {
     rotation.postMultiply(a  ,i,m_deflatedSize-2);
     rotation.postMultiply(m_Q,i,m_deflatedSize-2);
 #if DEBUG>1
@@ -615,7 +615,7 @@ if(traceQR) {
 
 void QRMatrix::createComplexMatrix(ComplexMatrix &M) const {
   const QRMatrix &a = *this;
-  const int       n = getRowCount();
+  const int       n = (int)getRowCount();
   M.setDimension(n,n);
   for(int r = 0; r < n; r++) {
     for(int c = 0; c < n; c++) {
@@ -626,14 +626,14 @@ void QRMatrix::createComplexMatrix(ComplexMatrix &M) const {
 
 void QRMatrix::setDiagonalElements(ComplexMatrix &M, const Complex &lambda) const {
   const QRMatrix &a = *this;
-  const int       n = getRowCount();
+  const int       n = (int)getRowCount();
   for(int i = 0; i < n; i++) {
     M(i,i) = a(i,i) - lambda;
   }
 }
 
 void QRMatrix::findEigenVectors() {
-  const int n = getRowCount();
+  const int n = (int)getRowCount();
 
 //  cout << "QR:\n" << *this;
 //  cout << "EigenValues:" << m_eigenValues << endl;

@@ -9,24 +9,7 @@ gif_lib.h - service library for decoding and encoding GIF images
 
 #ifdef _MSC_VER // [
 
-#define LIBROOT "c:/mytools2015/lib/"
-
-#ifdef _WIN32
-#ifdef _DEBUG
-#define LIB_VERSION LIBROOT "MTDebug32/"
-#else
-#define LIB_VERSION LIBROOT "MTRelease32/"
-#endif
-
-#else
-
-#ifdef _DEBUG
-#define LIB_VERSION LIBROOT "MTDebug64/"
-#else
-#define LIB_VERSION LIBROOT "MTRelease64/"
-#endif
-
-#endif
+#include <PragmaLib.h>
 
 #ifdef GIVE_LINK_MESSAGE
 #pragma message("link with " LIB_VERSION)

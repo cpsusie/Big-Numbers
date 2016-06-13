@@ -94,7 +94,7 @@ const CSize CTestOBMBitmapsDlg::paintOBMBitmap(const OBMResource &res, const CPo
   if(bm.LoadOEMBitmap(res.m_id) == 0) {
     String s = format(_T("%s -"), res.m_name);
     CSize tsize = getTextExtent(dc, s);
-    dc.TextOut(p.x, p.y + 3, s.cstr(), s.length());
+    dc.TextOut(p.x, p.y + 3, s.cstr(), (int)s.length());
     tsize.cy += 3;
     return tsize;
   } else {
@@ -107,7 +107,7 @@ const CSize CTestOBMBitmapsDlg::paintOBMBitmap(const OBMResource &res, const CPo
     bm.GetBitmap(&info);
     String s = format(_T("%s:(%2dx%2d)"), res.m_name, info.bmWidth,info.bmHeight);
     const CSize tsize = getTextExtent(dc, s);
-    dc.TextOut(p.x, p.y + size.cy + 3, s.cstr(), s.length());
+    dc.TextOut(p.x, p.y + size.cy + 3, s.cstr(), (int)s.length());
     size.cx = max(size.cx, tsize.cx);
     size.cy += tsize.cy + 3;
     return size;

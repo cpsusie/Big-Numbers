@@ -21,7 +21,7 @@ public:
   void decrementMaxSize(unsigned int amount);
   double getCurrentAverage() const;
   unsigned int getCurrentSize() const {
-    return m_queue.size();
+    return (int)m_queue.size();
   }
   unsigned int getMaxSize() const {
     return m_maxQueueSize;
@@ -79,7 +79,7 @@ protected:
 	//{{AFX_MSG(CProgressDlg)
 	virtual BOOL OnInitDialog();
 	virtual void OnCancel();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer( UINT_PTR nIDEvent);
 	afx_msg void OnClose();
 	afx_msg void OnButtonSuspend();
 	afx_msg void OnOk();

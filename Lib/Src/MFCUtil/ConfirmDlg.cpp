@@ -69,7 +69,7 @@ BOOL CConfirmDlg::OnInitDialog() {
   CSize textSize(0,0);
   for(size_t i = 0; i < lineArray.size(); i++) {
     const String &line = lineArray[i];
-    const CSize lineSize = dc.GetTextExtent(line.cstr(), line.length());
+    const CSize lineSize = dc.GetTextExtent(line.cstr(), (int)line.length());
     if(lineSize.cx > textSize.cx) {
       textSize.cx = lineSize.cx;
     }
@@ -155,7 +155,7 @@ BOOL CConfirmDlg::OnInitDialog() {
     const String &s = butStr[i];
     if(s.length()) {
       visibleButtonCount++;
-      CSize textSize = dc.GetTextExtent(s.cstr(), s.length());
+      CSize textSize = dc.GetTextExtent(s.cstr(), (int)s.length());
       if(textSize.cx > buttonSize.cx) {
         buttonSize.cx = textSize.cx;
       }
@@ -169,7 +169,7 @@ BOOL CConfirmDlg::OnInitDialog() {
 
   CWnd *chkBox = GetDlgItem(_IDC_CHECKDONTSHOWAGAIN);
   String chkBoxText = getWindowText(chkBox);
-  const CSize chkBoxTextSize = dc.GetTextExtent(chkBoxText.cstr(), chkBoxText.length());
+  const CSize chkBoxTextSize = dc.GetTextExtent(chkBoxText.cstr(), (int)chkBoxText.length());
   const CSize chkBoxSize(chkBoxTextSize.cx + 20, chkBoxTextSize.cy + 15);
   setWindowPosition(chkBox, CPoint(LEFTMARG, msgBottom + GAPBUTTON));
   setWindowSize(chkBox, chkBoxSize);
@@ -208,7 +208,7 @@ BOOL CConfirmDlg::OnInitDialog() {
 
 int confirmDialogBox(const String &message, const String &caption, bool &showAgain, UINT nType) {
   CConfirmDlg dlg(message.cstr(), caption.cstr(), nType);
-  int result = dlg.DoModal();
+  int result = (int)dlg.DoModal();
   showAgain = dlg.getShowAgain();
   return result;
 }

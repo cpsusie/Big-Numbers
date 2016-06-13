@@ -43,7 +43,7 @@ void ListCtrlLayoutAttribute::setControlRect(const CRect &r) {
  
   if((winChanged || (newClientWidth != oldClientWidth)) && (oldClientWidth && newClientWidth)) {
     const double newSum = (double)m_columnWeightArray.getColumnWidthSum() * newClientWidth / oldClientWidth;
-    const int    n      = m_columnWeightArray.size();
+    const int    n      = (int)m_columnWeightArray.size();
     for(int i = 0; i < n; i++) {
       const int cw = newSum * m_columnWeightArray[i];
       ctrl->SetColumnWidth(i, cw);

@@ -1505,7 +1505,7 @@ bool MyPolygon::add(const CPoint &p) {
 }
 
 int MyPolygon::contains(const CPoint &p) const { // 1=inside, -1=outside, 0=edge
-  unsigned int n = size();
+  UINT n = (UINT)size();
   if(n < 3) {
     return -1;
   }
@@ -1543,7 +1543,7 @@ void PolygonEdgeOperator::apply(const CPoint &p) {
 }
 
 void MyPolygon::applyToEdge(PointOperator &op, bool closingEdge) const {
-  int n = size();
+  int n = (int)size();
   for(int i = 1; i < n; i++) {
     const CPoint &p1 = (*this)[i-1];
     const CPoint &p2 = (*this)[i];

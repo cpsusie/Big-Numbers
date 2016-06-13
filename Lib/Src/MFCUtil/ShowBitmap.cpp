@@ -22,7 +22,7 @@ void DebugBitmap::showBitmap(HBITMAP bitmap) { // static
     DeleteDC(screenDC);
   } catch(Exception e) {
     if(screenDC != NULL) {
-      TextOut(screenDC,0,0,e.what(), _tcsclen(e.what()));
+      TextOut(screenDC,0,0,e.what(), (int)_tcsclen(e.what()));
     } else {
       throw;
     }

@@ -55,7 +55,7 @@ void putClipboard(HWND hwnd, const String &s) {
 
     String tmp(s);
     tmp.replace(_T("\r\n"),_T("\n")).replace(_T('\n'),_T("\r\n"));
-    const int characterCount = tmp.length() + 1;
+    const int characterCount = (int)tmp.length() + 1;
     const int nbytes = sizeof(TCHAR) * characterCount;
     HLOCAL buf = LocalAlloc(0,nbytes);
     memcpy(buf, tmp.cstr(), nbytes);

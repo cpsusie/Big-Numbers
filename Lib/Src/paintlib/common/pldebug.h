@@ -40,14 +40,22 @@
 #else
   // This will be optimized away in release mode and still allow TRACE
   // to take a variable amount of arguments :-).
-  inline void PLTrace (const char *, ...) { }
-  #define PLTRACE  1 ? (void)0 : ::PLTrace
+inline void PLTrace(const char *, ...) { }
+#define PLTRACE  1 ? (void)0 : ::PLTrace
 #endif
 
 //------------- ASSERT
 
 #ifdef _DEBUG
-  #ifdef _WIN32
+  #ifdef _WIN64
+    #define PLASSERT(f)            \
+      if (!(f))                    \
+        {                          \
+          PLTRACE ("Assertion failed at %s, %i\n", __FILE__, __LINE__); \
+          abort();                 \
+        }
+
+  #elif _WIN32
     #define PLASSERT(f)            \
       if (!(f))                    \
         {                          \

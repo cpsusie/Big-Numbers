@@ -16,13 +16,13 @@ bool SetMark::handleNode(const ExpressionNode *n, int level) {
     n->mark();
     if(n->getSymbol() == SUM) {
       const AddentArray &a = n->getAddentArray();
-      for(int i = a.size(); i--;) a[i]->mark();
+      for(size_t i = a.size(); i--;) a[i]->mark();
     }
   } else {
     n->unMark();
     if(n->getSymbol() == SUM) {
       const AddentArray &a = n->getAddentArray();
-      for(int i = a.size(); i--;) a[i]->unMark();
+      for(size_t i = a.size(); i--;) a[i]->unMark();
     }
   }
   return true;

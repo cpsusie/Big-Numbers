@@ -26,8 +26,8 @@ static Real radius(Real u, Real v) {
 *       A[m][n] has been destroyed by U[m][n] after the decomposition.      *
 ****************************************************************************/
 static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
-  const int m   = a.getRowCount();
-  const int n   = a.getColumnCount();
+  const int m   = (int)a.getRowCount();
+  const int n   = (int)a.getColumnCount();
   const int nm1 = n - 1;
   const int mm1 = m - 1;
   int  i, j, k, l, nm;
@@ -285,8 +285,8 @@ static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
 * No input quantities are destroyed, so sequential calling is OK    *
 ********************************************************************/
 static Vector svdSolve(const Matrix &u, const Vector &d, const Matrix &v, const Vector &b) {
-  const int m = u.getRowCount();
-  const int n = u.getColumnCount();
+  const int m = (int)u.getRowCount();
+  const int n = (int)u.getColumnCount();
 
   Vector tmp(n);
   for(int j = 0; j < n; j++) { // calculate <U,b>
@@ -314,14 +314,14 @@ static Vector svdSolve(const Matrix &u, const Vector &d, const Matrix &v, const 
 DEFINECLASSNAME(SVDDecomposition);
 
 SVDDecomposition::SVDDecomposition(const Matrix &a) : m_u(a) {
-  const int c = a.getColumnCount();
+  const int c = (int)a.getColumnCount();
   m_d.setDimension(c);
   m_v.setDimension(c,c);
   svdDecompose(m_u,m_d,m_v);
 }
 
 Vector SVDDecomposition::solve(const Vector &b) const {
-  const int dim = b.getDimension();
+  const int dim = (int)b.getDimension();
   if(dim != m_u.getRowCount()) {
     throwMethodInvalidArgumentException(s_className, _T("solve")
                                        ,_T("Invalid dimension Dim(u)=(%u,%u). Dim(b)=%u"), m_u.getRowCount(), m_u.getColumnCount(), dim);

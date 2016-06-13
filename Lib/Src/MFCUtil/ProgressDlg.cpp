@@ -240,7 +240,7 @@ double RollingAverageQueue::getCurrentAverage() const {
   return m_queue.size() ? (m_currentSum / m_queue.size()) : 0;
 }
 
-void CProgressDlg::OnTimer(UINT nIDEvent) {
+void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
   if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR | IR_SHOWTIMEESTIMATE | IR_SHOWPROGRESSMSG)) {
     short progress   = 0;
     short subPercent = 0;

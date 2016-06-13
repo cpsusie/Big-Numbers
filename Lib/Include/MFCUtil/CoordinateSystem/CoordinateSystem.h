@@ -48,7 +48,7 @@ public:
     m_objectArray.clear();
   }
   int    getObjectCount() const {
-    return m_objectArray.size();
+    return (int)m_objectArray.size();
   }
   CoordinateSystemObject *getObject(unsigned int index) {
     return m_objectArray[index];

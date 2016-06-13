@@ -4,7 +4,7 @@
 // superdiag = (c0=a(0,1),c1=a(1,2),c2=a(2,3)...,0)
 // subdiag   = (0,c1=a(1,0),c2=a(2,1),c3=a(3,2)...)
 Vector solve3diag(const Vector &superdiag, const Vector &diag, const Vector &subdiag, const Vector &d) {
-  int n = d.getDimension();
+  int n = (int)d.getDimension();
   Vector a(n);
   Vector b(n);
   b[0] = diag[0];

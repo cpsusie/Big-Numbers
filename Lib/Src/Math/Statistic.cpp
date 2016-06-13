@@ -16,7 +16,7 @@ DescriptiveStatistics::DescriptiveStatistics(const Array<Real> &data) {
   m_minimum           = 0;
   m_maximum           = 0;
   m_sum               = 0;
-  m_count             = data.size();
+  m_count             = (int)data.size();
 
   if(m_count == 0)
     return;
