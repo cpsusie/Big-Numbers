@@ -6,12 +6,12 @@
 #undef WINAPI_FAMILY
 #endif
 
-#if _WIN32 || _WIN64 || WIN32
-#ifdef _WIN64
+#if _WIN64
+#pragma message( "64-bit compilation")
 #define IS64BIT
-#else
+#elif _WIN32
+#pragma message( "32-bit compilation")
 #define IS32BIT
-#endif
 #endif
 
 #define WINAPI_FAMILY WINAPI_FAMILY_DESKTOP_APP
