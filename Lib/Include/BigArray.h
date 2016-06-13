@@ -37,9 +37,11 @@ private:
 #define MEMORYPAGE_COUNT 1024
 #endif
 
+#pragma warning( push )
+#pragma warning(disable:4200 4723 4724)
+
 #define _ELEMENTS_PER_PAGE (MAX_PAGESIZE / sizeof(T))
 
-#pragma warning(disable:4200 4723 4724)
 
   class ArrayPage {
   public:
@@ -126,6 +128,8 @@ private:
   unsigned int getPageOffset(size_t index) const {
     return index % _ELEMENTS_PER_PAGE;
   }
+
+#pragma warning( pop )
 
   void indexError(size_t index) const {
     throwException(_T("BigArray::Index %s out of range. size=%s, elementSize=%d"), format1000(index).cstr(), format1000(m_size).cstr(), sizeof(T));
