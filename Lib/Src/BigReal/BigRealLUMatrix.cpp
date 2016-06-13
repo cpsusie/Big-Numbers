@@ -68,7 +68,7 @@ BigRealVector BigRealLUMatrix::evald() const {
   return d;
 }
 
-void BigRealLUMatrix::pivot(const BigRealVector &d, unsigned int k) {
+void BigRealLUMatrix::pivot(const BigRealVector &d, size_t k) {
   BigRealLUMatrix &a      = *this;
   const size_t     n      = getRowCount();
   const int        digits = getPrecision();
@@ -101,7 +101,7 @@ void BigRealLUMatrix::lowerUpper() {
   BigRealVector   d      = evald();
 
   initPermut();
-  for(intptr_t k = 0; k < (intptr_t)n; k++) {
+  for(intptr_t k = 0; k < n; k++) {
     for(intptr_t i = k; i < n; i++) {
       BigReal sum;
       for(intptr_t l = 0; l <= k-1; l++) {

@@ -50,8 +50,8 @@ public:
 Sieve::Sieve(const BigInt &n) : m_base(n) {
   DigitPool *pool = n.getDigitPool();
   memset(m_remainder,0,sizeof(m_remainder));
-  for(Iterator<unsigned int> it = SmallPrimeSet::getPrimeSet().getIterator(); it.hasNext(); ) {
-    unsigned int p = it.next();
+  for(Iterator<size_t> it = SmallPrimeSet::getPrimeSet().getIterator(); it.hasNext(); ) {
+    size_t p = it.next();
     BigInt r = BigInt(m_base % BigInt(p, pool));
     m_remainder[p] = getUlong(r);
   }
@@ -60,8 +60,8 @@ Sieve::Sieve(const BigInt &n) : m_base(n) {
 bool Sieve::hasSmallFactor(const BigInt &n, int &factor) const {
   BigInt d = BigInt(n - m_base);
   int diff = (int)getDouble(d);
-  for(Iterator<unsigned int> it = SmallPrimeSet::getPrimeSet().getIterator(); it.hasNext(); ) {
-    int p = it.next();
+  for(Iterator<size_t> it = SmallPrimeSet::getPrimeSet().getIterator(); it.hasNext(); ) {
+    int p = (int)it.next();
     int r;
     if(diff > 0) {
       r = diff - (p-m_remainder[p]);

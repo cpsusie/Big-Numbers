@@ -154,8 +154,8 @@ class Tableau {
 private:
   DictionaryKeySet m_dictionarySet;
 
-  const unsigned int m_xCount;                  // Number of original variables
-  unsigned int m_slackCount, m_artificialCount; // Number of slack- and artificial variables
+  const size_t m_xCount;                  // Number of original variables
+  size_t m_slackCount, m_artificialCount; // Number of slack- and artificial variables
 
   Array<TableauRow>       m_table;              // size = getRowCount()
   CompactArray<Real>      m_costFactor;         // size = m_xCount
@@ -163,7 +163,7 @@ private:
   int                     m_traceFlags;
 
   int getWidth() const {
-    return m_xCount + m_slackCount + m_artificialCount;
+    return (int)(m_xCount + m_slackCount + m_artificialCount);
   }
 
   int getRowCount() const {
@@ -174,37 +174,37 @@ private:
     return getMaxColumnCount(getConstraintCount());
   }
 
-  int getMaxColumnCount(unsigned int constraintCount) const {
-    return m_xCount + 2 * constraintCount + 1;
+  int getMaxColumnCount(size_t constraintCount) const {
+    return (int)(m_xCount + 2 * constraintCount + 1);
   }
 
-  int getSlackColumn(     unsigned int index) const;        // index=[1..slackCount]
-  int getArtificialColumn(unsigned int index) const;        // index=[1..artificialCount]
+  int getSlackColumn(     size_t index) const;  // index=[1..slackCount]
+  int getArtificialColumn(size_t index) const;  // index=[1..artificialCount]
 
-  Real &slackVar(    unsigned int row, unsigned int index); // row=[1..constraintCount], index=[1..slackCount]
-  Real &artificalVar(unsigned int row, unsigned int index); // row=[1..constraintCount], index=[1..artificialCount]
+  Real &slackVar(    size_t row, size_t index); // row=[1..constraintCount], index=[1..slackCount]
+  Real &artificalVar(size_t row, size_t index); // row=[1..constraintCount], index=[1..artificialCount]
 
-  Real &objectFactor(unsigned int column) {
+  Real &objectFactor(size_t column) {
     return m_table[0].m_a[column];
   }
 
-  void allocate(           unsigned int constraintCount);
+  void allocate(size_t constraintCount);
   void preparePhase1();
   SimplexResult endPhase1();
-  void pivot(              unsigned int pivotRow, unsigned int pivotColumn, bool primalSimplex);
-  void multiplyRow(        unsigned int row, const Real &factor);
-  void addRowsToGetZero(   unsigned int dstRow, unsigned int srcRow, unsigned int column);
+  void pivot(              size_t pivotRow, size_t pivotColumn, bool primalSimplex);
+  void multiplyRow(        size_t row, const Real &factor);
+  void addRowsToGetZero(   size_t dstRow, size_t srcRow, size_t column);
   void addSlackColumn();
 
-  void setLeftSide(        unsigned int row, unsigned int column, const Real &value);
-  void setRightSide(       unsigned int row, const Real &b);
-  const Real &getRightSide(unsigned int row) const;
-  void setRelation(        unsigned int row, SimplexRelation relation);
-  void setCostFactor(      unsigned int xIndex, const Real &value);
+  void setLeftSide(        size_t row, size_t column, const Real &value);
+  void setRightSide(       size_t row, const Real &b);
+  const Real &getRightSide(size_t row) const;
+  void setRelation(        size_t row, SimplexRelation relation);
+  void setCostFactor(      size_t xIndex, const Real &value);
 
-  bool rowIsZero(          unsigned int row);
+  bool rowIsZero(          size_t row);
   int  getInequalityCount() const;
-  TCHAR getVariablePrefix(int index) const; // 'X' for original variables, 'S' for Slack- and  'A' for artificial variables
+  TCHAR getVariablePrefix(size_t index) const; // 'X' for original variables, 'S' for Slack- and  'A' for artificial variables
 
   void checkInvariant() const;
   void traceTableau() const;
@@ -213,7 +213,7 @@ private:
   void trace(int flag, const TCHAR *format, ...) const;
   void vtrace(const TCHAR *format, va_list argptr) const;
 public:
-  Tableau(unsigned int xCount, unsigned int constraintCount, SimplexTracer *tracer = NULL, int traceFlags = TRACE_MAINSTEP);
+  Tableau(size_t xCount, size_t constraintCount, SimplexTracer *tracer = NULL, int traceFlags = TRACE_MAINSTEP);
   Tableau(const Tableau &src);
 
   SimplexResult primalSimplex(int phase); // Parameter phase only for tracing
@@ -235,26 +235,26 @@ public:
   }
 
   int getXCount() const {
-    return m_xCount;
+    return (int)m_xCount;
   }
 
   int getSlackCount() const {
-    return m_slackCount;
+    return (int)m_slackCount;
   }
 
   int getArtCount() const {
-    return m_artificialCount;
+    return (int)m_artificialCount;
   }
 
   int getConstraintCount() const {
     return (int)m_table.size()-1;
   }
 
-  const Real &getCostFactor(unsigned int column) const {
+  const Real &getCostFactor(size_t column) const {
     return m_costFactor[column];
   }
 
-  const Real &getObjectFactor(unsigned int column) const {
+  const Real &getObjectFactor(size_t column) const {
     return m_table[0].m_a[column];
   }
 
@@ -265,21 +265,21 @@ public:
   bool isPrimalFeasible() const;
   bool isDualFeasible() const;
 
-  void addConstraint(unsigned int xIndex, SimplexRelation relation, const Real &rightSide);
+  void addConstraint(size_t xIndex, SimplexRelation relation, const Real &rightSide);
   void setCostFactors(TableauCostFactors &factors);
-  void setConstraint(unsigned int row, const TableauConstraint &constraint);
-  void setConstraint(unsigned int row, const CompactArray<Real> &leftSide, SimplexRelation relation, const Real &rightSide);
+  void setConstraint(size_t row, const TableauConstraint &constraint);
+  void setConstraint(size_t row, const CompactArray<Real> &leftSide, SimplexRelation relation, const Real &rightSide);
   void checkTableau();
   CompactArray<BasisVariable> getBasisVariables() const;
   BitSet getNonBasisVariables() const;
   SimplexSolution getSolution() const;
-  String getVariableName(int index) const;
+  String getVariableName(size_t index) const;
   String toString(int fieldSize = 12, int decimals = 5) const;
 
   static Real               getSlackFactor(   SimplexRelation relation);
   static const TCHAR       *getRelationString(SimplexRelation relation);
   static SimplexRelation    reverseRelation(  SimplexRelation relation);
-  static CompactArray<Real> createRealArray(unsigned int size);
+  static CompactArray<Real> createRealArray(size_t size);
 
   friend class DictionaryKey;
 };

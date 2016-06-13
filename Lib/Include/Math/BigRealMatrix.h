@@ -77,7 +77,7 @@ private:
   void allocPermut();
   void initPermut();
   BigRealVector evald() const;
-  void pivot(const BigRealVector &d, unsigned int k);
+  void pivot(const BigRealVector &d, size_t k);
   void lowerUpper();
   BigRealLUMatrix(const BigRealLUMatrix &a);                              /* not defined */
   BigRealLUMatrix &operator=(const BigRealLUMatrix &a);                   /* not defined */

@@ -67,7 +67,7 @@ void BigReal::formatFixed(String &result, int precision, long flags, bool remove
         result += spaceString(precision-decimalsDone,'0');
       }
       if(removeTrailingZeroes) {
-        int i;
+        intptr_t i;
         for(i = result.length()-1; i >= 0 && result[i]=='0';) {
           result.remove(i--);
         }
@@ -119,7 +119,7 @@ void BigReal::formatScientific(String &result, int precision, long flags, int ex
         result += spaceString(precision-decimalsDone,'0');
       }
       if(removeTrailingZeroes) {
-        int i;
+        intptr_t i;
         for(i = result.length()-1; i >= 0 && result[i]=='0';) {
           result.remove(i--);
         }
@@ -209,7 +209,7 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
       } // x defined && x != 0
     }
 
-    const int fillerLength = stream.getWidth() - result.length();
+    const int fillerLength = stream.getWidth() - (int)result.length();
     if(fillerLength <= 0) {
       stream.append(result);
     } else if ((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set

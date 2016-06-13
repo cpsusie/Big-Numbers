@@ -1,6 +1,8 @@
 #include "pch.h"
 
+#ifdef IS32BIT
 #define ASM_OPTIMIZED
+#endif
 
 #if(SP_OPT_METHOD == SP_OPT_NONE)
 

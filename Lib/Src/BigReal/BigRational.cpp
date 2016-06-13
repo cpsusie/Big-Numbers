@@ -36,7 +36,7 @@ BigRational::BigRational(const char    *s, DigitPool *digitPool) : m_numerator(d
 
 void BigRational::init(const String &s) {
   String tmp(s);
-  const int slash = tmp.find(_T('/'));
+  const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
     throwBigRealException(_T("init:Illegal argument for BigRational:%s"), s.cstr());
   }

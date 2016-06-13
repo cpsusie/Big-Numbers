@@ -26,7 +26,11 @@
 //#define SP_OPT_METHOD  SP_OPT_NONE
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU2
+#ifdef IS64BIT
+#define SP_OPT_METHOD SP_OPT_NONE
+#else
 #define SP_OPT_METHOD SP_OPT_BY_REG32
+#endif
 
 #ifndef SP_OPT_METHOD
 
@@ -1336,9 +1340,9 @@ private:
 
 protected:
   void allocateNewResources(size_t count) {
-    const size_t oldSize = size();
+    const int oldSize = (int)size();
     ResourcePool<T>::allocateNewResources(count);
-    for(size_t i = oldSize; i < size(); i++) {
+    for(int i = oldSize; i < (int)size(); i++) {
       Thread &thr = get(i);
       thr.setPriority(m_threadPriority);
       thr.setPriorityBoost(m_disablePriorityBoost);
@@ -1352,7 +1356,7 @@ public:
   void setPriority(int priority) {
     if(priority == m_threadPriority) return;
     m_threadPriority = priority;
-    for(size_t i = 0; i < size(); i++) get(i).setPriority(priority);
+    for(int i = 0; i < (int)size(); i++) get(i).setPriority(priority);
   }
   int getPriority() const {
     return m_threadPriority;
@@ -1360,7 +1364,7 @@ public:
   void setPriorityBoost(bool disablePriorityBoost) {
     if(disablePriorityBoost == m_disablePriorityBoost) return;
     m_disablePriorityBoost = disablePriorityBoost;
-    for(size_t i = 0; i < size(); i++) get(i).setPriorityBoost(disablePriorityBoost);
+    for(int i = 0; i < (int)size(); i++) get(i).setPriorityBoost(disablePriorityBoost);
   }
 
   bool getPriorityBoost() const {
@@ -1379,7 +1383,7 @@ private:
   ResourcePool<MTDigitPoolType>         m_digitPool;
   mutable Semaphore                     m_gate;
   int                                   m_processorCount;
-  int                                   m_activeThreads, m_maxActiveThreads;
+  intptr_t                              m_activeThreads, m_maxActiveThreads;
   static BigRealThreadPool              s_instance;
 
   BigRealThreadPool();
@@ -1397,7 +1401,7 @@ public:
                                                         // the rest of the jobs will be terminated and an exception with the same
                                                         // message will be thrown to the caller
 
-  static inline int    getMaxActiveThreads() {
+  static inline intptr_t getMaxActiveThreads() {
     return getInstance().m_maxActiveThreads;
   }
 

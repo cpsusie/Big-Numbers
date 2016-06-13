@@ -119,7 +119,7 @@ namespace TestMatrix {
         if (!A.isSquare()) {
           throwException(_T("exp(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
         }
-        const int dim = A.getRowCount();
+        const int dim = (int)A.getRowCount();
         Matrix    p = Matrix::one(dim);
         Matrix    sum(dim, dim);
         Matrix    last(dim, dim);
@@ -140,7 +140,7 @@ namespace TestMatrix {
         if (!A.isSquare()) {
           throwException(_T("cos(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
         }
-        const int    dim = A.getRowCount();
+        const int    dim = (int)A.getRowCount();
         const Matrix A2 = -A * A;
         Matrix       p = Matrix::one(dim);
         Matrix       sum(dim, dim);
@@ -162,7 +162,7 @@ namespace TestMatrix {
         if (!A.isSquare()) {
           throwException(_T("sin(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
         }
-        const int    dim = A.getRowCount();
+        const int    dim = (int)A.getRowCount();
         const Matrix A2 = -A * A;
         Matrix       p = A;
         Matrix       sum(dim, dim);
@@ -258,7 +258,7 @@ namespace TestMatrix {
       for (size_t i = 0; i < D.getRowCount(); i++) {
         for (size_t j = 0; j < D.getColumnCount(); j++) {
           if (i == j) {
-            verify(D(i, j) == i);
+            verify(D(i, j) == (int)i);
           }
           else {
             verify(D(i, j) == 0);
@@ -463,7 +463,7 @@ namespace TestMatrix {
     }
 
     static void checkIsSingular(const Matrix &A, const ComplexVector &eigenValues) {
-      int n = A.getRowCount();
+      int n = (int)A.getRowCount();
 
       verify(n == (int)eigenValues.getDimension());
 
@@ -532,7 +532,7 @@ namespace TestMatrix {
       const Matrix   Q = QR.getQMatrix();
       checkIsUnitary("Q", Q);
 
-      const int n = A.getRowCount();
+      const int n = (int)A.getRowCount();
       const ComplexVector &EValues = QR.getEigenValues();
       checkIsSingular(A, EValues);
       for (int i = 0; i < n; i++) {
@@ -590,7 +590,7 @@ namespace TestMatrix {
 
         const Matrix exp1A = exp(A);
 
-        const int dim = A.getRowCount();
+        const int dim = (int)A.getRowCount();
         ComplexMatrix expD = ComplexMatrix::one(dim);
         for (int k = 0; k < dim; k++) {
           expD(k, k) = ::exp(D(k, k));
@@ -625,7 +625,7 @@ namespace TestMatrix {
         const Matrix cos1A = cos(A);
         const Matrix sin1A = sin(A);
 
-        const int     dim = A.getRowCount();
+        const int     dim  = (int)A.getRowCount();
         ComplexMatrix cosD = ComplexMatrix::one(dim);
         ComplexMatrix sinD = ComplexMatrix::one(dim);
 

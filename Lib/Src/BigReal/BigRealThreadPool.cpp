@@ -30,7 +30,7 @@ void MThreadArray::waitForAllResults() {
   if(size() == 0) {
     return;
   } else {
-    (*this)[0]->getQueue().waitForResults(size());
+    (*this)[0]->getQueue().waitForResults((int)size());
   }
 }
 
@@ -167,7 +167,7 @@ void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // st
   instance.m_gate.signal(); // open gate for other threads
 
   try {
-    queue->waitForResults(jobs.size());
+    queue->waitForResults((int)jobs.size());
     instance.m_gate.wait();
       for(size_t i = 0; i < threads.size(); i++) instance.m_threadPool.releaseResource(threads[i]);
       instance.m_queuePool.releaseResource(queue);

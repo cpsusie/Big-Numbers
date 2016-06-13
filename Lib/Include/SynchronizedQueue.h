@@ -44,11 +44,11 @@ public:
     return size() == 0;
   }
   
-  int size() const { 
+  size_t size() const { 
     return QueueList<T>::size();
   }
 
-  T operator[](int index) const {
+  T operator[](size_t index) const {
     m_gate.wait();
     T result = QueueList<T>::operator[](index);
     m_gate.signal();

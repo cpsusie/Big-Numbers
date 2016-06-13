@@ -6,7 +6,9 @@
 
 #define EPS 1e-8
 
-Tableau::Tableau(unsigned int xCount, unsigned int constraintCount, SimplexTracer *tracer, int traceFlags) : m_xCount(xCount) {
+#define FSZ(n) format1000(n).cstr()
+
+Tableau::Tableau(size_t xCount, size_t constraintCount, SimplexTracer *tracer, int traceFlags) : m_xCount(xCount) {
   allocate(constraintCount);
   m_tracer     = tracer;
   m_traceFlags = traceFlags;
@@ -21,7 +23,7 @@ Tableau::Tableau(const Tableau &src) : m_xCount(src.m_xCount) {
   m_traceFlags      = src.m_traceFlags;
 }
 
-void Tableau::allocate(unsigned int constraintCount) {
+void Tableau::allocate(size_t constraintCount) {
   m_slackCount      = 0;
   m_artificialCount = 0;
 
@@ -300,12 +302,12 @@ SimplexResult Tableau::endPhase1() {
   return SIMPLEX_SOLUTION_OK;
 }
 
-void Tableau::pivot(unsigned int pivotRow, unsigned int pivotColumn, bool primalSimplex) {
+void Tableau::pivot(size_t pivotRow, size_t pivotColumn, bool primalSimplex) {
   TableauRow &row = m_table[pivotRow];
   const int leaveBasis = row.m_basisVariable;
-  const int enterBasis = pivotColumn;
+  const int enterBasis = (int)pivotColumn;
 
-  row.m_basisVariable = pivotColumn;
+  row.m_basisVariable = (int)pivotColumn;
 
   const Real &factor = row.m_a[pivotColumn];
   const String enteringVarName = getVariableName(enterBasis);
@@ -313,18 +315,18 @@ void Tableau::pivot(unsigned int pivotRow, unsigned int pivotColumn, bool primal
 
   if(isTracing(TRACE_PIVOTING)) {
     if(primalSimplex) {
-      trace(_T("pivot(%2d,%2d). %s -> %s. Cost[%s]:%-15.10lg   Tab[%2d,%2d]=%-15.10lg   Minimum:%-15.10lg")
-            ,pivotRow,pivotColumn
+      trace(_T("pivot(%2s,%2s). %s -> %s. Cost[%s]:%-15.10lg   Tab[%2s,%2s]=%-15.10lg   Minimum:%-15.10lg")
+            ,FSZ(pivotRow),FSZ(pivotColumn)
             ,enteringVarName.cstr(),leavingVarName.cstr()
             ,enteringVarName.cstr(),getDouble(getObjectFactor(pivotColumn))
-            ,pivotRow,pivotColumn ,getDouble(factor)
+            ,FSZ(pivotRow),FSZ(pivotColumn),getDouble(factor)
             ,getDouble(getObjectValue()));
     } else {
-      trace(_T("pivot(%2d,%2d). %s -> %s. %s=B[%2d]:%-15.10lg  Tab[%2d,%2d]=%-15.10lg   Minimum:%-15.10lg")
-            ,pivotRow,pivotColumn
+      trace(_T("pivot(%2s,%2s). %s -> %s. %s=B[%2s]:%-15.10lg  Tab[%2s,%2s]=%-15.10lg   Minimum:%-15.10lg")
+            ,FSZ(pivotRow),FSZ(pivotColumn)
             ,enteringVarName.cstr(),leavingVarName.cstr()
-            ,leavingVarName.cstr(),pivotRow,getDouble(getRightSide(pivotRow))
-            ,pivotRow,pivotColumn ,getDouble(factor)
+            ,leavingVarName.cstr(),FSZ(pivotRow),getDouble(getRightSide(pivotRow))
+            ,FSZ(pivotRow),FSZ(pivotColumn),getDouble(factor)
             ,getDouble(getObjectValue()));
     }
   }
@@ -338,7 +340,7 @@ void Tableau::pivot(unsigned int pivotRow, unsigned int pivotColumn, bool primal
   }
 }
 
-void Tableau::multiplyRow(unsigned int r, const Real &factor) {
+void Tableau::multiplyRow(size_t r, const Real &factor) {
   const int w = getWidth();
   TableauRow &row = m_table[r];
   CompactArray<Real> &a = row.m_a;
@@ -351,7 +353,7 @@ void Tableau::multiplyRow(unsigned int r, const Real &factor) {
 }
 
 // Add a multiplum of srcRow to dstRow to get a zero in table[dstRow][column]. Elementary matrix operation
-void Tableau::addRowsToGetZero(unsigned int dstRow, unsigned int srcRow, unsigned int column) {
+void Tableau::addRowsToGetZero(size_t dstRow, size_t srcRow, size_t column) {
   const int width = getWidth();
   CompactArray<Real> &src = m_table[srcRow].m_a;
   CompactArray<Real> &dst = m_table[dstRow].m_a;
@@ -381,7 +383,7 @@ void Tableau::checkTableau() {
   traceTableau();
 }
 
-bool Tableau::rowIsZero(unsigned int row) {
+bool Tableau::rowIsZero(size_t row) {
   for(int col = 1; col <= getXCount() ;col++) {
     if(m_table[row].m_a[col] != 0) {
       return false;
@@ -390,32 +392,32 @@ bool Tableau::rowIsZero(unsigned int row) {
   return true;
 }
 
-int Tableau::getSlackColumn(unsigned int index) const {
+int Tableau::getSlackColumn(size_t index) const {
   if(index < 1 || index > m_slackCount) {
-    throwException(_T("getSlackColumn:Illegal argument:index=%d. Valid interval=[1..%d]"), index, m_slackCount);
+    throwException(_T("getSlackColumn:Illegal argument:index=%s. Valid interval=[1..%d]"), FSZ(index), m_slackCount);
   }
-  return m_xCount + index;
+  return (int)(m_xCount + index);
 }
 
-int Tableau::getArtificialColumn(unsigned int index) const {
+int Tableau::getArtificialColumn(size_t index) const {
   if(index < 1 || index > m_artificialCount) {
-    throwException(_T("getArtificialColumn:Illegal argument:index=%d. Valid interval=[1..%d]"), index, m_artificialCount);
+    throwException(_T("getArtificialColumn:Illegal argument:index=%s. Valid interval=[1..%s]"), FSZ(index), FSZ(m_artificialCount));
   }
-  return m_xCount + m_slackCount + index;
+  return (int)(m_xCount + m_slackCount + index);
 }
 
-Real &Tableau::slackVar(unsigned int row, unsigned int index) {
+Real &Tableau::slackVar(size_t row, size_t index) {
   if(row < 1 || (int)row > getConstraintCount() || index < 1 || index > m_slackCount) {
-    throwException(_T("slackVar:Illegal arguments. (row,index)=(%d,%d). Valid row interval=[1..%d]. Valid index interval=[1..%d]")
-                   ,row, index, getConstraintCount(), m_slackCount);
+    throwException(_T("slackVar:Illegal arguments. (row,index)=(%s,%s). Valid row interval=[1..%s]. Valid index interval=[1..%s]")
+                   ,FSZ(row), FSZ(index), FSZ(getConstraintCount()), FSZ(m_slackCount));
   }
   return m_table[row].m_a[getSlackColumn(index)];
 }
 
-Real &Tableau::artificalVar(unsigned int row, unsigned int index) {
+Real &Tableau::artificalVar(size_t row, size_t index) {
   if(row < 1 || (int)row > getConstraintCount() || index < 1 || index > m_artificialCount) {
-    throwException(_T("artificalVar:Illegal arguments. (row,index)=(%d,%d). Valid row interval=[1..%d]. Valid index interval=[1..%d]")
-                   ,row, index, getConstraintCount(), m_artificialCount);
+    throwException(_T("artificalVar:Illegal arguments. (row,index)=(%s,%s). Valid row interval=[1..%s]. Valid index interval=[1..%s]")
+                   ,FSZ(row), FSZ(index), FSZ(getConstraintCount()), FSZ(m_artificialCount));
   }
   return m_table[row].m_a[getArtificialColumn(index)];
 }
@@ -430,13 +432,13 @@ int Tableau::getInequalityCount() const {
   return count;
 }
 
-void Tableau::setRelation(unsigned int row, SimplexRelation relation) { // private
+void Tableau::setRelation(size_t row, SimplexRelation relation) { // private
   if(strchr( "=<>", relation ) == NULL) {
     throwException(_T("Tableau::setRelation::Invalid relational operator (=%c). Must be <, > or ="),relation);
   }
 
   if(row < 1 || (int)row > getConstraintCount()) {
-    throwException(_T("setRelation:Illegal argument:Row=%d. Valid interval=[1..%d]"),row,getConstraintCount());
+    throwException(_T("setRelation:Illegal argument:Row=%s. Valid interval=[1..%s]"),FSZ(row),FSZ(getConstraintCount()));
   }
   m_table[row].m_relation = relation;
 }
@@ -450,27 +452,27 @@ void Tableau::setCostFactors(TableauCostFactors &factors) {
   }
 }
 
-void Tableau::setCostFactor(unsigned int xIndex, const Real &value) { // private
+void Tableau::setCostFactor(size_t xIndex, const Real &value) { // private
   if(xIndex < 1 || (int)xIndex > getXCount()) {
-    throwException(_T("Tableau::setCostFactor:Illegal argument. xIndex=%d. Valid interval=[1..%d]"),xIndex,getXCount());
+    throwException(_T("Tableau::setCostFactor:Illegal argument. xIndex=%s. Valid interval=[1..%s]"),FSZ(xIndex),FSZ(getXCount()));
   }
 
   objectFactor(xIndex) = value;
   m_costFactor[xIndex] = value;
 }
 
-void Tableau::addConstraint(unsigned int xIndex, SimplexRelation relation, const Real &rightSide) {
+void Tableau::addConstraint(size_t xIndex, SimplexRelation relation, const Real &rightSide) {
   if(xIndex < 1 || (int)xIndex >= getXCount()) {
-    throwException(_T("addConstraint:Invalid xIndex=%d. Valid interval=[1..%d]"), xIndex, getXCount());
+    throwException(_T("addConstraint:Invalid xIndex=%s. Valid interval=[1..%s]"), FSZ(xIndex), FSZ(getXCount()));
   }
 
   Real currentValue = 0;
   int  bvRow        = -1;
 
-  for(int i = 1; i < (int)m_table.size(); i++) {
+  for(size_t i = 1; i < m_table.size(); i++) {
     if(m_table[i].m_basisVariable == (int)xIndex) {
       currentValue = getRightSide(i);
-      bvRow = i;
+      bvRow = (int)i;
       break;
     }
   }
@@ -544,47 +546,47 @@ void Tableau::addSlackColumn() {
   }
 }
 
-void Tableau::setConstraint(unsigned int row, const TableauConstraint &constraint) {
+void Tableau::setConstraint(size_t row, const TableauConstraint &constraint) {
   setConstraint(row,constraint.m_leftSide,constraint.m_relation,constraint.m_rightSide);
 }
 
-void Tableau::setConstraint(unsigned int row, const CompactArray<Real> &leftSide, SimplexRelation relation, const Real &rightSide) {
+void Tableau::setConstraint(size_t row, const CompactArray<Real> &leftSide, SimplexRelation relation, const Real &rightSide) {
   if(row < 1 || (int)row > getConstraintCount()) {
-    throwException(_T("Tableau::setConstraint:row=%d out of range. Legal interval=[1..%d]")
-                  ,row,getConstraintCount());
+    throwException(_T("Tableau::setConstraint:row=%s out of range. Legal interval=[1..%s]")
+                  ,FSZ(row),FSZ(getConstraintCount()));
   }
   if(leftSide.size() != getXCount()) {
-    throwException(_T("Tableau::setConstraint:Invalid number of values specified for leftside. leftSide.size=%d. Tableau.xCount=%d.")
-                  ,leftSide.size(),getXCount());
+    throwException(_T("Tableau::setConstraint:Invalid number of values specified for leftside. leftSide.size=%s. Tableau.xCount=%s.")
+                  ,FSZ(leftSide.size()),FSZ(getXCount()));
   }
 
-  for(int col = 0; col < (int)leftSide.size(); col++) {
+  for(size_t col = 0; col < leftSide.size(); col++) {
     setLeftSide(row,col+1,leftSide[col]);
   }
   setRelation(row,relation);
   setRightSide(row,rightSide);
 }
 
-void Tableau::setLeftSide(unsigned int row, unsigned int column, const Real &value) {
+void Tableau::setLeftSide(size_t row, size_t column, const Real &value) {
   if((row < 1) || (column < 1) || ((int)row > getConstraintCount()) || ((int)column > getWidth())) {
-    throwException(_T("Tableu::setLeftSide:Illegal index (row,column)=(%d,%d). valid row interval=[1..%d], valid columnIndex=[1..%d]")
-                  ,row,column,getConstraintCount(),getWidth());
+    throwException(_T("Tableu::setLeftSide:Illegal index (row,column)=(%s,%s). valid row interval=[1..%s], valid columnIndex=[1..%s]")
+                  ,FSZ(row),FSZ(column),FSZ(getConstraintCount()),FSZ(getWidth()));
   }
   m_table[row].m_a[column] = value;
 }
 
-void Tableau::setRightSide(unsigned int row, const Real &b) {
+void Tableau::setRightSide(size_t row, const Real &b) {
   if(row < 1 || (int)row > getConstraintCount()) {
-    throwException(_T("Tableu::setRightSide:Illegal argument: row=%d. Valid row interval=[1..%d]")
-                  ,row,getConstraintCount());
+    throwException(_T("Tableu::setRightSide:Illegal argument: row=%s. Valid row interval=[1..%s]")
+                  ,FSZ(row),FSZ(getConstraintCount()));
   }
   m_table[row].setRightSide(b);
 }
 
-const Real &Tableau::getRightSide(unsigned int row) const {
+const Real &Tableau::getRightSide(size_t row) const {
   if(row < 1 || (int)row > getConstraintCount()) {
-    throwException(_T("Tableu::getRightSide:Illegal argument: row=%d. Valid row interval=[1..%d]")
-                  ,row,getConstraintCount());
+    throwException(_T("Tableu::getRightSide:Illegal argument: row=%s. Valid row interval=[1..%s]")
+                  ,FSZ(row),FSZ(getConstraintCount()));
   }
   return m_table[row].getRightSide();
 }
@@ -722,7 +724,7 @@ String Tableau::toString(int fieldSize, int decimals) const {
   return result;
 }
 
-TCHAR Tableau::getVariablePrefix(int index) const {
+TCHAR Tableau::getVariablePrefix(size_t index) const {
   if(index < 1) {
     return _T('?');
   } else if(index <= (int)m_xCount) {
@@ -736,11 +738,11 @@ TCHAR Tableau::getVariablePrefix(int index) const {
   }
 }
 
-static String getVariableName(TCHAR prefix, int index) {
-  return format(_T("%c%03d"), prefix, index);
+static String getVariableName(TCHAR prefix, size_t index) {
+  return format(_T("%c%-3s"), prefix, FSZ(index));
 }
 
-String Tableau::getVariableName(int index) const {
+String Tableau::getVariableName(size_t index) const {
   return ::getVariableName(getVariablePrefix(index),index);
 }
 
@@ -783,9 +785,9 @@ void Tableau::checkInvariant() const {
   }
 }
 
-CompactArray<Real> Tableau::createRealArray(unsigned int size) { // static
+CompactArray<Real> Tableau::createRealArray(size_t size) { // static
   CompactArray<Real> result(size);
-  for(unsigned int i = 0; i < size; i++) {
+  for(size_t i = 0; i < size; i++) {
     result.add(0);
   }
   return result;

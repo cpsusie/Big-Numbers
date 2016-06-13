@@ -44,8 +44,8 @@ void Pow2Cache::load(const String &fileName) {
 }
 
 void Pow2Cache::save(ByteOutputStream &s) const {
-  const unsigned long capacity = getCapacity();
-  const unsigned int  n        = (unsigned int)size();
+  const UINT capacity = (UINT)getCapacity();
+  const UINT n        = (UINT)size();
   debugLog(_T("saving Pow2Cache. size:%lu, capacity:%lu\n"), n, capacity);
   s.putBytes((BYTE*)&capacity, sizeof(capacity));
   s.putBytes((BYTE*)&n       , sizeof(n));
@@ -58,8 +58,8 @@ void Pow2Cache::save(ByteOutputStream &s) const {
 
 void Pow2Cache::load(ByteInputStream &s) {
   clear();
-  unsigned long capacity;
-  unsigned int  n;
+  UINT capacity;
+  UINT n;
 
   s.getBytesForced((BYTE*)&capacity, sizeof(capacity));
   s.getBytesForced((BYTE*)&n       , sizeof(n));
@@ -68,7 +68,7 @@ void Pow2Cache::load(ByteInputStream &s) {
   debugLog(_T("loading Pow2Cache. size:%lu, capacity:%lu..."), n, capacity);
 #endif
   setCapacity(capacity);
-  for(int i = 0; i < (int)n; i++) {
+  for(UINT i = 0; i < n; i++) {
     Pow2ArgumentKey key(s);
     put(key, new BigReal(s, &DEFAULT_DIGITPOOL));
   }
