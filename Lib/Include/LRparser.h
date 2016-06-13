@@ -159,6 +159,9 @@ private:
   }
 
 public:
+#pragma warning(push)
+#pragma warning(disable:4311 4302)
+
   inline int getAction(unsigned int state, int token) const { // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
     return isCompressedState(state) 
          ? findActionCompressed(   (unsigned long)m_action[state], token) 
@@ -207,7 +210,6 @@ public:
   inline unsigned int getStateCount() const {
     return m_stateCount;
   }
-
   inline unsigned int getLegalInputCount(unsigned int state) const {
     return isCompressedState(state)
          ? getLegalInputCountCompressed(  (unsigned long)(m_action[state]))
@@ -221,6 +223,7 @@ public:
       getLegalInputsUncompressed((const Type  *)(m_action[state]), symbols);
     }
   }
+#pragma warning(pop)
 
   ParserTablesTemplate(const BYTE           *compressedSet
                      , const BYTE           *compressedLasets
