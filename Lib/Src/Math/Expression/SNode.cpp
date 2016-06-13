@@ -203,7 +203,7 @@ SStmtList::SStmtList(SNode n) {
 }
 
 SStmtList &SStmtList::removeUnusedAssignments() {
-  for(int i = size()-1; i--;) { // Remove unused assignments
+  for(int i = (int)size()-1; i--;) { // Remove unused assignments
     const SNode &stmt = (*this)[i];
     const String &varName = stmt.left().name();
     bool isUsed = false;

@@ -43,6 +43,8 @@ private:
 #include <Math/Expression/ExpressionParser.h>
 #include <Math/MathFunctions.h>
 
+#pragma warning(disable:4312)
+
 %}
 %%
 

@@ -9,7 +9,7 @@ ComplexMatrix::ComplexMatrix(Complex c) : MatrixTemplate<Complex>() {
   (*this)(0,0) = c;
 }
 
-ComplexMatrix::ComplexMatrix(unsigned int rows, unsigned int columns) : MatrixTemplate<Complex>(rows,columns) {
+ComplexMatrix::ComplexMatrix(size_t rows, size_t columns) : MatrixTemplate<Complex>(rows,columns) {
 }
 
 ComplexMatrix::ComplexMatrix(const MatrixTemplate<Complex> &src) : MatrixTemplate<Complex>(src) {

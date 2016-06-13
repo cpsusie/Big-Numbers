@@ -17,7 +17,7 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
     return ExpressionNode::compare(n);
   }
   const FactorArray &na    = n->getFactorArray();
-  const int          count = min(m_factors.size(), na.size());
+  const int          count = (int)min(m_factors.size(), na.size());
   int                i,constCompare = 0;
   for(i = 0; i < count; i++) {
     const int c = m_factors[i]->compare(na[i]);
@@ -50,7 +50,7 @@ const ExpressionNode *ExpressionNodeProduct::clone(const ParserTree *tree) const
 }
 
 bool ExpressionNodeProduct::isConstant() const {
-  const int n = m_factors.size();
+  const int n = (int)m_factors.size();
   for(int i = 0; i < n; i++) {
     if(!m_factors[i]->isConstant()) {
       return false;

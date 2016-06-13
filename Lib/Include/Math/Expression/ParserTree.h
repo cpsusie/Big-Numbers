@@ -396,10 +396,10 @@ typedef const ExpressionNode *(ParserTree::*BinaryOperator)(const ExpressionNode
     return m_variables;
   }
   int getNodeTableSize() const {
-    return m_nodeTable.size();
+    return (int)m_nodeTable.size();
   }
   int getAddentTableSize() const {
-    return m_addentTable.size();
+    return (int)m_addentTable.size();
   }
   void substituteNodes(const CompactNodeHashMap<const ExpressionNode*> &nodeMap);
   void traverseTree(ExpressionNodeHandler &handler) const;

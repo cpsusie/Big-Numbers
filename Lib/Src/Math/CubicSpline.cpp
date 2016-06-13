@@ -87,7 +87,7 @@ AbstractDataFit *CubicSpline::clone() const {
 }
 
 int CubicSpline::findInterval(const Real &x) const {
-  int n = a.getDimension();
+  int n = (int)a.getDimension();
   if(m_lastInterval > 1 && m_lastInterval < n && x >= a[m_lastInterval-1] && x <= a[m_lastInterval]) {
     return m_lastInterval;
   }

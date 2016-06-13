@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <Math/Double80.h>
 
+#ifdef IS32BIT
 
 #pragma check_stack(off)
 #pragma warning(disable : 4073)
@@ -1671,3 +1672,5 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
   return dst;
 }
+
+#endif

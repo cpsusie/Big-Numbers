@@ -87,6 +87,7 @@ double root(double x, double y) { // must be double. not real
   return pow(x, 1.0/y);
 }
 
+#ifdef IS32BIT
 #define M_PI_2_60 7.244019458077122842384326056985109887461e+018 // pow(2,60) * 2*pi
 void sincos(double &c, double &s) {
   double r = fmod(c, M_PI_2_60);
@@ -100,6 +101,7 @@ void sincos(double &c, double &s) {
   }
 
 }
+#endif
 
 Real binomial(const Real &n, const Real &k) {
   return fac(n)/(fac(k)*fac(n-k));

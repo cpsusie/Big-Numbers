@@ -6,13 +6,14 @@
 
 class BigRealVector : public VectorTemplate<BigReal> {
 private:
+  DECLARECLASSNAME;
   unsigned int m_digits;
   void checkPrecision(unsigned int digits);
 protected:
-  void init(unsigned int dim, bool initialize, int digits);
+  void init(size_t dim, bool initialize, int digits);
 
 public:
-  explicit BigRealVector(unsigned int dim = 1, unsigned int digits = 16);
+  explicit BigRealVector(size_t dim = 1, unsigned int digits = 16);
   BigRealVector(const BigRealVector &v);
   BigRealVector(const VectorTemplate<BigReal> &v, unsigned int digits);
   unsigned int setPrecision(unsigned int digits);
@@ -25,6 +26,7 @@ public:
   BigRealVector &operator-=(const BigRealVector &rhs);
   BigReal length() const;
   friend class BigRealMatrix;
+  void invalidDimensionError(const TCHAR *method, const BigRealVector &rhs) const;
 };
 
 BigRealVector  operator*(const BigReal &d, const BigRealVector &rhs );
@@ -35,21 +37,23 @@ BigRealVector  operator-(const BigRealVector &lts, const BigRealVector& rhs);
 BigReal        operator*(const BigRealVector &lts, const BigRealVector& rhs);
 
 class BigRealMatrix : public MatrixTemplate<BigReal> {
+private:
+  DECLARECLASSNAME;
 protected:
   unsigned int m_digits;
   void checkPrecision(unsigned int digits);
-  void init(unsigned int rows, unsigned int cols, bool initialize, unsigned int digits);
+  void init(size_t rows, size_t cols, bool initialize, unsigned int digits);
 public:
-  explicit BigRealMatrix(unsigned int rows = 1, unsigned int cols = 1, unsigned int digits = 16);
+  explicit BigRealMatrix(size_t rows = 1, size_t cols = 1, unsigned int digits = 16);
   BigRealMatrix(const BigRealMatrix &a);
   unsigned int setPrecision(unsigned int digits);
   unsigned int getPrecision() const {
     return m_digits;
   }
-  static BigRealMatrix one( unsigned int dim , unsigned int digits = 16);
-  static BigRealMatrix zero(unsigned int rows, unsigned int columns, unsigned int digits = 16);
-  BigRealVector getRow(   unsigned int row) const;
-  BigRealVector getColumn(unsigned int column) const;
+  static BigRealMatrix one( size_t dim , unsigned int digits = 16);
+  static BigRealMatrix zero(size_t rows, size_t columns, unsigned int digits = 16);
+  BigRealVector getRow(   size_t row) const;
+  BigRealVector getColumn(size_t column) const;
 };
 
 BigRealVector operator*(const BigRealVector &lts, const BigRealMatrix &rhs);
@@ -77,7 +81,7 @@ private:
   void lowerUpper();
   BigRealLUMatrix(const BigRealLUMatrix &a);                              /* not defined */
   BigRealLUMatrix &operator=(const BigRealLUMatrix &a);                   /* not defined */
-  BigRealLUMatrix &setDimension(unsigned int rows, unsigned int cols);   /* not defined */
+  BigRealLUMatrix &setDimension(size_t rows, size_t cols);   /* not defined */
 
 public:
   BigRealLUMatrix();

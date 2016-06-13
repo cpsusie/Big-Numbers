@@ -3,32 +3,41 @@
 
 // Implementation of basic BigRealVector-operations
 
+DEFINECLASSNAME(BigRealVector);
+
 void BigRealVector::checkPrecision(unsigned int digits) {
   if(digits == 0) {
-    throwBigRealException(_T("BigRealVector:Precision = 0 not allowed."));
+    throwBigRealException(_T("%s:Precision = 0 not allowed."), s_className);
   }
 }
 
-void BigRealVector::init(unsigned int dim, bool initialize, int digits) {
+void BigRealVector::invalidDimensionError(const TCHAR *method, const BigRealVector &rhs) const {
+  throwBigRealException(_T("%s::%s:Invalid dimension. left.dimension=%s, right.dimension=%s.")
+    , s_className, method
+    , format1000(getDimension()).cstr()
+    , format1000(rhs.getDimension()).cstr());
+}
+
+void BigRealVector::init(size_t dim, bool initialize, int digits) {
   VectorTemplate<BigReal>::init(dim,initialize);
   checkPrecision(digits);
   m_digits = digits;
 }
 
-BigRealVector::BigRealVector(unsigned int dim, unsigned int digits) {
+BigRealVector::BigRealVector(size_t dim, unsigned int digits) {
   init(dim,true,digits);
 }
 
 BigRealVector::BigRealVector(const BigRealVector &v) {
   init(v.getDimension(),false,v.m_digits);
-  for(unsigned int i = 0; i < getDimension(); i++) {
+  for(size_t i = 0; i < getDimension(); i++) {
     (*this)[i] = v[i];
   }
 }
 
 BigRealVector::BigRealVector(const VectorTemplate<BigReal> &v, unsigned int digits) {
   init(v.getDimension(),false,digits);
-  for(unsigned int i = 0; i < getDimension(); i++) {
+  for(size_t i = 0; i < getDimension(); i++) {
     (*this)[i] = v[i];
   }
 }
@@ -41,11 +50,11 @@ unsigned int BigRealVector::setPrecision(unsigned int digits) {
 }
 
 BigRealVector operator*(const BigReal &d, const BigRealVector &rhs) {
-  const int n = rhs.getDimension();
-  const int digits = rhs.getPrecision();
+  const size_t n      = rhs.getDimension();
+  const int    digits = rhs.getPrecision();
 
   BigRealVector result(n,digits);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     result[i] = rProd(rhs[i],d,digits);
   }
   return result;
@@ -56,64 +65,58 @@ BigRealVector operator*(const BigRealVector &lts, const BigReal &d ) {
 }
 
 BigRealVector operator/(const BigRealVector &lts, const BigReal &d) {
-  const int n      = lts.getDimension();
-  const int digits = lts.getPrecision();
+  const size_t n      = lts.getDimension();
+  const int    digits = lts.getPrecision();
 
   BigRealVector result(n,digits);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     result[i] = rQuot(lts[i],d,digits);
   }
   return result;
 }
 
 BigReal operator*(const BigRealVector &lts, const BigRealVector& rhs) {
-  const int n      = lts.getDimension();
-  const int digits = min(lts.getPrecision(),rhs.getPrecision());
+  const size_t n      = lts.getDimension();
+  const int    digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if((unsigned int)n != rhs.getDimension()) {
-    throwBigRealException(_T("operator*(BigRealVector,BigRealVector):Invalid dimension. left.dimension=%u, right.dimension=%u."), n, rhs.getDimension());
-  }
+  if (n != rhs.getDimension()) lts.invalidDimensionError(_T("operator*"), rhs);
 
   BigReal sum = 0;
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     sum = rSum(sum,rProd(lts[i],rhs[i],digits),digits);
   }
   return sum;
 }
 
 BigRealVector operator+(const BigRealVector& lts, const BigRealVector& rhs) {
-  const int n      = lts.getDimension();
-  const int digits = min(lts.getPrecision(),rhs.getPrecision());
+  const size_t n      = lts.getDimension();
+  const int    digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if((unsigned int)n != rhs.getDimension()) {
-    throwBigRealException(_T("operator+(BigRealVector,BigRealVector):Invalid dimension. left.dimension=%u, right.dimension=%u."), n, rhs.getDimension());
-  }
+  if (n != rhs.getDimension()) lts.invalidDimensionError(_T("operator+"), rhs);
 
   BigRealVector result(n,digits);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     result[i] = rSum(lts[i],rhs[i],digits);
   }
   return result;
 }
 
 BigRealVector operator-(const BigRealVector& lts, const BigRealVector& rhs) {
-  const int n      = lts.getDimension();
-  const int digits = min(lts.getPrecision(),rhs.getPrecision());
+  const size_t n      = lts.getDimension();
+  const int    digits = min(lts.getPrecision(),rhs.getPrecision());
 
-  if((unsigned int)n != rhs.getDimension()) {
-    throwBigRealException(_T("operator-(BigRealVector,BigRealVector):Invalid dimension. left.dimension=%u, right.dimension=%u."), n, rhs.getDimension());
-  }
+  if (n != rhs.getDimension()) lts.invalidDimensionError(_T("operator-"), rhs);
 
   BigRealVector result(n,digits);
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     result[i] = rDif(lts[i],rhs[i],digits);
   }
   return result;
 }
 
 BigRealVector &BigRealVector::operator*=(const BigReal &d) {
-  const int n = getDimension();
-  for(int i = 0; i < n; i++) {
+  const size_t n = getDimension();
+  for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
     v = rProd(v,d,m_digits);
   }
@@ -121,8 +124,8 @@ BigRealVector &BigRealVector::operator*=(const BigReal &d) {
 }
 
 BigRealVector &BigRealVector::operator/=(const BigReal &d) {
-  const int n = getDimension();
-  for(int i = 0; i < n; i++) {
+  const size_t n = getDimension();
+  for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
     v = rQuot(v,d,m_digits);
   }
@@ -130,13 +133,12 @@ BigRealVector &BigRealVector::operator/=(const BigReal &d) {
 }
 
 BigRealVector &BigRealVector::operator+=(const BigRealVector &rhs) {
-  const int n      = getDimension();
-  const int digits = min(m_digits,rhs.getPrecision());
-  if((unsigned int)n != rhs.getDimension()) {
-    throwBigRealException(_T("operator+=(BigRealVector):Invalid dimension. Dimension=%u, right.dimension=%u."), n, rhs.getDimension());
-  }
+  const size_t n      = getDimension();
+  const int    digits = min(m_digits,rhs.getPrecision());
 
-  for(int i = 0; i < n; i++) {
+  if (n != rhs.getDimension()) invalidDimensionError(_T("operator+="), rhs);
+
+  for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
     v = rSum(v,rhs[i],digits);
   }
@@ -145,13 +147,12 @@ BigRealVector &BigRealVector::operator+=(const BigRealVector &rhs) {
 }
 
 BigRealVector &BigRealVector::operator-=(const BigRealVector &rhs) {
-  const int n = getDimension();
-  const int digits = min(m_digits,rhs.getPrecision());
-  if((unsigned int)n != rhs.getDimension()) {
-    throwBigRealException(_T("operator-=(BigRealVector):Invalid dimension. Dimension=%u, right.dimension=%u."), n, rhs.getDimension());
-  }
+  const size_t n = getDimension();
+  const int    digits = min(m_digits,rhs.getPrecision());
 
-  for(int i = 0; i < n; i++) {
+  if (n != rhs.getDimension()) invalidDimensionError(_T("operator-="), rhs);
+
+  for(size_t i = 0; i < n; i++) {
     BigReal &v = (*this)[i];
     v = rDif(v,rhs[i],digits);
   }
@@ -160,9 +161,9 @@ BigRealVector &BigRealVector::operator-=(const BigRealVector &rhs) {
 }
 
 BigReal BigRealVector::length() const {
-  const int n = getDimension();
+  const size_t n = getDimension();
   BigReal sum = 0;
-  for(int i = 0; i < n; i++) {
+  for(size_t i = 0; i < n; i++) {
     const BigReal &v = (*this)[i];
     sum = rSum(sum,rProd(v,v,m_digits),m_digits);
   }

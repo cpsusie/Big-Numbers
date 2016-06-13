@@ -130,7 +130,7 @@ class MarkedNodeTransformer : public ExpressionNodeHandler {
 private:
   CompactNodeHashMap<const ExpressionNode*> m_nodeMap;
 protected:
-  Expression                                     &m_expr;
+  Expression &m_expr;
 public:
   MarkedNodeTransformer(Expression *expr) : m_expr(*expr) {
   }

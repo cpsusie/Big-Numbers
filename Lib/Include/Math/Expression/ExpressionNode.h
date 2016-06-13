@@ -61,12 +61,12 @@ public:
 public:
   ExpressionNodeArray() {
   }
-  explicit ExpressionNodeArray(unsigned int capacity) : CompactArray<const ExpressionNode*>(capacity) {
+  explicit ExpressionNodeArray(size_t capacity) : CompactArray<const ExpressionNode*>(capacity) {
   }
   const ExpressionNode *toTree(ExpressionInputSymbol delimiter) const;
 
 #ifdef _DEBUG
-  inline void clear(int capacity=0) {
+  inline void clear(intptr_t capacity=0) {
     CompactArray<const ExpressionNode*>::clear(capacity);
     INITEXPRESSIONNODEARRAYDEBUGSTRING(this);
   }
@@ -74,7 +74,7 @@ public:
     CompactArray<const ExpressionNode*>::add(n);
     EXPRESSIONNODEARRAYADDLAST(this);
   }
-  inline void remove(unsigned int index, unsigned int count = 1) {
+  inline void remove(size_t index, size_t count = 1) {
     CompactArray<const ExpressionNode*>::remove(index, count);
     INITEXPRESSIONNODEARRAYDEBUGSTRING(this);
   }
@@ -121,7 +121,7 @@ public:
 public:
   AddentArray() {
   }
-  explicit AddentArray(unsigned int capacity) : CompactArray<const SumElement*>(capacity) {
+  explicit AddentArray(size_t capacity) : CompactArray<const SumElement*>(capacity) {
   }
 
   void add(const ExpressionNode *n, bool positive);
@@ -136,7 +136,7 @@ public:
     return *this;
   }
 
-  inline void clear(int capacity=0) {
+  inline void clear(intptr_t capacity=0) {
     CompactArray<const SumElement*>::clear(capacity);
     INITADDENTARRAYDEBUGSTRING(this);
   }
@@ -144,7 +144,7 @@ public:
     CompactArray<const SumElement*>::add(e);
     ADDENTARRAYADDLAST(this);
   }
-  inline void remove(unsigned int index, unsigned int count = 1) {
+  inline void remove(size_t index, size_t count = 1) {
     CompactArray<const SumElement*>::remove(index, count);
     INITADDENTARRAYDEBUGSTRING(this);
   }
@@ -189,7 +189,7 @@ public:
 public:
   FactorArray() {
   }
-  explicit FactorArray(unsigned int capacity) : CompactArray<const ExpressionFactor*>(capacity) {
+  explicit FactorArray(size_t capacity) : CompactArray<const ExpressionFactor*>(capacity) {
   }
 
   FactorArray selectConstantPositiveExponentFactors() const;
@@ -197,13 +197,13 @@ public:
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
-  inline void clear(int capacity=0) {
+  inline void clear(intptr_t capacity=0) {
     CompactArray<const ExpressionFactor*>::clear(capacity);
     INITFACTORARRAYEBUGSTRING(this);
   }
   void add(const ExpressionFactor *f);
   void add(const ExpressionNode *base, const ExpressionNode *exponent = NULL);
-  inline void remove(unsigned int index, unsigned int count = 1) {
+  inline void remove(size_t index, size_t count = 1) {
     CompactArray<const ExpressionFactor*>::remove(index, count);
     INITFACTORARRAYEBUGSTRING(this);
   }
@@ -582,7 +582,7 @@ public:
   }
 
   int getChildCount() const {
-    return m_childArray.size();
+    return (int)m_childArray.size();
   }
 
   const ExpressionNodeArray &getChildArray() const {
@@ -624,7 +624,7 @@ public:
   ExpressionNodePoly(const ParserTree *tree, const ExpressionNodePoly *src);
 
   int getDegree() const {
-    return m_coefficientArray.size() - 1;
+    return (int)m_coefficientArray.size() - 1;
   }
 
   const ExpressionNodeArray &getCoefficientArray() const {

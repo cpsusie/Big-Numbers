@@ -3,19 +3,21 @@
 
 // Implementation of basic matrix-operations
 
+DEFINECLASSNAME(BigRealMatrix);
+
 void BigRealMatrix::checkPrecision(unsigned int digits) {
   if(digits == 0) {
-    throwBigRealException(_T("BigRealMatrix:Precision = 0 not allowed."));
+    throwBigRealException(_T("%s:Precision = 0 not allowed."), s_className);
   }
 }
 
-void BigRealMatrix::init(unsigned int rows, unsigned int cols, bool initialize, unsigned int digits) {
+void BigRealMatrix::init(size_t rows, size_t cols, bool initialize, unsigned int digits) {
   MatrixTemplate<BigReal>::init(rows,cols,initialize);
   checkPrecision(digits);
   m_digits = digits;
 }
 
-BigRealMatrix::BigRealMatrix(unsigned int rows, unsigned int cols, unsigned int digits) {
+BigRealMatrix::BigRealMatrix(size_t rows, size_t cols, unsigned int digits) {
   init(rows,cols,true,digits);
 }
 
@@ -35,7 +37,7 @@ unsigned int BigRealMatrix::setPrecision(unsigned int digits) {
   return oldDigits;
 }
 
-BigRealMatrix BigRealMatrix::one(size_t dim, size_t digits) {
+BigRealMatrix BigRealMatrix::one(size_t dim, unsigned int digits) {
   BigRealMatrix result(dim,dim,digits);
   for(size_t i = 0; i < dim; i++) {
     result(i,i) = 1;

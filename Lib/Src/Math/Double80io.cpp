@@ -64,7 +64,7 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
       String decimals = substr(ciphers,dotPosition,precision);
       if(precision > 0) {
         if(removeTrailingZeroes) {
-          for(int i = decimals.length()-1; i >= 0 && decimals[i] == _T('0');) { // remove trailing zeroes from decimals
+          for(int i = (int)decimals.length()-1; i >= 0 && decimals[i] == _T('0');) { // remove trailing zeroes from decimals
             decimals.remove(i--);
           }
         } else { // add zeroes to specified precisionision
@@ -85,7 +85,7 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
     result += spaceString(leadingZeroes,_T('0'));
     result += substr(ciphers, 0, precision - leadingZeroes);
     if(removeTrailingZeroes) {
-      for(int i = result.length()-1; i >= 0 && result[i] == _T('0');) { // remove trailing zeroes from result
+      for(int i = (int)result.length()-1; i >= 0 && result[i] == _T('0');) { // remove trailing zeroes from result
         result.remove(i--);
       }
     } else {
@@ -197,7 +197,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
     } // x defined && x != 0
   } // end x defined
 
-  const int fillerLength = stream.getWidth() - result.length();
+  const int fillerLength = stream.getWidth() - (int)result.length();
   if(fillerLength <= 0) {
     stream.append(result);
   } else if((flags & (ios::left|ios::right)) == ios::left) { // adjust left iff only ios::left is set

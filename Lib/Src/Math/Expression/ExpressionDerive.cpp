@@ -237,7 +237,7 @@ SNode Expression::DPolynomial(const SNode &n, const String &name) const {
   SExprList newCoefficients;
   const int degree = n.getDegree();
   newCoefficients.add(D(coefficients[0], name));
-  for(size_t i = 1; i < coefficients.size(); i++) {
+  for(int i = 1; i < (int)coefficients.size(); i++) {
     newCoefficients.add(SNode(this, degree-i+1) * coefficients[i-1] * dudx + D(coefficients[i], name));
   }
   if(newCoefficients.size() == 0) {

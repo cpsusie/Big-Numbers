@@ -140,7 +140,7 @@ SNode Expression::reduce(const SNode n) const {
   const SStmtList stmtList(n);
   SStmtList       newStmtList;
 
-  const int stmtCount = stmtList.size() - 1;
+  const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
     const SNode &stmt = stmtList[i];
     newStmtList.add(assignStmt(stmt.left(), reduceRealExp(stmt.right())));
@@ -949,7 +949,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
   }
 
   FactorArray reduced = factorArray;
-  for(int startSize = reduced.size(); startSize > 0; startSize = reduced.size()) {
+  for(int startSize = (int)reduced.size(); startSize > 0; startSize = (int)reduced.size()) {
     const FactorArray tmp = reduced;
     reduced.clear();
     BitSet done(tmp.size());
@@ -1070,14 +1070,14 @@ SNode Expression::reduceRationalPower(const Rational &base, const Rational &expo
     Rational niceRootFactor = 1;
     __int64 bnR = 1, bdR = 1;
     if((abs(bn) == 1 || !bnRootFactors.isEmpty()) && (bd == 1 || !bdRootFactors.isEmpty())) {
-      for(Iterator<unsigned int> it1 = bnRootFactors.getIterator(); it1.hasNext();) {
+      for(Iterator<size_t> it1 = bnRootFactors.getIterator(); it1.hasNext();) {
         PrimeFactor &pf = bnPrimeFactors[it1.next()];
         do {
           bnR *= pf.m_prime;
           pf.m_multiplicity -= (unsigned int)ed;
         } while(pf.m_multiplicity >= (unsigned int)ed);
       }
-      for(Iterator<unsigned int> it2 = bdRootFactors.getIterator(); it2.hasNext();) {
+      for(Iterator<size_t> it2 = bdRootFactors.getIterator(); it2.hasNext();) {
         PrimeFactor &pf = bdPrimeFactors[it2.next()];
         do {
           bdR *= pf.m_prime;

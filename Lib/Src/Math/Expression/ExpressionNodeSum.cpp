@@ -39,7 +39,7 @@ int ExpressionNodeSum::compare(const ExpressionNode *n) const {
     return ExpressionNode::compare(n);
   }
   const AddentArray &na = n->getAddentArray();
-  const int count = min(m_elements.size(), na.size());
+  const int count = (int)min(m_elements.size(), na.size());
   int i;
   for(i = 0; i < count; i++) {
     const int c = m_elements[i]->compare(na[i]);
@@ -61,7 +61,7 @@ const ExpressionNode *ExpressionNodeSum::clone(const ParserTree *tree) const {
 }
 
 bool ExpressionNodeSum::isConstant() const {
-  const int n = m_elements.size();
+  const int n = (int)m_elements.size();
   for(int i = 0; i < n; i++) {
     if(!m_elements[i]->isConstant()) {
       return false;
@@ -92,7 +92,7 @@ void ExpressionNodeSum::dumpNode(String &s, int level) const {
 String ExpressionNodeSum::toString() const {
   bool first = true;
   String result;
-  const int n = m_elements.size();
+  const int n = (int)m_elements.size();
   for(int i = 0; i < n; i++) {
     const SumElement *e = m_elements[i];
     if(e->isPositive()) {

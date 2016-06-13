@@ -33,7 +33,7 @@ SNode Expression::toNForm(const ExpressionNode *n) const {
   const SStmtList stmtList(n);
   SStmtList       newStmtList;
 
-  const int stmtCount = stmtList.size() - 1;
+  const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
     const SNode &stmt = stmtList[i];
     newStmtList.add(assignStmt(stmt.left(), toNFormRealExp(stmt.right())));

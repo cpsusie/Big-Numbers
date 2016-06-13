@@ -25,7 +25,7 @@ int CommonSpline::preprocessdata(const CompactArray<DataPoint> &data, Vector &x,
   }
   copy.last().y /= c;
 
-  const int n = copy.size();
+  const int n = (int)copy.size();
 
   x.setDimension(n);
   y.setDimension(n);
@@ -38,7 +38,7 @@ int CommonSpline::preprocessdata(const CompactArray<DataPoint> &data, Vector &x,
 }
 
 int CommonSpline::findInterval(const Real &x) const {
-  int n = a.getDimension();
+  int n = (int)a.getDimension();
   if(m_lastInterval >= 0 && m_lastInterval < n-1 && x >= a[m_lastInterval] && x < a[m_lastInterval+1]) {
     return m_lastInterval;
   }

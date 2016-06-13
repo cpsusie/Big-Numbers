@@ -7,7 +7,7 @@ Real Expression::evaluateStatementListReal(const ExpressionNode *n) const {
   DEFINEMETHODNAME(evaluateStatementListReal);
   ExpressionNodeArray stmtList = getStatementList(n);
 
-  const int stmtCount =  stmtList.size() - 1;
+  const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
     doAssignment(stmtList[i]);
   }
@@ -23,7 +23,7 @@ bool Expression::evaluateStatementListBool(const ExpressionNode *n) const {
   DEFINEMETHODNAME(evaluateStatementListBool);
   ExpressionNodeArray stmtList = getStatementList(n);
 
-  const int stmtCount =  stmtList.size() - 1;
+  const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
     doAssignment(stmtList[i]);
   }

@@ -23,7 +23,7 @@ MachineCode &MachineCode::operator=(const MachineCode &src) {
 }
 
 int MachineCode::addBytes(const void *bytes, int count) {
-  const int ret = size();
+  const int ret = (int)size();
   append((BYTE*)bytes,count);
   return ret;
 }
@@ -35,7 +35,7 @@ void MachineCode::setBytes(int addr, const void *bytes, int count) {
 }
 
 int MachineCode::emit(const IntelInstruction &ins) {
-  const int pos = size();
+  const int pos = (int)size();
   append((BYTE*)&ins.m_bytes, ins.m_size);
   return pos;
 }
@@ -122,8 +122,9 @@ void MachineCode::fixupShortJumps(const CompactIntArray &jumps, int jmpAddr) {
 
 void MachineCode::fixupCall(const ExternalReference &ref) {
   const BYTE *instructionAddr = getData() + ref.m_addr;
-  const int PCrelativOffset = (const BYTE*)ref.m_p - instructionAddr - 4;
-  setBytes(ref.m_addr,&PCrelativOffset,4);
+  const intptr_t PCrelativOffset = (const BYTE*)ref.m_p - instructionAddr - 4;
+  const int PCoffset = (int)PCrelativOffset;
+  setBytes(ref.m_addr,&PCoffset,4);
 }
 
 void MachineCode::emitCall(function p) {
@@ -160,6 +161,8 @@ void Expression::compile(const char *expr, bool machineCode) {
     genCode();
   }
 }
+
+#ifdef IS32BIT
 
 Real Expression::fastEvaluate() {
   function p = m_code.getEntryPoint();
@@ -207,6 +210,8 @@ bool Expression::fastEvaluateBool() {
   }
   return result ? true : false;
 }
+
+#endif
 
 ExpressionReturnType Expression::findReturnType() const {
   DEFINEMETHODNAME(findReturnType);
@@ -587,10 +592,10 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   const ExpressionNode      *x     = n->getArgument();
 
   int bytesPushed = 0;
-  for(int i = clist.size() - 1; i >= 0; i--) { // see parameterlist to evaluatePolynomial
+  for(int i = (int)clist.size() - 1; i >= 0; i--) { // see parameterlist to evaluatePolynomial
     bytesPushed += genPush(clist[i]);
   }
-  bytesPushed += genPushInt(clist.size()-1);
+  bytesPushed += genPushInt((int)clist.size()-1);
   bytesPushed += genPush(x);
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((function)::evaluatePolynomial);
@@ -607,7 +612,7 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   genExpression(endExpr);                              // Evaluate end value for loopVar. and keep it in FPU-register
   m_code.emit(summation ? FLDZ : FLD1);               // Initialize accumulator
   genExpression(startAssignment->right());             // Evaluate start value for loopVar
-  const int loopStart = m_code.size();
+  const int loopStart = (int)m_code.size();
   m_code.emit(FCOMI(2));                              // Invariant:loopVar in st(0), endExpr in st(2)
   const int jmpEnd   = m_code.emitShortJmp(JASHORT);   // Jump loopEnd if st(0) > st(2)
   m_code.emitFStorePop(loopVar);                       // Pop st(0) to loopVar
@@ -617,7 +622,7 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   m_code.emit(FLD1);
   m_code.emit(FADD);                                  // Increment loopVar
   const int jmpStart = m_code.emitShortJmp(JMPSHORT);  // Jump loopStart
-  const int loopEnd  = m_code.size();
+  const int loopEnd  = (int)m_code.size();
   m_code.emit(FSTP(0));                               // Pop loopVar
   m_code.emit(FXCH(1));                               // Result in st(0), end value in st(1). swap these and pop st(0)
   m_code.emit(FSTP(0));                               // Pop end value
@@ -661,12 +666,12 @@ void Expression::genCall(const ExpressionNode *n, functionRef2 f) {
 
 void Expression::genIf(const ExpressionNode *n) {
   JumpList jumps = genBoolExpression(n->child(0));
-  m_code.fixupShortJumps(jumps.trueJumps,m_code.size());
+  m_code.fixupShortJumps(jumps.trueJumps,(int)m_code.size());
   genExpression(n->child(1)); // true-expression
   const int trueResultJump  = m_code.emitShortJmp(JMPSHORT);
-  m_code.fixupShortJumps(jumps.falseJumps,m_code.size());
+  m_code.fixupShortJumps(jumps.falseJumps,(int)m_code.size());
   genExpression(n->child(2)); // false-expression
-  m_code.fixupShortJump(trueResultJump,m_code.size());
+  m_code.fixupShortJump(trueResultJump,(int)m_code.size());
 }
 
 static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
@@ -711,7 +716,7 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   case AND  :
     { JumpList jump1 = genBoolExpression(n->left());
       JumpList jump2 = genBoolExpression(n->right());
-      m_code.fixupShortJumps(jump1.trueJumps,m_code.size());
+      m_code.fixupShortJumps(jump1.trueJumps,(int)m_code.size());
       result.falseJumps.addAll(jump1.falseJumps);
       result.falseJumps.addAll(jump2.falseJumps);
       result.trueJumps.addAll(jump2.trueJumps);
@@ -720,7 +725,7 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   case OR   :
     { JumpList jump1 = genBoolExpression(n->left());
       int trueJump   = m_code.emitShortJmp(JMPSHORT);
-      m_code.fixupShortJumps(jump1.falseJumps,m_code.size());
+      m_code.fixupShortJumps(jump1.falseJumps,(int)m_code.size());
       JumpList jump2 = genBoolExpression(n->right());
       result.falseJumps.addAll(jump2.falseJumps);
       result.trueJumps.addAll(jump1.trueJumps);

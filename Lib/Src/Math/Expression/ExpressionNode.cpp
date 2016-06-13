@@ -310,7 +310,7 @@ void SymbolOrderMap::init() {
 
 int SymbolOrderMap::compare(ExpressionInputSymbol s1, ExpressionInputSymbol s2) {
   if(!m_initDone) init();
-  return get(s1) - get(s2);
+  return *get(s1) - *get(s2);
 }
 
 typedef struct {

@@ -8,11 +8,11 @@ private:
   BitSet         m_primes;
 
   Primes();
-  void removeNonPrimes(unsigned int start);     // remove all nonprimes from m_primes
+  void removeNonPrimes(size_t start);     // remove all nonprimes from m_primes
   void extendPrimeSet(unsigned int upperLimit); // extend m_primes to contain all primes from start..upperLimit (incl)
   friend void deallocatePrimesInstance();
 public:
-  Iterator<unsigned int> getIterator(unsigned int upperLimit);
+  Iterator<size_t> getIterator(unsigned int upperLimit);
   static Primes &getInstance();
 };
 
@@ -21,7 +21,7 @@ Primes::Primes() : m_primes(3) {
 }
 
 void Primes::extendPrimeSet(unsigned int upperLimit) { // extend m_primes to contain all primes [2..upperLimit]
-  const unsigned int lastUpperLimit = m_primes.getCapacity() - 1;
+  const size_t lastUpperLimit = m_primes.getCapacity() - 1;
   if(upperLimit > lastUpperLimit) {
     m_primes.setCapacity(upperLimit+1);
     m_primes.add(lastUpperLimit+1, upperLimit);
@@ -29,18 +29,18 @@ void Primes::extendPrimeSet(unsigned int upperLimit) { // extend m_primes to con
   }
 }
 
-void Primes::removeNonPrimes(unsigned int start) {
-  const unsigned int upper = m_primes.getCapacity()-1;
-  for(Iterator<unsigned int> it = m_primes.getIterator(); it.hasNext();) {
-    const unsigned int p = it.next();
-    const unsigned int q = max(start / p,1) + 1;
-    for(unsigned int j = q*p; j <= upper; j += p) {
+void Primes::removeNonPrimes(size_t start) {
+  const size_t upper = m_primes.getCapacity()-1;
+  for(Iterator<size_t> it = m_primes.getIterator(); it.hasNext();) {
+    const size_t p = it.next();
+    const size_t q = max(start / p,1) + 1;
+    for(size_t j = q*p; j <= upper; j += p) {
       m_primes.remove(j);
     }
   }
 }
 
-Iterator<unsigned int> Primes::getIterator(unsigned int upperLimit) {
+Iterator<size_t> Primes::getIterator(unsigned int upperLimit) {
   extendPrimeSet(upperLimit);
   return m_primes.getIterator();
 }
@@ -70,8 +70,8 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
     m_positive = false;
   }
   const unsigned long upperLimit = getLong(sqrt(Double80(n))) + 1;
-  for(Iterator<unsigned int> it = Primes::getInstance().getIterator(upperLimit); it.hasNext();) {
-    const unsigned int p = it.next();
+  for(Iterator<size_t> it = Primes::getInstance().getIterator(upperLimit); it.hasNext();) {
+    const size_t p = it.next();
     if(n % p == 0) {
       PrimeFactor pf(p);
       for(n /= p; n % p == 0; n /= p) {
@@ -91,7 +91,7 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
 }
 
 PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int m) const {
-  PrimeFactorSet result(size() + 1);
+  PrimeFactorSet result((UINT)size() + 1);
   for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
     if(pf.m_multiplicity >= m) {
@@ -130,7 +130,7 @@ String PrimeFactorArray::toString() const {
 void PrimeFactorSet::initDebugString(const PrimeFactorArray &a) {
   m_debugString = a.isPositive() ? _T("{") : _T("{-1");
   const TCHAR *delimiter = _T("");
-  for(Iterator<unsigned int> it = getIterator(); it.hasNext(); delimiter = _T(",")) {
+  for(Iterator<size_t> it = getIterator(); it.hasNext(); delimiter = _T(",")) {
     m_debugString += format(_T("%s%u"), delimiter, a[it.next()].m_prime);
   }
   m_debugString += _T("}");

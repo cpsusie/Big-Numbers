@@ -16,7 +16,7 @@ class ComplexMatrix : public MatrixTemplate<Complex> {
 public:
   ComplexMatrix();
   explicit ComplexMatrix(Complex c);
-  ComplexMatrix(unsigned int rows, unsigned int columns);
+  ComplexMatrix(size_t rows, size_t columns);
 
   ComplexMatrix(const MatrixTemplate<Complex> &src);
   explicit ComplexMatrix(const VectorTemplate<Complex> &diagonal);

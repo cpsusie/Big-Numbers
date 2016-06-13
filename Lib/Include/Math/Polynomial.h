@@ -195,7 +195,7 @@ public:
   }
 
   int getDegree() const {
-    return m_coef.getDimension() - 1;
+    return (int)m_coef.getDimension() - 1;
   }
 
   Complex     operator()( const Complex &x);

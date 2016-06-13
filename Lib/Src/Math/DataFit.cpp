@@ -55,7 +55,7 @@ bool DataFit::solve(FittingType type, const CompactArray<DataPoint> &data, const
 }
 
 Real AbstractDataFit::ssd(const CompactArray<DataPoint> &data) {
-  int n = data.size();
+  int n = (int)data.size();
   Real sum = 0;
   for(int i = 0; i < n; i++) {
     const DataPoint &p = data[i];
