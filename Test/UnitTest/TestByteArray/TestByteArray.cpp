@@ -38,7 +38,7 @@ namespace TestByteArray
       verify(bfArray.size() == loaded.size());
 
       for (int i = 0; i < 1000; i++) {
-        const int index = randInt(bfArray.size());
+        const size_t index = randSizet(bfArray.size());
         const BYTE bfElement = bfArray[index];
         const BYTE element = loaded[index];
         verify(bfElement == element);

@@ -37,7 +37,7 @@ namespace TestPackedArray {
     void safeRemove(unsigned int index, unsigned int count = 1);
     void addZeroes(unsigned int index, unsigned int count);
     void addTestElements(int count, bool random);
-    unsigned int size() const;
+    size_t size() const;
     void clear();
 
 #ifdef _DEBUG
@@ -141,8 +141,8 @@ namespace TestPackedArray {
     m_pa.addZeroes(index, count);
   }
 
-  unsigned int TestClass::size() const {
-    const unsigned int result = m_a.size();
+  size_t TestClass::size() const {
+    const size_t result = m_a.size();
     if (result != m_pa.size()) {
       checkEqual();
     }
@@ -173,8 +173,8 @@ namespace TestPackedArray {
       OUTPUT(_T("Size differs. Array.size=%d, PackedArray.size=%lld"), m_a.size(), m_pa.size());
       return false;
     }
-    const int n = m_a.size();
-    for (int i = 0; i < n; i++) {
+    const size_t n = m_a.size();
+    for (size_t i = 0; i < n; i++) {
       unsigned int ea = m_a[i];
       unsigned int epa = m_pa.get(i);
       if (ea != epa) {

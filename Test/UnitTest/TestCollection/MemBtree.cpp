@@ -550,7 +550,7 @@ private:
   BTreeSetImpl                    &m_tree;
   Stack<BTreeIteratorStackElement> m_stack;
   const BTreePageItem             *m_next, *m_current;
-  unsigned long                    m_updateCount;
+  size_t                           m_updateCount;
   static const TCHAR              *className;
   void push(const BTreePage *page, int index, bool childDone);
   void pop() {
@@ -755,7 +755,7 @@ void BTreeSetImpl::showPage(const BTreePage *p, int level, AbstractFormatter &fo
 
 void BTreeSetImpl::showTree(AbstractFormatter &formatter) const {
   showPage(m_root,0,formatter);
-  _tprintf(_T("Size:%d"),m_size);
+  _tprintf(_T("Size:%s"), format1000(m_size).cstr());
 }
 
 // ------------------------------------BTreeMapImpl----------------------------------------
@@ -905,6 +905,6 @@ void BTreeMapImpl::showPage(const BTreePage *p, int level, AbstractFormatter &ke
 
 void BTreeMapImpl::showTree(AbstractFormatter &keyFormatter, AbstractFormatter &dataFormatter) const {
   showPage(getRoot(), 0, keyFormatter, dataFormatter);
-  _tprintf(_T("Size:%d"), size());
+  _tprintf(_T("Size:%s"), format1000(size()).cstr());
 }
 

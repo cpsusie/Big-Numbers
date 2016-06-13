@@ -121,6 +121,8 @@ namespace TestCompactArray {
 
     static void testSaveLoad(const TCHAR *fileName) {
       CompactArrayType a;
+      int es = sizeof(CompactArrayElement);
+      OUTPUT(_T("sizeof(CompactArrayElement):%d"), es);
       for (int i = 0; i < 2000; i++) {
         a.add(CompactArrayElement(randInt(100000)));
       }
@@ -135,10 +137,10 @@ namespace TestCompactArray {
       verify(loaded == a);
 
       CompactFileArray<CompactArrayElement> cfArray(fileName, 0);
-      verify(cfArray.size() == (unsigned int)loaded.size());
+      verify(cfArray.size() == loaded.size());
 
       for (int i = 0; i < 1000; i++) {
-        const int index = randInt(cfArray.size());
+        const size_t index = randSizet(cfArray.size());
         const CompactArrayElement &cfElement = cfArray[index];
         const CompactArrayElement &element = loaded[index];
         verify(cfElement == element);
@@ -252,8 +254,8 @@ namespace TestCompactArray {
       return key2 - key1;
     }
 
-    static int linearSearchLE(const CompactIntArray &a, int e) {
-      for (int i = a.size(); i--;) {
+    static intptr_t linearSearchLE(const CompactIntArray &a, int e) {
+      for (size_t i = a.size(); i--;) {
         if (a[i] <= e) {
           return i;
         }
@@ -261,7 +263,7 @@ namespace TestCompactArray {
       return -1;
     }
 
-    static size_t linearSearchGE(const CompactIntArray &a, int e) {
+    static intptr_t linearSearchGE(const CompactIntArray &a, int e) {
       size_t i;
       for (i = 0; i < a.size(); i++) {
         if (a[i] >= e) {
@@ -279,8 +281,8 @@ namespace TestCompactArray {
       //  _tprintf(_T("a:%s\n"), a.toStringBasicType().cstr());
       const int maxValue = a.last();
       for (int e = -1; e <= maxValue + 1; e++) {
-        int indexB = a.binarySearchLE(e, intHashCmp);
-        int indexL = linearSearchLE(a, e);
+        intptr_t indexB = a.binarySearchLE(e, intHashCmp);
+        intptr_t indexL = linearSearchLE(a, e);
         verify(indexB == indexL);
 
         indexB = a.binarySearchGE(e, intHashCmp);
@@ -293,7 +295,7 @@ namespace TestCompactArray {
         a.add(randInt() % 10000000);
       }
       a.sort(intHashCmp);
-      for (int i = a.size() - 1; i--;) {
+      for (size_t i = a.size() - 1; i--;) {
         if (a[i] == a[i + 1]) {
           a.remove(i);
         }
@@ -305,7 +307,7 @@ namespace TestCompactArray {
       */
       for (size_t i = 0; i < a.size(); i++) {
         const int v = a[i];
-        const int index = a.binarySearch(v, intHashCmp);
+        const intptr_t index = a.binarySearch(v, intHashCmp);
         verify(index == i);
       }
       int v = a[0] - 1;

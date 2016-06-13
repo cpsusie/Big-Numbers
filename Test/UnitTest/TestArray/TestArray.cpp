@@ -210,7 +210,7 @@ namespace TestArray
       verify(a != b);
 
       int key = 55;
-      int index = a.binarySearch(key, intReverseCompare);
+      intptr_t index = a.binarySearch(key, intReverseCompare);
       verify(index == 44);
 
       index = a.search(key, intReverseCompare);

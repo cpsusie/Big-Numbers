@@ -155,7 +155,7 @@ namespace TestString {
       s2Start = s2;
       for (int i = 0; i < 10; i++) {
         const String ins = format(_T("%d"), i);
-        const int    pos = insertedChars.length();
+        const size_t pos = insertedChars.length();
         s2.insert(pos, ins);
         insertedChars += ins;
         verify(s2 == insertedChars + s2Start);
@@ -272,8 +272,8 @@ namespace TestString {
       res = trimRight(res);
       verify(res == _T(" \n \tfisk"));
 
-      int reslen = res.length();
-      for (int i = 0; i <= reslen + 4; i++) {
+      size_t reslen = res.length();
+      for (size_t i = 0; i <= reslen + 4; i++) {
         try {
           TCHAR ch = res[i];
           verify(i < reslen);

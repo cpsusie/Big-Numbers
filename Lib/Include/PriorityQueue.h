@@ -41,10 +41,10 @@ public:
   }
 
   void add(const T &e) {
-    int s = size();
+    size_t s = size();
     m_a.add(e); 
     if(s > 0) {
-      for(int parent = s/2;; s = parent, parent >>= 1) {
+      for(size_t parent = s/2;; s = parent, parent >>= 1) {
         if(lessOrEqual(m_a[parent], m_a[s])) {
           return;
         }
@@ -58,10 +58,10 @@ public:
       throwException(_T("PriorityQueue::remove:Cannot delete from empty queue"));
 
     T result = m_a[0];
-    const int last = size()-1;
+    const size_t last = size()-1;
     m_a.swap(0, last);
     if(last > 1) {
-      for(int s = 0, child = 1; child < last; s = child, child <<= 1) { // Bubble base[0] down to its place
+      for(size_t s = 0, child = 1; child < last; s = child, child <<= 1) { // Bubble base[0] down to its place
         if((child+1 < last) && lessThan(m_a[child+1], m_a[child])) {     // s got 2 children. Use the smallest to bubble
           child++;
         }
@@ -79,7 +79,7 @@ public:
     return m_a.size() == 0;
   }
   
-  int size() const {
+  size_t size() const {
     return m_a.size();
   }
   

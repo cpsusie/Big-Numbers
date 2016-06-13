@@ -21,8 +21,8 @@ namespace TestStringPool {
     Logger::WriteMessage(msg.cstr());
   }
 
-  static String generateTestString(int i) {
-    return format(_T("Dette er en teststring med nr %08x"), i);
+  static String generateTestString(size_t i) {
+    return format(_T("Dette er en teststring med nr %8s"), format1000(i).cstr());
   }
 
   static int strCompare(const TCHAR * const &s1, const TCHAR * const &s2) {
@@ -36,7 +36,7 @@ namespace TestStringPool {
     TEST_METHOD(testStringPool) {
       StringPool sp;
 
-      CompactIntArray offsets;
+      CompactSizetArray offsets;
       for (int i = 0; i < 10000; i++) {
         offsets.add(sp.addString(generateTestString(i).cstr()));
       }
@@ -54,7 +54,7 @@ namespace TestStringPool {
         verify(generateTestString(i) == str);
       }
 
-      CompactIntArray offsets1;
+      CompactSizetArray offsets1;
       for (int i = 0; i < 10000; i++) {
         offsets1.add(sp.addString(generateTestString(i).cstr()));
       }

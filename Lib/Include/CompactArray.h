@@ -577,6 +577,7 @@ typedef CompactArray<int>    CompactIntArray;
 typedef CompactArray<long>   CompactLongArray;
 typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
+typedef CompactArray<size_t> CompactSizetArray;
 
 template <class T> class CompactFileArray {
 private:
@@ -591,7 +592,7 @@ private:
 
 public:
   CompactFileArray(const String &fileName, unsigned __int64 startOffset) 
-    : m_dataStartOffset(startOffset + sizeof(unsigned int))
+    : m_dataStartOffset(startOffset + sizeof(m_size))
     , m_f(fileName)
   {
     m_f.seek(startOffset);
