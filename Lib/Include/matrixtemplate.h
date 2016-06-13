@@ -253,8 +253,8 @@ public:
       throwIndexException(_T("setRow:Row %s out of range"), format1000(row).cstr());
     }
     if(v.getDimension() != getColumnCount()) {
-      throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.Dimension=%s")
-                          ,getDimensionString().cstr(), format1000(v.getDimension()).cstr());
+      throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.%s")
+                          ,getDimensionString().cstr(), v.getDimensionString().cstr());
     }
     for(size_t c = 0; c < getColumnCount(); c++) {
       m_a[row][c] = v(c);
@@ -267,8 +267,8 @@ public:
       throwIndexException(_T("setColumn:Column %s out of range"), format1000(column).cstr());
     }
     if(v.getDimension() != getRowCount()) {
-      throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.Dimension=%s")
-                          ,getDimensionString().cstr(), format1000(v.getDimension()).cstr());
+      throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.%s")
+                          ,getDimensionString().cstr(), v.getDimensionString().cstr());
     }
     for(size_t r = 0; r < getRowCount(); r++) {
       m_a[r][column] = v(r);
@@ -441,12 +441,14 @@ public:
     const size_t columns = lts.getColumnCount();
 
     if(columns != rhs.getDimension()) {
-      throwMatrixException(_T("operator*(Matrix,Vector):Invalid dimension. Matrix.%s, Vector.Dimension=%s"), lts.getDimensionString().cstr(), format1000(rhs.getDimension()).cstr());
+      throwMatrixException(_T("operator*(Matrix,Vector):Invalid dimension. Matrix.%s, Vector.%s")
+                          ,lts.getDimensionString().cstr()
+                          ,rhs.getDimensionString().cstr());
     }
 
     VectorTemplate<T> result(rows);
     for(size_t r = 0; r < rows; r++) {
-	  T sum = 0;
+	    T sum = 0;
       for(size_t c = 0; c < columns; c++) {
         sum += lts.m_a[r][c] * rhs[c];
       }
@@ -460,7 +462,9 @@ public:
     const size_t columns = rhs.getColumnCount();
 
     if(lts.getDimension() != rows) {
-      throwMatrixException(_T("operator*(Vector,Matrix):Invalid dimension. Vector.Dimension=%s. Matrix.%s"), format1000(lts.getDimension()).cstr(), rhs.getDimensionString().cstr());
+      throwMatrixException(_T("operator*(Vector,Matrix):Invalid dimension. Vector.%s. Matrix.%s")
+                          ,lts.getDimensionString().cstr()
+                          ,rhs.getDimensionString().cstr());
     }
 
     VectorTemplate<T> result(columns);
