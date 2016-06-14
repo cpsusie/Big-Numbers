@@ -729,9 +729,9 @@ TCHAR Tableau::getVariablePrefix(size_t index) const {
     return _T('?');
   } else if(index <= (int)m_xCount) {
     return _T('X');
-  } else if((m_slackCount      > 0) && (index <= getSlackColumn(m_slackCount))) {
+  } else if((m_slackCount      > 0) && ((int)index <= getSlackColumn(m_slackCount))) {
     return _T('S');
-  } else if((m_artificialCount > 0) && (index <= getArtificialColumn(m_artificialCount))) {
+  } else if((m_artificialCount > 0) && ((int)index <= getArtificialColumn(m_artificialCount))) {
     return _T('A');
   } else {
     return _T('#');

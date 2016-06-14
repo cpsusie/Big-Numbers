@@ -20,6 +20,9 @@
     <Filter Include="Source Files\Expression\Expression Grammar">
       <UniqueIdentifier>{499e8907-5cb3-4644-b0d4-ad3ada685767}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Asm Files">
+      <UniqueIdentifier>{0f95d5a8-ec2f-4b4e-857b-b69c9711e495}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Complex.cpp">
@@ -400,5 +403,10 @@
     <ClInclude Include="..\..\Include\Math\Polygon2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Double80x64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

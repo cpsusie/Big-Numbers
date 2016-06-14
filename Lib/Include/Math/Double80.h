@@ -3,11 +3,17 @@
 #include <StrStream.h>
 #include <Random.h>
 #include "PragmaLib.h"
-#ifdef _DEBUG
+
+#ifdef _DEBUG1
+#define _DEBUGD80
+#endif
+
+#ifdef _DEBUGD80
 #include <Semaphore.h>
 #endif
 
 #pragma check_stack(off)
+
 
 typedef enum {
   FPU_LOW_PRECISION            // 32-bits floatingpoint
@@ -54,10 +60,45 @@ public:
   static void             clearExceptions();
 };
 
-#ifdef _DEBUG
+#ifdef _DEBUGD80
 #define SETD80DEBUGSTRING(x) { if(Double80::s_debugStringEnabled) (x).ajourDebugString(); }
 #else
 #define SETD80DEBUGSTRING(x)
+#endif
+
+#ifdef _DEBUGD80
+
+class _TenByte {
+private:
+  char m_value[10];
+public:
+  inline _TenByte() {};
+  _TenByte(const Double80 &src);
+};
+
+#define TenByteClass _TenByte
+
+#else
+
+class Double80;
+#define TenByteClass Double80
+
+#endif
+
+#ifdef IS64BIT
+extern "C" void consD80Long(       TenByteClass &s, const long             &x);
+extern "C" void consD80ULong(      TenByteClass &s, const unsigned long     x);
+extern "C" void consD80LongLong(   TenByteClass &s, const __int64          &x);
+extern "C" void consD80ULongLong(  TenByteClass &s, const unsigned __int64  x);
+extern "C" void consD80Float(      TenByteClass &s, float                  &x);
+extern "C" void consD80Double(     TenByteClass &s, const double           &x);
+extern "C" long               &D80ToLong(      long               &dst, const TenByteClass &src);
+extern "C" unsigned long      &D80ToULong(     unsigned long      &dst, const TenByteClass &src);
+extern "C" long long          &D80ToLongLong(  long long          &dst, const TenByteClass &src);
+extern "C" unsigned long long &D80ToULongLong( unsigned long long &dst, const TenByteClass &src);
+extern "C" float              &D80ToFloat(     float              &dst, const TenByteClass &src);
+extern "C" double             &D80ToDouble(    double             &dst, const TenByteClass &src);
+extern "C" TenByteClass       &sumD80D80(TenByteClass &s, const TenByteClass &x, const TenByteClass &y);
 #endif
 
 class Double80 {
@@ -65,14 +106,14 @@ private:
   char m_value[10]; // Must be the first field in the class
   void init(const _TUCHAR *s);
 
-#ifdef _DEBUG
+#ifdef _DEBUGD80
   mutable char m_debugString[30];
   friend class InitDouble80;
-  friend class TenByte;
+  friend class _TenByte;
 public:
-  Double80(const TenByte &src);
+  Double80(const _TenByte &src);
   inline void ajourDebugString() const {
-    d80toa(m_debugString,*this);
+    d80toa(m_debugString, *this);
   }
   static Semaphore s_debugStringGate;
   static bool      s_debugStringEnabled;
@@ -80,29 +121,74 @@ public:
 
 public:
   Double80();
-  Double80(         int     x);
+  Double80(int              x);
   Double80(unsigned int     x);
-  Double80(         long    x);
+
+#ifdef IS32BIT
+  Double80(long             x);
   Double80(unsigned long    x);
-  Double80(         __int64 x);
+  Double80(__int64          x);
   Double80(unsigned __int64 x);
   Double80(float            x);
   Double80(double           x);
+#else
+  inline Double80(long x) {
+    consD80Long(*this, x);
+  }
+  inline Double80(unsigned long x) {
+    consD80ULong(*this, x);
+  }
+  inline Double80(__int64 x) {
+    consD80LongLong(*this, x);
+  }
+  inline Double80(unsigned __int64 x) {
+    consD80ULongLong(*this, x);
+  }
+  inline Double80(float x) {
+    consD80Float(*this, x);
+  }
+  inline Double80(double x) {
+    consD80Double(*this, x);
+  }
+#endif
   explicit Double80(const String &s);
   explicit Double80(const TCHAR  *s);
   explicit Double80(const BYTE   *bytes);
 #ifdef UNICODE
   explicit Double80(const char   *s);
 #endif
-  friend          int     getInt(   const Double80 &x);
-  friend unsigned int     getUint(  const Double80 &x);
+  friend          int     getInt( const Double80 &x);
+  friend unsigned int     getUint(const Double80 &x);
+
+#ifdef IS32BIT
   friend          long    getLong(  const Double80 &x);
   friend unsigned long    getUlong( const Double80 &x);
   friend          __int64 getInt64( const Double80 &x);
   friend unsigned __int64 getUint64(const Double80 &x);
   friend float            getFloat( const Double80 &x);
   friend double           getDouble(const Double80 &x);
-  static int              getExpo2( const Double80 &x);
+#else
+  friend long getLong(const Double80 &x) {
+    long tmp; return D80ToLong(tmp, x);
+  }
+  friend unsigned long getUlong(const Double80 &x) {
+    unsigned long tmp; return D80ToULong(tmp, x);
+  }
+  friend __int64 getInt64(const Double80 &x) {
+    long long tmp; return D80ToLongLong(tmp, x);
+  }
+  friend unsigned __int64 getUint64(const Double80 &x) {
+    unsigned long long tmp; return D80ToULongLong(tmp, x);
+  }
+  friend float getFloat(const Double80 &x) {
+    float tmp; return D80ToFloat(tmp, x);
+  }
+  friend inline double getDouble(const Double80 &x) {
+    double tmp; return D80ToDouble(tmp, x);
+  }
+#endif
+
+  static int              getExpo2(const Double80 &x);
   static int              getExpo10(const Double80 &x); // x == 0 ? 0 : floor(log10(|x|))
 
   Double80 &operator+=(const Double80 &x);
@@ -137,7 +223,7 @@ public:
     return p.addElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
   }
 
-  friend inline Packer &operator>>(Packer &p, Double80 &d) {
+  friend inline Packer &operator >> (Packer &p, Double80 &d) {
     p.getElement(Packer::E_DOUBLE, d.m_value, sizeof(d.m_value));
     SETD80DEBUGSTRING(d);
     return p;
@@ -155,64 +241,60 @@ public:
   static void initClass();
 };
 
-#ifdef _DEBUG
-
-class TenByte {
-private:
-  char m_value[10];
-public:
-  inline TenByte() {};
-  TenByte(const Double80 &src);
-};
-
+#ifdef IS32BIT
+Double80 operator+(const Double80 &x, const Double80 &y);
+#else
+inline Double80 operator+(const Double80 &x, const Double80 &y) {
+  TenByteClass sum;
+  return sumD80D80(sum, x, y);
+}
 #endif
 
-
-Double80 operator+(const Double80 &x, const Double80 &y);
 Double80 operator-(const Double80 &x, const Double80 &y);
 Double80 operator-(const Double80 &x);
 Double80 operator*(const Double80 &x, const Double80 &y);
 Double80 operator/(const Double80 &x, const Double80 &y);
 
-bool operator==(      const Double80 &x, const Double80 &y);
-bool operator!=(      const Double80 &x, const Double80 &y);
-bool operator<=(      const Double80 &x, const Double80 &y);
-bool operator>=(      const Double80 &x, const Double80 &y);
-bool operator< (      const Double80 &x, const Double80 &y);
-bool operator> (      const Double80 &x, const Double80 &y);
-Double80 fabs(        const Double80 &x);
-Double80 fmod(        const Double80 &x, const Double80 &y);
-Double80 sqr(         const Double80 &x);
-Double80 sqrt(        const Double80 &x);
-Double80 sin(         const Double80 &x);
-Double80 cos(         const Double80 &x);
+bool operator==(const Double80 &x, const Double80 &y);
+bool operator!=(const Double80 &x, const Double80 &y);
+bool operator<=(const Double80 &x, const Double80 &y);
+bool operator>=(const Double80 &x, const Double80 &y);
+bool operator< (const Double80 &x, const Double80 &y);
+bool operator> (const Double80 &x, const Double80 &y);
+Double80 fabs(const Double80 &x);
+Double80 fmod(const Double80 &x, const Double80 &y);
+Double80 sqr(const Double80 &x);
+Double80 sqrt(const Double80 &x);
+Double80 sin(const Double80 &x);
+Double80 cos(const Double80 &x);
 void     sincos(Double80 &c, Double80 &s); // calculate both cos and sin. c:inout c, s:out
-Double80 tan(         const Double80 &x);
-Double80 cot(         const Double80 &x);
-Double80 asin(        const Double80 &x);
-Double80 acos(        const Double80 &x);
-Double80 atan(        const Double80 &x);
-Double80 acot(        const Double80 &x);
-Double80 atan2(       const Double80 &y, const Double80 &x);
-Double80 exp(         const Double80 &x);
-Double80 log(         const Double80 &x);
-Double80 log10(       const Double80 &x);
-Double80 log2(        const Double80 &x);
-Double80 pow(         const Double80 &x, const Double80 &y);
-Double80 pow10(       const Double80 &x);
-Double80 pow2(        const Double80 &x);
-Double80 root(        const Double80 &x, const Double80 &y);
-Double80 floor(       const Double80 &x);
-Double80 ceil(        const Double80 &x);
-Double80 fraction(    const Double80 &x);
-int      sign(        const Double80 &x);
-Double80 round(       const Double80 &x, int prec = 0);
-Double80 Max(         const Double80 &x, const Double80 &y);
-Double80 Min(         const Double80 &x, const Double80 &y);
-bool     isNan(       const Double80 &x);
-bool     isPInfinity( const Double80 &x);
-bool     isNInfinity( const Double80 &x);
-bool     isInfinity(  const Double80 &x);
+Double80 tan(const Double80 &x);
+Double80 cot(const Double80 &x);
+Double80 asin(const Double80 &x);
+Double80 acos(const Double80 &x);
+Double80 atan(const Double80 &x);
+Double80 acot(const Double80 &x);
+Double80 atan2(const Double80 &y, const Double80 &x);
+Double80 exp(const Double80 &x);
+Double80 log(const Double80 &x);
+Double80 log10(const Double80 &x);
+Double80 log2(const Double80 &x);
+Double80 pow(const Double80 &x, const Double80 &y);
+Double80 pow10(const Double80 &x);
+Double80 pow2(const Double80 &x);
+Double80 root(const Double80 &x, const Double80 &y);
+Double80 floor(const Double80 &x);
+Double80 ceil(const Double80 &x);
+Double80 fraction(const Double80 &x);
+int      sign(const Double80 &x);
+Double80 round(const Double80 &x, int prec = 0);
+Double80 Max(const Double80 &x, const Double80 &y);
+Double80 Min(const Double80 &x, const Double80 &y);
+bool     isNan(const Double80 &x);
+bool     isPInfinity(const Double80 &x);
+bool     isNInfinity(const Double80 &x);
+bool     isInfinity(const Double80 &x);
+
 
 class RandomD80 : public Random {
 public:
