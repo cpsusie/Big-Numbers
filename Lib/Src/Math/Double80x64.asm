@@ -1,26 +1,103 @@
+; To be used in x64 mode when using class Double80
+; 
+;
+
+ROUND      EQU "0" 
+ROUNDDOWN  EQU "1"
+ROUNDUP    EQU "2" 
+TRUNCATE   EQU "3" 
+
+pushRoundMode MACRO roundMode
+	push	0
+    fnstcw	WORD PTR[rsp]        ; save FPU ctrlWord in cwSave (=*rsp)
+    mov		ax, WORD PTR[rsp]
+ifidn     <roundMode>,<ROUND>
+   and     ah, 0f3h		         ; clear bit 10,11
+elseifidn <roundMode>,<ROUNDDOWN>
+    or		ah, 04h              ; set bit 10
+    and		ah, 0f7h             ; clear bit 11
+elseifidn <roundMode>,<ROUNDUP>
+    and     ah, 0fbh             ; clear bit 10
+    or      ah, 8h               ; set bit 11
+else
+    or      ah, 0ch              ; set bit 10, 11
+endif
+    mov		WORD PTR[rsp+2], ax  ; crtlflags in rsp[2]
+    fldcw	WORD PTR[rsp+2]      ; load new ctrlword              ROUNDDOWN
+ENDM
+
+popRoundMode MACRO
+    fldcw	WORD PTR[rsp]        ; restore FPU  ctrlWord (=cwSave)
+	add		rsp, 8
+ENDM
+
+
 .DATA
 
-maxI32   dword 7fffffffh
-maxI32P1 dword 80000000h
-maxI64   qword 7fffffffffffffffh
-maxI64P1 qword 8000000000000000h
+maxI32       dword 7fffffffh
+maxI32P1     dword 80000000h
+maxI64       qword 7fffffffffffffffh
+maxI64P1     qword 8000000000000000h
+d80Epsilon   tbyte 0000000000000080c03fh  ; 1.08420217248550443e-019
+d80Minimum   tbyte 00000000000000800100h  ; 3.36210314311209209e-4932
+d80Maximum   tbyte 0fffffffffffffffffe7fh ; 1.18973149535723227e+4932
+m2pi2pow60   tbyte 403dc90fdaa22168c235h  ; 2*pi*pow2(60) (=7.244019458077122e+018)
+
 
 .CODE
 
-;---------------------------------------------- Constructors ------------------------------------------------
+;---------------------------------------------- FPU control function ----------------------------------------
 
-;void consD80Long(TenByteClass &s, long &x);
-consD80Long PROC
+;void FPUinit();
+FPUinit PROC
+    fninit
+	ret
+FPUinit ENDP
+
+;void FPUgetStatusWord(WORD &dst);
+FPUgetStatusWord PROC
+    fnstsw WORD PTR[rcx]
+	ret
+FPUgetStatusWord ENDP
+
+;void FPUgetControlWord(WORD &dst);
+FPUgetControlWord PROC
+    fnstcw WORD PTR[rcx]
+	ret
+FPUgetControlWord ENDP
+
+;void FPUsetControlWord(WORD &flags);
+FPUsetControlWord PROC
+    fldcw WORD PTR[rcx]
+	ret
+FPUsetControlWord ENDP
+
+;FPUgetTagsWord(WORD *dst);
+FPUgetTagsWord PROC
+    fstenv WORD PTR[rcx]
+	ret
+FPUgetTagsWord ENDP
+
+;void FPUclearExceptions();
+FPUclearExceptions PROC
+    fclex
+	ret
+FPUclearExceptions ENDP
+
+;----------------------------------------------Double80 Constructors ------------------------------------------------
+
+;void D80consLong(Double80 &dst, long &x);
+D80consLong PROC
     fild	DWORD PTR [rdx]
     fstp	TBYTE PTR [rcx]
     ret
-consD80Long ENDP
+D80consLong ENDP
 
 
-;void consD80ULong(TenByteClass &s, unsigned long x);
-consD80ULong PROC
+;void D80consULong(Double80 &dst, unsigned long x);
+D80consULong PROC
     cmp	    edx, maxI32
-    jbe	    SHORT DoSmallInt32
+    jbe	    DoSmallInt32
 
     and	    edx, maxI32
     push    rdx
@@ -31,29 +108,28 @@ consD80ULong PROC
     fld1
     faddp
     fstp	TBYTE PTR [rcx]
-    pop		rdx
-    pop     rdx
+    add		rsp, 16
     ret
 
 DoSmallInt32:
     push    rdx
     fild	DWORD PTR [rsp]
-    pop     rdx
+    add     rsp, 8
     fstp	TBYTE PTR [rcx]
     ret
-consD80ULong ENDP
+D80consULong ENDP
 
-; void consD80LongLong(TenByteClass &s, const __int64 &x);
-consD80LongLong PROC
+; void D80consLongLong(Double80 &dst, const __int64 &x);
+D80consLongLong PROC
     fild	QWORD PTR [rdx]
     fstp	TBYTE PTR [rcx]
     ret
-consD80LongLong ENDP
+D80consLongLong ENDP
 
-; void consD80ULongLong(TenByteClass &s, const unsigned __int64 x);
-consD80ULongLong PROC
+; void D80consULongLong(Double80 &dst, const unsigned __int64 x);
+D80consULongLong PROC
     cmp     rdx,0
-    jg 	    SHORT DoSmallInt64
+    jg 	    DoSmallInt64
 
     and	    rdx, maxI64
     push    rdx
@@ -64,43 +140,41 @@ consD80ULongLong PROC
     fld1
     faddp
     fstp	TBYTE PTR [rcx]
-    pop     rdx
-    pop     rdx
+    add		rsp, 16
     ret
 
 DoSmallInt64:
     push    rdx
     fild	QWORD PTR [rsp]
-    pop     rdx
+    add		rsp, 8
     fstp	TBYTE PTR [rcx]
     ret
-consD80ULongLong ENDP
+D80consULongLong ENDP
 
-; void consD80Float(TenByteClass &s, float &x);
-consD80Float PROC
+; void D80consFloat(Double80 &dst, float &x);
+D80consFloat PROC
     fld		DWORD PTR[rdx]
     fstp	TBYTE PTR[rcx]
     ret
-consD80Float ENDP
+D80consFloat ENDP
 
-;void consD80Double(TenByteClass &s, const double &x);
-consD80Double PROC
+;void D80consDouble(Double80 &dst, const double &x);
+D80consDouble PROC
     fld		QWORD PTR[rdx]
     fstp	TBYTE PTR[rcx]
     ret
-consD80Double ENDP
+D80consDouble ENDP
 
 ; ---------------------- Conversion functions from Double80 -> long,ulong,longlong ulonglong,float,double
 
-;long &D80ToLong(long &dst, const TenByteClass &src);
+;void D80ToLong(long &dst, const Double80 &src);
 D80ToLong PROC
     fld		TBYTE PTR[rdx]
     fistp	DWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToLong ENDP
 
-;unsigned long &D80ToULong(unsigned long &dst, const TenByteClass &src);
+;void D80ToULong(unsigned long &dst, const Double80 &src);
 D80ToULong PROC
     fld		TBYTE PTR[rdx]
 	ficom   maxI32
@@ -115,28 +189,25 @@ D80ToULong PROC
 	mov     eax, DWORD PTR[rcx]
 	add     eax, maxI32P1
 	mov     DWORD PTR[rcx], eax
-    mov		rax, rcx
     ret
 GetSmallInt32:
     fistp	DWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToULong ENDP
 
-;long long &D80ToLongLong(long long &dst, const TenByteClass &src);
+;void D80ToLongLong(long long &dst, const Double80 &src);
 D80ToLongLong PROC
     fld		TBYTE PTR[rdx]
     fistp	QWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToLongLong ENDP
 
-;unsigned long long &D80ToULongLong(unsigned long long &dst, const TenByteClass &src);
+;void D80ToULongLong(unsigned long long &dst, const Double80 &src);
 D80ToULongLong PROC
     fld		TBYTE PTR[rdx]
 	fild    maxI64
 	fcomip  st, st(1)
-	jge     GetSmallInt64
+	jae     GetSmallInt64
 
 	fild    maxI64P1                 ; x >= maxInt64
 	fchs
@@ -145,38 +216,542 @@ D80ToULongLong PROC
 	mov     rax, QWORD PTR[rcx]
 	add     rax, maxI64P1
 	mov     QWORD PTR[rcx], rax
-    mov		rax, rcx
     ret
 GetSmallInt64:
     fistp	QWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToULongLong ENDP
 
-;float &D80ToFloat(float &dst, const TenByteClass &src);
+;void D80ToFloat(float &dst, const Double80 &src);
 D80ToFloat PROC
     fld		TBYTE PTR [rdx]
     fstp	DWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToFloat ENDP
 
-;double &D80ToDouble(double &d, const TenByteClass &src);
+;void D80ToDouble(double &dst, const Double80 &src);
 D80ToDouble PROC
     fld		TBYTE PTR[rdx]
     fstp	QWORD PTR[rcx]
-    mov		rax, rcx
     ret
 D80ToDouble ENDP
 
-;TenByteClass &sumD80D80(TenByteClass &s, const TenByteClass &x, const TenByteClass &y);
-sumD80D80 PROC
-    fld		TBYTE PTR[r8]
-    fld		TBYTE PTR[rdx]
-    faddp
-    fstp	TBYTE PTR[rcx]
-    mov		rax,rcx
+; ---------------------- Binary operators +,-,*,- (and unary minus) and compare ------------------------------------------
+
+;void D80D80sum(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80D80sum PROC
+    fld		TBYTE PTR[rdx]  ; load x
+    fld		TBYTE PTR[r8 ]  ; load y
+    fadd
+    fstp	TBYTE PTR[rcx]  ; pop result
     ret
-sumD80D80 ENDP
+D80D80sum ENDP
+
+;void D80D80dif(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80D80dif PROC
+    fld		TBYTE PTR[rdx]  ; load x
+    fld		TBYTE PTR[r8 ]  ; load y
+    fsub
+    fstp	TBYTE PTR[rcx]  ; pop result
+    ret
+D80D80dif ENDP
+
+;void D80neg(TenByteClass &dst, const Double80 &x);
+D80neg PROC
+    fld		TBYTE PTR[rdx]  ; load x
+    fchs
+    fstp	TBYTE PTR[rcx]  ; pop result
+    ret
+D80neg ENDP
+
+;void D80D80mul(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80D80mul PROC
+    fld		TBYTE PTR[rdx]  ; load x
+    fld		TBYTE PTR[r8 ]  ; load y
+    fmul
+    fstp	TBYTE PTR[rcx]  ; pop result
+    ret
+D80D80mul ENDP
+
+;void D80D80div(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80D80div PROC
+    fld		TBYTE PTR[rdx]  ; load x
+    fld		TBYTE PTR[r8 ]  ; load y
+    fdiv
+    fstp	TBYTE PTR[rcx]  ; pop result
+    ret
+D80D80div ENDP
+
+;int D80D80Compare(const Double80 &x, const Double80 &y);
+D80D80Compare PROC
+    fld		TBYTE PTR[rdx]  ; load y
+    fld		TBYTE PTR[rcx]  ; load x
+    fcomip	st, st(1)					; st(0)=x, st(1)=y
+	ja		XAboveY
+	jb		XBelowY
+	xor		rax,rax
+	fstp	st(0)
+	ret
+XAboveY:
+	fstp	st(0)
+    mov		rax, 1
+	ret
+XBelowY:
+	fstp	st(0)
+    mov		rax, -1
+	ret
+D80D80Compare ENDP
+
+;int D80isZero(const Double80 &x);
+D80isZero PROC
+    fld		TBYTE PTR [rcx]
+    fldz
+    fcomip	st, st(1)            ; compare and pop zero
+    je		IsZero               ; if st(0) == st(1) (this != zero) goto IsZero
+    xor		rax, rax			 ; rax = 0 (false)
+	fstp	st(0)
+	ret
+IsZero:
+    mov		rax, 1			     ; rax = 1 (true)
+    fstp	st(0)                ; pop x
+	ret
+D80isZero ENDP
+
+; ---------------------------------------- assign operators +=,-=,*=,/=,++,-- -------------------------------------
+
+;void D80assignAdd(Double80 &dst, const Double80 &x);
+D80assignAdd PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld		TBYTE PTR[rdx]  ; load x
+    fadd
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80assignAdd ENDP
+
+;void D80assignSub(Double80 &dst, const Double80 &x);
+D80assignSub PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld		TBYTE PTR[rdx]  ; load x
+    fsub
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80assignSub ENDP
+
+;void D80assignMul(Double80 &dst, const Double80 &x);
+D80assignMul PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld		TBYTE PTR[rdx]  ; load x
+    fmul
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80assignMul ENDP
+
+;void D80assignDiv(Double80 &dst, const Double80 &x);
+D80assignDiv PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld		TBYTE PTR[rdx]  ; load x
+    fdiv
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80assignDiv ENDP
+
+;void D80increment(Double80 &dst);
+D80increment PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld1
+    fadd
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80increment ENDP
+
+;void D80decrement(Double80 &dst);
+D80decrement PROC
+    fld		TBYTE PTR[rcx]  ; load dst
+    fld1
+    fsub
+    fstp	TBYTE PTR[rcx]  ; pop to dst
+    ret
+D80decrement ENDP
+
+; ------------------------------------------Misc functions ---------------------------------------------------------
+;void D80getPi(Double80 &dst);
+D80getPi PROC
+	fldpi
+	fstp	TBYTE PTR[rcx]
+	ret
+D80getPi ENDP
+
+;void D80getEps(Double80 &dst);
+D80getEps PROC
+ 	fld     d80Epsilon
+	fstp    TBYTE PTR[rcx]
+	ret
+D80getEps ENDP
+
+;void D80getMin(Double80 &dst);
+D80getMin PROC
+	fld     d80Minimum
+	fstp    TBYTE PTR[rcx]
+	ret
+D80getMin ENDP
+
+;void D80getMax(Double80 &dst);
+D80getMax PROC
+	fld     d80Maximum
+	fstp    TBYTE PTR[rcx]
+	ret
+D80getMax ENDP
+
+; -------------------------------------------------- Double80 Functions ----------------------------------------
+
+;void D80getExpo2(int &dst, const Double80 &x);
+D80getExpo2 PROC
+    fld		TBYTE PTR [rdx]
+    fxtract
+    fstp	st(0)
+    fistp	DWORD PTR[rcx]
+	ret
+D80getExpo2 ENDP
+
+;void D80getExpo10(int &dst, const Double80 &x);
+D80getExpo10 PROC
+    fld		TBYTE PTR [rdx]
+    fldz
+    fcomip	st, st(1)            ; compare x and pop 0 
+	jne		x_not_zero           ; if(x != 0) goto x_not_zero
+    fstp	st(0)                ; pop x
+    mov		DWORD PTR[rcx], 0    ; x == 0 => result = 0
+    ret
+x_not_zero:
+    fld1
+    fxch	st(1)
+    fabs
+    fyl2x
+    fldlg2
+    fmul
+    pushRoundMode ROUNDDOWN
+    frndint
+    popRoundMode
+    fistp	DWORD PTR[rcx]
+	ret
+D80getExpo10 ENDP
+
+; void D80fabs(TenByteClass &dst, const Double80 &x);
+D80fabs PROC
+	fld		TBYTE PTR[rdx]
+	fabs
+	fstp	TBYTE PTR[rcx]
+	ret
+D80fabs ENDP
+
+;void D80sqr(TenByteClass &dst, const Double80 &x);
+D80sqr PROC
+    fld		TBYTE PTR[rdx]
+    fld		st(0)
+    fmul
+    fstp	TBYTE PTR[rcx]
+	ret
+D80sqr ENDP
+
+;void D80sqrt(TenByteClass &dst, const Double80 &x);
+D80sqrt PROC
+    fld		TBYTE PTR[rdx]
+    fsqrt
+    fstp    TBYTE PTR[rcx]
+	ret
+D80sqrt ENDP
+
+;void D80modulus(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80modulus PROC
+    fld		TBYTE PTR [r8]      ;                                                     st0=y
+    fabs                        ; y = abs(y)                                          st0=|y|
+    fld		TBYTE PTR [rdx]     ;                                                     st0=x,st1=|y|
+    fldz                        ;                                                     st0=0,st1=x,st2=|y|
+    fcomip	st, st(1)           ; compare and pop zero                                st0=x,st1=|y|
+	ja		Repeat_Negative_x   ; if st(0) > st(1) (0 > x) goto repeat_negative_x 
+
+Repeat_Positive_x:              ; do {												  st0=x,st1=|y|, x > 0
+    fprem                       ;   st0 %= y                                       
+    fnstsw	ax
+    sahf
+	jpe		Repeat_Positive_x   ; } while(statusword.c2 != 0);
+    fldz                        ;                                                     st0=0,st1=x,st2=|y|
+    fcomip	st, st(1)           ; compare and pop zero
+	jbe		pop2                ; if(st(0) <= st(1) (0 <= remainder) goto pop2
+    fadd                        ; remainder += y
+    fstp	TBYTE PTR[rcx]      ; pop result
+    ret                         ; return
+
+Repeat_Negative_x:              ; do {                                                st0=x,st=|y|, x < 0
+    fprem                       ;    st0 %= y
+    fnstsw	ax
+    sahf
+	jpe		Repeat_Negative_x   ; } while(statusword.c2 != 0)
+    fldz
+    fcomip	st, st(1)           ; compare and pop zero
+	jae		pop2                ; if(st(0) >= st(1) (0 >= remainder) goto pop2
+    fsubr                       ; remainder -= y
+    fstp	TBYTE PTR[rcx]      ; pop result
+    ret                         ; return
+
+pop2:                           ;                                                     st0=x%y,st1=y
+    fstp	TBYTE PTR[rcx]      ; pop result
+    fstp	st(0)               ; pop y
+	ret
+D80modulus ENDP
+
+; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
+
+;void D80sin(TenByteClass &dst, const Double80 &x);
+D80sin PROC
+	lea		r8, m2pi2pow60
+	call	D80modulus
+    fld		TBYTE PTR[rcx]
+    fsin
+    fstp	TBYTE PTR[rcx]
+	ret
+D80sin ENDP
+
+;void D80cos(TenByteClass &dst, const Double80 &x);
+D80cos PROC
+	lea		r8, m2pi2pow60
+	call	D80modulus
+    fld		TBYTE PTR[rcx]
+    fcos
+    fstp	TBYTE PTR[rcx]
+	ret
+D80cos ENDP
+
+;void D80tan(TenByteClass &dst, const Double80 &x);
+D80tan PROC
+	lea		r8, m2pi2pow60
+	call	D80modulus
+    fld		TBYTE PTR[rcx]
+    fptan
+    fstp	st
+    fstp	TBYTE PTR[rcx]
+	ret
+D80tan ENDP
+
+;void D80atan(TenByteClass &dst, const Double80 &x);
+D80atan PROC
+    fld		TBYTE PTR[rdx]
+    fld1
+    fpatan
+    fstp	TBYTE PTR[rcx]
+	ret
+D80atan ENDP
+
+;void D80atan2(TenByteClass &dst, const Double80 &y, const Double80 &x);
+D80atan2 PROC
+    fld		TBYTE PTR[rdx]
+    fld		TBYTE PTR[r8]
+    fpatan
+    fstp	TBYTE PTR[rcx]
+	ret
+D80atan2 ENDP
+
+;void D80sincos(Double80 &c, Double80 &s);
+D80sincos PROC
+    push    rdx
+	mov     rdx, rcx
+	lea		r8, m2pi2pow60
+	call	D80modulus
+	pop     rdx
+    fld		TBYTE PTR[rcx]
+    fsincos
+    fstp	TBYTE PTR [rcx]
+    fstp	TBYTE PTR [rdx]
+    ret
+D80sincos ENDP
+
+; --------------------------------------------------- Double80 Exponential and Logarithmic functions ------------------
+
+;void D80exp(TenByteClass &dst, const Double80 &x);
+D80exp PROC
+    fld		TBYTE PTR [rdx]
+    fldl2e
+    fmul
+    fld		st(0)
+	pushRoundMode ROUNDDOWN
+    frndint
+	popRoundMode
+    fsub	st(1), st(0)
+    fxch	st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp	st(1)
+    fstp	TBYTE PTR[rcx]
+	ret
+D80exp ENDP
+
+;void D80log(TenByteClass &dst, const Double80 &x);
+D80log PROC
+    fld1
+    fld		TBYTE PTR[rdx]
+    fyl2x
+    fldln2
+    fmul
+    fstp	TBYTE PTR[rcx]
+	ret
+D80log ENDP
+
+;void D80log10(TenByteClass &dst, const Double80 &x);
+D80log10 PROC
+    fld1
+    fld		TBYTE PTR[rdx]
+    fyl2x
+    fldlg2
+    fmul
+    fstp	TBYTE PTR[rcx]
+	ret
+D80log10 ENDP
+
+;void D80log2(TenByteClass &dst, const Double80 &x);
+D80log2 PROC
+    fld1
+    fld		TBYTE PTR[rdx]
+    fyl2x
+    fstp	TBYTE PTR[rcx]
+	ret
+D80log2 ENDP
+
+;void D80pow(TenByteClass &dst, const Double80 &x, const Double80 &y);
+D80pow PROC
+	fld		TBYTE PTR[r8]
+	fldz
+	fcomip	st, st(1)
+	je ZeroExponent
+
+	fld		TBYTE PTR[rdx]
+	fldz
+	fcomip	st, st(1)
+	je		ZeroBase
+							; st(0)=x, st(1)=y
+    fyl2x
+    fld		st(0)
+	pushRoundMode ROUNDDOWN
+    frndint
+	popRoundMode
+    fsub	st(1), st(0)
+    fxch	st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp	st(1)
+    fstp	TBYTE PTR[rcx]
+	ret
+ZeroExponent:				; st(0)=y
+	fstp	st(0)			; pop y
+	fld1
+    fstp	TBYTE PTR[rcx]
+	ret
+ZeroBase:					; st(0)=x, st(1)=y. x = 0. so st(0) = 0
+	fcomip	st, st(1)
+	ja		ZeroBaseNegativeExponent	
+	fstp	st(0)			; pop y
+	fldz
+    fstp	TBYTE PTR[rcx]	; return 0
+	ret
+ZeroBaseNegativeExponent:	; st(0)=y
+	fstp	st(0)
+	fld1
+	fldz
+	fdiv
+    fstp	TBYTE PTR[rcx]	; return 1/0 - error
+	ret
+D80pow ENDP
+
+;void D80pow10(TenByteClass &dst, const Double80 &x);
+D80pow10 PROC
+	fld		TBYTE PTR[rdx]
+	fldz
+	fcomip	st, st(1)
+	je		ZeroExponent
+
+    fldl2t
+    fmul
+    fld		st(0)
+	pushRoundMode ROUNDDOWN
+    frndint
+	popRoundMode
+    fsub	st(1), st(0)
+    fxch	st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp	st(1)
+    fstp	TBYTE PTR[rcx]
+	ret
+
+ZeroExponent:				; st(0)=x
+	fstp	st(0)			; pop x
+	fld1
+    fstp	TBYTE PTR[rcx]	; return 1
+	ret
+D80pow10 ENDP
+
+;void D80pow2(TenByteClass &dst, const Double80 &x);
+D80pow2 PROC
+	fld		TBYTE PTR[rdx]
+	fldz
+	fcomip	st, st(1)
+	je		ZeroExponent
+
+    fld		st(0)
+	pushRoundMode ROUNDDOWN
+    frndint
+	popRoundMode
+    fsub	st(1), st(0)
+    fxch	st(1)
+    f2xm1
+    fld1
+    fadd
+    fscale
+    fstp	st(1)
+    fstp	TBYTE PTR[rcx]
+	ret
+
+ZeroExponent:				; st(0)=x
+	fstp	st(0)			; pop x
+	fld1
+    fstp	TBYTE PTR[rcx]
+	ret
+D80pow2 ENDP
+
+; ------------------------------------------------- Double80 floor,ceil --------------------------------
+
+;void D80floor(TenByteClass &dst, const Double80 &x);
+D80floor PROC
+    fld		TBYTE PTR [rdx]
+	pushRoundMode ROUNDDOWN
+    frndint
+	popRoundMode
+    fstp	TBYTE PTR[rcx]
+	ret
+D80floor ENDP
+
+;void D80ceil(TenByteClass &dst, const Double80 &x);
+D80ceil PROC
+    fld		TBYTE PTR [rdx]
+	pushRoundMode ROUNDUP
+    frndint
+	popRoundMode
+    fstp	TBYTE PTR[rcx]
+	ret
+D80ceil ENDP
+
+; ------------------------------------------------ Double80 String functions -----------------------------------------
+
+;void D80ToBCD(BYTE bcd[10], const TenByteClass &src);
+D80ToBCD PROC
+    fld		TBYTE PTR[rdx]
+    fbstp	TBYTE PTR[rcx]
+	ret
+D80ToBCD ENDP
 
 END

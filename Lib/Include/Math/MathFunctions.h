@@ -22,7 +22,7 @@ bool   isInfinity(        double x);
 double root(              double x, double y);
 double cot(               double x);
 double acot(              double x);
-void   sincos(double &c, double &s);
+extern "C" void   sincos(double &c, double &s);
 
 typedef enum {
   RADIANS

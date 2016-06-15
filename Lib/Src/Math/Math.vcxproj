@@ -198,6 +198,7 @@
       <CompileAsWinRT>false</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AssemblerOutput>AssemblyAndSourceCode</AssemblerOutput>
+      <DebugInformationFormat>None</DebugInformationFormat>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -400,6 +401,21 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Double80x64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Doublex64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Doublex64.obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for double functions (MathFunctions.cpp)</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for double functions (MathFunctions.cpp)</Message>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Doublex64.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

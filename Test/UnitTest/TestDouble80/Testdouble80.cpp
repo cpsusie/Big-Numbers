@@ -656,6 +656,7 @@ namespace TestDouble80 {
       verify(d80 == 1);
 
       verify(FPU::getStackHeight() == 0);
+#ifdef IS32BIT
       for (int i = 1; i <= 8; i++) {
         __asm {
           fld x
@@ -672,7 +673,7 @@ namespace TestDouble80 {
 
       verify(!FPU::stackOverflow());
       verify(!FPU::stackUnderflow());
-
+#endif
       unsigned short exp = FPU_INVALID_OPERATION_EXCEPTION
         | FPU_DENORMALIZED_EXCEPTION
         | FPU_DIVIDE_BY_ZERO_EXCEPTION

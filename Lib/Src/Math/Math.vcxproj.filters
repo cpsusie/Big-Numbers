@@ -284,6 +284,10 @@
     <CustomBuild Include="Expression\Expression.lex">
       <Filter>Source Files\Expression\Expression Grammar</Filter>
     </CustomBuild>
+    <CustomBuild Include="Double80x64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Doublex64.asm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
@@ -403,10 +407,5 @@
     <ClInclude Include="..\..\Include\Math\Polygon2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Double80x64.asm">
-      <Filter>Source Files\Asm Files</Filter>
-    </None>
   </ItemGroup>
 </Project>
