@@ -6,6 +6,8 @@
 #include <Math/BigReal.h>
 #include "TestToString.h"
 
+#define FSZ(n) format1000(n).cstr()
+
 using namespace std;
 
 static const double defaultTestValues[] = {
@@ -43,21 +45,21 @@ static const double defaultTestValues[] = {
 
 class StringParametersIterator {
 private:
-  int            m_nextValueIndex;
-  int            m_nextFlagIndex;
+  size_t         m_nextValueIndex;
+  size_t         m_nextFlagIndex;
   int            m_nextPrecision;
   int            m_nextWidth;
 
   bool           m_hasNext;
   double         m_currentValue;
   long           m_currentFlags;
-  int            m_currentValueIndex,m_currentFlagIndex;
+  size_t         m_currentValueIndex,m_currentFlagIndex;
   int            m_currentPrecision, m_currentWidth;
   Array<double>  m_values;
   Array<long>    m_flagCombinations;
   Array<String>  m_flagString;
-  int            m_maxValueIndex;
-  int            m_maxFlagIndex;
+  size_t         m_maxValueIndex;
+  size_t         m_maxFlagIndex;
 
   void resetValueIndex()         { m_nextValueIndex = 0; }
   void resetFlagIndex()          { m_nextFlagIndex  = 0; }
@@ -95,11 +97,11 @@ public:
     return m_currentPrecision;
   }
   
-  inline long getFlags()                const { return m_currentFlags; }
-  inline const double &getValue64()     const { return m_currentValue; }
-  inline Double80      getValue80()     const { return m_currentValue; }
-  inline BigReal        getValueBigReal() const { return m_currentValue; }
-  String        toString()       const;
+  inline long getFlags()                 const { return m_currentFlags; }
+  inline const double &getValue64()      const { return m_currentValue; }
+  inline Double80      getValue80()      const { return m_currentValue; }
+  inline BigReal       getValueBigReal() const { return m_currentValue; }
+  String               toString()        const;
   inline operator StreamParameters() const {
     return StreamParameters(getPrecision(), getWidth(), getFlags());
   }
@@ -119,7 +121,7 @@ StringParametersIterator::StringParametersIterator(const Array<double> &values) 
 
 void StringParametersIterator::init(const Array<double> &values) {
   if(values.size() >= 256) {
-    throwException(_T("Too many values (=%d). max is 255"), values.size());
+    throwException(_T("Too many values (=%s). max is 255"), FSZ(values.size()));
   }
   m_values = values;
 
