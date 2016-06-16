@@ -1,47 +1,22 @@
 ; To be used in x64 mode when using class Double80
-; 
 ;
-
-ROUND      EQU "0" 
-ROUNDDOWN  EQU "1"
-ROUNDUP    EQU "2" 
-TRUNCATE   EQU "3" 
-
-pushRoundMode MACRO roundMode
-	push	0
-    fnstcw	WORD PTR[rsp]        ; save FPU ctrlWord in cwSave (=*rsp)
-    mov		ax, WORD PTR[rsp]
-ifidn     <roundMode>,<ROUND>
-   and     ah, 0f3h		         ; clear bit 10,11
-elseifidn <roundMode>,<ROUNDDOWN>
-    or		ah, 04h              ; set bit 10
-    and		ah, 0f7h             ; clear bit 11
-elseifidn <roundMode>,<ROUNDUP>
-    and     ah, 0fbh             ; clear bit 10
-    or      ah, 8h               ; set bit 11
-else
-    or      ah, 0ch              ; set bit 10, 11
-endif
-    mov		WORD PTR[rsp+2], ax  ; crtlflags in rsp[2]
-    fldcw	WORD PTR[rsp+2]      ; load new ctrlword              ROUNDDOWN
-ENDM
-
-popRoundMode MACRO
-    fldcw	WORD PTR[rsp]        ; restore FPU  ctrlWord (=cwSave)
-	add		rsp, 8
-ENDM
-
+.xlist
+include fpu.inc
+.list
 
 .DATA
 
-maxI32       dword 7fffffffh
-maxI32P1     dword 80000000h
-maxI64       qword 7fffffffffffffffh
-maxI64P1     qword 8000000000000000h
-d80Epsilon   tbyte 0000000000000080c03fh  ; 1.08420217248550443e-019
-d80Minimum   tbyte 00000000000000800100h  ; 3.36210314311209209e-4932
-d80Maximum   tbyte 0fffffffffffffffffe7fh ; 1.18973149535723227e+4932
-m2pi2pow60   tbyte 403dc90fdaa22168c235h  ; 2*pi*pow2(60) (=7.244019458077122e+018)
+maxI32			dword 7fffffffh
+maxI32P1		dword 80000000h
+maxI64			qword 7fffffffffffffffh
+maxI64P1		qword 8000000000000000h
+d80Epsilon		tbyte 0000000000000080c03fh  ; 1.08420217248550443e-019
+d80Minimum		tbyte 00000000000000800100h  ; 3.36210314311209209e-4932
+d80Maximum		tbyte 0fffffffffffffffffe7fh ; 1.18973149535723227e+4932
+m2pi2pow60		tbyte 403dc90fdaa22168c235h  ; 2*pi*pow2(60) (=7.244019458077122e+018)
+m1e18			tbyte 403ade0b6b3a76400000h  ; 1e18
+m1e18m1			tbyte 403ade0b6b3a763ffff0h  ; m1e18 - 1
+m10             tbyte 4002a000000000000000h  ; 10
 
 
 .CODE
@@ -753,5 +728,54 @@ D80ToBCD PROC
     fbstp	TBYTE PTR[rcx]
 	ret
 D80ToBCD ENDP
+
+;void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
+D80ToBCDAutoScale PROC
+    mov		eax, DWORD PTR[r8]  ;
+    cmp		eax, 0              ;
+    jne		scale_x             ;
+	                            ;
+    fld		TBYTE PTR[rdx]      ; 
+    jmp		rescale             ;
+	                            ;
+scale_x:                        ; Find m = x / 10^abs(expo10)
+    fild	DWORD PTR[r8]       ;                                       st0=expo10
+    fldl2t                      ;                                       st0=log2(10)         , st1=expo10
+    fmul                        ;                                       st0=expo10*log2(10)
+    fld		st(0)               ;                                       st0=expo10*log2(10)  , st1=st0
+    pushRoundMode ROUNDDOWN     ;
+    frndint                     ; Round down
+    popRoundMode                ; Restore control word
+    fsub	st(1), st(0)        ;
+    fxch	st(1)               ;
+    f2xm1                       ;
+    fld1                        ;
+    fadd                        ;
+    fscale                      ;
+    fstp	st(1)               ;                                       st0=10^expo10
+	                            ;
+    fld		TBYTE PTR[rdx]      ;                                       st0=x          , st1=10^expo10
+    fdivr                       ;                                       st0=x/10^expo10
+	                            ;
+Rescale:                        ;                                       st0=m
+    fld		m1e18               ;                                       st0=1e18       , st1=m
+    fmul                        ; m *= 1e18                             st0=m
+    mov		eax, DWORD PTR[r8]  ;                                       eax=expo10
+    fld		m1e18m1             ;                                       st0=1e18-1     , st1=m
+WhileLoop:                      ; while(|m| >= 1e18-1) {                st0=1e18-1     , st1=m
+    fld		st(1)               ;                                       st0=m          , st1=1e18-1     , st2=m
+    fabs                        ;                                       st0=|m|        , st1=1e18-1     , st2=m
+    fcomip	st, st(1)           ;   compare |m| and 1e18-1 and pop |m|  st0=1e18-1     , st1=m
+	jb		ExitLoop            ;   if(|m| < 1e18-1) break;             st0=1e18-1     , st1=m
+    fld		m10                 ;                                       st0=10         , st1=1e18-1     , st2=m
+    fdivp	st(2), st(0)        ;   m /= 10 and pop st0                 st0=1e18-1     , st1=m
+    inc		eax                 ;   expo10++
+    jmp		WhileLoop           ; }
+ExitLoop:                            ;
+    fstp	st(0)               ; Pop st(0)                             st0=m
+    fbstp	TBYTE PTR[rcx]      ; Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
+    mov		DWORD PTR[r8], eax  ; Restore expo10
+	ret
+D80ToBCDAutoScale ENDP
 
 END

@@ -44,6 +44,7 @@ extern "C" void FPUclearExceptions();
 
 class FPU {
 private:
+  DECLARECLASSNAME;
   FPU() {} // Cannot be instatiated
 public:
 #ifdef IS32BIT
@@ -173,11 +174,12 @@ extern "C" void D80pow2(        TenByteClass &dst, const Double80 &x);
 extern "C" void D80floor(       TenByteClass &dst, const Double80 &x);
 extern "C" void D80ceil(        TenByteClass &dst, const Double80 &x);
 extern "C" void D80ToBCD(BYTE bcd[10], const TenByteClass &src);
-
+extern "C" void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 #endif // IS64BIT
 
 class Double80 {
 private:
+  DECLARECLASSNAME;
   BYTE m_value[10]; // Must be the first field in the class
   void init(const _TUCHAR *s);
 
@@ -434,14 +436,12 @@ Double80 fabs(const Double80 &x);
 Double80 fmod(const Double80 &x, const Double80 &y);
 Double80 sqr( const Double80 &x);
 Double80 sqrt(const Double80 &x);
-
 Double80 sin( const Double80 &x);
 Double80 cos( const Double80 &x);
 Double80 tan( const Double80 &x);
 Double80 atan(const Double80 &x);
 Double80 atan2(const Double80 &y, const Double80 &x);
 void     sincos(Double80 &c, Double80 &s); // calculate both cos and sin. c:inout c, s:out
-
 Double80 exp(const Double80 &x);
 Double80 log(const Double80 &x);
 Double80 log10(const Double80 &x);

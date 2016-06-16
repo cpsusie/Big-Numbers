@@ -10,12 +10,13 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-//#define ASM_OPTIMIZED
+#define ASM_OPTIMIZED
+
 //#define SMART_VERSION
 
 #ifdef _DEBUG
 
-#define ENTER_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()                   \
+#define D80_ENTER_CRITICAL_SECTION()                                    \
   bool _debugStringEnabledOldValue;                                     \
   const bool _debuggerPresent = getDebuggerPresent();                   \
   if(_debuggerPresent) {                                                \
@@ -24,19 +25,19 @@
     s_debugStringEnabled = false;                                       \
   }
 
-#define LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_STMT(endStmt)       \
+#define D80_LEAVE_CRITICAL_SECTION_STMT(endStmt)                        \
   if(_debuggerPresent) {                                                \
     s_debugStringEnabled = _debugStringEnabledOldValue;                 \
     s_debugStringGate.signal();                                         \
     endStmt                                                             \
   }
 
-#define LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()                   \
-LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_STMT(;)
+#define D80_LEAVE_CRITICAL_SECTION_NOUPDATE()                           \
+D80_LEAVE_CRITICAL_SECTION_STMT(;)
 
 
-#define LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_AJOURSTRING()       \
-  LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_STMT(ajourDebugString();)
+#define D80_LEAVE_CRITICAL_SECTION_UPDATESTRING()                       \
+  D80_LEAVE_CRITICAL_SECTION_STMT(ajourDebugString();)
 
 _TenByte::_TenByte(const Double80 &src) {
   memcpy(m_value, src.m_value, sizeof(m_value));
@@ -49,9 +50,9 @@ Double80::Double80(const _TenByte &src) {
 
 #else
 
-#define ENTER_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()
-#define LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()
-#define LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_AJOURSTRING()
+#define D80_ENTER_CRITICAL_SECTION()
+#define D80_LEAVE_CRITICAL_SECTION_NOUPDATE()
+#define D80_LEAVE_CRITICAL_SECTION_UPDATESTRING()
 
 #endif // _DEBUG
 
@@ -65,6 +66,8 @@ void Double80::enableDebugString(bool enabled) {
   }
 #endif // _DEBUG
 }
+
+DEFINECLASSNAME(FPU);
 
 #ifdef IS32BIT
 
@@ -127,6 +130,8 @@ void FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
   case FPU_HIGH_PRECISION  : // set bit[8;9] of FPU control register to 1,1
     setControlWord((unsigned short)SETBIT(SETBIT(cw,8),9));
     break;
+  default: throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__)
+                                              ,_T("mode=%d"), mode);
   }
 }
 
@@ -138,7 +143,8 @@ FPUPrecisionMode FPU::getPrecisionMode() { // static
   case 2 : return FPU_NORMAL_PRECISION;
   case 3 : return FPU_HIGH_PRECISION;
   case 1 : 
-  default: throwException(_T("FPU::getPrecisionMode:Invalid precisionMode. bit[8,9] = %x"),precisionMode); // Should not come here
+  default: throwException(_T("%s::%s:Invalid precisionMode. bit[8,9] = %x")
+                         ,s_className, _T(__FUNCTION__),precisionMode); // Should not come here
            return FPU_HIGH_PRECISION;
   }
 }
@@ -159,7 +165,7 @@ void FPU::setRoundMode(FPURoundMode mode) { // static
     setControlWord((unsigned short)SETBIT(SETBIT(cw,10),11));
     break;
   default:
-    throwException(_T("FPU::setRoundMode:Invalid argument:%d"),mode);
+    throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__), _T("mode=%d"), mode);
     break;
   }
 }
@@ -172,7 +178,8 @@ FPURoundMode FPU::getRoundMode() { // static
   case 1 : return FPU_ROUNDCONTROL_ROUNDDOWN;
   case 2 : return FPU_ROUNDCONTROL_ROUNDUP;
   case 3 : return FPU_ROUNDCONTROL_TRUNCATE;
-  default: throwException(_T("FPU::getRoundMode:Invalid roundMode. bit[10,11] = %x"),roundingMode); // Should not come here
+  default: throwException(_T("%s::%s:Invalid roundMode. bit[10,11] = %x")
+                         ,s_className, _T(__FUNCTION__), roundingMode); // Should not come here
            return FPU_ROUNDCONTROL_ROUND;
   }
 }
@@ -233,6 +240,8 @@ Semaphore Double80::s_debugStringGate;
 bool      Double80::s_debugStringEnabled = false;
 #endif // _DEBUG
 
+DEFINECLASSNAME(Double80);
+
 const        Double80     Double80::zero;
 const        Double80     Double80::one;
 const        Double80     Double80::M_PI;
@@ -261,7 +270,7 @@ static const TenByteClass maxi64P1 = Double80((unsigned __int64)_I64_MAX + 1);
 
 void Double80::initClass() {
   if(sizeof(TenByteClass) != 10) {
-    throwException(_T("Double80::Size of TenByteClass must be 10. Size=%d."), sizeof(TenByteClass));
+    throwException(_T("%s::Size of TenByteClass must be 10. Size=%d."), s_className, sizeof(TenByteClass));
   }
 
   Double80 *p = (Double80*)(&M_PI);
@@ -449,7 +458,7 @@ Double80::Double80(const char *s) {
 
 void Double80::init(const _TUCHAR *s) {
 
-  ENTER_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING();
+  D80_ENTER_CRITICAL_SECTION();
 
   bool isNegative = false;
   Double80 result = zero;
@@ -497,10 +506,10 @@ void Double80::init(const _TUCHAR *s) {
   }
   *this = isNegative ? -result : result;
 
-  LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING_AJOURSTRING();
+  D80_LEAVE_CRITICAL_SECTION_UPDATESTRING();
 }
 
-#ifdef ISBIT32
+#ifdef IS32BIT
 
 int Double80::getExpo2(const Double80 &x) { // static
   int result;
@@ -559,6 +568,7 @@ long getLong(const Double80 &x) {
   FPU::setControlWord(cwSave);
   return result;
 }
+
 unsigned long getUlong(const Double80 &x) {
   unsigned long result;
   unsigned short cwSave = FPU::getControlWord();
@@ -916,7 +926,6 @@ bool Double80::isZero() const {
   return result;
 }
 
-
 Double80 fabs(const Double80 &x) {
   TenByteClass result;
   __asm {
@@ -1161,9 +1170,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
     fstp st(1)
     fstp result
   }
-
   FPU::setControlWord(cwSave);
-
   return result;
 }
 
@@ -1192,9 +1199,7 @@ Double80 pow10(const Double80 &x) {
     fstp st(1)
     fstp result
   }
-
   FPU::setControlWord(cwSave);
-
   return result;
 }
 
@@ -1221,7 +1226,6 @@ Double80 pow2(const Double80 &x) {
     fstp st(1)
     fstp result
   }
-
   FPU::setControlWord(cwSave);
   return result;
 }
@@ -1237,9 +1241,7 @@ Double80 floor(const Double80 &x) {
     frndint
     fstp result
   }
-
   FPU::setControlWord(cwSave);
-
   return result;
 }
 
@@ -1254,7 +1256,6 @@ Double80 ceil(const Double80 &x) {
     frndint
     fstp result
   }
-
   FPU::setControlWord(cwSave);
   return result;
 }
@@ -1370,10 +1371,9 @@ bool isNan(const Double80 &x) {
 
 unsigned long Double80::hashCode() const {
   return *(unsigned long*)m_value 
-    ^ *(unsigned long*)(m_value+4)
-    ^ *(unsigned short*)(m_value+8);
+       ^ *(unsigned long*)(m_value+4)
+       ^ *(unsigned short*)(m_value+8);
 }
-
 
 String Double80::toString() const {
   TCHAR tmp[30];
@@ -1413,10 +1413,9 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
   int expo10 = getExpo10(x);
   BYTE bcd[10];
 
-
 #ifndef ASM_OPTIMIZED
 
-  ENTER_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()
+  D80_ENTER_CRITICAL_SECTION()
 
   unsigned short cwSave = FPU::getControlWord();
 
@@ -1429,7 +1428,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
     expo10++;
   }
 
-  LEAVE_CRITICAL_SECTION_DOUBLE80_DEBUGSTRING()
+  D80_LEAVE_CRITICAL_SECTION_NOUPDATE()
 
   // Assertion: 1 <= |m| < 1e18-1 and x = m * 10^(expo10-18)
 
@@ -1444,8 +1443,9 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
   FPU::setControlWord(cwSave);
 
-#else
+#else // ASM_OPTIMIZED
 
+#ifdef IS32BIT
   unsigned short cwSave = FPU::getControlWord();
 
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
@@ -1512,7 +1512,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       mov expo10, eax             // Restore expo10
     }
 
-  #else
+  #else // SMART_VERSION
 
     const int p18 = expo10 - 18;
 
@@ -1572,11 +1572,16 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
       mov expo10, eax             // Restore expo10
     }
-  #endif
+  #endif // SMART_VERSION
 
   FPU::setControlWord(cwSave);
+#else // ! IS32BIT (ie IS64BIT)
 
-#endif
+  D80ToBCDAutoScale(bcd, x, expo10);
+
+#endif // IS32BIT
+
+#endif // ASM_OPTIMIZED
 
   declareAssignedBuffer(result, dst);
 

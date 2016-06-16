@@ -287,7 +287,9 @@
     <CustomBuild Include="Double80x64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="Doublex64.asm" />
+    <CustomBuild Include="Doublex64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
@@ -407,5 +409,10 @@
     <ClInclude Include="..\..\Include\Math\Polygon2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FPU.inc">
+      <Filter>Source Files\Asm Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
