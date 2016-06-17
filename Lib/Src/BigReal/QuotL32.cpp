@@ -37,7 +37,7 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
   u.approxQuot32(z, v);
   u.approxQuot32(v, getExpo10N(u)*Q32C.c3 + Q32C.c4);
 
-  int scale;
+  BRExpoType scale;
   const unsigned long yFirst = y.getFirst32(MAXDIGITS_DIVISOR32,&scale);
 
   BigReal result(pool), t(pool), tmp(pool);
@@ -59,13 +59,13 @@ BigReal BigReal::quotLinear32(const BigReal &x, const BigReal &y, const BigReal 
 
 // Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot32(const BigReal &x, const BigReal &y) {
-  int scale;
+  BRExpoType scale;
   const unsigned long yFirst = y.getFirst32(MAXDIGITS_DIVISOR32,&scale);
   return approxQuot32Abs(x, yFirst, scale).setSignByProductRule(x, y);
 }
 
 // Assume x != 0 and y != 0
-BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, int scale) {
+BigReal &BigReal::approxQuot32Abs(const BigReal &x, unsigned long y, BRExpoType scale) {
   const unsigned long q = x.getFirst32(MAXDIGITS_INT32)/y;
   *this = q;
   return multPow10(getExpo10(x) - scale - MAXDIGITS_INT32);
@@ -83,7 +83,7 @@ BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
 // Return the first k decimal digits of this.
 // if scale != NULL, result = n/10^scale, where scale = max(s|(n/10^s) % 10 != 0) and n = first k decimal digits of this
 // if scale == NULL, result = first k decimal digits of this, which can contain trailing zeroes
-unsigned long BigReal::getFirst32(const unsigned int k, int *scale) const {
+unsigned long BigReal::getFirst32(const unsigned int k, BRExpoType *scale) const {
 #ifdef _DEBUG
   DEFINEMETHODNAME(getFirst32);
   if(k > MAXDIGITS_INT32) {
@@ -97,8 +97,9 @@ unsigned long BigReal::getFirst32(const unsigned int k, int *scale) const {
     return 0;
   }
 
-  int           tmpScale = 0;
-  unsigned long result   = p->n;
+  BRExpoType    tmpScale = 0;
+  BRDigitType   result   = p->n;
+
   int           digits   = getDecimalDigitCount(result), firstDigits = digits;;
   if((unsigned int)digits >= k) {
     result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
@@ -112,7 +113,7 @@ unsigned long BigReal::getFirst32(const unsigned int k, int *scale) const {
     if(scale) {
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
         if(p) {
-          const unsigned int p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+          const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
           p = p->next;
         } else {
@@ -126,7 +127,7 @@ unsigned long BigReal::getFirst32(const unsigned int k, int *scale) const {
       }
     } else { // scale == NULL
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
-        const unsigned int p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+        const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
         result *= p10;
         if(p) {
           result += p->n / (BIGREALBASE/p10);
@@ -139,6 +140,6 @@ unsigned long BigReal::getFirst32(const unsigned int k, int *scale) const {
   if(scale) {
     *scale = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
   }
-  return result;
+  return (unsigned long)result;
 }
 

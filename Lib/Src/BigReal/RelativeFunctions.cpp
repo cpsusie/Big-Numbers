@@ -5,31 +5,31 @@
 
 #define _1 pool->get1()
 
-BigReal rSum(const BigReal &x, const BigReal &y, unsigned int digits, DigitPool *digitPool) {
+BigReal rSum(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
-  const int xe = BigReal::getExpo10(x);
-  const int ye = BigReal::getExpo10(y);
+  const BRExpoType xe = BigReal::getExpo10(x);
+  const BRExpoType ye = BigReal::getExpo10(y);
   return sum(x,y,e(_1,max(xe,ye) - digits - 2),pool);
 }
 
-BigReal rDif(const BigReal &x, const BigReal &y, unsigned int digits, DigitPool *digitPool) {
+BigReal rDif(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
-  const int xe = BigReal::getExpo10(x);
-  const int ye = BigReal::getExpo10(y);
+  const BRExpoType xe = BigReal::getExpo10(x);
+  const BRExpoType ye = BigReal::getExpo10(y);
   return dif(x,y,e(_1,max(xe,ye) - digits - 2),pool);
 }
 
-BigReal rProd(const BigReal &x, const BigReal &y, unsigned int digits, DigitPool *digitPool) {
+BigReal rProd(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   return prod(x,y,e(_1,BigReal::getExpo10(x) + BigReal::getExpo10(y) - digits - 2),pool);
 }
 
-BigReal rQuot(const BigReal &x, const BigReal &y, unsigned int digits, DigitPool *digitPool) {
+BigReal rQuot(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   return quot(x,y,e(_1,BigReal::getExpo10(x) - BigReal::getExpo10(y) - digits - 2),pool);
 }
 
-BigReal rSqrt(const BigReal &x, unsigned int digits) {
+BigReal rSqrt(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   return sqrt(x,e(_1, BigReal::getExpo10(x)/2 - digits));
 }
@@ -48,7 +48,7 @@ public:
 
 static const rExpConstants REXPC;
 
-BigReal rExp(const BigReal &x, unsigned int digits) {
+BigReal rExp(const BigReal &x, size_t digits) {
   DEFINEMETHODNAME(rExp);
   DigitPool *pool = x.getDigitPool();
   const BigReal c = x.isNegative() ? -PAPCprod(>,REXPC.c1,fabs(x),pool) : PAPCprod(<,REXPC.c2,x,pool);
@@ -67,7 +67,7 @@ BigReal rExp(const BigReal &x, unsigned int digits) {
   return exp(x, e(_1, (int)cd - digits - 1));
 }
 
-static BigReal getLogError(const BigReal &x, int digits) {
+static BigReal getLogError(const BigReal &x, intptr_t digits) {
   static const BigReal &c1 = BIGREAL_2;
   static const BigReal &c2 = BIGREAL_HALF;
 
@@ -84,21 +84,21 @@ static BigReal getLogError(const BigReal &x, int digits) {
   }
 }
 
-BigReal rLn(const BigReal &x, unsigned int digits) {
+BigReal rLn(const BigReal &x, size_t digits) {
   return ln(x, getLogError(x, digits));
 }
 
-BigReal rLog(const BigReal &base, const BigReal &x, unsigned int digits) { // log(x) base 
+BigReal rLog(const BigReal &base, const BigReal &x, size_t digits) { // log(x) base 
   BigReal lBase = rLn(base, digits+8);
   BigReal lX    = rLn(x   , digits+8);
   return rQuot(lX,lBase,digits+8);
 }
 
-BigReal rLog10(const BigReal &x, unsigned int digits) { // log(x) base 10
+BigReal rLog10(const BigReal &x, size_t digits) { // log(x) base 10
   return log10(x, getLogError(x, digits));
 }
 
-BigReal rPow(const BigReal &x, const BigReal &y, unsigned int digits) { // x^y
+BigReal rPow(const BigReal &x, const BigReal &y, size_t digits) { // x^y
   DEFINEMETHODNAME(rPow);
   DigitPool *pool = x.getDigitPool();
   if(y.isZero()) {
@@ -128,7 +128,7 @@ BigReal rPow(const BigReal &x, const BigReal &y, unsigned int digits) { // x^y
   return BIGREAL_0;
 }
 
-BigReal rRoot(const BigReal &x, const BigReal &y, unsigned int digits) {
+BigReal rRoot(const BigReal &x, const BigReal &y, size_t digits) {
   DEFINEMETHODNAME(rRoot);
   DigitPool *pool = x.getDigitPool();
   if(!x.isNegative()) {
@@ -142,20 +142,20 @@ BigReal rRoot(const BigReal &x, const BigReal &y, unsigned int digits) {
   return BIGREAL_0;
 }
 
-BigReal rSin(const BigReal &x, unsigned int digits) {
+BigReal rSin(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
     return pool->get0();
   }
   
-  const int piee = min(0,BigReal::getExpo10(x)) - (x.getDecimalDigits() + digits); // Exponent of precision of pi-value
+  const BRExpoType piee = min(0,BigReal::getExpo10(x)) - (x.getDecimalDigits() + digits); // Exponent of precision of pi-value
   const BigReal Pi = pi(e(_1,piee - 8),pool);
   const BigReal xp = x % Pi;
 
   return sin(x,e(_1,BigReal::getExpo10(xp) - digits));
 }
 
-BigReal rCos(const BigReal &x, unsigned int digits) {
+BigReal rCos(const BigReal &x, size_t digits) {
   static const BigReal &c1 = BIGREAL_HALF;
 
   DigitPool *pool = x.getDigitPool();
@@ -163,26 +163,26 @@ BigReal rCos(const BigReal &x, unsigned int digits) {
     return _1;
   }
 
-  const int piee = -(x.getDecimalDigits() + (int)digits); // Exponent of precision of pi-value
+  const BRExpoType piee = -((intptr_t)x.getDecimalDigits() + (intptr_t)digits); // Exponent of precision of pi-value
   const BigReal Pih = pi(e(_1,piee - 8),pool) * c1;
   const BigReal xp = x % Pih;
 
   return cos(x,e(_1,BigReal::getExpo10(xp) - digits));
 }
 
-BigReal rTan(const BigReal &x, unsigned int digits) {
+BigReal rTan(const BigReal &x, size_t digits) {
   const BigReal sn = rSin(x,digits);
   const BigReal cs = rCos(x,2*digits);
   return rQuot(sn,cs,digits);
 }
 
-BigReal rCot(const BigReal &x, unsigned int digits) {
+BigReal rCot(const BigReal &x, size_t digits) {
   const BigReal cs = rCos(x,digits);
   const BigReal sn = rSin(x,2*digits);
   return rQuot(cs,sn,digits);
 }
 
-BigReal rAsin(const BigReal &x, unsigned int digits) {
+BigReal rAsin(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
     return pool->get0();
@@ -190,7 +190,7 @@ BigReal rAsin(const BigReal &x, unsigned int digits) {
   return asin(x,e(_1, min(0,BigReal::getExpo10(x)) - digits - 8));
 }
 
-BigReal rAcos(const BigReal &x, unsigned int digits) {
+BigReal rAcos(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   if(x == BIGREAL_1) {
     return pool->get0();
@@ -198,7 +198,7 @@ BigReal rAcos(const BigReal &x, unsigned int digits) {
   return acos(x,e(_1, BigReal::getExpo10(_1 - x)/2 - digits - 8));
 }
 
-BigReal rAtan(const BigReal &x, unsigned int digits) {
+BigReal rAtan(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
     return pool->get0();
@@ -206,7 +206,7 @@ BigReal rAtan(const BigReal &x, unsigned int digits) {
   return atan(x,e(_1, min(0,BigReal::getExpo10(x)) - digits - 8));
 }
 
-BigReal rAcot(const BigReal &x, unsigned int digits) {
+BigReal rAcot(const BigReal &x, size_t digits) {
   static const BigReal &c1 = BIGREAL_HALF;
   DigitPool *pool = x.getDigitPool();
   if(x.isZero()) {
@@ -215,7 +215,7 @@ BigReal rAcot(const BigReal &x, unsigned int digits) {
   return acot(x,e(_1, min(0,-BigReal::getExpo10(x)) - digits - 8));
 }
 
-BigReal rRound(const BigReal &x, unsigned int digits) {
+BigReal rRound(const BigReal &x, size_t digits) {
   if(x.isZero()) {
     return x;
   }

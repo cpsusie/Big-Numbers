@@ -13,7 +13,7 @@ void BigReal::save(ByteOutputStream &s) const {
   s.putByte(b);
   if(!isZero()) {
     s.putBytes((BYTE*)&m_expo, sizeof(m_expo));
-    const int length = getLength();
+    const size_t length = getLength();
     s.putBytes((BYTE*)&length, sizeof(length));
     for(Digit *p = m_first; p; p = p->next) {
       s.putBytes((BYTE*)&(p->n), sizeof(p->n));
@@ -32,13 +32,13 @@ void BigReal::load(ByteInputStream &s) {
     clearDigits();
     m_negative = (b & NEGATIVE_FLAG) ? true : false;
     s.getBytesForced((BYTE*)&m_expo, sizeof(m_expo));
-    int length;
+    size_t length;
     s.getBytesForced((BYTE*)&length, sizeof(length));
-    for(int i = 0; i < length; i++) {
-      unsigned long n;
-      s.getBytesForced((BYTE*)(&n), sizeof(n));
-      assert(n < BIGREALBASE);
-      appendDigit(n);
+    for(size_t i = 0; i < length; i++) {
+      BRDigitType d;
+      s.getBytesForced((BYTE*)(&d), sizeof(d));
+      assert(d < BIGREALBASE);
+      appendDigit(d);
     }
     m_low = m_expo - length + 1;
   }

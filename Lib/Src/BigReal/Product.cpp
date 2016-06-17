@@ -16,16 +16,16 @@ BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f,
   return result.shortProduct(x,y,f.m_expo);
 }
 
-BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, int fexpo) {
+BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
   if(!s_continueCalculation) throwBigRealException(_T("Operation was cancelled"));
 
   if(x.isZero() || y.isZero()) {
     setToZero();
     return *this;
   }
-  const int fm        = fexpo - 2;
-  const int lm        = x.m_low + y.m_low;
-  const int loopCount = (x.m_expo + y.m_expo) - max(fm, lm) + 2;
+  const BRExpoType fm        = fexpo - 2;
+  const BRExpoType lm        = x.m_low + y.m_low;
+  const BRExpoType loopCount = (x.m_expo + y.m_expo) - max(fm, lm) + 2;
 
   if(loopCount <= 0) { // result is zero
     setToZero();
@@ -35,8 +35,8 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, int fexpo) {
 }
 
 // Assume a == b == 0. Dont care about sign of f
-void BigReal::split(BigReal &a, BigReal &b, int n, const BigReal &f) const {
-  int i = n;
+void BigReal::split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const {
+  intptr_t i = n;
   const Digit *p;
   for(p = m_first; i-- && p; p = p->next) {
     a.appendDigit(p->n);
@@ -69,26 +69,26 @@ bool BigReal::s_continueCalculation = true;
 
 BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level) { // static
 //  _tprintf(_T("length(X):%5d length(Y):%5d\n"),length(x),length(y));
-  const bool    swapXY  = x.getLength() < y.getLength();
-  const BigReal &X       = swapXY ? y : x;
-  const BigReal &Y       = swapXY ? x : y;
-  const int     XLength = X.getLength();
-  const int     YLength = Y.getLength();
-  DigitPool    *pool    = result.getDigitPool();
-  const int     w1      = XLength + YLength;
-  int           w;
+  const bool      swapXY  = x.getLength() < y.getLength();
+  const BigReal  &X       = swapXY ? y : x;
+  const BigReal  &Y       = swapXY ? x : y;
+  const size_t    XLength = X.getLength();
+  const size_t    YLength = Y.getLength();
+  DigitPool      *pool    = result.getDigitPool();
+  const intptr_t  w1      = XLength + YLength;
+  intptr_t        w;
 
   if(f.isZero()) {
     w = w1;
   } else {
-    const int w2 = X.m_expo + Y.m_expo - f.m_expo;
+    const intptr_t w2 = X.m_expo + Y.m_expo - f.m_expo;
     w = min(w2, w1);
   }
 
 //  TRACERECURSION((level, "product(result.pool:%2d, x.len,y.len,w:(%4d,%4d,%4d))"
 //                 ,pool->getId(), XLength,YLength, w));
 
-  if(YLength <= s_splitLength || w <= s_splitLength) {
+  if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
 //    _tprintf(_T("shortProd X.length:%3d Y.length:%3d w:%d\n"),Y.length(),w);
     return result.shortProduct(X, Y, f.m_expo);
   }
@@ -99,12 +99,12 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   const BigReal g = PAPCprod(#, C1third, f, pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
-  const int n = min(XLength, w)/2;
+  const intptr_t n = min((intptr_t)XLength, w)/2;
   BigReal a(pool), b(pool);
   const BigReal &zero = pool->get0();
   level++;
   X.split(a, b, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(Y,pool),pool));            // a + b = X   O(n)
-  if(YLength < n) {                                                                            //
+  if((intptr_t)YLength < n) {                                                                            //
     BigReal p1(pool),p2(pool);
     return result = product(p1, a, Y, zero, level) + product(p2, b, Y, g, level);              // a*Y+b*Y     O(2*n/2*n+n/2)
   }               
@@ -112,7 +112,7 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
   BigReal c(pool), d(pool);
   Y.split(c, d, n, g.isZero() ? zero : PAPCprod(#,gpm10,reciprocal(X, pool),pool));           // c + d = Y   O(n)
 
-  const int logBK = LOG10_BIGREALBASE * n;                           //                                       O(1)
+  const BRExpoType logBK = LOG10_BIGREALBASE * n;                    //                                       O(1)
                                                                      //
   b.multPow10(logBK);                                                //                                       O(1)
   d.multPow10(logBK);                                                //                                       O(1)

@@ -54,8 +54,8 @@ BigReal BigReal::ln10(const BigReal &f) { // static
         ln10Value = LN10C.c7;
       } else {
         BigReal z(LN10C.c7, LNPOOL);
-        int k = BigReal::getExpo10(PAPCprod(<,LN10C.c4,f,LNPOOL));
-        int a[100];
+        BRExpoType k = BigReal::getExpo10(PAPCprod(<,LN10C.c4,f,LNPOOL));
+        BRExpoType a[100];
         int n = 0;
         while(k < LN10C.c8) {
           k /= 2;
@@ -185,16 +185,16 @@ BigReal ln(const BigReal &x, const BigReal &f) {
 
   const BigReal g(PAPCprod(<,f, LNC.c1, pool));
 
-  int k = BigReal::getExpo10(g);
+  BRExpoType k = BigReal::getExpo10(g);
 
   BigReal y(pool);
   copy(y,x,PAPCprod(<,x, PAPCprod(<,f, LNC.c16,pool),pool));
   
-  const int m = BigReal::getExpo10(y);
+  const BRExpoType m = BigReal::getExpo10(y);
   y = e(y,-m,pool);
   BigReal z = BigReal::lnEstimate(y);
 
-  int a[100];
+  BRExpoType a[100];
   int n = 0;
   while(k < LNC.c18) {
     k /= 2;

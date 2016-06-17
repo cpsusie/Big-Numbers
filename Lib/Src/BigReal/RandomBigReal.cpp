@@ -1,22 +1,29 @@
 #include "pch.h"
 
+#ifdef IS32BIT
+#define nextDigit nextInt
+#else
+#define nextDigit nextInt64
+#endif
+
 // 0 <= random < 1; with the specified number of decimal digits
-BigReal BigReal::random(int length, Random *rnd, DigitPool *digitPool) { // static
+BigReal BigReal::random(size_t length, Random *rnd, DigitPool *digitPool) { // static
   Random    &r    = rnd       ? *rnd      : _standardRandomGenerator;
   DigitPool *pool = digitPool ? digitPool : &DEFAULT_DIGITPOOL;
   if(length == 0) {
     return pool->get0();
   }
-  BigReal   result(pool);
-  const int wholeDigits = length/LOG10_BIGREALBASE;
-  int       i;
+  BigReal        result(pool);
+  const intptr_t wholeDigits = length/LOG10_BIGREALBASE;
+  intptr_t       i;
+
   for(i = 0; i < wholeDigits; i++) {
-    result.appendDigit(r.nextInt(BIGREALBASE));
+    result.appendDigit(r.nextDigit(BIGREALBASE));
   }
 
   if(length % LOG10_BIGREALBASE) {
-    const int s = BigReal::pow10(length % LOG10_BIGREALBASE);
-    result.appendDigit(r.nextInt(s) * (BIGREALBASE / s));
+    const BRDigitType s = BigReal::pow10(length % LOG10_BIGREALBASE);
+    result.appendDigit(r.nextDigit(s) * (BIGREALBASE / s));
     i++;
   }
 
@@ -30,13 +37,13 @@ BigReal BigReal::random(int length, Random *rnd, DigitPool *digitPool) { // stat
 
   // Return uniform distributed random number between 0 (incl) and 1 (excl)
   // with length decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-BigReal  RandomBigReal::nextBigReal(int length, DigitPool *digitPool) { 
+BigReal  RandomBigReal::nextBigReal(size_t length, DigitPool *digitPool) { 
   return BigReal::random(length, this, digitPool);
 }
 
   // Return uniform distributed random number between low (incl) and high (excl)
   // with length decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-BigReal  RandomBigReal::nextBigReal(const BigReal &low, const BigReal &high, int length, DigitPool *digitPool) {
+BigReal  RandomBigReal::nextBigReal(const BigReal &low, const BigReal &high, size_t length, DigitPool *digitPool) {
   DEFINEMETHODNAME(nextBigReal);
   if(low >= high) {
     throwBigRealInvalidArgumentException(method, _T("low >= high"));
@@ -49,6 +56,6 @@ BigReal  RandomBigReal::nextBigReal(const BigReal &low, const BigReal &high, int
 }
 
   // Return uniform distributed random BigInt in range [0..10^length[
-BigInt RandomBigReal::nextInteger(int length, DigitPool *digitPool) {
+BigInt RandomBigReal::nextInteger(size_t length, DigitPool *digitPool) {
   return randomInteger(length, this, digitPool);
 }

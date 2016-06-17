@@ -2,15 +2,15 @@
 
 static const ConstBigReal C1third = 0.33333333333;
 
-BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int w, int level) { // static
-  const int     xLength = x.getLength();
-  const int     yLength = y.getLength();
-  DigitPool    *pool    = result.getDigitPool();
+BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t w, int level) { // static
+  const size_t XLength = x.getLength();
+  const size_t YLength = y.getLength();
+  DigitPool    *pool   = result.getDigitPool();
 
-  TRACERECURSION((level, _T("productMT(result.pool:%2d, x.len,y.len,w:(%4d,%4d,%4d))")
-                 ,pool->getId(), xLength,yLength, w));
+  TRACERECURSION((level, _T("productMT(result.pool:%2d, x.len,y.len,w:(%4s,%4s,%4s))")
+                 ,pool->getId(), format1000(XLength).cstr(),format1000(YLength).cstr(), format1000(w).cstr()));
 
-  if(yLength <= s_splitLength || w <= s_splitLength) {
+  if(YLength <= s_splitLength || w <= (intptr_t)s_splitLength) {
 //    _tprintf(_T("shortProd x.length:%3d y.length:%3d w:%d\n"),y.length(),w);
     return result.shortProduct(x, y, f.m_expo);
   }
@@ -19,7 +19,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   const BigReal g = PAPCprod(#,C1third,f,pool);
   BigReal gpm10(g);
   gpm10.multPow10(-10);
-  const int n = min(xLength, w)/2;
+  const intptr_t n = min((intptr_t)XLength, w)/2;
 
   BigReal a(pool), b(pool);
   level++;
@@ -27,7 +27,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
 
 
   MThreadArray threads;
-  if(yLength < n) {
+  if((intptr_t)YLength < n) {
     BigRealThreadPool::fetchMTThreadArray(threads, 1);
 
     MultiplierThread &thread = threads.get(0);
@@ -49,7 +49,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   BigReal c(pool), d(pool);
   y.split(c, d, n, g.isZero() ? pool->get0() : PAPCprod(#, gpm10, reciprocal(x, pool),pool));               // c + d = y   O(n)
 
-  const int logBK = LOG10_BIGREALBASE * n;
+  const BRExpoType logBK = LOG10_BIGREALBASE * n;
 
   b.multPow10(logBK);
   d.multPow10(logBK);

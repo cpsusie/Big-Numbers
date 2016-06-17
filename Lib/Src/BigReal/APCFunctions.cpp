@@ -4,7 +4,7 @@
 
 BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME(apcSum);
-  DigitPool         *pool   = digitPool ? digitPool : x.getDigitPool();
+  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 
   if(x.isZero()) {
     return BigReal(y, pool);
@@ -12,14 +12,14 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
     return digitPool ? BigReal(x, digitPool) : x;
   }
 
-  const int xe = getExpo10(x);
-  const int ye = getExpo10(y);
+  const BRExpoType xe = getExpo10(x);
+  const BRExpoType ye = getExpo10(y);
   return sum(x, y, e(_1, max(xe, ye) - APC_DIGITS - 2), pool).rRound(APC_DIGITS+2).adjustAPCResult(bias, method);
 }
 
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME(apcProd);
-  DigitPool         *pool   = digitPool ? digitPool : x.getDigitPool();
+  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   if(x.isZero() || y.isZero()) {
     return pool->get0();
   }
@@ -33,7 +33,7 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
   DEFINEMETHODNAME(apcQuot);
-  DigitPool         *pool   = digitPool ? digitPool : x.getDigitPool();
+  DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 
   if(x.isZero()) {
     return pool->get0();
@@ -45,7 +45,7 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
   BigReal z(pool);
   z.copyrTrunc(x, MAXDIGITS_INT64).setPositive();
 
-  int scale;
+  BRExpoType scale;
   const __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64, &scale);
 
   BigReal result(pool), tmp(pool), t(pool);
@@ -63,8 +63,8 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
 
 BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, DigitPool *digitPool) {
   DEFINEMETHODNAME(apcPow);
-  DigitPool           *pool   = digitPool ? digitPool : x.getDigitPool();
-  static const BigReal &c1     = BIGREAL_HALF;
+  DigitPool           *pool = digitPool ? digitPool : x.getDigitPool();
+  static const BigReal &c1  = BIGREAL_HALF;
 
   if(y.isZero()) {
     return _1;

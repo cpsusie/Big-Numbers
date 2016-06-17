@@ -67,9 +67,9 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   static const int minExpo2 = 64-16382;
   static const int maxExpo2 = 16384;
 
-  DigitPool *pool = getDigitPool();
-  const int ee2   = getExpo2(*this);
-  const int expo2 = 64 - ee2;
+  DigitPool       *pool  = getDigitPool();
+  const BRExpoType ee2   = getExpo2(*this);
+  const BRExpoType expo2 = 64 - ee2;
   Double80 e2;
   Double80 e2x = Double80::one;
   BigReal xi(pool);
@@ -79,7 +79,7 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
   } else if(expo2 >= maxExpo2) {
     e2 = ::pow2(maxExpo2);                                                  // Double80 pow2
     xi.shortProduct(::cut(*this,21), BigReal(e2, pool), BIGREAL_ZEROEXPO);  // BigReal multiplication
-    xi *= pow2(expo2 - maxExpo2,CONVERSION_POW2DIGITCOUNT);                 // BigReal pow2
+    xi *= pow2((int)(expo2 - maxExpo2),CONVERSION_POW2DIGITCOUNT);                 // BigReal pow2
     e2x = ::pow2(expo2 - maxExpo2);                                         // Double80 pow2
   } else {
     e2 = ::pow2(expo2);                                                     // Double80 pow2
@@ -91,7 +91,7 @@ Double80 BigReal::getDouble80NoLimitCheck() const {
     result = result * BIGREALBASE + p->n;
   }
 
-  const int e = xi.m_expo * LOG10_BIGREALBASE - digitCount + LOG10_BIGREALBASE;
+  const BRExpoType e = xi.m_expo * LOG10_BIGREALBASE - digitCount + LOG10_BIGREALBASE;
   if(e == 0) {
     return (isNegative() ? -result : result) / e2 / e2x;                          // Double80 division
   } else {

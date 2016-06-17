@@ -38,7 +38,7 @@ bool BigReal::isDebugStringEnabled() { // static
 void BigReal::init(int n) {
   init();
   if(n) {
-    unsigned int un;
+    BRDigitType un;
     if(n < 0) {
       m_negative = true;
       un = -n;
@@ -59,11 +59,12 @@ void BigReal::init(unsigned int n) {
   init();
   if(n) {
     m_expo = -1;
+    BRDigitType d = n;
     do {
-      insertDigit(n % BIGREALBASE);
-      n /= BIGREALBASE;
+      insertDigit(d % BIGREALBASE);
+      d /= BIGREALBASE;
       m_expo++;
-    } while(n);
+    } while(d);
     trimZeroes();
   }
 }
@@ -80,7 +81,7 @@ void BigReal::init(__int64 n) {
     }
     m_expo = -1;
     do {
-      insertDigit((unsigned long)(un % BIGREALBASE));
+      insertDigit((BRDigitType)(un % BIGREALBASE));
       un /= BIGREALBASE;
       m_expo++;
     } while(un);
@@ -93,7 +94,7 @@ void BigReal::init(unsigned __int64 n) {
   if(n) {
     m_expo = -1;
     do {
-      insertDigit((unsigned long)(n % BIGREALBASE));
+      insertDigit((BRDigitType)(n % BIGREALBASE));
       n /= BIGREALBASE;
       m_expo++;
     } while(n);
@@ -120,7 +121,7 @@ BigReal &BigReal::operator=(const BigReal &x) {
     } else if(isZero()) {      // x != 0
       copyAllDigits(x);
     } else {                   // x != 0 && *this != 0
-      const int missing = x.getLength() - getLength();
+      const intptr_t missing = x.getLength() - getLength();
       if(missing >= 0) {       // First copy all the digits, then append the rest if x.length > this.length
         Digit *sd, *dd;
         for(sd = x.m_first, dd = m_first; dd; sd = sd->next, dd = dd->next) {

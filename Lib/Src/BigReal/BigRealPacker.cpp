@@ -4,6 +4,17 @@
 #define ZERO_FLAG     0x01
 #define NEGATIVE_FLAG 0x02
 
+typedef CompactArray<BRDigitType> CompactDigitArray;
+#ifdef IS32BIT
+#define BRPACKERTYPE Packer::E_LONG
+#define htonDigit    htonl
+#define ntohDigit    ntohl
+#else
+#define BRPACKERTYPE Packer::E_LONG_LONG
+#define htonDigit    htonll
+#define ntohDigit    ntohll
+#endif
+
 Packer &operator<<(Packer &p, const BigReal &n) {
   BYTE b = 0;
   if(n.isZero()) {
@@ -14,13 +25,13 @@ Packer &operator<<(Packer &p, const BigReal &n) {
   p << b;
   if(!n.isZero()) {
     p << n.m_expo;
-    const int length = n.getLength();
-    CompactLongArray digits(length);
+    const size_t length = n.getLength();
+    CompactDigitArray digits(length);
     p << length;
     for(const Digit *d = n.m_first; d; d = d->next) {
-      digits.add(htonl(d->n));
+      digits.add(htonDigit(d->n));
     }
-    p.addElement(Packer::E_LONG, digits.getBuffer(), length * sizeof(unsigned long));
+    p.addElement(BRPACKERTYPE, digits.getBuffer(), length * sizeof(BRDigitType));
   }
   return p;
 }
@@ -34,15 +45,15 @@ Packer &operator>>(Packer &p, BigReal &n) {
     n.clearDigits();
     n.m_negative = (b & NEGATIVE_FLAG) ? true : false;
     p >> n.m_expo;
-    int length;
+    size_t length;
     p >> length;
-    unsigned long *da = NULL;
+    BRDigitType *da = NULL;
     try { 
-      da = new unsigned long[length];
-      p.getElement(Packer::E_LONG, da, length * sizeof(unsigned long));
-      unsigned long *d = da;
-      for(int i = length; i--;) {
-        n.appendDigit(ntohl(*(d++)));
+      da = new BRDigitType[length];
+      p.getElement(Packer::BRPACKERTYPE, da, length * sizeof(BRDigitType));
+      BRDigitType *d = da;
+      for(size_t i = length; i--;) {
+        n.appendDigit(ntohDigit(*(d++)));
       }
       n.m_low = n.m_expo - length + 1;
       delete[] da;

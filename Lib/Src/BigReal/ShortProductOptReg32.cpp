@@ -15,7 +15,7 @@
 #ifdef _DEBUG
 BigReal &BigReal::shortProductNoZeroCheckDebug(const BigReal &x, const BigReal &y, int loopCount) { // return *this
 #else
-BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, int loopCount) { // return *this
+BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &y, size_t loopCount) { // return *this
 #endif
 
   int              digitsAdded = 0;
@@ -151,7 +151,7 @@ NextDigit:
 
 #define SPLIT_LENGTH 240
 
-int BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
+size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
 
 #define MAX_DIGITVALUE (BIGREALBASE-1)
 

@@ -1,6 +1,6 @@
 #include "pch.h"
 
-void BigReal::insertAfter(Digit *q, unsigned long n) {
+void BigReal::insertAfter(Digit *q, BRDigitType n) {
 //  assert(n < BIGREALBASE);
   Digit *p = newDigit();
   p->n = n;
@@ -14,7 +14,7 @@ void BigReal::insertAfter(Digit *q, unsigned long n) {
   q->next = p;
 }
 
-void BigReal::insertDigit(unsigned long n) {
+void BigReal::insertDigit(BRDigitType n) {
 //  assert(n < BIGREALBASE);
   Digit *p = newDigit();
   p->n = n;
@@ -43,7 +43,7 @@ void BigReal::insertDigit(unsigned long n) {
 #endif
 
 // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
-void BigReal::insertZeroDigits(unsigned int count) { 
+void BigReal::insertZeroDigits(size_t count) { 
   DECLARE_CALLCOUNTER("insertZeroDigits");
 
   COUNTKEYCALL(count);
@@ -60,7 +60,7 @@ void BigReal::insertZeroDigits(unsigned int count) {
 }
 
 
-void BigReal::insertZeroDigitsAfter(Digit *p, unsigned int count) {
+void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
   DECLARE_CALLCOUNTER("insertZeroDigitsAfter");
 
   COUNTKEYCALL(count);
@@ -87,7 +87,7 @@ void BigReal::insertZeroDigitsAfter(Digit *p, unsigned int count) {
   }
 }
 
-void BigReal::insertBorrowDigitsAfter(Digit *p, unsigned int count) {
+void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
   DECLARE_CALLCOUNTER("insertBorrowDigitsAfter");
 
   COUNTKEYCALL(count);
@@ -142,7 +142,7 @@ void BigReal::trimTail() { // assume m_first != NULL => m_last != NULL and m_las
 }
 
 // Assume src != zero && length <= src.getLength() && m_first == m_last == NULL
-void BigReal::copyDigits(const BigReal &src, unsigned int length) {
+void BigReal::copyDigits(const BigReal &src, size_t length) {
   DECLARE_CALLCOUNTER("copyDigits");
 
   COUNTKEYCALL(length);
@@ -184,7 +184,7 @@ void BigReal::copyAllDigits(const BigReal &src) {
 }
 
 // Assume n = [0..BIGREALBASE[
-int BigReal::getDecimalDigitCount(unsigned long n) { // static
+int BigReal::getDecimalDigitCount32(unsigned long n) { // static
   // kind of binary search
   if(n < 10000) {
     if(n < 100) {
@@ -205,21 +205,70 @@ int BigReal::getDecimalDigitCount(unsigned long n) { // static
   }
 }
 
-const unsigned int BigReal::s_power10Table[] = {
-  1,
-  10,
-  100,
-  1000,
-  10000,
-  100000,
-  1000000,
-  10000000,
-  100000000,
-  1000000000
+// Assume n = [0..1eMAXDIGITS_INT64]
+int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
+  static const unsigned __int64 pow10Table[] = {
+     1ui64
+    ,10ui64
+    ,100ui64
+    ,1000ui64
+    ,10000ui64
+    ,100000ui64
+    ,1000000ui64
+    ,10000000ui64
+    ,100000000ui64
+    ,1000000000ui64
+    ,10000000000ui64
+    ,100000000000ui64
+    ,1000000000000ui64
+    ,10000000000000ui64
+    ,100000000000000ui64
+    ,1000000000000000ui64
+    ,10000000000000000ui64
+    ,100000000000000000ui64
+    ,1000000000000000000ui64
+    ,10000000000000000000ui64
+  };
+  int l = 0, r = ARRAYSIZE(pow10Table);
+  while(l < r) {
+    const int m = (l+r)/2;
+    const unsigned __int64 &p10 = pow10Table[m];
+    if(p10 <= n) {
+      l = m + 1;
+    } else {
+      r = m;
+    }
+  }
+  return r;
+}
+
+const BRDigitType BigReal::s_power10Table[POWER10TABLESIZE] = {
+  1
+ ,10
+ ,100
+ ,1000
+ ,10000
+ ,100000
+ ,1000000
+ ,10000000
+ ,100000000
+ ,1000000000
+#ifdef IS64BIT
+ ,10000000000
+ ,100000000000
+ ,1000000000000
+ ,10000000000000
+ ,100000000000000
+ ,1000000000000000
+ ,10000000000000000
+ ,100000000000000000
+ ,1000000000000000000
+ ,10000000000000000000
+#endif
 };
 
 // Return p if n = 10^p for p = [0..9]. else return -1.
-int BigReal::isPow10(unsigned long n) { // static
+int BigReal::isPow10(size_t n) { // static
   switch(n) {
   case 1         : return  0;
   case 10        : return  1;
@@ -231,6 +280,18 @@ int BigReal::isPow10(unsigned long n) { // static
   case 10000000  : return  7;
   case 100000000 : return  8;
   case 1000000000: return  9;
+#ifdef IS64BIT
+  case 10000000000         : return  10;
+  case 100000000000        : return  11;
+  case 1000000000000       : return  12;
+  case 10000000000000      : return  13;
+  case 100000000000000     : return  14;
+  case 1000000000000000    : return  15;
+  case 10000000000000000   : return  16;
+  case 100000000000000000  : return  17;
+  case 1000000000000000000 : return  18;
+  case 10000000000000000000: return  19;
+#endif
   default        : return -1;
   }
 }
@@ -239,24 +300,24 @@ bool BigReal::isPow10(const BigReal &x) { // static
   return !x.isZero() && (x.getLength() == 1) && (isPow10(x.getFirstDigit()) >= 0);
 }
 
-BigReal &BigReal::multPow10(int exp) {
+BigReal &BigReal::multPow10(BRExpoType exp) {
   if(isZero()) {
     return *this;
   }
   int m = exp % LOG10_BIGREALBASE;
-  int n = exp / LOG10_BIGREALBASE;
+  BRExpoType   n = exp / LOG10_BIGREALBASE;
   if(m == 0) {
     m_expo += n;
     m_low  += n;
     if(m_expo > BIGREAL_MAXEXPO || m_expo < BIGREAL_MINEXPO) {
-      throwBigRealException(_T("multPow10:Invalid m_expo:%d"),m_expo);
+      throwBigRealException(_T("multPow10:Invalid m_expo:%s"), m_expo);
     }
   } else {
     if(m < 0) {
       m = -m;
     }
-    const unsigned long s = pow10(m);
-    const unsigned long t = BIGREALBASE / s;
+    const BRDigitType s = pow10(m);
+    const BRDigitType t = BIGREALBASE / s;
     if(exp > 0) { // shift left
       Digit *p = m_first; 
       Digit *q = p->next; // *this != 0, =>. p != NULL
@@ -440,14 +501,14 @@ long getLong(const BigReal &x) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_long_min));
   }
 
-  long result = 0;
-  int i = x.m_expo;
+  intptr_t   result = 0;
+  BRExpoType i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
   for(;i-- >= 0;) result *= BIGREALBASE;
 
-  return x.isNegative() ? -result : result;
+  return (long)(x.isNegative() ? -result : result);
 }
 
 unsigned long getUlong(const BigReal &x) {
@@ -463,14 +524,14 @@ unsigned long getUlong(const BigReal &x) {
     throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_ulong_max));
   }
 
-  unsigned long result = 0;
-  int i = x.m_expo;
+  size_t     result = 0;
+  BRExpoType i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
   for(;i-- >= 0;) result *= BIGREALBASE;
 
-  return result;
+  return (unsigned long)result;
 }
 
 __int64 getInt64(const BigReal &x) {
@@ -486,8 +547,8 @@ __int64 getInt64(const BigReal &x) {
     throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_i64_min));
   }
 
-  __int64 result = 0;
-  int i = x.m_expo;
+  __int64    result = 0;
+  BRExpoType i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -509,7 +570,7 @@ unsigned __int64 getUint64(const BigReal &x) {
   }
 
   unsigned __int64 result = 0;
-  int i = x.m_expo;
+  BRExpoType       i      = x.m_expo;
   for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
     result = result * BIGREALBASE + p->n;
   }
@@ -518,18 +579,22 @@ unsigned __int64 getUint64(const BigReal &x) {
 }
 
 unsigned long BigReal::hashCode() const {
-  unsigned long s = m_expo;
+  size_t s = m_expo;
   if(isZero()) {
-    return s;
+    return 0;
   }
   if(m_negative) s = ~s;
   for(const Digit *p = m_first; p; p = p->next) {
     s = s * 17 + p->n;
   }
+#ifdef IS32BIT
   return s;
+#else // IS64BIT
+  return ((unsigned long)(s >> 32)) ^ ((unsigned long)(s & 0xffffffff));
+#endif
 }
 
-static void throwAssertionException(const TCHAR *format, ...) {
+static void throwAssertionException(_In_z_ _Printf_format_string_ const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
   const String msg = vformat(format,argptr);

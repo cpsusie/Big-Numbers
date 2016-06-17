@@ -13,18 +13,18 @@ TCHAR BigRealStream ::setSpaceChar(TCHAR value) {
 #define addDecimalPoint(s) { if(!decimalPointAdded) { s += "."; decimalPointAdded = true; } }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-void BigReal::formatFixed(String &result, int precision, long flags, bool removeTrailingZeroes) const {
+void BigReal::formatFixed(String &result, streamsize precision, long flags, bool removeTrailingZeroes) const {
   bool decimalPointAdded = false;
 
-  const BigReal nn(round(*this,precision));
+  const BigReal nn(round(*this,(intptr_t)precision));
   if(nn.isZero()) {
     StrStream::formatZero(result,precision,flags);
     return;
   }
 
-  const Digit *digit = nn.m_first;
-  int d              = getExpo10(nn);
-  int decimalsDone   = 0;
+  const      Digit *digit = nn.m_first;
+  BRExpoType d              = getExpo10(nn);
+  int        decimalsDone   = 0;
 
   if(d < 0) { // first handle integerpart
     result += _T("0");
@@ -44,23 +44,27 @@ void BigReal::formatFixed(String &result, int precision, long flags, bool remove
 
     if(precision > 0) {
       for(int i = 0; (i - LOG10_BIGREALBASE > d) && (decimalsDone < precision); i -= LOG10_BIGREALBASE) {
-        int partLength = LOG10_BIGREALBASE;
-        int rest       = precision - decimalsDone;
+        int      partLength = LOG10_BIGREALBASE;
+        intptr_t rest       = (intptr_t)(precision - decimalsDone);
         if(rest < LOG10_BIGREALBASE) {
-          partLength = rest;
+          partLength = (int)rest;
         }
         result += format(_T("%0*.*lu"), partLength,partLength,0);
         decimalsDone += partLength;
       }
       for(;digit && (decimalsDone < precision); digit = digit->next) {
-        int part       = digit->n;
-        int partLength = LOG10_BIGREALBASE;
-        int rest       = precision - decimalsDone;
+        BRDigitType part       = digit->n;
+        int         partLength = LOG10_BIGREALBASE;
+        intptr_t    rest       = (intptr_t)(precision - decimalsDone);
         if(rest < LOG10_BIGREALBASE) {
-          partLength = rest;
-          part /= BigReal::pow10(LOG10_BIGREALBASE - rest);
+          partLength = (int)rest;
+          part /= BigReal::pow10(LOG10_BIGREALBASE - (int)rest);
         }
+#ifdef IS32BIT
         result += format(_T("%0*.*lu"), partLength,partLength,part);
+#else
+        result += format(_T("%0*.*llu"), partLength,partLength,part);
+#endif
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && decimalsDone < precision) {
@@ -79,40 +83,52 @@ void BigReal::formatFixed(String &result, int precision, long flags, bool remove
   }
 }
 
-void BigReal::formatScientific(String &result, int precision, long flags, int expo10, bool removeTrailingZeroes) const {
+void BigReal::formatScientific(String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const {
   bool decimalPointAdded = false;
   bool exponentCharAdded = false;
 
-  const BigReal nn(round(*this,precision - expo10));
+  const BigReal nn(round(*this,(intptr_t)(precision - expo10)));
   const Digit *digit = nn.m_first;
-  int decimalsDone   = 0;
-  int scale          = getDecimalDigitCount(digit->n) - 1;
-  int scaleE10       = pow10(scale);
+  int          decimalsDone   = 0;
+  int          scale          = getDecimalDigitCount(digit->n) - 1;
+  BRDigitType  scaleE10       = pow10(scale);
 
-  result += format(_T("%d"), digit->n / scaleE10);
+#ifdef IS32BIT
+  result += format(_T("%lu"), digit->n / scaleE10);
+#else
+  result += format(_T("%llu"), digit->n / scaleE10);
+#endif
   if((flags & ios::showpoint) || precision > 0) {
     addDecimalPoint(result);
 
     if(precision > 0) {
-      int fraction = digit->n % scaleE10;
+      BRDigitType fraction = digit->n % scaleE10;
       if(precision < scale) {
-        fraction /= pow10(scale-precision);
-        decimalsDone = precision;
+        fraction /= pow10((int)(scale-precision));
+        decimalsDone = (int)precision; // precision < scale < LOG10_BIGREALBASE
       } else {
-        decimalsDone = scale;
+        decimalsDone = (int)scale; // scale < LOG10_BIGREALBASE
       }
       if(decimalsDone > 0) {
-        result += format(_T("%0*.*d"), decimalsDone,decimalsDone,fraction);
+#ifdef IS32BIT
+        result += format(_T("%0*.*lu"), decimalsDone,decimalsDone,fraction);
+#else
+        result += format(_T("%0*.*lu"), decimalsDone,decimalsDone,fraction);
+#endif
       }
       for(digit = digit->next; digit != NULL && decimalsDone < precision; digit = digit->next) { // now handle tail
-        int part       = digit->n;
-        int partLength = LOG10_BIGREALBASE;
-        int rest       = precision - decimalsDone;
+        BRDigitType part       = digit->n;
+        int         partLength = LOG10_BIGREALBASE;
+        intptr_t    rest       = (intptr_t)(precision - decimalsDone);
         if(rest < LOG10_BIGREALBASE) {
-          partLength = rest;
-          part /= pow10(LOG10_BIGREALBASE - rest);
+          partLength = (int)rest;
+          part /= pow10(LOG10_BIGREALBASE - (int)rest);
         }
+#ifdef IS32BIT
         result += format(_T("%0*.*lu"), partLength,partLength,part);
+#else
+        result += format(_T("%0*.*llu"), partLength,partLength,part);
+#endif
         decimalsDone += partLength;
       }
       if(!removeTrailingZeroes && decimalsDone < precision) {
@@ -130,7 +146,11 @@ void BigReal::formatScientific(String &result, int precision, long flags, int ex
     }
   }
   addExponentChar(result);
+#ifdef IS32BIT
   result += format(_T("%+03d"), BigReal::getExpo10(nn));
+#else
+  result += format(_T("%+03lld"), BigReal::getExpo10(nn));
+#endif
 }
 
 void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
@@ -138,7 +158,7 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
     result += _T("0");
   } else {
     bool decimalPointAdded = false;
-    int d = m_expo;
+    BRExpoType d = m_expo;
     if(d < 0) {
       result += _T("0");
       addDecimalPoint(result);
@@ -146,15 +166,27 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
         result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,0,spaceChar);
       }
       for(const Digit *digit = m_first; digit; digit = digit->next) {
+#ifdef IS32BIT
         result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
+#else
+        result += format(_T("%0*.*llu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
+#endif
       }
     } else {
+#ifdef IS32BIT
       result += format(_T("%lu%c"), m_first->n,spaceChar);
+#else
+      result += format(_T("%llu%c"), m_first->n,spaceChar);
+#endif
       if(d-- == 0 && m_first->next) {
         addDecimalPoint(result);
       }
       for(Digit *digit = m_first->next; digit; digit = digit->next) {
+#ifdef IS32BIT
         result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
+#else
+        result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
+#endif
         if(d-- == 0 && digit->next) 
           addDecimalPoint(result);
       }
@@ -173,9 +205,9 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
   ENTER_CRITICAL_SECTION_BIGREAL_DEBUGSTRING()
 
   try {
-    int   precision = stream.getPrecision();
-    long  flags     = stream.getFlags();
-    TCHAR spaceChar = stream.getSpaceChar();
+    streamsize precision = stream.getPrecision();
+    long       flags     = stream.getFlags();
+    TCHAR      spaceChar = stream.getSpaceChar();
 
     String result;
     if(x.isNegative()) {
@@ -193,7 +225,7 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
         if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
           x.formatFixed(result, precision, flags, false);
         } else {
-          int expo10 = BigReal::getExpo10(x);
+          BRExpoType expo10 = BigReal::getExpo10(x);
           if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
             x.formatScientific(result, precision, flags, expo10, false);
           } else {
@@ -201,7 +233,7 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
               precision = max(0,precision-1);
               x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
             } else {
-              const int prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
+              const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
               x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
             }
           }
@@ -209,7 +241,7 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
       } // x defined && x != 0
     }
 
-    const int fillerLength = stream.getWidth() - (int)result.length();
+    const streamsize fillerLength = stream.getWidth() - (intptr_t)result.length();
     if(fillerLength <= 0) {
       stream.append(result);
     } else if ((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set
@@ -228,8 +260,8 @@ BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
 }
 
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n) {
-  int e = BigReal::getExpo10(n);
-  int precision;
+  BRExpoType e = BigReal::getExpo10(n);
+  intptr_t   precision;
   if(e < 0) {
     precision = n.getLength() * LOG10_BIGREALBASE;
     if(e % LOG10_BIGREALBASE == 0) {
@@ -242,7 +274,7 @@ BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n) {
   }
 
   if(n.getLength() > 1) {
-    for(unsigned int last = n.getLastDigit(); last % 10 == 0; last /= 10) precision--;
+    for(BRDigitType last = n.getLastDigit(); last % 10 == 0; last /= 10) precision--;
   }
   out.setFlags((out.getFlags() | ios::scientific) & ~ios::fixed);
   out.setPrecision(precision);
@@ -441,11 +473,19 @@ void BigReal::dump(FILE *f) const {
   if(isNegative()) {
     _ftprintf(f, _T("-"));
   }
-  int d = m_expo;
+  BRExpoType d = m_expo;
   for(const Digit *digit = m_first; digit; digit = digit->next) {
+#ifdef IS32BIT
     _ftprintf(f,_T("%0*.*lu "), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n);
+#else
+    _ftprintf(f,_T("%0*.*llu "), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n);
+#endif
   }
+#ifdef IS32BIT
   _ftprintf(f,_T(" [expo,low,length]:[%4d,%4d,%4d]]"), m_expo,m_low,getLength());
+#else
+  _ftprintf(f,_T(" [expo,low,length]:[%4lld,%4lld,%4lld]]"), m_expo,m_low,getLength());
+#endif
 }
 
 String BigReal::toString() const {

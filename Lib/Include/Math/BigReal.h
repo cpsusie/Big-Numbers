@@ -14,20 +14,44 @@
 #include "Real.h"
 
 // Number of decimal digits in 1 BigReal digit
+#ifdef IS32BIT
 #define LOG10_BIGREALBASE  8
+#define POWER10TABLESIZE   10
+
+#define BIGREAL_ZEROEXPO  -900000000
+#define BIGREAL_MAXEXPO    99999999
+#define BIGREAL_MINEXPO   -99999999
+
+typedef unsigned long BRDigitType;
+typedef int           BRExpoType;
+#else // IS64BIT
+
+#define LOG10_BIGREALBASE  18
+#define POWER10TABLESIZE   20
+
+#define BIGREAL_ZEROEXPO  -900000000000000000
+#define BIGREAL_MAXEXPO    99999999999999999
+#define BIGREAL_MINEXPO   -99999999999999999
+
+typedef unsigned __int64 BRDigitType;
+typedef intptr_t         BRExpoType;
+
+#endif // IS32BIT
 
 #define SP_OPT_NONE      0
 #define SP_OPT_BY_FPU    1
 #define SP_OPT_BY_FPU2   2
 #define SP_OPT_BY_REG32  3
+#define SP_OPT_BY_REG64  4
 
 // Define SP_OPT_METHOD to one of these, to select the desired optmization of shortProduct. My own favorite is SP_OPT_BY_REG32
 
 //#define SP_OPT_METHOD  SP_OPT_NONE
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU
 //#define SP_OPT_METHOD  SP_OPT_BY_FPU2
+
 #ifdef IS64BIT
-#define SP_OPT_METHOD SP_OPT_NONE
+#define SP_OPT_METHOD SP_OPT_BY_REG64
 #else
 #define SP_OPT_METHOD SP_OPT_BY_REG32
 #endif
@@ -36,7 +60,7 @@
 
 #error Must define SP_OPT_METHOD
 
-#elif((SP_OPT_METHOD != SP_OPT_NONE) && (SP_OPT_METHOD != SP_OPT_BY_FPU) && (SP_OPT_METHOD != SP_OPT_BY_FPU2) && (SP_OPT_METHOD != SP_OPT_BY_REG32))
+#elif((SP_OPT_METHOD != SP_OPT_NONE) && (SP_OPT_METHOD != SP_OPT_BY_FPU) && (SP_OPT_METHOD != SP_OPT_BY_FPU2) && (SP_OPT_METHOD != SP_OPT_BY_REG32) && (SP_OPT_METHOD != SP_OPT_BY_REG64))
 
 #error Must define SP_OPT_METHOD
 
@@ -88,23 +112,29 @@
 
 #if LOG10_BIGREALBASE == 8
 #define BIGREALBASE 100000000
+// this is the only valid BIGREALBASE for these optimizations
 #else
 #error Illegal LOG10_BIGREALBASE. Must be 8.
-// this is the only valid BIGREALBASE for these optimizations
-#endif // LOG10_BIGREALBASE
+#endif // LOG10_BIGREALBASE == 8
+
+#elif (SP_OPT_METHOD == SP_OPT_BY_REG64)
+
+#if LOG10_BIGREALBASE == 18
+#define BIGREALBASE 1000000000000000000
+// this is the only valid BIGREALBASE for SP_OPT_BY_REG64
+#else
+#error Illegal LOG10_BIGREALBASE. Must be 18.
+#endif // LOG10_BIGREALBASE == 18
 
 #endif // if(SP_OPT_METHOD == ...)
 
-#define BIGREAL_ZEROEXPO  -900000000
-#define BIGREAL_MAXEXPO    99999999
-#define BIGREAL_MINEXPO   -99999999
 #define APC_DIGITS         6
 
 #define CONVERSION_POW2DIGITCOUNT 23
 
 class Digit { // The definition of Digit should NOT be changed!!! Se asm-code in ShortProduct*.cpp
 public:
-  unsigned long n;
+  BRDigitType    n;
   Digit         *next;
   Digit         *prev;
 };
@@ -125,17 +155,21 @@ class BigReal;
 
 class Pow2ArgumentKey {
 public:
-  int          m_n;
-  unsigned int m_digits;
+  int    m_n;
+  size_t m_digits;
   Pow2ArgumentKey() {
   }
-  inline Pow2ArgumentKey(int n, unsigned int digits) : m_n(n), m_digits(digits) {
+  inline Pow2ArgumentKey(int n, size_t digits) : m_n(n), m_digits(digits) {
   }
   inline Pow2ArgumentKey(ByteInputStream &s) {
     load(s);
   }
   inline unsigned long hashCode() const {
+#ifdef IS32BIT
     return m_n * 23 + m_digits;
+#else
+    return m_n * 23 + uint64Hash(m_digits);
+#endif
   }
   inline bool operator==(const Pow2ArgumentKey &k) const {
     return (m_n == k.m_n) && (m_digits == k.m_digits);
@@ -161,7 +195,7 @@ private:
   void clear();
 public:
 #ifdef _DEBUG
-  static unsigned int s_cacheHitCount, s_cacheRequestCount;
+  static size_t s_cacheHitCount, s_cacheRequestCount;
 #endif
 
   Pow2Cache();
@@ -193,9 +227,9 @@ public:
 
 class DigitPool : public BigRealResource {
 private:
-  static unsigned long  s_totalDigitCount;
+  static size_t         s_totalDigitCount;
   static bool           s_dumpCountWhenDestroyed;
-  unsigned long         m_digitCount;
+  size_t                m_digitCount;
   DigitPage            *m_firstPage;
   Digit                *m_freeDigits;;
 
@@ -205,14 +239,14 @@ private:
   BigInt               *m_two;  // = 2
   BigReal              *m_half; // = 0.5
 
-  static void addToCount(int n);
+  static void addToCount(intptr_t n);
   DigitPool(           const DigitPool &src); // not implemented
   DigitPool &operator=(const DigitPool &src); // not implemented
   void allocatePage();
 public:
   static DigitPool s_defaultDigitPool;
 
-  DigitPool(int id, unsigned int intialDigitcount = 0); // initialDigitcount in BIGREALBASE-digits
+  DigitPool(int id, size_t intialDigitcount = 0); // initialDigitcount in BIGREALBASE-digits
   virtual ~DigitPool();
 
   static void setDumpWhenDestroyed(bool dump) {
@@ -260,15 +294,15 @@ public:
   inline const BigReal &getHalf() const {
     return *m_half;
   }
-  static inline unsigned long getTotalAllocatedDigitCount() {
+  static inline size_t getTotalAllocatedDigitCount() {
     return s_totalDigitCount;
   }
-  inline unsigned long getAllocatedDigitCount() const {
+  inline size_t getAllocatedDigitCount() const {
     return m_digitCount;
   }
-  unsigned int getFreeDigitCount() const;
-  unsigned int getUsedDigitCount() const;
-  unsigned int getPageCount()      const;
+  size_t getFreeDigitCount() const;
+  size_t getUsedDigitCount() const;
+  size_t getPageCount()      const;
 };
 
 #define DEFAULT_DIGITPOOL DigitPool::s_defaultDigitPool
@@ -291,15 +325,15 @@ class BigRealStream;
 
 #ifdef _DEBUG
 extern "C" { 
-void insertDigitAndIncrExpo(BigReal &v, unsigned int n);
+void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
 }
 #endif
 
-void throwInvalidToleranceException(               const TCHAR *function);
-void throwBigRealInvalidArgumentException(         const TCHAR *function, const TCHAR *format,...);
-void throwBigRealGetIntegralTypeOverflowException( const TCHAR *function, const BigReal &x, const String &maxStr);
-void throwBigRealGetIntegralTypeUnderflowException(const TCHAR *function, const BigReal &x, const String &minStr);
-void throwBigRealException(const TCHAR *format,...);
+void throwInvalidToleranceException(               TCHAR const* const function);
+void throwBigRealInvalidArgumentException(         TCHAR const* const function, _In_z_ _Printf_format_string_ TCHAR const * const format,...);
+void throwBigRealGetIntegralTypeOverflowException( TCHAR const* const function, const BigReal &x, const String &maxStr);
+void throwBigRealGetIntegralTypeUnderflowException(TCHAR const* const function, const BigReal &x, const String &minStr);
+void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const format,...);
 
 class BigReal {
 
@@ -314,13 +348,13 @@ public:
 
 private:
   static Pow2Cache          s_pow2Cache;
-  static const unsigned int s_power10Table[];
-  static int                s_splitLength;         // Defined in shortProduct.cpp. Split factors when length > s_splitLength
+  static const BRDigitType  s_power10Table[POWER10TABLESIZE];
+  static size_t             s_splitLength;         // Defined in shortProduct.cpp. Split factors when length > s_splitLength
   static bool               s_continueCalculation; // Terminate all calculation with and Exception ("Operation was cancelled")
                                                    // if they enter shortProduct, or simply return whichever comes first
   Digit                    *m_first;               // Most significand  digit
   Digit                    *m_last;                // Least significand digit
-  int                       m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
+  BRExpoType                m_expo, m_low;         // if isZero() then (m_expo,m_low)=(BIGREAL_ZEROEXPO,0) else m_expo = m_low+getLength()-1
   bool                      m_negative;            // True for x < 0. else false
   DigitPool                &m_digitPool;
 
@@ -354,7 +388,7 @@ private:
     m_digitPool.deleteDigits(first, last);
   }
 
-  inline void appendDigit(unsigned long n) {
+  inline void appendDigit(BRDigitType n) {
   //  assert(n < BIGREALBASE);
     Digit *p = newDigit();
     p->n     = n;
@@ -367,11 +401,11 @@ private:
   inline void appendZero() {
     appendDigit(0);
   }
-  void    insertAfter(            Digit *q, unsigned long n);
-  void    insertDigit(                      unsigned long n);
-  void    insertZeroDigits(                 unsigned int count);
-  void    insertZeroDigitsAfter(  Digit *p, unsigned int count);
-  void    insertBorrowDigitsAfter(Digit *p, unsigned int count);
+  void    insertAfter(            Digit *q, BRDigitType n);
+  void    insertDigit(                      BRDigitType n);
+  void    insertZeroDigits(                 size_t count);
+  void    insertZeroDigitsAfter(  Digit *p, size_t count);
+  void    insertBorrowDigitsAfter(Digit *p, size_t count);
   inline void clearDigits() {
     if(m_first) {
       m_digitPool.deleteDigits(m_first, m_last);
@@ -394,9 +428,9 @@ private:
   }
   void    trimHead();
   void    trimTail();
-  Digit  *findDigit(const int exponent) const;
+  Digit  *findDigit(const BRExpoType exponent) const;
   Digit  *findDigitSubtract(const BigReal &f) const;
-  Digit  *findDigitAdd(const BigReal &f, int &low) const;
+  Digit  *findDigitAdd(const BigReal &f, BRExpoType &low) const;
 
   // Addition and subtraction helperfunctions
   BigReal &addAbs(const BigReal &x, const BigReal &y, const BigReal &f);                          // return this
@@ -428,7 +462,7 @@ private:
 #ifdef _DEBUG
   // One that works, and used for testing other versions of this important function
   BigReal &shortProductNoZeroCheckReference(const BigReal &x, const BigReal &y, int loopCount);   // return this
-  friend void insertDigitAndIncrExpo(BigReal &v, unsigned int n);
+  friend void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
   void    addSubProductReference1(unsigned __int64 &n);
   void    addSubProductReference2(unsigned __int64 &n);
   static  bool s_useShortProdReferenceVersion;
@@ -440,14 +474,14 @@ public:
 private:
 #endif
 
-  BigReal &shortProduct(                     const BigReal &x, const BigReal &y, int fexpo    );  // return this
-  BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, int loopCount);  // return this
-  static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,         int level);
-  static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int  w, int level);
+  BigReal &shortProduct(                     const BigReal &x, const BigReal &y, BRExpoType fexpo    );  // return this
+  BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, size_t     loopCount);  // return this
+  static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
+  static BigReal &productMT(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, intptr_t  w, int level);
 
-  void    split(BigReal &a, BigReal &b, int n, const BigReal &f) const;
-  void    copyDigits(   const BigReal &src, unsigned int length);
-  BigReal &copyrTrunc(   const BigReal &src, unsigned int digits); // copy specified number of decimal digits, truncating result. return *this
+  void    split(BigReal &a, BigReal &b, size_t n, const BigReal &f) const;
+  void    copyDigits(   const BigReal &src, size_t length);
+  BigReal &copyrTrunc(  const BigReal &src, size_t digits); // copy specified number of decimal digits, truncating result. return *this
   void    copyAllDigits(const BigReal &src);
   inline BigReal &setSignByProductRule(const BigReal &x, const BigReal &y) {
     m_negative = x.m_negative != y.m_negative;
@@ -457,16 +491,16 @@ private:
 
   // rTrunc and rRound cut of a number (!= 0) to the specified number of significant decimal digits,
   // truncating towards zero, or rounding respectively.
-  BigReal &rTrunc(unsigned int digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
-  BigReal &rRound(unsigned int digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
+  BigReal &rTrunc(size_t digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
+  BigReal &rRound(size_t digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
 
   // Division helperfunctions, 
   // Result.digitPool = x x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);                      // approximately 1/x
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y           );            // approximately x/y
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);                       // approximately x/y
-  BigReal &approxQuot32Abs(  const BigReal &x, unsigned long            y, int scale);            // approximately x/e(y,scale)
-  BigReal &approxQuot64Abs(  const BigReal &x, const unsigned __int64  &y, int scale);            // approximately x/e(y,scale)
+  BigReal &approxQuot32Abs(  const BigReal &x, unsigned long            y, BRExpoType scale);     // approximately x/e(y,scale)
+  BigReal &approxQuot64Abs(  const BigReal &x, const unsigned __int64  &y, BRExpoType scale);     // approximately x/e(y,scale)
   static double  estimateQuotNewtonTime(const BigReal &x, const BigReal &y, const BigReal &f);
   static double  estimateQuotLinearTime(const BigReal &x, const BigReal &y, const BigReal &f);
   static bool    chooseQuotNewton(      const BigReal &x, const BigReal &y, const BigReal &f);
@@ -474,8 +508,8 @@ private:
   // Misc
   BigReal  &adjustAPCResult(const char bias, const TCHAR *function); // return this
   Double80 getDouble80NoLimitCheck() const; 
-  void     formatFixed(        String &result, int precision, long flags, bool removeTrailingZeroes) const;
-  void     formatScientific(   String &result, int precision, long flags, int expo10, bool removeTrailingZeroes) const;
+  void     formatFixed(        String &result, streamsize precision, long flags, bool removeTrailingZeroes) const;
+  void     formatScientific(   String &result, streamsize precision, long flags, BRExpoType expo10, bool removeTrailingZeroes) const;
   void     formatWithSpaceChar(String &result, TCHAR spaceChar) const;
 
 public:
@@ -636,7 +670,7 @@ public:
   BigReal &operator--();                                                      // prefix-form
   BigReal  operator++(int);                                                   // postfix-form
   BigReal  operator--(int);                                                   // postfix-form
-  BigReal &multPow10(int exp);
+  BigReal &multPow10(BRExpoType exp);
 
   // Result.digitPool = x x.digitPool
   friend BigInt operator/ (     const BigInt &x, const BigInt &y);
@@ -657,7 +691,7 @@ public:
   // result.digitPool = f.defaultDigitPool
   static BigReal ln10(         const BigReal &f);                                     // ln(10) with |error| < f
   static BigReal lnEstimate(   const BigReal &x);                                     // Approximatly ln(x). Assume 1 <= x <= 10
-  static const BigReal &pow2(int n, unsigned int digits = 0);                         // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached
+  static const BigReal &pow2(int n, size_t digits = 0);                               // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached
 
   friend int compare(         const BigReal &x,  const BigReal &y);                   // sign(x-y)
   friend int compareAbs(      const BigReal &x,  const BigReal &y);                   // compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
@@ -693,15 +727,15 @@ public:
     return m_expo != BIGREAL_ZEROEXPO && m_negative;
   }
   
-  inline int getLength() const {                                                      // BigReal of BASE digits. 0 has length 1
+  inline size_t getLength() const {                                                      // BigReal of BASE digits. 0 has length 1
     return isZero() ? 1 : (m_expo - m_low + 1);
   }      
-  int getDecimalDigits()  const;                                                      // BigReal of decimal digits. 0 has length 1
-  inline int getLow()     const {
+  size_t getDecimalDigits()  const;                                                      // BigReal of decimal digits. 0 has length 1
+  inline BRExpoType getLow()     const {
     return isZero() ? 0 : m_low;
   }
 
-  static inline int       getExpo10(  const BigReal  &x) {                            // x == 0 ? 0 : floor(log10(|x|))
+  static inline BRExpoType  getExpo10(  const BigReal  &x) {                            // x == 0 ? 0 : floor(log10(|x|))
     return x.isZero() ? 0 : (x.m_expo * LOG10_BIGREALBASE + getDecimalDigitCount(x.m_first->n) - 1);
   }
 
@@ -709,23 +743,30 @@ public:
     return BigReal(getExpo10(x), x.getDigitPool());
   }
 
-  static inline int       pow10(unsigned int n) {                                     // Return 10^n. Assume n <= 9
+  static inline BRDigitType pow10(unsigned int n) {                                     // Return 10^n. Assume n <= 9
 #ifdef _DEBUG
-    if(n <= 9) {
+    if(n < ARRAYSIZE(s_power10Table)) {
       return s_power10Table[n];
     }
-    throwBigRealInvalidArgumentException(_T("pow10"), _T("n must be [0..9] (=%d)"),n);
+    throwBigRealInvalidArgumentException(_T("pow10"), _T("n must be [0..%d] (=%d)"),ARRAYSIZE(s_power10Table)-1,n);
     return 1;
 #else
     return s_power10Table[n];
 #endif
   }
 
-  static int     getExpo2(   const BigReal  &x);                                       // x == 0 ? 0 : approximately floor(log2(|x|))
-  static int     getDecimalDigitCount(unsigned long n);                                // n == 0 ? 0 : (floor(log10(n))+1). Assume n < BIGREALBASE
+  static BRExpoType getExpo2(   const BigReal  &x);                                       // x == 0 ? 0 : approximately floor(log2(|x|))
+  static inline int getDecimalDigitCount(BRDigitType n) {
+#ifdef IS32BIT
+    return getDecimalDigitCount32(n);
+#else
+    return getDecimalDigitCount64(n);
+#endif
+  }
+  static int     getDecimalDigitCount32(unsigned long n   );                           // n == 0 ? 0 : (floor(log10(n))+1). Assume n < BIGREALBASE
   static int     getDecimalDigitCount64(unsigned __int64 n);                           // as above but for n < 1eMAXDIGITS_INT64
   static int     logBASE(double x);                                                    // (int)(log10(x) / LOG10_BIGREALBASE)
-  static int     isPow10(unsigned long n);                                             // Return p if n = 10^p for p = [0..9]. else return -1.
+  static int     isPow10(size_t n);                                               // Return p if n = 10^p for p = [0..POWER10TableSIZE[. else return -1.
   static bool    isPow10(const BigReal &x);                                            // true if |x| = 10^p for p = [BIGREAL_MINEXPO..BIGREAL_MAXEXPO]
 
   // Result.digitPool = x x.digitPool
@@ -733,10 +774,10 @@ public:
   friend BigInt  floor(    const BigReal &x);                                          // biggest integer <= x
   friend BigInt  ceil(     const BigReal &x);                                          // smallest integer >= x
   friend BigReal fraction( const BigReal &x);                                          // sign(x) * (|x| - floor(|x|))
-  friend BigReal round(    const BigReal &x, int prec = 0);                            // sign(x) * floor(|x|*10^prec+0.5)/10^prec
-  friend BigReal trunc(    const BigReal &x, int prec = 0);                            // sign(x) * floor(|x|*10^prec)/10^prec
-  friend BigReal cut(      const BigReal &x, unsigned int digits, DigitPool *digitPool = NULL); // x truncated to the specified number of significant decimal digits
-  friend BigReal e(        const BigReal &x, int n,               DigitPool *digitPool = NULL); // x * pow(10,n)
+  friend BigReal round(    const BigReal &x, intptr_t prec = 0);                       // sign(x) * floor(|x|*10^prec+0.5)/10^prec
+  friend BigReal trunc(    const BigReal &x, intptr_t prec = 0);                       // sign(x) * floor(|x|*10^prec)/10^prec
+  friend BigReal cut(      const BigReal &x, size_t   digits, DigitPool *digitPool = NULL); // x truncated to the specified number of significant decimal digits
+  friend BigReal e(        const BigReal &x, BRExpoType n   , DigitPool *digitPool = NULL); // x * pow(10,n)
 
   friend inline int sign(  const BigReal &x) {                                         // x < 0 ? -1 : x > 0 ? 1 : 0
     return x.isZero() ? 0 : x.isPositive() ? 1 : -1;
@@ -748,7 +789,7 @@ public:
     return x.getLow() >= 0;
   }
 
-  static BigReal  random(int digits, Random *rnd = NULL, DigitPool *digitPool = NULL); // 0 <= random < 1; with the specified number of decimal digits, 
+  static BigReal  random(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL); // 0 <= random < 1; with the specified number of decimal digits, 
                                                                                        // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
 
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);            // Set to = from so |to-from| <= f. Return to
@@ -759,15 +800,15 @@ public:
   static BigReal quotLinear64( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);   // x/y with |error| < f. School method. using build-in 64-bit division
   static BigReal shortProd(    const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);   // x*y with |error| < f. Used to multiply short numbers. Used by prod.
 
-  inline unsigned long getFirstDigit() const {                                         // isZero() ? 0 : first BASE-digit.
+  inline BRDigitType getFirstDigit() const {                                         // isZero() ? 0 : first BASE-digit.
     return isZero() ? 0 : m_first->n;
   }
-  inline unsigned long  getLastDigit()  const {                                        // isZero() ? 0 : last BASE-digit.
+  inline BRDigitType getLastDigit()  const {                                        // isZero() ? 0 : last BASE-digit.
     return isZero() ? 0 : m_last->n;
   }
 
-  unsigned long    getFirst32(const unsigned int k, int *scale = NULL) const;          // First k decimal digits. Assume k <= 9.
-  unsigned __int64 getFirst64(const unsigned int k, int *scale = NULL) const;          // First k decimal digits. Assume k <= 19.
+  unsigned long    getFirst32(const unsigned int k, BRExpoType *scale = NULL) const;          // First k decimal digits. Assume k <= 9.
+  unsigned __int64 getFirst64(const unsigned int k, BRExpoType *scale = NULL) const;          // First k decimal digits. Assume k <= 19.
 
   String toString() const;
   inline DigitPool *getDigitPool() const {
@@ -792,7 +833,7 @@ public:
   static bool enableDebugString(bool enabled);                                         // return old value
   static bool isDebugStringEnabled();
 
-  static unsigned int getMaxSplitLength();
+  static size_t getMaxSplitLength();
 
   static void resumeCalculation() {    // Call this when terminateCalculation has been called and you want to start a new calculation
     s_continueCalculation = true;
@@ -941,7 +982,7 @@ class BigRealStream : public StrStream { // Don't derive from standardclass strs
 private:
   TCHAR m_spaceChar;
 public:
-  BigRealStream(int precision = 6, int width = 0, int flags = 0) : StrStream(precision, width, flags) {
+  BigRealStream(intptr_t precision = 6, intptr_t width = 0, int flags = 0) : StrStream(precision, width, flags) {
     m_spaceChar = 0;
   }
 
@@ -1121,9 +1162,9 @@ tostream     &operator<<(tostream     &out, const FullFormatBigReal &x);
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
 
-String toString(const BigReal &n, int precision=20, int width=0, int flags=0);
-BigReal inputBigReal( DigitPool &digitPool, const TCHAR *format,...);
-BigInt inputBigInt( DigitPool &digitPool, const TCHAR *format,...);
+String  toString(const BigReal &n, int precision=20, int width=0, int flags=0);
+BigReal inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format,...);
+BigInt  inputBigInt( DigitPool &digitPool, _In_z_ _Printf_format_string_  const TCHAR *format,...);
 
 class BigRealException : public Exception {
 public:
@@ -1131,16 +1172,16 @@ public:
   };
 };
 
-BigInt randomInteger(int digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+BigInt randomInteger(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
 
 class RandomBigReal : public Random {
 public:
-  BigReal  nextBigReal( int digits, DigitPool *digitPool = NULL);   // Return uniform distributed random number between 0 (incl) and 1 (excl)
+  BigReal  nextBigReal( size_t digits, DigitPool *digitPool = NULL);   // Return uniform distributed random number between 0 (incl) and 1 (excl)
                                                                     // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-  BigReal  nextBigReal(const BigReal &low, const BigReal &high, int digits, DigitPool *digitPool = NULL);
+  BigReal  nextBigReal(const BigReal &low, const BigReal &high, size_t digits, DigitPool *digitPool = NULL);
                                                                     // Return uniform distributed random number between low (incl) and high (excl)
                                                                     // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
-  BigInt nextInteger(int digits, DigitPool *digitPool = NULL);      // Return uniform distributed random BigInt in range [0..10^digits[
+  BigInt nextInteger(size_t digits, DigitPool *digitPool = NULL);      // Return uniform distributed random BigInt in range [0..10^digits[
 };
 
 inline BigReal  Max(const BigReal &x, const BigReal &y) {
@@ -1172,26 +1213,26 @@ BigReal pi(   const BigReal &f, DigitPool *digitPool = NULL);               // r
 
 // Calculates with relative precision ie. with the specified number of decimal digits
 
-BigReal rRound(const BigReal &x,    unsigned int digits);
-BigReal rSum(  const BigReal &x,    const BigReal &y, unsigned int digits, DigitPool *digitPool = NULL);
-BigReal rDif(  const BigReal &x,    const BigReal &y, unsigned int digits, DigitPool *digitPool = NULL);
-BigReal rProd( const BigReal &x,    const BigReal &y, unsigned int digits, DigitPool *digitPool = NULL);
-BigReal rQuot( const BigReal &x,    const BigReal &y, unsigned int digits, DigitPool *digitPool = NULL);
-BigReal rSqrt( const BigReal &x,    unsigned int digits);
-BigReal rExp(  const BigReal &x,    unsigned int digits);
-BigReal rLn(   const BigReal &x,    unsigned int digits);
-BigReal rLog10(const BigReal &x,    unsigned int digits);
-BigReal rLog(  const BigReal &base, const BigReal &x, int unsigned digits); // Logarithm(x) for the specified base. (ln(x)/ln(base))
-BigReal rPow(  const BigReal &x,    const BigReal &y, unsigned int digits); // x^y
-BigReal rRoot( const BigReal &x,    const BigReal &y, unsigned int digits);
-BigReal rSin(  const BigReal &x,    unsigned int digits);
-BigReal rCos(  const BigReal &x,    unsigned int digits);
-BigReal rTan(  const BigReal &x,    unsigned int digits);
-BigReal rCot(  const BigReal &x,    unsigned int digits);
-BigReal rAsin( const BigReal &x,    unsigned int digits);
-BigReal rAcos( const BigReal &x,    unsigned int digits);
-BigReal rAtan( const BigReal &x,    unsigned int digits);
-BigReal rAcot( const BigReal &x,    unsigned int digits);
+BigReal rRound(const BigReal &x,    size_t digits);
+BigReal rSum(  const BigReal &x,    const BigReal &y, size_t digits, DigitPool *digitPool = NULL);
+BigReal rDif(  const BigReal &x,    const BigReal &y, size_t digits, DigitPool *digitPool = NULL);
+BigReal rProd( const BigReal &x,    const BigReal &y, size_t digits, DigitPool *digitPool = NULL);
+BigReal rQuot( const BigReal &x,    const BigReal &y, size_t digits, DigitPool *digitPool = NULL);
+BigReal rSqrt( const BigReal &x,    size_t digits);
+BigReal rExp(  const BigReal &x,    size_t digits);
+BigReal rLn(   const BigReal &x,    size_t digits);
+BigReal rLog10(const BigReal &x,    size_t digits);
+BigReal rLog(  const BigReal &base, const BigReal &x, size_t digits); // Logarithm(x) for the specified base. (ln(x)/ln(base))
+BigReal rPow(  const BigReal &x,    const BigReal &y, size_t digits); // x^y
+BigReal rRoot( const BigReal &x,    const BigReal &y, size_t digits);
+BigReal rSin(  const BigReal &x,    size_t digits);
+BigReal rCos(  const BigReal &x,    size_t digits);
+BigReal rTan(  const BigReal &x,    size_t digits);
+BigReal rCot(  const BigReal &x,    size_t digits);
+BigReal rAsin( const BigReal &x,    size_t digits);
+BigReal rAcos( const BigReal &x,    size_t digits);
+BigReal rAtan( const BigReal &x,    size_t digits);
+BigReal rAcot( const BigReal &x,    size_t digits);
 
 class SynchronizedStringQueue : public SynchronizedQueue<TCHAR*>, public BigRealResource {
 private:
@@ -1220,8 +1261,8 @@ private:
   DigitPool                *m_digitPool;
   SynchronizedStringQueue  *m_resultQueue;
   Semaphore                 m_execute;
-  const BigReal             *m_x, *m_y, *m_f;
-  BigReal                   *m_result;
+  const BigReal            *m_x, *m_y, *m_f;
+  BigReal                  *m_result;
   int                       m_requestCount;
   int                       m_level;
   friend class BigRealThreadPool;
@@ -1416,7 +1457,7 @@ public:
   static BigRealThreadPool &getInstance();
 };
 
-void traceRecursion(int level, const TCHAR *format,...);
+void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format,...);
 
 #ifdef _DEBUG
 #define TRACERECURSION(p) traceRecursion p

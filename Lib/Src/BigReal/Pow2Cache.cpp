@@ -3,8 +3,8 @@
 #include <CompressFilter.h>
 
 #ifdef _DEBUG
-unsigned int Pow2Cache::s_cacheHitCount     = 0;
-unsigned int Pow2Cache::s_cacheRequestCount = 0;
+size_t Pow2Cache::s_cacheHitCount     = 0;
+size_t Pow2Cache::s_cacheRequestCount = 0;
 #endif
 
 Pow2Cache::Pow2Cache() {
@@ -21,7 +21,7 @@ Pow2Cache::~Pow2Cache() {
 //    save(_T("c:\\temp\\Pow2Cache.dat"));
   m_gate.wait();
 #ifdef _DEBUG
-  debugLog(_T("CacheHits/CacheRequest:(%lu/%lu) =%.2lf%%\n"), s_cacheHitCount, s_cacheRequestCount, PERCENT(s_cacheHitCount, s_cacheRequestCount));
+  debugLog(_T("CacheHits/CacheRequest:(%s/%s) =%.2lf%%\n"), format1000(s_cacheHitCount).cstr(), format1000(s_cacheRequestCount).cstr(), PERCENT(s_cacheHitCount, s_cacheRequestCount));
 #endif
   clear();
   m_gate.signal();
@@ -77,7 +77,7 @@ void Pow2Cache::load(ByteInputStream &s) {
 #endif
 }
 
-const BigReal &BigReal::pow2(int n, unsigned int digits) { // static
+const BigReal &BigReal::pow2(int n, size_t digits) { // static
   const Pow2ArgumentKey key(n, digits);
 
 #ifdef _DEBUG

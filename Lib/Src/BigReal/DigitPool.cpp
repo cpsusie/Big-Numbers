@@ -21,7 +21,7 @@ public:
 
 static InitBigReal initBigReal;
 
-unsigned long DigitPool::s_totalDigitCount        = 0;
+size_t        DigitPool::s_totalDigitCount        = 0;
 bool          DigitPool::s_dumpCountWhenDestroyed = false;
 DigitPool     DigitPool::s_defaultDigitPool(DEFAULT_DIGITPOOL_ID, 510000);
 
@@ -45,7 +45,7 @@ const ConstBigReal ConstBigReal::_dbl80_min(Double80::DBL80_MIN);
 const ConstBigReal ConstBigReal::_dbl80_max(Double80::DBL80_MAX);
 
 
-DigitPool::DigitPool(int id, unsigned int intialDigitCount) : BigRealResource(id) {
+DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_firstPage  = NULL;
   m_freeDigits = NULL;
   m_digitCount = 0;
@@ -60,7 +60,7 @@ DigitPool::DigitPool(int id, unsigned int intialDigitCount) : BigRealResource(id
   }
 #endif
 
-  const unsigned long wantedTotalDigitCount = m_digitCount + intialDigitCount;
+  const size_t wantedTotalDigitCount = m_digitCount + intialDigitCount;
   while(m_digitCount < wantedTotalDigitCount) {
     allocatePage();
   }
@@ -84,7 +84,7 @@ DigitPool::DigitPool(int id, unsigned int intialDigitCount) : BigRealResource(id
 }
 
 DigitPool::~DigitPool() {
-  const int digitCount = m_digitCount;
+  const size_t digitCount = m_digitCount;
   delete m_half;
   delete m_two;
   delete m_one;
@@ -104,7 +104,7 @@ DigitPool::~DigitPool() {
   }
 }
 
-void DigitPool::addToCount(int n) { //static 
+void DigitPool::addToCount(intptr_t n) { //static 
   static Semaphore gate;
   gate.wait();
   s_totalDigitCount += n;
@@ -119,20 +119,20 @@ void DigitPool::allocatePage() {
   addToCount(DIGITPAGESIZE);
 }
 
-unsigned int DigitPool::getFreeDigitCount() const {
-  unsigned int count = 0;
+size_t DigitPool::getFreeDigitCount() const {
+  size_t count = 0;
   for(const Digit *p = m_freeDigits; p; p = p->next) {
     count++;
   }
   return count;
 }
 
-unsigned int DigitPool::getUsedDigitCount() const {
+size_t DigitPool::getUsedDigitCount() const {
   return getPageCount() * DIGITPAGESIZE - getFreeDigitCount();
 }
 
-unsigned int DigitPool::getPageCount() const {
-  unsigned int count = 0;
+size_t DigitPool::getPageCount() const {
+  size_t count = 0;
   for(const DigitPage *p = m_firstPage; p; p = p->m_next) {
     count++;
   }

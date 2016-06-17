@@ -3,9 +3,9 @@
 // Assume *this != 0.
 // Return Digit corresponding to BIGREALBASE^exponent.
 // Return NULL if exponent is outside interval [m_low;m_expo]
-Digit *BigReal::findDigit(const int exponent) const { 
-  int fwd = m_expo - exponent;
-  int bwd = exponent - m_low;
+Digit *BigReal::findDigit(const BRExpoType exponent) const { 
+  BRExpoType fwd = m_expo - exponent;
+  BRExpoType bwd = exponent - m_low;
   Digit *p;
   if(bwd < 0 || fwd < 0) {
     return NULL;
@@ -22,12 +22,12 @@ Digit *BigReal::findDigit(const int exponent) const {
 // Return NULL if abs(this) < precisionen (=f)
 // low is set to the max(fexpo,m_low), where fexpo = f.expo - [f.first == 1]
 // Differs from findDigitSubtract in the special case where f = BIGREALBASE^n for some n
-Digit *BigReal::findDigitAdd(const BigReal &f, int &low) const { 
+Digit *BigReal::findDigitAdd(const BigReal &f, BRExpoType &low) const { 
   if(!f.isPositive()) {
     low = m_low;
     return m_last;
   } 
-  int fexpo = f.m_expo;
+  BRExpoType fexpo = f.m_expo;
   if(f.m_first->n == 1) {
     fexpo--;      // NB NB NB!
   }
@@ -40,8 +40,8 @@ Digit *BigReal::findDigitAdd(const BigReal &f, int &low) const {
   } else {
     low = fexpo;
 
-    int bwd = fexpo  - m_low;
-    int fwd = m_expo - fexpo;
+    BRExpoType bwd = fexpo  - m_low;
+    BRExpoType fwd = m_expo - fexpo;
     Digit *p;
     if(bwd < fwd) { // count backward
       for(p = m_last;  bwd--; p = p->prev);
@@ -63,8 +63,8 @@ Digit *BigReal::findDigitSubtract(const BigReal &f) const {
   } else if(f.m_expo <= m_low) {
     return m_last;
   } else {
-    int bwd = f.m_expo - m_low;
-    int fwd = m_expo   - f.m_expo;
+    BRExpoType bwd = f.m_expo - m_low;
+    BRExpoType fwd = m_expo   - f.m_expo;
     Digit *p;
     if(bwd < fwd) { // count backward
       for(p = m_last;  bwd--; p = p->prev);
@@ -78,7 +78,7 @@ Digit *BigReal::findDigitSubtract(const BigReal &f) const {
 // Assume &x != this && &y != this && *this == 0, x != 0 && y != 0
 // Return *this = |x| + |y| with maximal error = f
 BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
-  int xLow, yLow;
+  BRExpoType xLow, yLow;
   const Digit *xp = x.findDigitAdd(f, xLow);
   const Digit *yp = y.findDigitAdd(f, yLow);
 
@@ -97,7 +97,7 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
     m_expo = x.m_expo;
     m_low  = xLow;
   } else { // xp != NULL && yp != NULL
-    int d;
+    BRExpoType d;
     if(xLow < yLow) {
       for(d = yLow - xLow; xp && d--; xp = xp->prev) {
         insertDigit(xp->n);
@@ -109,7 +109,7 @@ BigReal &BigReal::addAbs(const BigReal &x, const BigReal &y, const BigReal &f) {
       }
       if(d > 0) insertZeroDigits(d);
     }
-    unsigned long carry;
+    BRDigitType carry;
     for(carry = 0; xp && yp; xp = xp->prev, yp = yp->prev) {
       carry += xp->n + yp->n;
       insertDigit(carry % BIGREALBASE);
@@ -149,8 +149,8 @@ BigReal &BigReal::addAbs(const BigReal &x) {
   if(x.m_low < m_low) {
     p  = m_last;
     xp = x.m_last;
-    const int t = min(m_low-1, x.m_expo);
-    int d;
+    const BRExpoType t = min(m_low-1, x.m_expo);
+    BRExpoType d;
     for(d = x.m_low; d <= t; d++, xp = xp->prev) {
       insertAfter(p, xp->n);
     }
@@ -160,7 +160,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     m_low = x.m_low;
   } else if(x.m_low > m_low) { 
     if((p = findDigit(x. m_low)) == NULL) {
-      const int t = x.m_low - 1 - m_expo;
+      const BRExpoType t = x.m_low - 1 - m_expo;
       if(t > 0) {
         insertZeroDigits(t);
       }
@@ -176,7 +176,7 @@ BigReal &BigReal::addAbs(const BigReal &x) {
     xp = x.m_last;
   }
 
-  unsigned long carry = 0;
+  BRDigitType carry = 0;
   while(xp) {
     if(p) {
       carry += p->n + xp->n;
@@ -214,14 +214,14 @@ BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
   }
 
   Digit *p = findDigitSubtract(f); 
-  const int last = f.isPositive() ? max(f.m_expo, x.m_low) : x.m_low;
+  const BRExpoType last = f.isPositive() ? max(f.m_expo, x.m_low) : x.m_low;
   if(last < m_low) {
-    const int k = m_low;
+    const BRExpoType k = m_low;
     p->n--;              // borrow
     insertAfter(p, BIGREALBASE - xp->n);
     xp = xp->prev;
     m_low--;
-    int d;
+    BRExpoType d;
     for(d = k - (last+1); xp && (d-- > 0); xp = xp->prev) {
       insertAfter(p, BIGREALBASE - 1 - xp->n);
       m_low--;
@@ -231,7 +231,7 @@ BigReal &BigReal::subAbs(const BigReal &x, const BigReal &f) {
       m_low -= d;
     }
   } else if(last > m_low) {
-    for(int d = last - m_low; p && d--; p = p->prev);
+    for(BRExpoType d = last - m_low; p && d--; p = p->prev);
   }
 
   while(xp) {

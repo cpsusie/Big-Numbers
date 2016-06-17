@@ -37,7 +37,7 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
   u.approxQuot32(z, v);
   u.approxQuot32(v, getExpo10N(u)*Q64C.c3 + Q64C.c4);
 
-  int scale;
+  BRExpoType scale;
   const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
 
   BigReal result(pool), t(pool), tmp(pool);
@@ -59,20 +59,20 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
 
 // Assume x != 0 and y != 0
 BigReal &BigReal::approxQuot64(const BigReal &x, const BigReal &y) {
-  int scale;
+  BRExpoType scale;
   const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64, &scale);
   return approxQuot64Abs(x, yFirst, scale).setSignByProductRule(x,y);
 }
 
 // Assume x != 0 and y != 0
-BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, int scale) {
+BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, BRExpoType scale) {
   const unsigned __int64 q = x.getFirst64(MAXDIGITS_INT64)/y;
   *this = q;
   return multPow10(getExpo10(x) - scale - MAXDIGITS_INT64);
 }
 
 // Same as getFirst32, but k = [0..MAXDIGITS_INT64] = [0..19]
-unsigned __int64 BigReal::getFirst64(const unsigned int k, int *scale) const {
+unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) const {
 #ifdef _DEBUG
   DEFINEMETHODNAME(getFirst46);
   if(k > MAXDIGITS_INT64) {
@@ -101,7 +101,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, int *scale) const {
     if(scale) {
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
         if(p) {
-          const unsigned int p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+          const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
           p = p->next;
         } else {
@@ -115,7 +115,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, int *scale) const {
       }
     } else { // scale == NULL
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
-        const unsigned int p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
+        const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
         result *= p10;
         if(p) {
           result += p->n / (BIGREALBASE/p10);
@@ -129,43 +129,6 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, int *scale) const {
     *scale  = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
   }
   return result;
-}
-
-// Assume n = [0..1eMAXDIGITS_INT64]
-int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
-  static const unsigned __int64 pow10Table[] = {
-    1ui64
-   ,10ui64
-   ,100ui64
-   ,1000ui64
-   ,10000ui64
-   ,100000ui64
-   ,1000000ui64
-   ,10000000ui64
-   ,100000000ui64
-   ,1000000000ui64
-   ,10000000000ui64
-   ,100000000000ui64
-   ,1000000000000ui64
-   ,10000000000000ui64
-   ,100000000000000ui64
-   ,1000000000000000ui64
-   ,10000000000000000ui64
-   ,100000000000000000ui64
-   ,1000000000000000000ui64
-   ,10000000000000000000ui64
-  };
-  int l = 0, r = ARRAYSIZE(pow10Table);
-  while(l < r) {
-    const int m = (l+r)/2;
-    const unsigned __int64 &p10 = pow10Table[m];
-    if(p10 <= n) {
-      l = m + 1;
-    } else {
-      r = m;
-    }
-  }
-  return r;
 }
 
 //#define TRACE_QUOTREMAINDER
@@ -208,7 +171,7 @@ void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
 
   if(BigReal::isPow10(y)) {
     BigReal tmp(x);
-    const int yp10 = BigReal::getExpo10(y);
+    const BRExpoType yp10 = BigReal::getExpo10(y);
     tmp.multPow10(-yp10);
     tmp.fractionate(quotient, remainder);
     if(remainder) {
@@ -228,7 +191,7 @@ void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
   BigReal z(x, pool);
   z.setPositive();
 
-  int                    scale;
+  BRExpoType             scale;
   const unsigned __int64 yFirst       = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
   const int              yDigits      = BigReal::getDecimalDigitCount64(yFirst);
 
