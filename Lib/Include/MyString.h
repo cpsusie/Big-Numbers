@@ -4,9 +4,9 @@
 #include <stdarg.h>
 #include "PragmaLib.h"
 
-#define DEFINEMETHODNAME(name)      static const TCHAR *method = _T(#name)
-#define DECLARECLASSNAME            static const TCHAR *s_className
-#define DEFINECLASSNAME(className)  const TCHAR *className::s_className = _T(#className)
+#define DEFINEMETHODNAME(name)      static TCHAR const* const method = _T(#name)
+#define DECLARECLASSNAME            static TCHAR const* const s_className
+#define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
 
 class String {
 private:
@@ -44,8 +44,8 @@ public:
   inline TCHAR last() const { return m_len ? m_buf[m_len-1] : 0; }
   TCHAR       *cstr()       { return m_buf; }
   const TCHAR *cstr() const { return m_buf; }
-  String &remove(size_t pos, size_t length = 1);                        // Remove characters at position pos, pos+1, ...pos+length-1
-  String &removeLast();                                           // Remove the last character if any.
+  String &remove(size_t pos, size_t length = 1);                     // Remove characters at position pos, pos+1, ...pos+length-1
+  String &removeLast();                                              // Remove the last character if any.
   String &insert(size_t pos, TCHAR ch);                              // Insert ch into String at position pos
   String &insert(size_t pos, const String &s);                       // Insert s into String at position pos
   friend bool    operator==( const String &lhs, const String &rhs);
@@ -84,12 +84,12 @@ public:
   friend String right( const String &str, intptr_t length);                 // Return substring s[s.len-length],s[s.len-length+1]...s[s.len-1]. ex. right("abc" ,2)   = "bc"
   friend String substr(const String &str, intptr_t from, intptr_t length);  // Return substring "str[from]str[from+1]...str[from+length-1]"     ex. substr(abcd",1,2) = "bc"
   friend String rev(   const String &str);                                  // Return reverse String
-  friend String spaceString(intptr_t length, TCHAR ch = _T(' '));           // Return String with length length, filled with ch. return "" if length <= 0
+  friend String spaceString(std::streamsize length, TCHAR ch = _T(' '));           // Return String with length length, filled with ch. return "" if length <= 0
 
   friend tostream &operator<<(tostream &f, const String &str);
   friend tistream &operator>>(tistream &f, String &str);
-  String &vprintf(const TCHAR *format, va_list argptr);           // Same as vsprintf. Return *this
-  String &printf( const TCHAR *format, ...);                      // Same as sprintf. Return *this
+  String &vprintf(const TCHAR *format, va_list argptr);                     // Same as vsprintf. Return *this
+  String &printf( _In_z_ _Printf_format_string_ const TCHAR *format, ...);  // Same as sprintf. Return *this
 
   const String &toString() const {
     return *this;
@@ -117,12 +117,12 @@ String format1000(unsigned long    n);
 String format1000(__int64          n);
 String format1000(unsigned __int64 n);
 
-unsigned long stringHash(    const String &str);                    // Very common used hashfunction
+unsigned long stringHash(    const String &str);                        // Very common used hashfunction
 int           stringHashCmp( const String &key, const String &elem);
-unsigned long stringiHash(   const String &str);                    // Very common used hashfunction
+unsigned long stringiHash(   const String &str);                        // Very common used hashfunction
 int           stringiHashCmp(const String &key, const String &elem);
-String vformat(const TCHAR *format, va_list argptr);                // Same arguments as vprintf,vsprintf
-String format( const TCHAR *format, ...);                           // Same arguments as printf,sprintf
+String vformat(const TCHAR *format, va_list argptr);                    // Same arguments as vprintf,vsprintf
+String format( _In_z_ _Printf_format_string_ const TCHAR *format, ...); // Same arguments as printf,sprintf
 
 String toString(char             ch, int width = 0, int flags = 0  );
 String toString(short            n , int precision = 0, int width = 0, int flags = 0);

@@ -94,7 +94,7 @@ namespace TestDate {
       String format = ddMMyyyyhhmm + _T(".SSS");
 
       Timestamp endDate = Date(1, 1, 2011);
-      for (Timestamp ts = Date(30, 4, 1583); ts < endDate; ts += 5.41) {
+      for (Timestamp ts = Date(30, 4, 1583); ts < endDate; ts.add(TDAYOFMONTH,5).add(THOUR,9).add(TSECOND,5082)) {
         int day, month, year;
         ts.getDMY(day, month, year);
         WeekDay weekDay = ts.getWeekDay();

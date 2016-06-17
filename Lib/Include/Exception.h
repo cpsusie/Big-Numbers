@@ -23,12 +23,12 @@ public:
 
 extern void exceptionTranslator(unsigned int u, EXCEPTION_POINTERS* pExp);
 
-extern void throwException(const TCHAR *format, ...);
+extern void throwException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 extern void throwException(const String &s);
-extern void throwInvalidArgumentException(const TCHAR *function, const TCHAR *format, ...);
-extern void throwTimeoutException(const TCHAR *format, ...);
-extern void throwMethodException(const TCHAR *className, const TCHAR *method, const TCHAR *format, ...);
-extern void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *method, const TCHAR *format, ...);
+extern void throwInvalidArgumentException(const TCHAR *function, _In_z_ _Printf_format_string_ TCHAR const * const format, ...);
+extern void throwTimeoutException(_In_z_ _Printf_format_string_  const TCHAR *format, ...);
+extern void throwMethodException(const TCHAR *className, TCHAR const * const method, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+extern void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *method, _In_z_ _Printf_format_string_ TCHAR const * const _Format, ...);
 extern void throwMethodUnsupportedOperationException(const TCHAR *className, const TCHAR *method);
 
 extern void throwErrNoOnNameException(const String &name);

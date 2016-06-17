@@ -8,27 +8,6 @@
 
 #include <StrStream.h>
 
-StrStream::StrStream(int precision, int width, int flags) : StreamParameters(precision,width,flags) {
-}
-
-StrStream::StrStream(tostream &stream) : StreamParameters(stream) {
-}
-
-StrStream &StrStream::append(const TCHAR *s) {
-  *this += s;
-  return *this;
-}
-
-StrStream &StrStream::append(const String &s) {
-  *this += s;
-  return *this;
-}
-
-StrStream &StrStream::operator<<(const TCHAR *str) {
-  return append(format(getStringFormat().cstr(), str));
-}
-
-
 #ifdef UNICODE
 //StrStream::StrStream(tostream &stream) : StreamParameters(stream) {//
 //}
@@ -48,55 +27,6 @@ StrStream &StrStream::operator<<(char        ch) {
 }
 #endif
 
-StrStream &StrStream::operator<<(TCHAR ch) {
-  return append(format(getCharFormat().cstr(), ch));
-}
-
-StrStream &StrStream::operator<<(const String &str) {
-  return append(format(getStringFormat().cstr(), str.cstr()));
-}
-
-StrStream &StrStream::operator<<(int n) {
-  return append(format(getIntFormat().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(unsigned int n) {
-  return append(format(getUIntFormat().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(long n) {
-  return append(format(getLongFormat().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(unsigned long n) {
-  return append(format(getULongFormat().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(__int64 n) {
-  return append(format(getInt64Format().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(unsigned __int64 n) {
-  return append(format(getUInt64Format().cstr(), n));
-}
-
-StrStream &StrStream::operator<<(float f) {
-  return append(format(getFloatFormat().cstr(), f));
-}
-
-StrStream &StrStream::operator<<(double d) {
-  return append(format(getDoubleFormat().cstr(), d));
-}
-
-StrStream &StrStream::operator<<(const StrStream &s) {
-  return append(s.cstr());
-}
-
-StrStream &StrStream::operator<<(const StreamParameters &param) {
-  ((StreamParameters&)(*this)) = param;
-  return *this;
-}
-
 TCHAR StrStream::unputc() {
   TCHAR ch = 0;
   const size_t l = length();
@@ -110,7 +40,7 @@ TCHAR StrStream::unputc() {
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & std::ios::uppercase) ? _T("E") : _T("e")); }
 
-void StrStream::formatZero(String &result, int precision, long flags, int maxPrecision) { // static
+void StrStream::formatZero(String &result, streamsize precision, long flags, streamsize maxPrecision) { // static
   if((flags & (std::ios::scientific|std::ios::fixed)) == std::ios::scientific) {
     result += _T("0");
     if((flags & std::ios::showpoint) || (precision > 0)) {

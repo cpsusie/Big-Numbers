@@ -146,28 +146,26 @@ Packer &Packer::operator>>(unsigned long &n) {
 // --------------------------------- __INT64 --------------------------
 
 Packer &Packer::operator<<(__int64 n) {
-  unsigned long hl = (unsigned long)(n >> 32);
-  unsigned long ll = (unsigned long)(n & 0xffffffff);
-  return *this << hl << ll;
-}
-
-Packer &Packer::operator<<(unsigned __int64 n) {
-  unsigned long hl = (unsigned long)(n >> 32);
-  unsigned long ll = (unsigned long)(n & 0xffffffff);
-  return *this << hl << ll;
+  unsigned __int64 nl = htonll(n);
+  return addElement(E_LONG_LONG, &nl, sizeof(nl));
 }
 
 Packer &Packer::operator>>(__int64 &n) {
-  unsigned long hl,ll;
-  *this >> hl >> ll;
-  n = ((unsigned __int64)hl << 32) | ll;
+  unsigned __int64 nl;
+  getElement(E_LONG_LONG, &nl, sizeof(nl));
+  n = ntohll(nl);
   return *this;
 }
 
+Packer &Packer::operator<<(unsigned __int64 n) {
+  unsigned __int64 nl = htonll(n);
+  return addElement(E_LONG_LONG, &nl, sizeof(nl));
+}
+
 Packer &Packer::operator>>(unsigned __int64 &n) {
-  unsigned long hl,ll;
-  *this >> hl >> ll;
-  n = ((unsigned __int64)hl << 32) | ll;
+  unsigned __int64 nl;
+  getElement(E_LONG_LONG, &nl, sizeof(nl));
+  n = ntohll(nl);
   return *this;
 }
 

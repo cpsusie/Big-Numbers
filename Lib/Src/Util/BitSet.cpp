@@ -545,7 +545,7 @@ bool operator>(const BitSet &lts, const BitSet &rhs) {
 
 unsigned long BitSet::hashCode() const {
 #ifdef IS64BIT
-  unsigned long v = (m_capacity >> 32) ^ (m_capacity & 0xffffffff);
+  unsigned long v = uint64Hash(m_capacity);
 #else
   unsigned long v = m_capacity;
 #endif

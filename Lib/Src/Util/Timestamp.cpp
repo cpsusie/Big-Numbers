@@ -393,7 +393,7 @@ String Timestamp::toString(const String &format) const {
 }
 
 unsigned long Timestamp::hashCode() const {
-  return (m_factor >> 32) | m_factor;
+  return uint64Hash(m_factor);
 }
 
 Timestamp::Timestamp(const SYSTEMTIME &st) {

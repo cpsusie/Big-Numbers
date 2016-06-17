@@ -202,7 +202,7 @@ namespace TestPackedArray {
     String tmpStr;
     const int l = m_pa.getBitsPerItem();
     int bitCount = 0;
-    for (int i = 0; i < m_a.size(); i++) {
+    for (size_t i = 0; i < m_a.size(); i++) {
       bitCount += l;
       if (bitCount > 32) {
         tmpStr += _T(":");

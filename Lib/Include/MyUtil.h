@@ -29,7 +29,7 @@
 
 void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
 void unredirectDebugLog();
-void debugLog(const TCHAR *format,...);
+void debugLog(_In_z_ _Printf_format_string_ const TCHAR *format,...);
 void debugLogLine(const TCHAR *fileName, int line);
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);
 String getMessageName(int msg);

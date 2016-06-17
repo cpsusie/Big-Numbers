@@ -574,7 +574,7 @@ public:
       } else {
         BitSet expectedFreeFilePages(m_freeFilePages.getCapacity());
         expectedFreeFilePages.add(0, m_pageFileSize-1);
-        for(int i = 0; i < m_pageMap.size(); i++) {
+        for(size_t i = 0; i < m_pageMap.size(); i++) {
           const PageMapElement &pm = m_pageMap[i];
           if(pm.m_loaded == 0) {
             expectedFreeFilePages.remove(pm.m_pageIndex);

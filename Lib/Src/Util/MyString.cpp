@@ -441,14 +441,14 @@ intptr_t String::rfind(TCHAR ch) const {
   return s ? s - m_buf : -1;
 }
 
-String spaceString(intptr_t length, TCHAR ch) {
+String spaceString(std::streamsize length, TCHAR ch) {
   if(length <= 0) {
     return EMPTYSTRING;
   }
   String result;
   delete[] result.m_buf;
-  result.m_buf = new TCHAR[result.m_capacity = (result.m_len = length) + 1];
-  MEMSET(result.m_buf, ch, length);
+  result.m_buf = new TCHAR[result.m_capacity = (result.m_len = (size_t)length) + 1];
+  MEMSET(result.m_buf, ch, (size_t)length);
   result.m_buf[length] = 0;
   return result;
 }

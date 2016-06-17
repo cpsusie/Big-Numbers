@@ -284,7 +284,7 @@ namespace TestString {
 
       const String constRes = res;
       reslen = constRes.length();;
-      for (int i = 0; i <= reslen + 4; i++) {
+      for (size_t i = 0; i <= reslen + 4; i++) {
         try {
           TCHAR ch = constRes[i];
           verify(i < reslen);

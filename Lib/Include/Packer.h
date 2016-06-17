@@ -14,6 +14,7 @@ public:
    ,E_SHORT
    ,E_INT
    ,E_LONG
+   ,E_LONG_LONG
    ,E_FLOAT
    ,E_DOUBLE
    ,E_STR

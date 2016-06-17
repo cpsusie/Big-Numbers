@@ -2281,14 +2281,14 @@ BitSet Regex::getPossibleBreakPointLines() const {
     return BitSet(10); // empty set
   }
   int maxLine = 0;
-  for(int i = 0; i < m_PCToLineArray.size(); i++) {
+  for(size_t i = 0; i < m_PCToLineArray.size(); i++) {
     const int l = m_PCToLineArray[i] >> 16;
     if(l > maxLine) {
       maxLine = l;
     }
   }
   BitSet result(maxLine+1);
-  for(int i = 0; i < m_PCToLineArray.size(); i++) {
+  for(size_t i = 0; i < m_PCToLineArray.size(); i++) {
     result.add(m_PCToLineArray[i] >> 16);
   }
   return result;

@@ -1,17 +1,15 @@
 #include "pch.h"
 #include <StreamParameters.h>
 
-using namespace std;
-
-StreamParameters::StreamParameters(int precision, int width, int flags) {
+StreamParameters::StreamParameters(streamsize precision, streamsize width, int flags) {
   m_precision = precision;
   m_width     = width;
   m_flags     = flags;
 }
 
 StreamParameters::StreamParameters(const tostream &stream) {
-  m_precision = (int)stream.precision();
-  m_width     = (int)stream.width();
+  m_precision = stream.precision();
+  m_width     = stream.width();
   m_flags     = stream.flags();
 }
 
@@ -37,7 +35,7 @@ TCHAR *StreamParameters::addModifier(TCHAR *dst) const {
 
 TCHAR *StreamParameters::addWidth(TCHAR *dst) const {
   if(m_width != 0) {
-    _itot(m_width,dst,10);
+    _i64tot(m_width,dst,10);
     dst += _tcsclen(dst);
   }
   return dst;
@@ -46,7 +44,7 @@ TCHAR *StreamParameters::addWidth(TCHAR *dst) const {
 TCHAR *StreamParameters::addPrecision(TCHAR *dst) const {
   if(m_precision != 0) {
     *(dst++) = _T('.');
-    _itot(m_precision,dst,10);
+    _i64tot(m_precision,dst,10);
     dst += _tcsclen(dst);
   }
   return dst;

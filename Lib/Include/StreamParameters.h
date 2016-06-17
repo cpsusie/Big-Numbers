@@ -2,9 +2,12 @@
 
 #include "MyString.h"
 
+using namespace std;
+
 class StreamParameters {
 private:
-  int m_precision, m_width, m_flags;
+  streamsize m_precision, m_width;
+  int        m_flags;
   TCHAR  *addModifier(      TCHAR *dst)                     const;
   TCHAR  *addWidth(         TCHAR *dst)                     const;
   TCHAR  *addPrecision(     TCHAR *dst)                     const;
@@ -12,17 +15,17 @@ private:
   TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)      const;
   TCHAR  *addFloatSpecifier(TCHAR *dst)                     const;
 public:
-  StreamParameters(int precision=6, int width=0, int flags=0);
+  StreamParameters(streamsize precision=6, streamsize width=0, int flags=0);
 
   StreamParameters(const tostream &stream);
   friend tostream &operator<<(tostream &out, const StreamParameters &p);
 
-  void setPrecision(int precision) { m_precision = precision; }
-  void setWidth(    int width    ) { m_width     = width;     }
-  void setFlags(    int flags    ) { m_flags     = flags;     }
-  int  getPrecision() const        { return m_precision; }
-  int  getWidth()     const        { return m_width;     }
-  int  getFlags()     const        { return m_flags;     }
+  void setPrecision(streamsize precision) { m_precision = precision; }
+  void setWidth(    streamsize width    ) { m_width     = width;     }
+  void setFlags(    int      flags    )   { m_flags     = flags;     }
+  streamsize getPrecision() const         { return m_precision;      }
+  streamsize getWidth()     const         { return m_width;          }
+  int        getFlags()     const         { return m_flags;          }
 
   String getStringFormat() const;
   String getCharFormat()   const;

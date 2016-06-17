@@ -15,6 +15,7 @@ public:
   int     nextInt();
   int     nextInt(int n);                      // return uniform distributed int value between 0 (inclusive) and n (exclusive) n must be positive.
   __int64 nextInt64();
+  __int64 nextInt64(__int64 n);                // return uniform distributed int value between 0 (inclusive) and n (exclusive) n must be positive.
   float   nextFloat();                         // return uniform distributed random float  between 0 (inclusive) and 1 (exclusive)
   float   nextFloat(float low, float high);    // return uniform distributed random float  between low (inclusive) and high (exlucisve)
   double  nextDouble();                        // return uniform distributed random double between 0 (inclusive) and 1 (exclusive)
