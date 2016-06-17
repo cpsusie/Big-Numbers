@@ -534,24 +534,24 @@ int Double80::getExpo10(const Double80 &x) { // static
     jne x_not_zero              // if(x != 0) goto x_not_zero
     fstp st(0)                  // pop x
     mov result, 0               // x == 0 => result = 0
-    jmp end
-    x_not_zero:
+    jmp Exit
+x_not_zero:
     fld1
-      fxch st(1)
-      fabs
-      fyl2x
-      fldlg2
-      fmul
-      fnstcw cwSave
-      mov ax, cwSave
-      or  ax, 0x400              // set bit 10
-      and ax, 0xf7ff             // clear bit 11
-      mov ctrlFlags, ax
-      fldcw ctrlFlags
-      frndint
-      fldcw cwSave
-      fistp result
-      end:
+    fxch st(1)
+    fabs
+    fyl2x
+    fldlg2
+    fmul
+    fnstcw cwSave
+    mov ax, cwSave
+    or  ax, 0x400              // set bit 10
+    and ax, 0xf7ff             // clear bit 11
+    mov ctrlFlags, ax
+    fldcw ctrlFlags
+    frndint
+    fldcw cwSave
+    fistp result
+Exit:
   }
   return result;
 }
@@ -823,9 +823,9 @@ bool operator!=(const Double80 &x, const Double80 &y) {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop y 
-	je end                      // if st(0) == st(1) (x < y) goto end
+    je Exit                     // if st(0) == st(1) (x < y) goto end
     mov result, 1
-end:
+Exit:
     fstp st(0)                  // pop x
   }
   return result;
@@ -839,9 +839,9 @@ bool operator==(const Double80 &x, const Double80 &y) {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop y
-	jne end                     // if st(0) != st(1) (x != y) goto end
+    jne Exit                    // if st(0) != st(1) (x != y) goto end
     mov result, 1
-end:
+Exit:
     fstp st(0)                  // pop x
   }
   return result;
@@ -855,9 +855,9 @@ bool operator>=(const Double80 &x, const Double80 &y) {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
-	jb end                      // if st(0) < st(1) (x < y) goto end
+    jb Exit                     // if st(0) < st(1) (x < y) goto end
     mov result, 1
-end:
+Exit:
     fstp st(0)                  // pop y
   }
   return result;
@@ -871,9 +871,9 @@ bool operator<=(const Double80 &x, const Double80 &y) {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop y
-	jb end                      // if st(0) < st(1) (y < x) goto end
+    jb Exit                     // if st(0) < st(1) (y < x) goto end
     mov result, 1
-end:
+Exit:
     fstp st(0)                  // pop x
   }
   return result;
@@ -887,9 +887,9 @@ bool operator>(const Double80 &x, const Double80 &y) {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop x
-    ja end                      // if st(0) > st(1) (x > y) goto end
+    ja Exit                     // if st(0) > st(1) (x > y) goto end
     mov result, 0
-end:
+Exit:
     fstp st(0)                  // pop y
   }
   return result;
@@ -903,9 +903,9 @@ bool operator<(const Double80 &x,const Double80 &y) {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
     fcomip st, st(1)            // compare and pop y
-    ja end                      // if st(0) > st(1) (y > x) goto end
+    ja Exit                     // if st(0) > st(1) (y > x) goto end
     mov result, 0
-end:
+Exit:
     fstp st(0)                  // pop x
   }
   return result;
@@ -918,9 +918,9 @@ bool Double80::isZero() const {
     fld TBYTE PTR [eax]
     fldz
     fcomip st, st(1)            // compare and pop zero
-    jne end                     // if st(0) != st(1) (this != zero) goto end
+    jne Exit                    // if st(0) != st(1) (this != zero) goto end
     mov result, 1
-    end:
+Exit:
     fstp st(0)                  // pop this
   }
   return result;
@@ -947,37 +947,37 @@ Double80 fmod(const Double80 &x, const Double80 &y) {
     fld TBYTE PTR [eax]         //                                                    st0=x,st1=|y|
     fldz                        //                                                    st0=0,st1=x,st2=|y|
     fcomip st, st(1)            // compare and pop zero                               st0=x,st1=|y|
-	ja repeat_negative_x        // if st(0) > st(1) (0 > x) goto repeat_negative_x 
+    ja repeat_negative_x        // if st(0) > st(1) (0 > x) goto repeat_negative_x 
 repeat_positive_x:              // do {                                               st0=x,st1=|y|, x > 0
     fprem                       //   st0 %= y                                       
     fstsw ax
     and ax,0x0400
-	  test ah, 4
-	  jne	repeat_positive_x       // } while(statusword.c2 != 0);
+    test ah, 4
+    jne	repeat_positive_x       // } while(statusword.c2 != 0);
     fldz                        //                                                    st0=0,st1=x,st2=|y|
     fcomip st, st(1)            // compare and pop zero
-  	jbe pop2                    // if(st(0) <= st(1) (0 <= remainder) goto pop2
+    jbe pop2                    // if(st(0) <= st(1) (0 <= remainder) goto pop2
     fadd                        // remainder += y
     fstp result                 // pop result
-    jmp end                     // goto end
+    jmp Exit                    // goto end
 
 repeat_negative_x:              // do {                                               st0=x,st=|y|, x < 0
     fprem                       //    st0 %= y
     fstsw ax
     and ax,0x0400
-	  test ah, 4
-	  jne	repeat_negative_x       // } while(statusword.c2 != 0)
+    test ah, 4
+    jne	repeat_negative_x       // } while(statusword.c2 != 0)
     fldz
     fcomip st, st(1)            // compare and pop zero
-	  jae pop2                    // if(st(0) >= st(1) (0 >= remainder) goto pop2
+    jae pop2                    // if(st(0) >= st(1) (0 >= remainder) goto pop2
     fsubr                       // remainder -= y
     fstp result                 // pop result
-    jmp end                     // goto end
+    jmp Exit                    // goto end
 
 pop2:                           //                                                    st0=x%y,st1=y
     fstp result                 // pop result
     fstp st(0)                  // pop y
-end:
+Exit:
   }
   return result;
 }
@@ -1501,12 +1501,12 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
       fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
       fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
-	  jb end                      //   if(|m| < 1e18-1) goto end           st0=1e18-1           , st1=m
+      jb Exit                     //   if(|m| < 1e18-1) goto Exit          st0=1e18-1           , st1=m
       fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
       fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
       inc eax                     //   expo10++
       jmp whileLoop               // }
-  end:
+  Exit:
       fstp st(0)                  // Pop st(0)                             st0=m
       fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
       mov expo10, eax             // Restore expo10
@@ -1562,12 +1562,12 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
       fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
       fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
-	  jb end                      //   if(|m| < 1e18-1) goto end           st0=1e18-1           , st1=m
+      jb Exit                     //   if(|m| < 1e18-1) goto end           st0=1e18-1           , st1=m
       fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
       fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
       inc eax                     //   expo10++
       jmp whileLoop               // }
-  end:
+    Exit:
       fstp st(0)                  // Pop st(0)                             st0=m
       fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
       mov expo10, eax             // Restore expo10

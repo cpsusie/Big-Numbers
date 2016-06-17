@@ -48,7 +48,7 @@ void AddentArray::initDebugString() {
     m_debugString = _T("0");
   } else {
     m_debugString = (*this)[0]->getDebugString();
-    for(int i = 1; i < size(); i++) {
+    for(size_t i = 1; i < size(); i++) {
       const SumElement *e = (*this)[i];
       m_debugString += e->getDebugString();
     }

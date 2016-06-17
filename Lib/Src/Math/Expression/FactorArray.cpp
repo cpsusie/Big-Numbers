@@ -96,7 +96,7 @@ void FactorArray::initDebugString() {
     m_debugString = _T("1");
   } else {
     m_debugString = format(_T("(%s)"), (*this)[0]->getDebugString().cstr());
-    for(int i = 1; i < size(); i++) {
+    for(size_t i = 1; i < size(); i++) {
       m_debugString += format(_T("*(%s)"), (*this)[i]->getDebugString().cstr());
     }
   }

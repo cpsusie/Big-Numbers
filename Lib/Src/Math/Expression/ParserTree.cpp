@@ -480,7 +480,9 @@ void ParserTree::enableReductionStack(bool enable) { // static
 }
 
 void ParserTree::clearAllBreakPoints() {
-  for(int i = 0; i < m_nodeTable.size(); i++) m_nodeTable[i]->clearBreakPoint();
+  for (size_t i = 0; i < m_nodeTable.size(); i++) {
+    m_nodeTable[i]->clearBreakPoint();
+  }
 }
 
 #endif

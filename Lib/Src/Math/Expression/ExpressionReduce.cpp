@@ -504,7 +504,7 @@ bool Expression::canUseReverseIdiotRule(const SumElement *e1, const SumElement *
         RETURNBOOL( true );
       }
     }
-    swap(e1, e2);
+    ::swap(e1, e2);
   }
   RETURNBOOL( false );
 }

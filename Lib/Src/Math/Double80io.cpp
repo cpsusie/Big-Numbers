@@ -28,8 +28,8 @@ static void formatNan(String &result, const Double80 &x) {
 #define addDecimalPoint(s) { s += _T("."); }
 #define addExponentChar(s) { s += ((flags & ios::uppercase) ? _T("E") : _T("e")); }
 
-static void formatFixed(String &result, const Double80 &x, int precision, long flags, bool removeTrailingZeroes) {
-  String        str       = round(x,precision).toString();
+static void formatFixed(String &result, const Double80 &x, streamsize precision, long flags, bool removeTrailingZeroes) {
+  String        str       = round(x,(int)precision).toString();
   const TCHAR  *mantissa  = findFirstDigit(str);
   TCHAR        *comma     = _tcschr(str.cstr(),_T('.'));
   TCHAR        *decimals  = NULL;
@@ -61,7 +61,7 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
       const int dotPosition = exponent+1;
       result += substr(ciphers,0,dotPosition);
 
-      String decimals = substr(ciphers,dotPosition,precision);
+      String decimals = substr(ciphers,dotPosition,(intptr_t)precision);
       if(precision > 0) {
         if(removeTrailingZeroes) {
           for(int i = (int)decimals.length()-1; i >= 0 && decimals[i] == _T('0');) { // remove trailing zeroes from decimals
@@ -78,12 +78,12 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
       }
     }
   } else { // exponent < 0
-    int leadingZeroes = -1 - exponent;
-    leadingZeroes = min(leadingZeroes,precision);
+    intptr_t leadingZeroes = -1 - exponent;
+    leadingZeroes = min(leadingZeroes,(intptr_t)precision);
     result += _T("0");
     addDecimalPoint(result);
     result += spaceString(leadingZeroes,_T('0'));
-    result += substr(ciphers, 0, precision - leadingZeroes);
+    result += substr(ciphers, 0, (intptr_t)precision - leadingZeroes);
     if(removeTrailingZeroes) {
       for(int i = (int)result.length()-1; i >= 0 && result[i] == _T('0');) { // remove trailing zeroes from result
         result.remove(i--);
@@ -94,7 +94,7 @@ static void formatFixed(String &result, const Double80 &x, int precision, long f
   }
 }
 
-static void formatScientific(String &result, const Double80 &x, int precision, long flags, int expo10, bool removeTrailingZeroes) {
+static void formatScientific(String &result, const Double80 &x, streamsize precision, long flags, intptr_t expo10, bool removeTrailingZeroes) {
   bool exponentCharAdded = false;
 
   String  str = x.toString();
@@ -112,12 +112,12 @@ static void formatScientific(String &result, const Double80 &x, int precision, l
   if(comma != NULL) {
     decimals = comma + 1;
     *comma = 0;
-    if(precision+1 < (int)decimals.length()) {
-      decimals = substr(decimals,0,precision+1);
-      if(decimals[precision] >= _T('5')) {
-        decimals[precision] = _T('0');
-        int i;
-        for(i = precision-1; i >= 0; i--) {
+    if(precision+1 < (intptr_t)decimals.length()) {
+      decimals = substr(decimals,0,(intptr_t)precision+1);
+      if(decimals[(intptr_t)precision] >= _T('5')) {
+        decimals[(intptr_t)precision] = _T('0');
+        intptr_t i;
+        for(i = (intptr_t)precision-1; i >= 0; i--) {
           TCHAR &digit = decimals[i];
           if(digit < _T('9')) {
             digit++;
@@ -140,26 +140,26 @@ static void formatScientific(String &result, const Double80 &x, int precision, l
 
   result += mantissa;
 
-  if(removeTrailingZeroes && precision < (int)decimals.length()) {
-    for(; precision > 0 && decimals[precision-1] == _T('0'); precision--) { // remove trailing zeroes from decimals
-      decimals.remove(precision-1);
+  if(removeTrailingZeroes && precision < (intptr_t)decimals.length()) {
+    for(; precision > 0 && decimals[(intptr_t)precision-1] == _T('0'); precision--) { // remove trailing zeroes from decimals
+      decimals.remove((intptr_t)precision-1);
     }
   }
 
   if((flags & ios::showpoint) || precision > 0) {
     addDecimalPoint(result);
     if(precision > 0) {
-      result += substr(decimals,0,precision);
+      result += substr(decimals,0,(intptr_t)precision);
     }
   }
 
   addExponentChar(result);
-  result += format(_T("%+03d"),exponent);
+  result += format(_T("%+03d"), exponent);
 }
 
 StrStream &operator<<(StrStream &stream, const Double80 &x) {
-  int  precision  = stream.getPrecision();
-  long flags = stream.getFlags();
+  streamsize precision  = stream.getPrecision();
+  long flags            = stream.getFlags();
 
   if(precision < 0) {
     precision = MAXPRECISION;
@@ -175,7 +175,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
       result = _T("+");
     }
 
-    if(x == Double80::zero) {
+    if(x.isZero()) {
       StrStream::formatZero(result,precision,flags,MAXPRECISION);
     } else { // x defined && x != 0
       if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
@@ -189,7 +189,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
             precision = max(0,precision-1);
             formatScientific(result, x, precision, flags, expo10, (flags & ios::showpoint) == 0);
           } else {
-            const int prec = (precision == 0) ? abs(expo10) : max(0,precision-expo10-1);
+            const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
             formatFixed(result, x, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
           }
         }
@@ -197,7 +197,7 @@ StrStream &operator<<(StrStream &stream, const Double80 &x) {
     } // x defined && x != 0
   } // end x defined
 
-  const int fillerLength = stream.getWidth() - (int)result.length();
+  const streamsize fillerLength = stream.getWidth() - (int)result.length();
   if(fillerLength <= 0) {
     stream.append(result);
   } else if((flags & (ios::left|ios::right)) == ios::left) { // adjust left iff only ios::left is set
