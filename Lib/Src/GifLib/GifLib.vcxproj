@@ -99,12 +99,12 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>C:\mytools2015\Lib\Src\GifLib\giflib-5.1.1\lib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Src\GifLib\giflib-5.1.1\lib;C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <OutDir>..\..\MTDebug32\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <IncludePath>C:\mytools2015\Lib\Src\GifLib\giflib-5.1.1\lib;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Src\GifLib\giflib-5.1.1\lib;C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <OutDir>..\..\MTRelease32\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
