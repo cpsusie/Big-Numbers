@@ -25,8 +25,8 @@ BigReal BigReal::quotNewton(const BigReal &x, const BigReal &y, const BigReal &f
 
   const BigReal g = PAPCprod(<,PAPCprod(<,NC.c1,f,pool), fabs(PAPCprod(<,y,reciprocal(x,pool),pool)),pool);
 
-  int k = getExpo10(g);
-  int a[100];
+  BRExpoType k = getExpo10(g);
+  BRExpoType a[100];
   int n = 0;
 
   while(k < NC.c4) {

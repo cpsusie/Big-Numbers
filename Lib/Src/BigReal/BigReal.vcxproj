@@ -262,6 +262,7 @@
     <ClCompile Include="ShortProductOptFPU2.cpp" />
     <ClCompile Include="ShortProductOptNone.cpp" />
     <ClCompile Include="ShortProductOptReg32.cpp" />
+    <ClCompile Include="ShortProductOptReg64.cpp" />
     <ClCompile Include="ShortProductReference.cpp" />
     <ClCompile Include="Sin.cpp" />
     <ClCompile Include="Sqrt.cpp" />
@@ -272,6 +273,21 @@
     <Natvis Include="NatvisFile.natvis">
       <SubType>Designer</SubType>
     </Natvis>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="BigRealShortProductx64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)BigRealShortProductx64.obj BigRealShortProductx64.asm</Command>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for BigRealShortProduct function x64 mode</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)BigRealShortProductx64.obj</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

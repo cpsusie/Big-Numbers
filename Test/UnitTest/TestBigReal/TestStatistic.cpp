@@ -44,12 +44,12 @@ const String TestStatistic::s_signaturString[] = {
  ,_T("(const BigReal &x, const BigReal &y, const BigReal &f)")
 };
 
-TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, unsigned int maxTestCount, const BigReal &maxTolerance) 
+TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, const BigReal &maxTolerance) 
 : m_threadId(threadId)
 , m_name(name)
 , m_digitPool(pool)
 , m_signatur(signatur)
-, m_maxTestCount(maxTestCount)
+, m_maxTestCount((int)maxTestCount)
 , m_maxTolerance(maxTolerance,pool)
 , m_error(pool)
 , m_minQ(pool)
@@ -59,19 +59,19 @@ TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, 
   init();
 }
 
-TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, unsigned int maxTestCount, int maxDigits)
+TestStatistic::TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, size_t maxDigits)
 : m_threadId(threadId)
 , m_name(name)
 , m_digitPool(pool)
 , m_signatur(signatur)
-, m_maxTestCount(maxTestCount)
+, m_maxTestCount((int)maxTestCount)
 , m_maxTolerance(pool)
 , m_error(pool)
 , m_minQ(pool)
 , m_maxQ(pool)
 , m_ypos(THREADYPOS(threadId))
 {
-  m_maxDigits    = maxDigits;
+  m_maxDigits    = (int)maxDigits;
   init();
 }
 
@@ -437,7 +437,7 @@ void TestStatistic::updateZ(const BigReal &tolerance) {
 }
 
 void TestStatistic::update(const BigReal &Q) {
-  int key;
+  BRExpoType key;
   if(Q.isZero()) {
     key = 0;
   } else {

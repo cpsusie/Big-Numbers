@@ -55,8 +55,8 @@ void testGetExpo10(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
   for(unsigned long i = 0; i < BIGREALBASE; i+=7) {
     const BigReal ni(i, pool);
-    const int e10 = BigReal::getExpo10(ni);
-    const int me10 = myGetExpo10(i);
+    const BRExpoType e10 = BigReal::getExpo10(ni);
+    const int        me10 = myGetExpo10(i);
     verify(e10 == me10);
   }
   stat.setEndMessageToOk();

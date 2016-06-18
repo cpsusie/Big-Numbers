@@ -59,9 +59,9 @@ private:
     return s_signaturString[m_signatur];
   }
   void printNameAndSignatur();
-  void markError(const BigReal &x,                              const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
+  void markError(const BigReal &x,                               const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
   void markError(const BigReal &x, const BigReal &y,             const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
-  void markError(const BigReal &x,                  int digits, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
+  void markError(const BigReal &x,                   int digits, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
   void markError(const BigReal &x, const BigReal &y, int digits, const BigReal &tolerance, const BigReal &exactResult, const BigReal &result);
   String getErrorHeader() const;
   String getParamStr(               const String &name, const BigReal &x) const;
@@ -71,18 +71,18 @@ private:
   String getRelativeErrorStr(       const BigReal &exactResult, const BigReal &result, const BigReal &tolerance) const;
   String getFunctionNameAndErrorStr(const BigReal &exactResult, const BigReal &result) const;
 public:
-  TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, unsigned int maxTestCount, const BigReal &maxTolerance);
-  TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, unsigned int maxTestCount, int maxDigits=0);
+  TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, const BigReal &maxTolerance);
+  TestStatistic(int threadId, const String &name, DigitPool *pool, FunctionSignatur signatur, size_t maxTestCount, size_t maxDigits=0);
   ~TestStatistic();
   void update( const BigReal &error, const BigReal &tolerance);
   void updateZ(const BigReal &tolerance);
   void update( const BigReal &Q);
-  void checkError( BigRealFunction1     f, const BigReal &x,                  const BigReal &tolerance, const BigReal &exactResult);
+  void checkError( BigRealFunction1     f, const BigReal &x,                   const BigReal &tolerance, const BigReal &exactResult);
   void checkError( BigRealFunction2     f, const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult);
   void checkError( BigRealFunction2Pool f, const BigReal &x, const BigReal &y, const BigReal &tolerance, const BigReal &exactResult);
-  void checkError(rBigRealFunction1     f, const BigReal &x,                  int           digits   , const BigReal &exactResult);
-  void checkError(rBigRealFunction2     f, const BigReal &x, const BigReal &y, int           digits   , const BigReal &exactResult);
-  void checkError(rBigRealFunction2Pool f, const BigReal &x, const BigReal &y, int           digits   , const BigReal &exactResult);
+  void checkError(rBigRealFunction1     f, const BigReal &x,                   int            digits   , const BigReal &exactResult);
+  void checkError(rBigRealFunction2     f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
+  void checkError(rBigRealFunction2Pool f, const BigReal &x, const BigReal &y, int            digits   , const BigReal &exactResult);
   static String toString(const BigReal &n, int digits = 6);
   inline bool isTimeToPrint() {
     m_testCounter++;

@@ -44,9 +44,9 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
 
 
 double BigReal::estimateQuotNewtonTime(const BigReal &x, const BigReal &y, const BigReal &f) { // static
-  int resultExpo = getExpo10(x) - getExpo10(y); // Expected exponent of result
-  int errorExpo  = getExpo10(f);
-  double resultDigits = resultExpo - errorExpo;
+  BRExpoType resultExpo   = getExpo10(x) - getExpo10(y); // Expected exponent of result
+  BRExpoType errorExpo    = getExpo10(f);
+  double     resultDigits = (double)(resultExpo - errorExpo);
   if(resultDigits <= 0) {
     return 1;
   }
@@ -55,18 +55,18 @@ double BigReal::estimateQuotNewtonTime(const BigReal &x, const BigReal &y, const
 }
 
 double BigReal::estimateQuotLinearTime(const BigReal &x, const BigReal &y, const BigReal &f) { // static
-  int resultExpo   = getExpo10(x) - getExpo10(y); // Expected exponent of result
-  int errorExpo    = getExpo10(f);
-  int resultDigits = resultExpo - errorExpo;
-  int yDigits      = getDecimalDigitCount(y.m_first->n);
+  BRExpoType resultExpo   = getExpo10(x) - getExpo10(y); // Expected exponent of result
+  BRExpoType errorExpo    = getExpo10(f);
+  intptr_t   resultDigits = resultExpo - errorExpo;
+  int        yDigits      = getDecimalDigitCount(y.m_first->n);
   double estimate  = (1.51e-7*resultDigits - 6.38e-6 + ((-2.08e-7*yDigits + 3.47e-6)*yDigits));
   return max(0,estimate);
 }
 
 bool BigReal::chooseQuotNewton(const BigReal &x, const BigReal &y, const BigReal &f) { // static
-  int resultExpo = getExpo10(x) - getExpo10(y); // Expected exponent of result
-  int errorExpo  = getExpo10(f);
-  double resultDigits = resultExpo - errorExpo;
+  BRExpoType resultExpo   = getExpo10(x) - getExpo10(y); // Expected exponent of result
+  BRExpoType errorExpo    = getExpo10(f);
+  double     resultDigits = (double)(resultExpo - errorExpo);
   if(resultDigits <= 0) {
     return false;
   }
@@ -78,4 +78,3 @@ bool BigReal::chooseQuotNewton(const BigReal &x, const BigReal &y, const BigReal
 
   return newtonTime < linearTime;
 }
-

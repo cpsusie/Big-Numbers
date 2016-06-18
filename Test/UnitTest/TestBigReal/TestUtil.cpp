@@ -41,7 +41,7 @@ Array<BigReal> generateTestData(const BigReal &from, const BigReal &to, bool exp
   return exponentialStep ? generateTestDataExponentialStep(result, from,to,count) : generateTestDataLinearStep(result, from,to,count);
 }
 
-float getRelativeError32(float x, DigitPool *pool, int *length) {
+float getRelativeError32(float x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
   if(length) *length = n.getLength();
@@ -49,7 +49,7 @@ float getRelativeError32(float x, DigitPool *pool, int *length) {
   return fabs((f32-x)/x);
 }
 
-double getRelativeError64(double x, DigitPool *pool, int *length) {
+double getRelativeError64(double x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
   if(length)  *length = n.getLength();
@@ -57,7 +57,7 @@ double getRelativeError64(double x, DigitPool *pool, int *length) {
   return fabs((d64-x)/x);
 }
 
-double getRelativeError80(const Double80 &x, DigitPool *pool, int *length) {
+double getRelativeError80(const Double80 &x, DigitPool *pool, size_t *length) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
   if(length)    *length = n.getLength();

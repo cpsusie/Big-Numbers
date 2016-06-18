@@ -78,7 +78,7 @@ void BigRealThreadPool::releaseMTThreadArray(MThreadArray &threads) { // static
 
       instance.m_MTThreadPool.releaseResource(thread);
     }
-    instance.m_activeThreads -= threads.size();
+    instance.m_activeThreads -= (int)threads.size();
     threads.clear();
   }
   instance.m_gate.signal();

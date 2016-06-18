@@ -29,10 +29,18 @@ void BigReal::formatFixed(String &result, streamsize precision, long flags, bool
   if(d < 0) { // first handle integerpart
     result += _T("0");
   } else {
+#ifdef IS32BIT
     result += format(_T("%lu"), digit->n);
+#else
+    result += format(_T("%llu"), digit->n);
+#endif
     d -= BigReal::getDecimalDigitCount(digit->n);
     for(digit = digit->next; digit != NULL && (d >= 0); d -= LOG10_BIGREALBASE, digit = digit->next) {
+#ifdef IS32BIT
       result += format(_T("%0*.*lu"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n);
+#else
+      result += format(_T("%0*.*llu"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n);
+#endif
     }
     result += spaceString(d+1,'0');
     d = -1;
@@ -492,7 +500,7 @@ String BigReal::toString() const {
   return ::toString(*this);
 }
 
-String toString(const BigReal &n, int precision, int width, int flags) {
+String toString(const BigReal &n, streamsize precision, streamsize width, int flags) {
   BigRealStream buf(precision,width,flags);
   buf << n;
   return buf;

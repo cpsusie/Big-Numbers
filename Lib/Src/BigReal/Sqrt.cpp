@@ -36,7 +36,7 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
     throwInvalidToleranceException(method);
   }
 
-  int m = BigReal::getExpo10(x);
+  BRExpoType m = BigReal::getExpo10(x);
   if(m > 0) {
     m /= 2;
   } else {
@@ -48,8 +48,8 @@ BigReal sqrt(const BigReal &x, const BigReal &f) {
 
   BigReal g = PAPCquot(<,PAPCprod(<,SQRTC.c2,f,pool),y,pool);
 
-  int k = BigReal::getExpo10(g);
-  int a[100];
+  BRExpoType k = BigReal::getExpo10(g);
+  BRExpoType a[100];
   int n = 0;
   while(k < -1) {
     k /= 2;

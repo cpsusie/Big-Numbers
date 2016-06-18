@@ -34,7 +34,7 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
     BigReal::s_splitLength = splitLength;
   }
 
-  _tprintf(_T("measureProduct:splitLength:%d\n"), BigReal::s_splitLength);
+  _tprintf(_T("measureProduct:splitLength:%d\n"), (int)BigReal::s_splitLength);
 
   const String dir                   = format(_T("prod%s"),Date().toString("yyyyMMdd").cstr());
   const String splitProductFileName  = format(_T("%s\\splitProduct%d.dat")      , dir.cstr(), BigReal::s_splitLength);
@@ -123,10 +123,11 @@ void BigRealTestClass::measureSplitLength() {
         MeasureBinaryOperator mProd(PROD,x,y,0);
         double timeUsage = measureTime(mProd, MEASURE_REALTIME);
 
-        _tprintf(_T("BigRealLength:(%4d,%4d) splitLength:%3d time:%20.3le sec.\n"), xLength, yLength, BigReal::s_splitLength, timeUsage);
+        _tprintf(_T("BigRealLength:(%4d,%4d) splitLength:%3d time:%20.3le sec.\n")
+                ,xLength, yLength, (int)BigReal::s_splitLength, timeUsage);
         fflush(stdout);
 
-        _ftprintf(dataFile,_T("%d %.3le\n"), BigReal::s_splitLength, timeUsage);
+        _ftprintf(dataFile,_T("%d %.3le\n"), (int)BigReal::s_splitLength, timeUsage);
       }
       fclose(dataFile);
     }
@@ -171,13 +172,16 @@ void BigRealTestClass::measureQuot() {
 
       yArray.add(y);
 
-      const int expo10x0 = BigReal::getExpo10(xArray[0]);
-      const int expo10y0 = BigReal::getExpo10(yArray[0]);
+      const BRExpoType expo10x0 = BigReal::getExpo10(xArray[0]);
+      const BRExpoType expo10y0 = BigReal::getExpo10(yArray[0]);
 
       for(size_t i = 1; i < xArray.size(); i++) {
-        const int expo10xi = BigReal::getExpo10(xArray[i]);
+        const BRExpoType expo10xi = BigReal::getExpo10(xArray[i]);
         if(expo10xi != expo10x0) {
-          throwException(_T("expo10(x[%d]=%s)=%d != expo10(x[0]=%s)=%d\n"),i,xArray[i].toString().cstr(),expo10xi,xArray[0].toString().cstr(),expo10x0);
+          throwException(_T("expo10(x[%d]=%s)=%s != expo10(x[0]=%s)=%s\n")
+                        ,(int)i
+                        ,xArray[i].toString().cstr(),format1000(expo10xi).cstr()
+                        ,xArray[0].toString().cstr(),format1000(expo10x0).cstr());
         }
       }
 
@@ -193,9 +197,9 @@ void BigRealTestClass::measureQuot() {
       ta.add(lnt);
       ta.sort(timeUsageMethodCmp);
 
-      const int expectedResultExpo = expo10x0 - expo10y0; // Expected exponent of result
-      const int errorExpo          = BigReal::getExpo10(f);
-      const int resultDigits       = expectedResultExpo - errorExpo;
+      const BRExpoType expectedResultExpo = expo10x0 - expo10y0; // Expected exponent of result
+      const BRExpoType errorExpo          = BigReal::getExpo10(f);
+      const BRExpoType resultDigits       = expectedResultExpo - errorExpo;
 
       double linear32TimeExpected = resultDigits * y.getLength() / 1.6e7;
       double newtonTimeExpected   = ::pow((double)resultDigits,1.07)/5e6;
@@ -593,7 +597,7 @@ void BigRealTestClass::testTruncRound() {
           x = e(BigReal::random(length, &rnd, pool), expo10);
         } while(x.isZero());
 
-        const int decDigits = BigReal::getExpo10(x) + 1;
+        const BRExpoType decDigits = BigReal::getExpo10(x) + 1;
 
         BigReal x1(x);
         BigReal X1(pool);
@@ -685,7 +689,7 @@ void BigRealTestClass::testCopyrTrunc() {
           x = e(BigReal::random(length, &rnd, pool), expo10);
         } while(x.isZero());
 
-        const int decDigits = BigReal::getExpo10(x) + 1;
+        const BRExpoType decDigits = BigReal::getExpo10(x) + 1;
 
         FullFormatBigReal x1(x);
         FullFormatBigReal x2(BigReal("1230139182731039182371230912837", pool), pool);

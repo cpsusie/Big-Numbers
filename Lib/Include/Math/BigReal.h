@@ -449,7 +449,7 @@ private:
   void    addFPUReg0();
   void    addSubProduct(unsigned __int64 n);
 
-#elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
+#elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_REG64) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
 
   inline Digit *fastAppendDigit(Digit *last) { // Assume last != NULL. new digit->n and ..->next are not initialized
     Digit *p = last->next = newDigit();        // Should only be called from shortProductNoZeroCheck. m_last will
@@ -833,7 +833,7 @@ public:
   static bool enableDebugString(bool enabled);                                         // return old value
   static bool isDebugStringEnabled();
 
-  static size_t getMaxSplitLength();
+  static unsigned int getMaxSplitLength();
 
   static void resumeCalculation() {    // Call this when terminateCalculation has been called and you want to start a new calculation
     s_continueCalculation = true;
@@ -982,7 +982,7 @@ class BigRealStream : public StrStream { // Don't derive from standardclass strs
 private:
   TCHAR m_spaceChar;
 public:
-  BigRealStream(intptr_t precision = 6, intptr_t width = 0, int flags = 0) : StrStream(precision, width, flags) {
+  BigRealStream(streamsize precision = 6, streamsize width = 0, int flags = 0) : StrStream(precision, width, flags) {
     m_spaceChar = 0;
   }
 
@@ -1162,7 +1162,7 @@ tostream     &operator<<(tostream     &out, const FullFormatBigReal &x);
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
 
-String  toString(const BigReal &n, int precision=20, int width=0, int flags=0);
+String  toString(const BigReal &n, streamsize precision=20, streamsize width=0, int flags=0);
 BigReal inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format,...);
 BigInt  inputBigInt( DigitPool &digitPool, _In_z_ _Printf_format_string_  const TCHAR *format,...);
 
@@ -1424,7 +1424,7 @@ private:
   ResourcePool<MTDigitPoolType>         m_digitPool;
   mutable Semaphore                     m_gate;
   int                                   m_processorCount;
-  intptr_t                              m_activeThreads, m_maxActiveThreads;
+  int                                   m_activeThreads, m_maxActiveThreads;
   static BigRealThreadPool              s_instance;
 
   BigRealThreadPool();
@@ -1442,7 +1442,7 @@ public:
                                                         // the rest of the jobs will be terminated and an exception with the same
                                                         // message will be thrown to the caller
 
-  static inline intptr_t getMaxActiveThreads() {
+  static inline int getMaxActiveThreads() {
     return getInstance().m_maxActiveThreads;
   }
 

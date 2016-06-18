@@ -7,9 +7,9 @@ static const int  biasCount   = ARRAYSIZE(legalBias);
 void testAPCSum(TestStatistic &stat) {
   DigitPool          *pool           = stat.getDigitPool();
   const unsigned int  totalTestCount = (unsigned int)(((double)biasCount * sqr(MAXSCALE - MINSCALE) * (MAXLENGTH-1) * 10) / sqr(SCALESTEP));
-  const BigReal        delta          = e(pool->get1(), -APC_DIGITS, pool);
-  int                 maxLength      = 0;
-  int                 sumLength      = 0;
+  const BigReal       delta          = e(pool->get1(), -APC_DIGITS, pool);
+  size_t              maxLength      = 0;
+  size_t              sumLength      = 0;
 
   stat.setTotalTestCount(totalTestCount);
 
@@ -27,13 +27,13 @@ void testAPCSum(TestStatistic &stat) {
                                    ,bias,length,xScale,yScale);
             }
 
-            const BigReal tolerance   = delta * Max(x, y);
-            const BigReal exactResult = x + y;
-            const BigReal APCResult   = BigReal::apcSum(bias, x, y, pool);
-            const BigReal error       = fabs(APCResult - exactResult);
-            const int    d           = compare(APCResult, exactResult);
-            bool         ok;
-            const int    len         = APCResult.getLength();
+            const BigReal    tolerance   = delta * Max(x, y);
+            const BigReal    exactResult = x + y;
+            const BigReal    APCResult   = BigReal::apcSum(bias, x, y, pool);
+            const BigReal    error       = fabs(APCResult - exactResult);
+            const int        d           = compare(APCResult, exactResult);
+            bool             ok;
+            const size_t     len         = APCResult.getLength();
             sumLength += len;
             if(len > maxLength) maxLength = len;
             switch(bias) {
@@ -106,8 +106,8 @@ static bool checkBiasedExpr(const BigReal &APCresult, const BigReal &x0, const c
 void testAPCProd(TestStatistic &stat) {
   DigitPool          *pool           = stat.getDigitPool();
   const unsigned int  totalTestCount = (unsigned int)(((double)biasCount * sqr(MAXSCALE - MINSCALE) * (MAXLENGTH-1) * 10) / sqr(SCALESTEP));
-  int                 maxLength      = 0;
-  int                 sumLength      = 0;
+  size_t              maxLength      = 0;
+  size_t              sumLength      = 0;
 
   stat.setTotalTestCount(totalTestCount);
 
@@ -127,7 +127,7 @@ void testAPCProd(TestStatistic &stat) {
 
             const BigReal exactResult = x * y;
             const BigReal APCResult   = BigReal::apcProd(bias, x, y,pool);
-            const int    len         = APCResult.getLength();
+            const size_t  len         = APCResult.getLength();
             sumLength += len;
             if(len > maxLength) maxLength = len;
             BigReal       quotient(pool);
@@ -162,14 +162,14 @@ const BigReal APCResult1   = BigReal::apcProd(bias, x, y,pool);
       }
     }
   }
-  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), maxLength);
+  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), (int)maxLength);
 }
 
 void testAPCQuot(TestStatistic &stat) {
   DigitPool          *pool           = stat.getDigitPool();
   const unsigned int  totalTestCount = (unsigned int)(((double)biasCount * sqr(MAXSCALE - MINSCALE) * MAXLENGTH * 10) / sqr(SCALESTEP));
-  int                 maxLength      = 0;
-  int                 sumLength      = 0;
+  size_t              maxLength      = 0;
+  size_t              sumLength      = 0;
 
   stat.setTotalTestCount(totalTestCount);
 
@@ -189,7 +189,7 @@ void testAPCQuot(TestStatistic &stat) {
 
             const BigReal exactResult = rQuot(x, y, 20);
             const BigReal APCResult   = BigReal::apcQuot(bias, x, y,pool);
-            const int    len         = APCResult.getLength();
+            const size_t  len         = APCResult.getLength();
             sumLength += len;
             if(len > maxLength) maxLength = len;
             BigReal       quotient(pool);
@@ -224,7 +224,7 @@ const BigReal APCResult1   = BigReal::apcQuot(bias, x, y,pool);
       }
     }
   }
-  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), maxLength);
+  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), (int)maxLength);
 }
 
 void testAPCPow(TestStatistic &stat) {
@@ -233,8 +233,8 @@ void testAPCPow(TestStatistic &stat) {
   const BigInt        maxY(  50, pool);
   const int           lengthStep     = 5;
   const unsigned int  totalTestCount = (unsigned int)(biasCount * ceil((double)(MAXSCALE - MINSCALE)/SCALESTEP) * ceil((double)(MAXLENGTH-4)/lengthStep) * getInt(maxY-minY));
-  int                 maxLength      = 0;
-  int                 sumLength      = 0;
+  size_t              maxLength      = 0;
+  size_t              sumLength      = 0;
 
   stat.setTotalTestCount(totalTestCount);
 
@@ -252,7 +252,7 @@ void testAPCPow(TestStatistic &stat) {
           
           const BigReal exactResult = rPow(x, y, 20);
           const BigReal APCResult   = BigReal::apcPow(bias, x, y, pool);
-          const int    len         = APCResult.getLength();
+          const size_t  len         = APCResult.getLength();
           sumLength += len;
           if(len > maxLength) maxLength = len;
           BigReal       quotient(pool);
@@ -283,5 +283,5 @@ void testAPCPow(TestStatistic &stat) {
       }
     }
   }
-  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), maxLength);
+  stat.addEndMessage(_T("avgLen:%5.3lf maxLen:%3d"), (double)sumLength / stat.getTestCount(), (int)maxLength);
 }

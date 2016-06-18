@@ -7,7 +7,7 @@ public:
   double         m_maxError;
   int            m_conversionCount;
   int            m_errorCount;
-  int            m_sumLength, m_maxLength;
+  size_t         m_sumLength, m_maxLength;
   ConversionTest(TestStatistic &stat);
   ~ConversionTest();
   void inline test(double error) {
@@ -17,7 +17,7 @@ public:
       if(error > m_maxError) m_maxError = error;
     }
   }
-  void inline addLength(int length) {
+  void inline addLength(size_t length) {
     m_sumLength += length;
     if(length > m_maxLength) m_maxLength = length ;
   }
@@ -36,8 +36,13 @@ ConversionTest::~ConversionTest() {
   m_stat.setEndMessage(_T("%s"), toString().cstr());
 }
 
+#ifdef IS32BIT
+#define formStr _T("errors/conv:%4d/%-8d Max rel.error:%le, avgLen:%6.4lf maxLen:%lu")
+#else
+#define formStr _T("errors/conv:%4d/%-8d Max rel.error:%le, avgLen:%6.4lf maxLen:%llu")
+#endif
 String ConversionTest::toString() const {
-  return format(_T("errors/conv:%4d/%-8d Max rel.error:%le, avgLen:%6.4lf maxLen:%d")
+  return format(formStr
                ,m_errorCount
                ,m_conversionCount
                ,m_maxError
@@ -51,7 +56,7 @@ static void testFloatConversion(TestStatistic &stat, int sign) {
   const float    loopStart = sign * FLT_MIN;
   const float    loopEnd   = sign * FLT_MAX / 2;
   const float    stepFactor = 1 + 0.0012345f / 2;
-  int            length;
+  size_t         length;
   ConversionTest convTest(stat);
   stat.setTotalTestCount(284190);
 
@@ -75,7 +80,7 @@ static void testDoubleConversion(TestStatistic &stat, int sign) {
   const double   loopStart  = sign * DBL_MIN;
   const double   loopEnd    = sign * DBL_MAX / 2;
   const double   stepFactor = 1 + 0.00456789 / 2;
-  int            length;
+  size_t         length;
   ConversionTest convTest(stat);
   stat.setTotalTestCount(621339);
 
@@ -99,7 +104,7 @@ static void testDouble80Conversion(TestStatistic &stat, int sign) {
   const Double80 loopStart  = sign * Double80::DBL80_MIN;
   const Double80 loopEnd    = sign * Double80::DBL80_MAX / 2;
   const Double80 stepFactor = 1 + 0.012345/4;
-  int            length;
+  size_t         length;
   ConversionTest convTest(stat);
   stat.setTotalTestCount(7370108);
 

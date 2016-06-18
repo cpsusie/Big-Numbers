@@ -495,7 +495,7 @@ void testGetFirst(TestStatistic &stat) {
         }
 
         String result = format(_T("%0*lu"),k,X.getFirst32(k));
-        const int len     = strlen(str);
+        const int len     = (int)strlen(str);
         const int missing = k - len;
         String expected = substr(str + spaceString(missing,_T('0')),0,k);
         if(result != expected) {

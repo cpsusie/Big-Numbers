@@ -11,6 +11,9 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{01d294f9-a864-4d68-8672-4ced1f69bb13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ASM Files">
+      <UniqueIdentifier>{34835de5-9711-4ef8-9a05-3227397f4c6a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BigReal.cpp">
@@ -181,6 +184,9 @@
     <ClCompile Include="Tan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShortProductOptReg64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -198,5 +204,10 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="BigRealShortProductx64.asm">
+      <Filter>Source Files\ASM Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
