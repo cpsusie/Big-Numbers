@@ -8,7 +8,7 @@ unsigned int randInt() {
 }
 
 unsigned int randInt(unsigned int n) {
-  return randInt() % n;
+  return _standardRandomGenerator.nextInt(n);
 }
 
 int randInt(int from, int to) {
@@ -20,5 +20,5 @@ __int64 randInt64() {
 }
 
 __int64 randInt64(unsigned __int64 n) {
-  return randInt64() % n;
+  return _standardRandomGenerator.nextInt64(n);
 }

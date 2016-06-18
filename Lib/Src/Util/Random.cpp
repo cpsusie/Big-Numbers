@@ -60,7 +60,11 @@ int Random::nextInt(int n) {
 }
 
 __int64 Random::nextInt64() {
-  return ((__int64)(next(32)) << 32) + next(32);
+  return ((__int64)(next(32)) << 31) + next(32);
+}
+
+__int64 Random::nextInt64(__int64 n) {
+  return nextInt64() % n;
 }
 
 float Random::nextFloat() {
