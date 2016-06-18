@@ -116,12 +116,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTDebug64</OutDir>
+    <OutDir>..\..\MTDebug64\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTRelease64</OutDir>
+    <OutDir>..\..\MTRelease64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
