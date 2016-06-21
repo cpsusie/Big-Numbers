@@ -302,6 +302,9 @@
     <CustomBuild Include="UInt128x64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
+    <CustomBuild Include="Doublex64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\Expression\Expression.h">
@@ -427,9 +430,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">
-      <Filter>Source Files\Asm Files</Filter>
-    </None>
-    <None Include="Doublex64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </None>
   </ItemGroup>

@@ -310,7 +310,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen  -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
@@ -318,6 +318,14 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating Expression lexer </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating Expression lexer </Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="Expression\Expression.y">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -333,11 +341,11 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -l -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsegen -l -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
