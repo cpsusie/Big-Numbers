@@ -1,5 +1,11 @@
 #include "pch.h"
+
+#ifdef IS64BIT
+
 #include <Math/Int128.h>
+
+const _int128 _I128_MIN(0x0000000000000000, 0x8000000000000000);
+const _int128 _I128_MAX(0xffffffffffffffff, 0x7fffffffffffffff);
 
 static const _int128 _0(0);
 static const _int128 _10(10);
@@ -11,11 +17,11 @@ char *_i128toa(_int128 value, char *str, int radix) {
   char *s = str;
   const bool negative = value < _0;
   if (negative && (radix == 10)) {
-    value = -value;
-    while (value != _0) {
-      const unsigned int c = value % _10;
+    _uint128 v = value;
+    while (v != _0) {
+      const unsigned int c = v % _10;
       *(s++) = radixLetter(c);
-      value /= _10;
+      v /= _10;
     }
     *(s++) = '-';
     *s = 0;
@@ -142,3 +148,5 @@ _int128::_int128(const char *str) {
     }
   }
 }
+
+#endif

@@ -1,7 +1,8 @@
 #include "pch.h"
-#include <Math/Int128.h>
 
 #ifdef IS64BIT
+
+#include <Math/Int128.h>
 
 unsigned int convertNumberChar(char digit) {
   switch(digit) {

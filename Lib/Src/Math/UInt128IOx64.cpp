@@ -1,7 +1,10 @@
 #include "pch.h"
-#include <Math/Int128.h>
 
 #ifdef IS64BIT
+
+#include <Math/Int128.h>
+
+const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
 
 static const _uint128 _0(0);
 static const _uint128 _10(10);
@@ -26,7 +29,7 @@ char*_ui128toa(_uint128 value, char *str, int radix) {
   }
 }
 
-wchar_t *_ui64tow(_uint128 value, wchar_t *str, int radix) {
+wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
   assert(radix >= 2 && radix <= 36);
   wchar_t *s = str;
   const _uint128 r(radix);
@@ -45,7 +48,7 @@ wchar_t *_ui64tow(_uint128 value, wchar_t *str, int radix) {
 }
 
 const char *_uint128::parseDec(const char *str) {
-  *this = 0;
+  *this = _0;
   while (isdigit(*str)) {
     const unsigned int d = *(str++) - '0';
     *this *= _10;
