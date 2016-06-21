@@ -57,7 +57,7 @@ public:
 static const CosConstants COSC;
 
 BigReal cos(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(cos);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

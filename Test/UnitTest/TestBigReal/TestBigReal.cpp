@@ -356,6 +356,8 @@ void testBigReal(int threadCount) {
   testGetExpo10();
   testMultPow10();
 
+  testPi();
+
 //  testGetExpo2();
 
   testAPCsum();

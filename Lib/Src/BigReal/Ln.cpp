@@ -37,7 +37,7 @@ static const Ln10Constants LN10C;
 #define _1 pool->get1()
 
 BigReal BigReal::ln10(const BigReal &f) { // static
-  DEFINEMETHODNAME(ln10);
+  DEFINEMETHODNAME;
   ln_gate.wait();
 
   try {
@@ -170,7 +170,7 @@ public:
 static LnConstants LNC;
 
 BigReal ln(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(ln);
+  DEFINEMETHODNAME;
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }
@@ -283,7 +283,7 @@ public:
 static const Ln1Constants LN1C;
 
 BigReal ln1(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(ln1);
+  DEFINEMETHODNAME;
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }
@@ -388,7 +388,7 @@ public:
 static const LogConstants LOGC;
 
 BigReal log(const BigReal &base, const BigReal &x, const BigReal &f) { // log(x) base base
-  DEFINEMETHODNAME(log);
+  DEFINEMETHODNAME;
 
   DigitPool *pool = x.getDigitPool();
 
@@ -447,7 +447,7 @@ public:
 static const Log10Constants L10C;
 
 BigReal log10(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(log10);
+  DEFINEMETHODNAME;
   if(!x.isPositive()) {
     throwBigRealInvalidArgumentException(method, _T("x<=0"));
   }

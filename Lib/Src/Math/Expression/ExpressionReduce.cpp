@@ -83,7 +83,7 @@ void Expression::reduce() {
 }
 
 void Expression::iterateTransformation(ExpressionTransformer &transformer) {
-  DEFINEMETHODNAME(iterateTransformation);
+  DEFINEMETHODNAME;
 
   const int                  maxIterations = 30;
   const SNode                oldRoot       = getRoot();
@@ -134,7 +134,7 @@ void Expression::iterateTransformation(ExpressionTransformer &transformer) {
 }
 
 SNode Expression::reduce(const SNode n) const {
-  DEFINEMETHODNAME(reduce);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SStmtList stmtList(n);
@@ -160,7 +160,7 @@ SNode Expression::reduce(const SNode n) const {
 }
 
 SNode Expression::reduceBoolExp(const SNode n) const {
-  DEFINEMETHODNAME(reduceBoolExp);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
   SNode result;
 
@@ -186,7 +186,7 @@ SNode Expression::reduceBoolExp(const SNode n) const {
 }
 
 SNode Expression::reduceRealExp(const SNode n) const {
-  DEFINEMETHODNAME(reduceRealExp);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   switch(n.getSymbol()) {
@@ -283,7 +283,7 @@ static ExpressionNodeSelector *getLogarithmicFunctionSelector() {
 
 // n.symbol == SUM
 SNode Expression::reduceSum(const SNode n) const {
-  DEFINEMETHODNAME(reduceSum);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   bool anyChanges = false;
@@ -439,7 +439,7 @@ SNode Expression::reduceSum(const SNode n) const {
  * return true if n1 = cos^2(expression) and n2 = sin^2(expression) or vice versa
  */
 bool Expression::canUseIdiotRule(const SNode n1, const SNode n2) const {
-  DEFINEMETHODNAME(canUseIdiotRule);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(n1, n2);
 
   if(n1.getSymbol() == POW && n2.getSymbol() == POW) {
@@ -466,7 +466,7 @@ static ExpressionInputSymbol getDualTrigonometricFunction(ExpressionInputSymbol 
 }
 
 static bool isSinOrCos(const SNode n) {
-  DEFINEMETHODNAME(isSinOrCos);
+  DEFINEMETHODNAME;
 
   switch(n.getSymbol()) {
   case SIN:
@@ -478,7 +478,7 @@ static bool isSinOrCos(const SNode n) {
 }
 
 bool Expression::isSquareOfSinOrCos(const SNode n) const {
-  DEFINEMETHODNAME(isSquareOfSinOrCos);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   switch(n.getSymbol()) {
@@ -490,7 +490,7 @@ bool Expression::isSquareOfSinOrCos(const SNode n) const {
 }
 
 bool Expression::canUseReverseIdiotRule(const SumElement *e1, const SumElement *e2, SumElement* &result) const {
-  DEFINEMETHODNAME(canUseReverseIdiotRule);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(*e1, *e2);
 
   for(int i = 0; i < 2; i++) {
@@ -510,7 +510,7 @@ bool Expression::canUseReverseIdiotRule(const SumElement *e1, const SumElement *
 }
 
 bool Expression::sameLogarithm(const SNode n1, const SNode n2) const {
-  DEFINEMETHODNAME(sameLogarithm);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(n1, n2);
 
   RETURNBOOL( ((n1.getSymbol() == LN) && (n2.getSymbol() == LN)) || ((n2.getSymbol() == LOG10) && (n2.getSymbol() == LOG10)) );
@@ -525,7 +525,7 @@ bool Expression::sameLogarithm(const SNode n1, const SNode n2) const {
  *         log(b/a) = -log(a) + log(b) where log = LN or LOG10
  */
 const SumElement *Expression::mergeLogarithms(const SumElement &e1, const SumElement &e2) const {
-  DEFINEMETHODNAME(mergeLogarithms);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(e1, e2);
 
   const SNode arg1        = e1.getNode()->left();
@@ -551,7 +551,7 @@ const SumElement *Expression::mergeLogarithms(const SumElement &e1, const SumEle
  * return NULL If no common factors found
  */
 const SumElement *Expression::getCommonFactor(const SumElement &e1, const SumElement &e2) const {
-  DEFINEMETHODNAME(getCommonFactor);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(e1, e2);
 
   FactorArray fl1, fl2;
@@ -651,7 +651,7 @@ StartSearch:
 }
 
 SNode Expression::changeFirstNegativeFactor(const SNode n) const {
-  DEFINEMETHODNAME(changeFirstNegativeFactor);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
   switch(n.getSymbol()) {
   case NUMBER :
@@ -691,7 +691,7 @@ SNode Expression::addentsToNode(const AddentArray &a) const {
 //------------------------------------ reduceProduct ----------------------------------------
 
 SNode Expression::reduceProduct(const SNode n) const {
-  DEFINEMETHODNAME(reduceProduct);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   FactorArray unreducedFactors, nonConstantFactors, constantFactors;
@@ -778,7 +778,7 @@ FactorArray &Expression::getFactors(FactorArray &result, const SNode n) const {
 }
 
 FactorArray &Expression::getFactors(FactorArray &result, const SNode n, const SNode exponent) const {
-  DEFINEMETHODNAME(getFactors);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(n, exponent);
 
   switch(n.getSymbol()) {
@@ -816,7 +816,7 @@ FactorArray &Expression::getFactors(FactorArray &result, const SNode n, const SN
  * return n split into as many separate factors as possible
  */
 FactorArray &Expression::getFactorsInPower(FactorArray &result, const SNode n, const SNode exponent) const {
-  DEFINEMETHODNAME(getFactorsInPower);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(n, exponent);
   FactorArray tmp1, tmp2;
   const SNode &base = n.left();
@@ -834,7 +834,7 @@ FactorArray &Expression::getFactorsInPower(FactorArray &result, const SNode n, c
 
 // n.symbol = POW
 SNode Expression::reducePower(const SNode n) const {
-  DEFINEMETHODNAME(reducePower);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode base  = n.left();
@@ -863,7 +863,7 @@ SNode Expression::reducePower(const SNode n) const {
  * return list of expressionFactors, result[i] = fetchFactorNode(factors[i].base,factors[i].exponent * factor)
  */
 FactorArray &Expression::multiplyExponents(FactorArray &result, const FactorArray &factors, const SNode exponent) const {
-  DEFINEMETHODNAME(multiplyExponents);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(factors, exponent);
 
   if(exponent.isOne()) {
@@ -900,7 +900,7 @@ bool Expression::rationalExponentsMultiply(const Rational &r1, const Rational &r
 }
 
 const ExpressionFactor *Expression::reduceTrigonometricFactors(const ExpressionFactor &f1, const ExpressionFactor &f2) const {
-  DEFINEMETHODNAME(reduceTrigonometricFactors);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(f1,f2);
 
   if(!f1.base()->isTrigonomtricFunction() || !f2.base()->isTrigonomtricFunction()) {
@@ -941,7 +941,7 @@ const ExpressionFactor *Expression::reduceTrigonometricFactors(const ExpressionF
 }
 
 SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
-  DEFINEMETHODNAME(reduceConstantFactors);
+  DEFINEMETHODNAME;
   ENTERMETHOD1(factorArray);
 
   if(factorArray.size() == 0) {
@@ -1053,7 +1053,7 @@ SNode Expression::reduceConstantFactors(const FactorArray &factorArray) const {
 }
 
 SNode Expression::reduceRationalPower(const Rational &base, const Rational &exponent) const {
-  DEFINEMETHODNAME(reduceRationalPower);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(base, exponent);
 
   if(exponent.isInteger()) {
@@ -1113,7 +1113,7 @@ SNode Expression::reduceRationalPower(const Rational &base, const Rational &expo
 }
 
 bool Expression::reducesToRationalConstant(const SNode n, Rational *r) const {
-  DEFINEMETHODNAME(reducesToRationalConstant);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   if(!n.isConstant()) {
@@ -1125,7 +1125,7 @@ bool Expression::reducesToRationalConstant(const SNode n, Rational *r) const {
 }
 
 bool Expression::reducesToRational(const SNode n, Rational *r) const {
-  DEFINEMETHODNAME(reducesToRational);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   switch(n.getSymbol()) {
@@ -1200,7 +1200,7 @@ bool Expression::reducesToRational(const SNode n, Rational *r) const {
 }
 
 SNode Expression::reduceModulus(const SNode n) const {
-  DEFINEMETHODNAME(reduceModulus);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode l  = n.left();
@@ -1220,7 +1220,7 @@ SNode Expression::reduceModulus(const SNode n) const {
 /* ------------------------------------------- multiplyParentheses ----------------------------------------- */
 
 SNode Expression::multiplyParentheses(const SNode n) const {
-  DEFINEMETHODNAME(multiplyParentheses);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   switch(n.getSymbol()) {
@@ -1234,7 +1234,7 @@ SNode Expression::multiplyParentheses(const SNode n) const {
 }
 
 SNode Expression::multiplyParenthesesInSum(const SNode n) const {
-  DEFINEMETHODNAME(multiplyParenthesesInSum);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const AddentArray &a = n.getAddentArray();
@@ -1248,7 +1248,7 @@ SNode Expression::multiplyParenthesesInSum(const SNode n) const {
 }
 
 SNode Expression::multiplyParenthesesInProduct(const SNode n) const {
-  DEFINEMETHODNAME(multiplyParenthesesInProduct);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const FactorArray &a = n.getFactorArray();
@@ -1299,7 +1299,7 @@ SNode Expression::multiplyParenthesesInProduct(const SNode n) const {
 }
 
 SNode Expression::multiplyParenthesesInPoly(const SNode n) const {
-  DEFINEMETHODNAME(multiplyParenthesesInPoly);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
   const ExpressionNodeArray &coef    = n.getCoefficientArray();
   SNode                      newArg  = multiplyParentheses(n.getArgument());
@@ -1313,7 +1313,7 @@ SNode Expression::multiplyParenthesesInPoly(const SNode n) const {
 }
 
 SNode Expression::multiply(const ExpressionFactor *a, const ExpressionNodeSum *s) const {
-  DEFINEMETHODNAME(multiply);
+  DEFINEMETHODNAME;
   ENTERMETHOD2(*a,*s);
 
   if(a->base()->getSymbol() == SUM && a->exponent()->isOne()) {
@@ -1330,7 +1330,7 @@ SNode Expression::multiply(const ExpressionFactor *a, const ExpressionNodeSum *s
 }
 
 SNode Expression::multiplyTreeNode(const SNode n) const {
-  DEFINEMETHODNAME(multiplyTreeNode);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const ExpressionNodeArray &a = n.getChildArray();
@@ -1347,7 +1347,7 @@ SNode Expression::multiplyTreeNode(const SNode n) const {
  * return if argument is an integer power p of e then p else LN(reduce(leftChild))
  */
 SNode Expression::reduceLn(const SNode n) const {
-  DEFINEMETHODNAME(reduceLn);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode arg  = n.left();
@@ -1363,7 +1363,7 @@ SNode Expression::reduceLn(const SNode n) const {
 }
 
 SNode Expression::getPowerOfE(const SNode n) const {
-  DEFINEMETHODNAME(getPowerOfE);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   if(n.isEulersConstant()) {
@@ -1382,7 +1382,7 @@ SNode Expression::getPowerOfE(const SNode n) const {
  * return if argument is an integer power p of 10 then p else LOG10(reduce(leftChild))
  */
 SNode Expression::reduceLog10(const SNode n) const {
-  DEFINEMETHODNAME(reduceLog10);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode arg  = n.left();
@@ -1399,7 +1399,7 @@ SNode Expression::reduceLog10(const SNode n) const {
 }
 
 SNode Expression::getPowerOf10(const SNode n) const {
-  DEFINEMETHODNAME(getPowerOf10);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   if(n.isTen()) {
@@ -1414,7 +1414,7 @@ SNode Expression::getPowerOf10(const SNode n) const {
 }
 
 SNode Expression::reduceAsymmetricFunction(const SNode n) const {
-  DEFINEMETHODNAME(reduceAsymmetricFunction);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode arg  = n.left();
@@ -1428,7 +1428,7 @@ SNode Expression::reduceAsymmetricFunction(const SNode n) const {
 }
 
 SNode Expression::reduceSymmetricFunction(const SNode n) const {
-  DEFINEMETHODNAME(reduceSymmetricFunction);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SNode arg  = n.left();
@@ -1446,7 +1446,7 @@ SNode Expression::reduceSymmetricFunction(const SNode n) const {
  * return no leading zeroes, all constant coefficients evaluated
  */
 SNode Expression::reducePolynomial(const SNode n) const {
-  DEFINEMETHODNAME(reducePolynomial);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   const SExprList coefficients(n.getCoefficientArray());
@@ -1489,7 +1489,7 @@ SNode Expression::reducePolynomial(const SNode n) const {
 }
 
 SNode Expression::reduceTreeNode(const SNode n) const {
-  DEFINEMETHODNAME(reduceTreeNode);
+  DEFINEMETHODNAME;
   ENTERMETHOD();
 
   if(n.getInverseFunction() == n.left().getSymbol()) RETURNNODE( n.left().left() );

@@ -4,7 +4,7 @@
 #include <Math/Expression/ExpressionFactor.h>
 
 Real Expression::evaluateStatementListReal(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(evaluateStatementListReal);
+  DEFINEMETHODNAME;
   ExpressionNodeArray stmtList = getStatementList(n);
 
   const int stmtCount = (int)stmtList.size() - 1;
@@ -20,7 +20,7 @@ Real Expression::evaluateStatementListReal(const ExpressionNode *n) const {
 }
 
 bool Expression::evaluateStatementListBool(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(evaluateStatementListBool);
+  DEFINEMETHODNAME;
   ExpressionNodeArray stmtList = getStatementList(n);
 
   const int stmtCount = (int)stmtList.size() - 1;
@@ -36,7 +36,7 @@ bool Expression::evaluateStatementListBool(const ExpressionNode *n) const {
 }
 
 Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(evaluateRealExpr);
+  DEFINEMETHODNAME;
 
   switch(n->getSymbol()) {
   case NAME    : return n->getVariable().getValue();
@@ -211,7 +211,7 @@ void Expression::getCoefficients(CompactArray<Real> &dst, const ExpressionNodeAr
 }
 
 void Expression::doAssignment(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(doAssignment);
+  DEFINEMETHODNAME;
   switch(n->getSymbol()) {
   case ASSIGN:
 //    printf(_T("doasign:<%s> = %le\n"),n->left()->getName().cstr(),evaluateRealExpr(n->right()));
@@ -227,7 +227,7 @@ void Expression::doAssignment(const ExpressionNode *n) const {
 }
 
 bool Expression::evaluateBoolExpr(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(evaluateBoolExpr);
+  DEFINEMETHODNAME;
   switch(n->getSymbol()) {
   case TYPEBOOL: return n->getBool();
   case NOT     : return !evaluateBoolExpr(n->child(0));

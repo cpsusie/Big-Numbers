@@ -5,7 +5,7 @@
 
 // Should only be called in Canonical treeform
 bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) const {
-  DEFINEMETHODNAME(treesEqual);
+  DEFINEMETHODNAME;
 
   if(n1 == n2) {
     return true;
@@ -86,7 +86,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
 
 // Should only be called in Canonical treeform
 bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
-  DEFINEMETHODNAME(treesEqualMinus);
+  DEFINEMETHODNAME;
 
   if(n1.isSameNode(n2) || n1.isEmpty() || n2.isEmpty()) {
     return false;

@@ -18,7 +18,7 @@ BigReal oldFraction(const BigReal &x) { // sign(x) * (|x| - floor(|x|))
 }
 
 void quotRemainder(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder) {
-  DEFINEMETHODNAME(quotRemainder);
+  DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero. (%s / 0)."), x.toString().cstr());
   }

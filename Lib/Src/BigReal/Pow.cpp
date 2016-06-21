@@ -17,7 +17,7 @@ public:
 static const PowConstants POWC;
 
 BigReal pow(const BigReal &x, const BigReal &y, const BigReal &f) { // x^y
-  DEFINEMETHODNAME(pow);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

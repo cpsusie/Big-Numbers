@@ -6,12 +6,10 @@ class Semaphore {
 private:
   DECLARECLASSNAME;
   HANDLE m_sem;
-  DWORD  m_lockingThreadId;
-  size_t m_enterCount;
 public:
   // initialCount is the number of threads allowed in critical section
   // maxWait is maximal number of threads, waiting on this semaphore
-  Semaphore(int initialCount=1, int maxWait=1000000);  // initialCount = [0..1]
+  Semaphore(int initialCount=1, int maxWait=1000000);
   Semaphore(const Semaphore &src);            // not defined. Semaphore not cloneable
   Semaphore &operator=(const Semaphore &src); // do
   ~Semaphore();

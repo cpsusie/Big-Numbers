@@ -13,6 +13,7 @@ PixelAccessor::~PixelAccessor() {
 }
 
 PixelAccessor *PixelAccessor::createPixelAccessor(PixRect *pixRect, DWORD flags) {
+  DEFINEMETHODNAME;
   switch(pixRect->getPixelFormat()) {
     //  case 8 : return new BytePixelAccessor(pixRect);
     //  case 16: return new WordPixelAccessor(pixRect);
@@ -20,7 +21,7 @@ PixelAccessor *PixelAccessor::createPixelAccessor(PixRect *pixRect, DWORD flags)
   case D3DFMT_X8R8G8B8:
     return new DWordPixelAccessor(pixRect, flags);
   default:
-    throwException(_T("%s:Unknown pixel format:%d. Must be 8, 16 or 32"),_T(__FUNCTION__), pixRect->getPixelFormat());
+    throwException(_T("%s:Unknown pixel format:%d. Must be 8, 16 or 32"),method, pixRect->getPixelFormat());
     return NULL;
   }
 }

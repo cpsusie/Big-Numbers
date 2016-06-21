@@ -12,7 +12,7 @@
 //static CallCounter addSPCpp("addSubProductCpp");
 //static CallCounter addSPTotal("addSubProductTotal");
 
-// return 0 if sum of products has been added. 1 if we need to do it in C-code. if so, the sum is returned in bigsum
+// return 1 if sum of products has been added. 0 if we need to do it in C-code. if so, the sum is returned in bigsum
 extern "C" int BigRealMultiplyColumn(const Digit *yk, const Digit *xk, Digit *dst, _uint128 &bigSum);
 
 static const _uint128 BIGREALBASE128(BIGREALBASE);

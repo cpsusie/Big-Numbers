@@ -39,7 +39,7 @@ size_t ExecutableByteArray::getCapacityCeil(size_t capacity) const {
 }
 
 BYTE *ExecutableByteArray::allocateBytes(size_t size) {
-  DEFINEMETHODNAME(allocateBytes);
+  DEFINEMETHODNAME;
   void *result = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
   if (result == NULL) {
     throwMethodLastErrorOnSysCallException(s_className, method);
@@ -48,7 +48,7 @@ BYTE *ExecutableByteArray::allocateBytes(size_t size) {
 }
 
 void  ExecutableByteArray::deallocateBytes(BYTE *buffer) {
-  DEFINEMETHODNAME(deallocateBytes);
+  DEFINEMETHODNAME;
   if (!VirtualFree(buffer, 0, MEM_RELEASE)) {
     throwMethodLastErrorOnSysCallException(s_className, method);
   }

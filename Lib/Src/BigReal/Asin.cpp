@@ -39,7 +39,7 @@ public:
 static const ASinConstants ASINC;
 
 BigReal asin(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(asin);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

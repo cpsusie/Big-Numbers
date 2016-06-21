@@ -17,8 +17,9 @@ public:
 static const ACosConstants ACOSC;
 
 BigReal acos(const BigReal &x, const BigReal &f) {
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
-    throwInvalidToleranceException(_T("acos"));
+    throwInvalidToleranceException(method);
   }
 
   DigitPool *pool = x.getDigitPool();

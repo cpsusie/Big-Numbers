@@ -17,7 +17,7 @@ public:
 static const ACotConstants ACOTC;
 
 BigReal acot(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(acot);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

@@ -138,7 +138,7 @@ ByteArray &ByteArray::setData(const BYTE *data, size_t size) {
 }
 
 ByteArray &ByteArray::remove(size_t index, size_t count) {
-  DEFINEMETHODNAME(remove);
+  DEFINEMETHODNAME;
   if(count == 0) {
     return *this;
   }

@@ -38,7 +38,7 @@ static String typeNameToString(const TCHAR *typeName) {
 
 
 ByteArray &ByteArray::loadFromResource(int resId, const TCHAR *typeName) {
-  DEFINEMETHODNAME(loadFromResource);
+  DEFINEMETHODNAME;
   HRSRC hSource = FindResource(NULL, MAKEINTRESOURCE(resId), typeName);
 
   if(hSource == NULL) {

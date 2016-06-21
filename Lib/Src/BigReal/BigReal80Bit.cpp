@@ -27,8 +27,12 @@ void BigReal::init(const Double80 &x){
     if(expo2 == 0) {
       init(getSignificandDouble80(x));
     } else {
-      const BigReal significand(getSignificandDouble80(x), getDigitPool());
+      DigitPool *pool = getDigitPool();
+      const BigReal significand(getSignificandDouble80(x), pool);
+      const bool isConstPool = pool->getId() == CONST_DIGITPOOL_ID;
+      if (isConstPool) ConstDigitPool::releaseInstance(); // unlock it or we will get a deadlock
       const BigReal &p2 = pow2(expo2, CONVERSION_POW2DIGITCOUNT);
+      if (isConstPool) ConstDigitPool::requestInstance();
       shortProductNoZeroCheck(significand, p2, 5).rRound(22);
 /*
       const BigReal significand(getSignificandDouble80(x), getDigitPool());
@@ -47,7 +51,7 @@ void BigReal::init(const Double80 &x){
 }
 
 Double80 getDouble80(const BigReal &x) {
-  DEFINEMETHODNAME(getDouble80);
+  DEFINEMETHODNAME;
 
   if(x.isZero()) {
     return Double80::zero;

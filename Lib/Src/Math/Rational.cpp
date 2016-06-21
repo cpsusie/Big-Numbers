@@ -49,7 +49,7 @@ Rational::Rational(unsigned int n) : m_numerator(n), m_denominator(1) {
 // See also http://www.virtualdub.org/blog/pivot/entry.php?id=81
 // for a discussion of calculating continued fractions by convergeants.
 Rational::Rational(double d, unsigned int maxND) {
-  DEFINEMETHODNAME(Rational(double));
+  DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %le cannot be contained in a Rational with maxND=%lu");
 
   bool   positive;
@@ -104,7 +104,7 @@ Rational::Rational(double d, unsigned int maxND) {
 }
 
 Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
-  DEFINEMETHODNAME(Rational(Double80));
+  DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %s cannot be contained in a Rational with maxND=%I64u");
 
   bool   positive;
@@ -173,7 +173,7 @@ Rational::Rational(const char *s) {
 #endif
 
 void Rational::init(const String &s) {
-  DEFINEMETHODNAME(init);
+  DEFINEMETHODNAME;
   String tmp(s);
   const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
@@ -318,7 +318,7 @@ __int64 Rational::pow(__int64 n, int y) { // static assume y >= 0
 }
 
 Rational pow(const Rational &r, int e) {
-  DEFINEMETHODNAME(pow);
+  DEFINEMETHODNAME;
   if(e == 0) {
     return Rational(1);
   } else if(e < 0) {
@@ -379,7 +379,7 @@ bool Rational::operator!=(const Rational &r) const {
 }
 
 long getLong(const Rational &r) {
-  DEFINEMETHODNAME(getLong);
+  DEFINEMETHODNAME;
   const __int64 v = getInt64(r);
   if((v < _I32_MIN) || (v > _I32_MAX)) {
     throwMethodException(Rational::s_className, method, _T("Value (=%I64d) out of range. Legal range is [%d..%d]"), v, _I32_MIN, _I32_MAX);
@@ -388,7 +388,7 @@ long getLong(const Rational &r) {
 }
 
 unsigned long getUlong(const Rational &r) {
-  DEFINEMETHODNAME(getUlong);
+  DEFINEMETHODNAME;
   if(r.isNegative()) {
     throwMethodException(Rational::s_className, method, _T("Value is negative(=%s)"), r.toString().cstr());
   }
@@ -404,7 +404,7 @@ __int64 getInt64(const Rational &r) {
 }
 
 unsigned __int64 getUint64(const Rational &r) {
-  DEFINEMETHODNAME(getUint64);
+  DEFINEMETHODNAME;
   if(r.isNegative()) {
     throwMethodException(Rational::s_className, method, _T("Value is negative (=%s)"), r.toString().cstr());
   }
@@ -412,7 +412,7 @@ unsigned __int64 getUint64(const Rational &r) {
 }
 
 __int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // static
-  DEFINEMETHODNAME(safeProd);
+  DEFINEMETHODNAME;
   if(a == 0 || b == 0) return 0;
   const int sa = sign(a), sb = sign(b);
   const int expectedSign = sa * sb;
@@ -425,7 +425,7 @@ __int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // st
 }
 
 __int64 Rational::findGCD(const __int64 &a, const __int64 &b) { // static
-  DEFINEMETHODNAME(findGCD);
+  DEFINEMETHODNAME;
   if(a <= 0 || b <= 0) {
     throwMethodInvalidArgumentException(s_className, method, _T("a=%I64d, b=%I64d"), a, b);
   }

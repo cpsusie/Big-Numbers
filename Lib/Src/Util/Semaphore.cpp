@@ -4,14 +4,9 @@
 DEFINECLASSNAME(Semaphore);
 
 Semaphore::Semaphore(int initialCount, int maxWait) {
-  if (initialCount > 1) {
-    throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__), _T("initialCount=%d. Must be [0..1]"), initialCount);
-  }
   if((m_sem = CreateSemaphore(NULL,initialCount,maxWait,NULL)) == NULL) {
     throwLastErrorOnSysCallException(_T("CreateSemaphore"));
   }
-  m_lockingThreadId = -1;
-  m_enterCount      = 0;
 }
 
 Semaphore::~Semaphore() {
@@ -19,16 +14,9 @@ Semaphore::~Semaphore() {
 }
 
 bool Semaphore::wait(int milliseconds) {
-  const DWORD thrId = GetCurrentThreadId();
-  if (thrId == m_lockingThreadId) {
-    m_enterCount++;
-    return true;
-  }
   const int ret = WaitForSingleObject(m_sem, milliseconds);
   switch(ret) {
   case WAIT_OBJECT_0: 
-    assert((m_lockingThreadId == -1) && (m_enterCount == 0));
-    m_lockingThreadId = thrId;
     return true;
   case WAIT_TIMEOUT :
     return false;
@@ -41,14 +29,8 @@ bool Semaphore::wait(int milliseconds) {
 }
 
 void Semaphore::signal() {
-  if (m_enterCount > 0) {
-    m_enterCount--;
-  }
-  else {
-    m_lockingThreadId = -1;
-    if (!ReleaseSemaphore(m_sem, 1, NULL)) {
-      throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
-    }
+  if (!ReleaseSemaphore(m_sem, 1, NULL)) {
+    throwLastErrorOnSysCallException(_T("ReleaseSemaphore"));
   }
 }
 

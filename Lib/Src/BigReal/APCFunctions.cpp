@@ -3,7 +3,7 @@
 #define _1 pool->get1()
 
 BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME(apcSum);
+  DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 
   if(x.isZero()) {
@@ -18,7 +18,7 @@ BigReal BigReal::apcSum(const char bias, const BigReal &x, const BigReal &y, Dig
 }
 
 BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME(apcProd);
+  DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   if(x.isZero() || y.isZero()) {
     return pool->get0();
@@ -32,7 +32,7 @@ BigReal BigReal::apcProd(const char bias, const BigReal &x, const BigReal &y, Di
 #define MAXDIGITS_DIVISOR64 ((MAXDIGITS_INT64+1)/2)
 
 BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME(apcQuot);
+  DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
 
   if(x.isZero()) {
@@ -62,7 +62,7 @@ BigReal BigReal::apcQuot(const char bias, const BigReal &x, const BigReal &y, Di
 }
 
 BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, DigitPool *digitPool) {
-  DEFINEMETHODNAME(apcPow);
+  DEFINEMETHODNAME;
   DigitPool           *pool = digitPool ? digitPool : x.getDigitPool();
   static const BigReal &c1  = BIGREAL_HALF;
 

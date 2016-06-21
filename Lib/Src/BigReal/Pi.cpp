@@ -48,7 +48,7 @@ public:
 static const PiConstants PIC;
 
 BigReal pi(const BigReal &f, DigitPool *digitPool) {
-  DEFINEMETHODNAME(pi);
+  DEFINEMETHODNAME;
   DigitPool *pool = digitPool ? digitPool : f.getDigitPool();
   pi_gate.wait();
 

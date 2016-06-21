@@ -121,7 +121,7 @@ void BigReal::formatScientific(String &result, streamsize precision, long flags,
 #ifdef IS32BIT
         result += format(_T("%0*.*lu"), decimalsDone,decimalsDone,fraction);
 #else
-        result += format(_T("%0*.*lu"), decimalsDone,decimalsDone,fraction);
+        result += format(_T("%0*.*llu"), decimalsDone,decimalsDone,fraction);
 #endif
       }
       for(digit = digit->next; digit != NULL && decimalsDone < precision; digit = digit->next) { // now handle tail

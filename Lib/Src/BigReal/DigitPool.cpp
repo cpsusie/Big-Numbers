@@ -25,9 +25,9 @@ size_t        DigitPool::s_totalDigitCount        = 0;
 bool          DigitPool::s_dumpCountWhenDestroyed = false;
 DigitPool     DigitPool::s_defaultDigitPool(DEFAULT_DIGITPOOL_ID, 510000);
 
-Semaphore     ConstBigReal::s_gate;
-DigitPool     ConstBigReal::s_digitPool(CONST_DIGITPOOL_ID);
-int           ConstBigReal::s_requestCount = 0;
+ConstDigitPool ConstDigitPool::s_instance;
+DEFINECLASSNAME(ConstDigitPool);
+
 Pow2Cache     BigReal::s_pow2Cache;
 
 const ConstBigReal ConstBigReal::_long_min(LONG_MIN);
@@ -43,6 +43,7 @@ const ConstBigReal ConstBigReal::_dbl_max(DBL_MAX);
 const ConstBigReal ConstBigReal::_dbl80_min(Double80::DBL80_MIN);
 const ConstBigReal ConstBigReal::_dbl80_max(Double80::DBL80_MAX);
 
+DEFINECLASSNAME(DigitPool);
 
 DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_firstPage  = NULL;

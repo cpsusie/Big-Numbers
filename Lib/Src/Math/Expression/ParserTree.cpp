@@ -79,7 +79,7 @@ String ParserTree::getTreeFormName(ParserTreeForm treeForm) { // static
 }
 
 void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
-  DEFINEMETHODNAME(initDynamicOperations);
+  DEFINEMETHODNAME;
   switch(treeForm) {
   case TREEFORM_STANDARD :
     pminus      = &ParserTree::minusS;
@@ -311,7 +311,7 @@ int ParserTree::getTreeDepth() const {
 }
 
 const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *n, const CompactNodeHashMap<const ExpressionNode*> &nodeMap) {
-  DEFINEMETHODNAME(traverseSubstituteNodes);
+  DEFINEMETHODNAME;
   const ExpressionNode * const *n1 = nodeMap.get(n);
   if(n1) {
     return *n1;
@@ -407,7 +407,7 @@ const ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) 
 }
 
 const ExpressionNode *ParserTree::constExpression(const String &name) const {
-  DEFINEMETHODNAME(constExpression);
+  DEFINEMETHODNAME;
 
   const ExpressionVariable *v = getVariable(name);
   if(v == NULL) {

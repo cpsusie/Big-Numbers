@@ -23,7 +23,7 @@ public:
 static const SqrtConstants SQRTC;
 
 BigReal sqrt(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(sqrt);
+  DEFINEMETHODNAME;
   if(x.isNegative()) {
     throwBigRealInvalidArgumentException(method, _T("x<0"));
   }

@@ -145,7 +145,7 @@ BigReal round(const BigReal &x, intptr_t prec) { // sign(x) * ent(abs(x)*10^prec
 }
 
 void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
-  DEFINEMETHODNAME(fractionate);
+  DEFINEMETHODNAME;
   if(integerPart == fractionPart) {
     throwBigRealInvalidArgumentException(method, _T("integerPart is the same variable as fractionPart"));
   }

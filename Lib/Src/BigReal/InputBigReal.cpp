@@ -1,12 +1,12 @@
 #include "pch.h"
 
-BigReal inputBigReal(DigitPool &digitPool, const char *format,...) {
+BigReal inputBigReal(DigitPool &digitPool, const TCHAR *format,...) {
   for(;;) {
     va_list argptr;
-    va_start(argptr,format);
-    vprintf(format,argptr);
+    va_start(argptr, format);
+    _vtprintf(format, argptr);
     va_end(argptr);
-    char line[4000];
+    char line[10000];
     fgets(line, sizeof(line), stdin);
     try {
       BigReal x(line, &digitPool);

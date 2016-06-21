@@ -129,7 +129,7 @@ FactorArray &Expression::toCFormProduct(FactorArray &result, const ExpressionNod
 
 // n.symbol == POW, 
 FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode *n, const SNode &exponent) const {
-  DEFINEMETHODNAME(toCFormPower);
+  DEFINEMETHODNAME;
   const SNode base = toCForm(n->left());
   const SNode expo = toCForm(n->right());
 
@@ -155,7 +155,7 @@ FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode 
 
 // n.symbol = ROOT
 FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *n, const SNode &exponent) const {
-  DEFINEMETHODNAME(toCFormRoot);
+  DEFINEMETHODNAME;
   const SNode rad  = toCForm(n->left());
   const SNode root = toCForm(n->right());
 

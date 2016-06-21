@@ -30,9 +30,10 @@ END_MESSAGE_MAP()
 DEFINECLASSNAME(CGifCtrl);
 
 void CGifCtrl::substituteControl(CWnd *wnd, int id) {
+  DEFINEMETHODNAME;
   CWnd *ctrl = wnd->GetDlgItem(id);
   if(ctrl == NULL) {
-    wnd->MessageBox(format(_T("%s::%s:Control %d not found"), s_className, _T(__FUNCTION__), id).cstr(), _T("Error"), MB_ICONWARNING);
+    wnd->MessageBox(format(_T("%s::%s:Control %d not found"), s_className, method, id).cstr(), _T("Error"), MB_ICONWARNING);
     return;
   }
   const DWORD  style   = ctrl->GetStyle();
@@ -41,7 +42,7 @@ void CGifCtrl::substituteControl(CWnd *wnd, int id) {
   const String str     = getWindowText(ctrl);
   ctrl->DestroyWindow();
   if(!Create(str.cstr(), style, rect, wnd, id)) {
-    wnd->MessageBox(format(_T("%s::%s:Create failed"), s_className, _T(__FUNCTION__)).cstr(), _T("Error"), MB_ICONWARNING);
+    wnd->MessageBox(format(_T("%s::%s:Create failed"), s_className, method).cstr(), _T("Error"), MB_ICONWARNING);
     return;
   }
   ModifyStyleEx(0,exStyle);

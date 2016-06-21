@@ -41,7 +41,7 @@ int MachineCode::emit(const IntelInstruction &ins) {
 }
 
 const Real *MachineCode::getValueAddr(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(getValueAddr);
+  DEFINEMETHODNAME;
   switch(n->getSymbol()) {
   case NAME  :
     return &n->getVariable().getValue();
@@ -214,7 +214,7 @@ bool Expression::fastEvaluateBool() {
 #endif
 
 ExpressionReturnType Expression::findReturnType() const {
-  DEFINEMETHODNAME(findReturnType);
+  DEFINEMETHODNAME;
   ExpressionNodeArray stmtList = getStatementList(getRoot());
   switch(stmtList.last()->getSymbol()) {
   case RETURNREAL : return EXPR_RETURN_REAL;

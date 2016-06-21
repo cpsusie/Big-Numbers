@@ -49,7 +49,7 @@ public:
 static const rExpConstants REXPC;
 
 BigReal rExp(const BigReal &x, size_t digits) {
-  DEFINEMETHODNAME(rExp);
+  DEFINEMETHODNAME;
   DigitPool *pool = x.getDigitPool();
   const BigReal c = x.isNegative() ? -PAPCprod(>,REXPC.c1,fabs(x),pool) : PAPCprod(<,REXPC.c2,x,pool);
   double cd;
@@ -99,7 +99,7 @@ BigReal rLog10(const BigReal &x, size_t digits) { // log(x) base 10
 }
 
 BigReal rPow(const BigReal &x, const BigReal &y, size_t digits) { // x^y
-  DEFINEMETHODNAME(rPow);
+  DEFINEMETHODNAME;
   DigitPool *pool = x.getDigitPool();
   if(y.isZero()) {
     return _1;
@@ -129,7 +129,7 @@ BigReal rPow(const BigReal &x, const BigReal &y, size_t digits) { // x^y
 }
 
 BigReal rRoot(const BigReal &x, const BigReal &y, size_t digits) {
-  DEFINEMETHODNAME(rRoot);
+  DEFINEMETHODNAME;
   DigitPool *pool = x.getDigitPool();
   if(!x.isNegative()) {
     return rPow(x,rQuot(_1,y,digits),digits);

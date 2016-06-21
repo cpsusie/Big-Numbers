@@ -12,7 +12,7 @@ BigReal &BigReal::operator%=(const BigReal &x) {
 }
 
 BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
-  DEFINEMETHODNAME(quot);
+  DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
   }

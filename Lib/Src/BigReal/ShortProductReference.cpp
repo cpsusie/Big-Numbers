@@ -4,7 +4,7 @@
 
 #ifdef _DEBUG
 
-bool BigReal::s_useShortProdReferenceVersion = true;
+bool BigReal::s_useShortProdReferenceVersion = false;
 
 BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, size_t loopCount) { // version 1
   return (s_useShortProdReferenceVersion) ? shortProductNoZeroCheckReference(x, y,loopCount) : shortProductNoZeroCheckDebug(x, y, loopCount);

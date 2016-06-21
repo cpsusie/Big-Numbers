@@ -2,6 +2,8 @@
 #include <float.h>
 #include <ctype.h>
 
+DEFINECLASSNAME(BigRational);
+
 BigRational::BigRational(DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
   init(digitPool->get0(), digitPool->get1());
 }
@@ -35,10 +37,11 @@ BigRational::BigRational(const char    *s, DigitPool *digitPool) : m_numerator(d
 #endif
 
 void BigRational::init(const String &s) {
+  DEFINEMETHODNAME;
   String tmp(s);
   const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
-    throwBigRealException(_T("init:Illegal argument for BigRational:%s"), s.cstr());
+    throwBigRealInvalidArgumentException(method, _T("s=%s"), s.cstr());
   }
   DigitPool *pool = getDigitPool();
   if(slash < 0) {
@@ -51,8 +54,9 @@ void BigRational::init(const String &s) {
 }
 
 void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
+  DEFINEMETHODNAME;
   if(denominator.isZero()) {
-    throwBigRealException(_T("BigRational::Denominator is zero"));
+    throwMethodInvalidArgumentException(s_className, method, _T("Denominator is zero"));
   }
 
   DigitPool *pool = getDigitPool();
@@ -121,7 +125,7 @@ BigInt BigRational::findGCD(const BigInt &a, const BigInt &b) { // static
   BigInt u(pool);
   u = a;
   BigInt v(b);
-  static const ConstInteger two = 2;
+  static const ConstBigInt two = 2;
 
   while(even(u) && even(v)) {
     u /= two;

@@ -28,7 +28,7 @@ Expression &Expression::toNumericForm() {
 // ------------------------------ toNForm -------------------------------------------------------------------------
 
 SNode Expression::toNForm(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(toNForm);
+  DEFINEMETHODNAME;
 
   const SStmtList stmtList(n);
   SStmtList       newStmtList;
@@ -53,7 +53,7 @@ SNode Expression::toNForm(const ExpressionNode *n) const {
 }
 
 SNode Expression::toNFormRealExp(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(toNFormRealExp);
+  DEFINEMETHODNAME;
   if(n->isConstant()) {
     return numberExpression(evaluateRealExpr(n));
   }
@@ -68,7 +68,7 @@ SNode Expression::toNFormRealExp(const ExpressionNode *n) const {
 }
 
 SNode Expression::toNFormBoolExp(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(toNFormBoolExp);
+  DEFINEMETHODNAME;
   if(n->isConstant()) {
     return booleanExpression(evaluateBoolExpr(n));
   }

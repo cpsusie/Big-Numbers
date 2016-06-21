@@ -19,7 +19,7 @@ public:
 static const SinConstants SINC;
 
 BigReal sin(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(sin);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

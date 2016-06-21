@@ -2,6 +2,8 @@
 #include <ByteFile.h>
 #include <CompressFilter.h>
 
+DEFINECLASSNAME(Pow2Cache);
+
 #ifdef _DEBUG
 size_t Pow2Cache::s_cacheHitCount     = 0;
 size_t Pow2Cache::s_cacheRequestCount = 0;
@@ -16,7 +18,7 @@ static unsigned char BITPERBRDIGIT = 64;
 #endif
 
 Pow2Cache::Pow2Cache() {
-  m_loaded    = false;
+  m_state     = CACHE_EMPTY;
   m_startSize = 0;
   if (ACCESS(CACHEFILENAME, 0) == 0) {
     m_gate.wait();
@@ -46,6 +48,35 @@ void Pow2Cache::clear() {
     delete it.next().getValue();
   }
   CompactHashMap<Pow2ArgumentKey, BigReal*>::clear();
+  m_state = CACHE_EMPTY;
+}
+
+bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
+  DEFINEMETHODNAME;
+  if (m_state & (CACHE_LOADED|CACHE_LOADING)) {
+    if (isLoaded()) {
+      throwMethodException(s_className, method, _T("Not allowed when cache is loaded from file"));
+    }
+    m_state &= ~CACHE_EMPTY;
+    return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+  }
+  else {
+    m_gate.wait();
+    m_state &= ~CACHE_EMPTY;
+    const bool ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+    m_gate.signal();
+    return ret;
+  }
+}
+
+BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
+  if (isLoaded()) {
+    return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+  }
+  m_gate.wait();
+  BigReal **result = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+  m_gate.signal();
+  return result;
 }
 
 void Pow2Cache::save(const String &fileName) {
@@ -54,7 +85,6 @@ void Pow2Cache::save(const String &fileName) {
 
 void Pow2Cache::load(const String &fileName) {
   load(DecompressFilter(ByteInputFile(fileName)));
-  m_loaded = true;
 }
 
 void Pow2Cache::save(ByteOutputStream &s) const {
@@ -89,10 +119,12 @@ void Pow2Cache::load(ByteInputStream &s) {
   debugLog(_T("Loading Pow2Cache. size:%lu, capacity:%lu..."), n, capacity);
 #endif
   setCapacity(capacity);
+  m_state |= CACHE_LOADING;
   for(UINT i = 0; i < n; i++) {
     Pow2ArgumentKey key(s);
     put(key, new BigReal(s, &DEFAULT_DIGITPOOL));
   }
+  m_state = CACHE_LOADED;
 #ifdef _DEBUG
   debugLog(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
 #endif

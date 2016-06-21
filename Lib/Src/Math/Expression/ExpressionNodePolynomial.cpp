@@ -27,7 +27,7 @@ ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionN
 }
 
 const ExpressionNode *ExpressionNodePoly::expand() const {
-  DEFINEMETHODNAME(expand);
+  DEFINEMETHODNAME;
 
   const ParserTree           *tree             = getTree();
   const ExpressionNodeArray  &coefficientArray = getCoefficientArray();

@@ -283,7 +283,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       for(exponent = 0; _istdigit(*t); t++) {
         exponent = 10 * exponent + (*t - '0');
         if(exponent > LOG10_BIGREALBASE*BIGREAL_MAXEXPO || exponent < 0) { // max. exponent in base 10
-          throwBigRealException(_T("Exponent too big. Max:%d"),LOG10_BIGREALBASE*BIGREAL_MAXEXPO);
+          throwBigRealException(_T("Exponent too big. Max:%s"),format1000(LOG10_BIGREALBASE*BIGREAL_MAXEXPO).cstr());
         }
       }
       exponent *= exponentSign;
@@ -292,6 +292,5 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       }
     }
   }
-
   LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(ajourDebugString(););
 }

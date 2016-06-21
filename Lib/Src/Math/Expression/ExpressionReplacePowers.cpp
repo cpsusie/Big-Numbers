@@ -86,7 +86,7 @@ const ExpressionFactor *Expression::replaceRationalPower(const ExpressionFactor 
 /* -------------------------------------------- replaceRationalFactors -----------------------------------------------------------*/
 
 const ExpressionNode *Expression::replaceRationalFactors(const ExpressionNode *n) const {
-  DEFINEMETHODNAME(replaceRationalFactors);
+  DEFINEMETHODNAME;
 
   switch(n->getSymbol()) {
   case NAME:

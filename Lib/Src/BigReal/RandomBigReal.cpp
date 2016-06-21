@@ -44,7 +44,7 @@ BigReal  RandomBigReal::nextBigReal(size_t length, DigitPool *digitPool) {
   // Return uniform distributed random number between low (incl) and high (excl)
   // with length decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
 BigReal  RandomBigReal::nextBigReal(const BigReal &low, const BigReal &high, size_t length, DigitPool *digitPool) {
-  DEFINEMETHODNAME(nextBigReal);
+  DEFINEMETHODNAME;
   if(low >= high) {
     throwBigRealInvalidArgumentException(method, _T("low >= high"));
   }

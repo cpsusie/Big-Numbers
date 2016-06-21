@@ -5,7 +5,7 @@ static void invalidTrigonometricMode(const TCHAR *function, TrigonometricMode mo
 }
 
 Real sin(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(sin);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return sin(x);
   case DEGREES: return sinDegrees(x);
@@ -16,7 +16,7 @@ Real sin(const Real &x, TrigonometricMode mode) {
 }
 
 Real cos(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(cos);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return cos(x);
   case DEGREES: return cosDegrees(x);
@@ -27,7 +27,7 @@ Real cos(const Real &x, TrigonometricMode mode) {
 }
 
 Real tan(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(tan);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return tan(x);
   case DEGREES: return tanDegrees(x);
@@ -38,7 +38,7 @@ Real tan(const Real &x, TrigonometricMode mode) {
 }
 
 Real cot(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(cot);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return cot(x);
   case DEGREES: return cotDegrees(x);
@@ -49,7 +49,7 @@ Real cot(const Real &x, TrigonometricMode mode) {
 }
 
 Real asin(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(asin);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return asin(x);
   case DEGREES: return asinDegrees(x);
@@ -60,7 +60,7 @@ Real asin(const Real &x, TrigonometricMode mode) {
 }
 
 Real acos(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(acos);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return acos(x);
   case DEGREES: return acosDegrees(x);
@@ -71,7 +71,7 @@ Real acos(const Real &x, TrigonometricMode mode) {
 }
 
 Real atan(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(atan);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return atan(x);
   case DEGREES: return atanDegrees(x);
@@ -82,7 +82,7 @@ Real atan(const Real &x, TrigonometricMode mode) {
 }
 
 Real acot(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(acot);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return acot(x);
   case DEGREES: return acotDegrees(x);
@@ -93,7 +93,7 @@ Real acot(const Real &x, TrigonometricMode mode) {
 }
 
 Real csc(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(csc);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return csc(x);
   case DEGREES: return cscDegrees(x);
@@ -104,7 +104,7 @@ Real csc(const Real &x, TrigonometricMode mode) {
 }
 
 Real sec(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(sec);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return sec(x);
   case DEGREES: return secDegrees(x);
@@ -115,7 +115,7 @@ Real sec(const Real &x, TrigonometricMode mode) {
 }
 
 Real acsc(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(acsc);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return acsc(x);
   case DEGREES: return acscDegrees(x);
@@ -126,7 +126,7 @@ Real acsc(const Real &x, TrigonometricMode mode) {
 }
 
 Real asec(const Real &x, TrigonometricMode mode) {
-  DEFINEMETHODNAME(asec);
+  DEFINEMETHODNAME;
   switch(mode) {
   case RADIANS: return asec(x);
   case DEGREES: return asecDegrees(x);

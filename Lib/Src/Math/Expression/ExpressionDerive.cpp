@@ -247,7 +247,7 @@ SNode Expression::DPolynomial(const SNode &n, const String &name) const {
 }
 
 SNode Expression::DStatementList(const SNode &n, const String &name) const {
-  DEFINEMETHODNAME(DStatementList);
+  DEFINEMETHODNAME;
 
   SStmtList stmtList(n);
   SStmtList d;

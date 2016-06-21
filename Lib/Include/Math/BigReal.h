@@ -183,17 +183,28 @@ public:
   }
 };
 
+#define CACHE_LOADING 0x1
+#define CACHE_LOADED  0x2
+#define CACHE_EMPTY   0x4
+
 class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, BigReal*> {
 private:
-  Semaphore  m_gate;
-  bool       m_loaded;
-  size_t     m_startSize;
+  DECLARECLASSNAME;
+  Semaphore     m_gate;
+  unsigned char m_state;
+  size_t        m_startSize;
 
   void save(const String &fileName);
   void load(const String &fileName);
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
   void clear();
+  inline bool isLoaded() const {
+    return m_state & CACHE_LOADED;
+  }
+  inline bool isLoading() const {
+    return m_state & CACHE_LOADING;
+  }
 public:
 #ifdef _DEBUG
   static size_t s_cacheHitCount, s_cacheRequestCount;
@@ -201,28 +212,8 @@ public:
 
   Pow2Cache();
   ~Pow2Cache();
-  inline bool isLoaded() const {
-    return m_loaded;
-  }
-  bool put(const Pow2ArgumentKey &key, BigReal * const &v) {
-    if (isLoaded()) {
-      throwException(_T("Pow2Cache.put not allowed when cache is loaded from file"));
-    }
-    m_gate.wait();
-    const bool ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
-    m_gate.signal();
-    return ret;
-  }
-
-  BigReal **get(const Pow2ArgumentKey &key) {
-    if (isLoaded()) {
-      return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
-    }
-    m_gate.wait();
-    BigReal **result = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
-    m_gate.signal();
-    return result;
-  }
+  bool put(const Pow2ArgumentKey &key, BigReal * const &v);
+  BigReal **get(const Pow2ArgumentKey &key);
 };
 
 class BigRealResource {
@@ -247,6 +238,7 @@ public:
 
 class DigitPool : public BigRealResource {
 private:
+  DECLARECLASSNAME;
   static size_t         s_totalDigitCount;
   static bool           s_dumpCountWhenDestroyed;
   size_t                m_digitCount;
@@ -356,6 +348,8 @@ void throwBigRealGetIntegralTypeUnderflowException(TCHAR const* const function, 
 void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const format,...);
 
 class BigReal {
+private:
+  DECLARECLASSNAME;
 
 #ifdef _DEBUG
 private:
@@ -439,14 +433,14 @@ private:
   
   inline BigReal &trimZeroes() {                                                                  // return this
     if(m_first) {
-      if(m_first->n == 0)     trimHead();
+      if(m_first->n == 0)     trimHead(); 
       else if(m_last->n == 0) trimTail();
       if(m_expo > BIGREAL_MAXEXPO) throwBigRealException(_T("Overflow"));
       if(m_low  < BIGREAL_MINEXPO) throwBigRealException(_T("Underflow"));
     }
     return *this;
   }
-  void    trimHead();
+  void    trimHead(); // trim zeroes from head, AND if necessary from the tail to
   void    trimTail();
   Digit  *findDigit(const BRExpoType exponent) const;
   Digit  *findDigitSubtract(const BigReal &f) const;
@@ -869,90 +863,129 @@ public:
 
 };
 
-class ConstBigReal : public BigReal {
+class ConstDigitPool : private DigitPool {
 private:
-  static Semaphore s_gate;
-  static DigitPool s_digitPool;
-  static int       s_requestCount;
-  friend class ConstInteger;
+  DECLARECLASSNAME;
+  Semaphore  m_gate;
+  int        m_requestCount;
+#ifdef _DEBUG
+  int        m_ownerThreadId;
+#endif
 
-  static inline DigitPool *requestConstDigitPool() {
-    s_gate.wait();
-    s_requestCount++;
-    return &s_digitPool;
-  }
-  static inline void releaseConstDigitPool() {
-    s_gate.signal();
-  }
-#define REQPOOL requestConstDigitPool()
-#define RELPOOL releaseConstDigitPool();
+  static ConstDigitPool s_instance;
+
 public:
-  static inline const DigitPool &getDigitPool() {
-    return s_digitPool;
-  }
-  static inline int getPoolRequestCount() {
-    return s_requestCount;
-  }
-
-  inline ConstBigReal(int              x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  ConstDigitPool() : DigitPool(CONST_DIGITPOOL_ID), m_requestCount(0) {
+#ifdef _DEBUG
+    m_ownerThreadId = -1;
+#endif
   }
 
-  inline ConstBigReal(unsigned int     x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  static inline DigitPool *requestInstance() {
+    DEFINEMETHODNAME;
+#ifdef _DEBUG
+    const DWORD thrId = GetCurrentThreadId();
+#endif
+    s_instance.m_gate.wait();
+    s_instance.m_requestCount++;
+#ifdef _DEBUG
+    s_instance.m_ownerThreadId = thrId;
+#endif
+    return &s_instance;
   }
 
-  inline ConstBigReal(long             x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  static inline void releaseInstance() {
+    DEFINEMETHODNAME;
+#ifdef _DEBUG
+    const DWORD thrId = GetCurrentThreadId();
+    if (thrId != s_instance.m_ownerThreadId) {
+      throwMethodException(s_className, method
+        , _T("Thread callling releaseInstance (=%d) is not the ownerthread (=%d)")
+        , thrId, s_instance.m_ownerThreadId);
+    }
+    s_instance.m_ownerThreadId = -1;
+#endif
+    s_instance.m_gate.signal();
   }
 
-  inline ConstBigReal(unsigned long    x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  static inline const BigInt &getZero() {
+    return s_instance.get0();
+  }
+  static inline const BigInt &getOne() {
+    return s_instance.get1();
+  }
+  static inline const BigInt &getTwo() {
+    return s_instance.get2();
+  }
+  static inline const BigReal &get05() {
+    return s_instance.getHalf();
+  }
+};
+
+#define REQUSETCONSTPOOL ConstDigitPool::requestInstance()
+#define RELEASECONSTPOOL ConstDigitPool::releaseInstance()
+
+class ConstBigReal : public BigReal {
+public:
+  inline ConstBigReal(int              x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  inline ConstBigReal(__int64          x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  inline ConstBigReal(unsigned int     x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  inline ConstBigReal(unsigned __int64 x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  inline ConstBigReal(long             x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  ConstBigReal(float                   x) : BigReal(x, REQPOOL) {
-    RELPOOL;
-  }
-  ConstBigReal(double                  x) : BigReal(x, REQPOOL) {
-    RELPOOL;
-  }
-  ConstBigReal(const Double80         &x) : BigReal(x, REQPOOL) {
-    RELPOOL;
-  }
-  ConstBigReal(const BigReal           &x) : BigReal(x, REQPOOL) {
-    RELPOOL;
+  inline ConstBigReal(unsigned long    x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  explicit inline ConstBigReal(const String &s) : BigReal(s, REQPOOL) {
-    RELPOOL;
+  inline ConstBigReal(__int64          x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  explicit inline ConstBigReal(const TCHAR  *s) : BigReal(s, REQPOOL) {
-    RELPOOL;
+  inline ConstBigReal(unsigned __int64 x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
-  explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, REQPOOL) {
-    RELPOOL;
+  ConstBigReal(float                   x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+  ConstBigReal(double                  x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+  ConstBigReal(const Double80         &x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+  ConstBigReal(const BigReal           &x) : BigReal(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+
+  explicit inline ConstBigReal(const String &s) : BigReal(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+
+  explicit inline ConstBigReal(const TCHAR  *s) : BigReal(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+
+  explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 
 #ifdef UNICODE
-  explicit inline ConstBigReal(const char   *s) : BigReal(s, REQPOOL) {
-    RELPOOL;
+  explicit inline ConstBigReal(const char   *s) : BigReal(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 #endif
 
   ~ConstBigReal() {
-    REQPOOL;
+    REQUSETCONSTPOOL;
     setToZero();
-    RELPOOL;
+    RELEASECONSTPOOL;
   }
 
   static const ConstBigReal _long_min;
@@ -969,14 +1002,6 @@ public:
   static const ConstBigReal _dbl80_max;
 
 };
-
-#define CONST_DIGITPOOL ConstBigReal::getDigitPool()
-
-#define BIGREAL_0     CONST_DIGITPOOL.get0()
-#define BIGREAL_1     CONST_DIGITPOOL.get1()
-#define BIGREAL_2     CONST_DIGITPOOL.get2()
-#define BIGREAL_HALF  CONST_DIGITPOOL.getHalf()
-Real getReal(const BigReal &x);
 
 /*
 #define APCsum(  bias, x, y)       BigReal::apcSum( #bias[0], x, y)
@@ -1025,6 +1050,9 @@ public:
 };
 
 class FullFormatBigReal : public BigReal {
+private:
+  DECLARECLASSNAME;
+
 public:
   FullFormatBigReal(const BigReal &n, DigitPool *digitPool = NULL) : BigReal(n, digitPool) {
   }
@@ -1039,6 +1067,8 @@ public:
 };
 
 class BigInt : public BigReal {
+private:
+  DECLARECLASSNAME;
 public:
   BigInt(DigitPool *digitPool = NULL) : BigReal(digitPool) {
   }
@@ -1081,60 +1111,61 @@ BigInt operator+(const BigInt &x, const BigInt &y);
 BigInt operator-(const BigInt &x, const BigInt &y);
 BigInt operator*(const BigInt &x, const BigInt &y);
 
-class ConstInteger : public BigInt {
-private:
-  static inline DigitPool *requestConstDigitPool() {
-    return ConstBigReal::requestConstDigitPool();
-  }
-  static inline void releaseConstDigitPool() {
-    ConstBigReal::releaseConstDigitPool();
-  }
+#define BIGREAL_0     ConstDigitPool::getZero()
+#define BIGREAL_1     ConstDigitPool::getOne()
+#define BIGREAL_2     ConstDigitPool::getTwo()
+#define BIGREAL_HALF  ConstDigitPool::get05()
+Real getReal(const BigReal &x);
 
+class ConstBigInt : public BigInt {
+private:
+  DECLARECLASSNAME;
 public:
-  explicit ConstInteger(const BigReal &x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   };
-  ConstInteger(int                    x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(int                    x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  ConstInteger(unsigned int           x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(unsigned int           x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  ConstInteger(long                   x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(long                   x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  ConstInteger(unsigned long          x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(unsigned long          x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  ConstInteger(__int64                x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(__int64                x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  ConstInteger(unsigned __int64       x) : BigInt(x, REQPOOL) {
-    RELPOOL;
+  ConstBigInt(unsigned __int64       x) : BigInt(x, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  explicit ConstInteger(const String &s) : BigInt(s, REQPOOL) {
-    RELPOOL;
+  explicit ConstBigInt(const String &s) : BigInt(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
-  explicit ConstInteger(const TCHAR  *s) : BigInt(s, REQPOOL) {
-    RELPOOL;
+  explicit ConstBigInt(const TCHAR  *s) : BigInt(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 #ifdef UNICODE
-  explicit ConstInteger(const char   *s) : BigInt(s, REQPOOL) {
-    RELPOOL;
+  explicit ConstBigInt(const char   *s) : BigInt(s, REQUSETCONSTPOOL) {
+    RELEASECONSTPOOL;
   }
 #endif
-  ~ConstInteger() {
-    REQPOOL;
+  ~ConstBigInt() {
+    REQUSETCONSTPOOL;
     setToZero();
-    RELPOOL;
+    RELEASECONSTPOOL;
   }
 };
 
-#undef REQPOOL
-#undef RELPOOL
+#undef REQUSETCONSTPOOL
+#undef RELEASECONSTPOOL
 
 class BigRational {
 private:
+  DECLARECLASSNAME;
   BigInt m_numerator, m_denominator;
   static BigInt findGCD(const BigInt &a, const BigInt &b);
   void init(const BigInt &numerator, const BigInt &denominator);
@@ -1181,9 +1212,10 @@ tostream     &operator<<(tostream     &out, const FullFormatBigReal &x);
 BigRealStream &operator<<(BigRealStream &out, const FullFormatBigReal &n);
 BigRealStream &operator<<(BigRealStream &out, const BigInt &n);
 
-String  toString(const BigReal &n, streamsize precision=20, streamsize width=0, int flags=0);
-BigReal inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format,...);
-BigInt  inputBigInt( DigitPool &digitPool, _In_z_ _Printf_format_string_  const TCHAR *format,...);
+String      toString(const BigReal &n, streamsize precision=20, streamsize width=0, int flags=0);
+BigReal     inputBigReal( DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+BigInt      inputBigInt(  DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
+BigRational inputRational(DigitPool &digitPool, _In_z_ _Printf_format_string_ const TCHAR *format, ...);
 
 class BigRealException : public Exception {
 public:

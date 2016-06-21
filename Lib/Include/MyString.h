@@ -4,7 +4,7 @@
 #include <stdarg.h>
 #include "PragmaLib.h"
 
-#define DEFINEMETHODNAME(name)      static TCHAR const* const method = _T(#name)
+#define DEFINEMETHODNAME            static TCHAR const* const method = _T(__FUNCTION__)
 #define DECLARECLASSNAME            static TCHAR const* const s_className
 #define DEFINECLASSNAME(className)  TCHAR const* const className::s_className = _T(#className)
 

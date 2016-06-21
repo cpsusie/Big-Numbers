@@ -20,7 +20,7 @@ public:
   const ConstBigReal  c16;
   const BigReal      &c17;
   const BigReal      &c18;
-  const ConstInteger c19;
+  const ConstBigInt   c19;
   const ConstBigReal  c20;
 
   ExpConstants()
@@ -51,7 +51,7 @@ public:
 static const ExpConstants EXPC;
 
 BigReal exp( const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(exp);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

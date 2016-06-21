@@ -74,7 +74,7 @@ BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, B
 // Same as getFirst32, but k = [0..MAXDIGITS_INT64] = [0..19]
 unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) const {
 #ifdef _DEBUG
-  DEFINEMETHODNAME(getFirst46);
+  DEFINEMETHODNAME;
   if(k > MAXDIGITS_INT64) {
     throwBigRealInvalidArgumentException(method, _T("k=%d. Legal interval is [0..%d]"),k,MAXDIGITS_INT64);
   }
@@ -134,7 +134,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
 //#define TRACE_QUOTREMAINDER
 
 void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
-  DEFINEMETHODNAME(quotRemainder1);
+  DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
   }

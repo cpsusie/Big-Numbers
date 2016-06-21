@@ -69,7 +69,7 @@ Number::~Number() {
 }
 
 void Number::setType(NumberType type) {
-  DEFINEMETHODNAME(setType);
+  DEFINEMETHODNAME;
   if(type == m_type) {
     return;
   }
@@ -190,7 +190,7 @@ Number &Number::operator=(unsigned int v) {
 }
 
 void Number::forceTypeToReal() {
-  DEFINEMETHODNAME(forceTypeToReal);
+  DEFINEMETHODNAME;
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED:
     throwTypeIsUndefinedException(method);
@@ -210,7 +210,7 @@ void Number::forceTypeToReal() {
 }
 
 int Number::getIntValue() const {
-  DEFINEMETHODNAME(getIntValue);
+  DEFINEMETHODNAME;
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED:
     throwTypeIsUndefinedException(method);
@@ -225,7 +225,7 @@ int Number::getIntValue() const {
 }
 
 Real Number::getRealValue() const {
-  DEFINEMETHODNAME(getRealValue);
+  DEFINEMETHODNAME;
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED:
     throwTypeIsUndefinedException(method);
@@ -240,7 +240,7 @@ Real Number::getRealValue() const {
 }
 
 Rational Number::getRationalValue() const {
-  DEFINEMETHODNAME(getRationalValue);
+  DEFINEMETHODNAME;
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED:
     throwTypeIsUndefinedException(method);
@@ -255,7 +255,7 @@ Rational Number::getRationalValue() const {
 }
 
 const Real *Number::getRealAddress() const {
-  DEFINEMETHODNAME(getRealAddress);
+  DEFINEMETHODNAME;
   switch(getType()) {
   case NUMBERTYPE_UNDEFINED:
     throwTypeIsUndefinedException(method);
@@ -310,7 +310,7 @@ Number operator-(const Number &n1, const Number &n2) {
 }
 
 Number operator-(const Number &v) {
-  DEFINEMETHODNAME(operator-);
+  DEFINEMETHODNAME;
   switch(v.getType()) {
   case NUMBERTYPE_UNDEFINED:
     Number::throwTypeIsUndefinedException(method);

@@ -584,9 +584,8 @@ void testReadWriteInteger(TestStatistic &stat) {
 unsigned int DigitMonitorThread::run() {
   for(;;) {
     Sleep(3000);
-    _tprintf(_T("Total digits allocated:%s. ConstdigitPool.requests:%d\n")
+    _tprintf(_T("Total digits allocated:%s\n")
             ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
-            ,ConstBigReal::getPoolRequestCount()
             );
   }
 }

@@ -61,7 +61,7 @@ public:
 static const ATanConstants ATANC;
 
 BigReal atan(const BigReal &x, const BigReal &f) {
-  DEFINEMETHODNAME(atan);
+  DEFINEMETHODNAME;
   if(!f.isPositive()) {
     throwInvalidToleranceException(method);
   }

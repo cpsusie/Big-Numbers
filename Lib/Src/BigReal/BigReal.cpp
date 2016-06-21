@@ -1,5 +1,7 @@
 #include "pch.h"
 
+DEFINECLASSNAME(BigReal);
+
 void BigReal::insertAfter(Digit *q, BRDigitType n) {
 //  assert(n < BIGREALBASE);
   Digit *p = newDigit();
@@ -301,6 +303,7 @@ bool BigReal::isPow10(const BigReal &x) { // static
 }
 
 BigReal &BigReal::multPow10(BRExpoType exp) {
+  DEFINEMETHODNAME;
   if(isZero()) {
     return *this;
   }
@@ -310,7 +313,7 @@ BigReal &BigReal::multPow10(BRExpoType exp) {
     m_expo += n;
     m_low  += n;
     if(m_expo > BIGREAL_MAXEXPO || m_expo < BIGREAL_MINEXPO) {
-      throwBigRealException(_T("multPow10:Invalid m_expo:%s"), m_expo);
+      throwBigRealInvalidArgumentException(method, _T("Invalid m_expo:%s"), format1000(m_expo).cstr());
     }
   } else {
     if(m < 0) {
@@ -489,7 +492,7 @@ unsigned int getUint(const BigReal &x) {
 }
 
 long getLong(const BigReal &x) {
-  DEFINEMETHODNAME(getLong);
+  DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
   }
@@ -512,7 +515,7 @@ long getLong(const BigReal &x) {
 }
 
 unsigned long getUlong(const BigReal &x) {
-  DEFINEMETHODNAME(getUlong);
+  DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
   }
@@ -535,7 +538,7 @@ unsigned long getUlong(const BigReal &x) {
 }
 
 __int64 getInt64(const BigReal &x) {
-  DEFINEMETHODNAME(getInt64);
+  DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
   }
@@ -557,7 +560,7 @@ __int64 getInt64(const BigReal &x) {
 }
 
 unsigned __int64 getUint64(const BigReal &x) {
-  DEFINEMETHODNAME(getUint64);
+  DEFINEMETHODNAME;
   if(x.isZero()) {
     return 0;
   }
@@ -615,7 +618,10 @@ void BigReal ::assertIsValidBigReal() const {
   unsigned int digitCount = 0;
   for(const Digit *p = m_first; p; p = p->next) {
     if(p->n >= BIGREALBASE) {
-      throwAssertionException(_T("Digit(%lu) (=%lu) >= BIGREALBASE (=%lu)"),digitCount,p->n,BIGREALBASE);
+      throwAssertionException(_T("Digit(%s) (=%s) >= BIGREALBASE (=%lu)")
+                             ,format1000(digitCount).cstr()
+                             ,format1000(p->n).cstr()
+                             ,format1000(BIGREALBASE).cstr());
     }
     digitCount++;
   }
@@ -623,7 +629,9 @@ void BigReal ::assertIsValidBigReal() const {
     throwAssertionException(_T("#digits in chain = 0. x != 0"));
   }
   if(digitCount != (unsigned int)getLength()) {
-    throwAssertionException(_T("#digits in chain (=%lu) != getLength() (=%u)"),digitCount,getLength());
+    throwAssertionException(_T("#digits in chain (=%s) != getLength() (=%s)")
+                           ,format1000(digitCount).cstr()
+                           ,format1000(getLength()).cstr());
   }
   if(m_first->n == 0) {
     throwAssertionException(_T("m_first->n = 0"));
@@ -632,9 +640,9 @@ void BigReal ::assertIsValidBigReal() const {
     throwAssertionException(_T("m_last->n = 0"));
   }
   if(m_expo > BIGREAL_MAXEXPO) {
-    throwAssertionException(_T("m_expo > BIGREAL_MAXEXPO (=%d)"),m_expo);
+    throwAssertionException(_T("m_expo > BIGREAL_MAXEXPO (=%s)"), format1000(m_expo).cstr());
   }
   if(m_expo < BIGREAL_MINEXPO) {
-    throwAssertionException(_T("m_expo < BIGREAL_MINEXPO (=%d)"),m_expo);
+    throwAssertionException(_T("m_expo < BIGREAL_MINEXPO (=%s)"), format1000(m_expo).cstr());
   }
 }
