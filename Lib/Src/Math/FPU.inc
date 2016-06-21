@@ -4,7 +4,7 @@ ROUNDUP    EQU "2"
 TRUNCATE   EQU "3" 
 
 pushRoundMode MACRO roundMode
-	push	0
+    push	0
     fnstcw	WORD PTR[rsp]        ; save FPU ctrlWord in cwSave (=*rsp)
     mov		ax, WORD PTR[rsp]
 ifidn     <roundMode>,<ROUND>
@@ -24,5 +24,5 @@ ENDM
 
 popRoundMode MACRO
     fldcw	WORD PTR[rsp]        ; restore FPU  ctrlWord (=cwSave)
-	add		rsp, 8
+    add		rsp, 8
 ENDM
