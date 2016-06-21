@@ -7,24 +7,38 @@ size_t Pow2Cache::s_cacheHitCount     = 0;
 size_t Pow2Cache::s_cacheRequestCount = 0;
 #endif
 
+#ifdef IS32BIT
+#define CACHEFILENAME _T("c:\\temp\\Pow2Cachex86.dat")
+static unsigned char BITPERBRDIGIT = 32;
+#else
+#define CACHEFILENAME _T("c:\\temp\\Pow2Cachex64.dat")
+static unsigned char BITPERBRDIGIT = 64;
+#endif
+
 Pow2Cache::Pow2Cache() {
-  m_loaded = false;
-  m_gate.wait();
-  if(isEmpty()) {
-    setCapacity(33000);
-    load(_T("c:\\temp\\Pow2Cache.dat"));
+  m_loaded    = false;
+  m_startSize = 0;
+  if (ACCESS(CACHEFILENAME, 0) == 0) {
+    m_gate.wait();
+    if (isEmpty()) {
+      setCapacity(33000);
+      load(CACHEFILENAME);
+    }
+    m_startSize = size();
+    m_gate.signal();
   }
-  m_gate.signal();
 }
 
 Pow2Cache::~Pow2Cache() {
-//    save(_T("c:\\temp\\Pow2Cache.dat"));
-  m_gate.wait();
+  if (size() != m_startSize) {
+    save(CACHEFILENAME);
+    m_gate.wait();
 #ifdef _DEBUG
-  debugLog(_T("CacheHits/CacheRequest:(%s/%s) =%.2lf%%\n"), format1000(s_cacheHitCount).cstr(), format1000(s_cacheRequestCount).cstr(), PERCENT(s_cacheHitCount, s_cacheRequestCount));
+    debugLog(_T("CacheHits/CacheRequest:(%s/%s) =%.2lf%%\n"), format1000(s_cacheHitCount).cstr(), format1000(s_cacheRequestCount).cstr(), PERCENT(s_cacheHitCount, s_cacheRequestCount));
 #endif
-  clear();
-  m_gate.signal();
+    clear();
+    m_gate.signal();
+  }
 }
 
 void Pow2Cache::clear() {
@@ -46,7 +60,8 @@ void Pow2Cache::load(const String &fileName) {
 void Pow2Cache::save(ByteOutputStream &s) const {
   const UINT capacity = (UINT)getCapacity();
   const UINT n        = (UINT)size();
-  debugLog(_T("saving Pow2Cache. size:%lu, capacity:%lu\n"), n, capacity);
+  debugLog(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
+  s.putBytes(&BITPERBRDIGIT, sizeof(BITPERBRDIGIT));
   s.putBytes((BYTE*)&capacity, sizeof(capacity));
   s.putBytes((BYTE*)&n       , sizeof(n));
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
@@ -54,18 +69,24 @@ void Pow2Cache::save(ByteOutputStream &s) const {
     e.getKey().save(s);
     e.getValue()->save(s);
   }
+#ifdef _DEBUG
+  debugLog(_T("Pow2Cache saved to %s\n"), CACHEFILENAME);
+#endif
 }
 
 void Pow2Cache::load(ByteInputStream &s) {
   clear();
   UINT capacity;
   UINT n;
-
+  const unsigned char signaturByte = s.getByte();
+  if (signaturByte != BITPERBRDIGIT) {
+    throwException(_T("Wrong bits/Digit in cache-file. Expected %d, got %d bits"), BITPERBRDIGIT, signaturByte);
+  }
   s.getBytesForced((BYTE*)&capacity, sizeof(capacity));
   s.getBytesForced((BYTE*)&n       , sizeof(n));
 
 #ifdef _DEBUG
-  debugLog(_T("loading Pow2Cache. size:%lu, capacity:%lu..."), n, capacity);
+  debugLog(_T("Loading Pow2Cache. size:%lu, capacity:%lu..."), n, capacity);
 #endif
   setCapacity(capacity);
   for(UINT i = 0; i < n; i++) {
@@ -73,13 +94,12 @@ void Pow2Cache::load(ByteInputStream &s) {
     put(key, new BigReal(s, &DEFAULT_DIGITPOOL));
   }
 #ifdef _DEBUG
-  debugLog(_T("Pow2Cache loaded\n"));
+  debugLog(_T("Pow2Cache loaded from %s\n"), CACHEFILENAME);
 #endif
 }
 
 const BigReal &BigReal::pow2(int n, size_t digits) { // static
   const Pow2ArgumentKey key(n, digits);
-
 #ifdef _DEBUG
   Pow2Cache::s_cacheRequestCount++;
 #endif

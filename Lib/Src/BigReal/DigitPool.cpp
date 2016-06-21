@@ -28,7 +28,6 @@ DigitPool     DigitPool::s_defaultDigitPool(DEFAULT_DIGITPOOL_ID, 510000);
 Semaphore     ConstBigReal::s_gate;
 DigitPool     ConstBigReal::s_digitPool(CONST_DIGITPOOL_ID);
 int           ConstBigReal::s_requestCount = 0;
-
 Pow2Cache     BigReal::s_pow2Cache;
 
 const ConstBigReal ConstBigReal::_long_min(LONG_MIN);

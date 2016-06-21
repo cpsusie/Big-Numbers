@@ -206,8 +206,8 @@
     <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="BigRealShortProductx64.asm">
+    <CustomBuild Include="BigRealShortProductx64.asm">
       <Filter>Source Files\ASM Files</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>

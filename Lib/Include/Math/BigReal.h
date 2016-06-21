@@ -187,6 +187,7 @@ class Pow2Cache : public CompactHashMap<Pow2ArgumentKey, BigReal*> {
 private:
   Semaphore  m_gate;
   bool       m_loaded;
+  size_t     m_startSize;
 
   void save(const String &fileName);
   void load(const String &fileName);
@@ -202,6 +203,25 @@ public:
   ~Pow2Cache();
   inline bool isLoaded() const {
     return m_loaded;
+  }
+  bool put(const Pow2ArgumentKey &key, BigReal * const &v) {
+    if (isLoaded()) {
+      throwException(_T("Pow2Cache.put not allowed when cache is loaded from file"));
+    }
+    m_gate.wait();
+    const bool ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+    m_gate.signal();
+    return ret;
+  }
+
+  BigReal **get(const Pow2ArgumentKey &key) {
+    if (isLoaded()) {
+      return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+    }
+    m_gate.wait();
+    BigReal **result = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+    m_gate.signal();
+    return result;
   }
 };
 
@@ -854,7 +874,6 @@ private:
   static Semaphore s_gate;
   static DigitPool s_digitPool;
   static int       s_requestCount;
-
   friend class ConstInteger;
 
   static inline DigitPool *requestConstDigitPool() {
