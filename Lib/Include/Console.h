@@ -48,6 +48,9 @@ public:
   static void setWindowAndBufferSize(int left, int top, int right, int bottom,  int fileNo = STD_OUTPUT_HANDLE);
   static void setTitle(const String &title);
   static String getTitle();
+  static CONSOLE_FONT_INFOEX getFont();
+  static COORD               getFontSize();
+  static void setFontSize(const COORD &fontSize);
   static void clear(                                                WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
   static void clearLine(int line,                                   WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);
   static void clearRect(int left,   int top, int right, int bottom, WORD attr = NORMALVIDEO, int fileNo = STD_OUTPUT_HANDLE);

@@ -451,9 +451,6 @@
     <ClCompile Include="StrStream.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
-    <ClCompile Include="Console.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
     <ClCompile Include="MinMax.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>
@@ -636,6 +633,9 @@
     </ClCompile>
     <ClCompile Include="ToAscii.cpp">
       <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Console.cpp">
+      <Filter>Source Files\Console</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

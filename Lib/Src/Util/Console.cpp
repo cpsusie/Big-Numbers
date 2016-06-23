@@ -192,6 +192,28 @@ String Console::getTitle() { // static
   return title;
 }
 
+CONSOLE_FONT_INFOEX Console::getFont() {
+  CONSOLE_FONT_INFOEX info;
+  info.cbSize = sizeof(info);
+  CHECK(GetCurrentConsoleFontEx(s_hStdOut, FALSE, &info));
+  return info;
+}
+
+COORD Console::getFontSize() {
+  const CONSOLE_FONT_INFOEX info = getFont();
+  const COORD               c    = GetConsoleFontSize(s_hStdOut, info.nFont);
+  if ((c.X | c.Y) == 0) {
+    checkSysCall(FALSE, __LINE__);
+  }
+  return c;
+}
+
+void Console::setFontSize(const COORD &fontSize) {
+  CONSOLE_FONT_INFOEX info = getFont();
+  info.dwFontSize = fontSize;
+  CHECK(SetCurrentConsoleFontEx(s_hStdOut, FALSE, &info));
+}
+
 void Console::clear(WORD attr, int fileNo) {
   int w,h;
   getBufferSize(w,h, fileNo);
