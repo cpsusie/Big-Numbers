@@ -609,7 +609,6 @@ D80pow PROC
     fld     st(0)
     pushRoundMode ROUNDDOWN
     frndint
-    popRoundMode
     fsub    st(1), st(0)
     fxch    st(1)
     f2xm1
@@ -618,6 +617,7 @@ D80pow PROC
     fscale
     fstp    st(1)
     fstp    TBYTE PTR[rcx]
+    popRoundMode
     ret
 ZeroExponent:               ; st(0)=y
     fstp    st(0)           ; pop y
@@ -652,7 +652,6 @@ D80pow10 PROC
     fld     st(0)
     pushRoundMode ROUNDDOWN
     frndint
-    popRoundMode
     fsub    st(1), st(0)
     fxch    st(1)
     f2xm1
@@ -661,6 +660,7 @@ D80pow10 PROC
     fscale
     fstp    st(1)
     fstp    TBYTE PTR[rcx]
+    popRoundMode
     ret
 
 ZeroExponent:               ; st(0)=x
@@ -680,7 +680,6 @@ D80pow2 PROC
     fld     st(0)
     pushRoundMode ROUNDDOWN
     frndint
-    popRoundMode
     fsub    st(1), st(0)
     fxch    st(1)
     f2xm1
@@ -689,6 +688,7 @@ D80pow2 PROC
     fscale
     fstp    st(1)
     fstp    TBYTE PTR[rcx]
+    popRoundMode
     ret
 
 ZeroExponent:               ; st(0)=x

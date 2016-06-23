@@ -12,8 +12,8 @@ m2pi2pow60   tbyte 403dc90fdaa22168c235h  ; 2*pi*pow2(60) (=7.244019458077122e+0
 
 .CODE
 
-;void d64modulus(double &dst, const double &x, const Double80 &y);
-d64modulus PROC
+;void d64rem(double &dst, const double &x, const Double80 &y);
+d64rem PROC
     fld		TBYTE PTR [r8]      ;                                                     st0=y
     fabs                      ; y = abs(y)                                          st0=|y|
     fld		QWORD PTR [rdx]     ;                                                     st0=x,st1=|y|
@@ -49,7 +49,7 @@ pop2:                           ;                                               
     fstp	QWORD PTR[rcx]      ; pop result
     fstp	st(0)               ; pop y
     ret
-d64modulus ENDP
+d64rem ENDP
 
 ; ----------------------------------------- Double80 trigonometric functions ----------------------------------------
 
@@ -57,13 +57,13 @@ d64modulus ENDP
 sincos PROC
     push    rdx
     mov     rdx, rcx
-    lea		r8, m2pi2pow60
-    call	d64modulus
+    lea		  r8, m2pi2pow60
+    call	  d64rem
     pop     rdx
-    fld		QWORD PTR[rcx]
+    fld		  QWORD PTR[rcx]
     fsincos
-    fstp	QWORD PTR [rcx]
-    fstp	QWORD PTR [rdx]
+    fstp	  QWORD PTR [rcx]
+    fstp	  QWORD PTR [rdx]
     ret
 sincos ENDP
 

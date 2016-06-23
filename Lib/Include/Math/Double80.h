@@ -223,21 +223,27 @@ public:
 #else
   inline Double80(long x) {
     D80consLong(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
   inline Double80(unsigned long x) {
     D80consULong(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
   inline Double80(__int64 x) {
     D80consLongLong(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
   inline Double80(unsigned __int64 x) {
     D80consULongLong(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
   inline Double80(float x) {
     D80consFloat(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
   inline Double80(double x) {
     D80consDouble(*this, x);
+    SETD80DEBUGSTRING(*this);
   }
 #endif // IS32BIT
 
@@ -331,43 +337,51 @@ public:
 
   inline Double80 &operator+=(const Double80 &x) {
     D80assignAdd(*this, x);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 &operator-=(const Double80 &x) {
     D80assignSub(*this, x);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 &operator*=(const Double80 &x) {
     D80assignMul(*this, x);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 &operator/=(const Double80 &x) {
     D80assignDiv(*this, x);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 &operator++() {   // prefix-form
     D80increment(*this);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 &operator--() {   // prefix-form
     D80decrement(*this);
+    SETD80DEBUGSTRING(*this);
     return *this;
   }
 
   inline Double80 operator++(int) { // postfix-form
     Double80 result(*this);
     D80increment(*this);
+    SETD80DEBUGSTRING(*this);
     return result;
   }
 
   inline Double80 operator--(int) { // postfix-form
     Double80 result(*this);
     D80decrement(*this);
+    SETD80DEBUGSTRING(*this);
     return result;
   }
 
