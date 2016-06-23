@@ -9,17 +9,17 @@
 #else
 
 extern "C" {
-  void int128sum( void *dst, const void *x, const void *y);
-  void int128dif( void *dst, const void *x, const void *y);
-  void int128mul( void *dst, const void *x, const void *y);
-  void int128div( void *dst, const void *x, const void *y);
-  void int128rem( void *dst, const void *x, const void *y);
-  void int128neg( void *dst, const void *x);
+  void int128sum( void *dst, const void *x);
+  void int128dif( void *dst, const void *x);
+  void int128mul( void *dst, const void *x);
+  void int128div( void *dst, void *x);
+  void int128rem( void *dst, void *x);
+  void int128neg( void *x);
   void int128shr( void *x, int shft);
   void int128shl( void *x, int shft);
   int  int128cmp( const void *n1, const void *n2);
-  void uint128div(void *dst, const void *x, const void *y);
-  void uint128rem(void *dst, const void *x, const void *y);
+  void uint128div(void *dst, const void *x);
+  void uint128rem(void *dst, const void *x);
   void uint128shr(void *x, int shft);
   int  uint128cmp(const void *n1, const void *n2);
 };
@@ -65,33 +65,33 @@ public:
 
   // arithmetic operators
   inline _int128 operator+(const _int128 &rhs) const {
-    _int128 result;
-    int128sum(&result, this, &rhs);
+    _int128 result(*this);
+    int128sum(&result, &rhs);
     return result;
   }
   inline _int128 operator-(const _int128 &rhs) const {
-    _int128 result;
-    int128dif(&result, this, &rhs);
+    _int128 result(*this);
+    int128dif(&result, &rhs);
     return result;
   }
   inline _int128 operator*(const _int128 &rhs) const {
-    _int128 result;
-    int128mul(&result, this, &rhs);
+    _int128 result(*this);
+    int128mul(&result, &rhs);
     return result;
   }
   inline _int128 operator/(const _int128 &rhs) const {
-    _int128 result, copy(*this);
-    int128div(&result, &copy, &rhs);
+    _int128 result(*this), tmp(rhs);
+    int128div(&result, &tmp);
     return result;
   }
   inline _int128 operator%(const _int128 &rhs) const {
-    _int128 result, copy(*this);
-    int128rem(&result, &copy, &rhs);
+    _int128 result(*this), tmp(rhs);
+    int128rem(&result, &tmp);
     return result;
   };
   inline _int128 operator-() const {
-    _int128 result;
-    int128neg(&result, this);
+    _int128 result(*this);
+    int128neg(&result);
     return result;
   }
 
@@ -118,28 +118,25 @@ public:
 
   // assign operators
   inline _int128 &operator+=(const _int128 &rhs) {
-    const _int128 copy(*this);
-    int128sum(this, &copy, &rhs);
+    int128sum(this, &rhs);
     return *this;
   }
   inline _int128 &operator-=(const _int128 &rhs) {
-    const _int128 copy(*this);
-    int128dif(this, &copy, &rhs);
+    int128dif(this, &rhs);
     return *this;
   }
   inline _int128 &operator*=(const _int128 &rhs) {
-    const _int128 copy(*this);
-    int128mul(this, &copy, &rhs);
+    int128mul(this, &rhs);
     return *this;
   }
   inline _int128 &operator/=(const _int128 &rhs) {
-    const _int128 copy(*this);
-    int128div(this, &copy, &rhs);
+    _int128 tmp(rhs);
+    int128div(this, &tmp);
     return *this;
   }
   inline _int128 &operator%=(const _int128 &rhs) {
-    const _int128 copy(*this);
-    int128rem(this, &copy, &rhs);
+    _int128 tmp(rhs);
+    int128rem(this, &tmp);
     return *this;
   }
   inline _int128 &operator>>=(const int amount) {
@@ -214,33 +211,33 @@ public:
 
   // arithmetic operators
   inline _uint128 operator+(const _uint128 &rhs) const {
-    _uint128 result;
-    int128sum(&result, this, &rhs);
+    _uint128 result(*this);
+    int128sum(&result, &rhs);
     return result;
   }
-  inline _int128 operator-(const _uint128 &rhs) const {
-    _int128 result;
-    int128dif(&result, this, &rhs);
+  inline _uint128 operator-(const _uint128 &rhs) const {
+    _uint128 result(*this);
+    int128dif(&result, &rhs);
     return result;
   }
   inline _uint128 operator*(const _uint128 &rhs) const {
-    _uint128 result;
-    int128mul(&result, this, &rhs);
+    _uint128 result(*this);
+    int128mul(&result, &rhs);
     return result;
   }
   inline _uint128 operator/(const _uint128 &rhs) const {
-    _uint128 result, copy(*this);
-    uint128div(&result, &copy, &rhs);
+    _uint128 result(*this);
+    uint128div(&result, &rhs);
     return result;
   }
   inline _uint128 operator%(const _uint128 &rhs) const {
-    _uint128 result, copy(*this);
-    uint128rem(&result, &copy, &rhs);
+    _uint128 result(*this);
+    uint128rem(&result, &rhs);
     return result;
   };
-  inline _int128 operator-(const _uint128 &x) {
-    _int128 result;
-    int128neg(&result, &x);
+  inline _uint128 operator-(const _uint128 &x) {
+    _uint128 result(*this);
+    int128neg(&result);
     return result;
   }
 
@@ -268,28 +265,23 @@ public:
 
   // assign operators
   inline _uint128 &operator+=(const _uint128 &rhs) {
-    const _uint128 copy(*this);
-    int128sum(this, &copy, &rhs);
+    int128sum(this, &rhs);
     return *this;
   }
   inline _uint128 &operator-=(const _uint128 &rhs) {
-    const _uint128 copy(*this);
-    int128dif(this, &copy, &rhs);
+    int128dif(this, &rhs);
     return *this;
   }
   inline _uint128 &operator*=(const _uint128 &rhs) {
-    const _uint128 copy(*this);
-    int128mul(this, &copy, &rhs);
+    int128mul(this, &rhs);
     return *this;
   }
   inline _uint128 &operator/=(const _uint128 &rhs) {
-    const _uint128 copy(*this);
-    uint128div(this, &copy, &rhs);
+    uint128div(this, &rhs);
     return *this;
   }
   inline _uint128 &operator%=(const _uint128 &rhs) {
-    const _uint128 copy(*this);
-    uint128rem(this, &copy, &rhs);
+    uint128rem(this, &rhs);
     return *this;
   }
   inline _uint128 &operator>>=(const int amount) {

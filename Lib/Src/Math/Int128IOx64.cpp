@@ -17,7 +17,7 @@ char *_i128toa(_int128 value, char *str, int radix) {
   char *s = str;
   const bool negative = value < _0;
   if (negative && (radix == 10)) {
-    _uint128 v = value;
+    _uint128 v = -value;
     while (v != _0) {
       const unsigned int c = v % _10;
       *(s++) = radixLetter(c);
@@ -49,11 +49,11 @@ wchar_t *_i128tow(_int128 value, wchar_t *str, int radix) {
   wchar_t *s = str;
   const bool negative = value < _0;
   if (negative && (radix == 10)) {
-    value = -value;
-    while (value != _0) {
-      const unsigned int c = value % _10;
+    _uint128 v = -value;
+    while (v != _0) {
+      const unsigned int c = v % _10;
       *(s++) = wradixLetter(c);
-      value /= _10;
+      v /= _10;
     }
     *(s++) = '-';
     *s = 0;

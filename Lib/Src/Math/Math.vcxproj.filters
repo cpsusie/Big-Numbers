@@ -23,123 +23,27 @@
     <Filter Include="Source Files\Asm Files">
       <UniqueIdentifier>{0f95d5a8-ec2f-4b4e-857b-b69c9711e495}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Matrix">
+      <UniqueIdentifier>{29781d5a-ecb0-48ee-a966-bc718cfe55b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Number Types">
+      <UniqueIdentifier>{17cdd2d4-75ab-41e7-bada-9b8f26f8c867}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Curve Fitting">
+      <UniqueIdentifier>{5baeaa4b-d3c8-4aa4-b071-ace3a4cf739e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Geometri">
+      <UniqueIdentifier>{3051d91d-836a-4b59-9520-5ab6816f2c9b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Functions">
+      <UniqueIdentifier>{87648fec-5156-4c1a-8e79-e23f73ea1c2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{7e1aa498-1f12-447d-aaa9-545466d9b731}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Complex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Double80.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MathException.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MathFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Matrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Double80io.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Double80Random.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="gammaR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrigonometricFunctionsD.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrigonometricFunctions.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrigonometricFunctionsG.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TrigonometricFunctionsR.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AkimaSpline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CommonSpline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ComplexMatrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ComplexMatrixSvd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CubicSpline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DataFit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="fft.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FritschCarlsonSpline.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GaussDistribution.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Gradient.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Jacobi.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LssdPolynomial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MatrixSvd.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Newton.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParseReal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Polar.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Polynomial.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QRMatrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rational.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RationalIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Rungekutta.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SigmoidIterator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simplex.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="SolveTriDiag.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Statistic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Transformation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Expression\AddentArray.cpp">
@@ -253,29 +157,143 @@
     <ClCompile Include="Expression\TestMachineCode.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
-    <ClCompile Include="Point2D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ComplexMatrix.cpp">
+      <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Point2DTransformations.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="ComplexMatrixSvd.cpp">
+      <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Point3D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Gradient.cpp">
+      <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Polygon2D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Jacobi.cpp">
+      <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Rectangle2D.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files\Matrix</Filter>
     </ClCompile>
-    <ClCompile Include="Int128IOx64.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="MatrixSvd.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="QRMatrix.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="SolveTriDiag.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Complex.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80io.cpp">
+      <Filter>Source Files\Number Types</Filter>
     </ClCompile>
     <ClCompile Include="UInt128IOx64.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Number Types</Filter>
     </ClCompile>
     <ClCompile Include="Int128IOCommon.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Int128IOx64.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="AkimaSpline.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="CommonSpline.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="CubicSpline.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="DataFit.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="FritschCarlsonSpline.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="LssdPolynomial.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="Polynomial.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="ParseReal.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Rational.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="RationalIO.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="Double80Random.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="fft.cpp">
+      <Filter>Source Files\Curve Fitting</Filter>
+    </ClCompile>
+    <ClCompile Include="Newton.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Transformation.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2DTransformations.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Point3D.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Polygon2D.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Rectangle2D.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Polar.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Point2D.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
+    <ClCompile Include="Simplex.cpp">
+      <Filter>Source Files\Matrix</Filter>
+    </ClCompile>
+    <ClCompile Include="gammaR.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="GaussDistribution.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigonometricFunctions.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigonometricFunctionsD.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigonometricFunctionsG.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="TrigonometricFunctionsR.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="MathFunctions.cpp">
+      <Filter>Source Files\Functions</Filter>
+    </ClCompile>
+    <ClCompile Include="MathException.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Rungekutta.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="SigmoidIterator.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Statistic.cpp">
+      <Filter>Source Files\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -454,7 +454,7 @@
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)UInt128x64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)UInt128x64.obj</Outputs>
     </CustomBuild>

@@ -1,54 +1,46 @@
 .CODE
 
-;void int128sum(_int128 &dst, const _int128 &x, const _int128 &y);
+;void int128sum(_int128 &dst, const _int128 &x); do assignop dst += x;
 int128sum PROC
-    push        rbx
     mov         rax, qword ptr[rdx]
-    add         rax, qword ptr[r8]
-    mov         rbx, qword ptr[rdx+8]
-    adc         rbx, qword ptr[r8+8]
-    mov         qword ptr[rcx], rax
-    mov         qword ptr[rcx+8], rbx
-    pop         rbx
+    add         qword ptr[rcx], rax
+    mov         rax, qword ptr[rdx+8]
+    adc         qword ptr[rcx+8], rax
     ret
 int128sum ENDP
 
-;void int128dif( _int128 &dst, const _int128 &x, const _int128 &y);
+;void int128dif(_int128 &dst, const _int128 &x); do assignop dst -= x;
 int128dif PROC
-    push        rbx
     mov         rax, qword ptr[rdx]
-    sub         rax, qword ptr[r8]
-    mov         rbx, qword ptr[rdx+8]
-    sbb         rbx, qword ptr[r8+8]
-    mov         qword ptr[rcx]  , rax
-    mov         qword ptr[rcx+8], rbx
-    pop         rbx
+    sub         qword ptr[rcx], rax
+    mov         rax, qword ptr[rdx+8]
+    sbb         qword ptr[rcx+8], rax
     ret
 int128dif ENDP
 
-;void int128mul(_int128 &dst, const _int128 &x, const _int128 &y);
+;void int128mul(_int128 &dst, const _int128 &x); do assignop dst *= x;
 int128mul PROC
     push        rbx
     mov         rax, qword ptr[rdx+8]           ; rax = x.hi
-    mov         rbx, qword ptr[r8+8]            ; rbx = y.hi
+    mov         rbx, qword ptr[rcx+8]           ; rbx = dst.hi
     or          rbx, rax                        ; rbx = x.hi | y.hi
-    mov         rbx, qword ptr[r8]              ; rbx = y.lo
-    jne         Hard                            ; if(x.hi|y.hi) goto Hard
-                                                ; simple int64 multiplication
+    mov         rbx, qword ptr[rcx]             ; rbx = dst.lo
+    jne         Hard                            ; if(x.hi|dst.hi) goto Hard
+                                                ; else simple int64 multiplication
     mov         rax, qword ptr[rdx]             ; rax = x.lo
     mul         rbx                             ; rdx:rax = rax * rbx
     mov         qword ptr[rcx]  , rax           ; dst.lo = rax
     mov         qword ptr[rcx+8], rdx           ; dst.hi = rdx
     pop         rbx
     ret
-Hard:                                           ; assume rax = x.hi, rbx = y.lo
+Hard:                                           ; assume rax = x.hi, rbx = dst.lo
     push        rsi
-    mov         rsi, rdx                        ; need rdx for highend of mul, so rsi=&x
+    mov         rsi, rdx                        ; need rdx for highend of mul, so rsi = &x
     mul         rbx                             ; rdx:rax = x.hi * y.lo
     mov         r9 , rax                        ; 
     mov         rax, qword ptr[rsi]             ; rax     = x.lo
-    mul         qword ptr[r8+8]                 ; rdx:rax = x.lo * y.hi
-    add         r9, rax                         ; r9      = lo(x.hi*y.lo+x.lo*y.hi); 
+    mul         qword ptr[rcx+8]                ; rdx:rax = x.lo * dst.hi
+    add         r9, rax                         ; r9      = lo(x.hi*dst.lo+x.lo*dst.hi); 
     mov         rax, qword ptr[rsi]             ; rax     = x.lo
     mul         rbx                             ; rdx:rax = x.lo * y.lo
     add         rdx, r9
@@ -59,192 +51,190 @@ Hard:                                           ; assume rax = x.hi, rbx = y.lo
     ret
 int128mul ENDP
 
-;void int128div(_int128 &dst, const _int128 &x, const _int128 &y);
+;void int128div(_int128 &dst, _int128 &x); do assignop dst /= x; if (x < 0) x = -x;
 int128div PROC
-    push        rdi
-    push        rsi
-    push        rbx
-    push        rcx
-    mov         r9,  rdx
-    xor         rdi, rdi
-    mov         rax, qword ptr[r9+8]
-    or          rax, rax
-    jge         L1
-    inc         rdi
-    mov         rdx, qword ptr[r9]
-    neg         rax
-    neg         rdx
-    sbb         rax, 0
-    mov         qword ptr[r9+8], rax
-    mov         qword ptr[r9], rdx
-L1:
-    mov         rax, qword ptr[r8+8]
-    or          rax, rax
-    jge         L2
-    inc         rdi
-    mov         rdx, qword ptr[r8]
-    neg         rax
-    neg         rdx
-    sbb         rax,0
-    mov         qword ptr[r8+8], rax
-    mov         qword ptr[r8], rdx
-L2:
-    or          rax, rax
-    jne         L3
-    mov         rcx, qword ptr[r8]
-    mov         rax, qword ptr[r9+8]
-    xor         rdx, rdx
-    div         rcx
-    mov         rbx, rax
-    mov         rax, qword ptr[r9]
-    div         rcx
-    mov         rdx, rbx
-    jmp         L4
-L3:
-    mov         rbx, rax
-    mov         rcx, qword ptr[r8]
-    mov         rdx, qword ptr[r9+8]
-    mov         rax, qword ptr[r9]
-L5:
-    shr         rbx, 1
-    rcr         rcx, 1
-    shr         rdx, 1
-    rcr         rax, 1
-    or          rbx, rbx
-    jne         L5
-    div         rcx
-    mov         rsi, rax
-    mul         qword ptr[r8+8]
-    mov         rcx, rax
-    mov         rax, qword ptr[r8]
-    mul         rsi
-    add         rdx, rcx
-    jb          L6
-    cmp         rdx, qword ptr[r9+8]
-    ja          L6
-    jb          L7
-    cmp         rax, qword ptr[rdx]
-    jbe         L7
-L6:
-    dec         rsi
-L7:
-    xor         rdx, rdx
-    mov         rax, rsi
-L4:
-    dec         rdi
-    jne         L8
-    neg         rdx
-    neg         rax
-    sbb         rdx, 0
-L8:
-    pop         rcx
-    pop         rbx
-    pop         rsi
-    pop         rdi
-    mov         qword ptr[rcx], rax
-    mov         qword ptr[rcx+8], rdx
-    ret
+    push        rbx                             ;
+    push        rdi                             ;
+    push        rsi                             ;
+    mov         r8, rcx                         ; r8 = &dst
+    mov         r9, rdx                         ; r9 = &x
+    xor         rdi, rdi                        ; rdi = 0
+    mov         rax, qword ptr[r8+8]            ; check sign of dst
+    or          rax, rax                        ;
+    jge         L1                              ; if(dst >= 0) goto L1
+    inc         rdi                             ; rdi++
+    mov         rdx, qword ptr[r8]              ; dst is negative. Change sign
+    neg         rax                             ; 
+    neg         rdx                             ; 
+    sbb         rax, 0                          ; 
+    mov         qword ptr[r8+8], rax            ; dst = -original dst
+    mov         qword ptr[r8], rdx              ;
+L1:                                             ; Assume dst >= 0, rdi = (original dst < 0)1:0
+    mov         rax, qword ptr[r9+8]            ; check sign of x
+    or          rax, rax                        ;
+    jge         L2                              ; 
+    inc         rdi                             ; x is negative. change sign, and increment rdi
+    mov         rdx, qword ptr[r9]              ;
+    neg         rax                             ;
+    neg         rdx                             ;
+    sbb         rax, 0                          ;
+    mov         qword ptr[r9+8], rax            ; x = -original x
+    mov         qword ptr[r9], rdx              ;
+L2:                                             ; Assume dst >= 0, x > 0, rdi = #original negative arguments
+    or          rax, rax                        ;
+    jne         L3                              ;
+    mov         rcx, qword ptr[r9]              ;
+    mov         rax, qword ptr[r8+8]            ;
+    xor         rdx, rdx                        ;
+    div         rcx                             ;
+    mov         rbx, rax                        ;
+    mov         rax, qword ptr[r8]              ;
+    div         rcx                             ;
+    mov         rdx, rbx                        ;
+    jmp         L4                              ;
+L3:                                             ;
+    mov         rbx, rax                        ;
+    mov         rcx, qword ptr[r9]              ;
+    mov         rdx, qword ptr[r8+8]            ;
+    mov         rax, qword ptr[r8]              ;
+L5:                                             ;
+    shr         rbx, 1                          ;
+    rcr         rcx, 1                          ;
+    shr         rdx, 1                          ;
+    rcr         rax, 1                          ;
+    or          rbx, rbx                        ;
+    jne         L5                              ;
+    div         rcx                             ;
+    mov         rsi, rax                        ;
+    mul         qword ptr[r9+8]                 ;
+    mov         rcx, rax                        ;
+    mov         rax, qword ptr[r9]              ;
+    mul         rsi                             ;
+    add         rdx, rcx                        ;
+    jb          L6                              ;
+    cmp         rdx, qword ptr[r8+8]            ;
+    ja          L6                              ;
+    jb          L7                              ;
+    cmp         rax, qword ptr[r8]              ;
+    jbe         L7                              ;
+L6:                                             ;
+    dec         rsi                             ;
+L7:                                             ;
+    xor         rdx, rdx                        ;
+    mov         rax, rsi                        ;
+L4:                                             ;
+    dec         rdi                             ;
+    jne         L8                              ;
+    neg         rdx                             ;
+    neg         rax                             ;
+    sbb         rdx, 0                          ;
+L8:                                             ;
+    pop         rsi                             ;
+    pop         rdi                             ;
+    pop         rbx                             ;
+    mov         qword ptr[r8], rax              ;
+    mov         qword ptr[r8+8], rdx            ;
+    ret                                         ;
 int128div ENDP
 
-;void int128rem( _int128 &dst, const _int128 &x, const _int128 &y);
+;void int128rem(_int128 &dst, _int128 &x); do assignop dst %= x; if (x < 0) x = -x;
 int128rem PROC
-    push        rbx
-    push        rdi
-    push        rcx
-    mov         r9,  rdx
-    xor         rdi, rdi
-    mov         rax, qword ptr[r9+8]
-    or          rax, rax
-    jge         L1
-    inc         rdi
-    mov         rdx, qword ptr[r9]
-    neg         rax
-    neg         rdx
-    sbb         rax, 0
-    mov         qword ptr[r9+8], rax
-    mov         qword ptr[r9], rdx
-L1:
-    mov         rax, qword ptr[r8+8]
-    or          rax, rax
-    jge         L2
-    mov         rdx, qword ptr[r8]
-    neg         rax
-    neg         rdx
-    sbb         rax, 0
-    mov         qword ptr[r8+8], rax
-    mov         qword ptr[r8], rdx
-L2:
-    or          rax, rax
-    jne         L3
-    mov         rcx, qword ptr[r8]
-    mov         rax, qword ptr[r9+8]
-    xor         rdx, rdx
-    div         rcx
-    mov         rax, qword ptr[r9]
-    div         rcx
-    mov         rax, rdx
-    xor         rdx, rdx
-    dec         rdi
-    jns         L4
-    jmp         L8
-L3:
-    mov         rbx, rax
-    mov         rcx, qword ptr[r8]
-    mov         rdx, qword ptr[r9+8]
-    mov         rax, qword ptr[r9]
-L5:
-    shr         rbx, 1
-    rcr         rcx, 1
-    shr         rdx, 1
-    rcr         rax, 1
-    or          rbx, rbx
-    jne         L5
-    div         rcx
-    mov         rcx, rax
-    mul         qword ptr[r8+8]
-    xchg        rax, rcx
-    mul         qword ptr[r8]
-    add         rdx, rcx
-    jb          L6
-    cmp         rdx, qword ptr[r9+8]
-    ja          L6
-    jb          L7
-    cmp         rax, qword ptr[r9]
-    jbe         L7
-L6:
-    sub         rax, qword ptr[r8]
-    sbb         rdx, qword ptr[r8+8]
-L7:
-    sub         rax, qword ptr[r9]
-    sbb         rdx, qword ptr[r9+8]
-    dec         rdi
-    jns         L8
-L4:
-    neg         rdx
-    neg         rax
-    sbb         rdx, 0
-L8:
-    pop         rcx
-    pop         rdi
-    pop         rbx
-    mov         qword ptr[rcx], rax
-    mov         qword ptr[rcx+8], rdx
-    ret
+    push        rbx                             ;
+    push        rdi                             ;
+    mov         r8, rcx                         ; r8 = &dst
+    mov         r9, rdx                         ; r9 = &x
+    xor         rdi, rdi                        ;
+    mov         rax, qword ptr[r8+8]            ; check sign of dst
+    or          rax, rax                        ;
+    jge         L1                              ;
+    inc         rdi                             ;
+    mov         rdx, qword ptr[r8]              ; dst is negative. change sign
+    neg         rax                             ;
+    neg         rdx                             ;
+    sbb         rax, 0                          ;
+    mov         qword ptr[r8+8], rax            ; dst = -original dst
+    mov         qword ptr[r8], rdx              ;
+L1:                                             ; Assume dst>=0, rdi = (original dst < 0)1:0
+    mov         rax, qword ptr[r9+8]            ; check sign of x
+    or          rax, rax                        ;
+    jge         L2                              ; if(x >= 0) goto L2
+    mov         rdx, qword ptr[r9]              ; x is negative. Change sign
+    neg         rax                             ;
+    neg         rdx                             ;
+    sbb         rax, 0                          ;
+    mov         qword ptr[r9+8], rax            ;
+    mov         qword ptr[r9], rdx              ;
+L2:                                             ; Assume dst>=0 and x > 0, (original dst < 0)1:0. dont care about orignal sign of x
+    or          rax, rax                        ;
+    jne         L3                              ;
+    mov         rcx, qword ptr[r9]              ;
+    mov         rax, qword ptr[r8+8]            ;
+    xor         rdx, rdx                        ;
+    div         rcx                             ;
+    mov         rax, qword ptr[r8]              ;
+    div         rcx                             ;
+    mov         rax, rdx                        ;
+    xor         rdx, rdx                        ;
+    dec         rdi                             ;
+    jns         L4                              ;
+    jmp         L8                              ;
+L3:                                             ;
+    mov         rbx, rax                        ;
+    mov         rcx, qword ptr[r9]              ;
+    mov         rdx, qword ptr[r8+8]            ;
+    mov         rax, qword ptr[r8]              ;
+L5:                                             ;
+    shr         rbx, 1                          ;
+    rcr         rcx, 1                          ;
+    shr         rdx, 1                          ;
+    rcr         rax, 1                          ;
+    or          rbx, rbx                        ;
+    jne         L5                              ;
+    div         rcx                             ;
+    mov         rcx, rax                        ;
+    mul         qword ptr[r9+8]                 ;
+    xchg        rax, rcx                        ;
+    mul         qword ptr[r9]                   ;
+    add         rdx, rcx                        ;
+    jb          L6                              ;
+    cmp         rdx, qword ptr[r8+8]            ;
+    ja          L6                              ;
+    jb          L7                              ;
+    cmp         rax, qword ptr[r8]              ;
+    jbe         L7                              ;
+L6:                                             ;
+    sub         rax, qword ptr[r9]              ;
+    sbb         rdx, qword ptr[r9+8]            ;
+L7:                                             ;
+    sub         rax, qword ptr[r8]              ;
+    sbb         rdx, qword ptr[r8+8]            ;
+    dec         rdi                             ;
+    jns         L8                              ;
+L4:                                             ;
+    neg         rdx                             ;
+    neg         rax                             ;
+    sbb         rdx, 0                          ;
+L8:                                             ;
+    pop         rdi                             ;
+    pop         rbx                             ;
+    mov         qword ptr[r8], rax              ;
+    mov         qword ptr[r8+8], rdx            ;
+    ret                                         ;
 int128rem ENDP
 
-;void int128neg( _int128 &dst, const _int128 &x);
+;void int128neg(_int128 &x); set x = -x;
 int128neg PROC
-    mov         rax,qword ptr[rdx]
+    mov         rax,qword ptr[rcx]
     neg         rax
-    mov         r8, qword ptr[rdx+8]
-    adc         r8, 0
-    neg         r8
     mov         qword ptr[rcx], rax
-    mov         qword ptr[rcx+8], r8
+    mov         rax, qword ptr[rcx+8]
+    adc         rax, 0
+    neg         rax
+    mov         qword ptr[rcx+8], rax
     ret
 int128neg ENDP
 
-;void int128shr(const _int128 &x, int shft);
+;void int128shr(_int128 &x, int shft); do assignop x >>= shft; (if(x<0) shift 1-bits in from left, else 0-bits)
 int128shr PROC
     mov         rax, rcx                    ; rax = &x; need cl to the shift instruction
     mov         rcx, rdx                    ; rcx = shift amount
@@ -269,7 +259,7 @@ RetSign:
     ret
 int128shr ENDP
 
-;void int128shl(const _int128 &x, int shft);
+;void int128shl(_int128 &x, int shft); do assignop x <<= shft;
 int128shl PROC
     mov         rax, rcx                    ; rax = &x; need cl to the shift instruction
     mov         rcx, rdx                    ; rcx = shift amount
@@ -295,7 +285,7 @@ RetZero:
     ret
 int128shl ENDP
 
-;int int128cmp(const _int128 &n1, const _int128 &n2);
+;int int128cmp(const _int128 &n1, const _int128 &n2); return sign(n1 - n2);
 int128cmp PROC
     mov         rax, qword ptr[rcx+8]       ; n1.hi
     cmp         rax, qword ptr[rdx+8]       ; n2.hi
