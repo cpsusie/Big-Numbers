@@ -52,7 +52,7 @@ unsigned int TesterJob::run() {
     try {
       test->runTest(m_id, pool);
     } catch(Exception e) {
-      log(_T("Exception in thread %d testing %s:%s\n"), thrId, test->getFunctionName().cstr(), e.what());
+      log(_T("Exception in thread %d testing %s:%s"), thrId, test->getFunctionName().cstr(), e.what());
       ERRLOG << e.what() << NEWLINE;
       TestStatistic::screenlog(_T("%s"), e.what());
       tcout.flush();

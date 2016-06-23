@@ -13,6 +13,12 @@
 #include "Double80.h"
 #include "Real.h"
 
+//#define USE_X32SERVERCHECK
+
+#ifdef USE_X32SERVERCHECK
+#include <Math/ExternEngine.h>
+#endif
+
 // Number of decimal digits in 1 BigReal digit
 #ifdef IS32BIT
 #define LOG10_BIGREALBASE  8
@@ -23,7 +29,8 @@
 #define BIGREAL_MINEXPO   -99999999
 
 typedef unsigned long BRDigitType;
-typedef int           BRExpoType;
+typedef long          BRExpoType;
+typedef long          BRDigitDiffType;
 #else // IS64BIT
 
 #define LOG10_BIGREALBASE  18
@@ -34,7 +41,8 @@ typedef int           BRExpoType;
 #define BIGREAL_MINEXPO   -99999999999999999
 
 typedef unsigned __int64 BRDigitType;
-typedef intptr_t         BRExpoType;
+typedef __int64          BRExpoType;
+typedef __int64          BRDigitDiffType;
 
 #endif // IS32BIT
 
@@ -200,10 +208,10 @@ private:
   void load(ByteInputStream  &s);
   void clear();
   inline bool isLoaded() const {
-    return m_state & CACHE_LOADED;
+    return (m_state & CACHE_LOADED) ? true : false;
   }
   inline bool isLoading() const {
-    return m_state & CACHE_LOADING;
+    return (m_state & CACHE_LOADING) ? true : false;
   }
 public:
 #ifdef _DEBUG
@@ -350,6 +358,11 @@ void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const form
 class BigReal {
 private:
   DECLARECLASSNAME;
+
+#ifdef USE_X32SERVERCHECK
+  static ExternEngine s_multiplyServer;
+  friend class InitBigReal;
+#endif
 
 #ifdef _DEBUG
 private:
@@ -807,7 +820,7 @@ public:
                                                                                        // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
 
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);            // Set to = from so |to-from| <= f. Return to
-  friend BigReal &copy(BigReal &to, const BigReal &from, unsigned int length);         // Set to = from so to.getlength() = min(length,from.getlength(). Return to
+  friend BigReal &copy(BigReal &to, const BigReal &from, size_t    length);            // Set to = from so to.getlength() = min(length,from.getlength(). Return to
 
   static BigReal quotNewton(   const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);   // x/y with |error| < f. Newton-rapthon iteration
   static BigReal quotLinear32( const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool);   // x/y with |error| < f. School method. using build-in 32-bit division

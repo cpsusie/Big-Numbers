@@ -19,9 +19,14 @@ Real getReal(const BigReal &x) {
 
 #define getSignificandDouble80(x) ((*((unsigned __int64*)(&(x)))) & 0xffffffffffffffffui64)
 
-void BigReal::init(const Double80 &x){
+void BigReal::init(const Double80 &x) {
+  DEFINEMETHODNAME;
+
   init();
 
+  if (isNan(x)) {
+    throwBigRealInvalidArgumentException(method, _T("Double80 is Nan"));
+  }
   if(!x.isZero()) {
     const int expo2 = Double80::getExpo2(x) - 63;
     if(expo2 == 0) {

@@ -27,7 +27,7 @@ MultiplyLoop:                                     ; do { ; we know that the firs
       mov         rcx, QWORD PTR[rcx+16]          ;   yp = yp->prev
       jrcxz       AddSubProduct                   ;   if(yp == NULL) exit loop to AddSubProduct
       mov         rbx, QWORD PTR[rbx+8]           ;   xp = xp->next
-      cmp         rbx, 0                          ;
+      or          rbx, rbx                        ;
       jne         MultiplyLoop                    ; } while(xp);
 
 AddSubProduct:
@@ -41,7 +41,7 @@ AddSubProduct:
       mov         rdi, rax                        ; rdi = sum / BASE
                                                   ; No need to set carry = currentDigit->n (it's just been added => currentDigit->n == 0)
       mov         QWORD PTR[r8], rdx              ; currentDigit->n = carry % BASE = sum % BASE = rdx
-      cmp         rdi, 0                          ;
+      or          rdi, rdi                        ;
       je          NextDigit                       ; if (sum == 0) we're done. Carry is always 0 at this point
                                                   ;
 AddIntNoCarry:                                    ; Assume 0 < sum in rdi <= maxui64), r8 is addr of last updated digit, Carry = 0
@@ -56,32 +56,32 @@ AddIntNoCarry:                                    ; Assume 0 < sum in rdi <= max
       div         rbx                             ; rax = carry / BASE, rdx = carry % BASE
       mov         QWORD PTR[r8], rdx              ; currentDigit->n = carry % BASE
                                                   ;
-      cmp         rdi, 0                          ;
+      or          rdi, rdi                        ;
       jne         AddIntPossibleCarry             ;
-      cmp         rax, 0                          ; sum = 0
+      or          rax, rax                        ; sum = 0
       jne         FinalizeCarryLoop               ; if(carry != 0) handle it in FinalizeCarryLoop, which assumes carry in eax
       jmp         NextDigit                       ; else we're done
                                                   ;
 AddIntPossibleCarry:                              ; Assume carry in rax. can be 0 or 1
-      cmp         rax, 0                          ;
+      or          rax, rax                        ;
       je          AddIntNoCarry                   ;
                                                   ; Assume 0 < sum in rdi <= maxui64/BASE (=18), rsi is addr of last updated digit, Carry in rax != 0 (maxvalue = 1)
       mov         r8, QWORD PTR[r8+16]            ; currentDigit = currentDigit->prev
       add         rax, QWORD PTR[r8]              ; carry += currentDigit->n
       add         rax, rdi                        ; carry += sum % BASE (No need to calculate sum % BASE because sum<BASE=>sum%BASE==sum = edi
       xor         rdx, rdx                        ;
-      div         rbx                             ; eax = carry / BASE, edx = carry % BASE
+      div         rbx                             ; rax = carry / BASE, rdx = carry % BASE
       mov         QWORD PTR[r8], rdx              ; currentDigit->n = carry % BASE
-      cmp         rax, 0                          ;
+      or          rax, rax                        ;
       je          NextDigit                       ; if (carry == 0) we're done
                                                   ;
-FinalizeCarryLoop:                                ; do { // Assume r8 is addr of last updated digit, Carry in eax (!= 0)
+FinalizeCarryLoop:                                ; do { // Assume r8 is addr of last updated digit, Carry in rax (!= 0)
       mov         r8, QWORD PTR[r8+16]            ;   currentDigit = currentDigit->prev
       add         rax, QWORD PTR[r8]              ;   carry += currentDigit->n
       xor         rdx, rdx                        ;
-      div         rbx                             ;   eax = carry / BASE , edx = carry % BASE
+      div         rbx                             ;   rax = carry / BASE , rdx = carry % BASE
       mov         QWORD PTR[r8], rdx              ;   currentDigit->n = carry % BASE
-      cmp         rax, 0                          ;
+      or          rax, rax                        ;
       je          NextDigit                       ;
       jmp         FinalizeCarryLoop               ; } while(carry != 0)
 SumTooBig:                                        ;

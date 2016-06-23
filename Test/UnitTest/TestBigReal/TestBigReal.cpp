@@ -318,6 +318,16 @@ static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
 }
 
+#ifdef IS32BIT
+  const TCHAR *architecture = _T("x86");
+#else
+  const TCHAR *architecture = _T("x64");
+#endif
+#ifdef _DEBUG
+  const TCHAR *compileMode = _T("Debug");
+#else
+  const TCHAR *compileMode = _T("Release");
+#endif
 
 //static DigitMonitorThread digitMonitor;
 
@@ -326,6 +336,10 @@ void testBigReal(int threadCount) {
   tcout << _T("debuggerPresent:") << getDebuggerPresent() << NEWLINE;
 #endif
   int winW, winH;
+  CONSOLE_FONT_INFOEX info = Console::getFont();
+  info.dwFontSize.X = 8;
+  info.dwFontSize.Y = 12;
+  Console::setFontSize(info.dwFontSize);
   Console::getLargestConsoleWindowSize(winW, winH);
   winW -= 10;
   winH --;
@@ -335,7 +349,7 @@ void testBigReal(int threadCount) {
 
   tcout << _T("Testing BigReal.") << NEWLINE;
 
-  log(_T("Begin test\n"));
+  log(_T("Begin test %s(%s)"), compileMode, architecture);
 
 #ifndef _DEBUG
   randomize();
@@ -344,19 +358,19 @@ void testBigReal(int threadCount) {
   AllTime startTime;
 
   Double80::enableDebugString(false);
-  BigReal::enableDebugString(  false);
+  BigReal::enableDebugString( false);
   redirectDebugLog();
 
 //StartAll:
+
   testConstructors();
 
   testConversions();
   testGetFirst();
+
   testGetDecimalDigitCount();
   testGetExpo10();
   testMultPow10();
-
-  testPi();
 
 //  testGetExpo2();
 
@@ -420,9 +434,9 @@ void testBigReal(int threadCount) {
                           );
   TestStatistic::screenlog(TesterJob::allOk() ? _T("BigReal ok.") : _T("BigReal failed."));
 
-  log(_T("Total time usage:%s Total allocated Digits:%s\n")
+  log(_T("Total time usage:%s Total allocated Digits:%s")
         ,timeUsage.toString(MMSS).cstr()
         ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
         );
-  log(_T("End test\n"));
+  log(_T("End test %s(%s)"), compileMode, architecture);
 }

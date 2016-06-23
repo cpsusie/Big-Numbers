@@ -374,11 +374,11 @@ BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f) {
   return to;
 }
 
-BigReal &copy(BigReal &to, const BigReal &from, unsigned int length) {
+BigReal &copy(BigReal &to, const BigReal &from, size_t length) {
   if(from.isZero()) {
     to.setToZero();
   } else {
-    length = minMax(length, (unsigned int)1, (unsigned int)from.getLength());
+    length = minMax(length, (size_t)1, from.getLength());
     to.m_low = (to.m_expo = from.m_expo) - length + 1;
     to.m_negative = from.m_negative;
     to.clearDigits();
@@ -419,7 +419,7 @@ int compare(const BigReal &x, const BigReal &y) {
   const int s = x.m_negative ? -1 : 1;
   const Digit *xp, *yp;
   for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
-    const long d = long(xp->n - yp->n);
+    const BRDigitDiffType d = (BRDigitDiffType)xp->n - (BRDigitDiffType)yp->n;
     if(d) {
       return sign(d) * s;
     }
@@ -451,7 +451,7 @@ int compareAbs(const BigReal &x, const BigReal &y) {
   // Compare digits
   const Digit *xp, *yp;
   for(xp = x.m_first, yp = y.m_first; xp && yp; xp = xp->next, yp = yp->next) {
-    const long d = long(xp->n - yp->n);
+    const BRDigitDiffType d = (BRDigitDiffType)xp->n - (BRDigitDiffType)yp->n;
     if(d) {
       return sign(d);
     }
@@ -593,7 +593,7 @@ unsigned long BigReal::hashCode() const {
 #ifdef IS32BIT
   return s;
 #else // IS64BIT
-  return ((unsigned long)(s >> 32)) ^ ((unsigned long)(s & 0xffffffff));
+  return uint64Hash(s);
 #endif
 }
 
@@ -615,7 +615,7 @@ void BigReal ::assertIsValidBigReal() const {
     }
     return;
   }
-  unsigned int digitCount = 0;
+  size_t digitCount = 0;
   for(const Digit *p = m_first; p; p = p->next) {
     if(p->n >= BIGREALBASE) {
       throwAssertionException(_T("Digit(%s) (=%s) >= BIGREALBASE (=%lu)")
@@ -628,7 +628,7 @@ void BigReal ::assertIsValidBigReal() const {
   if(digitCount == 0) {
     throwAssertionException(_T("#digits in chain = 0. x != 0"));
   }
-  if(digitCount != (unsigned int)getLength()) {
+  if(digitCount != getLength()) {
     throwAssertionException(_T("#digits in chain (=%s) != getLength() (=%s)")
                            ,format1000(digitCount).cstr()
                            ,format1000(getLength()).cstr());

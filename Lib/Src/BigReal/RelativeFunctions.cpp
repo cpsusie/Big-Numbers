@@ -9,29 +9,29 @@ BigReal rSum(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digit
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   const BRExpoType xe = BigReal::getExpo10(x);
   const BRExpoType ye = BigReal::getExpo10(y);
-  return sum(x,y,e(_1,max(xe,ye) - digits - 2),pool);
+  return sum(x,y,e(_1,max(xe,ye) - (BRExpoType)digits - 2),pool);
 }
 
 BigReal rDif(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
   const BRExpoType xe = BigReal::getExpo10(x);
   const BRExpoType ye = BigReal::getExpo10(y);
-  return dif(x,y,e(_1,max(xe,ye) - digits - 2),pool);
+  return dif(x,y,e(_1,max(xe,ye) - (BRExpoType)digits - 2),pool);
 }
 
 BigReal rProd(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
-  return prod(x,y,e(_1,BigReal::getExpo10(x) + BigReal::getExpo10(y) - digits - 2),pool);
+  return prod(x,y,e(_1,BigReal::getExpo10(x) + BigReal::getExpo10(y) - (BRExpoType)digits - 2),pool);
 }
 
 BigReal rQuot(const BigReal &x, const BigReal &y, size_t digits, DigitPool *digitPool) {
   DigitPool *pool = digitPool ? digitPool : x.getDigitPool();
-  return quot(x,y,e(_1,BigReal::getExpo10(x) - BigReal::getExpo10(y) - digits - 2),pool);
+  return quot(x,y,e(_1,BigReal::getExpo10(x) - BigReal::getExpo10(y) - (BRExpoType)digits - 2),pool);
 }
 
 BigReal rSqrt(const BigReal &x, size_t digits) {
   DigitPool *pool = x.getDigitPool();
-  return sqrt(x,e(_1, BigReal::getExpo10(x)/2 - digits));
+  return sqrt(x,e(_1, BigReal::getExpo10(x)/2 - (BRExpoType)digits));
 }
 
 class rExpConstants {

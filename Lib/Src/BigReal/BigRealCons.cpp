@@ -213,8 +213,8 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
     }
 
     if(firstNonZero < commaPos) { // We got something before decimalpoint
-      unsigned long n      = 0;
-      unsigned long factor = 1;
+      BRDigitType n      = 0;
+      BRDigitType factor = 1;
       for(t = commaPos - 1; t >= firstNonZero; t--) {
         n += factor * (*t - _T('0'));
         factor *= 10;
@@ -235,7 +235,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
     if(lastNonZero > commaPos) { // We got something after the decimalpoint
       fractionalPart.m_expo = -1;
       fractionalPart.m_low  = 0;
-      unsigned long n = 0;
+      BRDigitType n = 0;
       if(*commaPos == _T('.')) {
         int count = 0;
         for(t = commaPos + 1; _istdigit(*t); t++) {
@@ -249,9 +249,8 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
           }
         }
         if(n) { // Remember the last digit
-          while(count < LOG10_BIGREALBASE) { // Make it a whole Digit
-            n *= 10;
-            count++;
+          if(count < LOG10_BIGREALBASE) { // Make it a whole Digit
+            n *= pow10(LOG10_BIGREALBASE - count);
           }
           fractionalPart.appendDigit(n);
           fractionalPart.m_low--;
@@ -279,7 +278,7 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       } else if(*t == _T('+')) {
         t++;
       }
-      int exponent;
+      BRExpoType exponent;
       for(exponent = 0; _istdigit(*t); t++) {
         exponent = 10 * exponent + (*t - '0');
         if(exponent > LOG10_BIGREALBASE*BIGREAL_MAXEXPO || exponent < 0) { // max. exponent in base 10

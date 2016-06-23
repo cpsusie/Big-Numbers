@@ -89,11 +89,14 @@ BigReal getRelativeError(const BigReal &x, const BigReal &x0) {
 }
 
 static const TCHAR *thisFile = _T(__FILE__);
+static       FILE  *logFile = NULL;
 
 void log(const TCHAR *form,...) {
-  const String dir         = FileNameSplitter(thisFile).getDir();
-  const String logFileName = FileNameSplitter(getModuleFileName()).setDir(dir).setExtension(_T("log")).getFullPath();
-  FILE        *logFile     = MKFOPEN(logFileName,_T("a"));
+  if (logFile == NULL) {
+    const String dir         = FileNameSplitter(thisFile).getDir();
+    const String logFileName = FileNameSplitter(getModuleFileName()).setDir(dir).setExtension(_T("log")).getFullPath();
+    logFile = MKFOPEN(logFileName, _T("a"));
+  }
 
   va_list argptr;
   va_start(argptr,form);
@@ -102,7 +105,7 @@ void log(const TCHAR *form,...) {
 
   s.replace(_T('\n'),_T(' '));
   _ftprintf(logFile,_T("%s %s\n"),Timestamp().toString().cstr(),s.cstr());
-  fclose(logFile);
+  fflush(logFile);
 }
 
 void clearLine() {

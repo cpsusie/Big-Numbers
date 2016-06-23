@@ -12,10 +12,17 @@ bool      BigReal::s_debugStringEnabled = false;
 Semaphore BigReal::s_debugStringGate;
 #endif
 
+#ifdef USE_X32SERVERCHECK
+ExternEngine BigReal::s_multiplyServer(_T("c:\\bin\\multiplicationServer.exe"));
+#endif
+
 class InitBigReal {
 public:
   InitBigReal() {
     Double80::initClass();
+#ifdef USE_X32SERVERCHECK
+    BigReal::s_multiplyServer.start();
+#endif
   }
 };
 

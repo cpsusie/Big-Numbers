@@ -2,8 +2,6 @@
 #include <Console.h>
 #include "FunctionTest.h"
 
-using namespace std;
-
 void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
   const BigReal     from(m_xfrom, pool);
   const BigReal     to(  m_xto  , pool);

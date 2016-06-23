@@ -4,8 +4,6 @@
 #include <Console.h>
 #include "TestStatistic.h"
 
-using namespace std;
-
 class SetTimeToPrint : public TimeoutHandler {
 public:
   void handleTimeout(Timer &timer) {

@@ -16,6 +16,8 @@ BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f,
   return result.shortProduct(x,y,f.m_expo);
 }
 
+// NOTE: fexpo is NOT decimal exponent, but Digit-exponent. To get Decimal exponent,
+// multiply by LOG10_BIGREALBASE !!!
 BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fexpo) {
   if(!s_continueCalculation) throwBigRealException(_T("Operation was cancelled"));
 
@@ -31,7 +33,22 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
     setToZero();
     return *this;
   }
+
+#ifdef USE_X32SERVERCHECK
+  DigitPool *pool = getDigitPool();
+  BigReal ff(pool), serverResult(pool), error(pool);
+  ff = (fexpo == BIGREAL_ZEROEXPO) ? BIGREAL_0 : (e(BIGREAL_1, fexpo * LOG10_BIGREALBASE, pool));
+  s_multiplyServer.mult(serverResult, x, y, ff);
+
+  shortProductNoZeroCheck(x, y, loopCount);
+  error = serverResult - *this;
+  if (compareAbs(error, ff) > 0) {
+    shortProductNoZeroCheck(x, y, loopCount);
+  }
+  return *this;
+#else
   return shortProductNoZeroCheck(x, y, loopCount);
+#endif
 }
 
 // Assume a == b == 0. Dont care about sign of f

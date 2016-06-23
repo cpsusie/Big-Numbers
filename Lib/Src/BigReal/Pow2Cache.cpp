@@ -11,11 +11,11 @@ size_t Pow2Cache::s_cacheRequestCount = 0;
 
 #ifdef IS32BIT
 #define CACHEFILENAME _T("c:\\temp\\Pow2Cachex86.dat")
-static unsigned char BITPERBRDIGIT = 32;
 #else
 #define CACHEFILENAME _T("c:\\temp\\Pow2Cachex64.dat")
-static unsigned char BITPERBRDIGIT = 64;
 #endif
+
+#define BITPERBRDIGIT (sizeof(BRDigitType)*8)
 
 Pow2Cache::Pow2Cache() {
   m_state     = CACHE_EMPTY;
@@ -91,7 +91,8 @@ void Pow2Cache::save(ByteOutputStream &s) const {
   const UINT capacity = (UINT)getCapacity();
   const UINT n        = (UINT)size();
   debugLog(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
-  s.putBytes(&BITPERBRDIGIT, sizeof(BITPERBRDIGIT));
+  const unsigned char signaturByte = BITPERBRDIGIT;
+  s.putByte(signaturByte);
   s.putBytes((BYTE*)&capacity, sizeof(capacity));
   s.putBytes((BYTE*)&n       , sizeof(n));
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {

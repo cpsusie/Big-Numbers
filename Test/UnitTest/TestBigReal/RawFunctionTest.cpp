@@ -1,16 +1,16 @@
 #include "stdafx.h"
 #include "FunctionTest.h"
 
-static int myGetDecimalDigitCount(unsigned long x) {
+static int myGetDecimalDigitCount(BRDigitType x) {
   int count;
-  for(count = 0; x > 0 && count <= 10; count++) {
+  for(count = 0; x > 0; count++) {
     x /= 10;
   }
   return count;
 }
 
 void testGetDecimalDigitCount(TestStatistic &stat) {
-  unsigned int i;
+  BRDigitType i;
 
 #ifdef TESTTIME
   double startTime = getProcessTime();
@@ -47,13 +47,13 @@ void testGetDecimalDigits(TestStatistic &stat) {
   }
 }
 
-static int myGetExpo10(unsigned long x) {
+static int myGetExpo10(BRDigitType x) {
   return (x == 0) ? 0 : (int)floor(log10(x));
 }
 
 void testGetExpo10(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
-  for(unsigned long i = 0; i < BIGREALBASE; i+=7) {
+  for(BRDigitType i = 0; i < BIGREALBASE; i = ((i+1) * 5) / 4) {
     const BigReal ni(i, pool);
     const BRExpoType e10 = BigReal::getExpo10(ni);
     const int        me10 = myGetExpo10(i);

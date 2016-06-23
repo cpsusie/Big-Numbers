@@ -4,8 +4,6 @@
 #include <CPUInfo.h>
 #include "BigRealTestClass.h"
 
-using namespace std;
-
 BigRealTestClass::~BigRealTestClass() {
   if(m_digitPool) {
     BigRealThreadPool::releaseDigitPool(m_digitPool);
@@ -493,7 +491,6 @@ void BigRealTestClass::testBigRealStream() {
 }
 
 #ifdef __NEVER__
-
 void BigRealTestClass::testCopy() {
   for(int length = 1; length < 10; length++) {
     FullFormatBigReal src = e(BigReal::random(10+4*length),length*2);
