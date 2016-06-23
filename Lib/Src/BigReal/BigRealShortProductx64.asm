@@ -75,8 +75,8 @@ AddIntPossibleCarry:                              ; Assume carry in rax. can be 
       cmp         rax, 0                          ;
       je          NextDigit                       ; if (carry == 0) we're done
                                                   ;
-FinalizeCarryLoop:                                ; do { // Assume esi is addr of last updated digit, Carry in eax (!= 0)
-      mov         rsi, QWORD PTR[r8+16]           ;   currentDigit = currentDigit->prev
+FinalizeCarryLoop:                                ; do { // Assume r8 is addr of last updated digit, Carry in eax (!= 0)
+      mov         r8, QWORD PTR[r8+16]            ;   currentDigit = currentDigit->prev
       add         rax, QWORD PTR[r8]              ;   carry += currentDigit->n
       xor         rdx, rdx                        ;
       div         rbx                             ;   eax = carry / BASE , edx = carry % BASE
