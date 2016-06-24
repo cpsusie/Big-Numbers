@@ -31,23 +31,21 @@ BigReal &BigReal::shortProductNoZeroCheck(const BigReal &x, const BigReal &y, si
     cd = fastAppendDigit(cd);
     digitsAdded++;
 
-    if (BigRealMultiplyColumn(yk, xk, cd, bigSum128)) {
-      goto NextDigit;
-    }
-    BRDigitType carry = 0;
-    Digit      *d = cd;
-    d->n = bigSum128 % BIGREALBASE128;
-    bigSum128 /= BIGREALBASE128;
-    do {
-      d = d->prev;
-      carry += (d->n + (BRDigitType)(bigSum128 % BIGREALBASE128));
-      d->n = carry % BIGREALBASE;
-      carry     /= BIGREALBASE;
+    if (!BigRealMultiplyColumn(yk, xk, cd, bigSum128)) {
+      BRDigitType carry = 0;
+      Digit      *d = cd;
+      d->n = bigSum128 % BIGREALBASE128;
       bigSum128 /= BIGREALBASE128;
-    } while(bigSum128 || carry);
-// dont call trimZeroes() !!;
+      do {
+        d = d->prev;
+        carry += (d->n + (BRDigitType)(bigSum128 % BIGREALBASE128));
+        d->n = carry % BIGREALBASE;
+        carry /= BIGREALBASE;
+        bigSum128 /= BIGREALBASE128;
+      } while (bigSum128 || carry);
+      // dont call trimZeroes() !!;
+    }
 
-NextDigit:
     if(--loopCount <= 0) break;
     if(yk->next) {
       yk = yk->next;
