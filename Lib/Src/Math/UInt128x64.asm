@@ -145,11 +145,11 @@ uint128cmp PROC
      cmp        rax, qword ptr[rdx+8]      ; n2.hi
      jb         lessthan                   ; usigned compare of n1.hi and n2.hi
      ja         greaterthan
-     mov        rax, qword ptr[rcx]            ; n2.lo
-     cmp        rax, qword ptr[rdx]            ; n2.lo
+     mov        rax, qword ptr[rcx]        ; n2.lo
+     cmp        rax, qword ptr[rdx]        ; n2.lo
      jb         lessthan                   ; unsigned compare of n1.lo and n2.lo
      ja         greaterthan
-     mov        rax, 0                      ; they are equal
+     mov        rax, 0                     ; they are equal
      ret
 greaterthan:
      mov        rax, 1
