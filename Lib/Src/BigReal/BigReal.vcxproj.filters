@@ -11,7 +11,7 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{01d294f9-a864-4d68-8672-4ced1f69bb13}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ASM Files">
+    <Filter Include="Source Files\Asm Files">
       <UniqueIdentifier>{34835de5-9711-4ef8-9a05-3227397f4c6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -207,7 +207,7 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BigRealShortProductx64.asm">
-      <Filter>Source Files\ASM Files</Filter>
+      <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
