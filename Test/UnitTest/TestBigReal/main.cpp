@@ -204,8 +204,8 @@ void SpecialTestClass::runTest() {
 //  measureProduct(true, true, false);
 //  return;
 
-//  measureSplitLength();
-//  return;
+  measureSplitLength();
+  return;
 
 //  measureQuot();
 //  return;
@@ -222,8 +222,8 @@ void SpecialTestClass::runTest() {
 //  testMultiThreadedProduct();
 //  return;
 
-  testLnEstimate();
-  return;
+//  testLnEstimate();
+//  return;
 
 //  testFullFormat();
 //  return;

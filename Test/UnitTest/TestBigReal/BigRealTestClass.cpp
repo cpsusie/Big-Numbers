@@ -109,7 +109,7 @@ void BigRealTestClass::measureSplitLength() {
       const String fileName = format(_T("%s\\splitfac%05d_%05d.dat"), dir.cstr(), xLength, yLength);
       FILE *dataFile = MKFOPEN(fileName,"w");
 
-      for(BigReal::s_splitLength = 120; BigReal::s_splitLength <= 600; BigReal::s_splitLength += 5) {
+      for(BigReal::s_splitLength = 40; BigReal::s_splitLength <= BigReal::getMaxSplitLength(); BigReal::s_splitLength += 5) {
         Array<BigReal> x, y;
         for(int i = 0; i < 11; i++) {
           x.add(BigReal::random(xLength));
