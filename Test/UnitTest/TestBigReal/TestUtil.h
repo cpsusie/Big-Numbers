@@ -32,3 +32,8 @@ BigReal  getRelativeError(  const BigReal  &x, const BigReal &x0);
 void log(const TCHAR *form,...);
 void clearLine();
 
+const String &getSourceDir();
+const String &getArchitecture();
+const String &getCompileMode();
+const String getCompileArchitectureSignatureString();
+const String getSignatureSubDir();

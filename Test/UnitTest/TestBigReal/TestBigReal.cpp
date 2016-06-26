@@ -318,17 +318,6 @@ static double getPiTimeEstimate(int decimals) {
   return ((7.98881e-7 * decimals - 0.00109247) * decimals + 64.2134) * decimals - 70058.7;
 }
 
-#ifdef IS32BIT
-  const TCHAR *architecture = _T("x86");
-#else
-  const TCHAR *architecture = _T("x64");
-#endif
-#ifdef _DEBUG
-  const TCHAR *compileMode = _T("Debug");
-#else
-  const TCHAR *compileMode = _T("Release");
-#endif
-
 //static DigitMonitorThread digitMonitor;
 
 void testBigReal(int threadCount) {
@@ -349,7 +338,7 @@ void testBigReal(int threadCount) {
 
   tcout << _T("Testing BigReal.") << NEWLINE;
 
-  log(_T("Begin test %s(%s)"), compileMode, architecture);
+  log(_T("Begin test %s"), getCompileArchitectureSignatureString().cstr());
 
 #ifndef _DEBUG
   randomize();
@@ -438,5 +427,5 @@ void testBigReal(int threadCount) {
         ,timeUsage.toString(MMSS).cstr()
         ,format1000(DigitPool::getTotalAllocatedDigitCount()).cstr()
         );
-  log(_T("End test %s(%s)"), compileMode, architecture);
+  log(_T("End test %s"), getCompileArchitectureSignatureString().cstr());
 }

@@ -33,11 +33,14 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
   }
 
   _tprintf(_T("measureProduct:splitLength:%d\n"), (int)BigReal::s_splitLength);
+  const String dir                    = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod%s"),Date().toString("yyyyMMdd").cstr()));
+  const String splitProductFileName1  = format(_T("splitProduct%d.dat") , BigReal::s_splitLength);
+  const String splitProductRFileName1 = format(_T("splitProductR%d.dat"), BigReal::s_splitLength);
+  const String shortProductFileName1 = _T("shortProduct.dat");
 
-  const String dir                   = format(_T("prod%s"),Date().toString("yyyyMMdd").cstr());
-  const String splitProductFileName  = format(_T("%s\\splitProduct%d.dat")      , dir.cstr(), BigReal::s_splitLength);
-  const String splitProductRFileName = format(_T("%s\\splitProductR%d.dat")     , dir.cstr(), BigReal::s_splitLength);
-  const String shortProductFileName  = format(_T("%s\\shortProduct.dat"), dir.cstr());
+  const String splitProductFileName  = FileNameSplitter::getChildName(dir, splitProductFileName1 );
+  const String splitProductRFileName = FileNameSplitter::getChildName(dir, splitProductRFileName1);
+  const String shortProductFileName  = FileNameSplitter::getChildName(dir, shortProductFileName1 );
 
   const int minProductLength      = 30;
   const int maxProductLength      = 620000;
@@ -101,15 +104,67 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
   clearLine();
 }
 
+class LengthTimePair {
+public:
+  short m_splitLength;
+  float m_time;
+  LengthTimePair(int splitLength, double time) : m_splitLength((short)splitLength), m_time((float)time) {
+  }
+  LengthTimePair() : m_splitLength(0), m_time(0) {
+  }
+};
+
+class TimeArray : public CompactArray<LengthTimePair> {
+public:
+  TimeArray() : CompactArray<LengthTimePair>(301) {
+  }
+};
+
+class TimeMatrix : public Array<TimeArray> {
+private:
+  float getTotalTimeUsage(size_t column) const;
+public:
+  TimeArray getAverageArray() const;
+};
+
+TimeArray TimeMatrix::getAverageArray() const {
+  const TimeArray &firstRow = (*this)[0];
+  const size_t     rows    = size();
+  const size_t     columns = firstRow.size();
+  CompactArray<float> columnTime(columns);
+  float timeSum = 0;
+  for (size_t c = 0; c < columns; c++) {
+    const float columnSum = getTotalTimeUsage(c);
+    columnTime.add(columnSum);
+    timeSum += columnSum;
+  }
+  TimeArray result;
+  for(size_t c = 0; c < columns; c++) {
+    result.add(LengthTimePair(firstRow[c].m_splitLength, columnTime[c] / timeSum));
+  }
+
+  return result;
+}
+
+float TimeMatrix::getTotalTimeUsage(size_t column) const {
+  float sum = 0;
+  for (size_t r = 0; r < size(); r++) {
+    sum += (*this)[r][column].m_time;
+  }
+  return sum;
+}
+
 void BigRealTestClass::measureSplitLength() {
-  const String dir = format(_T("prod-REALTIME%s"),Date().toString("yyyyMMdd").cstr());
+  TimeMatrix timeMatrix;
+  const String dir = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod-PROCTIME%s"),Date().toString("yyyyMMdd").cstr()));
   for(int xLength = 4000; xLength <= 40000; xLength = (int)(1.3*xLength)) {
     for(int yLength = xLength; yLength <= 40000; yLength = (int)(1.3*yLength)) {
 
-      const String fileName = format(_T("%s\\splitfac%05d_%05d.dat"), dir.cstr(), xLength, yLength);
-      FILE *dataFile = MKFOPEN(fileName,"w");
+      const String fileName = FileNameSplitter::getChildName(dir, format(_T("splitfac%05d_%05d.dat"), xLength, yLength));
+      FILE *dataFile = MKFOPEN(fileName, "w");
 
-      for(BigReal::s_splitLength = 40; BigReal::s_splitLength <= BigReal::getMaxSplitLength(); BigReal::s_splitLength += 5) {
+      TimeArray ta;
+      for(BigReal::s_splitLength = 40; BigReal::s_splitLength <= BigReal::getMaxSplitLength(); BigReal::s_splitLength++) {
         Array<BigReal> x, y;
         for(int i = 0; i < 11; i++) {
           x.add(BigReal::random(xLength));
@@ -119,7 +174,9 @@ void BigRealTestClass::measureSplitLength() {
         }
 
         MeasureBinaryOperator mProd(PROD,x,y,0);
-        double timeUsage = measureTime(mProd, MEASURE_REALTIME);
+        double timeUsage = measureTime(mProd, MEASURE_PROCESSTIME);
+
+        ta.add(LengthTimePair((short)BigReal::s_splitLength, timeUsage));
 
         _tprintf(_T("BigRealLength:(%4d,%4d) splitLength:%3d time:%20.3le sec.\n")
                 ,xLength, yLength, (int)BigReal::s_splitLength, timeUsage);
@@ -128,8 +185,16 @@ void BigRealTestClass::measureSplitLength() {
         _ftprintf(dataFile,_T("%d %.3le\n"), (int)BigReal::s_splitLength, timeUsage);
       }
       fclose(dataFile);
+      timeMatrix.add(ta);
     }
   }
+  const TimeArray averageTime = timeMatrix.getAverageArray();
+  const String fileName = FileNameSplitter::getChildName(dir, _T("splitAverageTime.dat"));
+  FILE *dataFile = MKFOPEN(fileName, "w");
+  for (size_t i = 0; i < averageTime.size(); i++) {
+    _ftprintf(dataFile,_T("%d %.3le\n"), (int)averageTime[i].m_splitLength, (double)averageTime[i].m_time);
+  }
+  fclose(dataFile);
 }
 
 class TimeUsageMethod {

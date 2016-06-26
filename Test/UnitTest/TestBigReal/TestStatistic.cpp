@@ -113,13 +113,11 @@ TestStatistic::~TestStatistic() {
 */
 }
 
-static const TCHAR *thisFile = _T(__FILE__);
-
 tostream &TestStatistic::getErrorLog(bool logTime) { // static
   s_gate.wait();
   if(s_errorLogStream == NULL) {
     FileNameSplitter finfo(getModuleFileName());
-    finfo.setDir(FileNameSplitter(thisFile).getDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
+    finfo.setDir(getSourceDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
     const String fileName = finfo.getFullPath();
     FILE *f = MKFOPEN(fileName, "a"); fclose(f);
     s_errorLogStream = new tofstream(fileName.cstr(), ios::out | ios::app | ios::unitbuf);

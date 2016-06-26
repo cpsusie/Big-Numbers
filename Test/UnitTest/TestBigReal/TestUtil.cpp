@@ -89,12 +89,50 @@ BigReal getRelativeError(const BigReal &x, const BigReal &x0) {
 }
 
 static const TCHAR *thisFile = _T(__FILE__);
-static       FILE  *logFile = NULL;
+
+const String &getSourceDir() {
+  static String sourceDir;
+  if (sourceDir.length() == 0) {
+    sourceDir = FileNameSplitter(thisFile).getDir();
+  }
+  return sourceDir;
+}
+
+const String &getArchitecture() {
+  static String architecture;
+  if (architecture.length() == 0) {
+#ifdef IS32BIT
+    architecture = _T("x86");
+#else
+    architecture = _T("x64");
+#endif
+  }
+  return architecture;
+}
+
+const String &getCompileMode() {
+  static String compileMode;
+#ifdef _DEBUG
+  compileMode = _T("Debug");
+#else
+  compileMode = _T("Release");
+#endif
+  return compileMode;
+}
+
+const String getCompileArchitectureSignatureString() {
+  return format(_T("%s(%s)"), getCompileMode().cstr(), getArchitecture().cstr());
+}
+
+const String getSignatureSubDir() {
+  return FileNameSplitter::getChildName(getSourceDir(), getCompileArchitectureSignatureString());
+}
+
+static FILE  *logFile = NULL;
 
 void log(const TCHAR *form,...) {
   if (logFile == NULL) {
-    const String dir         = FileNameSplitter(thisFile).getDir();
-    const String logFileName = FileNameSplitter(getModuleFileName()).setDir(dir).setExtension(_T("log")).getFullPath();
+    const String logFileName = FileNameSplitter(getModuleFileName()).setDir(getSourceDir()).setExtension(_T("log")).getFullPath();
     logFile = MKFOPEN(logFileName, _T("a"));
   }
 
