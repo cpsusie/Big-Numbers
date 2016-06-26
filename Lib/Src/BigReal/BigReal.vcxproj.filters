@@ -43,15 +43,6 @@
     <ClCompile Include="BigRational.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BigReal32Bit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BigReal64Bit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BigReal80Bit.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BigRealCons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -185,6 +176,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ShortProductOptReg64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealFloat32Bit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealDouble64Bit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BigRealDouble80Bit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

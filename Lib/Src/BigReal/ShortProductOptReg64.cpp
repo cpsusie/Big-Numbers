@@ -80,7 +80,7 @@ size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with
 #define MAX_DIGITVALUE (BIGREALBASE-1)
 
 unsigned int BigReal::getMaxSplitLength() { // static
-  return 340;
+  return 340; // floor(_UI128_MAX / (MAX_DIGITVALUE * MAX_DIGITVALUE))
 }
 
 #endif // SP_OPT_METHOD == SP_OPT_BY_REG32

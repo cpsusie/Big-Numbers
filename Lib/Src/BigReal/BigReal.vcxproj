@@ -216,9 +216,9 @@
     <ClCompile Include="BigInt.cpp" />
     <ClCompile Include="BigRational.cpp" />
     <ClCompile Include="BigReal.cpp" />
-    <ClCompile Include="BigReal32Bit.cpp" />
-    <ClCompile Include="BigReal64Bit.cpp" />
-    <ClCompile Include="BigReal80Bit.cpp" />
+    <ClCompile Include="BigRealFloat32Bit.cpp" />
+    <ClCompile Include="BigRealDouble64Bit.cpp" />
+    <ClCompile Include="BigRealDouble80Bit.cpp" />
     <ClCompile Include="BigRealCons.cpp" />
     <ClCompile Include="BigRealException.cpp" />
     <ClCompile Include="BigRealFunctions.cpp" />

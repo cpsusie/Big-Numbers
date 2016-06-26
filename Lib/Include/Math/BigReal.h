@@ -501,6 +501,7 @@ public:
 private:
 #endif
 
+  // Don't call shortProductNoZeroCheck with numbers longer than getMaxSplitLength(), or you'll get a wrong result
   BigReal &shortProduct(                     const BigReal &x, const BigReal &y, BRExpoType fexpo    );  // return this
   BigReal &shortProductNoZeroCheck(          const BigReal &x, const BigReal &y, size_t     loopCount);  // return this
   static BigReal &product(  BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f,              int level);
