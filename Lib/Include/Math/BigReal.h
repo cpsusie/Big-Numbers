@@ -13,8 +13,10 @@
 #include "Double80.h"
 #include "Real.h"
 
-//#define USE_X32SERVERCHECK
-
+//#define USE_X32SERVERCHECK // use, if you want to have backup-check for correct multiplication, running in separate
+// process built with x86 code, Serverprocess is called "MultiplicationServer", and protocol to this is quit simple:
+// write 3 BigReals, x y f as text. Serverprogram will return x*y (as text) with an error no greater than |f|
+// Can be repeated as long as you want
 #ifdef USE_X32SERVERCHECK
 #include <Math/ExternEngine.h>
 #endif
