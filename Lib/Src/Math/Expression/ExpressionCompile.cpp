@@ -162,11 +162,10 @@ void Expression::compile(const char *expr, bool machineCode) {
   }
 }
 
-#ifdef IS32BIT
-
 Real Expression::fastEvaluate() {
   function p = m_code.getEntryPoint();
 
+#ifdef IS32BIT
 #ifndef LONGDOUBLE
 
   double result;
@@ -199,19 +198,25 @@ Real Expression::fastEvaluate() {
   #endif // _DEBUG
 
 #endif // IONGDOUBLE
+
+#else // !IS32BIT ie 64BIT
+  return 0;
+#endif // IS32BIT
 }
 
 bool Expression::fastEvaluateBool() {
   function p = m_code.getEntryPoint();
+#ifdef IS32BIT
   int result;
   __asm {
     call p
     mov result, eax
   }
   return result ? true : false;
+#else
+  return false;
+#endif // IS32BIT
 }
-
-#endif
 
 ExpressionReturnType Expression::findReturnType() const {
   DEFINEMETHODNAME;
