@@ -178,7 +178,7 @@ namespace TestBigArray {
 #define COUNT 108000
 #endif
 
-          for (int test = 1; test < 5; test++) {
+          for (int test = 1; test <= 2; test++) {
             OUTPUT(_T("Making array. Test %d..."), test);
             for (int i = 0; i < COUNT; i++) {
               if (i % 10000 == 0) {
