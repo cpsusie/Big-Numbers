@@ -34,12 +34,14 @@ typedef enum {
 #define FPU_ALL_EXCEPTIONS              0x3f
 
 #ifdef IS64BIT
-extern "C" void FPUinit();
-extern "C" void FPUgetStatusWord(WORD &dst);
-extern "C" void FPUgetControlWord(WORD &dst);
-extern "C" void FPUsetControlWord(const WORD &flags);
-extern "C" void FPUgetTagsWord(WORD *buffer); // WORD[14]
-extern "C" void FPUclearExceptions();
+extern "C" {
+void FPUinit();
+void FPUgetStatusWord(WORD &dst);
+void FPUgetControlWord(WORD &dst);
+void FPUsetControlWord(const WORD &flags);
+void FPUgetTagsWord(WORD *buffer); // WORD[14]
+void FPUclearExceptions();
+};
 #endif
 
 class FPU {
@@ -123,58 +125,60 @@ class Double80;
 #endif
 
 #ifdef IS64BIT
-extern "C" void D80consLong(       Double80 &s, const long             &x);
-extern "C" void D80consULong(      Double80 &s, const unsigned long     x);
-extern "C" void D80consLongLong(   Double80 &s, const __int64          &x);
-extern "C" void D80consULongLong(  Double80 &s, const unsigned __int64  x);
-extern "C" void D80consFloat(      Double80 &s, float                  &x);
-extern "C" void D80consDouble(     Double80 &s, const double           &x);
-extern "C" void D80ToLong(      long               &dst, const Double80 &src);
-extern "C" void D80ToULong(     unsigned long      &dst, const Double80 &src);
-extern "C" void D80ToLongLong(  long long          &dst, const Double80 &src);
-extern "C" void D80ToULongLong( unsigned long long &dst, const Double80 &src);
-extern "C" void D80ToFloat(     float              &dst, const Double80 &src);
-extern "C" void D80ToDouble(    double             &dst, const Double80 &src);
-extern "C" void D80D80sum(      TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" void D80D80dif(      TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" void D80D80mul(      TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" void D80D80div(      TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" int  D80D80Compare(  const Double80 &x, const Double80 &y);
-extern "C" int  D80isZero(      const Double80 &x);
-extern "C" void D80assignAdd(   Double80 &dst, const Double80 &x);
-extern "C" void D80assignSub(   Double80 &dst, const Double80 &x);
-extern "C" void D80assignMul(   Double80 &dst, const Double80 &x);
-extern "C" void D80assignDiv(   Double80 &dst, const Double80 &x);
-extern "C" void D80neg(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80increment(   Double80 &dst);
-extern "C" void D80decrement(   Double80 &dst);
-extern "C" void D80getPi(       Double80 &dst);
-extern "C" void D80getEps(      Double80 &dst);
-extern "C" void D80getMin(      Double80 &dst);
-extern "C" void D80getMax(      Double80 &dst);
-extern "C" void D80getExpo2(    int &dst         , const Double80 &x);
-extern "C" void D80getExpo10(   int &dst         , const Double80 &x);
-extern "C" void D80fabs(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80sqr(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80sqrt(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80modulus(     TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" void D80sin(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80cos(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80tan(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80atan(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80atan2(       TenByteClass &dst, const Double80 &y, const Double80 &x);
-extern "C" void D80sincos(      Double80     &c  , Double80       &s);
-extern "C" void D80exp(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80log(         TenByteClass &dst, const Double80 &x);
-extern "C" void D80log10(       TenByteClass &dst, const Double80 &x);
-extern "C" void D80log2(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80pow(         TenByteClass &dst, const Double80 &x, const Double80 &y);
-extern "C" void D80pow10(       TenByteClass &dst, const Double80 &x);
-extern "C" void D80pow2(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80floor(       TenByteClass &dst, const Double80 &x);
-extern "C" void D80ceil(        TenByteClass &dst, const Double80 &x);
-extern "C" void D80ToBCD(BYTE bcd[10], const TenByteClass &src);
-extern "C" void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
+extern "C" {
+void D80consLong(       Double80 &s, const long             &x);
+void D80consULong(      Double80 &s, const unsigned long     x);
+void D80consLongLong(   Double80 &s, const __int64          &x);
+void D80consULongLong(  Double80 &s, const unsigned __int64  x);
+void D80consFloat(      Double80 &s, float                  &x);
+void D80consDouble(     Double80 &s, const double           &x);
+void D80ToLong(      long               &dst, const Double80 &src);
+void D80ToULong(     unsigned long      &dst, const Double80 &src);
+void D80ToLongLong(  long long          &dst, const Double80 &src);
+void D80ToULongLong( unsigned long long &dst, const Double80 &src);
+void D80ToFloat(     float              &dst, const Double80 &src);
+void D80ToDouble(    double             &dst, const Double80 &src);
+void D80D80sum(      TenByteClass &dst, const Double80 &x, const Double80 &y);
+void D80D80dif(      TenByteClass &dst, const Double80 &x, const Double80 &y);
+void D80D80mul(      TenByteClass &dst, const Double80 &x, const Double80 &y);
+void D80D80div(      TenByteClass &dst, const Double80 &x, const Double80 &y);
+int  D80D80Compare(  const Double80 &x, const Double80 &y);
+int  D80isZero(      const Double80 &x);
+void D80assignAdd(   Double80 &dst, const Double80 &x);
+void D80assignSub(   Double80 &dst, const Double80 &x);
+void D80assignMul(   Double80 &dst, const Double80 &x);
+void D80assignDiv(   Double80 &dst, const Double80 &x);
+void D80neg(         TenByteClass &dst, const Double80 &x);
+void D80increment(   Double80 &dst);
+void D80decrement(   Double80 &dst);
+void D80getPi(       Double80 &dst);
+void D80getEps(      Double80 &dst);
+void D80getMin(      Double80 &dst);
+void D80getMax(      Double80 &dst);
+void D80getExpo2(    int &dst         , const Double80 &x);
+void D80getExpo10(   int &dst         , const Double80 &x);
+void D80fabs(        TenByteClass &dst, const Double80 &x);
+void D80sqr(         TenByteClass &dst, const Double80 &x);
+void D80sqrt(        TenByteClass &dst, const Double80 &x);
+void D80modulus(     TenByteClass &dst, const Double80 &x, const Double80 &y);
+void D80sin(         TenByteClass &dst, const Double80 &x);
+void D80cos(         TenByteClass &dst, const Double80 &x);
+void D80tan(         TenByteClass &dst, const Double80 &x);
+void D80atan(        TenByteClass &dst, const Double80 &x);
+void D80atan2(       TenByteClass &dst, const Double80 &y, const Double80 &x);
+void D80sincos(      Double80     &c  , Double80       &s);
+void D80exp(         TenByteClass &dst, const Double80 &x);
+void D80log(         TenByteClass &dst, const Double80 &x);
+void D80log10(       TenByteClass &dst, const Double80 &x);
+void D80log2(        TenByteClass &dst, const Double80 &x);
+void D80pow(         TenByteClass &dst, const Double80 &x, const Double80 &y);
+void D80pow10(       TenByteClass &dst, const Double80 &x);
+void D80pow2(        TenByteClass &dst, const Double80 &x);
+void D80floor(       TenByteClass &dst, const Double80 &x);
+void D80ceil(        TenByteClass &dst, const Double80 &x);
+void D80ToBCD(BYTE bcd[10], const TenByteClass &src);
+void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
+}
 #endif // IS64BIT
 
 class Double80 {

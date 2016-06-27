@@ -1,22 +1,22 @@
 .CODE
 
-;void int128sum(_int128 &dst, const _int128 &x); do assignop dst += x;
-int128sum PROC
+;void int128add(_int128 &dst, const _int128 &x); do assignop dst += x;
+int128add PROC
     mov         rax, qword ptr[rdx]
     add         qword ptr[rcx], rax
     mov         rax, qword ptr[rdx+8]
     adc         qword ptr[rcx+8], rax
     ret
-int128sum ENDP
+int128add ENDP
 
-;void int128dif(_int128 &dst, const _int128 &x); do assignop dst -= x;
-int128dif PROC
+;void int128sub(_int128 &dst, const _int128 &x); do assignop dst -= x;
+int128sub PROC
     mov         rax, qword ptr[rdx]
     sub         qword ptr[rcx], rax
     mov         rax, qword ptr[rdx+8]
     sbb         qword ptr[rcx+8], rax
     ret
-int128dif ENDP
+int128sub ENDP
 
 ;void int128mul(_int128 &dst, const _int128 &x); do assignop dst *= x;
 int128mul PROC
@@ -224,15 +224,29 @@ int128rem ENDP
 
 ;void int128neg(_int128 &x); set x = -x;
 int128neg PROC
-    mov         rax,qword ptr[rcx]
-    neg         rax
-    mov         qword ptr[rcx], rax
-    mov         rax, qword ptr[rcx+8]
-    adc         rax, 0
-    neg         rax
-    mov         qword ptr[rcx+8], rax
-    ret
+mov         rax, qword ptr[rcx]
+neg         rax
+mov         qword ptr[rcx], rax
+mov         rax, qword ptr[rcx + 8]
+adc         rax, 0
+neg         rax
+mov         qword ptr[rcx + 8], rax
+ret
 int128neg ENDP
+
+;void int128inc(_int128 &x); do ++x;
+int128inc PROC
+    add         qword ptr[rcx], 1
+    adc         qword ptr[rcx+8], 0
+    ret
+int128inc ENDP
+
+;void int128dec(_int128 &x); do --x;
+int128dec PROC
+    sub         qword ptr[rcx], 1
+    sbb         qword ptr[rcx+8], 0
+    ret
+int128dec ENDP
 
 ;void int128shr(_int128 &x, int shft); do assignop x >>= shft; (if(x<0) shift 1-bits in from left, else 0-bits)
 int128shr PROC
