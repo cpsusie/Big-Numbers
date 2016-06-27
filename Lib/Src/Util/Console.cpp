@@ -133,10 +133,6 @@ void Console::setWindowRect(const SMALL_RECT &r, int fileNo) {
   }
 }
 
-extern "C" { 
-  HWND WINBASEAPI APIENTRY GetConsoleWindow(VOID);
-}
-
 HWND Console::getWindow() {
   return GetConsoleWindow();
 }
