@@ -1,22 +1,40 @@
 #include "pch.h"
 #include <StreamParameters.h>
 
-StreamParameters::StreamParameters(streamsize precision, streamsize width, int flags) {
+StreamParameters::StreamParameters(streamsize precision, streamsize width, int flags, TCHAR filler) {
   m_precision = precision;
   m_width     = width;
   m_flags     = flags;
+  m_filler    = filler;
 }
 
-StreamParameters::StreamParameters(const tostream &stream) {
+StreamParameters::StreamParameters(const ostream &stream) {
   m_precision = stream.precision();
   m_width     = stream.width();
   m_flags     = stream.flags();
+  m_filler    = stream.fill();
 }
 
-tostream &operator<<(tostream &out, const StreamParameters &p) {
+StreamParameters::StreamParameters(const wostream &stream) {
+  m_precision = stream.precision();
+  m_width     = stream.width();
+  m_flags     = stream.flags();
+  m_filler    = stream.fill();
+}
+
+ostream &operator<<(ostream &out, const StreamParameters &p) {
   out.precision(p.m_precision);
   out.width(p.m_width);
   out.flags(p.m_flags);
+  out.fill((char)p.getFiller());
+  return out;
+}
+
+wostream &operator<<(wostream &out, const StreamParameters &p) {
+  out.precision(p.m_precision);
+  out.width(p.m_width);
+  out.flags(p.m_flags);
+  out.fill(p.getFiller());
   return out;
 }
 

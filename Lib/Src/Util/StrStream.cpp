@@ -21,7 +21,7 @@ StrStream &StrStream::operator<<(const char *str) {
   return append(str);
 }
 
-StrStream &StrStream::operator<<(char        ch) {
+StrStream &StrStream::operator<<(char ch) {
   const char tmp[2] = { ch, 0 };
   return append(tmp);
 }

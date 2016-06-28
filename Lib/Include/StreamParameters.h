@@ -8,6 +8,7 @@ class StreamParameters {
 private:
   streamsize m_precision, m_width;
   int        m_flags;
+  TCHAR      m_filler;
   TCHAR  *addModifier(      TCHAR *dst)                     const;
   TCHAR  *addWidth(         TCHAR *dst)                     const;
   TCHAR  *addPrecision(     TCHAR *dst)                     const;
@@ -15,17 +16,22 @@ private:
   TCHAR  *addIntSpecifier(  TCHAR *dst, bool isSigned)      const;
   TCHAR  *addFloatSpecifier(TCHAR *dst)                     const;
 public:
-  StreamParameters(streamsize precision=6, streamsize width=0, int flags=0);
+  StreamParameters(streamsize precision=6, streamsize width=0, int flags=0, TCHAR filler = _T(' '));
 
-  StreamParameters(const tostream &stream);
-  friend tostream &operator<<(tostream &out, const StreamParameters &p);
+  StreamParameters(const ostream  &stream);
+  StreamParameters(const wostream &stream);
+  friend ostream  &operator<<(ostream  &out, const StreamParameters &p);
+  friend wostream &operator<<(wostream &out, const StreamParameters &p);
 
   void setPrecision(streamsize precision) { m_precision = precision; }
   void setWidth(    streamsize width    ) { m_width     = width;     }
-  void setFlags(    int      flags    )   { m_flags     = flags;     }
+  void setFlags(    int      flags      ) { m_flags     = flags;     }
+  void setFiller(   TCHAR    filler     ) { m_filler    = filler;    }
+
   streamsize getPrecision() const         { return m_precision;      }
   streamsize getWidth()     const         { return m_width;          }
   int        getFlags()     const         { return m_flags;          }
+  TCHAR      getFiller()    const         { return m_filler;         }
 
   String getStringFormat() const;
   String getCharFormat()   const;
