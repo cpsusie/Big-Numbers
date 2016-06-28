@@ -9,6 +9,10 @@ static void checkZero(DigitPool *pool) {
   verify(getUint(n)     == 0);
   verify(getInt64(n)    == 0);
   verify(getUint64(n)   == 0);
+#ifdef IS64BIT
+  verify(getInt128(n)   == 0);
+  verify(getUint128(n)  == 0);
+#endif
   verify(getFloat(n)    == 0);
   verify(getDouble(n)   == 0);
   verify(getDouble80(n) == 0);
@@ -25,12 +29,12 @@ static String getFileName() {
 static void checkExact(int line, int x, DigitPool *pool) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
-  const int      i32 = getInt(n);
+  const int x1 = getInt(n);
 
-  if(i32 != x) {
-    ERRLOG << getFileName() << " line " << line                             << NEWLINE
-           << "x   :" << iparam(12)   << x                                  << NEWLINE
-           << "i32 :" << iparam(12)   << i32  << " difference:" << i32  - x << NEWLINE;
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                          << NEWLINE
+           << "x  :" << iparam(12)   << x                                << NEWLINE
+           << "x1 :" << iparam(12)   << x1  << " difference:" << x1  - x << NEWLINE;
     throwException(_T("%s line %d. x=%d"), getFileName().cstr(), line, x);
   }
 }
@@ -38,12 +42,12 @@ static void checkExact(int line, int x, DigitPool *pool) {
 static void checkExact(int line, unsigned int x, DigitPool *pool) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
-  const unsigned int     ui32 = getUint(n);
+  const unsigned int x1 = getUint(n);
 
-  if(ui32 != x) {
-    ERRLOG << getFileName() << " line " << line                             << NEWLINE
-           << "x   :" << iparam(12)   << x                                  << NEWLINE
-           << "ui32:" << iparam(12)   << ui32 << " difference:" << ui32 - x << NEWLINE;
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                       << NEWLINE
+           << "x :" << iparam(12)   << x                              << NEWLINE
+           << "x1:" << iparam(12)   << x1 << " difference:" << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%u"), getFileName().cstr(), line, x);
   }
 }
@@ -51,12 +55,12 @@ static void checkExact(int line, unsigned int x, DigitPool *pool) {
 static void checkExact(int line, __int64 x, DigitPool *pool) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
-  const __int64          i64  = getInt64(n);
+  const __int64 x1 = getInt64(n);
 
-  if(i64 != x) {
-    ERRLOG << getFileName() << " line " << line                             << NEWLINE
-           << "x   :" << iparam(12)   << x                                  << NEWLINE
-           << "i64 :" << iparam(12)   << i64  << " difference:" << i64  - x << NEWLINE;
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                           << NEWLINE
+           << "x  :" << iparam(12)     << x                               << NEWLINE
+           << "x1 :" << iparam(12)     << x1  << " difference:" << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%I64d"), getFileName().cstr(), line, x);
   }
 }
@@ -64,15 +68,59 @@ static void checkExact(int line, __int64 x, DigitPool *pool) {
 static void checkExact(int line, unsigned __int64 x, DigitPool *pool) {
   BigReal n(x, pool);
   n.assertIsValidBigReal();
-  const unsigned __int64 ui64 = getUint64(n);
+  const unsigned __int64 x1 = getUint64(n);
 
-  if(ui64 != x) {
-    ERRLOG << getFileName() << " line " << line                             << NEWLINE
-           << "x   :" << iparam(12)   << x                                  << NEWLINE
-           << "ui64:" << iparam(12)   << ui64 << " difference:" << ui64 - x << NEWLINE;
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                       << NEWLINE
+           << "x :" << iparam(12)   << x                              << NEWLINE
+           << "x1:" << iparam(12)   << x1 << " difference:" << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%I64u"), getFileName().cstr(), line, x);
   }
 }
+
+
+#ifdef IS64BIT
+
+String toString(const _int128 &n) {
+  TCHAR buf[200];
+  _i128tot(n, buf, 10);
+  return buf;
+}
+
+String toString(const _uint128 &n) {
+  TCHAR buf[200];
+  _ui128tot(n, buf, 10);
+  return buf;
+}
+
+static void checkExact(int line, _int128 x, DigitPool *pool) {
+  BigReal n(x, pool);
+  n.assertIsValidBigReal();
+  const _int128 x1 = getInt128(n);
+
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                          << NEWLINE
+           << "x   :" << iparam(35)   << x                               << NEWLINE
+           << "x1  :" << iparam(35)   << x1 << " difference:" << x1  - x << NEWLINE;
+    throwException(_T("%s line %d. x=%s"), getFileName().cstr(), line, toString(x).cstr());
+  }
+}
+
+static void checkExact(int line, _uint128 x, DigitPool *pool) {
+  BigReal n(x, pool);
+  n.assertIsValidBigReal();
+  const _uint128 x1 = getUint128(n);
+
+  if(x1 != x) {
+    ERRLOG << getFileName() << " line " << line                           << NEWLINE
+           << "x :" << iparam(35)       << x                              << NEWLINE
+           << "x1:" << iparam(35)       << x1 << " difference:" << x1 - x << NEWLINE;
+    throwException(_T("%s line %d. x=%s"), getFileName().cstr(), line, toString(x).cstr());
+  }
+}
+#endif // IS64BIT
+
+
 
 void testConstructors(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
@@ -89,12 +137,21 @@ void testConstructors(TestStatistic &stat) {
   checkExact(__LINE__,-123456780,pool);
   checkExact(__LINE__,-123456780,pool);
   checkExact(__LINE__,-1234567800000000i64 , pool);
-  checkExact(__LINE__, 1234567800000000ui64,pool);
+  checkExact(__LINE__, 1234567800000000ui64, pool);
 
 
-  checkExact(__LINE__,_I64_MIN ,pool);
-  checkExact(__LINE__,_I64_MAX ,pool);
-  checkExact(__LINE__,_UI64_MAX,pool);
+  checkExact(__LINE__, _I64_MIN  , pool);
+  checkExact(__LINE__, _I64_MAX  , pool);
+  checkExact(__LINE__, _UI64_MAX , pool);
+
+#ifdef IS64BIT
+  checkExact(__LINE__,_int128(_T("-1234567800023487623423400000")) , pool);
+  checkExact(__LINE__,_int128(_T("1234567800023487623423400000"))  , pool);
+  checkExact(__LINE__,_uint128(_T("1234567800023487623423400000")) , pool);
+  checkExact(__LINE__, _I128_MIN , pool);
+  checkExact(__LINE__, _I128_MAX , pool);
+  checkExact(__LINE__, _UI128_MAX, pool);
+#endif // IS64BIT
 
   float maxError32 = getRelativeError32(FLT_MIN,pool);
   verify(maxError32 == 0);
