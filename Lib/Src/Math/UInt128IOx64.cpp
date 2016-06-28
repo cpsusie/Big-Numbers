@@ -4,6 +4,9 @@
 
 #include <Math/Int128.h>
 
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
 
 static const _uint128 _0(0);
@@ -48,54 +51,68 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
 }
 
 const char *_uint128::parseDec(const char *str) {
-  *this = _0;
+  bool gotDigit = false;
   while (isdigit(*str)) {
+    if(!gotDigit) {
+      *this = _0;
+      gotDigit = true;
+    }
     const unsigned int d = *(str++) - '0';
     *this *= _10;
     *this += d;
   }
-  return str;
+  return gotDigit ? str : NULL;
 }
 
 const char *_uint128::parseHex(const char *str) {
-  *this = 0;
+  bool gotDigit = false;
   while (isxdigit(*str)) {
+    if(!gotDigit) {
+      *this = _0;
+      gotDigit = true;
+    }
     const unsigned int d = convertNumberChar(*(str++));
     *this *= _16;
     *this += d;
   }
-  return str;
+  return gotDigit ? str : NULL;
 }
 
 const char *_uint128::parseOct(const char *str) {
-  *this = 0;
+  bool gotDigit = false;
   while (isodigit(*str)) {
+    if(!gotDigit) {
+      *this = _0;
+      gotDigit = true;
+    }
     const unsigned int d = convertNumberChar(*(str++));
     *this *= _8;
     *this += d;
   }
-  return str;
+  return gotDigit ? str : NULL;
 }
 
 _uint128::_uint128(const char *str) {
-  if (!isdigit(*str)) {
-    throw exception("_uint128:string is not an integer");
-  }
+  bool ok = false;
   if (*str == '0') {
     switch (str[1]) {
     case 'x':
-      parseHex(str + 2);
+      ok = parseHex(str + 2) != NULL;
       break;
     case 0:
       *this = 0;
+      ok = true;
       break;
     default:
-      parseOct(str + 1);
+      ok = parseOct(str + 1) != NULL;
       break;
     }
   }
   else {
-    parseDec(str);
+    ok = parseDec(str) != NULL;
+  }
+  if (!ok) {
+    throw exception("_uint128:string is not an integer");
   }
 }
 

@@ -47,7 +47,7 @@ public:
   }
   inline _int128(short n) : lo(n), hi((n>=0)?0:-1) {
   }
-  inline explicit _int128(unsigned __int64 _lo, const unsigned __int64 _hi) : lo(_lo), hi(_hi) {
+  inline explicit _int128(const unsigned __int64 _hi, unsigned __int64 _lo) : hi(_hi), lo(_lo) {
   }
   explicit _int128(const char *str);
 
@@ -126,13 +126,16 @@ public:
     return copy;
   }
   inline _int128 operator&(const _int128 &rhs) const {
-    return _int128(lo&rhs.lo, hi&rhs.hi);
+    return _int128(hi&rhs.hi, lo&rhs.lo);
   }
   inline _int128 operator|(const _int128 &rhs) const {
-    return _int128(lo|rhs.lo, hi|rhs.hi);
+    return _int128(hi|rhs.hi, lo|rhs.lo);
   }
   inline _int128 operator^(const _int128 &rhs) const {
-    return _int128(lo^rhs.lo, hi^rhs.hi);
+    return _int128(hi^rhs.hi, lo^rhs.lo);
+  }
+  inline _int128 operator~() const {
+    return _int128(~hi, ~lo);
   }
 
   // assign operators
@@ -187,19 +190,19 @@ public:
     return *this;
   }
   inline _int128 &operator&=(const _int128 &rhs) {
-    lo &= rhs.lo;  hi &= rhs.hi;
+    hi &= rhs.hi; lo &= rhs.lo;
     return *this;
   }
   inline _int128 &operator|=(const _int128 &rhs) {
-    lo |= rhs.lo;  hi |= rhs.hi;
+    hi |= rhs.hi; lo |= rhs.lo;
     return *this;
   }
-  inline _int128 &operator^(const _int128 &rhs) {
-    lo ^= rhs.lo;  hi ^= rhs.hi;
+  inline _int128 &operator^=(const _int128 &rhs) {
+    hi ^= rhs.hi; lo ^= rhs.lo;
     return *this;
   }
 
-  const char *parseDec(const char *str); // return pointer to char following the number
+  const char *parseDec(const char *str); // return pointer to char following the number, or NULL on error
   const char *parseHex(const char *str); // do
   const char *parseOct(const char *str); // do
 };
@@ -225,7 +228,7 @@ public:
   }
   inline _uint128(short n) : lo(n), hi((n>=0)?0:-1) {
   }
-  inline explicit _uint128(unsigned __int64 _lo, const unsigned __int64 _hi) : lo(_lo), hi(_hi) {
+  inline explicit _uint128(const unsigned __int64 _hi, unsigned __int64 _lo) : hi(_hi), lo(_lo) {
   }
   explicit _uint128(const char *str);
 
@@ -318,13 +321,16 @@ public:
   }
 
   inline _uint128 operator&(const _uint128 &rhs) const {
-    return _uint128(lo&rhs.lo, hi&rhs.hi);
+    return _uint128(hi&rhs.hi, lo&rhs.lo);
   }
   inline _uint128 operator|(const _uint128 &rhs) const {
-    return _uint128(lo|rhs.lo, hi|rhs.hi);
+    return _uint128(hi|rhs.hi, lo|rhs.lo);
   }
   inline _uint128 operator^(const _uint128 &rhs) const {
-    return _uint128(lo^rhs.lo, hi^rhs.hi);
+    return _uint128(hi^rhs.hi, lo^rhs.lo);
+  }
+  inline _uint128 operator~() const {
+    return _uint128(~hi, ~lo);
   }
 
   // assign operators
@@ -375,15 +381,15 @@ public:
     return *this;
   }
   inline _uint128 &operator&=(const _uint128 &rhs) {
-    lo &= rhs.lo;  hi &= rhs.hi;
+    hi &= rhs.hi; lo &= rhs.lo;
     return *this;
   }
   inline _uint128 &operator|=(const _uint128 &rhs) {
-    lo |= rhs.lo;  hi |= rhs.hi;
+    hi |= rhs.hi; lo |= rhs.lo;
     return *this;
   }
   inline _uint128 &operator^(const _uint128 &rhs) {
-    lo ^= rhs.lo;  hi ^= rhs.hi;
+    hi ^= rhs.hi; lo ^= rhs.lo;
     return *this;
   }
 
@@ -447,16 +453,16 @@ inline _int128  operator-(const _int128  &lft, __int64 rhs) {
 inline _int128  operator-(const _int128  &lft, unsigned __int64 rhs) {
   return lft - (_uint128)rhs;
 }
-inline _int128  operator-(const _int128  &lft, int   rhs) {
+inline _int128  operator-(const _int128  &lft, int rhs) {
   return lft - (_int128)rhs;
 }
-inline _int128  operator-(const _int128  &lft, unsigned   int   rhs) {
+inline _int128  operator-(const _int128  &lft, unsigned int rhs) {
   return lft - (_uint128)rhs;
 }
 inline _int128  operator-(const _int128  &lft, short rhs) {
   return lft - (_int128)rhs;
 }
-inline _int128  operator-(const _int128  &lft, unsigned   short rhs) {
+inline _int128  operator-(const _int128  &lft, unsigned short rhs) {
   return lft - (_uint128)rhs;
 }
 inline _uint128 operator-(const _uint128 &lft, __int64 rhs) {
@@ -465,16 +471,16 @@ inline _uint128 operator-(const _uint128 &lft, __int64 rhs) {
 inline _uint128 operator-(const _uint128 &lft, unsigned __int64 rhs) {
   return lft - (_uint128)rhs;
 }
-inline _uint128 operator-(const _uint128 &lft, int   rhs) {
+inline _uint128 operator-(const _uint128 &lft, int rhs) {
   return lft - (_int128)rhs;
 }
-inline _uint128 operator-(const _uint128 &lft, unsigned   int   rhs) {
+inline _uint128 operator-(const _uint128 &lft, unsigned int rhs) {
   return lft - (_uint128)rhs;
 }
 inline _uint128 operator-(const _uint128 &lft, short rhs) {
   return lft - (_int128)rhs;
 }
-inline _uint128 operator-(const _uint128 &lft, unsigned   short rhs) {
+inline _uint128 operator-(const _uint128 &lft, unsigned short rhs) {
   return lft - (_uint128)rhs;
 }
 
@@ -486,16 +492,16 @@ inline _int128  operator*(const _int128  &lft, __int64 rhs) {
 inline _int128  operator*(const _int128  &lft, unsigned __int64 rhs) {
   return lft * (_uint128)rhs;
 }
-inline _int128  operator*(const _int128  &lft, int   rhs) {
+inline _int128  operator*(const _int128  &lft, int rhs) {
   return lft * (_int128)rhs;
 }
-inline _int128  operator*(const _int128  &lft, unsigned   int   rhs) {
+inline _int128  operator*(const _int128  &lft, unsigned int rhs) {
   return lft * (_uint128)rhs;
 }
 inline _int128  operator*(const _int128  &lft, short rhs) {
   return lft * (_int128)rhs;
 }
-inline _int128  operator*(const _int128  &lft, unsigned   short rhs) {
+inline _int128  operator*(const _int128  &lft, unsigned short rhs) {
   return lft * (_uint128)rhs;
 }
 inline _uint128 operator*(const _uint128 &lft, __int64 rhs) {
@@ -504,21 +510,216 @@ inline _uint128 operator*(const _uint128 &lft, __int64 rhs) {
 inline _uint128 operator*(const _uint128 &lft, unsigned __int64 rhs) {
   return lft * (_uint128)rhs;
 }
-inline _uint128 operator*(const _uint128 &lft, int   rhs) {
+inline _uint128 operator*(const _uint128 &lft, int rhs) {
   return lft * (_int128)rhs;
 }
-inline _uint128 operator*(const _uint128 &lft, unsigned   int   rhs) {
+inline _uint128 operator*(const _uint128 &lft, unsigned int rhs) {
   return lft * (_uint128)rhs;
 }
 inline _uint128 operator*(const _uint128 &lft, short rhs) {
   return lft * (_int128)rhs;
 }
-inline _uint128 operator*(const _uint128 &lft, unsigned   short rhs) {
+inline _uint128 operator*(const _uint128 &lft, unsigned short rhs) {
   return lft * (_uint128)rhs;
 }
 
 
+// operator/ for build in integral types as second argument
+inline _int128  operator/(const _int128  &lft, __int64 rhs) {
+  return lft / (_int128)rhs;
+}
+inline _int128  operator/(const _int128  &lft, unsigned __int64 rhs) {
+  return lft / (_int128)rhs;
+}
+inline _int128  operator/(const _int128  &lft, int rhs) {
+  return lft / (_int128)rhs;
+}
+inline _int128  operator/(const _int128  &lft, unsigned int rhs) {
+  return lft / (_int128)rhs;
+}
+inline _int128  operator/(const _int128  &lft, short rhs) {
+  return lft / (_int128)rhs;
+}
+inline _int128  operator/(const _int128  &lft, unsigned short rhs) {
+  return lft / (_int128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, __int64 rhs) {
+  return lft / (_int128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, unsigned __int64 rhs) {
+  return lft / (_uint128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, int rhs) {
+  return lft / (_int128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, unsigned int rhs) {
+  return lft / (_uint128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, short rhs) {
+  return lft / (_int128)rhs;
+}
+inline _uint128 operator/(const _uint128 &lft, unsigned short rhs) {
+  return lft / (_uint128)rhs;
+}
 
+
+// operator% for build in integral types as second argument
+inline _int128  operator%(const _int128  &lft, __int64 rhs) {
+  return lft % (_int128)rhs;
+}
+inline _int128  operator%(const _int128  &lft, unsigned __int64 rhs) {
+  return lft % (_int128)rhs;
+}
+inline _int128  operator%(const _int128  &lft, int rhs) {
+  return lft % (_int128)rhs;
+}
+inline _int128  operator%(const _int128  &lft, unsigned int rhs) {
+  return lft % (_int128)rhs;
+}
+inline _int128  operator%(const _int128  &lft, short rhs) {
+  return lft % (_int128)rhs;
+}
+inline _int128  operator%(const _int128  &lft, unsigned short rhs) {
+  return lft % (_int128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, __int64 rhs) {
+  return lft % (_int128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, unsigned __int64 rhs) {
+  return lft % (_uint128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, int rhs) {
+  return lft % (_int128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, unsigned int rhs) {
+  return lft % (_uint128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, short rhs) {
+  return lft % (_int128)rhs;
+}
+inline _uint128 operator%(const _uint128 &lft, unsigned short rhs) {
+  return lft % (_uint128)rhs;
+}
+
+
+// operator& for build in integral types as second argument
+inline _int128  operator&(const _int128  &lft, __int64 rhs) {
+  return lft & (_int128)rhs;
+}
+inline _int128  operator&(const _int128  &lft, unsigned __int64 rhs) {
+  return lft & (_int128)rhs;
+}
+inline _int128  operator&(const _int128  &lft, int rhs) {
+  return lft & (_int128)rhs;
+}
+inline _int128  operator&(const _int128  &lft, unsigned int rhs) {
+  return lft & (_int128)rhs;
+}
+inline _int128  operator&(const _int128  &lft, short rhs) {
+  return lft & (_int128)rhs;
+}
+inline _int128  operator&(const _int128  &lft, unsigned short rhs) {
+  return lft & (_int128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, __int64 rhs) {
+  return lft & (_uint128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, unsigned __int64 rhs) {
+  return lft & (_uint128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, int rhs) {
+  return lft & (_uint128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, unsigned int rhs) {
+  return lft & (_uint128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, short rhs) {
+  return lft & (_uint128)rhs;
+}
+inline _uint128 operator&(const _uint128 &lft, unsigned short rhs) {
+  return lft & (_uint128)rhs;
+}
+
+
+// operator| for build in integral types as second argument
+inline _int128  operator|(const _int128  &lft, __int64 rhs) {
+  return lft | (_int128)rhs;
+}
+inline _int128  operator|(const _int128  &lft, unsigned __int64 rhs) {
+  return lft | (_int128)rhs;
+}
+inline _int128  operator|(const _int128  &lft, int rhs) {
+  return lft | (_int128)rhs;
+}
+inline _int128  operator|(const _int128  &lft, unsigned int rhs) {
+  return lft | (_int128)rhs;
+}
+inline _int128  operator|(const _int128  &lft, short rhs) {
+  return lft | (_int128)rhs;
+}
+inline _int128  operator|(const _int128  &lft, unsigned short rhs) {
+  return lft | (_int128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, __int64 rhs) {
+  return lft | (_uint128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, unsigned __int64 rhs) {
+  return lft | (_uint128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, int rhs) {
+  return lft | (_uint128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, unsigned int rhs) {
+  return lft | (_uint128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, short rhs) {
+  return lft | (_uint128)rhs;
+}
+inline _uint128 operator|(const _uint128 &lft, unsigned short rhs) {
+  return lft | (_uint128)rhs;
+}
+
+
+// operator^ for build in integral types as second argument
+inline _int128  operator^(const _int128  &lft, __int64 rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _int128  operator^(const _int128  &lft, unsigned __int64 rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _int128  operator^(const _int128  &lft, int rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _int128  operator^(const _int128  &lft, unsigned int rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _int128  operator^(const _int128  &lft, short rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _int128  operator^(const _int128  &lft, unsigned short rhs) {
+  return lft ^ (_int128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, __int64 rhs) {
+  return lft ^ (_uint128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, unsigned __int64 rhs) {
+  return lft ^ (_uint128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, int rhs) {
+  return lft ^ (_uint128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, unsigned int rhs) {
+  return lft ^ (_uint128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, short rhs) {
+  return lft ^ (_uint128)rhs;
+}
+inline _uint128 operator^(const _uint128 &lft, unsigned short rhs) {
+  return lft ^ (_uint128)rhs;
+}
+
+
+// operator== for build in integral types as second argument
 inline bool operator==(const _int128 &lft, const _int128 &rhs) {
   return (lft.lo == rhs.lo) && (lft.hi == rhs.hi);
 }
@@ -569,6 +770,8 @@ inline bool operator==(const _uint128 &lft, unsigned short rhs) {
   return lft == _uint128(rhs);
 }
 
+
+// operator!= for build in integral types as second argument
 inline bool operator!=(const _int128 &lft, const _int128 &rhs) {
   return (lft.lo != rhs.lo) || (lft.hi != rhs.hi);
 }
@@ -593,8 +796,6 @@ inline bool operator!=(const _int128 &lft, short rhs) {
 inline bool operator!=(const _int128 &lft, unsigned short rhs) {
   return lft != _int128(rhs);
 }
-
-
 inline bool operator!=(const _uint128 &lft, const _int128 &rhs) {
   return (lft.lo != rhs.lo) || (lft.hi != rhs.hi);
 }
@@ -620,9 +821,7 @@ inline bool operator!=(const _uint128 &lft, unsigned short rhs) {
   return lft != _uint128(rhs);
 }
 
-
-
-
+// operator> for build in integral types as second argument
 inline bool operator>(const _int128 &lft, const _int128 &rhs) {
   return int128cmp(&lft, &rhs) > 0;
 }
@@ -647,9 +846,6 @@ inline bool operator>(const _int128 &lft, short rhs) {
 inline bool operator>(const _int128 &lft, unsigned short rhs) {
   return lft > _uint128(rhs);
 }
-
-
-
 inline bool operator>(const _uint128 &lft, const _int128 &rhs) {
   return uint128cmp(&lft, &rhs) > 0;
 }
@@ -676,7 +872,7 @@ inline bool operator>(const _uint128 &lft, unsigned short rhs) {
 }
 
 
-
+// operator>= for build in integral types as second argument
 inline bool operator>=(const _int128 &lft, const _int128 &rhs) {
   return int128cmp(&lft, &rhs) >= 0;
 }
@@ -701,8 +897,6 @@ inline bool operator>=(const _int128 &lft, short rhs) {
 inline bool operator>=(const _int128 &lft, unsigned short rhs) {
   return lft >= _uint128(rhs);
 }
-
-
 inline bool operator>=(const _uint128 &lft, const _int128 &rhs) {
   return uint128cmp(&lft, &rhs) >= 0;
 }
@@ -729,7 +923,7 @@ inline bool operator>=(const _uint128 &lft, unsigned short rhs) {
 }
 
 
-
+// operator< for build in integral types as second argument
 inline bool operator<(const _int128 &lft, const _int128 &rhs) {
   return int128cmp(&lft, &rhs) < 0;
 }
@@ -754,8 +948,6 @@ inline bool operator<(const _int128 &lft, short rhs) {
 inline bool operator<(const _int128 &lft, unsigned short rhs) {
   return lft < _uint128(rhs);
 }
-
-
 inline bool operator<(const _uint128 &lft, const _int128 &rhs) {
   return uint128cmp(&lft, &rhs) < 0;
 }
@@ -781,6 +973,8 @@ inline bool operator<(const _uint128 &lft, unsigned short rhs) {
   return lft < _uint128(rhs);
 }
 
+
+// operator<= for build in integral types as second argument
 inline bool operator<=(const _int128 &lft, const _int128 &rhs) {
   return int128cmp(&lft, &rhs) <= 0;
 }
@@ -805,7 +999,6 @@ inline bool operator<=(const _int128 &lft, short rhs) {
 inline bool operator<=(const _int128 &lft, unsigned short rhs) {
   return lft <= _uint128(rhs);
 }
-
 inline bool operator<=(const _uint128 &lft, const _int128 &rhs) {
   return uint128cmp(&lft, &rhs) <= 0;
 }
@@ -854,5 +1047,20 @@ unsigned int convertNumberChar(char digit);
 extern const _int128  _I128_MIN, _I128_MAX;
 extern const _uint128 _UI128_MAX;
 
+inline unsigned long int128Hash(const _int128 &n) {
+  return uint64Hash(n.lo ^ n.hi);
+}
+
+inline int int128HashCmp(const _int128 &n1, const _int128 &n2) {
+  return int128cmp(&n1, &n2);
+}
+
+inline unsigned long uint128Hash(const _uint128 &n) {
+  return uint64Hash(n.lo ^ n.hi);
+}
+
+inline int uint128HashCmp(const _uint128 &n1, const _uint128 &n2) {
+  return uint128cmp(&n1, &n2);
+}
 
 #endif // _M_X64

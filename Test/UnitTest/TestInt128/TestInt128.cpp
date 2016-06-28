@@ -148,7 +148,7 @@ namespace TestInt128 {
       i11--;
       verify(i11 == maxUI128);
 
-    }
+    } // Int128Comparators
 
     TEST_METHOD(Int128ArithmethicOperators) {
       _uint128 x1("0xffffffffffffffffffffffffffffffff");
@@ -184,6 +184,8 @@ namespace TestInt128 {
 
       _int128 x5("170141183460469231731687303715884105727");
       verify(x5 == _I128_MAX);
+      _int128 x5a("-170141183460469231731687303715884105728");
+      verify(x5a == _I128_MIN);
       _int128 y5(  "54678423345639783523445");
       _int128 x5copy(x5);
       _int128 y5copy(y5);
@@ -201,11 +203,39 @@ namespace TestInt128 {
 
       _int128  x6( "0x80000000000000000000000000000000");
       _uint128 ux6("0x80000000000000000000000000000000");
+/*
+      TCHAR bx6[1200], bimin[200];
+      _i128tow(x6, bx6, 16);
+      _i128tow(_I128_MIN, bimin, 16);
+      OUTPUT(_T("x6:%s"), bx6);
+      OUTPUT(_T("Imin:%s"), bimin);
+*/
       verify(x6 == _I128_MIN);
       _int128 y6(  "-54678423345639783523445");
 
-    }
+    } // Int128ArithmethicOperators
 
+    TEST_METHOD(Int128bitOperators) {
+      _int128 x1 = 0;
+      x1 = ~x1;
+      verify(x1 == -1);
+      x1 = x1 >> 2;
+      verify(x1 == -1);
+      x1 = x1 << 3;
+      verify(x1 == -8);
+
+      _uint128 x2 = 0;
+      x2 = ~x2;
+      verify(x2 == _UI128_MAX);
+
+      x2 = x2 >> 3;
+      verify(x2 == _UI128_MAX / 8);
+      x2 = x2 << 3;
+      verify(x2 == _UI128_MAX - 7);
+      x2 = x2 | 7;
+      verify(x2 == _UI128_MAX);
+
+    } // Int128ShiftOperators
 #endif // IS64BIT
 
   };
