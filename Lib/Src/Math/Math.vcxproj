@@ -264,6 +264,7 @@
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Int128IOCommon.cpp" />
     <ClCompile Include="Int128IOx64.cpp" />
+    <ClCompile Include="Int128Strx64.cpp" />
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
@@ -300,7 +301,7 @@
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
     <ClCompile Include="TrigonometricFunctionsR.cpp" />
-    <ClCompile Include="UInt128IOx64.cpp" />
+    <ClCompile Include="UInt128Strx64.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

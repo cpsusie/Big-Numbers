@@ -49,7 +49,8 @@ public:
   }
   inline explicit _int128(const unsigned __int64 _hi, unsigned __int64 _lo) : hi(_hi), lo(_lo) {
   }
-  explicit _int128(const char *str);
+  explicit _int128(const char    *str);
+  explicit _int128(const wchar_t *wstr);
 
   operator unsigned __int64() const {
     return lo;
@@ -107,7 +108,7 @@ public:
     _int128 result(*this), tmp(rhs);
     int128rem(&result, &tmp);
     return result;
-  };
+  }
   inline _int128 operator-() const {
     _int128 result(*this);
     int128neg(&result);
@@ -205,6 +206,10 @@ public:
   const char *parseDec(const char *str); // return pointer to char following the number, or NULL on error
   const char *parseHex(const char *str); // do
   const char *parseOct(const char *str); // do
+
+  const wchar_t *parseDec(const wchar_t *str); // return pointer to char following the number
+  const wchar_t *parseHex(const wchar_t *str); // do
+  const wchar_t *parseOct(const wchar_t *str); // do
 };
 
 class _uint128 {
@@ -230,7 +235,8 @@ public:
   }
   inline explicit _uint128(const unsigned __int64 _hi, unsigned __int64 _lo) : hi(_hi), lo(_lo) {
   }
-  explicit _uint128(const char *str);
+  explicit _uint128(const char    *str);
+  explicit _uint128(const wchar_t *wstr);
 
   inline operator _int128() const {
     return *(_int128*)(void*)this;
@@ -296,12 +302,12 @@ public:
     _uint128 result(*this);
     uint128rem(&result, &rhs);
     return result;
-  };
+  }
   inline _uint128 operator%(const _int128 &rhs) const {
     _uint128 result(*this);
     uint128rem(&result, &rhs);
     return result;
-  };
+  }
   inline _uint128 operator-() {
     _uint128 result(*this);
     int128neg(&result);
@@ -314,7 +320,7 @@ public:
     uint128shr(&copy, amount);
     return copy;
   }
-   inline _uint128 operator<<(const int amount) const {
+  inline _uint128 operator<<(const int amount) const {
     _uint128 copy(*this);
     int128shl(&copy, amount);
     return copy;
@@ -396,6 +402,10 @@ public:
   const char *parseDec(const char *str); // return pointer to char following the number
   const char *parseHex(const char *str); // do
   const char *parseOct(const char *str); // do
+
+  const wchar_t *parseDec(const wchar_t *str); // return pointer to char following the number
+  const wchar_t *parseHex(const wchar_t *str); // do
+  const wchar_t *parseOct(const wchar_t *str); // do
 };
 
 // 4 version of all 5 binary arithmetic operators and 6 compare-operators
@@ -1030,6 +1040,15 @@ char    * _ui128toa(_uint128 value, char    *str, int radix);
 wchar_t * _i128tow( _int128  value, wchar_t *str, int radix);
 wchar_t * _ui128tow(_uint128 value, wchar_t *str, int radix);
 
+
+#ifdef _UNICODE
+#define _i128tot   _i128tow
+#define _ui128tot  _ui128tow
+#else
+#define _i128tot   _i128toa
+#define _ui128tot  _ui128toa
+#endif // _UNICODE
+
 inline char radixLetter(unsigned int c) {
   return (c < 10) ? ('0' + c) : ('a' + (c-10));
 }
@@ -1038,11 +1057,11 @@ inline wchar_t wradixLetter(unsigned int c) {
   return (c < 10) ? ('0' + c) : ('a' + (c-10));
 }
 
-inline bool isodigit(unsigned char ch) {
+inline bool isodigit(wchar_t ch) {
   return ('0' <= ch) && (ch < '8');
 }
 
-unsigned int convertNumberChar(char digit);
+unsigned int convertNumberChar(wchar_t digit);
 
 extern const _int128  _I128_MIN, _I128_MAX;
 extern const _uint128 _UI128_MAX;
@@ -1062,5 +1081,15 @@ inline unsigned long uint128Hash(const _uint128 &n) {
 inline int uint128HashCmp(const _uint128 &n1, const _uint128 &n2) {
   return uint128cmp(&n1, &n2);
 }
+
+std::istream  &operator>>(std::istream  &s,       _int128  &n);
+std::ostream  &operator<<(std::ostream  &s, const _int128  &n);
+std::istream  &operator>>(std::istream  &s,       _uint128 &n);
+std::ostream  &operator<<(std::ostream  &s, const _uint128 &n);
+
+std::wistream &operator>>(std::wistream &s,       _int128  &n);
+std::wostream &operator<<(std::wostream &s, const _int128  &n);
+std::wistream &operator>>(std::wistream &s,       _uint128 &n);
+std::wostream &operator<<(std::wostream &s, const _uint128 &n);
 
 #endif // _M_X64

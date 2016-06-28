@@ -4,7 +4,7 @@
 
 #include <Math/Int128.h>
 
-unsigned int convertNumberChar(char digit) {
+unsigned int convertNumberChar(wchar_t digit) {
   switch(digit) {
   case '0': return 0;
   case '1': return 1;
