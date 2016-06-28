@@ -1,16 +1,18 @@
 #include "pch.h"
 
-#define MAXDIGITS_INT64     19
-#define MAXDIGITS_DIVISOR64 ((MAXDIGITS_INT64+1)/2)
+#ifdef IS64BIT
 
-class QuotL64Constants {
+#define MAXDIGITS_INT128     38
+#define MAXDIGITS_DIVISOR128 ((MAXDIGITS_INT128+1)/2)
+
+class QuotL128Constants {
 public:
   const ConstBigReal c1;
   const ConstBigReal c2;
   const ConstBigReal c3;
   const ConstBigReal c4;
 
-  QuotL64Constants()
+  QuotL128Constants()
     :c1(e(ConstBigReal(24),-2))
     ,c2(e(ConstBigReal( 4),-2))
     ,c3(e(ConstBigReal( 8),-2))
@@ -19,31 +21,32 @@ public:
   }
 };
 
-static const QuotL64Constants Q64C;
+static const QuotL128Constants Q128C;
 
 // Linear quot. Assume x != 0 and y != 0 and f != 0
-BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
+BigReal BigReal::quotLinear128(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   const bool yNegative = y.isNegative();
   ((BigReal&)y).setPositive(); // cheating. We set it back agin
 
-  const BigReal v = PAPCprod(<, PAPCprod(<, f, Q64C.c1, pool), y, pool); // v > 0
+  const BigReal v = PAPCprod(<, PAPCprod(<, f, Q128C.c1, pool), y, pool); // v > 0
 
   BigReal z(pool);
-  copy(z, x, v*Q64C.c2);
+  copy(z, x, v*Q128C.c2);
 
   z.setPositive();
 
   BigReal u(pool);
   u.approxQuot32(z, v);
-  u.approxQuot32(v, getExpo10N(u)*Q64C.c3 + Q64C.c4);
+  u.approxQuot32(v, getExpo10N(u)*Q128C.c3 + Q128C.c4);
 
   BRExpoType scale;
-  const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
+  _uint128 yFirst;
+  y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
 
   BigReal result(pool), t(pool), tmp(pool);
   bool loopDone = false;
   for(; compareAbs(z,v) > 0; loopDone = true) {
-    t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
+    t.approxQuot128Abs(z, yFirst, scale).m_negative = z.m_negative;
     result += t;
     z -= product(tmp, t, y, u, 0);
   }
@@ -53,47 +56,50 @@ BigReal BigReal::quotLinear64(const BigReal &x, const BigReal &y, const BigReal 
   if(loopDone) {
     return result.setSignByProductRule(x,y);
   } else {
-    return result.approxQuot64Abs(x, yFirst, scale).setSignByProductRule(x,y);
+    return result.approxQuot128Abs(x, yFirst, scale).setSignByProductRule(x,y);
   }
 }
 
 // Assume x != 0 and y != 0
-BigReal &BigReal::approxQuot64(const BigReal &x, const BigReal &y) {
+BigReal &BigReal::approxQuot128(const BigReal &x, const BigReal &y) {
   BRExpoType scale;
-  const unsigned __int64 yFirst = y.getFirst64(MAXDIGITS_DIVISOR64, &scale);
-  return approxQuot64Abs(x, yFirst, scale).setSignByProductRule(x,y);
+  _uint128 yFirst;
+  y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
+  return approxQuot128Abs(x, yFirst, scale).setSignByProductRule(x,y);
 }
 
 // Assume x != 0 and y != 0
-BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, BRExpoType scale) {
-  const unsigned __int64 q = x.getFirst64(MAXDIGITS_INT64)/y;
+BigReal &BigReal::approxQuot128Abs(const BigReal &x, const _uint128 &y, BRExpoType scale) {
+  _uint128 xFirst;
+  const _uint128 q = x.getFirst128(xFirst, MAXDIGITS_INT128)/y;
   *this = q;
-  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT64);
+  return multPow10(getExpo10(x) - scale - MAXDIGITS_INT128);
 }
 
-// Same as getFirst32, but k = [0..MAXDIGITS_INT64] = [0..19]
-unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) const {
+// Same as getFirst32, but k = [0..MAXDIGITS_INT128] = [0..38]
+_uint128 &BigReal::getFirst128(_uint128 &dst, const unsigned int k, BRExpoType *scale) const {
 #ifdef _DEBUG
   DEFINEMETHODNAME;
-  if(k > MAXDIGITS_INT64) {
-    throwBigRealInvalidArgumentException(method, _T("k=%d. Legal interval is [0..%d]"),k,MAXDIGITS_INT64);
+  if(k > MAXDIGITS_INT128) {
+    throwBigRealInvalidArgumentException(method, _T("k=%d. Legal interval is [0..%d]"),k,MAXDIGITS_INT128);
   }
 #endif
 
   const Digit *p = m_first;
   if(p == NULL) {
     if(scale) *scale = 0;
-    return 0;
+    dst = 0;
+    return dst;
   }
 
   int              tmpScale = 0;
-  unsigned __int64 result   = p->n;
+  dst                       = p->n;
   int              digits   = getDecimalDigitCount(p->n), firstDigits = digits;
   if((unsigned int)digits >= k) {
-    result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
+    dst /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
     if(scale) {
-      while(result % 10 == 0) {
-        result /= 10;
+      while(dst % 10 == 0) {
+        dst /= 10;
         tmpScale++;
       }
     }
@@ -102,23 +108,23 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
         if(p) {
           const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
-          result = result * p10 + p->n / (BIGREALBASE/p10);
+          dst = dst * p10 + p->n / (BIGREALBASE/p10);
           p = p->next;
         } else {
           tmpScale = k - digits;
           break;
         }
       }
-      while(result % 10 == 0) {
-        result /= 10;
+      while(dst % 10 == 0) {
+        dst /= 10;
         tmpScale++;
       }
     } else { // scale == NULL
       for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
         const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
-        result *= p10;
+        dst *= p10;
         if(p) {
-          result += p->n / (BIGREALBASE/p10);
+          dst += p->n / (BIGREALBASE/p10);
           p = p->next;
         }
       }
@@ -128,12 +134,12 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
   if(scale) {
     *scale  = m_expo * LOG10_BIGREALBASE + firstDigits - 1 + tmpScale - k;
   }
-  return result;
+  return dst;
 }
 
 //#define TRACE_QUOTREMAINDER
 
-void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
+void quotRemainder2(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
   DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
@@ -192,12 +198,13 @@ void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
   z.setPositive();
 
   BRExpoType             scale;
-  const unsigned __int64 yFirst       = y.getFirst64(MAXDIGITS_DIVISOR64,&scale);
+  _uint128               yFirst;
+  y.getFirst128(yFirst, MAXDIGITS_DIVISOR128, &scale);
   const int              yDigits      = BigReal::getDecimalDigitCount64(yFirst);
 
   BigReal q(pool), t(pool), tmp(pool);
   while(compareAbs(z, y) >= 0) {
-    t.approxQuot64Abs(z, yFirst, scale).m_negative = z.m_negative;
+    t.approxQuot128Abs(z, yFirst, scale).m_negative = z.m_negative;
     q += t;
     z -= BigReal::product(tmp, t, y, pool->get0(),0);
   }
@@ -251,10 +258,11 @@ void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
   ((BigReal&)y).m_negative = yNegative;
 }
 
-BigReal newModulusOperator1(const BigReal &x, const BigReal &y) {
+BigReal newModulusOperator2(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
-  quotRemainder1(x,y, NULL, &remainder);
+  quotRemainder2(x,y, NULL, &remainder);
   return remainder;
 }
 
+#endif

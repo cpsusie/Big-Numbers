@@ -102,6 +102,41 @@ void BigReal::init(unsigned __int64 n) {
   }
 }
 
+#ifdef IS64BIT
+void BigReal::init(const _int128 &n) {
+  init();
+  if(n) {
+    _uint128 un;
+    if(n < 0) {
+      m_negative = true;
+      un = -n;
+    } else {
+      un = n;
+    }
+    m_expo = -1;
+    do {
+      insertDigit((BRDigitType)(un % BIGREALBASE));
+      un /= BIGREALBASE;
+      m_expo++;
+    } while(un);
+    trimZeroes();
+  }
+}
+
+void BigReal::init(_uint128 n) {
+  init();
+  if(n) {
+    m_expo = -1;
+    do {
+      insertDigit((BRDigitType)(n % BIGREALBASE));
+      n /= BIGREALBASE;
+      m_expo++;
+    } while(n);
+    trimZeroes();
+  }
+}
+#endif // IS64BIT
+
 BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool?*digitPool:x.m_digitPool) {
   init();
   m_expo     = x.m_expo;

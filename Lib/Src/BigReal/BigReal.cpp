@@ -185,51 +185,117 @@ void BigReal::copyAllDigits(const BigReal &src) {
   (m_last = p)->next = NULL;
 }
 
-// Assume n = [0..BIGREALBASE[
+#define TENE0  1
+#define TENE1  10
+#define TENE2  100
+#define TENE3  1000
+#define TENE4  10000
+#define TENE5  100000
+#define TENE6  1000000
+#define TENE7  10000000
+#define TENE8  100000000
+#define TENE9  1000000000
+#define TENE10 10000000000
+#define TENE11 100000000000
+#define TENE12 1000000000000
+#define TENE13 10000000000000
+#define TENE14 100000000000000
+#define TENE15 1000000000000000
+#define TENE16 10000000000000000
+#define TENE17 100000000000000000
+#define TENE18 1000000000000000000
+#define TENE19 10000000000000000000
+
+// Assume n = [0..1e8[
 int BigReal::getDecimalDigitCount32(unsigned long n) { // static
   // kind of binary search
-  if(n < 10000) {
-    if(n < 100) {
-      if(n < 10) {
+  if(n < TENE4) {
+    if(n < TENE2) {
+      if(n < TENE1) {
         return n ? 1 : 0;
       } else { // 10 <= n < 1e2
         return 2;
       }
     } else { // 1e2 <= n < 1e4
-      return n < 1000 ? 3 : 4;
+      return (n < TENE3) ? 3 : 4;
     }
   } else { // 1e4 <= n < 1e9
-    if(n < 1000000) {
-      return n < 100000 ? 5 : 6;
+    if(n < TENE6) {
+      return (n < TENE5) ? 5 : 6;
     } else { // 1e6 <= n < 1e9
-      return n < 10000000 ? 7 : 8;
+      return (n < TENE7) ? 7 : 8;
     }
   }
 }
 
+#define FAST_X64GETDIGITCOUNT
+
+#ifdef FAST_X64GETDIGITCOUNT
+// Assume n = [0..1e19]
+
+int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
+  // Binary search
+  if(n < TENE10) {                          // n < 1e10
+    if(n < TENE5) {                         // n < 1e5
+      if(n < TENE2) {                       // n < 1e2
+        if(n < TENE1) {                     //
+          return n ? 1 : 0;                 // n < 1e1
+        } else {                            // 1e1 <= n < 1e2
+          return 2;                         //
+        }                                   //
+      } else {                              // 1e2 <= n < 1e5
+        if (n < TENE4) {                    // 1e2 <= n < 1e4
+          return (n < TENE3) ? 3 : 4;       // 1e2 <= n < 1e3
+        } else {                            // 1e3 <= n < 1e5
+          return 5;                         //
+        }                                   //
+      }                                     //
+    } else {                                // 1e5 <= n < 1e10
+      if(n < TENE7) {                       // 1e5 <= n < 1e7
+        return (n < TENE6) ? 6 : 7;         //
+      } else {                              // 1e7 <= n < 1e10
+        if (n < TENE9) {                    // 1e7 <= n < 1e9
+          return (n < TENE8) ? 8 : 9;       //
+        } else {                            // 1e9 <= n < 1e10
+          return 10;                        //
+        }                                   //
+      }                                     //
+    }                                       //
+  } else {                                  // 1e10 <= n <= 1e19
+    if(n < TENE15) {                        // 1e10 <= n < 1e15
+      if(n < TENE12) {                      // 1e10 <= n < 1e12
+        return (n < TENE11) ? 11 : 12;      // 1e10 <= n < 1e11
+      } else {                              // 1e12 <= n < 1e15
+        if (n < TENE14) {                   // 1e12 <= n < 1e13
+          return (n < TENE13) ? 13 : 14;    //
+        } else {                            // 1e13 <= n < 1e15
+          return 15;                        //
+        }                                   //
+      }                                     //
+    } else {                                // 1e15 <= n <= 1e19
+      if (n < TENE17) {                     // 1e15 <= n < 1e17
+        return (n < TENE16) ? 16 : 17;      //
+      } else {                              // 1e17 <= n <= 1e19
+        if (n < TENE19) {                   // 1e17 <= n < 1e19
+          return (n < TENE18) ? 18 : 19;    //
+        } else {                            // 1e18 <= n <= 1e19
+          return 29;                        //
+        }                                   //
+      }                                     //
+    }                                       //
+  }                                         //
+}                                           //
+
+#else // !FAST_X64GETDIGITCOUNT
+
 // Assume n = [0..1eMAXDIGITS_INT64]
 int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
   static const unsigned __int64 pow10Table[] = {
-     1ui64
-    ,10ui64
-    ,100ui64
-    ,1000ui64
-    ,10000ui64
-    ,100000ui64
-    ,1000000ui64
-    ,10000000ui64
-    ,100000000ui64
-    ,1000000000ui64
-    ,10000000000ui64
-    ,100000000000ui64
-    ,1000000000000ui64
-    ,10000000000000ui64
-    ,100000000000000ui64
-    ,1000000000000000ui64
-    ,10000000000000000ui64
-    ,100000000000000000ui64
-    ,1000000000000000000ui64
-    ,10000000000000000000ui64
+     TENE0    ,TENE1    ,TENE2    ,TENE3
+    ,TENE4    ,TENE5    ,TENE6    ,TENE7
+    ,TENE8    ,TENE9    ,TENE10   ,TENE11
+    ,TENE12   ,TENE13   ,TENE14   ,TENE15
+    ,TENE16   ,TENE17   ,TENE18   ,TENE19
   };
   int l = 0, r = ARRAYSIZE(pow10Table);
   while(l < r) {
@@ -244,56 +310,48 @@ int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
   return r;
 }
 
+#endif // FAST_X64GETDIGITCOUNT
+
 const BRDigitType BigReal::s_power10Table[POWER10TABLESIZE] = {
-  1
- ,10
- ,100
- ,1000
- ,10000
- ,100000
- ,1000000
- ,10000000
- ,100000000
- ,1000000000
+  TENE0    ,TENE1
+ ,TENE2    ,TENE3
+ ,TENE4    ,TENE5
+ ,TENE6    ,TENE7
+ ,TENE8    ,TENE9
 #ifdef IS64BIT
- ,10000000000
- ,100000000000
- ,1000000000000
- ,10000000000000
- ,100000000000000
- ,1000000000000000
- ,10000000000000000
- ,100000000000000000
- ,1000000000000000000
- ,10000000000000000000
-#endif
+ ,TENE10   ,TENE11
+ ,TENE12   ,TENE13
+ ,TENE14   ,TENE15
+ ,TENE16   ,TENE17
+ ,TENE18   ,TENE19
+#endif // IS64BIT
 };
 
 // Return p if n = 10^p for p = [0..9]. else return -1.
 int BigReal::isPow10(size_t n) { // static
   switch(n) {
-  case 1         : return  0;
-  case 10        : return  1;
-  case 100       : return  2;
-  case 1000      : return  3;
-  case 10000     : return  4;
-  case 100000    : return  5;
-  case 1000000   : return  6;
-  case 10000000  : return  7;
-  case 100000000 : return  8;
-  case 1000000000: return  9;
+  case TENE0:  return  0;
+  case TENE1:  return  1;
+  case TENE2:  return  2;
+  case TENE3:  return  3;
+  case TENE4:  return  4;
+  case TENE5:  return  5;
+  case TENE6:  return  6;
+  case TENE7:  return  7;
+  case TENE8:  return  8;
+  case TENE9:  return  9;
 #ifdef IS64BIT
-  case 10000000000         : return  10;
-  case 100000000000        : return  11;
-  case 1000000000000       : return  12;
-  case 10000000000000      : return  13;
-  case 100000000000000     : return  14;
-  case 1000000000000000    : return  15;
-  case 10000000000000000   : return  16;
-  case 100000000000000000  : return  17;
-  case 1000000000000000000 : return  18;
-  case 10000000000000000000: return  19;
-#endif
+  case TENE10: return  10;
+  case TENE11: return  11;
+  case TENE12: return  12;
+  case TENE13: return  13;
+  case TENE14: return  14;
+  case TENE15: return  15;
+  case TENE16: return  16;
+  case TENE17: return  17;
+  case TENE18: return  18;
+  case TENE19: return  19;
+#endif // IS64BIT
   default        : return -1;
   }
 }
@@ -580,6 +638,52 @@ unsigned __int64 getUint64(const BigReal &x) {
   for(;i-- >= 0;) result *= BIGREALBASE;
   return result;
 }
+
+#ifdef IS64BIT
+_int128 getInt128(const BigReal &x) {
+  DEFINEMETHODNAME;
+  if(x.isZero()) {
+    return 0;
+  }
+
+  if(x > ConstBigReal::_i128_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_i128_max));
+  }
+  if(x < ConstBigReal::_i128_min) {
+    throwBigRealGetIntegralTypeUnderflowException(method, x, toString(ConstBigReal::_i128_min));
+  }
+
+  _int128    result = 0;
+  BRExpoType i      = x.m_expo;
+  for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
+    result = result * BIGREALBASE + p->n;
+  }
+  for(;i-- >= 0;) result *= BIGREALBASE;
+  return x.isNegative() ? -result : result;
+}
+
+_uint128 getUint128(const BigReal &x) {
+  DEFINEMETHODNAME;
+  if(x.isZero()) {
+    return 0;
+  }
+
+  if(x.isNegative()) {
+    throwBigRealGetIntegralTypeUnderflowException(method, x, _T("0"));
+  }
+  if(x > ConstBigReal::_ui128_max) {
+    throwBigRealGetIntegralTypeOverflowException(method, x, toString(ConstBigReal::_ui128_max));
+  }
+
+  _uint128   result = 0;
+  BRExpoType i      = x.m_expo;
+  for(const Digit *p = x.m_first; p && (i-- >= 0); p = p->next) {
+    result = result * BIGREALBASE + p->n;
+  }
+  for(;i-- >= 0;) result *= BIGREALBASE;
+  return result;
+}
+#endif // IS64BIT
 
 unsigned long BigReal::hashCode() const {
   size_t s = m_expo;

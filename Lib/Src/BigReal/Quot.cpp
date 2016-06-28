@@ -3,7 +3,11 @@
 BigReal operator%(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
+#ifdef IS32BIT
   quotRemainder(x,y,NULL, &remainder);
+#else
+  quotRemainder2(x,y,NULL, &remainder);
+#endif
   return remainder;
 }
 
@@ -36,8 +40,12 @@ BigReal quot(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *di
   if(compareAbs(x,y) == 0) {
     return BigReal(sign(x) * sign(y), pool);
   }
-
+#ifdef IS32BIT
   return BigReal::quotLinear64(x,y,f, pool);
+#else
+  return BigReal::quotLinear128(x,y,f, pool);
+#endif
+
 //  return BigReal::quotNewton(x,y,f, pool);
 //  return BigReal::chooseQuotNewton(x,y,f,pool) ? BigReal::quotNewton(x,y,f,pool) : BigReal::quotLinear32(x,y,f,pool);
 }

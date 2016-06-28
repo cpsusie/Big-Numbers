@@ -216,7 +216,11 @@ static int timeUsageMethodCmp(const TimeUsageMethod &t1, const TimeUsageMethod &
 void BigRealTestClass::measureQuot() {
   tofstream dataFile("quotMeasure.dat");
 
-  const String header = "ResultDigits y                              MTime32(L)  ETime32(L)  q32(L)=MT/ET MTime64(L) M32/M64     MTime(N)    ETime(N)    q(N)=MT/ET";
+  const String header = "ResultDigits y                              "
+                        "MTime32(L)  ETime32(L)  q32(L )=MT/ET    "
+                        "MTime64(L)  ETime64(L)  q64(l )=M32/M64  "
+                        "MTime128(L) ETime128(L) q128(l)=M32/M128 "
+                        "MTime(N)    ETime(N)    q(N)   =MT/ET    ";
 
   tcout     << header << NEWLINE;
   dataFile  << header << NEWLINE;
@@ -250,13 +254,15 @@ void BigRealTestClass::measureQuot() {
 
       BigReal f = e(1,expo10x0 - expo10y0 - p);
 
-      TimeUsageMethod l32("L32",measureTime(MeasureBinaryOperator(QUOTLINEAR32, xArray, yArray, f)));
-      TimeUsageMethod l64("L64",measureTime(MeasureBinaryOperator(QUOTLINEAR64, xArray, yArray, f)));
-      TimeUsageMethod lnt("N"  ,measureTime(MeasureBinaryOperator(QUOTNEWTON  , xArray, yArray, f)));
+      TimeUsageMethod l32( "L32" ,measureTime(MeasureBinaryOperator(QUOTLINEAR32 , xArray, yArray, f)));
+      TimeUsageMethod l64( "L64" ,measureTime(MeasureBinaryOperator(QUOTLINEAR64 , xArray, yArray, f)));
+      TimeUsageMethod l128("L128",measureTime(MeasureBinaryOperator(QUOTLINEAR128, xArray, yArray, f)));
+      TimeUsageMethod lnt( "N"   ,measureTime(MeasureBinaryOperator(QUOTNEWTON   , xArray, yArray, f)));
 
       Array<TimeUsageMethod> ta;
       ta.add(l32);
       ta.add(l64);
+      ta.add(l128);
       ta.add(lnt);
       ta.sort(timeUsageMethodCmp);
 
@@ -264,34 +270,50 @@ void BigRealTestClass::measureQuot() {
       const BRExpoType errorExpo          = BigReal::getExpo10(f);
       const BRExpoType resultDigits       = expectedResultExpo - errorExpo;
 
-      double linear32TimeExpected = resultDigits * y.getLength() / 1.6e7;
-      double newtonTimeExpected   = ::pow((double)resultDigits,1.07)/5e6;
+      double linear32TimeExpected  = resultDigits * y.getLength() / 1.6e7;
+      double linear64TimeExpected  = linear32TimeExpected / 2;
+      double linear128TimeExpected = linear64TimeExpected / 2;
+      double newtonTimeExpected    = ::pow((double)resultDigits,1.07)/5e6;
 
       dataFile << iparam(12)  << resultDigits                           << _T(" ")
                << iparam(30)  << y                                      << _T(" ")
-               << udparam(4)  << l32.m_timeUsage                        << _T(" ")
-               << udparam(4)  << linear32TimeExpected                   << _T(" ")
-               << udparam(4)  << l32.m_timeUsage/linear32TimeExpected   << _T(" ")
-               << udparam(4)  << l64.m_timeUsage                        << _T(" ")
-               << udparam(4)  << l32.m_timeUsage/l64.m_timeUsage        << _T(" ")
-               << udparam(4)  << lnt.m_timeUsage                        << _T(" ")
-               << udparam(4)  << newtonTimeExpected                     << _T(" ")
-               << udparam(4)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
-               << ta[0].m_method << _T("/") << ta[1].m_method << _T("/") << ta[2].m_method
+               << udparam(9)  << l32.m_timeUsage                        << _T(" ")
+               << udparam(9)  << linear32TimeExpected                   << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/linear32TimeExpected   << _T(" ")
+               << udparam(9)  << l64.m_timeUsage                        << _T(" ")
+               << udparam(9)  << linear64TimeExpected                   << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/l64.m_timeUsage        << _T(" ")
+               << udparam(9)  << l128.m_timeUsage                       << _T(" ")
+               << udparam(9)  << linear128TimeExpected                  << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/l128.m_timeUsage       << _T(" ")
+               << udparam(9)  << lnt.m_timeUsage                        << _T(" ")
+               << udparam(9)  << newtonTimeExpected                     << _T(" ")
+               << udparam(9)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
+               << ta[0].m_method << _T("/") 
+               << ta[1].m_method << _T("/") 
+               << ta[2].m_method << _T("/") 
+               << ta[3].m_method
                << NEWLINE;
       dataFile.flush();
 
       tcout    << iparam(12)  << resultDigits                           << _T(" ")
                << iparam(30)  << y                                      << _T(" ")
-               << udparam(4)  << l32.m_timeUsage                        << _T(" ")
-               << udparam(4)  << linear32TimeExpected                   << _T(" ")
-               << udparam(4)  << l32.m_timeUsage/linear32TimeExpected   << _T(" ")
-               << udparam(4)  << l64.m_timeUsage                        << _T(" ")
-               << udparam(4)  << l32.m_timeUsage/l64.m_timeUsage        << _T(" ")
-               << udparam(4)  << lnt.m_timeUsage                        << _T(" ")
-               << udparam(4)  << newtonTimeExpected                     << _T(" ")
-               << udparam(4)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
-               << ta[0].m_method << _T("/") << ta[1].m_method << _T("/") << ta[2].m_method
+               << udparam(9)  << l32.m_timeUsage                        << _T(" ")
+               << udparam(9)  << linear32TimeExpected                   << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/linear32TimeExpected   << _T(" ")
+               << udparam(9)  << l64.m_timeUsage                        << _T(" ")
+               << udparam(9)  << linear64TimeExpected                   << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/l64.m_timeUsage        << _T(" ")
+               << udparam(9)  << l128.m_timeUsage                       << _T(" ")
+               << udparam(9)  << linear128TimeExpected                  << _T(" ")
+               << udparam(9)  << l32.m_timeUsage/l128.m_timeUsage       << _T(" ")
+               << udparam(9)  << lnt.m_timeUsage                        << _T(" ")
+               << udparam(9)  << newtonTimeExpected                     << _T(" ")
+               << udparam(9)  << lnt.m_timeUsage/newtonTimeExpected     << _T(" ")
+               << ta[0].m_method << _T("/") 
+               << ta[1].m_method << _T("/") 
+               << ta[2].m_method << _T("/") 
+               << ta[3].m_method
                << NEWLINE;
       tcout.flush();
 
@@ -301,10 +323,12 @@ void BigRealTestClass::measureQuot() {
 }
 
 void BigRealTestClass::measureQuotRemainder() {
-  tofstream oldDataFile("oldQuotRem.dat");
-  tofstream newDataFile("newQuotRem.dat");
+  const String dir = getSignatureSubDir();
+  tofstream oldDataFile( FileNameSplitter::getChildName(dir, _T("oldQuotRem.dat")).cstr());
+  tofstream newData1File(FileNameSplitter::getChildName(dir, _T("newQuotRem1.dat")).cstr());
+  tofstream newData2File(FileNameSplitter::getChildName(dir, _T("newQuotRem2.dat")).cstr());
 
-  const String header = "new Mod  old Mod";
+  const String header = _T("Length    Old Mod  Mod1  Mod2");
 
   tcout    << header << NEWLINE;
 
@@ -324,29 +348,45 @@ void BigRealTestClass::measureQuotRemainder() {
 
     const BigReal f;
 
-    TimeUsageMethod oldQR("oldQR", measureTime(MeasureBinaryOperator(OPERATOR_MOD     , xArray, yArray, f), MEASURE_REALTIME));
-    TimeUsageMethod newQR("newQR", measureTime(MeasureBinaryOperator(NEW_OPERATOR_MOD , xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod oldQR( "oldQR" , measureTime(MeasureBinaryOperator(OPERATOR_MOD     , xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod newQR1("newQR1", measureTime(MeasureBinaryOperator(NEW_OPERATOR_MOD1, xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod newQR2("newQR2", measureTime(MeasureBinaryOperator(NEW_OPERATOR_MOD2, xArray, yArray, f), MEASURE_REALTIME));
 
-    const double &oldQRTime = oldQR.m_timeUsage;
-    const double &newQRTime = newQR.m_timeUsage;
+    double QRTime[3];
+    QRTime[0] = oldQR.m_timeUsage;
+    QRTime[1] = newQR1.m_timeUsage;
+    QRTime[2] = newQR2.m_timeUsage;
 
-    oldDataFile << iparam(10)  << y.getLength()        << _T(" ")
-                << udparam(4)  << oldQRTime
-                << NEWLINE;
+    oldDataFile  << iparam(10)  << y.getLength()        << _T(" ")
+                 << udparam(4)  << QRTime[0]
+                 << NEWLINE;
 
-    newDataFile << iparam(10)  << y.getLength()        << _T(" ")
-                << udparam(4)  << newQRTime
-                << NEWLINE;
+    newData1File << iparam(10)  << y.getLength()        << _T(" ")
+                 << udparam(4)  << QRTime[1]
+                 << NEWLINE;
 
-    tcout       << iparam(10)  << y.getLength()        << _T(" ")
-                << udparam(4)  << newQRTime            << _T(" ")
-                << udparam(4)  << oldQRTime            << _T(" ")
-                << ((newQRTime < oldQRTime) ? _T("<-") : _T("  "))
+    newData2File << iparam(10)  << y.getLength()        << _T(" ")
+                 << udparam(4)  << QRTime[2]
+                 << NEWLINE;
+
+
+    int fastestIndex = 0;
+    for (int i = 1; i < ARRAYSIZE(QRTime); i++) {
+      if (QRTime[i] < QRTime[fastestIndex]) {
+        fastestIndex = i;
+      }
+    }
+    tcout       << iparam(10)  << y.getLength()         << _T(" ")
+                << udparam(8)  << QRTime[0]             << _T(" ")
+                << udparam(4)  << QRTime[1]             << _T(" ")
+                << udparam(4)  << QRTime[2]             << _T(" ")
+                << iparam(5)   << fastestIndex          << _T(" ")
                 << NEWLINE;
     tcout.flush();
 
   }
-  newDataFile.close();
+  newData2File.close();
+  newData1File.close();
   oldDataFile.close();
 }
 
@@ -357,8 +397,10 @@ void BigRealTestClass::testQuotRemainder() {
 
 #ifdef TRYLOOP
 
-  FILE *ErrorFile = FOPEN("c:\\temp\\QRErrors.txt", "w");
-  FILE *OKFile      = FOPEN("c:\\temp\\QROk.txt", "w");
+  FILE *ErrorFile1 = FOPEN("c:\\temp\\QR1Errors.txt", "w");
+  FILE *OKFile1    = FOPEN("c:\\temp\\QR1Ok.txt", "w");
+  FILE *ErrorFile2 = FOPEN("c:\\temp\\QR2Errors.txt", "w");
+  FILE *OKFile2    = FOPEN("c:\\temp\\QR2Ok.txt", "w");
 
   const BigReal xStep1("1.235");
   const BigReal xStep2("2.12234191");
@@ -370,51 +412,87 @@ void BigRealTestClass::testQuotRemainder() {
   const BigReal yEnd   = e(BIGREAL_1, 50, pool);
 
   for(FullFormatBigReal x(xStart, pool); x < xEnd; x *= ((x.getLength() < 4) ? xStep1 : yStep2)) {
-    for(FullFormatBigReal y(yStart, pool); y < yEnd; y *= ((y.getLength() < 4) ? yStep1 : yStep2)) {
+    for (FullFormatBigReal y(yStart, pool); y < yEnd; y *= ((y.getLength() < 4) ? yStep1 : yStep2)) {
 
-      _tprintf(_T("x,y:(%40s,%40s)\r"), toString(x,33,40,ios::scientific).cstr(), toString(y,33,40,ios::scientific).cstr());
+      _tprintf(_T("x,y:(%40s,%40s)\r"), toString(x, 33, 40, ios::scientific).cstr(), toString(y, 33, 40, ios::scientific).cstr());
 
-      BigInt            quotient(pool),  quotient1( pool);
-      FullFormatBigReal  remainder(pool), remainder1(pool);
+      BigInt             quotient(pool), quotient1(pool), quotient2(pool);
+      FullFormatBigReal  remainder(pool), remainder1(pool), remainder2(pool);
 
-      quotRemainder( x, y, &quotient,  &remainder );
+      quotRemainder(x, y, &quotient, &remainder);
       quotRemainder1(x, y, &quotient1, &remainder1);
+      quotRemainder2(x, y, &quotient2, &remainder2);
 
-      const bool qerror = quotient1  != quotient;
-      const bool rerror = remainder1 != remainder;
+      const bool qerror1 = quotient1 != quotient;
+      const bool rerror1 = remainder1 != remainder;
+      const bool qerror2 = quotient2 != quotient;
+      const bool rerror2 = remainder2 != remainder;
 
-      FullFormatBigReal(pool), qdiff,rdiff(pool);
+      FullFormatBigReal qdiff1(pool), rdiff1(pool), qdiff2(pool), rdiff2(pool);
       FILE *f;
-      if(qerror || rerror) {
-        f = ErrorFile;
-        qdiff = quotient1  - quotient;
-        rdiff = remainder1 - remainder;
-      } else {
-        f = OKFile;
+      if (qerror1 || rerror1) {
+        f = ErrorFile1;
+        qdiff1 = quotient1 - quotient;
+        rdiff1 = remainder1 - remainder;
+      }
+      else {
+        f = OKFile1;
       }
 
       String header;
-      if(qerror || rerror) {
-        if(qerror) header += _T("Q-error ");
-        if(rerror) header += _T("R-error");
-      } else {
+      if (qerror1 || rerror1) {
+        if (qerror1) header += _T("Q1-error ");
+        if (rerror1) header += _T("R1-error");
+      }
+      else {
         header = _T("OK");
       }
 
-      _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew-Q:%s\nold-Q:%s\nnew-R:%s\nold-R:%s\n%s%s\n")
-               ,header.cstr()
-               ,x.toString().cstr(), y.toString().cstr()
-               ,quotient1.toString().cstr()
-               ,quotient.toString().cstr()
-               ,remainder1.toString().cstr()
-               ,remainder.toString().cstr()
-               ,(qerror?format(_T("qdiff:%s\n"), qdiff.toString().cstr()).cstr():_T(""))
-               ,(rerror?format(_T("rdiff:%s\n"), rdiff.toString().cstr()).cstr():_T(""))
-               );
+      _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew1-Q:%s\nold-Q:%s\nnew1-R:%s\nold-R:%s\n%s%s\n")
+        , header.cstr()
+        , x.toString().cstr(), y.toString().cstr()
+        , quotient1.toString().cstr()
+        , quotient.toString().cstr()
+        , remainder1.toString().cstr()
+        , remainder.toString().cstr()
+        , (qerror1 ? format(_T("qdiff:%s\n"), qdiff1.toString().cstr()).cstr() : _T(""))
+        , (rerror1 ? format(_T("rdiff:%s\n"), rdiff1.toString().cstr()).cstr() : _T(""))
+      );
+
+      if (qerror2 || rerror2) {
+        f = ErrorFile2;
+        qdiff2 = quotient2 - quotient;
+        rdiff2 = remainder2 - remainder;
+      }
+      else {
+        f = OKFile2;
+      }
+
+      header = _T("");
+      if (qerror1 || rerror1) {
+        if (qerror2) header += _T("Q2-error ");
+        if (rerror2) header += _T("R2-error");
+      }
+      else {
+        header = _T("OK");
+      }
+
+      _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew2-Q:%s\nold-Q:%s\nnew2-R:%s\nold-R:%s\n%s%s\n")
+        , header.cstr()
+        , x.toString().cstr(), y.toString().cstr()
+        , quotient2.toString().cstr()
+        , quotient.toString().cstr()
+        , remainder2.toString().cstr()
+        , remainder.toString().cstr()
+        , (qerror2 ? format(_T("qdiff:%s\n"), qdiff2.toString().cstr()).cstr() : _T(""))
+        , (rerror2 ? format(_T("rdiff:%s\n"), rdiff2.toString().cstr()).cstr() : _T(""))
+      );
     }
   }
-  fclose(OKFile    );
-  fclose(ErrorFile);
+  fclose(OKFile2   );
+  fclose(ErrorFile2);
+  fclose(OKFile1   );
+  fclose(ErrorFile1);
 
 
 #else
@@ -912,17 +990,20 @@ void MeasureBinaryOperator::f() {
   const BigReal &Y = m_y[j];
 
   switch(m_op) {
-  case SUM               : m_result =         sum(         X,Y,m_f, m_pool); break;
-  case DIF               : m_result =         dif(         X,Y,m_f, m_pool); break;
-  case PROD              : m_result =         prod(        X,Y,m_f, m_pool); break;
-  case SHORTPROD         : m_result = BigReal::shortProd(   X,Y,m_f, m_pool); break;
-  case QUOTNEWTON        : m_result = BigReal::quotNewton(  X,Y,m_f, m_pool); break;
-  case QUOTLINEAR32      : m_result = BigReal::quotLinear32(X,Y,m_f, m_pool); break;
-  case QUOTLINEAR64      : m_result = BigReal::quotLinear64(X,Y,m_f, m_pool); break;
-  case QUOTREMAINDER     :            quotRemainder(   X,Y, &m_intResult, &m_remainder); break;
-  case QUOTREMAINDER1    :            quotRemainder1(  X,Y, &m_intResult, &m_remainder); break;
+  case SUM               : m_result =         sum(           X,Y,m_f, m_pool); break;
+  case DIF               : m_result =         dif(           X,Y,m_f, m_pool); break;
+  case PROD              : m_result =         prod(          X,Y,m_f, m_pool); break;
+  case SHORTPROD         : m_result = BigReal::shortProd(    X,Y,m_f, m_pool); break;
+  case QUOTNEWTON        : m_result = BigReal::quotNewton(   X,Y,m_f, m_pool); break;
+  case QUOTLINEAR32      : m_result = BigReal::quotLinear32( X,Y,m_f, m_pool); break;
+  case QUOTLINEAR64      : m_result = BigReal::quotLinear64( X,Y,m_f, m_pool); break;
+  case QUOTLINEAR128     : m_result = BigReal::quotLinear128(X,Y,m_f, m_pool); break;
+  case QUOTREMAINDER     :            quotRemainder(         X,Y, &m_intResult, &m_remainder); break;
+  case QUOTREMAINDER1    :            quotRemainder1(        X,Y, &m_intResult, &m_remainder); break;
+  case QUOTREMAINDER2    :            quotRemainder2(        X,Y, &m_intResult, &m_remainder); break;
   case OPERATOR_MOD      : m_result = X % Y; break;
-  case NEW_OPERATOR_MOD  : m_result = newModulusOperator(X,Y); break;
+  case NEW_OPERATOR_MOD1 : m_result = newModulusOperator1(X,Y); break;
+  case NEW_OPERATOR_MOD2 : m_result = newModulusOperator2(X,Y); break;
 
   default                : throwException(_T("Invalid operator. (=%d)"), m_op);
                            break;

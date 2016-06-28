@@ -37,16 +37,23 @@ DEFINECLASSNAME(ConstDigitPool);
 
 Pow2Cache     BigReal::s_pow2Cache;
 
-const ConstBigReal ConstBigReal::_long_min(LONG_MIN);
-const ConstBigReal ConstBigReal::_long_max(LONG_MAX);
-const ConstBigReal ConstBigReal::_ulong_max(ULONG_MAX);
-const ConstBigReal ConstBigReal::_i64_min(_I64_MIN);
-const ConstBigReal ConstBigReal::_i64_max(_I64_MAX);
-const ConstBigReal ConstBigReal::_ui64_max(_UI64_MAX);
-const ConstBigReal ConstBigReal::_flt_min(FLT_MIN);
-const ConstBigReal ConstBigReal::_flt_max(FLT_MAX);
-const ConstBigReal ConstBigReal::_dbl_min(DBL_MIN);
-const ConstBigReal ConstBigReal::_dbl_max(DBL_MAX);
+const ConstBigReal ConstBigReal::_long_min(LONG_MIN   );
+const ConstBigReal ConstBigReal::_long_max(LONG_MAX   );
+const ConstBigReal ConstBigReal::_ulong_max(ULONG_MAX );
+const ConstBigReal ConstBigReal::_i64_min(_I64_MIN    );
+const ConstBigReal ConstBigReal::_i64_max(_I64_MAX    );
+const ConstBigReal ConstBigReal::_ui64_max(_UI64_MAX  );
+
+#ifdef IS64BIT
+const ConstBigReal ConstBigReal::_i128_min(_I128_MIN  );
+const ConstBigReal ConstBigReal::_i128_max(_I128_MAX  );
+const ConstBigReal ConstBigReal::_ui128_max(_UI128_MAX);
+#endif // IS64BIT
+
+const ConstBigReal ConstBigReal::_flt_min(FLT_MIN     );
+const ConstBigReal ConstBigReal::_flt_max(FLT_MAX     );
+const ConstBigReal ConstBigReal::_dbl_min(DBL_MIN     );
+const ConstBigReal ConstBigReal::_dbl_max(DBL_MAX     );
 const ConstBigReal ConstBigReal::_dbl80_min(Double80::DBL80_MIN);
 const ConstBigReal ConstBigReal::_dbl80_max(Double80::DBL80_MAX);
 

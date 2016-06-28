@@ -204,8 +204,8 @@ void SpecialTestClass::runTest() {
 //  measureProduct(true, true, false);
 //  return;
 
-  measureSplitLength();
-  return;
+//  measureSplitLength();
+//  return;
 
 //  measureQuot();
 //  return;
