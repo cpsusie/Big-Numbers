@@ -16,6 +16,10 @@
 #include "Int128.h"
 #endif
 
+// Define this to have 2 different version of getDecimalDigitCount64(unsigned __int64 n).
+// Measures og time show that getDecimalDigitCount64 is 5 times faster that getDecimalDigitCount64Loop
+//#define HAS_LOOP_DIGITCOUNT
+
 //#define USE_X32SERVERCHECK // use, if you want to have backup-check for correct multiplication, running in separate
 // process built with x86 code, Serverprocess is called "MultiplicationServer", and protocol to this is quit simple:
 // write 3 BigReals, x y f as text. Serverprogram will return x*y (as text) with an error no greater than |f|
@@ -24,8 +28,9 @@
 #include <Math/ExternEngine.h>
 #endif
 
-// Number of decimal digits in 1 BigReal digit
+// Basic definitions depends on registersize. 32- og 64-bit
 #ifdef IS32BIT
+
 #define LOG10_BIGREALBASE  8
 #define POWER10TABLESIZE   10
 
@@ -36,6 +41,7 @@
 typedef unsigned long BRDigitType;
 typedef long          BRExpoType;
 typedef long          BRDigitDiffType;
+
 #else // IS64BIT
 
 #define LOG10_BIGREALBASE  18
@@ -751,8 +757,10 @@ public:
   friend BigReal  prod(         const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x*y with |error| <= f
   friend BigReal  quot(         const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x/y with |error| <= f
   friend void    quotRemainder( const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
-  friend void    quotRemainder1(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
-  friend void    quotRemainder2(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+  friend void    quotRemainder64( const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+#ifdef IS64BIT
+  friend void    quotRemainder128(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+#endif
   static BigReal  apcSum(       const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
   static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
   static BigReal  apcQuot(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
@@ -802,11 +810,11 @@ public:
     return isZero() ? 1 : (m_expo - m_low + 1);
   }      
   size_t getDecimalDigits()  const;                                                         // BigReal of decimal digits. 0 has length 1
-  inline BRExpoType getLow()     const {
+  inline BRExpoType getLow() const {
     return isZero() ? 0 : m_low;
   }
 
-  static inline BRExpoType  getExpo10(  const BigReal  &x) {                                // x == 0 ? 0 : floor(log10(|x|))
+  static inline BRExpoType getExpo10(const BigReal  &x) {                                   // x == 0 ? 0 : floor(log10(|x|))
     return x.isZero() ? 0 : (x.m_expo * LOG10_BIGREALBASE + getDecimalDigitCount(x.m_first->n) - 1);
   }
 
@@ -836,6 +844,11 @@ public:
   }
   static int     getDecimalDigitCount32(unsigned long n   );                                // n == 0 ? 0 : (floor(log10(n))+1). Assume n < BIGREALBASE
   static int     getDecimalDigitCount64(unsigned __int64 n);                                // as above but for n < 1eMAXDIGITS_INT64
+
+#ifdef HAS_LOOP_DIGITCOUNT
+  static int     getDecimalDigitCount64Loop(unsigned __int64 n);
+#endif
+
   static int     logBASE(double x);                                                         // (int)(log10(x) / LOG10_BIGREALBASE)
   static int     isPow10(size_t n);                                                         // Return p if n = 10^p for p = [0..POWER10TableSIZE[. else return -1.
   static bool    isPow10(const BigReal &x);                                                 // true if |x| = 10^p for p = [BIGREAL_MINEXPO..BIGREAL_MAXEXPO]
@@ -1613,8 +1626,8 @@ void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format
 #endif
 
 BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|))
-BigReal newModulusOperator1(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
-BigReal newModulusOperator2(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
+BigReal modulusOperator64( const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
+BigReal modulusOperator128(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 
 #ifdef LONGDOUBLE
 #pragma comment(lib, LIB_VERSION "LDBigReal.lib")

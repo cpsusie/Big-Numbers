@@ -228,11 +228,7 @@ int BigReal::getDecimalDigitCount32(unsigned long n) { // static
   }
 }
 
-#define FAST_X64GETDIGITCOUNT
-
-#ifdef FAST_X64GETDIGITCOUNT
 // Assume n = [0..1e19]
-
 int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
   // Binary search
   if(n < TENE10) {                          // n < 1e10
@@ -286,10 +282,9 @@ int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
   }                                         //
 }                                           //
 
-#else // !FAST_X64GETDIGITCOUNT
-
+#ifdef HAS_LOOP_DIGITCOUNT
 // Assume n = [0..1eMAXDIGITS_INT64]
-int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
+int BigReal::getDecimalDigitCount64Loop(unsigned __int64 n) { // static
   static const unsigned __int64 pow10Table[] = {
      TENE0    ,TENE1    ,TENE2    ,TENE3
     ,TENE4    ,TENE5    ,TENE6    ,TENE7
@@ -309,8 +304,7 @@ int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
   }
   return r;
 }
-
-#endif // FAST_X64GETDIGITCOUNT
+#endif // HAS_LOOP_DIGITCOUNT
 
 const BRDigitType BigReal::s_power10Table[POWER10TABLESIZE] = {
   TENE0    ,TENE1

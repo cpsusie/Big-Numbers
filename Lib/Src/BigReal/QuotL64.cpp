@@ -133,7 +133,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
 
 //#define TRACE_QUOTREMAINDER
 
-void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
+void quotRemainder64(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
   DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
@@ -251,10 +251,10 @@ void quotRemainder1(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
   ((BigReal&)y).m_negative = yNegative;
 }
 
-BigReal newModulusOperator1(const BigReal &x, const BigReal &y) {
+BigReal modulusOperator64(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
-  quotRemainder1(x,y, NULL, &remainder);
+  quotRemainder64(x,y, NULL, &remainder);
   return remainder;
 }
 

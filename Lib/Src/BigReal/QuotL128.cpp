@@ -139,7 +139,7 @@ _uint128 &BigReal::getFirst128(_uint128 &dst, const unsigned int k, BRExpoType *
 
 //#define TRACE_QUOTREMAINDER
 
-void quotRemainder2(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
+void quotRemainder128(const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder) {
   DEFINEMETHODNAME;
   if(y.isZero()) {
     throwBigRealInvalidArgumentException(method, _T("Division by zero"));
@@ -258,10 +258,10 @@ void quotRemainder2(const BigReal &x, const BigReal &y, BigInt *quotient, BigRea
   ((BigReal&)y).m_negative = yNegative;
 }
 
-BigReal newModulusOperator2(const BigReal &x, const BigReal &y) {
+BigReal modulusOperator128(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal remainder(pool);
-  quotRemainder2(x,y, NULL, &remainder);
+  quotRemainder128(x,y, NULL, &remainder);
   return remainder;
 }
 

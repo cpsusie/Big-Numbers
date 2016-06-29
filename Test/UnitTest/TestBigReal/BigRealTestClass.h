@@ -40,6 +40,9 @@ public:
 
   void testFractionate();
   void testGetDecimalDigitCount64();
+#ifdef HAS_LOOP_DIGITCOUNT
+  void measureGetDecimalDigitCount();
+#endif // HAS_LOOP_DIGITCOUNT
 };
 
 typedef enum {
@@ -50,13 +53,15 @@ typedef enum {
  ,QUOTNEWTON
  ,QUOTLINEAR32
  ,QUOTLINEAR64
- ,QUOTLINEAR128
  ,QUOTREMAINDER
- ,QUOTREMAINDER1
- ,QUOTREMAINDER2
+ ,QUOTREMAINDER64
  ,OPERATOR_MOD
- ,NEW_OPERATOR_MOD1
- ,NEW_OPERATOR_MOD2
+ ,OPERATOR_MOD64
+#ifdef IS64BIT
+ ,QUOTLINEAR128
+ ,QUOTREMAINDER128
+ ,OPERATOR_MOD128
+#endif // IS64BIT
 } BinaryOperator;
 
 class MeasureBinaryOperator : public MeasurableFunction {

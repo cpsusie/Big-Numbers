@@ -180,8 +180,8 @@ public:
 void SpecialTestClass::runTest() {
 
   DigitPool::setDumpWhenDestroyed(true);
-  Double80::enableDebugString(true);
-  BigReal::enableDebugString(  true);
+  Double80::enableDebugString(    true);
+  BigReal::enableDebugString(     true);
 
 //  testAPCSum();
 //  return;
@@ -215,6 +215,11 @@ void SpecialTestClass::runTest() {
 
 //  testGetDecimalDigitCount64();
 //  return;
+
+#ifdef HAS_LOOP_DIGITCOUNT
+//  measureGetDecimalDigitCount();
+//  return;
+#endif // HAS_LOOP_DIGITCOUNT
 
 //  testQuotRemainder();
 //  return;

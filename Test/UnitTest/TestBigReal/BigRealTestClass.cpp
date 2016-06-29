@@ -256,7 +256,11 @@ void BigRealTestClass::measureQuot() {
 
       TimeUsageMethod l32( "L32" ,measureTime(MeasureBinaryOperator(QUOTLINEAR32 , xArray, yArray, f)));
       TimeUsageMethod l64( "L64" ,measureTime(MeasureBinaryOperator(QUOTLINEAR64 , xArray, yArray, f)));
+#ifdef IS64BIT
       TimeUsageMethod l128("L128",measureTime(MeasureBinaryOperator(QUOTLINEAR128, xArray, yArray, f)));
+#else
+      TimeUsageMethod l128("L128 (undefined)", 1);
+#endif // IS64BIT
       TimeUsageMethod lnt( "N"   ,measureTime(MeasureBinaryOperator(QUOTNEWTON   , xArray, yArray, f)));
 
       Array<TimeUsageMethod> ta;
@@ -324,11 +328,11 @@ void BigRealTestClass::measureQuot() {
 
 void BigRealTestClass::measureQuotRemainder() {
   const String dir = getSignatureSubDir();
-  tofstream oldDataFile( FileNameSplitter::getChildName(dir, _T("oldQuotRem.dat")).cstr());
-  tofstream newData1File(FileNameSplitter::getChildName(dir, _T("newQuotRem1.dat")).cstr());
-  tofstream newData2File(FileNameSplitter::getChildName(dir, _T("newQuotRem2.dat")).cstr());
+  tofstream oldDataFile(   FileNameSplitter::getChildName(dir, _T("oldQuotRem.dat")).cstr());
+  tofstream newData64File( FileNameSplitter::getChildName(dir, _T("newQuotRem64.dat")).cstr());
+  tofstream newData128File(FileNameSplitter::getChildName(dir, _T("newQuotRem128.dat")).cstr());
 
-  const String header = _T("Length    Old Mod  Mod1  Mod2");
+  const String header = _T("Length     Old Mod  Mod64    Mod128");
 
   tcout    << header << NEWLINE;
 
@@ -348,27 +352,31 @@ void BigRealTestClass::measureQuotRemainder() {
 
     const BigReal f;
 
-    TimeUsageMethod oldQR( "oldQR" , measureTime(MeasureBinaryOperator(OPERATOR_MOD     , xArray, yArray, f), MEASURE_REALTIME));
-    TimeUsageMethod newQR1("newQR1", measureTime(MeasureBinaryOperator(NEW_OPERATOR_MOD1, xArray, yArray, f), MEASURE_REALTIME));
-    TimeUsageMethod newQR2("newQR2", measureTime(MeasureBinaryOperator(NEW_OPERATOR_MOD2, xArray, yArray, f), MEASURE_REALTIME));
+    double QRTime[3] = { 0, 0, 0 };
 
-    double QRTime[3];
+    TimeUsageMethod oldQR(   "oldQR"   , measureTime(MeasureBinaryOperator(OPERATOR_MOD   , xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod newQR64( "newQR64" , measureTime(MeasureBinaryOperator(OPERATOR_MOD64 , xArray, yArray, f), MEASURE_REALTIME));
     QRTime[0] = oldQR.m_timeUsage;
-    QRTime[1] = newQR1.m_timeUsage;
-    QRTime[2] = newQR2.m_timeUsage;
+    QRTime[1] = newQR64.m_timeUsage;
 
-    oldDataFile  << iparam(10)  << y.getLength()        << _T(" ")
-                 << udparam(4)  << QRTime[0]
-                 << NEWLINE;
+#ifdef IS64BIT
+    TimeUsageMethod newQR128("newQR128", measureTime(MeasureBinaryOperator(OPERATOR_MOD128, xArray, yArray, f), MEASURE_REALTIME));
+    QRTime[2] = newQR128.m_timeUsage;
+#endif
 
-    newData1File << iparam(10)  << y.getLength()        << _T(" ")
-                 << udparam(4)  << QRTime[1]
-                 << NEWLINE;
+    oldDataFile    << iparam(10)  << y.getLength()  << _T(" ")
+                   << udparam(4)  << QRTime[0]
+                   << NEWLINE;
 
-    newData2File << iparam(10)  << y.getLength()        << _T(" ")
-                 << udparam(4)  << QRTime[2]
-                 << NEWLINE;
+    newData64File  << iparam(10)  << y.getLength()  << _T(" ")
+                   << udparam(4)  << QRTime[1]
+                   << NEWLINE;
 
+#ifdef IS64BIT
+    newData128File << iparam(10)  << y.getLength()        << _T(" ")
+                   << udparam(4)  << QRTime[2]
+                   << NEWLINE;
+#endif
 
     int fastestIndex = 0;
     for (int i = 1; i < ARRAYSIZE(QRTime); i++) {
@@ -378,15 +386,15 @@ void BigRealTestClass::measureQuotRemainder() {
     }
     tcout       << iparam(10)  << y.getLength()         << _T(" ")
                 << udparam(8)  << QRTime[0]             << _T(" ")
-                << udparam(4)  << QRTime[1]             << _T(" ")
-                << udparam(4)  << QRTime[2]             << _T(" ")
+                << udparam(8)  << QRTime[1]             << _T(" ")
+                << udparam(8)  << QRTime[2]             << _T(" ")
                 << iparam(5)   << fastestIndex          << _T(" ")
                 << NEWLINE;
     tcout.flush();
 
   }
-  newData2File.close();
-  newData1File.close();
+  newData128File.close();
+  newData64File.close();
   oldDataFile.close();
 }
 
@@ -398,9 +406,9 @@ void BigRealTestClass::testQuotRemainder() {
 #ifdef TRYLOOP
 
   FILE *ErrorFile1 = FOPEN("c:\\temp\\QR1Errors.txt", "w");
-  FILE *OKFile1    = FOPEN("c:\\temp\\QR1Ok.txt", "w");
+  FILE *OKFile1    = FOPEN("c:\\temp\\QR1Ok.txt"    , "w");
   FILE *ErrorFile2 = FOPEN("c:\\temp\\QR2Errors.txt", "w");
-  FILE *OKFile2    = FOPEN("c:\\temp\\QR2Ok.txt", "w");
+  FILE *OKFile2    = FOPEN("c:\\temp\\QR2Ok.txt"    , "w");
 
   const BigReal xStep1("1.235");
   const BigReal xStep2("2.12234191");
@@ -416,33 +424,41 @@ void BigRealTestClass::testQuotRemainder() {
 
       _tprintf(_T("x,y:(%40s,%40s)\r"), toString(x, 33, 40, ios::scientific).cstr(), toString(y, 33, 40, ios::scientific).cstr());
 
-      BigInt             quotient(pool), quotient1(pool), quotient2(pool);
-      FullFormatBigReal  remainder(pool), remainder1(pool), remainder2(pool);
+      BigInt             quotient(pool);
+      FullFormatBigReal  remainder(pool);
+      BigInt             quotient64(pool);
+      FullFormatBigReal  remainder64(pool);
 
-      quotRemainder(x, y, &quotient, &remainder);
-      quotRemainder1(x, y, &quotient1, &remainder1);
-      quotRemainder2(x, y, &quotient2, &remainder2);
+      quotRemainder(   x, y, &quotient, &remainder);
+      quotRemainder64( x, y, &quotient64, &remainder64);
 
-      const bool qerror1 = quotient1 != quotient;
-      const bool rerror1 = remainder1 != remainder;
-      const bool qerror2 = quotient2 != quotient;
-      const bool rerror2 = remainder2 != remainder;
+      const bool qerror64 = quotient64  != quotient;
+      const bool rerror64 = remainder64 != remainder;
 
-      FullFormatBigReal qdiff1(pool), rdiff1(pool), qdiff2(pool), rdiff2(pool);
+#ifdef IS64BIT
+      BigInt             quotient128(pool);
+      FullFormatBigReal  remainder128(pool);
+      quotRemainder128(x, y, &quotient128, &remainder128);
+      const bool qerror128 = quotient128 != quotient;
+      const bool rerror128 = remainder128 != remainder;
+      FullFormatBigReal qdiff128(pool), rdiff128(pool);
+#endif // IS64BIT
+
+      FullFormatBigReal qdiff64(pool), rdiff64(pool);
       FILE *f;
-      if (qerror1 || rerror1) {
+      if (qerror64 || rerror64) {
         f = ErrorFile1;
-        qdiff1 = quotient1 - quotient;
-        rdiff1 = remainder1 - remainder;
+        qdiff64 = quotient64  - quotient;
+        rdiff64 = remainder64 - remainder;
       }
       else {
         f = OKFile1;
       }
 
       String header;
-      if (qerror1 || rerror1) {
-        if (qerror1) header += _T("Q1-error ");
-        if (rerror1) header += _T("R1-error");
+      if (qerror64 || rerror64) {
+        if (qerror64) header += _T("Q1-error ");
+        if (rerror64) header += _T("R1-error");
       }
       else {
         header = _T("OK");
@@ -451,27 +467,28 @@ void BigRealTestClass::testQuotRemainder() {
       _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew1-Q:%s\nold-Q:%s\nnew1-R:%s\nold-R:%s\n%s%s\n")
         , header.cstr()
         , x.toString().cstr(), y.toString().cstr()
-        , quotient1.toString().cstr()
+        , quotient64.toString().cstr()
         , quotient.toString().cstr()
-        , remainder1.toString().cstr()
+        , remainder64.toString().cstr()
         , remainder.toString().cstr()
-        , (qerror1 ? format(_T("qdiff:%s\n"), qdiff1.toString().cstr()).cstr() : _T(""))
-        , (rerror1 ? format(_T("rdiff:%s\n"), rdiff1.toString().cstr()).cstr() : _T(""))
+        , (qerror64 ? format(_T("qdiff:%s\n"), qdiff64.toString().cstr()).cstr() : _T(""))
+        , (rerror64 ? format(_T("rdiff:%s\n"), rdiff64.toString().cstr()).cstr() : _T(""))
       );
 
-      if (qerror2 || rerror2) {
+#ifdef IS64BIT
+      if (qerror128 || rerror128) {
         f = ErrorFile2;
-        qdiff2 = quotient2 - quotient;
-        rdiff2 = remainder2 - remainder;
+        qdiff128 = quotient128  - quotient;
+        rdiff128 = remainder128 - remainder;
       }
       else {
         f = OKFile2;
       }
 
       header = _T("");
-      if (qerror1 || rerror1) {
-        if (qerror2) header += _T("Q2-error ");
-        if (rerror2) header += _T("R2-error");
+      if (qerror128 || rerror128) {
+        if (qerror128) header += _T("Q2-error ");
+        if (rerror128) header += _T("R2-error");
       }
       else {
         header = _T("OK");
@@ -480,13 +497,15 @@ void BigRealTestClass::testQuotRemainder() {
       _ftprintf(f, _T("%s\nX:%s\nY:%s\nnew2-Q:%s\nold-Q:%s\nnew2-R:%s\nold-R:%s\n%s%s\n")
         , header.cstr()
         , x.toString().cstr(), y.toString().cstr()
-        , quotient2.toString().cstr()
+        , quotient128.toString().cstr()
         , quotient.toString().cstr()
-        , remainder2.toString().cstr()
+        , remainder128.toString().cstr()
         , remainder.toString().cstr()
-        , (qerror2 ? format(_T("qdiff:%s\n"), qdiff2.toString().cstr()).cstr() : _T(""))
-        , (rerror2 ? format(_T("rdiff:%s\n"), rdiff2.toString().cstr()).cstr() : _T(""))
+        , (qerror128 ? format(_T("qdiff:%s\n"), qdiff128.toString().cstr()).cstr() : _T(""))
+        , (rerror128 ? format(_T("rdiff:%s\n"), rdiff128.toString().cstr()).cstr() : _T(""))
       );
+#endif // IS64BIT
+
     }
   }
   fclose(OKFile2   );
@@ -495,7 +514,7 @@ void BigRealTestClass::testQuotRemainder() {
   fclose(ErrorFile1);
 
 
-#else
+#else // TRYLOOP
 
   for(;;) {
     const FullFormatBigReal x = inputBigReal(*pool, _T("Enter x:"));
@@ -517,8 +536,7 @@ void BigRealTestClass::testQuotRemainder() {
       _tprintf(_T("Ok - q=%s, remainder1=%s\n"), quotient1.toString().cstr(), remainder1.toString().cstr());
     }
   }
-#endif
-
+#endif // TRYLOOP
 }
 
 void BigRealTestClass::testMultiThreadedProduct() {
@@ -968,6 +986,43 @@ void BigRealTestClass::testGetDecimalDigitCount64() {
   }
 }
 
+#ifdef HAS_LOOP_DIGITCOUNT
+typedef int (*DigitCounterFunction)(unsigned __int64);
+
+class MeasureGetDigitCount : public MeasurableFunction {
+private:
+  const CompactArray<unsigned __int64> &m_a;
+  DigitCounterFunction m_counterFunction;
+public:
+  MeasureGetDigitCount(DigitCounterFunction counter, const CompactArray<unsigned __int64> &a) 
+    : m_a(a), m_counterFunction(counter)
+  {
+  }
+  void f();
+};
+
+void MeasureGetDigitCount::f() {
+  for (size_t i = 0; i < m_a.size(); i++) {
+    const int c = m_counterFunction(m_a[i]);
+  }
+}
+
+void BigRealTestClass::measureGetDecimalDigitCount() {
+  CompactArray<unsigned __int64> testData;
+  for (unsigned __int64 x = 0; x < BIGREALBASE; x = (x + 1) * 3) {
+    testData.add(x);
+  }
+
+  MeasureGetDigitCount measureFast(BigReal::getDecimalDigitCount64, testData);
+  MeasureGetDigitCount measureLoop(BigReal::getDecimalDigitCount64Loop, testData);
+
+  const double fastTime = measureTime(measureFast, MEASURE_THREADTIME);
+  const double loopTime = measureTime(measureLoop, MEASURE_THREADTIME);
+
+  _tprintf(_T("Time(getDecimalDigitCount64)  :%.4le\n"), fastTime);
+  _tprintf(_T("Time(getDecimalDigitCountLoop):%.4le\n"), loopTime);
+}
+#endif // HAS_LOOP_DIGITCOUNT
 
 MeasureBinaryOperator::MeasureBinaryOperator(BinaryOperator op, const Array<BigReal> &x, const Array<BigReal> &y, const BigReal &f)
 : m_op(op)
@@ -997,13 +1052,16 @@ void MeasureBinaryOperator::f() {
   case QUOTNEWTON        : m_result = BigReal::quotNewton(   X,Y,m_f, m_pool); break;
   case QUOTLINEAR32      : m_result = BigReal::quotLinear32( X,Y,m_f, m_pool); break;
   case QUOTLINEAR64      : m_result = BigReal::quotLinear64( X,Y,m_f, m_pool); break;
-  case QUOTLINEAR128     : m_result = BigReal::quotLinear128(X,Y,m_f, m_pool); break;
   case QUOTREMAINDER     :            quotRemainder(         X,Y, &m_intResult, &m_remainder); break;
-  case QUOTREMAINDER1    :            quotRemainder1(        X,Y, &m_intResult, &m_remainder); break;
-  case QUOTREMAINDER2    :            quotRemainder2(        X,Y, &m_intResult, &m_remainder); break;
+  case QUOTREMAINDER64   :            quotRemainder64(       X,Y, &m_intResult, &m_remainder); break;
   case OPERATOR_MOD      : m_result = X % Y; break;
-  case NEW_OPERATOR_MOD1 : m_result = newModulusOperator1(X,Y); break;
-  case NEW_OPERATOR_MOD2 : m_result = newModulusOperator2(X,Y); break;
+  case OPERATOR_MOD64    : m_result = modulusOperator64( X,Y); break;
+
+#ifdef IS64BIT
+  case QUOTLINEAR128     : m_result = BigReal::quotLinear128(X,Y,m_f, m_pool); break;
+  case QUOTREMAINDER128  :            quotRemainder128(      X,Y, &m_intResult, &m_remainder); break;
+  case OPERATOR_MOD128   : m_result = modulusOperator128(X,Y); break;
+#endif
 
   default                : throwException(_T("Invalid operator. (=%d)"), m_op);
                            break;

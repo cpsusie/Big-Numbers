@@ -6,7 +6,7 @@ BigReal operator%(const BigReal &x, const BigReal &y) {
 #ifdef IS32BIT
   quotRemainder(x,y,NULL, &remainder);
 #else
-  quotRemainder2(x,y,NULL, &remainder);
+  quotRemainder128(x,y,NULL, &remainder);
 #endif
   return remainder;
 }
