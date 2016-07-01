@@ -12,6 +12,36 @@
 #define ESI 6
 #define EDI 7
 
+#ifdef IS64BIT
+// 64 bit registers
+#define RAX 0
+#define RCX 1
+#define RDX 2
+#define RBX 3
+#define RSP 4
+#define RBP 5
+#define RSI 6
+#define RDI 7
+
+#define XMM0   0
+#define XMM1   1
+#define XMM2   2
+#define XMM3   3
+#define XMM4   4
+#define XMM5   5
+#define XMM6   6
+#define XMM7   7
+#define XMM8   8
+#define XMM9   9
+#define XMM10 10
+#define XMM11 11
+#define XMM12 12
+#define XMM13 13
+#define XMM14 14
+#define XMM15 15
+
+#endif // IS53BIT
+
 // 16 bit registers
 #define AX 0
 #define CX 1
@@ -43,8 +73,12 @@
 #define _SWAP2(op)     ((((op)&0xff)<< 8) | (((op)>> 8)&0xff))
 #define _SWAP3(op)     ((_SWAP2(op) << 8) | (((op)>>16)&0xff))
 #define _SWAP4(op)     ((_SWAP2(op) <<16) | (_SWAP2((op)>>16)))
+#define _SWAP5(op)     ((_SWAP4(op) << 8) | (((op)>>32)&0xff))
+#define _SWAP6(op)     ((_SWAP4(op) <<16) | (_SWAP2((op)>>32)))
+
 #define I64(n)        ((unsigned __int64)(n))
 
+#ifdef IS32BIT
 class IntelInstruction {
 private:
   static inline unsigned int swapBytes(unsigned int bytes, int sz) {
@@ -84,6 +118,50 @@ public:
   {
   }
 };
+#else // 64-bit
+class IntelInstruction {
+private:
+  static inline unsigned __int64 swapBytes(unsigned __int64 bytes, int sz) {
+    switch(sz) {
+    case 1 : return bytes;
+    case 2 : return _SWAP2(bytes);
+    case 3 : return _SWAP3(bytes);
+    case 4 : return _SWAP4(bytes);
+    case 5 : return _SWAP5(bytes);
+    case 6 : return _SWAP6(bytes);
+    default: throwMethodInvalidArgumentException(_T("IntelInstruction"), _T("swapBytes"), _T("sz=%d"), sz);
+             return bytes;
+    }
+  }
+public:
+  unsigned char    m_size;
+  unsigned __int64 m_bytes;
+
+  inline IntelInstruction(BYTE size, unsigned __int64 bytes) : m_size(size), m_bytes(swapBytes(bytes,size)) { // size is #bytes in opcode
+  }
+  // size=#bytes of opcode, ofSize=#bytes of offset
+  inline IntelInstruction(BYTE size, BYTE ofSize, unsigned __int64 bytes, int offset) : m_bytes(swapBytes(bytes,size)) {
+    m_bytes |= (I64(offset) << (8*size));
+    m_size = size + ofSize;
+  }
+};
+
+class IntelOpcode {
+public:
+  unsigned __int64 m_bytes;
+  unsigned int     m_size        : 6;
+  unsigned int     m_memAddrMode : 1;
+  unsigned int     m_regSrcMode  : 1;
+  inline IntelOpcode(BYTE size, unsigned __int64 bytes, bool memAddrMode, bool regSrcMode)
+    : m_bytes(bytes)
+    , m_size(size)
+    , m_memAddrMode(memAddrMode)
+    , m_regSrcMode(regSrcMode)
+  {
+  }
+};
+
+#endif // IS32BIT
 
 #define MEM_ADDR_PTR(       op,r32                ) IntelInstruction(op.m_size  ,      op.m_bytes |(r32)                                                              ) //  r32!=ESP,EBP                                     ex:fld word ptr[eax]
 #define MEM_ADDR_PTR1(      op,r32          ,offs1) IntelInstruction(op.m_size  ,1, (( op.m_bytes)|0x40                                         |  (r32)) ,(BYTE)offs1) //  r32!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
@@ -105,11 +183,13 @@ public:
 #define B1INS(op)        IntelInstruction(1, op)
 #define B2INS(op)        IntelInstruction(2, op)
 #define B3INS(op)        IntelInstruction(3, op)
+#define B4INS(op)        IntelInstruction(4, op)
 
 // instrcution defined with these macroes, should be combined with macroes MEM_ADDR_* (and evt. REG_SRC)
 #define B1INSA(op)       IntelOpcode(1, op, true ,true)
 #define B2INSA(op)       IntelOpcode(2, op, true ,true)
 #define B3INSA(op)       IntelOpcode(3, op, true ,true)
+#define B4INSA(op)       IntelOpcode(4, op, true ,true)
 #define B2INSANOREG(op)  IntelOpcode(2, op, true,false)
 
 #define FPUINS(op)       B2INS(      op)
@@ -186,6 +266,7 @@ public:
 #define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
 
 #define CALL                                   B1INS(0xE8)                              // Call near, 4 byte PC relative, displacement
+#define CALLABSOLUTE                           B2INSA(0xFFD0)                            // Call far, absolute address given by operand
 #define RET                                    B1INS(0xC3)                              // Near return to calling procedure
 
 #define TEST_AL_IMM_BYTE                       B1INS(0xA8)                              // 1 byte operand
@@ -233,7 +314,28 @@ public:
 #define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(0xA3)                              // 4 byte address. move EAX to dword pointed to by 2. operand
 #define MOV_FROM_AX_IMM_ADDR_WORD              B2INS(0x66A3)                            // 4 byte address. move AX  to word  pointed to by 2. operand
 
+#ifdef IS64BIT
 
+#define MOV_QWORD_R64(       r64)              B3INSA(0x488900  | ((r64)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_R64_QWORD(       r64)              B3INSA(0x488B00  | ((r64)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+
+#define MOV_R64_IMM_QWORD(   r64)              B2INS(0x48B8     |  (r64))               // 8 byte operand
+
+#define MOVSD_XMM_MMWORD(xmm)                  B4INSA(0xF20F1000)                       // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define MOVSD_MMWORD_XMM(xmm)                  B4INSA(0xF20F1100)                       // Build dst with MEM_ADDR-*,REG_SRC-macroes
+
+/*
+F2 0F 10 45 00       movsd       xmm0,mmword ptr [rbp]  
+F2 0F 10 4D 08       movsd       xmm1,mmword ptr [y]  
+F2 0F 10 4D 58       movsd       xmm1,mmword ptr [rbp+58h]  
+F2 0F 10 4D 10       movsd       xmm1,mmword ptr [z]  
+
+F2 0F 11 45 00       movsd       mmword ptr [rbp]    ,xmm0  
+F2 0F 11 45 58       movsd       mmword ptr [rbp+58h],xmm0  
+F2 0F 11 45 10       movsd       mmword ptr [z]      ,xmm0  
+*/
+
+#endif // IS64BIT
 
 #define ADD_BYTE_R8(         r8 )              B2INSA(0x0000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_DWORD_R32(       r32)              B2INSA(0x0100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes

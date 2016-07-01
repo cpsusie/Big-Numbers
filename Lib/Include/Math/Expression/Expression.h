@@ -62,6 +62,7 @@ public:
   void emitTestAH(  BYTE                  n);
   void emitTestEAX( unsigned long         n);
   void emitTestSP(  unsigned short        n);
+  void addImmediateAddr(const void *addr);
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
   void fixupShortJump(int addr, int jmpAddr);
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
@@ -126,7 +127,7 @@ private:
   friend class MarkedNodeMultiplier;
   friend class RationalPowersReducer;
 
-  void   parse(const char *expr);
+  void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
   void throwInvalidTrigonometricMode();
   static void throwUnknownSymbolException(const TCHAR *method, const SNode           n);
@@ -152,10 +153,13 @@ private:
 
   // Code generation (compile to machinecode)
   void genCode();
+  void genProlog();
+  void genEpilog();
   void genCode(                                            const ExpressionNode *n);
   void genStatementList(                                   const ExpressionNode *n);
   void genExpression(                                      const ExpressionNode *n);
   void genReturnBoolExpression(                            const ExpressionNode *n);
+#ifdef IS32BIT
   int  genPush(                                            const ExpressionNode *n);
   int  genPushRef(                                         const ExpressionNode *n, int index);
   int  genPushReal(                                        const Real           &x);
@@ -163,6 +167,16 @@ private:
   int  genPushInt(int n);
   int  genPush(                                            const void           *p, unsigned int size); // return size
   int  genPushRef(                                         const void           *p);
+#else
+  void genPush(                                            const ExpressionNode *n, int index);
+  void genPushRef(                                         const ExpressionNode *n, int index);
+  void genPushReal(                                        const Real           &x, int index);
+  void genPushDouble(                                      const double         &x, int index);
+  void genPushReturnAddr();
+  void genPushInt(                                         int n                  , int index);
+//  void genPush(                                            const void           *p, unsigned int size); // return size
+  void genPushRef(                                         const void           *p, int index);
+#endif // IS32BIT
   void genCall(                                            const ExpressionNode *n, function1    f);
   void genCall(                                            const ExpressionNode *n, function2    f);
   void genCall(                                            const ExpressionNode *n, functionRef1 f);
@@ -276,7 +290,6 @@ public:
   Expression(const Expression &src);
   Expression &operator=(const Expression &src);
   Expression getDerived(const String &name, bool reduceResult = true) const;
-  void   compile(const char   *expr, bool machineCode);
   void   compile(const String &expr, bool machineCode);
   inline Real evaluate() { 
     checkReturnType(_T("evaluate"), EXPR_RETURN_REAL);

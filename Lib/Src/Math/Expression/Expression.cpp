@@ -58,7 +58,7 @@ void Expression::clear() {
   setReduceIteration(0);
 }
 
-void Expression::parse(const char *expr) {
+void Expression::parse(const String &expr) {
   clear();
 
   setOk(true);

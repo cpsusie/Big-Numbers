@@ -41,6 +41,9 @@
     <Filter Include="Source Files\Misc">
       <UniqueIdentifier>{7e1aa498-1f12-447d-aaa9-545466d9b731}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Expression\Asm Files">
+      <UniqueIdentifier>{05b8f80c-c529-40dd-9738-b8dcb1c1e480}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -325,6 +328,9 @@
     </CustomBuild>
     <CustomBuild Include="Doublex64.asm">
       <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Expression\ExpressionCallx64.asm">
+      <Filter>Source Files\Expression\Asm Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

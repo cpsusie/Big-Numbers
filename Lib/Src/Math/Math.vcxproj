@@ -434,15 +434,25 @@
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
     </CustomBuild>
+    <CustomBuild Include="Expression\ExpressionCallx64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj ExpressionCallx64.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
+    </CustomBuild>
     <None Include="FPU.inc" />
     <CustomBuild Include="Int128x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Int128x64.obj</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for signed _int128 basic arithmetic operators +,-,*,/,%</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for signed _int128 basic arithmetic operators +,-,*,/,%,&lt;&lt;,&gt;&gt;</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for signed int128 basic arithmetic operators +,-,*,/,%</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for signed int128 basic arithmetic operators +,-,*,/,%,&lt;&lt;,&gt;&gt;</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Int128x64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
@@ -458,9 +468,9 @@
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)UInt128x64.obj</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%,&lt;&lt;,&gt;&gt;</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%,&lt;&lt;,&gt;&gt;</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)UInt128x64.obj</Outputs>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>

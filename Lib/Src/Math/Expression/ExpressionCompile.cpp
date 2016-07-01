@@ -53,9 +53,18 @@ const Real *MachineCode::getValueAddr(const ExpressionNode *n) const {
   }
 }
 
+void MachineCode::addImmediateAddr(const void *addr) {
+#ifdef IS32BIT
+  addBytes(&addr,sizeof(addr));
+#else
+  const DWORD v = (DWORD)((BYTE*)addr - (getData() + (size() + sizeof(DWORD))));
+  addBytes(&v,sizeof(v));
+#endif // IS32BIT
+}
+
 void MachineCode::emitBinaryOp(const IntelInstruction &ins, const void *p) {
   emit(ins);
-  addBytes(&p,sizeof(p));
+  addImmediateAddr(p);
 }
 
 #define ISBYTE(i)  ((i) >= -128 && (i) < 128)
@@ -121,13 +130,20 @@ void MachineCode::fixupShortJumps(const CompactIntArray &jumps, int jmpAddr) {
 }
 
 void MachineCode::fixupCall(const ExternalReference &ref) {
+#ifdef IS32BIT
   const BYTE *instructionAddr = getData() + ref.m_addr;
   const intptr_t PCrelativOffset = (const BYTE*)ref.m_p - instructionAddr - 4;
   const int PCoffset = (int)PCrelativOffset;
   setBytes(ref.m_addr,&PCoffset,4);
+#else // 64 Bit
+  const BYTE *instructionAddr = getData() + ref.m_addr;
+  const intptr_t PCrelativOffset = (const BYTE*)ref.m_p - instructionAddr - sizeof(instructionAddr);
+  setBytes(ref.m_addr,&PCrelativOffset,sizeof(instructionAddr));
+#endif
 }
 
 void MachineCode::emitCall(function p) {
+#ifdef IS32BIT
   emit(CALL);
   function ref = NULL;
   const int addr = addBytes(&ref,4);
@@ -136,6 +152,13 @@ void MachineCode::emitCall(function p) {
   emit(MEM_ADDR_ESP(MOV_R32_DWORD(EAX)));
   emit(MEM_ADDR_PTR(FLD_TBYTE,EAX));
 #endif
+#else // 64 Bit
+  emit(MOV_R64_IMM_QWORD(RAX));
+  addBytes(&p,sizeof(p));
+  emit(REG_SRC(CALLABSOLUTE, RAX));
+  emit(MEM_ADDR_ESP(MOVSD_MMWORD_XMM(XMM0)));
+  emit(MEM_ADDR_ESP(FLD_QWORD));
+#endif // IS32BIT
 }
 
 void MachineCode::linkExternals() {
@@ -146,10 +169,6 @@ void MachineCode::linkExternals() {
 
 #pragma warning(disable:4717)
 void Expression::compile(const String &expr, bool machineCode) {
-  compile(expr.cstr(),machineCode);
-}
-
-void Expression::compile(const char *expr, bool machineCode) {
   parse(expr);
   if(!isOk()) {
     return;
@@ -162,10 +181,14 @@ void Expression::compile(const char *expr, bool machineCode) {
   }
 }
 
+#ifdef IS64BIT
+extern "C" void callDoubleResultExpression(function e, double &result);
+#endif // IS64BIT
+
 Real Expression::fastEvaluate() {
-  function p = m_code.getEntryPoint();
 
 #ifdef IS32BIT
+  function p = m_code.getEntryPoint();
 #ifndef LONGDOUBLE
 
   double result;
@@ -200,7 +223,14 @@ Real Expression::fastEvaluate() {
 #endif // IONGDOUBLE
 
 #else // !IS32BIT ie 64BIT
-  return 0;
+
+#ifndef LONGDOUBLE
+  double result;
+  callDoubleResultExpression(m_code.getEntryPoint(), result);
+  return result;
+#else // LONGDOUBLE
+#endif // LONGDOUBLE
+
 #endif // IS32BIT
 }
 
@@ -240,11 +270,25 @@ void Expression::genCode() {
   m_code.genTestSequence();
   m_machineCode = true;
 #else
+  genProlog();
   genStatementList(getRoot());
   m_code.linkExternals();
   m_machineCode = true;
 #endif
 
+  m_code.flushInstructionCache();
+}
+
+void Expression::genProlog() {
+#ifdef IS64BIT
+  m_code.emitSubEsp(40); // to get 16-byte aligned RSP
+#endif
+}
+
+void Expression::genEpilog() {
+#ifdef IS64BIT
+  m_code.emitAddEsp(40);
+#endif
 }
 
 void Expression::genStatementList(const ExpressionNode *n) {
@@ -260,6 +304,7 @@ void Expression::genStatementList(const ExpressionNode *n) {
 
   case RETURNREAL:
     genExpression(n->left());
+    genEpilog();
     m_code.emit(RET);
     break;
 
@@ -276,6 +321,22 @@ void Expression::genStatementList(const ExpressionNode *n) {
 void Expression::genAssignment(const ExpressionNode *n) {
   genExpression(n->right());
   m_code.emitFStorePop(n->left());
+}
+
+void Expression::genReturnBoolExpression(const ExpressionNode *n) {
+  JumpList jumps = genBoolExpression(n->left());
+  int trueValue = 1;
+  const int trueLabel  = m_code.emit(MOV_R32_IMM_DWORD(EAX));
+  m_code.addBytes(&trueValue,4);
+  genEpilog();
+  m_code.emit(RET);
+
+  const int falseLabel = m_code.emit(REG_SRC(XOR_R32_DWORD(EAX),EAX));
+  genEpilog();
+  m_code.emit(RET);
+
+  m_code.fixupShortJumps(jumps.trueJumps ,trueLabel );
+  m_code.fixupShortJumps(jumps.falseJumps,falseLabel);
 }
 
 void Expression::genExpression(const ExpressionNode *n) {
@@ -593,6 +654,7 @@ static Real evaluatePolynomial(const Real x, int degree, ...) {
 }
 
 void Expression::genPolynomial(const ExpressionNode *n) {
+#ifdef IS32BIT
   const ExpressionNodeArray &clist = n->getCoefficientArray();
   const ExpressionNode      *x     = n->getArgument();
 
@@ -605,6 +667,8 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((function)::evaluatePolynomial);
   m_code.emitAddEsp(bytesPushed);
+#else
+#endif // IS32BIT
 }
 
 void Expression::genIndexedExpression(const ExpressionNode *n) {
@@ -635,6 +699,7 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   m_code.fixupShortJump(jmpEnd  ,loopEnd  );
 }
 
+#ifdef IS32BIT
 void Expression::genCall(const ExpressionNode *n, function1 f) {
   int bytesPushed = 0;
   bytesPushed += genPush(n->left());
@@ -668,6 +733,29 @@ void Expression::genCall(const ExpressionNode *n, functionRef2 f) {
   m_code.emitCall((function)f);
   m_code.emitAddEsp(bytesPushed);
 }
+#else // IS64BIT
+void Expression::genCall(const ExpressionNode *n, function1 f) {
+  genPush(n->left(), 0);
+  m_code.emitCall((function)f);
+}
+
+void Expression::genCall(const ExpressionNode *n, function2 f) {
+  genPush(n->left() , 0);
+  genPush(n->right(), 1);
+  m_code.emitCall((function)f);
+}
+
+void Expression::genCall(const ExpressionNode *n, functionRef1 f) {
+  genPushRef(n->left() ,0);
+  m_code.emitCall((function)f);
+}
+
+void Expression::genCall(const ExpressionNode *n, functionRef2 f) {
+  genPushRef(n->left() ,0);
+  genPushRef(n->right(),1);
+  m_code.emitCall((function)f);
+}
+#endif // IS32BIT
 
 void Expression::genIf(const ExpressionNode *n) {
   JumpList jumps = genBoolExpression(n->child(0));
@@ -690,20 +778,6 @@ static ExpressionInputSymbol reverseComparator(ExpressionInputSymbol symbol) {
   }
   throwException(_T("reverseComparator:Unknown relational operator:%d"), symbol);
   return EQ;
-}
-
-void Expression::genReturnBoolExpression(const ExpressionNode *n) {
-  JumpList jumps = genBoolExpression(n->left());
-  int trueValue = 1;
-  const int trueLabel  = m_code.emit(MOV_R32_IMM_DWORD(EAX));
-  m_code.addBytes(&trueValue,4);
-  m_code.emit(RET);
-
-  const int falseLabel = m_code.emit(REG_SRC(XOR_R32_DWORD(EAX),EAX));
-  m_code.emit(RET);
-
-  m_code.fixupShortJumps(jumps.trueJumps ,trueLabel );
-  m_code.fixupShortJumps(jumps.falseJumps,falseLabel);
 }
 
 JumpList Expression::genBoolExpression(const ExpressionNode *n) {
@@ -804,6 +878,7 @@ static int getAlignedSize(int size) {
   return rest ? (size + (4-rest)) : size;
 }
 
+#ifdef IS32BIT
 int Expression::genPush(const ExpressionNode *n) {
   if(n->isNameOrNumber()) {
     return genPushReal(*m_code.getValueAddr(n));
@@ -877,7 +952,7 @@ int Expression::genPush(const void *p, unsigned int size) { // return size round
 
 int Expression::genPushRef(const void *p) {
   m_code.emit(MOV_R32_IMM_DWORD(EAX));
-  m_code.addBytes(&p,4);
+  m_code.addBytes(&p,sizeof(p));
   m_code.emit(PUSH_R32(EAX));
   return sizeof(void*);
 }
@@ -901,3 +976,51 @@ int Expression::genPushReturnAddr() {
   return 0;
 #endif
 }
+
+#else // IS64BIT
+
+#define genPushReal genPushDouble
+
+void Expression::genPush(const ExpressionNode *n, int index) {
+  if(n->isNameOrNumber()) {
+    genPushReal(*m_code.getValueAddr(n), index);
+  } else {
+    genExpression(n);
+#ifdef _DEBUG
+    Real &tmpVar = m_code.getTmpVar(0);
+    m_code.emitFStorePop(&tmpVar);
+    genPushReal(tmpVar, index);
+#else
+    int bytesPushed = getAlignedSize(sizeof(Real));
+    m_code.emitSubEsp(bytesPushed);
+    m_code.emit(FSTP_REAL_PTR_ESP);
+    return bytesPushed;
+#endif
+  }
+}
+
+void Expression::genPushRef(const ExpressionNode *n, int index) {
+  if(n->isNameOrNumber()) {
+    return genPushRef(m_code.getValueAddr(n), index);
+  } else {
+    genExpression(n);
+    Real &tmpVar = m_code.getTmpVar(index);
+    m_code.emitFStorePop(&tmpVar);
+    return genPushRef(&tmpVar, index);
+  }
+}
+
+void Expression::genPushDouble(const double &x, int index) {
+  int dstRegister = (index == 0) ? XMM0 : XMM1;
+  m_code.emit(MEM_ADDR_DS(MOVSD_XMM_MMWORD(dstRegister)));
+  m_code.addImmediateAddr(&x);
+}
+
+void Expression::genPushRef(const void *p, int index) {
+  assert(index < 2);
+  int dstRegister = (index == 0) ? RCX : RDX;
+  m_code.emit(MOV_R64_IMM_QWORD(dstRegister));
+  m_code.addBytes(&p,sizeof(p));
+}
+#endif // IS32BIT
+
