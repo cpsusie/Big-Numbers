@@ -163,22 +163,22 @@ public:
 
 #endif // IS32BIT
 
-#define MEM_ADDR_PTR(       op,r32                ) IntelInstruction(op.m_size  ,      op.m_bytes |(r32)                                                              ) //  r32!=ESP,EBP                                     ex:fld word ptr[eax]
-#define MEM_ADDR_PTR1(      op,r32          ,offs1) IntelInstruction(op.m_size  ,1, (( op.m_bytes)|0x40                                         |  (r32)) ,(BYTE)offs1) //  r32!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
-#define MEM_ADDR_PTR4(      op,r32          ,offs4) IntelInstruction(op.m_size  ,4, (((op.m_bytes)|0x80)                                        |  (r32)) ,      offs4) //  r32!=ESP                    offs4=4 bytes signed ex fld word ptr[eax+0x12345678]
-#define MEM_ADDR_MP2PTR4(   op,r32       ,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x04)<<8) | 0x05 | ((p2)<<6) | ((r32   )<<3)           ,      offs4) //  r32!=ESP             p2=0-3 offs4=4 bytes signed ex fld word ptr[2*eax+0x12345678]
-#define MEM_ADDR_PTRMP2R32( op,r32,addR32,p2      ) IntelInstruction(op.m_size+1,   (((op.m_bytes)|0x04)<<8)        | ((p2)<<6) | ((addR32)<<3) |  (r32)              ) //  r32!=EBP addR32!=ESP p2=0-3                      ex fld word ptr[esp+2*ecx]
-#define MEM_ADDR_PTRMP2R321(op,r32,addR32,p2,offs1) IntelInstruction(op.m_size+1,1, (((op.m_bytes)|0x44)<<8)        | ((p2)<<6) | ((addR32)<<3) |  (r32)  ,(BYTE)offs1) //           addR32!=ESP p2=0-3                      ex fld word ptr[ebp+2*ecx+127]
-#define MEM_ADDR_PTRMP2R324(op,r32,addR32,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x84)<<8)        | ((p2)<<6) | ((addR32)<<3) |  (r32)  ,      offs4) //           addR32!=ESP p2=0-3 offs4=4 bytes signed ex fld word ptr[esp+2*eax+0x12345678]
+#define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op.m_size  ,      op.m_bytes |(reg)                                                              ) //  reg!=ESP,EBP                                     ex:fld word ptr[eax]
+#define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op.m_size  ,1, (( op.m_bytes)|0x40                                         |  (reg)) ,(BYTE)offs1) //  reg!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
+#define MEM_ADDR_PTR4(      op,reg          ,offs4) IntelInstruction(op.m_size  ,4, (((op.m_bytes)|0x80)                                        |  (reg)) ,      offs4) //  reg!=ESP                    offs4=4 bytes signed ex fld word ptr[eax+0x12345678]
+#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x04)<<8) | 0x05 | ((p2)<<6) | ((reg   )<<3)           ,      offs4) //  reg!=ESP             p2=0-3 offs4=4 bytes signed ex fld word ptr[2*eax+0x12345678]
+#define MEM_ADDR_PTRMP2R32( op,reg,addReg,p2      ) IntelInstruction(op.m_size+1,   (((op.m_bytes)|0x04)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)              ) //  reg!=EBP addReg!=ESP p2=0-3                      ex fld word ptr[esp+2*ecx]
+#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offs1) IntelInstruction(op.m_size+1,1, (((op.m_bytes)|0x44)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)  ,(BYTE)offs1) //           addReg!=ESP p2=0-3                      ex fld word ptr[ebp+2*ecx+127]
+#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x84)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)  ,      offs4) //           addReg!=ESP p2=0-3 offs4=4 bytes signed ex fld word ptr[esp+2*eax+0x12345678]
 #define MEM_ADDR_ESP(       op                    ) IntelInstruction(op.m_size+1,   (((op.m_bytes)|0x04)<<8) | 0x24                                                   ) //                                                   ex fld word ptr[esp}
 #define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op.m_size+1,1, (((op.m_bytes)|0x44)<<8) | 0x24                                       ,(BYTE)offs1) //                              offst=1 byte signed  ex fld word ptr[esp+128}
 #define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x84)<<8) | 0x24                                       ,      offs4) //                              offst=4 bytes signed ex fld word ptr[esp+0x12345678]
 #define MEM_ADDR_DS(        op                    ) IntelInstruction(op.m_size  ,   (  op.m_bytes)|0x05                                                               ) //  + 4 byte address
 #define REG_SRC(            op,reg)                 IntelInstruction(op.m_size  ,      op.m_bytes |0xc0|(reg)                                                         ) //                                                   ex add eax, ecx
 
-#define MEM_ADDR_PTRR32(    op,r32,addR32         ) MEM_ADDR_PTRMP2R32( op,r32,addR32,0      )                                                                          // r32!=EBP addR32!=ESP                              ex fld word ptr[esp+  ecx]
-#define MEM_ADDR_PTRR321(   op,r32,addR32   ,offs1) MEM_ADDR_PTRMP2R321(op,r32,addR32,0,offs1)                                                                          //          addR32!=ESP         offs1=1 byte signed  ex fld word ptr[ebp+  ecx+127]
-#define MEM_ADDR_PTRR324(   op,r32,addR32   ,offs4) MEM_ADDR_PTRMP2R324(op,r32,addR32,0,offs4)                                                                          //          addR32!=ESP         offs1=4 bytes signed ex fld word ptr[esp+  eax+0x12345678]
+#define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )                                                                          // reg!=EBP addReg!=ESP                              ex fld word ptr[esp+  ecx]
+#define MEM_ADDR_PTRREG1(   op,reg,addReg   ,offs1) MEM_ADDR_PTRMP2REG1(op,reg,addReg,0,offs1)                                                                          //          addReg!=ESP         offs1=1 byte signed  ex fld word ptr[ebp+  ecx+127]
+#define MEM_ADDR_PTRREG4(   op,reg,addReg   ,offs4) MEM_ADDR_PTRMP2REG4(op,reg,addReg,0,offs4)                                                                          //          addReg!=ESP         offs1=4 bytes signed ex fld word ptr[esp+  eax+0x12345678]
 
 #define B1INS(op)        IntelInstruction(1, op)
 #define B2INS(op)        IntelInstruction(2, op)
@@ -324,17 +324,6 @@ public:
 #define MOVSD_XMM_MMWORD(xmm)                  B4INSA(0xF20F1000)                       // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define MOVSD_MMWORD_XMM(xmm)                  B4INSA(0xF20F1100)                       // Build dst with MEM_ADDR-*,REG_SRC-macroes
 
-/*
-F2 0F 10 45 00       movsd       xmm0,mmword ptr [rbp]  
-F2 0F 10 4D 08       movsd       xmm1,mmword ptr [y]  
-F2 0F 10 4D 58       movsd       xmm1,mmword ptr [rbp+58h]  
-F2 0F 10 4D 10       movsd       xmm1,mmword ptr [z]  
-
-F2 0F 11 45 00       movsd       mmword ptr [rbp]    ,xmm0  
-F2 0F 11 45 58       movsd       mmword ptr [rbp+58h],xmm0  
-F2 0F 11 45 10       movsd       mmword ptr [z]      ,xmm0  
-*/
-
 #endif // IS64BIT
 
 #define ADD_BYTE_R8(         r8 )              B2INSA(0x0000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
@@ -436,14 +425,14 @@ F2 0F 11 45 10       movsd       mmword ptr [z]      ,xmm0
 #define IMUL_WORD                              B3INSA(0x66F728)                         //                   (dx:ax   = ax  * src  )
 
 // Additional forms of IMUL
-#define IMUL2_R32_DWORD(      r32)             B3INSA(0x0FAF00  | ((r32)<<3))           // 2 arguments       (r32 *= src           )
+#define IMUL2_R32_DWORD(      r32)             B3INSA(0x0FAF00    | ((r32)<<3))         // 2 arguments       (r32 *= src           )
 #define IMUL2_R16_WORD(       r16)             B4INSA(0x660FAF00  | ((r16)<<3))         //                   (r16 *= src           )
 
-#define IMUL3_DWORD_IMM_DWORD(r32)             B2INSA(0x6900    | ((r32)<<3))           // 3 args, r32,src,4 byte operand (r32 = src * imm.dword)
-#define IMUL3_DWORD_IMM_BYTE( r32)             B2INSA(0x6B00    | ((r32)<<3))           // 3 args. r32.dtv.1 byte operand (r32 = src * imm.byte )
+#define IMUL3_DWORD_IMM_DWORD(r32)             B2INSA(0x6900      | ((r32)<<3))         // 3 args, r32,src,4 byte operand (r32 = src * imm.dword)
+#define IMUL3_DWORD_IMM_BYTE( r32)             B2INSA(0x6B00      | ((r32)<<3))         // 3 args. r32.dtv.1 byte operand (r32 = src * imm.byte )
 
-#define IMUL3_WORD_IMM_WORD(  r16)             B3INSA(0x666900  | ((r16)<<3))           // 2 byte operand    (r16 = src * imm word )
-#define IMUL3_WORD_IMM_BYTE(  r16)             B3INSA(0x666B00  | ((r16)<<3))           // 1 byte operand    (r16 = src * imm byte )
+#define IMUL3_WORD_IMM_WORD(  r16)             B3INSA(0x666900    | ((r16)<<3))         // 2 byte operand    (r16 = src * imm word )
+#define IMUL3_WORD_IMM_BYTE(  r16)             B3INSA(0x666B00    | ((r16)<<3))         // 1 byte operand    (r16 = src * imm byte )
 
 #define DIV_BYTE                               B2INSA(0xF630)                           // Unsigned divide ax      /= src, Result:al = quot. ah = rem
 #define DIV_DWORD                              B2INSA(0xF730)                           //                 dk:ax   /= src. Result:ax = quot. dx = rem

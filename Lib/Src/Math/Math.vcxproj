@@ -437,7 +437,7 @@
     <CustomBuild Include="Expression\ExpressionCallx64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>

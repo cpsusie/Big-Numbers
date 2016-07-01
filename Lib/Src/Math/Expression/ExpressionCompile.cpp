@@ -986,16 +986,9 @@ void Expression::genPush(const ExpressionNode *n, int index) {
     genPushReal(*m_code.getValueAddr(n), index);
   } else {
     genExpression(n);
-#ifdef _DEBUG
     Real &tmpVar = m_code.getTmpVar(0);
     m_code.emitFStorePop(&tmpVar);
     genPushReal(tmpVar, index);
-#else
-    int bytesPushed = getAlignedSize(sizeof(Real));
-    m_code.emitSubEsp(bytesPushed);
-    m_code.emit(FSTP_REAL_PTR_ESP);
-    return bytesPushed;
-#endif
   }
 }
 
