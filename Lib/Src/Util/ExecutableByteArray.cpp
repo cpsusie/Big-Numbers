@@ -63,3 +63,11 @@ size_t ExecutableByteArray::getSystemPageSize() {
   }
   return pageSize;
 }
+
+void ExecutableByteArray::flushInstructionCache() {
+  DEFINEMETHODNAME;
+  if (!FlushInstructionCache(GetCurrentProcess(), getData(), getCapacity())) {
+    throwMethodLastErrorOnSysCallException(s_className, method);
+  }
+}
+

@@ -103,6 +103,7 @@ public:
   explicit ExecutableByteArray(unsigned int capacity);
   ~ExecutableByteArray();
   static size_t getSystemPageSize();
+  void flushInstructionCache();
 };
 
 class ByteFileArray {   // Read-only BYTE array accessed by seeking the file, instead of loading 
