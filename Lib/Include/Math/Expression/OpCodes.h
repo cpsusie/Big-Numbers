@@ -78,49 +78,9 @@
 
 #define I64(n)        ((unsigned __int64)(n))
 
-#ifdef IS32BIT
-class IntelInstruction {
-private:
-  static inline unsigned int swapBytes(unsigned int bytes, int sz) {
-    switch(sz) {
-    case 1 : return bytes;
-    case 2 : return _SWAP2(bytes);
-    case 3 : return _SWAP3(bytes);
-    case 4 : return _SWAP4(bytes);
-    default: throwMethodInvalidArgumentException(_T("IntelInstruction"), _T("swapBytes"), _T("sz=%d"), sz);
-             return bytes;
-    }
-  }
-public:
-  unsigned char    m_size;
-  unsigned __int64 m_bytes;
-
-  inline IntelInstruction(BYTE size, unsigned int bytes) : m_size(size), m_bytes(swapBytes(bytes,size)) { // size is #bytes in opcode
-  }
-  // size=#bytes of opcode, ofSize=#bytes of offset
-  inline IntelInstruction(BYTE size, BYTE ofSize, unsigned int bytes, int offset) : m_bytes(swapBytes(bytes,size)) {
-    m_bytes |= (I64(offset) << (8*size));
-    m_size = size + ofSize;
-  }
-};
 
 class IntelOpcode {
 public:
-  unsigned int  m_bytes;
-  unsigned int  m_size        : 6;
-  unsigned int  m_memAddrMode : 1;
-  unsigned int  m_regSrcMode  : 1;
-  inline IntelOpcode(BYTE size, unsigned int bytes, bool memAddrMode, bool regSrcMode)
-    : m_bytes(bytes)
-    , m_size(size)
-    , m_memAddrMode(memAddrMode)
-    , m_regSrcMode(regSrcMode)
-  {
-  }
-};
-#else // 64-bit
-class IntelInstruction {
-private:
   static inline unsigned __int64 swapBytes(unsigned __int64 bytes, int sz) {
     switch(sz) {
     case 1 : return bytes;
@@ -129,77 +89,131 @@ private:
     case 4 : return _SWAP4(bytes);
     case 5 : return _SWAP5(bytes);
     case 6 : return _SWAP6(bytes);
-    default: throwMethodInvalidArgumentException(_T("IntelInstruction"), _T("swapBytes"), _T("sz=%d"), sz);
+    default: throwMethodInvalidArgumentException(_T("IntelOpcode"), _T("swapBytes"), _T("sz=%d"), sz);
              return bytes;
     }
   }
 public:
-  unsigned char    m_size;
-  unsigned __int64 m_bytes;
-
-  inline IntelInstruction(BYTE size, unsigned __int64 bytes) : m_size(size), m_bytes(swapBytes(bytes,size)) { // size is #bytes in opcode
-  }
-  // size=#bytes of opcode, ofSize=#bytes of offset
-  inline IntelInstruction(BYTE size, BYTE ofSize, unsigned __int64 bytes, int offset) : m_bytes(swapBytes(bytes,size)) {
-    m_bytes |= (I64(offset) << (8*size));
-    m_size = size + ofSize;
-  }
-  IntelInstruction &prefix48() {
-    m_bytes <<= 8;
-    m_bytes |= 0x48;
-    m_size++;
-    return *this;
-  }
-
-};
-
-class IntelOpcode {
-public:
-  unsigned __int64 m_bytes;
-  unsigned int     m_size        : 6;
+  union {
+    unsigned __int64 m_bytes;
+    unsigned char    m_byte[8];
+  };
+  unsigned int     m_size        : 6; // = [0..15]. We can take only 6
   unsigned int     m_memAddrMode : 1;
   unsigned int     m_regSrcMode  : 1;
   inline IntelOpcode(BYTE size, unsigned __int64 bytes, bool memAddrMode, bool regSrcMode)
-    : m_bytes(bytes)
+    : m_bytes(swapBytes(bytes,size))
     , m_size(size)
     , m_memAddrMode(memAddrMode)
     , m_regSrcMode(regSrcMode)
   {
   }
   IntelOpcode &prefix48() {
-    m_bytes |= ((unsigned __int64)0x48) << (8*m_size);
+    m_bytes <<= 8;
+    m_bytes |= 0x48;
     m_size++;
     return *this;
   }
 };
 
+class IntelInstruction : public IntelOpcode {
+private:
+  inline IntelInstruction &or(BYTE b) { // always |= the last byte in instruction
+    m_byte[m_size - 1] |= b;
+    return *this;
+  }
+  // size=#bytes of opcode, ofSize=#bytes of offset
+  inline IntelInstruction &add(__int64 bytesToAdd, BYTE count) {
+    if (count == 1) {
+      m_byte[m_size++] = (BYTE)bytesToAdd;
+    }
+    else {
+      m_bytes |= (bytesToAdd) << (8 * m_size);
+      m_size += count;
+    }
+    return *this;
+  }
+public:
+  inline IntelInstruction(BYTE size, unsigned __int64 bytes) : IntelOpcode(size, bytes, false, false) {
+  }
+  inline IntelInstruction(const IntelOpcode &op) : IntelOpcode(op) {
+  }
+  inline IntelInstruction &memAddrPtr(BYTE reg) {
+    assert(m_memAddrMode);
+    return or (reg);
+  }
+  inline IntelInstruction &memAddrPtr1(BYTE reg, BYTE offset) {
+    assert(m_memAddrMode);
+    return or(0x40 | reg).add(offset, 1);
+  }
+  inline IntelInstruction &memAddrPtr4(BYTE reg, int offset) {
+    assert(m_memAddrMode);
+    return or(0x80 | reg).add(offset, 4);
+  }
+  inline IntelInstruction &memAddrMp2Ptr4(BYTE reg, BYTE p2, int offset) {
+    assert(m_memAddrMode);
+    return or(0x04).add(0x05 | (p2 << 6) | (reg << 3), 1).add(offset, 4);
+  }
+  inline IntelInstruction &memAddrMp2Reg(BYTE reg, BYTE p2, BYTE addReg) {
+    assert(m_memAddrMode);
+    return or(0x04).add((p2 << 6) | (addReg << 3) | reg, 1);
+  }
+  inline IntelInstruction &memAddrMp2Reg1(BYTE reg, BYTE p2, BYTE addReg, BYTE offs1) {
+    assert(m_memAddrMode);
+    return or(0x44).add((p2 << 6) | (addReg << 3) | reg, 1).add(offs1, 1);
+  }
+  inline IntelInstruction &memAddrMp2Reg4(BYTE reg, BYTE p2, BYTE addReg, int offs4) {
+    assert(m_memAddrMode);
+    return or(0x84).add((p2 << 6) | (addReg << 3) | reg, 1).add(offs4, 4);
+  }
+  inline IntelInstruction &memAddrEsp() {
+    assert(m_memAddrMode);
+    return or(0x04).add(0x24, 1);
+  }
+  inline IntelInstruction &memAddrEsp1(BYTE offs1) {
+    assert(m_memAddrMode);
+    return or(0x44).add(0x24, 1).add(offs1, 1);
+  }
+  inline IntelInstruction &memAddrEsp4(int offs4) {
+    assert(m_memAddrMode);
+    return or(0x84).add(0x24, 1).add(offs4, 4);
+  }
+  inline IntelInstruction &memImmDword() { // add 4 bytes address
+    assert(m_memAddrMode);
+    return or(0x05);
+  }
+  inline IntelInstruction &regSrc(BYTE reg) {
+    assert(m_regSrcMode);
+    return or(0xc0 | reg);
+  }
+};
+
 #define PREFIX48(ins) ((ins).prefix48())
 
-#endif // IS32BIT
-
-#define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op.m_size  ,      op.m_bytes |(reg)                                                              ) //  reg!=ESP,EBP                                     ex:fld word ptr[eax]
-#define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op.m_size  ,1, (( op.m_bytes)|0x40                                         |  (reg)) ,(BYTE)offs1) //  reg!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
-#define MEM_ADDR_PTR4(      op,reg          ,offs4) IntelInstruction(op.m_size  ,4, (((op.m_bytes)|0x80)                                        |  (reg)) ,      offs4) //  reg!=ESP                    offs4=4 bytes signed ex fld word ptr[eax+0x12345678]
-#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x04)<<8) | 0x05 | ((p2)<<6) | ((reg   )<<3)           ,      offs4) //  reg!=ESP             p2=0-3 offs4=4 bytes signed ex fld word ptr[2*eax+0x12345678]
-#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2      ) IntelInstruction(op.m_size+1,   (((op.m_bytes)|0x04)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)              ) //  reg!=EBP addReg!=ESP p2=0-3                      ex fld word ptr[esp+2*ecx]
-#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offs1) IntelInstruction(op.m_size+1,1, (((op.m_bytes)|0x44)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)  ,(BYTE)offs1) //           addReg!=ESP p2=0-3                      ex fld word ptr[ebp+2*ecx+127]
-#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x84)<<8)        | ((p2)<<6) | ((addReg)<<3) |  (reg)  ,      offs4) //           addReg!=ESP p2=0-3 offs4=4 bytes signed ex fld word ptr[esp+2*eax+0x12345678]
-#define MEM_ADDR_ESP(       op                    ) IntelInstruction(op.m_size+1,   (((op.m_bytes)|0x04)<<8) | 0x24                                                   ) //                                                   ex fld word ptr[esp}
-#define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op.m_size+1,1, (((op.m_bytes)|0x44)<<8) | 0x24                                       ,(BYTE)offs1) //                              offst=1 byte signed  ex fld word ptr[esp+128}
-#define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op.m_size+1,4, (((op.m_bytes)|0x84)<<8) | 0x24                                       ,      offs4) //                              offst=4 bytes signed ex fld word ptr[esp+0x12345678]
-#define MEM_ADDR_DS(        op                    ) IntelInstruction(op.m_size  ,   (  op.m_bytes)|0x05                                                               ) //  + 4 byte address
-#define REG_SRC(            op,reg)                 IntelInstruction(op.m_size  ,      op.m_bytes |0xc0|(reg)                                                         ) //                                                   ex add eax, ecx
+#define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op).memAddrPtr(     reg)                   //  reg!=ESP,EBP                                     ex:fld word ptr[eax]
+#define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op).memAddrPtr1(    reg,         offs1)    //  reg!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
+#define MEM_ADDR_PTR4(      op,reg          ,offs4) IntelInstruction(op).memAddrPtr4(    reg,         offs4)    //  reg!=ESP                    offs4=4 bytes signed ex fld word ptr[eax+0x12345678]
+#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offs4) IntelInstruction(op).memAddrMp2Ptr4( reg,p2,      offs4)    //  reg!=ESP             p2=0-3 offs4=4 bytes signed ex fld word ptr[2*eax+0x12345678]
+#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2      ) IntelInstruction(op).memAddrMp2Reg(  reg,p2,addReg)         //  reg!=EBP addReg!=ESP p2=0-3                      ex fld word ptr[esp+2*ecx]
+#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offs1) IntelInstruction(op).memAddrMp2Reg1( reg,p2,addReg,offs1)   //           addReg!=ESP p2=0-3                      ex fld word ptr[ebp+2*ecx+127]
+#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offs4) IntelInstruction(op).memAddrMp2Reg4( reg,p2,addReg,offs4)   //           addReg!=ESP p2=0-3 offs4=4 bytes signed ex fld word ptr[esp+2*eax+0x12345678]
+#define MEM_ADDR_ESP(       op                    ) IntelInstruction(op).memAddrEsp()                           //                                                   ex fld word ptr[esp}
+#define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op).memAddrEsp1(offs1)                     //                              offst=1 byte signed  ex fld word ptr[esp+128}
+#define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op).memAddrEsp4(offs4)                     //                              offst=4 bytes signed ex fld word ptr[esp+0x12345678]
+#define MEM_ADDR_DS(        op                    ) IntelInstruction(op).memImmDword()                          //  + 4 byte address
+#define REG_SRC(            op,reg)                 IntelInstruction(op).regSrc(reg)                            //                                                   ex add eax, ecx
 
 #define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )                                                                          // reg!=EBP addReg!=ESP                              ex fld word ptr[esp+  ecx]
 #define MEM_ADDR_PTRREG1(   op,reg,addReg   ,offs1) MEM_ADDR_PTRMP2REG1(op,reg,addReg,0,offs1)                                                                          //          addReg!=ESP         offs1=1 byte signed  ex fld word ptr[ebp+  ecx+127]
 #define MEM_ADDR_PTRREG4(   op,reg,addReg   ,offs4) MEM_ADDR_PTRMP2REG4(op,reg,addReg,0,offs4)                                                                          //          addReg!=ESP         offs1=4 bytes signed ex fld word ptr[esp+  eax+0x12345678]
 
+// Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
 #define B1INS(op)        IntelInstruction(1, op)
 #define B2INS(op)        IntelInstruction(2, op)
 #define B3INS(op)        IntelInstruction(3, op)
 #define B4INS(op)        IntelInstruction(4, op)
 
-// instrcution defined with these macroes, should be combined with macroes MEM_ADDR_* (and evt. REG_SRC)
+// Instrcution defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REG_SRC)
 #define B1INSA(op)       IntelOpcode(1, op, true ,true)
 #define B2INSA(op)       IntelOpcode(2, op, true ,true)
 #define B3INSA(op)       IntelOpcode(3, op, true ,true)
@@ -460,12 +474,14 @@ public:
 #define DEC_WORD                               B3INSA(0x66FF08)
 #define DEC_DWORD                              B2INSA(0xFF08)
 
+#ifdef IS32BIT
+
 #define INC_R32(r32)                           B1INS(0x40       | (r32))
 #define DEC_R32(r32)                           B1INS(0x48       | (r32))
 #define INC_R16(r16)                           B2INS(0x6640     | (r16))
 #define DEC_R16(r16)                           B2INS(0x6648     | (r16))
 
-#ifdef IS64BIT
+#else // IS64BIT
 
 #define MOV_QWORD_R64(       r64)              PREFIX48(MOV_DWORD_R32(r64))             // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define MOV_R64_QWORD(       r64)              PREFIX48(MOV_R32_DWORD(r64))             // Build src with MEM_ADDR-*,REG_SRC-macroes
@@ -483,33 +499,33 @@ public:
 #define DIVSD(xmm)                             B4INSA(0xF20F5E00 | ((xmm) << 3))         
 
 
-#define ADD_QWORD_R64(       r64)              PREFIX48(ADD_DWORD_R32(r64))
-#define ADD_R64_QWORD(       r64)              PREFIX48(ADD_R32_DWORD(r64))
+#define ADD_QWORD_R64(       r64)              PREFIX48(ADD_DWORD_R32(    r64))
+#define ADD_R64_QWORD(       r64)              PREFIX48(ADD_R32_DWORD(    r64))
 #define ADD_R64_IMM_QWORD(   r64)              PREFIX48(ADD_R32_IMM_DWORD(r64))
-#define ADD_R64_IMM_BYTE(    r64)              PREFIX48(ADD_R32_IMM_BYTE(r64))
+#define ADD_R64_IMM_BYTE(    r64)              PREFIX48(ADD_R32_IMM_BYTE( r64))
 
-#define OR_QWORD_R64(        r64)              PREFIX48(OR_DWORD_R32(r64))
-#define OR_R64_QWORD(        r64)              PREFIX48(OR_R32_DWORD(r64))
-#define OR_R64_IMM_QWORD(    r64)              PREFIX48(OR_R32_IMM_DWORD(r64))
+#define OR_QWORD_R64(        r64)              PREFIX48(OR_DWORD_R32(     r64))
+#define OR_R64_QWORD(        r64)              PREFIX48(OR_R32_DWORD(     r64))
+#define OR_R64_IMM_QWORD(    r64)              PREFIX48(OR_R32_IMM_DWORD( r64))
 
-#define AND_QWORD_R64(       r64)              PREFIX48(AND_DWORD_R32(r64))
-#define AND_R64_QWORD(       r64)              PREFIX48(AND_R32_DWORD(r64))
+#define AND_QWORD_R64(       r64)              PREFIX48(AND_DWORD_R32(    r64))
+#define AND_R64_QWORD(       r64)              PREFIX48(AND_R32_DWORD(    r64))
 #define AND_R64_IMM_QWORD(   r64)              PREFIX48(AND_R32_IMM_DWORD(r64))
 
-#define SUB_QWORD_R64(       r64)              PREFIX48(SUB_DWORD_R32(r64))
-#define SUB_R64_QWORD(       r64)              PREFIX48(SUB_R32_DWORD(r64))
+#define SUB_QWORD_R64(       r64)              PREFIX48(SUB_DWORD_R32(    r64))
+#define SUB_R64_QWORD(       r64)              PREFIX48(SUB_R32_DWORD(    r64))
 #define SUB_R64_IMM_QWORD(   r64)              PREFIX48(SUB_R32_IMM_DWORD(r64))
-#define SUB_R64_IMM_BYTE(    r64)              PREFIX48(SUB_R32_IMM_BYTE(r64))
+#define SUB_R64_IMM_BYTE(    r64)              PREFIX48(SUB_R32_IMM_BYTE( r64))
 
-#define XOR_QWORD_R64(       r64)              PREFIX48(XOR_DWORD_R32(r64))
-#define XOR_R64_QWORD(       r64)              PREFIX48(XOR_R32_DWORD(r64))
+#define XOR_QWORD_R64(       r64)              PREFIX48(XOR_DWORD_R32(    r64))
+#define XOR_R64_QWORD(       r64)              PREFIX48(XOR_R32_DWORD(    r64))
 #define XOR_R64_IMM_QWORD(   r64)              PREFIX48(XOR_R32_IMM_DWORD(r64))
 
-#define CMP_QWORD_R64(       r64)              PREFIX48(CMP_DWORD_R32(r64))
-#define CMP_R64_QWORD(       r64)              PREFIX48(CMP_R32_DWORD(r64))
+#define CMP_QWORD_R64(       r64)              PREFIX48(CMP_DWORD_R32(    r64))
+#define CMP_R64_QWORD(       r64)              PREFIX48(CMP_R32_DWORD(    r64))
 #define CMP_R64_IMM_QWORD(   r64)              PREFIX48(CMP_R32_IMM_DWORD(r64))
 
-#endif
+#endif // IS32BIT
 
 
 #define CWDE                                   B1INS(0x98)                              // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
@@ -518,6 +534,8 @@ public:
 #define CWD                                    B2INS(0x6699)                            // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
 
 // PUSH/POP _R8 not available
+
+#ifdef IS32BIT
 
 #define PUSH_R16(r16)                          B2INS(0x6650     | (r16))                // No operand
 #define POP_R16( r16)                          B2INS(0x6658     | (r16))                // No operand
@@ -528,6 +546,13 @@ public:
 #define PUSH_BYTE                              B1INS(0x6A    )                          // 1 byte value
 #define PUSH_DWORD                             B1INS(0x68    )                          // 4 byte value
 #define PUSH_WORD                              B2INS(0x6668  )                          // 2 byte value
+
+#else // IS64BIT
+
+#define PUSH_R64(r64)                          B1INS(0x50       | (r64))                // No operand
+#define POP_R64( r64)                          B1INS(0x58       | (r64))                // No operand
+
+#endif // IS32BIT
 
 #define REP_MOVS_BYTE                          B2INS(0xF3A4  )
 #define REP_MOVS_DWORD                         B2INS(0xF3A5  )
