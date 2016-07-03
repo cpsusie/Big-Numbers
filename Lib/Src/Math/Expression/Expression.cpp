@@ -53,7 +53,8 @@ Expression &Expression::operator=(const Expression &src) {
 void Expression::clear() {
   releaseAll();
   m_code.clear();
-  m_machineCode      = false;
+  m_machineCode  = false;
+  m_entryPoint   = NULL;
   setState(EXPR_EMPTY);
   setReduceIteration(0);
 }

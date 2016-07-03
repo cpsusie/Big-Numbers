@@ -326,8 +326,10 @@ void MachineCode::genTestSequence() {
   emit(PUSH_R32(EDX));
   emit(PUSH_R32(EDI));
 
-  emit(MOV_TO_EAX_IMM_ADDR_DWORD); addBytes(&addr,4);
+  emit(MOV_TO_EAX_IMM_ADDR_DWORD); addBytes(&addr,sizeof(addr));
+#ifdef IS32BIT
   emit(DEC_R32(EAX));
+#endif
   emit(REG_SRC(XOR_DWORD_R32(EDX),EDX));
   emit(MOV_R32_IMM_DWORD(EDI)); addBytes(&addr,4);
   emit(MEM_ADDR_PTR(MUL_DWORD,EDI));
@@ -408,16 +410,12 @@ void MachineCode::genTestSequence() {
   emit(NOOP);
 
   const IntelOpcode opcodes[] = {
-/*
-    UNKNOWN_OPCODE(ES)
-   ,UNKNOWN_OPCODE(CS)
-   ,UNKNOWN_OPCODE(SS)
-   ,UNKNOWN_OPCODE(DS)
-   ,UNKNOWN_OPCODE(FS)
-   ,UNKNOWN_OPCODE(GS)
-*/
 
-    NOT_BYTE
+    MOVSD_XMM_MMWORD(XMM0)
+   ,MOVSD_XMM_MMWORD(XMM2)
+   ,MOVSD_MMWORD_XMM(XMM3)
+   ,MOVSD_MMWORD_XMM(XMM7)
+   ,NOT_BYTE
    ,NOT_DWORD
    ,NOT_WORD
    ,NEG_BYTE
@@ -715,72 +713,72 @@ void MachineCode::genTestSequence() {
       for(int r = 0; r < ARRAYSIZE(registers); r++) {
         const int reg32 = registers[r];
         if(reg32 == EBP) continue;
-        emit(MEM_ADDR_PTRR32( op,reg32,addReg32));                         // size=3 r32!=EBP addR32!=ESP                 ex fld DWORD PTR[esp+  ecx]
+        emit(MEM_ADDR_PTRREG( op,reg32,addReg32));                         // size=3 r32!=EBP addR32!=ESP                 ex fld DWORD PTR[esp+  ecx]
       }
     }
 
     emit(NOOP);
     // dword ptr[eax+2*ecx]
-    for(r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
+    for(int r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
       const int addReg32 = registers[r1];
       if(addReg32 == ESP) continue;
       for(int p2 = 0; p2 < 4; p2++) {
         for(int r = 0; r < ARRAYSIZE(registers); r++) {
           const int reg32 = registers[r];
           if(reg32 == EBP) continue;
-          emit(MEM_ADDR_PTRMP2R32(op, reg32, addReg32, p2));               // size=3 r32!=EBP addR32!=ESP p2=0-3          ex fld DWORD PTR[esp+2*ecx]
+          emit(MEM_ADDR_PTRMP2REG(op, reg32, addReg32, p2));               // size=3 r32!=EBP addR32!=ESP p2=0-3          ex fld DWORD PTR[esp+2*ecx]
         }
       }
     }
 
     emit(NOOP);
     // dword ptr[eax+ecx+127]
-    for(r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
+    for(int r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
       const int addReg32 = registers[r1];
       if(addReg32 == ESP) continue;
       for(int r = 0; r < ARRAYSIZE(registers); r++) {
         const int reg32 = registers[r];
-        emit(MEM_ADDR_PTRR321(  op, reg32, addReg32,-1));                  // size=4 addR32!=ESP offs1=1 byte signed      ex fld DWORD PTR[ebp+  ecx+127]
-        emit(MEM_ADDR_PTRR321(  op, reg32, addReg32, 1));
+        emit(MEM_ADDR_PTRREG1(  op, reg32, addReg32,-1));                  // size=4 addR32!=ESP offs1=1 byte signed      ex fld DWORD PTR[ebp+  ecx+127]
+        emit(MEM_ADDR_PTRREG1(  op, reg32, addReg32, 1));
       }
     }
 
     emit(NOOP);
     // dword ptr[eax+2*ecx+127]
-    for(r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
+    for(int r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
       const int addReg32 = registers[r1];
       if(addReg32 == ESP) continue;
       for(int p2 = 0; p2 < 4; p2++) {
         for(int r = 0; r < ARRAYSIZE(registers); r++) {
           const int reg32 = registers[r];
-          emit(MEM_ADDR_PTRMP2R321(op, reg32, addReg32, p2, 1));           // size=4 addR32!=ESP p2=0-3                   ex fld DWORD PTR[ebp+2*ecx+127]
-          emit(MEM_ADDR_PTRMP2R321(op, reg32, addReg32, p2,-1));
+          emit(MEM_ADDR_PTRMP2REG1(op, reg32, addReg32, p2, 1));           // size=4 addR32!=ESP p2=0-3                   ex fld DWORD PTR[ebp+2*ecx+127]
+          emit(MEM_ADDR_PTRMP2REG1(op, reg32, addReg32, p2,-1));
         }
       }
     }
 
     emit(NOOP);
     // dword ptr[eax+ecx+0x12345678]
-    for(r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
+    for(int r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
       const int addReg32 = registers[r1];
       if(addReg32 == ESP) continue;
       for(int r = 0; r < ARRAYSIZE(registers); r++) {
         const int reg32 = registers[r];
-        emit(MEM_ADDR_PTRR324(  op, reg32, addReg32, 0x12345678));         // size=7 addR32!=ESP offs1=4 bytes signed     ex fld DWORD PTR[esp+  eax+0x12345678]
-        emit(MEM_ADDR_PTRR324(  op, reg32, addReg32,-0x12345678));
+        emit(MEM_ADDR_PTRREG4(  op, reg32, addReg32, 0x12345678));         // size=7 addR32!=ESP offs1=4 bytes signed     ex fld DWORD PTR[esp+  eax+0x12345678]
+        emit(MEM_ADDR_PTRREG4(  op, reg32, addReg32,-0x12345678));
       }
     }
 
     emit(NOOP);
     // dword ptr[eax+2*ecx+0x12345678]
-    for(r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
+    for(int r1 = 0; r1 < ARRAYSIZE(registers); r1++) {
       const int addReg32 = registers[r1];
       if(addReg32 == ESP) continue;
       for(int p2 = 0; p2 < 4; p2++) {
         for(int r = 0; r < ARRAYSIZE(registers); r++) {
           const int reg32 = registers[r];
-          emit(MEM_ADDR_PTRMP2R324(  op, reg32, addReg32,p2, 0x12345678)); // size=7 addR32!=ESP p2=0-3 offs4=4 bytes signed ex fld DWORD PTR[esp+2*eax+0x12345678]
-          emit(MEM_ADDR_PTRMP2R324(  op, reg32, addReg32,p2,-0x12345678));
+          emit(MEM_ADDR_PTRMP2REG4(  op, reg32, addReg32,p2, 0x12345678)); // size=7 addR32!=ESP p2=0-3 offs4=4 bytes signed ex fld DWORD PTR[esp+2*eax+0x12345678]
+          emit(MEM_ADDR_PTRMP2REG4(  op, reg32, addReg32,p2,-0x12345678));
         }
       }
     }

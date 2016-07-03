@@ -5,11 +5,12 @@
 #include "ExpressionParser.h"
 #include "OpCodes.h"
 
-typedef void (*function)();
-typedef Real (*functionRef1)(const Real &x);
-typedef Real (*functionRef2)(const Real &x, const Real &y);
-typedef Real (*function1)(Real x);
-typedef Real (*function2)(Real x, Real y);
+typedef void (*BuiltInFunction)();
+typedef BuiltInFunction ExpressionEntryPoint;
+typedef Real (*BuiltInFunctionRef1)(const Real &x);
+typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
+typedef Real (*BuiltInFunction1)(Real x);
+typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 //#define TEST_MACHINECODE
 
@@ -25,15 +26,15 @@ typedef Real (*function2)(Real x, Real y);
 #define FSTP_REAL_PTR_DS   MEM_ADDR_DS(FSTP_TBYTE )
 #define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_TBYTE)
 
-#endif
+#endif // LONGDOUBLE
 
 class ExternalReference {
 public:
-  int      m_addr;
-  function m_p;
+  int             m_addr;
+  BuiltInFunction m_f;
   inline ExternalReference() {
   }
-  inline ExternalReference(int addr, function p) : m_addr(addr), m_p(p) {
+  inline ExternalReference(int addr, BuiltInFunction f) : m_addr(addr), m_f(f) {
   }
 };
 
@@ -41,7 +42,11 @@ class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   CompactArray<ExternalReference> m_externals;
+#ifdef IS32BIT
   Real                            m_tmpVar[3];
+#else
+  BYTE                            m_stackTop;
+#endif // IS32BIT
 public:
   MachineCode();
   MachineCode(const MachineCode &src);
@@ -50,18 +55,15 @@ public:
   int  addBytes(const void *bytes, int count);
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
-  void emitCall(function p);
+  void emitCall(BuiltInFunction f);
   void emitFLoad(    const ExpressionNode *n) { emitBinaryOp(FLD_REAL_PTR_DS          , n); }
   void emitFLoad(    const Real           *x) { emitBinaryOp(FLD_REAL_PTR_DS          , x); }
   void emitFAdd(     const Real           *x) { emitBinaryOp(MEM_ADDR_DS(FADD_QWORD)  , x); }
   void emitFStorePop(const Real           *x) { emitBinaryOp(FSTP_REAL_PTR_DS         , x); }
   void emitFStorePop(const ExpressionNode *n) { emitBinaryOp(FSTP_REAL_PTR_DS         , n); }
   void emitFCompare( const ExpressionNode *n) { emitBinaryOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
-  void emitAddEsp(  int                   n);
-  void emitSubEsp(  int                   n);
   void emitTestAH(  BYTE                  n);
   void emitTestEAX( unsigned long         n);
-  void emitTestSP(  unsigned short        n);
   void addImmediateAddr(const void *addr);
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
   void fixupShortJump(int addr, int jmpAddr);
@@ -69,10 +71,20 @@ public:
   void fixupCall(const ExternalReference &ref);
   void emitBinaryOp(const IntelInstruction &ins, const ExpressionNode *n) { emitBinaryOp(ins,getValueAddr(n)); }
   void emitBinaryOp(const IntelInstruction &ins, const void *p);
+#ifdef IS32BIT
+  void emitAddESP(  int                   n);
+  void emitSubESP(  int                   n);
   Real &getTmpVar(int index) { return m_tmpVar[index]; }
+#else
+  void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
+  BYTE pushTmp();
+  BYTE popTmp();
+  void emitAddRSP(  int                   n);
+  void emitSubRSP(  int                   n);
+#endif // IS32BIT
   const Real *getValueAddr(const ExpressionNode *n) const;
   void linkExternals();
-  function getEntryPoint() const { return (function)getData(); }
+  ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }
 
 #ifdef TEST_MACHINECODE
   void genTestSequence();
@@ -115,6 +127,7 @@ class Expression : public ParserTree {
 private:
   DECLARECLASSNAME;
   bool                       m_machineCode;
+  ExpressionEntryPoint       m_entryPoint;
   MachineCode                m_code;
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
@@ -168,19 +181,14 @@ private:
   int  genPush(                                            const void           *p, unsigned int size); // return size
   int  genPushRef(                                         const void           *p);
 #else
-  void genPush(                                            const ExpressionNode *n, int index);
-  void genPushRef(                                         const ExpressionNode *n, int index);
-  void genPushReal(                                        const Real           &x, int index);
-  void genPushDouble(                                      const double         &x, int index);
-  void genPushReturnAddr();
-  void genPushInt(                                         int n                  , int index);
-//  void genPush(                                            const void           *p, unsigned int size); // return size
-  void genPushRef(                                         const void           *p, int index);
+  BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
+  BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
+  BYTE genSetIntParameter(                                 int n                  , int index, bool saveOnStack);
 #endif // IS32BIT
-  void genCall(                                            const ExpressionNode *n, function1    f);
-  void genCall(                                            const ExpressionNode *n, function2    f);
-  void genCall(                                            const ExpressionNode *n, functionRef1 f);
-  void genCall(                                            const ExpressionNode *n, functionRef2 f);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f);
   void genPolynomial(                                      const ExpressionNode *n);
   void genAssignment(                                      const ExpressionNode *n);
   void genIndexedExpression(                               const ExpressionNode *n);

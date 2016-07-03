@@ -69,7 +69,8 @@ void MachineCode::emitBinaryOp(const IntelInstruction &ins, const void *p) {
 
 #define ISBYTE(i)  ((i) >= -128 && (i) < 128)
 
-void MachineCode::emitAddEsp(int n) {
+#ifdef IS32BIT
+void MachineCode::emitAddESP(int n) {
   if(ISBYTE(n)) {
     emit(ADD_R32_IMM_BYTE(ESP));
     const char byte = n;
@@ -80,7 +81,7 @@ void MachineCode::emitAddEsp(int n) {
   }
 }
 
-void MachineCode::emitSubEsp(int n) {
+void MachineCode::emitSubESP(int n) {
   if(ISBYTE(n)) {
     emit(SUB_R32_IMM_BYTE(ESP));
     const char byte = n;
@@ -91,6 +92,32 @@ void MachineCode::emitSubEsp(int n) {
   }
 }
 
+#else // Is64BIT
+
+void MachineCode::emitAddRSP(int n) {
+  if(ISBYTE(n)) {
+    emit(ADD_R64_IMM_BYTE(ESP));
+    const char byte = n;
+    addBytes(&byte,1);
+  } else {
+    emit(ADD_R32_IMM_DWORD(ESP));
+    addBytes(&n,4);
+  }
+}
+
+void MachineCode::emitSubRSP(int n) {
+  if(ISBYTE(n)) {
+    emit(SUB_R64_IMM_BYTE(RSP));
+    const char byte = n;
+    addBytes(&byte,1);
+  } else {
+    emit(SUB_R64_IMM_QWORD(RSP));
+    addBytes(&n,4);
+  }
+}
+
+#endif // IS32BIT
+
 void MachineCode::emitTestAH(BYTE n) {
   emit(REG_SRC(TEST_IMM_BYTE,AH));
   addBytes(&n,1);
@@ -100,12 +127,7 @@ void MachineCode::emitTestEAX(unsigned long n) {
   emit(TEST_EAX_IMM_DWORD);
   addBytes(&n,4);
 }
-/*
-void MachineCode::emitTestSP(unsigned short n) {
-  emit3(TEST_SP);
-  addBytes(&n,2);
-}
-*/
+
 int MachineCode::emitShortJmp(const IntelInstruction &ins) {
   emit(ins);
   const BYTE addr = 0;
@@ -137,15 +159,15 @@ void MachineCode::fixupCall(const ExternalReference &ref) {
   setBytes(ref.m_addr,&PCoffset,4);
 #else // 64 Bit
   const BYTE *instructionAddr = getData() + ref.m_addr;
-  const intptr_t PCrelativOffset = (const BYTE*)ref.m_p - instructionAddr - sizeof(instructionAddr);
+  const intptr_t PCrelativOffset = (const BYTE*)ref.m_f - instructionAddr - sizeof(instructionAddr);
   setBytes(ref.m_addr,&PCrelativOffset,sizeof(instructionAddr));
 #endif
 }
 
-void MachineCode::emitCall(function p) {
+void MachineCode::emitCall(BuiltInFunction p) {
 #ifdef IS32BIT
   emit(CALL);
-  function ref = NULL;
+  BuiltInFunction ref = NULL;
   const int addr = addBytes(&ref,4);
   m_externals.add(ExternalReference(addr,p));
 #ifdef LONGDOUBLE
@@ -159,6 +181,17 @@ void MachineCode::emitCall(function p) {
   emit(MEM_ADDR_ESP(MOVSD_MMWORD_XMM(XMM0)));
   emit(MEM_ADDR_ESP(FLD_QWORD));
 #endif // IS32BIT
+}
+
+BYTE MachineCode::pushTmp() {
+  const BYTE offset = m_stackTop;
+  m_stackTop += 8;
+  return offset;
+}
+
+BYTE MachineCode::popTmp()  {
+  m_stackTop -= 8;
+  return m_stackTop;
 }
 
 void MachineCode::linkExternals() {
@@ -182,13 +215,13 @@ void Expression::compile(const String &expr, bool machineCode) {
 }
 
 #ifdef IS64BIT
-extern "C" void callDoubleResultExpression(function e, double &result);
+extern "C" void callDoubleResultExpression(ExpressionEntryPoint e, double &result);
 #endif // IS64BIT
 
 Real Expression::fastEvaluate() {
 
 #ifdef IS32BIT
-  function p = m_code.getEntryPoint();
+  ExpressionEntryPoint p = m_entryPoint; 
 #ifndef LONGDOUBLE
 
   double result;
@@ -226,7 +259,7 @@ Real Expression::fastEvaluate() {
 
 #ifndef LONGDOUBLE
   double result;
-  callDoubleResultExpression(m_code.getEntryPoint(), result);
+  callDoubleResultExpression(m_entryPoint, result);
   return result;
 #else // LONGDOUBLE
 #endif // LONGDOUBLE
@@ -235,7 +268,7 @@ Real Expression::fastEvaluate() {
 }
 
 bool Expression::fastEvaluateBool() {
-  function p = m_code.getEntryPoint();
+  ExpressionEntryPoint p = m_entryPoint;
 #ifdef IS32BIT
   int result;
   __asm {
@@ -276,18 +309,22 @@ void Expression::genCode() {
   m_machineCode = true;
 #endif
 
+  m_entryPoint = m_code.getEntryPoint();
   m_code.flushInstructionCache();
 }
 
 void Expression::genProlog() {
 #ifdef IS64BIT
-  m_code.emitSubEsp(40); // to get 16-byte aligned RSP
+#define LOCALSTACKSPACE   80
+#define RESERVESTACKSPACE 40
+  m_code.resetStack(RESERVESTACKSPACE);
+  m_code.emitSubRSP(LOCALSTACKSPACE + RESERVESTACKSPACE); // to get 16-byte aligned RSP
 #endif
 }
 
 void Expression::genEpilog() {
 #ifdef IS64BIT
-  m_code.emitAddEsp(40);
+  m_code.emitAddRSP(LOCALSTACKSPACE + RESERVESTACKSPACE);
 #endif
 }
 
@@ -665,8 +702,8 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   bytesPushed += genPushInt((int)clist.size()-1);
   bytesPushed += genPush(x);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((function)::evaluatePolynomial);
-  m_code.emitAddEsp(bytesPushed);
+  m_code.emitCall((BuiltInFunction)::evaluatePolynomial);
+  m_code.emitAddESP(bytesPushed);
 #else
 #endif // IS32BIT
 }
@@ -700,60 +737,123 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
 }
 
 #ifdef IS32BIT
-void Expression::genCall(const ExpressionNode *n, function1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f) {
   int bytesPushed = 0;
   bytesPushed += genPush(n->left());
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((function)f);
-  m_code.emitAddEsp(bytesPushed);
+  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, function2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f) {
   int bytesPushed = 0;
   bytesPushed += genPush(n->right());
   bytesPushed += genPush(n->left());
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((function)f);
-  m_code.emitAddEsp(bytesPushed);
+  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, functionRef1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(n->left(),0);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((function)f);
-  m_code.emitAddEsp(bytesPushed);
+  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, functionRef2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(n->right(),0);
   bytesPushed += genPushRef(n->left() ,1);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((function)f);
-  m_code.emitAddEsp(bytesPushed);
+  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitAddESP(bytesPushed);
 }
 #else // IS64BIT
-void Expression::genCall(const ExpressionNode *n, function1 f) {
-  genPush(n->left(), 0);
-  m_code.emitCall((function)f);
+
+static ExpressionNodeSelector *getBuiltInFunctionSelector() {
+  static const ExpressionInputSymbol builtInSymbols[] = { // all functions in this array use call to evaluate
+     MOD, POW, ROOT, SIN, COS, TAN, COT, CSC
+    ,SEC, ASIN, ACOS, ATAN, ACOT, ACSC, ASEC, COSH
+    ,SINH, TANH, ACOSH, ASINH, ATANH, LN, LOG10, EXP
+    ,SQR, SQRT, ABS, FLOOR, CEIL, BINOMIAL, GAMMA, GAUSS
+    ,FAC, NORM, PROBIT, ERF, INVERF, SIGN, MAX, MIN
+    ,RAND, NORMRAND, POLY
+  };
+  static bool                         initDone = false;
+  static ExpressionSymbolSet          functionSet;
+  static ExpressionNodeSymbolSelector selector(&functionSet);
+  if (!initDone) {
+    for (int i = 0; i < ARRAYSIZE(builtInSymbols); i++) {
+      functionSet.add(builtInSymbols[i]);
+    }
+    initDone = true;
+  }
+  return &selector;
 }
 
-void Expression::genCall(const ExpressionNode *n, function2 f) {
-  genPush(n->left() , 0);
-  genPush(n->right(), 1);
-  m_code.emitCall((function)f);
+static bool containsFunctionCall(const ExpressionNode *n) {
+  return n->getNodeCount(getBuiltInFunctionSelector()) > 0;
 }
 
-void Expression::genCall(const ExpressionNode *n, functionRef1 f) {
-  genPushRef(n->left() ,0);
-  m_code.emitCall((function)f);
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f) {
+  genSetParameter(n->left(), 0, false);
+  m_code.emitCall((BuiltInFunction)f);
 }
 
-void Expression::genCall(const ExpressionNode *n, functionRef2 f) {
-  genPushRef(n->left() ,0);
-  genPushRef(n->right(),1);
-  m_code.emitCall((function)f);
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f) {
+  const bool leftHasCalls  = containsFunctionCall(n->left());
+  const bool rightHasCalls = containsFunctionCall(n->right());
+  if (!rightHasCalls) {
+    genSetParameter(n->left(), 0, false);
+    genSetParameter(n->right(), 1, false);
+  } else if (!leftHasCalls) {
+    genSetParameter(n->right(), 1, false);
+    genSetParameter(n->left(), 0, false);
+  } else { // both left and right parmeter are expression using function calls
+    const BYTE offset = genSetParameter(n->left(), 0, true);
+    genSetParameter(n->right(), 1, false);
+    m_code.emit(MEM_ADDR_ESP1(MOVSD_XMM_MMWORD(XMM0), offset));
+  }
+  m_code.emitCall((BuiltInFunction)f);
+}
+
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f) {
+  bool stacked;
+  const BYTE offset = genSetRefParameter(n->left() ,0, stacked);
+  if (stacked) {
+    m_code.emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));
+    m_code.emit(ADD_R64_IMM_BYTE(RCX)); m_code.addBytes(&offset, 1);
+    m_code.popTmp();
+  }
+  m_code.emitCall((BuiltInFunction)f);
+}
+
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f) {
+  const bool rightHasCalls = containsFunctionCall(n->right());
+
+  bool stacked1, stacked2;
+  BYTE offset1, offset2;
+
+  if (!rightHasCalls) {
+    offset1 = genSetRefParameter(n->left(), 0, stacked1);
+    offset2 = genSetRefParameter(n->right(), 1, stacked2);
+  } else {
+    offset2 = genSetRefParameter(n->right(), 1, stacked2);
+    offset1 = genSetRefParameter(n->left(), 0, stacked1);
+  } 
+  if (stacked1) {
+    m_code.emit(REG_SRC(MOV_R64_QWORD(RCX), RSP));
+    m_code.emit(ADD_R64_IMM_BYTE(RCX)); m_code.addBytes(&offset1, 1);
+    m_code.popTmp();
+  }
+  if (stacked2) {
+    m_code.emit(REG_SRC(MOV_R64_QWORD(RDX), RSP));
+    m_code.emit(ADD_R64_IMM_BYTE(RDX)); m_code.addBytes(&offset2, 1);
+    m_code.popTmp();
+  }
+  m_code.emitCall((BuiltInFunction)f);
 }
 #endif // IS32BIT
 
@@ -890,7 +990,7 @@ int Expression::genPush(const ExpressionNode *n) {
     return genPushReal(tmpVar);
 #else
     int bytesPushed = getAlignedSize(sizeof(Real));
-    m_code.emitSubEsp(bytesPushed);
+    m_code.emitSubESP(bytesPushed);
     m_code.emit(FSTP_REAL_PTR_ESP);
     return bytesPushed;
 #endif
@@ -939,7 +1039,7 @@ int Expression::genPush(const void *p, unsigned int size) { // return size round
   default:
     size = getAlignedSize(size);
     unsigned int count = size / 4;
-    m_code.emitSubEsp(size);
+    m_code.emitSubESP(size);
     m_code.emit(MOV_R32_IMM_DWORD(ECX));
     m_code.addBytes(&count,4);
     m_code.emit(MOV_R32_IMM_DWORD(ESI));
@@ -979,41 +1079,46 @@ int Expression::genPushReturnAddr() {
 
 #else // IS64BIT
 
-#define genPushReal genPushDouble
-
-void Expression::genPush(const ExpressionNode *n, int index) {
+BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOnStack) {
+  const int dstRegister = (index == 0) ? XMM0 : XMM1;
   if(n->isNameOrNumber()) {
-    genPushReal(*m_code.getValueAddr(n), index);
+    assert(saveOnStack == false);
+    const double *addr = m_code.getValueAddr(n);
+    m_code.emit(MEM_ADDR_DS(MOVSD_XMM_MMWORD(dstRegister)));
+    m_code.addImmediateAddr(addr);
   } else {
+    if (saveOnStack) {
+      const BYTE offset = m_code.pushTmp();
+      genExpression(n);
+      m_code.emit(MEM_ADDR_ESP1(FSTP_QWORD, offset));
+      m_code.popTmp();
+      return offset;
+    }
+    else {
+      genExpression(n);
+      m_code.emit(MEM_ADDR_ESP(FSTP_QWORD));
+      m_code.emit(MEM_ADDR_ESP(MOVSD_XMM_MMWORD(dstRegister)));
+    }
+  }
+  return 0;
+}
+
+BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &savedOnStack) {
+  const int dstRegister = (index == 0) ? RCX : RDX;
+  if(n->isNameOrNumber()) {
+    const double *addr = m_code.getValueAddr(n);
+    m_code.emit(MOV_R64_IMM_QWORD(dstRegister));
+    m_code.addBytes(&addr,sizeof(addr));
+    savedOnStack = false;
+    return 0;
+  } else {
+    const BYTE offset = m_code.pushTmp();
     genExpression(n);
-    Real &tmpVar = m_code.getTmpVar(0);
-    m_code.emitFStorePop(&tmpVar);
-    genPushReal(tmpVar, index);
+    m_code.emit(MEM_ADDR_ESP1(FSTP_QWORD, offset));
+    savedOnStack = true;
+    return offset;
   }
 }
 
-void Expression::genPushRef(const ExpressionNode *n, int index) {
-  if(n->isNameOrNumber()) {
-    return genPushRef(m_code.getValueAddr(n), index);
-  } else {
-    genExpression(n);
-    Real &tmpVar = m_code.getTmpVar(index);
-    m_code.emitFStorePop(&tmpVar);
-    return genPushRef(&tmpVar, index);
-  }
-}
-
-void Expression::genPushDouble(const double &x, int index) {
-  int dstRegister = (index == 0) ? XMM0 : XMM1;
-  m_code.emit(MEM_ADDR_DS(MOVSD_XMM_MMWORD(dstRegister)));
-  m_code.addImmediateAddr(&x);
-}
-
-void Expression::genPushRef(const void *p, int index) {
-  assert(index < 2);
-  int dstRegister = (index == 0) ? RCX : RDX;
-  m_code.emit(MOV_R64_IMM_QWORD(dstRegister));
-  m_code.addBytes(&p,sizeof(p));
-}
 #endif // IS32BIT
 
