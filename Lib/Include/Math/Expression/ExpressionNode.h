@@ -389,6 +389,7 @@ public:
   bool    isCoefficientArrayConstant()  const;
   bool    dependsOn(const String &name) const;
   int     getNodeCount(ExpressionNodeSelector *selector = NULL) const; // If selector specified, only nodes wher selector.select(n) is true will be counted.
+  bool    containsFunctionCall() const;
                                                                        // If not specified, all nodes is counted
   bool    isBinaryOperator()            const;
   bool    isBooleanOperator()           const;

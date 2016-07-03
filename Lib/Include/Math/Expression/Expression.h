@@ -133,6 +133,9 @@ private:
   mutable ExpressionState    m_state;
   mutable unsigned int       m_reduceIteration;
   TrigonometricMode          m_trigonometricMode;
+#ifdef IS64BIT
+  bool                       m_hasCalls;
+#endif // IS64BIT
 
   friend class ExpressionNodeTree;
   friend class ExpressionPainter;
@@ -180,7 +183,7 @@ private:
   int  genPushInt(int n);
   int  genPush(                                            const void           *p, unsigned int size); // return size
   int  genPushRef(                                         const void           *p);
-#else
+#else // is 64 Bit
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
   BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
   BYTE genSetIntParameter(                                 int n                  , int index, bool saveOnStack);

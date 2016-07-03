@@ -37,6 +37,9 @@ private:
 %term BINOMIAL MAX MIN NORMRAND POLY RAND 
 %left LPAR RPAR LB RB            /*  ( ) [ ] (highest precedence) */
 
+/* Adding new builtin functions, that require call-instruction, must be
+   added to array in getBuiltInFunctionSelector() in ExpressionNode.cpp too
+*/
 %{
 
 #include "pch.h"

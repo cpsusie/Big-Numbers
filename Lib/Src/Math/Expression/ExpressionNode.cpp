@@ -130,6 +130,32 @@ String ExpressionNode::statementListToString(bool dbg) const {
   return result;
 }
 
+static ExpressionNodeSelector *getBuiltInFunctionSelector() {
+  // all functions in this array use call to evaluate in cmopiled code
+  static const ExpressionInputSymbol builtInSymbols[] = {
+     MOD, POW, ROOT, SIN, COS, TAN, COT, CSC
+    ,SEC, ASIN, ACOS, ATAN, ACOT, ACSC, ASEC, COSH
+    ,SINH, TANH, ACOSH, ASINH, ATANH, LN, LOG10, EXP
+    ,SQR, SQRT, ABS, FLOOR, CEIL, BINOMIAL, GAMMA, GAUSS
+    ,FAC, NORM, PROBIT, ERF, INVERF, SIGN, MAX, MIN
+    ,RAND, NORMRAND, POLY
+  };
+  static bool                         initDone = false;
+  static ExpressionSymbolSet          functionSet;
+  static ExpressionNodeSymbolSelector selector(&functionSet);
+  if (!initDone) {
+    for (int i = 0; i < ARRAYSIZE(builtInSymbols); i++) {
+      functionSet.add(builtInSymbols[i]);
+    }
+    initDone = true;
+  }
+  return &selector;
+}
+
+bool ExpressionNode::containsFunctionCall() const {
+  return getNodeCount(getBuiltInFunctionSelector()) > 0;
+}
+
 bool ExpressionNode::isBinaryOperator() const {
   switch(getSymbol()) {
   case POW  :
