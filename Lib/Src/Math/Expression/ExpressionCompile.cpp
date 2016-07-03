@@ -8,17 +8,31 @@ MachineCode::MachineCode() {
 }
 
 MachineCode::~MachineCode() {
+  clear();
+}
+
+void MachineCode::clear() {
+  ExecutableByteArray::clear();
+#ifdef IS64BIT
+  clearCoefCache();
+#endif // IS64BIT
 }
 
 MachineCode::MachineCode(const MachineCode &src) : ExecutableByteArray(src) {
-  m_externals = src.m_externals;
-  linkExternals();
+  m_refenceArray = src.m_refenceArray;
+#ifdef IS64BIT
+  copyCoefCache(src);
+#endif
+  linkReferences();
 }
 
 MachineCode &MachineCode::operator=(const MachineCode &src) {
-  ByteArray::operator=(src);
-  m_externals = src.m_externals;
-  linkExternals();
+  ExecutableByteArray::operator=(src);
+  m_refenceArray = src.m_refenceArray;
+#ifdef IS64BIT
+  copyCoefCache(src);
+#endif
+  linkReferences();
   return *this;
 }
 
@@ -92,27 +106,27 @@ void MachineCode::emitSubESP(int n) {
   }
 }
 
-#else // Is64BIT
+#else // IS64BIT
 
 void MachineCode::emitAddRSP(int n) {
+  DEFINEMETHODNAME;
   if(ISBYTE(n)) {
-    emit(ADD_R64_IMM_BYTE(ESP));
+    emit(ADD_R64_IMM_BYTE(RSP));
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    emit(ADD_R32_IMM_DWORD(ESP));
-    addBytes(&n,4);
+    throwMethodInvalidArgumentException(s_className, method, _T("n must be in range [0..255]"));
   }
 }
 
 void MachineCode::emitSubRSP(int n) {
+  DEFINEMETHODNAME;
   if(ISBYTE(n)) {
     emit(SUB_R64_IMM_BYTE(RSP));
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    emit(SUB_R64_IMM_QWORD(RSP));
-    addBytes(&n,4);
+    throwMethodInvalidArgumentException(s_className, method, _T("n must be in range [0..255]"));
   }
 }
 
@@ -127,6 +141,23 @@ BYTE MachineCode::popTmp()  {
   return m_stackTop;
 }
 
+void MachineCode::clearCoefCache() {
+  for (size_t i = 0; i < m_coefCache.size(); i++) {
+    delete m_coefCache[i];
+  }
+  m_coefCache.clear();
+}
+
+void MachineCode::copyCoefCache(const MachineCode &src) {
+  clearCoefCache();
+  for (size_t i = 0; i < src.m_coefCache.size(); i++) {
+    m_coefCache.add(new CompactDoubleArray(*src.m_coefCache[i]));
+  }
+}
+
+void MachineCode::addPolyCoefficients(CompactDoubleArray *coefArray) {
+  m_coefCache.add(coefArray);
+}
 #endif // IS32BIT
 
 void MachineCode::emitTestAH(BYTE n) {
@@ -162,17 +193,10 @@ void MachineCode::fixupShortJumps(const CompactIntArray &jumps, int jmpAddr) {
   }
 }
 
-void MachineCode::fixupCall(const ExternalReference &ref) {
-#ifdef IS32BIT
-  const BYTE *instructionAddr = getData() + ref.m_addr;
-  const intptr_t PCrelativOffset = (const BYTE*)ref.m_f - instructionAddr - 4;
-  const int PCoffset = (int)PCrelativOffset;
-  setBytes(ref.m_addr,&PCoffset,4);
-#else // 64 Bit
-  const BYTE *instructionAddr = getData() + ref.m_addr;
-  const intptr_t PCrelativOffset = (const BYTE*)ref.m_f - instructionAddr - sizeof(instructionAddr);
-  setBytes(ref.m_addr,&PCrelativOffset,sizeof(instructionAddr));
-#endif
+void MachineCode::fixupMemoryReference(const MemoryReference &ref) {
+  const BYTE    *instructionAddr  = getData() + ref.m_byteIndex;
+  const intptr_t PCrelativeOffset = ref.m_memAddr - instructionAddr - sizeof(instructionAddr);
+  setBytes(ref.m_byteIndex,&PCrelativeOffset,sizeof(PCrelativeOffset));
 }
 
 void MachineCode::emitCall(BuiltInFunction p) {
@@ -180,7 +204,7 @@ void MachineCode::emitCall(BuiltInFunction p) {
   emit(CALL);
   BuiltInFunction ref = NULL;
   const int addr = addBytes(&ref,4);
-  m_externals.add(ExternalReference(addr,p));
+  m_refenceArray.add(MemoryReference(addr,(BYTE*)p));
 #ifdef LONGDOUBLE
   emit(MEM_ADDR_ESP(MOV_R32_DWORD(EAX)));
   emit(MEM_ADDR_PTR(FLD_TBYTE,EAX));
@@ -194,9 +218,9 @@ void MachineCode::emitCall(BuiltInFunction p) {
 #endif // IS32BIT
 }
 
-void MachineCode::linkExternals() {
-  for(size_t i = 0; i < m_externals.size(); i++) {
-    fixupCall(m_externals[i]);
+void MachineCode::linkReferences() {
+  for(size_t i = 0; i < m_refenceArray.size(); i++) {
+    fixupMemoryReference(m_refenceArray[i]);
   }
 }
 
@@ -308,7 +332,7 @@ void Expression::genCode() {
 #else
   genProlog();
   genStatementList(getRoot());
-  m_code.linkExternals();
+  m_code.linkReferences();
   m_machineCode = true;
 #endif
 
@@ -684,6 +708,7 @@ void Expression::genExpression(const ExpressionNode *n) {
   }
 }
 
+#ifdef IS32BIT
 static Real evaluatePolynomial(const Real x, int degree, ...) {
   va_list argptr;
   va_start(argptr,degree);
@@ -697,7 +722,6 @@ static Real evaluatePolynomial(const Real x, int degree, ...) {
 }
 
 void Expression::genPolynomial(const ExpressionNode *n) {
-#ifdef IS32BIT
   const ExpressionNodeArray &clist = n->getCoefficientArray();
   const ExpressionNode      *x     = n->getArgument();
 
@@ -710,9 +734,48 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial);
   m_code.emitAddESP(bytesPushed);
-#else
-#endif // IS32BIT
 }
+
+#else // IS64BIT
+static double evaluatePolynomial(double x, const CompactDoubleArray &coef) {
+  const double *ak     = &coef[0];
+  const double *last   = &coef.last();
+  double        result = *ak;
+  while(ak++ < last) {
+    result = result * x + *ak;
+  }
+  return result;
+}
+
+void Expression::genPolynomial(const ExpressionNode *n) {
+  const ExpressionNodeArray &coefNodes = n->getCoefficientArray();
+  CompactDoubleArray *coefP = new CompactDoubleArray(coefNodes.size());
+  m_code.addPolyCoefficients(coefP);
+  CompactDoubleArray &coefValues = *coefP;
+
+  BitSet variableCoefSet(coefNodes.size());
+  for (int i = 0; i < coefNodes.size(); i++) {
+    const ExpressionNode *cn = coefNodes[i];
+    if (cn->isConstant()) {
+      coefValues.add(evaluateRealExpr(cn));
+    }
+    else {
+      coefValues.add(0);
+      variableCoefSet.add(i);
+    }
+  }
+  for (Iterator<size_t> it = variableCoefSet.getIterator(); it.hasNext();) {
+    const size_t i = it.next();
+    const ExpressionNode *cn = coefNodes[i];
+    genExpression(cn);
+    m_code.emitFStorePop(&coefValues[i]);
+  }
+  genSetParameter(n->getArgument(), 0, false);
+  m_code.emit(MOV_R64_IMM_QWORD(RDX)); m_code.addBytes(&coefP,sizeof(coefP));
+  m_code.emitCall((BuiltInFunction)::evaluatePolynomial);
+}
+
+#endif
 
 void Expression::genIndexedExpression(const ExpressionNode *n) {
   const bool            summation       = n->getSymbol() == INDEXEDSUM;
@@ -1102,4 +1165,3 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
 }
 
 #endif // IS32BIT
-

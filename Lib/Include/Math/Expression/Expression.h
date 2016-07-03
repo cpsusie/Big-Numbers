@@ -22,36 +22,44 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 #else
 
+#ifdef IS64BIT
+#error "LONGDOUBLE cannot be used together with x64 code"
+#endif // IS64BIT
+
 #define FLD_REAL_PTR_DS    MEM_ADDR_DS(FLD_TBYTE  )
 #define FSTP_REAL_PTR_DS   MEM_ADDR_DS(FSTP_TBYTE )
 #define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_TBYTE)
 
 #endif // LONGDOUBLE
 
-class ExternalReference {
+class MemoryReference {
 public:
-  int             m_addr;
-  BuiltInFunction m_f;
-  inline ExternalReference() {
+  int             m_byteIndex; // index of address in Machinecode
+  const BYTE     *m_memAddr;   // 4/8 byte absolute address (depending on x86/x64 mode)
+  inline MemoryReference() {
   }
-  inline ExternalReference(int addr, BuiltInFunction f) : m_addr(addr), m_f(f) {
+  inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
   }
 };
 
 class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
-  CompactArray<ExternalReference> m_externals;
+  CompactArray<MemoryReference>   m_refenceArray;
 #ifdef IS32BIT
   Real                            m_tmpVar[3];
 #else
   BYTE                            m_stackTop;
+  Array<CompactDoubleArray*>      m_coefCache;
+  void clearCoefCache();
+  void copyCoefCache(const MachineCode &src);
 #endif // IS32BIT
 public:
   MachineCode();
   MachineCode(const MachineCode &src);
   MachineCode &operator=(const MachineCode &src);
   ~MachineCode();
+  void clear();
   int  addBytes(const void *bytes, int count);
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
@@ -68,7 +76,7 @@ public:
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
   void fixupShortJump(int addr, int jmpAddr);
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
-  void fixupCall(const ExternalReference &ref);
+  void fixupMemoryReference(const MemoryReference &ref);
   void emitBinaryOp(const IntelInstruction &ins, const ExpressionNode *n) { emitBinaryOp(ins,getValueAddr(n)); }
   void emitBinaryOp(const IntelInstruction &ins, const void *p);
 #ifdef IS32BIT
@@ -81,9 +89,10 @@ public:
   BYTE popTmp();
   void emitAddRSP(  int                   n);
   void emitSubRSP(  int                   n);
+  void addPolyCoefficients(CompactDoubleArray *coefArray);
 #endif // IS32BIT
   const Real *getValueAddr(const ExpressionNode *n) const;
-  void linkExternals();
+  void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }
 
 #ifdef TEST_MACHINECODE
@@ -186,7 +195,6 @@ private:
 #else // is 64 Bit
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
   BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
-  BYTE genSetIntParameter(                                 int n                  , int index, bool saveOnStack);
 #endif // IS32BIT
   void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f);
   void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f);

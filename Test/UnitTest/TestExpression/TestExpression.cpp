@@ -1306,9 +1306,7 @@ namespace TestExpression {
     ,(ExpressionTest*)&test85
     ,(ExpressionTest*)&test86
     ,(ExpressionTest*)&test87
-#ifdef IS32BIT
     ,(ExpressionTest*)&test88
-#endif
     ,(ExpressionTest*)&test89
     ,(ExpressionTest*)&test90
     ,(ExpressionTest*)&test91

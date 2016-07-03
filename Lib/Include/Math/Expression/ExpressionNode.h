@@ -616,7 +616,7 @@ protected:
 #endif
 private:
   String toString(bool dbg) const;
-  ExpressionNodeArray         m_coefficientArray;
+  ExpressionNodeArray   m_coefficientArray;
   const ExpressionNode *m_argument;
 
 public:
