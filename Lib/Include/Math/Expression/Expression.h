@@ -299,12 +299,16 @@ public:
   Expression &operator=(const Expression &src);
   Expression getDerived(const String &name, bool reduceResult = true) const;
   void   compile(const String &expr, bool machineCode);
-  inline Real evaluate() { 
+  inline Real evaluate() {
+#ifdef _DEBUG
     checkReturnType(_T("evaluate"), EXPR_RETURN_REAL);
+#endif // _DEBUG
     return m_machineCode ? fastEvaluate()     : evaluateStatementListReal(getRoot());
   }
   inline bool evaluateBool() { 
+#ifdef _DEBUG
     checkReturnType(_T("evaluateBool"), EXPR_RETURN_BOOL);
+#endif // _DEBUG
     return m_machineCode ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
   }
 

@@ -215,7 +215,10 @@ void Expression::compile(const String &expr, bool machineCode) {
 }
 
 #ifdef IS64BIT
-extern "C" void callDoubleResultExpression(ExpressionEntryPoint e, double &result);
+extern "C" {
+  void callDoubleResultExpression(ExpressionEntryPoint e, double &result);
+  int  callIntResultExpression(ExpressionEntryPoint e);
+};
 #endif // IS64BIT
 
 Real Expression::fastEvaluate() {
@@ -268,8 +271,8 @@ Real Expression::fastEvaluate() {
 }
 
 bool Expression::fastEvaluateBool() {
-  ExpressionEntryPoint p = m_entryPoint;
 #ifdef IS32BIT
+  ExpressionEntryPoint p = m_entryPoint;
   int result;
   __asm {
     call p
@@ -277,7 +280,7 @@ bool Expression::fastEvaluateBool() {
   }
   return result ? true : false;
 #else
-  return false;
+  return callIntResultExpression(m_entryPoint) ? true : false;
 #endif // IS32BIT
 }
 

@@ -1,6 +1,6 @@
 .CODE
 
-;void callDoubleResultExpression(function f, double &result);
+;void callDoubleResultExpression(ExpressionEntryPoint e, double &result);
 callDoubleResultExpression PROC
     push        rdx
     call        rcx
@@ -8,6 +8,11 @@ callDoubleResultExpression PROC
     fstp        qword ptr[rdx]
     ret
 callDoubleResultExpression ENDP
+
+;int callIntResultExpression(ExpressionEntryPoint e);
+callIntResultExpression PROC
+    jmp         rcx
+callIntResultExpression ENDP
 
 END
 
