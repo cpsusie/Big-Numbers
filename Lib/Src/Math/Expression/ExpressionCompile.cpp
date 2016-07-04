@@ -76,7 +76,7 @@ void MachineCode::addImmediateAddr(const void *addr) {
 #endif // IS32BIT
 }
 
-void MachineCode::emitBinaryOp(const IntelInstruction &ins, const void *p) {
+void MachineCode::emitImmOp(const IntelInstruction &ins, const void *p) {
   emit(ins);
   addImmediateAddr(p);
 }
@@ -426,10 +426,10 @@ void Expression::genExpression(const ExpressionNode *n) {
 #else
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FADD_QWORD),n->left());
+      m_code.emitImmOp(MEM_ADDR_DS(FADD_QWORD),n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FADD_QWORD),n->right());
+      m_code.emitImmOp(MEM_ADDR_DS(FADD_QWORD),n->right());
     } else {
       genExpression(n->left());
       genExpression(n->right());
@@ -452,10 +452,10 @@ void Expression::genExpression(const ExpressionNode *n) {
 #else
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FSUB_QWORD),n->right());
+      m_code.emitImmOp(MEM_ADDR_DS(FSUB_QWORD),n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FSUBR_QWORD),n->left());
+      m_code.emitImmOp(MEM_ADDR_DS(FSUBR_QWORD),n->left());
     } else {
       genExpression(n->left());
       genExpression(n->right());
@@ -473,10 +473,10 @@ void Expression::genExpression(const ExpressionNode *n) {
 #else
     if(n->left()->isNameOrNumber()) {
       genExpression(n->right());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FMUL_QWORD),n->left());
+      m_code.emitImmOp(MEM_ADDR_DS(FMUL_QWORD),n->left());
     } else if(n->right()->isNameOrNumber()) {
       genExpression(n->left());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FMUL_QWORD),n->right());
+      m_code.emitImmOp(MEM_ADDR_DS(FMUL_QWORD),n->right());
     } else {
       genExpression(n->left());
       genExpression(n->right());
@@ -494,10 +494,10 @@ void Expression::genExpression(const ExpressionNode *n) {
 #else
     if(n->right()->isNameOrNumber()) {
       genExpression(n->left());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FDIV_QWORD),n->right());
+      m_code.emitImmOp(MEM_ADDR_DS(FDIV_QWORD),n->right());
     } else if(n->left()->isNameOrNumber()) {
       genExpression(n->right());
-      m_code.emitBinaryOp(MEM_ADDR_DS(FDIVR_QWORD),n->left());
+      m_code.emitImmOp(MEM_ADDR_DS(FDIVR_QWORD),n->left());
     } else {
       genExpression(n->left());
       genExpression(n->right());

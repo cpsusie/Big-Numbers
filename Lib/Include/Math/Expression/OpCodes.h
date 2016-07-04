@@ -14,14 +14,22 @@
 
 #ifdef IS64BIT
 // 64 bit registers
-#define RAX 0
-#define RCX 1
-#define RDX 2
-#define RBX 3
-#define RSP 4
-#define RBP 5
-#define RSI 6
-#define RDI 7
+#define RAX  0
+#define RCX  1
+#define RDX  2
+#define RBX  3
+#define RSP  4
+#define RBP  5
+#define RSI  6
+#define RDI  7
+#define R8   8
+#define R9   9
+#define R10 10
+#define R11 11
+#define R12 12
+#define R13 13
+#define R14 14
+#define R15 15
 
 #define XMM0   0
 #define XMM1   1
@@ -200,7 +208,7 @@ public:
 #define MEM_ADDR_ESP(       op                    ) IntelInstruction(op).memAddrEsp()                           //                                                   ex fld word ptr[esp}
 #define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op).memAddrEsp1(offs1)                     //                              offst=1 byte signed  ex fld word ptr[esp+128}
 #define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op).memAddrEsp4(offs4)                     //                              offst=4 bytes signed ex fld word ptr[esp+0x12345678]
-#define MEM_ADDR_DS(        op                    ) IntelInstruction(op).memImmDword()                          //  + 4 byte address
+#define MEM_ADDR_DS(        op                    ) IntelInstruction(op).memImmDword()                          //  + 4 byte address. In x64 mode PC-relative offset
 #define REG_SRC(            op,reg)                 IntelInstruction(op).regSrc(reg)                            //                                                   ex add eax, ecx
 
 #define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )                                                                          // reg!=EBP addReg!=ESP                              ex fld word ptr[esp+  ecx]
@@ -298,25 +306,25 @@ public:
 #define RET                                    B1INS(0xC3)                              // Near return to calling procedure
 
 #define TEST_AL_IMM_BYTE                       B1INS(0xA8)                              // 1 byte operand
-#define TEST_EAX_IMM_DWORD                     B1INS(0xA9)                              // 4 byte operand
 #define TEST_AX_IMM_WORD                       B2INS(0x66A9)                            // 2 byte operand
+#define TEST_EAX_IMM_DWORD                     B1INS(0xA9)                              // 4 byte operand
 
 #define TEST_IMM_BYTE                          B2INSA(0xF600)                           // Build src with MEM_ADDR-*,REG_SRC-macroes. 1 byte operand
-#define TEST_IMM_DWORD                         B2INSA(0xF700)                           // Build src with MEM_ADDR-*,REG_SRC-macroes. 4 byte operand
 #define TEST_IMM_WORD                          B3INSA(0x66F700)                         // Build src with MEM_ADDR-*,REG_SRC-macroes. 2 byte operand
+#define TEST_IMM_DWORD                         B2INSA(0xF700)                           // Build src with MEM_ADDR-*,REG_SRC-macroes. 4 byte operand
 
 #define TEST_R8_BYTE(        r8 )              B2INSA(0x8400    | ((r8 )<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
-#define TEST_R32_DWORD(      r32)              B2INSA(0x8500    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 #define TEST_R16_WORD(       r16)              B3INSA(0x668500  | ((r16)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
+#define TEST_R32_DWORD(      r32)              B2INSA(0x8500    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 
 
 #define NOOP                                   B1INS(0x90)
 
-#define XCHG_EAX_R32(        r32)              B1INS(0x90       |  (r32))               // r32=eax-edi
 #define XCHG_AX_R16(         r16)              B2INS(0x6690     |  (r16))               // r16=ax-di
+#define XCHG_EAX_R32(        r32)              B1INS(0x90       |  (r32))               // r32=eax-edi
 #define XCHG_R8_BYTE(        r8 )              B1INSA(0x8600    | ((r8 )<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
-#define XCHG_R32_DWORD(      r32)              B1INSA(0x8700    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 #define XCHG_R16_WORD(       r16)              B3INSA(0x668700  | ((r32)<<3)            // Build op2 with MEM_ADDR-*,REG_SRC-macroes
+#define XCHG_R32_DWORD(      r32)              B1INSA(0x8700    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 
 #define MOV_FROM_SEGREG_WORD(seg)              B2INSA(0x8C00    | ((seg)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define LEA_R32_DWORD(       dst)              B2INSANOREG(0x8D00 | ((dst)<<3))         // Build src with MEM_ADDR-macroes
@@ -324,23 +332,36 @@ public:
 #define POP_DWORD                              B2INSA(0x8F00)                           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 
 #define MOV_BYTE_R8(         r8 )              B2INSA(0x8800    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define MOV_DWORD_R32(       r32)              B2INSA(0x8900    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define MOV_WORD_R16(        r16)              B3INSA(0x668900  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_DWORD_R32(       r32)              B2INSA(0x8900    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define MOV_R8_BYTE(         r8 )              B2INSA(0x8A00    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define MOV_R32_DWORD(       r32)              B2INSA(0x8B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define MOV_R16_WORD(        r16)              B3INSA(0x668B00  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_R32_DWORD(       r32)              B2INSA(0x8B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 
-#define MOV_EAX_IMM_DWORD                      B1INS(0x05)                              // 4 byte operand
 #define MOV_R8_IMM_BYTE(     r8)               B1INS(0xB0       |  (r8 ))               // 1 byte operand
-#define MOV_R32_IMM_DWORD(   r32)              B1INS(0xB8       |  (r32))               // 4 byte operand
 #define MOV_R16_IMM_WORD(    r16)              B2INS(0x66B8     |  (r16))               // 2 byte operand
+#define MOV_R32_IMM_DWORD(   r32)              B1INS(0xB8       |  (r32))               // 4 byte operand
 
-#define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(0xA0)                              // 4 byte address. move byte  pointed to by 2. operand to AL
-#define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(0xA1)                              // 4 byte address. move dword pointed to by 2. operand to EAX
-#define MOV_TO_AX_IMM_ADDR_WORD                B2INS(0x66A1)                            // 4 byte address. move word  pointed to by 2. operand to AX
-#define MOV_FROM_AL_IMM_ADDR_BYTE              B1INS(0xA2)                              // 4 byte address. move AL  to byte  pointed to by 2. operand
-#define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(0xA3)                              // 4 byte address. move EAX to dword pointed to by 2. operand
-#define MOV_FROM_AX_IMM_ADDR_WORD              B2INS(0x66A3)                            // 4 byte address. move AX  to word  pointed to by 2. operand
+#define MOV_TO_AL_IMM_ADDR_BYTE                B1INS(0xA0)                              // 4/8 byte address. move byte  pointed to by 2. operand to AL
+#define MOV_TO_AX_IMM_ADDR_WORD                B2INS(0x66A1)                            // 4/8 byte address. move word  pointed to by 2. operand to AX
+#define MOV_TO_EAX_IMM_ADDR_DWORD              B1INS(0xA1)                              // 4/8 byte address. move dword pointed to by 2. operand to EAX
+#define MOV_FROM_AL_IMM_ADDR_BYTE              B1INS(0xA2)                              // 4/8 byte address. move AL  to byte  pointed to by 2. operand
+#define MOV_FROM_AX_IMM_ADDR_WORD              B2INS(0x66A3)                            // 4/8 byte address. move AX  to word  pointed to by 2. operand
+#define MOV_FROM_EAX_IMM_ADDR_DWORD            B1INS(0xA3)                              // 4/8 byte address. move EAX to dword pointed to by 2. operand
+
+#ifdef IS64BIT
+
+#define MOV_R64_QWORD(       r64)              PREFIX48(MOV_R32_DWORD(r64))             // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_QWORD_R64(       r64)              PREFIX48(MOV_DWORD_R32(r64))             // Build dst with MEM_ADDR-*,REG_SRC-macroes
+
+#define MOV_R64_IMM_QWORD(   r64)              PREFIX48(MOV_R32_IMM_DWORD(r64))         // 8 byte operand
+
+#define MOV_TO_RAX_IMM_ADDR_QWORD              PREFIX48(MOV_TO_EAX_IMM_ADDR_DWORD)      // 8 byte address                              // 4/8 byte address. move dword pointed to by 2. operand to EAX
+#define MOV_FROM_RAX_IMM_ADDR_QWORD            PREFIX48(MOV_FROM_EAX_IMM_ADDR_DWORD)    // 8 byte address                             // 4 byte address. move EAX to dword pointed to by 2. operand
+
+
+
+#endif
 
 #define ADD_BYTE_R8(         r8 )              B2INSA(0x0000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_DWORD_R32(       r32)              B2INSA(0x0100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
@@ -445,7 +466,7 @@ public:
 #define IMUL2_R16_WORD(       r16)             B4INSA(0x660FAF00  | ((r16)<<3))         //                   (r16 *= src           )
 
 #define IMUL3_DWORD_IMM_DWORD(r32)             B2INSA(0x6900      | ((r32)<<3))         // 3 args, r32,src,4 byte operand (r32 = src * imm.dword)
-#define IMUL3_DWORD_IMM_BYTE( r32)             B2INSA(0x6B00      | ((r32)<<3))         // 3 args. r32.dtv.1 byte operand (r32 = src * imm.byte )
+#define IMUL3_DWORD_IMM_BYTE( r32)             B2INSA(0x6B00      | ((r32)<<3))         // 3 args. r32.src.1 byte operand (r32 = src * imm.byte )
 
 #define IMUL3_WORD_IMM_WORD(  r16)             B3INSA(0x666900    | ((r16)<<3))         // 2 byte operand    (r16 = src * imm word )
 #define IMUL3_WORD_IMM_BYTE(  r16)             B3INSA(0x666B00    | ((r16)<<3))         // 1 byte operand    (r16 = src * imm byte )
@@ -483,11 +504,6 @@ public:
 
 #else // IS64BIT
 
-#define MOV_QWORD_R64(       r64)              PREFIX48(MOV_DWORD_R32(r64))             // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define MOV_R64_QWORD(       r64)              PREFIX48(MOV_R32_DWORD(r64))             // Build src with MEM_ADDR-*,REG_SRC-macroes
-
-#define MOV_R64_IMM_QWORD(   r64)              PREFIX48(MOV_R32_IMM_DWORD(r64))         // 8 byte operand
-
 #define MOVSD_XMM_MMWORD(xmm)                  B4INSA(0xF20F1000 | ((xmm) << 3))        // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define MOVSD_MMWORD_XMM(xmm)                  B4INSA(0xF20F1100 | ((xmm) << 3))        // Build dst with MEM_ADDR-*,REG_SRC-macroes
 
@@ -501,29 +517,37 @@ public:
 
 #define ADD_QWORD_R64(       r64)              PREFIX48(ADD_DWORD_R32(    r64))
 #define ADD_R64_QWORD(       r64)              PREFIX48(ADD_R32_DWORD(    r64))
-#define ADD_R64_IMM_QWORD(   r64)              PREFIX48(ADD_R32_IMM_DWORD(r64))
+#define ADD_R64_IMM_DWORD(   r64)              PREFIX48(ADD_R32_IMM_DWORD(r64))         // 4 byte operand
 #define ADD_R64_IMM_BYTE(    r64)              PREFIX48(ADD_R32_IMM_BYTE( r64))
 
 #define OR_QWORD_R64(        r64)              PREFIX48(OR_DWORD_R32(     r64))
 #define OR_R64_QWORD(        r64)              PREFIX48(OR_R32_DWORD(     r64))
-#define OR_R64_IMM_QWORD(    r64)              PREFIX48(OR_R32_IMM_DWORD( r64))
+#define OR_R64_IMM_DWORD(    r64)              PREFIX48(OR_R32_IMM_DWORD( r64))         // 4 byte operand
 
 #define AND_QWORD_R64(       r64)              PREFIX48(AND_DWORD_R32(    r64))
 #define AND_R64_QWORD(       r64)              PREFIX48(AND_R32_DWORD(    r64))
-#define AND_R64_IMM_QWORD(   r64)              PREFIX48(AND_R32_IMM_DWORD(r64))
+#define AND_R64_IMM_DWORD(   r64)              PREFIX48(AND_R32_IMM_DWORD(r64))         // 4 byte operand
 
 #define SUB_QWORD_R64(       r64)              PREFIX48(SUB_DWORD_R32(    r64))
 #define SUB_R64_QWORD(       r64)              PREFIX48(SUB_R32_DWORD(    r64))
-#define SUB_R64_IMM_QWORD(   r64)              PREFIX48(SUB_R32_IMM_DWORD(r64))
+#define SUB_R64_IMM_DWORD(   r64)              PREFIX48(SUB_R32_IMM_DWORD(r64))         // 4 byte operand
 #define SUB_R64_IMM_BYTE(    r64)              PREFIX48(SUB_R32_IMM_BYTE( r64))
 
 #define XOR_QWORD_R64(       r64)              PREFIX48(XOR_DWORD_R32(    r64))
 #define XOR_R64_QWORD(       r64)              PREFIX48(XOR_R32_DWORD(    r64))
-#define XOR_R64_IMM_QWORD(   r64)              PREFIX48(XOR_R32_IMM_DWORD(r64))
+#define XOR_R64_IMM_DWORD(   r64)              PREFIX48(XOR_R32_IMM_DWORD(r64))         // 4 byte operand
 
 #define CMP_QWORD_R64(       r64)              PREFIX48(CMP_DWORD_R32(    r64))
 #define CMP_R64_QWORD(       r64)              PREFIX48(CMP_R32_DWORD(    r64))
-#define CMP_R64_IMM_QWORD(   r64)              PREFIX48(CMP_R32_IMM_DWORD(r64))
+#define CMP_R64_IMM_DWORD(   r64)              PREFIX48(CMP_R32_IMM_DWORD(r64))         // 4 byte operand
+
+#define MUL_QWORD                              PREFIX48(MUL_DWORD)                      // (rdx:rax = rax * src  )
+#define IMUL_QWORD                             PREFIX48(IMUL_DWORD)                     // (rdx:rax = rax * src  )
+
+#define IMUL2_R64_DWORD(      r64)             PREFIX48(IMUL2_R32_DWORD(r64)            // 2 arguments       (r64 *= src           )
+
+#define IMUL3_QWORD_IMM_DWORD(r64)             PREFIX48(IMUL3_DWORD_IMM_DWORD(r64))     // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
+#define IMUL3_QWORD_IMM_BYTE( r64)             PREFIX48(IMUL3_DWORD_IMM_BYTE(R64))      // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
 
 #endif // IS32BIT
 

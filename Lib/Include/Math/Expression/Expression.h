@@ -12,7 +12,7 @@ typedef Real (*BuiltInFunctionRef2)(const Real &x, const Real &y);
 typedef Real (*BuiltInFunction1)(Real x);
 typedef Real (*BuiltInFunction2)(Real x, Real y);
 
-//#define TEST_MACHINECODE
+// #define TEST_MACHINECODE
 
 #ifndef LONGDOUBLE
 
@@ -64,12 +64,12 @@ public:
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
   void emitCall(BuiltInFunction f);
-  void emitFLoad(    const ExpressionNode *n) { emitBinaryOp(FLD_REAL_PTR_DS          , n); }
-  void emitFLoad(    const Real           *x) { emitBinaryOp(FLD_REAL_PTR_DS          , x); }
-  void emitFAdd(     const Real           *x) { emitBinaryOp(MEM_ADDR_DS(FADD_QWORD)  , x); }
-  void emitFStorePop(const Real           *x) { emitBinaryOp(FSTP_REAL_PTR_DS         , x); }
-  void emitFStorePop(const ExpressionNode *n) { emitBinaryOp(FSTP_REAL_PTR_DS         , n); }
-  void emitFCompare( const ExpressionNode *n) { emitBinaryOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
+  void emitFLoad(    const ExpressionNode *n) { emitImmOp(FLD_REAL_PTR_DS          , n); }
+  void emitFLoad(    const Real           *x) { emitImmOp(FLD_REAL_PTR_DS          , x); }
+  void emitFAdd(     const Real           *x) { emitImmOp(MEM_ADDR_DS(FADD_QWORD)  , x); }
+  void emitFStorePop(const Real           *x) { emitImmOp(FSTP_REAL_PTR_DS         , x); }
+  void emitFStorePop(const ExpressionNode *n) { emitImmOp(FSTP_REAL_PTR_DS         , n); }
+  void emitFCompare( const ExpressionNode *n) { emitImmOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
   void emitTestAH(  BYTE                  n);
   void emitTestEAX( unsigned long         n);
   void addImmediateAddr(const void *addr);
@@ -77,8 +77,8 @@ public:
   void fixupShortJump(int addr, int jmpAddr);
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
   void fixupMemoryReference(const MemoryReference &ref);
-  void emitBinaryOp(const IntelInstruction &ins, const ExpressionNode *n) { emitBinaryOp(ins,getValueAddr(n)); }
-  void emitBinaryOp(const IntelInstruction &ins, const void *p);
+  void emitImmOp(const IntelInstruction &ins, const ExpressionNode *n) { emitImmOp(ins,getValueAddr(n)); }
+  void emitImmOp(const IntelInstruction &ins, const void *p);
 #ifdef IS32BIT
   void emitAddESP(  int                   n);
   void emitSubESP(  int                   n);

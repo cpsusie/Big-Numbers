@@ -319,24 +319,75 @@ static unsigned int   staticInt32 = 0x12345678;
 void MachineCode::genTestSequence() {
   void *addr = (void*)&staticInt32;
 
-//emit(REG_SRC(MOV_DWORD_R32(EAX),ECX));
-//emit(REG_SRC(MOV_R32_DWORD(EAX),EDX));
+#ifdef IS32BIT
+  emit(DEC_R32(EAX));
 
   emit(PUSH_R32(EAX));
   emit(PUSH_R32(EDX));
   emit(PUSH_R32(EDI));
 
-  emit(MOV_TO_EAX_IMM_ADDR_DWORD); addBytes(&addr,sizeof(addr));
-#ifdef IS32BIT
-  emit(DEC_R32(EAX));
-#endif
+  emit(POP_R32(EDI));
+  emit(POP_R32(EDX));
+  emit(POP_R32(EAX));
+#else // IS64BIT
+
+  emit(REG_SRC(MOV_BYTE_R8(  BL ), BH ));
+  emit(REG_SRC(MOV_BYTE_R8(  BH ), DH ));
+  emit(REG_SRC(MOV_WORD_R16( DI ), SI ));
+  emit(REG_SRC(MOV_DWORD_R32(EDI), ESI));
+  emit(REG_SRC(MOV_QWORD_R64(RDI), RSI));
+
+  emit(REG_SRC(MOV_R8_BYTE(  BL ), BH ));
+  emit(REG_SRC(MOV_R8_BYTE(  BH ), DH ));
+  emit(REG_SRC(MOV_R16_WORD( DI ), SI ));
+  emit(REG_SRC(MOV_R32_DWORD(EDI), ESI));
+  emit(REG_SRC(MOV_R64_QWORD(RDI), RSI));
+
+  emit(MOV_R8_IMM_BYTE(  BL));       addBytes(addr,1);
+  emit(MOV_R8_IMM_BYTE(  BH));       addBytes((char*)addr+1,1);
+  emit(MOV_R16_IMM_WORD( DI));       addBytes(addr,2);
+  emit(MOV_R32_IMM_DWORD(EDI));      addBytes(addr,4);
+  emit(MOV_R64_IMM_QWORD(RDI));      addBytes(addr,8);
+
+  emit(MOV_TO_AL_IMM_ADDR_BYTE    ); addBytes(addr,sizeof(addr));
+  emit(MOV_TO_AX_IMM_ADDR_WORD    ); addBytes(addr,sizeof(addr));
+  emit(MOV_TO_EAX_IMM_ADDR_DWORD  ); addBytes(addr,sizeof(addr));
+  emit(MOV_TO_RAX_IMM_ADDR_QWORD  ); addBytes(addr,sizeof(addr));
+  emit(MOV_FROM_AL_IMM_ADDR_BYTE  ); addBytes(addr,sizeof(addr));
+  emit(MOV_FROM_AX_IMM_ADDR_WORD  ); addBytes(addr,sizeof(addr));
+  emit(MOV_FROM_EAX_IMM_ADDR_DWORD); addBytes(addr,sizeof(addr));
+  emit(MOV_FROM_RAX_IMM_ADDR_QWORD); addBytes(addr,sizeof(addr));
+
+  static int j = 0x12345678;
+  emit(MEM_ADDR_PTR(ADD_R32_DWORD(EDI), ESI));
+  emit(MEM_ADDR_PTR(ADD_R64_QWORD(RDI), RSI));
+  emit(REG_SRC(ADD_R64_QWORD(RDX),RAX));
+  emit(ADD_R64_IMM_DWORD(RAX)); addBytes(&j, 4);
+  emit(ADD_R64_IMM_BYTE(RBX)),  append(0x34);
+
+  emit(MEM_ADDR_PTR(OR_R32_DWORD(EDI), ESI));
+  emit(MEM_ADDR_PTR(OR_R64_QWORD(RDI), RSI));
+  emit(REG_SRC(OR_QWORD_R64(RDI)     , RSI));
+  emit(OR_R64_IMM_DWORD(RSI));  addBytes(&j, 4);
+
+  emit(MEM_ADDR_PTR(XOR_R32_DWORD(EDI), ESI));
+  emit(MEM_ADDR_PTR(XOR_R64_QWORD(RDI), RSI));
+  emit(REG_SRC(XOR_QWORD_R64(RDI)     , RSI));
+  emit(XOR_R64_IMM_DWORD(RSI)); addBytes(&j, 4);
+
+  emit(MEM_ADDR_PTR(MUL_QWORD,RDI));
+  emit(MEM_ADDR_PTR(IMUL_QWORD,RDI));
+
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RAX),RCX)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RCX),RCX)); addBytes(&staticInt32,4);
+  emit(MEM_ADDR_PTR(IMUL3_QWORD_IMM_DWORD(RDX),RCX)); addBytes(&staticInt32,4);
+
+#endif // IS32BIT
+
   emit(REG_SRC(XOR_DWORD_R32(EDX),EDX));
   emit(MOV_R32_IMM_DWORD(EDI)); addBytes(&addr,4);
   emit(MEM_ADDR_PTR(MUL_DWORD,EDI));
 
-  emit(POP_R32(EDI));
-  emit(POP_R32(EDX));
-  emit(POP_R32(EAX));
 
   emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(EAX),ECX)); addBytes(&staticInt32,4);
   emit(MEM_ADDR_PTR(IMUL3_DWORD_IMM_DWORD(ECX),ECX)); addBytes(&staticInt32,4);
