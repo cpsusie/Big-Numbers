@@ -1,5 +1,6 @@
 #pragma once
 
+#include "MathLib.h"
 #include "Point2D.h"
 
 #define MAXDEGREE 30
