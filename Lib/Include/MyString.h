@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Unicode.h"
 #include <stdarg.h>
+#include "Unicode.h"
 #include "PragmaLib.h"
 
 #define DEFINEMETHODNAME            static TCHAR const* const method = _T(__FUNCTION__)
