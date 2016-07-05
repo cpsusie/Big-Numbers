@@ -1,0 +1,350 @@
+#include "stdafx.h"
+#define APSTUDIO_INVOKED
+#include <Random.h>
+#include "resource.h"
+#include "Showgraf.h"
+#include "CustomFitThreadDlg.h"
+
+#ifdef _DEBUG
+#define new DEBUG_NEW
+#undef THIS_FILE
+static char THIS_FILE[] = __FILE__;
+#endif
+
+
+CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent) 
+: m_pointArray(pointArray)
+, m_fp(fp)
+, CDialog(CCustomFitThreadDlg::IDD, pParent) {
+
+    //{{AFX_DATA_INIT(CCustomFitThreadDlg)
+	m_expr  = expr;
+	m_xfrom = range.getFrom();
+	m_xto   = range.getTo();
+	m_name  = _T("");
+    //}}AFX_DATA_INIT
+  m_functionFitter = NULL;
+  m_worker         = NULL;
+}
+
+void CCustomFitThreadDlg::DoDataExchange(CDataExchange* pDX) {
+    CDialog::DoDataExchange(pDX);
+    //{{AFX_DATA_MAP(CCustomFitThreadDlg)
+	DDX_Control(pDX, IDC_DATALIST, m_dataList);
+	DDX_Text(pDX, IDC_EDITEXPR , m_expr );
+	DDX_Text(pDX, IDC_EDITXFROM, m_xfrom);
+	DDX_Text(pDX, IDC_EDITXTO  , m_xto  );
+	DDX_Text(pDX, IDC_EDITNAME , m_name );
+	//}}AFX_DATA_MAP
+}
+
+
+BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
+    //{{AFX_MSG_MAP(CCustomFitThreadDlg)
+    ON_WM_TIMER()
+	ON_WM_PAINT()
+	ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
+	ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
+	ON_BN_CLICKED(IDC_BUTTONSTOP   , OnButtonStop   )
+	ON_BN_CLICKED(IDC_BUTTONPLOT   , OnButtonPlot   )
+	ON_BN_CLICKED(IDC_BUTTONRESTART, OnButtonRestart)
+	ON_BN_CLICKED(IDC_BUTTONCOLOR  , OnButtonColor  )
+	ON_COMMAND(ID_GOTO_NAME        , OnGotoName     )
+    ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
+	ON_COMMAND(ID_GOTO_XINTERVAL   , OnGotoXInterval)
+    //}}AFX_MSG_MAP
+END_MESSAGE_MAP()
+
+BOOL CCustomFitThreadDlg::OnInitDialog() {
+  CDialog::OnInitDialog();
+
+  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_FITTING));
+  m_running = false;
+  showInfo();
+  updateButtons();
+  randomize();
+
+  m_color = randomColor();
+  const int dataWidth = getWindowRect(&m_dataList).Width()/2-12;
+  m_dataList.InsertColumn( 0,_T("X"), LVCFMT_LEFT, dataWidth);
+  m_dataList.InsertColumn( 1,_T("Y"), LVCFMT_LEFT, dataWidth);
+  m_dataList.SetExtendedStyle(LVS_EX_TRACKSELECT | LVS_EX_GRIDLINES | LVS_EX_HEADERDRAGDROP);
+
+  for(size_t i = 0; i < m_pointArray.size(); i++) {
+    const Point2D &p = m_pointArray[i];
+    addData(m_dataList, i, 0, format(_T("%lg"), p.x),true);
+    addData(m_dataList, i, 1, format(_T("%lg"), p.y));
+  }
+
+  return TRUE;
+}
+
+void CCustomFitThreadDlg::OnPaint() {
+  CPaintDC dc(this);
+
+  WINDOWPLACEMENT wp;
+  GetDlgItem(IDC_STATICCOLOR)->GetWindowPlacement(&wp);
+  dc.FillSolidRect(&wp.rcNormalPosition,m_color);
+}
+
+BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG* pMsg) {
+  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+    return true;
+  }
+  return CDialog::PreTranslateMessage(pMsg);
+}
+
+void CCustomFitThreadDlg::OnButtonColor() {
+  CColorDialog dlg(m_color);
+  dlg.m_cc.Flags |= CC_RGBINIT;
+  if(dlg.DoModal() == IDOK) {
+    m_color = dlg.m_cc.rgbResult;
+    Invalidate();
+  }
+}
+
+void CCustomFitThreadDlg::updateButtons() {
+  if(m_functionFitter == NULL) {
+    GetDlgItem(IDC_BUTTONRESTART)->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTONSTEP   )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONSOLVE  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONSTOP   )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONPLOT   )->EnableWindow(FALSE);
+    GetDlgItem(IDOK             )->EnableWindow(FALSE);
+    GetDlgItem(IDCANCEL         )->EnableWindow(TRUE );
+  } else if(m_running) {
+    GetDlgItem(IDC_BUTTONRESTART)->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONSTEP   )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONSOLVE  )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONSTOP   )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTONPLOT   )->EnableWindow(FALSE);
+    GetDlgItem(IDOK             )->EnableWindow(FALSE);
+    GetDlgItem(IDCANCEL         )->EnableWindow(FALSE);
+  } else {
+    GetDlgItem(IDC_BUTTONRESTART)->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTONSTEP   )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTONSOLVE  )->EnableWindow(TRUE );
+    GetDlgItem(IDC_BUTTONSTOP   )->EnableWindow(FALSE);
+    GetDlgItem(IDC_BUTTONPLOT   )->EnableWindow(TRUE );
+    GetDlgItem(IDOK             )->EnableWindow(TRUE );
+    GetDlgItem(IDCANCEL         )->EnableWindow(TRUE );
+  }
+}
+
+Point2DArray selectPointsInInterval(const DoubleInterval &interval, const Point2DArray &data) {
+  Point2DArray result;
+  for(size_t i = 0; i < data.size(); i++) {
+    if(interval.contains(data[i].x)) {
+      result.add(data[i]);
+    }
+  }
+  return result;
+}
+
+void CCustomFitThreadDlg::allocateFunctionFitter() {
+  deallocateFunctionFitter();
+
+  m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(DoubleInterval(m_xfrom,m_xto),m_pointArray));
+  if(!m_functionFitter->isOk()) {
+    MessageBox(m_functionFitter->getErrors()[0].cstr());
+    delete m_functionFitter;
+    m_functionFitter = NULL;
+    return;
+  }
+  m_worker = new FitThread(this,*m_functionFitter);
+
+  allocateInfoFields(m_functionFitter->getParamCount() + 5);
+}
+
+void CCustomFitThreadDlg::deallocateFunctionFitter() {
+  if(m_worker) {
+    m_worker->kill();
+    delete m_worker;
+    m_worker = NULL;
+  }
+  if(m_functionFitter) {
+    delete m_functionFitter;
+    m_functionFitter  = NULL;
+  }
+  deallocateInfoFields();
+}
+
+void CCustomFitThreadDlg::allocateInfoFields(int n) {
+  deallocateInfoFields();
+  for(int i = 0; i < n; i++) {
+    m_infoField.add(infofield(i));
+  }
+}
+
+void CCustomFitThreadDlg::deallocateInfoFields() {
+  for(size_t i = 0; i < m_infoField.size(); i++) {
+    CStatic *st = m_infoField[i];
+    st->DestroyWindow();
+    delete st;
+  }
+  m_infoField.clear();
+}
+
+#define FIELDID(i) (_APS_NEXT_CONTROL_VALUE + 1 + i)
+
+CStatic *CCustomFitThreadDlg::infofield(int i) {
+  CRect rect;
+  rect.top    = i * 20    + 30;
+  rect.bottom = rect.top  + 18;
+  rect.left   = 10;
+  rect.right  = rect.left + 200;
+  CStatic *st = new CStatic;
+  st->Create(_T(""),WS_VISIBLE | WS_GROUP | WS_TABSTOP,rect,this,FIELDID(i));
+  return st;
+}
+
+void CCustomFitThreadDlg::startTimer() {
+  int iInstallResult = SetTimer(1,500,NULL);
+}
+
+void CCustomFitThreadDlg::stopTimer() {
+  KillTimer(1);
+}
+
+void CCustomFitThreadDlg::printf(int field, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr,format);
+  String tmp = vformat(format,argptr);
+  va_end(argptr);
+  m_infoField[field]->SetWindowText(tmp.cstr());
+}
+
+void CCustomFitThreadDlg::showInfo() {
+  if (m_functionFitter == NULL) {
+  return;
+  }
+  int i;
+  for(i = 0; i < m_functionFitter->getParamCount(); i++) {
+    printf(i,_T("%-10s:%.12lf"),m_functionFitter->getParamName(i).cstr(),m_functionFitter->getParamValue(i));
+  }
+  printf(i++,_T("Iteration :%d")    ,m_functionFitter->getIterationCount());
+  printf(i++,_T("Stepsize  :%.12lf"),m_functionFitter->getStepSize());
+  printf(i++,_T("SSD       :%.12lf"),m_functionFitter->getSSD());
+  printf(i++,_T("Descent   :%.12lf"),m_functionFitter->getSSDDescent());
+  if(m_functionFitter->done()) printf(i++,_T("Done"));
+  UpdateData(false);
+}
+
+void CCustomFitThreadDlg::OnTimer(UINT nIDEvent) {
+  showInfo();
+  if(!m_running) {
+    updateButtons();
+    stopTimer();
+  }
+  CDialog::OnTimer(nIDEvent);
+}
+
+void CCustomFitThreadDlg::OnOK() {
+  UpdateData();
+  if(m_name.GetLength() == 0) {
+    MessageBox(_T("Must specify name"));
+    GetDlgItem(IDC_EDITNAME)->SetFocus();	
+    return;
+  }
+  if(m_functionFitter == NULL) {
+    MessageBox(_T("Illegal state:called OnOk with no functionfitter defined"), _T("Error"), MB_ICONEXCLAMATION);
+    return;
+  }
+
+  m_param = ExpressionGraphParameters((LPCTSTR)m_name,m_color,0,GSCURVE);
+  m_param.m_interval = DoubleInterval(m_xfrom , m_xto);
+  m_param.m_expr     = m_functionFitter->toString().cstr();
+
+  m_fp.addExpressionGraph(m_param);
+
+  stopTimer();
+  deallocateFunctionFitter();
+  CDialog::OnOK();
+}
+
+void CCustomFitThreadDlg::OnCancel() {
+  stopTimer();
+  deallocateFunctionFitter();
+  CDialog::OnCancel();
+}
+
+void CCustomFitThreadDlg::startWorker(int loopCounter) {
+  if(m_functionFitter == NULL || m_worker == NULL) {
+    MessageBox(_T("Illegal state:called startWorker with no functionfitter defined"), _T("Error"),MB_ICONEXCLAMATION);
+    return;
+  }
+  m_running = true;
+  updateButtons();
+  startTimer();
+  m_worker->m_loopCount = loopCounter;
+  m_worker->resume();
+}
+
+void CCustomFitThreadDlg::OnButtonRestart() {
+  UpdateData();
+  allocateFunctionFitter();
+  updateButtons();
+  if(m_functionFitter != NULL) {
+    m_functionFitter->init();
+    showInfo();
+  }
+}
+
+void CCustomFitThreadDlg::OnButtonPlot() {
+  m_fp.plotFunction(*m_functionFitter, DoubleInterval(m_xfrom,m_xto), m_color);
+}
+
+void CCustomFitThreadDlg::OnButtonStep() {
+  startWorker(1);
+  showInfo();
+}
+
+void CCustomFitThreadDlg::OnButtonSolve() {
+  startWorker(-1);
+}
+
+void CCustomFitThreadDlg::OnButtonStop() {
+  m_worker->m_loopCount = 1;
+}
+
+void CCustomFitThreadDlg::OnGotoName() {
+  gotoEditBox(this, IDC_EDITNAME);
+}
+
+void CCustomFitThreadDlg::OnGotoFunction() {
+  gotoEditBox(this, IDC_EDITEXPR);
+}
+
+void CCustomFitThreadDlg::OnGotoXInterval() {
+  gotoEditBox(this, IDC_EDITXFROM);
+}
+
+
+FitThread::FitThread(CCustomFitThreadDlg *dlg, FunctionFitter &functionFitter) : m_dlg(*dlg), m_functionFitter(functionFitter) {
+  setDeamon(true);
+  m_killed = false;
+}
+
+unsigned int FitThread::run() {
+  while(!m_killed) {
+    while(m_loopCount-- != 0 && !m_functionFitter.done() && !m_killed) {
+      m_functionFitter.stepIteration();
+    }
+    m_dlg.m_running = false;
+    if(m_killed) {
+      break;
+    }
+    suspend();
+  }
+  return 0;
+}
+
+void FitThread::kill() {
+  m_killed = true;
+  if(!m_dlg.m_running) {
+    resume();
+  }
+  while(stillActive()) {
+    Sleep(20);
+  }
+}
