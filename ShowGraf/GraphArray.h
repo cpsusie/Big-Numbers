@@ -4,17 +4,17 @@
 
 class GraphArray : public Array<GraphItem> {
 private:
-  int       m_selected;
+  intptr_t  m_selected;
   String    m_error;
   DataRange m_dataRange;
 
   void findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect);
   
-  const GraphItem &getItem(int index) const {
+  const GraphItem &getItem(size_t index) const {
     return (*this)[index];
   }
 
-  GraphItem &getItem(int index) {
+  GraphItem &getItem(size_t index) {
     return (*this)[index];
   }
 
@@ -24,12 +24,12 @@ public:
   }
   
   void unselect();
-  void select(int i);
+  void select(intptr_t i);
   void add(Graph *g);
-  void remove(int index);
+  void remove(size_t index);
   void clear();
   
-  int  getCurrentSelection() const {
+  intptr_t  getCurrentSelection() const {
     return m_selected;
   }
   const GraphItem *getSelectedItem() const {

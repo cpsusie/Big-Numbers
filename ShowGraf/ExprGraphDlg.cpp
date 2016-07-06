@@ -5,8 +5,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CExprGraphDlg::CExprGraphDlg(ExpressionGraphParameters &param, int showFlags, CWnd* pParent)  : m_param(param), CDialog(CExprGraphDlg::IDD, pParent) {
@@ -14,39 +12,33 @@ CExprGraphDlg::CExprGraphDlg(ExpressionGraphParameters &param, int showFlags, CW
       param.setDefaultName();
     }
     paramToWin(param);
-    //{{AFX_DATA_INIT(CExprGraphDlg)
-	//}}AFX_DATA_INIT
     m_showFlags = showFlags;
 }
 
 void CExprGraphDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CExprGraphDlg)
     DDX_Text(pDX, IDC_EDITEXPR , m_expr );
     DDX_Text(pDX, IDC_EDITNAME , m_name );
     DDX_Text(pDX, IDC_EDITXFROM, m_xfrom);
     DDX_Text(pDX, IDC_EDITXTO  , m_xto  );
     DDX_Text(pDX, IDC_EDITSTEPS, m_steps);
     DDV_MinMaxUInt(pDX, m_steps, 1, 10000);
-	DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
-	//}}AFX_DATA_MAP
+    DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CExprGraphDlg, CDialog)
-    //{{AFX_MSG_MAP(CExprGraphDlg)
-    ON_WM_PAINT()
-	ON_WM_SIZE()
-	ON_COMMAND(   ID_FILE_OPEN                  , OnFileOpen                  )
-	ON_COMMAND(   ID_FILE_SAVE                  , OnFileSave                  )
-	ON_COMMAND(   ID_FILE_SAVE_AS               , OnFileSaveAs                )
-	ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindmatchingparentesis)
-    ON_COMMAND(   ID_GOTO_NAME                  , OnGotoName                  )
-	ON_COMMAND(   ID_GOTO_STYLE                 , OnGotoStyle                 )
-    ON_COMMAND(   ID_GOTO_EXPR                  , OnGotoExpr                  )
-	ON_COMMAND(   ID_GOTO_XINTERVAL             , OnGotoXInterval             )
-	ON_COMMAND(   ID_GOTO_STEP                  , OnGotoStep                  )
-    ON_BN_CLICKED(IDC_BUTTONCOLOR               , OnButtonColor               )
-	//}}AFX_MSG_MAP
+  ON_WM_PAINT()
+  ON_WM_SIZE()
+  ON_COMMAND(   ID_FILE_OPEN                  , OnFileOpen                  )
+  ON_COMMAND(   ID_FILE_SAVE                  , OnFileSave                  )
+  ON_COMMAND(   ID_FILE_SAVE_AS               , OnFileSaveAs                )
+  ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindmatchingparentesis)
+  ON_COMMAND(   ID_GOTO_NAME                  , OnGotoName                  )
+  ON_COMMAND(   ID_GOTO_STYLE                 , OnGotoStyle                 )
+  ON_COMMAND(   ID_GOTO_EXPR                  , OnGotoExpr                  )
+  ON_COMMAND(   ID_GOTO_XINTERVAL             , OnGotoXInterval             )
+  ON_COMMAND(   ID_GOTO_STEP                  , OnGotoStep                  )
+  ON_BN_CLICKED(IDC_BUTTONCOLOR               , OnButtonColor               )
 END_MESSAGE_MAP()
 
 BOOL CExprGraphDlg::PreTranslateMessage(MSG* pMsg) {

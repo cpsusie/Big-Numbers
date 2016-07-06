@@ -7,8 +7,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 
@@ -17,31 +15,26 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
 , m_fp(fp)
 , CDialog(CCustomFitThreadDlg::IDD, pParent) {
 
-    //{{AFX_DATA_INIT(CCustomFitThreadDlg)
 	m_expr  = expr;
 	m_xfrom = range.getFrom();
 	m_xto   = range.getTo();
 	m_name  = _T("");
-    //}}AFX_DATA_INIT
   m_functionFitter = NULL;
   m_worker         = NULL;
 }
 
 void CCustomFitThreadDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CCustomFitThreadDlg)
 	DDX_Control(pDX, IDC_DATALIST, m_dataList);
 	DDX_Text(pDX, IDC_EDITEXPR , m_expr );
 	DDX_Text(pDX, IDC_EDITXFROM, m_xfrom);
 	DDX_Text(pDX, IDC_EDITXTO  , m_xto  );
 	DDX_Text(pDX, IDC_EDITNAME , m_name );
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
-    //{{AFX_MSG_MAP(CCustomFitThreadDlg)
-    ON_WM_TIMER()
+  ON_WM_TIMER()
 	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
 	ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
@@ -50,9 +43,8 @@ BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
 	ON_BN_CLICKED(IDC_BUTTONRESTART, OnButtonRestart)
 	ON_BN_CLICKED(IDC_BUTTONCOLOR  , OnButtonColor  )
 	ON_COMMAND(ID_GOTO_NAME        , OnGotoName     )
-    ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
+  ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
 	ON_COMMAND(ID_GOTO_XINTERVAL   , OnGotoXInterval)
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CCustomFitThreadDlg::OnInitDialog() {
@@ -72,8 +64,8 @@ BOOL CCustomFitThreadDlg::OnInitDialog() {
 
   for(size_t i = 0; i < m_pointArray.size(); i++) {
     const Point2D &p = m_pointArray[i];
-    addData(m_dataList, i, 0, format(_T("%lg"), p.x),true);
-    addData(m_dataList, i, 1, format(_T("%lg"), p.y));
+    addData(m_dataList, (int)i, 0, format(_T("%lg"), p.x),true);
+    addData(m_dataList, (int)i, 1, format(_T("%lg"), p.y));
   }
 
   return TRUE;
@@ -199,7 +191,7 @@ CStatic *CCustomFitThreadDlg::infofield(int i) {
 }
 
 void CCustomFitThreadDlg::startTimer() {
-  int iInstallResult = SetTimer(1,500,NULL);
+  intptr_t iInstallResult = SetTimer(1,500,NULL);
 }
 
 void CCustomFitThreadDlg::stopTimer() {
@@ -230,7 +222,7 @@ void CCustomFitThreadDlg::showInfo() {
   UpdateData(false);
 }
 
-void CCustomFitThreadDlg::OnTimer(UINT nIDEvent) {
+void CCustomFitThreadDlg::OnTimer(UINT_PTR nIDEvent) {
   showInfo();
   if(!m_running) {
     updateButtons();

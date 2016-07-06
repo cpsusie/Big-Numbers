@@ -6,7 +6,7 @@ void GraphArray::paint(Viewport2D &vp, CFont &buttonFont, const CRect &buttonPan
   m_error = _T("");
   for(size_t i = 0; i < size(); i++) {
     try {
-      getItem(i).paint(vp, buttonFont,i==m_selected);
+      getItem(i).paint(vp, buttonFont,(int)i==m_selected);
     } catch(Exception e) {
       if(m_error.length() == 0) {
         m_error = e.what();
@@ -31,7 +31,7 @@ void GraphArray::unselect() {
   m_selected = -1;
 }
 
-void GraphArray::select(int i) {
+void GraphArray::select(intptr_t i) {
   unselect();
   m_selected = i;
 }
@@ -44,7 +44,7 @@ bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point, const Rectangle
     }
   }
   double minDistance = 1000;
-  int selected = -1;
+  intptr_t selected = -1;
   for(size_t i = 0; i < size(); i++) {
     const GraphItem &item = getItem(i);
     if(!item.getGraph().isVisible()) {
@@ -89,7 +89,7 @@ void GraphArray::findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPa
     CRect buttonRect;
     buttonRect.left   = buttonPanelRect.left + (buttonPanelRect.Width() - buttonWidth)/2;
     buttonRect.right  = buttonRect.left + buttonWidth;
-    buttonRect.top    = buttonPanelRect.top + 10 + (buttonHeight+3) * (i + 1);
+    buttonRect.top    = buttonPanelRect.top + 10 + (buttonHeight+3) * ((int)i + 1);
     buttonRect.bottom = buttonRect.top + buttonHeight;
     gi.setButtonRect(buttonRect);
   }
@@ -104,7 +104,7 @@ void GraphArray::add(Graph *g) {
   Array<GraphItem>::add(GraphItem(g));
 }
 
-void GraphArray::remove(int index) {
+void GraphArray::remove(size_t index) {
   if(index == m_selected) {
     unselect();
   }
@@ -118,7 +118,7 @@ void GraphArray::remove(int index) {
     }
   }
 
-  if(index < (int)size()) {
+  if(index < size()) {
     select(index);
   } else if(size() > 0) {
     select(size()-1);

@@ -8,9 +8,7 @@
 
 class CShowGrafView : public CFormView, public FunctionPlotter {
 private:
-    //{{AFX_DATA(CShowGrafView)
     enum { IDD = IDD_SHOWGRAFVIEW };
-    //}}AFX_DATA
 
     CCoordinateSystem         m_coordinateSystem;
     bool                      m_firstDraw;
@@ -47,7 +45,6 @@ private:
 protected: // create from serialization only
     DECLARE_DYNCREATE(CShowGrafView)
 
-    //{{AFX_MSG(CShowGrafView)
     afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
     afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
     afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
@@ -56,9 +53,8 @@ protected: // create from serialization only
     afx_msg void OnSize(       UINT nType, int cx, int cy);
     afx_msg void OnSelectMenuDelete();
     afx_msg void OnSelectMenuEdit();
-	afx_msg void OnSelectMenuHide();
-	afx_msg void OnSelectMenuShow();
-	//}}AFX_MSG
+    afx_msg void OnSelectMenuHide();
+    afx_msg void OnSelectMenuShow();
   DECLARE_MESSAGE_MAP()
 
 public:
@@ -99,14 +95,12 @@ public:
     void startPolynomialFitThread();
     void makeExpoFit();
     void makePotensFit();
-    //{{AFX_VIRTUAL(CShowGrafView)
-    public:
+  public:
     virtual void OnDraw(CDC* pDC);  // overridden to draw this view
     protected:
     virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
     virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
     virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
-    //}}AFX_VIRTUAL
 
 #ifdef _DEBUG
   virtual void AssertValid() const;
@@ -114,5 +108,3 @@ public:
 #endif
 
 };
-
-//{{AFX_INSERT_LOCATION}}

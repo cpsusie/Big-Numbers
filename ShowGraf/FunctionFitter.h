@@ -41,18 +41,18 @@ public:
   void setParam(const Vector &values);
   
   int getParamCount() const {
-    return m_parameterValue.size();
+    return (int)m_parameterValue.size();
   }
   
-  const String &getParamName(int i) const {
+  const String &getParamName(size_t i) const {
     return m_parameterName[i];
   }
   
-  double getParamValue(int i) const {
+  double getParamValue(size_t i) const {
     return *m_parameterValue[i];
   }
   
-  void setParamValue(int i, double value) {
+  void setParamValue(size_t i, double value) {
     *m_parameterValue[i] = value;
   }
   

@@ -27,41 +27,33 @@ public:
     COLORREF                   m_color;
     int                        m_showFlags;
 
-    //{{AFX_DATA(CExprGraphDlg)
-	enum { IDD = IDD_EXPRGRAPH_DIALOG };
+  enum { IDD = IDD_EXPRGRAPH_DIALOG };
     CString m_expr;
     CString m_name;
     double  m_xfrom;
     double  m_xto;
     UINT    m_steps;
-	CString	m_style;
-	//}}AFX_DATA
+    CString	m_style;
 
-    //{{AFX_VIRTUAL(CExprGraphDlg)
     public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
 
 protected:
-    //{{AFX_MSG(CExprGraphDlg)
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();
-	afx_msg void OnGotoStyle();
+    afx_msg void OnGotoStyle();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();
     afx_msg void OnGotoStep();
     afx_msg void OnButtonColor();
     afx_msg void OnPaint();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnFileOpen();
-	afx_msg void OnFileSave();
-	afx_msg void OnFileSaveAs();
-	afx_msg void OnEditFindmatchingparentesis();
-	//}}AFX_MSG
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnFileOpen();
+    afx_msg void OnFileSave();
+    afx_msg void OnFileSaveAs();
+    afx_msg void OnEditFindmatchingparentesis();
     DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}

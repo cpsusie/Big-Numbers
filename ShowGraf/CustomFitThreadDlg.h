@@ -21,14 +21,12 @@ class CCustomFitThreadDlg : public CDialog {
 public:
     CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent = NULL);
 
-    //{{AFX_DATA(CCustomFitThreadDlg)
-	enum { IDD = IDD_FITTHREAD_DIALOG };
-	CListCtrl	m_dataList;
+  enum { IDD = IDD_FITTHREAD_DIALOG };
+    CListCtrl	m_dataList;
     CString     m_expr;
     double      m_xfrom;
     double      m_xto;
     CString     m_name;
-	//}}AFX_DATA
 
     HACCEL                    m_accelTable;
     FunctionFitter           *m_functionFitter;
@@ -51,18 +49,15 @@ public:
     void startTimer();
     void stopTimer();
 
-    //{{AFX_VIRTUAL(CCustomFitThreadDlg)
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+  public:
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
+  protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
 
 protected:
 
-    //{{AFX_MSG(CCustomFitThreadDlg)
     virtual BOOL OnInitDialog();
-    afx_msg void OnTimer(UINT nIDEvent);
+    afx_msg void OnTimer(UINT_PTR nIDEvent);
     afx_msg void OnPaint();
     virtual void OnOK();
     virtual void OnCancel();
@@ -76,8 +71,6 @@ protected:
     afx_msg void OnGotoFunction();
     afx_msg void OnGotoXInterval();
 
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

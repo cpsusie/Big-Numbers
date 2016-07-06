@@ -4,8 +4,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd* pParent /*=NULL*/) : m_param(param), CDialog(CIsoCurveGraphDlg::IDD, pParent) {
@@ -13,13 +11,10 @@ CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd* pPare
       param.setDefaultName();
     }
     paramToWin(param);
-    //{{AFX_DATA_INIT(CIsoCurveGraphDlg)
-	//}}AFX_DATA_INIT
 }
 
 void CIsoCurveGraphDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CIsoCurveGraphDlg)
     DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
     DDX_Text(pDX, IDC_EDITEXPR    , m_expr    );
     DDX_Text(pDX, IDC_EDITNAME    , m_name    );
@@ -28,13 +23,11 @@ void CIsoCurveGraphDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Text(pDX, IDC_EDITXTO     , m_xTo     );
     DDX_Text(pDX, IDC_EDITYFROM   , m_yFrom   );
     DDX_Text(pDX, IDC_EDITYTO     , m_yTo     );
-	//}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CIsoCurveGraphDlg, CDialog)
-    //{{AFX_MSG_MAP(CIsoCurveGraphDlg)
-    ON_WM_PAINT()
+  ON_WM_PAINT()
 	ON_WM_SIZE()
 	ON_COMMAND(   ID_FILE_OPEN                  , OnFileOpen                  )
 	ON_COMMAND(   ID_FILE_SAVE                  , OnFileSave                  )
@@ -47,7 +40,6 @@ BEGIN_MESSAGE_MAP(CIsoCurveGraphDlg, CDialog)
 	ON_COMMAND(   ID_GOTO_YINTERVAL             , OnGotoYInterval             )
   ON_COMMAND(   ID_GOTO_CELLSIZE              , OnGotoCellSize              )
   ON_BN_CLICKED(IDC_BUTTONCOLOR               , OnButtonColor               )
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 

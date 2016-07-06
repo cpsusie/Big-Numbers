@@ -4,8 +4,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent /*=NULL*/) 
@@ -18,25 +16,19 @@ CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd
 
   m_fit.solve(LSSD, m_data);
 
-    //{{AFX_DATA_INIT(CDegreeDlg)
-    m_degree = 0;
-    //}}AFX_DATA_INIT
+  m_degree = 0;
 }
 
 
 void CDegreeDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CDegreeDlg)
     DDX_Text(pDX, IDC_EDITDEGREE, m_degree);
     DDV_MinMaxUInt(pDX, m_degree, 0, 30);
-    //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CDegreeDlg, CDialog)
-    //{{AFX_MSG_MAP(CDegreeDlg)
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPINDEGREE, OnDeltaposSpinDegree)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CDegreeDlg::OnInitDialog() {

@@ -176,7 +176,7 @@ int IsoCurveFinder::getPointId(const HashedRectCorner &c1, const HashedRectCorne
     return *p; // already computed
   }
   const Point2D v = converge(c1.m_point, c2.m_point, c1.m_positive);
-  int id = m_pointArray.size();
+  int id = (int)m_pointArray.size();
   m_pointArray.add(v);
   m_edgeMap.put(edgeKey,id);
   return id;
@@ -321,9 +321,9 @@ static String intArrayToString(const CompactIntArray &a) {
 
 void IsoCurveFinder::saveStatistics(double startTime) {
   m_statistics.m_threadTime  = getThreadTime() - startTime;
-  m_statistics.m_pointCount  = m_pointArray.size();
-  m_statistics.m_cornerCount = m_cornerMap.size();
-  m_statistics.m_edgeCount   = m_edgeMap.size();
+  m_statistics.m_pointCount  = (int)m_pointArray.size();
+  m_statistics.m_cornerCount = (int)m_cornerMap.size();
+  m_statistics.m_edgeCount   = (int)m_edgeMap.size();
   m_statistics.m_hashStat    = _T("  CornerMap:") + intArrayToString(m_cornerMap.getLength()) + _T("\n")
                              + _T("  EdgeMap  :") + intArrayToString(m_edgeMap.getLength())   + _T("\n")
                              + _T("  DoneSet  :") + intArrayToString(m_centerSet.getLength()) + _T("\n");

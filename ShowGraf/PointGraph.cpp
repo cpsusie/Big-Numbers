@@ -29,7 +29,7 @@ const Point2DArray &PointGraph::getProcessedData() const {
     QueueList<double> queue;
     double sum = 0;
     const int maxQueueSize = getParam().m_rollSize;
-    int n = m_pointArray.size();
+    int n = (int)m_pointArray.size();
     for(int i = 0; i < n; i++) {
       if(queue.size() == maxQueueSize) {
         sum -= queue.get();
@@ -56,7 +56,7 @@ void PointGraph::clear() {
 double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
   const Point2DP tmpp(p);
   const Point2DArray &data = getProcessedData();
-  int n = data.size();
+  int n = (int)data.size();
   switch(getParam().m_style) {
   case GSCURVE:
     { double minDist = -1;
@@ -95,7 +95,7 @@ void PointGraph::setRollSize(int size) {
 void PointGraph::paint(Viewport2D &vp) {
   int   i;
   const Point2DArray &data  = getProcessedData();
-  const int           n     = data.size();
+  const int           n     = (int)data.size();
   const COLORREF      color = getParam().m_color;
 
   switch(getParam().m_style) {

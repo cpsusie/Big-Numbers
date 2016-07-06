@@ -68,7 +68,7 @@ void IsoCurveGraph::findDataRange() {
   if(isEmpty()) {
     m_range.init(-1,1,-1,1);
   } else {
-    const int          n  = m_lineArray.size();
+    const int          n  = (int)m_lineArray.size();
     const LineSegment *ls = &m_lineArray[0];
     m_range.init(  m_pointArray[ls->m_i1]);
     m_range.update(m_pointArray[ls->m_i2]);
@@ -91,7 +91,7 @@ void IsoCurveGraph::paint(Viewport2D &vp) {
   if(isEmpty()) {
     return;
   }
-  const int          n     = m_lineArray.size();
+  const int          n     = (int)m_lineArray.size();
   const LineSegment *ls    = &m_lineArray[0];
   const COLORREF     color = getParam().m_color;
 
@@ -153,7 +153,7 @@ double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &t
   if(isEmpty()) {
     return 1e40;
   }
-  const int          n  = m_lineArray.size();
+  const int          n  = (int)m_lineArray.size();
   const LineSegment *ls = &m_lineArray[0];
 
   switch(getParam().m_style) {
@@ -196,7 +196,7 @@ double IsoCurveGraph::getSmallestPositiveX() const {
   if(isEmpty()) {
     return 0;
   } else {
-    const int          n      = m_lineArray.size();
+    const int          n      = (int)m_lineArray.size();
     const LineSegment *ls     = &m_lineArray[0];
     double             result = max(0, m_pointArray[ls->m_i1].x);
     result = getMinPositive(m_pointArray[ls->m_i2].x, result);
@@ -212,7 +212,7 @@ double IsoCurveGraph::getSmallestPositiveY() const {
   if(isEmpty()) {
     return 0;
   } else {
-    const int          n      = m_lineArray.size();
+    const int          n      = (int)m_lineArray.size();
     const LineSegment *ls     = &m_lineArray[0];
     double             result = max(0, m_pointArray[ls->m_i1].y);
     result = getMinPositive(m_pointArray[ls->m_i2].y, result);

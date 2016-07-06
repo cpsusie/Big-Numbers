@@ -12,14 +12,11 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 IMPLEMENT_DYNCREATE(CShowGrafView, CFormView)
 
 BEGIN_MESSAGE_MAP(CShowGrafView, CFormView)
-    //{{AFX_MSG_MAP(CShowGrafView)
     ON_WM_LBUTTONDOWN()
     ON_WM_LBUTTONUP()
     ON_WM_RBUTTONDOWN()
@@ -30,7 +27,6 @@ BEGIN_MESSAGE_MAP(CShowGrafView, CFormView)
     ON_COMMAND(ID_SELECTMENU_EDIT  , OnSelectMenuEdit  )
     ON_COMMAND(ID_SELECTMENU_HIDE  , OnSelectMenuHide  )
     ON_COMMAND(ID_SELECTMENU_SHOW  , OnSelectMenuShow  )
-    //}}AFX_MSG_MAP
     ON_COMMAND(ID_FILE_PRINT        , CFormView::OnFilePrint)
     ON_COMMAND(ID_FILE_PRINT_DIRECT , CFormView::OnFilePrint)
     ON_COMMAND(ID_FILE_PRINT_PREVIEW, CFormView::OnFilePrintPreview)

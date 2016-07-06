@@ -5,31 +5,23 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd* pParent) : m_graph(g), CDialog(CDataGraphDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CDataGraphDlg)
-    m_name  = _T("");
+  m_name  = _T("");
 	m_style = _T("");
-	//}}AFX_DATA_INIT
 }
 
 void CDataGraphDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CDataGraphDlg)
 	DDX_Control(pDX, IDC_DATALIST, m_dataList);
-    DDX_Text(pDX, IDC_EDITNAME, m_name);
+  DDX_Text(pDX, IDC_EDITNAME, m_name);
 	DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
-	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CDataGraphDlg, CDialog)
-    //{{AFX_MSG_MAP(CDataGraphDlg)
     ON_BN_CLICKED(IDC_BUTTONCOLOR, OnButtoncolor)
     ON_WM_PAINT()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CDataGraphDlg::OnInitDialog() {
@@ -49,10 +41,9 @@ BOOL CDataGraphDlg::OnInitDialog() {
   const Point2DArray &data = m_graph.getDataPoints();
   for(size_t i = 0; i < data.size(); i++) {
     const Point2D &p = data[i];
-    addData(m_dataList, i, 0, format(_T("%lg"), p.x),true);
-    addData(m_dataList, i, 1, format(_T("%lg"), p.y));
+    addData(m_dataList, (int)i, 0, format(_T("%lg"), p.x),true);
+    addData(m_dataList, (int)i, 1, format(_T("%lg"), p.y));
   }
-
   UpdateData(FALSE);
   return FALSE;
 }

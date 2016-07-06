@@ -3,34 +3,26 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CIntervalDlg::CIntervalDlg(const RectangleTransformation &tr, CWnd* pParent) : m_tr(tr), CDialog(CIntervalDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CIntervalDlg)
     m_minx = m_tr.getFromRectangle().getMinX();
     m_maxx = m_tr.getFromRectangle().getMaxX();
     m_miny = m_tr.getFromRectangle().getMinY();
     m_maxy = m_tr.getFromRectangle().getMaxY();
-    //}}AFX_DATA_INIT
 }
 
 void CIntervalDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CIntervalDlg)
     DDX_Text(pDX, IDC_EDITXFROM, m_minx);
     DDX_Text(pDX, IDC_EDITXTO  , m_maxx);
     DDX_Text(pDX, IDC_EDITYFROM, m_miny);
     DDX_Text(pDX, IDC_EDITYTO  , m_maxy);
-    //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CIntervalDlg, CDialog)
-    //{{AFX_MSG_MAP(CIntervalDlg)
 	ON_COMMAND(ID_GOTO_XINTERVAL, OnGotoXInterval)
 	ON_COMMAND(ID_GOTO_YINTERVAL, OnGotoYInterval)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CIntervalDlg::OnInitDialog() {
