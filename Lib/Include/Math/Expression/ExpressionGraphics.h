@@ -1,6 +1,7 @@
 #pragma once
 
-#include <PixRect.h>
+#include <MFCUtil/WinTools.h>
+#include <MFCUtil/PixRect.h>
 #include <Math/Expression/Expression.h>
 
 class ExpressionRectangle;

@@ -199,24 +199,46 @@ void MachineCode::fixupMemoryReference(const MemoryReference &ref) {
   setBytes(ref.m_byteIndex,&PCrelativeOffset,sizeof(PCrelativeOffset));
 }
 
-void MachineCode::emitCall(BuiltInFunction p) {
 #ifdef IS32BIT
+void MachineCode::emitCall(BuiltInFunction p, ExpressionDestination dummy) {
   emit(CALL);
   BuiltInFunction ref = NULL;
-  const int addr = addBytes(&ref,4);
-  m_refenceArray.add(MemoryReference(addr,(BYTE*)p));
+  const int addr = addBytes(&ref, 4);
+  m_refenceArray.add(MemoryReference(addr, (BYTE*)p));
 #ifdef LONGDOUBLE
   emit(MEM_ADDR_ESP(MOV_R32_DWORD(EAX)));
-  emit(MEM_ADDR_PTR(FLD_TBYTE,EAX));
+  emit(MEM_ADDR_PTR(FLD_TBYTE, EAX));
 #endif
+}
 #else // 64 Bit
+
+void MachineCode::emitCall(BuiltInFunction p, ExpressionDestination dst) {
   emit(MOV_R64_IMM_QWORD(RAX));
   addBytes(&p,sizeof(p));
   emit(REG_SRC(CALLABSOLUTE, RAX));
-  emit(MEM_ADDR_ESP(MOVSD_MMWORD_XMM(XMM0)));
-  emit(MEM_ADDR_ESP(FLD_QWORD));
-#endif // IS32BIT
+  switch (dst.m_type) {
+  case RESULT_IN_FPU  :
+    emit(MEM_ADDR_ESP(MOVSD_MMWORD_XMM(XMM0)));                    // XMM0 -> FPU-top
+    emit(MEM_ADDR_ESP(FLD_QWORD));
+    break;
+  case RESULT_IN_XMM :
+    if (dst.m_offset == XMM1) {
+      emit(MOVEAPS(XMM1, XMM0));                                   // XMM0 -> XMM1
+    } // else do nothing
+    break;
+  case RESULT_IN_ADDRRDI:
+    emit(MEM_ADDR_PTR(MOVSD_MMWORD_XMM(XMM0), RDI));               // XMM0 -> *RDI
+    break;
+  case RESULT_ON_STACK:
+    emit(MEM_ADDR_ESP1(MOVSD_MMWORD_XMM(XMM0), dst.m_offset));     // XMM0 -> RSP[offset]
+    break;
+  case RESULT_IN_IMMADDR:
+    emitXMM0ToAddr(dst.m_immAddr);                                 // XMM0 -> PC-relative immAddr
+    break;
+  }
 }
+
+#endif // IS32BIT
 
 void MachineCode::linkReferences() {
   for(size_t i = 0; i < m_refenceArray.size(); i++) {
@@ -373,7 +395,7 @@ void Expression::genStatementList(const ExpressionNode *n) {
     break;
 
   case RETURNREAL:
-    genExpression(n->left());
+    genExpression(n->left(), DST_ADDRRDI);
     genEpilog();
     break;
 
@@ -387,10 +409,16 @@ void Expression::genStatementList(const ExpressionNode *n) {
   }
 }
 
+#ifdef IS32BIT
 void Expression::genAssignment(const ExpressionNode *n) {
-  genExpression(n->right());
+  genExpression(n->right(), DST_FPU);
   m_code.emitFStorePop(n->left());
 }
+#else // IS64BIT
+void Expression::genAssignment(const ExpressionNode *n) {
+  genExpression(n->right(), DST_IMMADDR(m_code.getValueAddr(n->left())));
+}
+#endif IS32BIT
 
 void Expression::genReturnBoolExpression(const ExpressionNode *n) {
   JumpList jumps = genBoolExpression(n->left());
@@ -406,7 +434,21 @@ void Expression::genReturnBoolExpression(const ExpressionNode *n) {
   m_code.fixupShortJumps(jumps.falseJumps,falseLabel);
 }
 
-void Expression::genExpression(const ExpressionNode *n) {
+#define GENEXPRESSION(n) genExpression(n, dst)
+#define GENCALL(n,f)     genCall(n,f,dst);      return
+#define GENPOLY(n)       genPolynomial(n, dst); return
+#define GENIF(n)         genIf(n,dst);          return
+
+#define GENTRIGOCALL(n,f)                         \
+  switch(getTrigonometricMode()) {                \
+  case RADIANS: GENCALL(n, f          );          \
+  case DEGREES: GENCALL(n, f##Degrees );          \
+  case GRADS  : GENCALL(n, f##Grads   );          \
+  default     : throwInvalidTrigonometricMode();  \
+  }
+
+void Expression::genExpression(const ExpressionNode *n, ExpressionDestination dst) {
+
   switch(n->getSymbol()) {
   case NAME  :
   case NUMBER:
@@ -425,14 +467,14 @@ void Expression::genExpression(const ExpressionNode *n) {
     break;
 #else
     if(n->left()->isNameOrNumber()) {
-      genExpression(n->right());
+      genExpression(n->right(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FADD_QWORD),n->left());
     } else if(n->right()->isNameOrNumber()) {
-      genExpression(n->left());
+      genExpression(n->left(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FADD_QWORD),n->right());
     } else {
-      genExpression(n->left());
-      genExpression(n->right());
+      genExpression(n->left(), DST_FPU);
+      genExpression(n->right(), DST_FPU);
       m_code.emit(FADD);
     }
     break;
@@ -440,7 +482,7 @@ void Expression::genExpression(const ExpressionNode *n) {
 
   case MINUS : 
     if(n->isUnaryMinus()) {
-      genExpression(n->left());
+      genExpression(n->left(), DST_FPU);
       m_code.emit(FCHS);
       break;
     }
@@ -451,14 +493,14 @@ void Expression::genExpression(const ExpressionNode *n) {
     break;
 #else
     if(n->right()->isNameOrNumber()) {
-      genExpression(n->left());
+      genExpression(n->left(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FSUB_QWORD),n->right());
     } else if(n->left()->isNameOrNumber()) {
-      genExpression(n->right());
+      genExpression(n->right(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FSUBR_QWORD),n->left());
     } else {
-      genExpression(n->left());
-      genExpression(n->right());
+      genExpression(n->left(), DST_FPU);
+      genExpression(n->right(), DST_FPU);
       m_code.emit(FSUB);
     }
     break;
@@ -472,14 +514,14 @@ void Expression::genExpression(const ExpressionNode *n) {
     break;
 #else
     if(n->left()->isNameOrNumber()) {
-      genExpression(n->right());
+      genExpression(n->right(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FMUL_QWORD),n->left());
     } else if(n->right()->isNameOrNumber()) {
-      genExpression(n->left());
+      genExpression(n->left(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FMUL_QWORD),n->right());
     } else {
-      genExpression(n->left());
-      genExpression(n->right());
+      genExpression(n->left(), DST_FPU);
+      genExpression(n->right(), DST_FPU);
       m_code.emit(FMUL);
     }
     break;
@@ -493,219 +535,91 @@ void Expression::genExpression(const ExpressionNode *n) {
     break;
 #else
     if(n->right()->isNameOrNumber()) {
-      genExpression(n->left());
+      genExpression(n->left(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FDIV_QWORD),n->right());
     } else if(n->left()->isNameOrNumber()) {
-      genExpression(n->right());
+      genExpression(n->right(), DST_FPU);
       m_code.emitImmOp(MEM_ADDR_DS(FDIVR_QWORD),n->left());
     } else {
-      genExpression(n->left());
-      genExpression(n->right());
+      genExpression(n->left(), DST_FPU);
+      genExpression(n->right(), DST_FPU);
       m_code.emit(FDIV);
     }
     break;
 #endif
 
-  case MOD   :
-    genCall(n, fmod);
-    break;
-  case POW   :
-    genCall(n, mypow);
-    break;
-  case ROOT   :
-    genCall(n, root);
-    break;
-  case SIN   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, sin        ); break;
-    case DEGREES: genCall(n, sinDegrees ); break;
-    case GRADS  : genCall(n, sinGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case COS   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, cos        ); break;
-    case DEGREES: genCall(n, cosDegrees ); break;
-    case GRADS  : genCall(n, cosGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case TAN   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, tan        ); break;
-    case DEGREES: genCall(n, tanDegrees ); break;
-    case GRADS  : genCall(n, tanGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case COT   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, cot        ); break;
-    case DEGREES: genCall(n, cotDegrees ); break;
-    case GRADS  : genCall(n, cotGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case CSC   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, csc        ); break;
-    case DEGREES: genCall(n, cscDegrees ); break;
-    case GRADS  : genCall(n, cscGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case SEC   :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, sec        ); break;
-    case DEGREES: genCall(n, secDegrees ); break;
-    case GRADS  : genCall(n, secGrads   ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ASIN  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, asin       ); break;
-    case DEGREES: genCall(n, asinDegrees); break;
-    case GRADS  : genCall(n, asinGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ACOS  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, acos       ); break;
-    case DEGREES: genCall(n, acosDegrees); break;
-    case GRADS  : genCall(n, acosGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ATAN  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, atan       ); break;
-    case DEGREES: genCall(n, atanDegrees); break;
-    case GRADS  : genCall(n, atanGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ACOT  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, acot       ); break;
-    case DEGREES: genCall(n, acotDegrees); break;
-    case GRADS  : genCall(n, acotGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ACSC  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, acsc       ); break;
-    case DEGREES: genCall(n, acscDegrees); break;
-    case GRADS  : genCall(n, acscGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case ASEC  :
-    switch(getTrigonometricMode()) {
-    case RADIANS: genCall(n, asec       ); break;
-    case DEGREES: genCall(n, asecDegrees); break;
-    case GRADS  : genCall(n, asecGrads  ); break;
-    default     : throwInvalidTrigonometricMode();
-    }
-    break;
-  case COSH  : 
-    genCall(n, cosh);
-    break;
-  case SINH  : 
-    genCall(n, sinh);
-    break;
-  case TANH  : 
-    genCall(n, tanh);
-    break;
-  case ACOSH : 
-    genCall(n, acosh);
-    break;
-  case ASINH : 
-    genCall(n, asinh);
-    break;
-  case ATANH : 
-    genCall(n, atanh);
-    break;
-  case LN    :
-    genCall(n, log);
-    break;
-  case LOG10   :
-    genCall(n, log10);
-    break;
-  case EXP   :
-    genCall(n, exp);
-    break;
-  case SQR   :
-    genCall(n, sqr);
-    break;
-  case SQRT  :
-    genCall(n, sqrt);
-    break;
-  case ABS   :
-    genCall(n, fabs);
-    break;
-  case FLOOR :
-    genCall(n, floor);
-    break;
-  case CEIL  :
-    genCall(n, ceil);
-    break;
-  case BINOMIAL:
-    genCall(n, binomial);
-    break;
-  case GAMMA :
-    genCall(n, gamma);
-    break;
-  case GAUSS :
-    genCall(n, gauss);
-    break;
-  case FAC   : 
-    genCall(n, fac);
-    break;
-  case NORM  :
-    genCall(n, norm);
-    break;
-  case PROBIT:
-    genCall(n, probitFunction);
-    break;
-  case ERF   :
-    genCall(n, errorFunction);
-    break;
-  case INVERF:
-    genCall(n, inverseErrorFunction);
-    break;
-  case SIGN  : 
-    genCall(n, dsign);
-    break;
-  case MAX   : 
-    genCall(n, dmax);
-    break;
-  case MIN   : 
-    genCall(n, dmin);
-    break;
-  case RAND  : 
-    genCall(n, random);
-    break;
-  case NORMRAND:
-    genCall(n, randomGaussian);
-    break;
-  case POLY  :
-    genPolynomial(n);
-    break;
+  case MOD           :    GENCALL(     n, fmod                );
+  case POW           :    GENCALL(     n, mypow               );
+  case ROOT          :    GENCALL(     n, root                );
+  case SIN           :    GENTRIGOCALL(n, sin                 );
+  case COS           :    GENTRIGOCALL(n, cos                 );
+  case TAN           :    GENTRIGOCALL(n, tan                 );
+  case COT           :    GENTRIGOCALL(n, cot                 );
+  case CSC           :    GENTRIGOCALL(n, csc                 );
+  case SEC           :    GENTRIGOCALL(n, sec                 );
+  case ASIN          :    GENTRIGOCALL(n, asin                );
+  case ACOS          :    GENTRIGOCALL(n, acos                );
+  case ATAN          :    GENTRIGOCALL(n, atan                );
+  case ACOT          :    GENTRIGOCALL(n, acot                );
+  case ACSC          :    GENTRIGOCALL(n, acsc                );
+  case ASEC          :    GENTRIGOCALL(n, asec                );
+  case COSH          :    GENCALL(     n, cosh                );
+  case SINH          :    GENCALL(     n, sinh                );
+  case TANH          :    GENCALL(     n, tanh                );
+  case ACOSH         :    GENCALL(     n, acosh               );
+  case ASINH         :    GENCALL(     n, asinh               );
+  case ATANH         :    GENCALL(     n, atanh               );
+  case LN            :    GENCALL(     n, log                 );
+  case LOG10         :    GENCALL(     n, log10               );
+  case EXP           :    GENCALL(     n, exp                 );
+  case SQR           :    GENCALL(     n, sqr                 );
+  case SQRT          :    GENCALL(     n, sqrt                );
+  case ABS           :    GENCALL(     n, fabs                );
+  case FLOOR         :    GENCALL(     n, floor               );
+  case CEIL          :    GENCALL(     n, ceil                );
+  case BINOMIAL      :    GENCALL(     n, binomial            );
+  case GAMMA         :    GENCALL(     n, gamma               );
+  case GAUSS         :    GENCALL(     n, gauss               );
+  case FAC           :    GENCALL(     n, fac                 );
+  case NORM          :    GENCALL(     n, norm                );
+  case PROBIT        :    GENCALL(     n, probitFunction      );
+  case ERF           :    GENCALL(     n, errorFunction       );
+  case INVERF        :    GENCALL(     n, inverseErrorFunction);
+  case SIGN          :    GENCALL(     n, dsign               );
+  case MAX           :    GENCALL(     n, dmax                );
+  case MIN           :    GENCALL(     n, dmin                );
+  case RAND          :    GENCALL(     n, random              );
+  case NORMRAND      :    GENCALL(     n, randomGaussian      );
+  case POLY          :    GENPOLY(     n);
   case INDEXEDSUM    :
   case INDEXEDPRODUCT:
     genIndexedExpression(n);
     break;
-  case IIF   :
-    genIf(n);
-    break;
-  default    :
+  case IIF           :    GENIF(n);
+  default            :
     throwUnknownSymbolException(_T("genExpression"), n);
     break;
   }
+#ifdef IS64BIT
+// at this point, the result is at the top in FPU-stack. Move result to dst
+  switch (dst.m_type) {
+  case RESULT_IN_FPU  : // do nothing
+    break;
+  case RESULT_IN_XMM :
+    m_code.emit(MEM_ADDR_ESP(FSTP_QWORD));                         // FPU  -> *RSP
+    m_code.emit(MEM_ADDR_ESP(MOVSD_XMM_MMWORD(dst.m_offset)));     // *RSP -> XMM0 or XMM1
+    break;
+  case RESULT_IN_ADDRRDI:
+    m_code.emit(MEM_ADDR_PTR(FSTP_QWORD, RDI));                    // FPU -> *RDI
+    break;
+  case RESULT_ON_STACK:
+    m_code.emit(MEM_ADDR_ESP1(FSTP_QWORD, dst.m_offset));          // FPU -> RSP[offset]
+    break;
+  case RESULT_IN_IMMADDR:
+    m_code.emitFStorePop(dst.m_immAddr);                           // FPU -> PC-relative immAddr
+    break;
+  }
+#endif
 }
 
 #ifdef IS32BIT
@@ -721,7 +635,7 @@ static Real evaluatePolynomial(const Real x, int degree, ...) {
   return result;
 }
 
-void Expression::genPolynomial(const ExpressionNode *n) {
+void Expression::genPolynomial(const ExpressionNode *n, ExpressionDestination dummy) {
   const ExpressionNodeArray &clist = n->getCoefficientArray();
   const ExpressionNode      *x     = n->getArgument();
 
@@ -732,7 +646,7 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   bytesPushed += genPushInt((int)clist.size()-1);
   bytesPushed += genPush(x);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)::evaluatePolynomial);
+  m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
@@ -747,7 +661,7 @@ static double evaluatePolynomial(double x, const CompactDoubleArray &coef) {
   return result;
 }
 
-void Expression::genPolynomial(const ExpressionNode *n) {
+void Expression::genPolynomial(const ExpressionNode *n, ExpressionDestination dst) {
   const ExpressionNodeArray &coefNodes = n->getCoefficientArray();
   CompactDoubleArray *coefP = new CompactDoubleArray(coefNodes.size());
   m_code.addPolyCoefficients(coefP);
@@ -767,12 +681,11 @@ void Expression::genPolynomial(const ExpressionNode *n) {
   for (Iterator<size_t> it = variableCoefSet.getIterator(); it.hasNext();) {
     const size_t i = it.next();
     const ExpressionNode *cn = coefNodes[i];
-    genExpression(cn);
-    m_code.emitFStorePop(&coefValues[i]);
+    genExpression(cn, DST_IMMADDR(&coefValues[i]));
   }
   genSetParameter(n->getArgument(), 0, false);
   m_code.emit(MOV_R64_IMM_QWORD(RDX)); m_code.addBytes(&coefP,sizeof(coefP));
-  m_code.emitCall((BuiltInFunction)::evaluatePolynomial);
+  m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }
 
 #endif
@@ -784,14 +697,14 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
   const ExpressionNode *endExpr         = n->child(1);
   const ExpressionNode *expr            = n->child(2);
   
-  genExpression(endExpr);                              // Evaluate end value for loopVar. and keep it in FPU-register
+  genExpression(endExpr, DST_FPU);                     // Evaluate end value for loopVar. and keep it in FPU-register
   m_code.emit(summation ? FLDZ : FLD1);                // Initialize accumulator
-  genExpression(startAssignment->right());             // Evaluate start value for loopVar
+  genExpression(startAssignment->right(), DST_FPU);    // Evaluate start value for loopVar
   const int loopStart = (int)m_code.size();
   m_code.emit(FCOMI(2));                               // Invariant:loopVar in st(0), endExpr in st(2)
   const int jmpEnd   = m_code.emitShortJmp(JASHORT);   // Jump loopEnd if st(0) > st(2)
   m_code.emitFStorePop(loopVar);                       // Pop st(0) to loopVar
-  genExpression(expr);                                 // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
+  genExpression(expr, DST_FPU);                        // Accumulator in st(0) (starting at 0 for INDEXEDSUM, 1 for INDEXEDPRODUCT)
   m_code.emit(summation ? FADD : FMUL);                // Update accumulator with st(0)
   m_code.emitFLoad(loopVar);
   m_code.emit(FLD1);
@@ -806,47 +719,47 @@ void Expression::genIndexedExpression(const ExpressionNode *n) {
 }
 
 #ifdef IS32BIT
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f, ExpressionDestination dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(n->left());
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f, ExpressionDestination dummy) {
   int bytesPushed = 0;
   bytesPushed += genPush(n->right());
   bytesPushed += genPush(n->left());
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, ExpressionDestination dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(n->left(),0);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, ExpressionDestination dummy) {
   int bytesPushed = 0;
   bytesPushed += genPushRef(n->right(),0);
   bytesPushed += genPushRef(n->left() ,1);
   bytesPushed += genPushReturnAddr();
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 #else // IS64BIT
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction1 f, ExpressionDestination dst) {
   genSetParameter(n->left(), 0, false);
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f, ExpressionDestination dst) {
   const bool leftHasCalls  = n->left()->containsFunctionCall();
   const bool rightHasCalls = n->right()->containsFunctionCall();
   if (!rightHasCalls) {
@@ -861,10 +774,10 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunction2 f) {
     m_code.emit(MEM_ADDR_ESP1(MOVSD_XMM_MMWORD(XMM0), offset));
     m_code.popTmp();
   }
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f, ExpressionDestination dst) {
   bool stacked;
   const BYTE offset = genSetRefParameter(n->left(), 0, stacked);
   if (stacked) {
@@ -872,10 +785,10 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef1 f) {
     m_code.emit(ADD_R64_IMM_BYTE(RCX)); m_code.addBytes(&offset, 1);
     m_code.popTmp();
   }
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dst);
 }
 
-void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f) {
+void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f, ExpressionDestination dst) {
   const bool rightHasCalls = n->right()->containsFunctionCall();
 
   bool stacked1, stacked2;
@@ -898,17 +811,17 @@ void Expression::genCall(const ExpressionNode *n, BuiltInFunctionRef2 f) {
     m_code.emit(ADD_R64_IMM_BYTE(RDX)); m_code.addBytes(&offset2, 1);
     m_code.popTmp();
   }
-  m_code.emitCall((BuiltInFunction)f);
+  m_code.emitCall((BuiltInFunction)f, dst);
 }
 #endif // IS32BIT
 
-void Expression::genIf(const ExpressionNode *n) {
+void Expression::genIf(const ExpressionNode *n, ExpressionDestination dst) {
   JumpList jumps = genBoolExpression(n->child(0));
   m_code.fixupShortJumps(jumps.trueJumps,(int)m_code.size());
-  genExpression(n->child(1)); // true-expression
+  GENEXPRESSION(n->child(1)); // true-expression
   const int trueResultJump  = m_code.emitShortJmp(JMPSHORT);
   m_code.fixupShortJumps(jumps.falseJumps,(int)m_code.size());
-  genExpression(n->child(2)); // false-expression
+  GENEXPRESSION(n->child(2)); // false-expression
   m_code.fixupShortJump(trueResultJump,(int)m_code.size());
 }
 
@@ -970,15 +883,15 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
       m_code.emit(FCOMPP);
 #else
       if(n->left()->isNameOrNumber()) {
-        genExpression(n->right());
+        genExpression(n->right(), DST_FPU);
         m_code.emitFCompare(n->left());
       } else if(n->right()->isNameOrNumber()) {
-        genExpression(n->left());
+        genExpression(n->left(), DST_FPU);
         m_code.emitFCompare(n->right());
         symbol = reverseComparator(symbol);
       } else {
-        genExpression(n->left());
-        genExpression(n->right());
+        genExpression(n->left(), DST_FPU);
+        genExpression(n->right(), DST_FPU);
         m_code.emit(FCOMPP);
       }
 #endif
@@ -1028,7 +941,7 @@ int Expression::genPush(const ExpressionNode *n) {
   if(n->isNameOrNumber()) {
     return genPushReal(*m_code.getValueAddr(n));
   } else {
-    genExpression(n);
+    genExpression(n, DST_FPU);
 #ifdef _DEBUG
     Real &tmpVar = m_code.getTmpVar(0);
     m_code.emitFStorePop(&tmpVar);
@@ -1046,7 +959,7 @@ int Expression::genPushRef(const ExpressionNode *n, int index) {
   if(n->isNameOrNumber()) {
     return genPushRef(m_code.getValueAddr(n));
   } else {
-    genExpression(n);
+    genExpression(n, DST_FPU);
     Real &tmpVar = m_code.getTmpVar(index);
     m_code.emitFStorePop(&tmpVar);
     return genPushRef(&tmpVar);
@@ -1134,14 +1047,11 @@ BYTE Expression::genSetParameter(const ExpressionNode *n, int index, bool saveOn
   } else {
     if (saveOnStack) {
       const BYTE offset = m_code.pushTmp();
-      genExpression(n);
-      m_code.emit(MEM_ADDR_ESP1(FSTP_QWORD, offset));
+      genExpression(n, DST_ONSTACK(offset));
       return offset;
     }
     else {
-      genExpression(n);
-      m_code.emit(MEM_ADDR_ESP(FSTP_QWORD));
-      m_code.emit(MEM_ADDR_ESP(MOVSD_XMM_MMWORD(dstRegister)));
+      genExpression(n, DST_XMM(dstRegister));
     }
   }
   return 0;
@@ -1157,8 +1067,7 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
     return 0;
   } else {
     const BYTE offset = m_code.pushTmp();
-    genExpression(n);
-    m_code.emit(MEM_ADDR_ESP1(FSTP_QWORD, offset));
+    genExpression(n, DST_ONSTACK(offset));
     savedOnStack = true;
     return offset;
   }

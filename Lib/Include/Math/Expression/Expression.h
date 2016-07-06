@@ -42,6 +42,44 @@ public:
   }
 };
 
+#ifdef IS64BIT
+typedef enum {
+  RESULT_IN_FPU
+ ,RESULT_IN_XMM
+ ,RESULT_IN_ADDRRDI
+ ,RESULT_ON_STACK
+ ,RESULT_IN_IMMADDR
+} ExpressionDestinationType;
+
+class ExpressionDestination {
+public:
+  const ExpressionDestinationType m_type;
+  const BYTE                      m_offset;  // only used for RESULT_ON_STACK,IN_XMM
+  const double                   *m_immAddr; // only used for RESULT_IMM_ADDR
+  ExpressionDestination(ExpressionDestinationType type, BYTE offset=0, const double *immAddr=NULL)
+    : m_type(type), m_offset(offset), m_immAddr(immAddr)
+  {
+  }
+};
+
+#define DST_FPU            ExpressionDestination(RESULT_IN_FPU )
+#define DST_XMM(xmmReg)    ExpressionDestination(RESULT_IN_XMM,xmmReg)
+#define DST_ADDRRDI        ExpressionDestination(RESULT_IN_ADDRRDI)
+#define DST_ONSTACK(offs1) ExpressionDestination(RESULT_ON_STACK  , offs1      )
+#define DST_IMMADDR(addr ) ExpressionDestination(RESULT_IN_IMMADDR, 0    , addr)
+
+#else
+
+typedef int ExpressionDestination;
+
+#define DST_FPU            0
+#define DST_XMM(xmm)       0
+#define DST_ADDRRDI        0
+#define DST_ONSTACK(offs1) 0
+#define DST_IMMADDR(addr ) 0
+
+#endif // IS64BIT
+
 class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
@@ -63,13 +101,16 @@ public:
   int  addBytes(const void *bytes, int count);
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
-  void emitCall(BuiltInFunction f);
+  void emitCall(BuiltInFunction f, ExpressionDestination dst);
   void emitFLoad(    const ExpressionNode *n) { emitImmOp(FLD_REAL_PTR_DS          , n); }
   void emitFLoad(    const Real           *x) { emitImmOp(FLD_REAL_PTR_DS          , x); }
   void emitFAdd(     const Real           *x) { emitImmOp(MEM_ADDR_DS(FADD_QWORD)  , x); }
   void emitFStorePop(const Real           *x) { emitImmOp(FSTP_REAL_PTR_DS         , x); }
   void emitFStorePop(const ExpressionNode *n) { emitImmOp(FSTP_REAL_PTR_DS         , n); }
   void emitFCompare( const ExpressionNode *n) { emitImmOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
+#ifdef IS64BIT
+  void emitXMM0ToAddr(const Real          *x) { emitImmOp(MEM_ADDR_DS(MOVSD_MMWORD_XMM(XMM0)), x); }
+#endif
   void emitTestAH(  BYTE                  n);
   void emitTestEAX( unsigned long         n);
   void addImmediateAddr(const void *addr);
@@ -83,7 +124,7 @@ public:
   void emitAddESP(  int                   n);
   void emitSubESP(  int                   n);
   Real &getTmpVar(int index) { return m_tmpVar[index]; }
-#else
+#else // IS64BIT
   void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
   BYTE pushTmp();
   BYTE popTmp();
@@ -182,8 +223,15 @@ private:
   void genEpilog();
   void genCode(                                            const ExpressionNode *n);
   void genStatementList(                                   const ExpressionNode *n);
-  void genExpression(                                      const ExpressionNode *n);
   void genReturnBoolExpression(                            const ExpressionNode *n);
+  void genExpression(                                      const ExpressionNode *n, ExpressionDestination dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f, ExpressionDestination dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f, ExpressionDestination dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f, ExpressionDestination dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f, ExpressionDestination dst);
+  void genPolynomial(                                      const ExpressionNode *n, ExpressionDestination dst);
+  void genIf(                                              const ExpressionNode *n, ExpressionDestination dst);
+
 #ifdef IS32BIT
   int  genPush(                                            const ExpressionNode *n);
   int  genPushRef(                                         const ExpressionNode *n, int index);
@@ -192,18 +240,13 @@ private:
   int  genPushInt(int n);
   int  genPush(                                            const void           *p, unsigned int size); // return size
   int  genPushRef(                                         const void           *p);
-#else // is 64 Bit
+#else // IS64BIT
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
   BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
 #endif // IS32BIT
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f);
-  void genPolynomial(                                      const ExpressionNode *n);
+
   void genAssignment(                                      const ExpressionNode *n);
   void genIndexedExpression(                               const ExpressionNode *n);
-  void genIf(                                              const ExpressionNode *n);
   JumpList genBoolExpression(                              const ExpressionNode *n);
 
   // Differentiation

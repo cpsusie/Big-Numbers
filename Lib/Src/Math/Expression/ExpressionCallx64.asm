@@ -2,10 +2,10 @@
 
 ;void callDoubleResultExpression(ExpressionEntryPoint e, double &result);
 callDoubleResultExpression PROC
-    push        rdx
+    push        rdi
+    mov         rdi, rdx
     call        rcx
-    pop         rdx
-    fstp        qword ptr[rdx]
+    pop         rdi
     ret
 callDoubleResultExpression ENDP
 
