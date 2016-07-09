@@ -70,16 +70,16 @@ namespace TestInt128 {
       i6--;
       verify(i6 < maxI64);
 
-      _uint128 i7 = maxUI64;
-      verify(i7 == maxUI64);
-      i7++;
-      verify(i7 > maxUI64);
-      i7--;
-      verify(i7 == maxUI64);
-      verify(i7 <= maxUI64);
-      verify(i7 >= maxUI64);
-      i7--;
-      verify(i7 < maxUI64);
+      _uint128 ui17 = maxUI64;
+      verify(ui17 == maxUI64);
+      ui17++;
+      verify(ui17 > maxUI64);
+      ui17--;
+      verify(ui17 == maxUI64);
+      verify(ui17 <= maxUI64);
+      verify(ui17 >= maxUI64);
+      ui17--;
+      verify(ui17 < maxUI64);
 
       _int128 i8 = 0;
       verify(i8 == 0);
@@ -100,7 +100,6 @@ namespace TestInt128 {
       verify(i8 == 1);
       verify(i8 >= 1);
       verify(i8 <= 1);
-
 
       _int128 i9 = maxI128;
       verify(i9 == maxI128);
@@ -132,21 +131,41 @@ namespace TestInt128 {
       i10++;
       verify(i10 == minI128);
 
-      _uint128 i11 = maxUI128;
-      verify(i11 == maxUI128);
-      i11--;
-      verify(i11 <  maxUI128);
-      verify(i11 <= maxUI128);
-      i11++;
-      verify(i11 == maxUI128);
-      verify(i11 <= maxUI128);
-      verify(i11 >= maxUI128);
-      i11++;
-      verify(i11 == 0);
-      verify(i11 <= 0);
-      verify(i11 >= 0);
-      i11--;
-      verify(i11 == maxUI128);
+      _uint128 ui11 = maxUI128;
+      verify(ui11 == maxUI128);
+      ui11--;
+      verify(ui11 <  maxUI128);
+      verify(ui11 <= maxUI128);
+      ui11++;
+      verify(ui11 == maxUI128);
+      verify(ui11 <= maxUI128);
+      verify(ui11 >= maxUI128);
+      ui11++;
+      verify(ui11 == 0);
+      verify(ui11 <= 0);
+      verify(ui11 >= 0);
+      ui11--;
+      verify(ui11 == maxUI128);
+
+
+      _uint128 ui12 = ui11--; // post decrement
+      verify(ui12 == ui11 + 1);
+      ui12 = ui11;
+      _uint128 ui13 = --ui11; // pre-decrement
+      verify((ui13 == ui12 - 1) && (ui13 == ui11));
+
+      _uint128 ui14 = ui11++; // post increment;
+      verify(ui14 == ui11 - 1);
+      ui14 = ui11;
+      _uint128 ui15 = ++ui11; // pre-increment
+      verify((ui15 == ui14 + 1) && (ui15 == ui11));
+
+      _int128 i15 = maxUI64;
+      i15++;
+      _int128 ei15("0x10000000000000000");
+      verify(i15 == ei15);
+      i15--;
+      verify(i15 == maxUI64);
 
     } // Int128Comparators
 
@@ -182,24 +201,152 @@ namespace TestInt128 {
       verify((d4 < 0) && (-d4 < r4));
       verify(z4 == x4);
 
-      _int128 x5("170141183460469231731687303715884105727");
-      verify(x5 == _I128_MAX);
-      _int128 x5a("-170141183460469231731687303715884105728");
-      verify(x5a == _I128_MIN);
-      _int128 y5(  "54678423345639783523445");
-      _int128 x5copy(x5);
-      _int128 y5copy(y5);
-      _int128 q5 = x5 / y5;
-      _int128 q5copy(q5);
-      verify((x5 == x5copy) && (y5 == y5copy));
-      _int128 r5 = x5 % y5;
-      _int128 r5copy(r5);
-      verify((x5 == x5copy) && (y5 == y5copy));
-      _int128 z5 = q5 * y5 + r5;
-      verify((x5 == x5copy) && (y5 == y5copy));
-      verify((y5 == y5copy) && (q5 == q5copy) && (r5 == r5copy));
-      verify(r5 < y5);
-      verify(z5 == x5);
+// ---------------------------------------------------------------
+
+      _int128 x5p("170141183460469231731687303715884105727");
+      _int128 x5n("-170141183460469231731687303715884105728");
+      verify(x5p == _I128_MAX);
+      verify(x5n == _I128_MIN);
+      _int128 y5p(  "54678423345639783523445");
+      _int128 y5n( "-54678423345639783523445");
+      _int128 x5pcopy(x5p);
+      _int128 y5pcopy(y5p);
+      _int128 x5ncopy(x5n);
+      _int128 y5ncopy(y5n);
+
+      _int128 s5np = x5n + y5p;
+      _int128 s5npcopy(s5np);
+      verify((x5n == x5ncopy) && (y5p == y5pcopy) && (s5np <= 0) && (s5np > x5n));
+
+      _int128 d5nn = x5n - y5n;
+      _int128 d5nncopy(d5nn);
+      verify((x5n == x5ncopy) && (y5n == y5ncopy) && (d5nn <= 0) && (d5nn > x5n));
+
+      _int128 s5pn = x5p + y5n;
+      _int128 s5pncopy(s5pn);
+      verify((x5p == x5pcopy) && (y5n == y5ncopy) && (s5pn >= 0) && (s5pn < x5p));
+
+      _int128 d5pp = x5p - y5p;
+      _int128 d5ppcopy(d5pp);
+      verify((x5p == x5pcopy) && (y5p == y5pcopy) && (d5pp >= 0) && (d5pp < x5p));
+
+      s5np -= y5p;
+      verify((s5np == x5ncopy) && (y5p == y5pcopy));
+
+      d5nn += y5n;
+      verify((d5nn == x5ncopy) && (y5n == y5ncopy));
+
+      s5pn -= y5n;
+      verify((s5pn == x5pcopy) && (y5n == y5ncopy));
+
+      d5pp += y5p;
+      verify((d5pp == x5pcopy) && (y5p == y5pcopy));
+
+// ---------------------------------------------------------------
+
+// ---------------------------------------------------------------
+
+      _int128 q5pp = x5p / y5p;
+      _int128 q5ppcopy(q5pp);
+      verify((x5p == x5pcopy) && (y5p == y5pcopy) && (q5pp >= 0));
+
+      _int128 q5pn = x5p / y5n;
+      _int128 q5pncopy(q5pn);
+      verify((x5p == x5pcopy) && (y5n == y5ncopy) && (q5pn <= 0));
+
+      _int128 q5np = x5n / y5p;
+      _int128 q5npcopy(q5np);
+      verify((x5n == x5ncopy) && (y5p == y5pcopy) && (q5np <= 0));
+
+      _int128 q5nn = x5n / y5n;
+      _int128 q5nncopy(q5nn);
+      verify((x5n == x5ncopy) && (y5n == y5ncopy) && (q5nn >= 0));
+
+// ---------------------------------------------------------------
+
+      _int128 r5pp = x5p % y5p;
+      _int128 r5ppcopy(r5pp);
+      verify((x5p == x5pcopy) && (y5p == y5pcopy) && (r5pp >= 0) && (r5pp < y5p));
+
+      _int128 r5pn = x5p % y5n;
+      _int128 r5pncopy(r5pn);
+      verify((x5p == x5pcopy) && (y5n == y5ncopy) && (r5pn >= 0) && (r5pn < y5p));
+
+      _int128 r5np = x5n % y5p;
+      _int128 r5npcopy(r5np);
+      verify((x5n == x5ncopy) && (y5p == y5pcopy) && (r5np <= 0) && (r5np > y5n));
+
+      _int128 r5nn = x5n % y5n;
+      _int128 r5nncopy(r5nn);
+      verify((x5n == x5ncopy) && (y5n == y5ncopy) && (r5nn <= 0) && (r5nn > y5n));
+
+// ---------------------------------------------------------------
+
+      _int128 z5pp = q5pp * y5p + r5pp;
+      verify((z5pp == x5pcopy) && (y5p == y5pcopy) && (q5pp == q5ppcopy) && (r5pp == r5ppcopy));
+
+      _int128 z5pn = q5pn * y5n + r5pn;
+      verify((z5pn == x5pcopy) && (y5n == y5ncopy) && (q5pn == q5pncopy) && (r5pn == r5pncopy));
+
+      _int128 z5np = q5np * y5p + r5np;
+      verify((z5np == x5ncopy) && (y5p == y5pcopy) && (q5np == q5npcopy) && (r5np == r5npcopy));
+
+      _int128 z5nn = q5nn * y5n + r5nn;
+      verify((z5nn == x5ncopy) && (y5n == y5ncopy) && (q5nn == q5nncopy) && (r5nn == r5nncopy));
+
+// ---------------------------------------------------------------
+
+      _int128 x5qp = x5p;
+      _int128 x5qn = x5n;
+
+      x5qp /= y5p;
+      verify((x5qp == q5pp) && (y5p == y5pcopy));
+
+      x5qn /= y5p;
+      verify((x5qn == q5np) && (y5p == y5pcopy));
+
+      x5qp *= y5p;
+      verify((x5p - x5qp == r5pp) && (y5p == y5pcopy));
+
+      x5qn *= y5p;
+      verify((x5n - x5qn == r5np) && (y5p == y5pcopy));
+
+      x5qp = x5p;
+      x5qn = x5n;
+
+      x5qp /= y5n;
+      verify((x5qp == q5pn) && (y5n == y5ncopy));
+
+      x5qn /= y5n;
+      verify((x5qn == q5nn) && (y5n == y5ncopy));
+
+      x5qp *= y5n;
+      verify((x5p - x5qp == r5pn) && (y5n == y5ncopy));
+
+      x5qn *= y5n;
+      verify((x5n - x5qn == r5nn) && (y5n == y5ncopy));
+
+// ---------------------------------------------------------------
+
+      _int128 x5rp = x5p;
+      _int128 x5rn = x5n;
+
+      x5rp %= y5p;
+      verify((x5rp == r5pp) && (y5p == y5pcopy));
+
+      x5rn %= y5p;
+      verify((x5rn == r5np) && (y5p == y5pcopy));
+
+      x5rp = x5p;
+      x5rn = x5n;
+
+      x5rp %= y5n;
+      verify((x5rp == r5pn) && (y5n == y5ncopy));
+
+      x5rn %= y5n;
+      verify((x5rn == r5nn) && (y5n == y5ncopy));
+
+// ---------------------------------------------------------------
 
       _int128  x6( "0x80000000000000000000000000000000");
       _uint128 ux6("0x80000000000000000000000000000000");
@@ -235,7 +382,55 @@ namespace TestInt128 {
       x2 = x2 | 7;
       verify(x2 == _UI128_MAX);
 
+      _int128 b1("0x123456789abcdef0123456789abcdef");
+      _int128 b2("0x7777777777777777777777777777777");
+      _int128 b3("0x46328ab5cdf43a89b3c819bf6483219");
+      _int128 ea("0x1234567012345670123456701234567");
+      verify((b1 & b2) == ea);
+      _int128 eo("0x7777777ffffffff77777777ffffffff");
+      verify((b1 | b2) == eo);
+      
+      _int128 x13 = b1 ^ b3;
+      _int128 b1mb3 = b1 & ~b3;
+      _int128 b3mb1 = b3 & ~b1;
+      _int128 symDif13 = b1mb3 | b3mb1;
+      verify(x13 == symDif13);
+
     } // Int128ShiftOperators
+
+    TEST_METHOD(Int128bitStreamOperators) {
+      std::ostringstream  ostr;
+      std::wostringstream wostr;
+      CompactArray<_int128> ia;
+
+      for (_int128 x = 0; x >= 0; x = (x + 1) * 3) {
+        ia.add(x);
+      }
+      for (_int128 x = 0; x <= 0; x = (x - 1) * 3) {
+        ia.add(x);
+      }
+      for (size_t i = 0; i < ia.size(); i++) {
+        ostr << ia[i] << "\n";
+        wostr << ia[i] << "\n";
+      }
+      std::string  str  = ostr.str();
+      std::wstring wstr = wostr.str();
+
+      std::istringstream  istr;
+      std::wistringstream wistr;
+
+      istr.str(str);
+      wistr.str(wstr);
+
+      for (size_t i = 0; i < ia.size(); i++) {
+        _int128 x;
+        istr >> x;
+        verify(x == ia[i]);
+        x = 0;
+        wistr >> x;
+        verify(x == ia[i]);
+      }
+    }
 #endif // IS64BIT
 
   };
