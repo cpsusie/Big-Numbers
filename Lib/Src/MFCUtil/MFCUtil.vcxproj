@@ -252,6 +252,7 @@
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SetControlText.cpp" />
     <ClCompile Include="ShowBitmap.cpp" />
+    <ClCompile Include="ShowException.cpp" />
     <ClCompile Include="SimpleLayoutManager.cpp" />
     <ClCompile Include="StaticBottomAligned.cpp" />
     <ClCompile Include="stdafx.cpp">

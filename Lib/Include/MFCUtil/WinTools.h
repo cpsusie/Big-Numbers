@@ -202,6 +202,8 @@ bool isBorderHit(UINT hitTestCode); // hitTestCode comes from OnNcLButtonDown(UI
 #define HDF_SORTUP              0x0400
 #define HDF_SORTDOWN            0x0200
 
+void showException(const Exception &e);
+
 class DebugBitmap {
 public:
   static void showBitmap(HBITMAP bitmap); // paint bitmap in upper left corner of the screen.

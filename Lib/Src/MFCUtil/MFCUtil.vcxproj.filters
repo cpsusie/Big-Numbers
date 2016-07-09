@@ -201,6 +201,9 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp">
       <Filter>Source Files\CoordinateSystem</Filter>
     </ClCompile>
+    <ClCompile Include="ShowException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MFCUtil.def">
