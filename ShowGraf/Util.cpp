@@ -83,10 +83,6 @@ void errorMessage(TCHAR *format,...) {
   exit(-1);
 }
 
-void showException(const Exception &e) {
-  AfxMessageBox(format(_T("%s"), e.what()).cstr(), MB_ICONWARNING);
-}
-
 CFont *scaleFont(CFont *src, double scale) {
   LOGFONT lf;
   src->GetLogFont(&lf);

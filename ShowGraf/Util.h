@@ -17,7 +17,6 @@ CFont *scaleFont(CFont *src, double scale);
 COLORREF randomColor();
 
 void errorMessage(TCHAR *format,...);
-void showException(const Exception &e);
 
 #define BLACK RGB(0,0,0)
 #define WHITE RGB(255,255,255)
