@@ -130,7 +130,7 @@ template<class CharType> const CharType *parseHex(const CharType *str, _int128 &
 
 template<class CharType> const CharType *parseOct(const CharType *str, _int128 &n) {
   bool gotDigit = false;
-  for (; isodigit(*str); str++) {
+  for (; iswodigit(*str); str++) {
     if (!gotDigit) {
       n = convertNumberChar(*str);
       gotDigit = true;

@@ -4,61 +4,145 @@
 
 #include <Math/Int128.h>
 
-class Int128Stream : public StrStream {
-private:
-  void addResult(const TCHAR *prefix, const TCHAR *buf);
-public:
-  Int128Stream(ostream &out) : StrStream(out) {
-  }
-  Int128Stream(wostream &out) : StrStream(out) {
-  }
+#include <comdef.h>
+#include <atlconv.h>
 
-  friend Int128Stream &operator<<(Int128Stream &s, const _int128 &n);
-  friend Int128Stream &operator<<(Int128Stream &s, const _uint128 &n);
+#define BASICSTRING basic_string<ct, char_traits<ct>, allocator<ct> >
+
+template<class ct> class StringTemplate : public BASICSTRING {
+public:
+  StringTemplate() {
+  }
+  StringTemplate(const char    *str);
+  StringTemplate(const wchar_t *str);
+
+  StringTemplate &operator+=(const StringTemplate &str);
+  StringTemplate &operator+=(char    ch);
+  StringTemplate &operator+=(wchar_t ch);
 };
 
-void Int128Stream::addResult(const TCHAR *prefix, const TCHAR *buf) {
+template<class ct> StringTemplate<ct>::StringTemplate(const char *str) {
+  if (sizeof(ct) == sizeof(char)) {
+    BASICSTRING::operator=((const ct*)str);
+  } else {
+    USES_CONVERSION;
+    BASICSTRING::operator=((const ct*)A2W(str));
+  }
+}
+
+template<class ct> StringTemplate<ct>::StringTemplate(const wchar_t *str) {
+  if (sizeof(ct) == sizeof(wchar_t)) {
+    BASICSTRING::operator=((const ct*)str);
+  } else {
+    USES_CONVERSION;
+    BASICSTRING::operator=((const ct*)W2A(str));
+  }
+}
+
+template<class ct> StringTemplate<ct> operator+(const StringTemplate<ct> &s1, const StringTemplate<ct> &s2) {
+  return StringTemplate<ct>((BASICSTRING)s1 + (BASICSTRING)s2)
+}
+
+template<class ct> StringTemplate<ct> &StringTemplate<ct>::operator+=(const StringTemplate &str) {
+  BASICSTRING::operator+=(str.c_str());
+  return *this;
+}
+
+template<class ct> StringTemplate<ct> &StringTemplate<ct>::operator+=(char    ch) {
+  BASICSTRING::operator+=((ct)ch);
+  return *this;
+}
+
+template<class ct> StringTemplate<ct> &StringTemplate<ct>::operator+=(wchar_t ch) {
+  BASICSTRING::operator+=((ct)ch);
+  return *this;
+}
+
+#define MAXTMPSIZE 1000
+template<class ct> StringTemplate<ct> getFillerString(streamsize l, ct ch = ' ') {
+  StringTemplate<ct> result;
+  if (l <= MAXTMPSIZE) {
+    ct tmp[MAXTMPSIZE+1], *cp = tmp + MAXTMPSIZE;
+    while (cp-- > tmp) *cp = ch;
+    result = tmp;
+  }
+  else {
+    ct *tmp = new ct[l + 1], *cp = tmp + l;
+    *cp = 0;
+    while (cp-- > tmp) *cp = ch;
+    result = tmp;
+    delete[] tmp;
+  }
+  return result;
+}
+
+template<class ct> class Int128Stream : public StringTemplate<ct>, public StreamParameters {
+private:
+  Int128Stream &addResult(const StringTemplate<ct> &prefix, const char *buf);
+public:
+  Int128Stream(ostream &out) : StreamParameters(out) {
+  }
+  Int128Stream(wostream &out) : StreamParameters(out) {
+  }
+
+  Int128Stream &operator<<(const _int128 &n);
+  Int128Stream &operator<<(const _uint128 &n);
+};
+
+
+template<class ct> Int128Stream<ct> &Int128Stream<ct>::addResult(const StringTemplate<ct> &prefix, const char *buf) {
   const streamsize wantedWidth = getWidth();
-  const streamsize resultWidth = _tcsclen(buf) + _tcsclen(prefix);
-  String result;
-  if(wantedWidth > resultWidth) {
+  const streamsize resultWidth = strlen(buf) + prefix.length();
+  StringTemplate<ct> result;
+  if (wantedWidth > resultWidth) {
     const streamsize fillerLength = wantedWidth - resultWidth;
     switch (getFlags() & ios::adjustfield) {
     case ios::left:
-      result = format(_T("%s%s%s"), prefix, buf, spaceString(fillerLength).cstr());
+      result =  prefix;
+      result += buf;
+      result += getFillerString<ct>(fillerLength);
       break;
     case ios::right:
-      result = format(_T("%s%s%s"), spaceString(fillerLength).cstr(), prefix, buf);
+      result =  getFillerString<ct>(fillerLength);
+      result += prefix;
+      result += buf;
       break;
     case ios::internal:
-      result = format(_T("%s%s%s"), prefix, spaceString(fillerLength, getFiller()).cstr(), buf);
+      result = prefix;
+      result += getFillerString<ct>(fillerLength, (ct)getFiller());
+      result += buf;
       break;
     }
   }
-  append(result);
+  else {
+    result =  prefix;
+    result += buf;
+  }
+  *this += result;
+  return *this;
 }
 
-Int128Stream &operator<<(Int128Stream &s, const _int128 &n) {
-  const TCHAR *prefix = _T("");
-  TCHAR        buf[200];
-  const int flags = s.getFlags();
+template<class ct> Int128Stream<ct> &Int128Stream<ct>::operator<<(const _int128 &n) {
+  StringTemplate<ct> prefix;
+  char               buf[200];
+  const int          flags = getFlags();
   switch (flags & ios::basefield) {
   case ios::dec:
     { const bool negative = (n < 0);
       const _uint128 v = negative ? -n : n;
-      _ui128tot(v, buf, 10);
+      _ui128toa(v, buf, 10);
       if ((flags & ios::showpos) || negative) {
-        prefix = negative ? _T("-") : _T("+");
+        prefix = negative ? "-" : "+";
       }
       break;
     }
   case ios::hex:
     { const _uint128 v = n;
-      if (flags & ios::showbase) prefix = _T("0x");
-      _ui128tot(v, buf, 16);
+      if (flags & ios::showbase) prefix = "0x";
+      _ui128toa(v, buf, 16);
       if (flags & ios::uppercase) {
-        for (TCHAR *cp = buf; *cp; cp++) {
-          if (_istlower(*cp)) *cp = _totupper(*cp);
+        for (char *cp = buf; *cp; cp++) {
+          if (iswlower(*cp)) *cp = _toupper(*cp);
         }
       }
     }
@@ -66,54 +150,51 @@ Int128Stream &operator<<(Int128Stream &s, const _int128 &n) {
   case ios::oct:
     { const _uint128 v = n;
       if (flags & ios::showbase) {
-        prefix = _T("0");
+        prefix = "0";
       }
-      _ui128tot(v, buf, 8);
+      _ui128toa(v, buf, 8);
       break;
     }
   }
-  s.addResult(prefix, buf);
-  return s;
+  return addResult(prefix, buf);
 }
 
-Int128Stream &operator<<(Int128Stream &s, const _uint128 &n) {
-  const TCHAR *prefix = _T("");
-  TCHAR        buf[200];
-  const int flags = s.getFlags();
+template<class ct> Int128Stream<ct> &Int128Stream<ct>::operator<<(const _uint128 &n) {
+  StringTemplate<ct> prefix;
+  char               buf[200];
+  const int          flags = getFlags();
   switch (flags & ios::basefield) {
   case ios::dec:
-    _ui128tot(n, buf, 10);
+    _ui128toa(n, buf, 10);
     if (flags & ios::showpos) {
-      prefix = _T("+");
+      prefix = "+";
     }
     break;
   case ios::hex:
-    { if (flags & ios::showbase) prefix = _T("0x");
-      _ui128tot(n, buf, 16);
+    { if (flags & ios::showbase) prefix = "0x";
+      _ui128toa(n, buf, 16);
       if (flags & ios::uppercase) {
-        for (TCHAR *cp = buf; *cp; cp++) {
-          if (_istlower(*cp)) *cp = _totupper(*cp);
+        for (char *cp = buf; *cp; cp++) {
+          if (iswlower(*cp)) *cp = _toupper(*cp);
         }
       }
     }
     break;
   case ios::oct:
     if (flags & ios::showbase) {
-      prefix = _T("0");
+      prefix = "0";
     }
-    _ui128tot(n, buf, 8);
+    _ui128toa(n, buf, 8);
     break;
   }
-
-  s.addResult(prefix, buf);
-  return s;
+  return addResult(prefix, buf);
 }
 
 #define peekChar(in,ch)           { ch = in.peek(); if(ch == EOF) in >> ch; }
 #define appendCharGetNext(in, ch) { in >> ch; buf += ch; peekChar(in,ch);   }
 
-template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
-  CharType ch;
+template <class IStreamType, class ct> void eatWhite(IStreamType &in) {
+  ct ch;
   for(;;in >> ch) {
 	  peekChar(in, ch);
 	  if(!iswspace(ch)) {
@@ -122,16 +203,18 @@ template <class IStreamType, class CharType> void eatWhite(IStreamType &in) {
   }
 }
 
-template <class IStreamType, class CharType> IStreamType &operator>> (IStreamType &in, _int128 &n) {
+template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in, _int128 &n) {
   if(in.ipfx(0)) {
-    String   buf;
-    CharType ch;
-    bool     gotDigits = false;
-
-    eatWhite<IStreamType, CharType>(in);
-    peekChar(in, ch);
+    StringTemplate<ct> buf;
+    ct                 ch;
+    bool               gotDigits = false;
 
     const int flags = in.flags();
+    if (flags & ios::skipws) {
+      eatWhite<IStreamType, ct>(in);
+    }
+    peekChar(in, ch);
+
     switch (flags & ios::basefield) {
     case ios::dec:
       if (ch == '+' || ch =='-') appendCharGetNext(in, ch);
@@ -157,9 +240,9 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
       break;
     case ios::oct:
       if (ch != '0') {
-        buf += _T('0');
+        buf += '0';
       }
-      while(isodigit(ch)) {
+      while(iswodigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
@@ -172,7 +255,7 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
       return in;
     }
     try {
-      n = _int128(buf.cstr());
+      n = _int128(buf.c_str());
     } catch(...) {
       in.setf(ios::failbit);
       in.isfx();
@@ -183,16 +266,18 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
   return in;
 }
 
-template <class IStreamType, class CharType> IStreamType &operator>> (IStreamType &in, _uint128 &n) {
+template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in, _uint128 &n) {
   if(in.ipfx(0)) {
-    String   buf;
-    CharType ch;
-    bool     gotDigits = false;
-
-    eatWhite<IStreamType, CharType>(in);
-    peekChar(in, ch);
+    StringTemplate<ct> buf;
+    ct                 ch;
+    bool               gotDigits = false;
 
     const int flags = in.flags();
+    if (flags & ios::skipws) {
+      eatWhite<IStreamType, ct>(in);
+    }
+    peekChar(in, ch);
+
     switch (flags & ios::basefield) {
     case ios::dec:
       if (ch == '+') appendCharGetNext(in, ch);
@@ -218,9 +303,9 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
       break;
     case ios::oct:
       if (ch != '0') {
-        buf += _T('0');
+        buf += '0';
       }
-      while(isodigit(ch)) {
+      while(iswodigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
@@ -233,7 +318,7 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
       return in;
     }
     try {
-      n = _uint128(buf.cstr());
+      n = _uint128(buf.c_str());
     } catch(...) {
       in.setf(ios::failbit);
       in.isfx();
@@ -244,21 +329,21 @@ template <class IStreamType, class CharType> IStreamType &operator>> (IStreamTyp
   return in;
 }
 
-template <class OStreamType> OStreamType &operator<<(OStreamType &out, const _int128 &n) {
+template <class OStreamType, class ct> OStreamType &operator<<(OStreamType &out, const _int128 &n) {
   if(out.opfx()) {
-    Int128Stream buf(out);
+    Int128Stream<ct> buf(out);
     buf << n;
-    out << buf.cstr();
+    out << buf.c_str();
     out.osfx();
   }
   return out;
 }
 
-template <class OStreamType> OStreamType &operator<<(OStreamType &out, const _uint128 &n) {
+template <class OStreamType, class ct> OStreamType &operator<<(OStreamType &out, const _uint128 &n) {
   if(out.opfx()) {
-    Int128Stream buf(out);
+    Int128Stream<ct> buf(out);
     buf << n;
-    out << buf.cstr();
+    out << buf.c_str();
     out.osfx();
   }
   return out;
@@ -269,7 +354,7 @@ istream  &operator>>(istream &s, _int128 &n) {
 }
 
 ostream  &operator<<(ostream &s, const _int128 &n) {
-  return ::operator<< <ostream>(s, n);
+  return ::operator<< <ostream, char>(s, n);
 }
 
 wistream &operator>>(wistream &s, _int128 &n) {
@@ -277,7 +362,7 @@ wistream &operator>>(wistream &s, _int128 &n) {
 }
 
 wostream &operator<<(wostream &s, const _int128 &n) {
-  return ::operator<< <wostream>(s, n);
+  return ::operator<< <wostream, wchar_t>(s, n);
 }
 
 
@@ -286,7 +371,7 @@ istream  &operator>>(istream &s, _uint128 &n) {
 }
 
 ostream  &operator<<(ostream &s, const _uint128 &n) {
-  return ::operator<< <ostream>(s, n);
+  return ::operator<< <ostream, char>(s, n);
 }
 
 wistream &operator>>(wistream &s, _uint128 &n) {
@@ -294,7 +379,7 @@ wistream &operator>>(wistream &s, _uint128 &n) {
 }
 
 wostream &operator<<(wostream &s, const _uint128 &n) {
-  return ::operator<< <wostream>(s, n);
+  return ::operator<< <wostream, wchar_t>(s, n);
 }
 
 #endif
