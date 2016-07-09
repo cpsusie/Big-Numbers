@@ -78,12 +78,12 @@ namespace TestRational {
         verify(rne == dne);
 
         VERIFYOP(+, 1e-13)
-          VERIFYOP(-, 1e-13)
-          VERIFYOP(*, 1e-14)
+        VERIFYOP(-, 1e-13)
+        VERIFYOP(*, 1e-14)
 
-          if (!r2.isZero()) {
-            VERIFYOP(/ , 3e-9)
-          }
+        if (!r2.isZero()) {
+          VERIFYOP(/ , 3e-9)
+        }
 
         const int      expo = r1.isZero() ? randInt(0, 4) : randInt(-3, 3);
         const Rational r1Pe = pow(r1, expo);
