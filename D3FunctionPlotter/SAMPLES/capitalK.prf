@@ -1,0 +1,517 @@
+<profile><profilepolygon>
+<closed>1</closed>
+<start><point>
+<x>4.882290</x>
+<y>1.023927</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>1.917763</x>
+<y>0.673506</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>1.516765</x>
+<y>0.611294</y>
+</point>
+  <point>
+<x>1.223152</x>
+<y>0.558411</y>
+</point>
+  <point>
+<x>1.036946</x>
+<y>0.514856</y>
+</point>
+  <point>
+<x>0.850762</x>
+<y>0.471303</y>
+</point>
+  <point>
+<x>0.743321</x>
+<y>0.427397</y>
+</point>
+  <point>
+<x>0.714625</x>
+<y>0.383143</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>-0.660072</x>
+<y>0.383224</y>
+</point>
+  <point>
+<x>-0.659621</x>
+<y>0.854141</y>
+</point>
+  <point>
+<x>0.715076</x>
+<y>0.854060</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715050</x>
+<y>0.826398</y>
+</point>
+  <point>
+<x>0.757990</x>
+<y>0.806344</y>
+</point>
+  <point>
+<x>0.843897</x>
+<y>0.793891</y>
+</point>
+  <point>
+<x>0.929804</x>
+<y>0.781439</y>
+</point>
+  <point>
+<x>1.022891</x>
+<y>0.775210</y>
+</point>
+  <point>
+<x>1.123114</x>
+<y>0.775204</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>1.223360</x>
+<y>0.775198</y>
+</point>
+  <point>
+<x>1.312868</x>
+<y>0.777612</y>
+</point>
+  <point>
+<x>1.391617</x>
+<y>0.782449</y>
+</point>
+  <point>
+<x>1.470387</x>
+<y>0.787285</y>
+</point>
+  <point>
+<x>1.624347</x>
+<y>0.802144</y>
+</point>
+  <point>
+<x>1.853471</x>
+<y>0.827025</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>4.839481</x>
+<y>1.179518</y>
+</point>
+  <point>
+<x>0.715389</x>
+<y>1.179760</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715389</x>
+<y>1.179760</y>
+</point>
+  <point>
+<x>0.715387</x>
+<y>1.176993</y>
+</point>
+  <point>
+<x>0.715381</x>
+<y>1.171462</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715375</x>
+<y>1.165929</y>
+</point>
+  <point>
+<x>0.715366</x>
+<y>1.156247</y>
+</point>
+  <point>
+<x>0.715353</x>
+<y>1.142419</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715333</x>
+<y>1.121674</y>
+</point>
+  <point>
+<x>0.715312</x>
+<y>1.100235</y>
+</point>
+  <point>
+<x>0.715291</x>
+<y>1.078108</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>0.715262</x>
+<y>1.046991</y>
+</point>
+  <point>
+<x>-0.659436</x>
+<y>1.047071</y>
+</point>
+  <point>
+<x>-0.659053</x>
+<y>1.445380</y>
+</point>
+  <point>
+<x>0.715643</x>
+<y>1.445299</y>
+</point>
+  <point>
+<x>0.715612</x>
+<y>1.412107</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715574</x>
+<y>1.373382</y>
+</point>
+  <point>
+<x>0.715547</x>
+<y>1.345722</y>
+</point>
+  <point>
+<x>0.715532</x>
+<y>1.329126</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.715521</x>
+<y>1.318060</y>
+</point>
+  <point>
+<x>0.715516</x>
+<y>1.312530</y>
+</point>
+  <point>
+<x>0.715516</x>
+<y>1.312530</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>8.963699</x>
+<y>1.312046</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.963699</x>
+<y>1.312046</y>
+</point>
+  <point>
+<x>8.963702</x>
+<y>1.314811</y>
+</point>
+  <point>
+<x>8.963707</x>
+<y>1.320344</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.963713</x>
+<y>1.325875</y>
+</point>
+  <point>
+<x>8.963722</x>
+<y>1.335556</y>
+</point>
+  <point>
+<x>8.963735</x>
+<y>1.349387</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.963753</x>
+<y>1.368749</y>
+</point>
+  <point>
+<x>8.963774</x>
+<y>1.389494</y>
+</point>
+  <point>
+<x>8.963794</x>
+<y>1.411623</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>8.963827</x>
+<y>1.444815</y>
+</point>
+  <point>
+<x>10.338523</x>
+<y>1.444735</y>
+</point>
+  <point>
+<x>10.338142</x>
+<y>1.046426</y>
+</point>
+  <point>
+<x>8.963444</x>
+<y>1.046507</y>
+</point>
+  <point>
+<x>8.963475</x>
+<y>1.077625</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.963496</x>
+<y>1.099752</y>
+</point>
+  <point>
+<x>8.963517</x>
+<y>1.121190</y>
+</point>
+  <point>
+<x>8.963536</x>
+<y>1.141935</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.963549</x>
+<y>1.155764</y>
+</point>
+  <point>
+<x>8.963558</x>
+<y>1.165446</y>
+</point>
+  <point>
+<x>8.963564</x>
+<y>1.170978</y>
+</point>
+  <point>
+<x>8.963569</x>
+<y>1.176509</y>
+</point>
+  <point>
+<x>8.963572</x>
+<y>1.179277</y>
+</point>
+  <point>
+<x>8.963572</x>
+<y>1.179277</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>4.989838</x>
+<y>1.179509</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>5.075747</x>
+<y>1.169823</y>
+</point>
+  <point>
+<x>5.347797</x>
+<y>1.135231</y>
+</point>
+  <point>
+<x>5.805965</x>
+<y>1.075735</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>7.896522</x>
+<y>0.926247</y>
+</point>
+  <point>
+<x>8.676855</x>
+<y>0.836304</y>
+</point>
+  <point>
+<x>8.146988</x>
+<y>0.805910</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.318813</x>
+<y>0.793453</y>
+</point>
+  <point>
+<x>8.469165</x>
+<y>0.787221</y>
+</point>
+  <point>
+<x>8.598042</x>
+<y>0.787213</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.698288</x>
+<y>0.787207</y>
+</point>
+  <point>
+<x>8.784211</x>
+<y>0.792042</y>
+</point>
+  <point>
+<x>8.855811</x>
+<y>0.801719</y>
+</point>
+  <point>
+<x>8.927434</x>
+<y>0.811395</y>
+</point>
+  <point>
+<x>8.963235</x>
+<y>0.827989</y>
+</point>
+  <point>
+<x>8.963257</x>
+<y>0.851502</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>8.963280</x>
+<y>0.874322</y>
+</point>
+  <point>
+<x>10.337976</x>
+<y>0.874241</y>
+</point>
+  <point>
+<x>10.337611</x>
+<y>0.492528</y>
+</point>
+  <point>
+<x>8.962913</x>
+<y>0.492609</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.962934</x>
+<y>0.513354</y>
+</point>
+  <point>
+<x>8.930733</x>
+<y>0.532371</y>
+</point>
+  <point>
+<x>8.866310</x>
+<y>0.549664</y>
+</point>
+  <point>
+<x>8.801888</x>
+<y>0.566955</y>
+</point>
+  <point>
+<x>8.680204</x>
+<y>0.588054</y>
+</point>
+  <point>
+<x>8.501218</x>
+<y>0.612959</y>
+</point>
+  <point>
+<x>8.322250</x>
+<y>0.637863</y>
+</point>
+  <point>
+<x>8.383131</x>
+<y>0.668285</y>
+</point>
+  <point>
+<x>8.683882</x>
+<y>0.704227</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>8.827097</x>
+<y>0.715282</y>
+</point>
+  <point>
+<x>8.368922</x>
+<y>0.767863</y>
+</point>
+  <point>
+<x>7.309335</x>
+<y>0.861972</y>
+</point>
+</profilecurve>
+</profilepolygon>
+<profilepolygon>
+<closed>0</closed>
+<start><point>
+<x>3.700812</x>
+<y>4.839926</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>3.700812</x>
+<y>4.839926</y>
+</point>
+</profilecurve>
+</profilepolygon>
+<profilepolygon>
+<closed>0</closed>
+<start><point>
+<x>3.749631</x>
+<y>4.839926</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>3.749631</x>
+<y>4.839926</y>
+</point>
+</profilecurve>
+</profilepolygon>
+</profile>

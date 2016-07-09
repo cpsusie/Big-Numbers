@@ -1,0 +1,51 @@
+<profile><profilepolygon>
+<closed>0</closed>
+<start><point>
+<x>0.252961</x>
+<y>0.043914</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>0.025835</x>
+<y>0.044527</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>0.025688</x>
+<y>0.291418</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>cspline</type>
+  <point>
+<x>0.129969</x>
+<y>0.282478</y>
+</point>
+  <point>
+<x>0.449309</x>
+<y>0.288226</y>
+</point>
+  <point>
+<x>0.481509</x>
+<y>0.405492</y>
+</point>
+</profilecurve>
+</profilepolygon>
+<profilepolygon>
+<closed>0</closed>
+<start><point>
+<x>0.004710</x>
+<y>0.294016</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>0.090337</x>
+<y>0.291939</y>
+</point>
+</profilecurve>
+</profilepolygon>
+</profile>

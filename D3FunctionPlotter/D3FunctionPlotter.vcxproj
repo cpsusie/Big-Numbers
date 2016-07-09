@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{37363999-F725-4257-BCF6-B13C5152A2FF}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <ExcludePath>$(ExcludePath)</ExcludePath>
+    <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug\D3FunctionPlotter.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\D3FunctionPlotter.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\D3FunctionPlotter.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Release\D3FunctionPlotter.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\D3FunctionPlotter.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\D3FunctionPlotter.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Release\D3FunctionPlotter.exe</OutputFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="BitmapCache.cpp" />
+    <ClCompile Include="BitmapRotate.cpp" />
+    <ClCompile Include="ColorDlg.cpp" />
+    <ClCompile Include="colormap.cpp" />
+    <ClCompile Include="ColormapDialog.cpp" />
+    <ClCompile Include="D3AnimatedSurface.cpp" />
+    <ClCompile Include="D3CoordinateSystem.cpp" />
+    <ClCompile Include="D3DeviceFactory.cpp" />
+    <ClCompile Include="D3DumpMesh.cpp" />
+    <ClCompile Include="D3Error.cpp" />
+    <ClCompile Include="D3FunctionPlotter.cpp" />
+    <ClCompile Include="D3FunctionPlotterDlg.cpp" />
+    <ClCompile Include="D3LightControl.cpp" />
+    <ClCompile Include="D3LightControlDirectional.cpp" />
+    <ClCompile Include="D3LightControlPoint.cpp" />
+    <ClCompile Include="D3LightControlSpot.cpp" />
+    <ClCompile Include="D3Math.cpp" />
+    <ClCompile Include="D3Scene.cpp" />
+    <ClCompile Include="D3SceneIO.cpp" />
+    <ClCompile Include="D3SceneObject.cpp" />
+    <ClCompile Include="D3Spherical.cpp" />
+    <ClCompile Include="D3TextureTools.cpp" />
+    <ClCompile Include="D3ToString.cpp" />
+    <ClCompile Include="DrawTool.cpp" />
+    <ClCompile Include="ExprDialog.cpp" />
+    <ClCompile Include="ExpressionWrapper.cpp" />
+    <ClCompile Include="Function2DSurface.cpp" />
+    <ClCompile Include="Function2DSurfaceDlg.cpp" />
+    <ClCompile Include="Function2DSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="IsoCurve.cpp" />
+    <ClCompile Include="IsoSurface.cpp" />
+    <ClCompile Include="IsoSurfaceDlg.cpp" />
+    <ClCompile Include="IsoSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="IsosurfacePolygonizer.cpp" />
+    <ClCompile Include="LightDlg.cpp" />
+    <ClCompile Include="MaterialDlg.cpp" />
+    <ClCompile Include="MemoryLogThread.cpp" />
+    <ClCompile Include="MeshArray.cpp" />
+    <ClCompile Include="MeshArrayJobMonitor.cpp" />
+    <ClCompile Include="MeshBuilder.cpp" />
+    <ClCompile Include="PersistentParameter.cpp" />
+    <ClCompile Include="Profile.cpp" />
+    <ClCompile Include="ProfileDlg.cpp" />
+    <ClCompile Include="ProfilePainter.cpp" />
+    <ClCompile Include="PropertyDlg.cpp" />
+    <ClCompile Include="PropertyDlgThread.cpp" />
+    <ClCompile Include="RotateProfile.cpp" />
+    <ClCompile Include="SelectAndLoadProfile.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TurnableRect.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="D3FunctionPlotter.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ColorDlg.h" />
+    <ClInclude Include="ColormapDialog.h" />
+    <ClInclude Include="colormap.h" />
+    <ClInclude Include="ComboBoxExprHelp.h" />
+    <ClInclude Include="Cube3D.h" />
+    <ClInclude Include="D3CoordinateSystem.h" />
+    <ClInclude Include="D3DeviceFactory.h" />
+    <ClInclude Include="D3Error.h" />
+    <ClInclude Include="D3FunctionPlotter.h" />
+    <ClInclude Include="D3FunctionPlotterDlg.h" />
+    <ClInclude Include="D3LightControl.h" />
+    <ClInclude Include="D3Math.h" />
+    <ClInclude Include="D3Scene.h" />
+    <ClInclude Include="DrawTool.h" />
+    <ClInclude Include="ExprDialog.h" />
+    <ClInclude Include="ExpressionWrapper.h" />
+    <ClInclude Include="Function2DSurface.h" />
+    <ClInclude Include="Function2DSurfaceDlg.h" />
+    <ClInclude Include="IsoCurve.h" />
+    <ClInclude Include="IsoSurface.h" />
+    <ClInclude Include="IsoSurfaceDlg.h" />
+    <ClInclude Include="IsoSurfacePolygonizer.h" />
+    <ClInclude Include="LightDlg.h" />
+    <ClInclude Include="MaterialDlg.h" />
+    <ClInclude Include="MemoryLogThread.h" />
+    <ClInclude Include="MeshArrayJobMonitor.h" />
+    <ClInclude Include="MeshBuilder.h" />
+    <ClInclude Include="PersistentParameter.h" />
+    <ClInclude Include="Profile.h" />
+    <ClInclude Include="ProfileDlg.h" />
+    <ClInclude Include="ProfilePainter.h" />
+    <ClInclude Include="PropertyDialog.h" />
+    <ClInclude Include="PropertyDlgThread.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="_Font.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\bitmap1.bmp" />
+    <Image Include="res\BlackSquare.bmp" />
+    <Image Include="res\CircleArrow.bmp" />
+    <Image Include="res\D3FunctionPlotter.ico" />
+    <Image Include="res\LeftRightArrow.bmp" />
+    <Image Include="res\RotateCorner.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\D3FunctionPlotter.rc2" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties _x007B_B4097DDA-446A-4AB9-B210-3AF19276DF6C_x007D_="CColormap" RESOURCE_FILE="D3FunctionPlotter.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

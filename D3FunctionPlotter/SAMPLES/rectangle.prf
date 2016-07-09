@@ -1,0 +1,29 @@
+<profile><profilepolygon>
+<closed>0</closed>
+<start><point>
+<x>0.374028</x>
+<y>0.720961</y>
+</point>
+</start><profilecurve>
+  <type>line</type>
+  <point>
+<x>0.499965</x>
+<y>0.514025</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>0.424883</x>
+<y>0.425761</y>
+</point>
+</profilecurve>
+<profilecurve>
+  <type>line</type>
+  <point>
+<x>0.223534</x>
+<y>0.423959</y>
+</point>
+</profilecurve>
+</profilepolygon>
+</profile>
