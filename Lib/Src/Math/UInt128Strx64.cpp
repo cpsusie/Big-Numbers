@@ -12,7 +12,7 @@ const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
 static const _uint128 _0(0);
 static const _uint128 _10(10);
 static const _uint128 _16(16);
-static const _uint128 _8(16);
+static const _uint128 _8(8);
 
 char*_ui128toa(_uint128 value, char *str, int radix) {
   assert(radix >= 2 && radix <= 36);
@@ -53,7 +53,8 @@ wchar_t *_ui128tow(_uint128 value, wchar_t *str, int radix) {
 
 template<class CharType> const CharType *parseDec(const CharType *str, _uint128 &n) {
   bool gotDigit = false;
-  for(; isdigit(*str); str++) {
+  if (*str == '+') str++;
+  for(; iswdigit(*str); str++) {
     if(!gotDigit) {
       n = *str - '0';
       gotDigit = true;
@@ -69,7 +70,7 @@ template<class CharType> const CharType *parseDec(const CharType *str, _uint128 
 
 template<class CharType> const CharType *parseHex(const CharType *str, _uint128 &n) {
   bool gotDigit = false;
-  for (; isxdigit(*str); str++) {
+  for (; iswxdigit(*str); str++) {
     if(!gotDigit) {
       n = convertNumberChar(*str);
       gotDigit = true;
@@ -116,6 +117,7 @@ _uint128::_uint128(const char *str) {
   if (*str == '0') {
     switch (str[1]) {
     case 'x':
+    case 'X':
       ok = parseHex(str + 2) != NULL;
       break;
     case 0:
@@ -131,7 +133,7 @@ _uint128::_uint128(const char *str) {
     ok = parseDec(str) != NULL;
   }
   if (!ok) {
-    throw exception("_uint128:string is not an integer");
+    throwException("_uint128:string is not an integer");
   }
 }
 

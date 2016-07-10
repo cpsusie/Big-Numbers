@@ -13,7 +13,7 @@ const _int128 _I128_MAX(0x7fffffffffffffff, 0xffffffffffffffff);
 static const _int128 _0(0);
 static const _int128 _10(10);
 static const _int128 _16(16);
-static const _int128 _8(16);
+static const _int128 _8(8);
 
 char *_i128toa(_int128 value, char *str, int radix) {
   assert(radix >= 2 && radix <= 36);
@@ -92,7 +92,7 @@ template<class CharType> const CharType *parseDec(const CharType *str, _int128 &
     negative = true;
   }
   bool gotDigit = false;
-  for(; isdigit(*str); str++) {
+  for(; iswdigit(*str); str++) {
     if (!gotDigit) {
       n = *str - '0';
       gotDigit = true;
@@ -114,7 +114,7 @@ template<class CharType> const CharType *parseDec(const CharType *str, _int128 &
 
 template<class CharType> const CharType *parseHex(const CharType *str, _int128 &n) {
   bool gotDigit = false;
-  for (; isxdigit(*str); str++) {
+  for (; iswxdigit(*str); str++) {
     if (!gotDigit) {
       n = convertNumberChar(*str);
       gotDigit = true;
@@ -161,9 +161,10 @@ _int128::_int128(const char *str) {
   if (*str == '-') {
     ok = parseDec(str) != NULL;
   } else {
-    if (isdigit(*str)) {
+    if (iswdigit(*str)) {
       if (*str == '0') {
         switch (str[1]) {
+        case 'X':
         case 'x':
           ok = parseHex(str + 2) != NULL;
           break;

@@ -62,14 +62,13 @@ template<class ct> StringTemplate<ct> &StringTemplate<ct>::operator+=(wchar_t ch
 template<class ct> StringTemplate<ct> getFillerString(streamsize l, ct ch = ' ') {
   StringTemplate<ct> result;
   if (l <= MAXTMPSIZE) {
-    ct tmp[MAXTMPSIZE+1], *cp = tmp + MAXTMPSIZE;
-    while (cp-- > tmp) *cp = ch;
+    ct tmp[MAXTMPSIZE+1], *cp = tmp + l;
+    for(*cp = 0; cp-- > tmp;) *cp = ch;
     result = tmp;
   }
   else {
     ct *tmp = new ct[l + 1], *cp = tmp + l;
-    *cp = 0;
-    while (cp-- > tmp) *cp = ch;
+    for(*cp = 0; cp-- > tmp;) *cp = ch;
     result = tmp;
     delete[] tmp;
   }
@@ -109,8 +108,13 @@ template<class ct> Int128Stream<ct> &Int128Stream<ct>::addResult(const StringTem
       break;
     case ios::internal:
       result = prefix;
-      result += getFillerString<ct>(fillerLength, (ct)getFiller());
+      result += getFillerString<ct>(fillerLength, prefix.length()?'0':(ct)getFiller());
       result += buf;
+      break;
+    default: // do as ios::left
+      result =  prefix;
+      result += buf;
+      result += getFillerString<ct>(fillerLength);
       break;
     }
   }
@@ -131,8 +135,10 @@ template<class ct> Int128Stream<ct> &Int128Stream<ct>::operator<<(const _int128 
     { const bool negative = (n < 0);
       const _uint128 v = negative ? -n : n;
       _ui128toa(v, buf, 10);
-      if ((flags & ios::showpos) || negative) {
-        prefix = negative ? "-" : "+";
+      if (negative) {
+        prefix = "-";
+      } else if (flags & ios::showpos) {
+        prefix = "+";
       }
       break;
     }
@@ -192,6 +198,7 @@ template<class ct> Int128Stream<ct> &Int128Stream<ct>::operator<<(const _uint128
 
 #define peekChar(in,ch)           { ch = in.peek(); if(ch == EOF) in >> ch; }
 #define appendCharGetNext(in, ch) { in >> ch; buf += ch; peekChar(in,ch);   }
+#define skipChar(in, ch)          { in >> ch; peekChar(in, ch);             }
 
 template <class IStreamType, class ct> void eatWhite(IStreamType &in) {
   ct ch;
@@ -222,20 +229,27 @@ template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in,
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
+      if (gotDigits) {
+        n.parseDec(buf.c_str());
+      }
       break;
     case ios::hex:
       if (ch == '0') {
-        appendCharGetNext(in, ch);
-        if (ch == 'x' || ch == 'X') {
-          appendCharGetNext(in, ch)
+        skipChar(in, ch);
+        if ((ch == 'x') || (ch == 'X')) {
+          skipChar(in, ch);
         }
         else {
+          buf += '0';
           gotDigits = true;
         }
       }
       while (iswxdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
+      }
+      if (gotDigits) {
+        n.parseHex(buf.c_str());
       }
       break;
     case ios::oct:
@@ -246,20 +260,14 @@ template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in,
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
+      if (gotDigits) {
+        n.parseOct(buf.c_str());
+      }
       break;
     }
     if(!gotDigits) {
       in.putback(ch);
       in.setf(ios::failbit);
-      in.isfx();
-      return in;
-    }
-    try {
-      n = _int128(buf.c_str());
-    } catch(...) {
-      in.setf(ios::failbit);
-      in.isfx();
-      throw;
     }
     in.isfx();
   }
@@ -285,20 +293,27 @@ template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in,
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
+      if (gotDigits) {
+        n.parseDec(buf.c_str());
+      }
       break;
     case ios::hex:
       if (ch == '0') {
-        appendCharGetNext(in, ch);
+        skipChar(in, ch);
         if (ch == 'x' || ch == 'X') {
-          appendCharGetNext(in, ch)
+          skipChar(in, ch)
         }
         else {
+          buf += '0';
           gotDigits = true;
         }
       }
       while (iswxdigit(ch)) {
         appendCharGetNext(in, ch);
         gotDigits = true;
+      }
+      if (gotDigits) {
+        n.parseHex(buf.c_str());
       }
       break;
     case ios::oct:
@@ -309,20 +324,14 @@ template <class IStreamType, class ct> IStreamType &operator>> (IStreamType &in,
         appendCharGetNext(in, ch);
         gotDigits = true;
       }
+      if (gotDigits) {
+        n.parseOct(buf.c_str());
+      }
       break;
     }
     if(!gotDigits) {
       in.putback(ch);
       in.setf(ios::failbit);
-      in.isfx();
-      return in;
-    }
-    try {
-      n = _uint128(buf.c_str());
-    } catch(...) {
-      in.setf(ios::failbit);
-      in.isfx();
-      throw;
     }
     in.isfx();
   }
@@ -334,6 +343,9 @@ template <class OStreamType, class ct> OStreamType &operator<<(OStreamType &out,
     Int128Stream<ct> buf(out);
     buf << n;
     out << buf.c_str();
+    if(out.flags() & ios::unitbuf) {
+      out.flush();
+    }
     out.osfx();
   }
   return out;
@@ -344,6 +356,9 @@ template <class OStreamType, class ct> OStreamType &operator<<(OStreamType &out,
     Int128Stream<ct> buf(out);
     buf << n;
     out << buf.c_str();
+    if(out.flags() & ios::unitbuf) {
+      out.flush();
+    }
     out.osfx();
   }
   return out;
