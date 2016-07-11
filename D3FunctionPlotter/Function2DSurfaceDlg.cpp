@@ -17,7 +17,7 @@ void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
     DDX_Text(pDX , IDC_EDIT_YTO              , m_yto                       );
     DDX_Text(pDX , IDC_EDIT_POINTS           , m_pointCount                );
     DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
-	  DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
+    DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
     DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
     DDX_Text(pDX , IDC_EDIT_TIMECOUNT        , m_timeCount                 );
     DDX_Text(pDX , IDC_EDIT_TIMEFROM         , m_timeFrom                  );
@@ -26,19 +26,19 @@ void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
 
 BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
     ON_WM_SIZE()
-    ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
-    ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
-    ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
-    ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-    ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                  )
-    ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval             )
-    ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval             )
-    ON_COMMAND(ID_GOTO_TINTERVAL             , OnGotoTInterval             )
-    ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount            )
-    ON_COMMAND(ID_GOTO_TIMECOUNT             , OnGotoTimeCount             )
-    ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST, ID_EXPRHELP_MENU_LAST, OnExprHelp)
-	ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
-    ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
+    ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                       )
+    ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                       )
+    ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                     )
+    ON_COMMAND(ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis     )
+    ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                       )
+    ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval                  )
+    ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval                  )
+    ON_COMMAND(ID_GOTO_TINTERVAL             , OnGotoTInterval                  )
+    ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount                 )
+    ON_COMMAND(ID_GOTO_TIMECOUNT             , OnGotoTimeCount                  )
+    ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST  , ID_EXPRHELP_MENU_LAST, OnExprHelp)
+    ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
+    ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
 END_MESSAGE_MAP()
 
 BOOL CFunction2DSurfaceDlg::OnInitDialog() {
@@ -48,28 +48,28 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_FUNCTION     , PCT_RELATIVE_Y_CENTER);
-  m_layoutManager.addControl(IDC_EDIT_EXPR           , RELATIVE_SIZE     );
-  m_layoutManager.addControl(IDC_STATIC_XINTERVAL    , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_XFROM          , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_DASH1        , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_XTO            , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_YINTERVAL    , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_YFROM          , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_DASH2        , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_YTO            , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_POINTCOUNT   , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_POINTS         , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_TIMEFROM       , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_DASH3        , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_TIMETO         , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_STATIC_TIMECOUNT    , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDC_EDIT_TIMECOUNT      , RELATIVE_Y_POS    );
-  m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION );
-  m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION );
+  m_layoutManager.addControl(IDC_EDIT_EXPR           , RELATIVE_SIZE        );
+  m_layoutManager.addControl(IDC_STATIC_XINTERVAL    , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_XFROM          , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_DASH1        , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_XTO            , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_YINTERVAL    , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_YFROM          , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_DASH2        , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_YTO            , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_POINTCOUNT   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_POINTS         , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECK_MACHINECODE   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECK_INCLUDETIME   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_CHECK_DOUBLESIDED   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_TIMEINTERVAL , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_TIMEFROM       , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_DASH3        , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_TIMETO         , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_TIMECOUNT    , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_TIMECOUNT      , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
+  m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_FUNC2DSURFACE_ACCELERATOR));
   setExprFont();

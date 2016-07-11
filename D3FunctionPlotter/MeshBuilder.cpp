@@ -124,9 +124,12 @@ bool MeshBuilder::has1NormalPerVertex() const {
 }
 
 bool MeshBuilder::use32BitIndices(bool doubleSided) const {
+  const int    factor           = doubleSided ? 2 : 1;
   const size_t vertexCount1Side = has1NormalPerVertex() ? m_vertices.size() : getIndexCount();
-  const size_t vertexCount      = vertexCount1Side * (doubleSided ? 2 : 1);
-  return vertexCount > MAX16BITVERTEXCOUNT;
+  const size_t vertexCount      = vertexCount1Side * factor;
+  const int    faceCount1Side   = getTriangleCount();
+  const int    faceCount        = faceCount1Side * factor;
+  return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
 }
 
 template<class VertexType, class IndexType> class MeshCreator {

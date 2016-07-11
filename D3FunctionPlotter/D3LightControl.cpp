@@ -131,7 +131,7 @@ void D3LightControl::prepareEffect() {
 }
 
 void D3LightControl::createEffect() {
-  const String effectSourceText = 
+  const char *effectSourceText = 
       "float4   g_MaterialDiffuseColor;    // Material's diffuse color                             \r\n"
       "float3   g_LightDir;                // Light's direction in world space                     \r\n"
       "float4x4 g_mWorld;                  // World matrix for object                              \r\n"
@@ -177,12 +177,13 @@ void D3LightControl::createEffect() {
       "}                                                                                           \r\n"
       ;
 
+  const int textlen = (int)strlen(effectSourceText);
   DWORD Flags = D3DXFX_NOT_CLONEABLE;
 #ifdef D3DXFX_LARGEADDRESS_HANDLE
   Flags |= D3DXFX_LARGEADDRESSAWARE;
 #endif
 
-  V(D3DXCreateEffect(getDevice(), effectSourceText.cstr(), (UINT)effectSourceText.length(), NULL, NULL, Flags, NULL, &m_effect, NULL));
+  V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, NULL));
 
   // Save technique handles for use when rendering
   m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"    );
