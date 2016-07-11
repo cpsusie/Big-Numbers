@@ -5,9 +5,17 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -23,7 +31,19 @@
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
@@ -35,7 +55,13 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -44,17 +70,29 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\..\..\MTRelease32\</OutDir>
-    <IntDir>.\Release</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules />
     <CodeAnalysisRuleAssemblies />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\..\..\MTDebug32\</OutDir>
-    <IntDir>.\Debug</IntDir>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules />
     <CodeAnalysisRuleAssemblies />
+    <OutDir>..\..\..\..\MTRelease64\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>..\..\..\..\MTDebug32\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <OutDir>..\..\..\..\MTDebug64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -65,6 +103,34 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PrecompiledHeader />
+      <PrecompiledHeaderOutputFile>.\..\..\obj\Release/libjpeg.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\..\obj\Release/</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\obj\Release/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\obj\Release/</ProgramDataBaseFileName>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <CompileAs>Default</CompileAs>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+      <DebugInformationFormat>None</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
+    </Lib>
+    <ResourceCompile>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <AdditionalIncludeDirectories>.;..\..\otherlib\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <PrecompiledHeaderOutputFile>.\..\..\obj\Release/libjpeg.pch</PrecompiledHeaderOutputFile>
       <AssemblerListingLocation>.\..\..\obj\Release/</AssemblerListingLocation>
       <ObjectFileName>.\..\..\obj\Release/</ObjectFileName>
@@ -98,6 +164,33 @@
       <WarningLevel>Level2</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAs>Default</CompileAs>
+      <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
+    </ClCompile>
+    <Lib>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+    </Lib>
+    <ResourceCompile>
+      <Culture>0x0407</Culture>
+    </ResourceCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>.;..\..\otherlib\libjpeg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <PrecompiledHeaderOutputFile>.\..\..\obj\Debug/libjpeg.pch</PrecompiledHeaderOutputFile>
+      <AssemblerListingLocation>.\..\..\obj\Debug/</AssemblerListingLocation>
+      <ObjectFileName>.\..\..\obj\Debug/</ObjectFileName>
+      <ProgramDataBaseFileName>.\..\..\obj\Debug/</ProgramDataBaseFileName>
+      <BrowseInformation>true</BrowseInformation>
+      <WarningLevel>Level2</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
       <ForceConformanceInForLoopScope>false</ForceConformanceInForLoopScope>
     </ClCompile>
@@ -163,17 +256,25 @@
     <ClInclude Include="..\..\otherlib\libjpeg\jerror.h" />
     <CustomBuild Include="jmorecfg.h">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying jmorecfg.h</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying jmorecfg.h</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy jmorecfg.h ..\..\otherlib\libjpeg\jmorecfg.h
 </Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy jmorecfg.h ..\..\otherlib\libjpeg\jmorecfg.h
+</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\otherlib\libjpeg\jmorecfg.h;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\otherlib\libjpeg\jmorecfg.h;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\otherlib\libjpeg\jconfig.vc">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Copying jconfig.vc</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Copying jconfig.vc</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">copy ..\..\otherlib\libjpeg\jconfig.vc ..\..\otherlib\libjpeg\jconfig.h
 </Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy ..\..\otherlib\libjpeg\jconfig.vc ..\..\otherlib\libjpeg\jconfig.h
+</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\otherlib\libjpeg\jconfig.h;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\otherlib\libjpeg\jconfig.h;%(Outputs)</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
