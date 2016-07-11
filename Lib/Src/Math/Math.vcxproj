@@ -342,7 +342,7 @@
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -l -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsergencpp.par</AdditionalInputs>

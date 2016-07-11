@@ -394,8 +394,8 @@ void ParserTree::traverseTree(ExpressionNodeHandler &handler) const {
 
 ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr) {
   switch(symbol) {
-  case NUMBER: return new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real));
-  case NAME  : return new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,char*));
+  case NUMBER: return new ExpressionNodeNumberWithPos(   this, pos, va_arg(argptr,Real  ));
+  case NAME  : return new ExpressionNodeVariableWithPos( this, pos, va_arg(argptr,TCHAR*));
   case POLY  : return new ExpressionNodePolyWithPos(     this, pos, argptr);
   default    : return new ExpressionNodeTreeWithPos(     this, pos, symbol, argptr);
   }

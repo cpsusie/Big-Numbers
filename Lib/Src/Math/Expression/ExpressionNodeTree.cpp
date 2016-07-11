@@ -32,15 +32,18 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSy
   INITEXPRESSIONNODEDEBUGSTRING();
 }
 
-void ExpressionNodeTree::initChildArray(va_list argptr) {
-  const va_list saveArgs = argptr;
+static int countVargs(va_list argptr) {
   int count = 0;
   for(ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     count++;
   }
+  return count;
+}
+
+void ExpressionNodeTree::initChildArray(va_list argptr) {
+  int count = countVargs(argptr);;
   const bool oldEnable = m_childArray.enableDebugString(false);
   m_childArray.clear(count);
-  argptr = saveArgs;
   for (ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     m_childArray.add(p);
   }
