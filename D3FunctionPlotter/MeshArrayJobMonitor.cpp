@@ -82,7 +82,7 @@ bool MeshArrayJobMonitor::fetchJob(double &t) {
 }
 
 int MeshArrayJobMonitor::getJobsDone() const {
-  return m_resultQueue.size() + m_errors.size();
+  return (int)(m_resultQueue.size() + m_errors.size());
 }
 
 void MeshArrayJobMonitor::clearResultQueue() {

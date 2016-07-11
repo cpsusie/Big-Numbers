@@ -182,7 +182,7 @@ void D3LightControl::createEffect() {
   Flags |= D3DXFX_LARGEADDRESSAWARE;
 #endif
 
-  V(D3DXCreateEffect(getDevice(), effectSourceText.cstr(), effectSourceText.length(), NULL, NULL, Flags, NULL, &m_effect, NULL));
+  V(D3DXCreateEffect(getDevice(), effectSourceText.cstr(), (UINT)effectSourceText.length(), NULL, NULL, Flags, NULL, &m_effect, NULL));
 
   // Save technique handles for use when rendering
   m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"    );

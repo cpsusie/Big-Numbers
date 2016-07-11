@@ -24,7 +24,7 @@ redirectDebugLog();
   try {
     CD3FunctionPlotterDlg dlg;
     m_pMainWnd = &dlg;
-    int nResponse = dlg.DoModal();
+    intptr_t nResponse = dlg.DoModal();
     if (nResponse == IDOK) {
     } else if (nResponse == IDCANCEL) {
     }

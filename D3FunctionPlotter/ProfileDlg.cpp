@@ -406,7 +406,7 @@ BOOL CProfileDlg::PreTranslateMessage(MSG* pMsg) {
   case WM_KEYDOWN:
     switch(m_currentControl) {
     case IDC_STATIC_PROFILEIMAGE2D:
-      if(m_currentDrawTool->OnKeyDown(pMsg->wParam, 1, pMsg->lParam)) {
+      if(m_currentDrawTool->OnKeyDown((UINT)pMsg->wParam, 1, (UINT)pMsg->lParam)) {
         return true;
       }
       break;

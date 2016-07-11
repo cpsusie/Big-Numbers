@@ -173,7 +173,7 @@ void ProfilePolygon::reverseOrder() {
   ProfilePolygon result;
   result.m_closed = m_closed;
   Point2DArray points = getAllPoints();
-  int pindex = points.size() - 1;
+  int pindex = (int)points.size() - 1;
   result.m_start = points[pindex--];
   for(intptr_t i = m_curveArray.size()-1; i >= 0; i--) {
     ProfileCurve &curve = m_curveArray[i];
@@ -309,9 +309,9 @@ int Profile::findPolygonContainingPoint(const Point2D *p) const {
       continue;
     }
     if(p == &pp.m_start) {
-      return i;
+      return (int)i;
     } else if(p == &pp.getLastPoint()) {
-      return i;
+      return (int)i;
     }
   }
   return -1;

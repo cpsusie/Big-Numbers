@@ -34,7 +34,7 @@ CEdit *CExprDialog::getExprField() {
 
 bool CExprDialog::validate() {
   ExpressionWrapper expr;
-  expr.compile(getExprString().cstr(), false);
+  expr.compile(getExprString(), false);
   if(!expr.ok()) {
     showExprError(expr.getErrorMessage());
     return false;
@@ -106,7 +106,7 @@ void CExprDialog::substituteSelectedText(const String &s) {
     }
     text.insert(startIndex, s);
     setWindowText(e, text);
-    int newSel = startIndex + s.length();
+    int newSel = (int)(startIndex + s.length());
     e->SetSel(newSel, newSel);
     gotoExpr();
   }

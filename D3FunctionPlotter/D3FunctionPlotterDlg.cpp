@@ -379,7 +379,7 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
   }
 }
 
-long CD3FunctionPlotterDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
+LRESULT CD3FunctionPlotterDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
   m_scene.render();
   if(wp) {
     show3DInfo();
@@ -1243,15 +1243,15 @@ void CD3FunctionPlotterDlg::setLightControlsVisible(bool visible) {
     if(missing.isEmpty()) {
       return;
     }
-    for(Iterator<unsigned int> it = missing.getIterator(); it.hasNext();) {
-      m_scene.setLightControlVisible(it.next(), true);
+    for(Iterator<size_t> it = missing.getIterator(); it.hasNext();) {
+      m_scene.setLightControlVisible((unsigned int)it.next(), true);
     }
   } else {
     if(visibleLightSet.isEmpty()) {
       return;
     }
-    for(Iterator<unsigned int> it = visibleLightSet.getIterator(); it.hasNext();) {
-      m_scene.setLightControlVisible(it.next(), false);
+    for(Iterator<size_t> it = visibleLightSet.getIterator(); it.hasNext();) {
+      m_scene.setLightControlVisible((unsigned int)it.next(), false);
     }
   }
   REPAINT();
@@ -1311,7 +1311,7 @@ void CD3FunctionPlotterDlg::onContextMenuBackground(CPoint point) {
   if(checkedItem != -1) {
     checkMenuItem(menu, checkedItem, true);
   }
-  const int visibleLightCount = m_scene.getLightsVisible().size();
+  const int visibleLightCount = (int)m_scene.getLightsVisible().size();
   if(visibleLightCount == 0) {
     removeMenuCommand(menu,ID_HIDE_LIGHTCONTROLS);
   }

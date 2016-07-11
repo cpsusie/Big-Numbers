@@ -208,7 +208,7 @@ protected:
 	  afx_msg void OnLightControlSpotAt();
 	  afx_msg void OnLightControlHide();
 	  afx_msg void OnLightRemove();
-    afx_msg long OnMsgRender(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };
 

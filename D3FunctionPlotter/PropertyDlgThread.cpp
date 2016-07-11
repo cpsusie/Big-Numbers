@@ -35,7 +35,7 @@ BOOL CPropertyDlgThread::InitInstance() {
     return TRUE;
   }
   m_inModalLoop = true;
-  int nResponse = m_dlg->DoModal();
+  intptr_t nResponse = m_dlg->DoModal();
   m_inModalLoop = false;
   delete m_dlg;
   m_dlg = NULL;

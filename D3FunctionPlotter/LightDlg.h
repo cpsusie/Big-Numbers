@@ -28,7 +28,7 @@ protected:
     virtual BOOL OnInitDialog();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
   	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-    afx_msg long OnMsgResetControls(WPARAM wp, LPARAM lp);
+    afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
 	  afx_msg void OnHideWindow();
 	  virtual void OnCancel();
 	  afx_msg void OnClose();

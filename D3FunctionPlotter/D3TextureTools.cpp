@@ -23,7 +23,7 @@ LPDIRECT3DTEXTURE9 loadTextureFromFile(LPDIRECT3DDEVICE9 device, const String &f
 LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray &ba) {
   LPDIRECT3DTEXTURE9 result;
   V(D3DXCreateTextureFromFileInMemoryEx(device
-                                       ,ba.getData(), ba.size()
+                                       ,ba.getData(), (UINT)ba.size()
                                        ,D3DX_DEFAULT, D3DX_DEFAULT, 1
                                        ,D3DUSAGE_DYNAMIC
                                        ,D3DFMT_A8R8G8B8

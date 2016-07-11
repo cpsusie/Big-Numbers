@@ -37,7 +37,7 @@ BOOL CMaterialDlg::OnInitDialog() {
   return TRUE;
 }
 
-long CMaterialDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
+LRESULT CMaterialDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
   resetControls();
   return 0;
 }

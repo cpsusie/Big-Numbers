@@ -255,7 +255,7 @@ void DrawTool::select(ProfilePolygon *p) {
 }
 
 void DrawTool::unselect(ProfilePolygon *p) {
-  const int index = m_polygonSet.getFirstIndex(p);
+  const intptr_t index = m_polygonSet.getFirstIndex(p);
   if(index >= 0) {
     m_polygonSet.remove(index);
   }
@@ -266,7 +266,7 @@ void DrawTool::select(Point2D *p) {
 }
 
 void DrawTool::unselect(Point2D *p) {
-  const int index = m_selectedPoints.getFirstIndex(p);
+  const intptr_t index = m_selectedPoints.getFirstIndex(p);
   if(index >= 0) {
     m_selectedPoints.remove(index);
   }

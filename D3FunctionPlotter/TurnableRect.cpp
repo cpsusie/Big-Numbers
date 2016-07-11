@@ -282,7 +282,7 @@ void TurnableRect::repaint(Viewport2D &vp, ProfileDialogState state) {
 bool TurnableRect::pointOnMarkRect(const CPoint &p) {
   for(size_t i = 0; i < m_marks.size(); i++) {
     if(m_marks[i].PtInRect(p)) {
-      m_selectedMarkIndex = i;
+      m_selectedMarkIndex = (int)i;
       return true;
     }
   }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 MeshArray &MeshArray::operator=(const MeshArray &src) {
-  clear(src.getCapacity());
+  clear((int)src.getCapacity());
   addAll(src);
   return *this;
 }

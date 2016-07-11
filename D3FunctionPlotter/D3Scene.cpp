@@ -465,8 +465,8 @@ String D3Scene::getLightString(unsigned int index) const {
 String D3Scene::getLightString() const {
   String result;
   BitSet lightSet = getLightsDefined();
-  for(Iterator<unsigned int> it = lightSet.getIterator(); it.hasNext(); ) {
-    unsigned int index = it.next();
+  for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext(); ) {
+    UINT index = (UINT)it.next();
     if(result.length()) result += "\n";
     result += format(_T("Light %2d:%s"), index, getLightString(index).cstr());
   }
@@ -617,7 +617,7 @@ void D3Scene::addSceneObject(D3SceneObject *obj) {
 }
 
 void D3Scene::removeSceneObject(D3SceneObject *obj) {
-  int index = m_objectArray.getFirstIndex(obj);
+  int index = (int)m_objectArray.getFirstIndex(obj);
   if(index >= 0) {
     m_objectArray.remove(index);
   }
@@ -630,7 +630,7 @@ void D3Scene::removeAllSceneObjects() {
 }
 
 void D3Scene::notifyIfObjectArrayChanged() {
-  const int newCount = m_objectArray.size();
+  const int newCount = (int)m_objectArray.size();
   if(newCount != m_oldObjectCount) {
     notifyPropertyChanged(SP_OBJECTCOUNT, &m_oldObjectCount, &newCount);
     m_oldObjectCount = newCount;

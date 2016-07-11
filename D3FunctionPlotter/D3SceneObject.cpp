@@ -88,8 +88,8 @@ SceneObjectWithVertexBuffer::~SceneObjectWithVertexBuffer() {
   }
 }
 
-void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, int count, DWORD fvf) {
-  const size_t bufferSize = vertexSize*count;
+void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf) {
+  const UINT bufferSize = (UINT)(vertexSize*count);
   V(getDevice()->CreateVertexBuffer(bufferSize, 0, fvf, D3DPOOL_DEFAULT, &m_vertexBuffer, NULL));
   m_vertexSize = vertexSize;
   m_fvf        = fvf;
@@ -102,7 +102,7 @@ void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
   V(m_vertexBuffer->Unlock());
 }
 
-void SceneObjectWithVertexBuffer::prepareDraw(unsigned int flags) {
+void SceneObjectWithVertexBuffer::prepareDraw(UINT flags) {
   V(getDevice()->SetStreamSource( 0, m_vertexBuffer, 0, m_vertexSize));
   V(getDevice()->SetFVF(m_fvf));
   D3SceneObject::prepareDraw(flags);
@@ -136,7 +136,7 @@ void SceneObjectWithIndexBuffer::unlockIndexBuffer() {
   V(m_indexBuffer->Unlock());
 }
 
-void SceneObjectWithIndexBuffer::prepareDraw(unsigned int flags) {
+void SceneObjectWithIndexBuffer::prepareDraw(UINT flags) {
   SceneObjectWithVertexBuffer::prepareDraw(flags);
   V(getDevice()->SetIndices(m_indexBuffer));
 }
@@ -296,9 +296,9 @@ MATERIAL D3LineArrow::getMaterial() const {
 // ----------------------------------------------- D3Curve ------------------------------------------------------------
 
 D3Curve::D3Curve(D3Scene &scene, const VertexArray &points) : SceneObjectWithVertexBuffer(scene) {
-  m_primitiveCount = points.size()-1;
+  m_primitiveCount = (int)points.size()-1;
 
-  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, points.size());
+  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, (UINT)points.size());
   memcpy(vertices, points.getBuffer(), sizeof(Vertex)*points.size());
   unlockVertexBuffer();
 }
@@ -312,7 +312,7 @@ D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObje
   int totalVertexCount = 0;
 
   for(size_t i = 0; i < curves.size(); i++) {
-    const int vertexCount = curves[i].size();
+    const int vertexCount = (int)curves[i].size();
     m_curveSize.add(vertexCount);
     totalVertexCount += vertexCount;
   }
@@ -320,8 +320,8 @@ D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObje
 
   int startIndex = 0;
   for(size_t i = 0; i < curves.size(); i++) {
-    const VertexArray &a = curves[i];
-    const size_t count = a.size();
+    const VertexArray &a     = curves[i];
+    const int          count = (int)a.size();
     memcpy(vertices+startIndex, a.getBuffer(), sizeof(Vertex)*count);
     startIndex += count;
   }
@@ -332,7 +332,7 @@ void D3CurveArray::draw() {
   prepareDraw();
   int startIndex = 0;
   for(size_t i = 0; i < m_curveSize.size(); i++) {
-    const size_t vertexCount = m_curveSize[i];
+    const int vertexCount = m_curveSize[i];
     V(getDevice()->DrawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1));
     startIndex += vertexCount;
   }

@@ -26,10 +26,10 @@ public:
     m_data.add(VertexNormalIndex(vIndex, nIndex));
   }
   inline int getTriangleCount() const {
-    return m_data.size() - 2;
+    return (int)m_data.size() - 2;
   }
-  inline unsigned int getIndexCount() const {
-    return m_data.size();
+  inline UINT getIndexCount() const {
+    return (UINT)m_data.size();
   }
   inline const CompactArray<VertexNormalIndex> &getIndices() const {
     return m_data;
@@ -60,35 +60,35 @@ public:
   void clear(unsigned int capacity = 0);
   inline int addVertex(float x, float y, float z) {
     m_vertices.add(Vertex(x, y, z));
-    return m_vertices.size()-1;
+    return (int)m_vertices.size()-1;
   }
   inline int addVertex(const Vertex &p) {
     m_vertices.add(p);
-    return m_vertices.size()-1;
+    return (int)m_vertices.size()-1;
   }
   inline int addVertex(const D3DXVECTOR3 &v) {
     m_vertices.add(Vertex(v));
-    return m_vertices.size()-1;
+    return (int)m_vertices.size()-1;
   }
   inline int addVertex(const Point3D &p) {
     m_vertices.add(Vertex(p));
-    return m_vertices.size()-1;
+    return (int)m_vertices.size()-1;
   }
   inline int addNormal(float x, float y, float z) {
     m_normals.add(Vertex(x, y, z));
-    return m_normals.size()-1;
+    return (int)m_normals.size()-1;
   }
   inline int addNormal(const Vertex &n) {
     m_normals.add(n);
-    return m_normals.size()-1;
+    return (int)m_normals.size()-1;
   }
   inline int addNormal(const D3DXVECTOR3 &v) {
     m_normals.add(Vertex(v));
-    return m_normals.size()-1;
+    return (int)m_normals.size()-1;
   }
   inline int addNormal(const Point3D &n) {
     m_normals.add(Vertex(n));
-    return m_normals.size()-1;
+    return (int)m_normals.size()-1;
   }
   inline Face &addFace(D3DCOLOR color) {
     m_faceArray.add(Face(color));
@@ -102,7 +102,7 @@ public:
     return m_faceArray.last();
   }
   inline int getNormalCount() const {
-    return m_normals.size();
+    return (int)m_normals.size();
   }
   int getTriangleCount()       const;
   int getIndexCount()          const;

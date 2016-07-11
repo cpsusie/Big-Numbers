@@ -175,7 +175,7 @@ LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, con
       pp.apply(ProfileRotator(param,pointsInOneSlice,normalsInOneSlice,normals3D,vRotation,nRotation, meshBuilder));
     }
     if(pointsInOneSlice == 0) {
-      pointsInOneSlice  = meshBuilder.getVertexArray().size();
+      pointsInOneSlice  = (int)meshBuilder.getVertexArray().size();
       normalsInOneSlice = meshBuilder.getNormalCount();
     }
   }

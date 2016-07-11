@@ -20,16 +20,16 @@ void MeshBuilder::clear(unsigned int capacity) {
 
 int MeshBuilder::getTriangleCount() const {
   int count = 0;
-  const int n = m_faceArray.size();
-  for(int i = 0; i < n; i++) {
+  const size_t n = m_faceArray.size();
+  for(size_t i = 0; i < n; i++) {
     count += m_faceArray[i].getTriangleCount();
   }
   return count;
 }
 
 bool MeshBuilder::isEmpty() const {
-  const int n = m_faceArray.size();
-  for(int i = 0; i < n; i++) {
+  const size_t n = m_faceArray.size();
+  for(size_t i = 0; i < n; i++) {
     if(m_faceArray[i].getTriangleCount() > 0) {
       return false;
     }
@@ -59,15 +59,15 @@ void MeshBuilder::check1NormalPerVertex() const {
   if(m_vertices.size() != m_normals.size()) {
     return;
   }
-  const int faceCount = m_faceArray.size();
-  CompactHashMap<UInt, unsigned int> vnMap(2*m_vertices.size() + 241);
+  const size_t faceCount = m_faceArray.size();
+  CompactHashMap<UInt, UINT> vnMap(2*m_vertices.size() + 241);
 
-  for(int i = 0; i < faceCount; i++) {
+  for(size_t i = 0; i < faceCount; i++) {
     const Face &face = m_faceArray[i];
     const CompactArray<VertexNormalIndex> &vna = face.getIndices();
     for(size_t j = 0; j < vna.size(); j++) {
       const VertexNormalIndex &vn = vna[j];
-      const unsigned int *np = vnMap.get(vn.m_vIndex);
+      const UINT *np = vnMap.get(vn.m_vIndex);
       if(np) {
         if(*np != vn.m_nIndex) {
           return;
@@ -92,8 +92,8 @@ int MeshBuilder::getIndexCount() const {
 void MeshBuilder::validate() const {
   m_validated  = true;
   m_validateOk = false;
-  const int maxVertexIndex = m_vertices.size()-1;
-  const int maxNormalIndex = m_normals.size() -1;
+  const int maxVertexIndex = (int)m_vertices.size()-1;
+  const int maxNormalIndex = (int)m_normals.size() -1;
   for(size_t i = 0; i < m_faceArray.size(); i++) {
     const CompactArray<VertexNormalIndex> &indexArray = m_faceArray[i].getIndices();
     for(size_t j = 0; j < indexArray.size(); j++) {
@@ -143,10 +143,10 @@ private:
     const VertexArray &normalArray      = m_mb.getNormalArray();
 
     const int          factor           = doubleSided ? 2 : 1;
-    const int          vertexCount1Side = vertexArray.size();
-    const size_t       vertexCount      = vertexCount1Side * factor;
+    const int          vertexCount1Side = (int)vertexArray.size();
+    const int          vertexCount      = vertexCount1Side * factor;
     const int          faceCount1Side   = m_mb.getTriangleCount();
-    const size_t       faceCount        = faceCount1Side * factor;
+    const int          faceCount        = faceCount1Side * factor;
     BitSet             vertexDone(vertexCount1Side);
 
     LPD3DXMESH mesh = NULL;
@@ -161,10 +161,10 @@ private:
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face                            &face         = faceArray[i];
         const CompactArray<VertexNormalIndex> &vnArray      = face.getIndices();
-        const size_t                           aSize        = vnArray.size();
+        const int                              aSize        = (int)vnArray.size();
         const D3DCOLOR                         diffuseColor = face.getDiffuseColor();
 
-        for(size_t j = 0; j < aSize; j++) {
+        for(int j = 0; j < aSize; j++) {
           const VertexNormalIndex &vn = vnArray[j];
           if(vertexDone.contains(vn.m_vIndex)) {
             continue;
@@ -177,13 +177,13 @@ private:
             vertices[vn.m_vIndex + vertexCount1Side].setPosAndNormal(v,-n, diffuseColor);
           }
         }
-        for(size_t j = 2; j < aSize; j++) {
+        for(int j = 2; j < aSize; j++) {
           *(ip1++) = vnArray[0  ].m_vIndex;
           *(ip1++) = vnArray[j-1].m_vIndex;
           *(ip1++) = vnArray[j  ].m_vIndex;
         }
         if(doubleSided) {
-          for(size_t j = 2; j < aSize; j++) {
+          for(int j = 2; j < aSize; j++) {
             *(ip2++) = vnArray[0  ].m_vIndex + vertexCount1Side;
             *(ip2++) = vnArray[j  ].m_vIndex + vertexCount1Side;
             *(ip2++) = vnArray[j-1].m_vIndex + vertexCount1Side;
@@ -209,29 +209,29 @@ private:
     const VertexArray &normalArray      = m_mb.getNormalArray();
 
     const int          factor           = doubleSided ? 2 : 1;
-    const size_t       vertexCount1Side = m_mb.getIndexCount();
-    const size_t       vertexCount      = vertexCount1Side * factor;
-    const size_t       faceCount1Side   = m_mb.getTriangleCount();
-    const size_t       faceCount        = faceCount1Side * factor;
+    const int          vertexCount1Side = m_mb.getIndexCount();
+    const int          vertexCount      = vertexCount1Side * factor;
+    const int          faceCount1Side   = m_mb.getTriangleCount();
+    const int          faceCount        = faceCount1Side * factor;
 
     LPD3DXMESH mesh = NULL;
     try {
-      V(D3DXCreateMeshFVF(faceCount, vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
+      V(D3DXCreateMeshFVF((DWORD)faceCount, (DWORD)vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
 
       VertexType *vertices;
       IndexType  *indexArray;
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
       V(mesh->LockIndexBuffer(  0, (void**)&indexArray));
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
-      int vnCount1 = 0, vnCount2 = vertexCount1Side;
+      int vnCount1 = 0, vnCount2 = (int)vertexCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
         const Face                            &face         = faceArray[i];
         const CompactArray<VertexNormalIndex> &vnArray      = face.getIndices();
-        const size_t                           aSize        = vnArray.size();
+        const int                              aSize        = (int)vnArray.size();
         const D3DCOLOR                         diffuseColor = face.getDiffuseColor();
 
-        for(size_t j = 0; j < aSize; j++) {
+        for(int j = 0; j < aSize; j++) {
           const VertexNormalIndex &vn = vnArray[j];
           const Vertex &v = vertexArray[vn.m_vIndex];
           const Vertex &n = normalArray[vn.m_nIndex];
@@ -242,7 +242,7 @@ private:
           }
         }
 
-        for(int f = 2; f < (int)aSize; f++) {
+        for(int f = 2; f < aSize; f++) {
           *(ip1++) = vnCount1;
           *(ip1++) = vnCount1 + f-1;
           *(ip1++) = vnCount1 + f;

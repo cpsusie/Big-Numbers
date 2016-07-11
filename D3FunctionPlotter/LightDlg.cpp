@@ -42,7 +42,7 @@ BOOL CLightDlg::OnInitDialog() {
   return TRUE;
 }
 
-long CLightDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
+LRESULT CLightDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
   resetControls();
   return 0;
 }

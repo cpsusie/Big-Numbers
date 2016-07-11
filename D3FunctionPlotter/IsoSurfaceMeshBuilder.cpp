@@ -92,7 +92,7 @@ double IsoSurface::evaluate(const Point3D &p) {
 }
 
 void IsoSurface::receiveFace(const Face3 &face) {
-  const int size = m_vertexArray->size();
+  const int size = (int)m_vertexArray->size();
   if(size > m_lastVertexCount) {
     for(const IsoSurfaceVertex *sv = &(*m_vertexArray)[m_lastVertexCount], *last = &m_vertexArray->last(); sv <= last; sv++) {
       m_mb.addVertex(sv->m_position);
@@ -149,7 +149,7 @@ void IsoSurfaceDebugObject::createDebugLines(IsoSurface &surface) {
       lines.add(Line(p-e2,p+e2));
       lines.add(Line(p-e3,p+e3));
     }
-    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), lines.size());
+    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), (int)lines.size());
   }
 }
 

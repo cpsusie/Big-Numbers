@@ -19,7 +19,7 @@ public:
   MeshAnimationThread(D3AnimatedSurface &surface) 
     : m_surface(surface)
     , m_nextMeshIndex(m_surface.m_nextMeshIndex)
-    , m_frameCount(m_surface.m_meshArray.size())
+    , m_frameCount((int)m_surface.m_meshArray.size())
     , m_timeout(0)
   {
     m_killed    = false;

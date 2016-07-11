@@ -301,10 +301,10 @@ public:
     return m_maxLightCount;
   }
   inline int getLightCount() const {
-    return m_lightsDefined->size();
+    return (int)m_lightsDefined->size();
   }
   inline int getLightEnabledCount() const {
-    return m_lightsEnabled->size();
+    return (int)m_lightsEnabled->size();
   }
 
   const MATERIAL &getMaterial() const {
@@ -343,13 +343,13 @@ public:
     clear();
   }
   void add(const LPD3DXMESH &m) {
-    add(size(), m);
+    add((unsigned int)size(), m);
   }
   void add(unsigned int index, const LPD3DXMESH &m, unsigned int count = 1);
   bool addAll(const MeshArray &src);
   void remove(unsigned int index, unsigned int count = 1);
   void removeLast() {
-    remove(size()-1);
+    remove((unsigned int)size()-1);
   }
 
   void clear(int capacity=0);
@@ -500,7 +500,7 @@ public:
   void setUserData(void *p) {
     m_userData = p;
   }
-  void prepareDraw(unsigned int flags = USE_SCENEPARAMS);
+  void prepareDraw(UINT flags = USE_SCENEPARAMS);
   void setVisible(bool visible) {
     m_visible = visible;
   }
@@ -552,9 +552,9 @@ protected:
   DWORD                   m_fvf;
   int                     m_vertexSize;
   LPDIRECT3DVERTEXBUFFER9 m_vertexBuffer;
-  void *allocateVertexBuffer(int vertexSize, int count, DWORD fvf);
+  void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
   void unlockVertexBuffer();
-  void prepareDraw(unsigned int flags = USE_SCENEPARAMS);
+  void prepareDraw(UINT flags = USE_SCENEPARAMS);
 public:
   SceneObjectWithVertexBuffer(D3Scene &scene);
   ~SceneObjectWithVertexBuffer();
@@ -569,7 +569,7 @@ protected:
   LPDIRECT3DINDEXBUFFER9 m_indexBuffer;
   void *allocateIndexBuffer(bool int32, int count);
   void unlockIndexBuffer();
-  void prepareDraw(unsigned int flags = USE_SCENEPARAMS);
+  void prepareDraw(UINT flags = USE_SCENEPARAMS);
 public:
   SceneObjectWithIndexBuffer(D3Scene &scene);
   ~SceneObjectWithIndexBuffer();
