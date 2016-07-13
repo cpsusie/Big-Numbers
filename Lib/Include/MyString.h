@@ -44,7 +44,7 @@ public:
   inline TCHAR last() const { return m_len ? m_buf[m_len-1] : 0; }
   TCHAR       *cstr()       { return m_buf; }
   const TCHAR *cstr() const { return m_buf; }
-  String &remove(size_t pos, size_t length = 1);                     // Remove characters at position pos, pos+1, ...pos+length-1
+  String &remove(size_t pos, size_t count = 1);                      // Remove characters at position pos, pos+1, ...pos+count-1
   String &removeLast();                                              // Remove the last character if any.
   String &insert(size_t pos, TCHAR ch);                              // Insert ch into String at position pos
   String &insert(size_t pos, const String &s);                       // Insert s into String at position pos

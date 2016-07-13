@@ -246,13 +246,17 @@ String &String::insert(size_t pos, const String &s) {
   return *this;
 }
 
-String &String::remove(size_t pos, size_t length) {
-  if(pos < m_len) {
-    if(m_len < pos + length) {
-      length = m_len - pos;
+String &String::remove(size_t pos, size_t count) {
+  if((pos < m_len) && (count > 0)) {
+    size_t j = pos + count;
+    if(j > m_len) {
+      j = m_len;
+      count = j - pos;
     }
-    MEMMOVE(m_buf + pos, m_buf + pos + length, m_len - pos);
-    m_len -= length;
+    if(j < m_len) {
+      MEMMOVE(m_buf + pos, m_buf + j, m_len - j);
+    }
+    m_len -= count;
   }
   return *this;
 }
