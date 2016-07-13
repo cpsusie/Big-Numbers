@@ -4,19 +4,20 @@
     <DisplayString>{m_debugString,s}</DisplayString>
   </Type>
   <Type Name="Complex">
-    <DisplayString Condition="im == 0">{re,f}</DisplayString>
-    <DisplayString Condition="im > 0">{re,f} + {im,f}i</DisplayString>
-    <DisplayString>{re,f} - {-im,f}i</DisplayString>
+    <DisplayString Condition="im == 0">{re,g}</DisplayString>
+    <DisplayString Condition="re == 0">{im,g}i</DisplayString>
+    <DisplayString Condition="im > 0">{re,g}+{im,g}i</DisplayString>
+    <DisplayString>{re,g}{im,g}i</DisplayString>
   </Type>
   <Type Name="Point2D">
-    <DisplayString>{{x={x} y={Y}}}</DisplayString>
+    <DisplayString>{{x={x} y={y}}}</DisplayString>
   </Type>
   <Type Name="Point3D">
-    <DisplayString>{{x={x} y={Y} z={z}}}</DisplayString>
+    <DisplayString>{{x={x} y={y} z={z}}}</DisplayString>
   </Type>
   <Type Name="Rational">
     <DisplayString Condition="m_denominator == 1">{m_numerator,d}</DisplayString>
-    <DisplayString>{m_numerator,d} / {m_denominator,u}</DisplayString>
+    <DisplayString>{m_numerator,d}/{m_denominator,u}</DisplayString>
   </Type>
   <Type Name="ExpressionNode">
     <DisplayString>{m_debugString}</DisplayString>

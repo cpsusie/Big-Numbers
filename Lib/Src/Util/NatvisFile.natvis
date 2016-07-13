@@ -4,4 +4,18 @@
     <DisplayString Condition="m_buf == 0">empty</DisplayString> 
     <DisplayString>{m_buf,su}</DisplayString>
   </Type>
+
+  <Type Name="ByteArray">
+    <DisplayString>{size = {m_size}}</DisplayString>
+    <Expand>
+      <Item Name="[size]">(int)(m_size)</Item>
+      <Item Name="[capacity]">((int)(m_capacity))</Item>
+      <ArrayItems>
+        <Size>m_size</Size>
+        <ValuePointer>(char*)(m_data)</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+
 </AutoVisualizer>
