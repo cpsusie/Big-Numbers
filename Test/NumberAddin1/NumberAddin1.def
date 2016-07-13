@@ -1,0 +1,8 @@
+; NumbersAddin1.def : Declares the module parameters for the DLL.
+
+LIBRARY
+
+EXPORTS
+    AddIn_BigReal
+	AddIn__int128
+	AddIn__uint128

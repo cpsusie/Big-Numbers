@@ -1,0 +1,9 @@
+; NatvisAddIn.def : Declares the module parameters for the DLL.
+
+LIBRARY
+
+EXPORTS
+	AddIn_SystemTime
+	AddIn_FileTime
+	AddIn_COleDateTime
+	AddIn_COleDateTimeSpan

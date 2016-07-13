@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+
+  <!-- Place this file and the AddIn-DLL to this folder: %USERPROFILE%\My Documents\Visual Studio 2012\Visualizers\ -->
+  
+  <Type Name="_SYSTEMTIME">
+    <DisplayString LegacyAddin="NatvisAddIn.dll" Export="AddIn_SystemTime"></DisplayString>
+  </Type>
+
+  <Type Name="_FILETIME">
+    <DisplayString LegacyAddin="NatvisAddIn.dll" Export="AddIn_FileTime"></DisplayString>
+  </Type>
+
+  <Type Name="ATL::COleDateTime">
+    <DisplayString LegacyAddin="NatvisAddIn.dll" Export="AddIn_COleDateTime"></DisplayString>
+  </Type>
+
+  <Type Name="ATL::COleDateTimeSpan">
+    <DisplayString LegacyAddin="NatvisAddIn.dll" Export="AddIn_COleDateTimeSpan"></DisplayString>
+  </Type>
+
+</AutoVisualizer>
