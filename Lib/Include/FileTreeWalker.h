@@ -15,5 +15,8 @@ public:
   static void walkFileTree(const String    &path, FileNameHandler &nameHandler, TCHAR **argv = NULL);
   static void walkDir(     const String    &path, FileNameHandler &nameHandler, TCHAR **argv = NULL); // non recurse
   static void traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bool recurse = false);
+#ifdef UNICODE
+  static void traverseArgv(char  **argv, FileNameHandler &nameHandler, bool recurse = false);
+#endif // UNICODDE
 };
 

@@ -59,9 +59,13 @@ class Argv {
 private:
   StringArray m_a;
   TCHAR **m_argv;
+  void createArgvFromArray();
 public:
   Argv();
   Argv(const StringArray &a);
+#ifdef UNICODE
+  Argv(char **argv);
+#endif
   ~Argv();
   operator TCHAR**() {
     return m_argv;
@@ -76,6 +80,25 @@ Argv::Argv() {
 }
 
 Argv::Argv(const StringArray &a) : m_a(a) {
+  createArgvFromArray();
+}
+
+#ifdef UNICODE
+Argv::Argv(char **argv) {
+  while (*argv) {
+    m_a.add(*(argv++));
+  }
+  createArgvFromArray();
+}
+#endif
+
+Argv::~Argv() {
+  if(m_argv != NULL) {
+    delete[] m_argv;
+  }
+}
+
+void Argv::createArgvFromArray() {
   if(m_a.size() == NULL) {
     m_argv = NULL;
   } else {
@@ -85,12 +108,6 @@ Argv::Argv(const StringArray &a) : m_a(a) {
       m_argv[i] = m_a[i].cstr();
     }
     m_argv[i] = NULL;
-  }
-}
-
-Argv::~Argv() {
-  if(m_argv != NULL) {
-    delete[] m_argv;
   }
 }
 
@@ -158,3 +175,10 @@ void FileTreeWalker::traverseArgv(TCHAR **argv, FileNameHandler &nameHandler, bo
     }
   }
 }
+
+#ifdef UNICODE
+
+void FileTreeWalker::traverseArgv(char **argv, FileNameHandler &nameHandler, bool recurse) { // static
+  traverseArgv(Argv(argv), nameHandler, recurse);
+}
+#endif // UNICODE
