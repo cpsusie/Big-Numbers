@@ -150,7 +150,7 @@ ByteArray &ByteArray::remove(size_t index, size_t count) {
     memmove(m_data+index, m_data+j, (m_size-j));
   }
   m_size -= count;
-  if(m_size < m_capacity/2) {
+  if(m_size < m_capacity/4) {
     setCapacity(m_size);
   }
   return *this;
