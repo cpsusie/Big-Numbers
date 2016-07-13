@@ -14,17 +14,22 @@ public:
 
 #ifdef UNICODE
 
+#include "TextFormatDetecter.h"
+
 class ByteQueue : private ByteArray {
 private:
-  const UINT   m_codePage;
-  const DWORD  m_flags;
+  DECLARECLASSNAME;
+  bool         m_firstRead;
+  TextFormat   m_textFormat;
   bool hasFullLine() const;
   const BYTE *findLastNewLine() const;
 public:
-  inline ByteQueue(UINT codePage, DWORD flags) : m_codePage(codePage), m_flags(flags) {
+  inline ByteQueue() {
+    clear();
   }
   inline void clear() {
     ByteArray::clear();
+    m_firstRead = true;
   }
   inline size_t size() const {
     return ByteArray::size();
@@ -32,26 +37,28 @@ public:
   inline bool isEmpty() const {
     return size() == 0;
   }
-    
+
   String getConvertedString(size_t count); // count is the number of bytes to convert
   size_t readUntilHasNewLine(FILE *f);
 };
 
 class CharQueue : private String {
+private:
+  DECLARECLASSNAME;
 public:
   CharQueue() {
   }
-  void clear() {
+  inline void clear() {
     (String&)(*this) = _T("");
   };
-  size_t size() const {
+  inline size_t size() const {
     return (size_t)length();
   }
-  bool isEmpty() const {
+  inline bool isEmpty() const {
     return size() == 0;
   }
 
-  void put(const String &s) {
+  inline void put(const String &s) {
     *this += s;
   }
   intptr_t get(_TUCHAR *dst, size_t n);
@@ -61,6 +68,7 @@ public:
 
 class LexFileStream : public LexStream {
 private:
+  DECLARECLASSNAME;
   FILE        *m_f;
   int          m_oldMode;
 
@@ -72,13 +80,8 @@ private:
 
 public:
 
-#ifdef UNICODE
-  LexFileStream(                    UINT codePage = CP_UTF8, DWORD flags = 0);
-  LexFileStream(const String &name, UINT codePage = CP_UTF8, DWORD flags = 0);
-#else
   LexFileStream();
   LexFileStream(const String &name);
-#endif
 
   ~LexFileStream() {
     close();
@@ -96,6 +99,7 @@ public:
 
 class LexStringStream : public LexStream {
 private:
+  DECLARECLASSNAME;
   String   m_string;
   intptr_t m_pos;
 public:

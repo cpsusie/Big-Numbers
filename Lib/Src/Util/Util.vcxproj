@@ -301,6 +301,7 @@
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
     <ClInclude Include="..\..\Include\Tcp.h" />
     <ClInclude Include="..\..\Include\TeeOutputStream.h" />
+    <ClInclude Include="..\..\Include\TextFormatDetecter.h" />
     <ClInclude Include="..\..\Include\TextRect.h" />
     <ClInclude Include="..\..\Include\TextWin.h" />
     <ClInclude Include="..\..\Include\Thread.h" />
@@ -495,6 +496,7 @@
     <ClCompile Include="Tcp.cpp" />
     <ClCompile Include="TcpString.cpp" />
     <ClCompile Include="TeeOutputStream.cpp" />
+    <ClCompile Include="TextFormatDetecter.cpp" />
     <ClCompile Include="TextRect.cpp" />
     <ClCompile Include="TextWin.cpp" />
     <ClCompile Include="Thread.cpp" />

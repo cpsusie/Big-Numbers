@@ -2,6 +2,8 @@
 #include <fcntl.h>
 #include <Scanner.h>
 
+DEFINECLASSNAME(LexFileStream);
+
 #ifndef UNICODE
 
 LexFileStream::LexFileStream() {
@@ -20,7 +22,7 @@ LexFileStream::LexFileStream(const String &name) {
 
 bool LexFileStream::open(const String &name) {
   close();
-  m_f = fopen(name.cstr(), _T("rb"));
+  m_f = fopen(name, _T("rb"));
   return ok();
 }
 
@@ -38,7 +40,7 @@ bool LexFileStream::eof() {
 
 #else // UNICODE
 
-LexFileStream::LexFileStream(UINT codePage, DWORD flags) : m_rawQueue(codePage, flags) {
+LexFileStream::LexFileStream() {
   m_f       = stdin;
 /*
   if(!isatty(m_f)) {
@@ -46,15 +48,15 @@ LexFileStream::LexFileStream(UINT codePage, DWORD flags) : m_rawQueue(codePage, 
   }
 */
 }
-;
-LexFileStream::LexFileStream(const String &name, UINT codePage, DWORD flags) : m_rawQueue(codePage, flags) {
+
+LexFileStream::LexFileStream(const String &name) {
   m_f       = NULL;
   open(name);
 }
 
 bool LexFileStream::open(const String &name) {
   close();
-  m_f = fopen(name.cstr(), _T("rb"));
+  m_f = fopen(name, _T("rb"));
   initQueues();
   return ok();
 }
@@ -71,9 +73,11 @@ intptr_t LexFileStream::getChars(_TUCHAR *dst, size_t n) {
     m_convertedQueue.put(m_rawQueue.getConvertedString(m_rawQueue.readUntilHasNewLine(m_f)));
   }
 
-  while((d - dst < (int)n) && !eof()) {
-    const intptr_t rest = n - (d-dst);
-    const intptr_t got  = m_convertedQueue.get(d, rest);
+  while(!eof()) {
+    const intptr_t done = d - dst;
+    if (done >= (int)n) return done;
+    const intptr_t needed = (int)n - done;
+    const intptr_t got  = m_convertedQueue.get(d, needed);
     if(got) {
       d += got;
     }
@@ -96,6 +100,8 @@ bool LexFileStream::eof() {
 
 // -------------------------------------------------------------------
 
+DEFINECLASSNAME(ByteQueue);
+
 bool ByteQueue::hasFullLine() const {
   return findLastNewLine() != NULL;
 }
@@ -105,10 +111,10 @@ const BYTE *ByteQueue::findLastNewLine() const {
 }
 
 size_t ByteQueue::readUntilHasNewLine(FILE *f) {
-  const BYTE *nl = findLastNewLine();;
-  while((nl == NULL) && !feof(f)) {
+  const BYTE *nl = findLastNewLine();
+  while(((nl == NULL) || (size() < 1000)) && !feof(f)) {
     BYTE tmp[4096];
-    const size_t n = fread(tmp, 1, sizeof(tmp), f);
+    const intptr_t n = fread(tmp, 1, sizeof(tmp), f);
     if(n > 0) {
       const size_t oldSize = size();
       append(tmp, n);
@@ -121,40 +127,106 @@ size_t ByteQueue::readUntilHasNewLine(FILE *f) {
   return nl ? (nl - getData() + 1) : size();
 }
 
-String ByteQueue::getConvertedString(size_t count) {
+// --------------------------------------------------------------------------------------------
+
+
+// Assume there is at least count bytes in ByteQueue.
+String ByteQueue::getConvertedString(size_t count) { // convert count bytes to string
   TCHAR tmp[4096];
   TCHAR *buffer     = tmp;
-  int    bufferSize = ARRAYSIZE(tmp);
-  try {
-    const int requiredSize = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), (int)count, NULL, 0);
-    if(requiredSize == 0) {
-      throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
+  size_t bufferSize = ARRAYSIZE(tmp);
+  String result;
+
+  if (m_firstRead) {
+    m_firstRead = false;
+    UINT bytesToSkip = 0;
+    m_textFormat = TextFormatDetecter::detectFormat(getData(), (int)size(), bytesToSkip);
+    if(bytesToSkip) {
+      remove(0, bytesToSkip);
+      count = (count >= bytesToSkip) ? (count - bytesToSkip) : 0;
     }
-    if(requiredSize + 1 > bufferSize) {
-      if(buffer != tmp) {
+  }
+
+  switch(m_textFormat) {
+  case TF_UNDEFINED: // just read it as ascii bytes
+  case TF_ASCII8:
+    { for (size_t i = 0; (i < count) && !isEmpty();) {
+        const size_t rest = count - i; // in bytes
+        const size_t charCount = min(rest, bufferSize - 1); // characters to copy = bytes to copy
+        const BYTE *src = getData();
+        const BYTE *lastByte = src + charCount;
+        _TUCHAR *dst = (_TUCHAR*)buffer;
+        while (src < lastByte) {
+          *(dst++) = *(src++);
+        }
+        *dst = _T('\0');
+        result += buffer;
+        remove(0, charCount);
+        i += charCount;
+      }
+    }
+    break;
+  case TF_ASCII16_BE:
+    throwException(_T("%s:Textformat TF_ASCII16_BE not implemented yet"), s_className);
+    break;
+  case TF_ASCII16_LE:
+    { if (count & 1) {  // make sure count is even, or we'll get an infinite loop
+        if (count > 1) {
+          count--;
+        } else if (++count > size()) {
+          append(0); // add a 0-byte to end the stream
+        }
+      }
+      for (size_t i = 0; (i < count) && !isEmpty();) {
+        const size_t rest = count - i; // in bytes
+        const size_t tcharCount = min(rest / sizeof(TCHAR), bufferSize - 1); // in TCHAR's
+        MEMCPY(buffer, (const TCHAR*)getData(), tcharCount);
+        buffer[tcharCount] = _T('\0');
+        result += buffer;
+        const size_t byteCount = tcharCount * sizeof(TCHAR);
+        remove(0, byteCount);
+        i += byteCount;
+      }
+    }
+    break;
+  case TF_UTF8:
+  case TF_UTF16_BE:
+  case TF_UTF16_LE:
+    try {
+      const int requiredSize = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, NULL, 0);
+      if (requiredSize == 0) {
+        throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
+      }
+      if ((UINT)requiredSize + 1 > bufferSize) {
+        if (buffer != tmp) {
+          delete[] buffer;
+        }
+        bufferSize = requiredSize + 1;
+        buffer = new TCHAR[bufferSize];
+      }
+      const int ret = MultiByteToWideChar(CP_UTF8, 0, (char*)getData(), (int)count, buffer, requiredSize);
+      if (ret == 0) {
+        throwMethodLastErrorOnSysCallException(s_className, _T("MultiByteToWideChar"));
+      }
+      buffer[requiredSize] = 0;
+      result = buffer;
+      if (buffer != tmp) {
         delete[] buffer;
       }
-      bufferSize = requiredSize + 1;
-      buffer = new TCHAR[bufferSize];
+      remove(0, count);
     }
-    const int ret = MultiByteToWideChar(m_codePage, m_flags, (char*)getData(), (int)count, buffer, requiredSize);
-    if(ret == 0) {
-      throwLastErrorOnSysCallException(_T("MultiByteToWideChar"));
+    catch (...) {
+      if (buffer != tmp) {
+        delete[] buffer;
+      }
+      throw;
     }
-    buffer[requiredSize] = 0;
-    const String result = buffer;
-    if(buffer != tmp) {
-      delete[] buffer;
-    }
-    remove(0, count);
-    return result; 
-  } catch(...) {
-    if(buffer != tmp) {
-      delete[] buffer;
-    }
-    throw;
+    break;
   }
+  return result;
 }
+
+DEFINECLASSNAME(CharQueue);
 
 intptr_t CharQueue::get(_TUCHAR *dst, size_t n) {
   n = min(length(), n);

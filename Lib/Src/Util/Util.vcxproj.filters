@@ -637,6 +637,9 @@
     <ClCompile Include="Console.cpp">
       <Filter>Source Files\Console</Filter>
     </ClCompile>
+    <ClCompile Include="TextFormatDetecter.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -885,6 +888,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\TeeOutputStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\TextFormatDetecter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
