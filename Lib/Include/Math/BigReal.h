@@ -20,13 +20,11 @@
 // Measures og time show that getDecimalDigitCount64 is 5 times faster that getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
-//#define USE_X32SERVERCHECK // use, if you want to have backup-check for correct multiplication, running in separate
+// #define USE_X32SERVERCHECK
+// use, if you want to have backup-check for correct multiplication, running in separate
 // process built with x86 code, Serverprocess is called "MultiplicationServer", and protocol to this is quit simple:
 // write 3 BigReals, x y f as text. Serverprogram will return x*y (as text) with an error no greater than |f|
 // Can be repeated as long as you want
-#ifdef USE_X32SERVERCHECK
-#include <Math/ExternEngine.h>
-#endif
 
 // Basic definitions depends on registersize. 32- og 64-bit
 #ifdef IS32BIT
@@ -369,11 +367,6 @@ void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const form
 class BigReal {
 private:
   DECLARECLASSNAME;
-
-#ifdef USE_X32SERVERCHECK
-  static ExternEngine s_multiplyServer;
-  friend class InitBigReal;
-#endif
 
 #ifdef _DEBUG
 private:

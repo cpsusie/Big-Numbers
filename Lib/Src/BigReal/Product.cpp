@@ -1,5 +1,53 @@
 #include "pch.h"
 
+#ifdef USE_X32SERVERCHECK
+#include <ExternProcess.h>
+
+class MultiplyServer : public ExternProcess {
+private:
+  Semaphore m_gate;
+public:
+  BigReal &mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f);
+  void startup();
+};
+
+void MultiplyServer::startup() {
+  m_gate.wait();
+  if (!isStarted()) {
+    start(false, _T("c:\\bin\\multiplicationServer.exe"), NULL);
+//    setVerbose(true);
+  }
+  m_gate.signal();
+}
+
+BigReal &MultiplyServer::mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f) {
+  DigitPool *pool = dst.getDigitPool();
+  FullFormatBigReal xf(x, pool), yf(y, pool), ff(f, pool);
+  BigRealStream xs, ys, fs;
+  xs << xf;
+  ys << yf;
+  fs << ff;
+
+  m_gate.wait();
+  try {
+    send(_T("%s %s %s\n"), xs.cstr(), ys.cstr(), fs.cstr());
+    const String line = receive();
+    dst = BigReal(line, pool);
+  }
+  catch (Exception e) {
+    _tprintf(_T("Exception:%s\n"), e.what());
+    dst = 0;
+  }
+  catch (...) {
+    _tprintf(_T("Unknown exception\n"));
+    dst = 0;
+  }
+  m_gate.signal();
+  return dst;
+}
+
+#endif // USE_X32SERVERCHECK
+
 #ifdef _DEBUG
 void traceRecursion(int level, const TCHAR *format,...) {
   const String spaces = spaceString(level);
@@ -9,7 +57,7 @@ void traceRecursion(int level, const TCHAR *format,...) {
   va_end(argptr);
   debugLog(_T("%s%2d:%s\n"), spaces.cstr(), level, msg.cstr());
 }
-#endif
+#endif // _DEBUG
 
 BigReal BigReal::shortProd(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *pool) { // static
   BigReal result(pool);
@@ -35,6 +83,13 @@ BigReal &BigReal::shortProduct(const BigReal &x, const BigReal &y, BRExpoType fe
   }
 
 #ifdef USE_X32SERVERCHECK
+  static bool firstTime = true;
+  static MultiplyServer s_multiplyServer;
+
+  if (firstTime) {
+    firstTime = false;
+    s_multiplyServer.startup();
+  }
   DigitPool *pool = getDigitPool();
   BigReal ff(pool), serverResult(pool), error(pool);
   ff = (fexpo == BIGREAL_ZEROEXPO) ? BIGREAL_0 : (e(BIGREAL_1, fexpo * LOG10_BIGREALBASE, pool));
