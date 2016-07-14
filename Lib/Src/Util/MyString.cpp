@@ -257,6 +257,7 @@ String &String::remove(size_t pos, size_t count) {
       MEMMOVE(m_buf + pos, m_buf + j, m_len - j);
     }
     m_len -= count;
+    m_buf[m_len] = 0;
   }
   return *this;
 }
