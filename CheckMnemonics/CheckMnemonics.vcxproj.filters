@@ -76,6 +76,9 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="Resource.txt">
+      <Filter>Grmmar</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resource.lex">
