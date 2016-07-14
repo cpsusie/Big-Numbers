@@ -640,6 +640,9 @@
     <ClCompile Include="TextFormatDetecter.cpp">
       <Filter>Source Files\Stream</Filter>
     </ClCompile>
+    <ClCompile Include="ExternProcess.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -891,6 +894,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\TextFormatDetecter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\ExternProcess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

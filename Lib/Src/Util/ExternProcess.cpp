@@ -2,8 +2,8 @@
 #include <fcntl.h>
 #include <io.h>
 #include <process.h>
-#include <HashMap.h>
-#include <Math/BigReal.h>
+#include <Semaphore.h>
+#include <ExternProcess.h>
 
 #define READ_FD  0
 #define WRITE_FD 1
@@ -79,20 +79,41 @@ void Pipe::init() {
   m_fd[0] = m_fd[1] = -1;
 }
 
-ExternEngine::ExternEngine(const String &path) : m_path(path) {
+DEFINECLASSNAME(ExternProcess);
+
+#define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
+
+#define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), _T(__FUNCTION__)).cstr()); m_level++; }
+#define EXITFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("exit  %s"), _T(__FUNCTION__)).cstr()); }
+
+ExternProcess::ExternProcess(bool verbose) : m_verbose(verbose) {
   m_processHandle     = INVALID_HANDLE_VALUE;
   m_input = m_output  = NULL;
+  m_level = 0;
 }
 
-ExternEngine::~ExternEngine() {
+ExternProcess::~ExternProcess() {
   stop();
 }
 
-void ExternEngine::start() {
-  start(true, m_path, NULL);
+void ExternProcess::start(bool silent, const String program, ...) {
+  ENTERFUNC
+  va_list argptr;
+  va_start(argptr, program);
+  try {
+    vstart(silent, program, argptr);
+    va_end(argptr);
+  }
+  catch (...) {
+    va_end(argptr);
+    EXITFUNC;
+    throw;
+  }
+  EXITFUNC;
 }
 
-void ExternEngine::start(bool silent, const String program,...) {
+void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
+  ENTERFUNC
   Pipe oldStdFiles;
   Pipe stdinPipe, stdoutPipe;
 
@@ -116,14 +137,11 @@ void ExternEngine::start(bool silent, const String program,...) {
     String childWorkDir = info.getDrive() + info.getDir();
     CHDIR(childWorkDir);
 
-    va_list argptr;
-    va_start(argptr, program);
     if(silent) {
       vstartCreateProcess(program, argptr);
     } else {
       vstartSpawn(program, argptr);
     }
-    va_end(argptr);
 
     CHDIR(oldWorkDir);
 
@@ -143,123 +161,91 @@ void ExternEngine::start(bool silent, const String program,...) {
     CHDIR(oldWorkDir);
 
     critiacalSection.signal();
+    EXITFUNC;
     throw e;
   }
+  EXITFUNC;
 }
 
-void ExternEngine::stop() {
+void ExternProcess::stop() {
+  ENTERFUNC;
   cleanup();
+  EXITFUNC;
 }
 
-void ExternEngine::killProcess() {
+void ExternProcess::killProcess() {
+  ENTERFUNC;
   if(m_processHandle != INVALID_HANDLE_VALUE) {
     TerminateProcess(m_processHandle, -1);
   }
   cleanup();
+  EXITFUNC;
 }
 
-#ifdef _DEBUG
-#define DEBUGMSG(msg) _tprintf(_T("%s\n"), _T(msg))
-#else
-#define DEBUGMSG(msg)
-#endif
-
-void ExternEngine::cleanup() {
-  DEBUGMSG("enter cleanup");
+void ExternProcess::cleanup() {
+  ENTERFUNC
   if(m_output) {
     fclose(m_output);
     m_output = NULL;
-    DEBUGMSG("m_output closed");
+    VERBOSE("m_output closed");
   }
   if(m_input) {
     fclose(m_input);
     m_input = NULL;
-    DEBUGMSG("m_input closed");
+    VERBOSE("m_input closed");
   }
   if(m_processHandle != INVALID_HANDLE_VALUE) {
     BOOL ret = CloseHandle(m_processHandle);
     setProcessHandle(INVALID_HANDLE_VALUE);
-    DEBUGMSG("processhandle closed");
+    VERBOSE("processhandle closed");
   }
+  EXITFUNC
 }
 
-BigReal &ExternEngine::mult(BigReal &dst, const BigReal &x, const BigReal &y, const BigReal &f) {
-  DigitPool *pool = dst.getDigitPool();
-  FullFormatBigReal xf(x, pool), yf(y, pool), ff(f, pool);
-  BigRealStream xs, ys, fs;
-  xs << xf;
-  ys << yf;
-  fs << ff;
-
-  m_gate.wait();
-  try {
-    send(_T("%s %s %s"), xs.cstr(), ys.cstr(), fs.cstr());
-    const String line = getLine();
-    dst = BigReal(line, pool);
-  }
-  catch (Exception e) {
-    _tprintf(_T("Exception:%s\n"), e.what());
-    dst = 0;
-  }
-  catch (...) {
-    _tprintf(_T("Unknown exception\n"));
-    dst = 0;
-  }
-  m_gate.signal();
-  return dst;
-}
-
-void ExternEngine::send(const TCHAR *format,...) const {
+void ExternProcess::send(const TCHAR *format,...) const {
+  ENTERFUNC
   va_list argptr;
-#ifdef _DEBUG
-  va_start(argptr, format);
-  String line = vformat(format, argptr);
-  va_end(argptr);
-  line.replace('\n',"");
-  _tprintf(_T("send <%s>\n"), line.cstr());
-  _ftprintf(m_output, _T("%s\n"), line.cstr());
-#else
   va_start(argptr, format);
   _vftprintf(m_output, format, argptr);
+  if (m_verbose) {
+    const String s = vformat(format, argptr);
+    VERBOSE(s.cstr());
+  }
   va_end(argptr);
-#endif
   fflush(m_output);
+  EXITFUNC
 }
 
-String ExternEngine::getLine() {
-  try {
-    TCHAR line[100000];
-    if (!FGETS(line, ARRAYSIZE(line), m_input)) {
-      return _T("");
-    }
-    strTrim( line);
-    _tprintf(_T("  Received:<%s>\n"), line);
-    return line;
-  } catch(Exception e) {
-    _tprintf(_T("getLine:Exception:%s\n"), e.what());
-    return _T("error");
+String ExternProcess::receive() {
+  ENTERFUNC
+  TCHAR line[10000];
+  if (!FGETS(line, ARRAYSIZE(line), m_input)) {
+    line[0] = 0;
   }
+  VERBOSE(line);
+  EXITFUNC
+  return line;
 }
 
-void ExternEngine::vstartSpawn(const String &program, va_list argptr) {
-  const TCHAR *args[100];
+void ExternProcess::vstartSpawn(const String &program, va_list argptr) {
+  const TCHAR *argv[100];
   int i = 0;
-  args[i++] = program.cstr();
-  for(TCHAR *arg = va_arg(argptr,TCHAR*); arg && i < ARRAYSIZE(args)-1; arg = va_arg(argptr,TCHAR*)) {
-    args[i++] = arg;
+  argv[i++] = program.cstr();
+  for(TCHAR *arg = va_arg(argptr,TCHAR*); arg && i < ARRAYSIZE(argv)-1; arg = va_arg(argptr,TCHAR*)) {
+    argv[i++] = arg;
   }
   va_end(argptr);
-  args[i] = NULL;
+  argv[i] = NULL;
 
-  HANDLE procHandle = (HANDLE)_tspawnv(_P_NOWAITO, program.cstr(), args);
+  HANDLE procHandle = (HANDLE)_tspawnv(_P_NOWAITO, program.cstr(), argv);
   if(procHandle != INVALID_HANDLE_VALUE) {
     setProcessHandle(procHandle);
   } else {
-    throwException(_T("spawn %s failed. %s"), program.cstr(), _sys_errlist[errno]);
+    throwErrNoOnSysCallException(_T("_tspawnv"));
   }
 }
 
-void ExternEngine::vstartCreateProcess(const String &program, va_list argptr) {
+void ExternProcess::vstartCreateProcess(const String &program, va_list argptr) {
   String commandLine = format(_T("\"%s\""), program.cstr());
   for(char *arg = va_arg(argptr, char*); arg; arg = va_arg(argptr, char*)) {
     commandLine += format(_T(" \"%s\""), arg);
@@ -279,9 +265,9 @@ void ExternEngine::vstartCreateProcess(const String &program, va_list argptr) {
   BOOL ok = CreateProcess(program.cstr(), commandLine.cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
   if(ok) {
     setProcessHandle(processInfo.hProcess);
-    CloseHandle(processInfo.hThread); // hProcess will be closed when extern engine dies
+    CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
   } else {
-    throwException(_T("createProcess %s failed. %s"), program.cstr(), getLastErrorText().cstr());
+    throwMethodLastErrorOnSysCallException(s_className, _T("createProcess"));
   }
 }
 
