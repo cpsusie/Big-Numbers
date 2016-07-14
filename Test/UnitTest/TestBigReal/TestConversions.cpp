@@ -5,9 +5,9 @@ class ConversionTest {
 public:
   TestStatistic &m_stat;
   double         m_maxError;
-  int            m_conversionCount;
-  int            m_errorCount;
-  size_t         m_sumLength, m_maxLength;
+  UINT           m_conversionCount;
+  UINT           m_errorCount;
+  UINT           m_sumLength, m_maxLength;
   ConversionTest(TestStatistic &stat);
   ~ConversionTest();
   void inline test(double error) {
@@ -18,8 +18,8 @@ public:
     }
   }
   void inline addLength(size_t length) {
-    m_sumLength += length;
-    if(length > m_maxLength) m_maxLength = length ;
+    m_sumLength += (UINT)length;
+    if(length > m_maxLength) m_maxLength = (UINT)length ;
   }
   String toString() const;
 };
@@ -36,13 +36,8 @@ ConversionTest::~ConversionTest() {
   m_stat.setEndMessage(_T("%s"), toString().cstr());
 }
 
-#ifdef IS32BIT
-#define formStr _T("errors/conv:%4d/%-8d Max rel.error:%le, avgLen:%6.4lf maxLen:%lu")
-#else
-#define formStr _T("errors/conv:%4d/%-8d Max rel.error:%le, avgLen:%6.4lf maxLen:%llu")
-#endif
 String ConversionTest::toString() const {
-  return format(formStr
+  return format(_T("errors/conv:%4lu/%-8lu Max rel.error:%le, avgLen:%6.4lf maxLen:%lu")
                ,m_errorCount
                ,m_conversionCount
                ,m_maxError
@@ -64,13 +59,13 @@ static void testFloatConversion(TestStatistic &stat, int sign) {
     for(float f32 = loopStart; f32 < loopEnd; f32 *= stepFactor) {
       convTest.test(getRelativeError32(f32, pool, &length));
       convTest.addLength(length);
-      if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%s"), stat.getCountStr().cstr());
+      if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   } else {
     for(float f32 = loopStart; f32 > loopEnd; f32 *= stepFactor) {
       convTest.test(getRelativeError32(f32, pool, &length));
       convTest.addLength(length);
-      if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%s"), stat.getCountStr().cstr());
+      if(stat.isTimeToPrint()) stat.printLoopMessage(_T("%5.1lf%%"), stat.getPercentDone());
     }
   }
 }
