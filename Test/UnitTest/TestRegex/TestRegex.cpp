@@ -54,7 +54,7 @@ namespace TestRegex {
     Regex regex1;
     regex1 = regex;
     RegexRegisters registers;
-    if ((ret = regex1.search(target, true, -1, &registers)) != expected) {
+    if ((ret = (int)regex1.search(target, true, -1, &registers)) != expected) {
       throwException(_T("error:pattern:<%s> target:<%s> return:%d expected:%d"), pattern.cstr(), target.cstr(), ret, expected);
     }
     if (pattern != savePattern) {

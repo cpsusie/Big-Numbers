@@ -123,7 +123,7 @@ namespace TestBitSet
 
   class PointerComparator : public Comparator<void*> {
     int compare(void * const &e1, void * const  &e2) {
-      return (unsigned long)e1 - (unsigned long)e2;
+      return sign((BYTE*)e1 - (BYTE*)e2);
     }
     AbstractComparator *clone() const {
       return new PointerComparator();
@@ -264,7 +264,7 @@ namespace TestBitSet
 
   static void testIterator(const KeySet &set) {
     OUTPUT(_T("Testing Iterator"));
-    int size = set.size();
+    size_t size = set.size();
     KeySet testSet(set);
     KeyArray list;
 
@@ -443,7 +443,7 @@ namespace TestBitSet
     }
 
     OUTPUT(_T("Testing select"));
-    for (int i = list.size() - 1; i >= 0; i--) {
+    for (intptr_t i = list.size() - 1; i >= 0; i--) {
       const Key &key = list[i];
       verify(set.remove(key));
       verify(set.size() == i);
@@ -697,7 +697,7 @@ namespace TestBitSet
       verify(map.get(k) != NULL);
     }
     OUTPUT(_T("Testing map.remove"));
-    for (int i = list.size() - 1; i >= 0; i--) {
+    for (intptr_t i = list.size() - 1; i >= 0; i--) {
       const KeyElement &e = list[i];
       verify(map.remove(e.m_key));
       verify(map.size() == i);
