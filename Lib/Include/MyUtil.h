@@ -69,6 +69,7 @@ int              rmdir(  const String &name);
 int              chdir(  const String &dir );
 bool             isatty( FILE *f);
 int              setFileMode(FILE *f, int mode); // mode = { _O_TEXT, _O_BINARY }. Returns old mode.
+HANDLE           getHandle(FILE *f);
 
 String           getSysErrorText(int errno);
 String           getErrnoText();
@@ -102,6 +103,7 @@ __int64          GETPOS( FILE *f);
 void             PIPE(   int  *pipe, unsigned int size, int textMode);
 int              DUP(    int   fd);
 void             DUP2(   int   fd1, int fd2); 
+HANDLE           GETHANDLE(FILE *f);
 
 String readFile(FILE *f);
 String readFile(const String &fileName);

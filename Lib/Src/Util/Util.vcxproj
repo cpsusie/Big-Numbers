@@ -263,6 +263,7 @@
     <ClInclude Include="..\..\Include\FileVersion.h" />
     <ClInclude Include="..\..\Include\HashMap.h" />
     <ClInclude Include="..\..\Include\HashSet.h" />
+    <ClInclude Include="..\..\Include\InputThread.h" />
     <ClInclude Include="..\..\Include\Iterator.h" />
     <ClInclude Include="..\..\Include\KMPAutomate.h" />
     <ClInclude Include="..\..\Include\Language.h" />
@@ -393,6 +394,7 @@
     <ClCompile Include="fwrite.cpp" />
     <ClCompile Include="GetCommandline.cpp" />
     <ClCompile Include="getcwd.cpp" />
+    <ClCompile Include="GetHandle.cpp" />
     <ClCompile Include="GetLockedResource.cpp" />
     <ClCompile Include="GetModuleFileName.cpp" />
     <ClCompile Include="GetPos.cpp" />
@@ -414,6 +416,7 @@
     <ClCompile Include="InputInt.cpp" />
     <ClCompile Include="InputInt64.cpp" />
     <ClCompile Include="InputPassword.cpp" />
+    <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="isatty.cpp" />
     <ClCompile Include="KeepAlive.cpp" />
     <ClCompile Include="KeyPressed.cpp" />

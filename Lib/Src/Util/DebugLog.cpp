@@ -98,6 +98,7 @@ void debugLog(const TCHAR *format,...) {
   }
   if(traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout)) {
     traceFile = MKFOPEN(redirectFileName, traceFlags.contains(FLAG_APPEND) ? _T("a") : _T("w"));
+//    setvbuf(traceFile, NULL, _IONBF, 100);
     traceFlags.remove(FLAG_REDIDRECT);
   }
 

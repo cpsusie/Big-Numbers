@@ -643,6 +643,12 @@
     <ClCompile Include="ExternProcess.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
+    <ClCompile Include="InputThread.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="GetHandle.cpp">
+      <Filter>Source Files\system</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -897,6 +903,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\ExternProcess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\InputThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

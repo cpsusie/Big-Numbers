@@ -17,7 +17,9 @@ public:
   void signal();
   void wait(  const char *name, const char *file, int line);
   void signal(const char *name, const char *file, int line);
-
+  HANDLE getHandle() const {
+    return m_sem;
+  }
 };
 
 #ifdef TRACESEMAPHORE
