@@ -265,19 +265,16 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
     BigReal result(pool);
     result.addAbs(x, y, f);
     result.m_negative = x.m_negative;
-    SETBIGREALDEBUGSTRING(result);
     return result;
   } else if(f.isZero()) {            // sign(x) != sign(y)
     const int c = compareAbs(x, y);
     if(c > 0) {                      // |x| > |y|. Calculate sign(x) * (|x| - |y|)
       BigReal result(x, pool);
       result.subAbs(y, f);
-      SETBIGREALDEBUGSTRING(result);
       return result;
     } else if(c < 0) {               // |x| < |y|. Calculate sign(y) * (|y| - |x|)
       BigReal result(y, pool);
       result.subAbs(x, f);
-      SETBIGREALDEBUGSTRING(result);
       return result;
     } else {                         // x == -y => x + y = 0
       return pool->get0();
@@ -289,11 +286,9 @@ BigReal sum(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *dig
     const int c = compareAbs(tmpX, tmpY);
     if(c > 0) {                      // abs(tmpX) > abs(tmpY)
       tmpX.subAbs(tmpY, f);
-      SETBIGREALDEBUGSTRING(tmpX);
       return tmpX;
     } else if(c < 0) {               // abs(tmpX) < abs(tmpY)
       tmpY.subAbs(tmpX, f);
-      SETBIGREALDEBUGSTRING(tmpY);
       return tmpY;
     } else {                         // tmpX == -tmpY => tmpX + tmpY == 0
       return pool->get0();
@@ -314,20 +309,17 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *di
     BigReal result(pool);
     result.addAbs(x, y, f);
     result.m_negative = x.m_negative;
-    SETBIGREALDEBUGSTRING(result)
     return result;
   } else if(f.isZero()) {            // sign(x) == sign(y)
     const int c = compareAbs(x, y);
     if(c > 0) {                      // |x| > |y|. Calculate sign(x) * (|x| - |y|)
       BigReal result(x, pool);
       result.subAbs(y, f);
-      SETBIGREALDEBUGSTRING(result)
       return result;
     } else if(c < 0) {               // |x| < |y|. Calculate -sign(y) * (|y| - |x|)
       BigReal result(y, pool);
       result.subAbs(x, f);
       result.changeSign();
-      SETBIGREALDEBUGSTRING(result)
       return result;
     } else {                         // x == y => x - y = 0;
       return pool->get0();
@@ -339,12 +331,10 @@ BigReal dif(const BigReal &x, const BigReal &y, const BigReal &f,  DigitPool *di
     const int c = compareAbs(tmpX, tmpY);
     if(c > 0) {                      // abs(tmpX) > abs(tmpY). Calculate sign(x) * (abs(tmpX) - abs(tmpY))
       tmpX.subAbs(tmpY, f);
-      SETBIGREALDEBUGSTRING(tmpX)
       return tmpX;
     } else if(c < 0) {               // abs(tmpX) < abs(tmpY). Calcluate -sign(tmpY) * (abs(tmpY) - abs(tmpX))
       tmpY.subAbs(tmpX, f);
       tmpY.changeSign();
-      SETBIGREALDEBUGSTRING(tmpY)
       return tmpY;
     } else {                         // tmpX == tmpY => tmpX - tmpY == 0;
       return pool->get0();
@@ -362,7 +352,6 @@ BigReal operator-(const BigReal &x) {
   }
   BigReal result(x);
   result.changeSign();
-  SETBIGREALDEBUGSTRING(result)
   return result;
 }
 
@@ -399,7 +388,6 @@ BigReal &BigReal::operator+=(const BigReal &x) {
       *this = BIGREAL_0;
     }
   }                        
-  SETBIGREALDEBUGSTRING(*this)
   return *this;
 }
 
@@ -409,7 +397,6 @@ BigReal &BigReal::operator-=(const BigReal &x) {
   } else if(isZero()) {
     *this = x;
     changeSign();
-    SETBIGREALDEBUGSTRING(*this)
     return *this;
   } else if(x.isZero()) {
     return *this;
@@ -430,7 +417,6 @@ BigReal &BigReal::operator-=(const BigReal &x) {
       *this = BIGREAL_0;
     }
   }
-  SETBIGREALDEBUGSTRING(*this)
   return *this;
 }
 

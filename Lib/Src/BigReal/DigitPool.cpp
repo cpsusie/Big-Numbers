@@ -7,11 +7,6 @@
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
 
-#ifdef _DEBUG
-bool      BigReal::s_debugStringEnabled = false;
-Semaphore BigReal::s_debugStringGate;
-#endif
-
 class InitBigReal {
 public:
   InitBigReal() {
@@ -57,16 +52,6 @@ DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_freeDigits = NULL;
   m_digitCount = 0;
 
-#ifdef _DEBUG
-  const bool debuggerPresent = getDebuggerPresent();
-  static Semaphore gate;
-
-  if(debuggerPresent) {
-    gate.wait();
-    BigReal::enableDebugString(false);
-  }
-#endif
-
   const size_t wantedTotalDigitCount = m_digitCount + intialDigitCount;
   while(m_digitCount < wantedTotalDigitCount) {
     allocatePage();
@@ -76,18 +61,6 @@ DigitPool::DigitPool(int id, size_t intialDigitCount) : BigRealResource(id) {
   m_one  = new BigInt(1, this);
   m_two  = new BigInt(2, this);
   m_half = new BigReal(e(BigReal(5, this), -1));
-
-#ifdef _DEBUG
-  if(debuggerPresent) {
-    BigReal::enableDebugString(true);
-    gate.signal();
-
-    SETBIGREALDEBUGSTRING(*m_zero);
-    SETBIGREALDEBUGSTRING(*m_one );
-    SETBIGREALDEBUGSTRING(*m_two );
-    SETBIGREALDEBUGSTRING(*m_half);
-  }
-#endif
 }
 
 DigitPool::~DigitPool() {

@@ -230,6 +230,7 @@
     <ClCompile Include="BigRealLUMatrix.cpp" />
     <ClCompile Include="BigRealMatrix.cpp" />
     <ClCompile Include="BigRealPacker.cpp" />
+    <ClCompile Include="BigRealPow10.cpp" />
     <ClCompile Include="BigRealStream.cpp" />
     <ClCompile Include="BigRealThread.cpp" />
     <ClCompile Include="BigRealThreadPool.cpp" />

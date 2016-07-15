@@ -31,7 +31,6 @@ BigReal BigReal::random(size_t length, Random *rnd, DigitPool *digitPool) { // s
   result.m_low      = -i;
   result.setPositive();
   result.trimZeroes();
-  SETBIGREALDEBUGSTRING(result);
   return result;
 }
 

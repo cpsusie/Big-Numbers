@@ -210,59 +210,50 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
 
 BigRealStream &operator<<(BigRealStream &stream, const BigReal &x) {
 
-  ENTER_CRITICAL_SECTION_BIGREAL_DEBUGSTRING()
+  streamsize precision = stream.getPrecision();
+  long       flags     = stream.getFlags();
+  TCHAR      spaceChar = stream.getSpaceChar();
 
-  try {
-    streamsize precision = stream.getPrecision();
-    long       flags     = stream.getFlags();
-    TCHAR      spaceChar = stream.getSpaceChar();
-
-    String result;
-    if(x.isNegative()) {
-      result += _T("-");
-    } else if(flags & ios::showpos) {
-      result += _T("+");
-    }
-
-    if(spaceChar != 0) {
-      x.formatWithSpaceChar(result,spaceChar);
-    } else {
-      if(x.isZero()) {
-        StrStream::formatZero(result, precision, flags);
-      } else { // x defined && x != 0
-        if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
-          x.formatFixed(result, precision, flags, false);
-        } else {
-          BRExpoType expo10 = BigReal::getExpo10(x);
-          if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
-            x.formatScientific(result, precision, flags, expo10, false);
-          } else {
-            if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format (or both) are specified
-              precision = max(0,precision-1);
-              x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
-            } else {
-              const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
-              x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
-            }
-          }
-        }
-      } // x defined && x != 0
-    }
-
-    const streamsize fillerLength = stream.getWidth() - (intptr_t)result.length();
-    if(fillerLength <= 0) {
-      stream.append(result);
-    } else if ((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set
-      stream.append(result).append(spaceString(fillerLength));
-    } else { // right align
-      stream.append(spaceString(fillerLength)).append(result);
-    }
-  } catch(Exception e) {
-    LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(;);
-    throw e;
+  String result;
+  if(x.isNegative()) {
+    result += _T("-");
+  } else if(flags & ios::showpos) {
+    result += _T("+");
   }
 
-  LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(;);
+  if(spaceChar != 0) {
+    x.formatWithSpaceChar(result,spaceChar);
+  } else {
+    if(x.isZero()) {
+      StrStream::formatZero(result, precision, flags);
+    } else { // x defined && x != 0
+      if((flags & (ios::scientific|ios::fixed)) == ios::fixed) { // Use fixed format
+        x.formatFixed(result, precision, flags, false);
+      } else {
+        BRExpoType expo10 = BigReal::getExpo10(x);
+        if((flags & (ios::scientific|ios::fixed)) == ios::scientific) { // Use scientific format
+          x.formatScientific(result, precision, flags, expo10, false);
+        } else {
+          if(expo10 < -4 || expo10 > 14 || (expo10 > 0 && expo10 >= precision) || expo10 > precision) { // neither scientific nor fixed format (or both) are specified
+            precision = max(0,precision-1);
+            x.formatScientific(result, precision, flags, expo10, (flags & ios::showpoint) == 0);
+          } else {
+            const intptr_t prec = (precision == 0) ? abs(expo10) : max(0,(intptr_t)precision-expo10-1);
+            x.formatFixed(result, prec, flags, ((flags & ios::showpoint) == 0) || precision <= 1);
+          }
+        }
+      }
+    } // x defined && x != 0
+  }
+
+  const streamsize fillerLength = stream.getWidth() - (intptr_t)result.length();
+  if(fillerLength <= 0) {
+    stream.append(result);
+  } else if ((flags & (ios::left | ios::right)) == ios::left) { // adjust left iff only ios::left is set
+    stream.append(result).append(spaceString(fillerLength));
+  } else { // right align
+    stream.append(spaceString(fillerLength)).append(result);
+  }
 
   return stream;
 }

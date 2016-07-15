@@ -336,18 +336,6 @@ public:
 
 #define DEFAULT_DIGITPOOL DigitPool::s_defaultDigitPool
 
-#ifdef _DEBUG
-
-#define SETBIGREALDEBUGSTRING( x) { if(BigReal::s_debugStringEnabled) { (x).ajourDebugString();  } }
-#define COPYBIGREALDEBUGSTRING(x) { if(s_debugStringEnabled) { memcpy(m_debugString, (x).m_debugString, sizeof(m_debugString)); } }
-
-#else // _DEBUG
-
-#define SETBIGREALDEBUGSTRING( x)
-#define COPYBIGREALDEBUGSTRING(x)
-
-#endif // _DEBUG
-
 class BigRealStream;
 
 #define _SETDIGITPOOL() m_digitPool(digitPool?*digitPool:DEFAULT_DIGITPOOL)
@@ -367,15 +355,6 @@ void throwBigRealException(_In_z_ _Printf_format_string_ TCHAR const* const form
 class BigReal {
 private:
   DECLARECLASSNAME;
-
-#ifdef _DEBUG
-private:
-  mutable TCHAR m_debugString[60];
-public:
-  void ajourDebugString() const;
-  static Semaphore s_debugStringGate;
-  static bool      s_debugStringEnabled;
-#endif // _DEBUG
 
 private:
   static Pow2Cache          s_pow2Cache;
@@ -521,7 +500,6 @@ private:
   void    copyAllDigits(const BigReal &src);
   inline BigReal &setSignByProductRule(const BigReal &x, const BigReal &y) {
     m_negative = x.m_negative != y.m_negative;
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
@@ -555,63 +533,51 @@ private:
 public:
   inline BigReal(                          DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init();
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(int              x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(unsigned int     x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(long             x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init((int)x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(unsigned long    x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init((unsigned int)x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(__int64          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(unsigned __int64 x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 #ifdef IS64BIT
   inline BigReal(_int128          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   inline BigReal(_uint128         x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 #endif // IS64BIT
 
   BigReal(float                   x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   BigReal(double                  x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   BigReal(const Double80         &x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
-    SETBIGREALDEBUGSTRING(*this)
   }
 
   BigReal(const BigReal           &x      , DigitPool *digitPool = NULL);
@@ -641,69 +607,58 @@ public:
 
   inline BigReal &operator=(int              n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(unsigned int     n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(long             n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(unsigned long    n) {
     clearDigits(); init((unsigned int)n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(__int64          n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(unsigned __int64 n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
 #ifdef IS64BIT
   inline BigReal &operator=(const _int128   &n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(const _uint128  &n) {
     clearDigits(); init(n);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 #endif // IS64BIT
 
   inline BigReal &operator=(float            x) {
     clearDigits(); init(x);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(double           x) {
     clearDigits(); init(x);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
   inline BigReal &operator=(const Double80  &x) {
     clearDigits(); init(x);
-    SETBIGREALDEBUGSTRING(*this);
     return *this;
   }
 
@@ -774,22 +729,15 @@ public:
   inline void setToZero() {
     clearDigits();
     init();
-    SETBIGREALDEBUGSTRING(*this);
   }
 
   inline BigReal &changeSign() {
-    if(!isZero()) { m_negative = !m_negative; SETBIGREALDEBUGSTRING(*this); }
+    if(!isZero()) { m_negative = !m_negative; }
     return *this;
   }
 
   inline void setPositive() {
-#ifdef _DEBUG
-    if(m_negative) {
-      changeSign();
-    }
-#else
     m_negative = false;
-#endif
   }
   inline  bool isPositive() const {
     return m_expo != BIGREAL_ZEROEXPO && !m_negative;
@@ -912,9 +860,6 @@ public:
   friend Packer &operator>>(Packer &p,       BigReal &n);
 
   friend BigRealStream &operator<<(BigRealStream &stream, const BigReal &x);
-
-  static bool enableDebugString(bool enabled);                                              // return old value
-  static bool isDebugStringEnabled();
 
   static unsigned int getMaxSplitLength();
 
@@ -1593,30 +1538,9 @@ void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format
 
 #ifdef _DEBUG
 #define TRACERECURSION(p) traceRecursion p
-
-#define ENTER_CRITICAL_SECTION_BIGREAL_DEBUGSTRING()                 \
-  bool _debugStringEnabledOldValue;                                  \
-  const bool _debuggerPresent = getDebuggerPresent();                \
-  if(_debuggerPresent) {                                             \
-    BigReal::s_debugStringGate.wait();                               \
-    _debugStringEnabledOldValue = BigReal::s_debugStringEnabled;     \
-    BigReal::s_debugStringEnabled = false;                           \
-  }
-
-#define LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(stmt)             \
-  if(_debuggerPresent) {                                             \
-    BigReal::s_debugStringEnabled = _debugStringEnabledOldValue;     \
-    BigReal::s_debugStringGate.signal();                             \
-    stmt                                                             \
-  }
-
 #else
 #define TRACERECURSION(p)
-
-#define ENTER_CRITICAL_SECTION_BIGREAL_DEBUGSTRING()
-#define LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(stmt)
-
-#endif
+#endif _DEBUG
 
 BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|))
 BigReal modulusOperator64( const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);

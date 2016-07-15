@@ -190,6 +190,9 @@
     <ClCompile Include="QuotL128.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="BigRealPow10.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

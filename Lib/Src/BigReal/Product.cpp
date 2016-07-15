@@ -208,7 +208,6 @@ BigReal &BigReal::product(BigReal &result, const BigReal &x, const BigReal &y, c
 BigReal prod(const BigReal &x, const BigReal &y, const BigReal &f, DigitPool *digitPool) {
   BigReal result(digitPool ? digitPool : x.getDigitPool());
   BigReal::product(result,x,y,f,0);
-  SETBIGREALDEBUGSTRING(result);
   return result;
 }
 
@@ -216,7 +215,6 @@ BigReal operator*(const BigReal &x, const BigReal &y) {
   DigitPool *pool = x.getDigitPool();
   BigReal result(pool);
   BigReal::product(result, x, y, pool->get0(), 0);
-  SETBIGREALDEBUGSTRING(result);
   return result;
 }
 

@@ -90,7 +90,6 @@ BigInt ceil(const BigReal &x) { // smallest integer >= x
     if(!result.m_negative) {
       ++result;
     }
-    SETBIGREALDEBUGSTRING(result);
     return result;
   }
 }
@@ -188,7 +187,6 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
       }
     }
     intPart.trimZeroes();
-    SETBIGREALDEBUGSTRING(*integerPart);
   } else { // Find first fractionPart, either from beginning or froam the end, depending on which is shortest
     if(m_expo <= -m_low) {
       for(BRExpoType expo = m_expo; expo-- >= 0; sd = sd->next);
@@ -217,7 +215,6 @@ void BigReal::fractionate(BigInt *integerPart, BigReal *fractionPart) const {
       }
     }
     fractionPart->trimZeroes();
-    SETBIGREALDEBUGSTRING(*fractionPart);
   }
 }
 
@@ -271,7 +268,6 @@ BigReal cut(const BigReal &x, size_t digits, DigitPool *digitPool) { // x trunca
     result.m_negative = true;
   }
   result.trimZeroes();
-  SETBIGREALDEBUGSTRING(result);
   return result;
 }
 
@@ -340,7 +336,6 @@ BigReal &BigReal::copyrTrunc(const BigReal &src, size_t digits) { // decimal dig
     m_low = (m_expo = src.m_expo) - newLength + 1;;
     if(m_last->n == 0) trimTail();
   }
-  SETBIGREALDEBUGSTRING(*this);
   return *this;
 }
 
@@ -385,7 +380,6 @@ BigReal &BigReal::rTrunc(size_t digits) {
       if(m_last->n == 0) trimTail();
     }
   }
-  SETBIGREALDEBUGSTRING(*this);
   return *this;
 }
 
@@ -457,6 +451,5 @@ BigReal &BigReal::rRound(size_t digits) {
 //      trimZeroes(); Not needed. p->n != 0
     }
   }
-  SETBIGREALDEBUGSTRING(*this);
   return *this;
 }

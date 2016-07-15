@@ -25,7 +25,6 @@ BigInt::BigInt(const BigReal &x, DigitPool *digitPool) : BigReal(digitPool ? dig
       }
     }
   }
-  SETBIGREALDEBUGSTRING(*this);
 }
 
 BigInt::BigInt(const String &s, DigitPool *digitPool) : BigReal(digitPool) {
@@ -61,7 +60,6 @@ BigInt operator-(const BigInt &x) {
   }
   BigInt result(x);
   result.m_negative = !result.m_negative;
-  SETBIGREALDEBUGSTRING(result);
   return result;
 }
 

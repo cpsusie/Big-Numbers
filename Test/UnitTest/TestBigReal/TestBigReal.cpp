@@ -346,8 +346,6 @@ void testBigReal(int threadCount) {
 
   AllTime startTime;
 
-  Double80::enableDebugString(false);
-  BigReal::enableDebugString( false);
   redirectDebugLog();
 
 //StartAll:

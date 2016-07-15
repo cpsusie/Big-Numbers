@@ -22,4 +22,11 @@
   <Type Name="ExpressionNode">
     <DisplayString>{m_debugString}</DisplayString>
   </Type>
+  <Type Name="_int128">
+    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
+  </Type>
+  <Type Name="_uint128">
+    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
+  </Type>
+
 </AutoVisualizer>

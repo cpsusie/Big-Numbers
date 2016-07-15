@@ -181,7 +181,6 @@ void SpecialTestClass::runTest() {
 
   DigitPool::setDumpWhenDestroyed(true);
   Double80::enableDebugString(    true);
-  BigReal::enableDebugString(     true);
 
 //  testAPCSum();
 //  return;

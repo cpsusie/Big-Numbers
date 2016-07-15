@@ -683,7 +683,6 @@ void BigRealTestClass::testCopyAllDigits() {
       continue;
     }
 
-    SETBIGREALDEBUGSTRING(y);
     _tprintf(_T("x:%s\n"), x.toString().cstr());
     _tprintf(_T("y:%s\n"), y.toString().cstr());
     if(x != y) {

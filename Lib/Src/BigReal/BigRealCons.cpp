@@ -2,7 +2,7 @@
 #include <float.h>
 #include <ctype.h>
 
-#ifdef _DEBUG
+#ifdef _USEDEBUGSTRING
 
 void BigReal::ajourDebugString() const {
   _tcsncpy(m_debugString, ::toString((*this),ARRAYSIZE(m_debugString)-10,0).cstr(),ARRAYSIZE(m_debugString)-1);
@@ -10,30 +10,6 @@ void BigReal::ajourDebugString() const {
 }
 
 #endif
-
-bool BigReal::enableDebugString(bool enabled) { // static
-#ifndef _DEBUG
-  return false;
-#else
-  if(!getDebuggerPresent()) {
-    return false;
-  } else {
-    s_debugStringGate.wait();
-    const bool result = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    s_debugStringGate.signal();
-    return result;
-  }
-#endif
-}
-
-bool BigReal::isDebugStringEnabled() { // static
-#ifdef _DEBUG
-  return s_debugStringEnabled;
-#else
-  return false;
-#endif
-}
 
 void BigReal::init(int n) {
   init();
@@ -143,7 +119,6 @@ BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool
   m_low      = x.m_low;
   m_negative = x.m_negative;
   if(!x.isZero()) copyAllDigits(x);
-  COPYBIGREALDEBUGSTRING(x);
 }
 
 BigReal &BigReal::operator=(const BigReal &x) {
@@ -185,14 +160,11 @@ BigReal &BigReal::operator=(const BigReal &x) {
     m_expo     = x.m_expo;
     m_low      = x.m_low;
     m_negative = x.m_negative;
-    COPYBIGREALDEBUGSTRING(x)
   }
   return *this;
 }
 
 void BigReal::init(const String &s, bool allowDecimalPoint) {
-  ENTER_CRITICAL_SECTION_BIGREAL_DEBUGSTRING();
-
   String tmpstr(s);
   TCHAR *cp           = tmpstr.cstr();
   TCHAR *commaPos     = NULL;
@@ -326,5 +298,4 @@ void BigReal::init(const String &s, bool allowDecimalPoint) {
       }
     }
   }
-  LEAVE_CRITICAL_SECTION_BIGREAL_DEBUGSTRING(ajourDebugString(););
 }

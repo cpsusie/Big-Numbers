@@ -42,5 +42,4 @@ void BigReal::load(ByteInputStream &s) {
     }
     m_low = m_expo - length + 1;
   }
-  SETBIGREALDEBUGSTRING(*this);
 }

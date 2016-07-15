@@ -62,6 +62,5 @@ Packer &operator>>(Packer &p, BigReal &n) {
       throw;
     }
   }
-  SETBIGREALDEBUGSTRING(n);
   return p;
 }

@@ -83,17 +83,17 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
     if(compareAbs(y, ConstBigReal::_ulong_max) <= 0) {       // use unsigned long as exponent;
       for(unsigned long tmpY = yNegative ? getUlong(-y) : getUlong(y); tmpY;) {
         if(tmpY & 1) {
-          result = SHORTPROD(result, tmpX); --tmpY;     SETBIGREALDEBUGSTRING(result);
+          result = SHORTPROD(result, tmpX); --tmpY;
         } else {
-          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY /= 2;  SETBIGREALDEBUGSTRING(tmpX  );
+          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY /= 2;
         }
       }
     } else if(compareAbs(y, ConstBigReal::_ui64_max) <= 0) { // use unsigned __int64 as exponent
       for(unsigned __int64 tmpY = yNegative ? getUint64(-y) : getUint64(y); tmpY;) {
         if(tmpY & 1) {
-          result = SHORTPROD(result, tmpX); --tmpY;     SETBIGREALDEBUGSTRING(result);
+          result = SHORTPROD(result, tmpX); --tmpY;
         } else {
-          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY /= 2;  SETBIGREALDEBUGSTRING(tmpX  );
+          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY /= 2;
         }
       }
     } else {                                                // use BigInt all the way down. guess this will almost never happen 
@@ -101,9 +101,9 @@ BigReal BigReal::apcPow(const char bias, const BigReal &x, const BigInt &y, Digi
       if(yNegative) tmpY.changeSign();
       while(!tmpY.isZero()) {
         if(odd(tmpY)) {
-          result = SHORTPROD(result, tmpX); --tmpY;     SETBIGREALDEBUGSTRING(result);
+          result = SHORTPROD(result, tmpX); --tmpY;
         } else {
-          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY *= c1; SETBIGREALDEBUGSTRING(tmpX  );
+          tmpX   = SHORTPROD(tmpX  , tmpX); tmpY *= c1;
         }
       }
     }
