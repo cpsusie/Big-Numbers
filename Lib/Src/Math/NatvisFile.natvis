@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="Double80">
-    <DisplayString>{m_debugString,s}</DisplayString>
-  </Type>
   <Type Name="Complex">
     <DisplayString Condition="im == 0">{re,g}</DisplayString>
     <DisplayString Condition="re == 0">{im,g}i</DisplayString>
@@ -27,6 +24,9 @@
   </Type>
   <Type Name="_uint128">
     <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
+  </Type>
+  <Type Name="Double80">
+    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
   </Type>
 
 </AutoVisualizer>

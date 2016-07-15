@@ -27,6 +27,9 @@
     <ClCompile Include="Int128Addin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Double80Addin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">

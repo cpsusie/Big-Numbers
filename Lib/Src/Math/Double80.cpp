@@ -14,59 +14,6 @@
 
 //#define SMART_VERSION
 
-#ifdef _DEBUG
-
-#define D80_ENTER_CRITICAL_SECTION()                                    \
-  bool _debugStringEnabledOldValue;                                     \
-  const bool _debuggerPresent = getDebuggerPresent();                   \
-  if(_debuggerPresent) {                                                \
-    s_debugStringGate.wait();                                           \
-    _debugStringEnabledOldValue = s_debugStringEnabled;                 \
-    s_debugStringEnabled = false;                                       \
-  }
-
-#define D80_LEAVE_CRITICAL_SECTION_STMT(endStmt)                        \
-  if(_debuggerPresent) {                                                \
-    s_debugStringEnabled = _debugStringEnabledOldValue;                 \
-    s_debugStringGate.signal();                                         \
-    endStmt                                                             \
-  }
-
-#define D80_LEAVE_CRITICAL_SECTION_NOUPDATE()                           \
-D80_LEAVE_CRITICAL_SECTION_STMT(;)
-
-
-#define D80_LEAVE_CRITICAL_SECTION_UPDATESTRING()                       \
-  D80_LEAVE_CRITICAL_SECTION_STMT(ajourDebugString();)
-
-_TenByte::_TenByte(const Double80 &src) {
-  memcpy(m_value, src.m_value, sizeof(m_value));
-}
-
-Double80::Double80(const _TenByte &src) {
-  memcpy(this->m_value, src.m_value, sizeof(m_value));
-  SETD80DEBUGSTRING(*this);
-}
-
-#else
-
-#define D80_ENTER_CRITICAL_SECTION()
-#define D80_LEAVE_CRITICAL_SECTION_NOUPDATE()
-#define D80_LEAVE_CRITICAL_SECTION_UPDATESTRING()
-
-#endif // _DEBUG
-
-
-void Double80::enableDebugString(bool enabled) {
-#ifdef _DEBUG
-  if(getDebuggerPresent()) {
-    s_debugStringGate.wait();
-    s_debugStringEnabled = enabled;
-    s_debugStringGate.signal();
-  }
-#endif // _DEBUG
-}
-
 DEFINECLASSNAME(FPU);
 
 #ifdef IS32BIT
@@ -235,11 +182,6 @@ public:
   }
 };
 
-#ifdef _DEBUG
-Semaphore Double80::s_debugStringGate;
-bool      Double80::s_debugStringEnabled = false;
-#endif // _DEBUG
-
 DEFINECLASSNAME(Double80);
 
 const        Double80     Double80::zero;
@@ -263,14 +205,14 @@ static const Double80     maxi32;
 static const Double80     log2_5;
 static const Double80     digitLookupTable[10];
 
-static const TenByteClass maxi32P1 = Double80((unsigned int)_I32_MAX + 1);
-static const TenByteClass maxi64   = Double80(_I64_MAX);
-static const TenByteClass maxi64P1 = Double80((unsigned __int64)_I64_MAX + 1);
+static const Double80 maxi32P1 = Double80((unsigned int)_I32_MAX + 1);
+static const Double80 maxi64   = Double80(_I64_MAX);
+static const Double80 maxi64P1 = Double80((unsigned __int64)_I64_MAX + 1);
 
 
 void Double80::initClass() {
-  if(sizeof(TenByteClass) != 10) {
-    throwException(_T("%s::Size of TenByteClass must be 10. Size=%d."), s_className, sizeof(TenByteClass));
+  if(sizeof(Double80) != 10) {
+    throwException(_T("%s::Size of Double80 must be 10. Size=%d."), s_className, sizeof(Double80));
   }
 
   Double80 *p = (Double80*)(&M_PI);
@@ -285,10 +227,6 @@ void Double80::initClass() {
 #else
   D80getPi(*p);
 #endif // IS32BIT
-
-#ifdef _DEBUG
-  Double80::s_debugStringEnabled = false;
-#endif // _DEBUG
 
   (Double80&)zero            = 0;
   (Double80&)one             = 1;
@@ -314,41 +252,10 @@ void Double80::initClass() {
     (Double80&)digitLookupTable[i] = i;
   }
 
-#ifdef _DEBUG
-  if(getDebuggerPresent()) {
-    s_debugStringEnabled = true;
-    Double80::zero.ajourDebugString();
-    Double80::one.ajourDebugString();
-    half.ajourDebugString();
-    oneTenth.ajourDebugString();
-    log2_5.ajourDebugString();
-    ten.ajourDebugString();
-    minusOne.ajourDebugString();
-    tenE18.ajourDebugString();
-    tenE18M1.ajourDebugString();
-    maxi32.ajourDebugString();
-
-    for(int i = 0; i < 10; i++) {
-      digitLookupTable[i].ajourDebugString();
-    }
-
-    Double80::M_PI.ajourDebugString();
-    M_PI_2.ajourDebugString();
-    M_PI_05.ajourDebugString();
-    M_PI_2_60.ajourDebugString();
-
-    Double80::DBL80_EPSILON.ajourDebugString();
-    Double80::DBL80_MIN.ajourDebugString();
-    Double80::DBL80_MAX.ajourDebugString();
-  }
-
-#endif // _DEBUG
-
   FPU::clearExceptions();
 }
 
 static InitDouble80 initDouble80;
-
 
 #ifdef IS32BIT
 
@@ -358,7 +265,6 @@ Double80::Double80(long x) {
     mov eax, this
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(unsigned long x) {
@@ -381,7 +287,6 @@ Double80::Double80(unsigned long x) {
       fstp TBYTE PTR [eax]
     }
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(__int64 x) {
@@ -390,7 +295,6 @@ Double80::Double80(__int64 x) {
     mov eax, this
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(unsigned __int64 x) {
@@ -413,7 +317,6 @@ Double80::Double80(unsigned __int64 x) {
       fstp TBYTE PTR [eax]
     }
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(float x) {
@@ -422,7 +325,6 @@ Double80::Double80(float x) {
     mov eax, this
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(double x) {
@@ -431,14 +333,12 @@ Double80::Double80(double x) {
     mov eax, this
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
 }
 
 #endif // IS32BIT
 
 Double80::Double80(const BYTE *bytes) {
   memcpy(&m_value,bytes,sizeof(m_value));
-  SETD80DEBUGSTRING(*this);
 }
 
 Double80::Double80(const String &s) {
@@ -457,9 +357,6 @@ Double80::Double80(const char *s) {
 #endif // UNICODE
 
 void Double80::init(const _TUCHAR *s) {
-
-  D80_ENTER_CRITICAL_SECTION();
-
   bool isNegative = false;
   Double80 result = zero;
   while(_istspace(*s)) {
@@ -505,8 +402,6 @@ void Double80::init(const _TUCHAR *s) {
     }
   }
   *this = isNegative ? -result : result;
-
-  D80_LEAVE_CRITICAL_SECTION_UPDATESTRING();
 }
 
 #ifdef IS32BIT
@@ -651,7 +546,7 @@ double getDouble(const Double80 &x) {
 }
 
 Double80 operator+(const Double80 &x, const Double80 &y) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -664,7 +559,7 @@ Double80 operator+(const Double80 &x, const Double80 &y) {
 }
 
 Double80 operator-(const Double80 &x, const Double80 &y) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -677,7 +572,7 @@ Double80 operator-(const Double80 &x, const Double80 &y) {
 }
 
 Double80 operator-(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -688,7 +583,7 @@ Double80 operator-(const Double80 &x) {
 }
 
 Double80 operator*(const Double80 &x, const Double80 &y) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -701,7 +596,7 @@ Double80 operator*(const Double80 &x, const Double80 &y) {
 }
 
 Double80 operator/(const Double80 &x, const Double80 &y) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -722,7 +617,6 @@ Double80 &Double80::operator+=(const Double80 &x) {
     fadd
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -735,7 +629,6 @@ Double80 &Double80::operator-=(const Double80 &x) {
     fsub
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -748,7 +641,6 @@ Double80 &Double80::operator*=(const Double80 &x) {
     fmul
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -761,7 +653,6 @@ Double80 &Double80::operator/=(const Double80 &x) {
     fdiv
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -773,7 +664,6 @@ Double80 &Double80::operator++() { // prefix-form
     fadd
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -785,7 +675,6 @@ Double80 &Double80::operator--() { // prefix-form
     fsub
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return *this;
 }
 
@@ -798,7 +687,6 @@ Double80 Double80::operator++(int dummy) { // postfix-form
     fadd
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return result;
 }
 
@@ -811,7 +699,6 @@ Double80 Double80::operator--(int dummy) { // postfix-form
     fsub
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(*this);
   return result;
 }
 
@@ -927,7 +814,7 @@ Exit:
 }
 
 Double80 fabs(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -938,7 +825,7 @@ Double80 fabs(const Double80 &x) {
 }
 
 Double80 fmod(const Double80 &x, const Double80 &y) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]         //                                                    st0=y
@@ -983,7 +870,7 @@ Exit:
 }
 
 Double80 sqr(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -995,7 +882,7 @@ Double80 sqr(const Double80 &x) {
 }
 
 Double80 sqrt(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1006,7 +893,7 @@ Double80 sqrt(const Double80 &x) {
 }
 
 Double80 sin(const Double80 &x) {
-  TenByteClass result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_PI_2_60);
   __asm {
     fld result
     fsin
@@ -1016,7 +903,7 @@ Double80 sin(const Double80 &x) {
 }
 
 Double80 cos(const Double80 &x) {
-  TenByteClass result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_PI_2_60);
   __asm {
     fld result
     fcos
@@ -1026,7 +913,7 @@ Double80 cos(const Double80 &x) {
 }
 
 Double80 tan(const Double80 &x) {
-  TenByteClass result = fmod(x,M_PI_2_60);
+  Double80 result = fmod(x,M_PI_2_60);
   __asm {
     fld result
     fptan
@@ -1037,7 +924,7 @@ Double80 tan(const Double80 &x) {
 }
 
 Double80 atan(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1049,7 +936,7 @@ Double80 atan(const Double80 &x) {
 }
 
 Double80 atan2(const Double80 &y ,const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
@@ -1062,7 +949,7 @@ Double80 atan2(const Double80 &y ,const Double80 &x) {
 }
 
 void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c, s:out
-  TenByteClass r = fmod(c,M_PI_2_60);
+  Double80 r = fmod(c,M_PI_2_60);
   __asm {
     fld r
     fsincos
@@ -1071,15 +958,13 @@ void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c
     mov eax, DWORD PTR s
     fstp TBYTE PTR [eax]
   }
-  SETD80DEBUGSTRING(c);
-  SETD80DEBUGSTRING(s);
 }
 
 Double80 exp(const Double80 &x) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1102,7 +987,7 @@ Double80 exp(const Double80 &x) {
 }
 
 Double80 log(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     fld1
     mov eax, DWORD PTR x
@@ -1116,7 +1001,7 @@ Double80 log(const Double80 &x) {
 }
 
 Double80 log10(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     fld1
     mov eax, DWORD PTR x
@@ -1130,7 +1015,7 @@ Double80 log10(const Double80 &x) {
 }
 
 Double80 log2(const Double80 &x) {
-  TenByteClass result;
+  Double80 result;
   __asm {
     fld1
     mov eax, DWORD PTR x
@@ -1152,7 +1037,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR y
     fld TBYTE PTR [eax]
@@ -1182,7 +1067,7 @@ Double80 pow10(const Double80 &x) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1211,7 +1096,7 @@ Double80 pow2(const Double80 &x) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1234,7 +1119,7 @@ Double80 floor(const Double80 &x) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1249,7 +1134,7 @@ Double80 ceil(const Double80 &x) {
   unsigned short cwSave = FPU::getControlWord();
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
 
-  TenByteClass result;
+  Double80 result;
   __asm {
     mov eax, DWORD PTR x
     fld TBYTE PTR [eax]
@@ -1415,20 +1300,16 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
 #ifndef ASM_OPTIMIZED
 
-  D80_ENTER_CRITICAL_SECTION()
-
   unsigned short cwSave = FPU::getControlWord();
 
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   
-  TenByteClass m = (expo10 == 0) ? x : (x / pow10(expo10)); // m must be TenByteClass
+  Double80 m = (expo10 == 0) ? x : (x / pow10(expo10));
   m = m * tenE18;
   while(fabs(m) >= tenE18M1) {
     m = m / ten;
     expo10++;
   }
-
-  D80_LEAVE_CRITICAL_SECTION_NOUPDATE()
 
   // Assertion: 1 <= |m| < 1e18-1 and x = m * 10^(expo10-18)
 
@@ -1450,10 +1331,10 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
   FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
 
-  static const TenByteClass E18    = tenE18;
-  static const TenByteClass E18M1  = tenE18M1;
-  static const TenByteClass TEN    = ten;
-  static const TenByteClass LOG2_5 = log2_5;
+  static const Double80 E18    = tenE18;
+  static const Double80 E18M1  = tenE18M1;
+  static const Double80 TEN    = ten;
+  static const Double80 LOG2_5 = log2_5;
 
   unsigned short cwSave1,ctrlFlags;
 

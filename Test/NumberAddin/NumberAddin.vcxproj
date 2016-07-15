@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BigRealAddin.cpp" />
+    <ClCompile Include="Double80Addin.cpp" />
     <ClCompile Include="Int128Addin.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="NumberAddIn.cpp" />
