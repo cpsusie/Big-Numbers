@@ -180,7 +180,6 @@ public:
 void SpecialTestClass::runTest() {
 
   DigitPool::setDumpWhenDestroyed(true);
-  Double80::enableDebugString(    true);
 
 //  testAPCSum();
 //  return;
