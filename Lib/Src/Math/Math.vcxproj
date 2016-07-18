@@ -262,9 +262,10 @@
     <ClCompile Include="gammaR.cpp" />
     <ClCompile Include="GaussDistribution.cpp" />
     <ClCompile Include="Gradient.cpp" />
+    <ClCompile Include="Int128IO.cpp" />
     <ClCompile Include="Int128IOCommon.cpp" />
-    <ClCompile Include="Int128IOx64.cpp" />
-    <ClCompile Include="Int128Strx64.cpp" />
+    <ClCompile Include="Int128Str.cpp" />
+    <ClCompile Include="Int128x86.cpp" />
     <ClCompile Include="Jacobi.cpp" />
     <ClCompile Include="LssdPolynomial.cpp" />
     <ClCompile Include="MathException.cpp" />
@@ -301,7 +302,7 @@
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
     <ClCompile Include="TrigonometricFunctionsR.cpp" />
-    <ClCompile Include="UInt128Strx64.cpp" />
+    <ClCompile Include="UInt128Str.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -383,6 +384,8 @@
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
+    <ClInclude Include="..\..\Include\Math\Int128x64.h" />
+    <ClInclude Include="..\..\Include\Math\Int128x86.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathFunctions.h" />

@@ -292,13 +292,16 @@
     <ClCompile Include="Statistic.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="Int128Strx64.cpp">
+    <ClCompile Include="Int128IO.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="UInt128Strx64.cpp">
+    <ClCompile Include="Int128Str.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="Int128IOx64.cpp">
+    <ClCompile Include="Int128x86.cpp">
+      <Filter>Source Files\Number Types</Filter>
+    </ClCompile>
+    <ClCompile Include="UInt128Str.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
   </ItemGroup>
@@ -452,6 +455,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Int128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Int128x64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Int128x86.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

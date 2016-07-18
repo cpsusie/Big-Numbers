@@ -1,7 +1,5 @@
 #include "pch.h"
 
-#ifdef IS64BIT
-
 #include <Math/Int128.h>
 
 #pragma warning(disable : 4073)
@@ -175,4 +173,3 @@ _uint128::_uint128(const wchar_t *str) {
   }
 }
 
-#endif

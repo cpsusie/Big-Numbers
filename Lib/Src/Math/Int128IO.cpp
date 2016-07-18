@@ -1,7 +1,5 @@
 #include "pch.h"
 
-#ifdef IS64BIT
-
 #include <Math/Int128.h>
 
 #include <comdef.h>
@@ -67,7 +65,7 @@ template<class ct> StringTemplate<ct> getFillerString(streamsize l, ct ch = ' ')
     result = tmp;
   }
   else {
-    ct *tmp = new ct[l + 1], *cp = tmp + l;
+    ct *tmp = new ct[(int)l + 1], *cp = tmp + l;
     for(*cp = 0; cp-- > tmp;) *cp = ch;
     result = tmp;
     delete[] tmp;
@@ -397,4 +395,3 @@ wostream &operator<<(wostream &s, const _uint128 &n) {
   return ::operator<< <wostream, wchar_t>(s, n);
 }
 
-#endif

@@ -1,7 +1,5 @@
 #include "pch.h"
 
-#ifdef IS64BIT
-
 #include <Math/Int128.h>
 
 #pragma warning(disable : 4073)
@@ -229,5 +227,3 @@ _int128::_int128(const wchar_t *str) {
     throw exception("_int128:string is not an integer");
   }
 }
-
-#endif

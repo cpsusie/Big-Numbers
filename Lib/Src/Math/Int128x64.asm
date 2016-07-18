@@ -257,7 +257,7 @@ int128shr PROC
     jae         RetSign
     cmp         cl, 40h
     jae         More64
-    shrd        qword ptr[eax], rdx, cl     ; shift x.lo taking new bits from x.hi (rdx)
+    shrd        qword ptr[rax], rdx, cl     ; shift x.lo taking new bits from x.hi (rdx)
     sar         qword ptr[rax+8], cl        ; shift x.hi
     ret
 More64:

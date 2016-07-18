@@ -1,7 +1,5 @@
 #include "pch.h"
 
-#ifdef IS64BIT
-
 #include <Math/Int128.h>
 
 unsigned int convertNumberChar(wchar_t digit) {
@@ -32,5 +30,3 @@ unsigned int convertNumberChar(wchar_t digit) {
     return 0;
   }
 }
-
-#endif
