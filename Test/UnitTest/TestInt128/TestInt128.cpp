@@ -1,10 +1,8 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include <limits.h>
-
-#ifdef IS64BIT
 #include <Math/Int128.h>
-#endif
+
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using namespace std;
@@ -42,8 +40,6 @@ namespace TestInt128 {
 
   TEST_CLASS(TesInt128) {
     public:
-
-#ifdef IS64BIT
 
     TEST_METHOD(Int128Comparators) {
       int              minI32   = _I32_MIN;
@@ -187,7 +183,31 @@ namespace TestInt128 {
 
     } // Int128Comparators
 
+    TEST_METHOD(TestMultiplication) {
+      _uint128 x(0x1111111122222222);
+      _uint128 y(0x3333333344444444);
+      _uint128 z = x * y;
+      const _uint128 expected1(0x0369d036a1907f6e, 0x530eca863b2a1908);
+
+      verify(z == expected1);
+
+      x = _uint128(0x123, 0xffffffffffffffff);
+      y = 0x000fffffffffffff;
+      z = x * y;
+      const _uint128 expected2(0x123ffffffffffedb, 0xfff0000000000001);
+      verify(z == expected2);
+
+    }
+
+    TEST_METHOD(TestDivision) {
+      _uint128 x(0xffffffffffffffff);
+      _uint128 y(0x12345);
+      _uint128 z = x / y;
+
+    }
+
     TEST_METHOD(Int128ArithmethicOperators) {
+
       _uint128 x1("0xffffffffffffffffffffffffffffffff");
       _uint128 res1 = x1 + 1;
       verify(res1 == 0);
@@ -552,7 +572,6 @@ namespace TestInt128 {
         verify(false);
       }
     }
-#endif // IS64BIT
 
   };
 }
