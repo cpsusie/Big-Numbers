@@ -51,7 +51,7 @@ Hard:                                           ; assume rax = x.hi, rbx = dst.l
     ret
 int128mul ENDP
 
-;void int128div(_int128 &dst, _int128 &x); do assignop dst /= x; if (x < 0) x = -x;
+;void int128div(_int128 &dst, _int128 &x); do assignop dst /= x; if (x < 0) x = -x; !!
 int128div PROC
     push        rbx                             ;
     push        rdi                             ;
@@ -137,7 +137,7 @@ L8:                                             ;
     ret                                         ;
 int128div ENDP
 
-;void int128rem(_int128 &dst, _int128 &x); do assignop dst %= x; if (x < 0) x = -x;
+;void int128rem(_int128 &dst, _int128 &x); do assignop dst %= x; if (x < 0) x = -x; !!
 int128rem PROC
     push        rbx                             ;
     push        rdi                             ;
@@ -234,14 +234,14 @@ mov         qword ptr[rcx + 8], rax
 ret
 int128neg ENDP
 
-;void int128inc(_int128 &x); do ++x;
+;void int128inc(_int128 &x); set x = x + 1;
 int128inc PROC
     add         qword ptr[rcx], 1
     adc         qword ptr[rcx+8], 0
     ret
 int128inc ENDP
 
-;void int128dec(_int128 &x); do --x;
+;void int128dec(_int128 &x); set xz = x - 1;
 int128dec PROC
     sub         qword ptr[rcx], 1
     sbb         qword ptr[rcx+8], 0
@@ -299,15 +299,15 @@ RetZero:
     ret
 int128shl ENDP
 
-;int int128cmp(const _int128 &n1, const _int128 &n2); return sign(n1 - n2);
+;int int128cmp(const _int128 &x1, const _int128 &x2); return sign(x1 - x2);
 int128cmp PROC
-    mov         rax, qword ptr[rcx+8]       ; n1.hi
-    cmp         rax, qword ptr[rdx+8]       ; n2.hi
-    jl          lessthan                    ; signed compare of n1.hi and n2.hi
+    mov         rax, qword ptr[rcx+8]       ; x1.hi
+    cmp         rax, qword ptr[rdx+8]       ; x2.hi
+    jl          lessthan                    ; signed compare of x1.hi and x2.hi
     jg          greaterthan
-    mov         rax, qword ptr[rcx]         ; n2.lo
-    cmp         rax, qword ptr[rdx]         ; n2.lo
-    jb          lessthan                    ; unsigned compare of n1.lo and n2.lo
+    mov         rax, qword ptr[rcx]         ; x2.lo
+    cmp         rax, qword ptr[rdx]         ; x2.lo
+    jb          lessthan                    ; unsigned compare of x1.lo and x2.lo
     ja          greaterthan
     mov         rax, 0                      ; they are equal
     ret

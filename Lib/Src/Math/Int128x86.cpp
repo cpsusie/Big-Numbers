@@ -1,7 +1,12 @@
 #include "pch.h"
 
-#ifndef _M_X64
+// The code in this file is only used for x86 compilation.
+// For x64 mode the 2 files Int128x64.asm and UInt128x64.asm
+// should be used instead. They execute much faster, because
+// they use 64-bit registers, and division functions are
+//  coded entirely in asembler.
 
+#ifndef _M_X64
 
 #include <Math/Int128.h>
 
@@ -39,9 +44,11 @@ void int128inc(void *x) {
   __asm {
     mov         edi, x
     add         dword ptr[edi], 1
+    jnc         Done
     adc         dword ptr[edi+4], 0
     adc         dword ptr[edi+8], 0
     adc         dword ptr[edi+12], 0
+Done:
   }
 }
 
@@ -49,9 +56,11 @@ void int128dec(void *x) {
   __asm {
     mov         edi, x
     sub         dword ptr[edi], 1
+    jnc         Done
     sbb         dword ptr[edi+4], 0
     sbb         dword ptr[edi+8], 0
     sbb         dword ptr[edi+12], 0
+Done:
   }
 }
 
@@ -62,23 +71,23 @@ void int128mul(void *dst, const void *x) {
   const _int128 *b = (const _int128*)x;
 
   if (!(dp->s4.i[1] || b->s4.i[1] || dp->s4.i[2] || b->s4.i[2] || dp->s4.i[3] || b->s4.i[3])) {
-    HI(*dp) = 0;
-    LO(*dp) = __int64(dp->s4.i[0]) * b->s4.i[0]; // simple _int64 multiplication. int32 * int32
+    HI64(*dp) = 0;
+    LO64(*dp) = __int64(dp->s4.i[0]) * b->s4.i[0]; // simple _int64 multiplication. int32 * int32
   }
   else {
-   _int128        a(*dp);
+    _int128        a(*dp);
     __asm {
       push        ebp
       lea         ebx, a                   // ebx = a
       mov         ecx, b                   // ecx = b
-      mov         ebp, dst                 // ebp = &prod
+      mov         ebp, dst                 // ebp = &dp (result)
       xor         eax, eax
       mov         dword ptr[ebp+8 ], eax   // dst[2..3] = 0
       mov         dword ptr[ebp+12], eax
       mov         eax, dword ptr[ebx]      // 1. round
       mul         dword ptr[ecx]           // [edx:eax] = x[0]*y[0]
       mov         dword ptr[ebp], eax
-      mov         dword ptr[ebp + 4], edx  // set prod{0:1]
+      mov         dword ptr[ebp + 4], edx  // set dp{0:1]
 
       mov         eax, dword ptr[ebx]      // 2. round
       mul         dword ptr[ecx + 4]       // [edx:eax] = x[0]*y[1]
@@ -88,9 +97,9 @@ void int128mul(void *dst, const void *x) {
       mul         dword ptr[ecx]           // [edx:eax] = x[1]*y[0]
       add         edi, eax                 //
       adc         esi, edx                 // [esi:edi] += [edx:eax]
-      pushfd                               // may be extra carry for prod[3]
+      pushfd                               // may be extra carry for dp[3]
       add         dword ptr[ebp + 4], edi
-      adc         dword ptr[ebp + 8], esi  // prod[1:2] += [esi:edi]
+      adc         dword ptr[ebp + 8], esi  // dp[1:2] += [esi:edi]
 
       mov         eax, dword ptr[ebx]      // 3. round. extra carries are overflow
       mul         dword ptr[ecx + 8]       // [edx:eax] = x[0]*y[2]
@@ -121,7 +130,7 @@ void int128mul(void *dst, const void *x) {
       add         edi, eax                 // edi += eax
       add         dword ptr[ebp+12], edi   // prod[3] += edi
       popfd
-      adc         dword ptr[ebp + 12],0    // add the saved carry
+      adc         dword ptr[ebp + 12],0    // add the saved carry to dp[3]
 
       pop         ebp
     }
@@ -342,272 +351,269 @@ RetZero:
 End:;
 }
 
-void _uint128::approxQuot(unsigned long y, int yScale) {
-  int xExpo;
-  const unsigned int q = getFirstBitsNoScale(32, xExpo) / y;
-  *this = q;
-
-  if (q) {
-    int shift = xExpo - yScale - 32;
-    if (shift > 0) {
-      *this <<= shift;
-    } else if (shift < 0) {
-      *this >>= -shift;
-    }
-  }
-}
-
-unsigned int _uint128::getFirstBitsAutoScale(int k, int &scale) const {
-  unsigned int result;
-  int tmpScale, expo;
+static unsigned int getFirst16(const _uint128 &n, int &expo2) {
+  unsigned int result, expo;
   __asm {
     pushf
     mov         ecx, 4
-    mov         edi, this
+    mov         edi, n
     add         edi, 12
     xor         eax, eax
     std
     repe        scasd
     jnz         SearchBit
-    mov         result, 0
-    jmp         End
+    xor         edx, edx
+    jmp         End1Result
 SearchBit:                             ; assume ecx hold the index of integer with first 1-bit
     add         edi, 4
     mov         edx, dword ptr [edi]
     bsr         eax, edx               ; eax holds index of highest 1 bit
-    inc         eax                    ; and now #bits in the int-element
-    cmp         eax, k
-    jge         GotEnoughDigits
-    test        ecx, ecx               ; Get some bits from next, if we got one
-    jne         AppendMoreBits         ; if(got more digits) goto AppendMoreBits
-                                       ; else no more bits. take it as it is
-    mov         edi, k
-    sub         edi, eax               ; tmpScale (edi) = k - digits
-    dec         eax
-    mov         expo, eax              ; expo = index of higehst 1-bit (ecx == 0)
-    jmp         RemoveTrailingZeros
+    cmp         eax, 15
+    je          End2Results
+    jg          TooManyBits
+    test        ecx, ecx               ; Get some bits from previous, if we got some
+    je          End2Results
 
-AppendMoreBits:                        ; Assume edi points to highest int with 1-bits
-                                       ; and this is not the lowest (ecx>0)
-                                       ; and eax = index of higest 1-bit + 1
     shl         ecx, 5
-    add         ecx, eax              
-    dec         ecx
-    mov         expo, ecx              ; expo = 32 * ecx + eax - 1
+    add         ecx, eax
+    mov         expo, ecx
+
     mov         edi, dword ptr[edi-4]  ; edi = previous int
-    mov         ecx, k
-    sub         ecx, eax               ; ecx = k - bits already in edx
+    mov         ecx, 15
+    sub         ecx, eax               ; ecx = 15 - index of higest 1-bit
     shld        edx, edi, cl           ; Shift edx left adding new bits from previous digit (edi)
-    xor         edi, edi               ; edi = 0
-    jmp         RemoveTrailingZeros
+    jmp         End1Result
 
-GotEnoughDigits:                       ; assume ecx = largest index of nonzero int and eax = #bits in this
+TooManyBits:                           ; assume eax = index of higest 1-bit in edx
+                                       ; and eax > 15
     shl         ecx, 5
-    add         ecx, eax               
-    dec         ecx
-    mov         expo, ecx              ; expo = 32 * ecx + eax
-    xor         edi, edi               ; tmpScale = 0
-    sub         eax, k
-    jle         RemoveTrailingZeros
+    add         ecx, eax
+    mov         expo, ecx
     mov         ecx, eax
+    sub         ecx, 15
     shr         edx, cl
+    jmp         End1Result
 
-RemoveTrailingZeros:                   ; assume edx holds as many bits we can get, right shift.
-                                       ; now downscale it and count number of shifts
-    test        edx, 1
-    jne         EndResult
-StartLoop:
-    shr         edx, 1
-    inc         edi
-    test        edx, 1
-    je          startLoop
-EndResult:
-    add         edi, expo
-    sub         edi, k
-    mov         tmpScale, edi
-    mov         result  , edx
-End:
+End2Results:
+    shl         ecx, 5
+    add         ecx, eax
+    mov         expo, ecx
+End1Result:
+    mov         result, edx
     popf
   }
-  scale = tmpScale;
+  expo2 = expo;
   return result;
 }
 
-unsigned int _uint128::getFirstBitsNoScale(int k, int &expo) const {
-  unsigned int result;
-  int tmpExpo;
+static unsigned int getFirst32(const _uint128 &n, int &expo2) {
+  unsigned int result, expo;
   __asm {
     pushf
     mov         ecx, 4
-    mov         edi, this
+    mov         edi, n
     add         edi, 12
     xor         eax, eax
     std
     repe        scasd
     jnz         SearchBit
-    mov         result, 0
-    jmp         End
+    xor         edx, edx
+    jmp         End1Result
 SearchBit:                             ; assume ecx hold the index of integer with first 1-bit
     add         edi, 4
     mov         edx, dword ptr [edi]
     bsr         eax, edx               ; eax holds index of highest 1 bit
-    inc         eax
-    cmp         eax, k
-    jge         GotEnoughDigits
-    test        ecx, ecx               ; Get som more digit from next, if we got one
-    jne         AppendMoreBits         ; if(got more digits) goto AppendMoreBits
-                                       ; else not more bits. shift in 0-bits from right
-    mov         ecx, k
-    sub         ecx, eax
-    shl         edx, cl
-    dec         eax
-    mov         tmpExpo, eax           ; expo = index of higehst 1-bit (ecx == 0)
-    jmp         End
+    cmp         eax, 31
+    je          End2Results
+    test        ecx, ecx               ; Get some bits from next, if we got some
+    je          End2Results
 
-AppendMoreBits:                        ; Assume edi points to highest int with 1-bits
-                                       ; and this is not the lowest (ecx>0)
-                                       ; and eax = index of higest 1-bit + 1
     shl         ecx, 5
-    add         ecx, eax              
-    dec         ecx
-    mov         tmpExpo, ecx           ; expo = 32 * ecx + eax - 1
+    add         ecx, eax
+    mov         expo, ecx
+
     mov         edi, dword ptr[edi-4]  ; edi = previous int
-    mov         ecx, k
-    sub         ecx, eax               ; ecx = k - bits already in edx
+    mov         ecx, 31
+    sub         ecx, eax               ; ecx = 31 - bits already in edx
     shld        edx, edi, cl           ; Shift edx left adding new bits from previous digit (edi)
-    jmp         End
+    jmp         End1Result
 
-GotEnoughDigits:                       ; assume ecx = largest index of nonzero int and eax = #bits in this
-    shl         ecx, 5
-    add         ecx, eax               
-    dec         ecx
-    mov         tmpExpo, ecx
-    sub         eax, k
-    jle         End
-    mov         ecx, eax
-    shr         edx, cl
-
-End:
-    mov         result  , edx
+End2Results:
+    shl         ecx   , 5
+    add         ecx   , eax
+    mov         expo  , ecx
+End1Result:
+    mov         result, edx
     popf
   }
-  expo = tmpExpo;
+  expo2 = expo;
   return result;
 }
 
-void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quot, _int128 *rem) {
-  const bool aNegative = a.isNegative();
-  const bool bNegative = b.isNegative();
-  _uint128 rest = aNegative ? -a : a;
-  _uint128 y    = bNegative ? -b : b;
-
-  int yScale;
-  const unsigned int yFirst = y.getFirstBitsAutoScale(16, yScale);
-
-  _uint128 result;
-  for (bool loopDone = false;;loopDone = true) {
-    if (loopDone) {
-      _uint128 t = rest;
-      t.approxQuot(yFirst, yScale);
-      result += t;
-      rest -= t * y;
-    } else {
-      result = rest;
-      result.approxQuot(yFirst, yScale);
-      rest -= result * y;
-    }
-    if (rest < y) break;
+static inline int getExpo2(unsigned int x) {
+  unsigned int result;
+  _asm {
+    mov         edx, x
+    bsr         eax, edx
+    mov         result, eax
   }
-  if (quot) {
-    *quot = (aNegative == bNegative) ? result : -result;
-  }
-  if (rem) {
-    *rem = aNegative ? rest : -rest;
-  }
+  return result;
 }
+/*
+static int findMatchingBitCount(const _uint128 &x, const _uint128 &y) {
+  int xExpo, yExpo;
+  getFirst32(x, xExpo);
+  getFirst32(y, yExpo);
+  _uint128 xs = x << (127 - xExpo);
+  _uint128 ys = y << (127 - yExpo);
+  int count = 0;
+  for (int i = 3; i >= 0; i--) {
+    for (int k = 31; k >= 0; k--) {
+      const int xbit = xs.s4.i[i] >> k;
+      const int ybit = ys.s4.i[i] >> k;
+      if (xbit == ybit) {
+        count++;
+      }
+      else {
+        return count;
+      }
+    }
+  }
+  return count;
+}
+
+static int findBestShift(const _uint128 &result, unsigned int q, const _uint128 &expected) {
+  int maxBitMatch = 0;
+  int bestShift   = 0;
+  for (int s = 0; s < 32; s++) {
+    _uint128 tmp = (result << s) + q;
+    int bitMatch = findMatchingBitCount(tmp, expected);
+    if (bitMatch > maxBitMatch) {
+      maxBitMatch = bitMatch;
+      bestShift = s;
+    }
+  }
+  return bestShift;
+}
+*/
 
 void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 *rem) {
-  _uint128 rest = a;
+  _uint128 dummyRest;
 
-  int yScale;
-  const unsigned int yFirst = y.getFirstBitsAutoScale(16, yScale);
+  int yExpo2;
+  const unsigned int y16      = getFirst16(y, yExpo2);
+  const int          y16Expo2 = getExpo2(y16); // in range [0..15]
 
-  _uint128 result;
-  for (bool loopDone = false;;loopDone = true) {
-    if (loopDone) {
-      _uint128 t = rest;
-      t.approxQuot(yFirst, yScale);
-      result += t;
-      rest -= t * y;
+  _uint128 &rest = rem  ? *rem  : dummyRest;
+  rest = a;
+  if(quot) *quot = 0;
+  _uint128 p;
+  int lastShift = 0;
+  for (int count = 0; rest >= y; count++) {
+    int restExpo2;
+    const unsigned int rest32      = getFirst32(rest, restExpo2);
+    const int          rest32Expo2 = getExpo2(rest32);
+    unsigned int       q;
+    int                shift;
+    if ((shift = restExpo2 - yExpo2 - (rest32Expo2 - y16Expo2)) < 0) { // >= -31
+      q  = (rest32 / y16) >> -shift;
+      if (q > 1) q--;
+      if(q > 1) {
+        p = y * q;
+      } else {
+        p = y;
+      }
+      shift = 0;
     } else {
-      result = rest;
-      result.approxQuot(yFirst, yScale);
-      rest -= result * y;
+      q = rest32 / (y16 + 1);
+      if (q == 0) {
+        q = 1;
+        p = y;
+      } else {
+        p = y * q;
+      }
+      if(shift) p <<= shift;
     }
-    if (rest < y) break;
+    if (quot) { // do we want the quot. If its NULL there's no need to do this
+      if (count) {
+        if (lastShift > shift) {
+          *quot <<= (lastShift - shift);
+        }
+        *quot += q;
+      }
+      else {
+        *quot = q;
+      }
+      lastShift = shift;
+    }
+    rest -= p;
   }
-  if (quot) *quot = result;
-  if (rem) *rem = rest;
+  if (lastShift && quot) {
+    *quot <<= lastShift;
+  }
+}
+
+static void signedQuotRemainder(const _int128 &a, const _int128 &b, _int128 *quot, _int128 *rem) {
+  const bool aNegative = a.isNegative();
+  const bool bNegative = b.isNegative();
+  if (!aNegative && !bNegative) {
+    unsignedQuotRemainder(*(const _uint128*)&a, *(const _uint128*)&b, (_uint128*)quot, (_uint128*)rem);
+  }
+  else {
+    const _uint128 x = aNegative ? -a : a;
+    const _uint128 y = bNegative ? -b : b;
+    _uint128 q, r;
+    unsignedQuotRemainder(x, y, quot ? &q : NULL, rem ? &r : NULL);
+
+    if (quot) {
+      *quot = (aNegative == bNegative) ? q : -q;
+    }
+    if (rem) {
+      *rem = aNegative ? -r : r;
+    }
+  }
 }
 
 
-void int128div(void *dst, const void *x) {
-  _int128       *dp = (_int128*)dst;
-  const _int128  a(*dp);
-  const _int128 &b = *(const _int128*)x;
-  signedQuotRemainder(a, b, dp, NULL);
+void int128div(void *dst, void *x) {
+  const _int128  a(*(_int128*)dst);
+  signedQuotRemainder(a, *(const _int128*)x, (_int128*)dst, NULL);
 }
 
-void int128rem(void *dst, const void *x) {
-  _int128       *dp = (_int128*)dst;
-  const _int128  a(*dp);
-  const _int128 &b = *(const _int128*)x;
-  signedQuotRemainder(a, b, NULL, dp);
+void int128rem(void *dst, void *x) {
+  const _int128  a(*(_int128*)dst);
+  signedQuotRemainder(a, *(const _int128*)x, NULL, (_int128*)dst);
 }
 
 void uint128div(void *dst, const void *x) {
-  _uint128      *dp = (_uint128*)dst;
-  const _uint128  a(*dp);
-  const _uint128 &b = *(const _uint128*)x;
-  unsignedQuotRemainder(a, b, dp, NULL);
+  const _uint128  a(*(_uint128*)dst);
+  unsignedQuotRemainder(a, *(const _uint128*)x, (_uint128*)dst, NULL);
 }
 
 void uint128rem(void *dst, const void *x) {
-  _uint128       *dp = (_uint128*)dst;
-  const _uint128  a(*dp);
-  const _uint128 &b = *(const _uint128*)x;
-  unsignedQuotRemainder(a, b, NULL, dp);
+  const _uint128  a(*(_uint128*)dst);
+  unsignedQuotRemainder(a, *(const _uint128*)x, NULL, (_uint128*)dst);
 }
 
 void int128neg(void *x) {
   __asm {
     mov         esi, x
-    mov         eax, dword ptr[esi]
-    neg         eax
-    mov         dword ptr[esi], eax
-
-    mov         eax, dword ptr[esi + 4]
-    adc         eax, 0
-    neg         eax
-    mov         dword ptr[esi + 4], eax
-
-    mov         eax, dword ptr[esi + 8]
-    adc         eax, 0
-    neg         eax
-    mov         dword ptr[esi + 8], eax
-
-    mov         eax, dword ptr[esi + 12]
-    adc         eax, 0
-    neg         eax
-    mov         dword ptr[esi + 12], eax
+    not dword ptr[esi]
+    not dword ptr[esi + 4]
+    not dword ptr[esi + 8]
+    not dword ptr[esi + 12]
+    add dword ptr[esi]   ,1
+    adc dword ptr[esi+4 ],0
+    adc dword ptr[esi+8 ],0
+    adc dword ptr[esi+12],0
   }
 }
 
-int int128cmp(const void *n1, const void *n2) {
+int int128cmp(const void *x1, const void *x2) {
   int result;
   __asm {
-    mov         esi, n1
-    mov         edi, n2
+    mov         esi, x1
+    mov         edi, x2
     mov         eax, dword ptr[esi + 12]
     cmp         eax, dword ptr[edi + 12]
     jl          lessthan                    ; signed compare of high int
@@ -636,11 +642,11 @@ End:
   return result;
 }
 
-int uint128cmp(const void *n1, const void *n2) {
+int uint128cmp(const void *x1, const void *x2) {
   int result;
   __asm {
-    mov         esi, n1
-    mov         edi, n2
+    mov         esi, x1
+    mov         edi, x2
     mov         eax, dword ptr[esi + 12]
     cmp         eax, dword ptr[edi + 12]
     jb          lessthan                    ; unsigned compare of all integers

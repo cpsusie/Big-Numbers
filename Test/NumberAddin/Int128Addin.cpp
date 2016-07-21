@@ -2,6 +2,11 @@
 #include <MyUtil.h>
 #include "NumberAddIn.h"
 
+class UInt128 {
+public:
+  unsigned long v[4];
+};
+
 ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
   char tmp[50];
   sprintf(tmp, " vers:%d base:%d procType:%d", pHelper->dwVersion, nBase, pHelper->GetProcessorType(pHelper));
@@ -10,6 +15,9 @@ ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, in
 }
 
 ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
+  UInt128 x;
+  pHelper->getRealObject(&x, sizeof(x));
+
   char tmp[10];
   sprintf(tmp, " base:%d", nBase);
   strcat(strncpy(pResult, "_uint128", maxResult), tmp);

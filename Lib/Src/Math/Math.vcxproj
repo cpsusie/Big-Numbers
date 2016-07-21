@@ -384,8 +384,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
-    <ClInclude Include="..\..\Include\Math\Int128x64.h" />
-    <ClInclude Include="..\..\Include\Math\Int128x86.h" />
     <ClInclude Include="..\..\Include\Math\LUMatrixTemplate.h" />
     <ClInclude Include="..\..\Include\Math\MathException.h" />
     <ClInclude Include="..\..\Include\Math\MathFunctions.h" />

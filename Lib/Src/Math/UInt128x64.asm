@@ -113,7 +113,7 @@ L2:
      ret
 uint128rem ENDP
 
-;void uint128shr(void *x, int shft); do assignop x >>= shft. always shift 0-bits in
+;void uint128shr(void *x, int shft); do assignop x >>= shft. always shift 0-bits in from left
 uint128shr PROC
     mov         rax, rcx                    ; rax = &x; need cl to the shift instruction
     mov         rcx, rdx                    ; rcx = shift amount
@@ -139,15 +139,15 @@ RetZero:
     ret
 uint128shr ENDP
 
-;int uint128cmp(const _uint128 &n1, const _uint128 &n2); return sign(n1 - n2);
+;int uint128cmp(const _uint128 &x1, const _uint128 &x2); return sign(x1 - x2);
 uint128cmp PROC
-     mov        rax, qword ptr[rcx+8]      ; n1.hi
-     cmp        rax, qword ptr[rdx+8]      ; n2.hi
-     jb         lessthan                   ; usigned compare of n1.hi and n2.hi
+     mov        rax, qword ptr[rcx+8]      ; x1.hi
+     cmp        rax, qword ptr[rdx+8]      ; x2.hi
+     jb         lessthan                   ; unsigned compare of x1.hi and x2.hi
      ja         greaterthan
-     mov        rax, qword ptr[rcx]        ; n2.lo
-     cmp        rax, qword ptr[rdx]        ; n2.lo
-     jb         lessthan                   ; unsigned compare of n1.lo and n2.lo
+     mov        rax, qword ptr[rcx]        ; x1.lo
+     cmp        rax, qword ptr[rdx]        ; x2.lo
+     jb         lessthan                   ; unsigned compare of x1.lo and x2.lo
      ja         greaterthan
      mov        rax, 0                     ; they are equal
      ret
