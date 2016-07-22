@@ -1610,8 +1610,6 @@ inline bool iswodigit(wchar_t ch) {
   return ('0' <= ch) && (ch < '8');
 }
 
-unsigned int convertNumberChar(wchar_t digit);
-
 extern const _int128  _I128_MIN, _I128_MAX;
 extern const _uint128 _UI128_MAX;
 

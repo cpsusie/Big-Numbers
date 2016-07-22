@@ -513,30 +513,40 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
     const int          rest32Expo2 = getExpo2(rest32);
     unsigned int       q;
     int                shift;
+    p = y;
     if ((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
-      q  = (rest32 / y16) >> -shift;
-      if (q > 1) q--;
-      p = y;
-      if(q > 1) p *= q;
+      q  = (rest32 / (y16+1)) >> -shift;
       shift = 0;
+      switch (q) {
+      case 0 : q = 1; break;
+      case 1 : break;
+      default: p *= q; break;
+      }
     } else {
       q = rest32 / (y16 + 1);
-      p = y;
       switch(q) {
       case 0 : q = 1; break;
       case 1 : break;
       default: p *= q; break;
       }
-      if(shift) p <<= shift;
+      if(shift) int128shl(&p,shift);
     }
     if (quot) { // do we want the quot. If its NULL there's no need to do this
       if (count) {
         if (lastShift > shift) {
-          *quot <<= (lastShift - shift);
+          int128shl(quot, lastShift - shift);
         }
-        *quot += q;
-      }
-      else {
+        __asm {
+          mov eax, q
+          mov esi, quot
+          add dword ptr[esi], eax
+          jnc AddDone
+          adc dword ptr[esi+4] ,0
+          adc dword ptr[esi+8] ,0
+          adc dword ptr[esi+12],0
+          AddDone:
+        }
+      } else {
         *quot = q;
       }
       lastShift = shift;
@@ -544,7 +554,7 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
     rest -= p;
   }
   if (lastShift && quot) {
-    *quot <<= lastShift;
+    int128shl(quot, lastShift);
   }
 }
 

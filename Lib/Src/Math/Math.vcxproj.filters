@@ -193,9 +193,6 @@
     <ClCompile Include="Double80io.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
-    <ClCompile Include="Int128IOCommon.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
     <ClCompile Include="AkimaSpline.cpp">
       <Filter>Source Files\Curve Fitting</Filter>
     </ClCompile>
@@ -299,9 +296,6 @@
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
     <ClCompile Include="Int128x86.cpp">
-      <Filter>Source Files\Number Types</Filter>
-    </ClCompile>
-    <ClCompile Include="UInt128Str.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
   </ItemGroup>

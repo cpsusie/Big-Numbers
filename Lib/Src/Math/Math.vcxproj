@@ -263,7 +263,6 @@
     <ClCompile Include="GaussDistribution.cpp" />
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Int128IO.cpp" />
-    <ClCompile Include="Int128IOCommon.cpp" />
     <ClCompile Include="Int128Str.cpp" />
     <ClCompile Include="Int128x86.cpp" />
     <ClCompile Include="Jacobi.cpp" />
@@ -302,7 +301,6 @@
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
     <ClCompile Include="TrigonometricFunctionsR.cpp" />
-    <ClCompile Include="UInt128Str.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

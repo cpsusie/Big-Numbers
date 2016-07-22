@@ -493,12 +493,77 @@ namespace TestInt128 {
     verify(R == expectedR);
   }
 
+static inline wchar_t RadixLetter(unsigned int c) {
+  return (c < 10) ? ('0' + c) : ('a' + (c-10));
+}
+
+static String int128ToString(_uint128 v, int radix) {
+  if (v.isZero()) {
+    return _T("0");
+  }
+  String result;
+  do {
+    unsigned int c = v % radix;
+    result += RadixLetter(c);
+    v /= radix;
+  } while (!v.isZero());
+  return rev(result);
+}
+
+static String int128ToString(_int128 v, int radix) {
+  if (v.isZero()) {
+    return _T("0");
+  }
+  if (radix != 10 || !v.isNegative()) {
+    return int128ToString((_uint128)v, radix);
+  }
+  String result;
+  _uint128 v1 = -v;
+  do {
+    unsigned int c = v1 % radix;
+    result += RadixLetter(c);
+    v1 /= radix;
+  } while (!v1.isZero());
+  result += _T('-');
+  return rev(result);
+}
+
+  static inline unsigned __int64 getRandInt64(unsigned int bits) {
+    return randInt64() & ((unsigned __int64(1) << bits) - 1);
+  }
+
+  static _uint128 randInt128(int bits) {
+    if (bits < 64) {
+      return _uint128(getRandInt64(bits));
+    } else {
+      return _uint128(getRandInt64(bits - 64), randInt64());
+    }
+  }
+
+  TEST_METHOD(Int128Test_ui128toa) {
+    for (int i = 0; i < 1000; i++) {
+      int bits = randInt(1, 128);
+      _uint128 x = randInt128(bits);
+      for (int radix = 2; radix <= 36; radix++) {
+        const String wanted = int128ToString(x, radix);
+        TCHAR str[200];
+        _ui128tot(x, str, radix);
+        verify(str == wanted);
+      }
+    }
+  }
+
   TEST_METHOD(Int128Test_i128toa) {
-    _int128 x(0xffffffffffffffff, 0xfffffffffffffffd); // -3
-    char str[200];
-    _i128toa(x, str, 10);
-    _int128 y(str);
-    verify(y == x);
+    for (int i = 0; i < 1000; i++) {
+      int bits = randInt(1, 128);
+      _int128 x = randInt128(bits);
+      for (int radix = 2; radix <= 36; radix++) {
+        const String wanted = int128ToString(x, radix);
+        TCHAR str[200];
+        _i128tot(x, str, radix);
+        verify(str == wanted);
+      }
+    }
   }
 
     TEST_METHOD(Int128ArithmethicOperators) {
