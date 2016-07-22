@@ -320,9 +320,6 @@
     <CustomBuild Include="Int128x64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="UInt128x64.asm">
-      <Filter>Source Files\Asm Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="Doublex64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>

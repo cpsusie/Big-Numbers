@@ -466,21 +466,6 @@
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
     </CustomBuild>
-    <CustomBuild Include="UInt128x64.asm">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
-      <FileType>Document</FileType>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
-      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)UInt128x64.obj</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%,shift left, shift right</Message>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)UInt128x64.obj UInt128x64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for unsigned _int128 basic arithmetic operators +,-,*,/,%, shift left, shift right</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)UInt128x64.obj</Outputs>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
-      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
-    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
