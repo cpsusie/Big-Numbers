@@ -20,13 +20,13 @@
     <DisplayString>{m_debugString}</DisplayString>
   </Type>
   <Type Name="_int128">
-    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
   </Type>
   <Type Name="_uint128">
-    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
   </Type>
   <Type Name="Double80">
-    <DisplayString LegacyAddin="NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
   </Type>
 
 </AutoVisualizer>

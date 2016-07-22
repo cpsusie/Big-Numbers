@@ -1,8 +1,4 @@
 #include "pch.h"
-#include <MyUtil.h>
-#include <comdef.h>
-#include <atlconv.h>
-#include "NumberAddIn.h"
 
 #define TENE0  1
 #define TENE1  10
@@ -279,11 +275,8 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
       break;
     }
   }
-  catch (Exception e) {
-    tmpStr = format(_T("%s"), e.what());
-  }
   catch (...) {
-    tmpStr = _T("unknown exception");
+    tmpStr = _T("Invalid adress");
   }
 
   USES_CONVERSION;
