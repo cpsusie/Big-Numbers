@@ -273,7 +273,6 @@ namespace TestDouble80 {
     }
 
     TEST_METHOD(Double80MeasureExpo10) {
-      Double80::enableDebugString(false);
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.0012345;
       int count = 0;
@@ -284,11 +283,9 @@ namespace TestDouble80 {
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
 
       OUTPUT(_T("TimeMeasure on Double80::getExpo10(): count = %d, Time = %.3le msec"), count, timeUsage);
-      Double80::enableDebugString(true);
     }
 
     TEST_METHOD(Double80measureToString) {
-      Double80::enableDebugString(false);
 
       const double startTime = getProcessTime();
       const Double80 stepFactor = 1.012345;
@@ -300,7 +297,6 @@ namespace TestDouble80 {
       const double timeUsage = (getProcessTime() - startTime) / 1e3 / count;
 
       OUTPUT(_T("TimeMeasure on Double80::toString(): count = %d, Time = %.3le msec"), count, timeUsage);
-      Double80::enableDebugString(true);
     }
 
     TEST_METHOD(Double80TestRound) {
