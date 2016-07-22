@@ -1,25 +1,24 @@
 #include "pch.h"
 #include <MyUtil.h>
+#include <Math/Int128.h>
 #include "NumberAddIn.h"
 
-class UInt128 {
-public:
-  unsigned long v[4];
-};
 
 ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  char tmp[50];
-  sprintf(tmp, " vers:%d base:%d procType:%d", pHelper->dwVersion, nBase, pHelper->GetProcessorType(pHelper));
-  strcat(strncpy(pResult, "_int128", maxResult), tmp);
+  char tmp[150];
+  _int128 x;
+  pHelper->getRealObject(&x, sizeof(x));
+  _i128toa(x, tmp, 10);
+  strncpy(pResult, tmp, maxResult);
 	return S_OK;
 }
 
 ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
-  UInt128 x;
+  char tmp[150];
+  _uint128 x;
   pHelper->getRealObject(&x, sizeof(x));
+  _ui128toa(x, tmp, 10);
+  strncpy(pResult, tmp, maxResult);
 
-  char tmp[10];
-  sprintf(tmp, " base:%d", nBase);
-  strcat(strncpy(pResult, "_uint128", maxResult), tmp);
 	return S_OK;
 }

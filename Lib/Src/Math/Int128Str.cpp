@@ -8,75 +8,119 @@
 const _int128 _I128_MIN(0x8000000000000000, 0x0000000000000000);
 const _int128 _I128_MAX(0x7fffffffffffffff, 0xffffffffffffffff);
 
-static const _int128 _0(0);
 static const _int128 _10(10);
-static const _int128 _16(16);
-static const _int128 _8(8);
+static const _int128 _1E9(1000000000);
 
 char *_i128toa(_int128 value, char *str, int radix) {
   assert(radix >= 2 && radix <= 36);
+  if (value.isZero()) {
+    return strcpy(str, "0");
+  }
+
   char *s = str;
-  const bool negative = value < _0;
-  if (negative && (radix == 10)) {
-    _uint128 v = -value;
-    while (v != _0) {
-      const unsigned int c = v % _10;
-      *(s++) = radixLetter(c);
-      v /= _10;
+  switch (radix) {
+  case 2:
+  case 16:
+    { const int partLen = (radix == 2) ? 32 : 8;
+      _ultoa(value.s4.i[3], str, radix);
+      for (int i = 2; i >= 0; i--) {
+        char tmpStr[40];
+        _ultoa(value.s4.i[i], tmpStr, radix);
+        int l = strlen(tmpStr);
+        for (int i = partLen - l; i--;) *(s++) = '0';
+        strcpy(s, tmpStr);
+        s += l;
+      }
+      *s = 0;
     }
-    *(s++) = '-';
-    *s = 0;
-    return _strrev(str);
+    return str;
+  case 10:
+    { _uint128 v = value.isNegative() ? -value : value;
+      for(;;) {
+        const unsigned int c = v % _1E9;
+        char tmpStr[20];
+        _ultoa(c, tmpStr, 10);
+        strcpy(s, _strrev(tmpStr));
+        int l = strlen(tmpStr);
+        s += l;
+        v /= _1E9;
+        if(v) {
+          while(l++ < 9) *(s++) = '0'; // append zeroes
+        } else {
+          break;
+        }
+      }
+      if (value.isNegative()) *(s++) = '-';
+      *s = 0;
+      return _strrev(str);
+    }
   }
 
   _uint128 v(value);
   const _uint128 r(radix);
-  while (v != _0) {
+  while (!v.isZero()) {
     const unsigned int c = v % r;
     *(s++) = radixLetter(c);
     v /= r;
   }
-  if (s == str) {
-    return strcpy(str, "0");
-  }
-  else {
-    *s = 0;
-    return _strrev(str);
-  }
-  return str;
+  *s = 0;
+  return _strrev(str);
 }
 
 wchar_t *_i128tow(_int128 value, wchar_t *str, int radix) {
   assert(radix >= 2 && radix <= 36);
+  if (value.isZero()) {
+    return wcscpy(str, L"0");
+  }
+
   wchar_t *s = str;
-  const bool negative = value < _0;
-  if (negative && (radix == 10)) {
-    _uint128 v = -value;
-    while (v != _0) {
-      const unsigned int c = v % _10;
-      *(s++) = wradixLetter(c);
-      v /= _10;
+  switch (radix) {
+  case 2:
+  case 16:
+    { const int partLen = (radix == 2) ? 32 : 8;
+      _ultow(value.s4.i[3], str, radix);
+      for (int i = 2; i >= 0; i--) {
+        wchar_t tmpStr[40];
+        _ultow(value.s4.i[i], tmpStr, radix);
+        int l = wcslen(tmpStr);
+        for (int i = partLen - l; i--;) *(s++) = '0';
+        wcscpy(s, tmpStr);
+        s += l;
+      }
+      *s = 0;
     }
-    *(s++) = '-';
-    *s = 0;
-    return _wcsrev(str);
+    return str;
+  case 10:
+    { _uint128 v = value.isNegative() ? -value : value;
+      for(;;) {
+        const unsigned int c = v % _1E9;
+        wchar_t tmpStr[20];
+        _ultow(c, tmpStr, 10);
+        wcscpy(s, _wcsrev(tmpStr));
+        int l = wcslen(tmpStr);
+        s += l;
+        v /= _1E9;
+        if (v) {
+          while(l++ < 9) *(s++) = '0'; // append zeroes
+        } else {
+          break;
+        }
+      }
+      if (value.isNegative()) *(s++) = '-';
+      *s = 0;
+      return _wcsrev(str);
+    }
   }
 
   _uint128 v(value);
   const _uint128 r(radix);
-  while (v != _0) {
+  do {
     const unsigned int c = v % r;
     *(s++) = radixLetter(c);
     v /= r;
-  }
-  if (s == str) {
-    return wcscpy(str, L"0");
-  }
-  else {
-    *s = 0;
-    return _wcsrev(str);
-  }
-  return str;
+  } while (!v.isZero());
+  *s = 0;
+  return _wcsrev(str);
 }
 
 template<class CharType> const CharType *parseDec(const CharType *str, _int128 &n) {
@@ -119,7 +163,7 @@ template<class CharType> const CharType *parseHex(const CharType *str, _int128 &
     }
     else {
       const unsigned int d = convertNumberChar(*str);
-      n *= _16;
+      n <<= 4;
       n += d;
     }
   }
@@ -135,7 +179,7 @@ template<class CharType> const CharType *parseOct(const CharType *str, _int128 &
     }
     else {
       const unsigned int d = convertNumberChar(*str);
-      n *= _8;
+      n <<= 3;
       n += d;
     }
   }

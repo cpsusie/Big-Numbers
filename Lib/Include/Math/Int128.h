@@ -144,12 +144,6 @@ public:
     _S16 s16;
   };
 
-#ifndef _M_X64
-  // helpers for division
-  unsigned int getFirstBitsAutoScale(int count, unsigned int &expo2, int &scale) const;
-  unsigned int getFirstBitsNoScale(int count, unsigned int &expo2) const;
-#endif
-
   // constructors
   inline _uint128() {}
 

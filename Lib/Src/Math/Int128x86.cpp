@@ -459,55 +459,53 @@ static inline int getExpo2(unsigned int x) {
   }
   return result;
 }
-/*
-static int findMatchingBitCount(const _uint128 &x, const _uint128 &y) {
-  int xExpo, yExpo;
-  getFirst32(x, xExpo);
-  getFirst32(y, yExpo);
-  _uint128 xs = x << (127 - xExpo);
-  _uint128 ys = y << (127 - yExpo);
-  int count = 0;
-  for (int i = 3; i >= 0; i--) {
-    for (int k = 31; k >= 0; k--) {
-      const int xbit = xs.s4.i[i] >> k;
-      const int ybit = ys.s4.i[i] >> k;
-      if (xbit == ybit) {
-        count++;
-      }
-      else {
-        return count;
-      }
-    }
-  }
-  return count;
-}
 
-static int findBestShift(const _uint128 &result, unsigned int q, const _uint128 &expected) {
-  int maxBitMatch = 0;
-  int bestShift   = 0;
-  for (int s = 0; s < 32; s++) {
-    _uint128 tmp = (result << s) + q;
-    int bitMatch = findMatchingBitCount(tmp, expected);
-    if (bitMatch > maxBitMatch) {
-      maxBitMatch = bitMatch;
-      bestShift = s;
-    }
+// Special class to perform fast multiplication of _uint128 and unsigned int
+// no need to do any accumulation of "cross-multiplications" cause 2. operand
+// is only 32 bits
+class _uint128FastMul : public _uint128 {
+public:
+  inline _uint128FastMul &operator=(const _uint128 &src) {
+    HI64(*this) = HI64(src); LO64(*this) = LO64(src);
+    return *this;
   }
-  return bestShift;
-}
-*/
+  inline _uint128FastMul &operator*=(unsigned int k) {
+    const _uint128FastMul copy(*this);
+    _asm {
+      mov edi, this
+      lea esi, copy
+      mov eax, dword ptr[esi]
+      mul k
+      mov dword ptr[edi], eax
+      mov dword ptr[edi+4], edx
+      mov eax, dword ptr[esi+4]
+      mul k
+      add dword ptr[edi+4], eax
+      mov dword ptr[edi+8], edx
+      adc dword ptr[edi+8], 0
+      mov eax, dword ptr[esi+8]
+      mul k
+      add dword ptr[edi+8], eax
+      mov dword ptr[edi+12], edx
+      adc dword ptr[edi+12], 0
+      mov eax, dword ptr[esi+12]
+      mul k
+      add dword ptr[edi+12], eax
+    }
+    return *this;
+  }
+};
 
 void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 *rem) {
   _uint128 dummyRest;
 
   int yExpo2;
-  const unsigned int y16      = getFirst16(y, yExpo2);
-  const int          y16Expo2 = getExpo2(y16); // in range [0..15]
-
-  _uint128 &rest = rem  ? *rem  : dummyRest;
+  const unsigned int y16    = getFirst16(y, yExpo2);
+  const int          yScale = yExpo2 - getExpo2(y16);
+  _uint128          &rest = rem  ? *rem  : dummyRest;
   rest = a;
   if(quot) *quot = 0;
-  _uint128 p;
+  _uint128FastMul p;
   int lastShift = 0;
   for (int count = 0; rest >= y; count++) {
     int restExpo2;
@@ -515,22 +513,19 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
     const int          rest32Expo2 = getExpo2(rest32);
     unsigned int       q;
     int                shift;
-    if ((shift = restExpo2 - yExpo2 - (rest32Expo2 - y16Expo2)) < 0) { // >= -31
+    if ((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
       q  = (rest32 / y16) >> -shift;
       if (q > 1) q--;
-      if(q > 1) {
-        p = y * q;
-      } else {
-        p = y;
-      }
+      p = y;
+      if(q > 1) p *= q;
       shift = 0;
     } else {
       q = rest32 / (y16 + 1);
-      if (q == 0) {
-        q = 1;
-        p = y;
-      } else {
-        p = y * q;
+      p = y;
+      switch(q) {
+      case 0 : q = 1; break;
+      case 1 : break;
+      default: p *= q; break;
       }
       if(shift) p <<= shift;
     }

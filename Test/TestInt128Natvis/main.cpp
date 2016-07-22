@@ -2,8 +2,6 @@
 #include <Math/Rational.h>
 #include <Math/BigReal.h>
 #include <Math/Double80.h>
-
-#ifdef IS64BIT
 #include <Math/Int128.h>
 
 void doInt128Math() {
@@ -19,7 +17,6 @@ void doInt128Math() {
 
   printf("z:%s\n", s);
 }
-#endif
 
 void doD80Math() {
   Double80 x = 1;
@@ -35,9 +32,7 @@ int main(int argc, TCHAR **argv) {
 
   doD80Math();
   int brSize = sizeof(BigReal);
-#ifdef IS64BIT
   doInt128Math();
-#endif
   int sz = sizeof(BigReal);
 
   BigReal xb, yb;
