@@ -150,7 +150,6 @@
     <ClCompile Include="Double80Addin.cpp" />
     <ClCompile Include="Int128Addin.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="NumberAddIn.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="NumberAddin.def" />

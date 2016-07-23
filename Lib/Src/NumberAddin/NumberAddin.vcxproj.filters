@@ -18,9 +18,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NumberAddIn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="BigRealAddin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

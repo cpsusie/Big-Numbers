@@ -139,28 +139,11 @@ public:
 template<class BigReal, class Digit> class BigRealAddIn {
 private:
   DEBUGHELPER *m_helper;
-  void *getObjectx86(void *dst, DWORD addr, int size) const {
-    DWORD got;
-    const BOOL hr = m_helper->ReadDebuggeeMemory(m_helper, addr, size, dst, &got);
-    if (got != size) {
-      throwException(_T("undefined"));
-    }
-    return dst;
-  }
-
-  void *getObjectx64(void *dst, QWORD addr, int size) const {
-    DWORD got;
-    const BOOL hr = m_helper->ReadDebuggeeMemoryEx(m_helper, addr, size, dst, &got);
-    if (got != size) {
-      throwException(_T("undefined"));
-    }
-    return dst;
-  }
   Digit &getDigit(Digit &d, QWORD addr) const {
     if (sizeof(Digit) == sizeof(Digitx86)) {
-      return *(Digit*)getObjectx86(&d, (DWORD)addr, sizeof(Digit));
+      return *(Digit*)m_helper->getObjectx86(&d, (DWORD)addr, sizeof(Digit));
     } else {
-      return *(Digit*)getObjectx64(&d, addr, sizeof(Digit));
+      return *(Digit*)m_helper->getObjectx64(&d, addr, sizeof(Digit));
     }
   }
 
@@ -276,11 +259,11 @@ ADDIN_API HRESULT WINAPI AddIn_BigReal(DWORD dwAddress, DEBUGHELPER *pHelper, in
     }
   }
   catch (...) {
-    tmpStr = _T("Invalid adress");
+    tmpStr = _T("Invalid address");
   }
 
   USES_CONVERSION;
   const char *cp = T2A(tmpStr.cstr());
   strncpy(pResult, cp, maxResult);
-	return S_OK;
+  return S_OK;
 }

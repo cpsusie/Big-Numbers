@@ -7,11 +7,10 @@ ADDIN_API HRESULT WINAPI AddIn_Double80(DWORD dwAddress, DEBUGHELPER *pHelper, i
     pHelper->getRealObject(&d, sizeof(d));
     char str[150];
     Double80::d80toa(str, d);
-    strncpy(str, str, maxResult);
+    strncpy(pResult, str, maxResult);
   }
   catch (...) {
-    strcpy(pResult, "Invalid adress");
+    strncpy(pResult, "Invalid address", maxResult);
   }
-
-	return S_OK;
+  return S_OK;
 }

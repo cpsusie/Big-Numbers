@@ -11,7 +11,7 @@ ADDIN_API HRESULT WINAPI AddIn__int128(DWORD dwAddress, DEBUGHELPER *pHelper, in
   } catch (...) {
     strcpy(pResult, "Invalid address");
   }
-	return S_OK;
+  return S_OK;
 }
 
 ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, int nBase, BOOL bUniStrings, char *pResult, size_t maxResult, DWORD /*reserved*/) {
@@ -25,5 +25,5 @@ ADDIN_API HRESULT WINAPI AddIn__uint128(DWORD dwAddress, DEBUGHELPER *pHelper, i
   } catch (...) {
     strcpy(pResult, "Invalid address");
   }
-	return S_OK;
+  return S_OK;
 }
