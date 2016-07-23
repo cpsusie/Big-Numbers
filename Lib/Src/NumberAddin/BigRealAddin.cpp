@@ -117,8 +117,6 @@ public:
 #define LOG10BASEx64  18
 #define ZEROEXPOx64   -900000000000000000
 
-typedef unsigned __int64 QWORD;
-
 class Digitx64 {
 public:
   QWORD          n;

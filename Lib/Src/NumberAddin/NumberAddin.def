@@ -1,4 +1,4 @@
-; NumbersAddin.def : Declares the module parameters for the DLL.
+; NumberAddin.def : Declares the module parameters for the DLL.
 
 LIBRARY
 

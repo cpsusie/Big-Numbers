@@ -18,13 +18,15 @@ typedef enum {
  ,PRTYPE_X64 = 9
 } ProcessorType;
 
+typedef unsigned __int64 QWORD;
+
 /* DebugHelper structure used from within the */
 typedef struct tagDEBUGHELPER {
 	DWORD dwVersion;
 	BOOL (WINAPI *ReadDebuggeeMemory)( const struct tagDEBUGHELPER *pThis, DWORD dwAddr, DWORD nWant, VOID* pWhere, DWORD *nGot );
 	// from here only when dwVersion >= 0x20000
-	unsigned __int64 (WINAPI *GetRealAddress)( const struct tagDEBUGHELPER *pThis );
-	BOOL (WINAPI *ReadDebuggeeMemoryEx)( const struct tagDEBUGHELPER *pThis, unsigned __int64 qwAddr, DWORD nWant, VOID* pWhere, DWORD *nGot );
+	QWORD (WINAPI *GetRealAddress)( const struct tagDEBUGHELPER *pThis );
+	BOOL (WINAPI *ReadDebuggeeMemoryEx)( const struct tagDEBUGHELPER *pThis, QWORD qwAddr, DWORD nWant, VOID* pWhere, DWORD *nGot );
 	int (WINAPI *GetProcessorType)( const struct tagDEBUGHELPER *pThis );
 
   inline DWORD getVersion() const {
@@ -42,8 +44,7 @@ typedef struct tagDEBUGHELPER {
     if (got != size) throwException(_T("undefined"));
     return dst;
   }
-
-  inline void *getObjectx64(void *dst, unsigned __int64 addr, int size) const {
+  inline void *getObjectx64(void *dst, QWORD addr, int size) const {
     DWORD got;
     const BOOL hr = ReadDebuggeeMemoryEx(this, addr, size, dst, &got);
     if (got != size) throwException(_T("undefined"));

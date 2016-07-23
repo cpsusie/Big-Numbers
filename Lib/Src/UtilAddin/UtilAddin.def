@@ -1,0 +1,9 @@
+; UtilAddin.def : Declares the module parameters for the DLL.
+
+LIBRARY
+
+EXPORTS
+    AddIn_BitSet
+    AddIn_Date
+    AddIn_Time
+    AddIn_Timestamp

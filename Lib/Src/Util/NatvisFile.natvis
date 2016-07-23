@@ -17,5 +17,17 @@
     </Expand>
   </Type>
 
+  <Type Name="BitSet">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet"></DisplayString>
+  </Type>
+  <Type Name="Date">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_Date"></DisplayString>
+  </Type>
+  <Type Name="Time">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_Time"></DisplayString>
+  </Type>
+  <Type Name="Timestamp">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_Timestamp"></DisplayString>
+  </Type>
 
 </AutoVisualizer>
