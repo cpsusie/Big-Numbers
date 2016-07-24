@@ -77,7 +77,6 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
       for(n /= p; n % p == 0; n /= p) {
         pf.m_multiplicity++;
       }
-      INITPRIMEFACTORDEBUGSTRING(pf);
       add(pf);
     }
     if((n == 1) || (p > upperLimit)) {
@@ -87,7 +86,6 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
   if(n != 1) {
     add(PrimeFactor(n));
   }
-  INITPRIMEFACTORARRAYDEBUGSTRING(*this);
 }
 
 PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int m) const {
@@ -98,7 +96,6 @@ PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int
       result.add(i);
     }
   }
-  INITPRIMEFACTORSETDEBUGSTRING(result, *this);
   return result;
 }
 
@@ -124,16 +121,3 @@ String PrimeFactorArray::toString() const {
     return m_positive ? result : format(_T("-%s"), result.cstr());
   }
 }
-
-#ifdef USEPRIMEFACTORDEBUGINFO
-
-void PrimeFactorSet::initDebugString(const PrimeFactorArray &a) {
-  m_debugString = a.isPositive() ? _T("{") : _T("{-1");
-  const TCHAR *delimiter = _T("");
-  for(Iterator<size_t> it = getIterator(); it.hasNext(); delimiter = _T(",")) {
-    m_debugString += format(_T("%s%u"), delimiter, a[it.next()].m_prime);
-  }
-  m_debugString += _T("}");
-}
-
-#endif

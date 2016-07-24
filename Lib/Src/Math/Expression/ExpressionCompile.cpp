@@ -668,7 +668,7 @@ void Expression::genPolynomial(const ExpressionNode *n, ExpressionDestination ds
   CompactDoubleArray &coefValues = *coefP;
 
   BitSet variableCoefSet(coefNodes.size());
-  for (int i = 0; i < coefNodes.size(); i++) {
+  for (size_t i = 0; i < coefNodes.size(); i++) {
     const ExpressionNode *cn = coefNodes[i];
     if (cn->isConstant()) {
       coefValues.add(evaluateRealExpr(cn));
@@ -878,48 +878,44 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   case GT   :
     { ExpressionInputSymbol symbol = n->getSymbol();
 #ifdef LONGDOUBLE
-      genExpression(n->left());
       genExpression(n->right());
+      genExpression(n->left());
       m_code.emit(FCOMPP);
 #else
       if(n->left()->isNameOrNumber()) {
         genExpression(n->right(), DST_FPU);
-        m_code.emitFCompare(n->left());
+        m_code.emitFComparePop(n->left());
+        symbol = reverseComparator(symbol);
       } else if(n->right()->isNameOrNumber()) {
         genExpression(n->left(), DST_FPU);
-        m_code.emitFCompare(n->right());
-        symbol = reverseComparator(symbol);
+        m_code.emitFComparePop(n->right());
       } else {
-        genExpression(n->left(), DST_FPU);
         genExpression(n->right(), DST_FPU);
+        genExpression(n->left(), DST_FPU);
         m_code.emit(FCOMPP);
       }
 #endif
       m_code.emit(FNSTSW_AX);
+      m_code.emit(SAHF);
+
       switch(symbol) {
       case EQ:
-        m_code.emitTestAH(0x40);
-        result.falseJumps.add(m_code.emitShortJmp(JESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
         break;
       case NE: 
-        m_code.emitTestAH(0x40);
-        result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JESHORT));
         break;
       case LE: 
-        m_code.emitTestAH(0x01);
-        result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JASHORT));
         break;
       case LT: 
-        m_code.emitTestAH(0x41);
-        result.falseJumps.add(m_code.emitShortJmp(JNESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JAESHORT));
         break;
       case GE: 
-        m_code.emitTestAH(0x41);
-        result.falseJumps.add(m_code.emitShortJmp(JESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JBSHORT));
         break;
       case GT: 
-        m_code.emitTestAH(0x01);
-        result.falseJumps.add(m_code.emitShortJmp(JESHORT));
+        result.falseJumps.add(m_code.emitShortJmp(JBESHORT));
         break;
       }
     }

@@ -632,6 +632,7 @@ public:
 #define FLDZ                                   FPUINS(0xD9EE)                            // push 0.0
 
 #define FNSTSW_AX                              FPUINS(0xDFE0)                            // Store status word into CPU register AX
+#define SAHF                                   B1INS( 0x9E	)
 
 // These opcodes should all be used with MEM_ADDR_* to get the various addressing-modes
 

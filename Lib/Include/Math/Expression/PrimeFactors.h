@@ -2,19 +2,7 @@
 
 #include <BitSet.h>
 
-#define USEPRIMEFACTORDEBUGINFO
-
 class PrimeFactor {
-#ifdef USEPRIMEFACTORDEBUGINFO
-private:
-  String m_debugString;
-public:
-  void initDebugString() { m_debugString = toString(); }
-  inline const String &getDebugString() const { return m_debugString; }
-#define INITPRIMEFACTORDEBUGSTRING(p) (p).initDebugString()
-#else
-#define INITPRIMEFACTORDEBUGSTRING(p)
-#endif
 public:
   unsigned __int64 m_prime;
   unsigned int m_multiplicity;
@@ -30,31 +18,12 @@ public:
 class PrimeFactorArray;
 
 class PrimeFactorSet : public BitSet {
-#ifdef USEPRIMEFACTORDEBUGINFO
-private:
-  String m_debugString;
-public:
-  void initDebugString(const PrimeFactorArray &a);
-#define INITPRIMEFACTORSETDEBUGSTRING(set, array) (set).initDebugString(array)
-#else
-#define INITPRIMEFACTORSETDEBUGSTRING(set, array)
-#endif
-
 public:
   inline explicit PrimeFactorSet(unsigned int capacity) : BitSet(capacity) {
   }
 };
 
-class PrimeFactorArray : public Array<PrimeFactor> {
-#ifdef USEPRIMEFACTORDEBUGINFO
-private:
-  String m_debugString;
-public:
-  void initDebugString() { m_debugString = toString(); }
-#define INITPRIMEFACTORARRAYDEBUGSTRING(a) (a).initDebugString()
-#else
-#define INITPRIMEFACTORARRAYDEBUGSTRING(a)
-#endif
+class PrimeFactorArray : public CompactArray<PrimeFactor> {
 private:
   bool m_positive;
 public:
@@ -66,7 +35,6 @@ public:
   }
   void setPositive() {
     m_positive = true;
-    INITPRIMEFACTORARRAYDEBUGSTRING(*this);
   }
   int sign() const {
     return m_positive ? 1 : -1;
