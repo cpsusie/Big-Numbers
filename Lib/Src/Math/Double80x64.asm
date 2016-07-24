@@ -62,7 +62,7 @@ FPUclearExceptions ENDP
 
 ;void D80consLong(Double80 &dst, long &x);
 D80consLong PROC
-    fild    qword ptr[rdx]
+    fild    dword ptr[rdx]
     fstp    tbyte ptr[rcx]
     ret
 D80consLong ENDP
@@ -75,9 +75,9 @@ D80consULong PROC
 
     and     edx, maxI32
     push    rdx
-    fild    qword ptr[rsp]
+    fild    dword ptr[rsp]
     push    7fffffffh
-    fild    qword ptr[rsp]
+    fild    dword ptr[rsp]
     faddp
     fld1
     faddp
@@ -87,7 +87,7 @@ D80consULong PROC
 
 DoSmallInt32:
     push    rdx
-    fild    qword ptr[rsp]
+    fild    dword ptr[rsp]
     add     rsp, 8
     fstp    tbyte ptr[rcx]
     ret
@@ -125,7 +125,7 @@ DoSmallInt64:
     ret
 D80consULongLong ENDP
 
-; void D80consFloat(Double80 &dst, float &x);
+;void D80consFloat(Double80 &dst, float &x);
 D80consFloat PROC
     fld     dword ptr[rdx]
     fstp    tbyte ptr[rcx]
