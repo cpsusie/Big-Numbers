@@ -17,6 +17,18 @@
     </Expand>
   </Type>
 
+  <Type Name="CompactArray&lt;*&gt;">
+      <DisplayString>{{size={m_size} }}</DisplayString>
+      <Expand>
+          <Item Name="[size]" ExcludeView="simple">m_size</Item>
+          <Item Name="[capacity]" ExcludeView="simple">m_capacity</Item>
+          <ArrayItems>
+              <Size>m_size</Size>
+              <ValuePointer>m_array</ValuePointer>
+          </ArrayItems>
+      </Expand>
+  </Type>
+
   <Type Name="BitSet">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet"></DisplayString>
   </Type>
