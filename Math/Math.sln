@@ -12,6 +12,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BigReal", "..\Lib\Src\BigReal\BigReal.vcxproj", "{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3FunctionPlotter", "..\D3FunctionPlotter\D3FunctionPlotter.vcxproj", "{37363999-F725-4257-BCF6-B13C5152A2FF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CalculatorApp", "CalculatorApp\CalculatorApp.vcxproj", "{3EA4F184-FE6C-43BA-BD7F-298090A8991D}"
 EndProject
