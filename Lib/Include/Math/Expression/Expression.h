@@ -411,19 +411,19 @@ public:
 
 class ExpressionDescription {
 private:
-  const char *m_syntax;
-  const char *m_description;
+  const TCHAR *m_syntax;
+  const TCHAR *m_description;
 
   static const ExpressionDescription expressionHelpList[];
   static const int helpListSize;
 
-  ExpressionDescription(const char *syntax, const char *description);
+  ExpressionDescription(const TCHAR *syntax, const TCHAR *description);
 public:
-  const char *getSyntax() const {
+  const TCHAR *getSyntax() const {
     return m_syntax;
   }
 
-  const char *getDescription() const {
+  const TCHAR *getDescription() const {
     return m_description;
   }
 
