@@ -12,9 +12,7 @@
 #include <Random.h>
 #include "Double80.h"
 #include "Real.h"
-#ifdef IS64BIT
 #include "Int128.h"
-#endif
 
 // Define this to have 2 different version of getDecimalDigitCount64(unsigned __int64 n).
 // Measures og time show that getDecimalDigitCount64 is 5 times faster that getDecimalDigitCount64Loop
@@ -209,7 +207,7 @@ private:
   DECLARECLASSNAME;
   Semaphore     m_gate;
   unsigned char m_state;
-  size_t        m_startSize;
+  size_t        m_updateCount, m_savedCount;
 
   void save(const String &fileName);
   void load(const String &fileName);
@@ -231,6 +229,13 @@ public:
   ~Pow2Cache();
   bool put(const Pow2ArgumentKey &key, BigReal * const &v);
   BigReal **get(const Pow2ArgumentKey &key);
+  inline bool isChanged() const {
+    return m_updateCount != m_savedCount;
+  }
+  bool hasCacheFile() const;
+  void load();
+  void save();
+
 };
 
 class BigRealResource {
@@ -385,10 +390,8 @@ private:
   void init(unsigned   int    n);
   void init(         __int64  n);
   void init(unsigned __int64  n);
-#ifdef IS64BIT
   void init(const    _int128 &n);
   void init(        _uint128  n);
-#endif // IS64BIT
   void init(float             x);
   void init(double            x);
   void init(const Double80   &x);
@@ -538,44 +541,35 @@ public:
   inline BigReal(int              x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   inline BigReal(unsigned int     x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   inline BigReal(long             x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init((int)x);
   }
-
   inline BigReal(unsigned long    x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init((unsigned int)x);
   }
-
   inline BigReal(__int64          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   inline BigReal(unsigned __int64 x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-#ifdef IS64BIT
+
   inline BigReal(_int128          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   inline BigReal(_uint128         x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-#endif // IS64BIT
 
   BigReal(float                   x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   BigReal(double                  x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-
   BigReal(const Double80         &x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
@@ -609,54 +603,44 @@ public:
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(unsigned int     n) {
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(long             n) {
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(unsigned long    n) {
     clearDigits(); init((unsigned int)n);
     return *this;
   }
-
   inline BigReal &operator=(__int64          n) {
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(unsigned __int64 n) {
     clearDigits(); init(n);
     return *this;
   }
 
-#ifdef IS64BIT
   inline BigReal &operator=(const _int128   &n) {
     clearDigits(); init(n);
     return *this;
   }
-
   inline BigReal &operator=(const _uint128  &n) {
     clearDigits(); init(n);
     return *this;
   }
-#endif // IS64BIT
 
   inline BigReal &operator=(float            x) {
     clearDigits(); init(x);
     return *this;
   }
-
   inline BigReal &operator=(double           x) {
     clearDigits(); init(x);
     return *this;
   }
-
   inline BigReal &operator=(const Double80  &x) {
     clearDigits(); init(x);
     return *this;
@@ -670,10 +654,8 @@ public:
   friend unsigned long    getUlong(   const BigReal  &x);
   friend          __int64 getInt64(   const BigReal  &x);
   friend unsigned __int64 getUint64(  const BigReal  &x);
-#ifdef IS64BIT
   friend          _int128 getInt128(  const BigReal  &x);
   friend         _uint128 getUint128( const BigReal  &x);
-#endif // IS64BIT
   friend float            getFloat(   const BigReal  &x);
   friend double           getDouble(  const BigReal  &x);
   friend Double80         getDouble80(const BigReal  &x);
@@ -719,6 +701,11 @@ public:
   static BigReal ln10(         const BigReal &f);                                     // ln(10) with |error| < f
   static BigReal lnEstimate(   const BigReal &x);                                     // Approximatly ln(x). Assume 1 <= x <= 10
   static const BigReal &pow2(int n, size_t digits = 0);                               // 2^n, with the specified number of digits. if digits = 0, then full precision. Results are cached
+
+  static void loadPow2Cache();
+  static void savePow2Cache();
+  static bool hasPow2CacheFile();
+  static bool pow2CacheChanged();
 
   friend int compare(         const BigReal &x,  const BigReal &y);                   // sign(x-y)
   friend int compareAbs(      const BigReal &x,  const BigReal &y);                   // compare(|x|,|y|). (Faster than compare(fabs(x),fabs(y)))
@@ -959,14 +946,12 @@ public:
   inline ConstBigReal(unsigned __int64 x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-#ifdef IS64BIT
   inline ConstBigReal(const _int128   &x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   inline ConstBigReal(const _uint128  &x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-#endif // IS64BIT
 
   ConstBigReal(float                   x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
@@ -1008,11 +993,9 @@ public:
   static const ConstBigReal _i64_min;
   static const ConstBigReal _i64_max;
   static const ConstBigReal _ui64_max;
-#ifdef IS64BIT
   static const ConstBigReal _i128_min;
   static const ConstBigReal _i128_max;
   static const ConstBigReal _ui128_max;
-#endif // IS64BIT
   static const ConstBigReal _flt_min;
   static const ConstBigReal _flt_max;
   static const ConstBigReal _dbl_min;
@@ -1103,12 +1086,10 @@ public:
   }
   BigInt(unsigned __int64       x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-#ifdef IS64BIT
   BigInt(const _int128          &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
   BigInt(const _uint128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-#endif // IS64BIT
 
   explicit BigInt(const String &s, DigitPool *digitPool = NULL);
   explicit BigInt(const TCHAR  *s, DigitPool *digitPool = NULL);
@@ -1158,21 +1139,18 @@ public:
   ConstBigInt(unsigned __int64       x) : BigInt(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-#ifdef IS64BIT
   ConstBigInt(const _int128          &x) : BigInt(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   ConstBigInt(const _uint128         &x) : BigInt(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-#endif // IS64BIT
   explicit ConstBigInt(const String &s) : BigInt(s, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   explicit ConstBigInt(const TCHAR  *s) : BigInt(s, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-
 
 #ifdef UNICODE
   explicit ConstBigInt(const char   *s) : BigInt(s, REQUSETCONSTPOOL) {

@@ -31,12 +31,9 @@ const ConstBigReal ConstBigReal::_ulong_max(ULONG_MAX );
 const ConstBigReal ConstBigReal::_i64_min(_I64_MIN    );
 const ConstBigReal ConstBigReal::_i64_max(_I64_MAX    );
 const ConstBigReal ConstBigReal::_ui64_max(_UI64_MAX  );
-
-#ifdef IS64BIT
 const ConstBigReal ConstBigReal::_i128_min(_I128_MIN  );
 const ConstBigReal ConstBigReal::_i128_max(_I128_MAX  );
 const ConstBigReal ConstBigReal::_ui128_max(_UI128_MAX);
-#endif // IS64BIT
 
 const ConstBigReal ConstBigReal::_flt_min(FLT_MIN     );
 const ConstBigReal ConstBigReal::_flt_max(FLT_MAX     );

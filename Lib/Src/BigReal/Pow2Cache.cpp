@@ -19,54 +19,70 @@ size_t Pow2Cache::s_cacheRequestCount = 0;
 
 Pow2Cache::Pow2Cache() {
   m_state     = CACHE_EMPTY;
-  m_startSize = 0;
-  if (ACCESS(CACHEFILENAME, 0) == 0) {
+  m_updateCount = m_savedCount = 0;
+}
+
+Pow2Cache::~Pow2Cache() {
+  clear();
+}
+
+bool Pow2Cache::hasCacheFile() const {
+  return ACCESS(CACHEFILENAME, 0) == 0;
+}
+
+void Pow2Cache::load() {
+  if (hasCacheFile()) {
     m_gate.wait();
-    if (isEmpty()) {
-      setCapacity(33000);
-      load(CACHEFILENAME);
+    while(!isEmpty()) {
+      m_gate.signal();
+      clear();
+      m_gate.wait();
     }
-    m_startSize = size();
+    setCapacity(33000);
+    load(CACHEFILENAME);
+    m_updateCount = m_savedCount = 0;
     m_gate.signal();
   }
 }
 
-Pow2Cache::~Pow2Cache() {
-  if (size() != m_startSize) {
-    save(CACHEFILENAME);
+void Pow2Cache::save() {
+  if (isChanged()) {
     m_gate.wait();
-#ifdef _DEBUG
-    debugLog(_T("CacheHits/CacheRequest:(%s/%s) =%.2lf%%\n"), format1000(s_cacheHitCount).cstr(), format1000(s_cacheRequestCount).cstr(), PERCENT(s_cacheHitCount, s_cacheRequestCount));
-#endif
-    clear();
+    save(CACHEFILENAME);
+    m_savedCount = m_updateCount;
     m_gate.signal();
   }
 }
 
 void Pow2Cache::clear() {
+  m_gate.wait();
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
     delete it.next().getValue();
   }
   CompactHashMap<Pow2ArgumentKey, BigReal*>::clear();
   m_state = CACHE_EMPTY;
+  m_updateCount++;
+  m_gate.signal();
 }
 
 bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
   DEFINEMETHODNAME;
+  bool ret;
   if (m_state & (CACHE_LOADED|CACHE_LOADING)) {
     if (isLoaded()) {
       throwMethodException(s_className, method, _T("Not allowed when cache is loaded from file"));
     }
     m_state &= ~CACHE_EMPTY;
-    return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+    ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
   }
   else {
     m_gate.wait();
     m_state &= ~CACHE_EMPTY;
-    const bool ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+    ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
     m_gate.signal();
-    return ret;
   }
+  if(ret) m_updateCount++;
+  return ret;
 }
 
 BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
@@ -106,7 +122,6 @@ void Pow2Cache::save(ByteOutputStream &s) const {
 }
 
 void Pow2Cache::load(ByteInputStream &s) {
-  clear();
   UINT capacity;
   UINT n;
   const unsigned char signaturByte = s.getByte();
@@ -161,4 +176,17 @@ const BigReal &BigReal::pow2(int n, size_t digits) { // static
 #endif
   }
   return **result;
+}
+
+void BigReal::loadPow2Cache() {
+  s_pow2Cache.load();
+}
+void BigReal::savePow2Cache() {
+  s_pow2Cache.save();
+}
+bool BigReal::hasPow2CacheFile() {
+  return s_pow2Cache.hasCacheFile();
+}
+bool BigReal::pow2CacheChanged() {
+  return s_pow2Cache.isChanged();
 }

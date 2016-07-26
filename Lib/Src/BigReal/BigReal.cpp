@@ -461,7 +461,6 @@ unsigned __int64 getUint64(const BigReal &x) {
   return result;
 }
 
-#ifdef IS64BIT
 _int128 getInt128(const BigReal &x) {
   DEFINEMETHODNAME;
   if(x.isZero()) {
@@ -505,7 +504,6 @@ _uint128 getUint128(const BigReal &x) {
   for(;i-- >= 0;) result *= BIGREALBASE;
   return result;
 }
-#endif // IS64BIT
 
 unsigned long BigReal::hashCode() const {
   size_t s = m_expo;

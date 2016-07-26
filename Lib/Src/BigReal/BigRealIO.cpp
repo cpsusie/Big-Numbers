@@ -193,7 +193,7 @@ void BigReal::formatWithSpaceChar(String &result, TCHAR spaceChar) const {
 #ifdef IS32BIT
         result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
 #else
-        result += format(_T("%0*.*lu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
+        result += format(_T("%0*.*llu%c"), LOG10_BIGREALBASE,LOG10_BIGREALBASE,digit->n,spaceChar);
 #endif
         if(d-- == 0 && digit->next) 
           addDecimalPoint(result);

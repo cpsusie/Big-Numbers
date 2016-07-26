@@ -9,10 +9,8 @@ static void checkZero(DigitPool *pool) {
   verify(getUint(n)     == 0);
   verify(getInt64(n)    == 0);
   verify(getUint64(n)   == 0);
-#ifdef IS64BIT
   verify(getInt128(n)   == 0);
   verify(getUint128(n)  == 0);
-#endif
   verify(getFloat(n)    == 0);
   verify(getDouble(n)   == 0);
   verify(getDouble80(n) == 0);
@@ -78,9 +76,6 @@ static void checkExact(int line, unsigned __int64 x, DigitPool *pool) {
   }
 }
 
-
-#ifdef IS64BIT
-
 String toString(const _int128 &n) {
   TCHAR buf[200];
   _i128tot(n, buf, 10);
@@ -118,9 +113,6 @@ static void checkExact(int line, _uint128 x, DigitPool *pool) {
     throwException(_T("%s line %d. x=%s"), getFileName().cstr(), line, toString(x).cstr());
   }
 }
-#endif // IS64BIT
-
-
 
 void testConstructors(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
@@ -144,14 +136,12 @@ void testConstructors(TestStatistic &stat) {
   checkExact(__LINE__, _I64_MAX  , pool);
   checkExact(__LINE__, _UI64_MAX , pool);
 
-#ifdef IS64BIT
-  checkExact(__LINE__,_int128(_T("-1234567800023487623423400000")) , pool);
-  checkExact(__LINE__,_int128(_T("1234567800023487623423400000"))  , pool);
-  checkExact(__LINE__,_uint128(_T("1234567800023487623423400000")) , pool);
+  checkExact(__LINE__,_int128( _T("-1234567800023487623423400000")) , pool);
+  checkExact(__LINE__,_int128( _T("1234567800023487623423400000" )) , pool);
+  checkExact(__LINE__,_uint128(_T("1234567800023487623423400000" )) , pool);
   checkExact(__LINE__, _I128_MIN , pool);
   checkExact(__LINE__, _I128_MAX , pool);
   checkExact(__LINE__, _UI128_MAX, pool);
-#endif // IS64BIT
 
   float maxError32 = getRelativeError32(FLT_MIN,pool);
   verify(maxError32 == 0);

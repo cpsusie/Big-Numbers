@@ -78,7 +78,6 @@ void BigReal::init(unsigned __int64 n) {
   }
 }
 
-#ifdef IS64BIT
 void BigReal::init(const _int128 &n) {
   init();
   if(n) {
@@ -111,7 +110,6 @@ void BigReal::init(_uint128 n) {
     trimZeroes();
   }
 }
-#endif // IS64BIT
 
 BigReal::BigReal(const BigReal &x, DigitPool *digitPool) : m_digitPool(digitPool?*digitPool:x.m_digitPool) {
   init();

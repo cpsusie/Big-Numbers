@@ -299,16 +299,21 @@ int main(int argc, char **argv) {
         throwLastErrorOnSysCallException(_T("SetThreadPriorityBoost"));
       }
     }
+    if (BigReal::hasPow2CacheFile()) {
+      BigReal::loadPow2Cache();
+    }
     if(specialTest) {
       SpecialTestClass stc;
       stc.runTest();
     } else {
       testBigReal(threadCount);
     }
+    if (BigReal::pow2CacheChanged()) {
+      BigReal::savePow2Cache();
+    }
   } catch(Exception e) {
     tcout << _T("\nException:") << e.what() << _T("\n");
     return -1;
   }
-
   return 0;
 }
