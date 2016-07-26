@@ -1894,10 +1894,6 @@ inline char radixLetter(unsigned int c) {
   return (c < 10) ? ('0' + c) : ('a' + (c-10));
 }
 
-inline wchar_t wradixLetter(unsigned int c) {
-  return (c < 10) ? ('0' + c) : ('a' + (c-10));
-}
-
 inline bool iswodigit(wchar_t ch) {
   return ('0' <= ch) && (ch < '8');
 }

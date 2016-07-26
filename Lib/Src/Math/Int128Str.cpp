@@ -69,7 +69,7 @@ static const _uint128 powRadix[] = {
  ,0x48c27395 //  1220703125 =  5^13
  ,0x81bf1000 //  2176782336 =  6^12
  ,0x75db9c97 //  1977326743 =  7^11
- ,0x7        //  mask
+ ,0          //  not used
  ,0xcfd41b91 //  3486784401 =  9^10
  ,0x3b9aca00 //  1000000000 = 10^9
  ,0x8c8b6d2b //  2357947691 = 11^9
@@ -93,7 +93,7 @@ static const _uint128 powRadix[] = {
  ,0x23744899 //   594823321 = 29^6
  ,0x2b73a840 //   729000000 = 30^6
  ,0x34e63b41 //   887503681 = 31^6
- ,0x1f       //   mask = 31
+ ,0          //  not used
  ,0x4cfa3cc1 //  1291467969 = 33^6
  ,0x5c13d840 //  1544804416 = 34^6
  ,0x6d91b519 //  1838265625 = 35^6
@@ -146,15 +146,21 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
       *s = 0;
     }
     return str;
-  case 8 : // Get 3 bits for each loop. Can't use ULTOSTR. Use mask/shift instead
-  case 32: // Get 5 bits for each loop.
-    { const unsigned int mask = powRadix[radix];
+  case 8 : // Get 3 bits/digit giving 30 bits per loop, ie 10 digits/loop
+  case 32: // Get 5 bits/digits giving 30 bits per loop too! which is 6 digit/loop
+    { const unsigned int mask = (1 << dc) - 1;
+      const unsigned int dpl  = 30 / dc;
       _uint128 v = value;
-      do {
-        const unsigned int c = v & mask;
-        *(s++) = radixLetter(c);
-        v >>= dc;
-      } while (!v.isZero());
+      for(;;) {
+        unsigned int v30 = v & ((1<<30) - 1);
+        v >>= 30;
+        unsigned int count;
+        for(count = 0; v30; count++, v30 >>= dc) {
+          *(s++) = radixLetter(v30 & mask);
+        }
+        if (v.isZero()) break;
+        while(count++ < dpl) *(s++) = '0';
+      }
       *s = 0;
       return STRREV(str);
     }
