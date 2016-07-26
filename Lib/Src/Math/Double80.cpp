@@ -27,7 +27,7 @@ void FPU::init() { // static
 unsigned short FPU::getStatusWord() { // static
   unsigned short sw;
   __asm {
-    fnstsw sw 
+    fstsw sw
   }
   return sw;
 }
@@ -803,12 +803,13 @@ bool Double80::isZero() const {
   __asm {
     mov eax, this
     fld TBYTE PTR [eax]
-    fldz
-    fcomip st, st(1)            // compare and pop zero
+    ftst
+    fstsw ax
+    sahf
+    fstp    st(0)
     jne Exit                    // if st(0) != st(1) (this != zero) goto end
     mov result, 1
 Exit:
-    fstp st(0)                  // pop this
   }
   return result;
 }
@@ -834,26 +835,23 @@ Double80 fmod(const Double80 &x, const Double80 &y) {
     fld TBYTE PTR [eax]         //                                                    st0=x,st1=|y|
     fldz                        //                                                    st0=0,st1=x,st2=|y|
     fcomip st, st(1)            // compare and pop zero                               st0=x,st1=|y|
-    ja repeat_negative_x        // if st(0) > st(1) (0 > x) goto repeat_negative_x 
-repeat_positive_x:              // do {                                               st0=x,st1=|y|, x > 0
-    fprem                       //   st0 %= y                                       
+    ja RepeatNegativeX          // if st(0) > st(1) (0 > x) goto repeat_negative_x
+RepeatPositiveX:                // do {                                               st0=x,st1=|y|, x > 0
+    fprem                       //   st0 %= y
     fstsw ax
-    and ax,0x0400
-    test ah, 4
-    jne	repeat_positive_x       // } while(statusword.c2 != 0);
+    sahf
+    jpe RepeatPositiveX         // } while(statusword.c2 != 0);
     fldz                        //                                                    st0=0,st1=x,st2=|y|
     fcomip st, st(1)            // compare and pop zero
     jbe pop2                    // if(st(0) <= st(1) (0 <= remainder) goto pop2
     fadd                        // remainder += y
     fstp result                 // pop result
     jmp Exit                    // goto end
-
-repeat_negative_x:              // do {                                               st0=x,st=|y|, x < 0
-    fprem                       //    st0 %= y
+RepeatNegativeX:                // do {                                               st0=x,st=|y|, x < 0
+    fprem                       //   st0 %= y
     fstsw ax
-    and ax,0x0400
-    test ah, 4
-    jne	repeat_negative_x       // } while(statusword.c2 != 0)
+    sahf
+    jpe RepeatNegativeX         // } while(statusword.c2 != 0)
     fldz
     fcomip st, st(1)            // compare and pop zero
     jae pop2                    // if(st(0) >= st(1) (0 >= remainder) goto pop2

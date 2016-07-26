@@ -568,6 +568,7 @@ namespace TestDouble80 {
       verify(d80 == -1000);
       testFunction("fmod", fmod, fmod, -60, 60, 1.2, 10);
       testFunction("fmod", fmod, fmod, -2.3, 2.7, -1.2, 1);
+      testFunction("fmod", fmod, fmod, -1.1e23, 1.1e23, 1.1e-10, 1.45e-6);
 
       testFunction("sqrt", sqrt, sqrt, 0, 10);
       testFunction("sin", sin, sin, -1, 1);

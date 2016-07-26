@@ -279,15 +279,15 @@ D80D80Compare ENDP
 ;int D80isZero(const Double80 &x);
 D80isZero PROC
     fld     tbyte ptr[rcx]
-    fldz
-    fcomip  st, st(1)            ; compare and pop zero
+    ftst
+    fnstsw  ax
+    sahf
+    fstp    st(0)
     je      IsZero               ; if st(0) == st(1) (this != zero) goto IsZero
     xor     rax, rax             ; rax = 0 (false)
-    fstp    st(0)
     ret
 IsZero:
     mov     rax, 1               ; rax = 1 (true)
-    fstp    st(0)                ; pop x
     ret
 D80isZero ENDP
 
@@ -437,18 +437,18 @@ D80sqrt ENDP
 
 ;void D80modulus(TenByteClass &dst, const Double80 &x, const Double80 &y);
 D80modulus PROC
-    fld     tbyte ptr[r8]      ;                                                     st0=y
+    fld     tbyte ptr[r8]       ;                                                     st0=y
     fabs                        ; y = abs(y)                                          st0=|y|
-    fld     tbyte ptr[rdx]     ;                                                     st0=x,st1=|y|
+    fld     tbyte ptr[rdx]      ;                                                     st0=x,st1=|y|
     fldz                        ;                                                     st0=0,st1=x,st2=|y|
     fcomip  st, st(1)           ; compare and pop zero                                st0=x,st1=|y|
-    ja      Repeat_Negative_x   ; if st(0) > st(1) (0 > x) goto repeat_negative_x 
+    ja      RepeatNegativeX     ; if st(0) > st(1) (0 > x) goto RepeatNegativeX
 
-Repeat_Positive_x:              ; do {                                                st0=x,st1=|y|, x > 0
+RepeatPositiveX:                ; do {                                                st0=x,st1=|y|, x > 0
     fprem                       ;   st0 %= y                                       
-    fnstsw  ax
+    fstsw  ax
     sahf
-    jpe     Repeat_Positive_x   ; } while(statusword.c2 != 0);
+    jpe     RepeatPositiveX     ; } while(statusword.c2 != 0);
     fldz                        ;                                                     st0=0,st1=x,st2=|y|
     fcomip  st, st(1)           ; compare and pop zero
     jbe     pop2                ; if(st(0) <= st(1) (0 <= remainder) goto pop2
@@ -456,11 +456,11 @@ Repeat_Positive_x:              ; do {                                          
     fstp    tbyte ptr[rcx]      ; pop result
     ret                         ; return
 
-Repeat_Negative_x:              ; do {                                                st0=x,st=|y|, x < 0
+RepeatNegativeX:                ; do {                                                st0=x,st=|y|, x < 0
     fprem                       ;    st0 %= y
-    fnstsw  ax
+    fstsw  ax
     sahf
-    jpe     Repeat_Negative_x   ; } while(statusword.c2 != 0)
+    jpe     RepeatNegativeX     ; } while(statusword.c2 != 0)
     fldz
     fcomip  st, st(1)           ; compare and pop zero
     jae     pop2                ; if(st(0) >= st(1) (0 >= remainder) goto pop2

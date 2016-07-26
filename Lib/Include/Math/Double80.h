@@ -358,8 +358,8 @@ public:
     return p;
   }
 
-  static const Double80 zero;          // = 1
-  static const Double80 one;           // = 0
+  static const Double80 zero;          // = 0
+  static const Double80 one;           // = 1
   static const Double80 M_PI;          // = 3.1415926535897932384626433
   static const Double80 DBL80_EPSILON; // Smallest such that 1.0+DBL80_EPSILON != 1.0 (=1.08420217248550443e-019)
   static const Double80 DBL80_MIN;     // Min positive value (=3.36210314311209209e-4932)
