@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HelloWorld", "HelloWorld\HelloWorld\HelloWorld.vcxproj", "{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3FunctionPlotter", "D3FunctionPlotter\D3FunctionPlotter.vcxproj", "{37363999-F725-4257-BCF6-B13C5152A2FF}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
@@ -42,16 +40,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Debug|ARM.ActiveCfg = Debug|Win32
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Debug|x64.ActiveCfg = Debug|x64
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Debug|x64.Build.0 = Debug|x64
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Debug|x86.ActiveCfg = Debug|Win32
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Debug|x86.Build.0 = Debug|Win32
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Release|ARM.ActiveCfg = Release|Win32
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Release|x64.ActiveCfg = Release|x64
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Release|x64.Build.0 = Release|x64
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Release|x86.ActiveCfg = Release|Win32
-		{D3485F05-926B-4A9D-A1C1-A5602B1D6C3C}.Release|x86.Build.0 = Release|Win32
 		{37363999-F725-4257-BCF6-B13C5152A2FF}.Debug|ARM.ActiveCfg = Debug|Win32
 		{37363999-F725-4257-BCF6-B13C5152A2FF}.Debug|x64.ActiveCfg = Debug|x64
 		{37363999-F725-4257-BCF6-B13C5152A2FF}.Debug|x64.Build.0 = Debug|x64
