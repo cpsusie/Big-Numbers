@@ -65,7 +65,7 @@ public:
     FPUgetControlWord(tmp);
     return tmp;
   }
-  static inline void             setControlWord(unsigned short flags) {
+  static inline void setControlWord(unsigned short flags) {
     FPUsetControlWord(flags);
   }
   static unsigned short          getTagsWord() {
@@ -79,10 +79,13 @@ public:
 #endif // IS32BIT
 
   static void             clearStatusWord();
-  static void             setPrecisionMode(FPUPrecisionMode p); // returns old precision mode
+  static unsigned short   setPrecisionMode(FPUPrecisionMode p); // returns currnet FPU controlwoed
   static FPUPrecisionMode getPrecisionMode();
-  static void             setRoundMode(FPURoundMode mode);      // returns old round mode
+  static unsigned short   setRoundMode(FPURoundMode mode);      // returns current FPU controlword
   static FPURoundMode     getRoundMode();
+  static inline void      restoreControlWord(unsigned short ctrlWord) {
+    setControlWord(ctrlWord);
+  }
   static int              getStackHeight();
   static bool             stackOverflow();
   static bool             stackUnderflow();

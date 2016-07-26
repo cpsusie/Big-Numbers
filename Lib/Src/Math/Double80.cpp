@@ -65,8 +65,8 @@ void FPU::clearExceptions() { // static
 #define SETBIT(n,bit)   ((n) |  (1<<(bit)))
 #define CLEARBIT(n,bit) ((n) & ~(1<<(bit)))
 
-void FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
-  unsigned short cw = getControlWord();
+unsigned short FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
+  const unsigned short cw = getControlWord();
   switch(mode) {
   case FPU_LOW_PRECISION   : // set bit[8;9] of FPU control register to 0,0
     setControlWord((unsigned short)CLEARBIT(CLEARBIT(cw,8),9));
@@ -80,11 +80,12 @@ void FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
   default: throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__)
                                               ,_T("mode=%d"), mode);
   }
+  return cw;
 }
 
 FPUPrecisionMode FPU::getPrecisionMode() { // static
-  unsigned short cw = getControlWord();
-  int precisionMode = (cw >> 8) & 3;
+  const unsigned short cw            = getControlWord();
+  const int            precisionMode = (cw >> 8) & 3;
   switch(precisionMode) {
   case 0 : return FPU_LOW_PRECISION;
   case 2 : return FPU_NORMAL_PRECISION;
@@ -96,8 +97,8 @@ FPUPrecisionMode FPU::getPrecisionMode() { // static
   }
 }
 
-void FPU::setRoundMode(FPURoundMode mode) { // static
-  unsigned short cw = getControlWord();
+unsigned short FPU::setRoundMode(FPURoundMode mode) { // static
+  const unsigned short cw = getControlWord();
   switch(mode) {
   case FPU_ROUNDCONTROL_ROUND     : // set bit[10;11] of FPU control register to 0,0
     setControlWord((unsigned short)CLEARBIT(CLEARBIT(cw,10),11));
@@ -115,11 +116,12 @@ void FPU::setRoundMode(FPURoundMode mode) { // static
     throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__), _T("mode=%d"), mode);
     break;
   }
+  return cw;
 }
 
 FPURoundMode FPU::getRoundMode() { // static
-  unsigned short cw = getControlWord();
-  int roundingMode = (cw >> 10) & 3;
+  const unsigned short cw           = getControlWord();
+  const int            roundingMode = (cw >> 10) & 3;
   switch(roundingMode) {
   case 0 : return FPU_ROUNDCONTROL_ROUND;
   case 1 : return FPU_ROUNDCONTROL_ROUNDDOWN;
@@ -452,22 +454,20 @@ Exit:
 }
 
 long getLong(const Double80 &x) {
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   long result;
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
     fistp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 unsigned long getUlong(const Double80 &x) {
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   unsigned long result;
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   if(x > maxi32) {
     __asm {
       mov eax, x
@@ -484,27 +484,25 @@ unsigned long getUlong(const Double80 &x) {
       fistp result;
     }
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 __int64 getInt64(const Double80 &x) {
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   __int64 result;
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
     fistp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 unsigned __int64 getUint64(const Double80 &x) {
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   unsigned __int64 result;
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   if(x > maxi64) {
     __asm {
       mov eax, x
@@ -521,7 +519,7 @@ unsigned __int64 getUint64(const Double80 &x) {
       fistp result;
     }
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
@@ -959,9 +957,7 @@ void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c
 }
 
 Double80 exp(const Double80 &x) {
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -980,7 +976,7 @@ Double80 exp(const Double80 &x) {
     fstp result
   }
 
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
@@ -1032,9 +1028,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
     return y.isNegative() ? (Double80::one / Double80::zero) : Double80::zero;
   }
 
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR y
@@ -1053,7 +1047,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
     fstp st(1)
     fstp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
@@ -1062,9 +1056,7 @@ Double80 pow10(const Double80 &x) {
     return Double80::one;
   }
 
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1082,7 +1074,7 @@ Double80 pow10(const Double80 &x) {
     fstp st(1)
     fstp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
@@ -1091,9 +1083,7 @@ Double80 pow2(const Double80 &x) {
     return Double80::one;
   }
 
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1109,14 +1099,12 @@ Double80 pow2(const Double80 &x) {
     fstp st(1)
     fstp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 Double80 floor(const Double80 &x) {
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1124,14 +1112,12 @@ Double80 floor(const Double80 &x) {
     frndint
     fstp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
 Double80 ceil(const Double80 &x) {
-  unsigned short cwSave = FPU::getControlWord();
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1139,7 +1125,7 @@ Double80 ceil(const Double80 &x) {
     frndint
     fstp result
   }
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
   return result;
 }
 
@@ -1203,20 +1189,18 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
       return sx == 1 ? floor(half+x) : -floor(half-x);
     case 1 :
       { Double80 p = pow10(dec);
-        unsigned short cwSave = FPU::getControlWord();
-        FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+        const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(half+x*p) : -floor(half-x*p);
         result /= p;
-        FPU::setControlWord(cwSave);
+        FPU::restoreControlWord(cwSave);
         return result;
       }
     case -1:
       { Double80 p = pow10(-dec);
-        unsigned short cwSave = FPU::getControlWord();
-        FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+        const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(half+x/p) : -floor(half-x/p);
         result *= p;
-        FPU::setControlWord(cwSave);
+        FPU::restoreControlWord(cwSave);
         return result;
       } 
     }
@@ -1298,10 +1282,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
 #ifndef ASM_OPTIMIZED
 
-  unsigned short cwSave = FPU::getControlWord();
-
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-  
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   Double80 m = (expo10 == 0) ? x : (x / pow10(expo10));
   m = m * tenE18;
   while(fabs(m) >= tenE18M1) {
@@ -1320,15 +1301,12 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
   D80ToBCD(bcd, m);
 #endif // IS32BIT
 
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
 
 #else // ASM_OPTIMIZED
 
 #ifdef IS32BIT
-  unsigned short cwSave = FPU::getControlWord();
-
-  FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
-
+  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   static const Double80 E18    = tenE18;
   static const Double80 E18M1  = tenE18M1;
   static const Double80 TEN    = ten;
@@ -1340,13 +1318,13 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
     _asm {
       mov eax, expo10
       cmp eax, 0
-      jne scale_x
+      jne ScaleX
 
       mov eax, DWORD PTR x
       fld TBYTE PTR [eax]
-      jmp rescale
+      jmp Rescale
 
-  scale_x:                        // Find m = x / 10^abs(expo10)
+  ScaleX:                         // Find m = x / 10^abs(expo10)
       fild expo10                 //                                       st0=expo10
       fldl2t                      //                                       st0=log2(10)         , st1=expo10
       fmul
@@ -1371,12 +1349,12 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fld TBYTE PTR [eax]         //                                       st0=x                , st1=10^expo10
       fdivr                       //                                       st0=x/10^expo10
 
-  rescale:                        //                                       st0=m                  
+  Rescale:                        //                                       st0=m
       fld E18                     //                                       st0=1e18             , st1=m
       fmul                        // m *= 1e18                             st0=m
       mov eax, expo10             //                                       eax=expo10
       fld E18M1                   //                                       st0=1e18-1           , st1=m
-  whileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
+  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
       fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
       fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
       fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
@@ -1384,7 +1362,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
       fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
       inc eax                     //   expo10++
-      jmp whileLoop               // }
+      jmp WhileLoop               // }
   Exit:
       fstp st(0)                  // Pop st(0)                             st0=m
       fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
@@ -1398,13 +1376,13 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
     _asm {
       mov eax, p18
       cmp eax, 0
-      jne scale_x
+      jne ScaleX
 
       mov eax, DWORD PTR x
       fld TBYTE PTR [eax]
-      jmp rescale
+      jmp Rescale
 
-  scale_x:                        // Find m = x/10^p18. First find 5^p18
+  ScaleX:                         // Find m = x/10^p18. First find 5^p18
       fild p18                    //                                       st0=p18
       fld  LOG2_5                 //                                       st0=log2(5)          , st1=p18
       fmul
@@ -1434,10 +1412,10 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fstp st(1)                  // pop st1                               st0=x/2^p18          , st1=5^p18
       fdivr                       // st0 /= st1                            st0=m = x/2^p18/5^p18 = x/10^p18
 
-  rescale:                        //                                       st0=m
+  Rescale:                        //                                       st0=m
       mov eax, expo10             //                                       eax=expo10
       fld E18M1                   //                                       st0=1e18-1           , st1=m
-  whileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
+  WhileLoop:                      // while(|m| >= 1e18-1) {                st0=1e18-1           , st1=m
       fld st(1)                   //                                       st0=m                , st1=1e18-1          , st2=m
       fabs                        //                                       st0=|m|              , st1=1e18-1          , st2=m
       fcomip st, st(1)            //   compare |m| and 1e18-1 and pop |m|  st0=1e18-1           , st1=m
@@ -1445,7 +1423,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       fld TEN                     //                                       st0=10               , st1=1e18-1          , st2=m
       fdivp st(2), st(0)          //   m /= 10 and pop st0                 st0=1e18-1           , st1=m
       inc eax                     //   expo10++
-      jmp whileLoop               // }
+      jmp WhileLoop               // }
     Exit:
       fstp st(0)                  // Pop st(0)                             st0=m
       fbstp TBYTE PTR bcd         // Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
@@ -1453,7 +1431,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
     }
   #endif // SMART_VERSION
 
-  FPU::setControlWord(cwSave);
+  FPU::restoreControlWord(cwSave);
 #else // ! IS32BIT (ie IS64BIT)
 
   D80ToBCDAutoScale(bcd, x, expo10);

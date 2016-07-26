@@ -732,12 +732,12 @@ D80ToBCD ENDP
 D80ToBCDAutoScale PROC
     mov     eax, dword ptr[r8]  ;
     cmp     eax, 0              ;
-    jne     scale_x             ;
+    jne     scaleX              ;
                                 ;
     fld     tbyte ptr[rdx]      ; 
     jmp     rescale             ;
                                 ;
-scale_x:                        ; Find m = x / 10^abs(expo10)
+scaleX:                         ; Find m = x / 10^abs(expo10)
     fild    dword ptr[r8]       ;                                       st0=expo10
     fldl2t                      ;                                       st0=log2(10)         , st1=expo10
     fmul                        ;                                       st0=expo10*log2(10)
