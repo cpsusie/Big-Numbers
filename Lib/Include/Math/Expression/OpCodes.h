@@ -302,7 +302,7 @@ public:
 #define JECXSHORT                              B1INS(0xE3)                              // Jump short if ECX register is 0  1 byte PC relative offset
 
 #define CALL                                   B1INS(0xE8)                              // Call near, 4 byte PC relative, displacement
-#define CALLABSOLUTE                           B2INSA(0xFFD0)                            // Call far, absolute address given by operand
+#define CALLABSOLUTE                           B2INSA(0xFFD0)                           // Call far, absolute address given by operand
 #define RET                                    B1INS(0xC3)                              // Near return to calling procedure
 
 #define TEST_AL_IMM_BYTE                       B1INS(0xA8)                              // 1 byte operand
@@ -364,106 +364,106 @@ public:
 #endif
 
 #define ADD_BYTE_R8(         r8 )              B2INSA(0x0000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define ADD_DWORD_R32(       r32)              B2INSA(0x0100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_WORD_R16(        r16)              B3INSA(0x660100  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define ADD_DWORD_R32(       r32)              B2INSA(0x0100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_R8_BYTE(         r8 )              B2INSA(0x0200    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define ADD_R32_DWORD(       r32)              B2INSA(0x0300    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_R16_WORD(        r16)              B3INSA(0x660300  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define ADD_R32_DWORD(       r32)              B2INSA(0x0300    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define ADD_AL_IMM_BYTE                        B1INS(0x04)                              // 1 byte operand
-#define ADD_EAX_IMM_DWORD                      B1INS(0x05)                              // 4 byte operand
 #define ADD_AX_IMM_WORD                        B2INS(0x6605)                            // 2 byte operand
+#define ADD_EAX_IMM_DWORD                      B1INS(0x05)                              // 4 byte operand
 #define ADD_R8_IMM_BYTE(     r8 )              B2INS(0x80C0     |  (r8 ))               // 1 byte operand
-#define ADD_R32_IMM_DWORD(   r32)              B2INS(0x81C0     |  (r32))               // 4 byte operand
 #define ADD_R16_IMM_WORD(    r16)              B3INS(0x6681C0   |  (r16))               // 2 byte operand
-#define ADD_R32_IMM_BYTE(    r32)              B2INS(0x83C0     |  (r32))               // 1 byte operand
+#define ADD_R32_IMM_DWORD(   r32)              B2INS(0x81C0     |  (r32))               // 4 byte operand
 #define ADD_R16_IMM_BYTE(    r16)              B3INS(0x6683C0   |  (r16))               // 1 byte operand
+#define ADD_R32_IMM_BYTE(    r32)              B2INS(0x83C0     |  (r32))               // 1 byte operand
 
 #define OR_BYTE_R8(          r8 )              B2INSA(0x0800    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define OR_DWORD_R32(        r32)              B2INSA(0x0900    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define OR_WORD_R16(         r16)              B3INSA(0x660900  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define OR_DWORD_R32(        r32)              B2INSA(0x0900    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define OR_R8_BYTE(          r8 )              B2INSA(0x0A00    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define OR_R32_DWORD(        r32)              B2INSA(0x0B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define OR_R16_WORD(         r16)              B3INSA(0x660B00  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define OR_R32_DWORD(        r32)              B2INSA(0x0B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define OR_AL_IMM_BYTE                         B1INS(0x0C)                              // 1 byte operand
-#define OR_EAX_IMM_DWORD                       B1INS(0x0D)                              // 4 byte operand
 #define OR_AX_IMM_WORD                         B2INS(0x660D)                            // 2 byte operand
+#define OR_EAX_IMM_DWORD                       B1INS(0x0D)                              // 4 byte operand
 #define OR_R8_IMM_BYTE(      r8 )              B2INS(0x80C8     |  (r8 ))               // 1 byte operand
-#define OR_R32_IMM_DWORD(    r32)              B2INS(0x81C8     |  (r32))               // 4 byte operand
 #define OR_R16_IMM_WORD(     r16)              B3INS(0x6681C8   |  (r16))               // 2 byte operand
-#define OR_R32_IMM_BYTE(     r32)              B2INS(0x83C8     |  (r32))               // 1 byte operand
+#define OR_R32_IMM_DWORD(    r32)              B2INS(0x81C8     |  (r32))               // 4 byte operand
 #define OR_R16_IMM_BYTE(     r16)              B3INS(0x6683C8   |  (r16))               // 1 byte operand
+#define OR_R32_IMM_BYTE(     r32)              B2INS(0x83C8     |  (r32))               // 1 byte operand
 
 #define AND_BYTE_R8(         r8 )              B2INSA(0x2000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define AND_DWORD_R32(       r32)              B2INSA(0x2100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define AND_WORD_R16(        r16)              B3INSA(0x662100  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define AND_DWORD_R32(       r32)              B2INSA(0x2100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define AND_R8_BYTE(         r8 )              B2INSA(0x2200    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define AND_R32_DWORD(       r32)              B2INSA(0x2300    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define AND_R16_WORD(        r16)              B3INSA(0x662300  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define AND_R32_DWORD(       r32)              B2INSA(0x2300    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define AND_AL_IMM_BYTE                        B1INS(0x24)                              // 1 byte operand
-#define AND_EAX_IMM_DWORD                      B1INS(0x25)                              // 4 byte operand
 #define AND_AX_IMM_WORD                        B2INS(0x6625)                            // 2 byte operand
+#define AND_EAX_IMM_DWORD                      B1INS(0x25)                              // 4 byte operand
 #define AND_R8_IMM_BYTE(     r8 )              B2INS(0x80E0     |  (r8 ))               // 1 byte operand
-#define AND_R32_IMM_DWORD(   r32)              B2INS(0x81E0     |  (r32))               // 4 byte operand
 #define AND_R16_IMM_WORD(    r16)              B3INS(0x6681E0   |  (r16))               // 2 byte operand
-#define AND_R32_IMM_BYTE(    r32)              B2INS(0x83E0     |  (r32))               // 1 byte operand
+#define AND_R32_IMM_DWORD(   r32)              B2INS(0x81E0     |  (r32))               // 4 byte operand
 #define AND_R16_IMM_BYTE(    r16)              B3INS(0x6683E0   |  (r16))               // 1 byte operand
+#define AND_R32_IMM_BYTE(    r32)              B2INS(0x83E0     |  (r32))               // 1 byte operand
 
 #define SUB_BYTE_R8(         r8 )              B2INSA(0x2800    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define SUB_DWORD_R32(       r32)              B2INSA(0x2900    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define SUB_WORD_R16(        r16)              B3INSA(0x662900  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define SUB_DWORD_R32(       r32)              B2INSA(0x2900    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define SUB_R8_BYTE(         r8 )              B2INSA(0x2A00    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define SUB_R32_DWORD(       r32)              B2INSA(0x2B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define SUB_R16_WORD(        r16)              B3INSA(0x662B00  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define SUB_R32_DWORD(       r32)              B2INSA(0x2B00    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define SUB_AL_IMM_BYTE                        B1INS(0x2C)                              // 1 byte operand
-#define SUB_EAX_IMM_DWORD                      B1INS(0x2D)                              // 4 byte operand
 #define SUB_AX_IMM_WORD                        B2INS(0x662D)                            // 2 byte operand
+#define SUB_EAX_IMM_DWORD                      B1INS(0x2D)                              // 4 byte operand
 #define SUB_R8_IMM_BYTE(     r8 )              B2INS(0x80E8     |  (r8 ))               // 1 byte operand
-#define SUB_R32_IMM_DWORD(   r32)              B2INS(0x81E8     |  (r32))               // 4 byte operand
 #define SUB_R16_IMM_WORD(    r16)              B3INS(0x6681E8   |  (r16))               // 2 byte operand
-#define SUB_R32_IMM_BYTE(    r32)              B2INS(0x83E8     |  (r32))               // 1 byte operand
+#define SUB_R32_IMM_DWORD(   r32)              B2INS(0x81E8     |  (r32))               // 4 byte operand
 #define SUB_R16_IMM_BYTE(    r16)              B3INS(0x6683E8   |  (r16))               // 1 byte operand
+#define SUB_R32_IMM_BYTE(    r32)              B2INS(0x83E8     |  (r32))               // 1 byte operand
 
 #define XOR_BYTE_R8(         r8 )              B2INSA(0x3000    | ((r8 )<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
-#define XOR_DWORD_R32(       r32)              B2INSA(0x3100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define XOR_WORD_R16(        r16)              B3INSA(0x663100  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define XOR_DWORD_R32(       r32)              B2INSA(0x3100    | ((r32)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
 #define XOR_R8_BYTE(         r8 )              B2INSA(0x3200    | ((r8 )<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define XOR_R16_WORD(        r16)              B3INSA(0x663300  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define XOR_R32_DWORD(       r32)              B2INSA(0x3300    | ((r32)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
 #define XOR_AL_IMM_BYTE                        B1INS(0x34)                              // 1 byte operand
+#define XOR_AX_IMM_WORD                        B2INS(0x6635)                            // 2 byte operand
 #define XOR_EAX_IMM_DWORD                      B1INS(0x35)                              // 4 byte operand
 #define XOR_R8_IMM_BYTE(     r8 )              B2INS(0x80F0     |  (r8 ))               // 1 byte operand
-#define XOR_AX_IMM_WORD                        B2INS(0x6635)                            // 2 byte operand
-#define XOR_R32_IMM_DWORD(   r32)              B2INS(0x81F0     |  (r32))               // 4 byte operand
 #define XOR_R16_IMM_WORD(    r16)              B3INS(0x6681F0   |  (r16))               // 2 byte operand
-#define XOR_R32_IMM_BYTE(    r32)              B2INS(0x83F0     |  (r32))               // 1 byte operand
+#define XOR_R32_IMM_DWORD(   r32)              B2INS(0x81F0     |  (r32))               // 4 byte operand
 #define XOR_R16_IMM_BYTE(    r16)              B3INS(0x6683F0   |  (r16))               // 1 byte operand
+#define XOR_R32_IMM_BYTE(    r32)              B2INS(0x83F0     |  (r32))               // 1 byte operand
 
 #define CMP_BYTE_R8(         r8 )              B2INSA(0x3800    | ((r8 )<<3))           // Build op1 with MEM_ADDR-*,REG_SRC-macroes
-#define CMP_DWORD_R32(       r32)              B2INSA(0x3900    | ((r32)<<3))           // Build op1 with MEM_ADDR-*,REG_SRC-macroes
 #define CMP_WORD_R16(        r16)              B3INSA(0x663900  | ((r16)<<3))           // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define CMP_DWORD_R32(       r32)              B2INSA(0x3900    | ((r32)<<3))           // Build op1 with MEM_ADDR-*,REG_SRC-macroes
 #define CMP_R8_BYTE(         r8 )              B2INSA(0x3A00    | ((r8 )<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
-#define CMP_R32_DWORD(       r32)              B2INSA(0x3B00    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 #define CMP_R16_WORD(        r16)              B3INSA(0x663B00  | ((r16)<<3))           // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define CMP_R32_DWORD(       r32)              B2INSA(0x3B00    | ((r32)<<3))           // Build op2 with MEM_ADDR-*,REG_SRC-macroes
 #define CMP_AL_IMM_BYTE                        B1INS(0x3C)                              // 1 byte operand
-#define CMP_EAX_IMM_DWORD                      B1INS(0x3D)                              // 4 byte operand
 #define CMP_AX_IMM_WORD                        B2INS(0x663D)                            // 2 byte operand
+#define CMP_EAX_IMM_DWORD                      B1INS(0x3D)                              // 4 byte operand
 #define CMP_R8_IMM_BYTE(     r8 )              B2INS(0x80F8     |  (r8 ))               // 1 byte operand
-#define CMP_R32_IMM_DWORD(   r32)              B2INS(0x81F8     |  (r32))               // 4 byte operand
 #define CMP_R16_IMM_WORD(    r16)              B3INS(0x6681F8   |  (r16))               // 2 byte operand
-#define CMP_R32_IMM_BYTE(    r32)              B2INS(0x83F8     |  (r32))               // 1 byte operand
+#define CMP_R32_IMM_DWORD(   r32)              B2INS(0x81F8     |  (r32))               // 4 byte operand
 #define CMP_R16_IMM_BYTE(    r16)              B3INS(0x6683F8   |  (r16))               // 1 byte operand
+#define CMP_R32_IMM_BYTE(    r32)              B2INS(0x83F8     |  (r32))               // 1 byte operand
 
 #define MUL_BYTE                               B2INSA(0xF620)                           // Unsigned multiply (ax      = al  * src  )
-#define MUL_DWORD                              B2INSA(0xF720)                           //                   (edx:eax = eax * src  )
 #define MUL_WORD                               B3INSA(0x66F720)                         //                   (dx:ax   = ax  * src  )
+#define MUL_DWORD                              B2INSA(0xF720)                           //                   (edx:eax = eax * src  )
 
 #define IMUL_BYTE                              B2INSA(0xF628)                           // Signed multiply   (ax      = al  * src  )
-#define IMUL_DWORD                             B2INSA(0xF728)                           //                   (edx:eax = eax * src  )
 #define IMUL_WORD                              B3INSA(0x66F728)                         //                   (dx:ax   = ax  * src  )
+#define IMUL_DWORD                             B2INSA(0xF728)                           //                   (edx:eax = eax * src  )
 
 // Additional forms of IMUL
-#define IMUL2_R32_DWORD(      r32)             B3INSA(0x0FAF00    | ((r32)<<3))         // 2 arguments       (r32 *= src           )
 #define IMUL2_R16_WORD(       r16)             B4INSA(0x660FAF00  | ((r16)<<3))         //                   (r16 *= src           )
+#define IMUL2_R32_DWORD(      r32)             B3INSA(0x0FAF00    | ((r32)<<3))         // 2 arguments       (r32 *= src           )
 
 #define IMUL3_DWORD_IMM_DWORD(r32)             B2INSA(0x6900      | ((r32)<<3))         // 3 args, r32,src,4 byte operand (r32 = src * imm.dword)
 #define IMUL3_DWORD_IMM_BYTE( r32)             B2INSA(0x6B00      | ((r32)<<3))         // 3 args. r32.src.1 byte operand (r32 = src * imm.byte )
@@ -472,24 +472,24 @@ public:
 #define IMUL3_WORD_IMM_BYTE(  r16)             B3INSA(0x666B00    | ((r16)<<3))         // 1 byte operand    (r16 = src * imm byte )
 
 #define DIV_BYTE                               B2INSA(0xF630)                           // Unsigned divide ax      /= src, Result:al = quot. ah = rem
-#define DIV_DWORD                              B2INSA(0xF730)                           //                 dk:ax   /= src. Result:ax = quot. dx = rem
-#define DIV_WORD                               B3INSA(0x66F730)                         //                 edx:eax /= src. Result:eax= quot. edx= rem
+#define DIV_WORD                               B3INSA(0x66F730)                         //                 dk:ax   /= src. Result:ax = quot. dx = rem
+#define DIV_DWORD                              B2INSA(0xF730)                           //                 edx:eax /= src. Result:eax= quot. edx= rem
 
 #define IDIV_BYTE                              B2INSA(0xF638)                           // Signed divide   ax      /= src, ah  must contain sign extension of al. Result:al = quot. ah = rem
-#define IDIV_DWORD                             B2INSA(0xF738)                           //                 dk:ax   /= src. dx  must contain sign extension of ax. Result:ax = quot. dx = rem
-#define IDIV_WORD                              B3INSA(0x66F738)                         //                 edx:eax /= src. edx must contain sign extension of ax. Result:eax= quot. edx= rem
+#define IDIV_WORD                              B3INSA(0x66F738)                         //                 dk:ax   /= src. dx  must contain sign extension of ax. Result:ax = quot. dx = rem
+#define IDIV_DWORD                             B2INSA(0xF738)                           //                 edx:eax /= src. edx must contain sign extension of ax. Result:eax= quot. edx= rem
 
 #define NOT_BYTE                               B2INSA(0xF610)
-#define NOT_DWORD                              B2INSA(0xF710)
 #define NOT_WORD                               B3INSA(0x66F710)
+#define NOT_DWORD                              B2INSA(0xF710)
 
 #define NEG_BYTE                               B2INSA(0xF618)
-#define NEG_DWORD                              B2INSA(0xF718)
 #define NEG_WORD                               B3INSA(0x66F718)
+#define NEG_DWORD                              B2INSA(0xF718)
 
 #define INC_BYTE                               B2INSA(0xFE00)
-#define INC_DWORD                              B2INSA(0xFF00)
 #define INC_WORD                               B3INSA(0x66FF00)
+#define INC_DWORD                              B2INSA(0xFF00)
 
 #define DEC_BYTE                               B2INSA(0xFE08)
 #define DEC_WORD                               B3INSA(0x66FF08)
