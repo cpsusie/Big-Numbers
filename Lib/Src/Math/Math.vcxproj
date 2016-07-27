@@ -456,9 +456,9 @@
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Int128x64.obj</Outputs>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for signed _int128 basic arithmetic operators +,-,*,/,%,shift left, shift right</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for signed int128 basic arithmetic operators +,-,*,/,%,shift left, shift right</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Int128x64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
