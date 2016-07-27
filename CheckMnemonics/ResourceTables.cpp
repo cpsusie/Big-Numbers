@@ -978,7 +978,7 @@ static const void *action[633] = {
   ,act0610,act0611,act0612,act0613,act0614,act0615,act0616,act0617,act0618,act0619
   ,act0620,act0621,act0622,act0623,act0624,act0625,act0626,act0627,act0628,act0629
   ,act0630,act0631,act0632
-}; // Size of table:2532 bytes. 
+}; // Size of table:5064 bytes. 
 
 /****************************************************************************\
 * The successor matrix is used when the parser has reduced by prod A -> alfa *
@@ -1230,7 +1230,7 @@ static const TableType *successor[633] = {
   ,NULL    ,NULL    ,succ0612,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
   ,NULL    ,NULL    ,NULL    ,NULL    ,succ0624,NULL    ,NULL    ,NULL    ,succ0628,succ0629
   ,succ0630,NULL    ,NULL    
-}; // Size of pointertable:2532 bytes.
+}; // Size of pointertable:5064 bytes.
 
 /****************************************************************************\
 * The productionLength[] array is indexed by production number and holds     *
@@ -2268,7 +2268,7 @@ static const TCHAR *symbolName[445] = {
   /* 442 */ _T("fileName"),
   /* 443 */ _T("layoutInfo"),
   /* 444 */ _T("name")
-}; // Total size of strings:6716 bytes, size of pointertable:1780 bytes.
+}; // Total size of strings:6716 bytes, size of pointertable:3560 bytes.
 
 static const ParserShortTables ResourceTables_s(compressedSet, compressedLasets
                                                ,action, successor, productionLength, leftSide
@@ -2276,8 +2276,8 @@ static const ParserShortTables ResourceTables_s(compressedSet, compressedLasets
                                                ,328, 445, 472, 633);
 
 const ParserTables *ResourceTables = &ResourceTables_s;
-// Size of ResourceTables_s: 48 bytes. Size of ResourceTables:4 bytes
+// Size of ResourceTables_s: 88 bytes. Size of ResourceTables:8 bytes
 
 
-// Total size of table data:24.744 bytes.
+// Total size of table data:31.632 bytes.
 
