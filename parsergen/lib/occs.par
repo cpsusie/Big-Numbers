@@ -1,0 +1,239 @@
+#include "stdafx.h"
+#include <string.h>
+#include <stdio.h>
+#include <stdarg.h>
+#include "LRparser.h"
+
+char *PAtables::PArightname(int prod, char *dst) const {
+  int symbols[1000];
+  int l = PAprodlen(prod);
+  if(l == 0)
+    strcpy(dst,"epsilon");
+  else {
+    PArightside(prod,symbols);
+    strcpy(dst,"");
+    for(int i = 0; i < l; i++) {
+      if(i > 0) strcat(dst," ");
+      strcat(dst,PAsymbolname(symbols[i]));
+    }
+  }
+  return dst;
+}
+
+PAstackelement::PAstackelement() {
+  m_state  = 0;
+  m_symbol = 0;
+}
+
+PAstackelement::PAstackelement(short state, short symbol, const sourceposition &pos) {
+  m_state  = state;
+  m_symbol = symbol;
+  m_pos    = pos;
+}
+
+int LRparser::PAnextaction() const {
+  return done() ? (accept() ? 0 : PAError) : m_tables.PAaction(m_state,m_input);
+}
+
+void LRparser::PAshift(short state, short symbol, const sourceposition &pos) {
+  m_parserstack[m_stacktop++] = PAstackelement(state,symbol, pos);
+}
+
+int LRparser::PArecover(int input) { // input is terminal. return terminal
+  if(m_suppresserror == 0) {
+    m_errorcount++;
+    if(input) // if(input != eoi) - ie current lexeme is empty
+      error( m_scanner->ii_pos(), "Unexpected symbol:'%s'", m_scanner->ii_text());
+    else
+      error( m_scanner->ii_pos(), "Unexpected end of input");
+    if( m_errorcount > m_maxerrorcount ) {
+      error(m_scanner->ii_pos(), "Too many errors, aborting");
+      return 0 /*EOI*/;
+    }
+  }
+
+  int height  = PAstackheight();
+  do {
+    while( !PAstackempty() && m_tables.PAaction( PAstacktop().m_state, input) == PAError )
+       PAstackpop(1);
+
+    if(!PAstackempty()) { /* Recovered successfully */
+
+//      printf("recovering popped %d symbols\n",height - PAstackheight());
+
+      popsymbols(height - PAstackheight());
+      m_state = PAstacktop().m_state;
+      return input;
+    }
+
+//    printf("recovering skipping %s\n",PAsymbolname(input));
+
+    PAstackrestore(height);
+    input = m_scanner->yylex();
+  } while( m_scanner->ii_mark_prev(), input != 0 /*EOI*/ );
+
+  return 0 /*EOI*/;
+}
+
+sourceposition LRparser::yypos() const {
+  return sourceposition(m_yypos.m_lineno,m_yypos.m_col-m_yylength);
+}
+
+const sourceposition &LRparser::yypos(int i) const {
+  if(m_done) return m_yypos;
+  return (m_yyprodlen == 0) ? m_scanner->ii_ppos() : PAstacktop(m_yyprodlen-i).m_pos;
+}
+
+int LRparser::parsestep() { // return 0 on continue, != 0 terminate parse
+  if(m_done) return -1; // parse has been terminated. Dont try to continue
+  int action = m_tables.PAaction(m_state,m_input);
+  if(m_suppresserror)
+     m_suppresserror--;
+  if(action == PAError) {
+
+    if(m_debug) debug("error on symbol %d\n",m_input);
+
+    if((m_input = PArecover(m_input)) == 0) { /*EOI*/
+      m_done = true;
+      return -1;
+    }
+    m_suppresserror = m_cascadecount;
+  } else
+  if(action > 0) { // shift
+    m_state = action;
+
+    if(m_debug) debug("shift %s to state %d\n",m_tables.PAsymbolname(m_input),action);
+
+    PAshift(m_state, m_input, m_scanner->ii_pos());
+    shiftsymbol(m_input);
+    m_scanner->ii_mark_prev();
+    m_input = m_scanner->yylex();
+  } else
+  if(action <= 0) { // reduce by production (= -action)
+    m_yyreduceproduction = -action;
+    m_yyprodlen          = m_tables.PAprodlen(m_yyreduceproduction);
+
+    if(m_debug) {
+      char tmp[1000];
+      debug("reduce by %-3d :%s\t -> %s\n",m_yyreduceproduction,
+        m_tables.PAleftname(m_yyreduceproduction),
+        m_tables.PArightname(m_yyreduceproduction,tmp));
+    }
+
+    defaultreduce(m_yyreduceproduction);    // $$ = $1
+    char termchar;
+    bool gotptoken;
+    m_yypos = m_scanner->ii_ppos();
+    if(m_yytext = (char *)m_scanner->ii_ptext()) {
+      m_yylength = m_scanner->ii_plength();
+      termchar   = m_yytext[m_yylength];
+      m_yytext[m_yylength] = '\0' ;
+      gotptoken  = true;
+//      printf("<%s> at (%d,%d)\n",m_yytext,m_yypos.m_lineno,m_yypos.m_col);
+    }
+    else { /* no previous token */
+      m_yytext   = "";
+      m_yylength = 0;
+      gotptoken  = false;
+    }
+
+    int c = reduceaction(m_yyreduceproduction);
+    if(gotptoken)
+      m_yytext[m_yylength] = termchar;
+    if(c) {
+      m_done = true;
+      return c;
+    }
+
+    const sourceposition &pos = yypos(1);
+
+    PAstackpop(m_yyprodlen);
+    popsymbols(m_yyprodlen);
+    shiftdollardollar();
+    if(m_yyreduceproduction == 0) {
+      int nt  = m_tables.PAleft(m_yyreduceproduction);
+      PAshift(m_state,nt,pos);
+      m_done = true;
+    }
+    else {
+      m_state = PAstacktop().m_state;
+      int nt  = m_tables.PAleft(m_yyreduceproduction);
+      m_state = m_tables.PAsucc(m_state,nt);
+      PAshift(m_state,nt,pos);
+    }
+  }
+  return 0;
+}
+
+int LRparser::parsebegin() { // return 0 on ok. < 0 on error
+  if(m_scanner == NULL) {
+    m_errorcount++;
+    m_done = true;
+    error(sourceposition(),"No scanner specified for LRparser");
+    return -1;
+  }
+
+  initialize();
+  inituserstack();
+  m_input = m_scanner->yylex();
+  PAshift(m_state, 0, m_scanner->ii_pos()); // push state0, eoi - ie stackbottom
+  return 0;
+}
+
+int LRparser::parse() {
+  if(parsebegin() != 0) 
+    return -1;
+  while(!m_done) {
+    int c = parsestep();
+    if(c) return c;
+  }
+  return (m_errorcount == 0) ? 0 : -1;
+}
+
+int LRparser::reduceaction(int prod) {
+  return 0;
+}
+
+void LRparser::initialize() {
+  m_state         = 0;
+  m_suppresserror = 0;
+  m_errorcount    = 0;
+  m_done          = false;
+  m_input         = 0;
+  PAstackinit();
+}
+
+LRparser::LRparser(const PAtables &tables, scanner *lex) : m_tables(tables), m_scanner(lex) {
+  initialize();
+  m_maxerrorcount = 100;
+  m_cascadecount  = 5;
+  m_yytext        = "";
+  m_yylength      = 0;
+  m_debug         = false;
+  m_done          = true;
+}
+
+scanner *LRparser::setscanner(scanner *lex) {
+  scanner *old = m_scanner;
+  m_scanner = lex;
+  return old;
+}
+
+void LRparser::verror(const sourceposition &pos, const char *format,va_list argptr) {
+  vprintf(format,argptr);
+  printf("\n"); // we default append a newline.
+}
+
+void LRparser::error(const sourceposition &pos, const char *format,...) {
+  va_list argptr;
+  va_start(argptr,format);
+  verror(pos,format,argptr);
+  va_end(argptr);
+}
+
+void LRparser::debug(const char *format,...) {
+  va_list argptr;
+  va_start(argptr,format);
+  vprintf(format,argptr);
+  va_end(argptr);
+}

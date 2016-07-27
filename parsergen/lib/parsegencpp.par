@@ -1,0 +1,36 @@
+$NEWHEADERFILE$=$GRAMMARNAME$Symbol.h
+#pragma once
+  typedef enum {
+    $TERMINALSYMBOLS$
+  } $GRAMMARNAME$InputSymbol;
+	
+  typedef enum {
+    $NONTERMINALSYMBOLS$
+  } $GRAMMARNAME$NonTerminal;
+
+$NEWHEADERFILE$=$GRAMMARNAME$Parser.h
+#pragma once
+
+#include <LRparser.h>
+
+const extern ParserTables *$GRAMMARNAME$Tables;
+
+$FILEHEAD$
+
+$NEWFILE$=$GRAMMARNAME$Action.cpp
+$CLASSHEAD$
+
+int $GRAMMARNAME$Parser::reduceAction(unsigned int prod) {
+
+  switch(prod) {
+  $ACTIONS$
+  }
+  return 0;
+}
+
+$CLASSTAIL$
+$NEWFILE$=$GRAMMARNAME$Tables.cpp
+$CLASSHEAD$
+
+$TABLES$
+

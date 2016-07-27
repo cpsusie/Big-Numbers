@@ -1,0 +1,1787 @@
+
+/**
+ * Java 5 Grammar
+ * Copyright 2005-2006 Fraunhofer IESE
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author Stefan Mandel, Stefan.Mandel@iese.fraunhofer.de.
+ *
+ * Comments added by Janus Dam Nielsen, jdn@brics.dk.
+ * Bug fixes:
+ *
+ * - By Janus Dam Nielsen
+ *   19/04/2007
+ *     type_parameters {-> [elements]:type_parameter*} =
+ *	  lt type_parameter_list_gt {-> []};
+ *    Changed to:
+ *     type_parameters {-> [elements]:type_parameter*} =
+ *	  lt type_parameter_list_gt {-> type_parameter_list_gt.elements};
+ *   21/04/2007
+ *     Made difference between the representation of += and + and similar for the other operators.
+ *   29/05/2007
+ *     Ellipsis operators was desugared to [], separated the two into AEllipsisDim and ABracketDim.
+ */
+Package sablecc.java5;
+
+/*******************************************************************
+ * Helpers                                                                                                      *
+ *******************************************************************/
+Helpers
+
+unicode_input_character	=
+   	[0..0xffff];
+
+ht =
+	0x0009;
+
+lf =
+	0x000a;
+
+ff =
+	0x000c;
+
+cr =
+	0x000d;
+
+sp =
+	' ';
+
+line_terminator =
+	lf |
+	cr |
+	cr lf; 
+
+input_character =
+	[unicode_input_character - [cr + lf]];
+
+not_star =
+	   [input_character - '*'] |
+	   line_terminator;
+
+not_star_not_slash =
+	[input_character - ['*' + '/']] |
+	line_terminator;
+
+unicode_letter =
+	[0x0041..0x005a] |
+	[0x0061..0x007a] |
+	[0x00aa..0x00aa] |
+	[0x00b5..0x00b5] |
+	[0x00ba..0x00ba] |
+	[0x00c0..0x00d6] |
+	[0x00d8..0x00f6] |
+	[0x00f8..0x01f5] |
+	[0x01fa..0x0217] |
+	[0x0250..0x02a8] |
+	[0x02b0..0x02b8] |
+	[0x02bb..0x02c1] |
+	[0x02d0..0x02d1] |
+	[0x02e0..0x02e4] |
+	[0x037a..0x037a] |
+	[0x0386..0x0386] |
+	[0x0388..0x038a] |
+	[0x038c..0x038c] |
+	[0x038e..0x03a1] |
+	[0x03a3..0x03ce] |
+	[0x03d0..0x03d6] |
+	[0x03da..0x03da] |
+	[0x03dc..0x03dc] |
+	[0x03de..0x03de] |
+	[0x03e0..0x03e0] |
+	[0x03e2..0x03f3] |
+	[0x0401..0x040c] |
+	[0x040e..0x044f] |
+	[0x0451..0x045c] |
+	[0x045e..0x0481] |
+	[0x0490..0x04c4] |
+	[0x04c7..0x04c8] |
+	[0x04cb..0x04cc] |
+	[0x04d0..0x04eb] |
+	[0x04ee..0x04f5] |
+	[0x04f8..0x04f9] |
+	[0x0531..0x0556] |
+	[0x0559..0x0559] |
+	[0x0561..0x0587] |
+	[0x05d0..0x05ea] |
+	[0x05f0..0x05f2] |
+	[0x0621..0x063a] |
+	[0x0640..0x064a] |
+	[0x0671..0x06b7] |
+	[0x06ba..0x06be] |
+	[0x06c0..0x06ce] |
+	[0x06d0..0x06d3] |
+	[0x06d5..0x06d5] |
+	[0x06e5..0x06e6] |
+	[0x0905..0x0939] |
+	[0x093d..0x093d] |
+	[0x0958..0x0961] |
+	[0x0985..0x098c] |
+	[0x098f..0x0990] |
+	[0x0993..0x09a8] |
+	[0x09aa..0x09b0] |
+	[0x09b2..0x09b2] |
+	[0x09b6..0x09b9] |
+	[0x09dc..0x09dd] |
+	[0x09df..0x09e1] |
+	[0x09f0..0x09f1] |
+	[0x0a05..0x0a0a] |
+	[0x0a0f..0x0a10] |
+	[0x0a13..0x0a28] |
+	[0x0a2a..0x0a30] |
+	[0x0a32..0x0a33] |
+	[0x0a35..0x0a36] |
+	[0x0a38..0x0a39] |
+	[0x0a59..0x0a5c] |
+	[0x0a5e..0x0a5e] |
+	[0x0a72..0x0a74] |
+	[0x0a85..0x0a8b] |
+	[0x0a8d..0x0a8d] |
+	[0x0a8f..0x0a91] |
+	[0x0a93..0x0aa8] |
+	[0x0aaa..0x0ab0] |
+	[0x0ab2..0x0ab3] |
+	[0x0ab5..0x0ab9] |
+	[0x0abd..0x0abd] |
+	[0x0ae0..0x0ae0] |
+	[0x0b05..0x0b0c] |
+	[0x0b0f..0x0b10] |
+	[0x0b13..0x0b28] |
+	[0x0b2a..0x0b30] |
+	[0x0b32..0x0b33] |
+	[0x0b36..0x0b39] |
+	[0x0b3d..0x0b3d] |
+	[0x0b5c..0x0b5d] |
+	[0x0b5f..0x0b61] |
+	[0x0b85..0x0b8a] |
+	[0x0b8e..0x0b90] |
+	[0x0b92..0x0b95] |
+	[0x0b99..0x0b9a] |
+	[0x0b9c..0x0b9c] |
+	[0x0b9e..0x0b9f] |
+	[0x0ba3..0x0ba4] |
+	[0x0ba8..0x0baa] |
+	[0x0bae..0x0bb5] |
+	[0x0bb7..0x0bb9] |
+	[0x0c05..0x0c0c] |
+	[0x0c0e..0x0c10] |
+	[0x0c12..0x0c28] |
+	[0x0c2a..0x0c33] |
+	[0x0c35..0x0c39] |
+	[0x0c60..0x0c61] |
+	[0x0c85..0x0c8c] |
+	[0x0c8e..0x0c90] |
+	[0x0c92..0x0ca8] |
+	[0x0caa..0x0cb3] |
+	[0x0cb5..0x0cb9] |
+	[0x0cde..0x0cde] |
+	[0x0ce0..0x0ce1] |
+	[0x0d05..0x0d0c] |
+	[0x0d0e..0x0d10] |
+	[0x0d12..0x0d28] |
+	[0x0d2a..0x0d39] |
+	[0x0d60..0x0d61] |
+	[0x0e01..0x0e2e] |
+	[0x0e30..0x0e30] |
+	[0x0e32..0x0e33] |
+	[0x0e40..0x0e46] |
+	[0x0e81..0x0e82] |
+	[0x0e84..0x0e84] |
+	[0x0e87..0x0e88] |
+	[0x0e8a..0x0e8a] |
+	[0x0e8d..0x0e8d] |
+	[0x0e94..0x0e97] |
+	[0x0e99..0x0e9f] |
+	[0x0ea1..0x0ea3] |
+	[0x0ea5..0x0ea5] |
+	[0x0ea7..0x0ea7] |
+	[0x0eaa..0x0eab] |
+	[0x0ead..0x0eae] |
+	[0x0eb0..0x0eb0] |
+	[0x0eb2..0x0eb3] |
+	[0x0ebd..0x0ebd] |
+	[0x0ec0..0x0ec4] |
+	[0x0ec6..0x0ec6] |
+	[0x0edc..0x0edd] |
+	[0x0f40..0x0f47] |
+	[0x0f49..0x0f69] |
+	[0x10a0..0x10c5] |
+	[0x10d0..0x10f6] |
+	[0x1100..0x1159] |
+	[0x115f..0x11a2] |
+	[0x11a8..0x11f9] |
+	[0x1e00..0x1e9b] |
+	[0x1ea0..0x1ef9] |
+	[0x1f00..0x1f15] |
+	[0x1f18..0x1f1d] |
+	[0x1f20..0x1f45] |
+	[0x1f48..0x1f4d] |
+	[0x1f50..0x1f57] |
+	[0x1f59..0x1f59] |
+	[0x1f5b..0x1f5b] |
+	[0x1f5d..0x1f5d] |
+	[0x1f5f..0x1f7d] |
+	[0x1f80..0x1fb4] |
+	[0x1fb6..0x1fbc] |
+	[0x1fbe..0x1fbe] |
+	[0x1fc2..0x1fc4] |
+	[0x1fc6..0x1fcc] |
+	[0x1fd0..0x1fd3] |
+	[0x1fd6..0x1fdb] |
+	[0x1fe0..0x1fec] |
+	[0x1ff2..0x1ff4] |
+	[0x1ff6..0x1ffc] |
+	[0x207f..0x207f] |
+	[0x2102..0x2102] |
+	[0x2107..0x2107] |
+	[0x210a..0x2113] |
+	[0x2115..0x2115] |
+	[0x2118..0x211d] |
+	[0x2124..0x2124] |
+	[0x2126..0x2126] |
+	[0x2128..0x2128] |
+	[0x212a..0x2131] |
+	[0x2133..0x2138] |
+	[0x3005..0x3005] |
+	[0x3031..0x3035] |
+	[0x3041..0x3094] |
+	[0x309b..0x309e] |
+	[0x30a1..0x30fa] |
+	[0x30fc..0x30fe] |
+	[0x3105..0x312c] |
+	[0x3131..0x318e] |
+	[0x4e00..0x9fa5] |
+	[0xac00..0xd7a3] |
+	[0xf900..0xfa2d] |
+	[0xfb00..0xfb06] |
+	[0xfb13..0xfb17] |
+	[0xfb1f..0xfb28] |
+	[0xfb2a..0xfb36] |
+	[0xfb38..0xfb3c] |
+	[0xfb3e..0xfb3e] |
+	[0xfb40..0xfb41] |
+	[0xfb43..0xfb44] |
+	[0xfb46..0xfbb1] |
+	[0xfbd3..0xfd3d] |
+	[0xfd50..0xfd8f] |
+	[0xfd92..0xfdc7] |
+	[0xfdf0..0xfdfb] |
+	[0xfe70..0xfe72] |
+	[0xfe74..0xfe74] |
+	[0xfe76..0xfefc] |
+	[0xff21..0xff3a] |
+	[0xff41..0xff5a] |
+	[0xff66..0xffbe] |
+	[0xffc2..0xffc7] |
+	[0xffca..0xffcf] |
+	[0xffd2..0xffd7] |
+	[0xffda..0xffdc];
+
+unicode_digit =
+	[0x0030..0x0039] |
+	[0x0660..0x0669] |
+	[0x06f0..0x06f9] |
+	[0x0966..0x096f] |
+	[0x09e6..0x09ef] |
+	[0x0a66..0x0a6f] |
+	[0x0ae6..0x0aef] |
+	[0x0b66..0x0b6f] |
+	[0x0be7..0x0bef] |
+	[0x0c66..0x0c6f] |
+	[0x0ce6..0x0cef] |
+	[0x0d66..0x0d6f] |
+	[0x0e50..0x0e59] |
+	[0x0ed0..0x0ed9] |
+	[0x0f20..0x0f29] |
+	[0xff10..0xff19];
+
+java_letter =
+	unicode_letter |
+	'$' |
+	'_';
+
+java_letter_or_digit =
+	unicode_letter |
+	unicode_digit |
+	'$' |
+	'_';
+
+non_zero_digit =
+	['1'..'9'];
+
+digit =
+	['0'..'9'];
+
+hex_digit =
+	['0'..'9'] |
+	['a'..'f'] |
+	['A'..'F'];
+
+octal_digit =
+	['0'..'7'];
+
+zero_to_three =
+	['0'..'3'];
+
+decimal_numeral =
+	'0' |
+	non_zero_digit digit*;
+
+hex_numeral =
+	'0' ('x' | 'X') hex_digit+;
+
+octal_numeral =
+	'0' octal_digit+;
+
+integer_type_suffix =
+	'l' | 'L';
+
+exponent_part =
+	('e' | 'E') ('+' | '-')? digit+;
+
+float_type_suffix =
+	'f' | 'F' | 'd' | 'D';
+
+single_character =
+	[input_character - [''' + '\']];
+
+octal_escape =
+	'\' (octal_digit octal_digit? | zero_to_three octal_digit octal_digit);
+
+unicode_escape = '\u' hex_digit hex_digit hex_digit hex_digit;
+
+escape_sequence =
+	'\b' | '\t' | '\n' | '\f' | '\r' | '\"' | '\' ''' | '\\' | octal_escape | unicode_escape;
+
+string_character =
+	[input_character - ['"' + '\']] | escape_sequence;
+    
+decimal_integer_literal =
+	decimal_numeral integer_type_suffix?;
+
+hex_integer_literal =
+	hex_numeral integer_type_suffix?;
+
+octal_integer_literal =
+	octal_numeral integer_type_suffix?;
+
+true =
+	'true';
+
+false =
+	'false';
+
+null =
+	'null';
+
+/*******************************************************************
+ * Tokens                                                          *
+ *******************************************************************/
+Tokens
+
+white_space =
+	(sp | ht | ff | line_terminator)*;
+
+traditional_comment =
+	'/*' not_star+ '*'+ (not_star_not_slash not_star* '*'+)* '/';
+
+documentation_comment =
+	   '/**' '*'* (not_star_not_slash not_star* '*'+)* '/';
+
+end_of_line_comment =
+	'//' input_character* line_terminator?;
+
+assert =
+	'assert';
+
+abstract =
+	'abstract';
+
+boolean =
+	'boolean';
+
+break =
+	'break';
+
+byte =
+	'byte';
+
+case =
+	'case';   
+
+catch =
+	'catch'; 
+
+char =
+	'char';
+
+clazz =
+	'class'; 
+
+const =
+	'const';
+
+continue =
+	'continue';
+
+default =
+	'default';
+
+do =
+	'do';
+
+double =
+	'double';  
+
+else =
+	'else';  
+
+enum =
+	'enum';
+
+extends =
+	'extends'; 
+
+final =
+	'final';
+
+finally =
+	'finally';
+
+float =
+	'float';
+
+for =
+	'for';   
+
+goto =
+	'goto';
+
+if =
+	'if';
+
+implements =
+	'implements';
+
+import =
+	'import';
+
+instanceof =
+	'instanceof';      
+
+int =
+	'int';
+
+interface =
+	'interface';
+
+long =
+	'long';
+
+native =
+	'native';
+
+new =
+	'new';
+
+package =
+	'package';
+
+private =
+	'private';
+
+protected =
+	'protected';   
+
+public =
+	'public';
+
+return =
+	'return';
+
+short =
+	'short';   
+
+static =
+	'static';
+
+strictfp =
+	'strictfp';
+
+super =
+	'super'; 
+
+switch =
+	'switch';
+
+synchronized =
+	'synchronized';
+
+this =
+	'this';
+
+throw =
+	'throw';
+
+throws =
+	'throws';
+
+transient =
+	'transient';
+
+try =
+	'try';
+
+void =
+	'void';
+
+volatile =
+	'volatile';
+
+while =
+	'while';
+
+l_par =
+	'(';
+
+r_par =
+	')';
+
+l_brc =
+	'{';
+
+r_brc =
+	'}';
+
+l_brk =
+	'[';
+
+r_brk =
+	']';
+
+semicolon =
+	';';
+
+comma =
+	',';
+
+dot =
+	'.';
+
+assign =
+	'=';
+
+lt =
+	'<';
+
+gt =
+	'>';
+
+not =
+	'!';
+
+complement =
+	'~';
+
+question =
+	'?';
+
+colon =
+	':';
+
+ellipsis =
+	'...';
+
+at = 
+	'@';
+
+eq =
+	'==';
+
+lt_eq =
+	'<=';
+
+gt_eq =
+	'>=';
+
+neq =
+	'!=';
+
+and_and =
+	'&&';
+
+or_or =
+	'||';
+
+plus_plus =
+	'++';
+
+minus_minus =
+	'--';
+
+plus =
+	'+';
+
+minus =
+	'-';
+
+star =
+	'*';
+
+div =
+	'/';
+
+and =
+	'&';
+
+or =
+	'|';
+
+xor =
+	'^';
+
+mod =
+	'%';
+
+shl =
+	'<<';
+
+sshr =
+	'>>';
+
+ushr =
+	'>>>';
+
+plus_assign =
+	'+=';
+
+minus_assign =
+	'-=';
+
+star_assign =
+	'*=';
+
+div_assign =
+	'/=';
+
+and_assign =
+	'&=';
+
+or_assign =
+	'|=';
+
+xor_assign =
+	'^=';
+
+mod_assign =
+	'%=';
+
+shl_assign =
+	'<<=';
+
+sshr_assign =
+	'>>=';
+
+ushr_assign =
+	'>>>=';
+
+floating_point_literal =
+	digit+ '.' digit* exponent_part? float_type_suffix? |
+    '.' digit+ exponent_part? float_type_suffix? |
+    digit+ exponent_part float_type_suffix? |
+    digit+ exponent_part? float_type_suffix;
+
+character_literal =
+	''' (single_character | escape_sequence) ''';
+
+string_literal =
+	'"' string_character* '"';
+
+boolean_literal =
+    true | 
+    false;
+
+null_literal =
+    null;
+
+integer_literal =
+    decimal_integer_literal | 
+    hex_integer_literal | 
+    octal_integer_literal;
+    
+identifier =
+	java_letter java_letter_or_digit*;
+
+/*******************************************************************
+ * Ignored Tokens                                                  *
+ *******************************************************************/
+Ignored Tokens
+
+  white_space, 
+  traditional_comment, 
+  documentation_comment, 
+  end_of_line_comment;
+
+/*******************************************************************
+ * Productions                                                     *
+ *******************************************************************/
+Productions
+
+goal {-> compilation_unit} =
+    compilation_unit {-> compilation_unit};
+
+compilation_unit {-> compilation_unit} =
+    package_declaration? import_declaration* type_declaration* {-> New compilation_unit(package_declaration, [import_declaration], [type_declaration])};
+
+literal {-> literal} =
+    {integer_literal} integer_literal {-> New literal.integer(integer_literal)} |
+    {floating_point_literal} floating_point_literal {-> New literal.floating_point(floating_point_literal)} |
+    {boolean_literal} boolean_literal {-> New literal.boolean(boolean_literal)} |
+    {character_literal} character_literal {-> New literal.character(character_literal)} |
+    {string_literal} string_literal {-> New literal.string(string_literal)} |
+    {null_literal} null_literal {-> New literal.null(null_literal)};
+
+type {-> type} =
+    {primitive_type} primitive_type {-> primitive_type.type} |
+    {reference_type} reference_type {-> reference_type.type};
+
+primitive_type {-> type} =
+    {byte} byte {-> New type.byte(byte)} |
+    {short} short {-> New type.short(short)} |
+    {int} int {-> New type.int(int)} |
+    {long} long {-> New type.long(long)} |
+    {char} char {-> New type.char(char)} |
+    {float} float {-> New type.float(float)} |
+    {double} double {-> New type.double(double)} |
+    {boolean} boolean {-> New type.boolean(boolean)};
+
+reference_type_list {-> [elements]:type*} =
+	{one} reference_type {-> [reference_type.type]} |
+	{some} reference_type_list comma reference_type {-> [reference_type_list.elements, reference_type.type]};
+
+reference_type {-> type} =
+    {class_or_interface_type} class_or_interface_type {-> New type.reference([class_or_interface_type.generic_identifier])} |
+    {primitive_type_array} primitive_type dim+ {-> New type.array(primitive_type.type, [dim])} |
+    {name_array} name dim+ {-> New type.array(New type.reference([New generic_identifier([name.identifier], [])]), [dim])} |
+    {generic_type_array} class_or_interface_name type_arguments dim+ {-> New type.array(New type.reference([class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_arguments.elements])]), [dim])} |
+    {generic_type_special_array} class_or_interface_name type_arguments dot name dim+ {-> New type.array(New type.reference([class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_arguments.elements]), New generic_identifier([name.identifier], [])]), [dim])};
+
+class_or_interface_type_list {-> [elements]:type*} =
+    {one} class_or_interface_type {-> [New type.reference([class_or_interface_type.generic_identifier])]} |
+    {some} class_or_interface_type_list comma class_or_interface_type {-> [class_or_interface_type_list.elements, New type.reference([class_or_interface_type.generic_identifier])]};
+
+class_or_interface_type {-> generic_identifier*} =
+    {type} class_or_interface_name {-> [class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [])]} |
+    {generic_type} class_or_interface_name type_arguments {-> [class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_arguments.elements])]};
+
+class_or_interface_name {-> [prefix]:generic_identifier* [suffix]:identifier*} =
+	{name} name {-> [] [name.identifier]} |
+	{generic_name} class_or_interface_name type_arguments dot name {-> [class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_arguments.elements])] [name.identifier]};
+
+generic_identifier {-> identifier* type_argument*} =
+	name type_arguments? {-> [name.identifier] [type_arguments.elements]};
+
+name {-> identifier*} =
+    {simple_name} simple_name {-> [simple_name.identifier]} |
+    {qualified_name} qualified_name {->[qualified_name.identifier]};
+
+simple_name {-> identifier} =
+    identifier {-> identifier};
+
+qualified_name {-> identifier*}=
+    name dot identifier {-> [name.identifier, identifier]};
+
+package_declaration {-> package_declaration} =
+    modifier* package name semicolon {-> New package_declaration([modifier], [name.identifier])};
+
+import_declaration {-> import_declaration} =
+    {single_type_import_declaration} single_type_import_declaration {-> New import_declaration.single_type([single_type_import_declaration.identifier])} |
+    {type_import_on_demand_declaration} type_import_on_demand_declaration {-> New import_declaration.type_on_demand([type_import_on_demand_declaration.identifier])} |
+    {single_static_import_declaration} single_static_import_declaration {-> New import_declaration.single_static([single_static_import_declaration.identifier])} |
+    {static_import_on_demand_declaration} static_import_on_demand_declaration {-> New import_declaration.static_on_demand([static_import_on_demand_declaration.identifier])};
+
+single_type_import_declaration {-> identifier*} =
+    import name semicolon {-> [name.identifier]};
+
+type_import_on_demand_declaration {-> identifier*} =
+    import name dot star semicolon {-> [name.identifier]};
+
+single_static_import_declaration {-> identifier*} =
+    import static name semicolon {-> [name.identifier]};
+
+static_import_on_demand_declaration {-> identifier*} =
+    import static name dot star semicolon {-> [name.identifier]};
+
+type_declaration {-> type_declaration?} =
+    {class_declaration} class_declaration {-> class_declaration.type_declaration} |
+	{enum_declaration} enum_declaration {-> enum_declaration.type_declaration} |
+    {interface_declaration} interface_declaration {-> interface_declaration.type_declaration} |
+ 	{annotation_type_declaration} annotation_type_declaration {-> annotation_type_declaration.type_declaration} |
+    {semicolon} semicolon {-> Null};
+
+
+modifier {-> modifier} =
+	{annotation} annotation {-> New modifier.annotation(annotation)} |
+    {public} public {-> New modifier.public(public)} |
+    {protected} protected {-> New modifier.protected(protected)} |
+    {private} private {-> New modifier.private(private)} |
+    {static} static {-> New modifier.static(static)} |
+    {abstract} abstract {-> New modifier.abstract(abstract)} |
+    {final} final {-> New modifier.final(final)} |
+    {native} native {-> New modifier.native(native)} |
+    {synchronized} synchronized {-> New modifier.synchronized(synchronized)} |
+    {transient} transient {-> New modifier.transient(transient)} |
+    {volatile} volatile {-> New modifier.volatile(volatile)} |
+    {strictfp} strictfp {-> New modifier.strictfp(strictfp)};
+
+class_declaration {-> type_declaration} =
+    modifier* clazz identifier type_parameters? extends_class? implements_interfaces? class_body {-> New type_declaration.class([modifier], identifier, [type_parameters.elements], extends_class.class, [implements_interfaces.interfaces], class_body)};
+
+extends_class {-> [class]:type} =
+    extends class_or_interface_type {-> New type.reference([class_or_interface_type.generic_identifier])};
+
+implements_interfaces {-> [interfaces]:type*}=
+    implements class_or_interface_type_list {-> [class_or_interface_type_list.elements]};
+
+class_body {-> class_body} =
+    l_brc class_body_declaration* r_brc {-> New class_body([class_body_declaration.body_declaration])};
+
+class_body_declaration {-> body_declaration} =
+    {class_member_declaration} class_member_declaration {-> class_member_declaration.body_declaration} |
+    {static_initializer} static_initializer {-> static_initializer.body_declaration}|
+    {constructor_declaration} constructor_declaration {-> constructor_declaration.body_declaration}|
+    {instance_intitializer} block {-> New body_declaration.init([block.statement])};
+
+class_member_declaration {-> body_declaration} =
+    {field_declaration} field_declaration {-> field_declaration.body_declaration} |
+    {method_declaration} method_declaration {-> method_declaration.body_declaration}|
+    {type_declaration} type_declaration {-> New body_declaration.type(type_declaration)};
+
+field_declaration {-> body_declaration} =
+    modifier* type variable_declarators semicolon {-> New body_declaration.field([modifier], type, [variable_declarators.elements])};
+
+variable_declarators {-> [elements]:expression*} =
+    {one} variable_declarator {-> [variable_declarator.expression]} |
+    {some} variable_declarators comma variable_declarator {-> [variable_declarators.elements, variable_declarator.expression]};
+
+variable_declarator {-> expression} =
+    {variable_declarator_id} variable_declarator_id {-> New expression.primary(variable_declarator_id.primary)} |
+    {assign} variable_declarator_id assign variable_initializer {-> New expression.assign(New expression.primary(variable_declarator_id.primary), New op.assign(), variable_initializer.expression)};
+
+variable_declarator_id {-> primary}=
+    {identifier} identifier {-> New primary.name([identifier])} |
+    {array} identifier dim+ {-> New primary.array([identifier], [dim])};
+
+variable_initializer {-> expression} =
+    {init} expression {-> expression} |
+    {array_init} array_initializer {-> New expression.values([array_initializer.elements])};
+
+method_declaration {-> body_declaration} =
+    {type} modifier* type_parameters? type identifier formal_parameters dim* throws_exception? method_body {-> New body_declaration.method([modifier], [type_parameters.elements], type, [dim], identifier, [formal_parameters.elements], [throws_exception.type], method_body)} |
+    {void} modifier* type_parameters? void identifier formal_parameters throws_exception? method_body {-> New body_declaration.method([modifier], [type_parameters.elements], Null, [], identifier, [formal_parameters.elements], [throws_exception.type], method_body)};
+
+formal_parameters {-> [elements]:formal_parameter*}=
+	l_par formal_parameter_list? r_par {-> [formal_parameter_list.elements]};
+
+formal_parameter_list {-> [elements]:formal_parameter* } =
+    {one} formal_parameter {-> [formal_parameter]} |
+    {some} formal_parameter_list comma formal_parameter {-> [formal_parameter_list.elements, formal_parameter]};
+
+formal_parameter {-> formal_parameter} =
+    modifier* type ellipsis_operator? variable_declarator_id {-> New formal_parameter([modifier], type, [ellipsis_operator.dim], variable_declarator_id.primary)};
+
+ellipsis_operator {-> dim} =
+	ellipsis {-> New dim.ellipsis()};
+
+throws_exception {-> type*} =
+    throws class_or_interface_type_list {-> [class_or_interface_type_list.elements]};
+
+method_body {-> method_body} =
+    {block} block {-> New method_body([block.statement])} |
+    {semicolon} semicolon {-> New method_body([])};
+
+static_initializer {-> body_declaration} =
+    static block {-> New body_declaration.static_init([block.statement])};
+
+constructor_declaration {-> body_declaration} =
+    modifier* type_parameters? identifier formal_parameters throws_exception? constructor_body {-> New body_declaration.constructor([modifier], [type_parameters.elements], identifier, [formal_parameters.elements], [throws_exception.type], constructor_body)};
+
+constructor_body {-> constructor_body} =
+    l_brc explicit_constructor_invocation? block_statement* r_brc {-> New constructor_body([explicit_constructor_invocation.statement, block_statement.statement])};
+
+explicit_constructor_invocation {-> statement} =
+    {this} type_arguments? this arguments semicolon {-> New statement.expression(New expression.primary(New primary.constructor_invocation(Null, New primary.this(), [type_arguments.elements], [arguments.elements])))} |
+    {super} type_arguments? super arguments semicolon                 {-> New statement.expression(New expression.primary(New primary.constructor_invocation(Null, New primary.super(), [type_arguments.elements], [arguments.elements])))} |
+    {qualified} primary dot type_arguments? super arguments semicolon {-> New statement.expression(New expression.primary(New primary.constructor_invocation(primary, New primary.super(), [type_arguments.elements], [arguments.elements])))};
+
+interface_declaration {-> type_declaration} =
+    modifier* interface identifier type_parameters? extends_interfaces? interface_body {-> New type_declaration.interface([modifier], identifier, [type_parameters.elements], [extends_interfaces.interfaces], interface_body)};
+
+extends_interfaces {-> [interfaces]:type*}=
+    extends class_or_interface_type_list {-> [class_or_interface_type_list.elements]};
+
+interface_body {-> interface_body} =
+    l_brc interface_member_declaration* r_brc {-> New interface_body([interface_member_declaration.body_declaration])};
+
+interface_member_declaration {-> body_declaration} =
+    {constant_declaration} constant_declaration {-> constant_declaration.body_declaration} |
+    {abstract_method_declaration} abstract_method_declaration {-> abstract_method_declaration.body_declaration} |
+    {type_declaration} type_declaration {-> New body_declaration.type(type_declaration)};
+
+enum_declaration {-> type_declaration} =
+	modifier* enum identifier implements_interfaces? enum_body {-> New type_declaration.enum([modifier], identifier, [implements_interfaces.interfaces], enum_body)};
+
+enum_body {-> enum_body} =
+	l_brc enum_constant_list? comma? enum_body_declarations? r_brc {-> New enum_body([enum_constant_list.elements], [enum_body_declarations.body_declaration])};
+
+enum_constant_list {-> [elements]:enum_constant*}=
+	{one} enum_constant {-> [enum_constant]} |
+	{some} enum_constant_list comma enum_constant {-> [enum_constant_list.elements, enum_constant]};
+
+enum_constant {-> enum_constant} =
+	annotation* identifier arguments? class_body? {-> New enum_constant([annotation], identifier, [arguments.elements], class_body)};
+
+enum_body_declarations {-> body_declaration*} =
+	semicolon class_body_declaration* {-> [class_body_declaration.body_declaration]};
+
+annotation_type_declaration {-> type_declaration} =
+	modifier* at interface identifier annotation_type_body {-> New type_declaration.annotation_type([modifier], identifier, annotation_type_body)};
+
+annotation_type_body {-> annotation_type_body}  =
+	l_brc annotation_type_element_declaration* r_brc {-> New annotation_type_body([annotation_type_element_declaration.body_declaration])};
+
+annotation_type_element_declaration {-> body_declaration} =
+	{abstract_declaration} modifier* type identifier l_par r_par default_value? semicolon {-> New body_declaration.annotation([modifier], type, identifier, default_value.expression)} |
+	{constant_declaration} constant_declaration {-> constant_declaration.body_declaration} |
+    {type_declaration} type_declaration {-> New body_declaration.type(type_declaration)};
+
+default_value {-> expression} =
+	default element_value {-> element_value.expression};
+
+arguments {-> [elements]:expression*} =
+	l_par argument_list? r_par
+        {-> [argument_list.elements]};
+
+constant_declaration {-> body_declaration} =
+    field_declaration {-> field_declaration.body_declaration};
+
+abstract_method_declaration {-> body_declaration} =
+    {type} modifier* type_parameters? type identifier formal_parameters dim* throws_exception? semicolon {-> New body_declaration.method([modifier], [type_parameters.elements], type, [dim], identifier, [formal_parameters.elements], [throws_exception.type], Null)} |
+    {void} modifier* type_parameters? void identifier formal_parameters throws_exception? semicolon {-> New body_declaration.method([modifier], [type_parameters.elements], Null, [], identifier, [formal_parameters.elements], [throws_exception.type], Null)};
+
+array_initializer {-> [elements]:expression*} =
+    l_brc variable_initializer_list? comma? r_brc {-> [variable_initializer_list.elements]};
+
+variable_initializer_list {-> [elements]:expression*} =
+    {one} variable_initializer {-> [variable_initializer.expression]} |
+    {some} variable_initializer_list comma variable_initializer {-> [variable_initializer_list.elements, variable_initializer.expression]};
+
+block {-> statement*} =
+    l_brc block_statement* r_brc {-> [block_statement.statement]};
+
+block_statement {-> statement} =
+    {local_variable_declaration_statement} local_variable_declaration_statement {-> local_variable_declaration_statement.statement} |
+    {statement} statement {-> statement} |
+    {class_declaration} class_declaration {-> New statement.type(class_declaration.type_declaration)} |
+    {enum_declaration} enum_declaration {-> New statement.type(enum_declaration.type_declaration)};
+
+local_variable_declaration_statement {-> statement} =
+    local_variable_declaration semicolon {-> New statement.expression(New expression.local_variable([local_variable_declaration.modifier], local_variable_declaration.type, [local_variable_declaration.expression]))};
+
+local_variable_declaration {-> modifier* type expression*} =
+    modifier* type variable_declarators {-> [modifier] type [variable_declarators.elements]};
+
+statement {-> statement} =
+    {statement_without_trailing_substatement} statement_without_trailing_substatement {-> statement_without_trailing_substatement.statement} |
+    {labeled_statement} labeled_statement {-> labeled_statement.statement} |
+    {if_then_statement} if_then_statement {-> if_then_statement.statement} |
+    {if_then_else_statement} if_then_else_statement {-> if_then_else_statement.statement} |
+    {while_statement} while_statement {-> while_statement.statement} |
+    {for_statement} for_statement {-> for_statement.statement} |
+    {enhanced_for_statement} enhanced_for_statement {-> enhanced_for_statement.statement};
+
+statement_no_short_if {-> statement} =
+    {statement_without_trailing_substatement} statement_without_trailing_substatement{-> statement_without_trailing_substatement.statement} |
+    {labeled_statement_no_short_if} labeled_statement_no_short_if {-> labeled_statement_no_short_if.statement} |
+    {if_then_else_statement_no_short_if} if_then_else_statement_no_short_if {-> if_then_else_statement_no_short_if.statement} |
+    {while_statement_no_short_if} while_statement_no_short_if {-> while_statement_no_short_if.statement} |
+    {for_statement_no_short_if} for_statement_no_short_if {-> for_statement_no_short_if.statement} |
+    {enhanced_for_statement} enhanced_for_statement_no_short_if {-> enhanced_for_statement_no_short_if.statement}; //TODO verify
+
+statement_without_trailing_substatement {-> statement} =
+    {block} block {-> New statement.block([block.statement])} |
+    {empty_statement} empty_statement {-> empty_statement.statement} |
+    {expression_statement} expression_statement {-> expression_statement.statement} |
+    {switch_statement} switch_statement {-> switch_statement.statement} |
+    {do_statement} do_statement{-> do_statement.statement}  |
+    {break_statement} break_statement {-> break_statement.statement} |
+    {continue_statement} continue_statement {-> continue_statement.statement} |
+    {return_statement} return_statement {-> return_statement.statement} |
+    {synchronized_statement} synchronized_statement {-> New statement.synchronized(synchronized_statement.expression, [synchronized_statement.statement])} |
+    {throw_statement} throw_statement {-> throw_statement.statement} |
+    {try_statement} try_statement {-> try_statement.statement} |
+    {assert_statement_short} assert_statement_short {-> assert_statement_short.statement} |
+    {assert_statement_long} assert_statement_long {-> assert_statement_long.statement} ;
+
+empty_statement {-> statement} =
+    semicolon {-> New statement.empty()};
+
+labeled_statement {-> statement} =
+    identifier colon statement {-> New statement.label(identifier, statement)};
+
+labeled_statement_no_short_if {-> statement} =
+    identifier colon statement_no_short_if {-> New statement.label(identifier, statement_no_short_if.statement)};
+
+expression_statement {-> statement} =
+    statement_exp semicolon {-> New statement.expression(statement_exp.expression)};
+
+statement_exp {-> expression} =
+    {assignment} assignment {-> assignment.expression} |
+    {pre_increment_exp} pre_increment_exp {-> pre_increment_exp.expression} |
+    {pre_decrement_exp} pre_decrement_exp {-> pre_decrement_exp.expression} |
+    {post_increment_exp} post_increment_exp {-> post_increment_exp.expression} |
+    {post_decrement_exp} post_decrement_exp {-> post_decrement_exp.expression} |
+    {method_invocation} method_invocation {-> New expression.primary(method_invocation.primary)} |
+    {new_class_exp} new_class_exp {-> New expression.primary(new_class_exp.primary)};
+
+if_then_statement {-> statement} =
+    if condition [ifs]:statement {-> New statement.conditional(condition.expression, ifs, Null)};
+
+if_then_else_statement {-> statement} =
+    if condition [ifs]:statement_no_short_if else [elses]:statement {-> New statement.conditional(condition.expression, ifs.statement, elses)};
+
+if_then_else_statement_no_short_if {-> statement} =
+    if condition [ifs]:statement_no_short_if else [elses]:statement_no_short_if {-> New statement.conditional(condition.expression, ifs.statement, elses.statement)};
+
+switch_statement {-> statement} =
+    switch condition switch_block {-> New statement.switch(condition.expression, [switch_block.statement])};
+
+switch_block {-> statement*} =
+    l_brc switch_block_statement_group* switch_label* r_brc {-> [switch_block_statement_group.statement, New statement.switch_block([switch_label.expression], [])]} ;
+
+switch_block_statement_group {-> statement} =
+    switch_label+ block_statement+ {-> New statement.switch_block([switch_label.expression], [block_statement.statement])};
+
+switch_label {-> expression?} =
+    {expression} case constant_exp colon {-> constant_exp.expression} |
+    {default} default colon {-> Null};
+
+while_statement {-> statement} =
+    while condition statement {-> New statement.while(condition.expression, statement)};
+
+while_statement_no_short_if {-> statement} =
+    while condition statement_no_short_if {-> New statement.while(condition.expression, statement_no_short_if.statement)};
+
+do_statement {-> statement} =
+    do statement while condition semicolon {-> New statement.do(statement, condition.expression)};
+
+for_statement {-> statement} =
+    for l_par for_init? [semicolon1]:semicolon expression? [semicolon2]:semicolon for_update? r_par statement {-> New statement.for([for_init.expression], expression, [for_update.expression], statement)};
+
+for_statement_no_short_if {-> statement} =
+    for l_par for_init? [semicolon1]:semicolon expression? [semicolon2]:semicolon for_update? r_par statement_no_short_if {-> New statement.for([for_init.expression], expression, [for_update.expression], statement_no_short_if.statement)};
+
+for_init {-> expression*} =
+    {statement_exp_list} statement_exp_list {-> [statement_exp_list.elements]} |
+    {local_variable_declaration} local_variable_declaration {-> [New expression.local_variable([local_variable_declaration.modifier], local_variable_declaration.type, [local_variable_declaration.expression])]};
+
+for_update {-> expression*} =
+    statement_exp_list {-> [statement_exp_list.elements]};
+
+enhanced_for_statement {-> statement} =
+    for l_par modifier* type identifier colon expression r_par statement {-> New statement.enhanced_for([modifier], type, identifier, expression, statement)};
+
+enhanced_for_statement_no_short_if {-> statement} =
+    for l_par modifier* type identifier colon expression r_par statement_no_short_if {-> New statement.enhanced_for([modifier], type, identifier, expression, statement_no_short_if.statement)};
+
+statement_exp_list {-> [elements]:expression*} =
+    {one} statement_exp {-> [statement_exp.expression]} |
+    {some} statement_exp_list comma statement_exp {-> [statement_exp_list.elements, statement_exp.expression]};
+
+break_statement {-> statement} =
+    break identifier? semicolon {-> New statement.break(identifier)};
+
+continue_statement {-> statement} =
+    continue identifier? semicolon {-> New statement.continue(identifier)};
+
+return_statement {-> statement} =
+    return expression? semicolon {-> New statement.return(expression)};
+
+throw_statement {-> statement} =
+    throw expression semicolon {-> New statement.throw(expression)};
+
+synchronized_statement {-> expression statement*} =
+    synchronized condition block {-> condition.expression [block.statement]};
+
+try_statement {-> statement} =
+    {try} try block catch_clause+ {-> New statement.try(New try_clause([block.statement]), [catch_clause], Null)}|
+    {finally} try block catch_clause* finally_clause {-> New statement.try(New try_clause([block.statement]), [catch_clause], finally_clause)};
+
+catch_clause {-> catch_clause} =
+    catch formal_parameters block {-> New catch_clause([formal_parameters.elements], [block.statement])};
+
+finally_clause {-> finally_clause} =
+    finally block {-> New finally_clause([block.statement])};
+
+assert_statement_short {-> statement} =
+    assert expression semicolon {-> New statement.assert(expression, Null)};
+    
+assert_statement_long {-> statement} =
+    assert [left]:expression colon [right]:expression semicolon {-> New statement.assert(left, right)};
+
+condition {-> expression} =
+	l_par expression r_par {-> expression}; //TODO verify
+
+primary {-> primary} =
+    {primary_no_new_array} primary_no_new_array {-> primary_no_new_array.primary} |
+    {new_array_exp} new_array_exp {-> new_array_exp.primary};
+
+primary_no_new_array {-> primary} =
+    {literal} literal {-> New primary.literal(literal)} |
+    {this} this {-> New primary.this()} |
+    {simple_exp} l_par name r_par {-> New primary.expression(New expression.primary(New primary.name([name.identifier])))} |
+    {complex_exp} l_par expression_nn r_par {-> New primary.expression(expression_nn.expression)} |
+    {new_class_exp} new_class_exp {-> new_class_exp.primary} |
+    {field_access} field_access {-> field_access.primary} |
+    {method_invocation} method_invocation {-> method_invocation.primary} |
+    {array_access} array_access {-> array_access.primary} |
+    {qualified_this} name dot this {-> New primary.qualified_this([name.identifier])} |
+    {qualified_super} name dot super {-> New primary.qualified_super([name.identifier])} |
+    {primitive_type} primitive_type dim* dot clazz {-> New primary.primitive_type_class(primitive_type.type, [dim])} |
+    {normal_type} name dim* dot clazz {-> New primary.normal_type_class([name.identifier], [dim])} |
+    {void} void dot clazz {-> New primary.void_type_class()};
+
+new_class_exp {-> primary} =
+    {simple} new type_arguments? class_or_interface_type arguments class_body? {-> New primary.new(Null, [type_arguments.elements], New type.reference([class_or_interface_type.generic_identifier]), [arguments.elements], class_body)} |
+    {qualified} primary dot new type_arguments? identifier arguments class_body? {-> New primary.new(primary, [type_arguments.elements], New type.reference([New generic_identifier([identifier], [])]), [arguments.elements], class_body)} |
+    {named} name dot new type_arguments? identifier arguments class_body? {-> New primary.new(New primary.name([name.identifier]), [type_arguments.elements], New type.reference([New generic_identifier([identifier], [])]), [arguments.elements], class_body)};
+
+argument_list {-> [elements]:expression*} =
+    {one} expression {-> [expression]} |
+    {some} argument_list comma expression {-> [argument_list.elements, expression]};
+
+new_array_exp {-> primary} =
+    {primitive_type} new primitive_type dim_expr+ dim* {-> New primary.new_array(primitive_type.type, [dim_expr.expression], [dim], Null)} |
+    {class_or_interface_type} new class_or_interface_type dim_expr+ dim* {-> New primary.new_array(New type.reference([class_or_interface_type.generic_identifier]), [dim_expr.expression], [dim], Null)} |
+    {init_primitive} new primitive_type dim+ array_initializer {-> New primary.new_array(primitive_type.type, [], [dim], New expression.values([array_initializer.elements]))} |
+    {init_class_interface} new class_or_interface_type dim+ array_initializer {-> New primary.new_array(New type.reference([class_or_interface_type.generic_identifier]), [], [dim], New expression.values([array_initializer.elements]))};
+
+dim_expr {-> expression} =
+    l_brk expression r_brk {-> expression};
+
+dim {-> dim} =
+	l_brk r_brk {-> New dim.bracket()};
+
+field_access {-> primary} =
+    {primary} primary dot identifier {-> New primary.field_access(primary, identifier)} |
+    {super} super dot identifier {-> New primary.field_access(New primary.super(), identifier)};
+
+method_invocation {-> primary} =
+	{unqualified} identifier arguments {-> New primary.method_invocation(Null, [], identifier, [arguments.elements])} |
+    {name} name dot type_arguments? identifier arguments  {-> New primary.method_invocation(New primary.name([name.identifier]), [type_arguments.elements], identifier, [arguments.elements])} |
+    {primary} primary dot type_arguments? identifier arguments  {-> New primary.method_invocation(primary, [type_arguments.elements], identifier, [arguments.elements])} |
+    {super} super dot type_arguments? identifier arguments  {-> New primary.method_invocation(New primary.super(), [type_arguments.elements], identifier, [arguments.elements])};
+
+array_access {-> primary} =
+    {name} name dim_expr {-> New primary.array_access(New primary.name([name.identifier]), dim_expr.expression)} |
+    {primary_no_new_array} primary_no_new_array dim_expr {-> New primary.array_access(primary_no_new_array.primary, dim_expr.expression)};
+
+postfix_exp {-> expression} =
+    {primary} primary {-> New expression.primary(primary)} |
+    {name} name {-> New expression.primary(New primary.name([name.identifier]))} |
+    {post_increment_exp} post_increment_exp {-> post_increment_exp.expression} |
+    {post_decrement_exp} post_decrement_exp {-> post_decrement_exp.expression} ;
+
+postfix_exp_nn {-> expression} =
+    {primary} primary {-> New expression.primary(primary)} |
+    {post_increment_exp} post_increment_exp {-> post_increment_exp.expression} |
+    {post_decrement_exp} post_decrement_exp {-> post_decrement_exp.expression} ;
+
+post_increment_exp {-> expression} =
+    postfix_exp plus_plus {-> New expression.post(New op.increment(), postfix_exp.expression)};
+
+post_decrement_exp {-> expression} =
+    postfix_exp minus_minus {-> New expression.post(New op.decrement(), postfix_exp.expression)};
+
+unary_exp {-> expression} =
+    {pre_increment_exp} pre_increment_exp {-> pre_increment_exp.expression} |
+    {pre_decrement_exp} pre_decrement_exp {-> pre_decrement_exp.expression} |
+    {plus} plus unary_exp {-> New expression.unary(New op.add(), unary_exp.expression)} |
+    {minus} minus unary_exp {-> New expression.unary(New op.sub(), unary_exp.expression)} |
+    {unary_exp_not_plus_minus} unary_exp_not_plus_minus {-> unary_exp_not_plus_minus.expression};
+
+unary_exp_nn {-> expression} =
+    {pre_increment_exp} pre_increment_exp {-> pre_increment_exp.expression} |
+    {pre_decrement_exp} pre_decrement_exp {-> pre_decrement_exp.expression} |
+    {plus} plus unary_exp {-> New expression.unary(New op.add(), unary_exp.expression)} |
+    {minus} minus unary_exp {-> New expression.unary(New op.sub(), unary_exp.expression)} |
+    {unary_exp_not_plus_minus} unary_exp_not_plus_minus_nn {-> unary_exp_not_plus_minus_nn.expression};
+
+pre_increment_exp {-> expression} =
+    plus_plus unary_exp {-> New expression.pre(New op.increment(), unary_exp.expression)};
+
+pre_decrement_exp {-> expression} =
+    minus_minus unary_exp {-> New expression.pre(New op.decrement(), unary_exp.expression)};
+
+unary_exp_not_plus_minus {-> expression} =
+    {postfix_exp} postfix_exp {-> postfix_exp.expression} |
+    {complement} complement unary_exp {-> New expression.unary(New op.complement(), unary_exp.expression)} |
+    {not} not unary_exp {-> New expression.unary(New op.not(), unary_exp.expression)} |
+    {cast_exp} cast_exp {-> cast_exp.expression};
+
+unary_exp_not_plus_minus_nn {-> expression} =
+    {postfix_exp} postfix_exp_nn {-> postfix_exp_nn.expression} |
+    {complement} complement unary_exp {-> New expression.unary(New op.complement(), unary_exp.expression)} |
+    {not} not unary_exp {-> New expression.unary(New op.not(), unary_exp.expression)} |
+    {cast_exp} cast_exp {-> cast_exp.expression};
+
+cast_exp {-> expression} =
+    {primitive} l_par primitive_type r_par unary_exp {-> New expression.cast(primitive_type.type, unary_exp.expression)} |
+    {primitive_array} l_par primitive_type dim+ r_par unary_exp {-> New expression.cast(New type.array(primitive_type.type, [dim]), unary_exp.expression)} |
+	{generic_reference} l_par name type_arguments r_par unary_exp_not_plus_minus {-> New expression.cast(New type.reference([New generic_identifier([name.identifier], [type_arguments.elements])]), unary_exp_not_plus_minus.expression)} |
+	{generic_reference_array} l_par name type_arguments dim+ r_par unary_exp_not_plus_minus {-> New expression.cast(New type.array(New type.reference([New generic_identifier([name.identifier], [type_arguments.elements])]), [dim]), unary_exp_not_plus_minus.expression)} |
+	{complex_reference} l_par name type_arguments dot class_or_interface_type r_par unary_exp_not_plus_minus {-> New expression.cast(New type.reference([New generic_identifier([name.identifier], [type_arguments.elements]), class_or_interface_type.generic_identifier]), unary_exp_not_plus_minus.expression)} |
+	{complex_reference_array} l_par name type_arguments dot class_or_interface_type dim+ r_par unary_exp_not_plus_minus {-> New expression.cast(New type.array(New type.reference([New generic_identifier([name.identifier], [type_arguments.elements]), class_or_interface_type.generic_identifier]), [dim]), unary_exp_not_plus_minus.expression)} |
+    {reference} l_par name r_par unary_exp_not_plus_minus {-> New expression.cast(New type.reference([New generic_identifier([name.identifier], [])]), unary_exp_not_plus_minus.expression)} |
+    {array} l_par name dim+ r_par unary_exp_not_plus_minus {-> New expression.cast(New type.array(New type.reference([New generic_identifier([name.identifier], [])]), [dim]), unary_exp_not_plus_minus.expression)};
+
+multiplicative_exp {-> expression} =
+    {unary_exp} unary_exp {-> unary_exp.expression} |
+    {star} multiplicative_exp star unary_exp {-> New expression.binary(New op.mult(), multiplicative_exp.expression, unary_exp.expression)} |
+    {div} multiplicative_exp div unary_exp {-> New expression.binary(New op.div(), multiplicative_exp.expression, unary_exp.expression)} |
+    {mod} multiplicative_exp mod unary_exp {-> New expression.binary(New op.mod(), multiplicative_exp.expression, unary_exp.expression)};
+
+multiplicative_exp_nn {-> expression} =
+    {unary_exp} unary_exp_nn {-> unary_exp_nn.expression} |
+    {star} multiplicative_exp_nn star unary_exp {-> New expression.binary(New op.mult(), multiplicative_exp_nn.expression, unary_exp.expression)} |
+    {star_name} name star unary_exp {-> New expression.binary(New op.mult(), New expression.primary(New primary.name([name.identifier])), unary_exp.expression)} |
+    {div} multiplicative_exp_nn div unary_exp {-> New expression.binary(New op.div(), multiplicative_exp_nn.expression, unary_exp.expression)} |
+    {div_name} name div unary_exp {-> New expression.binary(New op.div(), New expression.primary(New primary.name([name.identifier])), unary_exp.expression)} |
+    {mod} multiplicative_exp_nn mod unary_exp {-> New expression.binary(New op.mod(), multiplicative_exp_nn.expression, unary_exp.expression)} |
+    {mod_name} name mod unary_exp {-> New expression.binary(New op.mod(), New expression.primary(New primary.name([name.identifier])), unary_exp.expression)};
+
+additive_exp {-> expression} =
+    {multiplicative_exp} multiplicative_exp {-> multiplicative_exp.expression} |
+    {plus} additive_exp plus multiplicative_exp {-> New expression.binary(New op.add(), additive_exp.expression, multiplicative_exp.expression)} |
+    {minus} additive_exp minus multiplicative_exp {-> New expression.binary(New op.sub(), additive_exp.expression, multiplicative_exp.expression)} ;
+
+additive_exp_nn {-> expression} =
+    {multiplicative_exp} multiplicative_exp_nn {-> multiplicative_exp_nn.expression} |
+    {plus} additive_exp_nn plus multiplicative_exp {-> New expression.binary(New op.add(), additive_exp_nn.expression, multiplicative_exp.expression)} |
+    {plus_name} name plus multiplicative_exp {-> New expression.binary(New op.add(), New expression.primary(New primary.name([name.identifier])), multiplicative_exp.expression)} |
+    {minus} additive_exp_nn minus multiplicative_exp {-> New expression.binary(New op.sub(), additive_exp_nn.expression, multiplicative_exp.expression)} |
+    {minus_name} name minus multiplicative_exp {-> New expression.binary(New op.sub(), New expression.primary(New primary.name([name.identifier])), multiplicative_exp.expression)};
+
+shift_exp {-> expression} =
+    {additive_exp} additive_exp {-> additive_exp.expression} |
+    {shl} shift_exp shl additive_exp {-> New expression.binary(New op.shl(), shift_exp.expression, additive_exp.expression)} |
+    {sshr} shift_exp sshr additive_exp {-> New expression.binary(New op.sshr(), shift_exp.expression, additive_exp.expression)} |
+    {ushr} shift_exp ushr additive_exp {-> New expression.binary(New op.ushr(), shift_exp.expression, additive_exp.expression)};
+
+shift_exp_nn {-> expression} =
+    {additive_exp} additive_exp_nn {-> additive_exp_nn.expression} |
+    {shl} shift_exp_nn shl additive_exp {-> New expression.binary(New op.shl(), shift_exp_nn.expression, additive_exp.expression)} |
+    {shl_name} name shl additive_exp {-> New expression.binary(New op.shl(), New expression.primary(New primary.name([name.identifier])), additive_exp.expression)} |
+    {sshr} shift_exp_nn sshr additive_exp {-> New expression.binary(New op.sshr(), shift_exp_nn.expression, additive_exp.expression)} |
+    {sshr_name} name sshr additive_exp {-> New expression.binary(New op.sshr(), New expression.primary(New primary.name([name.identifier])), additive_exp.expression)} |
+    {ushr} shift_exp_nn ushr additive_exp {-> New expression.binary(New op.ushr(), shift_exp_nn.expression, additive_exp.expression)} |
+    {ushr_name} name ushr additive_exp {-> New expression.binary(New op.ushr(), New expression.primary(New primary.name([name.identifier])), additive_exp.expression)};
+
+relational_exp {-> expression} =
+    {shift_exp} shift_exp {-> shift_exp.expression} |
+    {lt} relational_exp lt shift_exp {-> New expression.comparison(New op.lt(), relational_exp.expression, shift_exp.expression)} |
+    {gt} relational_exp gt shift_exp {-> New expression.comparison(New op.gt(), relational_exp.expression, shift_exp.expression)} |
+    {lt_eq} relational_exp lt_eq shift_exp {-> New expression.comparison(New op.lt_eq(), relational_exp.expression, shift_exp.expression)} |
+    {gt_eq} relational_exp gt_eq shift_exp {-> New expression.comparison(New op.gt_eq(), relational_exp.expression, shift_exp.expression)};
+
+relational_exp_nn {-> expression} =
+    {shift_exp} shift_exp_nn {-> shift_exp_nn.expression} |
+    {lt} shift_exp_nn lt shift_exp {-> New expression.comparison(New op.lt(), shift_exp_nn.expression, shift_exp.expression)} |
+    {lt_name} name lt shift_exp {-> New expression.comparison(New op.lt(), New expression.primary(New primary.name([name.identifier])), shift_exp.expression)} |
+    {gt} shift_exp_nn gt shift_exp {-> New expression.comparison(New op.gt(), shift_exp_nn.expression, shift_exp.expression)} |
+    {gt_name} name gt shift_exp {-> New expression.comparison(New op.gt(), New expression.primary(New primary.name([name.identifier])), shift_exp.expression)} |
+    {lt_eq} relational_exp_nn lt_eq shift_exp {-> New expression.comparison(New op.lt_eq(), relational_exp_nn.expression, shift_exp.expression)} |
+    {lt_eq_name} name lt_eq shift_exp {-> New expression.comparison(New op.lt_eq(), New expression.primary(New primary.name([name.identifier])), shift_exp.expression)} |
+    {gt_eq} relational_exp_nn gt_eq shift_exp {-> New expression.comparison(New op.gt_eq(), relational_exp_nn.expression, shift_exp.expression)} |
+    {gt_eq_name} name gt_eq shift_exp {-> New expression.comparison(New op.gt_eq(), New expression.primary(New primary.name([name.identifier])), shift_exp.expression)};
+
+instanceof_exp {-> expression} =
+	{relational} relational_exp {-> relational_exp.expression} |
+	{instanceof} instanceof_exp instanceof reference_type {-> New expression.instanceof(instanceof_exp.expression, reference_type.type)};
+
+instanceof_exp_nn {-> expression} =
+	{relational} relational_exp_nn {-> relational_exp_nn.expression} |
+	{instanceof} instanceof_exp_nn instanceof reference_type {-> New expression.instanceof(instanceof_exp_nn.expression, reference_type.type)} |
+    {instanceof_name} name instanceof reference_type {-> New expression.instanceof(New expression.primary(New primary.name([name.identifier])), reference_type.type)};
+
+equality_exp {-> expression} =
+    {instanceof_exp} instanceof_exp {-> instanceof_exp.expression} |
+    {eq} equality_exp eq instanceof_exp {-> New expression.comparison(New op.eq(), equality_exp.expression, instanceof_exp.expression)} |
+    {neq} equality_exp neq instanceof_exp {-> New expression.comparison(New op.neq(), equality_exp.expression, instanceof_exp.expression)};
+
+equality_exp_nn {-> expression} =
+    {instanceof_exp} instanceof_exp_nn {-> instanceof_exp_nn.expression} |
+    {eq} equality_exp_nn eq instanceof_exp {-> New expression.comparison(New op.eq(), equality_exp_nn.expression, instanceof_exp.expression)} |
+    {eq_name} name eq instanceof_exp {-> New expression.comparison(New op.eq(), New expression.primary(New primary.name([name.identifier])), instanceof_exp.expression)} |
+    {neq} equality_exp_nn neq instanceof_exp {-> New expression.comparison(New op.neq(), equality_exp_nn.expression, instanceof_exp.expression)} |
+    {neq_name} name neq instanceof_exp {-> New expression.comparison(New op.neq(), New expression.primary(New primary.name([name.identifier])), instanceof_exp.expression)};
+
+and_exp {-> expression} =
+    {equality_exp} equality_exp {-> equality_exp.expression} |
+    {and_exp} and_exp and equality_exp {-> New expression.binary(New op.and(), and_exp.expression, equality_exp.expression)};
+
+and_exp_nn {-> expression} =
+    {equality_exp} equality_exp_nn {-> equality_exp_nn.expression} |
+    {and_exp} and_exp_nn and equality_exp {-> New expression.binary(New op.and(), and_exp_nn.expression, equality_exp.expression)} |
+    {and_exp_name} name and equality_exp {-> New expression.binary(New op.and(), New expression.primary(New primary.name([name.identifier])), equality_exp.expression)};
+
+xor_exp {-> expression} =
+    {and_exp} and_exp {-> and_exp.expression} |
+    {xor_exp} xor_exp xor and_exp {-> New expression.binary(New op.xor(), xor_exp.expression, and_exp.expression)};
+
+xor_exp_nn {-> expression} =
+    {and_exp} and_exp_nn {-> and_exp_nn.expression} |
+    {xor_exp} xor_exp_nn xor and_exp {-> New expression.binary(New op.xor(), xor_exp_nn.expression, and_exp.expression)} |
+    {xor_exp_name} name xor and_exp {-> New expression.binary(New op.xor(), New expression.primary(New primary.name([name.identifier])), and_exp.expression)};
+
+or_exp {-> expression} =
+    {xor_exp} xor_exp {-> xor_exp.expression} |
+    {or_exp} or_exp or xor_exp {-> New expression.binary(New op.or(), or_exp.expression, xor_exp.expression)};
+
+or_exp_nn {-> expression} =
+    {xor_exp} xor_exp_nn {-> xor_exp_nn.expression} |
+    {or_exp} or_exp_nn or xor_exp {-> New expression.binary(New op.or(), or_exp_nn.expression, xor_exp.expression)} |
+    {or_exp_name} name or xor_exp {-> New expression.binary(New op.or(), New expression.primary(New primary.name([name.identifier])), xor_exp.expression)};
+
+short_and_exp {-> expression} =
+    {or_exp} or_exp {-> or_exp.expression} |
+    {short_and_exp} short_and_exp and_and or_exp {-> New expression.shorthand(New op.and_and(), short_and_exp.expression, or_exp.expression)};
+
+short_and_exp_nn {-> expression} =
+    {or_exp} or_exp_nn {-> or_exp_nn.expression} |
+    {short_and_exp} short_and_exp_nn and_and or_exp {-> New expression.shorthand(New op.and_and(), short_and_exp_nn.expression, or_exp.expression)} |
+    {short_and_exp_name} name and_and or_exp {-> New expression.shorthand(New op.and_and(), New expression.primary(New primary.name([name.identifier])), or_exp.expression)};
+
+short_or_exp {-> expression} =
+    {short_and_exp} short_and_exp {-> short_and_exp.expression} |
+    {short_or_exp} short_or_exp or_or short_and_exp {-> New expression.shorthand(New op.or_or(), short_or_exp.expression, short_and_exp.expression)};
+
+short_or_exp_nn {-> expression} =
+    {short_and_exp} short_and_exp_nn {-> short_and_exp_nn.expression} |
+    {short_or_exp} short_or_exp_nn or_or short_and_exp {-> New expression.shorthand(New op.or_or(), short_or_exp_nn.expression, short_and_exp.expression)} |
+    {short_or_exp_name} name or_or short_and_exp {-> New expression.shorthand(New op.or_or(), New expression.primary(New primary.name([name.identifier])), short_and_exp.expression)};
+
+conditional_exp {-> expression} =
+    {short_or_exp} short_or_exp {-> short_or_exp.expression} |
+    {conditional} [condition]:short_or_exp question [ife]:expression colon [elsee]:conditional_exp {-> New expression.conditional(condition.expression, ife.expression, elsee.expression)};
+
+conditional_exp_nn {-> expression} =
+    {short_or_exp} short_or_exp_nn {-> short_or_exp_nn.expression} |
+    {conditional} [condition]:short_or_exp_nn question [ife]:expression colon [elsee]:conditional_exp {-> New expression.conditional(condition.expression, ife.expression, elsee.expression)} |
+    {short_name} [condition]:name question [ife]:expression colon [elsee]:conditional_exp {-> New expression.conditional(New expression.primary(New primary.name([condition.identifier])), ife.expression, elsee.expression)};
+	
+assignment_exp {-> expression} =
+    {conditional_exp} conditional_exp {-> conditional_exp.expression} |
+    {assignment} assignment {-> assignment.expression};
+
+assignment_exp_nn {-> expression} =
+    {conditional_exp} conditional_exp_nn {-> conditional_exp_nn.expression} |
+    {assignment} assignment {-> assignment.expression};
+
+assignment {-> expression} =
+    postfix_exp assignment_operator assignment_exp {-> New expression.assign(postfix_exp.expression, assignment_operator.op, assignment_exp.expression)};
+
+assignment_operator {-> op}=
+    {assign} assign {-> New op.assign()} |
+    {star_assign} star_assign {-> New op.mult_assign()} |
+    {div_assign} div_assign {-> New op.div_assign()} |
+    {mod_assign} mod_assign {-> New op.mod_assign()} |
+    {plus_assign} plus_assign {-> New op.add_assign()} |
+    {minus_assign} minus_assign {-> New op.sub_assign()} |
+    {shl_assign} shl_assign {-> New op.shl_assign()} |
+    {sshr_assign} sshr_assign {-> New op.sshr_assign()} |
+    {ushr_assign} ushr_assign {-> New op.ushr_assign()} |
+    {and_assign} and_assign {-> New op.and_assign()} |
+    {xor_assign} xor_assign {-> New op.xor_assign()} |
+    {or_assign} or_assign {-> New op.or_assign()};
+
+expression {-> expression} =
+    assignment_exp {-> assignment_exp.expression};
+
+expression_nn {-> expression} =
+	assignment_exp_nn {-> assignment_exp_nn.expression};
+	
+constant_exp {-> expression} =
+    expression {-> expression};
+
+type_arguments {-> [elements]:type_argument*} =
+	lt type_argument_list_gt {-> [type_argument_list_gt.elements]};
+	
+type_argument_list_gt {-> [elements]:type_argument*} =
+	{one} type_argument_gt {-> [type_argument_gt.type_argument]} |
+	{some} type_argument_list comma type_argument_gt {-> [type_argument_list.elements, type_argument_gt.type_argument]};
+
+type_argument_gt {-> type_argument} =
+	{reference_type} reference_type_gt {-> New type_argument.reference(reference_type_gt.type)} |
+	{wildcard} wildcard_gt {-> New type_argument.wildcard(wildcard_gt.wildcard)};
+
+reference_type_gt {-> type} =
+	{split_gt} reference_type gt {-> reference_type.type} |
+	{join_gt} class_or_interface_name lt type_argument_list_sshr {-> New type.reference([class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_argument_list_sshr.elements])])};
+		
+wildcard_gt {-> wildcard} =
+	{non_bounded} question gt {-> New wildcard.unbounded()} |
+	{extends} question extends reference_type_gt {-> New wildcard.extends(reference_type_gt.type)} |
+	{super} question super reference_type_gt {-> New wildcard.super(reference_type_gt.type)};
+
+type_argument_list_sshr {-> [elements]:type_argument*} =
+	{one} type_argument_sshr {-> [type_argument_sshr.type_argument]} |
+	{some} type_argument_list comma type_argument_sshr {-> [type_argument_list.elements, type_argument_sshr.type_argument]};
+
+type_argument_sshr {-> type_argument} =
+	{reference_type} reference_type_sshr {-> New type_argument.reference(reference_type_sshr.type)} |
+	{wildcard} wildcard_sshr {-> New type_argument.wildcard(wildcard_sshr.wildcard)};
+	
+reference_type_sshr {-> type} =
+	{split_gt} reference_type sshr {-> reference_type.type} |
+	{join_gt} class_or_interface_name lt type_argument_list_ushr {-> New type.reference([class_or_interface_name.prefix, New generic_identifier([class_or_interface_name.suffix], [type_argument_list_ushr.elements])])};
+		
+wildcard_sshr {-> wildcard} =
+	{non_bounded} question sshr {-> New wildcard.unbounded()} |
+	{extends} question extends reference_type_sshr {-> New wildcard.extends(reference_type_sshr.type)} |
+	{super} question super reference_type_sshr {-> New wildcard.super(reference_type_sshr.type)};
+
+type_argument_list_ushr {-> [elements]:type_argument*} =
+	{one} type_argument_ushr {-> [type_argument_ushr.type_argument]} |
+	{some} type_argument_list comma type_argument_ushr {-> [type_argument_list.elements, type_argument_ushr.type_argument]};
+
+type_argument_ushr {-> type_argument} =
+	{reference_type} reference_type_ushr {-> New type_argument.reference(reference_type_ushr.type)} |
+	{wildcard} wildcard_ushr {-> New type_argument.wildcard(wildcard_ushr.wildcard)};
+	
+reference_type_ushr {-> type} =
+	reference_type ushr {-> reference_type.type} ;
+		
+wildcard_ushr {-> wildcard} =
+	{non_bounded} question ushr {-> New wildcard.unbounded()} |
+	{bounded} question extends reference_type_ushr {-> New wildcard.extends(reference_type_ushr.type)} |
+	{super} question super reference_type_ushr {-> New wildcard.super(reference_type_ushr.type)};
+
+type_argument_list {-> [elements]:type_argument*} =
+	{one} type_argument {-> [type_argument]} |
+	{some} type_argument_list comma type_argument {-> [type_argument_list.elements, type_argument]};
+
+type_argument {-> type_argument} =
+	{reference_type} reference_type {-> New type_argument.reference(reference_type.type)} |
+	{wildcard} wildcard {-> New type_argument.wildcard(wildcard)};
+
+wildcard {-> wildcard} =
+	{unbounded} question {-> New wildcard.unbounded()} |
+	{extends} question extends reference_type {-> New wildcard.extends(reference_type.type)} |
+	{super} question super reference_type {-> New wildcard.super(reference_type.type)};
+
+type_parameters {-> [elements]:type_parameter*} =
+	lt type_parameter_list_gt {-> type_parameter_list_gt.elements};
+
+type_parameter_list_gt {-> [elements]:type_parameter*} = 
+	{one} type_parameter_gt {-> [type_parameter_gt.type_parameter]} |
+	{some} type_parameter_list comma type_parameter_gt {-> [type_parameter_list.elements, type_parameter_gt.type_parameter]};
+
+type_parameter_gt {-> type_parameter} =
+	{unbounded} simple_name gt {-> New type_parameter(simple_name.identifier, [])} |
+	{bounded} simple_name type_bound_gt {-> New type_parameter(simple_name.identifier, [type_bound_gt.bounds])};
+
+type_bound_gt {-> [bounds]:type*} =
+	{once} extends reference_type_gt {-> [reference_type_gt.type]} |
+	{more}  extends reference_type additional_bound_sequence_gt {-> [reference_type.type, additional_bound_sequence_gt.bounds]};
+
+additional_bound_sequence_gt {-> [bounds]:type*}=
+	{one} additional_bound_gt {-> [additional_bound_gt.bound]} |
+	{some} additional_bound_sequence additional_bound_gt {-> [additional_bound_sequence.bounds, additional_bound_gt.bound]};
+
+additional_bound_gt {-> [bound]:type} =
+	and reference_type_gt {-> reference_type_gt.type};
+
+type_parameter_list {-> [elements]:type_parameter*} =
+	{one} type_parameter {-> [type_parameter]} |
+	{some} type_parameter_list comma type_parameter {-> [type_parameter_list.elements, type_parameter]};
+
+type_parameter {-> type_parameter} =
+	simple_name type_bound? {-> New type_parameter(simple_name.identifier, [type_bound.bounds])};
+
+type_bound {-> [bounds]:type*} =
+	{once} extends reference_type {-> [reference_type.type]}|
+	{more} extends reference_type additional_bound_sequence {-> [reference_type.type, additional_bound_sequence.bounds]};
+
+additional_bound_sequence {-> [bounds]:type*} =
+	{one} additional_bound {-> [additional_bound.bound]} |
+	{some} additional_bound_sequence additional_bound {-> [additional_bound_sequence.bounds, additional_bound.bound]};
+
+additional_bound {-> [bound]:type} =
+	and reference_type {-> reference_type.type};
+
+annotation {-> annotation} =
+	{normal_annotation} normal_annotation {-> normal_annotation.annotation} |
+	{marker_annotation} marker_annotation {-> marker_annotation.annotation} |
+	{single_element_annotation} single_element_annotation {-> single_element_annotation.annotation};
+
+normal_annotation {-> annotation} =
+	at name l_par element_value_pair_list? r_par {-> New annotation([name.identifier], [element_value_pair_list.elements])};
+
+marker_annotation {-> annotation} =
+	at name {-> New annotation([name.identifier], [])};
+
+single_element_annotation {-> annotation} =
+	at name l_par element_value r_par {-> New annotation([name.identifier], [element_value.expression])};
+
+element_value_pair_list {-> [elements]:expression*} =
+	{one} element_value_pair {-> [element_value_pair.expression]} |
+	{some} element_value_pair_list comma element_value_pair {-> [element_value_pair_list.elements, element_value_pair.expression]};
+
+element_value_pair {-> expression} =
+	identifier assign element_value {-> New expression.value_pair(identifier, element_value.expression)};
+
+element_value_list {-> [elements]:expression*} =
+	{one} element_value {-> [element_value.expression]} |
+	{some} element_value_list comma element_value {-> [element_value_list.elements, element_value.expression]};
+
+element_value {-> expression} =
+	{name} name {-> New expression.primary(New primary.name([name.identifier]))} |
+	{not_name} conditional_exp_nn {-> conditional_exp_nn.expression} |
+	{annotation} annotation {-> New expression.annotation(annotation)} |
+	{array} element_value_array_initializer {-> New expression.values([element_value_array_initializer.elements])};
+
+element_value_array_initializer {-> [elements]:expression*} =
+	l_brc element_value_list? comma? r_brc {-> [element_value_list.elements]};
+
+line_number =
+	;
+
+
+/*******************************************************************
+ * Abstract Syntax Tree                                            *
+ *******************************************************************/
+Abstract Syntax Tree
+
+compilation_unit = 
+	package_declaration? import_declaration* type_declaration*;
+	
+package_declaration =
+	modifier* identifier*;
+
+import_declaration =
+    {single_type} identifier* |
+    {type_on_demand} identifier* |
+    {single_static} identifier* |
+    {static_on_demand} identifier*;
+
+type_declaration =
+	{class} modifier* identifier [type_parameters]:type_parameter* [extends]:type? [implements]:type* class_body |
+	{enum} modifier* identifier [implements]:type* enum_body? |
+	{interface} modifier* identifier [type_parameters]:type_parameter* [extends]:type* interface_body |
+	{annotation_type} modifier* identifier annotation_type_body;
+
+class_body =
+	body_declaration*;
+
+body_declaration =
+	{field} modifier* type [declarators]:expression* |
+	{method} modifier* [type_parameters]:type_parameter* type? dim* identifier [parameters]:formal_parameter* [exceptions]:type* method_body? |
+	{type} type_declaration? |
+	{constructor} modifier* [type_parameters]:type_parameter* identifier [parameters]:formal_parameter* [exceptions]:type* constructor_body |
+	{init} statement* |
+	{static_init} statement* |
+	{annotation} modifier* type identifier expression?;
+
+interface_body =
+	body_declaration*;
+
+enum_body =
+	enum_constant* body_declaration*;
+
+enum_constant =
+	annotation* identifier [arguments]:expression* class_body?;
+
+annotation_type_body =
+	body_declaration*;
+
+method_body =
+	statement*;
+
+constructor_body =
+	statement*;
+
+formal_parameter =
+	modifier* type dim* primary;
+
+statement =
+	{empty} |
+	{type} type_declaration |
+	{block} statement* |
+	{synchronized} [monitor]:expression statement* |
+	{conditional} [condition]:expression [ifs]:statement [elses]:statement? |
+	{while} [condition]:expression statement |
+	{for} [init]:expression* [condition]:expression? [update]:expression* statement |
+	{enhanced_for} modifier* type identifier [collection]:expression statement |
+	{do} statement [condition]:expression|
+	{switch} expression statement* |
+	{switch_block} expression* statement* |
+	{try} try_clause catch_clause* finally_clause? |
+	{throw} expression |
+	{break} identifier? |
+	{continue} identifier? |
+	{return} expression? |
+	{assert} [first]:expression [second]:expression? |
+	{label} identifier statement |
+	{expression} expression;
+
+try_clause = 
+	statement*;
+
+catch_clause =
+	formal_parameter* statement*;
+
+finally_clause =
+	statement*;
+
+expression =
+	{annotation} annotation |
+	{values} [values]:expression* |
+	{value_pair} identifier [value]:expression |	
+	{local_variable} modifier* type [declarators]:expression* |
+	{primary} primary |
+	{assign} [lhs]:expression op [rhs]:expression |
+	{pre} op expression |
+	{post} op expression |
+	{unary} op expression |
+	{cast} type expression |
+	{binary} op [a]:expression [b]:expression |
+	{comparison} op [a]:expression [b]:expression |
+	{shorthand} op [a]:expression [b]:expression | 
+	{instanceof} [instance]:expression type |
+	{conditional} [cond]:expression [true]:expression [false]:expression;
+
+primary =
+	{name} identifier* |
+	{array} identifier* dim* |
+	{new} [prefix]:primary? [type_arguments]:type_argument* type [arguments]:expression* class_body? |
+	{new_array} type [defined_dim]:expression* dim* [initializer]:expression? |
+	{constructor_invocation} [prefix]:primary? primary [type_arguments]:type_argument* [arguments]:expression* |
+	{literal} literal |
+	{this} |
+	{super} |
+	{expression} expression |
+	{qualified_this} identifier* |
+	{qualified_super} identifier* |
+	{primitive_type_class} type dim* |
+	{normal_type_class} identifier* dim* |
+	{void_type_class} |
+	{method_invocation} [prefix]:primary? [type_arguments]:type_argument* identifier [arguments]:expression* |
+	{array_access} [prefix]:primary [index]:expression |
+	{field_access} [prefix]:primary identifier;
+
+modifier = 
+	{annotation} annotation |
+	{public} public |
+	{protected} protected |
+	{private} private |
+    {static} static |
+    {abstract} abstract |
+    {final} final |
+    {native} native |
+    {synchronized} synchronized |
+    {transient} transient |
+    {volatile} volatile |
+    {strictfp} strictfp;
+
+type =
+	{reference} generic_identifier* |
+	{array} type dim* |
+    {byte} byte |
+    {short} short |
+    {int} int |
+    {long} long |
+    {char} char |
+    {float} float |
+    {double} double |
+    {boolean} boolean;
+
+generic_identifier =
+	identifier* [type_arguments]:type_argument*;
+
+type_parameter =
+	identifier type*;
+
+type_argument =
+	{reference} type |
+	{wildcard} wildcard;
+
+wildcard =
+	{unbounded} |
+	{extends} type |
+	{super} type;
+
+annotation =
+	identifier* expression*;
+
+dim =
+    {bracket} |
+	{ellipsis};
+
+op = 
+	{assign} |	
+	{mult_assign} |
+	{mult} |
+	{div} |
+	{div_assign} |
+	{mod} |
+	{mod_assign} |
+	{add} |
+	{add_assign} |
+	{sub} |
+	{sub_assign} |
+	{shl} |
+	{shl_assign} |
+	{sshr} |
+	{sshr_assign} |
+	{ushr} |
+	{ushr_assign} |
+	{and} |
+	{and_assign} |
+	{and_and} |
+	{xor} |
+	{xor_assign} |
+	{or} |
+	{or_assign} |
+	{or_or} |
+
+	{lt} |
+	{gt} |
+	{lt_eq} |
+	{gt_eq} |
+	{eq} |
+	{neq} |
+
+	{complement} |
+	{not} |
+
+	{decrement} |
+	{increment};
+
+literal =
+	{integer} integer_literal |
+    {floating_point} floating_point_literal |
+    {boolean} boolean_literal |
+    {character} character_literal |
+    {string} string_literal |
+    {null} null_literal;

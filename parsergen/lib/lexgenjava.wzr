@@ -1,0 +1,23 @@
+%{
+%}
+%{
+
+ /* This part goes to the first part of $CLASSNAMElex.java */
+
+package $package;
+
+import dk.jgmdata.Parsing.Scanner;
+import $CLASSNAMEsymbol;
+
+%}
+
+let     [_a-zA-Z]    /* Letter                 */
+alnum   [_a-zA-Z0-9] /* Alphanumeric character */
+
+%%
+
+  TODO:Add rules here
+
+%%
+
+  /* This part goes to the last part of $CLASSNAMElex.java */

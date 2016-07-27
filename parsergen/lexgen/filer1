@@ -1,0 +1,2517 @@
+/* ####----####+-+-+-+-+DFA.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><17.11.2015 17:00:15><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include <Stack.h>
+#include <string.h>
+#include "DFA.h"
+
+DFA::DFA(const NFA &nfa, Language language, bool verbose) : m_NFA(nfa), m_verboseFile(stdoutMarginFile) {
+  m_language = language; 
+  m_verbose  = verbose;
+  makeTransitions();
+
+  if(m_verbose) {
+    printf("Unminimized DFA table:\n");
+    for(int i = 0; i < m_states.size(); i++) {
+      m_states[i].print(m_verboseFile);
+    }
+  }
+  minimize();
+
+  if(m_verbose) {
+    printf("Minimized DFA table:\n");
+    for(int i = 0; i < m_states.size(); i++) {
+      m_states[i].print(m_verboseFile);
+    }
+  }
+}
+
+DFAstate::DFAstate(int id, BitSet *NFAset, AcceptAction *action) {
+  m_id     = id;
+  m_accept = action;
+  m_NFAset = NFAset;
+  memset(m_transition, 0, sizeof(m_transition));
+}
+
+void DFA::makeTransitions() {
+  // Initially m_states contains a single, start state formed by
+  // taking the epsilon closure of the NFA start state. m_states[0]
+  // is the DFA start state.
+
+  BitSet *NFAset = newNFAset();           // set of NFA states that defines the next DFA state.
+  NFAset->add(0);
+  DFAstate startState(0);
+  epsClosure(*NFAset, startState.m_accept);
+  startState.m_NFAset = NFAset;
+
+  m_states.add(startState);
+  for(int index = 0; index < m_states.size(); index++) {
+    DFAstate *current = &m_states[index];
+    if(m_verbose) {
+      m_verboseFile.printf("DFA state %3d. NFA states:", current->m_id);
+      printSet(m_verboseFile, *current->m_NFAset);
+      m_verboseFile.printf("\n");
+    }
+    for(int c = 0; c < MAX_CHARS ; c++) {
+      int nextDFAstate = FAILURE;         // go to nextDFAstate on char c
+      if(NFAset = transition(*current->m_NFAset, c)) {
+        AcceptAction *accept;             // if current DFA state is an acceptstate, this is the AcceptAction
+        epsClosure(*NFAset, accept);
+
+        if((nextDFAstate = stateExist(*NFAset)) < 0) {
+          nextDFAstate = m_states.size();
+          m_states.add(DFAstate(nextDFAstate, NFAset, accept));
+        } else {
+          delete NFAset;
+        }
+      }
+      current->m_transition[c] = nextDFAstate;
+    }
+  }
+}
+
+int DFA::stateExist(const BitSet &NFAset) const {
+  // If there's a DFA-state with m_NFAset identical to NFA_set, return the
+  // index of the state entry, else return -1.
+
+  for(int i = 0; i < m_states.size(); i++) {
+    if(*m_states[i].m_NFAset == NFAset) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+void DFA::epsClosure(BitSet &NFAset, AcceptAction *&accept) const {
+  // NFAset   is the set of start states to examine. also used as output
+  // *accept  is modified to point to the AcceptAction associated with an accepting
+  //          state (or NULL if the state isn't an accepting state).
+  //
+  // Computes the epsilon closure set for the NFAset. This set
+  // will contain all states that can be reached by making epsilon transitions
+  // from all NFA states in the original set. Returns an empty set if the
+  // set or the closure set is empty. Modifies *accept to point to the
+  // accepting String with LOWEST lineno, if one of the NFA states in the output set is an
+  // accepting state.
+  // The algorithm is:
+  //
+  // 1:  push all NFA-states in NFAset set onto stateStack
+  // 2:  while(stateStack is not empty)
+  // 3:      pop the top element p
+  // 4       if p is an accept state and p.accept.lineno < accept.lineno
+  //            accept = p.accept
+  // 5:      if(there's an epsilon transition from p to q)
+  // 6:         if(q isn't in NFAset)
+  // 7:              add q to NFAset
+  // 8:              push q onto stateStack
+
+
+  Stack<int> stateStack; // stack of NFA-states remaining to be tested
+
+  for(Iterator<unsigned int> it = NFAset.getIterator(); it.hasNext(); ) {                   // 1
+    stateStack.push(it.next());
+  }
+
+  accept = NULL;
+  while(!stateStack.isEmpty()) {                                                   // 2
+    const NFAstate &p = *m_NFA[stateStack.pop()];                                  // 3
+    if(p.m_accept && (accept == NULL || p.m_accept->m_pos.getLineNumber() < accept->m_pos.getLineNumber())) {     // 4
+      accept      = p.m_accept;
+    }
+
+    if(p.m_edge == EDGE_EPSILON) {                                                 // 5
+      if(p.m_next1) {
+        int next = p.m_next1->getID();
+        if(!NFAset.contains(next)) {                                               // 6
+          NFAset.add(next);                                                        // 7
+          stateStack.push(next);                                                   // 8
+        }
+      }
+      if(p.m_next2) {
+        int next = p.m_next2->getID();
+        if(!NFAset.contains(next)) {                                               // 6
+          NFAset.add(next);                                                        // 7
+          stateStack.push(next);                                                   // 8
+        }
+      }
+    }
+  }
+}
+
+BitSet *DFA::transition(BitSet &NFAset, int c) const {
+  // Return a set that contains all NFA states that can be reached by making
+  // transitions on "c" from any NFA state in NFAset. Returns NULL if
+  // there are no such transitions.
+
+  BitSet *result = NULL;
+
+  for(Iterator<unsigned int> it = NFAset.getIterator(); it.hasNext();) {
+    int i = it.next();
+    const NFAstate *p = m_NFA[i]->successor(c);
+    if(p) {
+      if(result == NULL) {
+        result = newNFAset();
+      }
+      result->add(p->getID());
+    }
+  }
+/*
+  printf("transitions on ");
+  printchar(c);
+  printf(" from {");
+  printSet(inp_set);
+  printf("}=");
+  if(result!= NULL)
+    printSet(*result);
+  else
+    printf("NULL");
+  printf("\n");
+*/
+  return result;
+}
+
+void DFA::printGroups(MarginFile &f) {
+  for(int i = 0; i < m_groups.size(); i++) {
+    f.printf("Group %2d:", i);
+    printSet(f, m_groups[i]);
+    f.printf("\n");
+  }
+}
+
+void DFA::printStates(MarginFile &f) const {
+  for(int i = 0; i < m_states.size(); i++) {
+    m_states[i].print(f);
+  }
+}
+
+// Put states with equal AcceptAction into the same group. 
+// Note that all non-accept-states go to the same group
+void DFA::makeInitialGroups() {
+  for(int i = 0; i < m_states.size(); i++) {
+    m_inGroup.add(-1);
+  }
+
+  for(i = 0; i < m_states.size(); i++) {
+    BitSet newset(m_states.size());
+    for(int j = 0; j < i; j++) {
+      // Check to see if a group already exists, ie. that has the same
+      // accepting String as the current state. If so, add the current
+      // state to the already existing group and skip past the code that
+      // would create a new group. Note that since all nonAccepting states
+      // have NULL accept strings, this loop puts all of these together
+      // into a single group.
+
+      if(m_states[i].m_accept == m_states[j].m_accept) {
+        m_groups[m_inGroup[j]].add(i);
+        m_inGroup[i] = m_inGroup[j];
+        goto Continue;
+      }
+    }
+
+    // Create a new group and put the current state into it.
+
+    newset.add(i);
+    m_inGroup[i] = m_groups.size(); // state[i] belongs to group m_groups.size()
+    m_groups.add(newset);
+
+Continue:; // Group already exists.
+  }
+
+  if(m_verbose) {
+    m_verboseFile.printf("Initial groupings:\n");
+    printGroups(m_verboseFile);
+  }
+}
+
+  // Reduce the size of the m_states to the number of groups.
+  // Consider the first element of each group (state) to be a
+  // "representative" state. Insert this state to the new transition table,
+  // modifying all the transitions, so that the successors
+  // are the groups within which the old state is found.
+void DFA::fixupTransitions() {
+  Array<DFAstate> newStates;
+
+  for(int g = 0; g < m_groups.size(); g++) {
+    Iterator<unsigned int> it = m_groups[g].getIterator();
+    int state = it.next();       // there is at least one state in each group
+    newStates.add(DFAstate(g));
+    DFAstate &newState = newStates.last();
+    DFAstate &oldState = m_states[state];
+    newState.m_accept  = oldState.m_accept;
+    for(int c = 0; c < MAX_CHARS; c++) {
+      int trans = oldState.m_transition[c];
+      newState.m_transition[c] = (trans == FAILURE) ? FAILURE : m_inGroup[trans];
+    }
+  }
+
+  m_states = newStates;
+}
+
+void DFA::minimize() {
+  bool stable;                                   // did we anything in this pass
+
+  makeInitialGroups();
+  do {
+    stable = true;
+    for(int i = 0; i < m_groups.size(); i++) {
+      BitSet &current = m_groups[i];
+      if(current.size() <= 1) {
+        continue;
+      }
+      
+      BitSet newset(m_states.size());
+      Iterator<unsigned int> it = current.getIterator();
+      int first = it.next();                     // state number of first element of current group
+      while(it.hasNext()) {
+        int next = it.next();                    // state number of next  element of current group
+        for(int c = 0; c < MAX_CHARS; c++) {
+          int firstSuccessor = m_states[first].m_transition[c];
+          int nextSuccessor  = m_states[next ].m_transition[c];
+
+          if(firstSuccessor != nextSuccessor            // if successor-states differ or belong to different groups
+             && (   firstSuccessor == FAILURE
+                 || nextSuccessor  == FAILURE
+                 || m_inGroup[firstSuccessor] != m_inGroup[nextSuccessor]
+                )
+            ) {
+            current.remove(next);                // move the state to newset
+            newset.add(next);
+            m_inGroup[next] = m_groups.size();
+            break;
+          }
+        } // for
+      } // while
+      if(!newset.isEmpty()) {
+        m_groups.add(newset);
+        stable = false;
+      }
+    } // for
+  } while(!stable);
+
+  if(m_verbose) {
+    m_verboseFile.printf("\nStates grouped as follows after minimization:\n");
+    printGroups(m_verboseFile);
+  }
+  fixupTransitions();
+}
+
+#ifndef USE_COMPACT_DFAFORMAT
+
+void DFAstate::print(MarginFile &f) const {
+  if(m_accept == NULL) {
+    f.printf("// DFA State %3d [nonAccepting]", m_id );
+  } else {
+    f.printf("// DFA State %3d %s", m_id, m_accept->dumpFormat().cstr());
+  }
+
+  int chars_printed = f.getLeftMargin();
+  int last_transition = FAILURE;
+  for(int j = 0; j < MAX_CHARS; j++) {
+    if(m_transition[j] != FAILURE) {
+      if(m_transition[j] != last_transition) {
+        f.printf("\n//   goto %2d on ", m_transition[j]);
+        chars_printed = f.getLeftMargin();
+      }
+      String tmp = binToAscii(j);
+      if(f.getCurrentLineLength() + tmp.length() > RMARGIN) {
+        f.printf("\n//              ");
+        chars_printed = f.getLeftMargin();
+      }
+      f.printf("%s", tmp.cstr() );
+      chars_printed += tmp.length();
+      last_transition = m_transition[j];
+    }
+  }
+  f.printf("\n");
+}
+
+#else // USE_COMPACT_DFAFORMAT
+
+#define FORMATCHAR(ch) binToAscii(ch)
+#define _FLUSHRANGE()                                                           \
+{ String tmp;                                                                   \
+  if(delim) tmp += delim; else delim = ","    ;                                 \
+  if(first == last) {                                                           \
+    tmp = FORMATCHAR(first);                                                    \
+  } else {                                                                      \
+    const char *formatStr = (first + 1 == last) ? "%s%s" : "%s-%s";             \
+    tmp = format(formatStr, FORMATCHAR(first).cstr(), FORMATCHAR(last).cstr()); \
+  }                                                                             \
+  if(charsPrinted + tmp.length() > RMARGIN) {                                   \
+    f.printf("\n//              ");                                                             \
+    charsPrinted = f.getLeftMargin();                                           \
+  }                                                                             \
+  f.printf("%s", tmp.cstr());                                                   \
+  charsPrinted += tmp.length();                                                 \
+}
+
+#define FLUSHRANGE() { if(first <= last) _FLUSHRANGE(); }
+#define NEWTRANS() { first = 1; last = 0; delim = NULL; }
+
+void DFAstate::print(MarginFile &f) const {
+  if(m_accept == NULL) {
+    f.printf("// DFA State %3d [nonAccepting]", m_id );
+  } else {
+    f.printf("// DFA State %3d %s", m_id, m_accept->dumpFormat().cstr());
+  }
+
+  int charsPrinted   = f.getLeftMargin();
+  int lastTransition = FAILURE;
+  unsigned int first,last;
+  const char  *delim;
+
+  NEWTRANS();
+  for(int ch = 0; ch < MAX_CHARS; ch++) {
+    if(m_transition[ch] != FAILURE) {
+      if(m_transition[ch] != lastTransition) {
+        FLUSHRANGE(); NEWTRANS();
+        f.printf("\n//   goto %2d on ", m_transition[ch]);
+        charsPrinted = f.getLeftMargin();
+      }
+      if(first > last) {
+        first = last = ch;
+      } else if(ch == last+1) {
+        last = ch;
+      } else {
+        FLUSHRANGE();
+        first = last = ch;
+      }
+      lastTransition = m_transition[ch];
+    }
+  }
+  FLUSHRANGE();
+  f.printf("\n");
+}
+
+#endif
+/* ####----####+-+-+-+-+DFAcode.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include <Stack.h>
+#include "DFA.h"
+
+  // Compress and output transitionmatrix eliminating equal columns and rows
+void DFA::printTables(MarginFile &f) const {
+  int    *columnMap = new int[MAX_CHARS];
+  int    *rowMap = new int[m_states.size()];
+  BitSet  columnSave(MAX_CHARS);       // columns that will remain in table
+  BitSet  rowSave(m_states.size());    // rows    that will remain in table
+
+  reduce(rowMap, columnMap, rowSave, columnSave); // Compress the tables
+
+  printCharMap( f, columnMap);
+  printStateMap(f, rowMap);
+
+  printTransitionMatrix(f, rowSave, columnSave);
+  printAcceptTable(f);
+  delete[] columnMap;
+  delete[] rowMap;
+}
+
+// Return true if two columns in transitionmatrix are equal, else return false
+bool DFA::columnsEqual(int col1, int col2) const {
+  for(int i = 0; i < m_states.size(); i++) {
+    if(m_states[i].m_transition[col1] != m_states[i].m_transition[col2]) {
+      return false;
+    }
+  }
+  return true;
+}
+
+  // Return true if two rows in transitionmatrix are equal, else return false 
+bool DFA::rowsEqual(int row1, int row2) const {
+  return memcmp(m_states[row1].m_transition, m_states[row2].m_transition, sizeof(DFAtrans)) == 0;
+}
+
+void DFA::reduce(int *rowMap, int *columnMap, BitSet &rowSave, BitSet &columnSave) const {
+  unsigned int i;
+
+  for(i = 0; i < MAX_CHARS; i++) {
+    columnMap[i] = -1;
+  }
+
+  for(int r_ncols = 0;;r_ncols++) {
+    for(i = r_ncols;  columnMap[i] != -1  && i < MAX_CHARS; i++ );
+
+    if(i >= MAX_CHARS) {
+      break;
+    }
+
+    columnSave.add(i);
+    columnMap[i] = r_ncols;
+
+    for(int j = i + 1; j < MAX_CHARS; j++) {
+      if(columnMap[j] == -1 && columnsEqual(i, j)) {
+        columnMap[j] = r_ncols;
+      }
+    }
+  }
+
+  for(i = 0; i < m_states.size(); i++) {
+    rowMap[i] = -1;
+  }
+
+  for(int r_nrows = 0 ;; r_nrows++ ) {
+    for(i = r_nrows; rowMap[i] != -1  && i < m_states.size(); i++ );
+
+    if(i >= m_states.size()) {
+      break;
+    }
+
+    rowSave.add(i);
+    rowMap[i] = r_nrows;
+
+    for(int j = i+1; j < m_states.size(); j++) {
+      if(rowMap[j]== -1 && rowsEqual(i, j)) {
+        rowMap[j] = r_nrows;
+      }
+    }
+  }
+}
+
+static int maxElement(const int *map, int size) {
+  int m = 0;
+  for(int i = 0; i < size; i++) {
+    if(map[i] > m) {
+      m = map[i];
+    }
+  }
+  return m;
+}
+
+void DFA::printCharMap(MarginFile &f, const int *map) const {
+  const char *text =
+     "\n"
+     "// The lexCharMap[] and lexStateMap arrays are used as follows:\n"
+     "// \n"
+     "// nextState = lexNext[lexStateMap[currentState]][lexCharMap[inputChar]];\n"
+     "//\n"
+     "// Character positions in the lexCharMap Array are:\n"
+     "//\n";
+
+  f.printf("%s", text);
+  printCharMap(f);
+  char *tableType;
+  switch(m_language) {
+  case CPP :
+    tableType = (maxElement(map, MAX_CHARS) > 255) ? "unsigned short" : "unsigned char";
+    f.printf("static %s lexCharMap[%d] = {\n", tableType, MAX_CHARS);
+    break;
+  case JAVA:
+    tableType = (maxElement(map, MAX_CHARS) > 255) ? "short" : "byte";
+    f.printf("private static final %s lexCharMap[] = {\n", tableType);
+    break;
+  }
+  int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+4);
+  for(int i = 0; i < MAX_CHARS; i++) {
+    f.printf("%4d", map[i]);
+    if(i < MAX_CHARS - 1) {
+      f.printf(",");
+    }
+    if(i % 16 == 15 || i == MAX_CHARS - 1) {
+      f.printf("\n");
+    }
+  }
+  f.setLeftMargin(oldMargin);
+  f.printf("};\n\n");
+}
+
+void DFA::printCharMap(MarginFile &f) const {
+  f.printf("//  ");
+  for(unsigned int i = 0; i < MAX_CHARS; i++) {
+    f.printf("%-4s ", binToAscii(i).cstr());
+    if(i % 16 == 15)
+      f.printf("\n//  ");
+  }
+  f.printf("\n\n");
+}
+
+void DFA::printStateMap(MarginFile &f, const int *map) const {
+  char *tableType;
+  switch(m_language) {
+  case CPP  :
+    tableType = (maxElement(map, m_states.size()) > 255) ? "unsigned short" : "unsigned char";
+    f.printf("static const %s lexStateMap[%d] = {\n", tableType, m_states.size());
+    break;
+  case JAVA :
+    tableType = (maxElement(map, m_states.size()) > 255) ? "short" : "byte";
+    f.printf("private static final %s lexStateMap[] = {\n", tableType);
+    break;
+  }
+
+  int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+4);
+  for(int i = 0; i < m_states.size(); i++) {
+    if(i % 10 == 0) {
+      f.printf("/* %3d */", i);
+    }
+    f.printf("%4d", map[i]);
+    if(i < m_states.size()-1) {
+      f.printf(",");
+    }
+    if(i % 10 == 9 || i == m_states.size()-1) {
+      f.printf("\n");
+    }
+  }
+  f.setLeftMargin(oldMargin);
+  f.printf("};\n\n");
+}
+
+void DFA::minmaxElement(BitSet &rowSave, BitSet &columnSave, int &minElement, int &maxElement) const {
+  minElement = maxElement = 0;
+  for(Iterator<unsigned int> rit = rowSave.getIterator(); rit.hasNext();) {
+    int r = rit.next();
+    for(Iterator<unsigned int> cit = columnSave.getIterator(); cit.hasNext();) {
+      int c = cit.next();
+      int e = m_states[r].m_transition[c];
+      if(e > maxElement) maxElement = e;
+      if(e < minElement) minElement = e;
+    }
+  }
+}
+
+const char *DFA::findTransisitionType(BitSet &rowSave, BitSet &columnSave) const {
+  int minElement, maxElement;
+  minmaxElement(rowSave, columnSave, minElement, maxElement);
+  if(minElement < -128 || maxElement > 127) {
+    return "short";
+  } else {
+    return m_language == CPP ? "char" : "byte";
+  }
+}
+
+void DFA::printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSave) const {
+  int rowCount = rowSave.size();
+  int colCount = columnSave.size();
+
+  const char *tableType = findTransisitionType(rowSave, columnSave);
+
+  switch(m_language) {
+  case CPP :
+    f.printf("static const %s lexNext[%d][%d] = {\n", tableType, rowCount, colCount);
+    break;
+  case JAVA:
+    f.printf("private static final %s lexNext[][] = {\n", tableType);
+    break;
+  }
+  int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+4);
+
+  if(colCount < 40) {
+    int rCount = 0;
+    for(Iterator<unsigned int> rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
+      int r = rit.next();
+      f.printf("/* %3d */ {", rCount);
+      int cCount = 0;
+      for(Iterator<unsigned int> cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
+        int c = cit.next();
+        if(cCount > 0) {
+          f.printf(",");
+        }
+        f.printf("%2d", m_states[r].m_transition[c]);
+      }
+      f.printf("}");
+      if(rCount < rowCount-1) {
+        f.printf(",\n");
+      } else {
+        f.printf("\n");
+      }
+    }
+  } else {
+    int rCount = 0;
+    for(Iterator<unsigned int> rit = rowSave.getIterator(); rit.hasNext(); rCount++) {
+      int r = rit.next();
+      f.printf("/* %3d */ {", rCount);
+      int cCount = 0;
+      for(Iterator<unsigned int> cit = columnSave.getIterator(); cit.hasNext(); cCount++) {
+        int c = cit.next();
+        f.printf("%4d", m_states[r].m_transition[c]);
+        if(cCount < colCount-1) {
+          f.printf(",");
+        }
+        if(cCount % 16 == 15) {
+          f.printf("\n           ");
+        }
+      }
+      f.printf("}");
+      if(rCount < rowCount-1) {
+        f.printf(",\n");
+      } else {
+        f.printf("\n");
+      }
+    }
+  }
+  f.setLeftMargin(oldMargin);
+  f.printf("};\n\n");
+}
+
+void DFA::printAcceptTable(MarginFile &f) const {
+  switch(m_language) {
+  case CPP:
+    f.printf("static const char lexAccept[] = {\n");
+    break;
+  case JAVA:
+    f.printf("private static final byte lexAccept[] = {\n");
+    break;
+  }
+
+  int oldMargin = f.getLeftMargin();
+  f.setLeftMargin(oldMargin+4);
+  for(int i = 0; i < m_states.size(); i++) {
+    const DFAstate &state = m_states[i];
+    if(i % 10 == 0) {
+      f.printf("/* %3d */", i);
+    }
+    if(state.m_accept == NULL) {
+      f.printf("  0");
+    } else {
+      f.printf("  %d", state.m_accept->m_anchor ? state.m_accept->m_anchor : 4);
+    }
+    f.printf("%c", (i < m_states.size()-1) ? ',' : ' ');
+    if(i % 10 == 9 || i == m_states.size() - 1) {
+      f.printf("\n");
+    }
+  }
+  f.setLeftMargin(oldMargin);
+  f.printf("};\n\n");
+}
+/* ####----####+-+-+-+-+escape.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include <ctype.h>
+#include "lexscanner.h"
+
+static bool isOctalDigit(char x) {
+  return '0' <= x && x <= '7';
+}
+
+// Convert the hex digit represented by 'c' to an int. 'c' must be one of
+// the following characters: 0123456789abcdefABCDEF
+static int hexToBin(int c) {
+  return (isdigit(c) ? c - '0': ((toupper(c)) - 'A') + 10) & 0xf;
+}
+
+// Convert the octal digit represented by 'c' to an int. 'c' must be a
+// digit in the range '0'-'7'.
+static int octalToBin(int c) {
+  return (c-'0') & 0x7;
+}
+
+// Map escape sequences into their equivalent symbols. Return the equivalent
+// ASCII character. s is advanced past the escape sequence. If no escape
+// sequence is present, the current character is returned and s
+// is advanced by one. The following are recognized:
+//
+//  \b      backspace
+//  \f      formfeed
+//  \t      tab
+//  \n      newline
+//  \r      carriage return
+//  \s      space
+//  \e      ASCII ESC character ('\033')
+//  \^C     C = any letter. Control code ie C-'\x40'
+//  \xDD    number formed of 1-2 hex digits
+//  \DDD    number formed of 1-3 octal digits
+unsigned int escape(const unsigned char *&s) {
+
+  unsigned int asciiVal;
+
+  if(*s != '\\')
+    asciiVal = *(s++);
+  else {
+    s++; // Skip the '\' 
+    switch(toupper(*s)) {
+    case 'B' :
+      asciiVal = '\b';
+      break;
+    case 'F' :
+      asciiVal = '\f';
+      break;
+    case 'T' :
+      asciiVal = '\t';
+      break;
+    case 'N' :
+      asciiVal = '\n';
+      break;
+    case 'R' :
+      asciiVal = '\r';
+      break;
+    case 'S' :
+      asciiVal = ' ';
+      break;
+    case 'E' :
+      asciiVal = '\033';
+      break;
+    case '^' :
+      s++;
+      asciiVal = *s;
+      if (asciiVal >= '\40')
+        asciiVal = toupper(asciiVal) - '\40';
+      break;
+
+    case 'X' :
+      asciiVal = 0;
+      s++;
+      if (isxdigit(*s))
+        asciiVal = hexToBin(*(s++));
+      if (isxdigit(*s)) {
+        asciiVal <<= 4;
+        asciiVal |= hexToBin(*(s++));
+      }
+      s--;
+      break;
+
+    default  :
+      if (!isOctalDigit(*s)) {
+        asciiVal = *s;
+      }
+      else {
+        s++;
+        asciiVal = octalToBin(*(s++));
+        if (isOctalDigit(*s)) {
+          asciiVal <<= 3;
+          asciiVal |= octalToBin(*(s++));
+        }
+        if (isOctalDigit(*s)) {
+          asciiVal <<= 3;
+          asciiVal |= octalToBin(*(s++));
+        }
+        s--;
+      }
+      break;
+    }
+    s++;
+  }
+  return asciiVal;
+}
+/* ####----####+-+-+-+-+lexgen.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+// lexgen.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <direct.h>
+#include <io.h>
+#include <Tokenizer.h>
+#include "DFA.h"
+#include "Wizard.h"
+#include <TemplateWriter.h>
+
+class ActionsWriter : public KeywordHandler {
+  const DFA &m_dfa;
+  bool       m_lineDirectives;
+  bool       m_generateBreaks;
+private:
+public:
+  ActionsWriter(const DFA &dfa, bool lineDirectives, bool generateBreaks);
+  void handleKeyword(TemplateWriter &writer, String &line) const;
+};
+
+ActionsWriter::ActionsWriter(const DFA &dfa, bool lineDirectives, bool generateBreaks) : m_dfa(dfa) {
+  m_lineDirectives = lineDirectives;
+  m_generateBreaks = generateBreaks;
+}
+
+void ActionsWriter::handleKeyword(TemplateWriter &writer, String &line) const {
+  BitSet done(m_dfa.m_states.size());
+  MarginFile &output = writer.getOutput();
+  int indent = output.getLeftMargin();
+  for(int i = 0; i < m_dfa.m_states.size(); i++) {
+    const DFAstate &s = m_dfa.m_states[i];
+    if(s.m_accept && !done.contains(i)) {
+      output.setLeftMargin(indent);
+      for(unsigned int j = i; j < m_dfa.m_states.size(); j++) {
+        if(m_dfa.m_states[j].m_accept == s.m_accept && !done.contains(j)) {
+          output.printf("case %d:\n", j);
+          done.add(j);
+        }
+      }
+      output.setLeftMargin(indent+2);
+      writeSourceText(output, *s.m_accept, writer.getPos(), m_lineDirectives);
+      if(m_generateBreaks) {
+        output.printf("break;\n");
+      }
+    }
+  }
+}
+
+class TablesWriter : public KeywordHandler {
+  const DFA &m_dfa;
+  bool       m_verbose;
+  bool       m_lineDirectives;
+public:
+  TablesWriter(const DFA &dfa, bool verbose, bool lineDirectives);
+  void handleKeyword(TemplateWriter &writer, String &line) const;
+};
+
+TablesWriter::TablesWriter(const DFA &dfa, bool verbose, bool lineDirectives) : m_dfa(dfa) {
+  m_verbose        = verbose;
+  m_lineDirectives = lineDirectives;
+}
+
+void TablesWriter::handleKeyword(TemplateWriter &writer, String &line) const {
+  if(m_verbose) {
+    m_dfa.printStates(writer.getOutput());
+  }
+  m_dfa.printTables(writer.getOutput());
+  if(m_lineDirectives) {
+    writeLineDirective(writer.getOutput(), writer.getPos().getFileName(), writer.getPos().getLineNumber()+1);
+  }
+}
+
+
+static void printOutputFiles(const String &templateName
+                            ,const String &lexFileName
+                            ,const DFA    &dfa
+                            ,bool          verbose
+                            ,bool          lineDirectives
+                            ,bool          generateBreaks
+                            ,const String &implOutputDir
+                            ,const String &headerOutputDir
+                            ) {
+
+  String lexName    = FileNameSplitter(lexFileName).getFileName();
+  String sourceName = FileNameSplitter(lexFileName).getAbsolutePath();
+
+  TemplateWriter writer(templateName, implOutputDir, headerOutputDir, verbose);
+  SourceTextWriter headerWriter(    dfa.getHeader()    , lineDirectives);
+  SourceTextWriter driverHeadWriter(dfa.getDriverHead(), lineDirectives);
+  SourceTextWriter driverTailWriter(dfa.getDriverTail(), lineDirectives);
+  ActionsWriter    actionsWriter(   dfa, lineDirectives, generateBreaks);
+  TablesWriter     tablesWriter(    dfa, verbose, lineDirectives);
+  NewFileHandler   newFileHandler;
+
+  writer.addKeywordHandler("FILEHEAD"     , headerWriter     );
+  writer.addKeywordHandler("CLASSHEAD"    , driverHeadWriter );
+  writer.addKeywordHandler("CLASSTAIL"    , driverTailWriter );
+  writer.addKeywordHandler("TABLES"       , tablesWriter     );
+  writer.addKeywordHandler("ACTIONS"      , actionsWriter    );
+  writer.addKeywordHandler("NEWFILE"      , newFileHandler   );
+  writer.addKeywordHandler("NEWHEADERFILE", newFileHandler   );
+  writer.addMacro("LEXNAME"  , lexName);
+  writer.addMacro("OUTPUTDIR", implOutputDir);
+  writer.addMacro("HEADERDIR", headerOutputDir);
+  writer.generateOutput();
+}
+
+static void usage() {
+  fprintf(stderr, 
+    "Usage:lexgen [options] input.\n"
+    " -mS: Use String S as template rather than lexgenXXX.par.\n"
+    " -l : Suppress #line directives in output.\n"
+    " -b : Suppress break-statements in output.\n"
+    " -v[level] :Verbose.\n"
+    "    level: 0: print DFA-states to generated cpp-file.\n"
+    "         : 1: dump NFA- and DFA-states to stdout.\n"
+    "         : 2: dump DFA-construction steps stdout.\n"
+    "    Default level = 0.\n"
+    " -wS: lex-wizard. write template lex-file with classname Slex to stdout.\n"
+	" -j : Generate java-lex. Default is C++.\n"
+    " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
+  );
+  exit(-1);
+}
+
+int main(int argc, char **argv) {
+  char *cp;
+  String implOutputDir   = ".";
+  String headerOutputDir = implOutputDir;
+  String templateName    = "";
+  bool   verbose         = false;
+  bool   generateBreaks  = true;
+  bool   dumpStates      = false;
+  bool   DFAVerbose      = false;
+  bool   lineDirectives  = true;
+  bool   callWizard      = false;
+  char  *wizardName      = "";
+  Language language      = CPP;
+
+  try {
+    for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
+      for(cp++;*cp;cp++) {
+        switch(*cp) {
+        case 'm': 
+          templateName = cp+1;
+          if(templateName.length() == 0) usage();
+          break;
+        case 'l':
+          lineDirectives = false;
+          continue;
+        case 'b':
+          generateBreaks = false;
+          continue;
+        case 'v':
+          verbose        = true;
+          { int level;
+            if(sscanf(cp+1, "%d", &level) != 1)
+              continue;
+            switch(level) {
+            case 2: DFAVerbose = true; // continue case
+            case 1: dumpStates = true; // continue case
+            case 0: verbose    = true;
+                    break;
+            default: usage();
+            }
+          }
+          break;
+        case 'w':
+          callWizard = true; 
+          wizardName = cp+1;
+          break;
+        case 'O':
+          { Tokenizer tok(cp+1, ",");
+            if(tok.hasNext()) {
+              implOutputDir = tok.next();
+            } else {
+              usage();
+            }
+            if(tok.hasNext()) {
+              headerOutputDir = tok.next();
+            } else {
+              headerOutputDir = implOutputDir;
+            }
+            if(tok.hasNext()) {
+              usage();
+            }
+            break;
+          }
+		case 'j':
+		  language = JAVA;
+		  continue;
+        default:
+          usage();
+          break;
+        }
+        break;
+      }
+    }
+
+    String skeletonFileName = "";
+    String wizardTemplate   = "";
+    switch(language) {
+	case CPP :
+      skeletonFileName = "lexgencpp.par";
+      wizardTemplate   = "lexgencpp.wzr" ;
+      break;
+	case JAVA:
+      skeletonFileName = "lexgenjava.par";
+      wizardTemplate   = "lexgenjava.wzr";
+	  lineDirectives   = false;
+      break;
+    default  :
+      usage();
+      break;
+    }
+
+    if(callWizard) {
+      String className = FileNameSplitter(wizardName).getFileName();
+      wizard(stdout, wizardTemplate, className);
+    } else {
+      if(!*argv) {
+        usage();
+      }
+      String lexFileName = *argv;
+      if(templateName.length() == 0) { // template not specified in argv
+        templateName = searchenv(skeletonFileName, "LIB");
+        if(templateName.length() == 0) {
+          throwException("template <%s> not found in environment LIB-path\n", skeletonFileName.cstr());
+        }
+      } else { // -mS options used. Check if templatefile S exist
+        if(access(templateName.cstr(), 0) < 0) {
+          throwException("Template <%s> not found", templateName.cstr());
+        }
+      }
+
+      NFA nfa;
+      NFAparser parser(lexFileName, nfa);
+
+      if(verbose) {
+        printf("Parsing %s\n", lexFileName.cstr());
+      }
+      parser.thompsonConstruction();
+
+      if(dumpStates) {
+        for(int i = 0; i < nfa.size(); i++) {
+          nfa[i]->print(stdoutMarginFile);
+        }
+      }
+
+      if(verbose) {
+        printf("Constructing DFA\n");
+      }
+
+      DFA dfa(nfa, language, DFAVerbose);
+      if(!DFAVerbose && dumpStates) {
+        for(int i = 0; i < dfa.m_states.size(); i++) {
+          dfa.m_states[i].print(stdoutMarginFile);
+        }
+      }
+
+      printOutputFiles(templateName
+                     , lexFileName
+                     , dfa
+                     , verbose
+                     , lineDirectives
+                     , generateBreaks
+                     , implOutputDir
+                     , headerOutputDir
+                     );
+
+    }
+  } catch(Exception e) {
+    fprintf(stderr, "%s\n", e.what());
+    return -1;
+  }
+  return 0;
+}
+/* ####----####+-+-+-+-+LexScanner.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 17:07:11><27.07.2016 17:07:11><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include <String.h>
+#include <assert.h>
+#include <ctype.h>
+#include "LexScanner.h"
+
+bool LexScanner::nextLine() {
+  bool ret = true;
+  if(fgets(m_lineBuffer, sizeof(m_lineBuffer), m_input) == NULL) {
+    strcpy(m_lineBuffer, "");
+    ret = false;
+  } else {
+    m_lineNo++;
+  }
+  m_next = (unsigned char*)m_lineBuffer;
+  m_col  = 0;
+  return ret;
+}
+
+void LexScanner::nextChar() {
+  if(*m_next == '\n') {
+    if(m_collecting) {
+      collectChar(*m_next);
+    }
+    nextLine();
+  } else {
+    if(m_collecting) {
+      collectChar(*m_next);
+    }
+    m_next++;
+    m_col++;
+  }
+}
+
+void LexScanner::parseString() {
+  while(*m_next && *m_next != '"' && *m_next != '\n') {
+    if (*m_next == '\\') {
+      nextChar();
+      switch(*m_next) {
+      case '\0':
+      case '\n': goto done;
+      case 'n' : nextChar(); continue;
+      case 'r' : nextChar(); continue;
+      case 't' : nextChar(); continue;
+      case '\\': nextChar(); continue;
+      case '"' : nextChar(); continue;
+      default  : nextChar(); continue; // ignore all other
+      }
+    }
+    nextChar();
+  }
+
+done:
+  if (*m_next == '"') {
+    nextChar();
+  }
+}
+
+void LexScanner::parseName() {
+  while(isalnum(*m_next) || *m_next == '_') {
+    nextChar();
+  }
+}
+
+void LexScanner::skipSpace() {
+  while (isspace(*getInput())) {
+    nextInput();
+  }
+}
+
+Token LexScanner::hnext() {
+start: // restart here if we meet a comment /*...*/ of //
+  while(isspace(*m_next)) {
+    nextChar();
+  }
+
+  m_text = (char*)m_next;
+
+  if(isalpha(*m_next) || *m_next == '_') {
+    parseName();
+    m_token = NAME;
+  } else {
+    switch( *m_next ) {
+    case '"':
+      nextChar();
+      parseString();
+      m_token = STRINGLIT;
+      break;
+    case '%':
+      nextChar();
+      switch(*m_next) {
+      case '%':
+        m_token = PERCENTPERCENT;
+        nextChar();
+        break;
+      case '{':
+        m_token = PERCENTLCURL;
+        nextChar();
+        break;
+      case '}':
+        m_token = PERCENTRCURL;
+        nextChar();
+        break;
+      default:
+        if(isalpha(*m_next))
+          parseName();
+        m_token = NAME;
+        break;
+      }
+      
+      break;
+    case '/':
+      nextChar();
+      switch(*m_next) {
+      case '/': // comment until endofline
+        nextChar();
+        while(*m_next && *m_next != '\n')
+          nextChar();
+        goto start;
+      case '*':
+        nextChar();
+        while(*m_next) {
+          while(*m_next && *m_next != '*') nextChar();
+          if(*m_next == '*') {
+            nextChar();
+            if(*m_next == '/') {
+              nextChar();
+              goto start;
+            }
+          }
+        }
+        m_token = EOI;
+        break;
+
+      default:
+        m_token = UNKNOWN;
+        break;
+      }
+      break;
+    case '\0':
+      m_token   = EOI;
+      break;
+    default:
+      m_token   = UNKNOWN;
+      nextChar();
+      break;
+    } // end switch
+  } // else
+  m_length = (char*)m_next - m_text;
+
+  if(m_debug) {
+    printf("%s\n", m_lineBuffer);
+    printf("%*.*s^\n", m_text - m_lineBuffer, m_text - m_lineBuffer, "");
+    printf("lex:lineno:%2d. token:%2d yytext:[%*.*s] yyleng:%d\n"
+          , m_lineNo, m_token, m_length, m_length, m_text, m_length );
+    pause();
+  }
+
+  return m_token;
+}
+
+bool LexScanner::nextExpr() {
+  // Gets a regular expression and the associated String from input
+  // Returns a pointer to the input String normally.
+  // Returns NULL on end of file or if a line beginning with % is
+  // encountered. All blank lines are discarded and all lines that start with
+  // whitespace are concatenated to the previous line.
+  // Lineno is set to the line number of the top line of a multiple-line block
+
+  while(m_lineBuffer[0] == '\n') { // skip blank lines
+    if(!nextLine()) {
+      return false;
+    }
+  }
+
+  if(m_lineBuffer[0] == '%') { // next line starts with a % sign
+    return false;
+  }
+
+  m_ruleLineNo = m_lineNo;
+  collectInit();
+  for(;;) {
+    char *nl;
+    if((nl = strchr(m_lineBuffer, '\n')) != NULL) *nl = '\0'; // terminate the line at '\n'
+    if(m_lineBuffer[0] != 0) { // only collect nonempty lines
+      for(char *cp = m_lineBuffer; *cp; cp++) {
+        collectChar(*cp);
+      }
+      collectChar('\n');
+    }
+    if(!nextLine())  {
+      break;
+    }
+    if(!isspace(m_lineBuffer[0])) { // we are at the next rule. stop read ahead
+      break;
+    }
+  }
+  collectChar('\0');
+  m_next = m_collector.getBuffer();
+  return *m_next != '\0'; // have we got more than '\0' into the buffer
+}
+
+static const Token tokenmap[] = {
+//  ^@  ^A  ^B  ^C  ^D  ^E  ^F  ^G  ^H  ^I  ^J  ^K  ^L  ^M  ^N  ^O
+     L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,
+
+//  ^P  ^Q  ^R  ^S  ^T  ^U  ^V  ^W  ^X  ^Y  ^Z  ^[  ^\  ^]  ^^  ^_
+     L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,
+
+//  SPACE  !   "   #    $        %   &    '  (   )   *         +     ,  -     .     /
+    L,     L,  L,  L,   DOLLAR,  L,  L,   L, LPAR, RPAR, STAR, PLUS, L, DASH, DOT,  L,
+
+//  0   1   2   3   4   5   6   7   8   9   :   ;   <   =   >   ?
+    L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  QUEST,
+
+//  @   A   B   C   D   E   F   G   H   I   J   K   L   M   N   O
+    L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,
+
+//  P   Q   R   S   T   U   V   W   X   Y   Z   [   \   ]   ^           _
+    L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  LB, L,  RB, CIRCUMFLEX, L,
+
+//  `   a   b   c   d   e   f   g   h   i   j   k   l   m   n   o
+    L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,
+
+//  p   q   r   s   t   u   v   w   x   y   z   {   |   }   ~   DEL
+    L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L,  L, BAR, L,  L,  L
+};
+
+MacroDefinition::MacroDefinition(char *value) {
+  m_value = value;
+  m_inUse = false;
+}
+
+MacroStackElement::MacroStackElement(MacroDefinition &m, unsigned char *next) : m_macroDefinition(m) {
+  m_next = next;
+}
+
+void LexScanner::addMacro() { // assume we have just scanned a name
+  String macroName = getText();
+  while(isspace(*m_next)) {
+    nextChar();
+  }
+  char tmp[1024];
+  int i = 0;
+  while (*m_next && !isspace(*m_next)) {
+    tmp[i++] = *m_next;
+    nextChar();
+  }
+  tmp[i] = '\0';
+//  printf("macro <%s>:<%s>\n", macroName.cstr(), tmp);
+  if (!m_macros.put(macroName, MacroDefinition(tmp))) {
+    error("Macro '%s' already defined", macroName.cstr());
+  }
+}
+
+MacroDefinition &LexScanner::parseMacro() {
+  // assume *m_next is '{'
+  // Return a pointer to the contents of a macro having the indicated
+  // name. Abort with a message if no macro exists.
+  // Advances m_next to point past the '}'
+
+  char *p;
+  m_next++;                                     // skip {
+  if(!(p = strchr( (char*)m_next, '}')) ) {     // and find }
+    error("Missing } in macro expansion");
+  } else {
+    *p = '\0';                                  // overwrite close brace.
+    String tmp((char*)m_next);
+    *p++ = '}';                                 // restore '}'
+    MacroDefinition *mac = m_macros.get(tmp);
+//    printf("expanding macro:<%s>\n", tmp.cstr());
+    if(mac == NULL) {
+      error("Macro {%s} doesn't exist", tmp.cstr());
+    }
+    if(mac->m_inUse) {
+      error("Recursive macros {%s} not allowed", tmp.cstr());
+    }
+    m_next = (unsigned char*)p;
+
+    return *mac;
+  }
+  throw Exception("Internal error in getmacro"); // to make compiler happy
+}
+
+void LexScanner::beginRuleSection() {
+  nextLine();
+  m_token = EOS;
+  m_ruleSection = true;
+}
+
+void LexScanner::endRuleSection() {
+  nextLine();
+  m_ruleSection = false;
+  m_length = 0;
+}
+
+Token LexScanner::nextToken() {                // called when we parse between %% and %%
+  if(m_token == EOS) {                         // Get another line
+    if(m_inQuote) {
+      error("newline in quoted String");       // doesn't return
+    }
+    do {                                       // read ahead until a non-blank line is read into the inputarray
+      if(!nextExpr()) {                        // then at end of file
+        m_token = EOI;
+        return m_token;
+      }
+//      printf("advance:m_next:<%s>\n", m_next);
+      while(isspace(*m_next)) {                // Ignore leading white space
+        nextInput();
+      }
+    } while(!*m_next );                        // and blank lines.
+  }
+
+  while(*m_next == '\0') {
+    if(!m_macroStack.isEmpty()) {              // Restore previous input source
+      MacroStackElement top = m_macroStack.pop();
+      m_next = top.m_next;
+      top.m_macroDefinition.m_inUse = false;   // Mark macro as unused
+      continue;
+    }
+
+    m_token  = EOS;                            // No more input sources to restore
+    m_lexeme = 0;                              // ie. you're at the real end of String.
+    return m_token;
+  }
+
+  if(!m_inQuote) {
+    while(*m_next == '{') {                    // Macro expansion required
+      MacroDefinition &m = parseMacro();       // Use macro body as input String, and set m_next to point past '}'
+      m.m_inUse = true;                        // Mark macro as used
+      m_macroStack.push(MacroStackElement(m, m_next));
+      m_next = (unsigned char*)m.m_value.cstr();
+    }
+  }
+
+  if(*m_next == '"') {                         // At start or end of a quoted String
+                                               // All characters are treated as
+    m_inQuote = !m_inQuote;                    // literals while m_inQuote is true
+    nextInput();                          
+    if(*m_next == '\0') {        
+      m_token  = EOS ;
+      m_lexeme = 0;
+      return m_token;
+    }
+  }
+
+  bool sawEscape = (*m_next == '\\');
+
+  if(!m_inQuote) {
+    if(isspace(*m_next)) {
+      m_token  = EOS ;
+      m_lexeme = 0;
+      return m_token;
+    }
+    m_lexeme = escape(m_next);
+  } else {
+    if(sawEscape && m_next[1] == '"') {
+      nextInput();                             // Skip the escaped character
+      nextInput();
+      m_lexeme = '"';
+    } else {
+      m_lexeme = *m_next;
+      nextInput();
+    }
+  }
+
+  m_token = (m_inQuote || sawEscape || m_lexeme > 127) ? L : tokenmap[m_lexeme];
+
+  return m_token;
+}
+
+String LexScanner::getText() {
+  const char save  = m_text[m_length];
+  m_text[m_length] = '\0';
+  String result(m_text);
+  m_text[m_length] = save;
+  return result;
+}
+
+void LexScanner::collectBegin() {
+  m_collecting = true;
+  m_collector.begin(m_text, m_length, SourcePosition(m_absoluteFileName, m_lineNo, 0));
+}
+
+void LexScanner::collectChar(char ch) {
+  m_collector.addChar(ch);
+}
+
+void LexScanner::getCollected(SourceText &src) {
+  src = m_collector.getSourceText(m_length);
+}
+
+static void error(char *fname, int lineno, char *format, ...) {
+  char tmp[256];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(tmp, format, argptr);
+  strReplace(tmp, '\n', ' ');
+  va_end(argptr);
+  printf("%s(%d) : error %s\n", fname, lineno, tmp);
+  exit(-1);
+}
+
+static void warning(char *fname, int lineno, char *format, ...) {
+  char tmp[256];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(tmp, format, argptr);
+  strReplace(tmp, '\n', ' ');
+  va_end(argptr);
+  printf("%s(%d) : warning %s\n", fname, lineno, tmp);
+}
+
+void LexScanner::verror(char *format, va_list argptr) {
+  char tmp[256];
+  vsprintf(tmp, format, argptr);
+  strReplace(tmp, '\n', ' ');
+  ::error(m_absoluteFileName.cstr(), m_ruleSection ? m_ruleLineNo : m_lineNo, "%s", tmp);
+}
+
+void LexScanner::error(char *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  verror(format, argptr);
+  va_end(argptr);
+}
+
+void LexScanner::warning(char *format, ...) {
+  char tmp[256];
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(tmp, format, argptr);
+  strReplace(tmp, '\n', ' ');
+  va_end(argptr);
+  ::warning(m_absoluteFileName.cstr(), m_ruleSection ? m_ruleLineNo:m_lineNo, "%s", tmp);
+}
+
+LexScanner::LexScanner(const String &fname) : m_macros(101) {
+  m_fileName          = fname;
+  m_absoluteFileName  = FileNameSplitter(m_fileName).getAbsolutePath();
+  m_input             = FOPEN(m_fileName, "r");
+  m_lineNo            = 0;
+  m_text              = m_lineBuffer;
+  m_length            = 0;
+  m_collecting        = false;
+  m_debug             = false;
+  m_inQuote           = false;      
+  m_ruleSection       = false;
+  nextLine();
+}
+
+LexScanner::~LexScanner() {
+  fclose(m_input);
+}
+/* ####----####+-+-+-+-+NFA.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include "NFA.h"
+
+NFAstate::NFAstate(int edge) {
+  m_id        = -1;
+  m_edge      = edge;
+  m_charClass = (edge == EDGE_CHCLASS) ? new BitSet(MAX_CHARS) : NULL;
+  m_next1     = m_next2 = NULL;
+  m_accept    = NULL;
+}
+
+NFAstate *NFAstate::successor(int c) const { 
+  return (m_edge == c || (m_edge == EDGE_CHCLASS && m_charClass->contains(c))) ? m_next1 : NULL;
+}
+
+void NFAstate::print(MarginFile &f) {
+  const int oldm = f.getLeftMargin();
+  f.printf("NFA state %3d", m_id);
+
+  if(m_next1 != NULL) {
+    f.printf(" -> %3d", m_next1->m_id);
+    if(m_next2) {
+      f.printf(" (%3d)", m_next2->m_id);
+    } else {
+      f.printf(" (---)");
+    }
+    f.printf(" on ");
+    switch(m_edge) {
+      case EDGE_CHCLASS :
+        f.setLeftMargin(30);
+        printCharClass(f, *m_charClass);
+        break;
+      case EDGE_EPSILON :
+        f.printf("EPSILON ");
+        break;
+      default           :
+        printChar(f, m_edge);
+        break;
+    }
+  }
+
+//  if( nfa == start )
+//      printf(" (START STATE)");
+
+  if(m_accept != NULL) {
+    f.printf(" %s", m_accept->dumpFormat().cstr());
+  }
+  f.printf("\n");
+  f.setLeftMargin(oldm);
+}
+
+String AcceptAction::dumpFormat() const {
+  String res = format("[accepting, line %3d <%s>]"
+                    ,m_pos.getLineNumber()
+                    ,left(trim(m_sourceText), 50).replace('\n', ' ').replace('\t', ' ').cstr());
+  if(m_anchor) {
+    res += format(" Anchor: %s%s"
+                 ,m_anchor & ANCHOR_START ? "start " : ""
+                 ,m_anchor & ANCHOR_END   ? "end"    : "");
+  }
+  return res;
+}
+/* ####----####+-+-+-+-+NFAParser.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 17:08:03><27.07.2016 17:08:03><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include "NFA.h"
+
+//#define DEBUGLEX
+
+#ifdef DEBUGLEX
+
+void NFAparser::enter(const char *function) {
+  String input = (char*)m_scanner.getInput();
+  input.replace('\n', ' ').replace('\r', "");
+  String next = String("'") + binToAscii(getLexeme()) + "'.";
+  int i1 = m_recurseLevel;
+  int i2 = max(30 - i1, 0);
+  printf("%*.*senter %-17s%*.*s next=%-7s Follow=\"%s\"\n", i1, i1, "", function, i2, i2, "", next.cstr(), input.cstr());
+  fflush(stdout);
+  m_recurseLevel++;
+}
+
+void NFAparser::leave(const char *function) {
+  m_recurseLevel--;
+  String input = (char*)m_scanner.getInput();
+  input.replace('\n', ' ').replace('\r', "");
+  String next = String("'") + binToAscii(getLexeme()) + "'.";
+  int i1 = m_recurseLevel;
+  int i2 = max(30 - i1, 0);
+  printf("%*.*sleave %-17s%*.*s next=%-7s Follow=\"%s\"\n", i1, i1, "", function, i2, i2, "", next.cstr(), input.cstr()); 
+  fflush(stdout);
+}
+
+#define ENTER(f) enter(f)
+#define LEAVE(f) leave(f)
+
+
+#else
+
+#define ENTER(f)
+#define LEAVE(f)
+
+#endif
+
+
+#ifdef _WIN32
+#pragma message("NB -------------------- In Windows newline include \\r and \\n -------------------")
+#else
+#pragma message("NB -------------------- Newline include \\n -------------------")
+#endif
+// In Windows a newline is \r\n, In Unix \n, 
+// so charerterclasses involving newline depends on the platform
+
+void NFAparser::expr(NFAstate *&startp, NFAstate *&endp) {
+  // This recursive descent compiler can't handle left recursion.
+  // The productions:
+  //
+  //  expr    => expr BAR catExpr
+  //           | catExpr
+  //           ;
+  //
+  // should be parsed as
+  //
+  //  expr    => catExpr expr'
+  //           ;
+
+  //  expr'   => BAR catExpr expr'
+  //           | epsilon
+  //           ;
+  //
+  // which will be done by this loop:
+  //
+  //  catExpr()
+  //  while(match(BAR)) {
+  //    nextToken();
+  //    catExpr();
+  //  }
+
+  ENTER("expr");
+
+  catExpr(startp, endp);
+
+  while(match(BAR)) {
+    NFAstate *e2_start = NULL; // expression to right of |
+    NFAstate *e2_end   = NULL;
+    NFAstate *p;
+
+    nextToken();
+    catExpr(e2_start, e2_end);
+
+    p               = new NFAstate;
+    p->m_next2      = e2_start;
+    p->m_next1      = startp;
+    startp          = p;
+
+    p               = new NFAstate;
+    endp->m_next1   = p;
+    e2_end->m_next1 = p;
+    endp            = p;
+  }
+
+  LEAVE("expr");
+}
+
+void NFAparser::catExpr(NFAstate *&startp, NFAstate *&endp) {
+  // The same translations that were needed in the expr rules are needed here.
+  //
+  //  catExpr     => catExpr factor
+  //               | factor
+  //               ;
+  //
+  //  is translated to:
+  //
+  //  catExpr     => factor catExpr'
+  //               ;
+  //
+  //  catExpr'    => factor catExpr'
+  //               | epsilon
+  //               ;
+  //
+  // which will be parsed by this loop:
+  //
+  //  factor();
+  //  while(token in first1(catExpr') ) {
+  //    factor();
+  //  }
+
+  ENTER("catExpr");
+
+  factor(startp, endp);
+
+  while(firstInCatExpr(m_scanner.getToken())) {
+    NFAstate *e2_start, *e2_end;
+
+    factor(e2_start, e2_end);
+    *endp = *e2_start;
+    delete e2_start;
+
+    endp = e2_end;
+  }
+
+  LEAVE("catExpr");
+}
+
+bool NFAparser::firstInCatExpr(Token tok) {
+  switch(tok) {
+  case RPAR       : // )
+  case DOLLAR     : // $
+  case BAR        : // |
+  case EOS        : // 0
+    return false;
+
+  case STAR       : // *
+  case PLUS       : // +
+  case QUEST      : // ?
+    error("+ ? or * must follow an expression.");
+    return false;
+
+  case RB         : // ]
+    error("Missing [ in character class.");
+    return false;
+  case CIRCUMFLEX : // ^
+    error("^ must be at start of expression or characterclass.");
+    return false;
+  }
+
+  return true;
+}
+
+void NFAparser::factor(NFAstate *&startp, NFAstate *&endp) {
+  // factor  => term 
+  //          | term STAR
+  //          | term PLUS
+  //          | term QUEST
+  //          ;
+
+  ENTER("factor");
+
+  term(startp, endp);
+
+  if(match(STAR) || match(PLUS) || match(QUEST)) {
+    NFAstate *start = new NFAstate;
+    NFAstate *end   = new NFAstate;
+    start->m_next1  = startp;
+    endp->m_next1   = end;
+
+    if(match(STAR) || match(QUEST)) {      //   * or ?
+      start->m_next2 = end;
+    }
+
+    if(match(STAR) || match(PLUS)) {       //   * or +
+      endp->m_next2 = startp;
+    }
+
+    startp  = start;
+    endp    = end;
+    nextToken();
+  }
+
+  LEAVE("factor");
+}
+
+void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
+  //
+  // term           => LB complement_opt charclass RB
+  //                 | DOT
+  //                 | LPAR expr RPAR
+  //                 | character
+  //                 ;
+  // 
+  // charclass      => characterInterval
+  //                 | epsilon
+  //                 ;
+  //
+  // complement_opt => CIRCUMFLEX
+  //                 | epsilon
+  //                 ;
+  //
+  // The [] is nonstandard. It matches a space ' ', tab '\t', formfeed '\f', or newline '\n',
+  // but not a carriage return '\r'.
+
+  ENTER("term");
+
+  if(match(LPAR)) { // ( expr )
+    nextToken();
+    expr( startp, endp );
+    if(match(RPAR)) {
+      nextToken();
+    } else {
+      error("Missing ')'."); // doesn't return
+    }
+  } else {
+    if(!match(DOT) && !match(LB) ) {
+      startp = new NFAstate(getLexeme());
+      nextToken();
+    } else { // DOT or [...]
+      startp = new NFAstate(EDGE_CHCLASS);
+      BitSet &chClass  = *startp->m_charClass;
+
+      if(match(DOT)) { // . (DOT) matches everything except '\n' (for Windows also '\r')
+        chClass.add('\n');
+#ifdef _WIN32
+        chClass.add('\r');
+#endif
+        chClass.invert();
+      } else { // [...]
+        nextToken(); // eat the '['
+        bool complementCharClass = false;
+        if(match(CIRCUMFLEX)) {            // Complement character class
+          complementCharClass = true;
+          nextToken();
+        }
+        if(match(RB)) {                     // [] or [^]
+          chClass.add(' ').add('\t').add('\f').add('\n');
+        } else {
+          characterInterval(*startp->m_charClass);
+        }
+        if(complementCharClass) {
+          chClass.add('\n'); // This will exclude '\n' if not specified in input
+#ifdef _WIN32
+          chClass.add('\r'); // and \r
+#endif
+          chClass.invert();
+        }
+        if(!match(RB)) {
+          error("Missing ] in character class.");
+        }
+      }
+//      printcharclass(chClass);
+      nextToken();
+    }
+
+    endp = startp->m_next1 = new NFAstate;
+  }
+
+  LEAVE("term");
+}
+
+void NFAparser::characterInterval(BitSet &set) {
+  //
+  // characterInterval  => ccl characterInterval'
+  //                     ;
+  //
+  // characterInterval' => ccl characterInterval'
+  //                     | epsilon
+  //                     ;
+  //
+  // ccl                => DASH charater
+  //                     | character DASH
+  //                     | character DASH character
+  //                     ;
+
+  ENTER("characterInterval");
+
+  if(match(DASH)) {       // Treat [-...] as a literal dash
+    warning("'-' at start of character class.");
+    set.add(getLexeme());
+    nextToken();
+  }
+
+  unsigned int first;
+  while(!match(EOS) && !match(RB)) {
+
+    ENTER("ccl");
+
+    if(match(DASH)) {
+      nextToken();
+      if(match(RB)) {     // Treat [...-] as literal
+        warning("'-' at end of character class.");
+        set.add('-');
+      } else {
+        set.add(first, getLexeme());
+      }
+    } else {
+      first = getLexeme();
+      set.add(first);
+    }
+    if(match(EOS) || match(RB)) {
+      LEAVE("ccl");
+      break;
+    } else {
+      nextToken();
+      LEAVE("ccl");
+    }
+  }
+
+  LEAVE("characterInterval");
+}
+
+AcceptAction *NFAparser::acceptString(int anchor) {
+  if( *m_scanner.getInput() == '|' ) {
+    if(m_lastAction == NULL) {
+      m_lastAction = new AcceptAction;
+    }
+    return m_lastAction; // we will get the actual actionstring later
+  }
+
+  // now parse the actual action and save it
+  AcceptAction *action;
+  if(m_lastAction == NULL) {
+    action = new AcceptAction;
+  } else {
+    action = m_lastAction;
+    m_lastAction = NULL;
+  }
+  action->m_pos        = m_scanner.getRulePosition();
+  action->m_sourceText = (char*)m_scanner.getInput();
+  action->m_anchor     = anchor;
+//  printf("action:#line %d <%s>\n", action->m_lineno, action->m_sourcetext.cstr());
+  return action;
+}
+
+NFAstate *NFAparser::rule() {
+  //  rule       => anchor_bol expr anchor_eol EOS action
+  //              ;
+  //
+  //  anchor_bol => ^
+  //              | epsilon
+  //              ;
+  //
+  //  anchor_eol => $
+  //              | epsilon
+  //              ;
+  //
+  //  action     => <tabs> <String of characters>
+  //              | epsilon
+  //              ;
+
+
+  NFAstate *start  = NULL;
+  NFAstate *end    = NULL;
+  int       anchor = ANCHOR_NONE;
+
+  ENTER("rule");
+
+  if(match(CIRCUMFLEX)) { // Anchor bol (beginning of line)
+    start =  new NFAstate('\n');
+    anchor |= ANCHOR_START ;
+    nextToken();
+    expr(start->m_next1, end);
+  } else {
+    expr(start, end);
+  }
+
+  if(match(DOLLAR)) { // Anchor eol
+    // pattern followed by \r or \n (use a character class).
+
+    nextToken();
+    end->m_next1   = new NFAstate;
+    end->m_edge    = EDGE_CHCLASS;
+    end->m_charClass = new BitSet(MAX_CHARS);
+    end->m_charClass->add('\n');
+#ifdef _WIN32
+    end->m_charClass->add('\r');
+#endif
+    end     = end->m_next1 ;
+    anchor |= ANCHOR_END  ;
+  }
+
+  m_scanner.skipSpace();
+
+  end->m_accept = acceptString(anchor);
+  nextToken(); // skip past EOS
+
+  LEAVE("rule");
+
+  return start;
+}
+
+NFAstate *NFAparser::machine() {
+  NFAstate *start;
+  NFAstate *p;
+
+  ENTER("machine");
+
+  p = start  = new NFAstate;
+  p->m_next1 = rule();
+
+  while(!match(EOI)) {
+    p->m_next2 = new NFAstate;
+    p          = p->m_next2;
+    p->m_next1 = rule();
+  }
+
+  LEAVE("machine");
+
+  return start;
+}
+
+void NFAparser::parseHeadBody(SourceText &source) {
+  Token tok = m_scanner.hnext();
+  m_scanner.collectBegin();
+  while(tok != PERCENTRCURL && tok != EOI) {
+    tok = m_scanner.hnext();
+  }
+  m_scanner.getCollected(source);
+//  printf("#line %d \"%s\"\n%s", lineno, m_scanner.getfname(), head.cstr());
+}
+
+void NFAparser::readHead() {
+  Token tok = m_scanner.hnext();
+  int section = 0;
+  while(tok != PERCENTPERCENT && tok != EOI) {
+    switch(tok) {
+    case PERCENTLCURL:
+      if(section > 1) {
+        m_scanner.error("Only 2 sections allowed.");
+      }
+      parseHeadBody((section == 0)?m_NFA.m_header:m_NFA.m_driverHead);
+      section++;
+      tok = m_scanner.hnext();
+      break;
+    case NAME:
+      m_scanner.addMacro();
+      tok = m_scanner.hnext();
+      break;
+    default:
+      m_scanner.error("Invalid text:%s", m_scanner.getText().cstr());
+      tok = m_scanner.hnext();
+    }
+  }
+}
+
+void NFAparser::readTail() {
+  m_scanner.collectBegin();
+  Token tok = m_scanner.hnext();
+  while(tok != EOI) {
+    tok = m_scanner.hnext();
+  }
+  m_scanner.getCollected(m_NFA.m_driverTail);
+}
+
+NFAstate *NFAparser::parse() {
+  readHead();
+  m_scanner.beginRuleSection();
+  m_scanner.nextToken();
+  NFAstate *start = machine();
+  m_scanner.endRuleSection();
+  readTail();
+  return start;
+}
+
+void NFAparser::generateID(NFAstate *state) {
+  if(state && state->m_id == -1) {
+    state->m_id = m_idCounter++;
+    m_NFA.add(state);
+    generateID(state->m_next1);
+    generateID(state->m_next2);
+  }
+}
+
+static int NFAcmp(NFAstate * const &s1, NFAstate * const &s2) {
+  return s1->m_id - s2->m_id;
+}
+
+void NFAparser::thompsonConstruction() {
+  m_recurseLevel = 0;
+  NFAstate *start = parse();
+  m_idCounter = 0;
+  generateID(start);
+  m_NFA.sort(NFAcmp);
+
+//  for(unsigned int i = 0; i < m_states.size(); i++)
+//    m_states[i]->print();
+
+}
+
+NFAparser::NFAparser(const String &fname, NFA &nfa) : m_scanner(fname), m_NFA(nfa) {
+  m_lastAction = NULL;
+}
+/* ####----####+-+-+-+-+printutil.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><17.11.2015 16:09:34><81B6>+-+-+-+-+####----#### */
+#include "stdafx.h"
+#include "NFA.h"
+
+// Returns a String that represents c. This will be the character itself for normal characters,
+// and an escape sequence (\n, \t, \x00, ...), for most others. A ' is represented as \'.
+// If "useHex" is true, then \xDD escape sequences are used. Otherwise, octal sequences (\DDD) are used.
+String binToAscii(int c, bool useHex) {
+  char result[10];
+  c &= 0xff;
+  if(' ' < c  &&  c < 0x7f  &&  c != '\'' && c != '\\') {
+    result[0] = c;
+    result[1] = '\0';
+  } else {
+    result[0] = '\\' ;
+    result[2] = '\0' ;
+
+    switch(c) {
+    case '\\': result[1] = '\\'; break;
+    case '\'': result[1] = '\''; break;
+    case '\b': result[1] = 'b' ; break;
+    case '\t': result[1] = 't' ; break;
+    case '\f': result[1] = 'f' ; break;
+    case '\r': result[1] = 'r' ; break;
+    case '\n': result[1] = 'n' ; break;
+    case ' ' : result[1] = 's' ; break;
+    default  : sprintf(&result[1], useHex ? "x%02x" : "%03o", c);
+               break;
+    }
+  }
+  return result;
+}
+
+void printChar(MarginFile &f, int c) {
+  f.printf("%s", binToAscii(c).cstr());
+}
+
+#define FORMATCHAR(ch) binToAscii(ch)
+#define FLUSHRANGE()                                                            \
+{ String tmp;                                                                   \
+  if(delim) tmp += delim; else delim = ","    ;                                 \
+  if(first == last) {                                                           \
+    tmp = FORMATCHAR(first);                                                    \
+  } else {                                                                      \
+    const char *formatStr = (first + 1 == last) ? "%s%s" : "%s-%s";             \
+    tmp = format(formatStr, FORMATCHAR(first).cstr(), FORMATCHAR(last).cstr()); \
+  }                                                                             \
+  if(charsPrinted + tmp.length() > RMARGIN) {                                   \
+    f.printf("\n");                                                             \
+    charsPrinted = f.getLeftMargin();                                           \
+  }                                                                             \
+  f.printf("%s", tmp.cstr());                                                   \
+  charsPrinted += tmp.length();                                                 \
+}
+
+void printCharClass(MarginFile &f, BitSet &set) {
+  int charsPrinted = f.getLeftMargin();
+  unsigned int first = 1, last = 0;
+  const char *delim = NULL;
+  for(Iterator<unsigned int> it = ((BitSet&)set).getIterator(); it.hasNext();) {
+    const unsigned ch = it.next();
+    if(first > last) {
+      first = last = ch;
+    } else if(ch == last+1) {
+      last = ch;
+    } else {
+      FLUSHRANGE();
+      first = last = ch;
+    }
+  }
+  if(first <= last) {
+    FLUSHRANGE();
+  }
+}
+/*
+void printCharClass(MarginFile &f, BitSet &set) {
+  int charsPrinted = f.getLeftMargin();
+  for(Iterator<unsigned int> it = set.getIterator(); it.hasNext();) {
+    int i = it.next();
+    String tmp = binToAscii(i);
+    if(charsPrinted + tmp.length() > RMARGIN) {
+      f.printf("\n");
+      charsPrinted = f.getLeftMargin();
+    }
+    f.printf("%s", tmp.cstr());
+    charsPrinted += tmp.length();
+  }
+}
+*/
+void printSet(MarginFile &f, BitSet &set) {
+  f.printf("[");
+  int charsPrinted = f.getLeftMargin();
+  for(Iterator<unsigned int> it = set.getIterator(); it.hasNext();) {
+    int i = it.next();
+    String tmp = format("%d ", i);
+    if(charsPrinted + tmp.length() > RMARGIN) {
+      f.printf("\n");
+      charsPrinted = f.getLeftMargin();
+    }
+    f.printf("%s", tmp.cstr());
+    charsPrinted += tmp.length();
+  }
+
+  f.printf("]");
+}
+/* ####----####+-+-+-+-+StdAfx.cpp+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+// stdafx.cpp : source file that includes just the standard includes
+//	lexgen.pch will be the pre-compiled header
+//	stdafx.obj will contain the pre-compiled type information
+
+#include "stdafx.h"
+
+// TODO: reference any additional headers you need in STDAFX.H
+// and not in this file
+/* ####----####+-+-+-+-+DFA.h+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+#pragma once
+
+#include "NFA.h"
+#include <MarginFile.h>
+
+typedef enum {
+	CPP
+   ,JAVA
+} Language;
+
+typedef int DFAtrans[MAX_CHARS];     // transitions for each DFAstate
+
+class DFAstate {
+public:
+  int           m_id;
+  AcceptAction *m_accept;            // accept action if accept state
+  BitSet       *m_NFAset;            // Set of NFA states
+  DFAtrans      m_transition;        // next state for each character
+
+  DFAstate(int id, BitSet *NFAset = NULL, AcceptAction *action = NULL);
+  void print(MarginFile &f) const;
+};
+
+#define FAILURE -1                   // if no transition on c, then m_transition[c] = FAILURE
+                                    
+class DFA {
+private:
+  const NFA      &m_NFA;
+  Array<BitSet>   m_groups;          // groups with equal AcceptAction in m_states
+  Array<int>      m_inGroup;         // indexed by DFAstate-number. Holds the index of the group, a state belongs to
+  bool            m_verbose;
+  Language        m_language;
+  MarginFile     &m_verboseFile;
+
+  BitSet *newNFAset() const {        // creates a set of NFA-states to be put in DFAstate
+    return new BitSet(m_NFA.size());
+  }
+
+  int         stateExist(const BitSet &NFAset) const;
+  BitSet     *transition(BitSet &NFAset, int c) const;
+  void        epsClosure(BitSet &NFAset, AcceptAction *&accept) const;
+  void        makeTransitions();
+  void        makeInitialGroups();
+  void        fixupTransitions();
+  void        minimize();
+  void        reduce(int *rowMap, int *columnMap, BitSet &rowSave, BitSet &columnSave) const;
+  bool        columnsEqual(int col1, int col2) const;
+  bool        rowsEqual(int row1, int row2) const;
+  void        minmaxElement(BitSet &rowSave, BitSet &columnSave, int &minElement, int &maxElement) const;
+  const char *findTransisitionType(BitSet &rowSave, BitSet &columnSave) const;
+  void        printGroups(   MarginFile &f);
+  void        printCharMap(  MarginFile &f) const;
+  void        printCharMap(  MarginFile &f, const int *map) const;
+  void        printStateMap( MarginFile &f, const int *map) const;
+  void        printTransitionMatrix(MarginFile &f, BitSet &rowSave, BitSet &columnSave) const;
+  void        printAcceptTable(MarginFile &f) const;
+public:
+  Array<DFAstate> m_states;
+  DFA(const NFA &nfa, Language language, bool verbose = false);
+  void printStates(MarginFile &f) const;
+  void printTables(MarginFile &f) const;
+  Language getLanguage() const { return m_language; }
+  const SourceText getHeader()     const { return m_NFA.m_header;     }
+  const SourceText getDriverHead() const { return m_NFA.m_driverHead; }
+  const SourceText getDriverTail() const { return m_NFA.m_driverTail; }
+};
+/* ####----####+-+-+-+-+LexScanner.h+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 17:07:11><27.07.2016 17:07:11><81B6>+-+-+-+-+####----#### */
+#pragma once
+
+#include <MyUtil.h>
+#include <MyString.h>
+#include <HashMap.h>
+#include <Stack.h>
+#include <StringCollector.h>
+
+typedef enum {
+  EOI                 //  end of input
+ ,STRINGLIT
+ ,NAME
+ ,PERCENTPERCENT
+ ,PERCENTLCURL
+ ,PERCENTRCURL
+ ,EOS                 //  end of String
+ ,DOT                 //  .
+ ,CIRCUMFLEX          //  ^
+ ,DOLLAR              //  $
+ ,LB                  //  [
+ ,RB                  //  ]
+ ,LPAR                //  (
+ ,RPAR                //  )
+ ,STAR                //  *
+ ,DASH                //  -
+ ,L                   //  literal character
+ ,QUEST               //  ?
+ ,BAR                 //  |
+ ,PLUS                //  +
+ ,UNKNOWN
+} Token;
+
+class MacroDefinition {
+public:
+  String m_value;
+  bool   m_inUse;
+  MacroDefinition(char *value);
+};
+
+class MacroStackElement {
+public:
+  MacroDefinition &m_macroDefinition;
+  unsigned char   *m_next;
+  MacroStackElement(MacroDefinition &m, unsigned char *next);
+};
+
+class LexScanner {
+private:
+  StringHashMap<MacroDefinition> m_macros;
+  Stack<MacroStackElement>       m_macroStack;
+  bool            m_inQuote;     // are we in a quoted String
+  char            m_lineBuffer[8192];
+  String          m_fileName, m_absoluteFileName;
+  unsigned char  *m_next;
+  StringCollector m_collector;
+  bool            m_collecting;
+  bool            m_debug;
+  unsigned int    m_lineNo;      // current lineno of inputfile
+  unsigned int    m_col;         // current column of inputfile
+  unsigned int    m_ruleLineNo;  // use this linenumber in error-messages when we are in rulesection
+  bool            m_ruleSection; // are we in the rulesection of input
+  int             m_length;
+  char           *m_text;
+  FILE           *m_input;
+  Token           m_token;       // current token  (almost = tokmap[m_lexeme])
+  unsigned int    m_lexeme;      // current lexeme (character read)
+  bool nextLine();
+  void nextChar();
+  void nextInput() {
+    m_next++;
+  }
+  bool nextExpr();
+  void parseName();
+  void parseString();
+  MacroDefinition &parseMacro();
+public:
+  LexScanner(const String &fname);
+  LexScanner(const LexScanner &src);            // not defined
+  LexScanner &operator=(const LexScanner &src); // not defined
+  virtual ~LexScanner();
+  char *getfname() {
+    return m_fileName.cstr();
+  }
+  String getText();             // get the text just scanned. used before first %%
+  Token hnext();                // next to be used before first %%
+  Token nextToken();            // get next token. to be used between %% and %%
+  Token getToken() const {
+    return m_token;
+  }
+  unsigned char *getInput() const {
+    return m_next;
+  }
+  unsigned int getLexeme() const {
+    return m_lexeme;
+  }
+  void skipSpace();
+  void beginRuleSection();
+  void endRuleSection();
+  void collectChar(char ch);
+  void collectInit() {
+    m_collector.init();
+  }
+  void collectBegin();
+  void collectEnd() {
+    m_collecting = false;
+  }
+  void getCollected(SourceText &src);
+  void addMacro();
+  unsigned int getLineno() const {
+    return m_lineNo;
+  }
+  SourcePosition getRulePosition() const {
+    return SourcePosition(m_absoluteFileName, m_ruleLineNo, 0);
+  }
+  void verror(char *format, va_list argptr);
+  void error(char *format, ...);
+  void warning(char *format, ...);
+};
+
+unsigned int escape(const unsigned char *&s); // scan escape sequences, return equivalent ASCII character. f.ex. "\n" = 10
+/* ####----####+-+-+-+-+NFA.h+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+#pragma once
+
+#include <MyUtil.h>
+#include <MyString.h>
+#include <MarginFile.h>
+#include <BitSet.h>
+#include <Array.h>
+#include <Scanner.h>
+#include "LexScanner.h"
+
+#define EDGE_EPSILON  -1                              // non-character values of NFAstate.m_edge
+#define EDGE_CHCLASS  -2
+
+
+#define MAX_CHARS   256                               // maximal character value
+
+#define RMARGIN 118
+
+class AcceptAction : public SourceText {
+public:
+  char m_anchor;            // is the pattern anchored to START, END, BOTH or none
+  String dumpFormat() const;
+};
+
+class NFAstate {
+public:
+  int           m_id;        // The states id
+  int           m_edge;      // Label for outgoing edge: character (>=0), EDGE_CHCLASS or EDGE_EPSILON
+  BitSet       *m_charClass; // Characterclass when m_edge = EDGE_CHCLASS
+  NFAstate     *m_next1;     // Next state (or NULL if none)
+  NFAstate     *m_next2;     // Alternative next state if m_edge = EDGE_EPSILON. NULL if no alternative.
+  AcceptAction *m_accept;    // AcceptAction if accepting state, else NULL
+  NFAstate(int edge = EDGE_EPSILON);
+  NFAstate *successor(int c) const; // Returns successor-state on transition c (character). NULL if none
+  int getID() const {
+    return m_id;
+  }
+  void print(MarginFile &f);
+};
+
+class NFA : public Array<NFAstate*> {
+public:
+  SourceText m_header, m_driverHead, m_driverTail;
+  NFA() {};
+  NFA(const NFA &src);      // not defined
+  NFA &operator=(NFA &src); // not defined
+};
+
+class NFAparser {
+private:
+  LexScanner    m_scanner;
+  AcceptAction *m_lastAction;
+  int           m_idCounter;
+  int           m_recurseLevel;
+  NFA          &m_NFA;
+
+  void parseHeadBody(SourceText &source);
+  void readHead();
+  void readTail();
+  void enter(const char *function);
+  void leave(const char *function);
+  AcceptAction *acceptString(int anchor);
+  void generateID(NFAstate *state);
+  NFAstate *parse();
+  NFAstate *machine();
+  NFAstate *rule();
+  void expr(NFAstate *&startp, NFAstate *&endp);
+  void catExpr(NFAstate *&startp, NFAstate *&endp);
+  bool firstInCatExpr(Token tok);
+  void factor(NFAstate *&startp, NFAstate *&endp);
+  void term(NFAstate *&startp, NFAstate *&endp);
+  void characterInterval(BitSet &set);
+  bool match(Token t) const {
+    return m_scanner.getToken() == t;
+  }
+
+  void nextToken() {
+    m_scanner.nextToken();
+  }
+
+  void error(char *message) {
+    m_scanner.error("%s", message);
+  }
+
+  void warning(char *message)  {
+    m_scanner.warning("%s", message);
+  }
+
+  unsigned int getLexeme() const {
+    return m_scanner.getLexeme();
+  }
+
+public:
+  NFAparser(const String &fname, NFA &nfa);
+  NFAparser(NFAparser &src);                  // not defined
+  NFAparser &operator=(const NFAparser &src); // not defined
+  void thompsonConstruction();
+};
+
+String binToAscii(int c, bool use_hex = true); // Returns a String that represents c, using escape-sequences. ie opposite of escape
+void printChar(     MarginFile &f, int c);     // f.printf("%s",binToAscii(c));
+void printCharClass(MarginFile &f, BitSet &set);
+void printSet(      MarginFile &f, BitSet &set);
+
+/* ####----####+-+-+-+-+resource.h+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><29.10.2015 21:41:43><81B6>+-+-+-+-+####----#### */
+//{{NO_DEPENDENCIES}}
+// Microsoft Developer Studio generated include file.
+// Used by lexgen.rc
+//
+
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_NEXT_RESOURCE_VALUE        101
+#define _APS_NEXT_COMMAND_VALUE         40001
+#define _APS_NEXT_CONTROL_VALUE         1000
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif
+/* ####----####+-+-+-+-+StdAfx.h+-+-+-+-+####-+-+-+-+-+<27.07.2016 13:21:04><27.07.2016 13:21:04><17.11.2015 15:22:12><81B6>+-+-+-+-+####----#### */
+#pragma once
+
+#include <MyUtil.h>
+
+//{{AFX_INSERT_LOCATION}}

@@ -1,0 +1,116 @@
+$NEWFILE$=$LEXNAME$Lex.java
+$FILEHEAD$
+
+import java.io.Reader;
+import dk.jgmdata.parsing.LexScanner;
+  
+public class $LEXNAME$Lex extends LexScanner {
+
+    private static final String lexemeTooLongMessage = "Lexeme too long. Discarding extra characters.";
+
+    $CLASSHEAD$
+    $TABLES$
+
+    public $LEXNAME$Lex(Reader reader) {
+        super(reader);
+    }
+    
+    /** nextState(state,c) is given the current state number and input character
+     *  and evaluates to the next state.
+     *  @param state current state
+     *  @param c current lookahead character
+     *  @return next state. -1 if next state doesn't exist
+     */
+    private static int nextState(int state,int c) {
+        return lexNext[lexStateMap[state]][lexCharMap[c]];
+    }
+    
+    @Override
+    public int getNextLexeme() {
+        int state           = 0;     // Current state
+        int lastAcceptState = 0;     // Most recently seen accept state
+        int prevState       = 0;     // State before lastAccept
+        int nextState;               // Next state
+        int lookahead;               // Lookahead character
+        byte anchor         = 0;     // Anchor mode for most recently seen accepting state
+
+        initMore();                  // Set when setMore() is executed
+        markStart();
+
+        for(;;) {
+            // Check end of file. If there's an unprocessed accepting state,
+            // lastAcceptState will be nonzero. In this case, ignore EOF for now, so
+            // that you can do the accept action. Otherwise, try to open another file
+            // and return 0, if you can't.
+
+            for(;;) {
+                if((lookahead = look(1)) != EOF) {
+                    nextState = nextState(state, lookahead);
+                    break;
+                } else if(lastAcceptState != 0) {  // still something to do
+                    nextState = -1;
+                    break;
+                } else if(isWrap()) {              // another file?
+                    saveLexeme();
+                    return 0;                      // EOI
+                }
+            }
+            if(isDebugging())
+                debugState("--------",state,lookahead);
+
+            if(nextState != -1) {
+                if(advance() < 0) {                 // Buffer full
+                    error(getPos(), getLength(), lexemeTooLongMessage);
+                    flush(true);
+                    if(isDebugging()) {
+                        debug(lexemeTooLongMessage);
+                        debugState("--------",state,look(1));
+                    }
+                }
+
+                if((anchor = lexAccept[nextState]) != 0) { // saw an accept state
+                    prevState       = state;
+                    lastAcceptState = nextState;
+                    markEnd();                      // Mark input at current character
+                                                    // A subsequent to_mark() returns us to this position
+                }
+                state = nextState;
+            } else if(lastAcceptState == 0) {       // illegal input
+                error(getPos(), 1, "Invalid character:'" + charToString(lookahead) + "'");
+                if(isDebugging())
+                    debug("Invalid character:'" + charToString(lookahead) + "'");
+                advance();
+            } else {
+                if(isDebugging())
+                    debugState("accept--",lastAcceptState,lookahead);
+
+                gotoMark();                         // Back up to previous accept state
+                if((anchor & ANCHOR_END) != 0)      // If end anchor is active
+                    pushBack(1);                    // push back the CR or LF
+                if((anchor & ANCHOR_START) != 0)    // if start anchor is active
+                    moveStart();                    // skip the leading newline
+                saveLexeme();
+
+                switch(lastAcceptState) {
+
+                $ACTIONS$
+                    
+                default:
+                    throw new IllegalStateException("$LEXNAME$Lex.getNextLexeme:Unknown accept state:" + lastAcceptState );
+                }
+                lastAcceptState = 0;
+
+                if(isMore()) {
+                    state = prevState;                  // Back up
+                    initMore();
+                } else {
+                    state = 0;
+                    markStart();
+                }
+            }
+        }
+    }
+    
+    $CLASSTAIL$
+
+}

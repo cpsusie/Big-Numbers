@@ -1,0 +1,54 @@
+$NEWFILE$=$GRAMMARNAME$Symbol.java
+$FILEHEAD$
+
+public class $GRAMMARNAME$Symbol {
+    $TERMINALSYMBOLS$
+    
+    $NONTERMINALSYMBOLS$
+
+}
+
+$NEWFILE$=$PARSERCLASSNAME$.java
+$FILEHEAD$
+
+import dk.jgmdata.parsing.LRParser;
+import dk.jgmdata.parsing.LexScanner;
+
+public class $PARSERCLASSNAME$ extends LRParser {
+    $CLASSHEAD$
+
+    public $PARSERCLASSNAME$(LexScanner scanner) {
+        super($TABLESCLASSNAME$.getInstance(), scanner);
+    }
+
+    @Override
+    public int reduceAction(int prod) {
+        switch(prod) {
+        $ACTIONS$
+        }
+        return 0;
+    }
+    
+    $CLASSTAIL
+}
+
+$NEWFILE$=$TABLESCLASSNAME$.java
+$FILEHEAD$
+
+import dk.jgmdata.parsing.ParserTables;
+
+public final class $TABLESCLASSNAME$ extends ParserTables {
+    $TABLES$
+    
+    private $TABLESCLASSNAME$() {
+        super(action,successor,leftSide,rightSide,symbolName,$TERMINALCOUNT$);
+    }
+
+    private static class LazyHolder {
+        private static final $TABLESCLASSNAME$ tables = new $TABLESCLASSNAME$();
+    }
+
+    public static $TABLESCLASSNAME$ getInstance() {
+        return LazyHolder.tables;
+    }
+}

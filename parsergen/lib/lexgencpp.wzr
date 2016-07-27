@@ -1,0 +1,33 @@
+%{
+#pragma once
+
+ /* This part goes to $CLASSNAMElex.h */
+
+#include <scanner.h>
+
+class $CLASSNAMElex : public scanner {
+public:
+  int yylex();
+};
+%}
+
+%{
+
+ /* This part goes to the first part of $CLASSNAMElex.cpp */
+
+#include "stdafx.h"
+#include "$CLASSNAMElex.h"
+#include "$CLASSNAMEsymbol.h"
+
+%}
+
+let     [_a-zA-Z]    /* Letter                 */
+alnum   [_a-zA-Z0-9] /* Alphanumeric character */
+
+%%
+
+  TODO:Add rules here
+
+%%
+
+  /* This part goes to the last part of $CLASSNAMElex.cpp */

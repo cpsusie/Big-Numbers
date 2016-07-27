@@ -1,0 +1,591 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\ParserDemo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\ParserDemo.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAPTERMINAL      BITMAP  DISCARDABLE     "res\\bitmaptree.bmp"
+/////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Find...\tCtrl+F",            ID_EDIT_FIND
+        MENUITEM "Find next\tF3",               ID_EDIT_FINDNEXT, GRAYED
+        MENUITEM "Find prev\tShift+F3",         ID_EDIT_FINDPREV, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Next error\tF4",              ID_EDIT_NEXTERROR, GRAYED
+        MENUITEM "Prev error\tShift+F4",        ID_EDIT_PREVERROR, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Find matching parant&es\tCtrl+E", 
+                                                ID_EDIT_FINDMATCHINGPARANTHES
+
+        MENUITEM "&Go to...\tCtrl+G",           ID_EDIT_GOTO
+        MENUITEM SEPARATOR
+        MENUITEM "Break on te&xtposition\tF9",  ID_EDIT_BREAKONTEXTPOSITION
+        MENUITEM "Select &productions to break on...\tCtrl+P", 
+                                                ID_EDIT_SELECTPRODUCTIONSTOBREAKON
+
+        MENUITEM "Select st&ates to break on...\tCtrl+A", 
+                                                ID_EDIT_SELECTSTATESTOBREAKON
+
+        MENUITEM "Select s&ymbols to break on...\tCtrl+Y", 
+                                                ID_EDIT_SELECTSYMBOLSTOBREAKON
+
+        MENUITEM SEPARATOR
+        MENUITEM "Derivation &Tree...\tCtrl+T", ID_EDIT_DERIVATIONTREE
+        , GRAYED
+    END
+    POPUP "&Run"
+    BEGIN
+        MENUITEM "&Parse input\tCtrl+F5",       ID_RUN_PARSEINPUT
+        POPUP "Start &debug"
+        BEGIN
+            MENUITEM "&Reset parser\tShift+F5",     ID_RUN_STARTDEBUG_RESETPARSER
+
+            MENUITEM "&Go\tF5",                     ID_RUN_STARTDEBUG_GO
+            MENUITEM "&Step 1 cycle\tF11",          ID_RUN_STARTDEBUG_STEP
+            MENUITEM "Step &over symbol\tF10",      ID_RUN_STARTDEBUG_STEPOVER
+
+        END
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Show &legal input\tCtrl+L",   ID_OPTIONS_SHOWLEGALINPUT
+        MENUITEM "S&how state items\tCtrl+H",   ID_OPTIONS_SHOWSTATE
+        MENUITEM "Ani&mate\tCtrl+M",            ID_OPTIONS_ANIMATE
+        POPUP "List &debug"
+        BEGIN
+            MENUITEM "List &debug from parser\tCtrl+D", 
+                                                    ID_OPTIONS_LISTDEBUGFROMPARSER
+
+            MENUITEM "List debug from le&xical scanner\tCtrl+X", 
+                                                    ID_OPTIONS_LISTDEBUGFROMSCANNER
+
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "E&rrors...\tCtrl+R",          ID_OPTIONS_ERRORS
+        MENUITEM "Stacksi&ze...\tCtrl+Z",       ID_OPTIONS_STACKSIZE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About Parserdemo...",        ID_HELP_ABOUTPARSERDEMO
+    END
+END
+
+IDR_MENUREGSYMBOLS MENU DISCARDABLE 
+BEGIN
+    POPUP "regsymbols"
+    BEGIN
+        MENUITEM "Any character",               ID_REGSYMBOLS_ANYCHARACTER
+        MENUITEM "Character in Range",          ID_REGSYMBOLS_CHARACTERINRANGE
+
+        MENUITEM "Character Not in Range",      ID_REGSYMBOLS_CHARACTERNOTINRANGE
+
+        MENUITEM "Beginning of Line",           ID_REGSYMBOLS_BEGINNINGOFLINE
+
+        MENUITEM "End of Line",                 ID_REGSYMBOLS_ENDOFLINE
+        MENUITEM "0 or More occurrences",       ID_REGSYMBOLS_0ORMOREOCCURRENCES
+
+        MENUITEM "1 or More occurrences",       ID_REGSYMBOLS_1ORMOREOCCURRENCES
+
+        MENUITEM "0 or 1 occurence",            ID_REGSYMBOLS_0OR1OCCURENCE
+        MENUITEM "Or",                          ID_REGSYMBOLS_OR
+        MENUITEM "Group",                       ID_REGSYMBOLS_GROUP
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 282, 54
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About ParserDemo"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
+    LTEXT           "ParserDemo Version 1.0 by Jesper Grønning Mikkelsen",
+                    IDC_STATIC,40,10,183,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,225,7,50,14,WS_GROUP
+END
+
+IDD_DIALOGPARSERDEMO DIALOGEX 0, 0, 586, 430
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Parser demo"
+MENU IDR_MAINMENU
+FONT 8, "Courier New", 0, 0, 0x1
+BEGIN
+    CONTROL         "Break on &productions:",IDC_CHECKBREAKONPRODUCTION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,145,246,94,9
+    CONTROL         "Break on st&ates:",IDC_CHECKBREAKONSTATE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,145,259,93,9
+    CONTROL         "Break on s&ymbols:",IDC_CHECKBREAKONSYMBOL,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,145,271,84,9
+    CONTROL         "&Break on error:",IDC_CHECKBREAKONERROR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,145,282,88,9
+    LISTBOX         IDC_LISTERRORS,145,295,437,61,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LISTDEBUG,145,370,437,53,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_HSCROLL | WS_TABSTOP
+    GROUPBOX        "",IDC_STATICSTACK,0,17,145,409,BS_CENTER
+    LTEXT           "",IDC_LOOKAHEAD,188,168,394,51,0,WS_EX_STATICEDGE
+    LTEXT           "&Input:",IDC_STATIC,118,5,22,10
+    LTEXT           "Lookahead:",IDC_LOOKAHEADLABEL,145,172,40,10
+    LTEXT           "Action:",IDC_ACTIONLABEL,145,220,32,8
+    LTEXT           "",IDC_ACTION,188,219,394,21,0,WS_EX_STATICEDGE
+    LTEXT           "State:",IDC_STATELABEL,145,153,28,10
+    CTEXT           "",IDC_STATE,188,152,23,11,SS_CENTERIMAGE,
+                    WS_EX_STATICEDGE
+    LTEXT           "",IDC_BREAKPRODTEXT,247,246,335,12,0,WS_EX_STATICEDGE
+    LTEXT           "Error&s",IDC_ERRORSLABEL,355,284,27,9
+    LTEXT           "Stack",IDC_STATIC,58,5,29,8
+    LTEXT           "",IDC_BREAKSTATETEXT,247,258,335,12,0,WS_EX_STATICEDGE
+    LTEXT           "&Debug",IDC_DEBUGLABEL,355,358,27,8
+    LTEXT           "",IDC_SOURCEPOSITION,517,152,65,11,SS_SUNKEN
+    LTEXT           "",IDC_BREAKSYMBOLTEXT,247,271,335,12,0,WS_EX_STATICEDGE
+END
+
+IDD_DIALOGERRORS DIALOG DISCARDABLE  0, 0, 196, 71
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Errors"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITMAXERRORCOUNT,91,14,29,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITCASCADECOUNT,91,35,29,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,139,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,139,24,50,14
+    LTEXT           "Error &cascadecount :",IDC_STATIC,16,38,66,13
+    LTEXT           "&Max. errorcount:",IDC_STATIC,16,17,63,12
+END
+
+IDD_DIALOGPRODUCTIONS DIALOG DISCARDABLE  0, 0, 535, 294
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Productions to break on"
+FONT 8, "Courier"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,478,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,478,27,50,14
+    LISTBOX         IDC_PRODUCTIONLIST,15,18,457,269,LBS_SORT | 
+                    LBS_MULTIPLESEL | LBS_NOINTEGRALHEIGHT | 
+                    LBS_DISABLENOSCROLL | WS_VSCROLL | WS_HSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "&Select all",IDC_BUTTONSELECTALL,478,47,50,14
+    PUSHBUTTON      "&Clear",IDC_BUTTONCLEAR,478,67,50,14
+END
+
+IDD_DIALOGTREE DIALOG DISCARDABLE  0, 0, 460, 265
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+CAPTION "Syntaxtree"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Tree1",IDC_DERIVATIONTREE,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
+                    WS_BORDER | WS_TABSTOP,7,17,387,241
+    DEFPUSHBUTTON   "OK",IDOK,403,7,50,14
+    PUSHBUTTON      "&Expand",IDC_BUTTONEXPAND,403,27,50,14
+    PUSHBUTTON      "Expand &all",IDC_BUTTONEXPANDALL,403,47,50,14
+END
+
+IDD_DIALOGSTATES DIALOG DISCARDABLE  0, 0, 352, 67
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "States to break on"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,295,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,295,24,50,14
+    EDITTEXT        IDC_EDITSTATES,52,20,221,16,ES_AUTOHSCROLL
+    LTEXT           "States:",IDC_STATIC,19,23,25,11
+END
+
+IDD_DIALOGFIND DIALOGEX 0, 0, 278, 87
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CONTEXTHELP
+CAPTION "Find"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBOFINDWHAT,50,13,143,89,CBS_DROPDOWN | 
+                    CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "",IDC_BUTTONREGSYMBOLSMENU,"Button",BS_OWNERDRAW | 
+                    BS_NOTIFY | WS_TABSTOP,195,13,9,12,WS_EX_DLGMODALFRAME
+    CONTROL         "Match &whole word only",IDC_CHECKMATCHWHOLEWORD,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,32,89,10
+    CONTROL         "Match &case",IDC_CHECKMATCHCASE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,46,68,10
+    CONTROL         "Regular &expression",IDC_CHECKUSEREGEXP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,12,60,93,10
+    CONTROL         "&Up",IDC_RADIOUP,"Button",BS_AUTORADIOBUTTON,132,42,41,
+                    8
+    CONTROL         "&Down",IDC_RADIODOWN,"Button",BS_AUTORADIOBUTTON,132,55,
+                    41,8
+    DEFPUSHBUTTON   "&Find Next",IDC_FINDNEXT,221,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,221,24,50,14
+    LTEXT           "Fi&nd what:",IDC_STATIC,12,14,34,13
+    GROUPBOX        "Direction",IDC_STATIC,124,31,70,39
+END
+
+IDD_DIALOGSTACKSIZE DIALOG DISCARDABLE  0, 0, 186, 64
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set stacksize"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "Stacksize:",IDC_STATIC,25,23,35,14
+    EDITTEXT        IDC_EDITSTACKSIZE,68,21,48,14,ES_AUTOHSCROLL | ES_NUMBER
+END
+
+IDD_DIALOGGOTO DIALOG DISCARDABLE  0, 0, 186, 67
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go to"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDITLINENUMBER,63,19,42,12,ES_AUTOHSCROLL
+    LTEXT           "Linenumber:",IDC_STATIC,17,20,41,12
+END
+
+IDD_DIALOGSHOWSTATE DIALOG DISCARDABLE  0, 0, 625, 206
+STYLE WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "State items"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITSTATE,7,7,611,164,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
+    PUSHBUTTON      "&Close",IDOK,565,184,53,16
+END
+
+IDD_DIALOGBREAKSYMBOLS DIALOG DISCARDABLE  0, 0, 383, 325
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Symbols to break on"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,326,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,326,27,50,14
+    LISTBOX         IDC_LISTSYMBOLS,7,46,312,272,LBS_SORT | LBS_MULTIPLESEL | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_HSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "&Clear",IDC_BUTTONCLEAR,326,47,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 47
+    END
+    IDD_DIALOGPARSERDEMO, DIALOG
+    BEGIN
+        BOTTOMMARGIN, 423
+    END
+    IDD_DIALOGERRORS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 189
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_DIALOGPRODUCTIONS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 528
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_DIALOGTREE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 453
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 258
+    END
+
+    IDD_DIALOGSTATES, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 345
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 60
+    END
+
+    IDD_DIALOGSTACKSIZE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
+
+    IDD_DIALOGSHOWSTATE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 618
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 200
+    END
+
+    IDD_DIALOGBREAKSYMBOLS, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 376
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 318
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATORMAIN ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            ID_EDIT_SELECTSTATESTOBREAKON, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "D",            ID_OPTIONS_LISTDEBUGFROMPARSER, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "D",            ID_GOTODEBUGCONTROL,    VIRTKEY, ALT, NOINVERT
+    "E",            ID_EDIT_FINDMATCHINGPARANTHES, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_EDIT_GOTO,           VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_OPTIONS_SHOWSTATE,   VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_GOTOINPUTCONTROL,    VIRTKEY, ALT, NOINVERT
+    "L",            ID_OPTIONS_SHOWLEGALINPUT, VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_OPTIONS_ANIMATE,     VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_EDIT_SELECTPRODUCTIONSTOBREAKON, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "R",            ID_OPTIONS_ERRORS,      VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_EDIT_SELECTSTATESTOBREAKON, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "S",            ID_GOTOERRORSCONTROL,   VIRTKEY, ALT, NOINVERT
+    "T",            ID_EDIT_DERIVATIONTREE, VIRTKEY, CONTROL, NOINVERT
+    VK_ESCAPE,      IDOK,                   VIRTKEY, NOINVERT
+    VK_F10,         ID_RUN_STARTDEBUG_STEPOVER, VIRTKEY, NOINVERT
+    VK_F11,         ID_RUN_STARTDEBUG_STEP, VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_FINDNEXT,       VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_FINDPREV,       VIRTKEY, SHIFT, NOINVERT
+    VK_F4,          ID_EDIT_NEXTERROR,      VIRTKEY, NOINVERT
+    VK_F4,          ID_EDIT_PREVERROR,      VIRTKEY, SHIFT, NOINVERT
+    VK_F5,          ID_RUN_STARTDEBUG_GO,   VIRTKEY, NOINVERT
+    VK_F5,          ID_RUN_PARSEINPUT,      VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_RUN_STARTDEBUG_RESETPARSER, VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_EDIT_BREAKONTEXTPOSITION, VIRTKEY, NOINVERT
+    "X",            ID_OPTIONS_LISTDEBUGFROMSCANNER, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "Y",            ID_EDIT_SELECTSYMBOLSTOBREAKON, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "Z",            ID_OPTIONS_STACKSIZE,   VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_ACCELERATORTREE ACCELERATORS DISCARDABLE 
+BEGIN
+    "+",            ID_EXPAND,              ASCII,  NOINVERT
+    "-",            ID_COLLAPSE,            ASCII,  NOINVERT
+    VK_RETURN,      ID_EXPANDORCOLLAPSE,    VIRTKEY, NOINVERT
+END
+
+IDR_ACCELERATORERRORS ACCELERATORS DISCARDABLE 
+BEGIN
+    "C",            ID_GOTOERRORCASCADECOUNT, VIRTKEY, ALT, NOINVERT
+    "M",            ID_GOTOMAXERRORCOUNT,   VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ACCELERATORFIND ACCELERATORS DISCARDABLE 
+BEGIN
+    "N",            ID_GOTOFINDWHAT,        VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ACCELERATORSHOWSTATE ACCELERATORS DISCARDABLE 
+BEGIN
+    VK_F10,         ID_RUN_STARTDEBUG_STEPOVER, VIRTKEY, NOINVERT
+    VK_F11,         ID_RUN_STARTDEBUG_STEP, VIRTKEY, NOINVERT
+    VK_F5,          ID_RUN_STARTDEBUG_GO,   VIRTKEY, NOINVERT
+    VK_F5,          ID_RUN_STARTDEBUG_RESETPARSER, VIRTKEY, SHIFT, NOINVERT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "ParseDemo\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "ParseDemo\0"
+            VALUE "LegalCopyright", "Copyright (C) 2002\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "ParserDemo.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "ParseDemo Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About ParserDemo..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\ParserDemo.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

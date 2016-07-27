@@ -1,0 +1,44 @@
+%{
+
+  /* This part goes to $CLASSNAMEparser.h */
+
+#pragma once
+
+#include <LRparser.h>
+#include "$CLASSNAMEsymbol.h"
+#include "$CLASSNAMElex.h"
+
+const extern PAtables *$CLASSNAMEPAtables;
+
+#ifndef YYSTYPE
+#define YYSTYPE int
+#endif
+
+class $CLASSNAMEparser : public LRparser {
+public:
+  $CLASSNAMEparser(scanner *lex=NULL) : LRparser(*$CLASSNAMEPAtables,lex) { }
+private:
+  YYSTYPE m_dollardollar,*m_stacktop,m_userstack[256];
+  int reduceaction(unsigned int prod);
+  void inituserstack()                   { m_stacktop      = m_userstack;    }
+  void shiftsymbol(unsigned int symbol)  { m_stacktop++;                     } // push 1 element (garbage) on userstack
+  void popsymbols(unsigned int count)    { m_stacktop     -= count;          } // pop count symbols from userstack
+  void shiftdollardollar()               { *(++m_stacktop) = m_dollardollar; } // push($$) on userstack
+  void defaultreduce(unsigned int prod)  { m_dollardollar  = *m_stacktop;    } // $$ = $1
+  YYSTYPE stacktop(int fromtop)          { return m_stacktop[-fromtop];      }
+};
+%}
+%term /* TODO:Enter terminalsymbols here
+%{
+  /* This part goes to the first part of $CLASSNAMEaction.cpp */
+
+#include "stdafx.h"
+#include "$CLASSNAMEparser.h"
+%}
+%%
+
+start : ;  /* TODO:Enter productions here */
+
+%%
+
+  /* This part goes to the last part of $CLASSNAMEaction.cpp */
