@@ -54,10 +54,7 @@ static const char digitCount[37] = {
 };
 
 // Highest power of radix that fits in 32 bit (index = radix)
-// For radix 2,4,16 special code is used which doesn't use this table.
-// For radix 8 and 32 the element is the bitmask used to get 1 digit
-// which is 3 bits for radix 8 and 5 bits for radix 32. None of these
-// bit-counts divide 32, which is the case for radix 2,4,16 (1,2 and 4 bits)
+// For radix 2,4,8,16,32 special code is used which doesn't use this table.
 // For all other radices the element is used to get as many digits as possible
 // by modulus and division
 static const _uint128 powRadix[] = {
@@ -146,13 +143,13 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
       *s = 0;
     }
     return str;
-  case 8 : // Get 3 bits/digit giving 30 bits per loop, ie 10 digits/loop
-  case 32: // Get 5 bits/digits giving 30 bits per loop too! which is 6 digit/loop
+  case 8 : // Get 3 bits/digit giving 30 bits/loop, ie 10 digits/loop
+  case 32: // Get 5 bits/digit giving 30 bits/loop too! which is 6 digits/loop
     { const unsigned int mask = (1 << dc) - 1;
       const unsigned int dpl  = 30 / dc;
       _uint128 v = value;
       for(;;) {
-        unsigned int v30 = v & ((1<<30) - 1);
+        unsigned int v30 = v.s4.i[0] & ((1<<30) - 1);
         v >>= 30;
         unsigned int count;
         for(count = 0; v30; count++, v30 >>= dc) {
