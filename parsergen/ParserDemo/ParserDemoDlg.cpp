@@ -13,53 +13,37 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 class CAboutDlg : public CDialog {
 public:
   CAboutDlg();
 
-  //{{AFX_DATA(CAboutDlg)
   enum { IDD = IDD_ABOUTBOX };
-  //}}AFX_DATA
 
-  //{{AFX_VIRTUAL(CAboutDlg)
   protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-  //}}AFX_VIRTUAL
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
-  //{{AFX_MSG(CAboutDlg)
-  //}}AFX_MSG
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
-  //{{AFX_DATA_INIT(CAboutDlg)
-  //}}AFX_DATA_INIT
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  //{{AFX_DATA_MAP(CAboutDlg)
-  //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
-  //{{AFX_MSG_MAP(CAboutDlg)
-  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-CParserDemoDlg::CParserDemoDlg(CWnd* pParent) : CDialog(CParserDemoDlg::IDD, pParent), m_textBox(m_input) {
-  //{{AFX_DATA_INIT(CParserDemoDlg)
+CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pParent), m_textBox(m_input) {
   m_input = _T("");
   m_breakOnProduction = FALSE;
   m_breakOnError      = FALSE;
   m_breakOnState      = FALSE;
   m_breakOnSymbol     = FALSE;
-  //}}AFX_DATA_INIT
 
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
   m_parser.setHandler(this);
@@ -68,19 +52,16 @@ CParserDemoDlg::CParserDemoDlg(CWnd* pParent) : CDialog(CParserDemoDlg::IDD, pPa
   m_breakSymbols     = new BitSet(m_parser.getParserTables().getTerminalCount());
 }
 
-void CParserDemoDlg::DoDataExchange(CDataExchange* pDX) {
+void CParserDemoDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  //{{AFX_DATA_MAP(CParserDemoDlg)
   DDX_Text( pDX, IDC_EDITINPUTSTRING       , m_input);
   DDX_Check(pDX, IDC_CHECKBREAKONPRODUCTION, m_breakOnProduction);
   DDX_Check(pDX, IDC_CHECKBREAKONERROR     , m_breakOnError);
   DDX_Check(pDX, IDC_CHECKBREAKONSTATE     , m_breakOnState);
   DDX_Check(pDX, IDC_CHECKBREAKONSYMBOL    , m_breakOnSymbol);
-  //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
-  //{{AFX_MSG_MAP(CParserDemoDlg)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
@@ -135,13 +116,13 @@ BEGIN_MESSAGE_MAP(CParserDemoDlg, CDialog)
   ON_BN_CLICKED(   IDC_CHECKBREAKONSYMBOL            , OnCheckBreakOnSymbol            )
   ON_BN_CLICKED(   IDC_CHECKBREAKONPRODUCTION        , OnCheckBreakOnProduction        )
   ON_BN_CLICKED(   IDC_CHECKBREAKONERROR             , OnCheckBreakOnError             )
-  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-static int findCharacterPosition(const char *s, const SourcePosition &pos) {
+static int findCharacterPosition(const TCHAR *s, const SourcePosition &pos) {
   int lineCount = 1;
   int col       = 0;
-  for(int i = 0; *s; i++, s++) {
+  int i;
+  for(i = 0; *s; i++, s++) {
     if(lineCount == pos.getLineNumber() && col == pos.getColumn() ) {
       break;
     }
@@ -155,7 +136,7 @@ static int findCharacterPosition(const char *s, const SourcePosition &pos) {
   return i;
 }
 
-static SourcePosition findSourcePosition(const char *s, int index) {
+static SourcePosition findSourcePosition(const TCHAR *s, int index) {
   SourcePosition pos(1, 0);
   for(int i = 0; i < index && *s; i++, s++) {
     if(*s == '\n') {
@@ -168,7 +149,7 @@ static SourcePosition findSourcePosition(const char *s, int index) {
 }
 
 static bool isIdentifierChar(unsigned char ch) {
-  return isalpha(ch) || ch == '_';
+  return _istalpha(ch) || ch == '_';
 }
 
 class CharacterClass {
@@ -184,13 +165,13 @@ CharacterClass::CharacterClass() {
     charClass[i] = 0;
   }
 
-  for(i = 0; i < ARRAYSIZE(charClass); i++) {
+  for(int i = 0; i < ARRAYSIZE(charClass); i++) {
     if(isIdentifierChar(i)) {
       charClass[i] = 1;
     }
   }
-  for(i = 0; i < ARRAYSIZE(charClass); i++) {
-    if(isdigit(i)) {
+  for(int i = 0; i < ARRAYSIZE(charClass); i++) {
+    if(_istdigit(i)) {
       charClass[i] = 2;
     }
   }
@@ -199,14 +180,14 @@ CharacterClass::CharacterClass() {
 
 static CharacterClass dummy;
 
-String getWord(const char *s, int pos) { 
+String getWord(const TCHAR *s, int pos) { 
   String tmp(s);
   int start = pos, end = pos;
-  unsigned char ch = s[pos];
-  unsigned char chClass = CharacterClass::charClass[ch];
+  _TUCHAR ch = s[pos];
+  _TUCHAR chClass = CharacterClass::charClass[ch];
 
-  if(isspace(ch)) {
-    return "";
+  if(_istspace(ch)) {
+    return _T("");
   } else {
     while((start > 0) && (CharacterClass::charClass[(unsigned char)(s[start-1])] == chClass)) {
       start--;
@@ -230,8 +211,8 @@ static bool operator<=(const SourcePosition &p1, const SourcePosition &p2) { ret
 static bool operator==(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) == 0; }
 static bool operator!=(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) != 0; }
 
-void CParserDemoDlg::handleError(const SourcePosition &pos, const char *form, va_list argptr) {
-  const String tmp = format("error in (%d,%d):%s", pos.getLineNumber(), pos.getColumn(), vformat(form, argptr).cstr());
+void CParserDemoDlg::handleError(const SourcePosition &pos, const TCHAR *form, va_list argptr) {
+  const String tmp = format(_T("error in (%d,%d):%s"), pos.getLineNumber(), pos.getColumn(), vformat(form, argptr).cstr());
   ((CListBox*)GetDlgItem(IDC_LISTERRORS))->AddString(tmp.cstr());
   enableMenuItem(this, ID_EDIT_NEXTERROR, true);
   enableMenuItem(this, ID_EDIT_PREVERROR, true);
@@ -240,9 +221,9 @@ void CParserDemoDlg::handleError(const SourcePosition &pos, const char *form, va
     Invalidate(false);
 }
 
-void CParserDemoDlg::handleDebug(const SourcePosition &pos, const char *form, va_list argptr) {
-  String line = format("(%d,%d):%s", pos.getLineNumber(), pos.getColumn(), vformat(form, argptr).cstr());
-  line.replace('\n', "\\n").replace('\r', "\\r").replace('\t', "\\t");
+void CParserDemoDlg::handleDebug(const SourcePosition &pos, const TCHAR *form, va_list argptr) {
+  String line = format(_T("(%d,%d):%s"), pos.getLineNumber(), pos.getColumn(), vformat(form, argptr).cstr());
+  line.replace('\n', _T("\\n")).replace('\r', _T("\\r")).replace('\t', _T("\\t"));
   ((CListBox*)GetDlgItem(IDC_LISTDEBUG))->AddString(line.cstr());
   m_debugPos.add(pos);
   if(m_animateOn) {
@@ -258,14 +239,14 @@ int CParserDemoDlg::handleReduction(unsigned int prod) {
   return 0;
 }
 
-static void printf(CClientDC &dc, int x, int y, int width, const char *form, ...) {
+static void printf(CClientDC &dc, int x, int y, int width, const TCHAR *form, ...) {
   va_list argptr;
   va_start(argptr, form);
-  dc.TextOut(x, y, format("%-*.*s", width, width, vformat(form, argptr).cstr()).cstr());
+  dc.TextOut(x, y, format(_T("%-*.*s"), width, width, vformat(form, argptr).cstr()).cstr());
   va_end(argptr);
 }
 
-void CParserDemoDlg::message(const char *format, ...) {
+void CParserDemoDlg::message(const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr, format);
   MessageBox(vformat(format, argptr).cstr());
@@ -325,7 +306,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
   m_printFont.CreateFont(12, 10, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
                         ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
                         ,DEFAULT_PITCH | FF_MODERN
-                        ,"Courier");
+                        ,_T("Courier"));
 
 
   TEXTMETRIC tm;
@@ -362,7 +343,7 @@ BOOL CParserDemoDlg::OnInitDialog() {
 
   m_showStateThread  = NULL;
 
-  m_accelTable         = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
+  m_accelTable       = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORMAIN));
   m_animateOn        = isMenuItemChecked(this, ID_OPTIONS_ANIMATE);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFont(&m_printFont);
   GetDlgItem(IDC_EDITINPUTSTRING)->SetFocus();
@@ -419,17 +400,18 @@ void CParserDemoDlg::OnPaint() {
 
     GetDlgItem(IDC_STATICSTACK)->GetWindowPlacement(&rect);
 
-    int maxElement = min(m_parser.getStackHeight(), RECTHEIGHT);
-    for(int i = 0; i < maxElement; i++) {
+    int maxElement = min((int)m_parser.getStackHeight(), RECTHEIGHT);
+    int i;
+    for(i = 0; i < maxElement; i++) {
       const ParserStackElement &elem   = m_parser.getStackElement(i);
-      const char *symbolString = (i == 0) ? "" : m_parser.getUserStack()[i]->getSymbol(); // (i == 0) ? "" : m_parser.getSymbolName(elem.m_symbol);
-      printf(dc, POSX, POSY(i), RECTWIDTH, "%3d (%2d,%2d) %s"
+      const TCHAR *symbolString = (i == 0) ? _T("") : m_parser.getUserStack()[i]->getSymbol(); // (i == 0) ? _T(""= : m_parser.getSymbolName(elem.m_symbol);
+      printf(dc, POSX, POSY(i), RECTWIDTH, _T("%3d (%2d,%2d) %s")
             ,elem.m_state
             ,elem.m_pos.getLineNumber(),elem.m_pos.getColumn()
             ,symbolString);
     }
     for(;i < RECTHEIGHT-1;i++) {
-      printf(dc, POSX, POSY(i), RECTWIDTH, "");
+      printf(dc, POSX, POSY(i), RECTWIDTH, _T(""));
     }
 
 //    dc.SetBkColor(RGB(255, 255, 255));
@@ -450,42 +432,42 @@ int CParserDemoDlg::findStackElement(const CPoint &p) {
   r.right  = wp.rcNormalPosition.right;
   r.top    = wp.rcNormalPosition.top;
   r.bottom = wp.rcNormalPosition.bottom;
-  if(!r.PtInRect(p))
+  if(!r.PtInRect(p)) {
     return -1;
-
+  }
   return (p.y - r.top) / CHARHEIGHT - 1;
 }
 
 void CParserDemoDlg::showStatus(bool gotoLastDebug) {
-  String state = format("%d", m_parser.state());
+  String state = format(_T("%d"), m_parser.state());
   SetDlgItemText(IDC_STATE, state.cstr());
 
   if(m_parser.done()) {
     if(m_parser.accept()) {
-      SetDlgItemText(IDC_ACTION, "Accept");
+      SetDlgItemText(IDC_ACTION, _T("Accept"));
     } else {
-      SetDlgItemText(IDC_ACTION, "Dont accept");
+      SetDlgItemText(IDC_ACTION, _T("Dont accept"));
     }
     enableMenuItem(this, ID_RUN_STARTDEBUG_STEP    , false);
     enableMenuItem(this, ID_RUN_STARTDEBUG_STEPOVER, false);
   } else {
-    const char *input = m_parser.getSymbolName(m_parser.input());
+    const TCHAR *input = m_parser.getSymbolName(m_parser.input());
     String LAtext;
     if(m_parser.getScanner()) {
-      String lexeme = (char*)m_parser.getScanner()->getText();
-      lexeme.replace('&', "&&");
-      const char *s = m_input.GetBuffer(m_input.GetLength());
+      String lexeme = m_parser.getScanner()->getText();
+      lexeme.replace('&', _T("&&"));
+      const TCHAR *s = m_input.GetBuffer(m_input.GetLength());
       SourcePosition pos = m_parser.getScanner()->getPos();
 
       if(isMenuItemChecked(this, ID_OPTIONS_SHOWLEGALINPUT)) {
-        LAtext = format("%s \"%s\" (%d,%d) legal input:%s"
+        LAtext = format(_T("%s \"%s\" (%d,%d) legal input:%s")
                        ,input, lexeme.cstr(), pos.getLineNumber(), pos.getColumn(), m_parser.getLegalInput().cstr());
       } else {
-        LAtext = format("%s \"%s\" (%d,%d)", input, lexeme.cstr(), pos.getLineNumber(), pos.getColumn());
+        LAtext = format(_T("%s \"%s\" (%d,%d)"), input, lexeme.cstr(), pos.getLineNumber(), pos.getColumn());
       }
 
       int charIndex = findCharacterPosition(s, pos);
-      ((CTextBox*)GetDlgItem(IDC_EDITINPUTSTRING))->SetSel(charIndex, charIndex+m_parser.getScanner()->getLength());
+      ((CTextBox*)GetDlgItem(IDC_EDITINPUTSTRING))->SetSel(charIndex, charIndex+(int)m_parser.getScanner()->getLength());
     }
     SetDlgItemText(IDC_LOOKAHEAD, LAtext.cstr());
     SetDlgItemText(IDC_ACTION, m_parser.getActionString().cstr());
@@ -510,17 +492,17 @@ void CParserDemoDlg::OnFileOpen() {
   if(dlg.DoModal() != IDOK) {
     return;
   }
-  if(strlen(dlg.m_ofn.lpstrFile) == 0) {
+  if(_tcsclen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
 
   try {
-    char *fname = dlg.m_ofn.lpstrFile;
+    TCHAR *fname = dlg.m_ofn.lpstrFile;
     struct _stat st = STAT(fname);
     int fileSize = st.st_size;
     char *buffer = new char[fileSize+1];
     memset(buffer, 0, fileSize);
-    FILE *f = FOPEN(fname, "rb");
+    FILE *f = FOPEN(fname, _T("rb"));
     fread(buffer, 1, fileSize, f);
     fclose(f);
     buffer[fileSize] = '\0';
@@ -533,7 +515,7 @@ void CParserDemoDlg::OnFileOpen() {
     m_textBox.markPos(NULL);
     delete[] buffer;
   } catch(Exception e) {
-    message("%s", e.what());
+    message(_T("%s"), e.what());
   }
 }
 
@@ -566,9 +548,10 @@ void CParserDemoDlg::OnRunStartDebugResetParser() {
 }
 
 void CParserDemoDlg::OnRunStartDebugGo() {
-  if(m_parser.done() || m_inputHasChanged)
+  if(m_parser.done() || m_inputHasChanged) {
     beginParse();
-  unsigned int errorCount = m_errorPos.size();
+  }
+  UINT errorCount = (UINT)m_errorPos.size();
   while(!m_parser.done()) {
     int action = m_parser.getNextAction();
     if(m_breakOnError && (m_errorPos.size() > errorCount || (action == _ParserError))) {
@@ -640,7 +623,7 @@ void CParserDemoDlg::OnChangeEditInputString() {
   OnMaxTextEditInputString();
 }
 
-BOOL CParserDemoDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CParserDemoDlg::PreTranslateMessage(MSG *pMsg) {
   BOOL result = FALSE;
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     result = TRUE;
@@ -660,7 +643,7 @@ BOOL CParserDemoDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 void CParserDemoDlg::updateSourcePosition(const SourcePosition &pos) {
-  GetDlgItem(IDC_SOURCEPOSITION)->SetWindowText(format("Ln %d, Col %d", pos.getLineNumber(), pos.getColumn()).cstr());
+  GetDlgItem(IDC_SOURCEPOSITION)->SetWindowText(format(_T("Ln %d, Col %d"), pos.getLineNumber(), pos.getColumn()).cstr());
 }
 
 int CParserDemoDlg::getSourcePositionIndex() {
@@ -674,7 +657,7 @@ SourcePosition CParserDemoDlg::getSourcePosition() {
 }
 
 int CParserDemoDlg::findSourcePositionIndex(const Array<SourcePosition> &list, const SourcePosition &pos) {
-  for(int i = list.size() - 1; i >= 0; i--) {
+  for(int i = (int)list.size() - 1; i >= 0; i--) {
     const SourcePosition &s = list[i];
     if(s.getLineNumber() == pos.getLineNumber() && s.getColumn() == pos.getColumn())  {
       return i;
@@ -864,7 +847,7 @@ void CParserDemoDlg::OnSize(UINT nType, int cx, int cy) {
 
 void CParserDemoDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
   const int index = findStackElement(point);
-  if(index > 0 && index < m_parser.getStackHeight()) {
+  if(index > 0 && index < (int)m_parser.getStackHeight()) {
     TreeDlg dlg(m_parser.getStackTop(m_parser.getStackHeight() - index - 1));
     dlg.DoModal();
   }
@@ -875,7 +858,7 @@ void CParserDemoDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
 void CParserDemoDlg::OnEditFindMatchingParanthes() {
   CTextBox *e = (CTextBox*)GetDlgItem(IDC_EDITINPUTSTRING);
   UpdateData();
-  char *input = m_input.GetBuffer(m_input.GetLength());
+  TCHAR *input = m_input.GetBuffer(m_input.GetLength());
   int cursorPos, endChar;
   e->GetSel(cursorPos, endChar);
   int m = findMatchingpParanthes(input, cursorPos);
@@ -894,24 +877,24 @@ void CParserDemoDlg::setBreakText(int controlId, const StringArray &textArray) {
 
 void CParserDemoDlg::setBreakProdText() {
   StringArray textArray;
-  for(Iterator<unsigned int> it = m_breakProductions->getIterator(); it.hasNext();) {
-    textArray.add(format("%d", it.next()));
+  for(Iterator<size_t> it = m_breakProductions->getIterator(); it.hasNext();) {
+    textArray.add(format(_T("%d"), (int)it.next()));
   }
   setBreakText(IDC_BREAKPRODTEXT, textArray);
 }
 
 void CParserDemoDlg::setBreakStateText() {
   StringArray textArray;
-  for(Iterator<unsigned int> it = m_breakStates->getIterator(); it.hasNext();) {
-    textArray.add(format("%d", it.next()));
+  for(Iterator<size_t> it = m_breakStates->getIterator(); it.hasNext();) {
+    textArray.add(format(_T("%d"), (int)it.next()));
   }
   setBreakText(IDC_BREAKSTATETEXT, textArray);
 }
 
 void CParserDemoDlg::setBreakSymbolText() {
   StringArray textArray;
-  for(Iterator<unsigned int> it = m_breakSymbols->getIterator(); it.hasNext();) {
-    textArray.add(m_parser.getSymbolName(it.next()));
+  for(Iterator<size_t> it = m_breakSymbols->getIterator(); it.hasNext();) {
+    textArray.add(m_parser.getSymbolName((int)it.next()));
   }
   setBreakText(IDC_BREAKSYMBOLTEXT, textArray);
 }

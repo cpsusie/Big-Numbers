@@ -1,10 +1,9 @@
 #include "stdafx.h"
 #include "history.h"
 #include <Registry.h>
-#include <Exception.h>
 
 static RegistryKey getKey() {
-  return RegistryKey(HKEY_CURRENT_USER, "Software").createOrOpenPath("JGMData\\ParserDemo\\FindHistory");
+  return RegistryKey(HKEY_CURRENT_USER, _T("Software")).createOrOpenPath(_T("JGMData\\ParserDemo\\FindHistory"));
 }
 
 History::History() {
@@ -14,7 +13,7 @@ History::History() {
     clear();
     for(int i = 0; i < 15; i++) {
       String str;
-      key.getValue(format("s%02d", i), str);
+      key.getValue(format(_T("s%02d"), i), str);
       add(str);
     }    
   } catch(Exception) {
@@ -25,9 +24,9 @@ History::History() {
 History::~History() {
   try {
     RegistryKey key = getKey();
-    const int n = min(15, size());
+    const int n = min(15, (int)size());
     for(int i = 0; i < n; i++) {
-      key.setValue(format("s%02d", i), (*this)[i]);
+      key.setValue(format(_T("s%02d"), i), (*this)[i]);
     }
   } catch(Exception) {
     // ignore
@@ -35,7 +34,7 @@ History::~History() {
 }
 
 bool History::add(const String &s) {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     if((*this)[i] == s) {
       removeIndex(i);
       break;

@@ -12,12 +12,12 @@ private:
   SyntaxNode **m_children;
   bool         m_terminal;
 public:
-  SyntaxNode(const char *symbol, unsigned int childCount, bool terminal, TestParser *parser);
+  SyntaxNode(const TCHAR *symbol, unsigned int childCount, bool terminal, TestParser *parser);
   ~SyntaxNode();
   void setChild(unsigned int i, SyntaxNode *n) { m_children[i] = n;      }
   unsigned int getChildCount() const  { return m_childCount;    }
   SyntaxNode *getChild(int i)         { return m_children[i];   }
-  const char *getSymbol() const       { return m_symbol.cstr(); }
+  const TCHAR *getSymbol() const       { return m_symbol.cstr(); }
   bool isTerminal() const             { return m_terminal;      }
 };
 
@@ -26,8 +26,8 @@ typedef SyntaxNode *SyntaxNodep;
 class ParserHandler {
 public:
   virtual int  handleReduction(unsigned int prod) = 0;
-  virtual void handleError(const SourcePosition &pos, const char *format, va_list argptr) = 0;
-  virtual void handleDebug(const SourcePosition &pos, const char *format, va_list argptr) = 0;
+  virtual void handleError(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
+  virtual void handleDebug(const SourcePosition &pos, const TCHAR *format, va_list argptr) = 0;
 };
 
 
@@ -55,15 +55,15 @@ public:
   ~TestParser();
   Grammar &getGrammar()                             { return m_grammar;                 }
   void setHandler(ParserHandler *handler)           { m_handler = handler;              }
-  void setNewInput(const char *String);
+  void setNewInput(const TCHAR *String);
   bool accept()                       const         { return m_ok;                      }
   String getLegalInput()              const         { return m_legalLookahead[state()]; }
   String getActionString()            const;
   const String &getStateItems(unsigned int state);
   SyntaxNodep getRoot()                             { return m_root;                    }
   void addSyntaxNode(SyntaxNodep p)                 { m_nodeList.add(p);                }
-  void vdebug(const char *format, va_list argptr);
-  void verror(const SourcePosition &pos, const char *format, va_list argptr);
+  void vdebug(const TCHAR *format, va_list argptr);
+  void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
   void setDebugScanner(bool newvalue)               { m_scanner->setDebug(newvalue);    }
   void setStackSize(unsigned int newsize);
   const SyntaxNodep getStackTop(int fromtop)  const { return m_stacktop[-fromtop];      }

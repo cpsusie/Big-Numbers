@@ -6,7 +6,7 @@ CTextBox::CTextBox(CString &str) : m_str(str) {
   m_redBrush.CreateSolidBrush(RGB(255, 0, 0));
 }
 
-BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd* pParentWnd, UINT nID) {
+BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *pParentWnd, UINT nID) {
  BOOL ret = CWnd::CreateEx(0, _T("EDIT"), NULL
 	                      ,dwStyle | WS_CHILD
 	                      ,rect.left, rect.top
@@ -18,10 +18,11 @@ BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd* 
  return ret;
 }
 
-static int findCharacterPosition(const char *s, const SourcePosition &pos) {
+static int findCharacterPosition(const TCHAR *s, const SourcePosition &pos) {
   int lineCount = 1;
   int column    = 0;
-  for(int i = 0; *s; i++, s++) {
+  int i;
+  for(i = 0; *s; i++, s++) {
     if(lineCount == pos.getLineNumber() && column == pos.getColumn()) {
       break;
     }
@@ -35,9 +36,10 @@ static int findCharacterPosition(const char *s, const SourcePosition &pos) {
   return i;
 }
 
-static int findColumn(const char *s, SourcePosition &pos) {
+static int findColumn(const TCHAR *s, SourcePosition &pos) {
   int index = findCharacterPosition(s, pos);
-  for(const char *t = s + index; t >= s && *t != '\n';) {
+  const TCHAR *t;
+  for(t = s + index; t >= s && *t != '\n';) {
     t--;
   }
   t++;
@@ -71,9 +73,9 @@ void CTextBox::draw(CDC &dc) {
     dc.GetTextMetrics(&tm);
     const int xoffset = GetScrollPos(SB_HORZ);
     const int yoffset = GetScrollPos(SB_VERT);
-    char *tmp = m_str.GetBuffer(m_str.GetLength());
+    TCHAR *tmp = m_str.GetBuffer(m_str.GetLength());
     CPoint cp;
-    cp.x = (findColumn(tmp, m_pos) - xoffset)     * tm.tmMaxCharWidth + 2;
+    cp.x = (findColumn(tmp, m_pos) - xoffset)    * tm.tmMaxCharWidth + 2;
     cp.y = (m_pos.getLineNumber() - yoffset - 1) * tm.tmHeight + 3;
 
     CRect rect;
@@ -103,6 +105,6 @@ void CTextBox::OnPaint() {
   draw(CClientDC(this));
 }
 
-void CTextBox::DoDataExchange(CDataExchange* pDX) {
+void CTextBox::DoDataExchange(CDataExchange *pDX) {
   DDX_Text(pDX, GetDlgCtrlID(), m_str);
 }

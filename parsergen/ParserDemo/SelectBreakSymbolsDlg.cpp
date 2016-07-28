@@ -5,34 +5,26 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd* pParent)
+CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent)
 : CDialog(CSelectBreakSymbolsDlg::IDD, pParent), m_tables(tables), m_symbolSet(symbolSet)
 {
-	//{{AFX_DATA_INIT(CSelectBreakSymbolsDlg)
-	//}}AFX_DATA_INIT
 }
 
-void CSelectBreakSymbolsDlg::DoDataExchange(CDataExchange* pDX) {
+void CSelectBreakSymbolsDlg::DoDataExchange(CDataExchange *pDX) {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(CSelectBreakSymbolsDlg)
-	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CSelectBreakSymbolsDlg, CDialog)
-	//{{AFX_MSG_MAP(CSelectBreakSymbolsDlg)
 	ON_BN_CLICKED(IDC_BUTTONCLEAR, OnButtonclear)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTSYMBOLS);
-
-  for(int s = 0; s < m_tables.getTerminalCount(); s++) {
+  UINT s;
+  for(s = 0; s < m_tables.getTerminalCount(); s++) {
     m_symbolMap.put(m_tables.getSymbolName(s), SymbolPos(s, m_symbolSet.contains(s)));
   }
   s = 0;
@@ -42,7 +34,7 @@ BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
     lb->InsertString(-1, entry.getKey().cstr());
   }
 
-  for(it = m_symbolMap.entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<String, SymbolPos> > it = m_symbolMap.entrySet().getIterator(); it.hasNext();) {
     SymbolPos &symbolPos = it.next().getValue();
     if(symbolPos.m_selected)
       lb->SetSel(symbolPos.m_symbolSetIndex);

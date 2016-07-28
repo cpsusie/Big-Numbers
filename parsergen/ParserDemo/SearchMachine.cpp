@@ -9,9 +9,9 @@ FindParameter::FindParameter() {
   m_skipCurrent    = false;
 }
 
-String regexpConvertAllreg(const char *wc) {
-  char tmp[256];
-  for(char *dst = tmp; *wc; wc++) {
+String regexpConvertAllreg(const TCHAR *wc) {
+  TCHAR tmp[256], *dst = tmp;
+  for(; *wc; wc++) {
     switch(*wc) {
     case '\\':
       *(dst++) = '\\';
@@ -37,9 +37,9 @@ String regexpConvertAllreg(const char *wc) {
   return tmp;
 }
 
-String regexpConvertNothing(const char *wc) {
-  char tmp[256];
-  for(char *dst = tmp; *wc;) {
+String regexpConvertNothing(const TCHAR *wc) {
+  TCHAR tmp[256], *dst = tmp;
+  while(*wc) {
     switch(*wc) {
     case '\\':
       switch(wc[1]) {
@@ -90,17 +90,17 @@ SearchMachine::SearchMachine(const FindParameter &param) {
   }
 
   if(m_param.m_matchWholeWord) {
-    tmp = String("\\<") + tmp + "\\>";
+    tmp = String(_T("\\<")) + tmp + _T("\\>");
   }
 
-//  printf("tmp:<%s>\n", tmp.cstr());
+//  printf(_T("tmp:<%s>\n"), tmp.cstr());
   m_reg.compilePattern(tmp, m_param.m_matchCase ? NULL : String::upperCaseTranslate);
 }
 
 int SearchMachine::findIndex(const String &s, int startPos) {
-  return m_reg.search(s, !m_param.m_dirUp, startPos);
+  return (int)m_reg.search(s, !m_param.m_dirUp, startPos);
 }
 
 int SearchMachine::resultLen() const {
-  return m_reg.getResultLength();
+  return (int)m_reg.getResultLength();
 }

@@ -14,17 +14,12 @@ public:
 
 class CSelectBreakSymbolsDlg : public CDialog {
 public:
-    CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd* pParent = NULL);
+    CSelectBreakSymbolsDlg(const ParserTables &tables, BitSet &symbolSet, CWnd *pParent = NULL);
 
-    //{{AFX_DATA(CSelectBreakSymbolsDlg)
     enum { IDD = IDD_DIALOGBREAKSYMBOLS };
-    //}}AFX_DATA
 
-
-    //{{AFX_VIRTUAL(CSelectBreakSymbolsDlg)
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 private:
   const ParserTables      &m_tables;
@@ -32,12 +27,9 @@ private:
   StringTreeMap<SymbolPos> m_symbolMap;
 protected:
 
-    //{{AFX_MSG(CSelectBreakSymbolsDlg)
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnButtonclear();
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

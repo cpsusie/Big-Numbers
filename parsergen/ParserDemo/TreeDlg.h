@@ -1,7 +1,7 @@
 #pragma once
 
 #include "TestParser.h"
-#include <LayoutManager.h>
+#include <MFCUtil/LayoutManager.h>
 
 class TreeDlg : public CDialog {
 private:
@@ -17,24 +17,17 @@ private:
     HTREEITEM findTreeItem(CTreeCtrl *ctrl, const CPoint &pt);
 
 public:
-	TreeDlg(SyntaxNodep tree, CWnd* pParent = NULL);
+	TreeDlg(SyntaxNodep tree, CWnd *pParent = NULL);
 
-
-	//{{AFX_DATA(TreeDlg)
 	enum { IDD = IDD_DIALOGTREE };
-	//}}AFX_DATA
 
-
-	//{{AFX_VIRTUAL(TreeDlg)
 	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	virtual BOOL PreTranslateMessage(MSG *pMsg);
 	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
+	virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 
-	//{{AFX_MSG(TreeDlg)
 	virtual BOOL OnInitDialog();
 	afx_msg void OnButtonExpand();
 	afx_msg void OnButtonExpandAll();
@@ -43,8 +36,6 @@ protected:
 	afx_msg void OnExpand();
 	virtual void OnOK();
 	afx_msg void OnExpandOrCollapse();
-	//}}AFX_MSG
 	DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

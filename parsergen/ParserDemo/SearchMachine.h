@@ -1,8 +1,6 @@
 #pragma once
 
 #include <Regex.h>
-#include <Array.h>
-#include <MyString.h>
 
 class FindParameter {
 public:
@@ -26,5 +24,5 @@ public:
   int resultLen() const;
 };
 
-String regexpConvertNothing(   const char *s);
-String regexpConvertAllreg(    const char *s);
+String regexpConvertNothing(   const TCHAR *s);
+String regexpConvertAllreg(    const TCHAR *s);

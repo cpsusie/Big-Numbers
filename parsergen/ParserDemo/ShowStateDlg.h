@@ -1,6 +1,6 @@
 #pragma once
 
-#include <LayoutManager.h>
+#include <MFCUtil/LayoutManager.h>
 
 class ShowStateDlg : public CDialog {
 private:
@@ -10,28 +10,22 @@ private:
   CDialog            *m_mainDialog;
   void ajourState();
 public:
-    ShowStateDlg(CDialog *mainDialog, CWnd* pParent = NULL);
+    ShowStateDlg(CDialog *mainDialog, CWnd *pParent = NULL);
 
-    //{{AFX_DATA(ShowStateDlg)
     enum { IDD = IDD_DIALOGSHOWSTATE };
-    CString m_data;
-    //}}AFX_DATA
 
-    //{{AFX_VIRTUAL(ShowStateDlg)
+    CString m_data;
+
     public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 
-    //{{AFX_MSG(ShowStateDlg)
     virtual BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnShowStateUpdate(WPARAM wp, LPARAM lp);
-    //}}AFX_MSG
+    afx_msg LRESULT OnShowStateUpdate(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

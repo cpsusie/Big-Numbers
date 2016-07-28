@@ -40,8 +40,8 @@
 
 #elif USE_GRAMMAR == JAVA5_GRAMMAR
 
-#include <C:\mytools\parsergen\java\Java5Lex.cpp>
-#include <C:\mytools\parsergen\java\Java5Tables.cpp>
+#include <C:\mytools2015\parsergen\java\Java5Lex.cpp>
+#include <C:\mytools2015\parsergen\java\Java5Tables.cpp>
 
 #else
 

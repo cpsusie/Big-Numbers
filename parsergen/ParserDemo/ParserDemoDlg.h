@@ -1,15 +1,13 @@
 #pragma once
 
-#include <BitSet.h>
-#include <WinTools.h>
 #include "FindDlg.h"
 #include "TextBox.h"
 #include "TestParser.h"
 
 class CParserDemoDlg : public CDialog, public TextContainer, public ParserHandler {
 public:
-    CParserDemoDlg(CWnd* pParent = NULL);
-    void             message(const char *format, ...);
+    CParserDemoDlg(CWnd *pParent = NULL);
+    void             message(const TCHAR *format, ...);
     void             showLastDebugLine();
     void             showStatus(bool gotoLastDebug = true);
     int              findStackElement(const CPoint &p);
@@ -36,24 +34,21 @@ public:
     void             find(const FindParameter &param);
     void             resetListBoxes();
     int              handleReduction(unsigned int prod);                                         // virtual from parserhandler
-    void             handleError(const SourcePosition &pos, const char *form, va_list argptr);   // do
-    void             handleDebug(const SourcePosition &pos, const char *form, va_list argptr);   // do
+    void             handleError(const SourcePosition &pos, const TCHAR *form, va_list argptr);   // do
+    void             handleDebug(const SourcePosition &pos, const TCHAR *form, va_list argptr);   // do
 
-    //{{AFX_DATA(CParserDemoDlg)
     enum { IDD = IDD_DIALOGPARSERDEMO };
+
     CString m_input;
     BOOL    m_breakOnProduction;
     BOOL    m_breakOnError;
     BOOL    m_breakOnState;
     BOOL    m_breakOnSymbol;
-    //}}AFX_DATA
 
-    //{{AFX_VIRTUAL(CParserDemoDlg)
     public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 public:
   CWinThread           *m_showStateThread;
@@ -76,7 +71,6 @@ protected:
   HACCEL                m_accelTable;
   CTextBox              m_textBox;
 
-    //{{AFX_MSG(CParserDemoDlg)
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg int  OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -129,8 +123,6 @@ protected:
     afx_msg void OnKillFocusListDebug();
     afx_msg void OnMaxTextEditInputString();
     afx_msg void OnHelpAboutParserDemo();
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

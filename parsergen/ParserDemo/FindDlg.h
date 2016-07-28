@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MyString.h>
 #include <Scanner.h>
 #include "SearchMachine.h"
 #include "History.h"
@@ -48,29 +47,24 @@ private:
   HACCEL         m_accelTable;
   int            m_selStart, m_selEnd;
   History        m_history;
-  void       addRegSymbol(const char *s, int cursorPos);
+  void       addRegSymbol(const TCHAR *s, int cursorPos);
 // Construction
 public:
-    FindDlg(FindParameter &param, TextContainer &tc, CWnd* pParent = NULL);
-    //{{AFX_DATA(FindDlg)
+    FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent = NULL);
     enum { IDD = IDD_DIALOGFIND };
     BOOL    m_matchCase;
     BOOL    m_matchWholeWord;
     BOOL    m_useRegExp;
     CString m_findWhat;
-    //}}AFX_DATA
 
 
-    //{{AFX_VIRTUAL(FindDlg)
     public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 
-    //{{AFX_MSG(FindDlg)
     afx_msg void OnFindnext();
     virtual BOOL OnInitDialog();
     afx_msg void OnButtonregsymbolsmenu();
@@ -89,8 +83,6 @@ protected:
     afx_msg void OnSelendokCombofindwhat();
     afx_msg void OnSelchangeCombofindwhat();
     afx_msg void OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct);
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

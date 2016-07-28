@@ -1,36 +1,28 @@
 #include "stdafx.h"
-#include <WinTools.h>
 #include "ParserDemo.h"
 #include "FindDlg.h"
 #include "History.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-FindDlg::FindDlg(FindParameter &param, TextContainer &tc, CWnd* pParent) : CDialog(FindDlg::IDD, pParent) , m_param(param), m_TextContainer(tc) {
-  //{{AFX_DATA_INIT(FindDlg)
+FindDlg::FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent) : CDialog(FindDlg::IDD, pParent) , m_param(param), m_TextContainer(tc) {
   m_matchCase      = param.m_matchCase;
   m_matchWholeWord = param.m_matchWholeWord;
   m_useRegExp      = param.m_useRegExp;
   m_findWhat       = param.m_findWhat.cstr();
-  //}}AFX_DATA_INIT
 }
 
-void FindDlg::DoDataExchange(CDataExchange* pDX) {
+void FindDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  //{{AFX_DATA_MAP(FindDlg)
   DDX_Check(pDX, IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(pDX, IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
   DDX_Check(pDX, IDC_CHECKUSEREGEXP     , m_useRegExp     );
   DDX_CBString(pDX, IDC_COMBOFINDWHAT   , m_findWhat      );
-  //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(FindDlg, CDialog)
-  //{{AFX_MSG_MAP(FindDlg)
   ON_BN_CLICKED(IDC_FINDNEXT                  , OnFindnext                     )
   ON_BN_CLICKED(IDC_BUTTONREGSYMBOLSMENU      , OnButtonregsymbolsmenu         )
   ON_COMMAND(ID_REGSYMBOLS_ANYCHARACTER       , OnRegsymbolsAnycharacter       )
@@ -48,7 +40,6 @@ BEGIN_MESSAGE_MAP(FindDlg, CDialog)
   ON_CBN_SELENDOK(IDC_COMBOFINDWHAT           , OnSelendokCombofindwhat        )
   ON_CBN_SELCHANGE(IDC_COMBOFINDWHAT          , OnSelchangeCombofindwhat       )
   ON_WM_DRAWITEM()
-  //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void FindDlg::OnFindnext() {
@@ -65,14 +56,14 @@ void FindDlg::OnFindnext() {
     if(!m_TextContainer.searchText(m_param).isSet()) {
       String msg;
       if(m_param.m_useRegExp)
-        msg = format("Cannot find a match for the regular expression '%s'.", m_param.m_findWhat.cstr());
+        msg = format(_T("Cannot find a match for the regular expression '%s'."), m_param.m_findWhat.cstr());
       else
-        msg = format("Cannot find the String '%s'.", m_param.m_findWhat.cstr());
+        msg = format(_T("Cannot find the String '%s'."), m_param.m_findWhat.cstr());
       MessageBox(msg.cstr(), NULL, MB_ICONWARNING);
       return;
     }
   } catch(Exception e) {
-    MessageBox(e.what(), "Error", MB_ICONWARNING);
+    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
     GetDlgItem(IDC_COMBOFINDWHAT)->SetFocus();
     return;
   }
@@ -106,7 +97,7 @@ void FindDlg::OnButtonregsymbolsmenu() {
   CMenu menu;
   int ret = menu.LoadMenu(IDR_MENUREGSYMBOLS);
   if(!ret) {
-    AfxMessageBox("Loadmenu failed", MB_ICONERROR);
+    AfxMessageBox(_T("Loadmenu failed"), MB_ICONERROR);
     return;
   }
   CRect r;
@@ -115,7 +106,7 @@ void FindDlg::OnButtonregsymbolsmenu() {
     
 }
 
-void FindDlg::addRegSymbol(const char *s, int cursorpos) {
+void FindDlg::addRegSymbol(const TCHAR *s, int cursorpos) {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
 
   UpdateData();
@@ -132,23 +123,23 @@ void FindDlg::addRegSymbol(const char *s, int cursorpos) {
   b->SetFocus();
 }
 
-void FindDlg::OnRegsymbolsAnycharacter()        { addRegSymbol(".", 1);      }
-void FindDlg::OnRegsymbolsCharacterinrange()    { addRegSymbol("[]", 1);     }
-void FindDlg::OnRegsymbolsCharacternotinrange() { addRegSymbol("[^]", 2);    }
-void FindDlg::OnRegsymbolsBeginningofline()     { addRegSymbol("^", 1);      }
-void FindDlg::OnRegsymbolsEndofline()           { addRegSymbol("$", 1);      }
-void FindDlg::OnRegsymbols0ormoreoccurrences()  { addRegSymbol("*", 1);      }
-void FindDlg::OnRegsymbols1ormoreoccurrences()  { addRegSymbol("+", 1);      }
-void FindDlg::OnRegsymbols0or1occurence()       { addRegSymbol("?", 1);      }
-void FindDlg::OnRegsymbolsOr()                  { addRegSymbol("\\|", 2);    }
-void FindDlg::OnRegsymbolsGroup()               { addRegSymbol("\\(\\)", 2); }
+void FindDlg::OnRegsymbolsAnycharacter()        { addRegSymbol(_T("."), 1);      }
+void FindDlg::OnRegsymbolsCharacterinrange()    { addRegSymbol(_T("[]"), 1);     }
+void FindDlg::OnRegsymbolsCharacternotinrange() { addRegSymbol(_T("[^]"), 2);    }
+void FindDlg::OnRegsymbolsBeginningofline()     { addRegSymbol(_T("^"), 1);      }
+void FindDlg::OnRegsymbolsEndofline()           { addRegSymbol(_T("$"), 1);      }
+void FindDlg::OnRegsymbols0ormoreoccurrences()  { addRegSymbol(_T("*"), 1);      }
+void FindDlg::OnRegsymbols1ormoreoccurrences()  { addRegSymbol(_T("+"), 1);      }
+void FindDlg::OnRegsymbols0or1occurence()       { addRegSymbol(_T("?"), 1);      }
+void FindDlg::OnRegsymbolsOr()                  { addRegSymbol(_T("\\|"), 2);    }
+void FindDlg::OnRegsymbolsGroup()               { addRegSymbol(_T("\\(\\)"), 2); }
 
 void FindDlg::OnSetfocusCombofindwhat() {
   CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
   b->SetEditSel(m_selStart, m_selEnd);
 }
 
-BOOL FindDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL FindDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg))
     return true;
     

@@ -4,30 +4,22 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-TreeDlg::TreeDlg(SyntaxNodep tree, CWnd* pParent) : m_tree(tree), CDialog(TreeDlg::IDD, pParent) {
-	//{{AFX_DATA_INIT(TreeDlg)
-	//}}AFX_DATA_INIT
+TreeDlg::TreeDlg(SyntaxNodep tree, CWnd *pParent) : m_tree(tree), CDialog(TreeDlg::IDD, pParent) {
 }
 
-void TreeDlg::DoDataExchange(CDataExchange* pDX) {
+void TreeDlg::DoDataExchange(CDataExchange *pDX) {
 	CDialog::DoDataExchange(pDX);
-	//{{AFX_DATA_MAP(TreeDlg)
-	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(TreeDlg, CDialog)
-	//{{AFX_MSG_MAP(TreeDlg)
 	ON_BN_CLICKED(IDC_BUTTONEXPAND, OnButtonExpand)
 	ON_BN_CLICKED(IDC_BUTTONEXPANDALL, OnButtonExpandAll)
 	ON_WM_SIZE()
 	ON_COMMAND(ID_COLLAPSE, OnCollapse)
 	ON_COMMAND(ID_EXPAND, OnExpand)
 	ON_COMMAND(ID_EXPANDORCOLLAPSE, OnExpandOrCollapse)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void TreeDlg::traverse(CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p) {
@@ -37,7 +29,7 @@ void TreeDlg::traverse(CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p) {
   } else {
     q = ctrl->InsertItem(tree->getSymbol(), 1, 1, p);
   }
-  for(int i = 0; i < tree->getChildCount(); i++) {
+  for(UINT i = 0; i < tree->getChildCount(); i++) {
     traverse(ctrl, tree->getChild(i), q);
   }
 }
@@ -111,7 +103,7 @@ HTREEITEM TreeDlg::findTreeItem(CTreeCtrl *ctrl, const CPoint &pt) {
   return NULL;
 }
 
-BOOL TreeDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg))
     return true;
 
@@ -121,7 +113,7 @@ BOOL TreeDlg::PreTranslateMessage(MSG* pMsg) {
       HTREEITEM item = findTreeItem(ctrl, pMsg->pt);
       if(item != NULL) {
         String derivation = getDerivation(ctrl, item, 160);
-        MessageBox(derivation.cstr(), "Derived String");
+        MessageBox(derivation.cstr(), _T("Derived String"));
         break;
       }
     }
@@ -155,7 +147,7 @@ void TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation,
   ctrl->GetItemImage(item, image, selectedimage);
   if(image == 0) { // item is a terminal
     CString s = ctrl->GetItemText(item);
-    maxlen -= derivation.length();
+    maxlen -= (int)derivation.length();
     if(maxlen < 0) return;
     derivation += s.GetBuffer(maxlen);
     return;
@@ -163,7 +155,7 @@ void TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation,
   for(HTREEITEM child = ctrl->GetChildItem(item); child != NULL; child = ctrl->GetNextSiblingItem(child)) { // item is a nonterminal
     String tmp;
     getDerivation(ctrl, child, tmp, maxlen);
-    if(derivation.length() > 0) derivation += " ";
+    if(derivation.length() > 0) derivation += _T(" ");
     derivation += tmp;
     if(derivation.length() > maxlen) {
       derivation = left(derivation, maxlen);
@@ -176,7 +168,7 @@ String TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, int maxlen) {
   String result;
   getDerivation(ctrl, item, result, maxlen+10);
   if(result.length() > maxlen) {
-    result = left(result, maxlen-3) + "...";
+    result = left(result, maxlen-3) + _T("...");
   }
   return result;
 }

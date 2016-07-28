@@ -2,25 +2,19 @@
 
 class StackSizeDlg : public CDialog {
 public:
-    StackSizeDlg(int oldSize, CWnd* pParent = NULL);
+    StackSizeDlg(int oldSize, CWnd *pParent = NULL);
 
-    //{{AFX_DATA(StackSizeDlg)
     enum { IDD = IDD_DIALOGSTACKSIZE };
-    UINT    m_stackSize;
-    //}}AFX_DATA
 
-    //{{AFX_VIRTUAL(StackSizeDlg)
+    UINT    m_stackSize;
+
     protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 
-    //{{AFX_MSG(StackSizeDlg)
     virtual void OnOK();
     virtual BOOL OnInitDialog();
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}
