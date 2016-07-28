@@ -6,10 +6,18 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+static void myVerify(bool b, TCHAR *str) {
+  if (!b) {
+    Assert::IsTrue(b, str);
+  }
+}
+
 #ifdef verify
 #undef verify
 #endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
+//#define verify(expr) Assert::IsTrue(expr, _T(#expr))
+#define verify(expr) myVerify(expr, _T(#expr))
+
 
 namespace TestDate {
 
@@ -262,7 +270,7 @@ namespace TestDate {
         minute = randInt(60);
         second = randInt(60);
         Timestamp timestamp(day, month, year, hour, minute, second);
-        if (timestamp.getWeekDay() == SUNDAY && (month == 3 || month == 10) && day > 25 && hour == 2) {
+        if (timestamp.getWeekDay() == SUNDAY && (month == 3 || month == 10) && day >= 25 && hour == 2) {
           continue; // skip the special hour when changing to/from summertime<->wintertime
         }
         time_t tt = timestamp.gettime_t();
