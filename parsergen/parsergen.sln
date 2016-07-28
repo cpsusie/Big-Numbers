@@ -6,8 +6,6 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParserDemo", "ParserDemo\ParserDemo.vcxproj", "{D9845C1E-2D62-4D66-87C4-D122A684B31A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-		{76688AD4-C2FB-4C19-BB38-DFF140CD80F6} = {76688AD4-C2FB-4C19-BB38-DFF140CD80F6}
-		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestExpressionLex", "TestExpressionLex\TestExpressionLex.vcxproj", "{156A4FA8-6CA2-46D6-A01D-BCDBBDF09D47}"
@@ -21,6 +19,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dummy", "dummy\dummy.vcxproj", "{970C68DF-14DB-4696-90FE-19CB1ECF6D3F}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "java", "java\java.vcxproj", "{CABF5570-7FB0-42C4-81FB-9151F647669F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lexgen", "lexgen\lexgen.vcxproj", "{76688AD4-C2FB-4C19-BB38-DFF140CD80F6}"
 	ProjectSection(ProjectDependencies) = postProject
