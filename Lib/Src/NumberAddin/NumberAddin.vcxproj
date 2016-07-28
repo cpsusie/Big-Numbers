@@ -74,24 +74,24 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\MTDebug64\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <IntDir>.\Release\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\MTDebug32\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <IntDir>.\Release\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>..\..\MTRelease32\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <IntDir>.\Release\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\MTRelease64\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <IntDir>.\Release\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -101,7 +101,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>.\NumberAddIn.def</ModuleDefinitionFile>
-      <OutputFile>..\..\MTRelease32\NumberAddIn.dll</OutputFile>
+      <OutputFile>..\..\MTDebug32\NumberAddIn.dll</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -112,7 +112,7 @@
     </ClCompile>
     <Link>
       <ModuleDefinitionFile>.\NumberAddIn.def</ModuleDefinitionFile>
-      <OutputFile>..\..\MTRelease32\NumberAddIn.dll</OutputFile>
+      <OutputFile>..\..\MTDebug64\NumberAddIn.dll</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -142,7 +142,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <ModuleDefinitionFile>.\NumberAddIn.def</ModuleDefinitionFile>
-      <OutputFile>..\..\MTRelease32\NumberAddIn.dll</OutputFile>
+      <OutputFile>..\..\MTRelease64\NumberAddIn.dll</OutputFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
