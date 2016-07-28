@@ -28,6 +28,7 @@ public:
 #include "pch.h"
 #include <HashMap.h>
 #include <Math/Expression/ExpressionSymbol.h>
+#include <Math/Expression/ExpressionLex.h>
 
 static int nameOrKeyWord(const _TUCHAR *lexeme);
 

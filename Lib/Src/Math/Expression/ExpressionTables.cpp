@@ -7,7 +7,7 @@
 #pragma warning(disable:4312)
 
 
-#line 33 "C:\\mytools\\parsergen\\lib\\parsegencpp.par"
+#line 33 "C:\\mytools2015\\parsergen\\lib\\parsegencpp.par"
 
 typedef short TableType;
 
@@ -324,7 +324,7 @@ static const void *action[151] = {
   ,act0130,act0131,act0132,act0133,act0134,act0135,act0136,act0137,act0138,act0139
   ,act0140,act0141,act0142,act0143,act0144,act0145,act0146,act0147,act0148,act0149
   ,act0150
-}; // Size of table:604 bytes. 
+}; // Size of table:1208 bytes.
 
 /****************************************************************************\
 * The successor matrix is used when the parser has reduced by prod A -> alfa *
@@ -440,7 +440,7 @@ static const TableType *successor[151] = {
   ,succ0130,succ0131,succ0132,NULL    ,succ0134,NULL    ,NULL    ,NULL    ,NULL    ,succ0139
   ,NULL    ,NULL    ,succ0142,succ0143,succ0144,NULL    ,NULL    ,NULL    ,NULL    ,NULL    
   ,NULL    
-}; // Size of pointertable:604 bytes.
+}; // Size of pointertable:1208 bytes.
 
 /****************************************************************************\
 * The productionLength[] array is indexed by production number and holds     *
@@ -667,7 +667,7 @@ static const TCHAR *symbolName[93] = {
   /*  90 */ _T("productExpr"),
   /*  91 */ _T("polyExpr"),
   /*  92 */ _T("exprList")
-}; // Total size of strings:704 bytes, size of pointertable:372 bytes.
+}; // Total size of strings:704 bytes, size of pointertable:744 bytes.
 
 static const ParserShortTables ExpressionTables_s(compressedSet, compressedLasets
                                                  ,action, successor, productionLength, leftSide
@@ -675,8 +675,8 @@ static const ParserShortTables ExpressionTables_s(compressedSet, compressedLaset
                                                  ,75, 93, 86, 151);
 
 const ParserTables *ExpressionTables = &ExpressionTables_s;
-// Size of ExpressionTables_s: 48 bytes. Size of ExpressionTables:4 bytes
+// Size of ExpressionTables_s: 88 bytes. Size of ExpressionTables:8 bytes
 
 
-// Total size of table data:6.864 bytes.
+// Total size of table data:8.488 bytes.
 
