@@ -21,8 +21,9 @@ public:
 #include <HashMap.h>
 #include <TreeMap.h>
 #include "Java5Symbol.h"
+#include "Java5Lex.h"
 
-static int nameOrKeyWord(const unsigned char *lexeme);
+static int nameOrKeyWord(const TCHAR *lexeme);
 
 %}
 
@@ -59,7 +60,7 @@ o				[0-7]                   /* Octal digit                              */
 							    }
 							  }
 							  if(i == 0) {
-							    error( startpos,"End of file in comment\n" );
+							    error( startpos,_T("End of file in comment\n") );
                               }
 							}
 
@@ -73,8 +74,8 @@ o				[0-7]                   /* Octal digit                              */
                               }
 							}
 
-"("		return LP;
-")"		return RP;
+"("		return LPAR;
+")"		return RPAR;
 "{"		return LC;
 "}"		return RC;
 "["		return LB;
@@ -127,62 +128,62 @@ o				[0-7]                   /* Octal digit                              */
 %%
 
 typedef struct {
-  char *m_name;
-  int   m_token;
+  TCHAR *m_name;
+  int    m_token;
 } ReservedWords;
 
 static ReservedWords wordTable[] = {
-  "abstract"     ,ABSTRACT
- ,"assert"       ,ASSERT
- ,"boolean"      ,TYPEBOOLEAN
- ,"break"        ,BREAK
- ,"byte"         ,TYPEBYTE
- ,"case"         ,CASE
- ,"catch"        ,CATCH
- ,"char"         ,TYPECHAR
- ,"class"        ,CLASS
- ,"continue"     ,CONTINUE
- ,"default"      ,DEFAULT
- ,"do"           ,DO
- ,"double"       ,TYPEDOUBLE
- ,"else"         ,ELSE
- ,"enum"         ,ENUM
- ,"extends"      ,EXTENDS
- ,"false"        ,BOOLEANLITERAL
- ,"final"        ,FINAL
- ,"finally"      ,FINALLY
- ,"float"        ,TYPEFLOAT
- ,"for"          ,FOR
- ,"if"           ,IF
- ,"implements"   ,IMPLEMENTS
- ,"import"       ,IMPORT
- ,"instanceof"   ,INSTANCEOF
- ,"int"          ,TYPEINT
- ,"interface"    ,INTERFACE
- ,"long"         ,TYPELONG
- ,"native"       ,NATIVE
- ,"new"          ,NEW
- ,"null"         ,NULLLITERAL
- ,"package"      ,PACKAGE
- ,"private"      ,PRIVATE
- ,"protected"    ,PROTECTED
- ,"public"       ,PUBLIC
- ,"return"       ,RETURN
- ,"short"        ,TYPESHORT
- ,"static"       ,STATIC
- ,"strictfp"     ,STRICTFP
- ,"super"        ,SUPER
- ,"switch"       ,SWITCH
- ,"synchronized" ,SYNCHRONIZED
- ,"this"         ,THISLITERAL
- ,"throw"        ,THROW
- ,"throws"       ,THROWS
- ,"transient"    ,TRANSIENT
- ,"true"         ,BOOLEANLITERAL
- ,"try"          ,TRYTOKEN
- ,"void"         ,TYPEVOID
- ,"volatile"     ,VOLATILE
- ,"while"        ,WHILE
+  _T("abstract"    ) ,ABSTRACT
+ ,_T("assert"      ) ,ASSERT
+ ,_T("boolean"     ) ,TYPEBOOLEAN
+ ,_T("break"       ) ,BREAK
+ ,_T("byte"        ) ,TYPEBYTE
+ ,_T("case"        ) ,CASE
+ ,_T("catch"       ) ,CATCH
+ ,_T("char"        ) ,TYPECHAR
+ ,_T("class"       ) ,CLASS
+ ,_T("continue"    ) ,CONTINUE
+ ,_T("default"     ) ,DEFAULT
+ ,_T("do"          ) ,DO
+ ,_T("double"      ) ,TYPEDOUBLE
+ ,_T("else"        ) ,ELSE
+ ,_T("enum"        ) ,ENUM
+ ,_T("extends"     ) ,EXTENDS
+ ,_T("false"       ) ,BOOLEANLITERAL
+ ,_T("final"       ) ,FINAL
+ ,_T("finally"     ) ,FINALLY
+ ,_T("float"       ) ,TYPEFLOAT
+ ,_T("for"         ) ,FOR
+ ,_T("if"          ) ,IF
+ ,_T("implements"  ) ,IMPLEMENTS
+ ,_T("import"      ) ,IMPORT
+ ,_T("instanceof"  ) ,INSTANCEOF
+ ,_T("int"         ) ,TYPEINT
+ ,_T("interface"   ) ,INTERFACE
+ ,_T("long"        ) ,TYPELONG
+ ,_T("native"      ) ,NATIVE
+ ,_T("new"         ) ,NEW
+ ,_T("null"        ) ,NULLLITERAL
+ ,_T("package"     ) ,PACKAGE
+ ,_T("private"     ) ,PRIVATE
+ ,_T("protected"   ) ,PROTECTED
+ ,_T("public"      ) ,PUBLIC
+ ,_T("return"      ) ,RETURN
+ ,_T("short"       ) ,TYPESHORT
+ ,_T("static"      ) ,STATIC
+ ,_T("strictfp"    ) ,STRICTFP
+ ,_T("super"       ) ,SUPER
+ ,_T("switch"      ) ,SWITCH
+ ,_T("synchronized") ,SYNCHRONIZED
+ ,_T("this"        ) ,THISLITERAL
+ ,_T("throw"       ) ,THROW
+ ,_T("throws"      ) ,THROWS
+ ,_T("transient"   ) ,TRANSIENT
+ ,_T("true"        ) ,BOOLEANLITERAL
+ ,_T("try"         ) ,TRYTOKEN
+ ,_T("void"        ) ,TYPEVOID
+ ,_T("volatile"    ) ,VOLATILE
+ ,_T("while"       ) ,WHILE
 };
 
 typedef StrHashMap<int> HashMapType;
@@ -198,8 +199,8 @@ public:
 
 static ReservedWordMap reservedWordMap(249);
 
-static int nameOrKeyWord(const unsigned char *lexeme) {
-  int *p = reservedWordMap.get((char*)lexeme);
+static int nameOrKeyWord(const TCHAR *lexeme) {
+  int *p = reservedWordMap.get(lexeme);
   return p ? *p : IDENTIFIER;
 }
 
@@ -208,7 +209,7 @@ void Java5Lex::findBestHashMapSize() {
   int bestCapacity;
   for(int capacity = 3; capacity < 2000; capacity++) {
     ReservedWordMap ht(capacity);
-	cl.put(ht.getCapacity(), ht.getLength());
+	cl.put((int)ht.getCapacity(), ht.getLength());
 	if(ht.getMaxChainLength() == 1) {
 	  bestCapacity = capacity;
 	  break;
@@ -220,8 +221,8 @@ void Java5Lex::findBestHashMapSize() {
     int capacity = e.getKey();
 	const CompactIntArray &chainLength = e.getValue();
 	printf("Capacity %4d:",capacity);
-	for(int l = 0; l < chainLength.size(); l++) {
-	  printf(" (%d,%3d)",l,chainLength[l]);
+	for(size_t l = 0; l < chainLength.size(); l++) {
+	  printf(" (%d,%3d)",(int)l,chainLength[l]);
 	}
 	printf("\n");
   }

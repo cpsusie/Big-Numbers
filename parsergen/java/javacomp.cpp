@@ -5,19 +5,19 @@
 #include "Java5symbol.h"
 #include "Java5parser.h"
 
-static void parse(const char *fileName) {
+static void parse(const String &fileName) {
   LexFileStream input(fileName);
   Java5Lex lex;
   lex.newStream(&input);
-  Java5Parser parser(fileName,&lex);
+  Java5Parser parser(fileName.cstr(),&lex);
   parser.parse();
 }
 
-static void scan(const char *name) {
+static void scan(const String &name) {
   LexFileStream input(name);
 
   if(!input.ok()) {
-    perror(name);
+    _tperror(name.cstr());
     return;
   }
   Java5Lex lex;
@@ -33,21 +33,21 @@ public:
   TestJavaParser(bool testLex) {
     m_testLex = testLex;
   }
-  void test(const char *fileName);
-  void handleFileName(const char *name, _finddata_t &info);
+  void test(const String &fileName);
+  void handleFileName(const TCHAR *name, DirListEntry &info);
 };
 
-void TestJavaParser::test(const char *fileName) {
+void TestJavaParser::test(const String &fileName) {
   if(m_testLex) {
-    printf("scanning <%s>\n",fileName);
-    scan(fileName);
+    _tprintf(_T("scanning <%s>\n"), fileName.cstr());
+     scan(fileName);
   } else {
-    printf("parsing <%s>\n",fileName);
+    _tprintf(_T("parsing <%s>\n"), fileName.cstr());
     parse(fileName);
   }
 }
 
-void TestJavaParser::handleFileName(const char *name, _finddata_t &info) {
+void TestJavaParser::handleFileName(const TCHAR *name, DirListEntry &info) {
   test(name);
 }
 
@@ -58,9 +58,9 @@ static void usage() {
 
 int main(int argc, char **argv) {
   char *cp;
-  bool testLex = false;
+  bool testLex  = false;
   bool recurse  = false;
-  char *dir;
+  String dir;
 
   
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
@@ -78,10 +78,10 @@ int main(int argc, char **argv) {
         
   TestJavaParser test(testLex);
   if(recurse) {
-    char *argv[] = { "*.java",NULL };
+    TCHAR *argv[] = { _T("*.java"), NULL };
     FileTreeWalker::walkFileTree(dir,test,argv);
   } else {
-    argvExpand(argc,argv);
+    argvExpand(argc, argv);
     for(;*argv; argv++) {
       test.test(*argv);
     }

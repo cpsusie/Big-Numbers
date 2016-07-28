@@ -34,7 +34,7 @@ private:
   }
   String m_fileName;
 public:
-  Java5Parser(const char *fileName, Scanner *lex=NULL, unsigned int stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
+  Java5Parser(const TCHAR *fileName, Scanner *lex=NULL, unsigned int stacksize = 1000) : LRparser(*Java5Tables,lex,stacksize) {
     m_fileName = fileName;
   }
   ~Java5Parser() {
@@ -50,7 +50,7 @@ public:
 %term   THROWS EXTENDS IMPLEMENTS
 %term   INTEGERLITERAL FLOATLITERAL BOOLEANLITERAL CHARACTERLITERAL STRINGLITERAL NULLLITERAL THISLITERAL SUPER INSTANCEOF NEW
 %left   COMMA
-%term   SEMICOLON DOT LC RC LP RP LB RB ELLIPSIS AT
+%term   SEMICOLON DOT LC RC LPAR RPAR LB RB ELLIPSIS AT
 %term   ASSIGN PLUSASSIGN MINUSASSIGN STARASSIGN DIVASSIGN MODASSIGN SHLASSIGN SSHRASSIGN USHRASSIGN ANDASSIGN XORASSIGN ORASSIGN
 %left   QUESTION COLON
 %left   COMPLEMENT NOT NEQ EQ LT LE GT GE
@@ -67,6 +67,8 @@ public:
 
 #include "stdafx.h"
 #include "Java5Parser.h"
+
+#pragma warning(disable:4312)
 
 %}
 
@@ -236,7 +238,7 @@ VariableInitializer             : Expression
                                 | ArrayInitializer
                                 ;
 
-FormalParameters                : LP FormalParameterList? RP
+FormalParameters                : LPAR FormalParameterList? RPAR
                                 ;
 
 FormalParameterList             : FormalParameter
@@ -300,7 +302,7 @@ AnnotationTypeDeclaration       : Modifier* AT INTERFACE Identifier AnnotationTy
 AnnotationTypeBody              : LC AnnotationTypeElementDeclaration* RC
                                 ;
 
-AnnotationTypeElementDeclaration: Modifier* Type Identifier LP RP DefaultValue? SEMICOLON
+AnnotationTypeElementDeclaration: Modifier* Type Identifier LPAR RPAR DefaultValue? SEMICOLON
                                 | ConstantDeclaration
                                 | TypeDeclaration
                                 ;
@@ -308,7 +310,7 @@ AnnotationTypeElementDeclaration: Modifier* Type Identifier LP RP DefaultValue? 
 DefaultValue                    : DEFAULT ElementValue
                                 ;
 
-Arguments                       : LP ArgumentList? RP
+Arguments                       : LPAR ArgumentList? RPAR
                                 ;
 
 ArgumentList                    : Expression
@@ -426,10 +428,10 @@ WhileStatementNoShortIf         : WHILE Condition StatementNoShortIf
 DoStatement                     : DO Statement WHILE Condition SEMICOLON
                                 ;
 
-ForStatement                    : FOR LP ForInit? SEMICOLON Expression? SEMICOLON ForUpdate? RP Statement
+ForStatement                    : FOR LPAR ForInit? SEMICOLON Expression? SEMICOLON ForUpdate? RPAR Statement
                                 ;
 
-ForStatementNoShortIf           : FOR LP ForInit? SEMICOLON Expression? SEMICOLON ForUpdate? RP StatementNoShortIf
+ForStatementNoShortIf           : FOR LPAR ForInit? SEMICOLON Expression? SEMICOLON ForUpdate? RPAR StatementNoShortIf
                                 ;
 
 ForInit                         : StatementExpressionList
@@ -439,10 +441,10 @@ ForInit                         : StatementExpressionList
 ForUpdate                       : StatementExpressionList
                                 ;
 
-EnhancedForStatement            : FOR LP Modifier* Type VariableDeclaratorId COLON Expression RP Statement
+EnhancedForStatement            : FOR LPAR Modifier* Type VariableDeclaratorId COLON Expression RPAR Statement
                                 ;
 
-EnhancedForStatementNoShortIf   : FOR LP Modifier* Type VariableDeclaratorId COLON Expression RP StatementNoShortIf
+EnhancedForStatementNoShortIf   : FOR LPAR Modifier* Type VariableDeclaratorId COLON Expression RPAR StatementNoShortIf
                                 ;
 
 StatementExpressionList         : StatementExpression
@@ -480,7 +482,7 @@ AssertStatementShort            : ASSERT Expression SEMICOLON
 AssertStatementLong             : ASSERT Expression COLON Expression SEMICOLON
                                 ;
 
-Condition                       : LP Expression RP
+Condition                       : LPAR Expression RPAR
                                 ;
 
 Primary                         : PrimaryNoNewArray
@@ -489,8 +491,8 @@ Primary                         : PrimaryNoNewArray
 
 PrimaryNoNewArray               : Literal
                                 | THISLITERAL
-                                | LP Name RP
-                                | LP ExpressionNN RP
+                                | LPAR Name RPAR
+                                | LPAR ExpressionNN RPAR
                                 | NewClassExpression
                                 | FieldAccess
                                 | MethodInvocation
@@ -720,14 +722,14 @@ UnaryExpressionNotPlusMinusNN   : PostfixExpressionNN
                                 | CastExpression
                                 ;
 
-CastExpression                  : LP PrimitiveType RP UnaryExpression
-                                | LP PrimitiveType Dim+ RP UnaryExpression
-                                | LP Name TypeArguments RP UnaryExpressionNotPlusMinus
-                                | LP Name TypeArguments Dim+ RP UnaryExpressionNotPlusMinus
-                                | LP Name TypeArguments DOT ClassOrInterfaceType RP UnaryExpressionNotPlusMinus
-                                | LP Name TypeArguments DOT ClassOrInterfaceType Dim+ RP UnaryExpressionNotPlusMinus
-                                | LP Name RP UnaryExpressionNotPlusMinus
-                                | LP Name Dim+ RP UnaryExpressionNotPlusMinus
+CastExpression                  : LPAR PrimitiveType RPAR UnaryExpression
+                                | LPAR PrimitiveType Dim+ RPAR UnaryExpression
+                                | LPAR Name TypeArguments RPAR UnaryExpressionNotPlusMinus
+                                | LPAR Name TypeArguments Dim+ RPAR UnaryExpressionNotPlusMinus
+                                | LPAR Name TypeArguments DOT ClassOrInterfaceType RPAR UnaryExpressionNotPlusMinus
+                                | LPAR Name TypeArguments DOT ClassOrInterfaceType Dim+ RPAR UnaryExpressionNotPlusMinus
+                                | LPAR Name RPAR UnaryExpressionNotPlusMinus
+                                | LPAR Name Dim+ RPAR UnaryExpressionNotPlusMinus
                                 ;
 
 PostfixExpression               : Primary
@@ -872,13 +874,13 @@ Annotation                      : NormalAnnotation
                                 | SingleElementAnnotation
                                 ;
 
-NormalAnnotation                : AT Name LP ElementValuePairList? RP
+NormalAnnotation                : AT Name LPAR ElementValuePairList? RPAR
                                 ;
 
 MarkerAnnotation                : AT Name
                                 ;
 
-SingleElementAnnotation         : AT Name LP ElementValue RP
+SingleElementAnnotation         : AT Name LPAR ElementValue RPAR
                                 ;
 
 ElementValuePairList            : ElementValuePair
