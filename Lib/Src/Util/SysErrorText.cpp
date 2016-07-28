@@ -1,9 +1,9 @@
 #include "pch.h"
 
 String getSysErrorText(int n) {
-  String msg = strerror(n);
-  if(msg.length() > 0 && msg[msg.length()-1] == '\n') {
-    msg.remove(msg.length()-1);
+  String msg = _tcserror(n);
+  if(msg.length() > 0 && msg.last() == '\n') {
+    msg.removeLast();
   }
   return msg;
 }
