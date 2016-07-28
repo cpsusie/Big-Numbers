@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Stack.h>
 #include <string.h>
 #include "DFA.h"
 

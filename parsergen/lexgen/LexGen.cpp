@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include <direct.h>
 #include <io.h>
-#include <Tokenizer.h>
 #include "DFA.h"
 #include "Wizard.h"
 #include <TemplateWriter.h>

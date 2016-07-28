@@ -1,6 +1,5 @@
 #pragma once
 
-#include "StringCollector.h"
 #include <lrparser.h>
 
 //char        *stripesc(    char *dst, char *src);

@@ -173,7 +173,7 @@ int GrammarTables::printActionMatrixCpp(MarginFile &output) const {
   }
   output.setLeftMargin(0);
   const int byteCount = wordAlignedSize(stateCount*sizeof(void*));
-  output.printf(_T("}; // Size of table:%d bytes. \n\n"), byteCount);
+  output.printf(_T("}; // Size of table:%d bytes.\n\n"), byteCount);
   return byteCount;
 }
 

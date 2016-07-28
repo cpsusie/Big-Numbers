@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Tokenizer.h>
 #include <io.h>
-#include "Grammar.h"
 #include "GrammarParser.h"
 #include "GrammarCode.h"
 #include "Wizard.h"

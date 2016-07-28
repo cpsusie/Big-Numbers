@@ -1,8 +1,6 @@
 #pragma once
 
 #include <HashMap.h>
-#include <MarginFile.h>
-#include "StringCollector.h"
 
 class TemplateWriter;
 

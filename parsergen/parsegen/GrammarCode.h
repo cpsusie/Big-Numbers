@@ -1,7 +1,6 @@
 #pragma once
 
 #include <TreeMap.h>
-#include "Grammar.h"
 
 class CodeFlags {
 public:

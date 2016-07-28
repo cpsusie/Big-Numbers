@@ -6,7 +6,6 @@ $FILEHEAD$
 
 $NEWFILE$=$LEXNAME$Lex.cpp
 $CLASSHEAD$
-#include "$HEADERDIR$/$LEXNAME$Lex.h"
 
 $TABLES$
 

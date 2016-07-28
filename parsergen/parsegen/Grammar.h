@@ -1,10 +1,9 @@
 #pragma once
 
-#include <BitSet.h>
 #include <HashMap.h>
 #include <MarginFile.h>
-#include "StringCollector.h"
 #include <LRParser.h>
+#include "StringCollector.h"
 
 typedef enum {
   CPP

@@ -97,7 +97,7 @@ bool GrammarTables::calcIsCompressibleState(unsigned int state) const {
       if(action >= 0) {
         return false;
       }
-      for(int i = 1; i < count; i++) {
+      for(size_t i = 1; i < count; i++) {
         if(actions[i].m_action != action) {
           return false;
         }

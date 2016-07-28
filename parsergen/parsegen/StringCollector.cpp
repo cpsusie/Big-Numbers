@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "StringCollector.h"
 
 void StringCollector::begin(TCHAR *str, int length, const SourcePosition &startPos) {
   const TCHAR save  = str[length];

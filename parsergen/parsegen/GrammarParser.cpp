@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Grammar.h"
 #include "GrammarParser.h"
 
 GrammarParser::GrammarParser(const String &fileName, int tabSize, Grammar &g) : m_lex(fileName, tabSize), m_grammar(g) {

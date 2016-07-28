@@ -1,10 +1,6 @@
 #pragma once
 
-#include <MyUtil.h>
-#include <MyString.h>
-#include <MarginFile.h>
 #include <BitSet.h>
-#include <Array.h>
 #include <Scanner.h>
 #include "LexScanner.h"
 

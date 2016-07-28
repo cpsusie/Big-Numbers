@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <Stack.h>
 #include "DFA.h"
 
   // Compress and output transitionmatrix eliminating equal columns and rows

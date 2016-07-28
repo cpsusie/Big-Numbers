@@ -82,7 +82,7 @@ static const TableType act0007[] = {   2,   3,  -5,   4,  11};
 static const void *action[12] = {
    act0000,act0001,act0002,act0003,act0004,act0005,act0006,act0007,act0008,act0009
   ,act0010,act0011
-}; // Size of table:96 bytes. 
+}; // Size of table:96 bytes.
 
 /****************************************************************************\
 * The successor matrix is used when the parser has reduced by prod A -> alfa *

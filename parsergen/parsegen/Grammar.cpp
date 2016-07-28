@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <Console.h>
 #include <assert.h>
-#include "Grammar.h"
 
 static String getModifierString(SymbolModifier modifier) {
   switch(modifier) {
