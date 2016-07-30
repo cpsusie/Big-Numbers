@@ -7,15 +7,15 @@ CTextBox::CTextBox(CString &str) : m_str(str) {
 }
 
 BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *pParentWnd, UINT nID) {
- BOOL ret = CWnd::CreateEx(0, _T("EDIT"), NULL
-	                      ,dwStyle | WS_CHILD
-	                      ,rect.left, rect.top
-	                      ,rect.right - rect.left, rect.bottom - rect.top
-	                      ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL);
- if(ret) {
-   ret = ModifyStyleEx(0, dwExStyle);
- }
- return ret;
+  BOOL ret = CWnd::CreateEx(0, _T("EDIT"), NULL
+	                         ,dwStyle | WS_CHILD
+	                         ,rect.left, rect.top
+	                         ,rect.right - rect.left, rect.bottom - rect.top
+	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL);
+  if(ret) {
+    ret = ModifyStyleEx(0, dwExStyle);
+  }
+  return ret;
 }
 
 static int findCharacterPosition(const TCHAR *s, const SourcePosition &pos) {
