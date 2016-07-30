@@ -1,0 +1,212 @@
+//
+// A Fast Algorithm for computing longest common subsequences
+// by James W. Hunt
+// and Thomas G. Szymanski
+// from Communications of the ACM May 1977 Volume 20 no. 5
+
+#include "stdafx.h"
+#include <Date.h>
+#include <Math.h>
+#include "LcsSimple.h"
+
+LcsSimple::LcsSimple(const LineArray &a, const LineArray &b, UINT *docSize, LcsComparator &cmp, CompareJob *job)
+: Lcs(cmp, job)
+{
+  m_matchList = NULL;
+  init(a, b);
+  if(m_seqReversed) {
+    m_docSize[1] = docSize[0];
+    m_docSize[0] = docSize[1];
+  } else {
+    m_docSize[0] = docSize[0];
+    m_docSize[1] = docSize[1];
+  }
+}
+
+LcsSimple::~LcsSimple() {
+  clear();
+}
+
+void LcsSimple::clear() {
+  delete[] m_matchList;
+  m_matchList = NULL;
+}
+
+void LcsSimple::init(const LineArray &a, const LineArray &b) {
+  const size_t as = a.size();
+  const size_t bs = b.size();
+  m_A.clear();
+  m_B.clear();
+  m_A.add(LcsElement(-1,_T(""))); // add a dummy-Element to make the real Elements from [1..n]
+  m_B.add(LcsElement(-1,_T(""))); // do
+  if(as >= bs) {
+    m_seqReversed = false;
+    for(UINT i = 0; i < as; i++) {
+      m_A.add(LcsElement(i+1,a[i]));
+    }
+    for(UINT i = 0; i < bs; i++) {
+      m_B.add(LcsElement(i+1,b[i]));
+    }
+    m_n = as;
+  } else { // bs > as
+    m_seqReversed = true;
+    for(UINT i = 0; i < as; i++) {
+      m_B.add(LcsElement(i+1,a[i]));
+    }
+    for(UINT i = 0; i < bs; i++) {
+      m_A.add(LcsElement(i+1,b[i]));
+    }
+    m_n = bs;
+  }
+  m_matchList = new MatchArray*[m_n+1];
+  for(size_t i = 0; i <= m_n; i++) {
+    m_matchList[i] = NULL;
+  }
+
+  m_tresh = new UINT[m_n+1];
+  m_link  = new Link*[m_n+1];
+}
+
+void LcsSimple::findLcs(ElementPairArray &result) {
+  // step 1: build linked list
+  const size_t matchListTotal = findMatchlist();
+
+  // step 2 initialize the m_tresh Array
+  m_tresh[0] = 0;
+  const UINT mnp1 = (UINT)m_n+1;
+
+  for(size_t i = 1; i <= m_n; i++) {
+    m_tresh[i] = mnp1;
+  }
+  m_link[0] = NULL;
+
+  if(m_job) m_job->incrProgress();
+
+BEGIN_TIMEMEASURE(6, _T("Comparing"));
+
+  // step 3 compute successive m_tresh values
+  size_t progress = 0;
+  for(UINT i = 1; i <= m_n; i++) {
+    MatchArray &m = *m_matchList[i];
+    const size_t ms = m.size();
+    for(size_t mi = 0; mi < ms; mi++) {
+      if(((progress++ & 0x3ff) == 0) && m_job) {
+        m_job->setSubProgressPercent(SPERCENT(progress,matchListTotal));
+      }
+      const UINT j = m[mi];
+      const UINT k = findK(j);
+      if(j < m_tresh[k]) {
+        m_tresh[k] = j;
+        m_link[k] = newLink(i,j,m_link[k-1]);
+      }
+    }
+  }
+
+  intptr_t k;
+  for(k = m_n; k >= 0; k--) {
+    if(m_tresh[k] < mnp1) {
+      break;
+    }
+  }
+
+END_TIMEMEASURE(  6, m_docSize[0] + m_docSize[1]);
+
+  if(m_job) m_job->incrProgress();
+
+BEGIN_TIMEMEASURE(7, _T("Building pairs"));
+
+  CompactArray<Link*> pairs;
+  for(Link *ptr = m_link[k]; ptr != NULL; ptr = ptr->m_next) {
+    pairs.add(ptr);
+  }
+
+  size_t pairCount = 0;
+  const size_t totalPairCount = pairs.size();
+
+  result.setCapacity(totalPairCount);
+  if(m_seqReversed) {
+    for(size_t k = pairs.size(); k--;) {
+      if(((pairCount++ & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(pairCount,totalPairCount)); }
+      result.add(ElementPair(pairs[k]->m_j-1,pairs[k]->m_i-1));
+    }
+  } else {
+    for(size_t k = pairs.size(); k--;) {
+      if(((pairCount++ & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(pairCount,totalPairCount)); }
+      result.add(ElementPair(pairs[k]->m_i-1,pairs[k]->m_j-1));
+    }
+  }
+
+END_TIMEMEASURE(  7, m_docSize[0]);
+}
+
+UINT LcsSimple::findK(UINT j) const { // find k:m_tresh[k-1] < j <= m_tresh[k]. ie min(k:m_tresh[k] <= j
+  UINT l = 1;
+  UINT r = (UINT)m_n;
+  while(l < r) {
+    const UINT mid = (l+r)>>1;
+    if(m_tresh[mid] < j) {
+      l = mid + 1;
+    } else {               // m_tresh[mid] >= j
+      r = mid;
+    }
+  }
+  return r;
+}
+
+size_t LcsSimple::findMatchlist() {
+  IndexComparator cmp1(m_cmp, m_job, m_A.size()-1);
+
+  if(m_job) m_job->incrProgress();
+
+BEGIN_TIMEMEASURE(3, _T("Sorting file 1"));
+  
+  m_A.sort(1,m_A.size()-1,cmp1);
+
+END_TIMEMEASURE(  3, nlogn(m_docSize[0]));
+
+  IndexComparatorR cmp2(m_cmp, m_job, m_B.size()-1);
+
+  if(m_job) m_job->incrProgress();
+
+BEGIN_TIMEMEASURE(4, _T("Sorting file 2"));
+
+  m_B.sort(1,m_B.size()-1,cmp2);
+
+END_TIMEMEASURE(  4, nlogn(m_docSize[1]));
+
+  if(m_job) m_job->incrProgress();
+
+BEGIN_TIMEMEASURE(5, _T("Finding matching lines"));
+
+  const size_t bs = m_B.size();
+  size_t bi = 1;
+  size_t result = 0;
+  size_t matchArrayCount   = 0;
+  size_t matchArraySizeSum = 0;
+  for(size_t ai = 1; ai <= m_n; ai++) {
+
+    if(((ai & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(ai,m_n)); }
+
+    while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, m_A[ai].m_s) < 0)) {
+      bi++;
+    }
+    if((ai > 1) && (m_cmp.compare(m_A[ai].m_s, m_A[ai-1].m_s) == 0)) {
+      result += (m_matchList[m_A[ai].m_index] = m_matchList[m_A[ai-1].m_index])->size();
+    } else {
+      MatchArray m;
+      matchArrayCount++;
+      while((bi < bs) && (m_cmp.compare(m_B[bi].m_s, m_A[ai].m_s) == 0)) {
+        m.add(m_B[bi++].m_index);
+      }
+      m.setCapacity(m.size());
+      m_tmpM.add(m);
+      result += m.size();
+      matchArraySizeSum += m.size();
+      m_matchList[m_A[ai].m_index] = &m_tmpM.last();
+    }
+  }
+
+END_TIMEMEASURE(  5, m_docSize[0] + m_docSize[1]);
+
+  return result;
+}

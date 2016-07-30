@@ -1,0 +1,6 @@
+// Microsoft Developer Studio generated Help ID include file.
+// Used by mydiff.rc
+//
+#define HIDC_COMBOFINDWHAT              0x808503f2    // IDD_DIALOGFIND
+#define HIDC_COMBOREGEX                 0x8086040d    // IDD_DIALOGREGEX
+#define HIDC_EDITFIELDDELIMITER         0x80880403    // IDD_DIALOGCOLUMNS
