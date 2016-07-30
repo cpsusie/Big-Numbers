@@ -192,6 +192,8 @@ public:
   String getClass();
 
   void setValue(const String &valueName, const String    &value , unsigned long type = REG_SZ   ) const;
+  void setValue(const String &valueName, unsigned __int64 value , unsigned long type = REG_QWORD) const;
+  void setValue(const String &valueName, __int64          value , unsigned long type = REG_QWORD) const;
   void setValue(const String &valueName, unsigned long    value , unsigned long type = REG_DWORD) const;
   void setValue(const String &valueName, long             value , unsigned long type = REG_DWORD) const;
   void setValue(const String &valueName, unsigned int     value , unsigned long type = REG_DWORD) const;
@@ -202,22 +204,26 @@ public:
   void setValue(const String &valueName, BYTE            *bytes , unsigned long size            ) const; // type = REG_BINARY
   void setValue(const RegistryValue &value) const;
 
-  void getValue(const String &valueName, String          &value) const;
-  void getValue(const String &valueName, unsigned long   &value) const;
-  void getValue(const String &valueName, long            &value) const;
-  void getValue(const String &valueName, unsigned int    &value) const;
-  void getValue(const String &valueName, int             &value) const;
-  void getValue(const String &valueName, unsigned short  &value) const;
-  void getValue(const String &valueName, short           &value) const;
-  void getValue(const String &valueName, bool            &value) const;
-  void getValue(const String &valueName, RegistryValue   &value) const;
+  void getValue(const String &valueName, String           &value) const;
+  void getValue(const String &valueName, unsigned __int64 &value) const;
+  void getValue(const String &valueName, __int64          &value) const;
+  void getValue(const String &valueName, unsigned long    &value) const;
+  void getValue(const String &valueName, long             &value) const;
+  void getValue(const String &valueName, unsigned int     &value) const;
+  void getValue(const String &valueName, int              &value) const;
+  void getValue(const String &valueName, unsigned short   &value) const;
+  void getValue(const String &valueName, short            &value) const;
+  void getValue(const String &valueName, bool             &value) const;
+  void getValue(const String &valueName, RegistryValue    &value) const;
 
-  String         getString(const String &name, const String  &defaultValue) const;
-  int            getInt(   const String &name, int            defaultValue) const;
-  unsigned int   getUint(  const String &name, unsigned int   defaultValue) const;
-  short          getShort( const String &name, short          defaultValue) const;
-  unsigned short getUshort(const String &name, unsigned short defaultValue) const;
-  bool           getBool(  const String &name, bool           defaultValue) const;
+  String           getString(const String &name, const String    &defaultValue) const;
+  __int64          getInt64( const String &name, __int64          defaultValue) const;
+  unsigned __int64 getUint64(const String &name, unsigned __int64 defaultValue) const;
+  int              getInt(   const String &name, int              defaultValue) const;
+  unsigned int     getUint(  const String &name, unsigned int     defaultValue) const;
+  short            getShort( const String &name, short            defaultValue) const;
+  unsigned short   getUshort(const String &name, unsigned short   defaultValue) const;
+  bool             getBool(  const String &name, bool             defaultValue) const;
 
   Iterator<String>        getSubKeyIterator() const;
   Iterator<RegistryValue> getValueIterator()  const;

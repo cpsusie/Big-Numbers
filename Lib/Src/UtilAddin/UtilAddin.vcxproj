@@ -216,6 +216,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="BitSetAddin.cpp" />
+    <ClCompile Include="TinyBitSetAddin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="UtilAddin.def" />

@@ -298,7 +298,7 @@ const String &RegistryKey::getName() const {
 }
 
 String RegistryKey::getClass() {
-  return "unknown class";
+  return _T("unknown class");
 /*
   long result = RegQueryInfoKey(key.m_key->getObject()
                                ,NULL    // Not interested in this key's class 
@@ -339,6 +339,49 @@ void RegistryKey::getValue(const String &valueName, String &value) const {
     }
   }
 }
+
+void RegistryKey::getValue(const String &valueName, unsigned __int64 &value) const {
+  unsigned long type;
+  unsigned long bufSize = 0;
+
+  long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
+  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+
+  switch(type) {
+  case REG_QWORD:
+    if(bufSize != sizeof(__int64)) {
+      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(__int64));
+    }
+    result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
+    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    break;
+  default:
+    throwException(_T("getValue:Illegal type for value %s (=%d). Must be %d"), valueName.cstr()
+                   ,type,REG_QWORD);
+  }
+}
+
+void RegistryKey::getValue(const String &valueName, __int64 &value) const {
+  unsigned long type;
+  unsigned long bufSize = 0;
+
+  long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
+  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+
+  switch(type) {
+  case REG_QWORD:
+    if(bufSize != sizeof(__int64)) {
+      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(__int64));
+    }
+    result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
+    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    break;
+  default:
+    throwException(_T("getValue:Illegal type for value %s (=%d). Must be %d"),valueName.cstr()
+                   ,type,REG_QWORD);
+  }
+}
+
 
 void RegistryKey::getValue(const String &valueName, unsigned long &value) const {
   unsigned long type;
@@ -444,6 +487,26 @@ String RegistryKey::getString(const String &name, const String &defaultValue) co
   return result;
 }
 
+__int64 RegistryKey::getInt64(const String &name, __int64 defaultValue) const {
+  __int64 result;
+  try {
+    getValue(name, result);
+  } catch(Exception) {
+    result = defaultValue;
+  }
+  return result;
+}
+
+unsigned __int64 RegistryKey::getUint64(const String &name, unsigned __int64 defaultValue) const {
+  unsigned __int64 result;
+  try {
+    getValue(name, result);
+  } catch(Exception) {
+    result = defaultValue;
+  }
+  return result;
+}
+
 int RegistryKey::getInt(const String &name, int defaultValue) const {
   int result;
   try {
@@ -504,6 +567,25 @@ void RegistryKey::setValue(const String &valueName, const String &value, unsigne
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)value.cstr(), sizeof(TCHAR)*((DWORD)value.length()+1));
   checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
 }
+
+void RegistryKey::setValue(const String &valueName, unsigned __int64 value, unsigned long type) const {
+  if(type != REG_QWORD && type != REG_QWORD_LITTLE_ENDIAN) {
+    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), type);
+  }
+
+  long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(unsigned long));
+  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+}
+
+void RegistryKey::setValue(const String &valueName, __int64 value, unsigned long type) const {
+  if(type != REG_QWORD && type != REG_QWORD_LITTLE_ENDIAN) {
+    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), type);
+  }
+
+  long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(long));
+  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+}
+
 
 void RegistryKey::setValue(const String &valueName, unsigned long value, unsigned long type) const {
   if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {

@@ -32,6 +32,18 @@
   <Type Name="BitSet">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet"></DisplayString>
   </Type>
+  <Type Name="BitSet8">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet8"></DisplayString>
+  </Type>
+  <Type Name="BitSet16">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet16"></DisplayString>
+  </Type>
+  <Type Name="BitSet32">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet32"></DisplayString>
+  </Type>
+  <Type Name="BitSet64">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet64"></DisplayString>
+  </Type>
   <Type Name="Date">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_Date"></DisplayString>
   </Type>

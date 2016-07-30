@@ -38,6 +38,9 @@
     <ClCompile Include="DateAddin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TinyBitSetAddin.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="UtilAddin.def">

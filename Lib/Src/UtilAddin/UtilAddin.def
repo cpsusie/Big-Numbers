@@ -3,6 +3,10 @@
 LIBRARY
 
 EXPORTS
+    AddIn_BitSet8
+    AddIn_BitSet16
+    AddIn_BitSet32
+    AddIn_BitSet64
     AddIn_BitSet
     AddIn_Date
     AddIn_Time

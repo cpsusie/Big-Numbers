@@ -32,7 +32,7 @@ public:
     return append(byte);
   }
 
-  ByteArray &clear(int newCapacity = 0);                   // return this, if newCapcity == -1 it will not be changed
+  ByteArray &clear(intptr_t newCapacity = 0);                   // return this, if newCapcity == -1 it will not be changed
   ByteArray &append( const ByteArray &d);
   ByteArray &append( const BYTE *data, size_t size);
   inline ByteArray &append(BYTE byte) {

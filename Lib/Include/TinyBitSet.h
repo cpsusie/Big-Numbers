@@ -236,7 +236,14 @@ public:
   }
 };
 
-typedef TinyBitSet<unsigned char>     BitSet8;
-typedef TinyBitSet<unsigned short>    BitSet16;
-typedef TinyBitSet<unsigned long>     BitSet32;
-typedef TinyBitSet<unsigned __int64>  BitSet64;
+class BitSet8 : public TinyBitSet<unsigned char> {
+};
+
+class BitSet16 : public TinyBitSet<unsigned short> {
+};
+
+class BitSet32 : public TinyBitSet<unsigned long> {
+};
+
+class BitSet64 : public TinyBitSet<unsigned __int64> {
+};

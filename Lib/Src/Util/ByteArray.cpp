@@ -45,7 +45,7 @@ ByteArray::~ByteArray() {
   cleanup();
 }
 
-ByteArray &ByteArray::clear(int newCapacity) {
+ByteArray &ByteArray::clear(intptr_t newCapacity) {
   switch(newCapacity) {
   case 0 :
     cleanup(); 
