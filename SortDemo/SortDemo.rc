@@ -1,0 +1,406 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\SortDemo.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\SortDemo.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About SortDemo"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "SortDemo Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_SORTDEMO_DIALOG DIALOGEX 0, 0, 638, 370
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "SortDemo"
+MENU IDR_MAINFRAME
+FONT 6, "Small Fonts", 0, 0, 0x1
+BEGIN
+END
+
+IDD_PARAMETER_DIALOG DIALOG DISCARDABLE  0, 0, 325, 181
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Initialization parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT_ELEMENTCOUNT,110,23,47,15,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBO_ELEMENTSIZE,110,43,47,86,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Random",IDC_RADIO_RANDOM,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,21,68,61,15
+    CONTROL         "&Sorted",IDC_RADIO_SORTED,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,87,61,15
+    CONTROL         "&Inverse sorted",IDC_RADIO_INVERSESORTED,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,21,106,61,15
+    CONTROL         "Sin&us",IDC_RADIO_SINUS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,125,61,15
+    CONTROL         "&File data",IDC_RADIO_FILEDATA,"Button",
+                    BS_AUTORADIOBUTTON | WS_TABSTOP,21,144,61,15
+    COMBOBOX        IDC_COMBO_RANDOMIZE,110,69,103,40,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_EDIT_SEED,251,69,55,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_PERIODCOUNT,175,123,34,15,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_FILENAME,136,145,123,15,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Browse...",IDC_BUTTON_BROWSE,266,145,42,15
+    DEFPUSHBUTTON   "OK",IDOK,268,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,268,24,50,14
+    LTEXT           "&Number of elements:",IDC_STATIC_ELEMENTCOUNT,21,26,81,
+                    12
+    LTEXT           "&Periods in sinuswave:",IDC_STATIC_PERIODCOUNT,98,127,
+                    71,10
+    LTEXT           "Filen&ame:",IDC_STATIC_FILENAME,98,147,34,11
+    LTEXT           "S&eed:",IDC_STATIC_SEED,226,71,21,16
+    LTEXT           "Si&ze of element (bytes):",IDC_STATIC_ELEMENTSIZE,21,44,
+                    81,12
+END
+
+IDD_LINEPRINTER_DIALOG DIALOG DISCARDABLE  0, 0, 477, 347
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Lineprinter"
+FONT 8, "Courier New"
+BEGIN
+    PUSHBUTTON      "&Copy",IDC_BUTTON_COPY,427,7,42,14
+    PUSHBUTTON      "&Save",IDC_BUTTON_SAVE,427,28,42,14
+    DEFPUSHBUTTON   "C&lose",IDC_BUTTON_CLOSE,427,49,43,14
+    LISTBOX         IDC_LISTBOX_LINE,7,7,409,333,LBS_NOINTEGRALHEIGHT | 
+                    WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_SORTDEMO_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 631
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 363
+    END
+
+    IDD_PARAMETER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 318
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 174
+    END
+
+    IDD_LINEPRINTER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 470
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 340
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "Initialize\tF4",              ID_FILE_INITIALIZE
+        MENUITEM "Go\tF5",                      ID_FILE_GO
+        MENUITEM "&Pause\tCtrl+P",              ID_FILE_PAUSE, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Sorting algorithm"
+    BEGIN
+        MENUITEM "",                            ID_SORT_FIRSTMETHOD
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Parameters...\tF2",          ID_OPTIONS_PARAMETERS
+        MENUITEM SEPARATOR
+        MENUITEM "A&nimate\tCtrl+N",            ID_OPTIONS_ANIMATE, CHECKED
+        POPUP "Spee&d"
+        BEGIN
+            MENUITEM "&Slow\tCtrl+S",               ID_OPTIONS_SPEED_SLOW
+            , CHECKED
+            MENUITEM "&Fast\tCtrl+F",               ID_OPTIONS_SPEED_FAST
+        END
+    END
+END
+
+IDR_CONTEXTMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "contextmenu"
+    BEGIN
+        MENUITEM "Analyze",                     ID_CONTEXTMENU_ANALYZE
+        MENUITEM "Remove",                      ID_CONTEXTMENU_REMOVE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            ID_SELECT_ALLMETHODS,   VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_OPTIONS_SPEED_FAST,  VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_OPTIONS_ANIMATE,     VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PAUSE,          VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_FILE_RESUME,         VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_OPTIONS_SPEED_SLOW,  VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_OPTIONS_PARAMETERS,  VIRTKEY, NOINVERT
+    VK_F4,          ID_FILE_INITIALIZE,     VIRTKEY, NOINVERT
+    VK_F5,          ID_FILE_GO,             VIRTKEY, NOINVERT
+    VK_F6,          ID_FILE_ANALYZE,        VIRTKEY, NOINVERT
+END
+
+IDR_PARAMETER_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            ID_GOTO_FILENAME,       VIRTKEY, ALT, NOINVERT
+    "E",            ID_GOTO_SEED,           VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_ELEMENTCOUNT,   VIRTKEY, ALT, NOINVERT
+    "P",            ID_GOTO_PERIODCOUNT,    VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTO_ELEMENTSIZE,    VIRTKEY, ALT, NOINVERT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "SortDemo\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "SortDemo\0"
+            VALUE "LegalCopyright", "Copyright (C) 2002\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "SortDemo.EXE\0"
+            VALUE "ProductName", "SortDemo Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_PARAMETER_DIALOG DLGINIT
+BEGIN
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0031, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3631, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3731, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3831, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3931, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3032, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3233, "\000" 
+    IDC_COMBO_RANDOMIZE, 0x403, 11, 0
+0x6946, 0x6578, 0x2064, 0x6573, 0x6465, "\000" 
+    IDC_COMBO_RANDOMIZE, 0x403, 25, 0
+0x6153, 0x656d, 0x7220, 0x6e61, 0x6f64, 0x206d, 0x6573, 0x6465, 0x6620, 
+0x726f, 0x6120, 0x6c6c, "\000" 
+    IDC_COMBO_RANDOMIZE, 0x403, 12, 0
+0x6152, 0x646e, 0x6d6f, 0x7320, 0x6565, 0x0064, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About SortDemo..."
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SORT_QUICKSORTMS     "&Quicksort (Microsoft VC++)"
+    ID_SORT_QUICKSORT1      "Quicksort &1"
+    ID_SORT_QUICKSORT3      "Quicksort &3"
+    ID_SORT_QUICKSORT4      "Quicksort &4"
+    ID_SORT_QUICKSORTPIVOT5 "Quicksort &5 (pivot = median 5)"
+    ID_SORT_QUICKSORT5_OPTIMAL "Quicksort 5 (optimal)"
+    ID_SORT_QUICKSORT_EX    "Quicksort (lib - Experimentall)"
+    ID_SORT_QSORT3NORECURSION "Quicksort 3 (&No recursion)"
+    ID_SORT_QUICKSORTTEMPLATES "Quicksort 3 from library (With &templates)"
+    ID_SORT_COMBSORT        "&Combsort"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_SORT_HEAPSORT        "&Heapsort"
+    ID_SORT_INSERTIONSORT   "&Insertionsort with binary search"
+    ID_SORT_SHELLSORTSLOW   "Shellsort (Slo&w version)"
+    ID_SORT_SHELLSORTFAST   "Shellsort (&Fast version)"
+    ID_SORT_SHAKERSORT      "Sha&kersort"
+    ID_SORT_BUBBLESORT      "&Bubblesort"
+    ID_SORT_SHORTSORTMS     "Sh&ortsort (Microsoft VC++)"
+    ID_SORT_MERGESORT       "&MergeSort"
+    ID_SORT_MULTITHREADQUICKSORT "Multithread Quicksort"
+END
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\SortDemo.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
