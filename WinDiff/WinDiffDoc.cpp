@@ -423,7 +423,7 @@ String WinDiffFilter::docFilter(const TCHAR *s, CompareJob *job) const {
 }
 
 CWinDiffDoc::CWinDiffDoc() {
-  m_diff.setTabSize(getOptions().m_tabSize, false);
+  initOptions(getOptions());
   TCHAR **argv = __targv;
   argv++;
   TCHAR *f1 = *argv ? *(argv++) : NULL;
@@ -433,6 +433,18 @@ CWinDiffDoc::CWinDiffDoc() {
   } else if(f1) {
     setDoc(0,DIFFDOC_FILE, FileNameSplitter(f1).getAbsolutePath());
   }
+}
+
+void CWinDiffDoc::initOptions(const Options &options) {
+  setIgnoreWhiteSpace(options.m_ignoreWhiteSpace                              , false);
+  setIgnoreCase(      options.m_ignoreCase                                    , false);
+  setIgnoreStrings(   options.m_ignoreStrings                                 , false);
+  setIgnoreComments(  options.m_ignoreComments                                , false);
+  setFileFormat(      options.m_ignoreColumns ? &options.m_fileFormat  : NULL , false);
+  setRegexFilter(     options.m_ignoreRegex   ? &options.m_regexFilter : NULL , false);
+  setStripComments(   options.m_stripComments                                 , false);
+  setViewWhiteSpace(  options.m_viewWhiteSpace                                , false);
+  setTabSize(         options.m_tabSize                                       , false);
 }
 
 void CWinDiffDoc::setDoc(int id, DiffDocType type, const String &arg, bool recomp) {

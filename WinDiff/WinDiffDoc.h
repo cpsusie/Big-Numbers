@@ -67,6 +67,7 @@ public:
 class CWinDiffDoc : public CDocument, public OptionsUpdater {
 private:
   void updateDiffDoc(bool recompare);
+  void initOptions(const Options &options);
 protected: // create from serialization only
   CWinDiffDoc();
   DECLARE_DYNCREATE(CWinDiffDoc)
