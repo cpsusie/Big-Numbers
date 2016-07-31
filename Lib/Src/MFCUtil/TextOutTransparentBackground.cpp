@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
 
 void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFont &font, COLORREF color) {

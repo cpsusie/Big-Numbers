@@ -113,7 +113,9 @@ HBITMAP cloneBitmap(HBITMAP bm);
 HBITMAP decodeAsPNG( const ByteArray &bytes, bool &hasAlpha);
 HBITMAP decodeAsTIFF(const ByteArray &bytes, bool &hasAlpha);
 
-void textOutTransparentBackground(HDC dc, const CPoint &p, const String &s, CFont &font, COLORREF color);
+void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFont &font, COLORREF color);
+void textOut(                     HDC hdc, const CPoint &p, const String &s);
+void textOut(                     HDC hdc, int x, int y, const String &s);
 
 void   addData(                     CListCtrl &ctrl, int row, int col, const String &str, bool newItem = false);
 String getItemString(         const CListCtrl &ctrl, int row, int col);

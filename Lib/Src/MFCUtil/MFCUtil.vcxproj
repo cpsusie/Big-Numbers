@@ -291,6 +291,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TextOut.cpp" />
     <ClCompile Include="TextOutTransparentBackground.cpp" />
     <ClCompile Include="Viewport2D.cpp" />
     <ClCompile Include="WinText.cpp" />

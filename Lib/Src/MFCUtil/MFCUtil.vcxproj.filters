@@ -204,6 +204,9 @@
     <ClCompile Include="ShowException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TextOut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="MFCUtil.def">
