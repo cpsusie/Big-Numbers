@@ -1,0 +1,169 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{04f27e8c-3f36-423a-a3f7-7757d58c48a8}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DFARegex">
+      <UniqueIdentifier>{2b250035-1448-41b5-b139-d5eec643ce6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DFARegex\DFARegex Header files">
+      <UniqueIdentifier>{92d9e3fe-a666-454b-95d2-d66f9cf1675e}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Source Files\DFARegex\Graphics">
+      <UniqueIdentifier>{2f21546f-dd7a-45fc-830b-c135617ca542}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{58af5261-6351-41fc-8f8b-c1a7e41bd0f0}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{287ddc81-4081-4e8a-8136-c6f24ea95a71}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CharacterMarker.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugTextWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexDemo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RegexDemoDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DFA.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="DFAPainter.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="DFARegex.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="NFAPainter.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="PatternParser.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="AutomatePainter.h">
+      <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CharacterMarker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugRegex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugTextWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexDemo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RegexDemoDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AutomatePainter.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DFAGraphics.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DFAPainter.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="NFAGraphics.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="TransitionPath.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="DFA.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="DFACode.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="DFARegex.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="DFAState.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="NFA.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternParser.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="PatternScanner.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+    <ClCompile Include="NFAPainter.cpp">
+      <Filter>Source Files\DFARegex\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="NFAState.cpp">
+      <Filter>Source Files\DFARegex</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RegexDemo.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\BlackDownArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackRightArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BreakPointMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GreenDownArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GreenUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PinkUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\RedUpArrow.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\RegexDemo.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\RegexDemo.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>
