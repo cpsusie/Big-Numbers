@@ -53,7 +53,7 @@ BEGIN
     "LANGUAGE 9, 1\r\n"
     "#pragma code_page(1252)\r\n"
     "#endif //_WIN32\r\n"
-    "#include ""res\\calculator.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""res\\CalculatorApp.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""         // Standard components\r\n"
     "#endif\r\n"
     "\0"
@@ -401,6 +401,10 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 48
     END
+
+    IDD_CALCULATOR_DIALOG, DIALOG
+    BEGIN
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -478,6 +482,10 @@ BEGIN
     IDC_BUTTONADD           "Addition  \r\nKey +"
     IDC_BUTTONCE            "Delete the last entered number of the calculation.\r\nEnter a new number to continue the calculation\r\nKey delete"
     IDC_BUTTONBACKSPACE     "Erase last entered digit\r\nKey backspace"
+    IDC_BUTTONMC            "Clear memory register"
+    IDC_BUTTONMR            "Recall value from memory register"
+    IDC_BUTTONMS            "Store value current display value in memory register"
+    IDC_BUTTONMADD          "Add current display value to memory register"
     IDC_BUTTONMOD           "Calculate the number in display modulus the next entered number\r\nKey %"
     IDC_BUTTONOR            "Calculate bitwise OR of the number in display and the next entered number\r\nKey |"
     IDC_BUTTONLSH           "Shift the number in display LEFT the number of times specified by the next entered number\r\nIf inv is active, shift RIGHT\r\nKey <"

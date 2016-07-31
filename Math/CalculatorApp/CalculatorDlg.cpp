@@ -978,20 +978,24 @@ void CCalculatorDlg::OnShowinfo() {
 static String loadString(int id) {
   TCHAR buffer[4096];
   LoadString(GetModuleHandle(NULL),id,buffer,sizeof(buffer));
-  buffer[sizeof(buffer)-1] = '\0';
+  buffer[ARRAYSIZE(buffer)-1] = '\0';
   return buffer;
 };
 
 BOOL CCalculatorDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
-  return FALSE;
-
   TOOLTIPTEXT *pTTT = (TOOLTIPTEXT*)pNMHDR; // Get the tooltip structure.
   UINT_PTR CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
 
   // Check once again that the idFrom holds handle itself.
   if(pTTT->uFlags & TTF_IDISHWND) {
     UINT nID = ::GetDlgCtrlID(HWND(CtrlHandle));
-    CToolTipCtrl* pToolTip = NULL; // AfxGetThreadState()->m_m_pToolTip;
+
+#if (_MFC_VER < 0x0700)
+    _AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
+#else
+     AFX_MODULE_THREAD_STATE* pThreadState = AfxGetModuleThreadState();
+#endif
+    CToolTipCtrl* pToolTip = pThreadState->m_pToolTip;
     if(pToolTip) {
       pToolTip->SetMaxTipWidth(SHRT_MAX); // Do this to make \r\n work!
       CRect mr(15,15,15,15);
