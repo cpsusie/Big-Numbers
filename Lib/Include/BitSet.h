@@ -219,7 +219,7 @@ public:
   }
   BitMatrix(const MatrixDimension &dim) 
     : m_dim(dim)
-    , BitSet(m_dim.getElementCount())
+    , BitSet(dim.getElementCount())
   {
   }
   void set(size_t r, size_t c, bool v);
