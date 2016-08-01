@@ -511,9 +511,6 @@
     <ClCompile Include="ArgvExpand.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
-    <ClCompile Include="BMAutomate.cpp">
-      <Filter>Source Files\String</Filter>
-    </ClCompile>
     <ClCompile Include="Bpn.cpp">
       <Filter>Source Files\Math</Filter>
     </ClCompile>

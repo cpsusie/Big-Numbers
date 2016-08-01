@@ -354,7 +354,6 @@
     <ClCompile Include="BitSetPacker.cpp" />
     <ClCompile Include="BitSetStream.cpp" />
     <ClCompile Include="BitSetToStringIntervals.cpp" />
-    <ClCompile Include="BMAutomate.cpp" />
     <ClCompile Include="Bpn.cpp" />
     <ClCompile Include="BSTRToString.cpp" />
     <ClCompile Include="ByteArray.cpp" />
