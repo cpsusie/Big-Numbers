@@ -1,0 +1,629 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\hexview.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOGFIND DIALOGEX 0, 0, 271, 114
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Find"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    COMBOBOX        IDC_COMBOFINDWHAT,36,17,143,90,CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Up",IDC_RADIOUP,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,126,59,46,16
+    CONTROL         "&Down",IDC_RADIODOWN,"Button",BS_AUTORADIOBUTTON,126,75,45,16
+    DEFPUSHBUTTON   "&Find next",IDC_FINDNEXT,214,7,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,214,24,50,14
+    LTEXT           "Fi&nd:",IDC_STATIC,11,19,20,12
+    LTEXT           "",IDC_STATICBYTESEQUENCE,36,35,143,12,SS_SUNKEN
+    LTEXT           "",IDC_STATICRADIXNAME,11,35,20,12
+    GROUPBOX        "Direction",IDC_STATICDIRECTIONFRAME,116,51,62,46
+    CONTROL         "Progress1",IDC_PROGRESSFIND,"msctls_progress32",PBS_SMOOTH | NOT WS_VISIBLE | WS_BORDER,7,104,257,8
+END
+
+IDD_DIALOGLINESIZE DIALOG 0, 0, 202, 72
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Set line size"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITLINESIZE,60,17,50,15,ES_AUTOHSCROLL
+    CONTROL         "&Fit lines to window",IDC_CHECKFITLINES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,40,76,12
+    DEFPUSHBUTTON   "OK",IDOK,145,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,145,24,50,14
+    LTEXT           "&Line size:",IDC_STATICLINESIZE,21,18,33,12
+END
+
+IDD_DIALOGENTERADDR DIALOG 0, 0, 229, 61
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Go to address"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITADDRESS,87,23,75,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,172,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,172,24,50,14
+    LTEXT           "",IDC_STATICADDRLABEL,11,25,73,13
+END
+
+IDD_DIALOGFINDNEXTPREV DIALOG 0, 0, 252, 119
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION
+CAPTION "Find next"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "&Cancel",IDCANCEL,195,7,50,14
+    CONTROL         "Progress1",IDC_PROGRESSFIND,"msctls_progress32",PBS_SMOOTH | WS_BORDER,7,102,238,10
+    LTEXT           "Find",IDC_STATICFINDLABEL,21,40,18,12
+    EDITTEXT        IDC_EDITFINDWHAT,44,38,185,16,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "",IDC_STATICBYTESEQUENCE,44,57,185,16,SS_SUNKEN
+    LTEXT           "",IDC_STATICRADIXNAME,21,61,20,12
+END
+
+IDD_ABOUTBOX DIALOG 0, 0, 276, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About HexView"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,13,25,20,20
+    LTEXT           "HexView Version 2.0 by Jesper Grønning Mikkelsen",IDC_STATIC,16,14,177,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002 - 2013",IDC_STATIC,39,30,119,8
+    DEFPUSHBUTTON   "OK",IDOK,219,7,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_DIALOGFIND, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 264
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_DIALOGLINESIZE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 195
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 65
+    END
+
+    IDD_DIALOGENTERADDR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+
+    IDD_DIALOGFINDNEXTPREV, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 245
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 112
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 269
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATORFIND ACCELERATORS
+BEGIN
+    "N",            ID_GOTO_FINDWHAT,       VIRTKEY, ALT, NOINVERT
+    VK_ESCAPE,      IDCANCEL,               VIRTKEY, NOINVERT
+END
+
+IDR_ACCELERATORENTERADDR ACCELERATORS
+BEGIN
+    "A",            ID_GOTO_EDITADDRESS,    VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ACCELERATORLINESIZE ACCELERATORS
+BEGIN
+    "L",            ID_GOTO_LINESIZE,       VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ACCELERATORNEXTPREV ACCELERATORS
+BEGIN
+    VK_ESCAPE,      IDCANCEL,               VIRTKEY, NOINVERT
+END
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "A",            ID_VIEW_SHOWASCII,      VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_VIEW_SHOWADDR,       VIRTKEY, ALT, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_FIND,           VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_EDIT_GOTOADDRESS,    VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_VIEW_LINESIZE,       VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPENFORUPDATE,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "R",            ID_EDIT_REFRESHFILE,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVEDOC,        VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_VIEW_ADDRSEPARATORS, VIRTKEY, ALT, NOINVERT
+    "U",            ID_VIEW_DATAHEXUPPERCASE, VIRTKEY, CONTROL, NOINVERT
+    "U",            ID_VIEW_ADDRHEXUPPERCASE, VIRTKEY, ALT, NOINVERT
+    VK_DOWN,        ID_LINEDOWN,            VIRTKEY, NOINVERT
+    VK_DOWN,        ID_SHIFT_LINEDOWN,      VIRTKEY, SHIFT, NOINVERT
+    VK_END,         ID_END,                 VIRTKEY, NOINVERT
+    VK_END,         ID_CTRLEND,             VIRTKEY, CONTROL, NOINVERT
+    VK_END,         ID_SHIFT_END,           VIRTKEY, SHIFT, NOINVERT
+    VK_END,         ID_SHIFT_CTRLEND,       VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_F3,          ID_EDIT_FIND_NEXT,      VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_FIND_PREV,      VIRTKEY, SHIFT, NOINVERT
+    VK_F4,          ID_EDIT_ALLOWEDIT,      VIRTKEY, NOINVERT
+    VK_F5,          ID_VIEW_DATAOCT,        VIRTKEY, NOINVERT
+    VK_F5,          ID_VIEW_ADDROCT,        VIRTKEY, ALT, NOINVERT
+    VK_F6,          ID_VIEW_DATADEC,        VIRTKEY, NOINVERT
+    VK_F6,          ID_VIEW_ADDRDEC,        VIRTKEY, ALT, NOINVERT
+    VK_F7,          ID_VIEW_DATAHEX3POS,    VIRTKEY, NOINVERT
+    VK_F7,          ID_VIEW_DATAHEX2POS,    VIRTKEY, CONTROL, NOINVERT
+    VK_F7,          ID_VIEW_ADDRHEX,        VIRTKEY, ALT, NOINVERT
+    VK_HOME,        ID_HOME,                VIRTKEY, NOINVERT
+    VK_HOME,        ID_CTRLHOME,            VIRTKEY, CONTROL, NOINVERT
+    VK_HOME,        ID_SHIFT_HOME,          VIRTKEY, SHIFT, NOINVERT
+    VK_HOME,        ID_SHIFT_CTRLHOME,      VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_LEFT,        ID_CHARLEFT,            VIRTKEY, NOINVERT
+    VK_LEFT,        ID_CTRLCHARLEFT,        VIRTKEY, CONTROL, NOINVERT
+    VK_LEFT,        ID_SHIFT_CHARLEFT,      VIRTKEY, SHIFT, NOINVERT
+    VK_LEFT,        ID_SHIFT_CTRLCHARLEFT,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_NEXT,        ID_PAGEDOWN,            VIRTKEY, NOINVERT
+    VK_NEXT,        ID_PAGERIGHT,           VIRTKEY, CONTROL, NOINVERT
+    VK_NEXT,        ID_SHIFT_PAGEDOWN,      VIRTKEY, SHIFT, NOINVERT
+    VK_NEXT,        ID_SHIFT_PAGERIGHT,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_PRIOR,       ID_PAGEUP,              VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_PAGELEFT,            VIRTKEY, CONTROL, NOINVERT
+    VK_PRIOR,       ID_SHIFT_PAGEUP,        VIRTKEY, SHIFT, NOINVERT
+    VK_PRIOR,       ID_SHIFT_PAGELEFT,      VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_RIGHT,       ID_CHARRIGHT,           VIRTKEY, NOINVERT
+    VK_RIGHT,       ID_CTRLCHARRIGHT,       VIRTKEY, CONTROL, NOINVERT
+    VK_RIGHT,       ID_SHIFT_CHARRIGHT,     VIRTKEY, SHIFT, NOINVERT
+    VK_RIGHT,       ID_SHIFT_CTRLCHARRIGHT, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_UP,          ID_LINEUP,              VIRTKEY, NOINVERT
+    VK_UP,          ID_SHIFT_LINEUP,        VIRTKEY, SHIFT, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENUSPECIALCHAR MENU
+BEGIN
+    POPUP "SpecialChar"
+    BEGIN
+        MENUITEM "Backspace\tAscii 8",          ID_SPECIALCHAR_BACKSPACE
+        MENUITEM "Tab\tAscii 9",                ID_SPECIALCHAR_TAB
+        MENUITEM "Newline\tAscii 10",           ID_SPECIALCHAR_NEWLINE
+        MENUITEM "Formfeed\tAscii 12",          ID_SPECIALCHAR_FORMFEED
+        MENUITEM "Carriage return\tAscii 13",   ID_SPECIALCHAR_CARRIAGERETURN
+        MENUITEM "Escape character\tAscii 27",  ID_SPECIALCHAR_ESCCHARACTER
+        MENUITEM "Octal number\t\\0ddd",        ID_SPECIALCHAR_OCTNUMBER
+        MENUITEM "Decimal number\t\\ddd",       ID_SPECIALCHAR_DECNUMBER
+        MENUITEM "Hexadecimal number\t\\xdd",   ID_SPECIALCHAR_HEXNUMBER
+        MENUITEM "Backslash\t\\\\",             ID_SPECIALCHAR_BACKSLASH
+    END
+END
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "Open for &update...\tCtrl+Shift+O", ID_FILE_OPENFORUPDATE
+        MENUITEM "&Close",                      ID_FILE_CLOSEDOC
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVEDOC
+        MENUITEM "Save &As...",                 ID_FILE_SAVEDOC_AS
+        MENUITEM SEPARATOR
+        MENUITEM "Recent files",                ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Enable edit\tF4",            ID_EDIT_ALLOWEDIT
+        MENUITEM SEPARATOR
+        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM SEPARATOR
+        MENUITEM "&Find...\tCtrl+F",            ID_EDIT_FIND
+        MENUITEM "Find &next\tF3",              ID_EDIT_FIND_NEXT
+        MENUITEM "Find &prev\tShft+F3",         ID_EDIT_FIND_PREV
+        MENUITEM SEPARATOR
+        MENUITEM "&Go to...\tCtrl+G",           ID_EDIT_GOTOADDRESS
+        MENUITEM SEPARATOR
+        MENUITEM "Refres&h file\tCtrl+R",       ID_EDIT_REFRESHFILE
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+        MENUITEM SEPARATOR
+        POPUP "&Data &format"
+        BEGIN
+            MENUITEM "&Octal numbers\tF5",          ID_VIEW_DATAOCT
+            MENUITEM "&Decimal numbers\tF6",        ID_VIEW_DATADEC, CHECKED
+            MENUITEM "Hexadecimal numbers, &3-pos\tF7", ID_VIEW_DATAHEX3POS
+            MENUITEM "Hexadecimal numbers, &2-pos\tCtrl+F7", ID_VIEW_DATAHEX2POS
+            MENUITEM SEPARATOR
+            MENUITEM "Show &ascii\tCtrl+A",         ID_VIEW_SHOWASCII
+            MENUITEM "Hexadecimal &uppercase\tCtrl+U", ID_VIEW_DATAHEXUPPERCASE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Show &addresses\tAlt+A",      ID_VIEW_SHOWADDR
+        POPUP "Address &format"
+        BEGIN
+            MENUITEM "&Octal\tAlt+F5",              ID_VIEW_ADDROCT
+            MENUITEM "&Decimal\tAlt+F6",            ID_VIEW_ADDRDEC, CHECKED
+            MENUITEM "&Hexadecimal\tAlt+F7",        ID_VIEW_ADDRHEX
+            MENUITEM SEPARATOR
+            MENUITEM "Hexadecimal &uppercase\tAlt+U", ID_VIEW_ADDRHEXUPPERCASE
+            MENUITEM "&Separators\tAlt+S",          ID_VIEW_ADDRSEPARATORS
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Line size...\tCtrl+L",       ID_VIEW_LINESIZE
+        POPUP "&Colors"
+        BEGIN
+            MENUITEM "Data text...",                ID_VIEW_COLORS_DATATEXT
+            MENUITEM "Data background...",          ID_VIEW_COLORS_DATABACK
+            MENUITEM SEPARATOR
+            MENUITEM "Ascii text...",               ID_VIEW_COLORS_ASCIITEXT
+            MENUITEM "Ascii background",            ID_VIEW_COLORS_ASCIIBACK
+            MENUITEM SEPARATOR
+            MENUITEM "Address text...",             ID_VIEW_COLORS_ADDRTEXT
+            MENUITEM "Address background...",       ID_VIEW_COLORS_ADDRBACK
+        END
+        MENUITEM "&Wrap around end-of-line",    ID_VIEW_WRAPENDOFLINE
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About HexView...",           ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\hexview.ico"
+
+IDR_HEXVIETYPE          ICON                    "res\\hexviewDoc.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 22, 22
+BEGIN
+    BUTTON      ID_FILE_OPEN
+    SEPARATOR
+    BUTTON      ID_EDIT_COPY
+    SEPARATOR
+    BUTTON      ID_EDIT_FIND
+    BUTTON      ID_EDIT_FIND_NEXT
+    BUTTON      ID_EDIT_FIND_PREV
+    BUTTON      ID_VIEW_SHOWASCII
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 2,0,0,1
+ PRODUCTVERSION 2,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "View and Edit Binary Files"
+            VALUE "FileVersion", "2, 0, 0, 1"
+            VALUE "InternalName", "HexView"
+            VALUE "LegalCopyright", "Copyright (C) 2002-2013"
+            VALUE "OriginalFilename", "HexView.EXE"
+            VALUE "ProductName", "HexView Application"
+            VALUE "ProductVersion", "2, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_DIALOGFIND AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "HexView\n\nHexview\n\n\nHexview.Document\nHexView Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "HexView"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_POSITION   "Addr:0123456789ABCDEF0123"
+    ID_INDICATOR_READONLY   " Read only "
+    ID_INDICATOR_DEBUG      "Debug output. Only visible when debugging"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_FIND            "Find the specified byte-sequence\nFind"
+    ID_EDIT_UNDO            "Undoes the last action"
+    ID_EDIT_REDO            "Redoes the previously undone action"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_ALLOWEDIT       "Enable or disable editting the file"
+    ID_EDIT_FIND_NEXT       "Find next occurrence of specified byte-sequence"
+    ID_EDIT_FIND_PREV       "Find previous occurrence of specified byte-sequence"
+    ID_EDIT_GOTOADDRESS     "Go to the specified address of file"
+    ID_EDIT_REFRESHFILE     "Read the file again"
+    ID_VIEW_DATAOCT         "Show bytes as octal numbers"
+    ID_VIEW_DATADEC         "Show bytes as decimal numbers"
+    ID_VIEW_DATAHEX3POS     "Show bytes as hexadecimal numbers, 3 positions each"
+    ID_VIEW_DATAHEX2POS     "Show bytes as hexadecimal numbers, 2 positions each"
+    ID_VIEW_SHOWASCII       "Show printable ascii-characters"
+    ID_VIEW_DATAHEXUPPERCASE 
+                            "Show hexadeimal letters A-F of bytes in upper/lower-case "
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_SHOWADDR        "Show or hide address of the leftmost visible byte on each line"
+    ID_VIEW_ADDROCT         "Show addresses as octal numbers"
+    ID_VIEW_ADDRDEC         "Show addresses as decimal numbers"
+    ID_VIEW_ADDRHEX         "Show addresses as hexadecimal numbers"
+    ID_VIEW_ADDRHEXUPPERCASE 
+                            "Show hexadeimal letters A-F of addresses in upper/lower-case "
+    ID_VIEW_ADDRSEPARATORS  "Show separator in addresses"
+    ID_VIEW_LINESIZE        "Set number of bytes per line"
+    ID_VIEW_COLORS_DATATEXT "Set text color of bytes"
+    ID_VIEW_COLORS_DATABACK "Set background color of bytes"
+    ID_VIEW_COLORS_ASCIITEXT "Set text color of printable ascii-characters"
+    ID_VIEW_COLORS_ASCIIBACK "Set background color of ascii-characters"
+    ID_VIEW_COLORS_ADDRTEXT "Set text color of addresses"
+    ID_VIEW_COLORS_ADDRBACK "Set background color of addresses"
+    ID_VIEW_WRAPENDOFLINE   "Go to next/previous line when reaching end- or start-of-line "
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_OPEN            "Open an existing file as read-only\nOpen"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_OPENFORUPDATE   "Open an existing file for update\nOpen"
+    ID_FILE_CLOSEDOC        "Close the file\nClose"
+    ID_FILE_SAVEDOC         "Save the modifications to the file"
+    ID_FILE_SAVEDOC_AS      "Save he file with another name"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE2       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE3       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE4       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE5       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE6       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE7       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE8       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE9       "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE10      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE11      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE12      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE13      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE14      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE15      "Open this file. Enable edit by pressing Shift"
+    ID_FILE_MRU_FILE16      "Open this file. Enable edit by pressing Shift"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE
+BEGIN
+    IDP_OLE_INIT_FAILED     "OLE initialization failed.  Make sure that the OLE libraries are the correct version."
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\hexview.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
