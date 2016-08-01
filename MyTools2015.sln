@@ -45,6 +45,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RegexDemo", "RegexDemo\Rege
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AvlTreeWnd", "AvlTreeWnd\AvlTreeWnd.vcxproj", "{367BA2D8-19AE-4C19-A18B-3201065A0CDE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -125,6 +131,12 @@ Global
 		{C1751A67-93FF-4B4F-BD92-67EA1AEAB43E}.Release|x64.Build.0 = Release|x64
 		{C1751A67-93FF-4B4F-BD92-67EA1AEAB43E}.Release|x86.ActiveCfg = Release|Win32
 		{C1751A67-93FF-4B4F-BD92-67EA1AEAB43E}.Release|x86.Build.0 = Release|Win32
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Debug|x64.ActiveCfg = Debug|x64
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Debug|x86.ActiveCfg = Debug|Win32
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Debug|x86.Build.0 = Debug|Win32
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Release|x64.ActiveCfg = Release|x64
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Release|x86.ActiveCfg = Release|Win32
+		{367BA2D8-19AE-4C19-A18B-3201065A0CDE}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
