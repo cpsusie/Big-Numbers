@@ -17,6 +17,7 @@ public:
 
  /* This part goes to the first part of javalex.cpp */
 
+#include "stdafx.h"
 #include <MyUtil.h>
 #include <HashMap.h>
 #include <TreeMap.h>
