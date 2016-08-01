@@ -9,8 +9,6 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 
-#include "targetver.h"
-
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
