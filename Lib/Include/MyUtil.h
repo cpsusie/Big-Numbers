@@ -126,8 +126,8 @@ double  inputDouble(  TCHAR *format, ...); // read a double from stdin
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);
 
-void argvExpand(int &argc, TCHAR **&argv);
-void argvExpand(int &argc, char  **&argv);
+void argvExpand(int &argc, wchar_t **&argv);
+void argvExpand(int &argc, char    **&argv);
 
 String getModuleFileName(HMODULE module = NULL); // if module == NULL, path of executable
 String getUserName();
