@@ -77,7 +77,7 @@ public:
   void paintPoints(Viewport2D &vp);
   void paintBox(Viewport2D &vp, const Point2D &point, CBrush &brush);
 
-	enum { IDD = IDD_PROFILE_DIALOG };
+  enum { IDD = IDD_PROFILE_DIALOG };
   double    m_degree;
   BOOL      m_normalSmooth;
   BOOL      m_rotateSmooth;
@@ -103,7 +103,7 @@ protected:
     afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
     afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
     afx_msg BOOL OnMouseWheel(UINT nFlags, short zDelta, CPoint pt);
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
     afx_msg void OnPaint();
     afx_msg void OnFileNew();
     afx_msg void OnFileOpen();

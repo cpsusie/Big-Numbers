@@ -9,12 +9,12 @@
 
 CProfileDlg::CProfileDlg(const Profile &profile, CWnd* pParent) : CDialog(CProfileDlg::IDD, pParent), m_profile(profile) {
   ProfileRotationParameters parameters;
-  m_degree       = RAD2GRAD(parameters.m_rad);
-  m_normalSmooth = parameters.m_smoothness & NORMALSMOOTH;
-  m_rotateSmooth = parameters.m_smoothness & ROTATESMOOTH;
-  m_edgeCount    = parameters.m_edgeCount;
-  m_rotateAxis   = parameters.m_rotateAxis;
-  m_3dmode       = 0;
+  m_degree           = RAD2GRAD(parameters.m_rad);
+  m_normalSmooth     = parameters.m_smoothness & NORMALSMOOTH;
+  m_rotateSmooth     = parameters.m_smoothness & ROTATESMOOTH;
+  m_edgeCount        = parameters.m_edgeCount;
+  m_rotateAxis       = parameters.m_rotateAxis;
+  m_3dmode           = 0;
   m_3DObject         = NULL;
   m_viewport         = NULL;
   m_currentDrawTool  = NULL;
