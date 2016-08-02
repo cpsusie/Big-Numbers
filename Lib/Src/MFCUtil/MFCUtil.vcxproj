@@ -125,6 +125,9 @@
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -190,6 +193,9 @@
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
     </Bscmake>
+    <Lib>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -253,6 +259,7 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
+    <ClCompile Include="ExpressionGraphics.cpp" />
     <ClCompile Include="FileSink.cpp" />
     <ClCompile Include="FileSrc.cpp" />
     <ClCompile Include="GetMessageName.cpp" />
@@ -318,6 +325,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditWithSpinButton.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnable.h" />

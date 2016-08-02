@@ -334,9 +334,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionFactor.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\Math\Expression\ExpressionGraphics.h">
-      <Filter>Header Files\Expression</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\Math\Expression\ExpressionLex.h">
       <Filter>Header Files\Expression</Filter>
     </ClInclude>

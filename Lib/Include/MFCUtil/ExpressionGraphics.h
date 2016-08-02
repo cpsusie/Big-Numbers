@@ -1,7 +1,7 @@
 #pragma once
 
-#include <MFCUtil/WinTools.h>
-#include <MFCUtil/PixRect.h>
+#include "PixRect.h"
+#include "WinTools.h"
 #include <Math/Expression/Expression.h>
 
 class ExpressionRectangle;
@@ -49,12 +49,12 @@ public:
   }
   void clear();
   inline int getChildCount() const {
-    return m_children.size();
+    return (int)m_children.size();
   }
   inline ExpressionRectangle &child(unsigned int index) {
     return m_children[index];
   }
-  inline hasParent() const {
+  inline bool hasParent() const {
     return m_parent != NULL;
   }
   inline const ExpressionRectangle *getParent() const {
@@ -97,4 +97,4 @@ public:
   const ExpressionRectangle *findLeastRectangle(const CPoint &point, bool withNode = true) const;
 };
 
-ExpressionImage expressionToImage(const Expression &expr, unsigned int fontSize, int maxWidth = -1);
+ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, int maxWidth = -1);

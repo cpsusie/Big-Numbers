@@ -321,7 +321,7 @@ typedef enum {
 class PixRect {
 private:
   DECLARECLASSNAME;
-  friend class PixelAccessor;;
+  friend class PixelAccessor;
   friend class PixRectOperator;
   friend class PixRectClipper;
   friend class PixRectDevice;

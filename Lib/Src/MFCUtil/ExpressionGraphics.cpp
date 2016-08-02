@@ -1,8 +1,6 @@
-#include "pch.h"
-#include <WinTools.h>
-#include <ColorSpace.h>
+#include "stdafx.h"
 #include <CompactHashMap.h>
-#include <Math/Expression/ExpressionGraphics.h>
+#include <MFCUtil/ExpressionGraphics.h>
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
 
@@ -18,7 +16,7 @@ typedef CompactKeyType<unsigned int> FontSizeKey;
 class FontCache : public CompactHashMap<FontSizeKey, CFont*> {
 public:
   ~FontCache();
-  CFont *getFont(bool text, unsigned int fontSize);
+  CFont *getFont(bool text, int fontSize);
 };
 
 FontCache::~FontCache() {
@@ -30,7 +28,7 @@ FontCache::~FontCache() {
   clear();
 }
 
-CFont *FontCache::getFont(bool text, unsigned int fontSize) {
+CFont *FontCache::getFont(bool text, int fontSize) {
   const unsigned int key = (text ? (1<<31) : 0) | fontSize;
   CFont **font = get(key);
   if(font == NULL) {
@@ -77,7 +75,7 @@ public:
 DEFINECLASSNAME(SymbolStringMap);
 
 const SymbolString &SymbolStringMap::getString(ExpressionInputSymbol symbol) const {
-  DEFINEMETHODNAME(getString);
+  DEFINEMETHODNAME;
   const SymbolString *ss = get(symbol);
   if(ss == NULL) {
     throwMethodInvalidArgumentException(s_className, method, _T("Unknown symbol:%s"), ExpressionTables->getSymbolName(symbol));
@@ -126,8 +124,8 @@ private:
   int m_leftFiller;          // empty space filled when concatenating images. Can be negative. Default=0
   int m_fontSize;
 public:
-  AlignedImage(int fontSize, const CSize &sz);
-  AlignedImage(int fontSize, const CSize &sz, D3DCOLOR backgroundColor);
+  AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz);
+  AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz, D3DCOLOR backgroundColor);
 
   AlignedImage *setAlignment(int align) {
     m_horizontalAlignment = align;
@@ -154,13 +152,13 @@ public:
   }
 };
 
-AlignedImage::AlignedImage(int fontSize, const CSize &sz) : m_fontSize(fontSize), PixRect(sz) {
+AlignedImage::AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz) : m_fontSize(fontSize), PixRect(device, PIXRECT_PLAINSURFACE, sz) {
   rop(0,0,sz.cx,sz.cy, WHITENESS, NULL, 0,0);
   setAlignment(sz.cy/2);
   m_leftFiller = 0;
 }
 
-AlignedImage::AlignedImage(int fontSize, const CSize &sz, D3DCOLOR backgroundColor) : m_fontSize(fontSize), PixRect(sz) {
+AlignedImage::AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz, D3DCOLOR backgroundColor) : m_fontSize(fontSize), PixRect(device, PIXRECT_PLAINSURFACE, sz) {
   fillRect(getRect(), backgroundColor);
   setAlignment(sz.cy/2);
   m_leftFiller = 0;
@@ -170,9 +168,9 @@ class AlignedTextImage : public AlignedImage {
 private:
   TEXTMETRIC   m_textMetric;
 public:
-  AlignedTextImage(FontCache &fontCache, const String &text, bool textFont, unsigned int fontSize, D3DCOLOR backgroundColor);
-  AlignedTextImage(FontCache &fontCache, const CSize &size);
-  AlignedTextImage(FontCache &fontCache, const CSize &size, D3DCOLOR backgroundColor);
+  AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const String &text, bool textFont, int fontSize, D3DCOLOR backgroundColor);
+  AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size);
+  AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size, D3DCOLOR backgroundColor);
 
   const TEXTMETRIC &getTextMetric() const {
     return m_textMetric;
@@ -182,8 +180,8 @@ public:
   }
 };
 
-AlignedTextImage::AlignedTextImage(FontCache &fontCache, const String &text, bool textFont, unsigned int fontSize, D3DCOLOR backgroundColor) 
-: AlignedImage(fontSize, CSize(10,10)) {
+AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const String &text, bool textFont, int fontSize, D3DCOLOR backgroundColor) 
+: AlignedImage(device, fontSize, CSize(10,10)) {
 
   CFont         *font   = fontCache.getFont(textFont, fontSize);
   HDC            hdc    = getDC();
@@ -201,7 +199,7 @@ AlignedTextImage::AlignedTextImage(FontCache &fontCache, const String &text, boo
     SetBkColor(hdc, D3DCOLOR2COLORREF(backgroundColor));
   }
 //  if(!textFont) SetTextColor(hdc, RGB(0,0,128));
-  TextOut(hdc, 0,0, text.cstr(), text.length());
+  textOut(hdc, 0,0, text);
 
   SelectObject(hdc, oldGDI);
   releaseDC(hdc);
@@ -214,7 +212,7 @@ AlignedTextImage::AlignedTextImage(FontCache &fontCache, const String &text, boo
 
 }
 
-AlignedTextImage::AlignedTextImage(FontCache &fontCache, const CSize &size) : AlignedImage(size.cy, size) {
+AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size) : AlignedImage(device, size.cy, size) {
   CFont         *font   = fontCache.getFont(true, size.cy);
   HDC            hdc    = getDC();
   HGDIOBJ        oldGDI = SelectObject(hdc, *font);
@@ -223,7 +221,7 @@ AlignedTextImage::AlignedTextImage(FontCache &fontCache, const CSize &size) : Al
   releaseDC(hdc);
 }
 
-AlignedTextImage::AlignedTextImage(FontCache &fontCache, const CSize &size, D3DCOLOR backgroundColor) : AlignedImage(size.cy, size, backgroundColor) {
+AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size, D3DCOLOR backgroundColor) : AlignedImage(device, size.cy, size, backgroundColor) {
   CFont         *font   = fontCache.getFont(true, size.cy);
   HDC            hdc    = getDC();
   HGDIOBJ        oldGDI = SelectObject(hdc, *font);
@@ -246,7 +244,7 @@ ImageArray::ImageArray(const AlignedImage *img1, va_list argptr) {
   }
 }
 
-#define MARKED_COLOR RGB_MAKE(198,198,198)
+#define MARKED_COLOR D3DCOLOR_XRGB(198,198,198)
 
 class ExpressionPainter {
 private:
@@ -255,12 +253,13 @@ private:
   static SymbolStringMap      s_stringMap;
   int                         m_maxWidth;
   CompactArray<AlignedImage*> m_imageTable;
+  PixRectDevice              &m_device;
   const Expression           &m_expression;
   D3DCOLOR                    m_backgroundColor;
   ExpressionRectangle         m_rectangle;
 
   static CFont *getFont(bool textFont, int fontSize);
-  unsigned int createSubFontSize(unsigned int fontSize) const {
+  int createSubFontSize(int fontSize) const {
     return (fontSize >= 10) ? (fontSize * 3 / 5) : fontSize;
   }
 
@@ -268,7 +267,7 @@ private:
   AlignedImage *createTextImage(const CSize &size);
   AlignedImage *createImage(const CSize &size);
 
-  AlignedTextImage *getTextImage(const String &str, bool textFont, unsigned int fontSize, ExpressionRectangle &rect);
+  AlignedTextImage *getTextImage(const String &str, bool textFont, int fontSize, ExpressionRectangle &rect);
   AlignedImage *concatImages(const ImageArray &imageList, ExpressionRectangle &rect);
   AlignedImage *stackImages( const ImageArray &imageList, ExpressionRectangle &rect) {
     return stackImages(false, imageList, rect);
@@ -280,36 +279,36 @@ private:
   AlignedImage *stackImages( ExpressionRectangle &rect, bool center, const AlignedImage *img1, ...); // terminate arguments with NULL
 
   AlignedImage *cutImage(             AlignedImage *image, unsigned int percent, int flags);
-  AlignedImage *getOpImage(           ExpressionInputSymbol symbol , unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getUnaryOpImage(      const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getBinaryOpImage(     const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getParenthesizedImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getParenthesizedImage(const ExpressionNode *n, const ExpressionNode *parent, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getParenthesizedImage(const ExpressionNode *n, bool textFont, const String &leftPar, const String &rightPar, unsigned int fontSize, ExpressionRectangle &rect, double alignPar = 0.5);
-  AlignedImage *getImage(             const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getImage1(            const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getSummationImage(    const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getProductImage(      const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getProductImage(      const FactorArray          &factors, const ExpressionNode *parent, unsigned int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
-  AlignedImage *getFactorImage(       const ExpressionFactor     *f      , const ExpressionNode *parent, unsigned int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
-  AlignedImage *getQuotImage(         const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getOpImage(           ExpressionInputSymbol symbol , int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getUnaryOpImage(      const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getBinaryOpImage(     const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getParenthesizedImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getParenthesizedImage(const ExpressionNode *n, const ExpressionNode *parent, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getParenthesizedImage(const ExpressionNode *n, bool textFont, const String &leftPar, const String &rightPar, int fontSize, ExpressionRectangle &rect, double alignPar = 0.5);
+  AlignedImage *getImage(             const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getImage1(            const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getSummationImage(    const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getProductImage(      const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getProductImage(      const FactorArray          &factors, const ExpressionNode *parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
+  AlignedImage *getFactorImage(       const ExpressionFactor     *f      , const ExpressionNode *parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect);
+  AlignedImage *getQuotImage(         const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getQuotImage(         const AlignedImage         *p, const AlignedImage *q, ExpressionRectangle &rect);
-  AlignedImage *getPowerImage(        const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getRootImage(         const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getFloorImage(        const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getCeilImage(         const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getAbsImage(          const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getBinomialImage(     const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getFunctionImage(     const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getIndexedImage(      const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getPolyImage(         const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getStatementImages(   const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
-  AlignedImage *getIfImage(           const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getPowerImage(        const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getRootImage(         const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getFloorImage(        const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getCeilImage(         const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getAbsImage(          const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getBinomialImage(     const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getFunctionImage(     const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getIndexedImage(      const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getPolyImage(         const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getStatementImages(   const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
+  AlignedImage *getIfImage(           const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
 public:
-  ExpressionPainter(const Expression &expr);
+  ExpressionPainter(PixRectDevice &device, const Expression &expr);
  ~ExpressionPainter();
 
-  PixRect *paintExpression(unsigned int fontSize, int maxWidth);
+  PixRect *paintExpression(int fontSize, int maxWidth);
   const ExpressionRectangle &getRectangleTree() const {
     return m_rectangle;
   }
@@ -320,7 +319,9 @@ DEFINECLASSNAME(ExpressionPainter);
 FontCache       ExpressionPainter::s_fontCache;
 SymbolStringMap ExpressionPainter::s_stringMap;
 
-ExpressionPainter::ExpressionPainter(const Expression &expr) : m_expression(expr) {
+ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr) 
+: m_device(device)
+, m_expression(expr) {
   m_backgroundColor = WHITE;
 }
 
@@ -328,7 +329,7 @@ ExpressionPainter::~ExpressionPainter() {
   clearImageTable();
 }
 
-PixRect *ExpressionPainter::paintExpression(unsigned int fontSize, int maxWidth) {
+PixRect *ExpressionPainter::paintExpression(int fontSize, int maxWidth) {
   clearImageTable();
   m_maxWidth = maxWidth;
   if(m_expression.getRoot() == NULL) {
@@ -338,15 +339,15 @@ PixRect *ExpressionPainter::paintExpression(unsigned int fontSize, int maxWidth)
 }
 
 AlignedImage *ExpressionPainter::createImage(const CSize &size) {
-  AlignedImage *image = (m_backgroundColor != WHITE) ? new AlignedImage(0, size, m_backgroundColor) : new AlignedImage(0, size);
+  AlignedImage *image = (m_backgroundColor != WHITE) ? new AlignedImage(m_device, 0, size, m_backgroundColor) : new AlignedImage(m_device, 0, size);
   m_imageTable.add(image);
   return image;
 }
 
 AlignedImage *ExpressionPainter::createTextImage(const CSize &size) {
   AlignedImage *image = (m_backgroundColor != WHITE) 
-                      ? new AlignedTextImage(s_fontCache, size, m_backgroundColor) 
-                      : new AlignedTextImage(s_fontCache, size);
+                      ? new AlignedTextImage(m_device, s_fontCache, size, m_backgroundColor) 
+                      : new AlignedTextImage(m_device, s_fontCache, size);
   m_imageTable.add(image);
   return image;
 }
@@ -380,7 +381,7 @@ AlignedImage *ExpressionPainter::cutImage(AlignedImage *image, unsigned int perc
 }
 
 void ExpressionPainter::clearImageTable() {
-  for(int i = 0; i < m_imageTable.size(); i++) {
+  for(size_t i = 0; i < m_imageTable.size(); i++) {
     delete m_imageTable[i];
   }
   m_imageTable.clear();
@@ -390,7 +391,7 @@ CFont *ExpressionPainter::getFont(bool textFont, int fontSize) { // static
   return s_fontCache.getFont(textFont, fontSize);
 }
 
-AlignedImage *ExpressionPainter::getImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   const D3DCOLOR oldColor = m_backgroundColor;
   AlignedImage  *result;
   if(n->isMarked()) {
@@ -403,8 +404,8 @@ AlignedImage *ExpressionPainter::getImage(const ExpressionNode *n, unsigned int 
   return result;
 }
 
-AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
-  DEFINEMETHODNAME(getImage);
+AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
+  DEFINEMETHODNAME;
   AlignedImage *result = NULL;
   switch(n->getSymbol()) {
   case NAME              :
@@ -548,7 +549,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, unsigned int
   return result;
 }
 
-AlignedImage *ExpressionPainter::getSummationImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getSummationImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle plusRect, minusRect;
   AlignedImage *plusImage  = getOpImage(PLUS , fontSize, plusRect );
   AlignedImage *minusImage = getOpImage(MINUS, fontSize, minusRect);
@@ -556,7 +557,7 @@ AlignedImage *ExpressionPainter::getSummationImage(const ExpressionNode *n, unsi
 
   bool first = true;
   const AddentArray &elements = n->getAddentArray();
-  for(int i = 0; i < elements.size(); i++) {
+  for(size_t i = 0; i < elements.size(); i++) {
     const SumElement *e = elements[i];
     ExpressionRectangle childRect;
     AlignedImage *img = getImage(e->getNode(), fontSize, childRect);
@@ -581,7 +582,7 @@ AlignedImage *ExpressionPainter::getSummationImage(const ExpressionNode *n, unsi
   return concatImages(imageList, rect);
 }
 
-AlignedImage *ExpressionPainter::getProductImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getProductImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   const FactorArray &a = n->getFactorArray();
   FactorArray p = a.selectConstantPositiveExponentFactors();
   p.addAll(a.selectNonConstantExponentFactors());
@@ -601,12 +602,12 @@ AlignedImage *ExpressionPainter::getProductImage(const ExpressionNode *n, unsign
   }
 }
 
-AlignedImage *ExpressionPainter::getProductImage(const FactorArray &factors, const ExpressionNode *parent, unsigned int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getProductImage(const FactorArray &factors, const ExpressionNode *parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
   ExpressionRectangle prodRect;
   AlignedImage *multiplyImage = getOpImage(PROD, fontSize, prodRect);
   ImageArray imageList;
   AlignedImage *operatorImage = NULL;
-  for(int i = 0; i < factors.size(); i++) {
+  for(size_t i = 0; i < factors.size(); i++) {
     const ExpressionFactor *factor = factors[i];
     if(operatorImage == NULL) {
       operatorImage = multiplyImage;
@@ -621,7 +622,7 @@ AlignedImage *ExpressionPainter::getProductImage(const FactorArray &factors, con
   return concatImages(imageList, rect);
 }
 
-AlignedImage *ExpressionPainter::getFactorImage(const ExpressionFactor *f, const ExpressionNode *parent, unsigned int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getFactorImage(const ExpressionFactor *f, const ExpressionNode *parent, int fontSize, bool changeExponentSign, ExpressionRectangle &rect) {
   AlignedImage *result;
   if(changeExponentSign) {
     const ExpressionFactor *rf = m_expression.fetchFactorNode(f->base(), m_expression.minusC(f->exponent()));
@@ -633,7 +634,7 @@ AlignedImage *ExpressionPainter::getFactorImage(const ExpressionFactor *f, const
   return result;
 }
 
-AlignedImage *ExpressionPainter::getQuotImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getQuotImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle leftRect, rightRect;
   AlignedImage *leftImage  = getImage(n->left() , fontSize, leftRect );
   AlignedImage *rightImage = getImage(n->right(), fontSize, rightRect);
@@ -643,7 +644,7 @@ AlignedImage *ExpressionPainter::getQuotImage(const ExpressionNode *n, unsigned 
 
 AlignedImage *ExpressionPainter::getQuotImage(const AlignedImage *p, const AlignedImage *q, ExpressionRectangle &rect) {
   const int totalHeight = p->getHeight() + q->getHeight();
-  const int lineWidth   = max(sqrt(totalHeight / 20), 1);
+  const int lineWidth   = max((int)sqrt(totalHeight / 20), 1);
 
   const CSize   size(max(p->getWidth(), q->getWidth()), lineWidth);
   AlignedImage *lineImage = createImage(size);
@@ -657,7 +658,7 @@ AlignedImage *ExpressionPainter::getQuotImage(const AlignedImage *p, const Align
   return result;
 }
 
-AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
 //  m_backgroundColor = RGB_MAKE(0,128,0);
   ExpressionRectangle baseRect, expoRect;
   AlignedImage               *baseImage = getParenthesizedImage(n->left(),n,fontSize, baseRect);
@@ -690,7 +691,7 @@ AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, unsigned
   return result->setAlignment(result->getHeight()-baseAlign);
 }
 
-AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle radRect, rootSignRect;
 
   const ExpressionNode *radicand         = n->left();
@@ -764,7 +765,7 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, unsigned 
   return result;
 }
 
-AlignedImage *ExpressionPainter::getFunctionImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getFunctionImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   SymbolString ss;
   String tmpStr;
   try {
@@ -784,7 +785,7 @@ AlignedImage *ExpressionPainter::getFunctionImage(const ExpressionNode *n, unsig
 
   AlignedImage *commaImage = NULL;
   const ExpressionNodeArray &a = n->getChildArray();
-  for(int i = 0; i < a.size(); i++) {
+  for(size_t i = 0; i < a.size(); i++) {
     const ExpressionNode *child = a[i];
     if(commaImage == NULL) {
       commaImage = getOpImage(COMMA, fontSize, commaRect);
@@ -802,7 +803,7 @@ AlignedImage *ExpressionPainter::getFunctionImage(const ExpressionNode *n, unsig
   return concatImages(imageList, rect);
 }
 
-AlignedImage *ExpressionPainter::getBinomialImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getBinomialImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle upperRect, lowerRect, lpRect, rpRect, innerRect;
   AlignedImage *upperImage = getImage(n->left() ,fontSize, upperRect);
   AlignedImage *lowerImage = getImage(n->right(),fontSize, lowerRect);
@@ -817,7 +818,7 @@ AlignedImage *ExpressionPainter::getBinomialImage(const ExpressionNode *n, unsig
   return concatImages(rect, lpImage, innerImage, rpImage, NULL);
 }
 
-AlignedImage *ExpressionPainter::getPolyImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getPolyImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle polyRect, lbRect, rbRect, commaRect, lpRect, rpRect, argRect;
   ImageArray result;
   result.add(getTextImage("poly", true, fontSize, polyRect));
@@ -826,7 +827,7 @@ AlignedImage *ExpressionPainter::getPolyImage(const ExpressionNode *n, unsigned 
 
   AlignedImage *commaImage = NULL;
   const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
-  for(int i = 0; i < coefficientArray.size(); i++) {
+  for(size_t i = 0; i < coefficientArray.size(); i++) {
     const ExpressionNode *c = coefficientArray[i];
     if(commaImage == NULL) {
       commaImage = getOpImage(COMMA, fontSize, commaRect);
@@ -848,7 +849,7 @@ AlignedImage *ExpressionPainter::getPolyImage(const ExpressionNode *n, unsigned 
   return concatImages(result, rect);
 }
 
-AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   unsigned int fm                = createSubFontSize(fontSize);
 
   ExpressionRectangle opRect, startRect, endRect, leftRect, rightRect;
@@ -870,7 +871,7 @@ AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, unsign
   return concatImages(rect, leftImage, rightImage, NULL);
 }
 
-AlignedImage *ExpressionPainter::getIfImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getIfImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle ifRect, commaRect, lpRect, rpRect, condRect, trueRect,falseRect;
 
   ImageArray    result;
@@ -889,13 +890,13 @@ AlignedImage *ExpressionPainter::getIfImage(const ExpressionNode *n, unsigned in
   return concatImages(result, rect);
 }
 
-AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle semiRect;
   AlignedImage       *semiImage = getOpImage(SEMI, fontSize, semiRect);
   ExpressionNodeArray list      = getStatementList(n);
 
   ImageArray result;
-  for(int i = 0; i < list.size(); i++) {
+  for(size_t i = 0; i < list.size(); i++) {
     ExpressionRectangle assignRect, stmtRect;
     AlignedImage *assignImage = getImage(list[i], fontSize, assignRect);
     stmtRect.addChild(assignRect).addChild(semiRect);
@@ -905,7 +906,7 @@ AlignedImage *ExpressionPainter::getStatementImages(const ExpressionNode *n, uns
   return stackImages(result, rect);
 }
 
-AlignedImage *ExpressionPainter::getUnaryOpImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getUnaryOpImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle opRect, parRect;
   AlignedImage *opImage  = getOpImage(n->getSymbol(), fontSize, opRect);
   AlignedImage *parImage = getParenthesizedImage(n->left(), n, fontSize, parRect);
@@ -913,7 +914,7 @@ AlignedImage *ExpressionPainter::getUnaryOpImage(const ExpressionNode *n, unsign
   return concatImages(rect, opImage, parImage, NULL);
 }
 
-AlignedImage *ExpressionPainter::getBinaryOpImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getBinaryOpImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   ExpressionRectangle opRect, lRect, rRect;
 
   AlignedImage *leftImage  = getParenthesizedImage(n->left(), n, fontSize, lRect);
@@ -924,28 +925,28 @@ AlignedImage *ExpressionPainter::getBinaryOpImage(const ExpressionNode *n, unsig
   return concatImages(rect, leftImage, opImage, rightImage, NULL);
 }
 
-AlignedImage *ExpressionPainter::getOpImage(ExpressionInputSymbol symbol, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getOpImage(ExpressionInputSymbol symbol, int fontSize, ExpressionRectangle &rect) {
   const SymbolString &ss = s_stringMap.getString(symbol);
   return getTextImage(ss.m_text, ss.m_textFont, fontSize, rect);
 }
 
-AlignedImage *ExpressionPainter::getFloorImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getFloorImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   return getParenthesizedImage(n, false, _T("\xeb"), _T("\xfb"), fontSize, rect);
 }
 
-AlignedImage *ExpressionPainter::getCeilImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getCeilImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   return getParenthesizedImage(n, false, _T("\xe9"), _T("\xf9"), fontSize, rect);
 }
 
-AlignedImage *ExpressionPainter::getAbsImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getAbsImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   return getParenthesizedImage(n, false, _T("|"), _T("|"), fontSize, rect);
 }
 
-AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
   return getParenthesizedImage(n, false, _T("("), _T(")"), fontSize, rect, 0.70);
 }
 
-AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, const ExpressionNode *parent, unsigned int fontSize, ExpressionRectangle &rect) {
+AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, const ExpressionNode *parent, int fontSize, ExpressionRectangle &rect) {
   if(n->needParentheses(parent)) {
     return getParenthesizedImage(n, fontSize, rect);
   } else {
@@ -953,12 +954,12 @@ AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, 
   }
 }
 
-AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, bool textFont, const String &leftPar, const String &rightPar, unsigned int fontSize, ExpressionRectangle &rect, double alignPar) {
+AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, bool textFont, const String &leftPar, const String &rightPar, int fontSize, ExpressionRectangle &rect, double alignPar) {
   ExpressionRectangle imgRect, lpRect, rpRect;
   AlignedImage *img     = getImage(n, fontSize, imgRect);
 
   const int     parSize = max(img->getSize().cy, fontSize);
-  const int     parAlignMent = parSize * alignPar;
+  const int     parAlignMent = (int)(parSize * alignPar);
 //  m_backgroundColor = RGB_MAKE(0,255,0);
 //  AlignedImage *rpImage = getTextImage(rightPar, textFont, parsize);
 //  m_backgroundColor = WHITE;
@@ -987,7 +988,7 @@ AlignedImage *ExpressionPainter::stackImages(ExpressionRectangle &rect, bool cen
 }
 
 AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, ExpressionRectangle &rect) {
-  DEFINEMETHODNAME(concatImages);
+  DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
     throwMethodInvalidArgumentException(s_className, method, _T("imageLIst.size()=%d != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
@@ -995,17 +996,17 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 
   int maxAlignment   = 0;
   int textImageIndex = -1;
-  for(int i = 0; i < imageList.size(); i++) {
+  for(size_t i = 0; i < imageList.size(); i++) {
     const AlignedImage *img = imageList[i];
     if(img->getAlignment() > maxAlignment) {
       maxAlignment = img->getAlignment();
     }
     if((img->getImageType() == TEXT_IMAGE) && (textImageIndex == -1)) {
-      textImageIndex = i;
+      textImageIndex = (int)i;
     }
   }
   CSize size(0,0);
-  for(i = 0; i < imageList.size(); i++) {
+  for(size_t i = 0; i < imageList.size(); i++) {
     const AlignedImage *img = imageList[i];
     CSize               sz  = img->getSize();
     size.cx += sz.cx + img->getLeftFiller();
@@ -1024,7 +1025,7 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
   rect.setSize(size);
 
   int x = size.cx;
-  for(i = imageList.size()-1; i >= 0; i--) {
+  for(int i = (int)imageList.size()-1; i >= 0; i--) {
     const AlignedImage *img = imageList[i];
     ExpressionRectangle &childRect = rect.child(i);
     CSize               sz  = img->getSize();
@@ -1041,14 +1042,14 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 }
 
 AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imageList, ExpressionRectangle &rect) {
-  DEFINEMETHODNAME(stackImages);
+  DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
     throwMethodInvalidArgumentException(s_className, method, _T("imageLIst.size()=%d != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
   }
   CSize size(0,0);
-
-  for(int i = 0; i < imageList.size(); i++) {
+  const int listSize = (int)imageList.size();
+  for(int i = 0; i < listSize; i++) {
     const CSize sz = imageList[i]->getSize();
     size.cx =  max(size.cx,sz.cx);
     size.cy += sz.cy;
@@ -1057,7 +1058,7 @@ AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imag
   rect.setSize(size);
 
   int y = 0;
-  for(i = 0; i < imageList.size(); i++) {
+  for(int i = 0; i < listSize; i++) {
     ExpressionRectangle &childRect = rect.child(i);
     const AlignedImage *img = imageList[i];
     const CSize         sz  = img->getSize();
@@ -1069,8 +1070,8 @@ AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imag
   return result;
 }
 
-AlignedTextImage *ExpressionPainter::getTextImage(const String &str, bool textFont, unsigned int fontSize, ExpressionRectangle &rect) {
-  AlignedTextImage *image = new AlignedTextImage(s_fontCache, str, textFont, fontSize, m_backgroundColor);
+AlignedTextImage *ExpressionPainter::getTextImage(const String &str, bool textFont, int fontSize, ExpressionRectangle &rect) {
+  AlignedTextImage *image = new AlignedTextImage(m_device, s_fontCache, str, textFont, fontSize, m_backgroundColor);
   m_imageTable.add(image);
   rect.setSize(image);
   return image;
@@ -1100,7 +1101,7 @@ bool ExpressionRectangle::traverseTree(ExpressionRectangleHandler &handler, cons
   if(!handler.handleRectangle(*this, parent)) {
     return false;
   }
-  for(int i = 0; i < m_children.size(); i++) {
+  for(size_t i = 0; i < m_children.size(); i++) {
     const ExpressionRectangle &r = m_children[i];
     if(!r.traverseTree(handler,this)) return false;
   }
@@ -1236,8 +1237,8 @@ const ExpressionRectangle *ExpressionImage::findLeastRectangle(const CPoint &poi
 }
 
 
-ExpressionImage expressionToImage(const Expression &expr, unsigned int fontSize, int maxWidth) {
-  ExpressionPainter painter(expr);
+ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, int maxWidth) {
+  ExpressionPainter painter(device, expr);
   PixRect *pr = painter.paintExpression(fontSize, maxWidth);
   const ExpressionImage result(pr, painter.getRectangleTree());
   result.traverseRectangleTree(AdjustPosition());
