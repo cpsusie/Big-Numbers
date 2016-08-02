@@ -1,0 +1,499 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\TestExpressionGraphics.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestExpressionGraphics.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Fint &matching parentesis\tCtrl+E", 
+                                                ID_EDIT_FINDMATCHINGPARENTESIS
+
+        MENUITEM "&Goto Edit F(x)\tCtrl+Shift+F", ID_EDIT_GOTOEDITFX
+        MENUITEM SEPARATOR
+        MENUITEM "Enter &parameters\tCtrl+P...", ID_EDIT_ENTERPARAMETERS
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Show reduction &Stack\tCtrl+S", ID_VIEW_SHOWREDUCTIONSTACK
+        MENUITEM "Show &rectangles\tCtrl+R",    ID_VIEW_SHOWRECTANGLES
+    END
+    POPUP "&Debug"
+    BEGIN
+        MENUITEM "&Debug reduction of F(x)\tF3", ID_DEBUG_REDUCEEXPR
+        MENUITEM "D&ebug reduction of F'(x)\tF4", ID_DEBUG_REDUCEDERIVED
+        MENUITEM SEPARATOR
+        MENUITEM "&Resume\tF5",                 ID_DEBUG_RUN
+        MENUITEM "St&op\tShft+F5",              ID_DEBUG_STOP
+        MENUITEM "&Trace reduction step\tF10",  ID_DEBUG_TRACEREDUCTIONSTEP
+        MENUITEM "&Step 1 reduce iteration\tF11", 
+                                                ID_DEBUG_STEP1REDUCEITERATION
+
+        MENUITEM SEPARATOR
+        MENUITEM "Test TreesE&qual...\tCtrl+Q", ID_DEBUG_TESTTREESEQUAL
+        MENUITEM SEPARATOR
+        MENUITEM "Clear all breakpoints\tAlt+F9", 
+                                                ID_DEBUG_CLEARALLBREAKPOINTS
+    END
+    POPUP "Fu&nctions"
+    BEGIN
+        MENUITEM "&Compile F(x)\tF7",           ID_FUNCTIONS_COMPILEFX
+        MENUITEM "&Derive F(x)\tF8",            ID_FUNCTIONS_DERIVEFX
+        MENUITEM SEPARATOR
+        MENUITEM "&Reduce F(x)\tShift+F7",      ID_FUNCTIONS_REDUCEFX
+        MENUITEM "Red&uce derived\tShift+F8",   ID_FUNCTIONS_REDUCEDERIVED
+        MENUITEM SEPARATOR
+        MENUITEM "&Evaluate F(x)\tCtrl+F",      ID_FUNCTIONS_EVALUATEFX
+        MENUITEM "E&valuate F'(x)\tCtrl+M",     ID_FUNCTIONS_EVALUATEDERIVED
+        MENUITEM "Evaluate &all\tCtrl+A",       ID_FUNCTIONS_EVALUATEALL
+    END
+END
+
+IDR_CONTEXTMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "contextMenu"
+    BEGIN
+        MENUITEM "Show Tree",                   ID_CONTEXTMENU_SHOWEXPRTREE
+        MENUITEM SEPARATOR
+        MENUITEM "To standard form",            ID_CONTEXTMENU_TOSTANDARDFORM
+
+        MENUITEM "To canonical form",           ID_CONTEXTMENU_TOCANONCALFORM
+
+        MENUITEM "To numeric form",             ID_CONTEXTMENU_TONUMERICFORM
+        MENUITEM SEPARATOR
+        MENUITEM "Expand",                      ID_CONTEXTMENU_EXPAND
+        MENUITEM "Multiply",                    ID_CONTEXTMENU_MULTIPLY
+    END
+END
+
+IDR_CONTEXTMENUSTACK MENU DISCARDABLE 
+BEGIN
+    POPUP "stackContextMenu"
+    BEGIN
+        MENUITEM "Show Tree",                   ID_CONTEXTMENU_SHOWNODETREE
+    END
+END
+
+IDR_CONTEXTMENU_TREE MENU DISCARDABLE 
+BEGIN
+    POPUP "breakpoint"
+    BEGIN
+        MENUITEM "Set breakpoint",              ID_SETBREAKPOINT
+        MENUITEM "Clear breakpoint",            ID_CLEARBREAKPOINT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            ID_FUNCTIONS_EVALUATEALL, VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "F",            ID_FUNCTIONS_EVALUATEFX, VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_GOTOEDITFX,     VIRTKEY, SHIFT, CONTROL, 
+                                                    NOINVERT
+    "M",            ID_FUNCTIONS_EVALUATEDERIVED, VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_EDIT_ENTERPARAMETERS, VIRTKEY, CONTROL, NOINVERT
+    "Q",            ID_DEBUG_TESTTREESEQUAL, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_VIEW_SHOWRECTANGLES, VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_VIEW_SHOWREDUCTIONSTACK, VIRTKEY, CONTROL, NOINVERT
+    VK_F10,         ID_DEBUG_TRACEREDUCTIONSTEP, VIRTKEY, NOINVERT
+    VK_F11,         ID_DEBUG_STEP1REDUCEITERATION, VIRTKEY, NOINVERT
+    VK_F3,          ID_DEBUG_REDUCEEXPR,    VIRTKEY, NOINVERT
+    VK_F4,          ID_DEBUG_REDUCEDERIVED, VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_RUN,           VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_STOP,          VIRTKEY, SHIFT, NOINVERT
+    VK_F7,          ID_FUNCTIONS_COMPILEFX, VIRTKEY, NOINVERT
+    VK_F7,          ID_FUNCTIONS_REDUCEFX,  VIRTKEY, SHIFT, NOINVERT
+    VK_F8,          ID_FUNCTIONS_DERIVEFX,  VIRTKEY, NOINVERT
+    VK_F8,          ID_FUNCTIONS_REDUCEDERIVED, VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_DEBUG_CLEARALLBREAKPOINTS, VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTOX,               VIRTKEY, ALT, NOINVERT
+    "Z",            ID_GOTOFONTSIZE,        VIRTKEY, ALT, NOINVERT
+END
+
+IDD_TREESEQUAL_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "1",            ID_GOTOEXPR1,           VIRTKEY, ALT, NOINVERT
+    "2",            ID_GOTOEXPR2,           VIRTKEY, ALT, NOINVERT
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    VK_F7,          ID_COMPILE,             VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_TREESEQUAL_DIALOG DIALOG DISCARDABLE  0, 0, 417, 320
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Test Trees Equal"
+FONT 10, "DejaVu Sans Mono"
+BEGIN
+    COMBOBOX        IDC_EDITEXPR1,43,31,367,190,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    COMBOBOX        IDC_EDITEXPR2,42,171,368,205,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    PUSHBUTTON      "&Compile",IDC_BUTTONCOMPILE,131,7,43,14
+    PUSHBUTTON      "&To canonical form",IDC_BUTTONCONVERT,179,7,81,14
+    DEFPUSHBUTTON   "Check &Equal",IDC_TESTTREESEQUAL,265,7,55,14
+    LTEXT           "Expr&1:",IDC_STATICLABEL1,15,31,22,12,SS_CENTERIMAGE
+    LTEXT           "Expr2:",IDC_STATICLABEL2,15,171,22,12,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATICIMAGE2,7,190,403,123,SS_SUNKEN | WS_BORDER
+    LTEXT           "",IDC_STATICIMAGE1,7,49,403,117,SS_SUNKEN | WS_BORDER
+    DEFPUSHBUTTON   "Check equal &Minus",IDC_TESTTREESEQUALMINUS,325,7,85,14
+END
+
+IDD_ENTER_VARIABLES_DIALOG DIALOG DISCARDABLE  0, 0, 270, 199
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter variables"
+FONT 10, "DejaVu Sans Mono"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,213,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,213,24,50,14
+END
+
+IDD_EXPRESSIONTREE_DIALOG DIALOG DISCARDABLE  0, 0, 395, 359
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Expression Tree"
+FONT 10, "DejaVu Sans Mono"
+BEGIN
+    DEFPUSHBUTTON   "&Close",IDCLOSE,338,7,50,14
+    CONTROL         "Tree1",IDC_TREE_EXPRESSION,"SysTreeView32",
+                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
+                    TVS_DISABLEDRAGDROP | WS_BORDER | WS_TABSTOP,7,7,319,278
+    LISTBOX         IDC_LIST_SYMBOLTABLE,7,287,381,65,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_TREESEQUAL_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 410
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 313
+    END
+
+    IDD_ENTER_VARIABLES_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 263
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_EXPRESSIONTREE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 388
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 352
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About TestExpressionGraphics"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "TestExpressionGraphics Version 1.0",IDC_STATIC,40,10,
+                    119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2016",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_TESTEXPRESSIONGRAPHICS_DIALOG DIALOGEX 0, 0, 637, 366
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "TestExpressionGraphics"
+MENU IDR_MAINFRAME
+FONT 10, "DejaVu Sans Mono", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDITEXPR,37,7,298,33,ES_MULTILINE | ES_AUTOHSCROLL | 
+                    ES_WANTRETURN
+    EDITTEXT        IDC_EDITX,353,7,31,12,ES_RIGHT | ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBOFONTSIZE,430,28,27,68,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "",IDC_STATICEXPRIMAGE,7,61,623,99,SS_SUNKEN | WS_BORDER | 
+                    NOT WS_GROUP
+    EDITTEXT        IDC_EDITDERIVED,37,167,586,17,ES_MULTILINE | 
+                    ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "",IDC_STATICDERIVEDIMAGE,7,189,623,166,SS_SUNKEN | 
+                    WS_BORDER | NOT WS_GROUP
+    LTEXT           "Fontsi&ze:",IDC_STATICFONTSIZE,391,30,35,10,
+                    SS_CENTERIMAGE
+    LTEXT           "f(x)=",IDC_STATIC,11,18,20,13
+    LTEXT           "f'(x)=",IDC_STATICDERIVEDLABEL,10,171,24,10
+    LTEXT           "&X:",IDC_STATICXLABEL,342,7,11,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITDERIVEDVALUE1,528,10,90,12,ES_RIGHT | 
+                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL1,506,7,20,12,
+                    SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITDERIVEDVALUE2,528,28,90,12,ES_RIGHT | 
+                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL2,506,28,20,12,
+                    SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITRESULTVALUE,411,7,90,12,ES_RIGHT | 
+                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f(x)::",IDC_STATICRESULTLABEL,391,7,18,12,
+                    SS_CENTERIMAGE
+    PUSHBUTTON      "Button1",IDC_BUTTONDUMMY,282,94,50,14,NOT WS_VISIBLE
+    LTEXT           "",IDC_STATICDEBUGINFO,7,46,623,12,SS_CENTERIMAGE | 
+                    SS_SUNKEN | WS_BORDER
+    LTEXT           "",IDC_STATICREDUCTIONSTACK,319,65,311,290,SS_SUNKEN | 
+                    NOT WS_VISIBLE | WS_BORDER
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_TESTEXPRESSIONGRAPHICS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 630
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 355
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "TestExpressionGraphics MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "TestExpressionGraphics\0"
+            VALUE "LegalCopyright", "Copyright (C) 2016\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TestExpressionGraphics.EXE\0"
+            VALUE "ProductName", "TestExpressionGraphics Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_TESTEXPRESSIONGRAPHICS_DIALOG DLGINIT
+BEGIN
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3431, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3631, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3831, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3032, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3232, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3432, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3632, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3832, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3633, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3834, "\000" 
+    IDC_COMBOFONTSIZE, 0x403, 3, 0
+0x3237, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About TestExpressionGraphics..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\TestExpressionGraphics.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
