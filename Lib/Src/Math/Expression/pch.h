@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "targetver.h"
+//#include "targetver.h"
 
 #define _CRT_SECURE_NO_WARNINGS 1
 

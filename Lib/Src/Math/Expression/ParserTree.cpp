@@ -438,16 +438,6 @@ String ParserTree::variablesToString() const {
   return result;
 }
 
-void ParserTree::enableAllDebugStrings(bool enable) {
-  Rational::enableDebugString(enable);
-  Number::enableDebugString(enable);
-  ExpressionNode::enableDebugString(enable);
-  ExpressionNodeArray::enableDebugString(enable);
-  SumElement::enableDebugString(enable);
-  AddentArray::enableDebugString(enable);
-  FactorArray::enableDebugString(enable);
-}
-
 #ifdef TRACE_REDUCTION_CALLSTACK
 
 void ParserTree::pushReductionMethod(const TCHAR *method, const String &s, const ExpressionNode *n) const {
@@ -470,12 +460,6 @@ void ParserTree::resetReductionStack() {
   const int newHeight = m_reductionStack.getHeight();
   if(newHeight != oldHeight) {
     notifyPropertyChanged(REDUCTION_STACKHIGHT, &oldHeight, &newHeight);
-  }
-}
-
-void ParserTree::enableReductionStack(bool enable) { // static
-  if(!getDebuggerPresent()) {
-    enableAllDebugStrings(enable);
   }
 }
 

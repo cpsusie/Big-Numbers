@@ -4,7 +4,6 @@
 ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, va_list argptr) : ExpressionNode(tree, POLY) {
   m_coefficientArray = getExpressionList(va_arg(argptr, ExpressionNode*));
   m_argument         = va_arg(argptr, ExpressionNode*);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionNodeArray &coefficientArray, const ExpressionNode *argument) : ExpressionNode(tree, POLY) {
@@ -13,7 +12,6 @@ ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionN
     m_coefficientArray.add((ExpressionNode*)coefficientArray[i]);
   }
   m_argument = argument;
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
@@ -23,7 +21,6 @@ ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionN
     m_coefficientArray.add(sa[i]->clone(tree));
   }
   m_argument = src->getArgument()->clone(tree);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 const ExpressionNode *ExpressionNodePoly::expand() const {
@@ -90,12 +87,3 @@ void ExpressionNodePoly::dumpNode(String &s, int level) const {
 String ExpressionNodePoly::toString() const {
   return _T("poly[") + m_coefficientArray.toString() + _T("](") + m_argument->toString() + _T(")");
 }
-
-#ifdef _DEBUG
-
-void ExpressionNodePoly::initDebugString() {
-  m_debugString = _T("poly[") + m_coefficientArray.getDebugString() + _T("](") + m_argument->getDebugString() + _T(")");
-}
-
-#endif
-

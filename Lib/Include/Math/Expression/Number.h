@@ -20,17 +20,6 @@ private:
     Rational  *m_rational;
   };
 
-#ifdef _DEBUG
-  String                m_debugString;
-  static bool           s_debugStringEnabled;
-  inline void initDebugString() {
-    m_debugString = toString();
-  }
-#define INITNUMBERDEBUGSTRING() { if(Number::s_debugStringEnabled) initDebugString(); }
-#else
-#define INITNUMBERDEBUGSTRING()
-#endif
-
   void setType(NumberType type);
   void forceTypeToReal();
   void cleanup();
@@ -112,8 +101,6 @@ public:
   const Real *getRealAddress() const; // will convert this to a Real by calling forceTypeToReal(), if its a Rational
 
   String toString() const;
-  static bool enableDebugString(bool enabled);
-
 };
 
 template<class T> bool isOdd(T x) {

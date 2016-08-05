@@ -22,7 +22,6 @@ SumElement::SumElement(const ExpressionNode *n, bool positive) {
     m_positive = !m_positive;
   }
   m_n->getTree()->m_addentTable.add(this);
-  INITSUMELEMENTDEBUGSTRING();
 }
 
 const ExpressionNode *SumElement::createExpressionNode() const {
@@ -58,16 +57,3 @@ String SumElement::toString() const {
   }
 }
 
-#ifdef _DEBUG
-
-bool SumElement::s_debugStringEnabled = getDebuggerPresent();
-
-void SumElement::initDebugString() {
-  if(m_positive) {
-    m_debugString = _T("+(") + m_n->getDebugString() + _T(")");
-  } else {
-    m_debugString = _T("-(") + m_n->getDebugString() + _T(")");
-  }
-}
-
-#endif

@@ -86,9 +86,9 @@ protected:
   void popReductionMethod(const TCHAR *method) const;
   void resetReductionStack();
 #define STARTREDUCTION()    resetReductionStack()
-#define ENTERMETHOD()       pushReductionMethod(method, format(_T("n:<%s>"), n.getDebugString().cstr()),n)
-#define ENTERMETHOD1(v)     pushReductionMethod(method, format(_T("%s:<%s>"), #v, (v).getDebugString().cstr()))
-#define ENTERMETHOD2(v1,v2) pushReductionMethod(method, format(_T("%s:<%s>, %s:<%s>"), #v1, (v1).getDebugString().cstr(), #v2, (v2).getDebugString().cstr()))
+#define ENTERMETHOD()       pushReductionMethod(method, format(_T("n:<%s>"), n.toString().cstr()),n)
+#define ENTERMETHOD1(v)     pushReductionMethod(method, format(_T("%s:<%s>"), _T(#v), (v).toString().cstr()))
+#define ENTERMETHOD2(v1,v2) pushReductionMethod(method, format(_T("%s:<%s>, %s:<%s>"), _T(#v1), (v1).toString().cstr(), _T(#v2), (v2).toString().cstr()))
 #define LEAVEMETHOD()       popReductionMethod(method)
 
 #define RETURN(x) { LEAVEMETHOD(); return x; }
@@ -108,21 +108,21 @@ protected:
 
 #define RETURNNODE(n)                                                                      \
 { const SNode &_n = n;                                                                     \
-  pushReductionMethod(method, format(_T("Reduced:<%s>"), _n.getDebugString().cstr()),_n);  \
+  pushReductionMethod(method, format(_T("Reduced:<%s>"), _n.toString().cstr()),_n);  \
   m_reductionStack.pop();                                                                  \
   RETURN(_n);                                                                              \
 }
 
 #define RETURNSHOWSTR(v)                                                                   \
 { const String _s = (v).toString();                                                        \
-  pushReductionMethod(method, format(_T("%s:<%s>"), #v, _s.cstr()));                       \
+  pushReductionMethod(method, format(_T("%s:<%s>"), _T(#v), _s.cstr()));                   \
   m_reductionStack.pop();                                                                  \
   RETURN(v);                                                                               \
 }
 
 #define RETURNPSHOWSTR(p)                                                                  \
 { const String _s = (p)->toString();                                                       \
-  pushReductionMethod(method, format(_T("%s:<%s>"), #p, _s.cstr()));                       \
+  pushReductionMethod(method, format(_T("%s:<%s>"), _T(#p), _s.cstr()));                   \
   m_reductionStack.pop();                                                                  \
   RETURN(p);                                                                               \
 }
@@ -386,7 +386,6 @@ typedef const ExpressionNode *(ParserTree::*BinaryOperator)(const ExpressionNode
   const ReductionStack &getReductionStack() const {
     return m_reductionStack;
   }
-  void enableReductionStack(bool enable);
   void clearAllBreakPoints();
 #endif
   Array<ExpressionVariable> &getVariables() {
@@ -405,5 +404,4 @@ typedef const ExpressionNode *(ParserTree::*BinaryOperator)(const ExpressionNode
   void traverseTree(ExpressionNodeHandler &handler) const;
   String variablesToString() const;
   String treeToString() const;
-  static void enableAllDebugStrings(bool enable);
 };

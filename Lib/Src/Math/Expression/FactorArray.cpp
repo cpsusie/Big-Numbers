@@ -9,7 +9,6 @@ void FactorArray::add(const ExpressionFactor *f) {
   if(base->getSymbol() != PRODUCT) {
     if(!base->isOne() && !(exponent->isZero())) {
       CompactArray<const ExpressionFactor*>::add(f);
-      FACTORARRAYADDLAST(this);
     }
   } else {
     const FactorArray &a = base->getFactorArray();
@@ -86,39 +85,3 @@ String FactorArray::toString() const {
   }
   return result;
 }
-
-#ifdef _DEBUG
-
-bool FactorArray::s_debugStringEnabled = getDebuggerPresent();
-
-void FactorArray::initDebugString() {
-  if(size() == 0) {
-    m_debugString = _T("1");
-  } else {
-    m_debugString = format(_T("(%s)"), (*this)[0]->getDebugString().cstr());
-    for(size_t i = 1; i < size(); i++) {
-      m_debugString += format(_T("*(%s)"), (*this)[i]->getDebugString().cstr());
-    }
-  }
-}
-
-void FactorArray::debugStringAddLast() {
-  if(size() == 1) {
-    m_debugString = _T("(");
-  } else {
-    m_debugString += _T("*(");
-  }
-  m_debugString += last()->getDebugString();
-  m_debugString += _T(")");
-}
-
-void FactorArray::debugStringAddAll(const FactorArray &src) {
-  if(size() == src.size()) {
-    m_debugString = src.getDebugString();
-  } else {
-    m_debugString += _T("*");
-    m_debugString += src.getDebugString();
-  }
-}
-
-#endif

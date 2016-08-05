@@ -111,6 +111,7 @@
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -120,6 +121,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
       <Verbose>true</Verbose>
@@ -136,6 +138,7 @@
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -145,6 +148,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
       <Verbose>true</Verbose>
@@ -177,6 +181,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
       <Verbose>true</Verbose>
@@ -212,6 +217,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>

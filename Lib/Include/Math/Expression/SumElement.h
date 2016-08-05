@@ -7,18 +7,6 @@ class ExpressionNode;
 class AddentArray;
 
 class SumElement {
-#ifdef _DEBUG
-private:
-  String                m_debugString;
-  static bool           s_debugStringEnabled;
-  void initDebugString();
-public:
-  inline const String &getDebugString() const { return m_debugString; }
-#define INITSUMELEMENTDEBUGSTRING() { if(SumElement::s_debugStringEnabled) initDebugString(); }
-#else
-#define INITSUMELEMENTDEBUGSTRING()
-#endif
-
   friend class ParserTree;
 
 private:
@@ -54,14 +42,4 @@ public:
   int compare(const SumElement *e) const;
 
   String toString() const;
-
-  inline static bool enableDebugString(bool enabled) {
-#ifdef _DEBUG
-    const bool ret = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    return ret;
-#else
-    return false;
-#endif
-  }
 };

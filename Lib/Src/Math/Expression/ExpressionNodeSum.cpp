@@ -9,7 +9,6 @@ static int compareSumElement(const SumElement * const &e1, const SumElement * co
 ExpressionNodeSum::ExpressionNodeSum(const ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
   m_elements = elements;
   m_elements.sort(compareSumElement);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 const ExpressionNodeSum *ExpressionNodeSum::multiply(const ExpressionNodeSum *n1, const ExpressionNodeSum *n2) { // static
@@ -19,7 +18,6 @@ const ExpressionNodeSum *ExpressionNodeSum::multiply(const ExpressionNodeSum *n1
   const AddentArray &aa2 = n2->getAddentArray();
 
   const ParserTree *tree = n1->getTree();
-  const bool oldEnable = AddentArray::enableDebugString(false);
   for(size_t i = 0; i < aa1.size(); i++) {
     const SumElement *e1 = aa1[i];
     const SNode       s1 = e1->getNode();
@@ -29,8 +27,6 @@ const ExpressionNodeSum *ExpressionNodeSum::multiply(const ExpressionNodeSum *n1
       newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
     }
   }
-  AddentArray::enableDebugString(oldEnable);  INITADDENTARRAYDEBUGSTRING(&newAddentArray);
-
   return new ExpressionNodeSum(tree, newAddentArray); // dont use getSum here. It has to be an ExpressionNodeSum
 }
 
@@ -107,10 +103,3 @@ String ExpressionNodeSum::toString() const {
   }
   return result;
 }
-
-#ifdef _DEBUG
-void ExpressionNodeSum::initDebugString() {
-  m_debugString = m_elements.getDebugString();
-}
-#endif
-

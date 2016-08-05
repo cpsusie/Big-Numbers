@@ -4,7 +4,6 @@
 ExpressionNodeVariable::ExpressionNodeVariable(const ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
   tree->allocateSymbol(this, false, false, false);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
@@ -33,9 +32,3 @@ void ExpressionNodeVariable::dumpNode(String &s, int level) const {
     s += _T("\n");
   }
 }
-
-#ifdef _DEBUG
-void ExpressionNodeVariable::initDebugString() {
-  m_debugString = getName();
-}
-#endif

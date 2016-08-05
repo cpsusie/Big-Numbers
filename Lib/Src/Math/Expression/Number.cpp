@@ -4,14 +4,9 @@
 
 DEFINECLASSNAME(Number);
 
-#ifdef _DEBUG
-bool         Number::s_debugStringEnabled = getDebuggerPresent();
-#endif
-
 Number::Number() {
   m_type     = NUMBERTYPE_UNDEFINED;
   m_rational = NULL;
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::Number(const Number &v) {
@@ -28,7 +23,6 @@ Number::Number(const Number &v) {
   default:
     throwUnknownTypeException(_T("copyConstructor"));
   }
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::Number(const Real &v) {
@@ -43,25 +37,21 @@ Number::Number(const Real &v) {
     m_type     = NUMBERTYPE_REAL;
     m_real     = new Real(v);
   }
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::Number(const Rational &v) {
   m_type     = NUMBERTYPE_RATIONAL;
   m_rational = new Rational(v);
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::Number(int v) {
   m_type     = NUMBERTYPE_RATIONAL;
   m_rational = new Rational(v);
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::Number(unsigned int v) {
   m_type     = NUMBERTYPE_RATIONAL;
   m_rational = new Rational(v);
-  INITNUMBERDEBUGSTRING();
 }
 
 Number::~Number() {
@@ -141,7 +131,6 @@ Number &Number::operator=(const Number &v) {
   default:
     v.throwUnknownTypeException(_T("operator="));
   }
-  INITNUMBERDEBUGSTRING();
   return *this;
 }
 
@@ -158,7 +147,6 @@ Number &Number::operator=(const Real &v) {
     setType(NUMBERTYPE_REAL);
     *m_real     = v;
   }
-  INITNUMBERDEBUGSTRING();
   return *this;
 }
 
@@ -167,7 +155,6 @@ Number &Number::operator=(const Rational &v) {
     setType(NUMBERTYPE_RATIONAL);
   }
   *m_rational = v;
-  INITNUMBERDEBUGSTRING();
   return *this;
 }
 
@@ -176,7 +163,6 @@ Number &Number::operator=(int v) {
     setType(NUMBERTYPE_RATIONAL);
   }
   *m_rational = v;
-  INITNUMBERDEBUGSTRING();
   return *this;
 }
 
@@ -185,7 +171,6 @@ Number &Number::operator=(unsigned int v) {
     setType(NUMBERTYPE_RATIONAL);
   }
   *m_rational = v;
-  INITNUMBERDEBUGSTRING();
   return *this;
 }
 
@@ -206,7 +191,6 @@ void Number::forceTypeToReal() {
   default:
     throwUnknownTypeException(method);
   }
-  INITNUMBERDEBUGSTRING();
 }
 
 int Number::getIntValue() const {
@@ -281,16 +265,6 @@ String Number::toString() const {
   default:
     return format(_T("%s::toString:Unknown type:%d"), s_className, getType());
   }
-}
-
-bool Number::enableDebugString(bool enabled) { // static
-#ifdef _DEBUG
-  const bool ret = s_debugStringEnabled;
-  s_debugStringEnabled = enabled;
-  return ret;
-#else
-  return false;
-#endif
 }
 
 Number operator+(const Number &n1, const Number &n2) {

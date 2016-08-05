@@ -39,153 +39,38 @@ class ParserTree;
 class Expression;
 
 class ExpressionNodeArray : public CompactArray<const ExpressionNode*> {
-#ifdef _DEBUG
-private:
-  String                m_debugString;
-public:
-  static bool           s_debugStringEnabled;
-  void initDebugString();
-  void debugStringAddLast();
-  void debugStringAddAll(const ExpressionNodeArray &src);
-  inline const String &getDebugString() const { return m_debugString; }
-
-#define INITEXPRESSIONNODEARRAYDEBUGSTRING(a)      { if(ExpressionNodeArray::s_debugStringEnabled) (a)->initDebugString();      }
-#define EXPRESSIONNODEARRAYADDLAST(        a)      { if(ExpressionNodeArray::s_debugStringEnabled) (a)->debugStringAddLast();   }
-#define EXPRESSIONNODEARRAYADDALL(         a, src) { if(ExpressionNodeArray::s_debugStringEnabled) (a)->debugStringAddAll(src); }
-#else
-#define INITEXPRESSIONNODEARRAYDEBUGSTRING(a)
-#define EXPRESSIONNODEARRAYADDLAST(        a)
-#define EXPRESSIONNODEARRAYADDALL(         a, src)
-#endif
-
 public:
   ExpressionNodeArray() {
   }
   explicit ExpressionNodeArray(size_t capacity) : CompactArray<const ExpressionNode*>(capacity) {
   }
   const ExpressionNode *toTree(ExpressionInputSymbol delimiter) const;
-
-#ifdef _DEBUG
-  inline void clear(intptr_t capacity=0) {
-    CompactArray<const ExpressionNode*>::clear(capacity);
-    INITEXPRESSIONNODEARRAYDEBUGSTRING(this);
-  }
-  inline void add(const ExpressionNode *n) {
-    CompactArray<const ExpressionNode*>::add(n);
-    EXPRESSIONNODEARRAYADDLAST(this);
-  }
-  inline void remove(size_t index, size_t count = 1) {
-    CompactArray<const ExpressionNode*>::remove(index, count);
-    INITEXPRESSIONNODEARRAYDEBUGSTRING(this);
-  }
-  inline void addAll(const ExpressionNodeArray &src) {
-    CompactArray<const ExpressionNode*>::addAll(src);
-    EXPRESSIONNODEARRAYADDALL(this, src);
-  }
-#endif
-
   bool isConstant() const;
-
   String toString() const;
-  inline static bool enableDebugString(bool enabled) {
-#ifdef _DEBUG
-    const bool ret = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    return ret;
-#else
-    return false;
-#endif
-  }
 };
 
 class AddentArray : public CompactArray<const SumElement*> {
-#ifdef _DEBUG
-private:
-  String                m_debugString;
-public:
-  static bool           s_debugStringEnabled;
-  void initDebugString();
-  void debugStringAddLast();
-  void debugStringAddAll(const AddentArray &src);
-  inline const String &getDebugString() const { return m_debugString; }
-
-#define INITADDENTARRAYDEBUGSTRING(a)      { if(AddentArray::s_debugStringEnabled) (a)->initDebugString();      }
-#define ADDENTARRAYADDLAST(        a)      { if(AddentArray::s_debugStringEnabled) (a)->debugStringAddLast();   }
-#define ADDENTARRAYADDALL(         a, src) { if(AddentArray::s_debugStringEnabled) (a)->debugStringAddAll(src); }
-#else
-#define INITADDENTARRAYDEBUGSTRING(a)
-#define ADDENTARRAYADDLAST(        a)
-#define ADDENTARRAYADDALL(         a, src)
-#endif
-
 public:
   AddentArray() {
   }
   explicit AddentArray(size_t capacity) : CompactArray<const SumElement*>(capacity) {
   }
-
   void add(const ExpressionNode *n, bool positive);
-
+  inline void add(const SumElement *e) {
+    CompactArray<const SumElement*>::add(e);
+  }
   inline AddentArray &operator+=(const ExpressionNode *n) {
     add(n, true);
     return *this;
   }
-
   inline AddentArray &operator-=(const ExpressionNode *n) {
     add(n, false);
     return *this;
   }
-
-  inline void clear(intptr_t capacity=0) {
-    CompactArray<const SumElement*>::clear(capacity);
-    INITADDENTARRAYDEBUGSTRING(this);
-  }
-  inline void add(const SumElement *e) {
-    CompactArray<const SumElement*>::add(e);
-    ADDENTARRAYADDLAST(this);
-  }
-  inline void remove(size_t index, size_t count = 1) {
-    CompactArray<const SumElement*>::remove(index, count);
-    INITADDENTARRAYDEBUGSTRING(this);
-  }
-  inline void addAll(const AddentArray &src) {
-    CompactArray<const SumElement*>::addAll(src);
-    ADDENTARRAYADDALL(this, src);
-  }
-
   String toString() const;
-  inline static bool enableDebugString(bool enabled) {
-#ifdef _DEBUG
-    const bool ret = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    return ret;
-#else
-    return false;
-#endif
-  }
 };
 
 class FactorArray : public CompactArray<const ExpressionFactor*> {
-#ifdef _DEBUG
-private:
-  String                m_debugString;
-
-public:
-  static bool           s_debugStringEnabled;
-  void initDebugString();
-  void debugStringAddLast();
-  void debugStringAddAll(const FactorArray &src);
-  inline const String &getDebugString() const { return m_debugString; }
-
-#define INITFACTORARRAYEBUGSTRING(a)      { if(FactorArray::s_debugStringEnabled) (a)->initDebugString();      }
-#define FACTORARRAYADDLAST(       a)      { if(FactorArray::s_debugStringEnabled) (a)->debugStringAddLast();   }
-#define FACTORARRAYADDALL(        a, src) { if(FactorArray::s_debugStringEnabled) (a)->debugStringAddAll(src); }
-#else
-#define INITFACTORARRAYEBUGSTRING(a)
-#define FACTORARRAYADDLAST(       a)
-#define FACTORARRAYADDALL(        a, src)
-#endif
-
 public:
   FactorArray() {
   }
@@ -197,31 +82,9 @@ public:
   FactorArray selectNonConstantExponentFactors() const;
   int findFactorWithChangeableSign() const;
 
-  inline void clear(intptr_t capacity=0) {
-    CompactArray<const ExpressionFactor*>::clear(capacity);
-    INITFACTORARRAYEBUGSTRING(this);
-  }
   void add(const ExpressionFactor *f);
   void add(const ExpressionNode *base, const ExpressionNode *exponent = NULL);
-  inline void remove(size_t index, size_t count = 1) {
-    CompactArray<const ExpressionFactor*>::remove(index, count);
-    INITFACTORARRAYEBUGSTRING(this);
-  }
-  inline void addAll(const FactorArray &src) {
-    CompactArray<const ExpressionFactor*>::addAll(src);
-    FACTORARRAYADDALL(this, src);
-  }
-
   String toString() const;
-  inline static bool enableDebugString(bool enabled) {
-#ifdef _DEBUG
-    const bool ret = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    return ret;
-#else
-    return false;
-#endif
-  }
 };
 
 class ExpressionSymbolSet : public BitSet {
@@ -290,19 +153,6 @@ public:
 } ;
 
 class ExpressionNode {
-#ifdef _DEBUG
-protected:
-  String                m_debugString;
-  static bool           s_debugStringEnabled;
-  virtual void initDebugString() = 0;
-public:
-  inline const String &getDebugString() const { return m_debugString; }
-
-#define INITEXPRESSIONNODEDEBUGSTRING() { if(ExpressionNode::s_debugStringEnabled) initDebugString(); }
-#else
-#define INITEXPRESSIONNODEDEBUGSTRING()
-#endif
-
 private:
   static SymbolOrderMap      s_orderMap;
   static InverseFunctionMap  s_inverseFunctionMap;
@@ -400,19 +250,10 @@ public:
   bool    isAsymmetricExponent()        const;
   int     getPrecedence()               const;
 
-  String  parenthesizedExpressionToString(const ExpressionNode  *parent, bool dbg=false)  const;
-  bool    needParentheses(                const ExpressionNode  *parent)                  const;
-  int     getMaxTreeDepth()                                                               const;
-  String  statementListToString( bool dbg=false)                                          const;
-  inline static bool enableDebugString(bool enabled) {
-#ifdef _DEBUG
-    const bool ret = s_debugStringEnabled;
-    s_debugStringEnabled = enabled;
-    return ret;
-#else
-    return false;
-#endif
-  }
+  String  parenthesizedExpressionToString(const ExpressionNode  *parent)  const;
+  bool    needParentheses(                const ExpressionNode  *parent)  const;
+  int     getMaxTreeDepth()                                               const;
+  String  statementListToString()                                         const;
 };
 
 typedef CompactKeyType<const ExpressionNode*>  ExpressionNodeKey;
@@ -424,26 +265,19 @@ ExpressionNodeArray getExpressionList(const ExpressionNode *n);
 ExpressionNodeArray getStatementList( const ExpressionNode *n);
 
 class ExpressionNodeNumber : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
   Number m_number;
 public:
   inline ExpressionNodeNumber(const ParserTree *tree, const Real &value) : ExpressionNode(tree, NUMBER) {
     m_number = value;
-    INITEXPRESSIONNODEDEBUGSTRING();
   }
 
   inline ExpressionNodeNumber(const ParserTree *tree, const Rational &value) : ExpressionNode(tree, NUMBER) {
     m_number = value;
-    INITEXPRESSIONNODEDEBUGSTRING();
   }
 
   inline ExpressionNodeNumber(const ParserTree *tree, const Number &value) : ExpressionNode(tree, NUMBER) {
     m_number = value;
-    INITEXPRESSIONNODEDEBUGSTRING();
   }
 
   const Real *getRealAddress() const {
@@ -475,15 +309,10 @@ public:
 };
 
 class ExpressionNodeBoolean : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
   const bool m_value;
 public:
   ExpressionNodeBoolean(const ParserTree *tree, bool b) : ExpressionNode(tree, TYPEBOOL), m_value(b) {
-    INITEXPRESSIONNODEDEBUGSTRING();
   }
   bool getBool() const {
     return m_value;
@@ -510,10 +339,6 @@ public:
 };
 
 class ExpressionNodeVariable : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
   String              m_name;
   ExpressionVariable *m_var;
@@ -526,7 +351,6 @@ public:
     , m_name(name)
   {
     m_var  = &var;
-    INITEXPRESSIONNODEDEBUGSTRING();
   }
 
   const String &getName() const {
@@ -562,12 +386,7 @@ public:
 };
 
 class ExpressionNodeTree : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
-  String toString(bool dbg) const;
   ExpressionNodeArray m_childArray;
   void initChildArray(va_list argptr);
 protected:
@@ -610,12 +429,7 @@ public:
 };
 
 class ExpressionNodePoly : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
-  String toString(bool dbg) const;
   ExpressionNodeArray   m_coefficientArray;
   const ExpressionNode *m_argument;
 
@@ -727,10 +541,6 @@ public:
 // ------------------------------------------------------------------------------------------------------
 
 class ExpressionNodeSum : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
   AddentArray m_elements;
 public:
@@ -759,10 +569,6 @@ public:
 };
 
 class ExpressionNodeProduct : public ExpressionNode {
-#ifdef _DEBUG
-protected:
-  void initDebugString();
-#endif
 private:
   FactorArray m_factors;
 public:
@@ -939,12 +745,6 @@ public:
   inline String toString() const {
     return isEmpty() ? "" : m_node->toString();
   }
-
-#ifdef _DEBUG
-  inline const String &getDebugString() const {
-    return m_node->getDebugString();
-  }
-#endif
 
   friend SNode reciprocal(const SNode &x);
   friend SNode sqrt(      const SNode &x);

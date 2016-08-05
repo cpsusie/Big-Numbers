@@ -38,16 +38,3 @@ bool ExpressionNodeBoolean::traverseExpression(ExpressionNodeHandler &handler, i
 void ExpressionNodeBoolean::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("BOOLEAN:%s\n"), boolToStr(getBool()));
 }
-
-#ifdef _DEBUG
-
-void ExpressionNodeNumber::initDebugString() {
-  m_debugString = getNumber().toString();
-}
-
-void ExpressionNodeBoolean::initDebugString() {
-  m_debugString = toString();
-}
-
-#endif
-

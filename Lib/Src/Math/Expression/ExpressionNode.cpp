@@ -4,10 +4,6 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
-#ifdef _DEBUG
-bool ExpressionNode::s_debugStringEnabled = getDebuggerPresent();
-#endif
-
 ExpressionNode::ExpressionNode(const ParserTree *tree, ExpressionInputSymbol symbol) : m_tree(*tree), m_info(symbol) {
   m_tree.m_nodeTable.add(this);
 }
@@ -106,25 +102,19 @@ int ExpressionNode::getMaxTreeDepth() const {
   return handler.getMaxLevel();
 }
 
-#ifdef _DEBUG
-#define TOSTRING(n) ((dbg)?(n)->getDebugString():(n)->toString())
-#else
-#define TOSTRING(n) toString()
-#endif
-
-String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *parent, bool dbg) const {
+String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *parent) const {
   if(needParentheses(parent)) {
-    return _T("(") + TOSTRING(this) + _T(")");
+    return _T("(") + toString() + _T(")");
   } else {
-    return TOSTRING(this);
+    return toString();
   }
 }
 
-String ExpressionNode::statementListToString(bool dbg) const {
+String ExpressionNode::statementListToString() const {
   String result;
   ExpressionNodeArray list = getStatementList(this);
   for(size_t i = 0; i < list.size(); i++) {
-    result += TOSTRING(list[i]);
+    result += list[i]->toString();
     result += _T(";\n");
   }
   return result;
@@ -416,36 +406,3 @@ String ExpressionNodeArray::toString() const {
     return result;
   }
 }
-
-#ifdef _DEBUG
-
-bool ExpressionNodeArray::s_debugStringEnabled = getDebuggerPresent();
-
-void ExpressionNodeArray::initDebugString() {
-  if(size() == 0) {
-    m_debugString = _T("");
-  } else {
-    m_debugString = format(_T("(%s)"), (*this)[0]->getDebugString().cstr());
-    for(size_t i = 1; i < size(); i++) {
-      m_debugString += format(_T(",(%s)"), (*this)[i]->getDebugString().cstr());
-    }
-  }
-}
-
-void ExpressionNodeArray::debugStringAddLast() {
-  if(size() == 1) {
-    m_debugString = format(_T("(%s)"), last()->getDebugString().cstr());
-  } else {
-    m_debugString += format(_T(",(%s)"), last()->getDebugString().cstr());
-  }
-}
-
-void ExpressionNodeArray::debugStringAddAll(const ExpressionNodeArray &src) {
-  if(size() == src.size()) {
-    m_debugString = src.getDebugString();
-  } else {
-    m_debugString += src.getDebugString();
-  }
-}
-
-#endif

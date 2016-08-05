@@ -9,7 +9,6 @@ static int compareFactors(const ExpressionFactor * const &f1, const ExpressionFa
 ExpressionNodeProduct::ExpressionNodeProduct(const ParserTree *tree, const FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
   m_factors = factors;
   m_factors.sort(compareFactors);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
@@ -40,12 +39,9 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
 
 const ExpressionNode *ExpressionNodeProduct::clone(const ParserTree *tree) const {
   FactorArray factors(m_factors.size());
-  const bool oldEnable = FactorArray::enableDebugString(false);
   for(size_t i = 0; i < m_factors.size(); i++) {
     factors.add(m_factors[i]->clone(tree));
   }
-  FactorArray::enableDebugString(oldEnable); INITFACTORARRAYEBUGSTRING(&factors);
-
   return new ExpressionNodeProduct(tree, factors);
 }
 
@@ -133,10 +129,4 @@ String ExpressionNodeProduct::toString() const {
   return result;
 */
 }
-
-#ifdef _DEBUG
-void ExpressionNodeProduct::initDebugString() {
-  m_debugString = m_factors.getDebugString();
-}
-#endif
 

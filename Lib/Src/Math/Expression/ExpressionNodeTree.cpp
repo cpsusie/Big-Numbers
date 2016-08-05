@@ -3,8 +3,6 @@
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
   initChildArray(argptr);
-#pragma warning(disable:4390)
-  if(m_childArray.size() > 0) INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, const ExpressionNodeArray &childArray) : ExpressionNode(tree, symbol) {
@@ -12,7 +10,6 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSy
   for(size_t i = 0; i < childArray.size(); i++) {
     m_childArray.add((ExpressionNode*)childArray[i]);
   }
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
@@ -21,7 +18,6 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, const ExpressionN
   for(size_t i = 0; i < sa.size(); i++) {
     m_childArray.add(sa[i]->clone(tree));
   }
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
@@ -29,7 +25,6 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSy
   va_start(argptr, symbol);
   initChildArray(argptr);
   va_end(argptr);
-  INITEXPRESSIONNODEDEBUGSTRING();
 }
 
 static int countVargs(va_list argptr) {
@@ -42,13 +37,10 @@ static int countVargs(va_list argptr) {
 
 void ExpressionNodeTree::initChildArray(va_list argptr) {
   int count = countVargs(argptr);;
-  const bool oldEnable = m_childArray.enableDebugString(false);
   m_childArray.clear(count);
   for (ExpressionNode *p = va_arg(argptr, ExpressionNode*); p; p = va_arg(argptr, ExpressionNode*)) {
     m_childArray.add(p);
   }
-  m_childArray.enableDebugString(oldEnable);
-  INITEXPRESSIONNODEARRAYDEBUGSTRING(&m_childArray);
 }
 
 const ExpressionNode *ExpressionNodeTree::expand() const {
@@ -208,28 +200,14 @@ void ExpressionNodeTree::dumpNode(String &s, int level) const {
   }
 }
 
-String ExpressionNodeTree::toString() const {
-  return toString(false);
-}
-
-#ifdef _DEBUG
-
-void ExpressionNodeTree::initDebugString() {
-  m_debugString = toString(true);
-}
-
-#define CHILDSTR(i)    ((dbg)?m_childArray[i]->getDebugString():m_childArray[i]->toString())
-#define CHILDPARSTR(i) m_childArray[i]->parenthesizedExpressionToString(this, dbg)
-#else
 #define CHILDSTR(i)    m_childArray[i]->toString()
 #define CHILDPARSTR(i) m_childArray[i]->parenthesizedExpressionToString(this)
-#endif
 
 #define RPSTR    _T(")")
 #define COMMASTR _T(",")
 
 
-String ExpressionNodeTree::toString(bool dbg) const {
+String ExpressionNodeTree::toString() const {
   switch(getSymbol()) {
   case MINUS     :
     if(isUnaryMinus()) {
@@ -293,7 +271,7 @@ String ExpressionNodeTree::toString(bool dbg) const {
   case TAN           : return _T("tan("   ) + CHILDSTR(0) + RPSTR;
   case TANH          : return _T("tanh("  ) + CHILDSTR(0) + RPSTR;
   case IIF           : return _T("if("    ) + CHILDSTR(0) + COMMASTR + CHILDSTR(1) + COMMASTR + CHILDSTR(2) + RPSTR;
-  case SEMI          : return m_childArray[0]->statementListToString(dbg) + CHILDSTR(1);
+  case SEMI          : return m_childArray[0]->statementListToString() + CHILDSTR(1);
   case ASSIGN        : return CHILDSTR(0) + _T(" = ") + CHILDSTR(1);
   case RETURNREAL    : return CHILDSTR(0);
   case RETURNBOOL    : return CHILDSTR(0);

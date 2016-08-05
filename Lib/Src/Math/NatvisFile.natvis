@@ -1,23 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="Complex">
-    <DisplayString Condition="im == 0">{re,g}</DisplayString>
-    <DisplayString Condition="re == 0">{im,g}i</DisplayString>
-    <DisplayString Condition="im > 0">{re,g}+{im,g}i</DisplayString>
-    <DisplayString>{re,g}{im,g}i</DisplayString>
-  </Type>
   <Type Name="Point2D">
     <DisplayString>{{x={x} y={y}}}</DisplayString>
   </Type>
   <Type Name="Point3D">
     <DisplayString>{{x={x} y={y} z={z}}}</DisplayString>
   </Type>
+  <Type Name="Complex">
+    <DisplayString Condition="im == 0">{re,g}</DisplayString>
+    <DisplayString Condition="re == 0">{im,g}i</DisplayString>
+    <DisplayString Condition="im > 0">{re,g}+{im,g}i</DisplayString>
+    <DisplayString>{re,g}{im,g}i</DisplayString>
+  </Type>
   <Type Name="Rational">
     <DisplayString Condition="m_denominator == 1">{m_numerator,d}</DisplayString>
-    <DisplayString>{m_numerator,d}/{m_denominator,u}</DisplayString>
-  </Type>
-  <Type Name="ExpressionNode">
-    <DisplayString>{m_debugString}</DisplayString>
+    <DisplayString>{m_numerator,d} / {m_denominator,u}</DisplayString>
   </Type>
   <Type Name="_int128">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
@@ -27,6 +24,22 @@
   </Type>
   <Type Name="Double80">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
+  </Type>
+  <Type Name="Number">
+    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_Number"></DisplayString>
+  </Type>
+  <Type Name="ExpressionVariable">
+    <DisplayString>{Name={m_name} Value={m_value}}</DisplayString>
+  </Type>
+  <Type Name="ExpressionNodeNumber">
+    <DisplayString>{Value={m_number}}</DisplayString>
+  </Type>
+  <Type Name="ExpressionNodeBoolean">
+    <DisplayString>{Value={m_value}}</DisplayString>
+  </Type>
+  <Type Name="SNode">
+    <DisplayString Condition="m_node == 0">null</DisplayString>
+    <DisplayString>{Node={*m_node}}</DisplayString>
   </Type>
 
 </AutoVisualizer>
