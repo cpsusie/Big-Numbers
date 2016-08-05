@@ -67,6 +67,34 @@ const Real *MachineCode::getValueAddr(const ExpressionNode *n) const {
   }
 }
 
+#ifdef IS64BIT
+bool MachineCode::emitFLoad(const ExpressionNode *n, ExpressionDestination dst) {
+  bool returnValue = true;
+  switch (dst.m_type) {
+  case RESULT_IN_ADDRRDI :
+  case RESULT_ON_STACK   :
+  case RESULT_IN_IMMADDR :
+    returnValue = false; // false  indicates that value needs to be moved from FPU to desired destination
+    // NB continue case
+  case RESULT_IN_FPU     :
+    if(n->isOne()) {
+      emit(FLD1);
+    } else if (n->isPi()) {
+      emit(FLDPI);
+    } else if(n->isZero()) {
+      emit(FLDZ);
+    } else {
+      emitFLoad(n);
+    }
+    break;
+  case RESULT_IN_XMM     :
+    emit(MEM_ADDR_DS(MOVSD_XMM_MMWORD(dst.m_offset))); addImmediateAddr(getValueAddr(n));
+    return true;
+  }
+  return returnValue;
+}
+#endif
+
 void MachineCode::addImmediateAddr(const void *addr) {
 #ifdef IS32BIT
   addBytes(&addr,sizeof(addr));
@@ -159,16 +187,6 @@ void MachineCode::addPolyCoefficients(CompactDoubleArray *coefArray) {
   m_coefCache.add(coefArray);
 }
 #endif // IS32BIT
-
-void MachineCode::emitTestAH(BYTE n) {
-  emit(REG_SRC(TEST_IMM_BYTE,AH));
-  addBytes(&n,1);
-}
-
-void MachineCode::emitTestEAX(unsigned long n) {
-  emit(TEST_EAX_IMM_DWORD);
-  addBytes(&n,4);
-}
 
 int MachineCode::emitShortJmp(const IntelInstruction &ins) {
   emit(ins);
@@ -452,9 +470,14 @@ void Expression::genExpression(const ExpressionNode *n, ExpressionDestination ds
   switch(n->getSymbol()) {
   case NAME  :
   case NUMBER:
+#ifdef IS64BIT
+    if(m_code.emitFLoad(n, dst)) {
+      return;
+    }
+#else
     m_code.emitFLoad(n);
+#endif
     break;
-
   case SEMI:
     genStatementList(n);
     break;

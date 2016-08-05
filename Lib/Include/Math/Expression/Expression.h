@@ -109,10 +109,9 @@ public:
   void emitFStorePop(   const ExpressionNode *n) { emitImmOp(FSTP_REAL_PTR_DS         , n); }
   void emitFComparePop( const ExpressionNode *n) { emitImmOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
 #ifdef IS64BIT
-  void emitXMM0ToAddr(const Real          *x) { emitImmOp(MEM_ADDR_DS(MOVSD_MMWORD_XMM(XMM0)), x); }
+  void emitXMM0ToAddr(  const Real           *x) { emitImmOp(MEM_ADDR_DS(MOVSD_MMWORD_XMM(XMM0)), x); }
+  bool emitFLoad(       const ExpressionNode *n, ExpressionDestination dst);
 #endif
-  void emitTestAH(  BYTE                  n);
-  void emitTestEAX( unsigned long         n);
   void addImmediateAddr(const void *addr);
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
   void fixupShortJump(int addr, int jmpAddr);
