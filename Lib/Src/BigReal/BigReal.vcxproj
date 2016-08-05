@@ -115,6 +115,7 @@
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -191,6 +192,7 @@
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX64</TargetMachine>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -221,6 +223,7 @@
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX64</TargetMachine>
+      <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>

@@ -100,6 +100,7 @@
     <OutDir>..\..\MTRelease64\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildAfterTargets />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -124,8 +125,9 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
       <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -151,8 +153,14 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -184,7 +192,7 @@
       <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
@@ -210,7 +218,8 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
