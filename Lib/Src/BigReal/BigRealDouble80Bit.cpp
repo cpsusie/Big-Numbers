@@ -168,7 +168,6 @@ BigReal::BigReal(const Double80 &x) {
     trimZeroes();
     multPow10(expo10 - getExpo10(*this));
   }
-  SETBIGREALDEBUGSTRING(*this)
 }
 
 Double80 getDouble80(const BigReal &x) {

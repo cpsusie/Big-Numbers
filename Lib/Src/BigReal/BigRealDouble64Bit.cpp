@@ -101,7 +101,6 @@ BigReal::BigReal(double x) {
     trimZeroes();
     multPow10(expo10 - getExpo10(*this));
   }
-  SETBIGREALDEBUGSTRING(*this)
 }
 
 double getDouble(const BigReal &x) {

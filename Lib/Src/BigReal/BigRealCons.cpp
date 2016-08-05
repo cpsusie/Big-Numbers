@@ -2,15 +2,6 @@
 #include <float.h>
 #include <ctype.h>
 
-#ifdef _USEDEBUGSTRING
-
-void BigReal::ajourDebugString() const {
-  _tcsncpy(m_debugString, ::toString((*this),ARRAYSIZE(m_debugString)-10,0).cstr(),ARRAYSIZE(m_debugString)-1);
-  LASTVALUE(m_debugString) = 0;
-}
-
-#endif
-
 void BigReal::init(int n) {
   init();
   if(n) {

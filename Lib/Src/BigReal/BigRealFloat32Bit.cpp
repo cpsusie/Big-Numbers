@@ -92,7 +92,6 @@ BigReal::BigReal(float x) {
     trimZeroes();
     multPow10(expo10 - getExpo10(*this));
   }
-  SETBIGREALDEBUGSTRING(*this);
 }
 
 float getFloat(const BigReal &x) {
