@@ -5,14 +5,9 @@
 const TCHAR *thisFile              = _T(__FILE__);
 DEFINECLASSNAME(Rational);
 
-#ifdef _DEBUG
-bool         Rational::s_debugStringEnabled = getDebuggerPresent();
-#endif
-
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)
 
 Rational::Rational() : m_numerator(0), m_denominator(1) {
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational::Rational(const __int64 &numerator, const __int64 &denominator) {
@@ -32,15 +27,12 @@ Rational::Rational(int numerator, const __int64 &denominator) {
 }
 
 Rational::Rational(const __int64 &n) : m_numerator(n), m_denominator(1) {
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational::Rational(int n) : m_numerator(n), m_denominator(1) {
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational::Rational(unsigned int n) : m_numerator(n), m_denominator(1) {
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 // This algorithm is borrowed from gimpzoommodel.c in LIBGIMP:
@@ -63,7 +55,6 @@ Rational::Rational(double d, unsigned int maxND) {
   } else {
     m_numerator   = 0;
     m_denominator = 1;
-    INITRATIONALDEBUGSTRING(*this);
     return;
   }
 
@@ -100,7 +91,6 @@ Rational::Rational(double d, unsigned int maxND) {
 
   m_numerator   = positive ? p1 : -p1;
   m_denominator = q1;
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
@@ -118,7 +108,6 @@ Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
   } else {
     m_numerator   = 0;
     m_denominator = 1;
-    INITRATIONALDEBUGSTRING(*this);
     return;
   }
 
@@ -155,7 +144,6 @@ Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
 
   m_numerator   = positive ? p1 : -(__int64)p1;
   m_denominator = q1;
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational::Rational(const String &s) {
@@ -184,7 +172,6 @@ void Rational::init(const String &s) {
       throwMethodInvalidArgumentException(s_className, method, _T("s=%s"), s.cstr());
     }
     m_denominator = 1;
-    INITRATIONALDEBUGSTRING(*this);
   } else {
     __int64 n, d;
     if((_stscanf(s.cstr()        , _T("%I64d"), &n) != 1)
@@ -216,7 +203,6 @@ void Rational::init(const __int64 &numerator, const __int64 &denominator) {
       m_denominator = -m_denominator;
     }
   }
-  INITRATIONALDEBUGSTRING(*this);
 }
 
 Rational operator+(const Rational &l, const Rational &r) {
@@ -295,9 +281,8 @@ Rational &Rational::operator%=(const Rational &r) {
 
 Rational fabs(const Rational &r) {
   Rational result;
-  result.m_numerator = abs(r.m_numerator);
+  result.m_numerator   = abs(r.m_numerator);
   result.m_denominator = r.m_denominator;
-  INITRATIONALDEBUGSTRING(result);
   return result;
 }
 
@@ -474,14 +459,4 @@ String Rational::toString() const {
   } else {
     return format(_T("%I64d/%I64d"), m_numerator, m_denominator);
   }
-}
-
-bool Rational::enableDebugString(bool enabled) { // static
-#ifdef _DEBUG
-  const bool ret = s_debugStringEnabled;
-  s_debugStringEnabled = enabled;
-  return ret;
-#else
-  return false;
-#endif
 }

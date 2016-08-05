@@ -5,21 +5,6 @@
 #include <Math/Real.h>
 
 class Rational {
-#ifdef _DEBUG
-private:
-  String                m_debugString;
-  static bool           s_debugStringEnabled;
-  inline void initDebugString() {
-    m_debugString = toString();
-  }
-public:
-  const String &getDebugString() const { return m_debugString; }
-
-#define INITRATIONALDEBUGSTRING(r) { if(Rational::s_debugStringEnabled) (r).initDebugString(); }
-#else
-#define INITRATIONALDEBUGSTRING(r)
-#endif
-
 private:
   DECLARECLASSNAME;
   __int64 m_numerator, m_denominator;
@@ -154,23 +139,14 @@ public:
   }
   inline void load(ByteInputStream  &s) {
     s.getBytesForced((BYTE*)this, sizeof(Rational));
-    INITRATIONALDEBUGSTRING(*this);
   }
 
   friend inline Packer &operator<<(Packer &p, const Rational &r) {
     return p << r.m_numerator << r.m_denominator;
   }
   friend inline Packer &operator>>(Packer &p, Rational &r) {
-#ifdef _DEBUG
-    p >> r.m_numerator >> r.m_denominator;
-    INITRATIONALDEBUGSTRING(r);
-    return p;
-#else
     return p >> r.m_numerator >> r.m_denominator;
-#endif
   }
-  static bool enableDebugString(bool enabled);
-
 };
 
 String toString(const Rational &r, int precision=0, int width=0, int flags=0);
