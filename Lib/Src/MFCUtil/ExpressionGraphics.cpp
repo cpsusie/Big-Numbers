@@ -103,8 +103,8 @@ SymbolStringMap::SymbolStringMap() {
   putString(IIF            , true , _T("if"   ));
   putString(MOD            , true , _T(" mod "));
   putString(PLUS           , true , _T("+"    ));
-  putString(MINUS          , true , _T("\x96" ));
-  putString(PROD           , true , _T("\x95" ));
+  putString(MINUS          , true , _T("-"    ));
+  putString(PROD           , true , _T("\xB7" ));
   putString(COMMA          , true , _T(","    ));
   putString(SEMI           , true , _T(";"    ));
   putString(LPAR           , true , _T("("    ));
@@ -205,9 +205,9 @@ AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, 
   releaseDC(hdc);
   setAlignment(size.cy/2);
 
-//  horizontalLine(m_textMetric.tmHeight - m_textMetric.tmAscent + m_textMetric.tmInternalLeading , RGB_MAKE(255,255,255));
+//  horizontalLine(m_textMetric.tmHeight - m_textMetric.tmAscent + m_textMetric.tmInternalLeading , D3DCOLOR_XRGB(255,255,255));
 #ifdef SHOW_LINES
-  horizontalLine(m_textMetric.tmHeight - m_textMetric.tmDescent, RGB_MAKE(255,  20,20));
+  horizontalLine(m_textMetric.tmHeight - m_textMetric.tmDescent, D3DCOLOR_XRGB(255,  20,20));
 #endif
 
 }
@@ -312,7 +312,7 @@ public:
   const ExpressionRectangle &getRectangleTree() const {
     return m_rectangle;
   }
-
+  void clear();
 };
 
 DEFINECLASSNAME(ExpressionPainter);
@@ -321,11 +321,16 @@ SymbolStringMap ExpressionPainter::s_stringMap;
 
 ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr) 
 : m_device(device)
-, m_expression(expr) {
+, m_expression(expr)
+{
   m_backgroundColor = WHITE;
 }
 
 ExpressionPainter::~ExpressionPainter() {
+  clear();
+}
+
+void ExpressionPainter::clear() {
   clearImageTable();
 }
 
@@ -383,6 +388,7 @@ AlignedImage *ExpressionPainter::cutImage(AlignedImage *image, unsigned int perc
 void ExpressionPainter::clearImageTable() {
   for(size_t i = 0; i < m_imageTable.size(); i++) {
     delete m_imageTable[i];
+    m_imageTable[i] = NULL;
   }
   m_imageTable.clear();
 }
@@ -659,7 +665,7 @@ AlignedImage *ExpressionPainter::getQuotImage(const AlignedImage *p, const Align
 }
 
 AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
-//  m_backgroundColor = RGB_MAKE(0,128,0);
+//  m_backgroundColor = D3DCOLOR_XRGB(0,128,0);
   ExpressionRectangle baseRect, expoRect;
   AlignedImage               *baseImage = getParenthesizedImage(n->left(),n,fontSize, baseRect);
   const int                   baseAlign = baseImage->getHeight() - baseImage->getAlignment();
@@ -668,7 +674,7 @@ AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, int font
   const int          baseHeight   = baseImage->getHeight();
   const unsigned int expoFontSize = min(createSubFontSize(baseHeight), fontSize);
 
-//  m_backgroundColor       = RGB_MAKE(255,0,0);
+//  m_backgroundColor       = D3DCOLOR_XRGB(255,0,0);
   AlignedImage *expoImage = getParenthesizedImage(exponent, n, expoFontSize, expoRect);
 //  m_backgroundColor       = WHITE;
 
@@ -696,12 +702,15 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontS
 
   const ExpressionNode *radicand         = n->left();
   const ExpressionNode *root             = n->right();
-  AlignedImage               *radImage         = getImage(radicand, fontSize, radRect);
-  const int                   rootSignFontSize = max(radImage->getHeight(),fontSize);
+  AlignedImage         *radImage         = getImage(radicand, fontSize, radRect);
+  const int             rootSignFontSize = max(radImage->getHeight(),fontSize);
   
-//  m_backgroundColor = RGB_MAKE(255,0,0);
+//  m_backgroundColor = D3DCOLOR_XRGB(255,0,0);
   AlignedImage         *rootSignImage = getOpImage(ROOT, rootSignFontSize, rootSignRect);
 //  m_backgroundColor = WHITE;
+
+//  PixRect *rootCopy = rootSignImage->clone(true);
+//  PixRect::showPixRect(rootCopy);
 
   AlignedImage       *leftImage = rootSignImage;
   ExpressionRectangle leftRect  = rootSignRect;
@@ -735,16 +744,17 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontS
         int roofTop   = result->getHeight() - (rootSignFontSize * 33) / 30 - (roofWidth+1)/2;
   int       roofLeft  = result->getWidth() - radImage->getWidth() - roofWidth*2/3 - max(roofWidth/2,1);
   for(;roofLeft > 0; roofLeft--) {
-    const COLORREF c = result->getPixel(roofLeft, roofTop) & 0x00ffffff;
-    if(c != m_backgroundColor) {
+    const D3DCOLOR c = ARGB_TORGB(result->getPixel(roofLeft, roofTop));
+    if(c != ARGB_TORGB(m_backgroundColor)) {
       break;
     }
   }
-//  result->line(roofLeft, roofTop, 0, roofTop, RGB(255,0,0));
+//  rootCopy->line(roofLeft, roofTop, 0, roofTop, RGB(255,0,0));
+//  PixRect::showPixRect(rootCopy);
 
   for(;roofTop > 0;) { // search upwards for the top of the line
-    const COLORREF c = result->getPixel(roofLeft, roofTop) & 0x00ffffff;
-    if(c != m_backgroundColor) {
+    const D3DCOLOR c = ARGB_TORGB(result->getPixel(roofLeft, roofTop));
+    if(c != ARGB_TORGB(m_backgroundColor)) {
       roofTop--;
     } else {
       roofTop+=roofWidth/2+1; // roofTop is now where to put the roof of the rootsign
@@ -854,11 +864,11 @@ AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, int fo
 
   ExpressionRectangle opRect, startRect, endRect, leftRect, rightRect;
 
-//  m_backgroundColor = RGB_MAKE(255,0,0);
+//  m_backgroundColor = D3DCOLOR_XRGB(255,0,0);
   AlignedImage *operatorImage    = cutImage(getOpImage(n->getSymbol(), fontSize * 2, opRect), 85, CUT_TOP);
   opRect.setSize(operatorImage);
 
-//  m_backgroundColor = RGB_MAKE(0,255,0);
+//  m_backgroundColor = D3DCOLOR_XRGB(0,255,0);
   AlignedImage *startAssignImage = getImage(n->child(0), fm, startRect);
   AlignedImage *endExprImage     = getImage(n->child(1), fm, endRect);
 
@@ -960,7 +970,7 @@ AlignedImage *ExpressionPainter::getParenthesizedImage(const ExpressionNode *n, 
 
   const int     parSize = max(img->getSize().cy, fontSize);
   const int     parAlignMent = (int)(parSize * alignPar);
-//  m_backgroundColor = RGB_MAKE(0,255,0);
+//  m_backgroundColor = D3DCOLOR_XRGB(0,255,0);
 //  AlignedImage *rpImage = getTextImage(rightPar, textFont, parsize);
 //  m_backgroundColor = WHITE;
   AlignedImage *lpImage = getTextImage(leftPar , textFont, parSize, lpRect)->setAlignment(parAlignMent);
@@ -1016,8 +1026,8 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 #ifdef SHOW_LINES
   for(i = 0; i < imageList.size(); i++) {
     AlignedImage *img = (AlignedImage*)imageList[i];
-    D3DCOLOR color = (i&1)?RGB_MAKE(128,128,128):RGB_MAKE(247,25,0);
-    img->horizontalLine(img->getAlignment(), RGB_MAKE(128,128,128));
+    D3DCOLOR color = (i&1)?D3DCOLOR_XRGB(128,128,128):D3DCOLOR_XRGB(247,25,0);
+    img->horizontalLine(img->getAlignment(), D3DCOLOR_XRGB(128,128,128));
   }
 #endif
 
