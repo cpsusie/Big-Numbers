@@ -278,7 +278,7 @@ void PixRect::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
   m_device.check3DResult(fileName, line, hr);
 }
 #else
-void PixRectDevice::check3DResult(HRESULT hr) {
+void PixRectDevice::check3DResult(HRESULT hr) const {
   if((hr != D3D_OK) && !m_exceptionInProgress) {
     m_exceptionInProgress = true;
     AfxMessageBox(format(_T("D3D-error %s"), get3DErrorMsg(hr).cstr()).cstr(), MB_ICONSTOP);
