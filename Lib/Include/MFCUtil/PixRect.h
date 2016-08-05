@@ -69,18 +69,14 @@ public:
   };
 };
 
+String get3DErrorMsg(HRESULT hr);
+
 #ifdef _DEBUG
-
-void check3DResult(TCHAR *fileName, int line, HRESULT hr);
-
+#define DECLARERESULTCHECKER void check3DResult(TCHAR *fileName, int line, HRESULT hr) const;
 #define CHECK3DRESULT(hr) check3DResult(_T(__FILE__),__LINE__,hr)
-
 #else
-
-void check3DResult(HRESULT hr);
-
+#define DECLARERESULTCHECKER CHECK3DRESULT(hr) check3DResult(_T(__FILE__),__LINE__,hr) const;
 #define CHECK3DRESULT(hr) check3DResult(hr)
-
 #endif
 
 class PixelAccessor {
@@ -116,8 +112,8 @@ public:
 class DWordPixelAccessor : public PixelAccessor {
 private:
   DECLARECLASSNAME;
-  DWORD       *m_pixels;
-  unsigned int m_pixelsPerLine;
+  DWORD *m_pixels;
+  UINT   m_pixelsPerLine;
 public:
   DWordPixelAccessor(PixRect *pixRect, DWORD flags) : PixelAccessor(pixRect, flags) {
     m_pixels        = (DWORD*)m_lockedRect.pBits;
@@ -259,7 +255,9 @@ public:
   Point2D m_scale;
 };
 
-class MyPolygon : public Array<CPoint> {
+typedef CompactArray<CPoint> PointArray;
+
+class MyPolygon : public PointArray {
 public:
   void move(const CPoint &dp);
   CRect getBoundsRect() const;
@@ -267,6 +265,7 @@ public:
   void applyToEdge(PointOperator &f, bool closingEdge = true) const;
   bool add(const CPoint &p);
 };
+
 /*
 class PixRectClipper {
 private:
@@ -277,6 +276,13 @@ public:
  ~PixRectClipper();
 };
 */
+
+typedef enum {
+  PIXRECT_TEXTURE
+ ,PIXRECT_RENDERTARGET
+ ,PIXRECT_PLAINSURFACE
+} PixRectType;
+
 
 class PixRectDevice {
 private:
@@ -291,6 +297,7 @@ private:
   LPDIRECT3DSURFACE  m_renderTarget;
   D3DFORMAT          m_defaultPixelFormat; // same format as the screen
   float              m_appScaleX, m_appScaleY;
+  mutable bool       m_exceptionInProgress;
   void set2DTransform(const CSize &size);
 
 public:
@@ -302,33 +309,35 @@ public:
   LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format, D3DPOOL pool);
   LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format, bool    lockable = false); // always in D3DPOOL_DEFAULT 
   LPDIRECT3DSURFACE createOffscreenPlainSurface(const CSize &size, D3DFORMAT format, D3DPOOL pool);
+  void releaseTexture(LPDIRECT3DTEXTURE texture);
+  void releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type);
+
   inline D3DFORMAT getDefaultPixelFormat() const {
     return m_defaultPixelFormat;
   }
   LPDIRECT3DDEVICE &getD3Device() {
     return m_device;
   }
-  static Array<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
+  static CompactArray<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
   D3DCAPS getDeviceCaps();
+  DECLARERESULTCHECKER;
+  inline void resetException() {
+    m_exceptionInProgress = false;
+  }
 };
-
-typedef enum {
-  PIXRECT_TEXTURE
-, PIXRECT_RENDERTARGET
-, PIXRECT_PLAINSURFACE
-} PixRectType;
 
 class PixRect {
 private:
   DECLARECLASSNAME;
+  DECLARERESULTCHECKER;
   friend class PixelAccessor;
   friend class PixRectOperator;
   friend class PixRectClipper;
   friend class PixRectDevice;
 
-  PixRectDevice    &m_device;
-  PixRectType       m_type;
-  D3DSURFACE_DESC   m_desc;
+  PixRectDevice            &m_device;
+  PixRectType               m_type;
+  D3DSURFACE_DESC           m_desc;
   mutable LPDIRECT3DSURFACE m_DCSurface; // only valid when we have an outstanding DC
 
   union {
@@ -336,6 +345,9 @@ private:
     LPDIRECT3DTEXTURE m_texture;
   };
 
+  inline void initSurfaces() {
+    m_surface = m_DCSurface = NULL;
+  }
   void create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
   void destroy();
   void createTexture(     const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
@@ -371,7 +383,7 @@ public:
   static void showPixRect(PixRect *pr);
 
   //  static DDCAPS getEmulatorCaps();
-  PixelAccessor *getPixelAccessor(DWORD flags = 0) {
+  inline PixelAccessor *getPixelAccessor(DWORD flags = 0) {
     return PixelAccessor::createPixelAccessor(this, flags);
   }
 
@@ -404,7 +416,7 @@ public:
 
   CSize getSizeInMillimeters(HDC hdc = NULL) const;
 
-  CRect getRect() const {
+  inline CRect getRect() const {
     return CRect(0, 0, getWidth(), getHeight());
   }
 
@@ -450,24 +462,24 @@ public:
   bool containsExtended(const Point2D &p) const;
 
   
-  void rop( const CRect  &dr,                    unsigned long op, const PixRect *src, const CPoint &sp);
-  void rop( const CRect  &dr,                    unsigned long op, const PixRect *src, const CRect  &sr);
-  void rop( const CPoint &dp, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp);
-  void rop( int x, int y, int w, int h,          unsigned long op, const PixRect *src, int sx, int sy);
-  void mask(const CRect  &dr,                    unsigned long op, const PixRect *src, const CPoint &sp, const PixRect *prMask);
-  void mask(const CPoint &dp, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp, const PixRect *prMask);
-  void mask(int x, int y, int w, int h,          unsigned long op, const PixRect *src, int sx, int sy,   const PixRect *prMask);
+  void rop( const CRect  &dr,                    ULONG op, const PixRect *src, const CPoint &sp);
+  void rop( const CRect  &dr,                    ULONG op, const PixRect *src, const CRect  &sr);
+  void rop( const CPoint &dp, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp);
+  void rop( int x, int y, int w, int h,          ULONG op, const PixRect *src, int sx, int sy);
+  void mask(const CRect  &dr,                    ULONG op, const PixRect *src, const CPoint &sp, const PixRect *prMask);
+  void mask(const CPoint &dp, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp, const PixRect *prMask);
+  void mask(int x, int y, int w, int h,          ULONG op, const PixRect *src, int sx, int sy,   const PixRect *prMask);
 
-  static void bitBlt(    HDC      dst, int x, int y, int w, int h,         unsigned long op, const PixRect *src, int sx, int sy);
-  static void bitBlt(    PixRect *dst, int x, int y, int w, int h,         unsigned long op,       HDC      src, int sx, int sy);
-  static void bitBlt(    HDC      dst, const CPoint &p, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp);
-  static void bitBlt(    PixRect *dst, const CPoint &p, const CSize &size, unsigned long op,       HDC      src, const CPoint &sp);
-  static void stretchBlt(HDC      dst, int x, int y, int w, int h,         unsigned long op, const PixRect *src, int sx, int sy, int sw, int sh);
-  static void stretchBlt(PixRect *dst, int x, int y, int w, int h,         unsigned long op, const HDC      src, int sx, int sy, int sw, int sh);
-  static void stretchBlt(HDC      dst, const CPoint &p, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp, const CSize &ssize);
-  static void stretchBlt(PixRect *dst, const CPoint &p, const CSize &size, unsigned long op, const HDC      src, const CPoint &sp, const CSize &ssize);
-  static void stretchBlt(HDC      dst, const CRect &dstRect,               unsigned long op, const PixRect *src, const CRect  &sr);
-  static void stretchBlt(PixRect *dst, const CRect &dstRect,               unsigned long op, const HDC      src, const CRect  &sr);
+  static void bitBlt(    HDC      dst, int x, int y, int w, int h,         ULONG op, const PixRect *src, int sx, int sy);
+  static void bitBlt(    PixRect *dst, int x, int y, int w, int h,         ULONG op,       HDC      src, int sx, int sy);
+  static void bitBlt(    HDC      dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp);
+  static void bitBlt(    PixRect *dst, const CPoint &p, const CSize &size, ULONG op,       HDC      src, const CPoint &sp);
+  static void stretchBlt(HDC      dst, int x, int y, int w, int h,         ULONG op, const PixRect *src, int sx, int sy, int sw, int sh);
+  static void stretchBlt(PixRect *dst, int x, int y, int w, int h,         ULONG op, const HDC      src, int sx, int sy, int sw, int sh);
+  static void stretchBlt(HDC      dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp, const CSize &ssize);
+  static void stretchBlt(PixRect *dst, const CPoint &p, const CSize &size, ULONG op, const HDC      src, const CPoint &sp, const CSize &ssize);
+  static void stretchBlt(HDC      dst, const CRect &dstRect,               ULONG op, const PixRect *src, const CRect  &sr);
+  static void stretchBlt(PixRect *dst, const CRect &dstRect,               ULONG op, const HDC      src, const CRect  &sr);
   static void alphaBlend(PixRect &dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha);
   static void alphaBlend(PixRect &dst, const CRect &dstRect,        const PixRect &src, const CRect &srcRect,           int srcConstAlpha);
   static void alphaBlend(HDC      dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha);
@@ -625,8 +637,3 @@ void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2,
 void applyToGlyphPolygon(const GlyphPolygon &glyphPolygon, CurveOperator &op);
 void applyToGlyph(const GlyphCurveData &glyphCurve, CurveOperator &op);
 void applyToText(const char *text, const PixRectFont &font, TextOperator &op);
-
-class DebugPixRect {
-public:
-  static void showPixRect(const PixRect *pr); // paint pr in upper left corner of the screen.
-};

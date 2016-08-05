@@ -124,6 +124,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -138,6 +139,7 @@
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,6 +159,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -171,6 +174,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -192,6 +196,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -209,6 +214,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -230,6 +236,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -276,6 +283,7 @@
     <ClCompile Include="MenuTools.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="MoveFileToTrachCan.cpp" />
+    <ClCompile Include="MyPolygon.cpp" />
     <ClCompile Include="NofifyIcon.cpp" />
     <ClCompile Include="OBMButton.cpp" />
     <ClCompile Include="Picture.cpp" />
@@ -283,6 +291,9 @@
     <ClCompile Include="PixRect.cpp" />
     <ClCompile Include="PixRectBlend.cpp" />
     <ClCompile Include="PixRectError.cpp" />
+    <ClCompile Include="PixRectFill.cpp" />
+    <ClCompile Include="PixRectOperators.cpp" />
+    <ClCompile Include="PixRectShapes.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
     <ClCompile Include="ProgressWithPctCtrl.cpp" />

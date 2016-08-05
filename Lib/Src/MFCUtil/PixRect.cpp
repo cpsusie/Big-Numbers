@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <Math.h>
 #include <float.h>
 #include <MFCUtil/WinTools.h>
@@ -9,6 +8,16 @@
 #pragma init_seg(lib)
 
 #pragma comment(lib,"d3d9.lib")
+
+#ifdef assert
+#undef assert
+#endif
+
+#ifdef _DEBUG
+#define assert(exp) (void)( (exp) || (xassert(_T(__FILE__), __LINE__, _T(#exp)), 0) )
+#else
+#define assert(exp)
+#endif
 
 class InitDirectX {
 public:
@@ -46,12 +55,13 @@ void PixRectDevice::initialize() { // static
 }
 
 void PixRectDevice::uninitialize() { // static
-  CHECK3DRESULT(s_direct3d->Release());
+  s_direct3d->Release();
   s_direct3d = NULL;
 }
 
 PixRectDevice::PixRectDevice() {
   m_device = NULL;
+  resetException();
 }
 
 PixRectDevice::~PixRectDevice() {
@@ -61,6 +71,7 @@ PixRectDevice::~PixRectDevice() {
 void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
   detach();
 
+  resetException();
   CSize sz;
   if(!windowed) {
     sz = getScreenSize(false);
@@ -111,6 +122,7 @@ void PixRectDevice::detach() {
     m_device->Release();
     m_device = NULL;
   }
+  resetException();
 }
 
 LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT format, D3DPOOL pool) {
@@ -136,7 +148,7 @@ LPDIRECT3DSURFACE PixRectDevice::createRenderTarget(const CSize &size, D3DFORMAT
   CHECK3DRESULT(m_device->GetRenderTarget(0, &oldRenderTarget));
   D3DSURFACE_DESC desc;
   CHECK3DRESULT(oldRenderTarget->GetDesc(&desc));
-  oldRenderTarget->Release();
+  releaseSurface(oldRenderTarget, PIXRECT_RENDERTARGET);
   if(format == D3DFMT_FORCE_DWORD) {
     format = desc.Format;
   }
@@ -156,14 +168,22 @@ LPDIRECT3DSURFACE PixRectDevice::createOffscreenPlainSurface(const CSize &size, 
   return surface;
 }
 
-Array<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // static
-  Array<D3DDISPLAYMODE> result;
+void PixRectDevice::releaseTexture(LPDIRECT3DTEXTURE texture) {
+  texture->Release();
+}
+
+void PixRectDevice::releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type) {
+  surface->Release();
+}
+
+CompactArray<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // static
+  CompactArray<D3DDISPLAYMODE> result;
   D3DDISPLAYMODE adapterMode;
-  CHECK3DRESULT(s_direct3d->GetAdapterDisplayMode(adapter, &adapterMode));
+  CHECKRESULT(s_direct3d->GetAdapterDisplayMode(adapter, &adapterMode));
   const UINT modeCount = s_direct3d->GetAdapterModeCount(adapter, adapterMode.Format);
   for (UINT mode = 0; mode < modeCount; mode++) {
     D3DDISPLAYMODE dp;
-    CHECK3DRESULT(s_direct3d->EnumAdapterModes(adapter, adapterMode.Format, mode, &dp));
+    CHECKRESULT(s_direct3d->EnumAdapterModes(adapter, adapterMode.Format, mode, &dp));
     result.add(dp);
   };
   return result;
@@ -195,7 +215,7 @@ void PixRectDevice::render(const PixRect *pr) {
     CHECK3DRESULT(m_device->GetRenderTarget(0, &renderTarget));
     //  CHECK3DRESULT(m_device->SetRenderTarget(0, m_renderTarget));
 
-    //  unsigned long clear_color = 0xffffffff;
+    //  ULONG clear_color = 0xffffffff;
     //  CHECK3DRESULT(m_device->Clear(0, NULL, D3DCLEAR_TARGET, clear_color, 1.0f, 0));
 
     //  CHECK3DRESULT(m_device->SetFVF(D3DFVF_XYZ | D3DFVF_DIFFUSE));
@@ -211,17 +231,17 @@ void PixRectDevice::render(const PixRect *pr) {
     CHECK3DRESULT(m_device->EndScene());
     //  CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
     //  CHECK3DRESULT(m_device->SetRenderTarget(0, oldRenderTarget));
-    renderTarget->Release();
+    releaseSurface(renderTarget, PIXRECT_RENDERTARGET);
+    renderTarget = NULL;
     CHECK3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
   }
   catch (...) {
     m_device->EndScene();
     if (renderTarget != NULL) {
-      renderTarget->Release();
+      releaseSurface(renderTarget, PIXRECT_RENDERTARGET);
     }
     throw;
   }
-
 }
 
 void PixRectDevice::set2DTransform(const CSize &size) {
@@ -247,87 +267,62 @@ void PixRectDevice::set2DTransform(const CSize &size) {
 */
 }
 
+#ifdef _DEBUG
+void PixRectDevice::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
+  if((hr != D3D_OK) && !m_exceptionInProgress) {
+    m_exceptionInProgress = true;
+    throwException(_T("D3D-error %s in %s, line %d"), get3DErrorMsg(hr).cstr(), fileName, line);
+  }
+}
+void PixRect::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
+  m_device.check3DResult(fileName, line, hr);
+}
+#else
+void PixRectDevice::check3DResult(HRESULT hr) {
+  if((hr != D3D_OK) && !m_exceptionInProgress) {
+    m_exceptionInProgress = true;
+    AfxMessageBox(format(_T("D3D-error %s"), get3DErrorMsg(hr).cstr()).cstr(), MB_ICONSTOP);
+    exit(-1);
+  }
+}
+void PixRect::check3DResult(HRESULT hr) const {
+  m_device.check3DResult(hr);
+}
+#endif
+
 void PixRect::reOpenDirectX() { // static 
 //  uninitialize();
 //  initialize();
 }
 
 
-class ApproximateColorComparator : public ColorComparator {
-  double m_tolerance;
-public:
-  ApproximateColorComparator(double tolerance);
-  bool equals(const D3DCOLOR &c1, const D3DCOLOR &c2);
-};
-
-ApproximateColorComparator::ApproximateColorComparator(double tolerance) {
-  m_tolerance = tolerance;
-}
-
-bool ApproximateColorComparator::equals(const D3DCOLOR &c1, const D3DCOLOR &c2) {
-  return colorDistance(c1,c2) < m_tolerance;
-}
-
-
-PixRectOperator::PixRectOperator(PixRect *pr) {
-  init();
-  setPixRect(pr);
-}
-
-void PixRectOperator::init() {
-  m_pixRect       = NULL;
-  m_pixelAccessor = NULL;
-}
-
-void PixRectOperator::setPixRect(PixRect *pixRect) {
-  m_pixRect = pixRect;
-  if(m_pixelAccessor != NULL) {
-    delete m_pixelAccessor;
-    m_pixelAccessor = NULL;
-  }
-  
-  if(m_pixRect != NULL) {
-    m_pixelAccessor = PixelAccessor::createPixelAccessor(m_pixRect);
-  }
-}
-
-PixRectOperator::~PixRectOperator() {
-  setPixRect(NULL);
-}
-
-void PixRectFilter::init() {
-  m_result              = NULL;
-  m_resultPixelAccessor = NULL;
-}
-
-void PixRectFilter::setPixRect(PixRect *pixRect) {
-  PixRectOperator::setPixRect(pixRect);
-  m_result              = m_pixRect;
-  m_resultPixelAccessor = m_pixelAccessor;
-}
-
-CRect PixRectFilter::getRect() const {
-  return (m_pixRect == NULL) ? CRect(0,0,0,0) : CRect(0,0,m_pixRect->getWidth(),m_pixRect->getHeight());
-}
-
 DEFINECLASSNAME(PixRect);
 
 PixRect::PixRect(PixRectDevice &device) : m_device(device) {
-  m_surface   = NULL;
-  m_DCSurface = NULL;
+  initSurfaces();
+
 }
 
 PixRect::PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT height, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
   const CSize sz(width, height);
-  m_DCSurface = NULL;
+  initSurfaces();
   create(type, sz, pixelFormat, pool);
   fillRect(0,0,width,height, WHITE);
 }
 
 PixRect::PixRect(PixRectDevice &device, PixRectType type, const CSize &size, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
-  m_DCSurface = NULL;
+  initSurfaces();
   create(type, size, pixelFormat, pool);
   fillRect(0,0,size.cx,size.cy,WHITE);
+}
+
+PixRect::PixRect(PixRectDevice &device, HBITMAP src, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
+  initSurfaces();
+  init(src, pixelFormat, pool);
+}
+
+PixRect::~PixRect() {
+  destroy();
 }
 
 PixRect *PixRect::clone(bool cloneImage, D3DPOOL pool) const {
@@ -381,7 +376,7 @@ LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
   LPDIRECT3DSURFACE dstSurface = m_device.createOffscreenPlainSurface(getSize(), getPixelFormat(), pool);
   LPDIRECT3DSURFACE srcSurface = getSurface();
   CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
-  srcSurface->Release();
+  m_device.releaseSurface(srcSurface, m_type);
   return dstSurface;
 }
 
@@ -422,11 +417,6 @@ CSize PixRect::getSizeInMillimeters(HDC hdc) const {
   }
 }
 
-PixRect::PixRect(PixRectDevice &device, HBITMAP src, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
-  m_DCSurface = NULL;
-  init(src, pixelFormat, pool);
-}
-
 void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool) {
   String errMsg;
   const CSize sz = getBitmapSize(src);
@@ -447,10 +437,6 @@ void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool) {
   if(!ok) {
     throwException(_T("%s::init failed:%s"), s_className, errMsg.cstr());
   }
-}
-
-PixRect::~PixRect() {
-  destroy();
 }
 
 void PixRect::create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool) {
@@ -498,13 +484,13 @@ void PixRect::destroy() {
 
 void PixRect::destroyTexture() {
   assert((getType() == PIXRECT_TEXTURE) && (m_texture != NULL));
-  CHECK3DRESULT(m_texture->Release());
+  m_device.releaseTexture(m_texture);
   m_texture = NULL;
 }
 
 void PixRect::destroySurface() {
   assert(((getType() == PIXRECT_RENDERTARGET) || (getType() == PIXRECT_PLAINSURFACE)) && (m_surface != NULL));
-  CHECK3DRESULT(m_surface->Release());
+  m_device.releaseSurface(m_surface, m_type);
   m_surface = NULL;
 }
 
@@ -630,7 +616,7 @@ HDC PixRect::getDC() const {
 void PixRect::releaseDC(HDC dc) const {
   assert(m_DCSurface != NULL);
   m_DCSurface->ReleaseDC(dc);
-  m_DCSurface->Release();
+  m_device.releaseSurface(m_DCSurface, m_type);
   m_DCSurface = NULL;
 }
 
@@ -748,7 +734,7 @@ D3DCOLOR PixRect::getPixel(const CPoint &p) const {
   return getPixel(p.x,p.y);
 }
 
-void PixRect::setPixel(unsigned int x, unsigned int y, D3DCOLOR color) {
+void PixRect::setPixel(UINT x, UINT y, D3DCOLOR color) {
   if(!contains(x,y)) {
     return;
   }
@@ -757,7 +743,7 @@ void PixRect::setPixel(unsigned int x, unsigned int y, D3DCOLOR color) {
   delete pixelAccessor;
 }
 
-D3DCOLOR PixRect::getPixel(unsigned int x, unsigned int y) const {
+D3DCOLOR PixRect::getPixel(UINT x, UINT y) const {
   if(!contains(x,y)) {
     return 0;
   }
@@ -767,15 +753,15 @@ D3DCOLOR PixRect::getPixel(unsigned int x, unsigned int y) const {
   return result;
 }
 
-void PixRect::rop( const CRect  &dr, unsigned long op, const PixRect *src, const CPoint &sp) {
+void PixRect::rop( const CRect  &dr, ULONG op, const PixRect *src, const CPoint &sp) {
   rop(dr.left,dr.top,dr.Width(),dr.Height(), op, src,sp.x,sp.y);
 }
 
-void PixRect::rop( const CPoint &dp, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp) {
+void PixRect::rop( const CPoint &dp, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp) {
   rop(dp.x,dp.y,size.cx,size.cy, op, src,sp.x,sp.y);
 }
 
-void PixRect::rop(int x, int y, int w, int h, unsigned long op, const PixRect *src, int sx, int sy) {
+void PixRect::rop(int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy) {
   String errorMsg;
 
   HDC srcDC = src ? src->getDC() : NULL;
@@ -794,20 +780,20 @@ void PixRect::rop(int x, int y, int w, int h, unsigned long op, const PixRect *s
   }
 }
 
-void PixRect::rop(const CRect &dr, unsigned long op, const PixRect *src, const CRect &sr) {
+void PixRect::rop(const CRect &dr, ULONG op, const PixRect *src, const CRect &sr) {
   AfxMessageBox(_T("PixRect::rop no implemented yet"));
 //  CHECK3DRESULT(m_surface->Blt(&dstRect, src->m_surface, &srcRect, DDBLT_ROP | DDBLT_WAIT, &bltFunc));
 }
 
-void PixRect::bitBlt(HDC dst, const CPoint &p, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp) { // static
+void PixRect::bitBlt(HDC dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp) { // static
   bitBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y);
 }
 
-void PixRect::bitBlt(PixRect *dst, const CPoint &p, const CSize &size, unsigned long op, HDC src, const CPoint &sp) { // static
+void PixRect::bitBlt(PixRect *dst, const CPoint &p, const CSize &size, ULONG op, HDC src, const CPoint &sp) { // static
   bitBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y);
 }
 
-void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, unsigned long op, const PixRect *src, int sx, int sy) { // static
+void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy) { // static
   String errorMsg;
 
   HDC srcDC = src ? src->getDC() : NULL;
@@ -823,7 +809,7 @@ void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, unsigned long op, cons
   }
 }
 
-void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, unsigned long op, HDC src, int sx, int sy) { // static
+void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, HDC src, int sx, int sy) { // static
   String errorMsg;
 
   HDC dstDC = dst->getDC();
@@ -838,7 +824,7 @@ void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, unsigned long op,
   }
 }
 
-void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, unsigned long op, const PixRect *src, int sx, int sy, int sw, int sh) { // static
+void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy, int sw, int sh) { // static
   String errorMsg;
 
   HDC  srcDC = src ? src->getDC() : NULL;
@@ -854,7 +840,7 @@ void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, unsigned long op, 
   }
 }
 
-void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, unsigned long op, const HDC src, int sx, int sy, int sw, int sh) { // static
+void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, const HDC src, int sx, int sy, int sw, int sh) { // static
   String errorMsg;
 
   HDC  dstDC = dst->getDC();
@@ -868,36 +854,36 @@ void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, unsigned long
   }
 }
 
-void PixRect::stretchBlt(HDC dst, const CPoint &p, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp, const CSize &ssize) { // static
+void PixRect::stretchBlt(HDC dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp, const CSize &ssize) { // static
   stretchBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y,ssize.cx,ssize.cy);
 }
 
-void PixRect::stretchBlt(PixRect *dst, const CPoint &p, const CSize &size, unsigned long op, const HDC src, const CPoint &sp, const CSize &ssize) { // static 
+void PixRect::stretchBlt(PixRect *dst, const CPoint &p, const CSize &size, ULONG op, const HDC src, const CPoint &sp, const CSize &ssize) { // static 
   stretchBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y,ssize.cx,ssize.cy);
 }
 
-void PixRect::stretchBlt(HDC dst, const CRect &dstRect, unsigned long op, const PixRect *src, const CRect &sr) { // static
+void PixRect::stretchBlt(HDC dst, const CRect &dstRect, ULONG op, const PixRect *src, const CRect &sr) { // static
   const CSize dsz = dstRect.Size();
   const CSize ssz = sr.Size();
   stretchBlt(dst, dstRect.left,dstRect.top,dsz.cx,dsz.cy, op, src, sr.left,sr.top,ssz.cx,ssz.cy);
 }
 
-void PixRect::stretchBlt(PixRect *dst, const CRect &dstRect, unsigned long op, const HDC src, const CRect &sr) { // static
+void PixRect::stretchBlt(PixRect *dst, const CRect &dstRect, ULONG op, const HDC src, const CRect &sr) { // static
   const CSize dsz = dstRect.Size();
   const CSize ssz = sr.Size();
   stretchBlt(dst, dstRect.left,dstRect.top,dsz.cx,dsz.cy, op, src, sr.left,sr.top,ssz.cx,ssz.cy);
 }
 
-void PixRect::mask(const CRect  &dr, unsigned long op, const PixRect *src, const CPoint &sp, const PixRect *prMask) {
+void PixRect::mask(const CRect  &dr, ULONG op, const PixRect *src, const CPoint &sp, const PixRect *prMask) {
   mask(dr.left,dr.top,dr.Width(),dr.Height(), op, src,sp.x,sp.y, prMask);
 }
 
-void PixRect::mask(const CPoint &dp, const CSize &size, unsigned long op, const PixRect *src, const CPoint &sp, const PixRect *prMask) {
+void PixRect::mask(const CPoint &dp, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp, const PixRect *prMask) {
   mask(dp.x,dp.y,size.cx,size.cy, op, src, sp.x,sp.y, prMask);
 }
 
 // Performs rasteropreation op on this using src, for the pixels which are non-zero in prMask
-void PixRect::mask(int x, int y, int w, int h, unsigned long op, const PixRect *src, int sx, int sy, const PixRect *prMask) {
+void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy, const PixRect *prMask) {
   String errorMsg;
 
   HDC srcDC  = src ? src->getDC() : NULL;
@@ -954,7 +940,7 @@ PixRectClipper::PixRectClipper(HWND hwnd) {
 }
 
 PixRectClipper::~PixRectClipper() {
-  CHECK3DRESULT(m_clipper->Release());
+  m_clipper->Release();
 }
 
 void PixRect::setClipper(PixRectClipper *clipper) {
@@ -972,331 +958,7 @@ void PixRect::copy(VIDEOHDR &videoHeader) {
 }
 */
 
-void PixRect::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) {
-  PixelAccessor *pa = getPixelAccessor();
-  pa->fill(p, color, cmp);
-  delete pa;
-}
 
-void PixRect::fill(const CPoint &p, D3DCOLOR color) {
-  fill(p,color,SimpleColorComparator());
-}
-
-void PixRect::fillTransparent(const CPoint &p, unsigned char alpha) { // alpha = 0 => opaque, 255 = transparent
-  if(!contains(p)) {
-    return;
-  }
-
-  const int width  = getWidth();
-  const int height = getHeight();
-  PixRect *copy = clone(true);
-  D3DCOLOR tmpColor = ~getPixel(p);
-  copy->fill(p,tmpColor);
-  copy->rop( 0,0,width,height,SRCINVERT,this,0,0);
-
-  PixelAccessor *pa  = getPixelAccessor();
-  PixelAccessor *cpa = copy->getPixelAccessor();
-
-  CPoint sp;
-  const D3DCOLOR alphaMask = D3DCOLOR_ARGB(alpha, 0, 0, 0);
-  for(sp.x = 0; sp.x < width; sp.x++) {
-    for(sp.y = 0; sp.y < height; sp.y++) {
-      if(cpa->getPixel(p)) {
-        D3DCOLOR c = pa->getPixel(sp) & 0x00ffffff;
-        pa->setPixel(sp, c | alphaMask);
-      }
-    }
-  }
-  delete pa;
-  delete cpa;
-  delete copy;
-}
-
-void PixRect::approximateFill(const CPoint &p, D3DCOLOR color, double tolerance) {
-  if(tolerance == 0) {
-    tolerance = colorDistance(getPixel(p), color);
-  }
-
-  fill(p,color,ApproximateColorComparator(tolerance));
-}
-
-void PixRect::line(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert) {
-  line(CPoint(x1,y1), CPoint(x2,y2), color, invert);
-}
-
-void PixRect::line(const CPoint &p1, const CPoint &p2, D3DCOLOR color, bool invert) {
-  if(invert) {
-    applyToLine(p1,p2,InvertColor(this));
-  } else {
-    applyToLine(p1,p2,SetColor(color, this));
-  }
-}
-
-void PixRect::rectangle(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert) {
-  rectangle(CRect(x1,y1,x2,y2),color,invert);
-}
-
-void PixRect::rectangle(const CPoint &p0, const CSize &size, D3DCOLOR color, bool invert) {
-  rectangle(CRect(p0,size),color,invert);
-}
-
-void PixRect::rectangle(const CRect &rect, D3DCOLOR color, bool invert) {
-  if(invert) {
-    applyToRectangle(rect, InvertColor(this));
-  } else {
-    applyToRectangle(rect, SetColor(color, this));
-  }
-}
-
-void PixRect::drawDragRect(CRect *newRect, const CSize &newSize, CRect *lastRect, const CSize &lastSize) {
-  HDC hdc = getDC();
-  CDC *dc = CDC::FromHandle(hdc);
-  CRect tmp;
-  if(lastRect) {
-    tmp = makePositiveRect(*lastRect);
-  }
-  dc->DrawDragRect(&makePositiveRect(newRect), newSize,(lastRect!=NULL) ? tmp : NULL, lastSize);
-  releaseDC(hdc);
-}
-
-void PixRect::polygon(const MyPolygon &polygon, D3DCOLOR color, bool invert, bool closingEdge) {
-  if(invert) {
-    polygon.applyToEdge(InvertColor(this), closingEdge);
-  } else {
-    polygon.applyToEdge(SetColor(color, this), closingEdge);
-  }
-}
-
-void PixRect::ellipse(const CRect &rect, D3DCOLOR color, bool invert) {
-  if(invert) {
-    applyToEllipse(rect,InvertColor(this));
-  } else {
-    applyToEllipse(rect,SetColor(color, this));
-  }
-}
-
-void PixRect::fillRect(const CRect &rect, D3DCOLOR color, bool invert) {
-  if(rect.Width() == 0 || rect.Height() == 0) {
-    return;
-  }
-  CRect dstRect = makePositiveRect(rect);
-  HDC hdc = getDC();
-  try {
-    if (invert) {
-      BitBlt( hdc, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), NULL, 0, 0, DSTINVERT);
-    }
-    else {
-      FillRect(hdc, &dstRect, CreateSolidBrush(D3DCOLOR2COLORREF(color)));
-    }
-    releaseDC(hdc);
-  }
-  catch (...) {
-    releaseDC(hdc);
-    throw;
-  }
-}
-
-void PixRect::fillRect(const CPoint &p0, const CSize &size, D3DCOLOR color, bool invert) {
-  fillRect(CRect(p0,size),color,invert);
-}
-
-void PixRect::fillRect(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert) {
-  fillRect(CRect(x1,y1,x2-x1,y2-y1),color,invert);
-}
-
-void PixRect::replicate(int x, int y, int w, int h, const PixRect *src) {
-  if(x < 0) {
-    w += x;
-    x = 0;
-  }
-  if(y < 0) {
-    h += y;
-    y = 0;
-  }
-  if(x >= getWidth() || y >= getHeight()) {
-    return;
-  }
-  w = min(w,getWidth()-x);
-  h = min(h,getHeight()-y);
-  if(w == 0 || h == 0) {
-    return;
-  }
-  for(int r = 0; r < h; r += src->getHeight()) {
-    for(int c = 0; c < w; c += src->getWidth()) {
-      rop(x+c,y+r,src->getWidth(),src->getHeight(),SRCCOPY, src,0,0);
-    }
-  }
-}
-
-PixRect &PixRect::apply(PixRectOperator &op) {
-  op.setPixRect(this);
-  applyToFullRectangle(CRect(CPoint(0,0), getSize()), op);
-  op.setPixRect(NULL);
-  return *this;
-}
-
-PixRect &PixRect::apply(PixRectFilter &filter) {
-  filter.setPixRect(this);
-  applyToFullRectangle(filter.getRect(),filter);
-  if(filter.m_result != this) {
-    rop(0,0,getWidth(),getHeight(),SRCCOPY,filter.m_result,0,0);
-  }
-  filter.setPixRect(NULL);
-  return *this;
-}
-
-void applyToLine(const CPoint &p1, const CPoint &p2, PointOperator &op) {
-  applyToLine(p1.x,p1.y,p2.x,p2.y,op);
-}
-
-void applyToLine(int x1, int y1, int x2, int y2, PointOperator &op) {
-  if(x1 == x2) {
-    if(y1 > y2) {
-      swap(y1,y2);
-    }
-    for(CPoint p = CPoint(x1,y1); p.y <= y2; p.y++) {
-      op.apply(p);
-    }
-  } else if(y1 == y2) {
-    if(x1 > x2) {
-      swap(x1,x2);
-    }
-    for(CPoint p = CPoint(x1,y1); p.x <= x2; p.x++) {
-      op.apply(p);
-    }
-  } else {
-    const int vx = x2 - x1;
-    const int vy = y2 - y1;
-    const int dx = sign(vx);
-    const int dy = sign(vy);
-    for(CPoint p = CPoint(x1,y1), p1 = CPoint(p.x-x1,p.y-y1);;) {
-      op.apply(p);
-      if(p.x == x2 && p.y == y2) {
-        break;
-      }
-      if(abs((p1.x+dx)*vy - p1.y*vx) < abs(p1.x*vy - (p1.y+dy)*vx)) {
-        p.x  += dx;
-        p1.x += dx;
-      } else {
-        p.y  += dy;
-        p1.y += dy;
-      }
-    }
-  }
-}
-
-void applyToRectangle(const CRect &rect, PointOperator &op) {
-  const CRect r = makePositiveRect(rect);
-  if(r.left == r.right) {
-    if(r.top == r.bottom) {
-      op.apply(r.TopLeft());                                // rect contains only 1 pixel
-    } else {
-      applyToLine(r.left , r.top, r.left  , r.bottom , op); // rect is a vertical line
-    }
-  } else if(r.top == r.bottom) {
-    applyToLine(r.left , r.top   , r.right, r.top    , op); // rect is a horizontal line
-  } else {                                                  // rect is a "real" rectangle
-    applyToLine(r.left , r.top   , r.right-1, r.top     , op); 
-    applyToLine(r.right, r.top   , r.right  , r.bottom-1, op);
-    applyToLine(r.right, r.bottom, r.left+1 , r.bottom  , op);
-    applyToLine(r.left , r.bottom, r.left   , r.top+1   , op);
-  }
-}
-
-void applyToFullRectangle(const CRect &rect, PointOperator &op) {
-  const CRect r = makePositiveRect(rect);
-  CPoint p;
-  for(p.y = r.top; p.y < r.bottom; p.y++) {
-    for(p.x = r.left; p.x < r.right; p.x++) {
-      op.apply(p);
-    }
-  }
-}
-
-static void applyToEllipsePart(const CPoint &start, const CPoint &end, const CPoint &center, PointOperator &op) {
-  const int    minx = min(start.x,end.x);
-  const int    miny = min(start.y,end.y);
-  const int    maxx = max(start.x,end.x);
-  const int    maxy = max(start.y,end.y);
-  const int    dx   = sign(end.x - start.x);
-  const int    dy   = sign(end.y - start.y);
-  const int    rx   = max(abs(start.x-center.x),abs(end.x-center.x));
-  const int    ry   = max(abs(start.y-center.y),abs(end.y-center.y));
-  const double rx2  = rx*rx;
-  const double ry2  = ry*ry;
-  const double rxy2 = rx2*ry2;
-
-  if(rx == 0 || ry == 0) {
-    return;
-  }
-
-  CPoint p  = start;
-  CPoint pc = p - center;
-  while(minx <= p.x && p.x <= maxx && miny <= p.y && p.y <= maxy) {
-    if(p == end) {
-      break;
-    }
-    op.apply(p);
-    const double d1 = fabs(ry2*sqr(pc.x+dx) + rx2*sqr(pc.y   ) - rxy2);
-    const double d2 = fabs(ry2*sqr(pc.x   ) + rx2*sqr(pc.y+dy) - rxy2);
-    if(d1 < d2) {
-      p.x  += dx;
-      pc.x += dx;
-    } else {
-      p.y  += dy;
-      pc.y += dy;
-    }
-  }
-}
-
-void applyToEllipse(const CRect &rect, PointOperator &op) {
-  const CRect r = makePositiveRect(rect);
-  const CPoint center = r.CenterPoint();
-  applyToEllipsePart(CPoint(center.x,r.top   ),CPoint(r.right,center.y ),center, op);
-  applyToEllipsePart(CPoint(r.right,center.y ),CPoint(center.x,r.bottom),center, op);
-  applyToEllipsePart(CPoint(center.x,r.bottom),CPoint(r.left,center.y  ),center, op);
-  applyToEllipsePart(CPoint(r.left,center.y  ),CPoint(center.x,r.top   ),center, op);
-}
-
-void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, CurveOperator &op, bool applyStart) {
-  Point2D p = start;
-  if(applyStart) {
-    op.apply(start);
-  }
-  for(float t = 0.1f; t < 1.01; t += 0.1f) {
-    float tt = t*t;
-    float s  = 1.0f - t;
-    float ss = s*s;
-    Point2D np = start*(ss*s) + cp1*(3*ss*t) + cp2*(3*s*tt) + end*(t*tt);
-    op.apply(np);
-    p = np;
-  }
-}
-
-void SetColor::apply(const CPoint &p) {
-  if(m_pixRect->contains(p)) {
-    m_pixelAccessor->setPixel(p, m_color);
-  }
-}
-
-void SetAlpha::apply(const CPoint &p) {
-  if(m_pixRect->contains(p)) {
-    const D3DCOLOR color  = ARGB_TORGB(m_pixelAccessor->getPixel(p)) | m_alphaMask;
-    m_pixelAccessor->setPixel(p, color);
-  }
-}
-
-void SubstituteColor::apply(const CPoint &p) {
-  if(m_pixelAccessor->getPixel(p) == m_from) {
-    m_pixelAccessor->setPixel(p,m_to);
-  }
-}
-
-void InvertColor::apply(const CPoint &p) {
-  if(m_pixRect->contains(p)) {
-    m_pixelAccessor->setPixel(p,~m_pixelAccessor->getPixel(p));
-  }
-}
 
 void CurveOperator ::apply(const Point2D &p) {
   if(m_firstTime) {
@@ -1308,98 +970,6 @@ void CurveOperator ::apply(const Point2D &p) {
   }
 }
 
-class PolygonFiller : public PixRectOperator {
-private:
-  MyPolygon &m_polygon;
-  void checkAndFill(const CPoint &p);
-public:
-  Array<CPoint> m_pointsOutside;
-  PolygonFiller(PixRect *pixRect, MyPolygon &polygon);
-  void apply(const CPoint &p);
-  void restoreBlackOutSideRegion();
-};
-
-PolygonFiller::PolygonFiller(PixRect *pixRect, MyPolygon &polygon) 
-: m_polygon(polygon) {
-  setPixRect(pixRect);
-}
-
-// Fills BLACK inside polygon, To speed up edge-scanner we fill RED outside, and collect all points used initially to fill 
-// these regions. They are afterwards removed (filled whith BLACK) from mask, so mask finally contains WHITE inside (and edge),
-// and BLACK outside.
-void PolygonFiller::checkAndFill(const CPoint &p) {
-  if(!m_pixRect->contains(p)) {
-    return;
-  }
-  if(m_pixelAccessor->getPixel(p) == 0)
-    switch(m_polygon.contains(p)) {
-    case 1:
-      m_pixelAccessor->fill(p,WHITE);
-      break;
-    case -1:
-      m_pixelAccessor->fill(p,D3DCOLOR_XRGB(255,0,0));
-      m_pointsOutside.add(p);
-      break;
-    case 0:
-      break;
-  }
-}
-
-void PolygonFiller::restoreBlackOutSideRegion() {
-  for(size_t i = 0; i < m_pointsOutside.size(); i++) {
-    m_pixelAccessor->fill(m_pointsOutside[i],BLACK);
-  }
-}
-
-void PolygonFiller::apply(const CPoint &p) {
-  checkAndFill(CPoint(p.x-1,p.y));
-  checkAndFill(CPoint(p.x+1,p.y));
-  checkAndFill(CPoint(p.x,p.y-1));
-  checkAndFill(CPoint(p.x,p.y+1));
-}
-
-void PixRect::fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert) {
-  CRect rect = polygon.getBoundsRect();
-  MyPolygon poly = polygon;
-  poly.move(-rect.TopLeft());
-  PixRect *psrc  = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat());
-  PixRect *pmask = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat());
-  psrc->fillRect(0,0,rect.Width(),rect.Height(),color);
-  pmask->fillRect(0,0,rect.Width(),rect.Height(),0);   // set mask to black
-  pmask->polygon(poly,WHITE);                          // draw white frame around polygon on mask
-
-  PolygonFiller *polygonFiller = new PolygonFiller(pmask, poly);
-  poly.applyToEdge(*polygonFiller);
-  polygonFiller->restoreBlackOutSideRegion();
-  delete polygonFiller;
-
-//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,NULL,0,0);
-//  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
-  mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
-  delete pmask;
-  delete psrc;
-}
-
-void PixRect::fillEllipse(const CRect &rect, D3DCOLOR color, bool invert) {
-  CRect r = rect;
-  if(rect.Width() == 0 || rect.Height() == 0) {
-    return;
-  }
-  r -= rect.TopLeft();
-  PixRect *psrc  = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
-  PixRect *pmask = new PixRect(m_device, getType(), r.Size(), getPool(), getPixelFormat());
-  psrc->fillRect(0,0,r.Width(),r.Height(),color);
-  pmask->fillRect(0,0,r.Width(),r.Height(),BLACK);  // set mask to black
-  pmask->ellipse(r,WHITE);                          // draw white ellipse on mask
-  pmask->fill(r.CenterPoint(),WHITE);
-
-//  rop(rect.left,rect.top,rect.Width(),rect.Height(),DSTINVERT,NULL,0,0);
-//  mask(rect.left,rect.top,rect.Width(),rect.Height(), MAKEROP4(SRCCOPY,DSTINVERT), psrc, 0,0, pmask);
-  mask(rect.left,rect.top,rect.Width(),rect.Height(), SRCCOPY, psrc, 0,0, pmask);
-
-  delete pmask;
-  delete psrc;
-}
 
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) {
   PixRect *result = src->clone();
@@ -1438,120 +1008,4 @@ void PixRectTextMaker::line(const Point2D &from, const Point2D &to) {
 
 void PixRectTextMaker::beginGlyph(const Point2D &offset) {
   m_glyphPos = m_textPos + offset;
-}
-
-void PixRect::bezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, D3DCOLOR color, bool invert) {
-  applyToBezier(start,cp1,cp2,end,PixRectTextMaker(this,Point2D(0,0), color,invert));
-}
-
-void MyPolygon::move(const CPoint &dp) {
-  for(size_t i = 0; i < size(); i++) {
-    (*this)[i] += dp;
-  }
-}
-
-CRect MyPolygon::getBoundsRect() const {
-  const Array<CPoint> &a = *this;
-  if(a.size() == 0) {
-    return CRect(0,0,0,0);
-  }
-  CRect result(a[0],a[0]);
-  for(size_t i = 1; i < a.size(); i++) {
-    const CPoint &p = a[i];
-    if(p.x < result.left  ) result.left   = p.x;
-    if(p.x > result.right ) result.right  = p.x;
-    if(p.y < result.top   ) result.top    = p.y;
-    if(p.y > result.bottom) result.bottom = p.y;
-  }
-  return CRect(result.left,result.top,result.right+1,result.bottom+1);
-}
-
-class Vector : public CPoint {
-public:
-  Vector(const CPoint &from, const CPoint &to);
-  double length() const;
-};
-
-Vector::Vector(const CPoint &from, const CPoint &to) {
-  x = to.x - from.x;
-  y = to.y - from.y;
-}
-
-double operator*(const Vector &v1, const Vector &v2) {
-  return v1.x*v2.x + v1.y*v2.y;
-}
-
-double Vector::length() const {
-  return sqrt(sqr(x) + sqr(y));
-}
-
-static int det(const Vector &v1, const Vector &v2) {
-  return v1.x*v2.y - v1.y*v2.x;
-}
-
-static double angle(const Vector &v1, const Vector &v2) {
-  if(v1 == v2) {
-    return 0;
-  }
-  double a = acos(v1*v2 / v1.length() / v2.length());
-  return a * sign(det(v1,v2));
-}
-
-bool MyPolygon::add(const CPoint &p) {
-  if(size() > 0 && p == last()) {
-    return false;
-  }
-  return Array<CPoint>::add(p);
-}
-
-int MyPolygon::contains(const CPoint &p) const { // 1=inside, -1=outside, 0=edge
-  UINT n = (UINT)size();
-  if(n < 3) {
-    return -1;
-  }
-  Vector v(p,(*this)[0]);
-  if(v.x == 0 && v.y == 0) {
-    return 0; // edge
-  }
-  double d = 0;
-  for(unsigned int i = 1; i <= n; i++) {
-    Vector vnext(p,(*this)[i%n]);
-    if(vnext.x == 0 && vnext.y == 0) {
-      return 0; // edge
-    }
-    d += angle(v,vnext);
-    v = vnext;
-  }
-  return fabs(d) > 1 ? 1 : -1; // d always +/- 2PI or 0.
-}
-
-class PolygonEdgeOperator : public PointOperator {
-  PointOperator &m_op;
-  const CPoint  &m_endPoint;
-public:
-  PolygonEdgeOperator(PointOperator &op, const CPoint &endPoint);
-  void apply(const CPoint &p);
-};
-
-PolygonEdgeOperator::PolygonEdgeOperator(PointOperator &op, const CPoint &endPoint) : m_op(op), m_endPoint(endPoint) {
-}
-
-void PolygonEdgeOperator::apply(const CPoint &p) {
-  if(p != m_endPoint) {
-    m_op.apply(p);
-  }
-}
-
-void MyPolygon::applyToEdge(PointOperator &op, bool closingEdge) const {
-  int n = (int)size();
-  for(int i = 1; i < n; i++) {
-    const CPoint &p1 = (*this)[i-1];
-    const CPoint &p2 = (*this)[i];
-    applyToLine(p1,p2,PolygonEdgeOperator(op,p2));
-  }
-  if(closingEdge && (n > 2)) {
-    const CPoint &p1 = last();
-    const CPoint &p2 = (*this)[0];
-    applyToLine(p1,p2,PolygonEdgeOperator(op,p2));
-  }
 }

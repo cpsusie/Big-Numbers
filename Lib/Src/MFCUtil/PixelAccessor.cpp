@@ -147,7 +147,7 @@ static D3DCOLOR shortColorToD3DColor(WORD color) {
   int g = RGB565_GETGREEN(color) << 2;
   int b = RGB565_GETBLUE(color)  << 3;
 
-  return RGB_MAKE(r,g,b);
+  return D3DCOLOR_XRGB(r,g,b);
 #else
   D3DCOLOR result;
   __asm {
