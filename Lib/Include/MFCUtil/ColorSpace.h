@@ -107,7 +107,7 @@ class CIEXYZ1931Color {
 public:
   static const CIEChromaticity D65StandardObserver, D65SupplementaryObserver;
   static const CIEXYZ1931Color D65Normalized;      // normalized white
-  static const CIEXYZ1931Color monitorWhite;       // CIEXYZ1931Color(RGBColor(RGB_MAKE(255,255,255)))
+  static const CIEXYZ1931Color monitorWhite;       // CIEXYZ1931Color(RGBColor(D3DCOLOR_XRGB(255,255,255)))
 
   float m_X,m_Y,m_Z;
   CIEXYZ1931Color(float X, float Y, float Z) : m_X(X), m_Y(Y), m_Z(Z) {
