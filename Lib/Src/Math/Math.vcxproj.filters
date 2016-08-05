@@ -298,6 +298,9 @@
     <ClCompile Include="Int128x86.cpp">
       <Filter>Source Files\Number Types</Filter>
     </ClCompile>
+    <ClCompile Include="Spherical.cpp">
+      <Filter>Source Files\Geometri</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -443,6 +446,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Int128.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Spherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

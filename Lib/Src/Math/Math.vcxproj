@@ -313,6 +313,7 @@
     <ClCompile Include="SigmoidIterator.cpp" />
     <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="SolveTriDiag.cpp" />
+    <ClCompile Include="Spherical.cpp" />
     <ClCompile Include="Statistic.cpp" />
     <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="TrigonometricFunctions.cpp" />
@@ -418,6 +419,7 @@
     <ClInclude Include="..\..\Include\Math\Rectangle2D.h" />
     <ClInclude Include="..\..\Include\Math\SigmoidIterator.h" />
     <ClInclude Include="..\..\Include\Math\Simplex.h" />
+    <ClInclude Include="..\..\Include\Math\Spherical.h" />
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="pch.h" />

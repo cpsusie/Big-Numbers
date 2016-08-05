@@ -1,6 +1,7 @@
 #pragma once
 
 #include <math.h>
+#include "MathLib.h"
 
 class Point3D {                 // A point in 3-dimensional space
 public:
