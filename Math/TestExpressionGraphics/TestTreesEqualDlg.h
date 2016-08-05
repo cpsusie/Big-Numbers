@@ -21,36 +21,35 @@ private:
   void ajourButtons();
 
 public:
-    CTestTreesEqualDlg(CWnd *pParent = NULL);
+  CTestTreesEqualDlg(CWnd *pParent = NULL);
 
 	enum { IDD = IDD_TREESEQUAL_DIALOG };
 	CString	m_expr1;
 	CString	m_expr2;
 
-
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
 
 	afx_msg void OnPaint();
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
-    afx_msg void OnTestTreesEqual();
+  afx_msg void OnTestTreesEqual();
 	afx_msg void OnTestTreesEqualMinus();
 	virtual BOOL OnInitDialog();
 	afx_msg void OnButtonCompile();
-    afx_msg void OnEditFindMatchingParentesis();
+  afx_msg void OnEditFindMatchingParentesis();
 	afx_msg void OnButtonConvert();
-    afx_msg void OnContextMenuShowTree();
-    afx_msg void OnGotoExpr1();
-    afx_msg void OnGotoExpr2();
+  afx_msg void OnContextMenuShowTree();
+  afx_msg void OnGotoExpr1();
+  afx_msg void OnGotoExpr2();
 	afx_msg void OnSetFocusEditExpr1();
 	afx_msg void OnKillFocusEditExpr1();
 	afx_msg void OnSetFocusEditExpr2();
 	afx_msg void OnKillFocusEditExpr2();
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 

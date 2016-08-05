@@ -13,11 +13,9 @@ CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd* pParent /*=NULL*/
 {
 }
 
-
 void CEnterVariablesDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
 }
-
 
 BEGIN_MESSAGE_MAP(CEnterVariablesDlg, CDialog)
 END_MESSAGE_MAP()

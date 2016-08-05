@@ -34,8 +34,8 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent) {
-	m_exprText = _T("");
-	m_x        = 0.0;
+    m_exprText = _T("");
+    m_x        = 0.0;
     m_hIcon           = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     m_debugExpr       = NULL;
     m_debugThread     = NULL;
@@ -49,9 +49,9 @@ CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
 }
 
 void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDITEXPR  , m_exprText);
-	DDX_Text(pDX, IDC_EDITX     , m_x       );
+  CDialog::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITEXPR  , m_exprText);
+  DDX_Text(pDX, IDC_EDITX     , m_x       );
 }
 
 #define INVALIDATE() Invalidate(FALSE)
@@ -61,44 +61,44 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
     ON_WM_QUERYDRAGICON()
     ON_WM_PAINT()
     ON_WM_CLOSE()
-	ON_WM_SIZE()
-	ON_WM_LBUTTONDOWN()
-	ON_WM_CONTEXTMENU()
-	ON_COMMAND(      ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree   )
-	ON_COMMAND(      ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm )
-	ON_COMMAND(      ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm )
-	ON_COMMAND(      ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm  )
-	ON_COMMAND(      ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree   )
-	ON_COMMAND(      ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand         )
-	ON_COMMAND(      ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply       )
+    ON_WM_SIZE()
+    ON_WM_LBUTTONDOWN()
+    ON_WM_CONTEXTMENU()
+    ON_COMMAND(      ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree   )
+    ON_COMMAND(      ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm )
+    ON_COMMAND(      ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm )
+    ON_COMMAND(      ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm  )
+    ON_COMMAND(      ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree   )
+    ON_COMMAND(      ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand         )
+    ON_COMMAND(      ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply       )
     ON_COMMAND(      ID_GOTOX                      , OnGotoX                     )
     ON_COMMAND(      ID_GOTOFONTSIZE               , OnGotoFontSize              )
-	ON_EN_CHANGE(    IDC_EDITEXPR                  , OnChangeEditExpr            )
-	ON_EN_CHANGE(    IDC_EDITX                     , OnChangeEditX               )
-	ON_CBN_SELCHANGE(IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize    )
-	ON_COMMAND(      ID_FILE_EXIT                  , OnFileExit                  )
-	ON_COMMAND(      ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-	ON_COMMAND(      ID_EDIT_GOTOEDITFX            , OnEditGotoEditFx            )
-	ON_COMMAND(      ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters       )
-	ON_COMMAND(      ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack    )
-	ON_COMMAND(      ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles        )
-	ON_COMMAND(      ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr           )
-	ON_COMMAND(      ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived        )
-	ON_COMMAND(      ID_DEBUG_RUN                  , OnDebugRun                  )
-	ON_COMMAND(      ID_DEBUG_STOP                 , OnDebugStop                 )
-	ON_COMMAND(      ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
-	ON_COMMAND(      ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep   )
-	ON_COMMAND(      ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration )
-	ON_COMMAND(      ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual       )
-	ON_COMMAND(      ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx        )
-	ON_COMMAND(      ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx         )
-	ON_COMMAND(      ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx       )
-	ON_COMMAND(      ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived  )
-	ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx         )
-	ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived    )
-	ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll      )
-  ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged        )
-  ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError         )
+    ON_EN_CHANGE(    IDC_EDITEXPR                  , OnChangeEditExpr            )
+    ON_EN_CHANGE(    IDC_EDITX                     , OnChangeEditX               )
+    ON_CBN_SELCHANGE(IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize    )
+    ON_COMMAND(      ID_FILE_EXIT                  , OnFileExit                  )
+    ON_COMMAND(      ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
+    ON_COMMAND(      ID_EDIT_GOTOEDITFX            , OnEditGotoEditFx            )
+    ON_COMMAND(      ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters       )
+    ON_COMMAND(      ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack    )
+    ON_COMMAND(      ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles        )
+    ON_COMMAND(      ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr           )
+    ON_COMMAND(      ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived        )
+    ON_COMMAND(      ID_DEBUG_RUN                  , OnDebugRun                  )
+    ON_COMMAND(      ID_DEBUG_STOP                 , OnDebugStop                 )
+    ON_COMMAND(      ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
+    ON_COMMAND(      ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep   )
+    ON_COMMAND(      ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration )
+    ON_COMMAND(      ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual       )
+    ON_COMMAND(      ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx        )
+    ON_COMMAND(      ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx         )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx       )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived  )
+    ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx         )
+    ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived    )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll      )
+    ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged        )
+    ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError         )
 END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
@@ -249,17 +249,15 @@ void CTestExpressionGraphicsDlg::OnViewShowReductionStack() {
 #ifdef TRACE_REDUCTION_CALLSTACK
   const bool showStack = toggleMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK);
 
-  m_expr.enableReductionStack(showStack);
-
   CWnd *stackWindow       = GetDlgItem(IDC_STATICREDUCTIONSTACK);
   CWnd *exprImage         = GetDlgItem(IDC_STATICEXPRIMAGE);
   CWnd *derivedImage      = GetDlgItem(IDC_STATICDERIVEDIMAGE);
   CWnd *derivedTextWindow = GetDlgItem(IDC_EDITDERIVED);
-  CRect stackRect = getWindowRect(stackWindow);
-  CRect r1        = getWindowRect(exprImage);
-  CRect r2        = getWindowRect(derivedImage);
-  CRect r3        = getWindowRect(derivedTextWindow);
-  const CRect cl = getClientRect(this);
+  CRect stackRect         = getWindowRect(stackWindow);
+  CRect r1                = getWindowRect(exprImage);
+  CRect r2                = getWindowRect(derivedImage);
+  CRect r3                = getWindowRect(derivedTextWindow);
+  const CRect cl          = getClientRect(this);
   if(showStack) {
     stackRect.top = r1.top;
     setWindowRect(stackWindow, stackRect);
@@ -461,7 +459,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
     if(m_debugThread->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
-	  enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
+    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , false);
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
@@ -469,7 +467,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
     } else if(m_debugThread->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , true );
-	  enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
+    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , false);
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
@@ -478,7 +476,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
       ENABLEFIELDLIST(dialogFields  , false);
       ENABLEFIELDLIST(fontSizeFields, true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
-	  enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
+    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , true );
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, true );
       enableMenuItem(this, ID_DEBUG_RUN                 , true );
@@ -487,7 +485,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
   } else { // No debug thread
     ENABLEFIELDLIST(dialogFields, true);
     enableMenuItem(this, ID_DEBUG_REDUCEEXPR            , true );
-	enableMenuItem(this, ID_DEBUG_REDUCEDERIVED         , true );
+  enableMenuItem(this, ID_DEBUG_REDUCEDERIVED         , true );
     enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP    , false);
     enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION  , false);
     enableMenuItem(this, ID_DEBUG_RUN                   , false);
@@ -1074,6 +1072,9 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
     }
   } catch(Exception e) {
     showError(e);
+  }
+  catch (...) {
+    MessageBox(_T("Unknown exception in %s"), _T(__FUNCTION__));
   }
 }
 

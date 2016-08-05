@@ -91,6 +91,9 @@ unsigned int DebugThread::run() {
   } catch(bool) {
     // ignore. thrown after resume, when killed
   }
+  catch (...) {
+    m_errorMsg = _T("Unknown exception caught in DebugThread");
+  }
   setBoolProperty(THREAD_TERMINATED, m_terminated, true );
   setBoolProperty(THREAD_RUNNING   , m_running   , false);
   

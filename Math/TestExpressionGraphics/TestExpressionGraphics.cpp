@@ -20,14 +20,16 @@ BOOL CTestExpressionGraphicsApp::InitInstance() {
 
     // Standard initialization
 
-    debugLog(_T("sizeof(ExpressionNode):%d\n"), sizeof(ExpressionNode));
-
-    CTestExpressionGraphicsDlg dlg;
-    m_pMainWnd = &dlg;
-    INT_PTR nResponse = dlg.DoModal();
-    if (nResponse == IDOK) {
-    } else if (nResponse == IDCANCEL) {
+    try {
+      CTestExpressionGraphicsDlg dlg;
+      m_pMainWnd = &dlg;
+      INT_PTR nResponse = dlg.DoModal();
+      if (nResponse == IDOK) {
+      } else if (nResponse == IDCANCEL) {
+      }
     }
-
+    catch (Exception e) {
+      MessageBox(NULL, e.what(), _T("Fatal error"), MB_ICONSTOP);
+    }
     return FALSE;
 }

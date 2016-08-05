@@ -16,7 +16,7 @@ typedef enum {
  ,HASDERIVEDVALUE2
 } StatusFlags;
 
-class CTestExpressionGraphicsDlg : public CDialog, public PropertyChangeListener  {
+class CTestExpressionGraphicsDlg : public CDialog, public PropertyChangeListener {
 private:
   HICON                        m_hIcon;
   HACCEL                       m_accelTabel;
@@ -73,7 +73,7 @@ private:
   void createThread(Expression &expr);
   void destroyThread();
   void showError(const Exception &e);
-  void showError(const TCHAR *format,...);
+  void showError(const TCHAR *format, ...);
   void paintDebugExpr();
   void enableFieldList(const int *ids, int n, bool enabled);
   void ajourDialogItems();
@@ -110,9 +110,9 @@ private:
   bool                               hasImageInWindow( int winId) const;
 
 public:
-    CTestExpressionGraphicsDlg(CWnd *pParent = NULL);
-   ~CTestExpressionGraphicsDlg();
-    void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  CTestExpressionGraphicsDlg(CWnd *pParent = NULL);
+ ~CTestExpressionGraphicsDlg();
+  void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 	enum { IDD = IDD_TESTEXPRESSIONGRAPHICS_DIALOG };
 	CString	m_exprText;
 	double	m_x;
@@ -120,8 +120,7 @@ public:
 public:
 	virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
+  virtual void DoDataExchange(CDataExchange *pDX);
 protected:
 
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
@@ -169,6 +168,6 @@ protected:
 	afx_msg void OnFunctionsEvaluateAll();
   afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowDebugError(       WPARAM wp, LPARAM lp);
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 

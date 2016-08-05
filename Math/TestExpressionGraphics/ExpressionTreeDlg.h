@@ -38,6 +38,6 @@ protected:
 	afx_msg void OnClearBreakPoint();
 	afx_msg void OnSetBreakPoint();
 	afx_msg void OnSelchangedTreeExpression(NMHDR* pNMHDR, LRESULT* pResult);
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
