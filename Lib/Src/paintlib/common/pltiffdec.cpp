@@ -312,7 +312,7 @@ void PLTIFFDecoder::doLoColor (TIFF * tif, PLBmpBase * pBmp) {
     Trace(2,"unexpected PhotometricInterpretation, default to PHOTOMETRIC_MINISWHITE");
   }
 
-  LineSize = TIFFScanlineSize(tif); //Number of bytes in one line
+  LineSize = (int32)TIFFScanlineSize(tif); //Number of bytes in one line
 
   PLPixel32 pPal[256];
   pBits = new PLBYTE [LineSize];

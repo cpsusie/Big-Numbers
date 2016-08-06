@@ -80,7 +80,7 @@ void PLJPEGEncoder::DoEncode( PLBmpBase *pBmp, PLDataSink *pDataSink) {
   */
 
     // Initialize custom data destination
-    jpeg_mem_dest(m_pcinfo, pDataSink->GetBufferPtr(), pDataSink->GetMaxDataSize(), pDataSink);
+    jpeg_mem_dest(m_pcinfo, pDataSink->GetBufferPtr(), (int)pDataSink->GetMaxDataSize(), pDataSink);
 
     // Set Header Fields
     m_pcinfo->image_width = pBmp->GetWidth();

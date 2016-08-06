@@ -443,7 +443,7 @@ long PLWinBmp::GetBitsMemNeeded(LONG width, LONG height, WORD BitsPerPixel) {
 long PLWinBmp::GetMemNeeded (LONG width, LONG height, WORD BitsPerPixel) {
   int HeaderMem = sizeof(BITMAPINFOHEADER); // Header memory
   if (BitsPerPixel < 16) { // Palette memory
-    HeaderMem += (1 << BitsPerPixel)*sizeof (RGBQUAD);
+    HeaderMem += (int)(1 << BitsPerPixel)*sizeof (RGBQUAD);
   }
 
   return HeaderMem+GetBitsMemNeeded (width, height, BitsPerPixel);
@@ -558,7 +558,7 @@ void PLWinBmp::initPointers() {
   if (m_pBMI->biBitCount < 16) { // Color table exists
     m_pClrTab = (PLPixel32 *)(((BITMAPINFO *) (m_pBMI))->bmiColors);
 
-    m_pBits = (BYTE *)m_pClrTab + (1 << m_pBMI->biBitCount)*sizeof (RGBQUAD);
+    m_pBits = (BYTE *)m_pClrTab + (int)(1 << m_pBMI->biBitCount)*sizeof (RGBQUAD);
   }
   else { // No color table for 16 bpp and up.
     m_pClrTab = NULL;

@@ -45,10 +45,9 @@ PLTIFFEncoderEx::~PLTIFFEncoderEx()
 }
 
 
-bool PLTIFFEncoderEx::Associate( PLDataSink* pDataSnk )
-{
-  m_TiffToken = TIFFOpenMem (pDataSnk->m_pStartData,
-                             pDataSnk->m_nMaxFileSize,
+bool PLTIFFEncoderEx::Associate(PLDataSink* pDataSnk) {
+  m_TiffToken = TIFFOpenMem(pDataSnk->m_pStartData,
+                             (int)pDataSnk->m_nMaxFileSize,
                              &(pDataSnk->m_nCurPos));
   return m_TiffToken != 0;
 }

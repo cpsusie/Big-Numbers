@@ -48,7 +48,7 @@ void PLBmpEncoder::DoEncode(PLBmpBase *pBmp, PLDataSink *pSink) {
   BFH.bfOffBits = sizeof (WINBITMAPFILEHEADER) +
                   sizeof (WINBITMAPINFOHEADER);
   if (BPP <= 8)   // include palette
-    BFH.bfOffBits += (1 << BPP) * sizeof(WINRGBQUAD);
+    BFH.bfOffBits += (PLLONG)(1 << BPP) * sizeof(WINRGBQUAD);
 
   BFH.bfSize = BFH.bfOffBits;
   BFH.bfSize += pBmp->GetHeight()*GetLineMemNeeded(pBmp->GetWidth(), BPP);

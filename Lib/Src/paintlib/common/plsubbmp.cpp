@@ -30,7 +30,7 @@ void PLSubBmp::Create( PLBmpBase & SrcBmp, const PLRect & SrcRect) {
 
   int bpp = SrcBmp.GetBitsPerPixel();
   if (bpp <= 8)
-    m_pClrTab = new PLPixel32 [1 << bpp];
+    m_pClrTab = new PLPixel32[(int)(1 << bpp)];
   else
     m_pClrTab = NULL;
   
@@ -56,7 +56,7 @@ void PLSubBmp::Create(int Width, int Height, const PLPixelFormat &pf, PLBYTE *pB
   
   if (!m_pLineArray) {  // freeMembers sets m_pLineArray to 0. 
     if (pf.GetBitsPerPixel() <= 8)
-      m_pClrTab = new PLPixel32 [1 << pf.GetBitsPerPixel()];
+      m_pClrTab = new PLPixel32[(int)(1 << pf.GetBitsPerPixel())];
     else
       m_pClrTab = NULL;
     initLocals (Width, Height, pf);

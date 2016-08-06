@@ -67,10 +67,10 @@ int bitcount(PLPixelFormat::Mask x)
 const PLPixelFormat & PLPixelFormat:: UseAlpha(bool useAlpha) const {
 	string name = GetName();
 	if (GetMask(A) && !useAlpha) {
-		int i = name.find('A');
+		int i = (int)name.find('A');
 		name[i] = 'X';
 	} else if (GetMask(X) && useAlpha) {
-		int i = name.find('X');
+		int i = (int)name.find('X');
 		name[i] = 'A';
 	}
 	return FromName(name);
@@ -119,19 +119,16 @@ const PLPixelFormat & PLPixelFormat::FromName(const string & name)
 	throw UnsupportedPixelFormat(name);
 }
 
-PLPixelFormat :: Channel PLPixelFormat :: parseChannel(const string& s, unsigned& pos) 
-{
+PLPixelFormat :: Channel PLPixelFormat::parseChannel(const string &s, unsigned int &pos) {
   string::size_type oldpos = pos;
   int ch = 0;
   do 
   {
-    pos = s.find(ppChannelNames[ch], oldpos);
-    if (string::npos == pos) 
-    {
+    pos = (unsigned int)s.find(ppChannelNames[ch], oldpos);
+    if (string::npos == pos) {
       ++ch;
-    } else 
-    {
-      pos += strlen(ppChannelNames[ch]);
+    } else {
+      pos += (unsigned int)strlen(ppChannelNames[ch]);
       return Channel(ch);
     }
   } while(pos == string::npos && ch < COUNT);
@@ -165,8 +162,8 @@ int PLPixelFormat :: GetNumColors() const
 PLPixelFormat PLPixelFormat::GetRGBSwapped() const
 {
   string s = GetName();
-  int RPos = s.find('R');
-  int BPos = s.find('B');
+  int RPos = (int)s.find('R');
+  int BPos = (int)s.find('B');
   s[RPos] = 'B';
   s[BPos] = 'R';
   return PLPixelFormat(s);  

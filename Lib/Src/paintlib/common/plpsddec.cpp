@@ -331,32 +331,19 @@ void PLPSDDecoder::readLayerHeader
   }
 }
 
-void PLPSDDecoder::skipLayerData
-    ( PLDataSource * pDataSrc
-    )
-{
-  if (m_MiscDataSize > 0)
-  {
-    int BytesLeft = m_MiscDataSize + (m_pMiscDataStart - pDataSrc->GetBufferPtr(0));
+void PLPSDDecoder::skipLayerData(PLDataSource *pDataSrc) {
+  if (m_MiscDataSize > 0) {
+    int BytesLeft = m_MiscDataSize + (int)(m_pMiscDataStart - pDataSrc->GetBufferPtr(0));
     pDataSrc->Skip (BytesLeft);
   }
-  
 }
 
-void PLPSDDecoder::skipMaskData
-    ( PLDataSource * pDataSrc
-    )
-{
+void PLPSDDecoder::skipMaskData( PLDataSource * pDataSrc) {
   int MaskDataLen = ReadMLong (pDataSrc);
   pDataSrc->ReadNBytes (MaskDataLen);
 }
 
-void PLPSDDecoder::readLayer 
-    ( PLDataSource * pDataSrc, 
-      PLBmp& Bmp,
-      int Mode
-    )
-{
+void PLPSDDecoder::readLayer(PLDataSource *pDataSrc, PLBmp &Bmp, int Mode) {
   m_LayersRead++;
   PLASSERT (m_LayersRead <= m_NumLayers);
   int CurLayer = m_LayersRead-1;

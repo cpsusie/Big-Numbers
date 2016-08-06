@@ -192,7 +192,7 @@ void my_read_data(png_structp png_ptr, png_bytep data, png_size_t length) {
   PLBYTE *ptr;
   PLDataSource *pSourceInfo=(PLDataSource*)png_get_io_ptr(png_ptr);
 
-  ptr = pSourceInfo->ReadNBytes(length);
+  ptr = pSourceInfo->ReadNBytes((int)length);
   memcpy(data,ptr,length);
 }
 

@@ -71,13 +71,13 @@ public:
     PLPixelFormat GetRGBSwapped() const;
 
 	struct UnsupportedPixelFormat {	
-		UnsupportedPixelFormat(const std::string& what) : m_what(what) {};
+		UnsupportedPixelFormat(const std::string &what) : m_what(what) {};
 		const std::string m_what;
 	};
 
 private:
 	PLPixelFormat(const std::string& sName);
-    static Channel parseChannel(const std::string& s, unsigned& pos);
+    static Channel parseChannel(const std::string &s, unsigned int &pos);
 
 	std::string m_sName;
 	int m_BitsPerPixel;

@@ -123,7 +123,7 @@ void PLFileSink::Close ()
   UnmapViewOfFile (m_pStartData);
   CloseHandle (m_hm);
   m_hm = NULL;
-  ::SetFilePointer(m_hf,GetDataSize(),0,FILE_BEGIN);
+  ::SetFilePointer(m_hf,(LONG)GetDataSize(),0,FILE_BEGIN);
   ::SetEndOfFile(m_hf); //Truncate the file to the right size
   CloseHandle (m_hf);
   m_hf = NULL;

@@ -47,7 +47,7 @@ void PLTIFFEncoder::SetCompression (PLWORD Compression)
 void PLTIFFEncoder::DoEncode (PLBmpBase * pBmp, PLDataSink* pDataSnk)
 {
   TIFF* tif = TIFFOpenMem (pDataSnk->m_pStartData,
-                           pDataSnk->m_nMaxFileSize,
+                           (int)pDataSnk->m_nMaxFileSize,
                            &(pDataSnk->m_nCurPos));
   PLASSERT( tif );
   /*

@@ -65,7 +65,7 @@ long PLAnyBmp::GetBitsMemNeeded(PLLONG width, PLLONG height, PLWORD BitsPerPixel
 long PLAnyBmp::GetMemNeeded(PLLONG width, PLLONG height, PLWORD BitsPerPixel) {
   int HeaderMem = sizeof (PLAnyBmp);
   if (BitsPerPixel < 16) { // Palette memory
-    HeaderMem += (1 << BitsPerPixel)*sizeof (PLPixel32);
+    HeaderMem += (int)(1 << BitsPerPixel)*sizeof (PLPixel32);
   }
 
   return HeaderMem+GetBitsMemNeeded (width, height, BitsPerPixel);
@@ -89,7 +89,7 @@ void PLAnyBmp::internalCreate(PLLONG Width, PLLONG Height, const PLPixelFormat &
 
   m_pBits = new PLBYTE [GetBitsMemNeeded (Width, Height, pf.GetBitsPerPixel())];
   if (pf.GetBitsPerPixel() <= 8)
-    m_pClrTab = new PLPixel32[1 << pf.GetBitsPerPixel()];
+    m_pClrTab = new PLPixel32[(int)(1 << pf.GetBitsPerPixel())];
    else
     m_pClrTab = NULL;
   initLocals(Width, Height, pf);

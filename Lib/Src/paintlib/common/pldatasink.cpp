@@ -101,13 +101,13 @@ size_t PLDataSink::WriteNBytes(size_t n, PLBYTE *pData) {
           "Buffer overflow while encoding.\n");
 
   memcpy(m_pStartData + m_nCurPos, pData, n);
-  m_nCurPos += n;
+  m_nCurPos += (int)n;
   return n;
 }
 
 void PLDataSink::WriteByte(PLBYTE Data) {
   *(m_pStartData + m_nCurPos) = Data;
-  m_nCurPos ++;
+  m_nCurPos++;
 }
 
 /*

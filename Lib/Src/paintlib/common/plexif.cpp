@@ -1222,7 +1222,7 @@ void PLExif::WriteData(jpeg_compress_struct * pcinfo)
     jpeg_write_m_byte(pcinfo, m_Comment[i]);
 */
 #else
-  jpeg_write_marker(pcinfo, JPEG_APP0 + 1, m_Data.get(), m_DataSize);
+  jpeg_write_marker(pcinfo, JPEG_APP0 + 1, m_Data.get(), (unsigned int)m_DataSize);
 /*  code removed should probably be in PLBmpInfo
   jpeg_write_marker(pcinfo, JPEG_COM, (PLBYTE *)&m_Comment[0], m_Comment.size());
 */
@@ -1603,7 +1603,7 @@ void PLExif::ReadIFD(const _PLExifTagValues *Tags, char * Prefix, PLExifTagList 
     NoComp = GetU32();
     if (NoComp != 0)    // otherwise no components so no data
     {
-      PLExifTagCPtr Tag(new PLExifTag(TagNo, Format, NoComp));
+      PLExifTagCPtr Tag(new PLExifTag((PLUINT)TagNo, (PLUINT)Format, (PLUINT)NoComp));
 
       //
       // Create the tag's shortname (and initialize it's m_Tag)

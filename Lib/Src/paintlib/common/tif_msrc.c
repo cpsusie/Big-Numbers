@@ -60,7 +60,7 @@ _tiffReadProc(thandle_t fd, tdata_t buf, tsize_t size)
 		size = pInfo->MaxFileSize-pInfo->CurPos;
 
 	memcpy ((void *)buf, (void *)(pInfo->pData+pInfo->CurPos), size);
-	pInfo->CurPos += size;
+	pInfo->CurPos += (int)size;
 	CHECKNEWSIZE;
 
 	return (tsize_t) size;
@@ -84,7 +84,7 @@ _tiffWriteProc(thandle_t fd, tdata_t buf, tsize_t size)
 		size = pInfo->MaxFileSize-pInfo->CurPos;
 
 	memcpy ((void *)(pInfo->pData+pInfo->CurPos), (void *)buf, size);
-	pInfo->CurPos += size;
+	pInfo->CurPos += (int)size;
 	CHECKNEWSIZE;
 
 	return (tsize_t) size;
