@@ -297,6 +297,7 @@
     <ClCompile Include="PixRectError.cpp" />
     <ClCompile Include="PixRectFill.cpp" />
     <ClCompile Include="PixRectOperators.cpp" />
+    <ClCompile Include="PixRectScale.cpp" />
     <ClCompile Include="PixRectShapes.cpp" />
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />

@@ -387,6 +387,10 @@ public:
     return PixelAccessor::createPixelAccessor(this, flags);
   }
 
+  PixRectDevice &getDevice() const {
+    return m_device;
+  }
+
   inline PixRectType getType() const {
     return m_type;
   }
