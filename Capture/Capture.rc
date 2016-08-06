@@ -66,12 +66,12 @@ END
 IDR_MAINFRAME TOOLBAR 32, 32
 BEGIN
     BUTTON      ID_FILE_SAVE
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_MSPAINT
     BUTTON      ID_APP_CAPTURE_AREA
     SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_CAPTURE_SCREEN
     BUTTON      ID_APP_CAPTURE_WINDOW
-    BUTTON      ID_MSPAINT
+    BUTTON      ID_APP_CAPTURE_SCREEN
 END
 
 
@@ -80,7 +80,7 @@ END
 // Bitmap
 //
 
-IDR_MAINFRAME           BITMAP                  "res\\toolbar1.bmp"
+IDR_MAINFRAME           BITMAP                  "res\\toolbar2.bmp"
 
 #endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
@@ -135,6 +135,14 @@ END
 #ifdef APSTUDIO_INVOKED
 GUIDELINES DESIGNINFO
 BEGIN
+    IDD_CAPTUREAREADIALOG, DIALOG
+    BEGIN
+    END
+
+    IDD_CAPTUREWINDOWDIALOG, DIALOG
+    BEGIN
+    END
+
     IDD_ABOUTBOX, DIALOG
     BEGIN
         LEFTMARGIN, 7

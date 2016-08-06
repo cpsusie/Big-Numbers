@@ -5,7 +5,7 @@ class CCaptureAreaDialog : public CDialog {
 public:
   CCaptureAreaDialog(CWnd* pParent = NULL);
 
-  const CRect &getCapturedRect() const {
+  inline const CRect &getCapturedRect() const {
     return m_rect;
   }
 

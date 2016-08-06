@@ -1,6 +1,7 @@
 #pragma once
 
 #include <afxWin.h>
+//#include <MFCUtil/TrueColorToolBar.h>
 #include "CaptureView.h"
 
 class CMainFrame : public CFrameWnd {
@@ -27,15 +28,15 @@ private:
   void initCurrent();
   void releaseCurrent();
 
-  bool hasSelectedWindow() const {
+  inline bool hasSelectedWindow() const {
     return m_selectedWindow != NULL;
   }
 
-  HWND getSelectedWindow() {
+  inline HWND getSelectedWindow() {
     return m_selectedWindow;
   }
 
-  bool isCapturingWindow() const {
+  inline bool isCapturingWindow() const {
     return m_capturingWindow;
   }
 
@@ -48,11 +49,11 @@ private:
   void drawRectangle(HWND hwnd);
   HWND findWindow(const CPoint &point);
 
-  CCaptureView *getView() {
+  inline CCaptureView *getView() {
     return (CCaptureView*)GetActiveView();
   }
 
-  CCaptureDoc *GetDocument() {
+  inline CCaptureDoc *GetDocument() {
     return getView()->GetDocument();
   }
 
@@ -66,6 +67,7 @@ public:
 protected:
   CStatusBar m_wndStatusBar;
   CToolBar   m_wndToolBar;
+//  CTrueColorToolBar 
 
 protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -94,4 +96,3 @@ protected:
     afx_msg void OnViewSizeCentimeter();
     DECLARE_MESSAGE_MAP()
 };
-

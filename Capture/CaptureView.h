@@ -34,12 +34,11 @@ public:
 #endif
 
 protected:
-
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnFilePrint();
-    afx_msg void OnFilePrintPreview();
-    afx_msg void OnFileSave();
-    afx_msg void OnEditCopy();
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  afx_msg void OnFilePrint();
+  afx_msg void OnFilePrintPreview();
+  afx_msg void OnFileSave();
+  afx_msg void OnEditCopy();
   DECLARE_MESSAGE_MAP()
 };
 

@@ -32,7 +32,6 @@ BOOL CCaptureApp::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-
 	CWinApp::InitInstance();
 
 	// Initialize OLE libraries
@@ -44,7 +43,6 @@ BOOL CCaptureApp::InitInstance() {
 	AfxEnableControlContainer();
 
 	EnableTaskbarInteraction(FALSE);
-
 
   SetRegistryKey(_T("JGMData"));
 
@@ -78,12 +76,12 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 public:
-      virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual BOOL PreTranslateMessage(MSG* pMsg);
 protected:
-      virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
-    virtual BOOL OnInitDialog();
+  virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
 
@@ -97,7 +95,7 @@ BOOL CAboutDlg::OnInitDialog() {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
