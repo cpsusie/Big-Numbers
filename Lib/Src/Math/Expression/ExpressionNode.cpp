@@ -30,7 +30,7 @@ String ExpressionNode::getSymbolName() const {
 }
 
 Real &ExpressionNode::getValue() const {
-  return m_tree.m_valueTable[getValueIndex()];
+  return m_tree.getValueRef(getValueIndex());
 }
 
 class NameChecker : public ExpressionNodeHandler {
@@ -401,6 +401,17 @@ bool ExpressionNodeArray::isConstant() const {
     if(!(*this)[i]->isConstant()) return false;
   }
   return true;
+}
+
+BitSet ExpressionNodeArray::getNonConstantNodes() const {
+  if(isEmpty()) return BitSet(1);
+  BitSet result(size());
+  for (size_t i = 0; i < size(); i++) {
+    if (!(*this)[i]->isConstant()) {
+      result.add(i);
+    }
+  }
+  return result;
 }
 
 String ExpressionNodeArray::toString() const {

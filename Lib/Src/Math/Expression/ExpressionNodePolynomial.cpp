@@ -80,7 +80,7 @@ bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int 
 }
 
 void ExpressionNodePoly::dumpNode(String &s, int level) const {
-  addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
+  addLeftMargin(s, level) += format(_T("%s first coefIndex:%d\n"), getSymbolName().cstr(), getFirstCoefIndex());
   for(size_t i = 0; i < m_coefficientArray.size(); i++) {
     m_coefficientArray[i]->dumpNode(s, level+1);
   }

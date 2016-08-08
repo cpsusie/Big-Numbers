@@ -39,7 +39,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
 
   switch(n->getSymbol()) {
-  case NAME    : return getValue(n->getVariable());
+  case NAME    : return getValueRef(n->getVariable());
   case NUMBER  : return n->getReal(); // dont use getValue() as it takes the value in m_valueTable
                                       // We might be called from buildSymbolTable
                                       // before this table is filled with constants
@@ -98,7 +98,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
     {            const ExpressionNode *startAssignment = n->child(0);
                  const ExpressionNode *beginExpr       = startAssignment->right();
                  const ExpressionNode *expr            = n->child(2);
-                 Real                 &i               = getValue(startAssignment->left()->getVariable());
+                 Real                 &i               = getValueRef(startAssignment->left()->getVariable());
                  const Real            endIndex        = evaluateRealExpr(n->child(1));
                  Real                  sum             = 0;
                  for(i = evaluateRealExpr(beginExpr); i <= endIndex; i++) {
@@ -111,7 +111,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
                  const ExpressionNode *beginExpr       = startAssignment->right();
                  const ExpressionNode *expr            = n->child(2);
                  const Real            endIndex        = evaluateRealExpr(n->child(1));
-                 Real                 &i               = getValue(startAssignment->left()->getVariable());
+                 Real                 &i               = getValueRef(startAssignment->left()->getVariable());
                  Real                  product         = 1;
 
                  for(i = evaluateRealExpr(beginExpr); i <= endIndex; i++) {
@@ -219,7 +219,7 @@ void Expression::doAssignment(const ExpressionNode *n) const {
 //    printf(_T("doasign:<%s> = %le\n"),n->left()->getName().cstr(),evaluateRealExpr(n->right()));
     { ExpressionVariable &var = n->left()->getVariable();
       if(!var.isConstant()) {
-        getValue(var) = evaluateRealExpr(n->right());
+        getValueRef(var) = evaluateRealExpr(n->right());
       }
     }
     break;

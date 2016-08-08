@@ -1326,7 +1326,7 @@ namespace TestExpression {
 
     TEST_METHOD(ExpressionTestAll) {
       FPU::init();
-
+//      redirectDebugLog();
       try {
         for (int i = 0; i < ARRAYSIZE(testCases); i++) {
           ExpressionTest &test = *testCases[i];
@@ -1334,6 +1334,9 @@ namespace TestExpression {
 //            tcout << _T("Test[") << i << _T("]:") << expr << spaceString(40) << _T("\r");
           Expression compiledExpr, interpreterExpr;
           compiledExpr.compile(expr, true);
+
+//          debugLog(_T("Test %d %s\n%s\n"), i, expr.cstr(), compiledExpr.treeToString().cstr());
+
           interpreterExpr.compile(expr, false);
           if (!compiledExpr.isOk()) {
             OUTPUT(_T("Error in testcase[%d]<%s>"), i, expr.cstr());

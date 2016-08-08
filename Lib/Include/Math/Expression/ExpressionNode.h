@@ -59,6 +59,7 @@ public:
   }
   ExpressionNode *toTree(ExpressionInputSymbol delimiter) const;
   bool isConstant() const;
+  BitSet getNonConstantNodes() const;
   String toString() const;
 };
 

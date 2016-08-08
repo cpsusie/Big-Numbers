@@ -1138,7 +1138,7 @@ bool Expression::reducesToRational(SNode n, Rational *r) {
     }
   case NAME           :
     { const ExpressionVariable &var = n.variable();
-      RETURNBOOL( var.isConstant() && Rational::isRealRational(getValue(var), r) );
+      RETURNBOOL( var.isConstant() && Rational::isRealRational(getValueRef(var), r) );
     }
 
   case MINUS          :

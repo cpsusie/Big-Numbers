@@ -162,6 +162,7 @@ private:
   ExpressionVariable   *allocateSymbol(     ExpressionNode *n        , bool isConstant, bool isLeftSide, bool isLoopVar);
   ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
   void                  allocateNumber(     ExpressionNode *n);
+  int                   insertValue(Real value); // insert value into m_valueTable, return index of position
   void buildSymbolTable(                    ExpressionNode *n);
   void buildSymbolTableIndexedExpression(   ExpressionNode *n);
   void buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
@@ -178,7 +179,7 @@ private:
   friend class ExpressionNodeVariable;
   friend class SumElement;
   friend class FactorArray;
-  friend class AllocateVariables;
+  friend class AllocateNumbers;
   friend class MarkedNodeTransformer;
 protected:
   ParserTree();
@@ -194,6 +195,12 @@ protected:
   void buildSymbolTable();
   void clearSymbolTable();
   void copyValues(ParserTree &src);
+  inline void setValueByIndex(UINT index, Real value) const {
+    m_valueTable[index] = value;
+  }
+  inline Real getValueByIndex(UINT index) const {
+    return m_valueTable[index];
+  }
   ExpressionNode *traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
   inline ExpressionNodeNumber *numberExpression(const Real     &v) {
@@ -307,10 +314,10 @@ public:
   inline SNode _2()    { return SNode(getTwo());  }
   inline SNode _half() { return SNode(getHalf()); }
 
-  inline Real &getValue(const ExpressionVariable &var) const {
-    return m_valueTable[var.getValueIndex()];
+  inline Real &getValueRef(const ExpressionVariable &var) const {
+    return getValueRef(var.getValueIndex());
   }
-  inline Real &getValue(UINT valueIndex) const {
+  inline Real &getValueRef(UINT valueIndex) const {
     return m_valueTable[valueIndex];
   }
   ExpressionNodeVariable *fetchVariableNode( const String               &name    );

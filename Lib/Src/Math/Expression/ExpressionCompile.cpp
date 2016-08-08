@@ -245,7 +245,7 @@ Real Expression::fastEvaluate() {
 
 #ifdef IS32BIT
   ExpressionEntryPoint  ep = m_entryPoint;
-  Real                 *dp = &getValue(0);
+  Real                 *dp = &getValueRef(0);
 
 #ifndef LONGDOUBLE
 
@@ -293,7 +293,7 @@ Real Expression::fastEvaluate() {
 
 #ifndef LONGDOUBLE
   double result;
-  callDoubleResultExpression(m_entryPoint, &getValue(0), result);
+  callDoubleResultExpression(m_entryPoint, &getValueRef(0), result);
   return result;
 #else // LONGDOUBLE
 #endif // LONGDOUBLE
@@ -304,7 +304,7 @@ Real Expression::fastEvaluate() {
 bool Expression::fastEvaluateBool() {
 #ifdef IS32BIT
   ExpressionEntryPoint  ep = m_entryPoint;
-  Real                 *dp = &getValue(0);
+  Real                 *dp = &getValueRef(0);
   int result;
   __asm {
     push esi
@@ -315,7 +315,7 @@ bool Expression::fastEvaluateBool() {
   }
   return result ? true : false;
 #else
-  return callIntResultExpression(m_entryPoint, &getValue(0)) ? true : false;
+  return callIntResultExpression(m_entryPoint, &getValueRef(0)) ? true : false;
 #endif // IS32BIT
 }
 
@@ -649,30 +649,29 @@ void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestinat
 static double evaluatePolynomial(double x, int n, const Real *coef) {
   const double *last   = coef + n;
   double        result = *coef;
-  while(coef++ < last) {
+  while(++coef < last) {
     result = result * x + *coef;
   }
   return result;
 }
 
 void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dst) {
-  const ExpressionNodeArray &coefArray = n->getCoefficientArray();
-  BitSet variableCoefSet(coefArray.size());
-  for (size_t i = 0; i < coefArray.size(); i++) {
-    if (!coefArray[i]->isConstant()) {
-      variableCoefSet.add(i);
+  const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
+  const int                  firstCoefIndex  = n->getFirstCoefIndex();
+  for(int i = 0; i < (int)coefArray.size(); i++) {
+    const ExpressionNode *coef = coefArray[i];
+    if(coef->isConstant()) {
+      setValueByIndex(firstCoefIndex + i, evaluateRealExpr(coef));
+    } else {
+      genExpression(coef, DST_INVALUETABLE(firstCoefIndex + i));
     }
-  }
-  const int firstCoefIndex = n->getFirstCoefIndex();
-  for (Iterator<size_t> it = variableCoefSet.getIterator(); it.hasNext();) {
-    const int i = (int)it.next();
-    genExpression(coefArray[i], DST_INVALUETABLE(firstCoefIndex + i));
   }
   genSetParameter(n->getArgument(), 0, false);
   m_code.emit(REG_SRC(XOR_QWORD_R64(RDX),RDX));
   BYTE coefCount = (BYTE)coefArray.size();
   m_code.emit(MOV_R8_IMM_BYTE(DL)); m_code.addBytes(&coefCount, 1);
-  m_code.emit(MOV_R64_IMM_QWORD(R8)); m_code.addBytes(&getValue(firstCoefIndex), sizeof(void*));
+  const Real *coef0 = &getValueRef(firstCoefIndex);
+  m_code.emit(MOV_R64_IMM_QWORD(R8)); m_code.addBytes(&coef0, sizeof(coef0));
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dst);
 }
 
@@ -940,11 +939,11 @@ int Expression::genPush(const ExpressionNode *n) {
 
 int Expression::genPushRef(const ExpressionNode *n, int index) {
   if(n->isNameOrNumber()) {
-    return genPushRef(&getValue(n->getValueIndex()));
+    return genPushRef(&getValueRef(n->getValueIndex()));
   } else {
     genExpression(n, DST_FPU);
     m_code.emitFStorePop(index);
-    return genPushRef(&getValue(index));
+    return genPushRef(&getValueRef(index));
   }
 }
 

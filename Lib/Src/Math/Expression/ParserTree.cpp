@@ -240,7 +240,7 @@ ExpressionNodeArray getStatementList(ExpressionNode *n) {
 void ParserTree::setValue(const String &name, const Real &value) {
   ExpressionVariable *v = getVariable(name);
   if(v != NULL) {
-    m_valueTable[v->getValueIndex()] = value;
+    setValueByIndex(v->getValueIndex(), value);
   }
 }
 
@@ -258,7 +258,7 @@ Array<ExpressionVariableWithValue> ParserTree::getAllVariables() const {
   Array<ExpressionVariableWithValue> result(m_variableTable.size());
   for (size_t i = 0; i < m_variableTable.size(); i++) {
     const ExpressionVariable &var = m_variableTable[i];
-    result.add(ExpressionVariableWithValue(var, m_valueTable[var.getValueIndex()]));
+    result.add(ExpressionVariableWithValue(var, getValueRef(var)));
   }
   return result;
 }
@@ -268,7 +268,7 @@ int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
     return 0;
   } else {
     if(selector) {
-      ((ParserTree*)this)->unmarkAll();
+      unmarkAll();
       markPow1Nodes();
     }
     return getRoot()->getNodeCount(selector);
