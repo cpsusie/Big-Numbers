@@ -8,10 +8,10 @@ private:
 public:
   SetMark(bool setMark) : m_setMark(setMark) {
   }
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
 };
 
-bool SetMark::handleNode(const ExpressionNode *n, int level) {
+bool SetMark::handleNode(ExpressionNode *n, int level) {
   if(m_setMark) {
     n->mark();
     if(n->getSymbol() == SUM) {
@@ -50,10 +50,10 @@ void ParserTree::markSimpleConstants() {
   MARKCONSTANT(m_half    );
 }
 
-void ParserTree::unmarkAll() const {
-  for(size_t i = 0; i < m_nodeTable.size()  ; i++) m_nodeTable[i]->unMark();
-  for(size_t i = 0; i < m_addentTable.size(); i++) m_addentTable[i]->unMark();
-  for(size_t i = 0; i < m_variables.size()  ; i++) m_variables[i].unMark();
+void ParserTree::unmarkAll() {
+  for(size_t i = 0; i < m_nodeTable.size()    ; i++) m_nodeTable[i]->unMark();
+  for(size_t i = 0; i < m_addentTable.size()  ; i++) m_addentTable[i]->unMark();
+  for(size_t i = 0; i < m_variableTable.size(); i++) m_variableTable[i].unMark();
 }
 
 void ParserTree::deleteUnmarked() {

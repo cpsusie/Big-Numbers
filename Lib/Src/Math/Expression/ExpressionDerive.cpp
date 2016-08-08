@@ -21,7 +21,7 @@ Expression Expression::getDerived(const String &name, bool reduceResult /*=false
   return result;
 }
 
-SNode Expression::D(const SNode &n, const String &name) const {
+SNode Expression::D(SNode n, const String &name) {
   switch(n.getSymbol()) {
   case NUMBER    :
     return _0();
@@ -229,9 +229,9 @@ SNode Expression::D(const SNode &n, const String &name) const {
  * return expression containing derived of poly n
  * throws ExpressionUnderivableException if any of the expressions involved in evaluating the polynomial cannot be derived
  */
-SNode Expression::DPolynomial(const SNode &n, const String &name) const {
+SNode Expression::DPolynomial(SNode n, const String &name) {
   const SExprList coefficients(n.getCoefficientArray());
-  const SNode     u            = n.getArgument();   // u(x) is the parameter to the polynomial
+  SNode           u            = n.getArgument();   // u(x) is the parameter to the polynomial
   const SNode     dudx         = D(u, name);        // dudx is u derived w.r.t. name
 
   SExprList newCoefficients;
@@ -246,7 +246,7 @@ SNode Expression::DPolynomial(const SNode &n, const String &name) const {
   return fetchPolyNode(newCoefficients, u);
 }
 
-SNode Expression::DStatementList(const SNode &n, const String &name) const {
+SNode Expression::DStatementList(SNode n, const String &name) {
   DEFINEMETHODNAME;
 
   SStmtList stmtList(n);

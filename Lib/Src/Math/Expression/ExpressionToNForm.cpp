@@ -27,7 +27,7 @@ Expression &Expression::toNumericForm() {
 
 // ------------------------------ toNForm -------------------------------------------------------------------------
 
-SNode Expression::toNForm(const ExpressionNode *n) const {
+SNode Expression::toNForm(ExpressionNode *n) {
   DEFINEMETHODNAME;
 
   const SStmtList stmtList(n);
@@ -52,7 +52,7 @@ SNode Expression::toNForm(const ExpressionNode *n) const {
   return newStmtList.removeUnusedAssignments();
 }
 
-SNode Expression::toNFormRealExp(const ExpressionNode *n) const {
+SNode Expression::toNFormRealExp(ExpressionNode *n) {
   DEFINEMETHODNAME;
   if(n->isConstant()) {
     return numberExpression(evaluateRealExpr(n));
@@ -67,7 +67,7 @@ SNode Expression::toNFormRealExp(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toNFormBoolExp(const ExpressionNode *n) const {
+SNode Expression::toNFormBoolExp(ExpressionNode *n) {
   DEFINEMETHODNAME;
   if(n->isConstant()) {
     return booleanExpression(evaluateBoolExpr(n));
@@ -96,7 +96,7 @@ SNode Expression::toNFormBoolExp(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toNFormSum(const ExpressionNode *n) const {
+SNode Expression::toNFormSum(ExpressionNode *n) {
   const AddentArray &a = n->getAddentArray();
   if(a.size() == 0) {
     return _0();
@@ -104,7 +104,7 @@ SNode Expression::toNFormSum(const ExpressionNode *n) const {
     Real constant = 0;
     AddentArray newArray;
     for(size_t i = 0; i < a.size(); i++) {
-      const SumElement *e = a[i];
+      SumElement *e = a[i];
       SNode tmp = toNFormRealExp(e->getNode());
       if(tmp.isNumber()) {
         if(e->isPositive()) constant += tmp.getReal(); else constant -= tmp.getReal();
@@ -116,8 +116,8 @@ SNode Expression::toNFormSum(const ExpressionNode *n) const {
     SNode result = newArray[0]->getNode();
     if(!newArray[0]->isPositive()) result = -result;
     for(size_t i = 1; i < newArray.size(); i++) {
-      const SumElement *e  = newArray[i];
-      const SNode       ne = e->getNode();
+      SumElement *e  = newArray[i];
+      SNode       ne = e->getNode();
       if(e->isPositive()) result += ne; else result -= ne;
     }
     return (constant == 0) ? result
@@ -126,14 +126,14 @@ SNode Expression::toNFormSum(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toNFormProduct(const ExpressionNode *n) const {
+SNode Expression::toNFormProduct(ExpressionNode *n) {
   Real constant = 1;
   const FactorArray &a = n->getFactorArray();
   FactorArray newArray;
   for(size_t i = 0; i < a.size(); i++) {
-    const ExpressionFactor     *f        = a[i];
-    const ExpressionNode *base     = toNFormRealExp(f->base());
-    const ExpressionNode *exponent = toNFormRealExp(f->exponent());
+    ExpressionFactor *f        = a[i];
+    ExpressionNode   *base     = toNFormRealExp(f->base());
+    ExpressionNode   *exponent = toNFormRealExp(f->exponent());
     if(base->isNumber() && exponent->isNumber()) {
       constant *= evaluateRealExpr(f);
     } else {
@@ -164,9 +164,9 @@ SNode Expression::toNFormProduct(const ExpressionNode *n) const {
   return result;
 }
 
-SNode Expression::toNFormPoly(const ExpressionNode *n) const {
-  const ExpressionNodeArray  &coefficientArray = n->getCoefficientArray();
-  const ExpressionNode *argument         = n->getArgument();
+SNode Expression::toNFormPoly(ExpressionNode *n) {
+  const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
+  ExpressionNode            *argument         = n->getArgument();
 
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
   for(size_t i = 0; i < coefficientArray.size(); i++) {
@@ -175,7 +175,7 @@ SNode Expression::toNFormPoly(const ExpressionNode *n) const {
   return getPoly(n, newCoefficientArray, toNFormRealExp(argument));
 }
 
-SNode Expression::toNFormTreeNode(const ExpressionNode *n) const {
+SNode Expression::toNFormTreeNode(ExpressionNode *n) {
   if(n->isBooleanOperator()) {
     return toNFormBoolExp(n);
   }

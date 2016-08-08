@@ -6,14 +6,20 @@ class ExpressionFactor : public ExpressionNodeTree {
 private:
   DECLARECLASSNAME;
 public:
-  ExpressionFactor(const ExpressionNode *base, const ExpressionNode *exponent)
+  ExpressionFactor(ExpressionNode *base, ExpressionNode *exponent)
     : ExpressionNodeTree(base->getTree(), POW, base, exponent?exponent:base->getTree()->getOne(), NULL) {
   }
 
+  inline ExpressionNode *base() {
+    return child(0);
+  }
   inline const ExpressionNode *base() const {
     return child(0);
   }
 
+  inline ExpressionNode *exponent() {
+    return child(1);
+  }
   inline const ExpressionNode *exponent() const {
     return child(1);
   }
@@ -22,9 +28,9 @@ public:
     return exponent()->isNumber() && exponent()->getNumber().isOdd();
   }
 
-  int compare(const ExpressionNode *n) const;
+  int compare(ExpressionNode *n);
 
-  const ExpressionNode *clone(const ParserTree *tree) const;
+  ExpressionNode *clone(ParserTree *tree) const;
 
   bool isConstant() const;
 

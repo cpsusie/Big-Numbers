@@ -2,35 +2,35 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/SumElement.h>
 
-static int compareSumElement(const SumElement * const &e1, const SumElement * const &e2) {
+static int compareSumElement(SumElement * const &e1, SumElement * const &e2) {
   return e1->compare(e2);
 }
 
-ExpressionNodeSum::ExpressionNodeSum(const ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
+ExpressionNodeSum::ExpressionNodeSum(ParserTree *tree, const AddentArray &elements) : ExpressionNode(tree, SUM) {
   m_elements = elements;
   m_elements.sort(compareSumElement);
 }
 
-const ExpressionNodeSum *ExpressionNodeSum::multiply(const ExpressionNodeSum *n1, const ExpressionNodeSum *n2) { // static
+ExpressionNodeSum *ExpressionNodeSum::multiply(ExpressionNodeSum *n1, ExpressionNodeSum *n2) { // static
   AddentArray newAddentArray;
 
   const AddentArray &aa1 = n1->getAddentArray();
   const AddentArray &aa2 = n2->getAddentArray();
 
-  const ParserTree *tree = n1->getTree();
+  ParserTree *tree = n1->getTree();
   for(size_t i = 0; i < aa1.size(); i++) {
-    const SumElement *e1 = aa1[i];
-    const SNode       s1 = e1->getNode();
+    SumElement *e1 = aa1[i];
+    const SNode s1 = e1->getNode();
     for(size_t j = 0; j < aa2.size(); j++) {
-      const SumElement *e2 = aa2[j];
-      const SNode       s2 = e2->getNode();
+      SumElement *e2 = aa2[j];
+      const SNode s2 = e2->getNode();
       newAddentArray.add(s1 * s2, e1->isPositive() == e2->isPositive());
     }
   }
   return new ExpressionNodeSum(tree, newAddentArray); // dont use getSum here. It has to be an ExpressionNodeSum
 }
 
-int ExpressionNodeSum::compare(const ExpressionNode *n) const {
+int ExpressionNodeSum::compare(ExpressionNode *n) {
   if(n->getSymbol() != SUM) {
     return ExpressionNode::compare(n);
   }
@@ -48,7 +48,7 @@ int ExpressionNodeSum::compare(const ExpressionNode *n) const {
   }
 }
 
-const ExpressionNode *ExpressionNodeSum::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeSum::clone(ParserTree *tree) const {
   AddentArray a(m_elements.size());
   for(size_t i = 0; i < m_elements.size(); i++) {
     a.add(m_elements[i]->clone(tree));
@@ -66,7 +66,7 @@ bool ExpressionNodeSum::isConstant() const {
   return true;
 }
 
-bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
   const AddentArray &a = getAddentArray();
   level++;
@@ -79,7 +79,7 @@ bool ExpressionNodeSum::traverseExpression(ExpressionNodeHandler &handler, int l
 void ExpressionNodeSum::dumpNode(String &s, int level) const {
   addLeftMargin(s, level) += format(_T("%s\n"), getSymbolName().cstr());
   for(size_t i = 0; i < m_elements.size(); i++) {
-    const SumElement *e = m_elements[i];
+    SumElement *e = m_elements[i];
     addLeftMargin(s, level+1) += e->isPositive() ? _T("+\n") : _T("\x96\n");
     e->getNode()->dumpNode(s, level+2);
   }
@@ -90,7 +90,7 @@ String ExpressionNodeSum::toString() const {
   String result;
   const int n = (int)m_elements.size();
   for(int i = 0; i < n; i++) {
-    const SumElement *e = m_elements[i];
+    SumElement *e = m_elements[i];
     if(e->isPositive()) {
       if(!first) {
         result += _T(" + ");

@@ -5,10 +5,10 @@
 
 Real Expression::evaluateStatementListReal(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
-  ExpressionNodeArray stmtList = getStatementList(n);
+  ExpressionNodeArray stmtList = getStatementList((ExpressionNode*)n);
 
-  const int stmtCount = (int)stmtList.size() - 1;
-  for(int i = 0; i < stmtCount; i++) {
+  const size_t stmtCount = stmtList.size() - 1;
+  for(size_t i = 0; i < stmtCount; i++) {
     doAssignment(stmtList[i]);
   }
   const ExpressionNode *last = stmtList.last();
@@ -21,7 +21,7 @@ Real Expression::evaluateStatementListReal(const ExpressionNode *n) const {
 
 bool Expression::evaluateStatementListBool(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
-  ExpressionNodeArray stmtList = getStatementList(n);
+  ExpressionNodeArray stmtList = getStatementList((ExpressionNode *)n);
 
   const int stmtCount = (int)stmtList.size() - 1;
   for(int i = 0; i < stmtCount; i++) {
@@ -39,8 +39,10 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
 
   switch(n->getSymbol()) {
-  case NAME    : return n->getVariable().getValue();
-  case NUMBER  : return n->getReal();
+  case NAME    : return getValue(n->getVariable());
+  case NUMBER  : return n->getReal(); // dont use getValue() as it takes the value in m_valueTable
+                                      // We might be called from buildSymbolTable
+                                      // before this table is filled with constants
   case PLUS    : return evaluateRealExpr(n->left()) + evaluateRealExpr(n->right());
   case MINUS   : return n->isUnaryMinus() ? -evaluateRealExpr(n->left()) : (evaluateRealExpr(n->left()) - evaluateRealExpr(n->right()));
   case PROD    : return           evaluateRealExpr(n->left()) * evaluateRealExpr(n->right());
@@ -96,7 +98,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
     {            const ExpressionNode *startAssignment = n->child(0);
                  const ExpressionNode *beginExpr       = startAssignment->right();
                  const ExpressionNode *expr            = n->child(2);
-                 Real                 &i               = startAssignment->left()->getVariable().getValue();
+                 Real                 &i               = getValue(startAssignment->left()->getVariable());
                  const Real            endIndex        = evaluateRealExpr(n->child(1));
                  Real                  sum             = 0;
                  for(i = evaluateRealExpr(beginExpr); i <= endIndex; i++) {
@@ -109,7 +111,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
                  const ExpressionNode *beginExpr       = startAssignment->right();
                  const ExpressionNode *expr            = n->child(2);
                  const Real            endIndex        = evaluateRealExpr(n->child(1));
-                 Real                 &i               = startAssignment->left()->getVariable().getValue();
+                 Real                 &i               = getValue(startAssignment->left()->getVariable());
                  Real                  product         = 1;
 
                  for(i = evaluateRealExpr(beginExpr); i <= endIndex; i++) {
@@ -217,7 +219,7 @@ void Expression::doAssignment(const ExpressionNode *n) const {
 //    printf(_T("doasign:<%s> = %le\n"),n->left()->getName().cstr(),evaluateRealExpr(n->right()));
     { ExpressionVariable &var = n->left()->getVariable();
       if(!var.isConstant()) {
-        var.setValue(evaluateRealExpr(n->right()));
+        getValue(var) = evaluateRealExpr(n->right());
       }
     }
     break;

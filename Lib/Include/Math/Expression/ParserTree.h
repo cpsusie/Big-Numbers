@@ -36,7 +36,7 @@ private:
   int m_nameCount;
   int m_treeDepth;
 public:
-  ParserTreeComplexity(const ParserTree &tree);
+  ParserTreeComplexity(ParserTree &tree);
   friend int parserTreeComplexityCmp(const ParserTreeComplexity &rs1, const ParserTreeComplexity &rs2);
   inline bool operator==(const ParserTreeComplexity &rs) const {
     return parserTreeComplexityCmp(*this, rs) == 0;
@@ -64,8 +64,8 @@ public:
 #ifdef TRACE_REDUCTION_CALLSTACK
 class ReductionStackElement {
 public:
-  const TCHAR                *m_method;
-  String                      m_str;
+  const TCHAR          *m_method;
+  String                m_str;
   const ExpressionNode *m_node;
   ReductionStackElement(const TCHAR *method, const String &str, const ExpressionNode *node = NULL) : m_method(method), m_node(node) {
     m_str = format(_T("%-20s:%s"), m_method, str.cstr());
@@ -146,24 +146,26 @@ protected:
 
 private:
   DECLARECLASSNAME;
-  const ExpressionNode                 *m_root;
-  int                                   m_indexNameCounter;
-  mutable StringTreeMap<int>            m_symbolTable;
-  mutable Array<ExpressionVariable>     m_variables;
-  mutable CompactArray<ExpressionNode*> m_nodeTable;
-  mutable CompactArray<SumElement*>     m_addentTable;
-  mutable StringArray                   m_errors;
-  mutable bool                          m_ok;
-  ParserTreeForm                        m_treeForm;
-  mutable const ExpressionNodeNumber   *m_minusOne, *m_zero, *m_one, *m_two, *m_half;
+  ExpressionNode               *m_root;
+  int                           m_indexNameCounter;
+  StringTreeMap<int>            m_nameTable; // map name -> index in m_variableTable
+  Array<ExpressionVariable>     m_variableTable;
+  mutable CompactArray<Real>    m_valueTable;
+  CompactArray<ExpressionNode*> m_nodeTable;
+  CompactArray<SumElement*>     m_addentTable;
+  StringArray                   m_errors;
+  bool                          m_ok;
+  ParserTreeForm                m_treeForm;
+  ExpressionNodeNumber         *m_minusOne, *m_zero, *m_one, *m_two, *m_half;
 
-  ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) const;
-  ExpressionVariable   *allocateSymbol(     const ExpressionNode *n        , bool isConstant, bool isLeftSide, bool isLoopVar) const;
-  ExpressionVariable   *allocateConstant(   const ExpressionNode *n, const String &name, const Real &value) const;
-  void buildSymbolTable(                    const ExpressionNode *n);
-  void buildSymbolTableIndexedExpression(   const ExpressionNode *n);
-  void buildSymbolTableAssign(              const ExpressionNode *n, bool loopAssignment);
-  void checkDependentOnLoopVariablesOnly(   const ExpressionNode *n);
+  ExpressionVariable   *allocateSymbol(     const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateSymbol(     ExpressionNode *n        , bool isConstant, bool isLeftSide, bool isLoopVar);
+  ExpressionVariable   *allocateConstant(   ExpressionNode *n, const String &name, const Real &value);
+  void                  allocateNumber(     ExpressionNode *n);
+  void buildSymbolTable(                    ExpressionNode *n);
+  void buildSymbolTableIndexedExpression(   ExpressionNode *n);
+  void buildSymbolTableAssign(              ExpressionNode *n, bool loopAssignment);
+  void checkDependentOnLoopVariablesOnly(   ExpressionNode *n);
   String getNewTempName();
   String getNewLoopName(const String &oldName) const;
 
@@ -176,6 +178,7 @@ private:
   friend class ExpressionNodeVariable;
   friend class SumElement;
   friend class FactorArray;
+  friend class AllocateVariables;
   friend class MarkedNodeTransformer;
 protected:
   ParserTree();
@@ -186,70 +189,69 @@ protected:
   void setTreeForm(ParserTreeForm form);
   void releaseAll();
   void pruneUnusedNodes();
-  void markPow1Nodes() const;
+  void markPow1Nodes();
   void deleteUnmarked();
   void buildSymbolTable();
   void clearSymbolTable();
   void copyValues(ParserTree &src);
-  const ExpressionNode *traverseSubstituteNodes(const ExpressionNode *n, const CompactNodeHashMap<const ExpressionNode*> &nodeMap);
+  ExpressionNode *traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
-
-  inline const ExpressionNodeNumber *numberExpression(const Real     &v) const {
+  inline ExpressionNodeNumber *numberExpression(const Real     &v) {
     return new ExpressionNodeNumber(this, v);
   }
-  inline const ExpressionNodeNumber *numberExpression(const Rational &v) const {
+  inline ExpressionNodeNumber *numberExpression(const Rational &v) {
     return new ExpressionNodeNumber(this, v);
   }
-  inline const ExpressionNodeNumber *numberExpression(int             v) const {
+  inline ExpressionNodeNumber *numberExpression(int             v) {
     return new ExpressionNodeNumber(this, Rational(v));
   }
-  inline const ExpressionNodeNumber *numberExpression(unsigned int    v) const {
+  inline ExpressionNodeNumber *numberExpression(unsigned int    v) {
     return new ExpressionNodeNumber(this, Rational(v));
   }
-  inline const ExpressionNodeNumber *numberExpression(__int64         v) const {
+  inline ExpressionNodeNumber *numberExpression(__int64         v) {
     return new ExpressionNodeNumber(this, Rational(v));
   }
-  inline const ExpressionNodeNumber *numberExpression(const Number   &v) const {
+  inline ExpressionNodeNumber *numberExpression(const Number   &v) {
     return new ExpressionNodeNumber(this, v);
   }
-  inline const ExpressionNodeBoolean *booleanExpression(bool b)          const {
+  inline ExpressionNodeBoolean *booleanExpression(bool b)          {
     return new ExpressionNodeBoolean(this, b);
   }
-  const ExpressionNode *allocateLoopVarNode( const String &prefix) const;
+  ExpressionNode *allocateLoopVarNode( const String &prefix);
 
   // Return nodes in std. form
-  const ExpressionNode *minusS(                    const ExpressionNode *n)  const;
-  const ExpressionNode *reciprocalS(               const ExpressionNode *n)  const;
-  const ExpressionNode *sumS(                      const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *differenceS(               const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *productS(                  const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *quotientS(                 const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *modulusS(                  const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *powerS(                    const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *rootS(                     const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *sqrS(                      const ExpressionNode *n)  const;
-  const ExpressionNode *sqrtS(                     const ExpressionNode *n)  const;
-  const ExpressionNode *expS(                      const ExpressionNode *n)  const;
-  const ExpressionNode *cotS(                      const ExpressionNode *n)  const;
-  const ExpressionNode *cscS(                      const ExpressionNode *n)  const;
-  const ExpressionNode *secS(                      const ExpressionNode *n)  const;
+  ExpressionNode *minusS(                    ExpressionNode *n);
+  ExpressionNode *reciprocalS(               ExpressionNode *n);
+  ExpressionNode *sumS(                      ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *differenceS(               ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *productS(                  ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *quotientS(                 ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *modulusS(                  ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *powerS(                    ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *rootS(                     ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *sqrS(                      ExpressionNode *n);
+  ExpressionNode *sqrtS(                     ExpressionNode *n);
+  ExpressionNode *expS(                      ExpressionNode *n);
+  ExpressionNode *cotS(                      ExpressionNode *n);
+  ExpressionNode *cscS(                      ExpressionNode *n);
+  ExpressionNode *secS(                      ExpressionNode *n);
 
   // Return nodes in canonical. form
-  const ExpressionNode *minusC(                    const ExpressionNode *n)  const;
-  const ExpressionNode *reciprocalC(               const ExpressionNode *n)  const;
-  const ExpressionNode *sumC(                      const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *differenceC(               const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *productC(                  const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *quotientC(                 const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *modulusC(                  const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *powerC(                    const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *rootC(                     const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *sqrC(                      const ExpressionNode *n)  const;
-  const ExpressionNode *sqrtC(                     const ExpressionNode *n)  const;
-  const ExpressionNode *expC(                      const ExpressionNode *n)  const;
-  const ExpressionNode *cotC(                      const ExpressionNode *n)  const;
-  const ExpressionNode *cscC(                      const ExpressionNode *n)  const;
-  const ExpressionNode *secC(                      const ExpressionNode *n)  const;
+  ExpressionNode *minusC(                    ExpressionNode *n);
+  ExpressionNode *reciprocalC(               ExpressionNode *n);
+  ExpressionNode *sumC(                      ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *differenceC(               ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *productC(                  ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *quotientC(                 ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *modulusC(                  ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *powerC(                    ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *rootC(                     ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *sqrC(                      ExpressionNode *n);
+  ExpressionNode *sqrtC(                     ExpressionNode *n);
+  ExpressionNode *expC(                      ExpressionNode *n);
+  ExpressionNode *cotC(                      ExpressionNode *n);
+  ExpressionNode *cscC(                      ExpressionNode *n);
+  ExpressionNode *secC(                      ExpressionNode *n);
 
   void initDynamicOperations(ParserTreeForm treeForm);
 public:
@@ -259,10 +261,13 @@ public:
   inline const ExpressionNode *getRoot() const {
     return m_root;
   }
+  inline ExpressionNode *getRoot() {
+    return m_root;
+  }
   
-  void setRoot(const ExpressionNode *n);
+  void setRoot(ExpressionNode *n);
   
-  void unmarkAll() const;
+  void unmarkAll();
   inline bool isOk() const {
     return m_ok;
   }
@@ -276,94 +281,100 @@ public:
 
   static String getTreeFormName(ParserTreeForm treeForm);
 
-  inline const ExpressionNode *getMinusOne() const {
+  inline ExpressionNode *getMinusOne() {
     if(!m_minusOne) m_minusOne = numberExpression(-1);
     return m_minusOne;
   }
-  inline const ExpressionNode *getZero() const {
+  inline ExpressionNode *getZero() {
     if(!m_zero    ) m_zero     = numberExpression(0);
     return m_zero;
   }
-  inline const ExpressionNode *getOne() const {
+  inline ExpressionNode *getOne() {
     if(!m_one     ) m_one      = numberExpression(1);
     return m_one;
   }
-  inline const ExpressionNode *getTwo() const {
+  inline ExpressionNode *getTwo() {
     if(!m_two     ) m_two      = numberExpression(2);
     return m_two;
   }
-  inline const ExpressionNode *getHalf() const {
+  inline ExpressionNode *getHalf() {
     if(!m_half    ) m_half     = numberExpression(Rational(1,2));
     return m_half;
   }
 
-  inline const SNode _0()    const { return SNode(getZero()); }
-  inline const SNode _1()    const { return SNode(getOne());  }
-  inline const SNode _2()    const { return SNode(getTwo());  }
-  inline const SNode _half() const { return SNode(getHalf()); }
+  inline SNode _0()    { return SNode(getZero()); }
+  inline SNode _1()    { return SNode(getOne());  }
+  inline SNode _2()    { return SNode(getTwo());  }
+  inline SNode _half() { return SNode(getHalf()); }
 
-  const ExpressionNodeVariable *fetchVariableNode( const String               &name    ) const;
-  const ExpressionNode         *constExpression(   const String               &name    ) const;
-  const ExpressionFactor       *fetchFactorNode(   const ExpressionNode *base            , const ExpressionNode *exponent = NULL) const; // if exponent not specified, it is set to 1
-  const ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol       symbol, ...               ) const; // terminate argumentlist with NULL
-  const ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, const ExpressionNode *argument       ) const;
+  inline Real &getValue(const ExpressionVariable &var) const {
+    return m_valueTable[var.getValueIndex()];
+  }
+  inline Real &getValue(UINT valueIndex) const {
+    return m_valueTable[valueIndex];
+  }
+  ExpressionNodeVariable *fetchVariableNode( const String               &name    );
+  ExpressionNode         *constExpression(   const String               &name    );
+  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL); // if exponent not specified, it is set to 1
+  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...               ); // terminate argumentlist with NULL
+  ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
 
-  const ExpressionFactor       *getFactor(         const ExpressionNode *base            , const ExpressionNode *exponent = NULL) const;
-  const ExpressionNode         *getTree(           ExpressionInputSymbol       symbol          , const ExpressionNodeArray  &a              ) const;
-  const ExpressionNode         *getSum(            const AddentArray          &addentArray)  const;
-  const ExpressionNode         *getProduct(        const FactorArray          &factorArray)  const;
-  const ExpressionNode         *getPoly(           const ExpressionNodeArray &coefficientArray, const ExpressionNode *argument       ) const;
+  ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);
+  ExpressionNode         *getTree(           ExpressionInputSymbol       symbol, ExpressionNodeArray &a);
+  ExpressionNode         *getSum(            AddentArray          &addentArray);
+  ExpressionNode         *getProduct(        FactorArray          &factorArray);
+  ExpressionNode         *getPoly(           ExpressionNodeArray &coefficientArray, ExpressionNode *argument);
 
-  const ExpressionFactor       *getFactor(         const ExpressionFactor     *oldFactor,        const ExpressionNode *newBase, const ExpressionNode *newExpo) const;
-  const ExpressionNode         *getTree(           const ExpressionNode *oldTree         , const ExpressionNodeArray  &newChildArray  ) const;
-  const ExpressionNode         *getSum(            const ExpressionNode *oldSum          , const AddentArray          &newAddentArray ) const;
-  const ExpressionNode         *getProduct(        const ExpressionNode *oldProduct      , const FactorArray          &newFactorArray ) const;
-  const ExpressionNode         *getPoly(           const ExpressionNode *oldPoly         , const ExpressionNodeArray &newCoefficientArray, const ExpressionNode *newArgument) const;
+  ExpressionFactor       *getFactor(         ExpressionFactor     *oldFactor,  ExpressionNode *newBase, ExpressionNode *newExpo);
+  ExpressionNode         *getTree(           ExpressionNode *oldTree         , ExpressionNodeArray  &newChildArray  );
+  ExpressionNode         *getSum(            ExpressionNode *oldSum          , AddentArray          &newAddentArray );
+  ExpressionNode         *getProduct(        ExpressionNode *oldProduct      , FactorArray          &newFactorArray );
+  ExpressionNode         *getPoly(           ExpressionNode *oldPoly         , ExpressionNodeArray  &newCoefficientArray, ExpressionNode *newArgument);
 
-  const ExpressionNode         *expandPower(       const ExpressionNode *base, const Rational &exponent) const;
+  ExpressionNode         *expandPower(       ExpressionNode *base, const Rational &exponent);
 
-  ExpressionNode               *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr); // used by parser
+  ExpressionNode         *vFetchNode(const SourcePosition &pos, ExpressionInputSymbol symbol, va_list argptr); // used by parser
 
-typedef const ExpressionNode *(ParserTree::*UnaryOperator)( const ExpressionNode *n) const;
-typedef const ExpressionNode *(ParserTree::*BinaryOperator)(const ExpressionNode *n1, const ExpressionNode *n2) const;
+typedef ExpressionNode *(ParserTree::*UnaryOperator)( ExpressionNode *n);
+typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, ExpressionNode *n2);
 
   UnaryOperator  pminus, preciprocal, psqr ,  psqrt, pexp,  pcot,   pcsc,   psec;
   BinaryOperator psum  , pdiff      , pprod,  pquot, pmod,  ppower, proot;
 
-  const ExpressionNode *conditionalExpression(     const ExpressionNode *condition
-                                                  ,const ExpressionNode *exprTrue
-                                                  ,const ExpressionNode *exprFalse) const;
+  ExpressionNode *conditionalExpression(     ExpressionNode *condition
+                                            ,ExpressionNode *exprTrue
+                                            ,ExpressionNode *exprFalse);
 
-  const ExpressionNode *and(                       const ExpressionNode *n1, const ExpressionNode *n2) const;
-  const ExpressionNode *or(                        const ExpressionNode *n1, const ExpressionNode *n2) const;
+  ExpressionNode *and(                       ExpressionNode *n1, ExpressionNode *n2);
+  ExpressionNode *or(                        ExpressionNode *n1, ExpressionNode *n2);
 
-  const ExpressionNode *assignStatement(           const ExpressionNode *leftSide
-                                                  ,const ExpressionNode *expr ) const;
-  const ExpressionNode *functionExpression(        ExpressionInputSymbol symbol
-                                                  ,const ExpressionNode *child) const;
-  const ExpressionNode *unaryMinus(                const ExpressionNode *child) const;
-  const ExpressionNode *unaryExpression(           ExpressionInputSymbol symbol
-                                                  ,const ExpressionNode *child) const;
-  const ExpressionNode *binaryExpression(          ExpressionInputSymbol symbol
-                                                  ,const ExpressionNode *left
-                                                  ,const ExpressionNode *right) const;
-  const ExpressionNode *ternaryExpression(         ExpressionInputSymbol symbol
-                                                  ,const ExpressionNode *child0
-                                                  ,const ExpressionNode *child1
-                                                  ,const ExpressionNode *child2) const;
+  ExpressionNode *assignStatement(           ExpressionNode *leftSide
+                                            ,ExpressionNode *expr );
+  ExpressionNode *functionExpression(        ExpressionInputSymbol symbol
+                                            ,ExpressionNode *child);
+  ExpressionNode *unaryMinus(                ExpressionNode *child);
+  ExpressionNode *unaryExpression(           ExpressionInputSymbol symbol
+                                            ,ExpressionNode *child);
+  ExpressionNode *binaryExpression(          ExpressionInputSymbol symbol
+                                            ,ExpressionNode *left
+                                            ,ExpressionNode *right);
+  ExpressionNode *ternaryExpression(         ExpressionInputSymbol symbol
+                                            ,ExpressionNode *child0
+                                            ,ExpressionNode *child1
+                                            ,ExpressionNode *child2);
 
-  const ExpressionNode *indexedSum(                const ExpressionNode *assign
-                                                  ,const ExpressionNode *endExpr
-                                                  ,const ExpressionNode *expr) const;
+  ExpressionNode *indexedSum(                ExpressionNode *assign
+                                            ,ExpressionNode *endExpr
+                                            ,ExpressionNode *expr);
 
-  const ExpressionNode *indexedProduct(            const ExpressionNode *assign
-                                                  ,const ExpressionNode *endExpr
-                                                  ,const ExpressionNode *expr) const;
+  ExpressionNode *indexedProduct(            ExpressionNode *assign
+                                            ,ExpressionNode *endExpr
+                                            ,ExpressionNode *expr);
 
-  void addError( const ExpressionNode *n  , const TCHAR *format,...) const;
-  void addError( const SourcePosition       &pos, const TCHAR *format,...) const;
-  void addError(                                  const TCHAR *format,...) const;
-  void vAddError(const SourcePosition       *pos, const TCHAR *format, va_list argptr) const;
+  void addError( ExpressionNode *n              , const TCHAR *format,...);
+  void addError( const SourcePosition       &pos, const TCHAR *format,...);
+  void addError(                                  const TCHAR *format,...);
+  void vAddError(const SourcePosition       *pos, const TCHAR *format, va_list argptr);
 
   const StringArray &getErrors() const {
     return m_errors;
@@ -378,30 +389,25 @@ typedef const ExpressionNode *(ParserTree::*BinaryOperator)(const ExpressionNode
   ExpressionVariable *getVariable(const String &name);
   const ExpressionVariable *getVariable(const String &name) const;
 
-  int getNodeCount(ExpressionNodeSelector *selector = NULL) const;
-  int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...) const; // terminate symbolset with 0. Only specified symbols will be counted
-  int getTreeDepth() const;
-  ParserTreeComplexity getComplexity() const;
+  int getNodeCount(ExpressionNodeSelector *selector = NULL);
+  int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...); // terminate symbolset with 0. Only specified symbols will be counted
+  int getTreeDepth();
+  ParserTreeComplexity getComplexity();
 #ifdef TRACE_REDUCTION_CALLSTACK
   const ReductionStack &getReductionStack() const {
     return m_reductionStack;
   }
   void clearAllBreakPoints();
 #endif
-  Array<ExpressionVariable> &getVariables() {
-    return m_variables;
-  }
-  const Array<ExpressionVariable> &getVariables() const {
-    return m_variables;
-  }
+  Array<ExpressionVariableWithValue> getAllVariables() const;
   int getNodeTableSize() const {
     return (int)m_nodeTable.size();
   }
   int getAddentTableSize() const {
     return (int)m_addentTable.size();
   }
-  void substituteNodes(const CompactNodeHashMap<const ExpressionNode*> &nodeMap);
-  void traverseTree(ExpressionNodeHandler &handler) const;
+  void substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap);
+  void traverseTree(ExpressionNodeHandler &handler);
   String variablesToString() const;
   String treeToString() const;
 };

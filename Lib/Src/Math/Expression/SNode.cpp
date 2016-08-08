@@ -1,16 +1,16 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
-SNode::SNode(const ParserTree *tree, const Rational &v) {
+SNode::SNode(ParserTree *tree, const Rational &v) {
   m_node = tree->numberExpression(v);
 }
 
 #define CALLUNARYOP(op, n1)               \
-  const ParserTree *tree = n1->getTree(); \
+  ParserTree *tree = n1->getTree();       \
   return (tree->*(tree->op))(n1);
 
 #define CALLBINOP(op, n1,n2)              \
-  const ParserTree *tree = n1->getTree(); \
+  ParserTree *tree = n1->getTree();       \
   return (tree->*(tree->op))(n1, n2);
 
 
@@ -170,8 +170,8 @@ SNode condExp(SNode condition, SNode nTrue, SNode nFalse) {
   return condition.node()->getTree()->conditionalExpression(condition.node(), nTrue.node(), nFalse.node());
 }
 
-SNode polyExp(const SExprList &coefficientArray, SNode argument) {
-  return argument.node()->getTree()->fetchPolyNode(coefficientArray, argument);;
+SNode polyExp(SExprList &coefficientArray, SNode argument) {
+  return argument.node()->getTree()->fetchPolyNode(coefficientArray, argument);
 }
 
 SNode indexSum(SNode assignStmt, SNode endExpr, SNode expr) {
@@ -186,7 +186,7 @@ SNode assignStmt(SNode leftSide, SNode expr) {
   return leftSide.node()->getTree()->assignStatement(leftSide.node(), expr.node());
 }
 
-SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) const {
+SNode SNodeArray::toTree(ExpressionInputSymbol delimiter) {
   if(size() == 0) {
     return SNode();
   }
@@ -220,13 +220,13 @@ SStmtList &SStmtList::removeUnusedAssignments() {
   return *this;
 }
 
-SExprList::SExprList(const ExpressionNodeArray &a) {
+SExprList::SExprList(ExpressionNodeArray &a) {
   for(size_t i = 0; i < a.size(); i++) {
     add(a[i]);
   }
 }
 
-SExprList::operator ExpressionNodeArray() const {
+SExprList::operator ExpressionNodeArray() {
   ExpressionNodeArray result(size());
   for(size_t i = 0; i < size(); i++) {
     result.add((*this)[i].node());

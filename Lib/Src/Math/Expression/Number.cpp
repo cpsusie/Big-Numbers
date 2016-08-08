@@ -174,25 +174,6 @@ Number &Number::operator=(unsigned int v) {
   return *this;
 }
 
-void Number::forceTypeToReal() {
-  DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED:
-    throwTypeIsUndefinedException(method);
-
-  case NUMBERTYPE_REAL    :
-    return;
-  case NUMBERTYPE_RATIONAL:
-    { const Real v = getReal(*m_rational);
-      setType(NUMBERTYPE_REAL);
-      *m_real = v;
-    }
-    break;
-  default:
-    throwUnknownTypeException(method);
-  }
-}
-
 int Number::getIntValue() const {
   DEFINEMETHODNAME;
   switch(getType()) {
@@ -236,22 +217,6 @@ Rational Number::getRationalValue() const {
     throwUnknownTypeException(method);
     return 0;
   }
-}
-
-const Real *Number::getRealAddress() const {
-  DEFINEMETHODNAME;
-  switch(getType()) {
-  case NUMBERTYPE_UNDEFINED:
-    throwTypeIsUndefinedException(method);
-  case NUMBERTYPE_REAL     :
-    break;
-  case NUMBERTYPE_RATIONAL :
-    ((Number*)this)->forceTypeToReal();
-    break;
-  default:
-    throwUnknownTypeException(method);
-  }
-  return m_real;
 }
 
 String Number::toString() const {

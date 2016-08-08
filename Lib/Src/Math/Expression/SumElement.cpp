@@ -4,7 +4,7 @@
 
 DEFINECLASSNAME(SumElement);
 
-SumElement::SumElement(const ExpressionNode *n, bool positive) {
+SumElement::SumElement(ExpressionNode *n, bool positive) {
   if(n->getSymbol() == POW) {
     if(n->left()->isOne() || n->right()->isOne()) {
       m_n = n->left();
@@ -32,7 +32,7 @@ bool SumElement::isConstant() const {
   return m_n->isConstant();
 }
 
-SumElement *SumElement::clone(const ParserTree *tree) const {
+SumElement *SumElement::clone(ParserTree *tree) const {
   return new SumElement(m_n->clone(tree), m_positive);
 }
 

@@ -1,23 +1,23 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
-ExpressionNodeVariable::ExpressionNodeVariable(const ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
+ExpressionNodeVariable::ExpressionNodeVariable(ParserTree *tree, const String &name) : ExpressionNode(tree, NAME) {
   m_name = name;
-  tree->allocateSymbol(this, false, false, false);
+  ((ParserTree*)tree)->allocateSymbol(this, false, false, false);
 }
 
-int ExpressionNodeVariable::compare(const ExpressionNode *n) const {
+int ExpressionNodeVariable::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
   return stringHashCmp(getName(), n->getName());
 }
 
-const ExpressionNode *ExpressionNodeVariable::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeVariable::clone(ParserTree *tree) const {
   return new ExpressionNodeVariable(tree, m_name);
 }
 
-bool ExpressionNodeVariable::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeVariable::traverseExpression(ExpressionNodeHandler &handler, int level) {
   return handler.handleNode(this, level);
 }
 

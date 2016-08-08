@@ -1,32 +1,35 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
-ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, va_list argptr) : ExpressionNode(tree, POLY) {
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, va_list argptr) : ExpressionNode(tree, POLY) {
   m_coefficientArray = getExpressionList(va_arg(argptr, ExpressionNode*));
   m_argument         = va_arg(argptr, ExpressionNode*);
+  m_firstCoefIndex   = -1;
 }
 
-ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionNodeArray &coefficientArray, const ExpressionNode *argument) : ExpressionNode(tree, POLY) {
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodeArray &coefficientArray, ExpressionNode *argument) : ExpressionNode(tree, POLY) {
   m_coefficientArray.setCapacity(coefficientArray.size());
   for(size_t i = 0; i < coefficientArray.size(); i++) {
-    m_coefficientArray.add((ExpressionNode*)coefficientArray[i]);
+    m_coefficientArray.add(coefficientArray[i]);
   }
   m_argument = argument;
+  m_firstCoefIndex   = -1;
 }
 
-ExpressionNodePoly::ExpressionNodePoly(const ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
+ExpressionNodePoly::ExpressionNodePoly(ParserTree *tree, const ExpressionNodePoly *src) : ExpressionNode(tree, POLY) {
   const ExpressionNodeArray &sa = src->getCoefficientArray();
   m_coefficientArray.setCapacity(sa.size());
   for(size_t i = 0; i < sa.size(); i++) {
     m_coefficientArray.add(sa[i]->clone(tree));
   }
   m_argument = src->getArgument()->clone(tree);
+  m_firstCoefIndex   = -1;
 }
 
-const ExpressionNode *ExpressionNodePoly::expand() const {
+ExpressionNode *ExpressionNodePoly::expand() {
   DEFINEMETHODNAME;
 
-  const ParserTree           *tree             = getTree();
+  ParserTree                 *tree             = getTree();
   const ExpressionNodeArray  &coefficientArray = getCoefficientArray();
   const SNode                 arg              = getArgument();
   int                         expo             = getDegree();
@@ -42,7 +45,7 @@ const ExpressionNode *ExpressionNodePoly::expand() const {
   return result;
 }
 
-int ExpressionNodePoly::compare(const ExpressionNode *n) const {
+int ExpressionNodePoly::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
@@ -57,7 +60,7 @@ int ExpressionNodePoly::compare(const ExpressionNode *n) const {
   return 0;
 }
 
-const ExpressionNode *ExpressionNodePoly::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodePoly::clone(ParserTree *tree) const {
   return new ExpressionNodePoly(tree, this);
 }
 
@@ -65,10 +68,10 @@ bool ExpressionNodePoly::isConstant() const {
   return m_argument->isConstant() && m_coefficientArray.isConstant();
 }
 
-bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodePoly::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
 
-  const ExpressionNodeArray &coef = getCoefficientArray();
+  ExpressionNodeArray &coef = getCoefficientArray();
   level++;
   for(size_t i = 0; i < coef.size(); i++) {
     if(!coef[i]->traverseExpression(handler, level)) return false;

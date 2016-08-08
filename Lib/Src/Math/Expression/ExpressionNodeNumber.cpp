@@ -1,37 +1,37 @@
 #include "pch.h"
 #include <Math/Expression/ParserTree.h>
 
-int ExpressionNodeNumber::compare(const ExpressionNode *n) const {
+int ExpressionNodeNumber::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
   return numberCmp(getNumber(), n->getNumber());
 }
 
-const ExpressionNode *ExpressionNodeNumber::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeNumber::clone(ParserTree *tree) const {
   return new ExpressionNodeNumber(tree, m_number);
 }
 
-bool ExpressionNodeNumber::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeNumber::traverseExpression(ExpressionNodeHandler &handler, int level) {
   return handler.handleNode(this, level);
 }
 
 void ExpressionNodeNumber::dumpNode(String &s, int level) const {
-  addLeftMargin(s, level) += format(_T("NUMBER:%s\n"), getNumber().toString().cstr());
+  addLeftMargin(s, level) += format(_T("NUMBER:%s valueIndex:%2d\n"), getNumber().toString().cstr(), getValueIndex());
 }
 
-int ExpressionNodeBoolean::compare(const ExpressionNode *n) const {
+int ExpressionNodeBoolean::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
   return getBool() - n->getBool();
 }
 
-const ExpressionNode *ExpressionNodeBoolean::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeBoolean::clone(ParserTree *tree) const {
   return new ExpressionNodeBoolean(tree, getBool());
 }
 
-bool ExpressionNodeBoolean::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeBoolean::traverseExpression(ExpressionNodeHandler &handler, int level) {
   return handler.handleNode(this, level);
 }
 

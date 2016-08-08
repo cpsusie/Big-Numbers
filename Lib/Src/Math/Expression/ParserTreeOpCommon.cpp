@@ -4,47 +4,47 @@
 #include <Math/Expression/SumElement.h>
 
 // ------------------------------------ Operators common to Standard/Canonical form --------------------------------------
-const ExpressionNode *ParserTree::and(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::and(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n2; else if(n1->isFalse()) return n1;
   if(n2->isTrue()) return n1; else if(n2->isFalse()) return n2;
   return binaryExpression(AND, n1, n2);
 }
 
-const ExpressionNode *ParserTree::or(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::or(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isTrue()) return n1; else if(n1->isFalse()) return n2;
   if(n2->isTrue()) return n2; else if(n2->isFalse()) return n1;
   return binaryExpression(OR, n1, n2);
 }
 
 
-const ExpressionNode *ParserTree::indexedSum(const ExpressionNode *assign, const ExpressionNode *endExpr, const ExpressionNode *expr) const {
+ExpressionNode *ParserTree::indexedSum(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
 //  assert(assign->getSymbol() == ASSIGN);
   return ternaryExpression(INDEXEDSUM, assign, endExpr, expr);
 }
 
-const ExpressionNode *ParserTree::indexedProduct(const ExpressionNode *assign, const ExpressionNode *endExpr, const ExpressionNode *expr) const {
+ExpressionNode *ParserTree::indexedProduct(ExpressionNode *assign, ExpressionNode *endExpr, ExpressionNode *expr) {
 //  assert(assign->getSymbol() == ASSIGN);
   return ternaryExpression(INDEXEDPRODUCT, assign, endExpr, expr);
 }
 
-const ExpressionNode *ParserTree::conditionalExpression(const ExpressionNode *condition, const ExpressionNode *exprTrue, const ExpressionNode *exprFalse) const {
+ExpressionNode *ParserTree::conditionalExpression(ExpressionNode *condition, ExpressionNode *exprTrue, ExpressionNode *exprFalse) {
 //  assert(condition->isBooleanOperator());
   return ternaryExpression(IIF, condition, exprTrue, exprFalse);
 }
 
-const ExpressionNode *ParserTree::assignStatement(const ExpressionNode *leftSide, const ExpressionNode *expr) const {
+ExpressionNode *ParserTree::assignStatement(ExpressionNode *leftSide, ExpressionNode *expr) {
 //  assert(leftSide->getNodeType() == EXPRESSIONNODEVARIABLE);
   return binaryExpression(ASSIGN, leftSide, expr);
 }
 
-const ExpressionFactor *ParserTree::fetchFactorNode(const ExpressionNode *base, const ExpressionNode *exponent) const {
+ExpressionFactor *ParserTree::fetchFactorNode(ExpressionNode *base, ExpressionNode *exponent) {
   if(exponent == NULL) {
     exponent = getOne();
   }
   if(exponent->isOne()) {
     if(base->getSymbol() == POW) {
       if(base->getNodeType() == EXPRESSIONNODEFACTOR) {
-        return (const ExpressionFactor*)base;
+        return (ExpressionFactor*)base;
       } else {
         return new ExpressionFactor(base->left(), base->right());
       }
@@ -60,17 +60,17 @@ const ExpressionFactor *ParserTree::fetchFactorNode(const ExpressionNode *base, 
   }
 }
 
-const ExpressionNodePoly *ParserTree::fetchPolyNode(const ExpressionNodeArray &coefficientArray, const ExpressionNode *argument) const {
+ExpressionNodePoly *ParserTree::fetchPolyNode(const ExpressionNodeArray &coefficientArray, ExpressionNode *argument) {
   return new ExpressionNodePoly(this, coefficientArray, argument);
 }
 
 // -----------------------------------------------------------------------------------------
 
-const ExpressionFactor *ParserTree::getFactor(const ExpressionNode *base, const ExpressionNode *exponent) const {
+ExpressionFactor *ParserTree::getFactor(ExpressionNode *base, ExpressionNode *exponent) {
   return fetchFactorNode(base, exponent);
 }
 
-const ExpressionNode *ParserTree::getSum(const AddentArray &a) const {
+ExpressionNode *ParserTree::getSum(AddentArray &a) {
   switch(a.size()) {
   case 0 :
     return getZero();
@@ -81,7 +81,7 @@ const ExpressionNode *ParserTree::getSum(const AddentArray &a) const {
   }
 }
 
-const ExpressionNode *ParserTree::getProduct(const FactorArray &a) const {
+ExpressionNode *ParserTree::getProduct(FactorArray &a) {
   switch(a.size()) {
   case 0 : return getOne();
   case 1 : return a[0]->exponent()->isOne() ? a[0]->base() : a[0];
@@ -89,71 +89,70 @@ const ExpressionNode *ParserTree::getProduct(const FactorArray &a) const {
   }
 }
 
-const ExpressionNode *ParserTree::getPoly(const ExpressionNodeArray &coefficientArray, const ExpressionNode *argument) const {
+ExpressionNode *ParserTree::getPoly(ExpressionNodeArray &coefficientArray, ExpressionNode *argument) {
   return fetchPolyNode(coefficientArray, argument);
 }
 
 // -------------------------------------------------------------------------------------------
 
-const ExpressionFactor *ParserTree::getFactor(const ExpressionFactor *oldFactor, const ExpressionNode *newBase, const ExpressionNode *newExpo) const {
-  const ExpressionNode *oldBase = oldFactor->base();
-  const ExpressionNode *oldExpo = oldFactor->exponent();
+ExpressionFactor *ParserTree::getFactor(ExpressionFactor *oldFactor, ExpressionNode *newBase, ExpressionNode *newExpo) {
+  ExpressionNode *oldBase = oldFactor->base();
+  ExpressionNode *oldExpo = oldFactor->exponent();
   return ((newBase == oldBase) && (newExpo == oldExpo)) ? oldFactor : getFactor(newBase, newExpo);
 }
 
-const ExpressionNode *ParserTree::getSum(const ExpressionNode *oldSum, const AddentArray &newAddentArray) const {
-  const AddentArray          &oldAddentArray = oldSum->getAddentArray();
-  const ExpressionNode *result         = (newAddentArray == oldAddentArray)
+ExpressionNode *ParserTree::getSum(ExpressionNode *oldSum, AddentArray &newAddentArray) {
+  AddentArray    &oldAddentArray = oldSum->getAddentArray();
+  ExpressionNode *result = (newAddentArray == oldAddentArray)
                                              ? oldSum
                                              : getSum(newAddentArray);
   return result;
 }
 
-
-const ExpressionNode *ParserTree::getProduct(const ExpressionNode *oldProduct, const FactorArray &newFactorArray) const {
-  const FactorArray          &oldFactorArray = oldProduct->getFactorArray();
-  const ExpressionNode *result         = (newFactorArray == oldFactorArray)
-                                             ? oldProduct
-                                             : getProduct(newFactorArray);
+ExpressionNode *ParserTree::getProduct(ExpressionNode *oldProduct, FactorArray &newFactorArray) {
+  const FactorArray  &oldFactorArray = oldProduct->getFactorArray();
+  ExpressionNode     *result         = (newFactorArray == oldFactorArray)
+                                     ? oldProduct
+                                     : getProduct(newFactorArray);
   return result;
 }
 
-const ExpressionNode *ParserTree::getPoly(const ExpressionNode *oldPoly, const ExpressionNodeArray &newCoefficientArray, const ExpressionNode *newArgument) const {
+ExpressionNode *ParserTree::getPoly(ExpressionNode *oldPoly, ExpressionNodeArray &newCoefficientArray, ExpressionNode *newArgument) {
   const ExpressionNodeArray  &oldCoefArray = oldPoly->getCoefficientArray();
-  const ExpressionNode *oldArgument  = oldPoly->getArgument();
-  const ExpressionNode *result       = (newCoefficientArray == oldCoefArray) 
+  const ExpressionNode       *oldArgument  = oldPoly->getArgument();
+  ExpressionNode             *result       = (newCoefficientArray == oldCoefArray)
                                           && (newArgument         == oldArgument )
                                            ? oldPoly 
                                            : getPoly(newCoefficientArray, newArgument);
   return result;
 }
 
-const ExpressionNode *ParserTree::functionExpression(ExpressionInputSymbol symbol, const ExpressionNode *child) const {
+ExpressionNode *ParserTree::functionExpression(ExpressionInputSymbol symbol, ExpressionNode *child) {
   return unaryExpression(symbol, child);
 }
 
-const ExpressionNode *ParserTree::unaryMinus(const ExpressionNode *child) const {
+ExpressionNode *ParserTree::unaryMinus(ExpressionNode *child) {
   return unaryExpression(MINUS, child);
 }
 
-const ExpressionNode *ParserTree::unaryExpression(   ExpressionInputSymbol symbol, const ExpressionNode *child) const {
+ExpressionNode *ParserTree::unaryExpression(ExpressionInputSymbol symbol, ExpressionNode *child) {
   return fetchTreeNode(symbol, child, NULL);
 }
 
-const ExpressionNode *ParserTree::binaryExpression(  ExpressionInputSymbol       symbol
-                                                         , const ExpressionNode *left
-                                                         , const ExpressionNode *right) const {
+ExpressionNode *ParserTree::binaryExpression(ExpressionInputSymbol symbol
+                                            ,ExpressionNode       *left
+                                            ,ExpressionNode       *right) {
   return fetchTreeNode(symbol, left, right, NULL);
 }
 
-const ExpressionNode *ParserTree::ternaryExpression( ExpressionInputSymbol       symbol
-                                                         , const ExpressionNode *child0
-                                                         , const ExpressionNode *child1
-                                                         , const ExpressionNode *child2) const {
+ExpressionNode *ParserTree::ternaryExpression( ExpressionInputSymbol  symbol
+                                             , ExpressionNode        *child0
+                                             , ExpressionNode        *child1
+                                             , ExpressionNode        *child2) {
   return fetchTreeNode(symbol, child0, child1, child2, NULL);
 }
 
-const ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol,...) const {
+ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol,...) {
   va_list argptr;
   va_start(argptr, symbol);
   ExpressionNodeTree *result = new ExpressionNodeTree(this, symbol, argptr);
@@ -161,17 +160,17 @@ const ExpressionNodeTree *ParserTree::fetchTreeNode(ExpressionInputSymbol symbol
   return result;
 }
 
-const ExpressionNode *ParserTree::getTree(ExpressionInputSymbol symbol, const ExpressionNodeArray &a) const {
+ExpressionNode *ParserTree::getTree(ExpressionInputSymbol symbol, ExpressionNodeArray &a) {
   return new ExpressionNodeTree(this, symbol, a);
 }
 
-const ExpressionNode *ParserTree::getTree(const ExpressionNode *oldTree, const ExpressionNodeArray &newChildArray) const {
+ExpressionNode *ParserTree::getTree(ExpressionNode *oldTree, ExpressionNodeArray &newChildArray) {
   const ExpressionNodeArray &oldChildArray = oldTree->getChildArray();
-  const ExpressionNode *result = (newChildArray == oldChildArray) ? oldTree : getTree(oldTree->getSymbol(), newChildArray);
+  ExpressionNode            *result = (newChildArray == oldChildArray) ? oldTree : getTree(oldTree->getSymbol(), newChildArray);
   return result;
 }
 
-const ExpressionNode *ParserTree::expandPower(const ExpressionNode *base, const Rational &exponent) const {
+ExpressionNode *ParserTree::expandPower(ExpressionNode *base, const Rational &exponent) {
   SNode b(base);
   SNode result(_1());
   __int64 num = exponent.getNumerator();

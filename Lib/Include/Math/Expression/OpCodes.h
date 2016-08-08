@@ -116,9 +116,9 @@ public:
     , m_regSrcMode(regSrcMode)
   {
   }
-  IntelOpcode &prefix48() {
+  inline IntelOpcode &prefixRex(BYTE rexByte) {
     m_bytes <<= 8;
-    m_bytes |= 0x48;
+    m_bytes |= rexByte;
     m_size++;
     return *this;
   }
@@ -196,7 +196,8 @@ public:
   }
 };
 
-#define PREFIX48(ins) ((ins).prefix48())
+#define PREFIX48(ins) ((ins).prefixRex(0x48))
+#define PREFIX49(ins) ((ins).prefixRex(0x49))
 
 #define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op).memAddrPtr(     reg)                   //  reg!=ESP,EBP                                     ex:fld word ptr[eax]
 #define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op).memAddrPtr1(    reg,         offs1)    //  reg!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
@@ -351,15 +352,15 @@ public:
 
 #ifdef IS64BIT
 
-#define MOV_R64_QWORD(       r64)              PREFIX48(MOV_R32_DWORD(r64))             // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define MOV_QWORD_R64(       r64)              PREFIX48(MOV_DWORD_R32(r64))             // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define REX(op,r64) (((r64)<8)?PREFIX48(op(r64)):PREFIX49(op((r64)-8)))
 
-#define MOV_R64_IMM_QWORD(   r64)              PREFIX48(MOV_R32_IMM_DWORD(r64))         // 8 byte operand
+#define MOV_R64_QWORD(       r64)              REX(MOV_R32_DWORD,r64)                  // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_QWORD_R64(       r64)              REX(MOV_DWORD_R32,r64)                  // Build dst with MEM_ADDR-*,REG_SRC-macroes
 
-#define MOV_TO_RAX_IMM_ADDR_QWORD              PREFIX48(MOV_TO_EAX_IMM_ADDR_DWORD)      // 8 byte address                              // 4/8 byte address. move dword pointed to by 2. operand to EAX
-#define MOV_FROM_RAX_IMM_ADDR_QWORD            PREFIX48(MOV_FROM_EAX_IMM_ADDR_DWORD)    // 8 byte address                             // 4 byte address. move EAX to dword pointed to by 2. operand
+#define MOV_R64_IMM_QWORD(   r64)              REX(MOV_R32_IMM_DWORD,r64)              // 8 byte operand
 
-
+#define MOV_TO_RAX_IMM_ADDR_QWORD              PREFIX48(MOV_TO_EAX_IMM_ADDR_DWORD)           // 8 byte address
+#define MOV_FROM_RAX_IMM_ADDR_QWORD            PREFIX48(MOV_FROM_EAX_IMM_ADDR_DWORD)         // 8 byte address
 
 #endif
 
@@ -515,39 +516,39 @@ public:
 #define DIVSD(xmm)                             B4INSA(0xF20F5E00 | ((xmm) << 3))         
 
 
-#define ADD_QWORD_R64(       r64)              PREFIX48(ADD_DWORD_R32(    r64))
-#define ADD_R64_QWORD(       r64)              PREFIX48(ADD_R32_DWORD(    r64))
-#define ADD_R64_IMM_DWORD(   r64)              PREFIX48(ADD_R32_IMM_DWORD(r64))         // 4 byte operand
-#define ADD_R64_IMM_BYTE(    r64)              PREFIX48(ADD_R32_IMM_BYTE( r64))
+#define ADD_QWORD_R64(       r64)              REX(ADD_DWORD_R32    ,r64)
+#define ADD_R64_QWORD(       r64)              REX(ADD_R32_DWORD    ,r64)
+#define ADD_R64_IMM_DWORD(   r64)              REX(ADD_R32_IMM_DWORD,r64)         // 4 byte operand
+#define ADD_R64_IMM_BYTE(    r64)              REX(ADD_R32_IMM_BYTE ,r64)
 
-#define OR_QWORD_R64(        r64)              PREFIX48(OR_DWORD_R32(     r64))
-#define OR_R64_QWORD(        r64)              PREFIX48(OR_R32_DWORD(     r64))
-#define OR_R64_IMM_DWORD(    r64)              PREFIX48(OR_R32_IMM_DWORD( r64))         // 4 byte operand
+#define OR_QWORD_R64(        r64)              REX(OR_DWORD_R32     ,r64)
+#define OR_R64_QWORD(        r64)              REX(OR_R32_DWORD     ,r64)
+#define OR_R64_IMM_DWORD(    r64)              REX(OR_R32_IMM_DWORD ,r64)         // 4 byte operand
 
-#define AND_QWORD_R64(       r64)              PREFIX48(AND_DWORD_R32(    r64))
-#define AND_R64_QWORD(       r64)              PREFIX48(AND_R32_DWORD(    r64))
-#define AND_R64_IMM_DWORD(   r64)              PREFIX48(AND_R32_IMM_DWORD(r64))         // 4 byte operand
+#define AND_QWORD_R64(       r64)              REX(AND_DWORD_R32    ,r64)
+#define AND_R64_QWORD(       r64)              REX(AND_R32_DWORD    ,r64)
+#define AND_R64_IMM_DWORD(   r64)              REX(AND_R32_IMM_DWORD,r64)         // 4 byte operand
 
-#define SUB_QWORD_R64(       r64)              PREFIX48(SUB_DWORD_R32(    r64))
-#define SUB_R64_QWORD(       r64)              PREFIX48(SUB_R32_DWORD(    r64))
-#define SUB_R64_IMM_DWORD(   r64)              PREFIX48(SUB_R32_IMM_DWORD(r64))         // 4 byte operand
-#define SUB_R64_IMM_BYTE(    r64)              PREFIX48(SUB_R32_IMM_BYTE( r64))
+#define SUB_QWORD_R64(       r64)              REX(SUB_DWORD_R32    ,r64)
+#define SUB_R64_QWORD(       r64)              REX(SUB_R32_DWORD    ,r64)
+#define SUB_R64_IMM_DWORD(   r64)              REX(SUB_R32_IMM_DWORD,r64)         // 4 byte operand
+#define SUB_R64_IMM_BYTE(    r64)              REX(SUB_R32_IMM_BYTE ,r64)
 
-#define XOR_QWORD_R64(       r64)              PREFIX48(XOR_DWORD_R32(    r64))
-#define XOR_R64_QWORD(       r64)              PREFIX48(XOR_R32_DWORD(    r64))
-#define XOR_R64_IMM_DWORD(   r64)              PREFIX48(XOR_R32_IMM_DWORD(r64))         // 4 byte operand
+#define XOR_QWORD_R64(       r64)              REX(XOR_DWORD_R32    ,r64)
+#define XOR_R64_QWORD(       r64)              REX(XOR_R32_DWORD    ,r64)
+#define XOR_R64_IMM_DWORD(   r64)              REX(XOR_R32_IMM_DWORD,r64)         // 4 byte operand
 
-#define CMP_QWORD_R64(       r64)              PREFIX48(CMP_DWORD_R32(    r64))
-#define CMP_R64_QWORD(       r64)              PREFIX48(CMP_R32_DWORD(    r64))
-#define CMP_R64_IMM_DWORD(   r64)              PREFIX48(CMP_R32_IMM_DWORD(r64))         // 4 byte operand
+#define CMP_QWORD_R64(       r64)              REX(CMP_DWORD_R32    ,r64)
+#define CMP_R64_QWORD(       r64)              REX(CMP_R32_DWORD    ,r64)
+#define CMP_R64_IMM_DWORD(   r64)              REX(CMP_R32_IMM_DWORD,r64)         // 4 byte operand
 
 #define MUL_QWORD                              PREFIX48(MUL_DWORD)                      // (rdx:rax = rax * src  )
 #define IMUL_QWORD                             PREFIX48(IMUL_DWORD)                     // (rdx:rax = rax * src  )
 
-#define IMUL2_R64_DWORD(      r64)             PREFIX48(IMUL2_R32_DWORD(r64)            // 2 arguments       (r64 *= src           )
+#define IMUL2_R64_DWORD(      r64)             REX(IMUL2_R32_DWORD  ,r64)            // 2 arguments       (r64 *= src           )
 
-#define IMUL3_QWORD_IMM_DWORD(r64)             PREFIX48(IMUL3_DWORD_IMM_DWORD(r64))     // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
-#define IMUL3_QWORD_IMM_BYTE( r64)             PREFIX48(IMUL3_DWORD_IMM_BYTE(R64))      // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
+#define IMUL3_QWORD_IMM_DWORD(r64)             REX(IMUL3_DWORD_IMM_DWORD,r64)     // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
+#define IMUL3_QWORD_IMM_BYTE( r64)             REX(IMUL3_DWORD_IMM_BYTE ,r64)      // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
 
 #endif // IS32BIT
 

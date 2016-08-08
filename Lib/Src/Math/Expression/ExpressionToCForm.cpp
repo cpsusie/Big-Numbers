@@ -18,7 +18,7 @@ Expression &Expression::toCanonicalForm() {
 
 // Replace PLUS,(binary) MINUS,PROD,QUOT,ROOT,SQRT,SQR,EXP,SEC,CSC,COT and negative constanst,
 // with combinations of SUM, (unary MINUS), PRODUCT, POW, SIN,COS,TAN, and positive constants
-SNode Expression::toCForm(const ExpressionNode *n) const {
+SNode Expression::toCForm(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER         :
   case NAME           : return n;
@@ -48,17 +48,17 @@ SNode Expression::toCForm(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toCFormSum(const ExpressionNode *n) const {
+SNode Expression::toCFormSum(ExpressionNode *n) {
   AddentArray a;
   return getSum(toCFormSum(a, n, true));
 }
 
-AddentArray &Expression::toCFormSum(AddentArray &result, const ExpressionNode *n, bool positive) const {
+AddentArray &Expression::toCFormSum(AddentArray &result, ExpressionNode *n, bool positive) {
   switch(n->getSymbol()) {
   case SUM:
     { const AddentArray &a = n->getAddentArray();
       for(size_t i = 0; i < a.size(); i++) {
-        const SumElement *e = a[i];
+        SumElement *e = a[i];
         toCFormSum(result, e->getNode(), e->isPositive() == positive);
       }
     }
@@ -80,12 +80,12 @@ AddentArray &Expression::toCFormSum(AddentArray &result, const ExpressionNode *n
   return result;
 }
 
-SNode Expression::toCFormProduct(const ExpressionNode *n) const {
+SNode Expression::toCFormProduct(ExpressionNode *n) {
   FactorArray a; 
   return getProduct(toCFormProduct(a, n, _1()));
 }
 
-FactorArray &Expression::toCFormProduct(FactorArray &result, const ExpressionNode *n, const SNode &exponent) const {
+FactorArray &Expression::toCFormProduct(FactorArray &result, ExpressionNode *n, SNode &exponent) {
   switch(n->getSymbol()) {
   case PRODUCT:
     { const FactorArray &a = n->getFactorArray();
@@ -128,10 +128,10 @@ FactorArray &Expression::toCFormProduct(FactorArray &result, const ExpressionNod
 }
 
 // n.symbol == POW, 
-FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode *n, const SNode &exponent) const {
+FactorArray &Expression::toCFormPower(FactorArray &result, ExpressionNode *n, SNode &exponent) {
   DEFINEMETHODNAME;
-  const SNode base = toCForm(n->left());
-  const SNode expo = toCForm(n->right());
+  SNode base = toCForm(n->left());
+  SNode expo = toCForm(n->right());
 
   switch(base.getSymbol()) {
   case POW :
@@ -142,7 +142,7 @@ FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode 
     break;
   case PRODUCT:
     { const FactorArray &factors = base.getFactorArray();
-      const SNode        newExpo = exponent * expo;
+      SNode              newExpo = exponent * expo;
       for(size_t i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
     }
     break;
@@ -154,10 +154,10 @@ FactorArray &Expression::toCFormPower(FactorArray &result, const ExpressionNode 
 }
 
 // n.symbol = ROOT
-FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *n, const SNode &exponent) const {
+FactorArray &Expression::toCFormRoot(FactorArray &result, ExpressionNode *n, SNode &exponent) {
   DEFINEMETHODNAME;
-  const SNode rad  = toCForm(n->left());
-  const SNode root = toCForm(n->right());
+  SNode rad  = toCForm(n->left());
+  SNode root = toCForm(n->right());
 
   switch(rad.getSymbol()) {
   case POW :
@@ -168,7 +168,7 @@ FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *
     break;
   case PRODUCT:
     { const FactorArray &factors = rad.getFactorArray();
-      const SNode        newExpo = exponent / root;
+      SNode              newExpo = exponent / root;
       for(size_t i = 0; i < factors.size(); i++) toCFormPower(result, factors[i], newExpo);
     }
     break;
@@ -179,17 +179,17 @@ FactorArray &Expression::toCFormRoot(FactorArray &result, const ExpressionNode *
   return result;
 }
 
-SNode Expression::toCFormPoly(const ExpressionNode *n) const {
+SNode Expression::toCFormPoly(ExpressionNode *n) {
   const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
   for(size_t i = 0; i < coefficientArray.size(); i++) {
     newCoefficientArray.add(toCForm(coefficientArray[i]));
   }
-  const ExpressionNode *newArgument = toCForm(n->getArgument());
+  ExpressionNode *newArgument = toCForm(n->getArgument());
   return getPoly(n, newCoefficientArray, newArgument);
 }
 
-SNode Expression::toCFormTreeNode(const ExpressionNode *n) const {
+SNode Expression::toCFormTreeNode(ExpressionNode *n) {
   const ExpressionNodeArray &a = n->getChildArray();
   ExpressionNodeArray newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
@@ -207,7 +207,7 @@ private:
   bool   m_ok;
 public:
   CanonicalFormChecker();
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
   bool isOk() const {
     return m_ok;
   }
@@ -235,7 +235,7 @@ CanonicalFormChecker::CanonicalFormChecker() : m_illegalSymbolSet(ExpressionTabl
   m_ok = true;
 }
 
-bool CanonicalFormChecker::handleNode(const ExpressionNode *n, int level) {
+bool CanonicalFormChecker::handleNode(ExpressionNode *n, int level) {
   if(m_illegalSymbolSet.contains(n->getSymbol()) || n->isBinaryMinus()) {
     m_error = format(_T("Illegal symbol in canonical form:<%s>. node=<%s>"), n->getSymbolName().cstr(), n->toString().cstr());
     m_ok = false;
@@ -244,7 +244,7 @@ bool CanonicalFormChecker::handleNode(const ExpressionNode *n, int level) {
   return true;
 }
 
-void Expression::checkIsCanonicalForm() const {
+void Expression::checkIsCanonicalForm() {
   CanonicalFormChecker checker;
   traverseTree(checker);
   if(!checker.isOk()) {

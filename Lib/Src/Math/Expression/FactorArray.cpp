@@ -2,36 +2,36 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-void FactorArray::add(const ExpressionFactor *f) {
-  const ExpressionNode *base     = f->base();
-  const ExpressionNode *exponent = f->exponent();
+void FactorArray::add(ExpressionFactor *f) {
+  ExpressionNode *base     = f->base();
+  ExpressionNode *exponent = f->exponent();
 
   if(base->getSymbol() != PRODUCT) {
     if(!base->isOne() && !(exponent->isZero())) {
-      CompactArray<const ExpressionFactor*>::add(f);
+      CompactArray<ExpressionFactor*>::add(f);
     }
   } else {
     const FactorArray &a = base->getFactorArray();
     if(exponent->isOne()) {
       addAll(a);
     } else {
-      const ParserTree *tree = f->getTree();
+      ParserTree *tree = f->getTree();
       for(size_t i = 0; i < a.size(); i++) {
-        const ExpressionFactor *f = a[i];
+        ExpressionFactor *f = a[i];
         add(tree->fetchFactorNode(f->base(), tree->productC(f->exponent(), exponent)));
       }
     }
   }
 }
 
-void FactorArray::add(const ExpressionNode *base, const ExpressionNode *exponent) {
+void FactorArray::add(ExpressionNode *base, ExpressionNode *exponent) {
   add(base->getTree()->fetchFactorNode(base, exponent));
 }
 
 FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
-    const ExpressionFactor *f = (*this)[i];
+    ExpressionFactor *f = (*this)[i];
     if(f->exponent()->isPositive()) {
       result.add(f);
     }
@@ -42,7 +42,7 @@ FactorArray FactorArray::selectConstantPositiveExponentFactors() const {
 FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
-    const ExpressionFactor *f = (*this)[i];
+    ExpressionFactor *f = (*this)[i];
     if(f->exponent()->isNegative()) {
       result.add(f);
     }
@@ -53,7 +53,7 @@ FactorArray FactorArray::selectConstantNegativeExponentFactors() const {
 FactorArray FactorArray::selectNonConstantExponentFactors() const {
   FactorArray result;
   for(size_t i = 0; i < size(); i++) {
-    const ExpressionFactor *f = (*this)[i];
+    ExpressionFactor *f = (*this)[i];
     if(!f->exponent()->isNumber()) {
       result.add(f);
     }
@@ -66,7 +66,7 @@ int FactorArray::findFactorWithChangeableSign() const {
     if((*this)[i]->isConstant()) return (int)i;
   }
   for(size_t i = 0; i < size(); i++) {
-    const ExpressionFactor *f = (*this)[i];
+    ExpressionFactor *f = (*this)[i];
     if(f->hasOddExponent() && f->exponent()->isPositive()) return (int)i;
   }
   for(size_t i = 0; i < size(); i++) {

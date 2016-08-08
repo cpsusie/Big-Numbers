@@ -4,7 +4,7 @@
 #include <Math/Expression/ExpressionFactor.h>
 
 // Should only be called in Canonical treeform
-bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) const {
+bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) {
   DEFINEMETHODNAME;
 
   if(n1 == n2) {
@@ -46,7 +46,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
 
   case MOD   :
     if(!treesEqual(n1->left(), n2->left())) return false;
-    return treesEqual(n1->right(), n2->right()) || treesEqualMinus(n1->right(), n2->right());
+    return treesEqual(n1->right(), n2->right()) || treesEqualMinus(((ExpressionNode*)n1)->right(), ((ExpressionNode*)n2)->right());
 
   case POLY  :
     { const ExpressionNodeArray &coef1 = n1->getCoefficientArray();
@@ -85,7 +85,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
 }
 
 // Should only be called in Canonical treeform
-bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
+bool Expression::treesEqualMinus(const SNode n1, const SNode n2) {
   DEFINEMETHODNAME;
 
   if(n1.isSameNode(n2) || n1.isEmpty() || n2.isEmpty()) {
@@ -108,8 +108,8 @@ bool Expression::treesEqualMinus(const SNode n1, const SNode n2) const {
       const AddentArray &a2 = n2.getAddentArray();
       if(a1.size() != a2.size()) return false;
       for(size_t i = 0; i < a1.size(); i++) {
-        const SumElement *e1 = a1[i];
-        const SumElement *e2 = a2[i];
+        SumElement *e1 = a1[i];
+        SumElement *e2 = a2[i];
         if(e1->isPositive() == e2->isPositive()) {
           if(!treesEqualMinus(e1->getNode(), e2->getNode())) return false;
         } else { // e1->isPositive() != e2->isPositive()

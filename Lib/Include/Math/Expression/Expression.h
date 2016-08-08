@@ -16,9 +16,9 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 #ifndef LONGDOUBLE
 
-#define FLD_REAL_PTR_DS    MEM_ADDR_DS(FLD_QWORD  )
-#define FSTP_REAL_PTR_DS   MEM_ADDR_DS(FSTP_QWORD )
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_QWORD)
+#define FLD_REAL           FLD_QWORD
+#define FSTP_REAL          FSTP_QWORD
+#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP( FSTP_QWORD)
 
 #else
 
@@ -26,8 +26,8 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 #error "LONGDOUBLE cannot be used together with x64 code"
 #endif // IS64BIT
 
-#define FLD_REAL_PTR_DS    MEM_ADDR_DS(FLD_TBYTE  )
-#define FSTP_REAL_PTR_DS   MEM_ADDR_DS(FSTP_TBYTE )
+#define FLD_REAL_PTR       FLD_TBYTE
+#define FSTP_REAL_PTR      FSTP_TBYTE
 #define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_TBYTE)
 
 #endif // LONGDOUBLE
@@ -48,35 +48,50 @@ typedef enum {
  ,RESULT_IN_XMM
  ,RESULT_IN_ADDRRDI
  ,RESULT_ON_STACK
- ,RESULT_IN_IMMADDR
+ ,RESULT_IN_VALUETABLE
 } ExpressionDestinationType;
 
 class ExpressionDestination {
-public:
+private:
   const ExpressionDestinationType m_type;
-  const BYTE                      m_offset;  // only used for RESULT_ON_STACK,IN_XMM
-  const double                   *m_immAddr; // only used for RESULT_IMM_ADDR
-  ExpressionDestination(ExpressionDestinationType type, BYTE offset=0, const double *immAddr=NULL)
-    : m_type(type), m_offset(offset), m_immAddr(immAddr)
+  const int                       m_offset;
+public:
+  ExpressionDestination(ExpressionDestinationType type, int offset)
+    : m_type(type), m_offset(offset)
   {
+  }
+  inline ExpressionDestinationType getType() const {
+    return m_type;
+  }
+  inline BYTE getXMMReg() const {
+    assert(m_type == RESULT_IN_XMM);
+    return (BYTE)m_offset;
+  }
+  inline BYTE getStackOffset() const {
+    assert(m_type == RESULT_ON_STACK);
+    return (BYTE)m_offset;
+  }
+  inline int getTableIndex() const {
+    assert(m_type == RESULT_IN_VALUETABLE);
+    return m_offset;
   }
 };
 
-#define DST_FPU            ExpressionDestination(RESULT_IN_FPU )
-#define DST_XMM(xmmReg)    ExpressionDestination(RESULT_IN_XMM,xmmReg)
-#define DST_ADDRRDI        ExpressionDestination(RESULT_IN_ADDRRDI)
-#define DST_ONSTACK(offs1) ExpressionDestination(RESULT_ON_STACK  , offs1      )
-#define DST_IMMADDR(addr ) ExpressionDestination(RESULT_IN_IMMADDR, 0    , addr)
+#define DST_FPU                 ExpressionDestination(RESULT_IN_FPU       , -1     )
+#define DST_XMM(xmmReg)         ExpressionDestination(RESULT_IN_XMM       , xmmReg )
+#define DST_ADDRRDI             ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
+#define DST_ONSTACK(offs1)      ExpressionDestination(RESULT_ON_STACK     , offs1  )
+#define DST_INVALUETABLE(index) ExpressionDestination(RESULT_IN_VALUETABLE, index  )
 
 #else
 
 typedef int ExpressionDestination;
 
-#define DST_FPU            0
-#define DST_XMM(xmm)       0
-#define DST_ADDRRDI        0
-#define DST_ONSTACK(offs1) 0
-#define DST_IMMADDR(addr ) 0
+#define DST_FPU                 0
+#define DST_XMM(xmmReg)         0
+#define DST_ADDRRDI             0
+#define DST_ONSTACK(     offs1) 0
+#define DST_INVALUETABLE(offs4) 0
 
 #endif // IS64BIT
 
@@ -84,14 +99,9 @@ class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   CompactArray<MemoryReference>   m_refenceArray;
-#ifdef IS32BIT
-  Real                            m_tmpVar[3];
-#else
+#ifdef IS64BIT
   BYTE                            m_stackTop;
-  Array<CompactDoubleArray*>      m_coefCache;
-  void clearCoefCache();
-  void copyCoefCache(const MachineCode &src);
-#endif // IS32BIT
+#endif // IS64BIT
 public:
   MachineCode();
   MachineCode(const MachineCode &src);
@@ -101,37 +111,33 @@ public:
   int  addBytes(const void *bytes, int count);
   void setBytes(int addr, const void *bytes, int count);
   int  emit(const IntelInstruction &ins);
-  void emitCall(BuiltInFunction f, ExpressionDestination dst);
-  void emitFLoad(       const ExpressionNode *n) { emitImmOp(FLD_REAL_PTR_DS          , n); }
-  void emitFLoad(       const Real           *x) { emitImmOp(FLD_REAL_PTR_DS          , x); }
-  void emitFAdd(        const Real           *x) { emitImmOp(MEM_ADDR_DS(FADD_QWORD)  , x); }
-  void emitFStorePop(   const Real           *x) { emitImmOp(FSTP_REAL_PTR_DS         , x); }
-  void emitFStorePop(   const ExpressionNode *n) { emitImmOp(FSTP_REAL_PTR_DS         , n); }
-  void emitFComparePop( const ExpressionNode *n) { emitImmOp(MEM_ADDR_DS(FCOMP_QWORD) , n); }
+  void emitCall(BuiltInFunction f, const ExpressionDestination &dst);
+  void emitFLoad(       const ExpressionNode *n) { emitTableOp(FLD_REAL    , n    ); }
+  void emitFStorePop(   int               index) { emitTableOp(FSTP_REAL   , index); }
+  void emitFStorePop(   const ExpressionNode *n) { emitTableOp(FSTP_REAL   , n    ); }
+  void emitFComparePop( const ExpressionNode *n) { emitTableOp(FCOMP_QWORD , n    ); }
 #ifdef IS64BIT
-  void emitXMM0ToAddr(  const Real           *x) { emitImmOp(MEM_ADDR_DS(MOVSD_MMWORD_XMM(XMM0)), x); }
-  bool emitFLoad(       const ExpressionNode *n, ExpressionDestination dst);
+  void emitXMM0ToAddr(  int               index) { emitTableOp(MOVSD_MMWORD_XMM(XMM0), index); }
+  bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
 #endif
-  void addImmediateAddr(const void *addr);
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
   void fixupShortJump(int addr, int jmpAddr);
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
   void fixupMemoryReference(const MemoryReference &ref);
-  void emitImmOp(const IntelInstruction &ins, const ExpressionNode *n) { emitImmOp(ins,getValueAddr(n)); }
-  void emitImmOp(const IntelInstruction &ins, const void *p);
+  inline void emitTableOp(const IntelOpcode &op, const ExpressionNode *n) {
+    emitTableOp(op, n->getValueIndex());
+  }
+  void emitTableOp(const IntelOpcode &op, int index);
 #ifdef IS32BIT
   void emitAddESP(  int                   n);
   void emitSubESP(  int                   n);
-  Real &getTmpVar(int index) { return m_tmpVar[index]; }
 #else // IS64BIT
   void resetStack(BYTE startOffset) { m_stackTop = startOffset; }
   BYTE pushTmp();
   BYTE popTmp();
   void emitAddRSP(  int                   n);
   void emitSubRSP(  int                   n);
-  void addPolyCoefficients(CompactDoubleArray *coefArray);
 #endif // IS32BIT
-  const Real *getValueAddr(const ExpressionNode *n) const;
   void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }
 
@@ -195,7 +201,7 @@ private:
   void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
   void throwInvalidTrigonometricMode();
-  static void throwUnknownSymbolException(const TCHAR *method, const SNode           n);
+  static void throwUnknownSymbolException(const TCHAR *method, SNode           n);
   static void throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n);
 
   // Evaluate tree nodes
@@ -223,13 +229,13 @@ private:
   void genCode(                                            const ExpressionNode *n);
   void genStatementList(                                   const ExpressionNode *n);
   void genReturnBoolExpression(                            const ExpressionNode *n);
-  void genExpression(                                      const ExpressionNode *n, ExpressionDestination dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f, ExpressionDestination dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f, ExpressionDestination dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f, ExpressionDestination dst);
-  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f, ExpressionDestination dst);
-  void genPolynomial(                                      const ExpressionNode *n, ExpressionDestination dst);
-  void genIf(                                              const ExpressionNode *n, ExpressionDestination dst);
+  void genExpression(                                      const ExpressionNode *n, const ExpressionDestination &dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction1    f, const ExpressionDestination &dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunction2    f, const ExpressionDestination &dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef1 f, const ExpressionDestination &dst);
+  void genCall(                                            const ExpressionNode *n, BuiltInFunctionRef2 f, const ExpressionDestination &dst);
+  void genPolynomial(                                      const ExpressionNode *n, const ExpressionDestination &dst);
+  void genIf(                                              const ExpressionNode *n, const ExpressionDestination &dst);
 
 #ifdef IS32BIT
   int  genPush(                                            const ExpressionNode *n);
@@ -249,83 +255,83 @@ private:
   JumpList genBoolExpression(                              const ExpressionNode *n);
 
   // Differentiation
-  SNode                       D(                           const SNode &n, const String &name) const;
-  SNode                       DPolynomial(                 const SNode &n, const String &name) const;
-  SNode                       DStatementList(              const SNode &n, const String &name) const;
+  SNode                       D(                           SNode n, const String &name);
+  SNode                       DPolynomial(                 SNode n, const String &name);
+  SNode                       DStatementList(              SNode n, const String &name);
 
   // Conversion between Standard-, Canonical- and Numeric tree form
-  SNode toSForm(               const ExpressionNode *n) const;
-  SNode toSFormSum(            const ExpressionNode *n) const;
-  SNode toSFormProduct(        const ExpressionNode *n) const;
-  SNode toSFormPow(            const ExpressionNode *n) const;
-  SNode toSFormPoly(           const ExpressionNode *n) const;
-  SNode toSFormTreeNode(       const ExpressionNode *n) const;
-  SNode toSFormFactorArray(    const FactorArray          &a, bool changeExponentSign) const;
+  SNode toSForm(               ExpressionNode *n);
+  SNode toSFormSum(            ExpressionNode *n);
+  SNode toSFormProduct(        ExpressionNode *n);
+  SNode toSFormPow(            ExpressionNode *n);
+  SNode toSFormPoly(           ExpressionNode *n);
+  SNode toSFormTreeNode(       ExpressionNode *n);
+  SNode toSFormFactorArray(    FactorArray    &a, bool changeExponentSign);
 
-  SNode toCForm(               const ExpressionNode *n) const;
-  SNode toCFormSum(            const ExpressionNode *n) const;
-  SNode toCFormProduct(        const ExpressionNode *n) const;
-  SNode toCFormPoly(           const ExpressionNode *n) const;
-  SNode toCFormTreeNode(       const ExpressionNode *n) const;
-  AddentArray &toCFormSum(     AddentArray &result, const ExpressionNode *n, bool positive) const;
-  FactorArray &toCFormProduct( FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
-  FactorArray &toCFormPower(   FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
-  FactorArray &toCFormRoot(    FactorArray &result, const ExpressionNode *n, const SNode &exponent) const;
+  SNode toCForm(               ExpressionNode *n);
+  SNode toCFormSum(            ExpressionNode *n);
+  SNode toCFormProduct(        ExpressionNode *n);
+  SNode toCFormPoly(           ExpressionNode *n);
+  SNode toCFormTreeNode(       ExpressionNode *n);
+  AddentArray &toCFormSum(     AddentArray &result, ExpressionNode *n, bool positive);
+  FactorArray &toCFormProduct( FactorArray &result, ExpressionNode *n, SNode &exponent);
+  FactorArray &toCFormPower(   FactorArray &result, ExpressionNode *n, SNode &exponent);
+  FactorArray &toCFormRoot(    FactorArray &result, ExpressionNode *n, SNode &exponent);
 
-  SNode toNForm(               const ExpressionNode *n) const;
-  SNode toNFormBoolExp(        const ExpressionNode *n) const;
-  SNode toNFormRealExp(        const ExpressionNode *n) const;
-  SNode toNFormSum(            const ExpressionNode *n) const;
-  SNode toNFormProduct(        const ExpressionNode *n) const;
-  SNode toNFormPoly(           const ExpressionNode *n) const;
-  SNode toNFormTreeNode(       const ExpressionNode *n) const;
+  SNode toNForm(               ExpressionNode *n);
+  SNode toNFormBoolExp(        ExpressionNode *n);
+  SNode toNFormRealExp(        ExpressionNode *n);
+  SNode toNFormSum(            ExpressionNode *n);
+  SNode toNFormProduct(        ExpressionNode *n);
+  SNode toNFormPoly(           ExpressionNode *n);
+  SNode toNFormTreeNode(       ExpressionNode *n);
 
   // Reduction
   void  iterateTransformation(ExpressionTransformer &transformer);
 
-  SNode                   reduce(                      const SNode             n) const;
-  SNode                   reduceBoolExp(               const SNode             n) const;
-  SNode                   reduceRealExp(               const SNode             n) const;
-  SNode                   reduceTreeNode(              const SNode             n) const;
-  SNode                   reduceSum(                   const SNode             n) const;
-  SNode                   reduceProduct(               const SNode             n) const;
-  SNode                   reduceModulus(               const SNode             n) const;
+  SNode                   reduce(                      SNode             n);
+  SNode                   reduceBoolExp(               SNode             n);
+  SNode                   reduceRealExp(               SNode             n);
+  SNode                   reduceTreeNode(              SNode             n);
+  SNode                   reduceSum(                   SNode             n);
+  SNode                   reduceProduct(               SNode             n);
+  SNode                   reduceModulus(               SNode             n);
 
-  SNode                   reducePower(                 const SNode             n) const;
-  SNode                   reduceConstantFactors(       const FactorArray      &factors) const;
-  SNode                   reduceRationalPower(         const Rational         &base, const Rational &exponent) const;
-  bool                    reducesToRationalConstant(   const SNode             n, Rational *r = NULL) const;
-  bool                    reducesToRational(           const SNode             n, Rational *r = NULL) const;
-  SNode                   multiplyParentheses(         const SNode             n) const;
-  SNode                   multiplyParenthesesInSum(    const SNode             n) const;
-  SNode                   multiplyParenthesesInProduct(const SNode             n) const;
-  SNode                   multiplyParenthesesInPoly(   const SNode             n) const;
-  SNode                   multiplyTreeNode(            const SNode             n) const;
-  SNode                   multiply(                    const ExpressionFactor *a, const ExpressionNodeSum *s) const;
+  SNode                   reducePower(                 SNode             n);
+  SNode                   reduceConstantFactors(       FactorArray            &factors);
+  SNode                   reduceRationalPower(         const Rational         &base, const Rational &exponent);
+  bool                    reducesToRationalConstant(   SNode             n, Rational *r = NULL);
+  bool                    reducesToRational(           SNode             n, Rational *r = NULL);
+  SNode                   multiplyParentheses(         SNode             n);
+  SNode                   multiplyParenthesesInSum(    SNode             n);
+  SNode                   multiplyParenthesesInProduct(SNode             n);
+  SNode                   multiplyParenthesesInPoly(   SNode             n);
+  SNode                   multiplyTreeNode(            SNode             n);
+  SNode                   multiply(                    ExpressionFactor *a, ExpressionNodeSum *s);
 
-  SNode                   factorsToNode(               const FactorArray      &a) const;
-  SNode                   addentsToNode(               const AddentArray      &a) const;
-  const SumElement       *getCommonFactor(             const SumElement       &e1, const SumElement &e2) const;
-  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n) const;
-  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n,        const SNode exponent) const;
-  FactorArray            &getFactorsInPower(           FactorArray &result,   const SNode            n,        const SNode exponent) const;
-  FactorArray            &multiplyExponents(           FactorArray &result,   const FactorArray      &factors, const SNode exponent) const;
-  SNode                   changeFirstNegativeFactor(   const SNode             n) const;
-  SNode                   reduceLn(                    const SNode             n) const;
-  SNode                   reduceLog10(                 const SNode             n) const;
-  SNode                   getPowerOfE(                 const SNode             n) const;
-  SNode                   getPowerOf10(                const SNode             n) const;
-  const SumElement       *mergeLogarithms(             const SumElement       &e1, const SumElement &e2) const;
-  SNode                   reduceAsymmetricFunction(    const SNode             n) const;
-  SNode                   reduceSymmetricFunction(     const SNode             n) const;
-  SNode                   reducePolynomial(            const SNode             n) const;
-  const ExpressionFactor *reduceTrigonometricFactors(  const ExpressionFactor &f1, const ExpressionFactor &f2) const;
+  SNode                   factorsToNode(               FactorArray      &a);
+  SNode                   addentsToNode(               AddentArray      &a);
+  SumElement             *getCommonFactor(             SumElement       &e1, SumElement &e2);
+  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n);
+  FactorArray            &getFactors(                  FactorArray &result,   const SNode            n,        const SNode exponent);
+  FactorArray            &getFactorsInPower(           FactorArray &result,   const SNode            n,        const SNode exponent);
+  FactorArray            &multiplyExponents(           FactorArray &result,   FactorArray           &factors,  const SNode exponent);
+  SNode                   changeFirstNegativeFactor(   SNode             n);
+  SNode                   reduceLn(                    SNode             n);
+  SNode                   reduceLog10(                 SNode             n);
+  SNode                   getPowerOfE(                 SNode             n);
+  SNode                   getPowerOf10(                SNode             n);
+  SumElement             *mergeLogarithms(             SumElement             &e1, SumElement &e2);
+  SNode                   reduceAsymmetricFunction(    SNode             n);
+  SNode                   reduceSymmetricFunction(     SNode             n);
+  SNode                   reducePolynomial(            SNode             n);
+  ExpressionFactor       *reduceTrigonometricFactors(  ExpressionFactor       &f1, ExpressionFactor &f2);
 
-  bool                    canUseIdiotRule(             const SNode             n1, const SNode n2) const;
-  bool                    canUseReverseIdiotRule(      const SumElement       *e1, const SumElement *e2, SumElement* &result) const;
-  bool                    isSquareOfSinOrCos(          const SNode             n) const;
-  bool                    sameLogarithm(               const SNode             n1, const SNode n2) const;
-  static bool             rationalExponentsMultiply(   const Rational         &r1, const Rational &r2) ;
+  bool                    canUseIdiotRule(             SNode             n1, const SNode n2);
+  bool                    canUseReverseIdiotRule(      SumElement       *e1,       SumElement *e2, SumElement* &result);
+  bool                    isSquareOfSinOrCos(          SNode             n);
+  bool                    sameLogarithm(               SNode             n1, const SNode n2);
+  static bool             rationalExponentsMultiply(   const Rational         &r1, const Rational &r2);
 
 #ifdef __NEVER__
   const ExpressionNode   *replaceRationalPowers(       const ExpressionNode   *n) const;
@@ -369,18 +375,18 @@ public:
     return m_returnType;
   }
 
-  void checkIsStandardForm() const;
-  void checkIsCanonicalForm() const;
+  void checkIsStandardForm();
+  void checkIsCanonicalForm();
 
   static void throwUnknownSymbolException(const TCHAR *className, const TCHAR *method, const ExpressionNode *n);
 
   void clear();
   void reduce();
 
-  bool treesEqual(     const ExpressionNode *n1, const ExpressionNode *n2) const;
-  bool treesEqualMinus(const SNode           n1, const SNode           n2) const;
+  bool treesEqual(     const ExpressionNode *n1, const ExpressionNode *n2);
+  bool treesEqualMinus(SNode n1, SNode n2);
 
-  bool equalMinus(const Expression &e) const {
+  bool equalMinus(Expression &e) {
     return treesEqualMinus(getRoot(), e.getRoot());
   }
 

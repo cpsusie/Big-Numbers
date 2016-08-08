@@ -4,15 +4,15 @@
 
 DEFINECLASSNAME(ExpressionFactor);
 
-const ExpressionNode *ExpressionFactor::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionFactor::clone(ParserTree *tree) const {
   return new ExpressionFactor(base()->clone(tree), exponent()->clone(tree));
 }
 
-int ExpressionFactor::compare(const ExpressionNode *n) const {
+int ExpressionFactor::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
-  const ExpressionFactor *f = (const ExpressionFactor*)n;
+  ExpressionFactor *f = (ExpressionFactor*)n;
   bool b1 = isConstant();
   bool b2 = f->isConstant();
   int c = b1 - b2;

@@ -1,18 +1,18 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
-ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, va_list argptr) : ExpressionNode(tree, symbol) {
   initChildArray(argptr);
 }
 
-ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, const ExpressionNodeArray &childArray) : ExpressionNode(tree, symbol) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, const ExpressionNodeArray &childArray) : ExpressionNode(tree, symbol) {
   m_childArray.setCapacity(childArray.size());
   for(size_t i = 0; i < childArray.size(); i++) {
     m_childArray.add((ExpressionNode*)childArray[i]);
   }
 }
 
-ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, const ExpressionNodeTree *src) : ExpressionNode(tree, src->getSymbol()) {
   const ExpressionNodeArray &sa = src->getChildArray();
   m_childArray.setCapacity(sa.size());
   for(size_t i = 0; i < sa.size(); i++) {
@@ -20,7 +20,7 @@ ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, const ExpressionN
   }
 }
 
-ExpressionNodeTree::ExpressionNodeTree(const ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
+ExpressionNodeTree::ExpressionNodeTree(ParserTree *tree, ExpressionInputSymbol symbol, ...) : ExpressionNode(tree, symbol) {
   va_list argptr;
   va_start(argptr, symbol);
   initChildArray(argptr);
@@ -43,15 +43,15 @@ void ExpressionNodeTree::initChildArray(va_list argptr) {
   }
 }
 
-const ExpressionNode *ExpressionNodeTree::expand() const {
+ExpressionNode *ExpressionNodeTree::expand() {
   if(!isExpandable()) {
     return this;
   }
   switch(getSymbol()) {
   case POW:
-    { const Expression     *expr = getExpr();
-      const ExpressionNode *expo = right();
-      Rational expoR;
+    { Expression     *expr = getExpr();
+      ExpressionNode *expo = right();
+      Rational        expoR;
       if(!expr->reducesToRationalConstant(expo, &expoR)) {
         return false;
       }
@@ -62,12 +62,12 @@ const ExpressionNode *ExpressionNodeTree::expand() const {
   }
 }
 
-bool ExpressionNodeTree::isExpandable() const {
+bool ExpressionNodeTree::isExpandable() {
   switch(getSymbol()) {
   case POW:
-    { const Expression     *expr = getExpr();
-      const ExpressionNode *expo = right();
-      Rational expoR;
+    { Expression     *expr = getExpr();
+      ExpressionNode *expo = right();
+      Rational        expoR;
       if(!expr->reducesToRational(expo, &expoR) || (abs(expoR.getNumerator()) <= 1)) {
         return false;
       }
@@ -88,7 +88,7 @@ bool ExpressionNodeTree::isExpandable() const {
   }
 }
 
-int ExpressionNodeTree::compare(const ExpressionNode *n) const {
+int ExpressionNodeTree::compare(ExpressionNode *n) {
   if(n->getNodeType() != getNodeType()) {
     return ExpressionNode::compare(n);
   }
@@ -125,7 +125,7 @@ int ExpressionNodeTree::compare(const ExpressionNode *n) const {
   return 0;
 }
 
-const ExpressionNode *ExpressionNodeTree::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeTree::clone(ParserTree *tree) const {
   return new ExpressionNodeTree(tree, this);
 }
 
@@ -138,13 +138,13 @@ public:
     m_nonConstantFound = false;
   }
 
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
   bool dependsOnNonConstantNames() const {
     return m_nonConstantFound;
   }
 };
 
-bool IndexedExpressionDependencyChecker::handleNode(const ExpressionNode *n, int level) {
+bool IndexedExpressionDependencyChecker::handleNode(ExpressionNode *n, int level) {
   if(!n->isName()) {
     return true;
   }
@@ -158,7 +158,7 @@ bool IndexedExpressionDependencyChecker::handleNode(const ExpressionNode *n, int
 
 static bool exprDependsOnNonConstantNames(const ExpressionNode *expr, const ExpressionVariable &loopVar) {
   IndexedExpressionDependencyChecker nodeHandler(loopVar);
-  expr->traverseExpression(nodeHandler, 0);
+  ((ExpressionNode*)expr)->traverseExpression(nodeHandler, 0);
   return nodeHandler.dependsOnNonConstantNames();
 }
 
@@ -182,7 +182,7 @@ bool ExpressionNodeTree::isConstant() const {
   return m_childArray.isConstant();
 }
 
-bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeTree::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
   const ExpressionNodeArray &a = getChildArray();
   level++;

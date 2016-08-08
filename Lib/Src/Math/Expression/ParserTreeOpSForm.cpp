@@ -5,7 +5,7 @@
 
 // ---------------------------------------- Operators for StandardForm ----------------------------------------------------
 // Not using SUM and PRODUCT nodes
-const ExpressionNode *ParserTree::minusS(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::minusS(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER:
     if(n->isZero()) {
@@ -28,7 +28,7 @@ const ExpressionNode *ParserTree::minusS(const ExpressionNode *n) const {
   }
 }
 
-const ExpressionNode *ParserTree::reciprocalS(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::reciprocalS(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER:
     { const Number &v = n->getNumber();
@@ -52,7 +52,7 @@ const ExpressionNode *ParserTree::reciprocalS(const ExpressionNode *n) const {
   return quotientS(getOne(), n);
 }
 
-const ExpressionNode *ParserTree::sumS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::sumS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() + n2->getRational());
   }
@@ -69,7 +69,7 @@ const ExpressionNode *ParserTree::sumS(const ExpressionNode *n1, const Expressio
   }
 }
 
-const ExpressionNode *ParserTree::differenceS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::differenceS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() - n2->getRational());
   }
@@ -84,7 +84,7 @@ const ExpressionNode *ParserTree::differenceS(const ExpressionNode *n1, const Ex
   }
 }
 
-const ExpressionNode *ParserTree::productS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::productS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() * n2->getRational());
   }
@@ -103,7 +103,7 @@ const ExpressionNode *ParserTree::productS(const ExpressionNode *n1, const Expre
   }
 }
 
-const ExpressionNode *ParserTree::quotientS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::quotientS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() / n2->getRational());
   }
@@ -118,19 +118,19 @@ const ExpressionNode *ParserTree::quotientS(const ExpressionNode *n1, const Expr
   }
 }
 
-const ExpressionNode *ParserTree::modulusS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::modulusS(ExpressionNode *n1, ExpressionNode *n2) {
   return binaryExpression(MOD, n1, n2);
 }
 
-const ExpressionNode *ParserTree::sqrS(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::sqrS(ExpressionNode *n) {
   return functionExpression(SQR, n);
 }
 
-const ExpressionNode *ParserTree::sqrtS(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::sqrtS(ExpressionNode *n) {
   return functionExpression(SQRT, n);
 }
 
-const ExpressionNode *ParserTree::powerS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::powerS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isInteger()) {
     return numberExpression(pow(n1->getRational(), n2->getNumber().getIntValue()));
   }
@@ -165,7 +165,7 @@ const ExpressionNode *ParserTree::powerS(const ExpressionNode *n1, const Express
   return binaryExpression(POW, n1, n2);
 }
 
-const ExpressionNode *ParserTree::rootS(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::rootS(ExpressionNode *n1, ExpressionNode *n2) {
   if(n2->isOne()) {
     return n1;
   } else if(n2->isMinusOne()) {
@@ -174,18 +174,18 @@ const ExpressionNode *ParserTree::rootS(const ExpressionNode *n1, const Expressi
   return binaryExpression(ROOT, n1, n2);
 }
 
-const ExpressionNode *ParserTree::expS(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::expS(ExpressionNode *n) {
   return functionExpression(EXP, n);
 }
 
-const ExpressionNode *ParserTree::cotS(const ExpressionNode *n)  const {
+ExpressionNode *ParserTree::cotS(ExpressionNode *n)  {
   return functionExpression(COT, n);
 }
 
-const ExpressionNode *ParserTree::cscS(const ExpressionNode *n)  const {
+ExpressionNode *ParserTree::cscS(ExpressionNode *n)  {
   return functionExpression(CSC, n);
 }
 
-const ExpressionNode *ParserTree::secS(const ExpressionNode *n)  const {
+ExpressionNode *ParserTree::secS(ExpressionNode *n)  {
   return functionExpression(SEC, n);
 }

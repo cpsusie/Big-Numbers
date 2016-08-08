@@ -2,7 +2,7 @@
 #include <Math/Expression/ExpressionNode.h>
 #include <Math/Expression/SumElement.h>
 
-void AddentArray::add(const ExpressionNode *n, bool positive) {
+void AddentArray::add(ExpressionNode *n, bool positive) {
   switch(n->getSymbol()) {
   case NUMBER:
     if(!n->isZero()) {      // dont add Zero
@@ -15,7 +15,7 @@ void AddentArray::add(const ExpressionNode *n, bool positive) {
     } else {
       const AddentArray &a = n->getAddentArray();
       for(size_t i = 0; i < a.size(); i++) {
-        const SumElement *e = a[i];
+        SumElement *e = a[i];
         add(e->getNode(), !e->isPositive());
       }
     }

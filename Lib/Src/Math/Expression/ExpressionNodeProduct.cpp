@@ -2,16 +2,16 @@
 #include <Math/Expression/ParserTree.h>
 #include <Math/Expression/ExpressionFactor.h>
 
-static int compareFactors(const ExpressionFactor * const &f1, const ExpressionFactor * const &f2) {
+static int compareFactors(ExpressionFactor * const &f1, ExpressionFactor * const &f2) {
   return f1->compare(f2);
 }
 
-ExpressionNodeProduct::ExpressionNodeProduct(const ParserTree *tree, const FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
+ExpressionNodeProduct::ExpressionNodeProduct(ParserTree *tree, FactorArray &factors) : ExpressionNode(tree, PRODUCT) {
   m_factors = factors;
   m_factors.sort(compareFactors);
 }
 
-int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
+int ExpressionNodeProduct::compare(ExpressionNode *n) {
   if(n->getNodeType() != EXPRESSIONNODEPRODUCT) {
     return ExpressionNode::compare(n);
   }
@@ -37,7 +37,7 @@ int ExpressionNodeProduct::compare(const ExpressionNode *n) const {
   }
 }
 
-const ExpressionNode *ExpressionNodeProduct::clone(const ParserTree *tree) const {
+ExpressionNode *ExpressionNodeProduct::clone(ParserTree *tree) const {
   FactorArray factors(m_factors.size());
   for(size_t i = 0; i < m_factors.size(); i++) {
     factors.add(m_factors[i]->clone(tree));
@@ -55,9 +55,9 @@ bool ExpressionNodeProduct::isConstant() const {
   return true;
 }
 
-bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, int level) const {
+bool ExpressionNodeProduct::traverseExpression(ExpressionNodeHandler &handler, int level) {
   if(!handler.handleNode(this, level)) return false;
-  const FactorArray &a = getFactorArray();
+  FactorArray &a = getFactorArray();
   level++;
   for(size_t i = 0; i < a.size(); i++) {
     if(!a[i]->traverseExpression(handler, level)) return false;

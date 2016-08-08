@@ -21,7 +21,6 @@ private:
   };
 
   void setType(NumberType type);
-  void forceTypeToReal();
   void cleanup();
   static void throwTypeIsUndefinedException(const TCHAR *method);
   static void throwUnknownTypeException(    const TCHAR *method, NumberType type);
@@ -97,8 +96,6 @@ public:
   inline bool operator!=(const Number &n) const {
     return !(*this == n);
   }
-
-  const Real *getRealAddress() const; // will convert this to a Real by calling forceTypeToReal(), if its a Rational
 
   String toString() const;
 };

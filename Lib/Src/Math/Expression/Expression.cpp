@@ -75,7 +75,7 @@ void Expression::parse(const String &expr) {
   }
 }
 
-void Expression::throwUnknownSymbolException(const TCHAR *method, const SNode n) { // static
+void Expression::throwUnknownSymbolException(const TCHAR *method, SNode n) { // static
   throwUnknownSymbolException(method, n.node());
 }
 
@@ -129,13 +129,13 @@ void Expression::throwInvalidTrigonometricMode() {
 
 class MarkedNodeTransformer : public ExpressionNodeHandler {
 private:
-  CompactNodeHashMap<const ExpressionNode*> m_nodeMap;
+  CompactNodeHashMap<ExpressionNode*> m_nodeMap;
 protected:
   Expression &m_expr;
 public:
   MarkedNodeTransformer(Expression *expr) : m_expr(*expr) {
   }
-  inline void putNodes(const ExpressionNode *from, const ExpressionNode *to) {
+  inline void putNodes(const ExpressionNode *from, ExpressionNode *to) {
     if(to != from) m_nodeMap.put(from, to);
   }
 
@@ -156,10 +156,10 @@ class MarkedNodeExpander : public MarkedNodeTransformer {
 public:
   MarkedNodeExpander(Expression *expr) : MarkedNodeTransformer(expr) {
   }
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
 };
 
-bool MarkedNodeExpander::handleNode(const ExpressionNode *n, int level) {
+bool MarkedNodeExpander::handleNode(ExpressionNode *n, int level) {
   if(n->isMarked() && n->isExpandable()) {
     putNodes(n, n->expand());
   }
@@ -170,10 +170,10 @@ class MarkedNodeMultiplier : public MarkedNodeTransformer {
 public:
   MarkedNodeMultiplier(Expression *expr) : MarkedNodeTransformer(expr) {
   }
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
 };
 
-bool MarkedNodeMultiplier::handleNode(const ExpressionNode *n, int level) {
+bool MarkedNodeMultiplier::handleNode(ExpressionNode *n, int level) {
   if(n->isMarked()) {
     putNodes(n, m_expr.multiplyParentheses(n));
   }

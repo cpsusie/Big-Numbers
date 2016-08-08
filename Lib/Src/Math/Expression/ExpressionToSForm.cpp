@@ -16,7 +16,7 @@ Expression &Expression::toStandardForm() {
 
 // ----------------------------------------- toSForm ------------------------------------------------------------------
 // Eliminate all Product- and Sum nodes
-SNode Expression::toSForm(const ExpressionNode *n) const {
+SNode Expression::toSForm(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER :
   case NAME   : return n;
@@ -28,7 +28,7 @@ SNode Expression::toSForm(const ExpressionNode *n) const {
   }
 }
 
-static int compare2(const SumElement * const &e1, const SumElement * const &e2) {
+static int compare2(SumElement * const &e1, SumElement * const &e2) {
   const bool p1 = e1->isPositive();
   const bool p2 = e2->isPositive();
   int c = p2 - p1;
@@ -36,7 +36,7 @@ static int compare2(const SumElement * const &e1, const SumElement * const &e2) 
   return e1->compare(e2);
 }
 
-static int compareMany(const SumElement * const &e1, const SumElement * const &e2) {
+static int compareMany(SumElement * const &e1, SumElement * const &e2) {
   return e1->compare(e2);
 }
 
@@ -48,7 +48,7 @@ static void sortAddentArrayStdForm(AddentArray &a) {
   }
 }
 
-SNode Expression::toSFormSum(const ExpressionNode *n) const {
+SNode Expression::toSFormSum(ExpressionNode *n) {
   AddentArray a = n->getAddentArray();
   if(a.size() == 0) {
     return getZero();
@@ -57,7 +57,7 @@ SNode Expression::toSFormSum(const ExpressionNode *n) const {
     SNode result = toSForm(a[0]->getNode()); // not createExpressionNode here. We'll get infinite recursion
     if(!a[0]->isPositive()) result = -result;
     for(size_t i = 1; i < a.size(); i++) {
-      const SumElement *e = a[i];
+      SumElement *e = a[i];
       SNode ne = toSForm(e->getNode());
       if(e->isPositive()) result += ne; else result -= ne;
     }
@@ -65,13 +65,13 @@ SNode Expression::toSFormSum(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toSFormProduct(const ExpressionNode *n) const {
+SNode Expression::toSFormProduct(ExpressionNode *n) {
   Rational constant = 1;
 
   const FactorArray &a = n->getFactorArray();
-  FactorArray        newArray;
+  FactorArray newArray;
   for(size_t i = 0; i < a.size(); i++) {
-    const ExpressionFactor *f = a[i];
+    ExpressionFactor *f = a[i];
     Rational r;
     if(reducesToRationalConstant(f, &r)) {
       constant *= r;
@@ -91,13 +91,13 @@ SNode Expression::toSFormProduct(const ExpressionNode *n) const {
   p.addAll(newArray.selectNonConstantExponentFactors());
   q.addAll(newArray.selectConstantNegativeExponentFactors());
 
-  return toSFormFactorArray(p, false) / toSFormFactorArray(q, true );
+  return toSFormFactorArray(p, false) / toSFormFactorArray(q, true);
 }
 
-SNode Expression::toSFormFactorArray(const FactorArray &a, bool changeExponentSign) const {
+SNode Expression::toSFormFactorArray(FactorArray &a, bool changeExponentSign) {
   SNodeArray a1;
   for(size_t i = 0; i < a.size(); i++) {
-    const ExpressionFactor *f = a[i];
+    ExpressionFactor *f = a[i];
     if(changeExponentSign) {
       a1.add(reciprocal(toSFormPow(f)));
     } else {
@@ -113,7 +113,7 @@ SNode Expression::toSFormFactorArray(const FactorArray &a, bool changeExponentSi
   }
 }
 
-SNode Expression::toSFormPow(const ExpressionNode *n) const {
+SNode Expression::toSFormPow(ExpressionNode *n) {
   const SNode base     = toSForm(n->left());
   const SNode exponent = toSForm(n->right());
 
@@ -173,9 +173,9 @@ SNode Expression::toSFormPow(const ExpressionNode *n) const {
   }
 }
 
-SNode Expression::toSFormPoly(const ExpressionNode *n) const {
-  const ExpressionNodeArray  &coefficientArray = n->getCoefficientArray();
-  const ExpressionNode *argument         = n->getArgument();
+SNode Expression::toSFormPoly(ExpressionNode *n) {
+  const ExpressionNodeArray &coefficientArray = n->getCoefficientArray();
+  ExpressionNode            *argument         = n->getArgument();
 
   ExpressionNodeArray newCoefficientArray(coefficientArray.size());
   for(size_t i = 0; i < coefficientArray.size(); i++) {
@@ -184,15 +184,14 @@ SNode Expression::toSFormPoly(const ExpressionNode *n) const {
   return getPoly(n, newCoefficientArray, toSForm(argument));
 }
 
-SNode Expression::toSFormTreeNode(const ExpressionNode *n) const {
+SNode Expression::toSFormTreeNode(ExpressionNode *n) {
   const ExpressionNodeArray &a = n->getChildArray();
-  ExpressionNodeArray newChildArray(a.size());
+  ExpressionNodeArray        newChildArray(a.size());
   for(size_t i = 0; i < a.size(); i++) {
     newChildArray.add(toSForm(a[i]));
   }
   return getTree(n, newChildArray);
 }
-
 
 // -------------------------------------------------------------------------------------------------------
 
@@ -203,7 +202,7 @@ private:
   bool   m_ok;
 public:
   StandardFormChecker();
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
   bool isOk() const {
     return m_ok;
   }
@@ -223,7 +222,7 @@ StandardFormChecker::StandardFormChecker() : m_illegalSymbolSet(ExpressionTables
   m_ok = true;
 }
 
-bool StandardFormChecker::handleNode(const ExpressionNode *n, int level) {
+bool StandardFormChecker::handleNode(ExpressionNode *n, int level) {
   if(m_illegalSymbolSet.contains(n->getSymbol())) {
     m_error = format(_T("Illegal symbol in standard form:<%s>. node=<%s>"), n->getSymbolName().cstr(), n->toString().cstr());
     m_ok = false;
@@ -232,7 +231,7 @@ bool StandardFormChecker::handleNode(const ExpressionNode *n, int level) {
   return true;
 }
 
-void Expression::checkIsStandardForm() const {
+void Expression::checkIsStandardForm() {
   StandardFormChecker checker;
   traverseTree(checker);
   if(!checker.isOk()) {

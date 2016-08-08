@@ -4,17 +4,21 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
-ExpressionNode::ExpressionNode(const ParserTree *tree, ExpressionInputSymbol symbol) : m_tree(*tree), m_info(symbol) {
+ExpressionNode::ExpressionNode(ParserTree *tree, ExpressionInputSymbol symbol) : m_tree(*tree), m_info(symbol) {
   m_tree.m_nodeTable.add(this);
 }
 
 Exception ExpressionNode::createAttributeNotSupportedException(const char *attribute) const {
   const String attr = attribute;
-  return Exception(format(_T("Cannot get %s of syntaxNode with symbol=%s"), attr.cstr(), getSymbolName().cstr()));
+  return Exception(format(_T("Attribute %s not defined for syntaxNode with symbol=%s"), attr.cstr(), getSymbolName().cstr()));
 }
 
 const Expression *ExpressionNode::getExpr() const {
   return (const Expression*)getTree();
+}
+
+Expression *ExpressionNode::getExpr() {
+  return (Expression*)getTree();
 }
 
 String ExpressionNode::getSymbolName() const {
@@ -25,6 +29,10 @@ String ExpressionNode::getSymbolName() const {
   return ExpressionTables->getSymbolName(sym);
 }
 
+Real &ExpressionNode::getValue() const {
+  return m_tree.m_valueTable[getValueIndex()];
+}
+
 class NameChecker : public ExpressionNodeHandler {
 private:
   const String &m_name;
@@ -33,7 +41,7 @@ public:
   NameChecker(const String &name) : m_name(name) {
     m_nameFound = false;
   }
-  bool handleNode(const ExpressionNode *n, int level) {
+  bool handleNode(ExpressionNode *n, int level) {
     if(n->isName() && (n->getName() == m_name)) {
       m_nameFound = true;
       return false;
@@ -56,7 +64,7 @@ public:
   NodeCounter(ExpressionNodeSelector *selector) : m_selector(selector) {
     m_count = 0;
   }
-  bool handleNode(const ExpressionNode *n, int level) {
+  bool handleNode(ExpressionNode *n, int level) {
     if((m_selector == NULL) || m_selector->select(n)) m_count++;
     return true;
   }
@@ -67,13 +75,13 @@ public:
 
 bool ExpressionNode::dependsOn(const String &name) const {
   NameChecker nameChecker(name);
-  traverseExpression(nameChecker,0);
+  ((ExpressionNode*)this)->traverseExpression(nameChecker,0);
   return nameChecker.isFound();
 }
 
 int ExpressionNode::getNodeCount(ExpressionNodeSelector *selector) const {
   NodeCounter nodeCounter(selector);
-  traverseExpression(nodeCounter, 0);
+  ((ExpressionNode*)this)->traverseExpression(nodeCounter, 0);
   return nodeCounter.getCount();
 }
 
@@ -83,13 +91,13 @@ private:
 public:
   MaxLevelFinder() : m_maxLevel(0) {
   }
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
   int getMaxLevel() const {
     return m_maxLevel;
   }
 };
 
-bool MaxLevelFinder::handleNode(const ExpressionNode *n, int level) {
+bool MaxLevelFinder::handleNode(ExpressionNode *n, int level) {
   if(level > m_maxLevel) {
     m_maxLevel = level;
   }
@@ -98,7 +106,7 @@ bool MaxLevelFinder::handleNode(const ExpressionNode *n, int level) {
 
 int ExpressionNode::getMaxTreeDepth() const {
   MaxLevelFinder handler;
-  traverseExpression(handler, 0);
+  ((ExpressionNode*)this)->traverseExpression(handler, 0);
   return handler.getMaxLevel();
 }
 
@@ -112,7 +120,7 @@ String ExpressionNode::parenthesizedExpressionToString(const ExpressionNode *par
 
 String ExpressionNode::statementListToString() const {
   String result;
-  ExpressionNodeArray list = getStatementList(this);
+  ExpressionNodeArray list = getStatementList((ExpressionNode*)this);
   for(size_t i = 0; i < list.size(); i++) {
     result += list[i]->toString();
     result += _T(";\n");
@@ -368,7 +376,7 @@ ExpressionInputSymbol InverseFunctionMap::getInverse(ExpressionInputSymbol symbo
 SymbolOrderMap     ExpressionNode::s_orderMap;
 InverseFunctionMap ExpressionNode::s_inverseFunctionMap;
 
-int ExpressionNode::compare(const ExpressionNode *n) const {
+int ExpressionNode::compare(ExpressionNode *n) {
   const ExpressionInputSymbol s1 = getSymbol();
   const ExpressionInputSymbol s2 = n->getSymbol();
   return (s1 != s2) ? s_orderMap.compare(s1, s2) : 0;
@@ -379,9 +387,9 @@ String &ExpressionNode::addLeftMargin(String &s, int level) { // static
   return s;
 }
 
-const ExpressionNode *ExpressionNodeArray::toTree(ExpressionInputSymbol delimiter) const {
-  const ExpressionNode *result = (*this)[0];
-  const ParserTree *tree = result->getTree();
+ExpressionNode *ExpressionNodeArray::toTree(ExpressionInputSymbol delimiter) const {
+  ExpressionNode *result = (*this)[0];
+  ParserTree *tree = result->getTree();
   for(size_t i = 1; i < size(); i++) {
     result = tree->binaryExpression(delimiter, result, (*this)[i]);
   }

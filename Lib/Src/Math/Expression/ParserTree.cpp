@@ -43,7 +43,7 @@ ParserTree::~ParserTree() {
   releaseAll();
 }
 
-void ParserTree::setRoot(const ExpressionNode *n) {
+void ParserTree::setRoot(ExpressionNode *n) {
   const ExpressionNode *oldRoot = m_root;
   if(n != oldRoot) {
     m_root = n;
@@ -141,7 +141,7 @@ void ParserTree::releaseAll() {
   clearSymbolTable();
 }
 
-void ParserTree::addError(const ExpressionNode *n, const TCHAR *format,...) const {
+void ParserTree::addError(ExpressionNode *n, const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
   if((n == NULL) || !n->hasPos()) {
@@ -151,21 +151,21 @@ void ParserTree::addError(const ExpressionNode *n, const TCHAR *format,...) cons
   }
 }
 
-void ParserTree::addError(const SourcePosition &pos, const TCHAR *format,...) const {
+void ParserTree::addError(const SourcePosition &pos, const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(&pos, format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::addError(const TCHAR *format,...) const {
+void ParserTree::addError(const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr, format);
   vAddError(NULL, format, argptr);
   va_end(argptr);
 }
 
-void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_list argptr) const {
+void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_list argptr) {
   String tmp2;
   String tmp = vformat(format, argptr);
   if(pos != NULL) {
@@ -175,7 +175,7 @@ void ParserTree::vAddError(const SourcePosition *pos, const TCHAR *format, va_li
   }
   tmp2.replace('\n',' ');
   m_errors.add(tmp2);
-  ((ParserTree*)this)->setOk(false);
+  setOk(false);
 }
 
 int ParserTree::decodeErrorString(const String &expr, String &error) { // static
@@ -216,7 +216,7 @@ void ParserTree::listErrors(const TCHAR *fname) const {
   }
 }
 
-static void getListFromTree(const ExpressionNode *n, int delimiterSymbol, ExpressionNodeArray &list) {
+static void getListFromTree(ExpressionNode *n, int delimiterSymbol, ExpressionNodeArray &list) {
   if(n->getSymbol() == delimiterSymbol) {
     getListFromTree(n->left(),delimiterSymbol,list);
     list.add(n->right());
@@ -225,13 +225,13 @@ static void getListFromTree(const ExpressionNode *n, int delimiterSymbol, Expres
   }
 }
 
-ExpressionNodeArray getExpressionList(const ExpressionNode *n) {
+ExpressionNodeArray getExpressionList(ExpressionNode *n) {
   ExpressionNodeArray result(10);
   getListFromTree(n, COMMA, result);
   return result;
 }
 
-ExpressionNodeArray getStatementList(const ExpressionNode *n) {
+ExpressionNodeArray getStatementList(ExpressionNode *n) {
   ExpressionNodeArray result(10);
   getListFromTree(n, SEMI, result);
   return result;
@@ -240,33 +240,42 @@ ExpressionNodeArray getStatementList(const ExpressionNode *n) {
 void ParserTree::setValue(const String &name, const Real &value) {
   ExpressionVariable *v = getVariable(name);
   if(v != NULL) {
-    v->setValue(value);
+    m_valueTable[v->getValueIndex()] = value;
   }
 }
 
 ExpressionVariable *ParserTree::getVariable(const String &name) {
-  const int *index = m_symbolTable.get(name);
-  return (index == NULL) ? NULL : &m_variables[*index];
+  const int *index = m_nameTable.get(name);
+  return (index == NULL) ? NULL : &m_variableTable[*index];
 }
 
 const ExpressionVariable *ParserTree::getVariable(const String &name) const {
-  const int *index = m_symbolTable.get(name);
-  return index ? &m_variables[*index] : NULL;
+  const int *index = m_nameTable.get(name);
+  return index ? &m_variableTable[*index] : NULL;
 }
 
-int ParserTree::getNodeCount(ExpressionNodeSelector *selector) const {
+Array<ExpressionVariableWithValue> ParserTree::getAllVariables() const {
+  Array<ExpressionVariableWithValue> result(m_variableTable.size());
+  for (size_t i = 0; i < m_variableTable.size(); i++) {
+    const ExpressionVariable &var = m_variableTable[i];
+    result.add(ExpressionVariableWithValue(var, m_valueTable[var.getValueIndex()]));
+  }
+  return result;
+}
+
+int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
   if(getRoot() == NULL) {
     return 0;
   } else {
     if(selector) {
-      unmarkAll();
+      ((ParserTree*)this)->unmarkAll();
       markPow1Nodes();
     }
     return getRoot()->getNodeCount(selector);
   }
 }
 
-int ParserTree::getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...) const { // terminate symbolset with 0. Only specified symbols will be counted
+int ParserTree::getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...) { // terminate symbolset with 0. Only specified symbols will be counted
   ExpressionSymbolSet legalSymbols;
   bool                setIsEmpty = true;
   if(s1) {
@@ -291,10 +300,10 @@ int ParserTree::getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...) co
 
 class Pow1NodeMarker : public ExpressionNodeHandler {
 public:
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
 };
 
-bool Pow1NodeMarker::handleNode(const ExpressionNode *n, int level) {
+bool Pow1NodeMarker::handleNode(ExpressionNode *n, int level) {
   if((n->getSymbol() == POW) && (n->right()->isOne())) {
     n->mark();
     n->right()->mark();
@@ -302,17 +311,17 @@ bool Pow1NodeMarker::handleNode(const ExpressionNode *n, int level) {
   return true;
 }
 
-void ParserTree::markPow1Nodes() const {
+void ParserTree::markPow1Nodes() {
   traverseTree(Pow1NodeMarker());
 }
 
-int ParserTree::getTreeDepth() const {
+int ParserTree::getTreeDepth() {
   return getRoot() ? getRoot()->getMaxTreeDepth() : 0;
 }
 
-const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *n, const CompactNodeHashMap<const ExpressionNode*> &nodeMap) {
+ExpressionNode *ParserTree::traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap) {
   DEFINEMETHODNAME;
-  const ExpressionNode * const *n1 = nodeMap.get(n);
+  ExpressionNode **n1 = nodeMap.get(n);
   if(n1) {
     return *n1;
   }
@@ -322,9 +331,9 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
   case EXPRESSIONNODEBOOLEAN   :
   case EXPRESSIONNODEVARIABLE  : return n;
   case EXPRESSIONNODEFACTOR    :
-    { const ExpressionFactor     *oldFactor = (ExpressionFactor*)n;
-      const ExpressionNode *newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
-      const ExpressionNode *newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
+    { ExpressionFactor *oldFactor = (ExpressionFactor*)n;
+      ExpressionNode   *newBase   = traverseSubstituteNodes(oldFactor->base()    , nodeMap);
+      ExpressionNode   *newExpo   = traverseSubstituteNodes(oldFactor->exponent(), nodeMap);
       return getFactor(oldFactor, newBase, newExpo);
     }
   case EXPRESSIONNODETREE      :
@@ -334,12 +343,12 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
       return getTree(n, newChildArray);
     }
   case EXPRESSIONNODESUM       :
-    { const AddentArray          &a = n->getAddentArray();
-      AddentArray                 newAddentArray(a.size());
+    { const AddentArray &a = n->getAddentArray();
+      AddentArray newAddentArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
-        const SumElement           *e    = a[i];
-        const ExpressionNode *oldNode = e->getNode();
-        const ExpressionNode *newNode = traverseSubstituteNodes(oldNode, nodeMap);
+        SumElement     *e       = a[i];
+        ExpressionNode *oldNode = e->getNode();
+        ExpressionNode *newNode = traverseSubstituteNodes(oldNode, nodeMap);
         if(newNode == oldNode) {
           newAddentArray.add(e);
         } else {
@@ -352,7 +361,7 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
     { const FactorArray           &a = n->getFactorArray();
       FactorArray                  newFactorArray(a.size());
       for(size_t i = 0; i < a.size(); i++) {
-        const ExpressionNode *newNode = traverseSubstituteNodes(a[i], nodeMap);
+        ExpressionNode *newNode = traverseSubstituteNodes(a[i], nodeMap);
         if(newNode->getNodeType() == EXPRESSIONNODEFACTOR) {
           newFactorArray.add((ExpressionFactor*)newNode);
         } else {
@@ -363,9 +372,9 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
     }
   case EXPRESSIONNODEPOLYNOMIAL:
     { const ExpressionNodeArray  &coef = n->getCoefficientArray();
-      const ExpressionNode       *arg  = n->getArgument();
+      ExpressionNode             *arg  = n->getArgument();
       ExpressionNodeArray         newCoef(coef.size());
-      const ExpressionNode       *newArg  = traverseSubstituteNodes(arg, nodeMap);
+      ExpressionNode             *newArg  = traverseSubstituteNodes(arg, nodeMap);
       for(size_t i = 0; i < coef.size(); i++) newCoef.add(traverseSubstituteNodes(coef[i], nodeMap));
       return getPoly(n, newCoef, newArg);
     }
@@ -375,17 +384,16 @@ const ExpressionNode *ParserTree::traverseSubstituteNodes(const ExpressionNode *
   }
 }
 
-void ParserTree::substituteNodes(const CompactNodeHashMap<const ExpressionNode*> &nodeMap) {
-  const ExpressionNode *root = getRoot();
+void ParserTree::substituteNodes(CompactNodeHashMap<ExpressionNode*> &nodeMap) {
+  ExpressionNode *root = getRoot();
   if(root) {
     setRoot(traverseSubstituteNodes(root, nodeMap));
   }
 }
 
-void ParserTree::traverseTree(ExpressionNodeHandler &handler) const {
-  const ExpressionNode *root = getRoot();
-  if(root) {
-    root->traverseExpression(handler, 0);
+void ParserTree::traverseTree(ExpressionNodeHandler &handler) {
+  if(m_root) {
+    m_root->traverseExpression(handler, 0);
   }
 }
 
@@ -402,11 +410,11 @@ ExpressionNode *ParserTree::vFetchNode(const SourcePosition &pos, ExpressionInpu
 }
 
 // Used by derivate, reduce, graphics
-const ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) const {
+ExpressionNodeVariable *ParserTree::fetchVariableNode(const String &name) {
   return new ExpressionNodeVariable(this, name);
 }
 
-const ExpressionNode *ParserTree::constExpression(const String &name) const {
+ExpressionNode *ParserTree::constExpression(const String &name) {
   DEFINEMETHODNAME;
 
   const ExpressionVariable *v = getVariable(name);
@@ -419,7 +427,7 @@ const ExpressionNode *ParserTree::constExpression(const String &name) const {
 }
 
 String ParserTree::treeToString() const {
-  unmarkAll();
+  ((ParserTree*)this)->unmarkAll();
   String result;
   if(m_root) m_root->dumpNode(result, 0);
   result += variablesToString();
@@ -427,13 +435,16 @@ String ParserTree::treeToString() const {
 }
 
 String ParserTree::variablesToString() const {
-  Iterator<Entry<String, int> > it = m_symbolTable.entrySet().getIterator();
   String result = _T("SymbolTable:\n");
-  if(it.hasNext()) {
-    while(it.hasNext()) {
-      Entry<String, int> &entry = it.next();
-      result += format(_T("  %-10s: %s\n"),entry.getKey().cstr(), m_variables[entry.getValue()].toString().cstr());
+  if(m_variableTable.size() > 0) {
+    for(size_t i = 0; i < m_variableTable.size(); i++) {
+      const ExpressionVariable &var = m_variableTable[i];
+      result += format(_T("  %2d: %s\n"), (int)i, var.toString().cstr());
     }
+  }
+  result += _T("ValueTable:\n");
+  for (size_t i = 0; i < m_valueTable.size(); i++) {
+    result += format(_T("  %2d: %s\n"), (int)i, ::toString(m_valueTable[i]).cstr());
   }
   return result;
 }

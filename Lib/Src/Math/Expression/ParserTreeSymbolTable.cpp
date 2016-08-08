@@ -3,38 +3,45 @@
 #include <Math/Expression/ExpressionFactor.h>
 #include <Math/Expression/SumElement.h>
 
+#define TMPVARCOUNT 5 // the first 5 elements are reserverd for temporary variables in machinecode
+
 void ParserTree::buildSymbolTable() {
-  const Array<ExpressionVariable> oldVariables = getVariables();
+  const Array<ExpressionVariableWithValue> oldVariables = getAllVariables();
 
   clearSymbolTable();
-  allocateConstant(NULL, "pi", M_PI);
-  allocateConstant(NULL, "e" , M_E);
+  for(int i = 0; i < TMPVARCOUNT; i++) {
+    m_valueTable.add(0);
+  }
+  allocateConstant(NULL, _T("pi"), M_PI);
+  allocateConstant(NULL, _T("e") , M_E);
   buildSymbolTable(m_root);
 
   for(size_t i = 0; i < oldVariables.size(); i++) {
-    const ExpressionVariable &oldVar = oldVariables[i];
+    const ExpressionVariableWithValue &oldVar = oldVariables[i];
     if(oldVar.isInput()) {
       ExpressionVariable *newVar = getVariable(oldVar.getName());
       if(newVar && newVar->isInput()) {
-        newVar->setValue(oldVar.getValue());
+        m_valueTable[newVar->getValueIndex()] = oldVar.getValue();
       }
     }
   }
 }
 
 void ParserTree::clearSymbolTable() {
-  m_symbolTable.clear();
-  m_variables.clear();
+  m_nameTable.clear();
+  m_variableTable.clear();
+  m_valueTable.clear();
   m_indexNameCounter = 0;
 }
 
-void ParserTree::buildSymbolTable(const ExpressionNode *n) {
+void ParserTree::buildSymbolTable(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NAME:
     allocateSymbol(n, false, false, false);
     break;
 
   case NUMBER:
+    allocateNumber(n);
     break;
 
   case SUM    :
@@ -55,14 +62,13 @@ void ParserTree::buildSymbolTable(const ExpressionNode *n) {
       buildSymbolTable(n->getArgument());
     }
     break;
-  case INDEXEDSUM:
+  case INDEXEDSUM    :
   case INDEXEDPRODUCT:
     buildSymbolTableIndexedExpression(n);
     break;
   case ASSIGN :
     buildSymbolTableAssign(n, false);
     break;
-
   default:
     { const ExpressionNodeArray &a = n->getChildArray();
       for(size_t i = 0; i < a.size(); i++) {
@@ -73,12 +79,12 @@ void ParserTree::buildSymbolTable(const ExpressionNode *n) {
   }
 }
 
-void ParserTree::buildSymbolTableIndexedExpression(const ExpressionNode *n) {
-  const ExpressionNode *startAssignment = n->child(0);
-  const ExpressionNode *loopVar         = startAssignment->left();
-  const ExpressionNode *endExpr         = n->child(1);
-  const ExpressionNode *expr            = n->child(2);
-  String                      loopVarName     = loopVar->getName();
+void ParserTree::buildSymbolTableIndexedExpression(ExpressionNode *n) {
+  ExpressionNode *startAssignment = n->child(0);
+  ExpressionNode *loopVar         = startAssignment->left();
+  ExpressionNode *endExpr         = n->child(1);
+  ExpressionNode *expr            = n->child(2);
+  String          loopVarName     = loopVar->getName();
 
   buildSymbolTableAssign(startAssignment,true);
   buildSymbolTable(endExpr);
@@ -89,9 +95,9 @@ void ParserTree::buildSymbolTableIndexedExpression(const ExpressionNode *n) {
   }
   buildSymbolTable(expr);
   if(isOk()) {
-    int index = *m_symbolTable.get(loopVarName);
-    m_symbolTable.remove(loopVarName);
-    m_symbolTable.put(getNewTempName(),index);
+    int index = *m_nameTable.get(loopVarName);
+    m_nameTable.remove(loopVarName);
+    m_nameTable.put(getNewTempName(),index);
   }
 }
 
@@ -102,7 +108,7 @@ String ParserTree::getNewTempName() {
 String ParserTree::getNewLoopName(const String &oldName) const {
   for(int i = 1;; i++) {
     const String newName = oldName + String(i);
-    if(m_symbolTable.get(newName) == NULL) {
+    if(m_nameTable.get(newName) == NULL) {
       return newName;
     }
   }
@@ -113,37 +119,37 @@ private:
   ParserTree &m_tree;
 public:
   DependencyChecker(ParserTree &tree) : m_tree(tree) {}
-  bool handleNode(const ExpressionNode *n, int level);
+  bool handleNode(ExpressionNode *n, int level);
 };
 
-bool DependencyChecker::handleNode(const ExpressionNode *n, int level) {
+bool DependencyChecker::handleNode(ExpressionNode *n, int level) {
   if(n->isName() && !n->getVariable().isLoopVar()) {
     m_tree.addError(n, _T("Control expression in the sum/product can only depend on constants and other control variables"));
   }
   return true;
 }
 
-void ParserTree::checkDependentOnLoopVariablesOnly(const ExpressionNode *n) {
+void ParserTree::checkDependentOnLoopVariablesOnly(ExpressionNode *n) {
   DependencyChecker checker(*this);
   n->traverseExpression(checker, 0); 
 }
 
 void ParserTree::copyValues(ParserTree &src) {
-  for(Iterator<Entry<String,int> > it = src.m_symbolTable.entrySet().getIterator(); it.hasNext();) {
+  for(Iterator<Entry<String,int> > it = src.m_nameTable.entrySet().getIterator(); it.hasNext();) {
     Entry<String,int> &entry = it.next();
-    const ExpressionVariable &srcVar = src.m_variables[entry.getValue()];
+    const ExpressionVariable &srcVar = src.m_variableTable[entry.getValue()];
     ExpressionVariable       *dstVar = getVariable(entry.getKey());
     if(dstVar == NULL || dstVar->isConstant() || dstVar->isLoopVar()) {
       continue;
     }
     try {
-      setValue(entry.getKey(), srcVar.getValue());
+      setValue(entry.getKey(), src.m_valueTable[srcVar.getValueIndex()]);
     } catch(Exception) {
     }
   }
 }
 
-void ParserTree::buildSymbolTableAssign(const ExpressionNode *n, bool loopAssignment) {
+void ParserTree::buildSymbolTableAssign(ExpressionNode *n, bool loopAssignment) {
   assert(n->getSymbol() == ASSIGN);
   if(n->right()->dependsOn(n->left()->getName())) {
     addError(n->left(), _T("Variable %s cannot depend on itself"), n->left()->getName().cstr());
@@ -152,21 +158,21 @@ void ParserTree::buildSymbolTableAssign(const ExpressionNode *n, bool loopAssign
   if(!loopAssignment && n->right()->isConstant()) {
     ExpressionVariable *v = allocateConstant(n->left(), n->left()->getName(), evaluateRealExpr(n->right()));
     if(v) {
-      ((ExpressionNodeVariable*)n->left())->setVariable(v);
+      n->left()->setVariable(v);
     }
   } else {
     allocateSymbol(n->left(), false, true, loopAssignment);
   }
 }
 
-const ExpressionNode *ParserTree::allocateLoopVarNode(const String &prefix) const {
-  const ExpressionNodeVariable *result = fetchVariableNode(getNewLoopName(prefix));
+ExpressionNode *ParserTree::allocateLoopVarNode(const String &prefix) {
+  ExpressionNodeVariable *result = fetchVariableNode(getNewLoopName(prefix));
   allocateSymbol(result, false, true, true);
   return result;
 }
 
-ExpressionVariable *ParserTree::allocateSymbol(const ExpressionNode *n, bool isConstant, bool isLeftSide, bool isLoopVar) const {
-  const ExpressionVariable *v = getVariable(n->getName());
+ExpressionVariable *ParserTree::allocateSymbol(ExpressionNode *n, bool isConstant, bool isLeftSide, bool isLoopVar) {
+  ExpressionVariable *v = getVariable(n->getName());
   if(v == NULL) {
     v = allocateSymbol(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
   } else {
@@ -183,21 +189,32 @@ ExpressionVariable *ParserTree::allocateSymbol(const ExpressionNode *n, bool isC
     }
   }
   ((ExpressionNodeVariable*)n)->setVariable((ExpressionVariable*)v);
-  return (ExpressionVariable*)v;
+  return v;
 }
 
-ExpressionVariable *ParserTree::allocateSymbol(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) const {
-  const int index = (int)m_variables.size();
-  m_variables.add(ExpressionVariable(name, value, isConstant, isLeftSide, isLoopVar));
-  m_symbolTable.put(name, index);
-  return (ExpressionVariable*)getVariable(name);
+ExpressionVariable *ParserTree::allocateSymbol(const String &name, const Real &value, bool isConstant, bool isLeftSide, bool isLoopVar) {
+  const int varIndex   = (int)m_variableTable.size();
+  const int valueIndex = (int)m_valueTable.size();
+  m_valueTable.add(value);
+  m_variableTable.add(ExpressionVariable(name, isConstant, isLeftSide, isLoopVar));
+  m_nameTable.put(name, varIndex);
+  ExpressionVariable *var = getVariable(name);
+  var->setValueIndex(valueIndex);
+  return var;
 }
 
-ExpressionVariable *ParserTree::allocateConstant(const ExpressionNode *n, const String &name, const Real &value) const {
+ExpressionVariable *ParserTree::allocateConstant(ExpressionNode *n, const String &name, const Real &value) {
   const ExpressionVariable *v = getVariable(name);
   if(v != NULL) {
     addError(n, _T("Constant %s has already been declared"), name.cstr());
     return NULL;
   }
   return allocateSymbol(name, value, true, true, false);
+}
+
+void ParserTree::allocateNumber(ExpressionNode *n) {
+  const Real value = n->getReal();
+  const int valueIndex = (int)m_valueTable.size();
+  m_valueTable.add(value);
+  n->setValueIndex(valueIndex);
 }

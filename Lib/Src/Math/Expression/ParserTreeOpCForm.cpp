@@ -5,7 +5,7 @@
 
 // -------------------------------------Operators for CanonicalForm-------------------------------------------------------------------------
 // Not using PLUS,(binary) MINUS,PROD,QUOT,ROOT,SQR,SQRT,EXP,COT,CSC,SEC
-const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::minusC(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER:
     return numberExpression(-n->getNumber());
@@ -17,7 +17,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
     { const AddentArray &a = n->getAddentArray();
       AddentArray newAddentArray(a.size());
       for(size_t i = 0; i < a.size(); i++) { // change sign for all elements in list
-        const SumElement *e = a[i]; 
+        SumElement *e = a[i];
         newAddentArray.add(e->getNode(),!e->isPositive());
       }
       return getSum(newAddentArray);
@@ -28,7 +28,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
       const int          index   = factors.findFactorWithChangeableSign();
       FactorArray        newFactors(factors.size());
       for(size_t i = 0; i < factors.size(); i++) {
-        const ExpressionFactor *factor = factors[i];
+        ExpressionFactor *factor = factors[i];
         if(i != index) {
           newFactors.add(factor);
         } else {
@@ -47,7 +47,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
       for(size_t i = 0; i < coefficientArray.size(); i++) {
         newCoefficientArray.add(minusC(coefficientArray[i]));
       }
-      const ExpressionNode *x = n->getArgument();
+      ExpressionNode *x = n->getArgument();
       return fetchPolyNode(newCoefficientArray, x);
     }
 
@@ -58,7 +58,7 @@ const ExpressionNode *ParserTree::minusC(const ExpressionNode *n) const {
   return unaryMinus(n);
 }
 
-const ExpressionNode *ParserTree::reciprocalC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::reciprocalC(ExpressionNode *n) {
   switch(n->getSymbol()) {
   case NUMBER :
     if(n->isRational()) {
@@ -70,7 +70,7 @@ const ExpressionNode *ParserTree::reciprocalC(const ExpressionNode *n) const {
     { const FactorArray &factors = n->getFactorArray();
       FactorArray newFactors;
       for(size_t i = 0; i < factors.size(); i++) {
-        const ExpressionFactor *factor = factors[i];
+        ExpressionFactor *factor = factors[i];
         newFactors.add(factor->base(), minusC(factor->exponent()));
       }
       return getProduct(newFactors);
@@ -83,7 +83,7 @@ const ExpressionNode *ParserTree::reciprocalC(const ExpressionNode *n) const {
   return quotientC(getOne(), n);
 }
 
-const ExpressionNode *ParserTree::sumC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::sumC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() + n2->getRational());
   } else if(n1->isZero()) {
@@ -97,7 +97,7 @@ const ExpressionNode *ParserTree::sumC(const ExpressionNode *n1, const Expressio
   return getSum(a);
 }
 
-const ExpressionNode *ParserTree::differenceC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::differenceC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isRational() && n2->isRational()) {
     return numberExpression(n1->getRational() - n2->getRational());
   } else if(n2->isZero()) {
@@ -111,7 +111,7 @@ const ExpressionNode *ParserTree::differenceC(const ExpressionNode *n1, const Ex
   return getSum(a);
 }
 
-const ExpressionNode *ParserTree::productC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::productC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isZero() || n2->isZero()) {
     return getZero();
   }
@@ -124,7 +124,7 @@ const ExpressionNode *ParserTree::productC(const ExpressionNode *n1, const Expre
   return getProduct(a);
 }
 
-const ExpressionNode *ParserTree::quotientC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::quotientC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n1->isZero()) {
     return getZero();
   }
@@ -140,26 +140,26 @@ const ExpressionNode *ParserTree::quotientC(const ExpressionNode *n1, const Expr
   } else {
     const FactorArray &a2 = n2->getFactorArray();
     for(size_t i = 0; i < a2.size(); i++) {
-      const ExpressionFactor *f = a2[i];
+      ExpressionFactor *f = a2[i];
       a.add(f->base(), minusC(f->exponent()));
     }
   }
   return getProduct(a);
 }
 
-const ExpressionNode *ParserTree::modulusC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::modulusC(ExpressionNode *n1, ExpressionNode *n2) {
   return binaryExpression(MOD, n1, n2);
 }
 
-const ExpressionNode *ParserTree::sqrC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::sqrC(ExpressionNode *n) {
   return powerC(n, getTwo());
 }
 
-const ExpressionNode *ParserTree::sqrtC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::sqrtC(ExpressionNode *n) {
   return rootC(n, getTwo());
 }
 
-const ExpressionNode *ParserTree::powerC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::powerC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n2->isZero()) {
     return getOne();
   } else if(n2->isOne()) {
@@ -173,7 +173,7 @@ const ExpressionNode *ParserTree::powerC(const ExpressionNode *n1, const Express
   }
 }
 
-const ExpressionNode *ParserTree::rootC(const ExpressionNode *n1, const ExpressionNode *n2) const {
+ExpressionNode *ParserTree::rootC(ExpressionNode *n1, ExpressionNode *n2) {
   if(n2->isOne()) {
     return n1;
   } else if(n2->isMinusOne()) {
@@ -182,18 +182,18 @@ const ExpressionNode *ParserTree::rootC(const ExpressionNode *n1, const Expressi
   return powerC(n1, reciprocalC(n2));
 }
 
-const ExpressionNode *ParserTree::expC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::expC(ExpressionNode *n) {
   return powerC(constExpression(_T("e")), n);
 }
 
-const ExpressionNode *ParserTree::cotC(const ExpressionNode *n) const {
+ExpressionNode *ParserTree::cotC(ExpressionNode *n) {
   return reciprocalC(functionExpression(TAN, n));
 }
 
-const ExpressionNode *ParserTree::cscC(const ExpressionNode *n)  const {
+ExpressionNode *ParserTree::cscC(ExpressionNode *n) {
   return reciprocalC(functionExpression(SIN, n));
 }
 
-const ExpressionNode *ParserTree::secC(const ExpressionNode *n)  const {
+ExpressionNode *ParserTree::secC(ExpressionNode *n) {
   return reciprocalC(functionExpression(COS, n));
 }

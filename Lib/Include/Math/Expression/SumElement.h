@@ -11,17 +11,17 @@ class SumElement {
 
 private:
   DECLARECLASSNAME;
-  const ExpressionNode *m_n;
-  bool                        m_positive; // true for +, false for -
-  mutable bool                m_marked;   // used for garbage-collection
+  ExpressionNode *m_n;
+  bool            m_positive; // true for +, false for -
+  bool            m_marked;   // used for garbage-collection
 public:
-  SumElement(const ExpressionNode *n, bool positive);
-  SumElement *clone(const ParserTree *tree) const;
+  SumElement(ExpressionNode *n, bool positive);
+  SumElement *clone(ParserTree *tree) const;
 
-  inline void mark() const {
+  inline void mark() {
     m_marked = true;
   }
-  inline void unMark() const {
+  inline void unMark() {
     m_marked = false;
   }
   inline bool isMarked() const {
@@ -29,6 +29,9 @@ public:
   }
   const ExpressionNode *createExpressionNode() const;
 
+  inline ExpressionNode *getNode() {
+    return m_n;
+  }
   inline const ExpressionNode *getNode() const {
     return m_n;
   }
