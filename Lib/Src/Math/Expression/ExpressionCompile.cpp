@@ -615,45 +615,42 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 #endif
 }
 
-#ifdef IS32BIT
-static Real evaluatePolynomial(const Real x, int degree, ...) {
-  va_list argptr;
-  va_start(argptr,degree);
-  
-  Real result = va_arg(argptr,Real);
-  while(degree--) {
-    result = result * x + va_arg(argptr,Real);
+// n is number of coeffients which is degree - 1.
+// coef[0] if coefficient for x^(n-1), coef[n-1] is constant term of polynomial
+static Real evaluatePolynomial(Real x, int n, const Real *coef) {
+  const Real *last   = coef + n;
+  Real        result = *coef;
+  while(++coef < last) {
+    result = result * x + *coef;
   }
-  va_end(argptr);
   return result;
 }
 
+#ifdef IS32BIT
+
 void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dummy) {
-  const ExpressionNodeArray &clist = n->getCoefficientArray();
-  const ExpressionNode      *x     = n->getArgument();
+  const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
+  const int                  firstCoefIndex  = n->getFirstCoefIndex();
+  for(int i = 0; i < (int)coefArray.size(); i++) {
+    const ExpressionNode *coef = coefArray[i];
+    if(coef->isConstant()) {
+      setValueByIndex(firstCoefIndex + i, evaluateRealExpr(coef));
+    } else {
+      genExpression(coef, dummy);
+      m_code.emitFStorePop(firstCoefIndex + i);
+    }
+  }
 
   int bytesPushed = 0;
-  for(int i = (int)clist.size() - 1; i >= 0; i--) { // see parameterlist to evaluatePolynomial
-    bytesPushed += genPush(clist[i]);
-  }
-  bytesPushed += genPushInt((int)clist.size()-1);
-  bytesPushed += genPush(x);
+  bytesPushed += genPushRef(&getValueRef(firstCoefIndex));
+  bytesPushed += genPushInt((int)coefArray.size());
+  bytesPushed += genPush(n->getArgument());
   bytesPushed += genPushReturnAddr();
   m_code.emitCall((BuiltInFunction)::evaluatePolynomial, dummy);
   m_code.emitAddESP(bytesPushed);
 }
 
 #else // IS64BIT
-// n is number of coeffients which is degree - 1.
-// coef[0] if coefficient for x^(n-1), coef[n-1] is constant term of polynomial
-static double evaluatePolynomial(double x, int n, const Real *coef) {
-  const double *last   = coef + n;
-  double        result = *coef;
-  while(++coef < last) {
-    result = result * x + *coef;
-  }
-  return result;
-}
 
 void Expression::genPolynomial(const ExpressionNode *n, const ExpressionDestination &dst) {
   const ExpressionNodeArray &coefArray       = n->getCoefficientArray();
@@ -925,15 +922,10 @@ int Expression::genPush(const ExpressionNode *n) {
     return genPushReal(n->getValue());
   } else {
     genExpression(n, DST_FPU);
-#ifdef _DEBUG
-    m_code.emitFStorePop((int)0);
-    return genPushReal(getValue(0));
-#else
     int bytesPushed = getAlignedSize(sizeof(Real));
     m_code.emitSubESP(bytesPushed);
     m_code.emit(FSTP_REAL_PTR_ESP);
     return bytesPushed;
-#endif
   }
 }
 
