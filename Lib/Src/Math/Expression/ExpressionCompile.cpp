@@ -236,8 +236,8 @@ void Expression::compile(const String &expr, bool machineCode) {
 
 #ifdef IS64BIT
 extern "C" {
-  void callDoubleResultExpression(ExpressionEntryPoint ep, Real *valueTable, double &result);
-  int  callIntResultExpression(   ExpressionEntryPoint ep, Real *valueTable);
+  void callRealResultExpression(ExpressionEntryPoint ep, Real *valueTable, Real &result);
+  int  callIntResultExpression( ExpressionEntryPoint ep, Real *valueTable);
 };
 #endif // IS64BIT
 
@@ -247,9 +247,7 @@ Real Expression::fastEvaluate() {
   ExpressionEntryPoint  ep = m_entryPoint;
   Real                 *dp = &getValueRef(0);
 
-#ifndef LONGDOUBLE
-
-  double result;
+  Real result;
   __asm {
     push esi
     mov  esi, dp
@@ -259,44 +257,11 @@ Real Expression::fastEvaluate() {
   }
   return result;
 
-#else // LONGDOUBLE
-
-  #ifndef _DEBUG
-
-    Real result;
-    __asm {
-      push esi
-      mov  esi, dp
-      call p
-      pop  esi
-      fstp result;
-    }
-    return result;
-
-  #else // !_DEBUG
-
-    TenByte result;
-    __asm {
-      push esi
-      mov  esi, dp
-      call p
-      pop  esi
-      fstp result;
-    }
-    return result;
-
-  #endif // _DEBUG
-
-#endif // IONGDOUBLE
-
 #else // !IS32BIT ie 64 BIT
 
-#ifndef LONGDOUBLE
-  double result;
-  callDoubleResultExpression(m_entryPoint, &getValueRef(0), result);
+  Real result;
+  callRealResultExpression(m_entryPoint, &getValueRef(0), result);
   return result;
-#else // LONGDOUBLE
-#endif // LONGDOUBLE
 
 #endif // IS32BIT
 }
@@ -454,8 +419,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 
   case PLUS  :
 #ifdef LONGDOUBLE
-    genExpression(n->left());
-    genExpression(n->right());
+    genExpression(n->left() , DST_FPU);
+    genExpression(n->right(), DST_FPU);
     m_code.emit(FADD);
     break;
 #else
@@ -466,7 +431,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       genExpression(n->left(), DST_FPU);
       m_code.emitTableOp(FADD_QWORD,n->right());
     } else {
-      genExpression(n->left(), DST_FPU);
+      genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
       m_code.emit(FADD);
     }
@@ -480,8 +445,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       break;
     }
 #ifdef LONGDOUBLE
-    genExpression(n->left());
-    genExpression(n->right());
+    genExpression(n->left() , DST_FPU);
+    genExpression(n->right(), DST_FPU);
     m_code.emit(FSUB);
     break;
 #else
@@ -492,7 +457,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       genExpression(n->right(), DST_FPU);
       m_code.emitTableOp(FSUBR_QWORD,n->left());
     } else {
-      genExpression(n->left(), DST_FPU);
+      genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
       m_code.emit(FSUB);
     }
@@ -501,8 +466,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 
   case PROD  :
 #ifdef LONGDOUBLE
-    genExpression(n->left());
-    genExpression(n->right());
+    genExpression(n->left() , DST_FPU);
+    genExpression(n->right(), DST_FPU);
     m_code.emit(FMUL);
     break;
 #else
@@ -513,7 +478,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       genExpression(n->left(), DST_FPU);
       m_code.emitTableOp(FMUL_QWORD,n->right());
     } else {
-      genExpression(n->left(), DST_FPU);
+      genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
       m_code.emit(FMUL);
     }
@@ -522,8 +487,8 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
 
   case QUOT :
 #ifdef LONGDOUBLE
-    genExpression(n->left());
-    genExpression(n->right());
+    genExpression(n->left() , DST_FPU);
+    genExpression(n->right(), DST_FPU);
     m_code.emit(FDIV);
     break;
 #else
@@ -534,7 +499,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
       genExpression(n->right(), DST_FPU);
       m_code.emitTableOp(FDIVR_QWORD,n->left());
     } else {
-      genExpression(n->left(), DST_FPU);
+      genExpression(n->left() , DST_FPU);
       genExpression(n->right(), DST_FPU);
       m_code.emit(FDIV);
     }
@@ -862,8 +827,8 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
   case GT   :
     { ExpressionInputSymbol symbol = n->getSymbol();
 #ifdef LONGDOUBLE
-      genExpression(n->right());
-      genExpression(n->left());
+      genExpression(n->right(), DST_FPU);
+      genExpression(n->left() , DST_FPU);
       m_code.emit(FCOMPP);
 #else
       if(n->left()->isNameOrNumber()) {
@@ -1001,7 +966,7 @@ int Expression::genPushInt(int n) {
 
 int Expression::genPushReturnAddr() {
 #ifdef LONGDOUBLE
-  return genPushRef(&m_code.getTmpVar(2));
+  return genPushRef(&getValueRef(0));
 #else
   return 0;
 #endif

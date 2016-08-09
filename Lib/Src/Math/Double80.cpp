@@ -201,6 +201,7 @@ static const Double80     half;
 static const Double80     oneTenth;
 static const Double80     ten;
 static const Double80     minusOne;
+static const Double80     two;
 static const Double80     tenE18;
 static const Double80     tenE18M1;
 static const Double80     maxi32;
@@ -232,6 +233,7 @@ void Double80::initClass() {
 
   (Double80&)zero            = 0;
   (Double80&)one             = 1;
+  (Double80&)two             = 2;
   (Double80&)ten             = 10;
   (Double80&)minusOne        = -1;
 
@@ -258,6 +260,73 @@ void Double80::initClass() {
 }
 
 static InitDouble80 initDouble80;
+
+Double80::Double80(const BYTE *bytes) {
+  memcpy(&m_value,bytes,sizeof(m_value));
+}
+
+Double80::Double80(const String &s) {
+  init((const _TUCHAR*)(s.cstr()));
+}
+
+Double80::Double80(const TCHAR *s) {
+  init((const _TUCHAR*)s);
+}
+
+#ifdef UNICODE
+Double80::Double80(const char *s) {
+  USES_CONVERSION;
+  init(A2W(s));
+}
+#endif // UNICODE
+
+void Double80::init(const _TUCHAR *s) {
+  bool isNegative = false;
+  Double80 result = zero;
+  while(_istspace(*s)) {
+    s++;
+  }
+  if(*s == _T('-')) {
+    isNegative = true;
+    s++;
+  } else if(*s == _T('+')) {
+    s++;
+  }
+  while(_istdigit(*s)) {
+    result = result * ten + digitLookupTable[*(s++) - _T('0')];
+  }
+  if(*s == _T('.') && _istdigit(s[1])) {
+    s++;
+    Double80 decimals = zero;
+    for(Double80 p = oneTenth; isdigit(*s); p /= ten) {
+      decimals += p * digitLookupTable[*(s++) - _T('0')];
+    }
+    result += decimals;
+  }
+  if(*s == _T('e') || *s == _T('E')) {
+    s++;
+    int expoSign = 1;
+    if(*s == _T('-')) {
+      expoSign = -1;
+      s++;
+    } else if(*s == _T('+')) {
+      s++;
+    }
+    int exponent = 0;
+    while(_istdigit(*s)) {
+      exponent = exponent * 10 + (*(s++) - _T('0'));
+    }
+    exponent *= expoSign;
+    if(exponent < -4900) {
+      result *= pow10(-4900);
+      exponent += 4900;
+      result *= pow10(exponent);
+    } else {
+      result *= pow10(exponent);    
+    }
+  }
+  *this = isNegative ? -result : result;
+}
 
 #ifdef IS32BIT
 
@@ -336,77 +405,6 @@ Double80::Double80(double x) {
     fstp TBYTE PTR [eax]
   }
 }
-
-#endif // IS32BIT
-
-Double80::Double80(const BYTE *bytes) {
-  memcpy(&m_value,bytes,sizeof(m_value));
-}
-
-Double80::Double80(const String &s) {
-  init((const _TUCHAR*)(s.cstr()));
-}
-
-Double80::Double80(const TCHAR *s) {
-  init((const _TUCHAR*)s);
-}
-
-#ifdef UNICODE
-Double80::Double80(const char *s) {
-  USES_CONVERSION;
-  init(A2W(s));
-}
-#endif // UNICODE
-
-void Double80::init(const _TUCHAR *s) {
-  bool isNegative = false;
-  Double80 result = zero;
-  while(_istspace(*s)) {
-    s++;
-  }
-  if(*s == _T('-')) {
-    isNegative = true;
-    s++;
-  } else if(*s == _T('+')) {
-    s++;
-  }
-  while(_istdigit(*s)) {
-    result = result * ten + digitLookupTable[*(s++) - _T('0')];
-  }
-  if(*s == _T('.') && _istdigit(s[1])) {
-    s++;
-    Double80 decimals = zero;
-    for(Double80 p = oneTenth; isdigit(*s); p /= ten) {
-      decimals += p * digitLookupTable[*(s++) - _T('0')];
-    }
-    result += decimals;
-  }
-  if(*s == _T('e') || *s == _T('E')) {
-    s++;
-    int expoSign = 1;
-    if(*s == _T('-')) {
-      expoSign = -1;
-      s++;
-    } else if(*s == _T('+')) {
-      s++;
-    }
-    int exponent = 0;
-    while(_istdigit(*s)) {
-      exponent = exponent * 10 + (*(s++) - _T('0'));
-    }
-    exponent *= expoSign;
-    if(exponent < -4900) {
-      result *= pow10(-4900);
-      exponent += 4900;
-      result *= pow10(exponent);
-    } else {
-      result *= pow10(exponent);    
-    }
-  }
-  *this = isNegative ? -result : result;
-}
-
-#ifdef IS32BIT
 
 int Double80::getExpo2(const Double80 &x) { // static
   int result;
@@ -1151,6 +1149,32 @@ Double80 acos(const Double80 &x) {
 
 Double80 acot(const Double80 &x) {
   return M_PI_05 - atan(x);
+}
+
+Double80 cosh(const Double80 &x) {
+  return (exp(x) + exp(-x))/two;
+}
+
+Double80 sinh(const Double80 &x) {
+  return (exp(x) - exp(-x))/two;
+}
+
+Double80 tanh(const Double80 &x) {
+  const Double80 e1 = exp(x);
+  const Double80 e2 = Double80::one/e1;
+  return (e1 - e2)/(e1+e2);
+}
+
+Double80 acosh(const Double80 &x) {
+  return log(x + sqrt(x*x-Double80::one));
+}
+
+Double80 asinh(const Double80 &x) {
+  return log(x + sqrt(x*x+Double80::one));
+}
+
+Double80 atanh(const Double80 &x) {
+  return log(sqrt((Double80::one+x)/(Double80::one-x)));
 }
 
 Double80 root(const Double80 &x, const Double80 &y) {

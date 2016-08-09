@@ -6,12 +6,6 @@
 
 #include <Math.h>
 
-#else
-
-Real cosh(                const Real &x);
-Real sinh(                const Real &x);
-Real tanh(                const Real &x);
-
 #endif
 
 int    getExpo10(         double x);
@@ -34,9 +28,6 @@ Real csc(                 const Real &x);
 Real sec(                 const Real &x);
 Real acsc(                const Real &x);
 Real asec(                const Real &x);
-//Real acosh(               const Real &x);
-//Real asinh(               const Real &x);
-//Real atanh(               const Real &x);
 
 Real sinDegrees(          const Real &x);
 Real cosDegrees(          const Real &x);

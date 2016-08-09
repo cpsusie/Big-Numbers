@@ -18,7 +18,7 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 #define FLD_REAL           FLD_QWORD
 #define FSTP_REAL          FSTP_QWORD
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP( FSTP_QWORD)
+#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_QWORD)
 
 #else
 
@@ -26,8 +26,8 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 #error "LONGDOUBLE cannot be used together with x64 code"
 #endif // IS64BIT
 
-#define FLD_REAL_PTR       FLD_TBYTE
-#define FSTP_REAL_PTR      FSTP_TBYTE
+#define FLD_REAL           FLD_TBYTE
+#define FSTP_REAL          FSTP_TBYTE
 #define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_TBYTE)
 
 #endif // LONGDOUBLE

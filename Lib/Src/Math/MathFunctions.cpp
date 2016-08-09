@@ -17,20 +17,6 @@ Real ttor(const TCHAR *str) {
 
 #else
 
-Real cosh(const Real &x) {
-  return (exp(x) + exp(-x))/2;
-}
-
-Real sinh(const Real &x) {
-  return (exp(x) - exp(-x))/2;
-}
-
-Real tanh(const Real &x) {
-  Real e1 = exp(x);
-  Real e2 = 1.0/e1;
-  return (e1 - e2)/(e1+e2);
-}
-
 Real ator(const char *str) {
   return Real(str);
 }

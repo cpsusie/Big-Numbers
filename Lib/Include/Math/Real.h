@@ -6,12 +6,10 @@
 #ifdef LONGDOUBLE
 
 #include "Double80.h"
-
 typedef Double80 Real;
-
 #else
-
 typedef double Real;
+#endif
 
 inline double getDouble(double x) {
   return x;
@@ -20,8 +18,6 @@ inline double getDouble(double x) {
 inline int getInt(double x) {
   return (int)x;
 }
-
-#endif
 
 const _TUCHAR *parseReal(const _TUCHAR *s); // Return pointer to the character after parsing the string with the regular expression:
                                             // {s}*[\-+]?({d}+|{d}+\.{d}*|{d}*\.{d}+)([eE][\-+]?{d}+)?

@@ -1,7 +1,7 @@
 .CODE
 
-;void callDoubleResultExpression(ExpressionEntryPoint ep, Real *valueTable, double &result);
-callDoubleResultExpression PROC
+;void callRealResultExpression(ExpressionEntryPoint ep, Real *valueTable, Real &result);
+callRealResultExpression PROC
     push        rsi
     push        rdi
     sub         rsp, 8
@@ -12,7 +12,7 @@ callDoubleResultExpression PROC
     pop         rdi
     pop         rsi
     ret
-callDoubleResultExpression ENDP
+callRealResultExpression ENDP
 
 ;int callIntResultExpression(ExpressionEntryPoint ep, Real *valueTable);
 callIntResultExpression PROC

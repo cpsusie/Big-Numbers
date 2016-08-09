@@ -577,20 +577,26 @@ inline Double80 ceil(const Double80 &x) {
 
 #endif // IS32BIT
 
-Double80 cot(const Double80 &x);
-Double80 asin(const Double80 &x);
-Double80 acos(const Double80 &x);
-Double80 acot(const Double80 &x);
-Double80 root(const Double80 &x, const Double80 &y);
-Double80 fraction(const Double80 &x);
-int      sign(const Double80 &x);
-Double80 round(const Double80 &x, int prec = 0);
-Double80 Max(const Double80 &x, const Double80 &y);
-Double80 Min(const Double80 &x, const Double80 &y);
-bool     isNan(const Double80 &x);
+Double80 cot(  const Double80 &x);
+Double80 asin( const Double80 &x);
+Double80 acos( const Double80 &x);
+Double80 acot( const Double80 &x);
+Double80 root( const Double80 &x, const Double80 &y);
+Double80 cosh( const Double80 &x);
+Double80 sinh( const Double80 &x);
+Double80 tanh( const Double80 &x);
+Double80 acosh(const Double80 &x);
+Double80 asinh(const Double80 &x);
+Double80 atanh(const Double80 &x);
+Double80 fraction(   const Double80 &x);
+int      sign(       const Double80 &x);
+Double80 round(      const Double80 &x, int prec = 0);
+Double80 Max(        const Double80 &x, const Double80 &y);
+Double80 Min(        const Double80 &x, const Double80 &y);
+bool     isNan(      const Double80 &x);
 bool     isPInfinity(const Double80 &x);
 bool     isNInfinity(const Double80 &x);
-bool     isInfinity(const Double80 &x);
+bool     isInfinity( const Double80 &x);
 
 class RandomD80 : public Random {
 public:

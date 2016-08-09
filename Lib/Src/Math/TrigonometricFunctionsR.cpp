@@ -24,16 +24,4 @@ Real asec(const Real &x) {
   return acos(1.0/x);
 }
 
-Real acosh(const Real &x) {
-  return log(x + sqrt(x*x-1));
-}
-
-Real asinh(const Real &x) {
-  return log(x + sqrt(x*x+1));
-}
-
-Real atanh(const Real &x) {
-  return log(sqrt((1+x)/(1-x)));
-}
-
 
