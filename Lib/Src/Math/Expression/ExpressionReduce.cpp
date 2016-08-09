@@ -42,7 +42,7 @@ public:
 void Expression::reduce() {
 
   try {
-    const Array<ExpressionVariableWithValue> variables = getAllVariables();
+    const ExpressionVariableArray variables = getAllVariables();
 
     const ParserTreeForm startTreeForm = getTreeForm();
     if(startTreeForm != TREEFORM_CANONICAL) {

@@ -406,7 +406,7 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   }
   void clearAllBreakPoints();
 #endif
-  Array<ExpressionVariableWithValue> getAllVariables() const;
+  ExpressionVariableArray getAllVariables() const;
   int getNodeTableSize() const {
     return (int)m_nodeTable.size();
   }

@@ -2,8 +2,6 @@
 
 #include <Math/Expression/ExpressionNode.h>
 
-typedef Array<ExpressionVariable> ExpressionVariableArray;
-
 class VariableEditField : public CEdit {
 private:
   CStatic m_label;

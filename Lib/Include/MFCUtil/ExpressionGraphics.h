@@ -13,7 +13,7 @@ public:
 
 class ExpressionRectangle : public CRect {
 private:
-  const ExpressionNode *m_node;
+  ExpressionNode             *m_node;
   Array<ExpressionRectangle>  m_children;
   const ExpressionRectangle  *m_parent;
 
@@ -44,7 +44,7 @@ public:
   inline CPoint TopRight() const {
     return CPoint(right, top);
   }
-  inline const ExpressionNode *getNode() const {
+  inline ExpressionNode *getNode() const {
     return m_node;
   }
   void clear();

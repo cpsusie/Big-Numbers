@@ -39,7 +39,7 @@ bool AllocateNumbers::handleNode(ExpressionNode *n, int level) {
 #define TMPVARCOUNT 5 // the first 5 elements are reserverd for temporary variables in machinecode
 
 void ParserTree::buildSymbolTable() {
-  const Array<ExpressionVariableWithValue> oldVariables = getAllVariables();
+  const ExpressionVariableArray oldVariables = getAllVariables();
 
   clearSymbolTable();
   for(int i = 0; i < TMPVARCOUNT; i++) {

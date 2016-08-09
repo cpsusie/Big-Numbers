@@ -39,7 +39,7 @@ void CEnterVariablesDlg::OnOK() {
   }
   const ExpressionVariableArray values = m_fieldArray.getValues();
   for(size_t i = 0; i < values.size(); i++) {
-    const ExpressionVariable &v = values[i];
+    const ExpressionVariableWithValue &v = values[i];
     m_expr.setValue(v.getName(), v.getValue());
   }
   CDialog::OnOK();

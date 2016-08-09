@@ -45,7 +45,7 @@ bool ExpressionWrapper::ok() {
 
 Real *ExpressionWrapper::getVariableByName(const String &name) {
   ExpressionVariable *var = ((Expression*)m_expr)->getVariable(name);
-  return var == NULL ? &dummy : &var->getValue();
+  return var == NULL ? &dummy : &((Expression*)m_expr)->getValueRef(*var);
 }
 
 Real ExpressionWrapper::evaluate() {

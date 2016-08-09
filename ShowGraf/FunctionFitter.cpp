@@ -59,8 +59,9 @@ double FunctionFitter::computeGradient(Vector &gradient) { // return SSD of curr
 }
 
 void FunctionFitter::dumpVarList(FILE *f) {
-  for(size_t i = 0; i < getVariables().size(); i++) {
-    ExpressionVariable &v = getVariables()[i];
+  const ExpressionVariableArray a = getAllVariables();
+  for(size_t i = 0; i < a.size(); i++) {
+    const ExpressionVariableWithValue &v = a[i];
     if(v.getName() == "x") {
       continue;
     }
@@ -224,17 +225,18 @@ FunctionFitter::FunctionFitter(const String &expr, const Point2DArray &data) : m
     return;
   }
   m_x = NULL;
-  for(size_t i = 0; i < getVariables().size(); i++) {
-    ExpressionVariable &v = getVariables()[i];
+  const ExpressionVariableArray va = getAllVariables();
+  for(size_t i = 0; i < va.size(); i++) {
+    const ExpressionVariableWithValue &v = va[i];
     if(v.getName() == "x") {
-      m_x = &v.getValue();
+      m_x = &getValueRef(v);
       continue;
     }
     if(v.isConstant()) {
       continue;
     }
     m_parameterName.add(v.getName());
-    m_parameterValue.add(&v.getValue());
+    m_parameterValue.add(&getValueRef(v));
   }
   init();
 }

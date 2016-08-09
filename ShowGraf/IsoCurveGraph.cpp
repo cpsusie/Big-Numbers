@@ -24,8 +24,8 @@ IsoCurveGraphEvaluator::IsoCurveGraphEvaluator(IsoCurveGraph *graph)
   m_expr.compile(param.m_expr, true);
   ExpressionVariable *xvp = m_expr.getVariable("x");
   ExpressionVariable *yvp = m_expr.getVariable("y");
-  m_x = xvp ? &xvp->getValue() : &m_dummyX;
-  m_y = yvp ? &yvp->getValue() : &m_dummyY;
+  m_x = xvp ? &m_expr.getValueRef(*xvp) : &m_dummyX;
+  m_y = yvp ? &m_expr.getValueRef(*yvp) : &m_dummyY;
 }
 
 double IsoCurveGraphEvaluator::evaluate(const Point2D &p) {

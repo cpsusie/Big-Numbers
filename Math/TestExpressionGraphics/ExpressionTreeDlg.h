@@ -11,7 +11,7 @@ private:
   SimpleLayoutManager   m_layoutManager;
   const Expression     *m_expr;
   const ExpressionNode *m_node;
-  const ExpressionNode *m_selectedNode;
+  ExpressionNode       *m_selectedNode;
 
   void traverse( CTreeCtrl *ctrl, HTREEITEM p, const ExpressionNode *n);
   void expandAll(CTreeCtrl *ctrl, HTREEITEM p);

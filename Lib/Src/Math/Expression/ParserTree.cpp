@@ -254,8 +254,8 @@ const ExpressionVariable *ParserTree::getVariable(const String &name) const {
   return index ? &m_variableTable[*index] : NULL;
 }
 
-Array<ExpressionVariableWithValue> ParserTree::getAllVariables() const {
-  Array<ExpressionVariableWithValue> result(m_variableTable.size());
+ExpressionVariableArray ParserTree::getAllVariables() const {
+  ExpressionVariableArray result(m_variableTable.size());
   for (size_t i = 0; i < m_variableTable.size(); i++) {
     const ExpressionVariable &var = m_variableTable[i];
     result.add(ExpressionVariableWithValue(var, getValueRef(var)));

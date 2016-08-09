@@ -11,7 +11,7 @@ DEFINECLASSNAME(VariableEditFieldArray);
 
 void VariableEditFieldArray::putValues(const ExpressionVariableArray &variables) {
   for(size_t i = 0; i < variables.size(); i++) {
-    const ExpressionVariable &v = variables[i];
+    const ExpressionVariableWithValue &v = variables[i];
     VariableEditField *f = findFieldByName(v.getName());
     if(f == NULL) {
       throwMethodInvalidArgumentException(s_className, _T("putValues"), _T("Variable with name <%s> not found"), v.getName().cstr());
@@ -26,7 +26,7 @@ void VariableEditFieldArray::putValues(const Expression &expr) {
     const String             &name = f->getName();
     const ExpressionVariable *v    = expr.getVariable(name);
     if(v) {
-      f->putValue(v->getValue());
+      f->putValue(expr.getValueRef(*v));
     }
   }
 }
@@ -45,7 +45,7 @@ ExpressionVariableArray VariableEditFieldArray::getValues() const {
   ExpressionVariableArray result;
   for(size_t i = 0; i < m_fields.size(); i++) {
     const VariableEditField *f = m_fields[i];
-    result.add(ExpressionVariable(f->getName(), f->getValue(), false,false,false));
+    result.add(ExpressionVariableWithValue(f->getName(), false,false,false, f->getValue()));
   }
   return result;
 }
@@ -61,7 +61,7 @@ VariableEditField *VariableEditFieldArray::findFieldByName(const String &name) {
 
 void VariableEditFieldArray::Create(CWnd *parent, const Expression &expr) {
   m_parent = parent;
-  const Array<ExpressionVariable> &variables = expr.getVariables();
+  const ExpressionVariableArray variables = expr.getAllVariables();
 
   int count = 0;
   for(size_t i = 0; i< variables.size(); i++) {

@@ -26,7 +26,7 @@ private:
   BitSet16                     m_flags;
   Expression                   m_expr     , m_derivedExpr;
   ExpressionImage              m_exprImage, m_derivedImage;
-  Array<ExpressionVariable>    m_savedVariables;
+  ExpressionVariableArray      m_savedVariables;
   DebugThread                 *m_debugThread;
   PropertyContainer           *m_currentChildDlg;
   int                          m_contextWinId;
@@ -100,7 +100,7 @@ private:
                Expression           *getContextExpression();
                ExpressionImage      *getContextImage();
   inline const ExpressionRectangle  *getContextRect()            const { return m_contextRect;             }
-  inline const ExpressionNode       *getContextNode()            const { return hasContextRect() ? m_contextRect->getNode() : NULL; }
+  inline       ExpressionNode       *getContextNode()            const { return hasContextRect() ? m_contextRect->getNode() : NULL; }
   inline       ExpressionInputSymbol getContextNodeSymbol()      const { return hasContextNode() ? getContextNode()->getSymbol() : EOI; }
   inline       bool                  isContextNodeExpandable()   const { return hasContextNode() ? getContextNode()->isExpandable() : false; }
   inline       bool                  isContextNodeMultiplyable() const { return hasContextNode() ? getContextNode()->isMultiplyable() : false; }

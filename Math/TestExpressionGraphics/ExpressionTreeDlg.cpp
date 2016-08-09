@@ -49,9 +49,9 @@ BOOL CExpressionTreeDlg::OnInitDialog() {
   expandAll(treeCtrl, TVI_ROOT);
  
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LIST_SYMBOLTABLE);
-  const Array<ExpressionVariable> &variables = m_expr->getVariables();
+  const ExpressionVariableArray variables = m_expr->getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
-    const ExpressionVariable &v = variables[i];
+    const ExpressionVariableWithValue &v = variables[i];
     lb->InsertString(-1, v.toString().cstr());
   }
   return TRUE;
@@ -68,7 +68,7 @@ CTreeCtrl *CExpressionTreeDlg::getTreeCtrl() {
 void CExpressionTreeDlg::setSelectedNode(const ExpressionNode *selectedNode) { // property
   const ExpressionNode *oldSelected = m_selectedNode;
   if(selectedNode != oldSelected) {
-    m_selectedNode = selectedNode;
+    m_selectedNode = (ExpressionNode*)selectedNode;
     notifyPropertyChanged(TREE_SELECTEDNODE, oldSelected, m_selectedNode);
   }
 }

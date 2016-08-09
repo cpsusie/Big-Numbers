@@ -408,8 +408,8 @@ void CTestExpressionGraphicsDlg::handlePropertyChanged(const PropertyContainer *
   } else if(source == m_currentChildDlg) {
     switch(id) {
     case TREE_SELECTEDNODE:
-      { const ExpressionNode *oldSelected = (const ExpressionNode*)oldValue;
-        const ExpressionNode *newSelected = (const ExpressionNode*)newValue;
+      { ExpressionNode *oldSelected = (ExpressionNode*)oldValue;
+        ExpressionNode *newSelected = (ExpressionNode*)newValue;
         if(oldSelected != NULL) {
           oldSelected->unMark();
         }
@@ -525,7 +525,7 @@ void CTestExpressionGraphicsDlg::paintDebugExpr() {
       { const BitSet16 oldFlags = m_flags;
         makeExprImage(*m_debugExpr);
         if(oldFlags.contains(HASFVALUE)) {
-          String varStr = m_debugExpr->getVariables().toString();
+//          String varStr = m_debugExpr->getVariables().toString();
           OnFunctionsEvaluateFx();
         }
       }
@@ -624,7 +624,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateFx() {
   }
 
   ExpressionVariable *var = m_expr.getVariable(_T("x"));
-  Real dummyX, &varX = var ? var->getValue() : dummyX;
+  Real dummyX, &varX = var ? m_expr.getValueRef(*var) : dummyX;
 
   bool ok;
   const Real x0 = getX(ok);
@@ -653,13 +653,13 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateDerived() {
   OnFunctionsEvaluateFx();
   if(!m_flags.contains(HASFVALUE)) return;
 
-  Array<ExpressionVariable> &variables = m_derivedExpr.getVariables();
+  ExpressionVariableArray variables = m_derivedExpr.getAllVariables();
   for(size_t i = 0; i < variables.size(); i++) {
     ExpressionVariable &v = variables[i];
     if(v.isInput()) {
       const ExpressionVariable *fv = m_expr.getVariable(v.getName());
       if(fv) {
-        v.setValue(fv->getValue());
+        m_derivedExpr.setValue(v.getName(), m_expr.getValueRef(*fv));
       }
     }
   }
@@ -842,8 +842,8 @@ const ReductionStackElement *CTestExpressionGraphicsDlg::getSelectedStackElement
 #endif
 
 void CTestExpressionGraphicsDlg::OnContextMenuShowExprTree() {
-  const Expression           *expr;
-  const ExpressionNode *node = NULL;
+  Expression     *expr;
+  ExpressionNode *node = NULL;
   bool  handleNodeChanges = false;
   if(isThreadPaused() && (getContextWindow() == m_debugWinId)) {
     expr = m_debugExpr;
@@ -1185,11 +1185,11 @@ void CTestExpressionGraphicsDlg::clearDebugInfo() {
   showDebugInfo(_T(""));
 }
 
-static int variableNameCompare(const ExpressionVariable &v1, const ExpressionVariable &v2) {
+static int variableNameCompare(const ExpressionVariableWithValue &v1, const ExpressionVariableWithValue &v2) {
   return _tcscmp(v1.getName().cstr(), v2.getName().cstr());
 }
 
-static bool isSameVariableNames(const Array<ExpressionVariable> &a1, const Array<ExpressionVariable> &a2) {
+static bool isSameVariableNames(const Array<ExpressionVariableWithValue> &a1, const Array<ExpressionVariableWithValue> &a2) {
   if(a1.size() != a2.size()) {
     return false;
   }
@@ -1203,7 +1203,7 @@ static bool isSameVariableNames(const Array<ExpressionVariable> &a1, const Array
 
 void CTestExpressionGraphicsDlg::saveExprVariables() {
   if(m_flags.contains(HASFVALUE)) {
-    m_savedVariables = m_expr.getVariables();
+    m_savedVariables = m_expr.getAllVariables();
     m_savedVariables.sort(variableNameCompare);
     m_flags.add(HASSAVEDVARIABLES);
   } else {
@@ -1220,14 +1220,14 @@ bool CTestExpressionGraphicsDlg::restoreExprVariables() {
   if(!m_flags.contains(ISCOMPILED)) {
     return false;
   }
-  Array<ExpressionVariable> a = m_expr.getVariables();
+  ExpressionVariableArray a = m_expr.getAllVariables();
   a.sort(variableNameCompare);
   if(!isSameVariableNames(a, m_savedVariables)) {
     clearSavedVariables();
     return false;
   }
   for(size_t i = 0; i < m_savedVariables.size(); i++) {
-    const ExpressionVariable &v = m_savedVariables[i];
+    const ExpressionVariableWithValue &v = m_savedVariables[i];
     if(v.isConstant() || v.isDefined() || v.isLoopVar()) {
       continue;
     }

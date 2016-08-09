@@ -14,7 +14,7 @@ void ExpressionGraph::calculate() {
 
   Real                 dummyX;
   ExpressionVariable  *xvp       = expr.getVariable("x");
-  Real                &x         = xvp ? xvp->getValue() : dummyX;
+  Real                &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
   const int            stepCount = param.m_steps;
   double               step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
   x = param.m_interval.getMin();

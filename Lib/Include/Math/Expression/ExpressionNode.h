@@ -39,10 +39,18 @@ public:
     , m_value(value)
   {
   }
+  inline ExpressionVariableWithValue(const String &name, bool isConstant, bool isDefined, bool isLoopVar, Real value)
+    : ExpressionVariable(name, isConstant, isDefined, isLoopVar)
+    , m_value(value)
+  {
+  }
+
   inline Real getValue() const {
     return m_value;
   }
 };
+
+typedef Array<ExpressionVariableWithValue> ExpressionVariableArray;
 
 class ExpressionNode;
 class SumElement;
