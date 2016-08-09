@@ -919,7 +919,7 @@ static int getAlignedSize(int size) {
 #ifdef IS32BIT
 int Expression::genPush(const ExpressionNode *n) {
   if(n->isNameOrNumber()) {
-    return genPushReal(n->getValue());
+    return genPushReal(n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
     int bytesPushed = getAlignedSize(sizeof(Real));
@@ -931,7 +931,7 @@ int Expression::genPush(const ExpressionNode *n) {
 
 int Expression::genPushRef(const ExpressionNode *n, int index) {
   if(n->isNameOrNumber()) {
-    return genPushRef(&getValueRef(n->getValueIndex()));
+    return genPushRef(&n->getValueRef());
   } else {
     genExpression(n, DST_FPU);
     m_code.emitFStorePop(index);
@@ -956,15 +956,15 @@ int Expression::genPush(const void *p, unsigned int size) { // return size round
     m_code.emit(PUSH_R32(EAX));
     return 4;
   case 6:
-    genPush(((char*)p)+4,4);
+    genPush(((BYTE*)p)+4,4);
     genPush(p,4);
     return 8;
   case 8:
-    genPush(((char*)p)+4,4);
+    genPush(((BYTE*)p)+4,4);
     genPush(p,4);
     return 8;
   case 10:
-    genPush(((char*)p)+8,4);
+    genPush(((BYTE*)p)+8,4);
     genPush(p,8);
     return 12;
   default:
@@ -982,9 +982,8 @@ int Expression::genPush(const void *p, unsigned int size) { // return size round
 }
 
 int Expression::genPushRef(const void *p) {
-  m_code.emit(MOV_R32_IMM_DWORD(EAX));
+  m_code.emit(PUSH_DWORD);
   m_code.addBytes(&p,sizeof(p));
-  m_code.emit(PUSH_R32(EAX));
   return sizeof(void*);
 }
 
@@ -1030,7 +1029,7 @@ BYTE Expression::genSetRefParameter(const ExpressionNode *n, int index, bool &sa
   const int dstRegister = (index == 0) ? RCX : RDX;
   if(n->isNameOrNumber()) {
     m_code.emit(MOV_R64_IMM_QWORD(dstRegister));
-    const Real *addr = &n->getValue();
+    const Real *addr = &n->getValueRef();
     m_code.addBytes(&addr, sizeof(void*));
     savedOnStack = false;
     return 0;

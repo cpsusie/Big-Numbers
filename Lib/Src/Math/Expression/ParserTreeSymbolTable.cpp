@@ -52,7 +52,7 @@ void ParserTree::buildSymbolTable() {
   for(size_t i = 0; i < oldVariables.size(); i++) {
     const ExpressionVariableWithValue &oldVar = oldVariables[i];
     if(oldVar.isInput()) {
-      ExpressionVariable *newVar = getVariable(oldVar.getName());
+      const ExpressionVariable *newVar = getVariable(oldVar.getName());
       if(newVar && newVar->isInput()) {
         setValueByIndex(newVar->getValueIndex(), oldVar.getValue());
       }
@@ -171,7 +171,7 @@ void ParserTree::copyValues(ParserTree &src) {
   for(Iterator<Entry<String,int> > it = src.m_nameTable.entrySet().getIterator(); it.hasNext();) {
     Entry<String,int> &entry = it.next();
     const ExpressionVariable &srcVar = src.m_variableTable[entry.getValue()];
-    ExpressionVariable       *dstVar = getVariable(entry.getKey());
+    const ExpressionVariable *dstVar = getVariable(entry.getKey());
     if(dstVar == NULL || dstVar->isConstant() || dstVar->isLoopVar()) {
       continue;
     }
@@ -205,7 +205,7 @@ ExpressionNode *ParserTree::allocateLoopVarNode(const String &prefix) {
 }
 
 ExpressionVariable *ParserTree::allocateSymbol(ExpressionNode *n, bool isConstant, bool isLeftSide, bool isLoopVar) {
-  ExpressionVariable *v = getVariable(n->getName());
+  ExpressionVariable *v = getVariableByName(n->getName());
   if(v == NULL) {
     v = allocateSymbol(n->getName(), 0, isConstant, isLeftSide, isLoopVar);
   } else {
@@ -229,7 +229,7 @@ ExpressionVariable *ParserTree::allocateSymbol(const String &name, const Real &v
   const int varIndex   = (int)m_variableTable.size();
   m_variableTable.add(ExpressionVariable(name, isConstant, isLeftSide, isLoopVar));
   m_nameTable.put(name, varIndex);
-  ExpressionVariable *var = getVariable(name);
+  ExpressionVariable *var = getVariableByName(name);
   var->setValueIndex(insertValue(value));
   return var;
 }
@@ -254,4 +254,30 @@ int ParserTree::insertValue(Real value) {
   const int index = (int)m_valueTable.size();
   m_valueTable.add(value);
   return index;
+}
+
+void ParserTree::setValue(const String &name, const Real &value) {
+  const ExpressionVariable *v = getVariable(name);
+  if(v != NULL) {
+    setValueByIndex(v->getValueIndex(), value);
+  }
+}
+
+ExpressionVariable *ParserTree::getVariableByName(const String &name) {
+  const int *index = m_nameTable.get(name);
+  return (index == NULL) ? NULL : &m_variableTable[*index];
+}
+
+const ExpressionVariable *ParserTree::getVariable(const String &name) const {
+  const int *index = m_nameTable.get(name);
+  return index ? &m_variableTable[*index] : NULL;
+}
+
+ExpressionVariableArray ParserTree::getAllVariables() const {
+  ExpressionVariableArray result(m_variableTable.size());
+  for (size_t i = 0; i < m_variableTable.size(); i++) {
+    const ExpressionVariable &var = m_variableTable[i];
+    result.add(ExpressionVariableWithValue(var, getValueRef(var)));
+  }
+  return result;
 }

@@ -195,11 +195,12 @@ protected:
   void buildSymbolTable();
   void clearSymbolTable();
   void copyValues(ParserTree &src);
-  inline void setValueByIndex(UINT index, Real value) const {
-    m_valueTable[index] = value;
+  ExpressionVariable *getVariableByName(const String &name);
+  inline void setValueByIndex(UINT valueIndex, Real value) const {
+    getValueRef(valueIndex) = value;
   }
-  inline Real getValueByIndex(UINT index) const {
-    return m_valueTable[index];
+  inline Real getValueByIndex(UINT valueIndex) const {
+    return getValueRef(valueIndex);
   }
   ExpressionNode *traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
 
@@ -212,7 +213,7 @@ protected:
   inline ExpressionNodeNumber *numberExpression(int             v) {
     return new ExpressionNodeNumber(this, Rational(v));
   }
-  inline ExpressionNodeNumber *numberExpression(unsigned int    v) {
+  inline ExpressionNodeNumber *numberExpression(UINT            v) {
     return new ExpressionNodeNumber(this, Rational(v));
   }
   inline ExpressionNodeNumber *numberExpression(__int64         v) {
@@ -393,12 +394,11 @@ typedef ExpressionNode *(ParserTree::*BinaryOperator)(ExpressionNode *n1, Expres
   void listErrors(tostream &out) const;
   void listErrors(const TCHAR *fname) const;
   void setValue(const String &name, const Real &value);
-  ExpressionVariable *getVariable(const String &name);
   const ExpressionVariable *getVariable(const String &name) const;
 
   int getNodeCount(ExpressionNodeSelector *selector = NULL);
   int getNodeCount(bool ignoreMarked, ExpressionInputSymbol s1,...); // terminate symbolset with 0. Only specified symbols will be counted
-  int getTreeDepth();
+  int getTreeDepth() const;
   ParserTreeComplexity getComplexity();
 #ifdef TRACE_REDUCTION_CALLSTACK
   const ReductionStack &getReductionStack() const {

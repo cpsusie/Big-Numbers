@@ -39,7 +39,7 @@ Real Expression::evaluateRealExpr(const ExpressionNode *n) const {
   DEFINEMETHODNAME;
 
   switch(n->getSymbol()) {
-  case NAME    : return getValueRef(n->getVariable());
+  case NAME    : return n->getValueRef();
   case NUMBER  : return n->getReal(); // dont use getValue() as it takes the value in m_valueTable
                                       // We might be called from buildSymbolTable
                                       // before this table is filled with constants

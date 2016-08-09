@@ -5,6 +5,7 @@
 #include "ExpressionWrapper.h"
 
 static Real dummy = 0;
+#define M_EXPR ((Expression*)m_expr)
 
 ExpressionWrapper::ExpressionWrapper() {
   m_expr = new Expression();
@@ -12,11 +13,11 @@ ExpressionWrapper::ExpressionWrapper() {
 }
 
 ExpressionWrapper::~ExpressionWrapper() {
-  delete (Expression*)m_expr;
+  delete M_EXPR;
 }
 
 void ExpressionWrapper::compile(const String &text, bool machineCode) {
-  Expression *e = (Expression*)m_expr;
+  Expression *e = M_EXPR;
   e->compile(text, machineCode);
 
   m_xp = getVariableByName(_T("x"));
@@ -28,32 +29,32 @@ void ExpressionWrapper::compile(const String &text, bool machineCode) {
 double ExpressionWrapper::operator()(const Point2D &p) {
   *m_xp = p.x;
   *m_yp = p.y;
-  return ((Expression*)m_expr)->evaluate();
+  return M_EXPR->evaluate();
 }
 
 double ExpressionWrapper::operator()(const Point3D &p) {
   *m_xp = p.x;
   *m_yp = p.y;
   *m_zp = p.z;
-  return ((Expression*)m_expr)->evaluate();
+  return M_EXPR->evaluate();
 }
 
 bool ExpressionWrapper::ok() {
-  Expression *e = (Expression*)m_expr;
+  Expression *e = M_EXPR;
   return e->isOk();
 }
 
 Real *ExpressionWrapper::getVariableByName(const String &name) {
-  ExpressionVariable *var = ((Expression*)m_expr)->getVariable(name);
-  return var == NULL ? &dummy : &((Expression*)m_expr)->getValueRef(*var);
+  const ExpressionVariable *var = M_EXPR->getVariable(name);
+  return var == NULL ? &dummy : &M_EXPR->getValueRef(*var);
 }
 
 Real ExpressionWrapper::evaluate() {
-  return ((Expression*)m_expr)->evaluate();
+  return M_EXPR->evaluate();
 }
 
 String ExpressionWrapper::getErrorMessage() {
-  Expression *e = (Expression*)m_expr;
+  Expression *e = M_EXPR;
   if(e->getErrors().size() == 0) {
     return "No errors";
   }
@@ -61,9 +62,9 @@ String ExpressionWrapper::getErrorMessage() {
 }
 
 bool ExpressionWrapper::isReturnTypeReal() const {
-  return ((Expression*)m_expr)->getReturnType() == EXPR_RETURN_REAL;
+  return M_EXPR->getReturnType() == EXPR_RETURN_REAL;
 }
 
 bool ExpressionWrapper::isReturnTypeBool() const {
-  return ((Expression*)m_expr)->getReturnType() == EXPR_RETURN_BOOL;
+  return M_EXPR->getReturnType() == EXPR_RETURN_BOOL;
 }

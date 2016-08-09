@@ -29,7 +29,7 @@ String ExpressionNode::getSymbolName() const {
   return ExpressionTables->getSymbolName(sym);
 }
 
-Real &ExpressionNode::getValue() const {
+Real &ExpressionNode::getValueRef() const {
   return m_tree.getValueRef(getValueIndex());
 }
 

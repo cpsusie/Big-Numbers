@@ -237,32 +237,6 @@ ExpressionNodeArray getStatementList(ExpressionNode *n) {
   return result;
 }
 
-void ParserTree::setValue(const String &name, const Real &value) {
-  ExpressionVariable *v = getVariable(name);
-  if(v != NULL) {
-    setValueByIndex(v->getValueIndex(), value);
-  }
-}
-
-ExpressionVariable *ParserTree::getVariable(const String &name) {
-  const int *index = m_nameTable.get(name);
-  return (index == NULL) ? NULL : &m_variableTable[*index];
-}
-
-const ExpressionVariable *ParserTree::getVariable(const String &name) const {
-  const int *index = m_nameTable.get(name);
-  return index ? &m_variableTable[*index] : NULL;
-}
-
-ExpressionVariableArray ParserTree::getAllVariables() const {
-  ExpressionVariableArray result(m_variableTable.size());
-  for (size_t i = 0; i < m_variableTable.size(); i++) {
-    const ExpressionVariable &var = m_variableTable[i];
-    result.add(ExpressionVariableWithValue(var, getValueRef(var)));
-  }
-  return result;
-}
-
 int ParserTree::getNodeCount(ExpressionNodeSelector *selector) {
   if(getRoot() == NULL) {
     return 0;
@@ -315,7 +289,7 @@ void ParserTree::markPow1Nodes() {
   traverseTree(Pow1NodeMarker());
 }
 
-int ParserTree::getTreeDepth() {
+int ParserTree::getTreeDepth() const {
   return getRoot() ? getRoot()->getMaxTreeDepth() : 0;
 }
 

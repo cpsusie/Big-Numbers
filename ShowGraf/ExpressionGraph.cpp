@@ -12,11 +12,11 @@ void ExpressionGraph::calculate() {
   Expression expr(param.m_trigonometricMode);
   expr.compile(param.m_expr, true);
 
-  Real                 dummyX;
-  ExpressionVariable  *xvp       = expr.getVariable("x");
-  Real                &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
-  const int            stepCount = param.m_steps;
-  double               step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
+  Real                      dummyX;
+  const ExpressionVariable *xvp       = expr.getVariable("x");
+  Real                     &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
+  const int                 stepCount = param.m_steps;
+  double                    step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;
   x = param.m_interval.getMin();
   for(int i = 0; i <= stepCount; x += step, i++) {
     try {

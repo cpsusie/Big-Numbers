@@ -451,6 +451,9 @@
     <ClInclude Include="..\..\Include\Math\Spherical.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Expression\pch.h">
+      <Filter>Source Files\Expression</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="FPU.inc">

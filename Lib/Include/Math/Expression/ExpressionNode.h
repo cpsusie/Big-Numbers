@@ -279,7 +279,7 @@ public:
   int     getNodeCount(ExpressionNodeSelector *selector = NULL) const; // If selector specified, only nodes wher selector.select(n) is true will be counted.
                                                                  // If not specified, all nodes is counted
   bool    containsFunctionCall()        const;
-  Real   &getValue()                    const;
+  Real   &getValueRef()                 const;
   bool    isBinaryOperator()            const;
   bool    isBooleanOperator()           const;
   bool    isTrigonomtricFunction()      const;
