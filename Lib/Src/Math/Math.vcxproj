@@ -5,6 +5,22 @@
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="LDDebug|Win32">
+      <Configuration>LDDebug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LDDebug|x64">
+      <Configuration>LDDebug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LDRelease|Win32">
+      <Configuration>LDRelease</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="LDRelease|x64">
+      <Configuration>LDRelease</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -33,7 +49,22 @@
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -48,7 +79,22 @@
     <CharacterSet>Unicode</CharacterSet>
     <UseOfMfc>Dynamic</UseOfMfc>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseOfMfc>Dynamic</UseOfMfc>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v140</PlatformToolset>
@@ -64,13 +110,25 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
@@ -82,7 +140,22 @@
     <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <OutDir>..\..\MTDebug32\</OutDir>
+    <ExecutablePath>$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>LD$(ProjectName)</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\MTDebug64\</OutDir>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>..\..\MTDebug64\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
@@ -95,7 +168,22 @@
     <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>..\..\MTRelease32\</OutDir>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <TargetName>LD$(ProjectName)</TargetName>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>..\..\MTRelease64\</OutDir>
+    <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\mytools2015\parsergen\lib;$(LibraryPath)</LibraryPath>
+    <CustomBuildAfterTargets />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>..\..\MTRelease64\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
@@ -130,7 +218,67 @@
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <BrowseInformation>true</BrowseInformation>
+      <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <Xdcmake>
+      <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
+    </Xdcmake>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <Lib>
+      <Verbose>false</Verbose>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>_WINDOWS;_DEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <BrowseInformation>true</BrowseInformation>
+      <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <Xdcmake>
+      <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
+    </Xdcmake>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <Lib>
+      <Verbose>false</Verbose>
+      <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+      <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
+    </Lib>
+    <PreBuildEvent>
+      <Command>
+      </Command>
+    </PreBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
@@ -196,6 +344,41 @@
       <TargetMachine>MachineX86</TargetMachine>
     </Lib>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Xdcmake>
+      <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
+    </Xdcmake>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+    <Lib>
+      <Verbose>false</Verbose>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -210,6 +393,40 @@
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <AdditionalIncludeDirectories />
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib>
+      <Verbose>false</Verbose>
+      <AdditionalDependencies>$(IntDir)Int128x64.obj;$(IntDir)Double80x64.obj;$(Intdir)Doublex64.obj;$(IntDir)ExpressionCallx64.obj;%(AdditionalDependencies)</AdditionalDependencies>
+    </Lib>
+    <Xdcmake>
+      <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
+    </Xdcmake>
+    <Bscmake>
+      <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>_WINDOWS;NDEBUG;_AFXEXT;_CRT_SECURE_NO_WARNINGS=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <SDLCheck>true</SDLCheck>
+      <AssemblerOutput>NoListing</AssemblerOutput>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
+      <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
@@ -295,9 +512,13 @@
     <ClCompile Include="ParseReal.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Point2D.cpp" />
     <ClCompile Include="Point2DTransformations.cpp" />
@@ -327,57 +548,105 @@
   <ItemGroup>
     <CustomBuild Include="Expression\Expression.lex">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">false</DeploymentContent>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Generating Expression lexer </Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Generating Expression lexer </Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating Expression lexer </Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\bin\lexgen -v -OExpression,..\..\Include\Math\Expression  Expression\Expression.lex</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating Expression lexer </Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Generating Expression lexer </Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Expression\ExpressionLex.cpp;..\..\Include\Math\Expression\ExpressionLex.h</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\mytools2015\parsergen\lib\lexgencpp.par</AdditionalInputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
     </CustomBuild>
     <CustomBuild Include="Expression\Expression.y">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">false</DeploymentContent>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Analyzing Expression Grammar</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|Win32'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Analyzing Expression Grammar</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|Win32'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Analyzing Expression Grammar</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">parsegen -OExpression,..\..\include\math\Expression  Expression\Expression.y</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Analyzing Expression Grammar</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Analyzing Expression Grammar</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">..\..\include\Math\Expression\ExpressionParser.h;..\..\include\Math\Expression\ExpressionSymbol.h;Expression/ExpressionTables.cpp;Expression/ExpressionAction.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">c:\mytools2015\parsergen\lib\parsegencpp.par</AdditionalInputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</DeploymentContent>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</DeploymentContent>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -429,64 +698,110 @@
   <ItemGroup>
     <CustomBuild Include="Double80x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">true</DeploymentContent>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for Double80 functions</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Assembler code for Double80 functions</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Double80x64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Double80x64.obj</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Double80x64.obj Double80x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for Double80 functions</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code for Double80 functions</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Double80x64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)Double80x64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</DeploymentContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Doublex64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">true</DeploymentContent>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Doublex64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Special functions for double (MathFunctions.cpp)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Special functions for double (MathFunctions.cpp)</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Doublex64.obj Doublex64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Doublex64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)Doublex64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Special functions for double (MathFunctions.cpp)</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Special functions for double (MathFunctions.cpp)</Message>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</DeploymentContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</TreatOutputAsContent>
     </CustomBuild>
     <CustomBuild Include="Expression\ExpressionCallx64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code to call generated machinecode for fast evaluation of Expressions</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)ExpressionCallx64.obj Expression/ExpressionCallx64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)ExpressionCallx64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">true</DeploymentContent>
     </CustomBuild>
     <None Include="FPU.inc" />
     <CustomBuild Include="Int128x64.asm">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</ExcludedFromBuild>
       <FileType>Document</FileType>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)Int128x64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">$(IntDir)Int128x64.obj</Outputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)Int128x64.obj Int128x64.asm</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">Assembler code for signed int128 basic arithmetic operators</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)Int128x64.obj</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">$(IntDir)Int128x64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">true</DeploymentContent>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</DeploymentContent>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">true</DeploymentContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDDebug|x64'">false</TreatOutputAsContent>
       <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</TreatOutputAsContent>
+      <TreatOutputAsContent Condition="'$(Configuration)|$(Platform)'=='LDRelease|x64'">false</TreatOutputAsContent>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
