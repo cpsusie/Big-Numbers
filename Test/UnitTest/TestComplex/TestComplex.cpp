@@ -155,5 +155,21 @@ namespace TestComplex {
       UNLINK(fileName);
     }
 
+    TEST_METHOD(TestIdiotRule) {
+      redirectDebugLog();
+      Complex c1 = Complex(0.59755527779720179,0.333218399476649774);
+      const Complex sinc1 = sin(c1);
+      const Complex cosc1 = cos(c1);
+      const Complex id = sqr(sinc1) + sqr(cosc1);
+      const Complex diff = Complex::one - id;
+      if (fabs(diff) > 1e-13) {
+        OUTPUT(_T("c1:%s, sin(c1):%s, cos(c1)%s, s:%s, diff:%s")
+              ,toString(c1,19).cstr()
+              ,toString(sinc1,19).cstr(),toString(cosc1,19).cstr()
+              ,toString(id).cstr(), toString(diff).cstr()
+              );
+      }
+      verifyAlmostEquals(Complex::one, sqr(sin(c1)) + sqr(cos(c1)), 1e-13);
+    }
   };
 }

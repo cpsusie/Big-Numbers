@@ -11,23 +11,17 @@ private:
 public:
   Real re, im;
 #ifdef LONGDOUBLE
-  Complex(double r, double i = 0) { re = r; im = i; }
+  Complex(double _re, double _im = 0) : re(_re), im(_im) {
+  }
 #endif
 
-  Complex() { 
-    re = im = 0;
+  Complex() : re(0), im(0) {
   }
-  Complex(int r) {
-    re = r;
-    im = 0;
+  Complex(int _re) : re(_re), im(0) {
   }
-  Complex(unsigned int r) {
-    re = r;
-    im = 0;
+  Complex(UINT _re) : re(_re), im(0) {
   }
-  Complex(const Real &r, const Real &i = 0) { 
-    re = r;
-    im = i;
+  Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
   }
   explicit inline Complex(const String &s) {
     init((_TUCHAR*)(s.cstr()));
