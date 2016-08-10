@@ -15,22 +15,14 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 // #define TEST_MACHINECODE
 
 #ifndef LONGDOUBLE
-
 #define FLD_REAL           FLD_QWORD
 #define FSTP_REAL          FSTP_QWORD
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_QWORD)
-
-#else
-
-#ifdef IS64BIT
-#error "LONGDOUBLE cannot be used together with x64 code"
-#endif // IS64BIT
-
+#else // LONGDOUBLE
 #define FLD_REAL           FLD_TBYTE
 #define FSTP_REAL          FSTP_TBYTE
-#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_TBYTE)
-
 #endif // LONGDOUBLE
+
+#define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_REAL)
 
 class MemoryReference {
 public:
@@ -41,14 +33,15 @@ public:
   inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
   }
 };
-
 #ifdef IS64BIT
 typedef enum {
   RESULT_IN_FPU
- ,RESULT_IN_XMM
  ,RESULT_IN_ADDRRDI
  ,RESULT_ON_STACK
  ,RESULT_IN_VALUETABLE
+#ifndef LONGDOUBLE
+ ,RESULT_IN_XMM  // XMM-register cannot be used for 80-bit floating points
+#endif
 } ExpressionDestinationType;
 
 class ExpressionDestination {
@@ -63,10 +56,6 @@ public:
   inline ExpressionDestinationType getType() const {
     return m_type;
   }
-  inline BYTE getXMMReg() const {
-    assert(m_type == RESULT_IN_XMM);
-    return (BYTE)m_offset;
-  }
   inline BYTE getStackOffset() const {
     assert(m_type == RESULT_ON_STACK);
     return (BYTE)m_offset;
@@ -75,23 +64,32 @@ public:
     assert(m_type == RESULT_IN_VALUETABLE);
     return m_offset;
   }
+#ifndef LONGDOUBLE
+  inline BYTE getXMMReg() const {
+    assert(m_type == RESULT_IN_XMM);
+    return (BYTE)m_offset;
+  }
+#endif
 };
 
 #define DST_FPU                 ExpressionDestination(RESULT_IN_FPU       , -1     )
-#define DST_XMM(xmmReg)         ExpressionDestination(RESULT_IN_XMM       , xmmReg )
 #define DST_ADDRRDI             ExpressionDestination(RESULT_IN_ADDRRDI   , -1     )
 #define DST_ONSTACK(offs1)      ExpressionDestination(RESULT_ON_STACK     , offs1  )
 #define DST_INVALUETABLE(index) ExpressionDestination(RESULT_IN_VALUETABLE, index  )
-
+#ifndef LONGDOUBLE
+#define DST_XMM(xmmReg)         ExpressionDestination(RESULT_IN_XMM       , xmmReg )
+#endif
 #else
 
 typedef int ExpressionDestination;
 
 #define DST_FPU                 0
-#define DST_XMM(xmmReg)         0
 #define DST_ADDRRDI             0
 #define DST_ONSTACK(     offs1) 0
 #define DST_INVALUETABLE(offs4) 0
+#ifndef LONGDOUBLE
+#define DST_XMM(xmmReg)         0
+#endif
 
 #endif // IS64BIT
 
@@ -115,9 +113,13 @@ public:
   void emitFLoad(       const ExpressionNode *n) { emitTableOp(FLD_REAL    , n    ); }
   void emitFStorePop(   int               index) { emitTableOp(FSTP_REAL   , index); }
   void emitFStorePop(   const ExpressionNode *n) { emitTableOp(FSTP_REAL   , n    ); }
+#ifndef LONGDOUBLE
   void emitFComparePop( const ExpressionNode *n) { emitTableOp(FCOMP_QWORD , n    ); }
+#endif
 #ifdef IS64BIT
+#ifndef LONGDOJUBLE
   void emitXMM0ToAddr(  int               index) { emitTableOp(MOVSD_MMWORD_XMM(XMM0), index); }
+#endif
   bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
 #endif
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
@@ -137,6 +139,7 @@ public:
   BYTE popTmp();
   void emitAddRSP(  int                   n);
   void emitSubRSP(  int                   n);
+  void emitAddR64(  int r64,     int  value);
 #endif // IS32BIT
   void linkReferences();
   ExpressionEntryPoint getEntryPoint() const { return (ExpressionEntryPoint)getData(); }
@@ -201,7 +204,7 @@ private:
   void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
   void throwInvalidTrigonometricMode();
-  static void throwUnknownSymbolException(const TCHAR *method, SNode           n);
+  static void throwUnknownSymbolException(const TCHAR *method, SNode                 n);
   static void throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n);
 
   // Evaluate tree nodes
@@ -247,6 +250,7 @@ private:
   int  genPushRef(                                         const void           *p);
 #else // IS64BIT
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
+  void genSetRefParameter(                                 const ExpressionNode *n, int index);
   BYTE genSetRefParameter(                                 const ExpressionNode *n, int index, bool &savedOnStack);
 #endif // IS32BIT
 

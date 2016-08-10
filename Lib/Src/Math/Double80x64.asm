@@ -102,8 +102,8 @@ D80consLongLong ENDP
 
 ; void D80consULongLong(Double80 &dst, const unsigned __int64 x);
 D80consULongLong PROC
-    cmp     rdx,0
-    jg      DoSmallInt64
+    cmp     rdx,maxI64
+    jbe      DoSmallInt64
 
     and     rdx, maxI64
     push    rdx
