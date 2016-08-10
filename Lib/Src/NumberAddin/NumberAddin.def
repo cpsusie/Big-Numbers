@@ -4,6 +4,7 @@ LIBRARY
 
 EXPORTS
     AddIn_BigReal
-	AddIn_Double80
-	AddIn__int128
-	AddIn__uint128
+    AddIn_Double80
+    AddIn__int128
+    AddIn__uint128
+    AddIn_Number
