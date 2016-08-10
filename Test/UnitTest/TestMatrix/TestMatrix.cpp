@@ -1,9 +1,6 @@
 #include "stdafx.h"
 #include "CppUnitTest.h"
 #include <Random.h>
-#include <Math.h>
-#include <Math/MathLib.h>
-#include <Math/Double80.h>
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 using namespace std;
@@ -14,7 +11,6 @@ using namespace std;
 #define verify(expr) Assert::IsTrue(expr, _T(#expr))
 
 namespace TestMatrix {		
-
   void OUTPUT(const TCHAR *format, ...) {
     va_list argptr;
     va_start(argptr, format);
@@ -124,7 +120,7 @@ namespace TestMatrix {
         Matrix    sum(dim, dim);
         Matrix    last(dim, dim);
 
-        for (double k = 1;; k++) {
+        for (Real k = 1;; k++) {
           last = sum;
           sum += p;
           if (normf(sum - last) == 0) {
@@ -146,7 +142,7 @@ namespace TestMatrix {
         Matrix       sum(dim, dim);
         Matrix       last(dim, dim);
 
-        for (double k = 0;; k += 2) {
+        for (Real k = 0;; k += 2) {
           last = sum;
           sum += p;
           if (normf(sum - last) == 0) {
@@ -168,7 +164,7 @@ namespace TestMatrix {
         Matrix       sum(dim, dim);
         Matrix       last(dim, dim);
 
-        for (double k = 1;; k += 2) {
+        for (Real k = 1;; k += 2) {
           last = sum;
           sum += p;
           if (normf(sum - last) == 0) {
@@ -186,7 +182,7 @@ namespace TestMatrix {
         const ComplexMatrix P1 = inverse(P);
         ComplexVector       D = QR.getEigenValues();
 
-        for (unsigned int i = 0; i < D.getDimension(); i++) {
+        for (size_t i = 0; i < D.getDimension(); i++) {
           D[i] = root(D[i], 3);
         }
         return P * ComplexMatrix(D) * P1;
