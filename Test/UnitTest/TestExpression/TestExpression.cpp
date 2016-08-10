@@ -1347,16 +1347,16 @@ namespace TestExpression {
             verify(false);
           } else {
             for (Real x = -2; x <= 2; x += 0.5) {
-              compiledExpr.setValue(_T("x"), x);
               interpreterExpr.setValue(_T("x"), x);
+              compiledExpr.setValue(_T("x"), x);
               switch (compiledExpr.getReturnType()) {
               case EXPR_RETURN_REAL:
-                { const Real compiledResult     = compiledExpr.evaluate();
+                { const Real cppResult          = test.fr(x);
                   const Real interpreterResult  = interpreterExpr.evaluate();
-                  const Real cppResult          = test.fr(x);
-                  const bool compiledDefined    = !isNan(compiledResult);
-                  const bool interpreterDefined = !isNan(interpreterResult);
+                  const Real compiledResult     = compiledExpr.evaluate();
                   const bool cppDefined         = !isNan(cppResult);
+                  const bool interpreterDefined = !isNan(interpreterResult);
+                  const bool compiledDefined    = !isNan(compiledResult);
 
                   if ((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 1e-15)) {
                     LOG log;
