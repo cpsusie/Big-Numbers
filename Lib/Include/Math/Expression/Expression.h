@@ -207,6 +207,17 @@ private:
   static void throwUnknownSymbolException(const TCHAR *method, SNode                 n);
   static void throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n);
 
+#ifdef _DEBUG
+  inline void checkReturnType(const TCHAR *method, ExpressionReturnType expectedReturnType) const {
+    if(m_returnType != expectedReturnType) {
+      throwMethodException(s_className, method, _T("Returntype=%d. exptected=%d\n"), m_returnType, expectedReturnType);
+    }
+  }
+#define CHECKRETURNTYPE(expectedType) checkReturnType(_T(__FUNCTION__), expectedType)
+#else
+#define CHECKRETURNTYPE(expectedType)
+#endif // _DEBUG
+
   // Evaluate tree nodes
   Real   evaluateStatementListReal(                        const ExpressionNode *n) const;
   bool   evaluateStatementListBool(                        const ExpressionNode *n) const;
@@ -222,7 +233,7 @@ private:
   void   print(                                            const ExpressionNode *n, FILE *f = stdout) const;
 
   // Evaluate by machinecode
-  Real   fastEvaluate();
+  Real   fastEvaluateReal();
   bool   fastEvaluateBool();
 
   // Code generation (compile to machinecode)
@@ -346,12 +357,6 @@ private:
   const ExpressionNode   *normalizePolynomial(         const ExpressionNode   *n) const;
 #endif
 
-  inline void checkReturnType(const TCHAR *method, ExpressionReturnType expectedReturnType) const {
-    if(m_returnType != expectedReturnType) {
-      throwMethodException(s_className, method, _T("Returntype=%d. exptected=%d\n"), m_returnType, expectedReturnType);
-    }
-  }
-
   // Properties
   void setState(ExpressionState newState);
   void setReduceIteration(unsigned int iteration);
@@ -363,15 +368,11 @@ public:
   Expression getDerived(const String &name, bool reduceResult = true) const;
   void   compile(const String &expr, bool machineCode);
   inline Real evaluate() {
-#ifdef _DEBUG
-    checkReturnType(_T("evaluate"), EXPR_RETURN_REAL);
-#endif // _DEBUG
-    return m_machineCode ? fastEvaluate()     : evaluateStatementListReal(getRoot());
+    CHECKRETURNTYPE(EXPR_RETURN_REAL);
+    return m_machineCode ? fastEvaluateReal() : evaluateStatementListReal(getRoot());
   }
   inline bool evaluateBool() { 
-#ifdef _DEBUG
-    checkReturnType(_T("evaluateBool"), EXPR_RETURN_BOOL);
-#endif // _DEBUG
+    CHECKRETURNTYPE(EXPR_RETURN_BOOL);
     return m_machineCode ? fastEvaluateBool() : evaluateStatementListBool(getRoot());
   }
 
