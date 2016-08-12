@@ -293,6 +293,11 @@ void CMainFrame::OnSize(UINT nType, int cx, int cy) {
     return;
   }
 
+  TextView *view1 = getActiveTextView();
+  TextView *view2 = view1 ? view1->getPartner() : NULL;
+  if(view1) view1->savePositionState();
+  if(view2) view2->savePositionState();
+
   if(m_wndSplitter.IsWindowVisible()) {
     m_wndSplitter.SetScrollStyle(0);
 
@@ -595,7 +600,7 @@ BOOL CMainFrame::doPreTranslateMessage(MSG* pMsg) {
   if(view == NULL) return ret;
 
   const TextPosition pos = view->getCurrentPos();
-  ;
+
   m_wndStatusBar.SetPaneText(4, format(_T("Ln %d, Col %d"), pos.m_line+1, pos.m_column+1).cstr());
 
   const TCHAR *msgStr = NULL;
@@ -712,7 +717,7 @@ void CMainFrame::OnFileOpen(int id) {
     const String f2 = FileNameSplitter::getChildName(files[0],files[2]);
     doc->setDocs(f1, f2);
   }
-  Invalidate();
+  Invalidate(FALSE);
 }
 
 void CMainFrame::OnFileMruFile1()  { onFileMruFile( 0);}
@@ -736,7 +741,7 @@ void CMainFrame::onFileMruFile(int index) {
   TextView *view = getActiveTextView();
   if(view == NULL) return;
   try {
-    const String fname = ((CWinDiffApp*)AfxGetApp())->getRecentFile(index);
+    const String fname = theApp.getRecentFile(index);
 
     if(ACCESS(fname, 4) < 0) {
       const int errorCode = errno;
@@ -748,7 +753,7 @@ void CMainFrame::onFileMruFile(int index) {
     }
     CWinDiffDoc *doc = view->getDocument();
     doc->setDoc(view->getId(),DIFFDOC_FILE, fname);
-    Invalidate();
+    Invalidate(FALSE);
     //view->refreshBoth();
   } catch(Exception e) {
     showException(e);

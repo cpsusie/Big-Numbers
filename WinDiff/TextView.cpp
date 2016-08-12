@@ -27,7 +27,7 @@ TextView::TextView() {
 
 void TextView::init() {
   m_state.init();
-  m_lastCaretPos = getCaretPosition();;
+  m_lastCaretPos = getCaretPosition();
   resetArrow();
   m_anchor.reset();
   m_lastAnchor.reset();
@@ -72,7 +72,7 @@ void TextView::OnInitialUpdate() {
   setFlagValue(VIEW_ISACTIVE, getId() == 0);
 
   if(idCollision) {
-    Invalidate();
+    repaintAll();
   } else {
     refreshDoc();
   }
@@ -135,10 +135,6 @@ void TextView::refreshDoc() {
 }
 
 void TextView::refreshBoth() {
-  init();
-  if(hasPartner()) {
-    getPartner()->init();
-  }
   refreshDoc();
   if(hasPartner()) {
     getPartner()->refreshDoc();

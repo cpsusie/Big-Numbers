@@ -402,7 +402,7 @@ BOOL CWinDiffView::PreTranslateMessage(MSG* pMsg) {
 
   case WM_MOUSEWHEEL:
     { handleAnchor();
-      short zDelta = (short)(pMsg->wParam >> 16);
+      const short zDelta = (short)(pMsg->wParam >> 16);
       if(zDelta > 0) {
         m_textView.scrollUp(3);
       } else {

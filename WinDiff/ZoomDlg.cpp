@@ -13,8 +13,8 @@ CZoomDlg::CZoomDlg(const String &s1, const String &s2, CWnd *pParent) : m_s1(s1)
 
 void CZoomDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
-    DDX_Check(pDX, IDC_CHECKIGNORECASE, m_ignorecase);
-    DDX_Text( pDX, IDC_EDIT2LINES, m_lines);
+  DDX_Check(pDX, IDC_CHECKIGNORECASE, m_ignorecase);
+  DDX_Text( pDX, IDC_EDIT2LINES, m_lines);
 }
 
 BEGIN_MESSAGE_MAP(CZoomDlg, CDialog)
@@ -53,14 +53,14 @@ void CZoomDlg::OnSize(UINT nType, int cx, int cy) {
 }
 
 BOOL CZoomDlg::PreTranslateMessage(MSG* pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
 
   switch(pMsg->message) {
   case WM_MOUSEWHEEL:
     { const short delta = (short)(pMsg->wParam >> 16);
-      const UINT  flags = pMsg->wParam & 0xffff;
+      const UINT  flags = (UINT)( pMsg->wParam & 0xffff);
       OnMouseWheel(flags, delta, pMsg->pt);
     }
     return true;
@@ -111,7 +111,6 @@ void CZoomDlg::createAndSetFont(double scale) {
   LOGFONT lf = getOptions().m_logFont;
   lf.lfHeight = (int)(scale * lf.lfHeight);
   m_font.CreateFontIndirect(&lf);
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDIT2LINES);
-  e->SetFont(&m_font);
+  GetDlgItem(IDC_EDIT2LINES)->SetFont(&m_font);
 }
 
