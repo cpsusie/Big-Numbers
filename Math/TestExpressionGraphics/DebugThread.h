@@ -12,7 +12,6 @@ typedef enum {
 
 class DebugThread : public Thread, public PropertyContainer, public PropertyChangeListener {
 private:
-  DECLARECLASSNAME;
   bool                  m_running, m_killed, m_terminated;
 
 #ifdef TRACE_REDUCTION_CALLSTACK
@@ -28,7 +27,7 @@ private:
   const Expression     *m_exprp;
   void stop(bool onReturn = false);
   void setBoolProperty(DebugThreadProperty id, bool &v, bool newValue);
-  void throwInvalidStateException(ExpressionState state) const;
+  void throwInvalidStateException(const TCHAR *method, ExpressionState state) const;
 public:
   DebugThread(Expression &expr);
   ~DebugThread();

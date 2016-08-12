@@ -7,14 +7,13 @@
 
 #define FIELDID(i) ((i) + _APS_NEXT_CONTROL_VALUE + 1)
 
-DEFINECLASSNAME(VariableEditFieldArray);
-
 void VariableEditFieldArray::putValues(const ExpressionVariableArray &variables) {
+  DEFINEMETHODNAME;
   for(size_t i = 0; i < variables.size(); i++) {
     const ExpressionVariableWithValue &v = variables[i];
     VariableEditField *f = findFieldByName(v.getName());
     if(f == NULL) {
-      throwMethodInvalidArgumentException(s_className, _T("putValues"), _T("Variable with name <%s> not found"), v.getName().cstr());
+      throwInvalidArgumentException(method, _T("Variable with name <%s> not found"), v.getName().cstr());
     }
     f->putValue(v.getValue());
   }

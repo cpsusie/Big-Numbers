@@ -623,7 +623,7 @@ void CTestExpressionGraphicsDlg::OnFunctionsEvaluateFx() {
     return;
   }
 
-  ExpressionVariable *var = m_expr.getVariable(_T("x"));
+  const ExpressionVariable *var = m_expr.getVariable(_T("x"));
   Real dummyX, &varX = var ? m_expr.getValueRef(*var) : dummyX;
 
   bool ok;

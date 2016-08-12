@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "DebugThread.h"
 
-DEFINECLASSNAME(DebugThread);
-
 DebugThread::DebugThread(Expression &expr) : m_expr(expr) {
   m_running = m_killed = m_terminated = false;
   m_exprp   = &m_expr;
@@ -17,11 +15,12 @@ typedef enum {
  ,BREAKONRETURN
 } BreakPointType;
 
-void DebugThread::throwInvalidStateException(ExpressionState state) const {
-  throwMethodInvalidArgumentException(s_className, _T("handleData"), _T("State=%d"), state);
+void DebugThread::throwInvalidStateException(const TCHAR *method, ExpressionState state) const {
+  throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
 void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  DEFINEMETHODNAME;
   if(m_killed) throw true;
 
   m_exprp = (const Expression*)source;

@@ -18,7 +18,6 @@ public:
 
 class VariableEditFieldArray {
 private:
-  DECLARECLASSNAME;
   CWnd                            *m_parent;
   CompactArray<VariableEditField*> m_fields;
   bool                             m_fieldsCreated, m_fontIsSet;
