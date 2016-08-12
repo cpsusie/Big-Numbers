@@ -2,8 +2,6 @@
 #include <Random.h>
 #include <TreeSet.h>
 
-DEFINECLASSNAME(TreeSetImpl);
-
 TreeSetImpl::TreeSetImpl(const AbstractObjectManager &objectManager, const AbstractComparator &comparator) {
   m_objectManager = objectManager.clone();
   m_comparator    = comparator.clone();
@@ -16,6 +14,10 @@ TreeSetImpl::~TreeSetImpl() {
   clear();
   delete m_comparator; 
   delete m_objectManager;
+}
+
+void TreeSetImpl::throwEmptySetException(const TCHAR *method) const {
+  throwException(_T("%s:Set is empty"), method);
 }
 
 AbstractCollection *TreeSetImpl::clone(bool cloneData) const {
@@ -185,7 +187,7 @@ bool TreeSetImpl::balanceL(TreeSetNode *&pp) {
       }
     }
   }
-  throwException("balanceL dropped to the end" );
+  throwException(_T("%s:Dropped to the end"), _T(__FUNCTION__));
   return true;
 }
 
@@ -231,7 +233,7 @@ bool TreeSetImpl::balanceR(TreeSetNode *&pp) {
       }
     }
   }
-  throwException("balanceR dropped to the end" );
+  throwException(_T("%s:dropped to the end"), _T(__FUNCTION__));
   return true;
 }
 
@@ -376,7 +378,7 @@ bool TreeSetImpl::contains(const void *key) const {
 
 const void *TreeSetImpl::getRandom() const {
   if(size() == 0) {
-    throwMethodException(s_className, _T("select"), _T("Set is empty"));
+    throwEmptySetException(_T(__FUNCTION__));
   }
 
   const TreeSetNode *p = m_root;
@@ -408,7 +410,7 @@ const TreeSetNode *TreeSetImpl::getMinNode() const {
   const TreeSetNode *result = NULL;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_left);
   if(result == NULL) {
-    throwMethodException(s_className, _T("getMinNode"), _T("Set is empty"));
+    throwEmptySetException(_T(__FUNCTION__));
   }
   return result;
 }
@@ -417,7 +419,7 @@ const TreeSetNode *TreeSetImpl::getMaxNode() const {
   const TreeSetNode *result = NULL;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_right);
   if(result == NULL) {
-    throwMethodException(s_className, _T("getMaxNode"), _T("Set is empty"));
+    throwEmptySetException(_T(__FUNCTION__));
   }
   return result;
 }

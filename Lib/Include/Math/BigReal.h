@@ -900,9 +900,9 @@ public:
     DEFINEMETHODNAME;
     const DWORD thrId = GetCurrentThreadId();
     if (thrId != s_instance.m_ownerThreadId) {
-      throwMethodException(s_className, method
-        , _T("Thread callling releaseInstance (=%d) is not the ownerthread (=%d)")
-        , thrId, s_instance.m_ownerThreadId);
+      throwException(
+        _T("%s:Thread callling releaseInstance (=%d) is not the ownerthread (=%d)")
+        , method, thrId, s_instance.m_ownerThreadId);
     }
     s_instance.m_ownerThreadId = -1;
 #endif

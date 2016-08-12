@@ -118,6 +118,6 @@ void throwMethodInvalidArgumentException(const TCHAR *className, const TCHAR *me
   throwInvalidArgumentException(cm.cstr(), _T("%s"), msg.cstr());
 }
 
-void throwMethodUnsupportedOperationException(const TCHAR *className, const TCHAR *method) {
-  throwException(_T("%s::%s:Unsupported operation"), className, method);
+void throwUnsupportedOperationException(const TCHAR *method) {
+  throwException(_T("%s:Unsupported operation"), method);
 }

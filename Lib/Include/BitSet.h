@@ -9,7 +9,6 @@
 
 class BitSet {
 private:
-  DECLARECLASSNAME;
   size_t selectRandomNonEmptyAtom() const;
 public:
 #if _BITSET_ATOMSIZE == 32

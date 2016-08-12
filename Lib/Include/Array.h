@@ -7,7 +7,6 @@
 
 class ArrayImpl : public AbstractCollection {
 private:
-  DECLARECLASSNAME;
   AbstractObjectManager *m_objectManager;
   void                 **m_elem;
   size_t                 m_size;

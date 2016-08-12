@@ -21,7 +21,7 @@ Number::Number(const Number &v) {
     m_rational = new Rational(*v.m_rational);
     break;
   default:
-    throwUnknownTypeException(_T("copyConstructor"));
+    throwUnknownTypeException(_T(__FUNCTION__));
   }
 }
 
@@ -91,7 +91,7 @@ void Number::cleanup() {
     delete m_rational;
     break;
   default:
-    throwUnknownTypeException(_T("cleanup"));
+    throwUnknownTypeException(_T(__FUNCTION__));
   }
   m_type     = NUMBERTYPE_UNDEFINED;
   m_rational = NULL;
@@ -102,11 +102,11 @@ void Number::throwUnknownTypeException(const TCHAR *method) const {
 }
 
 void Number::throwUnknownTypeException(const TCHAR *method, NumberType type) { // static
-  throwMethodException(s_className, method, _T("Unknown type:%d"), type);
+  throwException(_T("%s:Unknown type:%d"), method, type);
 }
 
 void Number::throwTypeIsUndefinedException(const TCHAR *method) { // static
-  throwMethodException(s_className, method, _T("Number is undefined"));
+  throwException(_T("%s:Number is undefined"), method);
 }
 
 Number &Number::operator=(const Number &v) {
@@ -129,7 +129,7 @@ Number &Number::operator=(const Number &v) {
     break;
 
   default:
-    v.throwUnknownTypeException(_T("operator="));
+    v.throwUnknownTypeException(_T(__FUNCTION__));
   }
   return *this;
 }
@@ -322,6 +322,7 @@ int numberCmp(const Number &n1, const Number &n2) {
 }
 
 bool Number::operator==(const Number &n) const {
+  DEFINEMETHODNAME;
   if(&n == this) {
     return true;
   }
@@ -331,14 +332,14 @@ bool Number::operator==(const Number &n) const {
   }
   switch(type) {
   case NUMBERTYPE_UNDEFINED:
-    throwTypeIsUndefinedException(_T("operator=="));
+    throwTypeIsUndefinedException(method);
     return false;
   case NUMBERTYPE_REAL     :
     return getRealValue() == n.getRealValue();
   case NUMBERTYPE_RATIONAL :
     return getRationalValue() == n.getRationalValue();
   default:
-    throwUnknownTypeException(_T("operator=="));
+    throwUnknownTypeException(method);
   }
   return false;
 }

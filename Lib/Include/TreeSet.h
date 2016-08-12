@@ -27,7 +27,6 @@ public:
 
 class TreeSetImpl : public AbstractSet {
 private:
-  DECLARECLASSNAME;
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
   TreeSetNode           *m_root;
@@ -43,6 +42,7 @@ private:
   void deleteNodeRecurse(TreeSetNode *n);
   const void *getRandom() const;
   friend class TreeSetIterator;
+  void throwEmptySetException(const TCHAR *method) const;
 protected:
   virtual TreeSetNode *allocateNode() const;
   virtual TreeSetNode *createNode(const void *key) const;

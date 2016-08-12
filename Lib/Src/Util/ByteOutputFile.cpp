@@ -2,8 +2,6 @@
 #include <fcntl.h>
 #include "ByteFile.h"
 
-DEFINECLASSNAME(ByteOutputFile);
-
 void ByteOutputFile::init(const String &name) {
   m_name  = name;
 }
@@ -19,7 +17,7 @@ ByteOutputFile::ByteOutputFile(const String &name) {
 
 ByteOutputFile::ByteOutputFile(FILE *f) {
   if(f == NULL) {
-    throwInvalidArgumentException(s_className, _T("Illegal argument(NULL)"));
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("Illegal argument(NULL)"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);

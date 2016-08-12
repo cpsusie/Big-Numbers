@@ -23,7 +23,6 @@ typedef unsigned long (*HashFunction)(const void *);
 
 class HashSetTable {
 private:
-  DECLARECLASSNAME;
   const HashSetImpl  &m_owner;
   const size_t        m_capacity;
   HashSetNode       **m_table;
@@ -52,7 +51,6 @@ public:
 
 class HashSetImpl : public AbstractSet {
 private:
-  DECLARECLASSNAME;
   AbstractObjectManager *m_objectManager;
   AbstractComparator    *m_comparator;
   HashFunction           m_hash;

@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <ByteArray.h>
 
-DEFINECLASSNAME(ExecutableByteArray);
-
 ExecutableByteArray::ExecutableByteArray(const BYTE *data, unsigned int size) {
   init();
   if (size > 0) {
@@ -42,7 +40,7 @@ BYTE *ExecutableByteArray::allocateBytes(size_t size) {
   DEFINEMETHODNAME;
   void *result = VirtualAlloc(NULL, size, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
   if (result == NULL) {
-    throwMethodLastErrorOnSysCallException(s_className, method);
+    throwLastErrorOnSysCallException(method);
   }
   return (BYTE*)result;
 }
@@ -50,7 +48,7 @@ BYTE *ExecutableByteArray::allocateBytes(size_t size) {
 void  ExecutableByteArray::deallocateBytes(BYTE *buffer) {
   DEFINEMETHODNAME;
   if (!VirtualFree(buffer, 0, MEM_RELEASE)) {
-    throwMethodLastErrorOnSysCallException(s_className, method);
+    throwLastErrorOnSysCallException(method);
   }
 }
 
@@ -67,7 +65,7 @@ size_t ExecutableByteArray::getSystemPageSize() {
 void ExecutableByteArray::flushInstructionCache() {
   DEFINEMETHODNAME;
   if (!FlushInstructionCache(GetCurrentProcess(), getData(), getCapacity())) {
-    throwMethodLastErrorOnSysCallException(s_className, method);
+    throwLastErrorOnSysCallException(method);
   }
 }
 

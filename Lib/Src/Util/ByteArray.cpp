@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <ByteArray.h>
 
-DEFINECLASSNAME(ByteArray);
-
 ByteArray::ByteArray() {
   init();
 }
@@ -93,7 +91,7 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
     return *this;
   }
   if(index > m_size) {
-    indexError(index);
+    indexError(_T(__FUNCTION__), index);
   }
   const size_t newSize = m_size + count;
   if(newSize > m_capacity) {
@@ -144,7 +142,10 @@ ByteArray &ByteArray::remove(size_t index, size_t count) {
   }
   const size_t j = index+count;
   if(j > m_size) {
-    throwException(_T("%s::%s(%lu,%lu): Invalid index. size=%u"), s_className, method, index, count, m_size);
+    throwException(_T("%s(%s,%s): Invalid index. size=%s")
+                  ,method
+                  ,format1000(index).cstr(), format1000(count).cstr()
+                  ,format1000(m_size).cstr());
   }
   if(j < m_size) {
     memmove(m_data+index, m_data+j, (m_size-j));
@@ -156,8 +157,11 @@ ByteArray &ByteArray::remove(size_t index, size_t count) {
   return *this;
 }
 
-void ByteArray::indexError(size_t i) const {
-  throwException(_T("%s:Index %u out of range. Size=%u"), s_className, i, m_size);
+void ByteArray::indexError(const TCHAR *method, size_t i) const {
+  throwException(_T("%s:Index %s out of range. size=%s")
+                ,method
+                ,format1000(i).cstr()
+                ,format1000(m_size).cstr());
 }
 
 void ByteArray::init() {

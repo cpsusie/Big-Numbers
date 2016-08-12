@@ -12,8 +12,8 @@ void AbstractIterator::noCurrentElementError(const TCHAR *className) const {
   throwMethodException(className, _T("remove"), _T("No current element"));
 }
 
-void AbstractIterator::unsupportedOperationError(const TCHAR *className) const {
-  throwMethodUnsupportedOperationException(className, _T("remove"));
+void AbstractIterator::unsupportedOperationError(const TCHAR *method) const {
+  throwUnsupportedOperationException(method);
 }
 
 const TCHAR *_compactArrayIteratorClassName = _T("CompactArrayIterator");

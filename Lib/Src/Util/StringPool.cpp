@@ -139,7 +139,7 @@ void *StringPoolIterator::next() {
 }
 
 void StringPoolIterator::remove() {
-  unsupportedOperationError(_T("StringPoolIterator"));
+  unsupportedOperationError(_T(__FUNCTION__));
 }
 
 

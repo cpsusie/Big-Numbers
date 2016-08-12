@@ -7,8 +7,6 @@
 #define MAXCHARVALUE 0xff
 #endif
 
-DEFINECLASSNAME(Tokenizer);
-
 Tokenizer::Tokenizer(const TCHAR *str, const TCHAR *delimiters, TCHAR textQualifier, int flags) : m_delimiterSet(MAXCHARVALUE) {
   init(str,delimiters,textQualifier,flags);
 }
@@ -96,7 +94,7 @@ String Tokenizer::getRemaining() const {
 
 StringIndex &Tokenizer::nextIndex(StringIndex &tIndex) {
   if(!hasNext()) {
-    throwMethodException(s_className, _T("nextIndex"), _T("No such element"));
+    throwException(_T("%s:No such element"), _T(__FUNCTION__));
   }
 
   const TCHAR *pos = m_next;
@@ -139,7 +137,7 @@ double Tokenizer::getDouble() {
   String s = next();
   double result;
   if(_stscanf(s.cstr(), _T("%le"), &result) != 1) {
-    throwMethodException(s_className, _T("getDouble"), _T("Expected double:<%s>"), s.cstr());
+    throwException(_T("%s:Expected double:<%s>"), _T(__FUNCTION__), s.cstr());
   }
   return result;
 }
@@ -148,7 +146,7 @@ int Tokenizer::getInt() {
   String s = next();
   int result;
   if(_stscanf(s.cstr(), _T("%ld"), &result) != 1) {
-    throwMethodException(s_className, _T("getInt"), _T("Expected int:<%s>"), s.cstr());
+    throwException(_T("%s:Expected int:<%s>"), _T(__FUNCTION__), s.cstr());
   }
   return result;
 }
@@ -157,7 +155,7 @@ unsigned int Tokenizer::getUint() {
   String s = next();
   unsigned int result;
   if(_stscanf(s.cstr(), _T("%lu"), &result) != 1) {
-    throwMethodException(s_className, _T("getUint"), _T("Expected unsigned int:<%s>"), s.cstr());
+    throwException(_T("%s:Expected unsigned int:<%s>"), _T(__FUNCTION__), s.cstr());
   }
   return result;
 }
@@ -166,7 +164,7 @@ __int64 Tokenizer::getInt64() {
   String s = next();
   __int64 result;
   if(_stscanf(s.cstr(), _T("%I64d"), &result) != 1) {
-    throwMethodException(s_className, _T("getInt64"), _T("Expected __int64:<%s>"), s.cstr());
+    throwException(_T("%s:Expected __int64:<%s>"), _T(__FUNCTION__), s.cstr());
   }
   return result;
 }
@@ -175,7 +173,7 @@ unsigned __int64 Tokenizer::getUint64() {
   String s = next();
   unsigned __int64 result;
   if(_stscanf(s.cstr(), _T("%I64u"), &result) != 1) {
-    throwMethodException(s_className, _T("getUint64"), _T("Expected unsigned __int64:<%s>"), s.cstr());
+    throwException(_T("%s:Expected unsigned __int64:<%s>"), _T(__FUNCTION__), s.cstr());
   }
   return result;
 }

@@ -2,7 +2,6 @@
 
 class Random {
 private:
-  DECLARECLASSNAME;
   __int64 m_seed;
 
 protected:

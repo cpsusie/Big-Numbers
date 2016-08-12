@@ -15,8 +15,6 @@
 #define ASM_OPTIMIZED
 #endif
 
-DEFINECLASSNAME(BitSet);
-
 BitSet::Atom BitSet::mask[_BITSET_ATOMSIZE+1]; // Array of atoms with number of 1-bits = index, index = [0;_BITSET_ATOMSIZE]
 
 #pragma warning(disable : 4073)
@@ -65,7 +63,7 @@ size_t BitSet::getAtomCount(size_t capacity) { // static
 
 BitSet::BitSet(size_t capacity) {
   if(capacity == 0) {
-    throwMethodInvalidArgumentException(s_className, _T("BitSet"), _T("Capacity=%d"),capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("Capacity=0"));
   }
   m_capacity = capacity;
   const size_t atomCount = ATOMCOUNT(m_capacity);
@@ -124,7 +122,7 @@ BitSet &BitSet::clear() {
 
 BitSet &BitSet::remove(size_t i) {
   if(i >= m_capacity) {
-    throwMethodInvalidArgumentException(s_className, _T("remove"), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
   ATOM(m_p,i) &= ~ATOMBIT(i);
   return *this;
@@ -132,7 +130,7 @@ BitSet &BitSet::remove(size_t i) {
 
 BitSet &BitSet::add(size_t i) {
   if(i >= m_capacity) {
-    throwMethodInvalidArgumentException(s_className, _T("add"), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
   ATOM(m_p,i) |= ATOMBIT(i);
   return *this;
@@ -140,7 +138,7 @@ BitSet &BitSet::add(size_t i) {
 
 BitSet &BitSet::remove(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwMethodInvalidArgumentException(s_className, _T("remove"), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;
@@ -168,7 +166,7 @@ BitSet &BitSet::remove(size_t a, size_t b) {
 
 BitSet &BitSet::add(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwMethodInvalidArgumentException(s_className, _T("add"), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;
@@ -233,7 +231,7 @@ size_t BitSet::selectRandomNonEmptyAtom() const {
       if(i-- == 0) i = a-1;
     }
   }
-  throwMethodException(s_className, _T("select"), _T("BitSet is empty"));
+  throwException(_T("Cannot select from empty BitSet"));
   return -1;
 }
 

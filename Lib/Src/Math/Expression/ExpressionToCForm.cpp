@@ -138,7 +138,7 @@ FactorArray &Expression::toCFormPower(FactorArray &result, ExpressionNode *n, SN
     result.add(base.left(), base.right() * exponent * expo);
     break;
   case ROOT:
-    throwMethodInvalidArgumentException(s_className, method, _T("ROOT in canonical form. n:<%s>"), n->toString().cstr());
+    throwInvalidSymbolForTreeMode(method, n);
     break;
   case PRODUCT:
     { const FactorArray &factors = base.getFactorArray();
@@ -164,7 +164,7 @@ FactorArray &Expression::toCFormRoot(FactorArray &result, ExpressionNode *n, SNo
     result.add(rad.left(), rad.right() * exponent / root);
     break;
   case ROOT:
-    throwMethodInvalidArgumentException(s_className, method, _T("ROOT in canonical form. n:<%s>"), n->toString().cstr());
+    throwInvalidSymbolForTreeMode(method, n);
     break;
   case PRODUCT:
     { const FactorArray &factors = rad.getFactorArray();

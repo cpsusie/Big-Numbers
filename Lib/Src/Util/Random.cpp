@@ -2,7 +2,6 @@
 #include <Math.h>
 #include <Random.h>
 
-DEFINECLASSNAME(Random);
 static const __int64 multiplier  = (__int64)0x5DEECE66D;
 static const __int64 addend      = 0xB;
 static const __int64 mask        = ((__int64)1 << 48) - 1;
@@ -44,7 +43,7 @@ int Random::nextInt() {
  */
 int Random::nextInt(int n) {
   if(n<=0) {
-    throwMethodInvalidArgumentException(s_className, _T("nextInt"), _T("n must be positive"));
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("n must be positive"));
   }
 
   if((n & -n) == n) { // i.e., n is a power of 2

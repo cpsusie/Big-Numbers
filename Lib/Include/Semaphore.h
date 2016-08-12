@@ -4,7 +4,6 @@
 
 class Semaphore {
 private:
-  DECLARECLASSNAME;
   HANDLE m_sem;
 public:
   // initialCount is the number of threads allowed in critical section

@@ -56,7 +56,7 @@ void BigRational::init(const String &s) {
 void BigRational::init(const BigInt &numerator, const BigInt &denominator) {
   DEFINEMETHODNAME;
   if(denominator.isZero()) {
-    throwMethodInvalidArgumentException(s_className, method, _T("Denominator is zero"));
+    throwInvalidArgumentException(method, _T("Denominator is zero"));
   }
 
   DigitPool *pool = getDigitPool();

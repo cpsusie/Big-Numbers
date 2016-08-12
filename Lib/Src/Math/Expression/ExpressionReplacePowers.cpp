@@ -45,8 +45,8 @@ const ExpressionNode *Expression::replaceRationalPowers(const ExpressionNode *n)
 }
 
 const ExpressionNode *Expression::replaceRationalPower(const ExpressionNode *n) const {
-  const ExpressionFactor     *f        = replaceRationalPower(fetchFactorNode(n->left(), n->right()));
-  const ExpressionNode *exponent = f->getExponent();
+  const ExpressionFactor *f        = replaceRationalPower(fetchFactorNode(n->left(), n->right()));
+  const ExpressionNode   *exponent = f->getExponent();
   if(!exponent->isNumber()) {
     return power(f->getBase(), exponent);
   } else if(exponent->isNegative()) {
@@ -112,7 +112,7 @@ const ExpressionNode *Expression::replaceRationalFactors(const ExpressionNode *n
         } else {
           Rational r = f->getBase()->getRational();
           if(!f->getExponent()->isOne()) {
-            throwMethodException(s_className, method, _T("Exponent to rational constant is not 1. (factor=%s)"),  f->toString().cstr());
+            throwException(_T("%s:Exponent to rational constant is not 1. (factor=%s)"),  method, f->toString().cstr());
           }
           const __int64 numerator   = r.getNumerator();
           const __int64 denominator = r.getDenominator();

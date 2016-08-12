@@ -58,7 +58,7 @@ SNode Expression::toNFormRealExp(ExpressionNode *n) {
     return numberExpression(evaluateRealExpr(n));
   }
   switch(n->getSymbol()) {
-  case NUMBER    : throwMethodException(s_className, method, _T("Unexpected node-symbol (NUMBER)"));
+  case NUMBER    : throwException(_T("%s:Unexpected node-symbol (NUMBER)"), method);
   case NAME      : return n;
   case SUM       : return toNFormSum(n);
   case PRODUCT   : return toNFormProduct(n);

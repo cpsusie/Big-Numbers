@@ -12,21 +12,19 @@
 
 #pragma warning(disable : 4244)
 
-DEFINECLASSNAME(PackedArray);
-
 PackedArray::PackedArray(unsigned char bitsPerItem) : m_bitsPerItem(bitsPerItem), m_maxValue((1<<bitsPerItem)-1) {
-  validateBitsPerItem(s_className, bitsPerItem);
+  validateBitsPerItem(bitsPerItem);
   m_firstFreeBit = 0;
 }
 
-void PackedArray::validateBitsPerItem(const TCHAR *className, unsigned int bitsPerItem) { // static
-  static const TCHAR *method = _T("validateBitsPerItem");
+void PackedArray::validateBitsPerItem(unsigned int bitsPerItem) { // static
+  DEFINEMETHODNAME;
 
   if(bitsPerItem == 0) {
-    throwMethodInvalidArgumentException(className, method, _T("bitsPerItem=0"));
+    throwInvalidArgumentException(method, _T("bitsPerItem=0"));
   }
   if(bitsPerItem > 31) {
-    throwMethodInvalidArgumentException(className, method, _T("bitsPerItem=%d. max=31"), bitsPerItem);
+    throwInvalidArgumentException(method, _T("bitsPerItem=%d. max=31"), bitsPerItem);
   }
 }
 
@@ -53,33 +51,33 @@ static String printbin(unsigned int v) {
 
 #ifdef _DEBUG
 
-#define CHECK_INDEX(f)            \
-{ if(index >= size()) {           \
-    indexError(index, _T(f));     \
-  }                               \
+#define CHECK_INDEX                      \
+{ if(index >= size()) {                  \
+    indexError(index, _T(__FUNCTION__)); \
+  }                                      \
 }
 
-#define CHECK_VALUE(f)            \
-{ if(v > m_maxValue) {            \
-    valueError(v, _T(f));         \
-  }                               \
+#define CHECK_VALUE                      \
+{ if(v > m_maxValue) {                   \
+    valueError(v, _T(__FUNCTION__));     \
+  }                                      \
 }
 
-#define CHECK_INDEX_AND_VALUE(f)  \
-{ CHECK_INDEX(f)                  \
-  CHECK_VALUE(f)                  \
+#define CHECK_INDEX_AND_VALUE            \
+{ CHECK_INDEX                            \
+  CHECK_VALUE                            \
 }
 
 #else
 
-#define CHECK_INDEX(f)
-#define CHECK_VALUE(f)
-#define CHECK_INDEX_AND_VALUE(f)
+#define CHECK_INDEX
+#define CHECK_VALUE
+#define CHECK_INDEX_AND_VALUE
 
 #endif
 
 unsigned int PackedArray::get(unsigned __int64 index) const {
-  CHECK_INDEX("get")
+  CHECK_INDEX
 
   const unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
   const unsigned int offset =         (index * m_bitsPerItem) % 32;
@@ -102,7 +100,7 @@ unsigned int PackedArray::select() const {
 }
 
 void PackedArray::set(unsigned __int64 index, unsigned int v) {
-  CHECK_INDEX_AND_VALUE("set")
+  CHECK_INDEX_AND_VALUE
 
         unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
   const unsigned int offset =         (index * m_bitsPerItem) % 32;
@@ -118,7 +116,7 @@ void PackedArray::set(unsigned __int64 index, unsigned int v) {
 }
 
 void PackedArray::or( unsigned __int64 index, unsigned int v) {
-  CHECK_INDEX_AND_VALUE("or")
+  CHECK_INDEX_AND_VALUE
 
         unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
   const unsigned int offset =         (index * m_bitsPerItem) % 32;
@@ -131,7 +129,7 @@ void PackedArray::or( unsigned __int64 index, unsigned int v) {
 }
 
 void PackedArray::and(unsigned __int64 index, unsigned int v) {
-  CHECK_INDEX_AND_VALUE("and")
+  CHECK_INDEX_AND_VALUE
 
         unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
   const unsigned int offset =         (index * m_bitsPerItem) % 32;
@@ -144,7 +142,7 @@ void PackedArray::and(unsigned __int64 index, unsigned int v) {
 }
 
 void PackedArray::xor(unsigned __int64 index, unsigned int v) {
-  CHECK_INDEX_AND_VALUE("xor")
+  CHECK_INDEX_AND_VALUE
 
         unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
   const unsigned int offset =         (index * m_bitsPerItem) % 32;
@@ -157,7 +155,7 @@ void PackedArray::xor(unsigned __int64 index, unsigned int v) {
 }
 
 void PackedArray::add(unsigned int v) {
-  CHECK_VALUE("add")
+  CHECK_VALUE
 
   assertHasOneFreeItem();
 
@@ -173,7 +171,7 @@ void PackedArray::add(unsigned int v) {
 }
 
 void PackedArray::add(unsigned __int64 index, unsigned int v) {
-  CHECK_VALUE("add")
+  CHECK_VALUE
 
   addZeroes(index, 1);
 

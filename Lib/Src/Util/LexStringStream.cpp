@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <Scanner.h>
 
-DEFINECLASSNAME(LexStringStream);
-
 bool LexStringStream::open(const String &str) {
   m_string = str;
   m_pos    = 0;

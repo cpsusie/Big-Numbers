@@ -206,11 +206,12 @@ private:
   void throwInvalidTrigonometricMode();
   static void throwUnknownSymbolException(const TCHAR *method, SNode                 n);
   static void throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n);
+  void        throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const;
 
 #ifdef _DEBUG
   inline void checkReturnType(const TCHAR *method, ExpressionReturnType expectedReturnType) const {
     if(m_returnType != expectedReturnType) {
-      throwMethodException(s_className, method, _T("Returntype=%d. exptected=%d\n"), m_returnType, expectedReturnType);
+      throwException(_T("%s:Returntype=%d. exptected=%d\n"), method, m_returnType, expectedReturnType);
     }
   }
 #define CHECKRETURNTYPE(expectedType) checkReturnType(_T(__FUNCTION__), expectedType)

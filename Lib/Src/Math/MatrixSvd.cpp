@@ -26,6 +26,7 @@ static Real radius(Real u, Real v) {
 *       A[m][n] has been destroyed by U[m][n] after the decomposition.      *
 ****************************************************************************/
 static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
+  DEFINEMETHODNAME;
   const int m   = (int)a.getRowCount();
   const int n   = (int)a.getColumnCount();
   const int nm1 = n - 1;
@@ -37,7 +38,7 @@ static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
   Real c, f, h, s, z;
 
   if(m < n) {
-    throwMathException(_T("svdDecompose:Matrix a must be augmented with extra zero rows. Dimension=(%d,%d)."), m, n);
+    throwMathException(_T("%s:Matrix a must be augmented with extra zero rows. Dimension=(%d,%d)."), method, m, n);
   }
 
   Vector rv1(n);
@@ -274,7 +275,7 @@ static void svdDecompose(Matrix &a, Vector &d, Matrix &v) {
 //    cout << "k:" << k << " Iterations:" << iteration << "\n";
 
     if(iteration == MAXITERATION) {
-      throwException(_T("No convergence in %d svdDecompose iterations"), MAXITERATION);
+      throwException(_T("%s:No convergence in %d iterations"), method, MAXITERATION);
     }
   }
 }
@@ -321,10 +322,13 @@ SVDDecomposition::SVDDecomposition(const Matrix &a) : m_u(a) {
 }
 
 Vector SVDDecomposition::solve(const Vector &b) const {
+  DEFINEMETHODNAME;
   const int dim = (int)b.getDimension();
   if(dim != m_u.getRowCount()) {
-    throwMethodInvalidArgumentException(s_className, _T("solve")
-                                       ,_T("Invalid dimension Dim(u)=(%u,%u). Dim(b)=%u"), m_u.getRowCount(), m_u.getColumnCount(), dim);
+    throwInvalidArgumentException(method
+                                 ,_T("Invalid dimension u.%s. b.%s")
+                                 , m_u.getDimensionString().cstr()
+                                 , b.getDimensionString().cstr());
   }
   return svdSolve(m_u,m_d,m_v,b);
 }

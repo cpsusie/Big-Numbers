@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <HashMap.h>
 
-DEFINECLASSNAME(HashMapImpl);
-
 HashMapImpl::HashMapImpl(const AbstractObjectManager &keyManager, const AbstractObjectManager &dataManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity)
 : HashSetImpl(keyManager, hash, comparator, capacity)
 {
@@ -111,18 +109,20 @@ const void *HashMapImpl::get(const void *key) const {
 
 AbstractEntry *HashMapImpl::selectEntry() const {
   if(size() == 0) {
-    throwMethodException(s_className, _T("select"), _T("Map is empty"));
+    throwException(_T("%s:Cannot select from empty map"), _T(__FUNCTION__));
   }
   return (HashMapNode*)findNode(select());
 }
 
 const AbstractEntry *HashMapImpl::getMinEntry() const {
-  throwMethodUnsupportedOperationException(s_className, _T("getMinEntry"));
+  DEFINEMETHODNAME;
+  throwUnsupportedOperationException(method);
   return NULL;
 }
 
 const AbstractEntry *HashMapImpl::getMaxEntry() const {
-  throwMethodUnsupportedOperationException(s_className, _T("getMaxEntry"));
+  DEFINEMETHODNAME;
+  throwUnsupportedOperationException(method);
   return NULL;
 }
 

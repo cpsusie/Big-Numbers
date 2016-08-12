@@ -5,7 +5,7 @@ protected:
   void noNextElementError(         const TCHAR *className) const;
   void concurrentModificationError(const TCHAR *className) const;
   void noCurrentElementError(      const TCHAR *className) const;
-  void unsupportedOperationError(  const TCHAR *className) const;
+  void unsupportedOperationError(  const TCHAR *method   ) const;
 
 public:
   virtual AbstractIterator *clone() = 0;

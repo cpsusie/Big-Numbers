@@ -32,8 +32,6 @@ static FileInitializer initFile;
 
 #endif
 
-DEFINECLASSNAME(HashSetTable);
-
 HashSetTable::HashSetTable(const HashSetImpl &owner, size_t capacity) : m_owner(owner), m_capacity(max(5, capacity)) {
   m_size        = 0;
   m_updateCount = 0;
@@ -94,7 +92,7 @@ void HashSetTable::remove(HashSetNode *n) {
 
 const AbstractKey *HashSetTable::select() const {
   if(m_size == 0) {
-    throwMethodException(s_className, _T("select"), _T("Set is empty"));
+    throwException(_T("%s:Cannot select from empty set"), _T(__FUNCTION__));
   }
 
   if(randInt() % 2 == 0) {
@@ -168,8 +166,6 @@ int HashSetTable::getMaxChainLength() const {
   }
   return m;
 }
-
-DEFINECLASSNAME(HashSetImpl);
 
 HashSetImpl::HashSetImpl(const AbstractObjectManager &objectManager, HashFunction hash, const AbstractComparator &comparator, size_t capacity) {
   m_objectManager = objectManager.clone();
@@ -311,12 +307,14 @@ void *HashSetImpl::select() {
 }
 
 const void *HashSetImpl::getMin() const {
-  throwMethodUnsupportedOperationException(s_className, _T("getMin"));
+  DEFINEMETHODNAME;
+  throwUnsupportedOperationException(method);
   return NULL;
 }
 
 const void *HashSetImpl::getMax() const {
-  throwMethodUnsupportedOperationException(s_className, _T("getMax"));
+  DEFINEMETHODNAME;
+  throwUnsupportedOperationException(method);
   return NULL;
 }
 

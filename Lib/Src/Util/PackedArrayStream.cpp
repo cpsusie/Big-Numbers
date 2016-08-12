@@ -31,8 +31,6 @@ void PackedArray::load(ByteInputStream &s) {
 
 #endif
 
-DEFINECLASSNAME(PackedFileArray);
-
 PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startOffset) 
 : m_data(fileName, startOffset + sizeof(unsigned int) + sizeof(unsigned __int64))
   // offset of ByteArray if startOffset + sizeof(m_bitsPerItem) + sizeof(PackedArray::m_firstFreeBit)
@@ -40,7 +38,7 @@ PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startO
   ByteInputFile s(fileName);
   s.seek(startOffset);
   s.getBytesForced((BYTE*)&m_bitsPerItem , sizeof(m_bitsPerItem ));
-  PackedArray::validateBitsPerItem(s_className, m_bitsPerItem);
+  PackedArray::validateBitsPerItem(m_bitsPerItem);
   s.getBytesForced((BYTE*)&m_firstFreeBit, sizeof(m_firstFreeBit));
   m_maxValue = (1<<m_bitsPerItem)-1;
 }

@@ -25,8 +25,6 @@ static size_t _max(size_t a, size_t b) {
   return a > b ? a : b;
 }
 
-DEFINECLASSNAME(ArrayImpl);
-
 ArrayImpl::ArrayImpl(AbstractObjectManager &objectManager, size_t capacity) {
   init(objectManager,0,_max(1,capacity));
 }
@@ -107,15 +105,17 @@ void ArrayImpl::clear() {
 }
 
 void ArrayImpl::indexError(const TCHAR *method, size_t index) const {
-  throwMethodInvalidArgumentException(s_className, method, _T("Index %d out of range. Arraysize=%d."), index, m_size);
+  throwInvalidArgumentException(method, _T("Index %s out of range. size=%s")
+                               ,format1000(index).cstr()
+                               ,format1000(m_size).cstr());
 }
 
 void ArrayImpl::selectError() const {
-  throwMethodException(s_className, _T("select"), _T("Array is empty"));
+  throwException(_T("%s:Cannot select from empty array"), _T(__FUNCTION__));
 }
 
 void ArrayImpl::unsupportedOperationError(const TCHAR *method) const {
-  throwMethodUnsupportedOperationException(s_className, method);
+  throwUnsupportedOperationException(method);
 }
 
 bool ArrayImpl::add(const void *e) {
@@ -128,8 +128,9 @@ bool ArrayImpl::add(const void *e) {
 }
 
 bool ArrayImpl::add(size_t i, const void *e, size_t count) {
+  DEFINEMETHODNAME;
   if(i > m_size) {
-    indexError(_T("add"), i);
+    indexError(method, i);
   }
   if(count == 0) {
     return false;
@@ -149,12 +150,13 @@ bool ArrayImpl::add(size_t i, const void *e, size_t count) {
 }
 
 void ArrayImpl::removeIndex(size_t i, size_t count) {
+  DEFINEMETHODNAME;
   if(count == 0) {
     return;
   }
   size_t j = i + count;
   if(j > m_size) {
-    indexError(_T("removeIndex"),j);
+    indexError(method,j);
   }
   for(size_t k = i; k < j; k++) {
     m_objectManager->deleteObject(m_elem[k]);
@@ -171,16 +173,17 @@ void ArrayImpl::removeIndex(size_t i, size_t count) {
 }
 
 bool ArrayImpl::remove(const void *e) {
-  unsupportedOperationError(_T("remove"));
+  unsupportedOperationError(_T(__FUNCTION__));
   return false;
 }
 
 void ArrayImpl::swap(size_t i1, size_t i2) {
+  DEFINEMETHODNAME;
   if(i1 >= m_size) {
-    indexError(_T("swap"),i1);
+    indexError(method, i1);
   }
   if(i2 >= m_size) {
-    indexError(_T("swap"),i2);
+    indexError(method, i2);
   }
   if(i1 != i2) {
     void *tmp  = m_elem[i1];
@@ -190,7 +193,7 @@ void ArrayImpl::swap(size_t i1, size_t i2) {
 }
 
 bool ArrayImpl::contains(const void *e) const {
-  unsupportedOperationError(_T("contains"));
+  unsupportedOperationError(_T(__FUNCTION__));
   return false;
 }
 

@@ -31,7 +31,6 @@ public:
 
 class Tokenizer {
 private:
-  DECLARECLASSNAME;
   const TCHAR        *m_str;
   BitSet              m_delimiterSet;
   TCHAR               m_textQualifier;

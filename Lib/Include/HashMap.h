@@ -24,7 +24,6 @@ public:
 
 class HashMapImpl : public HashSetImpl, public AbstractMap {
 private:
-  DECLARECLASSNAME;
   AbstractObjectManager *m_dataManager;
 
   AbstractObjectManager *getKeyManager() {

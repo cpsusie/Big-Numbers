@@ -83,7 +83,7 @@ Rational::Rational(double d, unsigned int maxND) {
   }
 
   if((da > maxND) || (da < 1.0 / maxND)) { // hard upper and lower bounds for ratio
-    throwMethodInvalidArgumentException(s_className, method, invalidDoubleMsg, d, maxND);
+    throwInvalidArgumentException(method, invalidDoubleMsg, d, maxND);
   }
 
   assert(((double)p1 / q1 <= maxND) && ((double)q1 / p1 <= maxND));
@@ -136,7 +136,7 @@ Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
   }
 
   if((da > maxND) || (da < Double80::one / maxND)) { // hard upper and lower bounds for ratio
-    throwMethodInvalidArgumentException(s_className, method, invalidDoubleMsg, d80.toString().cstr(), maxND);
+    throwInvalidArgumentException(method, invalidDoubleMsg, d80.toString().cstr(), maxND);
   }
 
   assert(((Double80)p1 / q1 <= maxND) && ((Double80)q1 / p1 <= maxND));
@@ -165,18 +165,18 @@ void Rational::init(const String &s) {
   String tmp(s);
   const int slash = (int)tmp.find(_T('/'));
   if(slash == 0) {
-    throwMethodInvalidArgumentException(s_className, method, _T("s=%s"), s.cstr());
+    throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
   }
   if(slash < 0) {
     if(_stscanf(s.cstr(), _T("%I64d"), &m_numerator) != 1) {
-      throwMethodInvalidArgumentException(s_className, method, _T("s=%s"), s.cstr());
+      throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
     m_denominator = 1;
   } else {
     __int64 n, d;
     if((_stscanf(s.cstr()        , _T("%I64d"), &n) != 1)
     || (_stscanf(s.cstr()+slash+1, _T("%I64d"), &d) != 1)) {
-      throwMethodInvalidArgumentException(s_className, method, _T("s=%s"), s.cstr());
+      throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
     }
     init(n, d);
   }
@@ -184,11 +184,11 @@ void Rational::init(const String &s) {
 
 void Rational::init(const __int64 &numerator, const __int64 &denominator) {
   if(denominator == 0) {
-    throwMethodInvalidArgumentException(s_className, _T("init"), _T("Denominator is zero"));
+    throwInvalidArgumentException(_T("init"), _T("Denominator is zero"));
   } else if((numerator < -_I64_MAX) || (numerator   > _I64_MAX)) {
-    throwMethodInvalidArgumentException(s_className, _T("init"), _T("Numerator(=%I64d) out of range [%I64d..%I64d]"), numerator, -_I64_MAX, _I64_MAX);
+    throwInvalidArgumentException(_T("init"), _T("Numerator(=%I64d) out of range [%I64d..%I64d]"), numerator, -_I64_MAX, _I64_MAX);
   } else if((denominator < -_I64_MAX) || (denominator > _I64_MAX)) {
-    throwMethodInvalidArgumentException(s_className, _T("init"), _T("Denominator(=%I64d) out of range [%I64d..%I64d]"), denominator, -_I64_MAX, _I64_MAX);
+    throwInvalidArgumentException(_T("init"), _T("Denominator(=%I64d) out of range [%I64d..%I64d]"), denominator, -_I64_MAX, _I64_MAX);
   }
 
   if(numerator == 0) { // zero always 0/1
@@ -242,7 +242,7 @@ Rational operator*(const Rational &l, const Rational &r) {
 }
 
 void Rational::throwDivisionbyZeroException(const TCHAR *method) { // static
-  throwMethodInvalidArgumentException(s_className, method, _T("Division by zero"));
+  throwInvalidArgumentException(method, _T("Division by zero"));
 }
 
 Rational operator/(const Rational &l, const Rational &r) {
@@ -404,7 +404,7 @@ __int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // st
   __int64 result = a * b;
   const int sr = sign(result);
   if(sr != expectedSign) {
-    throwMethodException(s_className, method, _T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
+    throwException(method, _T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
   }
   return result;
 }
@@ -412,7 +412,7 @@ __int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // st
 __int64 Rational::findGCD(const __int64 &a, const __int64 &b) { // static
   DEFINEMETHODNAME;
   if(a <= 0 || b <= 0) {
-    throwMethodInvalidArgumentException(s_className, method, _T("a=%I64d, b=%I64d"), a, b);
+    throwInvalidArgumentException(method, _T("a=%I64d, b=%I64d"), a, b);
   }
   __int64 g = 1;
   __int64 u = a;

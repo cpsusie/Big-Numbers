@@ -5,7 +5,6 @@
 
 class ByteInputFile : public ResetableByteInputStream {
 private:
-  DECLARECLASSNAME;
   FILE            *m_file;
   unsigned __int64 m_startPos;
   int              m_oldMode;
@@ -44,7 +43,6 @@ public:
 
 class ByteOutputFile : public ByteOutputStream {
 private:
-  DECLARECLASSNAME;
   FILE  *m_file;
   int    m_oldMode;
   String m_name;
@@ -86,7 +84,6 @@ typedef enum {
 
 class ByteFile : public ResetableByteInputOutputStream {
 private:
-  DECLARECLASSNAME;
   FILE            *m_file;
   unsigned __int64 m_startPos;
   int              m_oldMode;

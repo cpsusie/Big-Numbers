@@ -121,7 +121,7 @@ void ParserTree::initDynamicOperations(ParserTreeForm treeForm) {
     break;
 
   default                :
-    throwMethodInvalidArgumentException(s_className, method, _T("Unknown treeForm:%d"), treeForm);
+    throwInvalidArgumentException(method, _T("Unknown treeForm:%d"), treeForm);
   }
 }
 
@@ -353,7 +353,7 @@ ExpressionNode *ParserTree::traverseSubstituteNodes(ExpressionNode *n, CompactNo
       return getPoly(n, newCoef, newArg);
     }
   default:
-    throwMethodInvalidArgumentException(s_className, method, _T("Unknown nodeType:%d"), n->getNodeType());
+    throwInvalidArgumentException(method, _T("Unknown nodeType:%d"), n->getNodeType());
     return NULL;
   }
 }
@@ -393,9 +393,9 @@ ExpressionNode *ParserTree::constExpression(const String &name) {
 
   const ExpressionVariable *v = getVariable(name);
   if(v == NULL) {
-    throwMethodInvalidArgumentException(s_className, method, _T("%s not found in symbol table"), name.cstr());
+    throwInvalidArgumentException(method, _T("%s not found in symbol table"), name.cstr());
   } else if(!v->isConstant()) {
-    throwMethodInvalidArgumentException(s_className, method, _T("%s is not a constant"), name.cstr());
+    throwInvalidArgumentException(method, _T("%s is not a constant"), name.cstr());
   }
   return new ExpressionNodeVariable(this, name, *(ExpressionVariable*)v);
 }

@@ -70,7 +70,7 @@ bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
   bool ret;
   if (m_state & (CACHE_LOADED|CACHE_LOADING)) {
     if (isLoaded()) {
-      throwMethodException(s_className, method, _T("Not allowed when cache is loaded from file"));
+      throwException(_T("%s:Not allowed when cache is loaded from file"), method);
     }
     m_state &= ~CACHE_EMPTY;
     ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);

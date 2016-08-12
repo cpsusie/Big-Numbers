@@ -1,12 +1,10 @@
 #include "pch.h"
 
-DEFINECLASSNAME(String);
-
 TCHAR *String::newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity) { // static
   length = _tcsclen(s);
   TCHAR *result = new TCHAR[capacity = length + 1];
   if(result == NULL) {
-    throwMethodInvalidArgumentException(s_className, _T("newCharBuffer"), _T("Out of memory. Requested size=%lu"), capacity);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("Out of memory. Requested size=%s"), format1000(capacity).cstr());
   }
   return _tcscpy(result,s);
 }
@@ -529,7 +527,11 @@ String &String::trimRight() {
 }
 
 void String::indexError(size_t index) const {
-  throwMethodInvalidArgumentException(s_className, _T("operator[]"), _T("Index %u out of range in string <%s>. length=%d"), index, m_buf, m_len);
+  throwInvalidArgumentException(_T(__FUNCTION__)
+                               , _T("Index %s out of range in string <%s>. length=%s")
+                               , format1000(index).cstr()
+                               , m_buf
+                               , format1000(m_len).cstr());
 }
 
 TCHAR &String::operator[](size_t index) {

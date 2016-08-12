@@ -97,7 +97,7 @@ public:
     case 4 : return _SWAP4(bytes);
     case 5 : return _SWAP5(bytes);
     case 6 : return _SWAP6(bytes);
-    default: throwMethodInvalidArgumentException(_T("IntelOpcode"), _T("swapBytes"), _T("sz=%d"), sz);
+    default: throwInvalidArgumentException(_T(__FUNCTION__), _T("sz=%d"), sz);
              return bytes;
     }
   }

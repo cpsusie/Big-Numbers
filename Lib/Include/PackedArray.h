@@ -5,7 +5,6 @@
 
 class PackedArray {
 private:
-  DECLARECLASSNAME;
   unsigned int               m_bitsPerItem;
   unsigned int               m_maxValue;
   CompactArray<unsigned int> m_data;
@@ -14,16 +13,16 @@ private:
     if(m_data.size() * 32 < m_firstFreeBit + m_bitsPerItem) m_data.add(0);
   }
 
-  static void validateBitsPerItem(const TCHAR *className, unsigned int bitsPerItem);
+  static void validateBitsPerItem(unsigned int bitsPerItem);
 #ifdef _DEBUG
   void indexError(unsigned __int64 index, const TCHAR *method=_T("")) const {
-    throwMethodInvalidArgumentException(s_className, method, _T("Index %I64u out of range. size=%I64u"), index, size());
+    throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
   void valueError(unsigned int v, const TCHAR *method=_T("")) const {
-    throwMethodInvalidArgumentException(s_className, method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
+    throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
   }
   static void selectError() {
-    throwMethodException(s_className, _T("select"), _T("Cannot from empty array"));
+    throwException(_T("%s:Cannot select from empty array"), _T(__FUNCTION__));
   }
 #endif
 
@@ -78,7 +77,6 @@ class PackedFileArray { // Read-only packed array of integers accessed by seekin
                         // the whole array into memory. Slow, but save space
                         // Bytes starting at startOffset must be written by PackedArray.save
 private:
-  DECLARECLASSNAME;
   unsigned char                  m_bitsPerItem;
   unsigned int                   m_maxValue;
   CompactFileArray<unsigned int> m_data;
@@ -86,7 +84,7 @@ private:
 
 #ifdef _DEBUG
   void indexError(unsigned __int64 index, const TCHAR *method=_T("")) const {
-    throwMethodInvalidArgumentException(s_className, method, _T("Index %I64u out of range. size=%I64u"), index, size());
+    throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
 #endif
 public:

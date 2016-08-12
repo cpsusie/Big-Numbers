@@ -100,7 +100,7 @@ void DecompressFilter::decompress() {
   if(err == Z_STREAM_END) {
     m_eoz = true;
   } else if(err != Z_OK) {
-    throwException(_T("%s::%s:inflate returncode:%d"), s_className, _T(__FUNCTION__), err);
+    throwException(_T("%s:inflate returncode:%d"), _T(__FUNCTION__), err);
   }
 }
 

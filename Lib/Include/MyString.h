@@ -10,7 +10,6 @@
 
 class String {
 private:
-  DECLARECLASSNAME;
   size_t m_len, m_capacity;
   TCHAR *m_buf;
   static TCHAR *newCharBuffer(const TCHAR *s, size_t &length, size_t &capacity);

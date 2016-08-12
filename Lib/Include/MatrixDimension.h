@@ -38,6 +38,6 @@ public:
     return rowCount * columnCount;
   }
   inline String toString() const {
-    return format(_T("(%lu,%lu)"), rowCount, columnCount);
+    return format(_T("(%s,%s)"), format1000(rowCount).cstr(), format1000(columnCount).cstr());
   }
 };

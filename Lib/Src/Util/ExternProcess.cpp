@@ -79,8 +79,6 @@ void Pipe::init() {
   m_fd[0] = m_fd[1] = -1;
 }
 
-DEFINECLASSNAME(ExternProcess);
-
 #define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
 
 #define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), _T(__FUNCTION__)).cstr()); m_level++; }
@@ -267,7 +265,7 @@ void ExternProcess::vstartCreateProcess(const String &program, va_list argptr) {
     setProcessHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
   } else {
-    throwMethodLastErrorOnSysCallException(s_className, _T("createProcess"));
+    throwLastErrorOnSysCallException(_T(__FUNCTION__));
   }
 }
 

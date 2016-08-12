@@ -99,7 +99,6 @@ public:
 
 class LexStringStream : public LexStream {
 private:
-  DECLARECLASSNAME;
   String   m_string;
   intptr_t m_pos;
 public:

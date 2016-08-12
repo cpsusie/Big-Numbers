@@ -4,7 +4,6 @@
 
 class ExternProcess {
 private:
-  DECLARECLASSNAME;
   FILE                        *m_input;
   FILE                        *m_output;
   HANDLE                       m_processHandle;

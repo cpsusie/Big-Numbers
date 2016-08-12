@@ -311,7 +311,7 @@ public:
     }
 
     void remove() {
-      unsupportedOperationError(_T("CompactHashSet"));
+      unsupportedOperationError(_T(__FUNCTION__));
     }
   };
 

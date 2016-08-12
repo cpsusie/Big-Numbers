@@ -77,8 +77,7 @@ unsigned short FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
   case FPU_HIGH_PRECISION  : // set bit[8;9] of FPU control register to 1,1
     setControlWord((unsigned short)SETBIT(SETBIT(cw,8),9));
     break;
-  default: throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__)
-                                              ,_T("mode=%d"), mode);
+  default: throwInvalidArgumentException(_T(__FUNCTION__),_T("mode=%d"), mode);
   }
   return cw;
 }
@@ -91,8 +90,8 @@ FPUPrecisionMode FPU::getPrecisionMode() { // static
   case 2 : return FPU_NORMAL_PRECISION;
   case 3 : return FPU_HIGH_PRECISION;
   case 1 : 
-  default: throwException(_T("%s::%s:Invalid precisionMode. bit[8,9] = %x")
-                         ,s_className, _T(__FUNCTION__),precisionMode); // Should not come here
+  default: throwException(_T("%s:Invalid precisionMode. bit[8,9] = %x")
+                         ,_T(__FUNCTION__),precisionMode); // Should not come here
            return FPU_HIGH_PRECISION;
   }
 }
@@ -113,7 +112,7 @@ unsigned short FPU::setRoundMode(FPURoundMode mode) { // static
     setControlWord((unsigned short)SETBIT(SETBIT(cw,10),11));
     break;
   default:
-    throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__), _T("mode=%d"), mode);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("mode=%d"), mode);
     break;
   }
   return cw;

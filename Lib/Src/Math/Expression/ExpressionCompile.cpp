@@ -118,7 +118,7 @@ void MachineCode::emitAddRSP(int n) {
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    throwMethodInvalidArgumentException(s_className, method, _T("n must be in range [0..255]"));
+    throwInvalidArgumentException(method, _T("n must be in range [0..255]"));
   }
 }
 
@@ -129,7 +129,7 @@ void MachineCode::emitSubRSP(int n) {
     const char byte = n;
     addBytes(&byte,1);
   } else {
-    throwMethodInvalidArgumentException(s_className, method, _T("n must be in range [0..255]"));
+    throwInvalidArgumentException(method, _T("n must be in range [0..255]"));
   }
 }
 
@@ -167,7 +167,7 @@ int MachineCode::emitShortJmp(const IntelInstruction &ins) {
 void MachineCode::fixupShortJump(int addr, int jmpAddr) {
   const int v = jmpAddr - addr - 1;
   if (!ISBYTE(v)) {
-    throwMethodInvalidArgumentException(s_className, _T(__FUNCTION__)
+    throwInvalidArgumentException(_T(__FUNCTION__)
       ,_T("shortJump from %d to %d too long. offset=%d (must be in range [-128,127]")
       ,addr, jmpAddr, v);
   }
@@ -435,6 +435,11 @@ void Expression::genReturnBoolExpression(const ExpressionNode *n) {
 #define GENCALL(n,f)     genCall(n,f,dst);      return
 #define GENPOLY(n)       genPolynomial(n, dst); return
 #define GENIF(n)         genIf(n,dst);          return
+
+void Expression::throwInvalidTrigonometricMode() {
+  throwInvalidArgumentException(_T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
+}
+
 
 #define GENTRIGOCALL(n,f)                         \
   switch(getTrigonometricMode()) {                \

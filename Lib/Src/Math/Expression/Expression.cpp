@@ -87,6 +87,11 @@ void Expression::throwUnknownSymbolException(const TCHAR *className, const TCHAR
   throwMethodException(className, method, _T("Unexpected symbol in expression tree:%s"), n->getSymbolName().cstr());
 }
 
+void Expression::throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const {
+  throwException(_T("%s:Invalid symbol in tree form %s:<%s>")
+                ,method, getTreeFormName().cstr(),  n->getSymbolName().cstr());
+}
+
 void Expression::setState(ExpressionState newState) {
   const ExpressionState oldState = m_state;
   if(newState != oldState) {
@@ -121,11 +126,6 @@ void Expression::setTrigonometricMode(TrigonometricMode mode) {
     notifyPropertyChanged(EXPR_TRIGONOMETRICMODE, &oldMode, &m_trigonometricMode);
   }
 }
-
-void Expression::throwInvalidTrigonometricMode() {
-  throwMethodInvalidArgumentException(s_className, _T("genExpression"), _T("Invalid trigonometricMode:%d"), m_trigonometricMode);
-}
-
 
 class MarkedNodeTransformer : public ExpressionNodeHandler {
 private:

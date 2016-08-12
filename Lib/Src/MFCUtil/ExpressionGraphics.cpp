@@ -78,7 +78,7 @@ const SymbolString &SymbolStringMap::getString(ExpressionInputSymbol symbol) con
   DEFINEMETHODNAME;
   const SymbolString *ss = get(symbol);
   if(ss == NULL) {
-    throwMethodInvalidArgumentException(s_className, method, _T("Unknown symbol:%s"), ExpressionTables->getSymbolName(symbol));
+    throwInvalidArgumentException(method, _T("Unknown symbol:%s"), ExpressionTables->getSymbolName(symbol));
   }
   return *ss;
 }
@@ -1052,7 +1052,7 @@ AlignedImage *ExpressionPainter::stackImages(ExpressionRectangle &rect, bool cen
 AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, ExpressionRectangle &rect) {
   DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwMethodInvalidArgumentException(s_className, method, _T("imageLIst.size()=%d != rect.children.size()=%d")
+    throwInvalidArgumentException(method, _T("imageLIst.size()=%d != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
   }
 
@@ -1106,7 +1106,7 @@ AlignedImage *ExpressionPainter::concatImages(const ImageArray &imageList, Expre
 AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imageList, ExpressionRectangle &rect) {
   DEFINEMETHODNAME;
   if(imageList.size() != rect.getChildCount()) {
-    throwMethodInvalidArgumentException(s_className, method, _T("imageLIst.size()=%d != rect.children.size()=%d")
+    throwInvalidArgumentException(method, _T("imageLIst.size()=%d != rect.children.size()=%d")
                                        ,imageList.size(), rect.getChildCount());
   }
   CSize size(0,0);

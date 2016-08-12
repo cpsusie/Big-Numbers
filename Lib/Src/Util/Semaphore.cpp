@@ -1,8 +1,6 @@
 #include "pch.h"
 #include <Semaphore.h>
 
-DEFINECLASSNAME(Semaphore);
-
 Semaphore::Semaphore(int initialCount, int maxWait) {
   if((m_sem = CreateSemaphore(NULL,initialCount,maxWait,NULL)) == NULL) {
     throwLastErrorOnSysCallException(_T("CreateSemaphore"));

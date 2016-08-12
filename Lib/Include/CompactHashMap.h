@@ -383,7 +383,7 @@ public:
     }
 
     void remove() {
-      unsupportedOperationError(_T("CompactMapEntryIterator"));
+      unsupportedOperationError(_T(__FUNCTION__));
     }
   };
 

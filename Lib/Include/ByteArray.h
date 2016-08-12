@@ -5,13 +5,12 @@
 
 class ByteArray {
 private:
-  DECLARECLASSNAME;
   BYTE         *m_data;
   size_t        m_capacity;
   size_t        m_size;
 
   void cleanup();
-  void indexError(size_t i) const;
+  void indexError(const TCHAR *method, size_t i) const;
 protected:
   void init();
   virtual BYTE *allocateBytes( size_t size);
@@ -71,12 +70,12 @@ public:
   }
 
   inline const BYTE &operator[](size_t i) const {
-    if(i >= m_size) indexError(i);
+    if(i >= m_size) indexError(_T(__FUNCTION__), i);
     return m_data[i];
   }
 
   inline BYTE &operator[](size_t i) {
-    if(i >= m_size) indexError(i);
+    if(i >= m_size) indexError(_T(__FUNCTION__), i);
     return m_data[i];
   }
 
@@ -89,8 +88,6 @@ public:
 };
 
 class ExecutableByteArray : public ByteArray {
-private:
-  DECLARECLASSNAME;
 protected:
   BYTE *allocateBytes(size_t size);
   void  deallocateBytes(BYTE *buffer);

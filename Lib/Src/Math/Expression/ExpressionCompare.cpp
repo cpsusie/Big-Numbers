@@ -70,7 +70,7 @@ bool Expression::treesEqual(const ExpressionNode *n1, const ExpressionNode *n2) 
   case SEC   :
   case CSC   :
   case COT   :
-    throwMethodInvalidArgumentException(s_className, method, _T("Invalid symbol in canonical form:%s"), n1->getSymbolName().cstr());
+    throwInvalidSymbolForTreeMode(method, n1);
 
   default:
     { const ExpressionNodeArray &a1 = n1->getChildArray();
@@ -180,7 +180,7 @@ bool Expression::treesEqualMinus(const SNode n1, const SNode n2) {
   case SEC   :
   case CSC   :
   case COT   :
-    throwMethodInvalidArgumentException(s_className, method, _T("Invalid symbol in canonical form:%s"), n1.getSymbolName().cstr());
+    throwInvalidSymbolForTreeMode(method, n1);
 
   case RETURNREAL:
     return treesEqualMinus(n1.left(), n2.left());

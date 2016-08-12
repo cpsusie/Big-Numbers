@@ -2,8 +2,6 @@
 #include <fcntl.h>
 #include "ByteFile.h"
 
-DEFINECLASSNAME(ByteFile);
-
 ByteFile::ByteFile() {
   m_file  = NULL;
 }
@@ -15,7 +13,7 @@ ByteFile::ByteFile(const String &name, FileMode mode) {
 
 ByteFile::ByteFile(FILE *f, FileMode mode) {
   if(f == NULL) {
-    throwInvalidArgumentException(s_className, _T("f=NULL"));
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("f=NULL"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -36,8 +34,8 @@ void ByteFile::init(const String &name, FileMode mode) {
 void ByteFile::open(const String &name, FileMode mode) {
   close();
   switch(mode) {
-  case READMODE : m_file = FOPEN(  name, "rb"); break;
-  case WRITEMODE: m_file = MKFOPEN(name, "wb"); break;
+  case READMODE : m_file = FOPEN(  name, _T("rb")); break;
+  case WRITEMODE: m_file = MKFOPEN(name, _T("wb")); break;
   }
   init(name, mode);
 }
@@ -58,18 +56,18 @@ void ByteFile::close() {
 void ByteFile::putByte(BYTE c) {
 #ifdef _DEBUG
   if(m_mode != WRITEMODE) {
-    throwException("ByteFile::putByte:File is readonly");
+    throwException(_T("%s:File is readonly"), _T(__FUNCTION__));
   }
 #endif
   if(putc(c, m_file) != c) {
-    throwException("Error write byte");
+    throwException(_T("%s:Error write byte"), _T(__FUNCTION__));
   }
 }
 
 int ByteFile::getByte() {
 #ifdef _DEBUG
   if(m_mode != READMODE) {
-    throwException("ByteFile::getByte:File is writeonly");
+    throwException(_T("%s:File is writeonly"), _T(__FUNCTION__));
   }
 #endif
   return getc(m_file);
@@ -78,7 +76,7 @@ int ByteFile::getByte() {
 void ByteFile::putBytes(const BYTE *src, size_t n) {
 #ifdef _DEBUG
   if(m_mode != WRITEMODE) {
-    throwException("ByteFile::putBytes:File is readonly");
+    throwException(_T("%s:File is readonly"), _T(__FUNCTION__));
   }
 #endif
   FWRITE(src, 1, n, m_file);
@@ -87,7 +85,7 @@ void ByteFile::putBytes(const BYTE *src, size_t n) {
 intptr_t ByteFile::getBytes(BYTE *dst, size_t n) {
 #ifdef _DEBUG
   if(m_mode != READMODE) {
-    throwException("ByteFile::getBytes:File is writeonly");
+    throwException(_T("%s:File is writeonly"), _T(__FUNCTION__));
   }
 #endif
   return fread(dst, 1, n, m_file);

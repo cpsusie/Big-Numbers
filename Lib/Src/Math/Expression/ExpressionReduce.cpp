@@ -123,7 +123,7 @@ void Expression::iterateTransformation(ExpressionTransformer &transformer) {
   }
   setRoot(oldRoot);
   if(!done) {
-    throwMethodException(s_className, method, _T("Maxiterations reached for expression <%s>"), n.toString().cstr());
+    throwException(_T("%s:Maxiterations reached for expression <%s>"), method, n.toString().cstr());
   }
 
   pruneUnusedNodes();
@@ -1092,7 +1092,7 @@ SNode Expression::reduceRationalPower(const Rational &base, const Rational &expo
       niceRootFactor = Rational(-bnR, bdR);
       bnPrimeFactors.setPositive();
     } else {
-      throwMethodInvalidArgumentException(s_className, method, _T("Base:%s, exponent:%s"), base.toString().cstr(), exponent.toString().cstr());
+      throwInvalidArgumentException(method, _T("Base:%s, exponent:%s"), base.toString().cstr(), exponent.toString().cstr());
     }
 
     FactorArray fa;
