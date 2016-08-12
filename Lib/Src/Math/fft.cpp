@@ -18,7 +18,7 @@ return i;
 // This computes an in-place Complex-to-Complex Direct fourier transform
 // forward = true  => forward transform. ie. time-domain -> frequens-domain.
 // forward = false => reverse transform  ie. frequens-domain -> time-domain.
-void dft(Array<Complex> &data, bool forward) {
+void dft(CompactArray<Complex> &data, bool forward) {
   const int n = (int)data.size();
   Real *x2 = new Real[n];
   Real *y2 = new Real[n];
@@ -61,7 +61,7 @@ void dft(Array<Complex> &data, bool forward) {
 }
 
 // return p, assuming n = 2^p
-static int log2(unsigned int n) {
+static UINT log2(UINT n) {
   switch(n) {
   case 0x00000001: return 0;
   case 0x00000002: return 1;
@@ -105,19 +105,19 @@ static int log2(unsigned int n) {
 // data containing 2^t Complex numbers.
 // forward = true  => forward transform. ie. time-domain -> frequens-domain.
 // forward = false => reverse transform  ie. frequens-domain -> time-domain.
-void fft(Array<Complex> &data, bool forward) {
-  const int n = (int)data.size();
-  const int t = log2((unsigned int)n);
+void fft(CompactArray<Complex> &data, bool forward) {
+  const UINT n = (UINT)data.size();
+  const UINT t = log2((UINT)n);
 
   // Do the bit reversal
-  int i2 = n >> 1;
-  int j  = 0;
-  for(int i = 0; i < n-1; i++) {
+  UINT i2 = n >> 1;
+  UINT j  = 0;
+  for(UINT i = 0; i < n-1; i++) {
     if(i < j) {
-      data.swap(i,j);
+      data.swap(i, j);
 //      cout << "swap(" << i << "," << j << ")" << endl;
     }
-    int k;
+    UINT k;
     for(k = i2; k <= j; k >>= 1) j -= k;
     j += k;
   }
@@ -125,26 +125,26 @@ void fft(Array<Complex> &data, bool forward) {
   // Compute the FFT
   Real c1 = -1;
   Real c2 =  0;
-  int  l2 =  1;
-  for(int l = 0; l < t; l++) {
+  UINT l2 =  1;
+  for(UINT l = 0; l < t; l++) {
 
 /*
     cout << "l:" << l << " f:";
-    for(int dd = 0; dd < n; dd++) {
+    for(UINT dd = 0; dd < n; dd++) {
       if(dd > 0)
-        cout << ",";
-      cout << "\"" << data[dd] << "\"";
+        tcout << _T(",");
+      tcout << _T("\"") << data[dd] << _T("\"");
     }
-    cout << endl;
+    tcout << endl;
 */
 
-    const int l1 = l2;
+    const UINT l1 = l2;
     l2 <<= 1;
     Real u1 = 1;
     Real u2 = 0;
-    for(int j = 0; j < l1; j++) {
-      for(int p = j; p < n; p += l2) {
-        const int q = p + l1;
+    for(UINT j = 0; j < l1; j++) {
+      for(UINT p = j; p < n; p += l2) {
+        const UINT q = p + l1;
         Complex &dp = data[p];
         Complex &dq = data[q];
         Real t1 = u1*dq.re - u2*dq.im;
@@ -167,9 +167,8 @@ void fft(Array<Complex> &data, bool forward) {
 
   // Scaling for forward transform
   if(!forward) {
-    for(int i = 0; i < n; i++) {
+    for(UINT i = 0; i < n; i++) {
       data[i] /= n;
     }
   }
 }
-

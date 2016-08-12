@@ -46,12 +46,12 @@ public:
     return m_size;
   }
   inline void *getElement(size_t index) {
-    if(index >= m_size) indexError(_T("getElement"),index);
+    if(index >= m_size) indexError(_T(__FUNCTION__), index);
     return m_elem[index];
   }
 
   inline const void *getElement(size_t index) const {
-    if(index >= m_size) indexError(_T("const getElement"),index);
+    if(index >= m_size) indexError(_T(__FUNCTION__), index);
     return m_elem[index];
   }
 
@@ -76,6 +76,16 @@ public:
 
   AbstractIterator *getIterator();
 };
+
+/*
+template <class T> class TArrayImpl : public ArrayImpl {
+public:
+  TArrayImpl(AbstractObjectManager &om, size_t capacity) : ArrayImpl(om, capacity) {
+  }
+  TArrayImpl(AbstractObjectManager &om, const AbstractCollection *src) : ArrayImpl(om, src) {
+  }
+};
+*/
 
 template <class T> class Array : public Collection<T> {
 public:

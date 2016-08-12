@@ -2,6 +2,6 @@
 
 #include "Complex.h"
 
-void fft(Array<Complex> &x, bool forward=true);
-void dft(Array<Complex> &x, bool forward=true);
+void fft(CompactArray<Complex> &x, bool forward=true);
+void dft(CompactArray<Complex> &x, bool forward=true);
 

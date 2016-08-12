@@ -21,7 +21,7 @@ static AutoCounter initcounter(      _T("init"       ));
 
 #endif
 
-static size_t _max(size_t a, size_t b) { 
+static inline size_t _max(size_t a, size_t b) {
   return a > b ? a : b;
 }
 

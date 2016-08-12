@@ -26,7 +26,7 @@ namespace TestFFT {
     TEST_METHOD(FFTTest) {
 #define EPS 1e-14
 
-        Array<Complex> data;
+        CompactArray<Complex> data;
 
         data.add(Complex(1, 0));
         data.add(Complex(1, 1));
@@ -37,7 +37,7 @@ namespace TestFFT {
         data.add(Complex(0, 0));
         data.add(Complex(1, -1));
 
-        Array<Complex> expected;
+        CompactArray<Complex> expected(data.size());
 
         expected.add(Complex(5, 0));
         expected.add(Complex(1, 0));
@@ -48,7 +48,7 @@ namespace TestFFT {
         expected.add(Complex(5, 0));
         expected.add(Complex(1, 0));
 
-        Array<Complex> copy = data;
+        CompactArray<Complex> copy = data;
 
         // test DFT
         fft(data, true);

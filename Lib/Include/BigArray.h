@@ -29,11 +29,11 @@ private:
 #endif
   };
 
+#define MAX_PAGESIZE     4096
+
 #ifdef _DEBUG
-#define MAX_PAGESIZE     100
 #define MEMORYPAGE_COUNT   4
 #else
-#define MAX_PAGESIZE     4096
 #define MEMORYPAGE_COUNT 1024
 #endif
 
@@ -350,6 +350,9 @@ private:
 
 public:
   BigArray() : m_freeFilePages(256) {
+    if (_ELEMENTS_PER_PAGE == 0) {
+      throwInvalidArgumentException(_T(__FUNCTION__), _T("Elements/page = 0. sizeof(T)=%d"), sizeof(T));
+    }
     init();
     CHECK_BIGARRAY_INVARIANT();
   }
