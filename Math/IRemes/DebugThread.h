@@ -27,7 +27,7 @@ private:
   int                 m_oldMainIteration, m_oldSearchEIteration, m_oldExtremaCount;
   const Remes        *m_rp;
 
-  void throwInvalidStateException(RemesState state) const;
+  void throwInvalidStateException(const TCHAR *method, RemesState state) const;
   void stop();
   void setBoolProperty(DebugThreadProperty id, bool &v, bool newValue);
 public:

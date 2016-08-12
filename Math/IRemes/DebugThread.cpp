@@ -38,11 +38,12 @@ typedef enum {
  ,BREAKSUBSTEP
 } BreakPointType;
 
-void DebugThread::throwInvalidStateException(RemesState state) const {
-  throwMethodInvalidArgumentException(s_className, _T("handleData"), _T("State=%d"), state);
+void DebugThread::throwInvalidStateException(const TCHAR *method, RemesState state) const {
+  throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
 void DebugThread::handleData(const Remes &r) {
+  DEFINEMETHODNAME;
   if(m_killed) throw true;
 
   m_rp = &r;
@@ -79,7 +80,7 @@ void DebugThread::handleData(const Remes &r) {
         break;
 
       default:
-        throwInvalidStateException(newState);
+        throwInvalidStateException(method, newState);
       }
   } else {
     switch(newState) {
@@ -99,7 +100,7 @@ void DebugThread::handleData(const Remes &r) {
       break;
 
     default:
-      throwInvalidStateException(newState);
+      throwInvalidStateException(method, newState);
     }
   }
   m_oldState = newState;
