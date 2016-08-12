@@ -454,7 +454,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
         }
         break;
       case WM_MOUSEWHEEL:
-        { short zDelta = pMsg->wParam >> 16;
+        { const INT_PTR zDelta = pMsg->wParam >> 16;
           if(pMsg->wParam & MK_SHIFT) {
             if(zDelta > 0) {
               OnScrollLineLeft();
