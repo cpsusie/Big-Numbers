@@ -5,7 +5,6 @@ DEFINECLASSNAME(DebugThread);
 
 DebugThread::DebugThread(int M, int K, Remes &r) : m_M(M), m_K(K), m_r(r) {
   m_running = m_killed = m_terminated = false;
-  m_rp      = NULL;
 }
 
 DebugThread::~DebugThread() {
@@ -13,13 +12,9 @@ DebugThread::~DebugThread() {
 
 unsigned int DebugThread::run() {
   setDeamon(true);
-  m_oldState = (RemesState)-1;
-  m_oldMainIteration    = -1;
-  m_oldSearchEIteration = -1;
-  m_oldExtremaCount     = -1;
-  m_r.setHandler(this);
+  m_r.addPropertyChangeListener(this);
   try {
-    setBoolProperty(THREAD_RUNNING   , m_running, true);
+    setBoolProperty(THREAD_RUNNING, m_running, true);
     m_r.solve(m_M, m_K);
   } catch(Exception e) {
     m_errorMsg = e.what();
@@ -27,7 +22,7 @@ unsigned int DebugThread::run() {
   } catch(bool) {
     // ignore. thrown after resume, when killed
   }
-  m_rp = &m_r;
+  m_r.removePropertyChangeListener(this);
   setBoolProperty(THREAD_TERMINATED, m_terminated, true );
   setBoolProperty(THREAD_RUNNING   , m_running   , false);
   return 0;
@@ -42,47 +37,14 @@ void DebugThread::throwInvalidStateException(const TCHAR *method, RemesState sta
   throwInvalidArgumentException(method, _T("State=%d"), state);
 }
 
-void DebugThread::handleData(const Remes &r) {
+void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   DEFINEMETHODNAME;
   if(m_killed) throw true;
 
-  m_rp = &r;
-  const RemesState newState = r.getState();
-  if(m_breakPoints.isEmpty()) {
-    if(newState != m_oldState) {
-      notifyPropertyChanged(REMES_STATE, &m_oldState, &newState);
-    } else 
-      switch(newState) {
-      case REMES_INITIALIZE        :
-        break;
-      case REMES_SEARCH_E          :
-        { const int newValue = r.getSearchEIteration();
-          notifyPropertyChanged(REMES_SEARCHE_ITERATION, &m_oldSearchEIteration, &newValue);
-          m_oldSearchEIteration = newValue;
-        }
-        break;
-
-      case REMES_SEARCH_EXTREMA    :
-        { const int newValue = r.getExtremaCount();
-          notifyPropertyChanged(REMES_EXTREMA_COUNT, &m_oldExtremaCount, &newValue);
-          m_oldExtremaCount = newValue;
-        }
-        break;
-
-      case REMES_FINALIZE_ITERATION:
-        { const int newValue = r.getMainIteration();
-          notifyPropertyChanged(REMES_MAIN_ITERATION, &m_oldMainIteration, &newValue);
-          m_oldMainIteration = newValue;
-        }
-        break;
-
-      case REMES_NOCONVERGENCE     :
-        break;
-
-      default:
-        throwInvalidStateException(method, newState);
-      }
-  } else {
+  RemesPropertyData prop(*(const Remes*)source, id, oldValue, newValue);
+  notifyPropertyChanged(REMES_PROPERTY, NULL, &prop);
+  if(!m_breakPoints.isEmpty() && (id == REMES_STATE)) {
+    const RemesState newState = *(RemesState*)prop.m_newValue;
     switch(newState) {
     case REMES_INITIALIZE        :
     case REMES_SEARCH_E          :
@@ -103,23 +65,6 @@ void DebugThread::handleData(const Remes &r) {
       throwInvalidStateException(method, newState);
     }
   }
-  m_oldState = newState;
-  m_rp       = &m_r;
-}
-
-const Remes &DebugThread::getRemes() const {
-  if(m_rp == NULL) {
-    throwException(_T("DebugThread::getRemes()::Cannot access remes data in this state"));
-  }
-  return *m_rp;
-}
-
-void DebugThread::setBoolProperty(DebugThreadProperty id, bool &v, bool newValue) {
-  if(newValue != v) {
-    const bool oldValue = v;
-    v = newValue;
-    notifyPropertyChanged(id, &oldValue, &v);
-  }
 }
 
 void DebugThread::stop() {
@@ -127,6 +72,13 @@ void DebugThread::stop() {
   suspend();
   if(m_killed) throw true;
   setBoolProperty(THREAD_RUNNING, m_running, true);
+}
+
+String DebugThread::getStateName() const {
+  if(m_terminated) return _T("Terminated");
+  if(m_killed)     return _T("Killed");
+  if(m_running)    return _T("Running");
+  return _T("Suspended");
 }
 
 void DebugThread::kill() {

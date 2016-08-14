@@ -19,6 +19,8 @@
 
 
 #include <MyUtil.h>
+#include <NumberInterval.h>
+#include <Math/Rectangle2D.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/LayoutManager.h>
 

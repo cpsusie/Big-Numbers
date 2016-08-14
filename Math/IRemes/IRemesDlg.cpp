@@ -4,8 +4,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 class CAboutDlg : public CDialog {
@@ -38,17 +36,17 @@ CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
 	m_xTo           = 1.0;
 	m_relativeError = FALSE;
 	m_digits        = 15;
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-  m_remes       = NULL;
-  m_debugThread = NULL;
+  m_hIcon         = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_remes         = NULL;
+  m_debugThread   = NULL;
 }
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
 	DDX_Text( pDX, IDC_EDITM             , m_M            );
-	DDV_MinMaxUInt(pDX, m_M, 0, 20);
+	DDV_MinMaxUInt(pDX, m_M, 0, 20                        );
 	DDX_Text( pDX, IDC_EDITK             , m_K            );
-	DDV_MinMaxUInt(pDX, m_K, 0, 20);
+	DDV_MinMaxUInt(pDX, m_K, 0, 20                        );
 	DDX_Text( pDX, IDC_EDITXFROM         , m_xFrom        );
 	DDX_Text( pDX, IDC_EDITXTO           , m_xTo          );
 	DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
@@ -57,19 +55,28 @@ void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
-    ON_WM_SYSCOMMAND()
-    ON_WM_QUERYDRAGICON()
-    ON_WM_PAINT()
+  ON_WM_SYSCOMMAND()
+  ON_WM_QUERYDRAGICON()
+  ON_WM_PAINT()
 	ON_WM_SIZE()
-    ON_WM_CLOSE()
-	ON_COMMAND(ID_FILE_EXIT              , OnFileExit              )
-	ON_COMMAND(ID_RUN_GO                 , OnRunGo                 )
-	ON_COMMAND(ID_RUN_DEBUG              , OnRunDebug              )
-	ON_COMMAND(ID_RUN_SINGLEITERATION    , OnRunSingleIteration    )
-	ON_COMMAND(ID_RUN_SINGLESUBITERATION , OnRunSingleSubIteration )
-	ON_COMMAND(ID_RUN_STOP               , OnRunStop               )
-	ON_COMMAND(ID_HELP_ABOUTIREMES       , OnHelpAboutIRemes       )
-  ON_MESSAGE(ID_MSG_RUNSTATE_CHANGED   , OnMsgRunStateChanged    )
+  ON_WM_CLOSE()
+	ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                )
+	ON_COMMAND(ID_RUN_GO                       , OnRunGo                   )
+	ON_COMMAND(ID_RUN_DEBUG                    , OnRunDebug                )
+	ON_COMMAND(ID_RUN_SINGLEITERATION          , OnRunSingleIteration      )
+	ON_COMMAND(ID_RUN_SINGLESUBITERATION       , OnRunSingleSubIteration   )
+	ON_COMMAND(ID_RUN_STOP                     , OnRunStop                 )
+  ON_COMMAND(ID_GOTO_INTERVAL                , OnGotoInterval            )
+  ON_COMMAND(ID_GOTO_M                       , OnGotoM                   )
+  ON_COMMAND(ID_GOTO_K                       , OnGotoK                   )
+  ON_COMMAND(ID_GOTO_DIGITS                  , OnGotoDigits              )
+	ON_COMMAND(ID_HELP_ABOUTIREMES             , OnHelpAboutIRemes         )
+  ON_MESSAGE(ID_MSG_RUNSTATE_CHANGED         , OnMsgRunStateChanged      )
+  ON_MESSAGE(ID_MSG_STATE_CHANGED            , OnMsgStateChanged         )
+  ON_MESSAGE(ID_MSG_MAINITERATION_CHANGED    , OnMsgMainIterationChanged )
+  ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , OnMsgSearchEItChanged     )
+  ON_MESSAGE(ID_MSG_EXTREMACOUNT_CHANGED     , OnMsgExtremaCountChanged  )
+  ON_MESSAGE(ID_MSG_WARNING_CHANGED          , OnMsgWarningChanged       )
 END_MESSAGE_MAP()
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -140,32 +147,39 @@ void CIRemesDlg::OnPaint() {
   }
 }
 
-void CIRemesDlg::updateAll() {
-  updateCoef();
-  updateExtrema();
-  updateTemporary();
-  updateErrorPlot();
+
+void CIRemesDlg::showState(RemesState state) {
+  setWindowText(this, IDC_STATICSTATE
+               ,format(_T("%-10s %s")
+                      ,getThreadStateName().cstr()
+                      , Remes::getStateName(state)
+                      )
+               );
 }
 
-void CIRemesDlg::updateCoef() {
+void CIRemesDlg::showWarning(const String &str) {
+  setWindowText(this, IDC_STATICWARNING, str);
+}
+
+void CIRemesDlg::showCoefWindowData(const CoefWindowData &data) {
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTCOEF);
   lb->ResetContent();
-  if(!hasDebugThread()) return;
-  const Remes &r = m_debugThread->getRemes();
-  const StringArray sa = r.getCoefficientStringArray();
-  for(size_t i = 0; i < sa.size(); i++) {
-    lb->AddString(sa[i].cstr());
+  setWindowText(this, IDC_STATICSUBM, format(_T("%d"), data.m_M));
+  setWindowText(this, IDC_STATICSUBK, format(_T("%d"), data.m_K));
+  const StringArray &a = data.m_coefStrings;
+  const size_t n = a.size();
+  for(size_t i = 0; i < n; i++) {
+    lb->AddString(a[i].cstr());
   }
 }
 
-void CIRemesDlg::updateExtrema() {
+void CIRemesDlg::showExtremaWindowData(const ExtremaWindowData &data) {
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTEXTRMA);
   lb->ResetContent();
-  if(!hasDebugThread()) return;
-  const Remes &r = m_debugThread->getRemes();
-  const int n = r.getExtremaCount();
+  const StringArray &a = data.m_extremaStrings;
+  const size_t n = a.size();
   for(int i = 0; i < n; i++) {
-    lb->AddString(r.getExtremumString(i).cstr());
+    lb->AddString(a[i].cstr());
   }
 }
 
@@ -213,13 +227,9 @@ void CIRemesDlg::clearErrorPlot() {
   m_coorSystem.removeAllObjects();
 }
 
-void CIRemesDlg::updateErrorPlot() {
-  if(!hasDebugThread()) {
-    clearErrorPlot();
-    return;
-  }
-  const Remes &r = m_debugThread->getRemes();
+void CIRemesDlg::showErrorPlot(const Remes &r) {
   if(!r.hasErrorPlot()) {
+    clearErrorPlot();
     return;
   }
   const int plotKey = r.getCoefVectorIndex();
@@ -230,7 +240,9 @@ void CIRemesDlg::updateErrorPlot() {
 
   clearErrorPlot();
   Point2DArray pa;
-  r.getErrorPlot(400, pa);
+  const DoubleInterval xToRange = m_coorSystem.getTransformation().getToRectangle().getXInterval();
+  const int n = (int)xToRange.getLength()+1;
+  r.getErrorPlot(n, pa);
   ErrorPlot *plot = new ErrorPlot(pa, plotKey);
   m_coorSystem.addObject(plot);
   m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, plot->getMinY(), plot->getMaxY()), true);
@@ -248,13 +260,8 @@ void CIRemesDlg::updateErrorPlotXRange() {
   m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, dr.getMinY(), dr.getMaxY()), true);
 }
 
-void CIRemesDlg::updateTemporary() {
-  CStatic *st = (CStatic*)GetDlgItem(IDC_STATICTEMPORARY);
-  if(!hasDebugThread()) return;
-  const Remes &r = m_debugThread->getRemes();
-  if(r.getState() == REMES_SEARCH_E) {
-    st->SetWindowText(r.getSearchEString().cstr());
-  }
+void CIRemesDlg::showSearchE(const String &s) {
+  setWindowText(this, IDC_STATICTEMPORARY, s);
 }
 
 void CIRemesDlg::OnSize(UINT nType, int cx, int cy) {
@@ -290,30 +297,30 @@ void CIRemesDlg::ajourDialogItems() {
   if(hasDebugThread()) {
     if(m_debugThread->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
-	  enableMenuItem(this, ID_RUN_GO                , false);
-	  enableMenuItem(this, ID_RUN_DEBUG             , false);
+	    enableMenuItem(this, ID_RUN_GO                , false);
+	    enableMenuItem(this, ID_RUN_DEBUG             , false);
       enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
       enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
       enableMenuItem(this, ID_RUN_STOP              , true );
     } else if(m_debugThread->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
-	  enableMenuItem(this, ID_RUN_GO                , true );
-	  enableMenuItem(this, ID_RUN_DEBUG             , true );
+	    enableMenuItem(this, ID_RUN_GO                , true );
+	    enableMenuItem(this, ID_RUN_DEBUG             , true );
       enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
       enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
       enableMenuItem(this, ID_RUN_STOP              , false);
     } else { // paused
       ENABLEFIELDLIST(dialogFields, false);
-	  enableMenuItem(this, ID_RUN_GO                , false);
-	  enableMenuItem(this, ID_RUN_DEBUG             , false);
+	    enableMenuItem(this, ID_RUN_GO                , false);
+	    enableMenuItem(this, ID_RUN_DEBUG             , false);
       enableMenuItem(this, ID_RUN_SINGLEITERATION   , true );
       enableMenuItem(this, ID_RUN_SINGLESUBITERATION, true );
       enableMenuItem(this, ID_RUN_STOP              , true );
     }
   } else {
     ENABLEFIELDLIST(dialogFields, true);
-	enableMenuItem(this, ID_RUN_GO                , true );
-	enableMenuItem(this, ID_RUN_DEBUG             , true );
+	  enableMenuItem(this, ID_RUN_GO                , true );
+	  enableMenuItem(this, ID_RUN_DEBUG             , true );
     enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
     enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
     enableMenuItem(this, ID_RUN_STOP              , false);
@@ -364,24 +371,101 @@ void CIRemesDlg::OnRunStop() {
   }
 }
 
+void CIRemesDlg::OnGotoInterval() {
+  gotoEditBox(this, IDC_EDITXFROM);
+}
+
+void CIRemesDlg::OnGotoM() {
+  gotoEditBox(this, IDC_EDITM);
+}
+void CIRemesDlg::OnGotoK() {
+  gotoEditBox(this, IDC_EDITK);
+}
+void CIRemesDlg::OnGotoDigits() {
+  gotoEditBox(this, IDC_EDITDIGITS);
+}
+
 void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(source == m_debugThread) {
     switch(id) {
     case THREAD_RUNNING:
       PostMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)oldValue, (LPARAM)newValue);
       break;
-    default:;
+    case REMES_PROPERTY:
+      { const RemesPropertyData &data = *(RemesPropertyData*)newValue; // oldValue = NULL
+        switch(data.m_id) {
+        case REMES_STATE        : // *RemesState
+          { const RemesState oldState = *(RemesState*)data.m_oldValue;
+            const RemesState newState = *(RemesState*)data.m_newValue;
+            PostMessage(ID_MSG_STATE_CHANGED, (WPARAM)oldState, (LPARAM)newState);
+          }
+          break;
+        case MAINITERATION      : // *int
+          m_coefWinData = data.m_src;
+          PostMessage(ID_MSG_MAINITERATION_CHANGED, 0, (LPARAM)&m_coefWinData);
+          break;
+        case Q                  : // *BigReal
+          m_searchEString = data.m_src.getSearchEString();
+          PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, (LPARAM)&m_searchEString);
+          break;
+        case EXTREMUMCOUNT      : // *int
+          m_extrWinData = data.m_src;
+          PostMessage(ID_MSG_EXTREMACOUNT_CHANGED, 0, (LPARAM)&m_extrWinData);
+          break;
+        case COEFFICIENTVECTOR  : // *BigRealVector
+        case MMQUOT             : // *BigReal
+          break;
+        case MAXERROR           : // *BigReal
+          if(data.m_src.hasErrorPlot()) {
+            showErrorPlot(data.m_src);
+          }
+          break;
+        case WARNING            : // *String
+          m_warning = *(String*)data.m_newValue;
+          PostMessage(ID_MSG_WARNING_CHANGED, (WPARAM)0, (LPARAM)&m_warning);
+          break;
+        }
+      }
     }
   }
 }
 
 LRESULT CIRemesDlg::OnMsgRunStateChanged(WPARAM wp, LPARAM lp) {
-  const bool oldRunning = *(bool*)wp;
-  const bool newRunning = *(bool*)lp;
-  ajourDialogItems();
-  if(!newRunning) {
-    updateAll();
+  if(!m_debugThread->isRunning()) {
+    const String str = m_debugThread->getStateName();
+    setWindowText(this, IDC_STATICSTATE, str);
   }
+  ajourDialogItems();
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
+  RemesState newState = (RemesState)lp;
+  showState(newState);
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgMainIterationChanged(WPARAM wp, LPARAM lp) {
+  const CoefWindowData &data = *(CoefWindowData*)lp;
+  showCoefWindowData(data);
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgSearchEItChanged(WPARAM wp, LPARAM lp) {
+  const String &str = *(String*)lp;
+  showSearchE(str);
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgExtremaCountChanged(WPARAM wp, LPARAM lp) {
+  const ExtremaWindowData &data = *(ExtremaWindowData*)lp;
+  showExtremaWindowData(data);
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgWarningChanged(WPARAM wp, LPARAM lp) {
+  const String &warning = *(String*)lp;
+  showWarning(warning);
   return 0;
 }
 
@@ -423,6 +507,14 @@ void CIRemesDlg::destroyThread() {
     m_debugThread = NULL;
     delete m_remes;
     m_remes = NULL;
+  }
+}
+
+String CIRemesDlg::getThreadStateName() const {
+  if (!hasDebugThread()) {
+    return _T("No Thread");
+  } else {
+    return m_debugThread->getStateName();
   }
 }
 

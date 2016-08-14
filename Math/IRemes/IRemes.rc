@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,20 +64,21 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\IRemes.ico"
+IDR_MAINFRAME           ICON                    "res\\IRemes.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
         MENUITEM "E&xit",                       ID_FILE_EXIT
     END
-    MENUITEM "&Edit",                       65535
+    MENUITEM "&Edit",                       ID_EDIT
     POPUP "&Run"
     BEGIN
         MENUITEM "&Go\tCtrl+F5",                ID_RUN_GO
@@ -102,35 +101,37 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
-    VK_F10,         ID_RUN_SINGLEITERATION, VIRTKEY, NOINVERT
-    VK_F11,         ID_RUN_SINGLESUBITERATION, VIRTKEY, NOINVERT
+    "D",            ID_GOTO_DIGITS,         VIRTKEY, ALT, NOINVERT
+    "I",            ID_GOTO_INTERVAL,       VIRTKEY, ALT, NOINVERT
+    "K",            ID_GOTO_K,              VIRTKEY, ALT, NOINVERT
+    "M",            ID_GOTO_M,              VIRTKEY, ALT, NOINVERT
     VK_F5,          ID_RUN_DEBUG,           VIRTKEY, NOINVERT
     VK_F5,          ID_RUN_GO,              VIRTKEY, CONTROL, NOINVERT
+    VK_F10,         ID_RUN_SINGLEITERATION, VIRTKEY, NOINVERT
+    VK_F11,         ID_RUN_SINGLESUBITERATION, VIRTKEY, NOINVERT
     VK_F5,          ID_RUN_STOP,            VIRTKEY, SHIFT, NOINVERT
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About IRemes"
 FONT 8, "MS Sans Serif"
 BEGIN
@@ -140,40 +141,36 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
-IDD_IREMES_DIALOG DIALOGEX 0, 0, 649, 402
-STYLE DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | 
-    WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_IREMES_DIALOG DIALOGEX 0, 0, 756, 437
+STYLE DS_SETFONT | DS_CENTER | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "IRemes"
 MENU IDR_MAINFRAME
-FONT 8, "Courier New"
+FONT 8, "Courier New", 0, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDITXFROM,60,16,40,15,ES_RIGHT | ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDITXTO,119,16,40,15,ES_RIGHT | ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDITM,60,37,40,15,ES_RIGHT | ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    EDITTEXT        IDC_EDITK,60,58,40,15,ES_RIGHT | ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    EDITTEXT        IDC_EDITDIGITS,60,79,40,15,ES_RIGHT | ES_AUTOHSCROLL | 
-                    ES_NUMBER
-    CONTROL         "Minimize max. relative error",IDC_CHECKRELATIVEERROR,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,100,104,14
-    LTEXT           "",IDC_STATICTEMPORARY,7,123,212,88,SS_SUNKEN
-    LISTBOX         IDC_LISTCOEF,223,16,177,196,LBS_NOINTEGRALHEIGHT | 
-                    LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
-    LISTBOX         IDC_LISTEXTRMA,402,16,240,196,LBS_NOINTEGRALHEIGHT | 
-                    LBS_NOSEL | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "",IDC_FRAME_COORDINATESYSTEM,"Static",SS_BLACKFRAME | 
-                    SS_SUNKEN,7,216,635,179
-    LTEXT           "Interval:",IDC_STATIC,24,16,30,15,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITXFROM,60,16,40,15,ES_RIGHT | ES_AUTOHSCROLL,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDITXTO,119,16,40,15,ES_RIGHT | ES_AUTOHSCROLL,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDITM,60,37,40,15,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDITK,60,58,40,15,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDITDIGITS,60,79,40,15,ES_RIGHT | ES_AUTOHSCROLL | ES_NUMBER,WS_EX_CLIENTEDGE
+    CONTROL         "Minimize max. relative &Error",IDC_CHECKRELATIVEERROR,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,24,97,134,14
+    LTEXT           "",IDC_STATICTEMPORARY,7,149,212,79,SS_SUNKEN
+    LISTBOX         IDC_LISTCOEF,223,16,185,217,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL
+    LISTBOX         IDC_LISTEXTRMA,408,16,341,216,LBS_NOINTEGRALHEIGHT | LBS_NOSEL | WS_VSCROLL
+    CONTROL         "",IDC_FRAME_COORDINATESYSTEM,"Static",SS_BLACKFRAME | SS_SUNKEN,7,234,742,196
+    LTEXT           "&Interval:",IDC_STATIC,24,16,30,15,SS_CENTERIMAGE
     LTEXT           "-",IDC_STATIC,107,16,8,15,SS_CENTERIMAGE
-    LTEXT           "M:",IDC_STATIC,24,37,32,15,SS_CENTERIMAGE
-    LTEXT           "K:",IDC_STATIC,24,58,32,15,SS_CENTERIMAGE
-    LTEXT           "Digits",IDC_STATIC,24,79,32,15,SS_CENTERIMAGE
+    LTEXT           "&M:",IDC_STATIC,24,37,32,15,SS_CENTERIMAGE
+    LTEXT           "&K:",IDC_STATIC,24,58,32,15,SS_CENTERIMAGE
+    LTEXT           "&Digits",IDC_STATIC,24,79,32,15,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATICSUBM,119,37,40,15,0,WS_EX_CLIENTEDGE
+    LTEXT           "",IDC_STATICSUBK,119,58,40,15,0,WS_EX_CLIENTEDGE
+    LTEXT           "",IDC_STATICSTATE,7,113,215,16,SS_SUNKEN
+    LTEXT           "",IDC_STATICWARNING,7,131,214,16,SS_SUNKEN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -196,18 +193,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "2. algorithm of Remes\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "IRemes\0"
-            VALUE "LegalCopyright", "Copyright (C) 2016\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "IRemes.EXE\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "IRemes\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "2. algorithm of Remes"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "IRemes"
+            VALUE "LegalCopyright", "Copyright (C) 2016"
+            VALUE "OriginalFilename", "IRemes.EXE"
+            VALUE "ProductName", "IRemes"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -216,8 +208,6 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -225,7 +215,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -238,9 +228,9 @@ BEGIN
     IDD_IREMES_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 642
+        RIGHTMARGIN, 749
         TOPMARGIN, 7
-        BOTTOMMARGIN, 395
+        BOTTOMMARGIN, 430
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -248,15 +238,26 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_IREMES_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About IRemes..."
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
