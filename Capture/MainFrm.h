@@ -1,17 +1,22 @@
 #pragma once
 
-#include <afxWin.h>
-//#include <MFCUtil/TrueColorToolBar.h>
-#include "CaptureView.h"
+typedef enum {
+  DOCSIZE_IN_PIXELS
+ ,DOCSIZE_IN_CENTIMETERS
+} DocSizeFormat;
 
-class CMainFrame : public CFrameWnd {
+class CMainFrame : public CFrameWndEx {
 protected:
   CMainFrame();
   DECLARE_DYNCREATE(CMainFrame)
 
+// Overrides
 public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
+  virtual BOOL LoadFrame(UINT nIDResource, DWORD dwDefaultStyle = WS_OVERLAPPEDWINDOW | FWS_ADDTOTITLE, CWnd* pParentWnd = NULL, CCreateContext* pContext = NULL);
 
+// Implementation
 private:
   HWND            m_selectedWindow;
   HWND            m_capturedWindow;
@@ -20,6 +25,7 @@ private:
   HPEN            m_blackPen;
   WINDOWPLACEMENT m_savedWindowPlacement;
   bool            m_capturingWindow;
+  DocSizeFormat   m_docSizeFormat;
 
   void repaint();
   void showDocSize();
@@ -52,11 +58,18 @@ private:
   inline CCaptureView *getView() {
     return (CCaptureView*)GetActiveView();
   }
-
   inline CCaptureDoc *GetDocument() {
-    return getView()->GetDocument();
+    return (CCaptureDoc*)GetActiveDocument();
   }
-
+  inline const CCaptureDoc *GetDocument() const {
+    return (CCaptureDoc*)((CMainFrame*)this)->GetActiveDocument();
+  }
+  bool hasDocument() const {
+    return GetDocument() != NULL;
+  }
+  inline bool hasImage() const {
+    return hasDocument() && GetDocument()->hasImage();
+  }
 public:
   virtual ~CMainFrame();
 #ifdef _DEBUG
@@ -64,13 +77,21 @@ public:
   virtual void Dump(CDumpContext& dc) const;
 #endif
 
-protected:
-  CStatusBar m_wndStatusBar;
-  CToolBar   m_wndToolBar;
-//  CTrueColorToolBar 
+protected:  // control bar embedded members
+    CMFCMenuBar       m_wndMenuBar;
+    CMFCToolBar       m_wndToolBar;
+    CMFCStatusBar     m_wndStatusBar;
+    CMFCToolBarImages m_UserImages;
 
+// Generated message map functions
 protected:
-    afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg int     OnCreate(LPCREATESTRUCT lpCreateStruct);
+    afx_msg void    OnViewCustomize();
+    afx_msg LRESULT OnToolbarCreateNew(WPARAM wp, LPARAM lp);
+    afx_msg void OnFilePrint();
+    afx_msg void OnFilePrintPreview();
+    afx_msg void OnFileSave();
+    afx_msg void OnEditCopy();
     afx_msg void OnStartMSPaint();
     afx_msg void OnAppCaptureArea();
     afx_msg void OnAppCaptureWindow();
@@ -93,6 +114,14 @@ protected:
     afx_msg void OnMouseMove(UINT nFlags, CPoint point);
     afx_msg void OnLButtonUp(UINT nFlags, CPoint point);
     afx_msg void OnViewSizePixels();
-    afx_msg void OnViewSizeCentimeter();
+    afx_msg void OnViewSizeCentimeters();
+    afx_msg void OnUpdateFilePrint(          CCmdUI *pCmdUI);
+    afx_msg void OnUpdateFilePrintPreview(   CCmdUI *pCmdUI);
+    afx_msg void OnUpdateFileSave(           CCmdUI *pCmdUI);
+    afx_msg void OnUpdateEditCopy(           CCmdUI *pCmdUI);
+    afx_msg void OnUpdateStartMSPaint(       CCmdUI *pCmdUI);
+    afx_msg void OnUpdateViewSizePixels(     CCmdUI *pCmdUI);
+    afx_msg void OnUpdateViewSizeCentimeters(CCmdUI *pCmdUI);
     DECLARE_MESSAGE_MAP()
+
 };

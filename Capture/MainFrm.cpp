@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <io.h>
 #include <process.h>
+#include <MFCUtil/Clipboard.h>
 #include "CaptureView.h"
 #include "CaptureAreaDialog.h"
 #include "MainFrm.h"
@@ -9,35 +10,52 @@
 #define new DEBUG_NEW
 #endif
 
-static const TCHAR *appName = _T("Capture");
+IMPLEMENT_DYNCREATE(CMainFrame, CFrameWndEx)
 
-IMPLEMENT_DYNCREATE(CMainFrame, CFrameWnd)
+const int  iMaxUserToolbars = 10;
+const UINT uiFirstUserToolBarId = AFX_IDW_CONTROLBAR_FIRST + 40;
+const UINT uiLastUserToolBarId = uiFirstUserToolBarId + iMaxUserToolbars - 1;
 
-BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
+BEGIN_MESSAGE_MAP(CMainFrame, CFrameWndEx)
     ON_WM_CREATE()
+//    ON_COMMAND(ID_VIEW_CUSTOMIZE, &CMainFrame::OnViewCustomize)
+//    ON_REGISTERED_MESSAGE(AFX_WM_CREATETOOLBAR, &CMainFrame::OnToolbarCreateNew)
     ON_WM_LBUTTONUP()
     ON_WM_MOUSEMOVE()
     ON_WM_SIZE()
-    ON_COMMAND(ID_MSPAINT             , OnStartMSPaint          )
-    ON_COMMAND(ID_APP_CAPTURE_AREA    , OnAppCaptureArea        )
-    ON_COMMAND(ID_APP_CAPTURE_WINDOW  , OnAppCaptureWindowDummy )
-    ON_COMMAND(ID_APP_CAPTURE_SCREEN  , OnAppCaptureScreen      )
-    ON_COMMAND(ID_SCROLL_LINEDOWN     , OnScrollLineDown        )
-    ON_COMMAND(ID_SCROLL_LINEUP       , OnScrollLineUp          )
-    ON_COMMAND(ID_SCROLL_LINERIGHT    , OnScrollLineRight       )
-    ON_COMMAND(ID_SCROLL_LINELEFT     , OnScrollLineLeft        )
-    ON_COMMAND(ID_SCROLL_PAGEDOWN     , OnScrollPageDown        )
-    ON_COMMAND(ID_SCROLL_PAGEUP       , OnScrollPageUp          )
-    ON_COMMAND(ID_SCROLL_PAGERIGHT    , OnScrollPageRight       )
-    ON_COMMAND(ID_SCROLL_PAGELEFT     , OnScrollPageLeft        )
-    ON_COMMAND(ID_SCROLL_TOBOTTOM     , OnScrollToBottom        )
-    ON_COMMAND(ID_SCROLL_TOTOP        , OnScrollToTop           )
-    ON_COMMAND(ID_SCROLL_TORIGHT      , OnScrollToRight         )
-    ON_COMMAND(ID_SCROLL_TOLEFT       , OnScrollToLeft          )
-    ON_COMMAND(ID_SCROLL_TOEND        , OnScrollToEnd           )
-    ON_COMMAND(ID_SCROLL_TOHOME       , OnScrollToHome          )
-    ON_COMMAND(ID_VIEW_SIZE_PIXELS    , OnViewSizePixels        )
-    ON_COMMAND(ID_VIEW_SIZE_CENTIMETER, OnViewSizeCentimeter    )
+    ON_COMMAND(ID_FILE_PRINT                     , OnFilePrint                )
+    ON_COMMAND(ID_FILE_PRINT_PREVIEW             , OnFilePrintPreview         )
+    ON_COMMAND(ID_FILE_SAVE                      , OnFileSave                 )
+    ON_COMMAND(ID_EDIT_COPY                      , OnEditCopy                 )
+    ON_COMMAND(ID_MSPAINT                        , OnStartMSPaint             )
+    ON_COMMAND(ID_APP_CAPTURE_AREA               , OnAppCaptureArea           )
+    ON_COMMAND(ID_APP_CAPTURE_WINDOW             , OnAppCaptureWindowDummy    )
+    ON_COMMAND(ID_APP_CAPTURE_SCREEN             , OnAppCaptureScreen         )
+    ON_COMMAND(ID_SCROLL_LINEDOWN                , OnScrollLineDown           )
+    ON_COMMAND(ID_SCROLL_LINEUP                  , OnScrollLineUp             )
+    ON_COMMAND(ID_SCROLL_LINERIGHT               , OnScrollLineRight          )
+    ON_COMMAND(ID_SCROLL_LINELEFT                , OnScrollLineLeft           )
+    ON_COMMAND(ID_SCROLL_PAGEDOWN                , OnScrollPageDown           )
+    ON_COMMAND(ID_SCROLL_PAGEUP                  , OnScrollPageUp             )
+    ON_COMMAND(ID_SCROLL_PAGERIGHT               , OnScrollPageRight          )
+    ON_COMMAND(ID_SCROLL_PAGELEFT                , OnScrollPageLeft           )
+    ON_COMMAND(ID_SCROLL_TOBOTTOM                , OnScrollToBottom           )
+    ON_COMMAND(ID_SCROLL_TOTOP                   , OnScrollToTop              )
+    ON_COMMAND(ID_SCROLL_TORIGHT                 , OnScrollToRight            )
+    ON_COMMAND(ID_SCROLL_TOLEFT                  , OnScrollToLeft             )
+    ON_COMMAND(ID_SCROLL_TOEND                   , OnScrollToEnd              )
+    ON_COMMAND(ID_SCROLL_TOHOME                  , OnScrollToHome             )
+    ON_COMMAND(ID_VIEW_SIZE_PIXELS               , OnViewSizePixels           )
+    ON_COMMAND(ID_VIEW_SIZE_CENTIMETERS          , OnViewSizeCentimeters      )
+    ON_UPDATE_COMMAND_UI(ID_FILE_PRINT           , OnUpdateFilePrint          )
+    ON_UPDATE_COMMAND_UI(ID_FILE_PRINT_PREVIEW   , OnUpdateFilePrintPreview   )
+    ON_UPDATE_COMMAND_UI(ID_FILE_SAVE            , OnUpdateFileSave           )
+    ON_UPDATE_COMMAND_UI(ID_EDIT_COPY            , OnUpdateEditCopy           )
+    ON_UPDATE_COMMAND_UI(ID_MSPAINT              , OnUpdateStartMSPaint       )
+    ON_UPDATE_COMMAND_UI(ID_VIEW_SIZE_PIXELS     , OnUpdateViewSizePixels     )
+    ON_UPDATE_COMMAND_UI(ID_VIEW_SIZE_PIXELS     , OnUpdateViewSizePixels     )
+    ON_UPDATE_COMMAND_UI(ID_VIEW_SIZE_PIXELS     , OnUpdateViewSizePixels     )
+    ON_UPDATE_COMMAND_UI(ID_VIEW_SIZE_CENTIMETERS, OnUpdateViewSizeCentimeters)
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -47,54 +65,258 @@ static UINT indicators[] = {
 
 #define PENSIZE 4
 
-CMainFrame::CMainFrame() {
+CMainFrame::CMainFrame()
+{
   m_blackPen = ::CreatePen(PS_SOLID, PENSIZE, RGB(0,0,0));
+  m_docSizeFormat = DOCSIZE_IN_PIXELS;
   setCaptureAllEvents(false);
   initCurrent();
 }
 
-CMainFrame::~CMainFrame() {
+CMainFrame::~CMainFrame()
+{
 }
 
-int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
+{
+  if(CFrameWndEx::OnCreate(lpCreateStruct) == -1)
     return -1;
-  }
-  if(!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP
-      | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
-      !m_wndToolBar.LoadToolBar(IDR_MAINFRAME))
+
+  BOOL bNameValid;
+
+  if (!m_wndMenuBar.Create(this))
   {
-    TRACE0("Failed to create toolbar\n");
-    return -1;      // fail to create
-  }
-//  HBITMAP bitmap = ::LoadBitmap(theApp.m_hInstance,MAKEINTRESOURCE(IDB_TOOLBARBITMAP));
-//  m_wndToolBar.SetBitmap(bitmap);
-
-  if(!m_wndStatusBar.Create(this) || !m_wndStatusBar.SetIndicators(indicators, ARRAYSIZE(indicators))) {
-    TRACE0("Failed to create status bar\n");
-    return -1;      // fail to create
+      TRACE0("Failed to create menubar\n");
+      return -1;      // fail to create
   }
 
-  // TODO: Delete these three lines if you don't want the toolbar to
-  //  be dockable
+  m_wndMenuBar.SetPaneStyle(m_wndMenuBar.GetPaneStyle() | CBRS_SIZE_DYNAMIC | CBRS_TOOLTIPS | CBRS_FLYBY);
+
+  // prevent the menu bar from taking the focus on activation
+  CMFCPopupMenu::SetForceMenuFocus(FALSE);
+
+  if (!m_wndToolBar.CreateEx(this, TBSTYLE_FLAT, WS_CHILD | WS_VISIBLE | CBRS_TOP | CBRS_GRIPPER | CBRS_TOOLTIPS | CBRS_FLYBY | CBRS_SIZE_DYNAMIC) ||
+      !m_wndToolBar.LoadToolBar(theApp.m_bHiColorIcons ? IDR_MAINFRAME_256 : IDR_MAINFRAME))
+  {
+      TRACE0("Failed to create toolbar\n");
+      return -1;      // fail to create
+  }
+
+  CString strToolBarName;
+  bNameValid = strToolBarName.LoadString(IDS_TOOLBAR_STANDARD);
+  ASSERT(bNameValid);
+  m_wndToolBar.SetWindowText(strToolBarName);
+
+/*
+  CString strCustomize;
+  bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
+  ASSERT(bNameValid);
+  m_wndToolBar.EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+
+  // Allow user-defined toolbars operations:
+  InitUserToolbars(NULL, uiFirstUserToolBarId, uiLastUserToolBarId);
+*/
+
+  if (!m_wndStatusBar.Create(this))
+  {
+      TRACE0("Failed to create status bar\n");
+      return -1;      // fail to create
+  }
+  m_wndStatusBar.SetIndicators(indicators, sizeof(indicators)/sizeof(UINT));
+
+  // TODO: Delete these five lines if you don't want the toolbar and menubar to be dockable
+  m_wndMenuBar.EnableDocking(CBRS_ALIGN_ANY);
   m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
   EnableDocking(CBRS_ALIGN_ANY);
-  DockControlBar(&m_wndToolBar);
+  DockPane(&m_wndMenuBar);
+  DockPane(&m_wndToolBar);
+
+
+  // enable Visual Studio 2005 style docking window behavior
+  CDockingManager::SetDockingMode(DT_SMART);
+  // enable Visual Studio 2005 style docking window auto-hide behavior
+  EnableAutoHidePanes(CBRS_ALIGN_ANY);
+
+  // set the visual manager used to draw all user interface elements
+  CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerVS2008));
+/*
+  // Enable toolbar and docking window menu replacement
+  EnablePaneMenu(TRUE, ID_VIEW_CUSTOMIZE, strCustomize, ID_VIEW_TOOLBAR);
+
+  // enable quick (Alt+drag) toolbar customization
+  CMFCToolBar::EnableQuickCustomization();
+
+  if (CMFCToolBar::GetUserImages() == NULL)
+  {
+      // load user-defined toolbar images
+      if (m_UserImages.Load(_T(".\\UserImages.bmp")))
+      {
+          CMFCToolBar::SetUserImages(&m_UserImages);
+      }
+  }
+
+  // enable menu personalization (most-recently used commands)
+  // TODO: define your own basic commands, ensuring that each pulldown menu has at least one basic command.
+  CList<UINT, UINT> lstBasicCommands;
+
+  lstBasicCommands.AddTail(ID_FILE_NEW);
+  lstBasicCommands.AddTail(ID_FILE_OPEN);
+  lstBasicCommands.AddTail(ID_FILE_SAVE);
+  lstBasicCommands.AddTail(ID_FILE_PRINT);
+  lstBasicCommands.AddTail(ID_APP_EXIT);
+  lstBasicCommands.AddTail(ID_EDIT_CUT);
+  lstBasicCommands.AddTail(ID_EDIT_PASTE);
+  lstBasicCommands.AddTail(ID_EDIT_UNDO);
+  lstBasicCommands.AddTail(ID_APP_ABOUT);
+  lstBasicCommands.AddTail(ID_VIEW_STATUS_BAR);
+  lstBasicCommands.AddTail(ID_VIEW_TOOLBAR);
+
+  CMFCToolBar::SetBasicCommands(lstBasicCommands);
+*/
 
   m_bAutoMenuEnable = false;
   return 0;
 }
 
+BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
+{
+    if(!CFrameWndEx::PreCreateWindow(cs) )
+        return FALSE;
+    return TRUE;
+}
+
+// CMainFrame diagnostics
+
 #ifdef _DEBUG
-void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+void CMainFrame::AssertValid() const
+{
+  CFrameWndEx::AssertValid();
 }
 
-void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+void CMainFrame::Dump(CDumpContext& dc) const
+{
+  CFrameWndEx::Dump(dc);
 }
-
 #endif //_DEBUG
+
+
+// CMainFrame message handlers
+#ifdef __NEVER__
+void CMainFrame::OnViewCustomize()
+{
+    CMFCToolBarsCustomizeDialog* pDlgCust = new CMFCToolBarsCustomizeDialog(this, TRUE /* scan menus */);
+    pDlgCust->EnableUserDefinedToolbars();
+    pDlgCust->Create();
+}
+
+LRESULT CMainFrame::OnToolbarCreateNew(WPARAM wp,LPARAM lp)
+{
+    LRESULT lres = CFrameWndEx::OnToolbarCreateNew(wp,lp);
+    if (lres == 0)
+    {
+        return 0;
+    }
+
+    CMFCToolBar* pUserToolbar = (CMFCToolBar*)lres;
+    ASSERT_VALID(pUserToolbar);
+
+    BOOL bNameValid;
+    CString strCustomize;
+    bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
+    ASSERT(bNameValid);
+
+    pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+    return lres;
+}
+#endif
+
+BOOL CMainFrame::LoadFrame(UINT nIDResource, DWORD dwDefaultStyle, CWnd* pParentWnd, CCreateContext* pContext) 
+{
+    // base class does the real work
+
+    if (!CFrameWndEx::LoadFrame(nIDResource, dwDefaultStyle, pParentWnd, pContext))
+    {
+        return FALSE;
+    }
+
+
+    // enable customization button for all user toolbars
+    BOOL bNameValid;
+    CString strCustomize;
+    bNameValid = strCustomize.LoadString(IDS_TOOLBAR_CUSTOMIZE);
+    ASSERT(bNameValid);
+
+    for (int i = 0; i < iMaxUserToolbars; i ++)
+    {
+        CMFCToolBar* pUserToolbar = GetUserToolBarByIndex(i);
+        if (pUserToolbar != NULL)
+        {
+            pUserToolbar->EnableCustomizeButton(TRUE, ID_VIEW_CUSTOMIZE, strCustomize);
+        }
+    }
+
+    return TRUE;
+}
+
+void CMainFrame::OnFilePrint() {
+  if(!hasImage()) {
+    MessageBox(_T("No image to print"), _T("Error"), MB_ICONINFORMATION);
+    return;
+  }
+  getView()->OnFilePrint();
+}
+
+void CMainFrame::OnFilePrintPreview() {
+  if(!hasImage()) {
+    MessageBox(_T("No image to show"), _T("Error"), MB_ICONINFORMATION);
+    return;
+  }
+  getView()->OnFilePrintPreview();
+}
+
+void CMainFrame::OnFileSave() {
+  if(!hasImage()) {
+    MessageBox(_T("No image to save"), _T("Error"), MB_ICONINFORMATION);
+    return;
+  }
+
+  static const TCHAR *FileDialogExtensions = _T("Bitmap files (*.bmp)\0*.bmp;\0"
+                                               "JPEG files (*.jpg)\0*.jpg;\0"
+                                               "TIFF files (*.tiff)\0*.tiff;\0"
+                                               "PNG files (*.png)\0*.png;\0\0");
+
+
+  CFileDialog dlg(FALSE);
+  dlg.m_ofn.lpstrFilter = FileDialogExtensions;
+  dlg.m_ofn.lpstrDefExt = _T(".jpg");
+  dlg.m_ofn.lpstrTitle  = _T("Save picture");
+
+  if(dlg.DoModal() != IDOK || _tcslen(dlg.m_ofn.lpstrFile) == 0) {
+    return;
+  }
+
+  try {
+    CCaptureDoc *doc = GetDocument();
+    const TCHAR *ext = dlg.m_ofn.lpstrFilter;
+    doc->save(dlg.m_ofn.lpstrFile);
+  } catch(Exception e) {
+    MessageBox(e.what());
+  }
+}
+
+void CMainFrame::OnEditCopy() {
+  if(!hasImage()) {
+    MessageBox(_T("No image to copy"), _T("Error"), MB_ICONINFORMATION);
+    return;
+  }
+
+  HBITMAP bitmap = GetDocument()->getBitmap();
+  try {
+    putClipboard(theApp.m_pMainWnd->m_hWnd,bitmap);
+  } catch(Exception e) {
+    MessageBox(format(_T("putClipboard failed:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING);
+  }
+}
 
 void CMainFrame::OnScrollLineDown() {
   CCaptureView *view = getView();
@@ -204,8 +426,7 @@ void CMainFrame::OnScrollToEnd() {
 }
 
 void CMainFrame::OnScrollToHome() {
-  CCaptureView *view = getView();
-  view->ScrollToPosition(CPoint(0,0));
+  getView()->ScrollToPosition(CPoint(0,0));
 }
 
 void CMainFrame::repaint() {
@@ -214,12 +435,17 @@ void CMainFrame::repaint() {
 }
 
 void CMainFrame::showDocSize() {
-  if(isMenuItemChecked(this,ID_VIEW_SIZE_CENTIMETER)) {
-    CSize size = GetDocument()->getSizeInMillimeters();
-    m_wndStatusBar.SetPaneText(1,format(_T("%.1lf x %.1lf centimeters"),(double)size.cx/10,(double)size.cy/10).cstr());
-  } else {
-    CSize size = GetDocument()->getSize();
-    m_wndStatusBar.SetPaneText(1,format(_T("%d x %d pixels"),size.cx,size.cy).cstr());
+  switch(m_docSizeFormat) {
+  case DOCSIZE_IN_CENTIMETERS:
+    { const CSize size = GetDocument()->getSizeInMillimeters();
+      m_wndStatusBar.SetPaneText(1, format(_T("%.1lf x %.1lf centimeters"), (double)size.cx/10, (double)size.cy/10).cstr());
+    }
+    break;
+  case DOCSIZE_IN_PIXELS     :
+    { const CSize size = GetDocument()->getSize();
+      m_wndStatusBar.SetPaneText(1, format(_T("%d x %d pixels"), size.cx, size.cy).cstr());
+    }
+    break;
   }
 }
 
@@ -475,13 +701,33 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
 }
 
 void CMainFrame::OnViewSizePixels() {
-  checkMenuItem(this,ID_VIEW_SIZE_CENTIMETER,false);
-  checkMenuItem(this,ID_VIEW_SIZE_PIXELS,true);
+  m_docSizeFormat = DOCSIZE_IN_PIXELS;
   repaint();
 }
 
-void CMainFrame::OnViewSizeCentimeter() {
-  checkMenuItem(this,ID_VIEW_SIZE_CENTIMETER,true);
-  checkMenuItem(this,ID_VIEW_SIZE_PIXELS,false);
+void CMainFrame::OnViewSizeCentimeters() {
+  m_docSizeFormat = DOCSIZE_IN_CENTIMETERS;
   repaint();
+}
+
+void CMainFrame::OnUpdateFilePrint(CCmdUI *pCmdUI) {
+  pCmdUI->Enable(hasImage());
+}
+void CMainFrame::OnUpdateFilePrintPreview(CCmdUI *pCmdUI) {
+  pCmdUI->Enable(hasImage());
+}
+void CMainFrame::OnUpdateFileSave(CCmdUI *pCmdUI) {
+  pCmdUI->Enable(hasImage());
+}
+void CMainFrame::OnUpdateEditCopy(CCmdUI *pCmdUI) {
+  pCmdUI->Enable(hasImage());
+}
+void CMainFrame::OnUpdateStartMSPaint(CCmdUI *pCmdUI) {
+  pCmdUI->Enable(hasImage());
+}
+void CMainFrame::OnUpdateViewSizePixels(CCmdUI *pCmdUI) {
+  pCmdUI->SetCheck(m_docSizeFormat == DOCSIZE_IN_PIXELS);
+}
+void CMainFrame::OnUpdateViewSizeCentimeters(CCmdUI *pCmdUI) {
+  pCmdUI->SetCheck(m_docSizeFormat == DOCSIZE_IN_CENTIMETERS);
 }

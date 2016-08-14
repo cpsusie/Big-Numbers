@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "afxwinappex.h"
+#include "afxdialogex.h"
 #include <Process.h>
 #include "MainFrm.h"
 #include "CaptureDoc.h"
@@ -16,6 +18,9 @@ BEGIN_MESSAGE_MAP(CCaptureApp, CWinApp)
 END_MESSAGE_MAP()
 
 CCaptureApp::CCaptureApp() {
+    m_bHiColorIcons = TRUE;
+
+    SetAppID(_T("Capture"));
 }
 
 CCaptureApp theApp;
@@ -32,10 +37,11 @@ BOOL CCaptureApp::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-	CWinApp::InitInstance();
+	CWinAppEx::InitInstance();
 
 	// Initialize OLE libraries
-	if (!AfxOleInit()) {
+	if (!AfxOleInit())
+  {
 		AfxMessageBox(IDP_OLE_INIT_FAILED);
 		return FALSE;
 	}
@@ -48,12 +54,26 @@ BOOL CCaptureApp::InitInstance() {
 
   LoadStdProfileSettings(16);  // Load standard INI file options (including MRU)
 
+    InitContextMenuManager();
+
+    InitKeyboardManager();
+
+    InitTooltipManager();
+    CMFCToolTipInfo ttParams;
+    ttParams.m_bVislManagerTheme = TRUE;
+    theApp.GetTooltipManager()->SetTooltipParams(AFX_TOOLTIP_TYPE_ALL,
+        RUNTIME_CLASS(CMFCToolTipCtrl), &ttParams);
+
+    // Register the application's document templates.  Document templates
+    //  serve as the connection between documents, frame windows and views
   CSingleDocTemplate* pDocTemplate;
   pDocTemplate = new CSingleDocTemplate(
       IDR_MAINFRAME,
       RUNTIME_CLASS(CCaptureDoc),
       RUNTIME_CLASS(CMainFrame),
       RUNTIME_CLASS(CCaptureView));
+  if (!pDocTemplate)
+      return FALSE;
   AddDocTemplate(pDocTemplate);
 
   CCommandLineInfo cmdInfo;
@@ -67,6 +87,13 @@ BOOL CCaptureApp::InitInstance() {
   m_pMainWnd->UpdateWindow();
   m_device.attach(m_pMainWnd->m_hWnd);
   return TRUE;
+}
+
+int CCaptureApp::ExitInstance()
+{
+    AfxOleTerm(FALSE);
+
+    return CWinAppEx::ExitInstance();
 }
 
 class CAboutDlg : public CDialog {
@@ -104,6 +131,24 @@ END_MESSAGE_MAP()
 void CCaptureApp::OnAppAbout() {
   CAboutDlg aboutDlg;
   aboutDlg.DoModal();
+}
+
+// CMFCApplication2App customization load/save methods
+void CCaptureApp::PreLoadState()
+{
+    BOOL bNameValid;
+    CString strName;
+    bNameValid = strName.LoadString(IDS_EDIT_MENU);
+    ASSERT(bNameValid);
+    GetContextMenuManager()->AddMenu(strName, IDR_POPUP_EDIT);
+}
+
+void CCaptureApp::LoadCustomState()
+{
+}
+
+void CCaptureApp::SaveCustomState()
+{
 }
 
 static const char *browsers[] = {

@@ -4,10 +4,20 @@
 //
 #define IDD_ABOUTBOX                    100
 #define IDP_OLE_INIT_FAILED             100
+#define IDR_POPUP_EDIT                  119
+#define ID_STATUSBAR_PANE1              120
+#define ID_STATUSBAR_PANE2              121
+#define IDS_STATUS_PANE1                122
+#define IDS_STATUS_PANE2                123
+#define IDS_TOOLBAR_STANDARD            124
+#define IDS_TOOLBAR_CUSTOMIZE           125
+#define ID_VIEW_CUSTOMIZE               126
 #define IDR_MAINFRAME                   128
-#define IDD_CAPTUREAREADIALOG           129
-#define IDD_CAPTUREWINDOWDIALOG         130
-#define IDR_CAPTURETYPE                 131
+#define IDR_MAINFRAME_256               129
+#define IDD_CAPTUREAREADIALOG           130
+#define IDD_CAPTUREWINDOWDIALOG         131
+#define IDR_CAPTURETYPE                 132
+#define IDS_EDIT_MENU                   133
 #define IDC_STATICMESSAGE               1001
 #define IDC_EDITHOMEPAGE                1002
 #define ID_MSPAINT                      32771
@@ -30,15 +40,15 @@
 #define ID_SCROLL_TOHOME                32788
 #define ID_INDICATOR_SIZE               32789
 #define ID_VIEW_SIZE_PIXELS             32790
-#define ID_VIEW_SIZE_CENTIMETER         32791
+#define ID_VIEW_SIZE_CENTIMETERS        32791
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        144
-#define _APS_NEXT_COMMAND_VALUE         32799
+#define _APS_NEXT_RESOURCE_VALUE        145
+#define _APS_NEXT_COMMAND_VALUE         32804
 #define _APS_NEXT_CONTROL_VALUE         1003
 #define _APS_NEXT_SYMED_VALUE           105
 #endif

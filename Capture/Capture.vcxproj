@@ -290,6 +290,8 @@
       <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
       <ProfileGuidedDatabase>$(IntDir)$(TargetName).pgd</ProfileGuidedDatabase>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
+      <OptimizeReferences>false</OptimizeReferences>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
     </Link>
     <Xdcmake>
       <OutputFile>$(IntDir)$(TargetName).xml</OutputFile>
@@ -330,9 +332,7 @@
     <Image Include="res\Capture.ico" />
     <Image Include="res\CaptureDoc.ico" />
     <Image Include="res\Toolbar.bmp" />
-    <Image Include="res\Toolbar1.bmp" />
-    <Image Include="res\Toolbar2.bmp" />
-    <Image Include="res\Toolbar4Bit.bmp" />
+    <Image Include="res\Toolbar256.bmp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\Capture.rc2" />

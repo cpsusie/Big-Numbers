@@ -78,13 +78,7 @@
     <Image Include="res\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\Toolbar1.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Toolbar2.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Toolbar4Bit.bmp">
+    <Image Include="res\Toolbar256.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

@@ -13,8 +13,13 @@ private:
 
 public:
   CCaptureDoc *GetDocument();
+  void OnFilePrint() {
+    CScrollView::OnFilePrint();
+  }
+  void OnFilePrintPreview() {
+    CScrollView::OnFilePrintPreview();
+  }
   void repaint();
-  void ajourMenuItems();
 
 public:
   virtual void OnDraw(CDC* pDC);
@@ -35,10 +40,6 @@ public:
 
 protected:
   afx_msg void OnSize(UINT nType, int cx, int cy);
-  afx_msg void OnFilePrint();
-  afx_msg void OnFilePrintPreview();
-  afx_msg void OnFileSave();
-  afx_msg void OnEditCopy();
   DECLARE_MESSAGE_MAP()
 };
 
@@ -46,4 +47,3 @@ protected:
 inline CCaptureDoc* CCaptureView::GetDocument()
    { return (CCaptureDoc*)m_pDocument; }
 #endif
-
