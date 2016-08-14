@@ -59,13 +59,13 @@ const TCHAR *RegistryKey::getRootName(HKEY key) { // static
 
 void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction) { // static 
   if(result != ERROR_SUCCESS) {
-    throwException(_T("RegistryKey::%s:%s:%s"), function, regFunction, getErrorText(result).cstr());
+    throwException(_T("%s:%s:%s"), function, regFunction, getErrorText(result).cstr());
   }
 }
 
 void RegistryKey::checkResult(long result, const TCHAR *function, const TCHAR *regFunction, const String &argument) { // static 
   if(result != ERROR_SUCCESS) {
-    throwException(_T("RegistryKey::%s:%s(\"%s\"):%s"), function, regFunction, argument.cstr(), getErrorText(result).cstr());
+    throwException(_T("%s:%s(\"%s\"):%s"), function, regFunction, argument.cstr(), getErrorText(result).cstr());
   }
 }
 
@@ -76,13 +76,14 @@ RegistryKey::RegistryKey(HKEY key) : m_key(newCountedKey(key, true)) {
 RegistryKey::RegistryKey(const String &remoteMachine, HKEY key) : m_key(NULL) {
   HKEY theKey = key;
   long result = RegConnectRegistry(remoteMachine.cstr(), key, &theKey);
-  checkResult(result, _T("RegistryKey"), _T("RegConnectRegistry"), remoteMachine);
+  checkResult(result, _T(__FUNCTION__), _T("RegConnectRegistry"), remoteMachine);
   m_key = newCountedKey(theKey, true);
   REGISTRYLOG("open",theKey);
   m_name = getRootName(key);
 }
 
 RegistryKey::RegistryKey(HKEY key, const String &subKey, REGSAM samDesired, const String &remoteMachine) : m_key(NULL) {
+  DEFINEMETHODNAME;
    HKEY theKey = key;
 
    // if we're passed a remote machine name...
@@ -90,14 +91,14 @@ RegistryKey::RegistryKey(HKEY key, const String &subKey, REGSAM samDesired, cons
 
    if(remoteMachine.length() > 0)  {
      long result = RegConnectRegistry(remoteMachine.cstr(), key, &theKey);
-     checkResult(result, _T("RegistryKey"), _T("RegConnectRegistry"), remoteMachine);
+     checkResult(result, method, _T("RegConnectRegistry"), remoteMachine);
      REGISTRYLOG("open",theKey);
    }
 
    HKEY newKey;
 
    long result = RegOpenKeyEx(theKey, subKey.cstr(), 0, samDesired, &newKey);
-   checkResult(result, _T("RegistryKey"), _T("RegOpenKeyEx"), subKey);
+   checkResult(result, method, _T("RegOpenKeyEx"), subKey);
    REGISTRYLOG("open",newKey);
 
    m_key  = newCountedKey(newKey, true);
@@ -151,17 +152,18 @@ RegistryKey RegistryKey::openKey(const String &subKey, REGSAM samDesired) const 
 }
 
 void RegistryKey::deleteKey(const String &keyName) const {
+  DEFINEMETHODNAME;
    // deleteKey will always fail to delete a key with sub keys 
    // and deleteKeyAndSubKeys will always work.
 
   RegistryKey key = openKey(keyName); 
   Iterator<String> it = key.getSubKeyIterator();
   if(it.hasNext()) {
-    throwException(_T("RegistryKey::deleteKey(\"%s\") failed. Subkey exist"), key.getName().cstr());
+    throwException(_T("%s(\"%s\") failed. Subkey exist"), method, key.getName().cstr());
   }
 
   long result = RegDeleteKey(m_key->getObject(), keyName.cstr());
-  checkResult(result,_T("deleteKey"), _T("RegDeleteKey"), keyName);
+  checkResult(result,method, _T("RegDeleteKey"), keyName);
 }
 
 void RegistryKey::deleteSubKeys() const {
@@ -188,7 +190,7 @@ RegistryKey RegistryKey::createKey(const String &subKey
   if(disposition != REG_CREATED_NEW_KEY) {
     REGISTRYLOG("close",key.m_key->getObject());
     RegCloseKey(key.m_key->getObject());
-    throwException(_T("createKey(\"%s\") failed. Key alredy exist"), subKey.cstr());
+    throwException(_T("%s(\"%s\") failed. Key alredy exist"), _T(__FUNCTION__), subKey.cstr());
   }
   return key;
 }
@@ -217,7 +219,7 @@ RegistryKey RegistryKey::createOrOpenKey(const String  &subKey
   result = RegCreateKeyEx(m_key->getObject(), subKey.cstr(), 0, tmpClass.cstr(), options
                           ,samDesired, securityAttributes, &key
                           ,disposition);
-  checkResult(result,_T("createOrOpenKey"), _T("RegCreateKeyEx"), subKey);
+  checkResult(result,_T(__FUNCTION__), _T("RegCreateKeyEx"), subKey);
   REGISTRYLOG("open",key);
 
   RegistryKey newKey(key);
@@ -272,18 +274,18 @@ RegistryKey RegistryKey::connectRegistry(const String &machineName) const {
   HKEY key;
   long result = RegConnectRegistry(machineName.cstr(), m_key->getObject(), &key);
   REGISTRYLOG("open",key);
-  checkResult(result,_T("connectRegistry"), _T("RegConnectRegistry"), machineName);
+  checkResult(result,_T(__FUNCTION__), _T("RegConnectRegistry"), machineName);
   return RegistryKey(key);
 }
 
 void RegistryKey::flushKey() const {
   long result = RegFlushKey(m_key->getObject());
-  checkResult(result,_T("flushKey"), _T("RegFlushKey"));
+  checkResult(result,_T(__FUNCTION__), _T("RegFlushKey"));
 }
 
 void RegistryKey::deleteValue(const String &valueName) const {
   long result = RegDeleteValue(m_key->getObject(), valueName.cstr());
-  checkResult(result,_T("deleteValue"), _T("RegDeleteValue"), valueName);
+  checkResult(result,_T(__FUNCTION__), _T("RegDeleteValue"), valueName);
 }
 
 void RegistryKey::deleteValues() const {
@@ -319,17 +321,18 @@ String RegistryKey::getClass() {
 // --------------------------------------------getValue---------------------------------------------
 
 void RegistryKey::getValue(const String &valueName, String &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   if(type == REG_EXPAND_SZ || type == REG_SZ)  {
     unsigned char *buffer = new unsigned char[bufSize+1];
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, buffer, &bufSize);
     try {
-      checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+      checkResult(result, method, _T("RegQueryValueEx"), valueName);
       buffer[bufSize] = 0;
       value = (TCHAR*)buffer;
       delete[] buffer;
@@ -341,95 +344,113 @@ void RegistryKey::getValue(const String &valueName, String &value) const {
 }
 
 void RegistryKey::getValue(const String &valueName, unsigned __int64 &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   switch(type) {
   case REG_QWORD:
     if(bufSize != sizeof(__int64)) {
-      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(__int64));
+      throwException(_T("%s:Value has illegal size (=%d) Must be %d"), method, bufSize, sizeof(__int64));
     }
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
-    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    checkResult(result, method, _T("RegQueryValueEx"), valueName);
     break;
   default:
-    throwException(_T("getValue:Illegal type for value %s (=%d). Must be %d"), valueName.cstr()
+    throwException(_T("%s:Illegal type for value %s (=%d). Must be %d")
+                   ,method
+                   , valueName.cstr()
                    ,type,REG_QWORD);
   }
 }
 
 void RegistryKey::getValue(const String &valueName, __int64 &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   switch(type) {
   case REG_QWORD:
     if(bufSize != sizeof(__int64)) {
-      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(__int64));
+      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+                    ,method
+                    ,bufSize, sizeof(__int64));
     }
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
-    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    checkResult(result, method, _T("RegQueryValueEx"), valueName);
     break;
   default:
-    throwException(_T("getValue:Illegal type for value %s (=%d). Must be %d"),valueName.cstr()
-                   ,type,REG_QWORD);
+    throwException(_T("%s:Illegal type for value %s (=%d). Must be %d")
+                  ,method
+                  ,valueName.cstr()
+                  ,type,REG_QWORD);
   }
 }
 
 
 void RegistryKey::getValue(const String &valueName, unsigned long &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   switch(type) {
   case REG_DWORD:
   case REG_DWORD_BIG_ENDIAN:
     if(bufSize != sizeof(unsigned long)) {
-      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(long));
+      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+                    ,method
+                    ,bufSize, sizeof(long));
     }
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
-    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    checkResult(result, method, _T("RegQueryValueEx"), valueName);
     break;
   default:
-    throwException(_T("getValue:Illegal type for value %s (=%d). Must be {%d,%d}"), valueName.cstr()
-                   ,type,REG_DWORD,REG_DWORD_BIG_ENDIAN);
+    throwException(_T("%s:Illegal type for value %s (=%d). Must be {%d,%d}")
+                  ,method
+                  , valueName.cstr()
+                  ,type,REG_DWORD,REG_DWORD_BIG_ENDIAN);
   }
 }
 
 void RegistryKey::getValue(const String &valueName, long &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   switch(type) {
   case REG_DWORD:
   case REG_DWORD_BIG_ENDIAN:
     if(bufSize != sizeof(unsigned long)) {
-      throwException(_T("getValue:Value has illegal size (=%d) Must be %d"), bufSize, sizeof(long));
+      throwException(_T("%s:Value has illegal size (=%d) Must be %d")
+                    ,method
+                    ,bufSize, sizeof(long));
     }
     result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, (LPBYTE)&value, &bufSize);
-    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+    checkResult(result, method, _T("RegQueryValueEx"), valueName);
     break;
   default:
-    throwException(_T("getValue:Illegal type for value %s (=%d). Must be {%d,%d}"),valueName.cstr()
-                   ,type,REG_DWORD,REG_DWORD_BIG_ENDIAN);
+    throwException(_T("%s:Illegal type for value %s (=%d). Must be {%d,%d}")
+                  ,method
+                  ,valueName.cstr()
+                  ,type,REG_DWORD,REG_DWORD_BIG_ENDIAN);
   }
 }
 
 void RegistryKey::getValue(const String &valueName, unsigned int &value) const {
   unsigned long tmp;
-  getValue(valueName,tmp);
+  getValue(valueName, tmp);
   value = (unsigned int)tmp;
 }
 
@@ -441,7 +462,7 @@ void RegistryKey::getValue(const String &valueName, int &value) const {
 
 void RegistryKey::getValue(const String &valueName, unsigned short &value) const {
   unsigned long tmp;
-  getValue(valueName,tmp);
+  getValue(valueName, tmp);
   value = (unsigned short)tmp;
 }
 
@@ -453,23 +474,24 @@ void RegistryKey::getValue(const String &valueName, short &value) const {
 
 void RegistryKey::getValue(const String &valueName, bool &value) const {
   unsigned long tmp;
-  getValue(valueName,tmp);
+  getValue(valueName, tmp);
   value = tmp ? true : false;
 }
 
 void RegistryKey::getValue(const String &valueName, RegistryValue &value) const {
+  DEFINEMETHODNAME;
   unsigned long type;
   unsigned long bufSize = 0;
 
   long result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, NULL, &bufSize);
-  checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
+  checkResult(result, method, _T("RegQueryValueEx"), valueName);
 
   unsigned char *buffer = new unsigned char[bufSize];
 
   result = RegQueryValueEx(m_key->getObject(), valueName.cstr(), 0, &type, buffer, &bufSize);
   try {
-    checkResult(result, _T("getValue"), _T("RegQueryValueEx"), valueName);
-    value = RegistryValue(valueName,buffer, bufSize, type);
+    checkResult(result, method, _T("RegQueryValueEx"), valueName);
+    value = RegistryValue(valueName, buffer, bufSize, type);
     delete[] buffer;
   } catch(...) {
     delete[] buffer;
@@ -560,49 +582,54 @@ bool RegistryKey::getBool(const String &name, bool defaultValue) const {
 // --------------------------------------------setValue---------------------------------------------
 
 void RegistryKey::setValue(const String &valueName, const String &value, unsigned long type) const {
+  DEFINEMETHODNAME;
   if (type != REG_SZ && type != REG_EXPAND_SZ) {
-    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_SZ,REG_EXPAND_SZ}"), type);
+    throwException(_T("%s:Illegal type=%d. Must be {REG_SZ,REG_EXPAND_SZ}"), method, type);
   }
 
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)value.cstr(), sizeof(TCHAR)*((DWORD)value.length()+1));
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
 void RegistryKey::setValue(const String &valueName, unsigned __int64 value, unsigned long type) const {
+  DEFINEMETHODNAME;
   if(type != REG_QWORD && type != REG_QWORD_LITTLE_ENDIAN) {
-    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), type);
+    throwException(_T("%s:Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), method, type);
   }
 
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(unsigned long));
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
 void RegistryKey::setValue(const String &valueName, __int64 value, unsigned long type) const {
+  DEFINEMETHODNAME;
   if(type != REG_QWORD && type != REG_QWORD_LITTLE_ENDIAN) {
-    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), type);
+    throwException(_T("%s:Illegal type=%d. Must be {REG_QWORD,REG_QWORD_LITTLE_ENDIAN}"), method, type);
   }
 
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(long));
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
 
 void RegistryKey::setValue(const String &valueName, unsigned long value, unsigned long type) const {
+  DEFINEMETHODNAME;
   if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
-    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_DWORD,REG_DWORD_LITTLE_ENDIAN,REG_DWORD_BIG_ENDIAN}"), type);
+    throwException(_T("%s:Illegal type=%d. Must be {REG_DWORD,REG_DWORD_LITTLE_ENDIAN,REG_DWORD_BIG_ENDIAN}"), method, type);
   }
 
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(unsigned long));
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
 void RegistryKey::setValue(const String &valueName, long value, unsigned long type) const {
+  DEFINEMETHODNAME;
   if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
-    throwException(_T("RegistryKey::SetValue():Illegal type=%d. Must be {REG_DWORD,REG_DWORD_LITTLE_ENDIAN,REG_DWORD_BIG_ENDIAN}"), type);
+    throwException(_T("%s:Illegal type=%d. Must be {REG_DWORD,REG_DWORD_LITTLE_ENDIAN,REG_DWORD_BIG_ENDIAN}"), method, type);
   }
 
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, type, (BYTE*)&value, sizeof(long));
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
 void RegistryKey::setValue(const String &valueName, unsigned int value, unsigned long type) const {
@@ -628,12 +655,12 @@ void RegistryKey::setValue(const String &valueName, bool value) const {
 
 void RegistryKey::setValue(const String &valueName, BYTE *bytes , unsigned long size) const {
   long result = RegSetValueEx(m_key->getObject(), valueName.cstr(), 0, REG_BINARY, bytes, size);
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), valueName);
+  checkResult(result, _T(__FUNCTION__), _T("RegSetValueEx"), valueName);
 }
 
 void RegistryKey::setValue(const RegistryValue &value) const {
   long result = RegSetValueEx(m_key->getObject(), value.getName().cstr(), 0, value.getType(), value.getBuffer(), value.getBufSize());
-  checkResult(result, _T("setValue"), _T("RegSetValueEx"), value.getName());
+  checkResult(result, _T(__FUNCTION__), _T("RegSetValueEx"), value.getName());
 }
 
 // ---------------------------------------------RegistryValue-------------------------------------------------------
@@ -649,16 +676,68 @@ RegistryValue::RegistryValue(const String &name, const BYTE *bytes, unsigned lon
 
 RegistryValue::RegistryValue(const String &name, const String &str, unsigned long type) {
   if(type != REG_EXPAND_SZ &&  type != REG_SZ) {
-    throwException(_T("RegistryValue::Illegal type=%d for value <%s>. Must be {REG_EXPAND_SZ, REG_SZ}. Str=<%s>")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_EXPAND_SZ, REG_SZ}. Str=<%s>")
+                  ,_T(__FUNCTION__)
                   ,type, name.cstr(), str.cstr());
   }
   init(name, type, sizeof(TCHAR)*((DWORD)str.length() + 1));
   setBuffer(str.cstr());
 }
 
+RegistryValue::RegistryValue(const String &name, int value,  unsigned long type) {
+  if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
+                  ,_T(__FUNCTION__)
+                  ,type, name.cstr(), value);
+  }
+  init(name, type, sizeof(unsigned long));
+  setBuffer(&value);
+}
+
+RegistryValue::RegistryValue(const String &name, unsigned int value,  unsigned long type) {
+  if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
+                  ,_T(__FUNCTION__)
+                  ,type, name.cstr(), value);
+  }
+  init(name, type, sizeof(unsigned long));
+  setBuffer(&value);
+}
+
+RegistryValue::RegistryValue(const String &name, long value,  unsigned long type) {
+  if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
+                  ,_T(__FUNCTION__)
+                  ,type, name.cstr(), value);
+  }
+  init(name, type, sizeof(unsigned long));
+  setBuffer(&value);
+}
+
 RegistryValue::RegistryValue(const String &name, unsigned long value,  unsigned long type) {
   if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
-    throwException(_T("RegistryValue::Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
+                  ,_T(__FUNCTION__)
+                  ,type, name.cstr(), value);
+  }
+  init(name, type, sizeof(unsigned long));
+  setBuffer(&value);
+}
+
+RegistryValue::RegistryValue(const String &name, __int64 value,  unsigned long type) {
+  if(type != REG_QWORD) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%lu")
+                  ,_T(__FUNCTION__)
+                  ,type, name.cstr(), value);
+  }
+  init(name, type, sizeof(unsigned long));
+  setBuffer(&value);
+}
+
+RegistryValue::RegistryValue(const String &name, unsigned __int64 value,  unsigned long type) {
+  if(type != REG_QWORD) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}. Value=%lu")
+                  ,_T(__FUNCTION__)
                   ,type, name.cstr(), value);
   }
   init(name, type, sizeof(unsigned long));
@@ -743,17 +822,32 @@ RegistryValue &RegistryValue::operator=(const RegistryValue &src) {
   return *this;
 }
 
-RegistryValue::operator unsigned long() const {
+RegistryValue::operator unsigned int() const {
   if(m_type != REG_DWORD && m_type != REG_DWORD_LITTLE_ENDIAN && m_type != REG_DWORD_BIG_ENDIAN) {
-    throwException(_T("RegistryValue::operator unsigned long():Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}")
+                  ,_T(__FUNCTION__)
                   ,m_type, m_name.cstr());
   }
-  return *(unsigned long*)m_buffer;
+  return *(unsigned int*)m_buffer;
+}
+
+RegistryValue::operator unsigned long() const {
+  return (unsigned int)*this;
+}
+
+RegistryValue::operator unsigned __int64() const {
+  if(m_type != REG_QWORD) {
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_QWORD}")
+                  ,_T(__FUNCTION__)
+                  ,m_type, m_name.cstr());
+  }
+  return *(unsigned __int64*)m_buffer;
 }
 
 RegistryValue::operator String() const {
   if(m_type != REG_EXPAND_SZ &&  m_type != REG_SZ) {
-    throwException(_T("RegistryValue::operator String:Illegal type=%d for value <%s>. Must be {REG_SZ,REG_EXPAND_SZ}")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_SZ,REG_EXPAND_SZ}")
+                  ,_T(__FUNCTION__)
                   ,m_type, m_name.cstr());
   }
   return String((TCHAR*)m_buffer);
@@ -777,7 +871,8 @@ RegistryValue::operator StringArray() const {
     }
     break;
   default:
-    throwException(_T("RegistryValue::operator Array<String>:Illegal type=%d for value <%s>. Must be {REG_MULTI_SZ,REG_SZ,REG_EXPAND_SZ}")
+    throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_MULTI_SZ,REG_SZ,REG_EXPAND_SZ}")
+                  ,_T(__FUNCTION__)
                   ,m_type, m_name.cstr());
   }
   return result;
@@ -796,6 +891,9 @@ String RegistryValue::toString() const {
 
   case REG_DWORD:
     return format(_T("%lu"),*(unsigned long*)m_buffer);
+
+  case REG_QWORD:
+    return format(_T("%llu"),*(unsigned long long*)m_buffer);
 
   case REG_DWORD_BIG_ENDIAN:
     return format(_T("%lu"),ntohl(*(unsigned long*)m_buffer));
@@ -819,12 +917,13 @@ String RegistryValue::typeAsString(unsigned long type) { // static
   case REG_BINARY                    : return _T("REG_BINARY");
   case REG_DWORD                     : return _T("REG_DWORD");
   case REG_DWORD_BIG_ENDIAN          : return _T("REG_DWORD_BIG_ENDIAN");
+  case REG_QWORD                     : return _T("REG_QWORD");
   case REG_LINK                      : return _T("REG_LINK");
   case REG_MULTI_SZ                  : return _T("REG_MULTI_SZ");
   case REG_RESOURCE_LIST             : return _T("REG_RESOURCE_LIST");
   case REG_FULL_RESOURCE_DESCRIPTOR  : return _T("REG_FULL_RESOURCE_DESCRIPTOR");
   case REG_RESOURCE_REQUIREMENTS_LIST: return _T("REG_RESOURCE_REQUIREMENTS_LIST");
-  default                            : return format(_T("Type=%d"),type);
+  default                            : return format(_T("Type=%d"), type);
   }
 }
 
@@ -889,7 +988,7 @@ void SubKeyIterator::queryKeyInfo() {
                                ,NULL    // Not interested in max length of value buffer
                                ,NULL    // Not interested in length of security descriptor
                                ,NULL);  // Not interested in last write time
-  RegistryKey::checkResult(result, s_className, _T("RegQueryInfoKey"), m_key.getName());
+  RegistryKey::checkResult(result, _T(__FUNCTION__), _T("RegQueryInfoKey"), m_key.getName());
   init(subKeyCount, maxNameLength);
 }
 
@@ -941,7 +1040,7 @@ void *SubKeyIterator::next() {
       break;
 
     default:
-      RegistryKey::checkResult(result,_T("SubKeyIterator::next"), _T("RegEnumKeyEx"),m_key.getName());
+      RegistryKey::checkResult(result,_T(__FUNCTION__), _T("RegEnumKeyEx"),m_key.getName());
       break;
     }
   }
@@ -1032,7 +1131,7 @@ void RegValueIterator::queryKeyInfo() {
                                ,&maxValueLength 
                                ,NULL     // Not interested in length of security descriptor
                                ,NULL);   // Not interested in last write time
-  RegistryKey::checkResult(result, s_className, _T("RegQueryInfoKey"), m_key.getName());
+  RegistryKey::checkResult(result, _T(__FUNCTION__), _T("RegQueryInfoKey"), m_key.getName());
   init(valueCount,maxNameLength,maxValueLength);
 }
 
@@ -1096,7 +1195,7 @@ void *RegValueIterator::next() {
       break;
 
     default:
-      RegistryKey::checkResult(result,_T("RegValueIterator::next"), _T("RegEnumValue"),m_key.getName());
+      RegistryKey::checkResult(result,_T(__FUNCTION__), _T("RegEnumValue"),m_key.getName());
       break;
     }
   }

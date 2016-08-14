@@ -159,8 +159,9 @@ namespace TestRegistry
       RegistryValue multiStringValue(_T("multiStringFelt"), strings);
 
       RegTest test;
-      test.add(RegistryValue(_T("stringFelt"), _T("fisk")));
-      test.add(RegistryValue(_T("longFelt"), 0x12345678));
+      test.add(RegistryValue(_T("stringFelt"  ), _T("fisk")));
+      test.add(RegistryValue(_T("longFelt"    ), 0x12345678));
+      test.add(RegistryValue(_T("longlongFelt"), 0x123456789abcdef));
       test.add(binaryValue);
       test.add(multiStringValue);
       test.save();

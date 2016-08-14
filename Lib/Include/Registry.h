@@ -41,7 +41,9 @@ public :
     return typeAsString(m_type);
   }
 
-  operator unsigned long() const;    // type must be REG_DWORD, REG_DWORD_LITTLE_ENDIAN, REG_DWORD_BIG_ENDIAN
+  operator unsigned int() const;     // type must be REG_DWORD, REG_DWORD_LITTLE_ENDIAN, REG_DWORD_BIG_ENDIAN
+  operator unsigned long() const;    // same as int
+  operator unsigned __int64() const; // type must be REG_QWORD
   operator String() const;           // type must be REG_EXPAND_SZ, REG_SZ
   operator StringArray() const;      // type must be REG_MULTI_SZ
 
@@ -53,13 +55,18 @@ public :
     return m_buffer;
   }
 
-
   static String typeAsString(unsigned long type);
 
   RegistryValue();
-  RegistryValue(const String &name, const BYTE    *bytes, unsigned long size, unsigned long type = REG_BINARY);
-  RegistryValue(const String &name, const String  &str  ,                     unsigned long type = REG_SZ    );
-  RegistryValue(const String &name, unsigned long  value,                     unsigned long type = REG_DWORD );
+  RegistryValue(const String &name, const BYTE      *bytes, unsigned long size, unsigned long type = REG_BINARY);
+  RegistryValue(const String &name, const String    &str  ,                     unsigned long type = REG_SZ    );
+
+  RegistryValue(const String &name,          int     value,                     unsigned long type = REG_DWORD );
+  RegistryValue(const String &name, unsigned int     value,                     unsigned long type = REG_DWORD );
+  RegistryValue(const String &name,          long    value,                     unsigned long type = REG_DWORD );
+  RegistryValue(const String &name, unsigned long    value,                     unsigned long type = REG_DWORD );
+  RegistryValue(const String &name,          __int64 value,                     unsigned long type = REG_QWORD );
+  RegistryValue(const String &name, unsigned __int64 value,                     unsigned long type = REG_QWORD );
   RegistryValue(const String &name, const StringArray &strings); // type = REG_MULTI_SZ
   String toString() const;
 };
