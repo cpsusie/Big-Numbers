@@ -368,7 +368,7 @@ void PLBmpBase::Dump () {
                  << "," << pPal[i].GetB() 
                  << "," << pPal[i].GetA();
         cerr << "..." ;
-        for (i=254; i<256; i++)
+        for (int i=254; i<256; i++)
             cerr << "(" << pPal[i].GetR() 
                  << "," << pPal[i].GetG() 
                  << "," << pPal[i].GetB () 

@@ -145,7 +145,7 @@ void PLSGIDecoder::readRLE(PLBmpBase &Bmp) {
   
   /* read run length table */ 
   unsigned long * RowLengths = (unsigned long *)malloc(tablen);
-  for (i = 0; i<ysize*zsize; i++)
+  for (int i = 0; i<ysize*zsize; i++)
     RowLengths[i] = ReadMLong(m_pDataSrc);
 
   for (int channel = 0; channel < zsize; channel++) {
