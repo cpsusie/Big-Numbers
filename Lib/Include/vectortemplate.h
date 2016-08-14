@@ -249,7 +249,7 @@ public:
     return sqrt(sum);
   }
 
-  bool operator==(const VectorTemplate<T> &v) {
+  bool operator==(const VectorTemplate<T> &v) const {
     if(this == &v) {
       return true;
     }
@@ -264,7 +264,7 @@ public:
     return true;
   }
 
-  bool operator!=(const VectorTemplate<T> &v) {
+  bool operator!=(const VectorTemplate<T> &v) const {
     return !(*this == v);
   }
 
