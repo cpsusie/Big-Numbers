@@ -26,8 +26,6 @@ private:
   CompactArray<CoordinateSystemObject*> m_objectArray;
   int    findObject(const CoordinateSystemObject *object) const;
 public:
-  //{{AFX_VIRTUAL(CCoordinateSystem)
-  //}}AFX_VIRTUAL
 
 public:
   CCoordinateSystem();
@@ -125,12 +123,8 @@ public:
     return getTransformation().backwardTransform(p.x, p.y);
   }
 
-  //{{AFX_MSG(CCoordinateSystem)
 	afx_msg void OnPaint();
-	//}}AFX_MSG
 
   DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}
 

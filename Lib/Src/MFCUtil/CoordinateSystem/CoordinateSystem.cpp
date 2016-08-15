@@ -7,8 +7,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 #define WHITE RGB(255,255,255)
@@ -29,16 +27,14 @@ CCoordinateSystem::~CCoordinateSystem() {
 }
 
 BEGIN_MESSAGE_MAP(CCoordinateSystem, CStatic)
-    //{{AFX_MSG_MAP(CCoordinateSystem)
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
-  const TCHAR *function = _T("substituteControl");
+  DEFINEMETHODNAME;
   CWnd *ctrl = parent->GetDlgItem(id);
   if(ctrl == NULL) {
-    parent->MessageBox(format(_T("%s::%s:Control %d not found"), s_className, function, id).cstr(), _T("Error"), MB_ICONWARNING);
+    parent->MessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), _T("Error"), MB_ICONWARNING);
     return;
   }
   const DWORD  style   = ctrl->GetStyle();
@@ -52,7 +48,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   ctrl->DestroyWindow();
 
   if(!Create(_T(""), style, rect, parent, id)) {
-    parent->MessageBox(format(_T("%s::Create failed"), function).cstr(), _T("Error"), MB_ICONWARNING);
+    parent->MessageBox(format(_T("%s:Create failed"), method).cstr(), _T("Error"), MB_ICONWARNING);
     return;
   }
   ModifyStyleEx(0, exStyle);
