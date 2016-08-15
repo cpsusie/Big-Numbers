@@ -286,6 +286,7 @@
   <ItemGroup>
     <ClCompile Include="BigRealRemes2.cpp" />
     <ClCompile Include="DebugThread.cpp" />
+    <ClCompile Include="ExtremaMap.cpp" />
     <ClCompile Include="IRemes.cpp" />
     <ClCompile Include="IRemesDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">

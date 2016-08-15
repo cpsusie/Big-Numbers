@@ -31,7 +31,6 @@ public:
   friend tistream &operator>>(tistream &in ,       ExtremaKey &key);
 };
 
-
 class ExtremaVector : public BigRealVector {
 private:
   BigReal m_E;
@@ -54,12 +53,13 @@ public:
 };
 
 class ExtremaHashMap : public HashMap<ExtremaKey, Array<ExtremaVector> > {
+private:
+  void save(tostream &out);
+  void load(tistream &in);
 public:
   ExtremaHashMap();
   void save(const String &name);
   void load(const String &name);
-  void save(tostream &out);
-  void load(tistream &in);
 };
 
 class RemesTargetFunction : public FunctionTemplate<BigReal,BigReal> {
@@ -93,6 +93,7 @@ typedef enum {
 class Remes : public PropertyContainer {
 private:
   static const TCHAR          *s_stateName[];
+  static ExtremaHashMap        s_extremaMap;
   const BigReal                m_left, m_right;
   RemesTargetFunction         &m_targetFunction;   // Function to be approximated
   const bool                   m_useRelativeError;
@@ -117,11 +118,7 @@ private:
   RemesState                   m_state;
   String                       m_warning;
 
-  static ExtremaHashMap extremaMap;
   String               getMapFileName() const;
-  void                 setStateProperty(RemesState newState);
-  void                 setBigRealProperty(RemesProperty id, BigReal &v, const BigReal &newValue);
-  void                 setVectorProperty( RemesProperty id, BigRealVector &v, const BigRealVector &newValue);
   void                 initSolveState(const int M, const int K);
   void                 nextSolveState();
   bool                 hasNextSolveState() const;
@@ -138,10 +135,11 @@ private:
   void                 setExtrema(      const BigRealVector &extrema);
   void                 setExtrema(      const ExtremaVector &extrema);
   void                 findCoefficients();
-  BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, int depth);
+  BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r);
   void                 findExtrema();
   BigRealVector        findFinalExtrema(const int M, const int K, const bool highPrecision);
-  void                 setExtremum(     const int index, const BigReal &x);
+  int                  setExtremum(     const int index, const BigReal &x); // return sign of errorfunction at extremum
+  void                 resetExtremumCount();
   void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
   BigReal              approximation(   const BigReal &x) const; // Pm(x) / Pk(x)
   BigReal              errorFunction(   const BigReal &x) const; // m_useRelativeError ? (1 - sFunction(x) * approximation(x)) : (m_targetFunction(x)-approximation(x))

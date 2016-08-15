@@ -82,7 +82,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
 unsigned int DebugThread::run() {
   setDeamon(true);
   try {
-    setBoolProperty(THREAD_RUNNING, m_running, true);
+    setProperty(THREAD_RUNNING, m_running, true);
     m_expr.reduce();
   } catch(Exception e) {
     m_errorMsg = e.what();
@@ -93,26 +93,18 @@ unsigned int DebugThread::run() {
   catch (...) {
     m_errorMsg = _T("Unknown exception caught in DebugThread");
   }
-  setBoolProperty(THREAD_TERMINATED, m_terminated, true );
-  setBoolProperty(THREAD_RUNNING   , m_running   , false);
+  setProperty(THREAD_TERMINATED, m_terminated, true );
+  setProperty(THREAD_RUNNING   , m_running   , false);
   
   return 0;
 }
 
-void DebugThread::setBoolProperty(DebugThreadProperty id, bool &v, bool newValue) {
-  if(newValue != v) {
-    const bool oldValue = v;
-    v = newValue;
-    notifyPropertyChanged(id, &oldValue, &v);
-  }
-}
-
 void DebugThread::stop(bool onReturn) {
-  setBoolProperty(THREAD_RUNNING, m_running, false);
+  setProperty(THREAD_RUNNING, m_running, false);
   m_stoppedOnReturn = onReturn;
   suspend();
   if(m_killed) throw true;
-  setBoolProperty(THREAD_RUNNING, m_running, true );
+  setProperty(THREAD_RUNNING, m_running, true );
 }
 
 void DebugThread::go() {

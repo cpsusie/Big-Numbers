@@ -29,7 +29,8 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent) {
+CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T(""))
+{
 	m_K             = 1;
 	m_M             = 1;
 	m_xFrom         = 0.0;
@@ -43,15 +44,16 @@ CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
-	DDX_Text( pDX, IDC_EDITM             , m_M            );
-	DDV_MinMaxUInt(pDX, m_M, 0, 20                        );
-	DDX_Text( pDX, IDC_EDITK             , m_K            );
-	DDV_MinMaxUInt(pDX, m_K, 0, 20                        );
-	DDX_Text( pDX, IDC_EDITXFROM         , m_xFrom        );
-	DDX_Text( pDX, IDC_EDITXTO           , m_xTo          );
-	DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
-	DDX_Text( pDX, IDC_EDITDIGITS        , m_digits       );
-	DDV_MinMaxUInt(pDX, m_digits, 2, 100);
+  DDX_Text(pDX, IDC_EDITM, m_M);
+  DDV_MinMaxUInt(pDX, m_M, 0, 20);
+  DDX_Text(pDX, IDC_EDITK, m_K);
+  DDV_MinMaxUInt(pDX, m_K, 0, 20);
+  DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
+  DDX_Text(pDX, IDC_EDITXTO, m_xTo);
+  DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
+  DDX_Text(pDX, IDC_EDITDIGITS, m_digits);
+  DDV_MinMaxUInt(pDX, m_digits, 2, 200);
+  DDX_Text(pDX, IDC_EDITNAME, m_name);
 }
 
 BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
@@ -77,7 +79,12 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , OnMsgSearchEItChanged     )
   ON_MESSAGE(ID_MSG_EXTREMACOUNT_CHANGED     , OnMsgExtremaCountChanged  )
   ON_MESSAGE(ID_MSG_WARNING_CHANGED          , OnMsgWarningChanged       )
+  ON_MESSAGE(ID_MSG_SHOW_ERRORPLOT           , OnMsgShowErrorPlot        )
+  ON_MESSAGE(ID_MSG_SHOW_ERROR               , OnMsgShowError            )
+
 END_MESSAGE_MAP()
+
+
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
@@ -115,7 +122,7 @@ BOOL CIRemesDlg::OnInitDialog() {
 
   m_coorSystem.substituteControl(this, IDC_FRAME_COORDINATESYSTEM);
   m_coorSystem.setRetainAspectRatio(false);
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), true);
+  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), false);
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATICTEMPORARY       ,                                                     PCT_RELATIVE_BOTTOM );
@@ -227,25 +234,31 @@ void CIRemesDlg::clearErrorPlot() {
   m_coorSystem.removeAllObjects();
 }
 
-void CIRemesDlg::showErrorPlot(const Remes &r) {
+bool CIRemesDlg::createErrorPlot(const Remes &r) {
   if(!r.hasErrorPlot()) {
     clearErrorPlot();
-    return;
+    return false;
   }
   const int plotKey = r.getCoefVectorIndex();
 
   if(plotKey == getLastErrorPlotKey()) {
-    return;
+    return false;
   }
 
   clearErrorPlot();
   Point2DArray pa;
-  const DoubleInterval xToRange = m_coorSystem.getTransformation().getToRectangle().getXInterval();
-  const int n = (int)xToRange.getLength()+1;
-  r.getErrorPlot(n, pa);
+  r.getErrorPlot(getErrorPlotXPixelCount(), pa);
   ErrorPlot *plot = new ErrorPlot(pa, plotKey);
   m_coorSystem.addObject(plot);
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, plot->getMinY(), plot->getMaxY()), true);
+  return true;
+}
+
+void CIRemesDlg::showErrorPlot() {
+  if (m_coorSystem.getObjectCount() < 1) {
+    return;
+  }
+  const ErrorPlot *plot = (ErrorPlot*)m_coorSystem.getObject(0);
+  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, plot->getMinY(), plot->getMaxY()), false);
   m_coorSystem.Invalidate(FALSE);
 }
 
@@ -257,7 +270,15 @@ int CIRemesDlg::getLastErrorPlotKey() {
 
 void CIRemesDlg::updateErrorPlotXRange() {
   const DataRange dr = m_coorSystem.getDataRange();
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, dr.getMinY(), dr.getMaxY()), true);
+  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, dr.getMinY(), dr.getMaxY()), false);
+}
+
+
+int CIRemesDlg::getErrorPlotXPixelCount() const {
+  const IntervalTransformation &tr = m_coorSystem.getTransformation().getXTransformation();
+  const DoubleInterval xToRange = tr.forwardTransform(getXRange());
+  const int n = (int)xToRange.getLength()+1;
+  return (n <= 0) ? 1 : n;
 }
 
 void CIRemesDlg::showSearchE(const String &s) {
@@ -391,6 +412,12 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
     case THREAD_RUNNING:
       PostMessage(ID_MSG_RUNSTATE_CHANGED, (WPARAM)oldValue, (LPARAM)newValue);
       break;
+    case THREAD_ERROR:
+      m_gate.wait();
+      m_error = *(const String*)newValue;
+      m_gate.signal();
+      PostMessage(ID_MSG_SHOW_ERROR, 0, 0);
+      break;
     case REMES_PROPERTY:
       { const RemesPropertyData &data = *(RemesPropertyData*)newValue; // oldValue = NULL
         switch(data.m_id) {
@@ -401,28 +428,41 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
           }
           break;
         case MAINITERATION      : // *int
+          m_gate.wait();
           m_coefWinData = data.m_src;
-          PostMessage(ID_MSG_MAINITERATION_CHANGED, 0, (LPARAM)&m_coefWinData);
+          m_gate.signal();
+          PostMessage(ID_MSG_MAINITERATION_CHANGED, 0, 0);
           break;
         case Q                  : // *BigReal
+          m_gate.wait();
           m_searchEString = data.m_src.getSearchEString();
-          PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, (LPARAM)&m_searchEString);
+          m_gate.signal();
+          PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, 0);
           break;
         case EXTREMUMCOUNT      : // *int
+          m_gate.wait();
           m_extrWinData = data.m_src;
-          PostMessage(ID_MSG_EXTREMACOUNT_CHANGED, 0, (LPARAM)&m_extrWinData);
+          m_gate.signal();
+          PostMessage(ID_MSG_EXTREMACOUNT_CHANGED, 0, 0);
           break;
         case COEFFICIENTVECTOR  : // *BigRealVector
         case MMQUOT             : // *BigReal
           break;
         case MAXERROR           : // *BigReal
           if(data.m_src.hasErrorPlot()) {
-            showErrorPlot(data.m_src);
+            m_gate.wait();
+            const bool paint = createErrorPlot(data.m_src);
+            m_gate.signal();
+            if(paint) {
+              PostMessage(ID_MSG_SHOW_ERRORPLOT, 0, 0);
+            }
           }
           break;
         case WARNING            : // *String
+          m_gate.wait();
           m_warning = *(String*)data.m_newValue;
-          PostMessage(ID_MSG_WARNING_CHANGED, (WPARAM)0, (LPARAM)&m_warning);
+          m_gate.signal();
+          PostMessage(ID_MSG_WARNING_CHANGED, 0, 0);
           break;
         }
       }
@@ -446,26 +486,46 @@ LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CIRemesDlg::OnMsgMainIterationChanged(WPARAM wp, LPARAM lp) {
-  const CoefWindowData &data = *(CoefWindowData*)lp;
-  showCoefWindowData(data);
+  m_gate.wait();
+  showCoefWindowData(m_coefWinData);
+  m_gate.signal();
   return 0;
 }
 
 LRESULT CIRemesDlg::OnMsgSearchEItChanged(WPARAM wp, LPARAM lp) {
-  const String &str = *(String*)lp;
+  m_gate.wait();
+  const String str = m_searchEString;
+  m_gate.signal();
   showSearchE(str);
   return 0;
 }
 
 LRESULT CIRemesDlg::OnMsgExtremaCountChanged(WPARAM wp, LPARAM lp) {
-  const ExtremaWindowData &data = *(ExtremaWindowData*)lp;
-  showExtremaWindowData(data);
+  m_gate.wait();
+  showExtremaWindowData(m_extrWinData);
+  m_gate.signal();
   return 0;
 }
 
 LRESULT CIRemesDlg::OnMsgWarningChanged(WPARAM wp, LPARAM lp) {
-  const String &warning = *(String*)lp;
-  showWarning(warning);
+  m_gate.wait();
+  showWarning(m_warning);
+  m_gate.signal();
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgShowErrorPlot(WPARAM wp, LPARAM lp) {
+  m_gate.wait();
+  showErrorPlot();
+  m_gate.signal();
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgShowError(WPARAM wp, LPARAM lp) {
+  m_gate.wait();
+  const String error = m_error;
+  m_gate.signal();
+  MessageBox(error.cstr(), _T("Error"), MB_ICONEXCLAMATION);
   return 0;
 }
 
@@ -476,6 +536,11 @@ void CIRemesDlg::OnHelpAboutIRemes() {
 
 void CIRemesDlg::startThread(bool singleStep) {
   if(!UpdateData()) {
+    return;
+  }
+  if (m_name.GetLength() == 0) {
+    gotoEditBox(this, IDC_EDITNAME);
+    MessageBox(_T("Name cannot be empty"));
     return;
   }
   updateErrorPlotXRange();
@@ -493,6 +558,7 @@ void CIRemesDlg::startThread(bool singleStep) {
 }
 
 void CIRemesDlg::createThread() {
+  m_targetFunction.setName((LPCTSTR)m_name);
   m_targetFunction.setDigits(m_digits);
   m_targetFunction.setInterval(m_xFrom, m_xTo);
   m_remes       = new Remes(m_targetFunction, m_relativeError?true:false);

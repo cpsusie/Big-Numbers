@@ -51,8 +51,10 @@ private:
   void initStringArray(const Remes &r) {
     const int n = r.getExtremaCount();
     m_extremaStrings.clear();
-    m_extremaStrings.setCapacity(n);
-    for(int i = 0; i < n; i++) m_extremaStrings.add(r.getExtremumString(i));
+    if(n > 0) {
+      m_extremaStrings.setCapacity(n);
+      for(int i = 0; i < n; i++) m_extremaStrings.add(r.getExtremumString(i));
+    }
   }
 public:
   StringArray m_extremaStrings;
@@ -71,6 +73,7 @@ private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
   SimpleLayoutManager     m_layoutManager;
+  Semaphore               m_gate;
   CCoordinateSystem       m_coorSystem;
   DynamicTargetFunction   m_targetFunction;
   Remes                  *m_remes;
@@ -78,7 +81,7 @@ private:
   CoefWindowData          m_coefWinData;
   ExtremaWindowData       m_extrWinData;
   String                  m_searchEString;
-  String                  m_warning;
+  String                  m_warning, m_error;
 
   void startThread(bool singleStep);
   void createThread();
@@ -102,20 +105,19 @@ private:
   void showExtremaWindowData(const ExtremaWindowData &data);
   void showSearchE(const String &s);
   void clearErrorPlot();
-  void showErrorPlot(const Remes &r);
+  bool createErrorPlot(const Remes &r);
+  void showErrorPlot();
+  int  getErrorPlotXPixelCount() const;
   void updateErrorPlotXRange();
   int  getLastErrorPlotKey();
+  inline DoubleInterval getXRange() const {
+    return DoubleInterval(m_xFrom, m_xTo);
+  }
 public:
   CIRemesDlg(CWnd *pParent = NULL);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
 	enum { IDD = IDD_IREMES_DIALOG };
-	UINT	  m_K;
-	UINT	  m_M;
-	double	m_xFrom;
-	double	m_xTo;
-	BOOL	  m_relativeError;
-	UINT	  m_digits;
 
 public:
 	virtual BOOL PreTranslateMessage(MSG *pMsg);
@@ -123,7 +125,6 @@ protected:
   virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
-
   afx_msg void    OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
   virtual BOOL    OnInitDialog();
@@ -149,6 +150,15 @@ protected:
   afx_msg LRESULT OnMsgSearchEItChanged(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgExtremaCountChanged(  WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgWarningChanged(       WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgShowErrorPlot(        WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgShowError(            WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
+private:
+  CString m_name;
+	UINT	  m_K;
+	UINT	  m_M;
+	double	m_xFrom;
+	double	m_xTo;
+	BOOL	  m_relativeError;
+	UINT	  m_digits;
 };
-

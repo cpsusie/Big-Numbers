@@ -26,7 +26,6 @@ private:
   Expression           &m_expr;
   const Expression     *m_exprp;
   void stop(bool onReturn = false);
-  void setBoolProperty(DebugThreadProperty id, bool &v, bool newValue);
   void throwInvalidStateException(const TCHAR *method, ExpressionState state) const;
 public:
   DebugThread(Expression &expr);

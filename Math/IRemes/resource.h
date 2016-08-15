@@ -22,6 +22,8 @@
 #define IDC_STATICSTATE                 1012
 #define IDC_STATICSTATE2                1013
 #define IDC_STATICWARNING               1013
+#define IDC_EDITXFROM2                  1014
+#define IDC_EDITNAME                    1014
 #define ID_FILE_EXIT                    32771
 #define ID_RUN_GO                       32772
 #define ID_RUN_DEBUG                    32773
@@ -40,6 +42,8 @@
 #define ID_MSG_SEARCHEITERATION_CHANGED 32903
 #define ID_MSG_EXTREMACOUNT_CHANGED     32904
 #define ID_MSG_WARNING_CHANGED          32905
+#define ID_MSG_SHOW_ERRORPLOT           32906
+#define ID_MSG_SHOW_ERROR               32907
 
 // Next default values for new objects
 // 

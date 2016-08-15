@@ -14,17 +14,18 @@ unsigned int DebugThread::run() {
   setDeamon(true);
   m_r.addPropertyChangeListener(this);
   try {
-    setBoolProperty(THREAD_RUNNING, m_running, true);
+    setProperty(THREAD_RUNNING, m_running, true);
     m_r.solve(m_M, m_K);
   } catch(Exception e) {
-    m_errorMsg = e.what();
-    notifyPropertyChanged(THREAD_ERROR, _T(""), m_errorMsg.cstr());
+    setProperty(THREAD_ERROR, m_errorMsg, e.what());
   } catch(bool) {
     // ignore. thrown after resume, when killed
+  } catch (...) {
+    setProperty(THREAD_ERROR, m_errorMsg, _T("Unknown exception"));
   }
   m_r.removePropertyChangeListener(this);
-  setBoolProperty(THREAD_TERMINATED, m_terminated, true );
-  setBoolProperty(THREAD_RUNNING   , m_running   , false);
+  setProperty(THREAD_TERMINATED, m_terminated, true );
+  setProperty(THREAD_RUNNING   , m_running   , false);
   return 0;
 }
 
@@ -68,10 +69,10 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
 }
 
 void DebugThread::stop() {
-  setBoolProperty(THREAD_RUNNING, m_running, false);
+  setProperty(THREAD_RUNNING, m_running, false);
   suspend();
   if(m_killed) throw true;
-  setBoolProperty(THREAD_RUNNING, m_running, true);
+  setProperty(THREAD_RUNNING, m_running, true);
 }
 
 String DebugThread::getStateName() const {

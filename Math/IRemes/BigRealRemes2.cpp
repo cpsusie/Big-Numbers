@@ -11,9 +11,21 @@
 
 class NoConvergenceException : public Exception {
 public:
-  NoConvergenceException(const TCHAR *msg) : Exception(msg) {
+  NoConvergenceException(const TCHAR *method, const TCHAR *msg) : Exception(format(_T("%s:%s"), method, msg)) {
   }
 };
+
+static void throwNoConvergenceException(const TCHAR *method, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format, argptr);
+  va_end(argptr);
+  throw NoConvergenceException(method, msg.cstr());
+}
+
+static void throwSameSignException(const TCHAR *method) {
+  throwNoConvergenceException(method, _T("Sign(errorFunction) doesn't change between the found extrema."));
+}
 
 const TCHAR *Remes::s_stateName[] = {
   _T("INITIALIZE")
@@ -21,16 +33,7 @@ const TCHAR *Remes::s_stateName[] = {
  ,_T("REMES_SEARCH_EXTREMA")
  ,_T("REMES_FINALIZE_ITERATION")
  ,_T("REMES_NOCONVERGENCE")
-
 };
-
-static void throwNoConvergenceException(const TCHAR *format, ...) {
-  va_list argptr;
-  va_start(argptr, format);
-  String msg = vformat(format, argptr);
-  va_end(argptr);
-  throw NoConvergenceException(msg.cstr());
-}
 
 static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
 
@@ -39,17 +42,17 @@ static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
 class FormatBigReal : public String {
 public:
   FormatBigReal(const BigReal &x, int prec = 20, int width = 30, int flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
-  FormatBigReal(const Real   &x,                int width = 18, int flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
-  FormatBigReal(int           x,                int width =  2, int flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
+  FormatBigReal(const Real   &x,                 int width = 18, int flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
+  FormatBigReal(int           x,                 int width =  2, int flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
 };
 
-static void checkRange(const BigReal &x, const BigReal &left, const BigReal &right) {
-  if(x < left || x > right)
-    throwException(_T("%s:Invalid argument. x=%s outside range=[%s..%s]")
-                  ,_T(__FUNCTION__)
-                  ,x.toString().cstr()
-                  ,left.toString().cstr()
-                  ,right.toString().cstr());
+static void checkRange(const TCHAR *method, const BigReal &x, const BigReal &left, const BigReal &right) {
+  if((x < left) || (x > right))
+    throwInvalidArgumentException(method
+                                 ,_T("x=%s outside range=[%s..%s]")
+                                 ,x.toString().cstr()
+                                 ,left.toString().cstr()
+                                 ,right.toString().cstr());
 }
 
 static BigReal signedValue(int sign, const BigReal &x) {
@@ -67,6 +70,8 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
   if((m_left > 0) || (m_right < 0)) {
     throwException(_T("Interval [%s;%s] does not contain 0"), m_left.toString().cstr(), m_right.toString().cstr());
   }
+  loadExtremaFromFile();
+
   m_hasCoefficients = false;
   m_coefVectorIndex = 0;
   m_MMQuotEps       = DEFAULT_MMQUOT_EPS;
@@ -85,29 +90,6 @@ Remes::Remes(const Remes &src)
   m_MMQuotEps       = src.m_MMQuotEps;
 }
 
-void Remes::setStateProperty(RemesState newState) {
-  if (newState != m_state) {
-    const RemesState oldState = m_state;
-    m_state = newState;
-    notifyPropertyChanged(REMES_STATE, &oldState, &m_state);
-  }
-}
-
-void Remes::setBigRealProperty(RemesProperty id, BigReal &v, const BigReal &newValue) {
-  if (newValue != v) {
-    const BigReal old = v;
-    v = newValue;
-    notifyPropertyChanged(id, &old, &v);
-  }
-}
-
-void Remes::setVectorProperty(RemesProperty id, BigRealVector &v, const BigRealVector &newValue) {
-  if (newValue != v) {
-    const BigRealVector old = v;
-    v = newValue;
-    notifyPropertyChanged(id, &old, &v);
-  }
-}
 
 void Remes::setMMQuotEpsilon(const BigReal &mmQuotEps) {
   if(mmQuotEps <= 0 || mmQuotEps > 0.5) {
@@ -119,16 +101,18 @@ void Remes::setMMQuotEpsilon(const BigReal &mmQuotEps) {
 }
 
 String Remes::getMapFileName() const {
-  String typeString = m_useRelativeError ? _T("RelativeError") : _T("AbsoluteError");
-  return m_targetFunction.getName() + typeString + _T(".dat");
+  FileNameSplitter info(__FILE__);
+  const String typeString = m_useRelativeError ? _T("RelativeError") : _T("AbsoluteError");
+  const String fileName = m_targetFunction.getName() + typeString;
+  return info.setFileName(fileName).setExtension(_T("dat")).getAbsolutePath();
 }
 
 void Remes::loadExtremaFromFile() {
-  extremaMap.load(getMapFileName());
+  s_extremaMap.load(getMapFileName());
 }
 
 void Remes::saveExtremaToFile() {
-  extremaMap.save(getMapFileName());
+  s_extremaMap.save(getMapFileName());
 }
 
 void Remes::solve(const int M, const int K) {
@@ -159,9 +143,9 @@ void Remes::solve(const int M, const int K) {
   m_lastMMQuot      = BIGREAL_1;
   m_QEpsilon        = e(BIGREAL_1,-2);
 
-  setStateProperty(REMES_INITIALIZE);
+  setProperty(REMES_STATE, m_state, REMES_INITIALIZE);
 
-  for(setIntProperty(MAINITERATION, m_mainIteration, 1); m_mainIteration <= MAXIT; setIntProperty(MAINITERATION, m_mainIteration, m_mainIteration+1)) {
+  for(setProperty(MAINITERATION, m_mainIteration, 1); m_mainIteration <= MAXIT; setProperty(MAINITERATION, m_mainIteration, m_mainIteration+1)) {
     try {
       findCoefficients();
       
@@ -178,7 +162,7 @@ void Remes::solve(const int M, const int K) {
         break;
       }
 
-      setBigRealProperty(MMQUOT, m_MMQuot, BIGREAL_1 - rQuot(minExtr, maxExtr, m_digits)); // minExtr <= maxExtr => m_MMQuot >= 0
+      setProperty(MMQUOT, m_MMQuot, BIGREAL_1 - rQuot(minExtr, maxExtr, m_digits)); // minExtr <= maxExtr => m_MMQuot >= 0
 
       if(m_MMQuot < m_MMQuotEps) {
         saveExtremaToMap(m_E, m_MMQuot);
@@ -187,16 +171,16 @@ void Remes::solve(const int M, const int K) {
       }
 
       if((m_mainIteration > 1) && (m_MMQuot > m_lastMMQuot)) {
-        setStringProperty(WARNING, m_warning, format(_T("MinMaxQuot=%s > last MinMaxQuot=%s"), FormatBigReal(m_MMQuot).cstr(), FormatBigReal(m_lastMMQuot).cstr()));
+        setProperty(WARNING, m_warning, format(_T("MinMaxQuot=%s > last MinMaxQuot=%s"), FormatBigReal(m_MMQuot).cstr(), FormatBigReal(m_lastMMQuot).cstr()));
       } else {
-        setStringProperty(WARNING, m_warning, _T(""));
+        setProperty(WARNING, m_warning, _T(""));
       }
 
-      m_QEpsilon   = e(BIGREAL_1,BigReal::getExpo10(m_MMQuot) - 20);
+      m_QEpsilon   = e(BIGREAL_1,BigReal::getExpo10(m_MMQuot) - 25);
       m_lastMMQuot = m_MMQuot;
 
     } catch(NoConvergenceException e) {
-      setStringProperty(WARNING, m_warning, e.what());
+      setProperty(WARNING, m_warning, e.what());
       if(hasNextSolveState()) {
         nextSolveState();
         setExtrema(findInitialExtremaByInterpolation(M,K));
@@ -219,13 +203,13 @@ void Remes::initCoefficientVector(int dimension) {
 
   for(int i = 0; i <= m_N + 1; i++) v[i] = 0;
   m_E = 0;
-  setVectorProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
+  setProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
 }
 
 void Remes::initSolveState(const int M, const int K) {
   m_solveStateInterpolationDone = false;
   m_solveStateHighPrecision     = false;
-  m_solveStateDecrM             = (K == 0) || (M > K+1);
+  m_solveStateDecrM             = (M > 1) && ((K == 0) || (M > K));
 }
 
 void Remes::nextSolveState() {
@@ -233,22 +217,24 @@ void Remes::nextSolveState() {
     m_solveStateInterpolationDone = true;
   } else if(!m_solveStateHighPrecision) {
     m_solveStateHighPrecision     = true;
-  } else if(!m_solveStateDecrM) {
+  } else if(!m_solveStateDecrM && (m_M > 1)) {
     m_solveStateDecrM             = true;
   } else {
-    throwException(_T("Remes:No Next solveState for Remes(%d,%d):HighPrecision=true, DecrementM=true"),m_M,m_K);
+    throwException(_T("%s:No Next solveState for Remes(%d,%d):HighPrecision=true, DecrementM=true")
+                  ,_T(__FUNCTION__)
+                  ,m_M,m_K);
   }
 }
 
 void Remes::saveExtremaToMap(const BigReal &E, const BigReal &mmQuot) {
-  ExtremaKey key(m_M,m_K);
-  Array<ExtremaVector> *a = extremaMap.get(key);
+  const ExtremaKey key(m_M,m_K);
+  Array<ExtremaVector> *a = s_extremaMap.get(key);
   if(a != NULL) {
     a->add(ExtremaVector(m_extrema, E, mmQuot));
   } else {
     Array<ExtremaVector> a;
     a.add(ExtremaVector(m_extrema, E, mmQuot));
-    extremaMap.put(key,a);
+    s_extremaMap.put(key,a);
   }
 }
 
@@ -275,7 +261,7 @@ BigRealVector Remes::findFinalExtrema(const int M, const int K, const bool highP
   const BigReal mmQuot = highPrecision ? DEFAULT_MMQUOT_EPS : e(BIGREAL_1,-7);
 
   for(bool hasSolved = false;;) {
-    Array<ExtremaVector> *a = extremaMap.get(ExtremaKey(M,K));
+    Array<ExtremaVector> *a = s_extremaMap.get(ExtremaKey(M,K));
     if(a != NULL) {
       for(size_t i = 0; i < a->size(); i++) {
         ExtremaVector &v = (*a)[i];
@@ -333,23 +319,23 @@ Real InterpolationFunction::operator()(const Real &x) {
   if(x == 0 || x == maxX) {
     return getReal(m_initialExtr[getInt(x)]);
   } else if(x < 0 || x > maxX) {
-    throwException(_T("%s:Invalid argument. x=%s. x must be in the interval [0..%d]")
-                  ,_T(__FUNCTION__)
-                  ,toString(x).cstr(), maxX);
+    throwInvalidArgumentException(_T(__FUNCTION__)
+                                 ,_T("x=%s. x must be in the interval [0..%d]")
+                                 ,toString(x).cstr(), maxX);
   }
 
   return getReal(m_initialExtr[getInt(x)]) + CubicSpline::operator()(x/maxX);
 }
 
 bool Remes::hasSavedExtrema(const int M, const int K) {
-  return extremaMap.get(ExtremaKey(M,K)) != NULL;
+  return s_extremaMap.get(ExtremaKey(M,K)) != NULL;
 }
 
 const ExtremaVector &Remes::getBestSavedExtrema(const int M, const int K) {
-  const Array<ExtremaVector> *a = extremaMap.get(ExtremaKey(M,K));
+  const Array<ExtremaVector> *a = s_extremaMap.get(ExtremaKey(M,K));
   if(a == NULL) {
-    throwException(_T("%s:ExtremaKey(%d,%d) not found")
-                  ,_T(__FUNCTION__), M, K);
+    throwInvalidArgumentException(_T(__FUNCTION__), _T("ExtremaKey(%d,%d) not found")
+                                 , M, K);
   }
   size_t bestIndex = 0;
   for(size_t i = 1; i < a->size(); i++) {
@@ -371,9 +357,9 @@ BigRealVector Remes::getFastInitialExtremaByInterpolation(const int M, const int
   } else if(M > 1 && hasSavedExtrema(M-1,K)) {
     M1--;
   } else {
-    throwException(_T("%s(%d,%d):No saved solution for (M,K)=(%d,%d) or (%d,%d)")
-                  ,_T(__FUNCTION__)
-                  ,M,K,M,K-1,M-1,K);
+    throwInvalidArgumentException(_T(__FUNCTION__)
+                                 ,_T("(M,K)=(%d,%d). No saved solution for (M,K)=(%d,%d) or (%d,%d)")
+                                 ,M,K,M,K-1,M-1,K);
   }
   return getInterpolatedExtrema(getDefaultInitialExtrema(M,K),getDefaultInitialExtrema(M1,K1),getBestSavedExtrema(M1,K1));
 }
@@ -400,6 +386,7 @@ BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema,
 }
 
 void Remes::findCoefficients() {
+  DEFINEMETHODNAME;
   static const BigReal c1 = 0.5;
 
   const int MAXIT = 700;
@@ -408,7 +395,7 @@ void Remes::findCoefficients() {
   for(int r = 0, s = 1; r <= m_N+1; r++, s = -s) {
     const BigReal &xr = m_extrema[r];
 
-    checkRange(xr, m_left, m_right);
+    checkRange(method, xr, m_left, m_right);
 
     A(r,0) = sFunction(xr);
     for(int c = 1; c <= m_M; c++) {
@@ -423,15 +410,15 @@ void Remes::findCoefficients() {
     // The coefficients a[0]..a[m] and E can be found by solving the linear system of equations
     BigRealLUMatrix LU(A);
 
-    setVectorProperty(COEFFICIENTVECTOR, m_coefficientVector, LU.solve(m_functionValue));
+    setProperty(COEFFICIENTVECTOR, m_coefficientVector, LU.solve(m_functionValue));
     m_E                = m_coefficientVector[m_N+1];
-    setIntProperty(SEARCHEITERATION, m_searchEIteration, 1);
+    setProperty(SEARCHEITERATION, m_searchEIteration, 1);
     m_hasCoefficients  = true;
     m_coefVectorIndex++;
-    setStateProperty(REMES_SEARCH_E);
+    setProperty(REMES_STATE, m_state, REMES_SEARCH_E);
   } else {
     // for m_K > 0 we have to iterate
-    for(setIntProperty(SEARCHEITERATION, m_searchEIteration, 1); m_searchEIteration <= MAXIT; setIntProperty(SEARCHEITERATION, m_searchEIteration, m_searchEIteration+1)) {
+    for(setProperty(SEARCHEITERATION, m_searchEIteration, 1); m_searchEIteration <= MAXIT; setProperty(SEARCHEITERATION, m_searchEIteration, m_searchEIteration+1)) {
       for(int r = 0, s = 1; r <= m_N+1; r++, s = -s) {
         const BigReal &xr = m_extrema[r];
         A(r,m_M+1) = xr * (signedValue(s,m_E) - m_functionValue[r]);
@@ -442,57 +429,61 @@ void Remes::findCoefficients() {
 
       const BigRealLUMatrix LU(A);
 
-      setVectorProperty(COEFFICIENTVECTOR, m_coefficientVector, LU.solve(m_functionValue));
+      setProperty(COEFFICIENTVECTOR, m_coefficientVector, LU.solve(m_functionValue));
       m_nextE            = m_coefficientVector[m_N+1];
       m_hasCoefficients  = true;
       m_coefVectorIndex++;
       if(m_nextE.isZero()) break;
 
-      setBigRealProperty(Q, m_Q, fabs(BIGREAL_1 - rQuot(Min(fabs(m_E),fabs(m_nextE)), Max(fabs(m_E),fabs(m_nextE)), m_digits)));
+      setProperty(Q, m_Q, fabs(BIGREAL_1 - rQuot(Min(fabs(m_E),fabs(m_nextE)), Max(fabs(m_E),fabs(m_nextE)), m_digits)));
       if(m_Q < m_QEpsilon) {
         break;
       }
       m_E = rProd(c1, m_E + m_nextE, m_digits);
     }
     if(m_searchEIteration > MAXIT) {
-      throwNoConvergenceException(_T("Remes:findCoefficients:No convergence after %d iterations."), MAXIT);
+      throwNoConvergenceException(_T(__FUNCTION__), _T("No convergence after %d iterations"), MAXIT);
     }
   }
 }
+/*
+
+class ExtremaSearchJob : public Runnable {
+  const Remes &m_r;
+  DigitPool   *m_pool;
+  BigReal      m_left, m_right;
+  BigReal     &
+  int          m_index;
+  unsigned int run();
+  ExtremaSearchJob
+};
+
+class ExtremaFinder {
+
+};
+BigRealThreadPool &getInstance()
+*/
 
 void Remes::findExtrema() {
+  DEFINEMETHODNAME;
   const BigRealVector save = m_extrema;
 
-  setStateProperty(REMES_SEARCH_EXTREMA);
-
-  m_minExtremumIndex = -1; 
-  m_maxExtremumIndex = -1;
-  setIntProperty(EXTREMUMCOUNT, m_extremaCount, 0);
-  int prevSign;
-  for(int i = 0; i <= m_N+1; i++) {
-    const BigReal l = i == 0       ? m_left  : rQuot(save[i-1] + 2.0 * save[i], 3, m_digits);
-    const BigReal r = i == m_N + 1 ? m_right : rQuot(save[i+1] + 2.0 * save[i], 3, m_digits);
-    setExtremum(i, findExtremum(l, save[i], r, 0));
-    const BigReal &errorValue = m_errorValue[i];
-    setIntProperty(EXTREMUMCOUNT, m_extremaCount, m_extremaCount+1);
-    if(m_extremaCount == 1) {
-      m_minExtremumIndex = m_maxExtremumIndex = i;
-      prevSign = sign(errorValue);
-    } else {
-      const int s = sign(errorValue);
-      if(compareAbs(errorValue, m_errorValue[m_minExtremumIndex]) < 0) {
-        m_minExtremumIndex = i;
-      } else if(compareAbs(errorValue, m_errorValue[m_maxExtremumIndex]) > 0) {
-        m_maxExtremumIndex = i;
-      }
-      if(s == prevSign) {
-        throwNoConvergenceException(_T("%s:Sign(errorFunction) doesn't change between the found extrema.")
-                                   ,_T(__FUNCTION__));
-      }
-      prevSign = s;
+  setProperty(REMES_STATE, m_state, REMES_SEARCH_EXTREMA);
+  resetExtremumCount();
+  int prevSign = setExtremum(0, m_left);
+  for(int i = 1; i <= m_N; i++) {
+    const BigReal l = rQuot(save[i-1] + 2.0 * save[i], 3, m_digits);
+    const BigReal r = rQuot(save[i+1] + 2.0 * save[i], 3, m_digits);
+    const int s = setExtremum(i, findExtremum(l, save[i], r));
+    if(s == prevSign) {
+      throwSameSignException(method);
     }
-    setBigRealProperty(MAXERROR, m_maxError, fabs(m_errorValue[m_maxExtremumIndex]));
+    prevSign = s;
   }
+  if(setExtremum(m_N+1, m_right) == prevSign) {
+    throwSameSignException(method);
+  }
+  setProperty(MAXERROR, m_maxError, fabs(m_errorValue[m_maxExtremumIndex]));
 }
 
 class Point {
@@ -510,11 +501,11 @@ static int pointCompareY(const Point &p1, const Point &p2) {
   return compare(p2.m_y,p1.m_y);
 }
 
-static BigReal sqr(const BigReal &x, unsigned int digits) {
+static BigReal sqr(const BigReal &x, UINT digits) {
   return rProd(x, x, digits);
 }
 
-static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point &p3, unsigned int digits) {
+static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point &p3, UINT digits) {
   static const BigReal c1(0.5);
 
   BigReal sqx1 = sqr(p1.m_x,digits);
@@ -530,68 +521,73 @@ static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point 
   return c1 * rQuot(t,d,digits);
 }
 
-BigReal Remes::findExtremum(const BigReal &l, const BigReal &m, const BigReal &r, int depth) {
+BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const BigReal &to) {
+  DEFINEMETHODNAME;
   const int STEPCOUNT = 20;
+  BigReal l = from, r = to, m = middle;
+  const int errorSign = sign(errorFunction(m));
 
-  Array<Point> plot;
+  for(int depth = 0;; depth++) {
+    Array<Point> plot;
 
-  checkRange(m, l, r);
+    checkRange(method, m, l, r);
 
-  if(l == r) {
-    return l;
-  }
-
-  int errorSign = sign(errorFunction(m));
-
-  const BigReal step = rQuot(r-l,STEPCOUNT-1,m_digits);
-  BigReal x = l;
-  for(int count = 0;;) {
-    checkRange(x, l, r);
-    plot.add(Point(x,signedValue(errorSign, errorFunction(x))));
-
-    count++;
-    if(count < STEPCOUNT-1) {
-      x += step;
-    } else if(count == STEPCOUNT-1) {
-      x = r;
-    } else { // count == STEPCOUNT
-      break;
+    if(l == r) {
+      return l;
     }
-  }
-  plot.sort(pointCompareY);
 
-  try {
-    x = inverseInterpolate(plot[0], plot[1], plot[2], m_digits);
-  } catch(BigRealException e) {
-    m_warning = e.what();
-    x = l - 1;
-  }
-  if(x < l || x > r) {
-    x = plot[0].m_x;
-  } else { // l <= x <= r
-    if(signedValue(errorSign, errorFunction(x)) < plot[0].m_y) {
+    const BigReal step = rQuot(r-l,STEPCOUNT-1,m_digits);
+    BigReal x = l;
+    for(int count = 0;;) {
+      checkRange(method, x, l, r);
+      plot.add(Point(x,signedValue(errorSign, errorFunction(x))));
+
+      count++;
+      if(count < STEPCOUNT-1) {
+        x += step;
+      } else if(count == STEPCOUNT-1) {
+        x = r;
+      } else { // count == STEPCOUNT
+        break;
+      }
+    }
+    plot.sort(pointCompareY);
+
+    try {
+      x = inverseInterpolate(plot[0], plot[1], plot[2], m_digits);
+    } catch(BigRealException e) {
+      m_warning = e.what();
+      x = l - 1;
+    }
+    if(x < l || x > r) {
       x = plot[0].m_x;
+    } else { // l <= x <= r
+      if(signedValue(errorSign, errorFunction(x)) < plot[0].m_y) {
+        x = plot[0].m_x;
+      }
     }
-  }
-  if(x <= m_left) {
-    return m_left;
-  } else if(x >= m_right) {
-    return m_right;
-  } else if(depth >= 9) {
-    return x;
-  } else {
-    return findExtremum(x - e(step,-1), x, x + e(step,-1), depth+1);
+    if(x <= m_left) {
+      return m_left;
+    } else if(x >= m_right) {
+      return m_right;
+    } else if(depth >= 9) {
+      return x;
+    } else {
+      const BigReal dx = e(step,-1);
+      l = x - dx; m = x; r = x + dx;
+    }
   }
 }
 
 void Remes::setExtrema(const BigRealVector &extrema) {
   if(extrema.getDimension() != m_N + 2) {
-    throwException(_T("%s:Invalid dimension of extremaVector=%d, N=%d => expected dimension=%d")
-                  ,_T(__FUNCTION__)
-                  , extrema.getDimension(), m_N, m_N+2);
+    throwInvalidArgumentException(_T(__FUNCTION__)
+                                 ,_T("Dimension of extremaVector=%d, N=%d => Expected dimension=%d")
+                                 ,extrema.getDimension(), m_N, m_N+2);
   }
+  resetExtremumCount();
   for(size_t i = 0; i < extrema.getDimension(); i++) {
-    setExtremum((int)i,extrema[i]);
+    setExtremum((int)i, extrema[i]);
   }
 }
 
@@ -600,9 +596,26 @@ void Remes::setExtrema(const ExtremaVector &extrema) {
   m_E = extrema.getE();
 }
 
-void Remes::setExtremum(const int index, const BigReal &x) {
-  m_extrema[index]    = x;
-  m_errorValue[index] = errorFunction(x);
+void Remes::resetExtremumCount() {
+  m_minExtremumIndex = -1;
+  m_maxExtremumIndex = -1;
+  setProperty(EXTREMUMCOUNT, m_extremaCount, 0);
+}
+
+int Remes::setExtremum(const int index, const BigReal &x) {
+  m_extrema[index] = x;
+  const BigReal &errorValue = m_errorValue[index] = errorFunction(x);
+  if(m_extremaCount == 0) {
+    m_minExtremumIndex = m_maxExtremumIndex = index;
+  } else {
+    if(compareAbs(errorValue, m_errorValue[m_minExtremumIndex]) < 0) {
+      m_minExtremumIndex = index;
+    } else if(compareAbs(errorValue, m_errorValue[m_maxExtremumIndex]) > 0) {
+      m_maxExtremumIndex = index;
+    }
+  }
+  setProperty(EXTREMUMCOUNT, m_extremaCount, m_extremaCount+1);
+  return sign(errorValue);
 }
 
 BigReal Remes::approximation(const BigReal &x) const {
@@ -783,118 +796,3 @@ String Remes::getHeaderString() const {
                ,getDouble(m_maxError) 
                );
 }
-
-// -----------------------------------------------------------------------------------
-
-static unsigned long ExtremaKeyHash(const ExtremaKey &key) {
-  return key.hashCode();
-}
-
-static int ExtremaKeyCompare(const ExtremaKey &k1, const ExtremaKey &k2) {
-  return k1 == k2 ? 0 : 1;
-}
-
-ExtremaHashMap::ExtremaHashMap() : HashMap<ExtremaKey,Array<ExtremaVector> >(ExtremaKeyHash,ExtremaKeyCompare) {
-}
-
-ExtremaHashMap Remes::extremaMap;
-
-void ExtremaHashMap::save(const String &name) {
-  tofstream out(name.cstr());
-  save(out);
-  out.close();
-}
-
-void ExtremaHashMap::load(const String &name) {
-  if(ACCESS(name,0) < 0) {
-    return;
-  }
-
-  tifstream in(name.cstr());
-  load(in);
-  in.close();
-}
-
-static int extremaVectorCmp(const ExtremaVector &v1, const ExtremaVector &v2) {
-  return sign(v1.getMMQuot() - v2.getMMQuot());
-}
-
-typedef Entry<ExtremaKey, Array<ExtremaVector> > ExtremaMapEntry;
-
-void ExtremaHashMap::save(tostream &out) {
-  Iterator<ExtremaMapEntry> it = entrySet().getIterator();
-  out << size() << endl;
-  while(it.hasNext()) {
-    ExtremaMapEntry &e = it.next();
-    out << e.getKey() << endl;
-    Array<ExtremaVector> &a = e.getValue();
-    if(a.size() > 1) {
-      a.sort(extremaVectorCmp);
-      while(a.size() > 1) {
-        a.removeLast();
-      }
-    }
-    out << a.size() << endl;
-    for(size_t i = 0; i < a.size(); i++) {
-      out << a[i];
-    }
-  }
-}
-
-void ExtremaHashMap::load(tistream &in) {
-  clear();
-  int count;
-  in >> count;
-  for(int k = 0; k < count; k++) {
-    ExtremaKey key;
-    in >> key;
-    Array<ExtremaVector> a;
-    int arraySize;
-    in >> arraySize;
-    for(int i = 0; i < arraySize; i++) {
-      ExtremaVector v;
-      in >> v;
-      a.add(v);
-    }
-    put(key,a);
-  }
-}
-
-tostream &operator<<(tostream &out, const ExtremaKey &key) {
-  out << key.m_M << _T(") ") << key.m_K;
-  return out;
-}
-
-tistream &operator>>(tistream &in, ExtremaKey &key) {
-  int m, k;
-  in >> m >> k;
-  key = ExtremaKey(m,k);
-  return in;
-}
-
-
-tostream &operator<<(tostream &out, const ExtremaVector &v) {
-  out << FullFormatBigReal(v.getE())      << endl;
-  out << FullFormatBigReal(v.getMMQuot()) << endl;
-  out << v.getDimension() << endl;
-  for(size_t i = 0; i < v.getDimension(); i++) {
-    out << FullFormatBigReal(v[i]) << endl;
-  }
-  return out;
-}
-
-tistream &operator>>(tistream &in, ExtremaVector &v) {
-  BigReal E, mmQuot;
-  int dimension;
-  in >> E >> mmQuot;
-  in >> dimension;
-  BigRealVector tmp;
-  tmp.setDimension(dimension);
-  for(int i = 0; i < dimension; i++) {
-    in >> tmp[i];
-  }
-  v = ExtremaVector(tmp,E,mmQuot);
-  return in;
-}
-
-// -----------------------------------------------------------------------------------
