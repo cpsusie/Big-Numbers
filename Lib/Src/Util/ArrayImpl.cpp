@@ -43,7 +43,9 @@ void ArrayImpl::setCapacity(size_t capacity) {
     }
 
     void **newBuffer = new void*[capacity];
-    memcpy(newBuffer,m_elem,sizeof(m_elem[0])*m_size);
+    if(m_size > 0) {
+      memcpy(newBuffer,m_elem,sizeof(m_elem[0])*m_size);
+    }
     delete[] m_elem;
     m_elem = newBuffer;
 
