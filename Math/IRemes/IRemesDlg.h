@@ -49,12 +49,7 @@ public:
 class ExtremaWindowData {
 private:
   void initStringArray(const Remes &r) {
-    const int n = r.getExtremaCount();
-    m_extremaStrings.clear();
-    if(n > 0) {
-      m_extremaStrings.setCapacity(n);
-      for(int i = 0; i < n; i++) m_extremaStrings.add(r.getExtremumString(i));
-    }
+    m_extremaStrings = r.getExtremaStringArray();
   }
 public:
   StringArray m_extremaStrings;

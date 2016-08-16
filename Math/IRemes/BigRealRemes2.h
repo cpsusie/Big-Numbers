@@ -106,7 +106,9 @@ private:
   BigReal                      m_Q, m_QEpsilon;
   int                          m_mainIteration   , m_searchEIteration;
   int                          m_minExtremumIndex, m_maxExtremumIndex, m_extremaCount;
+  mutable Semaphore            m_extremaGate;
   BigRealVector                m_extrema;          // Extremum[0..N+1].                                              Dim=N+2
+  StringArray                  m_extremaStringArray;
   BigRealVector                m_functionValue;    // Values targetFunction(x) for x = m_extr[0..N+1].               Dim=N+2
   BigRealVector                m_errorValue;       // Values of errorFunction(x) for x = m_extr[0..N+1].             Dim=N+2
   BigReal                      m_maxError;
@@ -135,10 +137,11 @@ private:
   void                 setExtrema(      const BigRealVector &extrema);
   void                 setExtrema(      const ExtremaVector &extrema);
   void                 findCoefficients();
-  BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r);
+  BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
   void                 findExtrema();
   BigRealVector        findFinalExtrema(const int M, const int K, const bool highPrecision);
   int                  setExtremum(     const int index, const BigReal &x); // return sign of errorfunction at extremum
+  String               getExtremumString(int index) const;
   void                 resetExtremumCount();
   void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
   BigReal              approximation(   const BigReal &x) const; // Pm(x) / Pk(x)
@@ -146,6 +149,7 @@ private:
   BigReal              sFunction(       const BigReal &x) const; // m_useRelativeError ? (1/m_targetFunction(x)) : 1
   BigReal              targetFunction(  const BigReal &x) const; // m_useRelativeError ?  1 : m_targetFunction(x)
   String               getHeaderString() const;
+  friend class ExtremaSearchJob;
 public:
   Remes(RemesTargetFunction &targetFunction
        ,const bool useRelativeError);
@@ -195,7 +199,9 @@ public:
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;
-  String      getExtremumString(int index) const;
+  StringArray getExtremaStringArray() const {
+    return m_extremaStringArray;
+  }
   String      getMMQuotString() const;
   StringArray getCoefficientStringArray() const;
   String      getSearchEString() const;

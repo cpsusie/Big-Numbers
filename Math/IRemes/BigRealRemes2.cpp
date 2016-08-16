@@ -4,9 +4,9 @@
 
 #include "stdafx.h"
 #include <io.h>
+#include <CPUInfo.h>
 #include <Math/Polynomial.h>
 #include "BigRealRemes2.h"
-#include <Console.h>
 #include <fstream>
 
 class NoConvergenceException : public Exception {
@@ -56,7 +56,7 @@ static void checkRange(const TCHAR *method, const BigReal &x, const BigReal &lef
 }
 
 static BigReal signedValue(int sign, const BigReal &x) {
-  return sign >= 0 ? x : -x;
+  return (sign >= 0) ? x : -x;
 }
 
 
@@ -446,56 +446,176 @@ void Remes::findCoefficients() {
     }
   }
 }
-/*
 
+#define MULTITHREADED
+
+#ifdef MULTITHREADED
 class ExtremaSearchJob : public Runnable {
-  const Remes &m_r;
+private:
+  Remes       &m_remes;
   DigitPool   *m_pool;
-  BigReal      m_left, m_right;
-  BigReal     &
+  BigReal      m_left, m_right, m_middle;
   int          m_index;
+public:
   unsigned int run();
-  ExtremaSearchJob
+  ExtremaSearchJob(Remes &remes, int index, const BigReal &l, const BigReal &r, const BigReal &m, DigitPool *pool);
+  ~ExtremaSearchJob();
+};
+
+ExtremaSearchJob::ExtremaSearchJob(Remes &remes, int index, const BigReal &l, const BigReal &r, const BigReal &m, DigitPool *pool)
+  : m_remes(remes)
+  , m_index(index)
+  , m_left(pool)
+  , m_right(pool)
+  , m_middle(pool)
+  , m_pool(pool)
+{
+  m_left   = l;
+  m_right  = r;
+  m_middle = m;
+}
+
+ExtremaSearchJob::~ExtremaSearchJob() {
+  m_left = m_right = m_middle = 0;
+  BigRealThreadPool::releaseDigitPool(m_pool);
+}
+
+unsigned int ExtremaSearchJob::run() {
+  const BigReal extr = m_remes.findExtremum(m_left, m_middle, m_right, m_pool);
+  m_remes.setExtremum(m_index, extr);
+  return 0;
+}
+
+class ExtremaJobQueue : public SynchronizedQueue<ExtremaSearchJob*> {
+private:
+  Semaphore m_allDone;
+public:
+  ExtremaJobQueue() : m_allDone(0) {
+  }
+  void waitUntilAllDone() {
+    m_allDone.wait();
+  }
+  void signalAllDone() {
+    m_allDone.signal();
+  }
 };
 
 class ExtremaFinder {
-
+private:
+  const int                       m_processorCount;
+  Remes                          &m_remes;
+  ExtremaJobQueue                 m_jobQueue;
+  CompactArray<ExtremaSearchJob*> m_allJobs;
+public:
+  ExtremaFinder(Remes *remes) : m_remes(*remes), m_processorCount(getProcessorCount()) {
+  }
+  ~ExtremaFinder();
+  void insertJob(int index, const BigReal &l, const BigReal &r, const BigReal &m);
+  void execute();
 };
-BigRealThreadPool &getInstance()
-*/
+
+ExtremaFinder::~ExtremaFinder() {
+  m_jobQueue.clear();
+  for(size_t i = 0; i < m_allJobs.size(); i++) {
+    delete m_allJobs[i];
+  }
+  m_allJobs.clear();
+}
+
+void ExtremaFinder::insertJob(int index, const BigReal &l, const BigReal &r, const BigReal &m) {
+  m_allJobs.add(new ExtremaSearchJob(m_remes, index, l, r, m, BigRealThreadPool::fetchDigitPool()));
+}
+
+class WorkerThread : public Thread {
+private:
+  ExtremaJobQueue &m_jobQueue;
+public:
+  WorkerThread(ExtremaJobQueue &jobQueue) : m_jobQueue(jobQueue) {
+  }
+  unsigned int run();
+};
+
+unsigned int WorkerThread::run() {
+  for (;;) {
+    try {
+      ExtremaSearchJob *job = m_jobQueue.get(10);
+      job->run();
+    } catch (TimeoutException e) {
+      if(m_jobQueue.isEmpty()) {
+        m_jobQueue.signalAllDone();
+        return 0;
+      }
+    }
+  }
+}
+
+void ExtremaFinder::execute() {
+  for(size_t i = 0; i < m_allJobs.size(); i++) {
+    m_jobQueue.put(m_allJobs[i]);
+  }
+  CompactArray<WorkerThread*> threads;
+  for(int i = 0; i < m_processorCount; i++) {
+    WorkerThread *thr = new WorkerThread(m_jobQueue);
+    threads.add(thr);
+    thr->start();
+  }
+  m_jobQueue.waitUntilAllDone();
+  for(size_t i = 0; i < threads.size(); i++) {
+    delete threads[i];
+  }
+  threads.clear();
+}
+
+#endif // MULTITHREADED
 
 void Remes::findExtrema() {
   DEFINEMETHODNAME;
   const BigRealVector save = m_extrema;
-
   setProperty(REMES_STATE, m_state, REMES_SEARCH_EXTREMA);
   resetExtremumCount();
+
+#ifndef MULTITHREADED
   int prevSign = setExtremum(0, m_left);
+  DigitPool *pool = BigRealThreadPool::fetchDigitPool();
+  try {
+    for(int i = 1; i <= m_N; i++) {
+      const BigReal l = rQuot(save[i-1] + 2.0 * save[i], 3, m_digits);
+      const BigReal r = rQuot(save[i+1] + 2.0 * save[i], 3, m_digits);
+      const int s = setExtremum(i, findExtremum(l, save[i], r, pool));
+      if(s == prevSign) {
+        throwSameSignException(method);
+      }
+      prevSign = s;
+    }
+    if(setExtremum(m_N+1, m_right) == prevSign) {
+      throwSameSignException(method);
+    }
+    BigRealThreadPool::releaseDigitPool(pool);
+  } catch (...) {
+    BigRealThreadPool::releaseDigitPool(pool);
+    throw;
+  }
+#else // MULTITHREADED
+  ExtremaFinder multiExtremaFinder(this);
   for(int i = 1; i <= m_N; i++) {
     const BigReal l = rQuot(save[i-1] + 2.0 * save[i], 3, m_digits);
     const BigReal r = rQuot(save[i+1] + 2.0 * save[i], 3, m_digits);
-    const int s = setExtremum(i, findExtremum(l, save[i], r));
-    if(s == prevSign) {
-      throwSameSignException(method);
-    }
-    prevSign = s;
+    multiExtremaFinder.insertJob(i, l, r, save[i]);
   }
-  if(setExtremum(m_N+1, m_right) == prevSign) {
-    throwSameSignException(method);
-  }
+  setExtremum(0, m_left);
+  multiExtremaFinder.execute();
+  setExtremum(m_N+1, m_right);
+#endif // SINGLETHREADED
+
   setProperty(MAXERROR, m_maxError, fabs(m_errorValue[m_maxExtremumIndex]));
 }
 
 class Point {
 public:
   BigReal m_x, m_y;
-  Point(const BigReal &x, const BigReal &y);
+  inline Point(const BigReal &x, const BigReal &y) : m_x(x), m_y(y) {
+  }
 };
-
-Point::Point(const BigReal &x, const BigReal &y) {
-  m_x = x;
-  m_y = y;
-}
 
 static int pointCompareY(const Point &p1, const Point &p2) {
   return compare(p2.m_y,p1.m_y);
@@ -506,7 +626,8 @@ static BigReal sqr(const BigReal &x, UINT digits) {
 }
 
 static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point &p3, UINT digits) {
-  static const BigReal c1(0.5);
+  DigitPool *pool = p1.m_x.getDigitPool();
+  const BigReal &c1 = pool->getHalf();
 
   BigReal sqx1 = sqr(p1.m_x,digits);
   BigReal sqx2 = sqr(p2.m_x,digits);
@@ -521,10 +642,12 @@ static BigReal inverseInterpolate(const Point &p1, const Point &p2, const Point 
   return c1 * rQuot(t,d,digits);
 }
 
-BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const BigReal &to) {
+BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const BigReal &to, DigitPool *pool) {
   DEFINEMETHODNAME;
   const int STEPCOUNT = 20;
-  BigReal l = from, r = to, m = middle;
+  BigReal l(pool), r(pool), m(pool), brStepCount(pool);
+  l = from; r = to; m = middle;
+  brStepCount = STEPCOUNT - 1;
   const int errorSign = sign(errorFunction(m));
 
   for(int depth = 0;; depth++) {
@@ -536,7 +659,7 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
       return l;
     }
 
-    const BigReal step = rQuot(r-l,STEPCOUNT-1,m_digits);
+    const BigReal step = rQuot(r-l,brStepCount,m_digits);
     BigReal x = l;
     for(int count = 0;;) {
       checkRange(method, x, l, r);
@@ -556,7 +679,7 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
     try {
       x = inverseInterpolate(plot[0], plot[1], plot[2], m_digits);
     } catch(BigRealException e) {
-      m_warning = e.what();
+      setProperty(WARNING, m_warning, e.what());
       x = l - 1;
     }
     if(x < l || x > r) {
@@ -567,9 +690,11 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
       }
     }
     if(x <= m_left) {
-      return m_left;
+      x = m_left;
+      return x;
     } else if(x >= m_right) {
-      return m_right;
+      x = m_right;
+      return x;
     } else if(depth >= 9) {
       return x;
     } else {
@@ -597,12 +722,16 @@ void Remes::setExtrema(const ExtremaVector &extrema) {
 }
 
 void Remes::resetExtremumCount() {
+  m_extremaGate.wait();
   m_minExtremumIndex = -1;
   m_maxExtremumIndex = -1;
+  m_extremaStringArray.clear();
   setProperty(EXTREMUMCOUNT, m_extremaCount, 0);
+  m_extremaGate.signal();
 }
 
 int Remes::setExtremum(const int index, const BigReal &x) {
+  m_extremaGate.wait();
   m_extrema[index] = x;
   const BigReal &errorValue = m_errorValue[index] = errorFunction(x);
   if(m_extremaCount == 0) {
@@ -614,14 +743,19 @@ int Remes::setExtremum(const int index, const BigReal &x) {
       m_maxExtremumIndex = index;
     }
   }
+  m_extremaStringArray.add(getExtremumString(index));
   setProperty(EXTREMUMCOUNT, m_extremaCount, m_extremaCount+1);
+  m_extremaGate.signal();
+
   return sign(errorValue);
 }
 
 BigReal Remes::approximation(const BigReal &x) const {
+  DigitPool *pool = x.getDigitPool();
   if(m_K) {
-    BigReal sum1 = m_coefficientVector[m_M];
-    BigReal sum2 = m_coefficientVector[m_N];
+    BigReal sum1(pool), sum2(pool);
+    sum1 = m_coefficientVector[m_M];
+    sum2 = m_coefficientVector[m_N];
     int i;
     for(i = m_M - 1; i >= 0  ; i--) {
       sum1 = sum1 * x + m_coefficientVector[i];
@@ -629,9 +763,10 @@ BigReal Remes::approximation(const BigReal &x) const {
     for(i = m_N - 1; i >  m_M; i--) {
       sum2 = sum2 * x + m_coefficientVector[i];
     }
-    return rQuot(sum1, sum2 * x + BIGREAL_1, m_digits);
+    return rQuot(sum1, sum2 * x + pool->get1(), m_digits, pool);
   } else {
-    BigReal sum = m_coefficientVector[m_M];
+    BigReal sum(pool);
+    sum = m_coefficientVector[m_M];
     for(int i = m_M - 1; i >= 0; i--) {
       sum = sum * x + m_coefficientVector[i];
     }
@@ -640,23 +775,25 @@ BigReal Remes::approximation(const BigReal &x) const {
 }
 
 BigReal Remes::errorFunction(const BigReal &x) const {
-  return m_useRelativeError ? (BIGREAL_1 - sFunction(x) * approximation(x))
+  DigitPool *pool = x.getDigitPool();
+  return m_useRelativeError ? (pool->get1() - sFunction(x) * approximation(x))
                             : (m_targetFunction(x) - approximation(x) /* * sFunction(x)==1 */ )
                             ;
 }
 
 BigReal Remes::sFunction(const BigReal &x) const {
-  return m_useRelativeError ? rQuot(BIGREAL_1,m_targetFunction(x),m_digits) : BIGREAL_1;
+  DigitPool *pool = x.getDigitPool();
+  return m_useRelativeError ? rQuot(pool->get1(), m_targetFunction(x), m_digits) : pool->get1();
 }
 
 BigReal Remes::targetFunction(const BigReal &x) const {
-  return m_useRelativeError ? BIGREAL_1 : m_targetFunction(x);
+  return m_useRelativeError ? x.getDigitPool()->get1() : m_targetFunction(x);
 }
 
 void Remes::getErrorPlot(int n, Point2DArray &pa) const {
   if(!hasErrorPlot()) return;
   pa.clear();
-  const BigReal step = rQuot(m_right - m_left,n,m_digits);
+  const BigReal step = rQuot(m_right - m_left, n, m_digits);
   const BigReal stop = m_right + step*0.5;
   for(BigReal x = m_left; x <= stop; x += step) {
     pa.add(Point2D(getDouble(x), getDouble(errorFunction(x))));
