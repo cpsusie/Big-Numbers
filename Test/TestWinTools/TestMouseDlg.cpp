@@ -89,7 +89,7 @@ void CTestMouseDlg::showFlags(const TCHAR *function, UINT flags) {
   CClientDC(this).TextOut(10,10,s.cstr(), (int)s.length());
 }
 
-#define SHOWFLAGS() showFlags(_T(__FUNCTION__), nFlags)
+#define SHOWFLAGS() showFlags(__TFUNCTION__, nFlags)
 
 void CTestMouseDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   SHOWFLAGS();
@@ -291,7 +291,7 @@ void CTestMouseDlg::OnLoadAnimatedCursor() {
     m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), (DWORD)cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
 //    m_createdCursor = (HCURSOR)CreateIconFromResource((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000);
     if (m_createdCursor == NULL) {
-      throwLastErrorOnSysCallException(_T(__FUNCTION__));
+      throwLastErrorOnSysCallException(__TFUNCTION__);
     }
     setWindowCursor(this, m_createdCursor);
   } catch(Exception e) {

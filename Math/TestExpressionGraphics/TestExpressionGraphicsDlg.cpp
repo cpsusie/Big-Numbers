@@ -1074,7 +1074,7 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
     showError(e);
   }
   catch (...) {
-    MessageBox(_T("Unknown exception in %s"), _T(__FUNCTION__));
+    MessageBox(_T("Unknown exception in %s"), __TFUNCTION__);
   }
 }
 
