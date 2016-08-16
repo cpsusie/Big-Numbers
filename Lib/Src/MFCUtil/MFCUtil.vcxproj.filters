@@ -227,11 +227,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="MFCUtil.def">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -105,7 +105,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <BrowseInformation>true</BrowseInformation>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
-      <ProgramDataBaseFileName>$(OutDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -125,7 +125,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -142,7 +142,7 @@
       <AdditionalIncludeDirectories>C:\mytools2015\Lib\Src\paintlib\otherlib\libtiff;C:\mytools2015\Lib\Src\paintlib\otherlib\libpng;C:\mytools2015\Lib\Src\paintlib\otherlib\libjpeg;C:\mytools2015\Lib\Src\paintlib\common</AdditionalIncludeDirectories>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -162,7 +162,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
       <LinkTimeCodeGeneration>false</LinkTimeCodeGeneration>
@@ -181,7 +181,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -203,7 +203,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Lib>
       <TargetMachine>MachineX86</TargetMachine>
@@ -222,7 +222,7 @@
       <DebugInformationFormat>None</DebugInformationFormat>
       <UseUnicodeForAssemblerListing>false</UseUnicodeForAssemblerListing>
       <BrowseInformation>true</BrowseInformation>
-      <ProgramDataBaseFileName>$(OutDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -244,7 +244,7 @@
     </Xdcmake>
     <Bscmake>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -323,9 +323,6 @@
     <ClCompile Include="Viewport2D.cpp" />
     <ClCompile Include="WinText.cpp" />
     <ClCompile Include="WinTools.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="MFCUtil.def" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\AbstractMouseHandler.h" />
