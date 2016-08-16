@@ -22,7 +22,7 @@ private:
     throwInvalidArgumentException(method, _T("v=%lu, maxValue=%lu"), v, m_maxValue);
   }
   static void selectError() {
-    throwException(_T("%s:Cannot select from empty array"), _T(__FUNCTION__));
+    throwException(_T("%s:Cannot select from empty array"), __TFUNCTION__);
   }
 #endif
 

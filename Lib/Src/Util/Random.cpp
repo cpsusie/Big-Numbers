@@ -43,7 +43,7 @@ int Random::nextInt() {
  */
 int Random::nextInt(int n) {
   if(n<=0) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("n must be positive"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("n must be positive"));
   }
 
   if((n & -n) == n) { // i.e., n is a power of 2

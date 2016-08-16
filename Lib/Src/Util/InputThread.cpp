@@ -23,7 +23,7 @@ void InputThread::kill() {
     }
     Sleep(100);
   }
-  throwException(_T("%s:Cannot kill inputThread"), _T(__FUNCTION__));
+  throwException(_T("%s:Cannot kill inputThread"), __TFUNCTION__);
 }
 
 unsigned int InputThread::run() {

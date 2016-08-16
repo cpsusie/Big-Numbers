@@ -113,14 +113,14 @@ void ListImpl::throwOutOfRangeException(const TCHAR *method, size_t index) const
 
 void *ListImpl::getElement(size_t index) {
   if(index >= m_size) { 
-    throwOutOfRangeException(_T(__FUNCTION__), index);
+    throwOutOfRangeException(__TFUNCTION__, index);
   }
   return (void*)findNode(index)->m_data;
 }
 
 const void *ListImpl::getElement(size_t index) const {
   if(index >= m_size) {
-    throwOutOfRangeException(_T(__FUNCTION__), index);
+    throwOutOfRangeException(__TFUNCTION__, index);
   }
   return findNode(index)->m_data;
 }
@@ -141,7 +141,7 @@ bool ListImpl::add(const void *e) {
 
 bool ListImpl::add(size_t i, const void *e) {
   if(i > m_size) {
-    throwOutOfRangeException(_T(__FUNCTION__), i);
+    throwOutOfRangeException(__TFUNCTION__, i);
   }
   ListNode *n = createNode(e);
   if(i == 0) {
@@ -195,73 +195,73 @@ static const TCHAR *getElementeErrorText = _T("%s:List is empty");
 
 void ListImpl::removeFirst() {
   if(size() == 0) {
-    throwException(removeErrorText, _T(__FUNCTION__));
+    throwException(removeErrorText, __TFUNCTION__);
   }
   removeNode(m_first);
 }
 
 void ListImpl::removeLast() {
   if(size() == 0) {
-    throwException(removeErrorText, _T(__FUNCTION__));
+    throwException(removeErrorText, __TFUNCTION__);
   }
   removeNode(m_last);
 }
 
 void ListImpl::removeIndex(size_t i) {
   if(i >= m_size) {
-    throwOutOfRangeException(_T(__FUNCTION__), i);
+    throwOutOfRangeException(__TFUNCTION__, i);
   }
   removeNode((ListNode*)findNode(i));
 }
 
 bool ListImpl::remove(const void *e) {
-  throwUnsupportedOperationException(_T(__FUNCTION__));
+  throwUnsupportedOperationException(__TFUNCTION__);
   return false;
 }
 
 bool ListImpl::contains(const void *e) const {
-  throwUnsupportedOperationException(_T(__FUNCTION__));
+  throwUnsupportedOperationException(__TFUNCTION__);
   return false;
 }
 
 const void *ListImpl::select() const {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return findNode(randSizet(size()))->m_data;
 }
 
 void *ListImpl::select() {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return findNode(randSizet(size()))->m_data;
 }
 
 void *ListImpl::first() {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return m_first->m_data;
 }
 
 const void *ListImpl::first() const {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return m_first->m_data;
 }
 
 void *ListImpl::last() {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return m_last->m_data;
 }
 
 const void *ListImpl::last() const {
   if(size() == 0) {
-    throwException(getElementeErrorText, _T(__FUNCTION__));
+    throwException(getElementeErrorText, __TFUNCTION__);
   }
   return m_last->m_data;
 }

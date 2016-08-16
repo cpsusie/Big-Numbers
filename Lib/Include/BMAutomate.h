@@ -147,7 +147,7 @@ private:
 
   void allocate(size_t patternLength) {
     if (patternLength > INT_MAX) {
-      throwInvalidArgumentException(_T(__FUNCTION__), _T("patternLength > %u not allowed"), INT_MAX);
+      throwInvalidArgumentException(__TFUNCTION__, _T("patternLength > %u not allowed"), INT_MAX);
     }
     m_plm1    = (m_patternLength = (int)patternLength) - 1;
     m_pattern = new Ctype[patternLength+1];

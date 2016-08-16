@@ -311,7 +311,7 @@ public:
     }
 
     void remove() {
-      unsupportedOperationError(_T(__FUNCTION__));
+      unsupportedOperationError(__TFUNCTION__);
     }
   };
 

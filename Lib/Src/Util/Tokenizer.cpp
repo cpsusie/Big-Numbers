@@ -94,7 +94,7 @@ String Tokenizer::getRemaining() const {
 
 StringIndex &Tokenizer::nextIndex(StringIndex &tIndex) {
   if(!hasNext()) {
-    throwException(_T("%s:No such element"), _T(__FUNCTION__));
+    throwException(_T("%s:No such element"), __TFUNCTION__);
   }
 
   const TCHAR *pos = m_next;
@@ -137,7 +137,7 @@ double Tokenizer::getDouble() {
   String s = next();
   double result;
   if(_stscanf(s.cstr(), _T("%le"), &result) != 1) {
-    throwException(_T("%s:Expected double:<%s>"), _T(__FUNCTION__), s.cstr());
+    throwException(_T("%s:Expected double:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
@@ -146,7 +146,7 @@ int Tokenizer::getInt() {
   String s = next();
   int result;
   if(_stscanf(s.cstr(), _T("%ld"), &result) != 1) {
-    throwException(_T("%s:Expected int:<%s>"), _T(__FUNCTION__), s.cstr());
+    throwException(_T("%s:Expected int:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
@@ -155,7 +155,7 @@ unsigned int Tokenizer::getUint() {
   String s = next();
   unsigned int result;
   if(_stscanf(s.cstr(), _T("%lu"), &result) != 1) {
-    throwException(_T("%s:Expected unsigned int:<%s>"), _T(__FUNCTION__), s.cstr());
+    throwException(_T("%s:Expected unsigned int:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
@@ -164,7 +164,7 @@ __int64 Tokenizer::getInt64() {
   String s = next();
   __int64 result;
   if(_stscanf(s.cstr(), _T("%I64d"), &result) != 1) {
-    throwException(_T("%s:Expected __int64:<%s>"), _T(__FUNCTION__), s.cstr());
+    throwException(_T("%s:Expected __int64:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
@@ -173,7 +173,7 @@ unsigned __int64 Tokenizer::getUint64() {
   String s = next();
   unsigned __int64 result;
   if(_stscanf(s.cstr(), _T("%I64u"), &result) != 1) {
-    throwException(_T("%s:Expected unsigned __int64:<%s>"), _T(__FUNCTION__), s.cstr());
+    throwException(_T("%s:Expected unsigned __int64:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }

@@ -13,7 +13,7 @@ ByteInputFile::ByteInputFile(const String &name) {
 
 ByteInputFile::ByteInputFile(FILE *f) {
   if(f == NULL) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("f=NULL"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("f=NULL"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);

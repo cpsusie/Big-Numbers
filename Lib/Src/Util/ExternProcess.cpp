@@ -81,8 +81,8 @@ void Pipe::init() {
 
 #define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
 
-#define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), _T(__FUNCTION__)).cstr()); m_level++; }
-#define EXITFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("exit  %s"), _T(__FUNCTION__)).cstr()); }
+#define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), __TFUNCTION__).cstr()); m_level++; }
+#define EXITFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("exit  %s"), __TFUNCTION__).cstr()); }
 
 ExternProcess::ExternProcess(bool verbose) : m_verbose(verbose) {
   m_processHandle     = INVALID_HANDLE_VALUE;
@@ -265,7 +265,7 @@ void ExternProcess::vstartCreateProcess(const String &program, va_list argptr) {
     setProcessHandle(processInfo.hProcess);
     CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
   } else {
-    throwLastErrorOnSysCallException(_T(__FUNCTION__));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
 

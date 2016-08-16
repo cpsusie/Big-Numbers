@@ -42,7 +42,7 @@ void PixRectDevice::initialize() { // static
   try {
     s_direct3d = Direct3DCreate9(D3D_SDK_VERSION);
     if (s_direct3d == NULL) {
-      throwException(_T("%s::%s. Failed to create Direct3D object"), s_className, _T(__FUNCTION__));
+      throwException(_T("%s::%s. Failed to create Direct3D object"), s_className, __TFUNCTION__);
     }
 //    CHECK3DRESULT(directDraw->SetCooperativeLevel(NULL, DDSCL_NORMAL));
   } catch(Exception e) {
@@ -351,7 +351,7 @@ PixRect *PixRect::clone(bool cloneImage, D3DPOOL pool) const {
 void PixRect::moveToPool(D3DPOOL pool) {
   if (pool == getPool()) return;
   if (getType() == PIXRECT_RENDERTARGET) {
-    throwException(_T("%s::%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), s_className, _T(__FUNCTION__));
+    throwException(_T("%s::%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), s_className, __TFUNCTION__);
   }
   PixRect *tmp = clone(true, pool);
   destroy();
@@ -367,7 +367,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
     tmp->m_surface = NULL;
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__));
+    unknownTypeError(__TFUNCTION__);
   }
   delete tmp;
 }
@@ -450,7 +450,7 @@ void PixRect::create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D
     createPlainSurface(sz, pixelFormat, pool);
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__), type);
+    unknownTypeError(__TFUNCTION__, type);
   }
 }
 
@@ -478,7 +478,7 @@ void PixRect::destroy() {
     destroySurface();
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__));
+    unknownTypeError(__TFUNCTION__);
   }
 }
 
@@ -632,7 +632,7 @@ LPDIRECT3DSURFACE PixRect::getSurface() const {
     surface->AddRef();
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__));
+    unknownTypeError(__TFUNCTION__);
   }
   return surface;
 }
@@ -648,7 +648,7 @@ D3DLOCKED_RECT PixRect::lockRect(DWORD flags, const CRect *rect) {
     CHECK3DRESULT(m_surface->LockRect(&lr, rect, flags));
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__));
+    unknownTypeError(__TFUNCTION__);
     break;
   }
   return lr;
@@ -664,7 +664,7 @@ void PixRect::unlockRect() {
     CHECK3DRESULT(m_surface->UnlockRect());
     break;
   default:
-    unknownTypeError(_T(__FUNCTION__));
+    unknownTypeError(__TFUNCTION__);
   }
 }
 

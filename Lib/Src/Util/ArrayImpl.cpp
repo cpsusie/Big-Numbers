@@ -113,7 +113,7 @@ void ArrayImpl::indexError(const TCHAR *method, size_t index) const {
 }
 
 void ArrayImpl::selectError() const {
-  throwException(_T("%s:Cannot select from empty array"), _T(__FUNCTION__));
+  throwException(_T("%s:Cannot select from empty array"), __TFUNCTION__);
 }
 
 void ArrayImpl::unsupportedOperationError(const TCHAR *method) const {
@@ -175,7 +175,7 @@ void ArrayImpl::removeIndex(size_t i, size_t count) {
 }
 
 bool ArrayImpl::remove(const void *e) {
-  unsupportedOperationError(_T(__FUNCTION__));
+  unsupportedOperationError(__TFUNCTION__);
   return false;
 }
 
@@ -195,7 +195,7 @@ void ArrayImpl::swap(size_t i1, size_t i2) {
 }
 
 bool ArrayImpl::contains(const void *e) const {
-  unsupportedOperationError(_T(__FUNCTION__));
+  unsupportedOperationError(__TFUNCTION__);
   return false;
 }
 

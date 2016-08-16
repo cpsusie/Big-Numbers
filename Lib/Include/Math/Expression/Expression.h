@@ -214,7 +214,7 @@ private:
       throwException(_T("%s:Returntype=%d. exptected=%d\n"), method, m_returnType, expectedReturnType);
     }
   }
-#define CHECKRETURNTYPE(expectedType) checkReturnType(_T(__FUNCTION__), expectedType)
+#define CHECKRETURNTYPE(expectedType) checkReturnType(__TFUNCTION__, expectedType)
 #else
 #define CHECKRETURNTYPE(expectedType)
 #endif // _DEBUG

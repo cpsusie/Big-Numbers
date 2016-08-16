@@ -63,7 +63,7 @@ size_t BitSet::getAtomCount(size_t capacity) { // static
 
 BitSet::BitSet(size_t capacity) {
   if(capacity == 0) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("Capacity=0"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("Capacity=0"));
   }
   m_capacity = capacity;
   const size_t atomCount = ATOMCOUNT(m_capacity);
@@ -122,7 +122,7 @@ BitSet &BitSet::clear() {
 
 BitSet &BitSet::remove(size_t i) {
   if(i >= m_capacity) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwInvalidArgumentException(__TFUNCTION__, _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
   ATOM(m_p,i) &= ~ATOMBIT(i);
   return *this;
@@ -130,7 +130,7 @@ BitSet &BitSet::remove(size_t i) {
 
 BitSet &BitSet::add(size_t i) {
   if(i >= m_capacity) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwInvalidArgumentException(__TFUNCTION__, _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
   }
   ATOM(m_p,i) |= ATOMBIT(i);
   return *this;
@@ -138,7 +138,7 @@ BitSet &BitSet::add(size_t i) {
 
 BitSet &BitSet::remove(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwInvalidArgumentException(__TFUNCTION__, _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;
@@ -166,7 +166,7 @@ BitSet &BitSet::remove(size_t a, size_t b) {
 
 BitSet &BitSet::add(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwInvalidArgumentException(__TFUNCTION__, _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
   }
   if(a > b) {
     return *this;

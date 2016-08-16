@@ -167,7 +167,7 @@ int MachineCode::emitShortJmp(const IntelInstruction &ins) {
 void MachineCode::fixupShortJump(int addr, int jmpAddr) {
   const int v = jmpAddr - addr - 1;
   if (!ISBYTE(v)) {
-    throwInvalidArgumentException(_T(__FUNCTION__)
+    throwInvalidArgumentException(__TFUNCTION__
       ,_T("shortJump from %d to %d too long. offset=%d (must be in range [-128,127]")
       ,addr, jmpAddr, v);
   }

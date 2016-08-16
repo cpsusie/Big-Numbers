@@ -187,7 +187,7 @@ bool TreeSetImpl::balanceL(TreeSetNode *&pp) {
       }
     }
   }
-  throwException(_T("%s:Dropped to the end"), _T(__FUNCTION__));
+  throwException(_T("%s:Dropped to the end"), __TFUNCTION__);
   return true;
 }
 
@@ -233,7 +233,7 @@ bool TreeSetImpl::balanceR(TreeSetNode *&pp) {
       }
     }
   }
-  throwException(_T("%s:dropped to the end"), _T(__FUNCTION__));
+  throwException(_T("%s:dropped to the end"), __TFUNCTION__);
   return true;
 }
 
@@ -378,7 +378,7 @@ bool TreeSetImpl::contains(const void *key) const {
 
 const void *TreeSetImpl::getRandom() const {
   if(size() == 0) {
-    throwEmptySetException(_T(__FUNCTION__));
+    throwEmptySetException(__TFUNCTION__);
   }
 
   const TreeSetNode *p = m_root;
@@ -410,7 +410,7 @@ const TreeSetNode *TreeSetImpl::getMinNode() const {
   const TreeSetNode *result = NULL;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_left);
   if(result == NULL) {
-    throwEmptySetException(_T(__FUNCTION__));
+    throwEmptySetException(__TFUNCTION__);
   }
   return result;
 }
@@ -419,7 +419,7 @@ const TreeSetNode *TreeSetImpl::getMaxNode() const {
   const TreeSetNode *result = NULL;
   for(const TreeSetNode *p = m_root; p; result = p, p = p->m_right);
   if(result == NULL) {
-    throwEmptySetException(_T(__FUNCTION__));
+    throwEmptySetException(__TFUNCTION__);
   }
   return result;
 }

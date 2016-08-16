@@ -53,13 +53,13 @@ static String printbin(unsigned int v) {
 
 #define CHECK_INDEX                      \
 { if(index >= size()) {                  \
-    indexError(index, _T(__FUNCTION__)); \
+    indexError(index, __TFUNCTION__); \
   }                                      \
 }
 
 #define CHECK_VALUE                      \
 { if(v > m_maxValue) {                   \
-    valueError(v, _T(__FUNCTION__));     \
+    valueError(v, __TFUNCTION__);     \
   }                                      \
 }
 

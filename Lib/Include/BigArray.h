@@ -351,7 +351,7 @@ private:
 public:
   BigArray() : m_freeFilePages(256) {
     if (_ELEMENTS_PER_PAGE == 0) {
-      throwInvalidArgumentException(_T(__FUNCTION__), _T("Elements/page = 0. sizeof(T)=%d"), sizeof(T));
+      throwInvalidArgumentException(__TFUNCTION__, _T("Elements/page = 0. sizeof(T)=%d"), sizeof(T));
     }
     init();
     CHECK_BIGARRAY_INVARIANT();

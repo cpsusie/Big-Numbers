@@ -70,12 +70,12 @@ public:
   }
 
   inline const BYTE &operator[](size_t i) const {
-    if(i >= m_size) indexError(_T(__FUNCTION__), i);
+    if(i >= m_size) indexError(__TFUNCTION__, i);
     return m_data[i];
   }
 
   inline BYTE &operator[](size_t i) {
-    if(i >= m_size) indexError(_T(__FUNCTION__), i);
+    if(i >= m_size) indexError(__TFUNCTION__, i);
     return m_data[i];
   }
 

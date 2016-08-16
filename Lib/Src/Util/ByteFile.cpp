@@ -13,7 +13,7 @@ ByteFile::ByteFile(const String &name, FileMode mode) {
 
 ByteFile::ByteFile(FILE *f, FileMode mode) {
   if(f == NULL) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("f=NULL"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("f=NULL"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
@@ -56,18 +56,18 @@ void ByteFile::close() {
 void ByteFile::putByte(BYTE c) {
 #ifdef _DEBUG
   if(m_mode != WRITEMODE) {
-    throwException(_T("%s:File is readonly"), _T(__FUNCTION__));
+    throwException(_T("%s:File is readonly"), __TFUNCTION__);
   }
 #endif
   if(putc(c, m_file) != c) {
-    throwException(_T("%s:Error write byte"), _T(__FUNCTION__));
+    throwException(_T("%s:Error write byte"), __TFUNCTION__);
   }
 }
 
 int ByteFile::getByte() {
 #ifdef _DEBUG
   if(m_mode != READMODE) {
-    throwException(_T("%s:File is writeonly"), _T(__FUNCTION__));
+    throwException(_T("%s:File is writeonly"), __TFUNCTION__);
   }
 #endif
   return getc(m_file);
@@ -76,7 +76,7 @@ int ByteFile::getByte() {
 void ByteFile::putBytes(const BYTE *src, size_t n) {
 #ifdef _DEBUG
   if(m_mode != WRITEMODE) {
-    throwException(_T("%s:File is readonly"), _T(__FUNCTION__));
+    throwException(_T("%s:File is readonly"), __TFUNCTION__);
   }
 #endif
   FWRITE(src, 1, n, m_file);
@@ -85,7 +85,7 @@ void ByteFile::putBytes(const BYTE *src, size_t n) {
 intptr_t ByteFile::getBytes(BYTE *dst, size_t n) {
 #ifdef _DEBUG
   if(m_mode != READMODE) {
-    throwException(_T("%s:File is writeonly"), _T(__FUNCTION__));
+    throwException(_T("%s:File is writeonly"), __TFUNCTION__);
   }
 #endif
   return fread(dst, 1, n, m_file);

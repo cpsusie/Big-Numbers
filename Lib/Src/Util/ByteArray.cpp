@@ -91,7 +91,7 @@ ByteArray &ByteArray::insertConstant(size_t index, BYTE b, size_t count) {
     return *this;
   }
   if(index > m_size) {
-    indexError(_T(__FUNCTION__), index);
+    indexError(__TFUNCTION__, index);
   }
   const size_t newSize = m_size + count;
   if(newSize > m_capacity) {

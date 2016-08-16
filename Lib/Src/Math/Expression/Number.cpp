@@ -21,7 +21,7 @@ Number::Number(const Number &v) {
     m_rational = new Rational(*v.m_rational);
     break;
   default:
-    throwUnknownTypeException(_T(__FUNCTION__));
+    throwUnknownTypeException(__TFUNCTION__);
   }
 }
 
@@ -91,7 +91,7 @@ void Number::cleanup() {
     delete m_rational;
     break;
   default:
-    throwUnknownTypeException(_T(__FUNCTION__));
+    throwUnknownTypeException(__TFUNCTION__);
   }
   m_type     = NUMBERTYPE_UNDEFINED;
   m_rational = NULL;
@@ -129,7 +129,7 @@ Number &Number::operator=(const Number &v) {
     break;
 
   default:
-    v.throwUnknownTypeException(_T(__FUNCTION__));
+    v.throwUnknownTypeException(__TFUNCTION__);
   }
   return *this;
 }

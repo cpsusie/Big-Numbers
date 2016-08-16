@@ -46,12 +46,12 @@ public:
     return m_size;
   }
   inline void *getElement(size_t index) {
-    if(index >= m_size) indexError(_T(__FUNCTION__), index);
+    if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_elem[index];
   }
 
   inline const void *getElement(size_t index) const {
-    if(index >= m_size) indexError(_T(__FUNCTION__), index);
+    if(index >= m_size) indexError(__TFUNCTION__, index);
     return m_elem[index];
   }
 

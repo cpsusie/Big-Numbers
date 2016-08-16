@@ -284,28 +284,28 @@ DEFINECLASSNAME(DWordPixelAccessor);
 
 void DWordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
 #ifdef _DEBUG
-  checkPoint(s_className, _T(__FUNCTION__), x, y);
+  checkPoint(s_className, __TFUNCTION__, x, y);
 #endif
   m_pixels[m_pixelsPerLine * y + x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(UINT x, UINT y) {
 #ifdef _DEBUG
-  checkPoint(s_className, _T(__FUNCTION__), x, y);
+  checkPoint(s_className, __TFUNCTION__, x, y);
 #endif
   return m_pixels[m_pixelsPerLine * y + x];
 }
 
 void DWordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
 #ifdef _DEBUG
-  checkPoint(s_className, _T(__FUNCTION__), p.x, p.y);
+  checkPoint(s_className, __TFUNCTION__, p.x, p.y);
 #endif
   m_pixels[m_pixelsPerLine * p.y + p.x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(const CPoint &p) {
 #ifdef _DEBUG
-  checkPoint(s_className, _T(__FUNCTION__), p.x, p.y);
+  checkPoint(s_className, __TFUNCTION__, p.x, p.y);
 #endif
   return m_pixels[m_pixelsPerLine * p.y + p.x];
 }

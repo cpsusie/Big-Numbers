@@ -17,7 +17,7 @@ ByteOutputFile::ByteOutputFile(const String &name) {
 
 ByteOutputFile::ByteOutputFile(FILE *f) {
   if(f == NULL) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("Illegal argument(NULL)"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("Illegal argument(NULL)"));
   }
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
