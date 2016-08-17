@@ -4,10 +4,10 @@
 
 #include "stdafx.h"
 #include <io.h>
-#include <CPUInfo.h>
+#include <fstream>
 #include <Math/Polynomial.h>
 #include "BigRealRemes2.h"
-#include <fstream>
+#include "MultiExtremaFinder.h"
 
 class NoConvergenceException : public Exception {
 public:
@@ -28,11 +28,10 @@ static void throwSameSignException(const TCHAR *method) {
 }
 
 const TCHAR *Remes::s_stateName[] = {
-  _T("INITIALIZE")
- ,_T("REMES_SEARCH_E")
+  _T("REMES_INITIALIZE")
+ ,_T("REMES_SEARCH_COEFFICIENTS")
  ,_T("REMES_SEARCH_EXTREMA")
- ,_T("REMES_FINALIZE_ITERATION")
- ,_T("REMES_NOCONVERGENCE")
+ ,_T("REMES_SUCCEEDED")
 };
 
 static BigReal DEFAULT_MMQUOT_EPS = e(BIGREAL_1,-22);
@@ -94,7 +93,7 @@ Remes::Remes(const Remes &src)
 void Remes::setMMQuotEpsilon(const BigReal &mmQuotEps) {
   if(mmQuotEps <= 0 || mmQuotEps > 0.5) {
     throwException(_T("%s:Invalid argument=%s. Must be = ]0;0.5]")
-                  ,_T(__FUNCTION__)
+                  ,__TFUNCTION__
                   , mmQuotEps.toString());
   }
   m_MMQuotEps = mmQuotEps;
@@ -118,16 +117,23 @@ void Remes::saveExtremaToFile() {
 void Remes::solve(const int M, const int K) {
   const int MAXIT = 100;
 
+  setProperty(REMES_STATE, m_state, REMES_INITIALIZE);
+
   m_M = M;
   m_K = K;
   m_N = m_M + m_K;
+
+  setProperty(WARNING, m_warning, _T(""));
 
   const int dimension = m_N + 2;
   m_coefficientVector.setDimension(dimension);
   m_extrema.setDimension(dimension);
   m_functionValue.setDimension(dimension);
   m_errorValue.setDimension(dimension);
-
+  m_extremaStringArray.clear();
+  for(int i = 0; i < dimension; i++) {
+    m_extremaStringArray.add(_T(""));
+  }
   initSolveState(M, K);
   initCoefficientVector(dimension);
 
@@ -139,11 +145,10 @@ void Remes::solve(const int M, const int K) {
     setExtrema(getDefaultInitialExtrema(M, K));
   }
 
+RestartMainIteration:
   m_coefVectorIndex = 0;
   m_lastMMQuot      = BIGREAL_1;
   m_QEpsilon        = e(BIGREAL_1,-2);
-
-  setProperty(REMES_STATE, m_state, REMES_INITIALIZE);
 
   for(setProperty(MAINITERATION, m_mainIteration, 1); m_mainIteration <= MAXIT; setProperty(MAINITERATION, m_mainIteration, m_mainIteration+1)) {
     try {
@@ -184,7 +189,7 @@ void Remes::solve(const int M, const int K) {
       if(hasNextSolveState()) {
         nextSolveState();
         setExtrema(findInitialExtremaByInterpolation(M,K));
-        continue;
+        goto RestartMainIteration;
       } else {
         throw;
       }
@@ -192,9 +197,10 @@ void Remes::solve(const int M, const int K) {
   }
   if(m_mainIteration > MAXIT) {
     throwException(_T("%s(%d,%d) stopped after %d iterations. No convergence")
-                  ,_T(__FUNCTION__)
+                  ,__TFUNCTION__
                   , M, K, MAXIT);
   }
+  setProperty(REMES_STATE, m_state, REMES_SUCCEEDED);
 }
 
 void Remes::initCoefficientVector(int dimension) {
@@ -202,7 +208,7 @@ void Remes::initCoefficientVector(int dimension) {
   v.setDimension(dimension);
 
   for(int i = 0; i <= m_N + 1; i++) v[i] = 0;
-  m_E = 0;
+  setProperty(E                , m_E                , (BigReal&)BIGREAL_0);
   setProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
 }
 
@@ -221,7 +227,7 @@ void Remes::nextSolveState() {
     m_solveStateDecrM             = true;
   } else {
     throwException(_T("%s:No Next solveState for Remes(%d,%d):HighPrecision=true, DecrementM=true")
-                  ,_T(__FUNCTION__)
+                  ,__TFUNCTION__
                   ,m_M,m_K);
   }
 }
@@ -281,7 +287,7 @@ BigRealVector Remes::findFinalExtrema(const int M, const int K, const bool highP
   }
 
   throwException(_T("%s(%d,%d):Cannot find extremaVector with MinMaxQuot < %s, though it should exist")
-                ,_T(__FUNCTION__)
+                ,__TFUNCTION__
                 , M, K, mmQuot.toString().cstr());
   return BigRealVector(1);
 }
@@ -319,7 +325,7 @@ Real InterpolationFunction::operator()(const Real &x) {
   if(x == 0 || x == maxX) {
     return getReal(m_initialExtr[getInt(x)]);
   } else if(x < 0 || x > maxX) {
-    throwInvalidArgumentException(_T(__FUNCTION__)
+    throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("x=%s. x must be in the interval [0..%d]")
                                  ,toString(x).cstr(), maxX);
   }
@@ -334,7 +340,7 @@ bool Remes::hasSavedExtrema(const int M, const int K) {
 const ExtremaVector &Remes::getBestSavedExtrema(const int M, const int K) {
   const Array<ExtremaVector> *a = s_extremaMap.get(ExtremaKey(M,K));
   if(a == NULL) {
-    throwInvalidArgumentException(_T(__FUNCTION__), _T("ExtremaKey(%d,%d) not found")
+    throwInvalidArgumentException(__TFUNCTION__, _T("ExtremaKey(%d,%d) not found")
                                  , M, K);
   }
   size_t bestIndex = 0;
@@ -357,7 +363,7 @@ BigRealVector Remes::getFastInitialExtremaByInterpolation(const int M, const int
   } else if(M > 1 && hasSavedExtrema(M-1,K)) {
     M1--;
   } else {
-    throwInvalidArgumentException(_T(__FUNCTION__)
+    throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("(M,K)=(%d,%d). No saved solution for (M,K)=(%d,%d) or (%d,%d)")
                                  ,M,K,M,K-1,M-1,K);
   }
@@ -387,7 +393,9 @@ BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema,
 
 void Remes::findCoefficients() {
   DEFINEMETHODNAME;
-  static const BigReal c1 = 0.5;
+  static const BigReal c1 = BIGREAL_HALF;
+
+  setProperty(REMES_STATE, m_state, REMES_SEARCH_COEFFICIENTS);
 
   const int MAXIT = 700;
 
@@ -411,11 +419,9 @@ void Remes::findCoefficients() {
     BigRealLUMatrix LU(A);
 
     setProperty(COEFFICIENTVECTOR, m_coefficientVector, LU.solve(m_functionValue));
-    m_E                = m_coefficientVector[m_N+1];
-    setProperty(SEARCHEITERATION, m_searchEIteration, 1);
+    setProperty(E, m_E           , m_coefficientVector[m_N+1]);
     m_hasCoefficients  = true;
     m_coefVectorIndex++;
-    setProperty(REMES_STATE, m_state, REMES_SEARCH_E);
   } else {
     // for m_K > 0 we have to iterate
     for(setProperty(SEARCHEITERATION, m_searchEIteration, 1); m_searchEIteration <= MAXIT; setProperty(SEARCHEITERATION, m_searchEIteration, m_searchEIteration+1)) {
@@ -439,134 +445,14 @@ void Remes::findCoefficients() {
       if(m_Q < m_QEpsilon) {
         break;
       }
-      m_E = rProd(c1, m_E + m_nextE, m_digits);
+      setProperty(E, m_E, rProd(c1, m_E + m_nextE, m_digits));
     }
     if(m_searchEIteration > MAXIT) {
-      throwNoConvergenceException(_T(__FUNCTION__), _T("No convergence after %d iterations"), MAXIT);
+      throwNoConvergenceException(__TFUNCTION__, _T("No convergence after %d iterations"), MAXIT);
     }
   }
 }
 
-#define MULTITHREADED
-
-#ifdef MULTITHREADED
-class ExtremaSearchJob : public Runnable {
-private:
-  Remes       &m_remes;
-  DigitPool   *m_pool;
-  BigReal      m_left, m_right, m_middle;
-  int          m_index;
-public:
-  unsigned int run();
-  ExtremaSearchJob(Remes &remes, int index, const BigReal &l, const BigReal &r, const BigReal &m, DigitPool *pool);
-  ~ExtremaSearchJob();
-};
-
-ExtremaSearchJob::ExtremaSearchJob(Remes &remes, int index, const BigReal &l, const BigReal &r, const BigReal &m, DigitPool *pool)
-  : m_remes(remes)
-  , m_index(index)
-  , m_left(pool)
-  , m_right(pool)
-  , m_middle(pool)
-  , m_pool(pool)
-{
-  m_left   = l;
-  m_right  = r;
-  m_middle = m;
-}
-
-ExtremaSearchJob::~ExtremaSearchJob() {
-  m_left = m_right = m_middle = 0;
-  BigRealThreadPool::releaseDigitPool(m_pool);
-}
-
-unsigned int ExtremaSearchJob::run() {
-  const BigReal extr = m_remes.findExtremum(m_left, m_middle, m_right, m_pool);
-  m_remes.setExtremum(m_index, extr);
-  return 0;
-}
-
-class ExtremaJobQueue : public SynchronizedQueue<ExtremaSearchJob*> {
-private:
-  Semaphore m_allDone;
-public:
-  ExtremaJobQueue() : m_allDone(0) {
-  }
-  void waitUntilAllDone() {
-    m_allDone.wait();
-  }
-  void signalAllDone() {
-    m_allDone.signal();
-  }
-};
-
-class ExtremaFinder {
-private:
-  const int                       m_processorCount;
-  Remes                          &m_remes;
-  ExtremaJobQueue                 m_jobQueue;
-  CompactArray<ExtremaSearchJob*> m_allJobs;
-public:
-  ExtremaFinder(Remes *remes) : m_remes(*remes), m_processorCount(getProcessorCount()) {
-  }
-  ~ExtremaFinder();
-  void insertJob(int index, const BigReal &l, const BigReal &r, const BigReal &m);
-  void execute();
-};
-
-ExtremaFinder::~ExtremaFinder() {
-  m_jobQueue.clear();
-  for(size_t i = 0; i < m_allJobs.size(); i++) {
-    delete m_allJobs[i];
-  }
-  m_allJobs.clear();
-}
-
-void ExtremaFinder::insertJob(int index, const BigReal &l, const BigReal &r, const BigReal &m) {
-  m_allJobs.add(new ExtremaSearchJob(m_remes, index, l, r, m, BigRealThreadPool::fetchDigitPool()));
-}
-
-class WorkerThread : public Thread {
-private:
-  ExtremaJobQueue &m_jobQueue;
-public:
-  WorkerThread(ExtremaJobQueue &jobQueue) : m_jobQueue(jobQueue) {
-  }
-  unsigned int run();
-};
-
-unsigned int WorkerThread::run() {
-  for (;;) {
-    try {
-      ExtremaSearchJob *job = m_jobQueue.get(10);
-      job->run();
-    } catch (TimeoutException e) {
-      if(m_jobQueue.isEmpty()) {
-        m_jobQueue.signalAllDone();
-        return 0;
-      }
-    }
-  }
-}
-
-void ExtremaFinder::execute() {
-  for(size_t i = 0; i < m_allJobs.size(); i++) {
-    m_jobQueue.put(m_allJobs[i]);
-  }
-  CompactArray<WorkerThread*> threads;
-  for(int i = 0; i < m_processorCount; i++) {
-    WorkerThread *thr = new WorkerThread(m_jobQueue);
-    threads.add(thr);
-    thr->start();
-  }
-  m_jobQueue.waitUntilAllDone();
-  for(size_t i = 0; i < threads.size(); i++) {
-    delete threads[i];
-  }
-  threads.clear();
-}
-
-#endif // MULTITHREADED
 
 void Remes::findExtrema() {
   DEFINEMETHODNAME;
@@ -574,7 +460,7 @@ void Remes::findExtrema() {
   setProperty(REMES_STATE, m_state, REMES_SEARCH_EXTREMA);
   resetExtremumCount();
 
-#ifndef MULTITHREADED
+#ifndef MULTITHREADEDEXTREMAFINDER
   int prevSign = setExtremum(0, m_left);
   DigitPool *pool = BigRealThreadPool::fetchDigitPool();
   try {
@@ -595,8 +481,8 @@ void Remes::findExtrema() {
     BigRealThreadPool::releaseDigitPool(pool);
     throw;
   }
-#else // MULTITHREADED
-  ExtremaFinder multiExtremaFinder(this);
+#else // MULTITHREADEDEXTREMAFINDER
+  MultiExtremaFinder multiExtremaFinder(this);
   for(int i = 1; i <= m_N; i++) {
     const BigReal l = rQuot(save[i-1] + 2.0 * save[i], 3, m_digits);
     const BigReal r = rQuot(save[i+1] + 2.0 * save[i], 3, m_digits);
@@ -605,7 +491,7 @@ void Remes::findExtrema() {
   setExtremum(0, m_left);
   multiExtremaFinder.execute();
   setExtremum(m_N+1, m_right);
-#endif // SINGLETHREADED
+#endif // MULTITHREADEDEXTREMAFINDER
 
   setProperty(MAXERROR, m_maxError, fabs(m_errorValue[m_maxExtremumIndex]));
 }
@@ -706,7 +592,7 @@ BigReal Remes::findExtremum(const BigReal &from, const BigReal &middle, const Bi
 
 void Remes::setExtrema(const BigRealVector &extrema) {
   if(extrema.getDimension() != m_N + 2) {
-    throwInvalidArgumentException(_T(__FUNCTION__)
+    throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("Dimension of extremaVector=%d, N=%d => Expected dimension=%d")
                                  ,extrema.getDimension(), m_N, m_N+2);
   }
@@ -725,7 +611,9 @@ void Remes::resetExtremumCount() {
   m_extremaGate.wait();
   m_minExtremumIndex = -1;
   m_maxExtremumIndex = -1;
-  m_extremaStringArray.clear();
+  for(size_t i = 0; i < m_extremaStringArray.size(); i++) {
+    m_extremaStringArray[i] = _T("");
+  }
   setProperty(EXTREMUMCOUNT, m_extremaCount, 0);
   m_extremaGate.signal();
 }
@@ -743,7 +631,7 @@ int Remes::setExtremum(const int index, const BigReal &x) {
       m_maxExtremumIndex = index;
     }
   }
-  m_extremaStringArray.add(getExtremumString(index));
+  m_extremaStringArray[index] = getExtremumString(index);
   setProperty(EXTREMUMCOUNT, m_extremaCount, m_extremaCount+1);
   m_extremaGate.signal();
 
@@ -814,17 +702,11 @@ String Remes::getSearchEString() const {
 }
 
 String Remes::getExtremumString(int index) const {
-  const TCHAR *comment = _T("");
-  if(index == m_minExtremumIndex) {
-    comment = _T("<-- Min.");
-  } else if(index == m_maxExtremumIndex) {
-    comment = _T("<-- Max.");
-  }
-  return format(_T("Extr[%2d]:%s %s%s"), index, FormatBigReal(m_extrema[index]).cstr(), FormatBigReal(m_errorValue[index]).cstr(), comment);
+  return format(_T("Extr[%2d]:%s %s"), index, FormatBigReal(m_extrema[index]).cstr(), FormatBigReal(m_errorValue[index]).cstr());
 }
 
 String Remes::getMMQuotString() const {
-  const BigReal mmQuot = BIGREAL_1 - fabs(rQuot(this->getMinAbsExtremumValue(),getMaxAbsExtremumValue(),m_digits)); // minExtr -> maxExtr => mmQuot -> 0
+  const BigReal mmQuot = BIGREAL_1 - fabs(rQuot(getMinAbsExtremumValue(),getMaxAbsExtremumValue(),m_digits)); // minExtr -> maxExtr => mmQuot -> 0
   return format(_T("MinMaxQuot = 1-|MinExtr/MaxExtr|:%s"),FormatBigReal(mmQuot).cstr());
 }
 

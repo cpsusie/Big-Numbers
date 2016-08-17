@@ -23,7 +23,8 @@
 #include <Math/Rectangle2D.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/LayoutManager.h>
-
+#include "IRemes.h"
+#include "BigRealRemes2.h"
 
 
 #ifdef _UNICODE

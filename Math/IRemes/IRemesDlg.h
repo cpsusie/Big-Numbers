@@ -28,6 +28,13 @@ public:
   BigReal operator()(const BigReal &x);
 };
 
+typedef enum {
+  DBGMENU_EMPTY
+ ,DBGMENU_IDLE
+ ,DBGMENU_RUNNING
+ ,DBGMENU_PAUSED
+} DebugMenuState;
+
 class CoefWindowData {
 private:
   void initData(const Remes &r) {
@@ -46,23 +53,6 @@ public:
   }
 };
 
-class ExtremaWindowData {
-private:
-  void initStringArray(const Remes &r) {
-    m_extremaStrings = r.getExtremaStringArray();
-  }
-public:
-  StringArray m_extremaStrings;
-  ExtremaWindowData() {}
-  ExtremaWindowData(const Remes &r) {
-    initStringArray(r);
-  }
-  ExtremaWindowData &operator=(const Remes &r) {
-    initStringArray(r);
-    return *this;
-  }
-};
-
 class CIRemesDlg : public CDialog, public PropertyChangeListener {
 private:
   HACCEL                  m_accelTable;
@@ -74,9 +64,10 @@ private:
   Remes                  *m_remes;
   DebugThread            *m_debugThread;
   CoefWindowData          m_coefWinData;
-  ExtremaWindowData       m_extrWinData;
+  ExtremaStringArray      m_extrStrArray, m_extrStrArrayOld;
   String                  m_searchEString;
   String                  m_warning, m_error;
+  DebugMenuState          m_dbgMenuState;
 
   void startThread(bool singleStep);
   void createThread();
@@ -92,12 +83,17 @@ private:
   inline bool isThreadRunning() const {
     return hasDebugThread() && m_debugThread->isRunning();
   }
+  inline bool isThreadTerminated() const {
+    return hasDebugThread() && m_debugThread->isTerminated();
+  }
   void ajourDialogItems();
+  void setDebugMenuState(DebugMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
+  void showThreadState();
   void showState(RemesState state);
   void showWarning(const String &str);
-  void showCoefWindowData(   const CoefWindowData    &data);
-  void showExtremaWindowData(const ExtremaWindowData &data);
+  void showCoefWindowData(const CoefWindowData &data);
+  void showExtremaStringArray();
   void showSearchE(const String &s);
   void clearErrorPlot();
   bool createErrorPlot(const Remes &r);
@@ -111,6 +107,7 @@ private:
 public:
   CIRemesDlg(CWnd *pParent = NULL);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
+  void handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue);
 
 	enum { IDD = IDD_IREMES_DIALOG };
 
@@ -129,25 +126,31 @@ protected:
   virtual void    OnCancel();
   afx_msg void    OnClose();
   afx_msg void    OnFileExit();
+  afx_msg void    OnViewGrid();
 	afx_msg void    OnRunGo();
 	afx_msg void    OnRunDebug();
+	afx_msg void    OnRunContinue();
+	afx_msg void    OnRunRestart();
+	afx_msg void    OnRunStop();
+  afx_msg void    OnRunBreak();
 	afx_msg void    OnRunSingleIteration();
 	afx_msg void    OnRunSingleSubIteration();
-	afx_msg void    OnRunStop();
 	afx_msg void    OnGotoInterval();
 	afx_msg void    OnGotoM();
 	afx_msg void    OnGotoK();
 	afx_msg void    OnGotoDigits();
   afx_msg void    OnHelpAboutIRemes();
-  afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgStateChanged(         WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgMainIterationChanged( WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgSearchEItChanged(     WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgExtremaCountChanged(  WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgWarningChanged(       WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgShowErrorPlot(        WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgShowError(            WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgThrRunStateChanged(     WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgThrTerminatedChanged(   WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgThrErrorChanged(        WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgStateChanged(           WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgCoefficientsChanged(    WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgExtremaCountChanged(    WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgMaxErrorChanged(        WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgWarningChanged(         WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
+
 private:
   CString m_name;
 	UINT	  m_K;

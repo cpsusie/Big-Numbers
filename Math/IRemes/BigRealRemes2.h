@@ -5,6 +5,8 @@
 #include <Math/BigRealMatrix.h>
 #include <PropertyChangeListener.h>
 
+#define MULTITHREADEDEXTREMAFINDER
+
 class ExtremaKey {
 private:
   int m_M,m_K;
@@ -70,25 +72,61 @@ public:
 };
 
 typedef enum {
-  REMES_STATE        // *RemesState
- ,MAINITERATION      // *int
- ,SEARCHEITERATION   // *int
- ,EXTREMUMCOUNT      // *int
- ,COEFFICIENTVECTOR  // *BigRealVector                
- ,MMQUOT             // *BigReal
- ,Q                  // *BigReal
- ,MAXERROR           // *BigReal
- ,WARNING            // *String
+  REMES_STATE          // *RemesState
+ ,MAINITERATION        // *int
+ ,SEARCHEITERATION     // *int
+ ,EXTREMUMCOUNT        // *int
+ ,COEFFICIENTVECTOR    // *BigRealVector                
+ ,MMQUOT               // *BigReal
+ ,Q                    // *BigReal
+ ,E                    // *BigReal
+ ,MAXERROR             // *BigReal
+ ,WARNING              // *String
 } RemesProperty;
 
 typedef enum {
   REMES_INITIALIZE
- ,REMES_SEARCH_E
+ ,REMES_SEARCH_COEFFICIENTS
  ,REMES_SEARCH_EXTREMA
- ,REMES_FINALIZE_ITERATION
- ,REMES_NOCONVERGENCE
+ ,REMES_SUCCEEDED
 } RemesState;
 
+class ExtremaStringArray : public StringArray {
+private:
+  int m_minIndex, m_maxIndex;
+
+  inline const TCHAR *getComment(size_t index) const {
+    if(index == m_minIndex) return _T("<-- Min");
+    if(index == m_maxIndex) return _T("<-- Max");
+    return _T("");
+  }
+
+public:
+  ExtremaStringArray() {
+  }
+  ExtremaStringArray(const StringArray &src, int minIndex, int maxIndex)
+    : StringArray(src)
+    , m_minIndex(minIndex)
+    , m_maxIndex(maxIndex)
+  {
+  }
+  inline int getMinIndex() const {
+    return m_minIndex;
+  }
+  inline int getMaxIndex() const {
+    return m_maxIndex;
+  }
+  inline bool operator==(const ExtremaStringArray &a) const {
+    return (m_minIndex == a.m_minIndex) && (m_maxIndex == a.m_maxIndex)
+         && StringArray::operator==(a);
+  }
+  inline bool operator!=(const ExtremaStringArray &a) const {
+    return !(*this == a);
+  }
+  String getString(size_t index) const {
+    return (*this)[index] + getComment(index);
+  }
+};
 
 class Remes : public PropertyContainer {
 private:
@@ -149,7 +187,10 @@ private:
   BigReal              sFunction(       const BigReal &x) const; // m_useRelativeError ? (1/m_targetFunction(x)) : 1
   BigReal              targetFunction(  const BigReal &x) const; // m_useRelativeError ?  1 : m_targetFunction(x)
   String               getHeaderString() const;
+#ifdef MULTITHREADEDEXTREMAFINDER
   friend class ExtremaSearchJob;
+  friend class MultiExtremaFinder;
+#endif
 public:
   Remes(RemesTargetFunction &targetFunction
        ,const bool useRelativeError);
@@ -199,8 +240,8 @@ public:
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;
-  StringArray getExtremaStringArray() const {
-    return m_extremaStringArray;
+  ExtremaStringArray getExtremaStringArray() const {
+    return ExtremaStringArray(m_extremaStringArray, m_minExtremumIndex, m_maxExtremumIndex);
   }
   String      getMMQuotString() const;
   StringArray getCoefficientStringArray() const;

@@ -32,6 +32,7 @@ unsigned int DebugThread::run() {
 typedef enum {
   BREAKSTEP
  ,BREAKSUBSTEP
+ ,BREAKASAP
 } BreakPointType;
 
 void DebugThread::throwInvalidStateException(const TCHAR *method, RemesState state) const {
@@ -44,26 +45,37 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
 
   RemesPropertyData prop(*(const Remes*)source, id, oldValue, newValue);
   notifyPropertyChanged(REMES_PROPERTY, NULL, &prop);
-  if(!m_breakPoints.isEmpty() && (id == REMES_STATE)) {
-    const RemesState newState = *(RemesState*)prop.m_newValue;
-    switch(newState) {
-    case REMES_INITIALIZE        :
-    case REMES_SEARCH_E          :
-    case REMES_SEARCH_EXTREMA    :
+  if(!m_breakPoints.isEmpty()) {
+    if (m_breakPoints.contains(BREAKASAP)) {
+      stop();
+      return;
+    }
+    switch(id) {
+    case REMES_STATE:
+      { const RemesState newState = *(RemesState*)prop.m_newValue;
+        switch(newState) {
+        case REMES_INITIALIZE         :
+        case REMES_SEARCH_COEFFICIENTS:
+        case REMES_SEARCH_EXTREMA     :
+        case REMES_SUCCEEDED:
+          if(m_breakPoints.contains(BREAKSTEP) || m_breakPoints.contains(BREAKSUBSTEP)) {
+            stop();
+          }
+          break;
+
+        default:
+          throwInvalidStateException(method, newState);
+        }
+      }
+      break;
+    case SEARCHEITERATION     :
+    case EXTREMUMCOUNT        :
+    case MAXERROR             :
+    case WARNING              :
       if(m_breakPoints.contains(BREAKSUBSTEP)) {
         stop();
       }
       break;
-
-    case REMES_FINALIZE_ITERATION:
-    case REMES_NOCONVERGENCE     :
-      if(m_breakPoints.contains(BREAKSTEP)) {
-        stop();
-      }
-      break;
-
-    default:
-      throwInvalidStateException(method, newState);
     }
   }
 }
@@ -75,24 +87,22 @@ void DebugThread::stop() {
   setProperty(THREAD_RUNNING, m_running, true);
 }
 
-String DebugThread::getStateName() const {
+const TCHAR *DebugThread::getStateName() const {
+  if(m_running)    return _T("Running");
   if(m_terminated) return _T("Terminated");
   if(m_killed)     return _T("Killed");
-  if(m_running)    return _T("Running");
   return _T("Suspended");
 }
 
 void DebugThread::kill() {
-  if(m_terminated) return;
+  if(m_terminated || m_killed) return;
   m_killed = true;
-  if(m_running) {
-    stopASAP();
-  } else {
+  if(!m_running) {
     resume();
   }
-  for(int i = 0; i < 10; i++) {
+  for(int i = 0; i < 50; i++) {
     if(stillActive()) {
-      Sleep(50);
+      Sleep(100);
     } else {
       break;
     }
@@ -106,6 +116,7 @@ void DebugThread::singleStep() {
   if(m_running) return;
   m_breakPoints.add(   BREAKSTEP   );
   m_breakPoints.remove(BREAKSUBSTEP);
+  m_breakPoints.remove(BREAKASAP   );
   resume();
 }
 
@@ -113,6 +124,7 @@ void DebugThread::singleSubStep() {
   if(m_running) return;
   m_breakPoints.add(   BREAKSTEP   );
   m_breakPoints.add(   BREAKSUBSTEP);
+  m_breakPoints.remove(BREAKASAP   );
   resume();
 }
 
@@ -120,11 +132,11 @@ void DebugThread::go() {
   if(m_running) return;
   m_breakPoints.remove(BREAKSTEP   );
   m_breakPoints.remove(BREAKSUBSTEP);
+  m_breakPoints.remove(BREAKASAP   );
   resume();
 }
 
 void DebugThread::stopASAP() {
   if(!m_running) return;
-  m_breakPoints.add(   BREAKSTEP   );
-  m_breakPoints.add(   BREAKSUBSTEP);
+  m_breakPoints.add(   BREAKASAP   );
 }

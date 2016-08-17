@@ -56,5 +56,5 @@ public:
   inline bool isTerminated() const {
     return m_terminated;
   }
-  String getStateName() const;
+  const TCHAR *getStateName() const;
 };
