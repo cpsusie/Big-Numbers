@@ -18,7 +18,7 @@ void BigRealVector::invalidDimensionError(const TCHAR *method, const BigRealVect
     , format1000(rhs.getDimension()).cstr());
 }
 
-void BigRealVector::init(size_t dim, bool initialize, int digits) {
+void BigRealVector::init(size_t dim, bool initialize, UINT digits) {
   VectorTemplate<BigReal>::init(dim,initialize);
   checkPrecision(digits);
   m_digits = digits;

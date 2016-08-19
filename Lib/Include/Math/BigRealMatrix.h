@@ -7,17 +7,21 @@
 class BigRealVector : public VectorTemplate<BigReal> {
 private:
   DECLARECLASSNAME;
-  unsigned int m_digits;
-  void checkPrecision(unsigned int digits);
+  UINT m_digits;
+  void checkPrecision(UINT digits);
 protected:
-  void init(size_t dim, bool initialize, int digits);
+  void init(size_t dim, bool initialize, UINT digits);
 
 public:
-  explicit BigRealVector(size_t dim = 1, unsigned int digits = 16);
+  explicit BigRealVector(size_t dim = 1, UINT digits = 16);
   BigRealVector(const BigRealVector &v);
-  BigRealVector(const VectorTemplate<BigReal> &v, unsigned int digits);
-  unsigned int setPrecision(unsigned int digits);
-  unsigned int getPrecision() const {
+  BigRealVector(const VectorTemplate<BigReal> &v, UINT digits);
+  BigRealVector &setDimAndPrecision(size_t dim, UINT digits) {
+    setDimension(dim); setPrecision(digits);
+    return *this;
+  }
+  UINT setPrecision(UINT digits);
+  UINT getPrecision() const {
     return m_digits;
   }
   BigRealVector &operator*=(const BigReal &d);
@@ -40,18 +44,18 @@ class BigRealMatrix : public MatrixTemplate<BigReal> {
 private:
   DECLARECLASSNAME;
 protected:
-  unsigned int m_digits;
-  void checkPrecision(unsigned int digits);
-  void init(size_t rows, size_t cols, bool initialize, unsigned int digits);
+  UINT m_digits;
+  void checkPrecision(UINT digits);
+  void init(size_t rows, size_t cols, bool initialize, UINT digits);
 public:
-  explicit BigRealMatrix(size_t rows = 1, size_t cols = 1, unsigned int digits = 16);
+  explicit BigRealMatrix(size_t rows = 1, size_t cols = 1, UINT digits = 16);
   BigRealMatrix(const BigRealMatrix &a);
-  unsigned int setPrecision(unsigned int digits);
-  unsigned int getPrecision() const {
+  UINT setPrecision(UINT digits);
+  UINT getPrecision() const {
     return m_digits;
   }
-  static BigRealMatrix one( size_t dim , unsigned int digits = 16);
-  static BigRealMatrix zero(size_t rows, size_t columns, unsigned int digits = 16);
+  static BigRealMatrix one( size_t dim , UINT digits = 16);
+  static BigRealMatrix zero(size_t rows, size_t columns, UINT digits = 16);
   BigRealVector getRow(   size_t row) const;
   BigRealVector getColumn(size_t column) const;
 };

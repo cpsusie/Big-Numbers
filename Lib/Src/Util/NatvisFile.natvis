@@ -29,6 +29,17 @@
       </Expand>
   </Type>
 
+  <Type Name="VectorTemplate&lt;*&gt;">
+    <DisplayString>{{Dimension={m_dim} }}</DisplayString>
+    <Expand>
+      <Item Name="[Dimension]" ExcludeView="simple">m_dim</Item>
+      <ArrayItems>
+        <Size>m_dim</Size>
+        <ValuePointer>m_e</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
   <Type Name="BitSet">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet"></DisplayString>
   </Type>
