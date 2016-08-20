@@ -1,20 +1,6 @@
 #include "pch.h"
 #include <ctype.h>
 
-#ifdef LONGDOUBLE
-
-Real getReal(const BigReal &x) {
-  return getDouble80(x);
-}
-
-#else
-
-Real getReal(const BigReal &x) {
-  return getDouble(x);
-}
-
-#endif
-
 #ifndef FAST_BIGREAL_CONVERSION
 
 #define getSignificandDouble80(x) ((*((unsigned __int64*)(&(x)))) & 0xffffffffffffffffui64)

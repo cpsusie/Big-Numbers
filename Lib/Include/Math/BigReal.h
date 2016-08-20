@@ -1112,7 +1112,16 @@ BigInt operator*(const BigInt &x, const BigInt &y);
 #define BIGREAL_1     ConstDigitPool::getOne()
 #define BIGREAL_2     ConstDigitPool::getTwo()
 #define BIGREAL_HALF  ConstDigitPool::get05()
-Real getReal(const BigReal &x);
+
+#ifdef LONGDOUBLE
+inline Real getReal(const BigReal &x) {
+  return getDouble80(x);
+}
+#else
+inline Real getReal(const BigReal &x) {
+  return getDouble(x);
+}
+#endif
 
 class ConstBigInt : public BigInt {
 private:
@@ -1524,9 +1533,5 @@ BigReal oldFraction(const BigReal &x); // Old version sign(x) * (|x| - floor(|x|
 BigReal modulusOperator64( const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 BigReal modulusOperator128(const BigReal &x, const BigReal &y); // old operator%(const BigReal &x, const BigReal &y);
 
-#ifdef LONGDOUBLE
-#pragma comment(lib, LIB_VERSION "LDBigReal.lib")
-#else
 #pragma comment(lib,  LIB_VERSION "BigReal.lib")
-#endif
 

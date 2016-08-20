@@ -18,8 +18,8 @@ private:
 
   void checkIndex(size_t index) const {
     if(index >= m_dim) {
-      throwVectorException(_T("Index %s out of range. Dimension=%s")
-                          ,format1000(index).cstr(), format1000(m_dim).cstr());
+      throwVectorException(_T("Index %s out of range. %s")
+                          ,format1000(index).cstr(), getDimensionString().cstr());
     }
   }
 
@@ -52,15 +52,15 @@ protected:
   }
 
 public:
-
   explicit VectorTemplate(size_t dim = 1) {
     init(dim, true);
   }
 
   VectorTemplate(const VectorTemplate<T> &src) {
     init(src.m_dim, false);
-    for(size_t i = 0; i < m_dim; i++)
+    for(size_t i = 0; i < m_dim; i++) {
       m_e[i] = src.m_e[i];
+    }
   }
 
   VectorTemplate(const Array<T> &src) {
@@ -300,5 +300,4 @@ public:
   String getDimensionString() const {
     return format(_T("Dimension=%s"), format1000(m_dim).cstr());
   }
-
 };
