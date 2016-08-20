@@ -61,7 +61,7 @@ void MultiExtremaFinder::waitUntilAllThreadsTerminated() {
   int runningCount;
   for(;;) {
     runningCount = 0;
-    for(int i = 0; i < m_threads.size(); i++) {
+    for(size_t i = 0; i < m_threads.size(); i++) {
       if(m_threads[i]->stillActive()) {
         runningCount++;
       }
@@ -85,7 +85,7 @@ void MultiExtremaFinder::execute() {
     thr->start();
   }
   try {
-    for(int count = 0; count < m_allJobs.size(); count++) {
+    for(size_t count = 0; count < m_allJobs.size(); count++) {
       ExtremumResult result(&DEFAULT_DIGITPOOL);
       result = resultQueue.get();
       m_remes.setExtremum(result.m_index, result);

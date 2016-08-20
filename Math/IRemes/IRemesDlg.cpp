@@ -28,17 +28,20 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T("")) {
-	m_K             = 1;
-	m_M             = 1;
-	m_xFrom         = 0.0;
-	m_xTo           = 1.0;
-	m_relativeError = FALSE;
-	m_digits        = 15;
-  m_hIcon         = theApp.LoadIcon(IDR_MAINFRAME);
-  m_remes         = NULL;
-  m_debugThread   = NULL;
-  m_dbgMenuState  = DBGMENU_EMPTY;
+CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T("")), m_maxSearchEIterations(0)
+{
+  m_K                    = 1;
+  m_M                    = 1;
+  m_xFrom                = 0.0;
+  m_xTo                  = 1.0;
+  m_digits               = 15;
+  m_maxSearchEIterations = 700;
+  m_relativeError        = FALSE;
+  m_lastErrorPlotKey     = -1;
+  m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
+  m_remes                = NULL;
+  m_debugThread          = NULL;
+  m_dbgMenuState         = DBGMENU_EMPTY;
 }
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
@@ -53,29 +56,33 @@ void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
   DDX_Text(pDX, IDC_EDITDIGITS, m_digits);
   DDV_MinMaxUInt(pDX, m_digits, 2, 200);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
+  DDX_Text(pDX, IDC_EDITMAXSEARCHEITERATIONS, m_maxSearchEIterations);
+  DDV_MinMaxUInt(pDX, m_maxSearchEIterations, 2, 20000);
 }
 
 BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_WM_SYSCOMMAND()
   ON_WM_QUERYDRAGICON()
   ON_WM_PAINT()
-	ON_WM_SIZE()
+  ON_WM_SIZE()
   ON_WM_CLOSE()
-	ON_COMMAND(ID_FILE_EXIT                    , &CIRemesDlg::OnFileExit                  )
+  ON_COMMAND(ID_FILE_EXIT                    , &CIRemesDlg::OnFileExit                  )
   ON_COMMAND(ID_VIEW_GRID                    , &CIRemesDlg::OnViewGrid                  )
-	ON_COMMAND(ID_RUN_GO                       , &CIRemesDlg::OnRunGo                     )
-	ON_COMMAND(ID_RUN_DEBUG                    , &CIRemesDlg::OnRunDebug                  )
+  ON_COMMAND(ID_VIEW_SHOW_SPLINE             , &CIRemesDlg::OnViewShowSpline            )
+  ON_COMMAND(ID_RUN_GO                       , &CIRemesDlg::OnRunGo                     )
+  ON_COMMAND(ID_RUN_DEBUG                    , &CIRemesDlg::OnRunDebug                  )
   ON_COMMAND(ID_RUN_CONTINUE                 , &CIRemesDlg::OnRunContinue               )
   ON_COMMAND(ID_RUN_RESTART                  , &CIRemesDlg::OnRunRestart                )
-	ON_COMMAND(ID_RUN_STOP                     , &CIRemesDlg::OnRunStop                   )
+  ON_COMMAND(ID_RUN_STOP                     , &CIRemesDlg::OnRunStop                   )
   ON_COMMAND(ID_RUN_BREAK                    , &CIRemesDlg::OnRunBreak                  )
-	ON_COMMAND(ID_RUN_SINGLEITERATION          , &CIRemesDlg::OnRunSingleIteration        )
-	ON_COMMAND(ID_RUN_SINGLESUBITERATION       , &CIRemesDlg::OnRunSingleSubIteration     )
-  ON_COMMAND(ID_GOTO_INTERVAL                , &CIRemesDlg::OnGotoInterval              )
+  ON_COMMAND(ID_RUN_SINGLEITERATION          , &CIRemesDlg::OnRunSingleIteration        )
+  ON_COMMAND(ID_RUN_SINGLESUBITERATION       , &CIRemesDlg::OnRunSingleSubIteration     )
+  ON_COMMAND(ID_GOTO_DOMAIN                  , &CIRemesDlg::OnGotoDomain                )
   ON_COMMAND(ID_GOTO_M                       , &CIRemesDlg::OnGotoM                     )
   ON_COMMAND(ID_GOTO_K                       , &CIRemesDlg::OnGotoK                     )
   ON_COMMAND(ID_GOTO_DIGITS                  , &CIRemesDlg::OnGotoDigits                )
-	ON_COMMAND(ID_HELP_ABOUTIREMES             , &CIRemesDlg::OnHelpAboutIRemes           )
+  ON_COMMAND(ID_GOTO_MAXSEARCHEITERATIONS    , &CIRemesDlg::OnGotoMaxSearchEIterations  )
+  ON_COMMAND(ID_HELP_ABOUTIREMES             , &CIRemesDlg::OnHelpAboutIRemes           )
   ON_MESSAGE(ID_MSG_THR_RUNSTATE_CHANGED     , &CIRemesDlg::OnMsgThrRunStateChanged     )
   ON_MESSAGE(ID_MSG_THR_TERMINATED_CHANGED   , &CIRemesDlg::OnMsgThrTerminatedChanged   )
   ON_MESSAGE(ID_MSG_THR_ERROR_CHANGED        , &CIRemesDlg::OnMsgThrErrorChanged        )
@@ -84,6 +91,7 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_MESSAGE(ID_MSG_SEARCHEITERATION_CHANGED , &CIRemesDlg::OnMsgSearchEIterationChanged)
   ON_MESSAGE(ID_MSG_EXTREMACOUNT_CHANGED     , &CIRemesDlg::OnMsgExtremaCountChanged    )
   ON_MESSAGE(ID_MSG_MAXERROR_CHANGED         , &CIRemesDlg::OnMsgMaxErrorChanged        )
+  ON_MESSAGE(IS_MSG_UPDATEINTERPOLATION      , &CIRemesDlg::OnMsgUpdateInterpolation    )
   ON_MESSAGE(ID_MSG_WARNING_CHANGED          , &CIRemesDlg::OnMsgWarningChanged         )
 END_MESSAGE_MAP()
 
@@ -121,15 +129,24 @@ BOOL CIRemesDlg::OnInitDialog() {
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
-  m_coorSystem.substituteControl(this, IDC_FRAME_COORDINATESYSTEM);
-  m_coorSystem.setRetainAspectRatio(false);
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), false);
+  m_coorSystemError.substituteControl(   this, IDC_FRAME_COORSYSTEM_ERROR);
+  m_coorSystemError.setRetainAspectRatio(false);
+  m_coorSystemError.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), false);
+  m_coorSystemError.setAutoScale(true, false);
+
+  m_coorSystemSpline.substituteControl(   this, IDC_FRAME_COORSYSTEM_SPLINE);
+  m_coorSystemSpline.setRetainAspectRatio(false);
+  m_coorSystemSpline.setDataRange(DataRange(0, 1, -1, 1), false);
+  m_coorSystemSpline.setAutoScale(true, false);
+
+  setCoorSystemSplineVisible(isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_STATICTEMPORARY       ,                                                     PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTCOEF              ,                                                     PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_LISTEXTRMA            ,                 RELATIVE_RIGHT |                    PCT_RELATIVE_BOTTOM );
-  m_layoutManager.addControl(IDC_FRAME_COORDINATESYSTEM, RELATIVE_WIDTH                 | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
+  m_layoutManager.addControl(IDC_STATICTEMPORARY        ,                                                         PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_LISTCOEF               ,                                                         PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_LISTEXTRMA             ,                     RELATIVE_RIGHT |                    PCT_RELATIVE_BOTTOM );
+  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_ERROR , PCT_RELATIVE_RIGHT                 | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
+  m_layoutManager.addControl(IDC_FRAME_COORSYSTEM_SPLINE, PCT_RELATIVE_LEFT | RELATIVE_RIGHT | PCT_RELATIVE_TOP | RELATIVE_BOTTOM     );
 
   gotoEditBox(this, IDC_EDITNAME);
   return TRUE;
@@ -156,6 +173,22 @@ void CIRemesDlg::OnPaint() {
   }
 }
 
+void CIRemesDlg::setCoorSystemSplineVisible(bool visible) {
+  CRect errorRect  = getWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR);
+  if (visible) {
+    CRect splineRect = getWindowRect(this, IDC_FRAME_COORSYSTEM_SPLINE);
+    errorRect.right  = splineRect.left-1;
+    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
+    GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_SHOW);
+  } else {
+    GetDlgItem(IDC_FRAME_COORSYSTEM_SPLINE)->ShowWindow(SW_HIDE);
+    const CRect cr = getClientRect(this);
+    errorRect.right = cr.right;
+    setWindowRect(this, IDC_FRAME_COORSYSTEM_ERROR, errorRect);
+  }
+}
+
+
 void CIRemesDlg::showThreadState() {
   const TCHAR *str;
   bool resetRemesState = false;
@@ -171,8 +204,8 @@ void CIRemesDlg::showThreadState() {
   setWindowText(this, IDC_STATICTHREADSTATE, str);
 }
 
-void CIRemesDlg::showState(RemesState state) {
-  setWindowText(this, IDC_STATICSTATE, Remes::getStateName(state));
+void CIRemesDlg::showState(const String &str) {
+  setWindowText(this, IDC_STATICSTATE, str);
 }
 
 void CIRemesDlg::showWarning(const String &str) {
@@ -214,48 +247,8 @@ void CIRemesDlg::showExtremaStringArray() {
   }
 }
 
-class ErrorPlot : public CoordinateSystemObject {
-private:
-  const Point2DArray m_pa;
-  const int          m_key;
-  double             m_minY, m_maxY;
-public:
-  ErrorPlot(const Point2DArray &pa, int key);
-  inline const double &getMinY() const {
-    return m_minY;
-  }
-  inline const double &getMaxY() const {
-    return m_maxY;
-  }
-  inline int getKey() const {
-    return m_key;
-  }
-  void paint(Viewport2D &vp);
-};
-
-ErrorPlot::ErrorPlot(const Point2DArray &pa, int key) : m_pa(pa), m_key(key) {
-  const Rectangle2D r = m_pa.getBoundingBox();
-  m_minY = r.getMinY();
-  m_maxY = r.getMaxY();
-}
-
-void ErrorPlot::paint(Viewport2D &vp) {
-  const size_t n = m_pa.size();
-  if(n > 1) {
-    vp.MoveTo(m_pa[0]);
-    for(size_t i = 1; i < n; i++) {
-      vp.LineTo(m_pa[i]);
-    }
-  }
-}
-
 void CIRemesDlg::clearErrorPlot() {
-  const int n = m_coorSystem.getObjectCount();
-  for(int i = 0; i < n; i++) {
-    CoordinateSystemObject *obj = m_coorSystem.getObject(i);
-    delete obj;
-  }
-  m_coorSystem.removeAllObjects();
+  m_coorSystemError.deleteAllObjects();
 }
 
 bool CIRemesDlg::createErrorPlot(const Remes &r) {
@@ -265,41 +258,34 @@ bool CIRemesDlg::createErrorPlot(const Remes &r) {
   }
   const int plotKey = r.getCoefVectorIndex();
 
-  if(plotKey == getLastErrorPlotKey()) {
+  if(plotKey == m_lastErrorPlotKey) {
     return false;
   }
 
   clearErrorPlot();
   Point2DArray pa;
   r.getErrorPlot(getErrorPlotXPixelCount(), pa);
-  ErrorPlot *plot = new ErrorPlot(pa, plotKey);
-  m_coorSystem.addObject(plot);
+  m_coorSystemError.addPointObject(pa);
+  m_lastErrorPlotKey = plotKey;
   return true;
 }
 
 void CIRemesDlg::showErrorPlot() {
-  if (m_coorSystem.getObjectCount() < 1) {
+  if (m_coorSystemError.getObjectCount() == 0) {
     return;
   }
-  const ErrorPlot *plot = (ErrorPlot*)m_coorSystem.getObject(0);
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, 1.05*plot->getMinY(), 1.05*plot->getMaxY()), false);
-  m_coorSystem.Invalidate(FALSE);
-}
-
-int CIRemesDlg::getLastErrorPlotKey() {
-  const int n = m_coorSystem.getObjectCount();
-  if(n == 0) return -1;
-  return ((ErrorPlot*)m_coorSystem.getObject(0))->getKey();
+  m_coorSystemError.Invalidate(FALSE);
 }
 
 void CIRemesDlg::updateErrorPlotXRange() {
-  const DataRange dr = m_coorSystem.getDataRange();
-  m_coorSystem.setDataRange(DataRange(m_xFrom, m_xTo, dr.getMinY(), dr.getMaxY()), false);
+  const DataRange dr = m_coorSystemError.getDataRange();
+  m_coorSystemError.setDataRange(DataRange(m_xFrom, m_xTo, dr.getMinY(), dr.getMaxY()), false);
+  m_lastErrorPlotKey = -1;
 }
 
 
 int CIRemesDlg::getErrorPlotXPixelCount() const {
-  const IntervalTransformation &tr = m_coorSystem.getTransformation().getXTransformation();
+  const IntervalTransformation &tr = m_coorSystemError.getTransformation().getXTransformation();
   const DoubleInterval xToRange = tr.forwardTransform(getXRange());
   const int n = (int)xToRange.getLength()+1;
   return (n <= 0) ? 1 : n;
@@ -337,8 +323,9 @@ void CIRemesDlg::ajourDialogItems() {
    ,IDC_EDITK
    ,IDC_EDITXFROM
    ,IDC_EDITXTO
-   ,IDC_CHECKRELATIVEERROR
    ,IDC_EDITDIGITS
+   ,IDC_EDITMAXSEARCHEITERATIONS
+   ,IDC_CHECKRELATIVEERROR
   };
 
   showThreadState();
@@ -346,48 +333,16 @@ void CIRemesDlg::ajourDialogItems() {
     if(m_debugThread->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
       setDebugMenuState(DBGMENU_RUNNING);
-/*
-      enableMenuItem(this, ID_RUN_GO                , false);
-	    enableMenuItem(this, ID_RUN_DEBUG             , false);
-      enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
-      enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
-      enableMenuItem(this, ID_RUN_BREAK             , true );
-      enableMenuItem(this, ID_RUN_STOP              , true );
-*/
     } else if(m_debugThread->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
       setDebugMenuState(DBGMENU_IDLE);
-/*
-      enableMenuItem(this, ID_RUN_GO                , true );
-	    enableMenuItem(this, ID_RUN_DEBUG             , true );
-      enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
-      enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
-      enableMenuItem(this, ID_RUN_BREAK             , false);
-      enableMenuItem(this, ID_RUN_STOP              , false);
-*/
     } else { // paused
       ENABLEFIELDLIST(dialogFields, false);
       setDebugMenuState(DBGMENU_PAUSED);
-/*
-	    enableMenuItem(this, ID_RUN_GO                , true );
-	    enableMenuItem(this, ID_RUN_DEBUG             , true );
-      enableMenuItem(this, ID_RUN_SINGLEITERATION   , true );
-      enableMenuItem(this, ID_RUN_SINGLESUBITERATION, true );
-      enableMenuItem(this, ID_RUN_BREAK             , false);
-      enableMenuItem(this, ID_RUN_STOP              , true );
-*/
     }
   } else { // no debug thread
     ENABLEFIELDLIST(dialogFields, true);
     setDebugMenuState(DBGMENU_IDLE);
-/*
-	  enableMenuItem(this, ID_RUN_GO                , true );
-	  enableMenuItem(this, ID_RUN_DEBUG             , true );
-    enableMenuItem(this, ID_RUN_SINGLEITERATION   , false);
-    enableMenuItem(this, ID_RUN_SINGLESUBITERATION, false);
-    enableMenuItem(this, ID_RUN_BREAK             , false);
-    enableMenuItem(this, ID_RUN_STOP              , false);
-*/
   }
 }
 
@@ -488,8 +443,14 @@ void CIRemesDlg::OnFileExit() {
 }
 
 void CIRemesDlg::OnViewGrid() {
-  m_coorSystem.setGrid(toggleMenuItem(this, ID_VIEW_GRID));
+  const bool showGrid = toggleMenuItem(this, ID_VIEW_GRID);
+  m_coorSystemError.setGrid(showGrid);
+  m_coorSystemSpline.setGrid(showGrid);
   Invalidate(FALSE);
+}
+
+void CIRemesDlg::OnViewShowSpline() {
+  setCoorSystemSplineVisible(toggleMenuItem(this, ID_VIEW_SHOW_SPLINE));
 }
 
 void CIRemesDlg::OnRunGo() {
@@ -537,7 +498,7 @@ void CIRemesDlg::OnRunSingleSubIteration() {
   if(isThreadPaused()) m_debugThread->singleSubStep();
 }
 
-void CIRemesDlg::OnGotoInterval() {
+void CIRemesDlg::OnGotoDomain() {
   gotoEditBox(this, IDC_EDITXFROM);
 }
 
@@ -549,6 +510,9 @@ void CIRemesDlg::OnGotoK() {
 }
 void CIRemesDlg::OnGotoDigits() {
   gotoEditBox(this, IDC_EDITDIGITS);
+}
+void CIRemesDlg::OnGotoMaxSearchEIterations() {
+  gotoEditBox(this, IDC_EDITMAXSEARCHEITERATIONS);
 }
 
 void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
@@ -581,26 +545,26 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
 void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue) {
   switch(id) {
   case REMES_STATE        : // *RemesState
-    { const RemesState oldState = *(RemesState*)oldValue;
-      const RemesState newState = *(RemesState*)newValue;
-      PostMessage(ID_MSG_STATE_CHANGED, (WPARAM)oldState, (LPARAM)newState);
+    { m_gate.wait();
+      const RemesState oldState = *(RemesState*)oldValue;
+      m_stateString = r.getTotalStateString();
+      PostMessage(ID_MSG_STATE_CHANGED, 0, 0);
       if(oldState == REMES_SEARCH_COEFFICIENTS) {
-        m_gate.wait();
         m_coefWinData = r;
-        m_gate.signal();
         PostMessage(ID_MSG_COEFFICIENTS_CHANGED, 0, 0);
       }
+      m_gate.signal();
     }
     break;
 
-  case SEARCHEITERATION: // *int
+  case SEARCHEITERATION   : // *int
     m_gate.wait();
     m_searchEString = r.getSearchEString();
     m_gate.signal();
     PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, 0);
     break;
 
-   case EXTREMUMCOUNT      : // *int
+   case EXTREMACOUNT      : // *int
     m_gate.wait();
     m_extrStrArray = r.getExtremaStringArray();
     m_gate.signal();
@@ -612,6 +576,20 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   case E                  : // *BigReal
   case COEFFICIENTVECTOR  : // *BigRealVector
   case MMQUOT             : // *BigReal
+    break;
+  case INTERPOLATIONSPLINE: // *Function
+    if (isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE)) {
+      UINT                 dim = *(UINT*)oldValue;
+      Function            &f   = *(Function*)newValue;
+      const DoubleInterval xRange(0, dim-1);
+      CClientDC            dc(&m_coorSystemSpline);
+      
+      m_gate.wait();
+      m_coorSystemSpline.deleteAllObjects();
+      m_coorSystemSpline.addFunctionObject(dc, f, &xRange);
+      m_gate.signal();
+      PostMessage(IS_MSG_UPDATEINTERPOLATION, 0, 0);
+    }
     break;
   case MAXERROR           : // *BigReal
     if(r.hasErrorPlot()) {
@@ -657,8 +635,10 @@ LRESULT CIRemesDlg::OnMsgThrErrorChanged(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
-  RemesState newState = (RemesState)lp;
-  showState(newState);
+  m_gate.wait();
+  const String str = m_stateString;
+  m_gate.signal();
+  showState(str);
   return 0;
 }
 
@@ -680,6 +660,16 @@ LRESULT CIRemesDlg::OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp) {
 LRESULT CIRemesDlg::OnMsgExtremaCountChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
   showExtremaStringArray();
+  m_gate.signal();
+  return 0;
+}
+
+LRESULT CIRemesDlg::OnMsgUpdateInterpolation(WPARAM wp, LPARAM lp) {
+  m_gate.wait();
+  if (m_coorSystemSpline.getObjectCount() == 0) {
+    return 0;
+  }
+  m_coorSystemSpline.Invalidate(FALSE);
   m_gate.signal();
   return 0;
 }
@@ -729,8 +719,9 @@ void CIRemesDlg::startThread(bool singleStep) {
 void CIRemesDlg::createThread() {
   m_targetFunction.setName((LPCTSTR)m_name);
   m_targetFunction.setDigits(m_digits);
-  m_targetFunction.setInterval(m_xFrom, m_xTo);
+  m_targetFunction.setDomain(m_xFrom, m_xTo);
   m_remes       = new Remes(m_targetFunction, m_relativeError?true:false);
+  m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
   m_debugThread = new DebugThread(m_M, m_K, *m_remes);
   m_debugThread->addPropertyChangeListener(this);
 }
@@ -757,9 +748,8 @@ void CIRemesDlg::showError(const Exception &e) {
   MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING | MB_OK);
 }
 
-void DynamicTargetFunction::setInterval(double from, double to) {
-  m_interval.setFrom(from);
-  m_interval.setTo(  to  );
+void DynamicTargetFunction::setDomain(double from, double to) {
+  m_domain.setFrom(from).setTo(to);
 }
 
 BigReal DynamicTargetFunction::operator()(const BigReal &x) {

@@ -5,9 +5,9 @@
 
 class DynamicTargetFunction : public RemesTargetFunction {
 private:
-  String                  m_name;
-  NumberInterval<BigReal> m_interval;
-  int                     m_digits;
+  String          m_name;
+  BigRealInterval m_domain;
+  UINT            m_digits;
 public:
   void setName(const String &name) {
     m_name = name;
@@ -15,14 +15,14 @@ public:
   String getName() const {
     return m_name;
   }
-  void setInterval(double from, double to);
-  const NumberInterval<BigReal> &getInterval() const {
-    return m_interval;
+  void setDomain(double from, double to);
+  const BigRealInterval &getDomain() const {
+    return m_domain;
   }
-  void setDigits(int digits) {
+  void setDigits(UINT digits) {
     m_digits = digits;
   }
-  int getDigits() const {
+  UINT getDigits() const {
     return m_digits;
   }
   BigReal operator()(const BigReal &x);
@@ -58,16 +58,18 @@ private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
   SimpleLayoutManager     m_layoutManager;
+  DebugMenuState          m_dbgMenuState;
   Semaphore               m_gate;
-  CCoordinateSystem       m_coorSystem;
+  CCoordinateSystem       m_coorSystemError, m_coorSystemSpline;
   DynamicTargetFunction   m_targetFunction;
   Remes                  *m_remes;
   DebugThread            *m_debugThread;
+  int                     m_lastErrorPlotKey;
   CoefWindowData          m_coefWinData;
   ExtremaStringArray      m_extrStrArray, m_extrStrArrayOld;
   String                  m_searchEString;
+  String                  m_stateString;
   String                  m_warning, m_error;
-  DebugMenuState          m_dbgMenuState;
 
   void startThread(bool singleStep);
   void createThread();
@@ -90,7 +92,7 @@ private:
   void setDebugMenuState(DebugMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
   void showThreadState();
-  void showState(RemesState state);
+  void showState(const String &str);
   void showWarning(const String &str);
   void showCoefWindowData(const CoefWindowData &data);
   void showExtremaStringArray();
@@ -98,9 +100,9 @@ private:
   void clearErrorPlot();
   bool createErrorPlot(const Remes &r);
   void showErrorPlot();
+  void setCoorSystemSplineVisible(bool visible);
   int  getErrorPlotXPixelCount() const;
   void updateErrorPlotXRange();
-  int  getLastErrorPlotKey();
   inline DoubleInterval getXRange() const {
     return DoubleInterval(m_xFrom, m_xTo);
   }
@@ -127,7 +129,8 @@ protected:
   afx_msg void    OnClose();
   afx_msg void    OnFileExit();
   afx_msg void    OnViewGrid();
-	afx_msg void    OnRunGo();
+  afx_msg void    OnViewShowSpline();
+  afx_msg void    OnRunGo();
 	afx_msg void    OnRunDebug();
 	afx_msg void    OnRunContinue();
 	afx_msg void    OnRunRestart();
@@ -135,10 +138,11 @@ protected:
   afx_msg void    OnRunBreak();
 	afx_msg void    OnRunSingleIteration();
 	afx_msg void    OnRunSingleSubIteration();
-	afx_msg void    OnGotoInterval();
+	afx_msg void    OnGotoDomain();
 	afx_msg void    OnGotoM();
 	afx_msg void    OnGotoK();
 	afx_msg void    OnGotoDigits();
+  afx_msg void    OnGotoMaxSearchEIterations();
   afx_msg void    OnHelpAboutIRemes();
   afx_msg LRESULT OnMsgThrRunStateChanged(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgThrTerminatedChanged(   WPARAM wp, LPARAM lp);
@@ -148,6 +152,7 @@ protected:
   afx_msg LRESULT OnMsgSearchEIterationChanged(WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgExtremaCountChanged(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgMaxErrorChanged(        WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgUpdateInterpolation(    WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgWarningChanged(         WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 
@@ -157,6 +162,7 @@ private:
 	UINT	  m_M;
 	double	m_xFrom;
 	double	m_xTo;
-	BOOL	  m_relativeError;
 	UINT	  m_digits;
+  UINT    m_maxSearchEIterations;
+	BOOL	  m_relativeError;
 };

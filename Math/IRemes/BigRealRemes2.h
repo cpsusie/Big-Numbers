@@ -7,11 +7,20 @@
 
 #define MULTITHREADEDEXTREMAFINDER
 
+#define DEFAULT_FLAGS ios::left | ios::showpos | ios::scientific
+
+class FormatBigReal : public String {
+public:
+  FormatBigReal(const BigReal &x, int prec = 20, int width = 30, int flags = DEFAULT_FLAGS          ) : String(::toString(x,prec,width,flags)) {}
+  FormatBigReal(const Real    &x,                int width = 18, int flags = DEFAULT_FLAGS          ) : String(::toString(x,16  ,width,flags)) {}
+  FormatBigReal(int            x,                int width =  2, int flags = ios::right | ios::fixed) : String(::toString(x,0   ,width,flags)) {}
+};
+
 class ExtremaKey {
 private:
-  int m_M,m_K;
+  UINT m_M, m_K;
 public:
-  ExtremaKey(const int M, const int K) : m_M(M), m_K(K) {
+  ExtremaKey(const UINT M, const UINT K) : m_M(M), m_K(K) {
   }
 
   ExtremaKey() : m_M(0), m_K(0) {
@@ -64,22 +73,25 @@ public:
   void load(const String &name);
 };
 
-class RemesTargetFunction : public FunctionTemplate<BigReal,BigReal> {
+typedef NumberInterval<BigReal> BigRealInterval;
+
+class RemesTargetFunction : public FunctionTemplate<BigReal, BigReal> {
 public:
   virtual String getName() const = 0;
-  virtual const NumberInterval<BigReal> &getInterval() const = 0;
-  virtual int getDigits() const = 0;
+  virtual const BigRealInterval &getDomain() const = 0;
+  virtual UINT getDigits() const = 0;
 };
 
 typedef enum {
   REMES_STATE          // *RemesState
  ,MAINITERATION        // *int
  ,SEARCHEITERATION     // *int
- ,EXTREMUMCOUNT        // *int
+ ,EXTREMACOUNT         // *int
  ,COEFFICIENTVECTOR    // *BigRealVector                
  ,MMQUOT               // *BigReal
  ,Q                    // *BigReal
  ,E                    // *BigReal
+ ,INTERPOLATIONSPLINE  // *UINT,  *Function (dimension, InterpolationFunction)
  ,MAXERROR             // *BigReal
  ,WARNING              // *String
 } RemesProperty;
@@ -132,55 +144,57 @@ class Remes : public PropertyContainer {
 private:
   static const TCHAR          *s_stateName[];
   static ExtremaHashMap        s_extremaMap;
-  const BigReal                m_left, m_right;
-  RemesTargetFunction         &m_targetFunction;   // Function to be approximated
+  static const ConstBigReal    s_defaultMMQuotEps;
+  const BigRealInterval        m_domain;
+  RemesTargetFunction         &m_targetFunction;         // Function to be approximated
   const bool                   m_useRelativeError;
-  const unsigned int           m_digits;
-  int                          m_M, m_K, m_N;            // m_N = m_M + m_K
+  UINT                         m_M, m_K, m_N;            // m_N = m_M + m_K
+  const UINT                   m_digits;
+  RemesState                   m_state;
   BigRealVector                m_coefficientVector;      // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
   bool                         m_hasCoefficients;        // set to true the first time m_coefficient vector is calculated
-  int                          m_coefVectorIndex;
+  bool                         m_notifyExtremaCountChanged;
   BigReal                      m_E, m_nextE;
   BigReal                      m_Q, m_QEpsilon;
-  int                          m_mainIteration   , m_searchEIteration;
-  int                          m_minExtremumIndex, m_maxExtremumIndex, m_extremaCount;
-  mutable Semaphore            m_extremaGate;
-  BigRealVector                m_extrema;          // Extremum[0..N+1].                                              Dim=N+2
+  int                          m_mainIteration   , m_searchEMaxIterations, m_searchEIteration, m_extremaCount;
+  int                          m_minExtremumIndex, m_maxExtremumIndex, m_coefVectorIndex;
+  BigRealVector                m_extrema;                // Extremum[0..N+1].                                              Dim=N+2
   StringArray                  m_extremaStringArray;
-  BigRealVector                m_functionValue;    // Values targetFunction(x) for x = m_extr[0..N+1].               Dim=N+2
-  BigRealVector                m_errorValue;       // Values of errorFunction(x) for x = m_extr[0..N+1].             Dim=N+2
+  BigRealVector                m_functionValue;          // Values targetFunction(x) for x = m_extr[0..N+1].               Dim=N+2
+  BigRealVector                m_errorValue;             // Values of errorFunction(x) for x = m_extr[0..N+1].             Dim=N+2
   BigReal                      m_maxError;
-  BigReal                      m_MMQuotEps;        // Default value is 1e-22. Stop criterium. Iteration stops when 1-|minExtr/maxExtr| < m_mmQuotEps
+  BigReal                      m_MMQuotEps;              // Default value is 1e-22. Stop criterium. Iteration stops when 1-|minExtr/maxExtr| < m_mmQuotEps
   BigReal                      m_MMQuot, m_lastMMQuot; 
   bool                         m_solveStateInterpolationDone;
   bool                         m_solveStateHighPrecision;
   bool                         m_solveStateDecrM;
-  RemesState                   m_state;
   String                       m_warning;
 
+  void                 checkInterval();
+  void                 checkExtremaSigns(const TCHAR *method) const ;
   String               getMapFileName() const;
-  void                 initSolveState(const int M, const int K);
+  void                 initSolveState(const UINT M, const UINT K);
   void                 nextSolveState();
   bool                 hasNextSolveState() const;
   void                 saveExtremaToMap(const BigReal &E, const BigReal &mmQuot);
-  BigRealVector        getDefaultInitialExtrema(            const int M, const int K);
-  BigRealVector        findInitialExtremaByInterpolation(   const int M, const int K);
-  bool                 hasFastInterpolationOfExtrema(       const int M, const int K);
-  BigRealVector        getFastInitialExtremaByInterpolation(const int M, const int K);
-  bool                 hasSavedExtrema(                     const int M, const int K);
-  const ExtremaVector &getBestSavedExtrema(                 const int M, const int K);
+  BigRealVector        getDefaultInitialExtrema(            const UINT M, const UINT K);
+  BigRealVector        findInitialExtremaByInterpolation(   const UINT M, const UINT K);
+  bool                 hasFastInterpolationOfExtrema(       const UINT M, const UINT K);
+  BigRealVector        getFastInitialExtremaByInterpolation(const UINT M, const UINT K);
+  bool                 hasSavedExtrema(                     const UINT M, const UINT K);
+  const ExtremaVector &getBestSavedExtrema(                 const UINT M, const UINT K);
   BigRealVector        getInterpolatedExtrema(const BigRealVector &defaultExtrema, const BigRealVector &defaultSubExtrema, const BigRealVector &finalSubExtrema) const;
 
-  void                 initCoefficientVector(int dimension);
+  void                 initCoefficientVector(size_t dimension);
   void                 setExtrema(      const BigRealVector &extrema);
   void                 setExtrema(      const ExtremaVector &extrema);
   void                 findCoefficients();
   BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
   void                 findExtrema();
-  BigRealVector        findFinalExtrema(const int M, const int K, const bool highPrecision);
-  int                  setExtremum(     const int index, const BigReal &x); // return sign of errorfunction at extremum
-  String               getExtremumString(int index) const;
-  void                 resetExtremumCount();
+  BigRealVector        findFinalExtrema(const UINT M, const UINT K, const bool highPrecision);
+  int                  setExtremum(     const UINT index, const BigReal &x); // return sign of errorfunction at extremum
+  String               getExtremumString(UINT index) const;
+  void                 resetExtremaCount();
   void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
   BigReal              approximation(   const BigReal &x) const; // Pm(x) / Pk(x)
   BigReal              errorFunction(   const BigReal &x) const; // m_useRelativeError ? (1 - sFunction(x) * approximation(x)) : (m_targetFunction(x)-approximation(x))
@@ -192,17 +206,22 @@ private:
   friend class MultiExtremaFinder;
 #endif
 public:
-  Remes(RemesTargetFunction &targetFunction
-       ,const bool useRelativeError);
+  Remes(RemesTargetFunction &targetFunction, const bool useRelativeError);
   Remes(const Remes &src);
 
-  void solve(const int M, const int K);
+  void solve(const UINT M, const UINT K);
 
-  inline int getM() const {
+  inline UINT getM() const {
     return m_M;
   }
-  inline int getK() const {
+  inline UINT getK() const {
     return m_K;
+  }
+  UINT getSearchEMaxIterations() const {
+    return m_searchEMaxIterations;
+  }
+  void setSearchEMaxIterations(UINT maxiterations) {
+    m_searchEMaxIterations = maxiterations;
   }
   void loadExtremaFromFile();
   void saveExtremaToFile();
@@ -236,7 +255,7 @@ public:
   inline bool  hasErrorPlot() const {
     return m_hasCoefficients;
   }
-  void        getErrorPlot(int n, Point2DArray &pa) const;
+  void        getErrorPlot(UINT n, Point2DArray &pa) const;
 
   String      getCFunctionString(bool useDouble80) const;
   String      getJavaFunctionString() const;
@@ -257,9 +276,9 @@ public:
   static inline const TCHAR *getStateName(RemesState state) {
     return s_stateName[state];
   }
-
   inline const TCHAR *getStateName() const {
     return getStateName(m_state);
   }
-  
+
+  String getTotalStateString() const;
 };

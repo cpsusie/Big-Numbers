@@ -283,6 +283,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BigRealRemes2.cpp" />
+    <ClCompile Include="BigRealRemesInitialExtrema.cpp" />
+    <ClCompile Include="BigRealRemesStrings.cpp" />
     <ClCompile Include="DebugThread.cpp" />
     <ClCompile Include="ExtremaMap.cpp" />
     <ClCompile Include="IRemes.cpp" />

@@ -69,7 +69,7 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
       }
       break;
     case SEARCHEITERATION     :
-    case EXTREMUMCOUNT        :
+    case EXTREMACOUNT         :
     case MAXERROR             :
     case WARNING              :
       if(m_breakPoints.contains(BREAKSUBSTEP)) {
