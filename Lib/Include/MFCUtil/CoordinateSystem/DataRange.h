@@ -9,9 +9,10 @@ private:
   DoubleInterval m_xInterval, m_yInterval;
 public:
   void init(const Point2D &p);
+  void init(const Point2DArray &pa);
   void update(const Point2D &p);
   void update(const DataRange &dataRange);
-  
+  void update(const Point2DArray &pa);
   DataRange();
   DataRange(const Rectangle2D &r);
   DataRange(const DoubleInterval &xInterval, const DoubleInterval &yInterval);

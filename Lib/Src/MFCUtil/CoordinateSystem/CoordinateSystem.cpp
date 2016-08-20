@@ -4,7 +4,6 @@
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -21,6 +20,7 @@ CCoordinateSystem::CCoordinateSystem() {
   m_yAxisType         = AXIS_LINEAR;
   m_backgroundColor   = WHITE;
   m_axisColor         = BLACK;
+  m_autoScale         = m_autoSpace = true;
 }
 
 CCoordinateSystem::~CCoordinateSystem() {
@@ -71,10 +71,17 @@ void CCoordinateSystem::removeObject(CoordinateSystemObject *object) {
   }
 }
 
+void CCoordinateSystem::deleteAllObjects() { // remove AND delete all objects
+  for(size_t i = 0; i < m_objectArray.size(); i++) {
+    delete m_objectArray[i];
+  }
+  m_objectArray.clear();
+}
+
 int CCoordinateSystem::findObject(const CoordinateSystemObject *object) const {
-  for(int i = 0; i < (int)m_objectArray.size(); i++) {
+  for(size_t i = 0; i < m_objectArray.size(); i++) {
     if(m_objectArray[i] == object) {
-      return i;
+      return (int)i;
     }
   }
   return -1;
@@ -86,6 +93,9 @@ void CCoordinateSystem::OnPaint() {
 
 void CCoordinateSystem::paint(CDC &dc) {
   m_vp.setToRectangle(Rectangle2DR::makeBottomUpRectangle(getClientRect(this)));
+  if (m_autoScale && m_objectArray.size() > 0) {
+    setDataRange(findSmallestDataRange(), m_autoSpace);
+  }
   m_vp.setDC(&dc);
   m_vp.setClipping(true);
   SystemPainter painter(m_vp, GetFont(), m_backgroundColor, m_axisColor, m_xAxisType, m_yAxisType, hasGrid());
@@ -112,51 +122,87 @@ DoubleInterval CCoordinateSystem::getDefaultInterval(AxisType type) { // static
 }
 
 DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType) { // static 
-  return DataRange(getDefaultInterval(xType),getDefaultInterval(yType));
+  return DataRange(getDefaultInterval(xType), getDefaultInterval(yType));
 }
 
-void CCoordinateSystem::paintCurve(CDC &dc, const Point2DArray &a, COLORREF color) {
-  const int n = (int)a.size();
-  if(n > 1) {
-    Viewport2D *vp = getViewport(dc);
-    CPen pen;
-    pen.CreatePen(PS_SOLID,1,color);
-    CPen *oldPen = vp->SelectObject(&pen);
-    vp->MoveTo(a[0].x, a[0].y);
-    for(int i = 1; i < n; i++) {
-      const Point2D &p = a[i];
-      vp->LineTo(p.x,p.y);
-    }
-    vp->SelectObject(oldPen);
-    vp->setDC(NULL);
+// should only be called when m_objectArray.size() > 0
+DataRange CCoordinateSystem::findSmallestDataRange() const {
+  DataRange result = m_objectArray[0]->getDataRange();
+  for (size_t i = 1; i < m_objectArray.size(); i++) {
+    result.update(m_objectArray[i]->getDataRange());
   }
+  return result;
 }
 
-void CCoordinateSystem::plotfunction(CDC &dc, Function &f, const DoubleInterval *range, COLORREF color) {
+class PointArrayObject : public CoordinateSystemObject {
+private:
+  DataRange    m_dataRange;
+protected:
+  COLORREF     m_color;
+  Point2DArray m_points;
+  void initDataRange();
+public:
+  PointArrayObject(COLORREF color) : m_color(color) {
+  }
+  PointArrayObject(const Point2DArray &points, COLORREF color);
+  void paint(Viewport2D &vp);
+  const DataRange &getDataRange() const {
+    return m_dataRange;
+  }
+};
+
+PointArrayObject::PointArrayObject(const Point2DArray &points, COLORREF color) : m_color(color), m_points(points) {
+  initDataRange();
+}
+
+void PointArrayObject::initDataRange() {
+  m_dataRange.init(m_points);
+}
+
+void PointArrayObject::paint(Viewport2D &vp) {
+  CPen pen;
+  pen.CreatePen(PS_SOLID, 1, m_color);
+  CPen *oldPen = vp.SelectObject(&pen);
+  vp.MoveTo(m_points[0]);
+  for(size_t i = 1; i < m_points.size(); i++) {
+    vp.LineTo(m_points[i]);
+  }
+  vp.SelectObject(oldPen);
+}
+
+void CCoordinateSystem::addPointObject(const Point2DArray &a, COLORREF color) {
+  addObject(new PointArrayObject(a, color));
+}
+
+class FunctionObject : public PointArrayObject {
+public:
+  FunctionObject(Function &f, const DoubleInterval &range, UINT n, COLORREF color);
+};
+
+FunctionObject::FunctionObject(Function &f, const DoubleInterval &range, UINT n, COLORREF color) : PointArrayObject(color) {
+  m_points.setCapacity(n);
+  for(UINT i = 0; i < n; i++) {
+    try {
+      const Real t = (Real)i / (n-1);
+      const Real x = range.getFrom() * (1.0-t) + t * range.getTo();
+      const Real y = f(x);
+      m_points.add(Point2D(x, y));
+    }
+    catch (...) {
+      // ignore
+    }
+  }
+  initDataRange();
+}
+
+void CCoordinateSystem::addFunctionObject(CDC &dc, Function &f, const DoubleInterval *range, COLORREF color) {
   Viewport2D                   *vp      = getViewport(dc);
   const DoubleInterval          toRange = vp->getToRectangle().getXInterval();
   const IntervalTransformation &tr      = vp->getXTransformation();
   const DoubleInterval          xRange  = range ? *range : tr.backwardTransform(toRange);
-  const double                  step    = xRange.getLength() / toRange.getLength();
+  const UINT                    n       = (UINT)toRange.getLength() + 1;
 
-  CPen pen;
-  pen.CreatePen(PS_SOLID,1,color);
-  CPen *oldPen = vp->SelectObject(&pen);
-
-  try {
-    double x = xRange.getFrom();
-    double y = getDouble(f(x));
-    vp->MoveTo(x, getDouble(f(x)));
-    for(x += step; x <= xRange.getTo(); x += step) {
-      vp->LineTo(x,getDouble(f(x)));
-    }
-    vp->SelectObject(oldPen);
-    vp->setDC(NULL);
-  } catch(...) {
-    vp->SelectObject(oldPen);
-    vp->setDC(NULL);
-    throw;
-  }
+  addObject(new FunctionObject(f, xRange, n, color));
 }
 
 Viewport2D *CCoordinateSystem::getViewport(CDC &dc) {
@@ -171,12 +217,12 @@ void CCoordinateSystem::setDataRange(const DataRange &dataRange, bool makeSpace)
 void CCoordinateSystem::setFromRectangle(const Rectangle2D &rectangle, bool makeSpace) {
   Rectangle2D r = Rectangle2D::makePositiveRectangle(rectangle);
   if(r.getWidth() == 0) {
-    double dw = r.m_x == 0 ? 20 : r.m_x / 20;
+    const double dw = r.m_x == 0 ? 20 : r.m_x / 20;
     r.m_x -= dw / 2;
     r.m_w += dw;
   }
   if(r.getHeight() == 0) {
-    double dh = r.m_y == 0 ? 20 : r.m_y / 20;
+    const double dh = r.m_y == 0 ? 20 : r.m_y / 20;
     r.m_y -= dh / 2;
     r.m_h += dh;
   }

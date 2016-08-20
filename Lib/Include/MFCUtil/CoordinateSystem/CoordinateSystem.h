@@ -10,8 +10,10 @@ class CCoordinateSystem;
 class CoordinateSystemObject {
 public:
   virtual void paint(Viewport2D &vp) = 0;
+  virtual const DataRange &getDataRange() const = 0;
   virtual ~CoordinateSystemObject() {
   }
+
 };
 
 class CCoordinateSystem : public CStatic {
@@ -23,7 +25,9 @@ private:
   AxisType                              m_xAxisType, m_yAxisType;
   bool                                  m_grid;
   bool                                  m_retainAspectRatio;
+  bool                                  m_autoScale, m_autoSpace;
   CompactArray<CoordinateSystemObject*> m_objectArray;
+  DataRange findSmallestDataRange() const;
   int    findObject(const CoordinateSystemObject *object) const;
 public:
 
@@ -32,24 +36,25 @@ public:
   virtual ~CCoordinateSystem();
 
   void   substituteControl(CWnd *parent, int id);
+  void   paint(       CDC &dc);
 
   static DoubleInterval getDefaultInterval(AxisType type);
-  static DataRange getDefaultDataRange(AxisType xType, AxisType yType);
+  static DataRange      getDefaultDataRange(AxisType xType, AxisType yType);
 
-  void   paint(       CDC &dc);
-  void   paintCurve(  CDC &dc, const Point2DArray &a, COLORREF color = RGB(0,0,0));
-  void   plotfunction(CDC &dc, Function &f, const DoubleInterval *range = NULL, COLORREF color = RGB(0,0,0));
+  void   addPointObject(   const Point2DArray &a, COLORREF color = RGB(0,0,0));
+  void   addFunctionObject(CDC &dc, Function &f, const DoubleInterval *range = NULL, COLORREF color = RGB(0,0,0));
 
   void   addObject(   CoordinateSystemObject *object);
   void   removeObject(CoordinateSystemObject *object);
-  void   removeAllObjects() {
+  void   removeAllObjects() { // will not delete objects
     m_objectArray.clear();
   }
+  void deleteAllObjects(); // remove AND delete all objects
   int    getObjectCount() const {
     return (int)m_objectArray.size();
   }
-  CoordinateSystemObject *getObject(unsigned int index) {
-    return m_objectArray[index];
+  CoordinateSystemObject &getObject(UINT index) {
+    return *m_objectArray[index];
   }
 
   inline const RectangleTransformation &getTransformation() const {
@@ -85,6 +90,14 @@ public:
     return m_grid;
   }
 
+  void setAutoScale(bool autoScale, bool makeSpace) {
+    m_autoScale = autoScale;
+    m_autoSpace = makeSpace;
+  }
+
+  bool getAutoScale() const {
+    return m_autoScale;
+  }
   bool canRetainAspectRatio() const {
     return m_xAxisType == m_yAxisType;
   }

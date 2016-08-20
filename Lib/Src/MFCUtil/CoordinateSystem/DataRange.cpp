@@ -6,19 +6,19 @@ DataRange::DataRange() {
 }
 
 DataRange::DataRange(const Rectangle2D &r) {
-  init(r.getMinX(),r.getMaxX(), r.getMinY(),r.getMaxY());
+  init(r.getMinX(), r.getMaxX(), r.getMinY(), r.getMaxY());
 }
 
 DataRange::DataRange(const DoubleInterval &xInterval, const DoubleInterval &yInterval) {
-  init(xInterval.getMin(),xInterval.getMax(), yInterval.getMin(), yInterval.getMax());
+  init(xInterval.getMin(), xInterval.getMax(), yInterval.getMin(), yInterval.getMax());
 }
 
 DataRange::DataRange(double minX, double maxX, double minY, double maxY) {
-  init(minX,maxX,minY,maxY);
+  init(minX, maxX, minY, maxY);
 }
 
 void DataRange::init(const Point2D &p) { 
-  init(p.x,p.x,p.y,p.y);
+  init(p.x, p.x, p.y, p.y);
 }
 
 void DataRange::update(const Point2D &p) {
@@ -36,8 +36,8 @@ void DataRange::update(const Point2D &p) {
 }
 
 void DataRange::update(const DataRange &dataRange) {
-  update(Point2D(dataRange.getMinX(),dataRange.getMinY()));
-  update(Point2D(dataRange.getMaxX(),dataRange.getMaxY()));
+  update(Point2D(dataRange.getMinX(), dataRange.getMinY()));
+  update(Point2D(dataRange.getMaxX(), dataRange.getMaxY()));
 }
 
 void DataRange::init(double minX, double maxX, double minY, double maxY) {
@@ -51,4 +51,19 @@ DataRange::operator Rectangle2D() const {
   double minX = getMinX();
   double minY = getMinY();
   return Rectangle2D(minX, minY, getMaxX() - minX, getMaxY() - minY);
+}
+
+void DataRange::init(const Point2DArray &pa) {
+  if (pa.size() > 0) {
+    init(pa[0]);
+  }
+  for(size_t i = 1; i < pa.size(); i++) {
+    update(pa[i]);
+  }
+}
+
+void DataRange::update(const Point2DArray &pa) {
+  for(size_t i = 0; i < pa.size(); i++) {
+    update(pa[i]);
+  }
 }
