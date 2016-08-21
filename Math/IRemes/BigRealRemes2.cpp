@@ -51,10 +51,12 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
   checkInterval();
   loadExtremaFromFile();
 
+  m_reduceToInterpolate  = false;
   m_hasCoefficients      = false;
   m_coefVectorIndex      = 0;
   m_searchEMaxIterations = DEFAULT_SEARCHEMAXIT;
   m_MMQuotEps            = s_defaultMMQuotEps;
+  m_state                = REMES_INITIALIZED;
 }
 
 Remes::Remes(const Remes &src) 
@@ -66,9 +68,11 @@ Remes::Remes(const Remes &src)
 , m_searchEMaxIterations(src.m_searchEMaxIterations)
 {
   checkInterval();
-  m_hasCoefficients = false;
-  m_coefVectorIndex = 0;
-  m_MMQuotEps       = s_defaultMMQuotEps;
+  m_reduceToInterpolate = false;
+  m_hasCoefficients     = false;
+  m_coefVectorIndex     = 0;
+  m_MMQuotEps           = s_defaultMMQuotEps;
+  m_state                = REMES_INITIALIZED;
 }
 
 void Remes::checkInterval() {
@@ -91,8 +95,6 @@ void Remes::solve(const UINT M, const UINT K) {
 
   const int MAXIT = 100;
 
-  setProperty(REMES_STATE, m_state, REMES_INITIALIZE);
-
   m_M = M;
   m_K = K;
   m_N = m_M + m_K;
@@ -108,8 +110,10 @@ void Remes::solve(const UINT M, const UINT K) {
   for(UINT i = 0; i < dimension; i++) {
     m_extremaStringArray.add(_T(""));
   }
-  initSolveState(M, K);
+  initSolveState();
   initCoefficientVector(dimension);
+
+  setProperty(REMES_STATE, m_state, REMES_SOLVE_STARTED);
 
   if(hasSavedExtrema(M, K)) {
     setExtrema(getBestSavedExtrema(M, K));
@@ -192,13 +196,16 @@ void Remes::initCoefficientVector(size_t dimension) {
   setProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
 }
 
-void Remes::initSolveState(const UINT M, const UINT K) {
+void Remes::initSolveState() {
   m_solveStateInterpolationDone = false;
   m_solveStateHighPrecision     = false;
-  m_solveStateDecrM             = (M > 1) && ((K == 0) || (M > K));
+  m_solveStateDecrM             = (m_M > 1) && ((m_K == 0) || (m_M > m_K));
 }
 
 void Remes::nextSolveState() {
+  if(m_reduceToInterpolate) {
+    m_solveStateHighPrecision     = true;
+  }
   if(!m_solveStateInterpolationDone) {
     m_solveStateInterpolationDone = true;
   } else if(!m_solveStateHighPrecision) {
@@ -213,6 +220,9 @@ void Remes::nextSolveState() {
 }
 
 bool Remes::hasNextSolveState() const {
+  if(m_reduceToInterpolate) {
+    return true;
+  }
   return (m_solveStateInterpolationDone && m_solveStateHighPrecision && m_solveStateDecrM) ? false : true;
 }
 
@@ -250,6 +260,10 @@ void Remes::findCoefficients() {
   } else {
     // for m_K > 0 we have to iterate
     for(setProperty(SEARCHEITERATION, m_searchEIteration, 1); m_searchEIteration <= m_searchEMaxIterations; setProperty(SEARCHEITERATION, m_searchEIteration, m_searchEIteration+1)) {
+      if(m_reduceToInterpolate) {
+        throwNoConvergenceException(__TFUNCTION__, _T("Reduce M,K to interpolate new initial extrame"));
+      }
+
       s = 1;
       for(UINT r = 0; r <= m_N+1; r++, s = -s) {
         const BigReal &xr = m_extrema[r];

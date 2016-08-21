@@ -36,12 +36,14 @@ CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
   m_xTo                  = 1.0;
   m_digits               = 15;
   m_maxSearchEIterations = 700;
+  m_reduceToInterpolate  = false;
   m_relativeError        = FALSE;
   m_lastErrorPlotKey     = -1;
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_remes                = NULL;
   m_debugThread          = NULL;
-  m_dbgMenuState         = DBGMENU_EMPTY;
+  m_runMenuState         = RUNMENU_EMPTY;
+  m_subM = m_subK        = -1;
 }
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
@@ -70,13 +72,13 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_COMMAND(ID_VIEW_GRID                    , &CIRemesDlg::OnViewGrid                  )
   ON_COMMAND(ID_VIEW_SHOW_SPLINE             , &CIRemesDlg::OnViewShowSpline            )
   ON_COMMAND(ID_RUN_GO                       , &CIRemesDlg::OnRunGo                     )
-  ON_COMMAND(ID_RUN_DEBUG                    , &CIRemesDlg::OnRunDebug                  )
-  ON_COMMAND(ID_RUN_CONTINUE                 , &CIRemesDlg::OnRunContinue               )
+  ON_COMMAND(ID_RUN_F5                       , &CIRemesDlg::OnRunF5                     )
   ON_COMMAND(ID_RUN_RESTART                  , &CIRemesDlg::OnRunRestart                )
   ON_COMMAND(ID_RUN_STOP                     , &CIRemesDlg::OnRunStop                   )
   ON_COMMAND(ID_RUN_BREAK                    , &CIRemesDlg::OnRunBreak                  )
   ON_COMMAND(ID_RUN_SINGLEITERATION          , &CIRemesDlg::OnRunSingleIteration        )
   ON_COMMAND(ID_RUN_SINGLESUBITERATION       , &CIRemesDlg::OnRunSingleSubIteration     )
+  ON_COMMAND(ID_RUN_REDUCETOINTERPOLATE      , &CIRemesDlg::OnRunReduceToInterpolate    )
   ON_COMMAND(ID_GOTO_DOMAIN                  , &CIRemesDlg::OnGotoDomain                )
   ON_COMMAND(ID_GOTO_M                       , &CIRemesDlg::OnGotoM                     )
   ON_COMMAND(ID_GOTO_K                       , &CIRemesDlg::OnGotoK                     )
@@ -215,8 +217,6 @@ void CIRemesDlg::showWarning(const String &str) {
 void CIRemesDlg::showCoefWindowData(const CoefWindowData &data) {
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTCOEF);
   lb->ResetContent();
-  setWindowText(this, IDC_STATICSUBM, format(_T("%d"), data.m_M));
-  setWindowText(this, IDC_STATICSUBK, format(_T("%d"), data.m_K));
   const StringArray &a = data.m_coefStrings;
   const size_t n = a.size();
   for(size_t i = 0; i < n; i++) {
@@ -332,17 +332,17 @@ void CIRemesDlg::ajourDialogItems() {
   if(hasDebugThread()) {
     if(m_debugThread->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
-      setDebugMenuState(DBGMENU_RUNNING);
+      setRunMenuState(RUNMENU_RUNNING);
     } else if(m_debugThread->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
-      setDebugMenuState(DBGMENU_IDLE);
+      setRunMenuState(RUNMENU_IDLE);
     } else { // paused
       ENABLEFIELDLIST(dialogFields, false);
-      setDebugMenuState(DBGMENU_PAUSED);
+      setRunMenuState(RUNMENU_PAUSED);
     }
   } else { // no debug thread
     ENABLEFIELDLIST(dialogFields, true);
-    setDebugMenuState(DBGMENU_IDLE);
+    setRunMenuState(RUNMENU_IDLE);
   }
 }
 
@@ -354,14 +354,15 @@ typedef struct {
 #define MLABEL(s, id) _T(s), id
 
 static const MenuLabel runMenuLables[] = {
-  MLABEL("&Go\tCtrl+F5"               , ID_RUN_GO                 )
- ,MLABEL("&Debug\tF5"                 , ID_RUN_DEBUG              )
- ,MLABEL("&Continue\tF5"              , ID_RUN_CONTINUE           )
- ,MLABEL("&Restart\tCtrl+Shift+F5"    , ID_RUN_RESTART            )
- ,MLABEL("Stop\tShift+F5"             , ID_RUN_STOP               )
- ,MLABEL("&Break\tF9"                 , ID_RUN_BREAK              )
- ,MLABEL("Single &iteration\tF10"     , ID_RUN_SINGLEITERATION    )
- ,MLABEL("Single s&ub iteration\tF11" , ID_RUN_SINGLESUBITERATION )
+  MLABEL("&Go\tCtrl+F5"                       , ID_RUN_GO                  ) // 0
+ ,MLABEL("&Debug\tF5"                         , ID_RUN_F5                  ) // 1
+ ,MLABEL("&Continue\tF5"                      , ID_RUN_F5                  ) // 2
+ ,MLABEL("&Restart\tCtrl+Shift+F5"            , ID_RUN_RESTART             ) // 3
+ ,MLABEL("Stop\tShift+F5"                     , ID_RUN_STOP                ) // 4
+ ,MLABEL("&Break\tF9"                         , ID_RUN_BREAK               ) // 5
+ ,MLABEL("Single &iteration\tF10"             , ID_RUN_SINGLEITERATION     ) // 6
+ ,MLABEL("Single s&ub iteration\tF11"         , ID_RUN_SINGLESUBITERATION  ) // 7
+ ,MLABEL("Reduce to interpolate extrema\tNum-", ID_RUN_REDUCETOINTERPOLATE ) // 8
 };
 
 #define ITEM_START     0
@@ -372,27 +373,28 @@ static const MenuLabel runMenuLables[] = {
 #define ITEM_BREAK     5
 #define ITEM_SINGLEIT  6
 #define ITEM_SUBIT     7
-#define ITEM_SEPARATOR 8
+#define ITEM_REDUCE    8
+#define ITEM_SEPARATOR 9
 
 static const int runMenuIdleItems[] = {
   ITEM_START
  ,ITEM_DEBUG
- ,ITEM_SEPARATOR
- ,ITEM_SINGLEIT
- ,ITEM_SUBIT
  ,-1
 };
 
 static const int runMenuRunningItems[] = {
-  ITEM_STOP
- ,ITEM_BREAK
+  ITEM_BREAK
+ ,ITEM_STOP
+ ,ITEM_SEPARATOR
+ ,ITEM_REDUCE
  ,-1
 };
 
 static const int runMenuPausedItems[] = {
   ITEM_CONTINUE
- ,ITEM_RESTART
  ,ITEM_STOP     
+ ,ITEM_SEPARATOR
+ ,ITEM_RESTART
  ,ITEM_SEPARATOR
  ,ITEM_SINGLEIT
  ,ITEM_SUBIT
@@ -406,9 +408,9 @@ static const int * const runMenuItems[] = {
  ,runMenuPausedItems
 };
 
-void CIRemesDlg::setDebugMenuState(DebugMenuState menuState) {
-  if(menuState == m_dbgMenuState) return;
-  m_dbgMenuState = menuState;
+void CIRemesDlg::setRunMenuState(RunMenuState menuState) {
+  if(menuState == m_runMenuState) return;
+  m_runMenuState = menuState;
   int index;
   HMENU mainMenu = findMenuByString(*GetMenu(), _T("Run"), index);
 
@@ -457,6 +459,13 @@ void CIRemesDlg::OnRunGo() {
   startThread(false);
 }
 
+void CIRemesDlg::OnRunF5() {
+  switch(m_runMenuState) {
+  case RUNMENU_IDLE  : OnRunDebug();    break;
+  case RUNMENU_PAUSED: OnRunContinue(); break;
+  }
+}
+
 void CIRemesDlg::OnRunDebug() {
   startThread(true);
 }
@@ -496,6 +505,12 @@ void CIRemesDlg::OnRunSingleIteration() {
 
 void CIRemesDlg::OnRunSingleSubIteration() {
   if(isThreadPaused()) m_debugThread->singleSubStep();
+}
+
+void CIRemesDlg::OnRunReduceToInterpolate() {
+  if(isThreadRunning()) {
+    m_reduceToInterpolate = true;
+  }
 }
 
 void CIRemesDlg::OnGotoDomain() {
@@ -543,12 +558,18 @@ void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, 
 }
 
 void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue) {
+  if (m_reduceToInterpolate) {
+    r.reduceToInterpolate();
+    m_reduceToInterpolate = false;
+  }
+
   switch(id) {
   case REMES_STATE        : // *RemesState
     { m_gate.wait();
       const RemesState oldState = *(RemesState*)oldValue;
+      const RemesState newState = *(RemesState*)newValue;
       m_stateString = r.getTotalStateString();
-      PostMessage(ID_MSG_STATE_CHANGED, 0, 0);
+      PostMessage(ID_MSG_STATE_CHANGED, r.getM(), r.getK());
       if(oldState == REMES_SEARCH_COEFFICIENTS) {
         m_coefWinData = r;
         PostMessage(ID_MSG_COEFFICIENTS_CHANGED, 0, 0);
@@ -577,9 +598,9 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
   case COEFFICIENTVECTOR  : // *BigRealVector
   case MMQUOT             : // *BigReal
     break;
-  case INTERPOLATIONSPLINE: // *Function
+  case INTERPOLATIONSPLINE: // *dim, *Function
     if (isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE)) {
-      UINT                 dim = *(UINT*)oldValue;
+      const UINT           dim = *(UINT*)oldValue;
       Function            &f   = *(Function*)newValue;
       const DoubleInterval xRange(0, dim-1);
       CClientDC            dc(&m_coorSystemSpline);
@@ -636,10 +657,25 @@ LRESULT CIRemesDlg::OnMsgThrErrorChanged(WPARAM wp, LPARAM lp) {
 
 LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
+  const UINT M = (UINT)wp, K = (UINT)lp;
+  setSubMK(M, K);
   const String str = m_stateString;
   m_gate.signal();
   showState(str);
   return 0;
+}
+
+void CIRemesDlg::setSubMK(int subM, int subK) {
+  if (subM != m_subM) {
+    String str = ((subM >= 0) && (subM != m_M)) ? format(_T("%u"), subM) : _T("");
+    setWindowText(this, IDC_STATICSUBM, str);
+    m_subM = subM;
+  }
+  if (subK != m_subK) {
+    String str = ((subK >= 0) && (subK != m_K)) ? format(_T("%u"), subK) : _T("");
+    setWindowText(this, IDC_STATICSUBK, str);
+    m_subK = subK;
+  }
 }
 
 LRESULT CIRemesDlg::OnMsgCoefficientsChanged(WPARAM wp, LPARAM lp) {
@@ -720,9 +756,11 @@ void CIRemesDlg::createThread() {
   m_targetFunction.setName((LPCTSTR)m_name);
   m_targetFunction.setDigits(m_digits);
   m_targetFunction.setDomain(m_xFrom, m_xTo);
-  m_remes       = new Remes(m_targetFunction, m_relativeError?true:false);
+  setSubMK(-1,-1);
+  m_reduceToInterpolate = false;
+  m_remes               = new Remes(m_targetFunction, m_relativeError?true:false);
   m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
-  m_debugThread = new DebugThread(m_M, m_K, *m_remes);
+  m_debugThread         = new DebugThread(m_M, m_K, *m_remes);
   m_debugThread->addPropertyChangeListener(this);
 }
 

@@ -54,7 +54,8 @@ void DebugThread::handlePropertyChanged(const PropertyContainer *source, int id,
     case REMES_STATE:
       { const RemesState newState = *(RemesState*)prop.m_newValue;
         switch(newState) {
-        case REMES_INITIALIZE         :
+        case REMES_INITIALIZED        :
+        case REMES_SOLVE_STARTED      :
         case REMES_SEARCH_COEFFICIENTS:
         case REMES_SEARCH_EXTREMA     :
         case REMES_SUCCEEDED:

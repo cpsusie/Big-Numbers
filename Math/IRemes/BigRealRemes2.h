@@ -97,10 +97,12 @@ typedef enum {
 } RemesProperty;
 
 typedef enum {
-  REMES_INITIALIZE
+  REMES_INITIALIZED
+ ,REMES_SOLVE_STARTED
  ,REMES_SEARCH_COEFFICIENTS
  ,REMES_SEARCH_EXTREMA
  ,REMES_SUCCEEDED
+// adding a new states, remember to update Remes::s_stateName
 } RemesState;
 
 class ExtremaStringArray : public StringArray {
@@ -154,8 +156,8 @@ private:
   BigRealVector                m_coefficientVector;      // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
   bool                         m_hasCoefficients;        // set to true the first time m_coefficient vector is calculated
   bool                         m_notifyExtremaCountChanged;
-  BigReal                      m_E, m_nextE;
-  BigReal                      m_Q, m_QEpsilon;
+  mutable bool                 m_reduceToInterpolate;
+  BigReal                      m_E, m_nextE, m_Q, m_QEpsilon;
   int                          m_mainIteration   , m_searchEMaxIterations, m_searchEIteration, m_extremaCount;
   int                          m_minExtremumIndex, m_maxExtremumIndex, m_coefVectorIndex;
   BigRealVector                m_extrema;                // Extremum[0..N+1].                                              Dim=N+2
@@ -173,7 +175,7 @@ private:
   void                 checkInterval();
   void                 checkExtremaSigns(const TCHAR *method) const ;
   String               getMapFileName() const;
-  void                 initSolveState(const UINT M, const UINT K);
+  void                 initSolveState();
   void                 nextSolveState();
   bool                 hasNextSolveState() const;
   void                 saveExtremaToMap(const BigReal &E, const BigReal &mmQuot);
@@ -248,6 +250,9 @@ public:
   }
   inline const BigReal getMinAbsExtremumValue() const {
     return fabs(m_errorValue[m_minExtremumIndex]);
+  }
+  inline void  reduceToInterpolate() const {
+    m_reduceToInterpolate = true;
   }
   inline int   getCoefVectorIndex() const {
     return m_coefVectorIndex;

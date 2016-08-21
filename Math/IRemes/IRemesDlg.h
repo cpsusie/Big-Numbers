@@ -29,11 +29,11 @@ public:
 };
 
 typedef enum {
-  DBGMENU_EMPTY
- ,DBGMENU_IDLE
- ,DBGMENU_RUNNING
- ,DBGMENU_PAUSED
-} DebugMenuState;
+  RUNMENU_EMPTY
+ ,RUNMENU_IDLE
+ ,RUNMENU_RUNNING
+ ,RUNMENU_PAUSED
+} RunMenuState;
 
 class CoefWindowData {
 private:
@@ -58,13 +58,15 @@ private:
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
   SimpleLayoutManager     m_layoutManager;
-  DebugMenuState          m_dbgMenuState;
+  RunMenuState            m_runMenuState;
   Semaphore               m_gate;
   CCoordinateSystem       m_coorSystemError, m_coorSystemSpline;
   DynamicTargetFunction   m_targetFunction;
   Remes                  *m_remes;
+  int                     m_subM, m_subK;
   DebugThread            *m_debugThread;
   int                     m_lastErrorPlotKey;
+  bool                    m_reduceToInterpolate;
   CoefWindowData          m_coefWinData;
   ExtremaStringArray      m_extrStrArray, m_extrStrArrayOld;
   String                  m_searchEString;
@@ -74,6 +76,7 @@ private:
   void startThread(bool singleStep);
   void createThread();
   void destroyThread();
+  void setSubMK(int subM, int subK);
   String getThreadStateName() const;
   void showError(const Exception &e);
   inline bool hasDebugThread() const {
@@ -89,7 +92,7 @@ private:
     return hasDebugThread() && m_debugThread->isTerminated();
   }
   void ajourDialogItems();
-  void setDebugMenuState(DebugMenuState menuState);
+  void setRunMenuState(RunMenuState menuState);
   void enableFieldList(const int *ids, int n, bool enabled);
   void showThreadState();
   void showState(const String &str);
@@ -111,10 +114,10 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void handleRemesProperty(const Remes &r, int id, const void *oldValue, const void *newValue);
 
-	enum { IDD = IDD_IREMES_DIALOG };
+  enum { IDD = IDD_IREMES_DIALOG };
 
 public:
-	virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
 
@@ -123,7 +126,7 @@ protected:
   afx_msg HCURSOR OnQueryDragIcon();
   virtual BOOL    OnInitDialog();
   afx_msg void    OnPaint();
-	afx_msg void    OnSize(UINT nType, int cx, int cy);
+  afx_msg void    OnSize(UINT nType, int cx, int cy);
   virtual void    OnOK();
   virtual void    OnCancel();
   afx_msg void    OnClose();
@@ -131,17 +134,19 @@ protected:
   afx_msg void    OnViewGrid();
   afx_msg void    OnViewShowSpline();
   afx_msg void    OnRunGo();
-	afx_msg void    OnRunDebug();
-	afx_msg void    OnRunContinue();
-	afx_msg void    OnRunRestart();
-	afx_msg void    OnRunStop();
+  afx_msg void    OnRunF5();
+  afx_msg void    OnRunDebug();
+  afx_msg void    OnRunContinue();
+  afx_msg void    OnRunRestart();
+  afx_msg void    OnRunStop();
   afx_msg void    OnRunBreak();
-	afx_msg void    OnRunSingleIteration();
-	afx_msg void    OnRunSingleSubIteration();
-	afx_msg void    OnGotoDomain();
-	afx_msg void    OnGotoM();
-	afx_msg void    OnGotoK();
-	afx_msg void    OnGotoDigits();
+  afx_msg void    OnRunSingleIteration();
+  afx_msg void    OnRunSingleSubIteration();
+  afx_msg void    OnRunReduceToInterpolate();
+  afx_msg void    OnGotoDomain();
+  afx_msg void    OnGotoM();
+  afx_msg void    OnGotoK();
+  afx_msg void    OnGotoDigits();
   afx_msg void    OnGotoMaxSearchEIterations();
   afx_msg void    OnHelpAboutIRemes();
   afx_msg LRESULT OnMsgThrRunStateChanged(     WPARAM wp, LPARAM lp);
@@ -158,11 +163,11 @@ protected:
 
 private:
   CString m_name;
-	UINT	  m_K;
-	UINT	  m_M;
-	double	m_xFrom;
-	double	m_xTo;
-	UINT	  m_digits;
+  UINT	  m_K;
+  UINT	  m_M;
+  double	m_xFrom;
+  double	m_xTo;
+  UINT	  m_digits;
   UINT    m_maxSearchEIterations;
-	BOOL	  m_relativeError;
+  BOOL	  m_relativeError;
 };

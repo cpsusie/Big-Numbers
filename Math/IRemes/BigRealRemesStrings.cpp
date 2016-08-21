@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
 const TCHAR *Remes::s_stateName[] = {
-  _T("INITIALIZE")
+  _T("INITIALIZED")
+ ,_T("SOLVE STARTED")
  ,_T("SEARCH E")
  ,_T("SEARCH EXTREMA")
  ,_T("SUCCEEDED")

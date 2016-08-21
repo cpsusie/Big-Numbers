@@ -30,13 +30,13 @@
 #define ID_VIEW_GRID                    32773
 #define ID_VIEW_SHOW_SPLINE             32774
 #define ID_RUN_GO                       32780
-#define ID_RUN_DEBUG                    32781
-#define ID_RUN_CONTINUE                 32782
+#define ID_RUN_F5                       32782
 #define ID_RUN_RESTART                  32783
 #define ID_RUN_STOP                     32784
 #define ID_RUN_SINGLEITERATION          32785
 #define ID_RUN_SINGLESUBITERATION       32786
-#define ID_RUN_BREAK                    32787
+#define ID_RUN_REDUCETOINTERPOLATE      32787
+#define ID_RUN_BREAK                    32788
 #define ID_HELP_ABOUTIREMES             32790
 #define ID_GOTO_DOMAIN                  32800
 #define ID_GOTO_M                       32801
@@ -54,13 +54,14 @@
 #define IS_MSG_UPDATEINTERPOLATION      32908
 #define ID_MSG_WARNING_CHANGED          32909
 #define ID_ACCELERATOR32912             32912
+#define ID_ACCELERATOR32914             32914
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32914
+#define _APS_NEXT_COMMAND_VALUE         32916
 #define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           1031
 #endif

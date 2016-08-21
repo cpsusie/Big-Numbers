@@ -63,18 +63,22 @@ InterpolationFunction::InterpolationFunction(const BigRealVector &initialExtr, c
 
 CompactArray<DataPoint> InterpolationFunction::getInterpolationPoints(const BigRealVector &initialExtr, const BigRealVector &finalExtr) { // static
   const UINT              dim   = (UINT)initialExtr.getDimension();
+  const UINT              dim1  = dim-1;
   CompactArray<DataPoint> result;
 
-  for(UINT i = 0; i <= dim-1; i++) {
-    const Real x = (Real)i/(dim-1); // x = [0..1] Equally spaced
+  assert(finalExtr.getDimension() == dim);
+  result.add(DataPoint(0,0));
+  for(UINT i = 1; i < dim1; i++) {
+    const Real x = (Real)i/(dim1);                        // x = [0..1] Equally spaced
     const Real y = getReal(finalExtr[i] - initialExtr[i]); // first and last y will be 0
     result.add(DataPoint(x,y));
   }
+  result.add(DataPoint(1,0));
   return result;
 }
 
 Real InterpolationFunction::operator()(const Real &x) {
-  const int maxX = (int)m_initialExtr.getDimension()-1;
+  const Real maxX  = (int)m_initialExtr.getDimension()-1;
   if((x == 0) || (x == maxX)) {
     return getReal(m_initialExtr[getInt(x)]);
   } else if((x < 0) || (x > maxX)) {
@@ -82,8 +86,14 @@ Real InterpolationFunction::operator()(const Real &x) {
                                  ,_T("x=%s. x must be in the interval [0..%d]")
                                  ,toString(x).cstr(), maxX);
   }
-
-  return getReal(m_initialExtr[getInt(x)]) + CubicSpline::operator()(x/maxX);
+  Real result1 = getReal(m_initialExtr[getInt(x)]) + CubicSpline::operator()(x/maxX);
+  const Real fracX = fraction(x);
+  if (fracX == 0) {
+    return result1;
+  } else {
+     Real result2 = (*this)(ceil(x));
+     return result1 * (1.0-fracX) + result2 * fracX;
+  }
 }
 
 bool Remes::hasSavedExtrema(const UINT M, const UINT K) {
@@ -110,16 +120,16 @@ bool Remes::hasFastInterpolationOfExtrema(const UINT M, const UINT K) {
 
 BigRealVector Remes::getFastInitialExtremaByInterpolation(const UINT M, const UINT K) {
   UINT M1 = M, K1 = K;
-  if(K > 0 && hasSavedExtrema(M,K-1)) {
+  if((K > 0) && hasSavedExtrema(M,K-1)) {
     K1--;
-  } else if(M > 1 && hasSavedExtrema(M-1,K)) {
+  } else if((M > 1) && hasSavedExtrema(M-1,K)) {
     M1--;
   } else {
     throwInvalidArgumentException(__TFUNCTION__
                                  ,_T("(M,K)=(%u,%u). No saved solution for (M,K)=(%u,%u) or (%u,%u)")
                                  ,M,K,M,K-1,M-1,K);
   }
-  return getInterpolatedExtrema(getDefaultInitialExtrema(M, K),getDefaultInitialExtrema(M1, K1),getBestSavedExtrema(M1, K1));
+  return getInterpolatedExtrema(getDefaultInitialExtrema(M, K), getDefaultInitialExtrema(M1, K1), getBestSavedExtrema(M1, K1));
 }
 
 BigRealVector Remes::findInitialExtremaByInterpolation(const UINT M, const UINT K) {
@@ -129,13 +139,13 @@ BigRealVector Remes::findInitialExtremaByInterpolation(const UINT M, const UINT 
   Remes subRemes(*this);
   m_solveStateInterpolationDone = true;
 
-  return getInterpolatedExtrema(getDefaultInitialExtrema(M, K),getDefaultInitialExtrema(M1, K1),subRemes.findFinalExtrema(M1, K1, m_solveStateHighPrecision));
+  return getInterpolatedExtrema(getDefaultInitialExtrema(M, K), getDefaultInitialExtrema(M1, K1), subRemes.findFinalExtrema(M1, K1, m_solveStateHighPrecision));
 }
 
 BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema, const BigRealVector &defaultSubExtrema, const BigRealVector &finalSubExtrema) const {
   InterpolationFunction interpolFunction(defaultExtrema, defaultSubExtrema, finalSubExtrema);
   const UINT dimension = (UINT)defaultExtrema.getDimension();
-  notifyPropertyChanged(INTERPOLATIONSPLINE, &dimension, &(Function&)interpolFunction);
+  notifyPropertyChanged(INTERPOLATIONSPLINE, &dimension, (Function*)&interpolFunction);
   BigRealVector result(dimension);
   for(UINT i = 0; i < dimension; i++) {
     result[i] = interpolFunction(i);
