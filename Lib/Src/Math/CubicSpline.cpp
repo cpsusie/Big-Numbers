@@ -144,6 +144,11 @@ Real CubicSpline::operator()(int d, const Real &x) {
   }
 }
 
+NumberInterval<Real> CubicSpline::getDomain() const {
+  return NumberInterval<Real>(a[0], a[a.getDimension()-1]);
+}
+
+
 static const char *ctext_code1 = 
 "class CubicSpline {\n"
 "private:\n"

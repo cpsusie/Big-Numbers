@@ -1,5 +1,6 @@
 #pragma once
 
+#include <NumberInterval.h>
 #include "MathLib.h"
 #include "Point2D.h"
 
@@ -102,6 +103,7 @@ public:
   AbstractDataFit *clone() const;
   Real operator()(const Real &x);
   Real operator()(int d, const Real &x);
+  NumberInterval<Real> getDomain() const;
   String generateCFunction() const;
 };
 
