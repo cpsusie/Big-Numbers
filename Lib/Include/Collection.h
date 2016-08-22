@@ -222,27 +222,6 @@ public:
     }
   }
 
-  friend Packer &operator<<(Packer &p, const Collection<T> &c) {
-    const size_t size = c.size();
-    p << size;
-    for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
-      const T &e = it.next();
-      p << e;
-    }
-    return p;
-  }
-
-  friend Packer &operator>>(Packer &p, Collection<T> &c) {
-    size_t size;
-    p >> size;
-    for(size_t i = 0; i < size; i++) {
-      T e;
-      p >> e;
-      c.add(e);
-    }
-    return p;
-  }
-
   String toString(TCHAR delimiter = _T(',')) const {
     String result = _T("(");
     Iterator<T> it = ((Collection<T>*)this)->getIterator();
@@ -271,3 +250,24 @@ public:
     return result;
   }
 };
+
+template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
+  const D      delimiter;
+  const size_t size = c.size();
+  out << size << delimiter;
+  for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
+    out << it.next() << delimiter;
+  }
+  return out;
+}
+
+template<class S, class T> S &operator>>(S &in, Collection<T> &c) {
+  size_t size;
+  in >> size;
+  for(size_t i = 0; i < size; i++) {
+    T e;
+    in >> e;
+    c.add(e);
+  }
+  return in;
+}

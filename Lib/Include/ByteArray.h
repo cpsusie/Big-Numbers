@@ -95,9 +95,9 @@ protected:
 public:
   inline ExecutableByteArray() {
   }
-  ExecutableByteArray(const BYTE *data, unsigned int size);
+  ExecutableByteArray(const BYTE *data, UINT size);
   ExecutableByteArray(const ByteArray &src);
-  explicit ExecutableByteArray(unsigned int capacity);
+  explicit ExecutableByteArray(UINT capacity);
   ~ExecutableByteArray();
   static size_t getSystemPageSize();
   void flushInstructionCache();

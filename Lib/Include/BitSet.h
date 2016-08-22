@@ -2,10 +2,11 @@
 
 #include "CompactArray.h"
 #include "Iterator.h"
-#include "Packer.h"
 #include "MatrixDimension.h"
 
 #define _BITSET_ATOMSIZE 32
+
+class Packer;
 
 class BitSet {
 private:

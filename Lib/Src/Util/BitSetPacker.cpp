@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <Tcp.h>
 #include <BitSet.h>
+#include "Packer.h"
 
 Packer &operator<<(Packer &p, const BitSet &s) {
   const size_t capacity  = s.getCapacity();

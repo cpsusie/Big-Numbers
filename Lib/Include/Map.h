@@ -203,11 +203,11 @@ public:
     return !(*this == m);
   }
 
-    void save(ByteOutputStream &s) const {
+  void save(ByteOutputStream &s) const {
     const int    keySize   = sizeof(K);
     const int    valueSize = sizeof(V);
     const size_t n         = size();
-    Packer header;
+    Packer       header;
     header << keySize << valueSize << n;
     header.write(s);
     for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->entrySet().getIterator(); it.hasNext();) {
@@ -245,28 +245,6 @@ public:
     }
   }
 
-  friend Packer &operator<<(Packer &p, const Map<K, V> &m) {
-    const size_t size = m.size();
-    p << size;
-    for(Iterator<Entry<K, V> > it = ((Map<K, V>&)m).getIterator(); it.hasNext();) {
-      const Entry<K, V> &entry = it.next();
-      p << entry.getKey() << p << entry.getElement();
-    }
-    return p;
-  }
-
-  friend Packer &operator>>(Packer &p, Map<K, V> &m) {
-    size_t size;
-    p >> size;
-    for(size_t i = 0; i < size; i++) {
-      K key;
-      V value;
-      p >> key >> value;
-      m.put(key, value);
-    }
-    return p;
-  }
-
   String toString() const {
     String result = _T("(");
     size_t count = 0;
@@ -281,3 +259,26 @@ public:
     return result;
   }
 };
+
+template<class S, class K, class V, class D=StreamDelimiter> S &operator<<(S &out, const Map<K, V> &m) {
+  const D      delimiter;
+  const size_t size = m.size();
+  out << size << delimiter;
+  for(Iterator<Entry<K, V> > it = ((Map<K, V>&)m).entrySet().getIterator(); it.hasNext();) {
+    Entry<K, V> &e = it.next();
+    out << e.getKey() << delimiter << e.getValue() << delimiter;
+  }
+  return out;
+}
+
+template<class S, class K, class V> S &operator>>(S &in, Map<K, V> &m) {
+  size_t size;
+  in >> size;
+  for(size_t i = 0; i < size; i++) {
+    K key;
+    V value;
+    in >> key >> value;
+    m.put(key, value);
+  }
+  return in;
+}

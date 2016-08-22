@@ -5,8 +5,8 @@
 class CallCounter {
 private:
   const String             m_name;
-  IntHashMap<unsigned int> m_map;
-  unsigned int             m_callCount;
+  IntHashMap<UINT>         m_map;
+  UINT                     m_callCount;
   unsigned int             m_maxInt;
   double                   m_maxDouble;
 public:

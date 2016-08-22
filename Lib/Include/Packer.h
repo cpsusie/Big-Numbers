@@ -68,3 +68,7 @@ public:
   Packer &operator>>(         String      &s);
   Packer &operator>>(         ByteArray   &a);
 };
+
+inline Packer &operator<<(Packer &p, const StreamDelimiter &d) {
+  return p;
+}

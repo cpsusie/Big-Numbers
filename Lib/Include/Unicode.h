@@ -59,3 +59,12 @@
 #endif
 
 #define EMPTYSTRING _T("")
+
+class StreamDelimiter {
+public:
+};
+
+inline tostream &operator<<(tostream &out, const StreamDelimiter &d) {
+  out << std::endl;
+  return out;
+}

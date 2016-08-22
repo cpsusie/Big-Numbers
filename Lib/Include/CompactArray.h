@@ -7,7 +7,6 @@
 #include "Random.h"
 
 extern const TCHAR *_compactArrayIteratorClassName;
-extern const TCHAR *_compactArrayClassName;
 
 template <class T> class CompactArray {
 private:
@@ -16,12 +15,15 @@ private:
   size_t  m_updateCount;
   T      *m_array;
 
-  void indexError(size_t index, const TCHAR *label=_T("")) const {
-    throwException(_T("%s:%sIndex %lu out of range. size=%lu"), _compactArrayClassName, label, index, m_size);
+  void indexError(size_t index, const TCHAR *method) const {
+    throwException(_T("%s:Index %s out of range. size=%s")
+                  ,method
+                  ,format1000(index).cstr()
+                  ,format1000(m_size).cstr());
   }
 
-  void selectError() const {
-    throwException(_T("%s:Cannot select from empty array"), _compactArrayClassName);
+  void selectError(const TCHAR *method) const {
+    throwException(_T("%s:Cannot select from empty array"), method);
   }
 
   size_t getSortCount(size_t from, size_t count) const {
@@ -100,28 +102,30 @@ public:
   }
 
   inline T &operator[](size_t index) {
-    if(index >= m_size) indexError(index, _T("operator[]"));
+    if(index >= m_size) indexError(index, __TFUNCTION__);
     return m_array[index];
   }
 
   inline const T &operator[](size_t index) const {
-    if(index >= m_size) indexError(index, _T("operator[]"));
+    if(index >= m_size) indexError(index, __TFUNCTION__);
     return m_array[index];
   }
   
   inline const T &select() const {
-    if(m_size == 0) selectError();
+    if(m_size == 0) selectError(__TFUNCTION__);
     return m_array[randSizet() % m_size];
   }
 
   inline T &select() {
-    if(m_size == 0) selectError();
+    if(m_size == 0) selectError(__TFUNCTION__);
     return m_array[randSizet() % m_size];
   }
 
   CompactArray<T> getRandomSample(size_t k) const {
     if(k > m_size) {
-      throwInvalidArgumentException(_T("getRandomSample"), _T("k(=%u) > size(=%u)"), k, m_size);
+      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
+                                   ,format1000(k).cstr()
+                                   ,format1000(m_size).cstr());
     }
     CompactArray<T> result(k);
     for(size_t i = 0; i < k; i++) {
@@ -139,22 +143,22 @@ public:
   }
 
   inline T &first() {
-    if(m_size == 0) indexError(0, _T("first"));
+    if(m_size == 0) indexError(0, __TFUNCTION__);
     return m_array[0];
   }
 
   inline const T &first() const {
-    if(m_size == 0) indexError(0, _T("first"));
+    if(m_size == 0) indexError(0, __TFUNCTION__);
     return m_array[0];
   }
 
   inline T &last() {
-    if(m_size == 0) indexError(m_size, _T("last"));
+    if(m_size == 0) indexError(m_size, __TFUNCTION__);
     return m_array[m_size-1];
   }
 
   inline const T &last() const {
-    if(m_size == 0) indexError(m_size, _T("last"));
+    if(m_size == 0) indexError(m_size, __TFUNCTION__);
     return m_array[m_size-1];
   }
 
@@ -183,7 +187,7 @@ public:
   }
 
   void add(size_t index, const T &e, size_t count = 1) {
-    if(index > m_size) indexError(index, _T("add"));
+    if(index > m_size) indexError(index, __TFUNCTION__);
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
@@ -200,7 +204,7 @@ public:
   }
 
   void add(size_t index, const T *ep, size_t count) {
-    if(index > m_size) indexError(index, _T("add"));
+    if(index > m_size) indexError(index, __TFUNCTION__);
     if(count == 0) return;
     const size_t newSize = m_size + count;
     if(newSize > m_capacity) {
@@ -239,7 +243,7 @@ public:
       return;
     }
     const size_t j = index+count;
-    if(j > m_size) indexError(j, format(_T("remove(%lu,%lu):"), index, count).cstr());
+    if(j > m_size) indexError(j, format(_T("%s(%s,%s)"), __TFUNCTION__,format1000(index).cstr(), format1000(count).cstr()).cstr());
     if(j < m_size) {
       memmove(m_array+index, m_array+j, (m_size-j) * sizeof(T));
     }
@@ -251,13 +255,13 @@ public:
   }
 
   void removeLast() {
-    if(m_size == 0) indexError(m_size, _T("removeLast"));
+    if(m_size == 0) indexError(m_size, __TFUNCTION__);
     remove(m_size-1);
   }
 
   CompactArray<T> &swap(size_t i1, size_t i2) {
-    if(i1 >= m_size) indexError(i1, _T("swap"));
-    if(i2 >= m_size) indexError(i2, _T("swap"));
+    if(i1 >= m_size) indexError(i1, __TFUNCTION__);
+    if(i2 >= m_size) indexError(i2, __TFUNCTION__);
     const T tmp = m_array[i1];
     m_array[i1] = m_array[i2];
     m_array[i2] = tmp;
@@ -459,34 +463,6 @@ public:
     m_size = size;
   }
 
-  friend Packer &operator<<(Packer &p, const CompactArray<T> &s) {
-    const unsigned int elemSize = sizeof(T);
-    p << elemSize << s.m_size;
-    const T *q = s.m_array;
-    for(size_t i = s.m_size; i--;) {
-      p << *(q++);
-    }
-    return p;
-  }
-
-  friend Packer &operator>>(Packer &p, CompactArray<T> &s) {
-    unsigned int elemSize;
-    p >> elemSize;
-    if(elemSize != sizeof(T)) {
-      throwException(_T("Invalid element size:%d bytes. Expected %d bytes"), elemSize, sizeof(T));
-    }
-    size_t size;
-    s.clear();
-    p >> size;
-    s.setCapacity(size);
-    for(size_t i = size; i--;) {
-      T e;
-      p >> e;
-      s.add(e);
-    }
-    return p;
-  }
-
   String toString() const {
     String result = _T("{");
     if(m_size) {
@@ -564,11 +540,42 @@ public:
     }
   };
 
-
   Iterator<T> getIterator() {
     return Iterator<T>(new CompactArrayIterator(this));
   }
 };
+
+template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
+  const D delimiter;
+  const unsigned int elemSize = sizeof(T);
+  const size_t n = a.size();
+  out << elemSize << delimiter << n << delimiter;
+  if(n) {
+    const T *e = a.getBuffer();
+    for(size_t i = n; i--;) {
+      out << *(e++) << delimiter;
+    }
+  }
+  return out;
+}
+
+template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
+  UINT elemSize;
+  in >> elemSize;
+  if(elemSize != sizeof(T)) {
+    throwException(_T("Invalid element size:%d bytes. Expected %d bytes"), elemSize, sizeof(T));
+  }
+  size_t size;
+  a.clear();
+  in >> size;
+  a.setCapacity(size);
+  for(size_t i = size; i--;) {
+    T e;
+    in >> e;
+    a.add(e);
+  }
+  return in;
+}
 
 typedef CompactArray<char*>  CompactStrArray;
 typedef CompactArray<char>   CompactCharArray;
@@ -585,9 +592,12 @@ private:
   const unsigned __int64 m_dataStartOffset;
   size_t                 m_size;
 
-  void indexError(size_t index, const TCHAR *label=_T("")) const {
-    throwException(_T("CompactArray::%sIndex %lu out of range. Size=%lu, elementSize:%d")
-                  ,label, index, m_size, sizeof(T));
+  void indexError(size_t index, const TCHAR *method) const {
+    throwException(_T("%s:Index %s out of range. Size=%s, elementSize:%d")
+                  ,method
+                  ,format1000(index).cstr()
+                  ,format1000(m_size).cstr()
+                  ,sizeof(T));
   }
 
 public:
@@ -599,10 +609,10 @@ public:
     m_f.getBytesForced((BYTE*)&m_size, sizeof(m_size));
   }
   CompactFileArray(const CompactFileArray &src) {
-    throwException(_T("CompactFileArray:Copy-constructor not allowed"));
+    throwUnsupportedOperationException(__TFUNCTION__);
   }
   CompactFileArray &operator=(const CompactFileArray &src) {
-    throwException(_T("CompactFileArray:assignment not allowed"));
+    throwUnsupportedOperationException(__TFUNCTION__);
     return *this;
   }
 
@@ -611,7 +621,7 @@ public:
   }
 
   T operator[](size_t index) const {
-    if(index >= m_size) indexError(index, _T("operator[]"));
+    if(index >= m_size) indexError(index, __TFUNCTION__);
 
     m_f.seek(m_dataStartOffset + index * sizeof(T));
     T result;

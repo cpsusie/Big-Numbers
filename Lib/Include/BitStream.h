@@ -15,7 +15,7 @@ public:
   BitOutputStream &operator=(const BitOutputStream &src); // not defined. BitOutputStream not cloneable
   void putBits(unsigned long code, int count);
   void putBit(int bit);
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, UINT n);
   void putByte(BYTE b) {
     putBits(b, 8);
   }
@@ -32,7 +32,7 @@ public:
   BitInputStream &operator=(const BitInputStream &src);   // not defined. BitInputStream not cloneable
   int getBit();                                           // throws Exception if not enough bytes
   unsigned long getBits(int count);                       // do
-  int getBytes(BYTE *dst, unsigned int n);                // do
+  int getBytes(BYTE *dst, UINT n);                        // do
   int getByte();                                          // do
 };
 

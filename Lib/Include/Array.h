@@ -26,10 +26,10 @@ private:
   friend class ArrayIterator;
 public:
   ArrayImpl(AbstractObjectManager &objectManager, size_t capacity);
-  ArrayImpl(AbstractObjectManager &objectManager, const AbstractCollection *src);
   ~ArrayImpl();
+  ArrayImpl(AbstractObjectManager &objectManager, const AbstractCollection *src); // not implemented
+  ArrayImpl &operator=(const ArrayImpl &src);                                     // not implemented
   AbstractCollection *clone(bool cloneData) const;
-  ArrayImpl &operator=(const ArrayImpl &src);
   bool add(const void *e);
   bool add(size_t i, const void *e, size_t count);
   void removeIndex(size_t i, size_t count);
