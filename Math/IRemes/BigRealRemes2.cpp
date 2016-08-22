@@ -39,24 +39,19 @@ static BigReal signedValue(int sign, const BigReal &x) {
   return (sign >= 0) ? x : -x;
 }
 
+ExtremaMap Remes::s_extremaMap;
 const ConstBigReal Remes::s_defaultMMQuotEps = e(BIGREAL_1,-22);
 #define DEFAULT_SEARCHEMAXIT 700
 
 Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError) 
-: m_targetFunction(targetFunction)
-, m_domain(targetFunction.getDomain())
-, m_digits(targetFunction.getDigits() + 8)
-, m_useRelativeError(useRelativeError)
+: m_targetFunction(      targetFunction)
+, m_domain(              targetFunction.getDomain())
+, m_digits(              targetFunction.getDigits() + 8)
+, m_useRelativeError(    useRelativeError)
+, m_searchEMaxIterations(DEFAULT_SEARCHEMAXIT)
 {
-  checkInterval();
-  loadExtremaFromFile();
-
-  m_reduceToInterpolate  = false;
-  m_hasCoefficients      = false;
-  m_coefVectorIndex      = 0;
-  m_searchEMaxIterations = DEFAULT_SEARCHEMAXIT;
-  m_MMQuotEps            = s_defaultMMQuotEps;
-  m_state                = REMES_INITIALIZED;
+  initCommon();
+  s_extremaMap.setName(this->getMapFileName());
 }
 
 Remes::Remes(const Remes &src) 
@@ -67,12 +62,17 @@ Remes::Remes(const Remes &src)
 , m_useRelativeError(    src.m_useRelativeError)
 , m_searchEMaxIterations(src.m_searchEMaxIterations)
 {
+  initCommon();
+}
+
+void Remes::initCommon() {
   checkInterval();
-  m_reduceToInterpolate = false;
-  m_hasCoefficients     = false;
-  m_coefVectorIndex     = 0;
-  m_MMQuotEps           = s_defaultMMQuotEps;
-  m_state                = REMES_INITIALIZED;
+  m_reduceToInterpolate                    = false;
+  m_hasCoefficients                        = false;
+  m_extremaCountChangedNotificationEnabled = true;
+  m_coefVectorIndex                        = 0;
+  m_MMQuotEps                              = s_defaultMMQuotEps;
+  m_state                                  = REMES_INITIALIZED;
 }
 
 void Remes::checkInterval() {
@@ -191,6 +191,7 @@ void Remes::initCoefficientVector(size_t dimension) {
   BigRealVector v;
   v.setDimAndPrecision(dimension, m_digits);
 
+  m_hasCoefficients = false;
   for(UINT i = 0; i <= m_N + 1; i++) v[i] = 0;
   setProperty(E                , m_E                , (BigReal&)BIGREAL_0);
   setProperty(COEFFICIENTVECTOR, m_coefficientVector, v);
@@ -432,10 +433,10 @@ void Remes::setExtrema(const BigRealVector &extrema) {
                                  ,format1000(extrema.getDimension()).cstr(), m_N, m_N+2);
   }
   resetExtremaCount();
-  m_notifyExtremaCountChanged = false;
+  enableExtremaCountNotification(false);
   for(size_t i = 0; i < dim; i++) {
     if(i == dim-1) {
-      m_notifyExtremaCountChanged = true;
+      enableExtremaCountNotification(true);
     }
     setExtremum((UINT)i, extrema[i]);
   }
@@ -457,7 +458,7 @@ void Remes::resetExtremaCount() {
 
 int Remes::setExtremum(const UINT index, const BigReal &x) {
   m_extrema[index] = x;
-  const BigReal &errorValue = m_errorValue[index] = errorFunction(x);
+  const BigReal &errorValue = m_errorValue[index] = m_hasCoefficients?errorFunction(x) : ((index&1)?-1:1);
   if(m_extremaCount == 0) {
     m_minExtremumIndex = m_maxExtremumIndex = index;
   } else {
@@ -468,7 +469,7 @@ int Remes::setExtremum(const UINT index, const BigReal &x) {
     }
   }
   m_extremaStringArray[index] = getExtremumString(index);
-  if(m_notifyExtremaCountChanged) {
+  if(m_extremaCountChangedNotificationEnabled) {
     setProperty(EXTREMACOUNT, m_extremaCount, m_extremaCount+1);
   } else {
     m_extremaCount++;

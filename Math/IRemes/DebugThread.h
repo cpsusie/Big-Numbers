@@ -29,16 +29,18 @@ public:
 class DebugThread : public Thread, public PropertyContainer, public PropertyChangeListener {
 private:
   DECLARECLASSNAME;
+  Remes              &m_r;
+  IntInterval         m_mInterval, m_kInterval;
+  int                 m_maxMKSum;
+  bool                m_skipExisting;
   bool                m_running, m_killed, m_terminated;
   String              m_errorMsg;
   BitSet8             m_breakPoints;
-  int                 m_M, m_K;
-  Remes              &m_r;
 
   void throwInvalidStateException(const TCHAR *method, RemesState state) const;
   void stop();
 public:
-  DebugThread(int M, int K, Remes &r);
+  DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting);
   ~DebugThread();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void singleStep();

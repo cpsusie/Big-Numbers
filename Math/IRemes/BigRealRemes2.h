@@ -63,14 +63,25 @@ public:
   friend tistream &operator>>(tistream &in ,       ExtremaVector &v);
 };
 
-class ExtremaHashMap : public HashMap<ExtremaKey, Array<ExtremaVector> > {
+typedef HashMap<ExtremaKey, Array<ExtremaVector> > ExtremaHashMap;
+
+class ExtremaMap : private ExtremaHashMap {
 private:
+  String m_name;
+  int    m_updateCount, m_saveCount;
   void save(tostream &out);
   void load(tistream &in);
+  void load();
 public:
-  ExtremaHashMap();
-  void save(const String &name);
-  void load(const String &name);
+  ExtremaMap();
+  void save();
+  bool fileExist() const;
+  void setName(const String &name);
+  const String &getName() const {
+    return m_name;
+  }
+  const Array<ExtremaVector> *get(UINT M, UINT K) const;
+  void put(UINT M, UINT K, const ExtremaVector &v);
 };
 
 typedef NumberInterval<BigReal> BigRealInterval;
@@ -145,7 +156,7 @@ public:
 class Remes : public PropertyContainer {
 private:
   static const TCHAR          *s_stateName[];
-  static ExtremaHashMap        s_extremaMap;
+  static ExtremaMap            s_extremaMap;
   static const ConstBigReal    s_defaultMMQuotEps;
   const BigRealInterval        m_domain;
   RemesTargetFunction         &m_targetFunction;         // Function to be approximated
@@ -155,7 +166,7 @@ private:
   RemesState                   m_state;
   BigRealVector                m_coefficientVector;      // Coefficient[0..N+1] = { a[0]..a[M], b[1]..b[K], E }. b[0] = 1. Dim=N+2
   bool                         m_hasCoefficients;        // set to true the first time m_coefficient vector is calculated
-  bool                         m_notifyExtremaCountChanged;
+  bool                         m_extremaCountChangedNotificationEnabled;
   mutable bool                 m_reduceToInterpolate;
   BigReal                      m_E, m_nextE, m_Q, m_QEpsilon;
   int                          m_mainIteration   , m_searchEMaxIterations, m_searchEIteration, m_extremaCount;
@@ -172,6 +183,7 @@ private:
   bool                         m_solveStateDecrM;
   String                       m_warning;
 
+  void                 initCommon();
   void                 checkInterval();
   void                 checkExtremaSigns(const TCHAR *method) const ;
   String               getMapFileName() const;
@@ -179,22 +191,25 @@ private:
   void                 nextSolveState();
   bool                 hasNextSolveState() const;
   void                 saveExtremaToMap(const BigReal &E, const BigReal &mmQuot);
-  BigRealVector        getDefaultInitialExtrema(            const UINT M, const UINT K);
-  BigRealVector        findInitialExtremaByInterpolation(   const UINT M, const UINT K);
-  bool                 hasFastInterpolationOfExtrema(       const UINT M, const UINT K);
-  BigRealVector        getFastInitialExtremaByInterpolation(const UINT M, const UINT K);
-  bool                 hasSavedExtrema(                     const UINT M, const UINT K);
-  const ExtremaVector &getBestSavedExtrema(                 const UINT M, const UINT K);
+  BigRealVector        getDefaultInitialExtrema(            UINT M, UINT K) const;
+  BigRealVector        findInitialExtremaByInterpolation(   UINT M, UINT K);
+  bool                 hasFastInterpolationOfExtrema(       UINT M, UINT K) const;
+  BigRealVector        getFastInitialExtremaByInterpolation(UINT M, UINT K);
+  bool                 hasSavedExtrema(                     UINT M, UINT K) const;
+  const ExtremaVector &getBestSavedExtrema(                 UINT M, UINT K) const;
   BigRealVector        getInterpolatedExtrema(const BigRealVector &defaultExtrema, const BigRealVector &defaultSubExtrema, const BigRealVector &finalSubExtrema) const;
 
   void                 initCoefficientVector(size_t dimension);
   void                 setExtrema(      const BigRealVector &extrema);
   void                 setExtrema(      const ExtremaVector &extrema);
+  void                 enableExtremaCountNotification(bool enable) {
+    m_extremaCountChangedNotificationEnabled = enable;
+  }
   void                 findCoefficients();
   BigReal              findExtremum(    const BigReal &l, const BigReal &m, const BigReal &r, DigitPool *pool);
   void                 findExtrema();
-  BigRealVector        findFinalExtrema(const UINT M, const UINT K, const bool highPrecision);
-  int                  setExtremum(     const UINT index, const BigReal &x); // return sign of errorfunction at extremum
+  BigRealVector        findFinalExtrema(UINT M, UINT K, bool highPrecision);
+  int                  setExtremum(     UINT index, const BigReal &x); // return sign of errorfunction at extremum
   String               getExtremumString(UINT index) const;
   void                 resetExtremaCount();
   void                 setMMQuotEpsilon(const BigReal &MMQuotEps);  // set stop criterium. 
@@ -222,10 +237,9 @@ public:
   UINT getSearchEMaxIterations() const {
     return m_searchEMaxIterations;
   }
-  void setSearchEMaxIterations(UINT maxiterations) {
-    m_searchEMaxIterations = maxiterations;
+  void setSearchEMaxIterations(UINT maxIterations) {
+    m_searchEMaxIterations = maxIterations;
   }
-  void loadExtremaFromFile();
   void saveExtremaToFile();
   inline RemesTargetFunction &getTargetFunction() {
     return m_targetFunction;
@@ -259,6 +273,9 @@ public:
   }
   inline bool  hasErrorPlot() const {
     return m_hasCoefficients;
+  }
+  inline bool solutionExist(UINT M, UINT K) const {
+    return hasSavedExtrema(M, K);
   }
   void        getErrorPlot(UINT n, Point2DArray &pa) const;
 

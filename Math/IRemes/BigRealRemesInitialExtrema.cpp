@@ -2,7 +2,7 @@
 #include <Math/Polynomial.h>
 
 // Return the N+2 extrema (incl. endpoints) of the Chebyshev polynomial of degree N+1, scaled to the x-interval [m_left;m_right], where N=M+K
-BigRealVector Remes::getDefaultInitialExtrema(const UINT M, const UINT K) {
+BigRealVector Remes::getDefaultInitialExtrema(UINT M, UINT K) const {
   const Real left  = getReal(m_domain.getFrom());
   const Real right = getReal(m_domain.getTo());
   const Real a = (left + right)/2.0;
@@ -16,14 +16,14 @@ BigRealVector Remes::getDefaultInitialExtrema(const UINT M, const UINT K) {
   return result;
 }
 
-BigRealVector Remes::findFinalExtrema(const UINT M, const UINT K, const bool highPrecision) {
+BigRealVector Remes::findFinalExtrema(UINT M, UINT K, bool highPrecision) {
   const BigReal mmQuot = highPrecision ? s_defaultMMQuotEps : e(BIGREAL_1,-7);
 
   for(bool hasSolved = false;;) {
-    Array<ExtremaVector> *a = s_extremaMap.get(ExtremaKey(M, K));
+    const Array<ExtremaVector> *a = s_extremaMap.get(M, K);
     if(a != NULL) {
       for(size_t i = 0; i < a->size(); i++) {
-        ExtremaVector &v = (*a)[i];
+        const ExtremaVector &v = (*a)[i];
         if(v.getMMQuot() <= mmQuot) {
           return v;
         }
@@ -96,12 +96,12 @@ Real InterpolationFunction::operator()(const Real &x) {
   }
 }
 
-bool Remes::hasSavedExtrema(const UINT M, const UINT K) {
-  return s_extremaMap.get(ExtremaKey(M, K)) != NULL;
+bool Remes::hasSavedExtrema(UINT M, UINT K) const {
+  return s_extremaMap.get(M, K) != NULL;
 }
 
-const ExtremaVector &Remes::getBestSavedExtrema(const UINT M, const UINT K) {
-  const Array<ExtremaVector> *a = s_extremaMap.get(ExtremaKey(M, K));
+const ExtremaVector &Remes::getBestSavedExtrema(UINT M, UINT K) const {
+  const Array<ExtremaVector> *a = s_extremaMap.get(M, K);
   if(a == NULL) {
     throwInvalidArgumentException(__TFUNCTION__, _T("ExtremaKey(%u,%u) not found"), M, K);
   }
@@ -114,11 +114,11 @@ const ExtremaVector &Remes::getBestSavedExtrema(const UINT M, const UINT K) {
   return (*a)[bestIndex];
 }
 
-bool Remes::hasFastInterpolationOfExtrema(const UINT M, const UINT K) {
+bool Remes::hasFastInterpolationOfExtrema(UINT M, UINT K) const {
   return ((K > 0) && hasSavedExtrema(M, K-1)) || ((M > 1) && hasSavedExtrema(M-1, K));
 }
 
-BigRealVector Remes::getFastInitialExtremaByInterpolation(const UINT M, const UINT K) {
+BigRealVector Remes::getFastInitialExtremaByInterpolation(UINT M, UINT K) {
   UINT M1 = M, K1 = K;
   if((K > 0) && hasSavedExtrema(M,K-1)) {
     K1--;
@@ -132,7 +132,7 @@ BigRealVector Remes::getFastInitialExtremaByInterpolation(const UINT M, const UI
   return getInterpolatedExtrema(getDefaultInitialExtrema(M, K), getDefaultInitialExtrema(M1, K1), getBestSavedExtrema(M1, K1));
 }
 
-BigRealVector Remes::findInitialExtremaByInterpolation(const UINT M, const UINT K) {
+BigRealVector Remes::findInitialExtremaByInterpolation(UINT M, UINT K) {
   const UINT M1 = m_solveStateDecrM ? (M-1) :  M;
   const UINT K1 = m_solveStateDecrM ?  K    : (K-1);
 
@@ -154,28 +154,20 @@ BigRealVector Remes::getInterpolatedExtrema(const BigRealVector &defaultExtrema,
 }
 
 void Remes::saveExtremaToMap(const BigReal &E, const BigReal &mmQuot) {
-  const ExtremaKey key(m_M, m_K);
-  Array<ExtremaVector> *a = s_extremaMap.get(key);
-  if(a != NULL) {
-    a->add(ExtremaVector(m_extrema, E, mmQuot));
-  } else {
-    Array<ExtremaVector> a;
-    a.add(ExtremaVector(m_extrema, E, mmQuot));
-    s_extremaMap.put(key,a);
-  }
+  s_extremaMap.put(m_M, m_K, ExtremaVector(m_extrema, E, mmQuot));
 }
 
 String Remes::getMapFileName() const {
   FileNameSplitter info(__FILE__);
-  const String typeString = m_useRelativeError ? _T("RelativeError") : _T("AbsoluteError");
-  const String fileName = m_targetFunction.getName() + typeString;
+  const String typeString   = m_useRelativeError ? _T("RelativeError") : _T("AbsoluteError");
+  const String domainString = format(_T("[%s-%s]")
+                                    ,m_domain.getFrom().toString().cstr()
+                                    ,m_domain.getTo().toString().cstr()
+                                    );
+  const String fileName = m_targetFunction.getName() + domainString + typeString;
   return info.setFileName(fileName).setExtension(_T("dat")).getAbsolutePath();
 }
 
-void Remes::loadExtremaFromFile() {
-  s_extremaMap.load(getMapFileName());
-}
-
 void Remes::saveExtremaToFile() {
-  s_extremaMap.save(getMapFileName());
+  s_extremaMap.save();
 }

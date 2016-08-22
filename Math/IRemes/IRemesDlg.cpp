@@ -8,12 +8,9 @@
 class CAboutDlg : public CDialog {
 public:
   CAboutDlg();
-
   enum { IDD = IDD_ABOUTBOX };
-
-  protected:
+protected:
   virtual void DoDataExchange(CDataExchange* pDX);
-
 protected:
   DECLARE_MESSAGE_MAP()
 };
@@ -28,16 +25,21 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T("")), m_maxSearchEIterations(0)
+CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T("")), m_maxSearchEIterations(0)
 {
-  m_K                    = 1;
   m_M                    = 1;
+  m_K                    = 1;
+  m_MTo                  = m_M;
+  m_KTo                  = m_K;
   m_xFrom                = 0.0;
   m_xTo                  = 1.0;
-  m_digits               = 15;
+  m_digits               = 19;
   m_maxSearchEIterations = 700;
-  m_reduceToInterpolate  = false;
+  m_maxMKSum             = 0;
   m_relativeError        = FALSE;
+  m_skipExisting         = FALSE;
+
+  m_reduceToInterpolate  = false;
   m_lastErrorPlotKey     = -1;
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
   m_remes                = NULL;
@@ -48,18 +50,22 @@ CIRemesDlg::CIRemesDlg(CWnd* pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITM, m_M);
-  DDV_MinMaxUInt(pDX, m_M, 0, 20);
+  DDV_MinMaxUInt(pDX, m_M, 1, 100);
+  DDX_Text(pDX, IDC_EDITMTO, m_MTo);
   DDX_Text(pDX, IDC_EDITK, m_K);
-  DDV_MinMaxUInt(pDX, m_K, 0, 20);
+  DDV_MinMaxUInt(pDX, m_K, 0, 100);
+  DDX_Text(pDX, IDC_EDITKTO, m_KTo);
   DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
   DDX_Text(pDX, IDC_EDITXTO, m_xTo);
-  DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
   DDX_Text(pDX, IDC_EDITDIGITS, m_digits);
   DDV_MinMaxUInt(pDX, m_digits, 2, 200);
-  DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITMAXSEARCHEITERATIONS, m_maxSearchEIterations);
   DDV_MinMaxUInt(pDX, m_maxSearchEIterations, 2, 20000);
+  DDX_Check(pDX, IDC_CHECKRELATIVEERROR, m_relativeError);
+  DDX_Text(pDX, IDC_EDITMAXMKSUM, m_maxMKSum);
+  DDX_Check(pDX, IDC_CHECKSKIPEXISTING, m_skipExisting);
 }
 
 BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
@@ -95,6 +101,12 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_MESSAGE(ID_MSG_MAXERROR_CHANGED         , &CIRemesDlg::OnMsgMaxErrorChanged        )
   ON_MESSAGE(IS_MSG_UPDATEINTERPOLATION      , &CIRemesDlg::OnMsgUpdateInterpolation    )
   ON_MESSAGE(ID_MSG_WARNING_CHANGED          , &CIRemesDlg::OnMsgWarningChanged         )
+  ON_EN_KILLFOCUS(IDC_EDITM                  , &CIRemesDlg::OnEnKillfocusEditm          )
+  ON_EN_KILLFOCUS(IDC_EDITK                  , &CIRemesDlg::OnEnKillfocusEditk          )
+  ON_EN_KILLFOCUS(IDC_EDITMTO                , &CIRemesDlg::OnEnKillfocusEditmto        )
+  ON_EN_KILLFOCUS(IDC_EDITKTO                , &CIRemesDlg::OnEnKillfocusEditkto        )
+  ON_EN_UPDATE(IDC_EDITKTO                   , &CIRemesDlg::OnEnUpdateEditkto           )
+  ON_EN_UPDATE(IDC_EDITMTO                   , &CIRemesDlg::OnEnUpdateEditmto           )
 END_MESSAGE_MAP()
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -131,6 +143,7 @@ BOOL CIRemesDlg::OnInitDialog() {
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
+  m_coefListBox.substituteControl(this, IDC_LISTCOEF);
   m_coorSystemError.substituteControl(   this, IDC_FRAME_COORSYSTEM_ERROR);
   m_coorSystemError.setRetainAspectRatio(false);
   m_coorSystemError.setDataRange(DataRange(m_xFrom, m_xTo, -1, 1), false);
@@ -138,7 +151,7 @@ BOOL CIRemesDlg::OnInitDialog() {
 
   m_coorSystemSpline.substituteControl(   this, IDC_FRAME_COORSYSTEM_SPLINE);
   m_coorSystemSpline.setRetainAspectRatio(false);
-  m_coorSystemSpline.setDataRange(DataRange(0, 1, -1, 1), false);
+  m_coorSystemSpline.setDataRange(DataRange(0, 1, 0, 1), false);
   m_coorSystemSpline.setAutoScale(true, false);
 
   setCoorSystemSplineVisible(isMenuItemChecked(this, ID_VIEW_SHOW_SPLINE));
@@ -215,13 +228,8 @@ void CIRemesDlg::showWarning(const String &str) {
 }
 
 void CIRemesDlg::showCoefWindowData(const CoefWindowData &data) {
-  CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTCOEF);
-  lb->ResetContent();
-  const StringArray &a = data.m_coefStrings;
-  const size_t n = a.size();
-  for(size_t i = 0; i < n; i++) {
-    lb->AddString(a[i].cstr());
-  }
+  m_coefListBox.setLines(data.m_coefStrings);
+  m_coefListBox.Invalidate();
 }
 
 void CIRemesDlg::showExtremaStringArray() {
@@ -283,7 +291,6 @@ void CIRemesDlg::updateErrorPlotXRange() {
   m_lastErrorPlotKey = -1;
 }
 
-
 int CIRemesDlg::getErrorPlotXPixelCount() const {
   const IntervalTransformation &tr = m_coorSystemError.getTransformation().getXTransformation();
   const DoubleInterval xToRange = tr.forwardTransform(getXRange());
@@ -321,6 +328,9 @@ void CIRemesDlg::ajourDialogItems() {
     IDC_EDITNAME
    ,IDC_EDITM
    ,IDC_EDITK
+   ,IDC_EDITMTO
+   ,IDC_EDITKTO
+   ,IDC_EDITMAXMKSUM
    ,IDC_EDITXFROM
    ,IDC_EDITXTO
    ,IDC_EDITDIGITS
@@ -530,6 +540,66 @@ void CIRemesDlg::OnGotoMaxSearchEIterations() {
   gotoEditBox(this, IDC_EDITMAXSEARCHEITERATIONS);
 }
 
+
+void CIRemesDlg::OnEnKillfocusEditm() {
+  String mStr   = getWindowText(this, IDC_EDITM);
+  String mToStr = getWindowText(this, IDC_EDITMTO);
+  UINT m, mto;
+  if(_stscanf(mStr.cstr(), _T("%u"), &m) != 1) {
+    return;
+  }
+  if (_stscanf(mToStr.cstr(), _T("%u"), &mto) != 1) {
+    mto = 0;
+  }
+  if (m > mto) {
+    setWindowText(this, IDC_EDITMTO, format(_T("%u"), m));
+  }
+  adjustMaxMKSum();
+}
+
+void CIRemesDlg::OnEnKillfocusEditk() {
+  String kStr   = getWindowText(this, IDC_EDITK);
+  String kToStr = getWindowText(this, IDC_EDITKTO);
+  UINT k, kto;
+  if(_stscanf(kStr.cstr(), _T("%u"), &k) != 1) {
+    return;
+  }
+  if (_stscanf(kToStr.cstr(), _T("%u"), &kto) != 1) {
+    kto = 0;
+  }
+  if (k > kto) {
+    setWindowText(this, IDC_EDITKTO, format(_T("%u"), k));
+  }
+  adjustMaxMKSum();
+}
+void CIRemesDlg::OnEnKillfocusEditmto() {
+  adjustMaxMKSum();
+}
+void CIRemesDlg::OnEnKillfocusEditkto() {
+  adjustMaxMKSum();
+}
+void CIRemesDlg::OnEnUpdateEditmto() {
+  adjustMaxMKSum();
+}
+void CIRemesDlg::OnEnUpdateEditkto() {
+  adjustMaxMKSum();
+}
+
+void CIRemesDlg::adjustMaxMKSum() {
+  const UINT maxM = _ttoi(getWindowText(this, IDC_EDITMTO).cstr());
+  const UINT maxK = _ttoi(getWindowText(this, IDC_EDITKTO).cstr());
+  const UINT MKsum = maxM + maxK;
+
+  String maxMKSumStr   = getWindowText(this, IDC_EDITMAXMKSUM);
+  UINT maxMKSum;
+  if (_stscanf(maxMKSumStr.cstr(), _T("%u"), &maxMKSum) != 1) {
+    maxMKSum = 0;
+  }
+  if (maxMKSum < MKsum) {
+    setWindowText(this, IDC_EDITMAXMKSUM, format(_T("%u"), MKsum));
+  }
+}
+
 void CIRemesDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(source == m_debugThread) {
     switch(id) {
@@ -571,7 +641,8 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
       m_stateString = r.getTotalStateString();
       PostMessage(ID_MSG_STATE_CHANGED, r.getM(), r.getK());
       if(oldState == REMES_SEARCH_COEFFICIENTS) {
-        m_coefWinData = r;
+        m_coefWinData   = r;
+        m_searchEString = r.getSearchEString();
         PostMessage(ID_MSG_COEFFICIENTS_CHANGED, 0, 0);
       }
       m_gate.signal();
@@ -667,12 +738,16 @@ LRESULT CIRemesDlg::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 
 void CIRemesDlg::setSubMK(int subM, int subK) {
   if (subM != m_subM) {
-    String str = ((subM >= 0) && (subM != m_M)) ? format(_T("%u"), subM) : _T("");
+    String str = ((subM>=0) && ((subM!=m_M) || (m_M!=m_MTo)))
+               ? format(_T("%u"), subM) 
+               : _T("");
     setWindowText(this, IDC_STATICSUBM, str);
     m_subM = subM;
   }
   if (subK != m_subK) {
-    String str = ((subK >= 0) && (subK != m_K)) ? format(_T("%u"), subK) : _T("");
+    String str = ((subK>=0) && ((subK!=m_K) || (m_K!=m_KTo)))
+               ? format(_T("%u"), subK) 
+               : _T("");
     setWindowText(this, IDC_STATICSUBK, str);
     m_subK = subK;
   }
@@ -680,8 +755,10 @@ void CIRemesDlg::setSubMK(int subM, int subK) {
 
 LRESULT CIRemesDlg::OnMsgCoefficientsChanged(WPARAM wp, LPARAM lp) {
   m_gate.wait();
+  const String str = m_searchEString;
   showCoefWindowData(m_coefWinData);
   m_gate.signal();
+  showSearchE(str);
   return 0;
 }
 
@@ -733,9 +810,7 @@ void CIRemesDlg::startThread(bool singleStep) {
   if(!UpdateData()) {
     return;
   }
-  if (m_name.GetLength() == 0) {
-    gotoEditBox(this, IDC_EDITNAME);
-    MessageBox(_T("Name cannot be empty"));
+  if (!validateInput()) {
     return;
   }
   updateErrorPlotXRange();
@@ -752,6 +827,46 @@ void CIRemesDlg::startThread(bool singleStep) {
   }
 }
 
+bool CIRemesDlg::validateInput() {
+  const TCHAR *title = _T("Error");
+  if (m_name.GetLength() == 0) {
+    gotoEditBox(this, IDC_EDITNAME);
+    MessageBox(_T("Name cannot be empty"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_xFrom > 0 || m_xTo < 0) {
+    gotoEditBox(this, IDC_EDITXFROM);
+    MessageBox(_T("Domain must contain 0"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_xFrom >= m_xTo) {
+    gotoEditBox(this, IDC_EDITXFROM);
+    MessageBox(_T("Invalid interval. from must be < to"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_M < 1) {
+    gotoEditBox(this, IDC_EDITM);
+    MessageBox(_T("M must be >= 1"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_K < 0) {
+    gotoEditBox(this, IDC_EDITK);
+    MessageBox(_T("K must be >= 0"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_M > m_MTo) {
+    gotoEditBox(this, IDC_EDITM);
+    MessageBox(_T("M start > M end"), title, MB_ICONWARNING);
+    return false;
+  }
+  if (m_K > m_KTo) {
+    gotoEditBox(this, IDC_EDITK);
+    MessageBox(_T("K start > K end"), title, MB_ICONWARNING);
+    return false;
+  }
+  return true;
+}
+
 void CIRemesDlg::createThread() {
   m_targetFunction.setName((LPCTSTR)m_name);
   m_targetFunction.setDigits(m_digits);
@@ -760,7 +875,9 @@ void CIRemesDlg::createThread() {
   m_reduceToInterpolate = false;
   m_remes               = new Remes(m_targetFunction, m_relativeError?true:false);
   m_remes->setSearchEMaxIterations(m_maxSearchEIterations);
-  m_debugThread         = new DebugThread(m_M, m_K, *m_remes);
+  const IntInterval mInterval(m_M, m_MTo);
+  const IntInterval kInterval(m_K, m_KTo);
+  m_debugThread         = new DebugThread(*m_remes, mInterval, kInterval, m_maxMKSum, m_skipExisting?true:false);
   m_debugThread->addPropertyChangeListener(this);
 }
 
@@ -786,10 +903,10 @@ void CIRemesDlg::showError(const Exception &e) {
   MessageBox(format(_T("Exception:%s"), e.what()).cstr(), _T("Error"), MB_ICONWARNING | MB_OK);
 }
 
-void DynamicTargetFunction::setDomain(double from, double to) {
-  m_domain.setFrom(from).setTo(to);
-}
-
 BigReal DynamicTargetFunction::operator()(const BigReal &x) {
   return rLn(x + BIGREAL_1, m_digits);
+}
+
+void DynamicTargetFunction::setDomain(double from, double to) {
+  m_domain.setFrom(from).setTo(to);
 }

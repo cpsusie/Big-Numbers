@@ -2,6 +2,7 @@
 
 #include <MFCUtil/CoordinateSystem/CoordinateSystem.h>
 #include "DebugThread.h"
+#include "ListBoxDiffMarks.h"
 
 class DynamicTargetFunction : public RemesTargetFunction {
 private:
@@ -60,6 +61,7 @@ private:
   SimpleLayoutManager     m_layoutManager;
   RunMenuState            m_runMenuState;
   Semaphore               m_gate;
+  CListBoxDiffMarks       m_coefListBox;
   CCoordinateSystem       m_coorSystemError, m_coorSystemSpline;
   DynamicTargetFunction   m_targetFunction;
   Remes                  *m_remes;
@@ -73,10 +75,12 @@ private:
   String                  m_stateString;
   String                  m_warning, m_error;
 
+  bool validateInput();
   void startThread(bool singleStep);
   void createThread();
   void destroyThread();
   void setSubMK(int subM, int subK);
+  void adjustMaxMKSum();
   String getThreadStateName() const;
   void showError(const Exception &e);
   inline bool hasDebugThread() const {
@@ -126,6 +130,12 @@ protected:
   afx_msg HCURSOR OnQueryDragIcon();
   virtual BOOL    OnInitDialog();
   afx_msg void    OnPaint();
+  afx_msg void    OnEnKillfocusEditm();
+  afx_msg void    OnEnKillfocusEditk();
+  afx_msg void    OnEnKillfocusEditmto();
+  afx_msg void    OnEnKillfocusEditkto();
+  afx_msg void    OnEnUpdateEditkto();
+  afx_msg void    OnEnUpdateEditmto();
   afx_msg void    OnSize(UINT nType, int cx, int cy);
   virtual void    OnOK();
   virtual void    OnCancel();
@@ -163,11 +173,15 @@ protected:
 
 private:
   CString m_name;
-  UINT	  m_K;
   UINT	  m_M;
+  UINT	  m_K;
+  UINT    m_MTo;
+  UINT    m_KTo;
+  UINT    m_maxMKSum;
   double	m_xFrom;
   double	m_xTo;
   UINT	  m_digits;
   UINT    m_maxSearchEIterations;
   BOOL	  m_relativeError;
+  BOOL    m_skipExisting;
 };

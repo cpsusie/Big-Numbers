@@ -289,6 +289,7 @@
     <ClCompile Include="ExtremaMap.cpp" />
     <ClCompile Include="IRemes.cpp" />
     <ClCompile Include="IRemesDlg.cpp" />
+    <ClCompile Include="ListBoxDiffMarks.cpp" />
     <ClCompile Include="MultiExtremaFinder.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -309,6 +310,7 @@
     <ClInclude Include="DebugThread.h" />
     <ClInclude Include="IRemes.h" />
     <ClInclude Include="IRemesDlg.h" />
+    <ClInclude Include="ListBoxDiffMarks.h" />
     <ClInclude Include="MultiExtremaFinder.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />

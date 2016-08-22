@@ -3,7 +3,13 @@
 
 DEFINECLASSNAME(DebugThread);
 
-DebugThread::DebugThread(int M, int K, Remes &r) : m_M(M), m_K(K), m_r(r) {
+DebugThread::DebugThread(Remes &r, const IntInterval &mInterval, const IntInterval &kInterval, int maxMKSum, bool skipExisting) 
+: m_r(r)
+, m_mInterval(   mInterval   )
+, m_kInterval(   kInterval   )
+, m_maxMKSum(    maxMKSum    )
+, m_skipExisting(skipExisting)
+{
   m_running = m_killed = m_terminated = false;
 }
 
@@ -15,7 +21,16 @@ unsigned int DebugThread::run() {
   m_r.addPropertyChangeListener(this);
   try {
     setProperty(THREAD_RUNNING, m_running, true);
-    m_r.solve(m_M, m_K);
+    for (int M = m_mInterval.getFrom(); M <= m_mInterval.getTo(); M++) {
+      for (int K = m_kInterval.getFrom(); K <= m_kInterval.getTo(); K++) {
+        if(M + K <= m_maxMKSum) {
+          if (m_skipExisting && m_r.solutionExist(M, K)) {
+            continue;
+          }
+          m_r.solve(M, K);
+        }
+      }
+    }
   } catch(Exception e) {
     setProperty(THREAD_ERROR, m_errorMsg, e.what());
   } catch(bool) {

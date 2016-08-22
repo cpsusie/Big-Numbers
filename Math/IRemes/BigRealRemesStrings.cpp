@@ -128,10 +128,15 @@ String Remes::getSearchEString() const {
     return format(_T("New E:%s"), FormatBigReal(m_E, 25).cstr());
   } else {
     String str;
-    str  = format(_T("Search E. Iteration %3d. Stop when Q < %s\n"), m_searchEIteration, m_QEpsilon.toString().cstr());
-    str += format(_T("Last E:%s\n"), FormatBigReal(m_E ,25).cstr());
-    str += format(_T("New  E:%s\n"), FormatBigReal(m_nextE, 25).cstr());
-    str += format(_T("Q=1-min(|Last E|, |New E|)/max(|Last E|, |New E|)\nQ=%s"), FormatBigReal(m_Q).cstr());
+    str  = format(_T("Search E. Iteration %3d. MMQuot:%s\n")
+                 ,m_searchEIteration
+                 ,FormatBigReal(m_MMQuot,5,9).cstr());
+    str += format(_T("Last E:%s\n"), FormatBigReal(m_E    , 38).cstr());
+    str += format(_T("New  E:%s\n"), FormatBigReal(m_nextE, 38).cstr());
+    str += format(_T("Q=1-min(|Last E|, |New E|)/max(|Last E|, |New E|)\n"));
+    str += format(_T("Q=%s. Stop when Q<%s")
+                 ,FormatBigReal(m_Q,5,9).cstr()
+                 ,m_QEpsilon.toString().cstr());
     return str;
   }
 }
