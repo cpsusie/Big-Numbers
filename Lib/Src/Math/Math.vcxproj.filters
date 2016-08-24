@@ -44,6 +44,12 @@
     <Filter Include="Source Files\Expression\Asm Files">
       <UniqueIdentifier>{05b8f80c-c529-40dd-9738-b8dcb1c1e480}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Triangle">
+      <UniqueIdentifier>{186d8b24-c503-420e-9e06-895f811aa236}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Triangle">
+      <UniqueIdentifier>{2de3b9ba-c913-496e-9b21-7c91010b72c6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -301,6 +307,9 @@
     <ClCompile Include="Spherical.cpp">
       <Filter>Source Files\Geometri</Filter>
     </ClCompile>
+    <ClCompile Include="Triangle.cpp">
+      <Filter>Source Files\Triangle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -308,6 +317,9 @@
   <ItemGroup>
     <Text Include="Expression\Expression.txt">
       <Filter>Source Files\Expression\Expression Grammar</Filter>
+    </Text>
+    <Text Include="Triangle\ReadMe.txt">
+      <Filter>Source Files\Triangle</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
@@ -453,6 +465,9 @@
     </ClInclude>
     <ClInclude Include="Expression\pch.h">
       <Filter>Source Files\Expression</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h">
+      <Filter>Header Files\Triangle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

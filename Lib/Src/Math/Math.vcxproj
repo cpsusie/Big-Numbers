@@ -547,6 +547,7 @@
     <ClCompile Include="Spherical.cpp" />
     <ClCompile Include="Statistic.cpp" />
     <ClCompile Include="Transformation.cpp" />
+    <ClCompile Include="Triangle.cpp" />
     <ClCompile Include="TrigonometricFunctions.cpp" />
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
@@ -661,6 +662,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="Expression\Expression.txt" />
+    <Text Include="Triangle\ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Math\AlgorithmHandler.h" />
@@ -701,6 +703,7 @@
     <ClInclude Include="..\..\Include\Math\Spherical.h" />
     <ClInclude Include="..\..\Include\Math\Statistic.h" />
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
+    <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="Expression\pch.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
