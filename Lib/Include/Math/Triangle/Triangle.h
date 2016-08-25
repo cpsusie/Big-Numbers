@@ -248,6 +248,20 @@
 /*                                                                           */
 /*****************************************************************************/
 
+/* For single precision (which will save some memory and reduce paging),     */
+/*   define the symbol SINGLE by using the -DSINGLE compiler switch or by    */
+/*   writing "#define SINGLE" below.                                         */
+/*                                                                           */
+/* For double precision (which will allow you to refine meshes to a smaller  */
+/*   edge length), leave SINGLE undefined.                                   */
+/*                                                                           */
+/* Double precision uses more memory, but improves the resolution of the     */
+/*   meshes you can generate with Triangle.  It also reduces the likelihood  */
+/*   of a floating exception due to overflow.  Finally, it is much faster    */
+/*   than single precision on 64-bit architectures like the DEC Alpha.  I    */
+/*   recommend double precision unless you want to generate a mesh for which */
+/*   you do not have enough memory.                                          */
+
 /* #define SINGLE */
 
 #ifdef SINGLE
@@ -256,38 +270,88 @@
 #define REAL double
 #endif /* not SINGLE */
 
+/* If yours is not a Unix system, define the NO_TIMER compiler switch to     */
+/*   remove the Unix-specific timing code.                                   */
+
+#define NO_TIMER 1
+
+/* To insert lots of self-checks for internal errors, define the SELF_CHECK  */
+/*   symbol.  This will slow down the program significantly.  It is best to  */
+/*   define the symbol using the -DSELF_CHECK compiler switch, but you could */
+/*   write "#define SELF_CHECK" below.  If you are modifying this code, I    */
+/*   recommend you turn self-checks on until your work is debugged.          */
+
+/* #define SELF_CHECK */
+
+/* To compile Triangle as a callable object library (triangle.o), define the */
+/*   TRILIBRARY symbol.  Read the file triangle.h for details on how to call */
+/*   the procedure triangulate() that results.                               */
+
+#define TRILIBRARY
+
+/* It is possible to generate a smaller version of Triangle using one or     */
+/*   both of the following symbols.  Define the REDUCED symbol to eliminate  */
+/*   all features that are primarily of research interest; specifically, the */
+/*   -i, -F, -s, and -C switches.  Define the CDT_ONLY symbol to eliminate   */
+/*   all meshing algorithms above and beyond constrained Delaunay            */
+/*   triangulation; specifically, the -r, -q, -a, -u, -D, -S, and -s         */
+/*   switches.  These reductions are most likely to be useful when           */
+/*   generating an object library (triangle.o) by defining the TRILIBRARY    */
+/*   symbol.                                                                 */
+
+/* #define REDUCED */
+
 class TriangulateIO {
 public:
   REAL *pointlist;                                               /* In / out */
   REAL *pointattributelist;                                      /* In / out */
-  int *pointmarkerlist;                                          /* In / out */
-  int numberofpoints;                                            /* In / out */
-  int numberofpointattributes;                                   /* In / out */
+  int  *pointmarkerlist;                                         /* In / out */
+  int   numberofpoints;                                          /* In / out */
+  int   numberofpointattributes;                                 /* In / out */
 
-  int *trianglelist;                                             /* In / out */
+  int  *trianglelist;                                            /* In / out */
   REAL *triangleattributelist;                                   /* In / out */
-  REAL *trianglearealist;                                         /* In only */
-  int *neighborlist;                                             /* Out only */
-  int numberoftriangles;                                         /* In / out */
-  int numberofcorners;                                           /* In / out */
-  int numberoftriangleattributes;                                /* In / out */
+  REAL *trianglearealist;                                        /* In only  */
+  int  *neighborlist;                                            /* Out only */
+  int   numberoftriangles;                                       /* In / out */
+  int   numberofcorners;                                         /* In / out */
+  int   numberoftriangleattributes;                              /* In / out */
 
-  int *segmentlist;                                              /* In / out */
-  int *segmentmarkerlist;                                        /* In / out */
-  int numberofsegments;                                          /* In / out */
+  int  *segmentlist;                                             /* In / out */
+  int  *segmentmarkerlist;                                       /* In / out */
+  int   numberofsegments;                                        /* In / out */
 
   REAL *holelist;                        /* In / pointer to array copied out */
-  int numberofholes;                                      /* In / copied out */
+  int   numberofholes;                                    /* In / copied out */
 
   REAL *regionlist;                      /* In / pointer to array copied out */
-  int numberofregions;                                    /* In / copied out */
+  int   numberofregions;                                  /* In / copied out */
 
-  int *edgelist;                                                 /* Out only */
-  int *edgemarkerlist;            /* Not used with Voronoi diagram; out only */
+  int  *edgelist;                                                /* Out only */
+  int  *edgemarkerlist;           /* Not used with Voronoi diagram; out only */
   REAL *normlist;                /* Used only with Voronoi diagram; out only */
-  int numberofedges;                                             /* Out only */
+  int   numberofedges;                                           /* Out only */
 };
 
-void triangulate(char *, TriangulateIO *, TriangulateIO *,
-                 TriangulateIO *);
-void trifree(VOID *memptr);
+#ifdef TRILIBRARY
+
+void triangulate(char *triswitches, TriangulateIO *in, TriangulateIO *out, TriangulateIO *vorout);
+
+#else // !TRILIBRARY
+
+int triangleMain(int argc, char **argv);
+
+char *readline(char *string, FILE *infile, char *infilename);
+char *findfield(char *string);
+
+#endif // TRILIBRARY
+
+String getTriangleSyntax(); // get a string with command line switches
+String getTriangleInfo();   // get the whole story
+
+void triError(const TCHAR *format, ...);
+
+/* Maximum number of characters in a line read from a file (including the 0  */
+#define INPUTLINESIZE 1024
+
+#include <Math/PragmaLib.h>

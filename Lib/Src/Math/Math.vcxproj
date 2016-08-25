@@ -548,6 +548,9 @@
     <ClCompile Include="Statistic.cpp" />
     <ClCompile Include="Transformation.cpp" />
     <ClCompile Include="Triangle.cpp" />
+    <ClCompile Include="TriangleInfo.cpp" />
+    <ClCompile Include="TriangleIO.cpp" />
+    <ClCompile Include="TriangleMemory.cpp" />
     <ClCompile Include="TrigonometricFunctions.cpp" />
     <ClCompile Include="TrigonometricFunctionsD.cpp" />
     <ClCompile Include="TrigonometricFunctionsG.cpp" />
@@ -705,6 +708,7 @@
     <ClInclude Include="..\..\Include\Math\Transformation.h" />
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h" />
     <ClInclude Include="Expression\pch.h" />
+    <ClInclude Include="MemoryPool.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

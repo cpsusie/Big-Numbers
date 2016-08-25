@@ -310,6 +310,15 @@
     <ClCompile Include="Triangle.cpp">
       <Filter>Source Files\Triangle</Filter>
     </ClCompile>
+    <ClCompile Include="TriangleMemory.cpp">
+      <Filter>Source Files\Triangle</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangleInfo.cpp">
+      <Filter>Source Files\Triangle</Filter>
+    </ClCompile>
+    <ClCompile Include="TriangleIO.cpp">
+      <Filter>Source Files\Triangle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -468,6 +477,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\Triangle\Triangle.h">
       <Filter>Header Files\Triangle</Filter>
+    </ClInclude>
+    <ClInclude Include="MemoryPool.h">
+      <Filter>Source Files\Triangle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
