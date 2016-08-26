@@ -27,14 +27,14 @@
 //  This program may be freely redistributed under the condition that the
 //  copyright notices (including this entire header and the copyright
 //  notice printed when the `-h' switch is selected) are not removed, and
-//  no compensation is received.  Private, research, and institutional
-//  use is free.  You may distribute modified versions of this code UNDER
+//  no compensation is received. Private, research, and institutional
+//  use is free. You may distribute modified versions of this code UNDER
 //  THE CONDITION THAT THIS CODE AND ANY MODIFICATIONS MADE TO IT IN THE
 //  SAME FILE REMAIN UNDER COPYRIGHT OF THE ORIGINAL AUTHOR, BOTH SOURCE
 //  AND OBJECT CODE ARE MADE FREELY AVAILABLE WITHOUT CHARGE, AND CLEAR
-//  NOTICE IS GIVEN OF THE MODIFICATIONS.  Distribution of this code as
+//  NOTICE IS GIVEN OF THE MODIFICATIONS. Distribution of this code as
 //  part of a commercial system is permissible ONLY BY DIRECT ARRANGEMENT
-//  WITH THE AUTHOR.  (If you are not directly supplying this code to a
+//  WITH THE AUTHOR. (If you are not directly supplying this code to a
 //  customer, and you are instead telling them how they can obtain it for
 //  free, then you are not required to make any arrangement with me.)
 //
@@ -43,32 +43,32 @@
 //      http://www.cs.cmu.edu/~quake/triangle.html
 //
 //  Disclaimer:  Neither I nor Carnegie Mellon warrant this code in any way
-//  whatsoever.  This code is provided "as-is".  Use at your own risk.
+//  whatsoever. This code is provided "as-is". Use at your own risk.
 //
-//  Some of the references listed below are marked with an asterisk.  [*]
+//  Some of the references listed below are marked with an asterisk. [*]
 //  These references are available for downloading from the Web page
 //
 //      http://www.cs.cmu.edu/~quake/triangle.research.html
 //
-//  Three papers discussing aspects of Triangle are available.  A short
+//  Three papers discussing aspects of Triangle are available. A short
 //  overview appears in "Triangle:  Engineering a 2D Quality Mesh
 //  Generator and Delaunay Triangulator," in Applied Computational
 //  Geometry:  Towards Geometric Engineering, Ming C. Lin and Dinesh
 //  Manocha, editors, Lecture Notes in Computer Science volume 1148,
 //  pages 203-222, Springer-Verlag, Berlin, May 1996 (from the First ACM
-//  Workshop on Applied Computational Geometry).  [*]
+//  Workshop on Applied Computational Geometry). [*]
 //
 //  The algorithms are discussed in the greatest detail in "Delaunay
 //  Refinement Algorithms for Triangular Mesh Generation," Computational
-//  Geometry:  Theory and Applications 22(1-3):21-74, May 2002.  [*]
+//  Geometry:  Theory and Applications 22(1-3):21-74, May 2002. [*]
 //
 //  More detail about the data structures may be found in my dissertation:
 //  "Delaunay Refinement Mesh Generation," Ph.D. thesis, Technical Report
 //  CMU-CS-97-137, School of Computer Science, Carnegie Mellon University,
-//  Pittsburgh, Pennsylvania, 18 May 1997.  [*]
+//  Pittsburgh, Pennsylvania, 18 May 1997. [*]
 //
 //  Triangle was created as part of the Quake Project in the School of
-//  Computer Science at Carnegie Mellon University.  For further
+//  Computer Science at Carnegie Mellon University. For further
 //  information, see Hesheng Bao, Jacobo Bielak, Omar Ghattas, Loukas F.
 //  Kallivokas, David R. O'Hallaron, Jonathan R. Shewchuk, and Jifeng Xu,
 //  "Large-scale Simulation of Elastic Wave Propagation in Heterogeneous
@@ -88,12 +88,12 @@
 //  domains with small input angles well, as described in Gary L. Miller,
 //  Steven E. Pav, and Noel J. Walkington, "When and Why Ruppert's
 //  Algorithm Works," Twelfth International Meshing Roundtable, pages
-//  91-102, Sandia National Laboratories, September 2003.  [*]
+//  91-102, Sandia National Laboratories, September 2003. [*]
 //
 //  My implementation of the divide-and-conquer and incremental Delaunay
 //  triangulation algorithms follows closely the presentation of Guibas
 //  and Stolfi, even though I use a triangle-based data structure instead
-//  of their quad-edge data structure.  (In fact, I originally implemented
+//  of their quad-edge data structure. (In fact, I originally implemented
 //  Triangle using the quad-edge data structure, but the switch to a
 //  triangle-based data structure sped Triangle by a factor of two.)  The
 //  mesh manipulation primitives and the two aforementioned Delaunay
@@ -105,7 +105,7 @@
 //  Their O(n log n) divide-and-conquer algorithm is adapted from Der-Tsai
 //  Lee and Bruce J. Schachter, "Two Algorithms for Constructing the
 //  Delaunay Triangulation," International Journal of Computer and
-//  Information Science 9(3):219-242, 1980.  Triangle's improvement of the
+//  Information Science 9(3):219-242, 1980. Triangle's improvement of the
 //  divide-and-conquer algorithm by alternating between vertical and
 //  horizontal cuts was introduced by Rex A. Dwyer, "A Faster Divide-and-
 //  Conquer Algorithm for Constructing Delaunay Triangulations,"
@@ -118,7 +118,7 @@
 //  Saias, and Binhai Zhu, "Fast Randomized Point Location Without
 //  Preprocessing in Two- and Three-Dimensional Delaunay Triangulations,"
 //  Proceedings of the Twelfth Annual Symposium on Computational Geometry,
-//  ACM, May 1996.  [*]  If I were to randomize the order of Vertex
+//  ACM, May 1996. [*]  If I were to randomize the order of Vertex
 //  insertion (I currently don't bother), their result combined with the
 //  result of Kenneth L. Clarkson and Peter W. Shor, "Applications of
 //  Random Sampling in Computational Geometry II," Discrete &
@@ -127,9 +127,9 @@
 //
 //  The O(n log n) sweepline Delaunay triangulation algorithm is taken from
 //  Steven Fortune, "A Sweepline Algorithm for Voronoi Diagrams",
-//  Algorithmica 2(2):153-174, 1987.  A random sample of edges on the
+//  Algorithmica 2(2):153-174, 1987. A random sample of edges on the
 //  boundary of the triangulation are maintained in a splay tree for the
-//  purpose of point location.  Splay trees are described by Daniel
+//  purpose of point location. Splay trees are described by Daniel
 //  Dominic Sleator and Robert Endre Tarjan, "Self-Adjusting Binary Search
 //  Trees," Journal of the ACM 32(3):652-686, July 1985,
 //  http://portal.acm.org/citation.cfm?id=3835 .
@@ -137,7 +137,7 @@
 //  The algorithms for exact computation of the signs of determinants are
 //  described in Jonathan Richard Shewchuk, "Adaptive Precision Floating-
 //  Point Arithmetic and Fast Robust Geometric Predicates," Discrete &
-//  Computational Geometry 18(3):305-363, October 1997.  (Also available
+//  Computational Geometry 18(3):305-363, October 1997. (Also available
 //  as Technical Report CMU-CS-96-140, School of Computer Science,
 //  Carnegie Mellon University, Pittsburgh, Pennsylvania, May 1996.)  [*]
 //  An abbreviated version appears as Jonathan Richard Shewchuk, "Robust
@@ -146,7 +146,7 @@
 //  Many of the ideas for my exact arithmetic routines originate with
 //  Douglas M. Priest, "Algorithms for Arbitrary Precision Floating Point
 //  Arithmetic," Tenth Symposium on Computer Arithmetic, pp. 132-143, IEEE
-//  Computer Society Press, 1991.  [*]  Many of the ideas for the correct
+//  Computer Society Press, 1991. [*]  Many of the ideas for the correct
 //  evaluation of the signs of determinants are taken from Steven Fortune
 //  and Christopher J. Van Wyk, "Efficient Exact Arithmetic for Computa-
 //  tional Geometry," Proceedings of the Ninth Annual Symposium on
@@ -166,26 +166,26 @@
 //  triangular mesh generation, see the excellent survey by Marshall Bern
 //  and David Eppstein, "Mesh Generation and Optimal Triangulation," in
 //  Computing and Euclidean Geometry, Ding-Zhu Du and Frank Hwang,
-//  editors, World Scientific, Singapore, pp. 23-90, 1992.  [*]
+//  editors, World Scientific, Singapore, pp. 23-90, 1992. [*]
 //
 //  The time for incrementally adding PSLG (planar straight line graph)
 //  segments to create a constrained Delaunay triangulation is probably
 //  O(t^2) per segment in the worst case and O(t) per segment in the
 //  common case, where t is the number of triangles that intersect the
-//  segment before it is inserted.  This doesn't count point location,
-//  which can be much more expensive.  I could improve this to O(d log d)
+//  segment before it is inserted. This doesn't count point location,
+//  which can be much more expensive. I could improve this to O(d log d)
 //  time, but d is usually quite small, so it's not worth the bother.
 //  (This note does not apply when the -s switch is used, invoking a
 //  different method is used to insert segments.)
 //
 //  The time for deleting a Vertex from a Delaunay triangulation is O(d^2)
 //  in the worst case and O(d) in the common case, where d is the degree
-//  of the Vertex being deleted.  I could improve this to O(d log d) time,
+//  of the Vertex being deleted. I could improve this to O(d log d) time,
 //  but d is usually quite small, so it's not worth the bother.
 //
 //  Ruppert's Delaunay refinement algorithm typically generates triangles
 //  at a linear rate (constant time per triangle) after the initial
-//  triangulation is formed.  There may be pathological cases where
+//  triangulation is formed. There may be pathological cases where
 //  quadratic time is required, but these never arise in practice.
 //
 //  The geometric predicates (circumcenter calculations, segment
@@ -193,26 +193,23 @@
 //  Robustness" at http://www.cs.berkeley.edu/~jrs/mesh .
 //
 //  If you make any improvements to this code, please please please let me
-//  know, so that I may obtain the improvements.  Even if you don't change
+//  know, so that I may obtain the improvements. Even if you don't change
 //  the code, I'd still love to hear what it's being used for.
 //
 //***************************************************************************
 
-
-// #define CDT_ONLY
-
 // On some machines, my exact arithmetic routines might be defeated by the
-// use of internal extended precision floating-point registers.  The best
+// use of internal extended precision floating-point registers. The best
 // way to solve this problem is to set the floating-point registers to use
-// single or double precision internally.  On 80x86 processors, this may
+// single or double precision internally. On 80x86 processors, this may
 // be accomplished by setting the CPU86 symbol for the Microsoft C
 // compiler, or the LINUX symbol for the gcc compiler running on Linux.
 //
 // An inferior solution is to declare certain values as `volatile', thus
-// forcing them to be stored to memory and rounded off.  Unfortunately,
-// this solution might slow Triangle down quite a bit.  To use volatile
-// values, write "#define INEXACT volatile" below.  Normally, however,
-// INEXACT should be defined to be nothing.  ("#define INEXACT".)
+// forcing them to be stored to memory and rounded off. Unfortunately,
+// this solution might slow Triangle down quite a bit. To use volatile
+// values, write "#define INEXACT volatile" below. Normally, however,
+// INEXACT should be defined to be nothing. ("#define INEXACT".)
 //
 // For more discussion, see http://www.cs.cmu.edu/~quake/robust.pc.html .
 // For yet more discussion, see Section 5 of my paper, "Adaptive Precision
@@ -231,7 +228,7 @@
 
 #define FILENAMESIZE 2048
 
-// For efficiency, a variety of data structures are allocated in bulk.  The
+// For efficiency, a variety of data structures are allocated in bulk. The
 // following constants determine how many of each structure is allocated at once.
 
 #define TRIPERBLOCK    4092  /* Number of triangles allocated at once.       */
@@ -258,13 +255,13 @@
 #define DEADVERTEX -32768
 #define UNDEADVERTEX -32767
 
-// The next line is used to outsmart some very stupid compilers.  If your
+// The next line is used to outsmart some very stupid compilers. If your
 // compiler is smarter, feel free to replace the "int" with "void".
 // Not that it matters.
 
 //#define VOID int
 
-// Two constants for algorithms based on random sampling.  Both constants
+// Two constants for algorithms based on random sampling. Both constants
 // have been chosen empirically to optimize their respective algorithms.
 
 // Used for the point location scheme of Mucke, Saias, and Zhu, to decide
@@ -302,7 +299,7 @@
 #include <fpu_control.h>
 #endif // LINUX
 
-// Labels that signify the result of point location.  The result of a
+// Labels that signify the result of point location. The result of a
 // search indicates that the point falls in the interior of a triangle, on
 // an edge, on a Vertex, or outside the mesh.
 
@@ -313,7 +310,7 @@ typedef enum {
  ,OUTSIDE
 } LocateResult;
 
-// Labels that signify the result of Vertex insertion.  The result indicates
+// Labels that signify the result of Vertex insertion. The result indicates
 // that the Vertex was inserted with complete success, was inserted but
 // encroaches upon a subsegment, was not inserted because it lies on a
 // segment, or was not inserted because another Vertex occupies the same
@@ -326,7 +323,7 @@ typedef enum {
  ,DUPLICATEVERTEX
 } InserVvertexResult;
 
-// Labels that signify the result of direction finding.  The result
+// Labels that signify the result of direction finding. The result
 // indicates that a segment connecting the two query points falls within
 // the direction triangle, along the left edge of the direction triangle,
 // or along the right edge of the direction triangle.
@@ -342,24 +339,24 @@ typedef enum {
 //  The basic mesh data structures
 //
 //  There are three:  vertices, triangles, and subsegments (abbreviated
-//  `SubSeg').  These three data structures, linked by pointers, comprise
-//  the mesh.  A Vertex simply represents a mesh Vertex and its properties.
-//  A triangle is a triangle.  A subsegment is a special data structure used
+//  `SubSeg'). These three data structures, linked by pointers, comprise
+//  the mesh. A Vertex simply represents a mesh Vertex and its properties.
+//  A triangle is a triangle. A subsegment is a special data structure used
 //  to represent an impenetrable edge of the mesh (perhaps on the outer
 //  boundary, on the boundary of a hole, or part of an internal boundary
-//  separating two triangulated regions).  Subsegments represent boundaries,
+//  separating two triangulated regions). Subsegments represent boundaries,
 //  defined by the user, that triangles may not lie across.
 //
 //  A triangle consists of a list of three vertices, a list of three
 //  adjoining triangles, a list of three adjoining subsegments (when
 //  segments exist), an arbitrary number of optional user-defined
-//  floating-point attributes, and an optional area constraint.  The latter
+//  floating-point attributes, and an optional area constraint. The latter
 //  is an upper bound on the permissible area of each triangle in a region,
 //  used for mesh refinement.
 //
 //  For a triangle on a boundary of the mesh, some or all of the neighboring
-//  triangles may not be present.  For a triangle in the interior of the
-//  mesh, often no neighboring subsegments are present.  Such absent
+//  triangles may not be present. For a triangle in the interior of the
+//  mesh, often no neighboring subsegments are present. Such absent
 //  triangles and subsegments are never represented by NULL pointers; they
 //  are represented by two special records:  `dummytri', the triangle that
 //  fills "outer space", and `dummysub', the omnipresent subsegment.
@@ -368,11 +365,11 @@ typedef enum {
 //  protected memory.
 //
 //  However, it is important to understand that a triangle includes other
-//  information as well.  The pointers to adjoining vertices, triangles, and
+//  information as well. The pointers to adjoining vertices, triangles, and
 //  subsegments are ordered in a way that indicates their geometric relation
-//  to each other.  Furthermore, each of these pointers contains orientation
-//  information.  Each pointer to an adjoining triangle indicates which face
-//  of that triangle is contacted.  Similarly, each pointer to an adjoining
+//  to each other. Furthermore, each of these pointers contains orientation
+//  information. Each pointer to an adjoining triangle indicates which face
+//  of that triangle is contacted. Similarly, each pointer to an adjoining
 //  subsegment indicates which side of that subsegment is contacted, and how
 //  the subsegment is oriented relative to the triangle.
 //
@@ -383,7 +380,7 @@ typedef enum {
 //
 //  A subsegment consists of a list of four vertices--the vertices of the
 //  subsegment, and the vertices of the segment it is a part of--a list of
-//  two adjoining subsegments, and a list of two adjoining triangles.  One
+//  two adjoining subsegments, and a list of two adjoining triangles. One
 //  of the two adjoining triangles may not be present (though there should
 //  always be one), and neighboring subsegments might not be present.
 //  Subsegments also store a user-defined integer "boundary marker".
@@ -393,16 +390,16 @@ typedef enum {
 //  Like triangles, subsegments maintain information about the relative
 //  orientation of neighboring objects.
 //
-//  Vertices are relatively simple.  A Vertex is a list of floating-point
+//  Vertices are relatively simple. A Vertex is a list of floating-point
 //  numbers, starting with the x, and y coordinates, followed by an
 //  arbitrary number of optional user-defined floating-point attributes,
-//  followed by an integer boundary marker.  During the segment insertion
+//  followed by an integer boundary marker. During the segment insertion
 //  phase, there is also a pointer from each Vertex to a triangle that may
-//  contain it.  Each pointer is not always correct, but when one is, it
-//  speeds up segment insertion.  These pointers are assigned values once
+//  contain it. Each pointer is not always correct, but when one is, it
+//  speeds up segment insertion. These pointers are assigned values once
 //  at the beginning of the segment insertion phase, and are not used or
-//  updated except during this phase.  Edge flipping during segment
-//  insertion will render some of them incorrect.  Hence, don't rely upon
+//  updated except during this phase. Edge flipping during segment
+//  insertion will render some of them incorrect. Hence, don't rely upon
 //  them for anything.
 //
 //  Other than the exception mentioned above, vertices have no information
@@ -420,35 +417,35 @@ typedef enum {
 //
 //  Oriented triangles and oriented subsegments will usually be referred to
 //  as "handles."  A handle is essentially a pointer into the mesh; it
-//  allows you to "hold" one particular part of the mesh.  Handles are used
+//  allows you to "hold" one particular part of the mesh. Handles are used
 //  to specify the regions in which one is traversing and modifying the mesh.
-//  A single `triangle' may be held by many handles, or none at all.  (The
+//  A single `triangle' may be held by many handles, or none at all. (The
 //  latter case is not a memory leak, because the triangle is still
 //  connected to other triangles in the mesh.)
 //
-//  An `otri' is a handle that holds a triangle.  It holds a specific edge
-//  of the triangle.  An `osub' is a handle that holds a subsegment.  It
+//  An `otri' is a handle that holds a triangle. It holds a specific edge
+//  of the triangle. An `osub' is a handle that holds a subsegment. It
 //  holds either the left or right side of the subsegment.
 //
 //  Navigation about the mesh is accomplished through a set of mesh
-//  manipulation primitives, further below.  Many of these primitives take
+//  manipulation primitives, further below. Many of these primitives take
 //  a handle and produce a new handle that holds the mesh near the first
-//  handle.  Other primitives take two handles and glue the corresponding
-//  parts of the mesh together.  The orientation of the handles is
-//  important.  For instance, when two triangles are glued together by the
+//  handle. Other primitives take two handles and glue the corresponding
+//  parts of the mesh together. The orientation of the handles is
+//  important. For instance, when two triangles are glued together by the
 //  bond() primitive, they are glued at the edges on which the handles lie.
 //
 //  Because vertices have no information about which triangles they are
 //  attached to, I commonly represent a Vertex by use of a handle whose
-//  origin is the Vertex.  A single handle can simultaneously represent a
+//  origin is the Vertex. A single handle can simultaneously represent a
 //  triangle, an edge, and a Vertex.
 //
 //***************************************************************************
 
-// The triangle data structure.  Each triangle contains three pointers to
+// The triangle data structure. Each triangle contains three pointers to
 // adjoining triangles, plus three pointers to vertices, plus three
 // pointers to subsegments (declared below; these pointers are usually
-// `dummysub').  It may or may not also contain user-defined attributes
+// `dummysub'). It may or may not also contain user-defined attributes
 // and/or a floating-point "area constraint."  It may also contain extra
 // pointers for nodes, when the user asks for high-order elements.
 // Because the size and structure of a `triangle' is not decided until
@@ -456,23 +453,23 @@ typedef enum {
 typedef REAL **Triangle;            // Really:  typedef triangle *triangle
 
 // An oriented triangle:  includes a pointer to a triangle and orientation.
-// The orientation denotes an edge of the triangle.  Hence, there are
-// three possible orientations.  By convention, each edge always points
+// The orientation denotes an edge of the triangle. Hence, there are
+// three possible orientations. By convention, each edge always points
 // counterclockwise about the corresponding triangle.
 typedef struct {
   Triangle *tri;
   int orient; // Ranges from 0 to 2.
 } otri;
 
-// The subsegment data structure.  Each subsegment contains two pointers to
+// The subsegment data structure. Each subsegment contains two pointers to
 // adjoining subsegments, plus four pointers to vertices, plus two
 // pointers to adjoining Triangles, plus one boundary marker, plus one
 // segment number.
 typedef REAL **SubSeg;                  // Really:  typedef subseg *subseg
 
 // An oriented subsegment:  includes a pointer to a subsegment and an
-// orientation.  The orientation denotes a side of the edge.  Hence, there
-// are two possible orientations.  By convention, the edge is always
+// orientation. The orientation denotes a side of the edge. Hence, there
+// are two possible orientations. By convention, the edge is always
 // directed so that the "side" denoted is the right side of the edge.
 
 typedef struct {
@@ -481,7 +478,7 @@ typedef struct {
 } osub;
 
 // The Vertex data structure. Each Vertex is actually an array of REALs.
-// The number of REALs is unknown until runtime.  An integer boundary
+// The number of REALs is unknown until runtime. An integer boundary
 // marker, and sometimes a pointer to a Triangle, is appended after the REALs
 typedef REAL *Vertex;
 
@@ -505,7 +502,7 @@ void vertexFallsOnExistingWarning(const Vertex v) {
  _tprintf(_T("Warning:New vertex %s falls on existing vertex\n"), vertexToString(v).cstr());
 }
 
-// A queue used to store encroached subsegments.  Each subsegment's vertices
+// A queue used to store encroached subsegments. Each subsegment's vertices
 // are stored so that we can check whether a subsegment is still the same.
 typedef struct {
   SubSeg encsubseg;                             // An encroached subsegment.
@@ -513,7 +510,7 @@ typedef struct {
 } BadSubSeg;
 
 // A queue used to store bad Triangles.The key is the square of the cosine
-// of the smallest angle of the Triangle.  Each Triangle's vertices are
+// of the smallest angle of the Triangle. Each Triangle's vertices are
 // stored so that one can check whether a Triangle is still the same.
 typedef struct _badtriang {
   Triangle poortri;                             // A skinny or too-large Triangle.
@@ -537,13 +534,13 @@ static FlipStacker *FLIPSTACKER_MERGE4 = (FlipStacker*)((size_t)1);
 
 
 // A node in a heap used to store events for the sweepline Delaunay
-// algorithm.  Nodes do not point directly to their parents or children in
-// the heap.  Instead, each node knows its position in the heap, and can
-// look up its parent and children in a separate array.  The `eventptr'
+// algorithm. Nodes do not point directly to their parents or children in
+// the heap. Instead, each node knows its position in the heap, and can
+// look up its parent and children in a separate array. The `eventptr'
 // points either to a `Vertex' or to a Triangle (in encoded format, so
-// that an orientation is included).  In the latter case, the origin of
+// that an orientation is included). In the latter case, the origin of
 // the oriented Triangle is the apex of a "circle event" of the sweepline
-// algorithm.  To distinguish site events from circle events, all circle
+// algorithm. To distinguish site events from circle events, all circle
 // events are given an invalid (smaller than `xmin') x-coordinate `xkey'.
 typedef struct {
   REAL xkey, ykey;                              // Coordinates of the event.
@@ -551,12 +548,12 @@ typedef struct {
   int heapposition;                             // Marks this event's position in the heap.
 } Event;
 
-// A node in the splay tree.  Each node holds an oriented ghost Triangle
-// that represents a boundary edge of the growing triangulation.  When a
+// A node in the splay tree. Each node holds an oriented ghost Triangle
+// that represents a boundary edge of the growing triangulation. When a
 // circle event covers two boundary edges with a Triangle, so that they
 // are no longer boundary edges, those edges are not immediately deleted
 // from the tree; rather, they are lazily deleted when they are next
-// encountered.  (Since only a random sample of boundary edges are kept
+// encountered. (Since only a random sample of boundary edges are kept
 // in the tree, lazy deletion is faster.)  `keydest' is used to verify
 // that a Triangle is still the same as when it entered the splay tree; if
 // it has been rotated (due to a circle event), it no longer represents a
@@ -576,12 +573,12 @@ static REAL iccerrboundA, iccerrboundB, iccerrboundC;
 static REAL o3derrboundA, o3derrboundB, o3derrboundC;
 
 
-// Data structure for command line switches and file names.  This structure
+// Data structure for command line switches and file names. This structure
 // is used (instead of global variables) to allow reentrancy.
 
 class Behavior {
 // Switches for the triangulator.
-//   poly: -p switch.  refine: -r switch.
+//   poly: -p switch. refine: -r switch.
 //   quality: -q switch.
 //     minangle: minimum angle bound, specified after -q switch.
 //     goodangle: cosine squared of minangle.
@@ -590,24 +587,24 @@ class Behavior {
 //   fixedarea: -a switch with number.
 //     maxarea: maximum area bound, specified after -a switch.
 //   usertest: -u switch.
-//   regionattrib: -A switch.  convex: -c switch.
-//   weighted: 1 for -w switch, 2 for -W switch.  jettison: -j switch
-//   firstnumber: inverse of -z switch.  All items are numbered starting
+//   regionattrib: -A switch. convex: -c switch.
+//   weighted: 1 for -w switch, 2 for -W switch. jettison: -j switch
+//   firstnumber: inverse of -z switch. All items are numbered starting
 //     from `firstnumber'.
-//   edgesout: -e switch.  voronoi: -v switch.
-//   neighbors: -n switch.  geomview: -g switch.
-//   nobound: -B switch.  nopolywritten: -P switch.
-//   nonodewritten: -N switch.  noelewritten: -E switch.
-//   noiterationnum: -I switch.  noholes: -O switch.
+//   edgesout: -e switch. voronoi: -v switch.
+//   neighbors: -n switch. geomview: -g switch.
+//   nobound: -B switch. nopolywritten: -P switch.
+//   nonodewritten: -N switch. noelewritten: -E switch.
+//   noiterationnum: -I switch. noholes: -O switch.
 //   noexact: -X switch.
 //   order: element order, specified after -o switch.
 //   nobisect: count of how often -Y switch is selected.
 //   steiner: maximum number of Steiner points, specified after -S switch.
-//   incremental: -i switch.  sweepline: -F switch.
+//   incremental: -i switch. sweepline: -F switch.
 //   dwyer: inverse of -l switch.
 //   splitseg: -s switch.
-//   conformdel: -D switch.  docheck: -C switch.
-//   quiet: -Q switch.  verbose: count of how often -V switch is selected.
+//   conformdel: -D switch. docheck: -C switch.
+//   quiet: -Q switch. verbose: count of how often -V switch is selected.
 //   usesegments: -p, -r, -q, or -c switch; determines whether segments are
 //     used at all.
 //
@@ -653,7 +650,7 @@ public:
 };
 
 
-// Mesh data structure.  Triangle operates on only one mesh, but the mesh
+// Mesh data structure. Triangle operates on only one mesh, but the mesh
 // structure is used (instead of global variables) to allow reentrancy.
 class Mesh {
   // Variables used to allocate memory for Triangles, subsegments, vertices,
@@ -670,7 +667,7 @@ class Mesh {
 
   Behavior                &m_b; // all the options to the various algorithms
 
-  // Variables that maintain the bad Triangle queues.  The queues are
+  // Variables that maintain the bad Triangle queues. The queues are
   // ordered from 4095 (highest priority) to 0 (lowest priority).
   BadTriangle *queuefront[4096];
   BadTriangle *queuetail[4096];
@@ -719,13 +716,13 @@ class Mesh {
   Triangle *dummytri;             // Pointer to the `Triangle' that occupies all of "outer space."
   Triangle *dummytribase;         // Keep base address so we can free() it later.
 
-  // Pointer to the omnipresent subsegment.  Referenced by any Triangle or
+  // Pointer to the omnipresent subsegment. Referenced by any Triangle or
   // subsegment that isn't really connected to a subsegment at that
   // location.
   SubSeg *dummysub;
   SubSeg *dummysubbase;            // Keep base address so we can free() it later.
 
-  // Pointer to a recently visited Triangle.  Improves point location if
+  // Pointer to a recently visited Triangle. Improves point location if
   // proximate vertices are inserted sequentially.
   otri recenttri;
 
@@ -953,34 +950,34 @@ public:
 
 //***************************************************************************
 //
-//  Mesh manipulation primitives.  Each Triangle contains three pointers to
-//  other triangles, with orientations.  Each pointer points not to the
+//  Mesh manipulation primitives. Each Triangle contains three pointers to
+//  other triangles, with orientations. Each pointer points not to the
 //  first byte of a Triangle, but to one of the first three bytes of a
-//  Triangle.  It is necessary to extract both the Triangle itself and the
-//  orientation.  To save memory, I keep both pieces of information in one
-//  pointer.  To make this possible, I assume that all triangles are aligned
-//  to four-byte boundaries.  The decode() routine below decodes a pointer,
+//  Triangle. It is necessary to extract both the Triangle itself and the
+//  orientation. To save memory, I keep both pieces of information in one
+//  pointer. To make this possible, I assume that all triangles are aligned
+//  to four-byte boundaries. The decode() routine below decodes a pointer,
 //  extracting an orientation (in the range 0 to 2) and a pointer to the
-//  beginning of a Triangle.  The encode() routine compresses a pointer to a
-//  Triangle and an orientation into a single pointer.  My assumptions that
+//  beginning of a Triangle. The encode() routine compresses a pointer to a
+//  Triangle and an orientation into a single pointer. My assumptions that
 //  triangles are four-byte-aligned and that the `unsigned long' type is
 //  long enough to hold a pointer are two of the few kludges in this program.
 //
-//  Subsegments are manipulated similarly.  A pointer to a subsegment
+//  Subsegments are manipulated similarly. A pointer to a subsegment
 //  carries both an address and an orientation in the range 0 to 1.
 //
 //  The other primitives take an oriented Triangle or oriented subsegment,
 //  and return an oriented Triangle or oriented subsegment or Vertex; or
 //  they change the connections in the data structure.
 //
-//  Below, triangles and subsegments are denoted by their vertices.  The
+//  Below, triangles and subsegments are denoted by their vertices. The
 //  Triangle abc has origin (org) a, destination (dest) b, and apex (apex)
-//  c.  These vertices occur in counterclockwise order about the Triangle.
+//  c. These vertices occur in counterclockwise order about the Triangle.
 //  The handle abc may simultaneously denote Vertex a, edge ab, and Triangle
 //  abc.
 //
 //  Similarly, the subsegment ab has origin (sorg) a and destination (sdest)
-//  b.  If ab is thought to be directed upward (with b directly above a),
+//  b. If ab is thought to be directed upward (with b directly above a),
 //  then the handle ab is thought to grasp the right side of ab, and may
 //  simultaneously denote Vertex a and edge ab.
 //
@@ -1064,14 +1061,14 @@ static const int minus1mod3[3] = {2, 0, 1};
 
 //******** Primitives for triangles
 
-// decode() converts a pointer to an oriented Triangle.  The orientation is
+// decode() converts a pointer to an oriented Triangle. The orientation is
 // extracted from the two least significant bits of the pointer.
 
 #define decode(ptr, otri)                                                     \
   (otri).orient = (int) ((size_t)(ptr) & 3l);                                 \
   (otri).tri = (Triangle *)((size_t)(ptr) ^ (size_t)(otri).orient)
 
-// encode() compresses an oriented Triangle into a single pointer.  It
+// encode() compresses an oriented Triangle into a single pointer. It
 // relies on the assumption that all triangles are aligned to four-byte
 // boundaries, so the two least significant bits of (otri).tri are zero.
 
@@ -1079,10 +1076,10 @@ static const int minus1mod3[3] = {2, 0, 1};
   (Triangle) ((size_t)(otri).tri | (size_t)(otri).orient)
 
 // The following handle manipulation primitives are all described by Guibas
-// and Stolfi.  However, Guibas and Stolfi use an edge-based data
+// and Stolfi. However, Guibas and Stolfi use an edge-based data
 // structure, whereas I use a Triangle-based data structure.
 
-// sym() finds the abutting Triangle, on the same edge.  Note that the edge
+// sym() finds the abutting Triangle, on the same edge. Note that the edge
 // direction is necessarily reversed, because the handle specified by an
 // oriented Triangle is directed counterclockwise around the Triangle.
 
@@ -1113,7 +1110,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   (otri).orient = minus1mod3[(otri).orient]
 
 // onext() spins counterclockwise around a Vertex; that is, it finds the
-// next edge with the same origin in the counterclockwise direction.  This
+// next edge with the same origin in the counterclockwise direction. This
 // edge is part of a different Triangle.
 
 #define onext(otri1, otri2)                                                   \
@@ -1125,7 +1122,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   symself(otri);
 
 // oprev() spins clockwise around a Vertex; that is, it finds the next edge
-// with the same origin in the clockwise direction.  This edge is part of
+// with the same origin in the clockwise direction. This edge is part of
 // a different Triangle.
 
 #define oprev(otri1, otri2)                                                   \
@@ -1149,7 +1146,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   lprevself(otri);
 
 // dprev() spins clockwise around a Vertex; that is, it finds the next edge
-// with the same destination in the clockwise direction.  This edge is
+// with the same destination in the clockwise direction. This edge is
 // part of a different Triangle.
 
 #define dprev(otri1, otri2)                                                   \
@@ -1161,7 +1158,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   symself(otri);
 
 // rnext() moves one edge counterclockwise about the adjacent Triangle.
-// (It's best understood by reading Guibas and Stolfi.  It involves
+// (It's best understood by reading Guibas and Stolfi. It involves
 // changing triangles twice.)
 
 #define rnext(otri1, otri2)                                                   \
@@ -1175,7 +1172,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   symself(otri);
 
 // rprev() moves one edge clockwise about the adjacent Triangle.
-// (It's best understood by reading Guibas and Stolfi.  It involves
+// (It's best understood by reading Guibas and Stolfi. It involves
 // changing triangles twice.)
 
 #define rprev(otri1, otri2)                                                   \
@@ -1215,8 +1212,8 @@ static const int minus1mod3[3] = {2, 0, 1};
   (otri1).tri[(otri1).orient] = encode(otri2);                                \
   (otri2).tri[(otri2).orient] = encode(otri1)
 
-// Dissolve a bond (from one side).  Note that the other Triangle will still
-// think it's connected to this Triangle.  Usually, however, the other
+// Dissolve a bond (from one side). Note that the other Triangle will still
+// think it's connected to this Triangle. Usually, however, the other
 // Triangle is being deleted entirely, or bonded to another Triangle, so
 // it doesn't matter.
 
@@ -1233,7 +1230,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   (((otri1).tri == (otri2).tri) &&                                            \
    ((otri1).orient == (otri2).orient))
 
-// Primitives to infect or cure a Triangle with the virus.  These rely on
+// Primitives to infect or cure a Triangle with the virus. These rely on
 // the assumption that all subsegments are aligned to four-byte boundaries.
 #define infect(otri)                                                          \
   (otri).tri[6] = (Triangle)((size_t)(otri).tri[6] | 2)
@@ -1258,8 +1255,8 @@ static const int minus1mod3[3] = {2, 0, 1};
 #define setareabound(otri, value)                                             \
   ((REAL*)(otri).tri)[areaboundindex] = value
 
-// Check or set a Triangle's deallocation.  Its second pointer is set to
-// NULL to indicate that it is not allocated.  (Its first pointer is used
+// Check or set a Triangle's deallocation. Its second pointer is set to
+// NULL to indicate that it is not allocated. (Its first pointer is used
 // for the stack of dead items.)  Its fourth pointer (its first Vertex)
 // is set to NULL in case a `BadTriangle' structure points to it.
 
@@ -1271,8 +1268,8 @@ static const int minus1mod3[3] = {2, 0, 1};
 
 //******** Primitives for subsegments
 
-// sdecode() converts a pointer to an oriented subsegment.  The orientation
-// is extracted from the least significant bit of the pointer.  The two
+// sdecode() converts a pointer to an oriented subsegment. The orientation
+// is extracted from the least significant bit of the pointer. The two
 // least significant bits (one for orientation, one for viral infection)
 // are masked out to produce the real pointer.
 
@@ -1280,7 +1277,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   (osub).ssorient = (int)((size_t)(sptr) & 1);                                \
   (osub).ss = (SubSeg*)((size_t)(sptr) & ~(size_t)3)
 
-// sencode() compresses an oriented subsegment into a single pointer.  It
+// sencode() compresses an oriented subsegment into a single pointer. It
 // relies on the assumption that all subsegments are aligned to two-byte
 // boundaries, so the least significant bit of (osub).ss is zero.
 
@@ -1345,7 +1342,7 @@ static const int minus1mod3[3] = {2, 0, 1};
 #define setsegdest(osub, vertexptr)                                           \
   (osub).ss[5 - (osub).ssorient] = (SubSeg) vertexptr
 
-// These primitives read or set a boundary marker.  Boundary markers are
+// These primitives read or set a boundary marker. Boundary markers are
 // used to hold user-defined tags for setting boundary conditions in
 // finite element solvers.
 
@@ -1360,7 +1357,7 @@ static const int minus1mod3[3] = {2, 0, 1};
   (osub1).ss[(osub1).ssorient] = sencode(osub2);                              \
   (osub2).ss[(osub2).ssorient] = sencode(osub1)
 
-// Dissolve a subsegment bond (from one side).  Note that the other
+// Dissolve a subsegment bond (from one side). Note that the other
 // subsegment will still think it's connected to this subsegment.
 
 #define sdissolve(osub)                                                       \
@@ -1378,8 +1375,8 @@ static const int minus1mod3[3] = {2, 0, 1};
   (((osub1).ss == (osub2).ss) &&                                              \
    ((osub1).ssorient == (osub2).ssorient))
 
-// Check or set a subsegment's deallocation.  Its second pointer is set to
-// NULL to indicate that it is not allocated.  (Its first pointer is used
+// Check or set a subsegment's deallocation. Its second pointer is set to
+// NULL to indicate that it is not allocated. (Its first pointer is used
 // for the stack of dead items.)  Its third pointer (its first Vertex)
 // is set to NULL in case a `BadSubSeg' structure points to it.
 
@@ -1441,17 +1438,17 @@ static const int minus1mod3[3] = {2, 0, 1};
 //                    be further refined.
 //
 //  You may write your own procedure that decides whether or not a selected
-//  Triangle is too big (and needs to be refined).  There are two ways to do
+//  Triangle is too big (and needs to be refined). There are two ways to do
 //  this.
 //
 //  (1)  Modify the procedure `triunsuitable' below, then recompile
 //  Triangle.
 //
 //  (2)  Define the symbol EXTERNAL_TEST (either by adding the definition
-//  to this file, or by using the appropriate compiler switch).  This way,
-//  you can compile Triangle.c separately from your test.  Write your own
+//  to this file, or by using the appropriate compiler switch). This way,
+//  you can compile Triangle.c separately from your test. Write your own
 //  `triunsuitable' procedure in a separate C file (using the same prototype
-//  as below).  Compile it and link the object code with Triangle.o.
+//  as below). Compile it and link the object code with Triangle.o.
 //
 //  This procedure returns 1 if the Triangle is too large and should be
 //  refined; 0 otherwise.
@@ -1790,7 +1787,7 @@ void Behavior::parsecommandline(int argc, char **argv) {
     weighted = 0;
     if (!quiet) {
       printf("Warning:  weighted triangulations (-w, -W) are incompatible\n");
-      printf("  with PSLGs (-p) and meshing (-q, -a, -u).  Weights ignored.\n");
+      printf("  with PSLGs (-p) and meshing (-q, -a, -u). Weights ignored.\n");
     }
   }
   if (jettison && nonodewritten && !quiet) {
@@ -1894,7 +1891,7 @@ void Behavior::parsecommandline(int argc, char **argv) {
 //
 //  I originally wrote this procedure to simplify debugging; it can be
 //  called directly from the debugger, and presents information about an
-//  oriented triangle in digestible form.  It's also used when the
+//  oriented triangle in digestible form. It's also used when the
 //  highest level of verbosity (`-VVV') is specified.
 void Mesh::printtriangle(otri *t) {
   otri printtri;
@@ -1961,7 +1958,7 @@ void Mesh::printtriangle(otri *t) {
 //
 //  I originally wrote this procedure to simplify debugging; it can be
 //  called directly from the debugger, and presents information about an
-//  oriented subsegment in digestible form.  It's also used when the highest
+//  oriented subsegment in digestible form. It's also used when the highest
 //  level of verbosity (`-VVV') is specified.
 //
 void Mesh::printsubseg(osub *s) {
@@ -2028,7 +2025,7 @@ void Mesh::printsubseg(osub *s) {
 //
 //  The triangle that fills "outer space," called `dummytri', is pointed to
 //  by every triangle and subsegment on a boundary (be it outer or inner) of
-//  the triangulation.  Also, `dummytri' points to one of the triangles on
+//  the triangulation. Also, `dummytri' points to one of the triangles on
 //  the convex hull (until the holes and concavities are carved), making it
 //  possible to find a starting triangle for point location.
 //
@@ -2039,11 +2036,11 @@ void Mesh::printsubseg(osub *s) {
 //  `dummytri' and `dummysub' are generally required to fulfill only a few
 //  invariants:  their vertices must remain NULL and `dummytri' must always
 //  be bonded (at offset zero) to some triangle on the convex hull of the
-//  mesh, via a boundary edge.  Otherwise, the connections of `dummytri' and
-//  `dummysub' may change willy-nilly.  This makes it possible to avoid
+//  mesh, via a boundary edge. Otherwise, the connections of `dummytri' and
+//  `dummysub' may change willy-nilly. This makes it possible to avoid
 //  writing a good deal of special-case code (in the edge flip, for example)
 //  for dealing with the boundary of the mesh, places where no subsegment is
-//  present, and so forth.  Other entities are frequently bonded to
+//  present, and so forth. Other entities are frequently bonded to
 //  `dummytri' and `dummysub' as if they were real mesh entities, with no
 //  harm done.
 //
@@ -2078,7 +2075,7 @@ void Mesh::dummyinit(int trianglebytes, int subsegbytes) {
     dummysub = (SubSeg*)(alignptr + (size_t)subsegs.getAlignBytes()
                       - (alignptr % (size_t)subsegs.getAlignBytes()));
     // Initialize the two adjoining subsegments to be the omnipresent
-    // subsegment.  These will eventually be changed by various bonding
+    // subsegment. These will eventually be changed by various bonding
     // operations, but their values don't really matter, as long as they
     // can legally be dereferenced.
     dummysub[0] = (SubSeg)dummysub;
@@ -2111,7 +2108,7 @@ void Mesh::initializevertexpool() {
   int vertexsize;
 
   // The index within each Vertex at which the boundary marker is found,
-  // followed by the Vertex type.  Ensure the Vertex marker is aligned to
+  // followed by the Vertex type. Ensure the Vertex marker is aligned to
   // a sizeof(int)-byte address.
   vertexmarkindex = ((mesh_dim + nextras) * sizeof(REAL) +
                         sizeof(int) - 1) /
@@ -2141,7 +2138,7 @@ void Mesh::initializetrisubpools() {
   int trisize;
 
   // The index within each Triangle at which the extra nodes (above three)
-  // associated with high order elements are found.  There are three
+  // associated with high order elements are found. There are three
   // pointers to other triangles, three pointers to corners, and possibly
   // three pointers to subsegments before the extra nodes.
   highorderindex = 6 + (m_b.usesegments * 3);
@@ -2151,7 +2148,7 @@ void Mesh::initializetrisubpools() {
   // where the index is measured in REALs.
   elemattribindex = (trisize + sizeof(REAL) - 1) / sizeof(REAL);
   // The index within each Triangle at which the maximum area constraint
-  // is found, where the index is measured in REALs.  Note that if the
+  // is found, where the index is measured in REALs. Note that if the
   // `regionattrib' flag is set, an additional attribute will be added.
   areaboundindex = elemattribindex + eextras + m_b.regionattrib;
   // If Triangle attributes or an area bound are needed, increase the number
@@ -2162,7 +2159,7 @@ void Mesh::initializetrisubpools() {
     trisize = areaboundindex * sizeof(REAL);
   }
   // If a Voronoi diagram or Triangle neighbor graph is requested, make
-  // sure there's room to store an integer index in each Triangle.  This
+  // sure there's room to store an integer index in each Triangle. This
   // integer index can occupy the same space as the subsegment pointers
   // or attributes or area constraint or extra nodes.
   if ((m_b.voronoi || m_b.neighbors) && (trisize < 6 * sizeof(Triangle) + sizeof(int))) {
@@ -2175,7 +2172,7 @@ void Mesh::initializetrisubpools() {
            TRIPERBLOCK, 4);
 
   if (m_b.usesegments) {
-    // Initialize the pool of subsegments.  Take into account all eight
+    // Initialize the pool of subsegments. Take into account all eight
     // pointers and one boundary marker.
     subsegs.poolinit(8 * sizeof(Triangle) + sizeof(int), SUBSEGPERBLOCK, SUBSEGPERBLOCK, 4);
 
@@ -2189,7 +2186,7 @@ void Mesh::initializetrisubpools() {
 
 //  Deallocate space for a Triangle, marking it dead.
 void Mesh::triangledealloc(Triangle *dyingtriangle) {
-  // Mark the Triangle as dead.  This makes it possible to detect dead
+  // Mark the Triangle as dead. This makes it possible to detect dead
   //   triangles when traversing the list of all triangles.
   killtri(dyingtriangle);
   triangles.dealloc(dyingtriangle);
@@ -2210,7 +2207,7 @@ Triangle *Mesh::triangletraverse() {
 
 //  Deallocate space for a subsegment, marking it dead.
 void Mesh::subsegdealloc(SubSeg *dyingsubseg) {
-  // Mark the subsegment as dead.  This makes it possible to detect dead
+  // Mark the subsegment as dead. This makes it possible to detect dead
   // subsegments when traversing the list of all subsegments.
   killsubseg(dyingsubseg);
   subsegs.dealloc(dyingsubseg);
@@ -2231,7 +2228,7 @@ SubSeg *Mesh::subsegtraverse() {
 
 //  Deallocate space for a Vertex, marking it dead.
 void Mesh::vertexdealloc(Vertex dyingvertex) {
-  // Mark the Vertex as dead.  This makes it possible to detect dead
+  // Mark the Vertex as dead. This makes it possible to detect dead
   // vertices when traversing the list of all vertices.
   setvertextype(dyingvertex, DEADVERTEX);
   vertices.dealloc(dyingvertex);
@@ -2253,7 +2250,7 @@ Vertex Mesh::vertextraverse() {
 
 //  Deallocate space for a bad subsegment, marking it dead.
 void Mesh::badsubsegdealloc(BadSubSeg *dyingseg) {
-  // Set subsegment's origin to NULL.  This makes it possible to detect dead
+  // Set subsegment's origin to NULL. This makes it possible to detect dead
   // badsubsegs when traversing the list of all badsubsegs             .
   dyingseg->subsegorg = NULL;
   badsubsegs.dealloc(dyingseg);
@@ -2279,7 +2276,7 @@ BadSubSeg *Mesh::badsubsegtraverse() {
 //  The first Vertex is number 'firstnumber'.
 //
 //  Note that this takes O(n) time (with a small constant, if VERTEXPERBLOCK
-//  is large).  I don't care to take the trouble to make it work in constant
+//  is large). I don't care to take the trouble to make it work in constant
 //  time.
 Vertex Mesh::getvertex(int number) {
   VOID **getblock;
@@ -2390,9 +2387,9 @@ void Mesh::makesubseg(osub *newsubseg) {
 // full citation.
 
 // Which of the following two methods of finding the absolute values is
-// fastest is compiler-dependent.  A few compilers can inline and optimize
+// fastest is compiler-dependent. A few compilers can inline and optimize
 // the fabs() call; but most will incur the overhead of a function call,
-// which is disastrously slow.  A faster way on IEEE machines might be to
+// which is disastrously slow. A faster way on IEEE machines might be to
 // mask the appropriate bit, but that's difficult to do in C without
 // forcing the value to be stored to memory (rather than be kept in the
 // register to which the optimizer assigned it).
@@ -2406,8 +2403,8 @@ void Mesh::makesubseg(osub *newsubseg) {
 //
 // The operations Fast_Two_Sum(), Fast_Two_Diff(), Two_Sum(), Two_Diff(),
 // Split(), and Two_Product() are all implemented as described in the
-// reference.  Each of these macros requires certain variables to be
-// defined in the calling routine.  The variables `bvirt', `c', `abig',
+// reference. Each of these macros requires certain variables to be
+// defined in the calling routine. The variables `bvirt', `c', `abig',
 // `_i', `_j', `_k', `_l', `_m', and `_n' are declared `INEXACT' because
 // they store the result of an operation that may incur roundoff error.
 // The input parameter `x' (or the highest numbered `x_' parameter) must
@@ -2462,7 +2459,7 @@ void Mesh::makesubseg(osub *newsubseg) {
   Two_Product_Tail(a, b, x, y)
 
 // Two_Product_Presplit() is Two_Product() where one of the inputs has
-// already been split.  Avoids redundant splitting.
+// already been split. Avoids redundant splitting.
 
 #define Two_Product_Presplit(a, b, bhi, blo, x, y)   \
   x = (REAL) (a * b);                                \
@@ -2484,7 +2481,7 @@ void Mesh::makesubseg(osub *newsubseg) {
   x = (REAL) (a * a);                                \
   Square_Tail(a, x, y)
 
-// Macros for summing expansions of various fixed lengths.  These are all
+// Macros for summing expansions of various fixed lengths. These are all
 // unrolled versions of Expansion_Sum().
 
 #define Two_One_Sum(a1, a0, b, x2, x1, x0)           \
@@ -2514,8 +2511,8 @@ void Mesh::makesubseg(osub *newsubseg) {
 
 //  exactinit()   Initialize the variables used for exact arithmetic.
 //  `epsilon' is the largest power of two such that 1.0 + epsilon = 1.0 in
-//  floating-point arithmetic.  `epsilon' bounds the relative roundoff
-//  error.  It is used for floating-point error analysis.
+//  floating-point arithmetic. `epsilon' bounds the relative roundoff
+//  error. It is used for floating-point error analysis.
 //
 //  `splitter' is used to split floating-point numbers into two half-
 //  length significands for exact multiplication.
@@ -2557,9 +2554,9 @@ void exactinit() {
   splitter = 1.0;
   check = 1.0;
   // Repeatedly divide `epsilon' by two until it is too small to add to
-  // one without causing roundoff.  (Also check if the sum is equal to
+  // one without causing roundoff. (Also check if the sum is equal to
   // the previous sum, for machines that round up instead of using exact
-  // rounding.  Not that these routines will work on such machines.)
+  // rounding. Not that these routines will work on such machines.)
   do {
     lastcheck = check;
     epsilon *= half;
@@ -2587,10 +2584,10 @@ void exactinit() {
 //  fast_expansion_sum_zeroelim()   Sum two expansions, eliminating zero
 //                                  components from the output expansion.
 //
-//  Sets h = e + f.  See my Robust Predicates paper for details.
+//  Sets h = e + f. See my Robust Predicates paper for details.
 //
 //  If round-to-even is used (as with IEEE 754), maintains the strongly
-//  nonoverlapping property.  (That is, if e is strongly nonoverlapping, h
+//  nonoverlapping property. (That is, if e is strongly nonoverlapping, h
 //  will be also.)  Does NOT maintain the nonoverlapping or nonadjacent
 //  properties.
 int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
@@ -2666,11 +2663,11 @@ int fast_expansion_sum_zeroelim(int elen, REAL *e, int flen, REAL *f, REAL *h) {
 //                               eliminating zero components from the
 //                               output expansion.
 //
-//  Sets h = be.  See my Robust Predicates paper for details.
+//  Sets h = be. See my Robust Predicates paper for details.
 //
-//  Maintains the nonoverlapping property.  If round-to-even is used (as
+//  Maintains the nonoverlapping property. If round-to-even is used (as
 //  with IEEE 754), maintains the strongly nonoverlapping and nonadjacent
-//  properties as well.  (That is, if e has one of these properties, so
+//  properties as well. (That is, if e has one of these properties, so
 //  will h.)
 int scale_expansion_zeroelim(int elen, REAL *e, REAL b, REAL *h) {
   INEXACT REAL Q, sum;
@@ -2728,15 +2725,15 @@ REAL estimate(int elen, REAL *e) {
 //  counterclockwise()   Return a positive value if the points pa, pb, and
 //                       pc occur in counterclockwise order; a negative
 //                       value if they occur in clockwise order; and zero
-//                       if they are collinear.  The result is also a rough
+//                       if they are collinear. The result is also a rough
 //                       approximation of twice the signed area of the
 //                       Triangle defined by the three points.
 //
-//  Uses exact arithmetic if necessary to ensure a correct answer.  The
-//  result returned is the determinant of a matrix.  This determinant is
+//  Uses exact arithmetic if necessary to ensure a correct answer. The
+//  result returned is the determinant of a matrix. This determinant is
 //  computed adaptively, in the sense that exact arithmetic is used only to
 //  the degree it is needed to ensure that the returned value has the
-//  correct sign.  Hence, this function is usually quite fast, but will run
+//  correct sign. Hence, this function is usually quite fast, but will run
 //  more slowly when the input points are collinear or nearly so.
 //
 //  See my Robust Predicates paper for details.
@@ -2866,11 +2863,11 @@ REAL Mesh::counterclockwise(Vertex pa, Vertex pb, Vertex pc) {
 //               The points pa, pb, and pc must be in counterclockwise
 //               order, or the sign of the result will be reversed.
 //
-//  Uses exact arithmetic if necessary to ensure a correct answer.  The
-//  result returned is the determinant of a matrix.  This determinant is
+//  Uses exact arithmetic if necessary to ensure a correct answer. The
+//  result returned is the determinant of a matrix. This determinant is
 //  computed adaptively, in the sense that exact arithmetic is used only to
 //  the degree it is needed to ensure that the returned value has the
-//  correct sign.  Hence, this function is usually quite fast, but will run
+//  correct sign. Hence, this function is usually quite fast, but will run
 //  more slowly when the input points are cocircular or nearly so.
 //
 //  See my Robust Predicates paper for details.
@@ -3495,17 +3492,17 @@ REAL Mesh::incircle(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
 //  orient3d()   Return a positive value if the point pd lies below the
 //               plane passing through pa, pb, and pc; "below" is defined so
 //               that pa, pb, and pc appear in counterclockwise order when
-//               viewed from above the plane.  Returns a negative value if
-//               pd lies above the plane.  Returns zero if the points are
-//               coplanar.  The result is also a rough approximation of six
+//               viewed from above the plane. Returns a negative value if
+//               pd lies above the plane. Returns zero if the points are
+//               coplanar. The result is also a rough approximation of six
 //               times the signed volume of the tetrahedron defined by the
 //               four points.
 //
-//  Uses exact arithmetic if necessary to ensure a correct answer.  The
-//  result returned is the determinant of a matrix.  This determinant is
+//  Uses exact arithmetic if necessary to ensure a correct answer. The
+//  result returned is the determinant of a matrix. This determinant is
 //  computed adaptively, in the sense that exact arithmetic is used only to
 //  the degree it is needed to ensure that the returned value has the
-//  correct sign.  Hence, this function is usually quite fast, but will run
+//  correct sign. Hence, this function is usually quite fast, but will run
 //  more slowly when the input points are coplanar or nearly so.
 //
 //  See my Robust Predicates paper for details.
@@ -3974,15 +3971,15 @@ REAL Mesh::orient3d(Vertex pa, Vertex pb, Vertex pc, Vertex pd,
 //                 with the circle or plane passing through pa, pb, and pc
 //                 (meaning that pd is inside the circle or below the
 //                 plane); a negative value if it is compatible; and zero if
-//                 the four points are cocircular/coplanar.  The points pa,
+//                 the four points are cocircular/coplanar. The points pa,
 //                 pb, and pc must be in counterclockwise order, or the sign
 //                 of the result will be reversed.
 //
 //  If the -w switch is used, the points are lifted onto the parabolic
 //  lifting map, then they are dropped according to their weights, then the
-//  3D orientation test is applied.  If the -W switch is used, the points'
+//  3D orientation test is applied. If the -W switch is used, the points'
 //  heights are already provided, so the 3D orientation test is applied
-//  directly.  If neither switch is used, the incircle test is applied.
+//  directly. If neither switch is used, the incircle test is applied.
 //***************************************************************************
 REAL Mesh::nonregular(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
   if (m_b.weighted == 0) {
@@ -4002,7 +3999,7 @@ REAL Mesh::nonregular(Vertex pa, Vertex pb, Vertex pc, Vertex pd) {
 //  findcircumcenter()   Find the circumcenter of a Triangle.
 //
 //  The result is returned both in terms of x-y coordinates and xi-eta
-//  (barycentric) coordinates.  The xi-eta coordinate system is defined in
+//  (barycentric) coordinates. The xi-eta coordinate system is defined in
 //  terms of the Triangle:  the origin of the Triangle is the origin of the
 //  coordinate system; the destination of the Triangle is one unit along the
 //  xi axis; and the apex of the Triangle is one unit along the eta axis.
@@ -4041,9 +4038,9 @@ void Mesh::findcircumcenter(Vertex torg, Vertex tdest, Vertex tapex,
   dx = (yao * dodist - ydo * aodist) * denominator;
   dy = (xdo * aodist - xao * dodist) * denominator;
 
-  // Find the (squared) length of the Triangle's shortest edge.  This
+  // Find the (squared) length of the Triangle's shortest edge. This
   // serves as a conservative estimate of the insertion radius of the
-  // circumcenter's parent.  The estimate is used to ensure that
+  // circumcenter's parent. The estimate is used to ensure that
   // the algorithm terminates even if very small angles appear in
   // the input PSLG.
   if ((dodist < aodist) && (dodist < dadist)) {
@@ -4291,8 +4288,8 @@ void Mesh::checkdelaunay() {
 //  enqueuebadtriang()   Add a bad Triangle data structure to the end of a
 //                       queue.
 //
-//  The queue is actually a set of 4096 queues.  I use multiple queues to
-//  give priority to smaller angles.  I originally implemented a heap, but
+//  The queue is actually a set of 4096 queues. I use multiple queues to
+//  give priority to smaller angles. I originally implemented a heap, but
 //  the queues are faster by a larger margin than I'd suspected.
 void Mesh::enqueuebadtriang(BadTriangle *badtri) {
   REAL length, multiplier;
@@ -4335,7 +4332,7 @@ void Mesh::enqueuebadtriang(BadTriangle *badtri) {
   // length' is approximately squareroot(2.0) to what exponent?
   exponent = (int)(2.0 * exponent + (length > SQUAREROOTTWO));
   // `exponent' is now in the range 0...2047 for IEEE double precision.
-  //  Choose a queue in the range 0...4095.  The shortest edges have the
+  //  Choose a queue in the range 0...4095. The shortest edges have the
   //  highest priority (queue 4095).
   if (posexponent) {
     queuenumber = 2047 - exponent;
@@ -4419,16 +4416,16 @@ BadTriangle *Mesh::dequeuebadtriang() {
 //
 //  A subsegment is encroached if there is a Vertex in its diametral lens.
 //  For Ruppert's algorithm (-D switch), the "diametral lens" is the
-//  diametral circle.  For Chew's algorithm (default), the diametral lens is
+//  diametral circle. For Chew's algorithm (default), the diametral lens is
 //  just big enough to enclose two isosceles triangles whose bases are the
-//  subsegment.  Each of the two isosceles triangles has two angles equal
+//  subsegment. Each of the two isosceles triangles has two angles equal
 //  to `b->minangle'.
 //
 //  Chew's algorithm does not require diametral lenses at all--but they save
-//  time.  Any Vertex inside a subsegment's diametral lens implies that the
+//  time. Any Vertex inside a subsegment's diametral lens implies that the
 //  Triangle adjoining the subsegment will be too skinny, so it's only a
 //  matter of time before the encroaching Vertex is deleted by Chew's
-//  algorithm.  It's faster to simply not insert the doomed Vertex in the
+//  algorithm. It's faster to simply not insert the doomed Vertex in the
 //  first place, which is why I use diametral lenses with Chew's algorithm.
 //
 //  Returns a nonzero value if the subsegment is encroached.
@@ -4455,7 +4452,7 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
     // Find a Vertex opposite this subsegment.
     apex(neighbortri, eapex);
     // Check whether the apex is in the diametral lens of the subsegment
-    // (the diametral circle if `conformdel' is set).  A dot product
+    // (the diametral circle if `conformdel' is set). A dot product
     // of two sides of the Triangle is used to check whether the angle
     // at the apex is greater than (180 - 2 `minangle') degrees (for
     // lenses; 90 degrees for diametral circles).
@@ -4524,7 +4521,7 @@ int Mesh::checkseg4encroach(osub *testsubseg) {
 //  testtriangle()   Test a Triangle for quality and size.
 //
 //  Tests a Triangle to see if it satisfies the minimum angle condition and
-//  the maximum area condition.  Triangles that aren't up to spec are added
+//  the maximum area condition. Triangles that aren't up to spec are added
 //  to the bad Triangle queue.
 void Mesh::testtriangle(otri *testtri) {
   otri tri1, tri2;
@@ -4623,17 +4620,17 @@ void Mesh::testtriangle(otri *testtri) {
     // triangles should not be split, even if they have bad angles.
     // A skinny Triangle is not split if its shortest edge subtends a
     // small input angle, and both endpoints of the edge lie on a
-    // concentric circular shell.  For convenience, I make a small
+    // concentric circular shell. For convenience, I make a small
     // adjustment to that rule:  I check if the endpoints of the edge
     // both lie in segment interiors, equidistant from the apex where
     // the two segments meet.
     // First, check if both points lie in segment interiors.
     if ((vertextype(base1) == SEGMENTVERTEX) && (vertextype(base2) == SEGMENTVERTEX)) {
-      // Check if both points lie in a common segment.  If they do, the
+      // Check if both points lie in a common segment. If they do, the
       // skinny Triangle is enqueued to be split as usual.
       tspivot(tri1, testsub);
       if (testsub.ss == dummysub) {
-        // No common segment.  Find a subsegment that contains `torg'.
+        // No common segment. Find a subsegment that contains `torg'.
         otricopy(tri1, tri2);
         do {
           oprevself(tri1);
@@ -4691,7 +4688,7 @@ void Mesh::testtriangle(otri *testtri) {
 //                    insertion.
 //
 //  Traverses all the triangles, and provides each corner of each Triangle
-//  with a pointer to that Triangle.  Of course, pointers will be
+//  with a pointer to that Triangle. Of course, pointers will be
 //  overwritten by other pointers because (almost) each Vertex is a corner
 //  of several triangles, but in the end every Vertex will point to some
 //  Triangle that contains it.
@@ -4718,56 +4715,56 @@ void Mesh::makevertexmap() {
 //
 //  preciselocate()   Find a Triangle or edge containing a given point.
 //
-//  Begins its search from `searchtri'.  It is important that `searchtri'
+//  Begins its search from `searchtri'. It is important that `searchtri'
 //  be a handle with the property that `searchpoint' is strictly to the left
 //  of the edge denoted by `searchtri', or is collinear with that edge and
-//  does not intersect that edge.  (In particular, `searchpoint' should not
+//  does not intersect that edge. (In particular, `searchpoint' should not
 //  be the origin or destination of that edge.)
 //
 //  These conditions are imposed because preciselocate() is normally used in
 //  one of two situations:
 //
-//  (1)  To try to find the location to insert a new point.  Normally, we
-//       know an edge that the point is strictly to the left of.  In the
+//  (1)  To try to find the location to insert a new point. Normally, we
+//       know an edge that the point is strictly to the left of. In the
 //       incremental Delaunay algorithm, that edge is a bounding box edge.
 //       In Ruppert's Delaunay refinement algorithm for quality meshing,
 //       that edge is the shortest edge of the Triangle whose circumcenter
 //       is being inserted.
 //
-//  (2)  To try to find an existing point.  In this case, any edge on the
-//       convex hull is a good starting edge.  You must screen out the
+//  (2)  To try to find an existing point. In this case, any edge on the
+//       convex hull is a good starting edge. You must screen out the
 //       possibility that the Vertex sought is an endpoint of the starting
 //       edge before you call preciselocate().
 //
 //  On completion, `searchtri' is a Triangle that contains `searchpoint'.
 //
-//  This implementation differs from that given by Guibas and Stolfi.  It
+//  This implementation differs from that given by Guibas and Stolfi. It
 //  walks from Triangle to Triangle, crossing an edge only if `searchpoint'
-//  is on the other side of the line containing that edge.  After entering
+//  is on the other side of the line containing that edge. After entering
 //  a Triangle, there are two edges by which one can leave that Triangle.
 //  If both edges are valid (`searchpoint' is on the other side of both
 //  edges), one of the two is chosen by drawing a line perpendicular to
 //  the entry edge (whose endpoints are `forg' and `fdest') passing through
-//  `fapex'.  Depending on which side of this perpendicular `searchpoint'
+//  `fapex'. Depending on which side of this perpendicular `searchpoint'
 //  falls on, an exit edge is chosen.
 //
 //  This implementation is empirically faster than the Guibas and Stolfi
 //  point location routine (which I originally used), which tends to spiral
 //  in toward its target.
 //
-//  Returns ONVERTEX if the point lies on an existing Vertex.  `searchtri'
+//  Returns ONVERTEX if the point lies on an existing Vertex. `searchtri'
 //  is a handle whose origin is the existing Vertex.
 //
-//  Returns ONEDGE if the point lies on a mesh edge.  `searchtri' is a
+//  Returns ONEDGE if the point lies on a mesh edge. `searchtri' is a
 //  handle whose primary edge is the edge on which the point lies.
 //
 //  Returns INTRIANGLE if the point lies strictly within a Triangle.
 //  `searchtri' is a handle on the Triangle that contains the point.
 //
-//  Returns OUTSIDE if the point lies outside the mesh.  `searchtri' is a
-//  handle whose primary edge the point is to the right of.  This might
+//  Returns OUTSIDE if the point lies outside the mesh. `searchtri' is a
+//  handle whose primary edge the point is to the right of. This might
 //  occur when the circumcenter of a Triangle falls just slightly outside
-//  the mesh due to floating-point roundoff error.  It also occurs when
+//  the mesh due to floating-point roundoff error. It also occurs when
 //  seeking a hole or region point that a foolish user has placed outside
 //  the mesh.
 //
@@ -4812,7 +4809,7 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
     if (destorient > 0.0) {
       if (orgorient > 0.0) {
         // Move left if the inner product of (fapex - searchpoint) and
-        // (fdest - forg) is positive.  This is equivalent to drawing
+        // (fdest - forg) is positive. This is equivalent to drawing
         // a line perpendicular to the line (forg, fdest) and passing
         // through `fapex', and determining which side of this line
         // `searchpoint' falls on.
@@ -4838,7 +4835,7 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
       }
     }
 
-    // Move to another Triangle.  Leave a trace `backtracktri' in case
+    // Move to another Triangle. Leave a trace `backtracktri' in case
     // floating-point roundoff or some such bogey causes us to walk
     // off a boundary of the triangulation.
     if (moveleft) {
@@ -4876,8 +4873,8 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
 //
 //  Searching begins from one of:  the input `searchtri', a recently
 //  encountered Triangle `recenttri', or from a Triangle chosen from a
-//  random sample.  The choice is made by determining which Triangle's
-//  origin is closest to the point we are searching for.  Normally,
+//  random sample. The choice is made by determining which Triangle's
+//  origin is closest to the point we are searching for. Normally,
 //  `searchtri' should be a handle on the convex hull of the triangulation.
 //
 //  Details on the random sampling method can be found in the Mucke, Saias,
@@ -4885,19 +4882,19 @@ LocateResult Mesh::preciselocate(Vertex searchpoint, otri *searchtri, int stopat
 //
 //  On completion, `searchtri' is a Triangle that contains `searchpoint'.
 //
-//  Returns ONVERTEX if the point lies on an existing Vertex.  `searchtri'
+//  Returns ONVERTEX if the point lies on an existing Vertex. `searchtri'
 //  is a handle whose origin is the existing Vertex.
 //
-//  Returns ONEDGE if the point lies on a mesh edge.  `searchtri' is a
+//  Returns ONEDGE if the point lies on a mesh edge. `searchtri' is a
 //  handle whose primary edge is the edge on which the point lies.
 //
 //  Returns INTRIANGLE if the point lies strictly within a Triangle.
 //  searchtri' is a handle on the Triangle that contains the point.
 //
-//  Returns OUTSIDE if the point lies outside the mesh.  `searchtri' is a
-//  handle whose primary edge the point is to the right of.  This might
+//  Returns OUTSIDE if the point lies outside the mesh. `searchtri' is a
+//  handle whose primary edge the point is to the right of. This might
 //  occur when the circumcenter of a Triangle falls just slightly outside
-//  the mesh due to floating-point roundoff error.  It also occurs when
+//  the mesh due to floating-point roundoff error. It also occurs when
 //  seeking a hole or region point that a foolish user has placed outside
 //  the mesh.
 //
@@ -4948,7 +4945,7 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
   }
 
   // The number of random samples taken is proportional to the cube root of
-  // the number of triangles in the mesh.  The next bit of code assumes
+  // the number of triangles in the mesh. The next bit of code assumes
   // that the number of triangles increases monotonically (or at least
   // doesn't decrease enough to matter).
   while (SAMPLEFACTOR * samples * samples * samples < triangles.getItems()) {
@@ -4957,7 +4954,7 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
 
   // We'll draw ceiling(samples * TRIPERBLOCK / maxitems) random samples
   // from each block of triangles (except the first)--until we meet the
-  // sample quota.  The ceiling means that blocks at the end might be
+  // sample quota. The ceiling means that blocks at the end might be
   // neglected, but I don't care.
   samplesperblock  = (samples * TRIPERBLOCK - 1) / triangles.getMaxItems() + 1;
   // We'll draw ceiling(samples * itemsfirstblock / maxitems) random samples
@@ -5040,7 +5037,7 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
 //                   triangles.
 //
 //  The new subsegment is inserted at the edge described by the handle
-//  `tri'.  Its vertices are properly initialized.  The marker `subsegmark'
+//  `tri'. Its vertices are properly initialized. The marker `subsegmark'
 //  is applied to the subsegment and, if appropriate, its vertices.
 void Mesh::insertsubseg(otri *tri, int subsegmark) {
   otri oppotri;
@@ -5092,13 +5089,13 @@ void Mesh::insertsubseg(otri *tri, int subsegmark) {
 //  Terminology
 //
 //  A "local transformation" replaces a small set of triangles with another
-//  set of triangles.  This may or may not involve inserting or deleting a
+//  set of triangles. This may or may not involve inserting or deleting a
 //  Vertex.
 //
 //  The term "casing" is used to describe the set of triangles that are
 //  attached to the triangles being transformed, but are not transformed
-//  themselves.  Think of the casing as a fixed hollow structure inside
-//  which all the action happens.  A "casing" is only defined relative to
+//  themselves. Think of the casing as a fixed hollow structure inside
+//  which all the action happens. A "casing" is only defined relative to
 //  a single transformation; each occurrence of a transformation will
 //  involve a different casing.
 //
@@ -5111,13 +5108,13 @@ void Mesh::insertsubseg(otri *tri, int subsegmark) {
 //
 //  Imagine the original triangles, abc and bad, oriented so that the
 //  shared edge ab lies in a horizontal plane, with the Vertex b on the left
-//  and the Vertex a on the right.  The Vertex c lies below the edge, and
-//  the Vertex d lies above the edge.  The `flipedge' handle holds the edge
+//  and the Vertex a on the right. The Vertex c lies below the edge, and
+//  the Vertex d lies above the edge. The `flipedge' handle holds the edge
 //  ab of Triangle abc, and is directed left, from Vertex a to Vertex b.
 //
 //  The triangles abc and bad are deleted and replaced by the triangles cdb
-//  and dca.  The triangles that represent abc and bad are NOT deallocated;
-//  they are reused for dca and cdb, respectively.  Hence, any handles that
+//  and dca. The triangles that represent abc and bad are NOT deallocated;
+//  they are reused for dca and cdb, respectively. Hence, any handles that
 //  may have held the original triangles are still valid, although not
 //  directed as they were before.
 //
@@ -5126,11 +5123,11 @@ void Mesh::insertsubseg(otri *tri, int subsegmark) {
 //  (Hence, the two triangles have rotated counterclockwise.)
 //
 //  WARNING:  This transformation is geometrically valid only if the
-//  quadrilateral adbc is convex.  Furthermore, this transformation is
+//  quadrilateral adbc is convex. Furthermore, this transformation is
 //  valid only if there is not a subsegment between the triangles abc and
-//  bad.  This routine does not check either of these preconditions, and
+//  bad. This routine does not check either of these preconditions, and
 //  it is the responsibility of the calling routine to ensure that they are
-//  met.  If they are not, the streets shall be filled with wailing and
+//  met. If they are not, the streets shall be filled with wailing and
 //  gnashing of teeth.
 //
 //***************************************************************************
@@ -5231,19 +5228,19 @@ void Mesh::flip(otri *flipedge) {
 //***************************************************************************
 //
 //  unflip()   Transform two triangles to two different triangles by
-//             flipping an edge clockwise within a quadrilateral.  Reverses
+//             flipping an edge clockwise within a quadrilateral. Reverses
 //             the flip() operation so that the data structures representing
 //             the triangles are back where they were before the flip().
 //
 //  Imagine the original triangles, abc and bad, oriented so that the
 //  shared edge ab lies in a horizontal plane, with the Vertex b on the left
-//  and the Vertex a on the right.  The Vertex c lies below the edge, and
-//  the Vertex d lies above the edge.  The `flipedge' handle holds the edge
+//  and the Vertex a on the right. The Vertex c lies below the edge, and
+//  the Vertex d lies above the edge. The `flipedge' handle holds the edge
 //  ab of Triangle abc, and is directed left, from Vertex a to Vertex b.
 //
 //  The triangles abc and bad are deleted and replaced by the triangles cdb
-//  and dca.  The triangles that represent abc and bad are NOT deallocated;
-//  they are reused for cdb and dca, respectively.  Hence, any handles that
+//  and dca. The triangles that represent abc and bad are NOT deallocated;
+//  they are reused for cdb and dca, respectively. Hence, any handles that
 //  may have held the original triangles are still valid, although not
 //  directed as they were before.
 //
@@ -5252,11 +5249,11 @@ void Mesh::flip(otri *flipedge) {
 //  (Hence, the two triangles have rotated clockwise.)
 //
 //  WARNING:  This transformation is geometrically valid only if the
-//  quadrilateral adbc is convex.  Furthermore, this transformation is
+//  quadrilateral adbc is convex. Furthermore, this transformation is
 //  valid only if there is not a subsegment between the triangles abc and
-//  bad.  This routine does not check either of these preconditions, and
+//  bad. This routine does not check either of these preconditions, and
 //  it is the responsibility of the calling routine to ensure that they are
-//  met.  If they are not, the streets shall be filled with wailing and
+//  met. If they are not, the streets shall be filled with wailing and
 //  gnashing of teeth.
 //
 //***************************************************************************
@@ -5359,39 +5356,39 @@ void Mesh::unflip(otri *flipedge) {
 //                   performing flips as necessary to maintain the Delaunay
 //                   property.
 //
-//  The point `insertvertex' is located.  If `searchtri.tri' is not NULL,
-//  the search for the containing Triangle begins from `searchtri'.  If
+//  The point `insertvertex' is located. If `searchtri.tri' is not NULL,
+//  the search for the containing Triangle begins from `searchtri'. If
 //  `searchtri.tri' is NULL, a full point location procedure is called.
 //  If `insertvertex' is found inside a Triangle, the Triangle is split into
 //  three; if `insertvertex' lies on an edge, the edge is split in two,
-//  thereby splitting the two adjacent triangles into four.  Edge flips are
-//  used to restore the Delaunay property.  If `insertvertex' lies on an
+//  thereby splitting the two adjacent triangles into four. Edge flips are
+//  used to restore the Delaunay property. If `insertvertex' lies on an
 //  existing Vertex, no action is taken, and the value DUPLICATEVERTEX is
-//  returned.  On return, `searchtri' is set to a handle whose origin is the
+//  returned. On return, `searchtri' is set to a handle whose origin is the
 //  existing Vertex.
 //
 //  Normally, the parameter `splitseg' is set to NULL, implying that no
-//  subsegment should be split.  In this case, if `insertvertex' is found to
+//  subsegment should be split. In this case, if `insertvertex' is found to
 //  lie on a segment, no action is taken, and the value VIOLATINGVERTEX is
-//  returned.  On return, `searchtri' is set to a handle whose primary edge
+//  returned. On return, `searchtri' is set to a handle whose primary edge
 //  is the violated subsegment.
 //
 //  If the calling routine wishes to split a subsegment by inserting a
-//  Vertex in it, the parameter `splitseg' should be that subsegment.  In
+//  Vertex in it, the parameter `splitseg' should be that subsegment. In
 //  this case, `searchtri' MUST be the Triangle handle reached by pivoting
 //  from that subsegment; no point location is done.
 //
 //  `segmentflaws' and `triflaws' are flags that indicate whether or not
 //  there should be checks for the creation of encroached subsegments or bad
-//  quality triangles.  If a newly inserted Vertex encroaches upon
+//  quality triangles. If a newly inserted Vertex encroaches upon
 //  subsegments, these subsegments are added to the list of subsegments to
-//  be split if `segmentflaws' is set.  If bad triangles are created, these
+//  be split if `segmentflaws' is set. If bad triangles are created, these
 //  are added to the queue if `triflaws' is set.
 //
 //  If a duplicate Vertex or violated segment does not prevent the Vertex
 //  from being inserted, the return value will be ENCROACHINGVERTEX if the
 //  Vertex encroaches upon a subsegment (and checking is enabled), or
-//  SUCCESSFULVERTEX otherwise.  In either case, `searchtri' is set to a
+//  SUCCESSFULVERTEX otherwise. In either case, `searchtri' is set to a
 //  handle whose origin is the newly inserted Vertex.
 //
 //  insertvertex() does not use flip() for reasons of speed; some
@@ -5441,7 +5438,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
   }
 
   if (splitseg == NULL) {
-    // Find the location of the Vertex to be inserted.  Check if a good
+    // Find the location of the Vertex to be inserted. Check if a good
     // starting Triangle has already been provided by the caller.
     if (searchtri->tri == dummytri) {
       // Find a boundary Triangle.
@@ -5462,7 +5459,7 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
   }
 
   if (intersect == ONVERTEX) {
-    // There's already a Vertex there.  Return in `searchtri' a Triangle
+    // There's already a Vertex there. Return in `searchtri' a Triangle
     // whose origin is the existing Vertex.
     otricopy(horiz, *searchtri);
     otricopy(horiz, recenttri);
@@ -5746,8 +5743,8 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
   // The insertion is successful by default, unless an encroached subsegment is found.
   success = SUCCESSFULVERTEX;
   // Circle around the newly inserted Vertex, checking each edge opposite
-  // it for the Delaunay property.  Non-Delaunay edges are flipped.
-  // horiz' is always the edge being checked.  `first' marks where to
+  // it for the Delaunay property. Non-Delaunay edges are flipped.
+  // horiz' is always the edge being checked. `first' marks where to
   // stop circling.
   org(horiz, first);
   rightvertex = first;
@@ -5785,21 +5782,21 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
         apex(top, farvertex);
         // In the incremental Delaunay triangulation algorithm, any of
         // `leftvertex', `rightvertex', and `farvertex' could be vertices
-        // of the triangular bounding box.  These vertices must be
+        // of the triangular bounding box. These vertices must be
         // treated as if they are infinitely distant, even though their
         // "coordinates" are not.
         if ((leftvertex == infvertex1) || (leftvertex == infvertex2) ||
             (leftvertex == infvertex3)) {
-          // leftvertex' is infinitely distant.  Check the convexity of
-          // the boundary of the triangulation.  'farvertex' might be
+          // leftvertex' is infinitely distant. Check the convexity of
+          // the boundary of the triangulation. 'farvertex' might be
           // infinite as well, but trust me, this same condition should
           // be applied.
           doflip = counterclockwise(newvertex, rightvertex, farvertex) > 0.0;
         } else if ((rightvertex == infvertex1) ||
                    (rightvertex == infvertex2) ||
                    (rightvertex == infvertex3)) {
-          // `rightvertex' is infinitely distant.  Check the convexity of
-          // the boundary of the triangulation.  'farvertex' might be
+          // `rightvertex' is infinitely distant. Check the convexity of
+          // the boundary of the triangulation. 'farvertex' might be
           // infinite as well, but trust me, this same condition should
           // be applied.
           doflip = counterclockwise(farvertex, leftvertex, newvertex) > 0.0;
@@ -5942,10 +5939,10 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
       lnextself(horiz);
       sym(horiz, testtri);
       // Check for finishing a complete revolution about the new Vertex, or
-      // falling outside  of the triangulation.  The latter will happen
+      // falling outside  of the triangulation. The latter will happen
       // when a Vertex is inserted at a boundary.
       if ((leftvertex == first) || (testtri.tri == dummytri)) {
-        // We're done.  Return a Triangle whose origin is the new Vertex.
+        // We're done. Return a Triangle whose origin is the new Vertex.
         lnext(horiz, *searchtri);
         lnext(horiz, recenttri);
         return success;
@@ -5961,38 +5958,38 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
 //***************************************************************************
 //
 //  triangulatepolygon()   Find the Delaunay triangulation of a polygon that
-//                         has a certain "nice" shape.  This includes the
+//                         has a certain "nice" shape. This includes the
 //                         polygons that result from deletion of a Vertex or
 //                         insertion of a segment.
 //
-//  This is a conceptually difficult routine.  The starting assumption is
-//  that we have a polygon with n sides.  n - 1 of these sides are currently
-//  represented as edges in the mesh.  One side, called the "base", need not
+//  This is a conceptually difficult routine. The starting assumption is
+//  that we have a polygon with n sides. n - 1 of these sides are currently
+//  represented as edges in the mesh. One side, called the "base", need not
 //  be.
 //
 //  Inside the polygon is a structure I call a "fan", consisting of n - 1
-//  triangles that share a common origin.  For each of these triangles, the
-//  edge opposite the origin is one of the sides of the polygon.  The
+//  triangles that share a common origin. For each of these triangles, the
+//  edge opposite the origin is one of the sides of the polygon. The
 //  primary edge of each Triangle is the edge directed from the origin to
 //  the destination; note that this is not the same edge that is a side of
-//  the polygon.  `firstedge' is the primary edge of the first Triangle.
+//  the polygon. `firstedge' is the primary edge of the first Triangle.
 //  From there, the triangles follow in counterclockwise order about the
 //  polygon, until `lastedge', the primary edge of the last Triangle.
 //  `firstedge' and `lastedge' are probably connected to other triangles
 //  beyond the extremes of the fan, but their identity is not important, as
 //  long as the fan remains connected to them.
 //
-//  Imagine the polygon oriented so that its base is at the bottom.  This
+//  Imagine the polygon oriented so that its base is at the bottom. This
 //  puts `firstedge' on the far right, and `lastedge' on the far left.
 //  The right Vertex of the base is the destination of `firstedge', and the
 //  left Vertex of the base is the apex of `lastedge'.
 //
 //  The challenge now is to find the right sequence of edge flips to
-//  transform the fan into a Delaunay triangulation of the polygon.  Each
+//  transform the fan into a Delaunay triangulation of the polygon. Each
 //  edge flip effectively removes one Triangle from the fan, committing it
-//  to the polygon.  The resulting polygon has one fewer edge.  If `doflip'
+//  to the polygon. The resulting polygon has one fewer edge. If `doflip'
 //  is set, the final flip will be performed, resulting in a fan of one
-//  (useless?) Triangle.  If `doflip' is not set, the final flip is not
+//  (useless?) Triangle. If `doflip' is not set, the final flip is not
 //  performed, resulting in a fan of two triangles, and an unfinished
 //  triangular polygon that is not yet filled out with a single Triangle.
 //  On completion of the routine, `lastedge' is the last remaining Triangle,
@@ -6000,23 +5997,23 @@ InserVvertexResult Mesh::insertvertex(Vertex    newvertex
 //
 //  Although the flips are performed in the order described above, the
 //  decisions about what flips to perform are made in precisely the reverse
-//  order.  The recursive triangulatepolygon() procedure makes a decision,
+//  order. The recursive triangulatepolygon() procedure makes a decision,
 //  uses up to two recursive calls to triangulate the "subproblems"
 //  (polygons with fewer edges), and then performs an edge flip.
 //
 //  The "decision" it makes is which Vertex of the polygon should be
-//  connected to the base.  This decision is made by testing every possible
-//  Vertex.  Once the best Vertex is found, the two edges that connect this
-//  Vertex to the base become the bases for two smaller polygons.  These
-//  are triangulated recursively.  Unfortunately, this approach can take
-//  O(n^2) time not only in the worst case, but in many common cases.  It's
+//  connected to the base. This decision is made by testing every possible
+//  Vertex. Once the best Vertex is found, the two edges that connect this
+//  Vertex to the base become the bases for two smaller polygons. These
+//  are triangulated recursively. Unfortunately, this approach can take
+//  O(n^2) time not only in the worst case, but in many common cases. It's
 //  rarely a big deal for Vertex deletion, where n is rarely larger than
 //  ten, but it could be a big deal for segment insertion, especially if
-//  there's a lot of long segments that each cut many triangles.  I ought to
+//  there's a lot of long segments that each cut many triangles. I ought to
 //  code a faster algorithm some day.
 //
 //  The `edgecount' parameter is the number of sides of the polygon,
-//  including its base.  `triflaws' is a flag that determines whether the
+//  including its base. `triflaws' is a flag that determines whether the
 //  new triangles should be tested for quality, and enqueued if they are
 //  bad.
 //
@@ -6097,9 +6094,9 @@ void Mesh::triangulatepolygon(otri     *firstedge
 //  deletevertex()   Delete a Vertex from a Delaunay triangulation, ensuring
 //                   that the triangulation remains Delaunay.
 //
-//  The origin of `deltri' is deleted.  The union of the triangles adjacent
+//  The origin of `deltri' is deleted. The union of the triangles adjacent
 //  to this Vertex is a polygon, for which the Delaunay triangulation is
-//  found.  Two triangles are removed from the mesh.
+//  found. Two triangles are removed from the mesh.
 //
 //  Only interior vertices that do not lie on segments or boundaries may be
 //  deleted.
@@ -6287,24 +6284,24 @@ void Mesh::undovertex() {
 //
 //  I originally implemented the divide-and-conquer and incremental Delaunay
 //  triangulations using the edge-based data structure presented by Guibas
-//  and Stolfi.  Switching to a Triangle-based data structure doubled the
-//  speed.  However, I had to think of a few extra tricks to maintain the
+//  and Stolfi. Switching to a Triangle-based data structure doubled the
+//  speed. However, I had to think of a few extra tricks to maintain the
 //  elegance of the original algorithms.
 //
 //  The "bounding box" used by my variant of the divide-and-conquer
 //  algorithm uses one Triangle for each edge of the convex hull of the
-//  triangulation.  These bounding triangles all share a common apical
+//  triangulation. These bounding triangles all share a common apical
 //  Vertex, which is represented by NULL and which represents nothing.
 //  The bounding triangles are linked in a circular fan about this NULL
 //  Vertex, and the edges on the convex hull of the triangulation appear
-//  opposite the NULL Vertex.  You might find it easiest to imagine that
+//  opposite the NULL Vertex. You might find it easiest to imagine that
 //  the NULL Vertex is a point in 3D space behind the center of the
 //  triangulation, and that the bounding triangles form a sort of cone.
 //
-//  This bounding box makes it easy to represent degenerate cases.  For
-//  instance, the triangulation of two vertices is a single edge.  This edge
+//  This bounding box makes it easy to represent degenerate cases. For
+//  instance, the triangulation of two vertices is a single edge. This edge
 //  is represented by two bounding box triangles, one on each "side" of the
-//  edge.  These triangles are also linked together in a fan about the NULL
+//  edge. These triangles are also linked together in a fan about the NULL
 //  Vertex.
 //
 //  The bounding box also makes it easy to traverse the convex hull, as the
@@ -6317,7 +6314,7 @@ void Mesh::undovertex() {
 //  vertexsort()   Sort an array of vertices by x-coordinate, using the
 //                 y-coordinate as a secondary key.
 //
-//  Uses quicksort.  Randomized O(n log n) time.  No, I did not make any of
+//  Uses quicksort. Randomized O(n log n) time. No, I did not make any of
 //  the usual quicksort mistakes.
 //
 //***************************************************************************
@@ -6377,12 +6374,12 @@ void vertexsort(Vertex *sortarray, int arraysize) {
 
 //***************************************************************************
 //
-//  vertexmedian()   An order statistic algorithm, almost.  Shuffles an
+//  vertexmedian()   An order statistic algorithm, almost. Shuffles an
 //                   array of vertices so that the first `median' vertices
 //                   occur lexicographically before the remaining vertices.
 //
 //  Uses the x-coordinate as the primary key if axis == 0; the y-coordinate
-//  if axis == 1.  Very similar to the vertexsort() procedure, but runs in
+//  if axis == 1. Very similar to the vertexsort() procedure, but runs in
 //  randomized linear time.
 //
 //***************************************************************************
@@ -6480,24 +6477,24 @@ void alternateaxes(Vertex *sortarray, int arraysize, int axis) {
 //  a Triangle-based, rather than edge-based, data structure.
 //
 //  The algorithm walks up the gap between the two triangulations, knitting
-//  them together.  As they are merged, some of their bounding triangles
-//  are converted into real triangles of the triangulation.  The procedure
+//  them together. As they are merged, some of their bounding triangles
+//  are converted into real triangles of the triangulation. The procedure
 //  pulls each hull's bounding triangles apart, then knits them together
-//  like the teeth of two gears.  The Delaunay property determines, at each
+//  like the teeth of two gears. The Delaunay property determines, at each
 //  step, whether the next "tooth" is a bounding Triangle of the left hull
-//  or the right.  When a bounding Triangle becomes real, its apex is
+//  or the right. When a bounding Triangle becomes real, its apex is
 //  changed from NULL to a real Vertex.
 //
-//  Only two new triangles need to be allocated.  These become new bounding
-//  triangles at the top and bottom of the seam.  They are used to connect
+//  Only two new triangles need to be allocated. These become new bounding
+//  triangles at the top and bottom of the seam. They are used to connect
 //  the remaining bounding triangles (those that have not been converted
 //  into real triangles) into a single fan.
 //
 //  On entry, `farleft' and `innerleft' are bounding triangles of the left
-//  triangulation.  The origin of `farleft' is the leftmost Vertex, and
+//  triangulation. The origin of `farleft' is the leftmost Vertex, and
 //  the destination of `innerleft' is the rightmost Vertex of the
-//  triangulation.  Similarly, `innerright' and `farright' are bounding
-//  triangles of the right triangulation.  The origin of `innerright' and
+//  triangulation. Similarly, `innerright' and `farright' are bounding
+//  triangles of the right triangulation. The origin of `innerright' and
 //  destination of `farright' are the leftmost and rightmost vertices.
 //
 //  On completion, the origin of `farleft' is the leftmost Vertex of the
@@ -6631,7 +6628,7 @@ void Mesh::mergehulls(otri     *farleft
     // Have we reached the top?  (This isn't quite the right question,
     // because even though the left triangulation might seem finished now,
     // moving up on the right triangulation might reveal a new Vertex of
-    // the left triangulation.  And vice-versa.)
+    // the left triangulation. And vice-versa.)
     leftfinished = counterclockwise(upperleft, lowerleft, lowerright) <= 0.0;
     rightfinished = counterclockwise(upperright, lowerleft, lowerright) <= 0.0;
     if (leftfinished && rightfinished) {
@@ -6689,7 +6686,7 @@ void Mesh::mergehulls(otri     *farleft
         // Check whether the edge is Delaunay.
         badedge = incircle(lowerleft, lowerright, upperleft, nextapex) > 0.0;
         while (badedge) {
-          // Eliminate the edge with an edge flip.  As a result,the
+          // Eliminate the edge with an edge flip. As a result,the
           // left triangulation will have one more boundary Triangle.
           lnextself(nextedge);
           sym(nextedge, topcasing);
@@ -6800,7 +6797,7 @@ void Mesh::mergehulls(otri     *farleft
 //                     divide-and-conquer method.
 //
 //  Recursively breaks down the problem into smaller pieces, which are
-//  knitted together by mergehulls().  The base cases (problems of two or
+//  knitted together by mergehulls(). The base cases (problems of two or
 //  three vertices) are handled specially here.
 //
 //  On completion, `farleft' and `farright' are bounding triangles such that
@@ -6825,7 +6822,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
     printf("  Triangulating %d vertices.\n", vertices);
   }
   if (vertices == 2) {
-    // The triangulation of two vertices is an edge.  An edge is
+    // The triangulation of two vertices is an edge. An edge is
     // represented by two bounding triangles.
     maketriangle(farleft);
     setorg(*farleft, sortarray[0]);
@@ -6854,7 +6851,7 @@ void Mesh::divconqrecurse(Vertex   *sortarray
   } else if (vertices == 3) {
     // The triangulation of three vertices is either a Triangle (with
     // three bounding triangles) or two edges (with four bounding
-    // triangles).  In either case, four triangles are created.
+    // triangles). In either case, four triangles are created.
     maketriangle(&midtri);
     maketriangle(&tri1);
     maketriangle(&tri2);
@@ -7131,7 +7128,7 @@ void Mesh::boundingbox() {
 //  The triangular bounding box has three boundary triangles (one for each
 //  side of the bounding box), and a bunch of triangles fanning out from
 //  the three bounding box vertices (one Triangle for each edge of the
-//  convex hull of the inner mesh).  This routine removes these triangles.
+//  convex hull of the inner mesh). This routine removes these triangles.
 //
 //  Returns the number of edges on the convex hull of the triangulation.
 //
@@ -7165,7 +7162,7 @@ long Mesh::removebox() {
   lnext(nextedge, checkedge);
   symself(checkedge);
   if (checkedge.tri == dummytri) {
-    // Go on to the next Triangle.  There are only three boundary
+    // Go on to the next Triangle. There are only three boundary
     // triangles, and this next Triangle cannot be the third one,
     // so it's safe to stop here.
     lprevself(searchedge);
@@ -7184,7 +7181,7 @@ long Mesh::removebox() {
     if (!m_b.poly) {
       // Be careful!  One must check for the case where all the input
       // vertices are collinear, and thus all the triangles are part of
-      // the bounding box.  Otherwise, the setvertexmark() call below
+      // the bounding box. Otherwise, the setvertexmark() call below
       // will cause a bad pointer reference.
       if (dissolveedge.tri != dummytri) {
         org(dissolveedge, markorg);
@@ -7842,11 +7839,11 @@ long Mesh::delaunay() {
 //***************************************************************************
 //
 //  reconstruct()   Reconstruct a triangulation from its .ele (and possibly
-//                  .poly) file.  Used when the -r switch is used.
+//                  .poly) file. Used when the -r switch is used.
 //
-//  Reads an .ele file and reconstructs the original mesh.  If the -p switch
+//  Reads an .ele file and reconstructs the original mesh. If the -p switch
 //  is used, this procedure will also read a .poly file and reconstruct the
-//  subsegments of the original mesh.  If the -a switch is used, this
+//  subsegments of the original mesh. If the -a switch is used, this
 //  procedure will also read an .area file and set a maximum area constraint
 //  on each Triangle.
 //
@@ -7854,10 +7851,10 @@ long Mesh::delaunay() {
 //  subparametric elements, are discarded.
 //
 //  This routine finds the adjacencies between triangles (and subsegments)
-//  by forming one stack of triangles for each Vertex.  Each Triangle is on
-//  three different stacks simultaneously.  Each Triangle's subsegment
-//  pointers are used to link the items in each stack.  This memory-saving
-//  feature makes the code harder to read.  The most important thing to keep
+//  by forming one stack of triangles for each Vertex. Each Triangle is on
+//  three different stacks simultaneously. Each Triangle's subsegment
+//  pointers are used to link the items in each stack. This memory-saving
+//  feature makes the code harder to read. The most important thing to keep
 //  in mind is that each Triangle is removed from a stack precisely when
 //  the corresponding pointer is adjusted to refer to a subsegment rather
 //  than the next Triangle of the stack.
@@ -8006,7 +8003,7 @@ long Mesh::reconstruct(char     *elefilename
     printf("Reconstructing mesh.\n");
   }
   // Allocate a temporary array that maps each Vertex to some adjacent
-  // Triangle.  I took care to allocate all the permanent memory for
+  // Triangle. I took care to allocate all the permanent memory for
   // triangles and subsegments first.
   vertexarray = MALLOC(Triangle, vertices.getItems());
   // Each Vertex is initially unrepresented.
@@ -8218,17 +8215,17 @@ long Mesh::reconstruct(char     *elefilename
         decode(nexttri, checktri);
         sorg(subsegloop, shorg);
         notfound = 1;
-        // Look for triangles having this edge.  Note that I'm only
+        // Look for triangles having this edge. Note that I'm only
         // comparing each Triangle's destination with the subsegment;
         // each Triangle's apex is handled through a different Vertex.
         // Because each Triangle appears on three vertices' lists, each
         // occurrence of a Triangle on a list can (and does) represent
-        // an edge.  In this way, most edges are represented twice, and
+        // an edge. In this way, most edges are represented twice, and
         // every Triangle-subsegment bond is represented once.
         while (notfound && (checktri.tri != dummytri)) {
           dest(checktri, checkdest);
           if (shorg == checkdest) {
-            // We have a match.  Remove this Triangle from the list.
+            // We have a match. Remove this Triangle from the list.
             *prevlink = checktri.tri[6 + checktri.orient];
             // Bond the subsegment to the Triangle.
             tsbond(checktri, subsegloop);
@@ -8289,8 +8286,8 @@ long Mesh::reconstruct(char     *elefilename
 //
 //  Finds the Triangle that intersects a line segment drawn from the
 //  origin of `searchtri' to the point `searchpoint', and returns the result
-//  in `searchtri'.  The origin of `searchtri' does not change, even though
-//  the Triangle returned may differ from the one passed in.  This routine
+//  in `searchtri'. The origin of `searchtri' does not change, even though
+//  the Triangle returned may differ from the one passed in. This routine
 //  is used to find the direction to move in to get from one point to
 //  another.
 //
@@ -8317,8 +8314,8 @@ FindDirectionResult Mesh::finddirection(otri *searchtri, Vertex searchpoint) {
   rightccw = counterclockwise(startvertex, searchpoint, rightvertex);
   rightflag = rightccw > 0.0;
   if (leftflag && rightflag) {
-    // `searchtri' faces directly away from `searchpoint'.  We could go left
-    // or right.  Ask whether it's a Triangle or a boundary on the left.
+    // `searchtri' faces directly away from `searchpoint'. We could go left
+    // or right. Ask whether it's a Triangle or a boundary on the left.
     onext(*searchtri, checktri);
     if (checktri.tri == dummytri) {
       leftflag = 0;
@@ -8360,7 +8357,7 @@ FindDirectionResult Mesh::finddirection(otri *searchtri, Vertex searchpoint) {
 //***************************************************************************
 //
 //  segmentintersection()   Find the intersection of an existing segment
-//                          and a segment that is being inserted.  Insert
+//                          and a segment that is being inserted. Insert
 //                          a Vertex at the intersection, splitting an
 //                          existing subsegment.
 //
@@ -8417,7 +8414,7 @@ void Mesh::segmentintersection(otri *splittri, osub *splitsubseg, Vertex endpoin
   if (m_b.verbose > 1) {
     _tprintf(_T("  Splitting subsegment %s\n"), triangleToString(torg, tdest, newvertex).cstr());
   }
-  // Insert the intersection Vertex.  This should always succeed.
+  // Insert the intersection Vertex. This should always succeed.
   success = insertvertex(newvertex, splittri, splitsubseg, 0, 0);
   if (success != SUCCESSFULVERTEX) {
     internalerror(method, _T("Failure to split a segment"));
@@ -8442,7 +8439,7 @@ void Mesh::segmentintersection(otri *splittri, osub *splitsubseg, Vertex endpoin
     snextself(opposubseg);
   } while (opposubseg.ss != dummysub);
 
-  // Inserting the Vertex may have caused edge flips.  We wish to rediscover
+  // Inserting the Vertex may have caused edge flips. We wish to rediscover
   // the edge connecting endpoint1 to the new intersection Vertex.
   collinear = finddirection(splittri, endpoint1);
   dest(*splittri, rightvertex);
@@ -8539,13 +8536,13 @@ int Mesh::scoutsegment(otri *searchtri, Vertex endpoint2, int newmark) {
 //                     necessary.
 //
 //  Generates a sequence of subsegments connecting `endpoint1' to
-//  `endpoint2'.  `newmark' is the boundary marker of the segment, assigned
+//  `endpoint2'. `newmark' is the boundary marker of the segment, assigned
 //  to each new splitting Vertex and subsegment.
 //
 //  Note that conformingedge() does not always maintain the conforming
-//  Delaunay property.  Once inserted, segments are locked into place;
+//  Delaunay property. Once inserted, segments are locked into place;
 //  vertices inserted later (to force other segments in) may render these
-//  fixed segments non-Delaunay.  The conforming Delaunay property will be
+//  fixed segments non-Delaunay. The conforming Delaunay property will be
 //  restored by enforcequality() by splitting encroached subsegments.
 //
 //***************************************************************************
@@ -8586,7 +8583,7 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
       if (m_b.verbose > 2) {
         _tprintf(_T("  Two segments intersect at %s\n"), vertexToString(newvertex).cstr());
       }
-      // By fluke, we've landed right on another segment.  Split it.
+      // By fluke, we've landed right on another segment. Split it.
       tspivot(searchtri1, brokensubseg);
       success = insertvertex(newvertex, &searchtri1, &brokensubseg, 0, 0);
       if (success != SUCCESSFULVERTEX) {
@@ -8601,7 +8598,7 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
   otricopy(searchtri1, searchtri2);
   // `searchtri1' and `searchtri2' are fastened at their origins to
   // `newvertex', and will be directed toward `endpoint1' and `endpoint2'
-  // respectively.  First, we must get `searchtri2' out of the way so it
+  // respectively. First, we must get `searchtri2' out of the way so it
   // won't be invalidated during the insertion of the first half of the segment.
   finddirection(&searchtri2, endpoint2);
   if (!scoutsegment(&searchtri1, endpoint1, newmark)) {
@@ -8624,28 +8621,28 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
 //***************************************************************************
 //
 //  delaunayfixup()   Enforce the Delaunay condition at an edge, fanning out
-//                    recursively from an existing Vertex.  Pay special
+//                    recursively from an existing Vertex. Pay special
 //                    attention to stacking inverted triangles.
 //
 //  This is a support routine for inserting segments into a constrained
 //  Delaunay triangulation.
 //
 //  The origin of fixuptri is treated as if it has just been inserted, and
-//  the local Delaunay condition needs to be enforced.  It is only enforced
+//  the local Delaunay condition needs to be enforced. It is only enforced
 //  in one sector, however, that being the angular range defined by
 //  fixuptri.
 //
 //  This routine also needs to make decisions regarding the "stacking" of
-//  triangles.  (Read the description of constrainededge() below before
+//  triangles. (Read the description of constrainededge() below before
 //  reading on here, so you understand the algorithm.)  If the position of
 //  the new Vertex (the origin of fixuptri) indicates that the Vertex before
 //  it on the polygon is a reflex Vertex, then "stack" the Triangle by
-//  doing nothing.  (fixuptri is an inverted Triangle, which is how stacked
+//  doing nothing. (fixuptri is an inverted Triangle, which is how stacked
 //  triangles are identified.)
 //
 //  Otherwise, check whether the Vertex before that was a reflex Vertex.
 //  If so, perform an edge flip, thereby eliminating an inverted Triangle
-//  (popping it off the stack).  The edge flip may result in the creation
+//  (popping it off the stack). The edge flip may result in the creation
 //  of a new inverted Triangle, depending on whether or not the new Vertex
 //  is visible to the Vertex three edges behind on the polygon.
 //
@@ -8654,7 +8651,7 @@ void Mesh::conformingedge(Vertex endpoint1, Vertex endpoint2, int newmark) {
 //  inverted; hence, ensure that the edge between them is locally Delaunay.
 //
 //  `leftside' indicates whether or not fixuptri is to the left of the
-//  segment being inserted.  (Imagine that the segment is pointing up from
+//  segment being inserted. (Imagine that the segment is pointing up from
 //  endpoint1 to endpoint2.)
 //
 //***************************************************************************
@@ -8684,21 +8681,21 @@ void Mesh::delaunayfixup(otri *fixuptri, int leftside) {
   // Check whether the previous polygon Vertex is a reflex Vertex.
   if (leftside) {
     if (counterclockwise(nearvertex, leftvertex, farvertex) <= 0.0) {
-      // leftvertex is a reflex Vertex too.  Nothing can
+      // leftvertex is a reflex Vertex too. Nothing can
       // be done until a convex section is found.
       return;
     }
   } else {
     if (counterclockwise(farvertex, rightvertex, nearvertex) <= 0.0) {
-      // rightvertex is a reflex Vertex too.  Nothing can
+      // rightvertex is a reflex Vertex too. Nothing can
       // be done until a convex section is found.
       return;
     }
   }
   if (counterclockwise(rightvertex, leftvertex, farvertex) > 0.0) {
     // fartri is not an inverted Triangle, and farvertex is not a reflex
-    // Vertex.  As there are no reflex vertices, fixuptri isn't an
-    // inverted Triangle, either.  Hence, test the edge between the
+    // Vertex. As there are no reflex vertices, fixuptri isn't an
+    // inverted Triangle, either. Hence, test the edge between the
     // triangles to ensure it is locally Delaunay.
     if (incircle(leftvertex, farvertex, rightvertex, nearvertex) <= 0.0) {
       return;
@@ -8720,27 +8717,27 @@ void Mesh::delaunayfixup(otri *fixuptri, int leftside) {
 //                      form on each side of it.
 //
 //  Generates a single subsegment connecting `endpoint1' to `endpoint2'.
-//  The Triangle `starttri' has `endpoint1' as its origin.  `newmark' is the
+//  The Triangle `starttri' has `endpoint1' as its origin. `newmark' is the
 //  boundary marker of the segment.
 //
 //  To insert a segment, every Triangle whose interior intersects the
-//  segment is deleted.  The union of these deleted triangles is a polygon
+//  segment is deleted. The union of these deleted triangles is a polygon
 //  (which is not necessarily monotone, but is close enough), which is
-//  divided into two polygons by the new segment.  This routine's task is
+//  divided into two polygons by the new segment. This routine's task is
 //  to generate the Delaunay triangulation of these two polygons.
 //
-//  You might think of this routine's behavior as a two-step process.  The
+//  You might think of this routine's behavior as a two-step process. The
 //  first step is to walk from endpoint1 to endpoint2, flipping each edge
-//  encountered.  This step creates a fan of edges connected to endpoint1,
-//  including the desired edge to endpoint2.  The second step enforces the
+//  encountered. This step creates a fan of edges connected to endpoint1,
+//  including the desired edge to endpoint2. The second step enforces the
 //  Delaunay condition on each side of the segment in an incremental manner:
 //  proceeding along the polygon from endpoint1 to endpoint2 (this is done
 //  independently on each side of the segment), each Vertex is "enforced"
 //  as if it had just been inserted, but affecting only the previous
-//  vertices.  The result is the same as if the vertices had been inserted
+//  vertices. The result is the same as if the vertices had been inserted
 //  in the order they appear on the polygon, so the result is Delaunay.
 //
-//  In truth, constrainededge() interleaves these two steps.  The procedure
+//  In truth, constrainededge() interleaves these two steps. The procedure
 //  walks from endpoint1 to endpoint2, and each time an edge is encountered
 //  and flipped, the newly exposed Vertex (at the far end of the flipped
 //  edge) is "enforced" upon the previously flipped edges, usually affecting
@@ -8748,18 +8745,18 @@ void Mesh::delaunayfixup(otri *fixuptri, int leftside) {
 //  the Vertex falls on).
 //
 //  The algorithm is complicated by the need to handle polygons that are not
-//  convex.  Although the polygon is not necessarily monotone, it can be
+//  convex. Although the polygon is not necessarily monotone, it can be
 //  triangulated in a manner similar to the stack-based algorithms for
-//  monotone polygons.  For each reflex Vertex (local concavity) of the
+//  monotone polygons. For each reflex Vertex (local concavity) of the
 //  polygon, there will be an inverted Triangle formed by one of the edge
-//  flips.  (An inverted Triangle is one with negative area - that is, its
+//  flips. (An inverted Triangle is one with negative area - that is, its
 //  vertices are arranged in clockwise order - and is best thought of as a
 //  wrinkle in the fabric of the mesh.)  Each inverted Triangle can be
 //  thought of as a reflex Vertex pushed on the stack, waiting to be fixed
 //  later.
 //
 //  A reflex Vertex is popped from the stack when a Vertex is inserted that
-//  is visible to the reflex Vertex.  (However, if the Vertex behind the
+//  is visible to the reflex Vertex. (However, if the Vertex behind the
 //  reflex Vertex is not visible to the reflex Vertex, a new inverted
 //  Triangle will take its place on the stack.)  These details are handled
 //  by the delaunayfixup() routine above.
@@ -8812,13 +8809,13 @@ void Mesh::constrainededge(otri *starttri, Vertex endpoint2, int newmark) {
           // Enforce the Delaunay condition around farvertex, on the
           // left side of the segment only.
           delaunayfixup(&fixuptri2, 1);
-          // Flip the edge that crosses the segment.  After the edge is
+          // Flip the edge that crosses the segment. After the edge is
           // flipped, one of its endpoints is the fan Vertex, and the
           // destination of fixuptri is the fan Vertex.
           lprevself(fixuptri);
         } else {                // farvertex is to the right of the segment.
           delaunayfixup(&fixuptri, 0);
-          // Flip the edge that crosses the segment.  After the edge is
+          // Flip the edge that crosses the segment. After the edge is
           // flipped, one of its endpoints is the fan Vertex, and the
           // destination of fixuptri is the fan Vertex.
           oprevself(fixuptri);
@@ -8967,7 +8964,7 @@ void Mesh::markhull() {
 //  formskeleton()   Create the segments of a triangulation, including PSLG
 //                   segments and edges on the convex hull.
 //
-//  The PSLG segments are read from a .poly file.  The return value is the
+//  The PSLG segments are read from a .poly file. The return value is the
 //  number of segments in the file.
 //
 //***************************************************************************
@@ -9098,7 +9095,7 @@ void Mesh::formskeleton(FILE *polyfile, char *polyfilename)
 //***************************************************************************
 //
 //  infecthull()   Virally infect all of the triangles of the convex hull
-//                 that are not protected by subsegments.  Where there are
+//                 that are not protected by subsegments. Where there are
 //                 subsegments, set boundary markers as appropriate.
 //
 //***************************************************************************
@@ -9162,16 +9159,16 @@ void Mesh::infecthull() {
 //***************************************************************************
 //
 //  plague()   Spread the virus from all infected triangles to any neighbors
-//             not protected by subsegments.  Delete all infected triangles.
+//             not protected by subsegments. Delete all infected triangles.
 //
 //  This is the procedure that actually creates holes and concavities.
 //
-//  This procedure operates in two phases.  The first phase identifies all
-//  the triangles that will die, and marks them as infected.  They are
+//  This procedure operates in two phases. The first phase identifies all
+//  the triangles that will die, and marks them as infected. They are
 //  marked to ensure that each Triangle is added to the virus pool only
 //  once, so the procedure will terminate.
 //
-//  The second phase actually eliminates the infected triangles.  It also
+//  The second phase actually eliminates the infected triangles. It also
 //  eliminates orphaned vertices.
 //
 //***************************************************************************
@@ -9198,7 +9195,7 @@ void Mesh::plague() {
   while (virusloop != NULL) {
     testtri.tri = *virusloop;
     // A Triangle is marked as infected by messing with one of its pointers
-    // to subsegments, setting it to an illegal value.  Hence, we have to
+    // to subsegments, setting it to an illegal value. Hence, we have to
     // temporarily uninfect this Triangle so that we can examine its
     // adjacent subsegments.
     uninfect(testtri);
@@ -9247,7 +9244,7 @@ void Mesh::plague() {
         } else {               // The neighbor is protected by a subsegment.
           // Remove this Triangle from the subsegment.
           stdissolve(neighborsubseg);
-          // The subsegment becomes a boundary.  Set markers accordingly.
+          // The subsegment becomes a boundary. Set markers accordingly.
           if (mark(neighborsubseg) == 0) {
             setmark(neighborsubseg, 1);
           }
@@ -9294,7 +9291,7 @@ void Mesh::plague() {
             // Mark the corner of this Triangle as having been tested.
             setorg(neighbor, NULL);
           } else {
-            // A live Triangle.  The Vertex survives.
+            // A live Triangle. The Vertex survives.
             killorg = 0;
           }
           // Walk counterclockwise about the Vertex.
@@ -9310,7 +9307,7 @@ void Mesh::plague() {
             // Mark the corner of this Triangle as having been tested.
               setorg(neighbor, NULL);
             } else {
-              // A live Triangle.  The Vertex survives.
+              // A live Triangle. The Vertex survives.
               killorg = 0;
             }
             // Walk clockwise about the Vertex.
@@ -9333,7 +9330,7 @@ void Mesh::plague() {
       sym(testtri, neighbor);
       if (neighbor.tri == dummytri) {
         // There is no neighboring Triangle on this edge, so this edge
-        // is a boundary edge.  This Triangle is being deleted, so this
+        // is a boundary edge. This Triangle is being deleted, so this
         // boundary edge is deleted.
         hullsize--;
       } else {
@@ -9357,7 +9354,7 @@ void Mesh::plague() {
 //  regionplague()   Spread regional attributes and/or area constraints
 //                   (from a .poly file) throughout the mesh.
 //
-//  This procedure operates in two phases.  The first phase spreads an
+//  This procedure operates in two phases. The first phase spreads an
 //  attribute and/or an area constraint through a (segment-bounded) region.
 //  The triangles are marked to ensure that each Triangle is added to the
 //  virus pool only once, so the procedure will terminate.
@@ -9386,7 +9383,7 @@ void Mesh::regionplague(REAL attribute, REAL area) {
   while (virusloop != NULL) {
     testtri.tri = *virusloop;
     // A Triangle is marked as infected by messing with one of its pointers
-    // to subsegments, setting it to an illegal value.  Hence, we have to
+    // to subsegments, setting it to an illegal value. Hence, we have to
     // temporarily uninfect this Triangle so that we can examine its
     // adjacent subsegments.
     uninfect(testtri);
@@ -9451,9 +9448,9 @@ void Mesh::regionplague(REAL attribute, REAL area) {
 
 //***************************************************************************
 //
-//  carveholes()   Find the holes and infect them.  Find the area
-//                 constraints and infect them.  Infect the convex hull.
-//                 Spread the infection and kill triangles.  Spread the
+//  carveholes()   Find the holes and infect them. Find the area
+//                 constraints and infect them. Infect the convex hull.
+//                 Spread the infection and kill triangles. Spread the
 //                 area constraints.
 //
 //  This routine mainly calls other routines to carry out all these functions.
@@ -9515,7 +9512,7 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
           // Find a Triangle that contains the hole.
           intersect = locate(&holelist[i], &searchtri);
           if ((intersect != OUTSIDE) && (!infected(searchtri))) {
-            // Infect the Triangle.  This is done by marking the Triangle
+            // Infect the Triangle. This is done by marking the Triangle
             // as infected and including the Triangle in the virus pool.
             infect(searchtri);
             holetri  = viri.alloc();
@@ -9625,7 +9622,7 @@ void Mesh::carveholes(REAL *holelist, int holes, REAL *regionlist, int regions) 
 //***************************************************************************
 //
 //  tallyencs()   Traverse the entire list of subsegments, and check each
-//                to see if it is encroached.  If so, add it to the list.
+//                to see if it is encroached. If so, add it to the list.
 //
 //***************************************************************************
 void Mesh::tallyencs() {
@@ -9659,7 +9656,7 @@ String getPrecisionMsg() {
 //  splitencsegs()   Split all the encroached subsegments.
 //
 //  Each encroached subsegment is repaired by splitting it - inserting a
-//  Vertex at or near its midpoint.  Newly inserted vertices may encroach
+//  Vertex at or near its midpoint. Newly inserted vertices may encroach
 //  upon other subsegments; these are also repaired.
 //
 //  `triflaws' is a flag that specifies whether one should take note of new
@@ -9694,7 +9691,7 @@ void Mesh::splitencsegs(int triflaws) {
       sorg(currentenc, eorg);
       sdest(currentenc, edest);
       // Make sure that this segment is still the same segment it was
-      // when it was determined to be encroached.  If the segment was
+      // when it was determined to be encroached. If the segment was
       // enqueued multiple times (because several newly inserted
       // vertices encroached it), it may have already been split.
       if (!deadsubseg(currentenc.ss) && (eorg == encloop->subsegorg) && (edest == encloop->subsegdest)) {
@@ -9709,7 +9706,7 @@ void Mesh::splitencsegs(int triflaws) {
         // To avoid this, imagine a set of concentric circles, whose
         // radii are powers of two, about each segment endpoint.
         // These concentric circles determine where the segment is
-        // split.  (If both endpoints are shared with adjacent
+        // split. (If both endpoints are shared with adjacent
         // segments, split the segment in the middle, and apply the
         // concentric circles for later splittings.)
 
@@ -9829,7 +9826,7 @@ void Mesh::splitencsegs(int triflaws) {
                     , vertexToString(newvertex).cstr()
                     , getPrecisionMsg().cstr());
         }
-        // Insert the splitting Vertex.  This should always succeed.
+        // Insert the splitting Vertex. This should always succeed.
         success = insertvertex(newvertex, &enctri, &currentenc, 1, triflaws);
         if ((success != SUCCESSFULVERTEX) && (success != ENCROACHINGVERTEX)) {
           internalerror(__TFUNCTION__, _T("Failure to split a segment"));
@@ -9920,11 +9917,11 @@ void Mesh::splittriangle(BadTriangle *badtri) {
       setvertextype(newvertex, FREEVERTEX);
 
       // Ensure that the handle `badotri' does not represent the longest
-      // edge of the Triangle.  This ensures that the circumcenter must
+      // edge of the Triangle. This ensures that the circumcenter must
       // fall to the left of this edge, so point location will work.
       // (If the angle org-apex-dest exceeds 90 degrees, then the
       // circumcenter lies outside the org-dest edge, and eta is
-      // negative.  Roundoff error might prevent eta from being
+      // negative. Roundoff error might prevent eta from being
       // negative when it should be, so I test eta against xi.)
       if (eta < xi) {
         lprevself(badotri);
@@ -10038,7 +10035,7 @@ void Mesh::enforcequality() {
     } else {
       printf("  %ld encroached subsegments, and therefore might not be truly\n", badsubsegs.getItems());
     }
-    printf("  Delaunay.  If the Delaunay property is important to you,\n");
+    printf("  Delaunay. If the Delaunay property is important to you,\n");
     printf("  try increasing the number of Steiner points (controlled by\n");
     printf("  the -S switch) slightly and try again.\n\n");
   }
@@ -10061,7 +10058,7 @@ void Mesh::highorder() {
   }
   // The following line ensures that dead items in the pool of nodes
   // cannot be allocated for the extra nodes associated with high
-  // order elements.  This ensures that the primary nodes (at the
+  // order elements. This ensures that the primary nodes (at the
   // corners of elements) will occur earlier in the output files, and
   // have lower indices, than the extra nodes.
   vertices.resetDeadItems();
@@ -10069,10 +10066,10 @@ void Mesh::highorder() {
   triangles.traversalinit();
   triangleloop.tri = triangletraverse();
   // To loop over the set of edges, loop over all triangles, and look at
-  // the three edges of each Triangle.  If there isn't another Triangle
-  // adjacent to the edge, operate on the edge.  If there is another
+  // the three edges of each Triangle. If there isn't another Triangle
+  // adjacent to the edge, operate on the edge. If there is another
   // adjacent Triangle, operate on the edge only if the current Triangle
-  // has a smaller pointer than its neighbor.  This way, each edge is
+  // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
   while (triangleloop.tri != NULL) {
     for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
@@ -10080,7 +10077,7 @@ void Mesh::highorder() {
       if ((triangleloop.tri < trisym.tri) || (trisym.tri == dummytri)) {
         org(triangleloop, torg);
         dest(triangleloop, tdest);
-        // Create a new node in the middle of the edge.  Interpolate its attributes.
+        // Create a new node in the middle of the edge. Interpolate its attributes.
         newvertex = vertices.alloc();
         for (i = 0; i < 2 + nextras; i++) {
           newvertex[i] = 0.5 * (torg[i] + tdest[i]);
@@ -10370,7 +10367,7 @@ void Mesh::readholes(FILE *polyfile, char *polyfilename, REAL **hlist, int *hole
 //***************************************************************************
 //
 //  finishfile()   Write the command line to the output file so the user
-//                 can remember how the file was generated.  Close the file.
+//                 can remember how the file was generated. Close the file.
 //
 //***************************************************************************
 void finishfile(FILE *outfile, int argc, char **argv) {
@@ -10850,10 +10847,10 @@ void Mesh::writeedges(char *edgefilename, int argc, char **argv)
   triangleloop.tri = triangletraverse();
   edgenumber = m_b.firstnumber;
   // To loop over the set of edges, loop over all triangles, and look at
-  // the three edges of each Triangle.  If there isn't another Triangle
-  // adjacent to the edge, operate on the edge.  If there is another
+  // the three edges of each Triangle. If there isn't another Triangle
+  // adjacent to the edge, operate on the edge. If there is another
   // adjacent Triangle, operate on the edge only if the current Triangle
-  // has a smaller pointer than its neighbor.  This way, each edge is
+  // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
   while (triangleloop.tri != NULL) {
     for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
@@ -10919,7 +10916,7 @@ void Mesh::writeedges(char *edgefilename, int argc, char **argv)
 //
 //  WARNING:  In order to assign numbers to the Voronoi vertices, this
 //  procedure messes up the subsegments or the extra nodes of every
-//  element.  Hence, you should call this procedure last.
+//  element. Hence, you should call this procedure last.
 //
 //***************************************************************************
 #ifdef TRILIBRARY
@@ -11043,10 +11040,10 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
   triangleloop.tri = triangletraverse();
   vedgenumber = m_b.firstnumber;
   // To loop over the set of edges, loop over all triangles, and look at
-  // the three edges of each Triangle.  If there isn't another Triangle
-  // adjacent to the edge, operate on the edge.  If there is another
+  // the three edges of each Triangle. If there isn't another Triangle
+  // adjacent to the edge, operate on the edge. If there is another
   // adjacent Triangle, operate on the edge only if the current Triangle
-  // has a smaller pointer than its neighbor.  This way, each edge is
+  // has a smaller pointer than its neighbor. This way, each edge is
   // considered only once.
   while (triangleloop.tri != NULL) {
     for (triangleloop.orient = 0; triangleloop.orient < 3; triangleloop.orient++) {
@@ -11058,13 +11055,13 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
           org(triangleloop, torg);
           dest(triangleloop, tdest);
 #ifdef TRILIBRARY
-          // Copy an infinite ray.  Index of one endpoint, and -1.
+          // Copy an infinite ray. Index of one endpoint, and -1.
           elist[coordindex] = p1;
           normlist[coordindex++] = tdest[1] - torg[1];
           elist[coordindex] = -1;
           normlist[coordindex++] = torg[0] - tdest[0];
 #else // not TRILIBRARY
-          // Write an infinite ray.  Edge number, index of one endpoint, -1,
+          // Write an infinite ray. Edge number, index of one endpoint, -1,
           // and x and y coordinates of a vector representing the direction of the ray.
           fprintf(outfile, "%4ld   %d  %d   %.17g  %.17g\n"
                  ,vedgenumber, p1, -1, tdest[1] - torg[1], torg[0] - tdest[0]);
@@ -11072,7 +11069,7 @@ void Mesh::writevoronoi(char *vnodefilename, char *vedgefilename, int argc, char
         } else {
           // Find the number of the adjacent Triangle (and Voronoi Vertex).
           p2 = * (int *) (trisym.tri + 6);
-          // Finite edge.  Write indices of two endpoints.
+          // Finite edge. Write indices of two endpoints.
 #ifdef TRILIBRARY
           elist[coordindex] = p1;
           normlist[coordindex++] = 0.0;
@@ -11505,7 +11502,7 @@ String Mesh::getStatistics() {
 //
 //  main() or triangulate()   Gosh, do everything.
 //
-//  The sequence is roughly as follows.  Many of these steps can be skipped,
+//  The sequence is roughly as follows. Many of these steps can be skipped,
 //  depending on the command line switches.
 //
 //  - Initialize constants and parse the command line.
@@ -11515,7 +11512,7 @@ String Mesh::getStatistics() {
 //  - Insert the PSLG segments (-p), and possibly segments on the convex
 //      hull (-c).
 //  - Read the holes (-p), regional attributes (-pA), and regional area
-//      constraints (-pa).  Carve the holes and concavities, and spread the
+//      constraints (-pa). Carve the holes and concavities, and spread the
 //      regional attributes and area constraints.
 //  - Enforce the constraints on minimum angle (-q) and maximum area (-a).
 //      Also enforce the conforming Delaunay property (-q and -a).
@@ -11539,7 +11536,7 @@ int triangleMain(int argc, char **argv)
   FILE    *polyfile;
 #endif // not TRILIBRARY
 #ifndef NO_TIMER
-  // Variables for timing the performance of Triangle.  The types are
+  // Variables for timing the performance of Triangle. The types are
   // defined in sys/time.h.
   struct timeval tv0, tv1, tv2, tv3, tv4, tv5, tv6;
   struct timezone tz;
@@ -11657,7 +11654,7 @@ int triangleMain(int argc, char **argv)
     }
   } else {
     // Without a PSLG, there can be no holes or regional attributes
-    // or area constraints.  The following are set to zero to avoid
+    // or area constraints. The following are set to zero to avoid
     // an accidental free() later.
     m.holes   = 0;
     m.regions = 0;
