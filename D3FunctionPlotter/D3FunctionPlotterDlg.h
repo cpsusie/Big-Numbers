@@ -210,5 +210,7 @@ protected:
 	  afx_msg void OnLightRemove();
     afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnFileRead3dpointsfromfile();
 };
 

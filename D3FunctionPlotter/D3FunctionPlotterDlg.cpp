@@ -112,6 +112,7 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_LIGHTCONTROL_HIDE             , OnLightControlHide             )
   ON_COMMAND(ID_LIGHT_REMOVE                  , OnLightRemove                  )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
+  ON_COMMAND(ID_FILE_READ3DPOINTSFROMFILE, &CD3FunctionPlotterDlg::OnFileRead3dpointsfromfile)
 END_MESSAGE_MAP()
 
 #define REPAINT() Invalidate(FALSE)
@@ -516,6 +517,16 @@ void CD3FunctionPlotterDlg::OnFileProfileSurface() {
     fclose(f);
     CProfileDlg dlg(profile);
     dlg.DoModal();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CD3FunctionPlotterDlg::OnFileRead3dpointsfromfile() {
+  try {
+    DIRECT3DDEVICE device = m_scene.getDevice();
+    setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(device, "dummy", true)));
+    REPAINT();
   } catch(Exception e) {
     showException(e);
   }

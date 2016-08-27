@@ -349,6 +349,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TurnableRect.cpp" />
+    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="D3FunctionPlotter.rc" />

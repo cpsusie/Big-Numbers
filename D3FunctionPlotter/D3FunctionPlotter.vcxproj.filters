@@ -165,6 +165,9 @@
     <ClCompile Include="colormap.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorDlg.h">

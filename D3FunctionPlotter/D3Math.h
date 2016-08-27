@@ -49,6 +49,21 @@ String      toString(  const D3DXMATRIX  &m, int dec = 3);
 #define     radians(x) D3DXToRadian(x)
 #define     degrees(x) D3DXToDegree(x)
 
+class Point3DP : public Point3D {
+public:
+  inline Point3DP() {
+  }
+  inline Point3DP(double _x, double _y, double _z) : Point3D(_x, _y, _z) {
+  }
+  inline Point3DP(const Point3D &p) : Point3D(p) {
+  }
+  inline Point3DP(const D3DXVECTOR3 &v) : Point3D(v.x, v.y, v.z) {
+  }
+  inline operator D3DXVECTOR3() const {
+    return D3DXVECTOR3((float)x, (float)y, (float)z);
+  }
+};
+
 class D3PosDirUpScale {
   D3DXVECTOR3 m_pos, m_dir, m_up, m_scale;
   D3DXMATRIX  m_view;

@@ -362,6 +362,7 @@ LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const IsoSurfa
 MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 LPD3DXMESH     createSphereMesh(           DIRECT3DDEVICE device, double                            radius);
 D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene,        const IsoSurfaceParameters        &param);
+LPD3DXMESH     createMeshFromVertexFile(   DIRECT3DDEVICE device, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 
 LPDIRECT3DTEXTURE9 loadTextureFromFile(     LPDIRECT3DDEVICE9 device, const String &fileName);
