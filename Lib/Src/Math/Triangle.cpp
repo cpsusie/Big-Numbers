@@ -7882,7 +7882,7 @@ long Mesh::reconstruct(char     *elefilename
   int attribindex;
 #else // not TRILIBRARY
   FILE *elefile;
-  FILE *areafile;
+  FILE *areafile = NULL;
   char inputline[INPUTLINESIZE];
   char *stringptr;
   int areaelements;
@@ -10113,7 +10113,7 @@ void Mesh::highorder() {
 
 // Read the vertices from a file, which may be a node or.poly file.
 void Mesh::readnodes(char *nodefilename, char *polyfilename, FILE **polyfile) {
-  FILE *infile;
+  FILE *infile = NULL;
   Vertex vertexloop;
   char inputline[INPUTLINESIZE];
   char *stringptr;

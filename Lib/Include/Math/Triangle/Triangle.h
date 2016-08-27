@@ -287,7 +287,7 @@
 // TRILIBRARY symbol. Read the file triangle.h for details on how to call
 // the procedure triangulate() that results.
 
-#define TRILIBRARY
+//#define TRILIBRARY
 
 //  The CDT_ONLY symbol gets rid of all meshing algorithms above and beyond
 //  constrained Delaunay triangulation. Specifically, the -DCDT_ONLY switch
