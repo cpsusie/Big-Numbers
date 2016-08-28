@@ -14,10 +14,63 @@ public:
   D3DXVECTOR3     m_normal;
 };
 
-LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileName, bool doubleSided) {
+static String convertVertexFile(const String &fileName) {
   FILE *f = NULL;
   try {
-    f = FOPEN("c:\\mytools2015\\Math\\triangle\\x64\\Release\\fisk.node", "r");
+    f = FOPEN(fileName, _T("r"));
+    String line;
+    int lineno = 0;
+    CompactArray<Point3D> pointArray;
+    while (readLine(f, line)) {
+      lineno++;
+      Point3D p;
+      if (_stscanf(line.cstr(), _T("%le %le %le"), &p.x, &p.y, &p.z) != 3) {
+        throwException(_T("Invalid input in file %s line %d"), fileName.cstr(), lineno);
+      }
+      pointArray.add(p);
+    }
+    fclose(f); f = NULL;
+    String nodeFileName = _T("C:\\temp\\cXXXXXX");
+    _tmktemp(nodeFileName.cstr());
+    nodeFileName += _T(".node");
+    f = MKFOPEN(nodeFileName, _T("w"));
+    const UINT n = (UINT)pointArray.size();
+    _ftprintf(f, _T("%d 2 1 0\n"), n);
+    for(UINT i = 0; i < n; i++) {
+      const Point3D &p = pointArray[i];
+      _ftprintf(f, _T("%4d %lf %lf %lf\n"), i, p.x, p.y, p.z);
+    }
+    fclose(f); f = NULL;
+    return nodeFileName;
+  } catch(...) {
+    if(f) fclose(f);
+    throw;
+  }
+}
+
+static void runTriangle(const String &nodeFileName) {
+  const TCHAR *argv[10];
+  int i = 0;
+  const TCHAR *triangleExeName = _T("C:\\mytools2015\\Math\\Triangle\\x64\\Release\\triangle.exe");
+  argv[i++] = triangleExeName;
+  argv[i++] = _T("-QN");
+  argv[i++] = nodeFileName.cstr();
+  argv[i]   = NULL;
+  HANDLE processHandle = (HANDLE)_tspawnv(_P_WAIT, triangleExeName, argv);
+  if(processHandle == INVALID_HANDLE_VALUE) {
+    throwErrNoOnSysCallException(_T("_tspawnv"));
+  }
+  CloseHandle(processHandle);
+}
+
+static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, MeshBuilder &mb) {
+  FILE *f = NULL;
+
+  runTriangle(nodeFileName);
+  FileNameSplitter info(nodeFileName);
+  const String eleFileName = info.setFileName(info.getFileName() + _T(".1")).setExtension(_T("ele")).getAbsolutePath();
+  try {
+    f = FOPEN(nodeFileName, _T("r"));
     String line;
     readLine(f, line);
     Tokenizer tok(line, " ");
@@ -25,30 +78,28 @@ LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileNam
     Array<VertexWithFaceArray> vertexArray(vertexCount);
     for(int i = 0; i < vertexCount; i++) {
       readLine(f, line);
-      Tokenizer tok(line, " ");
       VertexWithFaceArray v;
-      int index = tok.getInt();
-      v.x = tok.getDouble();
-      v.y = tok.getDouble();
-      v.z = tok.getDouble();
+      int index;
+      if(_stscanf(line.cstr(), _T("%d %le %le %le"), &index, &v.x, &v.y, &v.z) != 4) {
+        throwException(_T("Invalid input in file %s line %d"), nodeFileName.cstr(), i+1);
+      }
       vertexArray.add(v);
     }
     fclose(f); f = NULL;
-    f = FOPEN("c:\\mytools2015\\Math\\triangle\\x64\\Release\\fisk.1.ele", "r");
 
+    f = FOPEN(eleFileName, _T("r"));
     readLine(f, line);
     Tokenizer tok1(line, " ");
     const int faceCount = tok1.getInt();
     CompactArray<Triangle> faceArray(faceCount);
     for(int i = 0; i < faceCount; i++) {
       readLine(f, line);
+      int      index;
       Triangle face;
-      Tokenizer tok(line, " ");
-      const int index = tok.getInt();
+      if(_stscanf(line.cstr(), _T("%d %d %d %d"), &index, &face.v1, &face.v2, &face.v3) != 4) {
+        throwException(_T("Invalid input in file %s line %d"), eleFileName.cstr(), i+1);
+      }
       assert(index == faceArray.size());
-      face.v1 = tok.getInt();
-      face.v2 = tok.getInt();
-      face.v3 = tok.getInt();
       vertexArray[face.v1].m_faceArray.add(index);
       vertexArray[face.v2].m_faceArray.add(index);
       vertexArray[face.v3].m_faceArray.add(index);
@@ -57,7 +108,7 @@ LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileNam
       const Point3DP    e13 = vertexArray[face.v3] - v1;
       const D3DXVECTOR3 c   = crossProduct(e13, e12);
       face.m_normal = unitVector(c);
-      face.m_area = length(c)/2;
+      face.m_area   = length(c)/2;
       faceArray.add(face);
     }
     fclose(f); f = NULL;
@@ -72,7 +123,6 @@ LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileNam
       v.m_normal = unitVector(normal);
     }
 
-    MeshBuilder mb;
     mb.clear(vertexCount);
     for(int i = 0; i < vertexCount; i++) {
       const VertexWithFaceArray &v = vertexArray[i];
@@ -87,12 +137,19 @@ LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileNam
       face.addVertexAndNormalIndex(triangle.v2, triangle.v2);
       face.addVertexAndNormalIndex(triangle.v3, triangle.v3);
     }
-    return mb.createMesh(device, doubleSided);
 
+    UNLINK(nodeFileName);
+    UNLINK(eleFileName );
+    return mb;
   } catch(Exception e) {
     if (f) {
       fclose(f); f = NULL;
     }
     throw;
   }
+}
+
+LPD3DXMESH createMeshFromVertexFile(DIRECT3DDEVICE device, const String &fileName, bool doubleSided) {
+  MeshBuilder mb;
+  return createMeshBuilderFromNodefile(convertVertexFile(fileName), mb).createMesh(device, doubleSided);
 }

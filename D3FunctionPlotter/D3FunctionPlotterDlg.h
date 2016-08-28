@@ -164,6 +164,7 @@ protected:
     afx_msg void OnFilePlotFunction();
     afx_msg void OnFileIsoSurface();
 	  afx_msg void OnFileProfileSurface();
+    afx_msg void OnFileRead3DPointsFromFile();
     afx_msg void OnFileExit();
 	  afx_msg void OnFileNexttry();
     afx_msg void OnViewFillmodePoint();
@@ -210,7 +211,5 @@ protected:
 	  afx_msg void OnLightRemove();
     afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnFileRead3dpointsfromfile();
 };
 
