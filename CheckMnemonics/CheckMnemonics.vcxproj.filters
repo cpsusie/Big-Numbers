@@ -13,7 +13,7 @@
       <UniqueIdentifier>{ccf570ab-3c3b-4260-8785-bf127a3aac77}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
-    <Filter Include="Grmmar">
+    <Filter Include="Grammar">
       <UniqueIdentifier>{08866209-500c-4e91-af6f-38a5fb486bf5}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -47,11 +47,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CheckMnemonics.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="Parsertree.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -77,15 +72,20 @@
   <ItemGroup>
     <Text Include="ReadMe.txt" />
     <Text Include="Resource.txt">
-      <Filter>Grmmar</Filter>
+      <Filter>Grammar</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resource.lex">
-      <Filter>Grmmar</Filter>
+      <Filter>Grammar</Filter>
     </CustomBuild>
     <CustomBuild Include="Resource.y">
-      <Filter>Grmmar</Filter>
+      <Filter>Grammar</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="CheckMnemonics.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

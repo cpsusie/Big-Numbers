@@ -303,7 +303,11 @@ extendedWindowStyleExpr     : extendedWindowStyleExpr OR ws_ex_style
                             | ws_ex_style
                             ;
 
-ctrl_style                  : ws_style
+ctrl_style					: add_ctrl_style
+							| NOT add_ctrl_style
+							;
+
+add_ctrl_style              : ws_style
                             | ss_style
                             | es_style
                             | bs_style
@@ -346,11 +350,7 @@ ds_style                    : _DS_ABSALIGN
                             | _DS_CONTEXTHELP
                             ; 
 
-ws_style                    : add_ws_style
-                            | NOT add_ws_style
-                            ;
-
-add_ws_style                : _WS_OVERLAPPED 
+ws_style                    : _WS_OVERLAPPED 
                             | _WS_POPUP
                             | _WS_CHILD
                             | _WS_MINIMIZE

@@ -229,12 +229,12 @@ MenuHotKey::MenuHotKey(const String &s) {
 }
 
 static const TCHAR *vkSynonyms[] = { // leave no space between words. COMMA (,) is separator here
-  _T("esc)      ,_T(escape")
- ,_T("backspace),_T(back")
- ,_T("del)      ,_T(delete")
- ,_T("pg up)    ,_T(prior")
- ,_T("pg down)  ,_T(next")
- ,_T("ins)      ,_T(insert")
+  _T("esc,escape")
+ ,_T("backspace,back")
+ ,_T("del,delete")
+ ,_T("pg up,prior")
+ ,_T("pg down,next")
+ ,_T("ins,insert")
  ,NULL
 };
 
