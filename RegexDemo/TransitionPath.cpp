@@ -4,7 +4,7 @@
 #ifdef _DEBUG
 
 String toString(const GridElement &ge) {
-  return ge.d.m_occupied ? _T("1"):_T("0");
+  return ge.d.m_occupied ? _T("1") : _T("0");
 }
 
 static MatrixDimension getGridSize(const CSize winSize) {
@@ -190,6 +190,7 @@ UINT TransitionGrid::getMindistance(const CPoint &gp) const {
 }
 
 void TransitionGrid::markPathAsOccupied(const TransitionPath &path) {
+  if (path.isEmpty()) return;
   for(size_t i = 1; i < path.size()-1; i += m_edgeMarkStep) {
     const CPoint &p = path[i];
     getGridElement(p.x,p.y).setOccupied();
@@ -197,6 +198,7 @@ void TransitionGrid::markPathAsOccupied(const TransitionPath &path) {
 }
 
 void TransitionGrid::unmarkPathAsOccupied(const TransitionPath &path) {
+  if (path.isEmpty()) return;
   for(size_t i = 1; i < path.size()-1; i += m_edgeMarkStep) {
     const CPoint &p = path[i];
     getGridElement(p.x,p.y).setFree();
