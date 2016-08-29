@@ -140,8 +140,10 @@ protected:
   virtual void    OnOK();
   virtual void    OnCancel();
   afx_msg void    OnClose();
+  afx_msg void    OnFileShowMaxErrors();
   afx_msg void    OnFileExit();
   afx_msg void    OnViewGrid();
+  afx_msg void    OnViewShowErrorFunction();
   afx_msg void    OnViewShowSpline();
   afx_msg void    OnRunGo();
   afx_msg void    OnRunF5();

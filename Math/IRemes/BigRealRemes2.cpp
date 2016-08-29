@@ -51,7 +51,7 @@ Remes::Remes(RemesTargetFunction &targetFunction, const bool useRelativeError)
 , m_searchEMaxIterations(DEFAULT_SEARCHEMAXIT)
 {
   initCommon();
-  s_extremaMap.setName(this->getMapFileName());
+  s_extremaMap.setName(getMapFileName());
 }
 
 Remes::Remes(const Remes &src) 

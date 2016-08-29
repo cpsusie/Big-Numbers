@@ -23,19 +23,25 @@ public:
   ExtremaKey(const UINT M, const UINT K) : m_M(M), m_K(K) {
   }
 
-  ExtremaKey() : m_M(0), m_K(0) {
+  inline ExtremaKey() : m_M(0), m_K(0) {
   }
 
-  bool operator==(const ExtremaKey &k) const {
+  inline bool operator==(const ExtremaKey &k) const {
     return (m_M == k.m_M) && (m_K == k.m_K);
   }
 
-  bool operator!=(const ExtremaKey &k) const {
+  inline bool operator!=(const ExtremaKey &k) const {
     return !operator==(k);
   }
 
-  unsigned long hashCode() const {
+  inline unsigned long hashCode() const {
     return m_M * 31 + m_K;
+  }
+  inline UINT getM() const {
+    return m_M;
+  }
+  inline UINT getK() const {
+    return m_K;
   }
 
   friend tostream &operator<<(tostream &out, const ExtremaKey &key);
@@ -64,6 +70,7 @@ public:
 };
 
 typedef HashMap<ExtremaKey, Array<ExtremaVector> > ExtremaHashMap;
+typedef Entry<ExtremaKey, Array<ExtremaVector> >   ExtremaMapEntry;
 
 class ExtremaMap : private ExtremaHashMap {
 private:
@@ -82,6 +89,9 @@ public:
   }
   const Array<ExtremaVector> *get(UINT M, UINT K) const;
   void put(UINT M, UINT K, const ExtremaVector &v);
+  Iterator<ExtremaMapEntry> getIerator() const {
+    return ((ExtremaHashMap*)this)->ExtremaHashMap::entrySet().getIterator();
+  }
 };
 
 typedef NumberInterval<BigReal> BigRealInterval;
@@ -276,6 +286,9 @@ public:
   }
   inline bool solutionExist(UINT M, UINT K) const {
     return hasSavedExtrema(M, K);
+  }
+  inline const ExtremaMap &getExtremaMap() const {
+    return s_extremaMap;
   }
   void        getErrorPlot(UINT n, Point2DArray &pa) const;
 

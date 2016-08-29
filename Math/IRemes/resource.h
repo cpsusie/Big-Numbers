@@ -21,7 +21,6 @@
 #define IDC_EDITMAXSEARCHEITERATIONS    1011
 #define IDC_CHECKRELATIVEERROR          1012
 #define IDC_BUTTONDUMMY                 1013
-#define IDC_CHECKRELATIVEERROR2         1014
 #define IDC_CHECKSKIPEXISTING           1014
 #define IDC_LISTCOEF                    1020
 #define IDC_LISTEXTRMA                  1021
@@ -31,9 +30,11 @@
 #define IDC_STATICTHREADSTATE           1025
 #define IDC_STATICSTATE                 1026
 #define IDC_STATICWARNING               1027
-#define ID_FILE_EXIT                    32771
+#define ID_FILE_SHOWMAXERRORS           32771
+#define ID_FILE_EXIT                    32772
 #define ID_VIEW_GRID                    32780
-#define ID_VIEW_SHOW_SPLINE             32781
+#define ID_VIEW_SHOW_ERRORFUNCTION      32781
+#define ID_VIEW_SHOW_SPLINE             32782
 #define ID_RUN_GO                       32790
 #define ID_RUN_F5                       32791
 #define ID_RUN_RESTART                  32792
@@ -64,7 +65,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        130
-#define _APS_NEXT_COMMAND_VALUE         32920
+#define _APS_NEXT_COMMAND_VALUE         32922
 #define _APS_NEXT_CONTROL_VALUE         1030
 #define _APS_NEXT_SYMED_VALUE           1031
 #endif

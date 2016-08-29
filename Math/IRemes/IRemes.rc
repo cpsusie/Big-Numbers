@@ -76,12 +76,16 @@ IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
+        MENUITEM "Show &Max Errors...",         ID_FILE_SHOWMAXERRORS
+        MENUITEM SEPARATOR
         MENUITEM "E&xit",                       ID_FILE_EXIT
     END
     POPUP "&View"
     BEGIN
         MENUITEM "&Grid\tCtrl+G",               ID_VIEW_GRID
-        MENUITEM "&Show interpolation\tCtrl+I", ID_VIEW_SHOW_SPLINE
+        MENUITEM SEPARATOR
+        MENUITEM "Show &Interpolation\tCtrl+I", ID_VIEW_SHOW_SPLINE
+        MENUITEM "Show &Errorfunction",         ID_VIEW_SHOW_ERRORFUNCTION, CHECKED
     END
     POPUP "&Run"
     BEGIN
@@ -118,22 +122,6 @@ BEGIN
     "G",            ID_VIEW_GRID,           VIRTKEY, CONTROL, NOINVERT
     "I",            ID_VIEW_SHOW_SPLINE,    VIRTKEY, CONTROL, NOINVERT
 END
-
-#endif    // Danish (Denmark) resources
-/////////////////////////////////////////////////////////////////////////////
-
-
-/////////////////////////////////////////////////////////////////////////////
-// English (United States) resources
-
-#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
-#pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Dialog
-//
 
 IDD_ABOUTBOX DIALOG 0, 0, 235, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
@@ -276,7 +264,7 @@ BEGIN
     IDS_ABOUTBOX            "&About IRemes..."
 END
 
-#endif    // English (United States) resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

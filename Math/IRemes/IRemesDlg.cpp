@@ -74,8 +74,10 @@ BEGIN_MESSAGE_MAP(CIRemesDlg, CDialog)
   ON_WM_PAINT()
   ON_WM_SIZE()
   ON_WM_CLOSE()
+  ON_COMMAND(ID_FILE_SHOWMAXERRORS           , &CIRemesDlg::OnFileShowMaxErrors         )
   ON_COMMAND(ID_FILE_EXIT                    , &CIRemesDlg::OnFileExit                  )
   ON_COMMAND(ID_VIEW_GRID                    , &CIRemesDlg::OnViewGrid                  )
+  ON_COMMAND(ID_VIEW_SHOW_ERRORFUNCTION      , &CIRemesDlg::OnViewShowErrorFunction     )
   ON_COMMAND(ID_VIEW_SHOW_SPLINE             , &CIRemesDlg::OnViewShowSpline            )
   ON_COMMAND(ID_RUN_GO                       , &CIRemesDlg::OnRunGo                     )
   ON_COMMAND(ID_RUN_F5                       , &CIRemesDlg::OnRunF5                     )
@@ -450,6 +452,24 @@ void CIRemesDlg::OnClose() {
   OnFileExit();
 }
 
+void CIRemesDlg::OnFileShowMaxErrors() {
+  OnRunDebug();
+  const ExtremaMap &map = m_remes->getExtremaMap();
+  const String tmpFileName = _T("c:\\temp\\RemesErrors.txt");
+  FILE *f = MKFOPEN(tmpFileName, _T("w"));
+  for (Iterator<ExtremaMapEntry> it = map.getIerator(); it.hasNext();) {
+    ExtremaMapEntry &e = it.next();
+    const ExtremaKey           &key = e.getKey();
+    const Array<ExtremaVector> &v   = e.getValue();
+    const int    x = key.getM();
+    const int    y = key.getK();
+    const double z = fabs(getDouble(v[0].getE()));
+    _ftprintf(f, _T("%2d %2d %lf\n"), x, y, log(z));
+  }
+  fclose(f);
+//  system("c:\\windows\\System32\\notepad %s")
+}
+
 void CIRemesDlg::OnFileExit() {
   EndDialog(IDOK);
 }
@@ -459,6 +479,11 @@ void CIRemesDlg::OnViewGrid() {
   m_coorSystemError.setGrid(showGrid);
   m_coorSystemSpline.setGrid(showGrid);
   Invalidate(FALSE);
+}
+
+
+void CIRemesDlg::OnViewShowErrorFunction() {
+  // TODO: Add your command handler code here
 }
 
 void CIRemesDlg::OnViewShowSpline() {
