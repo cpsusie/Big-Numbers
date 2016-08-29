@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <ExternProcess.h>
 #include "MeshBuilder.h"
 
 class Triangle {
@@ -49,18 +50,10 @@ static String convertVertexFile(const String &fileName) {
 }
 
 static void runTriangle(const String &nodeFileName) {
-  const TCHAR *argv[10];
-  int i = 0;
-  const TCHAR *triangleExeName = _T("C:\\mytools2015\\Math\\Triangle\\x64\\Release\\triangle.exe");
-  argv[i++] = triangleExeName;
-  argv[i++] = _T("-QN");
-  argv[i++] = nodeFileName.cstr();
-  argv[i]   = NULL;
-  HANDLE processHandle = (HANDLE)_tspawnv(_P_WAIT, triangleExeName, argv);
-  if(processHandle == INVALID_HANDLE_VALUE) {
-    throwErrNoOnSysCallException(_T("_tspawnv"));
-  }
-  CloseHandle(processHandle);
+  const String triangleExeName = _T("C:\\mytools2015\\Math\\Triangle\\x64\\Release\\triangle.exe");
+  const TCHAR *options         = _T("-QN");
+  const TCHAR *fileName        = nodeFileName.cstr();
+  ExternProcess::run(true, triangleExeName, options, fileName, NULL);
 }
 
 static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, MeshBuilder &mb) {
@@ -132,7 +125,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
 
     for(int i = 0; i < faceCount; i++) {
       const Triangle &triangle = faceArray[i];
-      Face &face = mb.addFace();
+      Face           &face     = mb.addFace();
       face.addVertexAndNormalIndex(triangle.v1, triangle.v1);
       face.addVertexAndNormalIndex(triangle.v2, triangle.v2);
       face.addVertexAndNormalIndex(triangle.v3, triangle.v3);
