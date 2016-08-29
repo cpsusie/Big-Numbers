@@ -8,7 +8,7 @@
 
 template <class T> class MatrixTemplate {
 private:
-  T             **m_a;
+  T              *m_a;
   MatrixDimension m_dim;
 
   static void vthrowMatrixException(const TCHAR *format, va_list argptr) {
@@ -38,30 +38,30 @@ private:
     }
   }
 
-  static T **allocate(size_t rows, size_t columns, bool initialize) {
+  inline size_t index(size_t r, size_t c) const {
+    return m_dim.columnCount * r + c;
+  }
+  inline size_t index(const MatrixIndex &i) const {
+    return index(i.r, i.c);
+  }
+
+  static T *allocate(size_t rows, size_t columns, bool initialize) {
     if(rows == 0) {
       throwMatrixException(_T("allocate:Number of rows=0"));
     }
     if(columns == 0) {
       throwMatrixException(_T("allocate:Number of columns=0"));
     }
-    T **a = new T*[rows];
-    for(size_t r = 0; r < rows; r++) {
-      a[r] = new T[columns];
-      T *v = a[r];
-      if(initialize) {
-        for(size_t c = 0; c < columns; c++) {
-          v[c] = T(0);
-        }
-      }
+    T *a = new T[rows*columns];
+    if(initialize) {
+      T *p = a, *last = p + rows*columns;
+      const T z(0);
+      while(p < last) *(p++) = z;
     }
     return a;
   }
 
   void cleanup() {
-    for(size_t r = 0; r < getRowCount(); r++) {
-      delete[] m_a[r];
-    }
     delete[] m_a;
   }
 
@@ -78,7 +78,7 @@ public:
 
   explicit MatrixTemplate(const T &coef) {
     init(1, 1, false);
-    m_a[0][0] = coef;
+    m_a[0] = coef;
   }
 
   MatrixTemplate(size_t rows, size_t columns) {
@@ -91,18 +91,16 @@ public:
 
   MatrixTemplate(const MatrixTemplate<T> &src) {
     init(src.getRowCount(), src.getColumnCount(), false);
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] = src.m_a[r][c];
-      }
-    }
+    T       *dp = m_a;
+    const T *sp = src.m_a, *last = sp + m_dim.getElementCount();
+    while(sp < last) *(dp++) = *(sp++);
   }
 
   explicit MatrixTemplate(const VectorTemplate<T> &diagonal) {
     const size_t d = diagonal.getDimension();
     init(d, d, true);
     for(size_t i = 0; i < d; i++) {
-      m_a[i][i] = diagonal[i];
+      m_a[index(i,i)] = diagonal[i];
     }
   }
 
@@ -125,11 +123,9 @@ public:
       init(src.getRowCount(), src.getColumnCount(), false);
     }
 
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] = src.m_a[r][c];
-      }
-    }
+    T       *dp = m_a;
+    const T *sp = src.m_a, *last = sp + m_dim.getElementCount();
+    while(sp < last) *(dp++) = *(sp++);
     return *this;
   }
 
@@ -138,21 +134,20 @@ public:
   }
 
   void clear() {
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] = T(0);
-      }
-    }
+    T *p = src.m_a, *last = p + m_dim.getElementCount();
+    const T z(0);
+    while(p < last) *(p++) = z;
   }
 
   MatrixTemplate<T> &setDimension(size_t rows, size_t columns) {
     if(rows != getRowCount() || columns != getColumnCount()) {
-      T **newa = allocate(rows, columns, true);
+      T *newa = allocate(rows, columns, true);
       const size_t copyr = __min(rows, getRowCount());
       const size_t copyc = __min(columns, getColumnCount());
       for(size_t r = 0; r < copyr; r++) {
+        size_t t = r*columns;
         for(size_t c = 0; c < copyc; c++) {
-          newa[r][c] = m_a[r][c];
+          newa[t++] = m_a[index(r,c)];
         }
       }
       cleanup();
@@ -192,7 +187,7 @@ public:
     }
     for(size_t r = 0; r < getRowCount(); r++) {
       for(size_t c = r+1; c < getColumnCount(); c++) {
-        if(m_a[r][c] != m_a[c][r]) {
+        if(m_a[index(r,c)] != m_a[index(c,r)]) {
           return false;
         }
       }
@@ -202,12 +197,12 @@ public:
 
   T &operator()(size_t r, size_t c) {
     checkIndex(r, c);
-    return m_a[r][c];
+    return m_a[index(r,c)];
   }
 
   const T &operator()(size_t r, size_t c) const {
     checkIndex(r, c);
-    return m_a[r][c];
+    return m_a[index(r,c)];
   }
 
   T &subDiagonal(size_t row) { // row must be [1..getRowCount()-1]
@@ -215,7 +210,7 @@ public:
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
     checkIndex(row, row-1);
-    return m_a[row][row-1];
+    return m_a[index(row,row-1)];
   }
 
   const T &subDiagonal(size_t row) const { // row must be [1..getRowCount()-1]
@@ -223,7 +218,7 @@ public:
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
     checkIndex(row, row-1);
-    return m_a[row][row-1];
+    return m_a[index(row,row-1)];
   }
 
   VectorTemplate<T> getRow(size_t row) const {
@@ -231,8 +226,9 @@ public:
       throwIndexException(_T("getRow:Row %s out of range"), format1000(row).cstr());
     }
     VectorTemplate<T> result(getColumnCount());
+    const T *p = m_a + index(row,0);
     for(size_t c = 0; c < getColumnCount(); c++) {
-      result[c] = m_a[row][c];
+      result[c] = *(p++);
     }
     return result;
   }
@@ -242,8 +238,9 @@ public:
       throwIndexException(_T("getColumn:Column %s out of range"), format1000(column).cstr());
     }
     VectorTemplate<T> result(getRowCount());
-    for(size_t r = 0; r < getRowCount(); r++) {
-      result[r] = m_a[r][column];
+    const T *p = m_a + index(0, column);
+    for(size_t r = 0; r < getRowCount(); r++, p += getColumnCount()) {
+      result[r] = *p;
     }
     return result;
   }
@@ -256,8 +253,10 @@ public:
       throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.%s")
                           ,getDimensionString().cstr(), v.getDimensionString().cstr());
     }
+
+    T *p = m_a + index(row,0);
     for(size_t c = 0; c < getColumnCount(); c++) {
-      m_a[row][c] = v(c);
+      *(p++) = v(c);
     }
     return *this;
   }
@@ -270,8 +269,9 @@ public:
       throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.%s")
                           ,getDimensionString().cstr(), v.getDimensionString().cstr());
     }
-    for(size_t r = 0; r < getRowCount(); r++) {
-      m_a[r][column] = v(r);
+    T *p = m_a + index(0, column);
+    for(size_t r = 0; r < getRowCount(); r++, p += getColumnCount()) {
+      *p = v(r);
     }
     return *this;
   }
@@ -283,9 +283,15 @@ public:
     if(r2 >= getRowCount()) {
       throwIndexException(_T("swapRows:r2=%s out of range"), format1000(r2).cstr());
     }
-    T *tmp  = m_a[r1];
-    m_a[r1] = m_a[r2];
-    m_a[r2] = tmp;
+    if (r1 != r2) {
+      T *p1 = m_a + index(r1, 0);
+      T *p2 = m_a + index(r2, 0);
+      for(size_t c = 0; c < getColumnCount(); c++, p1++, p2++) {
+        const T tmp = *p1;
+        *p1         = *p2;
+        *p2         = tmp;
+      }
+    }
     return *this;
   }
 
@@ -295,7 +301,7 @@ public:
     }
     VectorTemplate<T> result(getColumnCount());
     for(size_t r = 0; r < getColumnCount(); r++) {
-      result(r) = m_a[r][r];
+      result(r) = m_a[index(r,r)];
     }
     return result;
   }
@@ -320,8 +326,8 @@ public:
 
     MatrixTemplate<T> result(rowCount, columnCount);
     for(size_t r = row, rr = 0; rr < rowCount; r++, rr++) {
-      for(size_t  c = column, rc = 0; rc < columnCount; c++, rc++) {
-        result.m_a[rr][rc] = m_a[r][c];
+      for(size_t c = column, rc = 0; rc < columnCount; c++, rc++) {
+        result.m_a[result.index(rr,rc)] = m_a[index(r,c)];
       }
     }
     return result;
@@ -353,7 +359,7 @@ public:
     const size_t columnCount = src.getColumnCount();
     for(size_t r = row, sr = 0; sr < rowCount; r++, sr++) {
       for(size_t c = column, sc = 0; sc < columnCount; c++, sc++) {
-        m_a[r][c] = src.m_a[sr][sc];
+        m_a[index(r,c)] = src.m_a[src.index(sr,sc)];
       }
     }
     return *this;
@@ -362,7 +368,7 @@ public:
   static MatrixTemplate<T> one(size_t dim) {
     MatrixTemplate<T> result(dim, dim);
     for(size_t  i = 0; i < dim; i++) {
-      result.m_a[i][i] = 1;
+      result.m_a[result.index(i,i)] = 1;
     }
     return result;
   }
@@ -378,11 +384,9 @@ public:
     lts.checkSameDimension(_T("operator+"), rhs);
 
     MatrixTemplate<T> result(rows, columns);
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = lts.m_a[r][c] + rhs.m_a[r][c];
-      }
-    }
+    const T *spl = lts.m_a, *last = spl + lts.m_dim.getElementCount(), *spr = rhs.m_a;
+    T       *dp  = result.m_a;
+    while(spl < last) *(dp++) = *(spl++) + *(spr++);
     return result;
   }
 
@@ -393,11 +397,9 @@ public:
     lts.checkSameDimension(_T("operator-"), rhs);
 
     MatrixTemplate<T> result(rows, columns);
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = lts.m_a[r][c] - rhs.m_a[r][c];
-      }
-    }
+    const T *spl = lts.m_a, *last = spl + lts.m_dim.getElementCount(), *spr = rhs.m_a;
+    T       *dp  = result.m_a;
+    while(spl < last) *(dp++) = *(spl++) - *(spr++);
     return result;   
   }
 
@@ -406,33 +408,27 @@ public:
     const size_t columns = m.getColumnCount();
 
     MatrixTemplate<T> result(rows, columns);
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = -m.m_a[r][c];
-      }
-    }
+    const T *sp = m.m_a, *last = sp + m.m_dim.getElementCount();
+    T       *dp  = result.m_a;
+    while(sp < last) *(dp++) = -*(sp++);
     return result;   
   }
 
   MatrixTemplate<T> &operator+=(const MatrixTemplate<T> &rhs) {
     checkSameDimension(_T("operator+="), rhs);
 
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] += rhs.m_a[r][c];
-      }
-    }
+    const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
+    T       *dp = m_a;
+    while(sp < last) *(dp++) += *(sp++);
     return *this;
   }
 
   MatrixTemplate<T> &operator-=(const MatrixTemplate<T> &rhs) {
     checkSameDimension(_T("operator-="), rhs);
 
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] -= rhs.m_a[r][c];
-      }
-    }
+    const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
+    T       *dp = m_a;
+    while(sp < last) *(dp++) -= *(sp++);
     return *this;
   }
 
@@ -448,11 +444,11 @@ public:
 
     VectorTemplate<T> result(rows);
     for(size_t r = 0; r < rows; r++) {
-	    T sum = 0;
+      T sum = 0;
       for(size_t c = 0; c < columns; c++) {
-        sum += lts.m_a[r][c] * rhs[c];
+        sum += lts.m_a[lts.index(r,c)] * rhs[c];
       }
-	    result[r] = sum;
+      result[r] = sum;
     }
     return result;
   }
@@ -469,11 +465,11 @@ public:
 
     VectorTemplate<T> result(columns);
     for(size_t  c = 0; c < columns; c++) {
-	    T sum = 0;
+      T sum = 0;
       for(size_t r = 0; r < rows; r++) {
-        sum += lts[r] * rhs.m_a[r][c];
+        sum += lts[r] * rhs.m_a[rhs.index(r,c)];
       }
-	    result[c] = sum;
+      result[c] = sum;
     }
     return result;
   }
@@ -490,13 +486,16 @@ public:
 
     const size_t maxK = lts.getColumnCount(); // == rhs.getRowCount()
 
+    T *dp = result.m_a;
     for(size_t r = 0; r < rRows; r++) {
       for(size_t c = 0; c < rColumns; c++) {
         T sum = 0;
-        for(size_t k = 0; k < maxK; k++) {
-          sum += lts.m_a[r][k] * rhs.m_a[k][c];
+        const T *lp = lts.m_a + lts.index(r,0);
+        const T *rp = rhs.m_a + lts.index(0,c);
+        for(size_t k = 0; k < maxK; k++, rp += rColumns) {
+          sum += *(lp++) * *rp;
         }
-        result.m_a[r][c] = sum;
+        *(dp++) = sum;
       }
     }
     return result;
@@ -507,11 +506,9 @@ public:
     const size_t columns = rhs.getColumnCount();
     MatrixTemplate<T> result(rows, columns);
 
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = rhs.m_a[r][c] * d;
-      }
-    }
+    const T *sp = rhs.m_a, *last = sp + rhs.m_dim.getElementCount();
+    T       *dp = result.m_a;
+    while(sp < last) *(dp++) = *(sp++) * d;
     return result;
   }
 
@@ -520,11 +517,9 @@ public:
     const size_t columns = lts.getColumnCount();
     MatrixTemplate<T> result(rows, columns);
 
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = lts.m_a[r][c] * d;
-      }
-    }
+    const T *sp = lts.m_a, *last = sp + lts.m_dim.getElementCount();
+    T       *dp = result.m_a;
+    while(sp < last) *(dp++) = *(sp++) * d;
     return result;
   }
 
@@ -533,37 +528,29 @@ public:
     const size_t columns = lts.getColumnCount();
     MatrixTemplate<T> result(rows, columns);
 
-    for(size_t r = 0; r < rows; r++) {
-      for(size_t c = 0; c < columns; c++) {
-        result.m_a[r][c] = lts.m_a[r][c] / d;
-      }
-    }
+    const T *sp = lts.m_a, *last = sp + lts.m_dim.getElementCount();
+    T       *dp = result.m_a;
+    while(sp < last) *(dp++) = *(sp++) / d;
     return result;
   }
 
   MatrixTemplate<T> &operator*=(const T &d) {
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] *= d;
-      }
-    }
+    T *p = m_a, *last = p + m_dim.getElementCount();
+    while(p < last) *(p++) *= d;
     return *this;
   }
 
   MatrixTemplate<T> &operator/=(const T &d) {
-    for(size_t r = 0; r < getRowCount(); r++) {
-      for(size_t c = 0; c < getColumnCount(); c++) {
-        m_a[r][c] /= d;
-      }
-    }
+    T *p = m_a, *last = p + m_dim.getElementCount();
+    while(p < last) *(p++) /= d;
     return *this;
   }
 
-  friend MatrixTemplate<T> transpose(const MatrixTemplate<T> &a) {
-    MatrixTemplate<T> result(a.getColumnCount(), a.getRowCount());
-    for(size_t r = 0; r < a.getRowCount(); r++) {
-      for(size_t c = 0; c < a.getColumnCount(); c++) {
-        result.m_a[c][r] = a.m_a[r][c];
+  friend MatrixTemplate<T> transpose(const MatrixTemplate<T> &m) {
+    MatrixTemplate<T> result(m.getColumnCount(), m.getRowCount());
+    for(size_t r = 0; r < m.getRowCount(); r++) {
+      for(size_t c = 0; c < m.getColumnCount(); c++) {
+        result(c,r) = m(r,c);
       }
     }
     return result;
@@ -591,10 +578,10 @@ public:
 
     for(size_t i = 0; i < m; i++) {
       for(size_t j = 0; j < n; j++) {
-        const T &aij = A.m_a[i][j];
+        const T &aij = A(i,j);
         for(size_t k = 0, alfa = p*i; k < p; k++, alfa++) {
           for(size_t l = 0, beta = q*j; l < q; l++, beta++) {
-            result.m_a[alfa][beta] = aij * B.m_a[k][l];
+            result(alfa,beta) = aij * B(k,l);
           }
         }
       }
@@ -606,11 +593,11 @@ public:
     if(!m1.hasSameDimension(m2)) {
       return false;
     }
-    for(size_t r = 0; r < m1.getRowCount(); r++) {
-      for(size_t c = 0; c < m1.getColumnCount(); c++) {
-        if(!(m1.m_a[r][c] == m2.m_a[r][c])) {
-          return false;
-        }
+    const T *p1 = m1.m_a, *last = p1 + m1.m_dim.getElementCount();
+    const T *p2 = m2.m_a;
+    while(p1 < last) {
+      if(!((*p1++) == *(p2++))) {
+        return false;
       }
     }
     return true;
@@ -632,7 +619,7 @@ public:
     StreamParameters p(out);
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
-        out << p << a.m_a[r][c] << _T(" ");
+        out << p << a(r,c) << _T(" ");
       }
       out << _T("\n");
     }
@@ -642,7 +629,7 @@ public:
   friend tistream &operator>>(tistream &in, MatrixTemplate<T> &a) {
     for(size_t r = 0; r < a.getRowCount(); r++) {
       for(size_t c = 0; c < a.getColumnCount(); c++) {
-        in >> a.m_a[r][c];
+        in >> a(r,c);
       }
     }
     return in;

@@ -40,6 +40,20 @@
     </Expand>
   </Type>
 
+  <Type Name="MatrixTemplate&lt;*&gt;">
+    <DisplayString>{{Dimension={m_dim.rowCount}x{m_dim.columnCount} }}</DisplayString>
+    <Expand>
+      <Item Name="[Rows]" ExcludeView="simple">m_dim.rowCount</Item>
+      <ArrayItems>
+        <Direction>Forward</Direction>
+        <Rank>2</Rank>
+        <Size>$i == 0 ? m_dim.rowCount : m_dim.columnCount</Size>
+        <ValuePointer>m_a</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+
   <Type Name="BitSet">
     <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\UtilAddIn.dll" Export="AddIn_BitSet"></DisplayString>
   </Type>
