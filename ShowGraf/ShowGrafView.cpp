@@ -274,7 +274,7 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
 }
 
 void CShowGrafView::plotFunction(Function &f, const DoubleInterval &interval, COLORREF color) {
-  m_coordinateSystem.plotfunction(CClientDC(GetDlgItem(IDC_SYSTEMPANEL)), f, &interval, color);
+  m_coordinateSystem.addFunctionObject(CClientDC(GetDlgItem(IDC_SYSTEMPANEL)), f, &interval, color);
 }
 
 void CShowGrafView::plotFunction(Function &f, COLORREF color) {
