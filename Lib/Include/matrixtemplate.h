@@ -134,7 +134,7 @@ public:
   }
 
   void clear() {
-    T *p = src.m_a, *last = p + m_dim.getElementCount();
+    T *p = m_a, *last = p + m_dim.getElementCount();
     const T z(0);
     while(p < last) *(p++) = z;
   }
