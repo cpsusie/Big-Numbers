@@ -94,26 +94,59 @@ ExternProcess::~ExternProcess() {
   stop();
 }
 
+ArgArray::ArgArray(const String &program, const StringArray &args) {
+  add(program.cstr());
+  for(size_t a = 0; a < args.size(); a++) {
+    add(args[a].cstr());
+  }
+  add(NULL);
+}
+
+ArgArray::ArgArray(const String &program, va_list argptr) {
+  add(program.cstr());
+  for(TCHAR *arg = va_arg(argptr, TCHAR*);; arg = va_arg(argptr, TCHAR*)) {
+    add(arg);
+    if(arg == NULL) break;
+  }
+  va_end(argptr);
+}
+
+String ArgArray::getCommandLine() const {
+  size_t i = 0;
+  String commandLine = format(_T("\"%s\""), (*this)[i++]);
+  while((i < size()) && (*this)[i]) {
+    commandLine += format(_T(" \"%s\""), (*this)[i++]);
+  }
+  return commandLine;
+}
+
+void ExternProcess::start(bool silent, const String &program, const StringArray &args) {
+  ENTERFUNC;
+  start(silent, ArgArray(program, args));
+  EXITFUNC;
+}
+
 void ExternProcess::start(bool silent, const String program, ...) {
-  ENTERFUNC
+  ENTERFUNC;
   va_list argptr;
   va_start(argptr, program);
-  try {
-    vstart(silent, program, argptr);
-    va_end(argptr);
-  }
-  catch (...) {
-    va_end(argptr);
-    EXITFUNC;
-    throw;
-  }
+  ArgArray argv(program, argptr);
+  va_end(argptr);
+  start(silent, argv);
   EXITFUNC;
 }
 
 void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
+  ENTERFUNC;
+  start(silent, ArgArray(program, argptr));
+  EXITFUNC;
+}
+
+void ExternProcess::start(bool silent, const ArgArray &argv) {
   ENTERFUNC
   Pipe oldStdFiles;
   Pipe stdinPipe, stdoutPipe;
+  const String program = argv[0];
 
   static Semaphore critiacalSection; // juggle with filedescriptors for stdin/stdout. dont disturb!
 
@@ -131,14 +164,14 @@ void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
     stdinPipe.dupAndClose( READ_FD );
     stdoutPipe.dupAndClose(WRITE_FD);
 
-    FileNameSplitter info(program);
-    String childWorkDir = info.getDrive() + info.getDir();
+    const FileNameSplitter info(program);
+    const String childWorkDir = info.getDrive() + info.getDir();
     CHDIR(childWorkDir);
 
     if(silent) {
-      vstartCreateProcess(program, argptr);
+      startCreateProcess(program, argv.getCommandLine());
     } else {
-      vstartSpawn(program, argptr);
+      startSpawn(program, argv.getBuffer());
     }
 
     CHDIR(oldWorkDir);
@@ -150,7 +183,7 @@ void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
 
     critiacalSection.signal();
 
-  } catch(Exception e) {
+  } catch(...) {
     oldStdFiles.restoreStdFilesAndClose();
     killProcess();
     stdinPipe.close();
@@ -160,9 +193,39 @@ void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
 
     critiacalSection.signal();
     EXITFUNC;
-    throw e;
+    throw;
   }
   EXITFUNC;
+}
+
+void ExternProcess::startSpawn(const String &program, const TCHAR * const *argv) {
+  HANDLE procHandle = (HANDLE)_tspawnv(_P_NOWAITO, program.cstr(), argv);
+  if(procHandle != INVALID_HANDLE_VALUE) {
+    setProcessHandle(procHandle);
+  } else {
+    throwErrNoOnSysCallException(__TFUNCTION__);
+  }
+}
+
+void ExternProcess::startCreateProcess(const String &program, const String &commandLine) {
+  STARTUPINFO startupInfo;
+  memset(&startupInfo, 0, sizeof(startupInfo));
+  startupInfo.cb          = sizeof(startupInfo);
+  startupInfo.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+  startupInfo.wShowWindow = SW_SHOWMINNOACTIVE;
+  startupInfo.hStdInput   = (HANDLE)_get_osfhandle(0);
+  startupInfo.hStdOutput  = (HANDLE)_get_osfhandle(1);
+  startupInfo.hStdError   = (HANDLE)_get_osfhandle(2);
+
+  PROCESS_INFORMATION processInfo;
+
+  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
+  if(ok) {
+    setProcessHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
+  } else {
+    throwLastErrorOnSysCallException(__TFUNCTION__);
+  }
 }
 
 void ExternProcess::stop() {
@@ -225,47 +288,62 @@ String ExternProcess::receive() {
   return line;
 }
 
-void ExternProcess::vstartSpawn(const String &program, va_list argptr) {
-  const TCHAR *argv[100];
-  int i = 0;
-  argv[i++] = program.cstr();
-  for(TCHAR *arg = va_arg(argptr,TCHAR*); arg && i < ARRAYSIZE(argv)-1; arg = va_arg(argptr,TCHAR*)) {
-    argv[i++] = arg;
-  }
-  va_end(argptr);
-  argv[i] = NULL;
+// --------------------------------------------------------------------------
 
-  HANDLE procHandle = (HANDLE)_tspawnv(_P_NOWAITO, program.cstr(), argv);
-  if(procHandle != INVALID_HANDLE_VALUE) {
-    setProcessHandle(procHandle);
-  } else {
-    throwErrNoOnSysCallException(_T("_tspawnv"));
+int ExternProcess::runSpawn(const String &program, const TCHAR * const *argv) { // static
+  HANDLE processHandle = (HANDLE)_tspawnv(_P_WAIT, program.cstr(), argv);
+  if(processHandle == INVALID_HANDLE_VALUE) {
+    throwErrNoOnSysCallException(__TFUNCTION__);
   }
+  DWORD exitCode;
+  GetExitCodeProcess(processHandle, &exitCode);
+  CloseHandle(processHandle);
+  return exitCode;
 }
 
-void ExternProcess::vstartCreateProcess(const String &program, va_list argptr) {
-  String commandLine = format(_T("\"%s\""), program.cstr());
-  for(char *arg = va_arg(argptr, char*); arg; arg = va_arg(argptr, char*)) {
-    commandLine += format(_T(" \"%s\""), arg);
-  }
-
+int ExternProcess::runCreateProcess(const String &program, const String &commandLine) { // static
   STARTUPINFO startupInfo;
   memset(&startupInfo, 0, sizeof(startupInfo));
   startupInfo.cb          = sizeof(startupInfo);
-  startupInfo.dwFlags     = STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
+  startupInfo.dwFlags     = STARTF_USESHOWWINDOW;
   startupInfo.wShowWindow = SW_SHOWMINNOACTIVE;
-  startupInfo.hStdInput   = (HANDLE)_get_osfhandle(0);
-  startupInfo.hStdOutput  = (HANDLE)_get_osfhandle(1);
-  startupInfo.hStdError   = (HANDLE)_get_osfhandle(2);
 
   PROCESS_INFORMATION processInfo;
-
-  BOOL ok = CreateProcess(program.cstr(), commandLine.cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
+  BOOL ok = CreateProcess(program.cstr(), ((String&)commandLine).cstr(), NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, NULL, &startupInfo, &processInfo);
+  DWORD exitCode;
   if(ok) {
-    setProcessHandle(processInfo.hProcess);
-    CloseHandle(processInfo.hThread); // hProcess will be closed in destructor
+    WaitForSingleObject(processInfo.hProcess, INFINITE);
+    GetExitCodeProcess(processInfo.hProcess, &exitCode);
+    CloseHandle(processInfo.hProcess);
+    CloseHandle(processInfo.hThread);
   } else {
     throwLastErrorOnSysCallException(__TFUNCTION__);
   }
+  return exitCode;
 }
 
+int ExternProcess::run(bool silent, const ArgArray &argv) { // static
+  const String program = argv[0];
+  if (silent) {
+    return runCreateProcess(program, argv.getCommandLine());
+  } else {
+    return runSpawn(program, argv.getBuffer());
+  }
+}
+
+int ExternProcess::run(bool silent, const String &program, const StringArray &args) { // static
+  return run(silent, ArgArray(program, args));
+}
+
+ // wait for termination. return exit code
+int ExternProcess::vrun(bool silent, const String &program, va_list argptr) { // static
+  return run(silent, ArgArray(program, argptr));
+}
+
+int ExternProcess::run(bool silent, const String program, ...) { // static
+  va_list argptr;
+  va_start(argptr, program);
+  ArgArray argv(program, argptr);
+  va_end(argptr);
+  return run(silent, argv);
+}
