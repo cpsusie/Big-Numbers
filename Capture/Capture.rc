@@ -72,7 +72,6 @@ END
 //
 
 IDR_MAINFRAME           BITMAP                  "res\\toolbar.bmp"
-
 IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
 
 
@@ -83,9 +82,9 @@ IDR_MAINFRAME_256       BITMAP                  "res\\Toolbar256.bmp"
 
 IDR_MAINFRAME TOOLBAR 32, 32
 BEGIN
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_FILESAVE
+    BUTTON      ID_EDITCOPY
+    BUTTON      ID_FILEPRINT
     SEPARATOR
     BUTTON      ID_MSPAINT
     SEPARATOR
@@ -96,9 +95,9 @@ END
 
 IDR_MAINFRAME_256 TOOLBAR 32, 32
 BEGIN
-    BUTTON      ID_FILE_SAVE
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_FILESAVE
+    BUTTON      ID_EDITCOPY
+    BUTTON      ID_FILEPRINT
     SEPARATOR
     BUTTON      ID_MSPAINT
     SEPARATOR
@@ -187,7 +186,6 @@ END
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\Capture.ico"
-
 IDR_CAPTURETYPE         ICON                    "res\\CaptureDoc.ico"
 
 
@@ -207,15 +205,15 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "MSPaint...\tAlt+M",           ID_MSPAINT
         MENUITEM SEPARATOR
-        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
-        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "&Save\tCtrl+S",               ID_FILESAVE
+        MENUITEM "&Print...\tCtrl+P",           ID_FILEPRINT
         MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
         MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
         MENUITEM "E&xit",                       ID_APP_EXIT
     END
     POPUP "&Edit"
     BEGIN
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Copy\tCtrl+C",               ID_EDITCOPY
     END
     POPUP "&View"
     BEGIN
@@ -237,7 +235,7 @@ IDR_POPUP_EDIT MENU
 BEGIN
     POPUP "Edit"
     BEGIN
-        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Copy\tCtrl+C",               ID_EDITCOPY
     END
 END
 
@@ -249,10 +247,10 @@ END
 
 IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDITCOPY,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILEPRINT,          VIRTKEY, CONTROL, NOINVERT
     "P",            ID_MSPAINT,             VIRTKEY, ALT, NOINVERT
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILESAVE,           VIRTKEY, CONTROL, NOINVERT
     VK_DOWN,        ID_SCROLL_LINEDOWN,     VIRTKEY, NOINVERT
     VK_END,         ID_SCROLL_TOBOTTOM,     VIRTKEY, NOINVERT
     VK_END,         ID_SCROLL_TOEND,        VIRTKEY, CONTROL, NOINVERT
@@ -262,7 +260,7 @@ BEGIN
     VK_HOME,        ID_SCROLL_TOTOP,        VIRTKEY, NOINVERT
     VK_HOME,        ID_SCROLL_TOHOME,       VIRTKEY, CONTROL, NOINVERT
     VK_HOME,        ID_SCROLL_TOLEFT,       VIRTKEY, SHIFT, NOINVERT
-    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDITCOPY,           VIRTKEY, CONTROL, NOINVERT
     VK_LEFT,        ID_SCROLL_LINELEFT,     VIRTKEY, NOINVERT
     VK_NEXT,        ID_SCROLL_PAGEDOWN,     VIRTKEY, NOINVERT
     VK_NEXT,        ID_SCROLL_PAGERIGHT,    VIRTKEY, SHIFT, NOINVERT
@@ -338,10 +336,10 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_FILE_SAVE            "Save the captured image\nSave"
+    ID_FILESAVE            "Save the captured image\nSave"
     ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
     ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
-    ID_FILE_PRINT           "Print the captured image\nPrint"
+    ID_FILEPRINT           "Print the captured image\nPrint"
     ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
 END
 
@@ -364,7 +362,7 @@ END
 
 STRINGTABLE
 BEGIN
-    ID_EDIT_COPY            "Copy the captured image to the clipboard\nCopy"
+    ID_EDITCOPY            "Copy the captured image to the clipboard\nCopy"
 END
 
 STRINGTABLE
