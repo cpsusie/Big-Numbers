@@ -1,7 +1,7 @@
 0.050000 -3.000000e+000 -3.000000e+000 -3.000000e+000 3.000000e+000 3.000000e+000 3.000000e+000 0 0 0 1 0 0
-scale = 3;
+"scale = 3;
 x1 = x*scale; y1=y*scale; z1=z*scale;
-sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1); 
+sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 
 ((sqrx/9+4*sqry+4*sqrz)**-4
 +(sqry/9+4*sqrx+4*sqrz)**-4 
@@ -10,4 +10,4 @@ sqrx=sqr(x1); sqry=sqr(y1); sqrz=sqr(z1);
 +((4/3*x1+4)^2+16/9*sqry+16/9*sqrz)^-4
 +((4/3*y1-4)^2+16/9*sqrx+16/9*sqrz)^-4
 +((4/3*y1+4)^2+16/9*sqrx+16/9*sqrz)^-4)
-^-0.25-1
+^-0.25-1"
