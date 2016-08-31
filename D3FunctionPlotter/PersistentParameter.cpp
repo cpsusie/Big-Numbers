@@ -30,13 +30,20 @@ char *fgetline(char *line, int size, FILE *f) {
   return line;
 }
 
+#define nextChar() ch = fgetc(f)
 String PersistentParameter::readString(FILE *f) { // static
   String result;
-  char line[1024];
-  while(fgetline(line, sizeof(line), f)) {
-    result += line;
-    result += "\xd\xa";
+  int ch;
+  nextChar();
+  while(!feof(f) && isspace(ch)) nextChar();
+  if(ch == '\"') {
+    for(nextChar(); !feof(f) && (ch != '\"'); nextChar()) {
+      result += ch;
+    }
+  } else {
+    throwException(_T("Invalid input. Expected \""));
   }
+  result.replace('\n', _T("\xd\xa"));
   return result;
 }
 
@@ -52,7 +59,7 @@ void PersistentParameter::writeString(FILE *f, const String &str) { // static
   String tmp = str;
   tmp.replace(_T("\xd\xa"), _T("\n")).trimRight();
   USES_CONVERSION;
-  fprintf(f, "%s\n", T2A(tmp.cstr()));
+  fprintf(f, "\"%s\"\n", T2A(tmp.cstr()));
 }
 
 String PersistentParameter::getDisplayName() const {

@@ -77,11 +77,7 @@ LPD3DXMESH createMesh(DIRECT3DDEVICE device, const Function2DSurfaceParameters &
   if(param.m_includeTime) {
     throwInvalidArgumentException(_T("createMesh"), _T("param.includeTime=true"));
   }
-  ExpressionWrapper f;
-  f.compile(param.m_expr, param.m_machineCode);
-  if(!f.ok()) {
-    throwException(_T("Error in expression:%s"), f.getErrorMessage().cstr());
-  }
+  ExpressionWrapper f(param.m_expr, param.m_machineCode);
   return createMeshFrom2DFunction(device, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
 }
 
@@ -92,7 +88,7 @@ private:
   mutable ExpressionWrapper         m_expr;
 public:
   VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
-  LPD3DXMESH createMesh(double t) const;
+  LPD3DXMESH createMesh(double time) const;
 };
 
 VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
@@ -105,8 +101,8 @@ VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(DIRECT3DDEVICE devi
   }
 }
 
-LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double t) const {
-  m_expr.setT(t);
+LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
+  m_expr.setT(time);
   return createMeshFrom2DFunction(m_device
                                  ,m_expr
                                  ,m_param.getXInterval()
@@ -128,10 +124,10 @@ public:
   {
   }
   const DoubleInterval &getTimeInterval() const {
-    return m_param.getTInterval();
+    return m_param.getTimeInterval();
   }
-  int getTimeCount() const {
-    return m_param.m_timeCount;
+  UINT getFrameCount() const {
+    return m_param.m_frameCount;
   }
   VariableMeshCreator *fetchMeshCreator() const {
     return new VariableFunction2DMeshCreator(m_device, m_param);

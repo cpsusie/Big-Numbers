@@ -4,43 +4,49 @@
 #include "ExpressionWrapper.h"
 #include "ExprDialog.h"
 
-void CExprDialog::setExprFont() {
+void CExprDialog::createExprFont() {
+  if(m_exprFont.m_hObject) return;
   CFont *dlgFont = GetFont();
   LOGFONT lf;
   dlgFont->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
   BOOL ret = m_exprFont.CreateFontIndirect(&lf);
-  getExprField()->SetFont(&m_exprFont, FALSE);
+}
+
+void CExprDialog::setExprFont(int id) {
+  createExprFont();
+  getExprField(id)->SetFont(&m_exprFont, FALSE);
 }
 
 void CExprDialog::gotoMatchingParentesis() {
-  CEdit *e = getExprField();
+  const int id = getFocusCtrlId(this);
+  CEdit *e = getExprField(id);
   int cursorPos, endChar;
   e->GetSel(cursorPos,endChar);
-  String expr = getExprString();
+  const String expr = getExprString(id);
   int m = findMatchingpParanthes(expr.cstr(), cursorPos);
   if(m >= 0) {
     e->SetSel(m, m);
   }
 }
 
-String CExprDialog::getExprString() {
-  return getWindowText(this, IDC_EDIT_EXPR);
+String CExprDialog::getExprString(int id) {
+  return getWindowText(this, id);
 }
 
-CEdit *CExprDialog::getExprField() {
-  return (CEdit*)GetDlgItem(IDC_EDIT_EXPR);
+CEdit *CExprDialog::getExprField(int id) {
+  return (CEdit*)GetDlgItem(id);
 }
 
-bool CExprDialog::validate() {
+bool CExprDialog::validate(int id) {
   ExpressionWrapper expr;
-  expr.compile(getExprString(), false);
+  expr.compile(getExprString(id), false);
   if(!expr.ok()) {
     showExprError(expr.getErrorMessage());
     return false;
   }
   if(!expr.isReturnTypeReal()) {
-    gotoExpr();
+    gotoExpr(id);
     Message(_T("Expression must return real value"));
     return false;
   }
@@ -68,35 +74,42 @@ void CExprDialog::showExprError(const String &msg) {
   }
 }
 
-void CExprDialog::createHelpButton() {
-  if(GetDlgItem(IDC_BUTTON_HELP) == NULL) {
+void CExprDialog::createHelpButton(int id) {
+  if (m_helpButtonCount >= MAXHELPBUTTONS) {
     return;
   }
-  const CPoint hp = getWindowPosition(this, IDC_BUTTON_HELP);
+  if(GetDlgItem(id) == NULL) {
+    return;
+  }
+  const CPoint hp = getWindowPosition(this, id);
   
-  GetDlgItem(IDC_BUTTON_HELP)->DestroyWindow();
-  m_helpButton.Create(this, OBMIMAGE(RGARROW), hp, IDC_BUTTON_HELP);
+  GetDlgItem(id)->DestroyWindow();
+  m_helpButton[m_helpButtonCount++].Create(this, OBMIMAGE(RGARROW), hp, id);
 }
 
-void CExprDialog::showExprHelpMenu() {
+void CExprDialog::showExprHelpMenu(int id) {
   try {
     CMenu menu;
     createMenuExprHelp(menu);
     CRect r;
-    GetDlgItem(IDC_BUTTON_HELP)->GetWindowRect(&r);
+    GetDlgItem(id)->GetWindowRect(&r);
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,r.right,r.top, this);
   } catch(Exception e) {
     showException(e);
   }
 }
 
-void CExprDialog::handleSelectedExprHelpId(int id) {
-  substituteSelectedText(getExprSyntax(id - ID_EXPRHELP_MENU_FIRST));
+void CExprDialog::handleSelectedExprHelpId(int menuId, int ctrlId) {
+  substituteSelectedText(ctrlId, getExprSyntax(menuId - ID_EXPRHELP_MENU_FIRST));
 }
 
-void CExprDialog::substituteSelectedText(const String &s) {
+void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
   if(s.length() > 0) {
-    CEdit *e = getExprField();
+    CEdit *e = getExprField(ctrlId);
+    if (e == NULL) {
+      MessageBox(format(_T("No ctrlId %d in window"), ctrlId).cstr(), _T("Error"), MB_ICONWARNING);
+      return;
+    }
     int startIndex, endIndex;
     e->GetSel(startIndex, endIndex);
     const int selLen = endIndex - startIndex;
@@ -108,7 +121,7 @@ void CExprDialog::substituteSelectedText(const String &s) {
     setWindowText(e, text);
     int newSel = (int)(startIndex + s.length());
     e->SetSel(newSel, newSel);
-    gotoExpr();
+    gotoExpr(ctrlId);
   }
 }
 

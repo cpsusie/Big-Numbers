@@ -5,6 +5,7 @@
 #include "D3FunctionPlotter.h"
 #include "D3FunctionPlotterDlg.h"
 #include "Function2DSurfaceDlg.h"
+#include "ParametricSurfaceDlg.h"
 #include "IsoSurfaceDlg.h"
 #include "ProfileDlg.h"
 
@@ -64,7 +65,8 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_WM_CONTEXTMENU()
   ON_COMMAND(ID_FILE_SAVESTATE                , OnFileSaveState                )
   ON_COMMAND(ID_FILE_LOADSTATE                , OnFileLoadState                )
-  ON_COMMAND(ID_FILE_PLOTFUNCTION             , OnFilePlotFunction             )
+  ON_COMMAND(ID_FILE_FUNCTIONSURFACE          , OnFileFunctionSurface          )
+  ON_COMMAND(ID_FILE_PARAMETRICSURFACE        , OnFileParametricSurface        )
   ON_COMMAND(ID_FILE_ISOSURFACE               , OnFileIsoSurface               )
   ON_COMMAND(ID_FILE_PROFILESURFACE           , OnFileProfileSurface           )
   ON_COMMAND(ID_FILE_READ3DPOINTSFROMFILE     , OnFileRead3DPointsFromFile     )
@@ -420,6 +422,15 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 }
 */
 
+void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *param) {
+  DIRECT3DDEVICE device = m_scene.getDevice();
+  if(param->m_includeTime) {
+    setCalculatedObject(new D3AnimatedSurface(m_scene, createMeshArray(this, device, *param)), param);
+  } else {
+    setCalculatedObject(new SceneObjectWithMesh(m_scene, createMesh(device, *param)), param);
+  }
+}
+
 void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
   DIRECT3DDEVICE device = m_scene.getDevice();
 
@@ -481,7 +492,7 @@ void CD3FunctionPlotterDlg::OnFileLoadState() {
   }
 }
 
-void CD3FunctionPlotterDlg::OnFilePlotFunction() {
+void CD3FunctionPlotterDlg::OnFileFunctionSurface() {
   try {
     CFunction2DSurfaceDlg dlg(m_function2DSurfaceParam);
     if(dlg.DoModal() != IDOK) {
@@ -489,6 +500,20 @@ void CD3FunctionPlotterDlg::OnFilePlotFunction() {
     }
     m_function2DSurfaceParam = dlg.m_param;
     setCalculatedObject(&m_function2DSurfaceParam);
+    REPAINT();
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CD3FunctionPlotterDlg::OnFileParametricSurface() {
+  try {
+    CParametricSurfaceDlg dlg(m_parametricSurfaceParam);
+    if(dlg.DoModal() != IDOK) {
+      return;
+    }
+    m_parametricSurfaceParam = dlg.m_param;
+    setCalculatedObject(&m_parametricSurfaceParam);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -1513,10 +1538,13 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
   }
   PersistentParameter *param = (PersistentParameter*)m_calculatedObject->getUserData();
   switch(param->getType()) {
-  case PP_2DFUNCTION:
-    OnFilePlotFunction();
+  case PP_2DFUNCTION       :
+    OnFileFunctionSurface();
     break;
-  case PP_ISOSURFACE:
+  case PP_PARAMETRICSURFACE:
+    OnFileParametricSurface();
+    break;
+  case PP_ISOSURFACE       :
     OnFileIsoSurface();
     break;
   default:

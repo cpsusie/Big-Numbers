@@ -3,12 +3,12 @@
 
 IsoCurveParameters::IsoCurveParameters() {
   m_expr             = "";
-  m_size             = 0.25;
+  m_cellSize         = 0.25;
   m_boundingBox      = Rectangle2D(-5,-5,10,10);
   m_machineCode      = true;
   m_includeTime      = false;
   m_tInterval        = DoubleInterval(0,10);
-  m_timeCount        = 20;
+  m_frameCount       = 20;
 }
 
 void IsoCurveParameters::write(FILE *f) {
@@ -16,14 +16,14 @@ void IsoCurveParameters::write(FILE *f) {
   const DoubleInterval yInterval = m_boundingBox.getXInterval();
 
   fprintf(f,"%lf %le %le %le %le %d %d",
-            m_size
+            m_cellSize
            ,xInterval.getFrom(), xInterval.getTo()
            ,yInterval.getFrom(), yInterval.getTo()
            ,m_machineCode
            ,m_includeTime
          );
   if(m_includeTime) {
-    fprintf(f, " %lf %lf %d", m_tInterval.getFrom(), m_tInterval.getTo(), m_timeCount);
+    fprintf(f, " %lf %lf %d", m_tInterval.getFrom(), m_tInterval.getTo(), m_frameCount);
   }
   fprintf(f, "\n");
   writeString(f, m_expr);
@@ -38,7 +38,7 @@ void IsoCurveParameters::read(FILE *f) {
   m_machineCode = true;
   m_includeTime = false;
   m_tInterval   = DoubleInterval(0,20);
-  m_size        = tok.getDouble();
+  m_cellSize    = tok.getDouble();
 
   double xFrom, xTo, yFrom, yTo;
 
@@ -51,7 +51,7 @@ void IsoCurveParameters::read(FILE *f) {
   if(m_includeTime) {
     m_tInterval.setFrom(tok.getDouble());
     m_tInterval.setTo(tok.getDouble());
-    m_timeCount = tok.getInt();
+    m_frameCount = tok.getInt();
   }
   m_expr = readString(f);
 }

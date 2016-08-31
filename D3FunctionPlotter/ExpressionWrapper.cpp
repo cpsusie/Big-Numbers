@@ -16,6 +16,16 @@ ExpressionWrapper::~ExpressionWrapper() {
   delete M_EXPR;
 }
 
+ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode) {
+  m_expr = new Expression();
+  compile(text, machineCode);
+  if(!ok()) {
+    const String msg = getErrorMessage();
+    delete M_EXPR;
+    throwException(msg);
+  }
+}
+
 void ExpressionWrapper::compile(const String &text, bool machineCode) {
   Expression *e = M_EXPR;
   e->compile(text, machineCode);
@@ -26,13 +36,13 @@ void ExpressionWrapper::compile(const String &text, bool machineCode) {
   m_tp = getVariableByName(_T("t"));
 }
 
-double ExpressionWrapper::operator()(const Point2D &p) {
+Real ExpressionWrapper::operator()(const Point2D &p) {
   *m_xp = p.x;
   *m_yp = p.y;
   return M_EXPR->evaluate();
 }
 
-double ExpressionWrapper::operator()(const Point3D &p) {
+Real ExpressionWrapper::operator()(const Point3D &p) {
   *m_xp = p.x;
   *m_yp = p.y;
   *m_zp = p.z;

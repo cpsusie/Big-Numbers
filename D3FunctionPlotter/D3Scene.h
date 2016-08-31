@@ -8,8 +8,9 @@
 #include <NumberInterval.h>
 #include "D3Math.h"
 #include "D3DeviceFactory.h"
-#include "IsoSurface.h"
 #include "Function2DSurface.h"
+#include "ParametricSurface.h"
+#include "IsoSurface.h"
 
 class D3SceneObject;
 class D3LightControl;
@@ -358,6 +359,8 @@ public:
 LPD3DXMESH     createMeshFrom2DFunction(   DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided);
 LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
 MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
+LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
+MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
 LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 LPD3DXMESH     createSphereMesh(           DIRECT3DDEVICE device, double                            radius);

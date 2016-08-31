@@ -4,16 +4,16 @@
 
 class CFunction2DSurfaceDlg : public CExprDialog {
 private:
-    HACCEL m_accelTable;
+  HACCEL m_accelTable;
 
-    bool validate();
-    void saveAs(Function2DSurfaceParameters &param);
-    void save(const String &fileName, Function2DSurfaceParameters &param);
-    void enableTimeFields();
-    void paramToWin(const Function2DSurfaceParameters &param);
-    void winToParam(Function2DSurfaceParameters &param) const;
+  bool validate();
+  void saveAs(Function2DSurfaceParameters &param);
+  void save(const String &fileName, Function2DSurfaceParameters &param);
+  void enableTimeFields();
+  void paramToWin(const Function2DSurfaceParameters &param);
+  void winToParam(Function2DSurfaceParameters &param) const;
 public:
-    CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd* pParent = NULL);
+  CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd* pParent = NULL);
 
   enum { IDD = IDD_FUNC2DSURFACE_DIALOG };
     CString m_expr;
@@ -23,7 +23,7 @@ public:
     double  m_yto;
     int     m_pointCount;
     BOOL    m_machineCode;
-    int		  m_timeCount;
+    UINT	  m_frameCount;
     double	m_timeFrom;
     double	m_timeTo;
     BOOL	  m_includeTime;
@@ -32,11 +32,10 @@ public:
     Function2DSurfaceParameters m_param;
     CString                     m_name;
 
-    public:
+public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
 protected:
 
     afx_msg BOOL OnInitDialog();
@@ -49,12 +48,11 @@ protected:
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();
     afx_msg void OnGotoYInterval();
-    afx_msg void OnGotoTInterval();
+    afx_msg void OnGotoTimeInterval();
     afx_msg void OnGotoPointCount();
-    afx_msg void OnGotoTimeCount();
+    afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckIncludeTime();
     afx_msg void OnButtonHelp();
     afx_msg void OnExprHelp(UINT id);
     DECLARE_MESSAGE_MAP()
 };
-

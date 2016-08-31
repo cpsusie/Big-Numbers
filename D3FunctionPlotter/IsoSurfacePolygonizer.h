@@ -193,20 +193,20 @@ public:
 
 class PolygonizerStatistics {
 public:
-  double       m_threadTime;
-  UINT m_faceCount;
-  UINT m_vertexCount;
-  UINT m_cubeCount;
-  UINT m_cornerCount;
-  UINT m_edgeCount;
-  UINT m_cornerHits;
-  UINT m_edgeHits;
-  UINT m_zeroHits;
-  UINT m_evalCount;
-  UINT m_doCubeCalls;
-  UINT m_doTetraCalls;
-  UINT m_nonProduktiveCalls;
-  String       m_hashStat;
+  double m_threadTime;
+  UINT   m_faceCount;
+  UINT   m_vertexCount;
+  UINT   m_cubeCount;
+  UINT   m_cornerCount;
+  UINT   m_edgeCount;
+  UINT   m_cornerHits;
+  UINT   m_edgeHits;
+  UINT   m_zeroHits;
+  UINT   m_evalCount;
+  UINT   m_doCubeCalls;
+  UINT   m_doTetraCalls;
+  UINT   m_nonProduktiveCalls;
+  String m_hashStat;
 
   PolygonizerStatistics();
   void clear();
@@ -217,7 +217,7 @@ class IsoSurfacePolygonizer {
 private:
   static Array<CompactArray<char> >     m_cubetable[256];
   IsoSurfaceEvaluator                  &m_eval;            // Implicit surface function
-  double                                m_size, m_delta;   // Cube size, normal delta
+  double                                m_cellSize, m_delta;   // Cube size, normal delta
   Cube3D                                m_boundingBox;     // bounding box
   Point3D                               m_start;           // Start point on surface
   bool                                  m_tetrahedralMode; // Use tetrahedral decomposition
@@ -278,27 +278,27 @@ private:
   inline bool         hasActiveCubes() const {
     return !m_cubeStack.isEmpty();
   }
-  inline StackedCube  getActiveCube() {
+  inline StackedCube      getActiveCube() {
     return m_cubeStack.pop();
   }
-  void                pushCube(const StackedCube &cube);
+  void                    pushCube(const StackedCube &cube);
 
-  UINT        getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
-  Point3D             getNormal(const Point3D &point);
+  UINT                    getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
+  Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 
-  inline Point3D      getCornerPoint(const Point3DKey &key) const {
+  inline Point3D          getCornerPoint(const Point3DKey &key) const {
     return getCornerPoint(key.i,key.j,key.k);
   }
-  Point3D             getCornerPoint(int i, int j, int k) const;
-  Point3D             converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount = 0);
-  void                saveStatistics(double startTime);
-  void                dumpCornerMap();
+  Point3D                 getCornerPoint(int i, int j, int k) const;
+  Point3D                 converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount = 0);
+  void                    saveStatistics(double startTime);
+  void                    dumpCornerMap();
 public:
   IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval);
   ~IsoSurfacePolygonizer();
   void polygonize(const Point3D &start
-                 ,double         size
+                 ,double         cellSize
                  ,const Cube3D  &boundingBox
                  ,bool           tetrahedralMode
                  );

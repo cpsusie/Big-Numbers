@@ -7,13 +7,13 @@
 class IsoCurveParameters : public PersistentParameter {
 public:
   String         m_expr;
-  double         m_size;
+  double         m_cellSize;
   Rectangle2D    m_boundingBox;
   Point2D        m_startPoint;
   bool           m_machineCode;
   bool           m_includeTime; // if true, an animation will be generated
   DoubleInterval m_tInterval;
-  unsigned int   m_timeCount;   // number of frames (meshes) that will be generated
+  UINT           m_frameCount;  // number of frames (meshes) that will be generated
 
   IsoCurveParameters();
 

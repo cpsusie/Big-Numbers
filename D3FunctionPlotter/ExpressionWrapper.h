@@ -9,14 +9,15 @@ public:
   ExpressionWrapper();
   ExpressionWrapper(const ExpressionWrapper &src);            // not defined
   ExpressionWrapper &operator=(const ExpressionWrapper &src); // not defined
+  ExpressionWrapper(const String &text, bool machineCode);    // throws exception on error
   virtual ~ExpressionWrapper();
-  void compile(const String &text, bool machineCode);
+  void compile(const String &text, bool machineCode); // doesn't throw on error
   bool ok();
   Real *getVariableByName(const String &name);
   Real evaluate();
   String getErrorMessage();
-  double operator()(const Point2D &p);
-  double operator()(const Point3D &p);
+  Real operator()(const Point2D &p);
+  Real operator()(const Point3D &p);
   void setT(double t) {
     *m_tp = t;
   }

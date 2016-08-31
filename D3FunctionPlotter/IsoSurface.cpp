@@ -3,7 +3,7 @@
 
 IsoSurfaceParameters::IsoSurfaceParameters() {
   m_expr             = "";
-  m_size             = 0.25;
+  m_cellSize         = 0.25;
   m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
   m_tetrahedral      = true;
   m_adaptiveCellSize = false;
@@ -11,8 +11,8 @@ IsoSurfaceParameters::IsoSurfaceParameters() {
   m_machineCode      = true;
   m_doubleSided      = false;
   m_includeTime      = false;
-  m_tInterval        = DoubleInterval(0,10);
-  m_timeCount        = 20;
+  m_timeInterval     = DoubleInterval(0,10);
+  m_frameCount       = 20;
 }
 
 void IsoSurfaceParameters::write(FILE *f) {
@@ -20,7 +20,7 @@ void IsoSurfaceParameters::write(FILE *f) {
   const Point3D &rtf = m_boundingBox.m_rtf;
 
   fprintf(f,"%lf %le %le %le %le %le %le %d %d %d %d %d %d",
-            m_size
+            m_cellSize
            ,lbn.x,lbn.y,lbn.z
            ,rtf.x,rtf.y,rtf.z
            ,m_tetrahedral
@@ -31,7 +31,7 @@ void IsoSurfaceParameters::write(FILE *f) {
            ,m_includeTime
          );
   if(m_includeTime) {
-    fprintf(f, " %lf %lf %d", m_tInterval.getFrom(), m_tInterval.getTo(), m_timeCount);
+    fprintf(f, " %lf %lf %d", m_timeInterval.getFrom(), m_timeInterval.getTo(), m_frameCount);
   }
   fprintf(f, "\n");
   writeString(f, m_expr);
@@ -43,15 +43,15 @@ void IsoSurfaceParameters::read(FILE *f) {
   String line = readLine(f);
   Tokenizer tok(line, " ");
 
-  m_machineCode = true;
-  m_doubleSided = false;
-  m_includeTime = false;
-  m_tInterval   = DoubleInterval(0,20);
+  m_machineCode  = true;
+  m_doubleSided  = false;
+  m_includeTime  = false;
+  m_timeInterval = DoubleInterval(0,20);
 
-  m_size             = tok.getDouble();
+  m_cellSize     = tok.getDouble();
 
-  Point3D &lbn = m_boundingBox.m_lbn;
-  Point3D &rtf = m_boundingBox.m_rtf;
+  Point3D &lbn   = m_boundingBox.m_lbn;
+  Point3D &rtf   = m_boundingBox.m_rtf;
 
   lbn.x = tok.getDouble(); lbn.y = tok.getDouble(); lbn.z = tok.getDouble();
   rtf.x = tok.getDouble(); rtf.y = tok.getDouble(); rtf.z = tok.getDouble();
@@ -66,9 +66,9 @@ void IsoSurfaceParameters::read(FILE *f) {
       if(tok.hasNext()) {
         m_includeTime = GETBOOL(tok);
         if(m_includeTime) {
-          m_tInterval.setFrom(tok.getDouble());
-          m_tInterval.setTo(tok.getDouble());
-          m_timeCount = tok.getInt();
+          m_timeInterval.setFrom(tok.getDouble());
+          m_timeInterval.setTo(tok.getDouble());
+          m_frameCount = tok.getInt();
         }
       }
     }

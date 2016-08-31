@@ -5,7 +5,7 @@
 
 class VariableMeshCreator {
 public:
-  virtual LPD3DXMESH createMesh(double t) const = 0;
+  virtual LPD3DXMESH createMesh(double time) const = 0;
   virtual ~VariableMeshCreator() {
   }
 };
@@ -13,7 +13,7 @@ public:
 class MeshArrayJobParameter {
 public:
   virtual const DoubleInterval &getTimeInterval()    const = 0;
-  virtual int                   getTimeCount()       const = 0;
+  virtual UINT                  getFrameCount()      const = 0;
   virtual VariableMeshCreator  *fetchMeshCreator()   const = 0;
   MeshArray createMeshArray(CWnd *wnd);
 

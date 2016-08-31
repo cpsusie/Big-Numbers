@@ -6,7 +6,7 @@ class MeshAnimationThread : public Thread {
 private:
   D3AnimatedSurface &m_surface;
   int               &m_nextMeshIndex;
-  const int          m_frameCount;
+  const UINT         m_frameCount;
   Semaphore          m_timeout;
   double             m_sleepTime;
   bool               m_killed;
@@ -19,7 +19,7 @@ public:
   MeshAnimationThread(D3AnimatedSurface &surface) 
     : m_surface(surface)
     , m_nextMeshIndex(m_surface.m_nextMeshIndex)
-    , m_frameCount((int)m_surface.m_meshArray.size())
+    , m_frameCount((UINT)m_surface.m_meshArray.size())
     , m_timeout(0)
   {
     m_killed    = false;

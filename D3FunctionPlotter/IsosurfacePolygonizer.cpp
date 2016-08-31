@@ -91,15 +91,15 @@ IsoSurfacePolygonizer::~IsoSurfacePolygonizer() {
 // int bounds            : max. range of cubes (+/- on the three axes) from first cube
 // bool tetrahedralmode  : true to use tetrahedral decomposition of a rectangular cube. false to use cube directly
 void IsoSurfacePolygonizer::polygonize(const Point3D &start
-                                      ,double         size
+                                      ,double         cellSize
                                       ,const Cube3D  &boundingBox
                                       ,bool           tetrahedralMode) {
 
   const double startTime = getThreadTime();
 
-  m_size            = size;
+  m_cellSize        = cellSize;
   m_boundingBox     = boundingBox;
-  m_delta           = size/(double)(RES*RES);
+  m_delta           = cellSize/(double)(RES*RES);
   m_tetrahedralMode = tetrahedralMode;
 
   m_statistics.clear();
@@ -327,9 +327,9 @@ const HashedCubeCorner *IsoSurfacePolygonizer::getCorner(int i, int j, int k) {
 
 Point3D IsoSurfacePolygonizer::getCornerPoint(int i, int j, int k) const {
   Point3D result;
-  result.x = m_start.x+((double)i)*m_size;
-  result.y = m_start.y+((double)j)*m_size;
-  result.z = m_start.z+((double)k)*m_size;
+  result.x = m_start.x+((double)i)*m_cellSize;
+  result.y = m_start.y+((double)j)*m_cellSize;
+  result.z = m_start.z+((double)k)*m_cellSize;
   return result;
 }
 
@@ -346,7 +346,7 @@ Point3D IsoSurfacePolygonizer::findStartPoint(const Point3D &start) {
 // findStartPoint: search for point with value of sign specified by positive-parameter
 IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3D &p) {
   IsoSurfaceTest result;
-  double range = m_size;
+  double range = m_cellSize;
   result.m_ok = true;
   for(int i = 0; i < 10000; i++) {
 	result.m_point.x = p.x + _standardRandomGenerator.nextDouble(-range, range);

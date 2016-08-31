@@ -25,6 +25,9 @@
 class Function2D : public FunctionTemplate<Point2D, Real> {
 };
 
+class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
+};
+
 float       operator*(   const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 float       length(      const D3DXVECTOR3 &v);
 float       angle(       const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);

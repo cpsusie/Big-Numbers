@@ -19,7 +19,8 @@ void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
     DDX_Check(pDX, IDC_CHECK_MACHINECODE     , m_machineCode               );
     DDX_Check(pDX, IDC_CHECK_DOUBLESIDED     , m_doubleSided               );
     DDX_Check(pDX, IDC_CHECK_INCLUDETIME     , m_includeTime               );
-    DDX_Text(pDX , IDC_EDIT_TIMECOUNT        , m_timeCount                 );
+    DDX_Text(pDX , IDC_EDIT_FRAMECOUNT       , m_frameCount                );
+    DDV_MinMaxUInt(pDX, m_frameCount, 1, 300            );
     DDX_Text(pDX , IDC_EDIT_TIMEFROM         , m_timeFrom                  );
     DDX_Text(pDX , IDC_EDIT_TIMETO           , m_timeTo                    );
 }
@@ -33,9 +34,9 @@ BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_EXPR                  , OnGotoExpr                       )
     ON_COMMAND(ID_GOTO_XINTERVAL             , OnGotoXInterval                  )
     ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval                  )
-    ON_COMMAND(ID_GOTO_TINTERVAL             , OnGotoTInterval                  )
+    ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
     ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount                 )
-    ON_COMMAND(ID_GOTO_TIMECOUNT             , OnGotoTimeCount                  )
+    ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                  )
     ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST  , ID_EXPRHELP_MENU_LAST, OnExprHelp)
     ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
@@ -66,8 +67,8 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDIT_TIMEFROM       , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_STATIC_DASH3        , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDC_EDIT_TIMETO         , RELATIVE_Y_POS       );
-  m_layoutManager.addControl(IDC_STATIC_TIMECOUNT    , RELATIVE_Y_POS       );
-  m_layoutManager.addControl(IDC_EDIT_TIMECOUNT      , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_STATIC_FRAMECOUNT   , RELATIVE_Y_POS       );
+  m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT     , RELATIVE_Y_POS       );
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
@@ -92,13 +93,13 @@ BOOL CFunction2DSurfaceDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 #define MAXPOINTCOUNT 200
-#define MAXTIMECOUNT 200
+#define MAXFRAMECOUNT 300
 
 bool CFunction2DSurfaceDlg::validate() {
   if(!CExprDialog::validate()) {
     return false;
   }
-  if(m_pointCount == 0 || m_pointCount > MAXPOINTCOUNT) {
+  if(m_pointCount <= 0 || m_pointCount > MAXPOINTCOUNT) {
     gotoEditBox(this, IDC_EDIT_POINTS);
     Message(_T("Number of points must be between 0 and %d"), MAXPOINTCOUNT);
     return false;
@@ -115,9 +116,9 @@ bool CFunction2DSurfaceDlg::validate() {
   }
 
   if(m_includeTime) {
-    if(m_timeCount <= 0 || m_timeCount > MAXTIMECOUNT) {
-      gotoEditBox(this, IDC_EDIT_TIMECOUNT);
-      Message(_T("Number of times must be between 1 and %d"), MAXTIMECOUNT);
+    if(m_frameCount <= 0 || m_frameCount > MAXFRAMECOUNT) {
+      gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
+      Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
       return false;
     }
     if(m_timeFrom >= m_timeTo) {
@@ -149,8 +150,8 @@ void CFunction2DSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_STATIC_TIMEINTERVAL)->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMEFROM      )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_TIMECOUNT     )->EnableWindow(enable);
-  setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("F(t,&x,y) =") : _T("F(&x,y) ="));
+  GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
+  setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&z = F(t,x,y) =") : _T("&z = F(x,y) ="));
 }
 
 static const TCHAR *fileDialogExtensions = _T("Expression-files (*.exp)\0*.exp\0All files (*.*)\0*.*\0\0");
@@ -241,12 +242,12 @@ void CFunction2DSurfaceDlg::OnGotoPointCount() {
   gotoEditBox(this, IDC_EDIT_POINTS);
 }
 
-void CFunction2DSurfaceDlg::OnGotoTInterval() {
+void CFunction2DSurfaceDlg::OnGotoTimeInterval() {
   gotoEditBox(this, IDC_EDIT_TIMEFROM);
 }
 
-void CFunction2DSurfaceDlg::OnGotoTimeCount() {
-  gotoEditBox(this, IDC_EDIT_TIMECOUNT);
+void CFunction2DSurfaceDlg::OnGotoFrameCount() {
+  gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
 }
 
 void CFunction2DSurfaceDlg::OnButtonHelp() {
@@ -263,10 +264,10 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   m_xto           = param.getXInterval().getMax();
   m_yfrom         = param.getYInterval().getMin();
   m_yto           = param.getYInterval().getMax();
-  m_timeFrom      = param.getTInterval().getMin();
-  m_timeTo        = param.getTInterval().getMax();
+  m_timeFrom      = param.getTimeInterval().getMin();
+  m_timeTo        = param.getTimeInterval().getMax();
   m_pointCount    = param.m_pointCount;
-  m_timeCount     = param.m_timeCount;
+  m_frameCount    = param.m_frameCount;
   m_name          = param.getName().cstr();
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
   m_includeTime   = param.m_includeTime ? TRUE : FALSE;
@@ -281,14 +282,14 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
 void CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) const {
   param.setName((LPCTSTR)m_name);
   param.m_expr        = m_expr;
-  param.m_xInterval.setFrom(m_xfrom);
-  param.m_xInterval.setTo(  m_xto);
-  param.m_yInterval.setFrom(m_yfrom);
-  param.m_yInterval.setTo(m_yto);
-  param.m_tInterval.setFrom(m_timeFrom);
-  param.m_tInterval.setTo(  m_timeTo);
+  param.m_xInterval.setFrom(   m_xfrom);
+  param.m_xInterval.setTo(     m_xto);
+  param.m_yInterval.setFrom(   m_yfrom);
+  param.m_yInterval.setTo(     m_yto);
+  param.m_timeInterval.setFrom(m_timeFrom);
+  param.m_timeInterval.setTo(  m_timeTo);
   param.m_pointCount  = m_pointCount;
-  param.m_timeCount   = m_timeCount;
+  param.m_frameCount  = m_frameCount;
   param.m_machineCode = m_machineCode?true:false;
   param.m_includeTime = m_includeTime?true:false;
   param.m_doubleSided = m_doubleSided?true:false;

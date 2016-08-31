@@ -330,6 +330,9 @@
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
+    <ClCompile Include="ParametricSurface.cpp" />
+    <ClCompile Include="ParametricSurfaceDlg.cpp" />
+    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp" />
     <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />
@@ -382,6 +385,8 @@
     <ClInclude Include="MemoryLogThread.h" />
     <ClInclude Include="MeshArrayJobMonitor.h" />
     <ClInclude Include="MeshBuilder.h" />
+    <ClInclude Include="ParametricSurfaceDlg.h" />
+    <ClInclude Include="ParametricSurface.h" />
     <ClInclude Include="PersistentParameter.h" />
     <ClInclude Include="Profile.h" />
     <ClInclude Include="ProfileDlg.h" />

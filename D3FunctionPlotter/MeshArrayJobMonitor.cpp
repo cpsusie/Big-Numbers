@@ -196,11 +196,11 @@ WorkerThreadArray::~WorkerThreadArray() {
 class MeshArrayCreator : public InteractiveRunnable {
 private:
   MeshArrayJobMonitor m_jobs;
-  const int           m_frameCount;
+  const UINT          m_frameCount;
 public:
   MeshArrayCreator(const MeshArrayJobParameter &param)
   : m_jobs(param)
-  , m_frameCount(param.getTimeCount())
+  , m_frameCount(param.getFrameCount())
   {
   }
 
@@ -226,7 +226,7 @@ unsigned int MeshArrayCreator::run() {
   const double stept = m_jobs.m_param.getTimeInterval().getLength() / (m_frameCount-1);
   double       t     = m_jobs.m_param.getTimeInterval().getFrom();
 
-  for(int i = 0; i < m_frameCount; i++, t += stept) {
+  for(UINT i = 0; i < m_frameCount; i++, t += stept) {
     m_jobs.addJob(t);
   }
   const int processorCount = getProcessorCount();

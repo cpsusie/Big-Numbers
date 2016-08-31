@@ -168,6 +168,15 @@
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ParametricSurfaceDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricSurface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ColorDlg.h">
@@ -277,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="_Font.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricSurfaceDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricSurface.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

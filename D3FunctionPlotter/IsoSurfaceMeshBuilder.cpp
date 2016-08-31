@@ -39,12 +39,10 @@ public:
   }
 };
 
-IsoSurface::IsoSurface(const IsoSurfaceParameters &param) {
-  m_param = param;
-  m_exprWrapper.compile(m_param.m_expr,m_param.m_machineCode);
-  if(!m_exprWrapper.ok()) {
-    throwException(_T("%s"), m_exprWrapper.getErrorMessage().cstr());
-  }
+IsoSurface::IsoSurface(const IsoSurfaceParameters &param) 
+: m_param(param)
+, m_exprWrapper(param.m_expr,param.m_machineCode)
+{
   m_xp = m_exprWrapper.getVariableByName("x");
   m_yp = m_exprWrapper.getVariableByName("y");
   m_zp = m_exprWrapper.getVariableByName("z");
@@ -63,7 +61,7 @@ void IsoSurface::createData() {
   m_vertexArray = &polygonizer.getVertexArray();
 
   polygonizer.polygonize(Point3D(0,0,0)
-                        ,m_param.m_size
+                        ,m_param.m_cellSize
                         ,m_param.m_boundingBox
                         ,m_param.m_tetrahedral);
   if(m_mb.isEmpty()) {
@@ -140,7 +138,7 @@ void IsoSurfaceDebugObject::draw() {
 void IsoSurfaceDebugObject::createDebugLines(IsoSurface &surface) {
   const CompactArray<Point3D> &pointArray = surface.getDebugPoints();
   if(pointArray.size() > 0) {
-    const double  u = surface.getParam().m_size / 8;
+    const double  u = surface.getParam().m_cellSize / 8;
     const Point3D e1(u,0,0),e2(0,u,0),e3(0,0,u);
     CompactArray<Line> lines;
     for(size_t i = 0; i < pointArray.size(); i++) {
@@ -184,11 +182,11 @@ public:
   , m_surface(param)
   {
   }
-  LPD3DXMESH createMesh(double t) const;
+  LPD3DXMESH createMesh(double time) const;
 };
 
-LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double t) const {
-  m_surface.setT(t);
+LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time) const {
+  m_surface.setT(time);
   return ::createMesh(m_device, m_surface);
 }
 
@@ -202,10 +200,10 @@ public:
     , m_param(param) {
   }
   const DoubleInterval &getTimeInterval() const {
-    return m_param.getTInterval();
+    return m_param.getTimeInterval();
   }
-  int getTimeCount() const {
-    return m_param.m_timeCount;
+  UINT getFrameCount() const {
+    return m_param.m_frameCount;
   }
   VariableMeshCreator *fetchMeshCreator() const {
     return new VariableIsoSurfaceMeshCreator(m_device, m_param);
@@ -227,7 +225,7 @@ LPD3DXMESH createSphereMesh(DIRECT3DDEVICE device, double radius) {
   param.m_expr          = format(_T("x*x+y*y+z*z-%lf"), radius*radius);
   param.m_machineCode   = true;
   param.m_originOutside = false;
-  param.m_size          = radius / 5;
+  param.m_cellSize      = radius / 5;
   param.m_tetrahedral   = false;
   param.m_doubleSided   = false;
   return createMesh(device, param);

@@ -2,6 +2,7 @@
 
 typedef enum {
   PP_2DFUNCTION
+ ,PP_PARAMETRICSURFACE
  ,PP_ISOSURFACE
  ,PP_ISOCURVE
 } PersistentParameterType;
