@@ -33,15 +33,11 @@ BOOL CColorDlg::OnInitDialog() {
   return TRUE;
 }
 
-void CColorDlg::OnColorChangedColormapColor() {
-  setCurrentValue(getD3DCOLOR(IDC_COLORMAP_COLOR));
-}
 BEGIN_EVENTSINK_MAP(CColorDlg, CColormapDialog)
   ON_EVENT(CColorDlg, IDC_COLORMAP_COLOR, 1, CColorDlg::OnColorchangedColormapColor, VTS_NONE)
 END_EVENTSINK_MAP()
 
 
-void CColorDlg::OnColorchangedColormapColor()
-{
-  // TODO: Add your message handler code here
+void CColorDlg::OnColorchangedColormapColor() {
+  setCurrentValue(getD3DCOLOR(IDC_COLORMAP_COLOR));
 }

@@ -11,13 +11,12 @@ public:
 
 	enum { IDD = IDD_COLOR_DIALOG };
 
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+protected:
+  virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
-	afx_msg void OnColorChangedColormapColor();
 	virtual BOOL OnInitDialog();
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 private:
   CColormap m_color;
   DECLARE_EVENTSINK_MAP()
