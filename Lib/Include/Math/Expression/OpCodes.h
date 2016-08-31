@@ -148,7 +148,7 @@ public:
   }
   inline IntelInstruction &memAddrPtr(BYTE reg) {
     assert(m_memAddrMode);
-    return or (reg);
+    return or(reg);
   }
   inline IntelInstruction &memAddrPtr1(BYTE reg, BYTE offset) {
     assert(m_memAddrMode);
@@ -205,22 +205,22 @@ public:
 #define PREFIX49(ins) ((ins).prefixRex(0x49))
 #define PREFIX4C(ins) ((ins).prefixRex(0x4C))
 
-#define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op).memAddrPtr(     reg)                   //  reg!=ESP,EBP                                     ex:fld word ptr[eax]
-#define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op).memAddrPtr1(    reg,         offs1)    //  reg!=ESP                    offs1=1 byte signed  ex.fld word ptr[eax+127]
-#define MEM_ADDR_PTR4(      op,reg          ,offs4) IntelInstruction(op).memAddrPtr4(    reg,         offs4)    //  reg!=ESP                    offs4=4 bytes signed ex fld word ptr[eax+0x12345678]
-#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offs4) IntelInstruction(op).memAddrMp2Ptr4( reg,p2,      offs4)    //  reg!=ESP             p2=0-3 offs4=4 bytes signed ex fld word ptr[2*eax+0x12345678]
-#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2      ) IntelInstruction(op).memAddrMp2Reg(  reg,p2,addReg)         //  reg!=EBP addReg!=ESP p2=0-3                      ex fld word ptr[esp+2*ecx]
-#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offs1) IntelInstruction(op).memAddrMp2Reg1( reg,p2,addReg,offs1)   //           addReg!=ESP p2=0-3                      ex fld word ptr[ebp+2*ecx+127]
-#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offs4) IntelInstruction(op).memAddrMp2Reg4( reg,p2,addReg,offs4)   //           addReg!=ESP p2=0-3 offs4=4 bytes signed ex fld word ptr[esp+2*eax+0x12345678]
-#define MEM_ADDR_ESP(       op                    ) IntelInstruction(op).memAddrEsp()                           //                                                   ex fld word ptr[esp}
-#define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op).memAddrEsp1(offs1)                     //                              offst=1 byte signed  ex fld word ptr[esp+128}
-#define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op).memAddrEsp4(offs4)                     //                              offst=4 bytes signed ex fld word ptr[esp+0x12345678]
+#define MEM_ADDR_PTR(       op,reg                ) IntelInstruction(op).memAddrPtr(     reg                )   //  reg!=ESP,EBP                                     ex:fild word ptr[eax]
+#define MEM_ADDR_PTR1(      op,reg          ,offs1) IntelInstruction(op).memAddrPtr1(    reg,         offs1 )   //  reg!=ESP                    offs1=1 byte  signed ex:fild word ptr[eax + 127]
+#define MEM_ADDR_PTR4(      op,reg          ,offs4) IntelInstruction(op).memAddrPtr4(    reg,         offs4 )   //  reg!=ESP                    offs4=4 bytes signed ex:fild word ptr[eax + 0x12345678]
+#define MEM_ADDR_MP2PTR4(   op,reg       ,p2,offs4) IntelInstruction(op).memAddrMp2Ptr4( reg,p2,      offs4 )   //  reg!=ESP             p2=0-3 offs4=4 bytes signed ex:fild word ptr[2*eax + 0x12345678]
+#define MEM_ADDR_PTRMP2REG( op,reg,addReg,p2      ) IntelInstruction(op).memAddrMp2Reg(  reg,p2,addReg      )   //  reg!=EBP addReg!=ESP p2=0-3                      ex:fild word ptr[esp + 2*ecx]
+#define MEM_ADDR_PTRMP2REG1(op,reg,addReg,p2,offs1) IntelInstruction(op).memAddrMp2Reg1( reg,p2,addReg,offs1)   //           addReg!=ESP p2=0-3                      ex:fild word ptr[ebp + 2*ecx + 127]
+#define MEM_ADDR_PTRMP2REG4(op,reg,addReg,p2,offs4) IntelInstruction(op).memAddrMp2Reg4( reg,p2,addReg,offs4)   //           addReg!=ESP p2=0-3 offs4=4 bytes signed ex:fild word ptr[esp + 2*eax + 0x12345678]
+#define MEM_ADDR_ESP(       op                    ) IntelInstruction(op).memAddrEsp()                           //                                                   ex:fild word ptr[esp]
+#define MEM_ADDR_ESP1(      op              ,offs1) IntelInstruction(op).memAddrEsp1(offs1)                     //                              offst=1 byte  signed ex:fild word ptr[esp + 128]
+#define MEM_ADDR_ESP4(      op              ,offs4) IntelInstruction(op).memAddrEsp4(offs4)                     //                              offst=4 bytes signed ex:fild word ptr[esp + 0x12345678]
 #define MEM_ADDR_DS(        op                    ) IntelInstruction(op).memImmDword()                          //  + 4 byte address. In x64 mode PC-relative offset
-#define REG_SRC(            op,reg)                 IntelInstruction(op).regSrc(reg)                            //                                                   ex add eax, ecx
+#define REG_SRC(            op,reg)                 IntelInstruction(op).regSrc(reg)                            //                                                   ex:add eax, ecx
 
-#define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )                                                                          // reg!=EBP addReg!=ESP                              ex fld word ptr[esp+  ecx]
-#define MEM_ADDR_PTRREG1(   op,reg,addReg   ,offs1) MEM_ADDR_PTRMP2REG1(op,reg,addReg,0,offs1)                                                                          //          addReg!=ESP         offs1=1 byte signed  ex fld word ptr[ebp+  ecx+127]
-#define MEM_ADDR_PTRREG4(   op,reg,addReg   ,offs4) MEM_ADDR_PTRMP2REG4(op,reg,addReg,0,offs4)                                                                          //          addReg!=ESP         offs1=4 bytes signed ex fld word ptr[esp+  eax+0x12345678]
+#define MEM_ADDR_PTRREG(    op,reg,addReg         ) MEM_ADDR_PTRMP2REG( op,reg,addReg,0      )                  // reg!=EBP addReg!=ESP                              ex:fild word ptr[esp + ecx]
+#define MEM_ADDR_PTRREG1(   op,reg,addReg   ,offs1) MEM_ADDR_PTRMP2REG1(op,reg,addReg,0,offs1)                  //          addReg!=ESP         offs1=1 byte  signed ex:fild word ptr[ebp + ecx + 127]
+#define MEM_ADDR_PTRREG4(   op,reg,addReg   ,offs4) MEM_ADDR_PTRMP2REG4(op,reg,addReg,0,offs4)                  //          addReg!=ESP         offs1=4 bytes signed ex:fild word ptr[esp + eax + 0x12345678]
 
 // Instructions defined with these macroes, cannot be combined with the various addressing-nmodes
 #define B1INS(op)        IntelInstruction(1, op)
