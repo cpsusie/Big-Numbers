@@ -86,7 +86,9 @@ public:
     return m_pr;
   }
   void clear();
-
+  CSize size() const {
+    return isEmpty() ? CSize(0,0) : m_pr->getSize();
+  }
   inline bool isEmpty() const {
     return m_pr == NULL;
   }
