@@ -444,11 +444,16 @@ bool Rational::isRealRational(const Real &x, Rational *r) { // static
     if(r) *r = getInt(x);
     return true;
   }
-  const Rational tmp(x);
-  if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
-    if(r) *r = tmp;
-    return true;
-  } else {
+  try {
+    const Rational tmp(x);
+    if(tmp.getDenominator() <= 400) { // This is not good enough, but how should it be done ?
+      if(r) *r = tmp;
+      return true;
+    } else {
+      return false;
+    }
+  }
+  catch (Exception) {
     return false;
   }
 }
