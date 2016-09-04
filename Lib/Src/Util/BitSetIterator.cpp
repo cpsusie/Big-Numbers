@@ -13,41 +13,60 @@
 #define ASM_OPTIMIZED
 #endif
 
-Iterator<size_t> BitSet::getIterator() {
-  return Iterator<size_t>(new BitSetIterator(*this));
+Iterator<size_t> BitSet::getIterator(size_t start, size_t end) {
+  return Iterator<size_t>(new BitSetIterator(*this, start, end));
 }
 
-Iterator<size_t> BitSet::getReverseIterator() {
-  return Iterator<size_t>(new BitSetReverseIterator(*this));
+Iterator<size_t> BitSet::getReverseIterator(size_t start, size_t end) {
+  return Iterator<size_t>(new BitSetReverseIterator(*this, start, end));
 }
 
 // -----------------------------------------------------------------------
+
+DEFINECLASSNAME(BitSetIterator);
+
 AbstractIterator *BitSetIterator::clone() {
   return new BitSetIterator(*this);
 }
 
-void BitSetIterator::first() {
-  const size_t        atomCount = ATOMCOUNT(m_s.getCapacity());
-  const BitSet::Atom *first     = m_s.m_p;
-  const BitSet::Atom *p         = first;
-  const BitSet::Atom *last      = first + atomCount - 1;
+void BitSetIterator::first(size_t start, size_t end) {
+  m_end                         = min(m_s.getCapacity()-1, end);
+  setCurrentUndefined();
+  const BitSet::Atom *firstAtom = m_s.m_p;
+  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
 
 #ifndef ASM_OPTIMIZED
-  for(; p <= last; p++) {
-    if(*p) {
-      break;
-    }
-  }
-  if(p > last) {
+  const BitSet::Atom *q = p;
+
+SearchFirst1Bit:
+  while((*q==0) && (q++ < endAtom));
+
+  if(q > endAtom) {
     m_hasNext = false;
     return;
   }
-  m_hasNext = true;
-  for(size_t j = 0;; j++) {
-    if(*p & ATOMBIT(j)) {
-      m_next = (p-first) * BITSINATOM + j;
-      break;
+  if(q > p) {
+    const BitSet::Atom a = *q;
+    for(size_t j = 0;; j++) {
+      if(a & ATOMBIT(j)) {
+        m_hasNext = (m_next = (q-firstAtom) * BITSINATOM + j) <= m_end;
+        return;
+      }
     }
+  } else {
+    size_t j = start % BITSINATOM;
+    const BitSet::Atom a = *q & ~MASKATOM(j);
+    if(a) {
+      for(;;j++) {
+        if(a & ATOMBIT(j)) {
+          m_hasNext = (m_next = (q-firstAtom) * BITSINATOM + j) <= m_end;
+          return;
+        }
+      }
+    }
+    q++;
+    goto SearchFirst1Bit;
   }
 
 #else // ASM_OPTIMIZED
@@ -116,21 +135,20 @@ end:
 }
 
 void *BitSetIterator::next() { // throw Exception if no more
-  if(!m_hasNext) {
-    noNextElementError(_T("BitSetIterator"));
+  if(!m_hasNext) noNextElementError(s_className);
+  if((m_current = m_next++) >= m_end) {
+    m_hasNext = false;
+    return &m_current;
   }
-
-  m_current = m_next++;
-  const size_t atomCount = ATOMCOUNT(m_s.getCapacity());
   size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM;
   if(j) {
-    const BitSet::Atom q = m_s.m_p[i] & ~MASKATOM(j);
-    if(q) {
+    const BitSet::Atom a = m_s.m_p[i] & ~MASKATOM(j);
+    if(a) {
 
 #ifndef ASM_OPTIMIZED
       for(;;j++) {
-        if(q & ATOMBIT(j)) {
-          m_next = i * BITSINATOM + j;
+        if(a & ATOMBIT(j)) {
+          m_hasNext = (m_next = i * BITSINATOM + j) <= m_end;
           break;
         }
       }
@@ -164,21 +182,20 @@ void *BitSetIterator::next() { // throw Exception if no more
     i++;
   }
 
-  const BitSet::Atom *p = m_s.m_p + i;
+  const BitSet::Atom *p         = m_s.m_p + i;
+  const BitSet::Atom *endAtom   = m_s.m_p + ATOMINDEX(m_end);
 
 #ifndef ASM_OPTIMIZED
-  for(; i < atomCount; i++, p++) {
-    if(*p) {
-      break;
-    }
-  }
-  if(i == atomCount) {
+  while((*p==0) && (p++ < endAtom));
+
+  if(p > endAtom) {
     m_hasNext = false;
     return &m_current;
   }
+  const BitSet::Atom a = *p; // a != 0
   for(j = 0;; j++) {
-    if(*p & ATOMBIT(j)) {
-      m_next = i * BITSINATOM + j;
+    if(a & ATOMBIT(j)) {
+      m_hasNext = (m_next = (p - m_s.m_p) * BITSINATOM + j) <= m_end;
       break;
     }
   }
@@ -253,37 +270,54 @@ end:
   return &m_current;
 }
 
-void BitSetIterator::remove() {
-  m_s.remove(m_current);
-}
-
 // ---------------------------------------------------------------------
+
+DEFINECLASSNAME(BitSetReverseIterator);
 
 AbstractIterator *BitSetReverseIterator::clone() {
   return new BitSetReverseIterator(*this);
 }
 
-void BitSetReverseIterator::first() { // actually last
-  const size_t        atomCount = ATOMCOUNT(m_s.getCapacity());
-  const BitSet::Atom *start     = m_s.m_p;
-  const BitSet::Atom *p         = start + atomCount-1;
+void BitSetReverseIterator::first(size_t start, size_t end) { // actually last
+  start                         = min(start, m_s.getCapacity()-1);
+  m_end                         = end;
+  setCurrentUndefined();
+  const BitSet::Atom *firstAtom = m_s.m_p;
+  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
 
 #ifndef ASM_OPTIMIZED
-  for(;p >= start; p--) {
-    if(*p) {
-      break;
-    }
-  }
-  if(p < start) {
+  const BitSet::Atom *q = p;
+
+SearchRFirst1Bit:
+  while((*q == 0) && (q-- > endAtom));
+
+  if(q < endAtom) {
     m_hasNext = false;
     return;
   }
-  m_hasNext = true;
-  for(int j = BITSINATOM - 1;; j--) {
-    if(*p & ATOMBIT(j)) {
-      m_next = (UINT)((p-start) * BITSINATOM + j);
-      break;
+
+  if(q < p) {
+    const BitSet::Atom a = *q; // a != 0
+    for(size_t j = BITSINATOM - 1;; j--) {
+      if(a & ATOMBIT(j)) {
+        m_hasNext = (m_next = (q - firstAtom) * BITSINATOM + j) >= m_end;
+        return;
+      }
     }
+  } else {
+    size_t j = start % BITSINATOM;
+    const BitSet::Atom a = *q & MASKATOM(j+1);
+    if(a) {
+      for(;;j--) {
+        if(a & ATOMBIT(j)) {
+          m_hasNext = (m_next = (q - firstAtom) * BITSINATOM + j) >= m_end;
+          return;
+        }
+      }
+    }
+    q--;
+    goto SearchRFirst1Bit;
   }
 
 #else // ASM_OPTIMIZED
@@ -346,25 +380,21 @@ end:
 }
 
 void *BitSetReverseIterator::next() { // Actually previous. throw Exception if no next element
-  if(!m_hasNext) {
-    noNextElementError(_T("BitSetReverseIterator"));
-  }
-  if((m_current = m_next) > 0) {
-    m_next--;
-  } else  {
+  if(!hasNext()) noNextElementError(s_className);
+  if((m_current = m_next--) <= m_end) {
     m_hasNext = false;
     return &m_current;
   }
 
   size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM + 1;
   if(j < BITSINATOM) {
-    const BitSet::Atom q = m_s.m_p[i] & MASKATOM(j);
-    if(q) {
+    const BitSet::Atom a = m_s.m_p[i] & MASKATOM(j);
+    if(a) {
 
 #ifndef ASM_OPTIMIZED
       for(;;j--) {
-        if(q & ATOMBIT(j)) {
-          m_next = i * BITSINATOM + j;
+        if(a & ATOMBIT(j)) {
+          m_hasNext = (m_next = i * BITSINATOM + j) >= m_end;
           break;
         }
       }
@@ -398,23 +428,19 @@ void *BitSetReverseIterator::next() { // Actually previous. throw Exception if n
     i--;
   }
 
-  const BitSet::Atom *start = m_s.m_p;
-  const BitSet::Atom *p     = start + i;
+  const BitSet::Atom *p         = m_s.m_p + i;
+  const BitSet::Atom *endAtom   = m_s.m_p + ATOMINDEX(m_end);
 
 #ifndef ASM_OPTIMIZED
-  for(;p >= start; p--) {
-    if(*p) {
-      break;
-    }
-  }
-  if(p < start) {
+  while((*p == 0) && (p-- > endAtom));
+  if(p < endAtom) {
     m_hasNext = false;
     return &m_current;
   }
-
+  const BitSet::Atom a = *p; // a != 0
   for(j = BITSINATOM - 1;; j--) {
-    if(*p & ATOMBIT(j)) {
-      m_next = (UINT)((p-start) * BITSINATOM + j);
+    if(a & ATOMBIT(j)) {
+      m_hasNext = (m_next = (p - m_s.m_p) * BITSINATOM + j) >= m_end;
       break;
     }
   }
@@ -481,8 +507,4 @@ end:
 #endif // ASM_OPTIMIZED
 
   return &m_current;
-}
-
-void BitSetReverseIterator::remove() {
-  m_s.remove(m_current);
 }

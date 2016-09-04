@@ -48,11 +48,11 @@ public:
     return lts * rhs;
   }
 
-  BitSet &operator+=(size_t i) {                                 // Add i to the set, if it's not already there
+  BitSet &operator+=(size_t i) {                                        // Add i to the set, if it's not already there
     return add(i);
   }
 
-  BitSet &operator-=(size_t i) {                                 // Remove i from the set if it's there
+  BitSet &operator-=(size_t i) {                                        // Remove i from the set if it's there
     return remove(i);
   }
 
@@ -75,21 +75,21 @@ public:
   friend bool    operator> (const BitSet &lts, const BitSet &rhs);      // Same as rhs <  lts
   friend bool    operator==(const BitSet &lts, const BitSet &rhs);      // Equal. return true if the two sets contain the same elements
   friend bool    operator!=(const BitSet &lts, const BitSet &rhs);      // Same as !(lts == rhs)
-  friend int     bitSetCmp( const BitSet &i1, const BitSet &i2);            // NB! NOT the same as relational operators subset,pure subset.
+  friend int     bitSetCmp( const BitSet &i1, const BitSet &i2);        // NB! NOT the same as relational operators subset,pure subset.
   friend BitSet  compl(const BitSet &s);                                // Complementset
   size_t         oldsize() const;                                       // Number of elements, slow version
   size_t         size() const;                                          // Number of elements. fast version
   bool           isEmpty() const;                                       // Return true if set is empty
-  BitSet &remove(size_t i);                                      // Remove i from set
-  BitSet &add(   size_t i);                                      // Insert i into set
-  BitSet &remove(size_t a, size_t b);                     // Remove interval [a;b] from set
-  BitSet &add(   size_t a, size_t b);                     // Insert interval [a;b] into set
-  bool    contains(size_t i) const;                              // Return if set contains i
-  intptr_t     getIndex(size_t i) const;                              // Return number of elements < i. if i not in set -1 is returned
-  size_t getCount(size_t from, size_t to) const;      // Return number of elements between from and to. both included.
-  size_t select() const;                                          // Returns a random element from non empty set. throws Exception if set is empty
-  BitSet &clear();                                                      // Remove all elements from set
-  BitSet &invert();                                                     // Complementset
+  BitSet  &remove(  size_t i);                                          // Remove i from set
+  BitSet  &add(     size_t i);                                          // Insert i into set
+  BitSet  &remove(  size_t a, size_t b);                                // Remove interval [a;b] from set
+  BitSet  &add(     size_t a, size_t b);                                // Insert interval [a;b] into set
+  bool     contains(size_t i) const;                                    // Return if set contains i
+  intptr_t getIndex(size_t i) const;                                    // Return number of elements < i. if i not in set -1 is returned
+  size_t   getCount(size_t from, size_t to) const;                      // Return number of elements between from and to. both included.
+  size_t   select() const;                                              // Returns a random element from non empty set. throws Exception if set is empty
+  BitSet  &clear();                                                     // Remove all elements from set
+  BitSet  &invert();                                                    // Complementset
   inline size_t getCapacity() const {                                   // Return number of bits in set = maximum number of elements in set
     return m_capacity;
   }
@@ -106,8 +106,10 @@ public:
   tostream &dump(tostream &s = tcout);
   friend tostream &operator<<(tostream &s, const BitSet &rhs);
   void dump(FILE *f = stdout);
-  Iterator<size_t> getIterator();        // iterator that iterates elements of bitset in ascending  order
-  Iterator<size_t> getReverseIterator(); // iterator that iterates elements of bitset in descending order
+  Iterator<size_t> getIterator(       size_t start =  0, size_t end=-1); // Iterates elements of bitset in ascending  order,
+                                                                         // beginning from smallest element >= start
+  Iterator<size_t> getReverseIterator(size_t start = -1, size_t end= 0); // Iterates elements of bitset in descending order,
+                                                          // beginning from biggest element <= start
   friend class BitSetIterator;
   friend class BitSetReverseIterator;
 
@@ -120,34 +122,63 @@ public:
   static const char setBitsCount[256]; // Number of set bits for each bytevalue
 };
 
-class BitSetIterator : public AbstractIterator {
-private:
+class AbstractBitSetIterator : public AbstractIterator {
+protected:
   BitSet &m_s;
-  size_t  m_next;
-  size_t  m_current;
+  size_t  m_next, m_current, m_end;
   bool    m_hasNext;
-  void first();
+  inline AbstractBitSetIterator(BitSet &set) : m_s(set) {
+  }
+  inline bool hasCurrent() const {
+    return m_current < m_s.getCapacity();
+  }
+  inline void setCurrentUndefined() {
+    m_current = -1;
+  }
+  inline void remove(const TCHAR *className) {
+    if(!hasCurrent()) noCurrentElementError(className);
+    m_s.remove(m_current);
+    setCurrentUndefined();
+  }
+
 public:
-  AbstractIterator *clone();
-  BitSetIterator(BitSet &s) : m_s(s) { first(); }
-  bool hasNext() const { return m_hasNext; }
-  void *next();
-  void remove();
+  bool hasNext() const {
+    return m_hasNext;
+  }
 };
 
-class BitSetReverseIterator : public AbstractIterator {
+class BitSetIterator : public AbstractBitSetIterator {
 private:
-  BitSet &m_s;
-  size_t  m_next;
-  size_t  m_current;
-  bool    m_hasNext;
-  void first();
+  DECLARECLASSNAME;
+  void first(size_t start, size_t end);
 public:
   AbstractIterator *clone();
-  BitSetReverseIterator(BitSet &s) : m_s(s) { first(); }
-  bool hasNext() const { return m_hasNext; }
+  BitSetIterator(BitSet &set, size_t start=0, size_t end=-1)
+    : AbstractBitSetIterator(set)
+  {
+    first(start, end);
+  }
   void *next();
-  void remove();
+  void remove() {
+    AbstractBitSetIterator::remove(s_className);
+  }
+};
+
+class BitSetReverseIterator : public AbstractBitSetIterator {
+private:
+  DECLARECLASSNAME;
+  void first(size_t start, size_t end);
+public:
+  AbstractIterator *clone();
+  BitSetReverseIterator(BitSet &set, size_t start=-1, size_t end=0)
+    : AbstractBitSetIterator(set)
+  {
+    first(start, end);
+  }
+  void *next();
+  void remove() {
+    AbstractBitSetIterator::remove(s_className);
+  }
 };
 
 class CharacterFormater {
@@ -159,7 +190,6 @@ public:
   static CharacterFormater *hexEscapedAsciiFormater;
   static CharacterFormater *hexEscapedExtendedAsciiFormater;
 };
-
 
 String charBitSetToString(const BitSet &set, CharacterFormater *charFormater = CharacterFormater::stdFormater);
 
@@ -209,8 +239,12 @@ private:
     return MatrixIndex(index / m_dim.columnCount, index % m_dim.columnCount);
   }
   void checkSameDimension(const BitMatrix &m) const;
+  void checkValidRow(   const TCHAR *method, size_t r) const;
+  void checkValidColumn(const TCHAR *method, size_t c) const;
   friend class BitMatrixIterator;
-  
+  friend class BitMatrixRowIterator;
+  friend class BitMatrixColumnIterator;
+
 public:
   BitMatrix(size_t rowCount, size_t columnCount) 
     : m_dim(rowCount, columnCount)
@@ -247,9 +281,25 @@ public:
   inline const MatrixDimension &getDimension() const {
     return m_dim;
   }
-
-  BitSet getRow(   size_t r) const;
-  BitSet getColumn(size_t c) const;
+  BitMatrix &setDimension(const MatrixDimension &dim);
+  inline size_t size() const {    // Number of true elements.
+    return BitSet::size();
+  }
+  inline bool isEmpty() const {
+    return BitSet::isEmpty();
+  }
+  BitSet &getRow(   size_t r, BitSet &s) const;
+  BitSet &getColumn(size_t c, BitSet &s) const;
+  inline BitSet getRow(size_t r) const {
+    BitSet result(getColumnCount());
+    return getRow(r, result);
+  }
+  inline BitSet getColumn(size_t c) const {
+    BitSet result(getRowCount());
+    return getColumn(c, result);
+  }
+  void    setRow(   size_t r, bool v);
+  void    setColumn(size_t c, bool v);
   bool operator==(const BitMatrix &m) const;
   inline bool operator!=(const BitMatrix &m) const {
     return !(*this == m);
@@ -258,9 +308,13 @@ public:
   BitMatrix &operator|=(const BitMatrix &m);
   BitMatrix &operator^=(const BitMatrix &m);
   BitMatrix &operator-=(const BitMatrix &m);
-
+  BitMatrix operator*  (const BitMatrix &rhs) const; // like normal matrix multiplication, using bool instead of floating points
   Iterator<MatrixIndex> getIterator();
-
+  Iterator<MatrixIndex> getRowIterator(   size_t r);
+  Iterator<MatrixIndex> getColumnIterator(size_t c);
   String toString() const;
+  String getDimensionString() const {
+    return format(_T("Dimension=%s"), m_dim.toString().cstr());
+  }
 };
 
