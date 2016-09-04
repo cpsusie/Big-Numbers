@@ -7,11 +7,18 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
+void myVerify(bool b, const TCHAR *s) {
+  if (!b) {
+    Assert::IsTrue(b, s);
+  }
+}
 
 #ifdef verify
 #undef verify
 #endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
+//#define verify(expr) Assert::IsTrue(expr, _T(#expr))
+#define verify(expr) myVerify(expr, _T(#expr))
+
 
 namespace TestBitSet
 {		
@@ -57,6 +64,47 @@ namespace TestBitSet
   BitSet genRandomSet(size_t capacity, intptr_t size = -1) {
     BitSet result(10);
     return genRandomSet(result, capacity, size);
+  }
+
+  MatrixIndex getRandomIndex(const MatrixDimension &dim) {
+    return MatrixIndex(randSizet(dim.rowCount), randSizet(dim.columnCount));
+  }
+
+  BitMatrix &genRandomMatrix(BitMatrix &dst, const MatrixDimension &dim, intptr_t size) {
+    dst.clear();
+    dst.setDimension(dim);
+    const size_t capacity = dim.getElementCount();
+    if (size == -1) {
+      for (size_t i = capacity / 2; i--;) {
+        dst.set(randSizet(dim.rowCount), randSizet(dim.columnCount),true);
+      }
+    }
+    else if ((size_t)size >= capacity) {
+      dst.invert();
+    } else if ((size_t)size > capacity / 2) {
+      dst.invert();
+      for (size_t t = capacity - size; t;) {
+        const MatrixIndex i = getRandomIndex(dim);
+        if (dst.get(i)) {
+          dst.set(i, false);
+          t--;
+        }
+      }
+    } else {
+      for (size_t t = size; t;) {
+        const MatrixIndex i = getRandomIndex(dim);
+        if (!dst.get(i)) {
+          dst.set(i, true);
+          t--;
+        }
+      }
+    }
+    return dst;
+  }
+
+  BitMatrix genRandomMatrix(const MatrixDimension &dim, intptr_t size = -1) {
+    BitMatrix result(dim);
+    return genRandomMatrix(result, dim, size);
   }
 
   class BitSetTimeTester : public MeasurableFunction {
@@ -143,40 +191,59 @@ namespace TestBitSet
 
     TEST_METHOD(BitSetTestIterator)
     {
-#define ANTALITERATIONER 1000
+#define ANTALITERATIONER 20
       int s;
       try {
-        for (s = 0; s < ANTALITERATIONER; s++) {
-          BitSet a(genRandomSet(200));
-          BitSet copy(a);
-          copy.clear();
-          unsigned int count = 0;
-          for (Iterator<size_t> it = a.getIterator(); it.hasNext();) {
-            if (!copy.isEmpty()) {
-              verify(copy.contains(copy.select()));
+        for(size_t cap = 20; cap < 80; cap++) {
+          for (s = 0; s < ANTALITERATIONER; s++) {
+            BitSet a(genRandomSet(cap));
+            BitSet copy(a);
+            copy.clear();
+            unsigned int count = 0;
+            for (Iterator<size_t> it = a.getIterator(); it.hasNext();) {
+              if (!copy.isEmpty()) {
+                verify(copy.contains(copy.select()));
+              }
+              else {
+                try {
+                  size_t x = copy.select();
+                  Assert::Fail(_T("BitSet.select should throw exception when called on empty set"));
+                } catch (Exception e) {
+                  //ok
+                }
+              }
+              copy.add(it.next());
+              count++;
             }
-            else {
-              try {
-                size_t x = copy.select();
-                Assert::Fail(_T("BitSet.select should throw exception when called on empty set"));
-              } catch (Exception e) {
-                //ok
+            verify(count == copy.size());
+            verify(copy == a);
+
+            copy.clear();
+            count = 0;
+            for (Iterator<size_t> it = a.getReverseIterator(); it.hasNext();) {
+              copy.add(it.next());
+              count++;
+            }
+            verify(count == copy.size());
+            verify(copy == a);
+
+            for (int start = 0; start < cap+2; start++) {
+              for (int end = 0; end < cap; end++) {
+                BitSet am(a), tmp(a.getCapacity());
+                am.remove(start, end);
+                for (Iterator<size_t> it = a.getIterator(start, end); it.hasNext();) {
+                  tmp.add(it.next());
+                }
+                verify(a - am == tmp);
+
+                tmp.clear();
+                for (Iterator<size_t> it = a.getReverseIterator(end, start); it.hasNext();) {
+                  tmp.add(it.next());
+                }
+                verify(a - am == tmp);
               }
             }
-            copy.add(it.next());
-            count++;
           }
-          verify(count == copy.size());
-          verify(copy == a);
-
-          copy.clear();
-          count = 0;
-          for (Iterator<size_t> it = a.getReverseIterator(); it.hasNext();) {
-            copy.add(it.next());
-            count++;
-          }
-          verify(count == copy.size());
-          verify(copy == a);
         }
       } catch (Exception e) {
         Assert::Fail(format(_T("Exception:%s. s=%d"), e.what(), s).cstr());
@@ -342,14 +409,16 @@ namespace TestBitSet
 //        if (expectedIndex % 50000 == 0) {
 //          OUTPUT(_T("e:%s. index %s\r"), format1000(e).cstr(), format1000(index).cstr());
 //        }
-        if (index != expectedIndex) {
+        verify(index == expectedIndex);
+/*
+        if(index != expectedIndex) {
           OUTPUT(_T("e:%s. Expected:%s, got %s")
                 , format1000(e).cstr()
                 , format1000(expectedIndex).cstr()
                 , format1000(index).cstr());
-          pause();
           intptr_t index = loaded.getIndex(e);
         }
+*/
       }
       usedTime = (getThreadTime() - startTime) / 1000000;
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
@@ -400,6 +469,66 @@ namespace TestBitSet
       }
       double bitSetTime = getThreadTime() - startTime;
       OUTPUT(_T("BitSetTime     :%.3lf sec"), bitSetTime / 1000000);
+    }
+
+    TEST_METHOD(BitSetMatrix) {
+      MatrixDimension dim;
+      for (dim.rowCount = 1; dim.rowCount < 35; dim.rowCount++) {
+        for (dim.columnCount = 1; dim.columnCount < 35; dim.columnCount++) {
+          const BitMatrix m = genRandomMatrix(dim, -1);
+
+          verify(m.getDimension() == dim);
+
+          BitMatrix copy(m);
+          verify(copy == m);
+
+          copy.clear();
+          verify(copy.isEmpty());
+
+          copy = m;
+          verify(copy == m);
+
+          MatrixDimension dim1(dim.rowCount+1, dim.columnCount+1);
+          copy.setDimension(dim1);
+          verify(copy.getDimension() == dim1);
+          verify(copy.size() == m.size());
+          for (Iterator<MatrixIndex> it = ((BitMatrix&)m).getIterator(); it.hasNext();) {
+            const MatrixIndex i = it.next();
+            verify(copy.get(i));
+          }
+
+          size_t totalCount = 0;
+          for(size_t r = 0; r < copy.getRowCount(); r++) {
+            BitSet rb = copy.getRow(r);
+            int rowCount = 0;
+            for(Iterator<MatrixIndex> it = copy.getRowIterator(r); it.hasNext();) {
+              const MatrixIndex mi = it.next();
+              rowCount++;
+              verify(copy.get(mi));
+              verify(rb.contains(mi.c));
+            }
+            verify(rowCount == rb.size());
+            totalCount += rowCount;
+          }
+          verify(totalCount == copy.size());
+
+          totalCount = 0;
+          for(size_t c = 0; c < copy.getColumnCount(); c++) {
+            BitSet cb = copy.getColumn(c);
+            int colCount = 0;
+            for(Iterator<MatrixIndex> it = copy.getColumnIterator(c); it.hasNext();) {
+              const MatrixIndex mi = it.next();
+              colCount++;
+              verify(copy.get(mi));
+              verify(cb.contains(mi.r));
+            }
+            verify(colCount == cb.size());
+            totalCount += colCount;
+          }
+          verify(totalCount == copy.size());
+
+        }
+      }
     }
   };
 }
