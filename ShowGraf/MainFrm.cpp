@@ -100,6 +100,8 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_bAutoMenuEnable = FALSE;
   initMenuItems();
+  theApp.m_device.attach(*this);
+
   return 0;
 }
 

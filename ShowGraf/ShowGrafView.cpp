@@ -53,8 +53,8 @@ void CShowGrafView::init() {
 //  redirectDebugLog();
   m_coordinateSystem.substituteControl(this, IDC_SYSTEMPANEL);
 
-  m_backgroundColor  = WHITE;
-  m_axisColor        = BLACK;
+  m_backgroundColor  = RGB(255,255,255);
+  m_axisColor        = RGB(0,0,0);
   setGraphStyle(GSCURVE);
   m_XAxisType        = AXIS_LINEAR;
   m_xReader          = &DataReader::LinearDataReader;

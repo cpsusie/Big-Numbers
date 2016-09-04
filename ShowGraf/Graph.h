@@ -27,6 +27,8 @@ protected:
   }
 
 public:
+  Graph(const Graph &src);            // Not implemented
+  Graph &operator=(const Graph &src); // Not implemented
   virtual ~Graph() {
     delete m_param;
   }
@@ -39,21 +41,21 @@ public:
   virtual const DataRange &getDataRange() const = 0;
   virtual GraphType getType() const = 0;
   virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
-  double  distance(const Point2DP &p) const {;
+  inline double  distance(const Point2DP &p) const {;
     return distance(p,RectangleTransformation::id);
   }
   virtual double  getSmallestPositiveX() const = 0;
   virtual double  getSmallestPositiveY() const = 0;
-  void setStyle(GraphStyle style) {
+  inline void setStyle(GraphStyle style) {
     m_param->m_style = style;
   }
   virtual void setRollSize(int size) {
   }
   virtual bool isPointGraph() const = 0;
-  void setVisible(bool visible) {
+  inline void setVisible(bool visible) {
     m_visible = visible;
   }
-  bool isVisible() const {
+  inline bool isVisible() const {
     return m_visible;
   }
 };
@@ -71,20 +73,20 @@ protected:
 public:
   void paint(Viewport2D &vp);
 
-  bool isEmpty() const {
-    return m_pointArray.size() == 0;
+  inline bool isEmpty() const {
+    return m_pointArray.isEmpty();
   }
   
   void addPoint(const Point2D &p);
   void clear();
 
-  const DataRange &getDataRange() const {
+  inline const DataRange &getDataRange() const {
     return m_range;
   }
   
   const Point2DArray &getProcessedData() const;
   
-  const Point2DArray &getDataPoints() const {
+  inline const Point2DArray &getDataPoints() const {
     return m_pointArray;
   }
   
@@ -92,7 +94,7 @@ public:
   double  distance(const CPoint &p, const RectangleTransformation &tr) const;
   double  getSmallestPositiveX() const;
   double  getSmallestPositiveY() const;
-  bool    isPointGraph() const {
+  inline bool isPointGraph() const {
     return true;
   }
 };

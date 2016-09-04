@@ -11,6 +11,7 @@ public:
     String getRecentFile(int index);
     public:
     virtual BOOL InitInstance();
+    PixRectDevice m_device;
 
     afx_msg void OnAppAbout();
     DECLARE_MESSAGE_MAP()
