@@ -2,11 +2,11 @@
 #include <String.h>
 #include <BitSet.h>
 
-#ifdef ISBIT64
-#define FORMATUINT(v) format(_T("%I64u"), v)
-#else
+#if _BITSET_ATOMSIZE == 32
 #define FORMATUINT(v) format(_T("%u"), v)
-#endif
+#elif _BITSET_ATOMSIZE == 64
+#define FORMATUINT(v) format(_T("%I64u"), v)
+#endif // _BITSET_ATOMSIZE == 64
 
 #define FLUSHRANGE()                                                                \
 { if(delim) result += delim; else delim = _T(",");                                  \

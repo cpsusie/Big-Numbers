@@ -4,21 +4,17 @@
 #include "Iterator.h"
 #include "MatrixDimension.h"
 
-#define _BITSET_ATOMSIZE 32
+#ifdef IS32BIT
+#define BITSET_ASM_OPTIMIZED
+#endif
 
 class Packer;
 
 class BitSet {
-private:
-  size_t selectRandomNonEmptyAtom() const;
 public:
-#if _BITSET_ATOMSIZE == 32
-  typedef unsigned long  Atom;
-#elif _BITSET_ATOMSIZE == 16
-  typedef unsigned short Atom;
-#else
-#error "set::_BITSET_ATOMSIZE must be 16 or 32"
-#endif
+  typedef unsigned long Atom;
+
+#define _BITSET_ATOMSIZE 32
 
   friend class BitSetIndex;
   friend class BitSetFileIndex;
@@ -30,6 +26,9 @@ protected:
   Atom   *m_p;
   size_t  m_capacity;
   static size_t getAtomCount(size_t capacity);
+  String indexOutOfRangeString(size_t index) const;
+  void throwIndexOutOfRange(const TCHAR *method, size_t index, const TCHAR *format,...) const;
+
 public:
   explicit BitSet(size_t capacity); // can store integers from [0..capacity-1]
   BitSet(const BitSet &set);
@@ -255,6 +254,11 @@ public:
     : m_dim(dim)
     , BitSet(dim.getElementCount())
   {
+  }
+  BitMatrix &operator=(const BitMatrix &m) {
+    BitSet::operator=(m);
+    m_dim = m.m_dim;
+    return *this;
   }
   void set(size_t r, size_t c, bool v);
   inline void set(const MatrixIndex &i, bool v) {

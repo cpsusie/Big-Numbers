@@ -12,4 +12,3 @@ void BitSet::load(ByteInputStream &s) {
   setCapacity(capacity);
   s.getBytesForced((BYTE*)m_p, sizeof(Atom) * getAtomCount(capacity));
 }
-

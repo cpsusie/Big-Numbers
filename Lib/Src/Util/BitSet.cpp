@@ -11,9 +11,25 @@
 #define ATOM(p,i)       p[ATOMINDEX(i)]
 #define ATOMBIT(i)      ((BitSet::Atom)1<< ((i)%BITSINATOM))
 
-#ifdef IS32BIT
-#define ASM_OPTIMIZED
-#endif
+#ifdef IS64BIT
+#ifdef BITSET_ASM_OPTIMIZED
+extern "C" {
+  bool bitSetIsEmpty(const void *p, size_t atomCount);
+};
+#endif // BITSET_ASM_OPTIMIZED
+#endif // IS64BIT
+
+String BitSet::indexOutOfRangeString(size_t index) const {
+  return format(_T("Index %s out of range. Capacity=%s"), format1000(index).cstr(), format1000(m_capacity).cstr());
+}
+
+void BitSet::throwIndexOutOfRange(const TCHAR *method, size_t index, const TCHAR *format, ...) const {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format, argptr);
+  va_end(argptr);
+  throwInvalidArgumentException(method, _T("%s:%s"), msg.cstr(), indexOutOfRangeString(index).cstr());
+}
 
 BitSet::Atom BitSet::mask[_BITSET_ATOMSIZE+1]; // Array of atoms with number of 1-bits = index, index = [0;_BITSET_ATOMSIZE]
 
@@ -26,8 +42,14 @@ public:
 };
 
 InitBitSetMask::InitBitSetMask() {
+  if(_BITSET_ATOMSIZE != BITSINATOM) {
+    debugLog(_T("_BITSET_ATOMSIZE (=%d) != BITSINATOM (=%d) !\n")
+            ,_BITSET_ATOMSIZE
+            ,BITSINATOM);
+    throwException(_T("_BITSET_ATOMSIZE != BITSINATOM"));
+  }
   BitSet::mask[0] = 0;
-  for(int i = 1; i <= _BITSET_ATOMSIZE; i++) {
+  for(int i = 1; i <= BITSINATOM; i++) {
     BitSet::mask[i] = ATOMBIT(i-1) | BitSet::mask[i-1];
   }
 
@@ -122,7 +144,7 @@ BitSet &BitSet::clear() {
 
 BitSet &BitSet::remove(size_t i) {
   if(i >= m_capacity) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwIndexOutOfRange(__TFUNCTION__, i, _T(""));
   }
   ATOM(m_p,i) &= ~ATOMBIT(i);
   return *this;
@@ -130,7 +152,7 @@ BitSet &BitSet::remove(size_t i) {
 
 BitSet &BitSet::add(size_t i) {
   if(i >= m_capacity) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("Index %lu out of range. Capacity=%lu"), i, m_capacity);
+    throwIndexOutOfRange(__TFUNCTION__, i, _T(""));
   }
   ATOM(m_p,i) |= ATOMBIT(i);
   return *this;
@@ -138,7 +160,7 @@ BitSet &BitSet::add(size_t i) {
 
 BitSet &BitSet::remove(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwIndexOutOfRange(__TFUNCTION__, b, _T("(%s,%s)"), format1000(a).cstr(), format1000(b).cstr());
   }
   if(a > b) {
     return *this;
@@ -166,7 +188,7 @@ BitSet &BitSet::remove(size_t a, size_t b) {
 
 BitSet &BitSet::add(size_t a, size_t b) {
   if(b >= m_capacity) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("(%lu,%lu):Index %lu out of range. Capacity=%lu"), a, b, b, m_capacity);
+    throwIndexOutOfRange(__TFUNCTION__, b, _T("(%s,%s)"), format1000(a).cstr(), format1000(b).cstr());
   }
   if(a > b) {
     return *this;
@@ -201,35 +223,12 @@ bool BitSet::contains(size_t i) const {
 }
 
 size_t BitSet::select() const {
-  const size_t i = selectRandomNonEmptyAtom();
-  Atom p = m_p[i];
-  unsigned char bits[BITSINATOM];
-  Atom mask;
-  int count = 0;
-  for (int j = 0; p; j++) {
-    if(mask = p & ATOMBIT(j)) {
-      bits[count++] = j;
-      p &= ~mask;
-    }
+  const size_t i = randSizet(m_capacity);
+  for(Iterator<size_t> it = ((BitSet*)this)->getIterator(i); it.hasNext();) {
+    return it.next();
   }
-  return i * BITSINATOM + bits[randInt() % count];
-}
-
-size_t BitSet::selectRandomNonEmptyAtom() const {
-  const size_t a = ATOMCOUNT(m_capacity);
-  if(randInt() % 2) {
-    for(size_t c = a, i = randSizet() % a; c--; i = (i+1) % a) {
-      if(m_p[i]) {
-        return i;
-      }
-    }
-  } else {
-    for(size_t c = a, i = randSizet() % a; c--;) {
-      if(m_p[i]) {
-        return i;
-      }
-      if(i-- == 0) i = a-1;
-    }
+  for (Iterator<size_t> it = ((BitSet*)this)->getReverseIterator(i); it.hasNext();) {
+    return it.next();
   }
   throwException(_T("Cannot select from empty BitSet"));
   return -1;
@@ -354,63 +353,46 @@ size_t BitSet::getCount(size_t from, size_t to) const {
 }
 
 bool BitSet::isEmpty() const {
-  Atom *p = m_p;
-  size_t i = ATOMCOUNT(m_capacity);
-#ifndef ASM_OPTIMIZED
-  for(; i--;) {
-    if(*(p++)) {
-      return false;
-    }
+  const Atom *p         = m_p;
+  size_t      atomCount = ATOMCOUNT(m_capacity);
+
+#ifndef BITSET_ASM_OPTIMIZED
+  for(; atomCount--;) {
+    if(*(p++)) return false;
   }
   return true;
 
-#else
-#if _BITSET_ATOMSIZE == 32
+#else // BITSET_ASM_OPTIMIZED
+#ifdef IS32BIT
   __asm {
     pushf
-    mov ecx, i
+    mov ecx, atomCount
     mov edi, p
     xor eax, eax
     cld
     repe scasd
     jnz nonZeroFound
-    mov i, 1
+    mov atomCount, 1
     jmp end
 nonZeroFound:
-    mov i, 0
+    mov atomCount, 0
 end:
     popf
   }
-#elif _BITSET_ATOMSIZE == 16
-  __asm {
-    pushf
-    mov ecx, i
-    mov edi, p
-    xor eax, eax
-    cld
-    repe scasw
-    jnz nonZeroFound
-    mov i, 1
-    jmp end
-nonZeroFound:
-    mov i, 0
-end:
-    popf
-  }
-#else  // ASM_OPTIMIZED
-#error "_BITSET_ATOMSIZE must be 16 or 32"
-#endif // _BITSET_ATOMSIZE
+  return atomCount != 0;
 
-  return i != 0;
+#else // IS64BIT
+  return bitSetIsEmpty(p, atomCount);
+#endif // IS64BIT
 
-#endif // ASM_OPTIMIZED
+#endif // BITSET_ASM_OPTIMIZED
 
 }
 
 BitSet &BitSet::operator+=(const BitSet &rhs) { // this = this union rhs
   const size_t ratomCount = ATOMCOUNT(rhs.m_capacity);
 
-  if(ATOMCOUNT(m_capacity) < ratomCount) {
+  if(m_capacity < rhs.m_capacity) {
     setCapacity(rhs.m_capacity);
   }
   Atom *p        = m_p;
@@ -542,16 +524,12 @@ bool operator>(const BitSet &lts, const BitSet &rhs) {
 }
 
 unsigned long BitSet::hashCode() const {
-#ifdef IS64BIT
-  unsigned long v = uint64Hash(m_capacity);
-#else
-  unsigned long v = m_capacity;
-#endif
+  size_t v = m_capacity;
   const Atom *p = m_p;
   for(size_t i = ATOMCOUNT(m_capacity); i--;) {
     v ^= *(p++);
   }
-  return v;
+  return sizetHash(v);
 }
 
 bool operator==(const BitSet &lts, const BitSet &rhs) {
@@ -590,13 +568,19 @@ tostream& operator<<(tostream &s, const BitSet &rhs) {
 }
 
 String BitSet::toString() const {
+#if _BITSET_ATOMSIZE == 32
+  const TCHAR *form = _T("%lu");
+#elif _BITSET_ATOMSIZE == 64
+  const TCHAR *form = _T("%llu");
+#endif // IS64BIT
+
   String result = "(";
   Iterator<size_t> it = ((BitSet*)this)->getIterator();
   if(it.hasNext()) {
-    result += format(_T("%lu"), it.next());
+    result += format(form, it.next());
     while(it.hasNext()) {
       result += ',';
-      result += format(_T("%lu"), it.next());
+      result += format(form, it.next());
     }
   }
   result += ")";

@@ -43,7 +43,7 @@ intptr_t BitSetFileIndex::getIndex(size_t i) const {
   const size_t bitInterval = (rangeIndex < 0) ? 0 : (rangeIndex+1);
   const size_t startBit    =  bitInterval ? m_rangeTable[rangeIndex] : 0;
   if(!m_loadedIntervals->contains(bitInterval)) {
-    const size_t lastBit     =  (bitInterval < (unsigned int)m_rangeTable.size()) ? m_rangeTable[bitInterval] : (m_bitSet->getCapacity()-1);
+    const size_t lastBit     =  (bitInterval < m_rangeTable.size()) ? m_rangeTable[bitInterval] : (m_bitSet->getCapacity()-1);
     const size_t startAtom   = m_bitSet->getAtomIndex(startBit);
     const size_t atomsToRead = m_bitSet->getAtomIndex(lastBit) - startAtom + 1;
     m_f.seek(m_bitsStartOffset + startAtom * BYTESINATOM);
@@ -54,6 +54,5 @@ intptr_t BitSetFileIndex::getIndex(size_t i) const {
   if(!m_bitSet->contains(i)) {
     return -1;
   }
-
   return (bitInterval << m_shift) + m_bitSet->getCount(startBit, i) - 1;
 }

@@ -44,6 +44,9 @@
     <Filter Include="Source Files\Console">
       <UniqueIdentifier>{3837b879-f322-433a-b530-2025e8addf54}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Asm Files">
+      <UniqueIdentifier>{876a6a40-3ea2-48c5-8f99-ef68571b010f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -915,5 +918,10 @@
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="BitSetx64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

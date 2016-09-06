@@ -37,8 +37,7 @@ namespace TestBitSet
       for (size_t i = capacity / 2; i--;) {
         dst.add(randSizet(capacity));
       }
-    }
-    else if ((size_t)size >= capacity) {
+    } else if ((size_t)size >= capacity) {
       dst.invert();
     } else if ((size_t)size > capacity / 2) {
       dst.invert();
@@ -78,8 +77,7 @@ namespace TestBitSet
       for (size_t i = capacity / 2; i--;) {
         dst.set(randSizet(dim.rowCount), randSizet(dim.columnCount),true);
       }
-    }
-    else if ((size_t)size >= capacity) {
+    } else if ((size_t)size >= capacity) {
       dst.invert();
     } else if ((size_t)size > capacity / 2) {
       dst.invert();
@@ -203,8 +201,7 @@ namespace TestBitSet
             for (Iterator<size_t> it = a.getIterator(); it.hasNext();) {
               if (!copy.isEmpty()) {
                 verify(copy.contains(copy.select()));
-              }
-              else {
+              } else {
                 try {
                   size_t x = copy.select();
                   Assert::Fail(_T("BitSet.select should throw exception when called on empty set"));
@@ -217,7 +214,6 @@ namespace TestBitSet
             }
             verify(count == copy.size());
             verify(copy == a);
-
             copy.clear();
             count = 0;
             for (Iterator<size_t> it = a.getReverseIterator(); it.hasNext();) {
@@ -226,9 +222,8 @@ namespace TestBitSet
             }
             verify(count == copy.size());
             verify(copy == a);
-
-            for (int start = 0; start < cap+2; start++) {
-              for (int end = 0; end < cap; end++) {
+            for (size_t start = 0; start < cap+2; start++) {
+              for (size_t end = 0; end < cap; end++) {
                 BitSet am(a), tmp(a.getCapacity());
                 am.remove(start, end);
                 for (Iterator<size_t> it = a.getIterator(start, end); it.hasNext();) {
@@ -348,6 +343,8 @@ namespace TestBitSet
 //        if (expectedIndex % 50000 == 0) {
 //          OUTPUT(_T("e:%s. index %s\r"), format1000(e).cstr(), format1000(index).cstr());
 //        }
+        verify(index == expectedIndex);
+/*
         if (index != expectedIndex) {
           OUTPUT(_T("e:%s. Expected:%s, got %s")
                 ,format1000(e).cstr()
@@ -356,6 +353,7 @@ namespace TestBitSet
           pause();
           intptr_t index = bi.getIndex(e);
         }
+*/
       }
       usedTime = (getThreadTime() - startTime) / 1000000;
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
@@ -526,7 +524,6 @@ namespace TestBitSet
             totalCount += colCount;
           }
           verify(totalCount == copy.size());
-
         }
       }
     }

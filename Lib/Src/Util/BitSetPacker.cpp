@@ -24,22 +24,22 @@ Packer &operator<<(Packer &p, const BitSet &s) {
     p.addElement(Packer::E_VOID, buffer, byteCount);
     delete[] buffer;
   }
-#else
-  const unsigned short hs = 0x1234;
-  if(hs == htons(hs)) {
+#elif _BITSET_ATOMSIZE == 64
+  const unsigned __int64 hll = 0x123456789abcdef;
+  if(hll == htonll(hll)) {
     return p.addElement(Packer::E_VOID, s.m_p, byteCount);
   } else {
     BitSet::Atom *buffer = new BitSet::Atom[atomCount];
     const BitSet::Atom *src = s.m_p;
     BitSet::Atom *dst = buffer;
 
-    for(int c = atomCount; c--;) {
-      *(dst++) = htons(*(src++));
+    for(size_t c = atomCount; c--;) {
+      *(dst++) = htonll(*(src++));
     }
     p.addElement(Packer::E_VOID, buffer, byteCount);
     delete[] buffer;
   }
-#endif
+#endif // _BITSET_ATOMSIZE == 64
 
   return p;
 }
@@ -67,9 +67,9 @@ Packer &operator>>(Packer &p, BitSet &s) {
     }
     delete[] buffer;
   }
-#else
-  const unsigned long hs = 0x1234;
-  if(hs == htons(hs)) {
+#elif _BITSET_ATOMSIZE == 64
+  const unsigned __int64 hll = 0x123456789abcdef;
+  if(hll == htonll(hll)) {
     p.getElement(Packer::E_VOID, s.m_p, byteCount);
   } else {
     BitSet::Atom *buffer = new BitSet::Atom[atomCount];
@@ -78,12 +78,12 @@ Packer &operator>>(Packer &p, BitSet &s) {
     const BitSet::Atom *src = buffer;
     BitSet::Atom *dst = s.m_p;
 
-    for(int c = atomCount; c--;) {
-      *(dst++) = ntohs(*(src++));
+    for(size_t c = atomCount; c--;) {
+      *(dst++) = ntohll(*(src++));
     }
     delete[] buffer;
   }
-#endif
+#endif // _BITSET_ATOMSIZE == 64
 
   return p;
 }
