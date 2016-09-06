@@ -235,14 +235,14 @@ int128rem ENDP
 
 ;void int128neg(_int128 &x); set x = -x;
 int128neg PROC
-mov         rax, qword ptr[rcx]
-neg         rax
-mov         qword ptr[rcx], rax
-mov         rax, qword ptr[rcx + 8]
-adc         rax, 0
-neg         rax
-mov         qword ptr[rcx + 8], rax
-ret
+    mov         rax, qword ptr[rcx]
+    neg         rax
+    mov         qword ptr[rcx], rax
+    mov         rax, qword ptr[rcx + 8]
+    adc         rax, 0
+    neg         rax
+    mov         qword ptr[rcx + 8], rax
+    ret
 int128neg ENDP
 
 ;void int128inc(_int128 &x); set x = x + 1;
