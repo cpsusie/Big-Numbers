@@ -256,9 +256,9 @@ namespace TestBitSet
 
     TEST_METHOD(BitSetTestSize) {
       for (int test = 0; test < 40; test++) {
-        BitSet s(genRandomSet(test + 300));
+        const BitSet s(genRandomSet(test + 300));
         const size_t oldSize = s.oldsize();
-        const size_t size = s.size();
+        const size_t size    = s.size();
         verify(oldSize == size);
       }
     }
@@ -290,12 +290,20 @@ namespace TestBitSet
       }
     }
 
-    static size_t getCount(const BitSet &s, size_t from, size_t to) {
+    static size_t getCount1(const BitSet &s, size_t from, size_t to) {
       size_t count = 0;
       for (size_t i = from; i <= to; i++) {
         if (s.contains(i)) {
           count++;
         }
+      }
+      return count;
+    }
+
+    static size_t getCount2(const BitSet &s, size_t from, size_t to) {
+      size_t count = 0;
+      for(Iterator<size_t> it = ((BitSet&)s).getIterator(from, to); it.hasNext(); it.next()) {
+        count++;
       }
       return count;
     }
@@ -306,8 +314,9 @@ namespace TestBitSet
         //    OUTPUT(_T("set:%s"), s.toString().cstr());
         for (size_t from = 0; from < 300; from++) {
           for (size_t to = from; to < 300; to++) {
-            const size_t expected = getCount(s, from, to);
-            const size_t count    = s.getCount(from, to);
+            const size_t expected1 = getCount1(s, from, to);
+            const size_t expected2 = getCount2(s, from, to);
+            const size_t count     = s.getCount(from, to);
             /*
             if(count != expected) {
               OUTPUT(_T("(from,to):(%s,%s). expected:%s, got:%s")
@@ -318,7 +327,8 @@ namespace TestBitSet
               continue;
             }
             */
-            verify(count == expected);
+            verify(count == expected1);
+            verify(count == expected2);
           }
         }
       }
