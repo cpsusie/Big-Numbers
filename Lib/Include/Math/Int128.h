@@ -740,22 +740,22 @@ inline _int128  operator+(const _int128  &lft, __int64 rhs) {
 inline _int128  operator+(const _int128  &lft, unsigned __int64 rhs) {
   return lft + (_uint128)rhs;
 }
-inline _int128  operator+(const _int128  &lft, long  rhs) {
+inline _int128  operator+(const _int128  &lft, long rhs) {
   return lft + (_int128)rhs;
 }
-inline _int128  operator+(const _int128  &lft, unsigned   long  rhs) {
+inline _int128  operator+(const _int128  &lft, unsigned long rhs) {
   return lft + (_uint128)rhs;
 }
-inline _int128  operator+(const _int128  &lft, int   rhs) {
+inline _int128  operator+(const _int128  &lft, int rhs) {
   return lft + (_int128)rhs;
 }
-inline _int128  operator+(const _int128  &lft, unsigned   int   rhs) {
+inline _int128  operator+(const _int128  &lft, unsigned int rhs) {
   return lft + (_uint128)rhs;
 }
 inline _int128  operator+(const _int128  &lft, short rhs) {
   return lft + (_int128)rhs;
 }
-inline _int128  operator+(const _int128  &lft, unsigned   short rhs) {
+inline _int128  operator+(const _int128  &lft, unsigned short rhs) {
   return lft + (_uint128)rhs;
 }
 
@@ -765,22 +765,22 @@ inline _uint128 operator+(const _uint128 &lft, __int64 rhs) {
 inline _uint128 operator+(const _uint128 &lft, unsigned __int64 rhs) {
   return lft + (_uint128)rhs;
 }
-inline _uint128 operator+(const _uint128 &lft, long  rhs) {
+inline _uint128 operator+(const _uint128 &lft, long rhs) {
   return lft + (_int128)rhs;
 }
-inline _uint128 operator+(const _uint128 &lft, unsigned   long  rhs) {
+inline _uint128 operator+(const _uint128 &lft, unsigned long rhs) {
   return lft + (_uint128)rhs;
 }
-inline _uint128 operator+(const _uint128 &lft, int   rhs) {
+inline _uint128 operator+(const _uint128 &lft, int rhs) {
   return lft + (_int128)rhs;
 }
-inline _uint128 operator+(const _uint128 &lft, unsigned   int   rhs) {
+inline _uint128 operator+(const _uint128 &lft, unsigned int rhs) {
   return lft + (_uint128)rhs;
 }
 inline _uint128 operator+(const _uint128 &lft, short rhs) {
   return lft + (_int128)rhs;
 }
-inline _uint128 operator+(const _uint128 &lft, unsigned   short rhs) {
+inline _uint128 operator+(const _uint128 &lft, unsigned short rhs) {
   return lft + (_uint128)rhs;
 }
 
@@ -1148,7 +1148,6 @@ inline _uint128 operator^(const _uint128 &lft, unsigned short rhs) {
   return lft ^ (_uint128)rhs;
 }
 
-
 // Compare operators where second argument is built in integral type
 // operator== for built in integral types as second argument
 inline bool operator==(const _int128 &lft, __int64 rhs) {
@@ -1409,6 +1408,7 @@ inline bool operator<(const _uint128 &lft, unsigned short rhs) {
   return lft < _uint128(rhs);
 }
 
+
 // operator<= for built in integral types as second argument
 inline bool operator<=(const _int128 &lft, __int64 rhs) {
   return lft <= _int128(rhs);
@@ -1474,16 +1474,16 @@ inline _int128  &operator+=(_int128  &lft, long rhs) {
 inline _int128  &operator+=(_int128  &lft, unsigned long rhs) {
   return lft += (_uint128)rhs;
 }
-inline _int128  &operator+=(_int128  &lft, int   rhs) {
+inline _int128  &operator+=(_int128  &lft, int rhs) {
   return lft += (_int128)rhs;
 }
-inline _int128  &operator+=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator+=(_int128  &lft, unsigned int rhs) {
   return lft += (_uint128)rhs;
 }
 inline _int128  &operator+=(_int128  &lft, short rhs) {
   return lft += (_int128)rhs;
 }
-inline _int128  &operator+=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator+=(_int128  &lft, unsigned short rhs) {
   return lft += (_uint128)rhs;
 }
 
@@ -1493,24 +1493,25 @@ inline _uint128 &operator+=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator+=(_uint128 &lft, unsigned __int64 rhs) {
   return lft += (_uint128)rhs;
 }
-inline _uint128 &operator+=(_uint128 &lft, long   rhs) {
+inline _uint128 &operator+=(_uint128 &lft, long rhs) {
   return lft += (_int128)rhs;
 }
 inline _uint128 &operator+=(_uint128 &lft, unsigned long rhs) {
   return lft += (_uint128)rhs;
 }
-inline _uint128 &operator+=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator+=(_uint128 &lft, int rhs) {
   return lft += (_int128)rhs;
 }
-inline _uint128 &operator+=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator+=(_uint128 &lft, unsigned int rhs) {
   return lft += (_uint128)rhs;
 }
 inline _uint128 &operator+=(_uint128 &lft, short rhs) {
   return lft += (_int128)rhs;
 }
-inline _uint128 &operator+=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator+=(_uint128 &lft, unsigned short rhs) {
   return lft += (_uint128)rhs;
 }
+
 
 // operator-= for built in integral types as second argument
 inline _int128  &operator-=(_int128  &lft, __int64 rhs) {
@@ -1519,22 +1520,22 @@ inline _int128  &operator-=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator-=(_int128  &lft, unsigned __int64 rhs) {
   return lft -= (_uint128)rhs;
 }
-inline _int128  &operator-=(_int128  &lft, long  rhs) {
+inline _int128  &operator-=(_int128  &lft, long rhs) {
   return lft -= (_int128)rhs;
 }
-inline _int128  &operator-=(_int128  &lft, unsigned   long  rhs) {
+inline _int128  &operator-=(_int128  &lft, unsigned long rhs) {
   return lft -= (_uint128)rhs;
 }
-inline _int128  &operator-=(_int128  &lft, int   rhs) {
+inline _int128  &operator-=(_int128  &lft, int rhs) {
   return lft -= (_int128)rhs;
 }
-inline _int128  &operator-=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator-=(_int128  &lft, unsigned int rhs) {
   return lft -= (_uint128)rhs;
 }
 inline _int128  &operator-=(_int128  &lft, short rhs) {
   return lft -= (_int128)rhs;
 }
-inline _int128  &operator-=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator-=(_int128  &lft, unsigned short rhs) {
   return lft -= (_uint128)rhs;
 }
 
@@ -1544,22 +1545,22 @@ inline _uint128 &operator-=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator-=(_uint128 &lft, unsigned __int64 rhs) {
   return lft -= (_uint128)rhs;
 }
-inline _uint128 &operator-=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator-=(_uint128 &lft, long rhs) {
   return lft -= (_int128)rhs;
 }
-inline _uint128 &operator-=(_uint128 &lft, unsigned   long  rhs) {
+inline _uint128 &operator-=(_uint128 &lft, unsigned long rhs) {
   return lft -= (_uint128)rhs;
 }
-inline _uint128 &operator-=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator-=(_uint128 &lft, int rhs) {
   return lft -= (_int128)rhs;
 }
-inline _uint128 &operator-=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator-=(_uint128 &lft, unsigned int rhs) {
   return lft -= (_uint128)rhs;
 }
 inline _uint128 &operator-=(_uint128 &lft, short rhs) {
   return lft -= (_int128)rhs;
 }
-inline _uint128 &operator-=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator-=(_uint128 &lft, unsigned short rhs) {
   return lft -= (_uint128)rhs;
 }
 
@@ -1571,22 +1572,22 @@ inline _int128  &operator*=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator*=(_int128  &lft, unsigned __int64 rhs) {
   return lft *= (_uint128)rhs;
 }
-inline _int128  &operator*=(_int128  &lft, long  rhs) {
+inline _int128  &operator*=(_int128  &lft, long rhs) {
   return lft *= (_int128)rhs;
 }
-inline _int128  &operator*=(_int128  &lft, unsigned   long  rhs) {
+inline _int128  &operator*=(_int128  &lft, unsigned long rhs) {
   return lft *= (_uint128)rhs;
 }
-inline _int128  &operator*=(_int128  &lft, int   rhs) {
+inline _int128  &operator*=(_int128  &lft, int rhs) {
   return lft *= (_int128)rhs;
 }
-inline _int128  &operator*=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator*=(_int128  &lft, unsigned int rhs) {
   return lft *= (_uint128)rhs;
 }
 inline _int128  &operator*=(_int128  &lft, short rhs) {
   return lft *= (_int128)rhs;
 }
-inline _int128  &operator*=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator*=(_int128  &lft, unsigned short rhs) {
   return lft *= (_uint128)rhs;
 }
 
@@ -1596,22 +1597,22 @@ inline _uint128 &operator*=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator*=(_uint128 &lft, unsigned __int64 rhs) {
   return lft *= (_uint128)rhs;
 }
-inline _uint128 &operator*=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator*=(_uint128 &lft, long rhs) {
   return lft *= (_int128)rhs;
 }
-inline _uint128 &operator*=(_uint128 &lft, unsigned   long  rhs) {
+inline _uint128 &operator*=(_uint128 &lft, unsigned long rhs) {
   return lft *= (_uint128)rhs;
 }
-inline _uint128 &operator*=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator*=(_uint128 &lft, int rhs) {
   return lft *= (_int128)rhs;
 }
-inline _uint128 &operator*=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator*=(_uint128 &lft, unsigned int rhs) {
   return lft *= (_uint128)rhs;
 }
 inline _uint128 &operator*=(_uint128 &lft, short rhs) {
   return lft *= (_int128)rhs;
 }
-inline _uint128 &operator*=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator*=(_uint128 &lft, unsigned short rhs) {
   return lft *= (_uint128)rhs;
 }
 
@@ -1623,22 +1624,22 @@ inline _int128  &operator/=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator/=(_int128  &lft, unsigned __int64 rhs) {
   return lft /= (_uint128)rhs;
 }
-inline _int128  &operator/=(_int128  &lft, long  rhs) {
+inline _int128  &operator/=(_int128  &lft, long rhs) {
   return lft /= (_int128)rhs;
 }
-inline _int128  &operator/=(_int128  &lft, unsigned long  rhs) {
+inline _int128  &operator/=(_int128  &lft, unsigned long rhs) {
   return lft /= (_uint128)rhs;
 }
-inline _int128  &operator/=(_int128  &lft, int   rhs) {
+inline _int128  &operator/=(_int128  &lft, int rhs) {
   return lft /= (_int128)rhs;
 }
-inline _int128  &operator/=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator/=(_int128  &lft, unsigned int rhs) {
   return lft /= (_uint128)rhs;
 }
 inline _int128  &operator/=(_int128  &lft, short rhs) {
   return lft /= (_int128)rhs;
 }
-inline _int128  &operator/=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator/=(_int128  &lft, unsigned short rhs) {
   return lft /= (_uint128)rhs;
 }
 
@@ -1648,24 +1649,25 @@ inline _uint128 &operator/=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator/=(_uint128 &lft, unsigned __int64 rhs) {
   return lft /= (_uint128)rhs;
 }
-inline _uint128 &operator/=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator/=(_uint128 &lft, long rhs) {
   return lft /= (_int128)rhs;
 }
 inline _uint128 &operator/=(_uint128 &lft, unsigned long rhs) {
   return lft /= (_uint128)rhs;
 }
-inline _uint128 &operator/=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator/=(_uint128 &lft, int rhs) {
   return lft /= (_int128)rhs;
 }
-inline _uint128 &operator/=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator/=(_uint128 &lft, unsigned int rhs) {
   return lft /= (_uint128)rhs;
 }
 inline _uint128 &operator/=(_uint128 &lft, short rhs) {
   return lft /= (_int128)rhs;
 }
-inline _uint128 &operator/=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator/=(_uint128 &lft, unsigned short rhs) {
   return lft /= (_uint128)rhs;
 }
+
 
 // operator%= for built in integral types as second argument
 inline _int128  &operator%=(_int128  &lft, __int64 rhs) {
@@ -1674,22 +1676,22 @@ inline _int128  &operator%=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator%=(_int128  &lft, unsigned __int64 rhs) {
   return lft %= (_uint128)rhs;
 }
-inline _int128  &operator%=(_int128  &lft, long  rhs) {
+inline _int128  &operator%=(_int128  &lft, long rhs) {
   return lft %= (_int128)rhs;
 }
-inline _int128  &operator%=(_int128  &lft, unsigned   long  rhs) {
+inline _int128  &operator%=(_int128  &lft, unsigned long rhs) {
   return lft %= (_uint128)rhs;
 }
-inline _int128  &operator%=(_int128  &lft, int   rhs) {
+inline _int128  &operator%=(_int128  &lft, int rhs) {
   return lft %= (_int128)rhs;
 }
-inline _int128  &operator%=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator%=(_int128  &lft, unsigned int rhs) {
   return lft %= (_uint128)rhs;
 }
 inline _int128  &operator%=(_int128  &lft, short rhs) {
   return lft %= (_int128)rhs;
 }
-inline _int128  &operator%=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator%=(_int128  &lft, unsigned short rhs) {
   return lft %= (_uint128)rhs;
 }
 
@@ -1699,22 +1701,22 @@ inline _uint128 &operator%=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator%=(_uint128 &lft, unsigned __int64 rhs) {
   return lft %= (_uint128)rhs;
 }
-inline _uint128 &operator%=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator%=(_uint128 &lft, long rhs) {
   return lft %= (_int128)rhs;
 }
-inline _uint128 &operator%=(_uint128 &lft, unsigned   long  rhs) {
+inline _uint128 &operator%=(_uint128 &lft, unsigned long rhs) {
   return lft %= (_uint128)rhs;
 }
-inline _uint128 &operator%=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator%=(_uint128 &lft, int rhs) {
   return lft %= (_int128)rhs;
 }
-inline _uint128 &operator%=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator%=(_uint128 &lft, unsigned int rhs) {
   return lft %= (_uint128)rhs;
 }
 inline _uint128 &operator%=(_uint128 &lft, short rhs) {
   return lft %= (_int128)rhs;
 }
-inline _uint128 &operator%=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator%=(_uint128 &lft, unsigned short rhs) {
   return lft %= (_uint128)rhs;
 }
 
@@ -1726,22 +1728,22 @@ inline _int128  &operator&=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator&=(_int128  &lft, unsigned __int64 rhs) {
   return lft &= (_uint128)rhs;
 }
-inline _int128  &operator&=(_int128  &lft, long  rhs) {
+inline _int128  &operator&=(_int128  &lft, long rhs) {
   return lft &= (_int128)rhs;
 }
-inline _int128  &operator&=(_int128  &lft, unsigned long  rhs) {
+inline _int128  &operator&=(_int128  &lft, unsigned long rhs) {
   return lft &= (_uint128)rhs;
 }
-inline _int128  &operator&=(_int128  &lft, int   rhs) {
+inline _int128  &operator&=(_int128  &lft, int rhs) {
   return lft &= (_int128)rhs;
 }
-inline _int128  &operator&=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator&=(_int128  &lft, unsigned int rhs) {
   return lft &= (_uint128)rhs;
 }
 inline _int128  &operator&=(_int128  &lft, short rhs) {
   return lft &= (_int128)rhs;
 }
-inline _int128  &operator&=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator&=(_int128  &lft, unsigned short rhs) {
   return lft &= (_uint128)rhs;
 }
 
@@ -1751,22 +1753,22 @@ inline _uint128 &operator&=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator&=(_uint128 &lft, unsigned __int64 rhs) {
   return lft &= (_uint128)rhs;
 }
-inline _uint128 &operator&=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator&=(_uint128 &lft, long rhs) {
   return lft &= (_int128)rhs;
 }
-inline _uint128 &operator&=(_uint128 &lft, unsigned long  rhs) {
+inline _uint128 &operator&=(_uint128 &lft, unsigned long rhs) {
   return lft &= (_uint128)rhs;
 }
-inline _uint128 &operator&=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator&=(_uint128 &lft, int rhs) {
   return lft &= (_int128)rhs;
 }
-inline _uint128 &operator&=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator&=(_uint128 &lft, unsigned int rhs) {
   return lft &= (_uint128)rhs;
 }
 inline _uint128 &operator&=(_uint128 &lft, short rhs) {
   return lft &= (_int128)rhs;
 }
-inline _uint128 &operator&=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator&=(_uint128 &lft, unsigned short rhs) {
   return lft &= (_uint128)rhs;
 }
 
@@ -1778,22 +1780,22 @@ inline _int128  &operator|=(_int128  &lft, __int64 rhs) {
 inline _int128  &operator|=(_int128  &lft, unsigned __int64 rhs) {
   return lft |= (_uint128)rhs;
 }
-inline _int128  &operator|=(_int128  &lft, long  rhs) {
+inline _int128  &operator|=(_int128  &lft, long rhs) {
   return lft |= (_int128)rhs;
 }
-inline _int128  &operator|=(_int128  &lft, unsigned long  rhs) {
+inline _int128  &operator|=(_int128  &lft, unsigned long rhs) {
   return lft |= (_uint128)rhs;
 }
-inline _int128  &operator|=(_int128  &lft, int   rhs) {
+inline _int128  &operator|=(_int128  &lft, int rhs) {
   return lft |= (_int128)rhs;
 }
-inline _int128  &operator|=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator|=(_int128  &lft, unsigned int rhs) {
   return lft |= (_uint128)rhs;
 }
 inline _int128  &operator|=(_int128  &lft, short rhs) {
   return lft |= (_int128)rhs;
 }
-inline _int128  &operator|=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator|=(_int128  &lft, unsigned short rhs) {
   return lft |= (_uint128)rhs;
 }
 
@@ -1803,22 +1805,22 @@ inline _uint128 &operator|=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator|=(_uint128 &lft, unsigned __int64 rhs) {
   return lft |= (_uint128)rhs;
 }
-inline _uint128 &operator|=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator|=(_uint128 &lft, long rhs) {
   return lft |= (_int128)rhs;
 }
-inline _uint128 &operator|=(_uint128 &lft, unsigned long  rhs) {
+inline _uint128 &operator|=(_uint128 &lft, unsigned long rhs) {
   return lft |= (_uint128)rhs;
 }
-inline _uint128 &operator|=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator|=(_uint128 &lft, int rhs) {
   return lft |= (_int128)rhs;
 }
-inline _uint128 &operator|=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator|=(_uint128 &lft, unsigned int rhs) {
   return lft |= (_uint128)rhs;
 }
 inline _uint128 &operator|=(_uint128 &lft, short rhs) {
   return lft |= (_int128)rhs;
 }
-inline _uint128 &operator|=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator|=(_uint128 &lft, unsigned short rhs) {
   return lft |= (_uint128)rhs;
 }
 
@@ -1836,16 +1838,16 @@ inline _int128  &operator^=(_int128  &lft, long rhs) {
 inline _int128  &operator^=(_int128  &lft, unsigned long rhs) {
   return lft ^= (_uint128)rhs;
 }
-inline _int128  &operator^=(_int128  &lft, int   rhs) {
+inline _int128  &operator^=(_int128  &lft, int rhs) {
   return lft ^= (_int128)rhs;
 }
-inline _int128  &operator^=(_int128  &lft, unsigned   int   rhs) {
+inline _int128  &operator^=(_int128  &lft, unsigned int rhs) {
   return lft ^= (_uint128)rhs;
 }
 inline _int128  &operator^=(_int128  &lft, short rhs) {
   return lft ^= (_int128)rhs;
 }
-inline _int128  &operator^=(_int128  &lft, unsigned   short rhs) {
+inline _int128  &operator^=(_int128  &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
 }
 
@@ -1855,22 +1857,22 @@ inline _uint128 &operator^=(_uint128 &lft, __int64 rhs) {
 inline _uint128 &operator^=(_uint128 &lft, unsigned __int64 rhs) {
   return lft ^= (_uint128)rhs;
 }
-inline _uint128 &operator^=(_uint128 &lft, long  rhs) {
+inline _uint128 &operator^=(_uint128 &lft, long rhs) {
   return lft ^= (_int128)rhs;
 }
 inline _uint128 &operator^=(_uint128 &lft, unsigned long rhs) {
   return lft ^= (_uint128)rhs;
 }
-inline _uint128 &operator^=(_uint128 &lft, int   rhs) {
+inline _uint128 &operator^=(_uint128 &lft, int rhs) {
   return lft ^= (_int128)rhs;
 }
-inline _uint128 &operator^=(_uint128 &lft, unsigned   int   rhs) {
+inline _uint128 &operator^=(_uint128 &lft, unsigned int rhs) {
   return lft ^= (_uint128)rhs;
 }
 inline _uint128 &operator^=(_uint128 &lft, short rhs) {
   return lft ^= (_int128)rhs;
 }
-inline _uint128 &operator^=(_uint128 &lft, unsigned   short rhs) {
+inline _uint128 &operator^=(_uint128 &lft, unsigned short rhs) {
   return lft ^= (_uint128)rhs;
 }
 
