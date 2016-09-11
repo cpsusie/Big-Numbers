@@ -116,6 +116,10 @@ Rectangle2D getUnion(const Rectangle2D &r1, const Rectangle2D &r2);
 
 class Point2DArray : public CompactArray<Point2D> {
 public:
+  Point2DArray() {
+  }
+  explicit Point2DArray(size_t capacity) : CompactArray<Point2D>(capacity) {
+  }
   Rectangle2D getBoundingBox() const;
 };
 
