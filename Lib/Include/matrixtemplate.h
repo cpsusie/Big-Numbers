@@ -52,9 +52,10 @@ private:
     if(columns == 0) {
       throwMatrixException(_T("allocate:Number of columns=0"));
     }
-    T *a = new T[rows*columns];
+    const size_t n = rows * columns;
+    T *a = new T[n];
     if(initialize) {
-      T *p = a, *last = p + rows*columns;
+      T *p = a, *last = p + n;
       const T z(0);
       while(p < last) *(p++) = z;
     }
