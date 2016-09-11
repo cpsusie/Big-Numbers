@@ -68,13 +68,13 @@ void IsoCurveGraph::findDataRange() {
   if(isEmpty()) {
     m_range.init(-1,1,-1,1);
   } else {
-    const int          n  = (int)m_lineArray.size();
-    const LineSegment *ls = &m_lineArray[0];
-    m_range.init(  m_pointArray[ls->m_i1]);
-    m_range.update(m_pointArray[ls->m_i2]);
-    for(int i = 0; i < n; i++, ls++) {
-      m_range.update(m_pointArray[ls->m_i1]);
-      m_range.update(m_pointArray[ls->m_i2]);
+    const LineSegment *lsp = &m_lineArray[0];
+    const LineSegment *end = &m_lineArray.last();
+    m_range =  m_pointArray[lsp->m_i1];
+    m_range += m_pointArray[lsp->m_i2];
+    while(lsp++ < end) {
+      m_range += m_pointArray[lsp->m_i1];
+      m_range += m_pointArray[lsp->m_i2];
     }
   }
 }
@@ -87,53 +87,62 @@ void IsoCurveGraph::setTrigonometricMode(TrigonometricMode mode) {
   }
 }
 
-void IsoCurveGraph::paint(Viewport2D &vp) {
+void IsoCurveGraph::paint(CCoordinateSystem &cs) {
   if(isEmpty()) {
     return;
   }
-  const int          n     = (int)m_lineArray.size();
-  const LineSegment *ls    = &m_lineArray[0];
+  Viewport2D        &vp    = cs.getViewport();
+  const LineSegment *lsp   = &m_lineArray[0];
+  const LineSegment *end   = &m_lineArray.last();
   const COLORREF     color = getParam().m_color;
-
   switch(getParam().m_style) {
   case GSCURVE :
     { CPen pen;
       pen.CreatePen(PS_SOLID, 1, color);
       vp.SelectObject(&pen);
-      for(int i = 0; i < n; i++, ls++) {
-        const Point2D &p1 = m_pointArray[ls->m_i1];
-        const Point2D &p2 = m_pointArray[ls->m_i2];
+      for(;lsp <= end; lsp++) {
+        const Point2D &p1 = m_pointArray[lsp->m_i1];
+        const Point2D &p2 = m_pointArray[lsp->m_i2];
         if(pointDefined(p1) && pointDefined(p1)) {
           vp.MoveTo(p1);
           vp.LineTo(p2);
+          cs.setOccupiedLine(p1,p2);
         }
       }
     }
     break;
   case GSPOINT :
-    { for(int i = 0; i < n; i++, ls++) {
-        const Point2D &p1 = m_pointArray[ls->m_i1];
-        const Point2D &p2 = m_pointArray[ls->m_i2];
+    { Point2DArray tmp(2*m_pointArray.size());
+      for(;lsp <= end; lsp++) {
+        const Point2D &p1 = m_pointArray[lsp->m_i1];
+        const Point2D &p2 = m_pointArray[lsp->m_i2];
         if(pointDefined(p1)) {
           vp.SetPixel(p1, color);
+          tmp.add(p1);
         }
         if(pointDefined(p2)) {
           vp.SetPixel(p2, color);
+          tmp.add(p2);
         }
       }
+      cs.setOccupiedPoints(tmp);
     }
     break;
   case GSCROSS :
-    { for(int i = 0; i < n; i++, ls++) {
-        const Point2D &p1 = m_pointArray[ls->m_i1];
-        const Point2D &p2 = m_pointArray[ls->m_i2];
+    { Point2DArray tmp(2*m_pointArray.size());
+      for(;lsp <= end; lsp++) {
+        const Point2D &p1 = m_pointArray[lsp->m_i1];
+        const Point2D &p2 = m_pointArray[lsp->m_i2];
         if(pointDefined(p1)) {
           vp.paintCross(p1, color, 6);
+          tmp.add(p1);
         }
         if(pointDefined(p2)) {
           vp.paintCross(p2, color, 6);
+          tmp.add(p2);
         }
       }
+      cs.setOccupiedPoints(tmp);
     }
     break;
   default:

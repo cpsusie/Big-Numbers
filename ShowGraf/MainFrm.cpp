@@ -161,7 +161,6 @@ void CMainFrame::Dump(CDumpContext& dc) const {
 }
 #endif //_DEBUG
 
-
 void CMainFrame::OnFileNew() {
   getView()->clear();
 }
@@ -318,7 +317,6 @@ void CMainFrame::OnToolsFitPolynomial() {
 
 void CMainFrame::OnToolsFitExpoFunction() {
   getView()->makeExpoFit();
-
 }
 
 void CMainFrame::OnToolsFitPotensFunction() {
@@ -370,8 +368,6 @@ void CMainFrame::OnToolsImplicitDefinedCurve() {
   } catch(Exception e) {
     showException(e);
   }
-
-  
 }
 
 void CMainFrame::OnOptionsIgnoreErrors() {

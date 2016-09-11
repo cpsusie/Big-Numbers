@@ -47,7 +47,7 @@ public:
   double getSmallestPositiveY() const;
 
   bool OnLButtonDown(UINT nFlags, const CPoint &point, const RectangleTransformation &tr);
-  void paint(Viewport2D &vp, CFont &buttonFont, const CRect &buttonPanelRect);
+  void paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect);
   void setStyle(GraphStyle style);
   void setRollSize(int size);
   

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MFCUtil/Viewport2D.h>
 #include "Graph.h"
 #include "IsoCurveFinder.h"
 #include "IsoCurveGraphParameters.h"
@@ -16,7 +15,7 @@ private:
 public:
   IsoCurveGraph(IsoCurveGraphParameters &param);
   void             calculate();
-  void             paint(Viewport2D &vp);
+  void             paint(CCoordinateSystem &cs);
   bool             isEmpty() const;
   const DataRange &getDataRange() const;
   double           distance(const CPoint &p, const RectangleTransformation &tr) const;

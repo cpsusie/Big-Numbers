@@ -1,8 +1,7 @@
 #pragma once
 
 #include <float.h>
-#include <MFCUtil/Viewport2D.h>
-#include <MFCUtil/Coordinatesystem/DataRange.h>
+#include <MFCUtil/Coordinatesystem/Coordinatesystem.h>
 #include "GraphParameters.h"
 
 typedef enum {
@@ -11,7 +10,7 @@ typedef enum {
  ,ISOCURVEGRAPH
 } GraphType;
 
-class Graph {
+class Graph : public CoordinateSystemObject {
 private:
   bool m_visible;
 protected:
@@ -36,9 +35,7 @@ public:
     return *m_param;
   }
   virtual void calculate() {}
-  virtual void paint(Viewport2D &vp) = 0;
   virtual bool isEmpty() const  = 0;
-  virtual const DataRange &getDataRange() const = 0;
   virtual GraphType getType() const = 0;
   virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
   inline double  distance(const Point2DP &p) const {;
@@ -71,7 +68,7 @@ protected:
   void findDataRange();
   PointGraph(GraphParameters *param);
 public:
-  void paint(Viewport2D &vp);
+  void paint(CCoordinateSystem &cs);
 
   inline bool isEmpty() const {
     return m_pointArray.isEmpty();

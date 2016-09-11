@@ -31,10 +31,11 @@ void GraphItem::paintButton(CDC &dc, bool selected) {
   }
 }
 
-void GraphItem::paint(Viewport2D &vp, CFont &buttonFont, bool selected) {
+void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) {
+  Viewport2D &vp = cs.getViewport();
   if(m_graph->isVisible()) {
     vp.setClipping(true);
-    m_graph->paint(vp);
+    m_graph->paint(cs);
     vp.setClipping(false);
   }
   CDC &dc = *vp.getDC();

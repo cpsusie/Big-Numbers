@@ -26,7 +26,6 @@ void CDegreeDlg::DoDataExchange(CDataExchange* pDX) {
     DDV_MinMaxUInt(pDX, m_degree, 0, 30);
 }
 
-
 BEGIN_MESSAGE_MAP(CDegreeDlg, CDialog)
     ON_NOTIFY(UDN_DELTAPOS, IDC_SPINDEGREE, OnDeltaposSpinDegree)
 END_MESSAGE_MAP()

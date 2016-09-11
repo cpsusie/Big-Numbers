@@ -23,7 +23,7 @@ public:
     return m_graph->getParam().getPartialName();
   }
 
-  void paint(Viewport2D &vp, CFont &buttonFont, bool selected); // width in characters
+  void paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected); // width in characters
   
   const CRect &getButtonRect() const {
     return m_buttonRect;

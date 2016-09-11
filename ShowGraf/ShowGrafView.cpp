@@ -23,12 +23,12 @@ BEGIN_MESSAGE_MAP(CShowGrafView, CFormView)
     ON_WM_MOUSEMOVE()
     ON_WM_MOUSEWHEEL()
     ON_WM_SIZE()
-    ON_COMMAND(ID_SELECTMENU_DELETE, OnSelectMenuDelete)
-    ON_COMMAND(ID_SELECTMENU_EDIT  , OnSelectMenuEdit  )
-    ON_COMMAND(ID_SELECTMENU_HIDE  , OnSelectMenuHide  )
-    ON_COMMAND(ID_SELECTMENU_SHOW  , OnSelectMenuShow  )
-    ON_COMMAND(ID_FILE_PRINT        , CFormView::OnFilePrint)
-    ON_COMMAND(ID_FILE_PRINT_DIRECT , CFormView::OnFilePrint)
+    ON_COMMAND(ID_SELECTMENU_DELETE , OnSelectMenuDelete           )
+    ON_COMMAND(ID_SELECTMENU_EDIT   , OnSelectMenuEdit             )
+    ON_COMMAND(ID_SELECTMENU_HIDE   , OnSelectMenuHide             )
+    ON_COMMAND(ID_SELECTMENU_SHOW   , OnSelectMenuShow             )
+    ON_COMMAND(ID_FILE_PRINT        , CFormView::OnFilePrint       )
+    ON_COMMAND(ID_FILE_PRINT_DIRECT , CFormView::OnFilePrint       )
     ON_COMMAND(ID_FILE_PRINT_PREVIEW, CFormView::OnFilePrintPreview)
 END_MESSAGE_MAP()
 
@@ -264,8 +264,10 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
   m_coordinateSystem.setGrid(isMenuItemChecked(ID_VIEW_GRID));
   try {
     m_coordinateSystem.OnPaint();
-    CClientDC cdc(&m_coordinateSystem);
-    m_graphArray.paint(*m_coordinateSystem.getViewport(cdc), *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
+    CClientDC dc(&m_coordinateSystem);
+    m_coordinateSystem.setDC(dc);
+    m_graphArray.paint(m_coordinateSystem, *buttonFont, getRelativeClientRect(this,IDC_BUTTONPANEL));
+//    debugLog(_T("Cells Occupied:\n%s"), m_coordinateSystem.getOccupationMap().toString().cstr());
     return true;
   } catch(Exception e) {
     showException(e);
@@ -274,7 +276,7 @@ bool CShowGrafView::paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont 
 }
 
 void CShowGrafView::plotFunction(Function &f, const DoubleInterval &interval, COLORREF color) {
-  m_coordinateSystem.addFunctionObject(CClientDC(GetDlgItem(IDC_SYSTEMPANEL)), f, &interval, color);
+  m_coordinateSystem.addFunctionObject(f, &interval, color);
 }
 
 void CShowGrafView::plotFunction(Function &f, COLORREF color) {
@@ -396,7 +398,7 @@ void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
     ClientToScreen(&point);
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,point.x+10,point.y, this );
   } else {
-  CFormView::OnRButtonDown(nFlags, point);
+    CFormView::OnRButtonDown(nFlags, point);
   }
 }
 

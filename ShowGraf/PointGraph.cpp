@@ -10,10 +10,7 @@ void PointGraph::findDataRange() {
   if(isEmpty()) {
     m_range.init(-1,1,-1,1);
   } else {
-    m_range.init(m_pointArray[0]);
-    for(size_t i = 1; i < m_pointArray.size(); i++) {
-      m_range.update(m_pointArray[i]);
-    }
+    m_range = m_pointArray;
   }
 }
 
@@ -92,48 +89,62 @@ void PointGraph::setRollSize(int size) {
   m_param->m_rollSize = size;
 }
 
-void PointGraph::paint(Viewport2D &vp) {
-  int   i;
+void PointGraph::paint(CCoordinateSystem &cs) {
   const Point2DArray &data  = getProcessedData();
-  const int           n     = (int)data.size();
+  if(data.isEmpty()) return;
+  const Point2D      *pp    = &data[0];
+  const Point2D      *end   = &data.last();
+  Viewport2D         &vp    = cs.getViewport();
   const COLORREF      color = getParam().m_color;
+  Point2DArray        tmp;
 
   switch(getParam().m_style) {
   case GSCURVE :
-    if(n > 1) {
+    if(data.size() > 1) {
       CPen pen;
       pen.CreatePen(PS_SOLID, 1, color);
       vp.SelectObject(&pen);
-      bool lastDefined = pointDefined(data[0]);
+      bool lastDefined = pointDefined(*pp);
       if(lastDefined) {
-        vp.MoveTo(data[0]);
+        vp.MoveTo(*pp);
+        tmp.add(*pp);
       }
-      for(i = 1; i < n; i++) {
-        bool defined = pointDefined(data[i]);
+      while(pp++ < end) {
+        const bool defined = pointDefined(*pp);
         if(defined) {
           if(lastDefined) {
-            vp.LineTo(data[i]);
+            vp.LineTo(*pp);
+            tmp.add(*pp);
           } else {
-            vp.MoveTo(data[i]);
+            vp.MoveTo(*pp);
+            tmp.add(*pp);
           }
+        } else {
+          cs.setOccupiedConnectedPoints(tmp);
+          tmp.clear(-1);
         }
         lastDefined = defined;
       }
+      cs.setOccupiedConnectedPoints(tmp);
     }
     break;
   case GSPOINT :
-    for(i = 0; i < n; i++) {
-      if(pointDefined(data[i])) {
-        vp.SetPixel(data[i], color);
+    for(;pp <= end; pp++) {
+      if(pointDefined(*pp)) {
+        vp.SetPixel(*pp, color);
+        tmp.add(*pp);
       }
     }
+    cs.setOccupiedPoints(tmp);
     break;
   case GSCROSS :
-    for(i = 0; i < n; i++) {
-      if(pointDefined(data[i])) {
-        vp.paintCross(data[i], color, 6);
+    for(;pp <= end; pp++) {
+      if(pointDefined(*pp)) {
+        vp.paintCross(*pp, color, 6);
+        tmp.add(*pp);
       }
     }
+    cs.setOccupiedPoints(tmp);
     break;
   default:
     throwException(_T("Invalid style:%d"), getParam().m_style);

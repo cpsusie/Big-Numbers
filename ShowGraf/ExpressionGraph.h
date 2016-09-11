@@ -11,7 +11,7 @@ private:
 public:
   ExpressionGraph(ExpressionGraphParameters &param);
   void calculate();
-  void paint(Viewport2D &vp);
+  void paint(CCoordinateSystem &cs);
   void setTrigonometricMode(TrigonometricMode mode);
   inline GraphType getType() const {
     return EXPRESSIONGRAPH;

@@ -1,12 +1,13 @@
 #include "stdafx.h"
 #include "GraphArray.h"
 
-void GraphArray::paint(Viewport2D &vp, CFont &buttonFont, const CRect &buttonPanelRect) {
+void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) {
+  Viewport2D &vp = cs.getViewport();
   findButtonPositions(*vp.getDC(),buttonFont,buttonPanelRect);
   m_error = _T("");
   for(size_t i = 0; i < size(); i++) {
     try {
-      getItem(i).paint(vp, buttonFont,(int)i==m_selected);
+      getItem(i).paint(cs, buttonFont,(int)i==m_selected);
     } catch(Exception e) {
       if(m_error.length() == 0) {
         m_error = e.what();
@@ -99,7 +100,7 @@ void GraphArray::add(Graph *g) {
   if(size() == 0) {
     m_dataRange = g->getDataRange();
   } else {
-    m_dataRange.update(g->getDataRange());
+    m_dataRange += g->getDataRange();
   }
   Array<GraphItem>::add(GraphItem(g));
 }
@@ -114,7 +115,7 @@ void GraphArray::remove(size_t index) {
   if(size() > 0) {
     m_dataRange = getItem(0).m_graph->getDataRange();
     for(size_t i = 1; i < size(); i++) {
-      m_dataRange.update(getItem(i).m_graph->getDataRange());
+      m_dataRange += getItem(i).m_graph->getDataRange();
     }
   }
 
