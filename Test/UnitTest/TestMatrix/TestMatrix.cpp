@@ -113,7 +113,7 @@ namespace TestMatrix {
 
       static Matrix exp(const Matrix &A) {
         if (!A.isSquare()) {
-          throwException(_T("exp(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
+          throwException(_T("exp(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
         const int dim = (int)A.getRowCount();
         Matrix    p = Matrix::one(dim);
@@ -134,7 +134,7 @@ namespace TestMatrix {
 
       static Matrix cos(const Matrix &A) {
         if (!A.isSquare()) {
-          throwException(_T("cos(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
+          throwException(_T("cos(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
         const int    dim = (int)A.getRowCount();
         const Matrix A2 = -A * A;
@@ -156,7 +156,7 @@ namespace TestMatrix {
 
       static Matrix sin(const Matrix &A) {
         if (!A.isSquare()) {
-          throwException(_T("sin(Matrix):Matrix not square. Dimension = (%u,%u)"), A.getRowCount(), A.getColumnCount());
+          throwException(_T("sin(Matrix):Matrix not square. A.%s"), A.getDimensionString().cstr());
         }
         const int    dim = (int)A.getRowCount();
         const Matrix A2 = -A * A;
@@ -178,9 +178,9 @@ namespace TestMatrix {
 
       static ComplexMatrix cubicRoot(const Matrix &A) {
         const QRMatrix      QR = A;
-        const ComplexMatrix P = QR.getEigenVectors();
+        const ComplexMatrix P  = QR.getEigenVectors();
         const ComplexMatrix P1 = inverse(P);
-        ComplexVector       D = QR.getEigenValues();
+        ComplexVector       D  = QR.getEigenValues();
 
         for (size_t i = 0; i < D.getDimension(); i++) {
           D[i] = root(D[i], 3);
@@ -418,9 +418,9 @@ namespace TestMatrix {
       const Vector x = svd.solve(b);
 
       DistanceFromPlan diff(A, b);
-      const Vector           d = A*x - b;
-      const Real             distance = diff(x);
-      const Vector           gr = getGradient1(diff, x);
+      const Vector     d = A*x - b;
+      const Real       distance = diff(x);
+      const Vector     gr = getGradient1(diff, x);
       LOG log;
 
       log << _T("b       :") << param1 << b << endl;
@@ -443,7 +443,7 @@ namespace TestMatrix {
 
         const Real diffRe = normf(A - A1.getRealPart());
         const Real diffIm = normf(A1.getImaginaryPart());
-        const Real diff = diffRe + diffIm;
+        const Real diff   = diffRe + diffIm;
         if (diff > 1e-11) {
           LOG log;
           log << _T("Cubic root failed") << endl;
@@ -485,9 +485,9 @@ namespace TestMatrix {
           LOG log;
           log << _T("Matrix not singular.") << endl;
 
-          log << _T("A-") << v.re << _T("*I:\n") << param1 << S << endl;
+          log << _T("A-"  ) << v.re << _T("*I:\n") << param1 << S << endl;
           log << _T("U:\n") << param1 << svd.m_u << endl;
-          log << _T("D:") << param1 << svd.m_d << endl;
+          log << _T("D:"  ) << param1 << svd.m_d << endl;
           log << _T("V:\n") << param1 << svd.m_v << endl;
           verify(false);
         }
@@ -497,10 +497,10 @@ namespace TestMatrix {
     // Checks that inverse(Q) = transpose(Q) 
     static void checkIsUnitary(const String &name, const Matrix &A) {
       try {
-        const Matrix Ainverse = inverse(A);
-        const Matrix Atranspose = transpose(A);
-        const Matrix difference = Ainverse - Atranspose;
-        const String inverseName = format(_T("inverse(%s)"), name.cstr());
+        const Matrix Ainverse      = inverse(A);
+        const Matrix Atranspose    = transpose(A);
+        const Matrix difference    = Ainverse - Atranspose;
+        const String inverseName   = format(_T("inverse(%s)"), name.cstr());
         const String transposeName = format(_T("transpose(%s)"), name.cstr());
         const Real   diff = fabs(difference);
         if (diff > 1e-13) {
@@ -523,38 +523,38 @@ namespace TestMatrix {
 
     static void testQRMatrix(const Matrix &A) {
       const QRMatrix QR = A;
-      const Matrix   U = QR.getUMatrix();
+      const Matrix   U  = QR.getUMatrix();
       checkIsUnitary("U", U);
-      const Matrix   Q = QR.getQMatrix();
+      const Matrix   Q  = QR.getQMatrix();
       checkIsUnitary("Q", Q);
 
       const int n = (int)A.getRowCount();
       const ComplexVector &EValues = QR.getEigenValues();
       checkIsSingular(A, EValues);
       for (int i = 0; i < n; i++) {
-        const Complex      &lambda = EValues[i];
-        const ComplexVector EVector = QR.getEigenVectors().getColumn(i);
-        const ComplexVector Av = A * EVector;
-        const ComplexVector lambdaV = lambda * EVector;
+        const Complex      &lambda     = EValues[i];
+        const ComplexVector EVector    = QR.getEigenVectors().getColumn(i);
+        const ComplexVector Av         = A * EVector;
+        const ComplexVector lambdaV    = lambda * EVector;
         const ComplexVector difference = lambdaV - Av;
-        const Real          diff = fabs(difference);
+        const Real          diff       = fabs(difference);
         if (diff > 1e-12) {
           const Matrix A0 = transpose(U)* A  * U;
           const Matrix AV = transpose(Q)* A0 * Q;
           LOG log;
           log << _T("Egenvector passer ikke\n");
-          log << _T("A :\n") << param1 << A << endl;
-          log << _T("U :\n") << param1 << U << endl;
-          log << _T("Q :\n") << param1 << Q << endl;
+          log << _T("A :\n") << param1 << A  << endl;
+          log << _T("U :\n") << param1 << U  << endl;
+          log << _T("Q :\n") << param1 << Q  << endl;
           log << _T("A0:\n") << param1 << A0 << endl;
           log << _T("AV:\n") << param1 << AV << endl;
-          log << _T("Eigenvalues: {") << EValues << _T("}") << endl;
-          log << _T("Lambda[") << i << _T("]:") << lambda << endl;
-          log << _T("Evector[") << i << _T("]:") << EVector << endl;
-          log << _T("lambda*EVector:") << lambdaV << endl;
-          log << _T("A*EVector     :") << Av << endl;
-          log << _T("Difference       :") << difference << endl;
-          log << _T("fabs(Difference) :") << diff << endl;
+          log << _T("Eigenvalues: {"    ) << EValues       << _T("}") << endl;
+          log << _T("Lambda["           ) << i << _T("]:") << lambda  << endl;
+          log << _T("Evector["          ) << i << _T("]:") << EVector << endl;
+          log << _T("lambda*EVector   :") << lambdaV       << endl;
+          log << _T("A*EVector        :") << Av            << endl;
+          log << _T("Difference       :") << difference    << endl;
+          log << _T("fabs(Difference) :") << diff          << endl;
           verify(false);
         }
       }
@@ -578,16 +578,16 @@ namespace TestMatrix {
 
     TEST_METHOD(MatrixExp) {
       for (int i = 0; i < 100; i++) {
-        const Matrix        A = randomMatrix(6, 6); // randomMatrix(6,6);
-        const QRMatrix      QR = A;
-        const ComplexMatrix P = QR.getEigenVectors();
-        const ComplexMatrix P1 = inverse(P);
-        const ComplexMatrix D = ComplexMatrix(QR.getEigenValues());
+        const Matrix        A     = randomMatrix(6, 6); // randomMatrix(6,6);
+        const QRMatrix      QR    = A;
+        const ComplexMatrix P     = QR.getEigenVectors();
+        const ComplexMatrix P1    = inverse(P);
+        const ComplexMatrix D     = ComplexMatrix(QR.getEigenValues());
 
-        const Matrix exp1A = exp(A);
+        const Matrix        exp1A = exp(A);
 
-        const int dim = (int)A.getRowCount();
-        ComplexMatrix expD = ComplexMatrix::one(dim);
+        const int           dim   = (int)A.getRowCount();
+        ComplexMatrix       expD  = ComplexMatrix::one(dim);
         for (int k = 0; k < dim; k++) {
           expD(k, k) = ::exp(D(k, k));
         }
@@ -597,33 +597,32 @@ namespace TestMatrix {
         const Real diff = normf(exp1A - exp2A.getRealPart()) + normf(exp2A.getImaginaryPart());
         if (diff > 1e-12) {
           LOG log;
-          log << _T("A:\n") << param1 << A;
+          log << _T("A:\n")              << param1 << A;
           log << _T("exp(A) (taylor)\n") << exp1A;
           log << _T("exp(A).real (diagonalization):\n") << param1 << exp2A.getRealPart();
-          log << _T("EigenValues:") << QR.getEigenValues() << endl;
-          log << _T("EigenVectors:\n") << P;
-          log << _T("Determinant(eigenVectors):") << StreamParameters(6, 0, ios::scientific) << det(P) << endl;
-          log << _T("norm(diff):") << diff << endl;
+          log << _T("EigenValues:")      << QR.getEigenValues() << endl;
+          log << _T("EigenVectors:\n")   << P;
+          log << _T("Determinant(eigenVectors):")  << StreamParameters(6, 0, ios::scientific) << det(P) << endl;
+          log << _T("norm(diff):")       << diff   << endl;
           verify(false);
         }
       }
     }
 
     TEST_METHOD(MatrixCosSin) {
-
       for (int i = 0; i < 100; i++) {
-        const Matrix        A = randomMatrix(6, 6); // randomMatrix(6,6);
-        const QRMatrix      QR = A;
-        const ComplexMatrix P = QR.getEigenVectors();
-        const ComplexMatrix P1 = inverse(P);
-        const ComplexMatrix D = ComplexMatrix(QR.getEigenValues());
+        const Matrix        A     = randomMatrix(6, 6); // randomMatrix(6,6);
+        const QRMatrix      QR    = A;
+        const ComplexMatrix P     = QR.getEigenVectors();
+        const ComplexMatrix P1    = inverse(P);
+        const ComplexMatrix D     = ComplexMatrix(QR.getEigenValues());
 
-        const Matrix cos1A = cos(A);
-        const Matrix sin1A = sin(A);
+        const Matrix        cos1A = cos(A);
+        const Matrix        sin1A = sin(A);
 
-        const int     dim  = (int)A.getRowCount();
-        ComplexMatrix cosD = ComplexMatrix::one(dim);
-        ComplexMatrix sinD = ComplexMatrix::one(dim);
+        const int           dim   = (int)A.getRowCount();
+        ComplexMatrix       cosD  = ComplexMatrix::one(dim);
+        ComplexMatrix       sinD  = ComplexMatrix::one(dim);
 
         for (int k = 0; k < dim; k++) {
           cosD(k, k) = ::cos(D(k, k));
@@ -663,19 +662,19 @@ namespace TestMatrix {
           verify(false);
         }
 
-        const Matrix C2 = cos1A * cos1A;
-        const Matrix S2 = sin1A * sin1A;
+        const Matrix C2      = cos1A * cos1A;
+        const Matrix S2      = sin1A * sin1A;
         const Matrix sumC2S2 = C2 + S2;
-        const Real   diff = normf(sumC2S2 - Matrix::one(dim));
+        const Real   diff    = normf(sumC2S2 - Matrix::one(dim));
         if (diff > 1e-14) {
           LOG log;
-          log << _T("A:\n") << param1 << A;
+          log << _T("A:\n"             ) << param1 << A;
           log << _T("cos(A) (taylor)\n") << cos1A;
           log << _T("sin(A) (taylor)\n") << sin1A;
-          log << _T("cos^2(A)\n") << C2;
-          log << _T("sin^2(A)\n") << S2;
+          log << _T("cos^2(A)\n"       ) << C2;
+          log << _T("sin^2(A)\n"       ) << S2;
           log << _T("cos^2(A) + sin^2(A)\n") << sumC2S2;
-          log << _T("norm(diff):") << diff << endl;
+          log << _T("norm(diff):"      ) << diff << endl;
           verify(false);
         }
       }
@@ -685,18 +684,17 @@ namespace TestMatrix {
       const Matrix A = randomMatrix(3, 3);
       const Matrix B = randomMatrix(4, 4);
 
-      const Matrix AplusB = kroneckerSum(A, B);
+      const Matrix AplusB    = kroneckerSum(A, B);
       const Matrix expAplusB = exp(AplusB);
-      const Matrix expA = exp(A);
-      const Matrix expB = exp(B);
-      const Matrix expAexpB = kroneckerProduct(expA, expB);
+      const Matrix expA      = exp(A);
+      const Matrix expB      = exp(B);
+      const Matrix expAexpB  = kroneckerProduct(expA, expB);
       //  log << _T("exp(A+B):\n") << expAplusB;
       //  log << _T("expA*expB:\n") << expAexpB;
-      const Real   diff = normf(expAplusB - expAexpB);
+      const Real   diff      = normf(expAplusB - expAexpB);
 
       verify(diff < 1e-13);
       //  log << _T("normf(exp(A+B) - exp(A)*exp(B)):") << diff << endl;
-
     }
   };
 }
