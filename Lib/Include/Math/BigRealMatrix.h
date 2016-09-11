@@ -56,8 +56,12 @@ public:
   }
   static BigRealMatrix one( size_t dim , UINT digits = 16);
   static BigRealMatrix zero(size_t rows, size_t columns, UINT digits = 16);
-  BigRealVector getRow(   size_t row) const;
-  BigRealVector getColumn(size_t column) const;
+  BigRealVector getRow(     size_t row   ) const;
+  BigRealVector getColumn(  size_t column) const;
+  BigRealMatrix &operator+=(const BigRealMatrix &rhs);
+  BigRealMatrix &operator-=(const BigRealMatrix &rhs);
+  BigRealMatrix &operator*=(const BigReal &d);
+  BigRealMatrix &operator/=(const BigReal &d);
 };
 
 BigRealVector operator*(const BigRealVector &lts, const BigRealMatrix &rhs);
@@ -68,6 +72,7 @@ BigRealMatrix operator*(const BigRealMatrix &lts, const BigRealMatrix &rhs);
 BigRealMatrix operator*(const BigReal       &d  , const BigRealMatrix &rhs);
 BigRealMatrix operator*(const BigRealMatrix &lts, const BigReal       &d  );
 BigRealMatrix operator/(const BigRealMatrix &lts, const BigReal       &d  );
+BigRealMatrix operator-(const BigRealMatrix &m);
 BigReal       det(      const BigRealMatrix &a);
 BigRealMatrix inverse(  const BigRealMatrix &a);
 BigRealMatrix transpose(const BigRealMatrix &a);
@@ -75,27 +80,24 @@ BigReal       normf(    const BigRealMatrix &a); // Frobenius norm
 
 class BigRealLUMatrix : private BigRealMatrix {
 private:
-  size_t  *m_permut;
-  int      m_detsign;
+  CompactArray<size_t> m_permut;
+  int                  m_detsign;
 
-  void allocPermut();
   void initPermut();
   BigRealVector evald() const;
   void pivot(const BigRealVector &d, size_t k);
   void lowerUpper();
-  BigRealLUMatrix(const BigRealLUMatrix &a);                              /* not defined */
-  BigRealLUMatrix &operator=(const BigRealLUMatrix &a);                   /* not defined */
+  BigRealLUMatrix(const BigRealLUMatrix &a);                 /* not defined */
+  BigRealLUMatrix &operator=(const BigRealLUMatrix &a);      /* not defined */
   BigRealLUMatrix &setDimension(size_t rows, size_t cols);   /* not defined */
 
 public:
   BigRealLUMatrix();
   BigRealLUMatrix(const BigRealMatrix &a);
-  ~BigRealLUMatrix();
   BigRealLUMatrix &operator=(const BigRealMatrix &a);
   BigRealMatrix getInverse() const;
   BigRealVector solve(const BigRealVector &y) const;
   BigReal getDeterminant() const;
-
 
   friend tostream &operator<<(tostream &out, const BigRealLUMatrix &a);
 };
