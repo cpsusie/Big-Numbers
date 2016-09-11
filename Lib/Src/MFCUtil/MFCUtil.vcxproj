@@ -271,6 +271,7 @@
     <ClCompile Include="CoordinateSystem\LinearAxisPainter.cpp" />
     <ClCompile Include="CoordinateSystem\LogarithmicAxisPainter.cpp" />
     <ClCompile Include="CoordinateSystem\NormalDistributionAxisPainter.cpp" />
+    <ClCompile Include="CoordinateSystem\OccupationMap.cpp" />
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
@@ -308,6 +309,7 @@
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SetControlText.cpp" />
+    <ClCompile Include="ShapeFunctions.cpp" />
     <ClCompile Include="ShowBitmap.cpp" />
     <ClCompile Include="ShowException.cpp" />
     <ClCompile Include="SimpleLayoutManager.cpp" />
@@ -355,6 +357,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\resource.h" />
     <ClInclude Include="..\..\Include\MFCUtil\SelectDirDlg.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h" />
     <ClInclude Include="..\..\Include\MFCUtil\StaticBottomAligned.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />

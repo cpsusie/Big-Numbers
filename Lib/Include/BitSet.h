@@ -231,7 +231,6 @@ class BitMatrix : private BitSet {
 private:
   MatrixDimension m_dim;
   inline size_t getIndex(size_t r, size_t c) const {
-    assert(m_dim.isLegalIndex(r, c));
     return r*m_dim.columnCount + c;
   }
   inline MatrixIndex indexToPoint(size_t index) const {

@@ -2,6 +2,7 @@
 #include <BitSet.h>
 
 void BitMatrix::set(size_t r, size_t c, bool v) {
+  if(!m_dim.isLegalIndex(r, c)) return;
   if(v) {
     add(getIndex(r,c));
   } else {

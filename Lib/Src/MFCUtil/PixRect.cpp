@@ -959,18 +959,6 @@ void PixRect::copy(VIDEOHDR &videoHeader) {
 */
 
 
-
-void CurveOperator ::apply(const Point2D &p) {
-  if(m_firstTime) {
-    m_currentPoint = p;
-    m_firstTime = false;
-  } else {
-    line(m_currentPoint,p);
-    m_currentPoint = p;
-  }
-}
-
-
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) {
   PixRect *result = src->clone();
   const int width  = result->getWidth();

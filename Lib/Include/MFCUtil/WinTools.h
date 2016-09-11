@@ -163,6 +163,8 @@ inline CSize operator/(const CSize &s1, const CSize &s2) {
 
 #define ORIGIN CPoint(0,0)
 
+typedef CompactArray<CPoint> PointArray;
+
 inline CSize operator*(const CSize &sz, double factor) {
   return CSize(sz.cx*factor, sz.cy*factor);
 }

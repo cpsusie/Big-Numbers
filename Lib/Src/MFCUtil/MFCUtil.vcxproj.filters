@@ -225,6 +225,12 @@
     <ClCompile Include="PixRectScale.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ShapeFunctions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CoordinateSystem\OccupationMap.cpp">
+      <Filter>Source Files\CoordinateSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -333,6 +339,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
