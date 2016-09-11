@@ -42,15 +42,15 @@ public:
   }
   
   bool contains(const T &x) const {
-    return getMin() <= x && x <= getMax();
+    return (getMin() <= x) && (x <= getMax());
   }
   
   bool contains(const NumberInterval<T> &i) const {
-    return getMin() <= i.getMin() && i.getMax() <= getMax();
+    return (getMin() <= i.getMin()) && (i.getMax() <= getMax());
   }
 
   bool overlap(const NumberInterval<T> &i) const {
-    return getMin() <= i.getMax() && getMax() >= i.getMin();
+    return (getMin() <= i.getMax()) && (getMax() >= i.getMin());
   }
   
   NumberInterval<T> interSection(const NumberInterval<T> &i) const {
@@ -59,6 +59,19 @@ public:
     } else {
       return NumberInterval<T>(max(getMin(), i.getMin()), min(getMax(), i.getMax()));
     }
+  }
+
+  NumberInterval<T> &operator+=(const NumberInterval<T> &rhs) { // union operator
+    const T l = rhs.getMin();
+    const T r = rhs.getMax();
+    if (m_from < m_to) {
+      m_from = min(m_from, l);
+      m_to   = max(m_to  , r);
+    } else {
+      m_to   = min(m_to  , l);
+      m_from = max(m_from, r);
+    }
+    return *this;
   }
 
   T getLength() const {
