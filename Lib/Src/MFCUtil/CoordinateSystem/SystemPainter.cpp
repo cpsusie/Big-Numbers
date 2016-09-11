@@ -1,24 +1,22 @@
 #include "stdafx.h"
 #include <Math/MathFunctions.h>
+#include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/LinearAxisPainter.h>
 #include <MFCUtil/Coordinatesystem/LogarithmicAxisPainter.h>
 #include <MFCUtil/Coordinatesystem/NormalDistributionAxisPainter.h>
 #include <MFCUtil/Coordinatesystem/DateAxisPainter.h>
 
-SystemPainter::SystemPainter(Viewport2D &vp, CFont *font, COLORREF backgroundColor, COLORREF axisColor, AxisType xAxisType, AxisType yAxisType, bool grid) : m_vp(vp), m_font(font) {
-  m_backgroundColor = backgroundColor;
-  m_axisColor       = axisColor;
-  m_grid            = grid;
+SystemPainter::SystemPainter(CCoordinateSystem *system) : m_system(*system) {
   m_origin          = CPoint(0,0);
   m_oldFont         = NULL;
-  m_vp.setScale(getScale(xAxisType), X_AXIS);
-  m_vp.setScale(getScale(yAxisType), Y_AXIS);
+  getViewport().setScale(getScale(m_system.m_xAxisType), X_AXIS);
+  getViewport().setScale(getScale(m_system.m_yAxisType), Y_AXIS);
   if(m_font) {
-    m_oldFont = m_vp.getDC()->SelectObject(m_font);
+    m_oldFont = getViewport().getDC()->SelectObject(m_font);
   }
-  m_xAxisPainter    = createAxisPainter(true , xAxisType);
-  m_yAxisPainter    = createAxisPainter(false, yAxisType);
+  m_xAxisPainter    = createAxisPainter(true , m_system.m_xAxisType);
+  m_yAxisPainter    = createAxisPainter(false, m_system.m_yAxisType);
   makeSpaceForText();
 }
 
@@ -30,15 +28,15 @@ SystemPainter::~SystemPainter() {
     delete m_yAxisPainter;
   }
   if(m_oldFont) {
-    CDC *dc = m_vp.getDC();
+    CDC *dc = getViewport().getDC();
     dc->SelectObject(m_oldFont);
   }
 }
 
 void SystemPainter::paint() {
-  CDC *dc = m_vp.getDC();
+  CDC *dc = getViewport().getDC();
   CRect r = Rectangle2DR::makePositiveRectangle(getToRectangle());
-  dc->FillSolidRect(r, m_backgroundColor);
+  dc->FillSolidRect(r, m_system.m_backgroundColor);
 //  dc->Rectangle(&r);
 
   m_xAxisPainter->paintAxisData();
@@ -48,15 +46,19 @@ void SystemPainter::paint() {
 }
 
 Viewport2D &SystemPainter::getViewport() {
-  return m_vp;
+  return m_system.m_vp;
+}
+
+const Viewport2D &SystemPainter::getViewport() const {
+  return m_system.m_vp;
 }
 
 COLORREF SystemPainter::getAxisColor() const {
-  return m_axisColor;
+  return m_system.m_axisColor;
 }
 
 bool SystemPainter::hasGrid() const {
-  return m_grid;
+  return m_system.m_grid;
 }
 
 const CPoint &SystemPainter::getOrigin() const {
@@ -64,7 +66,7 @@ const CPoint &SystemPainter::getOrigin() const {
 }
 
 CSize SystemPainter::getTextExtent(const String &s) {
-  return m_vp.getDC()->GetTextExtent(s.cstr());
+  return getViewport().getDC()->GetTextExtent(s.cstr());
 }
 
 void SystemPainter::makeSpaceForText() {
@@ -73,9 +75,9 @@ void SystemPainter::makeSpaceForText() {
   int topMargin    = AbstractAxisPainter::ARROW_SIZE / 2;
   int bottomMargin = m_xAxisPainter->getMaxTextOffset() + getTextExtent(m_yAxisPainter->getMaxText()).cy + 1;
 
-  Rectangle2D fr = m_vp.getFromRectangle();
-  const IntervalTransformation &xtr = m_vp.getXTransformation();
-  const IntervalTransformation &ytr = m_vp.getYTransformation();
+  Rectangle2D fr = getViewport().getFromRectangle();
+  const IntervalTransformation &xtr = getViewport().getXTransformation();
+  const IntervalTransformation &ytr = getViewport().getYTransformation();
   bool adjustRectangle = false;
   if(xtr.isLinear() && fr.getMinX() == 0) {
     double dx = -xtr.backwardTransform(getToRectangle().left + leftMargin);
@@ -91,7 +93,7 @@ void SystemPainter::makeSpaceForText() {
   }
 
   if(adjustRectangle) {
-    m_vp.setFromRectangle(fr);
+    getViewport().setFromRectangle(fr);
   }
   Rectangle2DR innerRectangle = getToRectangle();
 
@@ -117,7 +119,7 @@ void SystemPainter::makeSpaceForText() {
 }
 
 CRect SystemPainter::getToRectangle() const {
-  return m_vp.getToRectangle();
+  return getViewport().getToRectangle();
 }
 
 AbstractAxisPainter *SystemPainter::createAxisPainter(bool xAxis, AxisType type) {
@@ -129,4 +131,12 @@ AbstractAxisPainter *SystemPainter::createAxisPainter(bool xAxis, AxisType type)
   default                      : throwException(_T("Invalid AxisType (=%d)"),type);
                                  return NULL;
   }
+}
+
+void SystemPainter::setOccupiedRect(const CRect &r) {
+  m_system.m_occupationMap.setOccupiedRect(r);
+}
+
+void SystemPainter::setOccupiedLine(const CPoint &from, const CPoint &to) { // line
+  m_system.m_occupationMap.setOccupiedLine(from, to);
 }

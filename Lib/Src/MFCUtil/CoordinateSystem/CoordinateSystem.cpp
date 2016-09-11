@@ -92,16 +92,19 @@ void CCoordinateSystem::OnPaint() {
 }
 
 void CCoordinateSystem::paint(CDC &dc) {
-  m_vp.setToRectangle(Rectangle2DR::makeBottomUpRectangle(getClientRect(this)));
+  const CRect cr = getClientRect(this);
+  m_vp.setToRectangle(Rectangle2DR::makeBottomUpRectangle(cr));
+  m_occupationMap.clear();
+  m_occupationMap.setWindowSize(cr.Size());
   if (m_autoScale && m_objectArray.size() > 0) {
     setDataRange(findSmallestDataRange(), m_autoSpace);
   }
   m_vp.setDC(&dc);
   m_vp.setClipping(true);
-  SystemPainter painter(m_vp, GetFont(), m_backgroundColor, m_axisColor, m_xAxisType, m_yAxisType, hasGrid());
+  SystemPainter painter(this);
   painter.paint();
   for(size_t i = 0; i < m_objectArray.size(); i++) {
-    m_objectArray[i]->paint(m_vp);
+    m_objectArray[i]->paint(*this);
   }
   m_vp.setClipping(false);
 }
@@ -112,7 +115,7 @@ DoubleInterval CCoordinateSystem::getDefaultInterval(AxisType type) { // static
   case AXIS_LOGARITHMIC         : return DoubleInterval(0.1,10);
   case AXIS_NORMAL_DISTRIBUTION : return DoubleInterval(0.001,0.999);
   case AXIS_DATE                :
-    { Timestamp now = Timestamp();
+    { const Timestamp now = Timestamp();
       return DoubleInterval(now.getDATE(), (now+1).getDATE());
     }
   default:
@@ -129,9 +132,37 @@ DataRange CCoordinateSystem::getDefaultDataRange(AxisType xType, AxisType yType)
 DataRange CCoordinateSystem::findSmallestDataRange() const {
   DataRange result = m_objectArray[0]->getDataRange();
   for (size_t i = 1; i < m_objectArray.size(); i++) {
-    result.update(m_objectArray[i]->getDataRange());
+    result += m_objectArray[i]->getDataRange();
   }
   return result;
+}
+
+void CCoordinateSystem::setOccupiedPoint(const Point2D &p) {
+  m_occupationMap.setOccupiedPoint(m_vp.forwardTransform(p));
+}
+
+void CCoordinateSystem::setOccupiedLine(const Point2D &p1, const Point2D &p2) {
+  m_occupationMap.setOccupiedLine(m_vp.forwardTransform(p1), m_vp.forwardTransform(p2));
+}
+
+void CCoordinateSystem::setOccupiedPoints(const Point2DArray &pa) {
+  PointArray tmp(pa.size());
+  m_occupationMap.setOccupiedPoints(transformPoint2DArray(tmp, pa));
+}
+
+void CCoordinateSystem::setOccupiedConnectedPoints(const Point2DArray &pa) {
+  if(pa.size() < 2) return;
+  PointArray tmp(pa.size());
+  m_occupationMap.setOccupiedConnectedPoints(transformPoint2DArray(tmp, pa));
+}
+
+PointArray &CCoordinateSystem::transformPoint2DArray(PointArray &dst, const Point2DArray &src) const {
+  dst.clear(src.size());
+  if(src.size() == 0) return dst;
+  for (const Point2D *p = &src[0], *end = &src.last(); p <= end;) {
+    dst.add(m_vp.forwardTransform(*(p++)));
+  }
+  return dst;
 }
 
 class PointArrayObject : public CoordinateSystemObject {
@@ -145,7 +176,7 @@ public:
   PointArrayObject(COLORREF color) : m_color(color) {
   }
   PointArrayObject(const Point2DArray &points, COLORREF color);
-  void paint(Viewport2D &vp);
+  void paint(CCoordinateSystem &cs);
   const DataRange &getDataRange() const {
     return m_dataRange;
   }
@@ -156,17 +187,21 @@ PointArrayObject::PointArrayObject(const Point2DArray &points, COLORREF color) :
 }
 
 void PointArrayObject::initDataRange() {
-  m_dataRange.init(m_points);
+  m_dataRange = DataRange(m_points);
 }
 
-void PointArrayObject::paint(Viewport2D &vp) {
+void PointArrayObject::paint(CCoordinateSystem &cs) {
+  if(m_points.size() <= 1) return;
   CPen pen;
   pen.CreatePen(PS_SOLID, 1, m_color);
+  Viewport2D &vp = cs.getViewport();
   CPen *oldPen = vp.SelectObject(&pen);
-  vp.MoveTo(m_points[0]);
-  for(size_t i = 1; i < m_points.size(); i++) {
-    vp.LineTo(m_points[i]);
+  const Point2D *p = &m_points[0], *end = &m_points.last();
+  vp.MoveTo(*p);
+  while(p++ < end) {
+    vp.LineTo(*p);
   }
+  cs.setOccupiedConnectedPoints(m_points);
   vp.SelectObject(oldPen);
 }
 
@@ -195,19 +230,17 @@ FunctionObject::FunctionObject(Function &f, const DoubleInterval &range, UINT n,
   initDataRange();
 }
 
-void CCoordinateSystem::addFunctionObject(CDC &dc, Function &f, const DoubleInterval *range, COLORREF color) {
-  Viewport2D                   *vp      = getViewport(dc);
-  const DoubleInterval          toRange = vp->getToRectangle().getXInterval();
-  const IntervalTransformation &tr      = vp->getXTransformation();
+void CCoordinateSystem::addFunctionObject(Function &f, const DoubleInterval *range, COLORREF color) {
+  const DoubleInterval          toRange = m_vp.getToRectangle().getXInterval();
+  const IntervalTransformation &tr      = m_vp.getXTransformation();
   const DoubleInterval          xRange  = range ? *range : tr.backwardTransform(toRange);
   const UINT                    n       = (UINT)toRange.getLength() + 1;
 
   addObject(new FunctionObject(f, xRange, n, color));
 }
 
-Viewport2D *CCoordinateSystem::getViewport(CDC &dc) {
+void CCoordinateSystem::setDC(CDC &dc) {
   m_vp.setDC(&dc);
-  return &m_vp;
 }
 
 void CCoordinateSystem::setDataRange(const DataRange &dataRange, bool makeSpace) {

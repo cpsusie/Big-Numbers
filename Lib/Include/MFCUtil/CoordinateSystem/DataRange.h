@@ -8,15 +8,16 @@ class DataRange {
 private:
   DoubleInterval m_xInterval, m_yInterval;
 public:
-  void init(const Point2D &p);
-  void init(const Point2DArray &pa);
-  void update(const Point2D &p);
-  void update(const DataRange &dataRange);
-  void update(const Point2DArray &pa);
   DataRange();
-  DataRange(const Rectangle2D &r);
+  DataRange(const Point2D      &p );
+  DataRange(const Rectangle2D  &r );
+  DataRange(const Point2DArray &pa);
   DataRange(const DoubleInterval &xInterval, const DoubleInterval &yInterval);
   DataRange(double minX, double maxX, double minY, double maxY);
+
+  DataRange &operator+=(const Point2D      &p ); // adjust intervals to include p
+  DataRange &operator+=(const DataRange    &dr); // union of *this  and dr
+  DataRange &operator+=(const Point2DArray &pa);
 
   double getMinX() const {
     return m_xInterval.getFrom();

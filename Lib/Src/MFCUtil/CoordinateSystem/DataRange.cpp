@@ -17,11 +17,31 @@ DataRange::DataRange(double minX, double maxX, double minY, double maxY) {
   init(minX, maxX, minY, maxY);
 }
 
-void DataRange::init(const Point2D &p) { 
+DataRange::DataRange(const Point2D &p) { 
   init(p.x, p.x, p.y, p.y);
 }
 
-void DataRange::update(const Point2D &p) {
+DataRange::DataRange(const Point2DArray &pa) {
+  if (pa.size() > 0) {
+    const Point2D *p = &pa[0], *end = &pa.last();
+    init(p->x, p->x, p->y, p->y);
+    while(p++ < end) {
+      *this += *p;
+    }
+  }
+}
+
+DataRange &DataRange::operator+=(const Point2DArray &pa) {
+  if (pa.size() > 0) {
+    const Point2D *end = &pa.last();
+    for(const Point2D *p = &pa[0]; p <= end;) {
+      *this += *(p++);
+    }
+  }
+  return *this;
+}
+
+DataRange &DataRange::operator+=(const Point2D &p) {
   if(p.x < m_xInterval.getFrom()) {
     m_xInterval.setFrom(p.x);
   } else if(p.x > m_xInterval.getTo()) {
@@ -33,11 +53,13 @@ void DataRange::update(const Point2D &p) {
   } else if(p.y > m_yInterval.getTo()) {
     m_yInterval.setTo(p.y);
   }
+  return *this;
 }
 
-void DataRange::update(const DataRange &dataRange) {
-  update(Point2D(dataRange.getMinX(), dataRange.getMinY()));
-  update(Point2D(dataRange.getMaxX(), dataRange.getMaxY()));
+DataRange &DataRange::operator+=(const DataRange &dr) {
+  m_xInterval += dr.getXInterval();
+  m_yInterval += dr.getYInterval();
+  return *this;
 }
 
 void DataRange::init(double minX, double maxX, double minY, double maxY) {
@@ -51,19 +73,4 @@ DataRange::operator Rectangle2D() const {
   double minX = getMinX();
   double minY = getMinY();
   return Rectangle2D(minX, minY, getMaxX() - minX, getMaxY() - minY);
-}
-
-void DataRange::init(const Point2DArray &pa) {
-  if (pa.size() > 0) {
-    init(pa[0]);
-  }
-  for(size_t i = 1; i < pa.size(); i++) {
-    update(pa[i]);
-  }
-}
-
-void DataRange::update(const Point2DArray &pa) {
-  for(size_t i = 0; i < pa.size(); i++) {
-    update(pa[i]);
-  }
 }

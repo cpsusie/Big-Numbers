@@ -3,28 +3,29 @@
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/Coordinatesystem/AbstractAxisPainter.h>
 
+class CCoordinateSystem;
+
 class SystemPainter {
 private:
+  CCoordinateSystem   &m_system;
   AbstractAxisPainter *m_xAxisPainter;
   AbstractAxisPainter *m_yAxisPainter;
-  Viewport2D          &m_vp;
   CPoint               m_origin; // Point inside vp.toRectangle where axes cross. Space is left for textdata to the axes
   CFont               *m_font, *m_oldFont;
-  COLORREF             m_backgroundColor;
-  COLORREF             m_axisColor;
-  bool                 m_grid;
 
   void  makeSpaceForText();
   CRect getToRectangle() const;
-  void  initOrigin();
   AbstractAxisPainter *createAxisPainter(bool xAxis, AxisType axisType);
 public:
-  SystemPainter(Viewport2D &vp, CFont *font, COLORREF backgroundColor, COLORREF axisColor, AxisType xAxisType, AxisType yAxisType, bool grid);
+  SystemPainter(CCoordinateSystem *system);
   ~SystemPainter();
-  void          paint();
-  Viewport2D   &getViewport();
-  COLORREF      getAxisColor() const;
-  bool          hasGrid() const;
-  const CPoint &getOrigin() const;
-  CSize         getTextExtent(const String &str);
+  void              paint();
+  Viewport2D       &getViewport();
+  const Viewport2D &getViewport() const;
+  COLORREF          getAxisColor() const;
+  bool              hasGrid() const;
+  const CPoint     &getOrigin() const;
+  CSize             getTextExtent(const String &str);
+  void              setOccupiedRect(const CRect &r);
+  void              setOccupiedLine(const CPoint &from, const CPoint &to);
 };

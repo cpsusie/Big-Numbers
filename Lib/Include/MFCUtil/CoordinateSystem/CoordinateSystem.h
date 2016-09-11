@@ -1,6 +1,8 @@
 #pragma once
 
+#include <BitSet.h>
 #include <Math/MathLib.h>
+#include <MFCUtil/WinTools.h>
 #include <MFCUtil/Viewport2D.h>
 #include "AxisType.h"
 #include "DataRange.h"
@@ -9,26 +11,50 @@ class CCoordinateSystem;
 
 class CoordinateSystemObject {
 public:
-  virtual void paint(Viewport2D &vp) = 0;
+  virtual void paint(CCoordinateSystem &cs) = 0;
   virtual const DataRange &getDataRange() const = 0;
   virtual ~CoordinateSystemObject() {
   }
-
 };
+
+class OccupationMap : public BitMatrix {
+private:
+  CSize m_cellSize; // in pixels
+  CSize m_winSize;  // in pixels
+  inline CRect getRect() const {
+    return CRect(0,0,m_winSize.cx,m_winSize.cy);
+  }
+  PointArray &createDistinctPointArray(PointArray &dst, const PointArray &src) const;
+public:
+  OccupationMap() : m_cellSize(10,10), m_winSize(80,80), BitMatrix(8,8) {
+  }
+  void setCellSize(int cx, int cy);
+  void setWindowSize(const CSize &size);
+  void setOccupiedPoint(          const CPoint     &p );
+  void setOccupiedLine(           const CPoint     &p1, const CPoint &p2);
+  void setOccupiedRect(           const CRect      &r );
+  void setOccupiedPoints(         const PointArray &pa);
+  void setOccupiedConnectedPoints(const PointArray &pa);
+};
+
 
 class CCoordinateSystem : public CStatic {
 private:
   DECLARECLASSNAME;
   Viewport2D                            m_vp;
+  OccupationMap                         m_occupationMap;
   COLORREF                              m_backgroundColor;
   COLORREF                              m_axisColor;
   AxisType                              m_xAxisType, m_yAxisType;
   bool                                  m_grid;
   bool                                  m_retainAspectRatio;
   bool                                  m_autoScale, m_autoSpace;
+  friend class SystemPainter;
+
   CompactArray<CoordinateSystemObject*> m_objectArray;
   DataRange findSmallestDataRange() const;
   int    findObject(const CoordinateSystemObject *object) const;
+  PointArray &transformPoint2DArray(PointArray &dst, const Point2DArray &src) const;
 public:
 
 public:
@@ -36,13 +62,13 @@ public:
   virtual ~CCoordinateSystem();
 
   void   substituteControl(CWnd *parent, int id);
-  void   paint(       CDC &dc);
+  void   paint(            CDC &dc);
 
   static DoubleInterval getDefaultInterval(AxisType type);
   static DataRange      getDefaultDataRange(AxisType xType, AxisType yType);
 
   void   addPointObject(   const Point2DArray &a, COLORREF color = RGB(0,0,0));
-  void   addFunctionObject(CDC &dc, Function &f, const DoubleInterval *range = NULL, COLORREF color = RGB(0,0,0));
+  void   addFunctionObject(Function &f, const DoubleInterval *range = NULL, COLORREF color = RGB(0,0,0));
 
   void   addObject(   CoordinateSystemObject *object);
   void   removeObject(CoordinateSystemObject *object);
@@ -65,7 +91,19 @@ public:
     return m_vp.getTransformation();;
   }
 
-  Viewport2D *getViewport(CDC &dc);
+  void setOccupiedPoint(          const Point2D      &p );
+  void setOccupiedLine(           const Point2D      &p1, const Point2D &p2);
+  void setOccupiedPoints(         const Point2DArray &pa);
+  void setOccupiedConnectedPoints(const Point2DArray &pa);
+
+  void setDC(CDC &dc);
+  Viewport2D &getViewport() {
+    return m_vp;
+  }
+  OccupationMap &getOccupationMap() {
+    return m_occupationMap;
+  }
+
   void  setFromRectangle(const Rectangle2D &rectangle, bool makeSpace);
 
   inline Rectangle2D getFromRectangle() const {

@@ -26,9 +26,9 @@ private:
 
   void verticalGridLine(  double x);
   void horizontalGridLine(double y);
-  void line(double x1, double y1, double x2, double y2);
-  void line(double x1, double y1, double x2, double y2, CPen &pen);
-  void textOut(int x, int y, const String &txt);
+  void line(double x1, double y1, double x2, double y2, bool setOccupied);
+  void line(double x1, double y1, double x2, double y2, CPen &pen, bool setOccupied);
+  void textOut(int x, int y, const String &txt, const CSize &textExtent);
   void paintXAxis();
   void paintYAxis();
 protected:
