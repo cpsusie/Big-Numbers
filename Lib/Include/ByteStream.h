@@ -5,8 +5,8 @@
 class ByteInputStream {
 public:
   virtual intptr_t getBytes(BYTE *dst, size_t n) = 0; // Must return the actual number of bytes read.
-  virtual int getByte() = 0;                           // Must return EOF when end-of-stream
-  void getBytesForced(BYTE *dst, size_t n);      // Throws "unexpected end-of-stream Exception", if the requested number of bytes cannot be read
+  virtual int getByte() = 0;                          // Must return EOF when end-of-stream
+  void getBytesForced(BYTE *dst, size_t n);           // Throws "unexpected end-of-stream Exception", if the requested number of bytes cannot be read
 };
 
 class ByteOutputStream {
