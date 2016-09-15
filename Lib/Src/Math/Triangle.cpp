@@ -658,7 +658,7 @@ class Mesh {
   // large) Triangles, and splay tree nodes.
   MemoryPool<Triangle>    triangles;
   MemoryPool<SubSeg>      subsegs;
-  MemoryPool<Real>        vertices;
+  MemoryPool<REAL>        vertices;
   MemoryPool<Triangle*>   viri;
   MemoryPool<BadSubSeg>   badsubsegs;
   MemoryPool<BadTriangle> badtriangles;
