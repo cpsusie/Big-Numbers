@@ -100,7 +100,7 @@ TreeSetNode *TreeSetIterator::findNext() {
       break;
 
     default:
-      throwException(_T("%s::findNext:Illegal state:%d"), s_className, sp->m_state);
+      throwException(_T("%s:Illegal state:%d"), __TFUNCTION__, sp->m_state);
     }
   }
   return NULL;
