@@ -17,7 +17,7 @@ PackedArray::PackedArray(unsigned char bitsPerItem) : m_bitsPerItem(bitsPerItem)
   m_firstFreeBit = 0;
 }
 
-void PackedArray::validateBitsPerItem(unsigned int bitsPerItem) { // static
+void PackedArray::validateBitsPerItem(UINT bitsPerItem) { // static
   DEFINEMETHODNAME;
 
   if(bitsPerItem == 0) {
@@ -28,7 +28,7 @@ void PackedArray::validateBitsPerItem(unsigned int bitsPerItem) { // static
   }
 }
 
-static TCHAR *sprintbin(TCHAR *s, unsigned int v) { // low-end bits first
+static TCHAR *sprintbin(TCHAR *s, UINT v) { // low-end bits first
   TCHAR *t = s;
   for(int i = 32; i--; v >>= 1) {
     *(t++) = _T('0') + (v & 1);
@@ -40,7 +40,7 @@ static TCHAR *sprintbin(TCHAR *s, unsigned int v) { // low-end bits first
 #ifdef TEST
 #define DUMP() if(trace) { dump(true); }
 
-static String printbin(unsigned int v) {
+static String printbin(UINT v) {
   TCHAR tmp[100];
   return sprintbin(tmp, v);
 }
@@ -53,13 +53,13 @@ static String printbin(unsigned int v) {
 
 #define CHECK_INDEX                      \
 { if(index >= size()) {                  \
-    indexError(index, __TFUNCTION__); \
+    indexError(index, __TFUNCTION__);    \
   }                                      \
 }
 
 #define CHECK_VALUE                      \
 { if(v > m_maxValue) {                   \
-    valueError(v, __TFUNCTION__);     \
+    valueError(v, __TFUNCTION__);        \
   }                                      \
 }
 
@@ -76,21 +76,21 @@ static String printbin(unsigned int v) {
 
 #endif
 
-unsigned int PackedArray::get(unsigned __int64 index) const {
+UINT PackedArray::get(unsigned __int64 index) const {
   CHECK_INDEX
 
-  const unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
-  const unsigned int offset =         (index * m_bitsPerItem) % 32;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
-        unsigned int v      = (*p >> offset) & (m_maxValue >> (m_bitsPerItem-n));
+  const UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
+  const UINT offset =         (index * m_bitsPerItem) % 32;
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
+        UINT v      = (*p >> offset) & (m_maxValue >> (m_bitsPerItem-n));
   if(rest -= n) {
     v |= (p[1] & (m_maxValue >> (m_bitsPerItem-rest))) << n;
   }
   return v;
 }
 
-unsigned int PackedArray::select() const {
+UINT PackedArray::select() const {
 #ifdef _DEBUG
   if(isEmpty()) {
    selectError();
@@ -99,14 +99,14 @@ unsigned int PackedArray::select() const {
   return get(randInt() % size());
 }
 
-void PackedArray::set(unsigned __int64 index, unsigned int v) {
+void PackedArray::set(unsigned __int64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
-        unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
-  const unsigned int offset =         (index * m_bitsPerItem) % 32;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
-        unsigned int mask   = m_maxValue >> (m_bitsPerItem - n);
+        UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
+  const UINT offset =         (index * m_bitsPerItem) % 32;
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
+        UINT mask   = m_maxValue >> (m_bitsPerItem - n);
   *p &= ~(mask << offset);
   *p |= (v & mask) << offset;
   if(rest -= n) {
@@ -115,62 +115,62 @@ void PackedArray::set(unsigned __int64 index, unsigned int v) {
   }
 }
 
-void PackedArray::or( unsigned __int64 index, unsigned int v) {
+void PackedArray::or(unsigned __int64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
-        unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
-  const unsigned int offset =         (index * m_bitsPerItem) % 32;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
+        UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
+  const UINT offset =         (index * m_bitsPerItem) % 32;
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
   *p |= (v & (m_maxValue >> (m_bitsPerItem - n))) << offset;
   if(rest -= n) {
     p[1] |= (v>>n) & (m_maxValue >> (m_bitsPerItem - rest));
   }
 }
 
-void PackedArray::and(unsigned __int64 index, unsigned int v) {
+void PackedArray::and(unsigned __int64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
-        unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
-  const unsigned int offset =         (index * m_bitsPerItem) % 32;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
+        UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
+  const UINT offset =         (index * m_bitsPerItem) % 32;
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
   *p &= (v << offset) | ~(m_maxValue << offset);
   if(rest -= n) {
     p[1] &= (v>>n) | ~(m_maxValue >> n);
   }
 }
 
-void PackedArray::xor(unsigned __int64 index, unsigned int v) {
+void PackedArray::xor(unsigned __int64 index, UINT v) {
   CHECK_INDEX_AND_VALUE
 
-        unsigned int *p     = &m_data[(index * m_bitsPerItem) / 32];
-  const unsigned int offset =         (index * m_bitsPerItem) % 32;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
+        UINT *p     = &m_data[(index * m_bitsPerItem) / 32];
+  const UINT offset =         (index * m_bitsPerItem) % 32;
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
   *p ^= (v & (m_maxValue >> (m_bitsPerItem - n))) << offset;
   if(rest -= n) {
     p[1] ^= (v>>n) & (m_maxValue >> (m_bitsPerItem - rest));
   }
 }
 
-void PackedArray::add(unsigned int v) {
+void PackedArray::add(UINT v) {
   CHECK_VALUE
 
   assertHasOneFreeItem();
 
-        unsigned int *p     = &m_data[m_firstFreeBit / 32];
-  const unsigned int offset =         m_firstFreeBit % 32;
+        UINT *p     = &m_data[m_firstFreeBit / 32];
+  const UINT offset =         m_firstFreeBit % 32;
   m_firstFreeBit += m_bitsPerItem;
-        unsigned int rest   = m_bitsPerItem;
-  const unsigned int n      = min(32 - offset, rest);
+        UINT rest   = m_bitsPerItem;
+  const UINT n      = min(32 - offset, rest);
   *p |= (v & (m_maxValue >> (m_bitsPerItem - n))) << offset;
   if(rest -= n) {
     p[1] |= (v>>n) & (m_maxValue >> (m_bitsPerItem - rest));
   }
 }
 
-void PackedArray::add(unsigned __int64 index, unsigned int v) {
+void PackedArray::add(unsigned __int64 index, UINT v) {
   CHECK_VALUE
 
   addZeroes(index, 1);
@@ -205,8 +205,8 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
   if(index < size()) {
     const __int64 bitPos      = index * m_bitsPerItem;
     const   int   baseOffset  = bitPos % 32;
-    unsigned int *p0          = &m_data[0];
-    unsigned int *basep       = p0 + bitPos/32; // first integer to copy from
+    UINT         *p0          = &m_data[0];
+    UINT         *basep       = p0 + bitPos/32; // first integer to copy from
 
 #ifdef TEST
     markPointer(basep, baseOffset);
@@ -229,7 +229,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
-        assert(((char*)basep <= src) && (src < dst) && (dst+bytesToMove <= (((char*)&m_data.last()) + sizeof(unsigned int))));
+        assert(((char*)basep <= src) && (src < dst) && (dst+bytesToMove <= (((char*)&m_data.last()) + sizeof(UINT))));
 #endif
         memmove(dst, src, bytesToMove);
         DUMP();
@@ -272,13 +272,13 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
       break;
 
     default:
-      { unsigned int      *src         = p0 + m_firstFreeBit / 32;
-        unsigned int      *dst         = p0 + (newFreeBit-1) / 32;
+      { UINT              *src         = p0 + m_firstFreeBit / 32;
+        UINT              *dst         = p0 + (newFreeBit-1) / 32;
         const    int       srcOffset   = m_firstFreeBit % 32;
                  int       dstOffset   = newFreeBit % 32;
         if(dstOffset == 0) dstOffset   = 32;
         const __int64      dstBitIndex = bitPos + bitsToAdd;
-        unsigned int      *dstp        = p0 + dstBitIndex/32; // lowest address to copy to
+        UINT              *dstp        = p0 + dstBitIndex/32; // lowest address to copy to
         int shiftL, shiftR;
 
 #ifdef TEST
@@ -333,7 +333,7 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
         }
 #endif
 
-        const unsigned int mask = (1<<baseOffset)-1;
+        const UINT mask = (1<<baseOffset)-1;
         if(dstp == basep) {
           *dstp = (basep[0] & mask) | ((basep[0] & ~mask) << shiftL);
           DUMP();
@@ -371,10 +371,10 @@ void PackedArray::addZeroes(unsigned __int64 index, unsigned __int64 count) {
 
 // TODO works only for little-endian
 void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
-  const unsigned int j = index + count;
+  const UINT j = index + count;
 #ifdef _DEBUG
   if(j > size()) {
-    indexError(j, format(_T("remove(%lu,%lu):"), index, count).cstr());
+    indexError(j, format(_T("remove(%llu,%llu):"), index, count).cstr());
   }
 #endif
 
@@ -392,8 +392,8 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
   if(j < size()) {
     const __int64     bitPos     = index * m_bitsPerItem;
     const   int       baseOffset = bitPos % 32;
-    unsigned int      *p0        = &m_data[0];
-    unsigned int      *basep     = p0 + bitPos/32; // first integer to copy to
+    UINT             *p0         = &m_data[0];
+    UINT             *basep      = p0 + bitPos/32; // first integer to copy to
 
     switch(bitsToRemove % 32) {
     case 0:
@@ -412,7 +412,7 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
         assert(bytesToMove > 0);
         markPointer(src);
         markPointer(dst);
-        assert(((char*)basep <= dst) && (dst < src) && (src+bytesToMove <= (((char*)&m_data.last()) + sizeof(unsigned int))));
+        assert(((char*)basep <= dst) && (dst < src) && (src+bytesToMove <= (((char*)&m_data.last()) + sizeof(UINT))));
 #endif
         memmove(dst, src, bytesToMove);
         DUMP();
@@ -428,10 +428,10 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
     default:
       { const  __int64     srcBitIndex = bitPos + bitsToRemove;
         const    int       srcOffset   = srcBitIndex % 32;
-        unsigned int      *src         = p0 + srcBitIndex / 32;
-        unsigned int      *dst         = basep;
+        UINT              *src         = p0 + srcBitIndex / 32;
+        UINT              *dst         = basep;
         const    int       dstOffset   = baseOffset;
-        unsigned int      *lastp       = &m_data.last(); // higest address to copy from
+        UINT              *lastp       = &m_data.last(); // higest address to copy from
         int shiftL, shiftR;
 
         assert(dstOffset != srcOffset);
@@ -448,7 +448,7 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
         markPointer(dst, dstOffset);
         markPointer(src, srcOffset);
 #endif
-        const unsigned int mask = (1<<dstOffset)-1;
+        const UINT mask = (1<<dstOffset)-1;
         if(dstOffset <= srcOffset) {
           *dst = (*dst & mask) | ((src[0] >> shiftR) & ~mask);
           DUMP();
@@ -505,8 +505,8 @@ void PackedArray::remove(unsigned __int64 index, unsigned __int64 count) {
 
   m_firstFreeBit = newFreeBit;
   const int          lastOffset  =  newFreeBit % 32;
-  const unsigned int newDataSize = (newFreeBit / 32) + (lastOffset ? 1 : 0);
-  if(newDataSize < (unsigned int)m_data.size()) {
+  const UINT         newDataSize = (newFreeBit / 32) + (lastOffset ? 1 : 0);
+  if(newDataSize < (UINT)m_data.size()) {
     m_data.remove(newDataSize, m_data.size() - newDataSize);
     DUMP();
   }
@@ -530,7 +530,7 @@ void PackedArray::setCapacity(unsigned __int64 capacity) {
     return;
   }
   unsigned __int64 bitCapacity = capacity * m_bitsPerItem;
-  unsigned int     intCapacity = (bitCapacity - 1) / 32 + 1;
+  UINT             intCapacity = (bitCapacity - 1) / 32 + 1;
   m_data.setCapacity(intCapacity);
 }
 
@@ -544,41 +544,50 @@ bool PackedArray::operator==(const PackedArray &a) const {
 void PackedArray::checkInvariant() const {
   const int expectedSize = m_firstFreeBit ? ((m_firstFreeBit-1) / 32 + 1) : 0;
   if(m_data.size() != expectedSize) {
-    throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%d, m_data.size=%d, Should be %d")
-                   ,m_bitsPerItem, m_firstFreeBit, m_data.size(), expectedSize);
+    throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%s, m_data.size=%s, Should be %d")
+                  ,m_bitsPerItem
+                  ,format1000(m_firstFreeBit).cstr()
+                  ,format1000(m_data.size()).cstr()
+                  ,expectedSize);
   }
   if(expectedSize > 0 && (m_firstFreeBit%32)) {
-    const unsigned int lastInt = m_data[expectedSize-1];
+    const UINT lastInt = m_data[expectedSize-1];
     if((lastInt & ~((1<<(m_firstFreeBit%32))-1)) != 0) {
-      throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%d, m_data.size=%d, Garbagebits in last element:%08x")
-                     ,m_bitsPerItem, m_firstFreeBit, m_data.size(), lastInt);
+      throwException(_T("PackedArray:Bits/Item:%d. m_firstFreeBit:%s, m_data.size=%s, Garbagebits in last element:%08x")
+                    ,m_bitsPerItem
+                    ,format1000(m_firstFreeBit).cstr()
+                    ,format1000(m_data.size()).cstr()
+                    ,lastInt);
     }
   }
 }
 
 String PackedArray::toString() const {
-  String result = format(_T("Packed Array:Bits/Item:%d, Size:%d, firstFreeBit:%d. m_data.size:%d\n")
-                        ,m_bitsPerItem, size(), m_firstFreeBit, m_data.size());
+  String result = format(_T("Packed Array:Bits/Item:%d, Size:%s, firstFreeBit:%s. m_data.size:%s\n")
+                        ,m_bitsPerItem
+                        ,format1000(size()).cstr()
+                        ,format1000(m_firstFreeBit).cstr()
+                        ,format1000(m_data.size()).cstr());
   TCHAR tmp[40];
   int l = getBitsPerItem();
   size_t n = m_data.size() * 32 / l;
   for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
-      result += " ";
+      result += _T(" ");
       bitCount %= 32;
     }
     if(i % 10 == 0) {
-      result += format(_T("%*d"), l, i/10);
+      result += format(_T("%*s"), l, formatSize(i/10).cstr());
     } else {
-      result += format(_T("%*s"), l," ");
+      result += format(_T("%*s"), l,_T(" "));
     }
   }
   result += _T("\n");
   for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
-      result += ":";
+      result += _T(":");
       bitCount %= 32;
     }
     result += format(_T("%*d"), l, i%10);
@@ -588,7 +597,7 @@ String PackedArray::toString() const {
   for(size_t i = 0, bitCount = 0; i < size(); i++) { // print member of the array
     bitCount += l;
     if(bitCount > 32) {
-      result += ":";
+      result += _T(":");
       bitCount %= 32;
     }
     result += format(_T("%*d"), l, get(i));
@@ -608,21 +617,20 @@ String PackedArray::toString() const {
       bitCount %= 32;
     }
     if(i % 10 == 0) {
-      result += format(_T("%*d"), l, i/10);
+      result += format(_T("%*s"), l, formatSize(i/10).cstr());
     } else {
-      result += format(_T("%*s"), l," ");
+      result += format(_T("%*s"), l,_T(" "));
     }
   }
   result += _T("\n");
   for(size_t i = 0, bitCount = 0; i < n; i++) { // print indices
     bitCount += l;
     if(bitCount > 32) {
-      result += ":";
+      result += _T(":");
       bitCount %= 32;
     }
     result += format(_T("%*d"), l, i%10);
   }
-
   return result;
 }
 
