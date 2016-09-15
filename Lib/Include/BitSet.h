@@ -236,7 +236,7 @@ private:
   inline MatrixIndex indexToPoint(size_t index) const {
     return MatrixIndex(index / m_dim.columnCount, index % m_dim.columnCount);
   }
-  void checkSameDimension(const BitMatrix &m) const;
+  void checkSameDimension(const TCHAR *method, const BitMatrix &m) const;
   void checkValidRow(   const TCHAR *method, size_t r) const;
   void checkValidColumn(const TCHAR *method, size_t c) const;
   friend class BitMatrixIterator;

@@ -4,9 +4,9 @@
 void BitMatrix::set(size_t r, size_t c, bool v) {
   if(!m_dim.isLegalIndex(r, c)) return;
   if(v) {
-    add(getIndex(r,c));
+    add(getIndex(r, c));
   } else {
-    remove(getIndex(r,c));
+    remove(getIndex(r, c));
   }
 }
 
@@ -104,25 +104,25 @@ bool BitMatrix::operator==(const BitMatrix &m) const {
 }
 
 BitMatrix &BitMatrix::operator&=(const BitMatrix &m) {
-  checkSameDimension(m);
+  checkSameDimension(__TFUNCTION__, m);
   ((BitSet&)(*this)) &= m;
   return *this;
 }
 
 BitMatrix &BitMatrix::operator|=(const BitMatrix &m) {
-  checkSameDimension(m);
+  checkSameDimension(__TFUNCTION__, m);
   ((BitSet&)(*this)) |= m;
   return *this;
 }
 
 BitMatrix &BitMatrix::operator^=(const BitMatrix &m) {
-  checkSameDimension(m);
+  checkSameDimension(__TFUNCTION__, m);
   ((BitSet&)(*this)) ^= m;
   return *this;
 }
 
 BitMatrix &BitMatrix::operator-=(const BitMatrix &m) {
-  checkSameDimension(m);
+  checkSameDimension(__TFUNCTION__, m);
   ((BitSet&)(*this)) -= m;
   return *this;
 }
@@ -323,11 +323,12 @@ Iterator<MatrixIndex> BitMatrix::getColumnIterator(size_t c) {
 
 // -------------------------------------------------------------------------
 
-void BitMatrix::checkSameDimension(const BitMatrix &m) const {
+void BitMatrix::checkSameDimension(const TCHAR *method, const BitMatrix &m) const {
   if(getDimension() != m.getDimension()) {
-    throwException(_T("BitMatrices must have the same dimensions. this->%s, m.%s")
-                  ,getDimensionString().cstr(), m.getDimensionString().cstr()
-                  );
+    throwInvalidArgumentException(method
+                                 ,_T("BitMatrices must have the same dimensions. this->%s, m.%s")
+                                 ,getDimensionString().cstr(), m.getDimensionString().cstr()
+                                 );
   }
 }
 
@@ -335,7 +336,7 @@ String BitMatrix::toString() const {
   String result;
   for(size_t r = 0; r < getRowCount(); r++) {
     for(size_t c = 0; c < getColumnCount(); c++) {
-      result += get(r,c)?_T("1"):_T("0");
+      result += get(r, c) ? _T("1") : _T("0");
     }
     result += _T("\n");
   }
