@@ -681,7 +681,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
     PostMessage(ID_MSG_SEARCHEITERATION_CHANGED, 0, 0);
     break;
 
-   case EXTREMACOUNT      : // *int
+  case EXTREMACOUNT       : // *int
     m_gate.wait();
     m_extrStrArray = r.getExtremaStringArray();
     m_gate.signal();
@@ -703,7 +703,7 @@ void CIRemesDlg::handleRemesProperty(const Remes &r, int id, const void *oldValu
       
       m_gate.wait();
       m_coorSystemSpline.deleteAllObjects();
-      m_coorSystemSpline.addFunctionObject(dc, f, &xRange);
+      m_coorSystemSpline.addFunctionObject(f, &xRange);
       m_gate.signal();
       PostMessage(IS_MSG_UPDATEINTERPOLATION, 0, 0);
     }
