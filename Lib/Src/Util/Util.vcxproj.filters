@@ -649,6 +649,9 @@
     <ClCompile Include="GetHandle.cpp">
       <Filter>Source Files\system</Filter>
     </ClCompile>
+    <ClCompile Include="FormatSize.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

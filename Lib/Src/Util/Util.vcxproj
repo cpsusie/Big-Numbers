@@ -437,6 +437,7 @@
     <ClCompile Include="FindDataCompCommon.cpp" />
     <ClCompile Include="fopen.cpp" />
     <ClCompile Include="format1000.cpp" />
+    <ClCompile Include="FormatSize.cpp" />
     <ClCompile Include="fraction.cpp" />
     <ClCompile Include="FrameChars.cpp" />
     <ClCompile Include="fread.cpp" />

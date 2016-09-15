@@ -116,6 +116,7 @@ String format1000(long             n);
 String format1000(unsigned long    n);
 String format1000(__int64          n);
 String format1000(unsigned __int64 n);
+String formatSize(size_t           n);
 
 unsigned long stringHash(    const String &str);                        // Very common used hashfunction
 int           stringHashCmp( const String &key, const String &elem);
