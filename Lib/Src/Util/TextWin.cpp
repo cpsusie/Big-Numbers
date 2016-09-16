@@ -77,7 +77,7 @@ void TextWin::insertBefore(TextWin *tw) {
 
 void TextWin::insertAfter(TextWin *tw) {
   if(tw == NULL) {
-    throwException(_T("insertAfter:NULL Invalid argument"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("tw = NULL"));
   }
   m_next = tw->m_next;
   m_prev = tw;
