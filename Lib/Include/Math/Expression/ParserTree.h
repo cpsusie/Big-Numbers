@@ -44,14 +44,14 @@ public:
   inline bool operator!=(const ParserTreeComplexity &rs) const {
     return parserTreeComplexityCmp(*this, rs) != 0;
   }
-  inline bool operator<(const ParserTreeComplexity  &rs) const {
-    return parserTreeComplexityCmp(*this, rs) < 0;
+  inline bool operator< (const ParserTreeComplexity &rs) const {
+    return parserTreeComplexityCmp(*this, rs) <  0;
   }
   inline bool operator<=(const ParserTreeComplexity &rs) const {
     return parserTreeComplexityCmp(*this, rs) <= 0;
   }
-  inline bool operator>(const ParserTreeComplexity  &rs) const {
-    return parserTreeComplexityCmp(*this, rs) > 0;
+  inline bool operator> (const ParserTreeComplexity &rs) const {
+    return parserTreeComplexityCmp(*this, rs) >  0;
   }
   inline bool operator>=(const ParserTreeComplexity &rs) const {
     return parserTreeComplexityCmp(*this, rs) >= 0;
