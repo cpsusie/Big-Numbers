@@ -441,6 +441,9 @@ __int64 Rational::findGCD(const __int64 &a, const __int64 &b) { // static
 
 bool Rational::isRealRational(const Real &x, Rational *r) { // static
   if(x == floor(x)) {
+    if(fabs(x) > LLONG_MAX) {
+      return false;
+    }
     if(r) *r = getInt(x);
     return true;
   }
