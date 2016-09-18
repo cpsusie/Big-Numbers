@@ -108,7 +108,7 @@ protected:
 
 #define RETURNNODE(n)                                                                      \
 { const SNode &_n = n;                                                                     \
-  pushReductionMethod(method, format(_T("Reduced:<%s>"), _n.toString().cstr()),_n);  \
+  pushReductionMethod(method, format(_T("Reduced:<%s>"), _n.toString().cstr()),_n);        \
   m_reductionStack.pop();                                                                  \
   RETURN(_n);                                                                              \
 }
