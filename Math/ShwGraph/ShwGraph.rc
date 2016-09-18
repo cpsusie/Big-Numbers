@@ -1,0 +1,417 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\ShwGraph.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\ShwGraph.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_EDIT_DIALOG DIALOG 0, 0, 260, 170
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit datapoints"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,203,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,203,24,50,14
+    LISTBOX         IDC_DATALIST,15,13,140,150,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_DEGREE_DIALOG DIALOG 0, 0, 200, 58
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter degree of polynomium"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,143,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,143,24,50,14
+    EDITTEXT        IDC_EDIT_DEGREE,49,13,20,14
+    LTEXT           "Degree:",IDC_STATIC,15,16,29,8
+    CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_ARROWKEYS,70,13,11,14
+END
+
+IDD_INTERVAL_DIALOG DIALOG 0, 0, 242, 81
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Enter intervals"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,185,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,185,24,50,14
+    EDITTEXT        IDC_EDIT_MINX,59,19,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_MAXX,111,19,40,14,ES_AUTOHSCROLL
+    LTEXT           "-",IDC_STATIC,103,23,8,8
+    LTEXT           "X - interval",IDC_STATIC,16,25,37,8
+    LTEXT           "Y - interval",IDC_STATIC,16,50,43,8
+    EDITTEXT        IDC_EDIT_MINY,59,44,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_MAXY,111,44,40,14,ES_AUTOHSCROLL
+    LTEXT           "-",IDC_STATIC,103,45,8,8
+    CONTROL         "Autoscale",IDC_AUTOSCALECHECK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,161,47,61,9
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_EDIT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 253
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 163
+    END
+
+    IDD_DEGREE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 193
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 51
+    END
+
+    IDD_INTERVAL_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 235
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 74
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit",                       ID_FILE_QUIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Degree...\tCtrl+D",          ID_EDIT_DEGREE
+        MENUITEM "Incr degree\tPg Up",          ID_EDIT_INCRDEGREE
+        MENUITEM "Decr degree\tPg Down",        ID_EDIT_DECRDEGREE
+        MENUITEM SEPARATOR
+        MENUITEM "&Least sum of squares polynomium \tCtrl+L", ID_EDIT_LEASTSUMOFSQUARES, CHECKED
+        POPUP "&Spline"
+        BEGIN
+            POPUP "C&ubic spline"
+            BEGIN
+                MENUITEM "&Natural cubic spline",       ID_EDIT_CUBICSPLINE_NATURAL
+                MENUITEM "&Match dydx...",              ID_EDIT_CUBICSPLINE_MATCHDYDX
+                MENUITEM "&Ignore endpoints",           ID_EDIT_CUBICSPLINE_NOENDPOINTS
+            END
+            MENUITEM "&Akima spline",               ID_EDIT_AKIMASPLINE
+            MENUITEM "&Fritsch-Carlson spline",     ID_EDIT_FRITSCHCARLSONSPLINE
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear",                      ID_EDIT_CLEAR
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "Show approximation\tCtrl+&0", ID_TOOLS_SHOWFUNCTION, CHECKED
+        MENUITEM "Show f'\tCtrl+&1",            ID_TOOLS_SHOWD1
+        MENUITEM "Show f""\tCtrl+&2",           ID_TOOLS_SHOWD2
+        MENUITEM "Show f'''\tCtrl+&3",          ID_TOOLS_SHOWD3
+        MENUITEM SEPARATOR
+        MENUITEM "Show &mouseposition\tCtrl+M", ID_TOOLS_SHOWMOUSEPOSITION, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "&Zoom in\tF3",                ID_TOOLS_ZOOMIN
+        MENUITEM "Z&oom out\tF4",               ID_TOOLS_ZOOMOUT, GRAYED
+        MENUITEM "Set &Interval...\tCtrl+I",    ID_TOOLS_SETINTERVAL
+        MENUITEM SEPARATOR
+        MENUITEM "&Grid\tCtrl+G",               ID_TOOLS_GRID
+        MENUITEM "&Font...\tCtrl+F",            ID_TOOLS_FONT
+        MENUITEM SEPARATOR
+        MENUITEM "&Display coefficients\tF2",   ID_TOOLS_DISPLAYCOEFFICIENTS
+        MENUITEM "Generate &C-function\tCtrl+C", ID_TOOLS_GENERATECFUNCTION
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About",                      ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS
+BEGIN
+    "0",            ID_TOOLS_SHOWFUNCTION,  VIRTKEY, CONTROL, NOINVERT
+    "1",            ID_TOOLS_SHOWD1,        VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_TOOLS_SHOWD2,        VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_TOOLS_SHOWD3,        VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_TOOLS_GENERATECFUNCTION, VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_EDIT_DEGREE,         VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_TOOLS_FONT,          VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_TOOLS_GRID,          VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_TOOLS_SETINTERVAL,   VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_EDIT_LEASTSUMOFSQUARES, VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_TOOLS_SHOWMOUSEPOSITION, VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    VK_ESCAPE,      IDOK,                   VIRTKEY, NOINVERT
+    VK_F2,          ID_TOOLS_DISPLAYCOEFFICIENTS, VIRTKEY, NOINVERT
+    VK_F3,          ID_TOOLS_ZOOMIN,        VIRTKEY, NOINVERT
+    VK_F4,          ID_TOOLS_ZOOMOUT,       VIRTKEY, NOINVERT
+    VK_NEXT,        ID_EDIT_DECRDEGREE,     VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_EDIT_INCRDEGREE,     VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSORZOOM          CURSOR                  "res\\cursor1.cur"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP1             BITMAP                  "res\\bitmap1.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    ID_HELP_ABOUT           "About"
+    ID_FILE_QUIT            "Quit"
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 0, 0, 304, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About ShwGraph"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "ShwGraph Version 1.1 by Jesper Grønning Mikkelsen",IDC_STATIC,40,10,189,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 1999",IDC_STATIC,40,25,77,8
+    DEFPUSHBUTTON   "OK",IDOK,247,7,50,14,WS_GROUP
+END
+
+IDD_SHWGRAPH_DIALOG DIALOGEX 0, 0, 456, 281
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_ACCEPTFILES | WS_EX_APPWINDOW
+CAPTION "Regression"
+MENU IDR_MENU1
+FONT 8, "Courier New", 0, 0, 0x1
+BEGIN
+    LTEXT           "Static",IDC_COORSYSTEM,0,0,450,270,0,WS_EX_CLIENTEDGE
+    LTEXT           "Static",IDC_STATICINFO,6,270,450,8,SS_SUNKEN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 297
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_SHWGRAPH_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 449
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 259
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "ShwGraph MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "ShwGraph"
+            VALUE "LegalCopyright", "Copyright (C) 1999"
+            VALUE "OriginalFilename", "ShwGraph.EXE"
+            VALUE "ProductName", "ShwGraph Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SHWGRAPH_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About ShwGraph..."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\ShwGraph.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
