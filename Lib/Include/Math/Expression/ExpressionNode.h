@@ -707,7 +707,10 @@ public:
   }
   inline SNode(ExpressionNode *node) : m_node(node) {
   }
+  SNode(ParserTree *tree, int             v);
+  SNode(ParserTree *tree, __int64         v);
   SNode(ParserTree *tree, const Rational &v);
+  SNode(ParserTree *tree, const Real     &v);
   inline bool isEmpty() const {
     return m_node == NULL;
   }

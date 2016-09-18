@@ -1,9 +1,22 @@
 #include "pch.h"
 #include <Math/Expression/Expression.h>
 
+SNode::SNode(ParserTree *tree, int v) {
+  m_node = tree->numberExpression(v);
+}
+
+SNode::SNode(ParserTree *tree, __int64 v) {
+  m_node = tree->numberExpression(v);
+}
+
 SNode::SNode(ParserTree *tree, const Rational &v) {
   m_node = tree->numberExpression(v);
 }
+
+SNode::SNode(ParserTree *tree, const Real &v) {
+  m_node = tree->numberExpression(v);
+}
+
 
 #define CALLUNARYOP(op, n1)               \
   ParserTree *tree = n1->getTree();       \
