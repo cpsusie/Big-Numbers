@@ -131,12 +131,12 @@ String ExpressionNode::statementListToString() const {
 static ExpressionNodeSelector *getBuiltInFunctionSelector() {
   // all functions in this array use call to evaluate in cmopiled code
   static const ExpressionInputSymbol builtInSymbols[] = {
-     MOD, POW, ROOT, SIN, COS, TAN, COT, CSC
-    ,SEC, ASIN, ACOS, ATAN, ACOT, ACSC, ASEC, COSH
-    ,SINH, TANH, ACOSH, ASINH, ATANH, LN, LOG10, EXP
-    ,SQR, SQRT, ABS, FLOOR, CEIL, BINOMIAL, GAMMA, GAUSS
-    ,FAC, NORM, PROBIT, ERF, INVERF, SIGN, MAX, MIN
-    ,RAND, NORMRAND, POLY
+      MOD     , POW     , ROOT    , SIN     , COS     , TAN     , COT     , CSC
+    , SEC     , ASIN    , ACOS    , ATAN    , ACOT    , ACSC    , ASEC    , COSH
+    , SINH    , TANH    , ACOSH   , ASINH   , ATANH   , LN      , LOG10   , EXP
+    , SQR     , SQRT    , ABS     , FLOOR   , CEIL    , BINOMIAL, GAMMA   , GAUSS
+    , FAC     , NORM    , PROBIT  , ERF     , INVERF  , SIGN    , MAX     , MIN
+    , RAND    , NORMRAND, POLY
   };
   static bool                         initDone = false;
   static ExpressionSymbolSet          functionSet;
