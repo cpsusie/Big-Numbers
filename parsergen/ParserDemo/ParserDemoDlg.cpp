@@ -851,24 +851,15 @@ void CParserDemoDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
     TreeDlg dlg(m_parser.getStackTop(m_parser.getStackHeight() - index - 1));
     dlg.DoModal();
   }
-
   CDialog::OnLButtonDblClk(nFlags, point);
 }
 
 void CParserDemoDlg::OnEditFindMatchingParanthes() {
-  CTextBox *e = (CTextBox*)GetDlgItem(IDC_EDITINPUTSTRING);
-  UpdateData();
-  TCHAR *input = m_input.GetBuffer(m_input.GetLength());
-  int cursorPos, endChar;
-  e->GetSel(cursorPos, endChar);
-  int m = findMatchingpParanthes(input, cursorPos);
-  if(m >= 0) {
-    e->SetSel(m, m);
-  }
+  gotoMatchingParanthes(this, IDC_EDITINPUTSTRING);
 }
 
 void CParserDemoDlg::setBreakText(int controlId, const StringArray &textArray) {
-  CWnd     *ctrl = GetDlgItem(controlId);
+  CWnd *ctrl = GetDlgItem(controlId);
 
   const String s = textArray.toString(' ');
   ctrl->ModifyStyle(0, SS_ENDELLIPSIS);

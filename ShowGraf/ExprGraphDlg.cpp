@@ -271,27 +271,11 @@ void CExprGraphDlg::OnFindMatchingParanthes() {
   if(getFocusCtrlId(this) != IDC_EDITEXPR) {
     return;
   }
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITEXPR);
-  CString text;
-  e->GetWindowText(text);
-  int startChar, endChar;
-  e->GetSel(startChar, endChar);
-  const int p = findMatchingpParanthes((LPCSTR)text,endChar);
-  if(p >= 0) {
-    e->SetSel(p,p);
-  }
+  gotoMatchingParanthes(this, IDC_EDITEXPR);
 }
 */
 void CExprGraphDlg::OnEditFindmatchingparentesis() {
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITEXPR);
-  UpdateData();
-  String expr = m_expr;
-  int cursorPos,endChar;
-  e->GetSel(cursorPos, endChar);
-  int m = findMatchingpParanthes(expr.cstr(), cursorPos);
-  if(m >= 0) {
-    e->SetSel(m, m);
-  }
+  gotoMatchingParanthes(this, IDC_EDITEXPR);
 }
 
 void CExprGraphDlg::paramToWin(const ExpressionGraphParameters &param) {
