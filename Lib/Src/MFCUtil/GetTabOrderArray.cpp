@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
 
 CompactIntArray getTabOrder(CWnd *wnd) {
