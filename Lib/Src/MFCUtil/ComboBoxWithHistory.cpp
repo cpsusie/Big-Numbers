@@ -17,14 +17,12 @@ BEGIN_MESSAGE_MAP(CComboBoxWithHistory, CComboBox)
 	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-DEFINECLASSNAME(CComboBoxWithHistory);
-
 void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String &registryName) {
-  const TCHAR *method = _T("substituteControl");
+  DEFINEMETHODNAME;
 
   CComboBox *oldCtrl = (CComboBox*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("%s::%s:Control with id=%d does not exist"), s_className, method, id).cstr(), MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Control with id=%d does not exist"), method, id).cstr(), MB_ICONWARNING);
     return;
   }
   CRect wr;
@@ -41,7 +39,7 @@ void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String 
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    AfxMessageBox(format(_T("%s::%s:Create failed"), s_className, method).cstr(),  MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(),  MB_ICONWARNING);
     return;
   }
   setTabOrder(parent, tabOrder);
@@ -65,7 +63,7 @@ void CComboBoxWithHistory::updateList() {
   GetWindowText(current);
   m_history.add((LPCTSTR)current);
   load();
-  for(int i = 0; i < (int)m_history.size(); i++) {
+  for(UINT i = 0; i < m_history.size(); i++) {
     if(m_history[i].cstr() == current) {
       SetCurSel(i);
       return;
@@ -80,7 +78,7 @@ void CComboBoxWithHistory::fillDropdownList() {
   }
 }
 
-BOOL CComboBoxWithHistory::PreTranslateMessage(MSG* pMsg) {
+BOOL CComboBoxWithHistory::PreTranslateMessage(MSG *pMsg) {
   if(GetDroppedState()) {
     switch(pMsg->message) {
     case WM_KEYDOWN:
@@ -134,9 +132,9 @@ void ComboBoxHistory::load() {
   try {
     RegistryKey key = getKey();
     clear();
-    for(unsigned int i = 0; i < m_maxHistoryLength; i++) {
+    for(UINT i = 0; i < m_maxHistoryLength; i++) {
       String value;
-      key.getValue(format(_T("s%02d"), i), value);
+      key.getValue(format(_T("s%02u"), i), value);
       if(value.length() > 0) {
         StringArray::add(value);
       }
@@ -150,9 +148,9 @@ void ComboBoxHistory::save() {
   try {
     RegistryKey key = getKey();
     key.deleteValues();
-    const int n = min(m_maxHistoryLength, (UINT)size());
-    for(int i = 0; i < n; i++) {
-      key.setValue(format(_T("s%02d"),i),(*this)[i]);
+    const UINT n = min(m_maxHistoryLength, (UINT)size());
+    for(UINT i = 0; i < n; i++) {
+      key.setValue(format(_T("s%02u"),i),(*this)[i]);
     }
   } catch(Exception) {
     // ignore
@@ -167,7 +165,7 @@ bool ComboBoxHistory::add(const String &s) {
     }
   }
   StringArray::add(0, s);
-  while(size() > (int)m_maxHistoryLength) {
+  while(size() > m_maxHistoryLength) {
     removeLast();
   }
   return true;
@@ -182,9 +180,9 @@ void ComboBoxHistory::removeString(const String &str) {
   }
 }
 
-void ComboBoxHistory::setMaxHistoryLength(unsigned int maxLength) {
+void ComboBoxHistory::setMaxHistoryLength(UINT maxLength) {
   m_maxHistoryLength = maxLength;
-  while(size() > (int)m_maxHistoryLength) {
+  while(size() > m_maxHistoryLength) {
     removeLast();
   }
 }
