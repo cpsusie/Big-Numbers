@@ -444,7 +444,7 @@ bool Rational::isRealRational(const Real &x, Rational *r) { // static
     if(fabs(x) > LLONG_MAX) {
       return false;
     }
-    if(r) *r = getInt(x);
+    if(r) *r = getInt64(x);
     return true;
   }
   try {
@@ -465,6 +465,6 @@ String Rational::toString() const {
   if(m_denominator == 1) {
     return format(_T("%I64d"), m_numerator);
   } else {
-    return format(_T("%I64d/%I64d"), m_numerator, m_denominator);
+    return format(_T("%I64d/%I64u"), m_numerator, m_denominator);
   }
 }
