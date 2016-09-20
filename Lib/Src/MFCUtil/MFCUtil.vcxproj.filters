@@ -231,6 +231,9 @@
     <ClCompile Include="CoordinateSystem\OccupationMap.cpp">
       <Filter>Source Files\CoordinateSystem</Filter>
     </ClCompile>
+    <ClCompile Include="GotoMatchingParanthes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">

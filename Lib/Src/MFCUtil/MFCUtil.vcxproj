@@ -281,6 +281,7 @@
     <ClCompile Include="GetMessageName.cpp" />
     <ClCompile Include="GetTabOrderArray.cpp" />
     <ClCompile Include="GifCtrl.cpp" />
+    <ClCompile Include="GotoMatchingParanthes.cpp" />
     <ClCompile Include="IconInfo.cpp" />
     <ClCompile Include="IconTools.cpp" />
     <ClCompile Include="InteractiveRunnable.cpp" />
