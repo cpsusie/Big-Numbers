@@ -1,4 +1,5 @@
-// Microsoft Developer Studio generated include file.
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
 // Used by TestExpressionGraphics.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -43,6 +44,8 @@
 #define IDC_TESTTREESEQUAL              1030
 #define IDC_BUTTONCOMPILE               1031
 #define IDC_TESTTREESEQUALMINUS         1032
+#define IDC_COMBONUMBERFORMAT           1034
+#define IDC_STATICFORMATLABEL           1035
 #define ID_FILE_EXIT                    32771
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32780
 #define ID_EDIT_GOTOEDITFX              32781
@@ -69,6 +72,7 @@
 #define ID_GOTOX                        32831
 #define ID_GOTOEXPR1                    32832
 #define ID_GOTOEXPR2                    32833
+#define ID_GOTONUMBERFORMAT             32834
 #define ID_CONTEXTMENU_MULTIPLY         32854
 #define ID_MSG_RUNSTATE_CHANGED         32900
 #define ID_MSG_SHOW_DEBUGERROR          32901
@@ -85,9 +89,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        136
-#define _APS_NEXT_COMMAND_VALUE         32855
-#define _APS_NEXT_CONTROL_VALUE         1034
+#define _APS_NEXT_RESOURCE_VALUE        137
+#define _APS_NEXT_COMMAND_VALUE         32857
+#define _APS_NEXT_CONTROL_VALUE         1036
 #define _APS_NEXT_SYMED_VALUE           104
 #endif
 #endif

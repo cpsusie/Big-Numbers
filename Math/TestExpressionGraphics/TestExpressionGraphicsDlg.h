@@ -26,6 +26,7 @@ private:
   BitSet16                     m_flags;
   Expression                   m_expr     , m_derivedExpr;
   ExpressionImage              m_exprImage, m_derivedImage;
+  int                          m_numberFormat;
   ExpressionVariableArray      m_savedVariables;
   DebugThread                 *m_debugThread;
   PropertyContainer           *m_currentChildDlg;
@@ -44,7 +45,11 @@ private:
   CComboBox *getFontSizeCombo() {
     return ((CComboBox*)GetDlgItem(IDC_COMBOFONTSIZE));
   }
-  int  getFontSize();
+  CComboBox *getNumberFormatCombo() {
+    return ((CComboBox*)GetDlgItem(IDC_COMBONUMBERFORMAT));
+  }
+  int          getFontSize();
+  NumberFormat getNumberFormat();
   bool loadMenu(CMenu &menu, int id);
   void compileExpr();
   void deriveExpr();
@@ -61,6 +66,7 @@ private:
   void paintExprImage();
   void paintDerivedImage();
   void paintImage(int id, const ExpressionImage &image);
+  void onSelChangeCombo();
   void clearResultValue();
   void clearDerivedValue1();
   void clearDerivedValue2();
@@ -113,12 +119,12 @@ public:
   CTestExpressionGraphicsDlg(CWnd *pParent = NULL);
  ~CTestExpressionGraphicsDlg();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-	enum { IDD = IDD_TESTEXPRESSIONGRAPHICS_DIALOG };
-	CString	m_exprText;
-	double	m_x;
+  enum { IDD = IDD_TESTEXPRESSIONGRAPHICS_DIALOG };
+  CString	m_exprText;
+  double	m_x;
 
 public:
-	virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
 protected:
@@ -130,42 +136,44 @@ protected:
   virtual void OnOK();
   virtual void OnCancel();
   afx_msg void OnClose();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
-	afx_msg void OnContextMenuShowExprTree();
-	afx_msg void OnContextMenuToStandardForm();
-	afx_msg void OnContextMenuToCanoncalForm();
-	afx_msg void OnContextMenuToNumericForm();
-	afx_msg void OnContextMenuShowNodeTree();
-	afx_msg void OnContextMenuExpand();
-	afx_msg void OnContextMenuMultiply();
-	afx_msg void OnGotoX();
-	afx_msg void OnGotoFontSize();
-	afx_msg void OnChangeEditExpr();
-	afx_msg void OnChangeEditX();
- 	afx_msg void OnSelChangeComboFontSize();
-	afx_msg void OnFileExit();
-	afx_msg void OnEditFindMatchingParentesis();
-	afx_msg void OnEditGotoEditFx();
-	afx_msg void OnEditEnterParameters();
-	afx_msg void OnViewShowReductionStack();
-	afx_msg void OnViewShowRectangles();
-	afx_msg void OnDebugReduceExpr();
-	afx_msg void OnDebugReduceDerived();
-	afx_msg void OnDebugRun();
-	afx_msg void OnDebugStop();
-	afx_msg void OnDebugClearAllBreakPoints();
-	afx_msg void OnDebugTraceReductionStep();
-	afx_msg void OnDebugStep1ReduceIteration();
-	afx_msg void OnDebugTestTreesEqual();
-	afx_msg void OnFunctionsCompileFx();
-	afx_msg void OnFunctionsDeriveFx();
-	afx_msg void OnFunctionsEvaluateFx();
-	afx_msg void OnFunctionsEvaluateDerived();
-	afx_msg void OnFunctionsReduceFx();
-	afx_msg void OnFunctionsReduceDerived();
-	afx_msg void OnFunctionsEvaluateAll();
+  afx_msg void OnSize(UINT nType, int cx, int cy);
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnContextMenu(CWnd *pWnd, CPoint point);
+  afx_msg void OnContextMenuShowExprTree();
+  afx_msg void OnContextMenuToStandardForm();
+  afx_msg void OnContextMenuToCanoncalForm();
+  afx_msg void OnContextMenuToNumericForm();
+  afx_msg void OnContextMenuShowNodeTree();
+  afx_msg void OnContextMenuExpand();
+  afx_msg void OnContextMenuMultiply();
+  afx_msg void OnGotoX();
+  afx_msg void OnGotoFontSize();
+  afx_msg void OnGotoNumberFormat();
+  afx_msg void OnChangeEditExpr();
+  afx_msg void OnChangeEditX();
+  afx_msg void OnSelchangeComboNumberFormat();
+  afx_msg void OnSelChangeComboFontSize();
+  afx_msg void OnFileExit();
+  afx_msg void OnEditFindMatchingParentesis();
+  afx_msg void OnEditGotoEditFx();
+  afx_msg void OnEditEnterParameters();
+  afx_msg void OnViewShowReductionStack();
+  afx_msg void OnViewShowRectangles();
+  afx_msg void OnDebugReduceExpr();
+  afx_msg void OnDebugReduceDerived();
+  afx_msg void OnDebugRun();
+  afx_msg void OnDebugStop();
+  afx_msg void OnDebugClearAllBreakPoints();
+  afx_msg void OnDebugTraceReductionStep();
+  afx_msg void OnDebugStep1ReduceIteration();
+  afx_msg void OnDebugTestTreesEqual();
+  afx_msg void OnFunctionsCompileFx();
+  afx_msg void OnFunctionsDeriveFx();
+  afx_msg void OnFunctionsEvaluateFx();
+  afx_msg void OnFunctionsEvaluateDerived();
+  afx_msg void OnFunctionsReduceFx();
+  afx_msg void OnFunctionsReduceDerived();
+  afx_msg void OnFunctionsEvaluateAll();
   afx_msg LRESULT OnMsgRunStateChanged(      WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowDebugError(       WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()

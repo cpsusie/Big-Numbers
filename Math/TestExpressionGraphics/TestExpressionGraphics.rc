@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,14 +64,15 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestExpressionGraphics.ico"
+IDR_MAINFRAME           ICON                    "res\\TestExpressionGraphics.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -81,9 +80,7 @@ BEGIN
     END
     POPUP "&Edit"
     BEGIN
-        MENUITEM "Fint &matching parentesis\tCtrl+E", 
-                                                ID_EDIT_FINDMATCHINGPARENTESIS
-
+        MENUITEM "Find &matching parentesis\tCtrl+E", ID_EDIT_FINDMATCHINGPARENTESIS
         MENUITEM "&Goto Edit F(x)\tCtrl+Shift+F", ID_EDIT_GOTOEDITFX
         MENUITEM SEPARATOR
         MENUITEM "Enter &parameters\tCtrl+P...", ID_EDIT_ENTERPARAMETERS
@@ -101,14 +98,11 @@ BEGIN
         MENUITEM "&Resume\tF5",                 ID_DEBUG_RUN
         MENUITEM "St&op\tShft+F5",              ID_DEBUG_STOP
         MENUITEM "&Trace reduction step\tF10",  ID_DEBUG_TRACEREDUCTIONSTEP
-        MENUITEM "&Step 1 reduce iteration\tF11", 
-                                                ID_DEBUG_STEP1REDUCEITERATION
-
+        MENUITEM "&Step 1 reduce iteration\tF11", ID_DEBUG_STEP1REDUCEITERATION
         MENUITEM SEPARATOR
         MENUITEM "Test TreesE&qual...\tCtrl+Q", ID_DEBUG_TESTTREESEQUAL
         MENUITEM SEPARATOR
-        MENUITEM "Clear all breakpoints\tAlt+F9", 
-                                                ID_DEBUG_CLEARALLBREAKPOINTS
+        MENUITEM "Clear all breakpoints\tAlt+F9", ID_DEBUG_CLEARALLBREAKPOINTS
     END
     POPUP "Fu&nctions"
     BEGIN
@@ -124,16 +118,14 @@ BEGIN
     END
 END
 
-IDR_CONTEXTMENU MENU DISCARDABLE 
+IDR_CONTEXTMENU MENU
 BEGIN
     POPUP "contextMenu"
     BEGIN
         MENUITEM "Show Tree",                   ID_CONTEXTMENU_SHOWEXPRTREE
         MENUITEM SEPARATOR
         MENUITEM "To standard form",            ID_CONTEXTMENU_TOSTANDARDFORM
-
         MENUITEM "To canonical form",           ID_CONTEXTMENU_TOCANONCALFORM
-
         MENUITEM "To numeric form",             ID_CONTEXTMENU_TONUMERICFORM
         MENUITEM SEPARATOR
         MENUITEM "Expand",                      ID_CONTEXTMENU_EXPAND
@@ -141,7 +133,7 @@ BEGIN
     END
 END
 
-IDR_CONTEXTMENUSTACK MENU DISCARDABLE 
+IDR_CONTEXTMENUSTACK MENU
 BEGIN
     POPUP "stackContextMenu"
     BEGIN
@@ -149,7 +141,7 @@ BEGIN
     END
 END
 
-IDR_CONTEXTMENU_TREE MENU DISCARDABLE 
+IDR_CONTEXTMENU_TREE MENU
 BEGIN
     POPUP "breakpoint"
     BEGIN
@@ -164,40 +156,38 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "A",            ID_FUNCTIONS_EVALUATEALL, VIRTKEY, CONTROL, NOINVERT
-    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, 
-                                                    NOINVERT
-    "F",            ID_FUNCTIONS_EVALUATEFX, VIRTKEY, CONTROL, NOINVERT
-    "F",            ID_EDIT_GOTOEDITFX,     VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "M",            ID_FUNCTIONS_EVALUATEDERIVED, VIRTKEY, CONTROL, NOINVERT
-    "P",            ID_EDIT_ENTERPARAMETERS, VIRTKEY, CONTROL, NOINVERT
+    VK_F9,          ID_DEBUG_CLEARALLBREAKPOINTS, VIRTKEY, ALT, NOINVERT
+    VK_F4,          ID_DEBUG_REDUCEDERIVED, VIRTKEY, NOINVERT
+    VK_F3,          ID_DEBUG_REDUCEEXPR,    VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_RUN,           VIRTKEY, NOINVERT
+    VK_F11,         ID_DEBUG_STEP1REDUCEITERATION, VIRTKEY, NOINVERT
+    VK_F5,          ID_DEBUG_STOP,          VIRTKEY, SHIFT, NOINVERT
     "Q",            ID_DEBUG_TESTTREESEQUAL, VIRTKEY, CONTROL, NOINVERT
+    VK_F10,         ID_DEBUG_TRACEREDUCTIONSTEP, VIRTKEY, NOINVERT
+    "P",            ID_EDIT_ENTERPARAMETERS, VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_GOTOEDITFX,     VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_F7,          ID_FUNCTIONS_COMPILEFX, VIRTKEY, NOINVERT
+    VK_F8,          ID_FUNCTIONS_DERIVEFX,  VIRTKEY, NOINVERT
+    "A",            ID_FUNCTIONS_EVALUATEALL, VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_FUNCTIONS_EVALUATEDERIVED, VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_FUNCTIONS_EVALUATEFX, VIRTKEY, CONTROL, NOINVERT
+    VK_F8,          ID_FUNCTIONS_REDUCEDERIVED, VIRTKEY, SHIFT, NOINVERT
+    VK_F7,          ID_FUNCTIONS_REDUCEFX,  VIRTKEY, SHIFT, NOINVERT
+    "Z",            ID_GOTOFONTSIZE,        VIRTKEY, ALT, NOINVERT
+    "X",            ID_GOTOX,               VIRTKEY, ALT, NOINVERT
     "R",            ID_VIEW_SHOWRECTANGLES, VIRTKEY, CONTROL, NOINVERT
     "S",            ID_VIEW_SHOWREDUCTIONSTACK, VIRTKEY, CONTROL, NOINVERT
-    VK_F10,         ID_DEBUG_TRACEREDUCTIONSTEP, VIRTKEY, NOINVERT
-    VK_F11,         ID_DEBUG_STEP1REDUCEITERATION, VIRTKEY, NOINVERT
-    VK_F3,          ID_DEBUG_REDUCEEXPR,    VIRTKEY, NOINVERT
-    VK_F4,          ID_DEBUG_REDUCEDERIVED, VIRTKEY, NOINVERT
-    VK_F5,          ID_DEBUG_RUN,           VIRTKEY, NOINVERT
-    VK_F5,          ID_DEBUG_STOP,          VIRTKEY, SHIFT, NOINVERT
-    VK_F7,          ID_FUNCTIONS_COMPILEFX, VIRTKEY, NOINVERT
-    VK_F7,          ID_FUNCTIONS_REDUCEFX,  VIRTKEY, SHIFT, NOINVERT
-    VK_F8,          ID_FUNCTIONS_DERIVEFX,  VIRTKEY, NOINVERT
-    VK_F8,          ID_FUNCTIONS_REDUCEDERIVED, VIRTKEY, SHIFT, NOINVERT
-    VK_F9,          ID_DEBUG_CLEARALLBREAKPOINTS, VIRTKEY, ALT, NOINVERT
-    "X",            ID_GOTOX,               VIRTKEY, ALT, NOINVERT
-    "Z",            ID_GOTOFONTSIZE,        VIRTKEY, ALT, NOINVERT
+    "M",            ID_GOTONUMBERFORMAT,    VIRTKEY, ALT, NOINVERT
 END
 
-IDD_TREESEQUAL_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDD_TREESEQUAL_ACCELERATOR ACCELERATORS
 BEGIN
     "1",            ID_GOTOEXPR1,           VIRTKEY, ALT, NOINVERT
     "2",            ID_GOTOEXPR2,           VIRTKEY, ALT, NOINVERT
-    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, 
-                                                    NOINVERT
+    "E",            ID_EDIT_FINDMATCHINGPARENTESIS, VIRTKEY, CONTROL, NOINVERT
     VK_F7,          ID_COMPILE,             VIRTKEY, NOINVERT
 END
 
@@ -207,15 +197,13 @@ END
 // Dialog
 //
 
-IDD_TREESEQUAL_DIALOG DIALOG DISCARDABLE  0, 0, 417, 320
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_TREESEQUAL_DIALOG DIALOG 0, 0, 417, 320
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Test Trees Equal"
 FONT 10, "DejaVu Sans Mono"
 BEGIN
-    COMBOBOX        IDC_EDITEXPR1,43,31,367,190,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
-    COMBOBOX        IDC_EDITEXPR2,42,171,368,205,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
+    COMBOBOX        IDC_EDITEXPR1,43,31,367,190,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_EDITEXPR2,42,171,368,205,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "&Compile",IDC_BUTTONCOMPILE,131,7,43,14
     PUSHBUTTON      "&To canonical form",IDC_BUTTONCONVERT,179,7,81,14
     DEFPUSHBUTTON   "Check &Equal",IDC_TESTTREESEQUAL,265,7,55,14
@@ -226,8 +214,8 @@ BEGIN
     DEFPUSHBUTTON   "Check equal &Minus",IDC_TESTTREESEQUALMINUS,325,7,85,14
 END
 
-IDD_ENTER_VARIABLES_DIALOG DIALOG DISCARDABLE  0, 0, 270, 199
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ENTER_VARIABLES_DIALOG DIALOG 0, 0, 270, 199
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Enter variables"
 FONT 10, "DejaVu Sans Mono"
 BEGIN
@@ -235,17 +223,14 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,213,24,50,14
 END
 
-IDD_EXPRESSIONTREE_DIALOG DIALOG DISCARDABLE  0, 0, 395, 359
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_EXPRESSIONTREE_DIALOG DIALOG 0, 0, 395, 359
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Expression Tree"
 FONT 10, "DejaVu Sans Mono"
 BEGIN
     DEFPUSHBUTTON   "&Close",IDCLOSE,338,7,50,14
-    CONTROL         "Tree1",IDC_TREE_EXPRESSION,"SysTreeView32",
-                    TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | 
-                    TVS_DISABLEDRAGDROP | WS_BORDER | WS_TABSTOP,7,7,319,278
-    LISTBOX         IDC_LIST_SYMBOLTABLE,7,287,381,65,LBS_SORT | 
-                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Tree1",IDC_TREE_EXPRESSION,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_DISABLEDRAGDROP | WS_BORDER | WS_TABSTOP,7,7,319,278
+    LISTBOX         IDC_LIST_SYMBOLTABLE,7,287,381,65,LBS_SORT | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -255,7 +240,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_TREESEQUAL_DIALOG, DIALOG
     BEGIN
@@ -283,77 +268,61 @@ BEGIN
 END
 #endif    // APSTUDIO_INVOKED
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About TestExpressionGraphics"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "TestExpressionGraphics Version 1.0",IDC_STATIC,40,10,
-                    119,8,SS_NOPREFIX
+    LTEXT           "TestExpressionGraphics Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2016",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
-IDD_TESTEXPRESSIONGRAPHICS_DIALOG DIALOGEX 0, 0, 637, 366
-STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU | WS_THICKFRAME
+IDD_TESTEXPRESSIONGRAPHICS_DIALOG DIALOGEX 0, 0, 679, 366
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "TestExpressionGraphics"
 MENU IDR_MAINFRAME
 FONT 10, "DejaVu Sans Mono", 0, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDITEXPR,37,7,298,33,ES_MULTILINE | ES_AUTOHSCROLL | 
-                    ES_WANTRETURN
-    EDITTEXT        IDC_EDITX,353,7,31,12,ES_RIGHT | ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBOFONTSIZE,430,28,27,68,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
-    LTEXT           "",IDC_STATICEXPRIMAGE,7,61,623,99,SS_SUNKEN | WS_BORDER | 
-                    NOT WS_GROUP
-    EDITTEXT        IDC_EDITDERIVED,37,167,586,17,ES_MULTILINE | 
-                    ES_AUTOHSCROLL | ES_READONLY
-    LTEXT           "",IDC_STATICDERIVEDIMAGE,7,189,623,166,SS_SUNKEN | 
-                    WS_BORDER | NOT WS_GROUP
-    LTEXT           "Fontsi&ze:",IDC_STATICFONTSIZE,391,30,35,10,
-                    SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITEXPR,37,7,287,33,ES_MULTILINE | ES_AUTOHSCROLL | ES_WANTRETURN
+    EDITTEXT        IDC_EDITX,405,10,31,12,ES_RIGHT | ES_AUTOHSCROLL,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_COMBONUMBERFORMAT,404,28,74,36,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
+    COMBOBOX        IDC_COMBOFONTSIZE,526,28,27,68,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP,WS_EX_CLIENTEDGE
+    LTEXT           "",IDC_STATICEXPRIMAGE,6,60,672,99,SS_SUNKEN | WS_BORDER | NOT WS_GROUP
+    EDITTEXT        IDC_EDITDERIVED,37,167,586,17,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "",IDC_STATICDERIVEDIMAGE,7,189,671,166,SS_SUNKEN | WS_BORDER | NOT WS_GROUP
+    LTEXT           "Fontsi&ze:",IDC_STATICFONTSIZE,487,28,35,12,SS_CENTERIMAGE
     LTEXT           "f(x)=",IDC_STATIC,11,18,20,13
     LTEXT           "f'(x)=",IDC_STATICDERIVEDLABEL,10,171,24,10
-    LTEXT           "&X:",IDC_STATICXLABEL,342,7,11,12,SS_CENTERIMAGE
-    EDITTEXT        IDC_EDITDERIVEDVALUE1,528,10,90,12,ES_RIGHT | 
-                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
-    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL1,506,7,20,12,
-                    SS_CENTERIMAGE
-    EDITTEXT        IDC_EDITDERIVEDVALUE2,528,28,90,12,ES_RIGHT | 
-                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
-    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL2,506,28,20,12,
-                    SS_CENTERIMAGE
-    EDITTEXT        IDC_EDITRESULTVALUE,411,7,90,12,ES_RIGHT | 
-                    ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
-    LTEXT           "f(x)::",IDC_STATICRESULTLABEL,391,7,18,12,
-                    SS_CENTERIMAGE
+    LTEXT           "&X:",IDC_STATICXLABEL,338,10,11,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITDERIVEDVALUE1,584,10,90,12,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL1,558,10,20,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITDERIVEDVALUE2,584,28,90,12,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f'(x)::",IDC_STATICDERIVEDLABEL2,558,28,20,12,SS_CENTERIMAGE
+    EDITTEXT        IDC_EDITRESULTVALUE,463,10,90,12,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_TABSTOP
+    LTEXT           "f(x)::",IDC_STATICRESULTLABEL,443,10,18,12,SS_CENTERIMAGE
     PUSHBUTTON      "Button1",IDC_BUTTONDUMMY,282,94,50,14,NOT WS_VISIBLE
-    LTEXT           "",IDC_STATICDEBUGINFO,7,46,623,12,SS_CENTERIMAGE | 
-                    SS_SUNKEN | WS_BORDER
-    LTEXT           "",IDC_STATICREDUCTIONSTACK,319,65,311,290,SS_SUNKEN | 
-                    NOT WS_VISIBLE | WS_BORDER
+    LTEXT           "",IDC_STATICDEBUGINFO,7,46,671,12,SS_CENTERIMAGE | SS_SUNKEN | WS_BORDER
+    LTEXT           "",IDC_STATICREDUCTIONSTACK,319,65,359,290,SS_SUNKEN | NOT WS_VISIBLE | WS_BORDER
+    LTEXT           "Nu&mber format:",IDC_STATICFORMATLABEL,338,28,58,12,SS_CENTERIMAGE
 END
 
 
@@ -363,7 +332,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -376,7 +345,7 @@ BEGIN
     IDD_TESTEXPRESSIONGRAPHICS_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 630
+        RIGHTMARGIN, 672
         TOPMARGIN, 7
         BOTTOMMARGIN, 355
     END
@@ -384,7 +353,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -407,15 +375,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "TestExpressionGraphics MFC Application\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "TestExpressionGraphics\0"
-            VALUE "LegalCopyright", "Copyright (C) 2016\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "TestExpressionGraphics.EXE\0"
-            VALUE "ProductName", "TestExpressionGraphics Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "TestExpressionGraphics MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "TestExpressionGraphics"
+            VALUE "LegalCopyright", "Copyright (C) 2016"
+            VALUE "OriginalFilename", "TestExpressionGraphics.EXE"
+            VALUE "ProductName", "TestExpressionGraphics Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -423,8 +389,6 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-
-#endif    // !_MAC
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -434,6 +398,12 @@ END
 
 IDD_TESTEXPRESSIONGRAPHICS_DIALOG DLGINIT
 BEGIN
+    IDC_COMBONUMBERFORMAT, 0x403, 11, 0
+0x6353, 0x6569, 0x746e, 0x6669, 0x6369, "\000" 
+    IDC_COMBONUMBERFORMAT, 0x403, 12, 0
+0x6e45, 0x6967, 0x656e, 0x7265, 0x6e69, 0x0067, 
+    IDC_COMBONUMBERFORMAT, 0x403, 11, 0
+0x2d45, 0x6f6e, 0x6174, 0x6974, 0x6e6f, "\000" 
     IDC_COMBOFONTSIZE, 0x403, 3, 0
 0x3431, "\000" 
     IDC_COMBOFONTSIZE, 0x403, 3, 0
@@ -462,15 +432,26 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TESTEXPRESSIONGRAPHICS_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About TestExpressionGraphics..."
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

@@ -33,9 +33,10 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent) {
-    m_exprText = _T("");
-    m_x        = 0.0;
+CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0)
+{
+    m_exprText        = _T("");
+    m_x               = 0.0;
     m_hIcon           = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     m_debugExpr       = NULL;
     m_debugThread     = NULL;
@@ -64,41 +65,43 @@ BEGIN_MESSAGE_MAP(CTestExpressionGraphicsDlg, CDialog)
     ON_WM_SIZE()
     ON_WM_LBUTTONDOWN()
     ON_WM_CONTEXTMENU()
-    ON_COMMAND(      ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree   )
-    ON_COMMAND(      ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm )
-    ON_COMMAND(      ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm )
-    ON_COMMAND(      ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm  )
-    ON_COMMAND(      ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree   )
-    ON_COMMAND(      ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand         )
-    ON_COMMAND(      ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply       )
-    ON_COMMAND(      ID_GOTOX                      , OnGotoX                     )
-    ON_COMMAND(      ID_GOTOFONTSIZE               , OnGotoFontSize              )
-    ON_EN_CHANGE(    IDC_EDITEXPR                  , OnChangeEditExpr            )
-    ON_EN_CHANGE(    IDC_EDITX                     , OnChangeEditX               )
-    ON_CBN_SELCHANGE(IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize    )
-    ON_COMMAND(      ID_FILE_EXIT                  , OnFileExit                  )
-    ON_COMMAND(      ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis)
-    ON_COMMAND(      ID_EDIT_GOTOEDITFX            , OnEditGotoEditFx            )
-    ON_COMMAND(      ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters       )
-    ON_COMMAND(      ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack    )
-    ON_COMMAND(      ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles        )
-    ON_COMMAND(      ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr           )
-    ON_COMMAND(      ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived        )
-    ON_COMMAND(      ID_DEBUG_RUN                  , OnDebugRun                  )
-    ON_COMMAND(      ID_DEBUG_STOP                 , OnDebugStop                 )
-    ON_COMMAND(      ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints  )
-    ON_COMMAND(      ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep   )
-    ON_COMMAND(      ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration )
-    ON_COMMAND(      ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual       )
-    ON_COMMAND(      ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx        )
-    ON_COMMAND(      ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx         )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx       )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived  )
-    ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx         )
-    ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived    )
-    ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll      )
-    ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged        )
-    ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError         )
+    ON_COMMAND(      ID_CONTEXTMENU_SHOWEXPRTREE   , OnContextMenuShowExprTree      )
+    ON_COMMAND(      ID_CONTEXTMENU_TOSTANDARDFORM , OnContextMenuToStandardForm    )
+    ON_COMMAND(      ID_CONTEXTMENU_TOCANONCALFORM , OnContextMenuToCanoncalForm    )
+    ON_COMMAND(      ID_CONTEXTMENU_TONUMERICFORM  , OnContextMenuToNumericForm     )
+    ON_COMMAND(      ID_CONTEXTMENU_SHOWNODETREE   , OnContextMenuShowNodeTree      )
+    ON_COMMAND(      ID_CONTEXTMENU_EXPAND         , OnContextMenuExpand            )
+    ON_COMMAND(      ID_CONTEXTMENU_MULTIPLY       , OnContextMenuMultiply          )
+    ON_COMMAND(      ID_GOTOX                      , OnGotoX                        )
+    ON_COMMAND(      ID_GOTOFONTSIZE               , OnGotoFontSize                 )
+    ON_COMMAND(      ID_GOTONUMBERFORMAT           , OnGotoNumberFormat             )
+    ON_EN_CHANGE(    IDC_EDITEXPR                  , OnChangeEditExpr               )
+    ON_EN_CHANGE(    IDC_EDITX                     , OnChangeEditX                  )
+    ON_CBN_SELCHANGE(IDC_COMBONUMBERFORMAT         , OnSelchangeComboNumberFormat   )
+    ON_CBN_SELCHANGE(IDC_COMBOFONTSIZE             , OnSelChangeComboFontSize       )
+    ON_COMMAND(      ID_FILE_EXIT                  , OnFileExit                     )
+    ON_COMMAND(      ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindMatchingParentesis   )
+    ON_COMMAND(      ID_EDIT_GOTOEDITFX            , OnEditGotoEditFx               )
+    ON_COMMAND(      ID_EDIT_ENTERPARAMETERS       , OnEditEnterParameters          )
+    ON_COMMAND(      ID_VIEW_SHOWREDUCTIONSTACK    , OnViewShowReductionStack       )
+    ON_COMMAND(      ID_VIEW_SHOWRECTANGLES        , OnViewShowRectangles           )
+    ON_COMMAND(      ID_DEBUG_REDUCEEXPR           , OnDebugReduceExpr              )
+    ON_COMMAND(      ID_DEBUG_REDUCEDERIVED        , OnDebugReduceDerived           )
+    ON_COMMAND(      ID_DEBUG_RUN                  , OnDebugRun                     )
+    ON_COMMAND(      ID_DEBUG_STOP                 , OnDebugStop                    )
+    ON_COMMAND(      ID_DEBUG_CLEARALLBREAKPOINTS  , OnDebugClearAllBreakPoints     )
+    ON_COMMAND(      ID_DEBUG_TRACEREDUCTIONSTEP   , OnDebugTraceReductionStep      )
+    ON_COMMAND(      ID_DEBUG_STEP1REDUCEITERATION , OnDebugStep1ReduceIteration    )
+    ON_COMMAND(      ID_DEBUG_TESTTREESEQUAL       , OnDebugTestTreesEqual          )
+    ON_COMMAND(      ID_FUNCTIONS_COMPILEFX        , OnFunctionsCompileFx           )
+    ON_COMMAND(      ID_FUNCTIONS_DERIVEFX         , OnFunctionsDeriveFx            )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEFX       , OnFunctionsEvaluateFx          )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEDERIVED  , OnFunctionsEvaluateDerived     )
+    ON_COMMAND(      ID_FUNCTIONS_REDUCEFX         , OnFunctionsReduceFx            )
+    ON_COMMAND(      ID_FUNCTIONS_REDUCEDERIVED    , OnFunctionsReduceDerived       )
+    ON_COMMAND(      ID_FUNCTIONS_EVALUATEALL      , OnFunctionsEvaluateAll         )
+    ON_MESSAGE(      ID_MSG_RUNSTATE_CHANGED       , OnMsgRunStateChanged           )
+    ON_MESSAGE(      ID_MSG_SHOW_DEBUGERROR        , OnMsgShowDebugError            )
 END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
@@ -131,7 +134,8 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDITX                , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_STATICRESULTLABEL    , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_EDITRESULTVALUE      , RELATIVE_X_POS);
-
+  m_layoutManager.addControl(IDC_STATICFORMATLABEL    , RELATIVE_X_POS);
+  m_layoutManager.addControl(IDC_COMBONUMBERFORMAT    , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_STATICDERIVEDLABEL1  , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_EDITDERIVEDVALUE1    , RELATIVE_X_POS);
   m_layoutManager.addControl(IDC_STATICDERIVEDLABEL2  , RELATIVE_X_POS);
@@ -151,6 +155,7 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
   enableMenuItem(this, ID_VIEW_SHOWREDUCTIONSTACK , false);
 #endif
 
+  getNumberFormatCombo()->SetCurSel(E_NOTATION);
   getFontSizeCombo()->SetCurSel(5);
   gotoEditBox(this, IDC_EDITEXPR);
 
@@ -180,9 +185,8 @@ void CTestExpressionGraphicsDlg::OnPaint() {
   if(IsIconic()) {
     CPaintDC dc(this); // device context for painting
 
-    SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
+    SendMessage(WM_ICONERASEBKGND, (WPARAM)dc.GetSafeHdc(), 0);
 
-    // Center icon in client rectangle
     int cxIcon = GetSystemMetrics(SM_CXICON);
     int cyIcon = GetSystemMetrics(SM_CYICON);
     CRect rect;
@@ -190,7 +194,6 @@ void CTestExpressionGraphicsDlg::OnPaint() {
     int x = (rect.Width() - cxIcon + 1) / 2;
     int y = (rect.Height() - cyIcon + 1) / 2;
 
-    // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
@@ -201,7 +204,7 @@ void CTestExpressionGraphicsDlg::OnPaint() {
 }
 
 HCURSOR CTestExpressionGraphicsDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG* pMsg) {
@@ -219,16 +222,7 @@ void CTestExpressionGraphicsDlg::OnFileExit() {
 }
 
 void CTestExpressionGraphicsDlg::OnEditFindMatchingParentesis() {
-  UpdateData();
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITEXPR);
-  int cursorPos, endChar;
-  e->GetSel(cursorPos,endChar);
-  String expr = (LPCTSTR)m_exprText;
-  const int m = findMatchingpParanthes(expr.cstr(), cursorPos);
-  if(m >= 0) {
-    e->SetSel(m, m);
-  }
-
+  gotoMatchingParanthes(this, IDC_EDITEXPR);
 }
 
 void CTestExpressionGraphicsDlg::OnEditGotoEditFx() {
@@ -285,6 +279,18 @@ void CTestExpressionGraphicsDlg::OnGotoX() {
 
 void CTestExpressionGraphicsDlg::OnGotoFontSize() {
   getFontSizeCombo()->SetFocus();
+  getFontSizeCombo()->ShowDropDown();
+}
+
+void CTestExpressionGraphicsDlg::OnGotoNumberFormat() {
+  getNumberFormatCombo()->SetFocus();
+  getNumberFormatCombo()->ShowDropDown();
+
+}
+
+NumberFormat CTestExpressionGraphicsDlg::getNumberFormat() {
+  CComboBox *cb = getNumberFormatCombo();
+  return (NumberFormat)cb->GetCurSel();
 }
 
 int CTestExpressionGraphicsDlg::getFontSize() {
@@ -689,7 +695,16 @@ void CTestExpressionGraphicsDlg::OnChangeEditX() {
   clearDerivedValue2();
 }
 
+
+void CTestExpressionGraphicsDlg::OnSelchangeComboNumberFormat() {
+  onSelChangeCombo();
+}
+
 void CTestExpressionGraphicsDlg::OnSelChangeComboFontSize() {
+  onSelChangeCombo();
+}
+
+void CTestExpressionGraphicsDlg::onSelChangeCombo() {
   if(isThreadPaused()) {
     paintDebugExpr();
   } else {
@@ -1066,24 +1081,22 @@ void CTestExpressionGraphicsDlg::makeExprImage(const Expression &expr) {
   try {
     const int oldContextWindow = getContextWindow();
     clearExprImage();
-    m_exprImage = expressionToImage(m_device, expr, getFontSize());
+    m_exprImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICEXPRIMAGE) {
       setContextWindow(oldContextWindow);
     }
   } catch(Exception e) {
     showError(e);
-  }
-  catch (...) {
-    MessageBox(_T("Unknown exception in %s"), __TFUNCTION__);
+  } catch (...) {
+    showError(_T("Unknown exception in %s"), __TFUNCTION__);
   }
 }
-
 
 void CTestExpressionGraphicsDlg::makeDerivedImage(const Expression &expr) {
   try {
     const int oldContextWindow = getContextWindow();
     clearDerivedImage();
-    m_derivedImage = expressionToImage(m_device, expr, getFontSize());
+    m_derivedImage = expressionToImage(m_device, expr, getFontSize(), getNumberFormat());
     if(oldContextWindow == IDC_STATICDERIVEDIMAGE) {
       setContextWindow(oldContextWindow);
     }
@@ -1310,3 +1323,4 @@ ExpressionImage &CTestExpressionGraphicsDlg::getImageFromWinId(int winId) {
                                return m_exprImage;
   }
 }
+
