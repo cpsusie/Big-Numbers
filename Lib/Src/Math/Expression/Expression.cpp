@@ -80,11 +80,8 @@ void Expression::throwUnknownSymbolException(const TCHAR *method, SNode n) { // 
 }
 
 void Expression::throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n) { // static
-  throwUnknownSymbolException(s_className, method, n);
-}
-
-void Expression::throwUnknownSymbolException(const TCHAR *className, const TCHAR *method, const ExpressionNode *n) { // static
-  throwMethodException(className, method, _T("Unexpected symbol in expression tree:%s"), n->getSymbolName().cstr());
+  throwException(_T("%s:Unexpected symbol in expression tree:%s")
+                ,method, n->getSymbolName().cstr());
 }
 
 void Expression::throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const {

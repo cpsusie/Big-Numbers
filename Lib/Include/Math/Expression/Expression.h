@@ -204,8 +204,8 @@ private:
   void   parse(const String &expr);
   ExpressionReturnType findReturnType() const;
   void throwInvalidTrigonometricMode();
-  static void throwUnknownSymbolException(const TCHAR *method, SNode                 n);
-  static void throwUnknownSymbolException(const TCHAR *method, const ExpressionNode *n);
+  static void throwUnknownSymbolException(  const TCHAR *method, SNode                 n);
+  static void throwUnknownSymbolException(  const TCHAR *method, const ExpressionNode *n);
   void        throwInvalidSymbolForTreeMode(const TCHAR *method, const ExpressionNode *n) const;
 
 #ifdef _DEBUG
@@ -383,8 +383,6 @@ public:
 
   void checkIsStandardForm();
   void checkIsCanonicalForm();
-
-  static void throwUnknownSymbolException(const TCHAR *className, const TCHAR *method, const ExpressionNode *n);
 
   void clear();
   void reduce();

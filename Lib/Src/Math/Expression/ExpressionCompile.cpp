@@ -401,7 +401,7 @@ void Expression::genStatementList(const ExpressionNode *n) {
     genReturnBoolExpression(n);
     break;
   default    :
-    throwUnknownSymbolException(_T("genStatementList"), n);
+    throwUnknownSymbolException(__TFUNCTION__, n);
     break;
   }
 }
@@ -603,7 +603,7 @@ void Expression::genExpression(const ExpressionNode *n, const ExpressionDestinat
     break;
   case IIF           :    GENIF(n);
   default            :
-    throwUnknownSymbolException(_T("genExpression"), n);
+    throwUnknownSymbolException(__TFUNCTION__, n);
     break;
   }
 #ifdef IS64BIT
@@ -765,7 +765,7 @@ JumpList Expression::genBoolExpression(const ExpressionNode *n) {
     break;
 
   default:
-    throwUnknownSymbolException(_T("genBoolExpression"), n);
+    throwUnknownSymbolException(__TFUNCTION__, n);
   }
   return result;
 }

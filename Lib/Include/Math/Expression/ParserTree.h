@@ -181,6 +181,7 @@ private:
   friend class FactorArray;
   friend class AllocateNumbers;
   friend class MarkedNodeTransformer;
+  friend class ExpressionPainter;
 protected:
   ParserTree();
   ParserTree(           const ParserTree &src);
@@ -203,6 +204,11 @@ protected:
     return getValueRef(valueIndex);
   }
   ExpressionNode *traverseSubstituteNodes(ExpressionNode *n, CompactNodeHashMap<ExpressionNode*> &nodeMap);
+
+  ExpressionNodeVariable *fetchVariableNode( const String               &name    );
+  ExpressionNode         *constExpression(   const String               &name    );
+  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL); // if exponent not specified, it is set to 1
+  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...               ); // terminate argumentlist with NULL
 
   inline ExpressionNodeNumber *numberExpression(const Real     &v) {
     return new ExpressionNodeNumber(this, v);
@@ -321,12 +327,7 @@ public:
   inline Real &getValueRef(UINT valueIndex) const {
     return m_valueTable[valueIndex];
   }
-  ExpressionNodeVariable *fetchVariableNode( const String               &name    );
-  ExpressionNode         *constExpression(   const String               &name    );
-  ExpressionFactor       *fetchFactorNode(   ExpressionNode *base, ExpressionNode *exponent = NULL); // if exponent not specified, it is set to 1
-  ExpressionNodeTree     *fetchTreeNode(     ExpressionInputSymbol     symbol, ...               ); // terminate argumentlist with NULL
   ExpressionNodePoly     *fetchPolyNode(     const ExpressionNodeArray  &coefficientArray, ExpressionNode *argument);
-
   ExpressionFactor       *getFactor(         ExpressionNode *base, ExpressionNode *exponent = NULL);
   ExpressionNode         *getTree(           ExpressionInputSymbol       symbol, ExpressionNodeArray &a);
   ExpressionNode         *getSum(            AddentArray          &addentArray);

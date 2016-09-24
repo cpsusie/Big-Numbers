@@ -120,14 +120,14 @@ typedef enum {
 
 class AlignedImage : public PixRect {
 private:
-  int m_horizontalAlignment; // centerLine from top. Default is height/2
-  int m_leftFiller;          // empty space filled when concatenating images. Can be negative. Default=0
+  int m_horizontalAlignment; // CenterLine from top. Default is height/2
+  int m_leftFiller;          // Empty space filled when concatenating images. Can be negative. Default=0
   int m_fontSize;
 public:
   AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz);
   AlignedImage(PixRectDevice &device, int fontSize, const CSize &sz, D3DCOLOR backgroundColor);
 
-  AlignedImage *setAlignment(int align) {
+  inline AlignedImage *setAlignment(int align) {
     m_horizontalAlignment = align;
     return this;
   }
@@ -141,13 +141,13 @@ public:
   inline int getAlignment() const {
     return m_horizontalAlignment;
   }
-  void horizontalLine(int y, D3DCOLOR color = BLACK) {
-    line(0,y,getWidth()-1,y, color);
+  inline void horizontalLine(int y, D3DCOLOR color = BLACK) {
+    line(0, y, getWidth()-1, y, color);
   }
   virtual ImageType getImageType() const {
     return NORMAL_IMAGE;
   }
-  int getFontSize() const {
+  inline int getFontSize() const {
     return m_fontSize;
   }
 };
@@ -172,10 +172,10 @@ public:
   AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size);
   AlignedTextImage(PixRectDevice &device, FontCache &fontCache, const CSize &size, D3DCOLOR backgroundColor);
 
-  const TEXTMETRIC &getTextMetric() const {
+  inline const TEXTMETRIC &getTextMetric() const {
     return m_textMetric;
   }
-  ImageType getImageType() const {
+  inline ImageType getImageType() const {
     return TEXT_IMAGE;
   }
 };
@@ -251,7 +251,10 @@ private:
   DECLARECLASSNAME;
   static FontCache            s_fontCache;
   static SymbolStringMap      s_stringMap;
-  int                         m_maxWidth;
+  const NumberFormat          m_numberFormat;
+  const int                   m_decimals;
+  const int                   m_maxWidth;
+  bool                        m_getNumberActive;
   CompactArray<AlignedImage*> m_imageTable;
   PixRectDevice              &m_device;
   Expression                 &m_expression;
@@ -259,7 +262,7 @@ private:
   ExpressionRectangle         m_rectangle;
 
   static CFont *getFont(bool textFont, int fontSize);
-  int createSubFontSize(int fontSize) const {
+  inline int createSubFontSize(int fontSize) const {
     return (fontSize >= 10) ? (fontSize * 3 / 5) : fontSize;
   }
 
@@ -267,10 +270,12 @@ private:
   AlignedImage *createTextImage(const CSize &size);
   AlignedImage *createImage(const CSize &size);
 
-  AlignedTextImage *getTextImage(const String &str, bool textFont, int fontSize, ExpressionRectangle &rect);
-  AlignedTextImage *getNumberImage(const Number &n, int fontSize, ExpressionRectangle &rect);
-  AlignedImage *concatImages(const ImageArray &imageList, ExpressionRectangle &rect);
-  AlignedImage *stackImages( const ImageArray &imageList, ExpressionRectangle &rect) {
+  AlignedTextImage    *getTextImage(     const String     &str, bool textFont, int fontSize, ExpressionRectangle &rect);
+  AlignedImage        *getNumberImage(   const ExpressionNode *n,              int fontSize, ExpressionRectangle &rect);
+  void                 splitReal(        const Real       &v  , Real &significant, int &exponent) const;
+  bool                 mustConvertNumber(const Number     &n) const;
+  AlignedImage        *concatImages(     const ImageArray &imageList,                        ExpressionRectangle &rect);
+  inline AlignedImage *stackImages(      const ImageArray &imageList,                        ExpressionRectangle &rect) {
     return stackImages(false, imageList, rect);
   }
 
@@ -307,11 +312,11 @@ private:
   AlignedImage *getStatementImages(   const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getIfImage(           const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
 public:
-  ExpressionPainter(PixRectDevice &device, const Expression &expr);
+  ExpressionPainter(PixRectDevice &device, const Expression &expr, NumberFormat numberFormat, int decimals, int maxWidth);
  ~ExpressionPainter();
 
-  PixRect *paintExpression(int fontSize, int maxWidth);
-  const ExpressionRectangle &getRectangleTree() const {
+  PixRect *paintExpression(int fontSize);
+  inline const ExpressionRectangle &getRectangleTree() const {
     return m_rectangle;
   }
   void clear();
@@ -321,11 +326,15 @@ DEFINECLASSNAME(ExpressionPainter);
 FontCache       ExpressionPainter::s_fontCache;
 SymbolStringMap ExpressionPainter::s_stringMap;
 
-ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr) 
-: m_device(device)
+ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &expr, NumberFormat numberFormat, int decimals, int maxWidth)
+: m_device(    device           )
 , m_expression((Expression&)expr)
+, m_numberFormat(numberFormat   )
+, m_decimals(    decimals       )
+, m_maxWidth(    maxWidth       )
 {
   m_backgroundColor = WHITE;
+  m_getNumberActive = false;
 }
 
 ExpressionPainter::~ExpressionPainter() {
@@ -336,9 +345,8 @@ void ExpressionPainter::clear() {
   clearImageTable();
 }
 
-PixRect *ExpressionPainter::paintExpression(int fontSize, int maxWidth) {
+PixRect *ExpressionPainter::paintExpression(int fontSize) {
   clearImageTable();
-  m_maxWidth = maxWidth;
   if(m_expression.getRoot() == NULL) {
     return getTextImage(_T("null"), true, fontSize, m_rectangle);
   }
@@ -424,7 +432,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
     }
 
   case NUMBER            :
-    return getNumberImage(n->getNumber(), fontSize, rect);
+    return getNumberImage(n, fontSize, rect);
 
   case SUM               :
     return getSummationImage(n, fontSize, rect);
@@ -551,7 +559,7 @@ AlignedImage *ExpressionPainter::getImage1(const ExpressionNode *n, int fontSize
     }
     break;
   default                                 :
-    Expression::throwUnknownSymbolException(s_className, method, n);
+    Expression::throwUnknownSymbolException(method, n);
     break;
   }
   return result;
@@ -888,7 +896,7 @@ AlignedImage *ExpressionPainter::getStdPolyImage(const ExpressionNode *n, int fo
     }
     if(c != 1) {
       ExpressionRectangle coefRect;
-      result.add(getNumberImage(c, fontSize, coefRect));
+      result.add(getNumberImage(coef, fontSize, coefRect));
       rect.addChild(coefRect);
     }
     switch(pow) {
@@ -1132,8 +1140,67 @@ AlignedImage *ExpressionPainter::stackImages(bool center, const ImageArray &imag
   return result;
 }
 
-AlignedTextImage *ExpressionPainter::getNumberImage(const Number &n, int fontSize, ExpressionRectangle &rect) {
-  return getTextImage(n.toString(), true, fontSize, rect);
+AlignedImage *ExpressionPainter::getNumberImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
+  const Number &num = n->getNumber();
+  if(m_getNumberActive || !mustConvertNumber(num)) {
+    return getTextImage(num.toString(), true, fontSize, rect);
+  } else {
+    m_getNumberActive = true; // to prevent infinte recursion
+    Real significand;
+    int  exponent;
+    splitReal(num.getRealValue(), significand, exponent);
+    if (m_numberFormat == ENGINEERING_NOTATION) {
+      const int r = abs(exponent % 3);
+      if (r) {
+        exponent    -= r;
+        significand *= (r==1) ? 10 : 100;
+      }
+    }
+
+    ExpressionNode *en = m_expression.fetchTreeNode(PROD
+                                                   ,m_expression.numberExpression(significand)
+                                                   ,m_expression.fetchTreeNode(POW
+                                                                              ,m_expression.numberExpression(10)
+                                                                              ,m_expression.numberExpression(exponent)
+                                                                              ,NULL
+                                                                              )
+                                                    ,NULL
+                                                    );
+
+    AlignedImage *result = getImage(en, fontSize, rect);
+    rect.m_children.clear();
+    rect.m_node = (ExpressionNode*)n;
+    m_getNumberActive = false;
+    return result;
+  }
+}
+
+void ExpressionPainter::splitReal(const Real &v, Real &significant, int &exponent) const {
+  const String   s    = toString(v, m_decimals, 0, ios::scientific);
+  const intptr_t ePos = s.find('e');
+  if(ePos < 0) {
+    exponent    = 0;
+    significant = v;
+  } else {
+    _stscanf(s.cstr() + ePos + 1 , _T("%d" ), &exponent   );
+    _stscanf(left(s, ePos).cstr(), _T("%lf"), &significant);
+  }
+}
+
+bool ExpressionPainter::mustConvertNumber(const Number &n) const {
+  switch(m_numberFormat) {
+  case SCIENTIFIC_NOTATION :
+  case ENGINEERING_NOTATION:
+    if(n.isRational()) return false;
+    { Real significant;
+      int  exponent;
+      splitReal(n.getRealValue(), significant, exponent);
+      return (exponent != 0);
+    }
+    break;
+  default                  :
+    return false;
+  }
 }
 
 AlignedTextImage *ExpressionPainter::getTextImage(const String &str, bool textFont, int fontSize, ExpressionRectangle &rect) {
@@ -1184,11 +1251,22 @@ bool ExpressionRectangle::isDescentantOf(const ExpressionRectangle &r) const {
 }
 
 String ExpressionRectangle::toString() const {
-  String rStr = format(_T("Rect:(%d,%d,%d,%d)"), left, top, right, bottom);
+  const String rStr = format(_T("Rect:(%3d,%3d,%3d,%3d)"), left, top, right, bottom);
   if(m_node == NULL) {
-    return rStr;
+    return format(_T("%s Node:%p"), rStr.cstr(), m_node);
   } else {
-    return format(_T("%s Node:%s"), rStr.cstr(), m_node->toString().cstr());
+    try {
+      return format(_T("%s Node:%p (%s)"), rStr.cstr(), m_node, m_node->toString().cstr());
+    } catch (...) {
+      return format(_T("%s Node:%p (Illegal pointer)"), rStr.cstr(), m_node);
+    }
+  }
+}
+
+void ExpressionRectangle::dump(int level) const { // recursive dump to debugLog
+  debugLog(_T("%*.*s%s\n"), level,level,_T(""), toString().cstr());
+  for(size_t i = 0; i < m_children.size(); i++) {
+    m_children[i].dump(level+2);
   }
 }
 
@@ -1302,11 +1380,11 @@ const ExpressionRectangle *ExpressionImage::findLeastRectangle(const CPoint &poi
   return rectFinder.getFoundRectangle();
 }
 
-
-ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, int maxWidth) {
-  ExpressionPainter painter(device, expr);
-  PixRect *pr = painter.paintExpression(fontSize, maxWidth);
+ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, NumberFormat numberFormat, int decimals, int maxWidth) {
+  ExpressionPainter     painter(device, expr, numberFormat, decimals, maxWidth);
+  PixRect              *pr = painter.paintExpression(fontSize);
   const ExpressionImage result(pr, painter.getRectangleTree());
   result.traverseRectangleTree(AdjustPosition());
+//  result.getRectangleTree().dump();
   return result;
 }

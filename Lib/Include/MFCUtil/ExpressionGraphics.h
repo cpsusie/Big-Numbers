@@ -1,7 +1,7 @@
 #pragma once
 
-#include "PixRect.h"
 #include "WinTools.h"
+#include "PixRect.h"
 #include <Math/Expression/Expression.h>
 
 class ExpressionRectangle;
@@ -32,11 +32,10 @@ private:
     return *this;
   }
   bool traverseTree(ExpressionRectangleHandler &handler, const ExpressionRectangle *parent) const;
-
 public:
-  ExpressionRectangle() : CRect(0,0,0,0) , m_node(NULL), m_parent(NULL) {
+  ExpressionRectangle() : CRect(0,0,0,0), m_node(NULL), m_parent(NULL) {
   }
-  ExpressionRectangle(const CPoint &topLeft) : CRect(topLeft.x,topLeft.y,0,0) , m_node(NULL), m_parent(NULL) {
+  ExpressionRectangle(const CPoint &topLeft) : CRect(topLeft.x,topLeft.y,0,0), m_node(NULL), m_parent(NULL) {
   }
   inline CPoint BottomLeft() const {
     return CPoint(left,bottom);
@@ -51,7 +50,7 @@ public:
   inline int getChildCount() const {
     return (int)m_children.size();
   }
-  inline ExpressionRectangle &child(unsigned int index) {
+  inline ExpressionRectangle &child(UINT index) {
     return m_children[index];
   }
   inline bool hasParent() const {
@@ -65,6 +64,7 @@ public:
     return m_children;
   }
   String toString() const;
+  void dump(int level=0) const; // recursive dump to debugLog
 };
 
 class ExpressionImage {
@@ -99,4 +99,10 @@ public:
   const ExpressionRectangle *findLeastRectangle(const CPoint &point, bool withNode = true) const;
 };
 
-ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, int maxWidth = -1);
+typedef enum {
+  SCIENTIFIC_NOTATION
+ ,ENGINEERING_NOTATION
+ ,E_NOTATION
+} NumberFormat;
+
+ExpressionImage expressionToImage(PixRectDevice &device, const Expression &expr, int fontSize, NumberFormat numberFormat = SCIENTIFIC_NOTATION, int decimals = 6, int maxWidth = -1);
