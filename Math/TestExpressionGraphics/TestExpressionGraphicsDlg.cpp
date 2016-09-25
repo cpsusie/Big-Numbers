@@ -454,18 +454,21 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
     IDC_EDITEXPR
    ,IDC_EDITX
    ,IDC_COMBOFONTSIZE
+   ,IDC_COMBONUMBERFORMAT
   };
 
-  static const int fontSizeFields[] = {
+  static const int comboFields[] = {
     IDC_COMBOFONTSIZE
+   ,IDC_COMBONUMBERFORMAT
   };
 
 #define ENABLEFIELDLIST(a,enabled) enableFieldList(a, ARRAYSIZE(a), enabled)
+
   if(hasDebugThread()) {
     if(m_debugThread->isRunning()) {
       ENABLEFIELDLIST(dialogFields, false);
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
-    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
+      enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , false);
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
@@ -473,16 +476,16 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
     } else if(m_debugThread->isTerminated()) {
       ENABLEFIELDLIST(dialogFields, true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , true );
-    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
+      enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , true );
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , false);
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, false);
       enableMenuItem(this, ID_DEBUG_RUN                 , false);
       enableMenuItem(this, ID_DEBUG_STOP                , false);
     } else { // paused
       ENABLEFIELDLIST(dialogFields  , false);
-      ENABLEFIELDLIST(fontSizeFields, true );
+      ENABLEFIELDLIST(comboFields   , true );
       enableMenuItem(this, ID_DEBUG_REDUCEEXPR          , false);
-    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
+      enableMenuItem(this, ID_DEBUG_REDUCEDERIVED       , false);
       enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP  , true );
       enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION, true );
       enableMenuItem(this, ID_DEBUG_RUN                 , true );
@@ -491,7 +494,7 @@ void CTestExpressionGraphicsDlg::ajourDialogItems() {
   } else { // No debug thread
     ENABLEFIELDLIST(dialogFields, true);
     enableMenuItem(this, ID_DEBUG_REDUCEEXPR            , true );
-  enableMenuItem(this, ID_DEBUG_REDUCEDERIVED         , true );
+    enableMenuItem(this, ID_DEBUG_REDUCEDERIVED         , true );
     enableMenuItem(this, ID_DEBUG_TRACEREDUCTIONSTEP    , false);
     enableMenuItem(this, ID_DEBUG_STEP1REDUCEITERATION  , false);
     enableMenuItem(this, ID_DEBUG_RUN                   , false);
@@ -695,7 +698,6 @@ void CTestExpressionGraphicsDlg::OnChangeEditX() {
   clearDerivedValue2();
 }
 
-
 void CTestExpressionGraphicsDlg::OnSelchangeComboNumberFormat() {
   onSelChangeCombo();
 }
@@ -745,7 +747,6 @@ void CTestExpressionGraphicsDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     clearContextWindow();
     break;
   }
-
   CDialog::OnLButtonDown(nFlags, point);
 }
 
@@ -788,7 +789,6 @@ void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
   default:
     return;
   }
-
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
 }
 
@@ -990,7 +990,7 @@ void CTestExpressionGraphicsDlg::OnDebugTraceReductionStep() {
       m_debugThread->goUntilReturn();
     } else
 #endif
-      m_debugThread->singleStep();
+    m_debugThread->singleStep();
   }
 }
 
@@ -1202,7 +1202,7 @@ static int variableNameCompare(const ExpressionVariableWithValue &v1, const Expr
   return _tcscmp(v1.getName().cstr(), v2.getName().cstr());
 }
 
-static bool isSameVariableNames(const Array<ExpressionVariableWithValue> &a1, const Array<ExpressionVariableWithValue> &a2) {
+static bool isSameVariableNames(const ExpressionVariableArray &a1, const ExpressionVariableArray &a2) {
   if(a1.size() != a2.size()) {
     return false;
   }
