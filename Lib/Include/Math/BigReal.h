@@ -512,7 +512,7 @@ private:
   BigReal &rRound(size_t digits);  // assume *this != 0 and digits > 0 (digits is decimal digits). return this
 
   // Division helperfunctions, 
-  // Result.digitPool = x x.digitPool
+  // Result.digitPool = x.digitPool
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);                      // approximately 1/x
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y           );            // approximately x/y
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);                       // approximately x/y
@@ -574,7 +574,7 @@ public:
     init(x);
   }
 
-  BigReal(const BigReal           &x      , DigitPool *digitPool = NULL);
+  BigReal(const BigReal          &x      , DigitPool *digitPool = NULL);
 
   explicit inline BigReal(const String &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(s, true);
@@ -660,7 +660,7 @@ public:
   friend double           getDouble(  const BigReal  &x);
   friend Double80         getDouble80(const BigReal  &x);
 
-  // Result.digitPool = x x.digitPool
+  // Result.digitPool = x.digitPool
   friend BigReal  operator+ (const BigReal &x, const BigReal &y);
   friend BigReal  operator- (const BigReal &x, const BigReal &y);
   friend BigReal  operator* (const BigReal &x, const BigReal &y);
@@ -678,18 +678,18 @@ public:
   BigReal  operator--(int);                                                   // postfix-form
   BigReal &multPow10(BRExpoType exp);
 
-  // Result.digitPool = x x.digitPool
-  friend BigInt operator/ (     const BigInt &x, const BigInt &y);
-  friend BigInt operator% (     const BigInt &x, const BigInt &y);
-  friend BigInt operator- (     const BigInt &x);
-  friend BigReal  sum(          const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x+y with |error| <= f
-  friend BigReal  dif(          const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x-y with |error| <= f
-  friend BigReal  prod(         const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x*y with |error| <= f
-  friend BigReal  quot(         const BigReal &x,  const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x/y with |error| <= f
-  friend void    quotRemainder( const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
-  friend void    quotRemainder64( const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+  // Result.digitPool = x.digitPool
+  friend BigInt operator/ (        const BigInt  &x, const BigInt &y);
+  friend BigInt operator% (        const BigInt  &x, const BigInt &y);
+  friend BigInt operator- (        const BigInt  &x);
+  friend BigReal  sum(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x+y with |error| <= f
+  friend BigReal  dif(             const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x-y with |error| <= f
+  friend BigReal  prod(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x*y with |error| <= f
+  friend BigReal  quot(            const BigReal &x, const BigReal &y, const BigReal  &f, DigitPool *digitPool = NULL); // x/y with |error| <= f
+  friend void     quotRemainder(   const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+  friend void     quotRemainder64( const BigReal &x, const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
 #ifdef IS64BIT
-  friend void    quotRemainder128(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
+  friend void     quotRemainder128(const BigReal &x,  const BigReal &y, BigInt *quotient, BigReal *remainder);  // Calculates only quotient and/or remainder if specified
 #endif
   static BigReal  apcSum(       const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
   static BigReal  apcProd(      const char bias,  const BigReal &x, const BigReal  &y, DigitPool *digitPool = NULL); // bias = '<','#' or '>'
@@ -770,7 +770,7 @@ public:
     return getDecimalDigitCount64(n);
 #endif
   }
-  static int     getDecimalDigitCount32(unsigned long n   );                                // n == 0 ? 0 : (floor(log10(n))+1). Assume n < BIGREALBASE
+  static int     getDecimalDigitCount32(unsigned long    n);                                // n == 0 ? 0 : (floor(log10(n))+1). Assume n < BIGREALBASE
   static int     getDecimalDigitCount64(unsigned __int64 n);                                // as above but for n < 1eMAXDIGITS_INT64
 
 #ifdef HAS_LOOP_DIGITCOUNT
@@ -781,7 +781,7 @@ public:
   static int     isPow10(size_t n);                                                         // Return p if n = 10^p for p = [0..POWER10TableSIZE[. else return -1.
   static bool    isPow10(const BigReal &x);                                                 // true if |x| = 10^p for p = [BIGREAL_MINEXPO..BIGREAL_MAXEXPO]
 
-  // Result.digitPool = x x.digitPool
+  // Result.digitPool = x.digitPool
   friend BigReal fabs(     const BigReal &x);                                               // absolute value of x (=|x|)
   friend BigInt  floor(    const BigReal &x);                                               // biggest integer <= x
   friend BigInt  ceil(     const BigReal &x);                                               // smallest integer >= x
@@ -801,7 +801,7 @@ public:
     return x.getLow() >= 0;
   }
 
-  static BigReal  random(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);   // 0 <= random < 1; with the specified number of decimal digits, 
+  static BigReal random(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);   // 0 <= random < 1; with the specified number of decimal digits, 
                                                                                             // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
 
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);                 // Set to = from so |to-from| <= f. Return to
@@ -1086,9 +1086,9 @@ public:
   }
   BigInt(unsigned __int64       x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(const _int128          &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(const _uint128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
 
   explicit BigInt(const String &s, DigitPool *digitPool = NULL);
