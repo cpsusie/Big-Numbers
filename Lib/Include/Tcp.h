@@ -31,6 +31,8 @@ inline void throwLastWSAErrorText() {
   throw TcpException(getLastWSAErrorText());
 }
 
+#ifndef _WINSOCK2API_
+
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
 
 inline unsigned __int64 htonll(unsigned __int64 x) {
@@ -47,6 +49,8 @@ inline unsigned __int64 ntohll(unsigned __int64 x) {
 #define ntohll(x) x
 
 #endif
+
+#endif // _WINSOCK2API_
 
 #pragma comment(lib, "wsock32.lib")
 

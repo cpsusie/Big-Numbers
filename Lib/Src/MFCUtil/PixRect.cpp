@@ -495,6 +495,13 @@ void PixRect::destroySurface() {
 }
 
 PixRect &PixRect::operator=(HBITMAP src) {
+  const D3DFORMAT pixelFormat = getPixelFormat();
+  const D3DPOOL   pool        = getPool();
+  destroy();
+  init(src, pixelFormat, pool);
+  return *this;
+
+/*
   String errMsg;
   const CSize     bmSize      = getBitmapSize(src);
   const D3DFORMAT pixelFormat = getPixelFormat(src);
@@ -516,6 +523,7 @@ PixRect &PixRect::operator=(HBITMAP src) {
     throwException(_T("%s::operator=(HBITMAP) failed:%s"), s_className, errMsg.cstr());
   }
   return *this;
+*/
 }
 
 D3DFORMAT PixRect::getPixelFormat(HBITMAP bm) { // static
