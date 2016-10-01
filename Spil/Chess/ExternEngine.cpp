@@ -231,7 +231,7 @@ void ExternEngine::sendUCI() {
     m_author = author;
   } catch(Exception e) {
     verbose(_T("Exception <%s>. last line read:<%s\n"), e.what(), line.cstr());
-    throwException(_T("Wrong or no reply on command \"uci\". Do not look like chess engine"));
+    throwException(_T("Wrong or no reply on command \"uci\". Doesn't seem to be a UCI chess engine"));
   }
 }
 
