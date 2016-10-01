@@ -1,0 +1,1123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{d477e009-e594-4d52-8211-71d4ac8b492a}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{04198dc6-5042-43d1-898d-26e8e775db11}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ea677dc3-b110-4b0c-86d2-5f05e100792e}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="EndGames">
+      <UniqueIdentifier>{bc863bcb-0eec-4d76-8930-6dbfe81f8257}</UniqueIdentifier>
+      <Extensions>cpp;h</Extensions>
+    </Filter>
+    <Filter Include="EndGames\3Men">
+      <UniqueIdentifier>{d09508ad-1aff-4f17-9eab-0b4b36eec503}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\4Men">
+      <UniqueIdentifier>{e1d0fa2e-adc2-4da8-a0dd-ea37ba95f5ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\5Men">
+      <UniqueIdentifier>{12c24a71-63d2-451e-9960-ddafd8f44993}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\5Men\5MenNoPawns">
+      <UniqueIdentifier>{3f6f2029-a7db-4496-a98a-1c90a29126d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\5Men\5MenWithPawns">
+      <UniqueIdentifier>{6e8b84e4-d92a-42d0-a4fe-f9b0d2462e1b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\EndGameKeyDefinitions">
+      <UniqueIdentifier>{34a1d06f-d07a-414d-b6e1-8e5974d3d540}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{7e8b0e3c-284b-4fb9-ae9a-f8dd5bd8e37d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractMoveFinder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Chess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateFileAssociation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionControl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionsDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnginesDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EnterTextDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldSet.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FieldSetUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FontSizeMenuManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameAnalyzeThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameEditHistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameHistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameIO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameKey.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameKeyHashStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameSetup.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUpdate.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetMatingPositions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="InputThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDABlock.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDAEnter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDAEnterCapture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDAKing.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDALeave.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LDAWalk.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Move.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderEndGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderExternEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderNegamax.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderNormalPlay.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderRandom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderRemotePlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveGenerator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpeningDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpeningDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpeningLibrary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Options.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionsAccessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PawnMask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Piece.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PieceValueDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlotWinsPValuesThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PositionSignature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectOpeningDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketChannel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StopWatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TablebaseDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeSettingsDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TraceDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TraceDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateBishopMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateKingMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateKnightMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdatePawnMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateQueenMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateRookMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPK.cpp">
+      <Filter>EndGames\3Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQK.cpp">
+      <Filter>EndGames\3Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRK.cpp">
+      <Filter>EndGames\3Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBKB.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBKN.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNKN.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPKB.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPKN.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPKP.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKB.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKN.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKP.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKQ.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKR.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRKB.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRKN.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRKP.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRKR.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRK.cpp">
+      <Filter>EndGames\4Men</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBKQ.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKBB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKBN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKNN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKRB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKRN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQKRR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNKQ.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQKQ.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQQK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQRK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKQ.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRRK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRKNN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRBK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRKB.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRKN.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRKR.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRNK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRRK.cpp">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBBPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBNPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPKB.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPKN.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPKQ.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPKR.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKBPPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNNPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPKB.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPKN.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPKQ.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPKR.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKNPPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPKB.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPKN.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPKQ.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPKR.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKPPPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQBPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQNPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPKB.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPKN.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPKQ.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPKR.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQPPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQQPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRBPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRNPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPKB.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPKN.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPKQ.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPKR.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRPPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRKP.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKRRPK.cpp">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyCodecKingsPawn.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyCodecKingsSym8.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition1Pawn.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition2EqualPawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition2Pawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition3Men.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition3Men1Pawn.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition4Men.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition4Men1Pawn.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition4Men2Equal.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition4Men2EqualPawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition4Men2Pawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men1Pawn.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men1Pawn2Equal.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men2Equal.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men2EqualPawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men2Pawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men3Equal.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men3EqualPawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition5Men3Pawns.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinitionDupletsAllowed.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKeyDefinitionDupletsNotAllowed.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="BackMoveGenerator.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndgameDecompress.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKey.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameResult.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameTablebase.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameTablebaseRegister.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameUtil.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="IndexedMap.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="ManualPositions.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="PackedIndexedMap.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteEndGameSubTablebase.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="SubTablebase.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimatedImage.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphics.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphicsDebug.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphicsDrag.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphicsMateAnimation.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphicsMoveAnimation.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessGraphicsText.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessResources.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Chess.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractMoveFinder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedImage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Chess.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineOptionsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineOptionsDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginesDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EnterTextDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldNames.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldSet.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameAnalyzeThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameEditHistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="InputThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LDA.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderEndGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderExternEngine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderNegamax.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderNormalPlay.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderRandom.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderRemotePlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpeningDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpeningDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpeningLibrary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Options.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PieceValueDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlotWinsPValuesThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectOpeningDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SocketChannel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StopWatch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TablebaseDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeSettingsDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Versionno.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame3Men.h">
+      <Filter>EndGames\3Men</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame4MenNoPawns.h">
+      <Filter>EndGames\4Men</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame4MenWithPawns.h">
+      <Filter>EndGames\4Men</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame5MenNoPawns.h">
+      <Filter>EndGames\5Men\5MenNoPawns</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame5MenWithPawns.h">
+      <Filter>EndGames\5Men\5MenWithPawns</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKeyCodec.h">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKeyDefinition.h">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKey.h">
+      <Filter>EndGames</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameTablebase.h">
+      <Filter>EndGames</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameUtil.h">
+      <Filter>EndGames</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexedMap.h">
+      <Filter>EndGames</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGraphics.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGraphicsAnimation.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\BlackBishop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackKing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackKnight.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackPawn.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackQueen.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackRook.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlueField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Board.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\CheckedKing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Chess.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DeleteMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DialogBackground.jpg">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DstFieldMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GreenField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Hourglasses.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\NoPiece.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\OpeningTreeImages.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PinkField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PlayerIndicator.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\PurpleField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SelectionFrame.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SrcFieldMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteBishop.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteKing.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteKnight.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteMark.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhitePawn.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteQueen.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Image2\whiteRook.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteRook.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\YellowField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\Chess.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="res\OpenLib.dat">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

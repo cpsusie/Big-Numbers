@@ -1,0 +1,121 @@
+'------------------------------------------------------------------------------
+'FILE DESCRIPTION: incremnt file- and product version inversion.h
+'------------------------------------------------------------------------------
+Function GetProjectDir(FullName)
+
+	'VC++ doesn't provide any method for getting the path of the active project
+	'See the VB Script reference for more information on the VB Script functions
+	'used in this function
+
+	'MsgBox "Dir: " & FullName
+
+	Dim proj_path
+	proj_path = Split(StrReverse(FullName), "\", -1, 1)
+
+	Dim count
+	count = UBound(proj_path)
+
+	Dim full_path
+	full_path = ""
+	Dim i
+
+	For i = 1 To count
+	  full_path = full_path & "\" & proj_path(i)
+	Next
+
+	GetProjectDir = StrReverse(full_path)
+	'MsgBox "Dir: " & FullName
+End Function
+
+'Sub: ReplaceText
+'______________________________________________________________________________
+
+Sub ReplaceText(byref selection, count, incrementby)
+
+	'selection represents the TextSelection object
+	'count represents the position of the version number to be incremented
+	'incrementby represents a number that will be added to the existing version number
+
+	selection.WordRight dsMove, count
+	selection.WordRight dsExtend, 1
+	Dim str
+	str = selection.Text 
+	'str = now
+	str = str + incrementby
+
+'msgbox selection.text & " -> " & str
+
+	selection.Text = str
+
+End Sub
+
+sub IncrementRelease(Path)
+
+	'Fejlhaandtering
+	Err.Clear
+	On Error resume next
+    
+	Documents.Open Path
+
+	'Obtain the TextSelection object
+	Dim selection
+	Set selection = ActiveDocument.selection
+	selection.StartOfDocument
+
+	'Increment the version information
+	dim count
+	for count = 1 to 4
+
+		selection.StartOfLine
+		ReplaceText selection, 9, 1
+		selection.LineDown
+		selection.StartOfLine
+		ReplaceText selection, 10, 1
+    next
+
+	ActiveDocument.Save
+	ActiveDocument.Close
+
+End sub
+
+Function  Exist(Path)
+	Dim Found
+	Found = False
+
+	On Error Resume Next
+	
+	Documents.Open Path, Text, True
+	If Err.number <> 0 Then
+		Found = False
+	Else
+		Found = True
+		ActiveDocument.close
+	End If
+	
+	Exist = Found
+End Function
+
+Sub Application_BuildFinish(numError, numWarning)
+	
+	'This event will be triggered after every build of a project
+	'You can check numError and/or numWarning to determine if you want to continue
+	If numError <> 0 Then Exit Sub
+	
+	Dim ProjectDir
+	Dim full_path
+
+	On Error Resume Next
+
+	'Initiering:
+	ProjectDir = GetProjectDir(ActiveProject.FullName)
+    full_path = ProjectDir & "Versionno.h"
+
+    if Exist(full_path) then
+'	  msgbox "now incrementing versiono.h"
+	  IncrementRelease full_path
+'	else
+'	  msgbox "Versionno.h doesn't exist"
+	end if
+	
+End Sub
+
