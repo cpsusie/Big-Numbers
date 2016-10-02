@@ -691,7 +691,7 @@ void CShwGraphDlg::showCoef() {
   CFont *oldFont = dc.SelectObject(m_currentFont);
   int i;
   for(i = 0; i <= degree; i++) {
-    textOut(dc,1,15+i*15,format(_T("A[%2d]=%lg"),i,ptmp.getCoef(i)));
+    textOut(dc,1,15+i*15,format(_T("A[%2d]=%lg"),i,ptmp.getCoef(i).re));
   }
   double ssd = m_dataFit.ssd(m_dataPoints);
   textOut(dc, 1,15+(i++)*15,format(_T("SSD = %lg"),ssd));
