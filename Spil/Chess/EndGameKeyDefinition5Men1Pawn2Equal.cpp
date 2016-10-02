@@ -13,8 +13,8 @@ EndGameKeyDefinition5Men1Pawn2Equal::EndGameKeyDefinition5Men1Pawn2Equal(PieceKe
 }
 
 unsigned long EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &key) const {
-  const unsigned int pos3 = key.getPosition3();
-  const unsigned int pos4 = key.getPosition4();
+  const UINT pos3 = key.getPosition3();
+  const UINT pos4 = key.getPosition4();
 
   assert(pos3 != pos4);
   EndGameKey tmp = key;
@@ -23,8 +23,8 @@ unsigned long EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &
     tmp.setPosition4(pos3);
   }
   // pos4 is biggest
-  const unsigned int pi3 = tmp.getP3OffDiagIndex();
-  const unsigned int pi4 = tmp.getP4OffDiagIndexEqualP34();
+  const UINT pi3 = tmp.getP3OffDiagIndex();
+  const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();
 
   return ADDPIT(tmp, ADD2EQUAL(ONE_PAWN_3MEN(tmp, 2), MAXINDEX_KK_WITH_PAWN_3MEN, pi3, pi4))
        - MININDEX;

@@ -12,7 +12,7 @@ PlotWinsPValuesThread::~PlotWinsPValuesThread() {
   m_dlg.removePropertyChangeListener(this);
 }
 
-unsigned int PlotWinsPValuesThread::run() {
+UINT PlotWinsPValuesThread::run() {
   const String fileName = format(_T("c:\\temp\\ChessWinPlot_%s_%d-%d"), getPieceTypeNameEnglish(m_param.m_pieceType), m_param.m_from, m_param.m_to);
   FILE *f = FOPEN(fileName, _T("w"));
   try {

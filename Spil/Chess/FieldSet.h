@@ -4,8 +4,8 @@
 
 class FieldSet {
 private:
-  unsigned int m_bits[2];
-  FieldSet(unsigned int i0, unsigned int i1) {
+  UINT m_bits[2];
+  FieldSet(UINT i0, UINT i1) {
     m_bits[0] = i0; m_bits[1] = i1;
   }
   friend class FieldSetIterator;
@@ -17,20 +17,20 @@ public:
   inline void clear() {
     m_bits[0] = m_bits[1] = 0;
   }
-  inline void add(unsigned int pos) {
+  inline void add(UINT pos) {
     m_bits[pos/32] |= (1<<(pos%32));
   }
-  inline void remove(unsigned int pos) {
+  inline void remove(UINT pos) {
     m_bits[pos/32] &= ~(1<<(pos%32));
   }
-  inline bool contains(unsigned int pos) const {
+  inline bool contains(UINT pos) const {
     return (m_bits[pos/32] & (1<<(pos%32))) != 0;
   }
-  inline FieldSet &operator+=(unsigned int pos) {
+  inline FieldSet &operator+=(UINT pos) {
     add(pos);
     return *this;
   }
-  inline FieldSet &operator-=(unsigned int pos) {
+  inline FieldSet &operator-=(UINT pos) {
     remove(pos);
     return *this;
   }

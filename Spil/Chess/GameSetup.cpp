@@ -71,7 +71,7 @@ PieceKey Game::setPieceAtPosition(PieceType pieceType, Player player, int pos) {
 
 PieceKey Game::removePieceAtPosition(int pos, bool resetType) {
   checkSetupMode(true);
-  validatePosition(_T("removePieceAtPosition"), pos);
+  VALIDATEPOS(pos);
 
   Piece *piece = m_board[pos];
   if(piece == NULL) {
@@ -86,7 +86,7 @@ PieceKey Game::removePieceAtPosition(int pos, bool resetType) {
 }
 
 bool Game::isPositionEmpty(int pos) const {
-  validatePosition(_T("isPositionEmpty"), pos);
+  VALIDATEPOS(pos);
   return m_board[pos] == NULL;
 }
 
@@ -108,7 +108,7 @@ void Game::validateAddPieceAtPosition(PieceType pieceType, Player player, int po
 }
 
 const Piece *Game::getPieceAtPosition(int pos) const {
-  validatePosition(_T("getPieceAtPosition"), pos);
+  VALIDATEPOS(pos);
   return m_board[pos];
 }
 
@@ -309,9 +309,9 @@ void Game::initAttackCounters(bool validate) {
       const AttackInfo   &attackInfo   = fieldAttacks.m_attackInfo;
 
       if(fieldAttacks.m_isAttacked) {
-        const unsigned int knightAttacks = getKnightAttackCount(player, enemyKingPos   );
-        const unsigned int pawnDiag1     = getPawnAttack(       player, enemyKingPos, 1);
-        const unsigned int pawnDiag2     = getPawnAttack(       player, enemyKingPos, 2);
+        const UINT knightAttacks         = getKnightAttackCount(player, enemyKingPos   );
+        const UINT pawnDiag1             = getPawnAttack(       player, enemyKingPos, 1);
+        const UINT pawnDiag2             = getPawnAttack(       player, enemyKingPos, 2);
         const int rowAttacks             = ATT_LEFT(     attackInfo)   + ATT_RIGHT(  attackInfo);
         const int colAttacks             = ATT_DOWN(     attackInfo)   + ATT_UP(     attackInfo);
         const int diag1Attacks           = ATT_DOWNDIAG1(attackInfo)   + ATT_UPDIAG1(attackInfo);
@@ -600,6 +600,7 @@ void Game::initPinnedState() {
 // Should only be called from initPinnedState
 // Assume piece is on the board and is not the king
 PinnedState Game::findPinnedState(const Piece *piece) const {
+  DEFINEMETHODNAME;
   const int pos = piece->m_position;
   switch(KING_DIRECTION(piece->m_playerState, pos)) {
   case MD_NONE     : return NOT_PINNED;
@@ -611,7 +612,7 @@ PinnedState Game::findPinnedState(const Piece *piece) const {
   case MD_UPDIAG1  : return ATT_UPDIAG1(  piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG1 : NOT_PINNED; 
   case MD_DOWNDIAG2: return ATT_DOWNDIAG2(piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG2 : NOT_PINNED;
   case MD_UPDIAG2  : return ATT_UPDIAG2(  piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG2 : NOT_PINNED;
-  default          : throwException(_T("findPinnedState:Unknown kingDirection:%d"), KING_DIRECTION(piece->m_playerState, pos));
+  default          : throwException(_T("%s:Unknown kingDirection:%d"), method, KING_DIRECTION(piece->m_playerState, pos));
   }
   return NOT_PINNED;
 }

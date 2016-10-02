@@ -15,8 +15,8 @@ private:
   int                        m_current;
   String                     m_title;
   String                     m_progressMsgString;
-  unsigned int               m_byteCounter;
-  unsigned int               m_currentFileSize;
+  UINT                       m_byteCounter;
+  UINT                       m_currentFileSize;
   void setCurrentFileSize();
 public:
 
@@ -34,7 +34,7 @@ public:
   String getProgressMessage() {
     return m_current < (int)m_list.size() ? format(m_progressMsgString.cstr(), m_list[m_current]->getName().cstr(), m_current+1, (int)m_list.size()) : _T("Done");
   }
-  void incrCount(unsigned int n) {
+  void incrCount(UINT n) {
     if(isInterrupted()) {
       throw InterruptedException();
     }
@@ -67,7 +67,7 @@ void DecompressJob::setCurrentFileSize() {
   m_currentFileSize = m_list[m_current]->getFileSize(COMPRESSEDTABLEBASE);
 }
 
-unsigned int DecompressJob::run() {
+UINT DecompressJob::run() {
   for(m_current = 0; m_current < (int)m_list.size(); m_current++) {
     const EndGameTablebase &tb = *m_list[m_current];
     if(isInterrupted()) {

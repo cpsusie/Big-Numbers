@@ -21,7 +21,7 @@ void EndGameKeyDefinitionDupletsAllowed::initIndexMap() {
   }
   m_stateShift = 0;
 
-  unsigned int keyTypeCount[MAX_PIECEKEY_VALUE+1];
+  UINT keyTypeCount[MAX_PIECEKEY_VALUE+1];
   for(int i = 0; i < ARRAYSIZE(keyTypeCount); i++) {
     keyTypeCount[i] = 0;
   }
@@ -30,7 +30,7 @@ void EndGameKeyDefinitionDupletsAllowed::initIndexMap() {
   }
   int stateCount = 1;
   for(int i = 0; i < ARRAYSIZE(keyTypeCount); i++) {
-    const unsigned int count = keyTypeCount[i];
+    const UINT count = keyTypeCount[i];
     if(count > 1) {
       stateCount *= count;
     }

@@ -225,47 +225,49 @@ String         getPieceTypeName(                  PieceType               pieceT
                                                                                           // First letter uppercase.
                                                                                           // plur=true gives pluralis form of the name
 String         getPieceTypeShortName(             PieceType               pieceType    ); // Language specific short name of the given PieceType
-const TCHAR    *getPieceTypeNameEnglish(           PieceType               pieceType, bool plur = false);
-const TCHAR    *getPieceTypeShortNameEnglish(      PieceType               type         ); // English short name of the given PieceType.
+const TCHAR   *getPieceTypeNameEnglish(           PieceType               pieceType, bool plur = false);
+const TCHAR   *getPieceTypeShortNameEnglish(      PieceType               type         ); // English short name of the given PieceType.
                                                                                           // King="K", Queen="Q", Rook="R" etc.
 void           reloadStrings();
-String         getPlayerName(                     Player                  player       ); // Language specific name of the given Player. First letter uppercase.
-const TCHAR    *getPlayerNameEnglish(              Player                  player       ); // WHITEPLAYER="white", BLACKPLAYER="black"
-String         getPieceNameEnglish(               PieceKey                key          ); // ex. white king, black pawn, empty...
-const TCHAR    *getFieldName(                      int                     position     ); // a1,a2,..,b1,b2,...,h1,h8
-const TCHAR    *getFieldName(                      int row, int col                     ); // = getFieldName(MAKE_POSITION(row,col))
-char           getColumnName(                     int                     position     ); // 'a'..'h'
-char           getRowName(                        int                     position     ); // '1'..'8'
-const TCHAR    *getFieldColorName(                 FieldColor              color        ); // {"white","black"}
-const TCHAR    *getFieldColorName(                 int                     position     ); // = getFieldColorName(getFieldColor(position))
-String         getBishopFlagsToString(            BishopFlags             bishopFlags  ); // Converts the bits in bishopFlags to String, "[W][B]". For debug
-String         getCastleString(                   MoveType                type         ); // "0-0" or "0-0-0". Assume type is SHORTCASTLING or LONGCASTLING
-String         getPinnedStateToString(            PinnedState             ps           ); // Returns a string representing ps. For debug
-String         getMoveTypeName(                   MoveType                moveType     ); // Returns a string representing moveType. For debug
+String         getPlayerName(                     Player                  player        ); // Language specific name of the given Player. First letter uppercase.
+const TCHAR   *getPlayerNameEnglish(              Player                  player        ); // WHITEPLAYER="white", BLACKPLAYER="black"
+String         getPieceNameEnglish(               PieceKey                key           ); // ex. white king, black pawn, empty...
+const TCHAR   *getFieldName(                      int                     position      ); // a1,a2,..,b1,b2,...,h1,h8
+const TCHAR   *getFieldName(                      int row, int col                      ); // = getFieldName(MAKE_POSITION(row,col))
+char           getColumnName(                     int                     position      ); // 'a'..'h'
+char           getRowName(                        int                     position      ); // '1'..'8'
+const TCHAR   *getFieldColorName(                 FieldColor              color         ); // {"white","black"}
+const TCHAR   *getFieldColorName(                 int                     position      ); // = getFieldColorName(getFieldColor(position))
+String         getBishopFlagsToString(            BishopFlags             bishopFlags   ); // Converts the bits in bishopFlags to String, "[W][B]". For debug
+String         getCastleString(                   MoveType                type          ); // "0-0" or "0-0-0". Assume type is SHORTCASTLING or LONGCASTLING
+String         getPinnedStateToString(            PinnedState             ps            ); // Returns a string representing ps. For debug
+String         getMoveTypeName(                   MoveType                moveType      ); // Returns a string representing moveType. For debug
 MoveDirection  getMoveDirection(                  int from, int to);
-String         getMoveDirectionName(              MoveDirection           direction    ); // Returns a string representing MoveDirection. For debug
-String         getPositionArrayToString(          PositionArray           positions    ); // Returns a string specifying the fields in the array. For debug
-String         getKingAttackStateToString(        KingAttackState         attackState  ); // Converts the bits in attackState to String. For debug
-const TCHAR    *getAnnotationToString(             MoveAnnotation          annotation   ); // Returns a string representing the MoveAnnotation. {"","?","??","!","!!","?!","!?"}
-String         getGameResultToString(             GameResult              gameResult   );
-MoveAnnotation parseAnnotation(                   const TCHAR             *str          );
-int            parseInt(                          Tokenizer              &tok          );
-String         getSymmetricTransformationToString(SymmetricTransformation st           );
-bool           isValidPosition(                  int                      position     ); // Returns true if position = [0..63]
-bool           isValidPosition(                  int row, int col                      ); // = isValidLine(row) && isValidLine(col)
-bool           isValidPawnPosition(              int                      position     ); // Return true if position can be occupied by a pawn
-bool           isValidLine(                      int line                              ); // Returns true if line = [0..7]
+String         getMoveDirectionName(              MoveDirection           direction     ); // Returns a string representing MoveDirection. For debug
+String         getPositionArrayToString(          PositionArray           positions     ); // Returns a string specifying the fields in the array. For debug
+String         getKingAttackStateToString(        KingAttackState         attackState   ); // Converts the bits in attackState to String. For debug
+const TCHAR   *getAnnotationToString(             MoveAnnotation          annotation    ); // Returns a string representing the MoveAnnotation. {"","?","??","!","!!","?!","!?"}
+String         getGameResultToString(             GameResult              gameResult    );
+MoveAnnotation parseAnnotation(                   const TCHAR            *str           );
+int            parseInt(                          Tokenizer              &tok           );
+String         getSymmetricTransformationToString(SymmetricTransformation st            );
+bool           isValidPosition(                  int                      position      ); // Returns true if position = [0..63]
+bool           isValidPosition(                  int row, int col                       ); // = isValidLine(row) && isValidLine(col)
+bool           isValidPawnPosition(              int                      position      ); // Return true if position can be occupied by a pawn
+bool           isValidLine(                      int line                               ); // Returns true if line = [0..7]
 void           validatePosition(                 const TCHAR *function, int pos         ); // throws Exception if not valid.
 void           validatePosition(                 const TCHAR *function, int row, int col); // throws Exception if not valid.
-int            decodePosition(                   const String &s                       );
-MoveDirection  getOppositeDirection(             MoveDirection direction               );
+int            decodePosition(                   const String &s                        );
+MoveDirection  getOppositeDirection(             MoveDirection direction                );
 
-#define MMSS_TO_SECONDS(m, s) (((m) * 60) + (s))
+#define VALIDATEPOS(pos)          validatePosition(__TFUNCTION__, pos)
+#define VALIDATEPOSITION(row,col) validatePosition(__TFUNCTION__, row,col)
+
+#define MMSS_TO_SECONDS(m, s)      (((m) * 60) + (s))
 #define HHMMSS_TO_SECONDS(h, m, s) ((h) * 3600 + MMSS_TO_SECONDS(m, s))
 #define GET_HOURS(s)               ((int)(( s)/3600))
 #define GET_MINUTES(s)             (((int)((s)/60))%60)
 #define GET_SECONDS(s)             (( s)%60)
-
 
 #ifdef TABLEBASE_BUILDER
 const FieldSet &getFieldsBetween(                int pos1, int pos2                    );
@@ -424,14 +426,14 @@ class PlayerSignature {
 private:
   union {
     struct {
-      unsigned int m_kingCount   : 1;
-      unsigned int m_queenCount  : 4;
-      unsigned int m_rookCount   : 4;
-      unsigned int m_bishopCount : 4;
-      unsigned int m_knightCount : 4;
-      unsigned int m_pawnCount   : 4;
+      UINT m_kingCount   : 1;
+      UINT m_queenCount  : 4;
+      UINT m_rookCount   : 4;
+      UINT m_bishopCount : 4;
+      UINT m_knightCount : 4;
+      UINT m_pawnCount   : 4;
     } m_pieceCount;
-    unsigned int m_hashCode;
+    UINT m_hashCode;
   };
   PlayerSignature() : m_hashCode(0) {
   }
@@ -548,9 +550,9 @@ private:
 
   static const DirectionArray *getMoveTable(       PieceKey key);
   static AttackAttribute       getAttackAttribute( PieceKey key);
-  static unsigned int          getMaterialValue(   PieceType pieceType);
+  static UINT                  getMaterialValue(   PieceType pieceType);
 
-  const unsigned int           m_index;
+  const UINT                   m_index;
   PlayerState                 &m_playerState, &m_enemyState;
 
 // Set by setType (initialization or promotion)
@@ -560,7 +562,7 @@ private:
   GameUpdateFunction           m_doMove, m_updateWhenCaptured;
 
 #ifndef TABLEBASE_BUILDER
-  unsigned int                 m_materialValue;
+  UINT                         m_materialValue;
   BishopFlags                  m_bishopFlag; // Only used for bishops (={WHITEFIELD_BISHOP,BLACKFIELD_BISHOP} depending on the fieldcolor)
   void initBishopMask(int pos);
 #else
@@ -568,7 +570,7 @@ private:
 #endif
 
 // Set when moved or captured
-  unsigned int                 m_position;
+  UINT                         m_position;
   bool                         m_onBoard;
   PinnedState                 &m_pinnedState; // Reference to m_playerState.m_pinnedState[m_index]
 
@@ -751,40 +753,40 @@ typedef struct {
   // 1 bit for each of the 8 directions is required, to indicate if the field is attacked by Queen, Rook or Bishop, 
   // Then this structure requires 4 + 8*1 = 12 bits, which can easily be contained in an unsigned long (32 bits).
   // Then the check for zero attacks is quite easy. See class FieldAttacks.
-  unsigned int   m_sdAttacks      : 4;  // (S)hort (D)istance attacks. ie from King, Knight or Pawn.
+  UINT           m_sdAttacks      : 4;  // (S)hort (D)istance attacks. ie from King, Knight or Pawn.
                                         // A bizare situation with 8 knights, 2 pawns and the king attacking the same field
                                         // gives a maximum of 11 short distance attacks on one field.
                                         // With 4 bits we can count to 15
-  unsigned int   m_fromLeft       : 1;  // Queen, Rook
-  unsigned int   m_fromRight      : 1;  // Queen, Rook
-  unsigned int   m_fromBelove     : 1;  // Queen, Rook
-  unsigned int   m_fromAbove      : 1;  // Queen, Rook
-  unsigned int   m_fromLowerDiag1 : 1;  // Queen, Bishop
-  unsigned int   m_fromUpperDiag1 : 1;  // Queen, Bishop
-  unsigned int   m_fromLowerDiag2 : 1;  // Queen, Bishop
-  unsigned int   m_fromUpperDiag2 : 1;  // Queen, Bishop
+  UINT           m_fromLeft       : 1;  // Queen, Rook
+  UINT           m_fromRight      : 1;  // Queen, Rook
+  UINT           m_fromBelove     : 1;  // Queen, Rook
+  UINT           m_fromAbove      : 1;  // Queen, Rook
+  UINT           m_fromLowerDiag1 : 1;  // Queen, Bishop
+  UINT           m_fromUpperDiag1 : 1;  // Queen, Bishop
+  UINT           m_fromLowerDiag2 : 1;  // Queen, Bishop
+  UINT           m_fromUpperDiag2 : 1;  // Queen, Bishop
   MoveDirection  m_kingDirection  : 5;  // Is king directly left for, right for,... the given field
 } AttackInfo;
 
 typedef struct {
-  unsigned int   m_sdAttacked     : 4;  // Same bits as AttackInfo.m_sdAttacks
-  unsigned int   m_rowAttacked    : 2;  // Same bits as AttackInfo.m_fromLeft and AttackInfo.m_fromRight. if != 0 one of these is != 0
-  unsigned int   m_colAttacked    : 2;  // Same bits as AttackInfo.m_fromBelove and AttackInfo.m_fromAbove. 
-  unsigned int   m_diag1Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag1 and AttackInfo.m_fromUpperDiag1
-  unsigned int   m_diag2Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag2 and AttackInfo.m_fromUpperDiag2
+  UINT           m_sdAttacked     : 4;  // Same bits as AttackInfo.m_sdAttacks
+  UINT           m_rowAttacked    : 2;  // Same bits as AttackInfo.m_fromLeft and AttackInfo.m_fromRight. if != 0 one of these is != 0
+  UINT           m_colAttacked    : 2;  // Same bits as AttackInfo.m_fromBelove and AttackInfo.m_fromAbove. 
+  UINT           m_diag1Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag1 and AttackInfo.m_fromUpperDiag1
+  UINT           m_diag2Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag2 and AttackInfo.m_fromUpperDiag2
   MoveDirection  m_kingDirection  : 5;
 } AttackDirectionInfo1;
 
 typedef struct {
-  unsigned int   m_sdAttacked     : 4;  // Same bits as AttackDirectionInfo1.m_sdAttacks
-  unsigned int   m_rcAttacked     : 4;  // Same bits as AttackDirectionInfo1.m_rowAttacked   and AttackDirectionInfo1.m_colAttacked
-  unsigned int   m_diagAttacked   : 4;  // Same bits as AttackDirectionInfo1.m_diag1Attacked and AttackDirectionInfo1.m_diag2Attacked
+  UINT           m_sdAttacked     : 4;  // Same bits as AttackDirectionInfo1.m_sdAttacks
+  UINT           m_rcAttacked     : 4;  // Same bits as AttackDirectionInfo1.m_rowAttacked   and AttackDirectionInfo1.m_colAttacked
+  UINT           m_diagAttacked   : 4;  // Same bits as AttackDirectionInfo1.m_diag1Attacked and AttackDirectionInfo1.m_diag2Attacked
   MoveDirection  m_kingDirection  : 5;
 } AttackDirectionInfo2;
 
 typedef struct {
-  unsigned int   m_sdAttacked     : 4;  // Same bits as AttackInfo.m_sdAttacks
-  unsigned int   m_ldAttacked     : 8;  // Same bits as all LD-attacking bits. if != 0 one of these is != 0
+  UINT           m_sdAttacked     : 4;  // Same bits as AttackInfo.m_sdAttacks
+  UINT           m_ldAttacked     : 8;  // Same bits as all LD-attacking bits. if != 0 one of these is != 0
   MoveDirection  m_kingDirection  : 5;
 } AttackTypeInfo;
 
@@ -875,7 +877,7 @@ typedef int (PlayerState::*ScoreEvaluator)() const;
 class GameKeyHashElement : public GameKey {
 private:
   friend class GameKeyHashStack;
-  unsigned int m_count;
+  UINT                m_count;
   GameKeyHashElement *m_next, **m_prev;
   GameKeyHashElement() {
     m_count = 1;
@@ -884,14 +886,14 @@ private:
 
 class GameKeyHashStack {
 private:
-  unsigned int         m_hashCapacity;
-  unsigned int         m_stackCapacity;
-  unsigned int         m_stackTop;
+  UINT                 m_hashCapacity;
+  UINT                 m_stackCapacity;
+  UINT                 m_stackTop;
   GameKeyHashElement **m_hashTable;
   GameKeyHashElement **m_stack;
   GameKeyHashElement  *m_freeList;
 
-  void init(unsigned int stackCapacity = 100);
+  void init(UINT stackCapacity = 100);
   void cleanUp();
   void initFreeList();
   void deleteFreeList();
@@ -941,7 +943,7 @@ public:
   PlayerStateToPush  m_savedState[2];         // One for each player
   GameKey            m_gameKey;
 #ifndef TABLEBASE_BUILDER
-  unsigned int       m_lastCaptureOrPawnMove;
+  UINT               m_lastCaptureOrPawnMove;
 #endif
 };
 
@@ -1018,8 +1020,8 @@ class Game {
 private:
   String                      m_name;
   GameStackElement           *m_gameStack;
-  unsigned int                m_stackCapacity;
-  unsigned int                m_stackSize;
+  UINT                        m_stackCapacity;
+  UINT                        m_stackSize;
   PlayerState                 m_playerState[2];
   Piece                      *m_board[64];
   GameKey                     m_gameKey;
@@ -1028,9 +1030,9 @@ private:
   bool                        m_setupMode;
 
 #ifndef TABLEBASE_BUILDER
-  unsigned int                m_maxPliesWithoutCaptureOrPawnMove;
-  unsigned int                m_lastCaptureOrPawnMove;
-  unsigned int                m_maxPositionRepeat;
+  UINT                        m_maxPliesWithoutCaptureOrPawnMove;
+  UINT                        m_lastCaptureOrPawnMove;
+  UINT                        m_maxPositionRepeat;
   GameKeyHashStack            m_hashStack;
   ScoreEvaluator              m_whiteScore, m_blackScore;
 
@@ -1459,8 +1461,8 @@ public:
 
   GameHistory     getHistory() const;
   MoveBase        getLastMove() const;
-        Move     &getMove(unsigned int ply);       // ply must be in range [0..m_stackSize-1]
-  const Move     &getMove(unsigned int ply) const; // ply must be in range [0..m_stackSize-1]
+        Move     &getMove(UINT ply);       // ply must be in range [0..m_stackSize-1]
+  const Move     &getMove(UINT ply) const; // ply must be in range [0..m_stackSize-1]
   int isStackEmpty() const {
     return m_stackSize == 0;
   }

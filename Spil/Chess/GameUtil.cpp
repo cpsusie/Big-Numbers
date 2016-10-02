@@ -704,14 +704,14 @@ bool isValidLine(int line) {
 
 const TCHAR *getFieldName(int row, int col) {
 #ifdef _DEBUG
-  validatePosition(_T("getFieldName"), row, col);
+  VALIDATEPOSITION(row, col);
 #endif
   return Game::fieldInfo[MAKE_POSITION(row, col)].m_name;
 }
 
 const TCHAR *getFieldName(int position) {
 #ifdef _DEBUG
-  validatePosition(_T("getFieldName"),position);
+  VALIDATEPOS(position);
 #endif
   return Game::fieldInfo[position].m_name;
 }

@@ -498,7 +498,7 @@ public:                                                                         
   name(IndexedMap &map, int value=0);                                                     \
   AbstractIterator *clone() { return new name(*this); }                                   \
   void *next();                                                                           \
-  UINT getCount() const;                                                          \
+  UINT getCount() const;                                                                  \
 };                                                                                        \
                                                                                           \
 name::name(IndexedMap &map, int value) : IndexedMapEntryIterator(map), m_value(value) {   \
@@ -524,8 +524,8 @@ void *name::next() {                                                            
   return &m_entry;                                                                        \
 }                                                                                         \
                                                                                           \
-UINT name::getCount() const {                                                     \
-  UINT count = 0;                                                                 \
+UINT name::getCount() const {                                                             \
+  UINT count = 0;                                                                         \
   for(const EndGameResult *p = m_firstElement; p <= m_lastElement; p++) {                 \
     if(filter(p)) count++;                                                                \
   }                                                                                       \
@@ -684,8 +684,8 @@ void IndexedMap::clear() {
 class DecompressedHeader : public TablebaseInfo {
 public:
   unsigned char m_bitsPerEntry;
-  UINT  m_bitSetIndexOffset;
-  UINT  m_arrayStartOffset;
+  UINT          m_bitSetIndexOffset;
+  UINT          m_arrayStartOffset;
 
   DecompressedHeader(const TablebaseInfo &info);
   DecompressedHeader(const String        &fileName);
@@ -843,9 +843,9 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   FILE *logFile = FOPEN(_T("c:\\temp\\decomp.txt"), _T("w"));
   int arrayIndex = 0;
   for(Iterator<UINT> it = winnerPositionSet.getIterator(); it.hasNext();) {
-    UINT index = it.next();
+    UINT             index  = it.next();
     const EndGameKey key    = m_keydef.indexToKey(index);
-    UINT     entry  = positionInfoArray.get(arrayIndex++);
+    UINT             entry  = positionInfoArray.get(arrayIndex++);
     Player           winner;
     if(canWinFlags == BOTHCANWIN) {
       winner = (entry & 1) ? BLACKPLAYER : WHITEPLAYER;

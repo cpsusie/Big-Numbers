@@ -26,10 +26,10 @@ protected:
     afx_msg void OnGotoMoveCount();
     afx_msg void OnGotoDefendStrength();
     afx_msg void OnGotoPath();
-	afx_msg void OnButtonPath();
-	afx_msg void OnButtonDecompressAll();
-	afx_msg void OnDeltaposSpinMoveCount(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnDeltaposSpinDefendStrength(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnButtonPath();
+    afx_msg void OnButtonDecompressAll();
+    afx_msg void OnDeltaposSpinMoveCount(NMHDR *pNMHDR, LRESULT *pResult);
+    afx_msg void OnDeltaposSpinDefendStrength(NMHDR *pNMHDR, LRESULT *pResult);
     DECLARE_MESSAGE_MAP()
 };
 

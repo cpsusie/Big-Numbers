@@ -126,7 +126,6 @@ int EndGameKeyDefinition::findRange(const unsigned long *rangeTable, UINT size, 
   return r-1;
 }
 
-
 EndGameKeyDefinition::EndGameKeyDefinition(PieceKey pk2) : m_totalPieceCount(3) {
   init(pk2);
 }
@@ -162,7 +161,7 @@ void EndGameKeyDefinition::init(PieceKey pk2, ...) {
     m_pieceKey[i++] = EMPTYPIECEKEY;
   }
   UINT pieceCount[2];
-  int          kingIndex[2];
+  int  kingIndex[2];
   pieceCount[WHITEPLAYER] = pieceCount[BLACKPLAYER] =  0;
   kingIndex[ WHITEPLAYER] = kingIndex[ BLACKPLAYER] = -1;
 
@@ -170,7 +169,7 @@ void EndGameKeyDefinition::init(PieceKey pk2, ...) {
     const PieceKey  pk     = m_pieceKey[i];
     const Player    player = GET_PLAYER_FROMKEY(pk);
     const PieceType type   = getPieceType(i);
-    UINT   &pCount = pieceCount[player];
+    UINT           &pCount = pieceCount[player];
 
     m_orderedPieceType[player][pCount] = PieceTypeWithIndex(type,i);
     if(type == King) {
@@ -774,8 +773,8 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const End
 { switch(KEYBOOL2MASK(key, IS_QUEENSIDE, i, j)) {                                                             \
   case 0: return TRANSFORM_MIRRORCOL;                                                                         \
   case 1:                                                                                                     \
-    { const UINT pi = pawnPosToIndex[key.getPosition##i()];                                           \
-      const UINT pj = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                             \
+    { const UINT pi = pawnPosToIndex[key.getPosition##i()];                                                   \
+      const UINT pj = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                     \
       if(pi != pj) {                                                                                          \
         return (pi < pj) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
       } else {                                                                                                \
@@ -783,8 +782,8 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const End
       }                                                                                                       \
     }                                                                                                         \
   case 2:                                                                                                     \
-    { const UINT pi = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                             \
-      const UINT pj = pawnPosToIndex[key.getPosition##j()];                                           \
+    { const UINT pi = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                     \
+      const UINT pj = pawnPosToIndex[key.getPosition##j()];                                                   \
       if(pi != pj) {                                                                                          \
         return (pj < pi) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
       } else {                                                                                                \
@@ -1138,8 +1137,8 @@ private:
   EndGameKeyWithOccupiedPositions m_key;
   ScannerFunction                 m_scannerFunctions[MAX_ENDGAME_PIECECOUNT];
   int                             m_pIndex;
-  UINT                    m_positionCount;
-  UINT                    m_distinctPositionCount;
+  UINT                            m_positionCount;
+  UINT                            m_distinctPositionCount;
   BitSet                          m_usedIndex;
 
   void allPositions();
@@ -1218,7 +1217,7 @@ void AllPositionScanner::checkSymmetry() {
   }
 
   EndGameKey key1 = m_keydef.getTransformedKey(m_key, m_keydef.getSymTransformation(m_key));
-  UINT index;
+  UINT       index;
   EndGameKey key2 = m_keydef.getNormalizedKey(key1, &index);
 
   if(!m_usedIndex.contains(index)) {

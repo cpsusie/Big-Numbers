@@ -79,9 +79,9 @@ protected:
   mutable String            m_shortName;
   mutable String            m_longName;
 
-  void selfCheckInit()            const;
-  unsigned int selfCheckSummary() const;
-  unsigned int checkSymmetries()  const;
+  void selfCheckInit()    const;
+  UINT selfCheckSummary() const;
+  UINT checkSymmetries()  const;
 
 #endif
 
@@ -93,8 +93,8 @@ protected:
   void        pieceTypeError(int index, const String &msg) const;
   void        invalidPieceCountError() const;
   void        impossibleEncodingError(const EndGameKey &key) const;
-  void        checkIsPawn(unsigned int index, bool expected) const;
-  void        checkSameOwner(unsigned int index1, unsigned int index2, bool expected) const;
+  void        checkIsPawn(UINT index, bool expected) const;
+  void        checkSameOwner(UINT index1, UINT index2, bool expected) const;
   void init(PieceKey pk2, ...);
 
   TCHAR *createWhiteKeyString(TCHAR *dst, const EndGameKey &key) const;
@@ -116,7 +116,7 @@ protected:
   static SymmetricTransformation get5Men3EqualPawnsSymTransformation( const EndGameKey &key);
 
 #ifdef TABLEBASE_BUILDER
-  mutable unsigned int m_minIndex, m_maxIndex, m_checkKeyCount, m_duplicateCount;
+  mutable UINT         m_minIndex, m_maxIndex, m_checkKeyCount, m_duplicateCount;
   mutable double       m_checkStartTime;
   mutable BitSet      *m_usedIndex;
 
@@ -140,14 +140,14 @@ public:
   static const char pawnPosToIndex[     64];
   static const char pawnIndexToPos[PAWN_POSCOUNT];
 
-  static unsigned int encodeKKSym8(         const EndGameKey &key);
-  static void         decodeKKSym8(               EndGameKey &key, unsigned int index);
+  static UINT         encodeKKSym8(         const EndGameKey &key);
+  static void         decodeKKSym8(               EndGameKey &key, UINT index);
 
-  static unsigned int encodeKKWithPawn(     const EndGameKey &key);
-  static void         decodeKKWithPawn(           EndGameKey &key, unsigned int index);
+  static UINT         encodeKKWithPawn(     const EndGameKey &key);
+  static void         decodeKKWithPawn(           EndGameKey &key, UINT index);
 
-  static unsigned int encodeLeftWKKWithPawn(const EndGameKey &key);
-  static void         decodeLeftWKKWithPawn(      EndGameKey &key, unsigned int index);
+  static UINT         encodeLeftWKKWithPawn(const EndGameKey &key);
+  static void         decodeLeftWKKWithPawn(      EndGameKey &key, UINT index);
 
   virtual unsigned long           keyToIndex(           const EndGameKey  &key  ) const = 0;
   virtual EndGameKey              indexToKey(           unsigned long      index) const = 0;
@@ -168,7 +168,7 @@ public:
   int        getPieceCount(PieceType type) const;
   int        findKeyIndexByCount(PieceKey pieceKey, int n) const;
 
-  PieceKey   getPieceKey(        unsigned int i) const {
+  PieceKey   getPieceKey(        UINT i) const {
 #ifdef _DEBUG
     if(i >= m_totalPieceCount) {
       throwInvalidArgumentException(_T("getPieceKey"), _T("index %d out of range. totalPieceCount=%d"), i, m_totalPieceCount);
@@ -177,25 +177,25 @@ public:
     return m_pieceKey[i];
   }
 
-  PieceType  getPieceType(       unsigned int i) const {
+  PieceType  getPieceType(       UINT i) const {
     return GET_TYPE_FROMKEY(getPieceKey(i));
   }
-  Player     getPieceOwner(      unsigned int i) const {
+  Player     getPieceOwner(      UINT i) const {
     return GET_PLAYER_FROMKEY(getPieceKey(i));
   }
 
-  static int findRange(const unsigned long *rangeTable, unsigned int size, unsigned long index);
+  static int findRange(const unsigned long *rangeTable, UINT size, unsigned long index);
   static int findRange2Equal(long f, unsigned long index);
   virtual EndGameKey getEndGameKey(      const GameKey    &gameKey) const = 0;
   EndGameKey         getTransformedKey(        EndGameKey  key, SymmetricTransformation st) const;
-  EndGameKey         getNormalizedKey(   const EndGameKey &key, unsigned int *index = NULL) const; // will return keys' index in index if != NULL
+  EndGameKey         getNormalizedKey(   const EndGameKey &key, UINT *index = NULL) const; // will return keys' index in index if != NULL
   void               validateKey(        const EndGameKey  key, const TCHAR *msg) const;
 
 #ifdef TABLEBASE_BUILDER
   const PositionSignature  &getPositionSignature()   const;
   virtual void             insertInitialPositions(EndGameTablebase &tablebase) const;
   const String            &toString(bool longNames = false) const;
-  void listLongestUnusedSequence(BitSet &s, unsigned int sequenceMinSize = 1) const;
+  void                     listLongestUnusedSequence(BitSet &s, UINT sequenceMinSize = 1) const;
 
   void                     doSelfCheck(bool checkSym) const;
   virtual bool match(const EndGameKey &key1, const EndGameKey &key2) const {
@@ -205,7 +205,7 @@ public:
   virtual bool isDupletsAllowed() const = 0;
   virtual unsigned long           keyToIndexNew(const EndGameKey  &key  ) const;
   virtual EndGameKey              indexToKeyNew(unsigned long      index) const;
-  bool hasConversion() const;
+  bool                            hasConversion() const;
 
 #else
   PositionSignature        getPositionSignature() const;
@@ -434,10 +434,10 @@ public:
   PawnOwner() {
     m_owner = 0;
   }
-  void setOwner(unsigned int index, Player owner) {
+  void setOwner(UINT index, Player owner) {
     if(owner == BLACKPLAYER) { m_owner |= (1 << index); } else { m_owner &= ~(1 << index); }
   }
-  Player getOwner(unsigned int index) const {
+  Player getOwner(UINT index) const {
     return (m_owner & (1 << index)) ? BLACKPLAYER : WHITEPLAYER;
   }
 };

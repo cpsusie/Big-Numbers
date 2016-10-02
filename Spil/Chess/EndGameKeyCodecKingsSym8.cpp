@@ -258,7 +258,7 @@ const char EndGameKeyDefinition::offDiagIndexToPos[56] = {
 
 // Assume W.king is in the triangle [A1,D1,D4], and if W.King is on diagonal A1-D4, then B.king is on or below diagonal A1-H8
 // Calculates an index in the range [0..461], which can be decoded back into the same positions with decodeKKSym8.
-unsigned int EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // static
+UINT EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // static
   int wki = whiteKingPosToIndex[key.getWhiteKingPosition()];
 
 #ifdef _DEBUG
@@ -290,8 +290,8 @@ unsigned int EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // stat
   }
 }
 
-void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, unsigned int index) { // static
-  unsigned int wki;
+void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, UINT index) { // static
+  UINT wki;
   if(index < START_RANGE_WK_BELOWDIAGC2D3) {
     index -= START_RANGE_WK_BELOWDIAGB1D1;
     key.setWhiteKingPosition(whiteKingIndexToPos[wki = index / 58]);
@@ -323,8 +323,8 @@ void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, unsigned int index) { /
 
 #ifdef _TEST_MODULE
 
-static unsigned int checkKey(const EndGameKey &key) {
-  const unsigned int index = EndGameKeyDefinition::encodeKKSym8(key);
+static UINT checkKey(const EndGameKey &key) {
+  const UINT index = EndGameKeyDefinition::encodeKKSym8(key);
   EndGameKey key1;
   EndGameKeyDefinition::decodeKKSym8(key1, index);
   if(key1 != key) {
@@ -334,7 +334,7 @@ static unsigned int checkKey(const EndGameKey &key) {
           ,index
           ,getFieldName(key1.getWhiteKingPosition())
           ,getFieldName(key1.getBlackKingPosition()));
-    unsigned int index2 = EndGameKeyDefinition::encodeKKSym8(key);
+    UINT index2 = EndGameKeyDefinition::encodeKKSym8(key);
     EndGameKey key2;
     EndGameKeyDefinition::decodeKKSym8(key2, index2);
   }
@@ -342,17 +342,17 @@ static unsigned int checkKey(const EndGameKey &key) {
 }
 
 void test2KingsSym8() {
-  unsigned int keyCount = 0;
-  unsigned int minIndex = 0xffffffff;
-  unsigned int maxIndex = 0;
+  UINT keyCount = 0;
+  UINT minIndex = 0xffffffff;
+  UINT maxIndex = 0;
   for(int wki = 0; wki < ARRAYSIZE(EndGameKeyDefinition::whiteKingIndexToPos); wki++) {
-    const unsigned int wkPos = EndGameKeyDefinition::whiteKingIndexToPos[wki];
+    const UINT wkPos = EndGameKeyDefinition::whiteKingIndexToPos[wki];
     for(int bkPos = 0; bkPos < 64; bkPos++) {
       if(!KINGSADJACENT(wkPos,bkPos) && (WK_INDEX_OFFDIAG(wki) || !IS_ABOVEMAINDIAG1(bkPos))) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);
-        const unsigned int index = checkKey(key);
+        const UINT index = checkKey(key);
         minIndex = min(minIndex, index);
         maxIndex = max(maxIndex, index);
         keyCount++;

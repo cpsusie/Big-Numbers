@@ -190,7 +190,7 @@ private:
   String         toString(const EndGameKey &key, bool initFormat=false) const {
     return key.toString(m_keydef, initFormat);
   }
-  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, unsigned int *pliesToEnd = NULL) const;
+  EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL) const;
   EndGameResult         getKeyResult(  const EndGameKey  key) const;
   void                  statusError(EndGamePositionStatus status, const EndGameKey &key) const;           // throw Exception
   void                  statusError(EndGamePositionStatus status, const Game &game, const Move &m) const; // throw Exception
@@ -214,12 +214,12 @@ private:
   mutable bool                        m_verboseTriggered;
   mutable FILE                       *m_logFile;
   mutable int                         m_infoLength;
-  unsigned int                        m_positionsAnalyzed;
+  UINT                                m_positionsAnalyzed;
 
   bool addPosition(const EndGameKey &key, bool markNew);
   bool addPosition(const EndGameKey &key, EndGameResult &result, bool markNew);
   EndGameResult getBestResult(Game &game, bool breakOnDraw);
-  void adjustMaxPly(Player winner, unsigned int plies);
+  void adjustMaxPly(Player winner, UINT plies);
   MaxVariantCount findMaxPlies() const;
 
   void resetInitialSetupFlags();
@@ -264,9 +264,9 @@ private:
   EndGameResult &setPositionResult(    EndGameResult &dst, const EndGameResult &result);
   EndGameResult &changePliesToEnd(     EndGameResult &dst, const EndGameResult &result);
 
-  EndGameResult &setAsTerminalPosition(EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd);
-  EndGameResult &setPositionResult(    EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd);
-  EndGameResult &changePliesToEnd(     EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd);
+  EndGameResult &setAsTerminalPosition(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd);
+  EndGameResult &setPositionResult(    EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd);
+  EndGameResult &changePliesToEnd(     EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd);
 
   BuildStep    getFirstBuildStep(bool recover) const;
   void         doBuild(BuildStep buildStep);
@@ -276,14 +276,14 @@ private:
   bool         addSuccessors(EndGameResult &result, Game &game, bool retroPosition);
   void         findDTM();
   void         unravelWinnerPositions(int minPliesToEnd = -1);
-  bool         analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, unsigned int pliesToEnd);
+  bool         analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, UINT pliesToEnd);
   bool         fixupPositions();
   void         fixupNonWinnerPositions(unsigned long &changedPositions);
   void         fixupPlies(             unsigned long &changedPositions);
 
-  unsigned int fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount);
+  UINT         fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount);
   void         fixupForwardPlies(EndGameEntryIterator &it, int iteration, unsigned long &changedPositions);
-  unsigned int fixupRetroPlies( const EndGameEntry &entry, PositionCount &changeCount);
+  UINT         fixupRetroPlies( const EndGameEntry &entry, PositionCount &changeCount);
   void         markNeighbours(  const EndGameEntry &entry, bool onlyWinnerPositions);
   void         markSuccessors(  const EndGameEntry &entry, bool onlyWinnerPositions);
   void         markPredecessors(const EndGameEntry &entry, bool onlyWinnerPositions);
@@ -350,7 +350,7 @@ public:
   bool                  exist(TablebaseFileType recoverFile) const;
   String                getFileName(TablebaseFileType fileType) const;
   time_t                getFileTime(TablebaseFileType fileType) const;
-  unsigned int          getFileSize(TablebaseFileType fileType) const;
+  UINT                  getFileSize(TablebaseFileType fileType) const;
 
   bool isLoaded() const {
     return m_positionIndex.isAllocated();
@@ -396,7 +396,7 @@ public:
   void                  convert();
   void                  list(FILE *f, ListFilter filter);
   void                  list(FILE *f, ListFilter filter, bool whiteWin, bool blackWin, int plies = -1);
-  bool                  checkConsistency(unsigned int flags);
+  bool                  checkConsistency(UINT flags);
   bool                  allSubKeysFound() const;
   void                  addInitPosition(Player playerInTurn, ...);
   void                  addInitPosition(EndGameKey key, bool allowTransform);

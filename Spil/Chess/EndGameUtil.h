@@ -27,21 +27,21 @@ public:
   EndGameResult() {
     m_data = 0;
   }
-  EndGameResult(EndGamePositionStatus status, unsigned int pliesToEnd) {
+  EndGameResult(EndGamePositionStatus status, UINT pliesToEnd) {
     m_data = (1<<11);
     setResult(status, pliesToEnd);
   }
 
   EndGameResult(GameResult r);
 
-  EndGameResult &setResult(EndGamePositionStatus status, unsigned int pliesToEnd);
-  EndGameResult &changePliesToEnd(unsigned int pliesToEnd);
+  EndGameResult &setResult(EndGamePositionStatus status, UINT pliesToEnd);
+  EndGameResult &changePliesToEnd(UINT pliesToEnd);
 
-  inline unsigned int getPliesToEnd() const {
+  inline UINT getPliesToEnd() const {
     return (m_data & 0x1ff);
   }
 
-  inline unsigned int getMovesToEnd() const {
+  inline UINT getMovesToEnd() const {
     return PLIESTOMOVES(getPliesToEnd());
   }
 
@@ -251,7 +251,7 @@ public:
   }
 };
 
-typedef TwoCountersTemplate<unsigned int>   PositionCount;
+typedef TwoCountersTemplate<UINT>           PositionCount;
 typedef TwoCountersTemplate<unsigned short> MaxVariantCount;
 
 #define TBISTATE_CONSISTENT          0x01
@@ -267,11 +267,11 @@ typedef TwoCountersTemplate<unsigned short> MaxVariantCount;
 class TablebaseInfo {
 public:
   mutable char       m_version[20];
-  unsigned int       m_totalPositions;        
-  unsigned int       m_indexCapacity;
-  unsigned int       m_undefinedPositions;
-  unsigned int       m_stalematePositions;
-  unsigned int       m_drawPositions;                // excl. stalemates and terminalDrawPositions;
+  UINT               m_totalPositions;        
+  UINT               m_indexCapacity;
+  UINT               m_undefinedPositions;
+  UINT               m_stalematePositions;
+  UINT               m_drawPositions;                // excl. stalemates and terminalDrawPositions;
   PositionCount      m_checkMatePositions;           // m_checkMatePositions[WHITEPLAYER] = #positions where black is checkmate (white win) likewise black
   PositionCount      m_terminalWinPositions;         // excl. checkmates
   PositionCount      m_nonTerminalWinPositions;      // excl. checkmates and terminalWinPositions
@@ -289,17 +289,17 @@ public:
   String toString(TablebaseInfoStringFormat f, bool plies = true) const;
   static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
 
-  unsigned int getCheckMatePositions() const {
+  UINT getCheckMatePositions() const {
     return m_checkMatePositions.getTotal();
   }
-  unsigned int getTerminalPositions() const {
+  UINT getTerminalPositions() const {
     return m_terminalWinPositions.getTotal();
   }
-  unsigned int getNonterminalPositions() const {
+  UINT getNonterminalPositions() const {
     return m_nonTerminalWinPositions.getTotal();
   }
   PositionCount getWinnerPositionCount() const;
-  unsigned int  getWinnerPositionCount(Player winner) const;
+  UINT  getWinnerPositionCount(Player winner) const;
   String formatMaxVariants(bool plies=false) const;
 
   bool isConsistent() const {
@@ -314,14 +314,14 @@ public:
 
 class StreamProgress : public ByteCounter, public TimeoutHandler {
 private:
-  unsigned int             m_total;
-  unsigned int             m_byteCount;
+  UINT                     m_total;
+  UINT                     m_byteCount;
   Timer                    m_timer;
 public:
   StreamProgress(const EndGameTablebase *tb);
   StreamProgress(const String &fileName);
   ~StreamProgress();
-  void incrCount(unsigned int n) {
+  void incrCount(UINT n) {
     m_byteCount += n;
   }
   void handleTimeout(Timer &timer);

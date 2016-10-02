@@ -15,7 +15,7 @@ void ChessWatch::setPlayerInTurn(Player player) {
     m_playerInTurn = player;
   } else {
     m_stopWatch[m_playerInTurn].stop();
-    const unsigned int incr = m_secondsIncr[m_playerInTurn];
+    const UINT incr = m_secondsIncr[m_playerInTurn];
     if(incr) {
       m_stopWatch[m_playerInTurn].addSeconds(incr);
     }
@@ -100,7 +100,7 @@ StopWatch::StopWatch(bool countDown) {
   m_msecondsPaused = 0;
 }
 
-void StopWatch::init(unsigned int startSeconds) {
+void StopWatch::init(UINT startSeconds) {
   m_startMSeconds  = startSeconds * 1000;
   m_startTime      = m_stopTime = Timestamp();
   m_running        = false;
@@ -121,7 +121,7 @@ void StopWatch::resume() {
   }
 }
 
-void StopWatch::addSeconds(unsigned int seconds) {
+void StopWatch::addSeconds(UINT seconds) {
   m_startMSeconds += 1000 * seconds;
 }
 

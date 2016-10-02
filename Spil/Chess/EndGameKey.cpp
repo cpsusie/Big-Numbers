@@ -2,6 +2,7 @@
 #include "EndGameKey.h"
 
 EndGameKey::EndGameKey(const EndGameKeyDefinition &keydef, Player playerInTurn, ...) {
+  DEFINEMETHODNAME;
   m_hashCode = 0;
   setPlayerInTurn(playerInTurn);
   va_list argptr;
@@ -9,10 +10,10 @@ EndGameKey::EndGameKey(const EndGameKeyDefinition &keydef, Player playerInTurn, 
   try {
     FieldSet used;
     for(int i = 0; i < keydef.getPieceCount(); i++) {
-      const unsigned int pos = va_arg(argptr, unsigned int);
-      validatePosition(_T("EndGameKey"), pos);
+      const UINT pos = va_arg(argptr, UINT);
+      validatePosition(method, pos);
       if(used.contains(pos)) {
-        throwInvalidArgumentException(_T("EndGameKey"),_T("Position %s already used"), getFieldName(pos));
+        throwInvalidArgumentException(method,_T("Position %s already used"), getFieldName(pos));
       }
       used.add(pos);
       setPosition(i, pos);
@@ -25,7 +26,7 @@ EndGameKey::EndGameKey(const EndGameKeyDefinition &keydef, Player playerInTurn, 
 }
 
 GameKey EndGameKey::getGameKey(const EndGameKeyDefinition &keydef) const {
-  GameKey result;
+  GameKey   result;
   const int pieceCount = keydef.getPieceCount();
   result.clear(getPlayerInTurn());
   for(int i = 0; i < pieceCount; i++) {
@@ -133,100 +134,100 @@ GameKey EndGameKey::getGameKey(const EndGameKeyDefinition &keydef) const {
 #define ADJUSTP2_PAWN_CHECK2POS(              i, j   )  ADJUSTPOS_CHECK2POS(2, 1, 2, i, j)
 #define ADJUSTP2_PAWN_CHECK3POS(              i, j, k)  ADJUSTPOS_CHECK3POS(2, 1, i, j, k)
 
-unsigned int EndGameKey::getP2OffDiagIndex() const {         // Kings off maindiag
-  const unsigned int p = getPosition2();
-  unsigned int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP2OffDiagIndex() const {         // Kings off maindiag
+  const UINT p   = getPosition2();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP3OffDiagIndex() const {         // Kings, p2 off maindiag
-  const unsigned int p = getPosition3();
-  int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP3OffDiagIndex() const {         // Kings, p2 off maindiag
+  const UINT p   = getPosition3();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   if(p > getPosition2()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP4OffDiagIndex() const {         // Kings, p2 or p3 off maindiag
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP4OffDiagIndex() const {         // Kings, p2 or p3 off maindiag
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   if(p > getPosition2()) dec++;
   if(p > getPosition3()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP3OffDiagIndexEqualP23() const { // Kings or p2 off maindiag, ignore p2
-  const unsigned int p = getPosition3();
-  unsigned int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP3OffDiagIndexEqualP23() const { // Kings or p2 off maindiag, ignore p2
+  const UINT p   = getPosition3();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP4OffDiagIndexEqualP34() const { // Kings, p2 or p3 off maindiag, ignore p3
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP4OffDiagIndexEqualP34() const { // Kings, p2 or p3 off maindiag, ignore p3
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   if(p > getPosition2()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP4OffDiagIndexEqualP234() const { // Kings, p2 or p3 off maindiag, ignore p2,p3
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 1 : 0;
+UINT EndGameKey::getP4OffDiagIndexEqualP234() const { // Kings, p2 or p3 off maindiag, ignore p2,p3
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 1 : 0;
   if(p > getPosition1()) dec++;
   return p - dec;
 }
 
-unsigned int EndGameKey::getP2DiagIndex() const {            // Kings, p2 on maindiag
-  const unsigned int p = getPosition2();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP2DiagIndex() const {            // Kings, p2 on maindiag
+  const UINT p   = getPosition2();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   return (p - dec) / 9;
 }
 
-unsigned int EndGameKey::getP3DiagIndex() const {            // Kings, p2, p3 on maindiag
-  const unsigned int p = getPosition3();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP3DiagIndex() const {            // Kings, p2, p3 on maindiag
+  const UINT p   = getPosition3();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   if(p > getPosition2()) dec += 9;
   return (p - dec) / 9;
 }
 
-unsigned int EndGameKey::getP4DiagIndex() const {            // Kings, p2, p3, p4 on maindiag
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP4DiagIndex() const {            // Kings, p2, p3, p4 on maindiag
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   if(p > getPosition2()) dec += 9;
   if(p > getPosition3()) dec += 9;
   return (p - dec) / 9;
 }
 
-unsigned int EndGameKey::getP3DiagIndexEqualP23() const {    // Kings, p2, p3 on maindiag, ignore p2
-  const unsigned int p = getPosition3();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP3DiagIndexEqualP23() const {    // Kings, p2, p3 on maindiag, ignore p2
+  const UINT p   = getPosition3();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   return (p - dec) / 9;
 }
 
-unsigned int EndGameKey::getP4DiagIndexEqualP34() const {    // Kings, p2, p3, p4 on maindiag, ignore p3
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP4DiagIndexEqualP34() const {    // Kings, p2, p3, p4 on maindiag, ignore p3
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   if(p > getPosition2()) dec += 9;
   return (p - dec) / 9;
 }
 
-unsigned int EndGameKey::getP4DiagIndexEqualP234() const {   // Kings, p2, p3, p4 on maindiag, ignore p2,p3
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition0()) ? 9 : 0;
+UINT EndGameKey::getP4DiagIndexEqualP234() const {   // Kings, p2, p3, p4 on maindiag, ignore p2,p3
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition0()) ? 9 : 0;
   if(p > getPosition1()) dec += 9;
   return (p - dec) / 9;
 }
 
 void EndGameKey::p2IndexToOffDiagPos() {
-  unsigned int p = getPosition2();
+  UINT p = getPosition2();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -239,7 +240,7 @@ void EndGameKey::p2IndexToOffDiagPos() {
 }
 
 void EndGameKey::p3IndexToOffDiagPos() {
-  unsigned int p = getPosition3();
+  UINT p = getPosition3();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -257,13 +258,12 @@ void EndGameKey::p3IndexToOffDiagPos() {
 }
 
 void EndGameKey::p4IndexToOffDiagPos() {
-  unsigned int p = getPosition4();
+  UINT p = getPosition4();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
   if(p >= getPosition2()) ge |= 4;
   if(p >= getPosition3()) ge |= 8;
-
   switch(ge) {
   case 0:                                             return; //               p < p0,p1,p2,p3
   case 1 : ADJUSTP4_OFFDIAG_CHECK3POS(  1,2,3);       return; // p0          < p <    p1,p2,p3
@@ -285,7 +285,7 @@ void EndGameKey::p4IndexToOffDiagPos() {
 }
 
 void EndGameKey::p3IndexToOffDiagPosEqualP23() {
-  unsigned int p = getPosition3();
+  UINT p = getPosition3();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -298,7 +298,7 @@ void EndGameKey::p3IndexToOffDiagPosEqualP23() {
 }
 
 void EndGameKey::p4IndexToOffDiagPosEqualP34() {
-  unsigned int p = getPosition4();
+  UINT p = getPosition4();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -316,7 +316,7 @@ void EndGameKey::p4IndexToOffDiagPosEqualP34() {
 }
 
 void EndGameKey::p4IndexToOffDiagPosEqualP234() {
-  unsigned int p = getPosition4();
+  UINT p = getPosition4();
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -360,7 +360,7 @@ void EndGameKey::p234IndexToOffDiagPosEqualP234() {
 }
 
 void EndGameKey::p2IndexToDiagPos() {
-  unsigned int p = getPosition2() * 9;
+  UINT p = getPosition2() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -373,7 +373,7 @@ void EndGameKey::p2IndexToDiagPos() {
 }
 
 void EndGameKey::p3IndexToDiagPos() {
-  unsigned int p = getPosition3() * 9;
+  UINT p = getPosition3() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -391,13 +391,12 @@ void EndGameKey::p3IndexToDiagPos() {
 }
 
 void EndGameKey::p4IndexToDiagPos() {
-  unsigned int p = getPosition4() * 9;
+  UINT p = getPosition4() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
   if(p >= getPosition2()) ge |= 4;
   if(p >= getPosition3()) ge |= 8;
-
   switch(ge) {
   case 0:  setPosition4(p);                           return; //               p < p0,p1,p2,p3
   case 1 : ADJUSTP4_ONDIAG_CHECK3POS(  1,2,3);        return; // p0          < p <    p1,p2,p3
@@ -419,7 +418,7 @@ void EndGameKey::p4IndexToDiagPos() {
 }
 
 void EndGameKey::p3IndexToDiagPosEqualP23() {
-  unsigned int p = getPosition3() * 9;
+  UINT p = getPosition3() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -432,7 +431,7 @@ void EndGameKey::p3IndexToDiagPosEqualP23() {
 }
 
 void EndGameKey::p4IndexToDiagPosEqualP34() {
-  unsigned int p = getPosition4() * 9;
+  UINT p = getPosition4() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -450,7 +449,7 @@ void EndGameKey::p4IndexToDiagPosEqualP34() {
 }
 
 void EndGameKey::p4IndexToDiagPosEqualP234() {
-  unsigned int p = getPosition4() * 9;
+  UINT p = getPosition4() * 9;
   int ge = 0;
   if(p >= getPosition0()) ge |= 1;
   if(p >= getPosition1()) ge |= 2;
@@ -493,28 +492,28 @@ void EndGameKey::p234IndexToDiagPosEqualP234() {
   p4IndexToDiagPosEqualP234();
 }
 
-unsigned int EndGameKey::getP3Pawn2Index() const { // higest position is G7
-  const unsigned int p = getPosition3();
-  unsigned int dec = (p > getPosition2()) ? 1 : 0;
+UINT EndGameKey::getP3Pawn2Index() const { // higest position is G7
+  const UINT p   = getPosition3();
+  UINT       dec = (p > getPosition2()) ? 1 : 0;
   return p - dec; 
 }
 
-unsigned int EndGameKey::getP4Pawn3Index() const { // higest position is G7
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition2()) ? 1 : 0;
+UINT EndGameKey::getP4Pawn3Index() const { // higest position is G7
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition2()) ? 1 : 0;
   if(p > getPosition3()) dec++;
   return p - dec; 
 }
 
 void EndGameKey::p3IndexToPawn2Pos() {
-  const unsigned int p = getPosition3();
+  const UINT p = getPosition3();
   if(p >= getPosition2()) {
     setPosition3(p+1);
   }
 }
 
 void EndGameKey::p4IndexToPawn3PosEqualP34() {
-  const unsigned int p = getPosition4();
+  const UINT p = getPosition4();
   if(p >= getPosition2()) {
     setPosition4(p+1);
   }
@@ -528,7 +527,7 @@ void EndGameKey::p34IndexToPawn23PosEqualP34() {
 }
 
 void EndGameKey::p4IndexToPawn3Pos() {
-  unsigned int p = getPosition4();
+  UINT p = getPosition4();
   int ge = 0;
   if(p >= getPosition2()) ge |= 1;
   if(p >= getPosition3()) ge |= 2;
@@ -545,9 +544,9 @@ void EndGameKey::p34IndexToPawn23Pos() {
   p4IndexToPawn3Pos();
 }
 
-unsigned int EndGameKey::getP4Pawn3IndexEqualP34() const {
-  const unsigned int p = getPosition4();
-  unsigned int dec = (p > getPosition2()) ? 1 : 0;
+UINT EndGameKey::getP4Pawn3IndexEqualP34() const {
+  const UINT p   = getPosition4();
+  UINT       dec = (p > getPosition2()) ? 1 : 0;
   return p - dec;
 }
 
@@ -558,32 +557,32 @@ String EndGameKey::toString(const EndGameKeyDefinition &keydef, bool initFormat)
 
 #ifdef TABLEBASE_BUILDER
 
-void EndGameKeyWithOccupiedPositions::setPosition( unsigned int pIndex, unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition(UINT pIndex, UINT pos) {
   EndGameKey::setPosition(pIndex, pos);
   m_occupiedPositions.add(pos);
 }
 
-void EndGameKeyWithOccupiedPositions::setPosition0(unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition0(UINT pos) {
   EndGameKey::setPosition0(pos);
   m_occupiedPositions.add(pos);
 }
 
-void EndGameKeyWithOccupiedPositions::setPosition1(unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition1(UINT pos) {
   EndGameKey::setPosition1(pos);
   m_occupiedPositions.add(pos);
 }
 
-void EndGameKeyWithOccupiedPositions::setPosition2(unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition2(UINT pos) {
   EndGameKey::setPosition2(pos);
   m_occupiedPositions.add(pos);
 }
 
-void EndGameKeyWithOccupiedPositions::setPosition3(unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition3(UINT pos) {
   EndGameKey::setPosition3(pos);
   m_occupiedPositions.add(pos);
 }
 
-void EndGameKeyWithOccupiedPositions::setPosition4(unsigned int pos) {
+void EndGameKeyWithOccupiedPositions::setPosition4(UINT pos) {
   EndGameKey::setPosition4(pos);
   m_occupiedPositions.add(pos);
 }

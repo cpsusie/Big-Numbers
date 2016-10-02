@@ -20,7 +20,7 @@ public:
     return m_eoi;
   }
   void readFile(const String &fileName);
-  unsigned int run();
+  UINT run();
   void putMessage(const String &s) {
     m_inputQueue.put(s);
   }

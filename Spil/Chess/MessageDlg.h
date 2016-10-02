@@ -8,7 +8,7 @@ private:
   String m_message;
   bool   m_timerIsRunning;
 
-  void startTimer(unsigned int milliSeconds);
+  void startTimer(UINT milliSeconds);
   void stopTimer();
 public:
   CMessageDlg(int milliSeconds, const String &caption, const String &message, CWnd* pParent = NULL);

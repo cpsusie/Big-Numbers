@@ -38,42 +38,33 @@
     <Filter Include="Source Files\Graphics">
       <UniqueIdentifier>{7e8b0e3c-284b-4fb9-ae9a-f8dd5bd8e37d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Graphics\Include">
+      <UniqueIdentifier>{b3a8f1a6-d4d9-487e-ad02-24952c7fd5c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs">
+      <UniqueIdentifier>{0b10487a-1376-45ea-815e-7d5d8adb327c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dialogs\Include">
+      <UniqueIdentifier>{c3394607-3333-451e-ba59-0752ecb0df62}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MoveFinders">
+      <UniqueIdentifier>{bb0846a4-f42c-4746-a756-99eab7eedd2a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\MoveFinders\Include">
+      <UniqueIdentifier>{a45e60e2-0455-4e59-be94-5df3f83b1cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\EndGameKeyDefinitions\Include">
+      <UniqueIdentifier>{9b83267d-6f90-461c-9097-19c4aa307329}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\Include">
+      <UniqueIdentifier>{0a9061f6-a2a4-4487-9134-af6c9e7a5da5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AbstractMoveFinder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Chess.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ChessDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ConnectDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CreateFileAssociation.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineOptionControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineOptionsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EngineOptionsDlgThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnginesDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="EnterTextDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ExternEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FieldInfo.cpp">
@@ -89,9 +80,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="GameAnalyzeThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GameEditHistory.cpp">
@@ -121,9 +109,6 @@
     <ClCompile Include="GetMatingPositions.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HistoryDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="InputThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -145,46 +130,13 @@
     <ClCompile Include="LDAWalk.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MessageDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MessageDlgThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Move.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderEndGame.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderExternEngine.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderNegamax.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderNormalPlay.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderRandom.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderRemotePlayer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MoveFinderThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveTable.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpeningDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="OpeningDlgThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OpeningLibrary.cpp">
@@ -202,9 +154,6 @@
     <ClCompile Include="Piece.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PieceValueDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PlayerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -214,9 +163,6 @@
     <ClCompile Include="PositionSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SelectOpeningDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SocketChannel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -224,18 +170,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StopWatch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TablebaseDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TimeSettingsDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TraceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TraceDlgThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UpdateBishopMove.cpp">
@@ -254,9 +188,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="UpdateRookMove.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ViewDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="EndGameKPK.cpp">
@@ -823,6 +754,96 @@
     <ClCompile Include="Image.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="AboutDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionsDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionsDlgThread.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="EnginesDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="EnterTextDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="HistoryDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="MessageDlgThread.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="OpeningDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="OpeningDlgThread.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="PieceValueDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="SelectOpeningDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="TablebaseDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="TimeSettingsDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="TraceDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="TraceDlgThread.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="AbstractMoveFinder.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderEndGame.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderExternEngine.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderNegamax.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderNormalPlay.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderRandom.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderRemotePlayer.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="MoveFinderThread.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="GameAnalyzeThread.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternEngine.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionControl.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Chess.rc">
@@ -830,40 +851,10 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AboutDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AbstractMoveFinder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimatedImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Chess.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChessDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ChessGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ConnectDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineOptionsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EngineOptionsDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnginesDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="EnterTextDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExternEngine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="FieldNames.h">
@@ -875,13 +866,7 @@
     <ClInclude Include="Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameAnalyzeThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="GameEditHistory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="HistoryDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="InputThread.h">
@@ -890,55 +875,16 @@
     <ClInclude Include="LDA.H">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MessageDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MessageDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderEndGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderExternEngine.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderNegamax.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderNormalPlay.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderRandom.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderRemotePlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpeningDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="OpeningDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="OpeningLibrary.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PieceValueDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PlotWinsPValuesThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SelectOpeningDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SocketChannel.h">
@@ -950,22 +896,7 @@
     <ClInclude Include="StopWatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TablebaseDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TimeSettingsDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TraceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TraceDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Versionno.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ViewDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="EndGame3Men.h">
@@ -983,35 +914,125 @@
     <ClInclude Include="EndGame5MenWithPawns.h">
       <Filter>EndGames\5Men\5MenWithPawns</Filter>
     </ClInclude>
-    <ClInclude Include="EndGameKeyCodec.h">
-      <Filter>EndGames\EndGameKeyDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="EndGameKeyDefinition.h">
-      <Filter>EndGames\EndGameKeyDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="EndGameKey.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="EndGameTablebase.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="EndGameUtil.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="IndexedMap.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ChessGraphics.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="ChessGraphicsAnimation.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>Source Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineOptionsDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EngineOptionsDlgThread.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EnginesDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EnterTextDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="GameAnalyzeThread.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="HistoryDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MessageDlgThread.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="OpeningDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="OpeningDlgThread.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="PieceValueDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectOpeningDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="TablebaseDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="TimeSettingsDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceDlgThread.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="TraceDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimatedImage.h">
+      <Filter>Source Files\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGraphics.h">
+      <Filter>Source Files\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessGraphicsAnimation.h">
+      <Filter>Source Files\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderEndGame.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderExternEngine.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderNegamax.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderNormalPlay.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderRandom.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderRemotePlayer.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="MoveFinderThread.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractMoveFinder.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKeyCodec.h">
+      <Filter>EndGames\EndGameKeyDefinitions\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKeyDefinition.h">
+      <Filter>EndGames\EndGameKeyDefinitions\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameKey.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameTablebase.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGameUtil.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="IndexedMap.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternEngine.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

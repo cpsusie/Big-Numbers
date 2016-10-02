@@ -85,10 +85,10 @@ typedef enum {
 
 class ChessResources {
 private:
-  static int          instanceCount;
-  static CSize        screenSize;
-  static const CPoint upperLeftCorner0;
-  static const CSize  fieldSize0;
+  static int          s_instanceCount;
+  static CSize        s_screenSize;
+  static const CPoint s_upperLeftCorner0;
+  static const CSize  s_fieldSize0;
   double              m_maxScale;
   double              m_scale;
   CSize               m_boardSize0;
@@ -98,11 +98,11 @@ private:
   CPoint              m_upperLeftCorner;
   CSize               m_fieldSize;
 
-  static Image       *m_boardImage;
-  static ImageArray   m_pieceImage[2];
-  static ImageArray   m_markImage;
-  static Image       *m_selectionFrameImage, *m_playerIndicator;
-  static CFont        m_boardTextFont, m_debugInfoFont;
+  static Image       *s_boardImage;
+  static ImageArray   s_pieceImage[2];
+  static ImageArray   s_markImage;
+  static Image       *s_selectionFrameImage, *s_playerIndicator;
+  static CFont        s_boardTextFont, s_debugInfoFont;
   AnimatedImage       m_hourGlassImage;
 public:
   ChessResources();
@@ -122,13 +122,13 @@ public:
   CSize  scaleSize(   const CSize  &s) const;
   CRect  scaleRect(   const CRect  &r) const;
   CFont &getBoardFont()                const {
-    return m_boardTextFont;
+    return s_boardTextFont;
   }
   CFont &getDebugFont()                const {
-    return m_debugInfoFont;
+    return s_debugInfoFont;
   }
   inline const CSize &getScreenSize() const {
-    return screenSize;
+    return s_screenSize;
   }
   inline const CSize &getBoardSize0() const {
     return m_boardSize0;
@@ -137,13 +137,13 @@ public:
     return m_boardSize;
   }
   inline const CPoint &getUpperLeftCorner0() const {
-    return upperLeftCorner0;
+    return s_upperLeftCorner0;
   }
   inline const CPoint &getUpperLeftCorner() const {
     return m_upperLeftCorner;
   }
   inline const CSize &getFieldSize0() const {
-    return fieldSize0;
+    return s_fieldSize0;
   }
   inline const CSize &getFieldSize() const {
     return m_fieldSize;
@@ -155,16 +155,16 @@ public:
     return m_selectionFrameSize;
   }
   const Image *getBoardImage() const {
-    return m_boardImage;
+    return s_boardImage;
   }
   const Image *getSelectionFrameImage() const {
-    return m_selectionFrameImage;
+    return s_selectionFrameImage;
   }
   const Image *getPlayerIndicatorImage() const {
-    return m_playerIndicator;
+    return s_playerIndicator;
   }
   inline const Image *getPieceImage(PieceKey pk) const {
-    return m_pieceImage[GET_PLAYER_FROMKEY(pk)][GET_TYPE_FROMKEY(pk)];
+    return s_pieceImage[GET_PLAYER_FROMKEY(pk)][GET_TYPE_FROMKEY(pk)];
   }
   AnimatedImage &getHourGlassAnimation() {
     return m_hourGlassImage;
@@ -195,7 +195,7 @@ public:
       bool m_showSetupMode       : 1;
       bool m_showFEN             : 1;
     } m_flags;
-    unsigned int m_anySet;
+    UINT m_anySet;
   };
   bool showState() const;
   DebugFlags();
@@ -249,7 +249,7 @@ private:
   CRect                       m_playerIndicatorRect;
   String                      m_modeText;
   CRect                       m_modeTextRect;
-  unsigned int                m_remainingTime[2];
+  UINT                        m_remainingTime[2];
   DebugFlags                  m_debugFlags;
   CSize                       m_lastDebugFieldSize;
   void allocate();
@@ -294,7 +294,7 @@ private:
   const CSize  &getTimeTextSize() const;
   void paintDebugInfo(        HDC dc); // this is BOARDDC
   void paintFieldAttacks(     HDC dc, const Game &game1, const Game &game2);
-  void paintFieldAttacks(     HDC dc, const CPoint &p, unsigned int count1, unsigned int count2, Player player, AttackInfoField f, bool hasKing1=false, bool hasKing2=false);
+  void paintFieldAttacks(     HDC dc, const CPoint &p, UINT count1, UINT count2, Player player, AttackInfoField f, bool hasKing1=false, bool hasKing2=false);
   void paintStateString(      HDC dc, int &line,                const Game &game1, const Game &game2);
   void paintStateString(      HDC dc, int &line, Player player, const Game &game1, const Game &game2);
   void paintLastMove(         HDC dc, int &line);
@@ -401,7 +401,7 @@ public:
 
   void startHourGlassAnimation(CWnd *wnd);
   void stopHourGlassAnimation();
-  void showClocks(unsigned int whiteTime, unsigned int blackTime, HDC dc);
+  void showClocks(UINT whiteTime, UINT blackTime, HDC dc);
 };
 
 class FontSizeMenuManager {

@@ -32,12 +32,12 @@ protected:
   void expandAll(  CTreeCtrl *ctrl, HTREEITEM p);
   void collapseAll(CTreeCtrl *ctrl, HTREEITEM p);
 
-	virtual BOOL OnInitDialog();
-	afx_msg void OnSize(UINT nType, int cx, int cy);
-	afx_msg void OnButtonExpand();
-	afx_msg void OnButtonExpandAll();
-	afx_msg void OnOpeningExpand();
-	afx_msg void OnSelChangedOpeningTree(NMHDR* pNMHDR, LRESULT* pResult);
+    virtual BOOL OnInitDialog();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnButtonExpand();
+    afx_msg void OnButtonExpandAll();
+    afx_msg void OnOpeningExpand();
+    afx_msg void OnSelChangedOpeningTree(NMHDR* pNMHDR, LRESULT* pResult);
 	DECLARE_MESSAGE_MAP()
 };
 

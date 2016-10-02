@@ -12,10 +12,10 @@ public:
 
 public:
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-	virtual BOOL OnInitDialog();
+  virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };

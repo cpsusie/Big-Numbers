@@ -32,7 +32,7 @@ typedef enum {
 class MoveFinderThread : public Thread, public PropertyContainer, public PropertyChangeListener, OptionsAccessor {
 private:
 
-  static OpeningLibrary openingLibrary;
+  static OpeningLibrary s_openingLibrary;
 
   const Player                         m_player;
   MoveFinderState                      m_state;
@@ -65,7 +65,7 @@ private:
 public:
   MoveFinderThread(Player player);
   ~MoveFinderThread();
-  unsigned int run();
+  UINT run();
 
   Player getPlayer() const {
     return m_player;

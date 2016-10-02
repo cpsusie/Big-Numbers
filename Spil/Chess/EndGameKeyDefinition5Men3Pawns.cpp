@@ -17,8 +17,8 @@ SymmetricTransformation EndGameKeyDefinition5Men3Pawns::getSymTransformation(con
 }
 
 unsigned long EndGameKeyDefinition5Men3Pawns::keyToIndex(const EndGameKey &key) const {
-  unsigned int pi3 = key.getP3Pawn2Index()         - 8;
-  unsigned int pi4 = key.getP4Pawn3IndexEqualP34() - 8;
+  UINT pi3 = key.getP3Pawn2Index()         - 8;
+  UINT pi4 = key.getP4Pawn3IndexEqualP34() - 8;
 
   SORT2(pi3,pi4);
   return ADDPIT(key, ADD2EQUAL(ONE_PAWN_3MEN(key, 2), KK_WITH_PAWN_POSCOUNT_3MEN, pi3, pi4))

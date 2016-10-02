@@ -29,6 +29,6 @@ public:
   PlotWinsPValuesThread(CChessDlg *dlg, const PValuePlotParameters &param);
   ~PlotWinsPValuesThread();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  unsigned int run();
+  UINT run();
 };
 

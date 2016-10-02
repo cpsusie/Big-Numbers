@@ -36,15 +36,15 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
     tmp.setPosition2(pos3);                                                                                                       \
     tmp.setPosition3(pos2);                                                                                                       \
   }                                                                                                                               \
-  const unsigned int pi2 = tmp.getP2OffDiagIndex();                                                                               \
-  const unsigned int pi3 = tmp.getP3OffDiagIndexEqualP23();                                                                       \
+  const UINT pi2 = tmp.getP2OffDiagIndex();                                                                                       \
+  const UINT pi3 = tmp.getP3OffDiagIndexEqualP23();                                                                               \
   return ADDPIT(tmp, ADD2EQUAL(KK_OFFDIAG_2MEN(tmp), KK_OFFDIAG_POSCOUNT, pi2, pi3))                                              \
        - MININDEX;                                                                                                                \
 }
 
 #define ENCODE_KK_ONDIAG_NOFLIP(key)                                                                                              \
-{ unsigned int pi2 = offDiagPosToIndex[pos2];                                                                                     \
-  unsigned int pi3 = offDiagPosToIndex[pos3];                                                                                     \
+{ UINT pi2 = offDiagPosToIndex[pos2];                                                                                             \
+  UINT pi3 = offDiagPosToIndex[pos3];                                                                                             \
   SORT2(pi2, pi3); /* pi2 < pi3 */                                                                                                \
   return ADDPIT(key, ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT, pi2, pi3))                                                \
        + START_RANGE_KK_ONDIAG_P23_BELOWDIAG                                                                                      \
@@ -52,8 +52,8 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
 }
 
 #define ENCODE_KK_ONDIAG_FLIPi(key,i,j)                                                                                           \
-{ unsigned int pi = offDiagPosToIndex[pos##i] - 28;                                                                               \
-  unsigned int pj = offDiagPosToIndex[pos##j];                                                                                    \
+{ UINT pi = offDiagPosToIndex[pos##i] - 28;                                                                                       \
+  UINT pj = offDiagPosToIndex[pos##j];                                                                                            \
   SORT2(pi, pj);                                                                                                                  \
   return ADDPIT(key, ADD2EQUALALLOWEQUALLH(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT, pi, pj))                                      \
        + START_RANGE_KK_ONDIAG_P2_BELOWDIAG                                                                                       \
@@ -75,16 +75,16 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
     tmp.setPosition2(pos3);                                                                                                       \
     tmp.setPosition3(pos2);                                                                                                       \
   }                                                                                                                               \
-  const unsigned int pi2 = tmp.getP2DiagIndex();                                                                                  \
-  const unsigned int pi3 = tmp.getP3DiagIndexEqualP23();                                                                          \
+  const UINT pi2 = tmp.getP2DiagIndex();                                                                                  \
+  const UINT pi3 = tmp.getP3DiagIndexEqualP23();                                                                          \
   return ADDPIT(tmp, ADD2EQUAL(KK_ONDIAG_2MEN(tmp), KK_ONDIAG_POSCOUNT, pi2, pi3))                                                \
        + START_RANGE_KKP23_ONDIAG                                                                                                 \
        - MININDEX;                                                                                                                \
 }
 
 unsigned long EndGameKeyDefinition4Men2Equal::keyToIndex(const EndGameKey &key) const {
-  unsigned int pos2 = key.getPosition2();
-  unsigned int pos3 = key.getPosition3();
+  UINT pos2 = key.getPosition2();
+  UINT pos3 = key.getPosition3();
 
   if(!key.kingsOnMainDiag1()) {                                         // kings off maindiag => p2, p3 anywhere
     ENCODE_KK_OFFDIAG(key);
@@ -238,34 +238,34 @@ String EndGameKeyDefinition4Men2Equal::getCodecName() const {
 
 #ifdef _DEBUG
 
-unsigned int add2Equal(unsigned int addr, unsigned int maxAddr, unsigned int lp, unsigned int hp) {
+UINT add2Equal(UINT addr, UINT maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp >= hp) || (addr >= maxAddr)) {
     throwException(_T("add2Equal:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp < hp)")
                   ,addr, maxAddr, lp, hp);
   }
-  unsigned int a = addr * hp;
+  UINT a = addr * hp;
   a += lp;
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr,hp-1);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr,hp-1);
   return a + rs;
 }
 
-unsigned int add2EqualAllowEqualLH(unsigned int addr, unsigned int maxAddr, unsigned int lp, unsigned int hp) {
+UINT add2EqualAllowEqualLH(UINT addr, UINT maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp > hp) || (addr >= maxAddr)) {
     throwException(_T("add2EqualAllowEqualLH:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
                   ,addr, maxAddr, lp, hp);
   }
-  unsigned int a = addr * (hp+1);
+  UINT a = addr * (hp+1);
   a += lp;
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, hp);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, hp);
   return a + rs;
 }
 
-void set2Pos2Equal(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2Pos2Equal(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
   key.setPosition(hpIndex, r);
@@ -273,10 +273,10 @@ void set2Pos2Equal(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, i
   addr /= r;
 }
 
-void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs; 
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
@@ -284,10 +284,10 @@ void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, unsigned int max
   addr /= r;
 }
 
-void set2OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
   r++;
@@ -295,10 +295,10 @@ void set2OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, unsigned int maxA
   addr /= r;
 }
 
-void set2OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);
   r++;
@@ -306,10 +306,10 @@ void set2OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, unsigned int maxA
   addr /= r;
 }
 
-void set2OffDiagPosFlipij(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipij(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const unsigned int rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);

@@ -238,7 +238,7 @@ MoveResultArray EndGameTablebase::getAllMoves(const Game &game) const {
   }
 }
 
-EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const Move &m, unsigned int *pliesToEnd) const {
+EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd) const {
   if((m.m_capturedPiece == NULL) && (m.m_type != PROMOTION)) {
     return EG_UNDEFINED;
   } else {
@@ -309,7 +309,7 @@ time_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
   return STAT(getFileName(fileType)).st_mtime;
 }
 
-unsigned int EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
+UINT EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
   return STAT(getFileName(fileType)).st_size;
 }
 
@@ -581,7 +581,7 @@ void EndGameTablebase::addInitPosition(Player playerInTurn,...) {
   va_start(argptr, playerInTurn);
   for(int pIndex = 0; pIndex < m_keydef.getPieceCount(); pIndex++) {
     const int pos = va_arg(argptr, int);
-    validatePosition(_T("addInitPosition"), pos);
+    VALIDATEPOS(pos);
     key.setPosition(pIndex, pos);
   }
   va_end(argptr);
@@ -831,8 +831,8 @@ void EndGameTablebase::generateAllRetroPositions() {
       innerIteration++;
       changed = false;
       EndGameEntryIterator it    = m_positionIndex.getIteratorUnvisitedEntries();
-      unsigned int         total = it.getCount();
-      for(unsigned int positionCount = 0; it.hasNext(); ) {
+      UINT                 total = it.getCount();
+      for(UINT positionCount = 0; it.hasNext(); ) {
         EndGameEntry &entry = it.next();
         positionCount++;
 
@@ -876,8 +876,8 @@ void EndGameTablebase::generateAllRetroPositions() {
       innerIteration++;
       changed2     = false;
       EndGameEntryIterator it    = m_positionIndex.getIteratorMarkedEntries();
-      unsigned int         total = it.getCount();
-      for(unsigned int positionCount = 0; it.hasNext();) {
+      UINT                 total = it.getCount();
+      for(UINT positionCount = 0; it.hasNext();) {
         EndGameEntry &entry = it.next();
         positionCount++;
 
@@ -1058,7 +1058,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
   m_positionIndex.clearHelpInfo();
 
   bool changed;
-  unsigned int pliesToEnd = 0;
+  UINT pliesToEnd = 0;
 
   do {
     changed = false;
@@ -1079,7 +1079,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
 //  verbose(_T("%27s%s\n"), _T(""), m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr());
 }
 
-bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, unsigned int pliesToEnd) {
+bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, UINT pliesToEnd) {
   bool changed = false;
 
   const EndGameResult        &result = entry.getValue();
@@ -1312,7 +1312,7 @@ StartLoop0:
 
 // Fix up all plies to end, that is NO MORE winner-positions exist
 void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
-  unsigned int iteration = 1;
+  UINT iteration = 1;
 
   if((m_info.m_stateFlags & TBISTATE_WINNERFORWARD1FIXED) == 0) {
     m_positionIndex.clearHelpInfo();
@@ -1329,7 +1329,7 @@ void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
   if((m_info.m_stateFlags & TBISTATE_RETROLOOPDONE) != TBISTATE_RETROLOOPDONE) {
     for(iteration++;;iteration++) {
       if((m_info.m_stateFlags & TBISTATE_WINNERRETROFIXED) == 0) {
-        for(unsigned int retroStartChangeCount = changedPositions, retroIteration = 1;; retroStartChangeCount = changedPositions, retroIteration++) {
+        for(UINT retroStartChangeCount = changedPositions, retroIteration = 1;; retroStartChangeCount = changedPositions, retroIteration++) {
           PositionCount loopChangeCount;
           m_positionIndex.clearAllChanged();
           // Invariant:No changed. loop through marked positions
@@ -1418,8 +1418,8 @@ void EndGameTablebase::fixupForwardPlies(EndGameEntryIterator &it, int iteration
   ENDLOOP_VERBOSE(FIXUP_FORWARD_VERBOSE)
 }
 
-unsigned int EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, PositionCount &changeCount) {
-  const unsigned int startChangeCount = changeCount.getTotal();
+UINT EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, PositionCount &changeCount) {
+  const UINT startChangeCount = changeCount.getTotal();
 
   const EndGameResult        &result     = entry.getValue();
   const EndGamePositionStatus status     = result.getStatus();
@@ -1478,8 +1478,8 @@ unsigned int EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, Positi
   return changeCount.getTotal() - startChangeCount;
 }
 
-unsigned int EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount) {
-  const unsigned int startChangeCount = changeCount.getTotal();
+UINT EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount) {
+  const UINT startChangeCount = changeCount.getTotal();
 
   const EndGameResult        &result = entry.getValue();
   const EndGamePositionStatus status = result.getStatus();
@@ -1494,8 +1494,8 @@ unsigned int EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, Posit
   m_workGame.pushState();
   for(bool moreBackMoves = bmg.firstMove(bm); moreBackMoves; m_workGame.unTryBackMove(), moreBackMoves = bmg.nextMove(bm)) {
     m_workGame.tryBackMove(bm);
-    if(!isUsableBackMove(bm)) continue;
 
+    if(!isUsableBackMove(bm)) continue;
     const EndGameKey predKey    = transformGameKey(m_workGame.getKey());
     EndGameResult   &predResult = m_positionIndex.get(predKey);
 
@@ -1546,8 +1546,8 @@ void EndGameTablebase::markPredecessors(bool onlyWinnerPositions) {
 
 EndGameResult EndGameTablebase::getBestResult(Game &game, bool breakOnDraw) { // find best result for player in turn.
   const Player playerInTurn      = game.getPlayerInTurn();
-  unsigned int pliesToWin        = 999999;
-  unsigned int pliesToLoose      = 0;
+  UINT         pliesToWin        = 999999;
+  UINT         pliesToLoose      = 0;
   bool         undefinedFound    = false;
   bool         drawMoveFound     = false;
   bool         winningMoveFound  = false;
@@ -1571,7 +1571,7 @@ EndGameResult EndGameTablebase::getBestResult(Game &game, bool breakOnDraw) { //
     }
     game.tryMove(m);
     EndGamePositionStatus status;
-    unsigned int pliesToEnd;
+    UINT pliesToEnd;
     switch(status = isTerminalMove(game, m, &pliesToEnd)) {
     case EG_DRAW     :
       drawMoveFound = true;
@@ -1689,7 +1689,7 @@ bool EndGameTablebase::addPosition(const EndGameKey &key, EndGameResult &result,
   }
 }
 
-EndGameResult &EndGameTablebase::setAsTerminalPosition(EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd) {
+EndGameResult &EndGameTablebase::setAsTerminalPosition(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd) {
   assert(pliesToEnd <= 1);
 
   dst.setResult(status, pliesToEnd);
@@ -1730,7 +1730,7 @@ EndGameResult &EndGameTablebase::setAsTerminalPosition(EndGameResult &dst, EndGa
   return dst;
 }
 
-EndGameResult &EndGameTablebase::setPositionResult(EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd) {
+EndGameResult &EndGameTablebase::setPositionResult(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd) {
   m_info.m_undefinedPositions--;
   switch(status) {
   case EG_DRAW    : 
@@ -1759,7 +1759,7 @@ EndGameResult &EndGameTablebase::setPositionResult(EndGameResult &dst, EndGamePo
   return dst;
 }
 
-EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, EndGamePositionStatus status, unsigned int pliesToEnd) {
+EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd) {
   if(status != dst.getStatus()) {
     throwInvalidArgumentException(_T("changePliesToEnd"), _T("dst=%s, status=%d. pliesToEnd=%d"), dst.toString(true).cstr(), status, pliesToEnd);
   }
@@ -1786,7 +1786,7 @@ EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, const EndG
   return changePliesToEnd(dst, result.getStatus(), result.getPliesToEnd());
 }
 
-void EndGameTablebase::adjustMaxPly(Player winner, unsigned int plies) {
+void EndGameTablebase::adjustMaxPly(Player winner, UINT plies) {
   unsigned short &maxPlies = m_info.m_maxPlies.m_count[winner];
   if(plies > maxPlies) {
     maxPlies = plies;
@@ -1835,7 +1835,7 @@ void EndGameTablebase::logPositionCount() const {
     m_logFile = MKFOPEN(getTempFileName(format(_T("%sCount.log"), getName().cstr())), _T("w"));
   }
 
-  const unsigned int posCount = m_info.m_totalPositions;
+  const UINT posCount = m_info.m_totalPositions;
   Timestamp now;
   if(m_generatingPositions) {
     _ftprintf(m_logFile,_T("%s %12lu %12ld %.3lf\n"),now.toString(_T("yyyyMMdd.hhmm")).cstr(),posCount,m_positionsAnalyzed, PERCENT(m_positionsAnalyzed, posCount));
@@ -2009,7 +2009,7 @@ void EndGameTablebase::listPositionCount(FILE *f) {
          );                                     \
 }
 
-bool EndGameTablebase::checkConsistency(unsigned int flags) {
+bool EndGameTablebase::checkConsistency(UINT flags) {
   unsigned long inconsistentPositionCount  = 0;
   bool          subTablebasesOk            = true;
   bool          headerOk                   = true;
@@ -2112,21 +2112,21 @@ CheckHeader:
       headerOk = false;
     }
 
-    const unsigned int positionCount = m_positionIndex.getEntryIterator().getCount();
+    const UINT positionCount = m_positionIndex.getEntryIterator().getCount();
     if(m_info.m_totalPositions != positionCount) {
       verbose(_T("\nHeader.total position count = %lu != calculated number of positions = %lu\n")
              ,m_info.m_totalPositions
              ,positionCount);
       headerOk = false;
     }
-    const unsigned int undefinedPositionCount = m_positionIndex.getIteratorUndefinedEntries().getCount();
+    const UINT undefinedPositionCount = m_positionIndex.getIteratorUndefinedEntries().getCount();
     if(m_info.m_undefinedPositions != undefinedPositionCount) {
       verbose(_T("\nHeader.undefined position count = %lu != calculated number undefined of positions = %lu\n")
              ,m_info.m_undefinedPositions
              ,undefinedPositionCount);
       headerOk = false;
     }
-    const unsigned int stalematePositionCount = m_positionIndex.getIteratorStalemateEntries().getCount();
+    const UINT stalematePositionCount = m_positionIndex.getIteratorStalemateEntries().getCount();
     if(m_info.m_stalematePositions != stalematePositionCount) {
       verbose(_T("\nHeader.stalemate position count = %lu != calculated number of stalemate positions = %lu\n")
              ,m_info.m_stalematePositions
@@ -2414,7 +2414,7 @@ MoveResultArray EndGameTablebase::getAllMoves(const GameKey &gameKey) const {
         skipNextPromotion = NULL;
       }
     }
-    unsigned int pliesToEnd;
+    UINT pliesToEnd;
     const EndGamePositionStatus status = isTerminalMove(game, m, &pliesToEnd);
     switch(status) {
     case EG_DRAW     :

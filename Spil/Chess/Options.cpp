@@ -798,13 +798,13 @@ Options &Options::getOptions() { // static
   return OptionsAccessor().getOptions();
 }
 
-EngineRegister Options::m_engineRegister;
+EngineRegister Options::s_engineRegister;
 
 EngineRegister &Options::getEngineRegister() { // static 
-  if(m_engineRegister.size() == 0) {
+  if(s_engineRegister.size() == 0) {
     loadEngineRegister();
   }
-  return m_engineRegister;
+  return s_engineRegister;
 }
 
 const String &Options::getEnginePathByPlayer(Player player) { // static
@@ -812,14 +812,14 @@ const String &Options::getEnginePathByPlayer(Player player) { // static
 }
 
 void Options::loadEngineRegister() { // static
-  m_engineRegister.clear();
+  s_engineRegister.clear();
   RegistryKey key = getEngineSubKey(getKey());
   for(Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
     const String keyName = it.next();
     RegistryKey engineKey = key.openKey(keyName);
     EngineDescription desc;
     loadEngineDescription(engineKey, desc);
-    m_engineRegister.add(desc);
+    s_engineRegister.add(desc);
   }
 }
 
@@ -830,7 +830,7 @@ void Options::saveEngineRegister(EngineRegister &engines) { // static
     RegistryKey subKey = key.createKey(format(_T("%02d"), (int)i));
     saveEngineDescription(subKey, engines[i]);
   }
-  m_engineRegister = engines;
+  s_engineRegister = engines;
   forEachPlayer(p) {
     if(getOptions().getCurrentEngineIndex(p) < 0) {
       getOptions().setEngineName(p, _T(""));

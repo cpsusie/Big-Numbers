@@ -10,7 +10,7 @@ private:
   int                 m_evaluationCount;
   int                 m_sign;
 
-  TCHAR                m_movesString[1024];
+  TCHAR               m_movesString[1024];
   int                 m_movePositions[20];
   int                 m_gameLength0; // #moves for depth = 0
   int                 m_lastGameLength;

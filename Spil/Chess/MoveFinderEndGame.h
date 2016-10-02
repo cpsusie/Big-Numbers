@@ -6,8 +6,8 @@
 class MoveFinderEndGame : public AbstractMoveFinder, OptionsAccessor {
 private:
   EndGameTablebase      *m_tablebase;
-  static String          m_currentDbPath;
-  static TablebaseMetric m_currentMetric;
+  static String          s_currentDbPath;
+  static TablebaseMetric s_currentMetric;
 public:
   MoveFinderEndGame(Player player, EndGameTablebase *tablebase);
   ~MoveFinderEndGame();

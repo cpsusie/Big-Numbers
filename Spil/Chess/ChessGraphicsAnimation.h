@@ -54,7 +54,7 @@ public:
   void paint();
   void unpaint();
   void flush();
-  unsigned int getSteps() const {
+  UINT getSteps() const {
     return m_it.getSteps();
   }
 };

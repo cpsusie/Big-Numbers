@@ -112,7 +112,7 @@ PositionCount TablebaseInfo::getWinnerPositionCount() const {
   return m_checkMatePositions + m_terminalWinPositions + m_nonTerminalWinPositions;
 }
 
-unsigned int TablebaseInfo::getWinnerPositionCount(Player winner) const {
+UINT TablebaseInfo::getWinnerPositionCount(Player winner) const {
   return m_checkMatePositions.m_count[winner] 
        + m_terminalWinPositions.m_count[winner] 
        + m_nonTerminalWinPositions.m_count[winner];

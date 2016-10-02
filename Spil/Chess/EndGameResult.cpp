@@ -17,7 +17,7 @@ const TCHAR *positionStatusToString(EndGamePositionStatus state) {
   }
 }
 
-EndGameResult &EndGameResult::setResult(EndGamePositionStatus status, unsigned int pliesToEnd) {
+EndGameResult &EndGameResult::setResult(EndGamePositionStatus status, UINT pliesToEnd) {
   assert(status >= 0 && status <= 3);
   assert(pliesToEnd <= 0x1ff);
   assert(exists() && !isDefined());
@@ -25,7 +25,7 @@ EndGameResult &EndGameResult::setResult(EndGamePositionStatus status, unsigned i
   return *this;
 }
 
-EndGameResult &EndGameResult::changePliesToEnd(unsigned int pliesToEnd) {
+EndGameResult &EndGameResult::changePliesToEnd(UINT pliesToEnd) {
   assert(exists() && isDefined());
   assert(pliesToEnd <= 0x1ff);
   m_data = (m_data & ~0x1ff) | pliesToEnd;

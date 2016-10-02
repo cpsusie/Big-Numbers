@@ -980,8 +980,8 @@ BOOL CChessDlg::PreTranslateMessage(MSG* pMsg) {
 /*
   switch(pMsg->message) {
   case WM_COMMAND:
-    { long         lp = pMsg->lParam;
-      unsigned int wp = pMsg->wParam;
+    { long lp = pMsg->lParam;
+      UINT wp = pMsg->wParam;
     }
     break;
   }
@@ -1784,7 +1784,7 @@ void CChessDlg::startFindHint(int timeout) { // timeout in milliseconds
   }
 }
 
-void CChessDlg::startTimer(unsigned int timerId, unsigned int milliSeconds) {
+void CChessDlg::startTimer(UINT timerId, UINT milliSeconds) {
   if(isTimerRunning(timerId)) {
     return;
   }
@@ -1796,7 +1796,7 @@ void CChessDlg::startTimer(unsigned int timerId, unsigned int milliSeconds) {
   }
 }
 
-void CChessDlg::stopTimer(unsigned int timerId) {
+void CChessDlg::stopTimer(UINT timerId) {
   if(isTimerRunning(timerId)) {
     KillTimer(timerId);
     m_timerIsRunning[timerId] = false;
@@ -1804,7 +1804,7 @@ void CChessDlg::stopTimer(unsigned int timerId) {
   }
 }
 
-bool CChessDlg::isTimerRunning(unsigned int timerId) const {
+bool CChessDlg::isTimerRunning(UINT timerId) const {
   if(timerId == 0 || timerId > MAXTIMERID) {
     errorMessage(_T("isTimerRunning:Invalid argument. timerId=%d. Valid interval=[%d..%d]"), timerId, 1, MAXTIMERID);
     return false;
@@ -2585,7 +2585,7 @@ void CChessDlg::enableClockControlMenu() {
 }
 
 void CChessDlg::updateClock() {
-  const unsigned int t[2] = {
+  const UINT t[2] = {
     m_watch.getSecondsRemaining(WHITEPLAYER)
    ,m_watch.getSecondsRemaining(BLACKPLAYER)
   };

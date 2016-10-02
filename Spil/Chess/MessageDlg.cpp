@@ -71,7 +71,7 @@ BOOL CMessageDlg::OnInitDialog() {
   return TRUE;
 }
 
-void CMessageDlg::startTimer(unsigned int milliSeconds) {
+void CMessageDlg::startTimer(UINT milliSeconds) {
   if(!m_timerIsRunning && SetTimer(1,milliSeconds,NULL)) {
     m_timerIsRunning = true;
   }

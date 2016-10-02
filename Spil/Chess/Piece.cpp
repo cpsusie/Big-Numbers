@@ -40,7 +40,7 @@ AttackAttribute Piece::getAttackAttribute(PieceKey key) { // static
   }
 }
 
-unsigned int Piece::getMaterialValue(PieceType pieceType) { // static
+UINT Piece::getMaterialValue(PieceType pieceType) { // static
   DEFINEMETHODNAME;
   switch(pieceType) {
   case King   : return 0;

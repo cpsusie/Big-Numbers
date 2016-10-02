@@ -3,8 +3,8 @@
 
 //#define FIND_ENDMOVE_BY_SEARCH
 
-String          MoveFinderEndGame::m_currentDbPath;
-TablebaseMetric MoveFinderEndGame::m_currentMetric;
+String          MoveFinderEndGame::s_currentDbPath;
+TablebaseMetric MoveFinderEndGame::s_currentMetric;
 
 MoveFinderEndGame::MoveFinderEndGame(Player player, EndGameTablebase *tablebase) 
 : AbstractMoveFinder(player)
@@ -20,18 +20,18 @@ ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &time
   initSearch(game, timeLimit, talking);
 
   if(!m_tablebase->isLoaded() 
-   || (m_currentDbPath != EndGameKeyDefinition::getDbPath()) 
-   || (m_currentMetric != EndGameKeyDefinition::getMetric())) {
+   || (s_currentDbPath != EndGameKeyDefinition::getDbPath()) 
+   || (s_currentMetric != EndGameKeyDefinition::getMetric())) {
     if(m_tablebase->isLoaded()) {
       m_tablebase->unload();
     }
-    m_currentDbPath = EndGameKeyDefinition::getDbPath();
-    m_currentMetric = EndGameKeyDefinition::getMetric();
-//    verbose(_T("Loading tablebase %s. Metric:%s..."), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(m_currentMetric));
+    s_currentDbPath = EndGameKeyDefinition::getDbPath();
+    s_currentMetric = EndGameKeyDefinition::getMetric();
+//    verbose(_T("Loading tablebase %s. Metric:%s..."), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
     m_tablebase->load();
   } else {
     if(isVerbose()) {
-      verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(m_currentMetric));
+      verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
     }
   }
   MoveResultArray allMoves(game.getPlayerInTurn());

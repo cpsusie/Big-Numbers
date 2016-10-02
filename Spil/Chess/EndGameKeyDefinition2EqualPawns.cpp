@@ -43,7 +43,7 @@ void EndGameKeyDefinition2EqualPawns::setPawnsOwner() {
 
 #ifdef _DEBUG
 
-void set2EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
@@ -53,7 +53,7 @@ void set2EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, unsigned int max
   addr /= r;
 }
 
-void set2EqualPawnsFlipi( EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipi( EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
@@ -64,7 +64,7 @@ void set2EqualPawnsFlipi( EndGameKey &key, unsigned long &addr, unsigned int max
   addr /= r;
 }
 
-void set2EqualPawnsFlipj( EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipj( EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
@@ -74,7 +74,7 @@ void set2EqualPawnsFlipj( EndGameKey &key, unsigned long &addr, unsigned int max
   addr /= r;
 }
 
-void set2EqualPawnsFlipij(EndGameKey &key, unsigned long &addr, unsigned int maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipij(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
   int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);

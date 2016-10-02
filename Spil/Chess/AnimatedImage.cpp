@@ -2,7 +2,7 @@
 #include <MFCUtil/WinTools.h>
 #include "AnimatedImage.h"
 
-AnimatedImage::AnimatedImage(int resId, unsigned int imageCount) {
+AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
   if(imageCount == 0) {
     throwInvalidArgumentException(_T("AnimatedImage"),_T("imageCount=0"));
   }
@@ -10,7 +10,7 @@ AnimatedImage::AnimatedImage(int resId, unsigned int imageCount) {
   const int frameWidth  = rawImage.getWidth() / imageCount;
   const int frameHeight = rawImage.getHeight();
 
-  for(unsigned int i = 0; i < imageCount; i++) {
+  for(UINT i = 0; i < imageCount; i++) {
     Image *frame = new Image(CSize(frameWidth, frameHeight));
     frame->rop(0,0,frameWidth, frameHeight, SRCCOPY, &rawImage, i*frameWidth, 0);
     m_imageArray.add(frame);
@@ -90,7 +90,7 @@ void AnimatedImage::setSecondsPerCycle(double secondsPerCycle, double pauseAtEnd
   m_sleepAtEnd      = m_sleepTimeMs + m_pauseAtEnd * 1000;
 }
 
-unsigned int AnimatedImage::run() {
+UINT AnimatedImage::run() {
   for(;;) {
     saveBackground();
     CClientDC dc(m_wnd);

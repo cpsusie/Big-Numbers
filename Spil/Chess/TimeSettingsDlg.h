@@ -60,28 +60,28 @@ public:
     }
 	enum { IDD = IDD_TIMESETTINGS_DIALOG };
 	CTabCtrl	m_clockType;
-	UINT	m_min1;
-	UINT	m_min2;
-	UINT	m_min3;
-	UINT	m_min4;
-	UINT	m_min5;
-	UINT	m_min6;
-	float	m_sec1;
-	float	m_sec2;
-	float	m_sec3;
-	float	m_sec4;
-	float	m_sec5;
-	float	m_sec6;
-    UINT    m_movesLeft;
-    UINT    m_hoursLeft;
-    UINT    m_minutesLeft;
-    UINT    m_secondsLeft;
-    UINT    m_secondsIncr;
-    UINT    m_speedChessHoursLeft;
-    UINT    m_speedChessMinutesLeft;
-    UINT    m_speedChessSecondsLeft;
-    UINT    m_speedChessSecondsIncr;
-	BOOL	m_resetClocks;
+	UINT	    m_min1;
+	UINT	    m_min2;
+	UINT	    m_min3;
+	UINT	    m_min4;
+	UINT	    m_min5;
+	UINT	    m_min6;
+	float	    m_sec1;
+	float	    m_sec2;
+	float	    m_sec3;
+	float	    m_sec4;
+	float	    m_sec5;
+	float	    m_sec6;
+    UINT        m_movesLeft;
+    UINT        m_hoursLeft;
+    UINT        m_minutesLeft;
+    UINT        m_secondsLeft;
+    UINT        m_secondsIncr;
+    UINT        m_speedChessHoursLeft;
+    UINT        m_speedChessMinutesLeft;
+    UINT        m_speedChessSecondsLeft;
+    UINT        m_speedChessSecondsIncr;
+    BOOL        m_resetClocks;
 
 
 	public:

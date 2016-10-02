@@ -15,7 +15,7 @@ public:
   ~EndGameEntryIterator() {
     setLog(false);
   }
-  unsigned int getCount();
+  UINT getCount();
   double getPercentDone() const;
   double getMilliSecondsRemaining() const;
   double getMilliSecondsUsed() const;
@@ -34,7 +34,7 @@ private:
   void allocate();
   void rethrowException(Exception &e, const EndGameKey &key) const;
 #ifdef _DEBUG
-  unsigned int getCheckedIndex(const EndGameKey &key) const;
+  UINT getCheckedIndex(const EndGameKey &key) const;
 #endif
 
 public:
@@ -82,13 +82,13 @@ public:
   EndGameEntryIterator getIteratorChangedUnvisitedEntries();              // All existing, changed, unvisited entries
   EndGameEntryIterator getIteratorMarkedEntries();                        // All marked entries
   EndGameEntryIterator getIteratorUnmarkedEntries();                      // All marked entries
-  EndGameEntryIterator getIteratorWinnerEntries(unsigned int pliesToEnd); // All winner entries with specified pliesToEnd
+  EndGameEntryIterator getIteratorWinnerEntries(UINT pliesToEnd);         // All winner entries with specified pliesToEnd
   EndGameEntryIterator getIteratorAllWinnerEntries();                     // All winner entries
   EndGameEntryIterator getIteratorAllNonWinnerEntries();                  // All existing, undefined or draw entries
   EndGameEntryIterator getIteratorCheckmateEntries(Player winner);
   EndGameEntryIterator getIteratorStalemateEntries();
-  EndGameEntryIterator getIteratorMinPliesToEnd(  Player winner, unsigned int minPliesToEnd);
-  EndGameEntryIterator getIteratorExactPliesToEnd(Player winner, unsigned int pliesToEnd);
+  EndGameEntryIterator getIteratorMinPliesToEnd(  Player winner, UINT minPliesToEnd);
+  EndGameEntryIterator getIteratorExactPliesToEnd(Player winner, UINT pliesToEnd);
   EndGameEntryIterator getIteratorNonEmptyHelpInfo();
 };
 
@@ -100,11 +100,11 @@ private:
   PackedArray                 m_statusArray;
   void rethrowException(Exception &e, const EndGameKey &key) const;
 #ifdef _DEBUG
-  unsigned int getCheckedIndex(const EndGameKey &key) const;
+  UINT getCheckedIndex(const EndGameKey &key) const;
 #endif
-  static int findBitsPerItem(unsigned int maxPlies);
+  static int findBitsPerItem(UINT maxPlies);
 public:
-  PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, unsigned int maxPlies);
+  PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, UINT maxPlies);
   void load(ByteInputStream &s);
 
   const EndGameKeyDefinition &getKeyDefinition() const {

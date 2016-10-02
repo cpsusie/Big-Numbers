@@ -183,7 +183,7 @@ const FieldAttackTextPosition *ChessGraphics::getSDAOffset(Player player) {
   return (player == m_computerPlayer) ? &offsetSDA[1]  : &offsetSDA[0];
 }
 
-void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, unsigned int count1, unsigned int count2, Player player, AttackInfoField f, bool hasKing1, bool hasKing2) {
+void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT count2, Player player, AttackInfoField f, bool hasKing1, bool hasKing2) {
   if(count1 == 0 && count2 == 0 && !hasKing1 && !hasKing2) {
     return;
   }

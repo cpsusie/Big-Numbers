@@ -9,10 +9,10 @@ public:
   SocketConnecter(int port, SOCKET &socket) : m_port(port), m_socket(socket) {
     start();
   }
-  unsigned int run();
+  UINT run();
 };
 
-unsigned int SocketConnecter::run() {
+UINT SocketConnecter::run() {
   try {
     m_socket = tcpOpen(m_port);
   } catch(...) {

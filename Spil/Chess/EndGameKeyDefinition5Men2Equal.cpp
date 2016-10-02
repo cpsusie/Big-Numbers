@@ -43,8 +43,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
     tmp.setPosition3(pos4);                                                                                                       \
     tmp.setPosition4(pos3);                                                                                                       \
   }                                                                                                                               \
-  const unsigned int pi3 = tmp.getP3OffDiagIndex();                                                                               \
-  const unsigned int pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                       \
+  const UINT pi3 = tmp.getP3OffDiagIndex();                                                                                       \
+  const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                               \
   return ADDPIT(tmp, ADD2EQUAL(KK_OFFDIAG_3MEN(tmp), KK_OFFDIAG_POSCOUNT, pi3, pi4))                                              \
        - MININDEX;                                                                                                                \
 }
@@ -55,16 +55,16 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
     tmp.setPosition3(pos4);                                                                                                       \
     tmp.setPosition4(pos3);                                                                                                       \
   }                                                                                                                               \
-  const unsigned int pi3 = tmp.getP3OffDiagIndex();                                                                               \
-  const unsigned int pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                       \
+  const UINT pi3 = tmp.getP3OffDiagIndex();                                                                                       \
+  const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                               \
   return ADDPIT(tmp, ADD2EQUAL(KK_ONDIAG_3MEN(tmp), KK_ONDIAG_POSCOUNT, pi3, pi4))                                                \
        + START_RANGE_KK_ONDIAG1                                                                                                   \
        - MININDEX;                                                                                                                \
 }
 
 #define ENCODE_KKP2_ONDIAG_NOFLIP(key)                                                                                            \
-{ unsigned int pi3 = offDiagPosToIndex[pos3];                                                                                     \
-  unsigned int pi4 = offDiagPosToIndex[pos4];                                                                                     \
+{ UINT pi3 = offDiagPosToIndex[pos3];                                                                                             \
+  UINT pi4 = offDiagPosToIndex[pos4];                                                                                             \
   SORT2(pi3,pi4);                                                                                                                 \
   return ADDPIT(key, ADD2EQUAL(KKP2_ONDIAG_3MEN(key), KKP2_ONDIAG_POSCOUNT, pi3, pi4))                                            \
        + START_RANGE_KKP2_ONDIAG_P34_BELOWDIAG                                                                                    \
@@ -72,8 +72,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2_ONDIAG_FLIPi(key,i,j)                                                                                         \
-{ unsigned int pi = offDiagPosToIndex[pos##i] - 28;                                                                               \
-  unsigned int pj = offDiagPosToIndex[pos##j];                                                                                    \
+{ UINT pi = offDiagPosToIndex[pos##i] - 28;                                                                                       \
+  UINT pj = offDiagPosToIndex[pos##j];                                                                                            \
   SORT2(pi,pj);                                                                                                                   \
   return ADDPIT(key, ADD2EQUALALLOWEQUALLH(KKP2_ONDIAG_3MEN(key), KKP2_ONDIAG_POSCOUNT, pi, pj))                                  \
        + START_RANGE_KKP2_ONDIAG_P3_BELOWDIAG                                                                                     \
@@ -95,16 +95,16 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
     tmp.setPosition3(pos4);                                                                                                       \
     tmp.setPosition4(pos3);                                                                                                       \
   }                                                                                                                               \
-  const unsigned int pi3 = tmp.getP3DiagIndex();                                                                                  \
-  const unsigned int pi4 = tmp.getP4DiagIndexEqualP34();                                                                          \
+  const UINT pi3 = tmp.getP3DiagIndex();                                                                                  \
+  const UINT pi4 = tmp.getP4DiagIndexEqualP34();                                                                          \
   return ADDPIT(tmp, ADD2EQUAL(KKP2_ONDIAG_3MEN(tmp), KKP2_ONDIAG_POSCOUNT, pi3, pi4))                                            \
        + START_RANGE_KKP234_ONDIAG                                                                                                \
        - MININDEX;                                                                                                                \
 }
 
 unsigned long EndGameKeyDefinition5Men2Equal::keyToIndex(const EndGameKey &key) const {
-  const unsigned int pos3 = key.getPosition3();
-  const unsigned int pos4 = key.getPosition4();
+  const UINT pos3 = key.getPosition3();
+  const UINT pos4 = key.getPosition4();
 
   if(!key.kingsOnMainDiag1()) {                                // Kings off maindiag => p2, p3, p4 anywhere
     ENCODE_KK_OFFDIAG(key);

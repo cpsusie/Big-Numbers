@@ -7,7 +7,7 @@
 #include "MoveFinderExternEngine.h"
 #include "MoveFinderRemotePlayer.h"
 
-OpeningLibrary MoveFinderThread::openingLibrary;
+OpeningLibrary MoveFinderThread::s_openingLibrary;
 
 static TCHAR *getStateName(MoveFinderState state) {
 #define caseStr(s) case MOVEFINDER_##s: return _T(#s);
@@ -106,13 +106,13 @@ void MoveFinderThread::moveNow() {
 }
 
 const OpeningLibrary &MoveFinderThread::getOpeningLibrary() { // static 
-  if(!openingLibrary.isLoaded()) {
-    openingLibrary.load(IDR_OPENINGLIBRARY);
+  if(!s_openingLibrary.isLoaded()) {
+    s_openingLibrary.load(IDR_OPENINGLIBRARY);
   }
-  return openingLibrary;
+  return s_openingLibrary;
 }
 
-unsigned int MoveFinderThread::run() {
+UINT MoveFinderThread::run() {
   setSelectedLanguageForThread();
 
   while(getState() != MOVEFINDER_KILLED) {

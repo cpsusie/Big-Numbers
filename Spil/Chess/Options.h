@@ -229,7 +229,7 @@ public:
 };
 
 class Options : public DefaultOptions {
-  static EngineRegister m_engineRegister;
+  static EngineRegister s_engineRegister;
   static void loadEngineRegister();
 public:
   Options();

@@ -6,10 +6,10 @@
 
 #ifdef _DEBUG
 
-unsigned int PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
-  const unsigned int result = m_keydef.keyToIndex(key);
+UINT PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
+  const UINT result = m_keydef.keyToIndex(key);
   if(result >= m_indexSize) {
-    unsigned int ii = m_keydef.keyToIndex(key);
+    UINT ii = m_keydef.keyToIndex(key);
     throwException(_T("Position [%s] has index %lu. Max=%lu"), key.toString(m_keydef).cstr(), result, m_indexSize-1);
   }
   return result;
@@ -37,7 +37,7 @@ static const EndGamePositionStatus statusConversion[] = {
  ,EG_BLACKWIN
 };
 
-PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, unsigned int maxPlies) 
+PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, UINT maxPlies) 
 : m_keydef(keydef)
 , m_indexSize(keydef.getIndexSize())
 , m_getResultEnabled(enableGetResult)
@@ -46,7 +46,7 @@ PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enab
 }
 
 void PackedIndexedMap::load(ByteInputStream &s) {
-  unsigned int size;
+  UINT size;
   s.getBytesForced((BYTE*)&size, sizeof(size));
   if(size != m_indexSize) {
     throwException(_T("Unexpected indexSize=%s read from stream. Expected %s"), format1000(size).cstr(), format1000(m_indexSize).cstr());
@@ -91,7 +91,7 @@ void PackedIndexedMap::load(ByteInputStream &s) {
   }
 }
 
-int PackedIndexedMap::findBitsPerItem(unsigned int maxPlies) { // static
+int PackedIndexedMap::findBitsPerItem(UINT maxPlies) { // static
   for(int l = 2; maxPlies; maxPlies >>= 1, l++);
   return l;
 }
@@ -104,7 +104,7 @@ EndGameResult PackedIndexedMap::getPositionResult(const EndGameKey &key) const {
   if(!m_getResultEnabled) {
     throwException(_T("PackedIndexedMap::getPositionResult:Unsupported operation. Index initialized with enableGetResult=false"));
   }
-  const unsigned int v = GETELEMENT(key);
+  const UINT v = GETELEMENT(key);
   return EndGameResult((EndGamePositionStatus)(v&3), v >> 2);
 }
 

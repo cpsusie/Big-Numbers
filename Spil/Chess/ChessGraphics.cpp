@@ -820,7 +820,7 @@ void ChessGraphics::stopHourGlassAnimation() {
   m_resources.getHourGlassAnimation().stopAnimation();
 }
 
-void ChessGraphics::showClocks(unsigned int whiteTime, unsigned int blackTime, HDC dc) {
+void ChessGraphics::showClocks(UINT whiteTime, UINT blackTime, HDC dc) {
   m_remainingTime[WHITEPLAYER] = whiteTime;
   m_remainingTime[BLACKPLAYER] = blackTime;
 

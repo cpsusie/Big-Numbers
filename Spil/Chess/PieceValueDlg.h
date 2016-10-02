@@ -16,19 +16,18 @@ public:
 	UINT	m_to;
 	int		m_pieceType;
 
-
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
    
 protected:
 
-	afx_msg void OnRadioKing();
-	afx_msg void OnRadioQueen();
-	afx_msg void OnRadioRook();
-	afx_msg void OnRadioBishop();
-	afx_msg void OnRadioKnight();
-	afx_msg void OnRadioPawn();
-	virtual void OnOK();
-	DECLARE_MESSAGE_MAP()
+    afx_msg void OnRadioKing();
+    afx_msg void OnRadioQueen();
+    afx_msg void OnRadioRook();
+    afx_msg void OnRadioBishop();
+    afx_msg void OnRadioKnight();
+    afx_msg void OnRadioPawn();
+    virtual void OnOK();
+    DECLARE_MESSAGE_MAP()
 };
 

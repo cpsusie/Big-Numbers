@@ -23,9 +23,9 @@ private:
   CSize getFrameSize() const;
   int   getFrameCount() const;
 public:
-  AnimatedImage(int resId, unsigned int imageCount);
+  AnimatedImage(int resId, UINT imageCount);
   ~AnimatedImage();
-  unsigned int run();
+  UINT run();
 
   void startAnimation(CWnd *wnd, const CPoint &p, double scale, bool removeWhenDone, int loopCount = 1);
   void stopAnimation();

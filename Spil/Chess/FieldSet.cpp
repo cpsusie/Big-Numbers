@@ -46,7 +46,7 @@ public:
 
 void FieldSetIterator::first() {
   for(int i = 0; i < 2; i++) {
-    for(unsigned int b = m_set.m_bits[i], j = 0; b; j++, b >>= 1) {
+    for(UINT b = m_set.m_bits[i], j = 0; b; j++, b >>= 1) {
       if(b & 1) {
         m_next = i*32 + j;
         return;
@@ -58,7 +58,7 @@ void FieldSetIterator::first() {
 
 void *FieldSetIterator::next() {
   for(m_current = m_next++; m_next < 64; m_next = (m_next<32)?32:64) {
-    for(unsigned int b = m_set.m_bits[m_next/32] >> (m_next%32); b; m_next++, b >>= 1) {
+    for(UINT b = m_set.m_bits[m_next/32] >> (m_next%32); b; m_next++, b >>= 1) {
       if(b & 1) {
         return &m_current;
       }

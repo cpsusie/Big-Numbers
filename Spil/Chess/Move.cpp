@@ -253,10 +253,10 @@ void ExecutableMove::findUniqueString(const Game &game) {
 
   default  :
     { MoveGenerator &mg = game.getMoveGenerator();
-      Move         move;
-      unsigned int sameRowCount     = 0;
-      unsigned int sameColCount     = 0;
-      unsigned int alternativeCount = 0;
+      Move move;
+      UINT sameRowCount     = 0;
+      UINT sameColCount     = 0;
+      UINT alternativeCount = 0;
       for(bool b = mg.firstMove(move); b; b = mg.nextMove(move)) {
         if(move.m_to   == m_to
         && move.m_from != m_from

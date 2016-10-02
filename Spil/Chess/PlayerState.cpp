@@ -368,6 +368,7 @@ int PlayerState::getPieceCount(PieceType pieceType) const {
 }
 
 int PlayerState::getStartPieceCount(PieceType pieceType) { // static
+  DEFINEMETHODNAME;
   switch(pieceType) {
   case King :
   case Queen:
@@ -379,7 +380,7 @@ int PlayerState::getStartPieceCount(PieceType pieceType) { // static
   case Pawn:
     return 8;
   default:
-    throwInvalidArgumentException(_T("getStartPieceCount"), _T("type=%d"), pieceType);
+    throwInvalidArgumentException(method, _T("type=%d"), pieceType);
     return 1;
   }
 }
@@ -439,6 +440,7 @@ PlayerSignature PlayerState::getPlayerSignature() const {
 }
 
 bool PlayerState::isPromotedPawn(const Piece *piece) const {
+  DEFINEMETHODNAME;
 //  if(getPieceCount(Pawn) == 8) {
 //    return false;
 //  }
@@ -461,7 +463,7 @@ bool PlayerState::isPromotedPawn(const Piece *piece) const {
     return false;
 
   default    :
-    throwInvalidArgumentException(_T("isPromotedPawn"), _T("piece.type=%d"), piece->getType());
+    throwInvalidArgumentException(method, _T("piece.type=%d"), piece->getType());
     return false;
   }
 }
@@ -491,7 +493,8 @@ void PlayerState::validatePromotionCount() const {
 }
 
 void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool validatePromotions) const {
-  validatePosition(_T("validateAddPieceAtPosition"), pos);
+  DEFINEMETHODNAME;
+  validatePosition(method, pos);
 
   switch(pieceType) {
   case King  :
@@ -529,7 +532,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
     break;
 
   default    :
-    throwInvalidArgumentException(_T("validateAddPieceAtPosition"), _T("pieceType=%d"), pieceType);
+    throwInvalidArgumentException(method, _T("pieceType=%d"), pieceType);
   }
 }
 

@@ -1406,8 +1406,8 @@ const char EndGameKeyDefinition::pawnIndexToPos[PAWN_POSCOUNT] = {
 #define END_RANGE_WK_CORNERFIELD   (START_RANGE_WK_CORNERFIELD + MAXINDEX_WK_CORNERFIELD)
 
 // Calculates an index in the range [0..3611] for the 2 kings which can be decoded with decodeKKWithPawn.
-unsigned int EndGameKeyDefinition::encodeKKWithPawn(const EndGameKey &key) { // static
-  const unsigned int wki = wkPosToIndex[key.getWhiteKingPosition()];
+UINT EndGameKeyDefinition::encodeKKWithPawn(const EndGameKey &key) { // static
+  const UINT wki = wkPosToIndex[key.getWhiteKingPosition()];
   if(wki < 36) {
     return (wki -  0) * 55 + kkWithPawnPosToIndex[wki][key.getBlackKingPosition()] + START_RANGE_WK_INNERFIELD;
   } else if(wki < 60) {
@@ -1417,8 +1417,8 @@ unsigned int EndGameKeyDefinition::encodeKKWithPawn(const EndGameKey &key) { // 
   }
 }
 
-void EndGameKeyDefinition::decodeKKWithPawn(EndGameKey &key, unsigned int index) { // static
-  unsigned int wki;
+void EndGameKeyDefinition::decodeKKWithPawn(EndGameKey &key, UINT index) { // static
+  UINT wki;
   if(index < START_RANGE_WK_EDGEFIELD) {
     index -= START_RANGE_WK_INNERFIELD;
     key.setWhiteKingPosition(wkIndexToPos[wki = index / 55]);
@@ -1519,8 +1519,8 @@ static const char *leftWKKWithPawnPosToIndex[32] = {
 #define START_RANGE_LEFTWK_CORNERFIELD END_RANGE_LEFTWK_EDGEFIELD
 #define END_RANGE_LEFTWK_CORNERFIELD   (START_RANGE_LEFTWK_CORNERFIELD + MAXINDEX_LEFTWK_CORNERFIELD)
 
-unsigned int EndGameKeyDefinition::encodeLeftWKKWithPawn(const EndGameKey &key) { // static
-  const unsigned int wki = leftWKPosToIndex[key.getWhiteKingPosition()];
+UINT EndGameKeyDefinition::encodeLeftWKKWithPawn(const EndGameKey &key) { // static
+  const UINT wki = leftWKPosToIndex[key.getWhiteKingPosition()];
   if(wki < 18) {
     return (wki -  0) * 55 + leftWKKWithPawnPosToIndex[wki][key.getBlackKingPosition()] + START_RANGE_LEFTWK_INNERFIELD;
   } else if(wki < 30) {
@@ -1530,8 +1530,8 @@ unsigned int EndGameKeyDefinition::encodeLeftWKKWithPawn(const EndGameKey &key) 
   }
 }
 
-void EndGameKeyDefinition::decodeLeftWKKWithPawn(EndGameKey &key, unsigned int index) { // static
-  unsigned int wki;
+void EndGameKeyDefinition::decodeLeftWKKWithPawn(EndGameKey &key, UINT index) { // static
+  UINT wki;
   if(index < START_RANGE_LEFTWK_EDGEFIELD) {
     index -= START_RANGE_LEFTWK_INNERFIELD;
     key.setWhiteKingPosition(leftWKIndexToPos[wki = index / 55]);
@@ -1552,8 +1552,8 @@ void EndGameKeyDefinition::decodeLeftWKKWithPawn(EndGameKey &key, unsigned int i
 
 #ifdef _TEST_MODULE
 
-static unsigned int checkKKWithPawnKey(const EndGameKey &key) {
-  unsigned int index = EndGameKeyDefinition::encodeKKWithPawn(key);
+static UINT checkKKWithPawnKey(const EndGameKey &key) {
+  UINT index = EndGameKeyDefinition::encodeKKWithPawn(key);
   EndGameKey key1;
   EndGameKeyDefinition::decodeKKWithPawn(key1, index);
   if(key1 != key) {
@@ -1562,7 +1562,7 @@ static unsigned int checkKKWithPawnKey(const EndGameKey &key) {
                                                       , index
                                                       , getFieldName(key1.getWhiteKingPosition())
                                                       , getFieldName(key1.getBlackKingPosition()));
-    unsigned int index2 = EndGameKeyDefinition::encodeKKWithPawn(key);
+    UINT index2 = EndGameKeyDefinition::encodeKKWithPawn(key);
     EndGameKey key2;
     EndGameKeyDefinition::decodeKKWithPawn(key2, index2);
   }
@@ -1570,16 +1570,16 @@ static unsigned int checkKKWithPawnKey(const EndGameKey &key) {
 }
 
 void testKKWithPawn() {
-  unsigned int keyCount = 0;
-  unsigned int minIndex = 0xffffffff;
-  unsigned int maxIndex = 0;
+  UINT keyCount = 0;
+  UINT minIndex = 0xffffffff;
+  UINT maxIndex = 0;
   for(int wkPos = 0; wkPos < 64; wkPos++) {
     for(int bkPos = 0; bkPos < 64; bkPos++) {
       if(!KINGSADJACENT(wkPos,bkPos)) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);
-        const unsigned int index = checkKKWithPawnKey(key);
+        const UINT index = checkKKWithPawnKey(key);
         minIndex = min(minIndex, index);
         maxIndex = max(maxIndex, index);
         keyCount++;
@@ -1593,8 +1593,8 @@ void testKKWithPawn() {
 }
 
 
-static unsigned int checkLeftWKKWithPawnKey(const EndGameKey &key) {
-  unsigned int index = EndGameKeyDefinition::encodeLeftWKKWithPawn(key);
+static UINT checkLeftWKKWithPawnKey(const EndGameKey &key) {
+  UINT index = EndGameKeyDefinition::encodeLeftWKKWithPawn(key);
   EndGameKey key1;
   EndGameKeyDefinition::decodeLeftWKKWithPawn(key1, index);
   if(key1 != key) {
@@ -1603,7 +1603,7 @@ static unsigned int checkLeftWKKWithPawnKey(const EndGameKey &key) {
                                                       , index
                                                       , getFieldName(key1.getWhiteKingPosition())
                                                       , getFieldName(key1.getBlackKingPosition()));
-    unsigned int index2 = EndGameKeyDefinition::encodeLeftWKKWithPawn(key);
+    UINT index2 = EndGameKeyDefinition::encodeLeftWKKWithPawn(key);
     EndGameKey key2;
     EndGameKeyDefinition::decodeLeftWKKWithPawn(key2, index2);
   }
@@ -1611,9 +1611,9 @@ static unsigned int checkLeftWKKWithPawnKey(const EndGameKey &key) {
 }
 
 void testLeftWKKWithPawn() {
-  unsigned int keyCount = 0;
-  unsigned int minIndex = 0xffffffff;
-  unsigned int maxIndex = 0;
+  UINT keyCount = 0;
+  UINT minIndex = 0xffffffff;
+  UINT maxIndex = 0;
   for(int wkPos = 0; wkPos < 64; wkPos++) {
     if(IS_KINGSIDE(wkPos)) {
       continue;
@@ -1623,7 +1623,7 @@ void testLeftWKKWithPawn() {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);
-        const unsigned int index = checkLeftWKKWithPawnKey(key);
+        const UINT index = checkLeftWKKWithPawnKey(key);
         minIndex = min(minIndex, index);
         maxIndex = max(maxIndex, index);
         keyCount++;
