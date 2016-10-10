@@ -71,19 +71,11 @@ void D3Scene::initTrans() {
 }
 
 void D3Scene::setFillMode(D3DFILLMODE fillMode) {
-  const D3DFILLMODE oldFillMode = getFillMode();
-  m_fillMode = fillMode;
-  if(m_fillMode != oldFillMode) {
-    notifyPropertyChanged(SP_FILLMODE, &oldFillMode, &m_fillMode);
-  }
+  setProperty(SP_FILLMODE, m_fillMode, fillMode);
 }
 
 void D3Scene::setShadeMode(D3DSHADEMODE shadeMode) {
-  const D3DSHADEMODE oldShadeMode = getShadeMode();
-  m_shadeMode = shadeMode;
-  if(m_shadeMode != oldShadeMode) {
-    notifyPropertyChanged(SP_SHADEMODE, &oldShadeMode, &m_shadeMode);
-  }
+  setProperty(SP_SHADEMODE, m_shadeMode, shadeMode);
 }
 
 void D3Scene::setObjPos(const D3DXVECTOR3 &pos) {
@@ -95,11 +87,9 @@ void D3Scene::setObjPos(const D3DXVECTOR3 &pos) {
 }
 
 void D3Scene::setObjOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  if(dir != m_objectPDUS.getDir() || up != m_objectPDUS.getUp()) {
-    const D3PosDirUpScale oldObj = m_objectPDUS;
-    m_objectPDUS.setOrientation(dir, up);
-    notifyPropertyChanged(SP_OBJECTORIENTATION, &oldObj,  &m_objectPDUS);
-  }
+  D3PosDirUpScale newObj = m_objectPDUS;
+  newObj.setOrientation(dir, up);
+  setProperty(SP_OBJECTORIENTATION, m_objectPDUS,  newObj);
 }
 
 void D3Scene::setObjScale(const D3DXVECTOR3 &scale) {
@@ -119,11 +109,9 @@ void D3Scene::setCameraPos(const D3DXVECTOR3 &pos) {
 }
 
 void D3Scene::setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  const D3PosDirUpScale oldCam = m_cameraPDUS;
-  m_cameraPDUS.setOrientation(dir, up);
-  if(m_cameraPDUS != oldCam) {
-    notifyPropertyChanged(SP_CAMERAORIENTATION, &oldCam,  &m_cameraPDUS);
-  }
+  D3PosDirUpScale newCam = m_cameraPDUS;
+  newCam.setOrientation(dir, up);
+  setProperty(SP_CAMERAORIENTATION, m_cameraPDUS, newCam);
 }
 
 void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
@@ -131,23 +119,19 @@ void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
 }
 
 void D3Scene::initObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
-  const D3PosDirUpScale oldObj = m_objectPDUS;
-  m_objectPDUS.setPos(pos);
-  m_objectPDUS.setOrientation(dir, up);
-  m_objectPDUS.setScale(scale);
-  if(m_objectPDUS != oldObj) {
-    notifyPropertyChanged(SP_OBJECTORIENTATION, &oldObj, &m_objectPDUS);
-  }
+  D3PosDirUpScale newObj = m_objectPDUS;
+  newObj.setPos(pos);
+  newObj.setOrientation(dir, up);
+  newObj.setScale(scale);
+  setProperty(SP_OBJECTORIENTATION, m_objectPDUS, newObj);
 }
 
 void D3Scene::initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
-  const D3PosDirUpScale oldCam = m_cameraPDUS;
-  m_cameraPDUS.setPos(pos);
-  m_cameraPDUS.setOrientation(lookAt - pos, up);
-  m_cameraPDUS.setScale(D3DXVECTOR3(1,1,1));
-  if(m_cameraPDUS != oldCam) {
-    notifyPropertyChanged(SP_CAMERAORIENTATION, &oldCam,  &m_cameraPDUS);
-  }
+  D3PosDirUpScale newCam = m_cameraPDUS;
+  newCam.setPos(pos);
+  newCam.setOrientation(lookAt - pos, up);
+  newCam.setScale(D3DXVECTOR3(1,1,1));
+  setProperty(SP_CAMERAORIENTATION, m_cameraPDUS, newCam);
 }
 
 void D3Scene::updateViewMatrix() {
@@ -175,7 +159,7 @@ void D3Scene::updateProjMatrix() {
 }
 
 void D3Scene::setProjMatrix(const D3DXMATRIX &m) {
-  const D3DXMATRIX currentProj = getProjMatrix();;
+  const D3DXMATRIX currentProj = getProjMatrix();
   setTransformation(D3DTS_PROJECTION, m);
   if(m != currentProj) {
     notifyPropertyChanged(SP_PROJECTIONTRANSFORMATION, &currentProj, &m);
@@ -514,11 +498,7 @@ String toString(const D3DCOLORVALUE &c) {
 }
 
 void D3Scene::setMaterial(const MATERIAL &material) {
-  const MATERIAL oldMaterial = m_material;
-  m_material = material;
-  if(m_material != oldMaterial) {
-    notifyPropertyChanged(SP_MATERIALPARAMETERS, &oldMaterial, &m_material);
-  }
+  setProperty(SP_MATERIALPARAMETERS, m_material, material);
 }
 
 String D3Scene::getMaterialString() const {
@@ -526,11 +506,7 @@ String D3Scene::getMaterialString() const {
 }
 
 void D3Scene::setBackgroundColor(D3DCOLOR color) {
-  const D3DCOLOR oldBackgroundColor = m_backgroundColor;
-  m_backgroundColor = color;
-  if(m_backgroundColor != oldBackgroundColor) {
-    notifyPropertyChanged(SP_BACKGROUNDCOLOR, &oldBackgroundColor, &m_backgroundColor);
-  }
+  setProperty(SP_BACKGROUNDCOLOR, m_backgroundColor, color);
 }
 
 void D3Scene::render() {
@@ -557,9 +533,7 @@ void D3Scene::render() {
   V(m_device->EndScene());
   V(m_device->Present(NULL, NULL, NULL, NULL));
 
-  const Timestamp oldRenderTime = m_renderTime;
-  m_renderTime = Timestamp();
-  notifyPropertyChanged(SP_RENDERTIME, &oldRenderTime, &m_renderTime);
+  setProperty(SP_RENDERTIME, m_renderTime, Timestamp());
 }
 
 D3Ray D3Scene::getPickRay(const CPoint &point) {
@@ -617,7 +591,7 @@ void D3Scene::addSceneObject(D3SceneObject *obj) {
 }
 
 void D3Scene::removeSceneObject(D3SceneObject *obj) {
-  int index = (int)m_objectArray.getFirstIndex(obj);
+  const int index = (int)m_objectArray.getFirstIndex(obj);
   if(index >= 0) {
     m_objectArray.remove(index);
   }
@@ -631,14 +605,9 @@ void D3Scene::removeAllSceneObjects() {
 
 void D3Scene::notifyIfObjectArrayChanged() {
   const int newCount = (int)m_objectArray.size();
-  if(newCount != m_oldObjectCount) {
-    notifyPropertyChanged(SP_OBJECTCOUNT, &m_oldObjectCount, &newCount);
-    m_oldObjectCount = newCount;
-  }
+  setProperty(SP_OBJECTCOUNT, m_oldObjectCount, newCount);
 }
 
-void D3Scene::setAnimationFrameIndex(int oldValue, int newValue) {
-  if(newValue != oldValue) {
-    notifyPropertyChanged(SP_ANIMATIONFRAMEINDEX, &oldValue, &newValue);
-  }
+void D3Scene::setAnimationFrameIndex(int &oldValue, int newValue) {
+  setProperty(SP_ANIMATIONFRAMEINDEX, oldValue, newValue);
 }

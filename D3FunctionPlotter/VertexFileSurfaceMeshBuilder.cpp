@@ -109,7 +109,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
       VertexWithFaceArray   &v  = vertexArray[i];
       const CompactIntArray &fa = v.m_faceArray;
       D3DXVECTOR3 normal(0.0f,0.0f,0.0f);
-      for(int f = 0; f < fa.size(); f++) {
+      for(size_t f = 0; f < fa.size(); f++) {
         const Triangle &face = faceArray[fa[f]];
         normal += face.m_area * face.m_normal;
       }

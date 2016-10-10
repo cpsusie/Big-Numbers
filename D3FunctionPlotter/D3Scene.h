@@ -261,7 +261,7 @@ public:
     return getTransformation(D3DTS_PROJECTION);
   }
 
-  void setAnimationFrameIndex(int oldValue, int newValue);
+  void setAnimationFrameIndex(int &oldValue, int newValue);
   D3DCOLOR getGlobalAmbientColor() const;
   void setGlobalAmbientColor(D3DCOLOR color);
   void enableSpecular(bool enabled);
