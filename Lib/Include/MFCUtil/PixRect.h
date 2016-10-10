@@ -56,9 +56,12 @@ protected:
   D3DLOCKED_RECT    m_lockedRect;
   D3DSURFACE_DESC   m_desc;
 #ifdef _DEBUG
-  void inline checkPoint(const TCHAR *className, const TCHAR *function, UINT x, UINT y) const {
+  void inline checkPoint(const TCHAR *method, UINT x, UINT y) const {
     if (x >= m_desc.Width || y >= m_desc.Height) {
-      throwException(_T("%s::%s(%u,%u) outside pixRect. Size=(%d,%d)"), className, function, x, y, m_desc.Width, m_desc.Height);
+      throwException(_T("%s(%u,%u) outside pixRect. Size=(%u,%u)")
+                    ,method
+                    ,x, y
+                    ,m_desc.Width, m_desc.Height);
     }
   }
 #endif
@@ -82,7 +85,6 @@ public:
 
 class DWordPixelAccessor : public PixelAccessor {
 private:
-  DECLARECLASSNAME;
   DWORD *m_pixels;
   UINT   m_pixelsPerLine;
 public:
@@ -397,6 +399,10 @@ public:
 
   void setSize(const CSize &size); // in pixels
 
+  inline bool hasAlphaChannel() const {
+    return hasAlphaChannel(getPixelFormat());
+  } 
+
   inline D3DFORMAT getPixelFormat() const {
     return m_desc.Format;
   }
@@ -404,7 +410,9 @@ public:
     return m_desc.Pool;
   }
 
+  static bool hasAlphaChannel(D3DFORMAT format);
   static D3DFORMAT getPixelFormat(HBITMAP bm);
+  static const TCHAR *getFormatName(D3DFORMAT format);
 
   CSize getSizeInMillimeters(HDC hdc = NULL) const;
 

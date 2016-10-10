@@ -445,6 +445,33 @@ LPDIRECT3DTEXTURE &PixRect::getTexture() {
 }
 
 void PixRect::checkHasAlphaChannel() const { // throw Exception if no alpha-channel
+  if (!hasAlphaChannel()) {
+    throwException(_T("PixRect has no alpha-channel. PixelFormat=%s"), getFormatName(getPixelFormat()));
+  }
+}
+
+bool PixRect::hasAlphaChannel(D3DFORMAT format) { //static
+  switch (format) {
+  case D3DFMT_A8R8G8B8      :
+  case D3DFMT_A1R5G5B5      :
+  case D3DFMT_A4R4G4B4      :
+  case D3DFMT_A8            :
+  case D3DFMT_A8R3G3B2      :
+  case D3DFMT_A2B10G10R10   :
+  case D3DFMT_A8B8G8R8      :
+  case D3DFMT_A2R10G10B10   :
+  case D3DFMT_A16B16G16R16  :
+  case D3DFMT_A8P8          :
+  case D3DFMT_A8L8          :
+  case D3DFMT_A4L4          :
+  case D3DFMT_A2W10V10U10   :
+  case D3DFMT_MULTI2_ARGB8  :
+  case D3DFMT_A16B16G16R16F :
+  case D3DFMT_A32B32G32R32F :
+    return true;
+  default:
+    return false;
+  }
 }
 
 void PixRect::setSize(const CSize &size) {

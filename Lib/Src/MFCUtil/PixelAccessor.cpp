@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <MyUtil.h>
-#include <Stack.h>
+#include <CompactStack.h>
 #include <MFCUtil/PixRect.h>
 
 PixelAccessor::PixelAccessor(PixRect *pixRect, DWORD flags) : m_pixRect(*pixRect) {
@@ -40,7 +40,7 @@ void PixelAccessor::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) 
   }
   const int width  = m_pixRect.getWidth();
   const int height = m_pixRect.getHeight();
-  Stack<CPoint> stack;
+  CompactStack<CPoint> stack(1000);
   stack.push(p);
   while(!stack.isEmpty()) {
     CPoint np = stack.pop();
@@ -194,36 +194,28 @@ public:
 
 void BytePixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("BytePixelAccessor::setPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   m_pixels[m_pixelsPerLine * y + x] = D3DColorToByteColor(color);
 }
 
 D3DCOLOR BytePixelAccessor::getPixel(UINT x, UINT y) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("BytePixelAccessor::getPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   return byteColorToD3DColor(m_pixels[m_pixelsPerLine * y + x]);
 }
 
 void BytePixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
 #ifdef _DEBUG
-  if((UINT)p.x >= m_ddsd.dwWidth || (UINT)p.y >= m_ddsd.dwHeight) {
-    throwException(_T("BytePixelAccessor::setPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   m_pixels[m_pixelsPerLine * p.y + p.x] = D3DColorToByteColor(color);
 }
 
 D3DCOLOR BytePixelAccessor::getPixel(const CPoint &p) {
 #ifdef _DEBUG
-  if(((UINT)p.x >= m_ddsd.dwWidth) || ((UINT)p.y >= m_ddsd.dwHeight)) {
-    throwException(_T("BytePixelAccessor::getPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   return byteColorToD3DColor(m_pixels[m_pixelsPerLine * p.y + p.x]);
 }
@@ -245,67 +237,57 @@ public:
 
 void WordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("WordPixelAccessor::setPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   m_pixels[m_pixelsPerLine * y + x] = D3DColorToShortColor(color);
 }
 
 D3DCOLOR WordPixelAccessor::getPixel(UINT x, UINT y) {
 #ifdef _DEBUG
-  if(x >= m_ddsd.dwWidth || y >= m_ddsd.dwHeight) {
-    throwException(_T("WordPixelAccessor::getPixel(%u,%u) outside pixrect. Size=(%d,%d)"),x,y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   return shortColorToD3DColor(m_pixels[m_pixelsPerLine * y + x]);
 }
 
 void WordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
 #ifdef _DEBUG
-  if(((UINT)p.x >= m_ddsd.dwWidth) || ((UINT)p.y >= m_ddsd.dwHeight)) {
-    throwException(_T("WordPixelAccessor::setPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   m_pixels[m_pixelsPerLine * p.y + p.x] = D3DColorToShortColor(color);
 }
 
 D3DCOLOR WordPixelAccessor::getPixel(const CPoint &p) {
 #ifdef _DEBUG
-  if(((UINT)p.x >= m_ddsd.dwWidth) || ((UINT)p.y >= m_ddsd.dwHeight)) {
-    throwException(_T("WordPixelAccessor::getPixel(%d,%d) outside pixrect. Size=(%d,%d)"),p.x,p.y,m_ddsd.dwWidth,m_ddsd.dwHeight);
-  }
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   return shortColorToD3DColor(m_pixels[m_pixelsPerLine * p.y + p.x]);
 }
 #endif
 
-DEFINECLASSNAME(DWordPixelAccessor);
-
 void DWordPixelAccessor::setPixel(UINT x, UINT y, D3DCOLOR color) {
 #ifdef _DEBUG
-  checkPoint(s_className, __TFUNCTION__, x, y);
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   m_pixels[m_pixelsPerLine * y + x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(UINT x, UINT y) {
 #ifdef _DEBUG
-  checkPoint(s_className, __TFUNCTION__, x, y);
+  checkPoint(__TFUNCTION__, x, y);
 #endif
   return m_pixels[m_pixelsPerLine * y + x];
 }
 
 void DWordPixelAccessor::setPixel(const CPoint &p, D3DCOLOR color) {
 #ifdef _DEBUG
-  checkPoint(s_className, __TFUNCTION__, p.x, p.y);
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   m_pixels[m_pixelsPerLine * p.y + p.x] = color;
 }
 
 D3DCOLOR DWordPixelAccessor::getPixel(const CPoint &p) {
 #ifdef _DEBUG
-  checkPoint(s_className, __TFUNCTION__, p.x, p.y);
+  checkPoint(__TFUNCTION__, p.x, p.y);
 #endif
   return m_pixels[m_pixelsPerLine * p.y + p.x];
 }
