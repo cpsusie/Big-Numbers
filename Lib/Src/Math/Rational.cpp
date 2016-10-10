@@ -32,7 +32,7 @@ Rational::Rational(const __int64 &n) : m_numerator(n), m_denominator(1) {
 Rational::Rational(int n) : m_numerator(n), m_denominator(1) {
 }
 
-Rational::Rational(unsigned int n) : m_numerator(n), m_denominator(1) {
+Rational::Rational(UINT n) : m_numerator(n), m_denominator(1) {
 }
 
 // This algorithm is borrowed from gimpzoommodel.c in LIBGIMP:
@@ -40,7 +40,7 @@ Rational::Rational(unsigned int n) : m_numerator(n), m_denominator(1) {
 //
 // See also http://www.virtualdub.org/blog/pivot/entry.php?id=81
 // for a discussion of calculating continued fractions by convergeants.
-Rational::Rational(double d, unsigned int maxND) {
+Rational::Rational(double d, UINT maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %le cannot be contained in a Rational with maxND=%lu");
 
@@ -327,8 +327,8 @@ int rationalCmp(const Rational &r1, const Rational &r2) {
   const int sign1 = sign(r1.m_numerator);
   const int c     = sign1 - sign(r2.m_numerator);
   if(c != 0) return c;
-  if(abs(r1.m_numerator) > (UINT)UINT_MAX
-  || abs(r2.m_numerator) > (UINT)UINT_MAX
+  if(abs(r1.m_numerator)                > (UINT)UINT_MAX
+  || abs(r2.m_numerator)                > (UINT)UINT_MAX
   || (unsigned __int64)r1.m_denominator > (UINT)UINT_MAX
   || (unsigned __int64)r2.m_denominator > (UINT)UINT_MAX) {
     return sign(getDouble(r1) - getDouble(r2));

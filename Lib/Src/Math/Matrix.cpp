@@ -3,7 +3,7 @@
 #include <Math/Matrix.h>
 
 void setToRandom(Vector &v) {
-  for(unsigned int i = 0; i < v.getDimension(); i++) {
+  for(UINT i = 0; i < v.getDimension(); i++) {
     setToRandom(v[i]);
   }
 }

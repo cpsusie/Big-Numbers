@@ -4,7 +4,7 @@
 
 void randomize() {
   const __int64 seed = getRandomSeed();
-  srand((unsigned int)seed);
+  srand((UINT)seed);
   _standardRandomGenerator.setSeed(seed);
 }
 

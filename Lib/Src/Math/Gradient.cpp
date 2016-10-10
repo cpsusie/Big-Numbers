@@ -11,7 +11,7 @@ Vector getGradient(VectorToRFunction &f, const Vector &x0, const Real &y0) {
   Vector x1(x0);
   Vector result(x1.getDimension());
 
-  for(unsigned int i = 0; i < x1.getDimension(); i++) {
+  for(UINT i = 0; i < x1.getDimension(); i++) {
     Real save = x1[i];
     Real eps  = (save == 0) ? EPSILON : EPSILON*save;
     x1[i] += eps;
@@ -26,7 +26,7 @@ Vector getGradient1(VectorToRFunction &f, const Vector &x) {
   Vector x1(x);
 
   Vector result(x.getDimension());
-  for(unsigned int i = 0; i < x.getDimension(); i++) {
+  for(UINT i = 0; i < x.getDimension(); i++) {
     Real save = x[i];
     Real eps  = (save == 0) ? EPSILON : EPSILON*save;
     x1[i] += eps;

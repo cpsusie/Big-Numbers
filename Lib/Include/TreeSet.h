@@ -182,9 +182,9 @@ public:
   }
 };
 
-class UIntTreeSet : public TreeSet<unsigned int> {
+class UIntTreeSet : public TreeSet<UINT> {
 public:
-  UIntTreeSet() : TreeSet<unsigned int>(uintHashCmp) {
+  UIntTreeSet() : TreeSet<UINT>(uintHashCmp) {
   }
 };
 

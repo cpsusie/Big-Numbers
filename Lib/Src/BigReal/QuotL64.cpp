@@ -72,7 +72,7 @@ BigReal &BigReal::approxQuot64Abs(const BigReal &x, const unsigned __int64 &y, B
 }
 
 // Same as getFirst32, but k = [0..MAXDIGITS_INT64] = [0..19]
-unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) const {
+unsigned __int64 BigReal::getFirst64(const UINT k, BRExpoType *scale) const {
 #ifdef _DEBUG
   DEFINEMETHODNAME;
   if(k > MAXDIGITS_INT64) {
@@ -89,7 +89,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
   int              tmpScale = 0;
   unsigned __int64 result   = p->n;
   int              digits   = getDecimalDigitCount(p->n), firstDigits = digits;
-  if((unsigned int)digits >= k) {
+  if((UINT)digits >= k) {
     result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
     if(scale) {
       while(result % 10 == 0) {
@@ -99,7 +99,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
     }
   } else { // digits < k
     if(scale) {
-      for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
         if(p) {
           const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
@@ -114,7 +114,7 @@ unsigned __int64 BigReal::getFirst64(const unsigned int k, BRExpoType *scale) co
         tmpScale++;
       }
     } else { // scale == NULL
-      for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
         const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
         result *= p10;
         if(p) {

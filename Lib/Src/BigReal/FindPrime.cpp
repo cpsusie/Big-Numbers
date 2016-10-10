@@ -91,7 +91,7 @@ private:
 public:
   PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler);
   ~PrimeSearcher();
-  unsigned int run();
+  UINT run();
 };
 
 PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRabinHandler *handler) 
@@ -119,7 +119,7 @@ PrimeSearcher::~PrimeSearcher() {
   BigRealThreadPool::releaseDigitPool(m_pool);
 }
 
-unsigned int PrimeSearcher::run() {
+UINT PrimeSearcher::run() {
   try {
     BigInt n = randomOddInteger(m_digitCount, m_rnd, m_pool);
     const Sieve sv(n);

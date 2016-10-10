@@ -18,7 +18,7 @@ void PixRect::fillTransparent(const CPoint &p, unsigned char alpha) { // alpha =
 
   const int width  = getWidth();
   const int height = getHeight();
-  PixRect *copy = clone(true);
+  PixRect *copy = clone(getType(), true);
   D3DCOLOR tmpColor = ~getPixel(p);
   copy->fill(p,tmpColor);
   copy->rop( 0,0,width,height,SRCINVERT,this,0,0);

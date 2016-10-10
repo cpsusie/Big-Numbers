@@ -174,7 +174,7 @@ void StringPool::setIndexCapacity(size_t capacity) {
   m_index         = allocateIndex(capacity);
 
   for(StringPoolNodePage *page = m_firstPage; page; page = page->m_next) {
-    for(unsigned int i = 0; i < page->m_count; i++) {
+    for(UINT i = 0; i < page->m_count; i++) {
       StringPoolNode *n = page->m_nodes+i;
       const unsigned long hashCode = strHash(getNodeString(n)) % m_indexCapacity;
       n->m_next = m_index[hashCode];

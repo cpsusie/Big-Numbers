@@ -25,7 +25,7 @@ String toString(int n, int precision, int width, int flags) {
   return stream;
 }
 
-String toString(unsigned int n, int precision, int width, int flags) {
+String toString(UINT n, int precision, int width, int flags) {
   StrStream stream(precision,width,flags);
   stream << n;
   return stream;

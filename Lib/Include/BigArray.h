@@ -9,8 +9,8 @@ template <class T> class BigArray {
 private:
   class PageMapElement {
   public:
-    unsigned int             m_pageIndex : 31; // We can have max 2^31 = 2.147.483.648 pages, each containing a number of elements. Pagesize about 4096 bytes.
-    unsigned int             m_loaded    : 1;  // 1 => page is in memory, 0 => swapped out, ie, must load before accessing its elements
+    UINT                     m_pageIndex : 31; // We can have max 2^31 = 2.147.483.648 pages, each containing a number of elements. Pagesize about 4096 bytes.
+    UINT                     m_loaded    : 1;  // 1 => page is in memory, 0 => swapped out, ie, must load before accessing its elements
     mutable unsigned __int64 m_lastReference;
 
     PageMapElement() {
@@ -113,7 +113,7 @@ private:
   size_t                               m_size;              // total number of elements in array
   mutable CompactArray<PageMapElement> m_pageMap;           // size = number of pages
   mutable BitSet                       m_freeFilePages;
-  mutable unsigned int                 m_pageFileSize;      // In pages. NOT bytes
+  mutable UINT                         m_pageFileSize;      // In pages. NOT bytes
   mutable unsigned __int64             m_referenceCounter;  // Incremented each time operator[] (non const) is called, and saved to PageMapElement. 
   mutable MemoryPage                   m_memoryPage[MEMORYPAGE_COUNT]; 
                                                             // To find a good page to swap, search for the loaded page with the lowest m_lastReference
@@ -125,7 +125,7 @@ private:
     return index / _ELEMENTS_PER_PAGE;
   }
 
-  unsigned int getPageOffset(size_t index) const {
+  UINT getPageOffset(size_t index) const {
     return index % _ELEMENTS_PER_PAGE;
   }
 
@@ -168,7 +168,7 @@ private:
     if(m_pageFile == NULL) {
       openPageFile();
     }
-    const unsigned int newPageIndex = m_pageFileSize++;
+    const UINT newPageIndex = m_pageFileSize++;
     if(m_pageFileSize >= m_freeFilePages.getCapacity()) {
       m_freeFilePages.setCapacity(2*m_pageFileSize);
     }
@@ -207,7 +207,7 @@ private:
     m_freeFilePages.remove(index);
   }
 
-  void allocatePage(unsigned int pageIndex) const {
+  void allocatePage(UINT pageIndex) const {
     assert(pageIndex < ARRAYSIZE(m_memoryPage));
     m_memoryPage[pageIndex].allocate();
   }
@@ -266,7 +266,7 @@ private:
 
       MemoryPage &mp = m_memoryPage[pmo->m_pageIndex];
       ArrayPage  tmpPage;
-      const unsigned int filePageIndex = pmi.m_pageIndex;
+      const UINT filePageIndex = pmi.m_pageIndex;
 
       readPage( filePageIndex, &tmpPage);
       writePage(filePageIndex, mp.m_page);

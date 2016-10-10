@@ -19,7 +19,7 @@ public:
     return e;
   }
 
-  T &top(unsigned int index = 0) {
+  T &top(UINT index = 0) {
     int i = (int)size() - 1 - index;
     if(i < 0) {
       throwException(_T("Cannot get element %d of stack with height %d"), index, size());
@@ -27,7 +27,7 @@ public:
     return (*this)[i];
   }
 
-  const T &top(unsigned int index = 0) const {
+  const T &top(UINT index = 0) const {
     int i = (int)size() - 1 - index;
     if(i < 0) {
       throwException(_T("Cannot get element %d of stack with height %d"), index, size());

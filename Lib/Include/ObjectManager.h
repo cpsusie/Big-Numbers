@@ -19,6 +19,5 @@ public:
   AbstractObjectManager *clone() const {
     return new ObjectManager<E>();
   }
-
 };
 

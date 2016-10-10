@@ -62,7 +62,7 @@ public:
     return 0;
   }
 
-  virtual unsigned int getEstimatedSecondsLeft();
+  virtual UINT getEstimatedSecondsLeft();
 
   const Timestamp &getJobStartTime() const {
     return m_jobStartTime;

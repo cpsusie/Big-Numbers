@@ -28,7 +28,7 @@ void Tableau::allocate(size_t constraintCount) {
   m_artificialCount = 0;
 
   m_table.clear();
-  for(unsigned int row = 0; row <= constraintCount; row++) {
+  for(UINT row = 0; row <= constraintCount; row++) {
     m_table.add(TableauRow(getMaxColumnCount(constraintCount)));
   }
 
@@ -238,10 +238,10 @@ void Tableau::preparePhase1() {
 
   int slackIndex = 1;
   for(int row = 1; row <= constraintCount; row++) {
-    for(unsigned int index = 1; index <= m_slackCount; index++) { // Clear Slack matrix
+    for(UINT index = 1; index <= m_slackCount; index++) { // Clear Slack matrix
       slackVar(row,index) = 0;
     }
-    for(unsigned int index = 1; index <= m_artificialCount; index++) {         // Clear Artificial matrix
+    for(UINT index = 1; index <= m_artificialCount; index++) {         // Clear Artificial matrix
       artificalVar(row,index) = 0;
     }
 
@@ -266,7 +266,7 @@ void Tableau::preparePhase1() {
   for(int col = 1; col <= getXCount(); col++) {
     objectFactor(col) = 0;
   }
-  for(unsigned int index = 1; index <= m_slackCount; index++) {
+  for(UINT index = 1; index <= m_slackCount; index++) {
     objectFactor(getSlackColumn(index)) = 0;
   }
 }
@@ -823,7 +823,7 @@ SimplexRelation Tableau::reverseRelation(SimplexRelation relation) { // static
   return EQUALS;
 }
 
-TableauRow::TableauRow(unsigned int size) {
+TableauRow::TableauRow(UINT size) {
   m_a = Tableau::createRealArray(size);
   m_basisVariable = 0;
   m_relation = EQUALS;

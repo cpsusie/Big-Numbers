@@ -31,7 +31,7 @@ static String translateExceptionCode(int code) {
   }
 }
 
-void exceptionTranslator(unsigned int u, EXCEPTION_POINTERS *pExp) {
+void exceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp) {
   throwException(translateExceptionCode(pExp->ExceptionRecord->ExceptionCode));
 }
 

@@ -30,7 +30,7 @@ String sprintbin(int i) {
   SPRINTBIN(i);
 }
 
-String sprintbin(unsigned int i) {
+String sprintbin(UINT i) {
   SPRINTBIN(i);
 }
 

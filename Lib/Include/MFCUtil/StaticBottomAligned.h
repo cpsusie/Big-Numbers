@@ -19,18 +19,12 @@ public:
     }
 public:
 
-	//{{AFX_VIRTUAL(CStaticBottomAligned)
-	//}}AFX_VIRTUAL
-
 public:
 	virtual ~CStaticBottomAligned();
 
 protected:
-	//{{AFX_MSG(CStaticBottomAligned)
 	afx_msg void OnPaint();
-	//}}AFX_MSG
 
 	DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

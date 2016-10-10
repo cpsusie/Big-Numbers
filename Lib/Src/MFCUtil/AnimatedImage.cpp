@@ -291,11 +291,11 @@ void AnimatedImage::clearDisposeTable() {
   m_disposeTable.clear();
 }
 
-void AnimatedImage::paintFrames(const CPoint &p, unsigned int last) {
+void AnimatedImage::paintFrames(const CPoint &p, UINT last) {
   if(!isLoaded() || isPlaying()) {
     return;
   }
-  if(last >= (unsigned int)m_frameTable.size()) {
+  if(last >= (UINT)m_frameTable.size()) {
     last = (int)m_frameTable.size()-1;
   }
   if(hasSavedBackground() && (m_background->getSize() != m_size)) {
@@ -307,7 +307,7 @@ void AnimatedImage::paintFrames(const CPoint &p, unsigned int last) {
   if(m_lastPaintedFrame != NULL) {
     m_lastPaintedFrame->dispose();
   }
-  for(unsigned int i = 0; i <= last; i++) {
+  for(UINT i = 0; i <= last; i++) {
     const GifFrame &frame = m_frameTable[i];
     frame.paint();
     if(i < last) {
@@ -336,7 +336,7 @@ void AnimatedImage::paintAllFrames(const CRect &r) {
   double       scaleFactor;
   CSize        newSize;
   int          fpl;
-  unsigned int maxArea = 0;
+  UINT         maxArea = 0;
 
 //  m_comment = format("imageCount:%2d  rSize:(%3d,%3d)\r\n", n, rSize.cx, rSize.cy);
 
@@ -352,7 +352,7 @@ void AnimatedImage::paintAllFrames(const CRect &r) {
     double       sf  = min(sfx, sfy);
 
     const CSize  psz  = CSize(floor(sf * prSize.cx) + 1, floor(sf * prSize.cy) + 1);
-    const unsigned int area = getArea(psz);;
+    const UINT   area = getArea(psz);;
     const CSize dstSz(framesPerLine * psz.cx-1, lineCount * psz.cy-1);
 /*
     const CSize rightWaste( rSize.cx - dstSz.cx             , fullLines * psz.cy  );
@@ -463,7 +463,7 @@ void AnimationThread::stopLoop() {
   }
 }
 
-unsigned int AnimationThread::run() {
+UINT AnimationThread::run() {
   while(!m_killed) {
     const int imageCount = m_owner->getFrameCount();
     for(m_stopSignal = false, m_frameIndex = 0; !m_stopSignal; m_frameIndex = (m_frameIndex + 1) % imageCount) {
@@ -496,7 +496,7 @@ void GifFrame::dispose() const {
   case DISPOSAL_UNSPECIFIED:       // No disposal specified
   case DISPOSE_DO_NOT      :       // Leave image in place
     if(!m_owner->isDisposeTableFull()) {
-      m_owner->addToDisposeTable(m_owner->m_workPr->clone(true));
+      m_owner->addToDisposeTable(m_owner->m_workPr->clone(m_owner->m_workPr->getType(), true));
     }
     return;
   case DISPOSE_BACKGROUND  :       // Set area to background color

@@ -22,7 +22,7 @@ void BigReal::init(int n) {
   }
 }
 
-void BigReal::init(unsigned int n) {
+void BigReal::init(UINT n) {
   init();
   if(n) {
     m_expo = -1;

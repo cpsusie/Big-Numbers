@@ -12,6 +12,6 @@ public:
   TeeOutputStream(const TeeOutputStream &src);            // not defined. TeeOutputStream not cloneable
   TeeOutputStream &operator=(const TeeOutputStream &src); // not defined. TeeOutputStream not cloneable
 
-  void putBytes(const BYTE *src, unsigned int n);
+  void putBytes(const BYTE *src, UINT n);
   void putByte(BYTE b);
 };

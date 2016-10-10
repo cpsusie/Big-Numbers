@@ -7,7 +7,7 @@ private:
   const String             m_name;
   IntHashMap<UINT>         m_map;
   UINT                     m_callCount;
-  unsigned int             m_maxInt;
+  UINT                     m_maxInt;
   double                   m_maxDouble;
 public:
   CallCounter(const String &name) : m_name(name), m_callCount(0), m_maxInt(0), m_maxDouble(0) {
@@ -17,10 +17,10 @@ public:
   inline void incr() {
     m_callCount++;
   }
-  inline void count(unsigned int n) {
+  inline void count(UINT n) {
     m_callCount += n;
   }
-  inline void updateMax(unsigned int v) {
+  inline void updateMax(UINT v) {
     m_callCount++;
     if(v > m_maxInt) m_maxInt = v;
   }

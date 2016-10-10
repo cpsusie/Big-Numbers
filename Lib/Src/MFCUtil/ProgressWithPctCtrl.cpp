@@ -5,8 +5,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 #pragma warning(disable : 4244)
@@ -19,9 +17,7 @@ CProgressWithPctCtrl::~CProgressWithPctCtrl() {
 }
 
 BEGIN_MESSAGE_MAP(CProgressWithPctCtrl, CProgressCtrl)
-	//{{AFX_MSG_MAP(CProgressWithPctCtrl)
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 DEFINECLASSNAME(CProgressWithPctCtrl);

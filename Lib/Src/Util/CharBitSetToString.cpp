@@ -51,11 +51,11 @@ public:
 
 class EscapedAsciiFormater : public CharacterFormater {
 private:
-  const unsigned int m_maxPrintable;
-  const bool         m_useHex;
+  const UINT m_maxPrintable;
+  const bool m_useHex;
 public:
   String formatChar(_TUCHAR ch);
-  EscapedAsciiFormater(unsigned int maxPrintable, bool useHex) : m_maxPrintable(maxPrintable), m_useHex(useHex) {
+  EscapedAsciiFormater(UINT maxPrintable, bool useHex) : m_maxPrintable(maxPrintable), m_useHex(useHex) {
   }
 };
 

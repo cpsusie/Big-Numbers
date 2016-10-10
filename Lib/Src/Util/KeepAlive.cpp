@@ -11,7 +11,7 @@ public:
     return m_flags;
   }
 
-  unsigned int run();
+  UINT run();
 };
 
 KeepAliveThread::KeepAliveThread() {
@@ -19,7 +19,7 @@ KeepAliveThread::KeepAliveThread() {
   m_flags = ES_CONTINUOUS | ES_SYSTEM_REQUIRED;
 }
 
-unsigned int KeepAliveThread::run() {
+UINT KeepAliveThread::run() {
   for(;;) {
     setExecutionState(m_flags);
     Sleep(60000);

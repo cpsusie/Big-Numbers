@@ -28,7 +28,7 @@ String format1000(int n) {
   return result;
 }
 
-String format1000(unsigned int n) {
+String format1000(UINT n) {
   TCHAR temp[40];
   _stprintf(temp, _T("%u"), n);
   TCHAR result[200];
@@ -42,7 +42,7 @@ String format1000(long n) {
 }
 
 String format1000(unsigned long n) {
-  return format1000((unsigned int)n);
+  return format1000((UINT)n);
 }
 
 String format1000(__int64 n) {

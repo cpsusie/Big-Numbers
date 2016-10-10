@@ -4,16 +4,16 @@
 
 class SigmoidIterator {
 private:
-  const unsigned int   m_steps;
+  const UINT           m_steps;
   double               m_current;
-  unsigned int         m_stepCounter;
+  UINT                 m_stepCounter;
   LinearTransformation m_tr;
   static double sigmoid(double x);
 public:
-  SigmoidIterator(double from, double to, unsigned int steps);
+  SigmoidIterator(double from, double to, UINT steps);
   bool hasNext() const;
   double next();
-  unsigned int getSteps() const {
+  UINT getSteps() const {
     return m_steps;
   }
 };

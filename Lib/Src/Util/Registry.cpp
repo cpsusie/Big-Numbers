@@ -448,10 +448,10 @@ void RegistryKey::getValue(const String &valueName, long &value) const {
   }
 }
 
-void RegistryKey::getValue(const String &valueName, unsigned int &value) const {
+void RegistryKey::getValue(const String &valueName, UINT &value) const {
   unsigned long tmp;
   getValue(valueName, tmp);
-  value = (unsigned int)tmp;
+  value = (UINT)tmp;
 }
 
 void RegistryKey::getValue(const String &valueName, int &value) const {
@@ -539,8 +539,8 @@ int RegistryKey::getInt(const String &name, int defaultValue) const {
   return result;
 }
 
-unsigned int RegistryKey::getUint(const String &name, unsigned int defaultValue) const {
-  unsigned int result;
+UINT RegistryKey::getUint(const String &name, UINT defaultValue) const {
+  UINT result;
   try {
     getValue(name, result);
   } catch(Exception) {
@@ -632,7 +632,7 @@ void RegistryKey::setValue(const String &valueName, long value, unsigned long ty
   checkResult(result, method, _T("RegSetValueEx"), valueName);
 }
 
-void RegistryKey::setValue(const String &valueName, unsigned int value, unsigned long type) const {
+void RegistryKey::setValue(const String &valueName, UINT value, unsigned long type) const {
   setValue(valueName, (unsigned long)value, type);
 }
 
@@ -694,7 +694,7 @@ RegistryValue::RegistryValue(const String &name, int value,  unsigned long type)
   setBuffer(&value);
 }
 
-RegistryValue::RegistryValue(const String &name, unsigned int value,  unsigned long type) {
+RegistryValue::RegistryValue(const String &name, UINT value,  unsigned long type) {
   if(type != REG_DWORD && type != REG_DWORD_LITTLE_ENDIAN && type != REG_DWORD_BIG_ENDIAN) {
     throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}. Value=%lu")
                   ,__TFUNCTION__
@@ -822,17 +822,17 @@ RegistryValue &RegistryValue::operator=(const RegistryValue &src) {
   return *this;
 }
 
-RegistryValue::operator unsigned int() const {
+RegistryValue::operator UINT() const {
   if(m_type != REG_DWORD && m_type != REG_DWORD_LITTLE_ENDIAN && m_type != REG_DWORD_BIG_ENDIAN) {
     throwException(_T("%s:Illegal type=%d for value <%s>. Must be {REG_DWORD,REG_DWORD_BIG_ENDIAN}")
                   ,__TFUNCTION__
                   ,m_type, m_name.cstr());
   }
-  return *(unsigned int*)m_buffer;
+  return *(UINT*)m_buffer;
 }
 
 RegistryValue::operator unsigned long() const {
-  return (unsigned int)*this;
+  return (UINT)*this;
 }
 
 RegistryValue::operator unsigned __int64() const {

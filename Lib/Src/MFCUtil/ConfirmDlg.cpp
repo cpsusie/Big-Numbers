@@ -6,8 +6,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType, CWnd* pParent /*=NULL*/)
@@ -19,27 +17,21 @@ CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType,
   m_icon            = NULL;
   m_hasCancelButton = false;
   m_accelTable      = NULL;
-    //{{AFX_DATA_INIT(CConfirmDlg)
-    m_dontShowAgain = FALSE;
-    //}}AFX_DATA_INIT
+  m_dontShowAgain = FALSE;
 }
 
 
 void CConfirmDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CConfirmDlg)
     DDX_Check(pDX, _IDC_CHECKDONTSHOWAGAIN, m_dontShowAgain);
-    //}}AFX_DATA_MAP
 }
 
 
 BEGIN_MESSAGE_MAP(CConfirmDlg, CDialog)
-    //{{AFX_MSG_MAP(CConfirmDlg)
-    ON_BN_CLICKED(_IDC_BUTTON0, OnButton0)
-    ON_BN_CLICKED(_IDC_BUTTON1, OnButton1)
-    ON_BN_CLICKED(_IDC_BUTTON2, OnButton2)
+  ON_BN_CLICKED(_IDC_BUTTON0, OnButton0)
+  ON_BN_CLICKED(_IDC_BUTTON1, OnButton1)
+  ON_BN_CLICKED(_IDC_BUTTON2, OnButton2)
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 #define LEFTMARG          25

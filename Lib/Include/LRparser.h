@@ -11,22 +11,22 @@ typedef enum {
  
 class ParserTables {
 public:
-  virtual int          getAction(           unsigned int state, int input) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
-  virtual int          getSuccessor(        unsigned int state, int nt   ) const = 0;
-  virtual unsigned int getProductionLength( unsigned int prod  ) const = 0;
-  virtual unsigned int getLeftSymbol(       unsigned int prod  ) const = 0;
-  virtual const TCHAR *getSymbolName(       unsigned int symbol) const = 0;
-  const   TCHAR       *getLeftSymbolName(   unsigned int prod  ) const {
+  virtual int          getAction(           UINT state, int input) const = 0; // > 0:shift, <=0:reduce, _ParserError:Error
+  virtual int          getSuccessor(        UINT state, int nt   ) const = 0;
+  virtual UINT         getProductionLength( UINT prod  ) const = 0;
+  virtual UINT         getLeftSymbol(       UINT prod  ) const = 0;
+  virtual const TCHAR *getSymbolName(       UINT symbol) const = 0;
+  const   TCHAR       *getLeftSymbolName(   UINT prod  ) const {
     return getSymbolName(getLeftSymbol(prod));
   }
-          String       getRightString(      unsigned int prod  ) const;
-  virtual void         getRightSide(        unsigned int prod, unsigned int *dst) const = 0;
-  virtual unsigned int getTerminalCount()   const = 0;
-  virtual unsigned int getSymbolCount()     const = 0;
-  virtual unsigned int getProductionCount() const = 0;
-  virtual unsigned int getStateCount()      const = 0;
-  virtual unsigned int getLegalInputCount(  unsigned int state ) const = 0;
-  virtual void         getLegalInputs(      unsigned int state, unsigned int *symbols) const = 0;
+          String       getRightString(      UINT prod  ) const;
+  virtual void         getRightSide(        UINT prod, UINT *dst) const = 0;
+  virtual UINT         getTerminalCount()   const = 0;
+  virtual UINT         getSymbolCount()     const = 0;
+  virtual UINT         getProductionCount() const = 0;
+  virtual UINT         getStateCount()      const = 0;
+  virtual UINT         getLegalInputCount(  UINT state ) const = 0;
+  virtual void         getLegalInputs(      UINT state, UINT *symbols) const = 0;
   virtual ~ParserTables() {
   }
 };
@@ -49,7 +49,7 @@ private:
   const unsigned short m_stateCount;
   mutable const Type **m_rightSides;
 
-  static inline bool contains(const BYTE *bitset, unsigned int v) {
+  static inline bool contains(const BYTE *bitset, UINT v) {
     return (bitset[v/8]&(1<<(v%8))) != 0;
   }
 
@@ -93,11 +93,11 @@ private:
          : getActionCompressedMultiItem(statev, token);
   }
 
-  inline void getLegalInputsCompressedSingleItem(unsigned long statev, unsigned int *symbols) const {
+  inline void getLegalInputsCompressedSingleItem(unsigned long statev, UINT *symbols) const {
     *symbols = (statev&0x7fff);
   }
 
-  void getLegalInputsCompressedMultiItem(unsigned long statev, unsigned int *symbols) const {
+  void getLegalInputsCompressedMultiItem(unsigned long statev, UINT *symbols) const {
     const BYTE *set = getCompressedLaset(statev);
     for(int token = 0; token < m_terminalCount; token++) {
       if(contains(set, token)) {
@@ -117,7 +117,7 @@ private:
     return sum;
   }
 
-  void getLegalInputsCompressed(unsigned long statev, unsigned int *symbols) const {
+  void getLegalInputsCompressed(unsigned long statev, UINT *symbols) const {
     if(isSingleItemActionState(statev)) {
       getLegalInputsCompressedSingleItem(statev, symbols);
     } else {
@@ -131,7 +131,7 @@ private:
          : getLegalInputCountCompressedMultiItem(statev);
   }
 
-  void getLegalInputsUncompressed(const Type *state, unsigned int *symbols) const {
+  void getLegalInputsUncompressed(const Type *state, UINT *symbols) const {
     for(int n = *(state++); n--; state+=2) {
       *(symbols++) = *state;
     }
@@ -146,7 +146,7 @@ private:
       m_rightSides = new const Type*[m_productionCount];
       int index = 0;;
       for(int p = 0; p < m_productionCount; p++) {
-        const unsigned int prodLen = m_productionLength[p];
+        const UINT prodLen = m_productionLength[p];
         m_rightSides[p] = prodLen ? (m_rightSideTable + index) : NULL;
         index += prodLen;
       }
@@ -154,7 +154,7 @@ private:
     return m_rightSides;
   }
 
-  inline bool isCompressedState(unsigned int state) const {
+  inline bool isCompressedState(UINT state) const {
     return contains(m_compressedSet, state);
   }
 
@@ -162,30 +162,30 @@ public:
 #pragma warning(push)
 #pragma warning(disable:4311 4302)
 
-  inline int getAction(unsigned int state, int token) const { // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
+  inline int getAction(UINT state, int token) const { // token is terminal. return > 0:shift, <=0:reduce, _ParserError:Error
     return isCompressedState(state) 
          ? findActionCompressed(   (unsigned long)m_action[state], token) 
          : findElementUncompressed((const Type  *)m_action[state], token);
   }
 
-  inline int getSuccessor(unsigned int state, int nt) const { // nt is nonterminal
+  inline int getSuccessor(UINT state, int nt) const { // nt is nonterminal
     return findElementUncompressed(m_successor[state], nt);
   };
 
-  inline unsigned int getProductionLength(unsigned int prod) const {
+  inline UINT getProductionLength(UINT prod) const {
     return m_productionLength[prod];
   }
 
-  inline unsigned int getLeftSymbol(unsigned int prod) const {
+  inline UINT getLeftSymbol(UINT prod) const {
     return m_leftSide[prod];
   }
 
-  inline const TCHAR *getSymbolName(unsigned int symbol) const {
+  inline const TCHAR *getSymbolName(UINT symbol) const {
     return m_symbolName[symbol];
   }
 
-  void getRightSide(unsigned int prod, unsigned int *dst) const {
-    unsigned int l = getProductionLength(prod);
+  void getRightSide(UINT prod, UINT *dst) const {
+    UINT l = getProductionLength(prod);
     if(l == 0) {
       return;
     }
@@ -195,28 +195,28 @@ public:
     }
   }
 
-  inline unsigned int getTerminalCount() const {
+  inline UINT getTerminalCount() const {
     return m_terminalCount;
   }
 
-  inline unsigned int getSymbolCount() const {
+  inline UINT getSymbolCount() const {
     return m_symbolCount;
   }
 
-  inline unsigned int getProductionCount() const {
+  inline UINT getProductionCount() const {
     return m_productionCount;
   }
 
-  inline unsigned int getStateCount() const {
+  inline UINT getStateCount() const {
     return m_stateCount;
   }
-  inline unsigned int getLegalInputCount(unsigned int state) const {
+  inline UINT getLegalInputCount(UINT state) const {
     return isCompressedState(state)
          ? getLegalInputCountCompressed(  (unsigned long)(m_action[state]))
          : getLegalInputCountUncompressed((const Type  *)(m_action[state]));
   }
 
-  void getLegalInputs(unsigned int state, unsigned int *symbols) const {
+  void getLegalInputs(UINT state, UINT *symbols) const {
     if(isCompressedState(state)) {
       getLegalInputsCompressed(  (unsigned long)(m_action[state]), symbols);
     } else {
@@ -280,26 +280,26 @@ public:
 
 class LRparser {
 private:
-  unsigned int        m_state;              // Current parserstate
+  UINT                m_state;              // Current parserstate
   int                 m_input;              // Current inputsymbol
-  unsigned int        m_stackSize;
+  UINT                m_stackSize;
   ParserStackElement *m_parserStack;
-  unsigned int        m_stackTop;           // Topelement of stack = parserStack[m_stackTop-1]
-  unsigned int        m_suppressError;      // Dont give errormessage when > 0. Decremented on every parsecycle
+  UINT                m_stackTop;           // Topelement of stack = parserStack[m_stackTop-1]
+  UINT                m_suppressError;      // Dont give errormessage when > 0. Decremented on every parsecycle
                                             // and set to m_cascadecount when PAaction return _ParserError
-  unsigned int        m_cascadeCount;       // Suppress the next m_cascadecount parsererrors
-  unsigned int        m_maxErrorCount;      // Maximal number of errors before terminate parse.
-  unsigned int        m_errorCount;         // Count parsererrors
+  UINT                m_cascadeCount;       // Suppress the next m_cascadecount parsererrors
+  UINT                m_maxErrorCount;      // Maximal number of errors before terminate parse.
+  UINT                m_errorCount;         // Count parsererrors
   bool                m_done;               // Have we finished the parse
   TCHAR              *m_text;               // Current lexeme
   int                 m_textLength;         // Length of current lexeme
   SourcePosition      m_pos;                // Current SourcePosition
-  unsigned int        m_productionLength;   // Length of current reduceproduction
+  UINT                m_productionLength;   // Length of current reduceproduction
   bool                m_debug;              // If true call debug on each parsecycle
   const ParserTables &m_tables;             // Generated by parsegen.exe
   Scanner            *m_scanner;            // Lexical scanner. generated by lexgen.exe
 
-  void parserStackCreate(unsigned int stackSize);
+  void parserStackCreate(UINT stackSize);
   void parserStackDestroy();
   void stackOverflow();
 
@@ -319,11 +319,11 @@ private:
     return m_parserStack[m_stackTop-1-fromTop];
   }
 
-  inline void parserStackPop(unsigned int count) {
+  inline void parserStackPop(UINT count) {
     m_stackTop -= count;
   }
 
-  inline void parserStackRestore(unsigned int newTop) {
+  inline void parserStackRestore(UINT newTop) {
     m_stackTop = newTop;
   }
 
@@ -331,16 +331,16 @@ private:
   void initialize();
   void dumpState();
 protected:
-  virtual int reduceAction(unsigned int prod) {  // Called for each reduction in the parse
+  virtual int reduceAction(UINT prod) {  // Called for each reduction in the parse
     return 0;
   }
-  virtual void userStackInit()                           = 0; // Called before the first parsecycle
-  virtual void userStackShiftSymbol(unsigned int symbol) = 0; // Called when LRparser shift in inputtoken
-  virtual void userStackPopSymbols( unsigned int count ) = 0; // Pop count symbols from userstack
-  virtual void userStackShiftDollarDollar()              = 0; // Push($$) to userstack. called at the end of each reduction
-  virtual void defaultReduce(       unsigned int prod  ) = 0; // $$ = $1
+  virtual void userStackInit()                   = 0; // Called before the first parsecycle
+  virtual void userStackShiftSymbol(UINT symbol) = 0; // Called when LRparser shift in inputtoken
+  virtual void userStackPopSymbols( UINT count ) = 0; // Pop count symbols from userstack
+  virtual void userStackShiftDollarDollar()      = 0; // Push($$) to userstack. called at the end of each reduction
+  virtual void defaultReduce(       UINT prod  ) = 0; // $$ = $1
 public:
-  LRparser(const ParserTables &tables, Scanner *lex = NULL, unsigned int stackSize = 256);
+  LRparser(const ParserTables &tables, Scanner *lex = NULL, UINT stackSize = 256);
   LRparser(const LRparser &src);                     // Not defined
   LRparser &operator=(const LRparser &rhs);          // Not defined
   ~LRparser();
@@ -349,7 +349,7 @@ public:
     return m_input;
   }
 
-  inline unsigned int state() const {
+  inline UINT state() const {
     return m_state;
   }
 
@@ -357,41 +357,41 @@ public:
     return m_stackTop == 0;
   }
 
-  inline unsigned int getStackHeight() const {
+  inline UINT getStackHeight() const {
     return m_stackTop;
   }
 
-  inline unsigned int getStackSize() const {
+  inline UINT getStackSize() const {
     return m_stackSize;
   }
 
-  void setStackSize(unsigned int newSize);
+  void setStackSize(UINT newSize);
 
-  inline const ParserStackElement &getStackElement(unsigned int index) const {
+  inline const ParserStackElement &getStackElement(UINT index) const {
     return m_parserStack[index];
   }
 
-  inline void setCascadeCount(unsigned int value) {
+  inline void setCascadeCount(UINT value) {
     m_cascadeCount = value;
   }
 
-  inline unsigned int getCascadeCount() const {
+  inline UINT getCascadeCount() const {
     return m_cascadeCount;
   }
 
-  inline void setMaxErrorCount(unsigned int value) {
+  inline void setMaxErrorCount(UINT value) {
     m_maxErrorCount = value;
   }
 
-  inline unsigned int getMaxErrorCount() const {
+  inline UINT getMaxErrorCount() const {
     return m_maxErrorCount;
   }
 
-  inline unsigned int getProductionLength(unsigned int prod) const {
+  inline UINT getProductionLength(UINT prod) const {
     return m_tables.getProductionLength(prod);
   }
 
-  inline const TCHAR *getSymbolName(unsigned int symbol) const {
+  inline const TCHAR *getSymbolName(UINT symbol) const {
     return m_tables.getSymbolName(symbol);
   }
 

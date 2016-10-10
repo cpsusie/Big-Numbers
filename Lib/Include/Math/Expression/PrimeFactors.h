@@ -5,7 +5,7 @@
 class PrimeFactor {
 public:
   unsigned __int64 m_prime;
-  unsigned int m_multiplicity;
+  UINT             m_multiplicity;
   inline PrimeFactor() : m_prime(0), m_multiplicity(0) {
   }
   inline PrimeFactor(unsigned __int64 prime) : m_prime(prime), m_multiplicity(1) {
@@ -19,7 +19,7 @@ class PrimeFactorArray;
 
 class PrimeFactorSet : public BitSet {
 public:
-  inline explicit PrimeFactorSet(unsigned int capacity) : BitSet(capacity) {
+  inline explicit PrimeFactorSet(UINT capacity) : BitSet(capacity) {
   }
 };
 
@@ -28,7 +28,7 @@ private:
   bool m_positive;
 public:
   PrimeFactorArray(__int64 n);
-  PrimeFactorSet findFactorsWithMultiplicityAtLeast(unsigned int m) const;
+  PrimeFactorSet findFactorsWithMultiplicityAtLeast(UINT m) const;
   __int64 getProduct() const;
   bool isPositive() const {
     return m_positive;

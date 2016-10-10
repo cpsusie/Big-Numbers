@@ -5,16 +5,12 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CComboBoxWithHistory::~CComboBoxWithHistory() {
 }
 
 BEGIN_MESSAGE_MAP(CComboBoxWithHistory, CComboBox)
-	//{{AFX_MSG_MAP(CComboBoxWithHistory)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CComboBoxWithHistory::substituteControl(CWnd *parent, int id, const String &registryName) {

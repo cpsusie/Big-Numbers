@@ -3,7 +3,7 @@
 
 #ifndef FAST_BIGREAL_CONVERSION
 
-#define getSignificandFloat(x) ((unsigned int)(((*((unsigned long*)(&(x)))) & 0x7fffff) | 0x800000))
+#define getSignificandFloat(x) ((UINT)(((*((unsigned long*)(&(x)))) & 0x7fffff) | 0x800000))
 #define getExpo2Float(x)       ((int)((((*((unsigned long*)(&(x)))) >> 23) & 0xff) - 0x7f))
 
 void BigReal::init(float x) {

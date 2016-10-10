@@ -47,7 +47,7 @@ public:
   inline StrStream &operator<<(int n) {
     return append(format(getIntFormat().cstr(), n));
   }
-  inline StrStream &operator<<(unsigned int n) {
+  inline StrStream &operator<<(UINT n) {
     return append(format(getUIntFormat().cstr(), n));
   }
   inline StrStream &operator<<(long n) {

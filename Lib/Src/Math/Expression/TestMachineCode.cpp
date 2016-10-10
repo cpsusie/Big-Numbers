@@ -314,7 +314,7 @@ void fisk() {
 
 static unsigned char  staticInt8  = 0x12;
 static unsigned short staticInt16 = 0x1234;
-static unsigned int   staticInt32 = 0x12345678;
+static UINT           staticInt32 = 0x12345678;
 
 void MachineCode::genTestSequence() {
   void *addr = (void*)&staticInt32;
@@ -695,7 +695,7 @@ void MachineCode::genTestSequence() {
    ,FIDIVR_DWORD
   };
 
-  const unsigned int registers[] = { // NB does not contain ESP,EBP
+  const UINT registers[] = { // NB does not contain ESP,EBP
     EAX
    ,ECX
    ,EDX

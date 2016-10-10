@@ -5,13 +5,11 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 #pragma warning(disable : 4244)
 
-CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &jobToDo, unsigned int updateRate) 
+CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &jobToDo, UINT updateRate) 
 : CDialog(CProgressDlg::IDD, pParent)
 , m_thread(thread)
 , m_jobToDo(jobToDo)
@@ -19,23 +17,17 @@ CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &j
 , m_supportedFeatures(jobToDo.getSupportedFeatures())
 {
   m_accelTable      = NULL;
-    //{{AFX_DATA_INIT(CProgressDlg)
-    //}}AFX_DATA_INIT
 }
 
 void CProgressDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CProgressDlg)
-    //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
-    //{{AFX_MSG_MAP(CProgressDlg)
 	ON_WM_TIMER()
 	ON_WM_CLOSE()
 	ON_BN_CLICKED(_IDC_BUTTONSUSPEND, OnButtonSuspend)
 	ON_COMMAND(IDOK, OnOk)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 BOOL CProgressDlg::OnInitDialog() {
@@ -221,15 +213,15 @@ static String formatSeconds(double sec) {
 }
 
 void RollingAverageQueue::add(double n) {
-  if((unsigned int)m_queue.size() == m_maxQueueSize) {
+  if((UINT)m_queue.size() == m_maxQueueSize) {
     m_currentSum -= m_queue.get();
   }
   m_queue.put(n);
   m_currentSum += n;
 }
 
-void RollingAverageQueue::decrementMaxSize(unsigned int amount) {
-  const unsigned int newMaxSize = (amount >= m_maxQueueSize) ? 1 : m_maxQueueSize - amount;
+void RollingAverageQueue::decrementMaxSize(UINT amount) {
+  const UINT newMaxSize = (amount >= m_maxQueueSize) ? 1 : m_maxQueueSize - amount;
   while(m_queue.size() > newMaxSize) {
     m_currentSum -= m_queue.get();
   }

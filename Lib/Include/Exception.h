@@ -21,7 +21,7 @@ public:
   }
 };
 
-extern void exceptionTranslator(unsigned int u, EXCEPTION_POINTERS* pExp);
+extern void exceptionTranslator(UINT u, EXCEPTION_POINTERS *pExp);
 
 extern void throwException(_In_z_ _Printf_format_string_ TCHAR const * const format, ...);
 extern void throwException(const String &s);

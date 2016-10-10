@@ -21,7 +21,7 @@ private:
 public:
   TimerThread(Timer *timer, int msec, TimeoutHandler &handler, bool repeatTimeout);
   ~TimerThread();
-  unsigned int run();
+  UINT run();
   void kill();
   inline bool isKilled() const {
     return (m_state & KILLED) != 0;
@@ -68,7 +68,7 @@ void TimerThread::clrFlag(unsigned char flags) {
   m_stateSem.signal();
 }
 
-unsigned int TimerThread::run() {
+UINT TimerThread::run() {
   while(!ISKILLED()) {
     m_timeout.wait(m_msec);
 

@@ -55,7 +55,7 @@ public:
     return TreeSetImpl::getComparator();
   }
   AbstractCollection *clone(bool cloneData) const {
-    throwException(_T("TreeMap::clone::Unsupported operation."));
+    throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
   AbstractMap *cloneMap(bool cloneData) const;
@@ -99,9 +99,9 @@ public:
   }
 };
 
-template <class T> class UIntTreeMap : public TreeMap<unsigned int, T>    {
+template <class T> class UIntTreeMap : public TreeMap<UINT, T>    {
 public:
-  UIntTreeMap() : TreeMap<unsigned int, T>(uintHashCmp) {
+  UIntTreeMap() : TreeMap<UINT, T>(uintHashCmp) {
   }
 };
 

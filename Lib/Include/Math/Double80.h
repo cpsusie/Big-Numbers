@@ -167,7 +167,7 @@ public:
     *this = (Double80)(long)(x);
   }
 
-  inline Double80(unsigned int x) {
+  inline Double80(UINT x) {
     *this = (Double80)(unsigned long)(x);
   }
 
@@ -210,7 +210,7 @@ public:
     return getLong(x);
   }
 
-  inline friend unsigned int getUint(const Double80 &x) {
+  inline friend UINT getUint(const Double80 &x) {
     return getUlong(x);
   }
 

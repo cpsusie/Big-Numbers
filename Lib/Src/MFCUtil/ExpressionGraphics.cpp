@@ -6,7 +6,7 @@
 
 //#define SHOW_LINES
 
-typedef CompactKeyType<unsigned int> FontSizeKey;
+typedef CompactKeyType<UINT> FontSizeKey;
 
 #define CUT_LEFT   0x01
 #define CUT_RIGHT  0x02
@@ -29,7 +29,7 @@ FontCache::~FontCache() {
 }
 
 CFont *FontCache::getFont(bool text, int fontSize) {
-  const unsigned int key = (text ? (1<<31) : 0) | fontSize;
+  const UINT key = (text ? (1<<31) : 0) | fontSize;
   CFont **font = get(key);
   if(font == NULL) {
     CFont *newFont = new CFont;
@@ -284,7 +284,7 @@ private:
   AlignedImage *concatImages(ExpressionRectangle &rect, const AlignedImage *img1, ...); // terminate arguments with NULL
   AlignedImage *stackImages( ExpressionRectangle &rect, bool center, const AlignedImage *img1, ...); // terminate arguments with NULL
 
-  AlignedImage *cutImage(             AlignedImage *image, unsigned int percent, int flags);
+  AlignedImage *cutImage(             AlignedImage *image, UINT percent, int flags);
   AlignedImage *getOpImage(           ExpressionInputSymbol symbol , int fontSize, ExpressionRectangle &rect);
   AlignedImage *getUnaryOpImage(      const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
   AlignedImage *getBinaryOpImage(     const ExpressionNode *n, int fontSize, ExpressionRectangle &rect);
@@ -367,7 +367,7 @@ AlignedImage *ExpressionPainter::createTextImage(const CSize &size) {
   return image;
 }
 
-AlignedImage *ExpressionPainter::cutImage(AlignedImage *image, unsigned int percent, int flags) {
+AlignedImage *ExpressionPainter::cutImage(AlignedImage *image, UINT percent, int flags) {
   const int srcW = image->getWidth();
   const int srcH = image->getHeight();
 
@@ -682,7 +682,7 @@ AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, int font
   const ExpressionNode *exponent  = n->right();
 
   const int          baseHeight   = baseImage->getHeight();
-  const unsigned int expoFontSize = min(createSubFontSize(baseHeight), fontSize);
+  const UINT         expoFontSize = min(createSubFontSize(baseHeight), fontSize);
 
 //  m_backgroundColor       = D3DCOLOR_XRGB(255,0,0);
   AlignedImage *expoImage = getParenthesizedImage(exponent, n, expoFontSize, expoRect);
@@ -726,7 +726,7 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontS
   ExpressionRectangle leftRect  = rootSignRect;
 
   if(!root->isTwo()) { // only paint root-expression if not 2
-    const unsigned int expoFontSize = createSubFontSize(max(createSubFontSize(rootSignFontSize), fontSize));
+    const UINT         expoFontSize = createSubFontSize(max(createSubFontSize(rootSignFontSize), fontSize));
     ExpressionRectangle rootRect;
     AlignedImage       *rootImage    = getImage(root, expoFontSize, rootRect);
     rootImage->setAlignment(rootImage->getHeight());
@@ -829,7 +829,7 @@ AlignedImage *ExpressionPainter::getBinomialImage(const ExpressionNode *n, int f
   AlignedImage *lowerImage = getImage(n->right(),fontSize, lowerRect);
   innerRect.addChild(upperRect).addChild(lowerRect);
   AlignedImage *innerImage = stackImages(innerRect, true, upperImage, lowerImage, NULL);
-  unsigned int  dfm        = upperImage->getHeight() + lowerImage->getHeight();
+  UINT          dfm        = upperImage->getHeight() + lowerImage->getHeight();
 
   AlignedImage *lpImage = getOpImage(LPAR, dfm, lpRect);
   AlignedImage *rpImage = getOpImage(RPAR, dfm, rpRect);
@@ -920,7 +920,7 @@ AlignedImage *ExpressionPainter::getStdPolyImage(const ExpressionNode *n, int fo
 }
 
 AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, int fontSize, ExpressionRectangle &rect) {
-  unsigned int fm                = createSubFontSize(fontSize);
+  UINT fm                = createSubFontSize(fontSize);
 
   ExpressionRectangle opRect, startRect, endRect, leftRect, rightRect;
 
@@ -1327,14 +1327,14 @@ bool RectFinder::handleRectangle(const ExpressionRectangle &r, const ExpressionR
 
 ExpressionImage::ExpressionImage(const ExpressionImage &src) {
   if(!src.isEmpty()) {
-    m_pr        = src.m_pr->clone(true);
+    m_pr        = src.m_pr->clone(src.m_pr->getType(), true);
     m_rectangle = src.m_rectangle;
     setParents();
   }
 }
 
 ExpressionImage::ExpressionImage(const PixRect *pr, const ExpressionRectangle &rectangle) {
-  m_pr        = pr->clone(true);
+  m_pr        = pr->clone(pr->getType(), true);
   m_rectangle = rectangle;
   setParents();
 }
@@ -1347,7 +1347,7 @@ ExpressionImage &ExpressionImage::operator=(const ExpressionImage &src) {
     clear();
   }
   if(!src.isEmpty()) {
-    m_pr        = src.m_pr->clone(true);
+    m_pr        = src.m_pr->clone(src.m_pr->getType(), true);
     m_rectangle = src.m_rectangle;
     setParents();
   }

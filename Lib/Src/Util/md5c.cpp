@@ -38,8 +38,8 @@ typedef unsigned long int UINT4;
 
 #ifdef USE_MD5_MEMCPY
 // Note: Replace "for loop" with standard memcpy if possible
-static void *MD5_memcpy(POINTER output, POINTER input, unsigned int length) {
-  unsigned int i;
+static void *MD5_memcpy(POINTER output, POINTER input, UINT length) {
+  UINT i;
 
   for (i = 0; i < length; i++)
     output[i] = input[i];
@@ -47,8 +47,8 @@ static void *MD5_memcpy(POINTER output, POINTER input, unsigned int length) {
 }
 
 // Note: Replace "for loop" with standard memset if possible
-static void *MD5_memset(POINTER output, int value, unsigned int length) {
-  unsigned int i;
+static void *MD5_memset(POINTER output, int value, UINT length) {
+  UINT i;
 
   for (i = 0; i < length; i++)
    ((char *)output)[i] = (char)value;
@@ -66,8 +66,8 @@ static void *MD5_memset(POINTER output, int value, unsigned int length) {
 
 // Encodes input (UINT4) into output (unsigned char). Assumes length is
 // a multiple of 4.
-static void Encode(unsigned char *output, UINT4 *input, unsigned int length) {
-  unsigned int i, j;
+static void Encode(unsigned char *output, UINT4 *input, UINT length) {
+  UINT i, j;
 
   for (i = 0, j = 0; j < length; i++, j += 4) {
     output[j  ] = (unsigned char)(input[i] & 0xff);
@@ -79,8 +79,8 @@ static void Encode(unsigned char *output, UINT4 *input, unsigned int length) {
 
 // Decodes input (unsigned char) into output (UINT4). Assumes length is
 // a multiple of 4.
-static void Decode(UINT4 *output, const unsigned char *input, unsigned int length) {
-  unsigned int i, j;
+static void Decode(UINT4 *output, const unsigned char *input, UINT length) {
+  UINT i, j;
 
   for (i = 0, j = 0; j < length; i++, j += 4)
     output[i] =   ((UINT4)input[j  ])
@@ -249,11 +249,11 @@ MD5Context::MD5Context() {
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block, and updating the
 // context.
-void MD5Context::update(const unsigned char *input, unsigned int inputLen) {
-  unsigned int i, index, partLen;
+void MD5Context::update(const unsigned char *input, UINT inputLen) {
+  UINT i, index, partLen;
 
   // Compute number of bytes mod 64
-  index = (unsigned int)((m_count[0] >> 3) & 0x3F);
+  index = (UINT)((m_count[0] >> 3) & 0x3F);
 
   // update number of bits
   if((m_count[0] += ((UINT4)inputLen << 3)) < ((UINT4)inputLen << 3))
@@ -283,13 +283,13 @@ void MD5Context::update(const unsigned char *input, unsigned int inputLen) {
 // the message digest and zeroizing the context.
 void MD5Context::final(unsigned char digest[16]) {
   unsigned char bits[8];
-  unsigned int index, padLen;
+  UINT index, padLen;
 
   // Save number of bits
   Encode(bits, m_count, 8);
 
   // Pad out to 56 mod 64.
-  index = (unsigned int)((m_count[0] >> 3) & 0x3f);
+  index = (UINT)((m_count[0] >> 3) & 0x3f);
   padLen = (index < 56) ? (56 - index) : (120 - index);
   update(PADDING, padLen);
 
@@ -307,7 +307,7 @@ void MD5Context::final(unsigned char digest[16]) {
 // returned in str, containing hexadecimal digits
 char *MD5Context::strFinal(char *dst) {
   unsigned char digest[16];
-  unsigned int i;
+  UINT i;
 
   final(digest);
   for(i = 0; i < 16; i++)
@@ -318,7 +318,7 @@ char *MD5Context::strFinal(char *dst) {
 /* Digests a String (src) and returns the result */
 char *MD5Context::digest(const char *src) {
   init();
-  unsigned int length = (UINT)strlen(src);
+  UINT length = (UINT)strlen(src);
   update(src, length);
   return strFinal(m_strDigest);
 }

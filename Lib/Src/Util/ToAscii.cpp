@@ -1,6 +1,6 @@
 #include "pch.h"
 
-unsigned char toAscii(unsigned int virtualCode) {
+unsigned char toAscii(UINT virtualCode) {
   BYTE keystate[256];
   ::GetKeyboardState(keystate);
   WORD ch;

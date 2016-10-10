@@ -23,8 +23,8 @@ public:
   Rational(int            numerator, const __int64 &denominator);
   Rational(const __int64           &n  );
   Rational(int                      n  );
-  Rational(unsigned int             n  );
-  explicit Rational(double          d  , unsigned int     maxND = _I32_MIN);
+  Rational(UINT                     n  );
+  explicit Rational(double          d  , UINT             maxND = _I32_MIN);
   explicit Rational(const Double80 &d80, unsigned __int64 maxND = _I64_MAX);
   explicit Rational(const String   &s  );
   explicit Rational(const TCHAR    *s  );
@@ -69,7 +69,7 @@ public:
   inline friend   int     getInt(     const Rational &r) {
     return getLong(r);
   }
-  inline friend unsigned int getUint( const Rational &r) {
+  inline friend UINT getUint( const Rational &r) {
     return getUlong(r);
   }
   friend          long    getLong(    const Rational &r);

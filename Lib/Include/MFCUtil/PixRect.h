@@ -1,6 +1,7 @@
 #pragma once
 
-#include <d3d9.h>
+#include <D3D9.h>
+#include <D3DX9.h>
 #include <vfw.h>
 #include <Array.h>
 #include <Math/Point2D.h>
@@ -13,8 +14,8 @@
 
 typedef LPDIRECT3D9        LPDIRECT3D;
 typedef LPDIRECT3DDEVICE9  LPDIRECT3DDEVICE;
-typedef LPDIRECT3DSURFACE9 LPDIRECT3DSURFACE;
 typedef LPDIRECT3DTEXTURE9 LPDIRECT3DTEXTURE;
+typedef LPDIRECT3DSURFACE9 LPDIRECT3DSURFACE;
 typedef D3DCAPS9           D3DCAPS;
 
 class PixRect;
@@ -251,10 +252,8 @@ typedef enum {
  ,PIXRECT_PLAINSURFACE
 } PixRectType;
 
-
 class PixRectDevice {
 private:
-  DECLARECLASSNAME;
   static LPDIRECT3D  s_direct3d;
 
   static void initialize();
@@ -273,6 +272,12 @@ public:
   ~PixRectDevice();
   void attach(HWND hwnd, bool windowed = true, const CSize *size = NULL);
   void detach();
+  void beginScene() {
+    CHECK3DRESULT(m_device->BeginScene());
+  }
+  void endScene() {
+    CHECK3DRESULT(m_device->EndScene());
+  }
   void render(const PixRect *pr);
   LPDIRECT3DTEXTURE createTexture(              const CSize &size, D3DFORMAT format, D3DPOOL pool);
   LPDIRECT3DSURFACE createRenderTarget(         const CSize &size, D3DFORMAT format, bool    lockable = false); // always in D3DPOOL_DEFAULT 
@@ -286,23 +291,34 @@ public:
   LPDIRECT3DDEVICE &getD3Device() {
     return m_device;
   }
+  LPDIRECT3DSURFACE getRenderTarget();
+  void setRenderTarget(LPDIRECT3DSURFACE renderTarget);
+  void setRenderTarget(PixRect *renderTarget);
+  void setWorldMatrix(const D3DXMATRIX &m) {
+    CHECK3DRESULT(m_device->SetTransform(D3DTS_WORLD, &m));
+  }
+  D3DXMATRIX &getWorldMatrix(D3DXMATRIX &m) const {
+    CHECK3DRESULT(m_device->GetTransform(D3DTS_WORLD, &m));
+    return m;
+  }
   static CompactArray<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
   D3DCAPS getDeviceCaps();
   DECLARERESULTCHECKER;
   inline void resetException() {
     m_exceptionInProgress = false;
   }
+  void alphaBlend(const PixRect *texture, const CRect &dstRect);
 };
 
 class PixRect {
 private:
-  DECLARECLASSNAME;
   DECLARERESULTCHECKER;
   friend class PixelAccessor;
   friend class PixRectOperator;
   friend class PixRectClipper;
   friend class PixRectDevice;
 
+  static const TCHAR       *s_typeName[];
   PixRectDevice            &m_device;
   PixRectType               m_type;
   D3DSURFACE_DESC           m_desc;
@@ -322,18 +338,19 @@ private:
   void createRenderTarget(const CSize &sz, D3DFORMAT pixelFormat, bool    lockable = false);         // always in D3DPOOL_DEFAULT 
   void createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool);
 
-  void destroySurface();
   void destroyTexture();
+  void destroySurface();
   void drawEllipsePart(const CPoint &start, const CPoint &end, CPoint &center, D3DCOLOR color, bool invert);
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
   void init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool);
   void checkHasAlphaChannel() const; // throw Exception if no alpha-channel
   LPDIRECT3DSURFACE getSurface() const;
   LPDIRECT3DSURFACE cloneSurface(D3DPOOL pool) const;
-  D3DLOCKED_RECT  lockRect(  DWORD Flags, const CRect *rect = NULL);
-  void            unlockRect();
-  static void unknownTypeError(TCHAR *method, PixRectType type);
-  void unknownTypeError(TCHAR *method) const;
+  D3DLOCKED_RECT    lockRect(  DWORD Flags, const CRect *rect = NULL);
+  void              unlockRect();
+  void              checkType(       const TCHAR *method, PixRectType expectedType) const;
+  static void       unknownTypeError(const TCHAR *method, PixRectType type);
+  void              unknownTypeError(const TCHAR *method) const;
 public:
   static void reOpenDirectX();
   PixRect(PixRectDevice &device);         // create a PixRect to draw directly on the screen
@@ -346,31 +363,34 @@ public:
   PixRect(PixRectDevice &device, HBITMAP src,                               D3DPOOL pool = D3DPOOL_FORCE_DWORD, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
 
   virtual ~PixRect();
-  PixRect *clone(bool cloneImage = false, D3DPOOL pool = D3DPOOL_FORCE_DWORD) const;
+  PixRect *clone(PixRectType type, bool cloneImage = false, D3DPOOL pool = D3DPOOL_FORCE_DWORD) const;
   void moveToPool(D3DPOOL pool);
-  static void showPixRect(PixRect *pr);
+  static void showPixRect(const PixRect *pr);
+
+  LPDIRECT3DTEXTURE &getTexture();
+  LPDIRECT3DSURFACE &getRenderTarget();
+  LPDIRECT3DSURFACE &getPlainSurface();
 
   //  static DDCAPS getEmulatorCaps();
   inline PixelAccessor *getPixelAccessor(DWORD flags = 0) {
     return PixelAccessor::createPixelAccessor(this, flags);
   }
 
-  PixRectDevice &getDevice() const {
+  inline PixRectDevice &getDevice() const {
     return m_device;
   }
-
   inline PixRectType getType() const {
     return m_type;
   }
-
+  inline const TCHAR *getTypeName() const {
+    return s_typeName[m_type];
+  }
   inline int getWidth()  const {
     return m_desc.Width;
   }
-  
   inline int getHeight() const {
     return m_desc.Height;
   }
-  
   inline CSize getSize() const {
     return CSize(getWidth(), getHeight());
   }
@@ -396,8 +416,6 @@ public:
   D3DCOLOR getPixel(UINT x, UINT y) const;
   void     setPixel(const CPoint &p, D3DCOLOR color);
   D3DCOLOR getPixel(const CPoint &p) const;
-  D3DCOLOR getAverageColor(const Rectangle2D &rect) const;
-  D3DCOLOR getAverageColor() const;
 
   void line(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert=false);
   void line(const CPoint &p1, const CPoint &p2, D3DCOLOR color, bool invert=false);
@@ -415,9 +433,10 @@ public:
   void fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert=false);
   void fillEllipse(const CRect &rect, D3DCOLOR color, bool invert=false);
   static PixRect *mirror(     const PixRect *src, bool vertical);
-  static PixRect *rotateImage(const PixRect *src, D3DCOLOR background, double degree);
+  static PixRect *rotateImage(const PixRect *src, double degree);
   static PixRect *scaleImage( const PixRect *src, const ScaleParameters &param);
   static CSize    getRotatedSize(const CSize &size, double degree);
+  void            drawRotated(const PixRect *src, const CPoint &dst, double degree);
   void text(const CPoint &p, const char *text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText(const CPoint &p, const char *text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
@@ -433,7 +452,6 @@ public:
   bool contains(        const Point2D &p) const;
   bool containsExtended(const Point2D &p) const;
 
-  
   void rop( const CRect  &dr,                    ULONG op, const PixRect *src, const CPoint &sp);
   void rop( const CRect  &dr,                    ULONG op, const PixRect *src, const CRect  &sr);
   void rop( const CPoint &dp, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp);

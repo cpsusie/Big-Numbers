@@ -10,18 +10,13 @@ public:
 
 public:
 
-    //{{AFX_VIRTUAL(CEditWithSpinButton)
-    //}}AFX_VIRTUAL
-
 public:
     virtual ~CEditWithSpinButton();
 
 protected:
-    //{{AFX_MSG(CEditWithSpinButton)
 	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	//}}AFX_MSG
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

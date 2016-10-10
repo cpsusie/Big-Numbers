@@ -28,8 +28,8 @@ private:
 
 public:
   explicit PackedArray(unsigned char bitsPerItem);
-  UINT get(unsigned __int64 index) const;
-  UINT select() const;
+  UINT         get(unsigned __int64 index) const;
+  UINT         select() const;
   void         set(unsigned __int64 index, UINT v);
   void         or( unsigned __int64 index, UINT v);
   void         and(unsigned __int64 index, UINT v);

@@ -49,7 +49,7 @@ Number::Number(int v) {
   m_rational = new Rational(v);
 }
 
-Number::Number(unsigned int v) {
+Number::Number(UINT v) {
   m_type     = NUMBERTYPE_RATIONAL;
   m_rational = new Rational(v);
 }
@@ -166,7 +166,7 @@ Number &Number::operator=(int v) {
   return *this;
 }
 
-Number &Number::operator=(unsigned int v) {
+Number &Number::operator=(UINT v) {
   if(m_type != NUMBERTYPE_RATIONAL) {
     setType(NUMBERTYPE_RATIONAL);
   }

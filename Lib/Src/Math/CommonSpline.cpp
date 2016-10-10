@@ -120,7 +120,7 @@ static String declareData(const char *name, const Vector &v) {
   char tmp[256];
   sprintf(tmp, "static double %s[] = {\n",name);
   String result = tmp;
-  for(unsigned int i = 0; i < v.getDimension(); i++) {
+  for(UINT i = 0; i < v.getDimension(); i++) {
     result += format(_T("  %.16le%s"),v[i],i < v.getDimension()-1?_T(",\n"):_T("\n"));
   }
   result += _T("};\n");

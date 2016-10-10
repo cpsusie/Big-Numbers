@@ -6,8 +6,8 @@ CountedByteInputStream::CountedByteInputStream(ByteCounter &counter, ByteInputSt
 }
 
 intptr_t CountedByteInputStream::getBytes(BYTE *dst, size_t n) {
-  size_t         total        = 0;
-  const unsigned int maxChunkSize = m_counter.getMaxChunkSize();
+  size_t     total        = 0;
+  const UINT maxChunkSize = m_counter.getMaxChunkSize();
   if(maxChunkSize == 0) {
     throwException("maxChunkSize == 0");
   }

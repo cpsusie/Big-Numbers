@@ -5,7 +5,7 @@
 
 // try this one: select max(sdf* + from my,df where sdf * 2 =;
 
-LRparser::LRparser(const ParserTables &tables, Scanner *scanner, unsigned int stackSize) : m_tables(tables), m_scanner(scanner) {
+LRparser::LRparser(const ParserTables &tables, Scanner *scanner, UINT stackSize) : m_tables(tables), m_scanner(scanner) {
   m_parserStack   = NULL;
   parserStackCreate(stackSize);
   
@@ -39,12 +39,12 @@ void LRparser::parserStackDestroy() {
   }
 }
 
-void LRparser::parserStackCreate(unsigned int stackSize) {
+void LRparser::parserStackCreate(UINT stackSize) {
   m_stackSize   = max(256, stackSize);
   m_parserStack = new ParserStackElement[m_stackSize];
 }
 
-void LRparser::setStackSize(unsigned int newSize) {
+void LRparser::setStackSize(UINT newSize) {
   parserStackDestroy();
   parserStackCreate(newSize);
   m_done = true;
@@ -85,7 +85,7 @@ bool LRparser::recover() {
     }
   }
 
-  const unsigned int startHeight  = getStackHeight();
+  const UINT startHeight  = getStackHeight();
   do {
     while(!stackEmpty() && m_tables.getAction(getParserStackTop().m_state, m_input) == _ParserError) {
       parserStackPop(1);
@@ -97,7 +97,7 @@ bool LRparser::recover() {
       if(m_debug && (poppedSymbols != 0)) {
         String poppedString;
         const TCHAR *delim = NULL;
-        for(unsigned int i = getStackHeight(); i < startHeight; i++) {
+        for(UINT i = getStackHeight(); i < startHeight; i++) {
           if(delim) poppedString += delim; else delim = _T(" ");
           poppedString += getSymbolName(m_parserStack[i].m_symbol);
         }
@@ -188,7 +188,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
       dumpState();
     }
   } else if(action <= 0) { // reduce by production (= -action)
-    const unsigned int reduceProduction = -action;
+    const UINT reduceProduction = -action;
     m_productionLength   = m_tables.getProductionLength(reduceProduction);
 
     if(m_debug) {
@@ -234,7 +234,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
     userStackShiftDollarDollar();
 
     if(reduceProduction == 0) {
-      const unsigned int nt = m_tables.getLeftSymbol(reduceProduction);
+      const UINT nt = m_tables.getLeftSymbol(reduceProduction);
       parserStackShift(m_state, nt, pos);
       m_done = true;
       if(m_debug) {
@@ -242,7 +242,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
       }
     } else {
       m_state = getParserStackTop().m_state;
-      const unsigned int nt = m_tables.getLeftSymbol(reduceProduction);
+      const UINT nt = m_tables.getLeftSymbol(reduceProduction);
       m_state = m_tables.getSuccessor(m_state,nt);
       parserStackShift(m_state, nt, pos);
     }
@@ -325,15 +325,15 @@ void LRparser::vdebug(const TCHAR *format, va_list argptr) {
   _tprintf(_T("\n"));
 }
 
-String ParserTables::getRightString(unsigned int prod) const {
-  const unsigned int length = getProductionLength(prod);
+String ParserTables::getRightString(UINT prod) const {
+  const UINT length = getProductionLength(prod);
   if(length == 0) {
     return _T("epsilon");
   } else { 
-    unsigned int symbols[1000];
+    UINT symbols[1000];
     getRightSide(prod, symbols);
     String result;
-    for(unsigned int i = 0; i < length; i++) {
+    for(UINT i = 0; i < length; i++) {
       if(i > 0) {
         result += _T(" ");
       }

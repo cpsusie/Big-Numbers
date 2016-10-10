@@ -14,7 +14,7 @@ BigReal &BigReal::shortProductNoZeroCheck(     const BigReal &x, const BigReal &
 
   int                digitsAdded = 0;
   Digit             *cd;
-  const unsigned int BASE        = BIGREALBASE;
+  const UINT         BASE        = BIGREALBASE;
 
   clearDigits();
   (cd = m_first = newDigit())->n = 0;
@@ -152,7 +152,7 @@ NextDigit:
 
 int BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with measureSplitFactor in testnumber.cpp
 
-unsigned int BigReal::getMaxSplitLength() { // static
+UINT BigReal::getMaxSplitLength() { // static
   return _UI64_MAX / ((unsigned __int64)MAX_DIGITVALUE * MAX_DIGITVALUE);
 }
 

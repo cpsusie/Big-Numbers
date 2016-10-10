@@ -37,7 +37,7 @@ private:
   bool           m_stopSignal : 1;
   void stopLoop();
 public:
-  unsigned int run();
+  UINT run();
   AnimationThread();
   void startAnimation(AnimatedImage *image, const CPoint &p);
   void stopAnimation();
@@ -93,7 +93,7 @@ public:
   void unload();
   void startAnimation(const CPoint &p);
   void stopAnimation();
-  void paintFrames(   const CPoint &p, unsigned int last);
+  void paintFrames(   const CPoint &p, UINT last);
   // do internal paint of frame 0..last on m_workPr (without delays) so we can call paintWork and show the specified frame
   void paintWork(     CDC  &dc,  const CPoint &p);
   void paintAllFrames(const CRect  &r);

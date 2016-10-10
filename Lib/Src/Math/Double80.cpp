@@ -207,7 +207,7 @@ static const Double80     maxi32;
 static const Double80     log2_5;
 static const Double80     digitLookupTable[10];
 
-static const Double80 maxi32P1 = Double80((unsigned int)_I32_MAX + 1);
+static const Double80 maxi32P1 = Double80((UINT)_I32_MAX + 1);
 static const Double80 maxi64   = Double80(_I64_MAX);
 static const Double80 maxi64P1 = Double80((unsigned __int64)_I64_MAX + 1);
 

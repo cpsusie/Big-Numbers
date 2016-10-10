@@ -11,7 +11,7 @@ BigRealThread::BigRealThread(int id)
   start();
 }
 
-unsigned int BigRealThread::run() {
+UINT BigRealThread::run() {
   FPU::setPrecisionMode(FPU_HIGH_PRECISION);
   for(;;) {
     try {

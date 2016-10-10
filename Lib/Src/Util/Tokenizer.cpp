@@ -151,9 +151,9 @@ int Tokenizer::getInt() {
   return result;
 }
 
-unsigned int Tokenizer::getUint() {
+UINT Tokenizer::getUint() {
   String s = next();
-  unsigned int result;
+  UINT result;
   if(_stscanf(s.cstr(), _T("%lu"), &result) != 1) {
     throwException(_T("%s:Expected unsigned int:<%s>"), __TFUNCTION__, s.cstr());
   }

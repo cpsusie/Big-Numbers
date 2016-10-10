@@ -16,7 +16,7 @@ int minMax(int x, int x1, int x2) {
   return MINMAX(x, x1, x2);
 }
 
-unsigned int minMax(unsigned int x, unsigned int x1, unsigned int x2) {
+UINT minMax(UINT x, UINT x1, UINT x2) {
   return MINMAX(x, x1, x2);
 }
 

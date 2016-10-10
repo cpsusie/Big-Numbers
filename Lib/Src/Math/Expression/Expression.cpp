@@ -97,8 +97,8 @@ void Expression::setState(ExpressionState newState) {
   }
 }
 
-void Expression::setReduceIteration(unsigned int iteration) {
-  const unsigned int oldIteration = m_reduceIteration;
+void Expression::setReduceIteration(UINT iteration) {
+  const UINT oldIteration = m_reduceIteration;
   if(iteration != oldIteration) {
     m_reduceIteration = iteration;
     notifyPropertyChanged(EXPR_REDUCEITERATION, &oldIteration, &m_reduceIteration);

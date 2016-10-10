@@ -46,7 +46,7 @@ String::String(int n) {
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(unsigned int n) {
+String::String(UINT n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%u"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);

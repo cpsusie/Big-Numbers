@@ -547,7 +547,7 @@ public:
 
 template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
   const D delimiter;
-  const unsigned int elemSize = sizeof(T);
+  const UINT elemSize = sizeof(T);
   const size_t n = a.size();
   out << elemSize << delimiter << n << delimiter;
   if(n) {

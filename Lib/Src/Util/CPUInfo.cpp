@@ -127,7 +127,7 @@ String FeatureInfo::toString(bool longDescription) const {
 #ifdef IS32BIT
 
 static char *getProcessorBrandString(char *dst) {
-  unsigned int eax_return;
+  UINT eax_return;
   __asm {
     mov eax,80000000H
     cpuid
@@ -170,18 +170,18 @@ static char *getProcessorBrandString(char *dst) {
 }
 
 static void getCPUData(char *vendor, VersionInfo &versionInfo, CPUBasics &cpuBasics, FeatureInfo &featureInfo, char *brandString, unsigned __int64 &serialNumber) {
-  char tmp_vendor[13];
-  VersionInfo tmp_versioninfo;
-  CPUBasics tmp_CPUBasics;
-  FeatureInfo tmp_FeatureInfo;
-  char tmp_brandString[49];
+  char             tmp_vendor[13];
+  VersionInfo      tmp_versioninfo;
+  CPUBasics        tmp_CPUBasics;
+  FeatureInfo      tmp_FeatureInfo;
+  char             tmp_brandString[49];
   unsigned __int64 tmp_serialNumber;
-  unsigned int highestEAX;
+  UINT             highestEAX;
 
-  memset(tmp_vendor,0,sizeof(tmp_vendor));
+  memset(tmp_vendor      ,0,sizeof(tmp_vendor));
   memset(&tmp_versioninfo,0,sizeof(tmp_versioninfo));
   memset(&tmp_FeatureInfo,0,sizeof(tmp_FeatureInfo));
-  memset(tmp_brandString,0,sizeof(tmp_brandString));
+  memset(tmp_brandString ,0,sizeof(tmp_brandString));
 
   __asm {
     mov eax,0

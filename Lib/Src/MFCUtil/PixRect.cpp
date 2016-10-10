@@ -36,13 +36,12 @@ InitDirectX::~InitDirectX() {
 static InitDirectX initDirectX;
 
 LPDIRECT3D         PixRectDevice::s_direct3d = NULL;
-DEFINECLASSNAME(PixRectDevice);
 
 void PixRectDevice::initialize() { // static
   try {
     s_direct3d = Direct3DCreate9(D3D_SDK_VERSION);
     if (s_direct3d == NULL) {
-      throwException(_T("%s::%s. Failed to create Direct3D object"), s_className, __TFUNCTION__);
+      throwException(_T("%s. Failed to create Direct3D object"), __TFUNCTION__);
     }
 //    CHECK3DRESULT(directDraw->SetCooperativeLevel(NULL, DDSCL_NORMAL));
   } catch(Exception e) {
@@ -57,6 +56,18 @@ void PixRectDevice::initialize() { // static
 void PixRectDevice::uninitialize() { // static
   s_direct3d->Release();
   s_direct3d = NULL;
+}
+
+CSize getSurfaceSize(LPDIRECT3DSURFACE surface) {
+  D3DSURFACE_DESC desc;
+  surface->GetDesc(&desc);
+  return CSize(desc.Width, desc.Height);
+}
+
+CSize getTextureSize(LPDIRECT3DTEXTURE texture) {
+  D3DSURFACE_DESC desc;
+  texture->GetLevelDesc(0, &desc);
+  return CSize(desc.Width, desc.Height);
 }
 
 PixRectDevice::PixRectDevice() {
@@ -135,7 +146,7 @@ LPDIRECT3DTEXTURE PixRectDevice::createTexture(const CSize &size, D3DFORMAT form
   if (pool == D3DPOOL_FORCE_DWORD) {
     pool = D3DPOOL_SYSTEMMEM;
   }
-  DWORD usage = 0; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
+  DWORD usage = D3DUSAGE_DYNAMIC; // (pool == D3DPOOL_MANAGED) ? 0 : D3DUSAGE_DYNAMIC;
 
   CHECK3DRESULT(m_device->CreateTexture(size.cx, size.cy, 1, usage, format, pool, &texture, NULL));
   return texture;
@@ -176,6 +187,22 @@ void PixRectDevice::releaseSurface(LPDIRECT3DSURFACE surface, PixRectType type) 
   surface->Release();
 }
 
+LPDIRECT3DSURFACE PixRectDevice::getRenderTarget() {
+  LPDIRECT3DSURFACE surface;
+  CHECK3DRESULT(m_device->GetRenderTarget(0,&surface));
+  return surface;
+}
+
+void PixRectDevice::setRenderTarget(LPDIRECT3DSURFACE renderTarget) {
+  CHECK3DRESULT(m_device->SetRenderTarget(0,renderTarget));
+  set2DTransform(getSurfaceSize(renderTarget));
+}
+
+void PixRectDevice::setRenderTarget(PixRect *renderTarget) {
+  CHECK3DRESULT(m_device->SetRenderTarget(0,renderTarget->m_surface));
+  set2DTransform(renderTarget->getSize());
+}
+
 CompactArray<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // static
   CompactArray<D3DDISPLAYMODE> result;
   D3DDISPLAYMODE adapterMode;
@@ -209,10 +236,10 @@ void PixRectDevice::render(const PixRect *pr) {
     return;  // Haven't been initialized yet!
   }
 
-  CHECK3DRESULT(m_device->BeginScene());
+  beginScene();
   LPDIRECT3DSURFACE renderTarget = NULL;
   try {
-    CHECK3DRESULT(m_device->GetRenderTarget(0, &renderTarget));
+    renderTarget = getRenderTarget();
     //  CHECK3DRESULT(m_device->SetRenderTarget(0, m_renderTarget));
 
     //  ULONG clear_color = 0xffffffff;
@@ -228,17 +255,16 @@ void PixRectDevice::render(const PixRect *pr) {
     //  render2d(winSize);
 
     CHECK3DRESULT(m_device->UpdateSurface(pr->m_surface, NULL, renderTarget, NULL));
-    CHECK3DRESULT(m_device->EndScene());
+    endScene();
     //  CHECK3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
     //  CHECK3DRESULT(m_device->SetRenderTarget(0, oldRenderTarget));
-    releaseSurface(renderTarget, PIXRECT_RENDERTARGET);
-    renderTarget = NULL;
+    renderTarget->Release(); renderTarget = NULL;
     CHECK3DRESULT(m_device->Present(NULL, NULL, NULL, NULL));
   }
   catch (...) {
-    m_device->EndScene();
+    endScene();
     if (renderTarget != NULL) {
-      releaseSurface(renderTarget, PIXRECT_RENDERTARGET);
+      renderTarget->Release();
     }
     throw;
   }
@@ -266,6 +292,12 @@ void PixRectDevice::set2DTransform(const CSize &size) {
   CHECKD3DRESULT(m_device->SetTransform( D3DTS_WORLD, D3DXMatrixAffineTransformation2D(&matWorld, 1, &rotationCenter, (float)GRAD2RAD(m_rotation), NULL)));
 */
 }
+
+const TCHAR *PixRect::s_typeName[] {
+  _T("PIXRECT_TEXTURE")
+ ,_T("PIXRECT_RENDERTARGET")
+ ,_T("PIXRECT_PLAINSURFACE")
+};
 
 #ifdef _DEBUG
 void PixRectDevice::check3DResult(TCHAR *fileName, int line, HRESULT hr) const {
@@ -295,12 +327,8 @@ void PixRect::reOpenDirectX() { // static
 //  initialize();
 }
 
-
-DEFINECLASSNAME(PixRect);
-
 PixRect::PixRect(PixRectDevice &device) : m_device(device) {
   initSurfaces();
-
 }
 
 PixRect::PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT height, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
@@ -325,23 +353,30 @@ PixRect::~PixRect() {
   destroy();
 }
 
-PixRect *PixRect::clone(bool cloneImage, D3DPOOL pool) const {
+PixRect *PixRect::clone(PixRectType type, bool cloneImage, D3DPOOL pool) const {
+  if (type == PIXRECT_RENDERTARGET) {
+    pool = D3DPOOL_DEFAULT;
+  }
   if (pool == D3DPOOL_FORCE_DWORD) {
     pool = getPool();
   }
-  PixRect *copy = new PixRect(m_device, getType(), getSize(), pool, getPixelFormat());
+  PixRect *copy = new PixRect(m_device, type, getSize(), pool, getPixelFormat());
   if(cloneImage) {
     if ((getPool() == D3DPOOL_SYSTEMMEM) && (pool == D3DPOOL_DEFAULT)) {
-      switch (getType()) {
-      case PIXRECT_TEXTURE:
-        CHECK3DRESULT(m_device.getD3Device()->UpdateTexture(m_texture, copy->m_texture));
-        break;
-      case PIXRECT_PLAINSURFACE:
-        CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(m_surface, NULL, copy->m_surface, NULL));
-        break;
+      LPDIRECT3DSURFACE srcSurface = NULL, dstSurface = NULL;
+      try {
+        srcSurface = getSurface();
+        dstSurface = copy->getSurface();
+        CHECK3DRESULT(m_device.getD3Device()->UpdateSurface(srcSurface, NULL, dstSurface, NULL));
+        srcSurface->Release(); srcSurface = NULL;
+        dstSurface->Release(); dstSurface = NULL;
+      } catch(...) {
+        if(srcSurface) srcSurface->Release();
+        if(dstSurface) dstSurface->Release();
+        delete copy;
+        throw;
       }
-    } 
-    else {
+    } else {
       copy->rop(getRect(), SRCCOPY, this, ORIGIN);
     }
   }
@@ -349,11 +384,12 @@ PixRect *PixRect::clone(bool cloneImage, D3DPOOL pool) const {
 }
 
 void PixRect::moveToPool(D3DPOOL pool) {
+  DEFINEMETHODNAME;
   if (pool == getPool()) return;
   if (getType() == PIXRECT_RENDERTARGET) {
-    throwException(_T("%s::%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), s_className, __TFUNCTION__);
+    throwException(_T("%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), method);
   }
-  PixRect *tmp = clone(true, pool);
+  PixRect *tmp = clone(getType(), true, pool);
   destroy();
   m_type = tmp->m_type;
   m_desc = tmp->m_desc;
@@ -367,7 +403,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
     tmp->m_surface = NULL;
     break;
   default:
-    unknownTypeError(__TFUNCTION__);
+    unknownTypeError(method);
   }
   delete tmp;
 }
@@ -380,11 +416,32 @@ LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
   return dstSurface;
 }
 
-void PixRect::showPixRect(PixRect *pr) { // static
+void PixRect::showPixRect(const PixRect *pr) { // static
   HDC screenDC = getScreenDC();
   BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),NULL,0,0,WHITENESS);
   PixRect::bitBlt(screenDC, 0,0,pr->getWidth(),pr->getHeight(), SRCCOPY, pr, 0,0);
   DeleteDC(screenDC);
+}
+
+
+void PixRect::checkType(const TCHAR *method, PixRectType expectedType) const {
+  if (getType() != expectedType) {
+    throwException(_T("%s::Type is %s. Expected type:%s"), method, s_typeName[m_type], s_typeName[expectedType]);
+  }
+}
+
+LPDIRECT3DSURFACE &PixRect::getPlainSurface() {
+  checkType(__TFUNCTION__, PIXRECT_PLAINSURFACE);
+  return m_surface;
+}
+
+LPDIRECT3DSURFACE &PixRect::getRenderTarget() {
+  checkType(__TFUNCTION__, PIXRECT_RENDERTARGET);
+  return m_surface;
+}
+LPDIRECT3DTEXTURE &PixRect::getTexture() {
+  checkType(__TFUNCTION__, PIXRECT_TEXTURE);
+  return m_texture;
 }
 
 void PixRect::checkHasAlphaChannel() const { // throw Exception if no alpha-channel
@@ -435,7 +492,7 @@ void PixRect::init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("%s::init failed:%s"), s_className, errMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errMsg.cstr());
   }
 }
 
@@ -446,6 +503,8 @@ void PixRect::create(PixRectType type, const CSize &sz, D3DFORMAT pixelFormat, D
     createTexture(sz, pixelFormat, pool);
     break;
   case PIXRECT_RENDERTARGET:
+    createRenderTarget(sz, pixelFormat, true);
+    break;
   case PIXRECT_PLAINSURFACE:
     createPlainSurface(sz, pixelFormat, pool);
     break;
@@ -461,9 +520,15 @@ void PixRect::createTexture(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool
   CHECK3DRESULT(m_texture->GetLevelDesc(0, &m_desc));
 }
 
+void PixRect::createRenderTarget(const CSize &sz, D3DFORMAT pixelFormat, bool lockable) { // always in D3DPOOL_DEFAULT
+  m_surface = m_device.createRenderTarget(sz, pixelFormat, lockable);
+  m_type    = PIXRECT_RENDERTARGET;
+  CHECK3DRESULT(m_surface->GetDesc(&m_desc));
+}
+
 void PixRect::createPlainSurface(const CSize &sz, D3DFORMAT pixelFormat, D3DPOOL pool) {
   m_surface = m_device.createOffscreenPlainSurface(sz, pixelFormat, pool);
-  m_type = PIXRECT_PLAINSURFACE;
+  m_type    = PIXRECT_PLAINSURFACE;
   CHECK3DRESULT(m_surface->GetDesc(&m_desc));
 }
 
@@ -520,7 +585,7 @@ PixRect &PixRect::operator=(HBITMAP src) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("%s::operator=(HBITMAP) failed:%s"), s_className, errMsg.cstr());
+    throwException(_T("%s(HBITMAP) failed:%s"), __TFUNCTION__, errMsg.cstr());
   }
   return *this;
 */
@@ -532,7 +597,7 @@ D3DFORMAT PixRect::getPixelFormat(HBITMAP bm) { // static
   case 32:
     return D3DFMT_X8B8G8R8;
   default:
-    throwException(_T("%s::getPixelFormat(HBITMAP):BITMAP.bmBitsPixel=%d. Must be 32"), s_className, info.bmBitsPixel);
+    throwException(_T("%s(HBITMAP):BITMAP.bmBitsPixel=%d. Must be 32"), __TFUNCTION__, info.bmBitsPixel);
     return D3DFMT_X8B8G8R8;
   }
 }
@@ -551,7 +616,7 @@ PixRect::operator HBITMAP() const {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("%s::operator HBITMAP failed:%s"), s_className, errMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errMsg.cstr());
   }
 
   return result;
@@ -580,7 +645,7 @@ void PixRect::fromBitmap(CBitmap &src) {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("%s::fromBitmap failed:%s"), s_className, errMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errMsg.cstr());
   }
 }
 
@@ -609,7 +674,7 @@ void PixRect::toBitmap(CBitmap &dst) const {
   DeleteDC(bmDC);
   releaseDC(prDC);
   if(!ok) {
-    throwException(_T("%s::toBitmap failed:%s"), s_className, errMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errMsg.cstr());
   }
 }
 
@@ -676,12 +741,12 @@ void PixRect::unlockRect() {
   }
 }
 
-void PixRect::unknownTypeError(TCHAR *method) const {
+void PixRect::unknownTypeError(const TCHAR *method) const {
   unknownTypeError(method, getType());
 }
 
-/*static*/ void PixRect::unknownTypeError(TCHAR *method, PixRectType type) {
-  throwException(_T("%s::%s:Unknown type:%d"), s_className, method, type);
+/*static*/ void PixRect::unknownTypeError(const TCHAR *method, PixRectType type) {
+  throwException(_T("%s:Unknown type:%d"), method, type);
 }
 
 
@@ -789,8 +854,20 @@ void PixRect::rop(int x, int y, int w, int h, ULONG op, const PixRect *src, int 
 }
 
 void PixRect::rop(const CRect &dr, ULONG op, const PixRect *src, const CRect &sr) {
-  AfxMessageBox(_T("PixRect::rop no implemented yet"));
-//  CHECK3DRESULT(m_surface->Blt(&dstRect, src->m_surface, &srcRect, DDBLT_ROP | DDBLT_WAIT, &bltFunc));
+  HDC dstDC = getDC();
+  try {
+    const CSize dsz = dr.Size(), ssz = sr.Size();
+    if(ssz == dsz) {
+      bitBlt(dstDC, dr.left, dr.top, dsz.cx,dsz.cy, op, src, sr.left,sr.top);
+    } else {
+      stretchBlt(dstDC, dr, op, src, sr);
+    }
+    releaseDC(dstDC);
+  }
+  catch (...) {
+    releaseDC(dstDC);
+    throw;
+  }
 }
 
 void PixRect::bitBlt(HDC dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp) { // static
@@ -813,7 +890,7 @@ void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRec
     src->releaseDC(srcDC);
   }
   if(!ok) {
-    throwException(_T("%s::bitBlt failed:%s"), s_className, errorMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
   }
 }
 
@@ -828,7 +905,7 @@ void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, HDC src
   }
   dst->releaseDC(dstDC);
   if(!ok) {
-    throwException(_T("%s::bitBlt failed:%s"), s_className, errorMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
   }
 }
 
@@ -844,7 +921,7 @@ void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, ULONG op, const Pi
     src->releaseDC(srcDC);
   }
   if(!ok) {
-    throwException(_T("%s::stretchBlt failed:%s"), s_className, errorMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
   }
 }
 
@@ -858,7 +935,7 @@ void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, con
   }
   dst->releaseDC(dstDC);
   if(!ok) {
-    throwException(_T("%s::stretchBlt failed:%s"), s_className, errorMsg.cstr());
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
   }
 }
 
@@ -967,8 +1044,8 @@ void PixRect::copy(VIDEOHDR &videoHeader) {
 */
 
 
-PixRect *PixRect::mirror(const PixRect *src, bool vertical) {
-  PixRect *result = src->clone();
+PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static
+  PixRect *result = src->clone(src->getType());
   const int width  = result->getWidth();
   const int height = result->getHeight();
   PixelAccessor *srcPA = PixelAccessor::createPixelAccessor((PixRect*)src);

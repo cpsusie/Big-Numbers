@@ -94,24 +94,24 @@ Packer &Packer::operator>>(unsigned short &n) {
 // --------------------------------- INT --------------------------
 
 Packer &Packer::operator<<(int n) {
-  unsigned int ni = htonl(n);
+  UINT ni = htonl(n);
   return addElement(E_INT, &ni, sizeof(ni));
 }
 
 Packer &Packer::operator>>(int &n) {
-  unsigned int ni;
+  UINT ni;
   getElement(E_INT, &ni, sizeof(ni));
   n = ntohl(ni);
   return *this;
 }
 
-Packer &Packer::operator<<(unsigned int n) {
-  unsigned int ni = htonl(n);
+Packer &Packer::operator<<(UINT n) {
+  UINT ni = htonl(n);
   return addElement(E_INT, &ni, sizeof(ni));
 }
 
-Packer &Packer::operator>>(unsigned int &n) {
-  unsigned int ni;
+Packer &Packer::operator>>(UINT &n) {
+  UINT ni;
   getElement(E_INT, &ni, sizeof(ni));
   n = ntohl(ni);
   return *this;

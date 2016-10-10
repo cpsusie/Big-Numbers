@@ -5,7 +5,7 @@
 class ByteCounter {
 public:
   virtual void incrCount(size_t n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
-  virtual unsigned int getMaxChunkSize() const {
+  virtual UINT getMaxChunkSize() const {
     return 500000;
   }
 };

@@ -178,7 +178,7 @@ public:
     if((ch < m_minChar) || (ch > m_maxChar)) {
       return false;
     }
-    const unsigned int index = ch - m_minChar;
+    const UINT index = ch - m_minChar;
     return (m_bitSet[index/8] & (1<<(index%8))) != 0;
   }
 #ifdef _DEBUG
@@ -296,8 +296,8 @@ void ByteBitSet::add(_TUCHAR from, _TUCHAR to) {
   }
   if(from < m_min) m_min = from;
   if(to   > m_max) m_max = to;
-  unsigned int fromIndex = BYTEINDEX(from);
-  unsigned int toIndex   = BYTEINDEX(to  );
+  UINT fromIndex = BYTEINDEX(from);
+  UINT toIndex   = BYTEINDEX(to  );
 
   if(fromIndex < toIndex) {
     if(from % 8) { 
@@ -361,13 +361,13 @@ class CharSetMap : public TreeMap<ByteBitSet, CompactIntArray> {
 public:
   CharSetMap() : TreeMap<ByteBitSet, CompactIntArray>(ByteBitSet::compare) {
   }
-  void incrAddresses(unsigned int addr, unsigned int incr);
+  void incrAddresses(UINT addr, UINT incr);
 #ifdef _DEBUG
   String toString() const;
 #endif
 };
 
-void CharSetMap::incrAddresses(unsigned int addr, unsigned int incr) { // called when instructions are inserted before the charset
+void CharSetMap::incrAddresses(UINT addr, UINT incr) { // called when instructions are inserted before the charset
   for(Iterator<CompactIntArray> it = values().getIterator(); it.hasNext();) {
     CompactIntArray &fixupArray = it.next();
     for(int i = 0; i < (int)fixupArray.size(); i++) {
@@ -406,7 +406,7 @@ public:
      m_addressStopMemory = 0;
 #endif
   }
-  void incrAddresses(unsigned int addr, unsigned int incr);
+  void incrAddresses(UINT addr, UINT incr);
 #ifdef _DEBUG
   String toString() const {
     return format(_T("R:%d L:%d, [%d-%d]\n"), m_regno, m_level, m_addressStartMemory, m_addressStopMemory);
@@ -414,19 +414,19 @@ public:
 #endif
 };
 
-void RegisterInfo::incrAddresses(unsigned int addr, unsigned int incr) {
+void RegisterInfo::incrAddresses(UINT addr, UINT incr) {
   if(m_addressStartMemory >= addr) m_addressStartMemory += incr;
   if(m_addressStopMemory  >= addr) m_addressStopMemory  += incr;
 }
 
 class RegisterInfoTable : public CompactArray<RegisterInfo> {
 public:
-  void incrAddresses(unsigned int addr, unsigned int incr);
+  void incrAddresses(UINT addr, UINT incr);
   RegisterInfo &findByRegno(BYTE regno);
   const RegisterInfo *findLastRegisterInCountingLoop(BYTE level, unsigned short loopStart) const;
 };
 
-void RegisterInfoTable::incrAddresses(unsigned int addr, unsigned int incr) {
+void RegisterInfoTable::incrAddresses(UINT addr, UINT incr) {
   for(int i = 0; i < (int)size(); i++) {
     (*this)[i].incrAddresses(addr, incr);
   }
@@ -464,10 +464,10 @@ public:
     , m_registerTable(registerTable)
   {
   }
-  void insertBytes(unsigned int addr, unsigned int incr);
+  void insertBytes(UINT addr, UINT incr);
 };
 
-void ByteInsertHandler::insertBytes(unsigned int addr, unsigned int incr) {
+void ByteInsertHandler::insertBytes(UINT addr, UINT incr) {
   m_charSetMap.incrAddresses(addr, incr);
   m_registerTable.incrAddresses(addr, incr);
 }
@@ -482,7 +482,7 @@ public:
   RegexScanner(const TCHAR *source, const unsigned char *translateTable);
   _TUCHAR        fetchRaw();
   _TUCHAR        fetch();
-  _TUCHAR        look(unsigned int lookahead = 0) const;
+  _TUCHAR        look(UINT lookahead = 0) const;
   inline bool    eos() const { return m_current == m_end; }
   inline int     getIndex() const { return (int)(m_current - m_source); }
   unsigned short fetchShort();
@@ -498,7 +498,7 @@ RegexScanner::RegexScanner(const TCHAR *source, const unsigned char *translateTa
   m_translateTable = translateTable;
 }
 
-_TUCHAR RegexScanner::look(unsigned int lookahead) const {
+_TUCHAR RegexScanner::look(UINT lookahead) const {
   const _TUCHAR *result = m_current + lookahead;
   if(result > m_end) {
     throwException(unexpectedEndMsg);
@@ -527,7 +527,7 @@ unsigned short RegexScanner::fetchShort() {
     error(expectedNumberMsg);
   }
   const int startIndex = getIndex();
-  unsigned int result = 0;
+  UINT result = 0;
   do {
     result = result * 10 + (ch - '0');
     fetch();
@@ -673,53 +673,53 @@ int Regex::compareStrings(const TCHAR *s1, const TCHAR *s2, size_t length) const
 
 // --------------------------------- Code generation -------------------------------------
 
-void Regex::insertZeroes(unsigned int addr, unsigned int count) {
+void Regex::insertZeroes(UINT addr, UINT count) {
   m_buffer.insertZeroes(addr, count);
   m_insertHandler->insertBytes(addr, count);
 }
 
-void Regex::insertOpcode(BYTE opcode, unsigned int addr) {
+void Regex::insertOpcode(BYTE opcode, UINT addr) {
   insertZeroes(addr, 1);
   storeOpcode(opcode, addr);
 }
 
-void Regex::insertJump(BYTE opcode, unsigned int addr, int to) {
+void Regex::insertJump(BYTE opcode, UINT addr, int to) {
   insertZeroes(addr, SIZE_JUMP);
   storeJump(opcode, addr, to);
 }
 
-void Regex::insertResetCounter(unsigned int addr, BYTE counterIndex) {
+void Regex::insertResetCounter(UINT addr, BYTE counterIndex) {
   insertZeroes(addr, 2);
   m_buffer[addr]   = resetCounter;
   m_buffer[addr+1] = counterIndex;
 }
 
-void Regex::insertCountingJump(BYTE opcode, unsigned int addr, int to, BYTE counterIndex) {
+void Regex::insertCountingJump(BYTE opcode, UINT addr, int to, BYTE counterIndex) {
   insertZeroes(addr, SIZE_COUNTINGJUMP);
   storeCountingJump(opcode, addr, to, counterIndex);
 }
 
-void Regex::storeOpcode(BYTE opcode, unsigned int addr) {
+void Regex::storeOpcode(BYTE opcode, UINT addr) {
   assertHasSpace(addr, 1);
   m_buffer[addr] = opcode;
 }
 
 // Store a jump(to) operation at address addr in m_buffer
 // opcode is the opcode to store.
-void Regex::storeJump(BYTE opcode, unsigned int addr, int to) {
+void Regex::storeJump(BYTE opcode, UINT addr, int to) {
   assertHasSpace(addr, SIZE_JUMP);
   m_buffer[addr] = opcode;
   storeShort(addr+1, to-(addr+SIZE_JUMP));
 }
 
-void Regex::storeCountingJump(BYTE opcode, unsigned int addr, int to, BYTE counterIndex) {
+void Regex::storeCountingJump(BYTE opcode, UINT addr, int to, BYTE counterIndex) {
   assertHasSpace(addr, SIZE_COUNTINGJUMP);
   m_buffer[addr]   = opcode;
   m_buffer[addr+1] = counterIndex;
   storeShort(addr+2, to-(addr+SIZE_COUNTINGJUMP));
 }
 
-void Regex::storeShort(unsigned int addr, short s) {
+void Regex::storeShort(UINT addr, short s) {
   storeData(addr, &s, sizeof(s));
 }
 
@@ -731,12 +731,12 @@ void Regex::appendCharacter(TCHAR ch) {
   m_buffer.append((BYTE*)&ch, sizeof(ch));
 }
 
-void Regex::storeData(unsigned int addr, const void *data, unsigned int size) {
+void Regex::storeData(UINT addr, const void *data, UINT size) {
   assertHasSpace(addr, size);
   memcpy(&m_buffer[addr], data, size);
 }
 
-void Regex::assertHasSpace(unsigned int addr, unsigned int count) { // extend m_buffer if needed
+void Regex::assertHasSpace(UINT addr, UINT count) { // extend m_buffer if needed
   const int needed = (int)addr + (int)count - (int)m_buffer.size();
   if(needed > 0) {
     m_buffer.appendZeroes(needed);
@@ -784,12 +784,12 @@ public:
 
 class CompilerStack : public Stack<ParStackElement> { // not CompactStack here, We have a CompactArray in the elements
 public:
-  bool   regnoIsOnStack(unsigned int regno) const;
-  String getDefinedRegStr(unsigned int regnum) const;
+  bool   regnoIsOnStack(UINT regno) const;
+  String getDefinedRegStr(UINT regnum) const;
 };
 
-bool CompilerStack::regnoIsOnStack(unsigned int regno) const {
-  for(unsigned int h = 0; h < getHeight(); h++) {
+bool CompilerStack::regnoIsOnStack(UINT regno) const {
+  for(UINT h = 0; h < getHeight(); h++) {
     if(top(h).m_regno == regno) {
       return true;
     }
@@ -797,10 +797,10 @@ bool CompilerStack::regnoIsOnStack(unsigned int regno) const {
   return false;
 }
 
-String CompilerStack::getDefinedRegStr(unsigned int regnum) const { // return a string with regno < regnum that is not on the stack (excluding top element
+String CompilerStack::getDefinedRegStr(UINT regnum) const { // return a string with regno < regnum that is not on the stack (excluding top element
   BitSet regSet(10);
   regSet.add(1, min(9,regnum-1));
-  for(unsigned int h = 0; h < getHeight(); h++) {
+  for(UINT h = 0; h < getHeight(); h++) {
     regSet.remove(top(h).m_regno);
   }
   if(regSet.isEmpty()) {
@@ -1142,7 +1142,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
         case _T('7'):
         case _T('8'):
         case _T('9'):
-          { const unsigned int c1 = c - _T('0');
+          { const UINT c1 = c - _T('0');
             if((c1 >= REGNUM) || stack.regnoIsOnStack(c1)) {
               scanner.error(commandStartIndex, regnoNotDefined, c1, stack.getDefinedRegStr(REGNUM).cstr());
             }
@@ -1337,7 +1337,7 @@ BitSet Regex::first(intptr_t pcStart,intptr_t pcEnd, bool *matchEmpty) const {  
       case charSet                  :
       case charSetNot               :
         { const CharSet set(opcode, pc);
-          for(unsigned int j = 0; j < MAXCHARSETSIZE; j++) {
+          for(UINT j = 0; j < MAXCHARSETSIZE; j++) {
             if(set.isLegalChar(j)) {
               result.add(TRANSLATE(j));
             }
@@ -2046,7 +2046,7 @@ RegexStepHandler *Regex::setHandler(RegexStepHandler *handler) {
 
 String Regex::toString() const {
   String result;
-  unsigned int lineCount = 0;
+  UINT lineCount = 0;
 
   CLEARLINENUMBERS();
 
@@ -2294,17 +2294,17 @@ BitSet Regex::getPossibleBreakPointLines() const {
   return result;
 }
 
-unsigned int _RegexMatchState::getDBGIpElement() const {
+UINT _RegexMatchState::getDBGIpElement() const {
   const UINT             ipIndex = (UINT)(m_ip - m_regex.getCodeStart());
   const CompactIntArray &dbg     = m_regex.getDebugInfo();
   return ((int)ipIndex >= dbg.size()) ? 0 : dbg[ipIndex];
 }
 
-unsigned int _RegexMatchState::getDBGPatternCharIndex() const {
+UINT _RegexMatchState::getDBGPatternCharIndex() const {
   return getDBGIpElement() & 0xffff;
 }
 
-unsigned int _RegexMatchState::getDBGLineNumber() const {
+UINT _RegexMatchState::getDBGLineNumber() const {
   return getDBGIpElement() >> 16;
 }
 

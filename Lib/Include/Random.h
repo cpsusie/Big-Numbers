@@ -5,7 +5,7 @@ private:
   __int64 m_seed;
 
 protected:
-  unsigned int next(unsigned int bits);
+  UINT next(UINT bits);
 
 public:
   Random();                                    // Initialize with m_seed = 0
@@ -29,8 +29,8 @@ public:
 void randomize();                              // randomize standard random-generator and _standardRandomGenerator (declared below)
 __int64 getRandomSeed();                       // gets a random seed to randomize. based upon next GUID
 
-unsigned int randInt();                        // use _standardRandomGenerator
-unsigned int randInt(unsigned int n);          // use _standardRandomGenerator. return random int in range [0..n-1]
+UINT         randInt();                        // use _standardRandomGenerator
+UINT         randInt(UINT         n);          // use _standardRandomGenerator. return random int in range [0..n-1]
 int          randInt(int from, int to);        // use _standardRandomGenerator. return random int in range [from..to]
 __int64      randInt64();                      // use _standardRandomGenerator
 __int64      randInt64(unsigned __int64 n);

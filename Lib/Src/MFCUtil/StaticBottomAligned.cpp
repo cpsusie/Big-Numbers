@@ -5,22 +5,16 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-CStaticBottomAligned::CStaticBottomAligned()
-{
+CStaticBottomAligned::CStaticBottomAligned() {
 }
 
-CStaticBottomAligned::~CStaticBottomAligned()
-{
+CStaticBottomAligned::~CStaticBottomAligned() {
 }
 
 BEGIN_MESSAGE_MAP(CStaticBottomAligned, CStatic)
-	//{{AFX_MSG_MAP(CStaticBottomAligned)
 	ON_WM_PAINT()
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CStaticBottomAligned::substituteControl(CWnd *parent, int id) {

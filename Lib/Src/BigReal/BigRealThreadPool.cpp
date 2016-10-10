@@ -138,8 +138,8 @@ DigitPool *BigRealThreadPool::fetchDigitPool() { // static
 void BigRealThreadPool::releaseDigitPool(DigitPool *pool) { // static
   BigRealThreadPool &instance = getInstance();
 #ifdef CHECKALLDIGITS_RELEASED
-  MTDigitPoolType *tmp = (MTDigitPoolType*)pool;
-  const unsigned int newUsed = tmp->getUsedDigitCount();
+  MTDigitPoolType *tmp     = (MTDigitPoolType*)pool;
+  const UINT       newUsed = tmp->getUsedDigitCount();
   if(tmp->m_usedDigits != newUsed) {
     throwBigRealException(_T("releaseDigitPool(%d).Used digits(fetch):%lu, Used digits(release):%lu"), pool->getId(), tmp->m_usedDigits, newUsed);
   }
@@ -209,7 +209,7 @@ public:
   PoolLoggingThread();
   void startLogging();
   void stopLogging();
-  unsigned int run();
+  UINT run();
 };
 
 PoolLoggingThread::PoolLoggingThread() : m_start(0) {
@@ -229,7 +229,7 @@ void PoolLoggingThread::stopLogging() {
   m_stopped = true;
 }
 
-unsigned int PoolLoggingThread::run() {
+UINT PoolLoggingThread::run() {
   for(;;) {
     const int timeout = m_stopped ? INFINITE : 2000;
     m_start.wait(timeout);

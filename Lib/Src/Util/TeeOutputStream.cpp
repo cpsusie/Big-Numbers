@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <TeeOutputStream.h>
 
-void TeeOutputStream::putBytes(const BYTE *src, unsigned int n) {
+void TeeOutputStream::putBytes(const BYTE *src, UINT n) {
   m_s1.putBytes(src, n);
   m_s2.putBytes(src, n);
 }

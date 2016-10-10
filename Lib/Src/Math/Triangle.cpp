@@ -4977,7 +4977,7 @@ LocateResult Mesh::locate(Vertex searchpoint, otri *searchtri) {
 
     // Choose `samplesleft' randomly sampled triangles in this block.
     do {
-      sampletri.tri = (Triangle*)(firsttri + (randInt((unsigned int) population) * triangles.getItemBytes()));
+      sampletri.tri = (Triangle*)(firsttri + (randInt((UINT) population) * triangles.getItemBytes()));
       if (!deadtri(sampletri.tri)) {
         org(sampletri, torg);
         dist = (searchpoint[0] - torg[0]) * (searchpoint[0] - torg[0])
@@ -6336,7 +6336,7 @@ void vertexsort(Vertex *sortarray, int arraysize) {
     return;
   }
   // Choose a random pivot to split the array.
-  pivot = (int) randInt((unsigned int) arraysize);
+  pivot = (int) randInt((UINT) arraysize);
   pivotx = sortarray[pivot][0];
   pivoty = sortarray[pivot][1];
   // Split the array.
@@ -6401,7 +6401,7 @@ void vertexmedian(Vertex *sortarray, int arraysize, int median, int axis) {
     return;
   }
   // Choose a random pivot to split the array.
-  pivot = (int) randInt((unsigned int) arraysize);
+  pivot = (int) randInt((UINT) arraysize);
   pivot1 = sortarray[pivot][axis];
   pivot2 = sortarray[pivot][1 - axis];
   // Split the array.

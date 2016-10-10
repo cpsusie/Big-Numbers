@@ -83,7 +83,7 @@ BigReal BigReal::reciprocal(const BigReal &x, DigitPool *digitPool) { // static
 // Return the first k decimal digits of this.
 // if scale != NULL, result = n/10^scale, where scale = max(s|(n/10^s) % 10 != 0) and n = first k decimal digits of this
 // if scale == NULL, result = first k decimal digits of this, which can contain trailing zeroes
-unsigned long BigReal::getFirst32(const unsigned int k, BRExpoType *scale) const {
+unsigned long BigReal::getFirst32(const UINT k, BRExpoType *scale) const {
 #ifdef _DEBUG
   DEFINEMETHODNAME;
   if(k > MAXDIGITS_INT32) {
@@ -101,7 +101,7 @@ unsigned long BigReal::getFirst32(const unsigned int k, BRExpoType *scale) const
   BRDigitType   result   = p->n;
 
   int           digits   = getDecimalDigitCount(result), firstDigits = digits;;
-  if((unsigned int)digits >= k) {
+  if((UINT)digits >= k) {
     result /= pow10(digits-k); // digits-k <= LOG10_BIGREALBASE, so pow10 will not fail
     if(scale) {
       while(result % 10 == 0) {
@@ -111,7 +111,7 @@ unsigned long BigReal::getFirst32(const unsigned int k, BRExpoType *scale) const
     }
   } else { // digits < k
     if(scale) {
-      for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
         if(p) {
           const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
           result = result * p10 + p->n / (BIGREALBASE/p10);
@@ -126,7 +126,7 @@ unsigned long BigReal::getFirst32(const unsigned int k, BRExpoType *scale) const
         tmpScale++;
       }
     } else { // scale == NULL
-      for(p = p->next; (unsigned int)digits < k; digits += LOG10_BIGREALBASE) {
+      for(p = p->next; (UINT)digits < k; digits += LOG10_BIGREALBASE) {
         const BRDigitType p10 = pow10(min(LOG10_BIGREALBASE,k-digits));
         result *= p10;
         if(p) {

@@ -30,7 +30,7 @@ void LexFileStream::initQueues() {
   // do nothing cause there are no queues
 }
 
-int LexFileStream::getChars(_TUCHAR *dst, unsigned int n) {
+int LexFileStream::getChars(_TUCHAR *dst, UINT n) {
   return fread(dst, 1, n, m_f);
 }
 

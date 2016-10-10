@@ -36,8 +36,8 @@ private:
 public:
   MD5Context();
   void init();
-  void update(const unsigned char *input, unsigned int inputLen);
-  void update(const          char *input, unsigned int inputLen) {
+  void update(const unsigned char *input, UINT inputLen);
+  void update(const          char *input, UINT inputLen) {
     update((const unsigned char*)input, inputLen);
   };
   void final(unsigned char digest[16]);

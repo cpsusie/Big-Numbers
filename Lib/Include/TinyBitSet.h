@@ -8,7 +8,7 @@ private:
   T m_bits; // T must be unsigned char,short,long or __int64 for this to compile
   inline explicit TinyBitSet(T bits) : m_bits(bits) {
   };
-  inline T mask(unsigned int i) const {
+  inline T mask(UINT i) const {
     return (i==getCapacity()) ? -1 : (((T)1<<i) - 1);
   }
 public:
@@ -24,19 +24,19 @@ public:
     va_end(argptr);
   }
 */
-  inline bool contains(unsigned int i) const {
+  inline bool contains(UINT i) const {
     return (m_bits & ((T)1<<i)) != 0;
   }
-  inline void add(unsigned int i) {
+  inline void add(UINT i) {
     m_bits |= ((T)1<<i);
   }
-  inline void remove(unsigned int i) {
+  inline void remove(UINT i) {
     m_bits &= ~((T)1<<i);
   }
-  inline void add(   unsigned int a, unsigned int b) {
+  inline void add(   UINT a, UINT b) {
     m_bits |= ~mask(a) & mask(b + 1);
   }
-  inline void remove(unsigned int a, unsigned int b) {
+  inline void remove(UINT a, UINT b) {
     m_bits &= mask(a) | ~mask(b + 1);
   }
   inline void clear() {
@@ -55,9 +55,9 @@ public:
     }
     return result;
   }
-  unsigned int select() const {                     // Returns a random element from non empty set. throws Exception if set is empty
+  UINT select() const {                     // Returns a random element from non empty set. throws Exception if set is empty
     if(isEmpty()) {
-      throwException(_T("TinyBitSet::select:Set is empty"));
+      throwException(_T("%s:Set is empty"), __TFUNCTION__);
     }
     CompactArray<unsigned char> members(64);
     T bits = m_bits;
@@ -70,7 +70,7 @@ public:
     return members.select();
   }
 
-  inline unsigned int getCapacity() const {
+  inline UINT getCapacity() const {
     return sizeof(T) * 8;
   }
   inline bool isEmpty() const {
@@ -128,8 +128,8 @@ public:
   class TinyBitSetIterator : public AbstractIterator {
   private:
     TinyBitSet<T> &m_set;
-    unsigned int   m_next;
-    unsigned int   m_current;
+    UINT           m_next;
+    UINT           m_current;
     bool           m_hasNext;
     void first() {
       if(m_set.isEmpty()) {
@@ -172,7 +172,7 @@ public:
   private:
     TinyBitSet<T> &m_set;
     int            m_next;
-    unsigned int   m_current;
+    UINT           m_current;
     bool           m_hasNext;
     void first() {
       if(m_set.isEmpty()) {
@@ -211,11 +211,11 @@ public:
     }
   };
 
-  Iterator<unsigned int> getIterator() {       // iterator that iterates elements of bitset in ascending  order
-    return Iterator<unsigned int>(new TinyBitSetIterator(*this));
+  Iterator<UINT> getIterator() {        // iterator that iterates elements of bitset in ascending  order
+    return Iterator<UINT>(new TinyBitSetIterator(*this));
   }
-  Iterator<unsigned int> getReverseIterator() { // iterator that iterates elements of bitset in descending order
-    return Iterator<unsigned int>(new TinyBitSetReverseIterator(*this));
+  Iterator<UINT> getReverseIterator() { // iterator that iterates elements of bitset in descending order
+    return Iterator<UINT>(new TinyBitSetReverseIterator(*this));
   }
 
   String toString() const {

@@ -10,7 +10,7 @@ public:
   NullOutputStream(const NullOutputStream &src);            // not defined. NullOutputStream not cloneable
   NullOutputStream &operator=(const NullOutputStream &src); // not defined. NullOutputStream not cloneable
 
-  void putBytes(const BYTE *src, unsigned int n) {
+  void putBytes(const BYTE *src, UINT n) {
     /* do nothing */
   }
 

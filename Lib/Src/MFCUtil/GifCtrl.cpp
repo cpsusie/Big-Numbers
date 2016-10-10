@@ -5,16 +5,12 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CGifCtrl::CGifCtrl() {
   m_isPainted    = false;
   m_suspended    = false;
   m_paintedIndex = -1;
-    //{{AFX_DATA_INIT(CGifCtrl)
-	//}}AFX_DATA_INIT
 }
 
 CGifCtrl::~CGifCtrl() {
@@ -148,8 +144,8 @@ void CGifCtrl::hide() {
 }
 
 #define CANPAINT() (isLoaded() && !isPlaying() && !isSuspended())
-void CGifCtrl::paintFrame(unsigned int index) {
-  if(CANPAINT() && index < (unsigned int)m_image.getFrameCount()) {
+void CGifCtrl::paintFrame(UINT index) {
+  if(CANPAINT() && index < (UINT)m_image.getFrameCount()) {
     m_isPainted    = true;
     m_suspended    = false;
     m_paintedIndex = index;

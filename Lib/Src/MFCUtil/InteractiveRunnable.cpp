@@ -4,7 +4,7 @@
 
 #pragma warning(disable : 4244)
 
-unsigned int InteractiveRunnable::getEstimatedSecondsLeft() {
+UINT InteractiveRunnable::getEstimatedSecondsLeft() {
   const unsigned short maxProgress = getMaxProgress();
   if(maxProgress == 0) {
     return 0;

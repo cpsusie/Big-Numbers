@@ -10,9 +10,6 @@ private:
 public:
     CColoredStatic();
 
-    //{{AFX_DATA(CColoredStatic)
-	//}}AFX_DATA
-
     void setBKColor(  COLORREF color);
     void setTextColor(COLORREF color);
     COLORREF getBKColor() const {
@@ -22,18 +19,12 @@ public:
       return m_textColor;
     }
 
-    //{{AFX_VIRTUAL(CColoredStatic)
-    //}}AFX_VIRTUAL
-
 public:
     virtual ~CColoredStatic();
 
 protected:
-    //{{AFX_MSG(CColoredStatic)
 	afx_msg void OnPaint();
-	//}}AFX_MSG
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

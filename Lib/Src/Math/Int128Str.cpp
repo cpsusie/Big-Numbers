@@ -11,7 +11,7 @@ const _uint128 _UI128_MAX(0xffffffffffffffff, 0xffffffffffffffff);
 
 static const _uint128 _10(10);
 
-static unsigned int convertNumberChar(wchar_t digit) {
+static UINT convertNumberChar(wchar_t digit) {
   switch(digit) {
   case '0': return 0;
   case '1': return 1;
@@ -118,7 +118,7 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     return str;
   }
 
-  const unsigned int dc = digitCount[radix];
+  const UINT dc = digitCount[radix];
 
   Ctype *s = str;
   switch (radix) {
@@ -145,13 +145,13 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     return str;
   case 8 : // Get 3 bits/digit giving 30 bits/loop, ie 10 digits/loop
   case 32: // Get 5 bits/digit giving 30 bits/loop too! which is 6 digits/loop
-    { const unsigned int mask = (1 << dc) - 1;
-      const unsigned int dpl  = 30 / dc;
+    { const UINT mask = (1 << dc) - 1;
+      const UINT dpl  = 30 / dc;
       _uint128 v = value;
       for(;;) {
-        unsigned int v30 = v.s4.i[0] & ((1<<30) - 1);
+        UINT v30 = v.s4.i[0] & ((1<<30) - 1);
         v >>= 30;
-        unsigned int count;
+        UINT count;
         for(count = 0; v30; count++, v30 >>= dc) {
           *(s++) = radixLetter(v30 & mask);
         }
@@ -171,7 +171,7 @@ template<class Int128Type, class Ctype> Ctype *int128toStr(Int128Type value, Cty
     _uint128 v = value;
     const _uint128 &divisor = powRadix[radix];
     for(;;) {
-      const unsigned int c = v % divisor;
+      const UINT c = v % divisor;
       Ctype tmpStr[40];
       ULTOSTR(c, tmpStr, radix);
       STRCPY(s, STRREV(tmpStr));
@@ -226,7 +226,7 @@ template<class CharType> const CharType *parseDec(const CharType *str, _int128 &
       gotDigit = true;
     }
     else {
-      const unsigned int d = *str - '0';
+      const UINT d = *str - '0';
       n *= _10;
       n += d;
     }
@@ -250,7 +250,7 @@ template<class CharType> const CharType *uparseDec(const CharType *str, _uint128
       gotDigit = true;
     }
     else {
-      const unsigned int d = *str - '0';
+      const UINT d = *str - '0';
       n *= _10;
       n += d;
     }
@@ -264,9 +264,8 @@ template<class CharType> const CharType *parseHex(const CharType *str, _uint128 
     if (!gotDigit) {
       *n = convertNumberChar(*str);
       gotDigit = true;
-    }
-    else {
-      const unsigned int d = convertNumberChar(*str);
+    } else {
+      const UINT d = convertNumberChar(*str);
       *n <<= 4;
       *n |= d;
     }
@@ -280,9 +279,8 @@ template<class CharType> const CharType *parseOct(const CharType *str, _uint128 
     if (!gotDigit) {
       *n = convertNumberChar(*str);
       gotDigit = true;
-    }
-    else {
-      const unsigned int d = convertNumberChar(*str);
+    } else {
+      const UINT d = convertNumberChar(*str);
       *n <<= 3;
       *n |= d;
     }

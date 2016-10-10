@@ -122,20 +122,20 @@ public:
 
 class TriangleStrip {
 public:
-  unsigned int m_vertexId[10];
+  UINT         m_vertexId[10];
   char         m_count;
   inline TriangleStrip() : m_count(0) {
   }
-  inline TriangleStrip(unsigned int v0, unsigned int v1, unsigned int v2) : m_count(3) {
+  inline TriangleStrip(UINT v0, UINT v1, UINT v2) : m_count(3) {
     m_vertexId[0] = v0; m_vertexId[1] = v1; m_vertexId[2] = v2;
   }
-  inline TriangleStrip(unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3) : m_count(4) {
+  inline TriangleStrip(UINT v0, UINT v1, UINT v2, UINT v3) : m_count(4) {
     m_vertexId[0] = v0; m_vertexId[1] = v1; m_vertexId[2] = v2; m_vertexId[3] = v3;
   }
-  inline TriangleStrip(unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4) : m_count(5) {
+  inline TriangleStrip(UINT v0, UINT v1, UINT v2, UINT v3, UINT v4) : m_count(5) {
     m_vertexId[0] = v0; m_vertexId[1] = v1; m_vertexId[2] = v2; m_vertexId[3] = v3; m_vertexId[4] = v4;
   }
-  inline TriangleStrip(unsigned int v0, unsigned int v1, unsigned int v2, unsigned int v3, unsigned int v4, unsigned int v5) : m_count(6) {
+  inline TriangleStrip(UINT v0, UINT v1, UINT v2, UINT v3, UINT v4, UINT v5) : m_count(6) {
     m_vertexId[0] = v0; m_vertexId[1] = v1; m_vertexId[2] = v2; m_vertexId[3] = v3; m_vertexId[4] = v4; m_vertexId[5] = v5;
   }
   inline bool isEmpty() const {
@@ -146,10 +146,10 @@ public:
 
 class Face3 {                   // Parameter to receiveFace
 public:
-  unsigned int m_i1,m_i2,m_i3;  // Indices into vertexArray
-  D3DCOLOR m_color;
+  UINT         m_i1,m_i2,m_i3;  // Indices into vertexArray
+  D3DCOLOR     m_color;
   Face3() {}
-  inline Face3(unsigned int i1, unsigned int i2, unsigned int i3, D3DCOLOR color) 
+  inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color) 
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
   {
   }
@@ -162,9 +162,9 @@ public:
   inline StackedCube(int i, int j, int k) : m_key(i,j,k) {
     memset(m_corners, 0, sizeof(m_corners));
   }
-  unsigned int getIndex() const;
+  UINT getIndex() const;
   inline bool intersectSurface() const {
-    const unsigned int index = getIndex();
+    const UINT index = getIndex();
     return index && (index < 255);
   }
   inline bool contains(const Point3D &p) const {
@@ -195,18 +195,18 @@ public:
 class PolygonizerStatistics {
 public:
   double       m_threadTime;
-  unsigned int m_faceCount;
-  unsigned int m_vertexCount;
-  unsigned int m_cubeCount;
-  unsigned int m_cornerCount;
-  unsigned int m_edgeCount;
-  unsigned int m_cornerHits;
-  unsigned int m_edgeHits;
-  unsigned int m_zeroHits;
-  unsigned int m_evalCount;
-  unsigned int m_doCubeCalls;
-  unsigned int m_doTetraCalls;
-  unsigned int m_nonProduktiveCalls;
+  UINT         m_faceCount;
+  UINT         m_vertexCount;
+  UINT         m_cubeCount;
+  UINT         m_cornerCount;
+  UINT         m_edgeCount;
+  UINT         m_cornerHits;
+  UINT         m_edgeHits;
+  UINT         m_zeroHits;
+  UINT         m_evalCount;
+  UINT         m_doCubeCalls;
+  UINT         m_doTetraCalls;
+  UINT         m_nonProduktiveCalls;
   String       m_hashStat;
 
   PolygonizerStatistics();
@@ -256,7 +256,7 @@ private:
     m_statistics.m_evalCount++;
     return m_eval.evaluate(p);
   }
-  inline void         putFace3(unsigned int i1, unsigned int i2, unsigned int i3) {
+  inline void         putFace3(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException("Invalid face(%u,%d,%d). vertexArray.size==%u", i1,i2,i3, m_vertexArray.size());
@@ -264,7 +264,7 @@ private:
 #endif
     m_face3Buffer.add(Face3(i1,i2,i3,m_color));
   }
-  inline void         putFace3R(unsigned int i1, unsigned int i2, unsigned int i3) {
+  inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
       throwException("Invalid face(%u,%d,%d). vertexArray.size==%u", i1,i2,i3, m_vertexArray.size());
@@ -284,7 +284,7 @@ private:
   }
   void                pushCube(const StackedCube &cube);
 
-  unsigned int        getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
+  UINT                getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
   Point3D             getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 

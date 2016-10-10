@@ -99,7 +99,7 @@ public:
     m_leftSide.add(a);
   }
 
-  const Real &getLeftSideCoefficient(unsigned int index) const { // index=[1..size]
+  const Real &getLeftSideCoefficient(UINT index) const { // index=[1..size]
     return m_leftSide[index-1];
   }
 
@@ -136,7 +136,7 @@ private:
   SimplexRelation    m_relation;
   CompactArray<Real> m_a;
 public:
-  TableauRow(unsigned int size);
+  TableauRow(UINT size);
 
   const Real &getRightSide() const {
     return m_a[0];

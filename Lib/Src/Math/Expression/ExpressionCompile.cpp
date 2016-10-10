@@ -872,7 +872,7 @@ int Expression::genPushReal(const Real &x) {
   return genPush(&x,sizeof(Real));
 }
 
-int Expression::genPush(const void *p, unsigned int size) { // return size rounded up to nearest multiply of 4
+int Expression::genPush(const void *p, UINT size) { // return size rounded up to nearest multiply of 4
   switch(size) {
   case 2:
     m_code.emit(MOV_TO_AX_IMM_ADDR_WORD);
@@ -898,7 +898,7 @@ int Expression::genPush(const void *p, unsigned int size) { // return size round
     return 12;
   default:
     size = getAlignedSize(size);
-    unsigned int count = size / 4;
+    UINT count = size / 4;
     m_code.emitSubESP(size);
     m_code.emit(MOV_R32_IMM_DWORD(ECX));
     m_code.addBytes(&count,4);

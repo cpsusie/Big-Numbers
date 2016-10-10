@@ -26,7 +26,7 @@ MultiplierThread::MultiplierThread(int id)
   start();
 }
 
-unsigned int MultiplierThread::run() {
+UINT MultiplierThread::run() {
 //  const int id = BigRealResource::getId();
 //  const int ypos = id + 20;
   for(;;) {

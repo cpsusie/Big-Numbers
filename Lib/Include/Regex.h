@@ -63,13 +63,13 @@ public:
     , m_regno(regno)
   {
   }
-  inline bool contains(unsigned int n) const {
+  inline bool contains(UINT n) const {
     return (m_minRepeat <= n) && ((m_maxRepeat==0) || (n <= m_maxRepeat));
   }
-  inline bool isGEMin(unsigned int n) const {
+  inline bool isGEMin(UINT n) const {
     return n >= m_minRepeat;
   }
-  inline bool isBelowMax(unsigned int n) const {
+  inline bool isBelowMax(UINT n) const {
     return m_maxRepeat && (n < m_maxRepeat);
   }
   inline bool hasStateRegister() const {
@@ -82,7 +82,7 @@ public:
 
 class _RegexCounterRegister : public _RegexCounterRange {
 public:
-  unsigned int m_value;
+  UINT m_value;
   inline bool isValueInRange() const {
     return isGEMin(m_value);
   }
@@ -99,7 +99,7 @@ public:
   const BYTE                        *m_ip;
   const TCHAR                       *m_sp;
   BYTE                               m_counterIndex;
-  unsigned int                       m_counterValue; // only set when hasCounter() = true
+  UINT                               m_counterValue; // only set when hasCounter() = true
 //  const TCHAR                       *m_regEnd;       // only set when hasCounter() = true
   inline _RegexMatchStackElement() {
   }
@@ -109,7 +109,7 @@ public:
     , m_counterIndex(-1)
   {
   }
-  inline _RegexMatchStackElement(const BYTE *ip, const TCHAR *sp, BYTE counterIndex, unsigned int counterValue/*, const TCHAR *regEnd*/)
+  inline _RegexMatchStackElement(const BYTE *ip, const TCHAR *sp, BYTE counterIndex, UINT counterValue/*, const TCHAR *regEnd*/)
     : m_ip(ip)
     , m_sp(sp)
     , m_counterIndex(counterIndex)
@@ -280,9 +280,9 @@ public:
   }
 
 #ifdef _DEBUG
-  unsigned int getDBGIpElement() const;
-  unsigned int getDBGLineNumber() const;
-  unsigned int getDBGPatternCharIndex() const;
+  UINT getDBGIpElement() const;
+  UINT getDBGLineNumber() const;
+  UINT getDBGPatternCharIndex() const;
   String stackToString() const;
   String registersToString() const;
   String countersToString() const;
@@ -353,16 +353,16 @@ public:
 
 class _RegexByteInsertHandler {
 public:
-  virtual void insertBytes(unsigned int addr, unsigned int incr) = 0;
+  virtual void insertBytes(UINT addr, UINT incr) = 0;
 };
 
 class Regex {
 private:
   ByteArray                  m_buffer;           // Space holding the compiled pattern commands.
-  unsigned int               m_codeSize;         // Number of bytes in code-segment. m_buffer may contain extra bytes holding the used charsets
+  UINT                       m_codeSize;         // Number of bytes in code-segment. m_buffer may contain extra bytes holding the used charsets
   BitSet                     m_fastMap;          // search uses the fastmap, to skip quickly over totally implausible characters
   mutable _RegexCounterTable m_counterTable;     // Counters used in ...{m,n} constructs
-  unsigned int               m_counterTableSize; // Number of counters in use.
+  UINT                       m_counterTableSize; // Number of counters in use.
   const unsigned char       *m_translateTable;   // Translate table to apply to all characters before comparing.
                                                  // Or NULL for no translation.
                                                  // The translation is applied to a pattern when it is compiled
@@ -378,7 +378,7 @@ private:
                                                  // Highorder 16 bits of each elemenet holds the line into code text returned by toString()
                                                  // Loworder 16 bits holds the index into pattern-string
   mutable bool               m_codeDirty;        // Set to true when anything in m_buffer has changed, and false when toString() is called.
-  mutable unsigned int       m_cycleCount;       // Counts the number of cycles from the search/match begin til return
+  mutable UINT               m_cycleCount;       // Counts the number of cycles from the search/match begin til return
 #endif
 
   void compilePattern1(   const TCHAR    *pattern);
@@ -412,20 +412,20 @@ private:
                          ,size_t          mstop) const;
   int  compareStrings(const TCHAR *s1, const TCHAR *s2, register size_t length) const;
   void init();
-  void insertZeroes(unsigned int addr,   unsigned int count); // Always call this. instead of m_buffer.insertZeroes
-  void storeData(                        unsigned int addr, const void *data, unsigned int size);
-  void insertOpcode(      BYTE opcode,   unsigned int addr                           );
-  void insertJump(        BYTE opcode,   unsigned int addr, int to                   );
-  void insertResetCounter(               unsigned int addr,         BYTE counterIndex);
-  void insertCountingJump(BYTE opcode,   unsigned int addr, int to, BYTE counterIndex);
-  void storeOpcode(       BYTE opcode,   unsigned int addr                           );
-  void storeJump(         BYTE opcode,   unsigned int addr, int to                   );
-  void storeResetCounter(                unsigned int addr,         BYTE counterIndex);
-  void storeCountingJump( BYTE opcode,   unsigned int addr, int to, BYTE counterIndex);
-  void storeShort(                       unsigned int addr, short s                  );
+  void insertZeroes(UINT addr,   UINT count); // Always call this. instead of m_buffer.insertZeroes
+  void storeData(                        UINT addr, const void *data, UINT size);
+  void insertOpcode(      BYTE opcode,   UINT addr                           );
+  void insertJump(        BYTE opcode,   UINT addr, int to                   );
+  void insertResetCounter(               UINT addr,         BYTE counterIndex);
+  void insertCountingJump(BYTE opcode,   UINT addr, int to, BYTE counterIndex);
+  void storeOpcode(       BYTE opcode,   UINT addr                           );
+  void storeJump(         BYTE opcode,   UINT addr, int to                   );
+  void storeResetCounter(                UINT addr,         BYTE counterIndex);
+  void storeCountingJump( BYTE opcode,   UINT addr, int to, BYTE counterIndex);
+  void storeShort(                       UINT addr, short s                  );
   void appendUShort(                     unsigned short s                            );
   void appendCharacter(TCHAR ch);
-  void assertHasSpace(unsigned int addr, unsigned int count); // extend m_buffer if needed
+  void assertHasSpace(UINT addr, UINT count); // extend m_buffer if needed
 public:
   Regex();
   Regex(const String &pattern, const unsigned char *translateTable = NULL);
@@ -457,7 +457,7 @@ public:
     return m_buffer.getData();
   }
 
-  inline unsigned int getCodeSize() const {
+  inline UINT getCodeSize() const {
     return m_codeSize;
   }
 
@@ -479,7 +479,7 @@ public:
     return m_PCToLineArray;
   }
   BitSet       getPossibleBreakPointLines() const;
-  unsigned int getCycleCount() const {
+  UINT         getCycleCount() const {
     return m_cycleCount;
   }
 #endif

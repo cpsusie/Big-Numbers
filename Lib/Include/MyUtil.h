@@ -38,8 +38,8 @@ String getMessageName(int msg);
 
 bool getDebuggerPresent();
 
-void *xmalloc(unsigned int n);
-void *xrealloc(void *q, unsigned int n);
+void *xmalloc(UINT n);
+void *xrealloc(void *q, UINT n);
 TCHAR *xstrdup(const TCHAR *str);
 void  xfree(void *p);
 
@@ -100,7 +100,7 @@ void             CHDIR(  const String &dir);
 String           GETCWD();
 __int64          GETSIZE(FILE *f);
 __int64          GETPOS( FILE *f);
-void             PIPE(   int  *pipe, unsigned int size, int textMode);
+void             PIPE(   int  *pipe, UINT size, int textMode);
 int              DUP(    int   fd);
 void             DUP2(   int   fd1, int fd2); 
 HANDLE           GETHANDLE(FILE *f);
@@ -116,7 +116,7 @@ void pause(const TCHAR *format, ...);
 bool keyPressed(int vk);
 bool shiftKeyPressed();
 bool ctrlKeyPressed();
-unsigned char toAscii(unsigned int virtualCode);
+unsigned char toAscii(UINT virtualCode);
 
 String  inputPassword(TCHAR *format, ...); // read password from console
 int     inputInt(     TCHAR *format, ...); // read an integer from stdin
@@ -169,7 +169,7 @@ String sprintbin(unsigned char    c);
 String sprintbin(         short   s);
 String sprintbin(unsigned short   s);
 String sprintbin(         int     i);
-String sprintbin(unsigned int     i);
+String sprintbin(UINT             i);
 String sprintbin(         long    l);
 String sprintbin(unsigned long    l);
 String sprintbin(         __int64 i);
@@ -204,7 +204,7 @@ inline int sign(const double &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0
 }
 
 
-inline unsigned int sqr(int x) {     // return x*x
+inline UINT         sqr(int x) {     // return x*x
   return x * x;
 }
 
@@ -235,7 +235,7 @@ extern const double M_E;
 short            minMax(short            x, short            x1, short            x2);
 unsigned short   minMax(unsigned short   x, unsigned short   x1, unsigned short   x2);
 int              minMax(int              x, int              x1, int              x2);
-unsigned int     minMax(unsigned int     x, unsigned int     x1, unsigned int     x2);
+UINT             minMax(UINT             x, UINT             x1, UINT             x2);
 __int64          minMax(__int64          x, __int64          x1, __int64          x2);
 unsigned __int64 minMax(unsigned __int64 x, unsigned __int64 x1, unsigned __int64 x2);
 float            minMax(float            x, float            x1, float            x2);
@@ -266,11 +266,11 @@ inline int intHashCmp(const int &n1, const int &n2) {
   return n1 - n2;
 }
 
-inline unsigned long uintHash(const unsigned int &n) {
+inline unsigned long uintHash(const UINT &n) {
   return n;
 }
 
-inline int  uintHashCmp(const unsigned int &n1, const unsigned int &n2) {
+inline int  uintHashCmp(const UINT &n1, const UINT &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 

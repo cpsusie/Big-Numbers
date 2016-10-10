@@ -6,7 +6,7 @@
 
 class CConfirmDlg : public CDialog {
 private:
-  const TCHAR *m_message, *m_caption;
+  const TCHAR     *m_message, *m_caption;
   const UINT       m_nType;
   HICON            m_icon;
   HACCEL           m_accelTable;
@@ -23,30 +23,21 @@ public:
       return !m_dontShowAgain;
     }
 
-    //{{AFX_DATA(CConfirmDlg)
     enum { IDD = _IDD_CONFIRM_DIALOG };
     BOOL    m_dontShowAgain;
-    //}}AFX_DATA
 
-
-    //{{AFX_VIRTUAL(CConfirmDlg)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-	//}}AFX_VIRTUAL
 
 protected:
 
-    //{{AFX_MSG(CConfirmDlg)
     virtual BOOL OnInitDialog();
     afx_msg void OnButton0();
     afx_msg void OnButton1();
     afx_msg void OnButton2();
     virtual void OnCancel();
-	afx_msg void OnPaint();
-	//}}AFX_MSG
+  	afx_msg void OnPaint();
     DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}

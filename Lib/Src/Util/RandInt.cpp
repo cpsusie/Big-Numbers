@@ -3,11 +3,11 @@
 
 Random _standardRandomGenerator;
 
-unsigned int randInt() {
+UINT randInt() {
   return _standardRandomGenerator.nextInt();
 }
 
-unsigned int randInt(unsigned int n) {
+UINT randInt(UINT n) {
   return _standardRandomGenerator.nextInt(n);
 }
 

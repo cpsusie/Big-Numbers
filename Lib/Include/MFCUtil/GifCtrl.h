@@ -14,14 +14,8 @@ private:
 public:
     CGifCtrl();
 
-    //{{AFX_DATA(CGifCtrl)
-	//}}AFX_DATA
-
-
-    //{{AFX_VIRTUAL(CGifCtrl)
-	public:
-	protected:
-	//}}AFX_VIRTUAL
+public:
+protected:
 #ifdef _DEBUG
     void trace(const char *format, ...);
 #endif
@@ -35,7 +29,7 @@ public:
     void unload();
     void play(bool force = false);
     void stop();
-    void paintFrame(unsigned int index);
+    void paintFrame(UINT index);
     void paintAllFrames();
     void hide();
     inline bool isPlaying() const {
@@ -57,14 +51,12 @@ public:
       return m_image.getFrameCount();
     }
 protected:
-    //{{AFX_MSG(CGifCtrl)
 	afx_msg void OnPaint();
 	afx_msg void OnDestroy();
 	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
 	afx_msg void OnSize(UINT nType, int cx, int cy);
-	//}}AFX_MSG
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 //{{AFX_INSERT_LOCATION}}

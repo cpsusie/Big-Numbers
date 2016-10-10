@@ -2,6 +2,6 @@
 
 class Runnable {
 public:
-  virtual unsigned int run() = 0;
+  virtual UINT run() = 0;
 };
 

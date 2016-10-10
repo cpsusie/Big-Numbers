@@ -13,7 +13,7 @@ CallCounter::~CallCounter() {
 
 void CallCounter::incr(int mapKey) {
   m_callCount++;
-  unsigned int *v = m_map.get(mapKey);
+  UINT *v = m_map.get(mapKey);
   if(v) {
     (*v)++;
   } else {
@@ -24,8 +24,8 @@ void CallCounter::incr(int mapKey) {
 class CallEntry {
 public:
   int          m_mapKey; // key
-  unsigned int m_calls;  // value. Number of calls for each key
-  inline CallEntry(int mapKey, unsigned int calls) : m_mapKey(mapKey), m_calls(calls) {
+  UINT         m_calls;  // value. Number of calls for each key
+  inline CallEntry(int mapKey, UINT calls) : m_mapKey(mapKey), m_calls(calls) {
   }
 };
 
@@ -36,8 +36,8 @@ static int callEntryCmp(const CallEntry &e1, const CallEntry &e2) {
 String CallCounter::mapToString() {
   Array<CallEntry> entryArray(m_map.size());
 
-  for(Iterator<Entry<int, unsigned int> > it = m_map.entrySet().getIterator(); it.hasNext();) {
-    const Entry<int, unsigned int> &e = it.next();
+  for(Iterator<Entry<int, UINT> > it = m_map.entrySet().getIterator(); it.hasNext();) {
+    const Entry<int, UINT> &e = it.next();
     entryArray.add(CallEntry(e.getKey(), e.getValue()));
   }
   entryArray.sort(callEntryCmp);

@@ -189,7 +189,7 @@ private:
   MachineCode                m_code;
   ExpressionReturnType       m_returnType;
   mutable ExpressionState    m_state;
-  mutable unsigned int       m_reduceIteration;
+  mutable UINT               m_reduceIteration;
   TrigonometricMode          m_trigonometricMode;
 #ifdef IS64BIT
   bool                       m_hasCalls;
@@ -258,7 +258,7 @@ private:
   int  genPushReal(                                        const Real           &x);
   int  genPushReturnAddr();
   int  genPushInt(int n);
-  int  genPush(                                            const void           *p, unsigned int size); // return size
+  int  genPush(                                            const void           *p, UINT size); // return size
   int  genPushRef(                                         const void           *p);
 #else // IS64BIT
   BYTE genSetParameter(                                    const ExpressionNode *n, int index, bool saveOnStack);
@@ -360,7 +360,7 @@ private:
 
   // Properties
   void setState(ExpressionState newState);
-  void setReduceIteration(unsigned int iteration);
+  void setReduceIteration(UINT iteration);
   void setReturnType(ExpressionReturnType returnType);
 public:
   Expression(TrigonometricMode mode = RADIANS);
@@ -404,7 +404,7 @@ public:
     return m_state;
   }
 
-  inline unsigned int getReduceIteration() const {
+  inline UINT getReduceIteration() const {
     return m_reduceIteration;
   }
 

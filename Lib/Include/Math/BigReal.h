@@ -541,14 +541,14 @@ public:
   inline BigReal(int              x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
-  inline BigReal(unsigned int     x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  inline BigReal(UINT             x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
   }
   inline BigReal(long             x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init((int)x);
   }
   inline BigReal(unsigned long    x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
-    init((unsigned int)x);
+    init((UINT)x);
   }
   inline BigReal(__int64          x      , DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(x);
@@ -603,7 +603,7 @@ public:
     clearDigits(); init(n);
     return *this;
   }
-  inline BigReal &operator=(unsigned int     n) {
+  inline BigReal &operator=(UINT             n) {
     clearDigits(); init(n);
     return *this;
   }
@@ -612,7 +612,7 @@ public:
     return *this;
   }
   inline BigReal &operator=(unsigned long    n) {
-    clearDigits(); init((unsigned int)n);
+    clearDigits(); init((UINT)n);
     return *this;
   }
   inline BigReal &operator=(__int64          n) {
@@ -649,7 +649,7 @@ public:
   BigReal &operator=(const BigReal    &x);
 
   friend          int     getInt(     const BigReal  &x);
-  friend unsigned int     getUint(    const BigReal  &x);
+  friend UINT             getUint(    const BigReal  &x);
   friend          long    getLong(    const BigReal  &x);
   friend unsigned long    getUlong(   const BigReal  &x);
   friend          __int64 getInt64(   const BigReal  &x);
@@ -750,7 +750,7 @@ public:
     return BigReal(getExpo10(x), x.getDigitPool());
   }
 
-  static inline BRDigitType pow10(unsigned int n) {                                         // Return 10^n. Assume n <= 9
+  static inline BRDigitType pow10(UINT n) {                                         // Return 10^n. Assume n <= 9
 #ifdef _DEBUG
     if(n < ARRAYSIZE(s_power10Table)) {
       return s_power10Table[n];
@@ -823,10 +823,10 @@ public:
     return isZero() ? 0 : m_last->n;
   }
 
-  unsigned long    getFirst32(const unsigned int k, BRExpoType *scale = NULL) const;        // First k decimal digits. Assume k <= 9.
-  unsigned __int64 getFirst64(const unsigned int k, BRExpoType *scale = NULL) const;        // First k decimal digits. Assume k <= 19.
+  unsigned long    getFirst32(const UINT k, BRExpoType *scale = NULL) const;        // First k decimal digits. Assume k <= 9.
+  unsigned __int64 getFirst64(const UINT k, BRExpoType *scale = NULL) const;        // First k decimal digits. Assume k <= 19.
 #ifdef IS64BIT
-  _uint128 &getFirst128(_uint128 &dst, const unsigned int k, BRExpoType *scale = NULL) const; // First k decimal digits. Assume k <= 38.
+  _uint128 &getFirst128(_uint128 &dst, const UINT k, BRExpoType *scale = NULL) const; // First k decimal digits. Assume k <= 38.
 #endif
   String toString() const;
   inline DigitPool *getDigitPool() const {
@@ -848,7 +848,7 @@ public:
 
   friend BigRealStream &operator<<(BigRealStream &stream, const BigReal &x);
 
-  static unsigned int getMaxSplitLength();
+  static UINT getMaxSplitLength();
 
   static void resumeCalculation() {    // Call this when terminateCalculation has been called and you want to start a new calculation
     s_continueCalculation = true;
@@ -931,7 +931,7 @@ public:
   inline ConstBigReal(int              x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  inline ConstBigReal(unsigned int     x) : BigReal(x, REQUSETCONSTPOOL) {
+  inline ConstBigReal(UINT             x) : BigReal(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   inline ConstBigReal(long             x) : BigReal(x, REQUSETCONSTPOOL) {
@@ -1076,7 +1076,7 @@ public:
 
   BigInt(int                    x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(unsigned int           x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(UINT                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
   BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
@@ -1133,7 +1133,7 @@ public:
   ConstBigInt(int                    x) : BigInt(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(unsigned int           x) : BigInt(x, REQUSETCONSTPOOL) {
+  ConstBigInt(UINT                   x) : BigInt(x, REQUSETCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   ConstBigInt(long                   x) : BigInt(x, REQUSETCONSTPOOL) {
@@ -1316,7 +1316,7 @@ private:
   int                       m_requestCount;
 public:
   BigRealThread(int id);
-  unsigned int run();
+  UINT run();
   void execute(Runnable &job, SynchronizedStringQueue &resultQueue);
 };
 
@@ -1332,7 +1332,7 @@ private:
   friend class BigRealThreadPool;
 public:
   MultiplierThread(int id);
-  unsigned int run();
+  UINT run();
 
   void multiply(BigReal &result, const BigReal &x, const BigReal &y, const BigReal &f, int level);
   DigitPool *getDigitPool() const {
@@ -1412,7 +1412,7 @@ class MThreadArray : private CompactArray<MultiplierThread*> {
 public:
   void waitForAllResults();
   ~MThreadArray();
-  MultiplierThread &get(unsigned int i) {
+  MultiplierThread &get(UINT i) {
     return *(*this)[i];
   }
 };
@@ -1421,8 +1421,8 @@ public:
 #ifdef CHECKALLDIGITS_RELEASED
 class DigitPoolWithCheck : public DigitPool {
 public:
-  unsigned int m_usedDigits;
-  DigitPoolWithCheck(int id, unsigned int intialDigitcount = 0) : DigitPool(id, intialDigitcount) {
+  UINT m_usedDigits;
+  DigitPoolWithCheck(int id, UINT intialDigitcount = 0) : DigitPool(id, intialDigitcount) {
   }
 };
 
@@ -1439,7 +1439,7 @@ private:
   int  m_threadPriority;
   bool m_disablePriorityBoost;
 
-  Thread &get(unsigned int index) {
+  Thread &get(UINT index) {
     return *((Thread*)((*this)[index]));
   }
 

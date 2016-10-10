@@ -41,19 +41,12 @@ public:
   inline UINT getMaxHistoryLength() const {
     return m_history.getMaxHistoryLength();
   }
-	//{{AFX_VIRTUAL(CComboBoxWithHistory)
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	//}}AFX_VIRTUAL
 
 public:
 	virtual ~CComboBoxWithHistory();
 
 protected:
-	//{{AFX_MSG(CComboBoxWithHistory)
-	//}}AFX_MSG
-
 	DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}

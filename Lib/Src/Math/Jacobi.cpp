@@ -11,7 +11,7 @@ Matrix getJacobi(VectorFunction &f, const Vector &x0, const Vector &y0) {
   Vector x1(x0);
   Matrix result(y0.getDimension(),x0.getDimension());
 
-  for(unsigned int i = 0; i < x1.getDimension(); i++) {
+  for(UINT i = 0; i < x1.getDimension(); i++) {
     Real &xi = x1[i];
     Real save = xi;
     Real eps  = (save == 0) ? EPSILON : EPSILON * save;

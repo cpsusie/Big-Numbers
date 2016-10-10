@@ -270,7 +270,7 @@ void Scanner::less(int count) { // protected
 }
 
 static unsigned short findColumn(const TCHAR *s, const TCHAR *first) { // search backwards for the the first '\n'
-  unsigned int count;
+  UINT count;
   for(count = 0; s >= first && *s != NEWLINE; s--) {
     count++;
   }

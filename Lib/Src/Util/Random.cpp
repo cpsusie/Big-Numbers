@@ -22,9 +22,9 @@ void Random::randomize() {
   setSeed(getRandomSeed());
 }
 
-unsigned int Random::next(unsigned int bits) {
+UINT Random::next(UINT bits) {
   m_seed = (m_seed * multiplier + addend) & mask;
-  return (unsigned int)(m_seed >> (48 - bits));
+  return (UINT)(m_seed >> (48 - bits));
 }
 
 bool Random::nextBool() {

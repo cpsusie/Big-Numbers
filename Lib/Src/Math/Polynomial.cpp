@@ -27,7 +27,7 @@ Polynomial::Polynomial(int degree) {
 
 Polynomial::Polynomial(const Vector &coef) {
   m_coef.setDimension(coef.getDimension());
-  for(unsigned int i = 0; i < coef.getDimension(); i++) {
+  for(UINT i = 0; i < coef.getDimension(); i++) {
     m_coef[i] = coef[i];
   }
   trimLeadingZeroes();
@@ -216,7 +216,7 @@ ComplexVector Polynomial::findRoots(bool verbose, const Real &rootCriterium) con
     if(verbose) {
       tcout << _T("Purification:") << endl;
     }
-    for(unsigned int i = 0; i < roots.getDimension(); i++) {
+    for(UINT i = 0; i < roots.getDimension(); i++) {
       roots[i] = findRoot(roots[i], verbose, rootCriterium);
     }
   }

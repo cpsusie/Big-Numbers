@@ -15,7 +15,7 @@
 
 typedef enum {
   EXPR_STATE                 // ExpressionState
- ,EXPR_REDUCEITERATION       // unsigned int
+ ,EXPR_REDUCEITERATION       // UINT
  ,EXPR_TRIGONOMETRICMODE     // TrigonometricMode
  ,EXPR_RETURNTYPE            // ExpressionReturnType
  ,EXPR_ROOT                  // ExpressionNode

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <ByteArray.h>
 
-ExecutableByteArray::ExecutableByteArray(const BYTE *data, unsigned int size) {
+ExecutableByteArray::ExecutableByteArray(const BYTE *data, UINT size) {
   init();
   if (size > 0) {
     setData(data, size);
@@ -15,7 +15,7 @@ ExecutableByteArray::ExecutableByteArray(const ByteArray &src) {
   }
 }
 
-ExecutableByteArray::ExecutableByteArray(unsigned int capacity) {
+ExecutableByteArray::ExecutableByteArray(UINT capacity) {
   init();
   setCapacity(capacity);
 }

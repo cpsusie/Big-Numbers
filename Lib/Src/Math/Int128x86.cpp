@@ -351,8 +351,8 @@ RetZero:
 End:;
 }
 
-static unsigned int getFirst16(const _uint128 &n, int &expo2) {
-  unsigned int result, expo;
+static UINT getFirst16(const _uint128 &n, int &expo2) {
+  UINT result, expo;
   __asm {
     pushf
     mov         ecx, 4
@@ -406,8 +406,8 @@ End1Result:
   return result;
 }
 
-static unsigned int getFirst32(const _uint128 &n, int &expo2) {
-  unsigned int result, expo;
+static UINT getFirst32(const _uint128 &n, int &expo2) {
+  UINT result, expo;
   __asm {
     pushf
     mov         ecx, 4
@@ -450,8 +450,8 @@ End1Result:
   return result;
 }
 
-static inline int getExpo2(unsigned int x) {
-  unsigned int result;
+static inline int getExpo2(UINT x) {
+  UINT result;
   _asm {
     mov         edx, x
     bsr         eax, edx
@@ -460,7 +460,7 @@ static inline int getExpo2(unsigned int x) {
   return result;
 }
 
-// Special class to perform fast multiplication of _uint128 and unsigned int
+// Special class to perform fast multiplication of _uint128 and UINT
 // no need to do any accumulation of "cross-multiplications" cause 2. operand
 // is only 32 bits
 class _uint128FastMul : public _uint128 {
@@ -469,7 +469,7 @@ public:
     HI64(*this) = HI64(src); LO64(*this) = LO64(src);
     return *this;
   }
-  inline _uint128FastMul &operator*=(unsigned int k) {
+  inline _uint128FastMul &operator*=(UINT k) {
     const _uint128FastMul copy(*this);
     _asm {
       mov edi, this
@@ -500,7 +500,7 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
   _uint128 dummyRest;
 
   int yExpo2;
-  const unsigned int y16    = getFirst16(y, yExpo2);
+  const UINT         y16    = getFirst16(y, yExpo2);
   const int          yScale = yExpo2 - getExpo2(y16);
   _uint128          &rest = rem  ? *rem  : dummyRest;
   rest = a;
@@ -509,9 +509,9 @@ void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot,
   int lastShift = 0;
   for (int count = 0; rest >= y; count++) {
     int restExpo2;
-    const unsigned int rest32      = getFirst32(rest, restExpo2);
+    const UINT         rest32      = getFirst32(rest, restExpo2);
     const int          rest32Expo2 = getExpo2(rest32);
-    unsigned int       q;
+    UINT               q;
     int                shift;
     p = y;
     if ((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31

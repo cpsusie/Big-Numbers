@@ -19,8 +19,8 @@ inline int getInt(double x) {
   return (int)x;
 }
 
-inline unsigned int getUint(double x) {
-  return (unsigned int)x;
+inline UINT getUint(double x) {
+  return (UINT)x;
 }
 
 inline long getLong(double x) {

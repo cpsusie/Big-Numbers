@@ -6,24 +6,18 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CColoredStatic::CColoredStatic() {
     m_textColor  = RGB(0,0,0);
     m_bkColorSet = false;
-    //{{AFX_DATA_INIT(CColoredStatic)
-	//}}AFX_DATA_INIT
 }
 
 CColoredStatic::~CColoredStatic() {
 }
 
 BEGIN_MESSAGE_MAP(CColoredStatic, CStatic)
-    //{{AFX_MSG_MAP(CColoredStatic)
     ON_WM_PAINT()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CColoredStatic::OnPaint() {

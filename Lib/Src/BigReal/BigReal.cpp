@@ -367,8 +367,8 @@ int getInt(const BigReal &x) {
   return (int)getLong(x);
 }
 
-unsigned int getUint(const BigReal &x) {
-  return (unsigned int)getUlong(x);
+UINT getUint(const BigReal &x) {
+  return (UINT)getUlong(x);
 }
 
 long getLong(const BigReal &x) {

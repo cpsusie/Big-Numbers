@@ -200,9 +200,9 @@ public:
   }
 };
 
-class UIntHashSet : public HashSet<unsigned int> {
+class UIntHashSet : public HashSet<UINT> {
 public:
-  UIntHashSet(size_t capacity=31) : HashSet<unsigned int>(uintHash, uintHashCmp, capacity) {
+  UIntHashSet(size_t capacity=31) : HashSet<UINT>(uintHash, uintHashCmp, capacity) {
   }
 };
 

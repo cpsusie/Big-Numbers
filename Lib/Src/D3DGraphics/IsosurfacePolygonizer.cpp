@@ -447,7 +447,7 @@ bool IsoSurfacePolygonizer::addToDoneSet(const Point3DKey &key) {
 // getVertexId: return index for vertex on edge:
 // c1.m_value and c2.m_value are presumed of different sign
 // return saved index if any; else calculate and save vertex for later use
-unsigned int IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2) {
+UINT IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2) {
 #ifdef VALIDATE_OPPOSITESIGN
   if(c1.m_positive == c2.m_positive) {
     throwException("getVertexId:corners have same sign. c1:%s, c2:%s", c1.toString().cstr(), c2.toString().cstr());
@@ -463,7 +463,7 @@ unsigned int IsoSurfacePolygonizer::getVertexId(const HashedCubeCorner &c1, cons
   IsoSurfaceVertex v;
   v.m_position = converge(c1.m_point, c2.m_point, c1.m_positive); // position
   v.m_normal   = getNormal(v.m_position); // normal
-  const unsigned int vid = m_vertexArray.size();
+  const UINT vid = m_vertexArray.size();
   m_vertexArray.add(v);
   m_edgeMap.put(edgeKey, vid);
   return vid;
@@ -554,8 +554,8 @@ String toString(CubeCorner cb) {
 
 #define TOLERANCE 1e-10
 
-unsigned int StackedCube::getIndex() const {
-  unsigned int index = 0;
+UINT StackedCube::getIndex() const {
+  UINT index = 0;
   for(int i = 0; i < ARRAYSIZE(m_corners); i++)  {
     if(m_corners[i]->m_positive) {
       index |= (1<<i);
@@ -614,7 +614,7 @@ void IsoSurfacePolygonizer::saveStatistics(double startTime) {
   m_statistics.m_threadTime  = getThreadTime() - startTime;
   m_statistics.m_vertexCount = m_vertexArray.size();
   m_statistics.m_cornerCount = m_cornerMap.size();
-  m_statistics.m_edgeCount   = (unsigned int)m_edgeMap.size();
+  m_statistics.m_edgeCount   = (UINT)m_edgeMap.size();
   m_statistics.m_hashStat    = _T("  CornerMap:") + intArrayToString(m_cornerMap.getLength())    + _T("\n")
                              + _T("  EdgeMap  :") + intArrayToString(m_edgeMap.getLength())      + _T("\n")
                              + _T("  DoneSet  :") + intArrayToString(m_cubesDoneSet.getLength()) + _T("\n");

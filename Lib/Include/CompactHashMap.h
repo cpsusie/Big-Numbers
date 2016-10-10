@@ -21,7 +21,7 @@ public:
 
 template <class K, class V> class CompactHashNodePage {
 public:
-  unsigned int               m_count;
+  UINT                       m_count;
   CompactHashNodePage<K, V> *m_next;
   CompactHashNode<K, V>      m_nodes[20000];
 
@@ -286,7 +286,7 @@ public:
   class CompactMapKeyIterator : public AbstractIterator {
   private:
     CompactHashNodePage<K, V> *m_currentPage;
-    unsigned int               m_currentIndex;
+    UINT                       m_currentIndex;
 
   public:
     CompactMapKeyIterator(CompactHashNodePage<K, V> *firstPage) {
@@ -315,7 +315,7 @@ public:
     }
 
     void remove() {
-      throwException(_T("Unsupported operation"));
+      throwUnsupportedOperationException(__TFUNCTION__);
     }
   };
 
@@ -353,7 +353,7 @@ public:
   class CompactMapEntryIterator : public AbstractIterator {
   private:
     CompactHashNodePage<K, V> *m_currentPage;
-    unsigned int               m_currentIndex;
+    UINT                       m_currentIndex;
     CompactMapIteratorEntry    m_buffer;
 
   public:

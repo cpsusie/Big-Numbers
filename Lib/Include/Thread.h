@@ -27,7 +27,7 @@ private:
   friend class         ThreadSet;
   friend class         InitThreadClass;
 
-  static UncaughtExceptionHandler *defaultUncaughtExceptionHandler;
+  static UncaughtExceptionHandler *s_defaultUncaughtExceptionHandler;
   String                    m_name;
   DWORD                     m_threadId;
   HANDLE                    m_threadHandle;
@@ -65,7 +65,7 @@ public:
     resume();
   }
 
-  unsigned int run();
+  UINT run();
 
   unsigned long getId() const {
     return m_threadId;
@@ -79,11 +79,11 @@ public:
   unsigned long getExitCode() const;
 
   static void setDefaultUncaughtExceptionHandler(UncaughtExceptionHandler &eh) {
-    defaultUncaughtExceptionHandler = &eh;
+    s_defaultUncaughtExceptionHandler = &eh;
   }
 
   static UncaughtExceptionHandler &getDefaultUncaughtExceptionHandler() {
-    return *defaultUncaughtExceptionHandler;
+    return *s_defaultUncaughtExceptionHandler;
   }
 
   void setUncaughtExceptionHandler(UncaughtExceptionHandler &eh) {

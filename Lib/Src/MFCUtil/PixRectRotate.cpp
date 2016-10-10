@@ -1,234 +1,177 @@
 #include "stdafx.h"
 #include <Math.h>
-#include <PixRect.h>
+#include <MFCUtil/Viewport2D.h>
+#include <MFCUtil/PixRect.h>
+
+#ifdef IS32BIT
+#define D3DX9DIR "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/"
+#else // IS64BIT
+#define D3DX9DIR "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64/"
+#endif
+
+#pragma comment(lib, D3DX9DIR "d3dx9.lib")
 
 class RotationData {
 public:
   const CRect  m_rect;
   const double m_degree;
-  const double m_cos,m_sin;
   CRect        m_resultRect;
   Point2D      m_offset;
+  D3DXMATRIX   m_world;
+
+  static D3DXMATRIX create2DRotationWorld(const D3DXVECTOR2 &center, double rad);
+  Rectangle2DR getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSize);
 
   RotationData(const CSize &size, double degree);
-
-  Point2D rotateForw(double x, double y) const {
-    return rotateForw(Point2D(x,y));
-  }
-
-  Point2D rotateBack(double x, double y) const {
-    return rotateBack(Point2D(x,y));
-  }
-
-  Point2D rotateForw(const Point2D &p) const;
-  Point2D rotateBack(const Point2D &p) const;
 };
 
 RotationData::RotationData(const CSize &size, double degree) 
 : m_rect(0,0,size.cx, size.cy)
 , m_degree(degree)
-, m_cos(cos(GRAD2RAD(degree)))
-, m_sin(sin(GRAD2RAD(degree)))
 {
   m_offset.x = m_offset.y = 0;
-  Point2DArray corners;
-  corners.add(rotateForw(m_rect.TopLeft()));
-  corners.add(rotateForw(CPoint(m_rect.right,m_rect.top)));
-  corners.add(rotateForw(m_rect.BottomRight()));
-  corners.add(rotateForw(CPoint(m_rect.left ,m_rect.bottom)));
-  Rectangle2D fRect = corners.getBoundingBox();
+  const Point2DP rcenter = m_rect.CenterPoint();
+  D3DXVECTOR2 center;
+  center.x     = (float)rcenter.x;
+  center.y     = (float)rcenter.y;
+  m_world      = create2DRotationWorld(center, GRAD2RAD(m_degree));
+  m_resultRect = getTransformedRectangle(m_world, size);
+}
 
-  if(fmod(m_degree, 90) == 0) {
-    m_offset = Point2D(0,0);
-    switch(((int)m_degree)%360) {
-    case 90:
-    case -90:
-    case 270:
-    case -270:
-      m_resultRect = CRect(0,0,m_rect.Height(),m_rect.Width());
-      break;
-    case 0   :
-    case 180 :
-    case -180:
-      m_resultRect = m_rect;
-      break;
-    }
-  } else {
-    m_offset     = -Point2D(ceil(fRect.getX()),ceil(fRect.getY())) + Point2D(fraction(fRect.getBottomRight().x),fraction(fRect.getBottomRight().y));
-    fRect        = Rectangle2D(0,0, fRect.getBottomRight().x + m_offset.x, fRect.getBottomRight().y + m_offset.y);
-    m_resultRect = CRect(CPoint(0,0),CPoint((int)ceil(fRect.getBottomRight().x),(int)ceil(fRect.getBottomRight().y)));
+D3DXMATRIX RotationData::create2DRotationWorld(const D3DXVECTOR2 &center, double rad) { // static
+  D3DXMATRIX m;
+  return *D3DXMatrixAffineTransformation2D(&m, 1, &center, (float)rad, NULL);
+}
+
+D3DXVECTOR2 operator*(const D3DXMATRIX &m, const D3DXVECTOR2 &v) {
+  D3DXVECTOR4 v4;
+  D3DXVec2Transform(&v4, &v, &m);
+  return D3DXVECTOR2(v4.x, v4.y);
+}
+
+Rectangle2DR RotationData::getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSize) {
+  D3DXVECTOR2 corner[4];
+  corner[0] = D3DXVECTOR2(0               , 0               );
+  corner[1] = D3DXVECTOR2((float)bmSize.cx, 0               );
+  corner[2] = D3DXVECTOR2(0               , (float)bmSize.cy);
+  corner[3] = D3DXVECTOR2((float)bmSize.cx, (float)bmSize.cy);
+
+  Point2DArray trCorners;
+  for(int i = 0; i < 4; i++) {
+    const D3DXVECTOR2 tp = m * corner[i];
+    trCorners.add(Point2D(tp.x,tp.y));
   }
+  return trCorners.getBoundingBox();
 }
 
-Point2D RotationData::rotateForw(const Point2D &p) const {
-  return Point2D(m_cos * p.x - m_sin * p.y + m_offset.x
-                ,m_sin * p.x + m_cos * p.y + m_offset.y);
-}
+#define V CHECK3DRESULT
 
-Point2D RotationData::rotateBack(const Point2D &p) const {
-  const double x1 = p.x - m_offset.x;
-  const double y1 = p.y - m_offset.y;
-  return Point2D(m_cos * x1 + m_sin * y1,-m_sin * x1 + m_cos * y1);
-}
-
-class Rotation : public RotationData {
-private:
-  const PixRect *m_srcPixRect;
-  PixelAccessor *m_src;
-  D3DCOLOR       m_background;
-
-  D3DCOLOR getMixedPixel(const Point2D &p) const;
-  void rotateAngle(PixRect *dstPixRect);
-  void rotateRightAngle(PixRect *dstPixRect, int degree);
+class BlendVertex {
+  float m_x, m_y, m_z, m_tu, m_tv;
 public:
-  Rotation(const PixRect *srcPixRect, D3DCOLOR background, double degree);
-  ~Rotation();
-  PixRect *getResult();
+  enum FVF {
+    FVF_Flags = D3DFVF_XYZ | D3DFVF_TEX1
+  };
+  BlendVertex() {
+  }
+  BlendVertex(int x, int y, float tu, float tv) : m_x((float)x), m_y((float)y), m_z(0), m_tu(tu), m_tv(tv) {
+  }
+  BlendVertex(const CPoint &p, const Point2DP &tp) : m_x((float)p.x), m_y((float)p.y), m_z(0), m_tu((float)tp.x), m_tv((float)tp.y) {
+  }
 };
 
-Rotation::Rotation(const PixRect *srcPixRect, D3DCOLOR background, double degree) 
-: m_srcPixRect(srcPixRect)
-, RotationData(srcPixRect->getSize(), degree)
-{
-  m_src = PixelAccessor::createPixelAccessor((PixRect*)srcPixRect);
-  m_background = background;
+#define SetTextureColorStage(dev, stage, arg1, op, arg2)        \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLOROP  , op   )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG1, arg1 )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_COLORARG2, arg2 ));
+
+#define SetTextureAlphaStage(dev, stage, arg1, op, arg2)        \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAOP  , op   )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG1, arg1 )); \
+  V(dev->SetTextureStageState(stage, D3DTSS_ALPHAARG2, arg2 ));
+
+void PixRectDevice::alphaBlend(const PixRect *texture, const CRect &dstRect) {
+  const CPoint     topLeft     = dstRect.TopLeft();
+  const CSize      size        = dstRect.Size();
+  const CSize      textureSize = texture->getSize();
+
+  const float qw = (size.cx == textureSize.cx) ? 1.0f : ((float)(size.cx) / (textureSize.cx));
+  const float qh = (size.cy == textureSize.cy) ? 1.0f : ((float)(size.cy) / (textureSize.cy));
+
+  BlendVertex vtx[4];
+  vtx[0] = BlendVertex(dstRect.left  , dstRect.top     , 0 , 0 );
+  vtx[1] = BlendVertex(dstRect.right , dstRect.top     , qw, 0 );
+  vtx[2] = BlendVertex(dstRect.right , dstRect.bottom  , qw, qh);
+  vtx[3] = BlendVertex(dstRect.left  , dstRect.bottom  , 0 , qh);
+
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , TRUE   ));
+  V(m_device->SetRenderState( D3DRS_ALPHATESTENABLE   , TRUE   ));
+
+  SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
+  SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
+  V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
+  V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
+  V(m_device->SetRenderState( D3DRS_SRCBLEND          , D3DBLEND_SRCALPHA   ));
+  V(m_device->SetRenderState( D3DRS_DESTBLEND         , D3DBLEND_INVSRCALPHA));
+  V(m_device->SetTexture(0, ((PixRect*)texture)->getTexture()));
+  V(m_device->SetFVF(BlendVertex::FVF_Flags));
+  V(m_device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vtx, sizeof(BlendVertex)));
+
 }
 
-Rotation::~Rotation() {
-  delete m_src;
+void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree) {
+  const RotationData    rotation(src->getSize(), degree);
+  const CSize           dstSize = getSize();
+  LPD3DXRENDERTOSURFACE tmpRender;
+  V(D3DXCreateRenderToSurface(m_device.getD3Device()
+                             ,dstSize.cx, dstSize.cy
+                             ,getPixelFormat()
+                             ,FALSE
+                             ,(D3DFORMAT)0
+                             ,&tmpRender));
+  D3DVIEWPORT9 vp;
+  vp.X = vp.Y = 0;
+  vp.Width  = dstSize.cx;
+  vp.Height = dstSize.cy;
+  vp.MinZ   = 0;
+  vp.MaxZ   = 1;
+  V(tmpRender->BeginScene(m_surface, &vp));
+  D3DXMATRIX       oldWorld;
+  LPDIRECT3DDEVICE device;
+  V(tmpRender->GetDevice(&device));
+  m_device.getWorldMatrix(oldWorld);
+  const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(PIXRECT_TEXTURE     , true, D3DPOOL_DEFAULT);
+  showPixRect(texture);
+  m_device.setWorldMatrix(rotation.m_world);
+
+  unsigned long clearColor = 0xffffffff;
+  V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
+
+  m_device.alphaBlend(texture, CRect(dst, src->getSize()));
+
+  V(tmpRender->EndScene(D3DX_DEFAULT));
+
+  tmpRender->Release();
+  showPixRect(this);
+//  V(m_device.getD3Device()->Present(NULL, NULL, NULL, NULL));
+
+  V(m_device.getD3Device()->SetTexture(0, NULL));
+
+//  device.setRenderTarget(oldRenderTarget);
+//  oldRenderTarget->Release();
+  m_device.setWorldMatrix(oldWorld);
+
+  if(texture != src)  delete texture;
 }
 
-static D3DCOLOR mixColor(D3DCOLOR c1, D3DCOLOR c2, double w2) {
-  if(c1 == c2) {
-    return c1;
-  }
-  const double w1 = 1.0 - w2;
-  return RGB_MAKE((unsigned long)(w1*RGB_GETRED(  c1) + w2*RGB_GETRED(  c2))
-                 ,(unsigned long)(w1*RGB_GETGREEN(c1) + w2*RGB_GETGREEN(c2))
-                 ,(unsigned long)(w1*RGB_GETBLUE( c1) + w2*RGB_GETBLUE( c2)));
-}
-
-D3DCOLOR Rotation::getMixedPixel(const Point2D &p) const {
-  const int x = (int)floor(p.x);
-  const int y = (int)floor(p.y);
-
-  const double wx = p.x - x;
-  const double wy = p.y - y;
-
-  if(wx == 0) {
-    if(wy == 0) {
-      return m_src->getPixel(x, y);
-    } else {
-      const int yp1 = y+1;
-      const D3DCOLOR c1 = (y   >= 0            ) ? m_src->getPixel(x, y  ) : m_background;
-      const D3DCOLOR c2 = (yp1 <  m_rect.bottom) ? m_src->getPixel(x, yp1) : m_background;
-      return mixColor(c1, c2, wy);
-    }
-  } else if(wy == 0) {
-    const int xp1 = x+1;
-    const D3DCOLOR c1 = (x   >= 0           ) ? m_src->getPixel(x  ,y) : m_background;
-    const D3DCOLOR c2 = (xp1 <  m_rect.right) ? m_src->getPixel(xp1,y) : m_background;
-    return mixColor(c1, c2, wx);
-  }
-  const int xp1 = x+1;
-  const int yp1 = y+1;
-  D3DCOLOR c1,c2,c3,c4;
-  if(x < 0) {
-    c1 = c3 = m_background;
-  } else {
-    c1 = (y   >= 0            ) ? m_src->getPixel(x, y  ) : m_background;
-    c3 = (yp1 <  m_rect.bottom) ? m_src->getPixel(x, yp1) : m_background;
-  }
-  if(xp1 >= m_rect.right) {
-    c2 = c4 = m_background;
-  } else {
-    c2 = (y   >= 0            ) ? m_src->getPixel(xp1, y  ) : m_background;
-    c4 = (yp1 <  m_rect.bottom) ? m_src->getPixel(xp1, yp1) : m_background;
-  }
-  if(c1 == c2) {
-    return (c3==c4) ? mixColor(c1, c3, wy) : mixColor(c1, mixColor(c3, c4, wx), wy);
-  } else if(c3==c4) {
-    return mixColor(mixColor(c1, c2, wx), c3, wy);
-  } else {
-
-    const double wx1 = 1.0 - wx;
-    const double wy1 = 1.0 - wy;
-
-    const double r1 = wx1*RGB_GETRED(  c1) + wx*RGB_GETRED(  c2);
-    const double g1 = wx1*RGB_GETGREEN(c1) + wx*RGB_GETGREEN(c2); 
-    const double b1 = wx1*RGB_GETBLUE( c1) + wx*RGB_GETBLUE( c2); 
-    const double r2 = wx1*RGB_GETRED(  c3) + wx*RGB_GETRED(  c4);
-    const double g2 = wx1*RGB_GETGREEN(c3) + wx*RGB_GETGREEN(c4); 
-    const double b2 = wx1*RGB_GETBLUE( c3) + wx*RGB_GETBLUE( c4); 
-
-    return RGB_MAKE((unsigned long)(wy1*r1+wy*r2),(unsigned long)(wy1*g1+wy*g2),(unsigned long)(wy1*b1+wy*b2));
-  }
-}
-
-void Rotation::rotateAngle(PixRect *dstPixRect) {
-  PixelAccessor *dst = dstPixRect->getPixelAccessor();
-  for(CPoint dstp(0,0); dstp.y < m_resultRect.bottom; dstp.y++) {
-    Point2D srcp = rotateBack(0, dstp.y);
-    for(dstp.x = 0; dstp.x < m_resultRect.right; dstp.x++, srcp.x += m_cos, srcp.y -= m_sin) {
-      if(m_srcPixRect->containsExtended(srcp)) {
-        dst->setPixel(dstp, getMixedPixel(srcp));
-      }
-    }
-  }
-  delete dst;
-}
-
-void Rotation::rotateRightAngle(PixRect *dstPixRect, int degree) {
-  PixelAccessor *dst = dstPixRect->getPixelAccessor();
-  CPoint srcp, dstp;
-  switch(degree) {
-  case   90:
-  case -270:
-    for(srcp.y = m_rect.top, dstp.x = m_resultRect.right-1; srcp.y < m_rect.bottom; srcp.y++, dstp.x--) {
-      for(srcp.x = m_rect.left, dstp.y = 0; srcp.x < m_rect.right; srcp.x++, dstp.y++) {
-        dst->setPixel(dstp, m_src->getPixel(srcp));
-      }
-    }
-    break;
-
-  case  270:
-  case  -90:
-    for(srcp.y = m_rect.top, dstp.x = 0; srcp.y < m_rect.bottom; srcp.y++, dstp.x++) {
-      for(srcp.x = m_rect. left, dstp.y = m_resultRect.bottom-1; srcp.x < m_rect.right; srcp.x++, dstp.y--) {
-        dst->setPixel(dstp, m_src->getPixel(srcp));
-      }
-    }
-    break;
-
-  case  180:
-  case -180:
-    for(srcp.y = m_rect.top, dstp.y = m_resultRect.bottom-1; srcp.y < m_rect.bottom; srcp.y++, dstp.y--) {
-      for(srcp.x = m_rect.left, dstp.x = m_resultRect.right-1; srcp.x < m_rect.right; srcp.x++, dstp.x--) {
-        dst->setPixel(dstp, m_src->getPixel(srcp));
-      }
-    }
-    break;
-  }
-  delete dst;
-}
-
-PixRect *Rotation::getResult() {
-  PixRect *result = new PixRect(m_resultRect.Width(),m_resultRect.Height(),m_srcPixRect->getPixelFormat());
-
-  if(m_degree == 0) {
-    result->rop(0,0,m_srcPixRect->getWidth(),m_srcPixRect->getHeight(),SRCCOPY,m_srcPixRect,0,0);
-  } else if(fmod(m_degree,90.0) == 0) {
-    rotateRightAngle(result,((int)m_degree)%360);
-  } else {
-    result->fillRect(m_resultRect, m_background);
-    rotateAngle(result);
-  }
-
+PixRect *PixRect::rotateImage(const PixRect *src, double degree) { // static
+  showPixRect(src);
+  RotationData rot(src->getSize(), degree);
+  PixRect     *result = new PixRect(src->getDevice(), PIXRECT_PLAINSURFACE, rot.m_resultRect.Size(),D3DPOOL_FORCE_DWORD, D3DFMT_A8R8G8B8);
+  showPixRect(result);
+  result->drawRotated(src, ORIGIN, degree);
   return result;
-}
-
-PixRect *PixRect::rotateImage(const PixRect *src, D3DCOLOR background, double degree) { // static
-  return Rotation(src,background,degree).getResult();
 }
 
 CSize PixRect::getRotatedSize(const CSize &size, double degree) { // static 

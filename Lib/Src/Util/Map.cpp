@@ -78,7 +78,7 @@ public:
     m_deleteMap = deleteMap;
   }
   bool add(const void *e) {
-    throwException("KeySet::add:Unsupported operation.");
+    throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
   bool remove(const void *e) {
@@ -146,11 +146,11 @@ public:
     m_cmp       = cmp;
   }
   bool add(const void *e) {
-    throwException("ValueCollection::add:Unsupported operation.");
+    throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
   bool remove(const void *e) {
-    throwException("ValueCollection::remove:Unsupported operation.");
+    throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
   bool contains(const void *e) const;

@@ -3,10 +3,10 @@
 #include "MyString.h"
 
 typedef struct {
-  unsigned int brandIndex    : 8;
-  unsigned int clflush       : 8;
-  unsigned int numProcessors : 8;
-  unsigned int localApicId   : 8;
+  UINT brandIndex    : 8;
+  UINT clflush       : 8;
+  UINT numProcessors : 8;
+  UINT localApicId   : 8;
 } CPUBasics;
 
 typedef enum {
@@ -96,14 +96,14 @@ typedef struct {
 } FeatureInfo; 
 
 typedef struct {
-  unsigned int steppingId     : 4;
-  unsigned int model          : 4;
-  unsigned int family         : 4;
-  ProcessorType processorType : 2;
-  unsigned int reserved1      : 2;
-  unsigned int extendedModel  : 4;
-  unsigned int extendedFamily : 8;
-  unsigned int reserverd2     : 4;
+  UINT          steppingId     : 4;
+  UINT          model          : 4;
+  UINT          family         : 4;
+  ProcessorType processorType  : 2;
+  UINT          reserved1      : 2;
+  UINT          extendedModel  : 4;
+  UINT          extendedFamily : 8;
+  UINT          reserverd2     : 4;
 } VersionInfo;
 
 class CPUInfo {

@@ -66,7 +66,7 @@ public:
     return HashSetImpl::getComparator();
   }
   AbstractCollection *clone(bool cloneData) const {
-    throwException("HashMap::clone::Unsupported operation.");
+    throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
   AbstractMap *cloneMap(bool cloneData) const;
@@ -122,9 +122,9 @@ public:
   }
 };
 
-template <class T> class UIntHashMap       : public HashMap<unsigned int, T> {
+template <class T> class UIntHashMap       : public HashMap<UINT, T> {
 public:
-  UIntHashMap(size_t capacity=31)   : HashMap<unsigned int, T>(uintHash, uintHashCmp, capacity) {
+  UIntHashMap(size_t capacity=31)   : HashMap<UINT, T>(uintHash, uintHashCmp, capacity) {
   }
 };
 

@@ -9,10 +9,10 @@ private:
 
   Primes();
   void removeNonPrimes(size_t start);     // remove all nonprimes from m_primes
-  void extendPrimeSet(unsigned int upperLimit); // extend m_primes to contain all primes from start..upperLimit (incl)
+  void extendPrimeSet(UINT upperLimit); // extend m_primes to contain all primes from start..upperLimit (incl)
   friend void deallocatePrimesInstance();
 public:
-  Iterator<size_t> getIterator(unsigned int upperLimit);
+  Iterator<size_t> getIterator(UINT upperLimit);
   static Primes &getInstance();
 };
 
@@ -20,7 +20,7 @@ Primes::Primes() : m_primes(3) {
   m_primes.add(2);
 }
 
-void Primes::extendPrimeSet(unsigned int upperLimit) { // extend m_primes to contain all primes [2..upperLimit]
+void Primes::extendPrimeSet(UINT upperLimit) { // extend m_primes to contain all primes [2..upperLimit]
   const size_t lastUpperLimit = m_primes.getCapacity() - 1;
   if(upperLimit > lastUpperLimit) {
     m_primes.setCapacity(upperLimit+1);
@@ -40,7 +40,7 @@ void Primes::removeNonPrimes(size_t start) {
   }
 }
 
-Iterator<size_t> Primes::getIterator(unsigned int upperLimit) {
+Iterator<size_t> Primes::getIterator(UINT upperLimit) {
   extendPrimeSet(upperLimit);
   return m_primes.getIterator();
 }
@@ -88,7 +88,7 @@ PrimeFactorArray::PrimeFactorArray(__int64 n) {
   }
 }
 
-PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(unsigned int m) const {
+PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(UINT m) const {
   PrimeFactorSet result((UINT)size() + 1);
   for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
@@ -103,7 +103,7 @@ __int64 PrimeFactorArray::getProduct() const {
   __int64 result = m_positive ? 1 : -1;
   for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
-    for(unsigned int j = 0; j < pf.m_multiplicity; j++) {
+    for(UINT j = 0; j < pf.m_multiplicity; j++) {
       result *= pf.m_prime;
     }
   }

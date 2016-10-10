@@ -23,7 +23,7 @@ Expression *ExpressionNode::getExpr() {
 
 String ExpressionNode::getSymbolName() const {
   const ExpressionInputSymbol sym = getSymbol();
-  if((unsigned int)sym >= ExpressionTables->getSymbolCount()) {
+  if((UINT)sym >= ExpressionTables->getSymbolCount()) {
     return format(_T("Unknown symbol (=%u)"), sym);
   }
   return ExpressionTables->getSymbolName(sym);
@@ -324,7 +324,7 @@ void SymbolOrderMap::init() {
   for(int i = 0; i < ARRAYSIZE(symbols); i++) {
     put(symbols[i], order++);
   }
-  for(unsigned int i = 1; i < ExpressionTables->getTerminalCount(); i++) {
+  for(UINT i = 1; i < ExpressionTables->getTerminalCount(); i++) {
     if(get((ExpressionInputSymbol)i) == NULL) {
       put((ExpressionInputSymbol)i, order++);
     }

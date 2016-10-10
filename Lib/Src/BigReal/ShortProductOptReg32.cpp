@@ -155,7 +155,7 @@ size_t BigReal::s_splitLength = SPLIT_LENGTH; // Value found by experiments with
 
 #define MAX_DIGITVALUE (BIGREALBASE-1)
 
-unsigned int BigReal::getMaxSplitLength() { // static
+UINT BigReal::getMaxSplitLength() { // static
   return _UI64_MAX / ((unsigned __int64)MAX_DIGITVALUE * MAX_DIGITVALUE);
 }
 

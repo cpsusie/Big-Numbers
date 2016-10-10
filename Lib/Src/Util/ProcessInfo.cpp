@@ -14,7 +14,7 @@ ProcessInfo::ProcessInfo(DWORD processId) {
       TCHAR name[MAX_PATH];
       if(GetModuleFileNameEx(hProcess, moduleArray[i], name, ARRAYSIZE(name))) {
         struct _stat st;
-        unsigned int size = 0;
+        UINT size = 0;
         if(_tstat(name, &st) >= 0) {
           size = st.st_size;
         }

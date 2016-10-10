@@ -32,7 +32,7 @@ void PackedArray::load(ByteInputStream &s) {
 #endif
 
 PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startOffset) 
-: m_data(fileName, startOffset + sizeof(unsigned int) + sizeof(unsigned __int64))
+: m_data(fileName, startOffset + sizeof(UINT) + sizeof(unsigned __int64))
   // offset of ByteArray if startOffset + sizeof(m_bitsPerItem) + sizeof(PackedArray::m_firstFreeBit)
 {
   ByteInputFile s(fileName);
@@ -43,22 +43,22 @@ PackedFileArray::PackedFileArray(const String &fileName, unsigned __int64 startO
   m_maxValue = (1<<m_bitsPerItem)-1;
 }
  
-unsigned int PackedFileArray::get(unsigned __int64 index) const { // this is the same algorithm as in PackedArray::get
+UINT PackedFileArray::get(unsigned __int64 index) const { // this is the same algorithm as in PackedArray::get
   CHECK_INDEX("get")
-  const unsigned int p0Index = (index * m_bitsPerItem) / 32;
-  const unsigned int offset  = (index * m_bitsPerItem) % 32;
-  const unsigned int p0      = m_data[p0Index];
-        unsigned int rest    = m_bitsPerItem;
-  const unsigned int n       = min(32 - offset, rest);
-        unsigned int v       = (p0 >> offset) & (m_maxValue >> (m_bitsPerItem-n));
+  const UINT p0Index = (index * m_bitsPerItem) / 32;
+  const UINT offset  = (index * m_bitsPerItem) % 32;
+  const UINT p0      = m_data[p0Index];
+        UINT rest    = m_bitsPerItem;
+  const UINT n       = min(32 - offset, rest);
+        UINT v       = (p0 >> offset) & (m_maxValue >> (m_bitsPerItem-n));
   if(rest -= n) {
-    const unsigned int p1 = m_data[p0Index+1];
+    const UINT p1 = m_data[p0Index+1];
     v |= (p1 & (m_maxValue >> (m_bitsPerItem-rest))) << n;
   }
   return v;
 }
 
-unsigned int PackedFileArray::select() const {
+UINT PackedFileArray::select() const {
 #ifdef _DEBUG
   if(isEmpty()) {
    PackedArray::selectError();

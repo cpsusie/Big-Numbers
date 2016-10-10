@@ -89,7 +89,7 @@ void DefaultExceptionHandler::uncaughtException(Thread &thread, Exception &e) {
 
 static DefaultExceptionHandler _defaultExceptionHandler;
 
-UncaughtExceptionHandler *Thread::defaultUncaughtExceptionHandler;
+UncaughtExceptionHandler *Thread::s_defaultUncaughtExceptionHandler;
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
@@ -102,7 +102,7 @@ public:
 
 InitThreadClass::InitThreadClass() {
   runningThreadSet = new ThreadSet;
-  Thread::defaultUncaughtExceptionHandler = &_defaultExceptionHandler;
+  Thread::s_defaultUncaughtExceptionHandler = &_defaultExceptionHandler;
 }
 
 InitThreadClass::~InitThreadClass() {
@@ -143,7 +143,7 @@ void Thread::handleUncaughtException(Exception &e) {
   if(m_uncaughtExceptionHandler != NULL) {
     m_uncaughtExceptionHandler->uncaughtException(*this, e);
   } else {
-    defaultUncaughtExceptionHandler->uncaughtException(*this, e);
+    s_defaultUncaughtExceptionHandler->uncaughtException(*this, e);
   }
 }
 
@@ -155,14 +155,14 @@ void Thread::resume() {
   ResumeThread(m_threadHandle);
 }
 
-unsigned int Thread::run() {
+UINT Thread::run() {
   return m_target ? m_target->run() : 0;
 }
 
 unsigned long Thread::getExitCode() const {
   DWORD exitCode = 0;
   if(!GetExitCodeThread(m_threadHandle,&exitCode)) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("getExitCode"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
   return exitCode;
 }
@@ -173,7 +173,7 @@ bool Thread::stillActive() const {
 
 void Thread::setPriority(int priority) {
   if(!SetThreadPriority(m_threadHandle,priority)) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("setPriority"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
 
@@ -183,27 +183,27 @@ int Thread::getPriority() const {
 
 void Thread::setPriorityBoost(bool disablePriorityBoost) {
   if(!SetThreadPriorityBoost(m_threadHandle, disablePriorityBoost)) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("setPriorityBoost"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
 
 bool Thread::getPriorityBoost() const {
   BOOL boostDisabled;
   if(GetThreadPriorityBoost(m_threadHandle, &boostDisabled)) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("getPriorityBoost"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
   return boostDisabled ? true : false;
 }
 
 void Thread::setAffinityMask(DWORD mask) {
   if(!SetThreadAffinityMask(m_threadHandle,mask)) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("setAffinityMask"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
 
 void Thread::setIdealProcessor(DWORD cpu) {
   if(SetThreadIdealProcessor(m_threadHandle,cpu) == (DWORD)-1) {
-    throwMethodLastErrorOnSysCallException(s_className, _T("setIdealProcessor"));
+    throwLastErrorOnSysCallException(__TFUNCTION__);
   }
 }
 

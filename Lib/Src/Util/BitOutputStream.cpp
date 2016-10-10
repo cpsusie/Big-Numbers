@@ -47,7 +47,7 @@ void BitOutputStream::putBits(unsigned long code, int count) {
   }
 }
 
-void BitOutputStream::putBytes(const BYTE *src, unsigned int n) {
+void BitOutputStream::putBytes(const BYTE *src, UINT n) {
   while(n--) {
     putBits(*(src++), 8);
   }

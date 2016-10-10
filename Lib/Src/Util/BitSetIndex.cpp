@@ -42,6 +42,6 @@ String BitSetIndex::getInfoString() const {
                ,format1000(m_bitSet.getCapacity()).cstr()
                ,format1000(m_bitSet.getCapacity()/_BITSET_ATOMSIZE).cstr()
                ,format1000(m_rangeTable.size()).cstr()
-               ,format1000(m_rangeTable.size()*sizeof(unsigned int)).cstr()
+               ,format1000(m_rangeTable.size()*sizeof(UINT)).cstr()
                );
 }
