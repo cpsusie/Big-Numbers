@@ -109,6 +109,7 @@ void PixRectDevice::alphaBlend(const PixRect *texture, const CRect &dstRect) {
 
   SetTextureColorStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_BLENDTEXTUREALPHA, D3DTA_DIFFUSE);
   SetTextureAlphaStage(m_device, 0, D3DTA_TEXTURE, D3DTOP_MODULATE         , D3DTA_DIFFUSE);
+
   V(m_device->SetRenderState( D3DRS_LIGHTING          , FALSE               ));
   V(m_device->SetRenderState( D3DRS_CULLMODE          , D3DCULL_NONE        ));
   V(m_device->SetRenderState( D3DRS_ZENABLE           , FALSE               ));
@@ -118,13 +119,15 @@ void PixRectDevice::alphaBlend(const PixRect *texture, const CRect &dstRect) {
   V(m_device->SetFVF(BlendVertex::FVF_Flags));
   V(m_device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, vtx, sizeof(BlendVertex)));
 
+  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE  , FALSE));
 }
 
 void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree) {
   const RotationData    rotation(src->getSize(), degree);
   const CSize           dstSize = getSize();
   LPD3DXRENDERTOSURFACE tmpRender;
-  V(D3DXCreateRenderToSurface(m_device.getD3Device()
+  LPDIRECT3DDEVICE      device  = m_device.getD3Device();
+  V(D3DXCreateRenderToSurface(device
                              ,dstSize.cx, dstSize.cy
                              ,getPixelFormat()
                              ,FALSE
@@ -137,39 +140,24 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree) 
   vp.MinZ   = 0;
   vp.MaxZ   = 1;
   V(tmpRender->BeginScene(m_surface, &vp));
-  D3DXMATRIX       oldWorld;
-  LPDIRECT3DDEVICE device;
-  V(tmpRender->GetDevice(&device));
-  m_device.getWorldMatrix(oldWorld);
-  const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(PIXRECT_TEXTURE     , true, D3DPOOL_DEFAULT);
-  showPixRect(texture);
+  m_device.set2DTransform(dstSize);
   m_device.setWorldMatrix(rotation.m_world);
+  const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(PIXRECT_TEXTURE     , true, D3DPOOL_DEFAULT);
 
-  unsigned long clearColor = 0xffffffff;
+  unsigned long clearColor = 0x00ff0000;
   V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
-
   m_device.alphaBlend(texture, CRect(dst, src->getSize()));
-
   V(tmpRender->EndScene(D3DX_DEFAULT));
-
   tmpRender->Release();
-  showPixRect(this);
-//  V(m_device.getD3Device()->Present(NULL, NULL, NULL, NULL));
 
   V(m_device.getD3Device()->SetTexture(0, NULL));
-
-//  device.setRenderTarget(oldRenderTarget);
-//  oldRenderTarget->Release();
-  m_device.setWorldMatrix(oldWorld);
 
   if(texture != src)  delete texture;
 }
 
 PixRect *PixRect::rotateImage(const PixRect *src, double degree) { // static
-  showPixRect(src);
   RotationData rot(src->getSize(), degree);
   PixRect     *result = new PixRect(src->getDevice(), PIXRECT_PLAINSURFACE, rot.m_resultRect.Size(),D3DPOOL_FORCE_DWORD, D3DFMT_A8R8G8B8);
-  showPixRect(result);
   result->drawRotated(src, ORIGIN, degree);
   return result;
 }

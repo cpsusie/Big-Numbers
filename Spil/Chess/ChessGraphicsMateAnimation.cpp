@@ -33,7 +33,7 @@ void RotatePieceAnimation::animate() {
     PixRect::bitBlt(tmpDC, 0,0,fieldSize45,fieldSize45, SRCCOPY, &boardWithoutKing, pos2.x,pos2.y); // paint background (checkedKing) on tmpDC
     pieceImage->paintImage(tmpDC, pos1, scale, it.next());
     BitBlt(m_dc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
-    Sleep(30);
+    Sleep(40);
   }
 
   pr45.releaseDC(tmpDC);

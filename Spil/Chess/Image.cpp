@@ -131,28 +131,17 @@ void Image::paintImage(HDC dc, const CPoint &dst, const CSize &size, const CPoin
 }
 
 void Image::paintRotated(HDC dc, const CPoint &dst, const CSize &size, const CPoint &src, double scale, double rotation) const {
-#ifdef _NEVER_
-#define TRANSPARENT_RED D3DCOLOR_XRGB(255,0,0)
-#define OPAQUE_RED      D3DCOLOR_ARGB(255,255,0,0)
-  PixRect *tmp = clone(true);
-  tmp->apply(SubstituteColor(WHITE, TRANSPARENT_RED));
-  PixRect *rotatedImage = PixRect::rotateImage(tmp, TRANSPARENT_RED, rotation);
-  delete tmp;
-
-
-  rotatedImage->apply(SetAlpha(255));
-  rotatedImage->apply(SubstituteColor(OPAQUE_RED, TRANSPARENT_RED));
-
+  PixRect *rotatedImage = PixRect::rotateImage(this, rotation);
+//  showPixRect(rotatedImage);
   const CSize rsize = rotatedImage->getSize();
   if(scale == 1) {
-    const CPoint rdst(dst.x - (rsize.cx-size.cx)/2, dst.y - (rsize.cy-size.cy)/2);
-    PixRect::alphaBlend(dc, rdst.x,rdst.y, rsize.cx,rsize.cy, *rotatedImage, 0,0, rsize.cx,rsize.cy, 255);
+//    const CPoint rdst(dst.x - (rsize.cx-size.cx)/2, dst.y - (rsize.cy-size.cy)/2);
+    PixRect::alphaBlend(dc, dst.x,dst.y, size.cx,size.cy, *rotatedImage, 0,0, size.cx,size.cy, 255);
   } else {
     const CSize dstsize((int)(rsize.cx * scale), (int)(rsize.cy*scale));
     const CSize srcSize((int)(size.cx  * scale), (int)(size.cy *scale));
-    const CPoint rdst(dst.x - (dstsize.cx-srcSize.cx)/2, dst.y - (dstsize.cy-srcSize.cy)/2);
-    PixRect::alphaBlend(dc, rdst.x,rdst.y, dstsize.cx,dstsize.cy, *rotatedImage, 0,0, rsize.cx,rsize.cy, 255);
+//    const CPoint rdst(dst.x - (dstsize.cx-srcSize.cx)/2, dst.y - (dstsize.cy-srcSize.cy)/2);
+    PixRect::alphaBlend(dc, dst.x,dst.y, dstsize.cx,dstsize.cy, *rotatedImage, 0,0, rsize.cx,rsize.cy, 255);
   }
   delete rotatedImage;
-#endif
 }

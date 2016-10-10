@@ -85,8 +85,6 @@ public:
   bool notifyGameChanged(const Game &game);
   bool notifyMove(const MoveBase &m);
   bool acceptUndoMove();
-  void notifyResign();
-  bool offerDraw();
 
   bool isRemote() const {
     return m_channel.isOpen();

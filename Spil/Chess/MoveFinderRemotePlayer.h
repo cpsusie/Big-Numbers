@@ -5,13 +5,14 @@
 
 class MoveFinderRemotePlayer : public AbstractMoveFinder, public OptionsAccessor {
 private:
-  SocketChannel  m_channel, m_signalChannel;
+  SocketChannel  m_channel;
   MoveBase       m_receivedMove;
-  void   sendCommand(MoveFinderCommand cmd);
-  void   sendMove(const MoveBase &m);
-  String receiveMove();
-  void   interrupt();
-  void   disConnect();
+  void              sendCommand(MoveFinderCommand cmd);
+  MoveFinderCommand getCommand();
+  void              sendMove(const MoveBase &m);
+  String            receiveMove();
+  void              interrupt();
+  void              disConnect();
 public:
   MoveFinderRemotePlayer(Player player, SocketChannel channel);
   ~MoveFinderRemotePlayer();
@@ -36,5 +37,4 @@ public:
   bool isConnected() const {
     return m_channel.isOpen();
   }
-  MoveFinderCommand getCommand();
 };

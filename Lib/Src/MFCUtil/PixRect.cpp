@@ -284,8 +284,9 @@ void PixRectDevice::set2DTransform(const CSize &size) {
 
   projection._34 = 0;
   projection._44 = 1;
-/*
+
   CHECK3DRESULT(m_device->SetTransform(D3DTS_PROJECTION, &projection));
+/*
   const CSize sz = getSize(m_someTexture);
   const D3DXVECTOR2 rotationCenter(37,37);
   D3DXMATRIX matWorld;
@@ -418,8 +419,12 @@ LPDIRECT3DSURFACE PixRect::cloneSurface(D3DPOOL pool) const {
 
 void PixRect::showPixRect(const PixRect *pr) { // static
   HDC screenDC = getScreenDC();
-  BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),NULL,0,0,WHITENESS);
-  PixRect::bitBlt(screenDC, 0,0,pr->getWidth(),pr->getHeight(), SRCCOPY, pr, 0,0);
+  if (pr->hasAlphaChannel()) {
+    alphaBlend(screenDC,0,0,pr->getWidth(),pr->getHeight(), *pr, 0, 0, pr->getWidth(),pr->getHeight(), 255);
+  } else {
+    BitBlt(screenDC,0,0,pr->getWidth(),pr->getHeight(),NULL,0,0,WHITENESS);
+    PixRect::bitBlt(screenDC, 0,0,pr->getWidth(),pr->getHeight(), SRCCOPY, pr, 0,0);
+  }
   DeleteDC(screenDC);
 }
 

@@ -267,7 +267,6 @@ private:
   D3DFORMAT          m_defaultPixelFormat; // same format as the screen
   float              m_appScaleX, m_appScaleY;
   mutable bool       m_exceptionInProgress;
-  void set2DTransform(const CSize &size);
 
 public:
   PixRectDevice();
@@ -303,6 +302,7 @@ public:
     CHECK3DRESULT(m_device->GetTransform(D3DTS_WORLD, &m));
     return m;
   }
+  void set2DTransform(const CSize &size);
   static CompactArray<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
   D3DCAPS getDeviceCaps();
   DECLARERESULTCHECKER;
