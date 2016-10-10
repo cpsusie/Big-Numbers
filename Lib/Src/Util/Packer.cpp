@@ -54,7 +54,8 @@ Packer &Packer::getElement(ElementType et, void *e, size_t size) {
   unsigned char ct = m_buffer[m_first++];
   ElementType t = (ElementType)ct;
   if(t != et) {
-    throwException(_T("Packer::getElement:Received invalid datetype:%d. Expected %d"),t,et);
+    m_first--;
+    throwInvalidArgumentException(__TFUNCTION__,_T("Received invalid datetype:%d. Expected %d"),t,et);
   }
   assert(m_buffer.size() >= m_first + size);
   memcpy(e, m_buffer.getData() + m_first, size);
@@ -72,9 +73,8 @@ Packer &Packer::operator<<(short n) {
 }
 
 Packer &Packer::operator>>(short &n) {
-  unsigned short ns;
-  getElement(E_SHORT, &ns, sizeof(ns));
-  n = ntohs(ns);
+  unsigned short us;
+  *this >> us;  n = us;
   return *this;
 }
 
@@ -99,9 +99,8 @@ Packer &Packer::operator<<(int n) {
 }
 
 Packer &Packer::operator>>(int &n) {
-  UINT ni;
-  getElement(E_INT, &ni, sizeof(ni));
-  n = ntohl(ni);
+  UINT ui;
+  *this >> ui;  n = ui;
   return *this;
 }
 
@@ -111,9 +110,26 @@ Packer &Packer::operator<<(UINT n) {
 }
 
 Packer &Packer::operator>>(UINT &n) {
-  UINT ni;
-  getElement(E_INT, &ni, sizeof(ni));
-  n = ntohl(ni);
+  switch (peekType()) {
+  case E_SHORT    :
+    { unsigned short us;
+      *this >> us; n = us;
+    }
+    break;
+  case E_INT      :
+    { UINT ni;
+      getElement(E_INT, &ni, sizeof(ni));
+      n = ntohl(ni);
+    }
+    break;
+  case E_LONG     :
+    { unsigned long ul;
+      *this >> ul; n = ul;
+    }
+    break;
+  default: 
+    throwException(_T("%s:Invalid type:%d. Expected E_SHORT/E_INT/E_LONG"), __TFUNCTION__, peekType());
+  }
   return *this;
 }
 
@@ -125,9 +141,8 @@ Packer &Packer::operator<<(long n) {
 }
 
 Packer &Packer::operator>>(long &n) {
-  unsigned long nl;
-  getElement(E_LONG, &nl, sizeof(nl));
-  n = ntohl(nl);
+  unsigned long ul;
+  *this >> ul; n = ul;
   return *this;
 }
 
@@ -137,9 +152,26 @@ Packer &Packer::operator<<(unsigned long n) {
 }
 
 Packer &Packer::operator>>(unsigned long &n) {
-  unsigned long nl;
-  getElement(E_LONG, &nl, sizeof(nl));
-  n = ntohl(nl);
+  switch (peekType()) {
+  case E_SHORT    :
+    { unsigned short us;
+      *this >> us; n = us;
+    }
+    break;
+  case E_INT      :
+    { UINT ui;
+      *this >> ui; n = ui;
+    }
+    break;
+  case E_LONG     :
+    { unsigned long nl;
+      getElement(E_LONG, &nl, sizeof(nl));
+      n = ntohl(nl);
+    }
+    break;
+  default: 
+    throwException(_T("%s:Invalid type:%d. Expected E_SHORT/E_INT/E_LONG"), __TFUNCTION__, peekType());
+  }
   return *this;
 }
 
@@ -151,9 +183,9 @@ Packer &Packer::operator<<(__int64 n) {
 }
 
 Packer &Packer::operator>>(__int64 &n) {
-  unsigned __int64 nl;
-  getElement(E_LONG_LONG, &nl, sizeof(nl));
-  n = ntohll(nl);
+  unsigned __int64 ui64;
+  *this >> ui64;
+  n = ui64;
   return *this;
 }
 
@@ -163,11 +195,67 @@ Packer &Packer::operator<<(unsigned __int64 n) {
 }
 
 Packer &Packer::operator>>(unsigned __int64 &n) {
-  unsigned __int64 nl;
-  getElement(E_LONG_LONG, &nl, sizeof(nl));
-  n = ntohll(nl);
+  switch (peekType()) {
+  case E_SHORT    :
+    { unsigned short us;
+      *this >> us; n = us;
+    }
+    break;
+  case E_INT      :
+    { UINT ui;
+      *this >> ui; n = ui;
+    }
+    break;
+  case E_LONG     :
+    { unsigned long ul;
+      *this >> ul; n = ul;
+    }
+    break;
+  case E_LONG_LONG:
+    { unsigned __int64 nl;
+      getElement(E_LONG_LONG, &nl, sizeof(nl));
+      n = ntohll(nl);
+    }
+    break;
+  default:
+    throwException(_T("%s:Invalid type:%d. Expected E_SHORT/E_INT/E_LONG/E_LONG_LONG"), __TFUNCTION__, peekType());
+  }
   return *this;
 }
+
+// ----------------------------------Float ---------------------------
+
+Packer &Packer::operator<<(float  n) {
+  return addElement(E_FLOAT , &n, sizeof(n));
+}
+
+Packer &Packer::operator>>(float &n) {
+  return getElement(E_FLOAT , &n, sizeof(n));
+}
+  
+// ----------------------------------Double ---------------------------
+
+Packer &Packer::operator<<(double n) {
+  return addElement(E_DOUBLE, &n, sizeof(n));
+}
+
+Packer &Packer::operator>>(double &n) {
+  switch (peekType()) {
+  case E_FLOAT:
+    { float f;
+      *this >> f;
+      n = f;
+    }
+    break;
+  case E_DOUBLE:
+    getElement(E_DOUBLE, &n, sizeof(n));
+    break;
+  default:
+    throwException(_T("%s:Invalid type:%d. Expected E_FLOAT/E_DOUBLE"), __TFUNCTION__, peekType());
+  }
+  return *this;
+}
+
 
 // --------------------------------- String --------------------------
 
@@ -186,7 +274,7 @@ Packer &Packer::operator>>(char *s) {
   return *this;
 }
 
-Packer &Packer::operator<<( const wchar_t * const s) {
+Packer &Packer::operator<<(const wchar_t * const s) {
   const size_t l = wcslen(s);
   *this << l;
   addElement(E_WSTR,s,l*sizeof(wchar_t));
@@ -217,11 +305,36 @@ Packer &Packer::operator<<(const String &s) {
 Packer &Packer::operator>>(String &s) {
   size_t l;
   *this >> l;
-  TCHAR *tmp = new TCHAR[l+1];
-  getElement(E_STRING, tmp, l*sizeof(TCHAR));
-  tmp[l] = 0;
-  s = tmp;
-  delete[] tmp;
+  switch(peekType()) {
+  case E_STR  :
+    { char *tmp = new char[l+1];
+      try {
+        getElement(E_STR, tmp, l);
+        tmp[l] = 0;
+        s = tmp;
+        delete[] tmp;
+      } catch (...) {
+        delete[] tmp;
+        throw;
+      }
+    }
+    break;
+  case E_WSTR :
+    { TCHAR *tmp = new TCHAR[l+1];
+      try {
+        getElement(E_WSTR, tmp, l*sizeof(TCHAR));
+        tmp[l] = 0;
+        s = tmp;
+        delete[] tmp;
+      } catch (...) {
+        delete[] tmp;
+        throw;
+      }
+    }
+    break;
+  default:
+    throwException(_T("%s:Invalid type:%d. Expected E_STR/E_WSTR"), __TFUNCTION__, peekType());
+  }
   return *this;
 }
 
