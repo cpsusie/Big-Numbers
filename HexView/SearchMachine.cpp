@@ -117,7 +117,7 @@ AddrRange SearchMachine::doSearch() {
         return AddrRange(foundIndex, foundIndex + patternLength - 1);
       }
       m_fileIndex += bytesRead;
-      const size_t newHeadSize = min(patternLength, bytesRead);
+      const size_t newHeadSize = min(patternLength, (size_t)bytesRead);
       // move tail to the start of buffer, so they next buffer will be concatenated to them
       memmove(buffer, buffer+headSize+bytesRead-newHeadSize, newHeadSize); 
       headSize = newHeadSize;
@@ -154,7 +154,7 @@ AddrRange SearchMachine::doSearch() {
         break;
       }
       addr -= bufferCapacity;
-      tailSize = min(patternLength, bytesRead);
+      tailSize = min((intptr_t)patternLength, bytesRead);
     }
   }
   return AddrRange();
