@@ -3,15 +3,19 @@
 
 #pragma warning(disable : 4244)
 
-void PixRect::alphaBlend(PixRect &dst, const CRect &dstRect, const PixRect &src, const CRect &srcRect, int srcConstAlpha) { // static 
-  alphaBlend(dst, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), src, srcRect.left, srcRect.top, srcRect.Width(), srcRect.Height(), srcConstAlpha);
+void PixRect::alphaBlend(PixRect &dst, const CPoint &dp, const CSize &ds, const PixRect &src, const CPoint &sp, const CSize &ss, int srcConstAlpha) { // static
+  alphaBlend(dst, dp.x, dp.y, ds.cx, ds.cy, src, sp.x, sp.y, ss.cx, ss.cy, srcConstAlpha);
+}
+
+void PixRect::alphaBlend(PixRect &dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static 
+  alphaBlend(dst, dr.left, dr.top, dr.Width(), dr.Height(), src, sr.left, sr.top, sr.Width(), sr.Height(), srcConstAlpha);
 }
 
 #define AC_SRC_ALPHA                0x01
 
 #pragma comment(lib, "MSIMG32.lib")
 
-void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
+void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h, const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
   HDC dc = NULL;
   try {
     dc = dst.getDC();
@@ -23,8 +27,12 @@ void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h,  const PixRec
   }
 }
 
-void PixRect::alphaBlend(HDC dst, const CRect &dstRect, const PixRect &src, const CRect &srcRect, int srcConstAlpha) { // static 
-  alphaBlend(dst, dstRect.left, dstRect.top, dstRect.Width(), dstRect.Height(), src, srcRect.left, srcRect.top, srcRect.Width(), srcRect.Height(), srcConstAlpha);
+void PixRect::alphaBlend(HDC dst, const CPoint &dp, const CSize &ds, const PixRect &src, const CPoint &sp, const CSize &ss, int srcConstAlpha) { // static
+  alphaBlend(dst, dp.x, dp.y, ds.cx, ds.cy, src, sp.x, sp.y, ss.cx, ss.cy, srcConstAlpha);
+}
+
+void PixRect::alphaBlend(HDC dst, const CRect &dr, const PixRect &src, const CRect &sr, int srcConstAlpha) { // static 
+  alphaBlend(dst, dr.left, dr.top, dr.Width(), dr.Height(), src, sr.left, sr.top, sr.Width(), sr.Height(), srcConstAlpha);
 }
 
 void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 

@@ -902,12 +902,27 @@ void PixRect::rop(const CRect &dr, ULONG op, const PixRect *src, const CRect &sr
   }
 }
 
-void PixRect::bitBlt(HDC dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp) { // static
-  bitBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y);
+void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, HDC src, int sx, int sy) { // static
+  String errorMsg;
+
+  HDC dstDC = dst->getDC();
+
+  BOOL ok = BitBlt(dstDC,x,y,w,h,src,sx,sy,op);
+  if(!ok) {
+    errorMsg = getLastErrorText();
+  }
+  dst->releaseDC(dstDC);
+  if(!ok) {
+    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
+  }
 }
 
-void PixRect::bitBlt(PixRect *dst, const CPoint &p, const CSize &size, ULONG op, HDC src, const CPoint &sp) { // static
-  bitBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y);
+void PixRect::bitBlt(PixRect *dst, const CPoint &dp, const CSize &ds, ULONG op, HDC src, const CPoint &sp) { // static
+  bitBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y);
+}
+
+void PixRect::bitBlt(PixRect *dst, const CRect &dr, ULONG op, HDC src, const CPoint &sp) {
+  bitBlt(dst, dr.left,dr.top,dr.Width(),dr.Height(), op, src, sp.x,sp.y);
 }
 
 void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy) { // static
@@ -926,19 +941,12 @@ void PixRect::bitBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRec
   }
 }
 
-void PixRect::bitBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, HDC src, int sx, int sy) { // static
-  String errorMsg;
+void PixRect::bitBlt(HDC dst, const CPoint &dp, const CSize &ds, ULONG op, const PixRect *src, const CPoint &sp) { // static
+  bitBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y);
+}
 
-  HDC dstDC = dst->getDC();
-
-  BOOL ok = BitBlt(dstDC,x,y,w,h,src,sx,sy,op);
-  if(!ok) {
-    errorMsg = getLastErrorText();
-  }
-  dst->releaseDC(dstDC);
-  if(!ok) {
-    throwException(_T("%s failed:%s"), __TFUNCTION__, errorMsg.cstr());
-  }
+void PixRect::bitBlt(HDC dst, const CRect &dr, ULONG op, const PixRect *src, const CPoint &sp) { // static
+  bitBlt(dst, dr.left,dr.top,dr.Width(),dr.Height(), op, src, sp.x,sp.y);
 }
 
 void PixRect::stretchBlt(HDC dst, int x, int y, int w, int h, ULONG op, const PixRect *src, int sx, int sy, int sw, int sh) { // static
@@ -971,24 +979,20 @@ void PixRect::stretchBlt(PixRect *dst, int x, int y, int w, int h, ULONG op, con
   }
 }
 
-void PixRect::stretchBlt(HDC dst, const CPoint &p, const CSize &size, ULONG op, const PixRect *src, const CPoint &sp, const CSize &ssize) { // static
-  stretchBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y,ssize.cx,ssize.cy);
+void PixRect::stretchBlt(HDC dst, const CPoint &dp, const CSize &ds, ULONG op, const PixRect *src, const CPoint &sp, const CSize &ss) { // static
+  stretchBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y,ss.cx,ss.cy);
 }
 
-void PixRect::stretchBlt(PixRect *dst, const CPoint &p, const CSize &size, ULONG op, const HDC src, const CPoint &sp, const CSize &ssize) { // static 
-  stretchBlt(dst, p.x,p.y,size.cx,size.cy, op, src, sp.x,sp.y,ssize.cx,ssize.cy);
+void PixRect::stretchBlt(PixRect *dst, const CPoint &dp, const CSize &ds, ULONG op, const HDC src, const CPoint &sp, const CSize &ss) { // static 
+  stretchBlt(dst, dp.x,dp.y,ds.cx,ds.cy, op, src, sp.x,sp.y,ss.cx,ss.cy);
 }
 
-void PixRect::stretchBlt(HDC dst, const CRect &dstRect, ULONG op, const PixRect *src, const CRect &sr) { // static
-  const CSize dsz = dstRect.Size();
-  const CSize ssz = sr.Size();
-  stretchBlt(dst, dstRect.left,dstRect.top,dsz.cx,dsz.cy, op, src, sr.left,sr.top,ssz.cx,ssz.cy);
+void PixRect::stretchBlt(HDC dst, const CRect &dr, ULONG op, const PixRect *src, const CRect &sr) { // static
+  stretchBlt(dst, dr.left,dr.top,dr.Width(),dr.Height(), op, src, sr.left,sr.top,sr.Width(),sr.Height());
 }
 
-void PixRect::stretchBlt(PixRect *dst, const CRect &dstRect, ULONG op, const HDC src, const CRect &sr) { // static
-  const CSize dsz = dstRect.Size();
-  const CSize ssz = sr.Size();
-  stretchBlt(dst, dstRect.left,dstRect.top,dsz.cx,dsz.cy, op, src, sr.left,sr.top,ssz.cx,ssz.cy);
+void PixRect::stretchBlt(PixRect *dst, const CRect &dr, ULONG op, const HDC src, const CRect &sr) { // static
+  stretchBlt(dst, dr.left,dr.top,dr.Width(),dr.Height(), op, src, sr.left,sr.top,sr.Width(),sr.Height());
 }
 
 void PixRect::mask(const CRect  &dr, ULONG op, const PixRect *src, const CPoint &sp, const PixRect *prMask) {
