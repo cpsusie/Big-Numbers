@@ -460,7 +460,7 @@ static ExpressionInputSymbol getDualTrigonometricFunction(ExpressionInputSymbol 
   switch(symbol) {
   case SIN: return COS;
   case COS: return SIN;
-  default : throwInvalidArgumentException(_T("getDualTrigo"), _T("symbol=%s"), ExpressionTables->getSymbolName(symbol));
+  default : throwInvalidArgumentException(__TFUNCTION__, _T("symbol=%s"), ExpressionTables->getSymbolName(symbol));
             return EOI;
   }
 }

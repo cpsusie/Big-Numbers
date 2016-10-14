@@ -8,7 +8,7 @@ void PlayerSignature::add(PieceType pt) {
   case Bishop: assert(m_pieceCount.m_bishopCount < 10); m_pieceCount.m_bishopCount++; break;
   case Knight: assert(m_pieceCount.m_knightCount < 10); m_pieceCount.m_knightCount++; break;
   case Pawn  : assert(m_pieceCount.m_pawnCount   <  8); m_pieceCount.m_pawnCount++;   break;
-  default    : throwInvalidArgumentException(_T("PlayerSignature::add"), _T("pt=%d"), pt);
+  default    : throwInvalidArgumentException(__TFUNCTION__, _T("pt=%d"), pt);
   }
 }
 
@@ -29,7 +29,7 @@ int PlayerSignature::getPieceCount(PieceType pt) const {
   case Bishop: return m_pieceCount.m_bishopCount;
   case Knight: return m_pieceCount.m_knightCount;
   case Pawn  : return m_pieceCount.m_pawnCount;
-  default    : throwInvalidArgumentException(_T("PlayerSignature::getPieceCount"), _T("pt=%d"), pt);
+  default    : throwInvalidArgumentException(__TFUNCTION__, _T("pt=%d"), pt);
                return 0;
   }
 }

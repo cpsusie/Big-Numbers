@@ -75,7 +75,7 @@ LPD3DXMESH createMeshFrom2DFunction(DIRECT3DDEVICE device, Function2D &f, const 
 
 LPD3DXMESH createMesh(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
   if(param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMesh"), _T("param.includeTime=true"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
   ExpressionWrapper f(param.m_expr, param.m_machineCode);
   return createMeshFrom2DFunction(device, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
@@ -136,7 +136,7 @@ public:
 
 MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
   if(!param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMeshArray"), _T("param.includeTime=false"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
   return Function2DMeshArrayJobParameter(device, param).createMeshArray(wnd);
 }

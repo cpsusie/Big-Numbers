@@ -106,7 +106,7 @@ static FieldSet calculateFieldsBetween(int pos1, int pos2) {
   case MD_UPDIAG1   : return followPositions(result, Game::fieldInfo[pos1].m_diag1Line.m_upper, pos2);
   case MD_DOWNDIAG2 : return followPositions(result, Game::fieldInfo[pos1].m_diag2Line.m_lower, pos2);
   case MD_UPDIAG2   : return followPositions(result, Game::fieldInfo[pos1].m_diag2Line.m_upper, pos2);
-  default           : throwInvalidArgumentException(_T("getFieldsBetween"), _T("pos1=%s, pos2=%s"), getFieldName(pos1), getFieldName(pos2));
+  default           : throwInvalidArgumentException(__TFUNCTION__, _T("pos1=%s, pos2=%s"), getFieldName(pos1), getFieldName(pos2));
                       return result;
   }
 }

@@ -46,7 +46,7 @@ void Game::updateGameMovePawn(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("updateGameMovePawn"), _T("moveType=%d"), m.m_type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("moveType=%d"), m.m_type);
   }
 }
 
@@ -78,7 +78,7 @@ void Game::updateGameBackMovePawn(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("updateGameBackMovePawn"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
   SET_EMPTYFIELD(m1.m_from);
   
@@ -222,7 +222,7 @@ void Game::pawnLeaveField(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("pawnLeaveField"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
   SET_EMPTYFIELD(m.m_from);
 }
@@ -336,7 +336,7 @@ void Game::setPawn(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setPawn"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   m.m_piece->m_pinnedState = getPinnedState(m.m_to);
@@ -878,7 +878,7 @@ void Game::pawnCaptureAndPromote(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("pawnCaptureAndPromote"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 

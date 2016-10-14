@@ -183,12 +183,13 @@ void Rational::init(const String &s) {
 }
 
 void Rational::init(const __int64 &numerator, const __int64 &denominator) {
+  DEFINEMETHODNAME;
   if(denominator == 0) {
-    throwInvalidArgumentException(_T("init"), _T("Denominator is zero"));
+    throwInvalidArgumentException(method, _T("Denominator is zero"));
   } else if((numerator < -_I64_MAX) || (numerator   > _I64_MAX)) {
-    throwInvalidArgumentException(_T("init"), _T("Numerator(=%I64d) out of range [%I64d..%I64d]"), numerator, -_I64_MAX, _I64_MAX);
+    throwInvalidArgumentException(method, _T("Numerator(=%I64d) out of range [%I64d..%I64d]"), numerator, -_I64_MAX, _I64_MAX);
   } else if((denominator < -_I64_MAX) || (denominator > _I64_MAX)) {
-    throwInvalidArgumentException(_T("init"), _T("Denominator(=%I64d) out of range [%I64d..%I64d]"), denominator, -_I64_MAX, _I64_MAX);
+    throwInvalidArgumentException(method, _T("Denominator(=%I64d) out of range [%I64d..%I64d]"), denominator, -_I64_MAX, _I64_MAX);
   }
 
   if(numerator == 0) { // zero always 0/1

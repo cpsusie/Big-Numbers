@@ -208,10 +208,10 @@ void IndexedMap::convertIndex() {
 
 void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const { // Saved in format used by IndexedMap::load(ByteInputStream &s)
                                                                                         // defined last in this file
-
+  DEFINEMTEHODNAME;
   const UINT indexSize = info.m_indexCapacity;
   if(info.m_indexCapacity != indexSize) {
-    throwInvalidArgumentException(_T("saveCompressed"), _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
+    throwInvalidArgumentException(method, _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
   }
   const EndGameResult *ep          = &first();
   const EndGameResult *lastElement = getLastElement();
@@ -225,7 +225,7 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
   }
 
   if((info.getCanWinFlags() != canWinFlags) || (canWinFlags == 0)) {
-    throwInvalidArgumentException(_T("saveCompressed"), _T("CanWinFlags inconsistent. info.canWinFlags:%d, counted:%d")
+    throwInvalidArgumentException(method, _T("CanWinFlags inconsistent. info.canWinFlags:%d, counted:%d")
                                  ,info.getCanWinFlags()
                                  ,canWinFlags
                                  );
@@ -250,7 +250,7 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
   }
 
   if(maxPly != info.m_maxPlies.getMax()) {
-    throwInvalidArgumentException(_T("saveCompressed")
+    throwInvalidArgumentException(method
                                  ,_T("Calculated maxPly=%d != info.maxPlies:%s")
                                  ,maxPly
                                  ,info.m_maxPlies.toString().cstr());

@@ -198,7 +198,7 @@ int MoveFinderNormalPlay::getLookahead(int level) const {
       return 5;
     }
   default:
-    throwInvalidArgumentException(_T("getLookadhead"), _T("level=%d. Must be [1..6]"), level);
+    throwInvalidArgumentException(__TFUNCTION__, _T("level=%d. Must be [1..6]"), level);
     return 4;
   }
 }

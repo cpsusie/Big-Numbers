@@ -327,7 +327,7 @@ bool MoveGeneratorCheck::isValidKingMove(const Move &m, KingAttackState kingAtta
     }
     break;
   default          :
-    throwInvalidArgumentException(_T("isValidKingMove"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
     return false;
   }
   return true;

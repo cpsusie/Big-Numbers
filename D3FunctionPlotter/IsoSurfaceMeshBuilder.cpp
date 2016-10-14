@@ -167,7 +167,7 @@ LPD3DXMESH createMesh(DIRECT3DDEVICE device, IsoSurface &surface) {
 
 LPD3DXMESH createMesh(DIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
   if(param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMesh"), _T("param.includeTime=true"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
   return createMesh(device, IsoSurface(param));
 }
@@ -212,7 +212,7 @@ public:
 
 MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
   if(!param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMeshArray"), _T("param.includeTime=false"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
   return IsoSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
 }

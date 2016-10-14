@@ -125,7 +125,7 @@ void EndGameKeyDefinition5Men3Pawns::scanPositions(EndGameKeyWithOccupiedPositio
     }
     break;
   default:
-    throwInvalidArgumentException(_T("scanPositions"), _T("pIndex=%d"), pIndex);
+    throwInvalidArgumentException(__TFUNCTION__, _T("pIndex=%d"), pIndex);
   }
 }
 

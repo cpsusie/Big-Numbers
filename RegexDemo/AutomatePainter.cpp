@@ -296,7 +296,7 @@ void AutomatePainter::paintLoopArrow(const CPoint &from, int radius, DirectionPa
     break;
 
   default     :
-    throwInvalidArgumentException(_T("paintLoopArrow"), _T("direction="), dirPair.m_startDir);
+    throwInvalidArgumentException(__TFUNCTION__, _T("direction="), dirPair.m_startDir);
   }
 
   textPos.x = minMax((int)textPos.x, 1, m_size.cx - textSize.cx - 1);
@@ -341,7 +341,7 @@ CPoint AutomatePainter::findBestTextPosition(const CPoint pFrom, ArrowDirection 
       return textPos;
     }
   default     :
-    throwInvalidArgumentException(_T("findBestTextPosition"), _T("direction="), direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("direction="), direction);
     return pFrom;
   }
 }

@@ -810,7 +810,7 @@ D3DXVECTOR3 CD3FunctionPlotterDlg::getSceneObjectPos(SceneObjectType type, int l
     return m_scene.getLightParam(lightIndex).Position;
     break;
   default:
-    throwInvalidArgumentException(_T("getSceneObjectPos"), _T("type=%d"), type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
     return D3DXVECTOR3(0,0,0);
   }
 }
@@ -824,7 +824,7 @@ void CD3FunctionPlotterDlg::setSceneObjectPos(const D3DXVECTOR3 &pos, SceneObjec
     m_scene.setLightPosition(lightIndex, pos);
     break;
   default:
-    throwInvalidArgumentException(_T("setSceneObjectPos"), _T("type=%d"), type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
   }
 }
 

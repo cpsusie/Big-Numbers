@@ -234,12 +234,12 @@ void RemoteEndGameSubTablebase::remoteService(TCHAR **argv) { // static.
   int    portNumber;
 
   if(!*argv) {
-    throwInvalidArgumentException(_T("remoteService"), _T("argv[1]=NULL, Must be tablename"));
+    throwInvalidArgumentException(method, _T("argv[1]=NULL, Must be tablename"));
   } else {
     tablebaseName = *(argv++);
   }
   if(!*argv) {
-    throwInvalidArgumentException(_T("remoteService"), _T("argv[2]=NULL, Must be portnumber"));
+    throwInvalidArgumentException(method, _T("argv[2]=NULL, Must be portnumber"));
   } else {
     portNumber = _tstoi(*argv);
   }

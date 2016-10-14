@@ -8,12 +8,13 @@ const TCHAR *getPieceTypeShortNameEnglish(PieceType type) {
   case Bishop: return _T("B");
   case Knight: return _T("N");
   case Pawn  : return _T("");
-  default    : throwInvalidArgumentException(_T("getPieceTypeShortNameEnglish"), _T("type=%d"), type);
+  default    : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
                return _T("?");
   }
 }
 
 const TCHAR *getPieceTypeNameEnglish(PieceType type, bool plur) {
+  DEFINEMETHODNAME;
   if(plur) {
     switch(type) {
     case King  : return _T("kings");
@@ -22,7 +23,7 @@ const TCHAR *getPieceTypeNameEnglish(PieceType type, bool plur) {
     case Bishop: return _T("bishops");
     case Knight: return _T("knights");
     case Pawn  : return _T("pawns");
-    default    : throwInvalidArgumentException(_T("getPieceTypeNameEnglish"), _T("type=%d"), type);
+    default    : throwInvalidArgumentException(method, _T("type=%d"), type);
                  return _T("?");
     }
   } else {
@@ -33,7 +34,7 @@ const TCHAR *getPieceTypeNameEnglish(PieceType type, bool plur) {
     case Bishop: return _T("bishop");
     case Knight: return _T("knight");
     case Pawn  : return _T("pawn");
-    default    : throwInvalidArgumentException(_T("getPieceTypeNameEnglish"), _T("type=%d"), type);
+    default    : throwInvalidArgumentException(method, _T("type=%d"), type);
                  return _T("?");
     }
   }
@@ -101,7 +102,7 @@ MoveAnnotation parseAnnotation(const TCHAR *str) {
       return as.m_annotation;
     }
   }
-  throwInvalidArgumentException(_T("parseAnnotation"), _T("str=\"%s\""), str);
+  throwInvalidArgumentException(__TFUNCTION__, _T("str=\"%s\""), str);
   return NOANNOTATION;
 }
 

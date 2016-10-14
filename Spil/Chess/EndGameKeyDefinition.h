@@ -171,7 +171,7 @@ public:
   PieceKey   getPieceKey(        UINT i) const {
 #ifdef _DEBUG
     if(i >= m_totalPieceCount) {
-      throwInvalidArgumentException(_T("getPieceKey"), _T("index %d out of range. totalPieceCount=%d"), i, m_totalPieceCount);
+      throwInvalidArgumentException(__TFUNCTION__, _T("index %d out of range. totalPieceCount=%d"), i, m_totalPieceCount);
     }
 #endif
     return m_pieceKey[i];

@@ -180,7 +180,7 @@ GameUpdateFunction Game::getMoveFunction(PieceType pieceType) { // static
   case Bishop : return &updateGameMoveBishop;
   case Knight : return &updateGameMoveKnight;
   case Pawn   : return &updateGameMovePawn;
-  default     : throwInvalidArgumentException(_T("getMoveFunction"), _T("pieceType=%d"), pieceType);
+  default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                 return NULL;
   }
 }
@@ -194,7 +194,7 @@ GameUpdateFunction Game::getBackMoveFunction(PieceType pieceType) { // static
   case Bishop : return updateGameBackMoveBishop;
   case Knight : return updateGameBackMoveKnight;
   case Pawn   : return updateGameBackMovePawn;
-  default     : throwInvalidArgumentException(_T("getBackMoveFunction"), _T("pieceType=%d"), pieceType);
+  default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                 return NULL;
   }
 }
@@ -208,7 +208,7 @@ GameUpdateFunction Game::getCaptureFunction(PieceType pieceType) { // static
   case Bishop : return &updateGameCaptureBishop;
   case Knight : return &updateGameCaptureKnight;
   case Pawn   : return &updateGameCapturePawn;
-  default     : throwInvalidArgumentException(_T("getCaptureFunction"), _T("pieceType=%d"), pieceType);
+  default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                 return NULL;
   }
 }
@@ -233,7 +233,7 @@ const Piece *Game::findFirstPieceInDirection(int pos, MoveDirection dir) const {
   case MD_UPDIAG1   : return findFirstPieceInDirection(fieldInfo[pos].m_diag1Line.m_upper);
   case MD_DOWNDIAG2 : return findFirstPieceInDirection(fieldInfo[pos].m_diag2Line.m_lower);
   case MD_UPDIAG2   : return findFirstPieceInDirection(fieldInfo[pos].m_diag2Line.m_upper);
-  default           : throwInvalidArgumentException(_T("findFirstPieceInDirection"), _T("dir=%d"), dir);
+  default           : throwInvalidArgumentException(__TFUNCTION__, _T("dir=%d"), dir);
                       return NULL;
   }
 }

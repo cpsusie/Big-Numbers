@@ -190,7 +190,7 @@ static EndGamePositionStatus transformPositionStatus(EndGamePositionStatus statu
     case EG_DRAW     : return status;
     case EG_WHITEWIN : return EG_BLACKWIN;
     case EG_BLACKWIN : return EG_WHITEWIN;
-    default          : throwInvalidArgumentException(_T("transformPositionStatus"), _T("status=%d"), status);
+    default          : throwInvalidArgumentException(__TFUNCTION__, _T("status=%d"), status);
     }
   }
   return EG_UNDEFINED;
@@ -324,7 +324,7 @@ String EndGameTablebase::getFileName(TablebaseFileType fileType) const {
   case DECOMPRESSEDTABLEBASE: return m_keydef.getDecompressedFileName();  // only available for chess-program
 #endif
   case COMPRESSEDTABLEBASE  : return m_keydef.getCompressedFileName();    // available to both makeEndGame and chess-program
-  default                   : throwInvalidArgumentException(_T("getFileName"), _T("fileType=%d"), fileType);
+  default                   : throwInvalidArgumentException(__TFUNCTION__, _T("fileType=%d"), fileType);
   }
   return _T("");
 }
@@ -593,7 +593,7 @@ void EndGameTablebase::addInitPosition(EndGameKey key, bool allowTransform) {
     for(int pIndex = 0; pIndex < m_keydef.getPieceCount(); pIndex++) {
       const int pos = key.getPosition(pIndex);
       if((m_keydef.getPieceType(pIndex) == Pawn) && !isValidPawnPosition(pos)) {
-        throwInvalidArgumentException(_T("addInitPosition"), _T("%s is not a valid position for a pawn."), getFieldName(pos));
+        throwInvalidArgumentException(__TFUNCTION__, _T("%s is not a valid position for a pawn."), getFieldName(pos));
       }
     }
 
@@ -1725,7 +1725,7 @@ EndGameResult &EndGameTablebase::setAsTerminalPosition(EndGameResult &dst, EndGa
     break;
 
   default:
-    throwInvalidArgumentException(_T("setAsTerminalPosition"), _T("status=%d"), status);
+    throwInvalidArgumentException(__TFUNCTION__, _T("status=%d"), status);
   }
   return dst;
 }
@@ -1754,14 +1754,14 @@ EndGameResult &EndGameTablebase::setPositionResult(EndGameResult &dst, EndGamePo
     adjustMaxPly(BLACKPLAYER, pliesToEnd);
     break;
   default         :
-    throwInvalidArgumentException(_T("setPositionResult"), _T("status=%d"), status);
+    throwInvalidArgumentException(__TFUNCTION__, _T("status=%d"), status);
   }
   return dst;
 }
 
 EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd) {
   if(status != dst.getStatus()) {
-    throwInvalidArgumentException(_T("changePliesToEnd"), _T("dst=%s, status=%d. pliesToEnd=%d"), dst.toString(true).cstr(), status, pliesToEnd);
+    throwInvalidArgumentException(__TFUNCTION__, _T("dst=%s, status=%d. pliesToEnd=%d"), dst.toString(true).cstr(), status, pliesToEnd);
   }
   switch(status) {
   case EG_WHITEWIN:
@@ -1773,7 +1773,7 @@ EndGameResult &EndGameTablebase::changePliesToEnd(EndGameResult &dst, EndGamePos
     adjustMaxPly(BLACKPLAYER, pliesToEnd);
     break;
   default         :
-    throwInvalidArgumentException(_T("changePliesToEnd"), _T("status=%d"), status);
+    throwInvalidArgumentException(__TFUNCTION__, _T("status=%d"), status);
   }
   return dst;
 }
@@ -1925,7 +1925,7 @@ void EndGameTablebase::list(FILE *f, ListFilter filter) {
     list(f, m_positionIndex.getIteratorNonEmptyHelpInfo());
     break;
   default:
-    throwInvalidArgumentException(_T("list"), _T("filter=%d"), filter);
+    throwInvalidArgumentException(__TFUNCTION__, _T("filter=%d"), filter);
   }
 }
 
@@ -1970,7 +1970,7 @@ void EndGameTablebase::list(FILE *f, ListFilter filter, bool whiteWin, bool blac
     }
     break;
   default:
-    throwInvalidArgumentException(_T("list"), _T("filter=%d"), filter);
+    throwInvalidArgumentException(__TFUNCTION__, _T("filter=%d"), filter);
   }
 }
 

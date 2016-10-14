@@ -88,7 +88,7 @@ void Game::queenLeaveField(const Move &m) {
     break;
 
   default          :
-    throwInvalidArgumentException(_T("queenLeaveField"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   SET_EMPTYFIELD(m.m_from);
@@ -147,7 +147,7 @@ void Game::setNonCapturingQueen(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setNonCapturingQueen"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 
@@ -204,6 +204,6 @@ void Game::setCapturingQueen(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setCapturingQueen"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }

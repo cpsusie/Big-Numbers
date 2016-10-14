@@ -133,7 +133,7 @@ String Move::toString(MoveStringFormat mf) const {
   case MOVE_FILEFORMAT  : return toStringFileFormat();
   case MOVE_UCIFORMAT   : return toStringUCIFormat();
   case MOVE_DEBUGFORMAT : return toStringDebugFormat();
-  default               : throwInvalidArgumentException(_T("Move::toString"), _T("mf=%d"), mf);
+  default               : throwInvalidArgumentException(__TFUNCTION__, _T("mf=%d"), mf);
                           return _T("");
   }
 }
@@ -325,7 +325,7 @@ String ExecutableMove::toString(MoveStringFormat mf) const {
   case MOVE_FILEFORMAT  : return toStringFileFormat()    + getAnnotationToString(m_annotation);
   case MOVE_UCIFORMAT   : return toStringUCIFormat();
   case MOVE_DEBUGFORMAT : return toStringDebugFormat()   + getAnnotationToString(m_annotation);
-  default               : throwInvalidArgumentException(_T("ExecutableMove::toString"), _T("mf=%d"), mf);
+  default               : throwInvalidArgumentException(__TFUNCTION__, _T("mf=%d"), mf);
                           return _T("");
   }
 }

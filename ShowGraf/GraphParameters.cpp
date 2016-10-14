@@ -24,7 +24,7 @@ static const TCHAR *styleName[] = {
 
 String GraphParameters::graphStyleToString(GraphStyle style) {  // static
   if(style < 0 || style > 2) {
-    throwInvalidArgumentException(_T("getStyleName"), _T("style=%d. Must be [0..2]"), style);
+    throwInvalidArgumentException(__TFUNCTION__, _T("style=%d. Must be [0..2]"), style);
   }
   return styleName[style];
 }

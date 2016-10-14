@@ -4,7 +4,7 @@
 
 AnimatedImage::AnimatedImage(int resId, UINT imageCount) {
   if(imageCount == 0) {
-    throwInvalidArgumentException(_T("AnimatedImage"),_T("imageCount=0"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("imageCount=0"));
   }
   const Image rawImage(resId);
   const int frameWidth  = rawImage.getWidth() / imageCount;
@@ -30,7 +30,7 @@ AnimatedImage::~AnimatedImage() {
 
 void AnimatedImage::startAnimation(CWnd *wnd, const CPoint &p, double scale, bool removeWhenDone, int loopCount) {
   if(wnd == NULL) {
-    throwInvalidArgumentException(_T("startAnimation"),_T("wnd == NULL"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("wnd == NULL"));
   }
   m_wnd            = wnd;
   m_point          = p;
@@ -82,7 +82,7 @@ int AnimatedImage::getFrameCount() const {
 
 void AnimatedImage::setSecondsPerCycle(double secondsPerCycle, double pauseAtEnd) {
   if(secondsPerCycle <= 0 || pauseAtEnd < 0) {
-    throwInvalidArgumentException(_T("setSecondsPerCycle"), _T("(%lg,%lg)"), secondsPerCycle, pauseAtEnd);
+    throwInvalidArgumentException(__TFUNCTION__, _T("(%lg,%lg)"), secondsPerCycle, pauseAtEnd);
   }
   m_secondsPerCycle = secondsPerCycle;
   m_pauseAtEnd      = pauseAtEnd;

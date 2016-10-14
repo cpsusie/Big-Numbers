@@ -213,6 +213,6 @@ void ChessResources::loadBitmap(CBitmap &dst, int resId, ImageType type) { // st
     }
     break;
   default:
-    throwInvalidArgumentException(_T("Inage"), _T("Imagetype=%d"), type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("Imagetype=%d"), type);
   }
 }

@@ -69,7 +69,7 @@ D3DXVECTOR3 createUnitVector(int i) {
   case 0 : return D3DXVECTOR3(1,0,0);
   case 1 : return D3DXVECTOR3(0,1,0);
   case 2 : return D3DXVECTOR3(0,0,1);
-  default: throwInvalidArgumentException(_T("createUnitVector"), _T("i=%d. Must be [0..2]"), i);
+  default: throwInvalidArgumentException(__TFUNCTION__, _T("i=%d. Must be [0..2]"), i);
            return D3DXVECTOR3(0,0,0);
   }
 }

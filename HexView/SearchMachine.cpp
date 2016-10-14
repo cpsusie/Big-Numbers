@@ -24,7 +24,7 @@ int SequentialByteContainer::fread(UINT count, BYTE *buffer) { // return number 
 
 void SequentialByteContainer::fseek(__int64 pos) {
   if(pos < 0 || pos > m_size) {
-    throwInvalidArgumentException(_T("SequentialByteContainer::fseek"), _T("pos=%I64d. size=%I64d"), pos, m_size);
+    throwInvalidArgumentException(__TFUNCTION__, _T("pos=%I64d. size=%I64d"), pos, m_size);
   }
   m_position = pos;
 }

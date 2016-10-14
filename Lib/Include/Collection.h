@@ -65,7 +65,7 @@ public:
 
   Collection<T> getRandomSample(size_t k) const {
     if(k > size()) {
-      throwInvalidArgumentException(_T("getRandomSample"), _T("k(=%u) > size(=%d)"), k, size());
+      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%u) > size(=%d)"), k, size());
     }
     CompactArray<const T*> tmp;
     tmp.setCapacity(k);

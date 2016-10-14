@@ -15,7 +15,7 @@ void Game::updateGameMoveKing(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("updateGameMoveKing"), _T("moveType=%d"), m.m_type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("moveType=%d"), m.m_type);
   }
 }
 
@@ -159,7 +159,7 @@ void Game::setKingBackMove(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setNonCapturingKing"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   KING_DIRECTION(state, m.m_to) = MD_NONE;
@@ -222,7 +222,7 @@ void Game::kingLeaveField(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("kingLeaveField"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   KING_DIRECTION(m_playerState[PLAYERINTURN],m.m_from) = m.m_direction;
@@ -304,7 +304,7 @@ void Game::setNonCapturingKing(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setNonCapturingKing"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   KING_DIRECTION(state, m.m_to) = MD_NONE;
@@ -407,7 +407,7 @@ void Game::setCapturingKing(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setCapturingKing"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   KING_DIRECTION(state, m.m_to) = MD_NONE;

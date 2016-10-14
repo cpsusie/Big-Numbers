@@ -33,7 +33,7 @@ void BitOutputStream::putBits(unsigned long code, int count) {
   }
 #ifdef _DEBUG
   if(count > 32) {
-    throwInvalidArgumentException(_T("BitOutputStream.putBits"), _T("count=%d. Max=32"), count);
+    throwInvalidArgumentException(__TFUNCTION__, _T("count=%d. Max=32"), count);
   }
 #endif
 

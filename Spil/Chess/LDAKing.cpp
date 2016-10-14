@@ -334,7 +334,7 @@ void Game::updateKingDir(const Move &m) {
   case MD_UPDIAG1  : updateKingDirMovingUpDiag1(  m); break;
   case MD_DOWNDIAG2: updateKingDirMovingDownDiag2(m); break;
   case MD_UPDIAG2  : updateKingDirMovingUpDiag2(  m); break;
-  default          : throwInvalidArgumentException(_T("updateKingDir"), _T("m.direction=%d"), m.m_direction);
+  default          : throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 
@@ -830,7 +830,7 @@ void Game::updateKingDirKingMove(const Move &m) {
   case MD_UPDIAG1  : updateKingDirKingMovingUpDiag1(  m); break;
   case MD_DOWNDIAG2: updateKingDirKingMovingDownDiag2(m); break;
   case MD_UPDIAG2  : updateKingDirKingMovingUpDiag2(  m); break;
-  default          : throwInvalidArgumentException(_T("updateKingDirKingMove"), _T("m.direction=%d"), m.m_direction);
+  default          : throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 

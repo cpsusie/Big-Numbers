@@ -136,12 +136,12 @@ void Image::paintRotated(HDC dc, const CPoint &dst, const CSize &size, const CPo
   const CSize rsize = rotatedImage->getSize();
   if(scale == 1) {
 //    const CPoint rdst(dst.x - (rsize.cx-size.cx)/2, dst.y - (rsize.cy-size.cy)/2);
-    PixRect::alphaBlend(dc, dst.x,dst.y, size.cx,size.cy, *rotatedImage, 0,0, size.cx,size.cy, 255);
+    PixRect::alphaBlend(dc, dst, size, *rotatedImage, ORIGIN, size, 255);
   } else {
     const CSize dstsize((int)(rsize.cx * scale), (int)(rsize.cy*scale));
-    const CSize srcSize((int)(size.cx  * scale), (int)(size.cy *scale));
+//    const CSize srcSize((int)(size.cx  * scale), (int)(size.cy *scale));
 //    const CPoint rdst(dst.x - (dstsize.cx-srcSize.cx)/2, dst.y - (dstsize.cy-srcSize.cy)/2);
-    PixRect::alphaBlend(dc, dst.x,dst.y, dstsize.cx,dstsize.cy, *rotatedImage, 0,0, rsize.cx,rsize.cy, 255);
+    PixRect::alphaBlend(dc, dst, dstsize, *rotatedImage, ORIGIN, rsize, 255);
   }
   delete rotatedImage;
 }

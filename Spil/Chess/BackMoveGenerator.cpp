@@ -218,7 +218,7 @@ bool FieldAttacks::isLDAttackedFromDir(MoveDirection direction) const {
   case MD_UPDIAG1  : return m_attackInfo.m_fromUpperDiag1;
   case MD_DOWNDIAG2: return m_attackInfo.m_fromLowerDiag2;
   case MD_UPDIAG2  : return m_attackInfo.m_fromUpperDiag2;
-  default          : throwInvalidArgumentException(_T("isLDAttackedFromDir"), _T("direction=%d"), direction);
+  default          : throwInvalidArgumentException(__TFUNCTION__, _T("direction=%d"), direction);
                      return false;
   }
 }

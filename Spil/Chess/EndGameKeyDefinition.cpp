@@ -231,7 +231,7 @@ int EndGameKeyDefinition::findKeyIndexByCount(PieceKey pieceKey, int n) const {
       }
     }
   }
-  throwInvalidArgumentException(_T("findKeyIndexByCount"), _T("pieceKey=%s %s, n=%d")
+  throwInvalidArgumentException(__TFUNCTION__, _T("pieceKey=%s %s, n=%d")
                                ,getPlayerNameEnglish(GET_PLAYER_FROMKEY(pieceKey))
                                ,getPieceTypeNameEnglish(GET_TYPE_FROMKEY(pieceKey))
                                ,n);
@@ -531,7 +531,7 @@ SymmetricTransformation EndGameKeyDefinition::getPlayTransformation(const Game &
   } else if(kps.swapPlayers() == gps) {
     return TRANSFORM_SWAPPLAYERS;
   }
-  throwInvalidArgumentException(_T("getPlayTransformation")
+  throwInvalidArgumentException(__TFUNCTION__
                                ,_T("EndGameKeyDefinition has signature %s. Game has %s")
                                ,kps.toString().cstr()
                                ,gps.toString().cstr()

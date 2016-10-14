@@ -28,7 +28,7 @@ unsigned long BitInputStream::getBits(int count) {
   }
 #ifdef _DEBUG
   if(count > 32) {
-    throwInvalidArgumentException(_T("BitInputStream.getBits"), _T("count=%d. Max=32"), count);
+    throwInvalidArgumentException(__TFUNCTION__, _T("count=%d. Max=32"), count);
   }
 #endif
 

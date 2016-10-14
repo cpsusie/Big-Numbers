@@ -67,7 +67,7 @@ void Game::rookLeaveField(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("rookLeaveField"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   switch(PLAYERINTURN) {
@@ -129,7 +129,7 @@ void Game::setNonCapturingRook(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setNonCapturingRook"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 
@@ -158,6 +158,6 @@ void Game::setCapturingRook(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setCapturingRook"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }

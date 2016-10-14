@@ -35,14 +35,14 @@ MoveBase Game::getLastMove() const {
 
 Move &Game::getMove(UINT ply) { // ply must be in range [0..m_stackSize-1]
   if(ply >= m_stackSize) {
-    throwInvalidArgumentException(_T("getMove"), _T("ply=%d. plyCount=%d"), ply, m_stackSize);
+    throwInvalidArgumentException(__TFUNCTION__, _T("ply=%d. plyCount=%d"), ply, m_stackSize);
   }
   return m_gameStack[ply];
 }
 
 const Move &Game::getMove(UINT ply) const { // ply must be in range [0..m_stackSize-1]
   if(ply >= m_stackSize) {
-    throwInvalidArgumentException(_T("getMove"), _T("ply=%d. plyCount=%d"), ply, m_stackSize);
+    throwInvalidArgumentException(__TFUNCTION__, _T("ply=%d. plyCount=%d"), ply, m_stackSize);
   }
   return m_gameStack[ply];
 }

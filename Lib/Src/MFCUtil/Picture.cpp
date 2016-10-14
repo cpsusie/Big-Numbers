@@ -519,7 +519,7 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
 
 void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // static
   if(hdc == NULL) {
-    throwInvalidArgumentException(_T("showBitmapResource"), _T("hdc = NULL"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("hdc = NULL"));
   }
 
   CBitmap bm;
@@ -550,7 +550,7 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 
 void CPicture::updateSizeOnDC(CDC *pDC) {
   if(pDC == NULL) { 
-    throwInvalidArgumentException(_T("updateSizeOnDC"), _T("pDC == NULL"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("pDC == NULL"));
   }
 
   if(isLoaded()) {

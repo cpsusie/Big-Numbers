@@ -78,7 +78,7 @@ int CEngineOptionsDlg::nextCtrlId(EngineOptionType type) {
     return FIRST_COMBO_CTRLID + m_comboCounter++;
 
   default:
-    throwInvalidArgumentException(_T("nextCtrlId"), _T("type=%d"), type);
+    throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
     return 0;
   }
 }

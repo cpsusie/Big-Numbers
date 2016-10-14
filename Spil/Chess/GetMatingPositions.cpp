@@ -90,7 +90,7 @@ const Piece *Game::findPinningPiece(const Piece *piece, int wantedDestination) c
     return findFirstPieceInDirection(piece->m_position
                                     ,getOppositeDirection(KING_DIRECTION(piece->m_playerState, piece->m_position)));
   default:
-    throwInvalidArgumentException(_T("findPinningPiece"), _T("piece.type=%d"), piece->getType());
+    throwInvalidArgumentException(__TFUNCTION__, _T("piece.type=%d"), piece->getType());
     return NULL;
   }
 }

@@ -94,7 +94,7 @@ LPD3DXMESH createMeshFromParametricSurface(DIRECT3DDEVICE device, ParametricSurf
 
 LPD3DXMESH createMesh(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
   if(param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMesh"), _T("param.includeTime=true"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
   ExprParametricSurface ps(param);
   return createMeshFromParametricSurface(device, ps, param.getTInterval(), param.getSInterval(), param.m_tStepCount, param.m_sStepCount, param.m_doubleSided);
@@ -152,7 +152,7 @@ public:
 
 MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
   if(!param.m_includeTime) {
-    throwInvalidArgumentException(_T("createMeshArray"), _T("param.includeTime=false"));
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
   return ParametricSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
 }

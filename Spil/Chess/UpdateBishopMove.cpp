@@ -78,7 +78,7 @@ void Game::bishopLeaveField(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("bishopLeaveField"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 
   SET_EMPTYFIELD(m.m_from);
@@ -116,7 +116,7 @@ void Game::setNonCapturingBishop(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setNonCapturingBishop"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 
@@ -145,7 +145,7 @@ void Game::setCapturingBishop(const Move &m) {
     break;
 
   default:
-    throwInvalidArgumentException(_T("setCapturingBishop"), _T("m.direction=%d"), m.m_direction);
+    throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
 }
 

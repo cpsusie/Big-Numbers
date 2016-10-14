@@ -119,7 +119,7 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
       }
       break;
     default                :
-      throwInvalidArgumentException(_T("generateMove"), _T("Invalid format:%d"), mf);
+      throwInvalidArgumentException(__TFUNCTION__, _T("Invalid format:%d"), mf);
     }
   }
   throwException(_T("%s is not a legal move"), s.cstr());
@@ -426,7 +426,7 @@ MoveDirection getOppositeDirection(MoveDirection direction) {
   case MD_UPDIAG1   : return MD_DOWNDIAG1;
   case MD_DOWNDIAG2 : return MD_UPDIAG2;
   case MD_UPDIAG2   : return MD_DOWNDIAG2;
-  default           : throwInvalidArgumentException(_T("getOppositeDirection"), _T("direction=%d"), direction);
+  default           : throwInvalidArgumentException(__TFUNCTION__, _T("direction=%d"), direction);
                       return MD_NONE;
   }
 }
@@ -546,7 +546,7 @@ String getPieceTypeName(PieceType pieceType, bool plur) {
   case Bishop  :
   case Knight  :
   case Pawn    : return plur ? pieceName_plur[pieceType] : pieceName[pieceType];
-  default      : throwInvalidArgumentException(_T("getPieceTypeName"), _T("pieceType=%d"), pieceType);
+  default      : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                  return _T("?");
   }
 }
@@ -560,7 +560,7 @@ String getPieceTypeShortName(PieceType pieceType) {
   case Bishop  :
   case Knight  :
   case Pawn    : return pieceShortName[pieceType];
-  default      : throwInvalidArgumentException(_T("getPieceTypeShortName"), _T("pieceType=%d"), pieceType);
+  default      : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                  return _T("?");
   }
 }
@@ -591,7 +591,7 @@ String getPinnedStateToString(PinnedState ps) {
   case PINNED_TO_COL      : return _T("|");
   case PINNED_TO_DIAG1    : return _T("/");
   case PINNED_TO_DIAG2    : return _T("\\");
-  default                 : throwInvalidArgumentException(_T("getPinnedStateString"), _T("ps=%d"), ps);
+  default                 : throwInvalidArgumentException(__TFUNCTION__, _T("ps=%d"), ps);
                             return _T("?");
   }
 }
@@ -654,7 +654,7 @@ const TCHAR *getAnnotationToString(MoveAnnotation annotation) {
   case EXCELLENT_MOVE      : return _T("!!");
   case INTERESTING_MOVE    : return _T("!?");
   case DOUBIOUS_MOVE       : return _T("?!");
-  default                  : throwInvalidArgumentException(_T("getAnnotationToString"), _T("annotation=%d"), annotation);
+  default                  : throwInvalidArgumentException(__TFUNCTION__, _T("annotation=%d"), annotation);
                              return _T("");
   }
 }
