@@ -54,8 +54,9 @@ public:
   }
 
   T remove() { // Always removes the lowest element, according to order and m_reverseOrder
-    if(isEmpty())
-      throwException(_T("PriorityQueue::remove:Cannot delete from empty queue"));
+    if(isEmpty()) {
+      throwException(_T("%s:Cannot delete from empty queue"), __TFUNCTION__);
+    }
 
     T result = m_a[0];
     const size_t last = size()-1;
@@ -90,5 +91,4 @@ public:
   String toString() const {
     return m_a.toString();
   }
-
 };

@@ -55,7 +55,7 @@ public:
   }
   inline int compare(const T &e1, const T &e2) {
     return m_usersuppliedcmp(&e1, &e2);
-  };
+  }
   inline bool isSet() const {
     return m_usersuppliedcmp != NULL;
   }
