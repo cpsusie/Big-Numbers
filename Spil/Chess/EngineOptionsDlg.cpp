@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifndef TABLEBASE_BUILDER
+
 #include <MFCUtil/WinTools.h>
 #include "ChessGraphics.h"
 #include "EngineOptionsDlgThread.h"
@@ -368,3 +371,5 @@ BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult
 #endif
   return FALSE;
 }
+
+#endif

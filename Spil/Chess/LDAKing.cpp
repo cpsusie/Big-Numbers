@@ -393,7 +393,7 @@ void Game::updateKingDirMovingLeft(      const Move &m) {
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
-      case MD_NONE     : 
+      case MD_NONE     :
       case MD_LEFT     :
       case MD_RIGHT    : break;
       case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
@@ -446,7 +446,7 @@ void Game::updateKingDirMovingRight(     const Move &m) {
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
-      case MD_NONE     : 
+      case MD_NONE     :
       case MD_LEFT     :
       case MD_RIGHT    : break;
       case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
@@ -482,7 +482,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
         }
       }
       break;
-    case MD_UP         : 
+    case MD_UP         :
       { for(int pos = fromInfo.m_colLine.m_lower[1]; DPOS_DOWN_LE(pos, m.m_to); pos += DPOS_DOWN) {
           KING_DIRECTION(state, pos) = MD_UP;
         }
@@ -502,7 +502,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
       case MD_NONE     : break;
       case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
       case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
-      case MD_DOWN     : 
+      case MD_DOWN     :
       case MD_UP       : break;
       case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
       case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
@@ -527,7 +527,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
       break;
     case MD_LEFT       : IF_BLOCKABLE_SET_KING_LEFT(       state, fromInfo); break;
     case MD_RIGHT      : IF_BLOCKABLE_SET_KING_RIGHT(      state, fromInfo); break;
-    case MD_UP         : 
+    case MD_UP         :
       { if(m.m_capturedPiece == NULL) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_UP) {
             KING_DIRECTION(state, pos) = MD_NONE;
@@ -555,7 +555,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
       case MD_NONE     : break;
       case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
       case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
-      case MD_DOWN     : 
+      case MD_DOWN     :
       case MD_UP       : break;
       case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
       case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
@@ -610,7 +610,7 @@ void Game::updateKingDirMovingDownDiag1( const Move &m) {
       case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
       case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
       case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
-      case MD_DOWNDIAG1: 
+      case MD_DOWNDIAG1:
       case MD_UPDIAG1  : break;
       case MD_DOWNDIAG2: IF_BLOCKABLE_SET_NOKING_DOWNDIAG2(state, toInfo);   break;
       case MD_UPDIAG2  : IF_BLOCKABLE_SET_NOKING_UPDIAG2(  state, toInfo);   break;
@@ -663,7 +663,7 @@ void Game::updateKingDirMovingUpDiag1(   const Move &m) {
       case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
       case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
       case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
-      case MD_DOWNDIAG1: 
+      case MD_DOWNDIAG1:
       case MD_UPDIAG1  : break;
       case MD_DOWNDIAG2: IF_BLOCKABLE_SET_NOKING_DOWNDIAG2(state, toInfo);   break;
       case MD_UPDIAG2  : IF_BLOCKABLE_SET_NOKING_UPDIAG2(  state, toInfo);   break;
@@ -690,7 +690,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
     case MD_UP         : IF_BLOCKABLE_SET_KING_UP(         state, fromInfo); break;
     case MD_DOWNDIAG1  : IF_BLOCKABLE_SET_KING_DOWNDIAG1(  state, fromInfo); break;
     case MD_UPDIAG1    : IF_BLOCKABLE_SET_KING_UPDIAG1(    state, fromInfo); break;
-    case MD_DOWNDIAG2: 
+    case MD_DOWNDIAG2:
       { if(m.m_capturedPiece == NULL) {
           for(int pos = fromInfo.m_pos; pos != m.m_to; pos += DPOS_DOWNDIAG2) {
             KING_DIRECTION(state, pos) = MD_NONE;
@@ -718,7 +718,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
       case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
       case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
       case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
-      case MD_DOWNDIAG2: 
+      case MD_DOWNDIAG2:
       case MD_UPDIAG2  : break;
       }
     }
@@ -771,7 +771,7 @@ void Game::updateKingDirMovingUpDiag2(   const Move &m) {
       case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
       case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
       case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
-      case MD_DOWNDIAG2: 
+      case MD_DOWNDIAG2:
       case MD_UPDIAG2  : break;
       }
     }
@@ -963,7 +963,7 @@ void Game::updateKingDirKingMovingDown(      const Move &m) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
-    case MD_DOWN     : 
+    case MD_DOWN     :
     case MD_UP       : break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
@@ -1016,7 +1016,7 @@ void Game::updateKingDirKingMovingUp(        const Move &m) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
-    case MD_DOWN     : 
+    case MD_DOWN     :
     case MD_UP       : break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
@@ -1071,7 +1071,7 @@ void Game::updateKingDirKingMovingDownDiag1( const Move &m) {
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
     case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
     case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
-    case MD_DOWNDIAG1: 
+    case MD_DOWNDIAG1:
     case MD_UPDIAG1  : break;
     case MD_DOWNDIAG2: IF_BLOCKABLE_SET_NOKING_DOWNDIAG2(state, toInfo);   break;
     case MD_UPDIAG2  : IF_BLOCKABLE_SET_NOKING_UPDIAG2(  state, toInfo);   break;
@@ -1124,7 +1124,7 @@ void Game::updateKingDirKingMovingUpDiag1(   const Move &m) {
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, toInfo);   break;
     case MD_DOWN     : IF_BLOCKABLE_SET_NOKING_DOWN(     state, toInfo);   break;
     case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
-    case MD_DOWNDIAG1: 
+    case MD_DOWNDIAG1:
     case MD_UPDIAG1  : break;
     case MD_DOWNDIAG2: IF_BLOCKABLE_SET_NOKING_DOWNDIAG2(state, toInfo);   break;
     case MD_UPDIAG2  : IF_BLOCKABLE_SET_NOKING_UPDIAG2(  state, toInfo);   break;
@@ -1179,7 +1179,7 @@ void Game::updateKingDirKingMovingDownDiag2( const Move &m) {
     case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
-    case MD_DOWNDIAG2: 
+    case MD_DOWNDIAG2:
     case MD_UPDIAG2  : break;
     }
   }
@@ -1232,7 +1232,7 @@ void Game::updateKingDirKingMovingUpDiag2(   const Move &m) {
     case MD_UP       : IF_BLOCKABLE_SET_NOKING_UP(       state, toInfo);   break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, toInfo);   break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, toInfo);   break;
-    case MD_DOWNDIAG2: 
+    case MD_DOWNDIAG2:
     case MD_UPDIAG2  : break;
     }
   }
@@ -1330,7 +1330,7 @@ void Game::updateKingDirEPDownDiag2(const EnPassantMove &m) {
     }
 
     switch(KING_DIRECTION(state, m.m_move.m_to)) {
-    case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, m.m_toInfo          );                break; 
+    case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, m.m_toInfo          );                break;
     case MD_RIGHT    : SET_NOKING_RIGHT(                 state, m.m_toInfo          );                break; // always blockable
     case MD_DOWN     : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
     case MD_UP       : throwException(_T("updateKingDirEPDownDiag2:King is above %s. Should be a pawn"), getFieldName(m.m_move.m_to));
@@ -1348,7 +1348,7 @@ void Game::updateKingDirEPDownDiag2(const EnPassantMove &m) {
     case MD_UP       : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_UP;        break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_KING_DOWNDIAG1(  state, m.m_capturedInfo    );                break;
     case MD_UPDIAG1  : setKingUpDiag1(                   state, m.m_capturedInfo    );                break; // always blockable
-    case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(  state, m.m_capturedInfo    );                break; 
+    case MD_DOWNDIAG2: IF_BLOCKABLE_SET_KING_DOWNDIAG2(  state, m.m_capturedInfo    );                break;
     case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(    state, m.m_capturedInfo    );                break;
     default          :                                                                                break;
     }
@@ -1397,7 +1397,7 @@ void Game::updateKingDirEPUpDiag1(  const EnPassantMove &m) {
     switch(KING_DIRECTION(state, m.m_capturedPosition)) {
     case MD_LEFT     :                                                                                break; // handled by first switch
     case MD_RIGHT    : setKingRight(                     state, m.m_capturedInfo    );                break; // always blockable
-    case MD_DOWN     : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWN;      break; 
+    case MD_DOWN     : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWN;      break;
     case MD_UP       : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_KING_DOWNDIAG1(  state, m.m_capturedInfo    );                break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_KING_UPDIAG1(    state, m.m_capturedInfo    );                break;
@@ -1432,7 +1432,7 @@ void Game::updateKingDirEPUpDiag2(  const EnPassantMove &m) {
     case MD_UPDIAG1  : setKingUpDiag1(                   state, m.m_fromInfo        );                break; // always blockable
     case MD_DOWNDIAG2: KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWNDIAG2; break;
     case MD_UPDIAG2  : KING_DIRECTION(                   state, m.m_move.m_from     ) = MD_NONE;      break;
-    default          :                                                                                break; 
+    default          :                                                                                break;
     }
 
     switch(KING_DIRECTION(state, m.m_move.m_to)) {
@@ -1450,7 +1450,7 @@ void Game::updateKingDirEPUpDiag2(  const EnPassantMove &m) {
     switch(KING_DIRECTION(state, m.m_capturedPosition)) {
     case MD_LEFT     : setKingLeft(                      state, m.m_capturedInfo    );                break; // always blockable
     case MD_RIGHT    :                                                                                break; // handled by first switch
-    case MD_DOWN     : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWN;      break; 
+    case MD_DOWN     : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWN;      break;
     case MD_UP       : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
     case MD_DOWNDIAG1: setKingDownDiag1(                 state, m.m_capturedInfo    );                break; // always blockable
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_KING_UPDIAG1(    state, m.m_capturedInfo    );                break;

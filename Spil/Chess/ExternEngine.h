@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef TABLEBASE_BUILDER
+
 #include "InputThread.h"
 
 typedef enum { // dont swap these. see optionsCmp in ExternEngine.cpp
@@ -133,8 +135,10 @@ public:
   void setParameterValue(const EngineOptionDescription &option, int           value); // OptionTypeSpin
   void setParameterValue(const EngineOptionDescription &option, bool          value); // OptionTypeCheckbox
   void setParameterValue(const EngineOptionDescription &option, const String &value); // OptionTypeCombo, OptionTypeString
-  void clickButton(      const EngineOptionDescription &option                     ); // for OptionTypeButton  
+  void clickButton(      const EngineOptionDescription &option                     ); // for OptionTypeButton
 
   void setParameters(const EngineOptionValueArray &valueArray);
   static EngineDescription getUCIReply(const String &path);
 };
+
+#endif

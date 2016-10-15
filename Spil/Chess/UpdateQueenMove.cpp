@@ -61,7 +61,7 @@ void Game::queenLeaveField(const Move &m) {
   const FieldInfo &fromInfo = fieldInfo[m.m_from];
 
   updateKingDir(m);
-  
+
   switch(m.m_direction) {
   case MD_LEFT    :   // Leave column and both diagonals
   case MD_RIGHT   :
@@ -103,7 +103,7 @@ void Game::setNonCapturingQueen(const Move &m) {
     LDAenterColumn(         toInfo);
     LDAenterDiag12(         toInfo);
     break;
-    
+
   case MD_RIGHT    :
     LDAwalkRight(           toInfo, m.m_from);
     LDAenterColumn(         toInfo);
@@ -127,7 +127,7 @@ void Game::setNonCapturingQueen(const Move &m) {
     LDAenterRC(             toInfo);
     LDAenterDiag2(          toInfo);
     break;
-    
+
   case MD_UPDIAG1  :
     LDAwalkUpDiag1(         toInfo, m.m_from);
     LDAenterRC(             toInfo);

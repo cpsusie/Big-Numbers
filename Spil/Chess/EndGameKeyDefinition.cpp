@@ -29,18 +29,12 @@ bool EndGameGlobalProperties::setDbPath(const String &path) {
   FileNameSplitter newInfo(path);
   FileNameSplitter oldInfo(m_dbPath);
   const bool ret = newInfo.getFullPath() != oldInfo.getFullPath();
-  const String oldPath = m_dbPath;
-  m_dbPath = path;
-  notifyPropertyChanged(ENDGAME_PATH, &oldPath, &m_dbPath);
+  setProperty(ENDGAME_PATH, m_dbPath, path);
   return ret;
 }
 
 void EndGameGlobalProperties::setMetric(TablebaseMetric m) {
-  if(m != m_metric) {
-    const TablebaseMetric oldMetric = m_metric;
-    m_metric = m;
-    notifyPropertyChanged(ENDGAME_METRIC, &oldMetric, &m_metric);
-  }
+  setProperty(ENDGAME_METRIC, m_metric, m);
 }
 
 EndGameGlobalProperties EndGameKeyDefinition::globalProperties;
@@ -86,7 +80,7 @@ String EndGameKeyDefinition::getCompressedFileName() const {
 
 
 
-int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // static 
+int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // static
   const double _8 = 8.0;
   unsigned short cwSave, ctrlFlags;
 
@@ -113,7 +107,7 @@ int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // stat
   return result >> 1;
 }
 
-int EndGameKeyDefinition::findRange(const unsigned long *rangeTable, UINT size, unsigned long index) { // static 
+int EndGameKeyDefinition::findRange(const unsigned long *rangeTable, UINT size, unsigned long index) { // static
   int l = 1, r = size;
   while(l < r) {
     const UINT m = (l+r)>>1;
@@ -149,7 +143,7 @@ void EndGameKeyDefinition::init(PieceKey pk2, ...) {
   m_pieceKey[i++] = WHITEKING;
   m_pieceKey[i++] = BLACKKING;
   m_pieceKey[i++] = pk2;
-  
+
   va_list argptr;
   va_start(argptr, pk2);
   while(i < m_totalPieceCount) {
@@ -343,22 +337,22 @@ void EndGameKeyDefinition::validateKey(const EndGameKey key, const TCHAR *msg) c
   for(UINT i = 2; i < m_totalPieceCount; i++) {
     const UINT posi = key.getPosition(i);
     switch(i) {
-    case 4: 
+    case 4:
       if(posi == key.getPosition3()) {
         throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
       }
-      // continue case      
+      // continue case
     case 3:
       if(posi == key.getPosition2()) {
         throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
       }
-      // continue case      
+      // continue case
     case 2:
       if((posi == wkPos) || (posi == bkPos)) {
         throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
       }
       break;
-    default: 
+    default:
       invalidPieceCountError();
     }
   }
@@ -369,7 +363,7 @@ TCHAR *EndGameKeyDefinition::createKeyString(TCHAR *dst, const EndGameKey &key, 
   if(initFormat) {
     return _tcscpy(dst, createInitKeyString(key).cstr());
   }
-  
+
   TCHAR blackStr[100];
   return _tcscat(createWhiteKeyString(dst, key), createBlackKeyString(blackStr, key));
 }
@@ -664,7 +658,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men(const En
   }                                                                                                           \
 }
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(const EndGameKey &key) { // static 
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(const EndGameKey &key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM4MEN2EQUAL)
 }
 
@@ -688,7 +682,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(co
 #define DECIDESYM8TRANSFORM5MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                  \
   _DECIDESYM8TRANSFORM5MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, 2, 3, 4)
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men2Equal(const EndGameKey &key) { // static 
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men2Equal(const EndGameKey &key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM5MEN2EQUAL)
 }
 
@@ -761,7 +755,7 @@ static SymmetricTransformation decideSym8Transform3EqualFlipij(EndGameKey key, S
   }                                                                                                           \
 }
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men3Equal(const EndGameKey &key) { // static 
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men3Equal(const EndGameKey &key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM3EQUAL)
 }
 
@@ -1058,7 +1052,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
       break;
     case 1:
       { const int wkPos = key.getWhiteKingPosition();
-        if(allPreviousOnDiag) { 
+        if(allPreviousOnDiag) {
           for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
             const int pos = subDiagIndexToPos[i];
             if(KINGSADJACENT(wkPos, pos)) {
@@ -1072,7 +1066,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
             }
             key.clearField(pos);
           }
-        } else { 
+        } else {
           for(int pos = 0; pos < 64; pos++) { // for all positions
             if(KINGSADJACENT(wkPos, pos)) {
               continue;
@@ -1090,7 +1084,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
       break;
     default:
       { const int pIndexAdd1 = pIndex+1;
-        if(allPreviousOnDiag) { 
+        if(allPreviousOnDiag) {
           for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
             const int pos = subDiagIndexToPos[i];
             if(key.isOccupied(pos)) {
@@ -1104,7 +1098,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
             }
             key.clearField(pos);
           }
-        } else { 
+        } else {
           for(int pos = 0; pos < 64; pos++) { // for all positions
             if(key.isOccupied(pos)) {
               continue;
@@ -1152,13 +1146,13 @@ public:
   UINT scanAllPositions();
 };
 
-AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef) 
+AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
 : m_keydef(keydef)
 , m_pieceCount(keydef.getPieceCount())
 , m_usedIndex(keydef.getIndexSize())
 {
-  m_scannerFunctions[0] = allPositions;
-  m_scannerFunctions[1] = blackKingPositions;
+  m_scannerFunctions[0] = &AllPositionScanner::allPositions;
+  m_scannerFunctions[1] = &AllPositionScanner::blackKingPositions;
   m_scannerFunctions[2] = m_scannerFunctions[3] = m_scannerFunctions[4] = NULL;
 
   for(int i = 2; i < m_pieceCount; i++) {
@@ -1167,10 +1161,10 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
     case Rook  :
     case Knight:
     case Bishop:
-      m_scannerFunctions[i] = allPositions;
+      m_scannerFunctions[i] = &AllPositionScanner::allPositions;
       break;
     case Pawn:
-      m_scannerFunctions[i] = pawnPositions;
+      m_scannerFunctions[i] = &AllPositionScanner::pawnPositions;
       break;
     default:
       throwException(_T("Unknown piecetype:%d"), m_keydef.getPieceType(i));
@@ -1309,23 +1303,29 @@ public:
   }
 };
 
+class UnusedPTQueue : public PriorityQueue<UnusedSequence> {
+public:
+  UnusedPTQueue() : PriorityQueue<UnusedSequence>(UnusedSequenceComparator()) {
+  }
+};
+
 void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, UINT sequenceMinSize) const {
-  PriorityQueue<UnusedSequence> ptQueue(UnusedSequenceComparator());
+  UnusedPTQueue ptq;
   long last = -1;
   for(Iterator<UINT> it = s.getIterator(); it.hasNext();) {
     const int i = it.next();
-    if(i - last > sequenceMinSize) {
-      ptQueue.add(UnusedSequence(last+1, i-1));
+    if(i - last > (int)sequenceMinSize) {
+      ptq.add(UnusedSequence(last+1, i-1));
     }
     last = i;
   }
   if(s.getCapacity()-1 - last > sequenceMinSize) {
-    ptQueue.add(UnusedSequence(last+1, s.getCapacity()-1));
+    ptq.add(UnusedSequence(last+1, s.getCapacity()-1));
   }
 
   FILE *f = MKFOPEN(getTempFileName(toString() + _T("UnusedSequences.txt")), _T("w"));
-  for(int i = 0; !ptQueue.isEmpty(); i++) {
-    const UnusedSequence us = ptQueue.remove();
+  for(int i = 0; !ptq.isEmpty(); i++) {
+    const UnusedSequence us = ptq.remove();
     _ftprintf(f, _T("%s\n"), us.toString(this).cstr());
   }
   UINT totalUnused = s.getCapacity() - s.size();

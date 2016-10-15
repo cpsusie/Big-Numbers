@@ -4,5 +4,5 @@
 const EndGameKeyDefinition4Men2Equal EndGameKBBK::keyDefinition(
   WHITEBISHOP
 );
-                                                                
+
 

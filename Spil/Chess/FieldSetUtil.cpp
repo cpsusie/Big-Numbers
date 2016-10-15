@@ -47,7 +47,7 @@ bool Game::pieceAttacksAnyPosition(const Piece *piece, const FieldSet &positions
     }
     break;
   case Pawn:
-    { PositionArray pa = (piece->getPlayer()==WHITEPLAYER) 
+    { PositionArray pa = (piece->getPlayer()==WHITEPLAYER)
                        ? fieldInfo[piece->m_position].m_whitePawnAttacks
                        : fieldInfo[piece->m_position].m_blackPawnAttacks;
       for(int count = *(pa++); count--;) {

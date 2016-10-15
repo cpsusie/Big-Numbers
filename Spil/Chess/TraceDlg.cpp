@@ -98,10 +98,10 @@ long CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   if(bsIndex >= 0) {  // dont incr caretPos
     text.cstr()[bsIndex] = '\0';
     currentText += text.cstr();
-    m_textBox->SetWindowText(currentText); 
+    m_textBox->SetWindowText(currentText);
   } else {
     currentText += text.cstr();
-    m_textBox->SetWindowText(currentText); 
+    m_textBox->SetWindowText(currentText);
     m_caretPos = currentText.GetLength();
   }
   scrollToBottom();

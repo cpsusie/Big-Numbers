@@ -5,7 +5,7 @@
 
 int          ChessResources::s_instanceCount    = 0;
 CSize        ChessResources::s_screenSize;
-const CPoint ChessResources::s_upperLeftCorner0 = CPoint(351,110); 
+const CPoint ChessResources::s_upperLeftCorner0 = CPoint(351,110);
 const CSize  ChessResources::s_fieldSize0       = CSize(74,74);
 
 Image       *ChessResources::s_boardImage;
@@ -16,7 +16,7 @@ Image       *ChessResources::s_playerIndicator;
 CFont        ChessResources::s_boardTextFont;
 CFont        ChessResources::s_debugInfoFont;
 
-ChessResources::ChessResources() 
+ChessResources::ChessResources()
 : m_hourGlassImage(     IDB_HOURGLASS, 6)
 {
   m_scale = -1;
@@ -111,23 +111,6 @@ void ChessResources::load() {
   setScale(1.0);
 }
 
-CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu
-  const int size  = (int)(56 * m_scale);
-  PixRect pr(theApp.m_device, PIXRECT_PLAINSURFACE, s_fieldSize0);
-  pr.rop(ORIGIN, s_fieldSize0, SRCCOPY, getBoardImage(), (GET_PLAYER_FROMKEY(pk)==WHITEPLAYER)?(s_upperLeftCorner0+CSize(0,s_fieldSize0.cy)):s_upperLeftCorner0);
-  getPieceImage(pk)->paintImage(pr, ORIGIN);
-
-  HDC tmpDC = CreateCompatibleDC(NULL);
-  CDC *dcp = CDC::FromHandle(tmpDC);
-  dst.CreateBitmap(size, size, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
-  CBitmap *oldBitmap = dcp->SelectObject(&dst);
-  SetStretchBltMode(*dcp, COLORONCOLOR /*HALFTONE*/);
-  PixRect::stretchBlt(*dcp, 0,0,size,size,SRCCOPY,&pr,0,0,s_fieldSize0.cx,s_fieldSize0.cy);
-  dcp->SelectObject(oldBitmap);
-  DeleteDC(tmpDC);
-  return dst;
-}
-
 void ChessResources::unload() {
   for(int i = 0; i < 2; i++) {
     ImageArray &a = s_pieceImage[i];
@@ -144,6 +127,23 @@ void ChessResources::unload() {
 
   delete s_selectionFrameImage;  s_selectionFrameImage = NULL;
   delete s_playerIndicator;      s_playerIndicator     = NULL;
+}
+
+CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu
+  const int size  = (int)(56 * m_scale);
+  PixRect pr(theApp.m_device, PIXRECT_PLAINSURFACE, s_fieldSize0);
+  pr.rop(ORIGIN, s_fieldSize0, SRCCOPY, getBoardImage(), (GET_PLAYER_FROMKEY(pk)==WHITEPLAYER)?(s_upperLeftCorner0+CSize(0,s_fieldSize0.cy)):s_upperLeftCorner0);
+  getPieceImage(pk)->paintImage(pr, ORIGIN);
+
+  HDC tmpDC = CreateCompatibleDC(NULL);
+  CDC *dcp = CDC::FromHandle(tmpDC);
+  dst.CreateBitmap(size, size, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
+  CBitmap *oldBitmap = dcp->SelectObject(&dst);
+  SetStretchBltMode(*dcp, COLORONCOLOR /*HALFTONE*/);
+  PixRect::stretchBlt(*dcp, 0,0,size,size,SRCCOPY,&pr,0,0,s_fieldSize0.cx,s_fieldSize0.cy);
+  dcp->SelectObject(oldBitmap);
+  DeleteDC(tmpDC);
+  return dst;
 }
 
 const Image *ChessResources::getFieldMarkImage(FieldMark m) const {

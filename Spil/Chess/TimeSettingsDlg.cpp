@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTimeSettingsDlg::CTimeSettingsDlg(bool clockRunning, CWnd* pParent) 
+CTimeSettingsDlg::CTimeSettingsDlg(bool clockRunning, CWnd* pParent)
 : m_clockRunning(clockRunning)
 , CDialog(CTimeSettingsDlg::IDD, pParent) {
 
@@ -254,7 +254,7 @@ void CTimeSettingsDlg::enableTimedGame(bool enable) {
 void CTimeSettingsDlg::enableSpeedChess(bool enable) {
   static const int ctrlId[] = {
      IDC_STATIC_PLAYER
-    ,IDC_COMBO_SPEEDPLAYER  
+    ,IDC_COMBO_SPEEDPLAYER
     ,IDC_STATIC_TIME
     ,IDC_STATIC_TIMEINCR
     ,IDC_STATIC_SECONDS_LC
@@ -378,16 +378,16 @@ bool CTimeSettingsDlg::windowToParam(TimeParametersWithComboSelection &tm, bool 
   bool ok;
   switch(tm.m_selectedComboItem) {
   case SELECTED_BOTH :
-    ok = windowToParam(tm.m_tm[WHITEPLAYER], speedChess); 
+    ok = windowToParam(tm.m_tm[WHITEPLAYER], speedChess);
     if(ok) {
-      windowToParam(tm.m_tm[BLACKPLAYER], speedChess); 
+      windowToParam(tm.m_tm[BLACKPLAYER], speedChess);
     }
     break;
   case SELECTED_WHITE:
-    ok = windowToParam(tm.m_tm[WHITEPLAYER], speedChess); 
+    ok = windowToParam(tm.m_tm[WHITEPLAYER], speedChess);
     break;
   case SELECTED_BLACK:
-    ok = windowToParam(tm.m_tm[BLACKPLAYER], speedChess); 
+    ok = windowToParam(tm.m_tm[BLACKPLAYER], speedChess);
     break;
   }
   return ok;

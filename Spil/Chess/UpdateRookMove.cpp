@@ -112,7 +112,7 @@ void Game::setNonCapturingRook(const Move &m) {
     LDAwalkLeft(              toInfo, m.m_from);
     LDAenterColumn(           toInfo);
     break;
-    
+
   case MD_RIGHT  :
     LDAwalkRight(             toInfo, m.m_from);
     LDAenterColumn(           toInfo);

@@ -68,8 +68,8 @@ typedef enum {
 #ifndef TABLEBASE_BUILDER
  ,POSITION_REPEATED_3_TIMES
  ,NO_CAPTURE_OR_PAWNMOVE
- ,DRAW
 #endif
+ ,DRAW
 } GameResult;
 
 #define GAMERESULTTOWINNER(gs) (((gs)==WHITE_CHECKMATE)?BLACKPLAYER:((gs)==BLACK_CHECKMATE)?WHITEPLAYER:(Player)-1)
@@ -138,12 +138,12 @@ typedef unsigned char  SymmetricTransformation;
 #define KING_MANY_ATTACKS            0x20 // Impossible in normal play, but can occur after edit the position, and skip the validation!
                                           // Should be handled as a doublecheck, ie. the only reply is a king-move.
                                           // This is automaticly done in Game::getMoveGenerator. The default case in the switch(m_kingAttackState)
-                                          // takes care of this situation, which handles any (legal) combination of the other flags too. fx. 
-                                          // KING_LD_ATTACKED_FROM_ROW | KING_LD_ATTACKED_FROM_DIAG1, which can occur in normal play as a doublecheck! 
+                                          // takes care of this situation, which handles any (legal) combination of the other flags too. fx.
+                                          // KING_LD_ATTACKED_FROM_ROW | KING_LD_ATTACKED_FROM_DIAG1, which can occur in normal play as a doublecheck!
 
 #define TRANSFORM_SWAPPLAYERS               1
 #define TRANSFORM_ROTATE180                 2
-#define TRANSFORM_ROTATERIGHT               3 
+#define TRANSFORM_ROTATERIGHT               3
 #define TRANSFORM_ROTATELEFT                4
 #define TRANSFORM_MIRRORROW                 5
 #define TRANSFORM_MIRRORCOL                 6
@@ -159,8 +159,8 @@ typedef enum {
 
 #define MAKE_POSITION(row,col)           (((row)<<3)|(col))
 
-#define GETROW(pos)                      ((pos)>>3)
-#define GETCOL(pos)                      ((pos)&7)
+#define GETROW(pos)                      ((int)((pos)>>3))
+#define GETCOL(pos)                      ((int)((pos)&7))
 
 #define _GET_DIAGONAL1(  row, col)       (7 + (row) - (col))
 #define _GET_DIAGONAL2(  row, col)       ((row) + (col))
@@ -303,7 +303,7 @@ void redirectVerbose(VerboseReceiver *receiver);
 void log(const TCHAR *format, ...);                            // log only to logfile if open
 void vlog(const TCHAR *format, va_list argptr);
 void setVerboseLogging(bool on);                              // If on is true, everything logged by verbose or log will go to logfile
-                                                              // which has an automatic generated, unique name 
+                                                              // which has an automatic generated, unique name
                                                               // (template "c:\temp\chess<timestamp>.log")
                                                               // If on is false, an open logfil will be closed
 
@@ -314,7 +314,7 @@ public:
 
 #ifdef _DEBUG
   const TCHAR           *m_debugStr;
-  Direction(MoveDirection direction, PositionArray fields, const TCHAR *debugStr) 
+  Direction(MoveDirection direction, PositionArray fields, const TCHAR *debugStr)
   : m_direction(direction)
   , m_oppositeDirection(getOppositeDirection(direction))
   , m_fields(fields)
@@ -337,7 +337,7 @@ class DirectionArray {
 public:
   const int             m_count;
   const Direction      *m_directions;
-  DirectionArray(int count, const Direction *directions) 
+  DirectionArray(int count, const Direction *directions)
   : m_count(count)
   , m_directions(directions)
   {
@@ -518,7 +518,7 @@ class Move;
 
 typedef void (Game::*GameUpdateFunction)(const Move &m);
 
-#define BISHOPPAIRBONUS 20 
+#define BISHOPPAIRBONUS 20
 
 class MoveTable {
 public:
@@ -630,7 +630,7 @@ protected:
   }
 public:
   MoveType       m_type;
-  int            m_from; 
+  int            m_from;
   int            m_to;
   int            m_dirIndex;
   int            m_moveIndex;
@@ -750,7 +750,7 @@ public:
 };
 
 typedef struct {
-  // 1 bit for each of the 8 directions is required, to indicate if the field is attacked by Queen, Rook or Bishop, 
+  // 1 bit for each of the 8 directions is required, to indicate if the field is attacked by Queen, Rook or Bishop,
   // Then this structure requires 4 + 8*1 = 12 bits, which can easily be contained in an unsigned long (32 bits).
   // Then the check for zero attacks is quite easy. See class FieldAttacks.
   UINT           m_sdAttacks      : 4;  // (S)hort (D)istance attacks. ie from King, Knight or Pawn.
@@ -771,7 +771,7 @@ typedef struct {
 typedef struct {
   UINT           m_sdAttacked     : 4;  // Same bits as AttackInfo.m_sdAttacks
   UINT           m_rowAttacked    : 2;  // Same bits as AttackInfo.m_fromLeft and AttackInfo.m_fromRight. if != 0 one of these is != 0
-  UINT           m_colAttacked    : 2;  // Same bits as AttackInfo.m_fromBelove and AttackInfo.m_fromAbove. 
+  UINT           m_colAttacked    : 2;  // Same bits as AttackInfo.m_fromBelove and AttackInfo.m_fromAbove.
   UINT           m_diag1Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag1 and AttackInfo.m_fromUpperDiag1
   UINT           m_diag2Attacked  : 2;  // Same bits as AttackInfo.m_fromLowerDiag2 and AttackInfo.m_fromUpperDiag2
   MoveDirection  m_kingDirection  : 5;
@@ -820,7 +820,7 @@ private:
   GameKey mirrorRows()    const;                              // Mirror rows for ervery piece   (new row = 7 - oldrow)
   GameKey mirrorColumns() const;                              // Mirror columns for every piece (new column = 7 - oldcolumn).
   GameKey mirrorDiag1()   const;                              // Mirror positions for every piece in A1-H8-diagonal. Be careful if pawns on the board
-  GameKey mirrorDiag2()   const;                              // Mirror positions for every piece in H1-A8-diagonal. Be careful if pawns on the board  
+  GameKey mirrorDiag2()   const;                              // Mirror positions for every piece in H1-A8-diagonal. Be careful if pawns on the board
   TCHAR *getFENBoardString( TCHAR *dst) const;                  // Return piece positions in FEN-format
   TCHAR *getFENCastleString(TCHAR *dst) const;
   TCHAR *getFENEpString(    TCHAR *dst) const;
@@ -924,7 +924,7 @@ public:
   KingAttackState    m_kingAttackState;       // Any combination of KING_NOT_ATTACKED,KING_ATTACKED_FROM_ROW,-COLUMN,-DIAG1,-DIAG2,-KNIGHT and KING_MANY_ATTACKS
 
 #ifndef TABLEBASE_BUILDER
-  int                m_totalMaterial;         // Sum of m_materialValue of not captured pieces belonging to player 
+  int                m_totalMaterial;         // Sum of m_materialValue of not captured pieces belonging to player
   int                m_positionalScore;       // Sum of positional scores for not captured pieces belonging to player
   BishopFlags        m_bishopFlags;           // Any combination of WHITEFIELD_BISHOP and BLACKFIELD_BISHOP
   unsigned char      m_pawnMask;              // 1 bit for each pawn. bit 0=A-pawn, bit 1=B-pawn, etc.
@@ -1108,10 +1108,10 @@ private:
   void undoEnpassant(                    const Move &m);
   void undoPromotion(                    const Move &m);
 
-  void blockRow(                         const FieldInfo &fieldInfo);    // enter row           (not queen/rook        ) 
-  void blockColumn(                      const FieldInfo &fieldInfo);    // enter column        (not queen/rook        ) 
-  void blockDiag1(                       const FieldInfo &fieldInfo);    // enter diagonal      (not queen/bishop/pawn ) 
-  void blockDiag2(                       const FieldInfo &fieldInfo);    // enter diagona2      (not queen/bishop/pawn ) 
+  void blockRow(                         const FieldInfo &fieldInfo);    // enter row           (not queen/rook        )
+  void blockColumn(                      const FieldInfo &fieldInfo);    // enter column        (not queen/rook        )
+  void blockDiag1(                       const FieldInfo &fieldInfo);    // enter diagonal      (not queen/bishop/pawn )
+  void blockDiag2(                       const FieldInfo &fieldInfo);    // enter diagona2      (not queen/bishop/pawn )
   void blockDiag12(                      const FieldInfo &fieldInfo);    // block both diagonals. ie { blockDiag1(f); blockDiag2(f); }
 
   void unblockRow(                       const FieldInfo &fieldInfo);    // leave row           (not queen/rook        )
@@ -1376,18 +1376,18 @@ public:
 
   bool doMove(const Move &m);             // Push gamestate and do move m. Return the same as tryMove
   Move undoMove();                        // Undo move done with doMove and restore gamestate
-  
+
   // These are used by MoveFinder, because they are faster than do-/undoMove
   bool tryMove(const Move &m);            // Assume the gamestate has been saved by pushState.
                                           // Return false if getPositionRepeats() > m_maxPositionRepeat or getMoveCountWithoutCaptureOrPawnMove() > 100
   void unTryMove();                       // Undo move done with tryMove and restores gamestate without popping it (should be done with popState)
 
 
+#ifndef TABLEBASE_BUILDER
   String toUCIString() const;
   String toFENString() const;    // Current position in FEN-format
   Game &fromFENString(const String &s);
 
-#ifndef TABLEBASE_BUILDER
   inline int getPositionRepeats() const {
     return m_hashStack.getRepeatCount();
   }
@@ -1561,10 +1561,10 @@ public:
 #define IS_EDGEFIELD(     pos)     (!IS_INNERFIELD(pos))
 #define GETSQUARE(pos)             Game::fieldInfo[pos].m_square
 
-#define IS_ONMAINDIAG1(   pos)     (GETDIAG1(pos) ==  _GETDIAGONAL1(A1)) 
-#define IS_ONMAINDIAG2(   pos)     (GETDIAG2(pos) ==  _GETDIAGONAL2(H1)) 
-#define IS_OFFMAINDIAG1(  pos)     (GETDIAG1(pos) !=  _GETDIAGONAL1(A1)) 
-#define IS_OFFMAINDIAG2(  pos)     (GETDIAG2(pos) !=  _GETDIAGONAL2(H1)) 
+#define IS_ONMAINDIAG1(   pos)     (GETDIAG1(pos) ==  _GETDIAGONAL1(A1))
+#define IS_ONMAINDIAG2(   pos)     (GETDIAG2(pos) ==  _GETDIAGONAL2(H1))
+#define IS_OFFMAINDIAG1(  pos)     (GETDIAG1(pos) !=  _GETDIAGONAL1(A1))
+#define IS_OFFMAINDIAG2(  pos)     (GETDIAG2(pos) !=  _GETDIAGONAL2(H1))
 #define IS_BELOWMAINDIAG1(pos)     (GETDIAG1(pos) <   _GETDIAGONAL1(A1))
 #define IS_BELOWMAINDIAG2(pos)     (GETDIAG2(pos) <   _GETDIAGONAL2(H1))
 #define IS_ABOVEMAINDIAG1(pos)     (GETDIAG1(pos) >   _GETDIAGONAL1(A1))

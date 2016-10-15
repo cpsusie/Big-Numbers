@@ -452,7 +452,7 @@ void Game::updateGameShortCastling() {
       m_gameKey.d.m_castleState[WHITEPLAYER] = SHORTCASTLE_DONE;
     }
     break;
-  
+
   case BLACKPLAYER:
     { PlayerState     &state  = m_playerState[BLACKPLAYER];
       const FieldInfo &e8Info = fieldInfo[E8];
@@ -475,7 +475,7 @@ void Game::updateGameShortCastling() {
       KING_DIRECTION(state, G8) = MD_NONE;
 
       LDAenterColumn(fieldInfo[F8]);
-      
+
       AttackInfo &oldKing  = ATTINFO(state, E8);
       AttackInfo &newKing  = ATTINFO(state, G8);
       AttackInfo &rook     = ATTINFO(state, F8);
@@ -514,7 +514,7 @@ void Game::updateGameLongCastling() {
       UPDATE_KINGATTACKS(PLAYERINTURN, c1Info, 1);
       KING_DIRECTION(state, D1) = MD_LEFT;
       KING_DIRECTION(state, C1) = MD_NONE;
-      
+
       LDAenterColumn(fieldInfo[D1]);
 
       AttackInfo &oldKing  = ATTINFO(state, E1);

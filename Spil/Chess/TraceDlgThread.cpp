@@ -59,11 +59,7 @@ void CTraceDlgThread::setActive(bool active) {
 }
 
 void CTraceDlgThread::setActiveProperty(bool value) { // called by traceDlg when OnShowWindow is called
-  if(value != m_active) {
-    const bool oldValue = m_active;
-    m_active = value;
-    notifyPropertyChanged(TRACEWINDOW_ACTIVE, &oldValue, &m_active);
-  }
+  setProperty(TRACEWINDOW_ACTIVE, m_active, value);
 }
 
 void CTraceDlgThread::vprintf(const TCHAR *format, va_list argptr) {

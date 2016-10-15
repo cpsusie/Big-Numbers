@@ -1,7 +1,10 @@
 #include "stdafx.h"
+
+#ifndef TABLEBASE_BUILDER
+
 #include "MoveFinderExternEngine.h"
 
-MoveFinderExternEngine::MoveFinderExternEngine(Player player) 
+MoveFinderExternEngine::MoveFinderExternEngine(Player player)
 : AbstractMoveFinder(player)
 , m_externEngine(Options::getEnginePathByPlayer(player))
 {
@@ -72,3 +75,5 @@ void MoveFinderExternEngine::notifyMove(const MoveBase &move) {
 String MoveFinderExternEngine::getStateString(Player computerPlayer, bool detailed) {
   return m_externEngine.toString();
 }
+
+#endif

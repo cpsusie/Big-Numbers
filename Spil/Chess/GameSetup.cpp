@@ -137,8 +137,8 @@ Game &Game::setPlayerInTurn(Player player) {
 }
 
 int Game::getKingDistance(int pos1, int pos2) { // static
-  const int dr = abs(GETROW(pos1)-GETROW(pos2));
-  const int dc = abs(GETCOL(pos1)-GETCOL(pos2));
+  const int dr = ::abs(GETROW(pos1)-GETROW(pos2));
+  const int dc = ::abs(GETCOL(pos1)-GETCOL(pos2));
   return max(dr, dc);
 }
 
@@ -190,7 +190,7 @@ Game &Game::setupStartPosition() {
       m_board[p->m_position = MAKE_POSITION(r, c)] = p;
       p->m_onBoard = true;
     }
-    
+
     for(int c = 0; i < 16; i++, c++) {
       const int r = (player==WHITEPLAYER) ? 1 : 6;
       Piece *p = state.m_pieces[i];
@@ -364,7 +364,7 @@ void Game::initAttackCounters(bool validate) {
                               , pawnAttacks, toLowerCase(getPieceTypeName(Pawn, true)).cstr()
                               , impossibleStr.cstr());
           }
-                           
+
           if(rowAttacks) {
             throwUserException(IDS_MSG_s_KING_ATTACKED_BY_d_s_AND_FROM_SIDE_s
                               , kingStr.cstr()
@@ -609,7 +609,7 @@ PinnedState Game::findPinnedState(const Piece *piece) const {
   case MD_DOWN     : return ATT_DOWN(     piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_COL   : NOT_PINNED;
   case MD_UP       : return ATT_UP(       piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_COL   : NOT_PINNED;
   case MD_DOWNDIAG1: return ATT_DOWNDIAG1(piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG1 : NOT_PINNED;
-  case MD_UPDIAG1  : return ATT_UPDIAG1(  piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG1 : NOT_PINNED; 
+  case MD_UPDIAG1  : return ATT_UPDIAG1(  piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG1 : NOT_PINNED;
   case MD_DOWNDIAG2: return ATT_DOWNDIAG2(piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG2 : NOT_PINNED;
   case MD_UPDIAG2  : return ATT_UPDIAG2(  piece->m_enemyState.m_attackTable[pos].m_attackInfo) ? PINNED_TO_DIAG2 : NOT_PINNED;
   default          : throwException(_T("%s:Unknown kingDirection:%d"), method, KING_DIRECTION(piece->m_playerState, pos));

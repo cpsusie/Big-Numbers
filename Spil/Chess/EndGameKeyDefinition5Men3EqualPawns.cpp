@@ -11,7 +11,7 @@ static unsigned long rangeStartTable[23];
 #define KK_2_QUEENSIDE_POSCOUNT        GET_RANGESTART3EQUAL(KK_POSCOUNT, 23)
 #define KK_3_QUEENSIDE_POSCOUNT        KK_1_QUEENSIDE_POSCOUNT
 
-#define START_RANGE_P4_QUEENSIDE       0 
+#define START_RANGE_P4_QUEENSIDE       0
 #define START_RANGE_P24_QUEENSIDE      (START_RANGE_P4_QUEENSIDE       + KK_1_QUEENSIDE_POSCOUNT)
 #define START_RANGE_P34_QUEENSIDE      (START_RANGE_P24_QUEENSIDE      + KK_2_QUEENSIDE_POSCOUNT)
 #define START_RANGE_P234_QUEENSIDE     (START_RANGE_P34_QUEENSIDE      + KK_2_QUEENSIDE_POSCOUNT)
@@ -171,7 +171,7 @@ EndGameKey EndGameKeyDefinition5Men3EqualPawns::indexToKey(unsigned long index) 
     SETPIT(              result, index  );
     SET3EQUALPAWNSNOFLIP(result, index, rangeStartTable, KK_POSCOUNT, 2, 3, 4);
     SETKK_WITH_PAWN(     result, index  );
-  } 
+  }
   return result;
 }
 
@@ -328,14 +328,14 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
           if(pawnPosToIndex[key.getPosition2()] <= max(pawnPosToIndex[MIRRORCOLUMN(pos3)], pawnPosToIndex[MIRRORCOLUMN(pos4)])) {
             continue;
           }
-          break; 
+          break;
         case 1: // 2,3 queenside, 4 kingside => pi3 > pi2. must have mirrorCol(pi4) <= pi3 (=max(pi2, pi3))
           if(pawnPosToIndex[MIRRORCOLUMN(pos4)] > pawnPosToIndex[pos3]) {
             continue;
           }
           break;
         case 2: // 2,4 queenside, 3 kingside. skip
-          continue; 
+          continue;
         case 3: // 2, 3, 4 queenside. Must have pos2 < pos3 < pos4
           if(pos4 < pos3) {
             continue;

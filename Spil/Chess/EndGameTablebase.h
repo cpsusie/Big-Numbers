@@ -159,13 +159,18 @@ typedef enum {
   ALLRETROPOSITIONS    , // needed only in makeendgame
   ALLTABLEBASE         , // needed only in makeendgame
   UNDEFINEDKEYSLOG     ,
-#else
-  DECOMPRESSEDTABLEBASE, // needed only in chess
 #endif // TABLEBASE_BUILDER
+  DECOMPRESSEDTABLEBASE, // needed only in chess
   COMPRESSEDTABLEBASE    // needed in both
 } TablebaseFileType;
 
-typedef CompactArray<EndGameTablebase*> EndGameTablebaseList;
+class EndGameTablebaseList : public CompactArray<EndGameTablebase*> {
+public:
+  EndGameTablebaseList() : CompactArray<EndGameTablebase*>(143) {
+  }
+  virtual ~EndGameTablebaseList() {
+  }
+};
 
 #ifdef TABLEBASE_BUILDER
 class EndGameTablebase : public EndGameSubTablebase, public TimeoutHandler {
@@ -204,7 +209,7 @@ private:
   TablebaseInfo                       m_info;
   bool                                m_bishopInitialField[MAX_ENDGAME_PIECECOUNT][2];
   bool                                m_pawnInitialField[MAX_ENDGAME_PIECECOUNT][8];
-  // m_bishopInitialField[i][fieldColor] is true if piece[i] = Bishop 
+  // m_bishopInitialField[i][fieldColor] is true if piece[i] = Bishop
   // and has an initial position on a field with color fieldColor
   mutable bool                        m_buildOk;
   mutable bool                        m_allKeysFound;
@@ -291,7 +296,7 @@ private:
   void         markSuccessors(  bool onlyWinnerPositions); // use m_workGame as startPosition
   void         markPredecessors(bool onlyWinnerPositions); // use m_workGame as startPosition
   void         verboseHelpInfo(const String &label);
-  
+
   void list(FILE *f, EndGameEntryIterator &it);
   void listPositionCount(FILE *f);
 
@@ -349,7 +354,7 @@ public:
 
   bool                  exist(TablebaseFileType recoverFile) const;
   String                getFileName(TablebaseFileType fileType) const;
-  time_t                getFileTime(TablebaseFileType fileType) const;
+  __time32_t            getFileTime(TablebaseFileType fileType) const;
   UINT                  getFileSize(TablebaseFileType fileType) const;
 
   bool isLoaded() const {
@@ -374,7 +379,6 @@ public:
   static       EndGameTablebaseList  getExistingEndGameTablebases();
   static       EndGameTablebase     &getInstanceByName(const String &name);
   static       EndGameTablebase     *getInstanceBySignature(const PositionSignature &signature, bool &swap);
-
   IndexedMap &getIndex() {
     return m_positionIndex;
   }

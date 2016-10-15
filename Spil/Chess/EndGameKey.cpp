@@ -495,14 +495,14 @@ void EndGameKey::p234IndexToDiagPosEqualP234() {
 UINT EndGameKey::getP3Pawn2Index() const { // higest position is G7
   const UINT p   = getPosition3();
   UINT       dec = (p > getPosition2()) ? 1 : 0;
-  return p - dec; 
+  return p - dec;
 }
 
 UINT EndGameKey::getP4Pawn3Index() const { // higest position is G7
   const UINT p   = getPosition4();
   UINT       dec = (p > getPosition2()) ? 1 : 0;
   if(p > getPosition3()) dec++;
-  return p - dec; 
+  return p - dec;
 }
 
 void EndGameKey::p3IndexToPawn2Pos() {

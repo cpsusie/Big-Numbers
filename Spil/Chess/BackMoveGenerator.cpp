@@ -178,12 +178,12 @@ void BackMoveGenerator::initFieldSets() { // static
     pa = info.m_whitePawnAttacks;
     if(pa) {
       FieldSet &wpAttacks = m_pawnAttacks[WHITEPLAYER][pos];
-      for(count = *(pa++); count--;) wpAttacks.add(*(pa++));
+      for(int count = *(pa++); count--;) wpAttacks.add(*(pa++));
     }
     pa = info.m_blackPawnAttacks;
     if(pa) {
       FieldSet &bpAttacks = m_pawnAttacks[BLACKPLAYER][pos];
-      for(count = *(pa++); count--;) bpAttacks.add(*(pa++));
+      for(int count = *(pa++); count--;) bpAttacks.add(*(pa++));
     }
   }
 }
@@ -307,7 +307,7 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
   case 0:
     break;
 
-  case 1: 
+  case 1:
     { const Player enemy = king->getEnemy();
       const int pawnPos = m_game.findAttackingPawnPosition(enemy, pos);
       if(pawnPos >= 0) {
@@ -323,12 +323,12 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
             switch(enemy) {
             case WHITEPLAYER:
               { const Piece *ldaPiece = m_game.findFirstPieceInDirection(pos, MD_DOWN);
-                return ldaPiece && LONGDISTANCE_ATTACKS(WHITEPLAYER, ldaPiece, ATTACKS_PARALLEL) 
+                return ldaPiece && LONGDISTANCE_ATTACKS(WHITEPLAYER, ldaPiece, ATTACKS_PARALLEL)
                     && (Game::getKingDistance(pos, ldaPiece->m_position) > 2);
               }
             case BLACKPLAYER:
               { const Piece *ldaPiece = m_game.findFirstPieceInDirection(pos, MD_UP);
-                return ldaPiece && LONGDISTANCE_ATTACKS(BLACKPLAYER, ldaPiece, ATTACKS_PARALLEL) 
+                return ldaPiece && LONGDISTANCE_ATTACKS(BLACKPLAYER, ldaPiece, ATTACKS_PARALLEL)
                     && (Game::getKingDistance(pos, ldaPiece->m_position) > 2);
               }
             default:INVALIDPLAYERERROR(enemy);
@@ -378,8 +378,8 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
       const FieldSet &fieldsBetween = getFieldsBetween(pos, rcPiece->m_position);
       return m_game.pieceCanGotoAnyPosition(diagPiece, fieldsBetween) || isNonCapturingPromotion(diagPiece->m_position, fieldsBetween);
     } else if(rcDist < diagDist) {         // Moved piece must be the parallel-moving piece, ie. a rook
-      if(rcPiece->getType() != Rook) {     
-        return false;                      // No need to check for P->Q-promotions. A queen can't do it. 
+      if(rcPiece->getType() != Rook) {
+        return false;                      // No need to check for P->Q-promotions. A queen can't do it
       }
       return m_game.pieceCanGotoAnyPosition(rcPiece, getFieldsBetween(pos, diagPiece->m_position));
     } else { // LDA-pieces have the same distance to pos. Impossible, unless a pawn just promoted to (Q or R) capturing a piece
@@ -1610,7 +1610,7 @@ bool BackMoveGeneratorSDDoubleCheck::firstMove(Move &m) const {
     if(piece->getType() == Pawn) {
       return false;
       // Can only happen, when a pawn just captured (diagonally) right beside the opponent king
-      // thereby uncovering a queen or rook, to give the double-check. But capturing means that the original position 
+      // thereby uncovering a queen or rook, to give the double-check. But capturing means that the original position
       // does not belong to the current endgame, so we can safely return false, to stop looking for predecessors
     }
     throwException(_T("Piece at %s attacking the %s king is neither a knight or pawn (=%s)")

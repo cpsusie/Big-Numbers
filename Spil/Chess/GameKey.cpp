@@ -60,13 +60,13 @@ void GameKey::initCastleState() {
 
 CastleState GameKey::findCastleState(Player player) const {
   switch(player) {
-  case WHITEPLAYER: return (m_pieceKey[E1] != WHITEKING) 
-                         ? 0 
+  case WHITEPLAYER: return (m_pieceKey[E1] != WHITEKING)
+                         ? 0
                          : (((m_pieceKey[A1] == WHITEROOK) ? LONGCASTLE_ALLOWED  : 0)
                           | ((m_pieceKey[H1] == WHITEROOK) ? SHORTCASTLE_ALLOWED : 0));
 
-  case BLACKPLAYER: return (m_pieceKey[E8] != BLACKKING) 
-                         ? 0 
+  case BLACKPLAYER: return (m_pieceKey[E8] != BLACKKING)
+                         ? 0
                          : (((m_pieceKey[A8] == BLACKROOK) ? LONGCASTLE_ALLOWED  : 0)
                           | ((m_pieceKey[H8] == BLACKROOK) ? SHORTCASTLE_ALLOWED : 0));
 
@@ -297,7 +297,7 @@ GameKey GameKey::transform(SymmetricTransformation st) const {
   }
 }
 
-int GameKey::transform(int pos, SymmetricTransformation st) { // static 
+int GameKey::transform(int pos, SymmetricTransformation st) { // static
   switch(st) {
   case 0                    : return pos;
   case TRANSFORM_SWAPPLAYERS: return MIRRORROW(   pos);

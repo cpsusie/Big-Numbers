@@ -47,7 +47,7 @@ BOOL CMessageDlg::OnInitDialog() {
   const CSize messageSize = dc.GetTextExtent(m_message.cstr(), m_message.length());
   TEXTMETRIC tm;
   dc.GetTextMetrics(&tm);
-  
+
   const int textBoxClientWidth  = max(captionSize.cx + 70, messageSize.cx + 70);
   const int textBoxClientHeight = tm.tmHeight * (newlineCount+2);
   const CSize textBoxClientSize(textBoxClientWidth, textBoxClientHeight*2);

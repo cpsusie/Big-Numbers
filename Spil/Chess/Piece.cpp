@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-Piece::Piece(PieceType pieceType, PlayerState &playerState, PlayerState &enemyState, int index, int row, int col) 
+Piece::Piece(PieceType pieceType, PlayerState &playerState, PlayerState &enemyState, int index, int row, int col)
 : m_playerState(playerState)
 , m_enemyState(enemyState)
 , m_index(index)
@@ -26,7 +26,7 @@ const DirectionArray *Piece::getMoveTable(PieceKey key) { // static
   }
 }
 
-AttackAttribute Piece::getAttackAttribute(PieceKey key) { // static 
+AttackAttribute Piece::getAttackAttribute(PieceKey key) { // static
   DEFINEMETHODNAME;
   switch(GET_TYPE_FROMKEY(key)) {
   case King   : return ATTACKS_PARALLEL | ATTACKS_DIAGONAL;

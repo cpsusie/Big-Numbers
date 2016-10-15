@@ -14,7 +14,7 @@ ExecutableMove MoveFinderNormalPlay::findBestMove(Game &game, const TimeLimit &t
     if(m.isMove()) {
       return m;
     }
-    
+
 #ifndef TABLEBASE_BUILDER
     m_evaluationCount   = 0;
     m_bestScore         = MIN_SCORE;

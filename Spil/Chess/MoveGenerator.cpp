@@ -399,7 +399,7 @@ bool MoveGeneratorNoCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -412,7 +412,7 @@ bool MoveGeneratorNoCheck::firstMove(Move &m) const {
               }
             } else if(IS_DIAGONALMOVE(direction->m_direction)) {
               CHECKFOR_EP(m, piece, dirIndex, moveIndex, to, direction->m_direction);
-              break;   
+              break;
             }
             SETMOVE_CHECKFORPROMOTION(m, piece, cp, dirIndex, moveIndex, to, direction->m_direction);
             return true;
@@ -426,7 +426,7 @@ bool MoveGeneratorNoCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -540,7 +540,7 @@ bool MoveGeneratorNoCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -567,7 +567,7 @@ bool MoveGeneratorNoCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -598,9 +598,9 @@ bool MoveGeneratorLDCheck::coversKing(int to) const {
   case MD_RIGHT    : return GET_LDA_RIGHT(     m_game.m_playerState[CURRENTENEMY], to) > 0;
   case MD_DOWN     : return GET_LDA_DOWN(      m_game.m_playerState[CURRENTENEMY], to) > 0;
   case MD_UP       : return GET_LDA_UP(        m_game.m_playerState[CURRENTENEMY], to) > 0;
-  case MD_DOWNDIAG1: return GET_LDA_DOWNDIAG1( m_game.m_playerState[CURRENTENEMY], to) > 0; 
+  case MD_DOWNDIAG1: return GET_LDA_DOWNDIAG1( m_game.m_playerState[CURRENTENEMY], to) > 0;
   case MD_UPDIAG1  : return GET_LDA_UPDIAG1(   m_game.m_playerState[CURRENTENEMY], to) > 0;
-  case MD_DOWNDIAG2: return GET_LDA_DOWNDIAG2( m_game.m_playerState[CURRENTENEMY], to) > 0; 
+  case MD_DOWNDIAG2: return GET_LDA_DOWNDIAG2( m_game.m_playerState[CURRENTENEMY], to) > 0;
   case MD_UPDIAG2  : return GET_LDA_UPDIAG2(   m_game.m_playerState[CURRENTENEMY], to) > 0;
   }
   return false;
@@ -683,7 +683,7 @@ bool MoveGeneratorLDCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -695,7 +695,7 @@ bool MoveGeneratorLDCheck::firstMove(Move &m) const {
                 break;
               }
             } else if(IS_DIAGONALMOVE(direction->m_direction)) { // Cannot cover the king from LDA-check by capturing EP
-              break;   
+              break;
             } else if(!coversKing(to)) {
               continue;
             }
@@ -711,7 +711,7 @@ bool MoveGeneratorLDCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -812,7 +812,7 @@ bool MoveGeneratorLDCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -840,7 +840,7 @@ bool MoveGeneratorLDCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -934,7 +934,7 @@ bool MoveGeneratorSDCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -950,7 +950,7 @@ bool MoveGeneratorSDCheck::firstMove(Move &m) const {
               break;
             } else {
               break; // Must capture the cheking piece (pawn og knight)
-            } 
+            }
             SETMOVE_CHECKFORPROMOTION(m, piece, cp, dirIndex, moveIndex, to, direction->m_direction);
             return true;
           }
@@ -963,7 +963,7 @@ bool MoveGeneratorSDCheck::firstMove(Move &m) const {
         const Direction      *direction = da.m_directions;
 
         for(int dirIndex = 0; dirIndex < da.m_count; dirIndex++, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -1061,7 +1061,7 @@ bool MoveGeneratorSDCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;
@@ -1090,7 +1090,7 @@ bool MoveGeneratorSDCheck::nextMove(Move &m) const { // Assumes m is a valid mov
         const Direction      *direction = da.m_directions + startDir;
 
         for(int dirIndex = startDir; dirIndex < da.m_count; dirIndex++, startIndex = 0, direction++) {
-          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) { 
+          if(MoveTable::uncoversKing[piece->m_pinnedState][direction->m_direction]) {
             continue;
           }
           PositionArray fields = direction->m_fields;

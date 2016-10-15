@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifndef TABLEBASE_BUILDER
+
 #include "MoveFinderExternEngine.h"
 #include "EngineOptionsDlgThread.h"
 #include "EngineOptionsDlg.h"
@@ -33,11 +36,7 @@ BEGIN_MESSAGE_MAP(CEngineOptionsDlgThread, CWinThread)
 END_MESSAGE_MAP()
 
 void CEngineOptionsDlgThread::setDialogRunning(bool running) {
-  if(running != m_dialogRunning) {
-    const bool oldValue = m_dialogRunning;
-    m_dialogRunning = running;
-    notifyPropertyChanged(ENGINEOPIONDIALOG_RUNNING, &oldValue, &running);
-  }
+  setProperty(ENGINEOPIONDIALOG_RUNNING, m_dialogRunning, running);
 }
 
 CEngineOptionsDlgThread *CEngineOptionsDlgThread::startThread(MoveFinderExternEngine *moveFinder) { // static
@@ -52,3 +51,5 @@ CEngineOptionsDlgThread *CEngineOptionsDlgThread::startThread(MoveFinderExternEn
 void CEngineOptionsDlgThread::closeThread() {
   PostThreadMessage(WM_QUIT,0,0);
 }
+
+#endif

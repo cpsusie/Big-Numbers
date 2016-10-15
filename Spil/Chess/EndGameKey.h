@@ -119,7 +119,7 @@ public:
     m_hashCode &= ~((0x3f << pIndex)); m_hashCode |= (pos << pIndex);
   }
 
-  inline UINT getWhiteKingPosition() const { 
+  inline UINT getWhiteKingPosition() const {
     return m_state.m_piece0Pos;
   }
 

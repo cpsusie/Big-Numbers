@@ -305,8 +305,8 @@ bool EndGameTablebase::exist(TablebaseFileType fileType) const {
   return ACCESS(getFileName(fileType),0) == 0;
 }
 
-time_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
-  return STAT(getFileName(fileType)).st_mtime;
+__time32_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
+  return (__time32_t)STAT(getFileName(fileType)).st_mtime;
 }
 
 UINT EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
@@ -315,11 +315,11 @@ UINT EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
 
 String EndGameTablebase::getFileName(TablebaseFileType fileType) const {
   switch(fileType) {
-#ifdef TABLEBASE_BUILDER 
-  case ALLFORWARDPOSITIONS  : return getAllForwardPositionsFileName();    // only available to makeEndGame 
-  case ALLRETROPOSITIONS    : return getAllRetroPositionsFileName();      // only available to makeEndGame 
-  case ALLTABLEBASE         : return m_keydef.getTablebaseFileName();     // only available to makeEndGame 
-  case UNDEFINEDKEYSLOG     : return getUndefinedKeyLogFileName();        // only available to makeEndGame 
+#ifdef TABLEBASE_BUILDER
+  case ALLFORWARDPOSITIONS  : return getAllForwardPositionsFileName();    // only available to makeEndGame
+  case ALLRETROPOSITIONS    : return getAllRetroPositionsFileName();      // only available to makeEndGame
+  case ALLTABLEBASE         : return m_keydef.getTablebaseFileName();     // only available to makeEndGame
+  case UNDEFINEDKEYSLOG     : return getUndefinedKeyLogFileName();        // only available to makeEndGame
 #else
   case DECOMPRESSEDTABLEBASE: return m_keydef.getDecompressedFileName();  // only available for chess-program
 #endif
@@ -360,7 +360,7 @@ void EndGameTablebase::gameResultError(const Game &game) { // static
 #ifndef TABLEBASE_BUILDER
 
 bool EndGameTablebase::needDecompress() const {
-  return !exist(DECOMPRESSEDTABLEBASE) 
+  return !exist(DECOMPRESSEDTABLEBASE)
       || (exist(COMPRESSEDTABLEBASE) && (getFileTime(DECOMPRESSEDTABLEBASE) < getFileTime(COMPRESSEDTABLEBASE)));
 }
 
@@ -514,12 +514,12 @@ void EndGameTablebase::doBuild(BuildStep buildStep) {
         } else {
           unravelWinnerPositions();
         }
-        m_info.m_buildTime = time(NULL);
+        m_info.m_buildTime = _time32(NULL);
         save();
         checkAllSubKeysFound();
         buildStep = FIXUP_POSITIONS;
         break;
-        
+
       case RECOVER_FROM_ALLPOSITIONS:
         load();
         buildStep = FIXUP_POSITIONS;
@@ -620,7 +620,7 @@ void EndGameTablebase::addInitPosition(EndGameKey key, bool allowTransform) {
       }
       addPosition(key, false);
 
-      for(pIndex = 0; pIndex < m_keydef.getPieceCount(); pIndex++) {
+      for(int pIndex = 0; pIndex < m_keydef.getPieceCount(); pIndex++) {
         const int pos = key.getPosition(pIndex);
         switch(m_keydef.getPieceType(pIndex)) {
         case Pawn:
@@ -647,7 +647,7 @@ void EndGameTablebase::resetInitialSetupFlags() {
     for(int c = 0; c < ARRAYSIZE(m_bishopInitialField[0]); c++) {
       m_bishopInitialField[pIndex][c] = false;
     }
-    for(c = 0; c < ARRAYSIZE(m_pawnInitialField[0]); c++) {
+    for(int c = 0; c < ARRAYSIZE(m_pawnInitialField[0]); c++) {
       m_pawnInitialField[pIndex][c] = false;
     }
   }
@@ -677,7 +677,7 @@ void EndGameTablebase::checkInitialSetupFlags() {
 #define  _BISHOPCOMBI2_EXIST(fc1, fc2)   (m_bishopInitialField[bi1][fc1] && m_bishopInitialField[bi2][fc2])
 #define  BISHOPCOMBI2SAMECOLOR_EXIST(fc)  _BISHOPCOMBI2_EXIST(fc, fc)
 #define  BISHOPCOMBI2DIFFCOLOR_EXIST()   (_BISHOPCOMBI2_EXIST(WHITEFIELD, BLACKFIELD) || _BISHOPCOMBI2_EXIST(BLACKFIELD, WHITEFIELD))
-                       
+
 
         { const int  bi1 = m_keydef.findKeyIndexByCount(pieceKey, 1);
           const int  bi2 = m_keydef.findKeyIndexByCount(pieceKey, 2);
@@ -709,7 +709,7 @@ void EndGameTablebase::checkInitialSetupFlags() {
           }
         }
         break;
-      default: throwException(_T("%s:Too many bishops (=%d)"), getName().cstr(), m_keydef.getPieceCount(player, Bishop)); 
+      default: throwException(_T("%s:Too many bishops (=%d)"), getName().cstr(), m_keydef.getPieceCount(player, Bishop));
       }
       break;
     case Pawn:
@@ -774,7 +774,8 @@ void EndGameTablebase::generateAllForwardPositions() {
   do {
     changed = false;
     iteration++;
-    for(EndGameEntryIterator it = m_positionIndex.getIteratorUndefinedUnvisitedEntries(); it.hasNext(); ) {
+    EndGameEntryIterator it = m_positionIndex.getIteratorUndefinedUnvisitedEntries();
+    while(it.hasNext()) {
       EndGameEntry &entry = it.next();
 
       entry.getValue().setVisited();
@@ -830,9 +831,10 @@ void EndGameTablebase::generateAllRetroPositions() {
     do {
       innerIteration++;
       changed = false;
-      EndGameEntryIterator it    = m_positionIndex.getIteratorUnvisitedEntries();
-      UINT                 total = it.getCount();
-      for(UINT positionCount = 0; it.hasNext(); ) {
+      EndGameEntryIterator it            = m_positionIndex.getIteratorUnvisitedEntries();
+      UINT                 total         = it.getCount();
+      UINT                 positionCount = 0;
+      while(it.hasNext()) {
         EndGameEntry &entry = it.next();
         positionCount++;
 
@@ -875,16 +877,17 @@ void EndGameTablebase::generateAllRetroPositions() {
     do {
       innerIteration++;
       changed2     = false;
-      EndGameEntryIterator it    = m_positionIndex.getIteratorMarkedEntries();
-      UINT                 total = it.getCount();
-      for(UINT positionCount = 0; it.hasNext();) {
+      EndGameEntryIterator it            = m_positionIndex.getIteratorMarkedEntries();
+      UINT                 total         = it.getCount();
+      UINT                 positionCount = 0;
+      while(it.hasNext()) {
         EndGameEntry &entry = it.next();
         positionCount++;
 
         entry.getValue().clearMark();
 
         m_workGame = entry.getKey().getGameKey(m_keydef);
-     
+
         const int positionBefore = m_info.m_totalPositions;
         changed2 |= addSuccessors(entry.getValue(), m_workGame, true);
         total += m_info.m_totalPositions - positionBefore;
@@ -1002,12 +1005,13 @@ void EndGameTablebase::findDTM() {
   { TimeUsagePrinter timeUsage(this);
 
     PositionCount changeCount;
-    for(EndGameEntryIterator it = m_positionIndex.getIteratorAllWinnerEntries(); it.hasNext();) {
+    EndGameEntryIterator it = m_positionIndex.getIteratorAllWinnerEntries();
+    while(it.hasNext()) {
       EndGameEntry &entry = it.next();
 
       switch(entry.getValue().getPliesToEnd()) {
       case 0: // checkmate. Dont touch
-        break; 
+        break;
       case 1:
         { m_workGame = entry.getKey().getGameKey(m_keydef);
           const EndGameResult result = getBestResult(m_workGame, false);
@@ -1064,7 +1068,8 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
     changed = false;
 
     PositionCount winnerCount;
-    for(EndGameEntryIterator it = m_positionIndex.getIteratorWinnerEntries(pliesToEnd); it.hasNext();) {
+    EndGameEntryIterator it = m_positionIndex.getIteratorWinnerEntries(pliesToEnd);
+    while(it.hasNext()) {
       EndGameEntry &entry = it.next();
 
       changed |= analyzeRetro(entry, winnerCount, pliesToEnd);
@@ -1074,7 +1079,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
 
     ENDLOOP_VERBOSE(UNRAVEL_VERBOSE)
     pliesToEnd++;
-  } while(changed || (pliesToEnd <= max(m_info.m_maxPlies.getMax(), minPliesToEnd)));
+  } while(changed || ((int)pliesToEnd <= max((int)m_info.m_maxPlies.getMax(), minPliesToEnd)));
 
 //  verbose(_T("%27s%s\n"), _T(""), m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr());
 }
@@ -1183,7 +1188,7 @@ bool EndGameTablebase::fixupPositions() {
     }
     if(((changedPositions == 0) && (startState == 0)) || checkConsistency(CHECK_HEADER | CHECK_POSITIONS | CHECK_RETURN_ON_ERROR)) {
       m_info.m_stateFlags |= TBISTATE_CONSISTENT;
-      m_info.m_consistencyCheckedTime = time(NULL);
+      m_info.m_consistencyCheckedTime = _time32(NULL);
       return true;
     }
     m_info.m_stateFlags = 0; // reset all flags and repeat
@@ -1222,7 +1227,8 @@ StartLoop0:
 
   m_positionIndex.clearHelpInfo();
   loopChangeCount.clear();
-  for(EndGameEntryIterator it = m_positionIndex.getIteratorAllNonWinnerEntries(); it.hasNext();) { // loop0
+  EndGameEntryIterator it = m_positionIndex.getIteratorAllNonWinnerEntries();
+  while(it.hasNext()) { // loop0
     EndGameEntry &entry = it.next();
     m_workGame = entry.getKey().getGameKey(m_keydef);
     const EndGameResult result = getBestResult(m_workGame, false);
@@ -1333,9 +1339,9 @@ void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
           PositionCount loopChangeCount;
           m_positionIndex.clearAllChanged();
           // Invariant:No changed. loop through marked positions
-          // fix all plies to predecessors to the marked positions 
-
-          for(EndGameEntryIterator it = m_positionIndex.getIteratorMarkedEntries(); it.hasNext();) {
+          // fix all plies to predecessors to the marked positions
+          EndGameEntryIterator it = m_positionIndex.getIteratorMarkedEntries();
+          while(it.hasNext()) {
             EndGameEntry &entry = it.next();
 
             changedPositions += fixupRetroPlies(entry, loopChangeCount); // Changed positions are set to changed and visited
@@ -1360,8 +1366,8 @@ void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
 
       // Invariant:All modified positions in the loop above are now marked as visited
       if((m_info.m_stateFlags & TBISTATE_WINNERFORWARD2FIXED) == 0) {
-
-        for(EndGameEntryIterator it = m_positionIndex.getIteratorVisitedEntries(); it.hasNext();) {
+        EndGameEntryIterator it = m_positionIndex.getIteratorVisitedEntries();
+        while(it.hasNext()) {
           const EndGameEntry &entry = it.next();
           markPredecessors(entry, true);
           INLOOP_VERBOSE(FIXUP_MARKPREDECESSOR_VERBOSE)
@@ -1507,7 +1513,7 @@ UINT EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, PositionCount
     switch(bestResult.getStatus()) {
     case EG_UNDEFINED:
     case EG_DRAW     :
-      assert(predResult.getStatus() <= EG_DRAW); 
+      assert(predResult.getStatus() <= EG_DRAW);
       break;
     case EG_WHITEWIN :
     case EG_BLACKWIN :
@@ -1733,7 +1739,7 @@ EndGameResult &EndGameTablebase::setAsTerminalPosition(EndGameResult &dst, EndGa
 EndGameResult &EndGameTablebase::setPositionResult(EndGameResult &dst, EndGamePositionStatus status, UINT pliesToEnd) {
   m_info.m_undefinedPositions--;
   switch(status) {
-  case EG_DRAW    : 
+  case EG_DRAW    :
     if(pliesToEnd == 0) {
       setAsStaleMatePosition(dst);
     } else {
@@ -1900,7 +1906,7 @@ void EndGameTablebase::handleTimeout(Timer &timer) {
 
 void EndGameTablebase::list(FILE *f, ListFilter filter) {
   switch(filter) {
-  case LIST_WINNER    : 
+  case LIST_WINNER    :
     list(f, m_positionIndex.getIteratorAllWinnerEntries());
     break;
   case LIST_MAXVAR    :
@@ -1993,10 +1999,10 @@ void EndGameTablebase::listPositionCount(FILE *f) {
   _ftprintf(f, _T("Positions sorted by plies to end for tablebase %s (%s)\n"), getName().cstr(), EndGameKeyDefinition::getMetricName());
   _ftprintf(f,_T("Plies   White win   Black win\n"));
   PositionCount total;
-  for(int plies = 0; plies < wpTable.size(); plies++) {
+  for(UINT plies = 0; plies < wpTable.size(); plies++) {
     const PositionCount &wp = wpTable[plies];
     total += wp;
-    _ftprintf(f,_T("%5d %s\n"), plies, wp.toString().cstr());
+    _ftprintf(f,_T("%5u %s\n"), plies, wp.toString().cstr());
   }
   _ftprintf(f, _T("Total %s\n"), total.toString().cstr());
 }
@@ -2020,8 +2026,9 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
   }
 
   if(flags & CHECK_POSITIONS) {
-    const TCHAR *msg = _T("Checking all non-winner positions");
-    for(EndGameEntryIterator it = m_positionIndex.getIteratorAllNonWinnerEntries(); it.hasNext();) {
+    const TCHAR         *msg = _T("Checking all non-winner positions");
+    EndGameEntryIterator it  = m_positionIndex.getIteratorAllNonWinnerEntries();
+    while(it.hasNext()) {
       const EndGameEntry &entry = it.next();
       m_workGame = entry.getKey().getGameKey(m_keydef);
       const EndGameResult bestResult = getBestResult(m_workGame, false);
@@ -2037,7 +2044,7 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
 
           if(flags & CHECK_LIST_MOVES) {
             const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
-            for(int i = 0; i < allMoves.size(); i++) {
+            for(UINT i = 0; i < allMoves.size(); i++) {
               const MoveWithResult &mr = allMoves[i];
               const ExecutableMove em = m_workGame.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
               verbose(_T("%-7s - %s\n"), em.toString(MOVE_SHORTFORMAT).cstr(), mr.m_result.toString(true).cstr());
@@ -2067,7 +2074,7 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
 
         if(flags & CHECK_LIST_MOVES) {
           const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
-          for(int i = 0; i < allMoves.size(); i++) {
+          for(UINT i = 0; i < allMoves.size(); i++) {
             const MoveWithResult &mr = allMoves[i];
             const ExecutableMove em = m_workGame.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
             verbose(_T("%-7s - %s\n"), em.toString(MOVE_SHORTFORMAT).cstr(), mr.m_result.toString(true).cstr());
@@ -2218,7 +2225,7 @@ String EndGameTablebase::save(bool convert) const {
 }
 
 String EndGameTablebase::saveAllForwardPositions(bool convert) {
-  m_info.m_buildTime = time(NULL);
+  m_info.m_buildTime = _time32(NULL);
   return save(getFileName(ALLFORWARDPOSITIONS), convert);
 }
 
@@ -2229,7 +2236,7 @@ String EndGameTablebase::loadAllForwardPositions() {
 }
 
 String EndGameTablebase::saveAllRetroPositions(bool convert) {
-  m_info.m_buildTime = time(NULL);
+  m_info.m_buildTime = _time32(NULL);
   return save(getFileName(ALLRETROPOSITIONS), convert);
 }
 
@@ -2373,7 +2380,7 @@ MaxVariantCount EndGameTablebase::findMaxPlies() const {
     const EndGameResult  egr        = e.getValue();
     const int            pliesToEnd = egr.getPliesToEnd();
     switch(egr.getStatus()) {
-    case EG_WHITEWIN:  
+    case EG_WHITEWIN:
       if(pliesToEnd > wmPlies) {
         wmPlies = pliesToEnd;
       }

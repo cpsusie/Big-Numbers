@@ -156,7 +156,7 @@ void EndGameKeyDefinition5Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
     break;
   case 4:
     { const UINT pi3 = pawnPosToIndex[key.getPosition3()];                  // p3 always on queen side
-      for(int pi4 = 0; pi4 < PAWN_POSCOUNT; pi4++) {
+      for(UINT pi4 = 0; pi4 < PAWN_POSCOUNT; pi4++) {
         const int pos4 = pawnIndexToPos[pi4];
         if(key.isOccupied(pos4)) {
           continue;

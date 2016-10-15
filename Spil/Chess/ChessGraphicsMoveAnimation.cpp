@@ -5,7 +5,7 @@
 PixRect *MovePieceAnimation::background          = NULL;
 int      MovePieceAnimation::animationsAllocated = 0;
 
-MovePieceAnimation::MovePieceAnimation(ChessGraphics *graphics, HDC dc, const int from, const int to, int steps) 
+MovePieceAnimation::MovePieceAnimation(ChessGraphics *graphics, HDC dc, const int from, const int to, int steps)
 : m_resources(graphics->getResources())
 , m_dc(dc)
 , m_from(graphics->getFieldPosition(from, true))

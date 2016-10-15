@@ -67,7 +67,7 @@ void IndexedMap::rethrowException(Exception &e, const EndGameKey &key) const {
 }
 
 
-IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef) 
+IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef)
 : m_keydef(keydef)
 , m_indexSize(keydef.getIndexSize())
 {
@@ -208,7 +208,7 @@ void IndexedMap::convertIndex() {
 
 void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const { // Saved in format used by IndexedMap::load(ByteInputStream &s)
                                                                                         // defined last in this file
-  DEFINEMTEHODNAME;
+  DEFINEMETHODNAME;
   const UINT indexSize = info.m_indexCapacity;
   if(info.m_indexCapacity != indexSize) {
     throwInvalidArgumentException(method, _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
@@ -231,8 +231,9 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
                                  );
   }
 
-  int maxPly = 0;
-  int winnerPositions = 0;
+  UINT maxPly          = 0;
+  int  winnerPositions = 0;
+  int  i;
   for(ep = &first(), i = indexSize; i--; ep++) {
     if(ep->isWinner()) {
       winnerPositions++;
@@ -251,7 +252,7 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
 
   if(maxPly != info.m_maxPlies.getMax()) {
     throwInvalidArgumentException(method
-                                 ,_T("Calculated maxPly=%d != info.maxPlies:%s")
+                                 ,_T("Calculated maxPly=%u != info.maxPlies:%s")
                                  ,maxPly
                                  ,info.m_maxPlies.toString().cstr());
   }
@@ -268,7 +269,7 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
   if(canWinFlags == BOTHCANWIN) { // No need for indicating who wins. A winposition is the one indicated by canWinFlags
     for(ep = &first(), i = indexSize; i--; ep++) {
       switch(ep->getStatus()) {
-      case EG_WHITEWIN: 
+      case EG_WHITEWIN:
         bs.putBit(0);
         break;
       case EG_BLACKWIN:
@@ -379,7 +380,7 @@ public:
   }
   const void *key() const;
 
-  void *value() { 
+  void *value() {
     return m_result;
   }
 
@@ -548,12 +549,12 @@ UINT name::getCount() const {                                                   
 #define ALLNONWINNER_FILTER(       p) (p->exists()         && !p->isWinner() )
 #define WIN_INPLIES_FILTER(        p) (ALLWINNER_FILTER(p) && (p->getPliesToEnd() == m_value ))
 #define STALEMATE_FILTER(          p) ((p->getStatus()     == EG_DRAW) && (p->getPliesToEnd() == 0))
-#define WHITEWIN_MINPLIES_FILTER(  p) (WHITEWIN_FILTER(p)  && (p->getPliesToEnd() >= m_value ))
-#define BLACKWIN_MINPLIES_FILTER(  p) (BLACKWIN_FILTER(p)  && (p->getPliesToEnd() >= m_value ))
-#define WHITEWIN_MAXPLIES_FILTER(  p) (WHITEWIN_FILTER(p)  && (p->getPliesToEnd() <= m_value ))
-#define BLACKWIN_MAXPLIES_FILTER(  p) (BLACKWIN_FILTER(p)  && (p->getPliesToEnd() <= m_value ))
-#define WHITEWIN_EXACTPLIES_FILTER(p) (WHITEWIN_FILTER(p)  && (p->getPliesToEnd() == m_value ))
-#define BLACKWIN_EXACTPLIES_FILTER(p) (BLACKWIN_FILTER(p)  && (p->getPliesToEnd() == m_value ))
+#define WHITEWIN_MINPLIES_FILTER(  p) (WHITEWIN_FILTER(p)  && ((int)p->getPliesToEnd() >= m_value ))
+#define BLACKWIN_MINPLIES_FILTER(  p) (BLACKWIN_FILTER(p)  && ((int)p->getPliesToEnd() >= m_value ))
+#define WHITEWIN_MAXPLIES_FILTER(  p) (WHITEWIN_FILTER(p)  && ((int)p->getPliesToEnd() <= m_value ))
+#define BLACKWIN_MAXPLIES_FILTER(  p) (BLACKWIN_FILTER(p)  && ((int)p->getPliesToEnd() <= m_value ))
+#define WHITEWIN_EXACTPLIES_FILTER(p) (WHITEWIN_FILTER(p)  && ((int)p->getPliesToEnd() == m_value ))
+#define BLACKWIN_EXACTPLIES_FILTER(p) (BLACKWIN_FILTER(p)  && ((int)p->getPliesToEnd() == m_value ))
 #define NONEMPTY_HELPINFO_FILTER(  p) (p->hasHelpInfo())
 
 DEFINE_FILTERED_ENTRYITERATOR(IteratorAllEntries               , EXIST_FILTER               )
@@ -715,7 +716,7 @@ void DecompressedHeader::load(ByteInputStream &s) {
 void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const {
   const int indexSize = m_keydef.getIndexSize();
   if(info.m_indexCapacity != indexSize) {
-    throwInvalidArgumentException(_T("decompress"), _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
+    throwInvalidArgumentException(__TFUNCTION__, _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
   }
 
   const unsigned char canWinFlags  = info.getCanWinFlags();
@@ -745,7 +746,7 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
 
   BitSetIndex positionIndex(winnerPositionSet);
 
-  PackedArray positionInfoArray(bitsPerEntry); 
+  PackedArray positionInfoArray(bitsPerEntry);
   positionInfoArray.setCapacity(winnerPositions);
   positionInfoArray.addZeroes(0,winnerPositions);
 

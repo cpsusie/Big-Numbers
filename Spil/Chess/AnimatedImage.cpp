@@ -104,7 +104,7 @@ UINT AnimatedImage::run() {
           break;
         case 0:
         case 1:
-          m_continue = false; 
+          m_continue = false;
           break;
         default:
           m_loopCount--;

@@ -81,7 +81,7 @@ void Game::updateGameBackMovePawn(const Move &m) {
     throwInvalidArgumentException(__TFUNCTION__, _T("m.direction=%d"), m.m_direction);
   }
   SET_EMPTYFIELD(m1.m_from);
-  
+
   const FieldInfo &toInfo = fieldInfo[m1.m_to];
 
   switch(m1.m_direction) {
@@ -340,7 +340,7 @@ void Game::setPawn(const Move &m) {
   }
 
   m.m_piece->m_pinnedState = getPinnedState(m.m_to);
-  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king. 
+  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }
 
 void Game::whitePawnWalkForward(const FieldInfo &toInfo, int from) {
@@ -671,7 +671,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
 
 
   case MD_UPDIAG2  : // white
-    { updateKingDirEPUpDiag2(epMove); 
+    { updateKingDirEPUpDiag2(epMove);
 
       if(epMove.m_fromInfo.m_innerRow) {
         unblockColumn(epMove.m_fromInfo);
@@ -682,7 +682,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
       if(epMove.m_capturedInfo.m_innerField) {
         unblockDiag12(epMove.m_capturedInfo);
       }
-      
+
       UPDATE_WHITEPAWNATTACKS(epMove.m_fromInfo, -1);
       UPDATE_WHITEPAWNATTACKS(epMove.m_toInfo  ,  1);
 
@@ -725,14 +725,14 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
   }
 
   m.m_piece->m_pinnedState = getPinnedState(m.m_to);
-  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king. 
+  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }
 
 // ------------------------------------------------ promote Pawn ---------------------------------------
 
 void Game::updateGamePromotion(const Move &m) {
   Piece       *pawn  = m.m_piece;
-  PlayerState &state = pawn->m_playerState;      
+  PlayerState &state = pawn->m_playerState;
 
 #ifndef TABLEBASE_BUILDER
   state.m_totalMaterial -= pawn->m_materialValue;
@@ -938,10 +938,10 @@ void Game::setNonCapturingPromotedKnight(const Move &m) {
   }
   // Column and both diagonals are non-blockable
   UPDATE_KNIGHTATTACKS(PLAYERINTURN, toInfo, 1);
-  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king. 
+  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }
 
 void Game::setCapturingPromotedKnight(const Move &m) {
   UPDATE_KNIGHTATTACKS(PLAYERINTURN, fieldInfo[m.m_to], 1);
-  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king. 
+  m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }

@@ -112,7 +112,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
   default          :
     throwException(_T("EndGameResult::getStatus:%d"), getStatus());
     return _T("");
-  }  
+  }
 }
 
 TCHAR *EndGameResult::toStr(TCHAR *dst, Player playerInTurn, bool ply) const {

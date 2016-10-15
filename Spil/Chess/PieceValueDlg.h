@@ -18,7 +18,7 @@ public:
 
 protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
-   
+
 protected:
 
     afx_msg void OnRadioKing();

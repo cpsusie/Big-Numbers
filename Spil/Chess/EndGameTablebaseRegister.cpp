@@ -5,155 +5,168 @@
 #include "EndGame5MenNoPawns.h"
 #include "EndGame5MenWithPawns.h"
 
-const EndGameTablebaseList &EndGameTablebase::getRegisteredEndGameTablebases() { // static 
-  static EndGameTablebaseList tablebaseList(143);
-  if(tablebaseList.size() == 0) {
-    tablebaseList.add(new EndGameKPK());    // King-Pawn                 / King
-    tablebaseList.add(new EndGameKQK());    // King-Queen                / King
-    tablebaseList.add(new EndGameKRK());    // King-Rook                 / King
-    tablebaseList.add(new EndGameKBBK());   // King-Bishop-Bishop        / King
-    tablebaseList.add(new EndGameKBKB());   // King-Bishop               / King-Bishop
-    tablebaseList.add(new EndGameKBKN());   // King-Bishop               / King-Knight
-    tablebaseList.add(new EndGameKBNK());   // King-Bishop-Knight        / King
-    tablebaseList.add(new EndGameKBPK());   // King-Bishop-Pawn          / King
-    tablebaseList.add(new EndGameKNKN());   // King-Knight               / King-Knight
-    tablebaseList.add(new EndGameKNNK());   // King-Knight-Knight        / King
-    tablebaseList.add(new EndGameKNPK());   // King-Knight-Pawn          / King
-    tablebaseList.add(new EndGameKPKB());   // King-Pawn                 / King-Bishop
-    tablebaseList.add(new EndGameKPKN());   // King-Pawn                 / King-Knight
-    tablebaseList.add(new EndGameKPKP());   // King-Pawn                 / King-Pawn
-    tablebaseList.add(new EndGameKPPK());   // King-Pawn-Pawn            / King
-    tablebaseList.add(new EndGameKQBK());   // King-Queen-Bishop         / King
-    tablebaseList.add(new EndGameKQKB());   // King-Queen                / King-Bishop
-    tablebaseList.add(new EndGameKQKN());   // King-Queen                / King-Knight
-    tablebaseList.add(new EndGameKQKP());   // King-Queen                / King-Pawn
-    tablebaseList.add(new EndGameKQKQ());   // King-Queen                / King-Queen
-    tablebaseList.add(new EndGameKQKR());   // King-Queen                / King-Rook
-    tablebaseList.add(new EndGameKQNK());   // King-Queen-Knight         / King
-    tablebaseList.add(new EndGameKQPK());   // King-Queen-Pawn           / King
-    tablebaseList.add(new EndGameKQQK());   // King-Queen-Queen          / King
-    tablebaseList.add(new EndGameKQRK());   // King-Queen-Rook           / King
-    tablebaseList.add(new EndGameKRBK());   // King-Rook-Bishop          / King
-    tablebaseList.add(new EndGameKRKB());   // King-Rook                 / King-Bishop
-    tablebaseList.add(new EndGameKRKN());   // King-Rook                 / King-Knight
-    tablebaseList.add(new EndGameKRKP());   // King-Rook                 / King-Pawn
-    tablebaseList.add(new EndGameKRKR());   // King-Rook                 / King-Rook
-    tablebaseList.add(new EndGameKRNK());   // King-Rook-Knight          / King
-    tablebaseList.add(new EndGameKRPK());   // King-Rook-Pawn            / King
-    tablebaseList.add(new EndGameKRRK());   // King-Rook-Rook            / King
-    tablebaseList.add(new EndGameKBBBK());  // King-Bishop-Bishop-Bishop / King
-    tablebaseList.add(new EndGameKBBKB());  // King-Bishop-Bishop        / King-Bishop
-    tablebaseList.add(new EndGameKBBKN());  // King-Bishop-Bishop        / King-Knight
-    tablebaseList.add(new EndGameKBBKP());  // King-Bishop-Bishop        / King-Pawn
-    tablebaseList.add(new EndGameKBBKR());  // King-Bishop-Bishop        / King-Rook
-    tablebaseList.add(new EndGameKBBNK());  // King-Bishop-Bishop-Knight / King
-    tablebaseList.add(new EndGameKBBPK());  // King-Bishop-Bishop-Pawn   / King
-    tablebaseList.add(new EndGameKBNKB());  // King-Bishop-Knight        / King-Bishop
-    tablebaseList.add(new EndGameKBNKN());  // King-Bishop-Knight        / King-Knight
-    tablebaseList.add(new EndGameKBNKP());  // King-Bishop-Knight        / King-Pawn
-    tablebaseList.add(new EndGameKBNKR());  // King-Bishop-Knight        / King-Rook
-    tablebaseList.add(new EndGameKBNNK());  // King-Bishop-Knight-Knight / King
-    tablebaseList.add(new EndGameKBNPK());  // King-Bishop-Knight-Pawn   / King
-    tablebaseList.add(new EndGameKBPKB());  // King-Bishop-Pawn          / King-Bishop
-    tablebaseList.add(new EndGameKBPKN());  // King-Bishop-Pawn          / King-Knight
-    tablebaseList.add(new EndGameKBPKP());  // King-Bishop-Pawn          / King-Pawn
-    tablebaseList.add(new EndGameKBPKQ());  // King-Bishop-Pawn          / King-Queen
-    tablebaseList.add(new EndGameKBPKR());  // King-Bishop-Pawn          / King-Rook
-    tablebaseList.add(new EndGameKBPPK());  // King-Bishop-Pawn-Pawn     / King
-    tablebaseList.add(new EndGameKNNKB());  // King-Knight-Knight        / King-Bishop
-    tablebaseList.add(new EndGameKNNKN());  // King-Knight-Knight        / King-Knight
-    tablebaseList.add(new EndGameKNNKP());  // King-Knight-Knight        / King-Pawn
-    tablebaseList.add(new EndGameKNNNK());  // King-Knight-Knight-Knight / King
-    tablebaseList.add(new EndGameKNNPK());  // King-Knight-Knight-Pawn   / King
-    tablebaseList.add(new EndGameKNPKB());  // King-Knight-Pawn          / King-Bishop
-    tablebaseList.add(new EndGameKNPKN());  // King-Knight-Pawn          / King-Knight
-    tablebaseList.add(new EndGameKNPKP());  // King-Knight-Pawn          / King-Pawn
-    tablebaseList.add(new EndGameKNPKQ());  // King-Knight-Pawn          / King-Queen
-    tablebaseList.add(new EndGameKNPKR());  // King-Knight-Pawn          / King-Rook
-    tablebaseList.add(new EndGameKNPPK());  // King-Knight-Pawn-Pawn     / King
-    tablebaseList.add(new EndGameKPPKB());  // King-Pawn-Pawn            / King-Bishop
-    tablebaseList.add(new EndGameKPPKN());  // King-Pawn-Pawn            / King-Knight
-    tablebaseList.add(new EndGameKPPKP());  // King-Pawn-Pawn            / King-Pawn
-    tablebaseList.add(new EndGameKPPKQ());  // King-Pawn-Pawn            / King-Queen
-    tablebaseList.add(new EndGameKPPKR());  // King-Pawn-Pawn            / King-Rook
-    tablebaseList.add(new EndGameKPPPK());  // King-Pawn-Pawn-Pawn       / King
-    tablebaseList.add(new EndGameKQBBK());  // King-Queen-Bishop-Bishop  / King
-    tablebaseList.add(new EndGameKQBKB());  // King-Queen-Bishop         / King-Bishop
-    tablebaseList.add(new EndGameKQBKN());  // King-Queen-Bishop         / King-Knight
-    tablebaseList.add(new EndGameKQBKP());  // King-Queen-Bishop         / King-Pawn
-    tablebaseList.add(new EndGameKQBKQ());  // King-Queen-Bishop         / King-Queen
-    tablebaseList.add(new EndGameKQBKR());  // King-Queen-Bishop         / King-Rook
-    tablebaseList.add(new EndGameKQBNK());  // King-Queen-Bishop-Knight  / King
-    tablebaseList.add(new EndGameKQBPK());  // King-Queen-Bishop-Pawn    / King
-    tablebaseList.add(new EndGameKQKBB());  // King-Queen                / King-Bishop-Bishop
-    tablebaseList.add(new EndGameKQKBN());  // King-Queen                / King-Bishop-Knight
-    tablebaseList.add(new EndGameKQKNN());  // King-Queen                / King-Knight-Knight
-    tablebaseList.add(new EndGameKQKRB());  // King-Queen                / King-Rook-Bishop
-    tablebaseList.add(new EndGameKQKRN());  // King-Queen                / King-Rook-Knight
-    tablebaseList.add(new EndGameKQKRR());  // King-Queen                / King-Rook-Rook
-    tablebaseList.add(new EndGameKQNKB());  // King-Queen-Knight         / King-Bishop
-    tablebaseList.add(new EndGameKQNKN());  // King-Queen-Knight         / King-Knight
-    tablebaseList.add(new EndGameKQNKP());  // King-Queen-Knight         / King-Pawn
-    tablebaseList.add(new EndGameKQNKQ());  // King-Queen-Knight         / King-Queen
-    tablebaseList.add(new EndGameKQNKR());  // King-Queen-Knight         / King-Rook
-    tablebaseList.add(new EndGameKQNNK());  // King-Queen-Knight-Knight  / King
-    tablebaseList.add(new EndGameKQNPK());  // King-Queen-Knight-Pawn    / King
-    tablebaseList.add(new EndGameKQPKB());  // King-Queen-Pawn           / King-Bishop
-    tablebaseList.add(new EndGameKQPKN());  // King-Queen-Pawn           / King-Knight
-    tablebaseList.add(new EndGameKQPKP());  // King-Queen-Pawn           / King-Pawn
-    tablebaseList.add(new EndGameKQPKQ());  // King-Queen-Pawn           / King-Queen
-    tablebaseList.add(new EndGameKQPKR());  // King-Queen-Pawn           / King-Rook
-    tablebaseList.add(new EndGameKQPPK());  // King-Queen-Pawn-Pawn      / King
-    tablebaseList.add(new EndGameKQQBK());  // King-Queen-Queen-Bishop   / King
-    tablebaseList.add(new EndGameKQQKB());  // King-Queen-Queen          / King-Bishop
-    tablebaseList.add(new EndGameKQQKN());  // King-Queen-Queen          / King-Knight
-    tablebaseList.add(new EndGameKQQKP());  // King-Queen-Queen          / King-Pawn
-    tablebaseList.add(new EndGameKQQKQ());  // King-Queen-Queen          / King-Queen
-    tablebaseList.add(new EndGameKQQKR());  // King-Queen-Queen          / King-Rook
-    tablebaseList.add(new EndGameKQQNK());  // King-Queen-Queen-Knight   / King
-    tablebaseList.add(new EndGameKQQPK());  // King-Queen-Queen-Pawn     / King
-    tablebaseList.add(new EndGameKQQQK());  // King-Queen-Queen-Queen    / King
-    tablebaseList.add(new EndGameKQQRK());  // King-Queen-Queen-Rook     / King
-    tablebaseList.add(new EndGameKQRBK());  // King-Queen-Rook-Bishop    / King
-    tablebaseList.add(new EndGameKQRKB());  // King-Queen-Rook           / King-Bishop
-    tablebaseList.add(new EndGameKQRKN());  // King-Queen-Rook           / King-Knight
-    tablebaseList.add(new EndGameKQRKP());  // King-Queen-Rook           / King-Pawn
-    tablebaseList.add(new EndGameKQRKQ());  // King-Queen-Rook           / King-Queen
-    tablebaseList.add(new EndGameKQRKR());  // King-Queen-Rook           / King-Rook
-    tablebaseList.add(new EndGameKQRNK());  // King-Queen-Rook-Knight    / King
-    tablebaseList.add(new EndGameKQRPK());  // King-Queen-Rook-Pawn      / King
-    tablebaseList.add(new EndGameKQRRK());  // King-Queen-Rook-Rook      / King
-    tablebaseList.add(new EndGameKRBBK());  // King-Rook-Bishop-Bishop   / King
-    tablebaseList.add(new EndGameKRBKB());  // King-Rook-Bishop          / King-Bishop
-    tablebaseList.add(new EndGameKRBKN());  // King-Rook-Bishop          / King-Knight
-    tablebaseList.add(new EndGameKRBKP());  // King-Rook-Bishop          / King-Pawn
-    tablebaseList.add(new EndGameKRBKR());  // King-Rook-Bishop          / King-Rook
-    tablebaseList.add(new EndGameKRBNK());  // King-Rook-Bishop-Knight   / King
-    tablebaseList.add(new EndGameKRBPK());  // King-Rook-Bishop-Pawn     / King
-    tablebaseList.add(new EndGameKRKNN());  // King-Rook                 / King-Knight-Knight
-    tablebaseList.add(new EndGameKRNKB());  // King-Rook-Knight          / King-Bishop
-    tablebaseList.add(new EndGameKRNKN());  // King-Rook-Knight          / King-Knight
-    tablebaseList.add(new EndGameKRNKP());  // King-Rook-Knight          / King-Pawn
-    tablebaseList.add(new EndGameKRNKR());  // King-Rook-Knight          / King-Rook
-    tablebaseList.add(new EndGameKRNNK());  // King-Rook-Knight-Knight   / King
-    tablebaseList.add(new EndGameKRNPK());  // King-Rook-Knight-Pawn     / King
-    tablebaseList.add(new EndGameKRPKB());  // King-Rook-Pawn            / King-Bishop
-    tablebaseList.add(new EndGameKRPKN());  // King-Rook-Pawn            / King-Knight
-    tablebaseList.add(new EndGameKRPKP());  // King-Rook-Pawn            / King-Pawn
-    tablebaseList.add(new EndGameKRPKQ());  // King-Rook-Pawn            / King-Queen
-    tablebaseList.add(new EndGameKRPKR());  // King-Rook-Pawn            / King-Rook
-    tablebaseList.add(new EndGameKRPPK());  // King-Rook-Pawn-Pawn       / King
-    tablebaseList.add(new EndGameKRRBK());  // King-Rook-Rook-Bishop     / King
-    tablebaseList.add(new EndGameKRRKB());  // King-Rook-Rook            / King-Bishop
-    tablebaseList.add(new EndGameKRRKN());  // King-Rook-Rook            / King-Knight
-    tablebaseList.add(new EndGameKRRKP());  // King-Rook-Rook            / King-Pawn
-    tablebaseList.add(new EndGameKRRKR());  // King-Rook-Rook            / King-Rook
-    tablebaseList.add(new EndGameKRRNK());  // King-Rook-Rook-Knight     / King
-    tablebaseList.add(new EndGameKRRPK());  // King-Rook-Rook-Pawn       / King
-    tablebaseList.add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
+class TablebaseRegister : public EndGameTablebaseList {
+public:
+  TablebaseRegister();
+  ~TablebaseRegister();
+};
 
+TablebaseRegister::TablebaseRegister() {
+  add(new EndGameKPK());    // King-Pawn                 / King
+  add(new EndGameKQK());    // King-Queen                / King
+  add(new EndGameKRK());    // King-Rook                 / King
+  add(new EndGameKBBK());   // King-Bishop-Bishop        / King
+  add(new EndGameKBKB());   // King-Bishop               / King-Bishop
+  add(new EndGameKBKN());   // King-Bishop               / King-Knight
+  add(new EndGameKBNK());   // King-Bishop-Knight        / King
+  add(new EndGameKBPK());   // King-Bishop-Pawn          / King
+  add(new EndGameKNKN());   // King-Knight               / King-Knight
+  add(new EndGameKNNK());   // King-Knight-Knight        / King
+  add(new EndGameKNPK());   // King-Knight-Pawn          / King
+  add(new EndGameKPKB());   // King-Pawn                 / King-Bishop
+  add(new EndGameKPKN());   // King-Pawn                 / King-Knight
+  add(new EndGameKPKP());   // King-Pawn                 / King-Pawn
+  add(new EndGameKPPK());   // King-Pawn-Pawn            / King
+  add(new EndGameKQBK());   // King-Queen-Bishop         / King
+  add(new EndGameKQKB());   // King-Queen                / King-Bishop
+  add(new EndGameKQKN());   // King-Queen                / King-Knight
+  add(new EndGameKQKP());   // King-Queen                / King-Pawn
+  add(new EndGameKQKQ());   // King-Queen                / King-Queen
+  add(new EndGameKQKR());   // King-Queen                / King-Rook
+  add(new EndGameKQNK());   // King-Queen-Knight         / King
+  add(new EndGameKQPK());   // King-Queen-Pawn           / King
+  add(new EndGameKQQK());   // King-Queen-Queen          / King
+  add(new EndGameKQRK());   // King-Queen-Rook           / King
+  add(new EndGameKRBK());   // King-Rook-Bishop          / King
+  add(new EndGameKRKB());   // King-Rook                 / King-Bishop
+  add(new EndGameKRKN());   // King-Rook                 / King-Knight
+  add(new EndGameKRKP());   // King-Rook                 / King-Pawn
+  add(new EndGameKRKR());   // King-Rook                 / King-Rook
+  add(new EndGameKRNK());   // King-Rook-Knight          / King
+  add(new EndGameKRPK());   // King-Rook-Pawn            / King
+  add(new EndGameKRRK());   // King-Rook-Rook            / King
+  add(new EndGameKBBBK());  // King-Bishop-Bishop-Bishop / King
+  add(new EndGameKBBKB());  // King-Bishop-Bishop        / King-Bishop
+  add(new EndGameKBBKN());  // King-Bishop-Bishop        / King-Knight
+  add(new EndGameKBBKP());  // King-Bishop-Bishop        / King-Pawn
+  add(new EndGameKBBKR());  // King-Bishop-Bishop        / King-Rook
+  add(new EndGameKBBNK());  // King-Bishop-Bishop-Knight / King
+  add(new EndGameKBBPK());  // King-Bishop-Bishop-Pawn   / King
+  add(new EndGameKBNKB());  // King-Bishop-Knight        / King-Bishop
+  add(new EndGameKBNKN());  // King-Bishop-Knight        / King-Knight
+  add(new EndGameKBNKP());  // King-Bishop-Knight        / King-Pawn
+  add(new EndGameKBNKR());  // King-Bishop-Knight        / King-Rook
+  add(new EndGameKBNNK());  // King-Bishop-Knight-Knight / King
+  add(new EndGameKBNPK());  // King-Bishop-Knight-Pawn   / King
+  add(new EndGameKBPKB());  // King-Bishop-Pawn          / King-Bishop
+  add(new EndGameKBPKN());  // King-Bishop-Pawn          / King-Knight
+  add(new EndGameKBPKP());  // King-Bishop-Pawn          / King-Pawn
+  add(new EndGameKBPKQ());  // King-Bishop-Pawn          / King-Queen
+  add(new EndGameKBPKR());  // King-Bishop-Pawn          / King-Rook
+  add(new EndGameKBPPK());  // King-Bishop-Pawn-Pawn     / King
+  add(new EndGameKNNKB());  // King-Knight-Knight        / King-Bishop
+  add(new EndGameKNNKN());  // King-Knight-Knight        / King-Knight
+  add(new EndGameKNNKP());  // King-Knight-Knight        / King-Pawn
+  add(new EndGameKNNNK());  // King-Knight-Knight-Knight / King
+  add(new EndGameKNNPK());  // King-Knight-Knight-Pawn   / King
+  add(new EndGameKNPKB());  // King-Knight-Pawn          / King-Bishop
+  add(new EndGameKNPKN());  // King-Knight-Pawn          / King-Knight
+  add(new EndGameKNPKP());  // King-Knight-Pawn          / King-Pawn
+  add(new EndGameKNPKQ());  // King-Knight-Pawn          / King-Queen
+  add(new EndGameKNPKR());  // King-Knight-Pawn          / King-Rook
+  add(new EndGameKNPPK());  // King-Knight-Pawn-Pawn     / King
+  add(new EndGameKPPKB());  // King-Pawn-Pawn            / King-Bishop
+  add(new EndGameKPPKN());  // King-Pawn-Pawn            / King-Knight
+  add(new EndGameKPPKP());  // King-Pawn-Pawn            / King-Pawn
+  add(new EndGameKPPKQ());  // King-Pawn-Pawn            / King-Queen
+  add(new EndGameKPPKR());  // King-Pawn-Pawn            / King-Rook
+  add(new EndGameKPPPK());  // King-Pawn-Pawn-Pawn       / King
+  add(new EndGameKQBBK());  // King-Queen-Bishop-Bishop  / King
+  add(new EndGameKQBKB());  // King-Queen-Bishop         / King-Bishop
+  add(new EndGameKQBKN());  // King-Queen-Bishop         / King-Knight
+  add(new EndGameKQBKP());  // King-Queen-Bishop         / King-Pawn
+  add(new EndGameKQBKQ());  // King-Queen-Bishop         / King-Queen
+  add(new EndGameKQBKR());  // King-Queen-Bishop         / King-Rook
+  add(new EndGameKQBNK());  // King-Queen-Bishop-Knight  / King
+  add(new EndGameKQBPK());  // King-Queen-Bishop-Pawn    / King
+  add(new EndGameKQKBB());  // King-Queen                / King-Bishop-Bishop
+  add(new EndGameKQKBN());  // King-Queen                / King-Bishop-Knight
+  add(new EndGameKQKNN());  // King-Queen                / King-Knight-Knight
+  add(new EndGameKQKRB());  // King-Queen                / King-Rook-Bishop
+  add(new EndGameKQKRN());  // King-Queen                / King-Rook-Knight
+  add(new EndGameKQKRR());  // King-Queen                / King-Rook-Rook
+  add(new EndGameKQNKB());  // King-Queen-Knight         / King-Bishop
+  add(new EndGameKQNKN());  // King-Queen-Knight         / King-Knight
+  add(new EndGameKQNKP());  // King-Queen-Knight         / King-Pawn
+  add(new EndGameKQNKQ());  // King-Queen-Knight         / King-Queen
+  add(new EndGameKQNKR());  // King-Queen-Knight         / King-Rook
+  add(new EndGameKQNNK());  // King-Queen-Knight-Knight  / King
+  add(new EndGameKQNPK());  // King-Queen-Knight-Pawn    / King
+  add(new EndGameKQPKB());  // King-Queen-Pawn           / King-Bishop
+  add(new EndGameKQPKN());  // King-Queen-Pawn           / King-Knight
+  add(new EndGameKQPKP());  // King-Queen-Pawn           / King-Pawn
+  add(new EndGameKQPKQ());  // King-Queen-Pawn           / King-Queen
+  add(new EndGameKQPKR());  // King-Queen-Pawn           / King-Rook
+  add(new EndGameKQPPK());  // King-Queen-Pawn-Pawn      / King
+  add(new EndGameKQQBK());  // King-Queen-Queen-Bishop   / King
+  add(new EndGameKQQKB());  // King-Queen-Queen          / King-Bishop
+  add(new EndGameKQQKN());  // King-Queen-Queen          / King-Knight
+  add(new EndGameKQQKP());  // King-Queen-Queen          / King-Pawn
+  add(new EndGameKQQKQ());  // King-Queen-Queen          / King-Queen
+  add(new EndGameKQQKR());  // King-Queen-Queen          / King-Rook
+  add(new EndGameKQQNK());  // King-Queen-Queen-Knight   / King
+  add(new EndGameKQQPK());  // King-Queen-Queen-Pawn     / King
+  add(new EndGameKQQQK());  // King-Queen-Queen-Queen    / King
+  add(new EndGameKQQRK());  // King-Queen-Queen-Rook     / King
+  add(new EndGameKQRBK());  // King-Queen-Rook-Bishop    / King
+  add(new EndGameKQRKB());  // King-Queen-Rook           / King-Bishop
+  add(new EndGameKQRKN());  // King-Queen-Rook           / King-Knight
+  add(new EndGameKQRKP());  // King-Queen-Rook           / King-Pawn
+  add(new EndGameKQRKQ());  // King-Queen-Rook           / King-Queen
+  add(new EndGameKQRKR());  // King-Queen-Rook           / King-Rook
+  add(new EndGameKQRNK());  // King-Queen-Rook-Knight    / King
+  add(new EndGameKQRPK());  // King-Queen-Rook-Pawn      / King
+  add(new EndGameKQRRK());  // King-Queen-Rook-Rook      / King
+  add(new EndGameKRBBK());  // King-Rook-Bishop-Bishop   / King
+  add(new EndGameKRBKB());  // King-Rook-Bishop          / King-Bishop
+  add(new EndGameKRBKN());  // King-Rook-Bishop          / King-Knight
+  add(new EndGameKRBKP());  // King-Rook-Bishop          / King-Pawn
+  add(new EndGameKRBKR());  // King-Rook-Bishop          / King-Rook
+  add(new EndGameKRBNK());  // King-Rook-Bishop-Knight   / King
+  add(new EndGameKRBPK());  // King-Rook-Bishop-Pawn     / King
+  add(new EndGameKRKNN());  // King-Rook                 / King-Knight-Knight
+  add(new EndGameKRNKB());  // King-Rook-Knight          / King-Bishop
+  add(new EndGameKRNKN());  // King-Rook-Knight          / King-Knight
+  add(new EndGameKRNKP());  // King-Rook-Knight          / King-Pawn
+  add(new EndGameKRNKR());  // King-Rook-Knight          / King-Rook
+  add(new EndGameKRNNK());  // King-Rook-Knight-Knight   / King
+  add(new EndGameKRNPK());  // King-Rook-Knight-Pawn     / King
+  add(new EndGameKRPKB());  // King-Rook-Pawn            / King-Bishop
+  add(new EndGameKRPKN());  // King-Rook-Pawn            / King-Knight
+  add(new EndGameKRPKP());  // King-Rook-Pawn            / King-Pawn
+  add(new EndGameKRPKQ());  // King-Rook-Pawn            / King-Queen
+  add(new EndGameKRPKR());  // King-Rook-Pawn            / King-Rook
+  add(new EndGameKRPPK());  // King-Rook-Pawn-Pawn       / King
+  add(new EndGameKRRBK());  // King-Rook-Rook-Bishop     / King
+  add(new EndGameKRRKB());  // King-Rook-Rook            / King-Bishop
+  add(new EndGameKRRKN());  // King-Rook-Rook            / King-Knight
+  add(new EndGameKRRKP());  // King-Rook-Rook            / King-Pawn
+  add(new EndGameKRRKR());  // King-Rook-Rook            / King-Rook
+  add(new EndGameKRRNK());  // King-Rook-Rook-Knight     / King
+  add(new EndGameKRRPK());  // King-Rook-Rook-Pawn       / King
+  add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
+}
+
+TablebaseRegister::~TablebaseRegister() {
+  for(size_t i = 0; i < size(); i++) {
+    delete (*this)[i];
   }
-  return tablebaseList;
+  clear();
+}
+
+const EndGameTablebaseList &EndGameTablebase::getRegisteredEndGameTablebases() { // static
+  static TablebaseRegister allTablebases;
+  return allTablebases;
 }
 
 EndGameTablebaseList EndGameTablebase::getExistingEndGameTablebases() { // static
@@ -167,7 +180,7 @@ EndGameTablebaseList EndGameTablebase::getExistingEndGameTablebases() { // stati
   return list;
 }
 
-EndGameTablebase &EndGameTablebase::getInstanceByName(const String &name) { // static 
+EndGameTablebase &EndGameTablebase::getInstanceByName(const String &name) { // static
   const EndGameTablebaseList &list = getRegisteredEndGameTablebases();
   for(size_t i = 0; i < list.size(); i++) {
     EndGameTablebase &db = *list[i];

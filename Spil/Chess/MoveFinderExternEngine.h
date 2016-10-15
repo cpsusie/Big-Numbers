@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef TABLEBASE_BUILDER
+
 #include "AbstractMoveFinder.h"
 #include "ExternEngine.h"
 #include "EngineOptionsDlgThread.h"
@@ -40,3 +42,5 @@ public:
   String getStateString(Player computerPlayer, bool detailed);
 
 };
+
+#endif

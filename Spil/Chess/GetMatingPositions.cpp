@@ -44,7 +44,7 @@ const Piece *Game::findAttackingPiece(Player player, int pos, FieldSet *result) 
           }
           pinningPiecePositions.add(pinningPiece->m_position);
         }
-        if(piece->m_attackAttribute & ATTACKS_LONGDISTANCE) { // Checks from Queen, Rook and Bishop can be defended 
+        if(piece->m_attackAttribute & ATTACKS_LONGDISTANCE) { // Checks from Queen, Rook and Bishop can be defended
                                                               // by blocking one of the squares between king and the attacking piece
           const FieldSet fieldsBetween = getFieldsBetween(pos, piece->m_position);
           for(Iterator<int> it = fieldsBetween.getIterator(); it.hasNext();) {

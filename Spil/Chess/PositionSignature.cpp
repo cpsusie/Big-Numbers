@@ -14,10 +14,10 @@ void PlayerSignature::add(PieceType pt) {
 
 int PlayerSignature::getPieceCount() const {
   return m_pieceCount.m_kingCount
-       + m_pieceCount.m_queenCount  
-       + m_pieceCount.m_rookCount   
-       + m_pieceCount.m_bishopCount 
-       + m_pieceCount.m_knightCount 
+       + m_pieceCount.m_queenCount
+       + m_pieceCount.m_rookCount
+       + m_pieceCount.m_bishopCount
+       + m_pieceCount.m_knightCount
        + m_pieceCount.m_pawnCount;
 }
 
@@ -87,7 +87,7 @@ String PlayerSignature::toString(bool longNames) const {
   return result;
 }
 
-void PositionSignature::invalidArgument(const String &str) { // static 
+void PositionSignature::invalidArgument(const String &str) { // static
   throwInvalidArgumentException(_T("PositionSignature"), _T("str=%s"), str.cstr());
 }
 

@@ -263,7 +263,7 @@ UINT EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // static
 
 #ifdef _DEBUG
   if((wki < 0)
-   || KINGSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition()) 
+   || KINGSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition())
    || (WK_INDEX_ONDIAG(wki) && IS_ABOVEMAINDIAG1(key.getBlackKingPosition()))) {
     throwException(_T("encodeKKSym8:Cannot encode kings:[%s,%s]"), getFieldName(key.getWhiteKingPosition()), getFieldName(key.getBlackKingPosition()));
   }

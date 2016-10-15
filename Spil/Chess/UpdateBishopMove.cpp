@@ -104,7 +104,7 @@ void Game::setNonCapturingBishop(const Move &m) {
     LDAwalkUpDiag1(         toInfo, m.m_from);
     LDAenterDiag2(          toInfo);
     break;
-    
+
   case MD_DOWNDIAG2:
     LDAwalkDownDiag2(       toInfo, m.m_from);
     LDAenterDiag1(          toInfo);

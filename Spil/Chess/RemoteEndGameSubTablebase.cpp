@@ -25,7 +25,7 @@ private:
   const RemoteTablebaseRequest   m_request;
   const PositionInfoRequestParam m_param;
 public:
-  RequestPositionInfo(RemoteTablebaseRequest request, const GameKey &gameKey, bool swapPlayers) 
+  RequestPositionInfo(RemoteTablebaseRequest request, const GameKey &gameKey, bool swapPlayers)
   : m_request(request)
   , m_param(gameKey, swapPlayers)
   {
@@ -64,7 +64,7 @@ private:
   const RemoteTablebaseRequest m_request;
   const SetGlobalsRequestParam m_param;
 public:
-  RequestSetGlobals(const String &dbPath, TablebaseMetric metric) 
+  RequestSetGlobals(const String &dbPath, TablebaseMetric metric)
     : m_request(REQUEST_SETGLOBALS)
     , m_param(dbPath, metric) {
   }

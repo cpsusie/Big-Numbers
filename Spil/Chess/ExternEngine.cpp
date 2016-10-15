@@ -6,6 +6,8 @@
 #include <FileVersion.h>
 #include "ExternEngine.h"
 
+#ifndef TABLEBASE_BUILDER
+
 #define READ_FD  0
 #define WRITE_FD 1
 
@@ -54,7 +56,7 @@ void Pipe::close() {
 
 void Pipe::close(int index) {
   int &fd = m_fd[index];
-  if(fd != -1) { 
+  if(fd != -1) {
     ::_close(fd);
     fd = -1;
   }
@@ -728,7 +730,7 @@ String EngineOptionDescription::getDefaultAsString() const {
   switch(m_type) {
   case OptionTypeCheckbox: return getDefaultBool() ? _T("Checked") : _T("Unchecked");
   case OptionTypeSpin    : return format(_T("%d"), getDefaultInt());
-  case OptionTypeCombo   : 
+  case OptionTypeCombo   :
   case OptionTypeString  : return getDefaultString();
   case OptionTypeButton  :
   default                : return _T("");
@@ -752,7 +754,7 @@ EngineOptionValueArray EngineOptionDescriptionArray::createDefaultValueArray(con
     switch(desc.getType()) {
     case OptionTypeCheckbox: result.setValue(desc.getName(), desc.getDefaultBool());   break;
     case OptionTypeSpin    : result.setValue(desc.getName(), desc.getDefaultInt());    break;
-    case OptionTypeCombo   : 
+    case OptionTypeCombo   :
     case OptionTypeString  : result.setValue(desc.getName(), desc.getDefaultString()); break;
     }
   }
@@ -824,13 +826,13 @@ public:
 };
 
 InfoHashMap::InfoHashMap() {
-  put(_T("depth")   , ENGINE_DEPTH   ); 
-  put(_T("score")   , ENGINE_SCORE   ); 
-  put(_T("time")    , ENGINE_TIME    ); 
-  put(_T("nodes")   , ENGINE_NODES   ); 
-  put(_T("nps")     , ENGINE_NODESPS ); 
+  put(_T("depth")   , ENGINE_DEPTH   );
+  put(_T("score")   , ENGINE_SCORE   );
+  put(_T("time")    , ENGINE_TIME    );
+  put(_T("nodes")   , ENGINE_NODES   );
+  put(_T("nps")     , ENGINE_NODESPS );
   put(_T("pv")      , ENGINE_PV      );
-  put(_T("string")  , ENGINE_STRING  ); 
+  put(_T("string")  , ENGINE_STRING  );
   put(_T("hashfull"), ENGINE_HASHFULL);
   put(_T("multipv") , ENGINE_MULTIPV );
 }
@@ -890,3 +892,5 @@ EngineInfoLine::EngineInfoLine(const String &line) {
     }
   }
 }
+
+#endif

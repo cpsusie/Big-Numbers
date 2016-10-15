@@ -32,7 +32,7 @@ END_MESSAGE_MAP()
 BOOL CConnectDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   setControlText(IDD, this);
-  
+
   enableComputerName();
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_CONNECT_ACCELERATOR));
   return TRUE;  // return TRUE unless you set the focus to a control

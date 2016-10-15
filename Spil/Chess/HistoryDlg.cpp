@@ -9,7 +9,7 @@
 #define new DEBUG_NEW
 #endif
 
-CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent) 
+CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
 : CDialog(CHistoryDlg::IDD, pParent)
 , m_gameName(game.getFileName())
 , m_gameStartPosition(game.getStartPosition()      )
@@ -85,7 +85,7 @@ BOOL CHistoryDlg::OnInitDialog() {
   scrollToBottom();
   gotoPly(m_lastPlyIndex);
   getHistoryBox()->SetFocus();
-  
+
   return FALSE;
 }
 
@@ -143,7 +143,7 @@ void CHistoryDlg::setFontSize(int pct, bool redraw) {
 }
 
 void CHistoryDlg::updateHistoryText() {
-  m_historyStr = m_history.toString(getOptions().getMoveFormat()).cstr();    
+  m_historyStr = m_history.toString(getOptions().getMoveFormat()).cstr();
   TCHAR chessSymbol[2], mateSymbol[2], captureSymbol[2];
 
   _stprintf(chessSymbol,  _T("%c"), 134);
@@ -152,7 +152,7 @@ void CHistoryDlg::updateHistoryText() {
   m_historyStr.Replace(_T("+"), chessSymbol  );
   m_historyStr.Replace(_T("#"), mateSymbol   );
   m_historyStr.Replace(_T("x"), captureSymbol);
-  
+
   UpdateData(FALSE);
 }
 
@@ -229,7 +229,7 @@ CEdit *CHistoryDlg::getHistoryBox() {
   return (CEdit*)GetDlgItem(IDC_EDIT_HISTORY);
 }
 
-void CHistoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
+void CHistoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   switch(nSBCode) {
   case SB_LEFT         : gotoPly(-1);                           break;
   case SB_RIGHT        : gotoPly(m_lastPlyIndex);               break;
@@ -237,7 +237,7 @@ void CHistoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   case SB_LINERIGHT    : gotoPly(pScrollBar->GetScrollPos()+1); break;
   case SB_PAGELEFT     : gotoPly(pScrollBar->GetScrollPos()-2); break;
   case SB_PAGERIGHT    : gotoPly(pScrollBar->GetScrollPos()+2); break;
-  case SB_THUMBPOSITION: 
+  case SB_THUMBPOSITION:
   case SB_THUMBTRACK   : gotoPly(nPos);                         break;
   }
   CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
@@ -333,7 +333,7 @@ void CHistoryDlg::OnHistoryContextMenuInterestingMove()  { setAnnotation(INTERES
 void CHistoryDlg::OnHistoryContextMenuDoubiousMove()     { setAnnotation(DOUBIOUS_MOVE);    }
 void CHistoryDlg::OnHistoryContextMenuRemoveAnnotation() { setAnnotation(NOANNOTATION);     }
 
-void CHistoryDlg::setAnnotation(MoveAnnotation annotation) { 
+void CHistoryDlg::setAnnotation(MoveAnnotation annotation) {
   CEdit *e = getHistoryBox();
   const int    topline   = e->GetFirstVisibleLine();
   const CPoint caret     = e->GetCaretPos();

@@ -84,7 +84,7 @@ typedef struct {
 
 static const AnnotationString annotationStrings[] = {
   _T("")  , NOANNOTATION
- ,_T("?") , BAD_MOVE 
+ ,_T("?") , BAD_MOVE
  ,_T("??"), VERYBAD_MOVE
  ,_T("!") , GOOD_MOVE
  ,_T("!!"), EXCELLENT_MOVE
@@ -216,7 +216,7 @@ void Game::parse(const String &s) {
           beginSetup();
           throw;
         }
-      } 
+      }
     }
   }
 }
@@ -288,7 +288,7 @@ String Game::toUCIString() const {
 }
 
 String Game::toFENString() const {
-  return m_gameKey.toFENString(getPlyCountWithoutCaptureOrPawnMove(), getPlyCount()/2+1); 
+  return m_gameKey.toFENString(getPlyCountWithoutCaptureOrPawnMove(), getPlyCount()/2+1);
 }
 
 Game &Game::fromFENString(const String &s) {
@@ -336,16 +336,16 @@ void Game::parseFEN(Tokenizer &tok) { // tok should contain a valid FEN-string
         const int pos = MAKE_POSITION(rank, file);
         PieceKey piece;
         switch(*cp) {
-        case 'K': piece = WHITEKING;  ; break; 
-        case 'Q': piece = WHITEQUEEN  ; break; 
-        case 'R': piece = WHITEROOK   ; break; 
-        case 'B': piece = WHITEBISHOP ; break; 
-        case 'N': piece = WHITEKNIGHT ; break; 
-        case 'P': piece = WHITEPAWN   ; break; 
+        case 'K': piece = WHITEKING;  ; break;
+        case 'Q': piece = WHITEQUEEN  ; break;
+        case 'R': piece = WHITEROOK   ; break;
+        case 'B': piece = WHITEBISHOP ; break;
+        case 'N': piece = WHITEKNIGHT ; break;
+        case 'P': piece = WHITEPAWN   ; break;
         case 'k': piece = BLACKKING   ; break;
-        case 'q': piece = BLACKQUEEN  ; break; 
-        case 'r': piece = BLACKROOK   ; break; 
-        case 'b': piece = BLACKBISHOP ; break; 
+        case 'q': piece = BLACKQUEEN  ; break;
+        case 'r': piece = BLACKROOK   ; break;
+        case 'b': piece = BLACKBISHOP ; break;
         case 'n': piece = BLACKKNIGHT ; break;
         case 'p': piece = BLACKPAWN   ; break;
         default :

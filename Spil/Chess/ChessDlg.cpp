@@ -36,8 +36,8 @@
 #define isThinkEnabled() isControlFlagSet(CTRL_THINKENABLED)
 #define isAppActive()    isControlFlagSet(CTRL_APPACTIVE   )
 
-int              CChessDlg::instanceCount = 0;
-CTraceDlgThread *CChessDlg::traceThread   = NULL;
+int              CChessDlg::s_instanceCount = 0;
+CTraceDlgThread *CChessDlg::s_traceThread   = NULL;
 
 #define BOARDDC (isInitDone() ? ((HDC)CClientDC(this)) : NULL)
 
@@ -50,7 +50,7 @@ CChessDlg::CChessDlg(const String &startupFileName, CWnd* pParent)
   commonInit();
 }
 
-CChessDlg::CChessDlg(const String &name, const GameKey &startPosition, const GameHistory &history, int plyIndex, CWnd *pParent) 
+CChessDlg::CChessDlg(const String &name, const GameKey &startPosition, const GameHistory &history, int plyIndex, CWnd *pParent)
 : CDialog(CChessDlg::IDD, pParent)
 , m_initialMode(ANALYZEMODE)
 , m_startPlyIndex(plyIndex)
@@ -86,18 +86,18 @@ void CChessDlg::commonInit() {
   }
   m_controlFlags      = CTRL_NEEDREPAINT | CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
 
-  if(instanceCount++ == 0) {
+  if(s_instanceCount++ == 0) {
     // redirect verbose to traceWindow
-    traceThread = CTraceDlgThread::startThread();
+    s_traceThread = CTraceDlgThread::startThread();
   }
 }
 
 CChessDlg::~CChessDlg() {
   forEachPlayer(p) delete m_moveFinder[p];
 
-  if(--instanceCount == 0) {
-    traceThread->kill();
-    traceThread = NULL;
+  if(--s_instanceCount == 0) {
+    s_traceThread->kill();
+    s_traceThread = NULL;
   }
   if(m_graphics) {
     delete m_graphics;
@@ -325,9 +325,9 @@ void CChessDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
     m_graphics->unmarkMouse(BOARDDC);
     break;
   case WA_ACTIVE      :
-  case WA_CLICKACTIVE : 
+  case WA_CLICKACTIVE :
     setControlFlag(CTRL_APPACTIVE);
-    break; 
+    break;
   }
 }
 
@@ -359,11 +359,6 @@ BOOL CChessDlg::OnInitDialog() {
 
   buildAndMarkLanguageMenu();
   buildEngineMenues();
-
-#ifdef TABLEBASE_BUILDER
-  enableMenuItem(this,ID_TEST_MOVEBACKWARDS      ,true);
-  enableMenuItem(this,ID_TEST_FICTIVEPAWNCAPTURES,true);
-#endif
 
   attachPropertyContainers();
 
@@ -406,29 +401,34 @@ BOOL CChessDlg::OnInitDialog() {
   }
 
 //  traceThread->reposition();
+#ifdef TABLEBASE_BUILDER
+  enableMenuItem(this,ID_TEST_MOVEBACKWARDS      ,true);
+  enableMenuItem(this,ID_TEST_FICTIVEPAWNCAPTURES,true);
+#endif
+
   setControlFlag(CTRL_INITDONE | CTRL_THINKENABLED);
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CChessDlg::attachPropertyContainers() {
-  traceThread->addPropertyChangeListener(  this);
+  s_traceThread->addPropertyChangeListener(  this);
   m_graphics->addPropertyChangeListener(    this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
     mf.addPropertyChangeListener(  this);
-    traceThread->addPropertyChangeListener(&mf);
+    s_traceThread->addPropertyChangeListener(&mf);
     mf.start();
   }
 }
 
 void CChessDlg::detachAllPropertyContainers() {
   m_graphics->removePropertyChangeListener(    this);
-  traceThread->removePropertyChangeListener(  this);
+  s_traceThread->removePropertyChangeListener(  this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
     mf.removePropertyChangeListener(  this);
-    traceThread->removePropertyChangeListener(&mf);
+    s_traceThread->removePropertyChangeListener(&mf);
   }
 }
 
@@ -522,7 +522,7 @@ void CChessDlg::paintGamePosition(bool flush) {
   try {
     switch(getDialogMode()) {
     case PLAYMODE:
-      if(getCurrentGame().getPlyCount() > 0 && getPlayerInTurn() == getHumanPlayer()) { // => last move was by the computer. 
+      if(getCurrentGame().getPlyCount() > 0 && getPlayerInTurn() == getHumanPlayer()) { // => last move was by the computer.
         m_graphics->markLastMoveAsComputerMove();
       } else {
         m_graphics->unmarkLastMove();
@@ -827,7 +827,7 @@ void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, c
       }
       break;
     }
-  } else if(source == traceThread) {
+  } else if(source == s_traceThread) {
     switch(id) {
     case TRACEWINDOW_ACTIVE:
       PostMessage(ID_MSG_TRACEWINDOW_CHANGED);
@@ -1291,7 +1291,7 @@ long CChessDlg::OnMsgShowSelectedHistoryMove(WPARAM wp, LPARAM lp) {
 
 void CChessDlg::activateOptions() {
   const Options &options = getOptions();
-  setView();              
+  setView();
   setComputerPlayer(              options.getComputerPlayer()                 );
   setValidateAfterEdit(           options.getValidateAfterEdit()              );
   setLevel(                       options.getNormalPlayLevel()                );
@@ -1312,12 +1312,8 @@ void CChessDlg::setComputerPlayer(Player computerPlayer) {
 }
 
 void CChessDlg::setGameResult(GameResult gameResult) {
-  const GameResult oldResult = m_gameResult;
-  m_gameResult = gameResult;
-  if(m_gameResult != oldResult) {
-    notifyPropertyChanged(GAMERESULT, &oldResult, &m_gameResult);
+  setProperty(GAMERESULT, m_gameResult, gameResult);
 //    verbose(_T("Property GAMERESULT changed. old:%s, new:%s\n"), ::getGameResultToString(oldResult).cstr(), ::getGameResultToString(gameResult).cstr());
-  }
 }
 
 bool CChessDlg::notifyMove(const MoveBase &m) {
@@ -1346,7 +1342,7 @@ void CChessDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     switch(getDialogMode()) {
     case PLAYMODE    : OnLButtonDownPlayMode( nFlags, point);  break;
     case EDITMODE    : OnLButtonDownEditMode( nFlags, point);  break;
-    case DEBUGMODE   : 
+    case DEBUGMODE   :
     case ANALYZEMODE:; OnLButtonDownDebugMode(nFlags, point);  break;
     }
   } catch(Exception e) {
@@ -1362,7 +1358,7 @@ void CChessDlg::OnLButtonUp(UINT nFlags, CPoint point) {
     case PLAYMODE    : OnLButtonUpPlayMode(   nFlags, point); break;
     case EDITMODE    : OnLButtonUpEditMode(   nFlags, point); break;
     case DEBUGMODE   :
-    case ANALYZEMODE:; OnLButtonUpDebugMode(  nFlags, point); break; 
+    case ANALYZEMODE:; OnLButtonUpDebugMode(  nFlags, point); break;
     }
   } catch(Exception e) {
     errorMessage(e);
@@ -1376,7 +1372,7 @@ void CChessDlg::OnMouseMove(UINT nFlags, CPoint point) {
     switch(getDialogMode()) {
     case PLAYMODE    : OnMouseMovePlayMode(   nFlags, point); break;
     case EDITMODE    : OnMouseMoveEditMode(   nFlags, point); break;
-    case DEBUGMODE   : 
+    case DEBUGMODE   :
     case ANALYZEMODE:; OnMouseMoveDebugMode(  nFlags, point); break;
     }
   } catch(Exception e) {
@@ -2162,7 +2158,6 @@ void CChessDlg::editUndo(UndoMode mode) {
               unExecuteLastPly();
             }
             break;
-          
           }
           paintGamePosition();
           notifyGameChanged(getCurrentGame());
@@ -2228,10 +2223,15 @@ void CChessDlg::OnEditRedo() {
 }
 
 void CChessDlg::OnEditCopyFEN() {
+#ifndef TABLEBASE_BUILDER
   putClipboard(m_hWnd, getCurrentGame().toFENString());
+#else
+  errorMessage(_T("Copy FEN not available in BUILDER_MODE"));
+#endif
 }
 
 void CChessDlg::OnEditPasteFEN() {
+#ifndef TABLEBASE_BUILDER
   try {
     const String text = getClipboardText();
     Game tmp;
@@ -2243,6 +2243,10 @@ void CChessDlg::OnEditPasteFEN() {
   } catch(Exception e) {
     errorMessage(e);
   }
+#else
+  errorMessage(_T("Paste FEN not available in BUILDER_MODE"));
+#endif
+
 }
 
 void CChessDlg::OnEscape() {
@@ -2483,7 +2487,7 @@ void CChessDlg::setLevel(int level) {
   const LevelMenuItem *item = itemArray+2;
   try {
     for(int i = 0; i < ARRAYSIZE(itemArray); i++) {
-      item = itemArray + i; 
+      item = itemArray + i;
       if(item->m_level == level) {
         break;
       }
@@ -2503,14 +2507,14 @@ void CChessDlg::setVisibleClocks() {
   const char oldVisible = getVisibleClocks();
   char visible = 0;
   if(isGameWithTimeLimit()) {
-    visible = BOTHCLOCKS_VISIBLE; 
+    visible = BOTHCLOCKS_VISIBLE;
   } else if(getOptions().getShowComputerTime()) {
     switch(getDialogMode()) {
     case PLAYMODE    :
       visible = (getComputerPlayer() == WHITEPLAYER) ? WHITECLOCK_VISIBLE : BLACKCLOCK_VISIBLE;
       break;
     case AUTOPLAYMODE:
-      visible = BOTHCLOCKS_VISIBLE; 
+      visible = BOTHCLOCKS_VISIBLE;
       break;
     }
   }
@@ -2568,7 +2572,7 @@ void CChessDlg::stopComputerTimeTimer() {
 void CChessDlg::setClockMenuText() {
   String menuText;
   switch(m_watch.getState()) {
-  case CW_STOPPED: 
+  case CW_STOPPED:
   case CW_PAUSED : menuText = loadString(IDS_STARTCLOCK);break;
   case CW_RUNNING: menuText = loadString(IDS_STOPCLOCK );break;
   }
@@ -2606,10 +2610,14 @@ void CChessDlg::OnWhiteEngineGetState() { engineGetState(    WHITEPLAYER); }
 void CChessDlg::OnBlackEngineGetState() { engineGetState(    BLACKPLAYER); }
 
 void CChessDlg::engineEditSettings(Player player) {
+#ifndef TABLEBASE_BUILDER
   CEngineOptionsDlg dlg(player);
   if(dlg.DoModal() == IDOK) {
     getMoveFinder(player).resetMoveFinder();
   }
+#else
+  MessageBox(_T("Cannot edit options for extern engines in BUILDER_MODE"), _T("Error"), MB_ICONEXCLAMATION);
+#endif
 }
 
 void CChessDlg::engineGetState(Player player) {
@@ -2647,7 +2655,6 @@ void CChessDlg::addEnginesToMenu(HMENU menu, int startId) {
     insertMenuItem(menu, i+separatorIndex+1, desc.getName(),  startId + i);
   }
 }
-
 
 void CChessDlg::OnExternEngineSwap() {
   Options &options = getOptions();
@@ -2773,12 +2780,12 @@ void CChessDlg::OnTraceWindow() {
 }
 
 bool CChessDlg::isTraceWindowVisible() const {
-  return traceThread->isActive();
+  return s_traceThread->isActive();
 }
 
 void CChessDlg::setTraceWindowVisible(bool visible) {
   if(visible != isTraceWindowVisible()) {
-    traceThread->setActive(visible);
+    s_traceThread->setActive(visible);
   }
 }
 

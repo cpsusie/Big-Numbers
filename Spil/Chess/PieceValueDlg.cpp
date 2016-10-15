@@ -64,7 +64,7 @@ void CPieceValueDlg::OnOK() {
     return;
   }
   if(m_step <= 0) {
-    MessageBox( _T("Step skal være > 0"), _T("Fejl"), MB_ICONWARNING); 
+    MessageBox( _T("Step skal være > 0"), _T("Fejl"), MB_ICONWARNING);
     gotoEditBox(this, IDC_EDIT_STEP);
     return;
   }

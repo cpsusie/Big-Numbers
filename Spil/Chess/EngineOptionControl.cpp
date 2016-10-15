@@ -1,4 +1,7 @@
 #include "stdafx.h"
+
+#ifndef TABLEBASE_BUILDER
+
 #include <MFCUtil/WinTools.h>
 #include "EngineOptionsDlg.h"
 
@@ -507,3 +510,5 @@ EngineOptionValueArray EngineOptionControlArray::getValues(const String &engineN
   }
   return result;
 }
+
+#endif

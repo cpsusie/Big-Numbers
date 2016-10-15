@@ -68,7 +68,7 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
   if(pIndex == getPieceCount()) {
     checkForBothPlayers(key);
   } else {
-    int pos;
+    UINT pos;
     switch(pIndex) {
     case 0:
       for(pos = 0; pos < 64; pos++) {

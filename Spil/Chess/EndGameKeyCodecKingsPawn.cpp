@@ -24,7 +24,7 @@ static const char _wkB2BkI2P[55] = {
  ,A7,B7,C7,D7,E7,F7,G7,H7
  ,A8,B8,C8,D8,E8,F8,G8,H8
 };
-const char _wkC2BkP2I[64] = { /*non-static*/ 
+const char _wkC2BkP2I[64] = { /*non-static*/
    0,-1,-1,-1, 1, 2, 3, 4
  , 5,-1,-1,-1, 6, 7, 8, 9
  ,10,-1,-1,-1,11,12,13,14
@@ -34,7 +34,7 @@ const char _wkC2BkP2I[64] = { /*non-static*/
  ,39,40,41,42,43,44,45,46
  ,47,48,49,50,51,52,53,54
 };
-const char _wkC2BkI2P[55] = { /*non-static*/ 
+const char _wkC2BkI2P[55] = { /*non-static*/
   A1         ,E1,F1,G1,H1
  ,A2         ,E2,F2,G2,H2
  ,A3         ,E3,F3,G3,H3
@@ -44,7 +44,7 @@ const char _wkC2BkI2P[55] = { /*non-static*/
  ,A7,B7,C7,D7,E7,F7,G7,H7
  ,A8,B8,C8,D8,E8,F8,G8,H8
 };
-const char _wkD2BkP2I[64] = { /*non-static*/ 
+const char _wkD2BkP2I[64] = { /*non-static*/
    0, 1,-1,-1,-1, 2, 3, 4
  , 5, 6,-1,-1,-1, 7, 8, 9
  ,10,11,-1,-1,-1,12,13,14
@@ -54,7 +54,7 @@ const char _wkD2BkP2I[64] = { /*non-static*/
  ,39,40,41,42,43,44,45,46
  ,47,48,49,50,51,52,53,54
 };
-const char _wkD2BkI2P[55] = { /*non-static*/ 
+const char _wkD2BkI2P[55] = { /*non-static*/
   A1,B1         ,F1,G1,H1
  ,A2,B2         ,F2,G2,H2
  ,A3,B3         ,F3,G3,H3
@@ -165,7 +165,7 @@ static const char _wkC3BkI2P[55] = {
  ,A7,B7,C7,D7,E7,F7,G7,H7
  ,A8,B8,C8,D8,E8,F8,G8,H8
 };
-const char _wkD3BkP2I[64] = { /*non-static*/ 
+const char _wkD3BkP2I[64] = { /*non-static*/
    0, 1, 2, 3, 4, 5, 6, 7
  , 8, 9,-1,-1,-1,10,11,12
  ,13,14,-1,-1,-1,15,16,17
@@ -175,7 +175,7 @@ const char _wkD3BkP2I[64] = { /*non-static*/
  ,39,40,41,42,43,44,45,46
  ,47,48,49,50,51,52,53,54
 };
-const char _wkD3BkI2P[55] = { /*non-static*/ 
+const char _wkD3BkI2P[55] = { /*non-static*/
   A1,B1,C1,D1,E1,F1,G1,H1
  ,A2,B2         ,F2,G2,H2
  ,A3,B3         ,F3,G3,H3
@@ -728,7 +728,7 @@ static const char _wkG7BkI2P[55] = {
 
 // --------------------------------- Edge fields -------------------------------------
 
-const char _wkB1BkP2I[64] = { /*non-static*/ 
+const char _wkB1BkP2I[64] = { /*non-static*/
   -1,-1,-1, 0, 1, 2, 3, 4
  ,-1,-1,-1, 5, 6, 7, 8, 9
  ,10,11,12,13,14,15,16,17
@@ -738,7 +738,7 @@ const char _wkB1BkP2I[64] = { /*non-static*/
  ,42,43,44,45,46,47,48,49
  ,50,51,52,53,54,55,56,57
 };
-const char _wkB1BkI2P[58] = { /*non-static*/ 
+const char _wkB1BkI2P[58] = { /*non-static*/
            D1,E1,F1,G1,H1
           ,D2,E2,F2,G2,H2
  ,A3,B3,C3,D3,E3,F3,G3,H3
@@ -748,7 +748,7 @@ const char _wkB1BkI2P[58] = { /*non-static*/
  ,A7,B7,C7,D7,E7,F7,G7,H7
  ,A8,B8,C8,D8,E8,F8,G8,H8
 };
-const char _wkC1BkP2I[64] = { /*non-static*/ 
+const char _wkC1BkP2I[64] = { /*non-static*/
    0,-1,-1,-1, 1, 2, 3, 4
  , 5,-1,-1,-1, 6, 7, 8, 9
  ,10,11,12,13,14,15,16,17
@@ -758,7 +758,7 @@ const char _wkC1BkP2I[64] = { /*non-static*/
  ,42,43,44,45,46,47,48,49
  ,50,51,52,53,54,55,56,57
 };
-const char _wkC1BkI2P[58] = { /*non-static*/ 
+const char _wkC1BkI2P[58] = { /*non-static*/
   A1         ,E1,F1,G1,H1
  ,A2         ,E2,F2,G2,H2
  ,A3,B3,C3,D3,E3,F3,G3,H3
@@ -768,7 +768,7 @@ const char _wkC1BkI2P[58] = { /*non-static*/
  ,A7,B7,C7,D7,E7,F7,G7,H7
  ,A8,B8,C8,D8,E8,F8,G8,H8
 };
-const char _wkD1BkP2I[64] = { /*non-static*/ 
+const char _wkD1BkP2I[64] = { /*non-static*/
    0, 1,-1,-1,-1, 2, 3, 4
  , 5, 6,-1,-1,-1, 7, 8, 9
  ,10,11,12,13,14,15,16,17
@@ -778,7 +778,7 @@ const char _wkD1BkP2I[64] = { /*non-static*/
  ,42,43,44,45,46,47,48,49
  ,50,51,52,53,54,55,56,57
 };
-const char _wkD1BkI2P[58] = { /*non-static*/ 
+const char _wkD1BkI2P[58] = { /*non-static*/
   A1,B1         ,F1,G1,H1
  ,A2,B2         ,F2,G2,H2
  ,A3,B3,C3,D3,E3,F3,G3,H3
@@ -1334,7 +1334,7 @@ static const char *kkWithPawnPosToIndex[64] = {
             ,_wkB7BkP2I,_wkC7BkP2I,_wkD7BkP2I,_wkE7BkP2I,_wkF7BkP2I,_wkG7BkP2I
 
             ,_wkB1BkP2I,_wkC1BkP2I,_wkD1BkP2I,_wkE1BkP2I,_wkF1BkP2I,_wkG1BkP2I             // Edgefields  : 24 fields with 58 elements each
- ,_wkA2BkP2I                                                                  ,_wkH2BkP2I                      
+ ,_wkA2BkP2I                                                                  ,_wkH2BkP2I
  ,_wkA3BkP2I                                                                  ,_wkH3BkP2I
  ,_wkA4BkP2I                                                                  ,_wkH4BkP2I
  ,_wkA5BkP2I                                                                  ,_wkH5BkP2I
@@ -1355,7 +1355,7 @@ static const char *kkWithPawnIndexToPos[64] = {
             ,_wkB7BkI2P,_wkC7BkI2P,_wkD7BkI2P,_wkE7BkI2P,_wkF7BkI2P,_wkG7BkI2P
 
             ,_wkB1BkI2P,_wkC1BkI2P,_wkD1BkI2P,_wkE1BkI2P,_wkF1BkI2P,_wkG1BkI2P             // Edgefields  : 24 fields with 58 elements each
- ,_wkA2BkI2P                                                                  ,_wkH2BkI2P                      
+ ,_wkA2BkI2P                                                                  ,_wkH2BkI2P
  ,_wkA3BkI2P                                                                  ,_wkH3BkI2P
  ,_wkA4BkI2P                                                                  ,_wkH4BkI2P
  ,_wkA5BkI2P                                                                  ,_wkH5BkI2P

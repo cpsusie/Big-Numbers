@@ -321,7 +321,7 @@ public:
 
 #else
 
-#define DECLARE_SELFCHECK 
+#define DECLARE_SELFCHECK
 #define DUMP_MACRO(m)
 #define DUMP_RANGETABLE(table)
 

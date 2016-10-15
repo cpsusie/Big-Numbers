@@ -253,7 +253,7 @@ bool Game::isCheckmate(Player player) const {
   switch(player) {
   case WHITEPLAYER: return findGameResult() == WHITE_CHECKMATE;
   case BLACKPLAYER: return findGameResult() == BLACK_CHECKMATE;
-  default         : INVALIDPLAYERERROR(player); 
+  default         : INVALIDPLAYERERROR(player);
                     return false;
   }
 }
@@ -264,7 +264,7 @@ PositionType Game::getPositionType() const {
   switch(whiteCount + blackCount) {
   case 2 : return DRAW_POSITION; // 2 kings left => draw
   case 3 : return getPositionType21();
-  case 4 : 
+  case 4 :
   case 5 : return TABLEBASE_POSITION;
   default: return NORMAL_POSITION;
   }
@@ -342,7 +342,7 @@ FieldSet Game::getLegalSourceFields(const Piece *piece) const {
   const MoveBaseArray moves = getLegalBackMoves(piece);
   FieldSet result;
 
-  for(int i = 0; i < moves.size(); i++) {
+  for(UINT i = 0; i < moves.size(); i++) {
     result.add(moves[i].m_from);
   }
   return result;
@@ -530,7 +530,7 @@ static StringTableLoader stringsLoader;
 
 String getPlayerName(Player player) {
   switch(player) {
-  case WHITEPLAYER : 
+  case WHITEPLAYER :
   case BLACKPLAYER : return playerName[player];
   default          : INVALIDPLAYERERROR(player);
                      return _T("?");
@@ -619,7 +619,7 @@ String GameHistory::toString(MoveStringFormat mf, int width) const {
   return result;
 }
 
-bool Game::hasSamePartialHistory(const Game &g1, const Game &g2) { // static 
+bool Game::hasSamePartialHistory(const Game &g1, const Game &g2) { // static
   if(g1.getStartPosition() != g2.getStartPosition()) {
     return false;
   }
@@ -637,7 +637,7 @@ bool Game::hasSamePartialHistory(const Game &g1, const Game &g2) { // static
 String getKingAttackStateToString(KingAttackState attackState) {
   String result;
   if(attackState & KING_LD_ATTACKED_FROM_ROW     ) result =  _T("-");
-  if(attackState & KING_LD_ATTACKED_FROM_COL     ) result += _T("|"); 
+  if(attackState & KING_LD_ATTACKED_FROM_COL     ) result += _T("|");
   if(attackState & KING_LD_ATTACKED_FROM_DIAG1   ) result += _T("/");
   if(attackState & KING_LD_ATTACKED_FROM_DIAG2   ) result += _T("\\");
   if(attackState & KING_SD_ATTACKED              ) result += _T("sd");

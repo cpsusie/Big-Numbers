@@ -4,7 +4,7 @@
 
 #ifdef TABLEBASE_BUILDER
 
-String AllManualPositions::getFileName() { // static 
+String AllManualPositions::getFileName() { // static
   return getResourceFileName(_T("ManualPositions.txt"));
 }
 
@@ -19,10 +19,10 @@ void AllManualPositions::load() {
   FILE        *f         = NULL;
   int          lineCount = 0;
   try {
-    if(access(fileName.cstr(),0) == 0) {
+    if(ACCESS(fileName,0) == 0) {
       FILE *f = FOPEN(fileName, _T("r"));
-      char line[1000];
-      while(FGETS(line, sizeof(line), f)) {
+      TCHAR line[1000];
+      while(FGETS(line, ARRAYSIZE(line), f)) {
         lineCount++;
         const String name = strTrim(line);
         get(name).load(f, lineCount);
@@ -40,7 +40,8 @@ void AllManualPositions::load() {
 }
 
 EndGameManualPositions &AllManualPositions::get(const String &name) {
-  for(int i = 0; i < m_endGamePositions.size(); i++) {
+  UINT i;
+  for(i = 0; i < m_endGamePositions.size(); i++) {
     EndGameManualPositions &ep = m_endGamePositions[i];
     if(ep.getName().equalsIgnoreCase(name)) {
       return ep;
@@ -54,7 +55,7 @@ EndGameManualPositions &AllManualPositions::get(const String &name) {
 void AllManualPositions::save() {
   FILE *f = MKFOPEN(getFileName(),_T("w"));
 
-  for(int i = 0; i < m_endGamePositions.size(); i++) {
+  for(UINT i = 0; i < m_endGamePositions.size(); i++) {
     m_endGamePositions[i].save(f);
   }
   fclose(f);
@@ -134,7 +135,7 @@ void EndGameManualPositions::save(FILE *f) {
     tmp.add(it.next());
   }
   tmp.sort(comparators[m_keydef.getPieceCount()]);
-  for(int i = 0; i < tmp.size(); i++) {
+  for(UINT i = 0; i < tmp.size(); i++) {
     _ftprintf(f, _T("    %s\n"), m_keydef.createInitKeyString(tmp[i]).cstr());
   }
   _ftprintf(f, _T("  end positions\n"));
@@ -158,7 +159,8 @@ EndGameKey EndGameManualPositions::createKey(const String &str) const {
     throwException(_T("Invalid player:%s"), playerStr.cstr());
   }
 
-  for(int index = 0; tok.hasNext() && index < m_keydef.getPieceCount();) {
+  int index;
+  for(index = 0; tok.hasNext() && index < m_keydef.getPieceCount();) {
     const String posStr = tok.next();
     result.setPosition(index++, decodePosition(toLowerCase(posStr)));
   }
@@ -179,10 +181,10 @@ void EndGameManualPositions::load() {
   int          lineCount = 0;
 
   try {
-    if(access(fileName.cstr(),0) == 0) {
+    if(ACCESS(fileName,0) == 0) {
       FILE *f = FOPEN(fileName, _T("r"));
-      char line[100];
-      while(FGETS(line, sizeof(line), f)) {
+      TCHAR line[100];
+      while(FGETS(line, ARRAYSIZE(line), f)) {
         lineCount++;
         const String tmp = strTrim(line);
         if(tmp == name) {
@@ -203,15 +205,15 @@ void EndGameManualPositions::load() {
 
 void EndGameManualPositions::load(FILE *f, int &lineCount) {
   verbose(_T("Loading manual positions for %s    \n"), getName().cstr());
-  char line[1000];
-  FGETS(line, sizeof(line),f);
+  TCHAR line[1000];
+  FGETS(line, ARRAYSIZE(line),f);
   lineCount++;
   strTrim(line);
-  if(stricmp(line,_T("begin positions")) == 0) {
+  if(_tcsicmp(line,_T("begin positions")) == 0) {
     while(FGETS(line, sizeof(line),f)) {
       lineCount++;
       strTrim(line);
-      if(stricmp(line,_T("end positions")) == 0) {
+      if(_tcsicmp(line,_T("end positions")) == 0) {
         break;
       }
       addKey(createKey(line));
@@ -228,9 +230,9 @@ CompactArray<EndGameKey> EndGameManualPositions::readUndefinedKeysLog(const Stri
   FILE *f = NULL;
   try {
     f = FOPEN(fileName, _T("r"));
-    char line[1000];
+    TCHAR line[1000];
     int lineCount = 0;
-    while(FGETS(line, sizeof(line), f)) {
+    while(FGETS(line, ARRAYSIZE(line), f)) {
       lineCount++;
       try {
         result.add(createKey(strTrim(line)));

@@ -6,7 +6,7 @@
 String          MoveFinderEndGame::s_currentDbPath;
 TablebaseMetric MoveFinderEndGame::s_currentMetric;
 
-MoveFinderEndGame::MoveFinderEndGame(Player player, EndGameTablebase *tablebase) 
+MoveFinderEndGame::MoveFinderEndGame(Player player, EndGameTablebase *tablebase)
 : AbstractMoveFinder(player)
 , m_tablebase(tablebase)
 {
@@ -19,8 +19,8 @@ MoveFinderEndGame::~MoveFinderEndGame() {
 ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint) {
   initSearch(game, timeLimit, talking);
 
-  if(!m_tablebase->isLoaded() 
-   || (s_currentDbPath != EndGameKeyDefinition::getDbPath()) 
+  if(!m_tablebase->isLoaded()
+   || (s_currentDbPath != EndGameKeyDefinition::getDbPath())
    || (s_currentMetric != EndGameKeyDefinition::getMetric())) {
     if(m_tablebase->isLoaded()) {
       m_tablebase->unload();
@@ -44,7 +44,8 @@ ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &time
   } else {
     switch(game.findGameResult()) {
     case NORESULT                          :
-      throwException(_T("MoveFinder(%s)::findBestMove:Cannot find best move in position [%s]")
+      throwException(_T("%s(%s):Cannot find best move in position [%s]")
+                    ,__TFUNCTION__
                     ,m_tablebase->getPositionTypeString().cstr()
                     ,m_tablebase->toString(game).cstr());
 

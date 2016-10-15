@@ -61,7 +61,7 @@ public:
   inline bool isDefined() const {
     return getStatus() != EG_UNDEFINED;
   }
-  
+
   inline bool isWinner() const {
     return getStatus() >= EG_WHITEWIN;
   }
@@ -90,7 +90,7 @@ public:
     m_data |= (1<<13);
     return *this;
   }
-  
+
   inline void clearChanged() {
     m_data &= ~(1<<13);
   }
@@ -102,7 +102,7 @@ public:
   inline void setMark() {
     m_data |= (1<<14);
   }
-  
+
   inline void clearMark() {
     m_data &= ~(1<<14);
   }
@@ -267,7 +267,7 @@ typedef TwoCountersTemplate<unsigned short> MaxVariantCount;
 class TablebaseInfo {
 public:
   mutable char       m_version[20];
-  UINT               m_totalPositions;        
+  UINT               m_totalPositions;
   UINT               m_indexCapacity;
   UINT               m_undefinedPositions;
   UINT               m_stalematePositions;

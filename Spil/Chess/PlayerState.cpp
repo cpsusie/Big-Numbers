@@ -48,7 +48,7 @@ PlayerState &PlayerState::operator=(const PlayerState &src) {
     const Piece *srcP = src.m_pieces[i];
     p->setType(srcP->getType());
     p->m_onBoard     = srcP->m_onBoard;
-    p->m_position    = srcP->m_position; 
+    p->m_position    = srcP->m_position;
     p->m_pinnedState = srcP->m_pinnedState;
     p->m_next        = NULL;
   }
@@ -230,7 +230,7 @@ ScoreEvaluator PlayerState::getScoreFunction() const {
     if((getNonPawnCountOnBoard() <= 3) && (m_pawnMask != 0)) { // 1 or 2 non-pawn pieces + king + a number of pawns on the board => endgame
       return &PlayerState::evaluateEndGame;
     } else {
-      return (*m_castleState & (SHORTCASTLE_ALLOWED|LONGCASTLE_ALLOWED)) 
+      return (*m_castleState & (SHORTCASTLE_ALLOWED|LONGCASTLE_ALLOWED))
              ? &PlayerState::evaluateNormalPlay
              : &PlayerState::evaluateNormalPlayWithoutCastleScore;
     }
@@ -518,7 +518,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
     throwUserException(IDS_MSG_CANNOT_ADD_ANOTHER_s_s, toLowerCase(getPlayerName(m_player)).cstr(), toLowerCase(getPieceTypeName(pieceType)).cstr());
     break;
 
-  case Pawn  : 
+  case Pawn  :
     if(!isValidPawnPosition(pos)) {
       throwUserException(IDS_MSG_CANNOT_PLACE_A_PAWN_ON_s, getFieldName(pos));
     }
@@ -550,7 +550,7 @@ String PlayerStateToPush::bishopFlagsToString() const {
 }
 #endif
 
-static const unsigned char rcAttackFlags[16] = {    // Indexed by m_attackDirectionInfo2.m_rcAttacked, which max value is 15. 
+static const unsigned char rcAttackFlags[16] = {    // Indexed by m_attackDirectionInfo2.m_rcAttacked, which max value is 15.
   0                                                 // See comment to struct AttackInfo in game.h
  ,KING_LD_ATTACKED_FROM_ROW
  ,KING_LD_ATTACKED_FROM_ROW
@@ -569,7 +569,7 @@ static const unsigned char rcAttackFlags[16] = {    // Indexed by m_attackDirect
  ,KING_MANY_ATTACKS
 };
 
-static const unsigned char diagAttackFlags[16] = {  // Indexed by m_attackDirectionInfo2.m_diagAttacked, which max value is 15. 
+static const unsigned char diagAttackFlags[16] = {  // Indexed by m_attackDirectionInfo2.m_diagAttacked, which max value is 15.
   0                                                 // See comment to struct AttackInfo in game.h
  ,KING_LD_ATTACKED_FROM_DIAG1
  ,KING_LD_ATTACKED_FROM_DIAG1
@@ -588,7 +588,7 @@ static const unsigned char diagAttackFlags[16] = {  // Indexed by m_attackDirect
  ,KING_MANY_ATTACKS
 };
 
-static const unsigned char sdAttackFlags[] = {      // Indexed by m_attackDirectionInfo.m_sdAttacked, which max value is 11. 
+static const unsigned char sdAttackFlags[] = {      // Indexed by m_attackDirectionInfo.m_sdAttacked, which max value is 11.
   0                                                 // See comment to struct AttackInfo in game.h
  ,KING_SD_ATTACKED
  ,KING_MANY_ATTACKS                                 // Occurs when attacked by more than one short distance attacking piece (King, Knight or Pawn)
@@ -632,7 +632,7 @@ bool PlayerState::setKingAttackStateBackMove() {
 bool PlayerState::hasOpposition() const {
   const int kingPos1 = m_king->m_position;
   const int kingPos2 = m_king->m_enemyState.m_king->m_position;
-  return Game::getKingDistance(kingPos1,kingPos2) == 2 
+  return Game::getKingDistance(kingPos1,kingPos2) == 2
       && (GETROW(kingPos1) == GETROW(kingPos2) || GETCOL(kingPos1) == GETCOL(kingPos2));
 }
 

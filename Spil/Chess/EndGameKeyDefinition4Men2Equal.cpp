@@ -13,7 +13,7 @@
 #define START_RANGE_KKP2_ONDIAG                (START_RANGE_KK_ONDIAG_P2_BELOWDIAG   + GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT ,28))
 #define START_RANGE_KKP23_ONDIAG               (START_RANGE_KKP2_ONDIAG              + KKP2_ONDIAG_POSCOUNT)
 
-EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23) 
+EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
 : EndGameKeyDefinitionDupletsAllowed(pk23)
 {
   assert(GET_TYPE_FROMKEY(pk23) != Pawn); // for pk23 = Pawn  , use superclass EndGameKeyDefinition2Pawns
@@ -227,7 +227,7 @@ void EndGameKeyDefinition4Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
 
 void EndGameKeyDefinition4Men2Equal::selfCheck() const {
   EndGameKeyWithOccupiedPositions key;
-  sym8PositionScanner(key, 0, true, (PositionScanner)scanPositions);
+  sym8PositionScanner(key, 0, true, (PositionScanner)&EndGameKeyDefinition4Men2Equal::scanPositions);
 }
 
 String EndGameKeyDefinition4Men2Equal::getCodecName() const {
@@ -277,7 +277,7 @@ void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, in
   maxAddr /= 2;
   int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
   const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
-  addr -= rs; 
+  addr -= rs;
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
   key.setPosition(lpIndex, EndGameKeyDefinition::offDiagIndexToPos[addr % r]);

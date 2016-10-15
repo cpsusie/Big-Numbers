@@ -54,7 +54,7 @@ class ColoredText : public String {
 public:
   COLORREF m_backColor, m_textColor;
 
-  ColoredText(const String &str, COLORREF backColor, COLORREF textColor) 
+  ColoredText(const String &str, COLORREF backColor, COLORREF textColor)
   : String(str)
   , m_backColor(backColor)
   , m_textColor(textColor)
@@ -216,7 +216,7 @@ public:
   CSize         m_offset;
   FieldAttackTextPosition() {
   }
-  FieldAttackTextPosition(TextAlignment align, int x, int y) 
+  FieldAttackTextPosition(TextAlignment align, int x, int y)
   : m_align(align)
   , m_offset(x,y)
   {
@@ -385,7 +385,7 @@ public:
   CSize setBoardSize(const CSize &size);
 
   CSize flushImage(HDC dc, bool resize);
-  
+
   void setShowFieldAttacks(   bool show) { m_debugFlags.m_flags.m_showFieldAttacks    = show;  }
   void setShowMaterial(       bool show) { m_debugFlags.m_flags.m_showMaterial        = show;  }
   void setShowCheckingSDAPos( bool show) { m_debugFlags.m_flags.m_showCheckingSDAPos  = show;  }

@@ -105,7 +105,7 @@ void MoveFinderThread::moveNow() {
   stopThinking(false);
 }
 
-const OpeningLibrary &MoveFinderThread::getOpeningLibrary() { // static 
+const OpeningLibrary &MoveFinderThread::getOpeningLibrary() { // static
   if(!s_openingLibrary.isLoaded()) {
     s_openingLibrary.load(IDR_OPENINGLIBRARY);
   }
@@ -157,7 +157,7 @@ UINT MoveFinderThread::run() {
       setMoveFinder(NULL);
       setState(MOVEFINDER_IDLE);
       break;
-       
+
     case REQUEST_KILL:
       DEBUGMSG((_T("killed\n"), getPlayerNameEnglish(m_player)))
       setState(MOVEFINDER_KILLED);
@@ -225,11 +225,16 @@ bool MoveFinderThread::isRightNormalPlayMoveFinder() const {
   if(m_moveFinder->getPositionType() != NORMAL_POSITION) {
     return false;
   }
+
+#ifndef TABLEBASE_BUILDER
   if(m_timeLimit.m_timeout == 0) {
     return m_moveFinder->getEngineType() == RANDOM_ENGINE;
   }
 
   return m_moveFinder->getEngineType() == EXTERN_ENGINE;
+#else
+  return m_moveFinder->getEngineType() == RANDOM_ENGINE;
+#endif
 }
 
 bool MoveFinderThread::isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const {
@@ -273,11 +278,15 @@ void MoveFinderThread::allocateMoveFinder() {
 }
 
 AbstractMoveFinder *MoveFinderThread::newMoveFinderNormalPlay() {
+#ifndef TABLEBASE_BUILDER
   if(m_timeLimit.m_timeout == 0) {
     return new MoveFinderRandomPlay(getPlayer());
   } else {
     return new MoveFinderExternEngine(getPlayer());
   }
+#else
+    return new MoveFinderRandomPlay(getPlayer());
+#endif
 }
 
 ExecutableMove MoveFinderThread::getMove() const {
@@ -352,12 +361,8 @@ String MoveFinderThread::getName() const {
 void MoveFinderThread::setState(MoveFinderState newState) {
   if(newState != m_state) {
     m_gate.wait();
-    const MoveFinderState oldState = m_state;
-    m_state                        = newState;
-
-    DEBUGMSG((_T("state %s -> %s\n"), getStateName(oldState), getStateName(newState)));
-
-    notifyPropertyChanged(MOVEFINDER_STATE, &oldState, &newState);
+    DEBUGMSG((_T("state %s -> %s\n"), getStateName(m_state), getStateName(newState)));
+    setProperty(MOVEFINDER_STATE, m_state, newState);
     m_gate.signal();
 
     if(newState != MOVEFINDER_BUSY) {
@@ -370,12 +375,11 @@ void MoveFinderThread::setMoveFinder(AbstractMoveFinder *moveFinder) {
   if(moveFinder != m_moveFinder) {
     m_gate.wait();
 
-    const AbstractMoveFinder *oldValue = m_moveFinder;
-    m_moveFinder                       = moveFinder;
-    notifyPropertyChanged(MOVEFINDER_ENGINE, oldValue, m_moveFinder);
-  
-    if(oldValue != NULL) {
-      delete oldValue;
+    const AbstractMoveFinder *old = m_moveFinder;
+    setProperty(MOVEFINDER_ENGINE, m_moveFinder, moveFinder);
+
+    if(old != NULL) {
+      delete old;
     }
     m_gate.signal();
   }

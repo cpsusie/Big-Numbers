@@ -443,7 +443,7 @@ void ChessGraphics::ajourKing(Player player, bool flush, HDC dc) {
     const bool kingIsAttacked   = king->getState().m_kingAttackState != 0;
     const bool kingIsCheckMate  = kingIsAttacked && m_game->isCheckmate();
     const bool kingIsMoveMarked = (pos == m_computerFrom) || (pos == m_computerTo);
-    const unsigned char newFlags = (kingIsAttacked   ? KING_HAS_CHECKMARK : 0) 
+    const unsigned char newFlags = (kingIsAttacked   ? KING_HAS_CHECKMARK : 0)
                                  | (kingIsCheckMate  ? KING_UPSIDEDOWN    : 0)
                                  | (kingIsMoveMarked ? KING_HAS_MOVEMARK  : 0)
                                  ;
@@ -851,8 +851,8 @@ void ChessGraphics::unmarkAll(HDC dc) {
   unmarkMatingPositions();
   ajourKings(true);
   unmarkLastMove();
-  
-  FLUSHIMAGE(dc);  
+
+  FLUSHIMAGE(dc);
 }
 
 void ChessGraphics::markLegalMoves() {
@@ -942,14 +942,14 @@ void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark, HDC dc) {
   for(Iterator<int> it = fields.getIterator(); it.hasNext();) {
     markField(it.next(), mark);
   }
-  FLUSHIMAGE(dc);  
+  FLUSHIMAGE(dc);
 }
 
 void ChessGraphics::unmarkFields(const FieldSet &fields, HDC dc) {
   for(Iterator<int> it = fields.getIterator(); it.hasNext();) {
     unmarkField(it.next());
   }
-  FLUSHIMAGE(dc);  
+  FLUSHIMAGE(dc);
 }
 
 int ChessGraphics::markField(int pos, FieldMark mark, HDC dc) {

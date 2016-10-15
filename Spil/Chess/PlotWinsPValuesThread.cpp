@@ -4,7 +4,7 @@
 
 #ifdef __NEVER__
 
-PlotWinsPValuesThread::PlotWinsPValuesThread(CChessDlg *dlg, const PValuePlotParameters &param) : m_dlg(*dlg), m_param(param) { 
+PlotWinsPValuesThread::PlotWinsPValuesThread(CChessDlg *dlg, const PValuePlotParameters &param) : m_dlg(*dlg), m_param(param) {
   m_dlg.addPropertyChangeListener(this);
 }
 

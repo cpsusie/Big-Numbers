@@ -188,12 +188,12 @@ GameUpdateFunction Game::getMoveFunction(PieceType pieceType) { // static
 #ifdef TABLEBASE_BUILDER
 GameUpdateFunction Game::getBackMoveFunction(PieceType pieceType) { // static
   switch(pieceType) {
-  case King   : return updateGameBackMoveKing;
-  case Queen  : return updateGameBackMoveQueen;
-  case Rook   : return updateGameBackMoveRook;
-  case Bishop : return updateGameBackMoveBishop;
-  case Knight : return updateGameBackMoveKnight;
-  case Pawn   : return updateGameBackMovePawn;
+  case King   : return &updateGameBackMoveKing;
+  case Queen  : return &updateGameBackMoveQueen;
+  case Rook   : return &updateGameBackMoveRook;
+  case Bishop : return &updateGameBackMoveBishop;
+  case Knight : return &updateGameBackMoveKnight;
+  case Pawn   : return &updateGameBackMovePawn;
   default     : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                 return NULL;
   }
@@ -295,7 +295,7 @@ bool Game::tryMove(const Move &m) {
 }
 
 // Undo move done with tryMove and restores gamestate without popping it (should be done with popState)
-void Game::unTryMove() { 
+void Game::unTryMove() {
   const GameStackElement &top = restoreState();
 
 #ifndef TABLEBASE_BUILDER
@@ -402,7 +402,7 @@ void Game::tryBackMove(const Move &m) {
 }
 
 // Undo backward move done with tryBackMove and restores gamestate without popping it (should be done with popState)
-void Game::unTryBackMove() { 
+void Game::unTryBackMove() {
   const GameStackElement &top = restoreState();
   Piece *piece = top.m_piece;
   m_board[piece->m_position = top.m_to] = piece;

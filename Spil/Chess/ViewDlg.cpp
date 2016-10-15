@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 BOOL CViewDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   setControlText(IDD, this);
-    
+
   return TRUE;
 }
 

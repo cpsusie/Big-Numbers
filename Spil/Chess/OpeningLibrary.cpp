@@ -192,7 +192,7 @@ unsigned long GameKeyWithRepeatCount::hashCode() const {
 }
 
 bool operator==(const GameKeyWithRepeatCount &key1, const GameKeyWithRepeatCount &key2) {
-  return (const GameKey&)key1 == (const GameKey&)key2 
+  return (const GameKey&)key1 == (const GameKey&)key2
       && key1.m_repeatCount == key2.m_repeatCount;
 }
 

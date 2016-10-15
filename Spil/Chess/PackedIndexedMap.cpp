@@ -37,7 +37,7 @@ static const EndGamePositionStatus statusConversion[] = {
  ,EG_BLACKWIN
 };
 
-PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, UINT maxPlies) 
+PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enableGetResult, UINT maxPlies)
 : m_keydef(keydef)
 , m_indexSize(keydef.getIndexSize())
 , m_getResultEnabled(enableGetResult)
@@ -54,13 +54,13 @@ void PackedIndexedMap::load(ByteInputStream &s) {
   clear();
   m_statusArray.setCapacity(m_indexSize);
   m_statusArray.addZeroes(0, m_indexSize);
-  
+
   EndGameResult *buffer = NULL;
 #define BUFFERSIZE 30000
   try {
     buffer = new EndGameResult[BUFFERSIZE];
- 
-    for(int i = 0; i < m_indexSize;) {
+
+    for(UINT i = 0; i < m_indexSize;) {
       int n = min(BUFFERSIZE, m_indexSize-i);
       s.getBytesForced((BYTE*)buffer, n*sizeof(buffer[0]));
       if(m_getResultEnabled) {
@@ -92,7 +92,8 @@ void PackedIndexedMap::load(ByteInputStream &s) {
 }
 
 int PackedIndexedMap::findBitsPerItem(UINT maxPlies) { // static
-  for(int l = 2; maxPlies; maxPlies >>= 1, l++);
+  int l;
+  for(l = 2; maxPlies; maxPlies >>= 1, l++);
   return l;
 }
 

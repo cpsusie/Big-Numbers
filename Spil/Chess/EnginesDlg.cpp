@@ -32,7 +32,7 @@ int CEnginesDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   if(CDialog::OnCreate(lpCreateStruct) == -1) {
      return -1;
   }
-    
+
   m_moveUpButton.Create(  this, OBMIMAGE(UPARROW), CPoint(0 ,0), IDC_BUTTON_MOVEUP);
   m_moveDownButton.Create(this, OBMIMAGE(DNARROW), CPoint(20,0), IDC_BUTTON_MOVEDOWN);
   return 0;
@@ -119,6 +119,7 @@ void CEnginesDlg::OnButtonMoveDown() {
 }
 
 void CEnginesDlg::OnButtonAdd() {
+#ifndef TABLEBASE_BUILDER
   try {
     const String title      = loadString(IDS_SELECTEXEFILETITLE);
     const String extensions = format(_T("%s%c*.exe%c%s%c*.*%c%c")
@@ -132,7 +133,7 @@ void CEnginesDlg::OnButtonAdd() {
   //  Options &options = getOptions();
   //  const FileNameSplitter info(options.getExternEnginePath(player));
   //  TCHAR dir[256], fileName[256];
-  
+
   //  _tcscpy(dir     , info.getDir().cstr());
   //  _tcscpy(fileName, info.getFullPath().cstr());
     dlg.m_ofn.Flags |= OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
@@ -147,6 +148,9 @@ void CEnginesDlg::OnButtonAdd() {
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
+#else
+  MessageBox(_T("Cannot add extern engines in BUILDER_MODE"), _T("Error"), MB_ICONEXCLAMATION);
+#endif
 }
 
 void CEnginesDlg::OnButtonDelete() {
@@ -163,6 +167,7 @@ void CEnginesDlg::OnButtonDelete() {
 }
 
 void CEnginesDlg::OnButtonCheck() {
+#ifndef TABLEBASE_BUILDER
   StringArray errors;
   String selectedEngineName;
   const int selected = getSelectedIndex();
@@ -201,6 +206,9 @@ void CEnginesDlg::OnButtonCheck() {
       MessageBox(msg.cstr(), loadString(IDS_WARNING).cstr());
     }
   }
+#else
+  MessageBox(_T("Cannot check extern engines in BUILDER_MODE"), _T("Error"), MB_ICONEXCLAMATION);
+#endif
 }
 
 void CEnginesDlg::OnOK() {

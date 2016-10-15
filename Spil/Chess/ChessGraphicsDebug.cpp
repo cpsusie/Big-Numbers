@@ -11,11 +11,11 @@
 #define FIELDSIZE m_resources.getFieldSize()
 
 bool DebugFlags::showState() const {
-  return m_flags.m_showMaterial      
-      || m_flags.m_showCheckingSDAPos 
-      || m_flags.m_showBishopFlags     
-      || m_flags.m_showPawnCount      
-      || m_flags.m_showLastCapture 
+  return m_flags.m_showMaterial
+      || m_flags.m_showCheckingSDAPos
+      || m_flags.m_showBishopFlags
+      || m_flags.m_showPawnCount
+      || m_flags.m_showLastCapture
       || m_flags.m_showPositionRepeats
       || m_flags.m_showSetupMode
       || m_flags.m_showFEN
@@ -192,7 +192,7 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT
   const bool isKingError = (hasKing1 != hasKing2);
   String attackStr, kingStr;
   const FieldAttackTextPosition *offset;
-  
+
   switch(f) {
   case FROM_SHORTDISTANCE:
     offset    = getSDAOffset(player);
@@ -232,7 +232,11 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
     line += 16;
   }
   if(m_debugFlags.m_flags.m_showFEN) {
+#ifndef TABLEBASE_BUILDER
     dtextOut(dc, 0, line, format(_T("FEN:%s"), m_game->toFENString().cstr()).cstr());
+#else
+    dtextOut(dc, 0, line, _T("FEN:Not available in BUILDER_MODE"));
+#endif
     line += 16;
   }
   if(m_debugFlags.m_flags.m_showLastCapture) {
@@ -270,7 +274,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
 
   if(m_debugFlags.m_flags.m_showMaterial) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No material"), RED, BLACK)); 
+    fieldText.add(ColoredText(_T(" No material"), RED, BLACK));
 #else
     const int mat1 = game1.getMaterial(player);
     const int mat2 = game2.getMaterial(player);
@@ -291,7 +295,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
 
   if(m_debugFlags.m_flags.m_showBishopFlags) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No bishopflags"), RED, BLACK)); 
+    fieldText.add(ColoredText(_T(" No bishopflags"), RED, BLACK));
 #else
     const BishopFlags bf1 = game1.getBishopFlags(player);
     const BishopFlags bf2 = game2.getBishopFlags(player);
@@ -306,7 +310,7 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
 
   if(m_debugFlags.m_flags.m_showPawnCount) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No pawnCount"), RED, BLACK)); 
+    fieldText.add(ColoredText(_T(" No pawnCount"), RED, BLACK));
 #else
     const String s1 = game1.getPawnCountToString(player);
     const String s2 = game2.getPawnCountToString(player);

@@ -26,7 +26,7 @@ void RotatePieceAnimation::animate() {
 
   const CPoint pos1((fieldSize45-fieldSize.cx)/2,(fieldSize45-fieldSize.cy)/2);
   const CPoint pos2((int)(pos.x-pos1.x),(int)(pos.y-pos1.y));
-  
+
   tmpDC = pr45.getDC();
 
   for(SigmoidIterator it(0,180,30); it.hasNext();) {

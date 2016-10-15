@@ -17,7 +17,7 @@ public:
   void setParameters(int milliSeconds, const String &caption, const String &message);
 protected:
   virtual ~CMessageDlgThread();
-  
+
 
   DECLARE_MESSAGE_MAP()
 };

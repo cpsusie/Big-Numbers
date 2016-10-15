@@ -20,7 +20,7 @@ void Game::updateGameMoveKnight(const Move &m) {
                            - MoveTable::knightPositionScore[piece->getPlayer()][m.m_from];
 #endif
   piece->m_pinnedState = getPinnedState(m.m_to);
-  state.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king. 
+  state.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }
 
 #ifdef TABLEBASE_BUILDER

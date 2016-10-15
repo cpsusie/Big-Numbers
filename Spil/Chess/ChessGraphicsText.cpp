@@ -15,14 +15,14 @@ void dtextOut(HDC dc, const CPoint &pos, const String &str, COLORREF backColor, 
 int dtextOut(HDC dc, int x, int y, TextAlignment align, const String &str, COLORREF backColor, COLORREF textColor) {
   const int textWidth = getTextExtent(dc, str).cx;
   switch(align) {
-  case ALIGN_LEFT  : 
+  case ALIGN_LEFT  :
     dtextOut(dc, x,y,             str,backColor,textColor);
     break;
 
   case ALIGN_RIGHT :
     dtextOut(dc, x-textWidth,y,   str,backColor,textColor);
     break;
-      
+
   case ALIGN_CENTER:
     dtextOut(dc, x-textWidth/2,y, str,backColor,textColor);
     break;

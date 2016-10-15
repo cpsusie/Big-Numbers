@@ -28,7 +28,7 @@ static unsigned long rangeStartKKOnDiag[27];
 #define START_RANGE_KKP34_ONDIAG                 (KKP2_ONDIAG_P3_BELOWDIAG                 + KKP2_ONDIAG_P3_BELOWDIAG_POSCOUNT            )
 #define START_RANGE_KKP234_ONDIAG                (START_RANGE_KKP34_ONDIAG                 + GET_RANGESTART2EQUAL(KKP34_ONDIAG_POSCOUNT,5))
 
-EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234) 
+EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234)
 : EndGameKeyDefinitionDupletsAllowed(pk234, pk234)
 {
   assert(GET_TYPE_FROMKEY(pk234) != Pawn);  // for pk234 = Pawn  : use EndGameKeyDefinition5Men3EqualPawns
@@ -603,7 +603,7 @@ void EndGameKeyDefinition5Men3Equal::scanPositions(EndGameKeyWithOccupiedPositio
           }
           switch(BOOL3MASK(IS_BELOWMAINDIAG1, pos2, pos3, pos4)) {
           case 0: continue; // 2,3,4 above. skip
-          case 1:           // 2 below, 3,4 above. => pi2 > max(mirrorDiag1(pi3), mirrorDiag1(pi4)) and 
+          case 1:           // 2 below, 3,4 above. => pi2 > max(mirrorDiag1(pi3), mirrorDiag1(pi4)) and
             if(pos4 < pos3) { // 3,4 above. Must have pos4 > pos3
               continue;
             }
@@ -643,7 +643,7 @@ void EndGameKeyDefinition5Men3Equal::scanPositions(EndGameKeyWithOccupiedPositio
 
 void EndGameKeyDefinition5Men3Equal::selfCheck() const {
   EndGameKeyWithOccupiedPositions key;
-  sym8PositionScanner(key, 0, true, (PositionScanner)scanPositions);
+  sym8PositionScanner(key, 0, true, (PositionScanner)&EndGameKeyDefinition5Men3Equal::scanPositions);
 }
 
 String EndGameKeyDefinition5Men3Equal::getCodecName() const {

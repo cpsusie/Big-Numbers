@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef TABLEBASE_BUILDER
+
 #include "Externengine.h"
 
 class CEngineOptionsDlg;
@@ -130,21 +132,21 @@ public:
     int nextSpinCtrlId();
     enum { IDD = IDD_ENGINEOPTIONS_DIALOG };
 
-
-	public:
+public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
     virtual BOOL OnInitDialog();
-	afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
-	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
-	virtual void OnOK();
-	virtual void OnCancel();
-	afx_msg void OnClose();
+	  afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
+	  afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+	  virtual void OnOK();
+	  virtual void OnCancel();
+	  afx_msg void OnClose();
     afx_msg void OnButtonSendToEngine();
-	afx_msg void OnButtonSetDefault();
+	  afx_msg void OnButtonSetDefault();
     DECLARE_MESSAGE_MAP()
 };
 
+#endif

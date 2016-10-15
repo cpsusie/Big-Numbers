@@ -40,7 +40,7 @@ public:
   ChessWatch();
   void setPlayerInTurn(Player player);
   void start(bool autoPlay);
-  
+
   inline UINT getSecondsRemaining(Player player) const {
     return m_stopWatch[player].getSecondsRemaining();
   }

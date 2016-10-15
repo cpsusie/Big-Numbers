@@ -75,7 +75,7 @@ String MoveBase::toSimpleFormat(bool uciFormat) const {
   case PROMOTION    :
     return format(_T("%s%s%s%s")
                  ,getFieldName(m_from)
-                 ,uciFormat?_T(""):_T("-") 
+                 ,uciFormat?_T(""):_T("-")
                  ,getFieldName(m_to)
                  ,getPieceTypeShortNameEnglish(Game::legalPromotions[m_promoteIndex]));
 
@@ -84,7 +84,7 @@ String MoveBase::toSimpleFormat(bool uciFormat) const {
   }
 }
 
-int MoveBase::getMaxStringLength(MoveStringFormat mf) { // static 
+int MoveBase::getMaxStringLength(MoveStringFormat mf) { // static
   static const int maxLength[] = {
      12           // MOVE_SHORTFORMAT
     ,14           // MOVE_LONGFORMAT

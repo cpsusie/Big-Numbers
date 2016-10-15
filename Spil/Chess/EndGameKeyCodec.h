@@ -67,7 +67,7 @@ extern const char _wkD3BkI2P[55];
     swap(i, j);                     \
   }                                 \
 }
-  
+
 #define SORT3(i,j,k)                \
 { SORT2(i, j);                      \
   if(j > k) {                       \

@@ -7,7 +7,7 @@ private:
   String                 m_stringValue;
   int                    m_intValue;
 public:
-  EngineOptionValue(const String &name, const String &value) 
+  EngineOptionValue(const String &name, const String &value)
     : m_name(name)
     , m_isString(true)
     , m_stringValue(value)
@@ -69,7 +69,7 @@ class EngineDescription {
 public:
   String m_path;
   String m_name;
-  String m_author; 
+  String m_author;
 
   EngineDescription(const String &path=_T("")) : m_path(path) {
   }

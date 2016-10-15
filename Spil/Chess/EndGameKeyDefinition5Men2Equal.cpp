@@ -15,14 +15,14 @@
 #define START_RANGE_KKP23_ONDIAG                  (START_RANGE_KKP2_ONDIAG_P3_BELOWDIAG      + GET_RANGESTART2EQUAL(KKP2_ONDIAG_POSCOUNT,28))
 #define START_RANGE_KKP234_ONDIAG                 (START_RANGE_KKP23_ONDIAG                  + KKP23_ONDIAG_POSCOUNT)
 
-EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, PieceKey pk34) 
+EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, PieceKey pk34)
 : EndGameKeyDefinitionDupletsAllowed(pk2, pk34)
 {
-  assert((pk2 != pk34) 
+  assert((pk2 != pk34)
       && (GET_TYPE_FROMKEY(pk34) != Pawn  )  // for pk34 = Pawn  : use EndGameKeyDefinition5Men2Pawns
       && (GET_TYPE_FROMKEY(pk2 ) != Pawn  )  // for pk2  = Pawn  : use EndGameKeyDefinition5Men1Pawn2Equal
         );
-/*          
+/*
 
   DUMP_MACRO(     KK_OFFDIAG_POSCOUNT                        );
   DUMP_MACRO(     KK_ONDIAG_POSCOUNT                         );
@@ -115,7 +115,7 @@ unsigned long EndGameKeyDefinition5Men2Equal::keyToIndex(const EndGameKey &key) 
     case 0: ENCODE_KKP234_ONDIAG(          key  );                      // 3,4   on    diag
     case 1: ENCODE_KKP24_ONDIAG(           key  );                      //   4   on    diag
     case 2: ENCODE_KKP23_ONDIAG(           key  );                      // 3     on    diag
-    case 3: 
+    case 3:
       { switch(BOOL2MASK(IS_ABOVEMAINDIAG1, pos3, pos4)) {
         case 0: ENCODE_KKP2_ONDIAG_NOFLIP(key    );                     // 3,4   below diag
         case 1: ENCODE_KKP2_ONDIAG_FLIPi( key,3,4);                     //   4   below diag
@@ -191,7 +191,7 @@ SymmetricTransformation EndGameKeyDefinition5Men2Equal::getSymTransformation(con
 void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const {
   switch(pIndex) {
   case 2:
-    sym8PositionScanner(key, 2, allPreviousOnDiag, (PositionScanner)scanPositions);
+    sym8PositionScanner(key, 2, allPreviousOnDiag, (PositionScanner)&EndGameKeyDefinition5Men2Equal::scanPositions);
     break;
   case 3:
     if(allPreviousOnDiag) {
@@ -269,7 +269,7 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
 
 void EndGameKeyDefinition5Men2Equal::selfCheck() const {
   EndGameKeyWithOccupiedPositions key;
-  sym8PositionScanner(key, 0, true, (PositionScanner)scanPositions);
+  sym8PositionScanner(key, 0, true, (PositionScanner)&EndGameKeyDefinition5Men2Equal::scanPositions);
 }
 
 String EndGameKeyDefinition5Men2Equal::getCodecName() const {

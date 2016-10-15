@@ -11,7 +11,7 @@ PieceDragger::PieceDragger(ChessGraphics *graphics, const CPoint &point, const O
   m_background     = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, boardSize);
   m_oldBackground  = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_size);
   m_helper         = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_size);
-  
+
   m_lastDragPoint = point;
   m_lastTopLeft   = m_resources.scalePoint(obp->TopLeft());
   initPaintedPoint();
@@ -79,7 +79,7 @@ void PieceDragger::saveDragPosition(const CPoint &p) {
 
 void PieceDragger::restoreDragPosition(HDC dc) {
   if(dc) {
-    PixRect::bitBlt(dc, m_savedDragPoint, m_size, SRCCOPY, m_oldBackground, ORIGIN); 
+    PixRect::bitBlt(dc, m_savedDragPoint, m_size, SRCCOPY, m_oldBackground, ORIGIN);
   } else {
     m_background->rop(m_savedDragPoint, m_size, SRCCOPY, m_oldBackground, ORIGIN);
   }

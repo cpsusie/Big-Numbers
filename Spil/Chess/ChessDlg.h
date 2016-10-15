@@ -52,13 +52,13 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   friend class PlotWinsPValuesThread;
 private:
-  static int              instanceCount;
-  static CTraceDlgThread *traceThread;     // only one instance of this
+  static int              s_instanceCount;
+  static CTraceDlgThread *s_traceThread;     // only one instance of this
   const DialogMode        m_initialMode;
   const int               m_startPlyIndex;
   HACCEL                  m_accelTable;
   HICON                   m_hIcon;
-  LayoutManager           m_layoutManager;     
+  LayoutManager           m_layoutManager;
   const String            m_startupFileName;
   Game                    m_game, m_savedGame;
   GameResult              m_gameResult;
@@ -234,7 +234,7 @@ private:
   Player getHumanPlayer() const {
     return GETENEMY(getComputerPlayer());
   }
-  
+
   Game &getCurrentGame() {
     return getCurrentGame1();
   }

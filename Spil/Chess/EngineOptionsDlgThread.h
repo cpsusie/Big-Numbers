@@ -1,5 +1,7 @@
 #pragma once
 
+#ifndef TABLEBASE_BUILDER
+
 #include <PropertyChangeListener.h>
 #include "Externengine.h"
 
@@ -40,4 +42,4 @@ protected:
     DECLARE_MESSAGE_MAP()
 };
 
-
+#endif

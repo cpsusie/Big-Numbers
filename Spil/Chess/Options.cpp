@@ -424,7 +424,7 @@ void Options::load() {
     m_animateCheckmate         = key.getBool(  ANIMATECHECKMATE        , defaultOptions.getAnimateCheckmate()       );
     m_askForNewGame            = key.getBool(  ASKFORNEWGAME           , defaultOptions.getAskForNewGame()          );
     m_computerPlayer           = key.getInt(   COMPUTERPLAYER          , defaultOptions.getComputerPlayer()         )
-                               ? BLACKPLAYER 
+                               ? BLACKPLAYER
                                : WHITEPLAYER;
     m_showComputerTime         = key.getBool(  SHOWCOMPUTERTIME        , defaultOptions.getShowComputerTime()       );
     m_validateAfterEdit        = key.getBool(  VALIDATE                , defaultOptions.getValidateAfterEdit()      );
@@ -444,7 +444,7 @@ void Options::load() {
     m_endGameDefendStrength    = key.getInt(   ENDGAMEDEFENDSTRENGTH   , defaultOptions.getEndGameDefendStrength()  );
     m_maxMovesWithoutCaptureOrPawnMove = key.getInt(MAXMOVESWITHOUTCAPTURE  , defaultOptions.getMaxMovesWithoutCaptureOrPawnMove());
 
-    m_moveFormat               = key.getInt(   HISTORYFORMAT           , defaultOptions.getMoveFormat()) 
+    m_moveFormat               = key.getInt(   HISTORYFORMAT           , defaultOptions.getMoveFormat())
                                ? MOVE_LONGFORMAT
                                : MOVE_SHORTFORMAT;
     m_depthInPlies             = key.getBool(  DEPTHINPLIES            , defaultOptions.getDepthInPlies()           );
@@ -498,7 +498,7 @@ void Options::load(FILE *f) {
     Tokenizer tok(line, _T(":"));
     String tag;
     int    intValue;
-    String strValue;       
+    String strValue;
     if(tok.hasNext()) {
       tag = tok.next();
       if(tag.equalsIgnoreCase(_T("EndSettings"))) {
@@ -741,7 +741,7 @@ void Options::setServerComputerName(const String &computerName) {
     m_serverComputerName = s;
     save();
   }
-} 
+}
 
 void Options::enableTestMenu(bool enabled) {
   if(enabled != m_testMenuEnabled) {
@@ -800,7 +800,7 @@ Options &Options::getOptions() { // static
 
 EngineRegister Options::s_engineRegister;
 
-EngineRegister &Options::getEngineRegister() { // static 
+EngineRegister &Options::getEngineRegister() { // static
   if(s_engineRegister.size() == 0) {
     loadEngineRegister();
   }
@@ -823,7 +823,7 @@ void Options::loadEngineRegister() { // static
   }
 }
 
-void Options::saveEngineRegister(EngineRegister &engines) { // static 
+void Options::saveEngineRegister(EngineRegister &engines) { // static
   RegistryKey key = getEngineSubKey(getKey());
   key.deleteSubKeys();
   for(size_t i = 0; i < engines.size(); i++) {

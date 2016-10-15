@@ -113,8 +113,8 @@ PositionCount TablebaseInfo::getWinnerPositionCount() const {
 }
 
 UINT TablebaseInfo::getWinnerPositionCount(Player winner) const {
-  return m_checkMatePositions.m_count[winner] 
-       + m_terminalWinPositions.m_count[winner] 
+  return m_checkMatePositions.m_count[winner]
+       + m_terminalWinPositions.m_count[winner]
        + m_nonTerminalWinPositions.m_count[winner];
 }
 
@@ -230,7 +230,7 @@ CompactIntArray MoveResultArray::findLongestLoosingMoves(int defendStrength) con
     }
   }
   const int minLooseDistance = maxLooseDistance * defendStrength / 100;
-    
+
   CompactIntArray result;
   for(size_t i = 0; i < tmp.size(); i++) {
     int p = tmp[i];
@@ -264,7 +264,7 @@ MoveWithResult MoveResultArray::selectBestMove(int defendStrength) const {
     return (*this)[moves.select()];
   } else {
     return selectLongestLoosingMove(defendStrength);
-  }    
+  }
 }
 
 
@@ -316,7 +316,7 @@ String secondsToString(double msec, bool showMilliSeconds) {
       return format(_T("%.0lf sec."), msec / 1000.0);
     }
   } else {
-    const int seconds = msec / 1000;
+    const int seconds = (int)(msec / 1000);
     if(seconds < 3600) {
       return format(_T("%02d:%02d min."), seconds/60, seconds%60);
     } else if(seconds < 24*3600) {

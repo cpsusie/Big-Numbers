@@ -4,7 +4,7 @@
 
 #define MININDEX 0
 
-EndGameKeyDefinition5Men1Pawn::EndGameKeyDefinition5Men1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4) 
+EndGameKeyDefinition5Men1Pawn::EndGameKeyDefinition5Men1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4)
 : EndGameKeyDefinition1Pawn(pk2, pk3, pk4)
 {
 }
