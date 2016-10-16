@@ -1,0 +1,514 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="TablebaseBuilder Debug|Win32">
+      <Configuration>TablebaseBuilder Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="TablebaseBuilder Release|Win32">
+      <Configuration>TablebaseBuilder Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName />
+    <SccLocalPath />
+    <ProjectGuid>{A4B4AD89-4044-434A-BDA1-A984C3210A85}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Release|Win32'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)ChessLib.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)ChessLib.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)ChessLib.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+    </ClCompile>
+    <ResourceCompile>
+      <Culture>0x0406</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)ChessLib.bsc</OutputFile>
+    </Bscmake>
+    <Lib>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Chess\BackMoveGenerator.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBBPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBNPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKBPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKey.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyCodecKingsPawn.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyCodecKingsSym8.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition1Pawn.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition2EqualPawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition2Pawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition3Men.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition3Men1Pawn.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition4Men.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition4Men1Pawn.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition4Men2Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition4Men2EqualPawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition4Men2Pawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men1Pawn.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men1Pawn2Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men2Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men2EqualPawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men2Pawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men3Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men3EqualPawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition5Men3Pawns.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsAllowed.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsNotAllowed.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNNPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKNPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKPPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQBPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKBB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKBN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKNN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKRB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKRN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKRR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQNPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQQK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQRRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRBPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRKNN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRNPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPKQ.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRPPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRBK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRKB.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRKN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRKP.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRNK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRPK.cpp" />
+    <ClCompile Include="..\Chess\EndGameKRRRK.cpp" />
+    <ClCompile Include="..\Chess\EndGameResult.cpp" />
+    <ClCompile Include="..\Chess\EndGameTablebase.cpp" />
+    <ClCompile Include="..\Chess\EndGameTablebaseRegister.cpp" />
+    <ClCompile Include="..\Chess\EndGameUtil.cpp" />
+    <ClCompile Include="..\Chess\FieldInfo.cpp" />
+    <ClCompile Include="..\Chess\FieldSet.cpp" />
+    <ClCompile Include="..\Chess\FieldSetUtil.cpp" />
+    <ClCompile Include="..\Chess\Game.cpp" />
+    <ClCompile Include="..\Chess\GameHistory.cpp" />
+    <ClCompile Include="..\Chess\GameIO.cpp" />
+    <ClCompile Include="..\Chess\GameKey.cpp" />
+    <ClCompile Include="..\Chess\GameSetup.cpp" />
+    <ClCompile Include="..\Chess\GameUpdate.cpp" />
+    <ClCompile Include="..\Chess\GameUtil.cpp" />
+    <ClCompile Include="..\Chess\IndexedMap.cpp" />
+    <ClCompile Include="..\Chess\LDABlock.cpp" />
+    <ClCompile Include="..\Chess\LDAEnter.cpp" />
+    <ClCompile Include="..\Chess\LDAEnterCapture.cpp" />
+    <ClCompile Include="..\Chess\LDAKing.cpp" />
+    <ClCompile Include="..\Chess\LDALeave.cpp" />
+    <ClCompile Include="..\Chess\LDAWalk.cpp" />
+    <ClCompile Include="..\Chess\ManualPositions.cpp" />
+    <ClCompile Include="..\Chess\Move.cpp" />
+    <ClCompile Include="..\Chess\MoveGenerator.cpp" />
+    <ClCompile Include="..\Chess\MoveTable.cpp" />
+    <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
+    <ClCompile Include="..\Chess\Piece.cpp" />
+    <ClCompile Include="..\Chess\PlayerState.cpp" />
+    <ClCompile Include="..\Chess\PositionSignature.cpp" />
+    <ClCompile Include="..\Chess\RemoteEndGameSubTablebase.cpp" />
+    <ClCompile Include="..\Chess\SubTablebase.cpp" />
+    <ClCompile Include="..\Chess\UpdateBishopMove.cpp" />
+    <ClCompile Include="..\Chess\UpdateKingMove.cpp" />
+    <ClCompile Include="..\Chess\UpdateKnightMove.cpp" />
+    <ClCompile Include="..\Chess\UpdatePawnMove.cpp" />
+    <ClCompile Include="..\Chess\UpdateQueenMove.cpp" />
+    <ClCompile Include="..\Chess\UpdateRookMove.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilder Debug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Chess\EndGame3Men.h" />
+    <ClInclude Include="..\Chess\EndGame4MenNoPawns.h" />
+    <ClInclude Include="..\Chess\EndGame4MenWithPawns.h" />
+    <ClInclude Include="..\Chess\EndGame5MenNoPawns.h" />
+    <ClInclude Include="..\Chess\EndGame5MenWithPawns.h" />
+    <ClInclude Include="..\chess\EndGameKey.h" />
+    <ClInclude Include="..\Chess\EndGameKeyCodec.h" />
+    <ClInclude Include="..\chess\EndGameKeyDefinition.h" />
+    <ClInclude Include="..\Chess\EndGameTablebase.h" />
+    <ClInclude Include="..\Chess\EndGameUtil.h" />
+    <ClInclude Include="..\chess\FieldNames.h" />
+    <ClInclude Include="..\Chess\FieldSet.h" />
+    <ClInclude Include="..\chess\Game.h" />
+    <ClInclude Include="..\chess\IndexedMap.h" />
+    <ClInclude Include="..\chess\LDA.H" />
+    <ClInclude Include="..\chess\Resource.h" />
+    <ClInclude Include="stdAfx.h" />
+    <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\chess\res\blackBishop.bmp" />
+    <Image Include="..\chess\res\blackKing.bmp" />
+    <Image Include="..\chess\res\blackKnight.bmp" />
+    <Image Include="..\chess\res\blackPawn.bmp" />
+    <Image Include="..\chess\res\blackQueen.bmp" />
+    <Image Include="..\chess\res\blackRook.bmp" />
+    <Image Include="..\chess\res\blueField.bmp" />
+    <Image Include="..\chess\res\Board.jpg" />
+    <Image Include="..\chess\res\checkedKing.bmp" />
+    <Image Include="..\chess\res\Chess.ico" />
+    <Image Include="..\chess\res\DialogBackground.jpg" />
+    <Image Include="..\chess\res\DstFieldMark.bmp" />
+    <Image Include="..\chess\res\Hourglasses.bmp" />
+    <Image Include="..\chess\res\NoPiece.bmp" />
+    <Image Include="..\chess\res\OpeningTreeImages.bmp" />
+    <Image Include="..\chess\res\pinkField.bmp" />
+    <Image Include="..\chess\res\PlayerIndicator.bmp" />
+    <Image Include="..\chess\res\purpleField.bmp" />
+    <Image Include="..\chess\res\selectionFrame.bmp" />
+    <Image Include="..\chess\res\srcfieldMark.bmp" />
+    <Image Include="..\chess\res\whiteBishop.bmp" />
+    <Image Include="..\chess\res\whiteKing.bmp" />
+    <Image Include="..\chess\res\whiteKnight.bmp" />
+    <Image Include="..\chess\res\whitePawn.bmp" />
+    <Image Include="..\chess\res\whiteQueen.bmp" />
+    <Image Include="..\chess\res\whiteRook.bmp" />
+    <Image Include="..\chess\res\yellowField.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\chess\res\Chess.rc2" />
+    <CustomBuild Include="..\chess\res\OpenLib.dat" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

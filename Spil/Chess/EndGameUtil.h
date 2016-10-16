@@ -234,21 +234,24 @@ public:
   inline void decr(Player player) {
     m_count[player]--;
   }
-  friend int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
-    return tc1.getTotal() - tc2.getTotal();
-  }
-  friend int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2, Player player) {
-    return (int)tc1.m_count[player] - tc2.m_count[player];
-  }
-  friend int compareMax(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
-    return (int)tc1.getMax() - tc2.getMax();
-  }
   bool operator==(const TwoCountersTemplate<T> &rhs) const {
     return m_count[0] == rhs.m_count[0] && m_count[1] == rhs.m_count[1];
   }
   bool operator!=(const TwoCountersTemplate<T> &rhs) const {
     return !(*this == rhs);
   }
+};
+
+template<class T> int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
+  return tc1.getTotal() - tc2.getTotal();
+};
+
+template<class T> int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2, Player player) {
+  return (int)tc1.m_count[player] - tc2.m_count[player];
+};
+
+template<class T> int compareMax(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
+  return (int)tc1.getMax() - tc2.getMax();
 };
 
 typedef TwoCountersTemplate<UINT>           PositionCount;
@@ -308,8 +311,13 @@ public:
   inline unsigned char getCanWinFlags() const {
     return (m_canWin[WHITEPLAYER]?WHITECANWIN:0)|(m_canWin[BLACKPLAYER]?BLACKCANWIN:0);
   }
-
-  static const char *programVersion;
+  String getVersion() const {
+    return m_version;
+  }
+  static const char *s_programVersion;
+  static String getProgramVersion() {
+    return s_programVersion;
+  }
 };
 
 class StreamProgress : public ByteCounter, public TimeoutHandler {

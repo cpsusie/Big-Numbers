@@ -2,7 +2,7 @@
 #include <io.h>
 #include "EndGameUtil.h"
 
-const char *TablebaseInfo::programVersion = "1.3";
+const char *TablebaseInfo::s_programVersion = "1.3";
 
 TablebaseInfo::TablebaseInfo() {
   clear();
@@ -14,15 +14,15 @@ void TablebaseInfo::clear() {
 
 void TablebaseInfo::save(ByteOutputStream &s) const {
   memset(m_version, 0, sizeof(m_version));
-  strcpy(m_version, programVersion);
+  strcpy(m_version, s_programVersion);
   s.putBytes((BYTE*)this, sizeof(TablebaseInfo));
 }
 
 void TablebaseInfo::load(ByteInputStream &s) {
   USES_CONVERSION;
   s.getBytesForced((BYTE*)this, sizeof(TablebaseInfo));
-  if(strcmp(m_version, programVersion) != 0) {
-    throw WrongVersionException(format(_T("Wrong fileversion:%s. Programversion=%s"), m_version, A2T(programVersion)).cstr());
+  if(getVersion() != getProgramVersion()) {
+    throw WrongVersionException(format(_T("Wrong fileversion:%s. Programversion=%s"), getVersion().cstr(), getProgramVersion().cstr()).cstr());
   }
 }
 
@@ -91,7 +91,7 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                  ,m_terminalWinPositions.toString(   ' ',11).cstr()
                  ,m_nonTerminalWinPositions.toString(' ',11).cstr()
                  ,formatMaxVariants(plies).cstr()
-                 ,format(_T("%s%s"), m_version, isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
+                 ,format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
                  );
   case TBIFORMAT_PRINT_COLUMNS2:
     return format(_T("%11s %11s %11s %10s %s %s %-7s")
@@ -101,7 +101,7 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                  ,format1000(m_stalematePositions          ).cstr()
                  ,getWinnerPositionCount().toString( ' ',11).cstr()
                  ,formatMaxVariants(plies).cstr()
-                 ,format(_T("%s%s"), m_version, isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
+                 ,format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
                  );
   default:
     return format(_T("Unknown print-format:%d"), f);
