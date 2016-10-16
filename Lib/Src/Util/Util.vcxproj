@@ -380,6 +380,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractIterator.cpp" />
     <ClCompile Include="access.cpp" />
+    <ClCompile Include="ArgvConversion.cpp" />
     <ClCompile Include="ArgvExpand.cpp" />
     <ClCompile Include="ArrayImpl.cpp" />
     <ClCompile Include="ArraySort.cpp" />

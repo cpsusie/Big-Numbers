@@ -13,8 +13,8 @@ typedef Comparator<DirListEntry> FindDataComparator;
 typedef Selector<  DirListEntry> FindDataSelector;
 typedef Array<DirListEntry> DirList;
 
-DirList scandir(const TCHAR *pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
-DirList scandir(const String    &pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
+DirList scandir(const TCHAR  *pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
+DirList scandir(const String &pattern, FindDataSelector *selector = NULL, FindDataComparator *comparator = NULL);
 
 enum FindDataField {
   FILEATTRIB

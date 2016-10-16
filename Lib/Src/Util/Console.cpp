@@ -183,8 +183,8 @@ void Console::setTitle(const String &title) {
 
 String Console::getTitle() { // static 
   TCHAR title[4000];
-  CHECK(GetConsoleTitle(title, sizeof(title)));
-  title[sizeof(title)-1] = '\0';
+  CHECK(GetConsoleTitle(title, ARRAYSIZE(title)));
+  title[ARRAYSIZE(title)-1] = '\0';
   return title;
 }
 

@@ -83,16 +83,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libtiff", "Lib\Src\paintlib
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Colormap", "Lib\Src\Colormap\Colormap.vcxproj", "{D428E022-E213-46A6-895E-8C35C38F7D7A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Chess", "Spil\Chess\Chess.vcxproj", "{61585121-3DF0-434B-85C5-F66546A4C11C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{D0280A64-5E92-45BB-95F9-561171595A26} = {D0280A64-5E92-45BB-95F9-561171595A26}
-		{6B52C566-6C03-476D-B214-F2CAA4734E16} = {6B52C566-6C03-476D-B214-F2CAA4734E16}
-		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
-		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
-		{FEE75CD8-49B4-410F-8488-1108EBE5B4FE} = {FEE75CD8-49B4-410F-8488-1108EBE5B4FE}
-		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -489,26 +479,6 @@ Global
 		{D428E022-E213-46A6-895E-8C35C38F7D7A}.TablebaseBuilder Debug|x86.ActiveCfg = Debug|Win32
 		{D428E022-E213-46A6-895E-8C35C38F7D7A}.TableBaseBuilder Release|x64.ActiveCfg = Release|x64
 		{D428E022-E213-46A6-895E-8C35C38F7D7A}.TableBaseBuilder Release|x86.ActiveCfg = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Debug|x64.ActiveCfg = Debug|x64
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Debug|x86.ActiveCfg = Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Debug|x86.Build.0 = Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDDebug|x64.ActiveCfg = Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDDebug|x86.ActiveCfg = Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDDebug|x86.Build.0 = Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDRelease|x64.ActiveCfg = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDRelease|x86.ActiveCfg = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.LDRelease|x86.Build.0 = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Release|x64.ActiveCfg = Release|x64
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Release|x86.ActiveCfg = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.Release|x86.Build.0 = Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TablebaseBuilder Debug|x64.ActiveCfg = TablebaseBuilder Debug|x64
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TablebaseBuilder Debug|x64.Build.0 = TablebaseBuilder Debug|x64
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TablebaseBuilder Debug|x86.ActiveCfg = TablebaseBuilder Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TablebaseBuilder Debug|x86.Build.0 = TablebaseBuilder Debug|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TableBaseBuilder Release|x64.ActiveCfg = TableBaseBuilder Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TableBaseBuilder Release|x64.Build.0 = TableBaseBuilder Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TableBaseBuilder Release|x86.ActiveCfg = TableBaseBuilder Release|Win32
-		{61585121-3DF0-434B-85C5-F66546A4C11C}.TableBaseBuilder Release|x86.Build.0 = TableBaseBuilder Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

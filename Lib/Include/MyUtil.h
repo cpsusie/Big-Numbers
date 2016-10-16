@@ -43,6 +43,9 @@ void *xrealloc(void *q, UINT n);
 TCHAR *xstrdup(const TCHAR *str);
 void  xfree(void *p);
 
+wchar_t **argv2wargv(const char **argv);
+char    **wargv2argv(const wchar_t **targv);
+
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
 #endif
@@ -183,28 +186,28 @@ inline const TCHAR *boolToStr(BOOL b) {
   return b ? _T("true") : _T("false");
 }
 
-double round(double x, int dec);
-double trunc(double x, int dec=0);
+double round(   double x, int dec);
+double trunc(   double x, int dec=0);
 double fraction(double x);
 
-inline int sign(int x) {            // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(int x) {             // return (x > 0) ? +1 : (x < 0) ? -1 : 0
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(const __int64 &x) { // return (x > 0) ? +1 : (x < 0) ? -1 : 0 
+inline int sign(const __int64 &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0 
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(float x) {          // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(float x) {           // return (x > 0) ? +1 : (x < 0) ? -1 : 0
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(const double &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0
+inline int sign(const double &x) {   // return (x > 0) ? +1 : (x < 0) ? -1 : 0
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
 
-inline UINT         sqr(int x) {     // return x*x
+inline UINT  sqr(int x) {            // return x*x
   return x * x;
 }
 

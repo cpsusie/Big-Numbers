@@ -652,6 +652,9 @@
     <ClCompile Include="FormatSize.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="ArgvConversion.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
