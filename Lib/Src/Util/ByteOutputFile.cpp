@@ -31,7 +31,7 @@ ByteOutputFile::~ByteOutputFile() {
 
 void ByteOutputFile::open(const String &name) {
   close();
-  m_file = MKFOPEN(name, "wb");
+  m_file = MKFOPEN(name, _T("wb"));
   init(name);
 }
 
@@ -39,9 +39,9 @@ void ByteOutputFile::close() {
   if(!isOpen()) {
     return;
   }
-  if(m_name != "") {
+  if(m_name != EMPTYSTRING) {
     fclose(m_file);
-    m_name = "";
+    m_name = EMPTYSTRING;
   } else {
     fflush(m_file);
     setFileMode(m_file, m_oldMode);

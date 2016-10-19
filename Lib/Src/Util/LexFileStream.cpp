@@ -75,8 +75,8 @@ intptr_t LexFileStream::getChars(_TUCHAR *dst, size_t n) {
 
   while(!eof()) {
     const intptr_t done = d - dst;
-    if (done >= (int)n) return done;
-    const intptr_t needed = (int)n - done;
+    if (done >= (intptr_t)n) return done;
+    const intptr_t needed = (intptr_t)n - done;
     const intptr_t got  = m_convertedQueue.get(d, needed);
     if(got) {
       d += got;

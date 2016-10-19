@@ -6,8 +6,6 @@
 
 #define MAX_BUFFERSIZE 8192
 
-DEFINECLASSNAME(CompressFilter);
-
 CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : m_dst(dst) {
   m_zStreamp  = NULL;
   m_buffer    = NULL;
@@ -20,7 +18,7 @@ CompressFilter::CompressFilter(ByteOutputStream &dst, CompressionLevel level) : 
   int err = deflateInit(zStream, (int)level);
   if (err != Z_OK) {
     delete zStream;
-    throwException(_T("%s:deflateInit:returncode=%d"), s_className, err);
+    throwException(_T("%s:deflateInit:returncode=%d"), __TFUNCTION__, err);
   }
   m_zStreamp  = zStream;
   m_buffer    = new BYTE[MAX_BUFFERSIZE*2];
@@ -58,7 +56,7 @@ void CompressFilter::flush() {
     flushOutput();
     break;
   default:
-    throwException(_T("%s::flush:deflate:returncode:%d"), s_className, err);
+    throwException(_T("%s:deflate:returncode:%d"), __TFUNCTION__, err);
   }
 }
 
@@ -70,7 +68,7 @@ void CompressFilter::flushInput() {
   while(zStreamp->avail_in > 0) {
     int err = deflate(zStreamp, Z_NO_FLUSH);
     if(err != Z_OK) {
-      throwException(_T("%s::flushInput:deflate:returncode:%d"), s_className, err);
+      throwException(_T("%s:deflate:returncode:%d"), __TFUNCTION__, err);
     }
     if(zStreamp->avail_out < MAX_BUFFERSIZE) {
       getCompressedData();
@@ -96,7 +94,7 @@ void CompressFilter::finalFlush() {
       flushOutput();
       return;
     default:
-      throwException(_T("%s::finalFlush:deflate:returncode:%d"), s_className, err);
+      throwException(_T("%s:deflate:returncode:%d"), __TFUNCTION__, err);
     }
   }
 }

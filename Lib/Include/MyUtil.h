@@ -43,9 +43,6 @@ void *xrealloc(void *q, UINT n);
 TCHAR *xstrdup(const TCHAR *str);
 void  xfree(void *p);
 
-wchar_t **argv2wargv(const char **argv);
-char    **wargv2argv(const wchar_t **targv);
-
 #ifdef ARRAYSIZE
 #undef ARRAYSIZE
 #endif
@@ -131,6 +128,9 @@ String   searchenv(  const String &fileName, const String &envName);
 
 void argvExpand(int &argc, wchar_t **&argv);
 void argvExpand(int &argc, char    **&argv);
+
+wchar_t **argv2wargv(const char **argv);
+char    **wargv2argv(const wchar_t **targv);
 
 String getModuleFileName(HMODULE module = NULL); // if module == NULL, path of executable
 String getUserName();

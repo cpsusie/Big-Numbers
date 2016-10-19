@@ -33,8 +33,8 @@ private:
   void checkIndex(size_t r, size_t c) const {
     if(!m_dim.isLegalIndex(r,c)) {
       throwIndexException(_T("Index (%s, %s) out of range")
-                         ,format1000(r).cstr()
-                         ,format1000(c).cstr());
+                         ,formatSize(r).cstr()
+                         ,formatSize(c).cstr());
     }
   }
 
@@ -224,7 +224,7 @@ public:
 
   VectorTemplate<T> getRow(size_t row) const {
     if(row >= getRowCount()) {
-      throwIndexException(_T("getRow:Row %s out of range"), format1000(row).cstr());
+      throwIndexException(_T("getRow:Row %s out of range"), formatSize(row).cstr());
     }
     VectorTemplate<T> result(getColumnCount());
     const T *p = m_a + index(row,0);
@@ -236,7 +236,7 @@ public:
 
   VectorTemplate<T> getColumn(size_t column) const {
     if(column >= getColumnCount()) {
-      throwIndexException(_T("getColumn:Column %s out of range"), format1000(column).cstr());
+      throwIndexException(_T("getColumn:Column %s out of range"), formatSize(column).cstr());
     }
     VectorTemplate<T> result(getRowCount());
     const T *p = m_a + index(0, column);
@@ -248,7 +248,7 @@ public:
 
   MatrixTemplate<T> &setRow(size_t row, const VectorTemplate<T> &v) {
     if(row >= getRowCount()) {
-      throwIndexException(_T("setRow:Row %s out of range"), format1000(row).cstr());
+      throwIndexException(_T("setRow:Row %s out of range"), formatSize(row).cstr());
     }
     if(v.getDimension() != getColumnCount()) {
       throwMatrixException(_T("setRow:Invalid dimension. %s. Vector.%s")
@@ -264,7 +264,7 @@ public:
 
   MatrixTemplate<T> &setColumn(size_t column, const VectorTemplate<T> &v) {
     if(column >= getColumnCount()) {
-      throwIndexException(_T("setColumn:Column %s out of range"), format1000(column).cstr());
+      throwIndexException(_T("setColumn:Column %s out of range"), formatSize(column).cstr());
     }
     if(v.getDimension() != getRowCount()) {
       throwMatrixException(_T("setColumn:Invalid dimension. %s. Vector.%s")
@@ -279,10 +279,10 @@ public:
 
   MatrixTemplate<T> &swapRows(size_t r1, size_t r2) {
     if(r1 >= getRowCount()) {
-      throwIndexException(_T("swapRows:r1=%s out of range"), format1000(r1).cstr());
+      throwIndexException(_T("swapRows:r1=%s out of range"), formatSize(r1).cstr());
     }
     if(r2 >= getRowCount()) {
-      throwIndexException(_T("swapRows:r2=%s out of range"), format1000(r2).cstr());
+      throwIndexException(_T("swapRows:r2=%s out of range"), formatSize(r2).cstr());
     }
     if (r1 != r2) {
       T *p1 = m_a + index(r1, 0);
@@ -310,19 +310,19 @@ public:
   MatrixTemplate<T> getSubMatrix(size_t row, size_t column, size_t rowCount, size_t columnCount) const {
     if(row + rowCount > getRowCount()) {
       throwMatrixException(_T("getSubMatrix:Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). RowCount=%s")
-                          , format1000(row).cstr()
-                          , format1000(column).cstr()
-                          , format1000(rowCount).cstr()
-                          , format1000(columnCount).cstr()
-                          , format1000(getRowCount()).cstr());
+                          , formatSize(row).cstr()
+                          , formatSize(column).cstr()
+                          , formatSize(rowCount).cstr()
+                          , formatSize(columnCount).cstr()
+                          , formatSize(getRowCount()).cstr());
     }
     if(column + columnCount > getColumnCount()) {
       throwMatrixException(_T("getSubMatrix:Cannot get subMatrix from offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
-                          , format1000(row).cstr()
-                          , format1000(column).cstr()
-                          , format1000(rowCount).cstr()
-                          , format1000(columnCount).cstr()
-                          , format1000(getColumnCount()).cstr());
+                          , formatSize(row).cstr()
+                          , formatSize(column).cstr()
+                          , formatSize(rowCount).cstr()
+                          , formatSize(columnCount).cstr()
+                          , formatSize(getColumnCount()).cstr());
     }
 
     MatrixTemplate<T> result(rowCount, columnCount);
@@ -341,19 +341,19 @@ public:
   MatrixTemplate<T> &setSubMatrix(size_t  row, size_t  column, const MatrixTemplate<T> &src) {
     if(row + src.getRowCount() > getRowCount()) {
       throwMatrixException(_T("setSubMatrix:Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). RowCount=%s")
-                           , format1000(row).cstr()
-                           , format1000(column).cstr()
-                           , format1000(src.getRowCount()).cstr()
-                           , format1000(src.getColumnCount()).cstr()
-                           , format1000(getRowCount()).cstr());
+                           , formatSize(row).cstr()
+                           , formatSize(column).cstr()
+                           , formatSize(src.getRowCount()).cstr()
+                           , formatSize(src.getColumnCount()).cstr()
+                           , formatSize(getRowCount()).cstr());
     }
     if(column + src.getColumnCount() > getColumnCount()) {
       throwMatrixException(_T("setSubMatrix:Cannot set subMatrix at offset (%s,%s) with dimension(%s,%s). ColumnCount=%s")
-                          , format1000(row).cstr()
-                          , format1000(column).cstr()
-                          , format1000(src.getRowCount()).cstr()
-                          , format1000(src.getColumnCount()).cstr()
-                          , format1000(getColumnCount()).cstr());
+                          , formatSize(row).cstr()
+                          , formatSize(column).cstr()
+                          , formatSize(src.getRowCount()).cstr()
+                          , formatSize(src.getColumnCount()).cstr()
+                          , formatSize(getColumnCount()).cstr());
     }
 
     const size_t rowCount    = src.getRowCount();
