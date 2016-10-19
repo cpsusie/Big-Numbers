@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Chess.h"
 #include "ChessDlg.h"
 
 #ifdef _DEBUG

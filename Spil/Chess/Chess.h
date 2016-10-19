@@ -4,6 +4,8 @@
     #error include 'stdafx.h' before including this file for PCH
 #endif
 
+#include <MFCUtil/PixRect.h>
+
 class CChessApp : public CWinApp {
 private:
   static void createFileAssociation();

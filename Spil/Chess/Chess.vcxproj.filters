@@ -917,9 +917,6 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Image.h">
-      <Filter>Source Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="AboutDlg.h">
       <Filter>Source Files\Dialogs\Include</Filter>
     </ClInclude>
@@ -1033,6 +1030,9 @@
     </ClInclude>
     <ClInclude Include="ExternEngine.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Source Files\Graphics\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

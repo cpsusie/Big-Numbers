@@ -2,6 +2,8 @@
 
 #define ORIGIN CPoint(0,0)
 
+#include "Chess.h"
+
 typedef enum {
   RESOURCE_BITMAP
  ,RESOURCE_JPEG

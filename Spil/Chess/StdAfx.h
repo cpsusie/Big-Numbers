@@ -18,6 +18,4 @@
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include "ChessGame.h"
-#include <MFCUtil/PixRect.h>
 #include "Options.h"
-#include "Chess.h"

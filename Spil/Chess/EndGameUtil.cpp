@@ -19,7 +19,6 @@ void TablebaseInfo::save(ByteOutputStream &s) const {
 }
 
 void TablebaseInfo::load(ByteInputStream &s) {
-  USES_CONVERSION;
   s.getBytesForced((BYTE*)this, sizeof(TablebaseInfo));
   if(getVersion() != getProgramVersion()) {
     throw WrongVersionException(format(_T("Wrong fileversion:%s. Programversion=%s"), getVersion().cstr(), getProgramVersion().cstr()).cstr());

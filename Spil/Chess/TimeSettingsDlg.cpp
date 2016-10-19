@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Math.h>
 #include <MFCUtil/WinTools.h>
+#include "Chess.h"
 #include "TimeSettingsDlg.h"
 
 #ifdef _DEBUG
@@ -40,7 +41,7 @@ void TimeParametersWithComboSelection::initSelectedComboItem() {
 
 void CTimeSettingsDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_TAB_CLOCKTYPE, m_clockType);
+    DDX_Control(pDX, IDC_TAB_CLOCKTYPE, m_clockType);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES1, m_min1);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES2, m_min2);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES3, m_min3);
@@ -95,10 +96,10 @@ BEGIN_MESSAGE_MAP(CTimeSettingsDlg, CDialog)
     ON_COMMAND(ID_SELECT_TIMEDGAMETAB           , OnSelectTimedGame         )
     ON_COMMAND(ID_SELECT_LEVELTSTAB             , OnSelectLevels            )
     ON_COMMAND(ID_SELECT_SPEEDCHESSTAB          , OnSelectSpeedChess        )
-	ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CLOCKTYPE  , OnSelchangeTabClocktype   )
-	ON_CBN_SETFOCUS( IDC_COMBO_PLAYER           , OnSetfocusComboplayer     )
+    ON_NOTIFY(TCN_SELCHANGE, IDC_TAB_CLOCKTYPE  , OnSelchangeTabClocktype   )
+    ON_CBN_SETFOCUS( IDC_COMBO_PLAYER           , OnSetfocusComboplayer     )
     ON_CBN_SELCHANGE(IDC_COMBO_SPEEDPLAYER      , OnSelChangeComboPlayer    )
-	ON_CBN_SETFOCUS( IDC_COMBO_SPEEDPLAYER      , OnSetfocusSpeedcomboplayer)
+    ON_CBN_SETFOCUS( IDC_COMBO_SPEEDPLAYER      , OnSetfocusSpeedcomboplayer)
     ON_MESSAGE(ID_MSG_SHOW_DROPDOWN             , OnMsgShowDropdown         )
 END_MESSAGE_MAP()
 

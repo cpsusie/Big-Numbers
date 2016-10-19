@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/SelectDirDlg.h>
+#include "Chess.h"
 #include "TablebaseDlg.h"
 
 #ifdef _DEBUG
@@ -9,31 +10,31 @@
 
 CTablebaseDlg::CTablebaseDlg(CWnd* pParent /*=NULL*/) : CDialog(CTablebaseDlg::IDD, pParent) {
   const Options &options = getOptions();
-    m_moveCount       = options.getMaxMovesWithoutCaptureOrPawnMove();
+  m_moveCount       = options.getMaxMovesWithoutCaptureOrPawnMove();
 	m_defendStrength  = options.getEndGameDefendStrength();
-    m_tablebaseMetric = (options.getEndGameTablebaseMetric() == DEPTH_TO_MATE) ? 0 : 1;
+  m_tablebaseMetric = (options.getEndGameTablebaseMetric() == DEPTH_TO_MATE) ? 0 : 1;
 	m_depthFormat     = options.getDepthInPlies() ? 1 : 0;
-    m_tablebasePath   = options.getEndGameTablebasePath().cstr();
+  m_tablebasePath   = options.getEndGameTablebasePath().cstr();
 }
 
 void CTablebaseDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
     DDX_Text(pDX , IDC_EDIT_MOVECOUNT     , m_moveCount      );
-	DDX_Text(pDX , IDC_EDIT_DEFENDSTRENGTH, m_defendStrength );
+    DDX_Text(pDX , IDC_EDIT_DEFENDSTRENGTH, m_defendStrength );
     DDX_Radio(pDX, IDC_RADIO_METRIC_DTM   , m_tablebaseMetric);
-	DDX_Radio(pDX, IDC_RADIO_DEPTHINMOVES , m_depthFormat    );
+    DDX_Radio(pDX, IDC_RADIO_DEPTHINMOVES , m_depthFormat    );
     DDX_Text(pDX , IDC_EDIT_TABLEBASEPATH , m_tablebasePath  );
 }
 
 
 BEGIN_MESSAGE_MAP(CTablebaseDlg, CDialog)
-    ON_COMMAND(ID_GOTO_MOVECOUNT                   , OnGotoMoveCount             )
-    ON_COMMAND(ID_GOTO_DIR                         , OnGotoPath                  )
-    ON_COMMAND(ID_GOTO_DEFENDSTRENGTH              , OnGotoDefendStrength        )
-	ON_BN_CLICKED(IDC_BUTTON_PATH                  , OnButtonPath                )
-	ON_BN_CLICKED(IDC_BUTTON_DECOMPRESSALL         , OnButtonDecompressAll       )
-	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_MOVECOUNT     , OnDeltaposSpinMoveCount     )
-	ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEFENDSTRENGTH, OnDeltaposSpinDefendStrength)
+  ON_COMMAND(ID_GOTO_MOVECOUNT                   , OnGotoMoveCount             )
+  ON_COMMAND(ID_GOTO_DIR                         , OnGotoPath                  )
+  ON_COMMAND(ID_GOTO_DEFENDSTRENGTH              , OnGotoDefendStrength        )
+  ON_BN_CLICKED(IDC_BUTTON_PATH                  , OnButtonPath                )
+  ON_BN_CLICKED(IDC_BUTTON_DECOMPRESSALL         , OnButtonDecompressAll       )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_MOVECOUNT     , OnDeltaposSpinMoveCount     )
+  ON_NOTIFY(UDN_DELTAPOS, IDC_SPIN_DEFENDSTRENGTH, OnDeltaposSpinDefendStrength)
 END_MESSAGE_MAP()
 
 BOOL CTablebaseDlg::OnInitDialog() {

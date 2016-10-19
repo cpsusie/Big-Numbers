@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <Registry.h>
+#include "Chess.h"
 
 void CChessApp::createFileAssociation() {
   try {

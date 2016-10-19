@@ -4,6 +4,7 @@
 #include <MFCUtil/Clipboard.h>
 #include "MFCUtil/ConfirmDlg.h"
 #include <Language.h>
+#include "Chess.h"
 #include "ChessDlg.h"
 #include "AboutDlg.h"
 #include "HistoryDlg.h"

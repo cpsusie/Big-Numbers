@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <MFCUtil/WinTools.h>
+#include "Chess.h"
 #include "ConnectDlg.h"
 
 #ifdef _DEBUG
