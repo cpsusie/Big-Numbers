@@ -479,7 +479,7 @@ void CWinDiffDoc::setDocs(const String &name1, const String &name2) { // always 
     theApp.addToRecentFileList(name2.cstr());
   } catch(CMemoryException *e) {
     TCHAR msg[1024];
-    e->GetErrorMessage(msg, sizeof(msg));
+    e->GetErrorMessage(msg, ARRAYSIZE(msg));
     showError(_T("%s"), msg);
     return;
   } catch(...) {
