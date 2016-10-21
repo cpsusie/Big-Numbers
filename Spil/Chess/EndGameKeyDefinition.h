@@ -63,8 +63,8 @@ public:
 
 class EndGameKeyDefinition {
 private:
-  static const TCHAR            *metricName[2];
-  static EndGameGlobalProperties globalProperties;
+  static const TCHAR            *s_metricName[2];
+  static EndGameGlobalProperties s_globalProperties;
 
   PieceTypeWithIndex        m_orderedPieceType[2][MAX_ENDGAME_PIECECOUNT-1];          // Ordered by type, to make endGameKey.toString put King first, then queen, rook, etc.
   unsigned char             m_pieceCount;                                             // 4 lowend bits = #white pieces, 4 highend bits = #black pieces
@@ -140,14 +140,14 @@ public:
   static const char pawnPosToIndex[     64];
   static const char pawnIndexToPos[PAWN_POSCOUNT];
 
-  static UINT         encodeKKSym8(         const EndGameKey &key);
-  static void         decodeKKSym8(               EndGameKey &key, UINT index);
+  static UINT                     encodeKKSym8(         const EndGameKey &key);
+  static void                     decodeKKSym8(               EndGameKey &key, UINT index);
 
-  static UINT         encodeKKWithPawn(     const EndGameKey &key);
-  static void         decodeKKWithPawn(           EndGameKey &key, UINT index);
+  static UINT                     encodeKKWithPawn(     const EndGameKey &key);
+  static void                     decodeKKWithPawn(           EndGameKey &key, UINT index);
 
-  static UINT         encodeLeftWKKWithPawn(const EndGameKey &key);
-  static void         decodeLeftWKKWithPawn(      EndGameKey &key, UINT index);
+  static UINT                     encodeLeftWKKWithPawn(const EndGameKey &key);
+  static void                     decodeLeftWKKWithPawn(      EndGameKey &key, UINT index);
 
   virtual unsigned long           keyToIndex(           const EndGameKey  &key  ) const = 0;
   virtual EndGameKey              indexToKey(           unsigned long      index) const = 0;
@@ -233,17 +233,17 @@ public:
   static void removePropertyChangeListener(PropertyChangeListener *listener);
 
   static bool setDbPath(const String &path) {
-    return globalProperties.setDbPath(path);
+    return s_globalProperties.setDbPath(path);
   }
 
   static const String &getDbPath() {
-    return globalProperties.getDbPath();
+    return s_globalProperties.getDbPath();
   }
   static void setMetric(TablebaseMetric m) {
-    globalProperties.setMetric(m);
+    s_globalProperties.setMetric(m);
   }
   static inline TablebaseMetric getMetric() {
-    return globalProperties.getMetric();
+    return s_globalProperties.getMetric();
   }
   static inline bool isMetricDTM() {
     return getMetric() == DEPTH_TO_MATE;
@@ -252,7 +252,7 @@ public:
     return getMetric() == DEPTH_TO_CONVERSION;
   }
   static const TCHAR *getMetricName(TablebaseMetric m) {
-    return metricName[m];
+    return s_metricName[m];
   }
   static const TCHAR *getMetricName() {
     return getMetricName(getMetric());

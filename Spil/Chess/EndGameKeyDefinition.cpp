@@ -37,9 +37,9 @@ void EndGameGlobalProperties::setMetric(TablebaseMetric m) {
   setProperty(ENDGAME_METRIC, m_metric, m);
 }
 
-EndGameGlobalProperties EndGameKeyDefinition::globalProperties;
+EndGameGlobalProperties EndGameKeyDefinition::s_globalProperties;
 
-const TCHAR *EndGameKeyDefinition::metricName[] = {
+const TCHAR *EndGameKeyDefinition::s_metricName[] = {
   _T("DTC")
  ,_T("DTM")
 };
@@ -53,11 +53,11 @@ String EndGameKeyDefinition::getFileMetricSuffix() { // static
 }
 
 void EndGameKeyDefinition::addPropertyChangeListener(PropertyChangeListener *listener) { // static
-  globalProperties.addPropertyChangeListener(listener);
+  s_globalProperties.addPropertyChangeListener(listener);
 }
 
 void EndGameKeyDefinition::removePropertyChangeListener(PropertyChangeListener *listener) { // static
-  globalProperties.removePropertyChangeListener(listener);
+  s_globalProperties.removePropertyChangeListener(listener);
 }
 
 #ifdef TABLEBASE_BUILDER

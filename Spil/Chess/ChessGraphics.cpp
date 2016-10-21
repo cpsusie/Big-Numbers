@@ -6,7 +6,6 @@
 #include <Math/SigmoidIterator.h>
 #include "MessageDlgThread.h"
 #include "MessageDlg.h"
-#include "ChessGraphics.h"
 #include "ChessGraphicsAnimation.h"
 
 #define UPPERLEFTCORNER(scaled) ((scaled) ? m_resources.getUpperLeftCorner() : m_resources.getUpperLeftCorner0())

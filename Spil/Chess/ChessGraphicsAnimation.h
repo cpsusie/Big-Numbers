@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ChessGraphics.h"
 #include <MFCUtil/ViewPort2D.h>
 #include <Math/SigmoidIterator.h>
+#include "ChessGraphics.h"
 
 class PieceDragger {
 private:
