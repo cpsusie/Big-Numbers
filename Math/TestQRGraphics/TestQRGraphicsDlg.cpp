@@ -176,11 +176,16 @@ void CTestQRGraphicsDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    QRMatrix QR(a);
-    ComplexVector e(a.getColumnCount());
-    QRTraceElement element(QR);
-    QRDialog qrDialog(this);
-    qrDialog.handleData(element);
+    try {
+      QRMatrix QR(a);
+      ComplexVector e(a.getColumnCount());
+      QRTraceElement element(QR);
+      QRDialog qrDialog(this);
+      qrDialog.handleData(element);
+    }
+    catch (Exception e) {
+      MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
+    }
     CDialog::OnPaint();
   }
 }
@@ -194,104 +199,142 @@ void CTestQRGraphicsDlg::OnFileQuit()  {
 }
 
 void CTestQRGraphicsDlg::OnFileNew() {
-  for(size_t r = 0; r < a.getRowCount(); r++) {
-    for(size_t c = 0; c < a.getColumnCount(); c++) {
-      a(r,c) = randInt(-5,5);
+  try {
+    for(size_t r = 0; r < a.getRowCount(); r++) {
+      for(size_t c = 0; c < a.getColumnCount(); c++) {
+        a(r,c) = randInt(-5,5);
+      }
     }
+    Invalidate(false);
   }
-  Invalidate(false);
+  catch (Exception e) {
+    showException(e);
+  }
+
 }
 
 void CTestQRGraphicsDlg::OnFileSolve() {
-  QRDialog qrDialog(this);
-  ComplexVector eValues = findEigenValues(a,&qrDialog);
+  try {
+    QRDialog qrDialog(this);
+    ComplexVector eValues = findEigenValues(a,&qrDialog);
+  }
+  catch (Exception e) {
+    showException(e);
+  }
 }
 
 void CTestQRGraphicsDlg::OnFileUn() {
-  size_t dim = a.getRowCount();
-  a = Matrix::zero(dim,dim);
+  try {
+    size_t dim = a.getRowCount();
+    a = Matrix::zero(dim,dim);
     
-  for(size_t i = 1; i < dim; i++) {
-    a(i,i-1) = 1;
-  }
-  a(0,dim-1) = 1;
+    for(size_t i = 1; i < dim; i++) {
+      a(i,i-1) = 1;
+    }
+    a(0,dim-1) = 1;
 
-  Invalidate(false);
+    Invalidate(false);
+  }
+  catch (Exception e) {
+    showException(e);
+  }
+
 }
 
 void CTestQRGraphicsDlg::OnFileIllconditioned() {
-  size_t dim = a.getRowCount();
-  a = Matrix::zero(dim,dim);
+  try {
+    size_t dim = a.getRowCount();
+    a = Matrix::zero(dim,dim);
     
-  for(size_t i = 1; i < dim; i++) {
-    a(i,i-1) = 1;
-  }
-
-  double p1[DEFAULTSIZE+1],p2[DEFAULTSIZE+1];
-  for(int i = 0; i <= DEFAULTSIZE; i++) {
-    p1[i] = p2[i] = 0;
-  }
-  p1[0] = 1;
-  for(size_t i = 1; i <= dim; i++) {
-    p2[0] = 1;
-    for(size_t j = 1; j <= i; j++) {
-      p2[j] = p1[j] + p1[j-1];
+    for(size_t i = 1; i < dim; i++) {
+      a(i,i-1) = 1;
     }
-    memcpy(p1,p2,sizeof(p1));
+
+    double p1[DEFAULTSIZE+1],p2[DEFAULTSIZE+1];
+    for(int i = 0; i <= DEFAULTSIZE; i++) {
+      p1[i] = p2[i] = 0;
+    }
+    p1[0] = 1;
+    for(size_t i = 1; i <= dim; i++) {
+      p2[0] = 1;
+      for(size_t j = 1; j <= i; j++) {
+        p2[j] = p1[j] + p1[j-1];
+      }
+      memcpy(p1,p2,sizeof(p1));
+    }
+    for(size_t i = 0; i < dim; i++) {
+      a(0,i) = -p1[dim-i-1];
+    }
+    Invalidate(false);    
   }
-  for(size_t i = 0; i < dim; i++) {
-    a(0,i) = -p1[dim-i-1];
+  catch (Exception e) {
+    showException(e);
   }
-  Invalidate(false);    
 }
 
 void CTestQRGraphicsDlg::OnFileSymmetric() {
-  size_t dim = a.getRowCount();
-  for(size_t r = 0; r < dim; r++) {
-    for(size_t c = 0; c <= r; c++) {
-      a(c,r) = a(r,c) = rand() % 10 - 5;
+  try {
+    size_t dim = a.getRowCount();
+    for(size_t r = 0; r < dim; r++) {
+      for(size_t c = 0; c <= r; c++) {
+        a(c,r) = a(r,c) = rand() % 10 - 5;
+      }
     }
-  }
     
-  Invalidate(false);
+    Invalidate(false);
+  }
+  catch (Exception e) {
+    showException(e);
+  }
 }
 
 void CTestQRGraphicsDlg::OnFileRandomAntiSymmetric() {
-  size_t dim = a.getRowCount();
-  size_t n = dim - 1;
-  a = Matrix::zero(dim,dim);
+  try {
+    size_t dim = a.getRowCount();
+    size_t n = dim - 1;
+    a = Matrix::zero(dim,dim);
 
-  double s = 1;
-  for(size_t i = 0; i < dim; i++) {
-    a(i,n-i) = s;
-  }
-  a(0,2) = 2;
-  a(0,3) = 2;
-  a(0,4) = 2;
-  a(4,0) = 2;
-  a(3,0) = 2;
-  a(2,0) = 2;
+    double s = 1;
+    for(size_t i = 0; i < dim; i++) {
+      a(i,n-i) = s;
+    }
+    a(0,2) = 2;
+    a(0,3) = 2;
+    a(0,4) = 2;
+    a(4,0) = 2;
+    a(3,0) = 2;
+    a(2,0) = 2;
     
-  Invalidate(false);
+    Invalidate(false);
+  }
+  catch (Exception e) {
+    showException(e);
+  }
 }
 
 static double spec[] =  { 2,-3,1,2,-3,-3,-5,-4,-4,2,0,4,-4,3,-4,1 };
 
 void CTestQRGraphicsDlg::OnFileSpecial() {
-  size_t dim = a.getRowCount();
-  size_t n = dim;
-  for(size_t r = 0; r < n; r++) {
-    for(size_t c = 0; c < n; c++) {
-      a(r,c) = 0;
+  try {
+    size_t dim = a.getRowCount();
+    size_t n = dim;
+    for(size_t r = 0; r < n; r++) {
+      for(size_t c = 0; c < n; c++) {
+        a(r,c) = 0;
+      }
     }
+    for(size_t c = 0; c < n; c++) {
+      a(0,c) = -spec[n-c-1];
+    }
+    for(size_t r = 1; r < n; r++) {
+      a(r,r-1) = 1;
+    }
+    Invalidate(false);
   }
-  for(size_t c = 0; c < n; c++) {
-    a(0,c) = -spec[n-c-1];
+  catch (Exception e) {
+    showException(e);
   }
-  for(size_t r = 1; r < n; r++) {
-    a(r,r-1) = 1;
-  }
-  Invalidate(false);
+
 }
 
 void CTestQRGraphicsDlg::OnOptionsPause() {
