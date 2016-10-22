@@ -55,11 +55,10 @@ void Pipe::close() {
 }
 
 void Pipe::close(int index) {
+  if(!isOpen(index)) return;
   int &fd = m_fd[index];
-  if(fd != -1) {
-    ::_close(fd);
-    fd = -1;
-  }
+  ::_close(fd);
+  fd = -1;
 }
 
 void Pipe::saveStdFiles() {
@@ -150,9 +149,9 @@ void ExternEngine::start(bool silent, const String program,...) {
 
   } catch(Exception e) {
     oldStdFiles.restoreStdFilesAndClose();
+    if(m_input  == NULL) stdinPipe.close();
+    if(m_output == NULL) stdoutPipe.close();
     killProcess();
-    stdinPipe.close();
-    stdoutPipe.close();
 
     CHDIR(oldWorkDir);
 

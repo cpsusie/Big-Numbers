@@ -346,7 +346,6 @@ void CEngineOptionsDlg::OnDeltaPosSpin(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 }
 
 BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
-#ifdef _TODO
   TOOLTIPTEXT *pTTT = (TOOLTIPTEXT*)pNMHDR; // Get the tooltip structure.
   UINT CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
 
@@ -358,7 +357,12 @@ BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult
       return FALSE;
     }
 
-    CToolTipCtrl* pToolTip = AfxGetThreadState()->m_pToolTip;
+#if (_MFC_VER < 0x0700)
+    _AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
+#else
+     AFX_MODULE_THREAD_STATE* pThreadState = AfxGetModuleThreadState();
+#endif
+    CToolTipCtrl* pToolTip = pThreadState->m_pToolTip;
     if(pToolTip) {
       pToolTip->SetMaxTipWidth(SHRT_MAX); // Do this to make \r\n work!
     }
@@ -368,8 +372,7 @@ BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult
     pTTT->lpszText = m_currentToolTip.cstr();
     return TRUE;
   }
-#endif
   return FALSE;
 }
 
-#endif
+#endif // TABLEBASE_BUILDER

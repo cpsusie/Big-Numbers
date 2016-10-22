@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -28,55 +26,86 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\chess.ico"
+IDR_MAINFRAME           ICON                    "res\\chess.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // OPENINGLIBRARY
 //
 
-IDR_OPENINGLIBRARY      OPENINGLIBRARY DISCARDABLE "res\\OpenLib.dat"
+IDR_OPENINGLIBRARY      OPENINGLIBRARY          "res\\OpenLib.dat"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // JPG
 //
 
-IDR_BOARD               JPG     DISCARDABLE     "res\\Board.jpg"
+IDR_BOARD               JPG                     "res\\Board.jpg"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-IDB_SELECTIONFRAME      BITMAP  DISCARDABLE     "res\\selectionFrame.bmp"
-IDB_BITMAPBLACKBISHOP   BITMAP  DISCARDABLE     "res\\blackBishop.bmp"
-IDB_BITMAPBLACKKING     BITMAP  DISCARDABLE     "res\\blackKing.bmp"
-IDB_BITMAPBLACKKNIGHT   BITMAP  DISCARDABLE     "res\\blackKnight.bmp"
-IDB_BITMAPBLACKPAWN     BITMAP  DISCARDABLE     "res\\blackPawn.bmp"
-IDB_BITMAPBLACKQUEEN    BITMAP  DISCARDABLE     "res\\blackQueen.bmp"
-IDB_BITMAPBLACKROOK     BITMAP  DISCARDABLE     "res\\blackRook.bmp"
-IDB_BITMAPWHITEBISHOP   BITMAP  DISCARDABLE     "res\\whiteBishop.bmp"
-IDB_BITMAPWHITEKING     BITMAP  DISCARDABLE     "res\\whiteKing.bmp"
-IDB_BITMAPWHITEKNIGHT   BITMAP  DISCARDABLE     "res\\whiteKnight.bmp"
-IDB_BITMAPWHITEPAWN     BITMAP  DISCARDABLE     "res\\whitePawn.bmp"
-IDB_BITMAPWHITEQUEEN    BITMAP  DISCARDABLE     "res\\whiteQueen.bmp"
-IDB_BITMAPWHITEROOK     BITMAP  DISCARDABLE     "res\\whiteRook.bmp"
-IDB_YELLOWFIELD         BITMAP  DISCARDABLE     "res\\yellowField.bmp"
-IDB_BLUEFIELD           BITMAP  DISCARDABLE     "res\\blueField.bmp"
-IDB_CHECKEDKING         BITMAP  DISCARDABLE     "res\\checkedKing.bmp"
-IDB_PURPLEFIELD         BITMAP  DISCARDABLE     "res\\purpleField.bmp"
-IDB_PINKFIELD           BITMAP  DISCARDABLE     "res\\pinkField.bmp"
-IDB_SRCMARK             BITMAP  DISCARDABLE     "res\\srcfieldMark.bmp"
-IDB_DSTMARK             BITMAP  DISCARDABLE     "res\\DstFieldMark.bmp"
-IDB_HOURGLASS           BITMAP  DISCARDABLE     "res\\Hourglasses.bmp"
-IDB_PLAYERINDICATOR     BITMAP  DISCARDABLE     "res\\PlayerIndicator.bmp"
-IDB_BITMAPNOPIECE       BITMAP  DISCARDABLE     "res\\NoPiece.bmp"
-IDB_BITMAPWHITEBLACK    BITMAP  DISCARDABLE     "res\\OpeningTreeImages.bmp"
-IDB_GREENFIELD          BITMAP  DISCARDABLE     "res\\GreenField.bmp"
-IDB_BITMAPWHITEMARK     BITMAP  DISCARDABLE     "res\\WhiteMark.bmp"
-IDB_BITMAPBLACKMARK     BITMAP  DISCARDABLE     "res\\BlackMark.bmp"
-IDB_BITMAPDELETEMARK    BITMAP  DISCARDABLE     "res\\DeleteMark.bmp"
+IDB_SELECTIONFRAME      BITMAP                  "res\\selectionFrame.bmp"
+
+IDB_BITMAPBLACKBISHOP   BITMAP                  "res\\blackBishop.bmp"
+
+IDB_BITMAPBLACKKING     BITMAP                  "res\\blackKing.bmp"
+
+IDB_BITMAPBLACKKNIGHT   BITMAP                  "res\\blackKnight.bmp"
+
+IDB_BITMAPBLACKPAWN     BITMAP                  "res\\blackPawn.bmp"
+
+IDB_BITMAPBLACKQUEEN    BITMAP                  "res\\blackQueen.bmp"
+
+IDB_BITMAPBLACKROOK     BITMAP                  "res\\blackRook.bmp"
+
+IDB_BITMAPWHITEBISHOP   BITMAP                  "res\\whiteBishop.bmp"
+
+IDB_BITMAPWHITEKING     BITMAP                  "res\\whiteKing.bmp"
+
+IDB_BITMAPWHITEKNIGHT   BITMAP                  "res\\whiteKnight.bmp"
+
+IDB_BITMAPWHITEPAWN     BITMAP                  "res\\whitePawn.bmp"
+
+IDB_BITMAPWHITEQUEEN    BITMAP                  "res\\whiteQueen.bmp"
+
+IDB_BITMAPWHITEROOK     BITMAP                  "res\\whiteRook.bmp"
+
+IDB_YELLOWFIELD         BITMAP                  "res\\yellowField.bmp"
+
+IDB_BLUEFIELD           BITMAP                  "res\\blueField.bmp"
+
+IDB_CHECKEDKING         BITMAP                  "res\\checkedKing.bmp"
+
+IDB_PURPLEFIELD         BITMAP                  "res\\purpleField.bmp"
+
+IDB_PINKFIELD           BITMAP                  "res\\pinkField.bmp"
+
+IDB_SRCMARK             BITMAP                  "res\\srcfieldMark.bmp"
+
+IDB_DSTMARK             BITMAP                  "res\\DstFieldMark.bmp"
+
+IDB_HOURGLASS           BITMAP                  "res\\Hourglasses.bmp"
+
+IDB_PLAYERINDICATOR     BITMAP                  "res\\PlayerIndicator.bmp"
+
+IDB_BITMAPNOPIECE       BITMAP                  "res\\NoPiece.bmp"
+
+IDB_BITMAPWHITEBLACK    BITMAP                  "res\\OpeningTreeImages.bmp"
+
+IDB_GREENFIELD          BITMAP                  "res\\GreenField.bmp"
+
+IDB_BITMAPWHITEMARK     BITMAP                  "res\\WhiteMark.bmp"
+
+IDB_BITMAPBLACKMARK     BITMAP                  "res\\BlackMark.bmp"
+
+IDB_BITMAPDELETEMARK    BITMAP                  "res\\DeleteMark.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -84,117 +113,100 @@ IDB_BITMAPDELETEMARK    BITMAP  DISCARDABLE     "res\\DeleteMark.bmp"
 //
 
 IDD_MAINFRAME DIALOGEX 0, 0, 957, 407
-STYLE DS_NOIDLEMSG | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Skak"
 MENU IDR_MAINFRAME
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    PUSHBUTTON      "To make menu alt-key work",IDC_DUMMYBUTTON,431,196,96,
-                    14,NOT WS_VISIBLE
+    PUSHBUTTON      "To make menu alt-key work",IDC_DUMMYBUTTON,431,196,96,14,NOT WS_VISIBLE
 END
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 81
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 81
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{About chess}"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_ICON_CHESS,11,17,20,20
-    LTEXT           "{Chess version}",IDC_STATIC_INFO,40,10,119,29,
-                    SS_NOPREFIX
+    LTEXT           "{Chess version}",IDC_STATIC_INFO,40,10,119,29,SS_NOPREFIX
     LTEXT           "Copyright© 2012 - ",IDC_STATIC_COPYRIGHT,40,46,119,8
     DEFPUSHBUTTON   "{OK}",IDOK,178,7,50,13,WS_GROUP
 END
 
 IDD_HISTORY_DIALOG DIALOGEX 0, 0, 227, 245
-STYLE DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "{History}"
 MENU IDR_HISTORY_MENU
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDIT_HISTORY,7,7,213,177,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT 
-                    WS_BORDER | WS_VSCROLL,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDIT_HISTORY,7,7,213,177,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | WS_VSCROLL,WS_EX_CLIENTEDGE
     DEFPUSHBUTTON   "{OK}",IDOK,116,225,50,13
     PUSHBUTTON      "{Cancel}",IDCANCEL,170,225,50,13
     SCROLLBAR       IDC_SCROLLBAR_HISTORY,18,201,188,9
 END
 
-IDD_TRACE_DIALOG DIALOG DISCARDABLE  0, 0, 260, 353
-STYLE DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_TRACE_DIALOG DIALOG 0, 0, 260, 353
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "{Activity log}"
 MENU IDR_TRACE_MENU
 FONT 8, "Courier New"
 BEGIN
-    EDITTEXT        IDC_EDIT_TEXTBOX,7,7,246,254,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | 
-                    WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_EDIT_TEXTBOX,7,7,246,254,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_READONLY | WS_VSCROLL | WS_HSCROLL
     DEFPUSHBUTTON   "{Close}",IDC_BUTTON_HIDE,22,327,50,13
     PUSHBUTTON      "{Clear}",IDC_BUTTON_CLEAR,83,326,50,13
-    CONTROL         "{Keep text}",IDC_CHECK_KEEPTEXT,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,146,325,87,14
+    CONTROL         "{Keep text}",IDC_CHECK_KEEPTEXT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,146,325,87,14
     LTEXT           "",IDC_STATIC_PV,7,271,246,46,SS_SUNKEN | WS_BORDER
 END
 
-IDD_OPENINGLIB_DIALOG DIALOG DISCARDABLE  0, 0, 433, 330
-STYLE DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_OPENINGLIB_DIALOG DIALOG 0, 0, 433, 330
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "{Openinglibrary}"
 MENU IDR_OPENINGLIB_MENU
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "{OK}",IDOK,376,7,50,13
-    CONTROL         "Tree1",IDC_TREE_OPENING,"SysTreeView32",TVS_HASBUTTONS | 
-                    TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | 
-                    WS_BORDER | WS_TABSTOP,7,7,352,316
+    CONTROL         "Tree1",IDC_TREE_OPENING,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | TVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,352,316
     PUSHBUTTON      "{Expand}",IDC_BUTTON_EXPAND,376,27,50,13
     PUSHBUTTON      "{Expand all}",IDC_BUTTON_EXPANDALL,376,47,50,13
 END
 
-IDD_SELECTOPENING_DIALOG DIALOG DISCARDABLE  0, 0, 190, 241
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_SELECTOPENING_DIALOG DIALOG 0, 0, 190, 241
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Select opening}"
 FONT 8, "MS Sans Serif"
 BEGIN
-    LISTBOX         IDC_LIST_NAMES,7,7,176,201,LBS_NOINTEGRALHEIGHT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LIST_NAMES,7,7,176,201,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
     DEFPUSHBUTTON   "{OK}",IDOK,75,221,50,13
     PUSHBUTTON      "{Cancel}",IDCANCEL,133,221,50,13
 END
 
 IDD_MESSAGE_DIALOG DIALOGEX 0, 0, 327, 132
-STYLE DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 14, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    EDITTEXT        IDC_EDIT_TEXTBOX,7,7,228,90,ES_CENTER | ES_MULTILINE | 
-                    WS_DISABLED | NOT WS_TABSTOP,WS_EX_CLIENTEDGE
+    EDITTEXT        IDC_EDIT_TEXTBOX,7,7,228,90,ES_CENTER | ES_MULTILINE | WS_DISABLED | NOT WS_TABSTOP,WS_EX_CLIENTEDGE
 END
 
-IDD_ENTERTEXT_DIALOG DIALOG DISCARDABLE  0, 0, 351, 119
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ENTERTEXT_DIALOG DIALOG 0, 0, 351, 119
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Enter text}"
 FONT 8, "MS Sans Serif"
 BEGIN
     DEFPUSHBUTTON   "{OK}",IDOK,294,7,50,13
     PUSHBUTTON      "{Cancel}",IDCANCEL,294,24,50,13
-    EDITTEXT        IDC_EDIT_TEXTBOX,53,40,222,45,ES_MULTILINE | 
-                    ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | 
-                    WS_VSCROLL | WS_HSCROLL
+    EDITTEXT        IDC_EDIT_TEXTBOX,53,40,222,45,ES_MULTILINE | ES_AUTOVSCROLL | ES_AUTOHSCROLL | ES_WANTRETURN | WS_VSCROLL | WS_HSCROLL
     LTEXT           "{Text:}",IDC_STATIC_TEXT,23,55,25,14
 END
 
-IDD_TIMESETTINGS_DIALOG DIALOG DISCARDABLE  0, 0, 263, 218
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_TIMESETTINGS_DIALOG DIALOG 0, 0, 263, 218
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Time}"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "Tab1",IDC_TAB_CLOCKTYPE,"SysTabControl32",0x0,7,7,249,
-                    183
+    CONTROL         "Tab1",IDC_TAB_CLOCKTYPE,"SysTabControl32",0x0,7,7,249,183
     LTEXT           "{Player}",IDC_STATIC_PLAYER,38,42,30,15
-    COMBOBOX        IDC_COMBO_PLAYER,76,42,53,61,CBS_DROPDOWN | WS_VSCROLL | 
-                    WS_TABSTOP
-    COMBOBOX        IDC_COMBO_SPEEDPLAYER,76,42,53,52,CBS_DROPDOWN | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_PLAYER,76,42,53,61,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_SPEEDPLAYER,76,42,53,52,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT           "{Number of moves:}",IDC_STATIC_MOVECOUNT,36,68,101,15
     EDITTEXT        IDC_EDIT_MOVECOUNT,147,66,23,15,ES_AUTOHSCROLL
     LTEXT           "{Time:}",IDC_STATIC_TIME,36,90,100,15
@@ -202,20 +214,15 @@ BEGIN
     EDITTEXT        IDC_EDIT_SPEEDCHESSHOURSLEFT,147,84,23,15,ES_AUTOHSCROLL
     LTEXT           ":",IDC_STATIC_COLON1,174,87,8,11
     EDITTEXT        IDC_EDIT_MINUTESLEFT,181,84,23,15,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SPEEDCHESSMINUTESLEFT,181,84,23,15,
-                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SPEEDCHESSMINUTESLEFT,181,84,23,15,ES_AUTOHSCROLL
     LTEXT           ":",IDC_STATIC_COLON2,207,87,8,11
     EDITTEXT        IDC_EDIT_SECONDSLEFT,215,84,23,15,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SPEEDCHESSSECONDSLEFT,215,84,23,15,
-                    ES_AUTOHSCROLL
-    LTEXT           "{Add seconds pr. move:}",IDC_STATIC_TIMEINCR,36,108,100,
-                    15
+    EDITTEXT        IDC_EDIT_SPEEDCHESSSECONDSLEFT,215,84,23,15,ES_AUTOHSCROLL
+    LTEXT           "{Add seconds pr. move:}",IDC_STATIC_TIMEINCR,36,108,100,15
     EDITTEXT        IDC_EDIT_SECONDSINCR,147,106,23,15,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_SPEEDCHESSSECONDSINCR,147,106,23,15,
-                    ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDIT_SPEEDCHESSSECONDSINCR,147,106,23,15,ES_AUTOHSCROLL
     LTEXT           "{sec.}",IDC_STATIC_SECONDS_LC,174,108,21,15
-    CONTROL         "{Reset time}",IDC_CHECK_RESETCLOCKS,"Button",
-                    BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,36,130,119,15
+    CONTROL         "{Reset time}",IDC_CHECK_RESETCLOCKS,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | WS_TABSTOP,36,130,119,15
     LTEXT           "{Level}",IDC_STATIC_LEVEL,43,39,26,15
     LTEXT           "{Time pr. move}",IDC_STATIC_TIMEPERMOVE,78,39,63,15
     LTEXT           "{Min.}",IDC_STATIC_MINUTES,77,55,18,8
@@ -248,42 +255,33 @@ BEGIN
     PUSHBUTTON      "{Cancel}",IDCANCEL,206,198,50,13
 END
 
-IDD_CONNECT_DIALOG DIALOG DISCARDABLE  0, 0, 264, 133
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_CONNECT_DIALOG DIALOG 0, 0, 264, 133
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Forbind computere}"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "{&Opret spil}",IDC_RADIO_CREATEGAME,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,31,32,86,10
+    CONTROL         "{&Opret spil}",IDC_RADIO_CREATEGAME,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,31,32,86,10
     CONTROL         "{&Forbind til andet spil}",IDC_RADIO_CONNECTTOGAME,
                     "Button",BS_AUTORADIOBUTTON,31,54,107,10
     EDITTEXT        IDC_EDIT_COMPUTERNAME,143,87,107,13,ES_AUTOHSCROLL
     DEFPUSHBUTTON   "{OK}",IDOK,207,7,50,14
     PUSHBUTTON      "{Cancel}",IDCANCEL,207,24,50,14
-    GROUPBOX        "{Hvordan ønsker du at spille}",IDC_GROUP_CONNECTMETHOD,
-                    18,16,127,57
-    LTEXT           "{Modstanders computernavn}",IDC_STATIC_COMPUTERNAME,20,
-                    87,109,13
+    GROUPBOX        "{Hvordan ønsker du at spille}",IDC_GROUP_CONNECTMETHOD,18,16,127,57
+    LTEXT           "{Modstanders computernavn}",IDC_STATIC_COMPUTERNAME,20,87,109,13
     LTEXT           "",IDC_STATIC_WAITING,20,105,231,14
 END
 
-IDD_PIECEVALUE_DIALOG DIALOG DISCARDABLE  0, 0, 330, 136
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_PIECEVALUE_DIALOG DIALOG 0, 0, 330, 136
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Plot Wins/PieceValue"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "&King",IDC_RADIO_KING,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,39,25,55,12
-    CONTROL         "&Dronning",IDC_RADIO_QUEEN,"Button",BS_AUTORADIOBUTTON,
-                    39,41,55,12
-    CONTROL         "&Tårn",IDC_RADIO_ROOK,"Button",BS_AUTORADIOBUTTON,39,57,
-                    55,12
-    CONTROL         "&Løber",IDC_RADIO_BISHOP,"Button",BS_AUTORADIOBUTTON,39,
-                    73,55,12
-    CONTROL         "&Springer",IDC_RADIO_KNIGHT,"Button",BS_AUTORADIOBUTTON,
-                    39,89,55,12
-    CONTROL         "&Bonde",IDC_RADIO_PAWN,"Button",BS_AUTORADIOBUTTON,39,
-                    105,55,12
+    CONTROL         "&King",IDC_RADIO_KING,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,39,25,55,12
+    CONTROL         "&Dronning",IDC_RADIO_QUEEN,"Button",BS_AUTORADIOBUTTON,39,41,55,12
+    CONTROL         "&Tårn",IDC_RADIO_ROOK,"Button",BS_AUTORADIOBUTTON,39,57,55,12
+    CONTROL         "&Løber",IDC_RADIO_BISHOP,"Button",BS_AUTORADIOBUTTON,39,73,55,12
+    CONTROL         "&Springer",IDC_RADIO_KNIGHT,"Button",BS_AUTORADIOBUTTON,39,89,55,12
+    CONTROL         "&Bonde",IDC_RADIO_PAWN,"Button",BS_AUTORADIOBUTTON,39,105,55,12
     EDITTEXT        IDC_EDIT_FROM,173,64,36,13,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_TO,226,64,36,13,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_STEP,173,82,36,13,ES_AUTOHSCROLL
@@ -295,72 +293,54 @@ BEGIN
     LTEXT           "Skridtlængde:",IDC_STATIC,117,86,45,13
 END
 
-IDD_TABLEBASE_DIALOG DIALOG DISCARDABLE  0, 0, 298, 190
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_TABLEBASE_DIALOG DIALOG 0, 0, 298, 190
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Tablebase settings}"
 FONT 8, "MS Sans Serif"
 BEGIN
     EDITTEXT        IDC_EDIT_MOVECOUNT,244,16,30,13,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_DEFENDSTRENGTH,244,40,30,13,ES_AUTOHSCROLL
-    CONTROL         "{Depth to mate}",IDC_RADIO_METRIC_DTM,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,25,82,112,14
-    CONTROL         "{Depth to conversion}",IDC_RADIO_METRIC_DTC,"Button",
-                    BS_AUTORADIOBUTTON,25,101,112,14
-    CONTROL         "{Moves}",IDC_RADIO_DEPTHINMOVES,"Button",
-                    BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,164,82,112,14
-    CONTROL         "{Plies}",IDC_RADIO_DEPTHINPLIES,"Button",
-                    BS_AUTORADIOBUTTON,164,101,112,14
+    CONTROL         "{Depth to mate}",IDC_RADIO_METRIC_DTM,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,25,82,112,14
+    CONTROL         "{Depth to conversion}",IDC_RADIO_METRIC_DTC,"Button",BS_AUTORADIOBUTTON,25,101,112,14
+    CONTROL         "{Moves}",IDC_RADIO_DEPTHINMOVES,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,164,82,112,14
+    CONTROL         "{Plies}",IDC_RADIO_DEPTHINPLIES,"Button",BS_AUTORADIOBUTTON,164,101,112,14
     EDITTEXT        IDC_EDIT_TABLEBASEPATH,68,142,181,14,ES_AUTOHSCROLL
     PUSHBUTTON      "...",IDC_BUTTON_PATH,252,142,27,14
-    PUSHBUTTON      "{Decompress all}",IDC_BUTTON_DECOMPRESSALL,50,169,113,
-                    14
+    PUSHBUTTON      "{Decompress all}",IDC_BUTTON_DECOMPRESSALL,50,169,113,14
     DEFPUSHBUTTON   "{OK}",IDOK,185,169,50,14
     PUSHBUTTON      "{Cancel}",IDCANCEL,241,169,50,14
     GROUPBOX        "{Metric}",IDC_GROUP_METRIC,16,71,127,54
-    LTEXT           "{Max moves with no capture/pawnmove:}",
-                    IDC_STATIC_MAXMOVES,16,17,185,14
+    LTEXT           "{Max moves with no capture/pawnmove:}",IDC_STATIC_MAXMOVES,16,17,185,14
     LTEXT           "{Path}",IDC_STATIC_TABLEBASEPATH,16,144,38,14
-    LTEXT           "{Defend strength}",IDC_STATIC_DEFENDSTRENGTH,16,40,185,
-                    14
-    CONTROL         "Spin1",IDC_SPIN_MOVECOUNT,"msctls_updown32",
-                    UDS_ARROWKEYS,273,15,11,13
-    CONTROL         "Spin1",IDC_SPIN_DEFENDSTRENGTH,"msctls_updown32",
-                    UDS_ARROWKEYS,273,39,11,13
+    LTEXT           "{Defend strength}",IDC_STATIC_DEFENDSTRENGTH,16,40,185,14
+    CONTROL         "Spin1",IDC_SPIN_MOVECOUNT,"msctls_updown32",UDS_ARROWKEYS,273,15,11,13
+    CONTROL         "Spin1",IDC_SPIN_DEFENDSTRENGTH,"msctls_updown32",UDS_ARROWKEYS,273,39,11,13
     GROUPBOX        "{Depth format} ",IDC_GROUP_DEPTHFORMAT,158,71,127,54
 END
 
-IDD_VIEW_DIALOG DIALOG DISCARDABLE  0, 0, 234, 175
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_VIEW_DIALOG DIALOG 0, 0, 234, 175
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{View}"
 FONT 8, "MS Sans Serif"
 BEGIN
-    CONTROL         "{Show fieldnames}",IDC_CHECK_SHOWFIELDNAMES,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,20,127,15
-    CONTROL         "{Show legal moves}",IDC_CHECK_SHOWLEGALMOVES,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,38,127,15
-    CONTROL         "{Show computer time}",IDC_CHECK_SHOWCOMPUTERTIME,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,56,127,15
-    CONTROL         "{Indicate player in turn}",
-                    IDC_CHECK_INDICATEPLAYERINTURN,"Button",BS_AUTOCHECKBOX | 
-                    WS_TABSTOP,21,74,127,15
-    CONTROL         "{Animate moves}",IDC_CHECK_ANIMATEMOVES,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,92,127,15
-    CONTROL         "{Animate checkmate}",IDC_CHECK_ANIMATECHECKMATE,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,110,127,15
-    CONTROL         "{Ask for new game}",IDC_CHECK_ASKFORNEWGAME,"Button",
-                    BS_AUTOCHECKBOX | WS_TABSTOP,21,128,127,15
+    CONTROL         "{Show fieldnames}",IDC_CHECK_SHOWFIELDNAMES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,20,127,15
+    CONTROL         "{Show legal moves}",IDC_CHECK_SHOWLEGALMOVES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,38,127,15
+    CONTROL         "{Show computer time}",IDC_CHECK_SHOWCOMPUTERTIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,56,127,15
+    CONTROL         "{Indicate player in turn}",IDC_CHECK_INDICATEPLAYERINTURN,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,74,127,15
+    CONTROL         "{Animate moves}",IDC_CHECK_ANIMATEMOVES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,92,127,15
+    CONTROL         "{Animate checkmate}",IDC_CHECK_ANIMATECHECKMATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,110,127,15
+    CONTROL         "{Ask for new game}",IDC_CHECK_ASKFORNEWGAME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,21,128,127,15
     DEFPUSHBUTTON   "{OK}",IDOK,121,154,50,14
     PUSHBUTTON      "{Cancel}",IDCANCEL,177,154,50,14
 END
 
 IDD_ENGINES_DIALOG DIALOGEX 0, 0, 521, 171
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Registered engines}"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    CONTROL         "List1",IDC_LIST_ENGINES,"SysListView32",LVS_REPORT | 
-                    LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | 
-                    WS_TABSTOP,7,7,474,128,WS_EX_CLIENTEDGE
+    CONTROL         "List1",IDC_LIST_ENGINES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | WS_BORDER | WS_TABSTOP,7,7,474,128,WS_EX_CLIENTEDGE
     PUSHBUTTON      "{Add}",IDC_BUTTON_ADD,227,150,54,14
     PUSHBUTTON      "{Delete}",IDC_BUTTON_DELETE,286,150,54,14
     PUSHBUTTON      "{Opdater liste}",IDC_BUTTON_CHECK,345,150,59,14
@@ -368,8 +348,8 @@ BEGIN
     PUSHBUTTON      "{Cancel}",IDCANCEL,464,150,50,14
 END
 
-IDD_ENGINEOPTIONS_DIALOG DIALOG DISCARDABLE  0, 0, 287, 126
-STYLE DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ENGINEOPTIONS_DIALOG DIALOG 0, 0, 287, 126
+STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 FONT 8, "MS Sans Serif"
 BEGIN
     PUSHBUTTON      "{Set to default}",IDC_BUTTON_SETDEFAULT,26,105,62,14
@@ -385,7 +365,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_HISTORY_DIALOG, DIALOG
     BEGIN
@@ -393,14 +373,6 @@ BEGIN
         RIGHTMARGIN, 220
         TOPMARGIN, 7
         BOTTOMMARGIN, 238
-    END
-
-    IDD_SELECTDIR_DIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 320
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 205
     END
 
     IDD_TRACE_DIALOG, DIALOG
@@ -507,7 +479,7 @@ END
 // Toolbar
 //
 
-IDR_FOLDERIMAGES TOOLBAR DISCARDABLE  18, 16
+IDR_FOLDERIMAGES TOOLBAR 18, 16
 BEGIN
     BUTTON      ID_BUTTONCLOSEFOLDER
     BUTTON      ID_BUTTONOPENEDFOLDER
@@ -520,18 +492,18 @@ END
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -557,25 +529,20 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&Filer"
     BEGIN
         POPUP "&Nyt spil"
         BEGIN
             MENUITEM "Spil &hvid mod computer",     ID_FILE_NEWGAME_YOUPLAYWHITE
-
             MENUITEM "Spil &sort mod computer",     ID_FILE_NEWGAME_YOUPLAYBLACK
-
             MENUITEM SEPARATOR
         END
         MENUITEM "Ind&læs spil...\tCtrl+L",     ID_FILE_LOADGAME
         MENUITEM SEPARATOR
-        MENUITEM "Opret &forbindelse til en anden computer...\tCtrl+N", 
-                                                ID_FILE_PLAY_REMOTE
-        MENUITEM "Af&bryd forbindelse til anden computer", 
-                                                ID_FILE_DISCONNECT_REMOTEGAME
-        , GRAYED
+        MENUITEM "Opret &forbindelse til en anden computer...\tCtrl+N", ID_FILE_PLAY_REMOTE
+        MENUITEM "Af&bryd forbindelse til anden computer\tCtrl+Q", ID_FILE_DISCONNECT_REMOTEGAME, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Gem\tCtrl+S",                ID_FILE_SAVE
         MENUITEM "Gem &som...",                 ID_FILE_SAVEAS
@@ -600,8 +567,7 @@ BEGIN
         MENUITEM "Vend &bræt\tCtrl+F4",         ID_EDIT_TURNBOARD
         MENUITEM SEPARATOR
         MENUITEM "&Tøm bræt\tAlt+C",            ID_EDIT_CLEARBOARD, GRAYED
-        MENUITEM "&Start opstilling",           ID_EDIT_SETUPSTARTPOSITION
-        , GRAYED
+        MENUITEM "&Start opstilling",           ID_EDIT_SETUPSTARTPOSITION, GRAYED
         POPUP "S&ymmetrisk transformation"
         BEGIN
             MENUITEM "Ombyt &farver",               ID_EDIT_SWAPCOLORS
@@ -615,8 +581,7 @@ BEGIN
         END
         POPUP "Sæt spiller i træ&kket", GRAYED
         BEGIN
-            MENUITEM "H&vid\tAlt+V",                ID_EDIT_WHITETOMOVE
-            , CHECKED
+            MENUITEM "H&vid\tAlt+V",                ID_EDIT_WHITETOMOVE, CHECKED
             MENUITEM "&Sort\tAlt+S",                ID_EDIT_BLACKTOMOVE
         END
         MENUITEM SEPARATOR
@@ -631,58 +596,37 @@ BEGIN
         MENUITEM "Tr&æk nu\tCtrl+F",            ID_MOVENOW, GRAYED
         POPUP "Spil sel&v"
         BEGIN
-            MENUITEM "Genstart &ikke ved afslutning\tCtrl+F5", 
-                                                    ID_AUTOPLAY_NO_RESTART
-            MENUITEM "&Genstart ved afslutning\tCtrl+Shift+F5", 
-                                                    ID_AUTOPLAY_RESTART_AT_END
-
+            MENUITEM "Genstart &ikke ved afslutning\tCtrl+F5", ID_AUTOPLAY_NO_RESTART
+            MENUITEM "&Genstart ved afslutning\tCtrl+Shift+F5", ID_AUTOPLAY_RESTART_AT_END
             MENUITEM SEPARATOR
             POPUP "&Niveau"
             BEGIN
                 POPUP "&Begge"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_BOTH_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_BOTH_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_BOTH_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_BOTH_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_BOTH_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_BOTH_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_BOTH_LEVEL_6
-
                 END
                 POPUP "&Hvid"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_WHITE_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_WHITE_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_WHITE_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_WHITE_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_WHITE_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_WHITE_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_WHITE_LEVEL_6
-
                 END
                 POPUP "&Sort"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_BLACK_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_BLACK_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_BLACK_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_BLACK_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_BLACK_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_BLACK_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_BLACK_LEVEL_6
-
                 END
             END
         END
@@ -713,17 +657,13 @@ BEGIN
             POPUP "&Hvid"
             BEGIN
                 MENUITEM "Indstillinger...",            ID_WHITE_ENGINE_SETTINGS
-
                 MENUITEM "Stat&us\tCtrl+U",             ID_WHITE_ENGINE_GETSTATE
-
                 MENUITEM SEPARATOR
             END
             POPUP "&Sort"
             BEGIN
                 MENUITEM "Indstillinger...",            ID_BLACK_ENGINE_SETTINGS
-
                 MENUITEM "Stat&us\tCtrl+Shift+U",       ID_BLACK_ENGINE_GETSTATE
-
                 MENUITEM SEPARATOR
             END
             MENUITEM SEPARATOR
@@ -731,11 +671,9 @@ BEGIN
             MENUITEM "Ad&ministrer...\tAlt+M",      ID_EXTERNENGINE_REGISTER
         END
         MENUITEM SEPARATOR
-        MENUITEM "Brug åbnings&bibliotek",      ID_OPENINGLIBRARY_ENABLED
-        , CHECKED
+        MENUITEM "Brug åbnings&bibliotek",      ID_OPENINGLIBRARY_ENABLED, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Brug slutspils&database",     ID_ENDGAMETABLEBASE_ENABLED
-        , CHECKED
+        MENUITEM "Brug slutspils&database",     ID_ENDGAMETABLEBASE_ENABLED, CHECKED
         MENUITEM "&Indstillinger...\tF7",       ID_TABLEBASE_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "&Log vindue\tAlt+L",          ID_VIEW_TRACEWINDOW
@@ -747,8 +685,7 @@ BEGIN
     POPUP "&Hjælp"
     BEGIN
         MENUITEM "&Hint...\tF8",                ID_HELP_HINT, GRAYED
-        MENUITEM "&Uendelig søgning efter bedste træk\tShift+F8", 
-                                                ID_HELP_INFINITEHINT
+        MENUITEM "&Uendelig søgning efter bedste træk\tShift+F8", ID_HELP_INFINITEHINT
         MENUITEM SEPARATOR
         MENUITEM "Åbnings&bibliotek...\tF9",    ID_HELP_SHOWOPENINGLIBRARY
         MENUITEM SEPARATOR
@@ -756,7 +693,7 @@ BEGIN
     END
 END
 
-IDR_TEST_MENU MENU DISCARDABLE 
+IDR_TEST_MENU MENU
 BEGIN
     POPUP "&Test"
     BEGIN
@@ -769,18 +706,14 @@ BEGIN
             MENUITEM "Vis &bondetællere",           ID_TEST_SHOWPAWNCOUNT
             MENUITEM "Vis s&idste slag",            ID_TEST_SHOWLASTCAPTURE
             MENUITEM "Vis &gentagelser",            ID_TEST_SHOWPOSITIONREPEATS
-
             MENUITEM "Vis sidste &træk",            ID_TEST_SHOWLASTMOVEINFO
             MENUITEM "Vis SDangribende felt",       ID_TEST_SHOWCHECKINGSDAPOS
-
             MENUITEM "Vis Setupmode",               ID_TEST_SHOWSETUPMODE
             MENUITEM "Vis &FEN",                    ID_TEST_SHOWFEN
         END
         MENUITEM SEPARATOR
-        MENUITEM "Træk baglæns",                ID_TEST_MOVEBACKWARDS
-        , GRAYED
-        MENUITEM "Generer fiktive bonde slag",  ID_TEST_FICTIVEPAWNCAPTURES
-        , GRAYED
+        MENUITEM "Træk baglæns",                ID_TEST_MOVEBACKWARDS, GRAYED
+        MENUITEM "Generer fiktive bonde slag",  ID_TEST_FICTIVEPAWNCAPTURES, GRAYED
         MENUITEM "Transformer slutspilsposition", ID_TEST_TRANSFORMPOSITION
         MENUITEM "Normaliser slutspilsposition", ID_TEST_NORMALIZEPOSITION
         MENUITEM "Gem til ekstern motor...",    ID_TEST_SAVETOEXTERNENGINE
@@ -789,7 +722,7 @@ BEGIN
     END
 END
 
-IDR_HISTORY_MENU MENU DISCARDABLE 
+IDR_HISTORY_MENU MENU
 BEGIN
     POPUP "&Filer"
     BEGIN
@@ -807,12 +740,8 @@ BEGIN
     BEGIN
         POPUP "Format"
         BEGIN
-            MENUITEM "&Kort algebraisk notation\tF2", 
-                                                    ID_OPTIONS_FORMAT_SHORTNOTATION
-
-            MENUITEM "&Lang algebraisk notation\tF3", 
-                                                    ID_OPTIONS_FORMAT_LONGNOTATION
-
+            MENUITEM "&Kort algebraisk notation\tF2", ID_OPTIONS_FORMAT_SHORTNOTATION
+            MENUITEM "&Lang algebraisk notation\tF3", ID_OPTIONS_FORMAT_LONGNOTATION
         END
         POPUP "Sk&riftstørrelse"
         BEGIN
@@ -826,7 +755,7 @@ BEGIN
     END
 END
 
-IDR_OPENINGLIB_MENU MENU DISCARDABLE 
+IDR_OPENINGLIB_MENU MENU
 BEGIN
     POPUP "&Åbninger"
     BEGIN
@@ -834,7 +763,7 @@ BEGIN
     END
 END
 
-IDR_HISTORY_CONTEXTMENU MENU DISCARDABLE 
+IDR_HISTORY_CONTEXTMENU MENU
 BEGIN
     POPUP "Annotation"
     BEGIN
@@ -849,7 +778,7 @@ BEGIN
     END
 END
 
-IDR_TRACE_MENU MENU DISCARDABLE 
+IDR_TRACE_MENU MENU
 BEGIN
     POPUP "Sk&riftstørrelse"
     BEGIN
@@ -868,57 +797,55 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "0",            ID_LEVEL_TIMED_GAME,    VIRTKEY, ALT, NOINVERT
+    VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "U",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "S",            ID_EDIT_BLACKTOMOVE,    VIRTKEY, ALT, NOINVERT
+    "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
+    "V",            ID_EDIT_PASTE_FEN,      VIRTKEY, CONTROL, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          ID_EDIT_STARTSETUP,     VIRTKEY, NOINVERT
+    VK_F4,          ID_EDIT_TURNBOARD,      VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDOALL,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDOPLY,        VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_WHITETOMOVE,    VIRTKEY, ALT, NOINVERT
+    VK_ESCAPE,      ID_ESCAPE,              VIRTKEY, NOINVERT
+    "M",            ID_EXTERNENGINE_REGISTER, VIRTKEY, ALT, NOINVERT
+    "Q",            ID_FILE_DISCONNECT_REMOTEGAME, VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_FILE_LOADGAME,       VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_PLAY_REMOTE,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_FILE_SHOWHISTORY,    VIRTKEY, NOINVERT
+    VK_F8,          ID_HELP_HINT,           VIRTKEY, NOINVERT
+    VK_F8,          ID_HELP_INFINITEHINT,   VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_HELP_SHOWOPENINGLIBRARY, VIRTKEY, NOINVERT
     "1",            ID_LEVEL_1,             VIRTKEY, ALT, NOINVERT
     "2",            ID_LEVEL_2,             VIRTKEY, ALT, NOINVERT
     "3",            ID_LEVEL_3,             VIRTKEY, ALT, NOINVERT
     "4",            ID_LEVEL_4,             VIRTKEY, ALT, NOINVERT
     "5",            ID_LEVEL_5,             VIRTKEY, ALT, NOINVERT
     "6",            ID_LEVEL_6,             VIRTKEY, ALT, NOINVERT
-    "A",            ID_SETTINGS_TOGGLECLOCK, VIRTKEY, ALT, NOINVERT
-    "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
-    "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
-    "F",            ID_MOVENOW,             VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_FILE_LOADGAME,       VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_VIEW_TRACEWINDOW,    VIRTKEY, ALT, NOINVERT
-    "M",            ID_EXTERNENGINE_REGISTER, VIRTKEY, ALT, NOINVERT
-    "N",            ID_FILE_PLAY_REMOTE,    VIRTKEY, CONTROL, NOINVERT
-    "N",            ID_SETTINGS_RESETCLOCK, VIRTKEY, ALT, NOINVERT
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
-    "S",            ID_EDIT_BLACKTOMOVE,    VIRTKEY, ALT, NOINVERT
-    "U",            ID_WHITE_ENGINE_GETSTATE, VIRTKEY, CONTROL, NOINVERT
-    "U",            ID_VIEW,                VIRTKEY, ALT, NOINVERT
-    "U",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "V",            ID_EDIT_PASTE_FEN,      VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_WHITETOMOVE,    VIRTKEY, ALT, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, NOINVERT
-    VK_BACK,        ID_EDIT_UNDOPLY,        VIRTKEY, CONTROL, NOINVERT
-    VK_ESCAPE,      ID_ESCAPE,              VIRTKEY, NOINVERT
-    VK_F10,         ID_TEST_DEBUG,          VIRTKEY, NOINVERT
-    VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
-    VK_F3,          ID_FILE_SHOWHISTORY,    VIRTKEY, NOINVERT
-    VK_F4,          ID_EDIT_STARTSETUP,     VIRTKEY, NOINVERT
-    VK_F4,          ID_EDIT_TURNBOARD,      VIRTKEY, CONTROL, NOINVERT
-    VK_F5,          ID_SETTINGS_START_THINKING, VIRTKEY, NOINVERT
-    VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
-    VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
     VK_F6,          ID_LEVEL_EDIT_TIMESETTINGS, VIRTKEY, NOINVERT
-    VK_F7,          ID_TABLEBASE_SETTINGS,  VIRTKEY, NOINVERT
-    VK_F8,          ID_HELP_HINT,           VIRTKEY, NOINVERT
-    VK_F8,          ID_HELP_INFINITEHINT,   VIRTKEY, SHIFT, NOINVERT
-    VK_F9,          ID_HELP_SHOWOPENINGLIBRARY, VIRTKEY, NOINVERT
-    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
     "Y",            ID_LEVEL_SPEEDCHESS,    VIRTKEY, ALT, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_EDIT_UNDOALL,        VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    "0",            ID_LEVEL_TIMED_GAME,    VIRTKEY, ALT, NOINVERT
+    "F",            ID_MOVENOW,             VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_SETTINGS_RESETCLOCK, VIRTKEY, ALT, NOINVERT
+    VK_F5,          ID_SETTINGS_START_THINKING, VIRTKEY, NOINVERT
+    "A",            ID_SETTINGS_TOGGLECLOCK, VIRTKEY, ALT, NOINVERT
+    VK_F7,          ID_TABLEBASE_SETTINGS,  VIRTKEY, NOINVERT
+    VK_F10,         ID_TEST_DEBUG,          VIRTKEY, NOINVERT
+    "U",            ID_VIEW,                VIRTKEY, ALT, NOINVERT
+    "L",            ID_VIEW_TRACEWINDOW,    VIRTKEY, ALT, NOINVERT
+    "U",            ID_WHITE_ENGINE_GETSTATE, VIRTKEY, CONTROL, NOINVERT
 END
 
-IDR_HISTORY_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_HISTORY_ACCELERATOR ACCELERATORS
 BEGIN
     "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
     "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
@@ -927,12 +854,12 @@ BEGIN
     VK_F3,          ID_OPTIONS_FORMAT_LONGNOTATION, VIRTKEY, NOINVERT
 END
 
-IDR_OPENING_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_OPENING_ACCELERATOR ACCELERATORS
 BEGIN
     "E",            ID_OPENING_EXPAND,      VIRTKEY, CONTROL, NOINVERT
 END
 
-IDR_TIMESETTINGS_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_TIMESETTINGS_ACCELERATOR ACCELERATORS
 BEGIN
     "1",            ID_GOTO_MINUTES1,       VIRTKEY, ALT, NOINVERT
     "2",            ID_GOTO_MINUTES2,       VIRTKEY, ALT, NOINVERT
@@ -949,18 +876,18 @@ BEGIN
     "T",            ID_SELECT_TIMEDGAMETAB, VIRTKEY, ALT, NOINVERT
 END
 
-IDR_MESSAGE_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_MESSAGE_ACCELERATOR ACCELERATORS
 BEGIN
     VK_ESCAPE,      ID_CLOSE_WINDOW,        VIRTKEY, NOINVERT
     VK_RETURN,      ID_CLOSE_WINDOW,        VIRTKEY, NOINVERT
 END
 
-IDR_CONNECT_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_CONNECT_ACCELERATOR ACCELERATORS
 BEGIN
     "M",            ID_GOTO_COMPUTERNAME,   VIRTKEY, ALT, NOINVERT
 END
 
-IDR_TABLEBASE_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_TABLEBASE_ACCELERATOR ACCELERATORS
 BEGIN
     "F",            ID_GOTO_DEFENDSTRENGTH, VIRTKEY, ALT, NOINVERT
     "P",            ID_GOTO_DIR,            VIRTKEY, ALT, NOINVERT
@@ -973,7 +900,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_KINGNAME            "Konge"
     IDS_QUEENNAME           "Dronning"
@@ -981,7 +908,7 @@ BEGIN
     IDS_BISHOPNAME          "Løber"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_KNIGHTNAME          "Springer"
     IDS_PAWNNAME            "Bonde"
@@ -1000,14 +927,14 @@ BEGIN
     IDS_PROMOTED_PAWN_PLUR  "forfremmede bønder"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_WHITEPLAYERNAME     "Hvid"
     IDS_BLACKPLAYERNAME     "Sort"
     IDS_BOTH_LABEL          "Begge"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_s_CANNOT_HAVE_TWO_KINGS "%s kan ikke have 2 konger"
     IDS_MSG_CANNOT_ADD_ANOTHER_s_s "Kan ikke tilføje en ekstra %s %s"
@@ -1029,7 +956,7 @@ BEGIN
     IDS_MSG_s_KING_ATTACKED_BY_d_s_s "%s er truet af %d %s%s"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_s_KING_ATTACKED_BY_d_s_AND_FROM_SIDE_s 
                             "%s er truet af %d %s og fra siden%s"
@@ -1055,7 +982,7 @@ BEGIN
     IDS_MSG_ASK_PLAYAGAIN   "Vil du spille igen"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_ASK_RESTART_ENGINE "Vil du genstarte den eksterne motor"
     IDS_IMPOSSIBLE          ", hvilket er umuligt"
@@ -1072,7 +999,7 @@ BEGIN
     IDS_DELETED             "Slettet"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_TIMEDGAME           "På &tid"
     IDS_LEVELS              "&Niveauer"
@@ -1086,7 +1013,7 @@ BEGIN
     IDS_AUTOPLAYMODETEXT    "Spiller selv"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ANALYZEMODETEXT     "Analyse"
     IDS_ERRORLABEL          "Fejl"
@@ -1095,7 +1022,7 @@ BEGIN
     IDS_CANCELQUESTION      "Fortryd rettelser"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_DRAW                "Remis"
     IDS_TERMINALDRAW        "Terminal remis"
@@ -1110,7 +1037,7 @@ BEGIN
     IDS_LOADGAMETITLE       "Vælg fil"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_EXEFILEEXTENSION    "EXE filer (*.exe)"
     IDS_ALLFILESEXTENSION   "Alle filer (*.*)"
@@ -1123,7 +1050,7 @@ BEGIN
     IDS_STOPCLOCK           "P&ause\tAlt+A"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_STOPWHITEEXTERNENGINE "&Stop\tCtrl+K"
     IDS_STARTWHITEEXTERNENGINE "&Kør\tCtrl+K"
@@ -1134,7 +1061,7 @@ BEGIN
     IDS_MOVETOSTART         "Tilbage til udgangsstilling\tEsc"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_OPENINGS            "Åbninger"
     IDS_RESTART             "Genstart"
@@ -1145,7 +1072,7 @@ BEGIN
     IDS_METRIC              "Metrik"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_TIMEPARAMETERSDIFFER 
                             "Tidsparametrene er forskellige for hvid og sort. Ønsker du at fortsætte"
@@ -1158,13 +1085,13 @@ BEGIN
     IDS_PLIES               "plies"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MOVE                "træk"
     IDS_MOVES               "træk"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDD_ABOUTBOX            "Om skak"
     IDD_HISTORY_DIALOG      "Træk liste"
@@ -1177,20 +1104,20 @@ BEGIN
     IDD_CONNECT_DIALOG      "Forbind computere"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDD_TABLEBASE_DIALOG    "Indstillinger for slutspilsdatabase"
     IDD_VIEW_DIALOG         "Udseende"
     IDD_ENGINES_DIALOG      "Administrer motorer"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDOK                    "OK"
     IDCANCEL                "&Annuller"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_INFO         "Af Jesper Grønning Mikkelsen"
     IDC_RADIO_CREATEGAME    "&Opret spil"
@@ -1199,7 +1126,7 @@ BEGIN
     IDC_GROUP_CONNECTMETHOD "Hvordan ønsker du at spille"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_MINUTES      "Min."
     IDC_STATIC_SECONDS      "Sek."
@@ -1211,31 +1138,31 @@ BEGIN
     IDC_STATIC_TIMEINCR     "Tillæg &pr. træk:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_SECONDS_LC   "sek."
     IDC_CHECK_RESETCLOCKS   "Nulstil &ure"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_TEXT         "Tekst:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_HIDE         "&Luk"
     IDC_BUTTON_CLEAR        "&Slet alt"
     IDC_CHECK_KEEPTEXT      "&Behold text"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_EXPAND       "&Ekspander"
     IDC_BUTTON_EXPANDALL    "Ekspander &alle"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_RADIO_METRIC_DTC    "Afstand til &Konvertering"
     IDC_RADIO_METRIC_DTM    "Afstand til &Mat"
@@ -1248,12 +1175,12 @@ BEGIN
     IDC_BUTTON_DECOMPRESSALL "&Udpak alle slutspilsdatabaser..."
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_MAXMOVES     "Max antal &træk uden slag/bondetræk:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_CHECK_SHOWFIELDNAMES "Vis &felt navne"
     IDC_CHECK_SHOWLEGALMOVES "Vis &lovlige træk"
@@ -1267,51 +1194,43 @@ BEGIN
     IDC_BUTTON_CHECK        "&Opdater liste"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_SAVE         "&Gem"
     IDC_BUTTON_SETDEFAULT   "&Sæt til standard"
     IDC_BUTTON_SENDTOENGINE "Send til &motor"
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
         POPUP "&New game"
         BEGIN
-            MENUITEM "Play &white against computer", 
-                                                    ID_FILE_NEWGAME_YOUPLAYWHITE
-
-            MENUITEM "Play &black against computer", 
-                                                    ID_FILE_NEWGAME_YOUPLAYBLACK
-
+            MENUITEM "Play &white against computer", ID_FILE_NEWGAME_YOUPLAYWHITE
+            MENUITEM "Play &black against computer", ID_FILE_NEWGAME_YOUPLAYBLACK
             MENUITEM SEPARATOR
         END
         MENUITEM "&Load game...\tCtrl+L",       ID_FILE_LOADGAME
         MENUITEM SEPARATOR
-        MENUITEM "&Connect to another computer...\tCtrl+A", 
-                                                ID_FILE_PLAY_REMOTE
-        MENUITEM "&Disconnect remotecomputer",  ID_FILE_DISCONNECT_REMOTEGAME
-        , GRAYED
+        MENUITEM "&Connect to another computer...\tCtrl+A", ID_FILE_PLAY_REMOTE
+        MENUITEM "&Disconnect remotecomputer\tCtrl+Q", ID_FILE_DISCONNECT_REMOTEGAME, GRAYED
         MENUITEM SEPARATOR
         MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
         MENUITEM "Save &as...",                 ID_FILE_SAVEAS
@@ -1336,8 +1255,7 @@ BEGIN
         MENUITEM "&Turn board\tCtrl+F4",        ID_EDIT_TURNBOARD
         MENUITEM SEPARATOR
         MENUITEM "Clear &board\tAlt+C",         ID_EDIT_CLEARBOARD, GRAYED
-        MENUITEM "Start p&osition",             ID_EDIT_SETUPSTARTPOSITION
-        , GRAYED
+        MENUITEM "Start p&osition",             ID_EDIT_SETUPSTARTPOSITION, GRAYED
         POPUP "S&ymmetric transformation"
         BEGIN
             MENUITEM "S&wap colors",                ID_EDIT_SWAPCOLORS
@@ -1351,8 +1269,7 @@ BEGIN
         END
         POPUP "Player to &move", GRAYED
         BEGIN
-            MENUITEM "&White\tAlt+W",               ID_EDIT_WHITETOMOVE
-            , CHECKED
+            MENUITEM "&White\tAlt+W",               ID_EDIT_WHITETOMOVE, CHECKED
             MENUITEM "&Black\tAlt+B",               ID_EDIT_BLACKTOMOVE
         END
         MENUITEM SEPARATOR
@@ -1368,56 +1285,36 @@ BEGIN
         POPUP "&Autoplay"
         BEGIN
             MENUITEM "&No restart\tCtrl+F5",        ID_AUTOPLAY_NO_RESTART
-            MENUITEM "&Restart at game over\tCtrl+Shift+F5", 
-                                                    ID_AUTOPLAY_RESTART_AT_END
-
+            MENUITEM "&Restart at game over\tCtrl+Shift+F5", ID_AUTOPLAY_RESTART_AT_END
             MENUITEM SEPARATOR
             POPUP "&Level"
             BEGIN
                 POPUP "B&oth"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_BOTH_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_BOTH_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_BOTH_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_BOTH_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_BOTH_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_BOTH_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_BOTH_LEVEL_6
-
                 END
                 POPUP "&White"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_WHITE_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_WHITE_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_WHITE_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_WHITE_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_WHITE_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_WHITE_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_WHITE_LEVEL_6
-
                 END
                 POPUP "&Black"
                 BEGIN
                     MENUITEM "&1",                          ID_AUTOPLAY_BLACK_LEVEL_1
-
                     MENUITEM "&2",                          ID_AUTOPLAY_BLACK_LEVEL_2
-
                     MENUITEM "&3",                          ID_AUTOPLAY_BLACK_LEVEL_3
-
-                    MENUITEM "&4",                          ID_AUTOPLAY_BLACK_LEVEL_4
-                    , CHECKED
+                    MENUITEM "&4",                          ID_AUTOPLAY_BLACK_LEVEL_4, CHECKED
                     MENUITEM "&5",                          ID_AUTOPLAY_BLACK_LEVEL_5
-
                     MENUITEM "&6",                          ID_AUTOPLAY_BLACK_LEVEL_6
-
                 END
             END
         END
@@ -1447,14 +1344,12 @@ BEGIN
         BEGIN
             POPUP "&White"
             BEGIN
-                MENUITEM "&Get state\tCtrl+G",          ID_WHITE_ENGINE_GETSTATE
-                , GRAYED
+                MENUITEM "&Get state\tCtrl+G",          ID_WHITE_ENGINE_GETSTATE, GRAYED
                 MENUITEM SEPARATOR
             END
             POPUP "&Black"
             BEGIN
-                MENUITEM "&Get state\tCtrl+Shift+G",    ID_BLACK_ENGINE_GETSTATE
-                , GRAYED
+                MENUITEM "&Get state\tCtrl+Shift+G",    ID_BLACK_ENGINE_GETSTATE, GRAYED
                 MENUITEM SEPARATOR
             END
             MENUITEM SEPARATOR
@@ -1462,11 +1357,9 @@ BEGIN
             MENUITEM "Engine &manager...\tAlt+M",   ID_EXTERNENGINE_REGISTER
         END
         MENUITEM SEPARATOR
-        MENUITEM "Enable &openinglibrary",      ID_OPENINGLIBRARY_ENABLED
-        , CHECKED
+        MENUITEM "Enable &openinglibrary",      ID_OPENINGLIBRARY_ENABLED, CHECKED
         MENUITEM SEPARATOR
-        MENUITEM "Enable endgame table&base",   ID_ENDGAMETABLEBASE_ENABLED
-        , CHECKED
+        MENUITEM "Enable endgame table&base",   ID_ENDGAMETABLEBASE_ENABLED, CHECKED
         MENUITEM "&Settings...\tF7",            ID_TABLEBASE_SETTINGS
         MENUITEM SEPARATOR
         MENUITEM "Log &window\tAlt+L",          ID_VIEW_TRACEWINDOW
@@ -1478,8 +1371,7 @@ BEGIN
     POPUP "&Help"
     BEGIN
         MENUITEM "&Hint...\tF8",                ID_HELP_HINT, GRAYED
-        MENUITEM "&Infinite search for best move\tShift+F8", 
-                                                ID_HELP_INFINITEHINT
+        MENUITEM "&Infinite search for best move\tShift+F8", ID_HELP_INFINITEHINT
         MENUITEM SEPARATOR
         MENUITEM "&Openinglibrary...\tF9",      ID_HELP_SHOWOPENINGLIBRARY
         MENUITEM SEPARATOR
@@ -1487,7 +1379,7 @@ BEGIN
     END
 END
 
-IDR_TEST_MENU MENU DISCARDABLE 
+IDR_TEST_MENU MENU
 BEGIN
     POPUP "&Test"
     BEGIN
@@ -1500,26 +1392,21 @@ BEGIN
             MENUITEM "Show pa&wn counters",         ID_TEST_SHOWPAWNCOUNT
             MENUITEM "Show &last capture",          ID_TEST_SHOWLASTCAPTURE
             MENUITEM "Show &position repeats",      ID_TEST_SHOWPOSITIONREPEATS
-
             MENUITEM "Show las&t move",             ID_TEST_SHOWLASTMOVEINFO
             MENUITEM "Show SD-attack field",        ID_TEST_SHOWCHECKINGSDAPOS
-
             MENUITEM "Show Setupmode",              ID_TEST_SHOWSETUPMODE
             MENUITEM "Show &FEN",                   ID_TEST_SHOWFEN
         END
         MENUITEM SEPARATOR
-        MENUITEM "Move &backwards",             ID_TEST_MOVEBACKWARDS
-        , GRAYED
-        MENUITEM "Generate &fictive pawn captures", 
-                                                ID_TEST_FICTIVEPAWNCAPTURES
-        , GRAYED
+        MENUITEM "Move &backwards",             ID_TEST_MOVEBACKWARDS, GRAYED
+        MENUITEM "Generate &fictive pawn captures", ID_TEST_FICTIVEPAWNCAPTURES, GRAYED
         MENUITEM "&Transform endgame position", ID_TEST_TRANSFORMPOSITION
         MENUITEM "&Normalize endgame position", ID_TEST_NORMALIZEPOSITION
         MENUITEM "Save to extern engine...",    ID_TEST_SAVETOEXTERNENGINE
     END
 END
 
-IDR_HISTORY_MENU MENU DISCARDABLE 
+IDR_HISTORY_MENU MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -1537,12 +1424,8 @@ BEGIN
     BEGIN
         POPUP "Format"
         BEGIN
-            MENUITEM "&Short algebraic notation\tF2", 
-                                                    ID_OPTIONS_FORMAT_SHORTNOTATION
-
-            MENUITEM "&Long algebraic notation\tF3", 
-                                                    ID_OPTIONS_FORMAT_LONGNOTATION
-
+            MENUITEM "&Short algebraic notation\tF2", ID_OPTIONS_FORMAT_SHORTNOTATION
+            MENUITEM "&Long algebraic notation\tF3", ID_OPTIONS_FORMAT_LONGNOTATION
         END
         POPUP "&Font size"
         BEGIN
@@ -1556,7 +1439,7 @@ BEGIN
     END
 END
 
-IDR_OPENINGLIB_MENU MENU DISCARDABLE 
+IDR_OPENINGLIB_MENU MENU
 BEGIN
     POPUP "&Openings"
     BEGIN
@@ -1564,7 +1447,7 @@ BEGIN
     END
 END
 
-IDR_HISTORY_CONTEXTMENU MENU DISCARDABLE 
+IDR_HISTORY_CONTEXTMENU MENU
 BEGIN
     POPUP "Annotation"
     BEGIN
@@ -1579,7 +1462,7 @@ BEGIN
     END
 END
 
-IDR_TRACE_MENU MENU DISCARDABLE 
+IDR_TRACE_MENU MENU
 BEGIN
     POPUP "&Font size"
     BEGIN
@@ -1598,58 +1481,55 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
-    "0",            ID_LEVEL_TIMED_GAME,    VIRTKEY, ALT, NOINVERT
+    VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "G",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "B",            ID_EDIT_BLACKTOMOVE,    VIRTKEY, ALT, NOINVERT
+    "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
+    "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
+    VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
+    "V",            ID_EDIT_PASTE_FEN,      VIRTKEY, CONTROL, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          ID_EDIT_STARTSETUP,     VIRTKEY, NOINVERT
+    VK_F4,          ID_EDIT_TURNBOARD,      VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDOALL,        VIRTKEY, SHIFT, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDOPLY,        VIRTKEY, CONTROL, NOINVERT
+    "W",            ID_EDIT_WHITETOMOVE,    VIRTKEY, ALT, NOINVERT
+    VK_ESCAPE,      ID_ESCAPE,              VIRTKEY, NOINVERT
+    "M",            ID_EXTERNENGINE_REGISTER, VIRTKEY, ALT, NOINVERT
+    "Q",            ID_FILE_DISCONNECT_REMOTEGAME, VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_FILE_LOADGAME,       VIRTKEY, CONTROL, NOINVERT
+    "A",            ID_FILE_PLAY_REMOTE,    VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    VK_F3,          ID_FILE_SHOWHISTORY,    VIRTKEY, NOINVERT
+    VK_F8,          ID_HELP_HINT,           VIRTKEY, NOINVERT
+    VK_F8,          ID_HELP_INFINITEHINT,   VIRTKEY, SHIFT, NOINVERT
+    VK_F9,          ID_HELP_SHOWOPENINGLIBRARY, VIRTKEY, NOINVERT
     "1",            ID_LEVEL_1,             VIRTKEY, ALT, NOINVERT
     "2",            ID_LEVEL_2,             VIRTKEY, ALT, NOINVERT
     "3",            ID_LEVEL_3,             VIRTKEY, ALT, NOINVERT
     "4",            ID_LEVEL_4,             VIRTKEY, ALT, NOINVERT
     "5",            ID_LEVEL_5,             VIRTKEY, ALT, NOINVERT
     "6",            ID_LEVEL_6,             VIRTKEY, ALT, NOINVERT
-    "A",            ID_FILE_PLAY_REMOTE,    VIRTKEY, CONTROL, NOINVERT
-    "A",            ID_SETTINGS_TOGGLECLOCK, VIRTKEY, ALT, NOINVERT
-    "B",            ID_EDIT_BLACKTOMOVE,    VIRTKEY, ALT, NOINVERT
-    "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
-    "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
+    VK_F6,          ID_LEVEL_EDIT_TIMESETTINGS, VIRTKEY, NOINVERT
     "D",            ID_LEVEL_SPEEDCHESS,    VIRTKEY, ALT, NOINVERT
-    "G",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "L",            ID_FILE_LOADGAME,       VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_VIEW_TRACEWINDOW,    VIRTKEY, ALT, NOINVERT
-    "M",            ID_EXTERNENGINE_REGISTER, VIRTKEY, ALT, NOINVERT
+    "0",            ID_LEVEL_TIMED_GAME,    VIRTKEY, ALT, NOINVERT
     "N",            ID_MOVENOW,             VIRTKEY, CONTROL, NOINVERT
     "R",            ID_SETTINGS_RESETCLOCK, VIRTKEY, ALT, NOINVERT
-    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_EDIT_PASTE_FEN,      VIRTKEY, CONTROL, NOINVERT
-    "V",            ID_VIEW,                VIRTKEY, ALT, NOINVERT
-    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, NOINVERT
-    VK_BACK,        ID_EDIT_UNDOPLY,        VIRTKEY, CONTROL, NOINVERT
-    VK_ESCAPE,      ID_ESCAPE,              VIRTKEY, NOINVERT
-    VK_F10,         ID_TEST_DEBUG,          VIRTKEY, NOINVERT
-    VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
-    VK_F3,          ID_FILE_SHOWHISTORY,    VIRTKEY, NOINVERT
-    VK_F4,          ID_EDIT_STARTSETUP,     VIRTKEY, NOINVERT
-    VK_F4,          ID_EDIT_TURNBOARD,      VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_SETTINGS_START_THINKING, VIRTKEY, NOINVERT
-    VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
-    VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    VK_F6,          ID_LEVEL_EDIT_TIMESETTINGS, VIRTKEY, NOINVERT
+    "A",            ID_SETTINGS_TOGGLECLOCK, VIRTKEY, ALT, NOINVERT
     VK_F7,          ID_TABLEBASE_SETTINGS,  VIRTKEY, NOINVERT
-    VK_F8,          ID_HELP_HINT,           VIRTKEY, NOINVERT
-    VK_F8,          ID_HELP_INFINITEHINT,   VIRTKEY, SHIFT, NOINVERT
-    VK_F9,          ID_HELP_SHOWOPENINGLIBRARY, VIRTKEY, NOINVERT
-    "W",            ID_EDIT_WHITETOMOVE,    VIRTKEY, ALT, NOINVERT
-    "W",            ID_TEST_SHOWPAWNCOUNT,  VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
-    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
-    "Z",            ID_EDIT_UNDOALL,        VIRTKEY, SHIFT, CONTROL, 
-                                                    NOINVERT
+    VK_F10,         ID_TEST_DEBUG,          VIRTKEY, NOINVERT
+    "W",            ID_TEST_SHOWPAWNCOUNT,  VIRTKEY, SHIFT, CONTROL, NOINVERT
+    "V",            ID_VIEW,                VIRTKEY, ALT, NOINVERT
+    "L",            ID_VIEW_TRACEWINDOW,    VIRTKEY, ALT, NOINVERT
 END
 
-IDR_HISTORY_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_HISTORY_ACCELERATOR ACCELERATORS
 BEGIN
     "A",            ID_EDIT_SELECT_ALL,     VIRTKEY, CONTROL, NOINVERT
     "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
@@ -1657,18 +1537,18 @@ BEGIN
     VK_F3,          ID_OPTIONS_FORMAT_LONGNOTATION, VIRTKEY, NOINVERT
 END
 
-IDR_SELECTDIR_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_SELECTDIR_ACCELERATOR ACCELERATORS
 BEGIN
     "D",            ID_GOTO_DRIVE,          VIRTKEY, ALT, NOINVERT
     "F",            ID_GOTO_DIR,            VIRTKEY, ALT, NOINVERT
 END
 
-IDR_OPENING_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_OPENING_ACCELERATOR ACCELERATORS
 BEGIN
     "E",            ID_OPENING_EXPAND,      VIRTKEY, CONTROL, NOINVERT
 END
 
-IDR_TIMESETTINGS_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_TIMESETTINGS_ACCELERATOR ACCELERATORS
 BEGIN
     "1",            ID_GOTO_MINUTES1,       VIRTKEY, ALT, NOINVERT
     "2",            ID_GOTO_MINUTES2,       VIRTKEY, ALT, NOINVERT
@@ -1685,18 +1565,18 @@ BEGIN
     "T",            ID_SELECT_TIMEDGAMETAB, VIRTKEY, ALT, NOINVERT
 END
 
-IDR_MESSAGE_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_MESSAGE_ACCELERATOR ACCELERATORS
 BEGIN
     VK_ESCAPE,      ID_CLOSE_WINDOW,        VIRTKEY, NOINVERT
     VK_RETURN,      ID_CLOSE_WINDOW,        VIRTKEY, NOINVERT
 END
 
-IDR_CONNECT_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_CONNECT_ACCELERATOR ACCELERATORS
 BEGIN
     "O",            ID_GOTO_COMPUTERNAME,   VIRTKEY, ALT, NOINVERT
 END
 
-IDR_TABLEBASE_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_TABLEBASE_ACCELERATOR ACCELERATORS
 BEGIN
     "N",            ID_GOTO_MOVECOUNT,      VIRTKEY, ALT, NOINVERT
     "P",            ID_GOTO_DIR,            VIRTKEY, ALT, NOINVERT
@@ -1709,7 +1589,7 @@ END
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_KINGNAME            "King"
     IDS_QUEENNAME           "Queen"
@@ -1717,7 +1597,7 @@ BEGIN
     IDS_BISHOPNAME          "Bishop"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_KNIGHTNAME          "Knight"
     IDS_PAWNNAME            "Pawn"
@@ -1736,14 +1616,14 @@ BEGIN
     IDS_PROMOTED_PAWN_PLUR  "promoted pawns"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_WHITEPLAYERNAME     "White"
     IDS_BLACKPLAYERNAME     "Black"
     IDS_BOTH_LABEL          "Both"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_s_CANNOT_HAVE_TWO_KINGS "%s cannot have 2 kings"
     IDS_MSG_CANNOT_ADD_ANOTHER_s_s "Cannot add another %s %s"
@@ -1764,7 +1644,7 @@ BEGIN
     IDS_MSG_s_KING_ATTACKED_BY_d_s_s "%s is attacked by %d %s%s"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_s_KING_ATTACKED_BY_d_s_AND_FROM_SIDE_s 
                             "%s is attacked by %d %s and from the side%s"
@@ -1791,7 +1671,7 @@ BEGIN
     IDS_MSG_ASK_PLAYAGAIN   "Do you want to play again"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MSG_ASK_RESTART_ENGINE "Do you want to restart the external engine"
     IDS_IMPOSSIBLE          ", which is impossible"
@@ -1808,7 +1688,7 @@ BEGIN
     IDS_DELETED             "Removed"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_TIMEDGAME           "&Timed game"
     IDS_LEVELS              "&Levels"
@@ -1822,7 +1702,7 @@ BEGIN
     IDS_AUTOPLAYMODETEXT    "Autoplay"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ANALYZEMODETEXT     "Analyze"
     IDS_ERRORLABEL          "Error"
@@ -1831,7 +1711,7 @@ BEGIN
     IDS_CANCELQUESTION      "Cancel changes"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_DRAW                "Draw"
     IDS_TERMINALDRAW        "Terminal draw"
@@ -1846,7 +1726,7 @@ BEGIN
     IDS_LOADGAMETITLE       "Select game"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_EXEFILEEXTENSION    "EXE files (*.exe)"
     IDS_ALLFILESEXTENSION   "All files (*.*)"
@@ -1859,7 +1739,7 @@ BEGIN
     IDS_STOPCLOCK           "P&ause\tAlt+A"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_STOPWHITEEXTERNENGINE "&Stop\tCtrl+R"
     IDS_STARTWHITEEXTERNENGINE "&Run\tCtrl+R"
@@ -1870,7 +1750,7 @@ BEGIN
     IDS_MOVETOSTART         "Return to orignal position\tEsc"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_OPENINGS            "Openings"
     IDS_RESTART             "Restart"
@@ -1881,7 +1761,7 @@ BEGIN
     IDS_METRIC              "Metric"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_TIMEPARAMETERSDIFFER 
                             "Timeparameters are different for black and white. Do you want to continue"
@@ -1894,13 +1774,13 @@ BEGIN
     IDS_PLIES               "plies"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_MOVE                "move"
     IDS_MOVES               "moves"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDD_ABOUTBOX            "About chess"
     IDD_HISTORY_DIALOG      "History"
@@ -1913,20 +1793,20 @@ BEGIN
     IDD_CONNECT_DIALOG      "Connect computer"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDD_TABLEBASE_DIALOG    "Endgame settings"
     IDD_VIEW_DIALOG         "View"
     IDD_ENGINES_DIALOG      "Engine manager"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDOK                    "OK"
     IDCANCEL                "&Cancel"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_INFO         "By Jesper Grønning Mikkelsen"
     IDC_RADIO_CREATEGAME    "C&reate game"
@@ -1935,7 +1815,7 @@ BEGIN
     IDC_GROUP_CONNECTMETHOD "How do you want to play"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_MINUTES      "Min."
     IDC_STATIC_SECONDS      "Sec."
@@ -1947,31 +1827,31 @@ BEGIN
     IDC_STATIC_TIMEINCR     "&Add seconds pr. move:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_SECONDS_LC   "sec."
     IDC_CHECK_RESETCLOCKS   "&Reset clocks"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_TEXT         "Text:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_HIDE         "C&lose"
     IDC_BUTTON_CLEAR        "&Clear"
     IDC_CHECK_KEEPTEXT      "&Keep log"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_EXPAND       "&Expand"
     IDC_BUTTON_EXPANDALL    "Expand &all"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_RADIO_METRIC_DTC    "Depth to &Conversion"
     IDC_RADIO_METRIC_DTM    "Depth to &Mate"
@@ -1984,12 +1864,12 @@ BEGIN
     IDC_BUTTON_DECOMPRESSALL "&Decompress all tablebases..."
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_STATIC_MAXMOVES     "Max &number of moves without capture/pawnmove:"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_CHECK_SHOWFIELDNAMES "Show &field names"
     IDC_CHECK_SHOWLEGALMOVES "Show &legal moves"
@@ -2003,14 +1883,14 @@ BEGIN
     IDC_BUTTON_CHECK        "&Updade list"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDC_BUTTON_SAVE         "&Save"
     IDC_BUTTON_SETDEFAULT   "Set to &default"
     IDC_BUTTON_SENDTOENGINE "Send to &engine"
 END
 
-#endif    // English (U.S.) resources
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 

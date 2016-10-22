@@ -11,12 +11,10 @@
 CEnginesDlg::CEnginesDlg(CWnd* pParent /*=NULL*/) : CDialog(CEnginesDlg::IDD, pParent) {
 }
 
-
 void CEnginesDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LIST_ENGINES, m_listCtrl);
 }
-
 
 BEGIN_MESSAGE_MAP(CEnginesDlg, CDialog)
     ON_BN_CLICKED(IDC_BUTTON_ADD     , OnButtonAdd)
