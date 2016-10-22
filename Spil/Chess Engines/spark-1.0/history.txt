@@ -1,0 +1,90 @@
+Spark development history
+=========================
+
+
+20101210 version 1.0, public
+==============================================================================
+This version played the 2010 Leiden CSVN Open Dutch Chamionships.
+It should play slightly stronger than Spark-0.5.
+
+enhancements:
+- new: mutipv support
+- new: UCI options to tune evaluation
+- tuned evaluation
+- tuned search
+
+known bugs:
+- Spark may crash when setting the hash size to 4096 Mb or higher.
+  (reported by Christian Goralski)
+
+
+20100531 version 0.5 (private)
+==============================================================================
+This version played in the May 2010 Leiden CSVN Tournament.
+This version is about 30 elo stronger than Spark-0.4.
+
+
+20100330 version 0.4 (public since 20100523)
+==============================================================================
+This version is about 40 elo stronger than Spark-0.3a.
+
+enhancements:
+- tuned evaluation
+- tuned search
+- improved time management
+- improved performance on 64-bit platforms
+
+bug fixes:
+- UCI hashfull was not reported correctly when using >1 threads 
+  (reported by Ernst Walet)
+- UCI options were not case insensitive, rendering them unchangeable under the
+  Aquarium GUI (reported by Pal Larkin)
+- ponderhits could cause time forfeits when there was only a single legal move 
+  (reported by Olivier Deville)
+
+
+20100217 version 0.3cct12 (private)
+==============================================================================
+Version to participate in the CCT12 tournament, win32-mp.exe only.
+- added opening book (compatible with bright 0.5c books)
+- tuned evaluation
+- tuned search
+
+
+20100110 version 0.3a (public)
+==============================================================================
+MP version now public
+
+bug fixes since 0.3:
+- on some machines, spark would sometimes not respond
+- evaluation sometimes used a wrong value for the pawn shield
+- unstoppable passed pawn evaluation for white and black was not identical
+
+
+
+20091122 version 0.3MP (private)
+==============================================================================
+Multi CPU versions for Windows 32/64, Mac OSX64, Linux64
+
+
+20091018 version 0.3 (public)
+==============================================================================
+First public release.
+Single CPU versions for Windows 32/64, Mac OSX64, Linux64
+
+
+20090811 version 0.2c (private)
+==============================================================================
+This version was operated by Ken Dail in the ACCA 2009 Tournament.
+Multicore version, Mac OSX64
+
+
+20090715 version 0.1 (private)
+==============================================================================
+First private version, played in Olivier Deville's Open Chesswar tournament.
+Single CPU, Windows32
+
+
+20080801-20090714
+==============================================================================
+single cpu internal development versions 
