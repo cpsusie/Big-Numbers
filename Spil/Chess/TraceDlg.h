@@ -13,7 +13,7 @@ private:
   CEdit                    *m_textBox;
   CStatic                  *m_messageField;
   CTraceDlgThread          &m_thread;
-  unsigned int              m_caretPos; // index into text in m_textBox
+  UINT                      m_caretPos; // index into text in m_textBox
   void scrollToBottom();
   void setFontSize(int pct, bool redraw);
 public:
@@ -49,5 +49,7 @@ protected:
 	afx_msg void OnFontsize175();
 	afx_msg void OnFontsize200();
 	DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnViewInfofields();
 };
 

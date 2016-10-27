@@ -2971,6 +2971,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TableBaseBuilder Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="SelectInfoFieldsDlg.cpp" />
     <ClCompile Include="SelectOpeningDlg.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -3202,6 +3203,7 @@
     <ClInclude Include="PieceValueDlg.h" />
     <ClInclude Include="PlotWinsPValuesThread.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SelectInfoFieldsDlg.h" />
     <ClInclude Include="SelectOpeningDlg.h" />
     <ClInclude Include="SocketChannel.h" />
     <ClInclude Include="StdAfx.h" />
@@ -3255,4 +3257,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="Chess.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

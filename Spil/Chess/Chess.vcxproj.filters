@@ -844,6 +844,9 @@
     <ClCompile Include="EngineOptionControl.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="SelectInfoFieldsDlg.cpp">
+      <Filter>Source Files\Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Chess.rc">
@@ -1033,6 +1036,9 @@
     </ClInclude>
     <ClInclude Include="Image.h">
       <Filter>Source Files\Graphics\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="SelectInfoFieldsDlg.h">
+      <Filter>Source Files\Dialogs\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -19,6 +19,7 @@
 #define IDD_VIEW_DIALOG                 114
 #define IDD_ENGINES_DIALOG              115
 #define IDD_ENGINEOPTIONS_DIALOG        116
+#define IDD_SELECTINFOFIELDS_DIALOG     117
 #define IDR_MAINFRAME                   128
 #define IDR_HISTORY_MENU                131
 #define IDR_HISTORY_CONTEXTMENU         132
@@ -300,6 +301,17 @@
 #define IDC_BUTTON_SENDTOENGINE         1194
 #define IDC_BUTTON_MOVEUP               1201
 #define IDC_BUTTON_MOVEDOWN             1202
+#define IDC_CHECK_DEPTH                 1203
+#define IDC_CHECK_SELDEPTH              1204
+#define IDC_CHECK_SCORE                 1205
+#define IDC_CHECK_TIME                  1206
+#define IDC_CHECK_NODES                 1207
+#define IDC_CHECK_NODESPS               1208
+#define IDC_CHECK_PV                    1209
+#define IDC_CHECK_STRING                1210
+#define IDC_CHECK_HASHFULL              1211
+#define IDC_CHECK_MULTIPV               1212
+#define IDC_CHECK_CPULOAD               1213
 #define ID_FILE_NEWGAME_YOUPLAYWHITE    32771
 #define ID_FILE_NEWGAME_YOUPLAYBLACK    32772
 #define ID_FILE_LOADGAME                32773
@@ -511,6 +523,7 @@
 #define ID_FONTSIZE_150                 33265
 #define ID_FONTSIZE_175                 33266
 #define ID_FONTSIZE_200                 33267
+#define ID_VIEW_INFOFIELDS              33268
 #define ID_GOOD_MOVE                    33280
 #define ID_EXCELLENT_MOVE               33281
 #define ID_BAD_MOVE                     33282
@@ -523,9 +536,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        424
-#define _APS_NEXT_COMMAND_VALUE         33304
-#define _APS_NEXT_CONTROL_VALUE         1203
+#define _APS_NEXT_RESOURCE_VALUE        426
+#define _APS_NEXT_COMMAND_VALUE         33306
+#define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif

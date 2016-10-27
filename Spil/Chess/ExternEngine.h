@@ -78,7 +78,7 @@ public:
   EngineOptionValueArray pruneDefaults(const EngineOptionValueArray &src) const;
 };
 
-class ExternEngine : public EngineDescription {
+class ExternEngine : public EngineDescription, public OptionsAccessor {
 private:
   FILE                        *m_input;
   FILE                        *m_output;

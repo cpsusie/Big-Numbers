@@ -2,6 +2,7 @@
 #include <MFCUtil/WinTools.h>
 #include "TraceDlg.h"
 #include "TraceDlgThread.h"
+#include "SelectInfofieldsDlg.h"
 #include "ChessGraphics.h"
 
 #ifdef _DEBUG
@@ -37,6 +38,7 @@ BEGIN_MESSAGE_MAP(CTraceDlg, CDialog)
     ON_COMMAND(ID_FONTSIZE_150              , OnFontsize150        )
     ON_COMMAND(ID_FONTSIZE_175              , OnFontsize175        )
     ON_COMMAND(ID_FONTSIZE_200              , OnFontsize200        )
+    ON_COMMAND(ID_VIEW_INFOFIELDS           , OnViewInfofields     )
 END_MESSAGE_MAP()
 
 BOOL CTraceDlg::OnInitDialog() {
@@ -193,4 +195,10 @@ void CTraceDlg::setFontSize(int pct, bool redraw) {
   m_layoutManager.scaleFont((double)pct / 100, redraw);
   getOptions().setTraceFontSize(pct);
   FontSizeMenuManager::setFontSize(this, pct);
+}
+
+
+void CTraceDlg::OnViewInfofields(){
+  CSelectInfoFieldsDlg dlg;
+  dlg.DoModal();
 }

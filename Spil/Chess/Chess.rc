@@ -358,6 +358,26 @@ BEGIN
     PUSHBUTTON      "{Cancel}",IDCANCEL,230,105,50,14
 END
 
+IDD_SELECTINFOFIELDS_DIALOG DIALOGEX 0, 0, 187, 178
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "{Select Info Fields}"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "{Depth}",IDC_CHECK_DEPTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,12,74,18
+    CONTROL         "{PV}",IDC_CHECK_PV,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,12,74,18
+    CONTROL         "{Selective depth}",IDC_CHECK_SELDEPTH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,34,74,18
+    CONTROL         "{String}",IDC_CHECK_STRING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,34,74,18
+    CONTROL         "{Score}",IDC_CHECK_SCORE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,56,74,18
+    CONTROL         "{HashFull}",IDC_CHECK_HASHFULL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,56,74,18
+    CONTROL         "{Time}",IDC_CHECK_TIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,78,74,18
+    CONTROL         "{Multi PV}",IDC_CHECK_MULTIPV,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,78,74,18
+    CONTROL         "{Nodes}",IDC_CHECK_NODES,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,100,74,18
+    CONTROL         "{CPU Load}",IDC_CHECK_CPULOAD,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,104,100,74,18
+    CONTROL         "{Nodes/sec}",IDC_CHECK_NODESPS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,122,74,18
+    DEFPUSHBUTTON   "{OK}",IDOK,83,162,50,13
+    PUSHBUTTON      "{Cancel}",IDCANCEL,137,162,50,13
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -469,6 +489,14 @@ BEGIN
         RIGHTMARGIN, 280
         TOPMARGIN, 7
         BOTTOMMARGIN, 119
+    END
+
+    IDD_SELECTINFOFIELDS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 180
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 171
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -789,6 +817,10 @@ BEGIN
         MENUITEM "175%",                        ID_FONTSIZE_175
         MENUITEM "200%",                        ID_FONTSIZE_200
     END
+    POPUP "&Vis"
+    BEGIN
+        MENUITEM "Vælg info felter...",         ID_VIEW_INFOFIELDS
+    END
 END
 
 
@@ -892,6 +924,17 @@ BEGIN
     "F",            ID_GOTO_DEFENDSTRENGTH, VIRTKEY, ALT, NOINVERT
     "P",            ID_GOTO_DIR,            VIRTKEY, ALT, NOINVERT
     "T",            ID_GOTO_MOVECOUNT,      VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_SELECTINFOFIELDS_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 
@@ -1109,6 +1152,7 @@ BEGIN
     IDD_TABLEBASE_DIALOG    "Indstillinger for slutspilsdatabase"
     IDD_VIEW_DIALOG         "Udseende"
     IDD_ENGINES_DIALOG      "Administrer motorer"
+    IDD_SELECTINFOFIELDS_DIALOG "Vælg felter der logges"
 END
 
 STRINGTABLE
@@ -1199,6 +1243,21 @@ BEGIN
     IDC_BUTTON_SAVE         "&Gem"
     IDC_BUTTON_SETDEFAULT   "&Sæt til standard"
     IDC_BUTTON_SENDTOENGINE "Send til &motor"
+END
+
+STRINGTABLE
+BEGIN
+    IDC_CHECK_DEPTH                 "&Dybde:"
+    IDC_CHECK_SELDEPTH              "&Selektiv dybde:"
+    IDC_CHECK_SCORE                 "S&core:"
+    IDC_CHECK_TIME                  "&Tid:"
+    IDC_CHECK_NODES                 "&Positioner:"
+    IDC_CHECK_NODESPS               "P&ositioner/sek.:"
+    IDC_CHECK_PV                    "Principal &variant:"
+    IDC_CHECK_STRING                "St&ring:"
+    IDC_CHECK_HASHFULL              "&Hashtable forbrug:"
+    IDC_CHECK_MULTIPV               "&Multi PV:"
+    IDC_CHECK_CPULOAD               "CP&U belastning:"
 END
 
 #endif    // Danish (Denmark) resources
@@ -1798,6 +1857,7 @@ BEGIN
     IDD_TABLEBASE_DIALOG    "Endgame settings"
     IDD_VIEW_DIALOG         "View"
     IDD_ENGINES_DIALOG      "Engine manager"
+    IDD_SELECTINFOFIELDS_DIALOG "Select log fields"
 END
 
 STRINGTABLE
@@ -1890,6 +1950,20 @@ BEGIN
     IDC_BUTTON_SENDTOENGINE "Send to &engine"
 END
 
+STRINGTABLE
+BEGIN
+    IDC_CHECK_DEPTH                 "&Depth:"
+    IDC_CHECK_SELDEPTH              "&Selective depth:"
+    IDC_CHECK_SCORE                 "S&core:"
+    IDC_CHECK_TIME                  "&Time:"
+    IDC_CHECK_NODES                 "&Positions:"
+    IDC_CHECK_NODESPS               "P&ositions/sec.:"
+    IDC_CHECK_PV                    "Principal &variant:"
+    IDC_CHECK_STRING                "St&ring:"
+    IDC_CHECK_HASHFULL              "&Hashtable usage:"
+    IDC_CHECK_MULTIPV               "&Multi PV:"
+    IDC_CHECK_CPULOAD               "CP&U load:"
+END
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 

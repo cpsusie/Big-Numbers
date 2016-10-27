@@ -97,6 +97,28 @@ public:
   int           getIndexByName(const String &name) const; // return -1 if not found
 };
 
+class EngineVerboseFields {
+public:
+  EngineVerboseFields();
+  void setDefault();
+
+  bool m_depth   ;
+  bool m_seldepth;
+  bool m_score   ;
+  bool m_time    ;
+  bool m_nodes   ;
+  bool m_nodesps ;
+  bool m_pv      ;
+  bool m_string  ;
+  bool m_hashfull;
+  bool m_multipv ;
+  bool m_cpuLoad ;
+  bool operator==(const EngineVerboseFields &evf) const;
+  inline bool operator!=(const EngineVerboseFields &evf) const {
+    return !(*this == evf);
+  }
+};
+
 #define LEVEL_SPEEDCHESS -1
 #define LEVEL_TIMEDGAME   0
 #define LEVELCOUNT        6
@@ -140,15 +162,6 @@ public:
   bool operator!=(const LevelTimeout &rhs) const;
 };
 
-class PlayerOptions {
-public:
-  PlayerOptions();
-  void setDefault();
-  int                  m_autoPlayLevel;
-  TimeParameters       m_timeParameters, m_speedChessParameters;
-  String               m_engineName;
-};
-
 class TimeLimit {
 public:
   int  m_timeout; // in milliseconds / INFINTE if search forever
@@ -156,6 +169,15 @@ public:
   TimeLimit(int timeout=500, bool softLimit=false) : m_timeout(timeout), m_softLimit(softLimit) {
   }
   String toString() const;
+};
+
+class PlayerOptions {
+public:
+  PlayerOptions();
+  void setDefault();
+  int                  m_autoPlayLevel;
+  TimeParameters       m_timeParameters, m_speedChessParameters;
+  String               m_engineName;
 };
 
 class DefaultOptions {
@@ -189,6 +211,7 @@ protected:
   String                m_serverComputerName;
   bool                  m_testMenuEnabled;
   bool                  m_showEngineConsole;
+  EngineVerboseFields   m_engineVerboseFields;
   PlayerOptions         m_playerOptions[2];
 public:
   void setDefault();
@@ -222,6 +245,7 @@ public:
   const String             &getServerComputerName()               const { return m_serverComputerName;                           }
   bool                      hasTestMenu()                         const { return m_testMenuEnabled;                              }
   bool                      getShowEngineConsole()                const { return m_showEngineConsole;                            }
+  const EngineVerboseFields getengineVerboseFields()              const { return m_engineVerboseFields;                          }
   const PlayerOptions      &getPlayerOptions(      Player player) const { return m_playerOptions[player];                        }
   int                       getAutoPlayLevel(      Player player) const { return getPlayerOptions(player).m_autoPlayLevel;       }
   const TimeParameters     &getTimeParameters(     Player player) const { return getPlayerOptions(player).m_timeParameters;      }
@@ -267,12 +291,13 @@ public:
   void setServerComputerName(    const String       &computerName                        );
   void enableTestMenu(           bool                enable                              );
   void setShowEngineConsole(     bool                show                                );
+  void setEngineVerboseFields(   const EngineVerboseFields &evf                          );
   void setAutoPlayLevel(         Player player, int level                                );
   void setTimeParameters(        Player player, const TimeParameters      &parameters    );
   void setSpeedTimeParameters(   Player player, const TimeParameters      &parameters    );
   void setEngineName(            Player player, const String              &name          );
   int  getCurrentEngineIndex(    Player player) const; // return -1 if not found
-  int    getSelectedLanguageIndex()       const;
+  int  getSelectedLanguageIndex()       const;
   static Options &getOptions();
   static EngineRegister        &getEngineRegister();
   static const String          &getEnginePathByPlayer( Player player);

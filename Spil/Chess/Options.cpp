@@ -77,6 +77,7 @@ void DefaultOptions::setDefault() {
   m_serverComputerName               = _T("");
   m_testMenuEnabled                  = false;
   m_showEngineConsole                = false;
+  m_engineVerboseFields.setDefault();
 
   forEachPlayer(p) {
     m_playerOptions[p].setDefault();
@@ -287,6 +288,7 @@ static const TCHAR *ENDGAMETABLEBASEPATH     = _T("EndGameTablebasePath");
 static const TCHAR *ENDGAMETABLEBASEMETRIC   = _T("EndGameTablebaseMetric");
 static const TCHAR *ENDGAMEDEFENDSTRENGTH    = _T("EndGameDefendStrength");
 static const TCHAR *MAXMOVESWITHOUTCAPTURE   = _T("FiftyMovesRule");
+
 static const TCHAR *HISTORYFORMAT            = _T("HistoryFormat");
 static const TCHAR *DEPTHINPLIES             = _T("DepthInPlies");
 static const TCHAR *CONNECTEDTOSERVER        = _T("Connected");
@@ -300,9 +302,23 @@ static const TCHAR *SPEEDTIMELEFT            = _T("SpeedTimeLeft");
 static const TCHAR *SPEEDINCREMENT           = _T("SpeedIncrement");
 static const TCHAR *AUTOPLAYLEVEL            = _T("AutoPlayLevel");
 static const TCHAR *TIMEOUT                  = _T("Timeout");
+
 static const TCHAR *ENGINE                   = _T("Engine");
 static const TCHAR *EEAUTHOR                 = _T("Author");
 static const TCHAR *EEPATH                   = _T("Path");
+
+static const TCHAR *ENGINEVERBOSEFIELDS      = _T("EngineVerboseFields");
+static const TCHAR *EVFDEPTH                 = _T("Depth");
+static const TCHAR *EVFSELDEPTH              = _T("SelDepth");
+static const TCHAR *EVFSCORE                 = _T("Score");
+static const TCHAR *EVFTIME                  = _T("Time");
+static const TCHAR *EVFNODES                 = _T("Nodes");
+static const TCHAR *EVFNODESPS               = _T("NodesPs");
+static const TCHAR *EVFPV                    = _T("PV");
+static const TCHAR *EVFSTRING                = _T("String");
+static const TCHAR *EVFHASHFULL              = _T("HashFull");
+static const TCHAR *EVFMULTIPV               = _T("MultiPV");
+static const TCHAR *EVFCPULOAD               = _T("CPULoad");
 
 static void saveSize(RegistryKey key, const CSize &s) {
   key.setValue(WIDTH  , s.cx);
@@ -347,6 +363,68 @@ static void loadEngineDescription(RegistryKey key, EngineDescription &desc) {
   desc.m_path   = key.getString(EEPATH  , _T(""));
 }
 
+EngineVerboseFields::EngineVerboseFields() {
+  setDefault();
+}
+
+void EngineVerboseFields::setDefault() {
+  m_depth    = true;
+  m_seldepth = false;
+  m_score    = true;
+  m_time     = false;
+  m_nodes    = true;
+  m_nodesps  = false;
+  m_pv       = false;
+  m_string   = false;
+  m_hashfull = false;
+  m_multipv  = false;
+  m_cpuLoad  = false;
+}
+
+bool EngineVerboseFields::operator==(const EngineVerboseFields &evf) const {
+  return m_depth     == evf.m_depth
+      && m_seldepth  == evf.m_seldepth
+      && m_score     == evf.m_score
+      && m_time      == evf.m_time
+      && m_nodes     == evf.m_nodes
+      && m_nodesps   == evf.m_nodesps
+      && m_pv        == evf.m_pv
+      && m_string    == evf.m_string
+      && m_hashfull  == evf.m_hashfull
+      && m_multipv   == evf.m_multipv
+      && m_cpuLoad   == evf.m_cpuLoad;
+}
+
+static void saveEngineVerboseFields(RegistryKey key, const EngineVerboseFields &evf) {
+  key.setValue(EVFDEPTH   , evf.m_depth   );
+  key.setValue(EVFSELDEPTH, evf.m_seldepth);
+  key.setValue(EVFSCORE   , evf.m_score   );
+  key.setValue(EVFTIME    , evf.m_time    );
+  key.setValue(EVFNODES   , evf.m_nodes   );
+  key.setValue(EVFNODESPS , evf.m_nodesps );
+  key.setValue(EVFPV      , evf.m_pv      );
+  key.setValue(EVFSTRING  , evf.m_string  );
+  key.setValue(EVFHASHFULL, evf.m_hashfull);
+  key.setValue(EVFMULTIPV , evf.m_multipv );
+  key.setValue(EVFCPULOAD , evf.m_cpuLoad );
+}
+
+static EngineVerboseFields loadEngineVerboseFields(RegistryKey key, const EngineVerboseFields &defaultValue) {
+  EngineVerboseFields evf;
+  evf.m_depth    = key.getBool(EVFDEPTH   , defaultValue.m_depth   );
+  evf.m_seldepth = key.getBool(EVFSELDEPTH, defaultValue.m_seldepth);
+  evf.m_score    = key.getBool(EVFSCORE   , defaultValue.m_score   );
+  evf.m_time     = key.getBool(EVFTIME    , defaultValue.m_time    );
+  evf.m_nodes    = key.getBool(EVFNODES   , defaultValue.m_nodes   );
+  evf.m_nodesps  = key.getBool(EVFNODESPS , defaultValue.m_nodesps );
+  evf.m_pv       = key.getBool(EVFPV      , defaultValue.m_pv      );
+  evf.m_string   = key.getBool(EVFSTRING  , defaultValue.m_string  );
+  evf.m_hashfull = key.getBool(EVFHASHFULL, defaultValue.m_hashfull);
+  evf.m_multipv  = key.getBool(EVFMULTIPV , defaultValue.m_multipv );
+  evf.m_cpuLoad  = key.getBool(EVFCPULOAD , defaultValue.m_cpuLoad );
+  return evf;
+}
+
 void Options::save() {
   try {
 
@@ -382,6 +460,8 @@ void Options::save() {
     key.setValue(SERVERCOMPUTERNAME      , m_serverComputerName     );
     key.setValue(TESTMENUENABLED         , m_testMenuEnabled        );
     key.setValue(SHOWENGINECONSOLE       , m_showEngineConsole      );
+
+    saveEngineVerboseFields(getSubKey(ENGINEVERBOSEFIELDS), m_engineVerboseFields);
 
     forEachPlayer(p) {
       RegistryKey subKey = getSubKey(p);
@@ -435,7 +515,7 @@ void Options::load() {
     m_langID                   = key.getInt(   LANGUAGE                , defaultOptions.getLangID()                 );
     m_boardSize                = loadSize(getSubKey(BOARDSIZE)         , defaultOptions.getBoardSize()              );
     m_normalPlayLevel          = key.getInt(   NORMALPLAYLEVEL         , defaultOptions.getNormalPlayLevel()        );
-    m_levelTimeout             = loadLevelTimeout(getSubKey(TIMEOUT), defaultOptions.getLevelTimeout());
+    m_levelTimeout             = loadLevelTimeout(getSubKey(TIMEOUT)   , defaultOptions.getLevelTimeout()           );
     m_openingLibraryEnabled    = key.getBool(  OPENINGLIBRARYENABLED   , defaultOptions.isOpeningLibraryEnabled()   );
     m_endGameTablebaseEnabled  = key.getBool(  ENDGAMETABLEBASEENABLED , defaultOptions.isEndGameTablebaseEnabled() );
     m_endGameTablebasePath     = key.getString(ENDGAMETABLEBASEPATH    , defaultOptions.getEndGameTablebasePath()   );
@@ -452,6 +532,8 @@ void Options::load() {
     m_serverComputerName       = key.getString(SERVERCOMPUTERNAME      , defaultOptions.getServerComputerName()     );
     m_testMenuEnabled          = key.getBool(  TESTMENUENABLED         , defaultOptions.hasTestMenu()               );
     m_showEngineConsole        = key.getBool(  SHOWENGINECONSOLE       , defaultOptions.getShowEngineConsole()      );
+    m_engineVerboseFields      = loadEngineVerboseFields(getSubKey(ENGINEVERBOSEFIELDS), defaultOptions.getengineVerboseFields());
+
     forEachPlayer(p) {
       RegistryKey subKey = getSubKey(p);
       PlayerOptions             &po     = m_playerOptions[p];
@@ -757,6 +839,12 @@ void Options::setShowEngineConsole(bool show) {
   }
 }
 
+void Options::setEngineVerboseFields(const EngineVerboseFields &evf) {
+  if (evf != m_engineVerboseFields) {
+    m_engineVerboseFields = evf;
+    save();
+  }
+}
 
 void Options::setAutoPlayLevel(Player player, int level) {
   PlayerOptions &po = m_playerOptions[player];

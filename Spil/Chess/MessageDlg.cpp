@@ -15,17 +15,14 @@ CMessageDlg::CMessageDlg(int milliSeconds, const String &caption, const String &
   m_timerIsRunning = false;
 }
 
-
 void CMessageDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
 }
-
 
 BEGIN_MESSAGE_MAP(CMessageDlg, CDialog)
   ON_WM_TIMER()
   ON_COMMAND(ID_CLOSE_WINDOW, OnCloseWindow                      )
 END_MESSAGE_MAP()
-
 
 BOOL CMessageDlg::OnInitDialog() {
   CDialog::OnInitDialog();
