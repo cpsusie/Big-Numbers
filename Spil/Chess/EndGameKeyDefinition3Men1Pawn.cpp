@@ -4,11 +4,11 @@
 
 #define MININDEX 0
 
-unsigned long EndGameKeyDefinition3Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition3Men1Pawn::keyToIndex(const EndGameKey &key) const {
   return ONE_PAWN_3MEN_INDEX(key) - MININDEX;
 }
 
-EndGameKey EndGameKeyDefinition3Men1Pawn::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition3Men1Pawn::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   SETPIT(         result, index   );

@@ -12,29 +12,35 @@ public:
 class DecompressJob : public InteractiveRunnable, public ByteCounter {
 private:
   const EndGameTablebaseList m_list;
-  int                        m_current;
+  size_t                     m_current;
   String                     m_title;
   String                     m_progressMsgString;
-  UINT                       m_byteCounter;
-  UINT                       m_currentFileSize;
+  String                     m_currentMsg;
+  Semaphore                  m_gate;
+  UINT64                     m_byteCounter;
+  UINT64                     m_currentFileSize;
   void setCurrentFileSize();
+  void setCurrentMessage(const String &msg);
 public:
 
   DecompressJob(const EndGameTablebaseList &list);
 
-  unsigned short getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
-    return (unsigned short)m_list.size();
+  USHORT getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+    return (USHORT)m_list.size();
   }
-  unsigned short getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
-    return m_current;
+  USHORT getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
+    return (USHORT)m_current;
   };
-  unsigned short getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
-    return (unsigned short)PERCENT(m_byteCounter, m_currentFileSize);
+  USHORT getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
+    return (USHORT)PERCENT(m_byteCounter, m_currentFileSize);
   }
   String getProgressMessage() {
-    return m_current < (int)m_list.size() ? format(m_progressMsgString.cstr(), m_list[m_current]->getName().cstr(), m_current+1, (int)m_list.size()) : _T("Done");
+    m_gate.wait();
+    const String result = m_currentMsg;
+    m_gate.signal();
+    return result;
   }
-  void incrCount(UINT n) {
+  void incrCount(size_t n) {
     if(isInterrupted()) {
       throw InterruptedException();
     }
@@ -60,6 +66,7 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_list(list) {
                               );
   m_progressMsgString = loadString(IDS_DECOMPRESSALLMESSAGE_s_d_d);
   m_current = 0;
+  setCurrentFileSize();
 }
 
 void DecompressJob::setCurrentFileSize() {
@@ -67,12 +74,19 @@ void DecompressJob::setCurrentFileSize() {
   m_currentFileSize = m_list[m_current]->getFileSize(COMPRESSEDTABLEBASE);
 }
 
+void DecompressJob::setCurrentMessage(const String &msg) {
+  m_gate.wait();
+  m_currentMsg = msg;
+  m_gate.signal();
+}
+
 UINT DecompressJob::run() {
-  for(m_current = 0; m_current < (int)m_list.size(); m_current++) {
+  for(m_current = 0; m_current < m_list.size(); m_current++) {
     const EndGameTablebase &tb = *m_list[m_current];
     if(isInterrupted()) {
       break;
     }
+    setCurrentMessage(format(m_progressMsgString.cstr(), tb.getName().cstr(), (int)m_current+1, (int)m_list.size()));
     setCurrentFileSize();
     try {
       tb.decompress(this);
@@ -81,6 +95,7 @@ UINT DecompressJob::run() {
     }
     verbose(_T("\n"));
   }
+  setCurrentMessage(_T("Done"));
   return 0;
 }
 
@@ -100,7 +115,7 @@ void EndGameTablebase::decompressAll() { // static
   if(jobList.size() == 0) {
     AfxMessageBox(IDS_ALLTABLEBASESDECOMPRESSED, MB_ICONINFORMATION|MB_OK);
   } else {
-    ProgressWindow progressWindow(NULL, DecompressJob(jobList), 0, 800);
+    ProgressWindow progressWindow(NULL, DecompressJob(jobList), 0, 200);
   }
 }
 

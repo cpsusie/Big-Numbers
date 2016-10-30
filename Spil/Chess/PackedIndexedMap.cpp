@@ -6,11 +6,14 @@
 
 #ifdef _DEBUG
 
-UINT PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
-  const UINT result = m_keydef.keyToIndex(key);
+EndGamePosIndex PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
+  const EndGamePosIndex result = m_keydef.keyToIndex(key);
   if(result >= m_indexSize) {
-    UINT ii = m_keydef.keyToIndex(key);
-    throwException(_T("Position [%s] has index %lu. Max=%lu"), key.toString(m_keydef).cstr(), result, m_indexSize-1);
+    const EndGamePosIndex ii = m_keydef.keyToIndex(key);
+    throwException(_T("Position [%s] has index %llu. Max=%llu")
+                  ,key.toString(m_keydef).cstr()
+                  ,result
+                  ,m_indexSize-1);
   }
   return result;
 }
@@ -46,10 +49,12 @@ PackedIndexedMap::PackedIndexedMap(const EndGameKeyDefinition &keydef, bool enab
 }
 
 void PackedIndexedMap::load(ByteInputStream &s) {
-  UINT size;
+  UINT64 size;
   s.getBytesForced((BYTE*)&size, sizeof(size));
   if(size != m_indexSize) {
-    throwException(_T("Unexpected indexSize=%s read from stream. Expected %s"), format1000(size).cstr(), format1000(m_indexSize).cstr());
+    throwException(_T("Unexpected indexSize=%s read from stream. Expected %s")
+                  ,format1000(size).cstr()
+                  ,format1000(m_indexSize).cstr());
   }
   clear();
   m_statusArray.setCapacity(m_indexSize);
@@ -60,9 +65,9 @@ void PackedIndexedMap::load(ByteInputStream &s) {
   try {
     buffer = new EndGameResult[BUFFERSIZE];
 
-    for(UINT i = 0; i < m_indexSize;) {
-      int n = min(BUFFERSIZE, m_indexSize-i);
-      s.getBytesForced((BYTE*)buffer, n*sizeof(buffer[0]));
+    for(size_t i = 0; i < m_indexSize;) {
+      UINT64 n = min(BUFFERSIZE, m_indexSize-i);
+      s.getBytesForced((BYTE*)buffer, (size_t)n*sizeof(buffer[0]));
       if(m_getResultEnabled) {
         for(const EndGameResult *egrp = buffer; n--; egrp++) {
           if(!egrp->exists()) {
@@ -103,7 +108,8 @@ EndGamePositionStatus PackedIndexedMap::getPositionStatus(const EndGameKey &key)
 
 EndGameResult PackedIndexedMap::getPositionResult(const EndGameKey &key) const {
   if(!m_getResultEnabled) {
-    throwException(_T("PackedIndexedMap::getPositionResult:Unsupported operation. Index initialized with enableGetResult=false"));
+    throwException(_T("%s:Unsupported operation. Index initialized with enableGetResult=false")
+                  ,__TFUNCTION__);
   }
   const UINT v = GETELEMENT(key);
   return EndGameResult((EndGamePositionStatus)(v&3), v >> 2);

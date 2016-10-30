@@ -7,7 +7,7 @@ Packer &operator<<(Packer &p, const BitSet &s) {
   const size_t capacity  = s.getCapacity();
   const size_t atomCount = s.getAtomCount();
   const size_t byteCount = atomCount * sizeof(BitSet::Atom);
-  p << capacity;
+  p << (UINT64)capacity;
 
 #if _BITSET_ATOMSIZE == 32
   const unsigned long hl = 0x12345678;
@@ -46,7 +46,11 @@ Packer &operator<<(Packer &p, const BitSet &s) {
 
 Packer &operator>>(Packer &p, BitSet &s) {
   size_t capacity;
-  p >> capacity;
+  UINT64 capacity64;
+  p >> capacity64;
+  CHECKUINT64ISVALIDSIZET(capacity64)
+  capacity = (size_t)capacity64;
+
   s.setCapacity(capacity);
   const size_t atomCount = s.getAtomCount();
   const size_t byteCount = atomCount * sizeof(BitSet::Atom);

@@ -12,7 +12,7 @@ EndGameKeyDefinition5Men1Pawn2Equal::EndGameKeyDefinition5Men1Pawn2Equal(PieceKe
         );
 }
 
-unsigned long EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &key) const {
   const UINT pos3 = key.getPosition3();
   const UINT pos4 = key.getPosition4();
 
@@ -30,7 +30,7 @@ unsigned long EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &
        - MININDEX;
 }
 
-EndGameKey EndGameKeyDefinition5Men1Pawn2Equal::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men1Pawn2Equal::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
 
   EndGameKey result;

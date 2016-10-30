@@ -446,21 +446,22 @@ public:
   }
 
   void save(ByteOutputStream &s) const { // modify this => take care of CompactFileArray
-    s.putBytes((BYTE*)&m_size, sizeof(m_size));
+    const UINT64 size64 = m_size;
+    s.putBytes((BYTE*)&size64, sizeof(size64));
     if(m_size) {
       s.putBytes((BYTE*)m_array, sizeof(T)*m_size);
     }
   }
-
   void load(ByteInputStream &s) {
     clear();
-    size_t size;
-    s.getBytesForced((BYTE*)&size, sizeof(size));
-    setCapacity(size);
-    if(size) {
-      s.getBytesForced((BYTE*)m_array, sizeof(T)*size);
+    UINT64 size64;
+    s.getBytesForced((BYTE*)&size64, sizeof(size64));
+    CHECKUINT64ISVALIDSIZET(size64)
+    setCapacity((size_t)size64);
+    if(size64) {
+      s.getBytesForced((BYTE*)m_array, sizeof(T)*(size_t)size64);
     }
-    m_size = size;
+    m_size = (size_t)size64;
   }
 
   String toString() const {
@@ -548,11 +549,11 @@ public:
 template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const CompactArray<T> &a) {
   const D delimiter;
   const UINT elemSize = sizeof(T);
-  const size_t n = a.size();
+  const UINT64 n = a.size();
   out << elemSize << delimiter << n << delimiter;
   if(n) {
     const T *e = a.getBuffer();
-    for(size_t i = n; i--;) {
+    for(size_t i = (size_t)n; i--;) {
       out << *(e++) << delimiter;
     }
   }
@@ -565,11 +566,12 @@ template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
   if(elemSize != sizeof(T)) {
     throwException(_T("Invalid element size:%d bytes. Expected %d bytes"), elemSize, sizeof(T));
   }
-  size_t size;
   a.clear();
-  in >> size;
-  a.setCapacity(size);
-  for(size_t i = size; i--;) {
+  UINT64 size64;
+  in >> size64;
+  CHECKUINT64ISVALIDSIZET(size64)
+  a.setCapacity((size_t)size64);
+  for(size_t i = (size_t)size64; i--;) {
     T e;
     in >> e;
     a.add(e);
@@ -582,6 +584,7 @@ typedef CompactArray<char>   CompactCharArray;
 typedef CompactArray<short>  CompactShortArray;
 typedef CompactArray<int>    CompactIntArray;
 typedef CompactArray<long>   CompactLongArray;
+typedef CompactArray<INT64>  CompactInt64Array;
 typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;
@@ -589,7 +592,7 @@ typedef CompactArray<size_t> CompactSizetArray;
 template <class T> class CompactFileArray {
 private:
   mutable ByteInputFile  m_f;
-  const unsigned __int64 m_dataStartOffset;
+  const UINT64           m_dataStartOffset;
   size_t                 m_size;
 
   void indexError(size_t index, const TCHAR *method) const {
@@ -601,12 +604,15 @@ private:
   }
 
 public:
-  CompactFileArray(const String &fileName, unsigned __int64 startOffset) 
-    : m_dataStartOffset(startOffset + sizeof(m_size))
+  CompactFileArray(const String &fileName, UINT64 startOffset)
+    : m_dataStartOffset(startOffset + sizeof(UINT64))
     , m_f(fileName)
   {
     m_f.seek(startOffset);
-    m_f.getBytesForced((BYTE*)&m_size, sizeof(m_size));
+    UINT64 size64;
+    m_f.getBytesForced((BYTE*)&size64, sizeof(size64));
+    CHECKUINT64ISVALIDSIZET(size64);
+    m_size = (size_t)size64;
   }
   CompactFileArray(const CompactFileArray &src) {
     throwUnsupportedOperationException(__TFUNCTION__);

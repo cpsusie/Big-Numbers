@@ -2,11 +2,11 @@
 #include "EndGameUtil.h"
 #include "EndGameKeyCodec.h"
 
-unsigned long EndGameKeyDefinition4Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men1Pawn::keyToIndex(const EndGameKey &key) const {
   return ONE_PAWN_4MEN_INDEX(key);
 }
 
-EndGameKey EndGameKeyDefinition4Men1Pawn::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition4Men1Pawn::indexToKey(EndGamePosIndex index) const {
   EndGameKey result;
   SETPIT(         result, index   );
   SETP3_INDEX(    result, index   );

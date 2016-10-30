@@ -4,7 +4,7 @@
 
 #define MININDEX 0
 
-static unsigned long rangeStartTable[23];
+static EndGamePosIndex rangeStartTable[23];
 
 #define KK_POSCOUNT                    MAXINDEX_KK_WITH_PAWN_2MEN
 #define KK_1_QUEENSIDE_POSCOUNT        GET_RANGESTART3EQUAL(KK_POSCOUNT, 22)
@@ -47,7 +47,7 @@ EndGameKeyDefinition5Men3EqualPawns::EndGameKeyDefinition5Men3EqualPawns(PieceKe
 
 #ifdef _DEBUG
 
-static UINT encodeNoFlip(EndGameKey key) {
+static EndGamePosIndex encodeNoFlip(EndGameKey key) {
   int pi2 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition2()];
   int pi3 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition3()];
   int pi4 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition4()];
@@ -58,7 +58,7 @@ static UINT encodeNoFlip(EndGameKey key) {
        - MININDEX;
 }
 
-static UINT encodeFlipi(EndGameKey key, UINT i, UINT j, UINT k) {
+static EndGamePosIndex encodeFlipi(EndGameKey key, UINT i, UINT j, UINT k) {
   int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
   int pj = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(j)];
   int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
@@ -75,7 +75,7 @@ static UINT encodeFlipi(EndGameKey key, UINT i, UINT j, UINT k) {
   }
 }
 
-static UINT encodeFlipij(EndGameKey key, int i, int j, int k) {
+static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
   int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
   int pj = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
   int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
@@ -133,7 +133,7 @@ static UINT encodeFlipij(EndGameKey key, int i, int j, int k) {
 
 #endif // _DEBUG
 
-unsigned long EndGameKeyDefinition5Men3EqualPawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men3EqualPawns::keyToIndex(const EndGameKey &key) const {
   switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) {
   case 0: ENCODE_NOFLIP(key      );                     // 2,3,4 queenside
   case 1: ENCODE_FLIPi( key,2,3,4);                     //   3,4 queenside
@@ -148,7 +148,7 @@ unsigned long EndGameKeyDefinition5Men3EqualPawns::keyToIndex(const EndGameKey &
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition5Men3EqualPawns::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men3EqualPawns::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   if(index < START_RANGE_P24_QUEENSIDE) {
@@ -181,26 +181,26 @@ SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformatio
 
 #ifdef _DEBUG
 
-void set3EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+2]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-void set3EqualPawnsFlipi(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3EqualPawnsFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+1]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-void set3EqualPawnsFlipj(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+void set3EqualPawnsFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+1]);
   addr -= GET_RANGESTART3EQUAL(maxAddr, r);
-  r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
+  r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
   const int pos = EndGameKeyDefinition::pawnIndexToPos[r];
@@ -209,8 +209,8 @@ void set3EqualPawnsFlipj(EndGameKey &key, unsigned long &addr, unsigned long *ta
   addr /= r;
 }
 
-void set3EqualPawnsFlipij(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+2]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);

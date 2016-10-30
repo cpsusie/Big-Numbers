@@ -82,7 +82,7 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
        - MININDEX;                                                                                                                \
 }
 
-unsigned long EndGameKeyDefinition4Men2Equal::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men2Equal::keyToIndex(const EndGameKey &key) const {
   UINT pos2 = key.getPosition2();
   UINT pos3 = key.getPosition3();
 
@@ -106,7 +106,7 @@ unsigned long EndGameKeyDefinition4Men2Equal::keyToIndex(const EndGameKey &key) 
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition4Men2Equal::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition4Men2Equal::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
 
   EndGameKey result;
@@ -238,34 +238,34 @@ String EndGameKeyDefinition4Men2Equal::getCodecName() const {
 
 #ifdef _DEBUG
 
-UINT add2Equal(UINT addr, UINT maxAddr, UINT lp, UINT hp) {
+EndGamePosIndex add2Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp >= hp) || (addr >= maxAddr)) {
     throwException(_T("add2Equal:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp < hp)")
                   ,addr, maxAddr, lp, hp);
   }
-  UINT a = addr * hp;
+  EndGamePosIndex a = addr * hp;
   a += lp;
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr,hp-1);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr,hp-1);
   return a + rs;
 }
 
-UINT add2EqualAllowEqualLH(UINT addr, UINT maxAddr, UINT lp, UINT hp) {
+EndGamePosIndex add2EqualAllowEqualLH(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp > hp) || (addr >= maxAddr)) {
-    throwException(_T("add2EqualAllowEqualLH:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
+    throwException(_T("add2EqualAllowEqualLH:addr=%llu, maxAddr=%llu, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
                   ,addr, maxAddr, lp, hp);
   }
-  UINT a = addr * (hp+1);
+  EndGamePosIndex a = addr * (hp+1);
   a += lp;
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, hp);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, hp);
   return a + rs;
 }
 
-void set2Pos2Equal(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2Pos2Equal(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
   key.setPosition(hpIndex, r);
@@ -273,10 +273,10 @@ void set2Pos2Equal(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpInd
   addr /= r;
 }
 
-void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
@@ -284,10 +284,10 @@ void set2OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, in
   addr /= r;
 }
 
-void set2OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
   r++;
@@ -295,10 +295,10 @@ void set2OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, UINT maxAddr, int
   addr /= r;
 }
 
-void set2OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);
   r++;
@@ -306,10 +306,10 @@ void set2OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, UINT maxAddr, int
   addr /= r;
 }
 
-void set2OffDiagPosFlipij(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);

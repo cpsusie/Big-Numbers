@@ -80,7 +80,7 @@ String EndGameKeyDefinition::getCompressedFileName() const {
 
 
 
-int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // static
+int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index) {
   const double _8 = 8.0;
   unsigned short cwSave, ctrlFlags;
 
@@ -95,7 +95,8 @@ int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // stat
     fild index
     fld _8
     fmul
-    fidiv f
+    fild f
+    fdiv
     fld1
     fadd
     fsqrt
@@ -107,7 +108,7 @@ int EndGameKeyDefinition::findRange2Equal(long f, unsigned long index) { // stat
   return result >> 1;
 }
 
-int EndGameKeyDefinition::findRange(const unsigned long *rangeTable, UINT size, unsigned long index) { // static
+int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex index) {
   int l = 1, r = size;
   while(l < r) {
     const UINT m = (l+r)>>1;
@@ -319,9 +320,9 @@ EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTran
   return key;
 }
 
-EndGameKey EndGameKeyDefinition::getNormalizedKey(const EndGameKey &key, UINT *index) const {
+EndGameKey EndGameKeyDefinition::getNormalizedKey(const EndGameKey &key, EndGamePosIndex *index) const {
   static const TCHAR *msg = _T("Invalid EndGameKey:getNormalizedKey(%s):%s");
-  const UINT ki = keyToIndex(key);
+  const EndGamePosIndex ki = keyToIndex(key);
   if(index) *index = ki;
   const EndGameKey result = indexToKey(ki);
   validateKey(result, msg);
@@ -896,9 +897,9 @@ void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
          ,format1000(getIndexSize()).cstr());
   selfCheckInit();
   selfCheck();
-  const UINT distinctKeyCount1 = selfCheckSummary();
+  const UINT64 distinctKeyCount1 = selfCheckSummary();
   if(checkSym) {
-    const UINT distinctKeyCount2 = checkSymmetries();
+    const UINT64 distinctKeyCount2 = checkSymmetries();
     if(distinctKeyCount2 != distinctKeyCount1) {
       verbose(_T("Minimal scan generated %s distinct keys, but allkeys scan generated %s distinct keys.\n")
              ,format1000(distinctKeyCount1).cstr(), format1000(distinctKeyCount2).cstr());
@@ -918,21 +919,21 @@ void EndGameKeyDefinition::selfCheckInit() const {
   m_maxIndex       =  0;
   m_checkKeyCount  =  0;
   m_duplicateCount =  0;
-  m_usedIndex      = new BitSet(getIndexSize());
+  m_usedIndex      = new BitSet((size_t)getIndexSize());
   m_checkStartTime = getProcessTime();
 }
 
-UINT EndGameKeyDefinition::selfCheckSummary() const {
+UINT64 EndGameKeyDefinition::selfCheckSummary() const {
   _tprintf(_T("%-*s\n"), 140, _T(" "));
-  const double usedTime           = getProcessTime() - m_checkStartTime;
-  const UINT distinctKeys = m_checkKeyCount  - m_duplicateCount;
+  const double usedTime     = getProcessTime() - m_checkStartTime;
+  const UINT64 distinctKeys = m_checkKeyCount  - m_duplicateCount;
 
-  verbose(_T("Keys checked   : %11s.\n"), format1000(m_checkKeyCount).cstr());
-  verbose(_T("Distinct keys  : %11s.\n"), format1000(distinctKeys).cstr());
+  verbose(_T("Keys checked   : %11s.\n"        ), format1000(m_checkKeyCount).cstr());
+  verbose(_T("Distinct keys  : %11s.\n"        ), format1000(distinctKeys).cstr());
   verbose(_T("Minimum index  : %11s. Key:%s.\n"), format1000(m_minIndex).cstr(), indexToKey(m_minIndex).toString(*this).cstr());
   verbose(_T("Maximum index  : %11s. Key:%s.\n"), format1000(m_maxIndex).cstr(), indexToKey(m_maxIndex).toString(*this).cstr());
-  verbose(_T("Indexsize()    : %11s.\n"), format1000(getIndexSize()).cstr());
-  verbose(_T("Duplicate keys : %11s.\n"), format1000(m_duplicateCount).cstr());
+  verbose(_T("Indexsize()    : %11s.\n"        ), format1000(getIndexSize()).cstr());
+  verbose(_T("Duplicate keys : %11s.\n"        ), format1000(m_duplicateCount).cstr());
   verbose(_T("Utilizationrate: %5.2lf%%, (%5.2lf%%)\n"), PERCENT(distinctKeys,getIndexSize()), PERCENT(distinctKeys,(m_maxIndex-m_minIndex+1)));
   verbose(_T("Used time      : %6.3lf sec. %.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_checkKeyCount*1000);
 
@@ -985,7 +986,7 @@ void EndGameKeyDefinition::checkForBothPlayers(EndGameKey &key) const {
 }
 
 void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
-  const unsigned long index = keyToIndex(key);
+  const EndGamePosIndex index = keyToIndex(key);
   if(index < m_minIndex) {
     m_minIndex = index;
   } else if(index > m_maxIndex) {
@@ -1003,23 +1004,25 @@ void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
            ,toString().cstr()
            ,format1000(m_checkKeyCount).cstr()
            ,key.toString(*this).cstr(), format1000(index).cstr(), format1000(getIndexSize()).cstr());
-    const unsigned long index = keyToIndex(key);
+    const EndGamePosIndex index = keyToIndex(key);
     pause();
-  } else if(m_usedIndex->contains(index)) {
+  } else if(m_usedIndex->contains((size_t)index)) {
     m_duplicateCount++;
     verbose(_T("Warning:index %s already used:Key:[%s]\n"), format1000(index).cstr(), key.toString(*this).cstr());
     pause();
   } else {
-    m_usedIndex->add(index);
+    m_usedIndex->add((size_t)index);
   }
   const EndGameKey k1 = indexToKey(index);
   if(!match(k1,key)) {
     verbose(_T("%s %11s:%s -> %s -> %s\n")
            ,toString().cstr()
            ,format1000(m_checkKeyCount).cstr()
-           ,key.toString(*this).cstr(), format1000(index).cstr(), k1.toString(*this).cstr());
-    const unsigned long index1 = keyToIndex(key);
-    const EndGameKey k2 = indexToKey(index1);
+           ,key.toString(*this).cstr()
+           ,format1000(index).cstr()
+           ,k1.toString(*this).cstr());
+    const EndGamePosIndex index1 = keyToIndex(key);
+    const EndGameKey      k2     = indexToKey(index1);
 
     pause();
   }
@@ -1131,8 +1134,8 @@ private:
   EndGameKeyWithOccupiedPositions m_key;
   ScannerFunction                 m_scannerFunctions[MAX_ENDGAME_PIECECOUNT];
   int                             m_pIndex;
-  UINT                            m_positionCount;
-  UINT                            m_distinctPositionCount;
+  UINT64                          m_positionCount;
+  UINT64                          m_distinctPositionCount;
   BitSet                          m_usedIndex;
 
   void allPositions();
@@ -1143,13 +1146,13 @@ private:
   void checkSymmetry();
 public:
   AllPositionScanner(const EndGameKeyDefinition &keydef);
-  UINT scanAllPositions();
+  UINT64 scanAllPositions();
 };
 
 AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
 : m_keydef(keydef)
 , m_pieceCount(keydef.getPieceCount())
-, m_usedIndex(keydef.getIndexSize())
+, m_usedIndex((size_t)keydef.getIndexSize())
 {
   m_scannerFunctions[0] = &AllPositionScanner::allPositions;
   m_scannerFunctions[1] = &AllPositionScanner::blackKingPositions;
@@ -1172,13 +1175,15 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
   }
 }
 
-UINT AllPositionScanner::scanAllPositions() {
+UINT64 AllPositionScanner::scanAllPositions() {
   m_positionCount         = 0;
   m_distinctPositionCount = 0;
   m_pIndex                = 0;
   verbose(_T("Checking symmetric transformation...\n"));
   (this->*(m_scannerFunctions[0]))();
-  verbose(_T("All %s positions checked. %s distinct keys found.\n"), format1000(m_positionCount).cstr(), format1000(m_distinctPositionCount).cstr());
+  verbose(_T("All %s positions checked. %s distinct keys found.\n")
+         ,format1000(m_positionCount).cstr()
+         ,format1000(m_distinctPositionCount).cstr());
 //  m_keydef.listLongestUnusedSequence(m_usedIndex);
   return m_distinctPositionCount;
 }
@@ -1210,13 +1215,13 @@ void AllPositionScanner::checkSymmetry() {
     _tprintf(_T("Position %s\r"), format1000(m_positionCount).cstr());
   }
 
-  EndGameKey key1 = m_keydef.getTransformedKey(m_key, m_keydef.getSymTransformation(m_key));
-  UINT       index;
-  EndGameKey key2 = m_keydef.getNormalizedKey(key1, &index);
+  EndGameKey      key1 = m_keydef.getTransformedKey(m_key, m_keydef.getSymTransformation(m_key));
+  EndGamePosIndex index;
+  EndGameKey      key2 = m_keydef.getNormalizedKey(key1, &index);
 
-  if(!m_usedIndex.contains(index)) {
+  if(!m_usedIndex.contains((size_t)index)) {
     m_distinctPositionCount++;
-    m_usedIndex.add(index);
+    m_usedIndex.add((size_t)index);
   }
   if(!m_keydef.match(key1, key2)) {
     _tprintf(_T("transformedKey(%s) -> %s\n"), m_key.toString(m_keydef).cstr(), key1.toString(m_keydef).cstr());
@@ -1254,7 +1259,7 @@ void AllPositionScanner::pawnPositions() {
   }
 }
 
-UINT EndGameKeyDefinition::checkSymmetries() const {
+UINT64 EndGameKeyDefinition::checkSymmetries() const {
   AllPositionScanner scanner(*this);
   return scanner.scanAllPositions();
 }

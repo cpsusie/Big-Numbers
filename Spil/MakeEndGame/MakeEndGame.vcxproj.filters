@@ -23,9 +23,6 @@
     <ClCompile Include="EndGameInfoList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\Chess\IndexedMap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MakeEndGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

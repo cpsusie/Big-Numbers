@@ -9,11 +9,11 @@ EndGameKeyDefinition5Men1Pawn::EndGameKeyDefinition5Men1Pawn(PieceKey pk2, Piece
 {
 }
 
-unsigned long EndGameKeyDefinition5Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men1Pawn::keyToIndex(const EndGameKey &key) const {
   return ONE_PAWN_5MEN_INDEX(key) - MININDEX;
 }
 
-EndGameKey EndGameKeyDefinition5Men1Pawn::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men1Pawn::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   SETPIT(         result, index   );

@@ -2,11 +2,9 @@
 #include <io.h>
 #include "EndGameUtil.h"
 
-const char *TablebaseInfo::s_programVersion = "1.3";
+// _________________________________________ 1.4 _________________________________________
 
-TablebaseInfo::TablebaseInfo() {
-  clear();
-}
+const char *TablebaseInfo::s_programVersion = "1.4";
 
 void TablebaseInfo::clear() {
   memset(this, 0, sizeof(TablebaseInfo));
@@ -107,11 +105,11 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   }
 }
 
-PositionCount TablebaseInfo::getWinnerPositionCount() const {
+PositionCount64 TablebaseInfo::getWinnerPositionCount() const {
   return m_checkMatePositions + m_terminalWinPositions + m_nonTerminalWinPositions;
 }
 
-UINT TablebaseInfo::getWinnerPositionCount(Player winner) const {
+UINT64 TablebaseInfo::getWinnerPositionCount(Player winner) const {
   return m_checkMatePositions.m_count[winner]
        + m_terminalWinPositions.m_count[winner]
        + m_nonTerminalWinPositions.m_count[winner];
@@ -331,7 +329,7 @@ String secondsToString(double msec, bool showMilliSeconds) {
 }
 
 IntervalChecker::IntervalChecker(const TCHAR *name) : m_name(name) {
-  m_minValue = 0xffffffff;
+  m_minValue = -1;
   m_maxValue = 0;
 }
 
@@ -340,7 +338,7 @@ IntervalChecker::~IntervalChecker() {
 }
 
 
-void IntervalChecker::update(unsigned long v) {
+void IntervalChecker::update(EndGamePosIndex v) {
   if(v < m_minValue) {
     m_minValue = v;
   }

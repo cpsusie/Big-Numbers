@@ -201,12 +201,12 @@ private:
   void                  statusError(EndGamePositionStatus status, const Game &game, const Move &m) const; // throw Exception
   void                  missingPositionError(const TCHAR *function, const EndGameKey key, EndGameResult &result);
 
-  void           load(ByteInputStream &s);
+  void                  load(ByteInputStream &s);
 
 #ifdef TABLEBASE_BUILDER
 
   PackedIndexedMap                   *m_packedIndex;
-  TablebaseInfo                       m_info;
+  TablebaseInfo                     m_info;
   bool                                m_bishopInitialField[MAX_ENDGAME_PIECECOUNT][2];
   bool                                m_pawnInitialField[MAX_ENDGAME_PIECECOUNT][8];
   // m_bishopInitialField[i][fieldColor] is true if piece[i] = Bishop
@@ -219,7 +219,7 @@ private:
   mutable bool                        m_verboseTriggered;
   mutable FILE                       *m_logFile;
   mutable int                         m_infoLength;
-  UINT                                m_positionsAnalyzed;
+  UINT64                              m_positionsAnalyzed;
 
   bool addPosition(const EndGameKey &key, bool markNew);
   bool addPosition(const EndGameKey &key, EndGameResult &result, bool markNew);
@@ -281,14 +281,14 @@ private:
   bool         addSuccessors(EndGameResult &result, Game &game, bool retroPosition);
   void         findDTM();
   void         unravelWinnerPositions(int minPliesToEnd = -1);
-  bool         analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, UINT pliesToEnd);
+  bool         analyzeRetro(const EndGameEntry &entry, PositionCount64 &winnerCount, UINT pliesToEnd);
   bool         fixupPositions();
-  void         fixupNonWinnerPositions(unsigned long &changedPositions);
-  void         fixupPlies(             unsigned long &changedPositions);
+  void         fixupNonWinnerPositions(UINT64 &changedPositions);
+  void         fixupPlies(             UINT64 &changedPositions);
 
-  UINT         fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount);
-  void         fixupForwardPlies(EndGameEntryIterator &it, int iteration, unsigned long &changedPositions);
-  UINT         fixupRetroPlies( const EndGameEntry &entry, PositionCount &changeCount);
+  UINT64       fixupRetroStatus(const EndGameEntry &entry, PositionCount64 &changeCount);
+  void         fixupForwardPlies(EndGameEntryIterator &it, int iteration, UINT64 &changedPositions);
+  UINT64       fixupRetroPlies( const EndGameEntry &entry, PositionCount64 &changeCount);
   void         markNeighbours(  const EndGameEntry &entry, bool onlyWinnerPositions);
   void         markSuccessors(  const EndGameEntry &entry, bool onlyWinnerPositions);
   void         markPredecessors(const EndGameEntry &entry, bool onlyWinnerPositions);
@@ -300,7 +300,7 @@ private:
   void list(FILE *f, EndGameEntryIterator &it);
   void listPositionCount(FILE *f);
 
-  CompactArray<PositionCount> getWinnerPositionCountArray();
+  CompactArray<PositionCount64> getWinnerPositionCountArray();
 
   String getAllForwardPositionsFileName() const {
     return EndGameKeyDefinition::getDbFileName(getName() + _T("AllForwardPositions.dat"));
@@ -315,7 +315,7 @@ private:
   }
 
   String toString(           const EndGameEntry &entry, bool ply=false) const; // same default as EndGameResult::toString
-  TCHAR   *toStr(  TCHAR *dst, const EndGameEntry &entry, bool ply=false) const;
+  TCHAR *toStr(  TCHAR *dst, const EndGameEntry &entry, bool ply=false) const;
 
 #else
   void                  decompress(ByteInputStream &s) const;
@@ -354,8 +354,8 @@ public:
 
   bool                  exist(TablebaseFileType recoverFile) const;
   String                getFileName(TablebaseFileType fileType) const;
-  __time32_t            getFileTime(TablebaseFileType fileType) const;
-  UINT                  getFileSize(TablebaseFileType fileType) const;
+  __time64_t            getFileTime(TablebaseFileType fileType) const;
+  UINT64                getFileSize(TablebaseFileType fileType) const;
 
   bool isLoaded() const {
     return m_positionIndex.isAllocated();

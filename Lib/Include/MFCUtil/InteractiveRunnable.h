@@ -42,23 +42,23 @@ public:
   inline char isSuspendOrCancelButtonPressed() const {
     return m_flags;
   }
-  virtual unsigned short getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  virtual USHORT getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
     return 0;
   }
-  virtual unsigned short getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
+  virtual USHORT getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
     return 0;
   };
-  virtual unsigned short getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
-    return 0;                                       // Should return an integer in the range [0..100]
+  virtual USHORT getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
+    return 0;                               // Should return an integer in the range [0..100]
   }
   virtual String getProgressMessage() {
-    return "";
+    return _T("");
   }
-  virtual String getTitle() {                       // Title of progress-window
-    return "Progress";
+  virtual String getTitle() {               // Title of progress-window
+    return _T("Progress");
   }
 
-  virtual int getSupportedFeatures() {              // Should return any combination of IR_-constants
+  virtual int getSupportedFeatures() {      // Should return any combination of IR_-constants
     return 0;
   }
 

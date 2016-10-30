@@ -102,7 +102,7 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
        - MININDEX;                                                                                                                \
 }
 
-unsigned long EndGameKeyDefinition5Men2Equal::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men2Equal::keyToIndex(const EndGameKey &key) const {
   const UINT pos3 = key.getPosition3();
   const UINT pos4 = key.getPosition4();
 
@@ -129,7 +129,7 @@ unsigned long EndGameKeyDefinition5Men2Equal::keyToIndex(const EndGameKey &key) 
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition5Men2Equal::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men2Equal::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
 
   EndGameKey result;

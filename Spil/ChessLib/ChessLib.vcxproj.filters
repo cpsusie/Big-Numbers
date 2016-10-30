@@ -34,6 +34,12 @@
     <Filter Include="EndGames\EndGameKeyDefinitions">
       <UniqueIdentifier>{4a702570-7a0f-45bf-860c-07cfc693e015}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EndGames\Include">
+      <UniqueIdentifier>{794d60fc-052f-4cef-9c34-f619fe8d8cda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\EndGameKeyDefinitions\Include">
+      <UniqueIdentifier>{69d89735-0702-48c4-9f6b-8e180e5dfdf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Chess\FieldInfo.cpp">
@@ -692,26 +698,26 @@
     <ClInclude Include="..\Chess\EndGame5MenWithPawns.h">
       <Filter>EndGames\5Men\5MenWithPawns</Filter>
     </ClInclude>
-    <ClInclude Include="..\Chess\EndGameKeyCodec.h">
-      <Filter>EndGames\EndGameKeyDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\chess\EndGameKeyDefinition.h">
-      <Filter>EndGames\EndGameKeyDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\chess\EndGameKey.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Chess\EndGameTablebase.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Chess\EndGameUtil.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
-    <ClInclude Include="..\chess\IndexedMap.h">
-      <Filter>EndGames</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chess\EndGameKey.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Chess\EndGameTablebase.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Chess\EndGameUtil.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chess\IndexedMap.h">
+      <Filter>EndGames\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Chess\EndGameKeyCodec.h">
+      <Filter>EndGames\EndGameKeyDefinitions\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\chess\EndGameKeyDefinition.h">
+      <Filter>EndGames\EndGameKeyDefinitions\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

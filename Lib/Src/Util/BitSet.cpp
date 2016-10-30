@@ -616,9 +616,9 @@ void BitSet::dump(FILE *f) {
   fprintf(f,"\n");
 }
 
-void BitSet::getRangeTable(CompactArray<size_t> &rangeTable, unsigned char shift) const {
+void BitSet::getRangeTable(CompactInt64Array &rangeTable, unsigned char shift) const {
   rangeTable.clear();
-  const unsigned int stepSize     = 1 << shift;
+  const UINT         stepSize     = 1 << shift;
   size_t             currentLimit = stepSize;
   size_t             counter      = 0;
   for(BitSetIterator it((BitSet&)(*this)); it.hasNext();) {

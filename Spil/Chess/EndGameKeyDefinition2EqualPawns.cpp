@@ -43,9 +43,9 @@ void EndGameKeyDefinition2EqualPawns::setPawnsOwner() {
 
 #ifdef _DEBUG
 
-void set2EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
+  int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r]);
@@ -53,9 +53,9 @@ void set2EqualPawnsNoFlip(EndGameKey &key, unsigned long &addr, UINT maxAddr, in
   addr /= r;
 }
 
-void set2EqualPawnsFlipi( EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
+  int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r]);
   r++;
@@ -64,9 +64,9 @@ void set2EqualPawnsFlipi( EndGameKey &key, unsigned long &addr, UINT maxAddr, in
   addr /= r;
 }
 
-void set2EqualPawnsFlipj( EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
+  int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
   key.setPosition(hpIndex, MIRRORCOLUMN(EndGameKeyDefinition::pawnIndexToPos[r]));
@@ -74,9 +74,9 @@ void set2EqualPawnsFlipj( EndGameKey &key, unsigned long &addr, UINT maxAddr, in
   addr /= r;
 }
 
-void set2EqualPawnsFlipij(EndGameKey &key, unsigned long &addr, UINT maxAddr, int lpIndex, int hpIndex) {
+void set2EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
+  int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
   int pos = EndGameKeyDefinition::pawnIndexToPos[r];

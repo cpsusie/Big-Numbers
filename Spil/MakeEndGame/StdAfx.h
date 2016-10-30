@@ -16,24 +16,21 @@
 #define CHESSLIB_ROOT "C:/mytools2015/Spil/ChessLib/"
 
 #ifndef _M_X64
-#ifdef _DEBUG
-#define CHESSLIB_VERSION CHESSLIB_ROOT "Win32/Debug/"
+#define CHESSLIB_PLATFORM "Win32/"
 #else
-#define CHESSLIB_VERSION CHESSLIB_ROOT "Win32/Release/"
+#define CHESSLIB_PLATFORM "X64/"
 #endif
-
-#else
 
 #ifdef _DEBUG
-#define CHESSLIB_VERSION CHESSLIB_ROOT "x64/Debug/"
+#define CHESSLIB_CONFIG "TablebaseBuilder Debug/"
 #else
-#define CHESSLIB_VERSION CHESSLIB_ROOT "x64/Release/"
+#define CHESSLIB_CONFIG "TablebaseBuilder Release/"
 #endif
 
-#endif
+#define CHESSLIB_VERSION CHESSLIB_ROOT CHESSLIB_PLATFORM CHESSLIB_CONFIG 
 
 #ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " CHESSLIB_VERSION)
+#pragma message(__FILE__ ":link with " CHESSLIB_VERSION)
 #endif
 #pragma comment(lib, CHESSLIB_VERSION "ChessLib.lib")
 

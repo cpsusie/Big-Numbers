@@ -36,3 +36,16 @@ extern void throwErrNoOnSysCallException(const TCHAR *function);
 
 extern void throwLastErrorOnSysCallException(const TCHAR *function);
 extern void throwMethodLastErrorOnSysCallException(const TCHAR *className, const TCHAR *method);
+
+#ifdef IS32BIT
+#define CHECKUINT64ISVALIDSIZET(size64)                         \
+if (size64 > UINT_MAX) {                                        \
+  throwException(_T("%s:%s (=%s) exceeds maxint32 (=%s)")       \
+                ,__TFUNCTION__                                  \
+                ,_T(#size64)                                    \
+                , format1000(size64).cstr()                     \
+                , format1000(UINT_MAX).cstr());                 \
+}
+#else
+#define CHECKUINT64ISVALIDSIZET(size64)
+#endif // IS32BIT

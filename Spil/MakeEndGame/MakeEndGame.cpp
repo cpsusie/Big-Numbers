@@ -149,16 +149,15 @@ static void processTablebase(EndGameTablebase &tablebase, int commands, int plie
   if(commands & CMD_CONVERT) {
     try {
       const TablebaseInfo info = tablebase.getInfo();
-      if(info.isConsistent() && info.m_consistencyCheckedTime == 0) {
+      if(info.isConsistent()) {
         verbose(_T("Converting %s...\n"), tablebase.getName().cstr());
         tablebase.convert();
         verbose(_T("Done\n"));
         jobDone = true;
       } else {
-        verbose(_T("Skip %-5s. isConsistent:%s, consistencyCheckedTime:%s\n")
+        verbose(_T("Skip %-5s. isConsistent:%s\n")
                ,tablebase.getName().cstr()
                ,boolToStr(info.isConsistent())
-               ,Timestamp((time_t)info.m_consistencyCheckedTime).toString().cstr()
                );
       }
     } catch(WrongVersionException e) {
@@ -221,7 +220,7 @@ public:
   AbstractComparator *clone() const {
     return new BuildSequenceComparator(m_tablebaseList);
   }
- };
+};
 
 int BuildSequenceComparator::compare(const SpecifiedSequence &s1, const SpecifiedSequence &s2) {
   const EndGameKeyDefinition &k1 = m_tablebaseList[s1.m_tableIndex]->getKeyDefinition();
@@ -232,7 +231,6 @@ int BuildSequenceComparator::compare(const SpecifiedSequence &s1, const Specifie
   if(c) return c;
   return s1.m_argIndex - s2.m_argIndex;
 }
-
 
 IntArray findBuildSequence(const IntArray &workSet, const EndGameTablebaseList &tablebaseList) {
   Array<SpecifiedSequence> tmp(workSet.size());
@@ -694,7 +692,7 @@ int main(int argc, char **argv) {
     }
 
     if(commands & CMD_CHECKKEYDEF) {
-      IntHashMap<bool> keyIndexDone;
+      UInt64HashMap<bool> keyIndexDone;
       Iterator<int> it = workSet.getIterator();
       for(Iterator<int> it = workSet.getIterator(); it.hasNext();) {
         EndGameTablebase &tb = *tablebaseList[it.next()];

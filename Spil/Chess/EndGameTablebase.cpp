@@ -305,11 +305,11 @@ bool EndGameTablebase::exist(TablebaseFileType fileType) const {
   return ACCESS(getFileName(fileType),0) == 0;
 }
 
-__time32_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
-  return (__time32_t)STAT(getFileName(fileType)).st_mtime;
+__time64_t EndGameTablebase::getFileTime(TablebaseFileType fileType) const {
+  return STAT(getFileName(fileType)).st_mtime;
 }
 
-UINT EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
+UINT64 EndGameTablebase::getFileSize(TablebaseFileType fileType) const {
   return STAT(getFileName(fileType)).st_size;
 }
 
@@ -462,11 +462,11 @@ void EndGameTablebase::doBuild(BuildStep buildStep) {
     while(buildStep != BUILD_DONE) {
       switch(buildStep) {
       case INSERT_INITIALPOSITIONS      :
-        { const int startCount = m_info.m_totalPositions;
+        { const INT64 startCount = m_info.m_totalPositions;
           m_keydef.insertInitialPositions(*this);
-          const int initCount   = m_info.m_totalPositions - startCount;
+          const INT64 initCount   = m_info.m_totalPositions - startCount;
           insertManualPositions();
-          const int manualCount = m_info.m_totalPositions - initCount - startCount;
+          const INT64 manualCount = m_info.m_totalPositions - initCount - startCount;
 
           verbose(_T("%s initial and %s manual positions added\n"), format1000(initCount).cstr(), format1000(manualCount).cstr());
 
@@ -490,9 +490,9 @@ void EndGameTablebase::doBuild(BuildStep buildStep) {
 
       case RECOVER_FROM_FORWARDPOSITIONS:
         { loadAllForwardPositions();
-          const int startCount = m_info.m_totalPositions;
+          const INT64 startCount = m_info.m_totalPositions;
           insertManualPositions();
-          const int manualCount = m_info.m_totalPositions - startCount;
+          const INT64 manualCount = m_info.m_totalPositions - startCount;
 
           verbose(_T("%s manual positions added\n"), format1000(manualCount).cstr());
 
@@ -827,20 +827,20 @@ void EndGameTablebase::generateAllRetroPositions() {
     mainIteration++;
     int innerIteration = 0;
     verbose(_T("Search for backward positions...\n"));
-    const int positionCountAtStart = m_info.m_totalPositions;
+    const INT64 positionCountAtStart = m_info.m_totalPositions;
     do {
       innerIteration++;
       changed = false;
       EndGameEntryIterator it            = m_positionIndex.getIteratorUnvisitedEntries();
-      UINT                 total         = it.getCount();
-      UINT                 positionCount = 0;
+      UINT64               total         = it.getCount();
+      UINT64               positionCount = 0;
       while(it.hasNext()) {
         EndGameEntry &entry = it.next();
         positionCount++;
 
         entry.getValue().setVisited();
 
-        const int positionBefore = m_info.m_totalPositions;
+        const INT64 positionBefore = m_info.m_totalPositions;
 
         m_workGame = entry.getKey().getGameKey(m_keydef);
 
@@ -869,7 +869,7 @@ void EndGameTablebase::generateAllRetroPositions() {
     } while(changed);
 
     // changed == false;
-    const int backwardPositionCount = m_info.m_totalPositions - positionCountAtStart;
+    const INT64 backwardPositionCount = m_info.m_totalPositions - positionCountAtStart;
     if(backwardPositionCount > 0) {
       verbose(_T("Solving %s found backward positions\n"), format1000(backwardPositionCount).cstr());
     }
@@ -878,8 +878,8 @@ void EndGameTablebase::generateAllRetroPositions() {
       innerIteration++;
       changed2     = false;
       EndGameEntryIterator it            = m_positionIndex.getIteratorMarkedEntries();
-      UINT                 total         = it.getCount();
-      UINT                 positionCount = 0;
+      UINT64               total         = it.getCount();
+      UINT64               positionCount = 0;
       while(it.hasNext()) {
         EndGameEntry &entry = it.next();
         positionCount++;
@@ -888,7 +888,7 @@ void EndGameTablebase::generateAllRetroPositions() {
 
         m_workGame = entry.getKey().getGameKey(m_keydef);
 
-        const int positionBefore = m_info.m_totalPositions;
+        const INT64 positionBefore = m_info.m_totalPositions;
         changed2 |= addSuccessors(entry.getValue(), m_workGame, true);
         total += m_info.m_totalPositions - positionBefore;
 
@@ -1004,7 +1004,7 @@ void EndGameTablebase::findDTM() {
 
   { TimeUsagePrinter timeUsage(this);
 
-    PositionCount changeCount;
+    PositionCount64 changeCount;
     EndGameEntryIterator it = m_positionIndex.getIteratorAllWinnerEntries();
     while(it.hasNext()) {
       EndGameEntry &entry = it.next();
@@ -1067,7 +1067,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
   do {
     changed = false;
 
-    PositionCount winnerCount;
+    PositionCount64 winnerCount;
     EndGameEntryIterator it = m_positionIndex.getIteratorWinnerEntries(pliesToEnd);
     while(it.hasNext()) {
       EndGameEntry &entry = it.next();
@@ -1084,7 +1084,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
 //  verbose(_T("%27s%s\n"), _T(""), m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr());
 }
 
-bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount &winnerCount, UINT pliesToEnd) {
+bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount64 &winnerCount, UINT pliesToEnd) {
   bool changed = false;
 
   const EndGameResult        &result = entry.getValue();
@@ -1165,7 +1165,7 @@ void EndGameTablebase::fixupBackup(bool force) {
 #define TBISTATE_PLIESFIXED    (TBISTATE_WINNERFORWARD1FIXED | TBISTATE_RETROLOOPDONE)
 
 bool EndGameTablebase::fixupPositions() {
-  unsigned long changedPositions = 0;
+  UINT64 changedPositions = 0;
 
   TimeUsagePrinter timeUsage(this, _T("Fixup-positions time"));
 
@@ -1212,14 +1212,14 @@ bool EndGameTablebase::fixupPositions() {
 #define FIXUP_NONWINNER_VERBOSE1(eosCh) _FIXUP_NONWINNER_VERBOSE(1, eosCh)
 
 // Scan for all draw/undefined positions to find any missed winner-positions
-void EndGameTablebase::fixupNonWinnerPositions(unsigned long &changedPositions) {
+void EndGameTablebase::fixupNonWinnerPositions(UINT64 &changedPositions) {
   int iteration = 1;
 
 StartLoop0:
-  PositionCount loopChangeCount;
+  PositionCount64 loopChangeCount;
 
   double startTime      = getThreadTime();
-  int    startUndefined = m_info.m_undefinedPositions;
+  INT64  startUndefined = m_info.m_undefinedPositions;
 
   if(startUndefined == 0) {
     return;
@@ -1256,7 +1256,7 @@ StartLoop0:
 
   double startTimeLoop1 = getThreadTime();
 
-  for(unsigned long startChangeCount = changedPositions; m_info.m_undefinedPositions > 0; startChangeCount = changedPositions) { // loop1
+  for(UINT64 startChangeCount = changedPositions; m_info.m_undefinedPositions > 0; startChangeCount = changedPositions) { // loop1
     loopChangeCount.clear();
     iteration++;
     for(EndGameEntryIterator it = m_positionIndex.getIteratorChangedUnvisitedEntries(); it.hasNext() && (m_info.m_undefinedPositions > 0);) {
@@ -1317,7 +1317,7 @@ StartLoop0:
 }
 
 // Fix up all plies to end, that is NO MORE winner-positions exist
-void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
+void EndGameTablebase::fixupPlies(UINT64 &changedPositions) {
   UINT iteration = 1;
 
   if((m_info.m_stateFlags & TBISTATE_WINNERFORWARD1FIXED) == 0) {
@@ -1335,8 +1335,8 @@ void EndGameTablebase::fixupPlies(unsigned long &changedPositions) {
   if((m_info.m_stateFlags & TBISTATE_RETROLOOPDONE) != TBISTATE_RETROLOOPDONE) {
     for(iteration++;;iteration++) {
       if((m_info.m_stateFlags & TBISTATE_WINNERRETROFIXED) == 0) {
-        for(UINT retroStartChangeCount = changedPositions, retroIteration = 1;; retroStartChangeCount = changedPositions, retroIteration++) {
-          PositionCount loopChangeCount;
+        for(UINT64 retroStartChangeCount = changedPositions, retroIteration = 1;; retroStartChangeCount = changedPositions, retroIteration++) {
+          PositionCount64 loopChangeCount;
           m_positionIndex.clearAllChanged();
           // Invariant:No changed. loop through marked positions
           // fix all plies to predecessors to the marked positions
@@ -1401,8 +1401,8 @@ void EndGameTablebase::verboseHelpInfo(const String &label) {
          );
 }
 
-void EndGameTablebase::fixupForwardPlies(EndGameEntryIterator &it, int iteration, unsigned long &changedPositions) {
-  PositionCount loopChangeCount;
+void EndGameTablebase::fixupForwardPlies(EndGameEntryIterator &it, int iteration, UINT64 &changedPositions) {
+  PositionCount64 loopChangeCount;
 
   verbose(_T("%-70s\r"),_T(""));
   verbose(_T("Positions to check:%s\n"), format1000(it.getCount()).cstr());
@@ -1424,8 +1424,8 @@ void EndGameTablebase::fixupForwardPlies(EndGameEntryIterator &it, int iteration
   ENDLOOP_VERBOSE(FIXUP_FORWARD_VERBOSE)
 }
 
-UINT EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, PositionCount &changeCount) {
-  const UINT startChangeCount = changeCount.getTotal();
+UINT64 EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, PositionCount64 &changeCount) {
+  const UINT64 startChangeCount = changeCount.getTotal();
 
   const EndGameResult        &result     = entry.getValue();
   const EndGamePositionStatus status     = result.getStatus();
@@ -1484,8 +1484,8 @@ UINT EndGameTablebase::fixupRetroPlies(const EndGameEntry &entry, PositionCount 
   return changeCount.getTotal() - startChangeCount;
 }
 
-UINT EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, PositionCount &changeCount) {
-  const UINT startChangeCount = changeCount.getTotal();
+UINT64 EndGameTablebase::fixupRetroStatus(const EndGameEntry &entry, PositionCount64 &changeCount) {
+  const UINT64 startChangeCount = changeCount.getTotal();
 
   const EndGameResult        &result = entry.getValue();
   const EndGamePositionStatus status = result.getStatus();
@@ -1841,12 +1841,12 @@ void EndGameTablebase::logPositionCount() const {
     m_logFile = MKFOPEN(getTempFileName(format(_T("%sCount.log"), getName().cstr())), _T("w"));
   }
 
-  const UINT posCount = m_info.m_totalPositions;
-  Timestamp now;
+  const UINT64 posCount = m_info.m_totalPositions;
+  Timestamp    now;
   if(m_generatingPositions) {
-    _ftprintf(m_logFile,_T("%s %12lu %12ld %.3lf\n"),now.toString(_T("yyyyMMdd.hhmm")).cstr(),posCount,m_positionsAnalyzed, PERCENT(m_positionsAnalyzed, posCount));
+    _ftprintf(m_logFile,_T("%s %12llu %12llu %.3lf\n"), now.toString(_T("yyyyMMdd.hhmm")).cstr(),posCount,m_positionsAnalyzed, PERCENT(m_positionsAnalyzed, posCount));
   } else {
-    _ftprintf(m_logFile,_T("%s %12lu %12ld %.3lf\n"),now.toString(_T("yyyyMMdd.hhmm")).cstr(),posCount,m_info.m_undefinedPositions, PERCENT(m_info.m_undefinedPositions, posCount));
+    _ftprintf(m_logFile,_T("%s %12llu %12llu %.3lf\n"), now.toString(_T("yyyyMMdd.hhmm")).cstr(),posCount,m_info.m_undefinedPositions, PERCENT(m_info.m_undefinedPositions, posCount));
   }
   fflush(m_logFile);
 }
@@ -1995,12 +1995,12 @@ void EndGameTablebase::list(FILE *f, EndGameEntryIterator &it) {
 }
 
 void EndGameTablebase::listPositionCount(FILE *f) {
-  const CompactArray<PositionCount> wpTable = getWinnerPositionCountArray();
+  const CompactArray<PositionCount64> wpTable = getWinnerPositionCountArray();
   _ftprintf(f, _T("Positions sorted by plies to end for tablebase %s (%s)\n"), getName().cstr(), EndGameKeyDefinition::getMetricName());
   _ftprintf(f,_T("Plies   White win   Black win\n"));
-  PositionCount total;
+  PositionCount64 total;
   for(UINT plies = 0; plies < wpTable.size(); plies++) {
-    const PositionCount &wp = wpTable[plies];
+    const PositionCount64 &wp = wpTable[plies];
     total += wp;
     _ftprintf(f,_T("%5u %s\n"), plies, wp.toString().cstr());
   }
@@ -2016,10 +2016,10 @@ void EndGameTablebase::listPositionCount(FILE *f) {
 }
 
 bool EndGameTablebase::checkConsistency(UINT flags) {
-  unsigned long inconsistentPositionCount  = 0;
-  bool          subTablebasesOk            = true;
-  bool          headerOk                   = true;
-  bool          verboseWasStarted          = isVerboseTriggerStarted();
+  UINT64 inconsistentPositionCount  = 0;
+  bool   subTablebasesOk            = true;
+  bool   headerOk                   = true;
+  bool   verboseWasStarted          = isVerboseTriggerStarted();
 
   if(!verboseWasStarted) {
     startVerboseTrigger();
@@ -2108,9 +2108,9 @@ CheckHeader:
       headerOk = false;
     }
 
-    PositionCount checkmates(m_positionIndex.getIteratorCheckmateEntries(WHITEPLAYER).getCount()
-                            ,m_positionIndex.getIteratorCheckmateEntries(BLACKPLAYER).getCount()
-                            );
+    PositionCount64 checkmates(m_positionIndex.getIteratorCheckmateEntries(WHITEPLAYER).getCount()
+                              ,m_positionIndex.getIteratorCheckmateEntries(BLACKPLAYER).getCount()
+                              );
     if(m_info.m_checkMatePositions != checkmates) {
       verbose(_T("\nHeader.checkmate positions %s = calculated number of checkmate positions = %s\n")
              ,m_info.m_checkMatePositions.toString('/', 5).cstr()
@@ -2119,29 +2119,29 @@ CheckHeader:
       headerOk = false;
     }
 
-    const UINT positionCount = m_positionIndex.getEntryIterator().getCount();
+    const UINT64 positionCount = m_positionIndex.getEntryIterator().getCount();
     if(m_info.m_totalPositions != positionCount) {
-      verbose(_T("\nHeader.total position count = %lu != calculated number of positions = %lu\n")
+      verbose(_T("\nHeader.total position count = %lu != calculated number of positions = %I64u\n")
              ,m_info.m_totalPositions
              ,positionCount);
       headerOk = false;
     }
-    const UINT undefinedPositionCount = m_positionIndex.getIteratorUndefinedEntries().getCount();
+    const UINT64 undefinedPositionCount = m_positionIndex.getIteratorUndefinedEntries().getCount();
     if(m_info.m_undefinedPositions != undefinedPositionCount) {
-      verbose(_T("\nHeader.undefined position count = %lu != calculated number undefined of positions = %lu\n")
+      verbose(_T("\nHeader.undefined position count = %lu != calculated number undefined of positions = %I64u\n")
              ,m_info.m_undefinedPositions
              ,undefinedPositionCount);
       headerOk = false;
     }
-    const UINT stalematePositionCount = m_positionIndex.getIteratorStalemateEntries().getCount();
+    const UINT64 stalematePositionCount = m_positionIndex.getIteratorStalemateEntries().getCount();
     if(m_info.m_stalematePositions != stalematePositionCount) {
-      verbose(_T("\nHeader.stalemate position count = %lu != calculated number of stalemate positions = %lu\n")
+      verbose(_T("\nHeader.stalemate position count = %lu != calculated number of stalemate positions = %I64u\n")
              ,m_info.m_stalematePositions
              ,stalematePositionCount);
       headerOk = false;
     }
-    const PositionCount headerWinPositions  = m_info.getWinnerPositionCount();
-    const unsigned long winnerPositionCount = m_positionIndex.getIteratorAllWinnerEntries().getCount();
+    const PositionCount64 headerWinPositions  = m_info.getWinnerPositionCount();
+    const UINT64          winnerPositionCount = m_positionIndex.getIteratorAllWinnerEntries().getCount();
     if(headerWinPositions.getTotal() != winnerPositionCount) {
       verbose(_T("\nHeader.total winner positioncount = %lu != calculated number of total winner positions = %lu\n")
              ,headerWinPositions.getTotal()
@@ -2185,9 +2185,9 @@ CheckHeader:
   return subTablebasesOk && (inconsistentPositionCount == 0) && headerOk;
 }
 
-CompactArray<PositionCount> EndGameTablebase::getWinnerPositionCountArray() {
+CompactArray<PositionCount64> EndGameTablebase::getWinnerPositionCountArray() {
   const int            maxPlies = m_info.m_maxPlies.getMax();
-  PositionCount       *wpCount  = new PositionCount[maxPlies+1];
+  PositionCount64     *wpCount  = new PositionCount64[maxPlies+1];
   startVerboseTrigger(1);
   for(EndGameEntryIterator it = m_positionIndex.getIteratorAllWinnerEntries(); it.hasNext();) {
     const EndGameResult &res = it.next().getValue();
@@ -2197,7 +2197,7 @@ CompactArray<PositionCount> EndGameTablebase::getWinnerPositionCountArray() {
     }
   }
   stopVerboseTrigger();
-  CompactArray<PositionCount> result;
+  CompactArray<PositionCount64> result;
   for(int i = 0; i <= maxPlies; i++) {
     result.add(wpCount[i]);
   }
@@ -2225,7 +2225,9 @@ String EndGameTablebase::save(bool convert) const {
 }
 
 String EndGameTablebase::saveAllForwardPositions(bool convert) {
-  m_info.m_buildTime = _time32(NULL);
+  if(!convert) {
+    m_info.m_buildTime = _time32(NULL);
+  }
   return save(getFileName(ALLFORWARDPOSITIONS), convert);
 }
 
@@ -2236,7 +2238,9 @@ String EndGameTablebase::loadAllForwardPositions() {
 }
 
 String EndGameTablebase::saveAllRetroPositions(bool convert) {
-  m_info.m_buildTime = _time32(NULL);
+  if(!convert) {
+    m_info.m_buildTime = _time32(NULL);
+  }
   return save(getFileName(ALLRETROPOSITIONS), convert);
 }
 
@@ -2249,13 +2253,13 @@ String EndGameTablebase::loadAllRetroPositions() {
 String EndGameTablebase::save(const String &fileName, bool convert) const {
   String result;
   if(convert) {
-    if(m_info.m_consistencyCheckedTime != 0) {
-      throwException(_T("%s already has a consistencyCheckedTime"), getName().cstr());
-    }
-    if(!m_info.isConsistent()) {
-      throwException(_T("%s is not checked for consistency"), getName().cstr());
-    }
-    ((EndGameTablebase*)this)->m_info.m_consistencyCheckedTime = getFileTime(ALLTABLEBASE);
+//    if(m_info.m_consistencyCheckedTime != 0) {
+//      throwException(_T("%s already has a consistencyCheckedTime"), getName().cstr());
+//    }
+//    if(!m_info.isConsistent()) {
+//      throwException(_T("%s is not checked for consistency"), getName().cstr());
+//    }
+//    ((EndGameTablebase*)this)->m_info.m_consistencyCheckedTime = (__time32_t)getFileTime(ALLTABLEBASE);
     result = FileNameSplitter(fileName).setExtension(_T("new")).getFullPath();
     verbose(_T("Saving tablebase to %s..."), result.cstr());
     saveNew(CountedByteOutputStream(StreamProgress(this), CompressFilter(ByteOutputFile(result))));
@@ -2275,7 +2279,7 @@ void EndGameTablebase::saveNew(ByteOutputStream &s) const {
 }
 
 void EndGameTablebase::save(ByteOutputStream &s) const {
-  TablebaseInfo tmp = m_info;
+  TablebaseInfo   tmp = m_info;
   tmp.m_indexCapacity = m_positionIndex.size();
   tmp.save(s);
   m_positionIndex.save(s);
@@ -2334,8 +2338,9 @@ void EndGameTablebase::compress(ByteOutputStream &s) {
 }
 
 void EndGameTablebase::convert() {
-  String /*f1Src,f1Dst,f2Src,f2Dst, */ f3Src,f3Dst,f4Src,f4Dst;
+  String /*f1Src,f1Dst, f2Src,f2Dst, f3Src,f3Dst,*/ f4Src,f4Dst ,/* f5Src,f5Dst,*/ f6Src,f6Dst;
   try {
+
 /*
     f1Src = loadAllForwardPositions();
     f1Dst = saveAllForwardPositions(true);
@@ -2343,32 +2348,49 @@ void EndGameTablebase::convert() {
     f2Src = loadAllRetroPositions();
     f2Dst = saveAllRetroPositions(true);
     unload();
-*/
+
+    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
     f3Src = load();
     f3Dst = save(true);
+*/
 
+    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
+    load();
     f4Src = getFileName(COMPRESSEDTABLEBASE);
     f4Dst = compress(true);
     unload();
 
 /*
-    unlink(f1Src);
-    rename(f1Dst, f1Src);
-    unlink(f2Src);
-    rename(f2Dst, f2Src);
+    EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
+    f5Src = load();
+    f5Dst = save(true);
 */
-    unlink(f3Src);
-    rename(f3Dst, f3Src);
-    unlink(f4Src);
-    rename(f4Dst, f4Src);
+    EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
+    load();
+    f6Src = getFileName(COMPRESSEDTABLEBASE);
+    f6Dst = compress(true);
+    unload();
+
+    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
+
+//    unlink(f1Src);    rename(f1Dst, f1Src);
+//    unlink(f2Src);    rename(f2Dst, f2Src);
+//    unlink(f3Src);    rename(f3Dst, f3Src);
+    unlink(f4Src);    rename(f4Dst, f4Src);
+//    unlink(f5Src);    rename(f5Dst, f5Src);
+    unlink(f6Src);    rename(f6Dst, f6Src);
   } catch(...) {
     unload();
 
-//  if(f1Dst != _T("")) unlink(f1Dst);
-//  if(f2Dst != _T("")) unlink(f2Dst);
+//    if(f1Dst != _T("")) unlink(f1Dst);
+//    if(f2Dst != _T("")) unlink(f2Dst);
 
-    if(f3Dst != _T("")) unlink(f3Dst);
+//    if(f3Dst != _T("")) unlink(f3Dst);
     if(f4Dst != _T("")) unlink(f4Dst);
+
+//    if(f5Dst != _T("")) unlink(f5Dst);
+    if(f6Dst != _T("")) unlink(f6Dst);
+    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
     throw;
   }
 }

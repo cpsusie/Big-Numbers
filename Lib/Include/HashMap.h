@@ -110,9 +110,9 @@ public:
   }
 };
 
-template <class T> class UShortHashMap     : public HashMap<unsigned short, T> {
+template <class T> class UShortHashMap     : public HashMap<USHORT, T> {
 public:
-  UShortHashMap(size_t capacity=31) : HashMap<unsigned short, T>(ushortHash, ushortHashCmp, capacity) {
+  UShortHashMap(size_t capacity=31) : HashMap<USHORT, T>(ushortHash, ushortHashCmp, capacity) {
   }
 };
 
@@ -134,21 +134,21 @@ public:
   }
 };
 
-template <class T> class ULongHashMap      : public HashMap<unsigned long, T> {
+template <class T> class ULongHashMap      : public HashMap<ULONG, T> {
 public:
-  ULongHashMap(size_t capacity=31)  : HashMap<unsigned long, T>(ulongHash, ulongHashCmp, capacity) {
+  ULongHashMap(size_t capacity=31)  : HashMap<ULONG, T>(ulongHash, ulongHashCmp, capacity) {
   }
 };
 
-template <class T> class Int64HashMap      : public HashMap<__int64, T> {
+template <class T> class Int64HashMap      : public HashMap<INT64, T> {
 public:
-  Int64HashMap(size_t capacity=31)  : HashMap<__int64, T>(int64Hash, int64HashCmp, capacity) {
+  Int64HashMap(size_t capacity=31)  : HashMap<INT64, T>(int64Hash, int64HashCmp, capacity) {
   }
 };
 
-template <class T> class UInt64HashMap     : public HashMap<unsigned __int64, T> {
+template <class T> class UInt64HashMap     : public HashMap<UINT64, T> {
 public:
-  UInt64HashMap(size_t capacity=31) : HashMap<unsigned __int64, T>(uint64Hash, uint64HashCmp, capacity) {
+  UInt64HashMap(size_t capacity=31) : HashMap<UINT64, T>(uint64Hash, uint64HashCmp, capacity) {
   }
 };
 

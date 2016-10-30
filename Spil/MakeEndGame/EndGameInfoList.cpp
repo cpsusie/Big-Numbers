@@ -48,7 +48,7 @@ String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                  ,Timestamp((time_t)m_consistencyCheckedTime).toString(tsFormat).cstr()
                 );
   default:
-    throwInvalidArgumentException(_T("EndGameInfo::toString"), _T("f=%d"), f);
+    throwInvalidArgumentException(__TFUNCTION__, _T("f=%d"), f);
     return _T("");
   }
 }
@@ -73,14 +73,14 @@ public:
 int InfoComparator::compare1(const EndGameInfo &i1, const EndGameInfo &i2) {
   int c;
   switch(m_sf) {
-  case NAME                                      : c = 0;                                                                                       break;
-  case POSITIONCOUNT                             : c = (int)i1.m_totalPositions                    - i2.m_totalPositions;                       break;
-  case INDEXSIZE                                 : c = (int)i1.m_indexCapacity                     - i2.m_indexCapacity;                        break;
-  case UNDEFINEDCOUNT                            : c = (int)i1.m_undefinedPositions                - i2.m_undefinedPositions;                   break;
-  case STALEMATECOUNT                            : c = (int)i1.m_stalematePositions                - i2.m_stalematePositions;                   break;
-  case WINNERPOSITIONCOUNT                       : c = (int)i1.getWinnerPositionCount().getTotal() - i2.getWinnerPositionCount().getTotal();    break;
-  case WINNERPOSITIONCOUNT      | SELECT_WHITEWIN: c = (int)i1.getWinnerPositionCount(WHITEPLAYER) - i2.getWinnerPositionCount(   WHITEPLAYER); break;
-  case WINNERPOSITIONCOUNT      | SELECT_BLACKWIN: c = (int)i1.getWinnerPositionCount(BLACKPLAYER) - i2.getWinnerPositionCount(   BLACKPLAYER); break;
+  case NAME                                      : c = 0;                                                                                                      break;
+  case POSITIONCOUNT                             : c = sign((INT64)i1.m_totalPositions                    - (INT64)i2.m_totalPositions);                       break;
+  case INDEXSIZE                                 : c = sign((INT64)i1.m_indexCapacity                     - (INT64)i2.m_indexCapacity);                        break;
+  case UNDEFINEDCOUNT                            : c = sign((INT64)i1.m_undefinedPositions                - (INT64)i2.m_undefinedPositions);                   break;
+  case STALEMATECOUNT                            : c = sign((INT64)i1.m_stalematePositions                - (INT64)i2.m_stalematePositions);                   break;
+  case WINNERPOSITIONCOUNT                       : c = sign((INT64)i1.getWinnerPositionCount().getTotal() - (INT64)i2.getWinnerPositionCount().getTotal());    break;
+  case WINNERPOSITIONCOUNT      | SELECT_WHITEWIN: c = sign((INT64)i1.getWinnerPositionCount(WHITEPLAYER) - (INT64)i2.getWinnerPositionCount(   WHITEPLAYER)); break;
+  case WINNERPOSITIONCOUNT      | SELECT_BLACKWIN: c = sign((INT64)i1.getWinnerPositionCount(BLACKPLAYER) - (INT64)i2.getWinnerPositionCount(   BLACKPLAYER)); break;
   case CHECKMATECOUNT                            : c = ::compare(   i1.m_checkMatePositions,         i2.m_checkMatePositions                 ); break;
   case CHECKMATECOUNT           | SELECT_WHITEWIN: c = ::compare(   i1.m_checkMatePositions,         i2.m_checkMatePositions     ,WHITEPLAYER); break;
   case CHECKMATECOUNT           | SELECT_BLACKWIN: c = ::compare(   i1.m_checkMatePositions,         i2.m_checkMatePositions     ,BLACKPLAYER); break;
@@ -93,10 +93,10 @@ int InfoComparator::compare1(const EndGameInfo &i1, const EndGameInfo &i2) {
   case MAXVARIANTLENGTH                          : c = ::compareMax(i1.m_maxPlies,                   i2.m_maxPlies                           ); break;
   case MAXVARIANTLENGTH         | SELECT_WHITEWIN: c = ::compare(   i1.m_maxPlies,                   i2.m_maxPlies               ,WHITEPLAYER); break;
   case MAXVARIANTLENGTH         | SELECT_BLACKWIN: c = ::compare(   i1.m_maxPlies,                   i2.m_maxPlies               ,BLACKPLAYER); break;
-  case RAWSIZE                                   : c = sign(i1.m_rawSize                           - i2.m_rawSize);                              break;
-  case COMPRESSEDSIZE                            : c = sign(i1.m_compressedSize                    - i2.m_compressedSize);                       break;
+  case RAWSIZE                                   : c = sign(i1.m_rawSize                           - i2.m_rawSize);                             break;
+  case COMPRESSEDSIZE                            : c = sign(i1.m_compressedSize                    - i2.m_compressedSize);                      break;
   case COMPRESSRATIO                             : c = sign(i1.m_compressRatio                     - i2.m_compressRatio);                       break;
-  case BUILDTIME                                 : c = i1.m_buildTime                              - i2.m_buildTime;                            break;
+  case BUILDTIME                                 : c = sign((INT64)i1.m_buildTime                  - (INT64)i2.m_buildTime);                    break;
   default                                        : throwException(_T("InfoComparator:sortField=%d"), m_sf);
   }
   if(c) return c;

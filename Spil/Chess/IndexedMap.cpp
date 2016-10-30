@@ -42,20 +42,21 @@ static int getBitCount(UINT n) {
 
 #ifdef _DEBUG
 
-UINT IndexedMap::getCheckedIndex(const EndGameKey &key) const {
-  const UINT result = m_keydef.keyToIndex(key);
+EndGamePosIndex IndexedMap::getCheckedIndex(const EndGameKey &key) const {
+  const EndGamePosIndex result = m_keydef.keyToIndex(key);
   if(result >= m_indexSize) {
-    UINT ii = m_keydef.keyToIndex(key);
-    throwException(_T("Position [%s] has index %lu. Max=%lu"), key.toString(m_keydef).cstr(), result, m_indexSize-1);
+    EndGamePosIndex ii = m_keydef.keyToIndex(key);
+    throwException(_T("Position [%s] has index %llu. Max=%llu")
+                  ,key.toString(m_keydef).cstr(), result, m_indexSize-1);
   }
   return result;
 }
 
-#define GETELEMENT(key) (*this)[getCheckedIndex(key)]
+#define GETELEMENT(key) (*this)[(size_t)getCheckedIndex(key)]
 
 #else // _DEBUG
 
-#define GETELEMENT(key) (*this)[m_keydef.keyToIndex(key)]
+#define GETELEMENT(key) (*this)[(size_t)m_keydef.keyToIndex(key)]
 
 #endif // _DEBUG
 
@@ -75,9 +76,8 @@ IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef)
 
 void IndexedMap::allocate() {
   clear();
-  setCapacity(m_indexSize);
-  add(0,EndGameResult(), m_indexSize);
-
+  setCapacity((size_t)m_indexSize);
+  add(0,EndGameResult(), (size_t)m_indexSize);
 }
 
 const EndGameResult &IndexedMap::get(const EndGameKey &key) const {
@@ -209,14 +209,14 @@ void IndexedMap::convertIndex() {
 void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const { // Saved in format used by IndexedMap::load(ByteInputStream &s)
                                                                                         // defined last in this file
   DEFINEMETHODNAME;
-  const UINT indexSize = info.m_indexCapacity;
+  const EndGamePosIndex indexSize = m_keydef.getIndexSize();
   if(info.m_indexCapacity != indexSize) {
-    throwInvalidArgumentException(method, _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
+    throwInvalidArgumentException(method, _T("info.indexCapacity=%I64u, keydef.indexSize=%I64u"), info.m_indexCapacity, indexSize);
   }
   const EndGameResult *ep          = &first();
   const EndGameResult *lastElement = getLastElement();
   unsigned char        canWinFlags = 0;
-  for(int i = indexSize; (canWinFlags != BOTHCANWIN) && i--; ep++) {
+  for(INT64 i = indexSize; (canWinFlags != BOTHCANWIN) && i--; ep++) {
     switch(ep->getStatus()) {
     case EG_WHITEWIN: canWinFlags |= WHITECANWIN; break;
     case EG_BLACKWIN: canWinFlags |= BLACKCANWIN; break;
@@ -231,9 +231,9 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
                                  );
   }
 
-  UINT maxPly          = 0;
-  int  winnerPositions = 0;
-  int  i;
+  UINT  maxPly          = 0;
+  INT64 winnerPositions = 0;
+  INT64 i;
   for(ep = &first(), i = indexSize; i--; ep++) {
     if(ep->isWinner()) {
       winnerPositions++;
@@ -244,7 +244,7 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
   }
 
   if(winnerPositions != info.getWinnerPositionCount().getTotal()) {
-    throwException(_T("Counted winnerPositions=%d != info.totalWinnerPosition:%s (=%d)")
+    throwException(_T("Counted winnerPositions=%I64d != info.totalWinnerPosition:%s (=%I64u)")
                   ,winnerPositions
                   ,info.getWinnerPositionCount().toString().cstr()
                   ,info.getWinnerPositionCount().getTotal());
@@ -403,7 +403,7 @@ protected:
   EndGameResult       *m_firstElement, *m_lastElement;
   EndGameResult       *m_current;
   IndexedMapEntry      m_entry;
-  const unsigned long  m_length;
+  const UINT64         m_length;
   const Timestamp      m_startTime;
   bool                 m_odd;
 public:
@@ -414,7 +414,7 @@ public:
   void remove() {
     unsupportedOperationError(_T("IndexedMapEntryIterator"));
   }
-  virtual UINT getCount() const = 0;
+  virtual UINT64 getCount() const = 0;
 
   inline double getPercentDone() const {
     return PERCENT(m_current - m_firstElement, m_length) + (m_odd?0:50.0);
@@ -451,7 +451,7 @@ double IndexedMapEntryIterator::getMilliSecondsRemaining() const {
   return getMilliSecondsUsed() / pct * (100.0-pct);
 }
 
-UINT EndGameEntryIterator::getCount() {
+UINT64 EndGameEntryIterator::getCount() {
   return ((IndexedMapEntryIterator*)(m_it))->getCount();
 }
 
@@ -499,7 +499,7 @@ public:                                                                         
   name(IndexedMap &map, int value=0);                                                     \
   AbstractIterator *clone() { return new name(*this); }                                   \
   void *next();                                                                           \
-  UINT getCount() const;                                                                  \
+  UINT64 getCount() const;                                                                \
 };                                                                                        \
                                                                                           \
 name::name(IndexedMap &map, int value) : IndexedMapEntryIterator(map), m_value(value) {   \
@@ -525,8 +525,8 @@ void *name::next() {                                                            
   return &m_entry;                                                                        \
 }                                                                                         \
                                                                                           \
-UINT name::getCount() const {                                                             \
-  UINT count = 0;                                                                         \
+UINT64 name::getCount() const {                                                           \
+  UINT64 count = 0;                                                                       \
   for(const EndGameResult *p = m_firstElement; p <= m_lastElement; p++) {                 \
     if(filter(p)) count++;                                                                \
   }                                                                                       \
@@ -714,9 +714,11 @@ void DecompressedHeader::load(ByteInputStream &s) {
 
 // Read format written with IndexedMap::saveCompressed(ByteOutputStream &s);
 void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const {
-  const int indexSize = m_keydef.getIndexSize();
+  const INT64 indexSize = m_keydef.getIndexSize();
   if(info.m_indexCapacity != indexSize) {
-    throwInvalidArgumentException(__TFUNCTION__, _T("info.indexCapacity=%d, keydef.indexSize=%d"), info.m_indexCapacity, indexSize);
+    throwInvalidArgumentException(__TFUNCTION__, _T("info.indexCapacity=%s, keydef.indexSize=%s")
+                                 ,format1000(info.m_indexCapacity).cstr()
+                                 ,format1000(indexSize).cstr());
   }
 
   const unsigned char canWinFlags  = info.getCanWinFlags();
@@ -728,20 +730,20 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
 
   BitInputStream bs(s);
 
-  BitSet winnerPositionSet(indexSize);
+  BitSet winnerPositionSet((size_t)indexSize);
 
   for(int index = 0; index < indexSize; index++) {
     if(bs.getBit()) {
       winnerPositionSet.add(index);
     }
   }
-  const int winnerPositions = winnerPositionSet.size();
+  const UINT64 winnerPositions = winnerPositionSet.size();
 
   if(winnerPositions != info.getWinnerPositionCount().getTotal()) {
-    throwException(_T("Counted winnerPositions=%d != info.totalWinnerPosition:%s (=%d)")
+    throwException(_T("Counted winnerPositions=%I64u != info.totalWinnerPosition:%s (=%s)")
                   ,winnerPositions
                   ,info.getWinnerPositionCount().toString().cstr()
-                  ,info.getWinnerPositionCount().getTotal());
+                  ,format1000(info.getWinnerPositionCount().getTotal()).cstr());
   }
 
   BitSetIndex positionIndex(winnerPositionSet);
@@ -751,7 +753,7 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   positionInfoArray.addZeroes(0,winnerPositions);
 
   if(canWinFlags == BOTHCANWIN) {
-    for(int i = 0; i < winnerPositions; i++) {
+    for(UINT64 i = 0; i < winnerPositions; i++) {
       if(bs.getBit()) {
         positionInfoArray.set(i, 1);
       }
@@ -878,7 +880,7 @@ EndGameResult IndexedMap::get(const EndGameKey &key) const {
   if(!isAllocated()) {
     throwException(_T("Index not loaded"));
   }
-  const int index = m_positionIndex->getIndex(m_keydef.keyToIndex(key));
+  const int index = m_positionIndex->getIndex((size_t)m_keydef.keyToIndex(key));
 
   if(index < 0) {
     return EndGameResult(EG_DRAW, 0);

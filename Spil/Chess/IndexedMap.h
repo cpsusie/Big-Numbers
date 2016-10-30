@@ -15,7 +15,7 @@ public:
   ~EndGameEntryIterator() {
     setLog(false);
   }
-  UINT getCount();
+  UINT64 getCount();
   double getPercentDone() const;
   double getMilliSecondsRemaining() const;
   double getMilliSecondsUsed() const;
@@ -30,11 +30,11 @@ class IndexedMap : public CompactArray<EndGameResult> {
 private:
 
   const EndGameKeyDefinition &m_keydef;
-  const unsigned long         m_indexSize;                                // keydef.getIndexSize()
+  const EndGamePosIndex       m_indexSize; // keydef.getIndexSize()
   void allocate();
   void rethrowException(Exception &e, const EndGameKey &key) const;
 #ifdef _DEBUG
-  UINT getCheckedIndex(const EndGameKey &key) const;
+  EndGamePosIndex getCheckedIndex(const EndGameKey &key) const;
 #endif
 
 public:
@@ -71,7 +71,6 @@ public:
   void convertIndex();
   void saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const;
 
-
   EndGameKeyIterator   getKeyIterator();
   EndGameEntryIterator getEntryIterator();                                // All existing entries
   EndGameEntryIterator getIteratorUndefinedEntries();                     // All existing, undefined entries
@@ -95,12 +94,12 @@ public:
 class PackedIndexedMap {
 private:
   const EndGameKeyDefinition &m_keydef;
-  const unsigned long         m_indexSize;                                // m_keydef.getIndexSize()
+  const EndGamePosIndex       m_indexSize;                                // m_keydef.getIndexSize()
   const bool                  m_getResultEnabled;
   PackedArray                 m_statusArray;
   void rethrowException(Exception &e, const EndGameKey &key) const;
 #ifdef _DEBUG
-  UINT getCheckedIndex(const EndGameKey &key) const;
+  EndGamePosIndex getCheckedIndex(const EndGameKey &key) const;
 #endif
   static int findBitsPerItem(UINT maxPlies);
 public:

@@ -51,13 +51,13 @@ BOOL CProgressDlg::OnInitDialog() {
   }
 
   if(!(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR))) {
-    winSize.cy -= moveControlsBelowUp(getProgressCtrl());
-    getProgressCtrl()->ShowWindow(SW_HIDE);
+    winSize.cy -= moveControlsBelowUp(&m_newProgressCtrl);
+    m_newProgressCtrl.ShowWindow(SW_HIDE);
   } else {
-    CProgressCtrl *pgsCtrl = getProgressCtrl();
-    CRect wr = getWindowRect(pgsCtrl);
-    pgsCtrl->SetRange(0, m_jobToDo.getMaxProgress());
-    pgsCtrl->SetPos(m_jobToDo.getProgress());
+//    CProgressCtrl *pgsCtrl = getProgressCtrl();
+//    CRect wr = getWindowRect(pgsCtrl);
+//    pgsCtrl->SetRange(0, m_jobToDo.getMaxProgress());
+//    pgsCtrl->SetPos(m_jobToDo.getProgress());
     m_newProgressCtrl.SetRange(0, m_jobToDo.getMaxProgress());
     m_newProgressCtrl.SetPos(m_jobToDo.getProgress());
   }
@@ -187,9 +187,11 @@ CStatic *CProgressDlg::getStaticTimeEstimate() {
   return (CStatic*)GetDlgItem(_IDC_STATICTIMEESTIMATE);
 }
 
+/*
 CProgressCtrl *CProgressDlg::getProgressCtrl() {
   return (CProgressCtrl*)GetDlgItem(_IDC_PROGRESSBAR);
 }
+*/
 
 CProgressCtrl *CProgressDlg::getSubProgressCtrl() {
   return (CProgressCtrl*)GetDlgItem(_IDC_SUBPROGRESSBAR);
@@ -243,7 +245,7 @@ void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
       }
     }
     if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR)) {
-      getProgressCtrl()->SetPos(progress);
+//      getProgressCtrl()->SetPos(progress);
       m_newProgressCtrl.SetPos(m_jobToDo.getProgress());
 
       if(m_supportedFeatures & IR_SUBPROGRESSBAR) {
@@ -289,6 +291,6 @@ void CProgressDlg::setWaitCursor(bool on) {
   setControlCursor(getSuspendButton()        , IDC_ARROW);
   setControlCursor(getStaticProgressMessage(), cursorId);
   setControlCursor(getStaticTimeEstimate()   , cursorId);
-  setControlCursor(getProgressCtrl()         , cursorId);
+  setControlCursor(&m_newProgressCtrl        , cursorId);
   setControlCursor(getSubProgressCtrl()      , cursorId);
 }

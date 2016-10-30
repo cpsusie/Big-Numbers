@@ -16,7 +16,7 @@ SymmetricTransformation EndGameKeyDefinition5Men3Pawns::getSymTransformation(con
   return getPawnSymTransformation(key);
 }
 
-unsigned long EndGameKeyDefinition5Men3Pawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men3Pawns::keyToIndex(const EndGameKey &key) const {
   UINT pi3 = key.getP3Pawn2Index()         - 8;
   UINT pi4 = key.getP4Pawn3IndexEqualP34() - 8;
 
@@ -25,7 +25,7 @@ unsigned long EndGameKeyDefinition5Men3Pawns::keyToIndex(const EndGameKey &key) 
        - MININDEX;
 }
 
-EndGameKey EndGameKeyDefinition5Men3Pawns::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men3Pawns::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   SETPIT(               result, index  );

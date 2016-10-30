@@ -50,7 +50,7 @@ private:
   CButton       *getSuspendButton();
   CStatic       *getStaticTimeEstimate();
   CStatic       *getStaticProgressMessage();
-  CProgressCtrl *getProgressCtrl();
+//  CProgressCtrl *getProgressCtrl();
   CProgressCtrl *getSubProgressCtrl();
   void startTimer();
   void stopTimer();

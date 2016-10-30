@@ -10,8 +10,8 @@
 
 #ifdef _DEBUG
 
-static int leftWkkP2WithPawnIndex(EndGameKey key, int pawnIndex) {
-  int result = LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex);
+static EndGamePosIndex leftWkkP2WithPawnIndex(EndGameKey key, int pawnIndex) {
+  EndGamePosIndex result = LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex);
   const int p2PosCount = P2POSCOUNT;
   result *= P2POSCOUNT;
   result += key.getP2OffDiagIndex();
@@ -61,7 +61,7 @@ EndGameKeyDefinition5Men2EqualPawns::EndGameKeyDefinition5Men2EqualPawns(PieceKe
        - MININDEX;                                                                                                                \
 }
 
-unsigned long EndGameKeyDefinition5Men2EqualPawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men2EqualPawns::keyToIndex(const EndGameKey &key) const {
   UINT pos3 = key.getPosition3();
   UINT pos4 = key.getPosition4();
   switch(BOOL2MASK(IS_KINGSIDE, pos3, pos4)) {
@@ -74,7 +74,7 @@ unsigned long EndGameKeyDefinition5Men2EqualPawns::keyToIndex(const EndGameKey &
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition5Men2EqualPawns::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men2EqualPawns::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   if(index < START_RANGE_P3_QUEENSIDE) {

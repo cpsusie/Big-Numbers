@@ -10,7 +10,7 @@ EndGameKeyDefinition4Men::EndGameKeyDefinition4Men(PieceKey pk2, PieceKey pk3) :
 
 #define MININDEX 0
 
-unsigned long EndGameKeyDefinition4Men::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men::keyToIndex(const EndGameKey &key) const {
   if(!key.kingsOnMainDiag1()) {
     return KK_OFFDIAG_4MEN_INDEX( key) + OFFSET_KK_OFFDIAG_4MEN   - MININDEX;
   }
@@ -23,7 +23,7 @@ unsigned long EndGameKeyDefinition4Men::keyToIndex(const EndGameKey &key) const 
   return KKP23_ONDIAG_4MEN_INDEX( key) + OFFSET_KKP23_ONDIAG_4MEN - MININDEX;
 }
 
-EndGameKey EndGameKeyDefinition4Men::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition4Men::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
 

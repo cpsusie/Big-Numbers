@@ -212,7 +212,7 @@ public:
   bool isEmpty() const {
     return (m_count[0] | m_count[1]) == 0;
   }
-  int getTotal() const {
+  T getTotal() const {
     return m_count[0] + m_count[1];
   }
   T getMax() const {
@@ -243,19 +243,31 @@ public:
 };
 
 template<class T> int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
-  return tc1.getTotal() - tc2.getTotal();
+  return sign((long long)tc1.getTotal() - (long long)tc2.getTotal());
 };
 
 template<class T> int compare(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2, Player player) {
-  return (int)tc1.m_count[player] - tc2.m_count[player];
+  return sign((long long)tc1.m_count[player] - (long long)tc2.m_count[player]);
 };
 
 template<class T> int compareMax(const TwoCountersTemplate<T> &tc1, const TwoCountersTemplate<T> &tc2) {
-  return (int)tc1.getMax() - tc2.getMax();
+  return sign((long long)tc1.getMax() - (long long)tc2.getMax());
 };
 
-typedef TwoCountersTemplate<UINT>           PositionCount;
+typedef TwoCountersTemplate<UINT>           PositionCount32;
 typedef TwoCountersTemplate<unsigned short> MaxVariantCount;
+
+class PositionCount64 : public TwoCountersTemplate<UINT64> {
+public:
+  PositionCount64() : TwoCountersTemplate<UINT64>() {
+  }
+  PositionCount64(UINT64 wc, UINT64 bc) : TwoCountersTemplate(wc, bc) {
+  }
+  PositionCount64(const PositionCount32 &src) : TwoCountersTemplate(src.m_count[0], src.m_count[1]) {
+  }
+  PositionCount64(const TwoCountersTemplate<UINT64> &src) : TwoCountersTemplate(src) {
+  }
+};
 
 #define TBISTATE_CONSISTENT          0x01
 #define TBISTATE_NONWINNERFIXED      0x02
@@ -270,39 +282,41 @@ typedef TwoCountersTemplate<unsigned short> MaxVariantCount;
 class TablebaseInfo {
 public:
   mutable char       m_version[20];
-  UINT               m_totalPositions;
-  UINT               m_indexCapacity;
-  UINT               m_undefinedPositions;
-  UINT               m_stalematePositions;
-  UINT               m_drawPositions;                // excl. stalemates and terminalDrawPositions;
-  PositionCount      m_checkMatePositions;           // m_checkMatePositions[WHITEPLAYER] = #positions where black is checkmate (white win) likewise black
-  PositionCount      m_terminalWinPositions;         // excl. checkmates
-  PositionCount      m_nonTerminalWinPositions;      // excl. checkmates and terminalWinPositions
+  UINT64             m_totalPositions;
+  UINT64             m_indexCapacity;
+  UINT64             m_undefinedPositions;
+  UINT64             m_stalematePositions;
+  UINT64             m_drawPositions;                // excl. stalemates and terminalDrawPositions;
+  PositionCount64    m_checkMatePositions;           // m_checkMatePositions[WHITEPLAYER] = #positions where black is checkmate (white win) likewise black
+  PositionCount64    m_terminalWinPositions;         // excl. checkmates
+  PositionCount64    m_nonTerminalWinPositions;      // excl. checkmates and terminalWinPositions
   MaxVariantCount    m_maxPlies;                     // max length in plies of forced winning variant for each player. 0 if no winnerpositions
   bool               m_canWin[2];                    // Indicates if a player has any winner-positions,
                                                      // ie. checkmates or conversions to a winning position in another endgame exist
   unsigned char      m_stateFlags;
-  __time32_t         m_buildTime;
-  __time32_t         m_consistencyCheckedTime;
+  __time64_t         m_buildTime;
+  __time64_t         m_consistencyCheckedTime;
 
-  TablebaseInfo();
+  inline TablebaseInfo() {
+    clear();
+  }
   void clear();
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
   String toString(TablebaseInfoStringFormat f, bool plies = true) const;
   static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
 
-  UINT getCheckMatePositions() const {
+  UINT64 getCheckMatePositions() const {
     return m_checkMatePositions.getTotal();
   }
-  UINT getTerminalPositions() const {
+  UINT64 getTerminalPositions() const {
     return m_terminalWinPositions.getTotal();
   }
-  UINT getNonterminalPositions() const {
+  UINT64 getNonterminalPositions() const {
     return m_nonTerminalWinPositions.getTotal();
   }
-  PositionCount getWinnerPositionCount() const;
-  UINT  getWinnerPositionCount(Player winner) const;
+  PositionCount64 getWinnerPositionCount() const;
+  UINT64 getWinnerPositionCount(Player winner) const;
   String formatMaxVariants(bool plies=false) const;
 
   bool isConsistent() const {
@@ -322,8 +336,8 @@ public:
 
 class StreamProgress : public ByteCounter, public TimeoutHandler {
 private:
-  UINT                     m_total;
-  UINT                     m_byteCount;
+  UINT64                   m_total;
+  UINT64                   m_byteCount;
   Timer                    m_timer;
 public:
   StreamProgress(const EndGameTablebase *tb);
@@ -378,13 +392,13 @@ public:
 
 class IntervalChecker {
 private:
-  const TCHAR   *m_name;
-  unsigned long m_minValue;
-  unsigned long m_maxValue;
+  const TCHAR  *m_name;
+  EndGamePosIndex m_minValue;
+  EndGamePosIndex m_maxValue;
 public:
   IntervalChecker(const TCHAR *name);
   ~IntervalChecker();
-  void update(unsigned long v);
+  void update(EndGamePosIndex v);
 };
 
 #endif

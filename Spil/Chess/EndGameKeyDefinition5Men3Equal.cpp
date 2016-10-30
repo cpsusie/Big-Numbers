@@ -4,8 +4,8 @@
 
 #define MININDEX 0
 
-static unsigned long rangeStartKKOffDiag[60];
-static unsigned long rangeStartKKOnDiag[27];
+static EndGamePosIndex rangeStartKKOffDiag[60];
+static EndGamePosIndex rangeStartKKOnDiag[27];
 
 #define KK_OFFDIAG_POSCOUNT    (2*KK_OFFDIAG_COUNT)
 #define KK_ONDIAG_POSCOUNT     (2*KK_ONDIAG_COUNT )
@@ -81,7 +81,7 @@ EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234)
 #define ENCODE_KKP34_ONDIAG_PRESWAP(key)          return encode_kkp34_ondiag_preswap(key)
 #define ENCODE_KKP234_ONDIAG(       key)          return encode_kkp234_ondiag(       key)
 
-static UINT encode_kk_offdiag(EndGameKey key) {
+static EndGamePosIndex encode_kk_offdiag(EndGameKey key) {
   UINT pos2 = key.getPosition2();
   UINT pos3 = key.getPosition3();
   UINT pos4 = key.getPosition4();
@@ -100,7 +100,7 @@ static UINT encode_kk_offdiag(EndGameKey key) {
        - MININDEX;
 }
 
-static UINT encode_kk_ondiag_noflip(EndGameKey key) {
+static EndGamePosIndex encode_kk_ondiag_noflip(EndGameKey key) {
   UINT pi2 = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition2()];
   UINT pi3 = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition3()];
   UINT pi4 = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition4()];
@@ -110,7 +110,7 @@ static UINT encode_kk_ondiag_noflip(EndGameKey key) {
        - MININDEX;
 }
 
-static UINT encode_kk_ondiag_flipi(EndGameKey key, UINT i, UINT j, UINT k) {
+static EndGamePosIndex encode_kk_ondiag_flipi(EndGameKey key, UINT i, UINT j, UINT k) {
   UINT pi = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(i)] - 28;
   UINT pj = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(j)];
   UINT pk = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(k)];
@@ -127,7 +127,7 @@ static UINT encode_kk_ondiag_flipi(EndGameKey key, UINT i, UINT j, UINT k) {
   }
 }
 
-static UINT encode_kk_ondiag_flipij(EndGameKey key, int i, int j, int k) {
+static EndGamePosIndex encode_kk_ondiag_flipij(EndGameKey key, int i, int j, int k) {
   UINT pi = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(i)] - 28;
   UINT pj = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(j)] - 28;
   UINT pk = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(k)];
@@ -139,7 +139,7 @@ static UINT encode_kk_ondiag_flipij(EndGameKey key, int i, int j, int k) {
        - MININDEX;
 }
 
-static UINT encode_kkp2_ondiag_flipi(EndGameKey key, int i, int j) {
+static EndGamePosIndex encode_kkp2_ondiag_flipi(EndGameKey key, int i, int j) {
   UINT pi = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(i)] - 28;
   UINT pj = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(j)];
   SORT2(pi, pj);
@@ -149,7 +149,7 @@ static UINT encode_kkp2_ondiag_flipi(EndGameKey key, int i, int j) {
 }
 
 
-static UINT encode_kkp2_ondiag_noflip(EndGameKey key, int i, int j) {
+static EndGamePosIndex encode_kkp2_ondiag_noflip(EndGameKey key, int i, int j) {
   UINT pi = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(i)];
   UINT pj = EndGameKeyDefinition::offDiagPosToIndex[key.getPosition(j)];
   SORT2(pi, pj);
@@ -158,7 +158,7 @@ static UINT encode_kkp2_ondiag_noflip(EndGameKey key, int i, int j) {
        - MININDEX;
 }
 
-static UINT encode_kkp2_ondiag_noswap(EndGameKey key, int i, int j) {
+static EndGamePosIndex encode_kkp2_ondiag_noswap(EndGameKey key, int i, int j) {
   const int pos3 = key.getPosition3();
   const int pos4 = key.getPosition4();
   switch(BOOL2MASK(IS_ABOVEMAINDIAG1, pos3, pos4)) {
@@ -170,14 +170,14 @@ static UINT encode_kkp2_ondiag_noswap(EndGameKey key, int i, int j) {
   return 0;
 }
 
-static UINT encode_kkp2_ondiag_preswapi(EndGameKey key, int i, int j) {
+static EndGamePosIndex encode_kkp2_ondiag_preswapi(EndGameKey key, int i, int j) {
   EndGameKey tmp = key;
   tmp.setPosition2(  key.getPosition(i));
   tmp.setPosition(i, key.getPosition2());
   ENCODE_KKP2_ONDIAG_NOSWAP(tmp,2,j);
 }
 
-static UINT encode_kkp34_ondiag_noswap(EndGameKey key) {
+static EndGamePosIndex encode_kkp34_ondiag_noswap(EndGameKey key) {
   const UINT pi3 = key.getP3DiagIndexEqualP23();
   const UINT pi4 = key.getP4DiagIndexEqualP234();
   return ADDPIT(key, ADD2EQUAL(KK_ONDIAG_3MEN(key), KKP34_ONDIAG_POSCOUNT, pi3, pi4))
@@ -185,7 +185,7 @@ static UINT encode_kkp34_ondiag_noswap(EndGameKey key) {
        - MININDEX;
 }
 
-static UINT encode_kkp23_ondiag_preswap(EndGameKey key) {
+static EndGamePosIndex encode_kkp23_ondiag_preswap(EndGameKey key) {
   const int pos2 = key.getPosition2();
   const int pos3 = key.getPosition3();
   const int pos4 = key.getPosition4();
@@ -200,7 +200,7 @@ static UINT encode_kkp23_ondiag_preswap(EndGameKey key) {
   ENCODE_KKP34_ONDIAG_NOSWAP(key);
 }
 
-static UINT encode_kkp24_ondiag_preswap(EndGameKey key) {
+static EndGamePosIndex encode_kkp24_ondiag_preswap(EndGameKey key) {
   const int pos2 = key.getPosition2();
   const int pos3 = key.getPosition3();
   const int pos4 = key.getPosition4();
@@ -215,7 +215,7 @@ static UINT encode_kkp24_ondiag_preswap(EndGameKey key) {
   ENCODE_KKP34_ONDIAG_NOSWAP(key);
 }
 
-static UINT encode_kkp34_ondiag_preswap(EndGameKey key) {
+static EndGamePosIndex encode_kkp34_ondiag_preswap(EndGameKey key) {
   const int pos3 = key.getPosition3();
   const int pos4 = key.getPosition4();
   if(pos4 < pos3) {
@@ -225,7 +225,7 @@ static UINT encode_kkp34_ondiag_preswap(EndGameKey key) {
   ENCODE_KKP34_ONDIAG_NOSWAP(key);
 }
 
-static UINT encode_kkp234_ondiag(EndGameKey key) {
+static EndGamePosIndex encode_kkp234_ondiag(EndGameKey key) {
   int pos2 = key.getPosition2();
   int pos3 = key.getPosition3();
   int pos4 = key.getPosition4();
@@ -392,7 +392,7 @@ static UINT encode_kkp234_ondiag(EndGameKey key) {
 
 #endif // _DEBUG
 
-unsigned long EndGameKeyDefinition5Men3Equal::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men3Equal::keyToIndex(const EndGameKey &key) const {
   UINT pos2 = key.getPosition2();
   UINT pos3 = key.getPosition3();
   UINT pos4 = key.getPosition4();
@@ -428,7 +428,7 @@ unsigned long EndGameKeyDefinition5Men3Equal::keyToIndex(const EndGameKey &key) 
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition5Men3Equal::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition5Men3Equal::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
 
   EndGameKey result;
@@ -654,68 +654,68 @@ String EndGameKeyDefinition5Men3Equal::getCodecName() const {
 
 #ifdef _DEBUG
 
-UINT add3Equal(UINT addr, UINT maxAddr, UINT lp, UINT mp, UINT hp) {
+EndGamePosIndex add3Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp >= mp) || (mp >= hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3Equal:addr=%u, maxAddr=%u, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) &&  lp < mp < hp")
+    throwException(_T("add3Equal:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) &&  lp < mp < hp")
                   ,addr, maxAddr, lp, mp, hp);
   }
-  UINT a = ADD2EQUAL(addr, maxAddr, lp, mp);
-  const UINT rs = GET_RANGESTART3EQUAL(maxAddr/2, hp-2);
+  EndGamePosIndex a = ADD2EQUAL(addr, maxAddr, lp, mp);
+  EndGamePosIndex rs = GET_RANGESTART3EQUAL(maxAddr/2, hp-2);
   return a + rs;
 }
 
-UINT add3EqualAllowEqualLM(UINT addr, UINT maxAddr, UINT lp, UINT mp, UINT hp) {
+EndGamePosIndex add3EqualAllowEqualLM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp > mp) || (mp >= hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3EqualAllowEqualLM:addr=%u, maxAddr=%u, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp <= mp < hp")
+    throwException(_T("add3EqualAllowEqualLM:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp <= mp < hp")
                   ,addr, maxAddr, lp, mp, hp);
   }
-  UINT a = ADD2EQUALALLOWEQUALLH(addr, maxAddr, lp, mp);
-  UINT r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
+  EndGamePosIndex a = ADD2EQUALALLOWEQUALLH(addr, maxAddr, lp, mp);
+  EndGamePosIndex r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
   return a + r;
 }
 
-UINT add3EqualAllowEqualHM(UINT addr, UINT maxAddr, UINT lp, UINT mp, UINT hp) {
+EndGamePosIndex add3EqualAllowEqualHM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp >= mp) || (mp > hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3EqualAllowEqualLM:addr=%u, maxAddr=%u, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp < mp <= hp")
+    throwException(_T("add3EqualAllowEqualLM:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp < mp <= hp")
                   ,addr, maxAddr, lp, mp, hp);
   }
-  UINT a = ADD2EQUAL(addr, maxAddr, lp, mp);
-  UINT r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
+  EndGamePosIndex a = ADD2EQUAL(addr, maxAddr, lp, mp);
+  EndGamePosIndex r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
   return a + r;
 }
 
-void set3Pos3Equal(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3Pos3Equal(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, r+2);
-  const UINT rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
   addr -= rs1;
   SET2POS2EQUAL(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-void set3OffDiagPosNoFlip(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+2]);
-  const int rs = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  const EndGamePosIndex rs = GET_RANGESTART3EQUAL(maxAddr/2, r);
   addr -= rs;
   SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-void set3OffDiagPosFlipi(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3OffDiagPosFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+1]);
-  const int rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
   addr -= rs1;
   SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-void set3OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+void set3OffDiagPosFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   maxAddr /= 2;
-  int r = EndGameKeyDefinition::findRange(table, tableSize, addr);
+  int r = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+1]);
-  const int rs1 = GET_RANGESTART3EQUAL(maxAddr, r);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr, r);
   addr -= rs1;
-  r  = EndGameKeyDefinition::findRange2Equal(maxAddr, addr);
-  const UINT rs2 = GET_RANGESTART2EQUAL(maxAddr, r);
+  r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs2 = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs2;
   r++;
   key.setPosition(mpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);
@@ -723,10 +723,10 @@ void set3OffDiagPosFlipj(EndGameKey &key, unsigned long &addr, unsigned long *ta
   addr /= r;
 }
 
-void set3OffDiagPosFlipij(EndGameKey &key, unsigned long &addr, unsigned long *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r   = EndGameKeyDefinition::findRange(table, tableSize, addr);
+void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r   = findTableRange(table, tableSize, addr);
   key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+2]);
-  const int rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
   addr -= rs1;
   SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
 }

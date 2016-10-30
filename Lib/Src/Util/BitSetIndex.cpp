@@ -29,19 +29,19 @@ intptr_t BitSetIndex::getIndex(size_t i) const {
   if(!m_bitSet.contains(i)) {
     return -1;
   }
-  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, sizetHashCmp);
+  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, int64HashCmp);
   if(rangeIndex < 0) {
     return m_bitSet.getCount(0, i) - 1;
   } else {
-    return ((rangeIndex+1) << m_shift) + m_bitSet.getCount(m_rangeTable[rangeIndex], i) - 1;
+    return ((rangeIndex+1) << m_shift) + m_bitSet.getCount((size_t)m_rangeTable[rangeIndex], i) - 1;
   }
 }
 
 String BitSetIndex::getInfoString() const {
   return format(_T("\nBitStIndex:info\nBitSet.capacity:%s (in bytes:%s)\nRangeTable.size:%s (in bytes:%s)\n")
                ,format1000(m_bitSet.getCapacity()).cstr()
-               ,format1000(m_bitSet.getCapacity()/_BITSET_ATOMSIZE).cstr()
+               ,format1000(m_bitSet.getCapacity() /_BITSET_ATOMSIZE).cstr()
                ,format1000(m_rangeTable.size()).cstr()
-               ,format1000(m_rangeTable.size()*sizeof(UINT)).cstr()
+               ,format1000(m_rangeTable.size()*sizeof(INT64)).cstr()
                );
 }

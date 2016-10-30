@@ -80,7 +80,7 @@ FILE            *MKFOPEN(const TCHAR   *name, const TCHAR  *mode);
 FILE            *MKFOPEN(const String  &name, const String &mode);
 void             FWRITE( const void *buffer, size_t size, size_t count, FILE *f);
 size_t           FREAD(        void *buffer, size_t size, size_t count, FILE *f);
-void             FSEEK(  FILE *f, __int64 offset);
+void             FSEEK(  FILE *f, INT64 offset);
 TCHAR           *FGETS(  TCHAR *line, size_t n, FILE *f);
 TCHAR           *GETS(   TCHAR *line);
 void             UNLINK( const String &name);
@@ -98,8 +98,8 @@ void             CHMOD(  const String &name, int mode);
 void             RMDIR(  const String &name);
 void             CHDIR(  const String &dir);
 String           GETCWD();
-__int64          GETSIZE(FILE *f);
-__int64          GETPOS( FILE *f);
+INT64            GETSIZE(FILE *f);
+INT64            GETPOS( FILE *f);
 void             PIPE(   int  *pipe, UINT size, int textMode);
 int              DUP(    int   fd);
 void             DUP2(   int   fd1, int fd2); 
@@ -120,7 +120,7 @@ unsigned char toAscii(UINT virtualCode);
 
 String  inputPassword(TCHAR *format, ...); // read password from console
 int     inputInt(     TCHAR *format, ...); // read an integer from stdin
-__int64 inputInt64(   TCHAR *format, ...); // read an __int64 from stdin
+INT64   inputInt64(   TCHAR *format, ...); // read an __int64 from stdin
 double  inputDouble(  TCHAR *format, ...); // read a double from stdin
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
@@ -166,17 +166,16 @@ template<class T> void swap(T &e1, T &e2) {
   T tmp = e1; e1 = e2; e2 = tmp;
 }
  
-
-String sprintbin(         char    c);
-String sprintbin(unsigned char    c);
-String sprintbin(         short   s);
-String sprintbin(unsigned short   s);
-String sprintbin(         int     i);
-String sprintbin(UINT             i);
-String sprintbin(         long    l);
-String sprintbin(unsigned long    l);
-String sprintbin(         __int64 i);
-String sprintbin(unsigned __int64 i);
+String sprintbin(char    c);
+String sprintbin(UCHAR   c);
+String sprintbin(short   s);
+String sprintbin(USHORT  s);
+String sprintbin(int     i);
+String sprintbin(UINT    i);
+String sprintbin(long    l);
+String sprintbin(ULONG   l);
+String sprintbin(INT64   i);
+String sprintbin(UINT64  i);
 
 inline const TCHAR *boolToStr(bool b) {
   return b ? _T("true") : _T("false");
@@ -194,7 +193,7 @@ inline int sign(int x) {             // return (x > 0) ? +1 : (x < 0) ? -1 : 0
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
-inline int sign(const __int64 &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0 
+inline int sign(const INT64 &x) {  // return (x > 0) ? +1 : (x < 0) ? -1 : 0
   return x < 0 ? -1 : x > 0 ? 1 : 0;
 }
 
@@ -235,17 +234,17 @@ extern const double M_E;
 #endif
 
 // return x if x is in I = [min(x1, x2); max(x1, x2)] else the endpoint of I nearest to x
-short            minMax(short            x, short            x1, short            x2);
-unsigned short   minMax(unsigned short   x, unsigned short   x1, unsigned short   x2);
-int              minMax(int              x, int              x1, int              x2);
-UINT             minMax(UINT             x, UINT             x1, UINT             x2);
-__int64          minMax(__int64          x, __int64          x1, __int64          x2);
-unsigned __int64 minMax(unsigned __int64 x, unsigned __int64 x1, unsigned __int64 x2);
-float            minMax(float            x, float            x1, float            x2);
-double           minMax(double           x, double           x1, double           x2);
+short   minMax(short   x, short   x1, short   x2);
+USHORT  minMax(USHORT  x, USHORT  x1, USHORT  x2);
+int     minMax(int     x, int     x1, int     x2);
+UINT    minMax(UINT    x, UINT    x1, UINT    x2);
+INT64   minMax(INT64   x, INT64   x1, INT64   x2);
+UINT64  minMax(UINT64  x, UINT64  x1, UINT64  x2);
+float   minMax(float   x, float   x1, float   x2);
+double  minMax(double  x, double  x1, double  x2);
 
 // very common used hash- and comparefunctions
-inline unsigned long shortHash(const short &n) {
+inline ULONG shortHash(const short &n) {
   return n;
 }
 
@@ -253,15 +252,15 @@ inline int shortHashCmp(const short &n1, const short &n2) {
   return n1 - n2;
 }
 
-inline unsigned long ushortHash(const unsigned short &n) {
+inline ULONG ushortHash(const USHORT &n) {
   return n;
 }
 
-inline int ushortHashCmp(const unsigned short &n1, const unsigned short &n2) {
+inline int ushortHashCmp(const USHORT &n1, const USHORT &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
-inline unsigned long intHash(const int &n) {
+inline ULONG intHash(const int &n) {
   return n;
 }
 
@@ -269,7 +268,7 @@ inline int intHashCmp(const int &n1, const int &n2) {
   return n1 - n2;
 }
 
-inline unsigned long uintHash(const UINT &n) {
+inline ULONG uintHash(const UINT &n) {
   return n;
 }
 
@@ -277,7 +276,7 @@ inline int  uintHashCmp(const UINT &n1, const UINT &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
-inline unsigned long longHash(const long &n) {
+inline ULONG longHash(const long &n) {
   return n;
 }
 
@@ -285,27 +284,27 @@ inline int longHashCmp(const long &n1, const long &n2) {
   return n1 - n2;
 }
 
-inline unsigned long ulongHash(const unsigned long &n) {
+inline ULONG ulongHash(const ULONG &n) {
   return n;
 }
 
-inline int ulongHashCmp( const unsigned long &n1, const unsigned long &n2) {
+inline int ulongHashCmp( const ULONG &n1, const ULONG &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
-inline unsigned long int64Hash(const __int64 &n) {
-  return (((unsigned long*)&n)[0]) ^ (((unsigned long*)&n)[1]);
+inline ULONG int64Hash(const INT64 &n) {
+  return (((ULONG*)&n)[0]) ^ (((ULONG*)&n)[1]);
 }
 
-inline int int64HashCmp(const __int64 &n1, const __int64 &n2) {
+inline int int64HashCmp(const INT64 &n1, const INT64 &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
-inline unsigned long uint64Hash(const unsigned __int64 &n) {
-  return (((unsigned long*)&n)[0]) ^ (((unsigned long*)&n)[1]);
+inline ULONG uint64Hash(const UINT64 &n) {
+  return (((ULONG*)&n)[0]) ^ (((ULONG*)&n)[1]);
 }
 
-inline int uint64HashCmp(const unsigned __int64 &n1, const unsigned __int64 &n2) {
+inline int uint64HashCmp(const UINT64 &n1, const UINT64 &n2) {
   return (n1 > n2) ? 1 : (n1 < n2) ? -1 : 0;
 }
 
@@ -317,16 +316,16 @@ inline int uint64HashCmp(const unsigned __int64 &n1, const unsigned __int64 &n2)
 #define sizetHashCmp uintHashCmp
 #endif
 
-inline unsigned long floatHash(const float &f) {
-  return (unsigned long)f;
+inline ULONG floatHash(const float &f) {
+  return (ULONG)f;
 }
 
 inline int floatHashCmp(const float &f1, const float &f2 ) {
   return sign(f1 - f2);
 }
 
-inline unsigned long doubleHash(const double &d) {
-  const unsigned long *p = (unsigned long *)(&d);
+inline ULONG doubleHash(const double &d) {
+  const ULONG *p = (ULONG*)(&d);
   return p[0] ^ p[1];
 }
 
@@ -334,9 +333,9 @@ inline int doubleHashCmp(const double &d1, const double &d2 ) {
   return sign(d1 - d2);
 }
 
-unsigned long strHash(      const TCHAR * const &s                          );
-         int  strHashCmp(   const TCHAR * const &s1, const TCHAR * const &s2);
-unsigned long striHash(     const TCHAR * const &s                          );
-         int  striHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2);
+ULONG strHash(      const TCHAR * const &s                          );
+int   strHashCmp(   const TCHAR * const &s1, const TCHAR * const &s2);
+ULONG striHash(     const TCHAR * const &s                          );
+int   striHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2);
 
 #include "Array.h"

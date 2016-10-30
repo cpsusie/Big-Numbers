@@ -36,7 +36,7 @@ EndGameKeyDefinition4Men2EqualPawns::EndGameKeyDefinition4Men2EqualPawns(PieceKe
        - MININDEX;                                                                                                                \
 }
 
-unsigned long EndGameKeyDefinition4Men2EqualPawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men2EqualPawns::keyToIndex(const EndGameKey &key) const {
   UINT pos2 = key.getPosition2();
   UINT pos3 = key.getPosition3();
   switch(BOOL2MASK(IS_KINGSIDE, pos2, pos3)) {
@@ -49,7 +49,7 @@ unsigned long EndGameKeyDefinition4Men2EqualPawns::keyToIndex(const EndGameKey &
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition4Men2EqualPawns::indexToKey(unsigned long index) const {
+EndGameKey EndGameKeyDefinition4Men2EqualPawns::indexToKey(EndGamePosIndex index) const {
   index += MININDEX;
   EndGameKey result;
   if(index < START_RANGE_P2_QUEENSIDE) {

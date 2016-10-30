@@ -2,15 +2,7 @@
 #include <BitSet.h>
 #include <CountedByteStream.h>
 
-void BitSetIndex::save(ByteOutputStream &s) const {
-  s.putByte(m_shift);                                             // save 1 byte:m_shift
-  const size_t setCapacity = m_bitSet.getCapacity();
-  s.putBytes((BYTE*)&setCapacity, sizeof(setCapacity));           // save 4/8 bytes:setCapacity
-  m_rangeTable.save(s);                                           // save rangetable
-  m_bitSet.save(s);                                               // save m_bitset
-}
-
-BitSetFileIndex::BitSetFileIndex(const String &fileName, unsigned __int64 startOffset) 
+BitSetFileIndex::BitSetFileIndex(const String &fileName, UINT64 startOffset) 
 : m_startOffset(startOffset)
 , m_f(fileName)
  {
@@ -19,12 +11,21 @@ BitSetFileIndex::BitSetFileIndex(const String &fileName, unsigned __int64 startO
   CountedByteInputStream in(byteCounter, m_f);
 
   m_shift = in.getByte();                                         // load 1 byte:m_shift
-  size_t setCapacity;
-  in.getBytesForced((BYTE*)&setCapacity, sizeof(setCapacity));    // load 4/8 bytes:setCapacity
+  UINT64 capacity64;
+  in.getBytesForced((BYTE*)&capacity64, sizeof(capacity64));      // load 8 bytes:setCapacity
+  CHECKUINT64ISVALIDSIZET(capacity64)
   m_rangeTable.load(in);                                          // load rangeTable
   m_loadedIntervals   = new BitSet(m_rangeTable.size()+1);
-  m_bitSet            = new BitSet(setCapacity);                  // allocate bitset. dont read it
-  m_bitsStartOffset   = startOffset + byteCounter.getByteOffset() + sizeof(size_t); // bits begin after bitet.capacity
+  m_bitSet            = new BitSet((size_t)capacity64);           // allocate bitset. dont read it
+  m_bitsStartOffset   = startOffset + byteCounter.getByteOffset() + sizeof(capacity64); // bits begin after bitet.capacity
+}
+
+void BitSetIndex::save(ByteOutputStream &s) const {
+  s.putByte(m_shift);                                             // save 1 byte:m_shift
+  const UINT64 setCapacity64 = m_bitSet.getCapacity();
+  s.putBytes((BYTE*)&setCapacity64, sizeof(setCapacity64));       // save 8 bytes:setCapacity
+  m_rangeTable.save(s);                                           // save rangetable
+  m_bitSet.save(s);                                               // save m_bitset
 }
 
 BitSetFileIndex::~BitSetFileIndex() {
@@ -38,12 +39,12 @@ intptr_t BitSetFileIndex::getIndex(size_t i) const {
   if(i >= m_bitSet->getCapacity()) {
     return -1;
   }
-  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, sizetHashCmp);
+  const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, int64HashCmp);
   
   const size_t bitInterval = (rangeIndex < 0) ? 0 : (rangeIndex+1);
-  const size_t startBit    =  bitInterval ? m_rangeTable[rangeIndex] : 0;
+  const size_t startBit    =  (size_t)(bitInterval ? m_rangeTable[rangeIndex] : 0);
   if(!m_loadedIntervals->contains(bitInterval)) {
-    const size_t lastBit     =  (bitInterval < m_rangeTable.size()) ? m_rangeTable[bitInterval] : (m_bitSet->getCapacity()-1);
+    const size_t lastBit     = (size_t)((bitInterval < m_rangeTable.size()) ? m_rangeTable[bitInterval] : (m_bitSet->getCapacity()-1));
     const size_t startAtom   = m_bitSet->getAtomIndex(startBit);
     const size_t atomsToRead = m_bitSet->getAtomIndex(lastBit) - startAtom + 1;
     m_f.seek(m_bitsStartOffset + startAtom * BYTESINATOM);

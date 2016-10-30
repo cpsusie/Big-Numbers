@@ -17,7 +17,7 @@ CTablebaseDlg::CTablebaseDlg(CWnd* pParent /*=NULL*/) : CDialog(CTablebaseDlg::I
   m_tablebasePath   = options.getEndGameTablebasePath().cstr();
 }
 
-void CTablebaseDlg::DoDataExchange(CDataExchange* pDX) {
+void CTablebaseDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
     DDX_Text(pDX , IDC_EDIT_MOVECOUNT     , m_moveCount      );
     DDX_Text(pDX , IDC_EDIT_DEFENDSTRENGTH, m_defendStrength );
@@ -25,7 +25,6 @@ void CTablebaseDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Radio(pDX, IDC_RADIO_DEPTHINMOVES , m_depthFormat    );
     DDX_Text(pDX , IDC_EDIT_TABLEBASEPATH , m_tablebasePath  );
 }
-
 
 BEGIN_MESSAGE_MAP(CTablebaseDlg, CDialog)
   ON_COMMAND(ID_GOTO_MOVECOUNT                   , OnGotoMoveCount             )
@@ -40,7 +39,7 @@ END_MESSAGE_MAP()
 BOOL CTablebaseDlg::OnInitDialog() {
   CDialog::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_TABLEBASE_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_TABLEBASE_ACCELERATOR));
   setControlText(IDD, this);
 
   return FALSE;
@@ -98,7 +97,18 @@ void CTablebaseDlg::OnButtonPath() {
 
 void CTablebaseDlg::OnButtonDecompressAll() {
 #ifndef TABLEBASE_BUILDER
-  EndGameTablebase::decompressAll();
+  UpdateData();
+  const String oldDbPath = EndGameKeyDefinition::getDbPath();
+  EndGameKeyDefinition::setDbPath((LPCTSTR)m_tablebasePath);
+  try {
+    EndGameTablebase::decompressAll();
+    EndGameKeyDefinition::setDbPath(oldDbPath);
+  }
+  catch (...) {
+    EndGameKeyDefinition::setDbPath(oldDbPath);
+    throw;
+  }
+    
 #else
   MessageBox(_T("Function not accesible in TABLEBASE_BUILDER-version"), _T("Error"), MB_ICONWARNING);
 #endif

@@ -8,14 +8,14 @@ private:
   UINT               m_bitsPerItem;
   UINT               m_maxValue;
   CompactArray<UINT> m_data;
-  unsigned __int64   m_firstFreeBit;
+  UINT64             m_firstFreeBit;
   void assertHasOneFreeItem() {
     if(m_data.size() * 32 < m_firstFreeBit + m_bitsPerItem) m_data.add(0);
   }
 
   static void validateBitsPerItem(UINT bitsPerItem);
 #ifdef _DEBUG
-  void indexError(unsigned __int64 index, const TCHAR *method=_T("")) const {
+  void indexError(UINT64 index, const TCHAR *method=_T("")) const {
     throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
   void valueError(UINT v, const TCHAR *method=_T("")) const {
@@ -28,21 +28,21 @@ private:
 
 public:
   explicit PackedArray(unsigned char bitsPerItem);
-  UINT         get(unsigned __int64 index) const;
-  UINT         select() const;
-  void         set(unsigned __int64 index, UINT v);
-  void         or( unsigned __int64 index, UINT v);
-  void         and(unsigned __int64 index, UINT v);
-  void         xor(unsigned __int64 index, UINT v);
-  void add(                                UINT v);
-  void add(      unsigned __int64 index, UINT v);
-  void addZeroes(unsigned __int64 index, unsigned __int64 count);
-  void remove(   unsigned __int64 index, unsigned __int64 count = 1);
+  UINT get(      UINT64 index) const;
+  UINT select() const;
+  void set(      UINT64 index, UINT v);
+  void or(       UINT64 index, UINT v);
+  void and(      UINT64 index, UINT v);
+  void xor(      UINT64 index, UINT v);
+  void add(                    UINT v);
+  void add(      UINT64 index, UINT v);
+  void addZeroes(UINT64 index, UINT64 count);
+  void remove(   UINT64 index, UINT64 count = 1);
   PackedArray &clear();
   bool isEmpty() const {
     return m_firstFreeBit == 0;
   }
-  unsigned __int64 size() const {
+  UINT64 size() const {
     return m_firstFreeBit / m_bitsPerItem;
   }
   void save(ByteOutputStream &s) const;
@@ -58,7 +58,7 @@ public:
     return m_maxValue;
   }
 
-  void setCapacity(unsigned __int64 capacity);
+  void setCapacity(UINT64 capacity);
 
 #ifdef _DEBUG
   static bool trace;
@@ -80,21 +80,21 @@ private:
   unsigned char          m_bitsPerItem;
   UINT                   m_maxValue;
   CompactFileArray<UINT> m_data;
-  unsigned __int64       m_firstFreeBit;
+  UINT64                 m_firstFreeBit;
 
 #ifdef _DEBUG
-  void indexError(unsigned __int64 index, const TCHAR *method=_T("")) const {
+  void indexError(UINT64 index, const TCHAR *method=_T("")) const {
     throwInvalidArgumentException(method, _T("Index %I64u out of range. size=%I64u"), index, size());
   }
 #endif
 public:
-  PackedFileArray(const String &fileName, unsigned __int64 startOffset);
-  UINT get(unsigned __int64 index) const;
+  PackedFileArray(const String &fileName, UINT64 startOffset);
+  UINT get(UINT64 index) const;
   UINT select() const;
   bool isEmpty() const {
     return m_firstFreeBit == 0;
   }
-  unsigned __int64 size() const {
+  UINT64 size() const {
     return m_firstFreeBit / m_bitsPerItem;
   }
   UINT getBitsPerItem() const {
