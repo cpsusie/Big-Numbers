@@ -45,8 +45,8 @@ unsigned long BitInputStream::getBits(int count) {
   return result;
 }
 
-int BitInputStream::getBytes(BYTE *dst, UINT n) {
-  for(int i = n; i--;) {
+intptr_t BitInputStream::getBytes(BYTE *dst, size_t n) {
+  for(size_t i = n; i--;) {
     *(dst++) = (BYTE)getBits(8);
   }
   return n;
