@@ -196,7 +196,7 @@ public:
   const PositionSignature  &getPositionSignature()   const;
   virtual void             insertInitialPositions(EndGameTablebase &tablebase) const;
   const String            &toString(bool longNames = false) const;
-  void                     listLongestUnusedSequence(BitSet &s, UINT sequenceMinSize = 1) const;
+  void                     listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize = 1) const;
 
   void                     doSelfCheck(bool checkSym) const;
   virtual bool match(const EndGameKey &key1, const EndGameKey &key2) const {
@@ -204,8 +204,8 @@ public:
   }
 
   virtual bool isDupletsAllowed() const = 0;
-  virtual unsigned long           keyToIndexNew(const EndGameKey  &key  ) const;
-  virtual EndGameKey              indexToKeyNew(unsigned long      index) const;
+  virtual EndGamePosIndex         keyToIndexNew(const EndGameKey  &key  ) const;
+  virtual EndGameKey              indexToKeyNew(EndGamePosIndex    index) const;
   bool                            hasConversion() const;
 
 #else

@@ -5,7 +5,7 @@
 void dtextOut(HDC dc, int x, int y, const String &str, COLORREF backColor, COLORREF textColor) {
   SetTextColor(dc, textColor);
   SetBkColor(  dc, backColor);
-  TextOut(     dc, x,y, str.cstr(),str.length());
+  textOut(dc, x, y, str);
 }
 
 void dtextOut(HDC dc, const CPoint &pos, const String &str, COLORREF backColor, COLORREF textColor) {
@@ -45,7 +45,7 @@ void dtextOut(HDC dc, int x, int y, TextAlignment align, const Array<ColoredText
     break;
 
   case ALIGN_RIGHT :
-    { for(int i = strings.size() - 1; i >= 0; i--) {
+    { for(int i = (int)strings.size() - 1; i >= 0; i--) {
         const ColoredText &str = strings[i];
         x -= dtextOut(dc,x,y,align,str,str.m_backColor,str.m_textColor);
       }

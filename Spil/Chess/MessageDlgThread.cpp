@@ -19,7 +19,7 @@ BOOL CMessageDlgThread::InitInstance() {
   m_pActiveWnd = m_pMainWnd = &dlg;
 
   CWinThread::InitInstance();
-  int nResponse = dlg.DoModal();
+  INT_PTR nResponse = dlg.DoModal();
   return TRUE;
 }
 

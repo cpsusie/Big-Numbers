@@ -622,7 +622,7 @@ EngineOptionDescription::EngineOptionDescription(String line, unsigned short ind
   String defaultStr;
   bool typeDefined = false;
 
-  int nameIndex = line.find(_T("name"));
+  intptr_t nameIndex = line.find(_T("name"));
   if(nameIndex < 0) {
     throwInvalidArgumentException(method, _T("No name for option. line:<%s>"), line.cstr());
   }
@@ -630,7 +630,7 @@ EngineOptionDescription::EngineOptionDescription(String line, unsigned short ind
   for(Tokenizer tok1(line, _T(" ")); tok1.hasNext();) {
     const String word = tok1.next();
     if(word == _T("type") || word == _T("default") || word == _T("min") || word == _T("max") || word == _T("var")) {
-      int nextField = line.find(word);
+      intptr_t nextField = line.find(word);
       m_name = trim(substr(line, 0, nextField - 1));
       line = substr(line, nextField, line.length());
       break;
@@ -714,7 +714,7 @@ EngineOptionDescription::EngineOptionDescription(String line, unsigned short ind
 }
 
 int EngineOptionDescription::getValueIndex(const String &str) const {
-  for(size_t i = 0; i < m_comboValues.size(); i++) {
+  for(UINT i = 0; i < m_comboValues.size(); i++) {
     if(m_comboValues[i] == str) {
       return i;
     }
@@ -774,7 +774,7 @@ EngineOptionValueArray EngineOptionDescriptionArray::createDefaultValueArray(con
 }
 
 EngineOptionDescriptionArray &EngineOptionDescriptionArray::removeOptionsByType(EngineOptionType type) { // return *this
-  for(int i = size(); i--;) {
+  for(size_t i = size(); i--;) {
     if((*this)[i].getType() == type) {
       removeIndex(i);
     }
@@ -784,7 +784,7 @@ EngineOptionDescriptionArray &EngineOptionDescriptionArray::removeOptionsByType(
 
 EngineOptionValueArray EngineOptionDescriptionArray::pruneDefaults(const EngineOptionValueArray &valueArray) const {
   EngineOptionValueArray result(valueArray);
-  for(int i = result.size(); i--;) {
+  for(size_t i = result.size(); i--;) {
     const EngineOptionValue       &v      = result[i];
     const EngineOptionDescription *option = findOptionByName(v.getName());
     bool prune = false;

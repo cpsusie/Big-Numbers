@@ -39,7 +39,7 @@ BOOL CTraceDlgThread::InitInstance() {
   }
   m_doModalActive = true;
   redirectVerbose(this);
-  int nResponse =  dlg.DoModal();
+  INT_PTR nResponse =  dlg.DoModal();
   redirectVerbose(NULL);
   return TRUE;
 }

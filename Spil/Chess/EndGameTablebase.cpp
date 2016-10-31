@@ -1831,7 +1831,7 @@ bool EndGameTablebase::isUsableMove(const Move &m) const {
 
 int EndGameTablebase::getInfoLength() const {
   if(m_infoLength == 0) {
-    m_infoLength = m_info.toString(TBIFORMAT_PRINT_UNDEFANDWINS).length();
+    m_infoLength = (int)m_info.toString(TBIFORMAT_PRINT_UNDEFANDWINS).length();
   }
   return m_infoLength;
 }

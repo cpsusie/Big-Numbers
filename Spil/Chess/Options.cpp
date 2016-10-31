@@ -221,7 +221,7 @@ bool EngineOptionValue::operator==(const EngineOptionValue &v) const {
 }
 
 int EngineOptionValueArray::getOptionIndex(const String &optionName) const {
-  for(size_t i = 0; i < size(); i++) {
+  for(UINT i = 0; i < size(); i++) {
     const EngineOptionValue &opt = (*this)[i];
     if(opt.getName() == optionName) {
       return i;
@@ -702,7 +702,7 @@ void Options::setHistoryFontSize(int size) {
 
 void Options::setGameInitialDir(const String &dir) {
   String tmp = dir;
-  const int len = tmp.length();
+  const intptr_t len = tmp.length();
   if(len > 1 && tmp[len-1] == '\\') {
     tmp = left(tmp, len-1);
   }
@@ -724,7 +724,7 @@ bool Options::setLangID(LANGID langID) {
 
 int Options::getSelectedLanguageIndex() const {
   const Array<Language> &spla = Language::getSupportedLanguages();
-  for(size_t i = 0; i < spla.size(); i++) {
+  for(UINT i = 0; i < spla.size(); i++) {
     if(spla[i].m_langID == m_langID) {
       return i;
     }

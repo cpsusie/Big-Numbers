@@ -10,7 +10,7 @@ private:
   void resetHistory();
 
   int getHistorySize() const {
-    return m_history.size();
+    return (int)m_history.size();
   }
 
   void removeLast();

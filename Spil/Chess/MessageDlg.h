@@ -24,7 +24,7 @@ public:
 protected:
 
 	virtual BOOL OnInitDialog();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnCloseWindow();
 	DECLARE_MESSAGE_MAP()
 };

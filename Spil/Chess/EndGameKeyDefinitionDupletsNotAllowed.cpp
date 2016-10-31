@@ -45,19 +45,22 @@ EndGameKey EndGameKeyDefinitionDupletsNotAllowed::getEndGameKey(const GameKey &g
   EndGameKey result;
   result.setPlayerInTurn(gameKey.getPlayerInTurn());
 
+#ifdef IS32BIT
 #define ASM_OPTIMIZED
+#endif
 
 #ifndef ASM_OPTIMIZED
 
   PieceKey pk;
-  for(int pos = 0, pieceCount = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
+  int pieceCount = 0;
+  for(int pos = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
     if((pk = gameKey.m_pieceKey[pos]) == EMPTYPIECEKEY) {
       continue;
     }
     result.setPosition(m_pieceKeyIndexMap[pk], pos);
     pieceCount++;
   }
-  assert(pieceCount == m_totalPieceCount);
+  assert(pieceCount == getPieceCount());
 
 #else
 

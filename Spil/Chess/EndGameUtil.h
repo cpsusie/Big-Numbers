@@ -336,14 +336,14 @@ public:
 
 class StreamProgress : public ByteCounter, public TimeoutHandler {
 private:
-  UINT64                   m_total;
-  UINT64                   m_byteCount;
-  Timer                    m_timer;
+  UINT64 m_total;
+  UINT64 m_byteCount;
+  Timer  m_timer;
 public:
   StreamProgress(const EndGameTablebase *tb);
   StreamProgress(const String &fileName);
   ~StreamProgress();
-  void incrCount(UINT n) {
+  void incrCount(UINT64 n) {
     m_byteCount += n;
   }
   void handleTimeout(Timer &timer);

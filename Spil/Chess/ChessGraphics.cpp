@@ -503,7 +503,7 @@ void ChessGraphics::animateMove(const MoveBase &m, HDC dc) {
   }
 
   const int sleepTime = (m_animations.size() == 1) ? 15 : 10;
-  const int n = m_animations.size();
+  const int n = (int)m_animations.size();
   for(bool cont = true; cont;) {
     for(int i = n; i--;) {
       m_animations[i]->paint();
@@ -602,7 +602,7 @@ const OffboardPiece *ChessGraphics::getOffboardPieceByPosition(const CPoint &poi
 
 const OffboardPiece *ChessGraphics::getOffboardPieceByKey(PieceKey key) const {
   const OffboardPieceArray &a = m_offboardPieces[GET_PLAYER_FROMKEY(key)];
-  for(int i = a.size() - 1; i >= 0; i--) {
+  for(int i = (int)a.size() - 1; i >= 0; i--) {
     const OffboardPiece &obp = a[i];
     if(obp.getKey() == key) {
       return &obp;

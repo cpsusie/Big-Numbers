@@ -34,7 +34,7 @@ BOOL CMessageDlg::OnInitDialog() {
   SetWindowText(m_caption.cstr());
 
   CClientDC captionDC(textBox);
-  const CSize captionSize = captionDC.GetTextExtent(m_caption.cstr(), m_caption.length());
+  const CSize captionSize = getTextExtent(captionDC, m_caption);
   int newlineCount = 0;
   for(const TCHAR *s = m_message.cstr(); *s; s++) {
     if(*s =='\n') newlineCount++;
@@ -42,7 +42,7 @@ BOOL CMessageDlg::OnInitDialog() {
 
   CClientDC tdc(textBox);
   CClientDC dc(this);
-  const CSize messageSize = dc.GetTextExtent(m_message.cstr(), m_message.length());
+  const CSize messageSize = getTextExtent(dc, m_message);
   TEXTMETRIC tm;
   dc.GetTextMetrics(&tm);
 
@@ -82,7 +82,7 @@ void CMessageDlg::stopTimer() {
   }
 }
 
-void CMessageDlg::OnTimer(UINT nIDEvent) {
+void CMessageDlg::OnTimer(UINT_PTR nIDEvent) {
   CDialog::OnTimer(nIDEvent);
   stopTimer();
   OnOK();

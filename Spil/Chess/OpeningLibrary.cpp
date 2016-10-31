@@ -118,7 +118,7 @@ const LibraryTransition *LibraryState::findTransitionByMove(const ExecutableMove
 }
 
 int LibraryState::findTransitionIndexByNameIndex(int nameIndex) const {
-  for(size_t i = 0; i < m_transitionArray.size(); i++) {
+  for(UINT i = 0; i < m_transitionArray.size(); i++) {
     const LibraryTransition *t = &m_transitionArray[i];
     if(t->m_nameIndex.contains(nameIndex)) {
       return i;
@@ -130,7 +130,7 @@ int LibraryState::findTransitionIndexByNameIndex(int nameIndex) const {
 ExecutableMove LibraryState::findGoodMove(const Game &game) const {
   checkPlayer(__LINE__,game.getPlayerInTurn());
   CompactIntArray goodMoves;
-  for(size_t i = 0; i < m_transitionArray.size(); i++) {
+  for(UINT i = 0; i < m_transitionArray.size(); i++) {
     const LibraryTransition &t = m_transitionArray[i];
     if(t.m_goodMove) {
       goodMoves.add(i);

@@ -271,7 +271,7 @@ void EngineOptionControl::invalidTypeException(int type, const String &name) con
 }
 
 EngineOptionControlArray::~EngineOptionControlArray() {
-  for(int i = size(); i--;) {
+  for(size_t i = size(); i--;) {
     (*this)[i].cleanup();
   }
   clear();
@@ -309,7 +309,7 @@ CompactIntArray EngineOptionControlArray::selectCtrlIdByType(EngineOptionType ty
 }
 
 int EngineOptionControlArray::getNonPushbuttonCount() const {
-  return size() - selectCtrlIdByType(OptionTypeButton).size();
+  return (int)(size() - selectCtrlIdByType(OptionTypeButton).size());
 }
 
 DialogColumnInfoArray EngineOptionControlArray::findColumnInfo(CWnd *wnd, int controlHeight, const CSize &space) {

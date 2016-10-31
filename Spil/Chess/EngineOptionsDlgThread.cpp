@@ -24,7 +24,7 @@ BOOL CEngineOptionsDlgThread::InitInstance() {
   CEngineOptionsDlg dlg(*this);
   m_pMainWnd    = &dlg;
   m_pActiveWnd  = &dlg;
-  int nResponse =  dlg.DoModal();
+  INT_PTR nResponse =  dlg.DoModal();
   return TRUE;
 }
 

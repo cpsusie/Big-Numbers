@@ -40,6 +40,9 @@
     <Filter Include="EndGames\EndGameKeyDefinitions\Include">
       <UniqueIdentifier>{69d89735-0702-48c4-9f6b-8e180e5dfdf6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EndGames\EndGameKeyDefinitions\Asm Files">
+      <UniqueIdentifier>{2f869827-3f49-4fa4-b209-b5ce02e987e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Chess\FieldInfo.cpp">
@@ -809,6 +812,9 @@
     </CustomBuild>
     <CustomBuild Include="..\chess\res\OpenLib.dat">
       <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\Chess\FindRange2Equals.asm">
+      <Filter>EndGames\EndGameKeyDefinitions\Asm Files</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
 , m_startOffset(      game.startWithBlack() ? 1 : 0)
 , m_lastPlyIndex(     game.getPlyCount()        - 1)
 {
-  m_historyStr = _T("");
+  m_historyStr  = _T("");
   m_markedPly   = -1;
   m_origHistory = m_history;
 }
@@ -321,7 +321,7 @@ void CHistoryDlg::markPly(int index) {
   int i = -startOffset();
   StringIndex strIndex;
   for(Tokenizer tok(text,_T("\n\r,")); tok.hasNext() && i <= index; strIndex = tok.nextIndex(), i++);
-  editBox->SetSel(strIndex.getStart(), strIndex.getEnd(),FALSE);
+  editBox->SetSel((int)strIndex.getStart(), (int)strIndex.getEnd(),FALSE);
   m_markedPly = index;
 }
 

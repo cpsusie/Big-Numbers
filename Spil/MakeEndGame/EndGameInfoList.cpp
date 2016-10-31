@@ -100,7 +100,7 @@ int InfoComparator::compare1(const EndGameInfo &i1, const EndGameInfo &i2) {
   default                                        : throwException(_T("InfoComparator:sortField=%d"), m_sf);
   }
   if(c) return c;
-  c = i1.m_name.length() - i2.m_name.length();
+  c = sign((intptr_t)i1.m_name.length() - (intptr_t)i2.m_name.length());
   if(c) return c;
   return _tcsicmp(i1.m_name.cstr(), i2.m_name.cstr());
 }

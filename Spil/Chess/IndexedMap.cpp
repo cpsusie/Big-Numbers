@@ -123,8 +123,8 @@ bool IndexedMap::remove(const EndGameKey &key) {
 
 IndexedMap &IndexedMap::clearAllVisited() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--;) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end;) {
       (ep++)->clearVisited();
     }
   }
@@ -133,8 +133,8 @@ IndexedMap &IndexedMap::clearAllVisited() {
 
 IndexedMap &IndexedMap::clearAllChanged() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--;) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end;) {
       (ep++)->clearChanged();
     }
   }
@@ -143,8 +143,8 @@ IndexedMap &IndexedMap::clearAllChanged() {
 
 IndexedMap &IndexedMap::clearAllMarked() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--;) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end;) {
       (ep++)->clearMark();
     }
   }
@@ -153,8 +153,8 @@ IndexedMap &IndexedMap::clearAllMarked() {
 
 IndexedMap &IndexedMap::clearHelpInfo() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--;) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end;) {
       (ep++)->clearHelpInfo();
     }
   }
@@ -163,8 +163,8 @@ IndexedMap &IndexedMap::clearHelpInfo() {
 
 IndexedMap &IndexedMap::markAllChanged() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--; ep++) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end; ep++) {
       if(ep->isChanged()) {
         ep->setMark();
       }
@@ -175,8 +175,8 @@ IndexedMap &IndexedMap::markAllChanged() {
 
 IndexedMap &IndexedMap::markAllVisited() {
   if(size()) {
-    EndGameResult *ep = &first();
-    for(int i = size(); i--; ep++) {
+    const EndGameResult *end = &last();
+    for(EndGameResult *ep = &first(); ep <= end;ep++) {
       if(ep->isVisited()) {
         ep->setMark();
       }
@@ -190,7 +190,7 @@ void IndexedMap::convertIndex() {
   copy.allocate();
   for(EndGameEntryIterator it = getEntryIterator(); it.hasNext();) {
     const EndGameEntry &e = it.next();
-    unsigned long newIndex = m_keydef.keyToIndexNew(e.getKey());
+    EndGamePosIndex newIndex = m_keydef.keyToIndexNew(e.getKey());
     if(newIndex >= m_indexSize) {
       throwException(_T("Key [%s] gives wrong index=%s. max=%s")
                     ,e.getKey().toString(m_keydef).cstr()
@@ -834,9 +834,9 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   DecompressedHeader header(info); // parts undefined. defined it below and rewrite it
 
   header.save(out);
-  header.m_bitSetIndexOffset = byteCounter.getByteOffset();
+  header.m_bitSetIndexOffset = (UINT)byteCounter.getByteOffset();
   positionIndex.save(out);
-  header.m_arrayStartOffset  = byteCounter.getByteOffset();
+  header.m_arrayStartOffset  = (UINT)byteCounter.getByteOffset();
   positionInfoArray.save(out);
   header.m_bitsPerEntry      = bitsPerEntry;
   file.seek(0);
@@ -880,7 +880,7 @@ EndGameResult IndexedMap::get(const EndGameKey &key) const {
   if(!isAllocated()) {
     throwException(_T("Index not loaded"));
   }
-  const int index = m_positionIndex->getIndex((size_t)m_keydef.keyToIndex(key));
+  const intptr_t index = m_positionIndex->getIndex((size_t)m_keydef.keyToIndex(key));
 
   if(index < 0) {
     return EndGameResult(EG_DRAW, 0);

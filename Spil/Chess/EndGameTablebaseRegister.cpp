@@ -171,7 +171,7 @@ const EndGameTablebaseList &EndGameTablebase::getRegisteredEndGameTablebases() {
 
 EndGameTablebaseList EndGameTablebase::getExistingEndGameTablebases() { // static
   EndGameTablebaseList list = getRegisteredEndGameTablebases();
-  for(int i = list.size()-1; i >= 0; i--) {
+  for(int i = (int)list.size()-1; i >= 0; i--) {
     EndGameTablebase &db = *list[i];
     if(!db.exist(COMPRESSEDTABLEBASE)) {
       list.remove(i);

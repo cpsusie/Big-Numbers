@@ -112,7 +112,7 @@ void CConnectDlg::makeHandshake() {
   }
 }
 
-void CConnectDlg::OnTimer(UINT nIDEvent) {
+void CConnectDlg::OnTimer(UINT_PTR nIDEvent) {
   if(tcpPoll(m_listener)) {
     stopTimer();
     SOCKET readS  = tcpAccept(m_listener);

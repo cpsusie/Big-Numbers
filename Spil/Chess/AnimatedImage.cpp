@@ -77,7 +77,7 @@ CSize AnimatedImage::getFrameSize() const {
 }
 
 int AnimatedImage::getFrameCount() const {
-  return m_imageArray.size();
+  return (int)m_imageArray.size();
 }
 
 void AnimatedImage::setSecondsPerCycle(double secondsPerCycle, double pauseAtEnd) {

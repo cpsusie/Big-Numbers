@@ -202,7 +202,7 @@ CompactIntArray MoveResultArray::findShortestWinnerMoves() const {
     }
   }
   CompactIntArray result;
-  for(size_t i = 0; i < tmp.size(); i++) {
+  for(UINT i = 0; i < tmp.size(); i++) {
     if(tmp[i] == minWinDistance) {
       result.add(i);
     }
@@ -229,7 +229,7 @@ CompactIntArray MoveResultArray::findLongestLoosingMoves(int defendStrength) con
   const int minLooseDistance = maxLooseDistance * defendStrength / 100;
 
   CompactIntArray result;
-  for(size_t i = 0; i < tmp.size(); i++) {
+  for(UINT i = 0; i < tmp.size(); i++) {
     int p = tmp[i];
     if((p >= 0) && (p >= minLooseDistance)) {
       result.add(i);
@@ -240,7 +240,7 @@ CompactIntArray MoveResultArray::findLongestLoosingMoves(int defendStrength) con
 
 CompactIntArray MoveResultArray::findDrawMoves() const {
   CompactIntArray result;
-  for(size_t i = 0; i < size(); i++) {
+  for(UINT i = 0; i < size(); i++) {
     if((*this)[i].m_result.getStatus() == EG_DRAW) {
       result.add(i);
     }
@@ -273,7 +273,7 @@ String MoveResultArray::toString(const Game &game, MoveStringFormat mf, bool dep
     const ExecutableMove em = game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
     msa.add(em.toString(mf));
   }
-  const int maxMoveStrLength = msa.maxLength();
+  const int maxMoveStrLength = (int)msa.maxLength();
   String result;
   for(size_t i = 0; i < size(); i++) {
     result += format(_T("%-*s - %s\n"), maxMoveStrLength, msa[i].cstr(), (*this)[i].m_result.toString(m_playerInTurn, depthInPlies).cstr());

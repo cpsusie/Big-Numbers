@@ -72,7 +72,7 @@ void CEnginesDlg::OnItemChangedList(NMHDR* pNMHDR, LRESULT* pResult) {
 
 void CEnginesDlg::updateListCtrl() {
   m_listCtrl.DeleteAllItems();
-  for(size_t i = 0; i < m_engineList.size(); i++) {
+  for(UINT i = 0; i < m_engineList.size(); i++) {
     const EngineDescription &desc = m_engineList[i];
     addData(m_listCtrl, i, 0, desc.getName(), true);
     addData(m_listCtrl, i, 1, desc.getAuthor());
@@ -141,7 +141,7 @@ void CEnginesDlg::OnButtonAdd() {
     if(dlg.DoModal() == IDOK && (_tcslen(dlg.m_ofn.lpstrFile) > 0)) {
       m_engineList.add(ExternEngine::getUCIReply(dlg.m_ofn.lpstrFile));
       updateListCtrl();
-      setSelectedIndex(m_listCtrl, m_engineList.size() - 1);
+      setSelectedIndex(m_listCtrl, (int)m_engineList.size() - 1);
     }
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
@@ -167,13 +167,13 @@ void CEnginesDlg::OnButtonDelete() {
 void CEnginesDlg::OnButtonCheck() {
 #ifndef TABLEBASE_BUILDER
   StringArray errors;
-  String selectedEngineName;
-  const int selected = getSelectedIndex();
+  String      selectedEngineName;
+  const int   selected = getSelectedIndex();
   if(selected >= 0) {
     selectedEngineName = m_engineList[selected].getName();
   }
   bool changed = false;
-  for(int i = m_engineList.size(); i--;) {
+  for(UINT i = (UINT)m_engineList.size(); i--;) {
     EngineDescription &desc = m_engineList[i];
     try {
       const EngineDescription newDesc = ExternEngine::getUCIReply(desc.getPath());
@@ -198,7 +198,7 @@ void CEnginesDlg::OnButtonCheck() {
     }
     if(errors.size() > 0) {
       String msg;
-      for(int i = errors.size(); i--;) {
+      for(size_t i = errors.size(); i--;) {
         msg += errors[i];
       }
       MessageBox(msg.cstr(), loadString(IDS_WARNING).cstr());

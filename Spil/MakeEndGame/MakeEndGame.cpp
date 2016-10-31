@@ -234,7 +234,7 @@ int BuildSequenceComparator::compare(const SpecifiedSequence &s1, const Specifie
 
 IntArray findBuildSequence(const IntArray &workSet, const EndGameTablebaseList &tablebaseList) {
   Array<SpecifiedSequence> tmp(workSet.size());
-  for(size_t i = 0; i < workSet.size(); i++) {
+  for(UINT i = 0; i < workSet.size(); i++) {
     tmp.add(SpecifiedSequence(i, workSet[i]));
   }
   tmp.sort(BuildSequenceComparator(tablebaseList));
@@ -594,7 +594,7 @@ int main(int argc, char **argv) {
     for(;*argv; argv++) {
       Regex regex(*argv, String::upperCaseTranslate);
       bool anyFound = false;
-      for(size_t i = 0; i < dbNames.size(); i++) {
+      for(UINT i = 0; i < dbNames.size(); i++) {
         if(regex.match(dbNames[i])) {
           anyFound = true;
           bool inWorkSet = false;

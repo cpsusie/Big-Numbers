@@ -574,7 +574,7 @@ void CTimeSettingsDlg::OnSetfocusSpeedcomboplayer() {
 //  PostMessage(ID_MSG_SHOW_DROPDOWN);
 }
 
-long CTimeSettingsDlg::OnMsgShowDropdown(WPARAM wp, LPARAM lp) {
+LRESULT CTimeSettingsDlg::OnMsgShowDropdown(WPARAM wp, LPARAM lp) {
   int id;
   switch(getCurrentTab()) {
   case TAB_TIMEDGAME  : id = IDC_COMBO_PLAYER     ; break;

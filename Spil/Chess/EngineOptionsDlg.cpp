@@ -108,7 +108,7 @@ BOOL CEngineOptionsDlg::PreTranslateMessage(MSG *pMsg) {
       if(ctrlId < 0) break;
       const EngineOptionControl *ctrl = m_controls.findControlById(ctrlId);
       if((ctrl == NULL) || (ctrl->getType() != OptionTypeSpin)) break;
-      const unsigned char asciiChar = toAscii(pMsg->wParam);
+      const unsigned char asciiChar = toAscii((UINT)pMsg->wParam);
       if(!isprint(asciiChar)) break;
       if(isdigit(asciiChar) || ((asciiChar == '-') && (ctrl->getMin() < 0))) break;
       return TRUE; // ie do NOT process this message
@@ -347,7 +347,7 @@ void CEngineOptionsDlg::OnDeltaPosSpin(UINT id, NMHDR *pNMHDR, LRESULT *pResult)
 
 BOOL CEngineOptionsDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
   TOOLTIPTEXT *pTTT = (TOOLTIPTEXT*)pNMHDR; // Get the tooltip structure.
-  UINT CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
+  UINT_PTR CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
 
   // Check once again that the idFrom holds handle itself.
   if(pTTT->uFlags & TTF_IDISHWND) {

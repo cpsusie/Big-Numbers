@@ -50,11 +50,11 @@ static bool moveMatchAnyFormat(const ExecutableMove &m, const String &s) {
 ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
   if(mf == -1) { // unknown format. try all
     String tmp = trim(s);
-    const int qMark  = tmp.find('?');
-    const int exMark = tmp.find('!');
+    const intptr_t qMark  = tmp.find('?');
+    const intptr_t exMark = tmp.find('!');
     MoveAnnotation annotation = NOANNOTATION;
     if(qMark > 0 || exMark > 0) {
-      const int annotationPos = (qMark < 0) ? exMark : (exMark < 0) ? qMark : min(qMark,exMark);
+      const intptr_t annotationPos = (qMark < 0) ? exMark : (exMark < 0) ? qMark : min(qMark,exMark);
       annotation = parseAnnotation(tmp.cstr() + annotationPos);
       tmp = left(tmp, annotationPos);
     }
@@ -79,11 +79,11 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
     case MOVE_FILEFORMAT   :
     case MOVE_DEBUGFORMAT  :
       { String tmp = trim(s);
-        const int qMark  = tmp.find('?');
-        const int exMark = tmp.find('!');
+        const intptr_t qMark  = tmp.find('?');
+        const intptr_t exMark = tmp.find('!');
         MoveAnnotation annotation = NOANNOTATION;
         if(qMark > 0 || exMark > 0) {
-          const int annotationPos = (qMark < 0) ? exMark : (exMark < 0) ? qMark : min(qMark,exMark);
+          const intptr_t annotationPos = (qMark < 0) ? exMark : (exMark < 0) ? qMark : min(qMark,exMark);
           annotation = parseAnnotation(tmp.cstr() + annotationPos);
           tmp = left(tmp, annotationPos);
         }
@@ -967,7 +967,7 @@ void updateMessageField(const TCHAR *format, ...) {
 
 void VerboseReceiver::vprintf(const TCHAR *format, va_list argptr) {
   String msg = vformat(format, argptr);
-  const int bsIndex = msg.find('\b');
+  const intptr_t bsIndex = msg.find('\b');
   if(bsIndex >= 0) {
     msg.cstr()[bsIndex] = '\0';
     const COORD oldPos = Console::getCursorPos(STD_ERROR_HANDLE);

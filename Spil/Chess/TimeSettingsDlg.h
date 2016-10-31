@@ -107,10 +107,10 @@ protected:
     afx_msg void OnSelectTimedGame();
     afx_msg void OnSelectLevels();
     afx_msg void OnSelectSpeedChess();
-	afx_msg void OnSelchangeTabClocktype(NMHDR* pNMHDR, LRESULT* pResult);
-	afx_msg void OnSetfocusComboplayer();
-	afx_msg void OnSetfocusSpeedcomboplayer();
-    afx_msg long OnMsgShowDropdown(      WPARAM wp, LPARAM lp);
+    afx_msg void OnSelchangeTabClocktype(NMHDR* pNMHDR, LRESULT* pResult);
+    afx_msg void OnSetfocusComboplayer();
+    afx_msg void OnSetfocusSpeedcomboplayer();
+    afx_msg LRESULT OnMsgShowDropdown(      WPARAM wp, LPARAM lp);
 	DECLARE_MESSAGE_MAP()
 };
 

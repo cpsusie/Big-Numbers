@@ -84,7 +84,7 @@ void CTraceDlg::reposition() {
   SendMessage(ID_MSG_REPOSITIONTRACEWINDOW);
 }
 
-long CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
@@ -110,7 +110,7 @@ long CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
+LRESULT  CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
@@ -118,7 +118,7 @@ long CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
+LRESULT  CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
   m_textQueue.clear();
   m_textBox->SetWindowText(_T(""));
   m_messageField->SetWindowText(_T(""));
@@ -126,7 +126,7 @@ long CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
+LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
   const CSize screenSize = getScreenSize();
   WINDOWPLACEMENT mainWinWpl, wpl;
   theApp.GetMainWnd()->GetWindowPlacement(&mainWinWpl);

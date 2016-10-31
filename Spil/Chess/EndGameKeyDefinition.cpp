@@ -79,7 +79,7 @@ String EndGameKeyDefinition::getCompressedFileName() const {
 
 
 
-
+#ifdef IS32BIT
 int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index) {
   const double _8 = 8.0;
   unsigned short cwSave, ctrlFlags;
@@ -107,6 +107,8 @@ int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index) {
   }
   return result >> 1;
 }
+
+#endif
 
 int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex index) {
   int l = 1, r = size;
@@ -458,12 +460,12 @@ String EndGameKeyDefinition::createInitKeyString(const EndGameKey &key) const {
 
 #ifdef TABLEBASE_BUILDER
 
-unsigned long EndGameKeyDefinition::keyToIndexNew(const EndGameKey &key) const { // should be overridden
+EndGamePosIndex EndGameKeyDefinition::keyToIndexNew(const EndGameKey &key) const { // should be overridden
   throwException(_T("keyToIndexNew:No conversion defined"));
   return 0;
 }
 
-EndGameKey EndGameKeyDefinition::indexToKeyNew(unsigned long index) const { // should be overridden
+EndGameKey EndGameKeyDefinition::indexToKeyNew(EndGamePosIndex index) const { // should be overridden
   throwException(_T("indexToKeyNew:No conversion defined"));
   return EndGameKey();
 }
@@ -1266,23 +1268,23 @@ UINT64 EndGameKeyDefinition::checkSymmetries() const {
 
 class UnusedSequence {
 private:
-  static String genKeyString(const EndGameKeyDefinition *keydef, unsigned long index);
+  static String genKeyString(const EndGameKeyDefinition *keydef, EndGamePosIndex index);
 public:
-  const unsigned long m_from, m_to;
-  unsigned long getLength() const {
+  const EndGamePosIndex m_from, m_to;
+  EndGamePosIndex getLength() const {
     return m_to - m_from + 1;
   }
-  UnusedSequence(unsigned long from, unsigned long to) : m_from(from), m_to(to) {
+  UnusedSequence(EndGamePosIndex from, EndGamePosIndex to) : m_from(from), m_to(to) {
   }
 
   String toString(const EndGameKeyDefinition *keydef) const;
 };
 
-String UnusedSequence::genKeyString(const EndGameKeyDefinition *keydef, unsigned long index) {
+String UnusedSequence::genKeyString(const EndGameKeyDefinition *keydef, EndGamePosIndex index) {
   try {
     return keydef->indexToKey(index).toString(*keydef);
   } catch(Exception e) {
-    return format(_T("Invalid index:%lu:%s"), index, e.what());
+    return format(_T("Invalid index:%s:%s"), format1000(index).cstr(), e.what());
   }
 }
 
@@ -1301,7 +1303,7 @@ String UnusedSequence::toString(const EndGameKeyDefinition *keydef) const {
 class UnusedSequenceComparator : public Comparator<UnusedSequence> {
 public:
   int compare(const UnusedSequence &e1, const UnusedSequence &e2) {
-    return e2.getLength() - e1.getLength();
+    return sign((intptr_t)e2.getLength() - (intptr_t)e1.getLength());
   }
   AbstractComparator *clone() const {
     return new UnusedSequenceComparator();
@@ -1314,17 +1316,17 @@ public:
   }
 };
 
-void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, UINT sequenceMinSize) const {
+void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize) const {
   UnusedPTQueue ptq;
-  long last = -1;
-  for(Iterator<UINT> it = s.getIterator(); it.hasNext();) {
-    const int i = it.next();
-    if(i - last > (int)sequenceMinSize) {
+  intptr_t last = -1;
+  for(Iterator<size_t> it = s.getIterator(); it.hasNext();) {
+    const intptr_t i = it.next();
+    if(i - last > sequenceMinSize) {
       ptq.add(UnusedSequence(last+1, i-1));
     }
     last = i;
   }
-  if(s.getCapacity()-1 - last > sequenceMinSize) {
+  if((intptr_t)s.getCapacity()-1 - last > sequenceMinSize) {
     ptq.add(UnusedSequence(last+1, s.getCapacity()-1));
   }
 
@@ -1333,7 +1335,7 @@ void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, UINT sequenceMin
     const UnusedSequence us = ptq.remove();
     _ftprintf(f, _T("%s\n"), us.toString(this).cstr());
   }
-  UINT totalUnused = s.getCapacity() - s.size();
+  UINT64 totalUnused = s.getCapacity() - s.size();
   _ftprintf(f, _T("Total unused indices:%s\n"), format1000(totalUnused).cstr());
   fclose(f);
 }

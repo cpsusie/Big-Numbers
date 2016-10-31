@@ -38,10 +38,10 @@ protected:
 
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
-    afx_msg void OnGotoComputerName();
+  afx_msg void OnGotoComputerName();
 	afx_msg void OnRadioCreateGame();
 	afx_msg void OnRadioConnectToGame();
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	virtual void OnCancel();
 	DECLARE_MESSAGE_MAP()
 };

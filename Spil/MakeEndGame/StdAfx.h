@@ -22,9 +22,9 @@
 #endif
 
 #ifdef _DEBUG
-#define CHESSLIB_CONFIG "TablebaseBuilder Debug/"
+#define CHESSLIB_CONFIG "TablebaseBuilderDebug/"
 #else
-#define CHESSLIB_CONFIG "TablebaseBuilder Release/"
+#define CHESSLIB_CONFIG "TablebaseBuilderRelease/"
 #endif
 
 #define CHESSLIB_VERSION CHESSLIB_ROOT CHESSLIB_PLATFORM CHESSLIB_CONFIG 

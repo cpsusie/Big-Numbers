@@ -58,7 +58,7 @@ CChessDlg::CChessDlg(const String &name, const GameKey &startPosition, const Gam
 {
   commonInit();
   try {
-    m_savedGame.setGameAfterPly(startPosition, history, history.size()-1);
+    m_savedGame.setGameAfterPly(startPosition, history, (int)history.size()-1);
     m_savedGame.setName(name);
     setGameName(name);
   } catch(Exception e) {
@@ -439,7 +439,7 @@ void CChessDlg::buildAndMarkLanguageMenu() {
   int index;
   HMENU languageMenu = findMenuContainingId(*GetMenu(), ID_LANGUAGE_DUMMY, index);
   removeAllMenuItems(languageMenu); // remove dummy item
-  for(size_t i = 0; i < spla.size(); i++) {
+  for(int i = 0; i < (int)spla.size(); i++) {
     insertMenuItem(languageMenu,i, spla[i].getLanguageName(),  ID_SETTINGS_LANGUAGE(i));
   }
   checkMenuItem(this, ID_SETTINGS_LANGUAGE(getOptions().getSelectedLanguageIndex()), true);
@@ -863,14 +863,14 @@ void CChessDlg::postCommand(int command) {
   PostMessage(WM_COMMAND, MAKELONG(command, 0), 0);
 }
 
-long CChessDlg::OnMsgEngineChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgEngineChanged(WPARAM wp, LPARAM lp) {
   if(getDialogMode() == AUTOPLAYMODE) {
     updateTitle();
   }
   return 0;
 }
 
-long CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
 #ifdef _DEBUGDLG
   verbose(_T("OnMsgMoveFinderStateChanged(%d,%d)\n"), wp, lp);
 #endif
@@ -933,7 +933,7 @@ long CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
 #ifdef _DEBUGDLG
   verbose(_T("OnMsgRemoteStateChanged(%d,%d)\n"), wp, lp);
 #endif
@@ -946,7 +946,7 @@ long CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CChessDlg::OnMsgGraphicsPlayerInTurnChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgGraphicsPlayerInTurnChanged(WPARAM wp, LPARAM lp) {
 #ifdef _DEBUGDLG
   verbose(_T("OnMsgGraphicsPlayerInTurnChanged(%d,%d)\n"), wp, lp);
 #endif
@@ -958,12 +958,12 @@ long CChessDlg::OnMsgGraphicsPlayerInTurnChanged(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
-long CChessDlg::OnMsgComputerPlayerChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgComputerPlayerChanged(WPARAM wp, LPARAM lp) {
   setVisibleClocks();
   return 0;
 }
 
-long CChessDlg::OnMsgTraceWindowChanged(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgTraceWindowChanged(WPARAM wp, LPARAM lp) {
 #ifdef _DEBUGDLG
   verbose(_T("OnMsgTraceWindowChanged(%d,%d)\n"), wp, lp);
 #endif
@@ -1280,9 +1280,9 @@ void CChessDlg::OnFileExit() {
   CDialog::OnOK(); //PostMessage(WM_QUIT);
 }
 
-long CChessDlg::OnMsgShowSelectedHistoryMove(WPARAM wp, LPARAM lp) {
+LRESULT CChessDlg::OnMsgShowSelectedHistoryMove(WPARAM wp, LPARAM lp) {
   try {
-    getCurrentGame().setGameAfterPly(m_savedGame, lp);
+    getCurrentGame().setGameAfterPly(m_savedGame, (int)lp);
     m_graphics->paintGamePosition(BOARDDC);
   } catch(Exception e) {
     errorMessage(e);
@@ -1438,7 +1438,7 @@ void CChessDlg::selectAndExecutePromotion(const CPoint &point, MoveAnnotation an
   }
   CMenu menu;
   menu.CreateMenu();
-  menu.AppendMenu(MF_POPUP, (int)((HMENU)subMenu), _T("Promote"));
+  menu.AppendMenu(MF_POPUP, (UINT_PTR)((HMENU)subMenu), _T("Promote"));
   CPoint scrPoint = point;
   ClientToScreen(&scrPoint);
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, scrPoint.x,scrPoint.y, this);
@@ -1470,7 +1470,7 @@ void CChessDlg::OnMouseMovePlayMode(UINT nFlags, CPoint point) {
 
 // --------------------------------------------------------------------------------------
 
-void CChessDlg::OnTimer(UINT nIDEvent) {
+void CChessDlg::OnTimer(UINT_PTR nIDEvent) {
   CDialog::OnTimer(nIDEvent);
   switch(nIDEvent) {
   case SHOWWATCH_TIMER:
@@ -2080,7 +2080,7 @@ void CChessDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
     if(pm.m_hMenu) {
       CBitmap &cbm = colorBitmap[p];
       cbm.LoadBitmap(colorMarkResourceId[p]);
-      menu.AppendMenu(MF_POPUP, (int)((HMENU)pm), &cbm);
+      menu.AppendMenu(MF_POPUP, (UINT_PTR)((HMENU)pm), &cbm);
     }
   }
   if(!game.isPositionEmpty(m_selectedPosition)) {
@@ -2089,7 +2089,7 @@ void CChessDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
   }
   CMenu topMenu;
   topMenu.CreateMenu();
-  topMenu.AppendMenu(MF_POPUP, (int)((HMENU)menu), _T("Edit"));
+  topMenu.AppendMenu(MF_POPUP, (UINT_PTR)((HMENU)menu), _T("Edit"));
   topMenu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
 }
 
@@ -2651,7 +2651,7 @@ void CChessDlg::addEnginesToMenu(HMENU menu, int startId) {
   }
 
   const EngineRegister &engineList = Options::getEngineRegister();
-  for(size_t i = 0; i < engineList.size(); i++) {
+  for(UINT i = 0; i < engineList.size(); i++) {
     const EngineDescription &desc = engineList[i];
     insertMenuItem(menu, i+separatorIndex+1, desc.getName(),  startId + i);
   }
@@ -2923,7 +2923,7 @@ void CChessDlg::enableTestMenu(bool enabled) {
         errorMessage(_T("LoadMenu failed:%s"), getLastErrorText().cstr());
         return;
       }
-      if(!GetMenu()->AppendMenu(MF_POPUP | MF_ENABLED, (UINT)GetSubMenu(testmenu,0), getMenuItemText(testmenu,0).cstr())) {
+      if(!GetMenu()->AppendMenu(MF_POPUP | MF_ENABLED, (UINT_PTR)GetSubMenu(testmenu,0), getMenuItemText(testmenu,0).cstr())) {
         errorMessage(_T("AppendMenu failed:%s"), getLastErrorText().cstr());
         return;
       }

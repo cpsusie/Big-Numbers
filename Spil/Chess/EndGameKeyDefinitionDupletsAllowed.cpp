@@ -144,20 +144,22 @@ int EndGameKeyDefinitionDupletsAllowed::getPieceIndex(PieceKey pk, int &state) c
 EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &gameKey) const {
   EndGameKey result;
   result.setPlayerInTurn(gameKey.getPlayerInTurn());
-
+#ifdef IS32BIT
 #define ASM_OPTIMIZED
+#endif
 
 #ifndef ASM_OPTIMIZED
 
   PieceKey pk;
-  for(int pos = 0, pieceCount = 0, state = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
+  int pieceCount = 0;
+  for(int pos = 0, state = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
     if((pk = gameKey.m_pieceKey[pos]) == EMPTYPIECEKEY) {
       continue;
     }
     result.setPosition(getPieceIndex(pk, state), pos);
     pieceCount++;
   }
-  assert(pieceCount == m_totalPieceCount);
+  assert(pieceCount == getPieceCount());
 
 #else
 

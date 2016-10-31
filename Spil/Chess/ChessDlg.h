@@ -277,7 +277,7 @@ protected:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
 	afx_msg void OnContextMenu(CWnd *pWnd , CPoint point);
-	afx_msg void OnTimer(UINT nIDEvent);
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
   afx_msg void OnFileNewGameYouPlayWhite();
   afx_msg void OnFileNewGameYouPlayBlack();
 	afx_msg void OnFileLoadGame();
@@ -449,14 +449,14 @@ protected:
 	afx_msg void OnTestPlotWinsPValues();
 	afx_msg void OnTestShowEngineConsole();
 	afx_msg void OnTestShowFEN();
-  afx_msg long OnMsgMoveFinderStateChanged(      WPARAM wp, LPARAM lp);
-	afx_msg long OnMsgEngineChanged(               WPARAM wp, LPARAM lp);
-  afx_msg long OnMsgExternEngineChanged(         WPARAM wp, LPARAM lp);
-  afx_msg long OnMsgGraphicsPlayerInTurnChanged( WPARAM wp, LPARAM lp);
-  afx_msg long OnMsgComputerPlayerChanged(       WPARAM wp, LPARAM lp);
-  afx_msg long OnMsgTraceWindowChanged(          WPARAM wp, LPARAM lp);
-	afx_msg long OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
-	afx_msg long OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgMoveFinderStateChanged(      WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnMsgEngineChanged(               WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgExternEngineChanged(         WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgGraphicsPlayerInTurnChanged( WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgComputerPlayerChanged(       WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgTraceWindowChanged(          WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
+	afx_msg LRESULT OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
 };
 
