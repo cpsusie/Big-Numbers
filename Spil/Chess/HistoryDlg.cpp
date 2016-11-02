@@ -27,29 +27,28 @@ void CHistoryDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Text(pDX, IDC_EDIT_HISTORY, m_historyStr);
 }
 
-
 BEGIN_MESSAGE_MAP(CHistoryDlg, CDialog)
-	ON_COMMAND(ID_FILE_ANALYZEPOSITION          , OnFileAnalyzePosition               )
+  ON_COMMAND(ID_FILE_ANALYZEPOSITION          , OnFileAnalyzePosition               )
   ON_COMMAND(ID_FILE_PRINT                    , OnFilePrint                         )
   ON_COMMAND(ID_EDIT_SELECT_ALL               , OnEditSelectall                     )
   ON_COMMAND(ID_EDIT_COPY                     , OnEditCopy                          )
   ON_COMMAND(ID_OPTIONS_FORMAT_SHORTNOTATION  , OnOptionsFormatShortNotation        )
   ON_COMMAND(ID_OPTIONS_FORMAT_LONGNOTATION   , OnOptionsFormatLongNotation         )
   ON_WM_HSCROLL(  )
-	ON_COMMAND(ID_GOOD_MOVE                     , OnHistoryContextMenuGoodMove        )
-	ON_COMMAND(ID_EXCELLENT_MOVE                , OnHistoryContextMenuExcellentMove   )
-	ON_COMMAND(ID_BAD_MOVE                      , OnHistoryContextMenuBadMove         )
-	ON_COMMAND(ID_VERYBAD_MOVE                  , OnHistoryContextMenuVeryBadMove     )
-	ON_COMMAND(ID_INTERESTING_MOVE              , OnHistoryContextMenuInterestingMove )
-	ON_COMMAND(ID_DOUBIOUS_MOVE                 , OnHistoryContextMenuDoubiousMove    )
-	ON_COMMAND(ID_REMOVE_ANNOTATION             , OnHistoryContextMenuRemoveAnnotation)
+  ON_COMMAND(ID_GOOD_MOVE                     , OnHistoryContextMenuGoodMove        )
+  ON_COMMAND(ID_EXCELLENT_MOVE                , OnHistoryContextMenuExcellentMove   )
+  ON_COMMAND(ID_BAD_MOVE                      , OnHistoryContextMenuBadMove         )
+  ON_COMMAND(ID_VERYBAD_MOVE                  , OnHistoryContextMenuVeryBadMove     )
+  ON_COMMAND(ID_INTERESTING_MOVE              , OnHistoryContextMenuInterestingMove )
+  ON_COMMAND(ID_DOUBIOUS_MOVE                 , OnHistoryContextMenuDoubiousMove    )
+  ON_COMMAND(ID_REMOVE_ANNOTATION             , OnHistoryContextMenuRemoveAnnotation)
   ON_COMMAND(ID_FONTSIZE_75                   , OnFontsize75                        )
   ON_COMMAND(ID_FONTSIZE_100                  , OnFontsize100                       )
   ON_COMMAND(ID_FONTSIZE_125                  , OnFontsize125                       )
   ON_COMMAND(ID_FONTSIZE_150                  , OnFontsize150                       )
   ON_COMMAND(ID_FONTSIZE_175                  , OnFontsize175                       )
   ON_COMMAND(ID_FONTSIZE_200                  , OnFontsize200                       )
-	ON_WM_SIZE()
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BOOL CHistoryDlg::OnInitDialog() {
