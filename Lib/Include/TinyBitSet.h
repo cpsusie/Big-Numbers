@@ -30,10 +30,18 @@ public:
   inline void add(UINT i) {
     m_bits |= ((T)1<<i);
   }
+  inline TinyBitSet &operator+=(UINT i) {
+    add(i);
+    return *this;
+  }
   inline void remove(UINT i) {
     m_bits &= ~((T)1<<i);
   }
-  inline void add(   UINT a, UINT b) {
+  inline TinyBitSet &operator-=(UINT pos) {
+    remove(pos);
+    return *this;
+  }
+  inline void add(UINT a, UINT b) {
     m_bits |= ~mask(a) & mask(b + 1);
   }
   inline void remove(UINT a, UINT b) {
@@ -79,7 +87,13 @@ public:
   inline TinyBitSet operator|(TinyBitSet s) const { // union
     return TinyBitSet(m_bits | s.m_bits);
   }
+  inline TinyBitSet operator+(TinyBitSet s) const { // union
+    return TinyBitSet(m_bits | s.m_bits);
+  }
   inline TinyBitSet operator&(TinyBitSet s) const { // intersection
+    return TinyBitSet(m_bits & s.m_bits);
+  }
+  inline TinyBitSet operator*(TinyBitSet s) const { // intersection
     return TinyBitSet(m_bits & s.m_bits);
   }
   inline TinyBitSet operator-(TinyBitSet s) const { // set difference
@@ -92,7 +106,15 @@ public:
     m_bits |= s.m_bits;
     return *this;
   }
+  inline TinyBitSet &operator+=(TinyBitSet s) {
+    m_bits |= s.m_bits;
+    return *this;
+  }
   inline TinyBitSet &operator&=(TinyBitSet s) {
+    m_bits &= s.m_bits;
+    return *this;
+  }
+  inline TinyBitSet &operator*=(TinyBitSet s) {
     m_bits &= s.m_bits;
     return *this;
   }
@@ -117,11 +139,11 @@ public:
     return (*this != s) && (*this <= s);
   }
 
-  unsigned long hashCode() const {
-    if(sizeof(T) < sizeof(unsigned long)) {
+  ULONG hashCode() const {
+    if(sizeof(T) <= sizeof(ULONG)) {
       return m_bits;
     } else {
-      return (((unsigned long*)&m_bits)[0]) ^ (((unsigned long*)&m_bits)[1])
+      return uint64Hash(m_bits);
     }
   }
 
@@ -236,14 +258,14 @@ public:
   }
 };
 
-class BitSet8 : public TinyBitSet<unsigned char> {
+class BitSet8 : public TinyBitSet<BYTE> {
 };
 
-class BitSet16 : public TinyBitSet<unsigned short> {
+class BitSet16 : public TinyBitSet<USHORT> {
 };
 
-class BitSet32 : public TinyBitSet<unsigned long> {
+class BitSet32 : public TinyBitSet<ULONG> {
 };
 
-class BitSet64 : public TinyBitSet<unsigned __int64> {
+class BitSet64 : public TinyBitSet<UINT64> {
 };
