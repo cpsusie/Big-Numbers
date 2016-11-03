@@ -135,6 +135,10 @@ EndGameKeyDefinition::EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey 
   init(pk2, pk3, pk4);
 }
 
+EndGameKeyDefinition::EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5) : m_totalPieceCount(6) {
+  init(pk2, pk3, pk4, pk5);
+}
+
 void EndGameKeyDefinition::init(PieceKey pk2, ...) {
   assert((m_totalPieceCount >= 3) && (m_totalPieceCount <= ARRAYSIZE(m_pieceKey)));
 
@@ -311,6 +315,7 @@ EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTran
     return key;
   }
   switch(m_totalPieceCount) {
+  case 6 : key.setPosition5(GameKey::transform(key.getPosition5(), st)); // continue case
   case 5 : key.setPosition4(GameKey::transform(key.getPosition4(), st)); // continue case
   case 4 : key.setPosition3(GameKey::transform(key.getPosition3(), st)); // continue case
   case 3 : key.setPosition2(GameKey::transform(key.getPosition2(), st));
@@ -629,9 +634,30 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men(const En
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM5MEN)
 }
 
+#define DECIDESYM8TRANSFORM6MEN(f1Offdiag, f2Offdiag, trTrue, trFalse)                                        \
+{ if(f1Offdiag(key.getWhiteKingPosition())) {                                                                 \
+    return f2Offdiag(key.getWhiteKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getBlackKingPosition())) {                                                          \
+    return f2Offdiag(key.getBlackKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition2())) {                                                                  \
+    return f2Offdiag(key.getPosition2())          ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition3())) {                                                                  \
+    return f2Offdiag(key.getPosition3())          ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition4())) {                                                                  \
+    return f2Offdiag(key.getPosition4())          ? trTrue : trFalse;                                         \
+  } else {                                                                                                    \
+    return f2Offdiag(key.getPosition5())          ? trTrue : trFalse;                                         \
+  }                                                                                                           \
+}
+
+// See comment on EndGameKeyDefinitionBase3Men, -4- and -5Men
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men(const EndGameKey &key) { // static
+  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN)
+}
+
 #define DECIDESYM8TRANSFORM2EQUAL_OPPOSITESIDE(trTrue, trFalse, i, j)                                         \
-{ const int pi = offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue)];                         \
-  const int pj = offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trTrue)];                         \
+{ const int pi = s_offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue)];                       \
+  const int pj = s_offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trTrue)];                       \
   if(pi >= 28) {                                                                                              \
     return (pi - 28 > pj) ? trTrue : trFalse;                                                                 \
   } else {                                                                                                    \
@@ -692,16 +718,16 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men2Equal(co
 #ifdef _DEBUG
 
 static SymmetricTransformation decideSym8Transform3EqualFlipi(EndGameKey key, SymmetricTransformation trTrue, SymmetricTransformation trFalse, int i, int j, int k) {
-  const int pi = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(i), trTrue )];
-  const int pj = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(j), trFalse)];
-  const int pk = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(k), trFalse)];
+  const int pi = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(i), trTrue )];
+  const int pj = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(j), trFalse)];
+  const int pk = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(k), trFalse)];
   return (pi > max(pj, pk)) ? trTrue : trFalse;
 }
 
 static SymmetricTransformation decideSym8Transform3EqualFlipij(EndGameKey key, SymmetricTransformation trTrue, SymmetricTransformation trFalse, int i, int j, int k) {
-  const int pi = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(i), trTrue )];
-  const int pj = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(j), trTrue )];
-  const int pk = EndGameKeyDefinition::offDiagPosToIndex[GameKey::transform(key.getPosition(k), trFalse)];
+  const int pi = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(i), trTrue )];
+  const int pj = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(j), trTrue )];
+  const int pk = EndGameKeyDefinition::s_offDiagPosToIndex[GameKey::transform(key.getPosition(k), trFalse)];
   return (max(pi, pj) >= pk) ? trTrue : trFalse;
 }
 
@@ -713,18 +739,18 @@ static SymmetricTransformation decideSym8Transform3EqualFlipij(EndGameKey key, S
 // Assume key.position(i) needs flip below diagonal.
 // return flip(pi) > max(pj,pk) ? trTrue : trFalse
 #define DECIDESYM8TRANSFORM3EQUAL_FLIPi(trTrue, trFalse, i, j, k)                                             \
-{ const int pi = offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue )];                        \
-  const int pj = offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trFalse)];                        \
-  const int pk = offDiagPosToIndex[GameKey::transform(key.getPosition##k(), trFalse)];                        \
+{ const int pi = s_offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue )];                      \
+  const int pj = s_offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trFalse)];                      \
+  const int pk = s_offDiagPosToIndex[GameKey::transform(key.getPosition##k(), trFalse)];                      \
   return (pi > max(pj, pk)) ? trTrue : trFalse;                                                               \
 }
 
 // Assume key.position(i) and position(j) need flip below diagonal.
 // return max(flip(pi),flip(pj)) >= pk ? trTrue : trFalse
 #define DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, i, j, k)                                            \
-{ const int pi = offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue )];                        \
-  const int pj = offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trTrue )];                        \
-  const int pk = offDiagPosToIndex[GameKey::transform(key.getPosition##k(), trFalse)];                        \
+{ const int pi = s_offDiagPosToIndex[GameKey::transform(key.getPosition##i(), trTrue )];                      \
+  const int pj = s_offDiagPosToIndex[GameKey::transform(key.getPosition##j(), trTrue )];                      \
+  const int pk = s_offDiagPosToIndex[GameKey::transform(key.getPosition##k(), trFalse)];                      \
   return (max(pi, pj) >= pk) ? trTrue : trFalse;                                                              \
 }
 
@@ -770,8 +796,8 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const End
 { switch(KEYBOOL2MASK(key, IS_QUEENSIDE, i, j)) {                                                             \
   case 0: return TRANSFORM_MIRRORCOL;                                                                         \
   case 1:                                                                                                     \
-    { const UINT pi = pawnPosToIndex[key.getPosition##i()];                                                   \
-      const UINT pj = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                     \
+    { const UINT pi = s_pawnPosToIndex[key.getPosition##i()];                                                 \
+      const UINT pj = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                   \
       if(pi != pj) {                                                                                          \
         return (pi < pj) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
       } else {                                                                                                \
@@ -779,8 +805,8 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const End
       }                                                                                                       \
     }                                                                                                         \
   case 2:                                                                                                     \
-    { const UINT pi = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                     \
-      const UINT pj = pawnPosToIndex[key.getPosition##j()];                                                   \
+    { const UINT pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                   \
+      const UINT pj = s_pawnPosToIndex[key.getPosition##j()];                                                 \
       if(pi != pj) {                                                                                          \
         return (pj < pi) ? 0 : TRANSFORM_MIRRORCOL;                                                           \
       } else {                                                                                                \
@@ -804,16 +830,16 @@ SymmetricTransformation EndGameKeyDefinition::get5Men2EqualPawnsSymTransformatio
 #ifdef _DEBUG
 
 static SymmetricTransformation decidePawnTransform3EqualPawnsFlipi(EndGameKey key, int i, int j, int k) {
-  const int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
-  const int pj = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(j)];
-  const int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
+  const int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
+  const int pj = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(j)];
+  const int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
   return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : 0;
 }
 
 static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey key, int i, int j, int k) {
-  const int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
-  const int pj = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
-  const int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
+  const int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
+  const int pj = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
+  const int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
   return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : 0;
 }
 
@@ -824,17 +850,17 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 
 /* Assume p##i is on kingside. return flip(pi) > max(pj,pk) ? MIRRORCOL : 0 */
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi(i, j, k)                                                      \
-{ const int pi = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                          \
-  const int pj = pawnPosToIndex[key.getPosition##j()];                                                        \
-  const int pk = pawnPosToIndex[key.getPosition##k()];                                                        \
+{ const int pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                          \
+  const int pj = s_pawnPosToIndex[key.getPosition##j()];                                                        \
+  const int pk = s_pawnPosToIndex[key.getPosition##k()];                                                        \
   return (pi > max(pj, pk)) ? TRANSFORM_MIRRORCOL : 0;                                                        \
 }
 
 /* Assume p##i and p##j is on kingside. return (max(flip(pi), flip(pj)) >= pk) ? MIRRORCOL : 0 */
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPij(i, j, k)                                                     \
-{ const int pi = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                          \
-  const int pj = pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                          \
-  const int pk = pawnPosToIndex[key.getPosition##k()];                                                        \
+{ const int pi = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                          \
+  const int pj = s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                          \
+  const int pk = s_pawnPosToIndex[key.getPosition##k()];                                                        \
   return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : 0;                                                       \
 }
 
@@ -930,12 +956,12 @@ UINT64 EndGameKeyDefinition::selfCheckSummary() const {
   const double usedTime     = getProcessTime() - m_checkStartTime;
   const UINT64 distinctKeys = m_checkKeyCount  - m_duplicateCount;
 
-  verbose(_T("Keys checked   : %11s.\n"        ), format1000(m_checkKeyCount).cstr());
-  verbose(_T("Distinct keys  : %11s.\n"        ), format1000(distinctKeys).cstr());
-  verbose(_T("Minimum index  : %11s. Key:%s.\n"), format1000(m_minIndex).cstr(), indexToKey(m_minIndex).toString(*this).cstr());
-  verbose(_T("Maximum index  : %11s. Key:%s.\n"), format1000(m_maxIndex).cstr(), indexToKey(m_maxIndex).toString(*this).cstr());
-  verbose(_T("Indexsize()    : %11s.\n"        ), format1000(getIndexSize()).cstr());
-  verbose(_T("Duplicate keys : %11s.\n"        ), format1000(m_duplicateCount).cstr());
+  verbose(_T("Keys checked   : %14s.\n"        ), format1000(m_checkKeyCount).cstr());
+  verbose(_T("Distinct keys  : %14s.\n"        ), format1000(distinctKeys).cstr());
+  verbose(_T("Minimum index  : %14s. Key:%s.\n"), format1000(m_minIndex).cstr(), indexToKey(m_minIndex).toString(*this).cstr());
+  verbose(_T("Maximum index  : %14s. Key:%s.\n"), format1000(m_maxIndex).cstr(), indexToKey(m_maxIndex).toString(*this).cstr());
+  verbose(_T("Indexsize()    : %14s.\n"        ), format1000(getIndexSize()).cstr());
+  verbose(_T("Duplicate keys : %14s.\n"        ), format1000(m_duplicateCount).cstr());
   verbose(_T("Utilizationrate: %5.2lf%%, (%5.2lf%%)\n"), PERCENT(distinctKeys,getIndexSize()), PERCENT(distinctKeys,(m_maxIndex-m_minIndex+1)));
   verbose(_T("Used time      : %6.3lf sec. %.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_checkKeyCount*1000);
 
@@ -1010,14 +1036,14 @@ void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
     pause();
   } else if(m_usedIndex->contains((size_t)index)) {
     m_duplicateCount++;
-    verbose(_T("Warning:index %s already used:Key:[%s]\n"), format1000(index).cstr(), key.toString(*this).cstr());
+    verbose(_T("Warning:Index %s already used:Key:[%s]\n"), format1000(index).cstr(), key.toString(*this).cstr());
     pause();
   } else {
     m_usedIndex->add((size_t)index);
   }
   const EndGameKey k1 = indexToKey(index);
   if(!match(k1,key)) {
-    verbose(_T("%s %11s:%s -> %s -> %s\n")
+    verbose(_T("%s %14s:%s -> %s -> %s\n")
            ,toString().cstr()
            ,format1000(m_checkKeyCount).cstr()
            ,key.toString(*this).cstr()
@@ -1028,8 +1054,8 @@ void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
 
     pause();
   }
-  if(++m_checkKeyCount % 2000000 == 0) {
-    verbose(_T("%11s. %s -> %11s -> %s [min,max]:[%s..%s]%20c")
+  if(++m_checkKeyCount % 4000000 == 0) {
+    verbose(_T("%14s. %s -> %14s -> %s [min,max]:[%s..%s]%20c")
           ,format1000(m_checkKeyCount).cstr()
           ,key.toString(*this).cstr()
           ,format1000(index).cstr()
@@ -1047,8 +1073,8 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
   } else {
     switch(pIndex) {
     case 0:
-      { for(int i = 0; i < ARRAYSIZE(whiteKingIndexToPos); i++) {
-          const int pos = whiteKingIndexToPos[i];
+      { for(int i = 0; i < ARRAYSIZE(s_whiteKingIndexToPos); i++) {
+          const int pos = s_whiteKingIndexToPos[i];
           key.setPosition0(pos);
           sym8PositionScanner(key, 1, IS_ONMAINDIAG1(pos), nextScanner);
           key.clearField(pos);
@@ -1058,8 +1084,8 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
     case 1:
       { const int wkPos = key.getWhiteKingPosition();
         if(allPreviousOnDiag) {
-          for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
-            const int pos = subDiagIndexToPos[i];
+          for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
+            const int pos = s_subDiagIndexToPos[i];
             if(KINGSADJACENT(wkPos, pos)) {
               continue;
             }
@@ -1090,8 +1116,8 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
     default:
       { const int pIndexAdd1 = pIndex+1;
         if(allPreviousOnDiag) {
-          for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
-            const int pos = subDiagIndexToPos[i];
+          for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
+            const int pos = s_subDiagIndexToPos[i];
             if(key.isOccupied(pos)) {
               continue;
             }
@@ -1256,8 +1282,8 @@ void AllPositionScanner::blackKingPositions() {
 }
 
 void AllPositionScanner::pawnPositions() {
-  for(int i = 0; i < ARRAYSIZE(EndGameKeyDefinition::pawnIndexToPos); i++) {
-    setPosAndScanNext(EndGameKeyDefinition::pawnIndexToPos[i]);
+  for(int i = 0; i < ARRAYSIZE(EndGameKeyDefinition::s_pawnIndexToPos); i++) {
+    setPosAndScanNext(EndGameKeyDefinition::s_pawnIndexToPos[i]);
   }
 }
 

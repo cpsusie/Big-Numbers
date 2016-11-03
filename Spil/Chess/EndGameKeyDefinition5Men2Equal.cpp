@@ -63,8 +63,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2_ONDIAG_NOFLIP(key)                                                                                            \
-{ UINT pi3 = offDiagPosToIndex[pos3];                                                                                             \
-  UINT pi4 = offDiagPosToIndex[pos4];                                                                                             \
+{ UINT pi3 = s_offDiagPosToIndex[pos3];                                                                                           \
+  UINT pi4 = s_offDiagPosToIndex[pos4];                                                                                           \
   SORT2(pi3,pi4);                                                                                                                 \
   return ADDPIT(key, ADD2EQUAL(KKP2_ONDIAG_3MEN(key), KKP2_ONDIAG_POSCOUNT, pi3, pi4))                                            \
        + START_RANGE_KKP2_ONDIAG_P34_BELOWDIAG                                                                                    \
@@ -72,8 +72,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2_ONDIAG_FLIPi(key,i,j)                                                                                         \
-{ UINT pi = offDiagPosToIndex[pos##i] - 28;                                                                                       \
-  UINT pj = offDiagPosToIndex[pos##j];                                                                                            \
+{ UINT pi = s_offDiagPosToIndex[pos##i] - 28;                                                                                     \
+  UINT pj = s_offDiagPosToIndex[pos##j];                                                                                          \
   SORT2(pi,pj);                                                                                                                   \
   return ADDPIT(key, ADD2EQUALALLOWEQUALLH(KKP2_ONDIAG_3MEN(key), KKP2_ONDIAG_POSCOUNT, pi, pj))                                  \
        + START_RANGE_KKP2_ONDIAG_P3_BELOWDIAG                                                                                     \
@@ -195,8 +195,8 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
     break;
   case 3:
     if(allPreviousOnDiag) {
-      for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) {
-        const int pos3 = subDiagIndexToPos[i];
+      for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
+        const int pos3 = s_subDiagIndexToPos[i];
         if(key.isOccupied(pos3)) {
           continue;
         }
@@ -218,8 +218,8 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
   case 4:
     { const int pos3 = key.getPosition3();
       if(allPreviousOnDiag) {
-        for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) {
-          const int pos4 = subDiagIndexToPos[i];
+        for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
+          const int pos4 = s_subDiagIndexToPos[i];
           if(key.isOccupied(pos4)) {
             continue;
           }
@@ -240,9 +240,9 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
           key.clearField(pos4);
         }
       } else { // kings, p2 on maindiag and p3 off maindiag
-        const int pi3 = offDiagPosToIndex[pos3];
-        for(int pi4 = pi3+1; pi4 < ARRAYSIZE(offDiagIndexToPos); pi4++) {
-          const int pos4 = offDiagIndexToPos[pi4];
+        const int pi3 = s_offDiagPosToIndex[pos3];
+        for(int pi4 = pi3+1; pi4 < ARRAYSIZE(s_offDiagIndexToPos); pi4++) {
+          const int pos4 = s_offDiagIndexToPos[pi4];
           if(key.isOccupied(pos4)) {
             continue;
           }

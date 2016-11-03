@@ -46,8 +46,8 @@ const Piece *Game::findAttackingPiece(Player player, int pos, FieldSet *result) 
         }
         if(piece->m_attackAttribute & ATTACKS_LONGDISTANCE) { // Checks from Queen, Rook and Bishop can be defended
                                                               // by blocking one of the squares between king and the attacking piece
-          const FieldSet fieldsBetween = getFieldsBetween(pos, piece->m_position);
-          for(Iterator<int> it = fieldsBetween.getIterator(); it.hasNext();) {
+          FieldSet fieldsBetween = getFieldsBetween(pos, piece->m_position);
+          for(Iterator<UINT> it = fieldsBetween.getIterator(); it.hasNext();) {
             const int pos1 = it.next();
             for(const Piece *defender = m_playerState[GETENEMY(player)].m_first; defender; defender = defender->m_next) {
               if(!defender->m_onBoard || (defender->getType() == King) || !pieceCanGotoPosition(defender, pos1)) {

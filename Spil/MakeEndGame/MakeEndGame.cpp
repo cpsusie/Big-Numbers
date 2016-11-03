@@ -260,7 +260,7 @@ static const EndGameTablebaseList selectRegisteredTablebases(int pieceCount) {
 static String makeTabebaseNameList() {
   const TCHAR *leftMargin = _T("          ");
   String result;
-  for(int pieceCount = 3; pieceCount <= 5; pieceCount++) {
+  for(int pieceCount = 3; pieceCount <= MAX_ENDGAME_PIECECOUNT; pieceCount++) {
     const EndGameTablebaseList tablebaseList = selectRegisteredTablebases(pieceCount);
     result += format(_T("    %d men:"), pieceCount);
     for(size_t i = 0; i < tablebaseList.size(); i++) {
@@ -281,7 +281,7 @@ static String makeTabebaseNameList() {
 
 static void usage(char *arg = NULL) {
   if(arg) {
-    printf("Invalid argumet:%s\n", arg);
+    printf("Invalid argument:%s\n", arg);
   }
   _tprintf(_T("Usage: MakeEndGame [options] dbnames...\n"
             " Options: -b     : Build tablebase. If not specified, the tablebase will by build and saved.\n"
@@ -549,7 +549,7 @@ int main(int argc, char **argv) {
           break;
 
         case 's':
-          if((sscanf(cp+1, "%d", &menCount) != 1) || (menCount < 3) || (menCount > 5)) {
+          if((sscanf(cp+1, "%d", &menCount) != 1) || (menCount < 3) || (menCount > MAX_ENDGAME_PIECECOUNT)) {
             usage();
           }
           break;

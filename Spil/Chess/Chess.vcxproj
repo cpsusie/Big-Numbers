@@ -923,6 +923,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EndGameKQRKBN.cpp" />
     <ClCompile Include="EndGameKey.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -1153,6 +1154,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition6Men.cpp" />
     <ClCompile Include="EndGameKeyDefinitionDupletsAllowed.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -3169,6 +3171,7 @@
     <ClInclude Include="EndGame4MenWithPawns.h" />
     <ClInclude Include="EndGame5MenNoPawns.h" />
     <ClInclude Include="EndGame5MenWithPawns.h" />
+    <ClInclude Include="EndGame6MenNoPawns.h" />
     <ClInclude Include="EndGameKey.h" />
     <ClInclude Include="EndGameKeyCodec.h" />
     <ClInclude Include="EndGameKeyDefinition.h" />

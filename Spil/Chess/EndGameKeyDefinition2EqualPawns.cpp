@@ -48,8 +48,8 @@ void set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r]);
-  key.setPosition(lpIndex, EndGameKeyDefinition::pawnIndexToPos[(addr) % r]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);
   addr /= r;
 }
 
@@ -57,9 +57,9 @@ void set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   maxAddr /= 2;
   int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r]);
   r++;
-  const int lpPos = EndGameKeyDefinition::pawnIndexToPos[(addr) % r];
+  const int lpPos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];
   key.setPosition(lpIndex, MIRRORCOLUMN(lpPos));
   addr /= r;
 }
@@ -69,8 +69,8 @@ void set2EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
-  key.setPosition(hpIndex, MIRRORCOLUMN(EndGameKeyDefinition::pawnIndexToPos[r]));
-  key.setPosition(lpIndex, EndGameKeyDefinition::pawnIndexToPos[(addr) % r]);
+  key.setPosition(hpIndex, MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r]));
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);
   addr /= r;
 }
 
@@ -79,9 +79,9 @@ void set2EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   int r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
-  int pos = EndGameKeyDefinition::pawnIndexToPos[r];
+  int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];
   key.setPosition(hpIndex, MIRRORCOLUMN(pos));
-  pos = EndGameKeyDefinition::pawnIndexToPos[(addr) % r];
+  pos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];
   key.setPosition(lpIndex, MIRRORCOLUMN(pos));
   addr /= r;
 }

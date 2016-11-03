@@ -925,7 +925,7 @@ void ChessGraphics::markMatingPositions(HDC dc) {
   int mouse = unmarkMouse();
   unmarkMatingPositions();
   m_matingPositions = m_game->getMatingPositions();
-  for(Iterator<int> it = m_matingPositions.getIterator(); it.hasNext();) {
+  for(Iterator<UINT> it = m_matingPositions.getIterator(); it.hasNext();) {
     markField(it.next(), PINKMARK);
   }
   markMouse(mouse);
@@ -938,14 +938,14 @@ void ChessGraphics::unmarkMatingPositions() {
 }
 
 void ChessGraphics::markFields(const FieldSet &fields, FieldMark mark, HDC dc) {
-  for(Iterator<int> it = fields.getIterator(); it.hasNext();) {
+  for(Iterator<UINT> it = ((FieldSet&)fields).getIterator(); it.hasNext();) {
     markField(it.next(), mark);
   }
   FLUSHIMAGE(dc);
 }
 
 void ChessGraphics::unmarkFields(const FieldSet &fields, HDC dc) {
-  for(Iterator<int> it = fields.getIterator(); it.hasNext();) {
+  for(Iterator<UINT> it = ((FieldSet&)fields).getIterator(); it.hasNext();) {
     unmarkField(it.next());
   }
   FLUSHIMAGE(dc);

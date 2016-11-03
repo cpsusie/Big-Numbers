@@ -22,13 +22,13 @@ public:
   }
 };
 
-#define MAX_ENDGAME_PIECECOUNT 5
 #define MAX_PIECEKEY_VALUE     MAKE_PIECEKEY(BLACKPLAYER, Pawn)
 
 #define PAWN1_POSCOUNT 24
 #define PAWN_POSCOUNT  48
 #define PAWN2_POSCOUNT 47
 #define PAWN3_POSCOUNT 46
+#define PAWN4_POSCOUNT 45
 
 class PieceIndexMappings {
 public:
@@ -105,10 +105,12 @@ protected:
   EndGameKeyDefinition(PieceKey pk2);
   EndGameKeyDefinition(PieceKey pk2, PieceKey pk3);
   EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey pk4);
+  EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5);
 
   static SymmetricTransformation getSym8Transformation3Men(           const EndGameKey &key);
   static SymmetricTransformation getSym8Transformation4Men(           const EndGameKey &key);
   static SymmetricTransformation getSym8Transformation5Men(           const EndGameKey &key);
+  static SymmetricTransformation getSym8Transformation6Men(           const EndGameKey &key);
   static SymmetricTransformation getSym8Transformation4Men2Equal(     const EndGameKey &key);
   static SymmetricTransformation getSym8Transformation5Men2Equal(     const EndGameKey &key);
   static SymmetricTransformation getSym8Transformation5Men3Equal(     const EndGameKey &key);
@@ -133,15 +135,15 @@ typedef void (EndGameKeyDefinition::*PositionScanner)(EndGameKeyWithOccupiedPosi
 #endif
 
 public:
-  static const char whiteKingPosToIndex[64];
-  static const char whiteKingIndexToPos[10];
-  static const char subDiagPosToIndex[  64];
-  static const char subDiagIndexToPos[  36];
-  static const char offDiagPosToIndex[  64];
-  static const char offDiagIndexToPos[  56];
+  static const char s_whiteKingPosToIndex[64];
+  static const char s_whiteKingIndexToPos[10];
+  static const char s_subDiagPosToIndex[  64];
+  static const char s_subDiagIndexToPos[  36];
+  static const char s_offDiagPosToIndex[  64];
+  static const char s_offDiagIndexToPos[  56];
 
-  static const char pawnPosToIndex[     64];
-  static const char pawnIndexToPos[PAWN_POSCOUNT];
+  static const char s_pawnPosToIndex[     64];
+  static const char s_pawnIndexToPos[PAWN_POSCOUNT];
 
   static EndGamePosIndex          encodeKKSym8(         const EndGameKey &key);
   static void                     decodeKKSym8(               EndGameKey &key, EndGamePosIndex index);
@@ -273,6 +275,7 @@ protected:
   EndGameKeyDefinitionDupletsNotAllowed(PieceKey pk2);
   EndGameKeyDefinitionDupletsNotAllowed(PieceKey pk2, PieceKey pk3);
   EndGameKeyDefinitionDupletsNotAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk4);
+  EndGameKeyDefinitionDupletsNotAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5);
 public:
   EndGameKey    getEndGameKey(const GameKey     &gameKey) const;
   bool          isDupletsAllowed() const {
@@ -429,6 +432,19 @@ public:
   SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
 
   DECLARE_SELFCHECK
+};
+
+class EndGameKeyDefinition6Men : public EndGameKeyDefinitionDupletsNotAllowed {
+public:
+  EndGameKeyDefinition6Men(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5);
+
+  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+
+  EndGamePosIndex getIndexSize() const {
+    return 12089624400;
+  }
+  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
 };
 
 #ifdef TABLEBASE_BUILDER

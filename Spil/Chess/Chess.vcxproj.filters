@@ -32,6 +32,9 @@
     <Filter Include="EndGames\5Men\5MenWithPawns">
       <UniqueIdentifier>{6e8b84e4-d92a-42d0-a4fe-f9b0d2462e1b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EndGames\6Men">
+      <UniqueIdentifier>{63c0faf5-8a03-42dd-83fc-8bd1c39236a6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="EndGames\EndGameKeyDefinitions">
       <UniqueIdentifier>{34a1d06f-d07a-414d-b6e1-8e5974d3d540}</UniqueIdentifier>
     </Filter>
@@ -61,6 +64,9 @@
     </Filter>
     <Filter Include="EndGames\EndGameKeyDefinitions\Asm Files">
       <UniqueIdentifier>{6f1f90ad-e030-4c2e-9b0a-973b1b931bcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\6Men\6MenNoPawns">
+      <UniqueIdentifier>{d404f8b8-9f12-4208-bbe8-9a466f440cac}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -850,6 +856,12 @@
     <ClCompile Include="SelectInfoFieldsDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition6Men.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGameKQRKBN.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">
@@ -1037,6 +1049,9 @@
     </ClInclude>
     <ClInclude Include="SelectInfoFieldsDlg.h">
       <Filter>Source Files\Dialogs\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="EndGame6MenNoPawns.h">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

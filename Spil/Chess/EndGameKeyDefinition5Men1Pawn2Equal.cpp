@@ -89,7 +89,7 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
       break;
     case 2:
       { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
-          pos = pawnIndexToPos[i];
+          pos = s_pawnIndexToPos[i];
           if(key.isOccupied(pos)) {
             continue;
           }

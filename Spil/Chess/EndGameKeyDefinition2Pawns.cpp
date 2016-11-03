@@ -101,7 +101,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
       break;
     case 2:
       { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
-          const int pos = pawnIndexToPos[i];
+          const int pos = s_pawnIndexToPos[i];
           if(key.isOccupied(pos)) {
             continue;
           }
@@ -113,7 +113,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
       break;
     case 3:
       { for(int i = 0; i < PAWN_POSCOUNT; i++) {
-          const int pos = pawnIndexToPos[i];
+          const int pos = s_pawnIndexToPos[i];
           if(key.isOccupied(pos)) {
             continue;
           }

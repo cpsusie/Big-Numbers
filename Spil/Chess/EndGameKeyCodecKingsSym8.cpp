@@ -178,8 +178,8 @@ static const char *kkOnDiagIndexToPos[4] = {
   ,_kkD4BkI2P
 };
 
-// whiteKingPosToIndex[whiteKingIndexToPos[index]] == index, index = [0..9]
-const char EndGameKeyDefinition::whiteKingPosToIndex[64] = {
+// s_whiteKingPosToIndex[s_whiteKingIndexToPos[index]] == index, index = [0..9]
+const char EndGameKeyDefinition::s_whiteKingPosToIndex[64] = {
     6, 0, 1, 2,-1,-1,-1,-1
   ,-1, 7, 3, 4,-1,-1,-1,-1
   ,-1,-1, 8, 5,-1,-1,-1,-1
@@ -190,15 +190,15 @@ const char EndGameKeyDefinition::whiteKingPosToIndex[64] = {
   ,-1,-1,-1,-1,-1,-1,-1,-1
 };
 
-const char EndGameKeyDefinition::whiteKingIndexToPos[10] = {
+const char EndGameKeyDefinition::s_whiteKingIndexToPos[10] = {
       B1,C1,D1                // Sub-diagonal fields in lower left triangle
         ,C2,D2
            ,D3
   ,A1,B2,C3,D4                // Diagonal fields in lower left triangle
 };
 
-// subDiagPosToIndex[subDiagIndexToPos[index]] == index, index = [0..35]
-const char EndGameKeyDefinition::subDiagPosToIndex[64] = {
+// s_subDiagPosToIndex[s_subDiagIndexToPos[index]] == index, index = [0..35]
+const char EndGameKeyDefinition::s_subDiagPosToIndex[64] = {
    28, 0, 1, 2, 3, 4, 5, 6
   ,-1,29, 7, 8, 9,10,11,12
   ,-1,-1,30,13,14,15,16,17
@@ -209,7 +209,7 @@ const char EndGameKeyDefinition::subDiagPosToIndex[64] = {
   ,-1,-1,-1,-1,-1,-1,-1,35
 };
 
-const char EndGameKeyDefinition::subDiagIndexToPos[36] = {
+const char EndGameKeyDefinition::s_subDiagIndexToPos[36] = {
       B1,C1,D1,E1,F1,G1,H1    // Sub-diagonal fields [ 0.. 6]
         ,C2,D2,E2,F2,G2,H2    //                     [ 7..12]
            ,D3,E3,F3,G3,H3    //                     [13..17]
@@ -220,9 +220,9 @@ const char EndGameKeyDefinition::subDiagIndexToPos[36] = {
   ,A1,B2,C3,D4,E5,F6,G7,H8    // Diagonal fields     [28..35]
 };
 
-// offDiagPosToIndex[offDiagIndexToPos[index]] == index, index = [0..55]
+// s_offDiagPosToIndex[s_offDiagIndexToPos[index]] == index, index = [0..55]
 
-const char EndGameKeyDefinition::offDiagPosToIndex[64] = {
+const char EndGameKeyDefinition::s_offDiagPosToIndex[64] = {
    -1, 0, 1, 2, 3, 4, 5, 6
   ,28,-1, 7, 8, 9,10,11,12
   ,29,35,-1,13,14,15,16,17
@@ -233,9 +233,9 @@ const char EndGameKeyDefinition::offDiagPosToIndex[64] = {
   ,34,40,45,49,52,54,55,-1
 };
 
-// offDiagPosToIndex(MIRRORDIAG1(offdiag-position)) = 28 + offDiagPosToIndex(offdiag-position)
+// s_offDiagPosToIndex(MIRRORDIAG1(offdiag-position)) = 28 + s_offDiagPosToIndex(offdiag-position)
 
-const char EndGameKeyDefinition::offDiagIndexToPos[56] = {
+const char EndGameKeyDefinition::s_offDiagIndexToPos[56] = {
    B1,C1,D1,E1,F1,G1,H1       // Sub-diagonal fields   [ 0.. 6]
      ,C2,D2,E2,F2,G2,H2       //                       [ 7..12]
         ,D3,E3,F3,G3,H3       //                       [13..17]
@@ -259,7 +259,7 @@ const char EndGameKeyDefinition::offDiagIndexToPos[56] = {
 // Assume W.king is in the triangle [A1,D1,D4], and if W.King is on diagonal A1-D4, then B.king is on or below diagonal A1-H8
 // Calculates an index in the range [0..461], which can be decoded back into the same positions with decodeKKSym8.
 EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // static
-  int wki = whiteKingPosToIndex[key.getWhiteKingPosition()];
+  int wki = s_whiteKingPosToIndex[key.getWhiteKingPosition()];
 
 #ifdef _DEBUG
   if((wki < 0)
@@ -294,47 +294,47 @@ void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, EndGamePosIndex index) 
   EndGamePosIndex wki;
   if(index < START_RANGE_WK_BELOWDIAGC2D3) {
     index -= START_RANGE_WK_BELOWDIAGB1D1;
-    key.setWhiteKingPosition(whiteKingIndexToPos[wki = index / 58]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[wki = index / 58]);
     key.setBlackKingPosition(wkBelowDiagIndexToPos[wki][index % 58]);
   } else if(index < START_RANGE_WK_ONDIAGB2D4) {
     index -= START_RANGE_WK_BELOWDIAGC2D3;
-    key.setWhiteKingPosition(whiteKingIndexToPos[wki = index / 55 + 3]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[wki = index / 55 + 3]);
     key.setBlackKingPosition(wkBelowDiagIndexToPos[wki][index % 55]);
   } else if(index < START_RANGE_WK_ONDIAGA1) {
     index -= START_RANGE_WK_ONDIAGB2D4;
-    key.setWhiteKingPosition(whiteKingIndexToPos[(wki = index / 25 + 1) + 6]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[(wki = index / 25 + 1) + 6]);
     key.setBlackKingPosition(wkOnDiagIndexToPos[wki][index % 25]);
   } else if(index < START_RANGE_KK_ONDIAGB2D4) {
     index -= START_RANGE_WK_ONDIAGA1;
-    key.setWhiteKingPosition(whiteKingIndexToPos[(wki = index / 27) + 6]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[(wki = index / 27) + 6]);
     key.setBlackKingPosition(wkOnDiagIndexToPos[wki][index % 27]);
   } else if(index < START_RANGE_KK_ONDIAGA1) {
     index -= START_RANGE_KK_ONDIAGB2D4;
-    key.setWhiteKingPosition(whiteKingIndexToPos[(wki = index / 5 + 1) + 6]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[(wki = index / 5 + 1) + 6]);
     key.setBlackKingPosition(kkOnDiagIndexToPos[wki][index % 5]);
   } else {
     index -= START_RANGE_KK_ONDIAGA1;
-    key.setWhiteKingPosition(whiteKingIndexToPos[(wki = index / 6) + 6]);
+    key.setWhiteKingPosition(s_whiteKingIndexToPos[(wki = index / 6) + 6]);
     key.setBlackKingPosition(kkOnDiagIndexToPos[wki][index % 6]);
   }
 }
 
-//#define _TEST_MODULE
+#define _TEST_MODULE
 
 #ifdef _TEST_MODULE
 
-static UINT checkKey(const EndGameKey &key) {
-  const UINT index = EndGameKeyDefinition::encodeKKSym8(key);
+static EndGamePosIndex checkKey(const EndGameKey &key) {
+  const EndGamePosIndex index = EndGameKeyDefinition::encodeKKSym8(key);
   EndGameKey key1;
   EndGameKeyDefinition::decodeKKSym8(key1, index);
   if(key1 != key) {
-    _tprintf(_T("(wkPos,bkPos)=(%s,%s) -> %lu -> (%s,%s)\n")
+    _tprintf(_T("(wkPos,bkPos)=(%s,%s) -> %llu -> (%s,%s)\n")
           ,getFieldName(key.getWhiteKingPosition())
           ,getFieldName(key.getBlackKingPosition())
           ,index
           ,getFieldName(key1.getWhiteKingPosition())
           ,getFieldName(key1.getBlackKingPosition()));
-    UINT index2 = EndGameKeyDefinition::encodeKKSym8(key);
+    EndGamePosIndex index2 = EndGameKeyDefinition::encodeKKSym8(key);
     EndGameKey key2;
     EndGameKeyDefinition::decodeKKSym8(key2, index2);
   }
@@ -342,26 +342,26 @@ static UINT checkKey(const EndGameKey &key) {
 }
 
 void test2KingsSym8() {
-  UINT keyCount = 0;
-  UINT minIndex = 0xffffffff;
-  UINT maxIndex = 0;
-  for(int wki = 0; wki < ARRAYSIZE(EndGameKeyDefinition::whiteKingIndexToPos); wki++) {
-    const UINT wkPos = EndGameKeyDefinition::whiteKingIndexToPos[wki];
+  UINT64          keyCount = 0;
+  EndGamePosIndex minIndex = -1;
+  EndGamePosIndex maxIndex = 0;
+  for(int wki = 0; wki < ARRAYSIZE(EndGameKeyDefinition::s_whiteKingIndexToPos); wki++) {
+    const UINT wkPos = EndGameKeyDefinition::s_whiteKingIndexToPos[wki];
     for(int bkPos = 0; bkPos < 64; bkPos++) {
       if(!KINGSADJACENT(wkPos,bkPos) && (WK_INDEX_OFFDIAG(wki) || !IS_ABOVEMAINDIAG1(bkPos))) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);
-        const UINT index = checkKey(key);
+        const EndGamePosIndex index = checkKey(key);
         minIndex = min(minIndex, index);
         maxIndex = max(maxIndex, index);
         keyCount++;
       }
     }
   }
-  _tprintf(_T("keyCount:%lu\n"), keyCount);
-  _tprintf(_T("minIndex:%lu\n"), minIndex);
-  _tprintf(_T("maxIndex:%lu\n"), maxIndex);
+  _tprintf(_T("keyCount:%llu\n"), keyCount);
+  _tprintf(_T("minIndex:%llu\n"), minIndex);
+  _tprintf(_T("maxIndex:%llu\n"), maxIndex);
   DUMP_MACRO(KK_OFFDIAG_COUNT);
   DUMP_MACRO(KK_ONDIAG_COUNT );
   DUMP_MACRO(END_RANGE_KK_ONDIAGA1);

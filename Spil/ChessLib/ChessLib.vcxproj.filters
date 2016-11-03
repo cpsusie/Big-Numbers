@@ -31,6 +31,9 @@
     <Filter Include="EndGames\5Men\5MenWithPawns">
       <UniqueIdentifier>{3b4c5bbc-bbd6-44c1-bac0-2572b32f4c0f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="EndGames\6Men">
+      <UniqueIdentifier>{16dd30dc-0f7a-47ad-9cb6-14ca2d19115e}</UniqueIdentifier>
+    </Filter>
     <Filter Include="EndGames\EndGameKeyDefinitions">
       <UniqueIdentifier>{4a702570-7a0f-45bf-860c-07cfc693e015}</UniqueIdentifier>
     </Filter>
@@ -42,6 +45,9 @@
     </Filter>
     <Filter Include="EndGames\EndGameKeyDefinitions\Asm Files">
       <UniqueIdentifier>{2f869827-3f49-4fa4-b209-b5ce02e987e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="EndGames\6Men\6MenNoPawns">
+      <UniqueIdentifier>{e2d940f3-754f-47f8-8ee1-3592d152b029}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -666,6 +672,12 @@
     <ClCompile Include="..\Chess\SubTablebase.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKeyDefinition6Men.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKQRKBN.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">
@@ -721,6 +733,9 @@
     </ClInclude>
     <ClInclude Include="..\chess\EndGameKeyDefinition.h">
       <Filter>EndGames\EndGameKeyDefinitions\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Chess\EndGame6MenNoPawns.h">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

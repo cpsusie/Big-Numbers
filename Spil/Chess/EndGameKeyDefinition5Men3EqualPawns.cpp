@@ -48,9 +48,9 @@ EndGameKeyDefinition5Men3EqualPawns::EndGameKeyDefinition5Men3EqualPawns(PieceKe
 #ifdef _DEBUG
 
 static EndGamePosIndex encodeNoFlip(EndGameKey key) {
-  int pi2 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition2()];
-  int pi3 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition3()];
-  int pi4 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition4()];
+  int pi2 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition2()];
+  int pi3 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition3()];
+  int pi4 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition4()];
 
   SORT3(pi2, pi3, pi4); /* pi2 < pi3 < pi4 */
   return ADDPIT(key, ADD3EQUAL(KK_WITH_PAWN_2MEN(key), KK_POSCOUNT, pi2, pi3, pi4))            // Use SET3EQUALPAWNSNOFLIP to decode
@@ -59,9 +59,9 @@ static EndGamePosIndex encodeNoFlip(EndGameKey key) {
 }
 
 static EndGamePosIndex encodeFlipi(EndGameKey key, UINT i, UINT j, UINT k) {
-  int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
-  int pj = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(j)];
-  int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
+  int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
+  int pj = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(j)];
+  int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
   SORT2(pj, pk);
 
   if(pi <= pj) { // pi <= pj < pk
@@ -76,9 +76,9 @@ static EndGamePosIndex encodeFlipi(EndGameKey key, UINT i, UINT j, UINT k) {
 }
 
 static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
-  int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
-  int pj = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
-  int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];
+  int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(i))];
+  int pj = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition(j))];
+  int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];
   SORT2(pi, pj);
 
   // pi < pj < pk
@@ -94,9 +94,9 @@ static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
 #else // !_DEBUG
 
 #define ENCODE_NOFLIP(key)                                                                                            \
-{ int pi2 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition2()];                                                 \
-  int pi3 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition3()];                                                 \
-  int pi4 = EndGameKeyDefinition::pawnPosToIndex[key.getPosition4()];                                                 \
+{ int pi2 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition2()];                                               \
+  int pi3 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition3()];                                               \
+  int pi4 = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition4()];                                               \
   SORT3(pi2, pi3, pi4); /* pi2 < pi3 < pi4 */                                                                         \
   return ADDPIT(key, ADD3EQUAL(KK_WITH_PAWN_2MEN(key), KK_POSCOUNT, pi2, pi3, pi4))                                   \
        + START_RANGE_P234_QUEENSIDE                                                                                   \
@@ -105,9 +105,9 @@ static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
 
 
 #define ENCODE_FLIPi(key,i,j,k)                                                                                       \
-{ int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                  \
-  int pj = EndGameKeyDefinition::pawnPosToIndex[key.getPosition##j()];                                                \
-  int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition##k()];                                                \
+{ int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                \
+  int pj = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition##j()];                                              \
+  int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition##k()];                                              \
   SORT2(pj, pk);                                                                                                      \
   if(pi <= pj) { /* pi <= pj < pk */                                                                                  \
     return ADDPIT(key, ADD3EQUALALLOWEQUALLM(KK_WITH_PAWN_2MEN(key), KK_POSCOUNT, pi, pj, pk))                        \
@@ -121,9 +121,9 @@ static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
 }
 
 #define ENCODE_FLIPij(key,i,j,k)                                                                                      \
-{ int pi = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                  \
-  int pj = EndGameKeyDefinition::pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                  \
-  int pk = EndGameKeyDefinition::pawnPosToIndex[key.getPosition(k)];                                                  \
+{ int pi = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##i())];                                \
+  int pj = EndGameKeyDefinition::s_pawnPosToIndex[MIRRORCOLUMN(key.getPosition##j())];                                \
+  int pk = EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(k)];                                                \
   SORT2(pi, pj);                                                                                                      \
   /* pi < pj < pk */                                                                                                  \
   return ADDPIT(key, ADD3EQUAL(KK_WITH_PAWN_2MEN(key), KK_POSCOUNT, pi, pj, pk))                                      \
@@ -183,14 +183,14 @@ SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformatio
 
 void set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+2]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+2]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
 void set3EqualPawnsFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+1]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+1]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
 }
@@ -198,20 +198,20 @@ void set3EqualPawnsFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex
 void set3EqualPawnsFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   maxAddr /= 2;
   int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+1]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+1]);
   addr -= GET_RANGESTART3EQUAL(maxAddr, r);
   r = findRange2Equal(maxAddr, addr);
   addr -= GET_RANGESTART2EQUAL(maxAddr, r);
   r++;
-  const int pos = EndGameKeyDefinition::pawnIndexToPos[r];
+  const int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];
   key.setPosition(mpIndex, MIRRORCOLUMN(pos));
-  key.setPosition(lpIndex, EndGameKeyDefinition::pawnIndexToPos[addr % r]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[addr % r]);
   addr /= r;
 }
 
 void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
   int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::pawnIndexToPos[r+2]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+2]);
   addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
   SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
 }
@@ -285,7 +285,7 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
     break;
   case 2:
     { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
-        const int pos2 = pawnIndexToPos[i];
+        const int pos2 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos2)) {
           continue;
         }
@@ -296,14 +296,14 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
     }
     break;
   case 3:
-    { const int pi2 = pawnPosToIndex[key.getPosition2()]; // always on queenside
+    { const int pi2 = s_pawnPosToIndex[key.getPosition2()]; // always on queenside
       for(int i = pi2+1; i < PAWN_POSCOUNT; i++) {
-        const int pos3 = pawnIndexToPos[i];
+        const int pos3 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos3)) {
           continue;
         }
         if(IS_KINGSIDE(pos3)) {
-          if(pawnPosToIndex[MIRRORCOLUMN(pos3)] >= pi2) {
+          if(s_pawnPosToIndex[MIRRORCOLUMN(pos3)] >= pi2) {
             continue;
           }
         }
@@ -316,7 +316,7 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   case 4:
     { const int pos3 = key.getPosition3();
       for(int i = 0; i < PAWN_POSCOUNT; i++) {
-        const int pos4 = pawnIndexToPos[i];
+        const int pos4 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos4)) {
           continue;
         }
@@ -325,12 +325,12 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
           if(pos4 < pos3) { // 3, 4 kingside. Must have pos4 > pos3
             continue;
           }
-          if(pawnPosToIndex[key.getPosition2()] <= max(pawnPosToIndex[MIRRORCOLUMN(pos3)], pawnPosToIndex[MIRRORCOLUMN(pos4)])) {
+          if(s_pawnPosToIndex[key.getPosition2()] <= max(s_pawnPosToIndex[MIRRORCOLUMN(pos3)], s_pawnPosToIndex[MIRRORCOLUMN(pos4)])) {
             continue;
           }
           break;
         case 1: // 2,3 queenside, 4 kingside => pi3 > pi2. must have mirrorCol(pi4) <= pi3 (=max(pi2, pi3))
-          if(pawnPosToIndex[MIRRORCOLUMN(pos4)] > pawnPosToIndex[pos3]) {
+          if(s_pawnPosToIndex[MIRRORCOLUMN(pos4)] > s_pawnPosToIndex[pos3]) {
             continue;
           }
           break;

@@ -1,22 +1,15 @@
 #pragma once
 
-class EndGameKey { // Cannot contain virtual functions.
+#define MAX_ENDGAME_PIECECOUNT 6
+
+class EndGameKey {
 private:
   union {
-    struct {
-      UINT m_piece0Pos    :  6;
-      UINT m_piece1Pos    :  6;
-      UINT m_piece2Pos    :  6;
-      UINT m_piece3Pos    :  6;
-      UINT m_piece4Pos    :  6;
-      UINT m_playerInTurn :  1;
-      //                    Total : 31 bits.
-    } m_state;
-    unsigned long m_hashCode;
+    UINT64 m_hashCode;
+    BYTE   m_pos[8];
   };
-
 public:
-  EndGameKey() {
+  inline EndGameKey() {
     m_hashCode = 0;
   }
 
@@ -24,11 +17,21 @@ public:
   GameKey getGameKey(const EndGameKeyDefinition &keydef) const;
 
   inline Player getPlayerInTurn() const {
-    return (Player)m_state.m_playerInTurn;
+    return (Player)m_pos[6];
   }
 
   inline void setPlayerInTurn(Player player) {
-    m_state.m_playerInTurn = player;
+    m_pos[6] = player;
+  }
+
+  inline UINT getPosition(UINT pIndex) const {
+    assert(pIndex < MAX_ENDGAME_PIECECOUNT);
+    return m_pos[pIndex];
+  }
+
+  inline void setPosition(UINT pIndex, UINT pos) {
+    assert((pIndex < MAX_ENDGAME_PIECECOUNT) && (pos < 64));
+    m_pos[pIndex] = pos;
   }
 
   inline bool isEmpty() const {
@@ -39,21 +42,24 @@ public:
     m_hashCode = 0;
   }
 
-  inline UINT getPosition0() const { return m_state.m_piece0Pos; }
-  inline UINT getPosition1() const { return m_state.m_piece1Pos; }
-  inline UINT getPosition2() const { return m_state.m_piece2Pos; }
-  inline UINT getPosition3() const { return m_state.m_piece3Pos; }
-  inline UINT getPosition4() const { return m_state.m_piece4Pos; }
+  inline UINT getPosition0() const { return getPosition(0); }
+  inline UINT getPosition1() const { return getPosition(1); }
+  inline UINT getPosition2() const { return getPosition(2); }
+  inline UINT getPosition3() const { return getPosition(3); }
+  inline UINT getPosition4() const { return getPosition(4); }
+  inline UINT getPosition5() const { return getPosition(5); }
 
-  inline void setPosition0(UINT pos) { m_state.m_piece0Pos = pos; }
-  inline void setPosition1(UINT pos) { m_state.m_piece1Pos = pos; }
-  inline void setPosition2(UINT pos) { m_state.m_piece2Pos = pos; }
-  inline void setPosition3(UINT pos) { m_state.m_piece3Pos = pos; }
-  inline void setPosition4(UINT pos) { m_state.m_piece4Pos = pos; }
+  inline void setPosition0(UINT pos) { setPosition(0,pos); }
+  inline void setPosition1(UINT pos) { setPosition(1,pos); }
+  inline void setPosition2(UINT pos) { setPosition(2,pos); }
+  inline void setPosition3(UINT pos) { setPosition(3,pos); }
+  inline void setPosition4(UINT pos) { setPosition(4,pos); }
+  inline void setPosition5(UINT pos) { setPosition(5,pos); }
 
   UINT getP2OffDiagIndex()          const;
   UINT getP3OffDiagIndex()          const;
   UINT getP4OffDiagIndex()          const;
+  UINT getP5OffDiagIndex()          const;
 
   UINT getP3OffDiagIndexEqualP23()  const;
   UINT getP4OffDiagIndexEqualP34()  const;
@@ -62,6 +68,7 @@ public:
   UINT getP2DiagIndex()             const;
   UINT getP3DiagIndex()             const;
   UINT getP4DiagIndex()             const;
+  UINT getP5DiagIndex()             const;
 
   UINT getP3DiagIndexEqualP23()     const;
   UINT getP4DiagIndexEqualP34()     const;
@@ -75,9 +82,13 @@ public:
   void p2IndexToOffDiagPos();
   void p3IndexToOffDiagPos();
   void p4IndexToOffDiagPos();
+  void p5IndexToOffDiagPos();
   void p23IndexToOffDiagPos();
   void p234IndexToOffDiagPos();
   void p34IndexToOffDiagPos();
+  void p45IndexToOffDiagPos();
+  void p345IndexToOffDiagPos();
+  void p2345IndexToOffDiagPos();
 
   void p3IndexToOffDiagPosEqualP23();
   void p4IndexToOffDiagPosEqualP34();
@@ -89,8 +100,10 @@ public:
   void p2IndexToDiagPos();
   void p3IndexToDiagPos();
   void p4IndexToDiagPos();
+  void p5IndexToDiagPos();
   void p23IndexToDiagPos();
   void p234IndexToDiagPos();
+  void p2345IndexToDiagPos();
 
   void p3IndexToDiagPosEqualP23();
   void p4IndexToDiagPosEqualP34();
@@ -108,71 +121,72 @@ public:
 
   void p3IndexToPawn1Pos();
 
-  inline UINT getPosition(UINT pIndex) const {
-    assert(pIndex <= 4);
-    return (m_hashCode >> (6*pIndex)) & 0x3f;
-  }
-
-  inline void setPosition(UINT pIndex, UINT pos) {
-    assert((pIndex <= 4) && (pos < 64));
-    pIndex *= 6;
-    m_hashCode &= ~((0x3f << pIndex)); m_hashCode |= (pos << pIndex);
-  }
-
   inline UINT getWhiteKingPosition() const {
-    return m_state.m_piece0Pos;
+    return getPosition0();
   }
 
   inline UINT getBlackKingPosition() const {
-    return m_state.m_piece1Pos;
+    return getPosition1();
   }
 
   inline void setWhiteKingPosition(UINT pos) {
-    m_state.m_piece0Pos = pos;
+    setPosition0(pos);
   }
 
   inline void setBlackKingPosition(UINT pos) {
-    m_state.m_piece1Pos = pos;
+    setPosition1(pos);
   }
 
   inline bool kingsOnMainDiag1() const {
-    return IS_ONMAINDIAG1(m_state.m_piece0Pos) && IS_ONMAINDIAG1(m_state.m_piece1Pos);
+    return IS_ONMAINDIAG1(getWhiteKingPosition()) && IS_ONMAINDIAG1(getBlackKingPosition());
   }
 
   inline bool p2OnMainDiag1() const {
-    return IS_ONMAINDIAG1(m_state.m_piece2Pos);
+    return IS_ONMAINDIAG1(getPosition2());
   }
 
   inline bool p2AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(m_state.m_piece2Pos);
+    return IS_ABOVEMAINDIAG1(getPosition2());
   }
 
   inline bool p2BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(m_state.m_piece2Pos);
+    return IS_BELOWMAINDIAG1(getPosition2());
   }
 
   inline bool p3OnMainDiag1() const {
-    return IS_ONMAINDIAG1(m_state.m_piece3Pos);
+    return IS_ONMAINDIAG1(getPosition3());
   }
 
   inline bool p3AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(m_state.m_piece3Pos);
+    return IS_ABOVEMAINDIAG1(getPosition3());
   }
 
   inline bool p3BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(m_state.m_piece3Pos);
+    return IS_BELOWMAINDIAG1(getPosition3());
   }
 
   inline bool p4OnMainDiag1() const {
-    return IS_ONMAINDIAG1(m_state.m_piece4Pos);
+    return IS_ONMAINDIAG1(getPosition4());
   }
 
   inline bool p4AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(m_state.m_piece4Pos);
+    return IS_ABOVEMAINDIAG1(getPosition4());
   }
 
   inline bool p4BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(m_state.m_piece4Pos);
+    return IS_BELOWMAINDIAG1(getPosition4());
+  }
+
+  inline bool p5OnMainDiag1() const {
+    return IS_ONMAINDIAG1(getPosition5());
+  }
+
+  inline bool p5AboveMainDiag1() const {
+    return IS_ABOVEMAINDIAG1(getPosition5());
+  }
+
+  inline bool p5BelowMainDiag1() const {
+    return IS_BELOWMAINDIAG1(getPosition5());
   }
 
   inline friend bool operator==(const EndGameKey &k1, const EndGameKey &k2) {
@@ -183,8 +197,8 @@ public:
     return k1.m_hashCode != k2.m_hashCode;
   }
 
-  inline unsigned long hashCode() const {
-    return m_hashCode;
+  inline ULONG hashCode() const {
+    return uint64Hash(m_hashCode);
   }
 
   String toString(const EndGameKeyDefinition &keydef, bool initFormat=false) const;
@@ -197,11 +211,11 @@ private:
   FieldSet m_occupiedPositions;
 
 public:
-  void setWhiteKingPosition(UINT pos) {
+  inline void setWhiteKingPosition(UINT pos) {
     setPosition0(pos);
   }
 
-  void setBlackKingPosition(UINT pos) {
+  inline void setBlackKingPosition(UINT pos) {
     setPosition1(pos);
   }
   void setPosition( UINT pIndex, UINT pos);
@@ -210,13 +224,14 @@ public:
   void setPosition2(UINT pos);
   void setPosition3(UINT pos);
   void setPosition4(UINT pos);
-  bool isOccupied(  UINT pos) const {
+  void setPosition5(UINT pos);
+  inline bool isOccupied(  UINT pos) const {
     return m_occupiedPositions.contains(pos);
   }
-  void clearField(UINT pos) {
+  inline void clearField(UINT pos) {
     m_occupiedPositions.remove(pos);
   }
-  void clear() {
+  inline void clear() {
     EndGameKey::clear();
     m_occupiedPositions.clear();
   }

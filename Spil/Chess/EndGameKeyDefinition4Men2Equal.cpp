@@ -43,8 +43,8 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
 }
 
 #define ENCODE_KK_ONDIAG_NOFLIP(key)                                                                                              \
-{ UINT pi2 = offDiagPosToIndex[pos2];                                                                                             \
-  UINT pi3 = offDiagPosToIndex[pos3];                                                                                             \
+{ UINT pi2 = s_offDiagPosToIndex[pos2];                                                                                           \
+  UINT pi3 = s_offDiagPosToIndex[pos3];                                                                                           \
   SORT2(pi2, pi3); /* pi2 < pi3 */                                                                                                \
   return ADDPIT(key, ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT, pi2, pi3))                                                \
        + START_RANGE_KK_ONDIAG_P23_BELOWDIAG                                                                                      \
@@ -52,8 +52,8 @@ EndGameKeyDefinition4Men2Equal::EndGameKeyDefinition4Men2Equal(PieceKey pk23)
 }
 
 #define ENCODE_KK_ONDIAG_FLIPi(key,i,j)                                                                                           \
-{ UINT pi = offDiagPosToIndex[pos##i] - 28;                                                                                       \
-  UINT pj = offDiagPosToIndex[pos##j];                                                                                            \
+{ UINT pi = s_offDiagPosToIndex[pos##i] - 28;                                                                                     \
+  UINT pj = s_offDiagPosToIndex[pos##j];                                                                                          \
   SORT2(pi, pj);                                                                                                                  \
   return ADDPIT(key, ADD2EQUALALLOWEQUALLH(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT, pi, pj))                                      \
        + START_RANGE_KK_ONDIAG_P2_BELOWDIAG                                                                                       \
@@ -153,8 +153,8 @@ void EndGameKeyDefinition4Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
   switch(pIndex) {
   case 2:
     if(allPreviousOnDiag) {
-      for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) {
-        const int pos2 = subDiagIndexToPos[i];
+      for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
+        const int pos2 = s_subDiagIndexToPos[i];
         if(key.isOccupied(pos2)) {
           continue;
         }
@@ -176,8 +176,8 @@ void EndGameKeyDefinition4Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
   case 3:
     { const int pos2 = key.getPosition2();
       if(allPreviousOnDiag) {
-        for(int i = 0; i < ARRAYSIZE(subDiagIndexToPos); i++) {
-          const int pos3 = subDiagIndexToPos[i];
+        for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
+          const int pos3 = s_subDiagIndexToPos[i];
           if(key.isOccupied(pos3)) {
             continue;
           }
@@ -199,9 +199,9 @@ void EndGameKeyDefinition4Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
         }
       } else {     // kings on maindiag, p2 off maindiag => p3 must be off maindiag and "above" p2
         assert(key.kingsOnMainDiag1() && !IS_ONMAINDIAG1(pos2));
-        const int pi2 = offDiagPosToIndex[pos2];
-        for(int pi3 = pi2+1; pi3 < ARRAYSIZE(offDiagIndexToPos); pi3++) {
-          const int pos3 = offDiagIndexToPos[pi3];
+        const int pi2 = s_offDiagPosToIndex[pos2];
+        for(int pi3 = pi2+1; pi3 < ARRAYSIZE(s_offDiagIndexToPos); pi3++) {
+          const int pos3 = s_offDiagIndexToPos[pi3];
           if(key.isOccupied(pos3)) {
             continue;
           }
@@ -279,8 +279,8 @@ void set2OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
-  key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
-  key.setPosition(lpIndex, EndGameKeyDefinition::offDiagIndexToPos[addr % r]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[addr % r]);
   addr /= r;
 }
 
@@ -289,9 +289,9 @@ void set2OffDiagPosFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex
   int r  = findRange2Equal(maxAddr, addr);
   const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
-  key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r]);
   r++;
-  key.setPosition(lpIndex, EndGameKeyDefinition::offDiagIndexToPos[addr % r + 28]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[addr % r + 28]);
   addr /= r;
 }
 
@@ -300,9 +300,9 @@ void set2OffDiagPosFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex
   int r  = findRange2Equal(maxAddr, addr);
   const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
-  key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r+28]);
   r++;
-  key.setPosition(lpIndex, EndGameKeyDefinition::offDiagIndexToPos[addr % r]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[addr % r]);
   addr /= r;
 }
 
@@ -312,8 +312,8 @@ void set2OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
   addr -= rs;
   r++;
-  key.setPosition(hpIndex, EndGameKeyDefinition::offDiagIndexToPos[r+28]);
-  key.setPosition(lpIndex, EndGameKeyDefinition::offDiagIndexToPos[addr % r + 28]);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r+28]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[addr % r + 28]);
   addr /= r;
 }
 

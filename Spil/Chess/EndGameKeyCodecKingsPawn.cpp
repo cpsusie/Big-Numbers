@@ -1367,8 +1367,8 @@ static const char *kkWithPawnIndexToPos[64] = {
  ,_wkA8BkI2P                                                                  ,_wkH8BkI2P
 };
 
-// pawnPosToIndex[pawnIndexToPos[index]] == index, index = [0..47]
-const char EndGameKeyDefinition::pawnPosToIndex[64] = {
+// s_pawnPosToIndex[s_pawnIndexToPos[index]] == index, index = [0..47]
+const char EndGameKeyDefinition::s_pawnPosToIndex[64] = {
    -1,-1,-1,-1,-1,-1,-1,-1
   , 0, 1, 2, 3,24,25,26,27
   , 4, 5, 6, 7,28,29,30,31
@@ -1379,7 +1379,7 @@ const char EndGameKeyDefinition::pawnPosToIndex[64] = {
   ,-1,-1,-1,-1,-1,-1,-1,-1
 };
 
-const char EndGameKeyDefinition::pawnIndexToPos[PAWN_POSCOUNT] = {
+const char EndGameKeyDefinition::s_pawnIndexToPos[PAWN_POSCOUNT] = {
    A2,B2,C2,D2 // Queenside
   ,A3,B3,C3,D3
   ,A4,B4,C4,D4

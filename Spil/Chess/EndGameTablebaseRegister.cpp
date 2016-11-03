@@ -4,6 +4,7 @@
 #include "EndGame4MenWithPawns.h"
 #include "EndGame5MenNoPawns.h"
 #include "EndGame5MenWithPawns.h"
+#include "EndGame6MenNoPawns.h"
 
 class TablebaseRegister : public EndGameTablebaseList {
 public:
@@ -155,6 +156,8 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRRNK());  // King-Rook-Rook-Knight     / King
   add(new EndGameKRRPK());  // King-Rook-Rook-Pawn       / King
   add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
+
+  add(new EndGameKQRKBN()); 
 }
 
 TablebaseRegister::~TablebaseRegister() {

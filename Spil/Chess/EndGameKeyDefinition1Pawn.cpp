@@ -85,7 +85,7 @@ void EndGameKeyDefinition1Pawn::scanPositions(EndGameKeyWithOccupiedPositions &k
     }
   } else { // pIndex == 2
     for(int i = 0; i < PAWN1_POSCOUNT; i++) {
-      const int pos = pawnIndexToPos[i];
+      const int pos = s_pawnIndexToPos[i];
       if(key.isOccupied(pos)) {
         continue;
       }

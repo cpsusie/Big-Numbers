@@ -14,8 +14,8 @@ EndGameKeyDefinition4Men2EqualPawns::EndGameKeyDefinition4Men2EqualPawns(PieceKe
 };
 
 #define ENCODE_NOFLIP(key)                                                                                                        \
-{ UINT pi2 = pawnPosToIndex[pos2];                                                                                                \
-  UINT pi3 = pawnPosToIndex[pos3];                                                                                                \
+{ UINT pi2 = s_pawnPosToIndex[pos2];                                                                                              \
+  UINT pi3 = s_pawnPosToIndex[pos3];                                                                                              \
   SORT2(pi2, pi3);                                                                                                                \
   return ADDPIT(key, ADD2EQUAL(KK_WITH_PAWN_2MEN(key), KK_WITH_PAWN_POSCOUNT, pi2, pi3))                                          \
        + START_RANGE_P23_QUEENSIDE                                                                                                \
@@ -23,8 +23,8 @@ EndGameKeyDefinition4Men2EqualPawns::EndGameKeyDefinition4Men2EqualPawns(PieceKe
 }
 
 #define ENCODE_FLIPi(key, i, j)                                                                                                   \
-{ UINT pi = pawnPosToIndex[MIRRORCOLUMN(pos##i)];                                                                                 \
-  UINT pj = pawnPosToIndex[pos##j];                                                                                               \
+{ UINT pi = s_pawnPosToIndex[MIRRORCOLUMN(pos##i)];                                                                               \
+  UINT pj = s_pawnPosToIndex[pos##j];                                                                                             \
   if(pi == pj) {                                                                                                                  \
     return LEFTWKK_ONE_PAWN_3MEN_INDEX(key, j)                                                                                    \
          + START_RANGE_SYMMETRIC_PAWNS                                                                                            \
@@ -119,7 +119,7 @@ void EndGameKeyDefinition4Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
     break;
   case 2:
     { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
-        const int pos2 = pawnIndexToPos[i];
+        const int pos2 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos2)) {
           continue;
         }
@@ -130,9 +130,9 @@ void EndGameKeyDefinition4Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
     }
     break;
   case 3:
-    { const UINT pi2 = pawnPosToIndex[key.getPosition2()];                  // p2 always on queen side
+    { const UINT pi2 = s_pawnPosToIndex[key.getPosition2()];                  // p2 always on queen side
       for(UINT i = 0; i < PAWN_POSCOUNT; i++) {
-        const int pos3 = pawnIndexToPos[i];
+        const int pos3 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos3)) {
           continue;
         }
@@ -141,7 +141,7 @@ void EndGameKeyDefinition4Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
             continue;
           }
         } else {
-          const UINT pi3 = pawnPosToIndex[MIRRORCOLUMN(pos3)];
+          const UINT pi3 = s_pawnPosToIndex[MIRRORCOLUMN(pos3)];
           if(pi2 > pi3) {
             continue;
           } else if((pi2 == pi3) && IS_KINGSIDE(key.getWhiteKingPosition())) {
