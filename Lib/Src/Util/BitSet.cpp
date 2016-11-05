@@ -143,17 +143,21 @@ BitSet &BitSet::clear() {
 }
 
 BitSet &BitSet::remove(size_t i) {
+#ifdef _DEBUG
   if(i >= m_capacity) {
     throwIndexOutOfRange(__TFUNCTION__, i, _T(""));
   }
+#endif
   ATOM(m_p,i) &= ~ATOMBIT(i);
   return *this;
 }
 
 BitSet &BitSet::add(size_t i) {
+#ifdef _DEBUG
   if(i >= m_capacity) {
     throwIndexOutOfRange(__TFUNCTION__, i, _T(""));
   }
+#endif
   ATOM(m_p,i) |= ATOMBIT(i);
   return *this;
 }

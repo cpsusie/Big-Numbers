@@ -47,11 +47,11 @@ public:
     return lts * rhs;
   }
 
-  BitSet &operator+=(size_t i) {                                        // Add i to the set, if it's not already there
+  inline BitSet &operator+=(size_t i) {                                 // Add i to the set, if it's not already there
     return add(i);
   }
 
-  BitSet &operator-=(size_t i) {                                        // Remove i from the set if it's there
+  inline BitSet &operator-=(size_t i) {                                 // Remove i from the set if it's there
     return remove(i);
   }
 
@@ -60,11 +60,11 @@ public:
   BitSet &operator*=(const BitSet &rhs);                                // this = this * rhs
   BitSet &operator^=(const BitSet &rhs);                                // this = this ^ rhs
 
-  BitSet &operator|=(const BitSet &rhs) {                               // Same as +=
+  inline BitSet &operator|=(const BitSet &rhs) {                        // Same as +=
     return *this += rhs;
-  } 
+  }
 
-  BitSet &operator&=(const BitSet &rhs) {                               // Same as *=
+  inline BitSet &operator&=(const BitSet &rhs) {                        // Same as *=
     return *this *= rhs;
   }
 
