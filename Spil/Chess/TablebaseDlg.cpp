@@ -108,7 +108,7 @@ void CTablebaseDlg::OnButtonDecompressAll() {
     EndGameKeyDefinition::setDbPath(oldDbPath);
     throw;
   }
-    
+
 #else
   MessageBox(_T("Function not accesible in TABLEBASE_BUILDER-version"), _T("Error"), MB_ICONWARNING);
 #endif

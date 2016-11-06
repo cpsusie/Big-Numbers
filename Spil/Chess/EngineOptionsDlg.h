@@ -30,7 +30,7 @@ public:
 
 class DialogColumnInfoArray : public Array<EngineOptionDialogColumnInfo> {
 public:
-  DialogColumnInfoArray(int maxControlsPerColumn, int ctrlHeight, const CSize &space) 
+  DialogColumnInfoArray(int maxControlsPerColumn, int ctrlHeight, const CSize &space)
   : m_maxControlsPerColumn(maxControlsPerColumn)
   , m_ctrlHeight(ctrlHeight)
   , m_space(space)
@@ -120,7 +120,7 @@ private:
   void     putDefaultToWindow();
   EngineOptionValueArray getValuesFromWindow() const;
   void     OnUserButton(UINT id);
-  void     OnDeltaPosSpin( UINT id, NMHDR *pNMHDR, LRESULT *pResult); 
+  void     OnDeltaPosSpin( UINT id, NMHDR *pNMHDR, LRESULT *pResult);
   BOOL     OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult);
   bool     validate();
   bool     isChanged() const;

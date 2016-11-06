@@ -2,10 +2,10 @@
 #include "EndGameUtil.h"
 #include "EndGameKeyCodec.h"
 
-EndGameKeyDefinition4Men::EndGameKeyDefinition4Men(PieceKey pk2, PieceKey pk3) 
+EndGameKeyDefinition4Men::EndGameKeyDefinition4Men(PieceKey pk2, PieceKey pk3)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3)
 {
-  assert((GET_TYPE_FROMKEY(pk2) != Pawn) 
+  assert((GET_TYPE_FROMKEY(pk2) != Pawn)
       && (GET_TYPE_FROMKEY(pk3) != Pawn));
 }
 

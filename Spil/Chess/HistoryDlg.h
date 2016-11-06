@@ -59,7 +59,7 @@ protected:
 	afx_msg void OnEditCopy();
 	afx_msg void OnOptionsFormatShortNotation();
 	afx_msg void OnOptionsFormatLongNotation();
-	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+	afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
 	afx_msg void OnHistoryContextMenuGoodMove();
 	afx_msg void OnHistoryContextMenuExcellentMove();
 	afx_msg void OnHistoryContextMenuBadMove();

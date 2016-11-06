@@ -5,8 +5,8 @@
 EndGameKeyDefinition5Men::EndGameKeyDefinition5Men(PieceKey pk2, PieceKey pk3, PieceKey pk4)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3, pk4)
 {
-  assert((GET_TYPE_FROMKEY(pk2) != Pawn) 
-      && (GET_TYPE_FROMKEY(pk3) != Pawn) 
+  assert((GET_TYPE_FROMKEY(pk2) != Pawn)
+      && (GET_TYPE_FROMKEY(pk3) != Pawn)
       && (GET_TYPE_FROMKEY(pk4) != Pawn));
 }
 

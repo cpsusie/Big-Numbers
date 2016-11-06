@@ -17,7 +17,7 @@ EndGameKeyDefinitionDupletsNotAllowed::EndGameKeyDefinitionDupletsNotAllowed(Pie
 }
 
 EndGameKeyDefinitionDupletsNotAllowed::EndGameKeyDefinitionDupletsNotAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5) : EndGameKeyDefinition(pk2, pk3, pk4, pk5) {
-  assert((pk2 != pk3) && (pk2 != pk4) && (pk2 != pk5) 
+  assert((pk2 != pk3) && (pk2 != pk4) && (pk2 != pk5)
       && (pk3 != pk4) && (pk3 != pk5)
       && (pk4 != pk5));
   initIndexMap();
