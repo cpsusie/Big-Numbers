@@ -4,7 +4,7 @@
 
 #define MININDEX 2
 
-EndGamePosIndex EndGameKeyDefinition4Men2Pawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men2Pawns::keyToIndex(EndGameKey key) const {
   return TWO_PAWNS_4MEN_INDEX(key) - MININDEX;
 }
 

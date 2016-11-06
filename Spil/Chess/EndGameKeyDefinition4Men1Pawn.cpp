@@ -2,7 +2,7 @@
 #include "EndGameUtil.h"
 #include "EndGameKeyCodec.h"
 
-EndGamePosIndex EndGameKeyDefinition4Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition4Men1Pawn::keyToIndex(EndGameKey key) const {
   return ONE_PAWN_4MEN_INDEX(key);
 }
 

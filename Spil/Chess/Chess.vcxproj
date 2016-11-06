@@ -520,6 +520,7 @@
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -923,6 +924,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EndGameKeyDefinition6Men2Equal.cpp" />
     <ClCompile Include="EndGameKQRKBN.cpp" />
     <ClCompile Include="EndGameKey.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -1965,6 +1967,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EndGameKQRKRR.cpp" />
     <ClCompile Include="EndGameKQRNK.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>

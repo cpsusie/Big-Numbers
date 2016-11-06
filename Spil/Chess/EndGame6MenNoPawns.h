@@ -7,3 +7,11 @@ public:
   EndGameKQRKBN() : EndGameTablebase(keyDefinition) {
   }
 };
+
+class EndGameKQRKRR : public EndGameTablebase {
+public:
+  static const EndGameKeyDefinition6Men2Equal keyDefinition;
+
+  EndGameKQRKRR() : EndGameTablebase(keyDefinition) {
+  }
+};

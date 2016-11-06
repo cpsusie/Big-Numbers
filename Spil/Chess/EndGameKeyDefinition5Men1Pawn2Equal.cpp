@@ -12,7 +12,7 @@ EndGameKeyDefinition5Men1Pawn2Equal::EndGameKeyDefinition5Men1Pawn2Equal(PieceKe
         );
 }
 
-EndGamePosIndex EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(EndGameKey key) const {
   const UINT pos3 = key.getPosition3();
   const UINT pos4 = key.getPosition4();
 
@@ -44,7 +44,7 @@ EndGameKey EndGameKeyDefinition5Men1Pawn2Equal::indexToKey(EndGamePosIndex index
 }
 
 
-SymmetricTransformation EndGameKeyDefinition5Men1Pawn2Equal::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition5Men1Pawn2Equal::getSymTransformation(EndGameKey key) const {
   return getPawnSymTransformation(key);
 }
 

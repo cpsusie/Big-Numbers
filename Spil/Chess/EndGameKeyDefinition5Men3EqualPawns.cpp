@@ -133,7 +133,7 @@ static EndGamePosIndex encodeFlipij(EndGameKey key, int i, int j, int k) {
 
 #endif // _DEBUG
 
-EndGamePosIndex EndGameKeyDefinition5Men3EqualPawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men3EqualPawns::keyToIndex(EndGameKey key) const {
   switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) {
   case 0: ENCODE_NOFLIP(key      );                     // 2,3,4 queenside
   case 1: ENCODE_FLIPi( key,2,3,4);                     //   3,4 queenside
@@ -175,7 +175,7 @@ EndGameKey EndGameKeyDefinition5Men3EqualPawns::indexToKey(EndGamePosIndex index
   return result;
 }
 
-SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformation(EndGameKey key) const {
   return get5Men3EqualPawnsSymTransformation(key);
 }
 

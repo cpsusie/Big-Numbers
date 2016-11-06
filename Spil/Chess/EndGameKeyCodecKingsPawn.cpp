@@ -1406,7 +1406,7 @@ const char EndGameKeyDefinition::s_pawnIndexToPos[PAWN_POSCOUNT] = {
 #define END_RANGE_WK_CORNERFIELD   (START_RANGE_WK_CORNERFIELD + MAXINDEX_WK_CORNERFIELD)
 
 // Calculates an index in the range [0..3611] for the 2 kings which can be decoded with decodeKKWithPawn.
-EndGamePosIndex EndGameKeyDefinition::encodeKKWithPawn(const EndGameKey &key) { // static
+EndGamePosIndex EndGameKeyDefinition::encodeKKWithPawn(EndGameKey key) { // static
   const EndGamePosIndex wki = wkPosToIndex[key.getWhiteKingPosition()];
   if(wki < 36) {
     return (wki -  0) * 55 + kkWithPawnPosToIndex[wki][key.getBlackKingPosition()] + START_RANGE_WK_INNERFIELD;
@@ -1519,7 +1519,7 @@ static const char *leftWKKWithPawnPosToIndex[32] = {
 #define START_RANGE_LEFTWK_CORNERFIELD END_RANGE_LEFTWK_EDGEFIELD
 #define END_RANGE_LEFTWK_CORNERFIELD   (START_RANGE_LEFTWK_CORNERFIELD + MAXINDEX_LEFTWK_CORNERFIELD)
 
-EndGamePosIndex EndGameKeyDefinition::encodeLeftWKKWithPawn(const EndGameKey &key) { // static
+EndGamePosIndex EndGameKeyDefinition::encodeLeftWKKWithPawn(EndGameKey key) { // static
   const EndGamePosIndex wki = leftWKPosToIndex[key.getWhiteKingPosition()];
   if(wki < 18) {
     return (wki -  0) * 55 + leftWKKWithPawnPosToIndex[wki][key.getBlackKingPosition()] + START_RANGE_LEFTWK_INNERFIELD;

@@ -5,12 +5,14 @@
 EndGameKeyDefinition5Men::EndGameKeyDefinition5Men(PieceKey pk2, PieceKey pk3, PieceKey pk4)
 : EndGameKeyDefinitionDupletsNotAllowed(pk2, pk3, pk4)
 {
-  assert((GET_TYPE_FROMKEY(pk2) != Pawn) && (GET_TYPE_FROMKEY(pk3) != Pawn) && (GET_TYPE_FROMKEY(pk4) != Pawn));
+  assert((GET_TYPE_FROMKEY(pk2) != Pawn) 
+      && (GET_TYPE_FROMKEY(pk3) != Pawn) 
+      && (GET_TYPE_FROMKEY(pk4) != Pawn));
 }
 
 #define MININDEX 0
 
-EndGamePosIndex EndGameKeyDefinition5Men::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men::keyToIndex(EndGameKey key) const {
   if(!key.kingsOnMainDiag1()) {
     return KK_OFFDIAG_5MEN_INDEX(  key) + OFFSET_KK_OFFDIAG_5MEN    - MININDEX;
   }
@@ -75,6 +77,6 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
   return result;
 }
 
-SymmetricTransformation EndGameKeyDefinition5Men::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition5Men::getSymTransformation(EndGameKey key) const {
   return getSym8Transformation5Men(key);
 }

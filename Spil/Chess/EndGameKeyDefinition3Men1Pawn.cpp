@@ -4,7 +4,7 @@
 
 #define MININDEX 0
 
-EndGamePosIndex EndGameKeyDefinition3Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition3Men1Pawn::keyToIndex(EndGameKey key) const {
   return ONE_PAWN_3MEN_INDEX(key) - MININDEX;
 }
 

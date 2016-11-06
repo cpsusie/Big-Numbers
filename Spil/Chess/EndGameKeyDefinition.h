@@ -94,30 +94,31 @@ protected:
   static void pawnSymSwitchError(int line);
   void        pieceTypeError(int index, const String &msg) const;
   void        invalidPieceCountError() const;
-  void        impossibleEncodingError(const EndGameKey &key) const;
+  void        impossibleEncodingError(EndGameKey key) const;
   void        checkIsPawn(UINT index, bool expected) const;
   void        checkSameOwner(UINT index1, UINT index2, bool expected) const;
   void init(PieceKey pk2, ...);
 
-  TCHAR *createWhiteKeyString(TCHAR *dst, const EndGameKey &key) const;
-  TCHAR *createBlackKeyString(TCHAR *dst, const EndGameKey &key) const;
+  TCHAR *createWhiteKeyString(TCHAR *dst, EndGameKey key) const;
+  TCHAR *createBlackKeyString(TCHAR *dst, EndGameKey key) const;
 
   EndGameKeyDefinition(PieceKey pk2);
   EndGameKeyDefinition(PieceKey pk2, PieceKey pk3);
   EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey pk4);
   EndGameKeyDefinition(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5);
 
-  static SymmetricTransformation getSym8Transformation3Men(           const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation4Men(           const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation5Men(           const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation6Men(           const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation4Men2Equal(     const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation5Men2Equal(     const EndGameKey &key);
-  static SymmetricTransformation getSym8Transformation5Men3Equal(     const EndGameKey &key);
-  static SymmetricTransformation getPawnSymTransformation(            const EndGameKey &key);
-  static SymmetricTransformation get4Men2EqualPawnsSymTransformation( const EndGameKey &key);
-  static SymmetricTransformation get5Men2EqualPawnsSymTransformation( const EndGameKey &key);
-  static SymmetricTransformation get5Men3EqualPawnsSymTransformation( const EndGameKey &key);
+  static SymmetricTransformation getSym8Transformation3Men(           EndGameKey key);
+  static SymmetricTransformation getSym8Transformation4Men(           EndGameKey key);
+  static SymmetricTransformation getSym8Transformation5Men(           EndGameKey key);
+  static SymmetricTransformation getSym8Transformation6Men(           EndGameKey key);
+  static SymmetricTransformation getSym8Transformation4Men2Equal(     EndGameKey key);
+  static SymmetricTransformation getSym8Transformation5Men2Equal(     EndGameKey key);
+  static SymmetricTransformation getSym8Transformation6Men2Equal(     EndGameKey key);
+  static SymmetricTransformation getSym8Transformation5Men3Equal(     EndGameKey key);
+  static SymmetricTransformation getPawnSymTransformation(            EndGameKey key);
+  static SymmetricTransformation get4Men2EqualPawnsSymTransformation( EndGameKey key);
+  static SymmetricTransformation get5Men2EqualPawnsSymTransformation( EndGameKey key);
+  static SymmetricTransformation get5Men3EqualPawnsSymTransformation( EndGameKey key);
 
 #ifdef TABLEBASE_BUILDER
   mutable EndGamePosIndex m_minIndex, m_maxIndex;
@@ -145,19 +146,19 @@ public:
   static const char s_pawnPosToIndex[     64];
   static const char s_pawnIndexToPos[PAWN_POSCOUNT];
 
-  static EndGamePosIndex          encodeKKSym8(         const EndGameKey &key);
+  static EndGamePosIndex          encodeKKSym8(               EndGameKey  key);
   static void                     decodeKKSym8(               EndGameKey &key, EndGamePosIndex index);
 
-  static EndGamePosIndex          encodeKKWithPawn(     const EndGameKey &key);
+  static EndGamePosIndex          encodeKKWithPawn(           EndGameKey  key);
   static void                     decodeKKWithPawn(           EndGameKey &key, EndGamePosIndex index);
 
-  static EndGamePosIndex          encodeLeftWKKWithPawn(const EndGameKey &key);
+  static EndGamePosIndex          encodeLeftWKKWithPawn(      EndGameKey  key);
   static void                     decodeLeftWKKWithPawn(      EndGameKey &key, EndGamePosIndex index);
 
-  virtual EndGamePosIndex         keyToIndex(           const EndGameKey  &key  ) const = 0;
-  virtual EndGameKey              indexToKey(           EndGamePosIndex    index) const = 0;
+  virtual EndGamePosIndex         keyToIndex(                 EndGameKey   key  ) const = 0;
+  virtual EndGameKey              indexToKey(            EndGamePosIndex   index) const = 0;
   virtual EndGamePosIndex         getIndexSize()                                  const = 0;
-  virtual SymmetricTransformation getSymTransformation( const EndGameKey  &key  ) const = 0;
+  virtual SymmetricTransformation getSymTransformation(       EndGameKey   key  ) const = 0;
 
   SymmetricTransformation         getPlayTransformation(const Game        &game ) const;
 
@@ -190,9 +191,9 @@ public:
   }
 
   virtual EndGameKey getEndGameKey(      const GameKey    &gameKey) const = 0;
-  EndGameKey         getTransformedKey(        EndGameKey  key, SymmetricTransformation st) const;
-  EndGameKey         getNormalizedKey(   const EndGameKey &key, EndGamePosIndex *index = NULL) const; // will return keys' index in index if != NULL
-  void               validateKey(        const EndGameKey  key, const TCHAR *msg) const;
+  EndGameKey         getTransformedKey(  EndGameKey key, SymmetricTransformation st) const;
+  EndGameKey         getNormalizedKey(   EndGameKey key, EndGamePosIndex *index = NULL) const; // will return keys' index in index if != NULL
+  void               validateKey(        EndGameKey key, const TCHAR *msg) const;
 
 #ifdef TABLEBASE_BUILDER
   const PositionSignature  &getPositionSignature()   const;
@@ -201,13 +202,13 @@ public:
   void                     listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize = 1) const;
 
   void                     doSelfCheck(bool checkSym) const;
-  virtual bool match(const EndGameKey &key1, const EndGameKey &key2) const {
+  virtual bool match(EndGameKey key1, EndGameKey key2) const {
     return key1 == key2;
   }
 
   virtual bool isDupletsAllowed() const = 0;
-  virtual EndGamePosIndex         keyToIndexNew(const EndGameKey  &key  ) const;
-  virtual EndGameKey              indexToKeyNew(EndGamePosIndex    index) const;
+  virtual EndGamePosIndex         keyToIndexNew(EndGameKey      key  ) const;
+  virtual EndGameKey              indexToKeyNew(EndGamePosIndex index) const;
   bool                            hasConversion() const;
 
 #else
@@ -262,6 +263,33 @@ public:
   }
 };
 
+#ifdef TABLEBASE_BUILDER
+
+#define DECLARE_SELFCHECK                                                                 \
+  void selfCheck() const;                                                                 \
+  String getCodecName() const
+
+#define DECLARE_MATCHKEYS bool match(EndGameKey key1, EndGameKey key2) const
+
+#define DUMP_MACRO(m) _tprintf(_T("%-50s:%14s\n"), _T(#m), format1000(m).cstr())
+
+#define DUMP_RANGETABLE(table)                                                            \
+{ _tprintf(_T("%s\n"), _T(#table));                                                       \
+  for(int i = 0; i < ARRAYSIZE(table); i++) {                                             \
+    _tprintf(_T("%2d:%14s (%9s)\n"), i, format1000(table[i]).cstr()                       \
+                             , i?format1000(table[i]-table[i-1]).cstr():_T(""));          \
+  }                                                                                       \
+}
+
+#else
+
+#define DECLARE_SELFCHECK
+#define DECLARE_MATCHKEYS
+#define DUMP_MACRO(m)
+#define DUMP_RANGETABLE(table)
+
+#endif
+
 extern "C" {
   int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex index);
   int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index);
@@ -299,10 +327,12 @@ private:
 protected:
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk23);
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk34);
+  EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk45);
 public:
   EndGameKey getEndGameKey(const GameKey &gameKey) const;
+  DECLARE_MATCHKEYS;
+
 #ifdef TABLEBASE_BUILDER
-  bool match(const EndGameKey &key1, const EndGameKey &key2) const;
 
   bool isDupletsAllowed() const {
     return true;
@@ -311,54 +341,30 @@ public:
 #endif
 };
 
-#ifdef TABLEBASE_BUILDER
-
-#define DECLARE_SELFCHECK                                                                 \
-  void selfCheck() const;                                                                 \
-  String getCodecName() const;
-
-#define DUMP_MACRO(m) _tprintf(_T("%-50s:%11s\n"), _T(#m), format1000(m).cstr())
-
-#define DUMP_RANGETABLE(table)                                                            \
-{ _tprintf(_T("%s\n"), #table);                                                           \
-  for(int i = 0; i < ARRAYSIZE(table); i++) {                                             \
-    _tprintf(_T("%2d:%11s (%9s)\n"), i, format1000(table[i]).cstr()                       \
-                             , i?format1000(table[i]-table[i-1]).cstr():_T(""));          \
-  }                                                                                       \
-}
-
-#else
-
-#define DECLARE_SELFCHECK
-#define DUMP_MACRO(m)
-#define DUMP_RANGETABLE(table)
-
-#endif
-
 class EndGameKeyDefinition3Men : public EndGameKeyDefinitionDupletsNotAllowed {
 public:
   EndGameKeyDefinition3Men(PieceKey pk2);
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 56112;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 };
 
 class EndGameKeyDefinition4Men : public EndGameKeyDefinitionDupletsNotAllowed {
 public:
   EndGameKeyDefinition4Men(PieceKey pk2, PieceKey pk3);
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 3415776;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 };
 
 class EndGameKeyDefinition4Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
@@ -370,28 +376,29 @@ private:
 public:
   EndGameKeyDefinition4Men2Equal(PieceKey pk23);
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 1708476;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
+  DECLARE_MATCHKEYS;
 };
 
 class EndGameKeyDefinition5Men : public EndGameKeyDefinitionDupletsNotAllowed {
 public:
   EndGameKeyDefinition5Men(PieceKey pk2, PieceKey pk3, PieceKey pk4);
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 204911280;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 };
 
 class EndGameKeyDefinition5Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
@@ -403,15 +410,16 @@ private:
 public:
   EndGameKeyDefinition5Men2Equal(PieceKey pk2, PieceKey pk34);
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 102459168;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
+  DECLARE_MATCHKEYS;
 };
 
 class EndGameKeyDefinition5Men3Equal : public EndGameKeyDefinitionDupletsAllowed {
@@ -423,28 +431,50 @@ private:
 public:
   EndGameKeyDefinition5Men3Equal(PieceKey pk234);
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 34155408;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
+  DECLARE_MATCHKEYS;
 };
 
 class EndGameKeyDefinition6Men : public EndGameKeyDefinitionDupletsNotAllowed {
 public:
   EndGameKeyDefinition6Men(PieceKey pk2, PieceKey pk3, PieceKey pk4, PieceKey pk5);
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 12089624400;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
+};
+
+class EndGameKeyDefinition6Men2Equal : public EndGameKeyDefinitionDupletsAllowed {
+private:
+#ifdef TABLEBASE_BUILDER
+  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
+#endif
+
+public:
+  EndGameKeyDefinition6Men2Equal(PieceKey pk2, PieceKey pk3, PieceKey pk45);
+
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
+
+  EndGamePosIndex getIndexSize() const {
+    return 6044829840;
+  }
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
+
+  DECLARE_SELFCHECK;
+  DECLARE_MATCHKEYS;
 };
 
 #ifdef TABLEBASE_BUILDER
@@ -474,7 +504,7 @@ protected:
   EndGameKeyDefinition1Pawn(PieceKey pk2);
   EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3);
   EndGameKeyDefinition1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4);
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
 #ifdef TABLEBASE_BUILDER
   Player getPawnOwner() const {
@@ -489,7 +519,7 @@ public:
 #ifdef TABLEBASE_BUILDER
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition3Men1Pawn : public EndGameKeyDefinition1Pawn {
@@ -497,8 +527,8 @@ public:
   EndGameKeyDefinition3Men1Pawn(PieceKey pk2) : EndGameKeyDefinition1Pawn(pk2) {
   }
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 173376;
@@ -510,8 +540,8 @@ public:
   EndGameKeyDefinition4Men1Pawn(PieceKey pk2, PieceKey pk3) : EndGameKeyDefinition1Pawn(pk2, pk3) {
   }
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 10575936;
@@ -522,8 +552,8 @@ class EndGameKeyDefinition5Men1Pawn : public EndGameKeyDefinition1Pawn {
 public:
   EndGameKeyDefinition5Men1Pawn(PieceKey pk2, PieceKey pk3, PieceKey pk4);
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 634556160;
@@ -539,18 +569,18 @@ private:
 public:
   EndGameKeyDefinition5Men1Pawn2Equal(PieceKey pk2, PieceKey pk34);
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 317278080;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
 #ifdef TABLEBASE_BUILDER
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition2Pawns : public EndGameKeyDefinitionDupletsNotAllowed {
@@ -563,7 +593,7 @@ private:
 protected:
   EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk3);
   EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk3, PieceKey pk4);
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
 #ifdef TABLEBASE_BUILDER
   Player getPawnOwner(int index) const {
@@ -578,7 +608,7 @@ public:
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition2EqualPawns : public EndGameKeyDefinitionDupletsAllowed {
@@ -602,8 +632,8 @@ public:
   EndGameKeyDefinition4Men2Pawns(PieceKey pk2, PieceKey pk3) : EndGameKeyDefinition2Pawns(pk2, pk3) {
   }
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 8148670;
@@ -615,8 +645,8 @@ public:
   EndGameKeyDefinition5Men2Pawns(PieceKey pk2, PieceKey pk3, PieceKey pk4) : EndGameKeyDefinition2Pawns(pk2, pk3, pk4) {
   }
 
-  EndGamePosIndex keyToIndex(const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 488920200;
@@ -636,16 +666,16 @@ public:
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 4074226;
   }
 
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition5Men2EqualPawns: public EndGameKeyDefinition2EqualPawns {
@@ -661,16 +691,16 @@ public:
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 252602012;
   }
 
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition5Men3Pawns : public EndGameKeyDefinitionDupletsAllowed {
@@ -684,19 +714,20 @@ private:
 
 public:
   EndGameKeyDefinition5Men3Pawns(PieceKey pk2, PieceKey pk34);
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 187416810;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
 #ifdef TABLEBASE_BUILDER
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };
 
 class EndGameKeyDefinition5Men3EqualPawns : public EndGameKeyDefinitionDupletsAllowed {
@@ -711,17 +742,17 @@ private:
 public:
   EndGameKeyDefinition5Men3EqualPawns(PieceKey pk234);
 
-  EndGamePosIndex keyToIndex(   const EndGameKey &key  ) const;
-  EndGameKey      indexToKey(   EndGamePosIndex   index) const;
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
     return 62473152;
   }
-  SymmetricTransformation getSymTransformation(const EndGameKey &key) const;
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
 #ifdef TABLEBASE_BUILDER
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
 
-  DECLARE_SELFCHECK
+  DECLARE_SELFCHECK;
 };

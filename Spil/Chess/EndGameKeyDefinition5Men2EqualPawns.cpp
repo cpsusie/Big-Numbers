@@ -61,7 +61,7 @@ EndGameKeyDefinition5Men2EqualPawns::EndGameKeyDefinition5Men2EqualPawns(PieceKe
        - MININDEX;                                                                                                                \
 }
 
-EndGamePosIndex EndGameKeyDefinition5Men2EqualPawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men2EqualPawns::keyToIndex(EndGameKey key) const {
   UINT pos3 = key.getPosition3();
   UINT pos4 = key.getPosition4();
   switch(BOOL2MASK(IS_KINGSIDE, pos3, pos4)) {
@@ -102,7 +102,7 @@ EndGameKey EndGameKeyDefinition5Men2EqualPawns::indexToKey(EndGamePosIndex index
   return result;
 }
 
-SymmetricTransformation EndGameKeyDefinition5Men2EqualPawns::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition5Men2EqualPawns::getSymTransformation(EndGameKey key) const {
   return get5Men2EqualPawnsSymTransformation(key);
 }
 

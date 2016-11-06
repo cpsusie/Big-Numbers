@@ -13,7 +13,7 @@ EndGameKeyDefinition6Men::EndGameKeyDefinition6Men(PieceKey pk2, PieceKey pk3, P
 
 #define MININDEX 0
 
-EndGamePosIndex EndGameKeyDefinition6Men::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition6Men::keyToIndex(EndGameKey key) const {
   if(!key.kingsOnMainDiag1()) {
     return KK_OFFDIAG_6MEN_INDEX(   key) + OFFSET_KK_OFFDIAG_6MEN     - MININDEX;
   }
@@ -96,6 +96,6 @@ EndGameKey EndGameKeyDefinition6Men::indexToKey(EndGamePosIndex index) const {
   return result;
 }
 
-SymmetricTransformation EndGameKeyDefinition6Men::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition6Men::getSymTransformation(EndGameKey key) const {
   return getSym8Transformation6Men(key);
 }

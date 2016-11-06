@@ -1561,9 +1561,9 @@ public:
 #define IS_EDGEFIELD(     pos)     (!IS_INNERFIELD(pos))
 #define GETSQUARE(pos)             Game::fieldInfo[pos].m_square
 
-#define IS_ONMAINDIAG1(   pos)     (GETDIAG1(pos) ==  _GETDIAGONAL1(A1))
+#define IS_ONMAINDIAG1(   pos)     (((pos) % 9) == 0)
 #define IS_ONMAINDIAG2(   pos)     (GETDIAG2(pos) ==  _GETDIAGONAL2(H1))
-#define IS_OFFMAINDIAG1(  pos)     (GETDIAG1(pos) !=  _GETDIAGONAL1(A1))
+#define IS_OFFMAINDIAG1(  pos)     (((pos) % 9) != 0)
 #define IS_OFFMAINDIAG2(  pos)     (GETDIAG2(pos) !=  _GETDIAGONAL2(H1))
 #define IS_BELOWMAINDIAG1(pos)     (GETDIAG1(pos) <   _GETDIAGONAL1(A1))
 #define IS_BELOWMAINDIAG2(pos)     (GETDIAG2(pos) <   _GETDIAGONAL2(H1))

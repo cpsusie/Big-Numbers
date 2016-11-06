@@ -8,7 +8,7 @@ EndGameKeyDefinition3Men::EndGameKeyDefinition3Men(PieceKey pk2) : EndGameKeyDef
 
 #define MININDEX 0
 
-EndGamePosIndex EndGameKeyDefinition3Men::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition3Men::keyToIndex(EndGameKey key) const {
   if(!key.kingsOnMainDiag1()) {
     return KK_OFFDIAG_3MEN_INDEX(key) + OFFSET_KK_OFFDIAG_3MEN  - MININDEX;
   }
@@ -43,6 +43,6 @@ EndGameKey EndGameKeyDefinition3Men::indexToKey(EndGamePosIndex index) const {
   return result;
 }
 
-SymmetricTransformation EndGameKeyDefinition3Men::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition3Men::getSymTransformation(EndGameKey key) const {
   return getSym8Transformation3Men(key);
 }

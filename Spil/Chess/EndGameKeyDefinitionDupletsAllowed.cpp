@@ -10,6 +10,10 @@ EndGameKeyDefinitionDupletsAllowed::EndGameKeyDefinitionDupletsAllowed(PieceKey 
   initIndexMap();
 }
 
+EndGameKeyDefinitionDupletsAllowed::EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk45) : EndGameKeyDefinition(pk2, pk3, pk45, pk45) {
+  initIndexMap();
+}
+
 #define STATEBIT(  state, index) (1<<((state)*MAX_ENDGAME_PIECECOUNT+(index)))
 #define STATESHIFT(state, index) ((m_stateShift & STATEBIT(state, index))?true:false)
 
@@ -191,7 +195,7 @@ EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &game
 
 #ifdef TABLEBASE_BUILDER
 
-bool EndGameKeyDefinitionDupletsAllowed::match(const EndGameKey &key1, const EndGameKey &key2) const {
+bool EndGameKeyDefinitionDupletsAllowed::match(EndGameKey key1, EndGameKey key2) const {
   if(key2 == key1) {
     return true;
   }

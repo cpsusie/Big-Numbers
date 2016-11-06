@@ -293,7 +293,7 @@ void EndGameKeyDefinition::pieceTypeError(int index, const String &msg) const {
                 );
 }
 
-void EndGameKeyDefinition::impossibleEncodingError(const EndGameKey &key) const {
+void EndGameKeyDefinition::impossibleEncodingError(EndGameKey key) const {
   throwInvalidArgumentException(_T("keyToIndex"), _T("%s:No encoding possible. Key=[%s]"), toString().cstr(), key.toString(*this).cstr());
 }
 
@@ -327,7 +327,7 @@ EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTran
   return key;
 }
 
-EndGameKey EndGameKeyDefinition::getNormalizedKey(const EndGameKey &key, EndGamePosIndex *index) const {
+EndGameKey EndGameKeyDefinition::getNormalizedKey(EndGameKey key, EndGamePosIndex *index) const {
   static const TCHAR *msg = _T("Invalid EndGameKey:getNormalizedKey(%s):%s");
   const EndGamePosIndex ki = keyToIndex(key);
   if(index) *index = ki;
@@ -336,7 +336,7 @@ EndGameKey EndGameKeyDefinition::getNormalizedKey(const EndGameKey &key, EndGame
   return result;
 }
 
-void EndGameKeyDefinition::validateKey(const EndGameKey key, const TCHAR *msg) const {
+void EndGameKeyDefinition::validateKey(EndGameKey key, const TCHAR *msg) const {
   const UINT wkPos = key.getWhiteKingPosition();
   const UINT bkPos = key.getBlackKingPosition();
   if(KINGSADJACENT(wkPos, bkPos)) {
@@ -345,6 +345,11 @@ void EndGameKeyDefinition::validateKey(const EndGameKey key, const TCHAR *msg) c
   for(UINT i = 2; i < m_totalPieceCount; i++) {
     const UINT posi = key.getPosition(i);
     switch(i) {
+    case 5:
+      if(posi == key.getPosition4()) {
+        throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
+      }
+      // continue case
     case 4:
       if(posi == key.getPosition3()) {
         throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
@@ -366,7 +371,6 @@ void EndGameKeyDefinition::validateKey(const EndGameKey key, const TCHAR *msg) c
   }
 }
 
-
 TCHAR *EndGameKeyDefinition::createKeyString(TCHAR *dst, const EndGameKey &key, bool initFormat) const {
   if(initFormat) {
     return _tcscpy(dst, createInitKeyString(key).cstr());
@@ -380,7 +384,7 @@ static const TCHAR *shortNames[]    = { _T(""),_T("K"),_T("Q"),_T("R"),_T("B"),_
 static const TCHAR *playerShortName = _T("WB");
 #define GETFIELDNAME(pos) Game::fieldInfo[pos].m_name
 
-TCHAR *EndGameKeyDefinition::createWhiteKeyString(TCHAR *dst, const EndGameKey &key) const {
+TCHAR *EndGameKeyDefinition::createWhiteKeyString(TCHAR *dst, EndGameKey key) const {
   switch(getPieceCount(WHITEPLAYER)) {
   case 1:
     _stprintf(dst, _T("%c White:K%s ")
@@ -414,12 +418,12 @@ TCHAR *EndGameKeyDefinition::createWhiteKeyString(TCHAR *dst, const EndGameKey &
                , shortNames[                     m_orderedPieceType[WHITEPLAYER][3].getPieceType()]
                , GETFIELDNAME(   key.getPosition(m_orderedPieceType[WHITEPLAYER][3].getIndex())));
     return dst;
-  default: throwException(_T("Invalid number of white piece (=%d)"), getPieceCount(WHITEPLAYER));
+  default: throwException(_T("Invalid number of white pieces (=%d)"), getPieceCount(WHITEPLAYER));
            return _T("????");
   }
 }
 
-TCHAR *EndGameKeyDefinition::createBlackKeyString(TCHAR *dst, const EndGameKey &key) const {
+TCHAR *EndGameKeyDefinition::createBlackKeyString(TCHAR *dst, EndGameKey key) const {
   switch(getPieceCount(BLACKPLAYER)) {
   case 1:
     _stprintf(dst, _T("Black:K%s")
@@ -449,7 +453,7 @@ TCHAR *EndGameKeyDefinition::createBlackKeyString(TCHAR *dst, const EndGameKey &
                , shortNames[                     m_orderedPieceType[BLACKPLAYER][3].getPieceType()]
                , GETFIELDNAME(   key.getPosition(m_orderedPieceType[BLACKPLAYER][3].getIndex())));
     return dst;
-  default: throwException(_T("Invalid number of black piece (=%d)"), getPieceCount(BLACKPLAYER));
+  default: throwException(_T("Invalid number of black pieces (=%d)"), getPieceCount(BLACKPLAYER));
            return _T("????");
   }
 }
@@ -465,13 +469,13 @@ String EndGameKeyDefinition::createInitKeyString(const EndGameKey &key) const {
 
 #ifdef TABLEBASE_BUILDER
 
-EndGamePosIndex EndGameKeyDefinition::keyToIndexNew(const EndGameKey &key) const { // should be overridden
-  throwException(_T("keyToIndexNew:No conversion defined"));
+EndGamePosIndex EndGameKeyDefinition::keyToIndexNew(EndGameKey key) const { // should be overridden
+  throwException(_T("%s:No conversion defined"), __TFUNCTION__);
   return 0;
 }
 
 EndGameKey EndGameKeyDefinition::indexToKeyNew(EndGamePosIndex index) const { // should be overridden
-  throwException(_T("indexToKeyNew:No conversion defined"));
+  throwException(_T("%s:No conversion defined"), __TFUNCTION__);
   return EndGameKey();
 }
 
@@ -542,7 +546,8 @@ SymmetricTransformation EndGameKeyDefinition::getPlayTransformation(const Game &
 }
 
 void EndGameKeyDefinition::invalidSquareError(const EndGameKey &key) { // static
-  throwException(_T("Position %s not contained in any square"), getFieldName(key.getWhiteKingPosition()));
+  throwException(_T("Position %s not contained in any square")
+                ,getFieldName(key.getWhiteKingPosition()));
 }
 
 void EndGameKeyDefinition::sym8DecisionSwitchError(int line) { // static
@@ -554,7 +559,7 @@ void EndGameKeyDefinition::pawnSymSwitchError(int line) { // static
 }
 
 void EndGameKeyDefinition::invalidPieceCountError() const {
-  throwException(_T("Invalid number of pieces (=%d) must be [3..5]"), m_totalPieceCount);
+  throwException(_T("Invalid number of pieces (=%d) must be [3..%d]"), m_totalPieceCount, MAX_ENDGAME_PIECECOUNT);
 }
 
 #define SYM8DECISIONSWITCH(decideStatement)                                                                   \
@@ -591,7 +596,7 @@ void EndGameKeyDefinition::invalidPieceCountError() const {
 // Creates a Symmetric Transformation, that moves W.King to lower left triangle (bounded by a1,d1,d4)
 // and if this is on diagonal a1-h8, moves B.King below this diagonal, ie to the triangle bounded by (a1,h1,h8).
 // If B.king is on main diagonal1 too, then flip board so piece2 will be below this diagonal.
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation3Men(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation3Men(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM3MEN)
 }
 
@@ -611,7 +616,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation3Men(const En
 // and if this is on diagonal a1-h8, moves B.King below this diagonal, ie to the triangle bounded by (a1,h1,h8).
 // If B.king is on main diagonal too, then flip board so piece2 will be below this diagonal.
 // if piece2 is on main diagonal too, flip board so piece3 will be below the diagonal
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM4MEN)
 }
 
@@ -630,7 +635,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men(const En
 }
 
 // See comment on EndGameKeyDefinitionBase3Men and -4Men
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM5MEN)
 }
 
@@ -651,7 +656,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men(const En
 }
 
 // See comment on EndGameKeyDefinitionBase3Men, -4- and -5Men
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN)
 }
 
@@ -687,7 +692,7 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men(const En
   }                                                                                                           \
 }
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM4MEN2EQUAL)
 }
 
@@ -711,8 +716,34 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation4Men2Equal(co
 #define DECIDESYM8TRANSFORM5MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                  \
   _DECIDESYM8TRANSFORM5MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, 2, 3, 4)
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men2Equal(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men2Equal(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM5MEN2EQUAL)
+}
+
+#define _DECIDESYM8TRANSFORM6MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, solo1, solo2, eq1, eq2)         \
+{ if(f1Offdiag(key.getWhiteKingPosition())) {                                                                 \
+    return f2Offdiag(key.getWhiteKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getBlackKingPosition())) {                                                          \
+    return f2Offdiag(key.getBlackKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition##solo1())) {                                                            \
+    return f2Offdiag(key.getPosition##solo1())     ? trTrue : trFalse;                                        \
+  } else if(f1Offdiag(key.getPosition##solo2())) {                                                            \
+    return f2Offdiag(key.getPosition##solo2())     ? trTrue : trFalse;                                        \
+  } else if(f1Offdiag(key.getPosition##eq1()) && f1Offdiag(key.getPosition##eq2())) {                         \
+    DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, eq1, eq2);                                  \
+  } else if(f1Offdiag(key.getPosition##eq1())) {                                                              \
+    return f2Offdiag(key.getPosition##eq1())      ? trTrue : trFalse;                                         \
+  } else { /* f1Offdiag(pos[eq2]) */                                                                          \
+    return f2Offdiag(key.getPosition##eq2())      ? trTrue : trFalse;                                         \
+  }                                                                                                           \
+}
+
+
+#define DECIDESYM8TRANSFORM6MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                  \
+  _DECIDESYM8TRANSFORM6MEN2EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, 2, 3, 4, 5)
+
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men2Equal(EndGameKey key) { // static
+  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN2EQUAL)
 }
 
 #ifdef _DEBUG
@@ -784,11 +815,11 @@ static SymmetricTransformation decideSym8Transform3EqualFlipij(EndGameKey key, S
   }                                                                                                           \
 }
 
-SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men3Equal(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men3Equal(EndGameKey key) { // static
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM3EQUAL)
 }
 
-SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(EndGameKey key) { // static
   return IS_QUEENSIDE(key.getPosition2()) ? 0 : TRANSFORM_MIRRORCOL;
 }
 
@@ -819,11 +850,11 @@ SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(const End
   return 0;                                                                                                   \
 }
 
-SymmetricTransformation EndGameKeyDefinition::get4Men2EqualPawnsSymTransformation(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::get4Men2EqualPawnsSymTransformation(EndGameKey key) { // static
   DECIDEPAWNSYMTRANSFORM2EQUALPAWNS(2, 3)
 }
 
-SymmetricTransformation EndGameKeyDefinition::get5Men2EqualPawnsSymTransformation(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::get5Men2EqualPawnsSymTransformation(EndGameKey key) { // static
   DECIDEPAWNSYMTRANSFORM2EQUALPAWNS(3, 4)
 }
 
@@ -866,7 +897,7 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 
 #endif
 
-SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformation(const EndGameKey &key) { // static
+SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformation(EndGameKey key) { // static
   switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) { // similar to DECIDESYM8TRANSFORM3EQUAL, case 7:kings on diag, 2,3,4 off diag
   case 0 : return 0;                                                              /* 2,3,4 queenside */
   case 1 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( 2, 3, 4);                     /*   3,4 queenside */
@@ -918,7 +949,7 @@ String EndGameKeyDefinition::getCodecName() const {
 }
 
 void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
-  verbose(_T("Running %scodec test for keydefinition %-15s ([%s]). Indexsize:%s\n")
+  verbose(_T("Running %scodec test for keydefinition %-15s [%s]. Indexsize:%s\n")
          ,checkSym?_T("extended "):_T("")
          ,getCodecName().cstr()
          ,toString().cstr()
@@ -930,7 +961,8 @@ void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
     const UINT64 distinctKeyCount2 = checkSymmetries();
     if(distinctKeyCount2 != distinctKeyCount1) {
       verbose(_T("Minimal scan generated %s distinct keys, but allkeys scan generated %s distinct keys.\n")
-             ,format1000(distinctKeyCount1).cstr(), format1000(distinctKeyCount2).cstr());
+             ,format1000(distinctKeyCount1).cstr()
+             ,format1000(distinctKeyCount2).cstr());
       pause();
     }
   }
@@ -962,35 +994,36 @@ UINT64 EndGameKeyDefinition::selfCheckSummary() const {
   verbose(_T("Maximum index  : %14s. Key:%s.\n"), format1000(m_maxIndex).cstr(), indexToKey(m_maxIndex).toString(*this).cstr());
   verbose(_T("Indexsize()    : %14s.\n"        ), format1000(getIndexSize()).cstr());
   verbose(_T("Duplicate keys : %14s.\n"        ), format1000(m_duplicateCount).cstr());
-  verbose(_T("Utilizationrate: %5.2lf%%, (%5.2lf%%)\n"), PERCENT(distinctKeys,getIndexSize()), PERCENT(distinctKeys,(m_maxIndex-m_minIndex+1)));
-  verbose(_T("Used time      : %6.3lf sec. %.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_checkKeyCount*1000);
+  verbose(_T("Utilizationrate: %9.2lf%%, (%6.2lf%%)\n"), PERCENT(distinctKeys,getIndexSize()), PERCENT(distinctKeys,(m_maxIndex-m_minIndex+1)));
+  verbose(_T("Used time      : %10.3lf sec. %7.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_checkKeyCount*1000);
 
-/*
+//#define LIST_UNUSED
+
+#ifdef LIST_UNUSED
   listLongestUnusedSequence(*m_usedIndex);
 
   FILE *f = FOPEN(getTempFileName(toString() + _T("Unused.txt")), _T("w"));
-  for(UINT i = m_minIndex; i <= m_maxIndex; i++) {
-    if(!m_usedIndex->contains(i)) {
-      int index1;
-      String keyStr;
-      try {
-        const EndGameKey key = indexToKey(i);
-        index1 = keyToIndex(key);
-        keyStr = key.toString(*this);
-      } catch(Exception e) {
-        index1 = -1;
-        keyStr = e.what();
-      }
-      _ftprintf(f, _T("%11s -> %s -> %11s"), format1000(i).cstr(), keyStr.cstr(), format1000(index1).cstr());
-      if(index1 >= 0 || !m_usedIndex->contains(index1)) {
-        _ftprintf(f, _T(" : not used either"));
-      }
-      _ftprintf(f,_T("\n"));
-      fflush(f);
+  for(EndGamePosIndex i = m_minIndex; i <= m_maxIndex; i++) {
+    if(m_usedIndex->contains(i)) continue;
+    intptr_t index1;
+    String keyStr;
+    try {
+      const EndGameKey key = indexToKey(i);
+      index1 = keyToIndex(key);
+      keyStr = key.toString(*this);
+    } catch(Exception e) {
+      index1 = -1;
+      keyStr = e.what();
     }
+    _ftprintf(f, _T("%14s -> %s -> %14s"), format1000(i).cstr(), keyStr.cstr(), format1000(index1).cstr());
+    if(index1 >= 0 || !m_usedIndex->contains(index1)) {
+      _ftprintf(f, _T(" : not used either"));
+    }
+    _ftprintf(f,_T("\n"));
+    fflush(f);
   }
   fclose(f);
-*/
+#endif
 
   delete m_usedIndex;
   m_usedIndex = NULL;
@@ -1021,22 +1054,20 @@ void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
     m_maxIndex = index;
   }
 
-/*
-  if(index == 33939540) {
-    verbose(_T("\nKey:[%s] -> index %s -> [%s]\n"), key.toString(*this).cstr(), format1000(index).cstr(), indexToKey(index).toString(*this).cstr());
-    pause();
-  }
-*/
   if(index >= getIndexSize()) {
-    verbose(_T("%s %11s:%s -> %s. Index size=%s\n")
+    verbose(_T("%s %14s:%s -> %s. Index size=%s\n")
            ,toString().cstr()
            ,format1000(m_checkKeyCount).cstr()
-           ,key.toString(*this).cstr(), format1000(index).cstr(), format1000(getIndexSize()).cstr());
+           ,key.toString(*this).cstr()
+           ,format1000(index).cstr()
+           ,format1000(getIndexSize()).cstr());
     const EndGamePosIndex index = keyToIndex(key);
     pause();
   } else if(m_usedIndex->contains((size_t)index)) {
     m_duplicateCount++;
-    verbose(_T("Warning:Index %s already used:Key:[%s]\n"), format1000(index).cstr(), key.toString(*this).cstr());
+    verbose(_T("Warning:Index %s already used:Key:[%s]\n")
+           ,format1000(index).cstr()
+           ,key.toString(*this).cstr());
     pause();
   } else {
     m_usedIndex->add((size_t)index);
@@ -1051,7 +1082,6 @@ void EndGameKeyDefinition::checkKey(const EndGameKey &key) const {
            ,k1.toString(*this).cstr());
     const EndGamePosIndex index1 = keyToIndex(key);
     const EndGameKey      k2     = indexToKey(index1);
-
     pause();
   }
   if(++m_checkKeyCount % 4000000 == 0) {
@@ -1151,11 +1181,11 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
 
 class AllPositionScanner;
 
-typedef EndGameKey (EndGameKeyDefinition::*NormalizeKeyFunction)(const EndGameKey &key, UINT *index) const;
-
 typedef void (AllPositionScanner::*ScannerFunction)();
 
-class AllPositionScanner {
+#include <Timer.h>
+
+class AllPositionScanner : public TimeoutHandler {
 private:
   const EndGameKeyDefinition     &m_keydef;
   const int                       m_pieceCount;
@@ -1172,6 +1202,10 @@ private:
   void setPosAndScanNext(int pos);
   void checkForBothPlayers();
   void checkSymmetry();
+  void handleTimeout(Timer &timer) {
+    _tprintf(_T("Position %s\r"), format1000(m_positionCount).cstr());
+  }
+
 public:
   AllPositionScanner(const EndGameKeyDefinition &keydef);
   UINT64 scanAllPositions();
@@ -1182,9 +1216,9 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
 , m_pieceCount(keydef.getPieceCount())
 , m_usedIndex((size_t)keydef.getIndexSize())
 {
+  for(int i = 0; i < m_pieceCount; i++) m_scannerFunctions[i] = NULL;
   m_scannerFunctions[0] = &AllPositionScanner::allPositions;
   m_scannerFunctions[1] = &AllPositionScanner::blackKingPositions;
-  m_scannerFunctions[2] = m_scannerFunctions[3] = m_scannerFunctions[4] = NULL;
 
   for(int i = 2; i < m_pieceCount; i++) {
     switch(m_keydef.getPieceType(i)) {
@@ -1208,7 +1242,10 @@ UINT64 AllPositionScanner::scanAllPositions() {
   m_distinctPositionCount = 0;
   m_pIndex                = 0;
   verbose(_T("Checking symmetric transformation...\n"));
+  Timer doPrintStatus(1);
+  doPrintStatus.startTimer(3000, *this, true);
   (this->*(m_scannerFunctions[0]))();
+  doPrintStatus.stopTimer();
   verbose(_T("All %s positions checked. %s distinct keys found.\n")
          ,format1000(m_positionCount).cstr()
          ,format1000(m_distinctPositionCount).cstr());
@@ -1217,9 +1254,7 @@ UINT64 AllPositionScanner::scanAllPositions() {
 }
 
 void AllPositionScanner::setPosAndScanNext(int pos) {
-  if(m_key.isOccupied(pos)) {
-    return;
-  }
+  if(m_key.isOccupied(pos)) return;
   m_key.setPosition(m_pIndex++, pos);
 
   if(m_pIndex == m_pieceCount) {
@@ -1239,9 +1274,7 @@ void AllPositionScanner::checkForBothPlayers() {
 }
 
 void AllPositionScanner::checkSymmetry() {
-  if(++m_positionCount % 1000000 == 0) {
-    _tprintf(_T("Position %s\r"), format1000(m_positionCount).cstr());
-  }
+  m_positionCount++;
 
   EndGameKey      key1 = m_keydef.getTransformedKey(m_key, m_keydef.getSymTransformation(m_key));
   EndGamePosIndex index;
@@ -1292,6 +1325,8 @@ UINT64 EndGameKeyDefinition::checkSymmetries() const {
   return scanner.scanAllPositions();
 }
 
+#ifdef LIST_UNUSED
+
 class UnusedSequence {
 private:
   static String genKeyString(const EndGameKeyDefinition *keydef, EndGamePosIndex index);
@@ -1315,7 +1350,7 @@ String UnusedSequence::genKeyString(const EndGameKeyDefinition *keydef, EndGameP
 }
 
 String UnusedSequence::toString(const EndGameKeyDefinition *keydef) const {
-  return format(_T("%11s-%11s. length:%9s : ]%s - %s[=[%s - %s]")
+  return format(_T("%14s-%14s. length:%9s : ]%s - %s[=[%s - %s]")
                ,format1000(m_from).cstr()
                ,format1000(m_to).cstr()
                ,format1000(getLength()).cstr()
@@ -1366,4 +1401,6 @@ void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, intptr_t sequenc
   fclose(f);
 }
 
-#endif
+#endif // LIST_UNUSED
+
+#endif // TABLEBASE_BUILDER

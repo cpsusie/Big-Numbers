@@ -9,7 +9,7 @@ EndGameKeyDefinition5Men1Pawn::EndGameKeyDefinition5Men1Pawn(PieceKey pk2, Piece
 {
 }
 
-EndGamePosIndex EndGameKeyDefinition5Men1Pawn::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men1Pawn::keyToIndex(EndGameKey key) const {
   return ONE_PAWN_5MEN_INDEX(key) - MININDEX;
 }
 

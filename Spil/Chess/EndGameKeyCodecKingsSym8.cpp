@@ -258,7 +258,7 @@ const char EndGameKeyDefinition::s_offDiagIndexToPos[56] = {
 
 // Assume W.king is in the triangle [A1,D1,D4], and if W.King is on diagonal A1-D4, then B.king is on or below diagonal A1-H8
 // Calculates an index in the range [0..461], which can be decoded back into the same positions with decodeKKSym8.
-EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(const EndGameKey &key) { // static
+EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(EndGameKey key) { // static
   int wki = s_whiteKingPosToIndex[key.getWhiteKingPosition()];
 
 #ifdef _DEBUG

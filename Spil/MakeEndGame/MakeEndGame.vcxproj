@@ -335,6 +335,9 @@
       <AdditionalOptions> /Zm200 </AdditionalOptions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\MakeEndGame.tlb</TypeLibraryName>

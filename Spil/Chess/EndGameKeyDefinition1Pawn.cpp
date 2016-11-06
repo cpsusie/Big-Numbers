@@ -34,7 +34,7 @@ void EndGameKeyDefinition1Pawn::setPawnOwner() {
 }
 #endif
 
-SymmetricTransformation EndGameKeyDefinition1Pawn::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition1Pawn::getSymTransformation(EndGameKey key) const {
   return getPawnSymTransformation(key);
 }
 

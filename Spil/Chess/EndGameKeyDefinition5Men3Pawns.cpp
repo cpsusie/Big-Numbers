@@ -12,11 +12,11 @@ EndGameKeyDefinition5Men3Pawns::EndGameKeyDefinition5Men3Pawns(PieceKey pk2, Pie
 #endif
 }
 
-SymmetricTransformation EndGameKeyDefinition5Men3Pawns::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition5Men3Pawns::getSymTransformation(EndGameKey key) const {
   return getPawnSymTransformation(key);
 }
 
-EndGamePosIndex EndGameKeyDefinition5Men3Pawns::keyToIndex(const EndGameKey &key) const {
+EndGamePosIndex EndGameKeyDefinition5Men3Pawns::keyToIndex(EndGameKey key) const {
   UINT pi3 = key.getP3Pawn2Index()         - 8;
   UINT pi4 = key.getP4Pawn3IndexEqualP34() - 8;
 

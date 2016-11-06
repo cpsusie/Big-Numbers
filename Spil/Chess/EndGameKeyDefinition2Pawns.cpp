@@ -17,7 +17,7 @@ EndGameKeyDefinition2Pawns::EndGameKeyDefinition2Pawns(PieceKey pk2, PieceKey pk
 #endif
 }
 
-SymmetricTransformation EndGameKeyDefinition2Pawns::getSymTransformation(const EndGameKey &key) const {
+SymmetricTransformation EndGameKeyDefinition2Pawns::getSymTransformation(EndGameKey key) const {
   return getPawnSymTransformation(key);
 }
 

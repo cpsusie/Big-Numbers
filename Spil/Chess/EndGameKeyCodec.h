@@ -76,24 +76,6 @@ extern const char _wkD3BkI2P[55];
   }                                 \
 }
 
-#define SORT2_UPDATECHANGED(i,j)    \
-{ if(i > j) {                       \
-    orderChanged = true;            \
-    swap(i, j);                     \
-  } else {                          \
-    orderChanged = false;           \
-  }                                 \
-}
-
-#define SORT3_UPDATECHANGED(i,j,k)  \
-{ SORT2_UPDATECHANGED(i, j);        \
-  if(j > k) {                       \
-    swap(j, k);                     \
-    orderChanged = true;            \
-    SORT2(i, j);                    \
-  }                                 \
-}
-
 #ifdef _DEBUG
 
 EndGamePosIndex add2Equal(             EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp);
@@ -257,7 +239,7 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define KEYBOOL3MASK(key, f, i, j, k) BOOL3MASK(f, key.getPosition##i(), key.getPosition##j(), key.getPosition##k())
 
 
-// ---------------------------------------- Without pawns or bishop pair ----------------------------------------
+// ---------------------------------------- Without pawns ----------------------------------------
 
 #define ADDPLAYER(   player, addr)             (((addr) << 1) | (player))
 #define ADDPIT(      key   , addr)             ADDPLAYER(key.getPlayerInTurn(), addr)
@@ -294,181 +276,181 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SETP4_ONDIAG(     key , addr)          SETPOS_INDEX(key, addr,  4, 4)
 #define SETP5_ONDIAG(     key , addr)          SETPOS_INDEX(key, addr,  3, 5)
 
-#define KK_OFFDIAG_3MEN(         key) ADDP2_INDEX(     KK_OFFDIAG_2MEN(  key), key.getP2OffDiagIndex())
-#define KK_ONDIAG_3MEN(          key) ADDPOS_BELOWDIAG(KK_ONDIAG_2MEN(   key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition2()])
-#define KKP2_ONDIAG_3MEN(        key) ADDP2_ONDIAG(    KK_ONDIAG_2MEN(   key), key.getP2DiagIndex())
+#define KK_OFFDIAG_3MEN(          key)  ADDP2_INDEX(     KK_OFFDIAG_2MEN(   key), key.getP2OffDiagIndex())
+#define KK_ONDIAG_3MEN(           key)  ADDPOS_BELOWDIAG(KK_ONDIAG_2MEN(    key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition2()])
+#define KKP2_ONDIAG_3MEN(         key)  ADDP2_ONDIAG(    KK_ONDIAG_2MEN(    key), key.getP2DiagIndex())
 
-#define KK_OFFDIAG_4MEN(         key) ADDP3_INDEX(     KK_OFFDIAG_3MEN(  key), key.getP3OffDiagIndex())
-#define KK_ONDIAG_4MEN(          key) ADDP3_INDEX(     KK_ONDIAG_3MEN(   key), key.getP3OffDiagIndex())
-#define KKP2_ONDIAG_4MEN(        key) ADDPOS_BELOWDIAG(KKP2_ONDIAG_3MEN( key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition3()])
-#define KKP23_ONDIAG_4MEN(       key) ADDP3_ONDIAG(    KKP2_ONDIAG_3MEN( key), key.getP3DiagIndex())
+#define KK_OFFDIAG_4MEN(          key)  ADDP3_INDEX(     KK_OFFDIAG_3MEN(   key), key.getP3OffDiagIndex())
+#define KK_ONDIAG_4MEN(           key)  ADDP3_INDEX(     KK_ONDIAG_3MEN(    key), key.getP3OffDiagIndex())
+#define KKP2_ONDIAG_4MEN(         key)  ADDPOS_BELOWDIAG(KKP2_ONDIAG_3MEN(  key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition3()])
+#define KKP23_ONDIAG_4MEN(        key)  ADDP3_ONDIAG(    KKP2_ONDIAG_3MEN(  key), key.getP3DiagIndex())
 
-#define KK_OFFDIAG_5MEN(         key) ADDP4_INDEX(     KK_OFFDIAG_4MEN(  key), key.getP4OffDiagIndex())
-#define KK_ONDIAG_5MEN(          key) ADDP4_INDEX(     KK_ONDIAG_4MEN(   key), key.getP4OffDiagIndex())
-#define KKP2_ONDIAG_5MEN(        key) ADDP4_INDEX(     KKP2_ONDIAG_4MEN( key), key.getP4OffDiagIndex())
-#define KKP23_ONDIAG_5MEN(       key) ADDPOS_BELOWDIAG(KKP23_ONDIAG_4MEN(key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition4()])
-#define KKP234_ONDIAG_5MEN(      key) ADDP4_ONDIAG(    KKP23_ONDIAG_4MEN(key), key.getP4DiagIndex())
+#define KK_OFFDIAG_5MEN(          key)  ADDP4_INDEX(     KK_OFFDIAG_4MEN(   key), key.getP4OffDiagIndex())
+#define KK_ONDIAG_5MEN(           key)  ADDP4_INDEX(     KK_ONDIAG_4MEN(    key), key.getP4OffDiagIndex())
+#define KKP2_ONDIAG_5MEN(         key)  ADDP4_INDEX(     KKP2_ONDIAG_4MEN(  key), key.getP4OffDiagIndex())
+#define KKP23_ONDIAG_5MEN(        key)  ADDPOS_BELOWDIAG(KKP23_ONDIAG_4MEN( key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition4()])
+#define KKP234_ONDIAG_5MEN(       key)  ADDP4_ONDIAG(    KKP23_ONDIAG_4MEN( key), key.getP4DiagIndex())
 
-#define KK_OFFDIAG_6MEN(         key) ADDP5_INDEX(     KK_OFFDIAG_5MEN(   key), key.getP5OffDiagIndex())
-#define KK_ONDIAG_6MEN(          key) ADDP5_INDEX(     KK_ONDIAG_5MEN(    key), key.getP5OffDiagIndex())
-#define KKP2_ONDIAG_6MEN(        key) ADDP5_INDEX(     KKP2_ONDIAG_5MEN(  key), key.getP5OffDiagIndex())
-#define KKP23_ONDIAG_6MEN(       key) ADDP5_INDEX(     KKP23_ONDIAG_5MEN( key), key.getP5OffDiagIndex())
-#define KKP234_ONDIAG_6MEN(      key) ADDPOS_BELOWDIAG(KKP234_ONDIAG_5MEN(key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition5()])
-#define KKP2345_ONDIAG_6MEN(     key) ADDP5_ONDIAG(    KKP234_ONDIAG_5MEN(key), key.getP5DiagIndex())
+#define KK_OFFDIAG_6MEN(          key)  ADDP5_INDEX(     KK_OFFDIAG_5MEN(   key), key.getP5OffDiagIndex())
+#define KK_ONDIAG_6MEN(           key)  ADDP5_INDEX(     KK_ONDIAG_5MEN(    key), key.getP5OffDiagIndex())
+#define KKP2_ONDIAG_6MEN(         key)  ADDP5_INDEX(     KKP2_ONDIAG_5MEN(  key), key.getP5OffDiagIndex())
+#define KKP23_ONDIAG_6MEN(        key)  ADDP5_INDEX(     KKP23_ONDIAG_5MEN( key), key.getP5OffDiagIndex())
+#define KKP234_ONDIAG_6MEN(       key)  ADDPOS_BELOWDIAG(KKP234_ONDIAG_5MEN(key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition5()])
+#define KKP2345_ONDIAG_6MEN(      key)  ADDP5_ONDIAG(    KKP234_ONDIAG_5MEN(key), key.getP5DiagIndex())
 
-#define KK_OFFDIAG_2MEN_INDEX(   key) ADDPIT(key, KK_OFFDIAG_2MEN(   key))
-#define KK_ONDIAG_2MEN_INDEX(    key) ADDPIT(key, KK_ONDIAG_2MEN(    key))
+#define KK_OFFDIAG_2MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_2MEN(    key))
+#define KK_ONDIAG_2MEN_INDEX(     key)  ADDPIT(key, KK_ONDIAG_2MEN(     key))
 
-#define KK_OFFDIAG_3MEN_INDEX(   key) ADDPIT(key, KK_OFFDIAG_3MEN(   key))
-#define KK_ONDIAG_3MEN_INDEX(    key) ADDPIT(key, KK_ONDIAG_3MEN(    key))
-#define KKP2_ONDIAG_3MEN_INDEX(  key) ADDPIT(key, KKP2_ONDIAG_3MEN(  key))
+#define KK_OFFDIAG_3MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_3MEN(    key))
+#define KK_ONDIAG_3MEN_INDEX(     key)  ADDPIT(key, KK_ONDIAG_3MEN(     key))
+#define KKP2_ONDIAG_3MEN_INDEX(   key)  ADDPIT(key, KKP2_ONDIAG_3MEN(   key))
 
-#define KK_OFFDIAG_4MEN_INDEX(   key) ADDPIT(key, KK_OFFDIAG_4MEN(   key))
-#define KK_ONDIAG_4MEN_INDEX(    key) ADDPIT(key, KK_ONDIAG_4MEN(    key))
-#define KKP2_ONDIAG_4MEN_INDEX(  key) ADDPIT(key, KKP2_ONDIAG_4MEN(  key))
-#define KKP23_ONDIAG_4MEN_INDEX( key) ADDPIT(key, KKP23_ONDIAG_4MEN( key))
+#define KK_OFFDIAG_4MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_4MEN(    key))
+#define KK_ONDIAG_4MEN_INDEX(     key)  ADDPIT(key, KK_ONDIAG_4MEN(     key))
+#define KKP2_ONDIAG_4MEN_INDEX(   key)  ADDPIT(key, KKP2_ONDIAG_4MEN(   key))
+#define KKP23_ONDIAG_4MEN_INDEX(  key)  ADDPIT(key, KKP23_ONDIAG_4MEN(  key))
 
-#define KK_OFFDIAG_5MEN_INDEX(   key) ADDPIT(key, KK_OFFDIAG_5MEN(   key))
-#define KK_ONDIAG_5MEN_INDEX(    key) ADDPIT(key, KK_ONDIAG_5MEN(    key))
-#define KKP2_ONDIAG_5MEN_INDEX(  key) ADDPIT(key, KKP2_ONDIAG_5MEN(  key))
-#define KKP23_ONDIAG_5MEN_INDEX( key) ADDPIT(key, KKP23_ONDIAG_5MEN( key))
-#define KKP234_ONDIAG_5MEN_INDEX(key) ADDPIT(key, KKP234_ONDIAG_5MEN(key))
+#define KK_OFFDIAG_5MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_5MEN(    key))
+#define KK_ONDIAG_5MEN_INDEX(     key)  ADDPIT(key, KK_ONDIAG_5MEN(     key))
+#define KKP2_ONDIAG_5MEN_INDEX(   key)  ADDPIT(key, KKP2_ONDIAG_5MEN(   key))
+#define KKP23_ONDIAG_5MEN_INDEX(  key)  ADDPIT(key, KKP23_ONDIAG_5MEN(  key))
+#define KKP234_ONDIAG_5MEN_INDEX( key)  ADDPIT(key, KKP234_ONDIAG_5MEN( key))
 
-#define KK_OFFDIAG_6MEN_INDEX(    key) ADDPIT(key, KK_OFFDIAG_6MEN(    key))
-#define KK_ONDIAG_6MEN_INDEX(     key) ADDPIT(key, KK_ONDIAG_6MEN(     key))
-#define KKP2_ONDIAG_6MEN_INDEX(   key) ADDPIT(key, KKP2_ONDIAG_6MEN(   key))
-#define KKP23_ONDIAG_6MEN_INDEX(  key) ADDPIT(key, KKP23_ONDIAG_6MEN(  key))
-#define KKP234_ONDIAG_6MEN_INDEX( key) ADDPIT(key, KKP234_ONDIAG_6MEN( key))
-#define KKP2345_ONDIAG_6MEN_INDEX(key) ADDPIT(key, KKP2345_ONDIAG_6MEN(key))
+#define KK_OFFDIAG_6MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_6MEN(    key))
+#define KK_ONDIAG_6MEN_INDEX(     key)  ADDPIT(key, KK_ONDIAG_6MEN(     key))
+#define KKP2_ONDIAG_6MEN_INDEX(   key)  ADDPIT(key, KKP2_ONDIAG_6MEN(   key))
+#define KKP23_ONDIAG_6MEN_INDEX(  key)  ADDPIT(key, KKP23_ONDIAG_6MEN(  key))
+#define KKP234_ONDIAG_6MEN_INDEX( key)  ADDPIT(key, KKP234_ONDIAG_6MEN( key))
+#define KKP2345_ONDIAG_6MEN_INDEX(key)  ADDPIT(key, KKP2345_ONDIAG_6MEN(key))
 
-#define MIN_KK_OFFDIAG_2MEN            0                                           /* Kings:B1, D1 */
-#define MAX_KK_OFFDIAG_2MEN            KK_OFFDIAG_COUNT                            /* Kings:D3, H8  == 441 */
-#define MIN_KK_ONDIAG_2MEN             0                                           /* Kings:B2, D4 */
-#define MAX_KK_ONDIAG_2MEN             KK_ONDIAG_COUNT                             /* Kings:A1, H8 */
+#define MIN_KK_OFFDIAG_2MEN             0                                           /* Kings:B1, D1 */
+#define MAX_KK_OFFDIAG_2MEN             KK_OFFDIAG_COUNT                            /* Kings:D3, H8  == 441 */
+#define MIN_KK_ONDIAG_2MEN              0                                           /* Kings:B2, D4 */
+#define MAX_KK_ONDIAG_2MEN              KK_ONDIAG_COUNT                             /* Kings:A1, H8 */
 
-#define MIN_KK_OFFDIAG_3MEN            ADDP2_INDEX(     MIN_KK_OFFDIAG_2MEN  ,  0) /* Kings:B1, D1, p2:A1 */
-#define MAX_KK_OFFDIAG_3MEN            ADDP2_INDEX(     MAX_KK_OFFDIAG_2MEN  ,  0) /* Kings:D3, H8, p2:G8 */
-#define MIN_KK_ONDIAG_3MEN             ADDPOS_BELOWDIAG(MIN_KK_ONDIAG_2MEN   ,  0) /* Kings:B2, D4, p2:B1 */
-#define MAX_KK_ONDIAG_3MEN             ADDPOS_BELOWDIAG(MAX_KK_ONDIAG_2MEN   ,  0) /* Kings:A1, H8, p2:H7 */
-#define MIN_KKP2_ONDIAG_3MEN           ADDP2_ONDIAG(    MIN_KK_ONDIAG_2MEN   ,  0) /* Kings:B2, D4, p2:A1 */
-#define MAX_KKP2_ONDIAG_3MEN           ADDP2_ONDIAG(    MAX_KK_ONDIAG_2MEN   ,  0) /* Kings:A1, H8, p2:G7 */
+#define MIN_KK_OFFDIAG_3MEN             ADDP2_INDEX(     MIN_KK_OFFDIAG_2MEN   , 0) /* Kings:B1, D1, p2:A1 */
+#define MAX_KK_OFFDIAG_3MEN             ADDP2_INDEX(     MAX_KK_OFFDIAG_2MEN   , 0) /* Kings:D3, H8, p2:G8 */
+#define MIN_KK_ONDIAG_3MEN              ADDPOS_BELOWDIAG(MIN_KK_ONDIAG_2MEN    , 0) /* Kings:B2, D4, p2:B1 */
+#define MAX_KK_ONDIAG_3MEN              ADDPOS_BELOWDIAG(MAX_KK_ONDIAG_2MEN    , 0) /* Kings:A1, H8, p2:H7 */
+#define MIN_KKP2_ONDIAG_3MEN            ADDP2_ONDIAG(    MIN_KK_ONDIAG_2MEN    , 0) /* Kings:B2, D4, p2:A1 */
+#define MAX_KKP2_ONDIAG_3MEN            ADDP2_ONDIAG(    MAX_KK_ONDIAG_2MEN    , 0) /* Kings:A1, H8, p2:G7 */
 
-#define MIN_KK_OFFDIAG_4MEN            ADDP3_INDEX(     MIN_KK_OFFDIAG_3MEN  ,  0) /* Kings:B1, D1, p2:A1, p3:C1 */
-#define MAX_KK_OFFDIAG_4MEN            ADDP3_INDEX(     MAX_KK_OFFDIAG_3MEN  ,  0) /* Kings:D3, H8, p2:G8, p3:F8 */
-#define MIN_KK_ONDIAG_4MEN             ADDP3_INDEX(     MIN_KK_ONDIAG_3MEN   ,  0) /* Kings:B2, D4, p2:B1, p3:A1 */
-#define MAX_KK_ONDIAG_4MEN             ADDP3_INDEX(     MAX_KK_ONDIAG_3MEN   ,  0) /* Kings:A1, H8, p2:H7, p3:G8 */
-#define MIN_KKP2_ONDIAG_4MEN           ADDPOS_BELOWDIAG(MIN_KKP2_ONDIAG_3MEN ,  0) /* Kings:B2, D4, p2:A1, p3:B1 */
-#define MAX_KKP2_ONDIAG_4MEN           ADDPOS_BELOWDIAG(MAX_KKP2_ONDIAG_3MEN ,  0) /* Kings:A1, H8, p2:G7, p3:H7 */
-#define MIN_KKP23_ONDIAG_4MEN          ADDP3_ONDIAG(    MIN_KKP2_ONDIAG_3MEN ,  0) /* Kings:B2, D4, p2:A1, p3:C3 */
-#define MAX_KKP23_ONDIAG_4MEN          ADDP3_ONDIAG(    MAX_KKP2_ONDIAG_3MEN ,  0) /* Kings:A1, H8, p2:G7, p3:F6 */
+#define MIN_KK_OFFDIAG_4MEN             ADDP3_INDEX(     MIN_KK_OFFDIAG_3MEN   , 0) /* Kings:B1, D1, p2:A1, p3:C1 */
+#define MAX_KK_OFFDIAG_4MEN             ADDP3_INDEX(     MAX_KK_OFFDIAG_3MEN   , 0) /* Kings:D3, H8, p2:G8, p3:F8 */
+#define MIN_KK_ONDIAG_4MEN              ADDP3_INDEX(     MIN_KK_ONDIAG_3MEN    , 0) /* Kings:B2, D4, p2:B1, p3:A1 */
+#define MAX_KK_ONDIAG_4MEN              ADDP3_INDEX(     MAX_KK_ONDIAG_3MEN    , 0) /* Kings:A1, H8, p2:H7, p3:G8 */
+#define MIN_KKP2_ONDIAG_4MEN            ADDPOS_BELOWDIAG(MIN_KKP2_ONDIAG_3MEN  , 0) /* Kings:B2, D4, p2:A1, p3:B1 */
+#define MAX_KKP2_ONDIAG_4MEN            ADDPOS_BELOWDIAG(MAX_KKP2_ONDIAG_3MEN  , 0) /* Kings:A1, H8, p2:G7, p3:H7 */
+#define MIN_KKP23_ONDIAG_4MEN           ADDP3_ONDIAG(    MIN_KKP2_ONDIAG_3MEN  , 0) /* Kings:B2, D4, p2:A1, p3:C3 */
+#define MAX_KKP23_ONDIAG_4MEN           ADDP3_ONDIAG(    MAX_KKP2_ONDIAG_3MEN  , 0) /* Kings:A1, H8, p2:G7, p3:F6 */
 
-#define MIN_KK_OFFDIAG_5MEN            ADDP4_INDEX(     MIN_KK_OFFDIAG_4MEN  ,  0) /* Kings:B1, D1, p2:A1, p3:C1, p4:E1 */
-#define MAX_KK_OFFDIAG_5MEN            ADDP4_INDEX(     MAX_KK_OFFDIAG_4MEN  ,  0) /* Kings:D3, H8, p2:G8, p3:F8, p4:E8 */
-#define MIN_KK_ONDIAG_5MEN             ADDP4_INDEX(     MIN_KK_ONDIAG_4MEN   ,  0) /* Kings:B2, D4, p2:B1, p3:A1, p4:C1 */
-#define MAX_KK_ONDIAG_5MEN             ADDP4_INDEX(     MAX_KK_ONDIAG_4MEN   ,  0) /* Kings:A1, H8, p2:H7, p3:G8, p4:F8 */
-#define MIN_KKP2_ONDIAG_5MEN           ADDP4_INDEX(     MIN_KKP2_ONDIAG_4MEN ,  0) /* Kings:B2, D4, p2:A1, p3:B1, p4:C1 */
-#define MAX_KKP2_ONDIAG_5MEN           ADDP4_INDEX(     MAX_KKP2_ONDIAG_4MEN ,  0) /* Kings:A1, H8, p2:G7, p3:H7, p4:G8 */
-#define MIN_KKP23_ONDIAG_5MEN          ADDPOS_BELOWDIAG(MIN_KKP23_ONDIAG_4MEN,  0) /* Kings:B2, D4, p2:A1, p3:C3, p4:B1 */
-#define MAX_KKP23_ONDIAG_5MEN          ADDPOS_BELOWDIAG(MAX_KKP23_ONDIAG_4MEN,  0) /* Kings:A1, H8, p2:G7, p3:F6, p4:H7 */
-#define MIN_KKP234_ONDIAG_5MEN         ADDP4_ONDIAG(    MIN_KKP23_ONDIAG_4MEN,  0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5 */
-#define MAX_KKP234_ONDIAG_5MEN         ADDP4_ONDIAG(    MAX_KKP23_ONDIAG_4MEN,  0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5 */
+#define MIN_KK_OFFDIAG_5MEN             ADDP4_INDEX(     MIN_KK_OFFDIAG_4MEN   , 0) /* Kings:B1, D1, p2:A1, p3:C1, p4:E1 */
+#define MAX_KK_OFFDIAG_5MEN             ADDP4_INDEX(     MAX_KK_OFFDIAG_4MEN   , 0) /* Kings:D3, H8, p2:G8, p3:F8, p4:E8 */
+#define MIN_KK_ONDIAG_5MEN              ADDP4_INDEX(     MIN_KK_ONDIAG_4MEN    , 0) /* Kings:B2, D4, p2:B1, p3:A1, p4:C1 */
+#define MAX_KK_ONDIAG_5MEN              ADDP4_INDEX(     MAX_KK_ONDIAG_4MEN    , 0) /* Kings:A1, H8, p2:H7, p3:G8, p4:F8 */
+#define MIN_KKP2_ONDIAG_5MEN            ADDP4_INDEX(     MIN_KKP2_ONDIAG_4MEN  , 0) /* Kings:B2, D4, p2:A1, p3:B1, p4:C1 */
+#define MAX_KKP2_ONDIAG_5MEN            ADDP4_INDEX(     MAX_KKP2_ONDIAG_4MEN  , 0) /* Kings:A1, H8, p2:G7, p3:H7, p4:G8 */
+#define MIN_KKP23_ONDIAG_5MEN           ADDPOS_BELOWDIAG(MIN_KKP23_ONDIAG_4MEN , 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:B1 */
+#define MAX_KKP23_ONDIAG_5MEN           ADDPOS_BELOWDIAG(MAX_KKP23_ONDIAG_4MEN , 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:H7 */
+#define MIN_KKP234_ONDIAG_5MEN          ADDP4_ONDIAG(    MIN_KKP23_ONDIAG_4MEN , 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5 */
+#define MAX_KKP234_ONDIAG_5MEN          ADDP4_ONDIAG(    MAX_KKP23_ONDIAG_4MEN , 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5 */
 
-#define MIN_KK_OFFDIAG_6MEN            ADDP5_INDEX(     MIN_KK_OFFDIAG_5MEN   , 0) /* Kings:B1, D1, p2:A1, p3:C1, p4:E1, p5:F1*/
-#define MAX_KK_OFFDIAG_6MEN            ADDP5_INDEX(     MAX_KK_OFFDIAG_5MEN   , 0) /* Kings:D3, H8, p2:G8, p3:F8, p4:E8, p5:D8*/
-#define MIN_KK_ONDIAG_6MEN             ADDP5_INDEX(     MIN_KK_ONDIAG_5MEN    , 0) /* Kings:B2, D4, p2:B1, p3:A1, p4:C1, p5:D1*/
-#define MAX_KK_ONDIAG_6MEN             ADDP5_INDEX(     MAX_KK_ONDIAG_5MEN    , 0) /* Kings:A1, H8, p2:H7, p3:G8, p4:F8, p5:E8*/
-#define MIN_KKP2_ONDIAG_6MEN           ADDP5_INDEX(     MIN_KKP2_ONDIAG_5MEN  , 0) /* Kings:B2, D4, p2:A1, p3:B1, p4:C1, p5:D1*/
-#define MAX_KKP2_ONDIAG_6MEN           ADDP5_INDEX(     MAX_KKP2_ONDIAG_5MEN  , 0) /* Kings:A1, H8, p2:G7, p3:H7, p4:G8, p5:F8*/
-#define MIN_KKP23_ONDIAG_6MEN          ADDP5_INDEX(     MIN_KKP23_ONDIAG_5MEN , 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:B1, p5:C1*/
-#define MAX_KKP23_ONDIAG_6MEN          ADDP5_INDEX(     MAX_KKP23_ONDIAG_5MEN , 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:H7, p5:G8*/
-#define MIN_KKP234_ONDIAG_6MEN         ADDPOS_BELOWDIAG(MIN_KKP234_ONDIAG_5MEN, 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5, p5:B1*/
-#define MAX_KKP234_ONDIAG_6MEN         ADDPOS_BELOWDIAG(MAX_KKP234_ONDIAG_5MEN, 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5, p5:H7*/
-#define MIN_KKP2345_ONDIAG_6MEN        ADDP5_ONDIAG(    MIN_KKP234_ONDIAG_5MEN, 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5, p5:F6*/
-#define MAX_KKP2345_ONDIAG_6MEN        ADDP5_ONDIAG(    MAX_KKP234_ONDIAG_5MEN, 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5, p5:D4*/
+#define MIN_KK_OFFDIAG_6MEN             ADDP5_INDEX(     MIN_KK_OFFDIAG_5MEN   , 0) /* Kings:B1, D1, p2:A1, p3:C1, p4:E1, p5:F1*/
+#define MAX_KK_OFFDIAG_6MEN             ADDP5_INDEX(     MAX_KK_OFFDIAG_5MEN   , 0) /* Kings:D3, H8, p2:G8, p3:F8, p4:E8, p5:D8*/
+#define MIN_KK_ONDIAG_6MEN              ADDP5_INDEX(     MIN_KK_ONDIAG_5MEN    , 0) /* Kings:B2, D4, p2:B1, p3:A1, p4:C1, p5:D1*/
+#define MAX_KK_ONDIAG_6MEN              ADDP5_INDEX(     MAX_KK_ONDIAG_5MEN    , 0) /* Kings:A1, H8, p2:H7, p3:G8, p4:F8, p5:E8*/
+#define MIN_KKP2_ONDIAG_6MEN            ADDP5_INDEX(     MIN_KKP2_ONDIAG_5MEN  , 0) /* Kings:B2, D4, p2:A1, p3:B1, p4:C1, p5:D1*/
+#define MAX_KKP2_ONDIAG_6MEN            ADDP5_INDEX(     MAX_KKP2_ONDIAG_5MEN  , 0) /* Kings:A1, H8, p2:G7, p3:H7, p4:G8, p5:F8*/
+#define MIN_KKP23_ONDIAG_6MEN           ADDP5_INDEX(     MIN_KKP23_ONDIAG_5MEN , 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:B1, p5:C1*/
+#define MAX_KKP23_ONDIAG_6MEN           ADDP5_INDEX(     MAX_KKP23_ONDIAG_5MEN , 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:H7, p5:G8*/
+#define MIN_KKP234_ONDIAG_6MEN          ADDPOS_BELOWDIAG(MIN_KKP234_ONDIAG_5MEN, 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5, p5:B1*/
+#define MAX_KKP234_ONDIAG_6MEN          ADDPOS_BELOWDIAG(MAX_KKP234_ONDIAG_5MEN, 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5, p5:H7*/
+#define MIN_KKP2345_ONDIAG_6MEN         ADDP5_ONDIAG(    MIN_KKP234_ONDIAG_5MEN, 0) /* Kings:B2, D4, p2:A1, p3:C3, p4:E5, p5:F6*/
+#define MAX_KKP2345_ONDIAG_6MEN         ADDP5_ONDIAG(    MAX_KKP234_ONDIAG_5MEN, 0) /* Kings:A1, H8, p2:G7, p3:F6, p4:E5, p5:D4*/
 
-#define FIRSTINDEX(name)               ADDPLAYER(WHITEPLAYER, MIN_##name)
-#define LASTINDEX(name)                ADDPLAYER(WHITEPLAYER, MAX_##name)
+#define FIRSTINDEX(name)                ADDPLAYER(WHITEPLAYER, MIN_##name)
+#define LASTINDEX(name)                 ADDPLAYER(WHITEPLAYER, MAX_##name)
 
-#define MININDEX_KK_OFFDIAG_2MEN       FIRSTINDEX(KK_OFFDIAG_2MEN   )
-#define MAXINDEX_KK_OFFDIAG_2MEN       LASTINDEX( KK_OFFDIAG_2MEN   )
-#define MININDEX_KK_ONDIAG_2MEN        FIRSTINDEX(KK_ONDIAG_2MEN    )
-#define MAXINDEX_KK_ONDIAG_2MEN        LASTINDEX( KK_ONDIAG_2MEN    )
+#define MININDEX_KK_OFFDIAG_2MEN        FIRSTINDEX(KK_OFFDIAG_2MEN    )
+#define MAXINDEX_KK_OFFDIAG_2MEN        LASTINDEX( KK_OFFDIAG_2MEN    )
+#define MININDEX_KK_ONDIAG_2MEN         FIRSTINDEX(KK_ONDIAG_2MEN     )
+#define MAXINDEX_KK_ONDIAG_2MEN         LASTINDEX( KK_ONDIAG_2MEN     )
 
-#define MININDEX_KK_OFFDIAG_3MEN       FIRSTINDEX(KK_OFFDIAG_3MEN   )
-#define MAXINDEX_KK_OFFDIAG_3MEN       LASTINDEX( KK_OFFDIAG_3MEN   )
-#define MININDEX_KK_ONDIAG_3MEN        FIRSTINDEX(KK_ONDIAG_3MEN    )
-#define MAXINDEX_KK_ONDIAG_3MEN        LASTINDEX( KK_ONDIAG_3MEN    )
-#define MININDEX_KKP2_ONDIAG_3MEN      FIRSTINDEX(KKP2_ONDIAG_3MEN  )
-#define MAXINDEX_KKP2_ONDIAG_3MEN      LASTINDEX( KKP2_ONDIAG_3MEN  )
+#define MININDEX_KK_OFFDIAG_3MEN        FIRSTINDEX(KK_OFFDIAG_3MEN    )
+#define MAXINDEX_KK_OFFDIAG_3MEN        LASTINDEX( KK_OFFDIAG_3MEN    )
+#define MININDEX_KK_ONDIAG_3MEN         FIRSTINDEX(KK_ONDIAG_3MEN     )
+#define MAXINDEX_KK_ONDIAG_3MEN         LASTINDEX( KK_ONDIAG_3MEN     )
+#define MININDEX_KKP2_ONDIAG_3MEN       FIRSTINDEX(KKP2_ONDIAG_3MEN   )
+#define MAXINDEX_KKP2_ONDIAG_3MEN       LASTINDEX( KKP2_ONDIAG_3MEN   )
 
-#define MININDEX_KK_OFFDIAG_4MEN       FIRSTINDEX(KK_OFFDIAG_4MEN   )
-#define MAXINDEX_KK_OFFDIAG_4MEN       LASTINDEX( KK_OFFDIAG_4MEN   )
-#define MININDEX_KK_ONDIAG_4MEN        FIRSTINDEX(KK_ONDIAG_4MEN    )
-#define MAXINDEX_KK_ONDIAG_4MEN        LASTINDEX( KK_ONDIAG_4MEN    )
-#define MININDEX_KKP2_ONDIAG_4MEN      FIRSTINDEX(KKP2_ONDIAG_4MEN  )
-#define MAXINDEX_KKP2_ONDIAG_4MEN      LASTINDEX( KKP2_ONDIAG_4MEN  )
-#define MININDEX_KKP23_ONDIAG_4MEN     FIRSTINDEX(KKP23_ONDIAG_4MEN )
-#define MAXINDEX_KKP23_ONDIAG_4MEN     LASTINDEX( KKP23_ONDIAG_4MEN )
+#define MININDEX_KK_OFFDIAG_4MEN        FIRSTINDEX(KK_OFFDIAG_4MEN    )
+#define MAXINDEX_KK_OFFDIAG_4MEN        LASTINDEX( KK_OFFDIAG_4MEN    )
+#define MININDEX_KK_ONDIAG_4MEN         FIRSTINDEX(KK_ONDIAG_4MEN     )
+#define MAXINDEX_KK_ONDIAG_4MEN         LASTINDEX( KK_ONDIAG_4MEN     )
+#define MININDEX_KKP2_ONDIAG_4MEN       FIRSTINDEX(KKP2_ONDIAG_4MEN   )
+#define MAXINDEX_KKP2_ONDIAG_4MEN       LASTINDEX( KKP2_ONDIAG_4MEN   )
+#define MININDEX_KKP23_ONDIAG_4MEN      FIRSTINDEX(KKP23_ONDIAG_4MEN  )
+#define MAXINDEX_KKP23_ONDIAG_4MEN      LASTINDEX( KKP23_ONDIAG_4MEN  )
 
-#define MININDEX_KK_OFFDIAG_5MEN       FIRSTINDEX(KK_OFFDIAG_5MEN   )
-#define MAXINDEX_KK_OFFDIAG_5MEN       LASTINDEX( KK_OFFDIAG_5MEN   )
-#define MININDEX_KK_ONDIAG_5MEN        FIRSTINDEX(KK_ONDIAG_5MEN    )
-#define MAXINDEX_KK_ONDIAG_5MEN        LASTINDEX( KK_ONDIAG_5MEN    )
-#define MININDEX_KKP2_ONDIAG_5MEN      FIRSTINDEX(KKP2_ONDIAG_5MEN  )
-#define MAXINDEX_KKP2_ONDIAG_5MEN      LASTINDEX( KKP2_ONDIAG_5MEN  )
-#define MININDEX_KKP23_ONDIAG_5MEN     FIRSTINDEX(KKP23_ONDIAG_5MEN )
-#define MAXINDEX_KKP23_ONDIAG_5MEN     LASTINDEX( KKP23_ONDIAG_5MEN )
-#define MININDEX_KKP234_ONDIAG_5MEN    FIRSTINDEX(KKP234_ONDIAG_5MEN)
-#define MAXINDEX_KKP234_ONDIAG_5MEN    LASTINDEX( KKP234_ONDIAG_5MEN)
+#define MININDEX_KK_OFFDIAG_5MEN        FIRSTINDEX(KK_OFFDIAG_5MEN    )
+#define MAXINDEX_KK_OFFDIAG_5MEN        LASTINDEX( KK_OFFDIAG_5MEN    )
+#define MININDEX_KK_ONDIAG_5MEN         FIRSTINDEX(KK_ONDIAG_5MEN     )
+#define MAXINDEX_KK_ONDIAG_5MEN         LASTINDEX( KK_ONDIAG_5MEN     )
+#define MININDEX_KKP2_ONDIAG_5MEN       FIRSTINDEX(KKP2_ONDIAG_5MEN   )
+#define MAXINDEX_KKP2_ONDIAG_5MEN       LASTINDEX( KKP2_ONDIAG_5MEN   )
+#define MININDEX_KKP23_ONDIAG_5MEN      FIRSTINDEX(KKP23_ONDIAG_5MEN  )
+#define MAXINDEX_KKP23_ONDIAG_5MEN      LASTINDEX( KKP23_ONDIAG_5MEN  )
+#define MININDEX_KKP234_ONDIAG_5MEN     FIRSTINDEX(KKP234_ONDIAG_5MEN )
+#define MAXINDEX_KKP234_ONDIAG_5MEN     LASTINDEX( KKP234_ONDIAG_5MEN )
 
-#define MININDEX_KK_OFFDIAG_6MEN       FIRSTINDEX(KK_OFFDIAG_6MEN    )
-#define MAXINDEX_KK_OFFDIAG_6MEN       LASTINDEX( KK_OFFDIAG_6MEN    )
-#define MININDEX_KK_ONDIAG_6MEN        FIRSTINDEX(KK_ONDIAG_6MEN     )
-#define MAXINDEX_KK_ONDIAG_6MEN        LASTINDEX( KK_ONDIAG_6MEN     )
-#define MININDEX_KKP2_ONDIAG_6MEN      FIRSTINDEX(KKP2_ONDIAG_6MEN   )
-#define MAXINDEX_KKP2_ONDIAG_6MEN      LASTINDEX( KKP2_ONDIAG_6MEN   )
-#define MININDEX_KKP23_ONDIAG_6MEN     FIRSTINDEX(KKP23_ONDIAG_6MEN  )
-#define MAXINDEX_KKP23_ONDIAG_6MEN     LASTINDEX( KKP23_ONDIAG_6MEN  )
-#define MININDEX_KKP234_ONDIAG_6MEN    FIRSTINDEX(KKP234_ONDIAG_6MEN )
-#define MAXINDEX_KKP234_ONDIAG_6MEN    LASTINDEX( KKP234_ONDIAG_6MEN )
-#define MININDEX_KKP2345_ONDIAG_6MEN   FIRSTINDEX(KKP2345_ONDIAG_6MEN)
-#define MAXINDEX_KKP2345_ONDIAG_6MEN   LASTINDEX( KKP2345_ONDIAG_6MEN)
+#define MININDEX_KK_OFFDIAG_6MEN        FIRSTINDEX(KK_OFFDIAG_6MEN    )
+#define MAXINDEX_KK_OFFDIAG_6MEN        LASTINDEX( KK_OFFDIAG_6MEN    )
+#define MININDEX_KK_ONDIAG_6MEN         FIRSTINDEX(KK_ONDIAG_6MEN     )
+#define MAXINDEX_KK_ONDIAG_6MEN         LASTINDEX( KK_ONDIAG_6MEN     )
+#define MININDEX_KKP2_ONDIAG_6MEN       FIRSTINDEX(KKP2_ONDIAG_6MEN   )
+#define MAXINDEX_KKP2_ONDIAG_6MEN       LASTINDEX( KKP2_ONDIAG_6MEN   )
+#define MININDEX_KKP23_ONDIAG_6MEN      FIRSTINDEX(KKP23_ONDIAG_6MEN  )
+#define MAXINDEX_KKP23_ONDIAG_6MEN      LASTINDEX( KKP23_ONDIAG_6MEN  )
+#define MININDEX_KKP234_ONDIAG_6MEN     FIRSTINDEX(KKP234_ONDIAG_6MEN )
+#define MAXINDEX_KKP234_ONDIAG_6MEN     LASTINDEX( KKP234_ONDIAG_6MEN )
+#define MININDEX_KKP2345_ONDIAG_6MEN    FIRSTINDEX(KKP2345_ONDIAG_6MEN)
+#define MAXINDEX_KKP2345_ONDIAG_6MEN    LASTINDEX( KKP2345_ONDIAG_6MEN)
 
-#define START_RANGE_KK_OFFDIAG_2MEN    0
-#define OFFSET_KK_OFFDIAG_2MEN         (START_RANGE_KK_OFFDIAG_2MEN    - MININDEX_KK_OFFDIAG_2MEN    )
-#define START_RANGE_KK_ONDIAG_2MEN     (OFFSET_KK_OFFDIAG_2MEN         + MAXINDEX_KK_OFFDIAG_2MEN    )
-#define OFFSET_KK_ONDIAG_2MEN          (START_RANGE_KK_ONDIAG_2MEN     - MININDEX_KK_ONDIAG_2MEN     )
-#define END_RANGE_ONDIAG_2MEN          (START_RANGE_KK_ONDIAG_2MEN     + MAXINDEX_KK_ONDIAG_2MEN     )
+#define START_RANGE_KK_OFFDIAG_2MEN     0
+#define OFFSET_KK_OFFDIAG_2MEN          (START_RANGE_KK_OFFDIAG_2MEN     - MININDEX_KK_OFFDIAG_2MEN     )
+#define START_RANGE_KK_ONDIAG_2MEN      (OFFSET_KK_OFFDIAG_2MEN          + MAXINDEX_KK_OFFDIAG_2MEN     )
+#define OFFSET_KK_ONDIAG_2MEN           (START_RANGE_KK_ONDIAG_2MEN      - MININDEX_KK_ONDIAG_2MEN      )
+#define END_RANGE_ONDIAG_2MEN           (START_RANGE_KK_ONDIAG_2MEN      + MAXINDEX_KK_ONDIAG_2MEN      )
 
-#define START_RANGE_KK_OFFDIAG_3MEN    0
-#define OFFSET_KK_OFFDIAG_3MEN         (START_RANGE_KK_OFFDIAG_3MEN    - MININDEX_KK_OFFDIAG_3MEN    )
-#define START_RANGE_KK_ONDIAG_3MEN     (OFFSET_KK_OFFDIAG_3MEN         + MAXINDEX_KK_OFFDIAG_3MEN    )
-#define OFFSET_KK_ONDIAG_3MEN          (START_RANGE_KK_ONDIAG_3MEN     - MININDEX_KK_ONDIAG_3MEN     )
-#define START_RANGE_KKP2_ONDIAG_3MEN   (OFFSET_KK_ONDIAG_3MEN          + MAXINDEX_KK_ONDIAG_3MEN     )
-#define OFFSET_KKP2_ONDIAG_3MEN        (START_RANGE_KKP2_ONDIAG_3MEN   - MININDEX_KKP2_ONDIAG_3MEN   )
-#define END_RANGE_ONDIAG_3MEN          (START_RANGE_KKP2_ONDIAG_3MEN   + MAXINDEX_KKP2_ONDIAG_3MEN   )
+#define START_RANGE_KK_OFFDIAG_3MEN     0
+#define OFFSET_KK_OFFDIAG_3MEN          (START_RANGE_KK_OFFDIAG_3MEN     - MININDEX_KK_OFFDIAG_3MEN     )
+#define START_RANGE_KK_ONDIAG_3MEN      (OFFSET_KK_OFFDIAG_3MEN          + MAXINDEX_KK_OFFDIAG_3MEN     )
+#define OFFSET_KK_ONDIAG_3MEN           (START_RANGE_KK_ONDIAG_3MEN      - MININDEX_KK_ONDIAG_3MEN      )
+#define START_RANGE_KKP2_ONDIAG_3MEN    (OFFSET_KK_ONDIAG_3MEN           + MAXINDEX_KK_ONDIAG_3MEN      )
+#define OFFSET_KKP2_ONDIAG_3MEN         (START_RANGE_KKP2_ONDIAG_3MEN    - MININDEX_KKP2_ONDIAG_3MEN    )
+#define END_RANGE_ONDIAG_3MEN           (START_RANGE_KKP2_ONDIAG_3MEN    + MAXINDEX_KKP2_ONDIAG_3MEN    )
 
-#define START_RANGE_KK_OFFDIAG_4MEN    0
-#define OFFSET_KK_OFFDIAG_4MEN         (START_RANGE_KK_OFFDIAG_4MEN    - MININDEX_KK_OFFDIAG_4MEN    )
-#define START_RANGE_KK_ONDIAG_4MEN     (OFFSET_KK_OFFDIAG_4MEN         + MAXINDEX_KK_OFFDIAG_4MEN    )
-#define OFFSET_KK_ONDIAG_4MEN          (START_RANGE_KK_ONDIAG_4MEN     - MININDEX_KK_ONDIAG_4MEN     )
-#define START_RANGE_KKP2_ONDIAG_4MEN   (OFFSET_KK_ONDIAG_4MEN          + MAXINDEX_KK_ONDIAG_4MEN     )
-#define OFFSET_KKP2_ONDIAG_4MEN        (START_RANGE_KKP2_ONDIAG_4MEN   - MININDEX_KKP2_ONDIAG_4MEN   )
-#define START_RANGE_KKP23_ONDIAG_4MEN  (OFFSET_KKP2_ONDIAG_4MEN        + MAXINDEX_KKP2_ONDIAG_4MEN   )
-#define OFFSET_KKP23_ONDIAG_4MEN       (START_RANGE_KKP23_ONDIAG_4MEN  - MININDEX_KKP23_ONDIAG_4MEN  )
-#define END_RANGE_ONDIAG_4MEN          (START_RANGE_KKP23_ONDIAG_4MEN  + MAXINDEX_KKP23_ONDIAG_4MEN  )
+#define START_RANGE_KK_OFFDIAG_4MEN     0
+#define OFFSET_KK_OFFDIAG_4MEN          (START_RANGE_KK_OFFDIAG_4MEN     - MININDEX_KK_OFFDIAG_4MEN     )
+#define START_RANGE_KK_ONDIAG_4MEN      (OFFSET_KK_OFFDIAG_4MEN          + MAXINDEX_KK_OFFDIAG_4MEN     )
+#define OFFSET_KK_ONDIAG_4MEN           (START_RANGE_KK_ONDIAG_4MEN      - MININDEX_KK_ONDIAG_4MEN      )
+#define START_RANGE_KKP2_ONDIAG_4MEN    (OFFSET_KK_ONDIAG_4MEN           + MAXINDEX_KK_ONDIAG_4MEN      )
+#define OFFSET_KKP2_ONDIAG_4MEN         (START_RANGE_KKP2_ONDIAG_4MEN    - MININDEX_KKP2_ONDIAG_4MEN    )
+#define START_RANGE_KKP23_ONDIAG_4MEN   (OFFSET_KKP2_ONDIAG_4MEN         + MAXINDEX_KKP2_ONDIAG_4MEN    )
+#define OFFSET_KKP23_ONDIAG_4MEN        (START_RANGE_KKP23_ONDIAG_4MEN   - MININDEX_KKP23_ONDIAG_4MEN   )
+#define END_RANGE_ONDIAG_4MEN           (START_RANGE_KKP23_ONDIAG_4MEN   + MAXINDEX_KKP23_ONDIAG_4MEN   )
 
-#define START_RANGE_KK_OFFDIAG_5MEN    0
-#define OFFSET_KK_OFFDIAG_5MEN         (START_RANGE_KK_OFFDIAG_5MEN    - MININDEX_KK_OFFDIAG_5MEN    )
-#define START_RANGE_KK_ONDIAG_5MEN     (OFFSET_KK_OFFDIAG_5MEN         + MAXINDEX_KK_OFFDIAG_5MEN    )
-#define OFFSET_KK_ONDIAG_5MEN          (START_RANGE_KK_ONDIAG_5MEN     - MININDEX_KK_ONDIAG_5MEN     )
-#define START_RANGE_KKP2_ONDIAG_5MEN   (OFFSET_KK_ONDIAG_5MEN          + MAXINDEX_KK_ONDIAG_5MEN     )
-#define OFFSET_KKP2_ONDIAG_5MEN        (START_RANGE_KKP2_ONDIAG_5MEN   - MININDEX_KKP2_ONDIAG_5MEN   )
-#define START_RANGE_KKP23_ONDIAG_5MEN  (OFFSET_KKP2_ONDIAG_5MEN        + MAXINDEX_KKP2_ONDIAG_5MEN   )
-#define OFFSET_KKP23_ONDIAG_5MEN       (START_RANGE_KKP23_ONDIAG_5MEN  - MININDEX_KKP23_ONDIAG_5MEN  )
-#define START_RANGE_KKP234_ONDIAG_5MEN (OFFSET_KKP23_ONDIAG_5MEN       + MAXINDEX_KKP23_ONDIAG_5MEN  )
-#define OFFSET_KKP234_ONDIAG_5MEN      (START_RANGE_KKP234_ONDIAG_5MEN - MININDEX_KKP234_ONDIAG_5MEN )
-#define END_RANGE_ONDIAG_5MEN          (START_RANGE_KKP234_ONDIAG_5MEN + MAXINDEX_KKP234_ONDIAG_5MEN )
+#define START_RANGE_KK_OFFDIAG_5MEN     0
+#define OFFSET_KK_OFFDIAG_5MEN          (START_RANGE_KK_OFFDIAG_5MEN     - MININDEX_KK_OFFDIAG_5MEN     )
+#define START_RANGE_KK_ONDIAG_5MEN      (OFFSET_KK_OFFDIAG_5MEN          + MAXINDEX_KK_OFFDIAG_5MEN     )
+#define OFFSET_KK_ONDIAG_5MEN           (START_RANGE_KK_ONDIAG_5MEN      - MININDEX_KK_ONDIAG_5MEN      )
+#define START_RANGE_KKP2_ONDIAG_5MEN    (OFFSET_KK_ONDIAG_5MEN           + MAXINDEX_KK_ONDIAG_5MEN      )
+#define OFFSET_KKP2_ONDIAG_5MEN         (START_RANGE_KKP2_ONDIAG_5MEN    - MININDEX_KKP2_ONDIAG_5MEN    )
+#define START_RANGE_KKP23_ONDIAG_5MEN   (OFFSET_KKP2_ONDIAG_5MEN         + MAXINDEX_KKP2_ONDIAG_5MEN    )
+#define OFFSET_KKP23_ONDIAG_5MEN        (START_RANGE_KKP23_ONDIAG_5MEN   - MININDEX_KKP23_ONDIAG_5MEN   )
+#define START_RANGE_KKP234_ONDIAG_5MEN  (OFFSET_KKP23_ONDIAG_5MEN        + MAXINDEX_KKP23_ONDIAG_5MEN   )
+#define OFFSET_KKP234_ONDIAG_5MEN       (START_RANGE_KKP234_ONDIAG_5MEN  - MININDEX_KKP234_ONDIAG_5MEN  )
+#define END_RANGE_ONDIAG_5MEN           (START_RANGE_KKP234_ONDIAG_5MEN  + MAXINDEX_KKP234_ONDIAG_5MEN  )
 
 #define START_RANGE_KK_OFFDIAG_6MEN     0
 #define OFFSET_KK_OFFDIAG_6MEN          (START_RANGE_KK_OFFDIAG_6MEN     - MININDEX_KK_OFFDIAG_6MEN     )

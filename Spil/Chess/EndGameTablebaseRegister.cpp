@@ -157,7 +157,8 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRRPK());  // King-Rook-Rook-Pawn       / King
   add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
 
-  add(new EndGameKQRKBN()); 
+  add(new EndGameKQRKBN());
+  add(new EndGameKQRKRR());
 }
 
 TablebaseRegister::~TablebaseRegister() {
