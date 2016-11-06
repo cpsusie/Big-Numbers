@@ -87,28 +87,28 @@ void generateManualPositionFile() {
 
 static int endGameKeyComparator3Men(const EndGameKey &k1, const EndGameKey &k2) {
   int c;
-  if(c = k1.getPosition0() - k2.getPosition0()) return c;
-  if(c = k1.getPosition1() - k2.getPosition1()) return c;
-  if(c = k1.getPosition2() - k2.getPosition2()) return c;
+  if(c = k1.getPosition(0) - k2.getPosition(0)) return c;
+  if(c = k1.getPosition(1) - k2.getPosition(1)) return c;
+  if(c = k1.getPosition(2) - k2.getPosition(2)) return c;
   return (int)k1.getPlayerInTurn() - (int)k2.getPlayerInTurn();
 }
 
 static int endGameKeyComparator4Men(const EndGameKey &k1, const EndGameKey &k2) {
   int c;
-  if(c = k1.getPosition0() - k2.getPosition0()) return c;
-  if(c = k1.getPosition1() - k2.getPosition1()) return c;
-  if(c = k1.getPosition2() - k2.getPosition2()) return c;
-  if(c = k1.getPosition3() - k2.getPosition3()) return c;
+  if(c = k1.getPosition(0) - k2.getPosition(0)) return c;
+  if(c = k1.getPosition(1) - k2.getPosition(1)) return c;
+  if(c = k1.getPosition(2) - k2.getPosition(2)) return c;
+  if(c = k1.getPosition(3) - k2.getPosition(3)) return c;
   return (int)k1.getPlayerInTurn() - (int)k2.getPlayerInTurn();
 }
 
 static int endGameKeyComparator5Men(const EndGameKey &k1, const EndGameKey &k2) {
   int c;
-  if(c = k1.getPosition0() - k2.getPosition0()) return c;
-  if(c = k1.getPosition1() - k2.getPosition1()) return c;
-  if(c = k1.getPosition2() - k2.getPosition2()) return c;
-  if(c = k1.getPosition3() - k2.getPosition3()) return c;
-  if(c = k1.getPosition4() - k2.getPosition4()) return c;
+  if(c = k1.getPosition(0) - k2.getPosition(0)) return c;
+  if(c = k1.getPosition(1) - k2.getPosition(1)) return c;
+  if(c = k1.getPosition(2) - k2.getPosition(2)) return c;
+  if(c = k1.getPosition(3) - k2.getPosition(3)) return c;
+  if(c = k1.getPosition(4) - k2.getPosition(4)) return c;
   return (int)k1.getPlayerInTurn() - (int)k2.getPlayerInTurn();
 }
 

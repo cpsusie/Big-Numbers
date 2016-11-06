@@ -87,10 +87,8 @@ void EndGameKeyDefinition5Men3Pawns::scanPositions(EndGameKeyWithOccupiedPositio
   case 2:
     { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
         const int pos2 = s_pawnIndexToPos[i];
-        if(key.isOccupied(pos2)) {
-          continue;
-        }
-        key.setPosition2(pos2);
+        if(key.isOccupied(pos2)) continue;
+        key.setPosition(2,pos2);
         scanPositions(key, 3);
         key.clearField(pos2);
       }
@@ -99,26 +97,20 @@ void EndGameKeyDefinition5Men3Pawns::scanPositions(EndGameKeyWithOccupiedPositio
   case 3:
     { for(int i = 0; i < PAWN_POSCOUNT; i++) {
         const int pos3 = s_pawnIndexToPos[i];
-        if(key.isOccupied(pos3)) {
-          continue;
-        }
-        key.setPosition3(pos3);
+        if(key.isOccupied(pos3)) continue;
+        key.setPosition(3,pos3);
         scanPositions(key, 4);
         key.clearField(pos3);
       }
     }
     break;
   case 4:
-    { const int pos3 = key.getPosition3();
+    { const int pos3 = key.getPosition(3);
       for(int i = 0; i < PAWN_POSCOUNT; i++) {
         const int pos4 = s_pawnIndexToPos[i];
-        if(pos3 > pos4) {
-          continue;
-        }
-        if(key.isOccupied(pos4)) {
-          continue;
-        }
-        key.setPosition4(pos4);
+        if(pos3 > pos4) continue;
+        if(key.isOccupied(pos4)) continue;
+        key.setPosition(4,pos4);
         checkForBothPlayers(key);
         key.clearField(pos4);
       }
@@ -129,8 +121,7 @@ void EndGameKeyDefinition5Men3Pawns::scanPositions(EndGameKeyWithOccupiedPositio
   }
 }
 
-void EndGameKeyDefinition5Men3Pawns::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition5Men3Pawns::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
 }
 

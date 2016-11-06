@@ -13,14 +13,14 @@ EndGameKeyDefinition5Men1Pawn2Equal::EndGameKeyDefinition5Men1Pawn2Equal(PieceKe
 }
 
 EndGamePosIndex EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(EndGameKey key) const {
-  const UINT pos3 = key.getPosition3();
-  const UINT pos4 = key.getPosition4();
+  const UINT pos3 = key.getPosition(3);
+  const UINT pos4 = key.getPosition(4);
 
   assert(pos3 != pos4);
   EndGameKey tmp = key;
   if(pos4 < pos3) {
-    tmp.setPosition3(pos4);
-    tmp.setPosition4(pos3);
+    tmp.setPosition(3,pos4);
+    tmp.setPosition(4,pos3);
   }
   // pos4 is biggest
   const UINT pi3 = tmp.getP3OffDiagIndex();
@@ -72,17 +72,15 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
     switch(pIndex) {
     case 0:
       for(pos = 0; pos < 64; pos++) {
-        key.setPosition0(pos);
+        key.setPosition(0,pos);
         scanPositions(key, pIndex+1);
         key.clearField(pos);
       }
       break;
     case 1:
       for(pos = 0; pos < 64; pos++) {
-        if(KINGSADJACENT(key.getWhiteKingPosition(), pos) || key.isOccupied(pos)) {
-          continue;
-        }
-        key.setPosition1(pos);
+        if(KINGSADJACENT(key.getWhiteKingPosition(), pos) || key.isOccupied(pos)) continue;
+        key.setPosition(1,pos);
         scanPositions(key, pIndex+1);
         key.clearField(pos);
       }
@@ -90,10 +88,8 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
     case 2:
       { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
           pos = s_pawnIndexToPos[i];
-          if(key.isOccupied(pos)) {
-            continue;
-          }
-          key.setPosition2(pos);
+          if(key.isOccupied(pos)) continue;
+          key.setPosition(2,pos);
           scanPositions(key, pIndex+1);
           key.clearField(pos);
         }
@@ -101,20 +97,16 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
       break;
     case 3:
       for(pos = 0; pos < 64; pos++) {
-        if(key.isOccupied(pos)) {
-          continue;
-        }
-        key.setPosition3(pos);
+        if(key.isOccupied(pos)) continue;
+        key.setPosition(3,pos);
         scanPositions(key, pIndex+1);
         key.clearField(pos);
       }
       break;
     case 4:
       for(pos = 0; pos < 64; pos++) {
-        if((pos <= key.getPosition3()) || key.isOccupied(pos)) {
-          continue;
-        }
-        key.setPosition4(pos);
+        if((pos <= key.getPosition(3)) || key.isOccupied(pos)) continue;
+        key.setPosition(4,pos);
         scanPositions(key, pIndex+1);
         key.clearField(pos);
       }
@@ -123,8 +115,7 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
   }
 }
 
-void EndGameKeyDefinition5Men1Pawn2Equal::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition5Men1Pawn2Equal::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
 }
 

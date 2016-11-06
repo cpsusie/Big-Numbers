@@ -14,18 +14,18 @@ EndGameKeyDefinition5Men::EndGameKeyDefinition5Men(PieceKey pk2, PieceKey pk3, P
 
 EndGamePosIndex EndGameKeyDefinition5Men::keyToIndex(EndGameKey key) const {
   if(!key.kingsOnMainDiag1()) {
-    return KK_OFFDIAG_5MEN_INDEX(  key) + OFFSET_KK_OFFDIAG_5MEN    - MININDEX;
+    return KK_OFFDIAG_5MEN_INDEX(  key) + START_RANGE_KK_OFFDIAG_5MEN   - MININDEX;
   }
   if(!key.p2OnMainDiag1()) {
-    return KK_ONDIAG_5MEN_INDEX(   key) + OFFSET_KK_ONDIAG_5MEN     - MININDEX;
+    return KK_ONDIAG_5MEN_INDEX(   key) + START_RANGE_KK_ONDIAG_5MEN     - MININDEX;
   }
   if(!key.p3OnMainDiag1()) {
-    return KKP2_ONDIAG_5MEN_INDEX( key) + OFFSET_KKP2_ONDIAG_5MEN   - MININDEX;
+    return KKP2_ONDIAG_5MEN_INDEX( key) + START_RANGE_KKP2_ONDIAG_5MEN   - MININDEX;
   }
   if(!key.p4OnMainDiag1()) {
-    return KKP23_ONDIAG_5MEN_INDEX(key) + OFFSET_KKP23_ONDIAG_5MEN  - MININDEX;
+    return KKP23_ONDIAG_5MEN_INDEX(key) + START_RANGE_KKP23_ONDIAG_5MEN  - MININDEX;
   }
-  return KKP234_ONDIAG_5MEN_INDEX( key) + OFFSET_KKP234_ONDIAG_5MEN - MININDEX;
+  return KKP234_ONDIAG_5MEN_INDEX( key) + START_RANGE_KKP234_ONDIAG_5MEN - MININDEX;
 }
 
 EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
@@ -33,7 +33,7 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
   EndGameKey result;
 
   if(index < START_RANGE_KK_ONDIAG_5MEN) {            // king(s) off maindiag => p2,p3,p4 anywhere
-    index -= OFFSET_KK_OFFDIAG_5MEN;
+    index -= START_RANGE_KK_OFFDIAG_5MEN;
     SETPIT(              result, index   );
     SETP4_INDEX(         result, index   );
     SETP3_INDEX(         result, index   );
@@ -41,7 +41,7 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
     SETKK_OFFDIAG(       result, index   );
     result.p234IndexToOffDiagPos();
   } else if(index < START_RANGE_KKP2_ONDIAG_5MEN) {   // kings on maindiag => p2 below, p3,p4 anywhere
-    index -= OFFSET_KK_ONDIAG_5MEN;
+    index -= START_RANGE_KK_ONDIAG_5MEN;
     SETPIT(              result, index   );
     SETP4_INDEX(         result, index   );
     SETP3_INDEX(         result, index   );
@@ -49,7 +49,7 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
     SETKK_ONDIAG(        result, index   );
     result.p34IndexToOffDiagPos();
   } else if(index < START_RANGE_KKP23_ONDIAG_5MEN) {  // kings,p2 on maindiag => p3 below, p4 anywhere
-    index -= OFFSET_KKP2_ONDIAG_5MEN;
+    index -= START_RANGE_KKP2_ONDIAG_5MEN;
     SETPIT(              result, index   );
     SETP4_INDEX(         result, index   );
     SETPOS_BELOWDIAG(    result, index, 3);
@@ -58,7 +58,7 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
     result.p2IndexToDiagPos();
     result.p4IndexToOffDiagPos();
   } else if(index < START_RANGE_KKP234_ONDIAG_5MEN) { // kings,p2,p3 on maindiag => p4 below
-    index -= OFFSET_KKP23_ONDIAG_5MEN;
+    index -= START_RANGE_KKP23_ONDIAG_5MEN;
     SETPIT(              result, index   );
     SETPOS_BELOWDIAG(    result, index, 4);
     SETP3_ONDIAG(        result, index   );
@@ -66,7 +66,7 @@ EndGameKey EndGameKeyDefinition5Men::indexToKey(EndGamePosIndex index) const {
     SETKK_ONDIAG(        result, index   );
     result.p23IndexToDiagPos();
   } else {                                            // kings,p2,p3,p4 on maindiag
-    index -= OFFSET_KKP234_ONDIAG_5MEN;
+    index -= START_RANGE_KKP234_ONDIAG_5MEN;
     SETPIT(              result, index   );
     SETP4_ONDIAG(        result, index   );
     SETP3_ONDIAG(        result, index   );

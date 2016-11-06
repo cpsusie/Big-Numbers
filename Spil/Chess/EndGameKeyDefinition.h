@@ -32,7 +32,7 @@ public:
 
 class PieceIndexMappings {
 public:
-  unsigned char m_pieceIndexMap[MAX_ENDGAME_PIECECOUNT];           // maps (pieceIndex)    -> cindex. There are max 5 pieces on the board
+  unsigned char m_pieceIndexMap[MAX_ENDGAME_PIECECOUNT];           // maps (pieceIndex)    -> cindex. There are max 6 pieces on the board
   unsigned char m_pieceReverseIndexMap[2][MAX_ENDGAME_PIECECOUNT]; // maps (player,cindex) -> pieceIndex
   String toString() const;
 };
@@ -63,6 +63,24 @@ public:
 
 typedef UINT64 EndGamePosIndex;
 
+#ifdef TABLEBASE_BUILDER
+class KeyDefinitionSelfCheckInfo {
+public:
+  EndGamePosIndex m_minIndex, m_maxIndex;
+  UINT64          m_checkKeyCount, m_duplicateCount;
+
+  void reset();
+  EndGamePosIndex getDistinctKeys() const {
+    return m_checkKeyCount  - m_duplicateCount;
+  }
+  EndGamePosIndex getRangeLength() const {
+    return m_maxIndex-m_minIndex+1;
+  }
+};
+class SelfCheckStatusPrinter;
+
+#endif
+
 class EndGameKeyDefinition {
 private:
   static const TCHAR            *s_metricName[2];
@@ -82,7 +100,7 @@ protected:
   mutable String            m_longName;
 
   void   selfCheckInit()    const;
-  UINT64 selfCheckSummary() const;
+  UINT64 selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter) const;
   UINT64 checkSymmetries()  const;
 
 #endif
@@ -121,18 +139,17 @@ protected:
   static SymmetricTransformation get5Men3EqualPawnsSymTransformation( EndGameKey key);
 
 #ifdef TABLEBASE_BUILDER
-  mutable EndGamePosIndex m_minIndex, m_maxIndex;
-  mutable UINT64          m_checkKeyCount, m_duplicateCount;
-  mutable double          m_checkStartTime;
-  mutable BitSet         *m_usedIndex;
+  mutable KeyDefinitionSelfCheckInfo m_selfCheckInfo;
+  mutable double                     m_checkStartTime;
+  mutable BitSet                    *m_usedIndex;
 
 typedef void (EndGameKeyDefinition::*PositionScanner)(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
 
-  virtual void         selfCheck() const;
+  virtual void         selfCheck(EndGameKeyWithOccupiedPositions &key) const;
   virtual String       getCodecName() const;
   void                 sym8PositionScanner(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag, PositionScanner nextScanner = NULL) const;
-  void                 checkForBothPlayers(EndGameKey &key) const;
-  void                 checkKey(const EndGameKey &key) const;
+  void                 checkForBothPlayers(EndGameKey key) const;
+  void                 checkKey(EndGameKey key) const;
 #endif
 
 public:
@@ -202,7 +219,10 @@ public:
   void                     listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize = 1) const;
 
   void                     doSelfCheck(bool checkSym) const;
-  virtual bool match(EndGameKey key1, EndGameKey key2) const {
+  const KeyDefinitionSelfCheckInfo &getSelfCheckInfo() const {
+    return m_selfCheckInfo;
+  }
+  virtual bool keysEqual(EndGameKey key1, EndGameKey key2) const {
     return key1 == key2;
   }
 
@@ -220,8 +240,8 @@ public:
     return toString(false);
   }
 
-  TCHAR *createKeyString(TCHAR *dst, const EndGameKey &key, bool initFormat) const;
-  String createInitKeyString(const EndGameKey &key) const;
+  TCHAR *createKeyString(TCHAR *dst, EndGameKey key, bool initFormat) const;
+  String createInitKeyString(EndGameKey key) const;
 
   static String getFileMetricSuffix();
 
@@ -266,10 +286,10 @@ public:
 #ifdef TABLEBASE_BUILDER
 
 #define DECLARE_SELFCHECK                                                                 \
-  void selfCheck() const;                                                                 \
+  void selfCheck(EndGameKeyWithOccupiedPositions &key) const;                             \
   String getCodecName() const
 
-#define DECLARE_MATCHKEYS bool match(EndGameKey key1, EndGameKey key2) const
+#define DECLARE_KEYSEQUAL bool keysEqual(EndGameKey key1, EndGameKey key2) const
 
 #define DUMP_MACRO(m) _tprintf(_T("%-50s:%14s\n"), _T(#m), format1000(m).cstr())
 
@@ -284,7 +304,7 @@ public:
 #else
 
 #define DECLARE_SELFCHECK
-#define DECLARE_MATCHKEYS
+#define DECLARE_KEYSEQUAL
 #define DUMP_MACRO(m)
 #define DUMP_RANGETABLE(table)
 
@@ -330,7 +350,7 @@ protected:
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk45);
 public:
   EndGameKey getEndGameKey(const GameKey &gameKey) const;
-  DECLARE_MATCHKEYS;
+  DECLARE_KEYSEQUAL;
 
 #ifdef TABLEBASE_BUILDER
 
@@ -385,7 +405,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
-  DECLARE_MATCHKEYS;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition5Men : public EndGameKeyDefinitionDupletsNotAllowed {
@@ -419,7 +439,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
-  DECLARE_MATCHKEYS;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition5Men3Equal : public EndGameKeyDefinitionDupletsAllowed {
@@ -440,7 +460,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
-  DECLARE_MATCHKEYS;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition6Men : public EndGameKeyDefinitionDupletsNotAllowed {
@@ -474,7 +494,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
-  DECLARE_MATCHKEYS;
+  DECLARE_KEYSEQUAL;
 };
 
 #ifdef TABLEBASE_BUILDER

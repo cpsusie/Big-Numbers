@@ -79,9 +79,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
     case 1:
       { const int wkPos = key.getWhiteKingPosition();
         for(int pos = 0; pos < 64; pos++) {
-          if(KINGSADJACENT(wkPos, pos)) {
-            continue;
-          }
+          if(KINGSADJACENT(wkPos, pos)) continue;
           key.setPosition(1, pos);
           scanPositions(key, 2, nextScanner);
           key.clearField(pos);
@@ -90,9 +88,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
       break;
     case 4:
       { for(int pos = 0; pos < 64; pos++) {
-          if(key.isOccupied(pos)) {
-            continue;
-          }
+          if(key.isOccupied(pos)) continue;
           key.setPosition(4, pos);
           scanPositions(key, 5, nextScanner);
           key.clearField(pos);
@@ -102,9 +98,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
     case 2:
       { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
           const int pos = s_pawnIndexToPos[i];
-          if(key.isOccupied(pos)) {
-            continue;
-          }
+          if(key.isOccupied(pos)) continue;
           key.setPosition(2, pos);
           scanPositions(key, 3, nextScanner);
           key.clearField(pos);
@@ -114,9 +108,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
     case 3:
       { for(int i = 0; i < PAWN_POSCOUNT; i++) {
           const int pos = s_pawnIndexToPos[i];
-          if(key.isOccupied(pos)) {
-            continue;
-          }
+          if(key.isOccupied(pos)) continue;
           key.setPosition(3, pos);
           if(nextScanner) { // for kings (pIndex = [0..1]) always use this function as scanner
             (this->*(nextScanner))(key, 4);
@@ -131,8 +123,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
   }
 }
 
-void EndGameKeyDefinition2Pawns::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition2Pawns::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
 }
 

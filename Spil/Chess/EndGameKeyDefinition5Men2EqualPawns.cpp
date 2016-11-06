@@ -62,8 +62,8 @@ EndGameKeyDefinition5Men2EqualPawns::EndGameKeyDefinition5Men2EqualPawns(PieceKe
 }
 
 EndGamePosIndex EndGameKeyDefinition5Men2EqualPawns::keyToIndex(EndGameKey key) const {
-  UINT pos3 = key.getPosition3();
-  UINT pos4 = key.getPosition4();
+  UINT pos3 = key.getPosition(3);
+  UINT pos4 = key.getPosition(4);
   switch(BOOL2MASK(IS_KINGSIDE, pos3, pos4)) {
   case 0: ENCODE_NOFLIP(key      );                     // 3,4 queenside
   case 1: ENCODE_FLIPi( key, 3, 4);                     //   4 queenside
@@ -145,26 +145,20 @@ void EndGameKeyDefinition5Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   case 3:
     { for(int i = 0; i < PAWN1_POSCOUNT; i++) {
         const int pos3 = s_pawnIndexToPos[i];
-        if(key.isOccupied(pos3)) {
-          continue;
-        }
-        key.setPosition3(pos3);
+        if(key.isOccupied(pos3)) continue;
+        key.setPosition(3,pos3);
         scanPositions(key, pIndex+1);
         key.clearField(pos3);
       }
     }
     break;
   case 4:
-    { const UINT pi3 = s_pawnPosToIndex[key.getPosition3()];                  // p3 always on queen side
+    { const UINT pi3 = s_pawnPosToIndex[key.getPosition(3)];                  // p3 always on queen side
       for(UINT pi4 = 0; pi4 < PAWN_POSCOUNT; pi4++) {
         const int pos4 = s_pawnIndexToPos[pi4];
-        if(key.isOccupied(pos4)) {
-          continue;
-        }
+        if(key.isOccupied(pos4)) continue;
         if(IS_QUEENSIDE(pos4)) {
-          if(pi3 > pi4) {
-            continue;
-          }
+          if(pi3 > pi4) continue;
         } else {
           const UINT pi4m = s_pawnPosToIndex[MIRRORCOLUMN(pos4)];
           if(pi3 > pi4m) {
@@ -173,7 +167,7 @@ void EndGameKeyDefinition5Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
             continue;
           }
         }
-        key.setPosition4(pos4);
+        key.setPosition(4,pos4);
         checkForBothPlayers(key);
         key.clearField(pos4);
       }
@@ -184,8 +178,7 @@ void EndGameKeyDefinition5Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   }
 }
 
-void EndGameKeyDefinition5Men2EqualPawns::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition5Men2EqualPawns::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
 }
 

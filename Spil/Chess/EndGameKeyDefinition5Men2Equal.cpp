@@ -42,8 +42,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 #define ENCODE_KK_OFFDIAG(key)                                                                                                    \
 { EndGameKey tmp = key;                                                                                                           \
   if(pos3 > pos4) {                                                                                                               \
-    tmp.setPosition3(pos4);                                                                                                       \
-    tmp.setPosition4(pos3);                                                                                                       \
+    tmp.setPosition(3,pos4);                                                                                                       \
+    tmp.setPosition(4,pos3);                                                                                                       \
   }                                                                                                                               \
   const UINT pi3 = tmp.getP3OffDiagIndex();                                                                                       \
   const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                               \
@@ -63,8 +63,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 #define ENCODE_KK_ONDIAG(key)                                                                                                     \
 { EndGameKey tmp = key;                                                                                                           \
   if(pos3 > pos4) {                                                                                                               \
-    tmp.setPosition3(pos4);                                                                                                       \
-    tmp.setPosition4(pos3);                                                                                                       \
+    tmp.setPosition(3,pos4);                                                                                                       \
+    tmp.setPosition(4,pos3);                                                                                                       \
   }                                                                                                                               \
   const UINT pi3 = tmp.getP3OffDiagIndex();                                                                                       \
   const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();                                                                               \
@@ -122,8 +122,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 
 #define ENCODE_KKP24_ONDIAG(key)                                                                                                  \
 { EndGameKey tmp = key;                                                                                                           \
-  tmp.setPosition3(pos4);                                                                                                         \
-  tmp.setPosition4(pos3);                                                                                                         \
+  tmp.setPosition(3,pos4);                                                                                                         \
+  tmp.setPosition(4,pos3);                                                                                                         \
   ENCODE_KKP23_ONDIAG(tmp);                                                                                                       \
 }
 
@@ -140,8 +140,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 #define ENCODE_KKP234_ONDIAG(key)                                                                                                 \
 { EndGameKey tmp = key;                                                                                                           \
   if(pos3 > pos4) {                                                                                                               \
-    tmp.setPosition3(pos4);                                                                                                       \
-    tmp.setPosition4(pos3);                                                                                                       \
+    tmp.setPosition(3,pos4);                                                                                                       \
+    tmp.setPosition(4,pos3);                                                                                                       \
   }                                                                                                                               \
   const UINT pi3 = tmp.getP3DiagIndex();                                                                                          \
   const UINT pi4 = tmp.getP4DiagIndexEqualP34();                                                                                  \
@@ -161,8 +161,8 @@ EndGameKeyDefinition5Men2Equal::EndGameKeyDefinition5Men2Equal(PieceKey pk2, Pie
 }
 
 EndGamePosIndex EndGameKeyDefinition5Men2Equal::keyToIndex(EndGameKey key) const {
-  const UINT pos3 = key.getPosition3();
-  const UINT pos4 = key.getPosition4();
+  const UINT pos3 = key.getPosition(3);
+  const UINT pos4 = key.getPosition(4);
 
   if(!key.kingsOnMainDiag1()) {                                // Kings off maindiag => p2, p3, p4 anywhere
     ENCODE_KK_OFFDIAG(key);
@@ -223,45 +223,35 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
     if(allPreviousOnDiag) {
       for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
         const int pos3 = s_subDiagIndexToPos[i];
-        if(key.isOccupied(pos3)) {
-          continue;
-        }
-        key.setPosition3(pos3);
+        if(key.isOccupied(pos3)) continue;
+        key.setPosition(3,pos3);
         scanPositions(key, 4, IS_ONMAINDIAG1(pos3));
         key.clearField(pos3);
       }
     } else {
       for(int pos3 = 0; pos3 < 64; pos3++) {
-        if(key.isOccupied(pos3)) {
-          continue;
-        }
-        key.setPosition3(pos3);
+        if(key.isOccupied(pos3)) continue;
+        key.setPosition(3,pos3);
         scanPositions(key, 4, false);
         key.clearField(pos3);
       }
     }
     break;
   case 4:
-    { const int pos3 = key.getPosition3();
+    { const int pos3 = key.getPosition(3);
       if(allPreviousOnDiag) {
         for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) {
           const int pos4 = s_subDiagIndexToPos[i];
-          if(key.isOccupied(pos4)) {
-            continue;
-          }
-          if(IS_ONMAINDIAG1(pos4) && (pos4 <= pos3)) {
-            continue;
-          }
-          key.setPosition4(pos4);
+          if(key.isOccupied(pos4)) continue;
+          if(IS_ONMAINDIAG1(pos4) && (pos4 <= pos3)) continue;
+          key.setPosition(4,pos4);
           checkForBothPlayers(key);
           key.clearField(pos4);
         }
       } else if(!key.kingsOnMainDiag1() || !key.p2OnMainDiag1()) {
         for(int pos4 = pos3+1; pos4 < 64; pos4++) {
-          if(key.isOccupied(pos4)) {
-            continue;
-          }
-          key.setPosition4(pos4);
+          if(key.isOccupied(pos4)) continue;
+          key.setPosition(4,pos4);
           checkForBothPlayers(key);
           key.clearField(pos4);
         }
@@ -269,9 +259,7 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
         const int pi3 = s_offDiagPosToIndex[pos3];
         for(int pi4 = pi3+1; pi4 < ARRAYSIZE(s_offDiagIndexToPos); pi4++) {
           const int pos4 = s_offDiagIndexToPos[pi4];
-          if(key.isOccupied(pos4)) {
-            continue;
-          }
+          if(key.isOccupied(pos4)) continue;
 
           if(!IS_SAMESIDEMAINDIAG1(pos3, pos4)) {
             if(pi3 > pi4) {
@@ -280,7 +268,7 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
               if(pi3 > pi4 - 28) continue;
             }
           }
-          key.setPosition4(pos4);
+          key.setPosition(4,pos4);
           checkForBothPlayers(key);
           key.clearField(pos4);
         }
@@ -293,12 +281,11 @@ void EndGameKeyDefinition5Men2Equal::scanPositions(EndGameKeyWithOccupiedPositio
   }
 }
 
-void EndGameKeyDefinition5Men2Equal::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition5Men2Equal::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   sym8PositionScanner(key, 0, true, (PositionScanner)&EndGameKeyDefinition5Men2Equal::scanPositions);
 }
 
-bool EndGameKeyDefinition5Men2Equal::match(EndGameKey key1, EndGameKey key2) const {
+bool EndGameKeyDefinition5Men2Equal::keysEqual(EndGameKey key1, EndGameKey key2) const {
   if(key2 == key1) return true;
   key2.swapPos(3,4);
   return key2 == key1;

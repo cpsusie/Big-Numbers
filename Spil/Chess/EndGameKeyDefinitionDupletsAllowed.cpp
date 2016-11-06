@@ -195,7 +195,7 @@ EndGameKey EndGameKeyDefinitionDupletsAllowed::getEndGameKey(const GameKey &game
 
 #ifdef TABLEBASE_BUILDER
 
-bool EndGameKeyDefinitionDupletsAllowed::match(EndGameKey key1, EndGameKey key2) const {
+bool EndGameKeyDefinitionDupletsAllowed::keysEqual(EndGameKey key1, EndGameKey key2) const {
   if(key2 == key1) {
     return true;
   }

@@ -19,57 +19,34 @@ public:
   inline Player getPlayerInTurn() const {
     return (Player)m_pos[6];
   }
-
   inline void setPlayerInTurn(Player player) {
     m_pos[6] = player;
   }
-
   inline UINT getPosition(UINT pIndex) const {
     assert(pIndex < MAX_ENDGAME_PIECECOUNT);
     return m_pos[pIndex];
   }
-
   inline void setPosition(UINT pIndex, UINT pos) {
     assert((pIndex < MAX_ENDGAME_PIECECOUNT) && (pos < 64));
     m_pos[pIndex] = pos;
   }
-
   inline bool isEmpty() const {
     return m_hashCode == 0;
   }
-
   inline void clear() {
     m_hashCode = 0;
   }
-
-  inline UINT getPosition0() const { return getPosition(0); }
-  inline UINT getPosition1() const { return getPosition(1); }
-  inline UINT getPosition2() const { return getPosition(2); }
-  inline UINT getPosition3() const { return getPosition(3); }
-  inline UINT getPosition4() const { return getPosition(4); }
-  inline UINT getPosition5() const { return getPosition(5); }
-
-  inline void setPosition0(UINT pos) { setPosition(0,pos); }
-  inline void setPosition1(UINT pos) { setPosition(1,pos); }
-  inline void setPosition2(UINT pos) { setPosition(2,pos); }
-  inline void setPosition3(UINT pos) { setPosition(3,pos); }
-  inline void setPosition4(UINT pos) { setPosition(4,pos); }
-  inline void setPosition5(UINT pos) { setPosition(5,pos); }
-
   inline UINT getWhiteKingPosition() const {
-    return getPosition0();
+    return getPosition(0);
   }
-
   inline UINT getBlackKingPosition() const {
-    return getPosition1();
+    return getPosition(1);
   }
-
   inline void setWhiteKingPosition(UINT pos) {
-    setPosition0(pos);
+    setPosition(0,pos);
   }
-
   inline void setBlackKingPosition(UINT pos) {
-    setPosition1(pos);
+    setPosition(1,pos);
   }
 
   UINT getP2OffDiagIndex()          const;
@@ -95,7 +72,6 @@ public:
   UINT getP3Pawn2Index()            const;
   UINT getP4Pawn3Index()            const;
   UINT getP4Pawn3IndexEqualP34()    const;
-  UINT getP4With2PawnsIndex()       const;
 
   void p2IndexToOffDiagPos();
   void p3IndexToOffDiagPos();
@@ -130,6 +106,7 @@ public:
   void p3IndexToOffDiagPosEqualP23();
   void p4IndexToOffDiagPosEqualP34();
   void p5IndexToOffDiagPosEqualP45();
+
   inline void p23IndexToOffDiagPosEqualP23() {
     p2IndexToOffDiagPos();
     p3IndexToOffDiagPosEqualP23();
@@ -142,7 +119,9 @@ public:
     p4IndexToOffDiagPos();
     p5IndexToOffDiagPosEqualP45();
   }
+
   void p4IndexToOffDiagPosEqualP234();
+
   inline void p234IndexToOffDiagPosEqualP234() {
     p2IndexToOffDiagPos();
     p3IndexToOffDiagPosEqualP23();
@@ -153,6 +132,7 @@ public:
   void p3IndexToDiagPos();
   void p4IndexToDiagPos();
   void p5IndexToDiagPos();
+
   inline void p23IndexToDiagPos() {
     p2IndexToDiagPos();
     p3IndexToDiagPos();
@@ -166,10 +146,10 @@ public:
     p5IndexToDiagPos();
   }
 
-
   void p3IndexToDiagPosEqualP23();
   void p4IndexToDiagPosEqualP34();
   void p5IndexToDiagPosEqualP45();
+
   inline void p23IndexToDiagPosEqualP23() {
     p2IndexToDiagPos();
     p3IndexToDiagPosEqualP23();
@@ -182,7 +162,9 @@ public:
     p4IndexToDiagPos();
     p5IndexToDiagPosEqualP45();
   }
+
   void p4IndexToDiagPosEqualP234();
+
   inline void p34IndexToDiagPosEqualP234() {
     p3IndexToDiagPosEqualP23();
     p4IndexToDiagPosEqualP234();
@@ -201,60 +183,51 @@ public:
     p3IndexToPawn2Pos();
     p4IndexToPawn3Pos();
   }
-  void p34IndexToPawn23PosEqualP34();
 
-  void p3IndexToPawn1Pos();
+  void p34IndexToPawn23PosEqualP34();
 
   inline bool kingsOnMainDiag1() const {
     return IS_ONMAINDIAG1(getWhiteKingPosition()) && IS_ONMAINDIAG1(getBlackKingPosition());
   }
 
   inline bool p2OnMainDiag1() const {
-    return IS_ONMAINDIAG1(getPosition2());
+    return IS_ONMAINDIAG1(getPosition(2));
   }
-
   inline bool p2AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(getPosition2());
+    return IS_ABOVEMAINDIAG1(getPosition(2));
   }
-
   inline bool p2BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(getPosition2());
+    return IS_BELOWMAINDIAG1(getPosition(2));
   }
 
   inline bool p3OnMainDiag1() const {
-    return IS_ONMAINDIAG1(getPosition3());
+    return IS_ONMAINDIAG1(getPosition(3));
   }
-
   inline bool p3AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(getPosition3());
+    return IS_ABOVEMAINDIAG1(getPosition(3));
   }
-
   inline bool p3BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(getPosition3());
+    return IS_BELOWMAINDIAG1(getPosition(3));
   }
 
   inline bool p4OnMainDiag1() const {
-    return IS_ONMAINDIAG1(getPosition4());
+    return IS_ONMAINDIAG1(getPosition(4));
   }
-
   inline bool p4AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(getPosition4());
+    return IS_ABOVEMAINDIAG1(getPosition(4));
   }
-
   inline bool p4BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(getPosition4());
+    return IS_BELOWMAINDIAG1(getPosition(4));
   }
 
   inline bool p5OnMainDiag1() const {
-    return IS_ONMAINDIAG1(getPosition5());
+    return IS_ONMAINDIAG1(getPosition(5));
   }
-
   inline bool p5AboveMainDiag1() const {
-    return IS_ABOVEMAINDIAG1(getPosition5());
+    return IS_ABOVEMAINDIAG1(getPosition(5));
   }
-
   inline bool p5BelowMainDiag1() const {
-    return IS_BELOWMAINDIAG1(getPosition5());
+    return IS_BELOWMAINDIAG1(getPosition(5));
   }
 
   inline friend bool operator==(EndGameKey k1, EndGameKey k2) {
@@ -293,24 +266,20 @@ private:
   FieldSet m_occupiedPositions;
 
 public:
-  inline void setWhiteKingPosition(UINT pos) {
-    setPosition0(pos);
+  inline void setPosition(UINT pIndex, UINT pos) {
+    EndGameKey::setPosition(pIndex, pos);
+    m_occupiedPositions.add(pos);
   }
-
-  inline void setBlackKingPosition(UINT pos) {
-    setPosition1(pos);
-  }
-  void setPosition( UINT pIndex, UINT pos);
-  void setPosition0(UINT pos);
-  void setPosition1(UINT pos);
-  void setPosition2(UINT pos);
-  void setPosition3(UINT pos);
-  void setPosition4(UINT pos);
-  void setPosition5(UINT pos);
-  inline bool isOccupied(  UINT pos) const {
+  inline bool isOccupied( UINT pos) const {
     return m_occupiedPositions.contains(pos);
   }
-  inline void clearField(UINT pos) {
+  inline void setWhiteKingPosition(UINT pos) {
+    setPosition(0,pos);
+  }
+  inline void setBlackKingPosition(UINT pos) {
+    setPosition(1,pos);
+  }
+  inline void clearField( UINT pos) {
     m_occupiedPositions.remove(pos);
   }
   inline void clear() {

@@ -140,47 +140,47 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SET2POS2EQUAL(key, addr, maxAddr, lpIndex, hpIndex)                           \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition##hpIndex(r);                                                        \
-  key.setPosition##lpIndex((addr) % r);                                               \
+  key.setPosition(hpIndex,r);                                                         \
+  key.setPosition(lpIndex,(addr) % r);                                                \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex)                    \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r]);                                   \
-  key.setPosition##lpIndex(s_offDiagIndexToPos[(addr) % r]);                          \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r]);                                    \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r]);                           \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, hpIndex)                     \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r]); r++;                              \
-  key.setPosition##lpIndex(s_offDiagIndexToPos[(addr) % r + 28]);                     \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r]); r++;                               \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r + 28]);                      \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPj(key, addr, maxAddr, lpIndex, hpIndex)                     \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+28]); r++;                           \
-  key.setPosition##lpIndex(s_offDiagIndexToPos[(addr) % r]);                          \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+28]); r++;                            \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r]);                           \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, hpIndex)                    \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+28]);                                \
-  key.setPosition##lpIndex(s_offDiagIndexToPos[(addr) % r + 28]);                     \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+28]);                                 \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r + 28]);                      \
   addr /= r;                                                                          \
 }
 
 // Can specify tablesize if only part of the rangetable should be searched. Use SET3POS3EQUAL, which use ARRAYSIZE(table) for paramete size!
 #define SET3POS3EQUALa(key, addr, table, size, maxAddr, lpIndex, mpIndex, hpIndex)    \
 { int r = findTableRange(table, size, addr);                                          \
-  key.setPosition##hpIndex(r+2);                                                      \
+  key.setPosition(hpIndex,r+2);                                                       \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
   SET2POS2EQUAL(key, addr, maxAddr, lpIndex, mpIndex);                                \
 }
@@ -190,33 +190,33 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 
 #define SET3OFFDIAGPOSNOFLIP(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)    \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+2]);                                 \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+2]);                                  \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
   SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);                         \
 }
 
 #define SET3OFFDIAGPOSFLIPi(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)     \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+1]);                                 \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+1]);                                  \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
   SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);                          \
 }
 
 #define SET3OFFDIAGPOSFLIPj(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)     \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+1]);                                 \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+1]);                                  \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
   r = findRange2Equal((maxAddr)/2, addr);                                             \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
   r++;                                                                                \
-  key.setPosition##mpIndex(s_offDiagIndexToPos[r+28]);                                \
-  key.setPosition##lpIndex(s_offDiagIndexToPos[addr % r]);                            \
+  key.setPosition(mpIndex,s_offDiagIndexToPos[r+28]);                                 \
+  key.setPosition(lpIndex,s_offDiagIndexToPos[addr % r]);                             \
   addr /= r;                                                                          \
 }
 
 #define SET3OFFDIAGPOSFLIPij(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)    \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                              \
-  key.setPosition##hpIndex(s_offDiagIndexToPos[r+2]);                                 \
+  key.setPosition(hpIndex,s_offDiagIndexToPos[r+2]);                                  \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                       \
   SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);                         \
 }
@@ -235,8 +235,8 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define BOOL2MASK(f, x, y   ) ((f(x)?1:0) | (f(y)?2:0))
 #define BOOL3MASK(f, x, y, z) (BOOL2MASK(f, x, y) | (f(z)?4:0))
 
-#define KEYBOOL2MASK(key, f, i, j)    BOOL2MASK(f, key.getPosition##i(), key.getPosition##j())
-#define KEYBOOL3MASK(key, f, i, j, k) BOOL3MASK(f, key.getPosition##i(), key.getPosition##j(), key.getPosition##k())
+#define KEYBOOL2MASK(key, f, i, j)    BOOL2MASK(f, key.getPosition(i), key.getPosition(j))
+#define KEYBOOL3MASK(key, f, i, j, k) BOOL3MASK(f, key.getPosition(i), key.getPosition(j), key.getPosition(k))
 
 
 // ---------------------------------------- Without pawns ----------------------------------------
@@ -246,7 +246,7 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SETPIT(      key   , addr)             { key.setPlayerInTurn((Player)((addr) & 1)); addr >>= 1; }
 
 #define ADDPOS_INDEX(addr, count, index)       ((EndGamePosIndex)(addr) * (count) + (index))
-#define SETPOS_INDEX(key, addr, count, pIndex) { key.setPosition##pIndex((addr) % (count)); addr /= (count); }
+#define SETPOS_INDEX(key, addr, count, pIndex) { key.setPosition(pIndex,(addr) % (count)); addr /= (count); }
 
 #define P2POSCOUNT                             (64-2)
 #define P3POSCOUNT                             (P2POSCOUNT-1)
@@ -264,7 +264,7 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SETP5_INDEX(      key,  addr   )       SETPOS_INDEX(key, addr, P5POSCOUNT, 5)
 
 #define ADDPOS_BELOWDIAG( addr, subDiagIndex)  ADDPOS_INDEX(addr, 28, subDiagIndex)
-#define SETPOS_BELOWDIAG( key , addr, pIndex)  { key.setPosition##pIndex(EndGameKeyDefinition::s_subDiagIndexToPos[(addr) % 28]); addr /= 28; }
+#define SETPOS_BELOWDIAG( key , addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_subDiagIndexToPos[(addr) % 28]); addr /= 28; }
 
 #define ADDP2_ONDIAG(     addr, p2DiagIndex)   ADDPOS_INDEX(addr, 6, p2DiagIndex)
 #define ADDP3_ONDIAG(     addr, p3DiagIndex)   ADDPOS_INDEX(addr, 5, p3DiagIndex)
@@ -277,25 +277,25 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SETP5_ONDIAG(     key , addr)          SETPOS_INDEX(key, addr,  3, 5)
 
 #define KK_OFFDIAG_3MEN(          key)  ADDP2_INDEX(     KK_OFFDIAG_2MEN(   key), key.getP2OffDiagIndex())
-#define KK_ONDIAG_3MEN(           key)  ADDPOS_BELOWDIAG(KK_ONDIAG_2MEN(    key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition2()])
+#define KK_ONDIAG_3MEN(           key)  ADDPOS_BELOWDIAG(KK_ONDIAG_2MEN(    key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition(2)])
 #define KKP2_ONDIAG_3MEN(         key)  ADDP2_ONDIAG(    KK_ONDIAG_2MEN(    key), key.getP2DiagIndex())
 
 #define KK_OFFDIAG_4MEN(          key)  ADDP3_INDEX(     KK_OFFDIAG_3MEN(   key), key.getP3OffDiagIndex())
 #define KK_ONDIAG_4MEN(           key)  ADDP3_INDEX(     KK_ONDIAG_3MEN(    key), key.getP3OffDiagIndex())
-#define KKP2_ONDIAG_4MEN(         key)  ADDPOS_BELOWDIAG(KKP2_ONDIAG_3MEN(  key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition3()])
+#define KKP2_ONDIAG_4MEN(         key)  ADDPOS_BELOWDIAG(KKP2_ONDIAG_3MEN(  key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition(3)])
 #define KKP23_ONDIAG_4MEN(        key)  ADDP3_ONDIAG(    KKP2_ONDIAG_3MEN(  key), key.getP3DiagIndex())
 
 #define KK_OFFDIAG_5MEN(          key)  ADDP4_INDEX(     KK_OFFDIAG_4MEN(   key), key.getP4OffDiagIndex())
 #define KK_ONDIAG_5MEN(           key)  ADDP4_INDEX(     KK_ONDIAG_4MEN(    key), key.getP4OffDiagIndex())
 #define KKP2_ONDIAG_5MEN(         key)  ADDP4_INDEX(     KKP2_ONDIAG_4MEN(  key), key.getP4OffDiagIndex())
-#define KKP23_ONDIAG_5MEN(        key)  ADDPOS_BELOWDIAG(KKP23_ONDIAG_4MEN( key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition4()])
+#define KKP23_ONDIAG_5MEN(        key)  ADDPOS_BELOWDIAG(KKP23_ONDIAG_4MEN( key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition(4)])
 #define KKP234_ONDIAG_5MEN(       key)  ADDP4_ONDIAG(    KKP23_ONDIAG_4MEN( key), key.getP4DiagIndex())
 
 #define KK_OFFDIAG_6MEN(          key)  ADDP5_INDEX(     KK_OFFDIAG_5MEN(   key), key.getP5OffDiagIndex())
 #define KK_ONDIAG_6MEN(           key)  ADDP5_INDEX(     KK_ONDIAG_5MEN(    key), key.getP5OffDiagIndex())
 #define KKP2_ONDIAG_6MEN(         key)  ADDP5_INDEX(     KKP2_ONDIAG_5MEN(  key), key.getP5OffDiagIndex())
 #define KKP23_ONDIAG_6MEN(        key)  ADDP5_INDEX(     KKP23_ONDIAG_5MEN( key), key.getP5OffDiagIndex())
-#define KKP234_ONDIAG_6MEN(       key)  ADDPOS_BELOWDIAG(KKP234_ONDIAG_5MEN(key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition5()])
+#define KKP234_ONDIAG_6MEN(       key)  ADDPOS_BELOWDIAG(KKP234_ONDIAG_5MEN(key), EndGameKeyDefinition::s_subDiagPosToIndex[key.getPosition(5)])
 #define KKP2345_ONDIAG_6MEN(      key)  ADDP5_ONDIAG(    KKP234_ONDIAG_5MEN(key), key.getP5DiagIndex())
 
 #define KK_OFFDIAG_2MEN_INDEX(    key)  ADDPIT(key, KK_OFFDIAG_2MEN(    key))
@@ -417,65 +417,45 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define MAXINDEX_KKP2345_ONDIAG_6MEN    LASTINDEX( KKP2345_ONDIAG_6MEN)
 
 #define START_RANGE_KK_OFFDIAG_2MEN     0
-#define OFFSET_KK_OFFDIAG_2MEN          (START_RANGE_KK_OFFDIAG_2MEN     - MININDEX_KK_OFFDIAG_2MEN     )
-#define START_RANGE_KK_ONDIAG_2MEN      (OFFSET_KK_OFFDIAG_2MEN          + MAXINDEX_KK_OFFDIAG_2MEN     )
-#define OFFSET_KK_ONDIAG_2MEN           (START_RANGE_KK_ONDIAG_2MEN      - MININDEX_KK_ONDIAG_2MEN      )
+#define START_RANGE_KK_ONDIAG_2MEN      (START_RANGE_KK_OFFDIAG_2MEN     + MAXINDEX_KK_OFFDIAG_2MEN     )
 #define END_RANGE_ONDIAG_2MEN           (START_RANGE_KK_ONDIAG_2MEN      + MAXINDEX_KK_ONDIAG_2MEN      )
 
 #define START_RANGE_KK_OFFDIAG_3MEN     0
-#define OFFSET_KK_OFFDIAG_3MEN          (START_RANGE_KK_OFFDIAG_3MEN     - MININDEX_KK_OFFDIAG_3MEN     )
-#define START_RANGE_KK_ONDIAG_3MEN      (OFFSET_KK_OFFDIAG_3MEN          + MAXINDEX_KK_OFFDIAG_3MEN     )
-#define OFFSET_KK_ONDIAG_3MEN           (START_RANGE_KK_ONDIAG_3MEN      - MININDEX_KK_ONDIAG_3MEN      )
-#define START_RANGE_KKP2_ONDIAG_3MEN    (OFFSET_KK_ONDIAG_3MEN           + MAXINDEX_KK_ONDIAG_3MEN      )
-#define OFFSET_KKP2_ONDIAG_3MEN         (START_RANGE_KKP2_ONDIAG_3MEN    - MININDEX_KKP2_ONDIAG_3MEN    )
+#define START_RANGE_KK_ONDIAG_3MEN      (START_RANGE_KK_OFFDIAG_3MEN     + MAXINDEX_KK_OFFDIAG_3MEN     )
+#define START_RANGE_KKP2_ONDIAG_3MEN    (START_RANGE_KK_ONDIAG_3MEN      + MAXINDEX_KK_ONDIAG_3MEN      )
 #define END_RANGE_ONDIAG_3MEN           (START_RANGE_KKP2_ONDIAG_3MEN    + MAXINDEX_KKP2_ONDIAG_3MEN    )
 
 #define START_RANGE_KK_OFFDIAG_4MEN     0
-#define OFFSET_KK_OFFDIAG_4MEN          (START_RANGE_KK_OFFDIAG_4MEN     - MININDEX_KK_OFFDIAG_4MEN     )
-#define START_RANGE_KK_ONDIAG_4MEN      (OFFSET_KK_OFFDIAG_4MEN          + MAXINDEX_KK_OFFDIAG_4MEN     )
-#define OFFSET_KK_ONDIAG_4MEN           (START_RANGE_KK_ONDIAG_4MEN      - MININDEX_KK_ONDIAG_4MEN      )
-#define START_RANGE_KKP2_ONDIAG_4MEN    (OFFSET_KK_ONDIAG_4MEN           + MAXINDEX_KK_ONDIAG_4MEN      )
-#define OFFSET_KKP2_ONDIAG_4MEN         (START_RANGE_KKP2_ONDIAG_4MEN    - MININDEX_KKP2_ONDIAG_4MEN    )
-#define START_RANGE_KKP23_ONDIAG_4MEN   (OFFSET_KKP2_ONDIAG_4MEN         + MAXINDEX_KKP2_ONDIAG_4MEN    )
-#define OFFSET_KKP23_ONDIAG_4MEN        (START_RANGE_KKP23_ONDIAG_4MEN   - MININDEX_KKP23_ONDIAG_4MEN   )
+#define START_RANGE_KK_ONDIAG_4MEN      (START_RANGE_KK_OFFDIAG_4MEN     + MAXINDEX_KK_OFFDIAG_4MEN     )
+#define START_RANGE_KKP2_ONDIAG_4MEN    (START_RANGE_KK_ONDIAG_4MEN      + MAXINDEX_KK_ONDIAG_4MEN      )
+#define START_RANGE_KKP23_ONDIAG_4MEN   (START_RANGE_KKP2_ONDIAG_4MEN    + MAXINDEX_KKP2_ONDIAG_4MEN    )
 #define END_RANGE_ONDIAG_4MEN           (START_RANGE_KKP23_ONDIAG_4MEN   + MAXINDEX_KKP23_ONDIAG_4MEN   )
 
 #define START_RANGE_KK_OFFDIAG_5MEN     0
-#define OFFSET_KK_OFFDIAG_5MEN          (START_RANGE_KK_OFFDIAG_5MEN     - MININDEX_KK_OFFDIAG_5MEN     )
-#define START_RANGE_KK_ONDIAG_5MEN      (OFFSET_KK_OFFDIAG_5MEN          + MAXINDEX_KK_OFFDIAG_5MEN     )
-#define OFFSET_KK_ONDIAG_5MEN           (START_RANGE_KK_ONDIAG_5MEN      - MININDEX_KK_ONDIAG_5MEN      )
-#define START_RANGE_KKP2_ONDIAG_5MEN    (OFFSET_KK_ONDIAG_5MEN           + MAXINDEX_KK_ONDIAG_5MEN      )
-#define OFFSET_KKP2_ONDIAG_5MEN         (START_RANGE_KKP2_ONDIAG_5MEN    - MININDEX_KKP2_ONDIAG_5MEN    )
-#define START_RANGE_KKP23_ONDIAG_5MEN   (OFFSET_KKP2_ONDIAG_5MEN         + MAXINDEX_KKP2_ONDIAG_5MEN    )
-#define OFFSET_KKP23_ONDIAG_5MEN        (START_RANGE_KKP23_ONDIAG_5MEN   - MININDEX_KKP23_ONDIAG_5MEN   )
-#define START_RANGE_KKP234_ONDIAG_5MEN  (OFFSET_KKP23_ONDIAG_5MEN        + MAXINDEX_KKP23_ONDIAG_5MEN   )
-#define OFFSET_KKP234_ONDIAG_5MEN       (START_RANGE_KKP234_ONDIAG_5MEN  - MININDEX_KKP234_ONDIAG_5MEN  )
+#define START_RANGE_KK_ONDIAG_5MEN      (START_RANGE_KK_OFFDIAG_5MEN     + MAXINDEX_KK_OFFDIAG_5MEN     )
+#define START_RANGE_KKP2_ONDIAG_5MEN    (START_RANGE_KK_ONDIAG_5MEN      + MAXINDEX_KK_ONDIAG_5MEN      )
+#define START_RANGE_KKP23_ONDIAG_5MEN   (START_RANGE_KKP2_ONDIAG_5MEN    + MAXINDEX_KKP2_ONDIAG_5MEN    )
+#define START_RANGE_KKP234_ONDIAG_5MEN  (START_RANGE_KKP23_ONDIAG_5MEN   + MAXINDEX_KKP23_ONDIAG_5MEN   )
 #define END_RANGE_ONDIAG_5MEN           (START_RANGE_KKP234_ONDIAG_5MEN  + MAXINDEX_KKP234_ONDIAG_5MEN  )
 
 #define START_RANGE_KK_OFFDIAG_6MEN     0
-#define OFFSET_KK_OFFDIAG_6MEN          (START_RANGE_KK_OFFDIAG_6MEN     - MININDEX_KK_OFFDIAG_6MEN     )
-#define START_RANGE_KK_ONDIAG_6MEN      (OFFSET_KK_OFFDIAG_6MEN          + MAXINDEX_KK_OFFDIAG_6MEN     )
-#define OFFSET_KK_ONDIAG_6MEN           (START_RANGE_KK_ONDIAG_6MEN      - MININDEX_KK_ONDIAG_6MEN      )
-#define START_RANGE_KKP2_ONDIAG_6MEN    (OFFSET_KK_ONDIAG_6MEN           + MAXINDEX_KK_ONDIAG_6MEN      )
-#define OFFSET_KKP2_ONDIAG_6MEN         (START_RANGE_KKP2_ONDIAG_6MEN    - MININDEX_KKP2_ONDIAG_6MEN    )
-#define START_RANGE_KKP23_ONDIAG_6MEN   (OFFSET_KKP2_ONDIAG_6MEN         + MAXINDEX_KKP2_ONDIAG_6MEN    )
-#define OFFSET_KKP23_ONDIAG_6MEN        (START_RANGE_KKP23_ONDIAG_6MEN   - MININDEX_KKP23_ONDIAG_6MEN   )
-#define START_RANGE_KKP234_ONDIAG_6MEN  (OFFSET_KKP23_ONDIAG_6MEN        + MAXINDEX_KKP23_ONDIAG_6MEN   )
-#define OFFSET_KKP234_ONDIAG_6MEN       (START_RANGE_KKP234_ONDIAG_6MEN  - MININDEX_KKP234_ONDIAG_6MEN  )
-#define START_RANGE_KKP2345_ONDIAG_6MEN (OFFSET_KKP234_ONDIAG_6MEN       + MAXINDEX_KKP234_ONDIAG_6MEN  )
-#define OFFSET_KKP2345_ONDIAG_6MEN      (START_RANGE_KKP2345_ONDIAG_6MEN - MININDEX_KKP2345_ONDIAG_6MEN )
+#define START_RANGE_KK_ONDIAG_6MEN      (START_RANGE_KK_OFFDIAG_6MEN     + MAXINDEX_KK_OFFDIAG_6MEN     )
+#define START_RANGE_KKP2_ONDIAG_6MEN    (START_RANGE_KK_ONDIAG_6MEN      + MAXINDEX_KK_ONDIAG_6MEN      )
+#define START_RANGE_KKP23_ONDIAG_6MEN   (START_RANGE_KKP2_ONDIAG_6MEN    + MAXINDEX_KKP2_ONDIAG_6MEN    )
+#define START_RANGE_KKP234_ONDIAG_6MEN  (START_RANGE_KKP23_ONDIAG_6MEN   + MAXINDEX_KKP23_ONDIAG_6MEN   )
+#define START_RANGE_KKP2345_ONDIAG_6MEN (START_RANGE_KKP234_ONDIAG_6MEN  + MAXINDEX_KKP234_ONDIAG_6MEN  )
 #define END_RANGE_ONDIAG_6MEN           (START_RANGE_KKP2345_ONDIAG_6MEN + MAXINDEX_KKP2345_ONDIAG_6MEN )
 
 // ---------------------------------------- Pawns ----------------------------------------
 
-#define ONE_PAWN_3MEN(key, pawn1Index)         ADDPOS_INDEX(KK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition##pawn1Index()])
+#define ONE_PAWN_3MEN(key, pawn1Index)         ADDPOS_INDEX(KK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(pawn1Index)])
 #define ONE_PAWN_4MEN(key)                     ADDP3_INDEX(ONE_PAWN_3MEN(key, 2), key.getP3OffDiagIndex())
 #define ONE_PAWN_5MEN(key)                     ADDP4_INDEX(ONE_PAWN_4MEN(key   ), key.getP4OffDiagIndex())
 
 #ifdef _DEBUG
 #define LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex)  ADDPOS_INDEX(LEFTWKK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(pawnIndex)])
 #else
-#define LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex)  ADDPOS_INDEX(LEFTWKK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition##pawnIndex()])
+#define LEFTWKK_ONE_PAWN_3MEN(key, pawnIndex)  ADDPOS_INDEX(LEFTWKK_WITH_PAWN_2MEN(key), PAWN1_POSCOUNT, EndGameKeyDefinition::s_pawnPosToIndex[key.getPosition(pawnIndex)])
 #endif
 
 #define KK_WITH_PAWN_2MEN_INDEX(     key)      ADDPIT(key, KK_WITH_PAWN_2MEN(key))
@@ -514,21 +494,21 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define TWO_PAWNS_5MEN_INDEX(key)      ADDPIT(key, TWO_PAWNS_5MEN(key))
 
 
-#define SETPAWN1POS(key, addr, pIndex)  { key.setPosition##pIndex(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN1_POSCOUNT]); \
+#define SETPAWN1POS(key, addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN1_POSCOUNT]);  \
                                           (addr) /= PAWN1_POSCOUNT;                                                                 \
                                         }
 
-#define SETPAWN2POS(key, addr, pIndex)  { key.setPosition##pIndex(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN2_POSCOUNT]); \
+#define SETPAWN2POS(key, addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN2_POSCOUNT]);  \
                                           (addr) /= PAWN2_POSCOUNT;                                                                 \
                                         }
 
-#define SETPAWN3POS(key, addr, pIndex)  { key.setPosition##pIndex(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN3_POSCOUNT]); \
+#define SETPAWN3POS(key, addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % PAWN3_POSCOUNT]);  \
                                           (addr) /= PAWN3_POSCOUNT;                                                                 \
                                         }
 
 #define SET2SYMMETRICPAWNS(key, addr, maxAddr, p1Index, p2Index)                                                                    \
-                          { key.setPosition##p1Index(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % ((maxAddr) * PAWN1_POSCOUNT)]);\
-                            key.setPosition##p2Index(MIRRORCOLUMN(key.getPosition##p1Index()));                                     \
+                          { key.setPosition(p1Index,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % ((maxAddr) * PAWN1_POSCOUNT)]); \
+                            key.setPosition(p2Index,MIRRORCOLUMN(key.getPosition(p1Index)));                                        \
                             (addr) /= ((maxAddr)*PAWN1_POSCOUNT);                                                                   \
                           }
 #ifdef _DEBUG
@@ -566,18 +546,18 @@ void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex)                        \
 { int r = findRange2Equal((maxAddr)/2, addr);                                             \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                      \
-  key.setPosition##hpIndex(EndGameKeyDefinition::s_pawnIndexToPos[r]);                    \
-  key.setPosition##lpIndex(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);           \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r]);                     \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);            \
   addr /= r;                                                                              \
 }
 
 #define SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, hpIndex)                         \
 { int r = findRange2Equal((maxAddr)/2, addr);                                             \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
-  key.setPosition##hpIndex(EndGameKeyDefinition::s_pawnIndexToPos[r]);                    \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_pawnIndexToPos[r]);                     \
   r++;                                                                                    \
   const int lpPos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];                   \
-  key.setPosition##lpIndex(MIRRORCOLUMN(lpPos));                                          \
+  key.setPosition(lpIndex,MIRRORCOLUMN(lpPos));                                           \
   addr /= r;                                                                              \
 }
 
@@ -585,8 +565,8 @@ void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 { int r = findRange2Equal((maxAddr)/2, addr);                                             \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
   r++;                                                                                    \
-  key.setPosition##hpIndex(MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r]));      \
-  key.setPosition##lpIndex(EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);           \
+  key.setPosition(hpIndex,MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r]));       \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);            \
   addr /= r;                                                                              \
 }
 
@@ -595,42 +575,42 @@ void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
   r++;                                                                                    \
   int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];                                    \
-  key.setPosition##hpIndex(MIRRORCOLUMN(pos));                                            \
+  key.setPosition(hpIndex,MIRRORCOLUMN(pos));                                             \
   pos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];                               \
-  key.setPosition##lpIndex(MIRRORCOLUMN(pos));                                            \
+  key.setPosition(lpIndex,MIRRORCOLUMN(pos));                                             \
   addr /= r;                                                                              \
 }
 
 #define SET3EQUALPAWNSNOFLIP(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)        \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition##hpIndex(s_pawnIndexToPos[r+2]);                                        \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r+2]);                                         \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
   SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);                             \
 }
 
 #define SET3EQUALPAWNSFLIPi(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)         \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition##hpIndex(s_pawnIndexToPos[r+1]);                                        \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r+1]);                                         \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
   SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);                              \
 }
 
 #define SET3EQUALPAWNSFLIPj(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)         \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition##hpIndex(s_pawnIndexToPos[r+1]);                                        \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r+1]);                                         \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
   r = findRange2Equal((maxAddr)/2, addr);                                                 \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                           \
   r++;                                                                                    \
   int pos = s_pawnIndexToPos[r];                                                          \
-  key.setPosition##mpIndex(MIRRORCOLUMN(pos));                                            \
-  key.setPosition##lpIndex(s_pawnIndexToPos[addr % r]);                                   \
+  key.setPosition(mpIndex,MIRRORCOLUMN(pos));                                             \
+  key.setPosition(lpIndex,s_pawnIndexToPos[addr % r]);                                    \
   addr /= r;                                                                              \
 }
 
 #define SET3EQUALPAWNSFLIPij(key, addr, table, maxAddr, lpIndex, mpIndex, hpIndex)        \
 { int r = findTableRange(table, ARRAYSIZE(table), addr);                                  \
-  key.setPosition##hpIndex(s_pawnIndexToPos[r+2]);                                        \
+  key.setPosition(hpIndex,s_pawnIndexToPos[r+2]);                                         \
   addr -= GET_RANGESTART3EQUAL((maxAddr)/2, r);                                           \
   SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);                             \
 }

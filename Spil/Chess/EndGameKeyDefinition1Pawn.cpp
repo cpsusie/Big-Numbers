@@ -86,9 +86,7 @@ void EndGameKeyDefinition1Pawn::scanPositions(EndGameKeyWithOccupiedPositions &k
   } else { // pIndex == 2
     for(int i = 0; i < PAWN1_POSCOUNT; i++) {
       const int pos = s_pawnIndexToPos[i];
-      if(key.isOccupied(pos)) {
-        continue;
-      }
+      if(key.isOccupied(pos)) continue;
       key.setPosition(2, pos);
       if(nextScanner) {
         (this->*(nextScanner))(key, 3);
@@ -100,8 +98,7 @@ void EndGameKeyDefinition1Pawn::scanPositions(EndGameKeyWithOccupiedPositions &k
   }
 }
 
-void EndGameKeyDefinition1Pawn::selfCheck() const {
-  EndGameKeyWithOccupiedPositions key;
+void EndGameKeyDefinition1Pawn::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
 }
 
