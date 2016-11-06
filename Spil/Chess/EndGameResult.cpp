@@ -92,7 +92,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
     switch(pliesToEnd) {
     case 0 : return _tcscpy(dst, STALEMATE_STR   );
     case 1 : return _tcscpy(dst, TERMINALDRAW_STR);
-    default: return _tcscpy(dst, _T("(/)")           );
+    default: return _tcscpy(dst, _T("(/)")       );
     }
 
   case EG_WHITEWIN :
@@ -110,7 +110,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
     }
 
   default          :
-    throwException(_T("EndGameResult::getStatus:%d"), getStatus());
+    throwException(_T("%s:status=%d"), __TFUNCTION__, getStatus());
     return _T("");
   }
 }
@@ -133,7 +133,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, Player playerInTurn, bool ply) const {
       }
     }
   default:
-    throwException(_T("EndGameResult::toStr:Unknown status:%d"), getStatus());
+    throwException(_T("%s:Unknown status:%d"), __TFUNCTION__, getStatus());
     return _T("");
   }
 }

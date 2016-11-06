@@ -322,7 +322,7 @@ EndGameKey EndGameKeyDefinition::getTransformedKey(EndGameKey key, SymmetricTran
            key.setPosition1(GameKey::transform(key.getPosition1(), st));
            key.setPosition0(GameKey::transform(key.getPosition0(), st));
            return key;
-  default: invalidPieceCountError();
+  default: invalidPieceCountError(__TFUNCTION__);
   }
   return key;
 }
@@ -366,7 +366,7 @@ void EndGameKeyDefinition::validateKey(EndGameKey key, const TCHAR *msg) const {
       }
       break;
     default:
-      invalidPieceCountError();
+      invalidPieceCountError(__TFUNCTION__);
     }
   }
 }
@@ -418,7 +418,9 @@ TCHAR *EndGameKeyDefinition::createWhiteKeyString(TCHAR *dst, EndGameKey key) co
                , shortNames[                     m_orderedPieceType[WHITEPLAYER][3].getPieceType()]
                , GETFIELDNAME(   key.getPosition(m_orderedPieceType[WHITEPLAYER][3].getIndex())));
     return dst;
-  default: throwException(_T("Invalid number of white pieces (=%d)"), getPieceCount(WHITEPLAYER));
+  default: throwException(_T("%s:Invalid number of white pieces (=%d)")
+                         ,__TFUNCTION__
+                         ,getPieceCount(WHITEPLAYER));
            return _T("????");
   }
 }
@@ -453,7 +455,9 @@ TCHAR *EndGameKeyDefinition::createBlackKeyString(TCHAR *dst, EndGameKey key) co
                , shortNames[                     m_orderedPieceType[BLACKPLAYER][3].getPieceType()]
                , GETFIELDNAME(   key.getPosition(m_orderedPieceType[BLACKPLAYER][3].getIndex())));
     return dst;
-  default: throwException(_T("Invalid number of black pieces (=%d)"), getPieceCount(BLACKPLAYER));
+  default: throwException(_T("%s:Invalid number of black pieces (=%d)")
+                         ,__TFUNCTION__
+                         ,getPieceCount(BLACKPLAYER));
            return _T("????");
   }
 }
@@ -558,8 +562,8 @@ void EndGameKeyDefinition::pawnSymSwitchError(int line) { // static
   throwException(_T("Line %d:DECIDEPAWNSYMTRANSFORM2EQUALPAWNS dropped to the end"), line);
 }
 
-void EndGameKeyDefinition::invalidPieceCountError() const {
-  throwException(_T("Invalid number of pieces (=%d) must be [3..%d]"), m_totalPieceCount, MAX_ENDGAME_PIECECOUNT);
+void EndGameKeyDefinition::invalidPieceCountError(const TCHAR *method) const {
+  throwException(_T("%s:Invalid number of pieces (=%d) must be [3..%d]"), method, m_totalPieceCount, MAX_ENDGAME_PIECECOUNT);
 }
 
 #define SYM8DECISIONSWITCH(decideStatement)                                                                   \
@@ -908,7 +912,9 @@ SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformatio
   case 6 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPij(3, 4, 2);                     /* 2     queenside */
   case 7 : return TRANSFORM_MIRRORCOL;                                            /* none  queenside */
   }
-  throwException(_T("get5Men3EqualPawnsSymTransformation:Unexpected mask:%d. Valid are [0..7]"), KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4));
+  throwException(_T("%s:Unexpected mask:%d. Valid are [0..7]")
+                ,__TFUNCTION__
+                ,KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4));
   return 0;
 }
 
@@ -940,7 +946,7 @@ void EndGameKeyDefinition::insertInitialPositions(EndGameTablebase &tablebase) c
     tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G3, H3);
     break;
   default:
-    throwException(_T("m_totalPieceCount=%d"), m_totalPieceCount);
+    invalidPieceCountError(__TFUNCTION__);
   }
 }
 
@@ -1232,7 +1238,7 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
       m_scannerFunctions[i] = &AllPositionScanner::pawnPositions;
       break;
     default:
-      throwException(_T("Unknown piecetype:%d"), m_keydef.getPieceType(i));
+      throwException(_T("%s:Unknown piecetype:%d"), __TFUNCTION__, m_keydef.getPieceType(i));
     }
   }
 }

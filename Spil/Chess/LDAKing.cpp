@@ -1261,11 +1261,12 @@ void Game::updateKingDirKingMovingUpDiag2(   const Move &m) {
 
 // Black pawn captures EP going down and left.
 void Game::updateKingDirEPDownDiag1(const EnPassantMove &m) {
+  DEFINEMETHODNAME;
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
 
     switch(KING_DIRECTION(state, m.m_move.m_from)) {
-    case MD_LEFT     : throwException(_T("updateKingDirEPDownDiag1:King is left for %s. Should be a pawn"), getFieldName(m.m_move.m_from));
+    case MD_LEFT     : throwException(_T("%s:King is left for %s. Should be a pawn"), method, getFieldName(m.m_move.m_from));
     case MD_RIGHT    : setKingRight(                     state, m.m_fromInfo        );                break; // always blockable
     case MD_DOWN     : setKingDown(                      state, m.m_fromInfo        );                break; // always blockable
     case MD_UP       : setKingUp(                        state, m.m_fromInfo        );                break; // always blockable
@@ -1280,7 +1281,7 @@ void Game::updateKingDirEPDownDiag1(const EnPassantMove &m) {
     case MD_LEFT     : SET_NOKING_LEFT(                  state, m.m_toInfo          );                break; // always blockable
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, m.m_toInfo          );                break;
     case MD_DOWN     : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
-    case MD_UP       : throwException(_T("updateKingDirEPDownDiag1:King is above %s. Should be a pawn"), getFieldName(m.m_move.m_to));
+    case MD_UP       : throwException(_T("%s:King is above %s. Should be a pawn"), method, getFieldName(m.m_move.m_to));
     case MD_DOWNDIAG1: KING_DIRECTION(                   state, m.m_move.m_from     ) = MD_NONE;      break;
     case MD_UPDIAG1  : KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_UPDIAG1;   break;
     case MD_DOWNDIAG2: IF_BLOCKABLE_SET_NOKING_DOWNDIAG2(state, m.m_toInfo          );                break;
@@ -1314,12 +1315,13 @@ void Game::updateKingDirEPDownDiag1(const EnPassantMove &m) {
 
 // Black pawn captures EP going down and right
 void Game::updateKingDirEPDownDiag2(const EnPassantMove &m) {
+  DEFINEMETHODNAME;
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
 
     switch(KING_DIRECTION(state, m.m_move.m_from)) {
     case MD_LEFT     : setKingLeft(                      state, m.m_fromInfo        );                break; // always blockable
-    case MD_RIGHT    : throwException(_T("updateKingDirEPDownDiag2:King is right for %s. Should be a pawn"), getFieldName(m.m_move.m_from));
+    case MD_RIGHT    : throwException(_T("%s:King is right for %s. Should be a pawn"), method, getFieldName(m.m_move.m_from));
     case MD_DOWN     : setKingDown(                      state, m.m_fromInfo        );                break; // always blockable
     case MD_UP       : setKingUp(                        state, m.m_fromInfo        );                break; // always blockable
     case MD_DOWNDIAG1: setKingDownDiag1(                 state, m.m_fromInfo        );                break; // always blockable
@@ -1333,7 +1335,7 @@ void Game::updateKingDirEPDownDiag2(const EnPassantMove &m) {
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, m.m_toInfo          );                break;
     case MD_RIGHT    : SET_NOKING_RIGHT(                 state, m.m_toInfo          );                break; // always blockable
     case MD_DOWN     : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
-    case MD_UP       : throwException(_T("updateKingDirEPDownDiag2:King is above %s. Should be a pawn"), getFieldName(m.m_move.m_to));
+    case MD_UP       : throwException(_T("%s:King is above %s. Should be a pawn"), method, getFieldName(m.m_move.m_to));
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, m.m_toInfo          );                break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, m.m_toInfo          );                break;
     case MD_DOWNDIAG2: KING_DIRECTION(                   state, m.m_move.m_from     ) = MD_NONE;      break;
@@ -1367,12 +1369,13 @@ void Game::updateKingDirEPDownDiag2(const EnPassantMove &m) {
 
 // White pawn captures EP going up and right.
 void Game::updateKingDirEPUpDiag1(  const EnPassantMove &m) {
+  DEFINEMETHODNAME;
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
 
     switch(KING_DIRECTION(state, m.m_move.m_from)) {
     case MD_LEFT     : setKingLeft(                      state, m.m_fromInfo        );                break; // always blockable
-    case MD_RIGHT    : throwException(_T("updateKingDirEPUpDiag1:King is right for %s. Should be a pawn"), getFieldName(m.m_move.m_from));
+    case MD_RIGHT    : throwException(_T("%s:King is right for %s. Should be a pawn"), method, getFieldName(m.m_move.m_from));
     case MD_DOWN     : setKingDown(                      state, m.m_fromInfo        );                break; // always blockable
     case MD_UP       : setKingUp(                        state, m.m_fromInfo        );                break; // always blockable
     case MD_DOWNDIAG1: KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWNDIAG1; break;
@@ -1385,7 +1388,7 @@ void Game::updateKingDirEPUpDiag1(  const EnPassantMove &m) {
     switch(KING_DIRECTION(state, m.m_move.m_to)) {
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, m.m_toInfo          );                break;
     case MD_RIGHT    : SET_NOKING_RIGHT(                 state, m.m_toInfo          );                break; // always blockable
-    case MD_DOWN     : throwException(_T("updateKingDirEPUpDiag1:King is belove %s. Should be a pawn"), getFieldName(m.m_move.m_to));
+    case MD_DOWN     : throwException(_T("%s:King is belove %s. Should be a pawn"), method, getFieldName(m.m_move.m_to));
     case MD_UP       : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
     case MD_DOWNDIAG1: KING_DIRECTION(                   state, m.m_move.m_to       ) = MD_DOWNDIAG1; break;
     case MD_UPDIAG1  : KING_DIRECTION(                   state, m.m_move.m_from     ) = MD_NONE;      break;
@@ -1420,11 +1423,12 @@ void Game::updateKingDirEPUpDiag1(  const EnPassantMove &m) {
 
 // White pawn captures EP going up and left
 void Game::updateKingDirEPUpDiag2(  const EnPassantMove &m) {
+  DEFINEMETHODNAME;
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
 
     switch(KING_DIRECTION(state, m.m_move.m_from)) {
-    case MD_LEFT     : throwException(_T("updateKingDirEPUpDiag2:King is left for %s. Should be a pawn"), getFieldName(m.m_move.m_from));
+    case MD_LEFT     : throwException(_T("%s:King is left for %s. Should be a pawn"), method, getFieldName(m.m_move.m_from));
     case MD_RIGHT    : setKingRight(                     state, m.m_fromInfo        );                break; // always blockable
     case MD_DOWN     : setKingDown(                      state, m.m_fromInfo        );                break; // always blockable
     case MD_UP       : setKingUp(                        state, m.m_fromInfo        );                break; // always blockable
@@ -1438,7 +1442,7 @@ void Game::updateKingDirEPUpDiag2(  const EnPassantMove &m) {
     switch(KING_DIRECTION(state, m.m_move.m_to)) {
     case MD_LEFT     : SET_NOKING_LEFT(                  state, m.m_toInfo          );                break; // always blockable
     case MD_RIGHT    : IF_BLOCKABLE_SET_NOKING_RIGHT(    state, m.m_toInfo          );                break;
-    case MD_DOWN     : throwException(_T("updateKingDirEPUpDiag2:King is belove %s. Should be a pawn"), getFieldName(m.m_move.m_to));
+    case MD_DOWN     : throwException(_T("%s:King is belove %s. Should be a pawn"), method, getFieldName(m.m_move.m_to));
     case MD_UP       : KING_DIRECTION(                   state, m.m_capturedPosition) = MD_NONE;      break;
     case MD_DOWNDIAG1: IF_BLOCKABLE_SET_NOKING_DOWNDIAG1(state, m.m_toInfo          );                break;
     case MD_UPDIAG1  : IF_BLOCKABLE_SET_NOKING_UPDIAG1(  state, m.m_toInfo          );                break;
@@ -1586,7 +1590,8 @@ PinnedState Game::getPinnedState(int pos) {
   case MD_UPDIAG1  : return GET_LDA_UPDIAG1(  m_playerState[CURRENTENEMY], pos) ? PINNED_TO_DIAG1 : NOT_PINNED;
   case MD_DOWNDIAG2: return GET_LDA_DOWNDIAG2(m_playerState[CURRENTENEMY], pos) ? PINNED_TO_DIAG2 : NOT_PINNED;
   case MD_UPDIAG2  : return GET_LDA_UPDIAG2(  m_playerState[CURRENTENEMY], pos) ? PINNED_TO_DIAG2 : NOT_PINNED;
-  default          : throwException(_T("getPinnedState:Invalid kingdirection %d at position %s")
+  default          : throwException(_T("%s:Invalid kingdirection %d at position %s")
+                                    ,__FUNCTION__
                                     ,KING_DIRECTION(m_playerState[PLAYERINTURN], pos)
                                     ,getFieldName(pos));
                      return NOT_PINNED;

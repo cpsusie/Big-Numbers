@@ -325,7 +325,7 @@ void Game::unTryMove() {
     undoLongCastling();
     break;
   default:
-    throwException(_T("untryMove:Unknown movetype:%d"),top.m_type);
+    throwException(_T("%s:Unknown movetype:%d"),__TFUNCTION__,top.m_type);
     break;
   }
 }

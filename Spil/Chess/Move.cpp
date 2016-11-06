@@ -46,7 +46,7 @@ bool MoveBase::isGoodMove() const {
     return false;
 
   default              :
-    throwException(_T("isGoodMove:Unknown annotation:%d"), m_annotation);
+    throwException(_T("%s:Unknown annotation:%d"), __TFUNCTION__, m_annotation);
     return false;
   }
 }

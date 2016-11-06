@@ -93,7 +93,7 @@ protected:
   static void sym8DecisionSwitchError(int line);
   static void pawnSymSwitchError(int line);
   void        pieceTypeError(int index, const String &msg) const;
-  void        invalidPieceCountError() const;
+  void        invalidPieceCountError(const TCHAR *method) const;
   void        impossibleEncodingError(EndGameKey key) const;
   void        checkIsPawn(UINT index, bool expected) const;
   void        checkSameOwner(UINT index1, UINT index2, bool expected) const;

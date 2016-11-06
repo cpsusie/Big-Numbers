@@ -254,7 +254,7 @@ private:
   void handleTimeout(Timer &timer);
   void logPositionCount() const;
   void logUndefinedPosition(const EndGameKey &key) const;
-  static void metricError(const TCHAR *function);                                                       // throw Exception
+  static void metricError(const TCHAR *method);                                                       // throw Exception
 
   int  getInfoLength() const;
   EndGameResult &setAsStaleMatePosition(EndGameResult &result) {

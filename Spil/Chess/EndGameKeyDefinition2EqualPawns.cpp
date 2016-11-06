@@ -36,7 +36,7 @@ void EndGameKeyDefinition2EqualPawns::setPawnsOwner() {
     }
     break;
   default:
-    throwException(_T("totalPieceCount=%d"), getPieceCount());
+    invalidPieceCountError(__TFUNCTION__);
   }
 }
 #endif

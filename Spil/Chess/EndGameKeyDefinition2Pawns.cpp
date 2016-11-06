@@ -57,7 +57,7 @@ void EndGameKeyDefinition2Pawns::insertInitialPositions(EndGameTablebase &tableb
         tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, pawn1Pos, pawn2Pos, H3);
         break;
       default:
-        throwException(_T("totalPieceCount=%d"), getPieceCount());
+        invalidPieceCountError(__TFUNCTION__);
       }
     }
   }

@@ -264,7 +264,8 @@ String EndGameKeyDefinition4Men2Equal::getCodecName() const {
 EndGamePosIndex add2Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp >= hp) || (addr >= maxAddr)) {
-    throwException(_T("add2Equal:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp < hp)")
+    throwException(_T("%s:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp < hp)")
+                  ,__TFUNCTION__
                   ,addr, maxAddr, lp, hp);
   }
   EndGamePosIndex a = addr * hp;
@@ -276,7 +277,8 @@ EndGamePosIndex add2Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp
 EndGamePosIndex add2EqualAllowEqualLH(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
   maxAddr /= 2;
   if((lp > hp) || (addr >= maxAddr)) {
-    throwException(_T("add2EqualAllowEqualLH:addr=%llu, maxAddr=%llu, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
+                  ,__TFUNCTION__
                   ,addr, maxAddr, lp, hp);
   }
   EndGamePosIndex a = addr * (hp+1);

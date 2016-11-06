@@ -704,7 +704,8 @@ String EndGameKeyDefinition5Men3Equal::getCodecName() const {
 
 EndGamePosIndex add3Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp >= mp) || (mp >= hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3Equal:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) &&  lp < mp < hp")
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) &&  lp < mp < hp")
+                  ,__TFUNCTION__
                   ,addr, maxAddr, lp, mp, hp);
   }
   EndGamePosIndex a = ADD2EQUAL(addr, maxAddr, lp, mp);
@@ -714,7 +715,8 @@ EndGamePosIndex add3Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp
 
 EndGamePosIndex add3EqualAllowEqualLM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp > mp) || (mp >= hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3EqualAllowEqualLM:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp <= mp < hp")
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp <= mp < hp")
+                  ,__TFUNCTION__
                   ,addr, maxAddr, lp, mp, hp);
   }
   EndGamePosIndex a = ADD2EQUALALLOWEQUALLH(addr, maxAddr, lp, mp);
@@ -724,7 +726,8 @@ EndGamePosIndex add3EqualAllowEqualLM(EndGamePosIndex addr, EndGamePosIndex maxA
 
 EndGamePosIndex add3EqualAllowEqualHM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
   if((lp >= mp) || (mp > hp) || (addr >= maxAddr/2)) {
-    throwException(_T("add3EqualAllowEqualLM:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp < mp <= hp")
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp < mp <= hp")
+                  ,__TFUNCTION__
                   ,addr, maxAddr, lp, mp, hp);
   }
   EndGamePosIndex a = ADD2EQUAL(addr, maxAddr, lp, mp);

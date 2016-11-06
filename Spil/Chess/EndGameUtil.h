@@ -24,10 +24,10 @@ private:                  // f e d c b a9     876543210
   unsigned short m_data;  // - M C V E Status pliesToEnd
 
 public:
-  EndGameResult() {
+  inline EndGameResult() {
     m_data = 0;
   }
-  EndGameResult(EndGamePositionStatus status, UINT pliesToEnd) {
+  inline EndGameResult(EndGamePositionStatus status, UINT pliesToEnd) {
     m_data = (1<<11);
     setResult(status, pliesToEnd);
   }

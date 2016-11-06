@@ -265,7 +265,10 @@ EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(EndGameKey key) { // static
   if((wki < 0)
    || KINGSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition())
    || (WK_INDEX_ONDIAG(wki) && IS_ABOVEMAINDIAG1(key.getBlackKingPosition()))) {
-    throwException(_T("encodeKKSym8:Cannot encode kings:[%s,%s]"), getFieldName(key.getWhiteKingPosition()), getFieldName(key.getBlackKingPosition()));
+    throwException(_T("%s:Cannot encode kings:[%s,%s]")
+                  ,__TFUNCTION__
+                  ,getFieldName(key.getWhiteKingPosition())
+                  ,getFieldName(key.getBlackKingPosition()));
   }
 #endif
 

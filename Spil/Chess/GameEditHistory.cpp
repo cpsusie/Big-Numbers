@@ -16,7 +16,7 @@ GameEditHistory::GameEditHistory() {
 
 Game &GameEditHistory::beginEdit(const Game &game) {
   if(m_game.isSetupMode()) {
-    throwException(_T("beginEdit:Alredy in editmode"));
+    throwException(_T("%s:Alredy in editmode"), __TFUNCTION__);
   }
   resetHistory();
   m_key0 = game.getKey();
@@ -32,7 +32,7 @@ Game &GameEditHistory::beginEdit(const Game &game) {
 
 void GameEditHistory::endEdit() {
   if(!m_game.isSetupMode()) {
-    throwException(_T("endEdit:Not in editmode"));
+    throwException(_T("%s:Not in editmode"), __TFUNCTION__);
   }
   m_history.clear();
   m_game.newGame();

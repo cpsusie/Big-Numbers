@@ -409,7 +409,9 @@ bool BackMoveGenerator::isNonCapturingPromotion(int promotedPos, const FieldSet 
   } else if(c == 7) {
     srcField = MAKE_POSITION(r,c-1);
   } else {
-    throwException(_T("isNonCapturingPromotion:promotedPos %s is an edgefield, (r,c)=(%d,%d)"), getFieldName(promotedPos), r, c);
+    throwException(_T("%s:promotedPos %s is an edgefield, (r,c)=(%d,%d)")
+                  ,__TFUNCTION__
+                  ,getFieldName(promotedPos), r, c);
     srcField = 0; // just to make compiler happy
   }
   return sourceFieldSet.contains(srcField);
@@ -458,7 +460,9 @@ bool BackMoveGenerator::isCapturingPromotion(int promotedPos, int uncoveredPos, 
     CHECK_NOT_CORNER(r,c-1);
     srcField = MAKE_POSITION(r,c-1);
   } else {
-    throwException(_T("isCapturingPromotion:promotedPos %s is an edgefield, (r,c)=(%d,%d)"), getFieldName(promotedPos), r, c);
+    throwException(_T("%s:promotedPos %s is an edgefield, (r,c)=(%d,%d)")
+                  ,__TFUNCTION__
+                  ,getFieldName(promotedPos), r, c);
     srcField = 0; // just to make compiler happy
   }
 
@@ -556,7 +560,9 @@ void BackMoveGenerator::findPromoteFieldSet() const {
   case TRANSFORM_ROTATERIGHT : promoteFieldSet = (kingOwner==WHITEPLAYER)?&fileA:&fileH; break;
   case TRANSFORM_MIRRORDIAG1 :
   case TRANSFORM_ROTATELEFT  : promoteFieldSet = (kingOwner==WHITEPLAYER)?&fileH:&fileA; break;
-  default                    : throwException(_T("Unexpected transformation:%s"), getSymmetricTransformationToString(transformation).cstr());
+  default                    : throwException(_T("%s:Unexpected transformation:%s")
+                                             ,__TFUNCTION__
+                                             , getSymmetricTransformationToString(transformation).cstr());
   }
   PRINTF((_T("Trans:%s\nKingowner:%s\nKing sourcefield:%s\nKey.tr:%s\nPromoteFields:%s\n")
         , getSymmetricTransformationToString(transformation).cstr()
@@ -866,7 +872,7 @@ bool BackMoveGeneratorLDCheck::firstMove(Move &m) const {
 
   Piece *checkingPiece = findCheckingLDAPiece(kingPos);
   if(checkingPiece == NULL) {
-    throwException(_T("No LDA-piece attacks %s king at %s"), getPlayerNameEnglish(PLAYERINTURN), getFieldName(kingPos));
+    throwException(_T("%s:No LDA-piece attacks %s king at %s"), __TFUNCTION__, getPlayerNameEnglish(PLAYERINTURN), getFieldName(kingPos));
   }
   const DirectionArray &da        = checkingPiece->m_moveTable[checkingPiece->m_position];
   const Direction      *direction = da.m_directions;
@@ -1603,7 +1609,7 @@ bool BackMoveGeneratorSDDoubleCheck::firstMove(Move &m) const {
 
   const int attPos = m_game.m_playerState[CURRENTENEMY].m_checkingSDAPosition;
   if(attPos < 0) {
-    throwException(_T("BackMoveGeneratorSDDoubleCheck:checkSDAPosition=-1"));
+    throwException(_T("%s:checkSDAPosition=-1"), __TFUNCTION__);
   }
   Piece *piece = m_game.m_board[attPos];
   if(piece->getType() != Knight) {

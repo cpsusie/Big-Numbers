@@ -216,7 +216,7 @@ bool MoveFinderThread::newMoveFinderNeeded() const {
     }
 
   default               :
-    throwException(_T("newMoveFinderNeeded::unknown positiontype:%d"), gamePositionType);
+    throwException(_T("%s:Unknown positiontype:%d"), __TFUNCTION__, gamePositionType);
     return false;
   }
 }

@@ -33,7 +33,7 @@ static int getBitCount(UINT n) {
   int c = 0;
   for(UINT m = 0; (c <= 32) && (m < n); c++, m = (m << 1) | 1);
   if(c > 8) {
-    throwException(_T("getBitCount:n=%lu. Needs %d bits to encode. Max=8"), n, c);
+    throwException(_T("%s:n=%lu. Needs %d bits to encode. Max=8"), __TFUNCTION__, n, c);
   }
   return c;
 }
@@ -61,7 +61,8 @@ EndGamePosIndex IndexedMap::getCheckedIndex(const EndGameKey &key) const {
 #endif // _DEBUG
 
 void IndexedMap::rethrowException(Exception &e, const EndGameKey &key) const {
-  throwException(_T("%s. key:[%s], index:%s, size:%s\n"), e.what()
+  throwException(_T("%s. key:[%s], index:%s, size:%s\n")
+                ,e.what()
                 ,key.toString(m_keydef).cstr()
                 ,format1000(m_keydef.keyToIndex(key)).cstr()
                 ,format1000(size()).cstr());

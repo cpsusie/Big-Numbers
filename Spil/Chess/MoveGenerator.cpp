@@ -2,6 +2,7 @@
 
 // Checks if the king is uncovered by En passant.
 bool Game::uncoversKingEP(const Piece *pawn, const int to) const {
+  DEFINEMETHODNAME;
   switch(pawn->m_pinnedState) {
   case NOT_PINNED:
     { const int        kingPos  = pawn->m_playerState.m_king->m_position;
@@ -30,7 +31,8 @@ bool Game::uncoversKingEP(const Piece *pawn, const int to) const {
     return false;
 
   case PINNED_TO_ROW      :
-    throwException(_T("Pawn has PinnedState=PINNED_TO_ROW, when doing en passant, which is impossible!!"));
+    throwException(_T("%s:Pawn has PinnedState=PINNED_TO_ROW, when doing en passant, which is impossible!!")
+                  ,method);
     return true;
 
   case PINNED_TO_COL   :
@@ -43,7 +45,7 @@ bool Game::uncoversKingEP(const Piece *pawn, const int to) const {
     return GETDIAG2(to) != GETDIAG2(pawn->m_position);
 
   default:
-    throwException(_T("Game::uncoversKingEP:Invalid pinnedState:%d"), pawn->m_pinnedState);
+    throwException(_T("%s:Invalid pinnedState:%d"), method, pawn->m_pinnedState);
     return true;
   }
 }

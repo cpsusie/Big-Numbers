@@ -159,7 +159,7 @@ bool Game::hasEnemyPawnBeside(int to) const { // assume to is at 5. row (white t
   case F4:
   case G4: return (m_gameKey.m_pieceKey[to+DPOS_LEFT ] == BLACKPAWN) || (m_gameKey.m_pieceKey[to+DPOS_RIGHT] == BLACKPAWN);
   case H4: return m_gameKey.m_pieceKey[G4] == BLACKPAWN;
-  default: throwException(_T("hasEnemyPawnBeside:Illegal position:%s"), getFieldName(to));
+  default: throwException(_T("%s:Illegal position:%s"), __TFUNCTION__, getFieldName(to));
            return false;
   }
 }
@@ -716,7 +716,7 @@ void Game::updateGameEP(const Move &m) { // En passant updates. Quite special mo
     break;
 
   default:
-    throwException(_T("Invalid moveDirection for En passant:%d"), m.m_direction);
+    throwException(_T("%s:Invalid moveDirection for En passant:%d"), __TFUNCTION__, m.m_direction);
   }
 
   SET_PIECE(m.m_to, m.m_piece);
@@ -904,7 +904,7 @@ void Game::setNonCapturingPromotedLDA(const Move &m, PieceType type) {
     break;
 
   default    :
-    throwException(_T("setNonCapturingPromotedLDA:Invalid type (=%d). Must be {Queen,Rook,Bishop}"), type);
+    throwException(_T("%s:Invalid type (=%d). Must be {Queen,Rook,Bishop}"), __TFUNCTION__, type);
   }
 }
 
@@ -927,7 +927,7 @@ void Game::setCapturingPromotedLDA(const Move &m, PieceType type) {
     break;
 
   default    :
-    throwException(_T("setCapturingPromotedLDA:Invalid type (=%d). Must be {Queen,Rook,Bishop}"), type);
+    throwException(_T("%s:Invalid type (=%d). Must be {Queen,Rook,Bishop}"), __TFUNCTION__, type);
   }
 }
 

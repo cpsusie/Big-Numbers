@@ -279,9 +279,10 @@ EndGamePositionStatus EndGameTablebase::isTerminalMove(const Game &game, const M
       }
       break;
     default:
-      throwException(_T("Unknown metric:%d"), EndGameKeyDefinition::getMetric());
+      throwException(_T("%s:Unknown metric:%d"), __TFUNCTION__, EndGameKeyDefinition::getMetric());
     }
-    throwException(_T("isTerminalMove:Unexpected terminal status for key[%s], move:[%s]:%d")
+    throwException(_T("%s:Unexpected terminal status for key[%s], move:[%s]:%d")
+                  ,__TFUNCTION__
                   ,transformGameKey(game.getKey()).toString(m_keydef).cstr()
                   ,m.toString().cstr()
                   ,status
@@ -381,8 +382,8 @@ bool EndGameTablebase::needBuild(bool recover) const {
   return getFirstBuildStep(recover) != BUILD_DONE;
 }
 
-void EndGameTablebase::metricError(const TCHAR *function) { // static
-  throwException(_T("EndGameTablebase::%s:Metric must be DTC"), function);
+void EndGameTablebase::metricError(const TCHAR *method) { // static
+  throwException(_T("%s:Metric must be DTC"), method);
 }
 
 BuildStep EndGameTablebase::getFirstBuildStep(bool recover) const {
@@ -552,7 +553,7 @@ void EndGameTablebase::doBuild(BuildStep buildStep) {
         break;
 
       default:
-        throwException(_T("Invalid buildStep:%d"), buildStep);
+        throwException(_T("%s:Invalid buildStep:%d"), __TFUNCTION__, buildStep);
       }
     }
 
@@ -760,7 +761,7 @@ void EndGameTablebase::checkInitialSetupFlags() {
 
 void EndGameTablebase::generateAllForwardPositions() {
   if(!EndGameKeyDefinition::isMetricDTC()) {
-    metricError(_T("generateAllForwardPositions"));
+    metricError(__TFUNCTION__);
   }
   verbose(_T("\nGenerating all forward positions...\n"));
 
@@ -812,7 +813,7 @@ void EndGameTablebase::generateAllForwardPositions() {
 
 void EndGameTablebase::generateAllRetroPositions() {
   if(!EndGameKeyDefinition::isMetricDTC()) {
-    metricError(_T("generateAllRetroPositions"));
+    metricError(__TFUNCTION__);
   }
   verbose(_T("\nSearch for positions by moving backwards...\n"));
 
@@ -1031,7 +1032,9 @@ void EndGameTablebase::findDTM() {
         }
         break;
       default:
-        throwException(_T("findDTM:Unexpected pliesToEnd:%s. Expected pliesToEnd is 0 or 1"), toString(entry, true).cstr());
+        throwException(_T("%s:Unexpected pliesToEnd:%s. Expected pliesToEnd is 0 or 1")
+                      ,__TFUNCTION__
+                      , toString(entry, true).cstr());
       }
       INLOOP_VERBOSE(FIND_DTM_VERBOSE)
     }
