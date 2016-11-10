@@ -24,24 +24,36 @@ public:
 #define BYTECOUNT(size) (((size)-1) / 8 + 1)
 
 template<class BitSet> String BitSetAddIn<BitSet>::toString(BitSet &set, size_t maxResult) const {
-  const DWORD  capacity = (DWORD)set.m_capacity;
+  const QWORD  capacity = set.m_capacity;
 
   if (capacity == 0) {
     return _T("empty");
   }
   const QWORD  startAddr  = set.m_paddr;
-  DWORD        byte0Index = 0; // in bytes
+  QWORD        byte0Index = 0; // in bytes
   String       result;
+  const int    maxBufCount = 30; // to prevent long responstime for very large bitsets
+  int          buffersRead = 0;
 //  return format(_T("capacity:%u, addr:%#I64x"), capacity, startAddr);
-  for(DWORD bytesLeft = BYTECOUNT(capacity); bytesLeft > 0;) {
-    BYTE buffer[1024];
-    const int   n = min(bytesLeft, sizeof(buffer));
+  for(QWORD bytesLeft = BYTECOUNT(capacity); bytesLeft > 0;) {
+    BYTE      buffer[4096];
+    const int n = (int)min(bytesLeft, sizeof(buffer));
+    if(buffersRead++ == maxBufCount) {
+      if (result.length() == 0) {
+        result = format(_T("It will take a long time to expand BitSet. Capacity=%I64u."), capacity);
+      } else {
+        for(size_t rl = result.length(); rl < maxResult; rl++) {
+          result += _T('.');
+        }
+      }
+      break;
+    }
     bytesLeft -= n;
     m_helper->getObjectx64(buffer, startAddr + byte0Index, n);
     const BYTE *p = (BYTE*)buffer;
     for (int i = n; i--; p++) {
       if (*p) {
-        int k = (byte0Index + (p - buffer)) * 8;
+        QWORD k = (byte0Index + (p - buffer)) * 8;
         for (BYTE b = *p; b; b >>= 1, k++) {
           if (b & 1) {
             TCHAR numStr[20];
