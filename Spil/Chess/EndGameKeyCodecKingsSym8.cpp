@@ -170,7 +170,6 @@ static const char *kkOnDiagPosToIndex[4] = {
   ,_kkD4BkP2I
 };
 
-
 static const char *kkOnDiagIndexToPos[4] = {
    _kkA1BkI2P
   ,_kkB2BkI2P
@@ -322,7 +321,7 @@ void EndGameKeyDefinition::decodeKKSym8(EndGameKey &key, EndGamePosIndex index) 
   }
 }
 
-#define _TEST_MODULE
+//#define _TEST_MODULE
 
 #ifdef _TEST_MODULE
 

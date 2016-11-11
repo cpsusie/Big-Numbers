@@ -58,6 +58,7 @@ public:
   UINT getP4OffDiagIndexEqualP34()  const;
   UINT getP5OffDiagIndexEqualP45()  const;
   UINT getP4OffDiagIndexEqualP234() const;
+  UINT getP5OffDiagIndexEqualP345() const;
 
   UINT getP2DiagIndex()             const;
   UINT getP3DiagIndex()             const;
@@ -68,6 +69,7 @@ public:
   UINT getP4DiagIndexEqualP34()     const;
   UINT getP5DiagIndexEqualP45()     const;
   UINT getP4DiagIndexEqualP234()    const;
+  UINT getP5DiagIndexEqualP345()    const;
 
   UINT getP3Pawn2Index()            const;
   UINT getP4Pawn3Index()            const;
@@ -121,13 +123,16 @@ public:
   }
 
   void p4IndexToOffDiagPosEqualP234();
+  void p5IndexToOffDiagPosEqualP345();
 
   inline void p234IndexToOffDiagPosEqualP234() {
-    p2IndexToOffDiagPos();
-    p3IndexToOffDiagPosEqualP23();
+    p23IndexToOffDiagPosEqualP23();
     p4IndexToOffDiagPosEqualP234();
   }
-
+  inline void p345IndexToOffDiagPosEqualP345() {
+    p34IndexToOffDiagPosEqualP34();
+    p5IndexToOffDiagPosEqualP345();
+  }
   void p2IndexToDiagPos();
   void p3IndexToDiagPos();
   void p4IndexToDiagPos();
@@ -164,17 +169,24 @@ public:
   }
 
   void p4IndexToDiagPosEqualP234();
+  void p5IndexToDiagPosEqualP345();
 
   inline void p34IndexToDiagPosEqualP234() {
     p3IndexToDiagPosEqualP23();
     p4IndexToDiagPosEqualP234();
   }
+  inline void p45IndexToDiagPosEqualP345() {
+    p4IndexToDiagPosEqualP34();
+    p5IndexToDiagPosEqualP345();
+  }
   inline void p234IndexToDiagPosEqualP234() {
-    p2IndexToDiagPos();
-    p3IndexToDiagPosEqualP23();
+    p23IndexToDiagPosEqualP23();
     p4IndexToDiagPosEqualP234();
   }
-
+  inline void p345IndexToDiagPosEqualP345() {
+    p34IndexToDiagPosEqualP34();
+    p5IndexToDiagPosEqualP345();
+  }
   void p3IndexToPawn2Pos();
   void p4IndexToPawn3Pos();
   void p4IndexToPawn3PosEqualP34();

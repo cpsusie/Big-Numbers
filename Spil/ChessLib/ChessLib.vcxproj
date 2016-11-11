@@ -436,6 +436,8 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <PreprocessToFile>false</PreprocessToFile>
+      <ShowIncludes>false</ShowIncludes>
     </ClCompile>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -502,6 +504,7 @@
     <ClCompile Include="..\Chess\EndGameKeyDefinition5Men3Pawns.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men2Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition6Men3Equal.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsAllowed.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsNotAllowed.cpp" />
     <ClCompile Include="..\Chess\EndGameKNKN.cpp" />
@@ -544,6 +547,7 @@
     <ClCompile Include="..\Chess\EndGameKQKBN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKNN.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKNNN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKP.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKQ.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKR.cpp" />

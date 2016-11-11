@@ -179,45 +179,6 @@ SymmetricTransformation EndGameKeyDefinition5Men3EqualPawns::getSymTransformatio
   return get5Men3EqualPawnsSymTransformation(key);
 }
 
-#ifdef _DEBUG
-
-void set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+2]);
-  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
-  SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
-}
-
-void set3EqualPawnsFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+1]);
-  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
-  SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
-}
-
-void set3EqualPawnsFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  maxAddr /= 2;
-  int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+1]);
-  addr -= GET_RANGESTART3EQUAL(maxAddr, r);
-  r = findRange2Equal(maxAddr, addr);
-  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
-  r++;
-  const int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];
-  key.setPosition(mpIndex, MIRRORCOLUMN(pos));
-  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[addr % r]);
-  addr /= r;
-}
-
-void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex) {
-  int r = findTableRange(table, tableSize, addr);
-  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+2]);
-  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
-  SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
-}
-
-#endif
-
 #ifdef TABLEBASE_BUILDER
 
 void EndGameKeyDefinition5Men3EqualPawns::setPawnsOwner() {

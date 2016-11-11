@@ -684,6 +684,12 @@
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men2Equal.cpp">
       <Filter>EndGames\EndGameKeyDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKQKNNN.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKeyDefinition6Men3Equal.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">

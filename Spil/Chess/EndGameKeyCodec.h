@@ -63,14 +63,12 @@ extern const char _wkD3BkI2P[55];
 #define GET_RANGESTART3EQUAL(f, index) ((f) * SUMSUM1TO(index))
 
 #define SORT2(i,j)                  \
-{ if(i > j) {                       \
-    swap(i, j);                     \
-  }                                 \
+{ if((i) > (j)) swap(i, j);         \
 }
 
 #define SORT3(i,j,k)                \
 { SORT2(i, j);                      \
-  if(j > k) {                       \
+  if((j) > (k)) {                   \
     swap(j, k);                     \
     SORT2(i, j);                    \
   }                                 \
@@ -78,56 +76,61 @@ extern const char _wkD3BkI2P[55];
 
 #ifdef _DEBUG
 
-EndGamePosIndex add2Equal(             EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp);
-EndGamePosIndex add2EqualAllowEqualLH( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp);
+EndGamePosIndex _addPit(                EndGamePosIndex addr, Player p);
+EndGamePosIndex _addPosIndex(           EndGamePosIndex addr, UINT count, UINT index);
+EndGamePosIndex _add2Equal(             EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp);
+EndGamePosIndex _add2EqualAllowEqualLH( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp);
 
-EndGamePosIndex add3Equal(             EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
-EndGamePosIndex add3EqualAllowEqualLM( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
-EndGamePosIndex add3EqualAllowEqualHM( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
+EndGamePosIndex _add3Equal(             EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
+EndGamePosIndex _add3EqualAllowEqualLM( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
+EndGamePosIndex _add3EqualAllowEqualHM( EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp);
 
-void set2Pos2Equal(       EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2OffDiagPosFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2OffDiagPosFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _setPit(              EndGameKey &key, EndGamePosIndex &addr);
+void _setPosIndex(         EndGameKey &key, EndGamePosIndex &addr, UINT count, UINT pIndex);
+void _setPosBelowDiag(     EndGameKey &key, EndGamePosIndex &addr, UINT pIndex);
+void _set2Pos2Equal(       EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2OffDiagPosFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2OffDiagPosFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
 
-void set3Pos3Equal(       EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3OffDiagPosFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3OffDiagPosFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3Pos3Equal(       EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3OffDiagPosFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3OffDiagPosFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
 
-#define ADD2EQUAL(             addr, maxAddr, lp,     hp) add2Equal(             addr, maxAddr, lp,     hp)
-#define ADD2EQUALALLOWEQUALLH( addr, maxAddr, lp,     hp) add2EqualAllowEqualLH( addr, maxAddr, lp,     hp)
+#define ADD2EQUAL(             addr, maxAddr, lp,     hp) _add2Equal(             addr, maxAddr, lp,     hp)
+#define ADD2EQUALALLOWEQUALLH( addr, maxAddr, lp,     hp) _add2EqualAllowEqualLH( addr, maxAddr, lp,     hp)
 
-#define ADD3EQUAL(             addr, maxAddr, lp, mp, hp) add3Equal(             addr, maxAddr, lp, mp, hp)
-#define ADD3EQUALALLOWEQUALLM( addr, maxAddr, lp, mp, hp) add3EqualAllowEqualLM( addr, maxAddr, lp, mp, hp)
-#define ADD3EQUALALLOWEQUALHM( addr, maxAddr, lp, mp, hp) add3EqualAllowEqualHM( addr, maxAddr, lp, mp, hp)
+#define ADD3EQUAL(             addr, maxAddr, lp, mp, hp) _add3Equal(             addr, maxAddr, lp, mp, hp)
+#define ADD3EQUALALLOWEQUALLM( addr, maxAddr, lp, mp, hp) _add3EqualAllowEqualLM( addr, maxAddr, lp, mp, hp)
+#define ADD3EQUALALLOWEQUALHM( addr, maxAddr, lp, mp, hp) _add3EqualAllowEqualHM( addr, maxAddr, lp, mp, hp)
 
 
-#define SET2POS2EQUAL(       key, addr, maxAddr, lpIndex, hpIndex) set2Pos2Equal(       key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex) set2OffDiagPosNoFlip(key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2OFFDIAGPOSFLIPi( key, addr, maxAddr, lpIndex, hpIndex) set2OffDiagPosFlipi( key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2OFFDIAGPOSFLIPj( key, addr, maxAddr, lpIndex, hpIndex) set2OffDiagPosFlipj( key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, hpIndex) set2OffDiagPosFlipij(key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2POS2EQUAL(       key, addr, maxAddr, lpIndex, hpIndex) _set2Pos2Equal(       key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex) _set2OffDiagPosNoFlip(key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2OFFDIAGPOSFLIPi( key, addr, maxAddr, lpIndex, hpIndex) _set2OffDiagPosFlipi( key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2OFFDIAGPOSFLIPj( key, addr, maxAddr, lpIndex, hpIndex) _set2OffDiagPosFlipj( key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, hpIndex) _set2OffDiagPosFlipij(key, addr, maxAddr, lpIndex, hpIndex)
 
 #define SET3POS3EQUALa(      key, addr, table, size,             maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3Pos3Equal(             key, addr, table, size,             maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3Pos3Equal(            key, addr, table, size,             maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3POS3EQUAL(       key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
   SET3POS3EQUALa(            key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3OFFDIAGPOSNOFLIP(key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3OffDiagPosNoFlip(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3OffDiagPosNoFlip(     key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3OFFDIAGPOSFLIPi( key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3OffDiagPosFlipi(       key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3OffDiagPosFlipi(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3OFFDIAGPOSFLIPj( key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3OffDiagPosFlipj(       key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3OffDiagPosFlipj(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3OFFDIAGPOSFLIPij(key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3OffDiagPosFlipij(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3OffDiagPosFlipij(     key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #else
 
@@ -242,11 +245,23 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 // ---------------------------------------- Without pawns ----------------------------------------
 
 #define ADDPLAYER(   player, addr)             (((addr) << 1) | (player))
+
+#ifndef _DEBUG
 #define ADDPIT(      key   , addr)             ADDPLAYER(key.getPlayerInTurn(), addr)
 #define SETPIT(      key   , addr)             { key.setPlayerInTurn((Player)((addr) & 1)); addr >>= 1; }
 
 #define ADDPOS_INDEX(addr, count, index)       ((EndGamePosIndex)(addr) * (count) + (index))
 #define SETPOS_INDEX(key, addr, count, pIndex) { key.setPosition(pIndex,(addr) % (count)); addr /= (count); }
+
+#else //_DEBUG
+
+#define ADDPIT(      key   , addr)                 _addPit(     addr, key.getPlayerInTurn())
+#define SETPIT(      key   , addr)                 _setPit(     key , addr)
+
+#define ADDPOS_INDEX(addr  , count, index)         _addPosIndex(addr, count,index)
+#define SETPOS_INDEX(key   , addr , count, pIndex) _setPosIndex(key , addr ,count, pIndex)
+
+#endif // _DEBUG
 
 #define P2POSCOUNT                             (64-2)
 #define P3POSCOUNT                             (P2POSCOUNT-1)
@@ -264,7 +279,11 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
 #define SETP5_INDEX(      key,  addr   )       SETPOS_INDEX(key, addr, P5POSCOUNT, 5)
 
 #define ADDPOS_BELOWDIAG( addr, subDiagIndex)  ADDPOS_INDEX(addr, 28, subDiagIndex)
+#ifndef _DEBUG
 #define SETPOS_BELOWDIAG( key , addr, pIndex)  { key.setPosition(pIndex,EndGameKeyDefinition::s_subDiagIndexToPos[(addr) % 28]); addr /= 28; }
+#else
+#define SETPOS_BELOWDIAG( key , addr, pIndex)  _setPosBelowDiag(key, addr, pIndex)
+#endif // _DEBUG
 
 #define ADDP2_ONDIAG(     addr, p2DiagIndex)   ADDPOS_INDEX(addr, 6, p2DiagIndex)
 #define ADDP3_ONDIAG(     addr, p3DiagIndex)   ADDPOS_INDEX(addr, 5, p3DiagIndex)
@@ -513,32 +532,32 @@ void set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInde
                           }
 #ifdef _DEBUG
 
-void set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
-void set2EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
+void _set2EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex);
 
-void set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
-void set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, UINT maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
+void _set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex);
 
-#define SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex) set2EqualPawnsNoFlip(key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2EQUALPAWNSFLIPi( key, addr, maxAddr, lpIndex, hpIndex) set2EqualPawnsFlipi( key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2EQUALPAWNSFLIPj( key, addr, maxAddr, lpIndex, hpIndex) set2EqualPawnsFlipj( key, addr, maxAddr, lpIndex, hpIndex)
-#define SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, hpIndex) set2EqualPawnsFlipij(key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex) _set2EqualPawnsNoFlip(key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2EQUALPAWNSFLIPi( key, addr, maxAddr, lpIndex, hpIndex) _set2EqualPawnsFlipi( key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2EQUALPAWNSFLIPj( key, addr, maxAddr, lpIndex, hpIndex) _set2EqualPawnsFlipj( key, addr, maxAddr, lpIndex, hpIndex)
+#define SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, hpIndex) _set2EqualPawnsFlipij(key, addr, maxAddr, lpIndex, hpIndex)
 
 #define SET3EQUALPAWNSNOFLIP(key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3EqualPawnsNoFlip(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3EqualPawnsNoFlip(     key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3EQUALPAWNSFLIPi( key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3EqualPawnsFlipi(       key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3EqualPawnsFlipi(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3EQUALPAWNSFLIPj( key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3EqualPawnsFlipj(       key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3EqualPawnsFlipj(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 #define SET3EQUALPAWNSFLIPij(key, addr, table,                   maxAddr, lpIndex, mpIndex, hpIndex) \
-  set3EqualPawnsFlipij(      key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
+  _set3EqualPawnsFlipij(     key, addr, table, ARRAYSIZE(table), maxAddr, lpIndex, mpIndex, hpIndex)
 
 
 #else

@@ -123,6 +123,8 @@ if(p >= getPosition(i)) {                                 \
 #define ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP45(  i, j      )  ADJUSTPOS_CHECK2POS(5, 1, 2, i, j      )
 #define ADJUSTP5_OFFDIAG_CHECK3POS_EQUALP45(  i, j, k   )  ADJUSTPOS_CHECK3POS(5, 1, 1, i, j, k   )
 #define ADJUSTP4_OFFDIAG_CHECK1POS_EQUALP234( i         )  ADJUSTPOS_CHECK1POS(4, 1, 1, i         )
+#define ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345( i         )  ADJUSTPOS_CHECK1POS(5, 1, 2, i         )
+#define ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP345( i, j      )  ADJUSTPOS_CHECK2POS(5, 1, 1, i, j      )
 
 #define ADJUSTP3_ONDIAG_CHECK1POS_EQUALP23(   i         )  ADJUSTPOS_CHECK1POS(3, 9, 1, i         )
 #define ADJUSTP4_ONDIAG_CHECK1POS_EQUALP34(   i         )  ADJUSTPOS_CHECK1POS(4, 9, 2, i         )
@@ -131,6 +133,8 @@ if(p >= getPosition(i)) {                                 \
 #define ADJUSTP5_ONDIAG_CHECK2POS_EQUALP45(   i, j      )  ADJUSTPOS_CHECK2POS(5, 9, 2, i, j      )
 #define ADJUSTP5_ONDIAG_CHECK3POS_EQUALP45(   i, j, k   )  ADJUSTPOS_CHECK3POS(5, 9, 1, i, j, k   )
 #define ADJUSTP4_ONDIAG_CHECK1POS_EQUALP234(  i         )  ADJUSTPOS_CHECK1POS(4, 9, 1, i         )
+#define ADJUSTP5_ONDIAG_CHECK1POS_EQUALP345(  i         )  ADJUSTPOS_CHECK1POS(5, 9, 2, i         )
+#define ADJUSTP5_ONDIAG_CHECK2POS_EQUALP345(  i, j      )  ADJUSTPOS_CHECK2POS(5, 9, 1, i, j      )
 
 #define ADJUSTP2_PAWN_CHECK1POS(              i         )  ADJUSTPOS_CHECK1POS(2, 1, 3, i         )
 #define ADJUSTP2_PAWN_CHECK2POS(              i, j      )  ADJUSTPOS_CHECK2POS(2, 1, 2, i, j      )
@@ -201,6 +205,14 @@ UINT EndGameKey::getP4OffDiagIndexEqualP234() const { // Kings, p2 or p3 off mai
   return p - dec;
 }
 
+UINT EndGameKey::getP5OffDiagIndexEqualP345() const { // Kings, p2, p3 or p4 off maindiag, ignore p3,p4
+  const UINT p   = getPosition(5);
+  UINT       dec = (p > getPosition(0)) ? 1 : 0;
+  if(p > getPosition(1)) dec++;
+  if(p > getPosition(2)) dec++;
+  return p - dec;
+}
+
 UINT EndGameKey::getP2DiagIndex() const {            // Kings, p2 on maindiag
   const UINT p   = getPosition(2);
   UINT       dec = (p > getPosition(0)) ? 9 : 0;
@@ -263,6 +275,14 @@ UINT EndGameKey::getP4DiagIndexEqualP234() const {   // Kings, p2, p3, p4 on mai
   const UINT p   = getPosition(4);
   UINT       dec = (p > getPosition(0)) ? 9 : 0;
   if(p > getPosition(1)) dec += 9;
+  return (p - dec) / 9;
+}
+
+UINT EndGameKey::getP5DiagIndexEqualP345() const {   // Kings, p2, p3, p4, p5 on maindiag, ignore p3,p4
+  const UINT p   = getPosition(5);
+  UINT       dec = (p > getPosition(0)) ? 9 : 0;
+  if(p > getPosition(1)) dec += 9;
+  if(p > getPosition(2)) dec += 9;
   return (p - dec) / 9;
 }
 
@@ -439,6 +459,24 @@ void EndGameKey::p4IndexToOffDiagPosEqualP234() {
   }
 }
 
+void EndGameKey::p5IndexToOffDiagPosEqualP345() {
+  UINT p = getPosition(5);
+  int ge = 0;
+  if(p >= getPosition(0)) ge |= 0x01;
+  if(p >= getPosition(1)) ge |= 0x02;
+  if(p >= getPosition(2)) ge |= 0x04;
+  switch(ge) {
+  case 0x00:                                               return; //               p < p0,p1,p2
+  case 0x01: ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP345(  1,2);  return; // p0          < p <    p1,p2
+  case 0x02: ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP345(0  ,2);  return; //    p1       < p < p0   ,p2
+  case 0x03: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(    2);  return; // p0,p1       < p <       p2
+  case 0x04: ADJUSTP5_OFFDIAG_CHECK2POS_EQUALP345(0,1  );  return; //       p2      p < p0,p1
+  case 0x05: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(  1  );  return; // p0   ,p2    < p <    p1
+  case 0x06: ADJUSTP5_OFFDIAG_CHECK1POS_EQUALP345(0    );  return; //    p1,p2    < p < p0   
+  case 0x07: setPosition(5,p + 3);                         return; // p0,p1,p2    < p
+  }
+}
+
 void EndGameKey::p2IndexToDiagPos() {
   UINT p = getPosition(2) * 9;
   int ge = 0;
@@ -610,6 +648,24 @@ void EndGameKey::p4IndexToDiagPosEqualP234() {
   case 0x01 : ADJUSTP4_ONDIAG_CHECK1POS_EQUALP234(1);    return; // p0          < p <    p1
   case 0x02 : ADJUSTP4_ONDIAG_CHECK1POS_EQUALP234(0);    return; //    p1       < p < p0
   case 0x03 : setPosition(4,p + 2*9);                    return; // p0,p1       < p
+  }
+}
+
+void EndGameKey::p5IndexToDiagPosEqualP345() {
+  UINT p = getPosition(5) * 9;
+  int ge = 0;
+  if(p >= getPosition(0)) ge |= 0x01;
+  if(p >= getPosition(1)) ge |= 0x02;
+  if(p >= getPosition(2)) ge |= 0x04;
+  switch(ge) {
+  case 0x00 : setPosition(5,p);                           return; //               p < p0,p1,p2
+  case 0x01 : ADJUSTP5_ONDIAG_CHECK2POS_EQUALP345(  1,2); return; // p0          < p <    p1,p2
+  case 0x02 : ADJUSTP5_ONDIAG_CHECK2POS_EQUALP345(0  ,2); return; //    p1       < p < p0   ,p2
+  case 0x03 : ADJUSTP5_ONDIAG_CHECK1POS_EQUALP345(    2); return; // p0,p1         p <       p2
+  case 0x04 : ADJUSTP5_ONDIAG_CHECK2POS_EQUALP345(0,1  ); return; //       p2    < p < p0,p1
+  case 0x05 : ADJUSTP5_ONDIAG_CHECK1POS_EQUALP345(  1  ); return; // p0   ,p2    < p <    p1
+  case 0x06 : ADJUSTP5_ONDIAG_CHECK1POS_EQUALP345(0    ); return; //    p1,p2    < p < p0
+  case 0x07 : setPosition(5,p + 3*9);                     return; // p0,p1,p2    < p
   }
 }
 

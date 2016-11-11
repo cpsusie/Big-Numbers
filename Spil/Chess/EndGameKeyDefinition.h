@@ -68,13 +68,14 @@ class KeyDefinitionSelfCheckInfo {
 public:
   EndGamePosIndex m_minIndex, m_maxIndex;
   UINT64          m_checkKeyCount, m_duplicateCount;
+  bool            m_testRunning;
 
   void reset();
   EndGamePosIndex getDistinctKeys() const {
-    return m_checkKeyCount  - m_duplicateCount;
+    return m_checkKeyCount - m_duplicateCount;
   }
   EndGamePosIndex getRangeLength() const {
-    return m_maxIndex-m_minIndex+1;
+    return m_maxIndex - m_minIndex + 1;
   }
 };
 class SelfCheckStatusPrinter;
@@ -102,7 +103,7 @@ protected:
   void   selfCheckInit()    const;
   UINT64 selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter) const;
   UINT64 checkSymmetries()  const;
-
+  void pause() const;
 #endif
 
   PositionSignature  createPositionSignature() const;
@@ -133,6 +134,7 @@ protected:
   static SymmetricTransformation getSym8Transformation5Men2Equal(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation6Men2Equal(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation5Men3Equal(     EndGameKey key);
+  static SymmetricTransformation getSym8Transformation6Men3Equal(     EndGameKey key);
   static SymmetricTransformation getPawnSymTransformation(            EndGameKey key);
   static SymmetricTransformation get4Men2EqualPawnsSymTransformation( EndGameKey key);
   static SymmetricTransformation get5Men2EqualPawnsSymTransformation( EndGameKey key);
@@ -295,9 +297,11 @@ public:
 
 #define DUMP_RANGETABLE(table)                                                            \
 { _tprintf(_T("%s\n"), _T(#table));                                                       \
-  for(int i = 0; i < ARRAYSIZE(table); i++) {                                             \
-    _tprintf(_T("%2d:%14s (%9s)\n"), i, format1000(table[i]).cstr()                       \
-                             , i?format1000(table[i]-table[i-1]).cstr():_T(""));          \
+  const UINT _size = ARRAYSIZE(table);                                                    \
+  for(UINT i = 0; i < _size; i++) {                                                       \
+    _tprintf(_T("%2d:%14s (%11s)\n"), i                                                   \
+            ,format1000(table[i]).cstr()                                                  \
+            ,(i<_size-1)?format1000(table[i+1]-table[i]).cstr():_T(""));                  \
   }                                                                                       \
 }
 
@@ -490,6 +494,27 @@ public:
 
   EndGamePosIndex getIndexSize() const {
     return 6044829840;
+  }
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
+
+  DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
+};
+
+class EndGameKeyDefinition6Men3Equal : public EndGameKeyDefinitionDupletsAllowed {
+private:
+#ifdef TABLEBASE_BUILDER
+  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
+#endif
+
+public:
+  EndGameKeyDefinition6Men3Equal(PieceKey pk2, PieceKey pk345);
+
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
+
+  EndGamePosIndex getIndexSize() const {
+    return 2284424082;
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 

@@ -925,6 +925,8 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
     <ClCompile Include="EndGameKeyDefinition6Men2Equal.cpp" />
+    <ClCompile Include="EndGameKeyDefinition6Men3Equal.cpp" />
+    <ClCompile Include="EndGameKQKNNN.cpp" />
     <ClCompile Include="EndGameKQRKBN.cpp" />
     <ClCompile Include="EndGameKey.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>

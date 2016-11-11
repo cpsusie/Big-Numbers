@@ -791,36 +791,57 @@ static SymmetricTransformation decideSym8Transform3EqualFlipij(EndGameKey key, S
 
 #endif
 
-#define DECIDESYM8TRANSFORM3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                      \
+// assume all prev positions are on diag, that is kings,p2,p3,...p(i-1)
+#define DECIDESYM8TRANSFORM3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, i, j, k)                           \
+{ switch(KEYBOOL3MASK(key, f1Offdiag, i, j, k)) {                                                           \
+  case 0: return trFalse;                                                       /* i,j,k on    diag */      \
+  case 1: return f2Offdiag(key.getPosition(i)  ) ? trTrue : trFalse;            /*   j,k on    diag */      \
+  case 2: return f2Offdiag(key.getPosition(j)  ) ? trTrue : trFalse;            /* i,  k on    diag */      \
+  case 3: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, i, j);  /*     k on    diag */      \
+  case 4: return f2Offdiag(key.getPosition(k)  ) ? trTrue : trFalse;            /* i,j   on    diag */      \
+  case 5: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, i, k);  /*   j   on    diag */      \
+  case 6: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, j, k);  /* i     on    diag */      \
+  case 7: switch(KEYBOOL3MASK(key, f2Offdiag, i, j, k)) {                       /* none  on    diag */      \
+          case 0: return trFalse;                                               /* i,j,k below diag */      \
+          case 1: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, i, j, k);   /*   j,k below diag */      \
+          case 2: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, j, i, k);   /* i,  k below diag */      \
+          case 3: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, i, j, k);   /*     k below diag */      \
+          case 4: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, k, i, j);   /* i,j   below diag */      \
+          case 5: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, i, k, j);   /*   j   below diag */      \
+          case 6: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, j, k, i);   /* i     below diag */      \
+          case 7: return trTrue;                                                /* none  below diag */      \
+          }                                                                                                 \
+  }                                                                                                         \
+}
+
+#define DECIDESYM8TRANSFORM5MEN3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                      \
 { if(f1Offdiag(key.getWhiteKingPosition())) {                                                                 \
     return f2Offdiag(key.getWhiteKingPosition())   ? trTrue : trFalse;            /* wk off diag      */      \
   } else if(f1Offdiag(key.getBlackKingPosition())) {                                                          \
     return f2Offdiag(key.getBlackKingPosition())   ? trTrue : trFalse;            /* wk on diag       */      \
   } else {                                                                        /* kings on    diag */      \
-    switch(KEYBOOL3MASK(key, f1Offdiag, 2, 3, 4)) {                                                           \
-    case 0: return trFalse;                                                       /* 2,3,4 on    diag */      \
-    case 1: return f2Offdiag(key.getPosition(2)  ) ? trTrue : trFalse;            /*   3,4 on    diag */      \
-    case 2: return f2Offdiag(key.getPosition(3)  ) ? trTrue : trFalse;            /* 2,  4 on    diag */      \
-    case 3: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, 2, 3);  /*     4 on    diag */      \
-    case 4: return f2Offdiag(key.getPosition(4)  ) ? trTrue : trFalse;            /* 2,3   on    diag */      \
-    case 5: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, 2, 4);  /*   3   on    diag */      \
-    case 6: DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, 3, 4);  /* 2     on    diag */      \
-    case 7: switch(KEYBOOL3MASK(key, f2Offdiag, 2, 3, 4)) {                       /* none  on    diag */      \
-            case 0: return trFalse;                                               /* 2,3,4 below diag */      \
-            case 1: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, 2, 3, 4);   /*   3,4 below diag */      \
-            case 2: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, 3, 2, 4);   /* 2,  4 below diag */      \
-            case 3: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, 2, 3, 4);   /*     4 below diag */      \
-            case 4: DECIDESYM8TRANSFORM3EQUAL_FLIPi( trTrue, trFalse, 4, 2, 3);   /* 2,3   below diag */      \
-            case 5: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, 2, 4, 3);   /*   3   below diag */      \
-            case 6: DECIDESYM8TRANSFORM3EQUAL_FLIPij(trTrue, trFalse, 3, 4, 2);   /* 2     below diag */      \
-            case 7: return trTrue;                                                /* none  below diag */      \
-            }                                                                                                 \
-    }                                                                                                         \
+    DECIDESYM8TRANSFORM3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, 2, 3, 4)                                 \
   }                                                                                                           \
 }
 
 SymmetricTransformation EndGameKeyDefinition::getSym8Transformation5Men3Equal(EndGameKey key) { // static
-  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM3EQUAL)
+  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM5MEN3EQUAL)
+}
+
+#define DECIDESYM8TRANSFORM6MEN3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse)                                  \
+{ if(f1Offdiag(key.getWhiteKingPosition())) {                                                                 \
+    return f2Offdiag(key.getWhiteKingPosition())   ? trTrue : trFalse;            /* wk off diag      */      \
+  } else if(f1Offdiag(key.getBlackKingPosition())) {                                                          \
+    return f2Offdiag(key.getBlackKingPosition())   ? trTrue : trFalse;            /* wk on diag       */      \
+  } else if(f1Offdiag(key.getPosition(2))) {                                      /* kings on    diag */      \
+    return f2Offdiag(key.getPosition(2))           ? trTrue : trFalse;            /* wk on diag       */      \
+  } else {                                                                        /* kings,p2 on    diag */   \
+    DECIDESYM8TRANSFORM3EQUAL(f1Offdiag, f2Offdiag, trTrue, trFalse, 3, 4, 5)                                 \
+  }                                                                                                           \
+}
+
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men3Equal(EndGameKey key) { // static
+  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN3EQUAL)
 }
 
 SymmetricTransformation EndGameKeyDefinition::getPawnSymTransformation(EndGameKey key) { // static
@@ -881,7 +902,7 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( i, j, k) return decidePawnTransform3EqualPawnsFlipi( key, i, j, k)
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPij(i, j, k) return decidePawnTransform3EqualPawnsFlipij(key, i, j, k)
 
-#else
+#else // !_DEBUG
 
 /* Assume p##i is on kingside. return flip(pi) > max(pj,pk) ? MIRRORCOL : 0 */
 #define DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi(i, j, k)                                                      \
@@ -899,10 +920,316 @@ static SymmetricTransformation decidePawnTransform3EqualPawnsFlipij(EndGameKey k
   return (max(pi, pj) >= pk) ? TRANSFORM_MIRRORCOL : 0;                                                       \
 }
 
-#endif
+#endif // _DEBUG
+
+#ifdef _DEBUG
+
+EndGamePosIndex _addPit(EndGamePosIndex addr, Player p) {
+  addr <<= 1;
+  addr |= p;
+  return addr;
+}
+
+void _setPit(EndGameKey &key, EndGamePosIndex &addr) {
+  const Player p = (Player)(addr&1);
+  key.setPlayerInTurn(p);
+  addr >>= 1;
+}
+
+EndGamePosIndex _addPosIndex(EndGamePosIndex addr, UINT count, UINT index) {
+  addr *= count;
+  addr += index;
+  return addr;
+}
+
+void _setPosIndex(EndGameKey &key, EndGamePosIndex &addr, UINT count, UINT pIndex) {
+  const UINT pos = addr % count;
+  key.setPosition(pIndex, pos);
+  addr /= count;
+}
+
+void _setPosBelowDiag(EndGameKey &key, EndGamePosIndex &addr, UINT pIndex) {
+  const UINT subDiagIndex = addr % 28;
+  const UINT pos          = EndGameKeyDefinition::s_subDiagIndexToPos[subDiagIndex];
+  key.setPosition(pIndex, pos);
+  addr /= 28;
+}
+
+EndGamePosIndex _add2Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
+  maxAddr /= 2;
+  if((lp >= hp) || (addr >= maxAddr)) {
+    throwException(_T("%s:addr=%u, maxAddr=%u, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp < hp)")
+                  ,__TFUNCTION__
+                  ,addr, maxAddr, lp, hp);
+  }
+  EndGamePosIndex a = addr * hp;
+  a += lp;
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr,hp-1);
+  return a + rs;
+}
+
+EndGamePosIndex _add2EqualAllowEqualLH(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT hp) {
+  maxAddr /= 2;
+  if((lp > hp) || (addr >= maxAddr)) {
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,hp)=(%u,%u). Assume (addr < maxAddr) && (lp <= hp)")
+                  ,__TFUNCTION__
+                  ,addr, maxAddr, lp, hp);
+  }
+  EndGamePosIndex a = addr * (hp+1);
+  a += lp;
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, hp);
+  return a + rs;
+}
+
+void _set2Pos2Equal(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs;
+  r++;
+  key.setPosition(hpIndex, r);
+  const UINT lpPos = addr % r;
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set2OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs;
+  r++;
+  const UINT hpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[r];
+  const UINT lpSubIndex = addr % r;
+  const UINT lpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[lpSubIndex];
+  key.setPosition(hpIndex, hpPos);
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set2OffDiagPosFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs;
+  const UINT hpPos = EndGameKeyDefinition::s_offDiagIndexToPos[r];
+  key.setPosition(hpIndex, hpPos);
+  r++;
+  const UINT lpSupIndex = addr % r + 28;
+  const UINT lpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[lpSupIndex];
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set2OffDiagPosFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs;
+  const UINT hpSupIndex = r+28;
+  const UINT hpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[hpSupIndex];
+  key.setPosition(hpIndex, hpPos);
+  r++;
+  const UINT lpSubIndex = addr % r;
+  const UINT lpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[lpSubIndex];
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set2OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs;
+  r++;
+  const UINT hpSupIndex = r+28;
+  const UINT hpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[hpSupIndex];
+  key.setPosition(hpIndex, hpPos);
+  const UINT lpSupIndex = addr % r + 28;
+  const UINT lpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[lpSupIndex];
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+EndGamePosIndex _add3Equal(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
+  if((lp >= mp) || (mp >= hp) || (addr >= maxAddr/2)) {
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) &&  lp < mp < hp")
+                  ,__TFUNCTION__
+                  ,addr, maxAddr, lp, mp, hp);
+  }
+  EndGamePosIndex a  = ADD2EQUAL(addr, maxAddr, lp, mp);
+  EndGamePosIndex rs = GET_RANGESTART3EQUAL(maxAddr/2, hp-2);
+  return a + rs;
+}
+
+EndGamePosIndex _add3EqualAllowEqualLM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
+  if((lp > mp) || (mp >= hp) || (addr >= maxAddr/2)) {
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp <= mp < hp")
+                  ,__TFUNCTION__
+                  ,addr, maxAddr, lp, mp, hp);
+  }
+  EndGamePosIndex a = ADD2EQUALALLOWEQUALLH(addr, maxAddr, lp, mp);
+  EndGamePosIndex r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
+  return a + r;
+}
+
+EndGamePosIndex _add3EqualAllowEqualHM(EndGamePosIndex addr, EndGamePosIndex maxAddr, UINT lp, UINT mp, UINT hp) {
+  if((lp >= mp) || (mp > hp) || (addr >= maxAddr/2)) {
+    throwException(_T("%s:addr=%llu, maxAddr=%llu, (lp,mp,hp)=(%u,%u,%u). Assume (addr < maxAddr/2) && lp < mp <= hp")
+                  ,__TFUNCTION__
+                  ,addr, maxAddr, lp, mp, hp);
+  }
+  EndGamePosIndex a = ADD2EQUAL(addr, maxAddr, lp, mp);
+  EndGamePosIndex r = GET_RANGESTART3EQUAL(maxAddr/2, hp-1);
+  return a + r;
+}
+
+void _set3Pos3Equal(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  key.setPosition(hpIndex, r+2);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  addr -= rs1;
+  SET2POS2EQUAL(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+void _set3OffDiagPosNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  const UINT hpPos = EndGameKeyDefinition::s_offDiagIndexToPos[r+2];
+  key.setPosition(hpIndex, hpPos);
+  const EndGamePosIndex rs = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  addr -= rs;
+  SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+void _set3OffDiagPosFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r+1]);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  addr -= rs1;
+  SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+void _set3OffDiagPosFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findTableRange(table, tableSize, addr);
+  const UINT hpPos = EndGameKeyDefinition::s_offDiagIndexToPos[r+1];
+  key.setPosition(hpIndex, hpPos);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr, r);
+  addr -= rs1;
+  r  = findRange2Equal(maxAddr, addr);
+  const EndGamePosIndex rs2 = GET_RANGESTART2EQUAL(maxAddr, r);
+  addr -= rs2;
+  r++;
+  const UINT mpSupIndex = r+28;
+  const UINT mpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[mpSupIndex];
+  const UINT lpSubIndex = addr % r;
+  const UINT lpPos      = EndGameKeyDefinition::s_offDiagIndexToPos[lpSubIndex];
+  key.setPosition(mpIndex, mpPos);
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r   = findTableRange(table, tableSize, addr);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_offDiagIndexToPos[r+2]);
+  const EndGamePosIndex rs1 = GET_RANGESTART3EQUAL(maxAddr/2, r);
+  addr -= rs1;
+  SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+
+// --------------------------------------- Pawns -----------------------------------------------
+
+void _set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findRange2Equal(maxAddr, addr);
+  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
+  r++;
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r]);
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);
+  addr /= r;
+}
+
+void _set2EqualPawnsFlipi( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findRange2Equal(maxAddr, addr);
+  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r]);
+  r++;
+  const int lpPos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];
+  key.setPosition(lpIndex, MIRRORCOLUMN(lpPos));
+  addr /= r;
+}
+
+void _set2EqualPawnsFlipj( EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findRange2Equal(maxAddr, addr);
+  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
+  r++;
+  key.setPosition(hpIndex, MIRRORCOLUMN(EndGameKeyDefinition::s_pawnIndexToPos[r]));
+  key.setPosition(lpIndex, EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r]);
+  addr /= r;
+}
+
+void _set2EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findRange2Equal(maxAddr, addr);
+  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
+  r++;
+  int pos = EndGameKeyDefinition::s_pawnIndexToPos[r];
+  key.setPosition(hpIndex, MIRRORCOLUMN(pos));
+  pos = EndGameKeyDefinition::s_pawnIndexToPos[(addr) % r];
+  key.setPosition(lpIndex, MIRRORCOLUMN(pos));
+  addr /= r;
+}
+
+
+void _set3EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  const UINT hpPos = EndGameKeyDefinition::s_pawnIndexToPos[r+2];
+  key.setPosition(hpIndex, hpPos);
+  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
+  SET2EQUALPAWNSNOFLIP(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+void _set3EqualPawnsFlipi(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  const UINT hpPos = EndGameKeyDefinition::s_pawnIndexToPos[r+1];
+  key.setPosition(hpIndex, hpPos);
+  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
+  SET2EQUALPAWNSFLIPi(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+void _set3EqualPawnsFlipj(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  maxAddr /= 2;
+  int r = findTableRange(table, tableSize, addr);
+  const UINT hpPos = EndGameKeyDefinition::s_pawnIndexToPos[r+1];
+  key.setPosition(hpIndex, hpPos);
+  addr -= GET_RANGESTART3EQUAL(maxAddr, r);
+  r = findRange2Equal(maxAddr, addr);
+  addr -= GET_RANGESTART2EQUAL(maxAddr, r);
+  r++;
+  UINT mpPos = EndGameKeyDefinition::s_pawnIndexToPos[r];
+  mpPos = MIRRORCOLUMN(mpPos);
+  key.setPosition(mpIndex, mpPos);
+
+  const UINT lpSubIndex = addr % r;
+  const UINT lpPos      = EndGameKeyDefinition::s_pawnIndexToPos[lpSubIndex];
+  key.setPosition(lpIndex, lpPos);
+  addr /= r;
+}
+
+void _set3EqualPawnsFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex *table, int tableSize, EndGamePosIndex maxAddr, int lpIndex, int mpIndex, int hpIndex) {
+  int r = findTableRange(table, tableSize, addr);
+  key.setPosition(hpIndex, EndGameKeyDefinition::s_pawnIndexToPos[r+2]);
+  addr -= GET_RANGESTART3EQUAL(maxAddr/2, r);
+  SET2EQUALPAWNSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
+}
+
+#endif //_DEBUG
 
 SymmetricTransformation EndGameKeyDefinition::get5Men3EqualPawnsSymTransformation(EndGameKey key) { // static
-  switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) { // similar to DECIDESYM8TRANSFORM3EQUAL, case 7:kings on diag, 2,3,4 off diag
+  switch(KEYBOOL3MASK(key, IS_KINGSIDE, 2, 3, 4)) { // similar to DECIDESYM8TRANSFORM5MEN3EQUAL, case 7:kings on diag, 2,3,4 off diag
   case 0 : return 0;                                                              /* 2,3,4 queenside */
   case 1 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( 2, 3, 4);                     /*   3,4 queenside */
   case 2 : DECIDEPAWNSYMTRANSFORM3EQUALPAWNS_FLIPi( 3, 2, 4);                     /* 2,  4 queenside */
@@ -961,6 +1288,7 @@ void KeyDefinitionSelfCheckInfo::reset() {
   m_maxIndex       =  0;
   m_checkKeyCount  =  0;
   m_duplicateCount =  0;
+  m_testRunning    = true;
 }
 
 class SelfCheckStatusPrinter : public TimeoutHandler {
@@ -979,10 +1307,12 @@ public:
 
 void SelfCheckStatusPrinter::handleTimeout(Timer &timer) {
   const KeyDefinitionSelfCheckInfo info = m_keydef.getSelfCheckInfo();
+  if(!info.m_testRunning) return;
+  const EndGameKey key = m_key;
   verbose(_T("%14s. %s -> %14s [min,max]:[%s..%s]%20c")
          ,format1000(info.m_checkKeyCount).cstr()
-         ,m_key.toString(m_keydef).cstr()
-         ,format1000(m_keydef.keyToIndex(m_key)).cstr()
+         ,key.toString(m_keydef).cstr()
+         ,format1000(m_keydef.keyToIndex(key)).cstr()
          ,format1000(info.m_minIndex).cstr()
          ,format1000(info.m_maxIndex).cstr()
          ,'\r'
@@ -992,7 +1322,6 @@ void SelfCheckStatusPrinter::handleTimeout(Timer &timer) {
 String SelfCheckStatusPrinter::getSummaryString() const {
   const KeyDefinitionSelfCheckInfo &info         = m_keydef.getSelfCheckInfo();
   const UINT64                      distinctKeys = info.getDistinctKeys();
-
   String result;
   result =  format(_T("Keys checked   : %14s.\n"        ), format1000(info.m_checkKeyCount).cstr());
   result += format(_T("Distinct keys  : %14s.\n"        ), format1000(distinctKeys).cstr());
@@ -1014,7 +1343,7 @@ void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
   selfCheckInit();
   SelfCheckStatusPrinter printStatus(this, key);
   Timer intervalPrinter(1);
-  intervalPrinter.startTimer(3000,printStatus, true);
+  intervalPrinter.startTimer(1000,printStatus, true);
   selfCheck(key);
   intervalPrinter.stopTimer();
 
@@ -1039,6 +1368,12 @@ void EndGameKeyDefinition::selfCheckInit() const {
   m_selfCheckInfo.reset();
   m_usedIndex      = new BitSet((size_t)getIndexSize());
   m_checkStartTime = getProcessTime();
+}
+
+void EndGameKeyDefinition::pause() const {
+  m_selfCheckInfo.m_testRunning = false;
+  ::pause();
+  m_selfCheckInfo.m_testRunning = true;
 }
 
 UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter) const {
@@ -1075,7 +1410,7 @@ UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &stat
     fflush(f);
   }
   fclose(f);
-#endif
+#endif // LIST_UNUSED
 
   delete m_usedIndex;
   m_usedIndex = NULL;
