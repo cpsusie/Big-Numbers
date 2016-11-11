@@ -1571,7 +1571,8 @@ private:
   EndGameKeyWithOccupiedPositions m_key;
   ScannerFunction                 m_scannerFunctions[MAX_ENDGAME_PIECECOUNT];
   int                             m_pIndex;
-  UINT64                          m_positionCount;
+  UINT64                          m_positionCount, m_lastPositionCount;
+  double                          m_lastStatusTime;
   UINT64                          m_distinctPositionCount;
   BitSet                          m_usedIndex;
 
@@ -1581,9 +1582,7 @@ private:
   void setPosAndScanNext(int pos);
   void checkForBothPlayers();
   void checkSymmetry();
-  void handleTimeout(Timer &timer) {
-    _tprintf(_T("Position %s\r"), format1000(m_positionCount).cstr());
-  }
+  void handleTimeout(Timer &timer);
 
 public:
   AllPositionScanner(const EndGameKeyDefinition &keydef);
@@ -1594,6 +1593,7 @@ AllPositionScanner::AllPositionScanner(const EndGameKeyDefinition &keydef)
 : m_keydef(keydef)
 , m_pieceCount(keydef.getPieceCount())
 , m_usedIndex((size_t)keydef.getIndexSize())
+, m_lastPositionCount(-1)
 {
   for(int i = 0; i < m_pieceCount; i++) m_scannerFunctions[i] = NULL;
   m_scannerFunctions[0] = &AllPositionScanner::allPositions;
@@ -1699,6 +1699,20 @@ void AllPositionScanner::pawnPositions() {
   }
 }
 
+void AllPositionScanner::handleTimeout(Timer &timer) {
+  const double now = getProcessTime();
+  TCHAR infoStr[200];
+  if (m_positionCount > m_lastPositionCount) {
+    const UINT64 n = m_positionCount - m_lastPositionCount;
+    _stprintf(infoStr, _T(" Keys/sec:%s."), format1000((UINT64)((double)n / ((now-m_lastStatusTime)/1000000.0))).cstr());
+  } else {
+    infoStr[0] = 0;
+  }
+  m_lastPositionCount = m_positionCount;
+  m_lastStatusTime    = now;
+  _tprintf(_T("Position %15s. %s\r"), format1000(m_positionCount).cstr(), infoStr);
+}
+
 UINT64 EndGameKeyDefinition::checkSymmetries() const {
   AllPositionScanner scanner(*this);
   return scanner.scanAllPositions();
@@ -1729,11 +1743,12 @@ String UnusedSequence::genKeyString(const EndGameKeyDefinition *keydef, EndGameP
 }
 
 String UnusedSequence::toString(const EndGameKeyDefinition *keydef) const {
-  return format(_T("%14s-%14s. length:%11s : ]%s - %s[ = [%s - %s]")
+  return format(_T("%14s-%14s. length:%11s : %c%s - %s[ = [%s - %s]")
                ,format1000(m_from).cstr()
                ,format1000(m_to).cstr()
                ,format1000(getLength()).cstr()
-               ,genKeyString(keydef, m_from - 1).cstr()
+               ,m_from?_T(']'):_T('[')
+               ,genKeyString(keydef, m_from?(m_from - 1):m_from).cstr()
                ,genKeyString(keydef, m_to   + 1).cstr()
                ,genKeyString(keydef, m_from    ).cstr()
                ,genKeyString(keydef, m_to      ).cstr()

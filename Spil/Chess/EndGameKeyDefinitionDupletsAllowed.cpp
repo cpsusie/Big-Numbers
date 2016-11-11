@@ -72,6 +72,7 @@ void EndGameKeyDefinitionDupletsAllowed::initIndexMap() {
         { m_equal[0] = i;
           for(int j = i+1, e = 1; j < getPieceCount(); j++) {
             if(getPieceKey(j) == getPieceKey(i)) {
+              assert(e < ARRAYSIZE(m_equal));
               m_equal[e++] = j;
             }
           }
