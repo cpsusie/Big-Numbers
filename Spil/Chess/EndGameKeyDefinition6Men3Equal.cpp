@@ -4,7 +4,7 @@
 
 #define MININDEX 0
 
-static EndGamePosIndex rangeStartKKOffDiag[60];
+static EndGamePosIndex rangeStartKKOffDiag[59];
 static EndGamePosIndex rangeStartKKOnDiag[59];
 static EndGamePosIndex rangeStartKKP2OnDiag[27];
 
@@ -21,15 +21,15 @@ static EndGamePosIndex rangeStartKKP2OnDiag[27];
 #define KKP23_ONDIAG_P4_BELOWDIAG_POSCOUNT        GET_RANGESTART2EQUAL(KKP23_ONDIAG_POSCOUNT, 28)
 #define KKP245_ONDIAG_POSCOUNT                   (MAXINDEX_KKP2_ONDIAG_4MEN  - MININDEX_KKP2_ONDIAG_4MEN  )
 
-#define START_RANGE_KK_ONDIAG1                   (                                           GET_RANGESTART3EQUAL(KK_OFFDIAG_POSCOUNT ,60))
-#define START_RANGE_KKP2_ONDIAG_P5_BELOWDIAG     (START_RANGE_KK_ONDIAG1                   + GET_RANGESTART3EQUAL(KK_ONDIAG_POSCOUNT  ,60))
+#define START_RANGE_KK_ONDIAG1                   (                                           GET_RANGESTART3EQUAL(KK_OFFDIAG_POSCOUNT ,59) )
+#define START_RANGE_KKP2_ONDIAG_P5_BELOWDIAG     (START_RANGE_KK_ONDIAG1                   + GET_RANGESTART3EQUAL(KK_ONDIAG_POSCOUNT  ,59) )
 #define START_RANGE_KKP2_ONDIAG_P35_BELOWDIAG    (START_RANGE_KKP2_ONDIAG_P5_BELOWDIAG     + KKP2_ONDIAG_1_BELOWDIAG_POSCOUNT              )
 #define START_RANGE_KKP2_ONDIAG_P45_BELOWDIAG    (START_RANGE_KKP2_ONDIAG_P35_BELOWDIAG    + KKP2_ONDIAG_2_BELOWDIAG_POSCOUNT              )
 #define START_RANGE_KKP2_ONDIAG_P345_BELOWDIAG   (START_RANGE_KKP2_ONDIAG_P45_BELOWDIAG    + KKP2_ONDIAG_2_BELOWDIAG_POSCOUNT              )
 #define START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG   (START_RANGE_KKP2_ONDIAG_P345_BELOWDIAG   + KKP2_ONDIAG_3_BELOWDIAG_POSCOUNT              )
 #define START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG    (START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG   + KKP23_ONDIAG_P45_BELOWDIAG_POSCOUNT           )
 #define START_RANGE_KKP245_ONDIAG                (START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG    + KKP23_ONDIAG_P4_BELOWDIAG_POSCOUNT            )
-#define START_RANGE_KKP2345_ONDIAG               (START_RANGE_KKP245_ONDIAG                + GET_RANGESTART2EQUAL(KKP245_ONDIAG_POSCOUNT,5))
+#define START_RANGE_KKP2345_ONDIAG               (START_RANGE_KKP245_ONDIAG                + GET_RANGESTART2EQUAL(KKP245_ONDIAG_POSCOUNT,4))
 
 EndGameKeyDefinition6Men3Equal::EndGameKeyDefinition6Men3Equal(PieceKey pk2, PieceKey pk345)
 : EndGameKeyDefinitionDupletsAllowed(pk2, pk345, pk345)
@@ -46,7 +46,7 @@ EndGameKeyDefinition6Men3Equal::EndGameKeyDefinition6Men3Equal(PieceKey pk2, Pie
   INIT_RANGETABLE3EQUAL(rangeStartKKOffDiag , KK_OFFDIAG_POSCOUNT  );
   INIT_RANGETABLE3EQUAL(rangeStartKKOnDiag  , KK_ONDIAG_POSCOUNT   );
   INIT_RANGETABLE3EQUAL(rangeStartKKP2OnDiag, KKP2_ONDIAG_POSCOUNT );
-
+/*
   _tprintf(_T("Constants for %s\n"), getCodecName().cstr());
   DUMP_MACRO( KK_OFFDIAG_POSCOUNT                     );
   DUMP_MACRO( KK_ONDIAG_POSCOUNT                      );
@@ -71,6 +71,7 @@ EndGameKeyDefinition6Men3Equal::EndGameKeyDefinition6Men3Equal(PieceKey pk2, Pie
   DUMP_RANGETABLE(rangeStartKKOffDiag   );
   DUMP_RANGETABLE(rangeStartKKOnDiag    );
   DUMP_RANGETABLE(rangeStartKKP2OnDiag  );
+*/
 }
 
 #ifdef _DEBUG
@@ -581,7 +582,7 @@ static void decode_kkp2345_ondiag6m3e(EndGameKey &key, EndGamePosIndex index) {
 #define DECODE_KKP2345_ONDIAG(key, index)                                                                                         \
 { index -= START_RANGE_KKP2345_ONDIAG;                                                                                            \
   SETPIT(              key, index   );                                                                                            \
-  SET3POS3EQUALa(      key, index, rangeStartKKP2OnDiag, 6, KKP2_ONDIAG_POSCOUNT, 3, 4, 5);                                       \
+  SET3POS3EQUALa(      key, index, rangeStartKKP2OnDiag, 5, KKP2_ONDIAG_POSCOUNT, 3, 4, 5);                                       \
   SETP2_ONDIAG(        key, index   );                                                                                            \
   SETKK_ONDIAG(        key, index   );                                                                                            \
   key.p2IndexToDiagPos();                                                                                                         \

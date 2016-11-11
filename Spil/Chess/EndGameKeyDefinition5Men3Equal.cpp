@@ -41,6 +41,7 @@ EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234)
   INIT_RANGETABLE3EQUAL(rangeStartKKOffDiag , KK_OFFDIAG_POSCOUNT);
   INIT_RANGETABLE3EQUAL(rangeStartKKOnDiag  , KK_ONDIAG_POSCOUNT );
 
+/*
   _tprintf(_T("Constants for %s\n"), getCodecName().cstr());
   DUMP_MACRO( KK_OFFDIAG_POSCOUNT                      );
   DUMP_MACRO( KK_ONDIAG_POSCOUNT                       );
@@ -62,6 +63,7 @@ EndGameKeyDefinition5Men3Equal::EndGameKeyDefinition5Men3Equal(PieceKey pk234)
 
   DUMP_RANGETABLE(rangeStartKKOffDiag   );
   DUMP_RANGETABLE(rangeStartKKOnDiag    );
+*/
 }
 
 #ifdef _DEBUG

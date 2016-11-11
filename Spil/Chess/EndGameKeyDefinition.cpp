@@ -1295,11 +1295,14 @@ class SelfCheckStatusPrinter : public TimeoutHandler {
 private:
   const EndGameKeyDefinition      &m_keydef;
   EndGameKeyWithOccupiedPositions &m_key;
+  double                           m_lastProcTime;
+  UINT64                           m_lastcheckKeyCount;
 public:
   SelfCheckStatusPrinter(const EndGameKeyDefinition *keydef, EndGameKeyWithOccupiedPositions &key)
     : m_keydef(*keydef)
     , m_key(key)
   {
+    m_lastcheckKeyCount = -1;
   }
   void handleTimeout(Timer &timer);
   String getSummaryString() const;
@@ -1309,12 +1312,21 @@ void SelfCheckStatusPrinter::handleTimeout(Timer &timer) {
   const KeyDefinitionSelfCheckInfo info = m_keydef.getSelfCheckInfo();
   if(!info.m_testRunning) return;
   const EndGameKey key = m_key;
-  verbose(_T("%14s. %s -> %14s [min,max]:[%s..%s]%20c")
+  String keysPerSecStr;
+  const double now = getProcessTime();
+  if(info.m_checkKeyCount > m_lastcheckKeyCount) {
+    const UINT64 n = (info.m_checkKeyCount - m_lastcheckKeyCount);
+    keysPerSecStr = format(_T("%9s keys/sec."), format1000((UINT64)(n / ((now - m_lastProcTime)/1000000.0))).cstr());
+  }
+  m_lastcheckKeyCount  = info.m_checkKeyCount;
+  m_lastProcTime       = now;
+  verbose(_T("%14s. %s -> %14s [min,max]:[%s..%s] %s%20c")
          ,format1000(info.m_checkKeyCount).cstr()
          ,key.toString(m_keydef).cstr()
          ,format1000(m_keydef.keyToIndex(key)).cstr()
          ,format1000(info.m_minIndex).cstr()
          ,format1000(info.m_maxIndex).cstr()
+         ,keysPerSecStr.cstr()
          ,'\r'
          );
 }
@@ -1384,11 +1396,11 @@ UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &stat
   verbose(_T("%s"), statusPrinter.getSummaryString().cstr());
   verbose(_T("Used time      : %10.3lf sec. %7.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_selfCheckInfo.m_checkKeyCount*1000);
 
-//#define LIST_UNUSED
+#define LIST_UNUSED
 
-#ifdef LIST_UNUSED
   listLongestUnusedSequence(*m_usedIndex);
 
+#ifdef __NEVER__ // LIST_UNUSED
   FILE *f = FOPEN(getTempFileName(toString() + _T("Unused.txt")), _T("w"));
   for(EndGamePosIndex i = m_selfCheckInfo.m_minIndex; i <= m_selfCheckInfo.m_maxIndex; i++) {
     if(m_usedIndex->contains(i)) continue;
@@ -1717,7 +1729,7 @@ String UnusedSequence::genKeyString(const EndGameKeyDefinition *keydef, EndGameP
 }
 
 String UnusedSequence::toString(const EndGameKeyDefinition *keydef) const {
-  return format(_T("%14s-%14s. length:%9s : ]%s - %s[=[%s - %s]")
+  return format(_T("%14s-%14s. length:%11s : ]%s - %s[ = [%s - %s]")
                ,format1000(m_from).cstr()
                ,format1000(m_to).cstr()
                ,format1000(getLength()).cstr()
