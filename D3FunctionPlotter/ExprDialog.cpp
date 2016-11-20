@@ -42,7 +42,7 @@ bool CExprDialog::validate(int id) {
   ExpressionWrapper expr;
   expr.compile(getExprString(id), false);
   if(!expr.ok()) {
-    showExprError(expr.getErrorMessage());
+    showExprError(expr.getErrorMessage(),id);
     return false;
   }
   if(!expr.isReturnTypeReal()) {
@@ -53,7 +53,7 @@ bool CExprDialog::validate(int id) {
   return true;
 }
 
-void CExprDialog::showExprError(const String &msg) {
+void CExprDialog::showExprError(const String &msg, int id) {
   try {
     Tokenizer tok(msg, ":");
     String posStr = tok.next();
@@ -62,14 +62,14 @@ void CExprDialog::showExprError(const String &msg) {
     if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
       tmp = tok.getRemaining();
     } else {
-      throwException(_T("no sourceposition"));
+      throwException(_T("No sourceposition"));
     }
-    int charIndex = SourcePosition::findCharIndex(getExprString().cstr(), SourcePosition(line,col));
-    gotoExpr();
-    getExprField()->SetSel(charIndex, charIndex);
+    int charIndex = SourcePosition::findCharIndex(getExprString(id).cstr(), SourcePosition(line,col));
+    gotoExpr(id);
+    getExprField(id)->SetSel(charIndex, charIndex);
     Message(_T("%s"), tmp.cstr());
   } catch(Exception) { // ignore Exception, and just show msg
-    gotoExpr();
+    gotoExpr(id);
     Message(_T(":%s"), msg.cstr());
   }
 }
@@ -130,7 +130,7 @@ void CExprDialog::createMenuExprHelp(CMenu &menu) {
   const int count = ExpressionDescription::getHelpListSize();
   int ret = menu.LoadMenu(IDR_EXPRHELP_MENU);
   if(!ret) {
-    throwException(_T("Loadmenu(%s) failed"), IDR_EXPRHELP_MENU);
+    throwException(_T("Loadmenu(%d) failed"), IDR_EXPRHELP_MENU);
   }
 
   CMenu *m = menu.GetSubMenu(0);

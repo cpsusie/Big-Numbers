@@ -13,7 +13,7 @@ private:
 
   void createExprFont();
   void createMenuExprHelp(CMenu &menu);
-  void showExprError(const String &msg);
+  void showExprError(const String &msg, int id = IDC_EDIT_EXPR);
   String getExprSyntax(int index);
   void substituteSelectedText(int ctrlId, const String &s);
 
