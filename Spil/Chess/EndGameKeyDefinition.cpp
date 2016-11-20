@@ -1257,20 +1257,25 @@ void EndGameKeyDefinition::insertInitialPositions(EndGameTablebase &tablebase) c
     tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3);
     break;
   case 4:
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G3);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G3);
+    { for(UINT p3 = G2; p3 <= G3; p3+=8)
+        for(UINT p2 = F2; p2 <= F3; p2+=8)
+          tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, p2, p3);
+    }
     break;
   case 5:
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G2, H2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G2, H2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G3, H2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G3, H2);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G2, H3);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G2, H3);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F2, G3, H3);
-    tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, F3, G3, H3);
+    { for(UINT p4 = H2; p4 <= H3; p4+=8)
+        for(UINT p3 = G2; p3 <= G3; p3+=8)
+          for(UINT p2 = F2; p2 <= F3; p2+=8)
+            tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, p2, p3, p4);
+    }
+    break;
+  case 6:
+    { for(UINT p5 = H4; p5 <= H5; p5+=8)
+        for(UINT p4 = H2; p4 <= H3; p4+=8)
+          for(UINT p3 = G2; p3 <= G3; p3+=8)
+            for(UINT p2 = F2; p2 <= F3; p2+=8)
+              tablebase.addInitPosition(WHITEPLAYER, wkPos, bkPos, p2, p3, p4, p5);
+    }
     break;
   default:
     invalidPieceCountError(__TFUNCTION__);

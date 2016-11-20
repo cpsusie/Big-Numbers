@@ -13,20 +13,12 @@ EndGameKeyDefinition5Men1Pawn2Equal::EndGameKeyDefinition5Men1Pawn2Equal(PieceKe
 }
 
 EndGamePosIndex EndGameKeyDefinition5Men1Pawn2Equal::keyToIndex(EndGameKey key) const {
-  const UINT pos3 = key.getPosition(3);
-  const UINT pos4 = key.getPosition(4);
-
-  assert(pos3 != pos4);
-  EndGameKey tmp = key;
-  if(pos4 < pos3) {
-    tmp.setPosition(3,pos4);
-    tmp.setPosition(4,pos3);
-  }
+  key.sort2Pos(3, 4);
   // pos4 is biggest
-  const UINT pi3 = tmp.getP3OffDiagIndex();
-  const UINT pi4 = tmp.getP4OffDiagIndexEqualP34();
+  const UINT pi3 = key.getP3OffDiagIndex();
+  const UINT pi4 = key.getP4OffDiagIndexEqualP34();
 
-  return ADDPIT(tmp, ADD2EQUAL(ONE_PAWN_3MEN(tmp, 2), MAXINDEX_KK_WITH_PAWN_3MEN, pi3, pi4))
+  return ADDPIT(key, ADD2EQUAL(ONE_PAWN_3MEN(key, 2), MAXINDEX_KK_WITH_PAWN_3MEN, pi3, pi4))
        - MININDEX;
 }
 
@@ -117,6 +109,10 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
 
 void EndGameKeyDefinition5Men1Pawn2Equal::selfCheck(EndGameKeyWithOccupiedPositions &key) const {
   scanPositions(key, 0);
+}
+
+bool EndGameKeyDefinition5Men1Pawn2Equal::keysEqual(EndGameKey key1, EndGameKey key2) const {
+  return keysMatch34Equal(key2,key1);
 }
 
 String EndGameKeyDefinition5Men1Pawn2Equal::getCodecName() const {

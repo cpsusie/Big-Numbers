@@ -157,10 +157,8 @@ void EndGameKeyDefinition4Men2EqualPawns::selfCheck(EndGameKeyWithOccupiedPositi
   scanPositions(key, 0);
 }
 
-bool EndGameKeyDefinition4Men2Equal::keysEqual(EndGameKey key1, EndGameKey key2) const {
-  if(key2 == key1) return true;
-  key2.swapPos(2,3);
-  return key2 == key1;
+bool EndGameKeyDefinition4Men2EqualPawns::keysEqual(EndGameKey key1, EndGameKey key2) const {
+  return keysMatch23Equal(key2,key1);
 }
 
 String EndGameKeyDefinition4Men2EqualPawns::getCodecName() const {

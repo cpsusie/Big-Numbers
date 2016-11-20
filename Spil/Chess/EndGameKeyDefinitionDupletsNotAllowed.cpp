@@ -59,13 +59,17 @@ EndGameKey EndGameKeyDefinitionDupletsNotAllowed::getEndGameKey(const GameKey &g
 #ifndef ASM_OPTIMIZED
 
   PieceKey pk;
+#ifdef _DEBUG
   int pieceCount = 0;
+#endif
   for(int pos = 0; pos < ARRAYSIZE(gameKey.m_pieceKey); pos++) {
     if((pk = gameKey.m_pieceKey[pos]) == EMPTYPIECEKEY) {
       continue;
     }
     result.setPosition(m_pieceKeyIndexMap[pk], pos);
+#ifdef _DEBUG
     pieceCount++;
+#endif
   }
   assert(pieceCount == getPieceCount());
 

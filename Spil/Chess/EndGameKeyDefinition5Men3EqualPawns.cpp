@@ -309,6 +309,10 @@ void EndGameKeyDefinition5Men3EqualPawns::selfCheck(EndGameKeyWithOccupiedPositi
   scanPositions(key, 0);
 }
 
+bool EndGameKeyDefinition5Men3EqualPawns::keysEqual(EndGameKey key1, EndGameKey key2) const {
+  return keysMatch234Equal(key2,key1);
+}
+
 String EndGameKeyDefinition5Men3EqualPawns::getCodecName() const {
   return _T("5Men3EqualPawns");
 }

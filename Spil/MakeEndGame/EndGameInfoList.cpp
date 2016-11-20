@@ -25,25 +25,56 @@ unsigned int EndGameInfo::getMaxVariant() const {
   return m_maxPlies.getMax();
 }
 
+#define NAMEWIDTH      6
+#define RAWSIZEWIDTH  13
+#define COMPSIZEWIDTH 13
+#define COMPPCTWIDTH   5
+
+String EndGameInfoList::getHeaderString(TablebaseInfoStringFormat f) const {
+  switch(f) {
+  case TBIFORMAT_PRINT_COLUMNS1:
+    return TablebaseInfo::getColumnHeaders(f
+                        ,format(_T("%-*s"), NAMEWIDTH, _T("Name"))
+                        ,format(_T("%*s %*s %*s %-14s")
+                               ,RAWSIZEWIDTH , _T("Raw size")
+                               ,COMPSIZEWIDTH, _T("Comp.size")
+                               ,COMPPCTWIDTH , _T("Comp%")
+                               ,_T("Buildtime"))
+                        ,m_printAsPlies);
+  case TBIFORMAT_PRINT_COLUMNS2:
+    return TablebaseInfo::getColumnHeaders(f
+                        ,format(_T("%-*s"), NAMEWIDTH, _T("Name"))
+                        ,format(_T("%*s %*s %*s %-14s %-14s")
+                               ,RAWSIZEWIDTH , _T("Raw size")
+                               ,COMPSIZEWIDTH, _T("Comp.size")
+                               ,COMPPCTWIDTH , _T("Comp%")
+                               ,_T("Buildtime")
+                               ,_T("Checktime"))
+                        ,m_printAsPlies);
+  default:
+    return _T("");
+  }
+}
+
 String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   static const String tsFormat = _T("dd.MM.yy hh:mm");
   switch(f) {
   case TBIFORMAT_PRINT_COLUMNS1:
-    return format(_T("%-5s %s %11s %13s %6s  %14s")
-                 ,m_name.cstr()
+    return format(_T("%-*s%s%*s %*s %*s %14s")
+                 ,NAMEWIDTH    , m_name.cstr()
                  ,TablebaseInfo::toString(f, plies).cstr()
-                 ,m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
-                 ,m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
-                 ,m_compressRatio  ? format(_T("%5.2lf"), m_compressRatio).cstr() : _T("-")
+                 ,RAWSIZEWIDTH , m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
+                 ,COMPSIZEWIDTH, m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
+                 ,COMPPCTWIDTH , m_compressRatio  ? format(_T("%5.2lf"), m_compressRatio).cstr() : _T("-")
                  ,Timestamp((time_t)m_buildTime).toString(tsFormat).cstr()
                 );
   case TBIFORMAT_PRINT_COLUMNS2:
-    return format(_T("%-5s %s %11s %13s %6s  %14s  %14s")
-                 ,m_name.cstr()
+    return format(_T("%-*s%s%*s %*s %*s %14s %14s")
+                 ,NAMEWIDTH    , m_name.cstr()
                  ,TablebaseInfo::toString(f, plies).cstr()
-                 ,m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
-                 ,m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
-                 ,m_compressRatio  ? format(_T("%5.2lf"), m_compressRatio).cstr() : _T("-")
+                 ,RAWSIZEWIDTH , m_rawSize        ? format1000(m_rawSize        ).cstr()     : _T("-")
+                 ,COMPSIZEWIDTH, m_compressedSize ? format1000(m_compressedSize ).cstr()     : _T("-")
+                 ,COMPPCTWIDTH , m_compressRatio  ? format(_T("%5.2lf"), m_compressRatio).cstr() : _T("-")
                  ,Timestamp((time_t)m_buildTime).toString(tsFormat).cstr()
                  ,Timestamp((time_t)m_consistencyCheckedTime).toString(tsFormat).cstr()
                 );
@@ -51,6 +82,16 @@ String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
     throwInvalidArgumentException(__TFUNCTION__, _T("f=%d"), f);
     return _T("");
   }
+}
+
+String EndGameInfoList::getSummaryString(TablebaseInfoStringFormat f) const {
+  const int dataLength = (f == TBIFORMAT_PRINT_COLUMNS1) ? 141 : 85;
+  return format(_T("Total:%-*s%*s %*s %*.2lf")
+               ,dataLength,_T(" ")
+               ,RAWSIZEWIDTH , format1000(m_totalRawSize).cstr()
+               ,COMPSIZEWIDTH, format1000(m_totalCompressedSize).cstr()
+               ,COMPPCTWIDTH , PERCENT(m_totalCompressedSize, m_totalRawSize)
+               );
 }
 
 class InfoComparator : public Comparator<EndGameInfo> {
@@ -134,7 +175,7 @@ EndGameInfoList &EndGameInfoList::sort(SortField sf, bool reverseSort) {
 
 String EndGameInfoList::toString(TablebaseInfoStringFormat f, bool includeErrors) const {
 #define ADDLINE(s)  { result += s; result += _T("\n"); }
-#define ADDFILLER() ADDLINE(spaceString((f==TBIFORMAT_PRINT_COLUMNS1)?185:157,'_'))
+#define ADDFILLER() ADDLINE(spaceString((f==TBIFORMAT_PRINT_COLUMNS1)?195:157,'_'))
 
   String result = format(_T("Metric:%s\n"), EndGameKeyDefinition::getMetricName());
   result += getHeaderString(f);
@@ -152,25 +193,3 @@ String EndGameInfoList::toString(TablebaseInfoStringFormat f, bool includeErrors
   }
   return result;
 }
-
-String EndGameInfoList::getHeaderString(TablebaseInfoStringFormat f) const {
-  switch(f) {
-  case TBIFORMAT_PRINT_COLUMNS1:
-    return TablebaseInfo::getColumnHeaders(f, format(_T("%-5s  "), _T("Name")), format(_T(" %11s %13s  %-6s %-14s"), _T("Raw size"), _T("Comp.size"), _T("Comp.%"), _T("Buildtime")), m_printAsPlies);
-  case TBIFORMAT_PRINT_COLUMNS2:
-    return TablebaseInfo::getColumnHeaders(f, format(_T("%-5s  "), _T("Name")), format(_T(" %11s %13s  %-6s %-14s  %-14s"), _T("Raw size"), _T("Comp.size"), _T("Comp.%"), _T("Buildtime"), _T("Checktime")), m_printAsPlies);
-  default:
-    return _T("");
-  }
-}
-
-String EndGameInfoList::getSummaryString(TablebaseInfoStringFormat f) const {
-  const int dataLength = (f == TBIFORMAT_PRINT_COLUMNS1) ? 129 : 85;
-  return format(_T("Total:%-*s%13s %13s %6.2lf")
-               ,dataLength
-               ,_T(" ")
-               ,format1000(m_totalRawSize).cstr(), format1000(m_totalCompressedSize).cstr()
-               ,PERCENT(m_totalCompressedSize, m_totalRawSize)
-               );
-}
-

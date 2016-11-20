@@ -23,28 +23,100 @@ void TablebaseInfo::load(ByteInputStream &s) {
   }
 }
 
+#define WBWIDTH(n) (2*(n)+1)
+
+#define POSITIONWIDTH    14
+#define INDEXSIZEWIDTH   14
+#define UNDEFINEDWIDTH   11
+#define STALEMATEWIDTH   10
+#define MATEPOSWIDTH      9
+#define WINNERPOSWIDTH   14
+#define TERMPOSWIDTH     11
+#define NTPOSWIDTH       14
+#define MAXVARWIDTH       7
+#define VERSIONWIDTH      5
+
+static const TCHAR *POSITIONSTR     = _T("Positions");
+static const TCHAR *INDEXSIZESTR    = _T("Indexsize");
+static const TCHAR *UNDEFINEDSTR    = _T("Undefined");
+static const TCHAR *STALEMATESTR    = _T("Stalemates");
+static const TCHAR *MATEPOSSTR      = _T("Checkmates");
+static const TCHAR *TERMPOSSTR      = _T("Terminal positions");
+static const TCHAR *NTPOSSTR        = _T("Non term positions");
+static const TCHAR *MAXVARSTR       = _T("Max var");
+static const TCHAR *VERSIONSTR      = _T("Vers");
+static const TCHAR *WINNERPOSSTR    = _T("Winnerpositions");
+
+#define FILLER(l) spaceString(l,_T(' ')).cstr()
+
+static String wbHeader1(const TCHAR *title, int fieldWidth) {
+  const int titleWidth = WBWIDTH(fieldWidth);
+  String result = title;
+  while (result.length() < titleWidth) {
+    result += _T('-');
+    if (result.length() < titleWidth) {
+      result = _T("-") + result;
+    }
+  }
+  return result;
+}
+
+static String wbHeader2(int fieldWidth) {
+  return format(_T("%*s %*s"), fieldWidth, _T("W.win"), fieldWidth, _T("B.win"));
+}
+
 String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies) {   // static
   switch(f) {
   case TBIFORMAT_PRINT_COLUMNS1:
+    { const String h1 = format(_T("%*s %*s %*s %*s %s %s %s %*s %-*s")
+                              ,POSITIONWIDTH       , POSITIONSTR
+                              ,INDEXSIZEWIDTH      , INDEXSIZESTR
+                              ,UNDEFINEDWIDTH      , UNDEFINEDSTR
+                              ,STALEMATEWIDTH      , STALEMATESTR
+                              ,wbHeader1(MATEPOSSTR, MATEPOSWIDTH).cstr()
+                              ,wbHeader1(TERMPOSSTR, TERMPOSWIDTH).cstr()
+                              ,wbHeader1(NTPOSSTR  , NTPOSWIDTH  ).cstr()
+                              ,MAXVARWIDTH         , MAXVARSTR
+                              ,VERSIONWIDTH        , VERSIONSTR
+                              );
+      const String h2 = format(_T("%s %s %s %s %*s %s")
+                              ,FILLER(POSITIONWIDTH + INDEXSIZEWIDTH + UNDEFINEDWIDTH + STALEMATEWIDTH + 3)
+                              ,wbHeader2(MATEPOSWIDTH).cstr()
+                              ,wbHeader2(TERMPOSWIDTH).cstr()
+                              ,wbHeader2(NTPOSWIDTH  ).cstr()
+                              ,MAXVARWIDTH , plies ? _T("(plies)") : _T("(moves)")
+                              ,FILLER(VERSIONWIDTH)
+                              );
     return format(
-      _T("%s Positions   Indexsize   Undefined Stalemates -----Checkmates---- ---Terminal positions--  --Non term positions-- Max var Version%s\n")
-      _T("%s                                                  W.win     B.win       W.win       B.win       W.win       B.win (%-5s)        %s\n")
-      ,headerLeft.cstr()
-      ,headerRight.cstr()
-      ,spaceString(headerLeft.length(),' ').cstr()
-      ,plies?_T("plies"):_T("moves")
-      ,spaceString(headerRight.length(),' ').cstr()
+      _T("%s %s%s\n")
+      _T("%s %s%s\n")
+      ,headerLeft.cstr()            ,h1.cstr(), headerRight.cstr()
+      ,FILLER(headerLeft.length())  ,h2.cstr(), FILLER(headerRight.length())
       );
+    }
   case TBIFORMAT_PRINT_COLUMNS2:
-    return format(
-      _T("%s Positions   Indexsize   Undefined Stalemates ----Winnerpositions---- Max var Version%s\n")
-      _T("%s                                                    W.win       B.win (%-5s)        %s\n")
-      ,headerLeft.cstr()
-      ,headerRight.cstr()
-      ,spaceString(headerLeft.length(),' ').cstr()
-      ,plies?_T("plies"):_T("moves")
-      ,spaceString(headerRight.length(),' ').cstr()
+   { const String h1 = format(_T("%*s %*s %*s %*s %s %*s %-*s")
+                              ,POSITIONWIDTH  , POSITIONSTR
+                              ,INDEXSIZEWIDTH , INDEXSIZESTR
+                              ,UNDEFINEDWIDTH , UNDEFINEDSTR
+                              ,STALEMATEWIDTH , STALEMATESTR
+                              ,wbHeader1(WINNERPOSSTR, WINNERPOSWIDTH).cstr()
+                              ,MAXVARWIDTH    , MAXVARSTR
+                              ,VERSIONWIDTH   , VERSIONSTR
+                              );
+      const String h2 = format(_T("%s %s %*s %*s %s")
+                              ,FILLER(POSITIONWIDTH + INDEXSIZEWIDTH + UNDEFINEDWIDTH + STALEMATEWIDTH + 3)
+                              ,wbHeader2(WINNERPOSWIDTH).cstr()
+                              ,MAXVARWIDTH, plies ? _T("(plies)") : _T("(moves)")
+                              ,FILLER(VERSIONWIDTH)
+                              );
+      return format(
+      _T("%s %s%s\n")
+      _T("%s %s%s\n")
+      ,headerLeft.cstr()          , h1.cstr(), headerRight.cstr()
+      ,FILLER(headerLeft.length()), h2.cstr(), FILLER(headerRight.length())
       );
+    }
   default:
     return _T("");
   }
@@ -53,52 +125,52 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
 String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   switch(f) {
   case TBIFORMAT_PRINT_TERMINALS:
-    return format(_T("Undef:%11s Checkmates:(%s) Stalemates:%9s Term:(%s)")
-                 ,format1000(m_undefinedPositions       ).cstr()
-                 ,m_checkMatePositions.toString(  ',', 9).cstr()
-                 ,format1000(m_stalematePositions       ).cstr()
-                 ,m_terminalWinPositions.toString(',',11).cstr()
+    return format(_T("Undef:%*s Checkmates:(%s) Stalemates:%*s Term:(%s)")
+                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions      ).cstr()
+                 ,m_checkMatePositions.toString(  _T(','), MATEPOSWIDTH).cstr()
+                 ,STALEMATEWIDTH, format1000(m_stalematePositions      ).cstr()
+                 ,m_terminalWinPositions.toString(_T(','), TERMPOSWIDTH).cstr()
                  );
 
   case TBIFORMAT_PRINT_NONTERMINALS:
-    return format(_T("Pos:%11s Undef:%11s (%5.2lf%%) Term:(%s) Win:(%s) MaxVar:%s")
-                 ,format1000(m_totalPositions                      ).cstr()
-                 ,format1000(m_undefinedPositions                  ).cstr()
-                 ,PERCENT(m_undefinedPositions,m_totalPositions)
-                 ,(m_checkMatePositions + m_terminalWinPositions).toString(',',11).cstr()
-                 ,m_nonTerminalWinPositions.toString(',',11).cstr()
+    return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Term:(%s) Win:(%s) MaxVar:%s")
+                 ,POSITIONWIDTH , format1000(m_totalPositions    ).cstr()
+                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,PERCENT(m_undefinedPositions, m_totalPositions )
+                 ,(m_checkMatePositions + m_terminalWinPositions ).toString(_T(','), WINNERPOSWIDTH).cstr()
+                 ,m_nonTerminalWinPositions.toString(_T(','), NTPOSWIDTH).cstr()
                  ,formatMaxVariants(plies).cstr()
                  );
 
   case TBIFORMAT_PRINT_UNDEFANDWINS:
-    return format(_T("Pos:%11s Undef:%11s (%5.2lf%%) Win:(%s)")
-                 ,format1000(m_totalPositions           ).cstr()
-                 ,format1000(m_undefinedPositions       ).cstr()
-                 ,PERCENT(m_undefinedPositions,m_totalPositions)
-                 ,getWinnerPositionCount().toString(',' ).cstr()
+    return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Win:(%s)")
+                 ,POSITIONWIDTH,  format1000(m_totalPositions    ).cstr()
+                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,PERCENT(m_undefinedPositions, m_totalPositions )
+                 ,getWinnerPositionCount().toString(_T(','), WINNERPOSWIDTH).cstr()
                  );
 
   case TBIFORMAT_PRINT_COLUMNS1:
-    return format(_T("%11s %11s %11s %10s %s %s %s %s %-7s")
-                 ,format1000(m_totalPositions              ).cstr()
-                 ,format1000(m_indexCapacity               ).cstr()
-                 ,format1000(m_undefinedPositions          ).cstr()
-                 ,format1000(m_stalematePositions          ).cstr()
-                 ,m_checkMatePositions.toString(     ' ',9 ).cstr()
-                 ,m_terminalWinPositions.toString(   ' ',11).cstr()
-                 ,m_nonTerminalWinPositions.toString(' ',11).cstr()
+    return format(_T(" %*s %*s %*s %*s %s %s %s %s %-*s")
+                 ,POSITIONWIDTH , format1000(m_totalPositions    ).cstr()
+                 ,INDEXSIZEWIDTH, format1000(m_indexCapacity     ).cstr()
+                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,STALEMATEWIDTH, format1000(m_stalematePositions).cstr()
+                 ,m_checkMatePositions.toString(     _T(' '), MATEPOSWIDTH).cstr()
+                 ,m_terminalWinPositions.toString(   _T(' '), TERMPOSWIDTH).cstr()
+                 ,m_nonTerminalWinPositions.toString(_T(' '), NTPOSWIDTH  ).cstr()
                  ,formatMaxVariants(plies).cstr()
-                 ,format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
+                 ,VERSIONWIDTH, format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
                  );
   case TBIFORMAT_PRINT_COLUMNS2:
-    return format(_T("%11s %11s %11s %10s %s %s %-7s")
-                 ,format1000(m_totalPositions              ).cstr()
-                 ,format1000(m_indexCapacity               ).cstr()
-                 ,format1000(m_undefinedPositions          ).cstr()
-                 ,format1000(m_stalematePositions          ).cstr()
-                 ,getWinnerPositionCount().toString( ' ',11).cstr()
+    return format(_T(" %*s %*s %*s %*s %s %s %-*s")
+                 ,POSITIONWIDTH , format1000(m_totalPositions    ).cstr()
+                 ,INDEXSIZEWIDTH, format1000(m_indexCapacity     ).cstr()
+                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,STALEMATEWIDTH, format1000(m_stalematePositions).cstr()
+                 ,getWinnerPositionCount().toString(_T(' '), WINNERPOSWIDTH).cstr()
                  ,formatMaxVariants(plies).cstr()
-                 ,format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
+                 ,VERSIONWIDTH, format(_T("%s%s"), getVersion().cstr(), isConsistent()?_T("*"):format(_T("%#02x"), m_stateFlags).cstr()).cstr()
                  );
   default:
     return format(_T("Unknown print-format:%d"), f);

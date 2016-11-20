@@ -423,6 +423,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <UseFullPaths>true</UseFullPaths>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Release\MakeEndGame.tlb</TypeLibraryName>

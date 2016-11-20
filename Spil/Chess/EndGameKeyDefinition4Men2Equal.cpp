@@ -230,6 +230,10 @@ void EndGameKeyDefinition4Men2Equal::selfCheck(EndGameKeyWithOccupiedPositions &
   sym8PositionScanner(key, 0, true, (PositionScanner)&EndGameKeyDefinition4Men2Equal::scanPositions);
 }
 
+bool EndGameKeyDefinition4Men2Equal::keysEqual(EndGameKey key1, EndGameKey key2) const {
+  return keysMatch23Equal(key2,key1);
+}
+
 String EndGameKeyDefinition4Men2Equal::getCodecName() const {
   return _T("4Men2Equal");
 }

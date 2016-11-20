@@ -335,33 +335,30 @@ public:
   }
 };
 
-#define MAX_STATECOUNT 3
+#define MAX_DUPLETCOUNT 3
 
 class EndGameKeyDefinitionDupletsAllowed : public EndGameKeyDefinition {
 private:
-  unsigned short m_stateShift;                                             // Indexed by [state][pieceIndex=m_pieceKeyIndexMap[state][pieceKey]]
-  char           m_pieceKeyIndexMap[MAX_STATECOUNT][MAX_PIECEKEY_VALUE+1]; // Indexed by [state][pieceKey]
-#ifdef TABLEBASE_BUILDER
-  int            m_equal[3];
-#endif
-
+  char m_pieceKeyIndexMap[MAX_PIECEKEY_VALUE+1][MAX_DUPLETCOUNT]; // Indexed by pieceKey,count[pieceKey]
   void initIndexMap();
-  void setStateShift(int state, int pieceIndex);
-  int  getPieceIndex(PieceKey pk, int &state) const;
 protected:
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk23);
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk34);
   EndGameKeyDefinitionDupletsAllowed(PieceKey pk2, PieceKey pk3, PieceKey pk45);
+#ifdef TABLEBASE_BUILDER
+  static bool keysMatch23Equal( EndGameKey k1, EndGameKey k2);
+  static bool keysMatch34Equal( EndGameKey k1, EndGameKey k2);
+  static bool keysMatch45Equal( EndGameKey k1, EndGameKey k2);
+  static bool keysMatch234Equal(EndGameKey k1, EndGameKey k2);
+  static bool keysMatch345Equal(EndGameKey k1, EndGameKey k2);
+#endif
 public:
   EndGameKey getEndGameKey(const GameKey &gameKey) const;
-  DECLARE_KEYSEQUAL;
 
 #ifdef TABLEBASE_BUILDER
-
   bool isDupletsAllowed() const {
     return true;
   }
-
 #endif
 };
 
@@ -626,6 +623,7 @@ public:
   void insertInitialPositions(EndGameTablebase &tablebase) const;
 #endif
   DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition2Pawns : public EndGameKeyDefinitionDupletsNotAllowed {
@@ -721,6 +719,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition5Men2EqualPawns: public EndGameKeyDefinition2EqualPawns {
@@ -746,6 +745,7 @@ public:
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 
   DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition5Men3Pawns : public EndGameKeyDefinitionDupletsAllowed {
@@ -773,6 +773,7 @@ public:
 #endif
 
   DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
 };
 
 class EndGameKeyDefinition5Men3EqualPawns : public EndGameKeyDefinitionDupletsAllowed {
@@ -800,4 +801,5 @@ public:
 #endif
 
   DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
 };

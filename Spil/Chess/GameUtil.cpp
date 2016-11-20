@@ -265,7 +265,8 @@ PositionType Game::getPositionType() const {
   case 2 : return DRAW_POSITION; // 2 kings left => draw
   case 3 : return getPositionType21();
   case 4 :
-  case 5 : return TABLEBASE_POSITION;
+  case 5 :
+  case 6 : return TABLEBASE_POSITION;
   default: return NORMAL_POSITION;
   }
 }

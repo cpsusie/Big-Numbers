@@ -785,13 +785,7 @@ void EndGameKeyDefinition6Men3Equal::selfCheck(EndGameKeyWithOccupiedPositions &
 }
 
 bool EndGameKeyDefinition6Men3Equal::keysEqual(EndGameKey key1, EndGameKey key2) const {
-                     if(key2 == key1) return true;
-  key2.swapPos(3,4); if(key2 == key1) return true;
-  key2.swapPos(4,5); if(key2 == key1) return true;
-  key2.swapPos(3,4); if(key2 == key1) return true;
-  key2.swapPos(4,5); if(key2 == key1) return true;
-  key2.swapPos(3,4); if(key2 == key1) return true;
-  return false;
+  return keysMatch345Equal(key1, key2);
 }
 
 String EndGameKeyDefinition6Men3Equal::getCodecName() const {
