@@ -4,27 +4,27 @@
 
 typedef void (*SortMethod)(void *, size_t nelem, size_t width, AbstractComparator &comparator);
 
-void quickSortMS(           void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSort1(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSort3(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSort3NoRecursion( void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSort4(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSortPivot5(       void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSort5Optimal(     void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSortRandom(       void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void quickSortEx(           void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void MTQuickSort(           void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void combSort(              void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void heapSort(              void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void insertionSort(         void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void shellSortSlow(         void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void shellSortFast(         void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void insertionSort(         void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void shakerSort(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void bubbleSort(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void shortSortMS(           void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void assort(                void *base, size_t nelem, size_t width, AbstractComparator &comparator);
-void mergeSort(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSortMS(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort1(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort3(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort3NoRecursion(  void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort4OptimalPivot3(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort5OptimalPivot3(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSort5OptimalPivot5(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSortRandom(        void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void quickSortEx(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void MTQuickSort(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void combSort(               void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void combSort11(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void heapSort(               void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void insertionSort(          void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void shellSortSlow(          void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void shellSortFast(          void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void insertionSort(          void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void shakerSort(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void bubbleSort(             void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void shortSortMS(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
+void mergeSort(              void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 
 void swap(register char *p1, register char *p2, size_t width);
 
@@ -59,22 +59,16 @@ typedef struct {
   if(NEEDSWAP(0, 1)) {                                        \
     if(NEEDSWAP(1, 2)) {                                      \
       SWAP(0, 2);                                             \
+    } else if(NEEDSWAP(0, 2)) {                               \
+      PERMUTER3(1,2,0);                                       \
     } else {                                                  \
-      if(NEEDSWAP(0, 2)) {                                    \
-        PERMUTER3(1,2,0);                                     \
-      } else {                                                \
-        SWAP(0, 1);                                           \
-      }                                                       \
+      SWAP(0, 1);                                             \
     }                                                         \
-  } else {                                                    \
-    if(NEEDSWAP(1, 2)) {                                      \
-      if(NEEDSWAP(0, 2)) {                                    \
-        PERMUTER3(2,1,0);                                     \
-      } else {                                                \
-        SWAP(1, 2);                                           \
-      }                                                       \
+  } else if(NEEDSWAP(1, 2)) {                                 \
+    if(NEEDSWAP(0, 2)) {                                      \
+      PERMUTER3(2,1,0);                                       \
     } else {                                                  \
-      /* do nothing */                                        \
+      SWAP(1, 2);                                             \
     }                                                         \
   }                                                           \
 }
@@ -203,22 +197,16 @@ typedef struct {
   if(NEEDSWAP(0, 1)) {                                        \
     if(NEEDSWAP(1, 2)) {                                      \
       TSWAP(0, 2);                                            \
+    } else if(NEEDSWAP(0, 2)) {                               \
+      TPERMUTER3(1, 2, 0);                                    \
     } else {                                                  \
-      if(NEEDSWAP(0, 2)) {                                    \
-        TPERMUTER3(1, 2, 0);                                  \
-      } else {                                                \
-        TSWAP(0, 1);                                          \
-      }                                                       \
+      TSWAP(0, 1);                                            \
     }                                                         \
-  } else {                                                    \
-    if(NEEDSWAP(1, 2)) {                                      \
-      if(NEEDSWAP(0, 2)) {                                    \
-        TPERMUTER3(2, 1, 0);                                  \
-      } else {                                                \
-        TSWAP(1, 2);                                          \
-      }                                                       \
+  } else if(NEEDSWAP(1, 2)) {                                 \
+    if(NEEDSWAP(0, 2)) {                                      \
+      TPERMUTER3(2, 1, 0);                                    \
     } else {                                                  \
-      /* do nothing */                                        \
+      TSWAP(1, 2);                                            \
     }                                                         \
   }                                                           \
 }

@@ -122,19 +122,10 @@
     <ClCompile Include="QuickSort3NoRecursion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="QuickSort4.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuickSort5Optimal.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="QuickSortEx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QuickSortMS.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="QuickSortPivot5.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="QuickSortRandom.cpp">
@@ -152,9 +143,6 @@
     <ClCompile Include="ShortSortMS.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sortMethod.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SortPanelWnd.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -162,6 +150,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Swap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CombSort11.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickSort5OptimalPivot3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickSort4OptimalPivot3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="QuickSort5OptimalPivot5.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SortMethod.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

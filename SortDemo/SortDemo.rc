@@ -352,16 +352,17 @@ END
 
 STRINGTABLE DISCARDABLE 
 BEGIN
-    ID_SORT_QUICKSORTMS     "&Quicksort (Microsoft VC++)"
-    ID_SORT_QUICKSORT1      "Quicksort &1"
-    ID_SORT_QUICKSORT3      "Quicksort &3"
-    ID_SORT_QUICKSORT4      "Quicksort &4"
-    ID_SORT_QUICKSORTPIVOT5 "Quicksort &5 (pivot = median 5)"
-    ID_SORT_QUICKSORT5_OPTIMAL "Quicksort 5 (optimal)"
-    ID_SORT_QUICKSORT_EX    "Quicksort (lib - Experimentall)"
-    ID_SORT_QSORT3NORECURSION "Quicksort 3 (&No recursion)"
-    ID_SORT_QUICKSORTTEMPLATES "Quicksort 3 from library (With &templates)"
-    ID_SORT_COMBSORT        "&Combsort"
+    ID_SORT_QUICKSORTMS               "&Quicksort (Microsoft VC++)"
+    ID_SORT_QUICKSORT1                "Quicksort &1"
+    ID_SORT_QUICKSORT3                "Quicksort &3"
+    ID_SORT_QUICKSORT4OPTIMALPIVOT3   "Quicksort &4 (optimal, pivot = median 3)"
+    ID_SORT_QUICKSORT5OPTIMALPIVOT3   "Quicksort 5 (optimal, pivot = median 3)"
+    ID_SORT_QUICKSORT5OPTIMALPIVOT5   "Quicksort &5 (optimal, pivot = median 5)"
+    ID_SORT_QUICKSORT_EX              "Quicksort (lib - Experimental)"
+    ID_SORT_QSORT3NORECURSION         "Quicksort 3 (&No recursion)"
+    ID_SORT_QUICKSORTTEMPLATES        "Quicksort 3 from library (With &templates)"
+    ID_SORT_COMBSORT                  "&Combsort"
+    ID_SORT_COMBSORT11                "Combsort11"
 END
 
 STRINGTABLE DISCARDABLE 

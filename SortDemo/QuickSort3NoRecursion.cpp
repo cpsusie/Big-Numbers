@@ -24,10 +24,9 @@ tailrecurse:
 
     default:
       SORT3OPT(0, nelem/2, nelem-1);
+      PASSIGN(pivot, EPTR(nelem/2));
       break;
     }
-
-    memcpy(pivot, EPTR(nelem/2), width);
 
     char *pi = EPTR(1), *pj = EPTR(nelem-2);
     do {

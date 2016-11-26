@@ -101,7 +101,7 @@ int MergeMinSize = 120;
 void MergeSortAnyWidth::sort(void *list, size_t n) {
 #ifdef COMBINEDSORT
   if(n < MergeMinSize) {
-    quickSortPivot5(list, n, m_width, m_comparator);
+    quickSort5OptimalPivot5(list, n, m_width, m_comparator);
     return;
   }
 #else
@@ -162,7 +162,7 @@ public:
 template <class T> void MergeSortClass<T>::sort(T *list, size_t n) {
 #ifdef COMBINEDSORT
   if(n < MergeMinSize) {
-    quickSortPivot5(list, n, sizeof(T), m_comparator);
+    quickSort5OptimalPivot5(list, n, sizeof(T), m_comparator);
     return;
   }
 #else

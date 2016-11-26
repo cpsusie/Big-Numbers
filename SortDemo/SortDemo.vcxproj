@@ -261,6 +261,7 @@
     <ClCompile Include="AboutBoxDlg.cpp" />
     <ClCompile Include="AnalyzeSortMethod.cpp" />
     <ClCompile Include="BubbleSort.cpp" />
+    <ClCompile Include="CombSort11.cpp" />
     <ClCompile Include="CombSort.cpp" />
     <ClCompile Include="ErrorMessage.cpp" />
     <ClCompile Include="HeapSort.cpp" />
@@ -276,11 +277,11 @@
     <ClCompile Include="QuickSort1.cpp" />
     <ClCompile Include="QuickSort3.cpp" />
     <ClCompile Include="QuickSort3NoRecursion.cpp" />
-    <ClCompile Include="QuickSort4.cpp" />
-    <ClCompile Include="QuickSort5Optimal.cpp" />
+    <ClCompile Include="QuickSort4OptimalPivot3.cpp" />
+    <ClCompile Include="QuickSort5OptimalPivot3.cpp" />
     <ClCompile Include="QuickSortEx.cpp" />
     <ClCompile Include="QuickSortMS.cpp" />
-    <ClCompile Include="QuickSortPivot5.cpp" />
+    <ClCompile Include="QuickSort5OptimalPivot5.cpp" />
     <ClCompile Include="QuickSortRandom.cpp" />
     <ClCompile Include="ShakerSort.cpp" />
     <ClCompile Include="ShellSortFast.cpp" />
@@ -288,7 +289,7 @@
     <ClCompile Include="ShortSortMS.cpp" />
     <ClCompile Include="SortDemo.cpp" />
     <ClCompile Include="SortDemoDlg.cpp" />
-    <ClCompile Include="sortMethod.cpp" />
+    <ClCompile Include="SortMethod.cpp" />
     <ClCompile Include="SortPanelWnd.cpp" />
     <ClCompile Include="SortThread.cpp" />
     <ClCompile Include="stdafx.cpp">

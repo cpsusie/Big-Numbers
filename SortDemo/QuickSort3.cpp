@@ -15,10 +15,9 @@ static void sort(void *base, size_t nelem, size_t width, AbstractComparator &com
     return;
   default:
     SORT3OPT(0, nelem/2, nelem-1);
+    PASSIGN(pivot, EPTR(nelem/2));
     break;
   }
-
-  memcpy(pivot, EPTR(nelem/2), width);
 
 // dont need to check first and last element against pivot element again
   char *pi = EPTR(1), *pj = EPTR(nelem-2);
@@ -87,7 +86,7 @@ template <class T> void QuickSort3Class<T>::sort(T *base, size_t nelem, Abstract
     }
   } while(pi <= pj);
 
-  if(pj > base       ) sort(base,pj-base+1, comparator);
+  if(pj > base  ) sort(base,pj-base+1, comparator);
   const size_t i = pi - base;
   if(i < nelem-1) sort(pi  ,nelem-i  , comparator);
 }

@@ -112,8 +112,8 @@ BOOL CSortDemoDlg::OnInitDialog() {
   m_origMenuTextPause = getMenuItemText(this, ID_FILE_PAUSE);
   m_fast              = isMenuItemChecked(this,ID_OPTIONS_SPEED_FAST);
 
-  toggleSortMethod(ID_SORT_MULTITHREADQUICKSORT, false);
-//  toggleSortMethod(ID_SORT_QUICKSORTTEMPLATES , false);
+//  toggleSortMethod(ID_SORT_MULTITHREADQUICKSORT, false);
+  toggleSortMethod(ID_SORT_QUICKSORTTEMPLATES , false);
 /*
   toggleSortMethod(ID_SORT_QUICKSORT4         , false);
   toggleSortMethod(ID_SORT_QUICKSORTPIVOT5    , false);

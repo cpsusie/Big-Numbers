@@ -2,7 +2,7 @@
 
 #pragma check_stack(off)
 
-static void sort4AnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
+static void sort4OptimalPivot3AnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
   DECLARE_STACK(stack, 80);
   PUSH(stack, base, nelem);
 
@@ -24,7 +24,7 @@ tailrecurse:
       continue;
     default:
       SORT3OPT(0, nelem/2, nelem-1);
-      memcpy(pivot, EPTR(nelem/2), width);
+      PASSIGN(pivot, EPTR(nelem/2));
       break;
     }
 
@@ -42,33 +42,31 @@ tailrecurse:
     } while(pi <= pj);
     const size_t i = (pi - (char*)base) / width;
     const size_t j = (pj - (char*)base) / width;
-    if(j > nelem - i) {       // Sort the smallest partition first, to save stackspace
+    if(j > nelem - i) {              // Sort the smallest partition first, to save stackspace
       if(j > 0) {
         PUSH(stack, base, j+1);      // Save start, count of elements to be sorted later. ie. Sort(base,j+1,width, comparator);
       }
-      if(i < nelem-1) {       // Sort(pi, nelem-i, width, comparator);
+      if(i < nelem-1) {              // Sort(pi, nelem-i, width, comparator);
         base  = pi;
         nelem -= i;
         goto tailrecurse;
       }
     } else {
-      if(i < nelem-1) {       // Save start,count of elements to be sorted later. ie Sort(pi,nelem-i, width, comparator);
+      if(i < nelem-1) {              // Save start,count of elements to be sorted later. ie Sort(pi,nelem-i, width, comparator);
         PUSH(stack, pi, nelem-i); 
       }
-      if(j > 0) {             // Sort(base,j+1,width, comparator);
+      if(j > 0) {                    // Sort(base,j+1,width, comparator);
         nelem = j+1;
         goto tailrecurse;
       }
     }
-
-
   }
 }
 
-void quickSort4AnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
+void quickSort4OptimalPivot3AnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
   char buffer[100], *pivot = width <= sizeof(buffer) ? buffer : new char[width];
   try {
-    sort4AnyWidth(base,nelem,width,comparator,pivot);
+    sort4OptimalPivot3AnyWidth(base,nelem,width,comparator,pivot);
     if(pivot!=buffer) delete[] pivot;
   } catch(...) {
     if(pivot!=buffer) delete[] pivot;
@@ -76,12 +74,12 @@ void quickSort4AnyWidth(void *base, size_t nelem, size_t width, AbstractComparat
   }
 }
 
-template <class T> class QuickSort4Class {
-  public:
-    void sort(T *base, size_t nelem, AbstractComparator &comparator);
+template <class T> class QuickSort4OptimalPivot3Class {
+public:
+  void sort(T *base, size_t nelem, AbstractComparator &comparator);
 };
 
-template <class T> void QuickSort4Class<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
+template <class T> void QuickSort4OptimalPivot3Class<T>::sort(T *base, size_t nelem, AbstractComparator &comparator) {
   DECLARE_STACK(stack, 80);
   PUSH(stack, base, nelem);
 
@@ -142,26 +140,22 @@ tailrecurse:
   }
 }
 
-void quickSort4(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
+void quickSort4OptimalPivot3(void *base, size_t nelem, size_t width, AbstractComparator &comparator) {
   switch(width) {
   case sizeof(char)  :
-    { QuickSort4Class<char>().sort((char*)base, nelem, comparator);
-      break;
-    }
+    QuickSort4OptimalPivot3Class<char>().sort((char*)base, nelem, comparator);
+    break;
   case sizeof(short) :
-    { QuickSort4Class<short>().sort((short*)base, nelem, comparator);
-      break;
-    }
+    QuickSort4OptimalPivot3Class<short>().sort((short*)base, nelem, comparator);
+    break;
   case sizeof(long)  : // include pointertypes
-    { QuickSort4Class<long>().sort((long*)base, nelem, comparator);
-      break;
-    }
+    QuickSort4OptimalPivot3Class<long>().sort((long*)base, nelem, comparator);
+    break;
   case sizeof(__int64):
-    { QuickSort4Class<__int64>().sort((__int64*)base, nelem, comparator);
-      break;
-    }
+    QuickSort4OptimalPivot3Class<__int64>().sort((__int64*)base, nelem, comparator);
+    break;
   default            : // for all other values of width, we must use the hard way to copy and swap elements
-    quickSort4AnyWidth(base, nelem, width, comparator);
+    quickSort4OptimalPivot3AnyWidth(base, nelem, width, comparator);
     break;
   }
 }
