@@ -274,6 +274,7 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_COMMAND(ID_PROMOTE_TO_BISHOP               , OnPromoteToBishop                )
   ON_COMMAND(ID_PROMOTE_TO_KNIGHT               , OnPromoteToKnight                )
   ON_COMMAND(ID_TEST_DEBUG                      , OnTestDebug                      )
+  ON_COMMAND(ID_TEST_FINDKNIGHTROUTE            , OnTestFindknightroute            )
   ON_COMMAND(ID_TEST_SHOWFIELDATTACKS           , OnTestShowFieldAttacks           )
   ON_COMMAND(ID_TEST_SHOWMATERIAL               , OnTestShowMaterial               )
   ON_COMMAND(ID_TEST_SHOWBISHOPFLAGS            , OnTestShowBishopFlags            )
@@ -299,7 +300,7 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_MESSAGE(ID_MSG_TRACEWINDOW_CHANGED         , OnMsgTraceWindowChanged          )
   ON_MESSAGE(ID_MSG_SHOW_SELECTED_MOVE          , OnMsgShowSelectedHistoryMove     )
   ON_MESSAGE(ID_MSG_REMOTESTATE_CHANGED         , OnMsgRemoteStateChanged          )
-END_MESSAGE_MAP()
+    END_MESSAGE_MAP()
 
 HCURSOR CChessDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
@@ -445,8 +446,8 @@ void CChessDlg::buildAndMarkLanguageMenu() {
   checkMenuItem(this, ID_SETTINGS_LANGUAGE(getOptions().getSelectedLanguageIndex()), true);
 }
 
-void CChessDlg::invalidModeError() const {
-  throwException(_T("Invalid mode:%d"), getDialogMode());
+void CChessDlg::invalidModeError(const TCHAR *method) const {
+  throwException(_T("%s:Invalid mode:%d"), method, getDialogMode());
 }
 
 void CChessDlg::errorMessage(const TCHAR *format, ...) const {
@@ -470,7 +471,6 @@ void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
 
   m_graphics->setBoardSize(getClientRect(this).Size());
   getOptions().setBoardSize(m_graphics->flushImage(BOARDDC, true));
-
 }
 
 void CChessDlg::OnPaint() {
@@ -574,12 +574,19 @@ void CChessDlg::ajourMenuItemsEnableStatus() {
     enableEditBoardMenuItems(false,false);
     setEscapeMenuText(IDS_ENDAUTOPLAY, true);
     break;
+
   case ANALYZEMODE:
     setMenuItemText(this, ID_EDIT_UNDO, loadString(IDS_MOVEBACKWARD));
     setMenuItemText(this, ID_EDIT_REDO, loadString(IDS_MOVEFORWARD ));
     break;
+
+  case KNIGHTROUTEMODE:
+    enableEditBoardMenuItems(false,false);
+    setEscapeMenuText(IDS_ENDDEBUG, true);
+    break;
+
   default:
-    invalidModeError();
+    invalidModeError(__TFUNCTION__);
     break;
   }
   enableSubMenuContainingId(this, ID_FILE_NEWGAME_YOUPLAYWHITE, (mode == PLAYMODE) || (mode == DEBUGMODE));
@@ -610,7 +617,8 @@ void CChessDlg::enableUndoRedo() {
   case AUTOPLAYMODE: undo = false;                              redo = false;                   break;
   case ANALYZEMODE : undo = getPlyCount() > m_startPlyIndex+1;  redo = (getPlyCount() < m_savedGame.getPlyCount()) && hasSamePartialHistory();
                      break;
-  default          : invalidModeError();
+  case KNIGHTROUTEMODE: undo = false;                              redo = false;                   break;
+  default          : invalidModeError(__TFUNCTION__);
   }
   enableMenuItem(this, ID_EDIT_UNDO              , undo);
   enableMenuItem(this, ID_EDIT_UNDOALL           , undo);
@@ -768,6 +776,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     updateTitle();
     break;
+
   case EDITMODE   :
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_editHistory.beginEdit(m_game));
@@ -775,6 +784,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     m_graphics->setModeText(loadString(IDS_EDITMODETEXT), BOARDDC);
     setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
     break;
+
   case DEBUGMODE   :
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
@@ -782,6 +792,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     m_graphics->setModeText(loadString(IDS_DEBUGMODETEXT), BOARDDC);
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     break;
+
   case AUTOPLAYMODE:
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
@@ -792,6 +803,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     updateTitle();
     startThinking();
     break;
+
   case ANALYZEMODE:
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
@@ -799,8 +811,18 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     m_graphics->setModeText(loadString(IDS_ANALYZEMODETEXT), BOARDDC);
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     break;
+
+  case KNIGHTROUTEMODE:
+    stopAllBackgroundActivity(true);
+    m_graphics->setGame(m_game);
+    setGameSettings();
+    m_graphics->setModeText(_T("Find Knight Route"), BOARDDC);
+    setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
+    m_selectedPosition = -1;
+    break;
+
   default:
-    invalidModeError();
+    invalidModeError(__TFUNCTION__);
     return;
   }
   setVisibleClocks();
@@ -896,15 +918,19 @@ LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
         case DEBUGMODE:
           showHintMessageBox(move);
           break;
+
         case AUTOPLAYMODE:
           executeMove(move);
           break;
+
         case ANALYZEMODE:
           enableStartThinking();
           showHintMessageBox(moveFinder.getMove());
           break;
+        case KNIGHTROUTEMODE:
+          break;
         default:
-          errorMessage(_T("OnMsgMoveFinderStateChanged:Unexpected dialogstate:%d"), getDialogMode());
+          errorMessage(_T("%s:Unexpected dialogstate:%d"), __TFUNCTION__,getDialogMode());
           break;
         }
       }
@@ -997,7 +1023,8 @@ Game &CChessDlg::getCurrentGame1() {
   case DEBUGMODE   : return m_game;
   case AUTOPLAYMODE: return m_game;
   case ANALYZEMODE : return m_game;
-  default          : invalidModeError();
+  case KNIGHTROUTEMODE: return m_game;
+  default          : invalidModeError(__TFUNCTION__);
                      return m_game;
   }
 }
@@ -1041,8 +1068,10 @@ void CChessDlg::updateTitle() {
   case ANALYZEMODE:
     title = format(_T("%s - %s %s %d"), loadString(IDS_ANALYZEMODETEXT).cstr(), getCurrentGame().getDisplayName().cstr(), loadString(IDS_AFTERMOVE).cstr(), PLIESTOMOVES(m_startPlyIndex));
     break;
+  case KNIGHTROUTEMODE:
+    break;
   default         :
-    invalidModeError();
+    invalidModeError(__TFUNCTION__);
   }
 
 /*
@@ -1341,10 +1370,11 @@ void CChessDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(!isAppActive()) return;
   try {
     switch(getDialogMode()) {
-    case PLAYMODE    : OnLButtonDownPlayMode( nFlags, point);  break;
-    case EDITMODE    : OnLButtonDownEditMode( nFlags, point);  break;
-    case DEBUGMODE   :
-    case ANALYZEMODE:; OnLButtonDownDebugMode(nFlags, point);  break;
+    case PLAYMODE       : OnLButtonDownPlayMode( nFlags, point); break;
+    case EDITMODE       : OnLButtonDownEditMode( nFlags, point); break;
+    case DEBUGMODE      :
+    case ANALYZEMODE    : OnLButtonDownDebugMode(nFlags, point); break;
+    case KNIGHTROUTEMODE: OnLButtonDownKRMode(   nFlags, point); break;
     }
   } catch(Exception e) {
     errorMessage(e);
@@ -1356,10 +1386,11 @@ void CChessDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   if(!isAppActive()) return;
   try {
     switch(getDialogMode()) {
-    case PLAYMODE    : OnLButtonUpPlayMode(   nFlags, point); break;
-    case EDITMODE    : OnLButtonUpEditMode(   nFlags, point); break;
-    case DEBUGMODE   :
-    case ANALYZEMODE:; OnLButtonUpDebugMode(  nFlags, point); break;
+    case PLAYMODE       : OnLButtonUpPlayMode(   nFlags, point); break;
+    case EDITMODE       : OnLButtonUpEditMode(   nFlags, point); break;
+    case DEBUGMODE      :
+    case ANALYZEMODE    : OnLButtonUpDebugMode(  nFlags, point); break;
+    case KNIGHTROUTEMODE: OnLButtonUpKRMode(     nFlags, point); break;
     }
   } catch(Exception e) {
     errorMessage(e);
@@ -1371,10 +1402,11 @@ void CChessDlg::OnMouseMove(UINT nFlags, CPoint point) {
   if(!isAppActive()) return;
   try {
     switch(getDialogMode()) {
-    case PLAYMODE    : OnMouseMovePlayMode(   nFlags, point); break;
-    case EDITMODE    : OnMouseMoveEditMode(   nFlags, point); break;
-    case DEBUGMODE   :
-    case ANALYZEMODE:; OnMouseMoveDebugMode(  nFlags, point); break;
+    case PLAYMODE       : OnMouseMovePlayMode(   nFlags, point); break;
+    case EDITMODE       : OnMouseMoveEditMode(   nFlags, point); break;
+    case DEBUGMODE      :
+    case ANALYZEMODE    : OnMouseMoveDebugMode(  nFlags, point); break;
+    case KNIGHTROUTEMODE: OnMouseMoveKRMode(     nFlags, point); break;
     }
   } catch(Exception e) {
     m_graphics->reopen();
@@ -1442,7 +1474,6 @@ void CChessDlg::selectAndExecutePromotion(const CPoint &point, MoveAnnotation an
   CPoint scrPoint = point;
   ClientToScreen(&scrPoint);
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, scrPoint.x,scrPoint.y, this);
-
 }
 
 void CChessDlg::OnPromoteToQueen()  { executePromotion(Queen);  }
@@ -1623,7 +1654,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
   case ANALYZEMODE:
     break;
   default:
-    invalidModeError();
+    invalidModeError(__TFUNCTION__);
     break;
   }
 }
@@ -2215,7 +2246,7 @@ void CChessDlg::OnEditRedo() {
       executeMove(m_savedGame.getMove(getCurrentGame().getPlyCount()));
       break;
     default:
-      invalidModeError();
+      invalidModeError(__TFUNCTION__);
       break;
     }
   } catch(Exception e) {
@@ -2289,8 +2320,12 @@ void CChessDlg::OnEscape() {
         paintGamePosition();
       }
       break;
+    case KNIGHTROUTEMODE: 
+      popDialogMode();
+      break;
+
     default:
-      invalidModeError();
+      invalidModeError(__TFUNCTION__);
       break;
     }
   } catch(Exception e) {
@@ -2908,6 +2943,81 @@ void CChessDlg::OnMouseMoveDebugMode(UINT nFlags, CPoint point) {
   m_graphics->markMouse(getBoardPosition(point), BOARDDC);
 }
 
+// ------------------------------ Mousehandlers KnightRoute Mode ------------------------------------------
+
+static String findShortestKnightRoute(UINT from, UINT to) {
+  UINT            dist[64];
+  FieldSet        total, front;
+  memset(dist,-1,sizeof(dist));
+  total.add(from);
+  front = total;
+  dist[from] = 0;
+  while(!total.contains(to)) {
+    FieldSet newFront;
+    for(Iterator<UINT> it = front.getIterator(); it.hasNext();) {
+      const UINT p   = it.next();
+      const UINT pd1 = dist[p]+1;
+      const DirectionArray &da = MoveTable::knightMoves[p];
+      for(int i = 0; i < da.m_count; i++) {
+        const UINT d = da.m_directions[i].m_fields[1];
+        if(total.contains(d)) continue;
+        newFront.add(d);
+        total.add(d);
+        dist[d] = min(pd1, dist[d]);
+      }
+    }
+    front = newFront;
+  }
+  CompactIntArray route;
+  UINT p = to;
+  route.add(p);
+  for(UINT d = dist[p]; d-- > 0;) {
+    const DirectionArray &da = MoveTable::knightMoves[p];
+    for(int i = 0; i < da.m_count; i++) {
+      const UINT p1 = da.m_directions[i].m_fields[1];
+      if(dist[p1] == d) {
+        p = p1;
+        break;
+      }
+    }
+    route.add(p);
+  }
+  String result;
+  const TCHAR *delimiter = NULL;
+  for(UINT i = (UINT)route.size()-1; i--;) {
+    if(delimiter) result += delimiter; else delimiter = _T(" ");
+    result += getFieldName(route[i]);
+  }
+  return result;
+}
+
+void CChessDlg::OnLButtonDownKRMode(UINT nFlags, CPoint point) {
+  const int pos = getBoardPosition(point);
+  if(!isValidPosition(pos)) return;
+
+  if(m_selectedPosition < 0) {
+    m_selectedPosition = pos;
+    m_graphics->markField(m_selectedPosition, YELLOWMARK, BOARDDC);
+  } else if (pos == m_selectedPosition) {
+    m_graphics->unmarkField(m_selectedPosition, BOARDDC);
+    m_selectedPosition = -1;
+  } else {
+    m_graphics->markField(pos, YELLOWMARK, BOARDDC);
+    String str = findShortestKnightRoute(m_selectedPosition, pos);
+    putClipboard(*this, str);
+    MessageBox(str.cstr(), _T("Best Knight route"));
+    m_graphics->unmarkField(pos               , BOARDDC);
+    m_graphics->unmarkField(m_selectedPosition, BOARDDC);
+    m_selectedPosition = -1;
+  }
+}
+
+void CChessDlg::OnLButtonUpKRMode(UINT nFlags, CPoint point) {
+}
+void CChessDlg::OnMouseMoveKRMode(UINT nFlags, CPoint point) {
+//  m_graphics->markMouse(getBoardPosition(point), BOARDDC);
+}
+
 // -------------------------------- Test functions -------------------------------------------------------
 
 void CChessDlg::toggleEnableTestMenu() {
@@ -2957,6 +3067,11 @@ void CChessDlg::setTestItemStates() {
 void CChessDlg::OnTestDebug() {
   if(!getOptions().hasTestMenu()) return;
   pushDialogMode(DEBUGMODE);
+}
+
+void CChessDlg::OnTestFindknightroute() {
+  if(!getOptions().hasTestMenu()) return;
+  pushDialogMode(KNIGHTROUTEMODE);
 }
 
 void CChessDlg::OnTestShowFieldAttacks() {

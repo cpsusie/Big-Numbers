@@ -304,9 +304,7 @@ private:
 
   void markFields(            const FieldSet &fields,   FieldMark mark,             HDC dc = NULL);
   void unmarkFields(          const FieldSet &fields,                               HDC dc = NULL);
-  int  markField(             int pos,                  FieldMark mark,             HDC dc = NULL); // return pos
   void markMatingPositions(                                                         HDC dc = NULL);
-  void unmarkField(           int pos                 ,                             HDC dc = NULL);
   void paintEmptyField(       int pos,                                  bool flush, HDC dc = NULL);
   void paintField(            int pos,                                  bool flush, HDC dc = NULL);
   void paintOffboardPieces(   Player player,                            bool flush, HDC dc = NULL);
@@ -347,6 +345,8 @@ public:
   void  startDragPiece(      const CPoint &point, PieceKey key,               HDC dc);
   void  dragPiece(           const CPoint &point,                             HDC dc);
   void  endDragPiece(                                                         HDC dc = NULL);
+  int   markField(           int pos,             FieldMark mark,             HDC dc = NULL); // return pos
+  void  unmarkField(         int pos            ,                             HDC dc = NULL);
 
   CPoint getFieldPosition(int r, int c, bool scaled) const;
   CPoint getFieldPosition(int pos     , bool scaled) const;

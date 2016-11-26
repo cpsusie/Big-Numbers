@@ -678,14 +678,6 @@ String getGameResultToString(GameResult gameResult) {
   }
 }
 
-int parseInt(Tokenizer &tok) {
-  int result;
-  if(!tok.hasNext() || (_stscanf(tok.next().cstr(), _T("%d"), &result) != 1)) {
-    throwException(_T("Expected number"));
-  }
-  return result;
-}
-
 bool isValidPosition(int position) {
   return (0 <= position) && (position < 64);
 }

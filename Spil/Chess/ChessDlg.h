@@ -16,6 +16,7 @@ typedef enum {
  ,DEBUGMODE
  ,AUTOPLAYMODE
  ,ANALYZEMODE
+ ,KNIGHTROUTEMODE
 } DialogMode;
 
 class DialogSettings {
@@ -169,7 +170,7 @@ private:
   void   unExecuteLastPly();
   void   editUndo(UndoMode mode);
   Game  &validateBeforeSave();
-  void   invalidModeError() const;
+  void   invalidModeError(const TCHAR *method) const;
   void   errorMessage(const TCHAR *format,...) const;
   void   errorMessage(const Exception &e) const;
   void   OnLButtonDownPlayMode( UINT nFlags, CPoint point);
@@ -181,6 +182,9 @@ private:
   void   OnLButtonDownDebugMode(UINT nFlags, CPoint point);
   void   OnMouseMoveDebugMode(  UINT nFlags, CPoint point);
   void   OnLButtonUpDebugMode(  UINT nFlags, CPoint point);
+  void   OnLButtonDownKRMode(UINT nFlags, CPoint point);
+  void   OnMouseMoveKRMode(  UINT nFlags, CPoint point);
+  void   OnLButtonUpKRMode(  UINT nFlags, CPoint point);
   void   startThinking();
   void   stopThinking();
   void   startFindHint(int timeout);
@@ -431,6 +435,7 @@ protected:
   afx_msg void OnPromoteToBishop();
   afx_msg void OnPromoteToKnight();
 	afx_msg void OnTestDebug();
+  afx_msg void OnTestFindknightroute();
 	afx_msg void OnTestShowFieldAttacks();
 	afx_msg void OnTestShowMaterial();
 	afx_msg void OnTestShowBishopFlags();
@@ -458,5 +463,6 @@ protected:
 	afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
+public:
 };
 

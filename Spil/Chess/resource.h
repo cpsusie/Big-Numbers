@@ -483,6 +483,7 @@
 #define ID_TEST_PLOTWINSPVALUES         33157
 #define ID_TEST_SHOWENGINECONSOLE       33158
 #define ID_TEST_SHOWFEN                 33159
+#define ID_TEST_FINDKNIGHTROUTE         33160
 #define ID_GOTO_DIR                     33190
 #define ID_GOTO_DRIVE                   33191
 #define ID_GOTO_MOVECOUNT               33192
@@ -533,11 +534,11 @@
 #define ID_REMOVE_ANNOTATION            33286
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        426
-#define _APS_NEXT_COMMAND_VALUE         33306
+#define _APS_NEXT_COMMAND_VALUE         33307
 #define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           117
 #endif

@@ -249,7 +249,6 @@ String         getKingAttackStateToString(        KingAttackState         attack
 const TCHAR   *getAnnotationToString(             MoveAnnotation          annotation    ); // Returns a string representing the MoveAnnotation. {"","?","??","!","!!","?!","!?"}
 String         getGameResultToString(             GameResult              gameResult    );
 MoveAnnotation parseAnnotation(                   const TCHAR            *str           );
-int            parseInt(                          Tokenizer              &tok           );
 String         getSymmetricTransformationToString(SymmetricTransformation st            );
 bool           isValidPosition(                  int                      position      ); // Returns true if position = [0..63]
 bool           isValidPosition(                  int row, int col                       ); // = isValidLine(row) && isValidLine(col)

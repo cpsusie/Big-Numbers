@@ -394,8 +394,8 @@ void Game::parseFEN(Tokenizer &tok) { // tok should contain a valid FEN-string
     } else {
       m_gameKey.d.m_EPSquare = decodePosition(ep) ^ 8;
     }
-    int pc = parseInt(tok);
-    int n  = parseInt(tok);
+    int pc = tok.getInt();
+    int n  = tok.getInt();
   } catch(Exception e) {
     throwException(_T("Invalid FEN:%s"), e.what());
   }

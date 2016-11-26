@@ -21,6 +21,7 @@
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,37 @@ BEGIN
     "#include <mfcutil.rc>\0"
 END
 
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\chess.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
 #endif    // APSTUDIO_INVOKED
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -87,6 +118,7 @@ IDR_OPENINGLIBRARY      OPENINGLIBRARY          "res\\OpenLib.dat"
 //
 
 IDR_BOARD               JPG                     "res\\Board.jpg"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -557,44 +589,6 @@ BEGIN
 END
 
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 9, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#endif //_WIN32\r\n"
-    "#include ""res\\chess.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""afxres.rc""         // Standard components\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -790,6 +784,7 @@ BEGIN
         MENUITEM "Gem til ekstern motor...",    ID_TEST_SAVETOEXTERNENGINE
         MENUITEM "Plot Wins/P.Values...",       ID_TEST_PLOTWINSPVALUES
         MENUITEM "Vis Konsol for Motor",        ID_TEST_SHOWENGINECONSOLE
+        MENUITEM "Find knight Route",           ID_TEST_FINDKNIGHTROUTE
     END
 END
 
@@ -1290,17 +1285,17 @@ END
 
 STRINGTABLE
 BEGIN
-    IDC_CHECK_DEPTH                 "&Dybde:"
-    IDC_CHECK_SELDEPTH              "&Selektiv dybde:"
-    IDC_CHECK_SCORE                 "S&core:"
-    IDC_CHECK_TIME                  "&Tid:"
-    IDC_CHECK_NODES                 "&Positioner:"
-    IDC_CHECK_NODESPS               "P&ositioner/sek.:"
-    IDC_CHECK_PV                    "Principal &variant:"
-    IDC_CHECK_STRING                "St&ring:"
-    IDC_CHECK_HASHFULL              "&Hashtable forbrug:"
-    IDC_CHECK_MULTIPV               "&Multi PV:"
-    IDC_CHECK_CPULOAD               "CP&U belastning:"
+    IDC_CHECK_DEPTH         "&Dybde:"
+    IDC_CHECK_SELDEPTH      "&Selektiv dybde:"
+    IDC_CHECK_SCORE         "S&core:"
+    IDC_CHECK_TIME          "&Tid:"
+    IDC_CHECK_NODES         "&Positioner:"
+    IDC_CHECK_NODESPS       "P&ositioner/sek.:"
+    IDC_CHECK_PV            "Principal &variant:"
+    IDC_CHECK_STRING        "St&ring:"
+    IDC_CHECK_HASHFULL      "&Hashtable forbrug:"
+    IDC_CHECK_MULTIPV       "&Multi PV:"
+    IDC_CHECK_CPULOAD       "CP&U belastning:"
 END
 
 #endif    // Danish (Denmark) resources
@@ -1995,20 +1990,23 @@ END
 
 STRINGTABLE
 BEGIN
-    IDC_CHECK_DEPTH                 "&Depth:"
-    IDC_CHECK_SELDEPTH              "&Selective depth:"
-    IDC_CHECK_SCORE                 "S&core:"
-    IDC_CHECK_TIME                  "&Time:"
-    IDC_CHECK_NODES                 "&Positions:"
-    IDC_CHECK_NODESPS               "P&ositions/sec.:"
-    IDC_CHECK_PV                    "Principal &variant:"
-    IDC_CHECK_STRING                "St&ring:"
-    IDC_CHECK_HASHFULL              "&Hashtable usage:"
-    IDC_CHECK_MULTIPV               "&Multi PV:"
-    IDC_CHECK_CPULOAD               "CP&U load:"
+    IDC_CHECK_DEPTH         "&Depth:"
+    IDC_CHECK_SELDEPTH      "&Selective depth:"
+    IDC_CHECK_SCORE         "S&core:"
+    IDC_CHECK_TIME          "&Time:"
+    IDC_CHECK_NODES         "&Positions:"
+    IDC_CHECK_NODESPS       "P&ositions/sec.:"
+    IDC_CHECK_PV            "Principal &variant:"
+    IDC_CHECK_STRING        "St&ring:"
+    IDC_CHECK_HASHFULL      "&Hashtable usage:"
+    IDC_CHECK_MULTIPV       "&Multi PV:"
+    IDC_CHECK_CPULOAD       "CP&U load:"
 END
+
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
+
+
 
 #ifndef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -2031,3 +2029,4 @@ LANGUAGE 9, 1
 #include <mfcutil/mfcutil.rc>
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+
