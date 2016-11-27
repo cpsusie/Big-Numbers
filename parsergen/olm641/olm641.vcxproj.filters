@@ -14,13 +14,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="olm641.txt">
+    <Text Include="Olm641.txt">
       <Filter>Source Files\Grammar</Filter>
     </Text>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="olm641.cpp">
+    <ClCompile Include="Olm641.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Olm641Action.cpp">
@@ -37,13 +36,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="olm641lex.h">
+    <ClInclude Include="Olm641lex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="olm641parser.h">
+    <ClInclude Include="Olm641parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="olm641symbol.h">
+    <ClInclude Include="Olm641symbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
@@ -51,10 +50,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="olm641.lex">
+    <CustomBuild Include="Olm641.lex">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
-    <CustomBuild Include="olm641.y">
+    <CustomBuild Include="Olm641.y">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
   </ItemGroup>

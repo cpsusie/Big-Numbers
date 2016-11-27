@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\parsergen\\olm627\\Olm627.lex"
+#line 2 "C:\\mytools2015\\parsergen\\Olm627\\Olm627.lex"
 #pragma once
 
  /* This part goes to the h file */

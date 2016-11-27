@@ -24,7 +24,7 @@
     <ClCompile Include="GotoDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\parsegen\Grammar.cpp">
+    <ClCompile Include="..\parsergen\Grammar.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="History.cpp">
@@ -88,7 +88,7 @@
     <ClInclude Include="GotoDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\parsegen\Grammar.h">
+    <ClInclude Include="..\parsergen\Grammar.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GRAMMARS.h">

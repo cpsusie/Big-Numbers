@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParserDemo", "ParserDemo\ParserDemo.vcxproj", "{D9845C1E-2D62-4D66-87C4-D122A684B31A}"
 	ProjectSection(ProjectDependencies) = postProject
+		{8BD7BF5C-79E4-4CB9-8452-D28E2D96C5BD} = {8BD7BF5C-79E4-4CB9-8452-D28E2D96C5BD}
+		{CABF5570-7FB0-42C4-81FB-9151F647669F} = {CABF5570-7FB0-42C4-81FB-9151F647669F}
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
@@ -42,7 +44,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Util", "..\Lib\Src\Util\Uti
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "..\Lib\Src\Math\Math.vcxproj", "{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParseGen", "parsegen\ParseGen.vcxproj", "{DF08617D-DB7E-462F-854E-D4B3F7ADFAE7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Parsergen", "parsergen\Parsergen.vcxproj", "{DF08617D-DB7E-462F-854E-D4B3F7ADFAE7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

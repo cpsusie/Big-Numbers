@@ -30,6 +30,7 @@ public:
 #include <HashMap.h>
 #include <TreeMap.h>
 #include "ResourceSymbol.h"
+#include "ResourceLex.h"
 
 static ResourceInputSymbol nameOrKeyWord(const TCHAR *lexeme);
 static ResourceInputSymbol preprocssessorDirective(const TCHAR *lexeme);

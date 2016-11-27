@@ -21,7 +21,6 @@
     <Text Include="Java5.txt">
       <Filter>Source Files\Grammar</Filter>
     </Text>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Java5Action.cpp">

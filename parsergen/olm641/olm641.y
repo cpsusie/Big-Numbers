@@ -33,7 +33,7 @@ private:
 start	: S
 		;
 
-S		: a b A E  { debug("reduce by a b A E pos of A is (%d,%d)\n",getPos(3).getLineNumber(),getPos(3).getColumn()); }
+S		: a b A E  { debug(_T("reduce by a b A E pos of A is (%d,%d)\n"),getPos(3).getLineNumber(),getPos(3).getColumn()); }
 		| a b B x
 		| a D
 		| A z
@@ -51,7 +51,7 @@ D		: f A
 		| f a D
 		;
 
-E		:         { printf("reduce by E -> eps yypos(0):(%d,%d)\n",getPos(0).getLineNumber(),getPos(0).getColumn()); }
+E		:         { _tprintf(_T("reduce by E -> eps yypos(0):(%d,%d)\n"), getPos(0).getLineNumber(),getPos(0).getColumn()); }
 		| z
 		;
 

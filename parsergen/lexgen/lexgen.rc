@@ -72,7 +72,7 @@ BEGIN
         BEGIN
             VALUE "Comments", "\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "Generate lexical scanner from .lex-file, to be used together with parsegen to build a compiler\0"
+            VALUE "FileDescription", "Generate lexical scanner from .lex-file, to be used together with parsergen to build a compiler\0"
             VALUE "FileVersion", "1, 0, 0, 1\0"
             VALUE "InternalName", "lexgen\0"
             VALUE "LegalCopyright", "Copyright © 2008\0"

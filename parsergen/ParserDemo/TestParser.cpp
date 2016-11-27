@@ -97,7 +97,7 @@ TestParser::~TestParser() {
 }
 
 void TestParser::deleteNodeList() {
-  for(int i = 0; i < m_nodeList.size(); i++) {
+  for(size_t i = 0; i < m_nodeList.size(); i++) {
     delete m_nodeList[i];
   }
   m_nodeList.clear();

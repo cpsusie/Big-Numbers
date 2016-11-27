@@ -2,7 +2,7 @@
 
   /* this part goes to the h file */
 
-#include "olm637symbol.h"
+#include "Olm637symbol.h"
 
 #define YYSTYPE int
 class Olm637Parser : public LRparser {
@@ -28,7 +28,7 @@ private:
   /* This part goes to the first part of the parser cpp file */
 
 #include "stdafx.h"
-#include "olm637parser.h"
+#include "Olm637parser.h"
 %}
 %%
 

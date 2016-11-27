@@ -42,13 +42,13 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\parsegen\StringCollector.cpp">
+    <ClCompile Include="..\parsergen\StringCollector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\parsegen\TemplateWriter.cpp">
+    <ClCompile Include="..\parsergen\TemplateWriter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\parsegen\Wizard.cpp">
+    <ClCompile Include="..\parsergen\Wizard.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -70,13 +70,13 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\parsegen\StringCollector.h">
+    <ClInclude Include="..\parsergen\StringCollector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\parsegen\TemplateWriter.h">
+    <ClInclude Include="..\parsergen\TemplateWriter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\parsegen\Wizard.h">
+    <ClInclude Include="..\parsergen\Wizard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

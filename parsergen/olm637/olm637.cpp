@@ -1,15 +1,12 @@
-// olm637.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
-#include "olm637lex.h"
-#include "olm637parser.h"
+#include "Olm637lex.h"
+#include "Olm637parser.h"
 
-static char *input = "afafdx";
+static String input = "afafdx";
 //static char *input = "a f a f a f d x\n\n\n";
 //static char *input = "a f a f a f a f a f a f a f a f d  x ";
 
-static void test(char *input) {
+static void test(const String input) {
   LexStringStream str(input);
   Olm637Lex    lex;
   lex.newStream(&str);
@@ -18,12 +15,11 @@ static void test(char *input) {
   p.parse();
 }
 
-int main(int argc, char* argv[])
-{ 
+int main(int argc, char* argv[]) { 
   for(;;) {
-    char line[100];
-    printf("Indtast inputstreng:");
-    gets(line);
+    TCHAR line[100];
+    _tprintf(_T("Indtast inputstreng:"));
+    GETS(line);
     test(line);
   }
 

@@ -157,7 +157,7 @@ void TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation,
     getDerivation(ctrl, child, tmp, maxlen);
     if(derivation.length() > 0) derivation += _T(" ");
     derivation += tmp;
-    if(derivation.length() > maxlen) {
+    if((int)derivation.length() > maxlen) {
       derivation = left(derivation, maxlen);
       return;
     }
@@ -167,7 +167,7 @@ void TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, String &derivation,
 String TreeDlg::getDerivation(CTreeCtrl *ctrl, HTREEITEM item, int maxlen) {
   String result;
   getDerivation(ctrl, item, result, maxlen+10);
-  if(result.length() > maxlen) {
+  if((int)result.length() > maxlen) {
     result = left(result, maxlen-3) + _T("...");
   }
   return result;

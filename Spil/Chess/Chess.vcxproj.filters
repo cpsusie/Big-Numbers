@@ -874,6 +874,9 @@
     <ClCompile Include="EndGameKQKNNN.cpp">
       <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClCompile>
+    <ClCompile Include="FindKnightRoute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">

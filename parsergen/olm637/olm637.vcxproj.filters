@@ -18,13 +18,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="olm637.txt">
+    <Text Include="Olm637.txt">
       <Filter>Source Files\Grammar</Filter>
     </Text>
-    <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="olm637.cpp">
+    <ClCompile Include="Olm637.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Olm637Action.cpp">
@@ -41,7 +40,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="olm637lex.h">
+    <ClInclude Include="Olm637lex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Olm637Parser.h">
@@ -55,10 +54,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="olm637.lex">
+    <CustomBuild Include="Olm637.lex">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
-    <CustomBuild Include="olm637.y">
+    <CustomBuild Include="Olm637.y">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
   </ItemGroup>

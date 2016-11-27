@@ -18,12 +18,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="olm627.txt">
+    <Text Include="Olm627.txt">
       <Filter>Source Files\Grammar</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="olm627.cpp">
+    <ClCompile Include="Olm627.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Olm627Action.cpp">
@@ -40,13 +40,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="olm627lex.h">
+    <ClInclude Include="Olm627lex.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="olm627parser.h">
+    <ClInclude Include="Olm627parser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="olm627symbol.h">
+    <ClInclude Include="Olm627symbol.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
@@ -54,10 +54,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="olm627.lex">
+    <CustomBuild Include="Olm627.lex">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
-    <CustomBuild Include="olm627.y">
+    <CustomBuild Include="Olm627.y">
       <Filter>Source Files\Grammar</Filter>
     </CustomBuild>
   </ItemGroup>

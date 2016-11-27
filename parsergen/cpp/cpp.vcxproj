@@ -236,18 +236,18 @@
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\lexgen.exe;c:\mytools\parsergen\lib\lexgencpp.par;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
     <CustomBuild Include="cpp.y">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsegen -h Cpp.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsegen -h Cpp.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">parsergen -h Cpp.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">parsergen -h Cpp.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">CppParser.h;CppSymbol.h;CppAction.cpp;CppTables.cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CppParser.h;CppSymbol.h;CppAction.cpp;CppTables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsegencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsegencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsegen -h Cpp.y</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsegen -h Cpp.y</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">parsergen -h Cpp.y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">parsergen -h Cpp.y</Command>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CppParser.h;CppSymbol.h;CppAction.cpp;CppTables.cpp;%(Outputs)</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CppParser.h;CppSymbol.h;CppAction.cpp;CppTables.cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsegencpp.par;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsegen.exe;c:\mytools\parsergen\lib\parsegencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\parsergen.exe;c:\mytools\parsergen\lib\parsergencpp.par;%(AdditionalInputs)</AdditionalInputs>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

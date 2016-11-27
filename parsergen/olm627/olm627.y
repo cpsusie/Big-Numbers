@@ -2,7 +2,7 @@
 
   /* this part goes to the h file */
 
-#include "olm627symbol.h"
+#include "Olm627symbol.h"
 
 class Olm627Parser : public LRparser {
 public:

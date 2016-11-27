@@ -690,6 +690,15 @@
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men3Equal.cpp">
       <Filter>EndGames\EndGameKeyDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\FindKnightRoute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\GameKeyHashStack.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\PawnMask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">

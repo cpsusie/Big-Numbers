@@ -12,8 +12,9 @@ public:
 %{
 
  /* This part goes to the first part of the cpp file */
-
-#include "olm637Symbol.h"
+#include "stdafx.h"
+#include "Olm637Symbol.h"
+#include "Olm637Lex.h"
 
 %}
 

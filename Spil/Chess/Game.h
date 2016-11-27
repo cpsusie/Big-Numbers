@@ -258,6 +258,7 @@ void           validatePosition(                 const TCHAR *function, int pos 
 void           validatePosition(                 const TCHAR *function, int row, int col); // throws Exception if not valid.
 int            decodePosition(                   const String &s                        );
 MoveDirection  getOppositeDirection(             MoveDirection direction                );
+String         findShortestKnightRoute(          UINT from, UINT to);
 
 #define VALIDATEPOS(pos)          validatePosition(__TFUNCTION__, pos)
 #define VALIDATEPOSITION(row,col) validatePosition(__TFUNCTION__, row,col)

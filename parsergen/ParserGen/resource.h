@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Developer Studio generated include file.
-// Used by ParseGen.rc
+// Used by ParserGen.rc
 //
 
 // Next default values for new objects

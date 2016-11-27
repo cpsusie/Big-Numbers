@@ -6,7 +6,9 @@
 #pragma warning(disable:4312)
 
 
-#line 33 "C:\\mytools2015\\parsergen\\lib\\parsegencpp.par"
+#line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+
+#pragma warning(disable : 4312)
 
 typedef short TableType;
 

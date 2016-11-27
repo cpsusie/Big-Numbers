@@ -1,9 +1,9 @@
-// olm627.cpp : Defines the entry point for the console application.
+// Olm627.cpp : Defines the entry point for the console application.
 //
 
 #include "stdafx.h"
-#include "olm627lex.h"
-#include "olm627parser.h"
+#include "Olm627lex.h"
+#include "Olm627parser.h"
 
 static TCHAR *input = _T("afafdx");
 //static char *input = "a f a f a f d x\n\n\n";

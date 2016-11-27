@@ -55,10 +55,11 @@ void FindDlg::OnFindnext() {
     m_history.add(m_param.m_findWhat);
     if(!m_TextContainer.searchText(m_param).isSet()) {
       String msg;
-      if(m_param.m_useRegExp)
+      if(m_param.m_useRegExp) {
         msg = format(_T("Cannot find a match for the regular expression '%s'."), m_param.m_findWhat.cstr());
-      else
+      } else {
         msg = format(_T("Cannot find the String '%s'."), m_param.m_findWhat.cstr());
+      }
       MessageBox(msg.cstr(), NULL, MB_ICONWARNING);
       return;
     }
@@ -75,7 +76,7 @@ BOOL FindDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   CComboBox *combo = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
   combo->AddString(m_findWhat.GetBuffer(m_findWhat.GetLength()));
-  for(int i = 0; i < m_history.size(); i++) {
+  for(size_t i = 0; i < m_history.size(); i++) {
     combo->AddString(m_history[i].cstr());
   }
 

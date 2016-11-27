@@ -4,13 +4,13 @@
 #include <HashMap.h>
 #include <TreeMap.h>
 #include "ResourceSymbol.h"
+#include "ResourceLex.h"
 
 static ResourceInputSymbol nameOrKeyWord(const TCHAR *lexeme);
 static ResourceInputSymbol preprocssessorDirective(const TCHAR *lexeme);
 
 
-#line 8 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
-#include "./ResourceLex.h"
+#line 8 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 
 
 // The lexCharMap[] and lexStateMap arrays are used as follows:
@@ -87,7 +87,7 @@ static const char lexAccept[] = {
     /*  20 */  4,  0,  0 
 };
 
-#line 12 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 11 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 
 // nextState(state,c) is given the current state number and input
 // character and evaluates to the next state.
@@ -171,76 +171,76 @@ int ResourceLex::getNextLexeme() {
 
       switch(lastAcceptState) {
       case 1:
-#line 101 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
-        ;
-        
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
-        break;
-      case 2:
 #line 102 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         ;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
-      case 3:
+      case 2:
 #line 103 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         ;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
+        break;
+      case 3:
+#line 104 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+        ;
+        
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 4:
-#line 53 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 54 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return LPAR;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 5:
-#line 54 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 55 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return RPAR;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 6:
-#line 57 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 58 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return COMMA;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 7:
-#line 58 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 59 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return DOT;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 8:
       case 16:
       case 18:
       case 20:
-#line 49 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 50 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return NUMBER;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 9:
-#line 100 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 101 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return nameOrKeyWord(getText());
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 10:
-#line 55 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 56 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return OR;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 11:
-#line 51 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 52 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         return STRING;
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 12:
-#line 85 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 86 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
                                   while(i = input()) { // skip until end of line ie handle as a comment
                                     if(i < 0) {
@@ -256,10 +256,10 @@ int ResourceLex::getNextLexeme() {
                                   }
                                 }
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 13:
-#line 70 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 71 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
                                   SourcePosition startpos = getPos();
                                   while(i = input()) {
@@ -275,10 +275,10 @@ int ResourceLex::getNextLexeme() {
                                   }
                                 }
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 14:
-#line 60 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 61 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
         { int i;
                                   while(i = input()) {
                                     if(i < 0) {
@@ -289,7 +289,7 @@ int ResourceLex::getNextLexeme() {
                                   }
                                 }
         
-#line 94 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
                   
       default:
@@ -311,7 +311,7 @@ int ResourceLex::getNextLexeme() {
   }
 }
 
-#line 106 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
+#line 107 "C:\\mytools2015\\CheckMnemonics\\Resource.lex"
 
   /* This part goes to the last part of ResourceLex.cpp */
 
@@ -737,4 +737,4 @@ void ResourceLex::verror(const SourcePosition &pos, const TCHAR *format, va_list
 }
 
 
-#line 115 "C:\\mytools\\parsergen\\lib\\lexgencpp.par"
+#line 114 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"

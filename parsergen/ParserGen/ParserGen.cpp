@@ -17,8 +17,8 @@ static void verbose(int level, TCHAR *format, ...) {
 
 static void usage() {
   fprintf(stderr,
-    "Usage:parsegen [options] file\n"
-    " -mS: Use String S as template rather than parsegenXXX.par.\n"
+    "Usage:parsergen [options] file\n"
+    " -mS: Use String S as template rather than parsergenXXX.par.\n"
     " -l : Suppress #line directives in output.\n"
     " -b : Suppress break-statements in output.\n"
     " -a : No reduceactions generated.\n"
@@ -31,7 +31,7 @@ static void usage() {
     "     level = 2 -> write warnings to stdout.\n"
     "     default level is 1.\n"
     " -ffile :dump first1-sets to file.\n"
-    " -wS: Parsegen-wizard. write template grammar-file with classname S to stdout.\n"
+    " -wS: Parsergen-wizard. write template grammar-file with classname S to stdout.\n"
     " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
     " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize >= 1. default tabsize=4.\n"
     " -j : Generate java-parser. Default is C++.\n"
@@ -154,12 +154,12 @@ int main(int argc, char **argv) {
     String wizardTemplate   = _T("");
     switch(language) {
 	  case CPP :
-      skeletonFileName = _T("parsegencpp.par");
-      wizardTemplate   = _T("parsegencpp.wzr");
+      skeletonFileName = _T("parsergencpp.par");
+      wizardTemplate   = _T("parsergencpp.wzr");
       break;
 	  case JAVA:
-      skeletonFileName = _T("parsegenjava.par");
-      wizardTemplate   = _T("parsegenjava.wzr");
+      skeletonFileName = _T("parsergenjava.par");
+      wizardTemplate   = _T("parsergenjava.wzr");
 	    flags.m_lineDirectives   = false;
       break;
     default  :

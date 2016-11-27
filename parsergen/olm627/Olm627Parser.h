@@ -5,8 +5,8 @@
 
 const extern ParserTables *Olm627Tables;
 
-#line 5 "C:\\mytools2015\\parsergen\\olm627\\Olm627.y"
-#include "olm627symbol.h"
+#line 5 "C:\\mytools2015\\parsergen\\Olm627\\Olm627.y"
+#include "Olm627symbol.h"
 
 class Olm627Parser : public LRparser {
 public:
@@ -22,5 +22,5 @@ private:
 };
 
 
-#line 18 "C:\\mytools2015\\parsergen\\lib\\parsegencpp.par"
+#line 18 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 

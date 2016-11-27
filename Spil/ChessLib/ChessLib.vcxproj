@@ -184,7 +184,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -218,7 +218,7 @@
       <WarningLevel>Level3</WarningLevel>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -326,7 +326,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -360,7 +360,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>
       </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;TABLEBASE_BUILDER;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -637,10 +637,12 @@
     <ClCompile Include="..\Chess\FieldInfo.cpp" />
     <ClCompile Include="..\Chess\FieldSet.cpp" />
     <ClCompile Include="..\Chess\FieldSetUtil.cpp" />
+    <ClCompile Include="..\Chess\FindKnightRoute.cpp" />
     <ClCompile Include="..\Chess\Game.cpp" />
     <ClCompile Include="..\Chess\GameHistory.cpp" />
     <ClCompile Include="..\Chess\GameIO.cpp" />
     <ClCompile Include="..\Chess\GameKey.cpp" />
+    <ClCompile Include="..\Chess\GameKeyHashStack.cpp" />
     <ClCompile Include="..\Chess\GameSetup.cpp" />
     <ClCompile Include="..\Chess\GameUpdate.cpp" />
     <ClCompile Include="..\Chess\GameUtil.cpp" />
@@ -656,6 +658,7 @@
     <ClCompile Include="..\Chess\MoveGenerator.cpp" />
     <ClCompile Include="..\Chess\MoveTable.cpp" />
     <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
+    <ClCompile Include="..\Chess\PawnMask.cpp" />
     <ClCompile Include="..\Chess\Piece.cpp" />
     <ClCompile Include="..\Chess\PlayerState.cpp" />
     <ClCompile Include="..\Chess\PositionSignature.cpp" />

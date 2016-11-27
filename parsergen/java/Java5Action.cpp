@@ -6,7 +6,7 @@
 #pragma warning(disable:4312)
 
 
-#line 21 "C:\\mytools2015\\parsergen\\lib\\parsegencpp.par"
+#line 21 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
 
 int Java5Parser::reduceAction(unsigned int prod) {
 
@@ -17,4 +17,4 @@ int Java5Parser::reduceAction(unsigned int prod) {
 
 #line 907 "C:\\mytools2015\\parsergen\\java\\Java5.y"
 
-#line 31 "C:\\mytools2015\\parsergen\\lib\\parsegencpp.par"
+#line 31 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
