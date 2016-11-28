@@ -438,7 +438,9 @@ IDirect3DTexture9 *Cdx9_rectDemoDlg::loadTextureFromResource(int resId, const St
   tmp.loadFromResource(resId, typeName.cstr());
   IDirect3DTexture9 *result;
 
-  CHECKD3DRESULT(D3DXCreateTextureFromFileInMemoryEx(m_device, tmp.getData(), tmp.size()
+  CHECKD3DRESULT(D3DXCreateTextureFromFileInMemoryEx(
+     m_device
+    ,tmp.getData(), (UINT)tmp.size()
     ,D3DX_DEFAULT, D3DX_DEFAULT, 1
     ,D3DUSAGE_DYNAMIC
     ,D3DFMT_A8R8G8B8
@@ -454,7 +456,8 @@ IDirect3DTexture9 *Cdx9_rectDemoDlg::loadTextureFromResource(int resId, const St
 
 IDirect3DTexture9 *Cdx9_rectDemoDlg::loadTextureFromFile(const String &fileName) {
   IDirect3DTexture9 *result;
-  CHECKD3DRESULT(D3DXCreateTextureFromFileEx( m_device, fileName.cstr()
+  CHECKD3DRESULT(D3DXCreateTextureFromFileEx(
+     m_device, fileName.cstr()
     ,D3DX_DEFAULT, D3DX_DEFAULT, 1
     ,D3DUSAGE_DYNAMIC
     ,D3DFMT_A8R8G8B8
