@@ -9,7 +9,7 @@ intptr_t CountedByteInputStream::getBytes(BYTE *dst, size_t n) {
   size_t     total        = 0;
   const UINT maxChunkSize = m_counter.getMaxChunkSize();
   if(maxChunkSize == 0) {
-    throwException("maxChunkSize == 0");
+    throwException(_T("maxChunkSize == 0"));
   }
   while(n > 0) {
     const intptr_t need = min(n, maxChunkSize);
