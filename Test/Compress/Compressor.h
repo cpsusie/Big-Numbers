@@ -15,5 +15,6 @@ public:
   virtual void check() const {}
   virtual ~Compressor() {
   }
-  void printRatios(FILE *f = stdout);
+  void printRatios(FILE *f = stdout) const;
+  String getRatios() const;
 };
