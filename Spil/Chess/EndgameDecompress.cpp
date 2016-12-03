@@ -40,7 +40,7 @@ public:
     m_gate.signal();
     return result;
   }
-  void incrCount(size_t n) {
+  void incrCount(UINT64 n) {
     if(isInterrupted()) {
       throw InterruptedException();
     }

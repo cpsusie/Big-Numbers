@@ -50,7 +50,7 @@ static const TCHAR *WINNERPOSSTR    = _T("Winnerpositions");
 #define FILLER(l) spaceString(l,_T(' ')).cstr()
 
 static String wbHeader1(const TCHAR *title, int fieldWidth) {
-  const int titleWidth = WBWIDTH(fieldWidth);
+  const UINT titleWidth = WBWIDTH(fieldWidth);
   String result = title;
   while (result.length() < titleWidth) {
     result += _T('-');

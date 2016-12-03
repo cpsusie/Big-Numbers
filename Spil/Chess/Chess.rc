@@ -53,13 +53,12 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
     "LANGUAGE 9, 1\r\n"
-    "#include ""res\\TestWinTools.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""res\\chess.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
     "#include ""afxres.rc""      // Standard components\r\n"
     "#if !defined(_AFXDLL)\r\n"
     "#include ""afxribbon.rc""   // MFC ribbon and control bar resources\r\n"
     "#endif\r\n"
-    "#endif\r\n"
-    "#include <mfcutil.rc>\0"
+    "#endif\r\0"
 END
 
 1 TEXTINCLUDE 
@@ -452,7 +451,6 @@ BEGIN
     DEFPUSHBUTTON   "{OK}",IDOK,83,162,50,13
     PUSHBUTTON      "{Cancel}",IDCANCEL,137,162,50,13
 END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -2026,7 +2024,7 @@ LANGUAGE 9, 1
 #include "afxribbon.rc"   // MFC ribbon and control bar resources
 #endif
 #endif
-#include <mfcutil/mfcutil.rc>
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

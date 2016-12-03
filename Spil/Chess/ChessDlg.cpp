@@ -300,7 +300,7 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_MESSAGE(ID_MSG_TRACEWINDOW_CHANGED         , OnMsgTraceWindowChanged          )
   ON_MESSAGE(ID_MSG_SHOW_SELECTED_MOVE          , OnMsgShowSelectedHistoryMove     )
   ON_MESSAGE(ID_MSG_REMOTESTATE_CHANGED         , OnMsgRemoteStateChanged          )
-    END_MESSAGE_MAP()
+END_MESSAGE_MAP()
 
 HCURSOR CChessDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;

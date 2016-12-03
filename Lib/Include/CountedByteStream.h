@@ -4,7 +4,7 @@
 
 class ByteCounter {
 public:
-  virtual void incrCount(size_t n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
+  virtual void incrCount(UINT64 n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
   virtual UINT getMaxChunkSize() const {
     return 500000;
   }
@@ -12,14 +12,14 @@ public:
 
 class CountFileOffset : public ByteCounter {
 private:
-  size_t m_counter;
+  UINT64 m_counter;
 public:
   CountFileOffset() : m_counter(0) {
   }
-  void incrCount(size_t n) {
+  void incrCount(UINT64 n) {
     m_counter += n;
   }
-  inline size_t getByteOffset() const {
+  inline UINT64 getByteOffset() const {
     return m_counter;
   }
 };

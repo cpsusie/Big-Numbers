@@ -19,19 +19,20 @@ BOOL CChessApp::InitInstance() {
 
 #pragma warning(disable : 4101)
 
-/*
-  GameKey key;
-  int size = sizeof(Game);
-  size = sizeof(key);
-  size = sizeof(key.d);
-  size = sizeof(key.m_u);
-  size = sizeof(AttackInfo);
-  size = sizeof(AttackDirectionInfo);
-  size = sizeof(FieldAttacks);
-  size = sizeof(CChessDlg);
-  size = sizeof(PlayerState);
-  size = sizeof(PlayerStateToPush);
-*/
+  INITCOMMONCONTROLSEX InitCtrls;
+  InitCtrls.dwSize = sizeof(InitCtrls);
+  // Set this to include all the common control classes you want to use
+  // in your application.
+  InitCtrls.dwICC = ICC_WIN95_CLASSES;
+  InitCommonControlsEx(&InitCtrls);
+
+  CWinApp::InitInstance();
+
+  AfxEnableControlContainer();
+
+  // Activate "Windows Native" visual manager for enabling themes in MFC controls
+  CMFCVisualManager::SetDefaultManager(RUNTIME_CLASS(CMFCVisualManagerWindows));
+
   TCHAR **argv = __targv + 1;
 
   try {

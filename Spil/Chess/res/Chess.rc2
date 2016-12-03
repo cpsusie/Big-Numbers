@@ -16,6 +16,8 @@
 
 #include "VersionNo.h"
 
+#include <mfcutil/mfcutil.rc>
+
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION FILEVER
  PRODUCTVERSION PRODVER
