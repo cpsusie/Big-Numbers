@@ -6,7 +6,7 @@
 
 #ifdef _DEBUG
 
-EndGamePosIndex PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
+EndGamePosIndex PackedIndexedMap::getCheckedIndex(EndGameKey key) const {
   const EndGamePosIndex result = m_keydef.keyToIndex(key);
   if(result >= m_indexSize) {
     const EndGamePosIndex ii = m_keydef.keyToIndex(key);
@@ -26,7 +26,7 @@ EndGamePosIndex PackedIndexedMap::getCheckedIndex(const EndGameKey &key) const {
 
 #endif
 
-void PackedIndexedMap::rethrowException(Exception &e, const EndGameKey &key) const {
+void PackedIndexedMap::rethrowException(Exception &e, EndGameKey key) const {
   throwException(_T("%s. key:[%s], index:%s, size:%s\n"), e.what()
                 ,key.toString(m_keydef).cstr()
                 ,format1000(m_keydef.keyToIndex(key)).cstr()
@@ -102,11 +102,11 @@ int PackedIndexedMap::findBitsPerItem(UINT maxPlies) { // static
   return l;
 }
 
-EndGamePositionStatus PackedIndexedMap::getPositionStatus(const EndGameKey &key) const {
+EndGamePositionStatus PackedIndexedMap::getPositionStatus(EndGameKey key) const {
   return (EndGamePositionStatus)(GETELEMENT(key) & 3);
 }
 
-EndGameResult PackedIndexedMap::getPositionResult(const EndGameKey &key) const {
+EndGameResult PackedIndexedMap::getPositionResult(EndGameKey key) const {
   if(!m_getResultEnabled) {
     throwException(_T("%s:Unsupported operation. Index initialized with enableGetResult=false")
                   ,__TFUNCTION__);

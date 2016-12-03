@@ -129,49 +129,49 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderDebug|Win32'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderDebug|x64'">
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;C:\mytools2015\Spil\Chess;C:\mytools2015\Test\Compress;C:\mytools2015\Spil\ChessLib\EndGameKeyDefinition.Old;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -455,6 +455,10 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Test\Compress\AdaptiveHuffmanTree.cpp" />
+    <ClCompile Include="..\..\Test\Compress\ArithmeticCoder.cpp" />
+    <ClCompile Include="..\..\Test\Compress\Compressor.cpp" />
+    <ClCompile Include="..\..\Test\Compress\ZLibCompressor.cpp" />
     <ClCompile Include="..\Chess\BackMoveGenerator.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBBK.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBK.cpp" />
@@ -664,12 +668,14 @@
     <ClCompile Include="..\Chess\PositionSignature.cpp" />
     <ClCompile Include="..\Chess\RemoteEndGameSubTablebase.cpp" />
     <ClCompile Include="..\Chess\SubTablebase.cpp" />
+    <ClCompile Include="..\Chess\TablebaseConversion.cpp" />
     <ClCompile Include="..\Chess\UpdateBishopMove.cpp" />
     <ClCompile Include="..\Chess\UpdateKingMove.cpp" />
     <ClCompile Include="..\Chess\UpdateKnightMove.cpp" />
     <ClCompile Include="..\Chess\UpdatePawnMove.cpp" />
     <ClCompile Include="..\Chess\UpdateQueenMove.cpp" />
     <ClCompile Include="..\Chess\UpdateRookMove.cpp" />
+    <ClCompile Include="IndexedMapCompressNew.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -700,6 +706,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Test\Compress\AdaptiveHuffmanTree.h" />
+    <ClInclude Include="..\..\Test\Compress\ArithmeticCoder.h" />
+    <ClInclude Include="..\..\Test\Compress\Compressor.h" />
+    <ClInclude Include="..\..\Test\Compress\ZLibCompressor.h" />
     <ClInclude Include="..\Chess\EndGame3Men.h" />
     <ClInclude Include="..\Chess\EndGame4MenNoPawns.h" />
     <ClInclude Include="..\Chess\EndGame4MenWithPawns.h" />
@@ -717,6 +727,8 @@
     <ClInclude Include="..\chess\IndexedMap.h" />
     <ClInclude Include="..\chess\LDA.H" />
     <ClInclude Include="..\chess\Resource.h" />
+    <ClInclude Include="BitSetCompression.h" />
+    <ClInclude Include="PackedArrayCompression.h" />
     <ClInclude Include="stdAfx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

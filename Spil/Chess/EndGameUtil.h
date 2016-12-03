@@ -351,10 +351,6 @@ public:
 
 #ifdef TABLEBASE_BUILDER
 
-String secondsToString(double msec, bool showMilliSeconds=true);
-
-#define TESTSECONDS(d) _tprintf(_T("secondsToString(%lf):%s\n"), (double)(d), secondsToString(d).cstr())
-
 typedef Iterator<EndGameKey>   EndGameKeyIterator;
 
 class EndGameManualPositions {

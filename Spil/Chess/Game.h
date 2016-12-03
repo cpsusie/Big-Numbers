@@ -469,10 +469,10 @@ private:
   friend class GameKey;
   friend class EndGameKeyDefinition;
   static void invalidArgument(const String &str);
+public:
   void add(PieceKey pk) {
     m_pieceTypes[GET_PLAYER_FROMKEY(pk)].add(GET_TYPE_FROMKEY(pk));
   }
-public:
   PositionSignature() {}
   PositionSignature(const String &str);
   PositionSignature swapPlayers() const;
@@ -1549,6 +1549,8 @@ public:
     return getStartPosition().d.m_playerInTurn == BLACKPLAYER;
   }
 };
+
+String secondsToString(double msec, bool showMilliSeconds=true);
 
 #define KINGSADJACENT(wkPos,bkPos) (Game::getKingDistance(wkPos,bkPos) <= 1)
 

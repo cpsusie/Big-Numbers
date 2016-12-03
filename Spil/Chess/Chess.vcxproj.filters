@@ -877,6 +877,9 @@
     <ClCompile Include="FindKnightRoute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TablebaseConversion.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">

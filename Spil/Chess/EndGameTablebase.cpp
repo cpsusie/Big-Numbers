@@ -2184,7 +2184,6 @@ CheckHeader:
   if(!verboseWasStarted) {
     stopVerboseTrigger();
   }
-
   return subTablebasesOk && (inconsistentPositionCount == 0) && headerOk;
 }
 
@@ -2275,8 +2274,8 @@ String EndGameTablebase::save(const String &fileName, bool convert) const {
 }
 
 void EndGameTablebase::saveNew(ByteOutputStream &s) const {
-  save(s);
-//  throwException(_T("%s:saveNew:Not supported"), getName().cstr());
+//  save(s);
+  throwException(_T("%s:saveNew:Not supported"), getName().cstr());
 //  getTablebaseInfoNew().save(s);
 //  m_positionIndex.save(s);
 }
@@ -2309,93 +2308,10 @@ String EndGameTablebase::compress(bool convert) {
   }
 }
 
-/*
-TablebaseInfoNew EndGameTablebase::getTablebaseInfoNew() const {
-  TablebaseInfoNew infoNew(m_info);
-  infoNew.m_maxPlies = findMaxPlies();
-  infoNew.m_indexCapacity = m_positionIndex.size();
-  if(infoNew.m_consistencyChecked) {
-    infoNew.m_consistencyCheckedTime = getFileTime(ALLTABLEBASE);
-  }
-
-  verbose(_T("\n%-5s %s ConsistentChecked:%s\n")
-         ,getName().cstr()
-         ,infoNew.toString(TBIFORMAT_PRINT_COLUMNS).cstr()
-         ,infoNew.m_consistencyChecked ? Timestamp(infoNew.m_consistencyCheckedTime).toString().cstr() : _T("---")
-         );
-  return infoNew;
-}
-*/
-
-void EndGameTablebase::compressNew(ByteOutputStream &s) {
-  compress(s);
-//  throwException(_T("%s:compressNew:Not supported"), getName().cstr());
-//  getTablebaseInfoNew().save(s);
-//  m_positionIndex.saveCompressed(s);
-}
-
 void EndGameTablebase::compress(ByteOutputStream &s) {
   m_info.m_indexCapacity = m_positionIndex.size();
   m_info.save(s);
   m_positionIndex.saveCompressed(s, m_info);
-}
-
-void EndGameTablebase::convert() {
-  String /*f1Src,f1Dst, f2Src,f2Dst, f3Src,f3Dst,*/ f4Src,f4Dst ,/* f5Src,f5Dst,*/ f6Src,f6Dst;
-  try {
-
-/*
-    f1Src = loadAllForwardPositions();
-    f1Dst = saveAllForwardPositions(true);
-    unload();
-    f2Src = loadAllRetroPositions();
-    f2Dst = saveAllRetroPositions(true);
-    unload();
-
-    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
-    f3Src = load();
-    f3Dst = save(true);
-*/
-
-    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
-    load();
-    f4Src = getFileName(COMPRESSEDTABLEBASE);
-    f4Dst = compress(true);
-    unload();
-
-/*
-    EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
-    f5Src = load();
-    f5Dst = save(true);
-*/
-    EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
-    load();
-    f6Src = getFileName(COMPRESSEDTABLEBASE);
-    f6Dst = compress(true);
-    unload();
-
-    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
-
-//    unlink(f1Src);    rename(f1Dst, f1Src);
-//    unlink(f2Src);    rename(f2Dst, f2Src);
-//    unlink(f3Src);    rename(f3Dst, f3Src);
-    unlink(f4Src);    rename(f4Dst, f4Src);
-//    unlink(f5Src);    rename(f5Dst, f5Src);
-    unlink(f6Src);    rename(f6Dst, f6Src);
-  } catch(...) {
-    unload();
-
-//    if(f1Dst != _T("")) unlink(f1Dst);
-//    if(f2Dst != _T("")) unlink(f2Dst);
-
-//    if(f3Dst != _T("")) unlink(f3Dst);
-    if(f4Dst != _T("")) unlink(f4Dst);
-
-//    if(f5Dst != _T("")) unlink(f5Dst);
-    if(f6Dst != _T("")) unlink(f6Dst);
-    EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
-    throw;
-  }
 }
 
 MaxVariantCount EndGameTablebase::findMaxPlies() const {

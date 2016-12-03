@@ -216,7 +216,6 @@ public:
   AbstractComparator *clone() const {
     return new MoveComparator(m_playerInTurn);
   }
-
 };
 
 int MoveComparator::compare(const MoveWithResult &m1, const MoveWithResult &m2) {
@@ -336,7 +335,6 @@ MoveWithResult MoveResultArray::selectBestMove(int defendStrength) const {
   }
 }
 
-
 String MoveResultArray::toString(const Game &game, MoveStringFormat mf, bool depthInPlies) {
   sort();
   StringArray msa;
@@ -376,29 +374,6 @@ void StreamProgress::handleTimeout(Timer &timer) {
 }
 
 #ifdef TABLEBASE_BUILDER
-
-String secondsToString(double msec, bool showMilliSeconds) {
-  if(msec < 60000) {
-    if(showMilliSeconds) {
-      return format(_T("%.3lf sec."), msec / 1000.0);
-    } else {
-      return format(_T("%.0lf sec."), msec / 1000.0);
-    }
-  } else {
-    const int seconds = (int)(msec / 1000);
-    if(seconds < 3600) {
-      return format(_T("%02d:%02d min."), seconds/60, seconds%60);
-    } else if(seconds < 24*3600) {
-      return format(_T("%02d:%02d:%02d"), seconds/3600, (seconds/60) % 60, seconds % 60);
-    } else {
-      const int days    =  seconds / (3600*24);
-      const int hours   = (seconds / 3600) % 24;
-      const int minutes = (seconds / (24*60)) % 60;
-      const int sec     = seconds % 60;
-      return format(_T("%d days, %02d:%02d:%02d hours"), days, hours, minutes, sec);
-    }
-  }
-}
 
 IntervalChecker::IntervalChecker(const TCHAR *name) : m_name(name) {
   m_minValue = -1;

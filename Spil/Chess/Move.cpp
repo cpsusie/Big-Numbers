@@ -169,7 +169,6 @@ String Move::toStringLongFormat() const {
   }
 }
 
-
 String Move::toStringDebugFormat() const {
   switch(m_type) {
   case NOMOVE       :
@@ -343,11 +342,13 @@ String ExecutableMove::toStringShortFormat() const {
         return format(_T("%cx%s%s")
                      ,getColumnName(m_from)
                      ,getFieldName(m_to)
-                     ,getCheckString());
+                     ,getCheckString()
+                     );
       } else {
         return format(_T("%s%s")
                      ,getFieldName(m_to)
-                     ,getCheckString());
+                     ,getCheckString()
+                     );
       }
     } else {
       if(m_capturedPieceType != NoPiece) {
@@ -355,13 +356,15 @@ String ExecutableMove::toStringShortFormat() const {
                      ,getPieceTypeShortName(m_pieceType).cstr()
                      ,m_uniqueString.cstr()
                      ,getFieldName(m_to)
-                     ,getCheckString());
+                     ,getCheckString()
+                     );
       } else {
         return format(_T("%s%s%s%s")
                      ,getPieceTypeShortName(m_pieceType).cstr()
                      ,m_uniqueString.cstr()
                      ,getFieldName(m_to)
-                     ,getCheckString());
+                     ,getCheckString()
+                     );
       }
     }
 
@@ -371,24 +374,26 @@ String ExecutableMove::toStringShortFormat() const {
                    ,getColumnName(m_from)
                    ,getFieldName(m_to)
                    ,getPieceTypeShortName(getPromoteTo()).cstr()
-                   ,getCheckString());
+                   ,getCheckString()
+                   );
     } else {
       return format(_T("%s%s%s")
                    ,getFieldName(m_to)
                    ,getPieceTypeShortName(getPromoteTo()).cstr()
-                   ,getCheckString());
+                   ,getCheckString()
+                   );
     }
 
   case ENPASSANT    :
     return format(_T("%cx%s e.p.%s")
-                  ,getColumnName(m_from)
-                  ,getFieldName(m_to)
-                  ,getCheckString()
+                 ,getColumnName(m_from)
+                 ,getFieldName(m_to)
+                 ,getCheckString()
                  );
 
   case SHORTCASTLING:
   case LONGCASTLING :
-    return format(_T("%s%s"),getCastleString(m_type).cstr(), getCheckString());
+    return format(_T("%s%s"), getCastleString(m_type).cstr(), getCheckString());
 
   default:
     return format(_T("Unknown moveType (=%d)"),m_type);
@@ -424,7 +429,7 @@ String ExecutableMove::toStringLongFormat() const {
 
   case SHORTCASTLING:
   case LONGCASTLING :
-    return format(_T("%s%s"),getCastleString(m_type).cstr(), getCheckString());
+    return format(_T("%s%s"), getCastleString(m_type).cstr(), getCheckString());
 
   default:
     return format(_T("Unknown moveType (=%d)"),m_type);
@@ -443,7 +448,7 @@ String ExecutableMove::toStringDebugFormat() const {
                   ,getFieldName(m_from)
                   ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
                   ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():_T(""))
-                                ,getFieldName(m_to)).cstr()
+                                    ,getFieldName(m_to)).cstr()
                   ,getCheckString()
                   ,m_dirIndex
                   ,m_moveIndex
@@ -455,7 +460,7 @@ String ExecutableMove::toStringDebugFormat() const {
                   ,getFieldName(m_from)
                   ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
                   ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():_T(""))
-                                ,getFieldName(m_to)).cstr()
+                                    ,getFieldName(m_to)).cstr()
                   ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]).cstr()
                   ,getCheckString()
                   ,m_dirIndex

@@ -21,7 +21,7 @@ public:
 };
 
 EndGameGlobalProperties::EndGameGlobalProperties() {
-  m_dbPath = _T("c:\\temp");
+  m_dbPath = _T("c:\\temp\\ChessEndGames");
   m_metric = DEPTH_TO_CONVERSION;
 }
 
@@ -122,6 +122,71 @@ int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex
   }
   return r-1;
 }
+
+#ifdef __NEVER__
+
+// this is an alternative way to calculate the offset in the tables generated
+// by INIT_RANGETABLE3EQUAL. But it's much slower than tablelookup, at least
+// in C-code. Maybe some assemlber-route would do it faster. But who cares
+
+static int findRange3Equal(EndGamePosIndex index, EndGamePosIndex m) {
+  m /= 2;
+  if(index < m) return 0;
+  const double c = 3.0 * index/m;
+  const double u = root(c - sqrt(c*c-1.0/27), 3);
+  int          r = (int)((3*u*(u-1) + 1)/3/u)+1;
+  while (GET_RANGESTART3EQUAL(m, r) > index) {
+    r--;
+  }
+  return r;
+}
+
+static void test2Equal() {
+  EndGamePosIndex testTable[60];
+  EndGamePosIndex maxadr = 30000;
+  INIT_RANGETABLE3EQUAL(testTable,maxadr)
+  DUMP_RANGETABLE(testTable)
+  EndGamePosIndex firstIndex = 0;
+  EndGamePosIndex lastIndex  = LASTVALUE(testTable);
+goto StartTimeMeasure;
+  bool ok = true;
+  for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
+    const int       rOld   = findTableRange(testTable, ARRAYSIZE(testTable), i);
+    const int       rNew   = findRange3Equal(i, maxadr);
+    if(rNew != rOld) {
+      printf("findTableRange(%6llu):%4d, findRange3Equal(%6llu, %4llu):%4d\n", i, rOld, i, maxadr, rNew);
+      const int rNew   = findRange3Equal(i, maxadr);
+      ok = false;
+    }
+    if (i % 5000000 == 0) {
+      printf("%.2lf%%\r", PERCENT(i,lastIndex));
+    }
+  }
+  printf(ok?"All ok!\n" : "Errors found\n");
+
+  double startTime = getProcessTime();
+  for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
+    const int       rOld   = findTableRange(testTable, ARRAYSIZE(testTable), i);
+    if (i % 5000000 == 0) {
+      _tprintf(_T("%11s : %3d ... %.2lf%% \r"), format1000(i).cstr(), rOld, PERCENT(i,lastIndex));
+    }
+  }
+  const double findTableRangeTime = getProcessTime() - startTime;
+  printf("Time(findTableRange):%.4lf sec\n", findTableRangeTime/1000000);
+
+  startTime = getProcessTime();
+  for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
+    const int       rNew   = findRange3Equal(i, maxadr);
+    if (i % 5000000 == 0) {
+      _tprintf(_T("%11s : %3d ... %.2lf%% \r"), format1000(i).cstr(), rNew, PERCENT(i,lastIndex));
+    }
+  }
+  const double findRange3EqualTime = getProcessTime() - startTime;
+  printf("Time(findRange3Equal):%.4lf sec\n", findRange3EqualTime/1000000);
+
+}
+
+#endif // __NEVER__
 
 EndGameKeyDefinition::EndGameKeyDefinition(PieceKey pk2) : m_totalPieceCount(3) {
   init(pk2);
@@ -237,30 +302,6 @@ int EndGameKeyDefinition::findKeyIndexByCount(PieceKey pieceKey, int n) const {
                                ,getPieceTypeNameEnglish(GET_TYPE_FROMKEY(pieceKey))
                                ,n);
   return -1;
-}
-
-String PieceIndexMappings::toString() const {
-  String result;
-  for(int i = 0; i < ARRAYSIZE(m_pieceIndexMap); i++) {
-    unsigned char pi = m_pieceIndexMap[i];
-    if(pi == 0xff) {
-      break;
-    }
-    result += format(_T("pieceIndexMap[%d]=%d\n"),i,pi);
-  }
-  forEachPlayer(p) {
-    result += format(_T("ReverseMap(%s)"), getPlayerNameEnglish(p));
-    TCHAR delimiter = _T(':');
-    for(int i = 0; i < ARRAYSIZE(m_pieceReverseIndexMap[p]); i++, delimiter=_T(',')) {
-      unsigned char ri = m_pieceReverseIndexMap[p][i];
-      if(ri == 0xff) {
-        break;
-      }
-      result += format(_T("%c%d"), delimiter, ri);
-    }
-    result += _T("\n");
-  }
-  return result;
 }
 
 int EndGameKeyDefinition::getPieceCount(Player player, PieceType type) const {
@@ -549,7 +590,7 @@ SymmetricTransformation EndGameKeyDefinition::getPlayTransformation(const Game &
   return 0;
 }
 
-void EndGameKeyDefinition::invalidSquareError(const EndGameKey &key) { // static
+void EndGameKeyDefinition::invalidSquareError(EndGameKey key) { // static
   throwException(_T("Position %s not contained in any square")
                 ,getFieldName(key.getWhiteKingPosition()));
 }

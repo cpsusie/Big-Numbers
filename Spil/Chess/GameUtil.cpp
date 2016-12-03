@@ -745,6 +745,30 @@ static String _getFieldName(int position) { // used by getPositionArrayToString,
   return format(_T("%c%c"), getColumnName(position), getRowName(position));
 }
 
+String secondsToString(double msec, bool showMilliSeconds) {
+  if(msec < 60000) {
+    if(showMilliSeconds) {
+      return format(_T("%.3lf sec."), msec / 1000.0);
+    } else {
+      return format(_T("%.0lf sec."), msec / 1000.0);
+    }
+  } else {
+    const int seconds = (int)(msec / 1000);
+    if(seconds < 3600) {
+      return format(_T("%02d:%02d min."), seconds/60, seconds%60);
+    } else if(seconds < 24*3600) {
+      return format(_T("%02d:%02d:%02d"), seconds/3600, (seconds/60) % 60, seconds % 60);
+    } else {
+      const int days    =  seconds / (3600*24);
+      const int hours   = (seconds / 3600) % 24;
+      const int minutes = (seconds / (24*60)) % 60;
+      const int sec     = seconds % 60;
+      return format(_T("%d days, %02d:%02d:%02d hours"), days, hours, minutes, sec);
+    }
+  }
+}
+
+
 String getPositionArrayToString(PositionArray positions) {
   if(positions == NULL) {
     return _T("");

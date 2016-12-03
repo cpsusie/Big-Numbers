@@ -30,13 +30,6 @@ public:
 #define PAWN3_POSCOUNT 46
 #define PAWN4_POSCOUNT 45
 
-class PieceIndexMappings {
-public:
-  unsigned char m_pieceIndexMap[MAX_ENDGAME_PIECECOUNT];           // maps (pieceIndex)    -> cindex. There are max 6 pieces on the board
-  unsigned char m_pieceReverseIndexMap[2][MAX_ENDGAME_PIECECOUNT]; // maps (player,cindex) -> pieceIndex
-  String toString() const;
-};
-
 class EndGameTablebase;
 
 typedef enum {
@@ -108,7 +101,7 @@ protected:
 
   PositionSignature  createPositionSignature() const;
 
-  static void invalidSquareError(const EndGameKey &key);
+  static void invalidSquareError(EndGameKey key);
   static void sym8DecisionSwitchError(int line);
   static void pawnSymSwitchError(int line);
   void        pieceTypeError(int index, const String &msg) const;
@@ -193,7 +186,7 @@ public:
   int        getPieceCount(PieceType type) const;
   int        findKeyIndexByCount(PieceKey pieceKey, int n) const;
 
-  PieceKey   getPieceKey(        UINT i) const {
+  inline PieceKey   getPieceKey(        UINT i) const {
 #ifdef _DEBUG
     if(i >= m_totalPieceCount) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index %d out of range. totalPieceCount=%d"), i, m_totalPieceCount);
@@ -318,6 +311,15 @@ extern "C" {
   int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex index);
   int findRange2Equal(EndGamePosIndex f, EndGamePosIndex index);
 };
+
+inline BYTE getBitCount(UINT n, BYTE maxBits=8) {
+  BYTE count = 0;
+  for(UINT m = 0; (count <= 32) && (m < n); count++, m = (m << 1) | 1);
+  if(count > maxBits) {
+    throwException(_T("%s:n=%lu. Needs %d bits to encode. Max=%d"), __TFUNCTION__, n, count, maxBits);
+  }
+  return count;
+}
 
 class EndGameKeyDefinitionDupletsNotAllowed : public EndGameKeyDefinition {
 private:

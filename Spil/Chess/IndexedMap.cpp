@@ -29,20 +29,11 @@
     }                                                                                                 \
   }
 
-static int getBitCount(UINT n) {
-  int c = 0;
-  for(UINT m = 0; (c <= 32) && (m < n); c++, m = (m << 1) | 1);
-  if(c > 8) {
-    throwException(_T("%s:n=%lu. Needs %d bits to encode. Max=8"), __TFUNCTION__, n, c);
-  }
-  return c;
-}
-
 #ifdef TABLEBASE_BUILDER
 
 #ifdef _DEBUG
 
-EndGamePosIndex IndexedMap::getCheckedIndex(const EndGameKey &key) const {
+EndGamePosIndex IndexedMap::getCheckedIndex(EndGameKey key) const {
   const EndGamePosIndex result = m_keydef.keyToIndex(key);
   if(result >= m_indexSize) {
     EndGamePosIndex ii = m_keydef.keyToIndex(key);
@@ -60,7 +51,7 @@ EndGamePosIndex IndexedMap::getCheckedIndex(const EndGameKey &key) const {
 
 #endif // _DEBUG
 
-void IndexedMap::rethrowException(Exception &e, const EndGameKey &key) const {
+void IndexedMap::rethrowException(Exception &e, EndGameKey key) const {
   throwException(_T("%s. key:[%s], index:%s, size:%s\n")
                 ,e.what()
                 ,key.toString(m_keydef).cstr()
@@ -81,7 +72,7 @@ void IndexedMap::allocate() {
   add(0,EndGameResult(), (size_t)m_indexSize);
 }
 
-const EndGameResult &IndexedMap::get(const EndGameKey &key) const {
+const EndGameResult &IndexedMap::get(EndGameKey key) const {
   try {
     if(size() == 0) {
       throwException(_T("Index not loaded"));
@@ -93,7 +84,7 @@ const EndGameResult &IndexedMap::get(const EndGameKey &key) const {
   }
 }
 
-EndGameResult &IndexedMap::get(const EndGameKey &key) {
+EndGameResult &IndexedMap::get(EndGameKey key) {
   try {
     if(size() == 0) {
       allocate();
@@ -105,7 +96,7 @@ EndGameResult &IndexedMap::get(const EndGameKey &key) {
   }
 }
 
-bool IndexedMap::remove(const EndGameKey &key) {
+bool IndexedMap::remove(EndGameKey key) {
   if(size() == 0) {
     return false;
   }
@@ -258,8 +249,8 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
                                  ,info.m_maxPlies.toString().cstr());
   }
 
-  const int maxMoves              = PLIESTOMOVES(maxPly);
-  const unsigned char bitsPerMove = getBitCount(maxMoves);
+  const int  maxMoves    = PLIESTOMOVES(maxPly);
+  const BYTE bitsPerMove = getBitCount(maxMoves);
 
   BitOutputStream bs(s);
 
@@ -685,9 +676,9 @@ void IndexedMap::clear() {
 
 class DecompressedHeader : public TablebaseInfo {
 public:
-  unsigned char m_bitsPerEntry;
-  UINT          m_bitSetIndexOffset;
-  UINT          m_arrayStartOffset;
+  BYTE m_bitsPerEntry;
+  UINT m_bitSetIndexOffset;
+  UINT m_arrayStartOffset;
 
   DecompressedHeader(const TablebaseInfo &info);
   DecompressedHeader(const String        &fileName);
@@ -722,11 +713,11 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
                                  ,format1000(indexSize).cstr());
   }
 
-  const unsigned char canWinFlags  = info.getCanWinFlags();
-  const int           maxPly       = info.m_maxPlies.getMax();
-  const int           maxMoves     = PLIESTOMOVES(maxPly);
-  const unsigned char bitsPerMove  = getBitCount(maxMoves);
-  const unsigned char bitsPerEntry = bitsPerMove+((canWinFlags == BOTHCANWIN)?1:0);
+  const BYTE  canWinFlags  = info.getCanWinFlags();
+  const int   maxPly       = info.m_maxPlies.getMax();
+  const int   maxMoves     = PLIESTOMOVES(maxPly);
+  const BYTE  bitsPerMove  = getBitCount(maxMoves);
+  const BYTE  bitsPerEntry = bitsPerMove+((canWinFlags == BOTHCANWIN)?1:0);
   // maybe need a bit to white/black win, which will be the first bit for every entry
 
   BitInputStream bs(s);
@@ -877,7 +868,7 @@ void IndexedMap::load() {
 //  verbose(_T("%s"), m_positionIndex->getInfoString().cstr());
 }
 
-EndGameResult IndexedMap::get(const EndGameKey &key) const {
+EndGameResult IndexedMap::get(EndGameKey key) const {
   if(!isAllocated()) {
     throwException(_T("Index not loaded"));
   }

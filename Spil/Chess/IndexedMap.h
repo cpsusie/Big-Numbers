@@ -28,13 +28,12 @@ public:
 
 class IndexedMap : public CompactArray<EndGameResult> {
 private:
-
   const EndGameKeyDefinition &m_keydef;
   const EndGamePosIndex       m_indexSize; // keydef.getIndexSize()
   void allocate();
-  void rethrowException(Exception &e, const EndGameKey &key) const;
+  void rethrowException(Exception &e, EndGameKey key) const;
 #ifdef _DEBUG
-  EndGamePosIndex getCheckedIndex(const EndGameKey &key) const;
+  EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
 
 public:
@@ -44,13 +43,13 @@ public:
     return m_keydef;
   }
 
-  const EndGameResult &get(const EndGameKey &key) const;
+  const EndGameResult &get(EndGameKey key) const;
   bool isAllocated() const {
     return size() > 0;
   }
 
-  EndGameResult &get(const EndGameKey &key);
-  bool remove(const EndGameKey &key);
+  EndGameResult &get(EndGameKey key);
+  bool remove(EndGameKey key);
 
   IndexedMap &clearAllVisited();
   IndexedMap &clearAllChanged();
@@ -69,7 +68,10 @@ public:
   }
 
   void convertIndex();
-  void saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const;
+  void saveCompressed(   ByteOutputStream &s, const TablebaseInfo &info) const;
+#ifdef TABLEBASE_BUILDER
+  void saveCompressedNew(ByteOutputStream &s, const TablebaseInfo &info) const;
+#endif
 
   EndGameKeyIterator   getKeyIterator();
   EndGameEntryIterator getEntryIterator();                                // All existing entries
@@ -97,9 +99,9 @@ private:
   const EndGamePosIndex       m_indexSize;                                // m_keydef.getIndexSize()
   const bool                  m_getResultEnabled;
   PackedArray                 m_statusArray;
-  void rethrowException(Exception &e, const EndGameKey &key) const;
+  void rethrowException(Exception &e, EndGameKey key) const;
 #ifdef _DEBUG
-  EndGamePosIndex getCheckedIndex(const EndGameKey &key) const;
+  EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
   static int findBitsPerItem(UINT maxPlies);
 public:
@@ -110,8 +112,8 @@ public:
     return m_keydef;
   }
 
-  EndGamePositionStatus getPositionStatus(const EndGameKey &key) const;
-  EndGameResult         getPositionResult(const EndGameKey &key) const;
+  EndGamePositionStatus getPositionStatus(EndGameKey key) const;
+  EndGameResult         getPositionResult(EndGameKey key) const;
   bool isAllocated() const {
     return m_statusArray.size() > 0;
   }
@@ -125,7 +127,7 @@ public:
 class IndexedMap {
 private:
   const EndGameKeyDefinition &m_keydef;
-  unsigned char               m_canWinFlags;
+  BYTE                        m_canWinFlags;
   BitSetFileIndex            *m_positionIndex;
   PackedFileArray            *m_infoArray;
 
@@ -134,7 +136,7 @@ public:
   IndexedMap(const IndexedMap &src);                                      // not defined
   IndexedMap &operator=(const IndexedMap &src);                           // not defined
   ~IndexedMap();
-  EndGameResult get(const EndGameKey &key) const;
+  EndGameResult get(EndGameKey key) const;
   bool isAllocated() const {
     return m_positionIndex != NULL;
   }
