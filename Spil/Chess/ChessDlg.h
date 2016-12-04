@@ -7,7 +7,7 @@
 #include "MoveFinderThread.h"
 #include "StopWatch.h"
 #include "TraceDlgThread.h"
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include "PieceValueDlg.h"
 
 typedef enum {

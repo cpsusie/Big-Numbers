@@ -3,7 +3,7 @@
 #include <HashMap.h>
 #include <Math/MathLib.h>
 #include <Math/BigRealMatrix.h>
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 #define MULTITHREADEDEXTREMAFINDER
 

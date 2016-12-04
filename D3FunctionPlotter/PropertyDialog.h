@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 inline void putWindowBesideMainWindow(CWnd *wnd) {
   putWindowBesideWindow(wnd, AfxGetApp()->GetMainWnd());

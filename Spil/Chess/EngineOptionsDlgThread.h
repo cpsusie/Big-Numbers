@@ -2,7 +2,7 @@
 
 #ifndef TABLEBASE_BUILDER
 
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include "Externengine.h"
 
 class MoveFinderExternEngine;

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 void PropertyContainer::notifyPropertyChanged(int id, const void *oldValue, const void *newValue) const {
   for(size_t i = 0; i < m_listeners.size(); i++) {

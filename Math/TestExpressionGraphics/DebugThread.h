@@ -2,7 +2,7 @@
 
 #include <Thread.h>
 #include <TinyBitSet.h>
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 typedef enum {
   THREAD_RUNNING           // bool*

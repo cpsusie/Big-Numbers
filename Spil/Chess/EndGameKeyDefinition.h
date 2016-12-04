@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include "EndGameKey.h"
 
 class PieceTypeWithIndex {

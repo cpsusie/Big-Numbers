@@ -4,7 +4,7 @@
 #include <Thread.h>
 #include <BitSet.h>
 #include <Date.h>
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include <NumberInterval.h>
 #include "D3Math.h"
 #include "D3DeviceFactory.h"

@@ -2,7 +2,7 @@
 
 #include <Thread.h>
 #include <SynchronizedQueue.h>
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 class CChessDlg;
 

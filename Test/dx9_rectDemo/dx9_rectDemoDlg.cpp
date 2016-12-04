@@ -3,9 +3,6 @@
 #include "dx9_rectDemoDlg.h"
 #include "afxdialogex.h"
 
-#pragma comment(lib,"d3d9.lib")
-#pragma comment(lib,"d3dx9.lib")
-
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif

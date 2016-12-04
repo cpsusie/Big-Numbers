@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 
 typedef enum {
   TREE_SELECTEDNODE            // const ExpressionNode *

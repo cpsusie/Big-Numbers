@@ -23,7 +23,8 @@
     <RootNamespace>Util</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
     <Keyword>MFCDLLProj</Keyword>
-    <ProjectName> </ProjectName>
+    <ProjectName>
+    </ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -342,7 +343,7 @@
     <ClInclude Include="..\..\Include\PragmaLib.h" />
     <ClInclude Include="..\..\Include\PriorityQueue.h" />
     <ClInclude Include="..\..\Include\ProcessTools.h" />
-    <ClInclude Include="..\..\Include\PropertyChangeListener.h" />
+    <ClInclude Include="..\..\Include\PropertyContainer.h" />
     <ClInclude Include="..\..\Include\QueueList.h" />
     <ClInclude Include="..\..\Include\Random.h" />
     <ClInclude Include="..\..\Include\Regex.h" />

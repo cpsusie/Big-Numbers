@@ -5,7 +5,7 @@
 #endif
 
 #include <Thread.h>
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include <Regex.h>
 #include "DFARegex.h"
 

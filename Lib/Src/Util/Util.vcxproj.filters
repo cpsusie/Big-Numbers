@@ -783,9 +783,6 @@
     <ClInclude Include="..\..\Include\ProcessTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\PropertyChangeListener.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\QueueList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -920,6 +917,9 @@
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PropertyContainer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

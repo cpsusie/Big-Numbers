@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PropertyChangeListener.h>
+#include <PropertyContainer.h>
 #include "AnimatedImage.h"
 
 class OffboardPiece : public CRect {
