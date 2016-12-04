@@ -62,6 +62,10 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BigReal", "..\Lib\Src\BigReal\BigReal.vcxproj", "{1A2B1860-57C7-4A1B-BA1D-3CA3D773446C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Compress", "Compress\compress.vcxproj", "{1C00959C-9198-494E-B810-AF8210AE78AC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0280A64-5E92-45BB-95F9-561171595A26} = {D0280A64-5E92-45BB-95F9-561171595A26}
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
