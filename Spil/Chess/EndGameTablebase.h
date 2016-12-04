@@ -183,6 +183,9 @@ private:
   mutable CompactHashMap<SubTablebaseKey, SubTablebasePositionInfo> m_subTablebaseMap;
   mutable bool                                                      m_useRemoteSubTablebase;
   int                                                               m_loadRefCount;
+#ifndef TABLEBASE_BUILDER
+  static  Semaphore                                                 s_loadGate;
+#endif
 
   MoveResultArray getAllMoves(const GameKey &gameKey) const; // assume gameKey.positionSignature == keydef.positionSignature
 
@@ -206,7 +209,7 @@ private:
 #ifdef TABLEBASE_BUILDER
 
   PackedIndexedMap                   *m_packedIndex;
-  TablebaseInfo                     m_info;
+  TablebaseInfo                       m_info;
   bool                                m_bishopInitialField[MAX_ENDGAME_PIECECOUNT][2];
   bool                                m_pawnInitialField[MAX_ENDGAME_PIECECOUNT][8];
   // m_bishopInitialField[i][fieldColor] is true if piece[i] = Bishop

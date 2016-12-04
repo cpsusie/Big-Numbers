@@ -31,9 +31,20 @@ EndGameTablebase::EndGameTablebase(const EndGameKeyDefinition &keydef)
 EndGameTablebase::~EndGameTablebase() {
 }
 
+#ifndef TABLEBASE_BUILDER
+Semaphore EndGameTablebase::s_loadGate;
+#define BEGIN_LOADUNLOAD_CRITICAL_SECTION s_loadGate.wait()
+#define END_LOADUNLOAD_CRITICAL_SECTION   s_loadGate.signal()
+#else
+#define BEGIN_LOADUNLOAD_CRITICAL_SECTION
+#define END_LOADUNLOAD_CRITICAL_SECTION
+#endif
+
 String EndGameTablebase::load(ByteCounter *byteCounter) {
+  BEGIN_LOADUNLOAD_CRITICAL_SECTION;
   m_loadRefCount++;
   if(isLoaded()) {
+    END_LOADUNLOAD_CRITICAL_SECTION;
     return _T("");
   }
   String result;
@@ -59,14 +70,18 @@ String EndGameTablebase::load(ByteCounter *byteCounter) {
   verbose(_T("Loading %s-tablebase from %s...\n"), getName().cstr(), result.cstr());
   load(ByteInputFile(result));
 #endif
+  END_LOADUNLOAD_CRITICAL_SECTION;
   return result;
 }
 
 void EndGameTablebase::unload() {
+  BEGIN_LOADUNLOAD_CRITICAL_SECTION;
   if(--m_loadRefCount > 0)  {
+    END_LOADUNLOAD_CRITICAL_SECTION;
     return;
   }
   clear();
+  END_LOADUNLOAD_CRITICAL_SECTION;
   unloadSubTablebases();
 }
 
