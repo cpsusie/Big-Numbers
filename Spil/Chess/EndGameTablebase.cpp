@@ -89,7 +89,7 @@ void EndGameTablebase::unload() {
 
 void EndGameTablebase::decompress(ByteCounter *byteCounter) const {
   const String fileName = getFileName(COMPRESSEDTABLEBASE);
-  decompress(DecompressFilter(CountedByteInputStream(byteCounter?*byteCounter:(ByteCounter&)StreamProgress(fileName), ByteInputFile(fileName))));
+  decompress(DecompressFilter(CountedByteInputStream((byteCounter?*byteCounter:StreamProgress(fileName)), ByteInputFile(fileName))));
 }
 
 void EndGameTablebase::decompress(ByteInputStream &s) const {

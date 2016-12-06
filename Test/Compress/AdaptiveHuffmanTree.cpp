@@ -7,7 +7,7 @@
 //#define DEBUGMODULE
 
 void AdaptivHuffmanTree::compress(ResetableByteInputStream &input, ByteOutputStream &output, int quality) {
-  CountFileOffset inputCounter, outputCounter;
+  ByteCounter inputCounter, outputCounter;
 
   initialize();
   CountedByteInputStream   in(inputCounter   , input );
@@ -30,12 +30,12 @@ void AdaptivHuffmanTree::compress(ResetableByteInputStream &input, ByteOutputStr
   }
   encode(out,endOfStream);
 
-  m_rawSize        = inputCounter.getByteOffset();
-  m_compressedSize = outputCounter.getByteOffset();
+  m_rawSize        = inputCounter.getCount();
+  m_compressedSize = outputCounter.getCount();
 }
 
 void AdaptivHuffmanTree::expand(ByteInputStream &input, ByteOutputStream &output) {
-  CountFileOffset inputCounter, outputCounter;
+  ByteCounter inputCounter, outputCounter;
 
   initialize();
   CountedByteInputStream   inc(inputCounter , input );
@@ -50,8 +50,8 @@ void AdaptivHuffmanTree::expand(ByteInputStream &input, ByteOutputStream &output
     updateModel(c);
   }
 
-  m_compressedSize = inputCounter.getByteOffset();
-  m_rawSize        = outputCounter.getByteOffset();
+  m_compressedSize = inputCounter.getCount();
+  m_rawSize        = outputCounter.getCount();
 }
 
 void AdaptivHuffmanTree::addNode(int parent, int weight, bool child_is_leaf, int child) {

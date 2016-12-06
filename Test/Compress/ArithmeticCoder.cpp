@@ -9,7 +9,7 @@ ArithmeticCoder::~ArithmeticCoder() {
 }
 
 void ArithmeticCoder::compress(ResetableByteInputStream &input, ByteOutputStream &output, int quality) {
-  CountFileOffset inputCounter, outputCounter;
+  ByteCounter inputCounter, outputCounter;
 
   CountedByteOutputStream  outc(outputCounter, output);
   BitOutputStream          out(outc);
@@ -26,12 +26,12 @@ void ArithmeticCoder::compress(ResetableByteInputStream &input, ByteOutputStream
   flushEncoder(out);
   out.putBits(0,16);
 
-  m_rawSize        = inputCounter.getByteOffset();
-  m_compressedSize = outputCounter.getByteOffset();
+  m_rawSize        = inputCounter.getCount();
+  m_compressedSize = outputCounter.getCount();
 }
 
 void ArithmeticCoder::expand(ByteInputStream &input, ByteOutputStream &output) {
-  CountFileOffset          inputCounter, outputCounter;
+  ByteCounter              inputCounter, outputCounter;
   CountedByteInputStream   inc(inputCounter , input );
   BitInputStream           in(inc);
   CountedByteOutputStream  out(outputCounter, output);
@@ -52,8 +52,8 @@ void ArithmeticCoder::expand(ByteInputStream &input, ByteOutputStream &output) {
     out.putByte(c);
   }
 
-  m_compressedSize = inputCounter.getByteOffset();
-  m_rawSize        = outputCounter.getByteOffset();
+  m_compressedSize = inputCounter.getCount();
+  m_rawSize        = outputCounter.getCount();
 }
 
 void ArithmeticCoder::buildModel(ResetableByteInputStream &input, BitOutputStream &output) {

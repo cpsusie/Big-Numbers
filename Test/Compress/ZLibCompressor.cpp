@@ -4,7 +4,7 @@
 #include "ZLibCompressor.h"
 
 void ZLibCompressor::compress(ResetableByteInputStream &input, ByteOutputStream &output, int quality) {
-  CountFileOffset          outputCounter;
+  ByteCounter              outputCounter;
   CountedByteOutputStream  out(outputCounter, output);
   CompressFilter           filter(out);
   BYTE                     buffer[4096];
@@ -17,11 +17,11 @@ void ZLibCompressor::compress(ResetableByteInputStream &input, ByteOutputStream 
   }
   filter.flush();
   m_rawSize        = byteCounter;
-  m_compressedSize = outputCounter.getByteOffset();
+  m_compressedSize = outputCounter.getCount();
 }
 
 void ZLibCompressor::expand(ByteInputStream &input, ByteOutputStream &output) {
-  CountFileOffset          inputCounter;
+  ByteCounter              inputCounter;
   CountedByteInputStream   in(inputCounter, input );
   DecompressFilter         filter(in);
   BYTE                     buffer[4096];
@@ -32,6 +32,6 @@ void ZLibCompressor::expand(ByteInputStream &input, ByteOutputStream &output) {
     output.putBytes(buffer, n);
     byteCounter += n;
   }
-  m_compressedSize = inputCounter.getByteOffset();
+  m_compressedSize = inputCounter.getCount();
   m_rawSize        = byteCounter;
 }

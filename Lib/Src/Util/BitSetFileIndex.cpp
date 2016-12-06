@@ -7,7 +7,7 @@ BitSetFileIndex::BitSetFileIndex(const String &fileName, UINT64 startOffset)
 , m_f(fileName)
  {
   m_f.seek(startOffset);
-  CountFileOffset        byteCounter;
+  ByteCounter            byteCounter;
   CountedByteInputStream in(byteCounter, m_f);
 
   m_shift = in.getByte();                                         // load 1 byte:m_shift
@@ -17,7 +17,7 @@ BitSetFileIndex::BitSetFileIndex(const String &fileName, UINT64 startOffset)
   m_rangeTable.load(in);                                          // load rangeTable
   m_loadedIntervals   = new BitSet(m_rangeTable.size()+1);
   m_bitSet            = new BitSet((size_t)capacity64);           // allocate bitset. dont read it
-  m_bitsStartOffset   = startOffset + byteCounter.getByteOffset() + sizeof(capacity64); // bits begin after bitet.capacity
+  m_bitsStartOffset   = startOffset + byteCounter.getCount() + sizeof(capacity64); // bits begin after bitet.capacity
 }
 
 void BitSetIndex::save(ByteOutputStream &s) const {

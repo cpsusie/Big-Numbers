@@ -723,7 +723,6 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   BitInputStream bs(s);
 
   BitSet winnerPositionSet((size_t)indexSize);
-
   for(int index = 0; index < indexSize; index++) {
     if(bs.getBit()) {
       winnerPositionSet.add(index);
@@ -820,15 +819,15 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
 
   // save decompressed format
   ByteOutputFile          file(m_keydef.getDecompressedFileName());
-  CountFileOffset         byteCounter;
-  CountedByteOutputStream out(byteCounter, file);
+  ByteCounter             outputCounter;
+  CountedByteOutputStream out(outputCounter, file);
 
   DecompressedHeader header(info); // parts undefined. defined it below and rewrite it
 
   header.save(out);
-  header.m_bitSetIndexOffset = (UINT)byteCounter.getByteOffset();
+  header.m_bitSetIndexOffset = (UINT)outputCounter.getCount();
   positionIndex.save(out);
-  header.m_arrayStartOffset  = (UINT)byteCounter.getByteOffset();
+  header.m_arrayStartOffset  = (UINT)outputCounter.getCount();
   positionInfoArray.save(out);
   header.m_bitsPerEntry      = bitsPerEntry;
   file.seek(0);

@@ -353,13 +353,11 @@ String MoveResultArray::toString(const Game &game, MoveStringFormat mf, bool dep
 
 StreamProgress::StreamProgress(const EndGameTablebase *tb) : m_timer(1) {
   m_total     = sizeof(TablebaseInfo) + tb->getKeyDefinition().getIndexSize() * sizeof(EndGameResult);
-  m_byteCount = 0;
   m_timer.startTimer(1500, *this, true);
 }
 
 StreamProgress::StreamProgress(const String &fileName) : m_timer(1) {
   m_total     = STAT(fileName).st_size;
-  m_byteCount = 0;
   m_timer.startTimer(1500, *this, true);
 }
 
@@ -370,7 +368,7 @@ StreamProgress::~StreamProgress() {
 }
 
 void StreamProgress::handleTimeout(Timer &timer) {
-  verbose(_T("%.2lf%%\b"), PERCENT(m_byteCount, m_total));
+  verbose(_T("%.2lf%%\b"), PERCENT(getCount(), m_total));
 }
 
 #ifdef TABLEBASE_BUILDER

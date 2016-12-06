@@ -3,23 +3,18 @@
 #include "ByteStream.h"
 
 class ByteCounter {
-public:
-  virtual void incrCount(UINT64 n) = 0; // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
-  virtual UINT getMaxChunkSize() const {
-    return 500000;
-  }
-};
-
-class CountFileOffset : public ByteCounter {
 private:
   UINT64 m_counter;
 public:
-  CountFileOffset() : m_counter(0) {
+  ByteCounter() : m_counter(0) {
   }
-  void incrCount(UINT64 n) {
+  virtual void incrCount(UINT64 n) { // will be called every time n bytes are read/written from/to CountedByteInput/OutputStream
     m_counter += n;
   }
-  inline UINT64 getByteOffset() const {
+  virtual UINT getMaxChunkSize() const {
+    return 500000;
+  }
+  inline UINT64 getCount() const {
     return m_counter;
   }
 };
@@ -33,6 +28,9 @@ public:
 
   void putBytes(const BYTE *src, size_t n);
   void putByte(BYTE b);
+  const ByteCounter &getCounter() const {
+    return m_counter;
+  }
 };
 
 class CountedByteInputStream : public ByteInputStream {
@@ -43,5 +41,8 @@ public:
   CountedByteInputStream(ByteCounter &counter, ByteInputStream &src);
 
   intptr_t getBytes(BYTE *dst, size_t n);
-  int getByte();
+  int      getByte();
+  const ByteCounter &getCounter() const {
+    return m_counter;
+  }
 };

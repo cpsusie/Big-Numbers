@@ -322,7 +322,6 @@ private:
 
 #else
   void                  decompress(ByteInputStream &s) const;
-
 #endif // TABLEBASE_BUILDER
 
 protected:

@@ -16,13 +16,12 @@ private:
   String                     m_title;
   String                     m_progressMsgString;
   String                     m_currentMsg;
+  UINT64                     m_byteCounterStart;
   Semaphore                  m_gate;
-  UINT64                     m_byteCounter;
   UINT64                     m_currentFileSize;
   void setCurrentFileSize();
   void setCurrentMessage(const String &msg);
 public:
-
   DecompressJob(const EndGameTablebaseList &list);
 
   USHORT getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
@@ -32,7 +31,7 @@ public:
     return (USHORT)m_current;
   };
   USHORT getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
-    return (USHORT)PERCENT(m_byteCounter, m_currentFileSize);
+    return (USHORT)PERCENT(getCount() - m_byteCounterStart, m_currentFileSize);
   }
   String getProgressMessage() {
     m_gate.wait();
@@ -44,7 +43,7 @@ public:
     if(isInterrupted()) {
       throw InterruptedException();
     }
-    m_byteCounter += n;
+    ByteCounter::incrCount(n);
   }
   String getTitle() {
     return m_title;
@@ -70,8 +69,8 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) : m_list(list) {
 }
 
 void DecompressJob::setCurrentFileSize() {
-  m_byteCounter     = 0;
-  m_currentFileSize = m_list[m_current]->getFileSize(COMPRESSEDTABLEBASE);
+  m_byteCounterStart = getCount();
+  m_currentFileSize  = m_list[m_current]->getFileSize(COMPRESSEDTABLEBASE);
 }
 
 void DecompressJob::setCurrentMessage(const String &msg) {
