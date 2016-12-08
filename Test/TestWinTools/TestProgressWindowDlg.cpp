@@ -7,53 +7,48 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
-CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd* pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestProgressWindowDlg)
-	m_hasMessageBox     = TRUE;
-	m_hasTimeEstimate   = TRUE;
-	m_interruptable     = TRUE;
-	m_hasProgressBar    = TRUE;
-	m_showPercent       = FALSE;
-	m_hasSubProgressBar = FALSE;
-	m_suspendable       = FALSE;
-	m_delayMSec         = 600;
-	m_title             = _T("Some job");
-	m_jobTime           = 10;
-	m_updateRate        = 200;
-	//}}AFX_DATA_INIT
+CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd* pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent), m_jobCount(0)
+{
+    m_hasMessageBox     = TRUE;
+    m_hasTimeEstimate   = TRUE;
+    m_interruptable     = TRUE;
+    m_hasProgressBar    = TRUE;
+    m_showPercent       = FALSE;
+    m_hasSubProgressBar = FALSE;
+    m_suspendable       = FALSE;
+    m_delayMSec         = 600;
+    m_title             = _T("Some job");
+    m_jobTime           = 10;
+    m_updateRate        = 200;
+    m_jobCount          = 1;
 }
 
 void CTestProgressWindowDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestProgressWindowDlg)
-	DDX_Check(pDX, IDC_CHECKHASMESSAGEBOX     , m_hasMessageBox);
-	DDX_Check(pDX, IDC_CHECKHASTIMEESTIMATE   , m_hasTimeEstimate  );
-	DDX_Check(pDX, IDC_CHECKINTERRUPTABLE     , m_interruptable    );
-	DDX_Check(pDX, IDC_CHECKSUPPORTPROGRESS   , m_hasProgressBar   );
-	DDX_Check(pDX, IDC_CHECKSUPPORTPERCENT    , m_showPercent      );
-	DDX_Check(pDX, IDC_CHECKSUPPORTSUBPROGRESS, m_hasSubProgressBar);
-	DDX_Check(pDX, IDC_CHECKSUSPENDABLE       , m_suspendable      );
-	DDX_Text( pDX, IDC_EDITDELAY              , m_delayMSec        );
-	DDX_Text( pDX, IDC_EDITTITLE              , m_title            );
-	DDX_Text( pDX, IDC_EDITJOBTIME            , m_jobTime          );
-	DDX_Text( pDX, IDC_EDITUPDATERATE         , m_updateRate       );
-	DDV_MinMaxUInt(pDX, m_updateRate, 10, 2000);
-	//}}AFX_DATA_MAP
+  CDialog::DoDataExchange(pDX);
+  DDX_Check(pDX, IDC_CHECKHASMESSAGEBOX, m_hasMessageBox);
+  DDX_Check(pDX, IDC_CHECKHASTIMEESTIMATE, m_hasTimeEstimate);
+  DDX_Check(pDX, IDC_CHECKINTERRUPTABLE, m_interruptable);
+  DDX_Check(pDX, IDC_CHECKSUPPORTPROGRESS, m_hasProgressBar);
+  DDX_Check(pDX, IDC_CHECKSUPPORTPERCENT, m_showPercent);
+  DDX_Check(pDX, IDC_CHECKSUPPORTSUBPROGRESS, m_hasSubProgressBar);
+  DDX_Check(pDX, IDC_CHECKSUSPENDABLE, m_suspendable);
+  DDX_Text(pDX, IDC_EDITDELAY, m_delayMSec);
+  DDX_Text(pDX, IDC_EDITTITLE, m_title);
+  DDX_Text(pDX, IDC_EDITJOBTIME, m_jobTime);
+  DDX_Text(pDX, IDC_EDITUPDATERATE, m_updateRate);
+  DDV_MinMaxUInt(pDX, m_updateRate, 10, 2000);
+  DDX_Text(pDX, IDC_EDITJOBCOUNT, m_jobCount);
+	DDV_MinMaxUInt(pDX, m_jobCount, 1, 4);
 }
 
 BEGIN_MESSAGE_MAP(CTestProgressWindowDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestProgressWindowDlg)
-	ON_BN_CLICKED(IDC_BUTTONSTARTJOB              , OnButtonStartJob )
-	//}}AFX_MSG_MAP
+    ON_BN_CLICKED(IDC_BUTTONSTARTJOB              , OnButtonStartJob )
 END_MESSAGE_MAP()
 
 BOOL CTestProgressWindowDlg::OnInitDialog() {
     CDialog::OnInitDialog();
-
     return TRUE;
 }
 
@@ -63,38 +58,43 @@ private:
   const unsigned int m_supportedFeatures;
   double             m_timeDoneMsec;
   double             m_totalMsec;
+  USHORT             m_jobCount;
 public:
-  SomeJob(const TCHAR *title, int seconds, unsigned int supportedFeatures);
+  SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT m_jobCount);
 
   int getSupportedFeatures() {
-    return m_supportedFeatures;;
+    return m_supportedFeatures;
   }
 
-  unsigned short getSubProgressPercent();
-  unsigned short getProgress();
-  unsigned short getMaxProgress() {
+  USHORT getSubProgressPercent(UINT index);
+  USHORT getProgress();
+  USHORT getJobCount() const {
+    return m_jobCount;
+  }
+  USHORT getMaxProgress() {
     return 1000;
   }
   String getTitle() {
     return m_title;
   }
 
-  String getProgressMessage() {  
-    return format(_T("%.1lf/%.0lf sec"), m_timeDoneMsec / 1000000, m_totalMsec / 1000000);
+  String getProgressMessage(UINT index) {  
+    return format(_T("Job %d:%.1lf/%.0lf sec"), index, m_timeDoneMsec / 1000000, m_totalMsec / 1000000);
   }
   
-  unsigned int run();
+  UINT run();
 };
 
-SomeJob::SomeJob(const TCHAR *title, int seconds, unsigned int supportedFeatures) 
+SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT jobCount) 
 : m_title(title)
 , m_supportedFeatures(supportedFeatures)
+, m_jobCount(jobCount)
 {
   m_timeDoneMsec = 0;
   m_totalMsec    = (double)seconds * 1000000;
 }
 
-unsigned short SomeJob::getProgress() {
+USHORT SomeJob::getProgress() {
   if(m_timeDoneMsec >= m_totalMsec) {
     return getMaxProgress();
   } else  {
@@ -102,11 +102,11 @@ unsigned short SomeJob::getProgress() {
   }
 }
 
-unsigned short SomeJob::getSubProgressPercent() {
+USHORT SomeJob::getSubProgressPercent(UINT i) {
   return (short)fmod(m_timeDoneMsec / 10000.0,100);
 }
 
-unsigned int SomeJob::run() {
+UINT SomeJob::run() {
   bool warningDone = false;
   HANDLE thr = GetCurrentThread();
   for(;m_timeDoneMsec < m_totalMsec;) {
@@ -125,10 +125,9 @@ unsigned int SomeJob::run() {
   return 0;
 }
 
-
 void CTestProgressWindowDlg::OnButtonStartJob() {
   UpdateData();
-  unsigned int supportedFeatures = 0;
+  UINT supportedFeatures = 0;
   if(m_hasProgressBar   ) supportedFeatures |= IR_PROGRESSBAR;
   if(m_showPercent      ) supportedFeatures |= IR_SHOWPERCENT;
   if(m_hasSubProgressBar) supportedFeatures |= IR_SUBPROGRESSBAR;
@@ -137,7 +136,6 @@ void CTestProgressWindowDlg::OnButtonStartJob() {
   if(m_hasTimeEstimate  ) supportedFeatures |= IR_SHOWTIMEESTIMATE;
   if(m_hasMessageBox    ) supportedFeatures |= IR_SHOWPROGRESSMSG;
 
-  SomeJob job(m_title, m_jobTime , supportedFeatures);
+  SomeJob job(m_title, m_jobTime , supportedFeatures, m_jobCount);
   ProgressWindow wnd(this, job, m_delayMSec, m_updateRate);
 }
-

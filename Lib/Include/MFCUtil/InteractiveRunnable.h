@@ -27,6 +27,8 @@ private:
     m_flags &= ~1;
   }
 
+  USHORT getAvgSubProgressPercent();
+
   friend class ProgressWindow;
   friend class CProgressDlg;
 public:
@@ -42,26 +44,27 @@ public:
   inline char isSuspendOrCancelButtonPressed() const {
     return m_flags;
   }
-  virtual USHORT getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  virtual USHORT getMaxProgress() {                    // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
     return 0;
   }
-  virtual USHORT getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
+  virtual USHORT getProgress() {                       // do. Should return a short in the range [0..getMaxProgress()]
     return 0;
   };
-  virtual USHORT getSubProgressPercent() {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
-    return 0;                               // Should return an integer in the range [0..100]
+  virtual USHORT getJobCount() const {
+    return 1;
   }
-  virtual String getProgressMessage() {
+  virtual USHORT getSubProgressPercent(UINT index=0) { // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
+    return 0;                                          // Should return an integer in the range [0..100]
+  }
+  virtual String getProgressMessage(UINT index=0) {
     return _T("");
   }
-  virtual String getTitle() {               // Title of progress-window
+  virtual String getTitle() {                          // Title of progress-window
     return _T("Progress");
   }
-
-  virtual int getSupportedFeatures() {      // Should return any combination of IR_-constants
+  virtual int getSupportedFeatures() {                 // Should return any combination of IR_-constants
     return 0;
   }
-
   virtual UINT getEstimatedSecondsLeft();
 
   const Timestamp &getJobStartTime() const {

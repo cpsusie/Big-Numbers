@@ -14,26 +14,19 @@ private:
 public:
     CTestConfirmDlg(CWnd* pParent = NULL);
 
-    //{{AFX_DATA(CTestConfirmDlg)
     enum { IDD = IDD_TESTCONFIRMDLG_DIALOG };
-	CString	m_confirmCaption;
-	CString	m_confirmMessage;
-    //}}AFX_DATA
+    CString m_confirmCaption;
+    CString m_confirmMessage;
 
 
-    //{{AFX_VIRTUAL(CTestConfirmDlg)
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
 
 protected:
 
-    //{{AFX_MSG(CTestConfirmDlg)
-	virtual BOOL OnInitDialog();
-	afx_msg void OnButtonTestConfirm();
-	afx_msg void OnButtonShowStandardMessageBox();
-    //}}AFX_MSG
+    virtual BOOL OnInitDialog();
+    afx_msg void OnButtonTestConfirm();
+    afx_msg void OnButtonShowStandardMessageBox();
     DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

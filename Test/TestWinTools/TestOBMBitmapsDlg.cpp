@@ -5,25 +5,17 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestOBMBitmapsDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestOBMBitmapsDlg)
-    //}}AFX_DATA_INIT
 }
 
 void CTestOBMBitmapsDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestOBMBitmapsDlg)
-    //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CTestOBMBitmapsDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestOBMBitmapsDlg)
     ON_WM_PAINT()
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 
@@ -70,7 +62,6 @@ static const OBMResource resourceTable[] = {
  ,OBM(OBM_ZOOM)
  ,OBM(OBM_ZOOMD)
 };
-
 
 void CTestOBMBitmapsDlg::paintOBMBitmaps() {
   const CSize cs = getClientRect(this).Size();

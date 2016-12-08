@@ -1,32 +1,19 @@
-
-// TestWinTools.h : main header file for the PROJECT_NAME application
-//
-
 #pragma once
 
 #ifndef __AFXWIN_H__
-	#error "include 'stdafx.h' before including this file for PCH"
+    #error "include 'stdafx.h' before including this file for PCH"
 #endif
 
-#include "resource.h"		// main symbols
+#include "resource.h"       // main symbols
 
-
-// CTestWinToolsApp:
-// See TestWinTools.cpp for the implementation of this class
-//
-
-class CTestWinToolsApp : public CWinApp
-{
+class CTestWinToolsApp : public CWinApp {
 public:
-	CTestWinToolsApp();
+    CTestWinToolsApp();
 
-// Overrides
 public:
-	virtual BOOL InitInstance();
+    virtual BOOL InitInstance();
 
-// Implementation
-
-	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
 extern CTestWinToolsApp theApp;

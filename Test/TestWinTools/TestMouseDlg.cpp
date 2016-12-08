@@ -5,13 +5,9 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestMouseDlg::CTestMouseDlg(CWnd* pParent) : CDialog(CTestMouseDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestMouseDlg)
-    //}}AFX_DATA_INIT
   m_systemCursor  = NULL;
   m_createdCursor = NULL;
 }
@@ -25,35 +21,31 @@ CTestMouseDlg::~CTestMouseDlg() {
 
 void CTestMouseDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestMouseDlg)
-    //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CTestMouseDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestMouseDlg)
-	ON_WM_CHAR()
-	ON_WM_KEYDOWN()
-	ON_BN_CLICKED(   IDC_NORMALSYSTEMCURSOR  , OnNormalSystemCursor       )
-	ON_BN_CLICKED(   IDC_SETSYSTEMCURSOR1    , OnSetSystemCursor1         )
-	ON_BN_CLICKED(   IDC_SYSTEMCURSOR2       , OnSetSystemCursor2         )
-	ON_BN_CLICKED(   IDC_NORMALWINDOWCURSOR  , OnNormalWindowCursor       )
-	ON_BN_CLICKED(   IDC_WINDOWCURSOR1       , OnSetWindowCursor1         )
-	ON_BN_CLICKED(   IDC_WINDOWCURSOR2       , OnSetWindowCursor2         )
-	ON_BN_CLICKED(   IDC_NORMALCONTROLCURSOR , OnNormalControlCursor      )
-	ON_BN_CLICKED(   IDC_CONTROLCURSOR1      , OnSetControlCursor1        )
-	ON_BN_CLICKED(   IDC_CONTROLCURSOR2      , OnSetControlCursor2        )
-	ON_BN_CLICKED(   IDC_SETCURSORPOS        , OnSetCursorPos             )
-	ON_BN_CLICKED(   IDC_HIDECURSOR          , OnHideCursor               )
-	ON_BN_CLICKED(   IDC_WAITCURSOR          , OnWaitCursor               )
-	ON_BN_CLICKED(   IDC_CLIPCURSOR          , OnClipCursor               )
-	ON_BN_CLICKED(   IDC_UNCLIPCURSOR        , OnUnclipCursor             )
-	ON_BN_CLICKED(   IDC_CREATECURSOR        , OnCreateCursor             )
-	ON_CBN_SELCHANGE(IDC_COMBO_MOUSECURSOR   , OnSelchangeComboMouseCursor)
-	ON_WM_LBUTTONDOWN()
-	ON_WM_MOUSEMOVE()
-	ON_WM_RBUTTONDOWN()
-	ON_BN_CLICKED(IDC_LOADANICURSOR, OnLoadAnimatedCursor)
-	//}}AFX_MSG_MAP
+    ON_WM_CHAR()
+    ON_WM_KEYDOWN()
+    ON_BN_CLICKED(   IDC_NORMALSYSTEMCURSOR  , OnNormalSystemCursor       )
+    ON_BN_CLICKED(   IDC_SETSYSTEMCURSOR1    , OnSetSystemCursor1         )
+    ON_BN_CLICKED(   IDC_SYSTEMCURSOR2       , OnSetSystemCursor2         )
+    ON_BN_CLICKED(   IDC_NORMALWINDOWCURSOR  , OnNormalWindowCursor       )
+    ON_BN_CLICKED(   IDC_WINDOWCURSOR1       , OnSetWindowCursor1         )
+    ON_BN_CLICKED(   IDC_WINDOWCURSOR2       , OnSetWindowCursor2         )
+    ON_BN_CLICKED(   IDC_NORMALCONTROLCURSOR , OnNormalControlCursor      )
+    ON_BN_CLICKED(   IDC_CONTROLCURSOR1      , OnSetControlCursor1        )
+    ON_BN_CLICKED(   IDC_CONTROLCURSOR2      , OnSetControlCursor2        )
+    ON_BN_CLICKED(   IDC_SETCURSORPOS        , OnSetCursorPos             )
+    ON_BN_CLICKED(   IDC_HIDECURSOR          , OnHideCursor               )
+    ON_BN_CLICKED(   IDC_WAITCURSOR          , OnWaitCursor               )
+    ON_BN_CLICKED(   IDC_CLIPCURSOR          , OnClipCursor               )
+    ON_BN_CLICKED(   IDC_UNCLIPCURSOR        , OnUnclipCursor             )
+    ON_BN_CLICKED(   IDC_CREATECURSOR        , OnCreateCursor             )
+    ON_CBN_SELCHANGE(IDC_COMBO_MOUSECURSOR   , OnSelchangeComboMouseCursor)
+    ON_WM_LBUTTONDOWN()
+    ON_WM_MOUSEMOVE()
+    ON_WM_RBUTTONDOWN()
+    ON_BN_CLICKED(IDC_LOADANICURSOR, OnLoadAnimatedCursor)
 END_MESSAGE_MAP()
 
 BOOL CTestMouseDlg::OnInitDialog() {

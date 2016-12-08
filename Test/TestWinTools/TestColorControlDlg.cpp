@@ -4,56 +4,48 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestColorControlDlg::CTestColorControlDlg(CWnd* pParent) : CDialog(CTestColorControlDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestColorControlDlg)
-	m_caption    = _T("");
-	m_hasBorder  = FALSE;
-	m_enabled    = FALSE;
-	m_visible    = TRUE;
-	m_clientEdge = FALSE;
-	m_modalFrame = FALSE;
-	m_staticEdge = FALSE;
-	m_sunken     = FALSE;
-	//}}AFX_DATA_INIT
+    m_caption    = _T("");
+    m_hasBorder  = FALSE;
+    m_enabled    = FALSE;
+    m_visible    = TRUE;
+    m_clientEdge = FALSE;
+    m_modalFrame = FALSE;
+    m_staticEdge = FALSE;
+    m_sunken     = FALSE;
   m_pickingColor = false;
 }
 
 void CTestColorControlDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
-  //{{AFX_DATA_MAP(CTestColorControlDlg)
-  DDX_Text(pDX, IDC_EDITCAPTION, m_caption);
-  DDX_Check(pDX, IDC_CHECKBORDER, m_hasBorder);
-  DDX_Check(pDX, IDC_CHECKENABLED, m_enabled);
-  DDX_Check(pDX, IDC_CHECKVISIBLE, m_visible);
-  DDX_Check(pDX, IDC_CHECKCLIENTEDGE, m_clientEdge);
-  DDX_Check(pDX, IDC_CHECKMODALFRAME, m_modalFrame);
-  DDX_Check(pDX, IDC_CHECKSTATICEDGE, m_staticEdge);
-  DDX_Check(pDX, IDC_CHECKSUNKEN, m_sunken);
-  //}}AFX_DATA_MAP
-  DDX_Control(pDX, IDC_COLORMAPCTRL, m_colormap);
+  DDX_Text(   pDX, IDC_EDITCAPTION    , m_caption   );
+  DDX_Check(  pDX, IDC_CHECKBORDER    , m_hasBorder );
+  DDX_Check(  pDX, IDC_CHECKENABLED   , m_enabled   );
+  DDX_Check(  pDX, IDC_CHECKVISIBLE   , m_visible   );
+  DDX_Check(  pDX, IDC_CHECKCLIENTEDGE, m_clientEdge);
+  DDX_Check(  pDX, IDC_CHECKMODALFRAME, m_modalFrame);
+  DDX_Check(  pDX, IDC_CHECKSTATICEDGE, m_staticEdge);
+  DDX_Check(  pDX, IDC_CHECKSUNKEN    , m_sunken    );
+  DDX_Control(pDX, IDC_COLORMAPCTRL   , m_colormap  );
 }
 
 BEGIN_MESSAGE_MAP(CTestColorControlDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestColorControlDlg)
   ON_WM_PAINT()
   ON_BN_CLICKED(IDC_CHECKBORDER    , OnCheckBorder       )
   ON_EN_CHANGE( IDC_EDITCAPTION    , OnChangeEditCaption )
   ON_BN_CLICKED(IDC_BUTTONPICKCOLOR, OnButtonpickcolor   )
-	ON_BN_CLICKED(IDC_CHECKVISIBLE   , OnCheckVisible      )
-	ON_BN_CLICKED(IDC_CHECKENABLED   , OnCheckEnabled      )
-	ON_BN_CLICKED(IDC_CHECKCLIENTEDGE, OnCheckClientEdge   )
-	ON_BN_CLICKED(IDC_CHECKMODALFRAME, OnCheckModalFrame   )
-	ON_BN_CLICKED(IDC_CHECKSTATICEDGE, OnCheckStaticEdge   )
-	ON_BN_CLICKED(IDC_CHECKSUNKEN    , OnCheckSunken       )
-	ON_COMMAND(ID_GOTO_CAPTION       , OnGotoCaption       )
+  ON_BN_CLICKED(IDC_CHECKVISIBLE   , OnCheckVisible      )
+  ON_BN_CLICKED(IDC_CHECKENABLED   , OnCheckEnabled      )
+  ON_BN_CLICKED(IDC_CHECKCLIENTEDGE, OnCheckClientEdge   )
+  ON_BN_CLICKED(IDC_CHECKMODALFRAME, OnCheckModalFrame   )
+  ON_BN_CLICKED(IDC_CHECKSTATICEDGE, OnCheckStaticEdge   )
+  ON_BN_CLICKED(IDC_CHECKSUNKEN    , OnCheckSunken       )
+  ON_COMMAND(ID_GOTO_CAPTION       , OnGotoCaption       )
   ON_WM_LBUTTONDOWN()
   ON_WM_LBUTTONUP()
-	ON_WM_SIZE()
-	//}}AFX_MSG_MAP
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BOOL CTestColorControlDlg::OnInitDialog() {
@@ -179,7 +171,7 @@ void CTestColorControlDlg::OnOK() {
 
 void CTestColorControlDlg::OnSize(UINT nType, int cx, int cy) {
   CDialog::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);	
+  m_layoutManager.OnSize(nType, cx, cy);    
 }
 
 BEGIN_EVENTSINK_MAP(CTestColorControlDlg, CDialog)

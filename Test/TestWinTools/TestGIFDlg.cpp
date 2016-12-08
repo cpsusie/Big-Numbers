@@ -3,37 +3,29 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestGIFDlg::CTestGIFDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestGIFDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestGIFDlg)
-    //}}AFX_DATA_INIT
 }
 
 void CTestGIFDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestGIFDlg)
-    //}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CTestGIFDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestGIFDlg)
-	ON_WM_SIZE()
-	ON_BN_CLICKED(IDC_BUTTONLOADGIF          , OnButtonLoadGif          )
-	ON_BN_CLICKED(IDC_BUTTONLOADRESROUCE     , OnButtonLoadResouce      )
-	ON_BN_CLICKED(IDC_BUTTONLOADRESROUCEERROR, OnButtonLoadResroucEerror)
-	ON_BN_CLICKED(IDC_BUTTONSTART            , OnButtonStart            )
-	ON_BN_CLICKED(IDC_BUTTONSTOP             , OnButtonStop             )
-	ON_BN_CLICKED(IDC_BUTTONUNLOAD           , OnButtonUnload           )
-	ON_BN_CLICKED(IDC_BUTTONPAINTALL         , OnButtonPaintAll         )
-	ON_BN_CLICKED(IDC_BUTTONPAINTFIRST       , OnButtonPaintFirst       )
-	ON_BN_CLICKED(IDC_BUTTONPAINTNEXT        , OnButtonPaintNext        )
-	ON_BN_CLICKED(IDC_BUTTONPAINTPREV        , OnButtonPaintPrev        )
-	ON_BN_CLICKED(IDC_BUTTONCLEAR            , OnButtonClear            )
-	ON_BN_CLICKED(IDC_BUTTONHIDE             , OnButtonHide             )
-	//}}AFX_MSG_MAP
+    ON_WM_SIZE()
+    ON_BN_CLICKED(IDC_BUTTONLOADGIF          , OnButtonLoadGif          )
+    ON_BN_CLICKED(IDC_BUTTONLOADRESROUCE     , OnButtonLoadResouce      )
+    ON_BN_CLICKED(IDC_BUTTONLOADRESROUCEERROR, OnButtonLoadResroucEerror)
+    ON_BN_CLICKED(IDC_BUTTONSTART            , OnButtonStart            )
+    ON_BN_CLICKED(IDC_BUTTONSTOP             , OnButtonStop             )
+    ON_BN_CLICKED(IDC_BUTTONUNLOAD           , OnButtonUnload           )
+    ON_BN_CLICKED(IDC_BUTTONPAINTALL         , OnButtonPaintAll         )
+    ON_BN_CLICKED(IDC_BUTTONPAINTFIRST       , OnButtonPaintFirst       )
+    ON_BN_CLICKED(IDC_BUTTONPAINTNEXT        , OnButtonPaintNext        )
+    ON_BN_CLICKED(IDC_BUTTONPAINTPREV        , OnButtonPaintPrev        )
+    ON_BN_CLICKED(IDC_BUTTONCLEAR            , OnButtonClear            )
+    ON_BN_CLICKED(IDC_BUTTONHIDE             , OnButtonHide             )
 END_MESSAGE_MAP()
 
 BOOL CTestGIFDlg::OnInitDialog() {

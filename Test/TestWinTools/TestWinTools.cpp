@@ -15,12 +15,7 @@ CTestWinToolsApp::CTestWinToolsApp() {
   // support Restart Manager
   m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
 
-  // TODO: add construction code here,
-  // Place all significant initialization in InitInstance
 }
-
-
-// The one and only CTestWinToolsApp object
 
 CTestWinToolsApp theApp;
 

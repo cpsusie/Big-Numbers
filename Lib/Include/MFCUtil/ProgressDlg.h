@@ -40,23 +40,22 @@ private:
   InteractiveRunnable &m_jobToDo;
   const UINT           m_updateRate;
   const int            m_supportedFeatures;
+  USHORT               m_jobCount;
   RollingAverageQueue  m_rollingAverage;
   String               m_timeElapsedLabel, m_timeRemaingLabel;
   CProgressWithPctCtrl m_newProgressCtrl;
   HACCEL               m_accelTable;
 
-  void substituteProgressControl();
   CButton       *getCancelButton();
   CButton       *getSuspendButton();
   CStatic       *getStaticTimeEstimate();
-  CStatic       *getStaticProgressMessage();
-//  CProgressCtrl *getProgressCtrl();
-  CProgressCtrl *getSubProgressCtrl();
+  CStatic       *getStaticProgressMessage(UINT index);
+  CProgressCtrl *getSubProgressCtrl(      UINT index);
+  int            setVisibleJobs(          UINT count);
   void startTimer();
   void stopTimer();
   void setWaitCursor(bool on = true);
-  double getEstimatedSecondsLeft(short progress, short subPercent);
-  int moveControlsBelowUp(CWnd *ctrl);
+  int moveControlsBelowUp(CWnd *win, int dh=0);
   void resumeJob();
   void suspendJob();
 public:

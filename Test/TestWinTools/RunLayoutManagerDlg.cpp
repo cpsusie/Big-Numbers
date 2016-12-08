@@ -4,17 +4,14 @@
 #include "RunLayoutManagerDlg.h"
 
 #include "resource.h"
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd* pParent /*=NULL*/)
     : CDialog(CRunLayoutManagerDlg::IDD, pParent)
 {
-    //{{AFX_DATA_INIT(CRunLayoutManagerDlg)
-	//}}AFX_DATA_INIT
 
   m_windowFlags = windowFlags;
   m_list1Flags  = list1Flags;
@@ -25,25 +22,21 @@ CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int 
 
 void CRunLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CRunLayoutManagerDlg)
-	//}}AFX_DATA_MAP
 }
 
 BEGIN_MESSAGE_MAP(CRunLayoutManagerDlg, CDialog)
-    //{{AFX_MSG_MAP(CRunLayoutManagerDlg)
     ON_WM_SIZE()
-	ON_WM_SIZING()
-	ON_COMMAND(ID_FONT_SIZE1               , OnFontSize1               )
-	ON_COMMAND(ID_FONT_SIZE15              , OnFontSize15              )
-	ON_COMMAND(ID_FONT_SIZE175             , OnFontSize175             )
-	ON_COMMAND(ID_FONT_SIZE2               , OnFontSize2               )
-	ON_COMMAND(ID_FONT_SIZE3               , OnFontSize3               )
-	ON_COMMAND(ID_LAYOUT_UPPERLISTVISIBLE  , OnLayoutUpperListVisible  )
-	ON_COMMAND(ID_LAYOUT_LOWERLISTVISIBLE  , OnLayoutLowerListVisible  )
-	ON_COMMAND(ID_LAYOUT_LOWERLIST_HALFSIZE, OnLayoutLowerListHalfsize )
-	ON_BN_CLICKED(IDC_ONSIZE               , OnOnSize                  )
-	ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-	//}}AFX_MSG_MAP
+    ON_WM_SIZING()
+    ON_COMMAND(ID_FONT_SIZE1               , OnFontSize1               )
+    ON_COMMAND(ID_FONT_SIZE15              , OnFontSize15              )
+    ON_COMMAND(ID_FONT_SIZE175             , OnFontSize175             )
+    ON_COMMAND(ID_FONT_SIZE2               , OnFontSize2               )
+    ON_COMMAND(ID_FONT_SIZE3               , OnFontSize3               )
+    ON_COMMAND(ID_LAYOUT_UPPERLISTVISIBLE  , OnLayoutUpperListVisible  )
+    ON_COMMAND(ID_LAYOUT_LOWERLISTVISIBLE  , OnLayoutLowerListVisible  )
+    ON_COMMAND(ID_LAYOUT_LOWERLIST_HALFSIZE, OnLayoutLowerListHalfsize )
+    ON_BN_CLICKED(IDC_ONSIZE               , OnOnSize                  )
+    ON_COMMAND(ID_FILE_EXIT, OnFileExit)
 END_MESSAGE_MAP()
 
 BOOL CRunLayoutManagerDlg::OnInitDialog() {

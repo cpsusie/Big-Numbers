@@ -6,14 +6,10 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestLayoutManagerDlg::CTestLayoutManagerDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestLayoutManagerDlg::IDD, pParent) {
   setToDefault();
-    //{{AFX_DATA_INIT(CTestLayoutManagerDlg)
-	//}}AFX_DATA_INIT
 }
 
 void CTestLayoutManagerDlg::setToDefault() {
@@ -75,8 +71,7 @@ void CTestLayoutManagerDlg::setToDefault() {
 }
 void CTestLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestLayoutManagerDlg)
-	DDX_Check(pDX, IDC_CHECK_WINDOW_RETAIN_ASPECTRATIO        , m_windowRetainAspectRatio     );
+    DDX_Check(pDX, IDC_CHECK_WINDOW_RETAIN_ASPECTRATIO        , m_windowRetainAspectRatio     );
     DDX_Check(pDX, IDC_CHECK_WINDOW_RESIZE_FONT               , m_windowResizeFont            );
     DDX_Check(pDX, IDC_CHECK_WINDOW_FONT_RELATIVE_SIZE        , m_windowFontRelativeSize      ); 
     DDX_Check(pDX, IDC_CHECK_LIST1_RESIZE_FONT                , m_list1ResizeFont             );
@@ -93,8 +88,8 @@ void CTestLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Check(pDX, IDC_CHECK_LIST1_PCT_RELATIVE_BOTTOM        , m_list1PctRelativeBottom      );
     DDX_Check(pDX, IDC_CHECK_LIST1_FONT_RELATIVE_X_POSITION   , m_list1FontRelativeXPosition  );
     DDX_Check(pDX, IDC_CHECK_LIST1_FONT_RELATIVE_Y_POSITION   , m_list1FontRelativeYPosition  );
-	DDX_Check(pDX, IDC_CHECK_LIST1_CONSTANT_WIDTH             , m_list1ConstantWidth          );
-	DDX_Check(pDX, IDC_CHECK_LIST1_CONSTANT_HEIGHT            , m_list1ConstantHeight         );
+    DDX_Check(pDX, IDC_CHECK_LIST1_CONSTANT_WIDTH             , m_list1ConstantWidth          );
+    DDX_Check(pDX, IDC_CHECK_LIST1_CONSTANT_HEIGHT            , m_list1ConstantHeight         );
     DDX_Check(pDX, IDC_CHECK_LIST2_RESIZE_FONT                , m_list2ResizeFont             );
     DDX_Check(pDX, IDC_CHECK_LIST2_FONT_RELATIVE_SIZE         , m_list2FontRelativeSize       );
     DDX_Check(pDX, IDC_CHECK_LIST2_RELATIVE_LEFT              , m_list2RelativeLeft           );
@@ -109,8 +104,8 @@ void CTestLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Check(pDX, IDC_CHECK_LIST2_PCT_RELATIVE_BOTTOM        , m_list2PctRelativeBottom      );
     DDX_Check(pDX, IDC_CHECK_LIST2_FONT_RELATIVE_X_POSITION   , m_list2FontRelativeXPosition  );
     DDX_Check(pDX, IDC_CHECK_LIST2_FONT_RELATIVE_Y_POSITION   , m_list2FontRelativeYPosition  );
-	DDX_Check(pDX, IDC_CHECK_LIST2_CONSTANT_WIDTH             , m_list2ConstantWidth          );
-	DDX_Check(pDX, IDC_CHECK_LIST2_CONSTANT_HEIGHT            , m_list2ConstantHeight         );
+    DDX_Check(pDX, IDC_CHECK_LIST2_CONSTANT_WIDTH             , m_list2ConstantWidth          );
+    DDX_Check(pDX, IDC_CHECK_LIST2_CONSTANT_HEIGHT            , m_list2ConstantHeight         );
     DDX_Check(pDX, IDC_CHECK_LIST2_INIT_LISTHEADERS           , m_list2InitListheaders        );
     DDX_Check(pDX, IDC_CHECK_LIST2_RESIZE_LISTHEADERS         , m_list2ResizeListheaders      );
     DDX_Check(pDX, IDC_CHECK_BUTTON_FONT_RELATIVE_SIZE        , m_buttonFontRelativeSize      );
@@ -126,18 +121,15 @@ void CTestLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Check(pDX, IDC_CHECK_BUTTON_PCT_RELATIVE_RIGHT        , m_buttonPctRelativeRight      );
     DDX_Check(pDX, IDC_CHECK_BUTTON_RELATIVE_BOTTOM           , m_buttonRelativeBottom        );
     DDX_Check(pDX, IDC_CHECK_BUTTON_PCT_RELATIVE_BOTTOM       , m_buttonPctRelativeBottom     );
-	DDX_Check(pDX, IDC_CHECK_BUTTON_CONSTANT_WIDTH            , m_buttonConstantWidth         );
-	DDX_Check(pDX, IDC_CHECK_BUTTON_CONSTANT_HEIGHT           , m_buttonConstantHeight        );
-	DDX_Check(pDX, IDC_CHECK_BUTTON_RESIZE_FONT               , m_buttonResizeFont            );
-	//}}AFX_DATA_MAP
+    DDX_Check(pDX, IDC_CHECK_BUTTON_CONSTANT_WIDTH            , m_buttonConstantWidth         );
+    DDX_Check(pDX, IDC_CHECK_BUTTON_CONSTANT_HEIGHT           , m_buttonConstantHeight        );
+    DDX_Check(pDX, IDC_CHECK_BUTTON_RESIZE_FONT               , m_buttonResizeFont            );
 }
 
 
 BEGIN_MESSAGE_MAP(CTestLayoutManagerDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestLayoutManagerDlg)
     ON_BN_CLICKED(IDC_BUTTON_OPEN_DIALOG, OnButtonOpenDialog)
-	ON_BN_CLICKED(IDC_BUTTON_SETTODEFAULT, OnButtonSetToDefault)
-	//}}AFX_MSG_MAP
+    ON_BN_CLICKED(IDC_BUTTON_SETTODEFAULT, OnButtonSetToDefault)
 END_MESSAGE_MAP()
 
 int CTestLayoutManagerDlg::getWindowFlags() const {

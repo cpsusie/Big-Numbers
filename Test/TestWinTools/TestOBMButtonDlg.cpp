@@ -6,27 +6,19 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestOBMButtonDlg::IDD, pParent) {
-    //{{AFX_DATA_INIT(CTestOBMButtonDlg)
-	m_buttonsEnabled = TRUE;
-	//}}AFX_DATA_INIT
+    m_buttonsEnabled = TRUE;
 }
 
 void CTestOBMButtonDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-    //{{AFX_DATA_MAP(CTestOBMButtonDlg)
-	DDX_Check(pDX, IDC_CHECK_ENABLEBUTTONS, m_buttonsEnabled);
-	//}}AFX_DATA_MAP
+    DDX_Check(pDX, IDC_CHECK_ENABLEBUTTONS, m_buttonsEnabled);
 }
 
-
 BEGIN_MESSAGE_MAP(CTestOBMButtonDlg, CDialog)
-    //{{AFX_MSG_MAP(CTestOBMButtonDlg)
-	ON_BN_CLICKED(IDC_CHECK_ENABLEBUTTONS, OnCheckEnableButtons)
+    ON_BN_CLICKED(IDC_CHECK_ENABLEBUTTONS, OnCheckEnableButtons)
     ON_BN_CLICKED(IDC_DNARROW_BUTTON     , OnButtonDNARROW)
     ON_BN_CLICKED(IDC_LFARROW_BUTTON     , OnButtonLFARROW)
     ON_BN_CLICKED(IDC_RGARROW_BUTTON     , OnButtonRGARROW)
@@ -34,7 +26,6 @@ BEGIN_MESSAGE_MAP(CTestOBMButtonDlg, CDialog)
     ON_BN_CLICKED(IDC_ZOOM_BUTTON        , OnButtonZOOM   )
     ON_BN_CLICKED(IDC_REDUCE_BUTTON      , OnButtonREDUCE )
     ON_BN_CLICKED(IDC_RESTORE_BUTTON     , OnButtonRESTORE)
-	//}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 void CTestOBMButtonDlg::OnOK() {

@@ -65,11 +65,11 @@ CRect getWindowRect(const CWnd *wnd, int id) {
 
 bool setWindowRect(CWnd *wnd, const CRect &rect) {
   if(wnd == NULL) return false;
-//  WINDOWPLACEMENT wp;
-//  wnd->GetWindowPlacement(&wp);
-//  wp.rcNormalPosition = rect;
-//  wnd->SetWindowPlacement(&wp)
-  return wnd->SetWindowPos(NULL,rect.left,rect.top,rect.Width(), rect.Height(), SWP_NOZORDER |SWP_DRAWFRAME|SWP_NOCOPYBITS) ? true : false;
+  WINDOWPLACEMENT wp;
+  wnd->GetWindowPlacement(&wp);
+  wp.rcNormalPosition = rect;
+  return wnd->SetWindowPlacement(&wp) ? true : false;
+//  return wnd->SetWindowPos(NULL,rect.left,rect.top,rect.Width(), rect.Height(), SWP_NOZORDER |SWP_DRAWFRAME|SWP_NOCOPYBITS) ? true : false;
 }
 
 bool setWindowRect(CWnd *wnd, int id, const CRect &rect) {
