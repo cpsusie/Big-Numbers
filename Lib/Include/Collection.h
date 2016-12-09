@@ -109,9 +109,15 @@ public:
   bool addAll(const Collection<T> &c) {
     bool changed = false;
     for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext(); ) {
-      if(add(it.next())) {
-        changed = true;
-      }
+      if(add(it.next())) changed = true;
+    }
+    return changed;
+  }
+
+  bool addAll(const CompactArray<T> &a) {
+    bool changed = false;
+    for(size_t i = 0; i < a.size(); i++) {
+      if(add(a[i])) changed = true;
     }
     return changed;
   }
