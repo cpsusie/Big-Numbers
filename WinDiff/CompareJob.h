@@ -30,8 +30,8 @@ private:
   CWinDiffDoc &m_doc;
 
   const bool                   m_recompare;
-  unsigned short               m_currentStep;
-  unsigned short               m_subProgressPercent;
+  USHORT                       m_currentStep;
+  USHORT                       m_subProgressPercent;
   String                       m_progressMessage;
   CompactArray<_ProgressStep>  m_stepArray;
   double                       m_sumEstimatedTimeUnits, m_timeUnitsDone, m_q;
@@ -44,19 +44,19 @@ public:
   CompareJob(CWinDiffDoc *doc, bool recompare);
   ~CompareJob();
 
-  unsigned short getMaxProgress() {
+  USHORT getMaxProgress() {
     return 1000;
   }
 
-  unsigned short getProgress() {
-    return (unsigned short)(m_timeUnitsDone / m_sumEstimatedTimeUnits * 1000);
+  USHORT getProgress() {
+    return (USHORT)(m_timeUnitsDone / m_sumEstimatedTimeUnits * 1000);
   }
 
-  unsigned short getSubProgressPercent() {
+  USHORT getSubProgressPercent(UINT index) {
     return m_subProgressPercent;
   }
 
-  String getProgressMessage();
+  String getProgressMessage(UINT index);
 
 #ifdef MEASURE_STEPTIME
   const _ProgressStep &getCurrentStep() const { 
@@ -74,7 +74,7 @@ public:
 
   void incrProgress();
 
-  void setSubProgressPercent(unsigned short v);
+  void setSubProgressPercent(USHORT v);
 
   void addStep(double estimatedTimeUnits, const TCHAR *msg);
 

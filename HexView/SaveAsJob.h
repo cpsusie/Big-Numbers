@@ -22,9 +22,9 @@ public:
     m_interrupted = true;
   };
 
-  unsigned short getProgress();
+  USHORT getProgress();
 
-  unsigned short getMaxProgress() {
+  USHORT getMaxProgress() {
     return 1000;
   }
 
@@ -48,4 +48,3 @@ public:
     return m_errorMessage;
   }
 };
-

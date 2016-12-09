@@ -81,14 +81,14 @@ void SearchMachine::interrupt() {
   m_interrupted = true;
 }
 
-unsigned short SearchMachine::getProgress() {
+USHORT SearchMachine::getProgress() {
   const short maxValue = getMaxProgress();
   if(m_forwardSearch) {
     const double total = (double)m_size - m_startPosition;
-    return total ? (unsigned short)(((double)(m_fileIndex - m_startPosition)*maxValue) / total) : maxValue;
+    return total ? (USHORT)(((double)(m_fileIndex - m_startPosition)*maxValue) / total) : maxValue;
   } else {
     const double total = (double)m_startPosition;
-    return total ? (unsigned short)((total - m_fileIndex)*maxValue / total) : maxValue;
+    return total ? (USHORT)((total - m_fileIndex)*maxValue / total) : maxValue;
   }
 }
 

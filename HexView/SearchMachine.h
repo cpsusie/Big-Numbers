@@ -40,7 +40,6 @@ private:
   __int64        m_size;
   __int64        m_fileIndex;
 
-  void initSearch();
   AddrRange doSearch();
 public:
 
@@ -62,10 +61,10 @@ public:
     return m_findWhat;
   }
 // ---------------------- Functions to implement InteractiveRunnable ---------------
-  unsigned int run();
+  UINT run();
   void interrupt();
-  unsigned short getProgress();
-  unsigned short getMaxProgress() {
+  USHORT getProgress();
+  USHORT getMaxProgress() {
     return 1000;
   }
   String getTitle() {

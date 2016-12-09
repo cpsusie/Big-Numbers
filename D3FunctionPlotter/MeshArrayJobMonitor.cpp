@@ -204,10 +204,10 @@ public:
   {
   }
 
-  unsigned short getMaxProgress() {
+  USHORT getMaxProgress() {
     return m_frameCount;
   }
-  unsigned short getProgress() {
+  USHORT getProgress() {
     return m_jobs.getJobsDone();
   }
   String getTitle() {
@@ -219,7 +219,7 @@ public:
   MeshArray getResult() {
     return m_jobs.getResult();
   }
-  unsigned int run();
+  UINT run();
 };
 
 unsigned int MeshArrayCreator::run() {

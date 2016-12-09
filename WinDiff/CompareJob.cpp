@@ -34,7 +34,7 @@ CompareJob::~CompareJob() {
 #endif
 }
 
-String CompareJob::getProgressMessage() {
+String CompareJob::getProgressMessage(UINT index) {
   m_sem.wait();
   String result = m_progressMessage;
   m_sem.signal();
@@ -74,7 +74,7 @@ void CompareJob::incrProgress() {
   updateProgressMessage();
 }
 
-void CompareJob::setSubProgressPercent(unsigned short v) {
+void CompareJob::setSubProgressPercent(USHORT v) {
   m_subProgressPercent = min(v,100);
   if(isSuspendOrCancelButtonPressed()) {
     if(isInterrupted()) {
