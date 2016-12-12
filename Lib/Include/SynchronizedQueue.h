@@ -40,6 +40,20 @@ public:
     m_gate.signal();
   }
 
+  bool addAll(const Collection<T> &c) {
+    m_gate.wait();
+    const bool result = QueueList<T>::addAll(c);
+    m_gate.signal();
+    return result;
+  }
+
+  bool addAll(const CompactArray<T> &a) {
+    m_gate.wait();
+    const bool result = QueueList<T>::addAll(a);
+    m_gate.signal();
+    return result;
+  }
+
   bool isEmpty() const {
     return size() == 0;
   }
