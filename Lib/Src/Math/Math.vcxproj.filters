@@ -319,6 +319,9 @@
     <ClCompile Include="TriangleIO.cpp">
       <Filter>Source Files\Triangle</Filter>
     </ClCompile>
+    <ClCompile Include="RungekuttaFehlberg.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

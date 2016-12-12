@@ -545,6 +545,7 @@
     <ClCompile Include="RationalIO.cpp" />
     <ClCompile Include="Rectangle2D.cpp" />
     <ClCompile Include="Rungekutta.cpp" />
+    <ClCompile Include="RungekuttaFehlberg.cpp" />
     <ClCompile Include="SigmoidIterator.cpp" />
     <ClCompile Include="Simplex.cpp" />
     <ClCompile Include="SolveTriDiag.cpp" />
