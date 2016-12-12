@@ -142,38 +142,43 @@ double Tokenizer::getDouble() {
   return result;
 }
 
-int Tokenizer::getInt() {
+int Tokenizer::getInt(bool hex) {
   String s = next();
   int result;
-  if(_stscanf(s.cstr(), _T("%ld"), &result) != 1) {
+  if(_stscanf(s.cstr(), hex ? _T("%x") : _T("%ld"), &result) != 1) {
     throwException(_T("%s:Expected int:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
 
-UINT Tokenizer::getUint() {
+UINT Tokenizer::getUint(bool hex) {
   String s = next();
   UINT result;
-  if(_stscanf(s.cstr(), _T("%lu"), &result) != 1) {
+  if(_stscanf(s.cstr(), hex ? _T("%x") : _T("%lu"), &result) != 1) {
     throwException(_T("%s:Expected unsigned int:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
 
-__int64 Tokenizer::getInt64() {
+__int64 Tokenizer::getInt64(bool hex) {
   String s = next();
   __int64 result;
-  if(_stscanf(s.cstr(), _T("%I64d"), &result) != 1) {
+  if(_stscanf(s.cstr(), hex ? _T("%I64x") : _T("%I64d"), &result) != 1) {
     throwException(_T("%s:Expected __int64:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
 }
 
-unsigned __int64 Tokenizer::getUint64() {
+unsigned __int64 Tokenizer::getUint64(bool hex) {
   String s = next();
   unsigned __int64 result;
-  if(_stscanf(s.cstr(), _T("%I64u"), &result) != 1) {
+  if(_stscanf(s.cstr(), hex ? _T("%I64x") : _T("%I64u"), &result) != 1) {
     throwException(_T("%s:Expected unsigned __int64:<%s>"), __TFUNCTION__, s.cstr());
   }
   return result;
+}
+
+bool Tokenizer::getBool() { // expect "true" or "false"
+  String s = next();
+  return strToBool(s.cstr());
 }

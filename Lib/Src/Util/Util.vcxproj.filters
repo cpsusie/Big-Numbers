@@ -655,6 +655,9 @@
     <ClCompile Include="ArgvConversion.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="StrToBool.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

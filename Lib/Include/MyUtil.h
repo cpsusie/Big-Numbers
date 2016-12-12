@@ -185,6 +185,8 @@ inline const TCHAR *boolToStr(BOOL b) {
   return b ? _T("true") : _T("false");
 }
 
+bool strToBool(const TCHAR *s);
+
 double round(   double x, int dec);
 double trunc(   double x, int dec=0);
 double fraction(double x);

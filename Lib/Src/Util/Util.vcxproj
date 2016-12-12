@@ -549,6 +549,7 @@
     <ClCompile Include="StrStream.cpp" />
     <ClCompile Include="strtabcmp.cpp" />
     <ClCompile Include="StrTabExp.cpp" />
+    <ClCompile Include="StrToBool.cpp" />
     <ClCompile Include="StrToLower.cpp" />
     <ClCompile Include="StrToUpper.cpp" />
     <ClCompile Include="StrTrim.cpp" />

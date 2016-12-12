@@ -54,9 +54,9 @@ public:
     return *m_next != 0;
   }
   double           getDouble();
-  int              getInt();
-  unsigned int     getUint();
-  __int64          getInt64();
-  unsigned __int64 getUint64();
-
+  int              getInt(   bool hex = false);
+  UINT             getUint(  bool hex = false);
+  __int64          getInt64( bool hex = false);
+  unsigned __int64 getUint64(bool hex = false);
+  bool             getBool(); // expect "true" or "false"
 };
