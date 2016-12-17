@@ -207,17 +207,20 @@ public:
 
 class SimpleLayoutManager : public LayoutManager {
 private:
-  DECLARECLASSNAME;
   CompactArray<LayoutAttribute*> m_attributes;
+  bool                           m_arrayModified;
   SimpleLayoutManager(const SimpleLayoutManager &src);                // not defined. SimpleLayoutManager is not cloneable
   SimpleLayoutManager &operator=(const SimpleLayoutManager &src); // not defined. SimpleLayoutManager is not cloneable
   void updateFontScale(LayoutAttribute &attr, double scale, bool redraw, const CSize &currentSize);
   void updateChildRect(LayoutAttribute &attr, const CSize &currentSize);
   bool isAnyChildrenChanged() const;
 public:
-  SimpleLayoutManager() {}
+  SimpleLayoutManager() : m_arrayModified(false) {
+  }
   ~SimpleLayoutManager();
-  void addControl(int ctrlId, int flags);
+  void addControl(   int ctrlId, int flags);
+  void removeControl(int ctrlId);
+  void removeAll();
   void OnSize(UINT nType, int cx, int cy);
   void scaleFont(double scale, bool redraw);
 };
