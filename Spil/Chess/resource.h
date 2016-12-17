@@ -173,7 +173,6 @@
 #define IDS_RESTART                     391
 #define IDS_RESTARTQUESTION             392
 #define IDS_DECOMPRESSALLTITLE          393
-#define IDS_DECOMPRESSALLMESSAGE_s_d_d  394
 #define IDS_ALLTABLEBASESDECOMPRESSED   395
 #define IDS_METRIC                      396
 #define IDS_TIMEPARAMETERSDIFFER        400

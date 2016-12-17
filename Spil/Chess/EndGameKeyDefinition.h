@@ -94,7 +94,7 @@ protected:
   mutable String            m_longName;
 
   void   selfCheckInit()    const;
-  UINT64 selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter) const;
+  UINT64 selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter, bool listUnused, bool orderByLength) const;
   UINT64 checkSymmetries()  const;
   void pause() const;
 #endif
@@ -126,6 +126,7 @@ protected:
   static SymmetricTransformation getSym8Transformation4Men2Equal(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation5Men2Equal(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation6Men2Equal(     EndGameKey key);
+  static SymmetricTransformation getSym8Transformation6Men2Pairs(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation5Men3Equal(     EndGameKey key);
   static SymmetricTransformation getSym8Transformation6Men3Equal(     EndGameKey key);
   static SymmetricTransformation getPawnSymTransformation(            EndGameKey key);
@@ -211,9 +212,9 @@ public:
   const PositionSignature  &getPositionSignature()   const;
   virtual void             insertInitialPositions(EndGameTablebase &tablebase) const;
   const String            &toString(bool longNames = false) const;
-  void                     listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize = 1) const;
+  void                     listLongestUnusedSequence(BitSet &s, bool orderByLength, intptr_t sequenceMinSize = 1) const;
 
-  void                     doSelfCheck(bool checkSym) const;
+  void                     doSelfCheck(bool checkSym, bool listUnused, bool orderByLength) const;
   const KeyDefinitionSelfCheckInfo &getSelfCheckInfo() const {
     return m_selfCheckInfo;
   }
@@ -351,6 +352,7 @@ protected:
   static bool keysMatch23Equal( EndGameKey k1, EndGameKey k2);
   static bool keysMatch34Equal( EndGameKey k1, EndGameKey k2);
   static bool keysMatch45Equal( EndGameKey k1, EndGameKey k2);
+  static bool keysMatch2Pairs(  EndGameKey k1, EndGameKey k2);
   static bool keysMatch234Equal(EndGameKey k1, EndGameKey k2);
   static bool keysMatch345Equal(EndGameKey k1, EndGameKey k2);
 #endif
@@ -493,6 +495,27 @@ public:
 
   EndGamePosIndex getIndexSize() const {
     return 6044829840;
+  }
+  SymmetricTransformation getSymTransformation(EndGameKey key) const;
+
+  DECLARE_SELFCHECK;
+  DECLARE_KEYSEQUAL;
+};
+
+class EndGameKeyDefinition6Men2Pairs : public EndGameKeyDefinitionDupletsAllowed {
+private:
+#ifdef TABLEBASE_BUILDER
+  void scanPositions(EndGameKeyWithOccupiedPositions &key, int pIndex, bool allPreviousOnDiag) const;
+#endif
+
+public:
+  EndGameKeyDefinition6Men2Pairs(PieceKey pk23, PieceKey pk45);
+
+  EndGamePosIndex keyToIndex(EndGameKey      key  ) const;
+  EndGameKey      indexToKey(EndGamePosIndex index) const;
+
+  EndGamePosIndex getIndexSize() const {
+    return 3028564350; 
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 

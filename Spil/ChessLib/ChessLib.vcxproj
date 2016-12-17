@@ -509,6 +509,7 @@
     <ClCompile Include="..\Chess\EndGameKeyDefinition5Men3Pawns.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men2Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameKeyDefinition6Men2Pairs.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinition6Men3Equal.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsAllowed.cpp" />
     <ClCompile Include="..\Chess\EndGameKeyDefinitionDupletsNotAllowed.cpp" />
@@ -559,6 +560,7 @@
     <ClCompile Include="..\Chess\EndGameKQKRB.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKRN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKRR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQKRRR.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNKB.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNKN.cpp" />
@@ -581,6 +583,7 @@
     <ClCompile Include="..\Chess\EndGameKQQKP.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQKQ.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQKR.cpp" />
+    <ClCompile Include="..\Chess\EndGameKQQKRR.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQNK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQPK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQQK.cpp" />

@@ -84,6 +84,14 @@ bool EndGameKeyDefinitionDupletsAllowed::keysMatch45Equal(EndGameKey k1, EndGame
   return k2 == k1;
 }
 
+bool EndGameKeyDefinitionDupletsAllowed::keysMatch2Pairs(EndGameKey k1, EndGameKey k2) {
+  if(k2 == k1) return true;
+  k2.swapPos(2,3); if(k2 == k1) return true;
+  k2.swapPos(4,5); if(k2 == k1) return true;
+  k2.swapPos(2,3); if(k2 == k1) return true;
+  return false;
+}
+
 bool EndGameKeyDefinitionDupletsAllowed::keysMatch234Equal(EndGameKey k1, EndGameKey k2) {
                    if(k2 == k1) return true;
   k2.swapPos(2,3); if(k2 == k1) return true;

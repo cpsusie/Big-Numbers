@@ -56,11 +56,11 @@ extern const char _wkD3BkI2P[55];
 #define ADD4BIT(    addr  , index)          (((addr) << 4) | (index))
 #define ADD5BIT(    addr  , index)          (((addr) << 5) | (index))
 
-#define SUM1TO(n)    ((n)*((n)+1)/2)             /* sum(1, 2, 3, .. , n)                                  */
-#define SUMSUM1TO(n) ((((((n)+3)*(n))+2)*(n))/6) /* sum(SUM1TO(1), SUM1TO(2), SUM1TO(3), ... , SUM1TO(n)) */
+#define SUM1TO(n)    ((UINT64)(n)*((UINT64)(n)+1)/2)                     /* sum(1, 2, 3, .. , n)                                  */
+#define SUMSUM1TO(n) ((((((UINT64)(n)+3)*(UINT64)(n))+2)*(UINT64)(n))/6) /* sum(SUM1TO(1), SUM1TO(2), SUM1TO(3), ... , SUM1TO(n)) */
 
-#define GET_RANGESTART2EQUAL(f, index) ((f) * SUM1TO(index))
-#define GET_RANGESTART3EQUAL(f, index) ((f) * SUMSUM1TO(index))
+#define GET_RANGESTART2EQUAL(f, index) ((UINT64)(f) * SUM1TO(index))
+#define GET_RANGESTART3EQUAL(f, index) ((UINT64)(f) * SUMSUM1TO(index))
 
 #define SORT2(i,j)                  \
 { if((i) > (j)) swap(i, j);         \
@@ -151,32 +151,32 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 #define SET2OFFDIAGPOSNOFLIP(key, addr, maxAddr, lpIndex, hpIndex)                    \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r]);                                    \
-  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r]);                           \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r]);              \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r]);     \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPi(key, addr, maxAddr, lpIndex, hpIndex)                     \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r]); r++;                               \
-  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r + 28]);                      \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r]); r++;         \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r + 28]);\
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPj(key, addr, maxAddr, lpIndex, hpIndex)                     \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r);                                       \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+28]); r++;                            \
-  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r]);                           \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r+28]); r++;      \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r]);     \
   addr /= r;                                                                          \
 }
 
 #define SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, hpIndex)                    \
 { int r = findRange2Equal((maxAddr)/2, addr);                                         \
   addr -= GET_RANGESTART2EQUAL((maxAddr)/2, r); r++;                                  \
-  key.setPosition(hpIndex,s_offDiagIndexToPos[r+28]);                                 \
-  key.setPosition(lpIndex,s_offDiagIndexToPos[(addr) % r + 28]);                      \
+  key.setPosition(hpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[r+28]);           \
+  key.setPosition(lpIndex,EndGameKeyDefinition::s_offDiagIndexToPos[(addr) % r + 28]);\
   addr /= r;                                                                          \
 }
 

@@ -720,6 +720,15 @@
     <ClCompile Include="..\Chess\TablebaseConversion.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKQKRRR.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKQQKRR.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\EndGameKeyDefinition6Men2Pairs.cpp">
+      <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">

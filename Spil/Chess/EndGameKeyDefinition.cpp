@@ -791,6 +791,32 @@ SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men2Equal(En
   SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN2EQUAL)
 }
 
+
+#define DECIDESYM8TRANSFORM6MEN2PAIRS(f1Offdiag, f2Offdiag, trTrue, trFalse)                                  \
+{ if(f1Offdiag(key.getWhiteKingPosition())) {                                                                 \
+    return f2Offdiag(key.getWhiteKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getBlackKingPosition())) {                                                          \
+    return f2Offdiag(key.getBlackKingPosition())  ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition(2)) && f1Offdiag(key.getPosition(3))) {                                 \
+    DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, 2, 3);                                      \
+  } else if(f1Offdiag(key.getPosition(2))) {                                                                  \
+    return f2Offdiag(key.getPosition(2))          ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition(3))) {                                                                  \
+    return f2Offdiag(key.getPosition(3))          ? trTrue : trFalse;                                         \
+  } else if(f1Offdiag(key.getPosition(4)) && f1Offdiag(key.getPosition(5))) {                                 \
+    DECIDESYM8TRANSFORM2EQUAL_OFFDIAG(f2Offdiag, trTrue, trFalse, 4, 5);                                      \
+  } else if(f1Offdiag(key.getPosition(4))) {                                                                  \
+    return f2Offdiag(key.getPosition(4))          ? trTrue : trFalse;                                         \
+  } else {                                                                                                    \
+    return f2Offdiag(key.getPosition(5))          ? trTrue : trFalse;                                         \
+  }                                                                                                           \
+}
+
+
+SymmetricTransformation EndGameKeyDefinition::getSym8Transformation6Men2Pairs(EndGameKey key) { // static
+  SYM8DECISIONSWITCH(DECIDESYM8TRANSFORM6MEN2PAIRS)
+}
+
 #ifdef _DEBUG
 
 static SymmetricTransformation decideSym8Transform3EqualFlipi(EndGameKey key, SymmetricTransformation trTrue, SymmetricTransformation trFalse, int i, int j, int k) {
@@ -1178,7 +1204,6 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
   SET2OFFDIAGPOSFLIPij(key, addr, maxAddr, lpIndex, mpIndex);
 }
 
-
 // --------------------------------------- Pawns -----------------------------------------------
 
 void _set2EqualPawnsNoFlip(EndGameKey &key, EndGamePosIndex &addr, EndGamePosIndex maxAddr, int lpIndex, int hpIndex) {
@@ -1391,7 +1416,7 @@ String SelfCheckStatusPrinter::getSummaryString() const {
   return result;
 }
 
-void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
+void EndGameKeyDefinition::doSelfCheck(bool checkSym, bool listUnused, bool orderByLength) const {
   verbose(_T("Running %scodec test for keydefinition %-15s [%s]. Indexsize:%s\n")
          ,checkSym?_T("extended "):_T("")
          ,getCodecName().cstr()
@@ -1401,11 +1426,13 @@ void EndGameKeyDefinition::doSelfCheck(bool checkSym) const {
   selfCheckInit();
   SelfCheckStatusPrinter printStatus(this, key);
   Timer intervalPrinter(1);
+//#ifndef _DEBUG
   intervalPrinter.startTimer(1000,printStatus, true);
+//#endif
   selfCheck(key);
   intervalPrinter.stopTimer();
 
-  const UINT64 distinctKeyCount1 = selfCheckSummary(printStatus);
+  const UINT64 distinctKeyCount1 = selfCheckSummary(printStatus, listUnused, orderByLength);
   if(checkSym) {
     const UINT64 distinctKeyCount2 = checkSymmetries();
     if(distinctKeyCount2 != distinctKeyCount1) {
@@ -1434,7 +1461,7 @@ void EndGameKeyDefinition::pause() const {
   m_selfCheckInfo.m_testRunning = true;
 }
 
-UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter) const {
+UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &statusPrinter, bool listUnused, bool orderByLength) const {
   _tprintf(_T("%-*s\n"), 150, _T(" "));
   const double usedTime     = getProcessTime() - m_checkStartTime;
   const UINT64 distinctKeys = m_selfCheckInfo.getDistinctKeys();
@@ -1442,9 +1469,9 @@ UINT64 EndGameKeyDefinition::selfCheckSummary(const SelfCheckStatusPrinter &stat
   verbose(_T("%s"), statusPrinter.getSummaryString().cstr());
   verbose(_T("Used time      : %10.3lf sec. %7.3lf nano sec/key.\n"), usedTime / 1000000, usedTime/m_selfCheckInfo.m_checkKeyCount*1000);
 
-#define LIST_UNUSED
-
-  listLongestUnusedSequence(*m_usedIndex);
+  if(listUnused) {
+    listLongestUnusedSequence(*m_usedIndex, orderByLength);
+  }
 
 #ifdef __NEVER__ // LIST_UNUSED
   FILE *f = FOPEN(getTempFileName(toString() + _T("Unused.txt")), _T("w"));
@@ -1493,6 +1520,9 @@ void EndGameKeyDefinition::checkForBothPlayers(EndGameKey key) const {
 
 void EndGameKeyDefinition::checkKey(EndGameKey key) const {
   m_selfCheckInfo.m_checkKeyCount++;
+  if (m_selfCheckInfo.m_checkKeyCount == 2874523) {
+    int fisk = 1;
+  }
   const EndGamePosIndex index = keyToIndex(key);
   if(index < m_selfCheckInfo.m_minIndex) {
     m_selfCheckInfo.m_minIndex = index;
@@ -1764,8 +1794,6 @@ UINT64 EndGameKeyDefinition::checkSymmetries() const {
   return scanner.scanAllPositions();
 }
 
-#ifdef LIST_UNUSED
-
 class UnusedSequence {
 private:
   static String genKeyString(const EndGameKeyDefinition *keydef, EndGamePosIndex index);
@@ -1801,24 +1829,37 @@ String UnusedSequence::toString(const EndGameKeyDefinition *keydef) const {
                );
 }
 
+typedef enum {
+  COMPARE_BY_LENGTH
+ ,COMPARE_BY_INDEX
+} UnusedSequenceCompareField;
+
 class UnusedSequenceComparator : public Comparator<UnusedSequence> {
+private:
+  const UnusedSequenceCompareField m_compareField;
 public:
+  UnusedSequenceComparator(UnusedSequenceCompareField field) : m_compareField(field) {
+  }
   int compare(const UnusedSequence &e1, const UnusedSequence &e2) {
-    return sign((intptr_t)e2.getLength() - (intptr_t)e1.getLength());
+    switch(m_compareField) {
+    case COMPARE_BY_LENGTH: return sign((intptr_t)e2.getLength() - (intptr_t)e1.getLength());
+    case COMPARE_BY_INDEX : return sign((INT64)e1.m_from - (INT64)e2.m_from);
+    default               : return sign((INT64)e1.m_from - (INT64)e2.m_from);
+    }
   }
   AbstractComparator *clone() const {
-    return new UnusedSequenceComparator();
+    return new UnusedSequenceComparator(m_compareField);
   }
 };
 
 class UnusedPTQueue : public PriorityQueue<UnusedSequence> {
 public:
-  UnusedPTQueue() : PriorityQueue<UnusedSequence>(UnusedSequenceComparator()) {
+  UnusedPTQueue(UnusedSequenceCompareField compareField) : PriorityQueue<UnusedSequence>(UnusedSequenceComparator(compareField)) {
   }
 };
 
-void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, intptr_t sequenceMinSize) const {
-  UnusedPTQueue ptq;
+void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, bool orderByLength, intptr_t sequenceMinSize) const {
+  UnusedPTQueue ptq(orderByLength ? COMPARE_BY_LENGTH : COMPARE_BY_INDEX);
   intptr_t last = -1;
   for(Iterator<size_t> it = s.getIterator(); it.hasNext();) {
     const intptr_t i = it.next();
@@ -1840,7 +1881,5 @@ void EndGameKeyDefinition::listLongestUnusedSequence(BitSet &s, intptr_t sequenc
   _ftprintf(f, _T("Total unused indices:%s\n"), format1000(totalUnused).cstr());
   fclose(f);
 }
-
-#endif // LIST_UNUSED
 
 #endif // TABLEBASE_BUILDER

@@ -43,14 +43,13 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KK_OFFDIAG(key)                                                                                                    \
-{ EndGameKey tmp = key;                                                                                                           \
-  if(pos4 > pos5) {                                                                                                               \
-    tmp.setPosition(4,pos5);                                                                                                       \
-    tmp.setPosition(5,pos4);                                                                                                       \
+{ if(pos4 > pos5) {                                                                                                               \
+    key.setPosition(4,pos5);                                                                                                      \
+    key.setPosition(5,pos4);                                                                                                      \
   }                                                                                                                               \
-  const UINT pi4 = tmp.getP4OffDiagIndex();                                                                                       \
-  const UINT pi5 = tmp.getP5OffDiagIndexEqualP45();                                                                               \
-  return ADDPIT(tmp, ADD2EQUAL(KK_OFFDIAG_4MEN(tmp), KK_OFFDIAG_POSCOUNT, pi4, pi5))                                              \
+  const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
+  const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
+  return ADDPIT(key, ADD2EQUAL(KK_OFFDIAG_4MEN(key), KK_OFFDIAG_POSCOUNT, pi4, pi5))                                              \
        - MININDEX;                                                                                                                \
 }
 
@@ -65,14 +64,13 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KK_ONDIAG(key)                                                                                                     \
-{ EndGameKey tmp = key;                                                                                                           \
-  if(pos4 > pos5) {                                                                                                               \
-    tmp.setPosition(4,pos5);                                                                                                      \
-    tmp.setPosition(5,pos4);                                                                                                      \
+{ if(pos4 > pos5) {                                                                                                               \
+    key.setPosition(4,pos5);                                                                                                      \
+    key.setPosition(5,pos4);                                                                                                      \
   }                                                                                                                               \
-  const UINT pi4 = tmp.getP4OffDiagIndex();                                                                                       \
-  const UINT pi5 = tmp.getP5OffDiagIndexEqualP45();                                                                               \
-  return ADDPIT(tmp, ADD2EQUAL(KK_ONDIAG_4MEN(tmp), KK_ONDIAG_POSCOUNT, pi4, pi5))                                                \
+  const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
+  const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
+  return ADDPIT(key, ADD2EQUAL(KK_ONDIAG_4MEN(key), KK_ONDIAG_POSCOUNT, pi4, pi5))                                                \
        + START_RANGE_KK_ONDIAG1                                                                                                   \
        - MININDEX;                                                                                                                \
 }
@@ -89,14 +87,13 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2_ONDIAG(key)                                                                                                   \
-{ EndGameKey tmp = key;                                                                                                           \
-  if(pos4 > pos5) {                                                                                                               \
-    tmp.setPosition(4,pos5);                                                                                                      \
-    tmp.setPosition(5,pos4);                                                                                                      \
+{ if(pos4 > pos5) {                                                                                                               \
+    key.setPosition(4,pos5);                                                                                                      \
+    key.setPosition(5,pos4);                                                                                                      \
   }                                                                                                                               \
-  const UINT pi4 = tmp.getP4OffDiagIndex();                                                                                       \
-  const UINT pi5 = tmp.getP5OffDiagIndexEqualP45();                                                                               \
-  return ADDPIT(tmp, ADD2EQUAL(KKP2_ONDIAG_4MEN(tmp), KKP2_ONDIAG_POSCOUNT, pi4, pi5))                                            \
+  const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
+  const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
+  return ADDPIT(key, ADD2EQUAL(KKP2_ONDIAG_4MEN(key), KKP2_ONDIAG_POSCOUNT, pi4, pi5))                                            \
        + START_RANGE_KKP2_ONDIAG1                                                                                                 \
        - MININDEX;                                                                                                                \
 }
@@ -153,10 +150,8 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 #define ENCODE_KKP234_ONDIAG(key)  return (KKP234_ONDIAG_6MEN_INDEX(key) + START_RANGE_KKP234_ONDIAG - MININDEX);
 
 #define ENCODE_KKP235_ONDIAG(key)                                                                                                 \
-{ EndGameKey tmp = key;                                                                                                           \
-  tmp.setPosition(4,pos5);                                                                                                        \
-  tmp.setPosition(5,pos4);                                                                                                        \
-  ENCODE_KKP234_ONDIAG(tmp);                                                                                                      \
+{ key.swapPos(4,5);                                                                                                               \
+  ENCODE_KKP234_ONDIAG(key);                                                                                                      \
 }
 
 #define DECODE_KKP234_ONDIAG(key, index)                                                                                          \
@@ -171,14 +166,13 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2345_ONDIAG(key)                                                                                                \
-{ EndGameKey tmp = key;                                                                                                           \
-  if(pos4 > pos5) {                                                                                                               \
-    tmp.setPosition(4,pos5);                                                                                                      \
-    tmp.setPosition(5,pos4);                                                                                                      \
+{ if(pos4 > pos5) {                                                                                                               \
+    key.setPosition(4,pos5);                                                                                                      \
+    key.setPosition(5,pos4);                                                                                                      \
   }                                                                                                                               \
-  const UINT pi4 = tmp.getP4DiagIndex();                                                                                          \
-  const UINT pi5 = tmp.getP5DiagIndexEqualP45();                                                                                  \
-  return ADDPIT(tmp, ADD2EQUAL(KKP23_ONDIAG_4MEN(tmp), KKP23_ONDIAG_POSCOUNT, pi4, pi5))                                          \
+  const UINT pi4 = key.getP4DiagIndex();                                                                                          \
+  const UINT pi5 = key.getP5DiagIndexEqualP45();                                                                                  \
+  return ADDPIT(key, ADD2EQUAL(KKP23_ONDIAG_4MEN(key), KKP23_ONDIAG_POSCOUNT, pi4, pi5))                                          \
        + START_RANGE_KKP2345_ONDIAG                                                                                               \
        - MININDEX;                                                                                                                \
 }

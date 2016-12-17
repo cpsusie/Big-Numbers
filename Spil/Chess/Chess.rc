@@ -1146,7 +1146,6 @@ BEGIN
     IDS_RESTART             "Genstart"
     IDS_RESTARTQUESTION     "Ændring af sproget kræver at programmet genstartes.\nVil du fortsætte"
     IDS_DECOMPRESSALLTITLE  "Udpakker slutspilsdatabaser"
-    IDS_DECOMPRESSALLMESSAGE_s_d_d "Udpakker %s (%d/%d)"
     IDS_ALLTABLEBASESDECOMPRESSED "Alle slutspilsdatabaser er udpakket"
     IDS_METRIC              "Metrik"
 END
@@ -1851,7 +1850,6 @@ BEGIN
     IDS_RESTART             "Restart"
     IDS_RESTARTQUESTION     "To change the language, the program will restart.\nDo you want to continue"
     IDS_DECOMPRESSALLTITLE  "Decompressing endgames"
-    IDS_DECOMPRESSALLMESSAGE_s_d_d "Decompressing %s (%d/%d)"
     IDS_ALLTABLEBASESDECOMPRESSED "All tablebasees are decompressed"
     IDS_METRIC              "Metric"
 END

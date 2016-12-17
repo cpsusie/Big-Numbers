@@ -28,12 +28,14 @@
 #define CMD_LISTBLACKWIN             0x00020000
 #define CMD_CHECKKEYDEF              0x00040000
 #define CMD_CHECKSYMMETRIES          0x00080000
-#define CMD_CHECKCONSISTENCY         0x00100000
-#define CMD_CHECKPOSITIONS           0x00200000
-#define CMD_CHECKLISTMOVES           0x00400000
-#define CMD_CONVERT                  0x00800000
-#define CMD_ADDUNDEFINEDKEYS         0x01000000
-#define CMD_EXTRACTWINNERBITS        0x02000000
+#define CMD_LISTUNUSEDSEQEUENCES     0x00100000
+#define CMD_ORDERSEQUENCEBYLENGTH    0x00200000
+#define CMD_CHECKCONSISTENCY         0x00400000
+#define CMD_CHECKPOSITIONS           0x00800000
+#define CMD_CHECKLISTMOVES           0x01000000
+#define CMD_CONVERT                  0x02000000
+#define CMD_ADDUNDEFINEDKEYS         0x04000000
+#define CMD_EXTRACTWINNERBITS        0x08000000
 
 void printSkillLine() {
   verbose(_T("%s\n"),spaceString(158,'_').cstr());
@@ -331,7 +333,10 @@ static void usage(char *arg = NULL) {
             "          -M      : Build DTM-databases, ,and if needed, rebuild parts of DTC.\n"
             "          -e      : Extract winner database.\n"
             "          -a      : Add undefined keys to ManualPositions.txt, for the specified tablebases.\n"
-            "          -c[+]   : Check keydefinition. If '+' specified, symmetries will be checked too (be patient!).\n"
+            "          -c[+u[z]]  : Check keydefinition.\n"
+            "                    If '+' specified, symmetries will be checked too (be patient!).\n"
+            "                    If 'u' specified, unused sequences of the index will be listed to c:\\temp\\xxxUnusedSequences.txt\n"
+            "                    If 'z' specified after'u', the unused sequence will be sorted by lengt descending\n"
             "          -u[+[+]]: Check undefined/draw positions. If '+' specified, all positions and plies-to-end will be checked.\n"
             "                  : If '++' specified, all the moves for the inconsistent positions will be listed.\n"
             "                    Default only header information is checked.\n"
@@ -521,9 +526,24 @@ int main(int argc, char **argv) {
           break;
         case 'c':
           commands |= CMD_CHECKKEYDEF;
-          if(cp[1] == '+') {
-            commands |= CMD_CHECKSYMMETRIES;
-            cp++;
+          for(;;) {
+            switch(cp[1]) {
+            case '+':
+              commands |= CMD_CHECKSYMMETRIES;
+              cp++;
+              continue;
+            case 'u':
+              commands |= CMD_LISTUNUSEDSEQEUENCES;
+              cp++;
+              if (cp[1] == 'z') {
+                commands |= CMD_ORDERSEQUENCEBYLENGTH;
+                cp++;
+              }
+              continue;
+            default :
+              break;
+            }
+            break;
           }
           continue;
         case 'u':
@@ -708,7 +728,10 @@ int main(int argc, char **argv) {
           continue;
         }
         currentWork.setTablebase(&tb);
-        tb.getKeyDefinition().doSelfCheck((commands & CMD_CHECKSYMMETRIES) != 0);
+        tb.getKeyDefinition().doSelfCheck((commands & CMD_CHECKSYMMETRIES      ) != 0
+                                         ,(commands & CMD_LISTUNUSEDSEQEUENCES ) != 0
+                                         ,(commands & CMD_ORDERSEQUENCEBYLENGTH) != 0
+                                         );
         currentWork.setTablebase(NULL);
         *done = true;
       }
