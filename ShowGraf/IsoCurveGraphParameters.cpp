@@ -9,16 +9,14 @@ IsoCurveGraphParameters::IsoCurveGraphParameters(const String &name, COLORREF co
   m_cellSize          = 0.1;
 }
    
-void IsoCurveGraphParameters::write(FILE *f) {
+void IsoCurveGraphParameters::writeFile(FILE *f) {
   USES_CONVERSION;
-  const TCHAR *tstyle = graphStyleToString(m_style).cstr();
-  const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode).cstr();
-  const TCHAR *texpr  = m_expr.cstr();
+  const TCHAR *tstyle = graphStyleToString(m_style);
+  const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
   const char  *astyle = T2A(tstyle);
   const char  *atrigo = T2A(ttrigo);
-  const char  *aexpr  = T2A(texpr);
 
-  fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %s %s %08x %d\n%s\n"
+  fprintf(f,"%lf %lf %lf %lf %lf %lf %lf %s %s %08x %d\n"
    ,m_boundingBox.getMinX()
    ,m_boundingBox.getMinY()
    ,m_boundingBox.getWidth()
@@ -30,23 +28,11 @@ void IsoCurveGraphParameters::write(FILE *f) {
    ,atrigo
    ,m_color
    ,m_rollSize
-   ,aexpr
   );
+  writeString(f, m_expr);
 }
 
-void IsoCurveGraphParameters::read(const String &fileName) {
-  FILE *f = FOPEN(fileName, "r");
-  try {
-    read(f);
-    fclose(f);
-    setName(fileName);
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-
-void IsoCurveGraphParameters::read(FILE *f) {
+void IsoCurveGraphParameters::readFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double bx,by,bw,bh,csz,x0,y0;
   int color, rollSize;
@@ -61,11 +47,6 @@ void IsoCurveGraphParameters::read(FILE *f) {
   m_trigonometricMode = trigonometricModeFromString(trigoStr);
   m_color             = color;
   m_rollSize          = rollSize;
-
-  char line[4096];
-  m_expr = _T("");
-  while(fgets(line, ARRAYSIZE(line), f)) {
-    m_expr += line;
-  }
+  m_expr              = readString(f);
 }
 

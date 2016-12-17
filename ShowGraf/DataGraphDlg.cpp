@@ -13,25 +13,23 @@ CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd* pParent) : m_graph(g), CDialog(
 }
 
 void CDataGraphDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_DATALIST, m_dataList);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
 	DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CDataGraphDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTONCOLOR, OnButtoncolor)
-    ON_WM_PAINT()
 END_MESSAGE_MAP()
 
 BOOL CDataGraphDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   
   const GraphParameters &param = m_graph.getParam();
-  m_color    = param.m_color;
+  getColorButton()->SetColor(param.m_color);
   m_fullName = param.getFullName();
   m_name     = param.getPartialName().cstr();
-  m_style    = GraphParameters::graphStyleToString(param.m_style).cstr();
+  m_style    = GraphParameters::graphStyleToString(param.m_style);
 
   const int dataWidth = getWindowRect(&m_dataList).Width()/2-12;
   m_dataList.InsertColumn( 0, _T("X"), LVCFMT_LEFT, dataWidth);
@@ -58,33 +56,7 @@ void CDataGraphDlg::OnOK() {
 
   m_graph.getParam().setName((LPCTSTR)m_name);
   m_graph.getParam().m_style = (GraphStyle)getStyleCombo()->GetCurSel();
-  m_graph.getParam().m_color = m_color;
+  m_graph.getParam().m_color = getColorButton()->GetColor();
 
   CDialog::OnOK();
 }
-
-CComboBox *CDataGraphDlg::getStyleCombo() {
-  return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
-}
-
-void CDataGraphDlg::OnCancel() {
-  CDialog::OnCancel();
-}
-
-void CDataGraphDlg::OnButtoncolor() {
-  CColorDialog dlg(m_color);
-  dlg.m_cc.Flags |= CC_RGBINIT;
-  if(dlg.DoModal() == IDOK) {
-    m_color = dlg.m_cc.rgbResult;
-    Invalidate();
-  }
-}
-
-void CDataGraphDlg::OnPaint() {
-  CPaintDC dc(this);
-
-  WINDOWPLACEMENT wp;
-  GetDlgItem(IDC_STATICCOLOR)->GetWindowPlacement(&wp);
-  dc.FillSolidRect(&wp.rcNormalPosition,m_color);
-}
-

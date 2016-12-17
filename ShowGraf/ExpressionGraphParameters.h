@@ -5,15 +5,16 @@
 #include "GraphParameters.h"
 
 class ExpressionGraphParameters : public GraphParameters {
+protected:
+  void readFile( FILE *f);
+  void writeFile(FILE *f);
+
 public:
   String            m_expr;
   DoubleInterval    m_interval;
   unsigned int      m_steps;
   TrigonometricMode m_trigonometricMode;
   ExpressionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
-  void read(const String &fileName);
-  void write(FILE *f);
-  void read( FILE *f);
 };
 
 class FunctionPlotter {

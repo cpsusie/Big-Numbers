@@ -9,16 +9,20 @@
 #define IDB_BITMAP_CUSTOM_FUNCTION      111
 #define IDR_MENU_EXPR_DIALOG            112
 #define IDR_MENU_ISOCURVE_DIALOG        113
+#define IDR_MENU_DIFFEQUATION_DIALOG    114
+#define IDB_BITMAPDELETE                117
+#define IDR_ACCELERATOR_DIFFEQUATION    118
 #define IDR_MAINFRAME                   128
 #define IDR_DUMMYTOOLBAR                129
 #define IDD_SHOWGRAFVIEW                130
 #define IDD_EXPRGRAPH_DIALOG            131
 #define IDD_DATAGRAPH_DIALOG            132
 #define IDD_ISOCURVEGRAPH_DIALOG        133
-#define IDD_DEGREE_DIALOG               134
-#define IDD_FITTHREAD_DIALOG            135
-#define IDD_INTERVAL_DIALOG             136
-#define IDD_ROLLSIZE_DIALOG             137
+#define IDD_DIFFEQUATIONGRAPH_DIALOG    134
+#define IDD_DEGREE_DIALOG               135
+#define IDD_FITTHREAD_DIALOG            136
+#define IDD_INTERVAL_DIALOG             137
+#define IDD_ROLLSIZE_DIALOG             138
 #define IDR_ACCELERATOR_EXPR            140
 #define IDR_ACCELERATOR_ISOCURVE        141
 #define IDR_ACCELERATOR_INTERVAL        142
@@ -26,7 +30,6 @@
 #define IDR_MENUSELECTGRAF              150
 #define IDC_SYSTEMPANEL                 1001
 #define IDC_BUTTONPANEL                 1002
-#define IDC_STATICCOLOR                 1010
 #define IDC_STATICDASH                  1011
 #define IDC_STATICSTEPS                 1012
 #define IDC_STATICINTERVAL              1013
@@ -43,7 +46,10 @@
 #define IDC_EDITYFROM                   1024
 #define IDC_EDITYTO                     1025
 #define IDC_EDITNAME                    1026
+#define IDC_STATICEPS                   1069
 #define IDC_EDITCELLSIZE                1070
+#define IDC_EDITMAXERROR                1071
+#define IDC_BUTTONADDEQ                 1072
 #define IDC_COMBOSTYLE                  1073
 #define IDC_BUTTONCOLOR                 1074
 #define IDC_BUTTONRESTART               1075
@@ -54,7 +60,6 @@
 #define IDC_DATALIST                    1080
 #define IDC_SPINDEGREE                  1081
 #define IDC_EDITDEGREE                  1082
-#define IDC_CUSTOM1                     1083
 #define IDC_STATICCELLSIZE              1084
 #define IDC_STATICBOUNDINGBOX           1085
 #define ID_FILE_SAVEAS                  32771
@@ -64,12 +69,12 @@
 #define ID_VIEW_SETROLLSIZE             32783
 #define ID_VIEW_SCALE_X_LINEAR          32790
 #define ID_VIEW_SCALE_X_LOGARITHMIC     32791
-#define ID_VIEW_SCALE_X_NORMALDISTRIBUTION 32792
+#define ID_VIEW_SCALE_X_NORMALDIST      32792
 #define ID_VIEW_SCALE_X_DATETIME        32793
 #define ID_EDIT_FINDMATCHINGPARENTESIS  32793
 #define ID_VIEW_SCALE_Y_LINEAR          32800
 #define ID_VIEW_SCALE_Y_LOGARITHMIC     32801
-#define ID_VIEW_SCALE_Y_NORMALDISTRIBUTION 32802
+#define ID_VIEW_SCALE_Y_NORMALDIST      32802
 #define ID_VIEW_SCALE_Y_DATETIME        32803
 #define ID_VIEW_SCALE_RESETSCALE        32810
 #define ID_VIEW_STYLE_CURVE             32820
@@ -85,6 +90,7 @@
 #define ID_TOOLS_FIT_CUSTOM_FUNCTION    32843
 #define ID_TOOLS_PLOT                   32850
 #define ID_TOOLS_IMPLICITDEFINEDCURVE   32851
+#define ID_TOOLS_DIFFERENTIALEQUATIONS  32852
 #define ID_OPTIONS_IGNOREERRORS         32860
 #define ID_OPTIONS_DEGREES              32861
 #define ID_OPTIONS_RADIANS              32862
@@ -100,18 +106,18 @@
 #define ID_GOTO_STEP                    32904
 #define ID_GOTO_CELLSIZE                32905
 #define ID_GOTO_STYLE                   32907
+#define ID_GOTO_MAXERROR                32908
 #define ID_SELECTMENU_HIDE              32916
 #define ID_SELECTMENU_SHOW              32917
-#define ID_BUTTON32918                  32918
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
-#define _APS_NEXT_RESOURCE_VALUE        114
-#define _APS_NEXT_COMMAND_VALUE         32922
-#define _APS_NEXT_CONTROL_VALUE         1069
+#define _APS_NEXT_RESOURCE_VALUE        125
+#define _APS_NEXT_COMMAND_VALUE         32930
+#define _APS_NEXT_CONTROL_VALUE         1092
 #define _APS_NEXT_SYMED_VALUE           153
 #endif
 #endif

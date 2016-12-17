@@ -153,26 +153,20 @@ void PointGraph::paint(CCoordinateSystem &cs) {
 
 double PointGraph::getSmallestPositiveX() const {
   const Point2DArray &data = getProcessedData();
-  if(data.size() == 0) {
-    return 0;
-  } else {
-    double result = max(0, data[0].x);
-    for(size_t i = 0; i < data.size(); i++) {
-      result = getMinPositive(data[i].x, result);
-    }
-    return result;
+  if(data.isEmpty()) return 0;
+  double result = max(0, data[0].x);
+  for(size_t i = 1; i < data.size(); i++) {
+    result = getMinPositive(data[i].x, result);
   }
+  return result;
 }
 
 double PointGraph::getSmallestPositiveY() const {
   const Point2DArray &data = getProcessedData();
-  if(data.size() == 0) {
-    return 0;
-  } else {
-    double result = max(0, data[0].y);
-    for(size_t i = 0; i < data.size(); i++) {
-      result = getMinPositive(data[i].y, result);
-    }
-    return result;
+  if(data.isEmpty()) return 0;
+  double result = max(0, data[0].y);
+  for(size_t i = 1; i < data.size(); i++) {
+    result = getMinPositive(data[i].y, result);
   }
+  return result;
 }

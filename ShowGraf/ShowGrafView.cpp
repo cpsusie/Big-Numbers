@@ -8,6 +8,7 @@
 #include "DataGraph.h"
 #include "ExprGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
+#include "DiffEquationGraphDlg.h"
 #include "DataGraphDlg.h"
 
 #ifdef _DEBUG
@@ -296,8 +297,8 @@ void CShowGrafView::OnDraw(CDC *pDC) {
       const DataRange dr = m_coordinateSystem.getDataRange();
       enableMenuItem(ID_VIEW_SCALE_X_LOGARITHMIC       , dr.getMinX() > 0);
       enableMenuItem(ID_VIEW_SCALE_Y_LOGARITHMIC       , dr.getMinY() > 0);
-      enableMenuItem(ID_VIEW_SCALE_X_NORMALDISTRIBUTION, maxNormInterval.contains(dr.getXInterval()));
-      enableMenuItem(ID_VIEW_SCALE_Y_NORMALDISTRIBUTION, maxNormInterval.contains(dr.getYInterval()));
+      enableMenuItem(ID_VIEW_SCALE_X_NORMALDIST        , maxNormInterval.contains(dr.getXInterval()));
+      enableMenuItem(ID_VIEW_SCALE_Y_NORMALDIST        , maxNormInterval.contains(dr.getYInterval()));
       checkMenuItem( ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.isRetainingAspectRatio());
       enableMenuItem(ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.canRetainAspectRatio());
     }
@@ -431,7 +432,7 @@ void CShowGrafView::OnSelectMenuEdit() {
   if(m_graphArray.getCurrentSelection() >= 0) {
     Graph &g = m_graphArray[m_graphArray.getCurrentSelection()].getGraph();
     switch(g.getType()) {
-    case EXPRESSIONGRAPH:
+    case EXPRESSIONGRAPH  :
       { ExpressionGraphParameters *param = (ExpressionGraphParameters*)&g.getParam();
         CExprGraphDlg dlg(*param);
         if(dlg.DoModal() == IDOK) {
@@ -440,7 +441,7 @@ void CShowGrafView::OnSelectMenuEdit() {
       }
       break;
 
-    case ISOCURVEGRAPH:
+    case ISOCURVEGRAPH    :
       { IsoCurveGraphParameters *param = (IsoCurveGraphParameters*)&g.getParam();
         CIsoCurveGraphDlg dlg(*param);
         if(dlg.DoModal() == IDOK) {
@@ -449,11 +450,24 @@ void CShowGrafView::OnSelectMenuEdit() {
       }
       break;
 
-    case DATAGRAPH      :
+    case DATAGRAPH        :
       { CDataGraphDlg dlg((DataGraph&)g);
         dlg.DoModal();
       }
       break;
+
+    case DIFFEQUATIONGRAPH:
+      { DiffEquationGraphParameters *param = (DiffEquationGraphParameters*)&g.getParam();
+        CDiffEquationGraphDlg dlg(*param);
+        if(dlg.DoModal() == IDOK) {
+          g.calculate();
+        }
+      }
+      break;
+
+    default:
+      MessageBox(format(_T("%s:Unknown graph type:%d"), __TFUNCTION__, g.getType()).cstr());
+      return;
     }
     Invalidate();
   }
@@ -499,16 +513,19 @@ void CShowGrafView::initScale() {
 }
 
 void CShowGrafView::addGraphFromFile(const String &fileName) {
-  try {
-    readExprFile(fileName);
-  } catch(Exception e) {
+  for (int i = 0; i < 4; i++) {
     try {
-      readDataFile(fileName);
+      switch(i) {
+      case 0: readExprFile(  fileName); break;
+      case 1: readIsoFile(   fileName); break;
+      case 2: readDataFile(  fileName); break;
+      case 3: readDiffEqFile(fileName); break;
+      }
       return;
-    } catch(...) {
+    } catch(Exception e) {
     }
-    MessageBox(e.what());
   }
+  MessageBox(format(_T("%s is not a valid format"), fileName.cstr()).cstr(), _T("Error"), MB_ICONWARNING);
 }
 
 void CShowGrafView::readDataFile(const String &fileName) {
@@ -535,8 +552,28 @@ void CShowGrafView::readDataFile(const String &fileName) {
 
 void CShowGrafView::readExprFile(const String &fileName) {
   ExpressionGraphParameters param;
-  param.read(fileName);
+  param.load(fileName);
   Graph *g = new ExpressionGraph(param);
+  m_graphArray.add(g);
+  if(m_graphArray.size() == 1) {
+    initScale();
+  }
+}
+
+void CShowGrafView::readIsoFile(const String &fileName) {
+  IsoCurveGraphParameters param;
+  param.load(fileName);
+  Graph *g = new IsoCurveGraph(param);
+  m_graphArray.add(g);
+  if(m_graphArray.size() == 1) {
+    initScale();
+  }
+}
+
+void CShowGrafView::readDiffEqFile(const String &fileName) {
+  DiffEquationGraphParameters param;
+  param.load(fileName);
+  Graph *g = new DiffEquationGraph(param);
   m_graphArray.add(g);
   if(m_graphArray.size() == 1) {
     initScale();
@@ -555,7 +592,7 @@ void CShowGrafView::setRollSize(int size) {
 void CShowGrafView::setXAxisType(AxisType type) {
   checkMenuItem(ID_VIEW_SCALE_X_LINEAR            , false);
   checkMenuItem(ID_VIEW_SCALE_X_LOGARITHMIC       , false);
-  checkMenuItem(ID_VIEW_SCALE_X_NORMALDISTRIBUTION, false);
+  checkMenuItem(ID_VIEW_SCALE_X_NORMALDIST        , false);
   checkMenuItem(ID_VIEW_SCALE_X_DATETIME          , false);
   switch(type) {
   case AXIS_LINEAR              :
@@ -579,7 +616,7 @@ void CShowGrafView::setXAxisType(AxisType type) {
     }
     break;
   case AXIS_NORMAL_DISTRIBUTION :
-    checkMenuItem(ID_VIEW_SCALE_X_NORMALDISTRIBUTION, true);
+    checkMenuItem(ID_VIEW_SCALE_X_NORMALDIST, true);
     break;
   case AXIS_DATE                :
     checkMenuItem(ID_VIEW_SCALE_X_DATETIME          , true);
@@ -591,7 +628,7 @@ void CShowGrafView::setXAxisType(AxisType type) {
 void CShowGrafView::setYAxisType(AxisType type) {
   checkMenuItem(ID_VIEW_SCALE_Y_LINEAR            , false);
   checkMenuItem(ID_VIEW_SCALE_Y_LOGARITHMIC       , false);
-  checkMenuItem(ID_VIEW_SCALE_Y_NORMALDISTRIBUTION, false);
+  checkMenuItem(ID_VIEW_SCALE_Y_NORMALDIST        , false);
   checkMenuItem(ID_VIEW_SCALE_Y_DATETIME          , false);
   switch(type) {
   case AXIS_LINEAR              :
@@ -615,7 +652,7 @@ void CShowGrafView::setYAxisType(AxisType type) {
     }
     break;
   case AXIS_NORMAL_DISTRIBUTION :
-    checkMenuItem(ID_VIEW_SCALE_Y_NORMALDISTRIBUTION, true);
+    checkMenuItem(ID_VIEW_SCALE_Y_NORMALDIST, true);
     break;
   case AXIS_DATE                :
     checkMenuItem(ID_VIEW_SCALE_Y_DATETIME          , true);
@@ -655,6 +692,12 @@ void CShowGrafView::addExpressionGraph(ExpressionGraphParameters &param) {
 
 void CShowGrafView::addIsoCurveGraph(IsoCurveGraphParameters &param) {
   m_graphArray.add(new IsoCurveGraph(param));
+  m_graphArray.select(m_graphArray.size()-1);
+  Invalidate(TRUE);
+}
+
+void CShowGrafView::addDiffEquationGraph(DiffEquationGraphParameters &param) {
+  m_graphArray.add(new DiffEquationGraph(param));
   m_graphArray.select(m_graphArray.size()-1);
   Invalidate(TRUE);
 }

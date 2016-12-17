@@ -28,6 +28,14 @@ DataGraphParameters::DataGraphParameters(const String &name
   m_yRelativeToFirst = yRelativeToFirst;
 }
 
+void DataGraphParameters::readFile(FILE *f) {
+  throwException(_T("%s:unsupported function"), __TFUNCTION__);
+}
+
+void DataGraphParameters::writeFile(FILE *f) {
+  throwException(_T("%s:unsupported function"), __TFUNCTION__);
+}
+
 DataReader::DataReader(StringConverter convert, double from, double to, int flags) : m_legalInterval(from,to) {
   m_convert = convert;
   m_flags   = flags;

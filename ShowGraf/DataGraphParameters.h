@@ -5,7 +5,11 @@
 
 class DataGraphParameters : public GraphParameters {
 private:
-  String m_fileName;
+  String     m_fileName;
+protected:
+  void readFile( FILE *f);
+  void writeFile(FILE *f);
+
 public:
   DataGraphParameters(const String &name, COLORREF color, bool onePerLine, bool ignoreErrors, bool xRelativeToFirst, bool yRelativeToFirst, DataReader &xReader, DataReader &yReader, int rollSize, GraphStyle style);
   const String &getFileName() const {

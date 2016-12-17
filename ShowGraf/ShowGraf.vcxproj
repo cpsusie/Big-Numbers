@@ -284,6 +284,10 @@
     <ClCompile Include="DataGraphDlg.cpp" />
     <ClCompile Include="DataGraphParameters.cpp" />
     <ClCompile Include="DegreeDlg.cpp" />
+    <ClCompile Include="DiffEquationGraph.cpp" />
+    <ClCompile Include="DiffEquationGraphDlg.cpp" />
+    <ClCompile Include="DiffEquationGraphParameters.cpp" />
+    <ClCompile Include="DiffEquationSystem.cpp" />
     <ClCompile Include="ExpressionGraph.cpp" />
     <ClCompile Include="ExpressionGraphParameters.cpp" />
     <ClCompile Include="ExprGraphDlg.cpp" />
@@ -324,6 +328,10 @@
     <ClInclude Include="DataGraphDlg.h" />
     <ClInclude Include="DataGraphParameters.h" />
     <ClInclude Include="DegreeDlg.h" />
+    <ClInclude Include="DiffEquationGraph.h" />
+    <ClInclude Include="DiffEquationGraphDlg.h" />
+    <ClInclude Include="DiffEquationGraphParameters.h" />
+    <ClInclude Include="DiffEquationSystem.h" />
     <ClInclude Include="ExpressionGraph.h" />
     <ClInclude Include="ExpressionGraphParameters.h" />
     <ClInclude Include="ExprGraphDlg.h" />
@@ -352,6 +360,7 @@
     <Image Include="res\bmpFitExpoFunction.bmp" />
     <Image Include="res\bmpFitPolyFunction.bmp" />
     <Image Include="res\bmpFitPotensFunction.bmp" />
+    <Image Include="res\DeleteMark.bmp" />
     <Image Include="res\mainframe.bmp" />
     <Image Include="res\ShowGraf.ico" />
     <Image Include="res\ShowGrafDoc.ico" />

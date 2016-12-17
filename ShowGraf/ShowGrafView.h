@@ -4,32 +4,34 @@
 #include "GraphArray.h"
 #include "ExpressionGraph.h"
 #include "IsoCurveGraph.h"
+#include "DiffEquationGraph.h"
 #include "CustomFitThread.h"
 
 class CShowGrafView : public CFormView, public FunctionPlotter {
 private:
     enum { IDD = IDD_SHOWGRAFVIEW };
 
-    CCoordinateSystem         m_coordinateSystem;
-    bool                      m_firstDraw;
-    CFont                     m_axisFont;
-    CFont                     m_buttonFont;
-    GraphArray                m_graphArray;
-    GraphStyle                m_grafStyle;
-    AxisType                  m_XAxisType,m_YAxisType;
-    DataReader               *m_xReader, *m_yReader;
-    int                       m_rollSize;
-    COLORREF                  m_backgroundColor,m_axisColor;
-    bool                      m_onePerLine;
-    bool                      m_rangeSpecified;
-    bool                      m_dragging;
-    RectangleTransformation   m_mouseDownTransform;
-    CPoint                    m_mouseDownPoint;
-    bool                      m_xRelativeToFirst, m_yRelativeToFirst;
-    DataRange                 m_explicitRange;
-    CCustomFitThread         *m_fitThread;
-    ExpressionGraphParameters m_plotParam;
-    IsoCurveGraphParameters   m_isoCurveParam;
+    CCoordinateSystem           m_coordinateSystem;
+    bool                        m_firstDraw;
+    CFont                       m_axisFont;
+    CFont                       m_buttonFont;
+    GraphArray                  m_graphArray;
+    GraphStyle                  m_grafStyle;
+    AxisType                    m_XAxisType,m_YAxisType;
+    DataReader                 *m_xReader, *m_yReader;
+    int                         m_rollSize;
+    COLORREF                    m_backgroundColor,m_axisColor;
+    bool                        m_onePerLine;
+    bool                        m_rangeSpecified;
+    bool                        m_dragging;
+    RectangleTransformation     m_mouseDownTransform;
+    CPoint                      m_mouseDownPoint;
+    bool                        m_xRelativeToFirst, m_yRelativeToFirst;
+    DataRange                   m_explicitRange;
+    CCustomFitThread           *m_fitThread;
+    ExpressionGraphParameters   m_plotParam;
+    IsoCurveGraphParameters     m_isoCurveParam;
+    DiffEquationGraphParameters m_diffEqParam;
 
     void checkMenuItem(int id, bool checked);
     bool isMenuItemChecked(int id);
@@ -63,14 +65,17 @@ public:
     void init();
     void initScale();
     void clear();
-    void addGraphFromFile(    const String &fileName);
-    void readDataFile(const String &fileName);
-    void readExprFile(const String &fileName);
+    void addGraphFromFile(const String &fileName);
+    void readDataFile(    const String &fileName);
+    void readExprFile(    const String &fileName);
+    void readIsoFile(     const String &fileName);
+    void readDiffEqFile(  const String &fileName);
     void setGraphStyle(GraphStyle newStyle);
     void setXAxisType(AxisType type);
     void setYAxisType(AxisType type);
     void setRollingAverage(bool on);
     void setRetainAspectRatio(bool retain);
+
     CCoordinateSystem &getCoordinateSystem() {
       return m_coordinateSystem;
     }
@@ -84,12 +89,18 @@ public:
     ExpressionGraphParameters &getPlotParam() {
       return m_plotParam;
     }
+
     IsoCurveGraphParameters &getIsoCurveParam() {
       return m_isoCurveParam;
     }
 
-    void addExpressionGraph(ExpressionGraphParameters &param);
-    void addIsoCurveGraph(  IsoCurveGraphParameters   &param);
+    DiffEquationGraphParameters &getDiffEquationParam() {
+      return m_diffEqParam;
+    }
+
+    void addExpressionGraph(  ExpressionGraphParameters   &param);
+    void addIsoCurveGraph(    IsoCurveGraphParameters     &param);
+    void addDiffEquationGraph(DiffEquationGraphParameters &param);
     void setTrigonometricMode(TrigonometricMode mode);
     void startCustomFitThread();
     void startPolynomialFitThread();

@@ -7,27 +7,28 @@
 #define new DEBUG_NEW
 #endif
 
-CExprGraphDlg::CExprGraphDlg(ExpressionGraphParameters &param, int showFlags, CWnd* pParent)  : m_param(param), CDialog(CExprGraphDlg::IDD, pParent) {
-    if(!param.hasName()) {
-      param.setDefaultName();
-    }
-    paramToWin(param);
-    m_showFlags = showFlags;
+CExprGraphDlg::CExprGraphDlg(ExpressionGraphParameters &param, int showFlags, CWnd *pParent)
+: m_param(param)
+, CDialog(CExprGraphDlg::IDD, pParent)
+{
+  if(!m_param.hasName()) {
+    m_param.setDefaultName();
+  }
+  m_showFlags = showFlags;
 }
 
 void CExprGraphDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDITEXPR , m_expr );
-    DDX_Text(pDX, IDC_EDITNAME , m_name );
-    DDX_Text(pDX, IDC_EDITXFROM, m_xfrom);
-    DDX_Text(pDX, IDC_EDITXTO  , m_xto  );
-    DDX_Text(pDX, IDC_EDITSTEPS, m_steps);
-    DDV_MinMaxUInt(pDX, m_steps, 1, 10000);
-    DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
+  CDialog::DoDataExchange(pDX);
+  DDX_Text(pDX, IDC_EDITEXPR, m_expr);
+  DDX_Text(pDX, IDC_EDITNAME, m_name);
+  DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
+  DDX_Text(pDX, IDC_EDITXTO, m_xTo);
+  DDX_Text(pDX, IDC_EDITSTEPS, m_steps);
+  DDV_MinMaxUInt(pDX, m_steps, 1, 10000);
+  DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CExprGraphDlg, CDialog)
-  ON_WM_PAINT()
   ON_WM_SIZE()
   ON_COMMAND(   ID_FILE_OPEN                  , OnFileOpen                  )
   ON_COMMAND(   ID_FILE_SAVE                  , OnFileSave                  )
@@ -38,7 +39,6 @@ BEGIN_MESSAGE_MAP(CExprGraphDlg, CDialog)
   ON_COMMAND(   ID_GOTO_EXPR                  , OnGotoExpr                  )
   ON_COMMAND(   ID_GOTO_XINTERVAL             , OnGotoXInterval             )
   ON_COMMAND(   ID_GOTO_STEP                  , OnGotoStep                  )
-  ON_BN_CLICKED(IDC_BUTTONCOLOR               , OnButtonColor               )
 END_MESSAGE_MAP()
 
 BOOL CExprGraphDlg::PreTranslateMessage(MSG* pMsg) {
@@ -51,7 +51,6 @@ BOOL CExprGraphDlg::PreTranslateMessage(MSG* pMsg) {
 BOOL CExprGraphDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_EXPR));
-  GetDlgItem(IDC_EDITNAME)->SetFocus(); 
   if(!(m_showFlags & SHOW_INTERVAL)) {
     GetDlgItem(IDC_STATICINTERVAL)->ShowWindow(SW_HIDE);
     GetDlgItem(IDC_EDITXFROM     )->ShowWindow(SW_HIDE);
@@ -63,7 +62,6 @@ BOOL CExprGraphDlg::OnInitDialog() {
     GetDlgItem(IDC_STATICSTEPS   )->ShowWindow(SW_HIDE);
     GetDlgItem(IDC_EDITSTEPS     )->ShowWindow(SW_HIDE);
   }
-#include <tchar.h>
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
@@ -87,19 +85,16 @@ BOOL CExprGraphDlg::OnInitDialog() {
     m_layoutManager.addControl(IDC_STATICSTEPS   , RELATIVE_Y_POS);
     m_layoutManager.addControl(IDC_EDITSTEPS     , RELATIVE_Y_POS);
   }
-
   m_layoutManager.scaleFont(1.5,false);
+  paramToWin(m_param);
+  UpdateData(FALSE);
   gotoEditBox(this, IDC_EDITEXPR);
 
   return FALSE;
 }
 
-
 void CExprGraphDlg::OnOK() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
+  if(!UpdateData() || !validate()) return;
   winToParam(m_param);
   CDialog::OnOK();
 }
@@ -123,17 +118,13 @@ bool CExprGraphDlg::validate() {
     return false;
   }
   if(m_showFlags & SHOW_INTERVAL) {
-    if(m_xfrom >= m_xto) {
+    if(m_xFrom >= m_xTo) {
       OnGotoXInterval();
       MessageBox(_T("x-from must be less than x-to"));
       return false;
     }
   }
   return true;
-}
-
-CComboBox *CExprGraphDlg::getStyleCombo() {
-  return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
 }
 
 void CExprGraphDlg::OnGotoExpr() {
@@ -156,23 +147,6 @@ void CExprGraphDlg::OnGotoStep() {
   gotoEditBox(this,IDC_EDITSTEPS);
 }
 
-void CExprGraphDlg::OnButtonColor() {
-  CColorDialog dlg(m_color);
-  dlg.m_cc.Flags |= CC_RGBINIT;
-  if(dlg.DoModal() == IDOK) {
-    m_color = dlg.m_cc.rgbResult;
-    Invalidate();
-  }
-}
-
-void CExprGraphDlg::OnPaint() {
-  CPaintDC dc(this); // device context for painting
-
-  WINDOWPLACEMENT wp;
-  GetDlgItem(IDC_STATICCOLOR)->GetWindowPlacement(&wp);
-  dc.FillSolidRect(&wp.rcNormalPosition, m_color);
-}
-
 void CExprGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
   CDialog::OnSize(nType, cx, cy);
@@ -188,30 +162,20 @@ void CExprGraphDlg::OnFileOpen() {
     return;
   }
 
-  FILE *f = NULL;
   try {
-    f = FOPEN(dlg.m_ofn.lpstrFile, "rb");
-
     ExpressionGraphParameters param;
-    param.read(f);
-    fclose(f); f = NULL;
-    param.setName(dlg.m_ofn.lpstrFile);
+    const String fileName = dlg.m_ofn.lpstrFile;
+    param.load(fileName);
     paramToWin(param);
-    addToRecent(dlg.m_ofn.lpstrFile);
+    addToRecent(fileName);
     UpdateData(false);
   } catch(Exception e) {
-    if(f) {
-      fclose(f);
-    }
     showException(e);
   }
 }
 
 void CExprGraphDlg::OnFileSave() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
+  if(!UpdateData() || !validate()) return;
   
   ExpressionGraphParameters param;
   winToParam(param);
@@ -224,10 +188,7 @@ void CExprGraphDlg::OnFileSave() {
 }
 
 void CExprGraphDlg::OnFileSaveAs() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
+  if(!UpdateData() || !validate()) return;
   
   ExpressionGraphParameters param;
   winToParam(param);
@@ -246,19 +207,12 @@ void CExprGraphDlg::saveAs(ExpressionGraphParameters &param) {
 }
 
 void CExprGraphDlg::save(const String &fileName, ExpressionGraphParameters &param) {
-  FILE *f = NULL;
   try {
-    f = FOPEN(fileName, "wb");
-    param.setName(fileName);
-    param.write(f);
+    param.save(fileName);
     paramToWin(param);
-    fclose(f); f = NULL;
     addToRecent(fileName);
     UpdateData(FALSE);
   } catch(Exception e) {
-    if(f) {
-      fclose(f);
-    }
     showException(e);
   }
 }
@@ -281,11 +235,11 @@ void CExprGraphDlg::OnEditFindmatchingparentesis() {
 void CExprGraphDlg::paramToWin(const ExpressionGraphParameters &param) {
   m_fullName = param.getFullName();
   m_name     = param.getPartialName().cstr();
-  m_style    = GraphParameters::graphStyleToString(param.m_style).cstr();
-  m_color    = param.m_color;
+  m_style    = GraphParameters::graphStyleToString(param.m_style);
+  getColorButton()->SetColor(param.m_color);
   m_expr     = param.m_expr.cstr();
-  m_xfrom    = param.m_interval.getMin();
-  m_xto      = param.m_interval.getMax();
+  m_xFrom    = param.m_interval.getMin();
+  m_xTo      = param.m_interval.getMax();
   m_steps    = param.m_steps;
 }
 
@@ -297,9 +251,8 @@ void CExprGraphDlg::winToParam(ExpressionGraphParameters &param) {
   param.setName(m_fullName);
   param.m_expr  = m_expr;
   param.m_style = (GraphStyle)getStyleCombo()->GetCurSel();
-  param.m_color = m_color;
-  param.m_interval.setFrom(m_xfrom);
-  param.m_interval.setTo(m_xto);
+  param.m_color = getColorButton()->GetColor();
+  param.m_interval.setFrom(m_xFrom);
+  param.m_interval.setTo(m_xTo);
   param.m_steps = m_steps;
 }
-

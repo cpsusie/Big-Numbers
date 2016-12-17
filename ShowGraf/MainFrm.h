@@ -79,13 +79,13 @@ protected:
     afx_msg void OnToolsFitCustomFunction();
     afx_msg void OnToolsPlot();
     afx_msg void OnToolsImplicitDefinedCurve();
+    afx_msg void OnToolsDifferentialEquations();
     afx_msg void OnOptionsIgnoreErrors();
     afx_msg void OnOptionsRadians();
     afx_msg void OnOptionsDegrees();
     afx_msg void OnOptionsGrads();
 
   DECLARE_MESSAGE_MAP()
-
 };
 
 

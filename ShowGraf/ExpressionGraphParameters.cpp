@@ -11,16 +11,14 @@ ExpressionGraphParameters::ExpressionGraphParameters(const String &name, COLORRE
 }
 
    
-void ExpressionGraphParameters::write(FILE *f) {
+void ExpressionGraphParameters::writeFile(FILE *f) {
   USES_CONVERSION;
-  const TCHAR *tstyle = graphStyleToString(m_style).cstr();
-  const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode).cstr();
-  const TCHAR *texpr  = m_expr.cstr();
+  const TCHAR *tstyle = graphStyleToString(m_style);
+  const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
   const char  *astyle = T2A(tstyle);
   const char  *atrigo = T2A(ttrigo);
-  const char  *aexpr  = T2A(texpr);
 
-  fprintf(f,"%lf %lf %d %s %s %08x %d\n%s\n"
+  fprintf(f, "%lf %lf %d %s %s %08x %d\n"
    ,m_interval.getFrom()
    ,m_interval.getTo()
    ,m_steps
@@ -28,23 +26,11 @@ void ExpressionGraphParameters::write(FILE *f) {
    ,atrigo
    ,m_color
    ,m_rollSize
-   ,aexpr
   );
+  writeString(f, m_expr);
 }
 
-void ExpressionGraphParameters::read(const String &fileName) {
-  FILE *f = FOPEN(fileName, "r");
-  try {
-    read(f);
-    fclose(f);
-    setName(fileName);
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-
-void ExpressionGraphParameters::read(FILE *f) {
+void ExpressionGraphParameters::readFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double from, to;
   int steps;
@@ -60,11 +46,6 @@ void ExpressionGraphParameters::read(FILE *f) {
   m_trigonometricMode = trigonometricModeFromString(trigoStr);
   m_color             = color;
   m_rollSize          = rollSize;
-
-  char line[4096];
-  m_expr = _T("");
-  while(fgets(line, ARRAYSIZE(line), f)) {
-    m_expr += line;
-  }
+  m_expr              = readString(f);
 }
 

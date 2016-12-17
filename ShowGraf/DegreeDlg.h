@@ -10,31 +10,31 @@ private:
     CompactArray<DataPoint>   m_data;
     FunctionPlotter          &m_fp;
     DataFit                   m_fit;
-    COLORREF                  m_color;
+
+    CMFCColorButton *getColorButton() {
+      return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
+    }
 
     void setDegree(int degree);
+    COLORREF getColor() {
+      return getColorButton()->GetColor();
+    }
+    void setColor(COLORREF color) {
+      getColorButton()->SetColor(color);
+    }
 public:
-    CDegreeDlg(const Point2DArray &m_pointArray, FunctionPlotter &fp, CWnd* pParent = NULL);
+    CDegreeDlg(const Point2DArray &m_pointArray, FunctionPlotter &fp, CWnd *pParent = NULL);
 
-    //{{AFX_DATA(CDegreeDlg)
     enum { IDD = IDD_DEGREE_DIALOG };
     UINT    m_degree;
-    //}}AFX_DATA
 
-
-    //{{AFX_VIRTUAL(CDegreeDlg)
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-    //}}AFX_VIRTUAL
+protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 
-    //{{AFX_MSG(CDegreeDlg)
-	afx_msg void OnDeltaposSpinDegree(NMHDR* pNMHDR, LRESULT* pResult);
+	afx_msg void OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult);
 	virtual BOOL OnInitDialog();
-	virtual void OnOK();
-	//}}AFX_MSG
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
-//{{AFX_INSERT_LOCATION}}

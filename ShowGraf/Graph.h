@@ -4,10 +4,14 @@
 #include <MFCUtil/Coordinatesystem/Coordinatesystem.h>
 #include "GraphParameters.h"
 
+#define EMPTY_DISTANCE 1e40
+
 typedef enum {
-  EXPRESSIONGRAPH
+  POINTGRAPH
+ ,EXPRESSIONGRAPH
  ,DATAGRAPH
  ,ISOCURVEGRAPH
+ ,DIFFEQUATIONGRAPH
 } GraphType;
 
 class Graph : public CoordinateSystemObject {
@@ -17,9 +21,6 @@ protected:
   GraphParameters *m_param;
   Graph(GraphParameters *param) {
     m_param = param;
-  }
-  static inline double getMinPositive(double x, double r) {
-    return (x > 0 && (r == 0 || x < r)) ? x : r;
   }
   static bool pointDefined(const Point2D &p) {
     return _finite(p.x) && !_isnan(p.x) && _finite(p.y) && !_isnan(p.y);
@@ -40,6 +41,9 @@ public:
   virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
   inline double  distance(const Point2DP &p) const {;
     return distance(p,RectangleTransformation::id);
+  }
+  static inline double getMinPositive(double x, double r) {
+    return (x > 0 && (r == 0 || x < r)) ? x : r;
   }
   virtual double  getSmallestPositiveX() const = 0;
   virtual double  getSmallestPositiveY() const = 0;
@@ -66,14 +70,16 @@ private:
 
 protected:
   void findDataRange();
-  PointGraph(GraphParameters *param);
 public:
+  PointGraph(GraphParameters *param);
   void paint(CCoordinateSystem &cs);
 
   inline bool isEmpty() const {
     return m_pointArray.isEmpty();
   }
-  
+  GraphType getType() const {
+    return POINTGRAPH;
+  }
   void addPoint(const Point2D &p);
   void clear();
 
@@ -95,4 +101,3 @@ public:
     return true;
   }
 };
-

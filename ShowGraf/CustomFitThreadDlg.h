@@ -18,25 +18,43 @@ public:
 };
 
 class CCustomFitThreadDlg : public CDialog {
+private:
+    HACCEL                    m_accelTable;
+    CListCtrl	                m_dataList;
+    CString                   m_name;
+    CString                   m_expr;
+    double                    m_xFrom;
+    double                    m_xTo;
+
+    CMFCColorButton *getColorButton() {
+      return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
+    }
+    COLORREF getColor() {
+      return getColorButton()->GetColor();
+    }
+    void setColor(COLORREF color) {
+      getColorButton()->SetColor(color);
+    }
+    DoubleInterval getXInterval() {
+      return DoubleInterval(m_xFrom, m_xTo);
+    }
+    void setXInterval(const DoubleInterval &i) {
+      m_xFrom = i.getFrom();
+      m_xTo   = i.getTo();
+    }
 public:
     CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent = NULL);
 
-  enum { IDD = IDD_FITTHREAD_DIALOG };
-    CListCtrl	m_dataList;
-    CString     m_expr;
-    double      m_xfrom;
-    double      m_xto;
-    CString     m_name;
+    enum { IDD = IDD_FITTHREAD_DIALOG };
 
-    HACCEL                    m_accelTable;
     FunctionFitter           *m_functionFitter;
     FitThread                *m_worker;
     Array<CStatic*>           m_infoField;
     const Point2DArray       &m_pointArray;
     FunctionPlotter          &m_fp;
     bool                      m_running;
-    COLORREF                  m_color;
     ExpressionGraphParameters m_param;
+
     void allocateInfoFields(int n);
     void deallocateInfoFields();
     void allocateFunctionFitter();
@@ -58,7 +76,6 @@ protected:
 
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
-    afx_msg void OnPaint();
     virtual void OnOK();
     virtual void OnCancel();
     afx_msg void OnButtonStep();
@@ -66,7 +83,6 @@ protected:
     afx_msg void OnButtonStop();
     afx_msg void OnButtonPlot();
     afx_msg void OnButtonRestart();
-    afx_msg void OnButtonColor();
     afx_msg void OnGotoName();
     afx_msg void OnGotoFunction();
     afx_msg void OnGotoXInterval();

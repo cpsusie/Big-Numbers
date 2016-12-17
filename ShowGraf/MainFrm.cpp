@@ -5,6 +5,7 @@
 #include "RollSizeDlg.h"
 #include "ExprGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
+#include "DiffEquationGraphDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -35,10 +36,10 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_VIEW_GRID                      , OnViewGrid                    )
   ON_COMMAND(ID_VIEW_SCALE_X_LINEAR            , OnViewScaleXLinear            )
   ON_COMMAND(ID_VIEW_SCALE_X_LOGARITHMIC       , OnViewScaleXLogarithmic       )
-  ON_COMMAND(ID_VIEW_SCALE_X_NORMALDISTRIBUTION, OnViewScaleXNormaldistribution)
+  ON_COMMAND(ID_VIEW_SCALE_X_NORMALDIST        , OnViewScaleXNormaldistribution)
   ON_COMMAND(ID_VIEW_SCALE_Y_LINEAR            , OnViewScaleYLinear            )
   ON_COMMAND(ID_VIEW_SCALE_Y_LOGARITHMIC       , OnViewScaleYLogarithmic       )
-  ON_COMMAND(ID_VIEW_SCALE_Y_NORMALDISTRIBUTION, OnViewScaleYNormaldistribution)
+  ON_COMMAND(ID_VIEW_SCALE_Y_NORMALDIST        , OnViewScaleYNormaldistribution)
   ON_COMMAND(ID_VIEW_SCALE_Y_DATETIME          , OnViewScaleYDatetime          )
   ON_COMMAND(ID_VIEW_SCALE_X_DATETIME          , OnViewScaleXDatetime          )
   ON_COMMAND(ID_VIEW_SCALE_RESETSCALE          , OnViewScaleResetScale         )
@@ -56,6 +57,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_TOOLS_FIT_CUSTOM_FUNCTION      , OnToolsFitCustomFunction      )
   ON_COMMAND(ID_TOOLS_PLOT                     , OnToolsPlot                   )
   ON_COMMAND(ID_TOOLS_IMPLICITDEFINEDCURVE     , OnToolsImplicitDefinedCurve   )
+  ON_COMMAND(ID_TOOLS_DIFFERENTIALEQUATIONS    , OnToolsDifferentialEquations  )
   ON_COMMAND(ID_OPTIONS_IGNOREERRORS           , OnOptionsIgnoreErrors         )
   ON_COMMAND(ID_OPTIONS_RADIANS                , OnOptionsRadians              )
   ON_COMMAND(ID_OPTIONS_DEGREES                , OnOptionsDegrees              )
@@ -370,6 +372,20 @@ void CMainFrame::OnToolsImplicitDefinedCurve() {
   }
 }
 
+void CMainFrame::OnToolsDifferentialEquations() {
+  try {
+    DiffEquationGraphParameters &param = getView()->getDiffEquationParam();
+    param.m_trigonometricMode = getTrigonometricMode();
+    const DoubleInterval xInterval = getView()->getCoordinateSystem().getDataRange().getXInterval();
+    CDiffEquationGraphDlg dlg(param);
+    if(dlg.DoModal() == IDOK) {
+      getView()->addDiffEquationGraph(param);
+    }
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
 void CMainFrame::OnOptionsIgnoreErrors() {
   toggleMenuItem(this,ID_OPTIONS_IGNOREERRORS);
   Invalidate(FALSE);
@@ -407,3 +423,5 @@ void CMainFrame::setTrigonometricMode(TrigonometricMode mode) {
 void CMainFrame::OnOptionsRadians() {  setTrigonometricMode(RADIANS); }
 void CMainFrame::OnOptionsDegrees() {  setTrigonometricMode(DEGREES); }
 void CMainFrame::OnOptionsGrads()   {  setTrigonometricMode(GRADS  ); }
+
+

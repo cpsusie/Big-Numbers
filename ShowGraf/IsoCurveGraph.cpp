@@ -159,16 +159,14 @@ const DataRange &IsoCurveGraph::getDataRange() const {
 }
 
 double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
-  if(isEmpty()) {
-    return 1e40;
-  }
-  const int          n  = (int)m_lineArray.size();
+  if(isEmpty()) return EMPTY_DISTANCE;
+  const size_t       n  = m_lineArray.size();
   const LineSegment *ls = &m_lineArray[0];
 
   switch(getParam().m_style) {
   case GSCURVE:
     { double minDist = -1;
-      for(int i = 0; i < n; i++, ls++) {
+      for(size_t i = 0; i < n; i++, ls++) {
         const Point2D &p1 = m_pointArray[ls->m_i1];
         const Point2D &p2 = m_pointArray[ls->m_i2];
         const double dist = distanceFromLineSegment(tr.forwardTransform((Point2DP)p1), tr.forwardTransform(p2), (Point2DP)p);
@@ -181,7 +179,7 @@ double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &t
   case GSPOINT:
   case GSCROSS:
     { double minDist = -1;
-      for(int i = 0; i < n; i++, ls++) {
+      for(size_t i = 0; i < n; i++, ls++) {
         const Point2D &p1 = m_pointArray[ls->m_i1];
         const Point2D &p2 = m_pointArray[ls->m_i2];
         double dist = ::distance(tr.forwardTransform(p1), (Point2DP)p);
@@ -202,33 +200,27 @@ double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &t
 }
 
 double IsoCurveGraph::getSmallestPositiveX() const {
-  if(isEmpty()) {
-    return 0;
-  } else {
-    const int          n      = (int)m_lineArray.size();
-    const LineSegment *ls     = &m_lineArray[0];
-    double             result = max(0, m_pointArray[ls->m_i1].x);
+  if(isEmpty()) return 0;
+  const size_t       n      = m_lineArray.size();
+  const LineSegment *ls     = &m_lineArray[0];
+  double             result = max(0, m_pointArray[ls->m_i1].x);
+  result = getMinPositive(m_pointArray[ls->m_i2].x, result);
+  for(size_t i = 0; i < n; i++, ls++) {
+    result = getMinPositive(m_pointArray[ls->m_i1].x, result);
     result = getMinPositive(m_pointArray[ls->m_i2].x, result);
-    for(int i = 0; i < n; i++, ls++) {
-      result = getMinPositive(m_pointArray[ls->m_i1].x, result);
-      result = getMinPositive(m_pointArray[ls->m_i2].x, result);
-    }
-    return result;
   }
+  return result;
 }
 
 double IsoCurveGraph::getSmallestPositiveY() const {
-  if(isEmpty()) {
-    return 0;
-  } else {
-    const int          n      = (int)m_lineArray.size();
-    const LineSegment *ls     = &m_lineArray[0];
-    double             result = max(0, m_pointArray[ls->m_i1].y);
+  if(isEmpty()) return 0;
+  const size_t       n      = m_lineArray.size();
+  const LineSegment *ls     = &m_lineArray[0];
+  double             result = max(0, m_pointArray[ls->m_i1].y);
+  result = getMinPositive(m_pointArray[ls->m_i2].y, result);
+  for(size_t i = 0; i < n; i++, ls++) {
+    result = getMinPositive(m_pointArray[ls->m_i1].y, result);
     result = getMinPositive(m_pointArray[ls->m_i2].y, result);
-    for(int i = 0; i < n; i++, ls++) {
-      result = getMinPositive(m_pointArray[ls->m_i1].y, result);
-      result = getMinPositive(m_pointArray[ls->m_i2].y, result);
-    }
-    return result;
   }
+  return result;
 }

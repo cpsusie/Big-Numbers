@@ -30,6 +30,12 @@ public:
 class GraphParameters {
 private:
   String     m_name;
+protected:
+  static String readString( FILE *f);
+  static void   writeString(FILE *f, const String &str);
+  static String readLine(   FILE *f);
+  virtual void  readFile(   FILE *f);
+  virtual void  writeFile(  FILE *f);
 public:
   COLORREF   m_color;
   int        m_rollSize;
@@ -52,8 +58,11 @@ public:
     m_name = _T("Untitled");
   }
 
-  static String            graphStyleToString(GraphStyle style);
+  void load(const String &fileName);
+  void save(const String &fileName);
+
+  static const TCHAR      *graphStyleToString(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
-  static String            trigonometricModeToString(TrigonometricMode mode);
+  static const TCHAR      *trigonometricModeToString(TrigonometricMode mode);
   static TrigonometricMode trigonometricModeFromString(const String &str);
 };

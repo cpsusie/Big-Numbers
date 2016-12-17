@@ -134,37 +134,21 @@ void GraphArray::clear() {
 }
 
 double GraphArray::getSmallestPositiveX() const {
-  if(size() == 0) {
-    return 0;
-  } else {
-    double result = getItem(0).getGraph().getSmallestPositiveX();
-    if(result < 0) {
-      result = 0;
-    }
-    for(size_t i = 0; i < size(); i++) {
-      double x = getItem(i).getGraph().getSmallestPositiveX();
-      if(x > 0 && (result == 0 || x < result)) {
-        result = x;
-      }
-    }
-    return result;
+  if(isEmpty()) return 0;
+  double result = getItem(0).getGraph().getSmallestPositiveX();
+  if(result < 0) result = 0;
+  for(size_t i = 1; i < size(); i++) {
+    result = Graph::getMinPositive(getItem(i).getGraph().getSmallestPositiveX(), result);
   }
+  return result;
 }
 
 double GraphArray::getSmallestPositiveY() const {
-  if(size() == 0) {
-    return 0;
-  } else {
-    double result = getItem(0).getGraph().getSmallestPositiveY();
-    if(result < 0) {
-      result = 0;
-    }
-    for(size_t i = 0; i < size(); i++) {
-      double y = getItem(i).getGraph().getSmallestPositiveY();
-      if(y > 0 && (result == 0 || y < result)) {
-        result = y;
-      }
-    }
-    return result;
+  if(isEmpty()) return 0;
+  double result = getItem(0).getGraph().getSmallestPositiveY();
+  if(result < 0) result = 0;
+  for(size_t i = 1; i < size(); i++) {
+    result = Graph::getMinPositive(getItem(i).getGraph().getSmallestPositiveY(), result);
   }
+  return result;
 }

@@ -13,7 +13,7 @@ void ExpressionGraph::calculate() {
   expr.compile(param.m_expr, true);
   m_image = expressionToImage(theApp.m_device, expr, 18);
   Real                      dummyX;
-  const ExpressionVariable *xvp       = expr.getVariable("x");
+  const ExpressionVariable *xvp       = expr.getVariable(_T("x"));
   Real                     &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
   const int                 stepCount = param.m_steps;
   double                    step      = (param.m_interval.getMax() - param.m_interval.getMin()) / stepCount;

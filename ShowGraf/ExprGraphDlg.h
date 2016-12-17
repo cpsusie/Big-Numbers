@@ -12,8 +12,21 @@ private:
     SimpleLayoutManager m_layoutManager;
     CFont               m_exprFont;
     String              m_fullName;
-    CComboBox *getStyleCombo();
 
+    CString             m_name;
+    CString	            m_style;
+    CString             m_expr;
+    double              m_xFrom;
+    double              m_xTo;
+    UINT                m_steps;
+    int                 m_showFlags;
+
+    CComboBox *getStyleCombo() {
+      return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
+    }
+    CMFCColorButton *getColorButton() {
+      return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
+    }
     bool validate();
     void paramToWin(            const ExpressionGraphParameters &param);
     void winToParam(                  ExpressionGraphParameters &param);
@@ -24,20 +37,12 @@ private:
 public:
     CExprGraphDlg(ExpressionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
     ExpressionGraphParameters &m_param;
-    COLORREF                   m_color;
-    int                        m_showFlags;
 
-  enum { IDD = IDD_EXPRGRAPH_DIALOG };
-    CString m_expr;
-    CString m_name;
-    double  m_xfrom;
-    double  m_xto;
-    UINT    m_steps;
-    CString	m_style;
+    enum { IDD = IDD_EXPRGRAPH_DIALOG };
 
-    public:
+public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
@@ -48,8 +53,6 @@ protected:
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();
     afx_msg void OnGotoStep();
-    afx_msg void OnButtonColor();
-    afx_msg void OnPaint();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnFileOpen();
     afx_msg void OnFileSave();

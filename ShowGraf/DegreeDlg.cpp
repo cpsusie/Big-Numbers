@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent /*=NULL*/) 
+CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd *pParent) 
 : m_fp(fp)
 , CDialog(CDegreeDlg::IDD, pParent) {
 
@@ -15,10 +15,8 @@ CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd
   }
 
   m_fit.solve(LSSD, m_data);
-
   m_degree = 0;
 }
-
 
 void CDegreeDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
@@ -46,7 +44,7 @@ void CDegreeDlg::setDegree(int degree) {
   m_degree = m_fit.getActualDegree();
   UpdateData(FALSE);
 
-  m_fp.plotFunction( m_fit, m_color);
+  m_fp.plotFunction( m_fit, getColor());
 }
 
 void CDegreeDlg::OnDeltaposSpinDegree(NMHDR* pNMHDR, LRESULT* pResult) {
@@ -62,8 +60,4 @@ void CDegreeDlg::OnDeltaposSpinDegree(NMHDR* pNMHDR, LRESULT* pResult) {
     setDegree(degree);
     
     *pResult = 0;
-}
-
-void CDegreeDlg::OnOK() {
-  CDialog::OnOK();
 }

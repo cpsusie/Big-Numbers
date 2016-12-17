@@ -16,8 +16,7 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
 , CDialog(CCustomFitThreadDlg::IDD, pParent) {
 
 	m_expr  = expr;
-	m_xfrom = range.getFrom();
-	m_xto   = range.getTo();
+	setXInterval(range);
 	m_name  = _T("");
   m_functionFitter = NULL;
   m_worker         = NULL;
@@ -27,21 +26,19 @@ void CCustomFitThreadDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_DATALIST, m_dataList);
 	DDX_Text(pDX, IDC_EDITEXPR , m_expr );
-	DDX_Text(pDX, IDC_EDITXFROM, m_xfrom);
-	DDX_Text(pDX, IDC_EDITXTO  , m_xto  );
+	DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
+	DDX_Text(pDX, IDC_EDITXTO  , m_xTo  );
 	DDX_Text(pDX, IDC_EDITNAME , m_name );
 }
 
 
 BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
   ON_WM_TIMER()
-	ON_WM_PAINT()
 	ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
 	ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
 	ON_BN_CLICKED(IDC_BUTTONSTOP   , OnButtonStop   )
 	ON_BN_CLICKED(IDC_BUTTONPLOT   , OnButtonPlot   )
 	ON_BN_CLICKED(IDC_BUTTONRESTART, OnButtonRestart)
-	ON_BN_CLICKED(IDC_BUTTONCOLOR  , OnButtonColor  )
 	ON_COMMAND(ID_GOTO_NAME        , OnGotoName     )
   ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
 	ON_COMMAND(ID_GOTO_XINTERVAL   , OnGotoXInterval)
@@ -56,7 +53,7 @@ BOOL CCustomFitThreadDlg::OnInitDialog() {
   updateButtons();
   randomize();
 
-  m_color = randomColor();
+  setColor(randomColor());
   const int dataWidth = getWindowRect(&m_dataList).Width()/2-12;
   m_dataList.InsertColumn( 0,_T("X"), LVCFMT_LEFT, dataWidth);
   m_dataList.InsertColumn( 1,_T("Y"), LVCFMT_LEFT, dataWidth);
@@ -71,28 +68,11 @@ BOOL CCustomFitThreadDlg::OnInitDialog() {
   return TRUE;
 }
 
-void CCustomFitThreadDlg::OnPaint() {
-  CPaintDC dc(this);
-
-  WINDOWPLACEMENT wp;
-  GetDlgItem(IDC_STATICCOLOR)->GetWindowPlacement(&wp);
-  dc.FillSolidRect(&wp.rcNormalPosition,m_color);
-}
-
 BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
   return CDialog::PreTranslateMessage(pMsg);
-}
-
-void CCustomFitThreadDlg::OnButtonColor() {
-  CColorDialog dlg(m_color);
-  dlg.m_cc.Flags |= CC_RGBINIT;
-  if(dlg.DoModal() == IDOK) {
-    m_color = dlg.m_cc.rgbResult;
-    Invalidate();
-  }
 }
 
 void CCustomFitThreadDlg::updateButtons() {
@@ -136,7 +116,7 @@ Point2DArray selectPointsInInterval(const DoubleInterval &interval, const Point2
 void CCustomFitThreadDlg::allocateFunctionFitter() {
   deallocateFunctionFitter();
 
-  m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(DoubleInterval(m_xfrom,m_xto),m_pointArray));
+  m_functionFitter  = new FunctionFitter((LPCTSTR)m_expr,selectPointsInInterval(getXInterval(), m_pointArray));
   if(!m_functionFitter->isOk()) {
     MessageBox(m_functionFitter->getErrors()[0].cstr());
     delete m_functionFitter;
@@ -243,8 +223,8 @@ void CCustomFitThreadDlg::OnOK() {
     return;
   }
 
-  m_param = ExpressionGraphParameters((LPCTSTR)m_name,m_color,0,GSCURVE);
-  m_param.m_interval = DoubleInterval(m_xfrom , m_xto);
+  m_param            = ExpressionGraphParameters((LPCTSTR)m_name,getColor(),0,GSCURVE);
+  m_param.m_interval = getXInterval();
   m_param.m_expr     = m_functionFitter->toString().cstr();
 
   m_fp.addExpressionGraph(m_param);
@@ -283,7 +263,7 @@ void CCustomFitThreadDlg::OnButtonRestart() {
 }
 
 void CCustomFitThreadDlg::OnButtonPlot() {
-  m_fp.plotFunction(*m_functionFitter, DoubleInterval(m_xfrom,m_xto), m_color);
+  m_fp.plotFunction(*m_functionFitter, getXInterval(), getColor());
 }
 
 void CCustomFitThreadDlg::OnButtonStep() {
