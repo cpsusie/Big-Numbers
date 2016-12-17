@@ -30,28 +30,25 @@ void RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Real eps) {
 
   const Real hmin = 0.001;
   const Real hmax = 0.250;
+  const Real br   = v0end - 0.00001 * fabs(v0end);
   Real       h    = 0.25;
-  Real       br   = v0end - 0.00001 * fabs(v0end);
   Real       s;
 
   setValue(start);
-  size_t d = m_y.getDimension();
   while(m_y[0] < v0end) {
     if(m_y[0] + h > br) {
       h = v0end - m_y[0];
     }
 
-    Vector k1(d), k2(d), k3(d), k4(d), k5(d), k6(d);
-
-    k1 = h * m_diff( m_y );
-    k2 = h * m_diff( rkfv(m_y[0] + a2*h, m_y + b2*k1) );
-    k3 = h * m_diff( rkfv(m_y[0] + a3*h, m_y + b3*k1 + c3*k2) );
-    k4 = h * m_diff( rkfv(m_y[0] + a4*h, m_y + b4*k1 + c4*k2 + d4*k3) );
-    k5 = h * m_diff( rkfv(m_y[0] + a5*h, m_y + b5*k1 + c5*k2 + d5*k3 + e5*k4) );
-    k6 = h * m_diff( rkfv(m_y[0] + a6*h, m_y + b6*k1 + c6*k2 + d6*k4 + e6*k4 + f6*k5) );
+    const Vector k1 = h * m_diff( m_y );
+    const Vector k2 = h * m_diff( rkfv(m_y[0] + a2*h, m_y + b2*k1) );
+    const Vector k3 = h * m_diff( rkfv(m_y[0] + a3*h, m_y + b3*k1 + c3*k2) );
+    const Vector k4 = h * m_diff( rkfv(m_y[0] + a4*h, m_y + b4*k1 + c4*k2 + d4*k3) );
+    const Vector k5 = h * m_diff( rkfv(m_y[0] + a5*h, m_y + b5*k1 + c5*k2 + d5*k3 + e5*k4) );
+    const Vector k6 = h * m_diff( rkfv(m_y[0] + a6*h, m_y + b6*k1 + c6*k2 + d6*k4 + e6*k4 + f6*k5) );
 
     const Real   error = Vector(r1*k1 + r3*k3 + r4*k4 + r5*k5 + r6*k6).length();
-    const Vector ynew(m_y + rkfv( h, n1*k1 + n3*k3 + n4*k4 + n5*k5) );
+    const Vector ynew(m_y + rkfv(h, n1*k1 + n3*k3 + n4*k4 + n5*k5) );
     if((error < eps) || (h < 2 * hmin)) {
       setValue(ynew);
     }
