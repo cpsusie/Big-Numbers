@@ -68,8 +68,6 @@ private:
   mutable bool         m_dataProcessed;
   DataRange            m_range;
 
-protected:
-  void findDataRange();
 public:
   PointGraph(GraphParameters *param);
   void paint(CCoordinateSystem &cs);
@@ -82,6 +80,7 @@ public:
   }
   void addPoint(const Point2D &p);
   void clear();
+  void updateDataRange();
 
   inline const DataRange &getDataRange() const {
     return m_range;

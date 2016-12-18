@@ -9,7 +9,7 @@
 
 IMPLEMENT_DYNAMIC(CDiffEquationGraphDlg, CDialog)
 
-CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd* pParent /*=NULL*/)
+CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent)
 	: m_param(param)
   , CDialog(IDD_DIFFEQUATIONGRAPH_DIALOG, pParent)
 {
@@ -33,7 +33,19 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_DIFFEQUATION));
   m_layoutManager.OnInitDialog(this);
 
+  m_layoutManager.addControl(IDC_STATICINTERVAL, PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_EDITXFROM     , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_STATICDASH    , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_EDITXTO       , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_STATICEPS     , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_EDITMAXERROR  , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
+  m_layoutManager.addControl(IDC_BUTTONADDEQ   , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT | RELATIVE_X_POS);
+  m_layoutManager.addControl(IDOK              , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT | RELATIVE_X_POS);
+  m_layoutManager.addControl(IDCANCEL          , PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT | RELATIVE_X_POS);
+  m_layoutManager.addControl(IDC_LISTERRORS    , PCT_RELATIVE_TOP    | RELATIVE_BOTTOM | RELATIVE_WIDTH);
+
   paramToWin(m_param);
+  clearErrorList();
   UpdateData(false);
 
 //  m_layoutManager.scaleFont(1.5,false);
@@ -58,19 +70,25 @@ void CDiffEquationGraphDlg::DoDataExchange(CDataExchange *pDX) {
 #define LAST_EQCONTROLID  (FIRST_EQCONTROLID      + 10*20)
 
 BEGIN_MESSAGE_MAP(CDiffEquationGraphDlg, CDialog)
-  ON_WM_DESTROY()
   ON_WM_SIZE()
-  ON_BN_CLICKED(IDOK                                              , OnBnClickedOk               )
-  ON_BN_CLICKED(IDC_BUTTONADDEQ                                   , OnBnClickedButtonaddeq      )
-  ON_CONTROL_RANGE(BN_CLICKED, FIRST_EQCONTROLID, LAST_EQCONTROLID, OnBnClickedEquation         )
-  ON_COMMAND(   ID_FILE_OPEN                                      , OnFileOpen                  )
-  ON_COMMAND(   ID_FILE_SAVE                                      , OnFileSave                  )
-  ON_COMMAND(   ID_FILE_SAVE_AS                                   , OnFileSaveAs                )
-  ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                    , OnEditFindmatchingparentesis)
-  ON_COMMAND(   ID_GOTO_NAME                                      , OnGotoName                  )
-  ON_COMMAND(   ID_GOTO_STYLE                                     , OnGotoStyle                 )
-  ON_COMMAND(   ID_GOTO_MAXERROR                                  , OnGotoMaxError              )
-  ON_COMMAND(   ID_GOTO_XINTERVAL                                 , OnGotoXInterval             )
+  ON_WM_DESTROY()
+  ON_BN_CLICKED(IDC_BUTTONADDEQ                                     , OnBnClickedButtonaddeq      )
+  ON_CONTROL_RANGE(BN_CLICKED  , FIRST_EQCONTROLID, LAST_EQCONTROLID, OnBnClickedEquation         )
+  ON_CONTROL_RANGE(EN_CHANGE   , FIRST_EQCONTROLID, LAST_EQCONTROLID, OnEditChangeEquation        )
+  ON_CONTROL_RANGE(EN_SETFOCUS , FIRST_EQCONTROLID, LAST_EQCONTROLID, OnEditSetFocusEquation      )
+  ON_CONTROL_RANGE(EN_KILLFOCUS, FIRST_EQCONTROLID, LAST_EQCONTROLID, OnEditKillFocusEquation     )
+  ON_COMMAND(   ID_FILE_NEW                                         , OnFileNew                   )
+  ON_COMMAND(   ID_FILE_OPEN                                        , OnFileOpen                  )
+  ON_COMMAND(   ID_FILE_SAVE                                        , OnFileSave                  )
+  ON_COMMAND(   ID_FILE_SAVE_AS                                     , OnFileSaveAs                )
+  ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                      , OnEditFindmatchingparentesis)
+  ON_COMMAND(   ID_EDIT_NEXTERROR                                   , OnEditNexterror             )
+  ON_COMMAND(   ID_EDIT_PREVERROR                                   , OnEditPreverror             )
+  ON_COMMAND(   ID_GOTO_NAME                                        , OnGotoName                  )
+  ON_COMMAND(   ID_GOTO_STYLE                                       , OnGotoStyle                 )
+  ON_COMMAND(   ID_GOTO_MAXERROR                                    , OnGotoMaxError              )
+  ON_COMMAND(   ID_GOTO_XINTERVAL                                   , OnGotoXInterval             )
+  ON_LBN_SELCHANGE(IDC_LISTERRORS                                   , OnLbnSelchangeListerrors    )
 END_MESSAGE_MAP()
 
 bool CDiffEquationGraphDlg::validate() {
@@ -102,12 +120,71 @@ bool CDiffEquationGraphDlg::validate() {
     return false;
   }
   try {
-    DiffEquationSystem::validate(param.m_equationsDescription);
+    CompilerErrorList errorList;
+    if(!DiffEquationSystem::validate(param.m_equationsDescription, errorList)) {
+      showErrors(errorList);
+      return false;
+    } else {
+      clearErrorList();
+    }
   } catch (Exception e) {
     MessageBox(e.what());
     return false;
   }
   return true;
+}
+
+void CDiffEquationGraphDlg::showErrors(const CompilerErrorList &errorList) {
+  CListBox *listBox = getErrorList();
+  listBox->ResetContent();
+  m_errorPosArray.clear();
+  for (size_t i = 0; i < errorList.size(); i++) {
+    listBox->AddString(errorList[i].cstr());
+    m_errorPosArray.add(ErrorPosition(errorList[i]));
+  }
+  setSelectedError(0);
+  enableMenuItem(this, ID_EDIT_NEXTERROR, true);
+  enableMenuItem(this, ID_EDIT_PREVERROR, true);
+}
+
+void CDiffEquationGraphDlg::clearErrorList() {
+  CListBox *listBox = getErrorList();
+  listBox->ResetContent();
+  m_errorPosArray.clear();
+  clearCurrentAdjustSet();
+  enableMenuItem(this, ID_EDIT_NEXTERROR, false);
+  enableMenuItem(this, ID_EDIT_PREVERROR, false);
+}
+
+void CDiffEquationGraphDlg::setSelectedError(int index) {
+  if (index >= 0 && index < getErrorCount()) {
+    getErrorList()->SetCurSel(index);
+    gotoErrorPosition(index);
+  }
+}
+
+void CDiffEquationGraphDlg::gotoTextPosition(int ctrlId, const SourcePosition &pos) {
+  const int selstart = SourcePosition::findCharIndex(getWindowText(this, ctrlId).cstr(), pos);
+  ((CEdit*)GetDlgItem(ctrlId))->SetSel(selstart, selstart+1);
+}
+
+void CDiffEquationGraphDlg::gotoErrorPosition(int index) {
+  const ErrorPosition &pos = m_errorPosArray[index];
+  CEquationEdit       *eq  = getEquationEdit(pos.m_eqIndex);
+  if(pos.m_inExpr) {
+    const int ctrlId = eq->getExprId();
+    gotoEditBox(this, ctrlId);
+    gotoTextPosition(ctrlId, pos.m_pos);
+  } else {
+    gotoEditBox(this, eq->getNameId());
+  }
+}
+
+void CDiffEquationGraphDlg::OnFileNew() {
+  DiffEquationGraphParameters param;
+  paramToWin(param);
+  clearErrorList();
+  UpdateData(false);
 }
 
 static const TCHAR *fileDialogExtensions = _T("Differential equation-files (*.deq)\0*.deq\0All files (*.*)\0*.*\0\0");
@@ -125,8 +202,10 @@ void CDiffEquationGraphDlg::OnFileOpen() {
     const String fileName = dlg.m_ofn.lpstrFile;
     param.load(fileName);
     paramToWin(param);
+    clearErrorList();
     addToRecent(fileName);
     UpdateData(false);
+//    Invalidate();
   } catch(Exception e) {
     showException(e);
   }
@@ -163,6 +242,14 @@ void CDiffEquationGraphDlg::OnEditFindmatchingparentesis() {
   if(eq->getFocusField() == EQ_EXPR_EDIT) {
     gotoMatchingParanthes(this, eq->getExprId());
   }
+}
+
+void CDiffEquationGraphDlg::OnEditNexterror() {
+  setSelectedError(getSelectedError()+1);
+}
+
+void CDiffEquationGraphDlg::OnEditPreverror() {
+  setSelectedError(getSelectedError()-1);
 }
 
 void CDiffEquationGraphDlg::paramToWin(const DiffEquationGraphParameters &param) {
@@ -248,6 +335,7 @@ void CDiffEquationGraphDlg::addEquation() {
 
   const CompactIntArray oldTabOrder = getTabOrder(this);
   eq->Create(this, getEquationCount());
+  eq->setVisibleChecked(true);
   m_equationControlArray.add(eq);
   distributeEquationRectangles(newTotalEqHeight);
   adjustTabOrder(oldTabOrder);
@@ -273,7 +361,7 @@ void CDiffEquationGraphDlg::adjustTabOrder(const CompactIntArray &oldTabOrder) {
 }
 
 void CDiffEquationGraphDlg::distributeEquationRectangles(int totalEquationsHeight) {
-  const int eqCount = (int)getEquationCount();
+  const int eqCount = getEquationCount();
   if(eqCount > 0) {
     const CRect  cr = getClientRect(this);
     CRect        totalRect;
@@ -313,12 +401,33 @@ void CDiffEquationGraphDlg::adjustWindowSize() {
                : getWindowRect(this, IDC_EDITNAME).bottom;
   topCtrlsBottom += 10;
 
-  CRect cr     = getClientRect(this);
-  const CSize okSize = getWindowSize(this, IDOK);
+  CRect       cr          = getClientRect(this);
+  const CRect okRect      = getWindowRect(this, IDOK);
+  const CRect errRect     = getWindowRect(this, IDC_LISTERRORS);
+  const int   space       = errRect.top - okRect.bottom; // gap between ok-button and errorListBox
+  const int   newCrHeight = topCtrlsBottom + okRect.Height() + errRect.Height() + space;
+  const int   deltaY      = newCrHeight - cr.bottom;
+  cr.bottom = newCrHeight;
 
-  const int wantedCrHeight = topCtrlsBottom + okSize.cy + 20;
-  cr.bottom = wantedCrHeight;
   setClientRectSize(this, cr.Size());
+  static const int bottomIdArray[] = {
+    IDC_STATICINTERVAL
+   ,IDC_EDITXFROM     
+   ,IDC_STATICDASH    
+   ,IDC_EDITXTO       
+   ,IDC_STATICEPS     
+   ,IDC_EDITMAXERROR  
+   ,IDC_BUTTONADDEQ   
+   ,IDOK
+   ,IDCANCEL          
+   ,IDC_LISTERRORS    
+  };
+  for (int i = 0; i < ARRAYSIZE(bottomIdArray); i++) {
+    int ctrlId = bottomIdArray[i];
+    CPoint p = getWindowPosition(this, ctrlId);
+    p.y += deltaY;
+    setWindowPosition(this, ctrlId, p);
+  }
 }
 
 CRect CDiffEquationGraphDlg::getTotalEquationRect() const {
@@ -336,7 +445,7 @@ CComboBox *CDiffEquationGraphDlg::getStyleCombo() {
   return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
 }
 
-int CDiffEquationGraphDlg::findEquationIndexByCtrlId(UINT id) {
+int CDiffEquationGraphDlg::findEquationIndexByCtrlId(UINT id) const {
   const size_t eqCount = getEquationCount();
   for (size_t i = 0; i < eqCount; i++) {
     if (getEquationEdit(i)->containsCtrlId(id)) {
@@ -356,6 +465,8 @@ void CDiffEquationGraphDlg::gotoEquation(size_t index) {
   gotoEditBox(this, getEquationEdit(index)->getNameId());
 }
 
+// CDiffEquationGraphDlg message handlers
+
 BOOL CDiffEquationGraphDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
@@ -363,9 +474,13 @@ BOOL CDiffEquationGraphDlg::PreTranslateMessage(MSG *pMsg) {
   return CDialog::PreTranslateMessage(pMsg);
 }
 
-// CDiffEquationGraphDlg message handlers
+void CDiffEquationGraphDlg::OnSize(UINT nType, int cx, int cy) {
+  CDialog::OnSize(nType, cx, cy);
+  m_layoutManager.OnSize(nType, cx, cy);
+}
 
-void CDiffEquationGraphDlg::OnBnClickedOk() {
+
+void CDiffEquationGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
   CDialog::OnOK();
@@ -373,6 +488,7 @@ void CDiffEquationGraphDlg::OnBnClickedOk() {
 
 void CDiffEquationGraphDlg::OnBnClickedButtonaddeq() {
   addEquation();
+  Invalidate();
 }
 
 void CDiffEquationGraphDlg::OnBnClickedEquation(UINT id) {
@@ -385,13 +501,93 @@ void CDiffEquationGraphDlg::OnBnClickedEquation(UINT id) {
     removeEquation(eqIndex);
     break;
   case EQ_VISIBLE_BUTTON:
+    eq->setVisibleChecked(eq->getVisibleChecked());
     break;
   }
 }
 
-void CDiffEquationGraphDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
+void CDiffEquationGraphDlg::OnEditChangeEquation(UINT id) {
+  if(isCurrentAdjustSetEmpty()) return; // no need to update the positions
+  String text = getWindowText(this, id);
+  const int delta = (int)text.length() - (int)m_currentText.length();
+  if(delta != 0) {
+    int selStart, selEnd;
+    ((CEdit*)GetDlgItem(id))->GetSel(selStart, selEnd);
+    adjustErrorPositions(text, selStart, delta);
+    traceCurrentAdjustSet();
+  }
+  m_currentText = text;
+}
+
+void CDiffEquationGraphDlg::adjustErrorPositions(const String &s, int sel, int delta) {
+  if(delta > 0) { // string has grown
+    const SourcePosition sp1 = SourcePosition::findSourcePosition(m_currentText.cstr(), sel-delta);
+    const SourcePosition sp2 = SourcePosition::findSourcePosition(s.cstr(), sel);
+    for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
+      ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
+      if(ep.m_pos >= sp1) {
+        const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
+        ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
+      }
+    } 
+  } else { // delta < 0 => new string is smaller
+    const SourcePosition sp1 = SourcePosition::findSourcePosition(s.cstr(), sel);
+    const SourcePosition sp2 = SourcePosition::findSourcePosition(m_currentText.cstr(), sel-delta);
+    for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
+      ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
+      if(ep.m_pos >= sp2) {
+        const int ci = SourcePosition::findCharIndex(m_currentText.cstr(), ep.m_pos);
+        ep.m_pos = SourcePosition::findSourcePosition(s.cstr(), ci+delta);
+      }
+    } 
+  }
+}
+
+void CDiffEquationGraphDlg::traceCurrentAdjustSet() {
+#ifdef _DEBUG
+  String str;
+  for (UINT i = 0; i < m_currentAdjustSet.size(); i++) {
+    ErrorPosition &ep = m_errorPosArray[m_currentAdjustSet[i]];
+    str += ep.m_pos.toString();
+  }
+  setWindowText(this, IDC_STATICADJUSTSET, str);
+#endif
+}
+
+void CDiffEquationGraphDlg::setCurrentAdjustSet(UINT id) {
+  clearCurrentAdjustSet();
+  const int eqIndex = findEquationIndexByCtrlId(id);
+  if(eqIndex < 0) return;
+  CEquationEdit *eq = getEquationEdit(eqIndex);
+  bool inExpr;
+  switch(eq->findFieldByCtrlId(id)) {
+  case EQ_EXPR_EDIT:
+    inExpr = true;
+    // NB continue case
+  case EQ_NAME_EDIT:
+    for(UINT i = 0; i < m_errorPosArray.size(); i++) {
+      const ErrorPosition &ep = m_errorPosArray[i];
+      if((ep.m_eqIndex == eqIndex) && (ep.m_inExpr == inExpr)) {
+        m_currentAdjustSet.add(i);
+      }
+    }
+    break;
+  }
+  traceCurrentAdjustSet();
+}
+
+void CDiffEquationGraphDlg::OnEditSetFocusEquation(UINT id) {
+  setCurrentAdjustSet(id);
+  if(isCurrentAdjustSetEmpty()) return; // no need to update the positions
+  m_currentText = getWindowText(this, id);
+}
+
+void CDiffEquationGraphDlg::OnEditKillFocusEquation(UINT id) {
+  clearCurrentAdjustSet();
+}
+
+void CDiffEquationGraphDlg::OnLbnSelchangeListerrors() {
+  setSelectedError(getSelectedError());
 }
 
 void CDiffEquationGraphDlg::OnGotoName() {
@@ -414,8 +610,6 @@ void CDiffEquationGraphDlg::OnGotoMaxError() {
 
 #define EQEXPRFIELDID(i) (((i)*(int)m_subWndArray.size()) + _APS_NEXT_CONTROL_VALUE + 1)
 
-CBitmap CEquationEdit:: s_deleteBitmap;
-
 CEquationEdit::CEquationEdit(CFont &font) : m_font(font) {
   m_subWndArray.add(&m_editName    );
   m_subWndArray.add(&m_label       );
@@ -427,7 +621,9 @@ CEquationEdit::CEquationEdit(CFont &font) : m_font(font) {
 }
 
 CompactArray<CRect> CEquationEdit::calculateSubWinRect(const CRect &r) const {
-  const int nameLeft     = r.left;
+  const int MARGIN = 15;
+
+  const int nameLeft     = r.left + MARGIN;
   const int nameWidth    = 40;
   const int nameRight    = nameLeft + nameWidth;
   const int nameHeight   = 22;
@@ -441,7 +637,7 @@ CompactArray<CRect> CEquationEdit::calculateSubWinRect(const CRect &r) const {
 
   const int delWidth     = 28;
   const int delHeight    = 23;
-  const int delRight     = r.right - 3;
+  const int delRight     = r.right - MARGIN;
   const int delLeft      = delRight - delWidth;
   const int delTop       = r.CenterPoint().y - delHeight/2;
 
@@ -451,7 +647,7 @@ CompactArray<CRect> CEquationEdit::calculateSubWinRect(const CRect &r) const {
   const int colorHeight  = nameHeight;
   const int colorTop     = r.CenterPoint().y - colorHeight/2;
 
-  const int visWidth     = 90;
+  const int visWidth     = 66;
   const int visRight     = colorLeft  - 10;
   const int visLeft      = visRight - visWidth;
   const int visHeight    = nameHeight;
@@ -505,11 +701,10 @@ void CEquationEdit::Create(CWnd *parent, int eqIndex) {
   ModifyStyleEx(0, WS_EX_CLIENTEDGE);
   SetFont(&m_font, FALSE);
 
-  m_editStartV.Create(                  STD_STYLES | ES_RIGHT        | WS_BORDER  , dummyRect, parent, getStartVId() );
-  m_checkVisible.Create(_T("Visible:"), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT, dummyRect, parent, getVisibleId());
-  m_colorButton.Create(_T("Color")    , STD_STYLES                                , dummyRect, parent, getColorId()  );
-  m_buttonDelete.Create(_T("Del")     , STD_STYLES                                , dummyRect, parent, getDeleteId() );
-//  m_deleteButton.SetBitmap(getDeleteBitmap());
+  m_editStartV.Create(                  STD_STYLES | ES_RIGHT        | WS_BORDER  , dummyRect, parent  , getStartVId() );
+  m_checkVisible.Create(_T("Visible:"), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT, dummyRect, parent  , getVisibleId());
+  m_colorButton.Create(_T("Color")    , STD_STYLES                                , dummyRect, parent  , getColorId()  );
+  m_buttonDelete.Create(parent                                                    , dummyRect.TopLeft(), getDeleteId(),true);
 }
 
 #define FOREACHSUBWIN(i) for(Iterator<CWnd*> i = m_subWndArray.getIterator(); i.hasNext();) 
@@ -535,6 +730,15 @@ void CEquationEdit::winToParam(DiffEquationDescription &desc, EquationAttributes
   attr.m_startValue = m_startValue;
   attr.m_visible    = m_visible ? true : false;
   attr.m_color      = m_colorButton.GetColor();
+}
+
+bool CEquationEdit::getVisibleChecked() {
+  return (m_checkVisible.GetCheck() == BST_CHECKED);
+}
+
+void CEquationEdit::setVisibleChecked(bool checked) {
+  m_checkVisible.SetCheck(checked ? BST_CHECKED : BST_UNCHECKED);
+  m_colorButton.EnableWindow(checked ? 1 : 0);
 }
 
 CRect CEquationEdit::getWindowRect() {
@@ -603,13 +807,6 @@ int CEquationEdit::getDeleteId() const {
   return m_exprId + 6;
 }
 
-HBITMAP CEquationEdit::getDeleteBitmap() {
-  if (!s_deleteBitmap.m_hObject == 0) {
-    s_deleteBitmap.LoadBitmap(IDB_BITMAPDELETE);
-  }
-  return s_deleteBitmap;
-}
-
 CEquationEdit::~CEquationEdit() {
   FOREACHSUBWIN(it) it.next()->DestroyWindow();
 }
@@ -619,11 +816,14 @@ void CEquationEdit::addToLayoutManager(SimpleLayoutManager &layoutManager, int f
   layoutManager.addControl(getLabelId()  , PCT_RELATIVE_X_POS | PCT_RELATIVE_Y_POS);
   int exprAttr = PCT_RELATIVE_LEFT | RELATIVE_RIGHT;
   if(!(flags & TOP_EQUATION)) exprAttr |= PCT_RELATIVE_TOP;
+/*
   if(flags & BOTTOM_EQUATION) {
     exprAttr |= RELATIVE_BOTTOM;
   } else {
     exprAttr |= PCT_RELATIVE_BOTTOM;
   }
+*/
+  exprAttr |= PCT_RELATIVE_BOTTOM;
   layoutManager.addControl(getExprId()   , exprAttr);
   layoutManager.addControl(getStartVId() , RELATIVE_X_POS     | PCT_RELATIVE_Y_POS);
   layoutManager.addControl(getVisibleId(), RELATIVE_X_POS     | PCT_RELATIVE_Y_POS);
@@ -636,3 +836,4 @@ void CEquationEdit::removeFromLayoutManager(SimpleLayoutManager &layoutManager) 
     layoutManager.removeControl(m_exprId + i);
   }
 }
+

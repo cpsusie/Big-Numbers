@@ -6,9 +6,9 @@ PointGraph::PointGraph(GraphParameters *param) : Graph(param) {
   m_dataProcessed = false;
 }
 
-void PointGraph::findDataRange() {
+void PointGraph::updateDataRange() {
   if(isEmpty()) {
-    m_range.init(-1,1,-1,1);
+    m_range.setToDefault();
   } else {
     m_range = m_pointArray;
   }
@@ -47,6 +47,7 @@ void PointGraph::addPoint(const Point2D &p) {
 
 void PointGraph::clear() {
   m_pointArray.clear();
+  updateDataRange();
   m_dataProcessed = false;
 }
 

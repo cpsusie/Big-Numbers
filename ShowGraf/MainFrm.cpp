@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "ShowGraf.h"
 #include "MainFrm.h"
+#include "DiffEquationGraphDlg.h"
+#include "ExpressionGraphDlg.h"
+#include "IsoCurveGraphDlg.h"
 #include "IntervalDlg.h"
 #include "RollSizeDlg.h"
-#include "ExprGraphDlg.h"
-#include "IsoCurveGraphDlg.h"
-#include "DiffEquationGraphDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -335,7 +335,7 @@ void CMainFrame::OnToolsPlot() {
     param.m_color             = randomColor();
     param.m_trigonometricMode = getTrigonometricMode();
     param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
-    CExprGraphDlg dlg(param);
+    CExpressionGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
       Expression expr(param.m_trigonometricMode);
       expr.compile(param.m_expr, true);

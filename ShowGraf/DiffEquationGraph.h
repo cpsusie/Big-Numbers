@@ -10,6 +10,7 @@ private:
   CompactArray<PointGraph*> m_pointGraphArray;
   DataRange                 m_dataRange;
   void clear();
+  void updateDataRange();
   friend class DiffEquationHandler;
 public:
   DiffEquationGraph(const DiffEquationGraphParameters &param);

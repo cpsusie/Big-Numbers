@@ -7,7 +7,7 @@
 
 class ExpressionGraph : public PointGraph {
 private:
-  ExpressionImage m_image;
+//  ExpressionImage m_image;
 public:
   ExpressionGraph(ExpressionGraphParameters &param);
   void calculate();

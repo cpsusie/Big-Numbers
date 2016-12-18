@@ -6,9 +6,9 @@
 #include "ShowGrafView.h"
 #include "DataGraphParameters.h"
 #include "DataGraph.h"
-#include "ExprGraphDlg.h"
-#include "IsoCurveGraphDlg.h"
 #include "DiffEquationGraphDlg.h"
+#include "ExpressionGraphDlg.h"
+#include "IsoCurveGraphDlg.h"
 #include "DataGraphDlg.h"
 
 #ifdef _DEBUG
@@ -329,6 +329,10 @@ bool CShowGrafView::isMenuItemChecked(int id) {
   return ::isMenuItemChecked(GetParent(), id);
 }
 
+void CShowGrafView::initScaleIfSingleGraph() {
+  if (m_graphArray.size() == 1) initScale();
+}
+
 #ifdef _DEBUG
 void CShowGrafView::AssertValid() const {
   CFormView::AssertValid();
@@ -434,7 +438,7 @@ void CShowGrafView::OnSelectMenuEdit() {
     switch(g.getType()) {
     case EXPRESSIONGRAPH  :
       { ExpressionGraphParameters *param = (ExpressionGraphParameters*)&g.getParam();
-        CExprGraphDlg dlg(*param);
+        CExpressionGraphDlg dlg(*param);
         if(dlg.DoModal() == IDOK) {
           g.calculate();
         }
@@ -555,9 +559,7 @@ void CShowGrafView::readExprFile(const String &fileName) {
   param.load(fileName);
   Graph *g = new ExpressionGraph(param);
   m_graphArray.add(g);
-  if(m_graphArray.size() == 1) {
-    initScale();
-  }
+  initScaleIfSingleGraph();
 }
 
 void CShowGrafView::readIsoFile(const String &fileName) {
@@ -565,9 +567,7 @@ void CShowGrafView::readIsoFile(const String &fileName) {
   param.load(fileName);
   Graph *g = new IsoCurveGraph(param);
   m_graphArray.add(g);
-  if(m_graphArray.size() == 1) {
-    initScale();
-  }
+  initScaleIfSingleGraph();
 }
 
 void CShowGrafView::readDiffEqFile(const String &fileName) {
@@ -575,9 +575,7 @@ void CShowGrafView::readDiffEqFile(const String &fileName) {
   param.load(fileName);
   Graph *g = new DiffEquationGraph(param);
   m_graphArray.add(g);
-  if(m_graphArray.size() == 1) {
-    initScale();
-  }
+  initScaleIfSingleGraph();
 }
 
 void CShowGrafView::setRollingAverage(bool on) {
@@ -684,21 +682,24 @@ void CShowGrafView::setRetainAspectRatio(bool retain) {
   m_coordinateSystem.setRetainAspectRatio(retain);
 }
 
+void CShowGrafView::addDiffEquationGraph(DiffEquationGraphParameters &param) {
+  m_graphArray.add(new DiffEquationGraph(param));
+  m_graphArray.select(m_graphArray.size()-1);
+  initScaleIfSingleGraph();
+  Invalidate(TRUE);
+}
+
 void CShowGrafView::addExpressionGraph(ExpressionGraphParameters &param) {
   m_graphArray.add(new ExpressionGraph(param));
   m_graphArray.select(m_graphArray.size()-1);
+  initScaleIfSingleGraph();
   Invalidate(TRUE);
 }
 
 void CShowGrafView::addIsoCurveGraph(IsoCurveGraphParameters &param) {
   m_graphArray.add(new IsoCurveGraph(param));
   m_graphArray.select(m_graphArray.size()-1);
-  Invalidate(TRUE);
-}
-
-void CShowGrafView::addDiffEquationGraph(DiffEquationGraphParameters &param) {
-  m_graphArray.add(new DiffEquationGraph(param));
-  m_graphArray.select(m_graphArray.size()-1);
+  initScaleIfSingleGraph();
   Invalidate(TRUE);
 }
 

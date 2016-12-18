@@ -17,6 +17,18 @@ void DiffEquationGraph::clear() {
     delete m_pointGraphArray[i];
   }
   m_pointGraphArray.clear();
+  updateDataRange();
+}
+
+void DiffEquationGraph::updateDataRange() {
+  if (isEmpty()) {
+    m_dataRange.setToDefault();
+  } else {
+    m_dataRange = m_pointGraphArray[0]->getDataRange();
+    for(size_t i = 1; i < m_pointGraphArray.size(); i++) {
+      m_dataRange += m_pointGraphArray[i]->getDataRange();
+    }
+  }
 }
 
 class DiffEquationHandler : public RungeKuttaFehlbergHandler {
@@ -46,7 +58,8 @@ void DiffEquationGraph::calculate() {
   clear();
   const DiffEquationGraphParameters &param = *(DiffEquationGraphParameters*)m_param;
   DiffEquationSystem  eq;
-  eq.compile(param.m_equationsDescription);
+  CompilerErrorList   errorList;
+  if(!eq.compile(param.m_equationsDescription, errorList)) errorList.throwFirstError();
   DiffEquationSet eqSet = param.getVisibleEquationSet();
   const int graphCount = eqSet.size();
   if (graphCount == 0) {
@@ -62,6 +75,10 @@ void DiffEquationGraph::calculate() {
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
   RungeKuttaFehlberg(eq, handler).calculate(param.getStartVector(), param.m_interval.getTo(), param.m_eps);
+  for(size_t i = 0; i < m_pointGraphArray.size(); i++) {
+    m_pointGraphArray[i]->updateDataRange();
+  }
+  updateDataRange();
 }
 
 void DiffEquationGraph::setTrigonometricMode(TrigonometricMode mode) {

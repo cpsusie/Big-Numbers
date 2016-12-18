@@ -15,26 +15,34 @@ void DiffEquationSystem::cleanup() {
 DiffEquationSystem::DiffEquationSystem(const DiffEquationSystem &src) {
   m_equationSystemDescription = src.m_equationSystemDescription;
   if (src.isCompiled()) {
-    compile();
+    CompilerErrorList errorList;
+    if(!compile(errorList)) errorList.throwFirstError();
   }
 }
 
 DiffEquationSystem &DiffEquationSystem::operator=(const DiffEquationSystem &src) {
+  const DiffEquationSystemDescription saveDesc = m_equationSystemDescription;
   cleanup();
   m_equationSystemDescription = src.m_equationSystemDescription;
   if(src.isCompiled()) {
-    compile();
+    CompilerErrorList errorList;
+    if(!compile(errorList)) {
+      cleanup();
+      m_equationSystemDescription = saveDesc;
+      errorList.throwFirstError();
+    }
   }
   return *this;
 }
 
-void DiffEquationSystem::compile() {
+bool DiffEquationSystem::compile(CompilerErrorList &errorList) {
   cleanup();
+  errorList.clear();
   try {
     for(UINT i = 0; i < m_equationSystemDescription.size(); i++) {
       const DiffEquationDescription &desc = m_equationSystemDescription[i];
       if(!DiffEquationDescription::isValidName(desc.m_name)) {
-        throwException(_T("<%s> is not a valid function name"), desc.m_name.cstr());
+        errorList.addError(i, false, _T("<%s> is not a valid function name"), desc.m_name.cstr());
       }
     }
     for (UINT i = 1; i < m_equationSystemDescription.size(); i++) {
@@ -42,7 +50,7 @@ void DiffEquationSystem::compile() {
       for(UINT j = 0; j < i; j++) {
         const String &name2 = m_equationSystemDescription[j].m_name;
         if(name1 == name2) {
-          throwException(_T("Cannot have more than 1 definition of %s'"), name1.cstr());
+          errorList.addError(i, false, _T("Cannot have more than 1 definition of %s'"), name1.cstr());
         }
       }
     }
@@ -53,18 +61,18 @@ void DiffEquationSystem::compile() {
       if (e->isOk()) {
         m_exprArray.add(e);
       } else {
-        const String msg = e->getErrors()[0];
+        errorList.addErrors(i, e->getErrors());
         delete e;
-        throwException(msg);
       }
     }
+    if(!errorList.isOk()) return false;
     for (UINT i = 0; i < m_exprArray.size(); i++) {
       ExpressionWithInputVector  *e  = m_exprArray[i];
       const ExpressionVariable   *vx = e->getVariable(_T("x"));
       if(vx) {
         e->m_input.add(ExpressionInputIndex(0, &(e->getValueRef(*vx))));
         if (!vx->isInput()) {
-          throwException(_T("Variable 'x' is not input in equation %d"), (int)i);
+          errorList.addError(i, true, _T("Variable 'x' is not input in this equation"));
         }
       }
       for(UINT j = 0; j < m_equationSystemDescription.size(); j++) {
@@ -72,38 +80,41 @@ void DiffEquationSystem::compile() {
         const ExpressionVariable *vj    = e->getVariable(namej);
         if(vj == NULL) continue;
         if (!vj->isInput()) {
-          throwException(_T("Variable '%s' is not input in equation %d"), namej.cstr(), (int)i);
+          errorList.addError(i, true, _T("Variable '%s' is not input in this equation"), namej.cstr());
+        } else {
+          e->m_input.add(ExpressionInputIndex(j+1, &(e->getValueRef(*vj)))); // +1 because v[0] is variable "x"
         }
-        e->m_input.add(ExpressionInputIndex(j+1, &(e->getValueRef(*vj)))); // +1 becaus v[0] is variable "x"
       }
     }
   } catch (...) {
     cleanup();
     throw;
   }
+  return errorList.isOk();
 }
 
-void DiffEquationSystem::compile(const DiffEquationSystemDescription &desd) {
+bool DiffEquationSystem::compile(const DiffEquationSystemDescription &desc, CompilerErrorList &errorList) {
   cleanup();
-  m_equationSystemDescription = desd;
-  compile();
+  m_equationSystemDescription = desc;
+  return compile(errorList);
 }
 
-void DiffEquationSystem::setDescription(const DiffEquationSystemDescription &desd) {
-  validate(desd);
+void DiffEquationSystem::setDescription(const DiffEquationSystemDescription &desc) {
+  CompilerErrorList errorList;
+  validate(desc, errorList);
   cleanup();
-  m_equationSystemDescription = desd;
+  m_equationSystemDescription = desc;
 }
 
-void DiffEquationSystem::validate(const DiffEquationSystemDescription &desd) { // static
+bool DiffEquationSystem::validate(const DiffEquationSystemDescription &desc, CompilerErrorList &errorList) { // static
   DiffEquationSystem s;
-  s.compile(desd);
+  return s.compile(desc, errorList);
 }
 
 bool DiffEquationDescription::isValidName(const String &s) {
   String tmp = s;
   tmp.trim();
-  if(tmp != s) return false;
+  if((tmp != s) || (tmp == _T("x"))) return false;
   LexStringStream stream(s);
   ExpressionLex lex(&stream);
   if(lex.getNextLexeme() != NAME) return false;
@@ -126,4 +137,47 @@ Vector DiffEquationSystem::operator()(const Vector &x) {
     dx[i+1] = m_exprArray[i]->evaluate(x);
   }
   return dx;
+}
+
+void CompilerErrorList::vaddError(UINT eqIndex, bool expr, const TCHAR *form, va_list argptr) {
+  const String msg = vformat(form, argptr);
+  add(format(_T("(%d,%c):%s"), eqIndex, expr?_T('E'):_T('N'), msg.cstr()));
+}
+
+void CompilerErrorList::addError(UINT eqIndex, bool expr, const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vaddError(eqIndex, expr, format, argptr);
+  va_end(argptr);
+}
+
+void CompilerErrorList::addErrors(UINT eqIndex, const StringArray &errors) { // errors from Expression.compile()
+  for(size_t i = 0; i < errors.size(); i++) {
+    addError(eqIndex, true, _T("%s"), errors[i].cstr());
+  }
+}
+
+ErrorPosition::ErrorPosition(const String &error) {
+  int eqIndex;
+  TCHAR fieldMark;
+  Tokenizer tok(error, _T(":"));
+  const String eqMark = tok.next();
+  if (_stscanf(eqMark.cstr(), _T("(%d,%c)"), &eqIndex, &fieldMark) != 2) {
+    m_eqIndex = -1;
+  } else {
+    m_eqIndex = eqIndex;
+    m_inExpr  = (fieldMark == _T('E'));
+
+    if(m_inExpr) {
+      const String posStr = tok.next();
+      int line, col;
+      if(_stscanf(posStr.cstr(), _T("(%d,%d)"), &line,&col) == 2) {
+        m_pos.setLocation(line, col);
+      } else {
+        m_pos.setLocation(0,0);
+      }
+    } else {
+      m_pos.setLocation(0,0);
+    }
+  }
 }

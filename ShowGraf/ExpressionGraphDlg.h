@@ -6,7 +6,7 @@
 #define SHOW_INTERVAL 0x1
 #define SHOW_STEP     0x2
 
-class CExprGraphDlg : public CDialog {
+class CExpressionGraphDlg : public CDialog {
 private:
     HACCEL              m_accelTable;
     SimpleLayoutManager m_layoutManager;
@@ -35,7 +35,7 @@ private:
     void addToRecent(const String &fileName);
 
 public:
-    CExprGraphDlg(ExpressionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
+    CExpressionGraphDlg(ExpressionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
     ExpressionGraphParameters &m_param;
 
     enum { IDD = IDD_EXPRGRAPH_DIALOG };
@@ -54,6 +54,7 @@ protected:
     afx_msg void OnGotoXInterval();
     afx_msg void OnGotoStep();
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileSave();
     afx_msg void OnFileSaveAs();

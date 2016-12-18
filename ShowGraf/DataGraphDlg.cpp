@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd* pParent) : m_graph(g), CDialog(CDataGraphDlg::IDD, pParent) {
+CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd *pParent) : m_graph(g), CDialog(CDataGraphDlg::IDD, pParent) {
   m_name  = _T("");
 	m_style = _T("");
 }
@@ -47,7 +47,7 @@ BOOL CDataGraphDlg::OnInitDialog() {
 }
 
 void CDataGraphDlg::OnOK() {
-  UpdateData();
+  if(!UpdateData()) return;
   if(m_name.GetLength() == 0) {
     MessageBox(_T("Must specify name"));
     GetDlgItem(IDC_EDITNAME)->SetFocus();   

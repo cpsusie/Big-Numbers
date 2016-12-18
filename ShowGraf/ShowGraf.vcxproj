@@ -290,7 +290,7 @@
     <ClCompile Include="DiffEquationSystem.cpp" />
     <ClCompile Include="ExpressionGraph.cpp" />
     <ClCompile Include="ExpressionGraphParameters.cpp" />
-    <ClCompile Include="ExprGraphDlg.cpp" />
+    <ClCompile Include="ExpressionGraphDlg.cpp" />
     <ClCompile Include="FunctionFitter.cpp" />
     <ClCompile Include="GraphArray.cpp" />
     <ClCompile Include="GraphItem.cpp" />
@@ -334,7 +334,7 @@
     <ClInclude Include="DiffEquationSystem.h" />
     <ClInclude Include="ExpressionGraph.h" />
     <ClInclude Include="ExpressionGraphParameters.h" />
-    <ClInclude Include="ExprGraphDlg.h" />
+    <ClInclude Include="ExpressionGraphDlg.h" />
     <ClInclude Include="FunctionFitter.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphArray.h" />
@@ -360,7 +360,6 @@
     <Image Include="res\bmpFitExpoFunction.bmp" />
     <Image Include="res\bmpFitPolyFunction.bmp" />
     <Image Include="res\bmpFitPotensFunction.bmp" />
-    <Image Include="res\DeleteMark.bmp" />
     <Image Include="res\mainframe.bmp" />
     <Image Include="res\ShowGraf.ico" />
     <Image Include="res\ShowGrafDoc.ico" />

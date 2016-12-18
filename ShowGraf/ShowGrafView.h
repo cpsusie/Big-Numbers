@@ -36,7 +36,7 @@ private:
     void checkMenuItem(int id, bool checked);
     bool isMenuItemChecked(int id);
     void enableMenuItem(int id, bool enabled);
-
+    void initScaleIfSingleGraph();
     void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
     void plotFunction(Function &f, COLORREF color);
     bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);

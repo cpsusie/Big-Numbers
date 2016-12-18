@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd* pParent /*=NULL*/) 
+CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent) 
 : m_param(param)
 , CDialog(CIsoCurveGraphDlg::IDD, pParent)
 {
@@ -29,16 +29,17 @@ void CIsoCurveGraphDlg::DoDataExchange(CDataExchange* pDX) {
 
 BEGIN_MESSAGE_MAP(CIsoCurveGraphDlg, CDialog)
 	ON_WM_SIZE()
-	ON_COMMAND(   ID_FILE_OPEN                  , OnFileOpen                  )
-	ON_COMMAND(   ID_FILE_SAVE                  , OnFileSave                  )
-	ON_COMMAND(   ID_FILE_SAVE_AS               , OnFileSaveAs                )
-	ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS, OnEditFindmatchingparentesis)
-  ON_COMMAND(   ID_GOTO_NAME                  , OnGotoName                  )
-	ON_COMMAND(   ID_GOTO_STYLE                 , OnGotoStyle                 )
-  ON_COMMAND(   ID_GOTO_EXPR                  , OnGotoExpr                  )
-	ON_COMMAND(   ID_GOTO_XINTERVAL             , OnGotoXInterval             )
-	ON_COMMAND(   ID_GOTO_YINTERVAL             , OnGotoYInterval             )
-  ON_COMMAND(   ID_GOTO_CELLSIZE              , OnGotoCellSize              )
+  ON_COMMAND(   ID_FILE_NEW                                       , OnFileNew                   )
+	ON_COMMAND(   ID_FILE_OPEN                                      , OnFileOpen                  )
+	ON_COMMAND(   ID_FILE_SAVE                                      , OnFileSave                  )
+	ON_COMMAND(   ID_FILE_SAVE_AS                                   , OnFileSaveAs                )
+	ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                    , OnEditFindmatchingparentesis)
+  ON_COMMAND(   ID_GOTO_NAME                                      , OnGotoName                  )
+	ON_COMMAND(   ID_GOTO_STYLE                                     , OnGotoStyle                 )
+  ON_COMMAND(   ID_GOTO_EXPR                                      , OnGotoExpr                  )
+	ON_COMMAND(   ID_GOTO_XINTERVAL                                 , OnGotoXInterval             )
+	ON_COMMAND(   ID_GOTO_YINTERVAL                                 , OnGotoYInterval             )
+  ON_COMMAND(   ID_GOTO_CELLSIZE                                  , OnGotoCellSize              )
 END_MESSAGE_MAP()
 
 
@@ -142,6 +143,12 @@ void CIsoCurveGraphDlg::OnGotoCellSize() {
 void CIsoCurveGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);
   CDialog::OnSize(nType, cx, cy);
+}
+
+void CIsoCurveGraphDlg::OnFileNew() {
+  IsoCurveGraphParameters param;
+  paramToWin(param);
+  UpdateData(false);
 }
 
 static const TCHAR *fileDialogExtensions = _T("Iso curve-files (*.iso)\0*.iso\0All files (*.*)\0*.*\0\0");

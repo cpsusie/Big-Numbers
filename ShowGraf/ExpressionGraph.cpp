@@ -11,7 +11,7 @@ void ExpressionGraph::calculate() {
   const ExpressionGraphParameters &param = *(ExpressionGraphParameters*)m_param;
   Expression expr(param.m_trigonometricMode);
   expr.compile(param.m_expr, true);
-  m_image = expressionToImage(theApp.m_device, expr, 18);
+//  m_image = expressionToImage(theApp.m_device, expr, 18);
   Real                      dummyX;
   const ExpressionVariable *xvp       = expr.getVariable(_T("x"));
   Real                     &x         = xvp ? expr.getValueRef(*xvp) : dummyX;
@@ -28,7 +28,7 @@ void ExpressionGraph::calculate() {
       // ignore
     }
   }
-  findDataRange();
+  updateDataRange();
 }
 
 void ExpressionGraph::setTrigonometricMode(TrigonometricMode mode) {
@@ -41,10 +41,12 @@ void ExpressionGraph::setTrigonometricMode(TrigonometricMode mode) {
 
 void ExpressionGraph::paint(CCoordinateSystem &cs) {
   PointGraph::paint(cs);
+/*
   if(m_image.isEmpty()) return;
   Viewport2D &vp = cs.getViewport();
   CPoint topLeft(30,30);
   PixRect::bitBlt(*vp.getDC(), topLeft, m_image.size(), SRCCOPY, m_image.getImage(), ORIGIN);
   const CRect imageRect(topLeft, m_image.getImage()->getSize());
   cs.getOccupationMap().setOccupiedRect(imageRect);
+*/
 }

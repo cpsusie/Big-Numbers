@@ -6,27 +6,26 @@
 #define IDB_BITMAP_POLYNOMIAL           103
 #define IDB_BITMAP_EXPO_FUNCTION        104
 #define IDB_BITMAP_POTENS_FUNCTION      105
-#define IDB_BITMAP_CUSTOM_FUNCTION      111
-#define IDR_MENU_EXPR_DIALOG            112
-#define IDR_MENU_ISOCURVE_DIALOG        113
-#define IDR_MENU_DIFFEQUATION_DIALOG    114
-#define IDB_BITMAPDELETE                117
-#define IDR_ACCELERATOR_DIFFEQUATION    118
+#define IDB_BITMAP_CUSTOM_FUNCTION      106
+#define IDR_MENU_DIFFEQUATION_DIALOG    110
+#define IDR_MENU_EXPR_DIALOG            111
+#define IDR_MENU_ISOCURVE_DIALOG        112
 #define IDR_MAINFRAME                   128
 #define IDR_DUMMYTOOLBAR                129
 #define IDD_SHOWGRAFVIEW                130
-#define IDD_EXPRGRAPH_DIALOG            131
-#define IDD_DATAGRAPH_DIALOG            132
-#define IDD_ISOCURVEGRAPH_DIALOG        133
-#define IDD_DIFFEQUATIONGRAPH_DIALOG    134
+#define IDD_DATAGRAPH_DIALOG            131
+#define IDD_DIFFEQUATIONGRAPH_DIALOG    132
+#define IDD_EXPRGRAPH_DIALOG            133
+#define IDD_ISOCURVEGRAPH_DIALOG        134
 #define IDD_DEGREE_DIALOG               135
 #define IDD_FITTHREAD_DIALOG            136
 #define IDD_INTERVAL_DIALOG             137
 #define IDD_ROLLSIZE_DIALOG             138
-#define IDR_ACCELERATOR_EXPR            140
-#define IDR_ACCELERATOR_ISOCURVE        141
-#define IDR_ACCELERATOR_INTERVAL        142
-#define IDR_ACCELERATOR_FITTING         143
+#define IDR_ACCELERATOR_DIFFEQUATION    140
+#define IDR_ACCELERATOR_EXPR            141
+#define IDR_ACCELERATOR_ISOCURVE        142
+#define IDR_ACCELERATOR_INTERVAL        143
+#define IDR_ACCELERATOR_FITTING         144
 #define IDR_MENUSELECTGRAF              150
 #define IDC_SYSTEMPANEL                 1001
 #define IDC_BUTTONPANEL                 1002
@@ -62,6 +61,8 @@
 #define IDC_EDITDEGREE                  1082
 #define IDC_STATICCELLSIZE              1084
 #define IDC_STATICBOUNDINGBOX           1085
+#define IDC_LISTERRORS                  1093
+#define IDC_STATICADJUSTSET             1095
 #define ID_FILE_SAVEAS                  32771
 #define ID_FILE_EXIT                    32772
 #define ID_VIEW_GRID                    32781
@@ -71,7 +72,9 @@
 #define ID_VIEW_SCALE_X_LOGARITHMIC     32791
 #define ID_VIEW_SCALE_X_NORMALDIST      32792
 #define ID_VIEW_SCALE_X_DATETIME        32793
-#define ID_EDIT_FINDMATCHINGPARENTESIS  32793
+#define ID_EDIT_FINDMATCHINGPARENTESIS  32794
+#define ID_EDIT_NEXTERROR               32795
+#define ID_EDIT_PREVERROR               32796
 #define ID_VIEW_SCALE_Y_LINEAR          32800
 #define ID_VIEW_SCALE_Y_LOGARITHMIC     32801
 #define ID_VIEW_SCALE_Y_NORMALDIST      32802
@@ -98,6 +101,8 @@
 #define ID_HELP_ABOUT                   32870
 #define ID_SELECTMENU_DELETE            32880
 #define ID_SELECTMENU_EDIT              32881
+#define ID_SELECTMENU_HIDE              32882
+#define ID_SELECTMENU_SHOW              32883
 #define ID_INDICATOR_POSITION           32890
 #define ID_GOTO_XINTERVAL               32900
 #define ID_GOTO_YINTERVAL               32901
@@ -107,8 +112,6 @@
 #define ID_GOTO_CELLSIZE                32905
 #define ID_GOTO_STYLE                   32907
 #define ID_GOTO_MAXERROR                32908
-#define ID_SELECTMENU_HIDE              32916
-#define ID_SELECTMENU_SHOW              32917
 
 // Next default values for new objects
 // 
@@ -116,8 +119,8 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         32930
-#define _APS_NEXT_CONTROL_VALUE         1092
+#define _APS_NEXT_COMMAND_VALUE         32914
+#define _APS_NEXT_CONTROL_VALUE         1096
 #define _APS_NEXT_SYMED_VALUE           153
 #endif
 #endif

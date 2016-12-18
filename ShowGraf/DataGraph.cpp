@@ -61,7 +61,7 @@ void DataGraph::readData(FILE *f) {
       throwException(_T("Invalid input in %s line %d:<%s>:\n\r%s\n"),param->getFileName().cstr(),lineCount,line,e.what());
     }
   }
-  findDataRange();
+  updateDataRange();
 }
 
 DataGraph::DataGraph(DataGraphParameters &param) : PointGraph(new DataGraphParameters(param)) {

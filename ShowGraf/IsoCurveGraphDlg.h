@@ -53,6 +53,7 @@ protected:
     afx_msg void OnGotoYInterval();
     afx_msg void OnGotoCellSize();
     afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileSave();
     afx_msg void OnFileSaveAs();

@@ -6,7 +6,7 @@
 	#error this file is not editable by Microsoft Visual C++
 #endif //APSTUDIO_INVOKED
 
-
+#include <MFCUtil/MFCUtil.rc>
 /////////////////////////////////////////////////////////////////////////////
 // Add manually edited resources here...
 

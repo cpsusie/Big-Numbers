@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MFCUtil/LayoutManager.h>
+#include <MFCUtil/Deletebutton.h>
 #include "DiffEquationGraph.h"
 
 #define TOP_EQUATION    0x1
@@ -18,7 +19,6 @@ typedef enum {
 
 class CEquationEdit : public CEdit {
 private:
-  static CBitmap      s_deleteBitmap;
   CFont              &m_font;
   CompactArray<CWnd*> m_subWndArray;
   CString             m_name;
@@ -26,7 +26,6 @@ private:
   double              m_startValue;
   BOOL                m_visible;
 
-  HBITMAP             getDeleteBitmap();
   CompactArray<CRect> calculateSubWinRect(const CRect &r) const;
 private:
   int             m_exprId;
@@ -35,7 +34,7 @@ private:
   CEdit           m_editStartV;
   CButton         m_checkVisible;
   CMFCColorButton m_colorButton;
-  CBitmapButton   m_buttonDelete;
+  CDeleteButton   m_buttonDelete;
 public:
   CEquationEdit(CFont &font);
   ~CEquationEdit();
@@ -69,6 +68,8 @@ public:
   inline DiffEquationField getFocusField() const {
     return findFieldByCtrlId(getFocusCtrlId(this));
   }
+  bool  getVisibleChecked();
+  void  setVisibleChecked(bool checked);
   void  paramToWin(  const DiffEquationDescription &desc, const EquationAttributes &attr);
   void  winToParam(        DiffEquationDescription &desc,       EquationAttributes &attr);
 };
@@ -80,12 +81,39 @@ private:
     CFont                        m_exprFont;
     String                       m_fullName;
     CompactArray<CEquationEdit*> m_equationControlArray;
+    CompactArray<ErrorPosition>  m_errorPosArray;
+    CompactIntArray              m_currentAdjustSet;
+    String                       m_currentText;
+
     CComboBox *getStyleCombo();
     void adjustWindowSize();
     void distributeEquationRectangles(int totalEquationsHeight);
     void adjustTabOrder(const CompactIntArray &oldTabOrder);
-
     bool validate();
+    void showErrors(const CompilerErrorList &errorList);
+    void clearErrorList();
+    bool isErrorListVisible() {
+      return getErrorList()->IsWindowVisible() ? true : false;
+    }
+    inline int getErrorCount() {
+      return getErrorList()->GetCount();
+    }
+    int getSelectedError() {
+      return getErrorCount() ? getErrorList()->GetCurSel() : -1;
+    }
+    void setSelectedError( int index);
+    void gotoErrorPosition(int index);
+    void setCurrentAdjustSet(UINT id);
+    inline void clearCurrentAdjustSet() {
+      m_currentAdjustSet.clear();
+      traceCurrentAdjustSet();
+    }
+    bool isCurrentAdjustSetEmpty() const {
+      return m_currentAdjustSet.isEmpty();
+    }
+    void traceCurrentAdjustSet();
+    void adjustErrorPositions(const String &s, int sel, int delta);
+    void gotoTextPosition( int ctrlId, const SourcePosition &pos);
     void paramToWin(                 const DiffEquationGraphParameters &param);
     void winToParam(                       DiffEquationGraphParameters &param);
     void equationToWin(size_t index, const DiffEquationDescription &desc, const EquationAttributes &attr);
@@ -98,7 +126,7 @@ private:
     void removeEquation(size_t index);
     void addEquationToLOManager(     size_t index);
     void removeEquationFromLOManager(size_t index);
-    int            findEquationIndexByCtrlId(UINT id); // return -1 if id does not belong to any equation
+    int            findEquationIndexByCtrlId(UINT id) const; // return -1 if id does not belong to any equation
     CEquationEdit *findEquationByCtrlId(     UINT id); // return NULL if not in any diff-equation
     inline int     getFocusEquationIndex() {           // return -1 if not in any diff-equation
       return findEquationIndexByCtrlId(getFocusCtrlId(this));
@@ -115,6 +143,9 @@ private:
     }
     inline CEquationEdit *getLastEquationEdit() const {
       return getEquationCount() ? getEquationEdit(getEquationCount()-1) : NULL;
+    }
+    CListBox *getErrorList() {
+      return (CListBox*)GetDlgItem(IDC_LISTERRORS);
     }
     CRect getTotalEquationRect() const;
 
@@ -139,19 +170,26 @@ protected:
 
   	DECLARE_MESSAGE_MAP()
 public:
-    afx_msg void OnBnClickedButtonaddeq();
-    afx_msg void OnBnClickedEquation(UINT id);
     virtual BOOL OnInitDialog();
-    afx_msg void OnDestroy();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-    afx_msg void OnGotoName();
-    afx_msg void OnGotoStyle();
-    afx_msg void OnGotoMaxError();
-    afx_msg void OnGotoXInterval();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
+    afx_msg void OnDestroy();
+    afx_msg void OnBnClickedButtonaddeq();
+    afx_msg void OnBnClickedEquation(    UINT id);
+    afx_msg void OnEditChangeEquation(   UINT id);
+    afx_msg void OnEditSetFocusEquation( UINT id);
+    afx_msg void OnEditKillFocusEquation(UINT id);
+    afx_msg void OnOK();
+    afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
     afx_msg void OnFileSave();
     afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindmatchingparentesis();
-    afx_msg void OnBnClickedOk();
+    afx_msg void OnEditNexterror();
+    afx_msg void OnEditPreverror();
+    afx_msg void OnLbnSelchangeListerrors();
+    afx_msg void OnGotoName();
+    afx_msg void OnGotoStyle();
+    afx_msg void OnGotoMaxError();
+    afx_msg void OnGotoXInterval();
 };
