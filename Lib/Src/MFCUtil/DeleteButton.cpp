@@ -1,9 +1,10 @@
 #include "stdafx.h"
 #include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
-#include <MFCUtil/OBMButton.h>
+#include <MFCUtil/DeleteButton.h>
+#include <MFCUtil/resource.h>
 
-void OBMButton::Create(CWnd *parent, int res, int resD, int resI, const CPoint &pos, UINT id, bool tabStop) {
+void CDeleteButton::Create(CWnd *parent, const CPoint &pos, UINT id, bool tabStop) {
   int flags = WS_CHILD | WS_VISIBLE | BS_NOTIFY | BS_OWNERDRAW;
   if(tabStop) flags |= WS_TABSTOP;
 
@@ -14,23 +15,23 @@ void OBMButton::Create(CWnd *parent, int res, int resD, int resI, const CPoint &
                            ,id)) {
     throwException(_T("%s:CBitmapButton::Create failed"), __TFUNCTION__);
   }
-  loadBitmap(m_bitmap        ,res );
-  loadBitmap(m_bitmapSel     ,resD);
-  loadBitmap(m_bitmapFocus   ,res );
-  loadBitmap(m_bitmapDisabled,resI);
+  loadBitmap(m_bitmap        ,_IDB_DELETEBUTTON_BITMAP );
+  loadBitmap(m_bitmapSel     ,_IDB_DELETEBUTTON_BITMAPD);
+  loadBitmap(m_bitmapFocus   ,_IDB_DELETEBUTTON_BITMAP );
+  loadBitmap(m_bitmapDisabled,_IDB_DELETEBUTTON_BITMAPI);
   SizeToContent();
   SetPosition(pos.x,pos.y,false);
 }
 
-void OBMButton::loadBitmap(CBitmap &bm, int id) {
+void CDeleteButton::loadBitmap(CBitmap &bm, int id) {
   if(id) {
-    if(!bm.LoadOEMBitmap(id)) {
-      AfxMessageBox(format(_T("%s:LoadOEMBitmap(%d) failed"), __TFUNCTION__, id).cstr(), MB_ICONWARNING);
+    if(!bm.LoadBitmap(id)) {
+      AfxMessageBox(format(_T("LoadBitmap(%d) failed"), id).cstr(), MB_ICONWARNING);
     }
   }
 };
 
-void OBMButton::SetPosition(int x, int y, bool redraw) {
+void CDeleteButton::SetPosition(int x, int y, bool redraw) {
   int flags = SWP_NOZORDER | SWP_NOSIZE;
   if(!redraw) flags |= SWP_NOREDRAW;
   CBitmapButton::SetWindowPos(&wndTop,x,y,0,0,flags);

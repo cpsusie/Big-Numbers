@@ -237,6 +237,9 @@
     <ClCompile Include="PixRectRotate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DeleteButton.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="targetver.h">
@@ -350,12 +353,24 @@
     <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\FolderImages.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DeleteButton.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DeleteButtonD.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DeleteButtonI.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

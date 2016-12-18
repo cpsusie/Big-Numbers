@@ -44,6 +44,9 @@ public:
   }
   
   void init(double minX, double maxX, double minY, double maxY);
+  inline void setToDefault() { // used for empty pointArray in PointGraph
+    init(-1,1,-1,1);
+  }
   operator Rectangle2D() const;
 };
 

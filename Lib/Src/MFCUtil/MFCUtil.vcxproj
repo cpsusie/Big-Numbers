@@ -276,6 +276,7 @@
     <ClCompile Include="CoordinateSystem\OccupationMap.cpp" />
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CursorTools.cpp" />
+    <ClCompile Include="DeleteButton.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
     <ClCompile Include="ExpressionGraphics.cpp" />
     <ClCompile Include="FileSink.cpp" />
@@ -347,6 +348,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\LogarithmicAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditWithSpinButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
@@ -373,6 +375,9 @@
     <Natvis Include="NatvisFile.natvis" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\DeleteButton.bmp" />
+    <Image Include="res\DeleteButtonD.bmp" />
+    <Image Include="res\DeleteButtonI.bmp" />
     <Image Include="res\FolderImages.bmp" />
   </ItemGroup>
   <ItemGroup>
