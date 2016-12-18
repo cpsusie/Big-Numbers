@@ -154,6 +154,25 @@ public:
     m_column += amount;
   }
 
+  inline int compare(const SourcePosition &pos) const { // assume same fileName
+    const int c = m_lineNumber - pos.m_lineNumber;
+    if(c) return c;
+    return m_column - pos.m_column;
+  }
+
+  inline bool operator<(const SourcePosition &pos) const {
+    return compare(pos) < 0;
+  }
+  inline bool operator>(const SourcePosition &pos) const {
+    return compare(pos) > 0;
+  }
+  inline bool operator<=(const SourcePosition &pos) const {
+    return compare(pos) <= 0;
+  }
+  inline bool operator>=(const SourcePosition &pos) const {
+    return compare(pos) >= 0;
+  }
+
   String toString() const;
   friend class Scanner;
 
