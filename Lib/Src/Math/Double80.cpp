@@ -1240,6 +1240,13 @@ Double80 Min(const Double80 &x, const Double80 &y) {
   return (x <= y) ? x : y;
 }
 
+#define MINMAX1(x,MIN,MAX) (((x) < (MIN)) ? (MIN) : ((x) > (MAX)) ? (MAX) : (x))
+#define MINMAX(x,x1,x2) (((x1) <= (x2)) ? MINMAX1(x,x1,x2) : MINMAX1(x,x2,x1))
+
+Double80 minMax(const Double80 &x, const Double80 &x1, const Double80 &x2) {
+  return MINMAX(x, x1, x2);
+}
+
 #define SIGNIFICAND(d) ((*((unsigned __int64*)(&(d)))) & 0xffffffffffffffffui64)
 #define EXPONENT(d)    ((*(unsigned short*)(((char*)&(d)) + 8)) & 0x7fff)
 

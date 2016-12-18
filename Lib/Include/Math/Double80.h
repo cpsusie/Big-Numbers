@@ -593,6 +593,7 @@ int      sign(       const Double80 &x);
 Double80 round(      const Double80 &x, int prec = 0);
 Double80 Max(        const Double80 &x, const Double80 &y);
 Double80 Min(        const Double80 &x, const Double80 &y);
+Double80 minMax(     const Double80 &x, const Double80 &x1, const Double80 &x2);
 bool     isNan(      const Double80 &x);
 bool     isPInfinity(const Double80 &x);
 bool     isNInfinity(const Double80 &x);
