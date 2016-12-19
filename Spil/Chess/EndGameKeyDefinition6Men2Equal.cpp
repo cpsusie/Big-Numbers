@@ -43,10 +43,7 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KK_OFFDIAG(key)                                                                                                    \
-{ if(pos4 > pos5) {                                                                                                               \
-    key.setPosition(4,pos5);                                                                                                      \
-    key.setPosition(5,pos4);                                                                                                      \
-  }                                                                                                                               \
+{ key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
   const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
   return ADDPIT(key, ADD2EQUAL(KK_OFFDIAG_4MEN(key), KK_OFFDIAG_POSCOUNT, pi4, pi5))                                              \
@@ -64,10 +61,7 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KK_ONDIAG(key)                                                                                                     \
-{ if(pos4 > pos5) {                                                                                                               \
-    key.setPosition(4,pos5);                                                                                                      \
-    key.setPosition(5,pos4);                                                                                                      \
-  }                                                                                                                               \
+{ key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
   const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
   return ADDPIT(key, ADD2EQUAL(KK_ONDIAG_4MEN(key), KK_ONDIAG_POSCOUNT, pi4, pi5))                                                \
@@ -87,10 +81,7 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2_ONDIAG(key)                                                                                                   \
-{ if(pos4 > pos5) {                                                                                                               \
-    key.setPosition(4,pos5);                                                                                                      \
-    key.setPosition(5,pos4);                                                                                                      \
-  }                                                                                                                               \
+{ key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
   const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
   return ADDPIT(key, ADD2EQUAL(KKP2_ONDIAG_4MEN(key), KKP2_ONDIAG_POSCOUNT, pi4, pi5))                                            \
@@ -166,10 +157,7 @@ EndGameKeyDefinition6Men2Equal::EndGameKeyDefinition6Men2Equal(PieceKey pk2, Pie
 }
 
 #define ENCODE_KKP2345_ONDIAG(key)                                                                                                \
-{ if(pos4 > pos5) {                                                                                                               \
-    key.setPosition(4,pos5);                                                                                                      \
-    key.setPosition(5,pos4);                                                                                                      \
-  }                                                                                                                               \
+{ key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi4 = key.getP4DiagIndex();                                                                                          \
   const UINT pi5 = key.getP5DiagIndexEqualP45();                                                                                  \
   return ADDPIT(key, ADD2EQUAL(KKP23_ONDIAG_4MEN(key), KKP23_ONDIAG_POSCOUNT, pi4, pi5))                                          \
