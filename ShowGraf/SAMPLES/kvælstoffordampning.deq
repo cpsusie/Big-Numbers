@@ -1,0 +1,9 @@
+0.000000 200.000000 5.000000e-01 Curve RADIANS 1
+"m"
+"density = 0.807;
+bottomarea = 10;
+totalarea = if(m <= 0,0,bottomarea + m/density/bottomarea);
+deltaT = 273.16 + 20 - 77.16;
+lambda = 0.038 * 0.01;
+-lambda * totalarea * deltaT"
+"300 true 00000000"
