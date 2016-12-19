@@ -1520,9 +1520,6 @@ void EndGameKeyDefinition::checkForBothPlayers(EndGameKey key) const {
 
 void EndGameKeyDefinition::checkKey(EndGameKey key) const {
   m_selfCheckInfo.m_checkKeyCount++;
-  if (m_selfCheckInfo.m_checkKeyCount == 2874523) {
-    int fisk = 1;
-  }
   const EndGamePosIndex index = keyToIndex(key);
   if(index < m_selfCheckInfo.m_minIndex) {
     m_selfCheckInfo.m_minIndex = index;

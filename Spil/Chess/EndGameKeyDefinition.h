@@ -515,7 +515,7 @@ public:
   EndGameKey      indexToKey(EndGamePosIndex index) const;
 
   EndGamePosIndex getIndexSize() const {
-    return 3025883070; 
+    return 3023455680;
   }
   SymmetricTransformation getSymTransformation(EndGameKey key) const;
 

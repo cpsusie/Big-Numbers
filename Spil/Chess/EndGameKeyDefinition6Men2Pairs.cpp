@@ -7,24 +7,22 @@
 #define KK_OFFDIAG_POSCOUNT                    (MAXINDEX_KK_OFFDIAG_2MEN     - MININDEX_KK_OFFDIAG_2MEN    )
 #define KK_ONDIAG_POSCOUNT                     (MAXINDEX_KK_ONDIAG_2MEN      - MININDEX_KK_ONDIAG_2MEN     )
 #define KKP23_ONDIAG_POSCOUNT                  (MAXINDEX_KKP23_ONDIAG_4MEN   - MININDEX_KKP23_ONDIAG_4MEN  )
-#define KKP234_ONDIAG_POSCOUNT                 (MAXINDEX_KKP234_ONDIAG_5MEN  - MININDEX_KKP234_ONDIAG_5MEN )
+#define KKP234_ONDIAG_POSCOUNT                ((MAXINDEX_KKP234_ONDIAG_5MEN  - MININDEX_KKP234_ONDIAG_5MEN )*14)
 #define KKP2345_ONDIAG_POSCOUNT                (MAXINDEX_KKP2345_ONDIAG_6MEN - MININDEX_KKP2345_ONDIAG_6MEN)
 
 #define KK_OFFDIAG_POSCOUNT_23                 GET_RANGESTART2EQUAL(KK_OFFDIAG_POSCOUNT               , 61 )
 #define KK_ONDIAG_P23_BELOW_POSCOUNT_23        GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT                , 27 )
 #define KK_ONDIAG_P2_BELOW_POSCOUNT_23         GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT                , 28 )
 #define KKP2_ONDIAG_POSCOUNT_23                (MAXINDEX_KKP2_ONDIAG_4MEN - MININDEX_KKP2_ONDIAG_4MEN      )
-#define KKP23_ONDIAG_P45_BELOW_POSCOUNT_23     GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT                , 5  )
-#define KKP23_ONDIAG_P4_BELOW_POSCOUNT_23      GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT                , 5  )
-#define KKP234_ONDIAG_POSCOUNT_23              GET_RANGESTART2EQUAL(KKP234_ONDIAG_POSCOUNT            , 28 )
+#define KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT       GET_RANGESTART2EQUAL(KK_ONDIAG_POSCOUNT                , 5  )
 #define KKP2345_ONDIAG_POSCOUNT_23             GET_RANGESTART2EQUAL(KKP2345_ONDIAG_POSCOUNT           , 4  )
 
 #define KK_OFFDIAG_POSCOUNT_45                 GET_RANGESTART2EQUAL(KK_OFFDIAG_POSCOUNT_23            , 59 )
 #define KK_ONDIAG_P23_BELOW_POSCOUNT_45        GET_RANGESTART2EQUAL(KK_ONDIAG_P23_BELOW_POSCOUNT_23   , 59 )
 #define KK_ONDIAG_P2_BELOW_POSCOUNT_45         GET_RANGESTART2EQUAL(KK_ONDIAG_P2_BELOW_POSCOUNT_23    , 59 )
 #define KKP2_ONDIAG_POSCOUNT_45                GET_RANGESTART2EQUAL(KKP2_ONDIAG_POSCOUNT_23           , 59 )
-#define KKP23_ONDIAG_P45_BELOW_POSCOUNT_45     GET_RANGESTART2EQUAL(KKP23_ONDIAG_P45_BELOW_POSCOUNT_23, 27 )
-#define KKP23_ONDIAG_P4_BELOW_POSCOUNT_45      GET_RANGESTART2EQUAL(KKP23_ONDIAG_P4_BELOW_POSCOUNT_23 , 28 )
+#define KKP23_ONDIAG_P45_BELOW_POSCOUNT_45     GET_RANGESTART2EQUAL(KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT  , 27 )
+#define KKP23_ONDIAG_P4_BELOW_POSCOUNT_45      GET_RANGESTART2EQUAL(KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT  , 28 )
 
 #define START_RANGE_KK_ONDIAG_P23_BELOWDIAG    (                                         KK_OFFDIAG_POSCOUNT_45            )
 #define START_RANGE_KK_ONDIAG_P2_BELOWDIAG     (START_RANGE_KK_ONDIAG_P23_BELOWDIAG    + KK_ONDIAG_P23_BELOW_POSCOUNT_45   )
@@ -32,7 +30,7 @@
 #define START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG (START_RANGE_KKP2_ONDIAG                + KKP2_ONDIAG_POSCOUNT_45           )
 #define START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG  (START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG + KKP23_ONDIAG_P45_BELOW_POSCOUNT_45)
 #define START_RANGE_KKP234_ONDIAG              (START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG  + KKP23_ONDIAG_P4_BELOW_POSCOUNT_45 )
-#define START_RANGE_KKP2345_ONDIAG             (START_RANGE_KKP234_ONDIAG              + KKP234_ONDIAG_POSCOUNT_23         )
+#define START_RANGE_KKP2345_ONDIAG             (START_RANGE_KKP234_ONDIAG              + KKP234_ONDIAG_POSCOUNT            )
 
 EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, PieceKey pk45)
 : EndGameKeyDefinitionDupletsAllowed(pk23, pk23, pk45)
@@ -42,7 +40,7 @@ EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, Pi
       && (GET_TYPE_FROMKEY(pk45) != Pawn  )
         );
 
-
+/*
   DUMP_MACRO(KK_OFFDIAG_POSCOUNT                    );
   DUMP_MACRO(KK_ONDIAG_POSCOUNT                     );
   DUMP_MACRO(KKP23_ONDIAG_POSCOUNT                  );
@@ -53,9 +51,7 @@ EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, Pi
   DUMP_MACRO(KK_ONDIAG_P23_BELOW_POSCOUNT_23        );
   DUMP_MACRO(KK_ONDIAG_P2_BELOW_POSCOUNT_23         );
   DUMP_MACRO(KKP2_ONDIAG_POSCOUNT_23                );
-  DUMP_MACRO(KKP23_ONDIAG_P45_BELOW_POSCOUNT_23     );
-  DUMP_MACRO(KKP23_ONDIAG_P4_BELOW_POSCOUNT_23      );
-  DUMP_MACRO(KKP234_ONDIAG_POSCOUNT_23              );
+  DUMP_MACRO(KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT       );
   DUMP_MACRO(KKP2345_ONDIAG_POSCOUNT_23             );
 
   DUMP_MACRO(KK_OFFDIAG_POSCOUNT_45                 );
@@ -72,9 +68,10 @@ EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, Pi
   DUMP_MACRO(START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG  );
   DUMP_MACRO(START_RANGE_KKP234_ONDIAG              );
   DUMP_MACRO(START_RANGE_KKP2345_ONDIAG             );
+*/
 }
-#define _TEST
-#ifdef _TEST
+
+#ifdef _DEBUG
     
 static EndGamePosIndex checkAndReturn(EndGamePosIndex index, EndGamePosIndex max) {
   max--;
@@ -189,7 +186,7 @@ static EndGamePosIndex encodeKKP23OnDiagNoFlip(EndGameKey key) {
   UINT pi5 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(5)];
   SORT2(pi4, pi5); /* pi4 < pi5 */
   RETURN(ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT                , pi2, pi3)
-                                                            , KKP23_ONDIAG_P45_BELOW_POSCOUNT_23, pi4, pi5))
+                                                            , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi4, pi5))
        + START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG
        - MININDEX
        , START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG);
@@ -198,7 +195,7 @@ static EndGamePosIndex encodeKKP23OnDiagNoFlip(EndGameKey key) {
 static void decodeKKP23OnDiagNoFlip(EndGameKey &key, EndGamePosIndex index) {
   index -= START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG;
   SETPIT(              key, index   );
-  SET2OFFDIAGPOSNOFLIP(key, index, KKP23_ONDIAG_P45_BELOW_POSCOUNT_23, 4, 5);
+  SET2OFFDIAGPOSNOFLIP(key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);
   SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT                , 2, 3);
   SETKK_ONDIAG(        key, index   );
   key.p23IndexToDiagPosEqualP23();
@@ -212,7 +209,7 @@ static EndGamePosIndex encodeKKP23OnDiagFlipi(EndGameKey key, int i, int j) {
   UINT pj = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(j)];
   SORT2(pi, pj);
   RETURN( ADDPIT(key, ADD2EQUALALLOWEQUALLH(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT               , pi2, pi3)
-                                                                         , KKP23_ONDIAG_P4_BELOW_POSCOUNT_23, pi , pj))
+                                                                         , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi , pj))
         + START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG
         - MININDEX
         ,START_RANGE_KKP234_ONDIAG);
@@ -221,7 +218,7 @@ static EndGamePosIndex encodeKKP23OnDiagFlipi(EndGameKey key, int i, int j) {
 static void decodeKKP23OnDiagFlipi(EndGameKey &key, EndGamePosIndex index) {
   index -= START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG;
   SETPIT(              key, index   );
-  SET2OFFDIAGPOSFLIPj( key, index, KKP23_ONDIAG_P4_BELOW_POSCOUNT_23, 4, 5);
+  SET2OFFDIAGPOSFLIPj( key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);
   SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT               , 2, 3);
   SETKK_ONDIAG(        key, index   );
   key.p23IndexToDiagPosEqualP23();
@@ -271,8 +268,8 @@ static EndGamePosIndex encodeKKP2345OnDiag(EndGameKey key) {
   const UINT pi3 = key.getP3DiagIndexEqualP23();
   const UINT pi4 = key.getP4DiagIndex();
   const UINT pi5 = key.getP5DiagIndexEqualP45();
-  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT        , pi2, pi3)
-                                                            , KKP2345_ONDIAG_POSCOUNT_23, pi4, pi5))
+  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT              , pi2, pi3)
+                                                            , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi4, pi5))
        + START_RANGE_KKP2345_ONDIAG
        - MININDEX;
 }
@@ -280,8 +277,8 @@ static EndGamePosIndex encodeKKP2345OnDiag(EndGameKey key) {
 static void decodeKKP2345OnDiag(EndGameKey &key, EndGamePosIndex index) {
   index -= START_RANGE_KKP2345_ONDIAG;
   SETPIT(              key, index   );
-  SET2POS2EQUAL(       key, index, KKP2345_ONDIAG_POSCOUNT_23, 4, 5);
-  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT        , 2, 3);
+  SET2POS2EQUAL(       key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT              , 2, 3);
   SETKK_ONDIAG(        key, index   );
   key.p23IndexToDiagPosEqualP23();
   key.p45IndexToDiagPosEqualP45();
@@ -309,8 +306,8 @@ static void decodeKKP2345OnDiag(EndGameKey &key, EndGamePosIndex index) {
 #else
 
 #define ENCODE_KK_OFFDIAG(key)                                                                                                    \
-{ key.sort2Pos(2, 3);                                                                                                              \
-  key.sort2Pos(4, 5);                                                                                                              \
+{ key.sort2Pos(2, 3);                                                                                                             \
+  key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi2 = key.getP2OffDiagIndex();                                                                                       \
   const UINT pi3 = key.getP3OffDiagIndexEqualP23();                                                                               \
   const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
@@ -329,27 +326,173 @@ static void decodeKKP2345OnDiag(EndGameKey &key, EndGamePosIndex index) {
   key.p45IndexToOffDiagPosEqualP45();                                                                                             \
 }
 
-#define ENCODE_KK_ONDIAG(key)                                                                                                     \
-{ key.sort2Pos(2, 3);                                                                                                              \
-  key.sort2Pos(4, 5);                                                                                                              \
-  const UINT pi2 = key.getP2OffDiagIndex();                                                                                       \
-  const UINT pi3 = key.getP3OffDiagIndexEqualP23();                                                                               \
+#define ENCODE_KK_ONDIAG_NOFLIP(key)                                                                                              \
+{ UINT pi2 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(2)];                                                       \
+  UINT pi3 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(3)];                                                       \
+  SORT2(pi2, pi3); /* pi2 < pi3 */                                                                                                \
+  key.sort2Pos(4, 5);                                                                                                             \
   const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
   const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
-  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT   , pi2, pi3)                                    \
-                                                            , KK_ONDIAG_POSCOUNT_23, pi4, pi5))                                                                  \
-       + START_RANGE_KK_ONDIAG1                                                                                                   \
+  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT             , pi2, pi3)                          \
+                                                            , KK_ONDIAG_P23_BELOW_POSCOUNT_23, pi4, pi5))                         \
+       + START_RANGE_KK_ONDIAG_P23_BELOWDIAG                                                                                      \
        - MININDEX;                                                                                                                \
 }
 
-#define DECODE_KK_ONDIAG(key, index)                                                                                              \
-{ index -= START_RANGE_KK_ONDIAG1;                                                                                                \
+#define DECODE_KK_ONDIAG_NOFLIP(key, index)                                                                                       \
+{ index -= START_RANGE_KK_ONDIAG_P23_BELOWDIAG;                                                                                   \
   SETPIT(              key, index   );                                                                                            \
-  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT_23, 4, 5);                                                                  \
-  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT   , 2, 3);                                                                  \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_P23_BELOW_POSCOUNT_23, 4, 5);                                                        \
+  SET2OFFDIAGPOSNOFLIP(key, index, KK_ONDIAG_POSCOUNT             , 2, 3);                                                        \
   SETKK_ONDIAG(        key, index   );                                                                                            \
-  key.p23IndexToOffDiagPosEqualP23();                                                                                             \
   key.p45IndexToOffDiagPosEqualP45();                                                                                             \
+}
+
+#define ENCODE_KK_ONDIAG_FLIPi(key, i, j )                                                                                        \
+{ UINT pi = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(i)] - 28;                                                   \
+  UINT pj = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(j)];                                                        \
+  SORT2(pi, pj);                                                                                                                  \
+  key.sort2Pos(4, 5);                                                                                                             \
+  const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
+  const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
+  return ADDPIT(key, ADD2EQUAL(ADD2EQUALALLOWEQUALLH(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT            , pi , pj )               \
+                                                                        , KK_ONDIAG_P2_BELOW_POSCOUNT_23, pi4, pi5))              \
+       + START_RANGE_KK_ONDIAG_P2_BELOWDIAG                                                                                       \
+       - MININDEX;                                                                                                                \
+}
+
+#define DECODE_KK_ONDIAG_FLIPi(key, index)                                                                                        \
+{ index -= START_RANGE_KK_ONDIAG_P2_BELOWDIAG;                                                                                    \
+  SETPIT(              key, index   );                                                                                            \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_P2_BELOW_POSCOUNT_23, 4, 5);                                                         \
+  SET2OFFDIAGPOSFLIPj( key, index, KK_ONDIAG_POSCOUNT            , 2, 3);                                                         \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p45IndexToOffDiagPosEqualP45();                                                                                             \
+}
+
+#define ENCODE_KKP2_ONDIAG(key)                                                                                                   \
+{ key.sort2Pos(4, 5);                                                                                                             \
+  const UINT pi4 = key.getP4OffDiagIndex();                                                                                       \
+  const UINT pi5 = key.getP5OffDiagIndexEqualP45();                                                                               \
+  return ADDPIT(key, ADD2EQUAL(KKP2_ONDIAG_4MEN(key), KKP2_ONDIAG_POSCOUNT_23, pi4, pi5))                                         \
+       + START_RANGE_KKP2_ONDIAG                                                                                                  \
+       - MININDEX;                                                                                                                \
+}
+
+#define ENCODE_KKP3_ONDIAG(key)                                                                                                   \
+{ key.swapPos(2, 3);                                                                                                              \
+  ENCODE_KKP2_ONDIAG(key);                                                                                                        \
+}
+
+#define DECODE_KKP2_ONDIAG(key, index)                                                                                            \
+{ index -= START_RANGE_KKP2_ONDIAG;                                                                                               \
+  SETPIT(              key, index   );                                                                                            \
+  SET2POS2EQUAL(       key, index, KKP2_ONDIAG_POSCOUNT_23, 4, 5);                                                                \
+  SETPOS_BELOWDIAG(    key, index, 3);                                                                                            \
+  SETP2_ONDIAG(        key, index   );                                                                                            \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p2IndexToDiagPos();                                                                                                         \
+  key.p45IndexToOffDiagPosEqualP45();                                                                                             \
+}
+
+#define ENCODE_KKP23_ONDIAG_NOFLIP(key)                                                                                           \
+{ key.sort2Pos(2, 3);                                                                                                             \
+  const UINT pi2 = key.getP2DiagIndex();                                                                                          \
+  const UINT pi3 = key.getP3DiagIndexEqualP23();                                                                                  \
+  UINT pi4 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(4)];                                                       \
+  UINT pi5 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(5)];                                                       \
+  SORT2(pi4, pi5); /* pi4 < pi5 */                                                                                                \
+  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT              , pi2, pi3)                         \
+                                                            , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi4, pi5))                        \
+       + START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG                                                                                   \
+       - MININDEX;                                                                                                                \
+}
+
+#define DECODE_KKP23_ONDIAG_NOFLIP(key, index)                                                                                    \
+{ index -= START_RANGE_KKP23_ONDIAG_P45_BELOWDIAG;                                                                                \
+  SETPIT(              key, index   );                                                                                            \
+  SET2OFFDIAGPOSNOFLIP(key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);                                                       \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT              , 2, 3);                                                       \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p23IndexToDiagPosEqualP23();                                                                                                \
+}
+
+#define ENCODE_KKP23_ONDIAG_FLIPi(key, i, j)                                                                                      \
+{ key.sort2Pos(2, 3);                                                                                                             \
+  const UINT pi2 = key.getP2DiagIndex();                                                                                          \
+  const UINT pi3 = key.getP3DiagIndexEqualP23();                                                                                  \
+  UINT pi = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(i)] - 28;                                                   \
+  UINT pj = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(j)];                                                        \
+  SORT2(pi, pj);                                                                                                                  \
+  return ADDPIT(key, ADD2EQUALALLOWEQUALLH(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT               , pi2, pi3)            \
+                                                                         , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi , pj))            \
+       + START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG                                                                                    \
+       - MININDEX;                                                                                                                \
+}
+
+#define DECODE_KKP23_ONDIAG_FLIPi(key, index)                                                                                     \
+{ index -= START_RANGE_KKP23_ONDIAG_P4_BELOWDIAG;                                                                                 \
+  SETPIT(              key, index   );                                                                                            \
+  SET2OFFDIAGPOSFLIPj( key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);                                                       \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT              , 2, 3);                                                       \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p23IndexToDiagPosEqualP23();                                                                                                \
+}
+
+#define ENCODE_KKP234_ONDIAG(key)                                                                                                 \
+{ key.sort2Pos(2, 3);                                                                                                             \
+  const UINT pi2 = key.getP2DiagIndex();                                                                                          \
+  const UINT pi3 = key.getP3DiagIndexEqualP23();                                                                                  \
+  const UINT pi4 = key.getP4DiagIndex();                                                                                          \
+  const UINT pi5 = EndGameKeyDefinition::s_offDiagPosToIndex[key.getPosition(5)];                                                 \
+  return ADDPIT(key, ADDPOS_BELOWDIAG(ADDP4_ONDIAG(                                                                               \
+                         ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT, pi2, pi3)                                             \
+                        ,pi4                                                                                                      \
+                       )                                                                                                          \
+                      ,pi5                                                                                                        \
+                     )                                                                                                            \
+               )                                                                                                                  \
+         + START_RANGE_KKP234_ONDIAG                                                                                              \
+         - MININDEX;                                                                                                              \
+}
+
+#define ENCODE_KKP235_ONDIAG(key)                                                                                                 \
+{ key.swapPos(4, 5);                                                                                                              \
+  ENCODE_KKP234_ONDIAG(key);                                                                                                      \
+}
+
+#define DECODE_KKP234_ONDIAG(key, index)                                                                                          \
+{ index -= START_RANGE_KKP234_ONDIAG;                                                                                             \
+  SETPIT(              key, index   );                                                                                            \
+  SETPOS_BELOWDIAG(    key, index, 5);                                                                                            \
+  SETP4_ONDIAG(        key, index   );                                                                                            \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT                , 2, 3);                                                     \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p23IndexToDiagPosEqualP23();                                                                                                \
+  key.p4IndexToDiagPos();                                                                                                         \
+}
+
+#define ENCODE_KKP2345_ONDIAG(key)                                                                                                \
+{ key.sort2Pos(2, 3);                                                                                                             \
+  key.sort2Pos(4, 5);                                                                                                             \
+  const UINT pi2 = key.getP2DiagIndex();                                                                                          \
+  const UINT pi3 = key.getP3DiagIndexEqualP23();                                                                                  \
+  const UINT pi4 = key.getP4DiagIndex();                                                                                          \
+  const UINT pi5 = key.getP5DiagIndexEqualP45();                                                                                  \
+  return ADDPIT(key, ADD2EQUAL(ADD2EQUAL(KK_ONDIAG_2MEN(key), KK_ONDIAG_POSCOUNT              , pi2, pi3)                         \
+                                                            , KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, pi4, pi5))                        \
+       + START_RANGE_KKP2345_ONDIAG                                                                                               \
+       - MININDEX;                                                                                                                \
+}
+
+#define DECODE_KKP2345_ONDIAG(key, index)                                                                                         \
+{ index -= START_RANGE_KKP2345_ONDIAG;                                                                                            \
+  SETPIT(              key, index   );                                                                                            \
+  SET2POS2EQUAL(       key, index, KKP23_ONDIAG_4MEN2EQUAL_POSCOUNT, 4, 5);                                                       \
+  SET2POS2EQUAL(       key, index, KK_ONDIAG_POSCOUNT              , 2, 3);                                                       \
+  SETKK_ONDIAG(        key, index   );                                                                                            \
+  key.p23IndexToDiagPosEqualP23();                                                                                                \
+  key.p45IndexToDiagPosEqualP45();                                                                                                \
 }
 
 #endif
@@ -432,7 +575,6 @@ void EndGameKeyDefinition6Men2Pairs::scanPositions(EndGameKeyWithOccupiedPositio
         key.clearField(pos2);
       }
     } else {
-      return;
       for(int pos2 = 0; pos2 < 64; pos2++) {
         if(key.isOccupied(pos2)) continue;
         key.setPosition(2,pos2);
