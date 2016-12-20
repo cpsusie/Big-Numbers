@@ -13,9 +13,11 @@ public:
 };
 
 TablebaseRegister::TablebaseRegister() {
+  // 3 men
   add(new EndGameKPK());    // King-Pawn                 / King
   add(new EndGameKQK());    // King-Queen                / King
   add(new EndGameKRK());    // King-Rook                 / King
+    // 4 men
   add(new EndGameKBBK());   // King-Bishop-Bishop        / King
   add(new EndGameKBKB());   // King-Bishop               / King-Bishop
   add(new EndGameKBKN());   // King-Bishop               / King-Knight
@@ -46,6 +48,7 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRNK());   // King-Rook-Knight          / King
   add(new EndGameKRPK());   // King-Rook-Pawn            / King
   add(new EndGameKRRK());   // King-Rook-Rook            / King
+    // 5 men
   add(new EndGameKBBBK());  // King-Bishop-Bishop-Bishop / King
   add(new EndGameKBBKB());  // King-Bishop-Bishop        / King-Bishop
   add(new EndGameKBBKN());  // King-Bishop-Bishop        / King-Knight
@@ -157,11 +160,33 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRRPK());  // King-Rook-Rook-Pawn       / King
   add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
 
+    // 6 men
+  add(new EndGameKBKBBB());
+  add(new EndGameKBKNNN());
+  add(new EndGameKBKQQQ());
+  add(new EndGameKBKRRR());
+  add(new EndGameKNKBBB());
+  add(new EndGameKNKNNN());
+  add(new EndGameKNKQQQ());
+  add(new EndGameKNKRRR());
+  add(new EndGameKQKBBB());
+  add(new EndGameKQKNNN());
+  add(new EndGameKQKQQQ());
+  add(new EndGameKQKRRR());
+  add(new EndGameKBBKNN());
+  add(new EndGameKQQKBB());
+  add(new EndGameKQQKNN());
+  add(new EndGameKQQKQQ());
+  add(new EndGameKQQKRR());
+  add(new EndGameKRRKBB());
+  add(new EndGameKRRKNN());
+  add(new EndGameKRRKRR());
   add(new EndGameKQRKBN());
   add(new EndGameKQRKRR());
-  add(new EndGameKQQKRR());
-  add(new EndGameKQKNNN());
-  add(new EndGameKQKRRR());
+  add(new EndGameKRKBBB());
+  add(new EndGameKRKNNN());
+  add(new EndGameKRKQQQ());
+  add(new EndGameKRKRRR());
 }
 
 TablebaseRegister::~TablebaseRegister() {

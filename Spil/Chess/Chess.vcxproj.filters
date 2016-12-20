@@ -871,23 +871,20 @@
     <ClCompile Include="EndGameKeyDefinition6Men3Equal.cpp">
       <Filter>EndGames\EndGameKeyDefinitions</Filter>
     </ClCompile>
-    <ClCompile Include="EndGameKQKNNN.cpp">
-      <Filter>EndGames\6Men\6MenNoPawns</Filter>
-    </ClCompile>
     <ClCompile Include="FindKnightRoute.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TablebaseConversion.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
-    <ClCompile Include="EndGameKQKRRR.cpp">
-      <Filter>EndGames\6Men\6MenNoPawns</Filter>
-    </ClCompile>
-    <ClCompile Include="EndGameKQQKRR.cpp">
-      <Filter>EndGames\6Men\6MenNoPawns</Filter>
-    </ClCompile>
     <ClCompile Include="EndGameKeyDefinition6Men2Pairs.cpp">
       <Filter>EndGames\EndGameKeyDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGame6Men3Equal.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
+    </ClCompile>
+    <ClCompile Include="EndGame6Men2Pairs.cpp">
+      <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

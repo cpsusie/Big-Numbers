@@ -460,6 +460,7 @@
     <ClCompile Include="..\..\Test\Compress\Compressor.cpp" />
     <ClCompile Include="..\..\Test\Compress\ZLibCompressor.cpp" />
     <ClCompile Include="..\Chess\BackMoveGenerator.cpp" />
+    <ClCompile Include="..\Chess\EndGame6Men3Equal.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBBK.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBK.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBKB.cpp" />
@@ -553,14 +554,12 @@
     <ClCompile Include="..\Chess\EndGameKQKBN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKNN.cpp" />
-    <ClCompile Include="..\Chess\EndGameKQKNNN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKP.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKQ.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKR.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKRB.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKRN.cpp" />
     <ClCompile Include="..\Chess\EndGameKQKRR.cpp" />
-    <ClCompile Include="..\Chess\EndGameKQKRRR.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNKB.cpp" />
     <ClCompile Include="..\Chess\EndGameKQNKN.cpp" />
@@ -583,7 +582,6 @@
     <ClCompile Include="..\Chess\EndGameKQQKP.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQKQ.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQKR.cpp" />
-    <ClCompile Include="..\Chess\EndGameKQQKRR.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQNK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQPK.cpp" />
     <ClCompile Include="..\Chess\EndGameKQQQK.cpp" />
@@ -678,6 +676,7 @@
     <ClCompile Include="..\Chess\UpdatePawnMove.cpp" />
     <ClCompile Include="..\Chess\UpdateQueenMove.cpp" />
     <ClCompile Include="..\Chess\UpdateRookMove.cpp" />
+    <ClCompile Include="EndGame6Men2Pairs.cpp" />
     <ClCompile Include="IndexedMapCompressNew.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>

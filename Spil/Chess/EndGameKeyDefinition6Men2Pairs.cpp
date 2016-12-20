@@ -35,9 +35,9 @@
 EndGameKeyDefinition6Men2Pairs::EndGameKeyDefinition6Men2Pairs(PieceKey pk23, PieceKey pk45)
 : EndGameKeyDefinitionDupletsAllowed(pk23, pk23, pk45)
 {
-  assert((pk23 != pk45)
-      && (GET_TYPE_FROMKEY(pk23) != Pawn  )
-      && (GET_TYPE_FROMKEY(pk45) != Pawn  )
+  assert((GET_PLAYER_FROMKEY(pk23) != GET_PLAYER_FROMKEY(pk45))
+      && (GET_TYPE_FROMKEY(  pk23) != Pawn  )
+      && (GET_TYPE_FROMKEY(  pk45) != Pawn  )
         );
 
 /*

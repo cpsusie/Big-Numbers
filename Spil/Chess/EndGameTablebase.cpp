@@ -712,9 +712,9 @@ void EndGameTablebase::checkInitialSetupFlags() {
 #define BISHOPCOMBI3SAMECOLOR_EXIST(fc)       _BISHOPCOMBI3_EXIST(fc, fc, fc)
 #define BISHOPCOMBI3DIFFCOLOR_EXIST(fc)       (_BISHOPCOMBI3_EXIST(fc, fc, 1-fc) || _BISHOPCOMBI3_EXIST(fc, 1-fc, fc) || _BISHOPCOMBI3_EXIST(1-fc, fc, fc))
 
-        { const int  bi1 = m_keydef.findKeyIndexByCount(pieceKey, 0);
-          const int  bi2 = m_keydef.findKeyIndexByCount(pieceKey, 1);
-          const int  bi3 = m_keydef.findKeyIndexByCount(pieceKey, 2);
+        { const int  bi1 = m_keydef.findKeyIndexByCount(pieceKey, 1);
+          const int  bi2 = m_keydef.findKeyIndexByCount(pieceKey, 2);
+          const int  bi3 = m_keydef.findKeyIndexByCount(pieceKey, 3);
           const bool www = BISHOPCOMBI3SAMECOLOR_EXIST(WHITEFIELD);
           const bool bbb = BISHOPCOMBI3SAMECOLOR_EXIST(BLACKFIELD);
           const bool wwb = BISHOPCOMBI3DIFFCOLOR_EXIST(WHITEFIELD);
