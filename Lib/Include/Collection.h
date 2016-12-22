@@ -65,7 +65,8 @@ public:
 
   Collection<T> getRandomSample(size_t k) const {
     if(k > size()) {
-      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%u) > size(=%d)"), k, size());
+      throwInvalidArgumentException(__TFUNCTION__, _T("k(=%s) > size(=%s)")
+                                   ,format1000(k).cstr(), format1000(size()).cstr());
     }
     CompactArray<const T*> tmp;
     tmp.setCapacity(k);
@@ -163,6 +164,7 @@ public:
   }
 
   bool operator==(const Collection<T> &c) const {
+    DEFINEMETHODNAME;
     if(this == &c) return true;
     const size_t n = size();
     if(n != c.size()) {
@@ -180,10 +182,12 @@ public:
       }
     }
     if(count != n) {
-      throwException(_T("Collection.operator==:iterators returned %d elements, size=%d"), count, n);
+      throwException(_T("%s:Iterators returned %d elements, size=%d")
+                    ,method, count, n);
     }
     if(it1.hasNext() || it2.hasNext()) {
-      throwException("Collection.operator==:iterators didn't return same number of elements");
+      throwException(_T("%s:iterators didn't return same number of elements")
+                    ,method);
     }
     return true;
   }
@@ -194,7 +198,7 @@ public:
 
   void save(ByteOutputStream &s) const {
     const int    esize = sizeof(T);
-    const size_t n     = size();
+    const UINT64 n     = size();
     Packer header;
     header << esize << n;
     header.write(s);
@@ -206,21 +210,25 @@ public:
   }
 
   void load(ByteInputStream &s) {
+    DEFINEMETHODNAME;
     Packer header;
-    int esize;
-    size_t size;
+    int    esize;
+    UINT64 n;
     if(!header.read(s)) {
-      throwException("Collection.load:Couldn't read header");
+      throwException(_T("%s:Couldn't read header"), method);
     }
-    header >> esize >> size;
+    header >> esize >> n;
     if(esize != sizeof(T)) {
-      throwException(_T("Collection.load:Invalid element size:%d bytes. Expected %d bytes"), esize, sizeof(T));
+      throwException(_T("%s:Invalid element size:%d bytes. Expected %d bytes")
+                    ,method, esize, sizeof(T));
     }
+    CHECKUINT64ISVALIDSIZET(n);
     clear();
-    for(size_t i = 0; i < size; i++) {
+    for(size_t i = 0; i < n; i++) {
       Packer p;
       if(!p.read(s)) {
-        throwException(_T("Collection.load:Unexpected eos. Expected %d elements. got %d"), size, i);
+        throwException(_T("%s:Unexpected eos. Expected %s elements. got %s")
+                      ,method, format1000(n).cstr(), format1000(i).cstr());
       }
       T e;
       p >> e;
@@ -259,7 +267,7 @@ public:
 
 template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {
   const D      delimiter;
-  const size_t size = c.size();
+  const UINT64 size = c.size();
   out << size << delimiter;
   for(Iterator<T> it = ((Collection<T>&)c).getIterator(); it.hasNext();) {
     out << it.next() << delimiter;
@@ -268,8 +276,10 @@ template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const 
 }
 
 template<class S, class T> S &operator>>(S &in, Collection<T> &c) {
-  size_t size;
+  UINT64 size;
   in >> size;
+  CHECKUINT64ISVALIDSIZET(size);
+  c.clear();
   for(size_t i = 0; i < size; i++) {
     T e;
     in >> e;

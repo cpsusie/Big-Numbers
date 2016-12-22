@@ -28,19 +28,19 @@ String::String(char ch) {
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(short n) {
+String::String(SHORT n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%hd"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(unsigned short n) {
+String::String(USHORT n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%hu"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(int n) {
+String::String(INT n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%d"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
@@ -52,25 +52,25 @@ String::String(UINT n) {
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(long n) {
+String::String(LONG n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%ld"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(unsigned long n) {
+String::String(ULONG n) {
   TCHAR tmp[20];
   _stprintf(tmp, _T("%lu"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(__int64 n) {
+String::String(INT64 n) {
   TCHAR tmp[100];
   _stprintf(tmp, _T("%I64d"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
 }
 
-String::String(unsigned __int64 n) {
+String::String(UINT64 n) {
   TCHAR tmp[100];
   _stprintf(tmp, _T("%I64u"), n);
   m_buf = newCharBuffer(tmp, m_len, m_capacity);
@@ -629,6 +629,6 @@ String &String::vprintf(const TCHAR *format, va_list argptr) {
   return *this;
 }
 
-unsigned long String::hashCode() const {
+ULONG String::hashCode() const {
   return strHash(cstr());
 }

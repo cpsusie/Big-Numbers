@@ -424,8 +424,8 @@ public:
     return !(*this == a);
   }
 
-  unsigned long hashCode() const {
-    unsigned long sum = 0;
+  ULONG hashCode() const {
+    ULONG sum = 0;
     size_t count = size();
     for(const T *p = m_array; count--;) {
       sum = sum * 31 + (p++)->hashCode();
@@ -434,7 +434,7 @@ public:
   }
 
   inline bool isEmpty() const {
-    return m_size == 0;;
+    return m_size == 0;
   };
 
   inline size_t size() const {

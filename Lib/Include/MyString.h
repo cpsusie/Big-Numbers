@@ -24,17 +24,17 @@ public:
   String &operator=( const char *s);
   String &operator+=(const char *rhs);
 #endif
-  explicit String(char             ch);
-  explicit String(short            n );
-  explicit String(unsigned short   n );
-  explicit String(int              n );
-  explicit String(unsigned int     n );
-  explicit String(long             n );
-  explicit String(unsigned long    n );
-  explicit String(__int64          n );
-  explicit String(unsigned __int64 n );
-  explicit String(float            x );
-  explicit String(double           x );
+  explicit String(char    ch);
+  explicit String(SHORT   n );
+  explicit String(USHORT  n );
+  explicit String(INT     n );
+  explicit String(UINT    n );
+  explicit String(LONG    n );
+  explicit String(ULONG   n );
+  explicit String(INT64   n );
+  explicit String(UINT64  n );
+  explicit String(float   x );
+  explicit String(double  x );
 
   ~String();
   String      &operator=(const String &rhs);
@@ -95,7 +95,7 @@ public:
     return *this;
   }
 
-  unsigned long hashCode() const;
+  ULONG hashCode() const;
 
   // works only for characters [0..255] 
   static const unsigned char  upperCaseTranslate[256];
@@ -110,30 +110,30 @@ String toUpperCase(const String &str);                         // Return an uppe
 String toLowerCase(const String &str);                         // Return a lowercase copy of str
 String firstLetterToUpperCase(const String &str);              // Return a copy of str, with first non-space letter changed to uppercase.
 
-String format1000(int              n);
-String format1000(unsigned int     n);
-String format1000(long             n);
-String format1000(unsigned long    n);
-String format1000(__int64          n);
-String format1000(unsigned __int64 n);
+String format1000(INT              n);
+String format1000(UINT             n);
+String format1000(LONG             n);
+String format1000(ULONG            n);
+String format1000(INT64            n);
+String format1000(UINT64           n);
 String formatSize(size_t           n);
 
-unsigned long stringHash(    const String &str);                        // Very common used hashfunction
+ULONG         stringHash(    const String &str);                        // Very common used hashfunction
 int           stringHashCmp( const String &key, const String &elem);
-unsigned long stringiHash(   const String &str);                        // Very common used hashfunction
+ULONG         stringiHash(   const String &str);                        // Very common used hashfunction
 int           stringiHashCmp(const String &key, const String &elem);
 String vformat(const TCHAR *format, va_list argptr);                    // Same arguments as vprintf,vsprintf
 String format( _In_z_ _Printf_format_string_ const TCHAR *format, ...); // Same arguments as printf,sprintf
 
 String toString(char             ch, int width = 0, int flags = 0  );
-String toString(short            n , int precision = 0, int width = 0, int flags = 0);
-String toString(unsigned short   n , int precision = 0, int width = 0, int flags = 0);
-String toString(int              n , int precision = 0, int width = 0, int flags = 0);
-String toString(unsigned int     n , int precision = 0, int width = 0, int flags = 0);
-String toString(long             n , int precision = 0, int width = 0, int flags = 0);
-String toString(unsigned long    n , int precision = 0, int width = 0, int flags = 0);
-String toString(__int64          n , int precision = 0, int width = 0, int flags = 0);
-String toString(unsigned __int64 n , int precision = 0, int width = 0, int flags = 0);
+String toString(SHORT            n , int precision = 0, int width = 0, int flags = 0);
+String toString(USHORT           n , int precision = 0, int width = 0, int flags = 0);
+String toString(INT              n , int precision = 0, int width = 0, int flags = 0);
+String toString(UINT             n , int precision = 0, int width = 0, int flags = 0);
+String toString(LONG             n , int precision = 0, int width = 0, int flags = 0);
+String toString(ULONG            n , int precision = 0, int width = 0, int flags = 0);
+String toString(INT64            n , int precision = 0, int width = 0, int flags = 0);
+String toString(UINT64           n , int precision = 0, int width = 0, int flags = 0);
 String toString(float            x , int precision = 6, int width = 0, int flags = 0);
 String toString(double           x , int precision = 6, int width = 0, int flags = 0);
 

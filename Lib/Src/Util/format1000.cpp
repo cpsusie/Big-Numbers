@@ -19,7 +19,7 @@
   }                                           \
 }
 
-String format1000(int n) {
+String format1000(INT n) {
   TCHAR temp[40];
   _itot(n,temp,10);
   TCHAR result[200];
@@ -37,15 +37,15 @@ String format1000(UINT n) {
   return result;
 }
 
-String format1000(long n) {
+String format1000(LONG n) {
   return format1000((int)n);
 }
 
-String format1000(unsigned long n) {
+String format1000(ULONG n) {
   return format1000((UINT)n);
 }
 
-String format1000(__int64 n) {
+String format1000(INT64 n) {
   TCHAR temp[70];
   _i64tot(n, temp, 10);
   TCHAR result[200];
@@ -54,7 +54,7 @@ String format1000(__int64 n) {
   return result;
 }
 
-String format1000(unsigned __int64 n) {
+String format1000(UINT64 n) {
   TCHAR temp[70];
   _ui64tot(n, temp, 10);
   TCHAR result[200];

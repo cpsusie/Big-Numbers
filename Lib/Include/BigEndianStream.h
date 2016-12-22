@@ -47,7 +47,7 @@ public:
 
 #endif
 
-class BigEndianOutputStream : ByteOutputStream {
+class BigEndianOutputStream : public ByteOutputStream {
 private:
   ByteOutputStream &m_out;
 public:
@@ -66,11 +66,25 @@ public:
     m_out.putBytes((BYTE*)buf, n*sizeof(USHORT));
 #endif
   }
+  inline void putShorts(SHORT *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    writeItemArrayBE<SHORT, BEShort>(m_out, buf, n);
+#else
+    m_out.putBytes((BYTE*)buf, n*sizeof(SHORT));
+#endif
+  }
   inline void putLongs(ULONG *buf, size_t n) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     writeItemArrayBE<ULONG, BELong>(m_out, buf, n);
 #else
-    m_out.putBytes((BYTE*)buf, n*sizeof(ULIONG));
+    m_out.putBytes((BYTE*)buf, n*sizeof(ULONG));
+#endif
+  }
+  inline void putLongs(LONG *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    writeItemArrayBE<LONG, BELong>(m_out, buf, n);
+#else
+    m_out.putBytes((BYTE*)buf, n*sizeof(LONG));
 #endif
   }
   inline void putLongLongs(ULONGLONG *buf, size_t n) {
@@ -80,8 +94,34 @@ public:
     m_out.putBytes((BYTE*)buf, n*sizeof(ULIONGLONG));
 #endif
   }
+  inline void putLongLongs(LONGLONG *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    writeItemArrayBE<LONGLONG, BELongLong>(m_out, buf, n);
+#else
+    m_out.putBytes((BYTE*)buf, n*sizeof(LIONGLONG));
+#endif
+  }
 
+  inline BigEndianOutputStream &operator<<(bool b) {
+    m_out.putByte(b?1:0);
+    return *this;
+  }
+  inline BigEndianOutputStream &operator<<(BYTE n) {
+    m_out.putByte(n);
+    return *this;
+  }
+  inline BigEndianOutputStream &operator<<(char n) {
+    m_out.putByte(n);
+    return *this;
+  }
   inline BigEndianOutputStream &operator<<(USHORT n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = htons(n);
+#endif
+    m_out.putBytes((BYTE*)&n, sizeof(n));
+    return *this;
+  }
+  inline BigEndianOutputStream &operator<<(SHORT n) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     n = htons(n);
 #endif
@@ -95,7 +135,21 @@ public:
     m_out.putBytes((BYTE*)&n, sizeof(n));
     return *this;
   }
+  inline BigEndianOutputStream &operator<<(LONG n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = htonl(n);
+#endif
+    m_out.putBytes((BYTE*)&n, sizeof(n));
+    return *this;
+  }
   inline BigEndianOutputStream &operator<<(UINT64 n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = htonll(n);
+#endif
+    m_out.putBytes((BYTE*)&n, sizeof(n));
+    return *this;
+  }
+  inline BigEndianOutputStream &operator<<(INT64 n) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     n = htonll(n);
 #endif
@@ -105,7 +159,7 @@ public:
   BigEndianOutputStream &operator<<(const BitSet &s);
 };
 
-class BigEndianInputStream : ByteInputStream {
+class BigEndianInputStream : public ByteInputStream {
 private:
   ByteInputStream &m_in;
 public:
@@ -124,11 +178,25 @@ public:
     m_in.getBytesForced(buf, n*sizeoF(USHORT));
 #endif
   }
+  inline void getShorts(SHORT *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    readItemArrayBE<SHORT, BEShort>(m_in, buf, n);
+#else
+    m_in.getBytesForced(buf, n*sizeoF(SHORT));
+#endif
+  }
   inline void getLongs(ULONG *buf, size_t n) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     readItemArrayBE<ULONG, BELong>(m_in, buf, n);
 #else
     m_in.getBytesForced(buf, n*sizeoF(ULONG));
+#endif
+  }
+  inline void getLongs(LONG *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    readItemArrayBE<LONG, BELong>(m_in, buf, n);
+#else
+    m_in.getBytesForced(buf, n*sizeoF(LONG));
 #endif
   }
   inline void getLongLongs(ULONGLONG *buf, size_t n) {
@@ -138,6 +206,29 @@ public:
     m_in.getBytesForced(buf, n*sizeoF(ULONGLONG));
 #endif
   }
+  inline void getLongLongs(LONGLONG *buf, size_t n) {
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    readItemArrayBE<LONGLONG, BELongLong>(m_in, buf, n);
+#else
+    m_in.getBytesForced(buf, n*sizeoF(LONGLONG));
+#endif
+  }
+
+  inline BigEndianInputStream &operator>>(bool &b) {
+    BYTE tmp;
+    *this >> tmp;
+    b = tmp?true:false;
+    return *this;
+  }
+
+  inline BigEndianInputStream &operator>>(BYTE &n) {
+    m_in.getBytesForced(&n, 1);
+    return *this;
+  }
+  inline BigEndianInputStream &operator>>(char &n) {
+    m_in.getBytesForced((BYTE*)&n, 1);
+    return *this;
+  }
 
   inline BigEndianInputStream &operator>>(USHORT &n) {
     m_in.getBytesForced((BYTE*)&n, sizeof(n));
@@ -146,8 +237,22 @@ public:
 #endif
     return *this;
   }
+  inline BigEndianInputStream &operator>>(SHORT &n) {
+    m_in.getBytesForced((BYTE*)&n, sizeof(n));
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = ntohs(n);
+#endif
+    return *this;
+  }
 
-  inline BigEndianInputStream &operator>>(ULONG  &n) {
+  inline BigEndianInputStream &operator>>(ULONG &n) {
+    m_in.getBytesForced((BYTE*)&n, sizeof(n));
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = ntohl(n);
+#endif
+    return *this;
+  }
+  inline BigEndianInputStream &operator>>(LONG &n) {
     m_in.getBytesForced((BYTE*)&n, sizeof(n));
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     n = ntohl(n);
@@ -156,6 +261,13 @@ public:
   }
 
   inline BigEndianInputStream &operator>>(UINT64 &n) {
+    m_in.getBytesForced((BYTE*)&n, sizeof(n));
+#if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
+    n = ntohll(n);
+#endif
+    return *this;
+  }
+  inline BigEndianInputStream &operator>>(INT64 &n) {
     m_in.getBytesForced((BYTE*)&n, sizeof(n));
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__
     n = ntohll(n);

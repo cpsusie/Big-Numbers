@@ -3,8 +3,8 @@
 
 //#define ROTATE_LEFT(x, n) (((x) << (n)) | ((x) >> (32-(n))))
 
-unsigned long strHash(const TCHAR * const &s) {
-  unsigned long i = 0;
+ULONG strHash(const TCHAR * const &s) {
+  ULONG i = 0;
 
   for(const _TUCHAR *cp = (const _TUCHAR*)s; *cp;) {
     i = (i * 117) ^ *(cp++);
