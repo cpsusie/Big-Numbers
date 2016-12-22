@@ -1,11 +1,20 @@
 #include "stdafx.h"
 #include "EndGame6MenNoPawns.h"
 
+const EndGameKeyDefinition6Men2Pairs EndGameKBBKBB::keyDefinition(
+  WHITEBISHOP
+ ,BLACKBISHOP
+);
+
 const EndGameKeyDefinition6Men2Pairs EndGameKBBKNN::keyDefinition(
   WHITEBISHOP
  ,BLACKKNIGHT
 );
 
+const EndGameKeyDefinition6Men2Pairs EndGameKNNKNN::keyDefinition(
+  WHITEKNIGHT
+ ,BLACKKNIGHT
+);
 
 const EndGameKeyDefinition6Men2Pairs EndGameKQQKBB::keyDefinition(
   WHITEQUEEN

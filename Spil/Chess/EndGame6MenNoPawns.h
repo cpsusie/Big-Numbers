@@ -96,6 +96,14 @@ public:
   }
 };
 
+class EndGameKBBKBB : public EndGameTablebase {
+public:
+  static const EndGameKeyDefinition6Men2Pairs keyDefinition;
+
+  EndGameKBBKBB() : EndGameTablebase(keyDefinition) {
+  }
+};
+
 class EndGameKBBKNN : public EndGameTablebase {
 public:
   static const EndGameKeyDefinition6Men2Pairs keyDefinition;
@@ -104,6 +112,13 @@ public:
   }
 };
 
+class EndGameKNNKNN : public EndGameTablebase {
+public:
+  static const EndGameKeyDefinition6Men2Pairs keyDefinition;
+
+  EndGameKNNKNN() : EndGameTablebase(keyDefinition) {
+  }
+};
 
 class EndGameKQQKBB : public EndGameTablebase {
 public:

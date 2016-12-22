@@ -173,7 +173,9 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKQKNNN());
   add(new EndGameKQKQQQ());
   add(new EndGameKQKRRR());
+  add(new EndGameKBBKBB());
   add(new EndGameKBBKNN());
+  add(new EndGameKNNKNN());
   add(new EndGameKQQKBB());
   add(new EndGameKQQKNN());
   add(new EndGameKQQKQQ());
