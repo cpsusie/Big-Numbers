@@ -658,6 +658,9 @@
     <ClCompile Include="StrToBool.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="BigEndianStream.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -922,6 +925,9 @@
       <Filter>Source Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\PropertyContainer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\BigEndianStream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -290,6 +290,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h" />
     <ClInclude Include="..\..\Include\BigArray.h" />
+    <ClInclude Include="..\..\Include\BigEndianStream.h" />
     <ClInclude Include="..\..\Include\BitSet.h" />
     <ClInclude Include="..\..\Include\BitStream.h" />
     <ClInclude Include="..\..\Include\BMAutomate.h" />
@@ -386,6 +387,7 @@
     <ClCompile Include="ArgvExpand.cpp" />
     <ClCompile Include="ArrayImpl.cpp" />
     <ClCompile Include="ArraySort.cpp" />
+    <ClCompile Include="BigEndianStream.cpp" />
     <ClCompile Include="BitInputStream.cpp" />
     <ClCompile Include="BitMatrix.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
