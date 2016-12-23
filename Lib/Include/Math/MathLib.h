@@ -37,7 +37,7 @@ private:
   void setValue(const Vector &v);
 public:
   RungeKuttaFehlberg(VectorFunction &diff, RungeKuttaFehlbergHandler &handler);
-  void calculate(const Vector &start, Real v0end, Real eps);
+  const Vector &calculate(const Vector &start, Real v0end, Real eps);
   const Vector &getvalue() const {
     return m_y;
   }

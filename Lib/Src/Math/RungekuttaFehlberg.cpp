@@ -19,7 +19,7 @@ void RungeKuttaFehlberg::setValue(const Vector &v) {
 
 // rungekuttafehlberg method of order 4 and 5
 // see http://math.fullerton.edu/mathews/n2003/RungeKuttaFehlbergMod.html
-void RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Real eps) {
+const Vector &RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Real eps) {
   const Real a2 = 0.25,     b2 = 0.25;
   const Real a3 = 3.0/8.0,  b3 = 3.0/32,        c3 = 9.0/32;
   const Real a4 = 12.0/13,  b4 = 1932.0/2197,   c4 = -7200.0/2197,  d4 = 7296.0/2197;
@@ -60,6 +60,7 @@ void RungeKuttaFehlberg::calculate(const Vector &start, Real v0end, Real eps) {
     s = minMax(s    , 0.1 , 4.0 );
     h = minMax(s * h, hmin, hmax);
   }
+  return m_y;
 }
 
 #ifdef TEST_MODULE

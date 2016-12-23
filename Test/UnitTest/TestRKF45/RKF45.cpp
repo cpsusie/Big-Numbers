@@ -68,7 +68,11 @@ namespace TestRKF45 {
       start[0] = 0;
       start[1] = 1;
 
-      RungeKuttaFehlberg(Expdiff(), ValueHandler()).calculate(start, 1.0, 0.01);
+      const Vector end = RungeKuttaFehlberg(Expdiff(), ValueHandler()).calculate(start, 1.0, 0.01);
+      Vector expectedEnd(2);
+      expectedEnd[0] = 1;
+      expectedEnd[1] = M_E;
+      verify((end - expectedEnd).length() < 1e-4);
 		}
 	};
 }
