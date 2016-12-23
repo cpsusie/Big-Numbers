@@ -17,7 +17,7 @@ public:
 #define _BITSET_ATOMSIZE 32
 
   friend class BitSetIndex;
-  friend class BitSetFileIndex;
+  friend class FileBitSetIndex;
   void getRangeTable(CompactInt64Array &rangeTable, unsigned char shift) const;
 private:
   static Atom mask[_BITSET_ATOMSIZE+1];
@@ -192,6 +192,21 @@ public:
 
 String charBitSetToString(const BitSet &set, CharacterFormater *charFormater = CharacterFormater::stdFormater);
 
+class FileBitSet {
+private:
+  mutable ByteInputFile  m_f;
+  UINT64                 m_firstAtomOffset;     // offset to the first Atom in bit-array. not bitset.capacity
+  size_t                 m_capacity;
+  FileBitSet(const FileBitSet &src);            // not implemented. Not cloneable
+  FileBitSet &operator=(const FileBitSet &src); // not implemented. Not cloneable
+public:
+  FileBitSet(const String &fileName, UINT64 startOffset);
+  bool contains(size_t i) const;
+  inline size_t getCapacity() const {                                   // Return number of bits in set = maximum number of elements in set
+    return m_capacity;
+  }
+};
+
 class BitSetIndex {
 private:
   const BitSet     &m_bitSet;
@@ -203,13 +218,13 @@ public:
   intptr_t getIndex(size_t i) const; // faster than Bitset.getIndex(i)
   String getInfoString() const;
 
-  void save(ByteOutputStream &s) const; // also save bitset. to be used in BitSetFileIndex
+  void save(ByteOutputStream &s) const; // also save bitset. to be used in FleBitSetIndex
   inline const CompactInt64Array &getRangeTable() const {
     return m_rangeTable;
   }
 };
 
-class BitSetFileIndex {                 // use BitSetIndex saved with BitSetIndex.save 
+class FileBitSetIndex {                 // use BitSetIndex saved with BitSetIndex.save 
 private:
   mutable ByteInputFile  m_f;
   const UINT64           m_startOffset;
@@ -219,8 +234,8 @@ private:
   BitSet                *m_loadedIntervals; // contains intervals already loaded. start as empty, and works as a cache
   BitSet                *m_bitSet;
 public:
-  BitSetFileIndex(const String &fileName, UINT64 startOffset); // load rangetable
-  ~BitSetFileIndex();
+  FileBitSetIndex(const String &fileName, UINT64 startOffset); // load rangetable
+  ~FileBitSetIndex();
   intptr_t getIndex(size_t i) const;          // lazy-read bitset, saved with BitSetIndex.save
   inline const CompactInt64Array &getRangeTable() const {
     return m_rangeTable;

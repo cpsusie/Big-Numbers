@@ -9,7 +9,7 @@
 #define BYTECOUNT(size) (((size)-1) / 8 + 1)
 #define BYTEINDEX(i)    ((i)/8)
 #define ATOM(p,i)       p[ATOMINDEX(i)]
-#define ATOMBIT(i)      ((BitSet::Atom)1<< ((i)%BITSINATOM))
+#define ATOMBIT(i)      ((BitSet::Atom)1 << ((i)%BITSINATOM))
 
 #ifdef IS64BIT
 #ifdef BITSET_ASM_OPTIMIZED

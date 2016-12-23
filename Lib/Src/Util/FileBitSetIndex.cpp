@@ -2,7 +2,7 @@
 #include <BitSet.h>
 #include <CountedByteStream.h>
 
-BitSetFileIndex::BitSetFileIndex(const String &fileName, UINT64 startOffset) 
+FileBitSetIndex::FileBitSetIndex(const String &fileName, UINT64 startOffset)
 : m_startOffset(startOffset)
 , m_f(fileName)
  {
@@ -28,19 +28,19 @@ void BitSetIndex::save(ByteOutputStream &s) const {
   m_bitSet.save(s);                                               // save m_bitset
 }
 
-BitSetFileIndex::~BitSetFileIndex() {
+FileBitSetIndex::~FileBitSetIndex() {
   delete m_bitSet;
   delete m_loadedIntervals;
 }
 
 #define BYTESINATOM sizeof(m_bitSet->m_p[0])
 
-intptr_t BitSetFileIndex::getIndex(size_t i) const {
+intptr_t FileBitSetIndex::getIndex(size_t i) const {
   if(i >= m_bitSet->getCapacity()) {
     return -1;
   }
   const intptr_t rangeIndex = m_rangeTable.binarySearchLE(i, int64HashCmp);
-  
+
   const size_t bitInterval = (rangeIndex < 0) ? 0 : (rangeIndex+1);
   const size_t startBit    =  (size_t)(bitInterval ? m_rangeTable[rangeIndex] : 0);
   if(!m_loadedIntervals->contains(bitInterval)) {

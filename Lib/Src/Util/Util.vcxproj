@@ -392,7 +392,8 @@
     <ClCompile Include="BitMatrix.cpp" />
     <ClCompile Include="BitOutputStream.cpp" />
     <ClCompile Include="BitSet.cpp" />
-    <ClCompile Include="BitSetFileIndex.cpp" />
+    <ClCompile Include="FileBitSet.cpp" />
+    <ClCompile Include="FileBitSetIndex.cpp" />
     <ClCompile Include="BitSetIndex.cpp" />
     <ClCompile Include="BitSetIterator.cpp" />
     <ClCompile Include="BitSetPacker.cpp" />

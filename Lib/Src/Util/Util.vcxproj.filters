@@ -136,9 +136,6 @@
     <ClCompile Include="BitSet.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
-    <ClCompile Include="BitSetFileIndex.cpp">
-      <Filter>Source Files\Collection</Filter>
-    </ClCompile>
     <ClCompile Include="BitSetIndex.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
@@ -660,6 +657,12 @@
     </ClCompile>
     <ClCompile Include="BigEndianStream.cpp">
       <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBitSetIndex.cpp">
+      <Filter>Source Files\Collection</Filter>
+    </ClCompile>
+    <ClCompile Include="FileBitSet.cpp">
+      <Filter>Source Files\Collection</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -20,8 +20,7 @@ void myVerify(bool b, const TCHAR *s) {
 #define verify(expr) myVerify(expr, _T(#expr))
 
 
-namespace TestBitSet
-{		
+namespace TestBitSet {
   void OUTPUT(const TCHAR *format, ...) {
     va_list argptr;
     va_start(argptr, format);
@@ -334,6 +333,17 @@ namespace TestBitSet
       }
     }
 
+    TEST_METHOD(TestFileBitSet) {
+      const size_t capacity = 20000;
+      const BitSet s(genRandomSet(capacity));
+      const TCHAR *fileName = _T("c:\\temp\\testBitSet\\fileBitSet.dat");
+      s.save(ByteOutputFile(fileName));
+      FileBitSet fs(fileName, 0);
+      for (size_t i = 0; i < capacity; i++) {
+        verify(s.contains(i) == fs.contains(i));
+      }
+    }
+
     void testAllBitSetIndices(size_t capacity) {
       BitSet s(10);
       genRandomSet(s, capacity, capacity/3);
@@ -369,7 +379,7 @@ namespace TestBitSet
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
-    TEST_METHOD(BitSetTestIndex) {
+    TEST_METHOD(TestBitSetIndex) {
       /*
       {
       for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
@@ -390,17 +400,17 @@ namespace TestBitSet
       testAllBitSetIndices(6600000);
     }
 
-    void testAllBitSetFileIndices(size_t capacity) {
+    void testAllFileBitSetIndices(size_t capacity) {
       BitSet s(10);
       genRandomSet(s, capacity, capacity / 3);
 
       double startTime = getThreadTime();
-      const TCHAR *fileName = _T("c:\\temp\\testBitSet\\bitSetFileIndex.dat");
+      const TCHAR *fileName = _T("c:\\temp\\testBitSet\\fileBitSetIndex.dat");
 
       BitSetIndex bi(s);
       bi.save(ByteOutputFile(fileName));
 
-      BitSetFileIndex loaded(fileName, 0);
+      FileBitSetIndex loaded(fileName, 0);
 
       double usedTime = (getThreadTime() - startTime) / 1000000;
 
@@ -432,7 +442,7 @@ namespace TestBitSet
       OUTPUT(_T("Iteration-time:%7.3lf"), usedTime);
     }
 
-    TEST_METHOD(BitSetFileIndexTest) {
+    TEST_METHOD(FileBitSetIndexTest) {
       /*
       {
       for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
@@ -450,7 +460,7 @@ namespace TestBitSet
       }
       */
       randomize();
-      testAllBitSetFileIndices(6600000);
+      testAllFileBitSetIndices(6600000);
     }
 
     TEST_METHOD(BitSetIndexTimes) {
