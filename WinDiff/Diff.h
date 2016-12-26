@@ -59,9 +59,9 @@ typedef CompactArray<DiffLine> DiffLineArray;
 class DiffFilter {
 public:
   virtual String lineFilter(const TCHAR *s) const = 0;
-  virtual String docFilter( const TCHAR *s, CompareJob *job) const = 0;
-  virtual bool   hasLineFilter()           const = 0;
-  virtual bool   hasDocFilter()            const = 0;
+  virtual String docFilter( const TCHAR *s) const = 0;
+  virtual bool   hasLineFilter()            const = 0;
+  virtual bool   hasDocFilter()             const = 0;
 };
 
 extern DiffFilter *stdDiffFilter;
@@ -77,8 +77,8 @@ private:
   String               m_buf;
   String               m_name;
   mutable time_t       m_lastReadTime;
+  mutable size_t       m_lineCount;
   mutable UINT         m_fileSize;
-  mutable CompareJob  *m_job;
   void clear();
   void processBuffer(const TCHAR *buf,    DiffFilter &filter, LineArray &la) const;
   void readFile(     DiffFilter &filter, LineArray &la) const;
@@ -89,7 +89,7 @@ public:
   ~DiffDoc();
   void setToFile(const TCHAR *fname);
   void setToBuf( const TCHAR *buf  );
-  void getLines(DiffFilter &filter, LineArray &s, CompareJob *job) const;
+  void getLines(DiffFilter &filter, LineArray &s) const;
 
   inline const String &getName() const {
     return m_name;
@@ -119,6 +119,9 @@ public:
 
   bool isEmpty() const;
   UINT getSize() const;
+  inline size_t getLineCount() const {
+    return m_lineCount;
+  }
 };
 
 class Diff {
@@ -150,7 +153,7 @@ public:
   Diff();
   Diff(const TCHAR *fname1, const TCHAR *fname2, CompareJob *job);
   Diff(const Diff &src);             // not implemented
-  Diff &operator==(const Diff &src); // not implemented
+  Diff &operator=(const Diff &src); // not implemented
   ~Diff();
   bool refreshLines(CompareJob *job);
   void compare(                                                 DiffFilter &filter, LcsComparator &cmp, CompareJob *job);

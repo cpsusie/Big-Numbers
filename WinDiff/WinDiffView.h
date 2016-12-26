@@ -2,7 +2,7 @@
 
 #include "TextView.h"
 
-class CWinDiffView : public CFormView, public TextContainer {
+class CWinDiffView : public CFormView, public TextContainer, public OptionsAccessor {
 protected: // create from serialization only
   CWinDiffView();
   DECLARE_DYNCREATE(CWinDiffView)

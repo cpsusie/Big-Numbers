@@ -40,13 +40,13 @@ private:
   static String stripWhiteSpace(       const String &s);
   static String stripLineComments(     const String &s); // strip //... comments
   static String stripStrings(          const String &s);
-  static String stripMultilineComments(const String &s, CompareJob *job); // strip /* ... */ comments
+  static String stripMultilineComments(const String &s); // strip /* ... */ comments
 
 public:
   WinDiffFilter();
   
   String lineFilter(const TCHAR *s) const;
-  String docFilter( const TCHAR *s, CompareJob *job) const;
+  String docFilter( const TCHAR *s) const;
   bool   hasLineFilter() const {
     return (m_flags & (FLAG_IGNORE_WHITEPSACE | FLAG_IGNORE_COMMENTS | FLAG_IGNORE_STRINGS | FLAG_IGNORE_COLUMNS | FLAG_IGNORE_REGEX)) != 0;
   }

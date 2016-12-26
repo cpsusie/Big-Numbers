@@ -13,10 +13,10 @@ private:
   const TCHAR *m_label;
   const double m_startTime;
 public:
-  TimeMeasure(int id, const TCHAR *label) : m_id(id), m_label(label), m_startTime(getThreadTime()) {
+  TimeMeasure(int id, const TCHAR *label) : m_id(id), m_label(label), m_startTime(getProcessTime()) {
   }
   double getUsedTime() const {
-    return getThreadTime() - m_startTime;
+    return getProcessTime() - m_startTime;
   }
   const TCHAR *getLabel() const {
     return m_label;
@@ -156,35 +156,30 @@ public:
 extern LcsComparator *stdLcsComparator;
 
 class IndexComparator : public Comparator<LcsElement> {
-private:
-  LcsComparator       &m_c;
-  CompareJob          *m_job;
-  const size_t         m_lineCount;
-  const size_t         m_cmpCountEstimate;
-  size_t               m_compareCount;
+protected:
+  LcsComparator &m_c;
+  size_t         m_compareCount;
 public:
-  IndexComparator(LcsComparator &c, CompareJob *job, size_t lineCount);
-  ~IndexComparator();
-  int compare(const LcsElement &e1, const LcsElement &e2);
+  IndexComparator(LcsComparator &c) : m_c(c) {
+    m_compareCount = 0;
+  }
   AbstractComparator *clone() const {
-    return new IndexComparator(m_c,m_job, m_lineCount);
+    return new IndexComparator(m_c);
+  }
+  int compare(const LcsElement &e1, const LcsElement &e2);
+  inline size_t getCompareCount() const {
+    return m_compareCount;
   }
 };
 
-class IndexComparatorR : public Comparator<LcsElement> {
-private:
-  LcsComparator       &m_c;
-  CompareJob          *m_job;
-  const size_t         m_lineCount;
-  const size_t         m_cmpCountEstimate;
-  size_t               m_compareCount;
+class IndexComparatorR : public IndexComparator {
 public:
-  IndexComparatorR(LcsComparator &c, CompareJob *job, size_t lineCount);
-  ~IndexComparatorR();
-  int compare(const LcsElement &e1, const LcsElement &e2);
-  AbstractComparator *clone() const {
-    return new IndexComparatorR(m_c,m_job, m_lineCount);
+  inline IndexComparatorR(LcsComparator &c) : IndexComparator(c) {
   }
+  AbstractComparator *clone() const {
+    return new IndexComparatorR(m_c);
+  }
+  int compare(const LcsElement &e1, const LcsElement &e2);
 };
 
 class Lcs {
@@ -216,6 +211,9 @@ public:
   virtual void findLcs(ElementPairArray &p) = 0;
 };
 
-double nlogn(double x);
+inline double nlogn(double x) {
+  return (x <= 0) ? 0 : (x * log(x));
+}
+
 #define CHECK_INTERVAL 0x3fff
 #define NL _T('\n')

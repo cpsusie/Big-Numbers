@@ -25,6 +25,8 @@
 #include <MFCUtil/WinTools.h>
 #include "WinDiff.h"
 
+//#define MEASURE_STEPTIME
+
 #define BLACK                RGB(0,0,0)
 #define LIGHTGREY            RGB(235,235,235)
 #define LINENUMBERBACKGROUND RGB(240,240,240)

@@ -93,70 +93,15 @@ void Lcs::dumpThresh() {
 
 // -------------------------------------------------------------------------------------
 
-#define ESTIMATED_COMPARECOUNT(n) (1.725*nlogn((double)n))
-
-IndexComparator::IndexComparator(LcsComparator &c, CompareJob *job, size_t lineCount) 
-: m_c(c)
-, m_job(job)
-, m_lineCount(lineCount)
-, m_cmpCountEstimate((size_t)ESTIMATED_COMPARECOUNT(lineCount))
-{
-#ifdef MEASURE_STEPTIME
-  debugLog(_T("IndexComparator(lineCount:%s, compareCountEstimate:%s\n")
-          ,format1000(m_lineCount).cstr()
-          ,format1000(m_cmpCountEstimate).cstr());
-#endif
-
-  m_compareCount = 0;
-}
-
-IndexComparator::~IndexComparator() {
-#ifdef MEASURE_STEPTIME
-  debugLog(_T("IndexComparator(lineCount:%s, compareCountEstimate:%s actual compareCount:%s\n")
-          ,format1000(m_lineCount).cstr()
-          ,format1000(m_cmpCountEstimate).cstr()
-          ,format1000(m_compareCount).cstr());
-#endif
-}
-
 int IndexComparator::compare(const LcsElement &e1, const LcsElement &e2) {
-  if(((m_compareCount++ & 0xffff) == 0) && m_job) {
-    m_job->setSubProgressPercent(SPERCENT(m_compareCount,m_cmpCountEstimate));
-  }
+  m_compareCount++;
   const int c = m_c.compare(e1.m_s, e2.m_s);
   if(c) return c;
   return e1.m_index - e2.m_index;
 }
 
-// -------------------------------------------------------------------------------------
-
-IndexComparatorR::IndexComparatorR(LcsComparator &c, CompareJob *job, size_t lineCount) 
-: m_c(c)
-, m_job(job)
-, m_lineCount(lineCount)
-, m_cmpCountEstimate((size_t)ESTIMATED_COMPARECOUNT(lineCount))
-{
-#ifdef MEASURE_STEPTIME
-  debugLog(_T("IndexComparatorR(lineCount:%s, compareCountEstimate:%s\n")
-          ,format1000(m_lineCount).cstr()
-          ,format1000(m_cmpCountEstimate).cstr());
-#endif
-
-  m_compareCount = 0;
-}
-
-IndexComparatorR::~IndexComparatorR() {
-#ifdef MEASURE_STEPTIME
-  debugLog(_T("IndexComparatorR(lineCount:%s, compareCountEstimate:%s actual compareCount:%s\n")
-          ,format1000(m_lineCount).cstr(), format1000(m_cmpCountEstimate).cstr()
-          ,format1000(m_compareCount).cstr());
-#endif
-}
-
 int IndexComparatorR::compare(const LcsElement &e1, const LcsElement &e2) {
-  if(((m_compareCount++ & 0xffff) == 0) && m_job) {
-    m_job->setSubProgressPercent(SPERCENT(m_compareCount,m_cmpCountEstimate));
-  }
+  m_compareCount++;
   const int c = m_c.compare(e1.m_s, e2.m_s);
   if(c) return c;
   return e2.m_index - e1.m_index;
@@ -179,7 +124,3 @@ int StdLcsComparator::compare(const TCHAR * const &s1, const TCHAR * const &s2) 
 
 static StdLcsComparator stdlcscmp;
 LcsComparator *stdLcsComparator = &stdlcscmp;
-
-double nlogn(double x) {
-  return (x <= 0) ? 0 : (x * log(x));
-}

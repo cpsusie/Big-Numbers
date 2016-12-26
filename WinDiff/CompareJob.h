@@ -2,6 +2,7 @@
 
 #include <CompactArray.h>
 #include <Semaphore.h>
+#include <Timer.h>
 #include <MFCUtil/InteractiveRunnable.h>
 
 class CWinDiffDoc;
@@ -49,7 +50,10 @@ public:
   }
 
   USHORT getProgress() {
-    return (USHORT)(m_timeUnitsDone / m_sumEstimatedTimeUnits * 1000);
+    return (USHORT)((m_timeUnitsDone 
+                   + m_subProgressPercent/100.0 * getCurrentStep().m_timeUnits
+                    ) / m_sumEstimatedTimeUnits * 1000
+                   );
   }
 
   USHORT getSubProgressPercent(UINT index) {
@@ -58,11 +62,9 @@ public:
 
   String getProgressMessage(UINT index);
 
-#ifdef MEASURE_STEPTIME
-  const _ProgressStep &getCurrentStep() const { 
+  inline const _ProgressStep &getCurrentStep() const { 
     return m_stepArray[m_currentStep];
   }
-#endif
 
   String getTitle() {
     return _T("Comparing 2 files");
@@ -81,4 +83,21 @@ public:
   UINT getEstimatedSecondsLeft();
 
   UINT run();
+};
+
+class CompareSubJob : public Runnable {
+public:
+  virtual USHORT getProgressPercent() const = 0;
+  virtual size_t getWeight() const = 0;
+};
+
+class Execute2 : public TimeoutHandler {
+private:
+  CompareJob    &m_compareJob;
+  CompareSubJob *m_job[2];
+public:
+  Execute2(CompareJob *compareJob) : m_compareJob(*compareJob) {
+  }
+  void run(CompareSubJob &job1, CompareSubJob &job2);
+  void handleTimeout(Timer &timer);
 };

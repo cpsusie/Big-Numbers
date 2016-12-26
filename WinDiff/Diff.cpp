@@ -7,7 +7,7 @@
 
 DiffDoc::DiffDoc() {
   setToBuf(_T(""));
-  m_job = NULL;
+  m_lineCount = 0;
 }
 
 DiffDoc::DiffDoc(DiffDocType type, const TCHAR *arg) {
@@ -19,7 +19,6 @@ DiffDoc::DiffDoc(DiffDocType type, const TCHAR *arg) {
     setToBuf(arg);
     break;
   }
-  m_job = NULL;
 }
 
 DiffDoc::~DiffDoc() {
@@ -27,8 +26,9 @@ DiffDoc::~DiffDoc() {
 }
 
 void DiffDoc::clear() {
-  m_buf      = _T("");
-  m_fileSize = 0;
+  m_buf       = _T("");
+  m_fileSize  = 0;
+  m_lineCount = 0;
 }
 
 bool DiffDoc::isEmpty() const {
@@ -59,17 +59,19 @@ UINT DiffDoc::getSize() const {
 
 void DiffDoc::setToFile(const TCHAR *fname) {
   clear();
-  m_type         = DIFFDOC_FILE,
-  m_name         = fname;
-  m_lastReadTime = 0;
+  m_type           = DIFFDOC_FILE,
+  m_name           = fname;
+  m_lastReadTime   = 0;
+  m_lineCount      = 0;
 }
 
 void DiffDoc::setToBuf(const TCHAR *buf) {
-  m_type         = DIFFDOC_BUF;
-  m_buf          = buf;
-  m_name         = _T("Untitled");
-  m_lastReadTime = 0;
-  m_fileSize     = 0;
+  m_type           = DIFFDOC_BUF;
+  m_buf            = buf;
+  m_name           = _T("Untitled");
+  m_lastReadTime   = 0;
+  m_fileSize       = 0;
+  m_lineCount      = 0;
 }
 
 static UINT getLineCount(const String &s) {
@@ -85,20 +87,15 @@ static UINT getLineCount(const String &s) {
 void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la) const {
   String tmp;
   if(filter.hasDocFilter()) {
-    tmp = filter.docFilter(buf, m_job);
+    tmp = filter.docFilter(buf);
   } else {
     tmp = buf;
   }
 
-  const size_t totalLineCount = getLineCount(tmp);
-  size_t       count          = 0;
+  m_lineCount = ::getLineCount(tmp);
 
-  la.setLineCapacity(totalLineCount+2);
+  la.setLineCapacity(m_lineCount+2);
 
-  if(m_job) m_job->incrProgress();
-
-BEGIN_TIMEMEASURE(1, _T("Building lineArray"));
-  
   for(TCHAR *cp = tmp.cstr();;) { // will chop tmp into 0-terminated strings. Should persist until we are done building s
     TCHAR *nl = _tcschr(cp, NL);
     if(!nl) {
@@ -110,23 +107,15 @@ BEGIN_TIMEMEASURE(1, _T("Building lineArray"));
     if((nl > cp) && (*(nl-1) == _T('\r'))) {
       *(nl-1) = 0;
       la.add(cp);
-      if(((count++ & CHECK_INTERVAL) == 0) && m_job) {
-        m_job->setSubProgressPercent(SPERCENT(count,totalLineCount));
-      }
     } else {    
       *nl = 0;
       la.add(cp);
-      if(((count++ & CHECK_INTERVAL) == 0) && m_job) {
-        m_job->setSubProgressPercent(SPERCENT(count,totalLineCount));
-      }
     }
     if(*(cp = nl + 1) == _T('\r')) {
       cp++;
     }
   }
   la.updateCapacity();
-
-END_TIMEMEASURE(1, tmp.length());
 }
 
 void DiffDoc::readFile(DiffFilter &filter, LineArray &la) const {
@@ -158,21 +147,14 @@ time_t DiffDoc::getLastModifiedTime() const {
   }
 }
 
-void DiffDoc::getLines(DiffFilter &filter, LineArray &la, CompareJob *job) const {
-  m_job = job;
-  try {
-    switch(m_type) {
-    case DIFFDOC_FILE:
-      readFile(filter, la);
-      break;
-    case DIFFDOC_BUF :
-      processBuffer(m_buf.cstr(), filter, la);
-      break;
-    }
-    m_job = NULL;
-  } catch(...) {
-    m_job = NULL;
-    throw;
+void DiffDoc::getLines(DiffFilter &filter, LineArray &la) const {
+  switch(m_type) {
+  case DIFFDOC_FILE:
+    readFile(filter, la);
+    break;
+  case DIFFDOC_BUF :
+    processBuffer(m_buf.cstr(), filter, la);
+    break;
   }
 }
 
@@ -251,7 +233,7 @@ void Diff::tabExpand(LineArray &dst, const LineArray &src, int tabSize, bool vie
 
   if(m_job) m_job->incrProgress();
 
-BEGIN_TIMEMEASURE(8, _T("TabExpand"));
+BEGIN_TIMEMEASURE(7, _T("TabExpand"));
 
   const size_t n = src.size();
   dst.setLineCapacity(src.size());
@@ -263,7 +245,7 @@ BEGIN_TIMEMEASURE(8, _T("TabExpand"));
     if(((i & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(i,n)); }
   }
 
-END_TIMEMEASURE(  8, m_docSize[id]);
+END_TIMEMEASURE(  7, m_docSize[id]);
 }
 
 void Diff::addDiffLine(const TCHAR *s0, const TCHAR *s1, int l0, int l1, DiffLineAttribute attr) {
@@ -343,7 +325,7 @@ void Diff::makeDiffLines(const LineArray &a, const LineArray &b, const ElementPa
 
   if(m_job) m_job->incrProgress();
 
-BEGIN_TIMEMEASURE(9, _T("Build final lines"));
+BEGIN_TIMEMEASURE(8, _T("Build final lines"));
 
   for(size_t i = 0; i < pairs.size(); i++) {
     const ElementPair &e = pairs[i];
@@ -378,7 +360,7 @@ b.dump(_T("c:\\temp\\lineArray_B_Before.txt"));
   }
   findFirstLastDiff();
 
-END_TIMEMEASURE(  9, m_docSize[0] + m_docSize[1]);
+END_TIMEMEASURE(  8, m_docSize[0] + m_docSize[1]);
 
   if(m_job) { m_job->setSubProgressPercent(100); }
 }
@@ -424,8 +406,41 @@ void Diff::findFirstLastDiff() {
   }
 }
 
-void Diff::compare(const LineArray &a, const LineArray &b, DiffFilter &filter, LcsComparator &cmp) {
+class LineFilterJob : public CompareSubJob {
+private:
+  const LineArray &m_a;
+  LineArray       &m_fa;
+  DiffFilter      &m_filter;
+  const size_t     m_n;
+  size_t           m_count;
+public:
+  LineFilterJob(const LineArray &a, LineArray &fa, DiffFilter &filter)
+    :m_a(a)
+    ,m_fa(fa)
+    ,m_filter(filter)
+    ,m_n(a.size())
+  {
+    m_count = 0;
+  }
+  UINT run();
+  size_t getWeight() const {
+    return m_n;
+  }
+  USHORT getProgressPercent() const {
+    return SPERCENT(m_count, m_n);
+  }
+};
 
+UINT LineFilterJob::run() {
+  m_fa.setLineCapacity(m_a.size());
+  for(m_count = 0; m_count < m_n; m_count ++) {
+    m_fa.add(m_filter.lineFilter(m_a[m_count]).cstr());
+  }
+  m_fa.updateCapacity();
+  return 0;
+}
+
+void Diff::compare(const LineArray &a, const LineArray &b, DiffFilter &filter, LcsComparator &cmp) {
   m_docSize[0] = getDoc(0).getSize();
   m_docSize[1] = getDoc(1).getSize();
 
@@ -435,37 +450,18 @@ void Diff::compare(const LineArray &a, const LineArray &b, DiffFilter &filter, L
   if(!filter.hasLineFilter()) {
     findLcs(epa, a, b, cmp);
   } else {
-    StringPool sp;
-    LineArray fa(sp), fb(sp);
-    sp.setIndexCapacity(a.size() + b.size());
-    sp.setTextCapacity( a.getStringPool().getTextCapacity());
-    fa.setLineCapacity( a.size());
-    fb.setLineCapacity( b.size());
+    StringPool spa,spb;
+    LineArray fa(spa), fb(spb);
+    spa.setIndexCapacity(a.size());
+    spa.setTextCapacity( a.getStringPool().getTextCapacity());
+    spb.setIndexCapacity(b.size());
+    spb.setTextCapacity( b.getStringPool().getTextCapacity());
 
-    if(m_job) m_job->incrProgress();
+BEGIN_TIMEMEASURE(2, _T("LineFiltering docs"));
 
-BEGIN_TIMEMEASURE(4, _T("LineFiltering doc1"));
+    Execute2(m_job).run(LineFilterJob(a,fa,filter), LineFilterJob(b,fb,filter));
 
-    const size_t asize = a.size();
-    for(size_t i = 0; i < asize; i++) {
-      fa.add(filter.lineFilter(a[i]).cstr());
-      if(((i & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(i,asize)); }
-    }
-END_TIMEMEASURE(4, m_docSize[0]);
-
-    if(m_job) m_job->incrProgress();
-
-BEGIN_TIMEMEASURE(5, _T("LineFiltering doc2"));
-
-    const size_t bsize = b.size();
-    for(size_t i = 0; i < bsize; i++) {
-      fb.add(filter.lineFilter(b[i]).cstr());
-      if(((i & CHECK_INTERVAL) == 0) && m_job) { m_job->setSubProgressPercent(SPERCENT(i,bsize)); }
-    }
-END_TIMEMEASURE(5, m_docSize[1]);
-
-    fa.updateCapacity();
-    fb.updateCapacity();
+END_TIMEMEASURE(2, m_docSize[0]+m_docSize[1]);
 
     findLcs(epa, fa, fb, cmp);
   }
@@ -495,13 +491,42 @@ void Diff::setDoc(int id, const DiffDoc &doc) {
   setDoc(id, doc.getType(), doc.getArg().cstr());
 }
 
+class GetLinesJob : public CompareSubJob {
+private:
+  const DiffDoc &m_doc;
+  DiffFilter    &m_filter;
+  LineArray     &m_lines;
+public:
+  GetLinesJob(const DiffDoc &doc, DiffFilter &filter, LineArray &lines)
+    : m_doc(doc)
+    , m_filter(filter)
+    , m_lines(lines)
+  {}
+  UINT run() {
+    m_doc.getLines(m_filter, m_lines);
+    return 0;
+  }
+  USHORT getProgressPercent() const {
+    return SPERCENT(m_lines.size(), m_doc.getLineCount());
+  }
+  size_t getWeight() const {
+    return m_doc.getLineCount();
+  }
+};
+
 void Diff::compare(DiffFilter &filter, LcsComparator &cmp, CompareJob *job) {
   m_job = job;
-  StringPool sp;
-  LineArray s0(sp), s1(sp);
 
-  getDoc(0).getLines(filter, s0, m_job);
-  getDoc(1).getLines(filter, s1, m_job);
+  StringPool sp0,sp1;
+  LineArray s0(sp0), s1(sp1);
+
+BEGIN_TIMEMEASURE(1, _T("Get lines"));
+
+  Execute2(m_job).run(GetLinesJob(getDoc(0), filter, s0)
+                     ,GetLinesJob(getDoc(1), filter, s1)
+                     );
+END_TIMEMEASURE(1, (double)s0.size() + (double)s1.size());
+
   compare(s0, s1, filter, cmp);
 
   m_job = NULL;
@@ -527,8 +552,8 @@ bool Diff::refreshLines(CompareJob *job) {
   StringPool sp;
   LineArray s0(sp), s1(sp);
 
-  getDoc(0).getLines(*m_diffFilter, s0, m_job);
-  getDoc(1).getLines(*m_diffFilter, s1, m_job);
+  getDoc(0).getLines(*m_diffFilter, s0);
+  getDoc(1).getLines(*m_diffFilter, s1);
   makeDiffLines(s0, s1);
 
   m_job = NULL;
@@ -615,7 +640,7 @@ class StdDiffFilter : public DiffFilter {
   String lineFilter(const TCHAR *s) const {
     return s;
   }
-  String docFilter(const TCHAR *s, CompareJob *job) const {
+  String docFilter(const TCHAR *s) const {
     return s;
   }
   bool hasLineFilter() const {

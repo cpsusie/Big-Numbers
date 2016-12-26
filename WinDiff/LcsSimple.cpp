@@ -5,6 +5,7 @@
 // from Communications of the ACM May 1977 Volume 20 no. 5
 
 #include "stdafx.h"
+#include <Timer.h>
 #include <Date.h>
 #include <Math.h>
 #include "LcsSimple.h"
@@ -82,7 +83,7 @@ void LcsSimple::findLcs(ElementPairArray &result) {
 
   if(m_job) m_job->incrProgress();
 
-BEGIN_TIMEMEASURE(6, _T("Comparing"));
+BEGIN_TIMEMEASURE(5, _T("Comparing"));
 
   // step 3 compute successive m_tresh values
   size_t progress = 0;
@@ -109,11 +110,11 @@ BEGIN_TIMEMEASURE(6, _T("Comparing"));
     }
   }
 
-END_TIMEMEASURE(  6, m_docSize[0] + m_docSize[1]);
+END_TIMEMEASURE(  5, m_docSize[0] + m_docSize[1]);
 
   if(m_job) m_job->incrProgress();
 
-BEGIN_TIMEMEASURE(7, _T("Building pairs"));
+BEGIN_TIMEMEASURE(6, _T("Building pairs"));
 
   CompactArray<Link*> pairs;
   for(Link *ptr = m_link[k]; ptr != NULL; ptr = ptr->m_next) {
@@ -136,7 +137,7 @@ BEGIN_TIMEMEASURE(7, _T("Building pairs"));
     }
   }
 
-END_TIMEMEASURE(  7, m_docSize[0]);
+END_TIMEMEASURE(  6, m_docSize[0]);
 }
 
 UINT LcsSimple::findK(UINT j) const { // find k:m_tresh[k-1] < j <= m_tresh[k]. ie min(k:m_tresh[k] <= j
@@ -153,30 +154,59 @@ UINT LcsSimple::findK(UINT j) const { // find k:m_tresh[k-1] < j <= m_tresh[k]. 
   return r;
 }
 
+#define ESTIMATED_COMPARECOUNT(n) (1.725*nlogn((double)n))
+
+class LcsSortJob : public CompareSubJob {
+private:
+  CompactArray<LcsElement> &m_a;
+  IndexComparator          &m_cmp;
+  const size_t              m_lineCount;
+  const size_t              m_estimateCompareCount;
+public:
+  LcsSortJob(CompactArray<LcsElement> &a, IndexComparator &cmp)
+  : m_a(a)
+  , m_cmp(cmp)
+  ,m_lineCount(a.size())
+  ,m_estimateCompareCount((size_t)ESTIMATED_COMPARECOUNT(a.size()))
+  {
+  }
+  UINT run() {
+#ifdef MEASURE_STEPTIME
+  debugLog(_T("%s(lineCount:%s, compareCountEstimate:%s\n")
+          ,__TFUNCTION__
+          ,format1000(m_lineCount).cstr()
+          ,format1000(m_estimateCompareCount).cstr());
+#endif
+    m_a.sort(1, m_a.size()-1, m_cmp);
+#ifdef MEASURE_STEPTIME
+  debugLog(_T("%s(lineCount:%s, compareCountEstimate:%s actual compareCount:%s\n")
+          ,__TFUNCTION__
+          ,format1000(m_lineCount).cstr()
+          ,format1000(m_estimateCompareCount).cstr()
+          ,format1000(m_cmp.getCompareCount()).cstr());
+#endif
+    return 0;
+  }
+  USHORT getProgressPercent() const {
+    return SPERCENT(m_cmp.getCompareCount(), m_estimateCompareCount);
+  }
+  size_t getWeight() const {
+    return m_lineCount;
+  }
+};
+
 size_t LcsSimple::findMatchlist() {
-  IndexComparator cmp1(m_cmp, m_job, m_A.size()-1);
+
+BEGIN_TIMEMEASURE(3, _T("Sorting files"));
+
+  Execute2(m_job).run(LcsSortJob(m_A, IndexComparator( m_cmp))
+                     ,LcsSortJob(m_B, IndexComparatorR(m_cmp)));
+
+END_TIMEMEASURE(  3, nlogn(max((double)m_A.size(), (double)m_B.size())));
 
   if(m_job) m_job->incrProgress();
 
-BEGIN_TIMEMEASURE(3, _T("Sorting file 1"));
-  
-  m_A.sort(1,m_A.size()-1,cmp1);
-
-END_TIMEMEASURE(  3, nlogn(m_docSize[0]));
-
-  IndexComparatorR cmp2(m_cmp, m_job, m_B.size()-1);
-
-  if(m_job) m_job->incrProgress();
-
-BEGIN_TIMEMEASURE(4, _T("Sorting file 2"));
-
-  m_B.sort(1,m_B.size()-1,cmp2);
-
-END_TIMEMEASURE(  4, nlogn(m_docSize[1]));
-
-  if(m_job) m_job->incrProgress();
-
-BEGIN_TIMEMEASURE(5, _T("Finding matching lines"));
+BEGIN_TIMEMEASURE(4, _T("Finding matching lines"));
 
   const size_t bs = m_B.size();
   size_t bi = 1;
@@ -206,7 +236,7 @@ BEGIN_TIMEMEASURE(5, _T("Finding matching lines"));
     }
   }
 
-END_TIMEMEASURE(  5, m_docSize[0] + m_docSize[1]);
+END_TIMEMEASURE(  4, m_docSize[0] + m_docSize[1]);
 
   return result;
 }

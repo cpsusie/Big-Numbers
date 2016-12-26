@@ -45,7 +45,7 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
   for(size_t i = 0; i < m_n; i++) {
     B.add(LcsElement((int)i+1, b[i]));
   }
-  IndexComparator cmp(m_cmp, NULL, (UINT)A.size());
+  IndexComparator cmp(m_cmp);
 
   A.sort(1, A.size()-1, cmp);
   B.sort(1, B.size()-1, cmp);

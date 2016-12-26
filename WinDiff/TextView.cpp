@@ -61,6 +61,7 @@ void TextView::OnDraw(CDC *pDC) {
 
 void TextView::OnInitialUpdate() {
   CView::OnInitialUpdate();
+  setFont(getOptions().m_logFont, false);
   m_state.init(getDiffView().getId());
 
   bool idCollision = false;
@@ -242,7 +243,9 @@ LOGFONT TextView::getLogFont() {
 }
 
 bool TextView::setFont(const LOGFONT &newValue, bool repaint) {
-  if(getLogFont() == newValue) return false;
+  if(getLogFont() == newValue) {
+    return false;
+  }
   SAVESTATE;
   if(m_font.m_hObject) {
     m_font.DeleteObject();
@@ -251,7 +254,9 @@ bool TextView::setFont(const LOGFONT &newValue, bool repaint) {
     throwLastErrorOnSysCallException(_T("CreateFontIndirect"));
   }
   getOptions().m_logFont = newValue;
-  if(hasPartner()) { getPartner()->setFont(newValue, false); }
+  if(hasPartner()) { 
+    getPartner()->setFont(newValue, false);
+  }
   REFRESHBOTH;
   return true;
 }
@@ -289,7 +294,6 @@ bool TextView::setHighLightCompareEqual(bool newValue, bool repaint) {
   if(hasPartner()) { 
     getPartner()->setFlagValue(HIGHLIGhT_COMPAREEQUAL, newValue);
   }
-
   REFRESHBOTH;
   return true;
 }
@@ -825,8 +829,8 @@ private:
 public:
   OrigDiffFilter(DiffFilter &f) : m_f(f) {};
   String lineFilter(const TCHAR *s) const { return s;                } // no filter
-  String docFilter( const TCHAR *s, CompareJob *job) const {
-    return m_f.docFilter(s, job);
+  String docFilter( const TCHAR *s) const {
+    return m_f.docFilter(s);
   } // inherit original document-filtering
   bool   hasLineFilter() const {
     return false;
@@ -839,7 +843,7 @@ public:
 String TextView::getOrigString(int index) {
   LineArray s;
   OrigDiffFilter filter(getDocument()->m_filter);
-  m_diff->getDoc(getId()).getLines(filter,s, NULL);
+  m_diff->getDoc(getId()).getLines(filter,s);
   return s[index];
 }
 

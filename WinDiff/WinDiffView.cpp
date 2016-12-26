@@ -12,7 +12,7 @@
 IMPLEMENT_DYNCREATE(CWinDiffView, CFormView)
 
 void CWinDiffView::DoDataExchange(CDataExchange* pDX) {
-    CFormView::DoDataExchange(pDX);
+  CFormView::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CWinDiffView, CFormView)
@@ -245,6 +245,9 @@ void CWinDiffView::adjustChildPositions() {
 }
 
 void CWinDiffView::setNameFontSizePct(int pct, bool updatePartner) {
+  if (pct == m_nameFontSizePct) {
+    return;
+  }
   CWnd *nameWindow = GetDlgItem(IDC_NAME);
   if(m_origNameFont.lfFaceName[0] == 0) { // not yet initialized
     CFont *origFont = nameWindow->GetFont();
@@ -292,6 +295,7 @@ int CWinDiffView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   r.bottom        = lpCreateStruct->cx;
 
   m_textView.Create(r, this,  GetDocument()->m_diff);
+
   return 0;
 }
 
@@ -444,6 +448,7 @@ void CWinDiffView::setScrollRange(bool redraw) {
 
 void CWinDiffView::OnInitialUpdate() {
   CFormView::OnInitialUpdate();
+  setNameFontSizePct(getOptions().m_nameFontSizePct, false);
   DragAcceptFiles(true);
   setScrollRange(false);
 }

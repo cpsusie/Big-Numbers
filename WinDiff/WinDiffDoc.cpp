@@ -32,13 +32,13 @@ bool WinDiffComparator::setIgnoreCase(bool newValue) {
   RETURN_CHANGED(m_ignoreCase, newValue);
 }
 
-#define TIMEFACTOR_BUILDLINEARRAY    3.0e-2
+#define TIMEFACTOR_READFILES         5.0e-2
 #define TIMEFACTOR_SORT              6.8e-3
-#define TIMEFACTOR_MATCHLINES        1.5e-2
-#define TIMEFACTOR_COMPARING         3.5e-2
+#define TIMEFACTOR_MATCHLINES        1.1e-2
+#define TIMEFACTOR_COMPARING         2.5e-2
 #define TIMEFACTOR_BUILDPAIRS        3.0e-3
-#define TIMEFACTOR_TABEXPAND         2.9e-2
-#define TIMEFACTOR_BUILDFINALLINES   3.0e-2
+#define TIMEFACTOR_TABEXPAND         2.3e-2
+#define TIMEFACTOR_BUILDFINALLINES   4.0e-2
 
 double WinDiffComparator::getSortTimeFactor() const {
   return m_ignoreCase ? (1.8 * TIMEFACTOR_SORT) : TIMEFACTOR_SORT;
@@ -314,8 +314,8 @@ double WinDiffFilter::getTimeFactor() const {
   if(m_flags & FLAG_IGNORE_COLUMNS   ) factor += 0.1;
   if(m_flags & FLAG_IGNORE_REGEX     ) factor += 0.1;
   if(m_flags & FLAG_IGNORE_WHITEPSACE) factor += 0.085;
-  if(m_flags & FLAG_IGNORE_COMMENTS  ) factor += 0.1;
-  if(m_flags & FLAG_IGNORE_STRINGS   ) factor += 0.095;
+  if(m_flags & FLAG_IGNORE_COMMENTS  ) factor += 0.06;
+  if(m_flags & FLAG_IGNORE_STRINGS   ) factor += 0.075;
   return factor;
 }
 
@@ -330,7 +330,7 @@ String WinDiffFilter::toString() const {
 }
 
 // Remove all /* ... */ comments
-String WinDiffFilter::stripMultilineComments(const String &s, CompareJob *job) { // static.
+String WinDiffFilter::stripMultilineComments(const String &s) { // static.
   int state = 0;
   String result(s);
   TCHAR *dst = result.cstr();
@@ -414,9 +414,9 @@ String WinDiffFilter::stripMultilineComments(const String &s, CompareJob *job) {
   return result.cstr();
 }
 
-String WinDiffFilter::docFilter(const TCHAR *s, CompareJob *job) const {
+String WinDiffFilter::docFilter(const TCHAR *s) const {
   if(m_flags & FLAG_STRIP_COMMENTS) {
-    return stripMultilineComments(s, job);
+    return stripMultilineComments(s);
   } else {
     return s;
   }
@@ -504,20 +504,16 @@ void CWinDiffDoc::updateDiffDoc(bool recompare) {
   const UINT doc0Size   = getDocSize(0);
   const UINT doc1Size   = getDocSize(1);
   const UINT sumDocSize = doc0Size+doc1Size;
+  const UINT maxDocSize = max(doc0Size,doc1Size);
 
-  job.addStep(TIMEFACTOR_BUILDLINEARRAY * doc0Size, _T("Building linearray doc1...")            );
-  job.addStep(TIMEFACTOR_BUILDLINEARRAY * doc1Size, _T("Building linearray doc2...")            );
+  job.addStep(TIMEFACTOR_READFILES * sumDocSize, _T("Reading files...")            );
 
   if(recompare) {
     if(m_filter.hasLineFilter()) {
-      const double lineFilterTimeFactor = m_filter.getTimeFactor();
-      job.addStep(lineFilterTimeFactor * doc0Size, _T("Filter lines doc1...")                   );
-      job.addStep(lineFilterTimeFactor * doc1Size, _T("Filter lines doc2...")                   );
+      job.addStep(m_filter.getTimeFactor() * maxDocSize, _T("Filter lines...")      );
     }
 
-    const double sortTimeFactor = m_cmp.getSortTimeFactor();
-    job.addStep(sortTimeFactor * nlogn(doc0Size), _T("Sorting doc1...")                         );
-    job.addStep(sortTimeFactor * nlogn(doc1Size), _T("Sorting doc2...")                         );
+    job.addStep(m_cmp.getSortTimeFactor() * nlogn(maxDocSize), _T("Sorting docs..."));
 
     job.addStep(m_cmp.getMatchTimeFactor() * sumDocSize, _T("Finding matching lines...")        );
     job.addStep(TIMEFACTOR_COMPARING       * sumDocSize, _T("Comparing...")                     );

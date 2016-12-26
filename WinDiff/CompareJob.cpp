@@ -26,10 +26,11 @@ CompareJob::~CompareJob() {
   m_stepArray[m_currentStep].m_endTime = now;
   const double totalTime = getTotalTime(m_stepArray);
   for(int i = 1; i < m_stepArray.size(); i++) {
-    const  _ProgressStep &s = m_stepArray[i];
-    double measurePct       = PERCENT(s.getMeasuredTime(),totalTime              );
-    double estimatePct      = PERCENT(s.m_timeUnits      ,m_sumEstimatedTimeUnits);
-    debugLog(_T("%-30s:Measured %%:%4.1lf Estimated %%:%4.1lf\n"), s.m_msg, measurePct, estimatePct);
+    const _ProgressStep &s            = m_stepArray[i];
+    const double         measurePct   = PERCENT(s.getMeasuredTime(),totalTime              );
+    const double         estimatePct  = PERCENT(s.m_timeUnits      ,m_sumEstimatedTimeUnits);
+    const double         deviationPct = fabs(measurePct - estimatePct) / measurePct * 100;
+    debugLog(_T("%-30s:Measured:%4.1lf%% Estimated:%4.1lf%% Deviation:%3.0lf%%\n"), s.m_msg, measurePct, estimatePct, deviationPct);
   }
 #endif
 }
@@ -124,3 +125,23 @@ UINT CompareJob::run() {
   return 0;
 }
 
+void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {
+  m_job[0]  = &job1;
+  m_job[1]  = &job2;
+
+  RunnableArray jobArray(2);
+  jobArray.add(m_job[0]);
+  jobArray.add(m_job[1]);
+  m_compareJob.incrProgress();
+  Timer timer(1);
+  timer.startTimer(300, *this, true);
+  ThreadPool::executeInParallel(jobArray);
+  timer.stopTimer();
+}
+
+void Execute2::handleTimeout(Timer &timer) {
+  const size_t w0 = m_job[0]->getWeight();
+  const size_t w1 = m_job[1]->getWeight();
+  const size_t ws = max(1,w0+w1); // prevent division by zero
+  m_compareJob.setSubProgressPercent((USHORT)((w0*m_job[0]->getProgressPercent() + w1*m_job[1]->getProgressPercent())/ws));
+}
