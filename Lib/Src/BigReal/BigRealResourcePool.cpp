@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <CPUInfo.h>
 
-BigRealThreadPool::BigRealThreadPool() {
+BigRealResourcePool::BigRealResourcePool() {
   m_gate.wait();
 
   m_processorCount = getProcessorCount();
@@ -16,7 +16,7 @@ BigRealThreadPool::BigRealThreadPool() {
   m_gate.signal();
 }
 
-BigRealThreadPool::~BigRealThreadPool() {
+BigRealResourcePool::~BigRealResourcePool() {
   m_gate.wait();
 
   m_MTThreadPool.deleteAll();
@@ -35,11 +35,11 @@ void MThreadArray::waitForAllResults() {
 }
 
 MThreadArray::~MThreadArray() {
-  BigRealThreadPool::releaseMTThreadArray(*this);
+  BigRealResourcePool::releaseMTThreadArray(*this);
 }
 
-MThreadArray &BigRealThreadPool::fetchMTThreadArray(MThreadArray &threads, int count) { // static
-  BigRealThreadPool &instance = getInstance();
+MThreadArray &BigRealResourcePool::fetchMTThreadArray(MThreadArray &threads, int count) { // static
+  BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();
 
   threads.clear(count);
@@ -64,8 +64,8 @@ MThreadArray &BigRealThreadPool::fetchMTThreadArray(MThreadArray &threads, int c
   return threads;
 }
 
-void BigRealThreadPool::releaseMTThreadArray(MThreadArray &threads) { // static
-  BigRealThreadPool &instance = getInstance();
+void BigRealResourcePool::releaseMTThreadArray(MThreadArray &threads) { // static
+  BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();
 
   if(threads.size() > 0) {
@@ -84,8 +84,8 @@ void BigRealThreadPool::releaseMTThreadArray(MThreadArray &threads) { // static
   instance.m_gate.signal();
 }
 
-void BigRealThreadPool::setPriority(int priority) { // static
-  BigRealThreadPool &instance = getInstance();
+void BigRealResourcePool::setPriority(int priority) { // static
+  BigRealResourcePool &instance = getInstance();
 
   instance.m_gate.wait();
 
@@ -104,8 +104,8 @@ void BigRealThreadPool::setPriority(int priority) { // static
   instance.m_gate.signal();
 }
 
-void BigRealThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
-  BigRealThreadPool &instance = getInstance();
+void BigRealResourcePool::setPriorityBoost(bool disablePriorityBoost) { // static
+  BigRealResourcePool &instance = getInstance();
 
   instance.m_gate.wait();
 
@@ -124,8 +124,8 @@ void BigRealThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
   instance.m_gate.signal();
 }
 
-DigitPool *BigRealThreadPool::fetchDigitPool() { // static
-  BigRealThreadPool &instance = getInstance();
+DigitPool *BigRealResourcePool::fetchDigitPool() { // static
+  BigRealResourcePool &instance = getInstance();
   instance.m_gate.wait();
   MTDigitPoolType *pool = instance.m_digitPool.fetchResource();
 #ifdef CHECKALLDIGITS_RELEASED
@@ -135,8 +135,8 @@ DigitPool *BigRealThreadPool::fetchDigitPool() { // static
   return pool;
 }
 
-void BigRealThreadPool::releaseDigitPool(DigitPool *pool) { // static
-  BigRealThreadPool &instance = getInstance();
+void BigRealResourcePool::releaseDigitPool(DigitPool *pool) { // static
+  BigRealResourcePool &instance = getInstance();
 #ifdef CHECKALLDIGITS_RELEASED
   MTDigitPoolType *tmp     = (MTDigitPoolType*)pool;
   const UINT       newUsed = tmp->getUsedDigitCount();
@@ -152,10 +152,10 @@ void BigRealThreadPool::releaseDigitPool(DigitPool *pool) { // static
   // Blocks until all jobs are done. If any of the jobs throws an exception
   // the rest of the jobs will be terminated and an exception with the same
   // message will be thrown to the caller
-void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // static 
+void BigRealResourcePool::executeInParallel(CompactArray<Runnable*> &jobs) { // static 
   if(jobs.size() == 0) return;
-  BigRealThreadPool &instance = getInstance();
-  instance.m_gate.wait();  // get exclusive access to BigRealThreadPool
+  BigRealResourcePool &instance = getInstance();
+  instance.m_gate.wait();  // get exclusive access to BigRealResourcePool
   CompactArray<BigRealThread*> threads(jobs.size());;
   for(size_t i = 0; i < jobs.size(); i++) {
     threads.add(instance.m_threadPool.fetchResource());
@@ -181,8 +181,8 @@ void BigRealThreadPool::executeInParallel(CompactArray<Runnable*> &jobs) { // st
   }
 }
 
-String BigRealThreadPool::toString() { // static
-  BigRealThreadPool &instance = getInstance();
+String BigRealResourcePool::toString() { // static
+  BigRealResourcePool &instance = getInstance();
   String result;
   instance.m_gate.wait();
 
@@ -196,9 +196,9 @@ String BigRealThreadPool::toString() { // static
   return result;
 }
 
-BigRealThreadPool BigRealThreadPool::s_instance;
+BigRealResourcePool BigRealResourcePool::s_instance;
 
-BigRealThreadPool &BigRealThreadPool::getInstance() {
+BigRealResourcePool &BigRealResourcePool::getInstance() {
   return s_instance;
 }
 
@@ -236,16 +236,16 @@ UINT PoolLoggingThread::run() {
     if(m_stopped) {
       continue;
     }
-    debugLog(_T("%s\n"), BigRealThreadPool::getInstance().toString().cstr());
+    debugLog(_T("%s\n"), BigRealResourcePool::getInstance().toString().cstr());
   }
 }
 
 static PoolLoggingThread loggingThread;
 
-void BigRealThreadPool::startLogging() {
+void BigRealResourcePool::startLogging() {
   loggingThread.startLogging();
 }
 
-void BigRealThreadPool::stopLogging() {
+void BigRealResourcePool::stopLogging() {
   loggingThread.stopLogging();
 }

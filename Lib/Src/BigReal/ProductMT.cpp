@@ -28,7 +28,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
 
   MThreadArray threads;
   if((intptr_t)YLength < n) {
-    BigRealThreadPool::fetchMTThreadArray(threads, 1);
+    BigRealResourcePool::fetchMTThreadArray(threads, 1);
 
     MultiplierThread &thread = threads.get(0);
 
@@ -56,7 +56,7 @@ BigReal &BigReal::productMT(BigReal &result, const BigReal &x, const BigReal &y,
   BigReal Kg(g);
   Kg.multPow10(logBK);
 
-  BigRealThreadPool::fetchMTThreadArray(threads, 2);
+  BigRealResourcePool::fetchMTThreadArray(threads, 2);
 
   MultiplierThread &threadR = threads.get(0);
   MultiplierThread &threadS = threads.get(1);

@@ -238,14 +238,9 @@ public:
 
 };
 
-class BigRealResource {
-private:
-  const int m_id;
+class BigRealResource : public IdentifiedResource {
 public:
-  BigRealResource(int id) : m_id(id) {
-  }
-  inline int getId() const {
-    return m_id;
+  BigRealResource(int id) : IdentifiedResource(id) {
   }
 };
 
@@ -1329,7 +1324,7 @@ private:
   BigReal                  *m_result;
   int                       m_requestCount;
   int                       m_level;
-  friend class BigRealThreadPool;
+  friend class BigRealResourcePool;
 public:
   MultiplierThread(int id);
   UINT run();
@@ -1408,7 +1403,7 @@ public:
 };
 
 class MThreadArray : private CompactArray<MultiplierThread*> {
-  friend class BigRealThreadPool;
+  friend class BigRealResourcePool;
 public:
   void waitForAllResults();
   ~MThreadArray();
@@ -1434,7 +1429,7 @@ typedef DigitPool MTDigitPoolType;
 
 #endif
 
-template <class T> class ThreadPool : public ResourcePool<T> {
+template <class T> class BigRealThreadPool : public ResourcePool<T> {
 private:
   int  m_threadPriority;
   bool m_disablePriorityBoost;
@@ -1454,7 +1449,7 @@ protected:
     }
   }
 public:
-  ThreadPool() {
+  BigRealThreadPool() {
     m_threadPriority       = THREAD_PRIORITY_NORMAL;
     m_disablePriorityBoost = false;
   }
@@ -1480,22 +1475,22 @@ public:
 
 typedef CompactArray<Runnable*> BigRealJobArray;
 
-class BigRealThreadPool {
+class BigRealResourcePool {
 private:
-  ThreadPool<BigRealThread>             m_threadPool;
-  ThreadPool<MultiplierThread>          m_MTThreadPool;
+  BigRealThreadPool<BigRealThread>      m_threadPool;
+  BigRealThreadPool<MultiplierThread>   m_MTThreadPool;
   ResourcePool<SynchronizedStringQueue> m_queuePool;
   ResourcePool<MTDigitPoolType>         m_digitPool;
   mutable Semaphore                     m_gate;
   int                                   m_processorCount;
   int                                   m_activeThreads, m_maxActiveThreads;
-  static BigRealThreadPool              s_instance;
+  static BigRealResourcePool            s_instance;
 
-  BigRealThreadPool();
-  BigRealThreadPool(const BigRealThreadPool &src);            // not implemented
-  BigRealThreadPool &operator=(const BigRealThreadPool &src); // not implemented
+  BigRealResourcePool();
+  BigRealResourcePool(const BigRealResourcePool &src);            // not implemented
+  BigRealResourcePool &operator=(const BigRealResourcePool &src); // not implemented
 public:
-  ~BigRealThreadPool();
+  ~BigRealResourcePool();
   static MThreadArray &fetchMTThreadArray(  MThreadArray &threads, int count);
   static void          releaseMTThreadArray(MThreadArray &threads);
 
@@ -1518,7 +1513,7 @@ public:
   // THREAD_PRIORITY_IDLE,-PRIORITY_LOWEST,-PRIORITY_BELOW_NORMAL,-PRIORITY_NORMAL,-PRIORITY_ABOVE_NORMAL
 
   static void setPriorityBoost(bool disablePriorityBoost);
-  static BigRealThreadPool &getInstance();
+  static BigRealResourcePool &getInstance();
 };
 
 void traceRecursion(int level, _In_z_ _Printf_format_string_ const TCHAR *format,...);

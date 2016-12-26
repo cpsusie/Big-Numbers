@@ -36,7 +36,7 @@ unsigned int TesterJob::run() {
   incrRunning();
   const int ypos = THREADYPOS(m_id);
 
-  DigitPool *pool = BigRealThreadPool::fetchDigitPool();
+  DigitPool *pool = BigRealResourcePool::fetchDigitPool();
   const int thrId = GetCurrentThreadId();
 
   while(!s_testQueue.isEmpty()) {
@@ -61,7 +61,7 @@ unsigned int TesterJob::run() {
     s_doneQueue.put(test);
   }
   addTimeUsage(getThreadTime());
-  BigRealThreadPool::releaseDigitPool(pool);
+  BigRealResourcePool::releaseDigitPool(pool);
   Console::clearLine(ypos);
   decrRunning();
   return 0;
@@ -78,7 +78,7 @@ void TesterJob::startAll(int count) { // static
       s_testerJobs.add(new TesterJob(i));
     }
     s_gate.signal();
-    BigRealThreadPool::executeInParallel(s_testerJobs);
+    BigRealResourcePool::executeInParallel(s_testerJobs);
   }
 }
 

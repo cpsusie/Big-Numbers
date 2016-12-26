@@ -286,8 +286,8 @@ int main(int argc, char **argv) {
     }
 
     if(highPriority) {
-      BigRealThreadPool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
-      BigRealThreadPool::setPriorityBoost(true);
+      BigRealResourcePool::setPriority(THREAD_PRIORITY_ABOVE_NORMAL);
+      BigRealResourcePool::setPriorityBoost(true);
 
       if(!SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL)) {
         throwLastErrorOnSysCallException(_T("SetThreadPriority"));

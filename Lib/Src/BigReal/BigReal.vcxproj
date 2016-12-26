@@ -303,7 +303,7 @@
     <ClCompile Include="BigRealPow10.cpp" />
     <ClCompile Include="BigRealStream.cpp" />
     <ClCompile Include="BigRealThread.cpp" />
-    <ClCompile Include="BigRealThreadPool.cpp" />
+    <ClCompile Include="BigRealResourcePool.cpp" />
     <ClCompile Include="BigRealVector.cpp" />
     <ClCompile Include="Cos.cpp" />
     <ClCompile Include="Cot.cpp" />

@@ -6,14 +6,14 @@
 
 BigRealTestClass::~BigRealTestClass() {
   if(m_digitPool) {
-    BigRealThreadPool::releaseDigitPool(m_digitPool);
+    BigRealResourcePool::releaseDigitPool(m_digitPool);
     m_digitPool = NULL;
   }
 }
 
 DigitPool *BigRealTestClass::getDigitPool() {
   if(m_digitPool == NULL) {
-    m_digitPool = BigRealThreadPool::fetchDigitPool();
+    m_digitPool = BigRealResourcePool::fetchDigitPool();
   }
   return m_digitPool;
 }
@@ -555,7 +555,7 @@ void BigRealTestClass::testMultiThreadedProduct() {
   _ftprintf(f, _T("y:")); y.print(f); _ftprintf(f, _T("\n"));
   _ftprintf(f, _T("z:")); z.print(f); _ftprintf(f, _T("\n"));
   fclose(f);
-  _tprintf(_T("Max active Thread:%d\n"), BigRealThreadPool::getInstance().getMaxActiveThreads());
+  _tprintf(_T("Max active Thread:%d\n"), BigRealResourcePool::getInstance().getMaxActiveThreads());
 }
 
 
@@ -1029,13 +1029,13 @@ MeasureBinaryOperator::MeasureBinaryOperator(BinaryOperator op, const Array<BigR
 , m_y(y)
 , m_f(f)
 {
-  BigRealThreadPool &poolCreator = BigRealThreadPool::getInstance();
+  BigRealResourcePool &poolCreator = BigRealResourcePool::getInstance();
   m_pool = poolCreator.fetchDigitPool();
   i = j = 0;
 }
 
 MeasureBinaryOperator::~MeasureBinaryOperator() {
-  BigRealThreadPool &poolCreator = BigRealThreadPool::getInstance();
+  BigRealResourcePool &poolCreator = BigRealResourcePool::getInstance();
   poolCreator.releaseDigitPool(m_pool);
 }
 

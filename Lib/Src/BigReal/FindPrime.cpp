@@ -101,7 +101,7 @@ PrimeSearcher::PrimeSearcher(int id, int digitCount, PrimeQueue &queue, MillerRa
 , m_handler(   handler   )
 {
   m_rnd.randomize();
-  m_pool = BigRealThreadPool::fetchDigitPool();
+  m_pool = BigRealResourcePool::fetchDigitPool();
   m_deletePending = false;
   setDeamon(true);
 }
@@ -116,7 +116,7 @@ PrimeSearcher::~PrimeSearcher() {
   if(stillActive()) {
     debugLog(_T("Cannot kill PrimeSearcher (id=%d)"), m_id);
   }
-  BigRealThreadPool::releaseDigitPool(m_pool);
+  BigRealResourcePool::releaseDigitPool(m_pool);
 }
 
 UINT PrimeSearcher::run() {
