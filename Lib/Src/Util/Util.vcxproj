@@ -567,6 +567,8 @@
     <ClCompile Include="TextRect.cpp" />
     <ClCompile Include="TextWin.cpp" />
     <ClCompile Include="Thread.cpp" />
+    <ClCompile Include="ThreadPool.cpp" />
+    <ClCompile Include="ThreadPoolThread.cpp" />
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="TimePacker.cpp" />

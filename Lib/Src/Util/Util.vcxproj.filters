@@ -664,6 +664,12 @@
     <ClCompile Include="FileBitSet.cpp">
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
+    <ClCompile Include="ThreadPool.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
+    <ClCompile Include="ThreadPoolThread.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
