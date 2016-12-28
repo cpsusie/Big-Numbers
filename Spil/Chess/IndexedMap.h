@@ -36,6 +36,9 @@ private:
   EndGamePosIndex getCheckedIndex(EndGameKey key) const;
 #endif
 
+#ifdef NEWCOMPRESSION
+  void pruneAllPliesByNP(NotPrunedFlags np);
+#endif // NEWCOMPRESSION
 public:
   IndexedMap(const EndGameKeyDefinition &keydef);
 
@@ -50,7 +53,9 @@ public:
 
   EndGameResult &get(EndGameKey key);
   bool remove(EndGameKey key);
-
+#ifdef NEWCOMPRESSION
+  PositionTypeCounters countWinnerPositionTypes();
+#endif // NEWCOMPRESSION
   IndexedMap &clearAllVisited();
   IndexedMap &clearAllChanged();
   IndexedMap &clearAllMarked();
@@ -68,10 +73,13 @@ public:
   }
 
   void convertIndex();
+#ifdef NEWCOMPRESSION
+  void saveCompressed(   BigEndianOutputStream &out, const TablebaseInfo &info);
+  void saveCompressedNew(BigEndianOutputStream &out, const TablebaseInfo &info);
+#else // !NEWCOMPRESSION
   void saveCompressed(   ByteOutputStream &s, const TablebaseInfo &info) const;
-#ifdef TABLEBASE_BUILDER
   void saveCompressedNew(ByteOutputStream &s, const TablebaseInfo &info) const;
-#endif
+#endif // NEWCOMPRESSION
 
   EndGameKeyIterator   getKeyIterator();
   EndGameEntryIterator getEntryIterator();                                // All existing entries
@@ -122,13 +130,15 @@ public:
   }
 };
 
-#else
+#else // !TABLEBASE_BUILDER
+
+#ifndef NEWCOMPRESSION
 
 class IndexedMap {
 private:
   const EndGameKeyDefinition &m_keydef;
   BYTE                        m_canWinFlags;
-  BitSetFileIndex            *m_positionIndex;
+  FileBitSetIndex            *m_positionIndex;
   PackedFileArray            *m_infoArray;
 
 public:
@@ -145,4 +155,32 @@ public:
   void load();
 };
 
-#endif
+#else // NEWCOMPRESSION
+
+class IndexedMap {
+private:
+  const EndGameKeyDefinition &m_keydef;
+  BYTE                        m_canWinFlags;
+  NotPrunedFlags              m_npFlags;
+  FileBitSetIndex            *m_wpIndex;
+  FileBitSetIndex            *m_npIndex;
+  FileBitSet                 *m_whoWinSet;
+  PackedFileArray            *m_infoArray;
+  void init();
+  IndexedMap(const IndexedMap &src);                                      // not defined
+  IndexedMap &operator=(const IndexedMap &src);                           // not defined
+public:
+  IndexedMap(const EndGameKeyDefinition &keydef);
+  ~IndexedMap();
+  EndGameResult get(EndGameKey key) const;
+  bool isAllocated() const {
+    return m_wpIndex != NULL;
+  }
+  void decompress(BigEndianInputStream &s, const TablebaseInfo &info) const;
+  void clear();
+  void load();
+};
+
+#endif // NEWCOMPRESSION
+
+#endif // TABLEBASE_BUILDER

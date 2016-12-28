@@ -6,6 +6,12 @@
 #include <Timer.h>
 #include "EndGameKeyDefinition.h"
 
+// #define NEWCOMPRESSION
+
+#ifdef NEWCOMPRESSION
+#include <BigEndianStream.h>
+#endif
+
 typedef enum {
   EG_UNDEFINED
  ,EG_DRAW
@@ -19,9 +25,15 @@ const TCHAR *positionStatusToString(EndGamePositionStatus state);
 #define PLIESTOMOVES(plies)    (((plies)+1)/2)
 #define MOVESTOPLIES(moves)    ((moves)?((moves)*2-1):0)
 
+#define BOOL2MASK(b1, b2)     (((b1)?1:0) | ((b2)?2:0))
+#define BOOL3MASK(b1, b2, b3) (BOOL2MASK(b1, b2) | ((b3)?4:0))
+
+#define FBOOL2MASK(f, x, y   ) BOOL2MASK(f(x), f(y))
+#define FBOOL3MASK(f, x, y, z) BOOL3MASK(f(x), f(y), f(z))
+
 class EndGameResult {     // bit 0-8:pliesToEnd, bit 9-10:positionStatus, bit 11:exist, bit 12:visited, bit 13:changed, bit 14:marked
 private:                  // f e d c b a9     876543210
-  unsigned short m_data;  // - M C V E Status pliesToEnd
+  USHORT m_data;          // - M C V E Status pliesToEnd
 
 public:
   inline EndGameResult() {
@@ -44,7 +56,11 @@ public:
   inline UINT getMovesToEnd() const {
     return PLIESTOMOVES(getPliesToEnd());
   }
-
+#ifdef NEWCOMPRESSION
+  inline void prunePliesToEnd() { // to be used with compression
+    m_data &= ~0x1ff;
+  }
+#endif
   inline EndGamePositionStatus getStatus() const {
     return (EndGamePositionStatus)((m_data>>9) & 0x3);
   }
@@ -134,6 +150,12 @@ public:
   String toString(Player playerInTurn, bool ply = false) const;
 };
 
+#define EGR_STALEMATE    EndGameResult(EG_DRAW     , 0)
+#define EGR_TERMINALDRAW EndGameResult(EG_DRAW     , 1)
+#define EGR_DRAW         EndGameResult(EG_DRAW     , 2)
+#define EGR_WHITEISMATE  EndGameResult(EG_BLACKWIN , 0)
+#define EGR_BLACKISMATE  EndGameResult(EG_WHITEWIN , 0)
+
 typedef Entry<EndGameKey, EndGameResult> EndGameEntry;
 
 class MoveWithResult : public MoveBase {
@@ -169,7 +191,7 @@ public:
   CompactIntArray findShortestWinnerMoves()                   const;
   CompactIntArray findLongestLoosingMoves(int defendStrength) const; // defendStrength = [0..100]
   CompactIntArray findDrawMoves()                             const;
-  MoveWithResult selectBestMove(int defendStrength)           const; // defendStrength = [0..100]
+  MoveWithResult  selectBestMove(int defendStrength)          const; // defendStrength = [0..100]
 
   MoveResultArray &sort();
   String toString(const Game &game, MoveStringFormat mf, bool depthInPlies);
@@ -275,11 +297,22 @@ public:
 #define TBISTATE_WINNERRETROFIXED    0x08
 #define TBISTATE_WINNERFORWARD2FIXED 0x10
 
+#define TBISTATE_MASK                0x1f
+
 #define WHITECANWIN 0x01
 #define BLACKCANWIN 0x02
 #define BOTHCANWIN  (WHITECANWIN|BLACKCANWIN)
 
+#ifdef NEWCOMPRESSION
+typedef BYTE NotPrunedFlags;
+#define NPFLAGS(player,parity) ((NotPrunedFlags)(((player)<<1) | (parity)))
+#define NPGETPLAYER(npf)       ((Player)(((npf)>>1)&1))
+#define NPGETPARITY(npf)       ((npf)&1)
+#endif
+
 class TablebaseInfo {
+private:
+  void checkVersion() const; // throws exception if wrong version
 public:
   mutable char       m_version[20];
   UINT64             m_totalPositions;
@@ -293,7 +326,7 @@ public:
   MaxVariantCount    m_maxPlies;                     // max length in plies of forced winning variant for each player. 0 if no winnerpositions
   bool               m_canWin[2];                    // Indicates if a player has any winner-positions,
                                                      // ie. checkmates or conversions to a winning position in another endgame exist
-  unsigned char      m_stateFlags;
+  BYTE               m_stateFlags;
   __time64_t         m_buildTime;
   __time64_t         m_consistencyCheckedTime;
 
@@ -301,8 +334,12 @@ public:
     clear();
   }
   void clear();
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
+  void save(ByteOutputStream      &s) const;
+  void load(ByteInputStream       &s);
+#ifdef NEWCOMPRESSION
+  void save(BigEndianOutputStream &s) const;
+  void load(BigEndianInputStream  &s);
+#endif
   String toString(TablebaseInfoStringFormat f, bool plies = true) const;
   static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
 
@@ -322,7 +359,11 @@ public:
   bool isConsistent() const {
     return (m_stateFlags & TBISTATE_CONSISTENT) != 0;
   }
-  inline unsigned char getCanWinFlags() const {
+#ifdef NEWCOMPRESSION
+  void setNPFlags(NotPrunedFlags flags); // comes from PositionTypeCounters.getMinCounterIndex()
+  NotPrunedFlags getNPFlags() const;
+#endif
+  inline BYTE getCanWinFlags() const {
     return (m_canWin[WHITEPLAYER]?WHITECANWIN:0)|(m_canWin[BLACKPLAYER]?BLACKCANWIN:0);
   }
   String getVersion() const {
@@ -393,4 +434,27 @@ public:
   void update(EndGamePosIndex v);
 };
 
-#endif
+#ifdef NEWCOMPRESSION
+
+class PositionTypeCounters {
+public:
+  UINT64 m_count[2][2]; // indexed by playerInTurn, moveToEnd&1
+  inline PositionTypeCounters() {
+    m_count[0][0] = m_count[0][1] = m_count[1][0] = m_count[1][1] = 0;
+  }
+  inline void updateCount(const EndGameEntry &e) {
+    m_count[e.getKey().getPlayerInTurn()][e.getValue().getMovesToEnd()&1]++;
+  }
+  String toString() const {
+    return format(_T("  %14s  %14s\nW:%14s  %14s\nB:%14s  %14s\n")
+                 ,_T("Even par"), _T("Odd par")
+                 ,format1000(m_count[WHITEPLAYER][0]).cstr(),format1000(m_count[WHITEPLAYER][1]).cstr()
+                 ,format1000(m_count[BLACKPLAYER][0]).cstr(),format1000(m_count[BLACKPLAYER][1]).cstr()
+                 );
+  }
+  NotPrunedFlags getBestNPFlags() const; // bit 0:(0=even Parity,1=odd), bit 1:(0=WhiteToMove,1=BlacktoMove)
+};
+
+#endif // NEWCOMPRESSION
+
+#endif // TABLEBASE_BUILDER

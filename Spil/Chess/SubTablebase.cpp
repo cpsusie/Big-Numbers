@@ -97,7 +97,7 @@ EndGameResult SubTablebasePositionInfo::getPositionResult(const Game &game) cons
   if(m_tablebase != NULL) {
     return m_tablebase->getPositionResult(game, m_swapPlayers);
   } else {
-    return EndGameResult(EG_DRAW, 2); // pliesToEnd: 0=STALEMATE, 1=Terminal draw, so we use 2
+    return EGR_DRAW;
   }
 }
 

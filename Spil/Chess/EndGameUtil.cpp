@@ -6,6 +6,12 @@
 
 const char *TablebaseInfo::s_programVersion = "1.4";
 
+void TablebaseInfo::checkVersion() const {
+  if(getVersion() != getProgramVersion()) {
+    throw WrongVersionException(format(_T("Wrong fileversion:%s. Programversion=%s"), getVersion().cstr(), getProgramVersion().cstr()).cstr());
+  }
+}
+
 void TablebaseInfo::clear() {
   memset(this, 0, sizeof(TablebaseInfo));
 }
@@ -18,10 +24,56 @@ void TablebaseInfo::save(ByteOutputStream &s) const {
 
 void TablebaseInfo::load(ByteInputStream &s) {
   s.getBytesForced((BYTE*)this, sizeof(TablebaseInfo));
-  if(getVersion() != getProgramVersion()) {
-    throw WrongVersionException(format(_T("Wrong fileversion:%s. Programversion=%s"), getVersion().cstr(), getProgramVersion().cstr()).cstr());
-  }
+  checkVersion();
 }
+
+#ifdef NEWCOMPRESSION
+template<class T> BigEndianOutputStream &operator<<(BigEndianOutputStream &s, const TwoCountersTemplate<T> &c) {
+  return s << c.m_count[0] << c.m_count[1];
+}
+
+template<class T> BigEndianInputStream &operator>>(BigEndianInputStream &s, TwoCountersTemplate<T> &c) {
+  return s >> c.m_count[0] >> c.m_count[1];
+}
+
+void TablebaseInfo::save(BigEndianOutputStream &s) const {
+  memset(m_version, 0, sizeof(m_version));
+  strcpy(m_version, s_programVersion);
+  s.putBytes((BYTE*)m_version, sizeof(m_version));
+  s << m_totalPositions
+    << m_indexCapacity
+    << m_undefinedPositions
+    << m_stalematePositions
+    << m_drawPositions
+    << m_checkMatePositions
+    << m_terminalWinPositions
+    << m_nonTerminalWinPositions
+    << m_maxPlies
+    << m_canWin[0] << m_canWin[1]
+    << m_stateFlags
+    << m_buildTime
+    << m_consistencyCheckedTime;
+}
+
+void TablebaseInfo::load(BigEndianInputStream &s) {
+  s.getBytes((BYTE*)m_version, sizeof(m_version));
+  checkVersion();
+
+  s >> m_totalPositions
+    >> m_indexCapacity
+    >> m_undefinedPositions
+    >> m_stalematePositions
+    >> m_drawPositions
+    >> m_checkMatePositions
+    >> m_terminalWinPositions
+    >> m_nonTerminalWinPositions
+    >> m_maxPlies
+    >> m_canWin[0] >> m_canWin[1]
+    >> m_stateFlags
+    >> m_buildTime
+    >> m_consistencyCheckedTime;
+}
+#endif // NEWCOMPRESSION
 
 #define WBWIDTH(n) (2*(n)+1)
 
@@ -87,23 +139,23 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
                               ,MAXVARWIDTH , plies ? _T("(plies)") : _T("(moves)")
                               ,FILLER(VERSIONWIDTH)
                               );
-    return format(
-      _T("%s %s%s\n")
-      _T("%s %s%s\n")
-      ,headerLeft.cstr()            ,h1.cstr(), headerRight.cstr()
-      ,FILLER(headerLeft.length())  ,h2.cstr(), FILLER(headerRight.length())
-      );
+      return format(
+        _T("%s %s%s\n")
+        _T("%s %s%s\n")
+        ,headerLeft.cstr()            ,h1.cstr(), headerRight.cstr()
+        ,FILLER(headerLeft.length())  ,h2.cstr(), FILLER(headerRight.length())
+        );
     }
   case TBIFORMAT_PRINT_COLUMNS2:
-   { const String h1 = format(_T("%*s %*s %*s %*s %s %*s %-*s")
-                              ,POSITIONWIDTH  , POSITIONSTR
-                              ,INDEXSIZEWIDTH , INDEXSIZESTR
-                              ,UNDEFINEDWIDTH , UNDEFINEDSTR
-                              ,STALEMATEWIDTH , STALEMATESTR
-                              ,wbHeader1(WINNERPOSSTR, WINNERPOSWIDTH).cstr()
-                              ,MAXVARWIDTH    , MAXVARSTR
-                              ,VERSIONWIDTH   , VERSIONSTR
-                              );
+    { const String h1 = format(_T("%*s %*s %*s %*s %s %*s %-*s")
+                               ,POSITIONWIDTH  , POSITIONSTR
+                               ,INDEXSIZEWIDTH , INDEXSIZESTR
+                               ,UNDEFINEDWIDTH , UNDEFINEDSTR
+                               ,STALEMATEWIDTH , STALEMATESTR
+                               ,wbHeader1(WINNERPOSSTR, WINNERPOSWIDTH).cstr()
+                               ,MAXVARWIDTH    , MAXVARSTR
+                               ,VERSIONWIDTH   , VERSIONSTR
+                               );
       const String h2 = format(_T("%s %s %*s %*s %s")
                               ,FILLER(POSITIONWIDTH + INDEXSIZEWIDTH + UNDEFINEDWIDTH + STALEMATEWIDTH + 3)
                               ,wbHeader2(WINNERPOSWIDTH).cstr()
@@ -111,10 +163,10 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
                               ,FILLER(VERSIONWIDTH)
                               );
       return format(
-      _T("%s %s%s\n")
-      _T("%s %s%s\n")
-      ,headerLeft.cstr()          , h1.cstr(), headerRight.cstr()
-      ,FILLER(headerLeft.length()), h2.cstr(), FILLER(headerRight.length())
+        _T("%s %s%s\n"
+           "%s %s%s\n")
+        ,headerLeft.cstr()          , h1.cstr(), headerRight.cstr()
+        ,FILLER(headerLeft.length()), h2.cstr(), FILLER(headerRight.length())
       );
     }
   default:
@@ -196,6 +248,19 @@ String TablebaseInfo::formatMaxVariants(bool plies) const {
                );
 }
 
+#ifdef NEWCOMPRESSION
+void TablebaseInfo::setNPFlags(BYTE npIndex) { // comes from PositionTypeCounters.getMinCounterIndex()
+  assert(npIndex < 4);
+  assert(isConsistent());
+  m_stateFlags &= TBISTATE_MASK;
+  m_stateFlags |= npIndex << 5;
+}
+
+BYTE TablebaseInfo::getNPFlags() const {
+  return (m_stateFlags >> 5) & 3;
+}
+#endif
+
 //----------------------------------------------------------------------------------------------------
 class MoveComparator : public Comparator<MoveWithResult> {
 private:
@@ -219,33 +284,29 @@ public:
 };
 
 int MoveComparator::compare(const MoveWithResult &m1, const MoveWithResult &m2) {
-  const bool m1Win = isWinnerMove(m1);
-  const bool m2Win = isWinnerMove(m2);
-  if(m1Win) {
-    if(m2Win) {
-      const int c = m1.m_result.getMovesToEnd() - m2.m_result.getMovesToEnd();
-      return c ? c : positionCompare(m1,m2);
-    } else {
-      return -1;
-    }
-  } else if(m2Win) { // && !m1Win
-    return 1;
-  } else { // m1Win == false && m2Win == false
-    const bool m1Draw = isDrawMove(m1);
-    const bool m2Draw = isDrawMove(m2);
-    if(m1Draw) {
-      if(m2Draw) {
-        return positionCompare(m1,m2);
-      } else { // m1 draw && m2 loose
-        return -1;
-      }
-    } else if(m2Draw) { // m1 Loose
-      return 1;
-    } else { // m1 loose && m2 loose
-      const int c = m2.m_result.getMovesToEnd() - m1.m_result.getMovesToEnd();
+  int c;
+  switch(FBOOL2MASK(isWinnerMove, m1, m2)) {
+  case 3:
+    c = m1.m_result.getMovesToEnd() - m2.m_result.getMovesToEnd();
+    return c ? c : positionCompare(m1, m2);
+  case 2: return  1;
+  case 1: return -1;
+  case 0:
+    switch(FBOOL2MASK(isDrawMove, m1, m2)) {
+    case 3: return positionCompare(m1, m2);
+    case 2: return  1;
+    case 1: return -1;
+    case 0:
+      c = m2.m_result.getMovesToEnd() - m1.m_result.getMovesToEnd();
       return c ? c : positionCompare(m1,m2);
     }
   }
+  throwException(_T("%s(%s,%s) dropped to the end")
+                ,__TFUNCTION__
+                ,m1.toString().cstr()
+                ,m2.toString().cstr()
+                );
+  return 0;
 }
 
 int MoveComparator::positionCompare(const MoveWithResult &m1, const MoveWithResult &m2) const {
@@ -363,7 +424,7 @@ StreamProgress::StreamProgress(const String &fileName) : m_timer(1) {
 
 StreamProgress::~StreamProgress() {
   m_timer.stopTimer();
-  verbose(_T("        \b")); // clear the decimals written in hanbdleTimeout
+  verbose(_T("        \b")); // clear the decimals written in handleTimeout
   verbose(_T("100%%\n"));
 }
 
@@ -392,4 +453,22 @@ void IntervalChecker::update(EndGamePosIndex v) {
   }
 }
 
-#endif
+#ifdef NEWCOMPRESSION
+NotPrunedFlags PositionTypeCounters::getBestNPFlags() const {
+  UINT64         currentMin = m_count[0][0];
+  NotPrunedFlags result     = NPFLAGS(0,0);
+  forEachPlayer(player) {
+    for(BYTE parity = 0; parity <= 1; parity++) {
+      const UINT64 v = m_count[player][parity];
+      if(v < currentMin) {
+        result = NPFLAGS(player, parity);
+        currentMin = v;
+      }
+    }
+  }
+  return result;
+}
+
+#endif // NEWCOMPRESSION
+
+#endif // TABLEBASE_BUILDER

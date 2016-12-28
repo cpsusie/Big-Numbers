@@ -227,7 +227,10 @@ private:
   bool addPosition(const EndGameKey &key, bool markNew);
   bool addPosition(const EndGameKey &key, EndGameResult &result, bool markNew);
   EndGameResult getBestResult(Game &game, bool breakOnDraw);
-  void adjustMaxPly(Player winner, UINT plies);
+  inline void adjustMaxPly(Player winner, UINT plies) {
+    USHORT &maxPlies = m_info.m_maxPlies.m_count[winner];
+    if(plies > maxPlies) maxPlies = plies;
+  }
   MaxVariantCount findMaxPlies() const;
 
   void resetInitialSetupFlags();
@@ -292,11 +295,7 @@ private:
   UINT64       fixupRetroStatus(const EndGameEntry &entry, PositionCount64 &changeCount);
   void         fixupForwardPlies(EndGameEntryIterator &it, int iteration, UINT64 &changedPositions);
   UINT64       fixupRetroPlies( const EndGameEntry &entry, PositionCount64 &changeCount);
-  void         markNeighbours(  const EndGameEntry &entry, bool onlyWinnerPositions);
-  void         markSuccessors(  const EndGameEntry &entry, bool onlyWinnerPositions);
   void         markPredecessors(const EndGameEntry &entry, bool onlyWinnerPositions);
-  void         markNeighbours(  bool onlyWinnerPositions); // use m_workGame as startPosition
-  void         markSuccessors(  bool onlyWinnerPositions); // use m_workGame as startPosition
   void         markPredecessors(bool onlyWinnerPositions); // use m_workGame as startPosition
   void         verboseHelpInfo(const String &label);
 

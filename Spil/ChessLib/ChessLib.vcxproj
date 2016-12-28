@@ -462,6 +462,7 @@
     <ClCompile Include="..\Chess\BackMoveGenerator.cpp" />
     <ClCompile Include="..\Chess\EndGame6Men2Pairs.cpp" />
     <ClCompile Include="..\Chess\EndGame6Men3Equal.cpp" />
+    <ClCompile Include="..\Chess\EndGameBuild.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBBK.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBK.cpp" />
     <ClCompile Include="..\Chess\EndGameKBBKB.cpp" />

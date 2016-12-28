@@ -21,7 +21,11 @@ public:
 };
 
 EndGameGlobalProperties::EndGameGlobalProperties() {
+#ifndef NEWCOMPRESSION
   m_dbPath = _T("c:\\temp\\ChessEndGames");
+#else // NEWCOMPRESSION
+  m_dbPath = _T("c:\\temp\\CG1");
+#endif // NEWCOMPRESSION
   m_metric = DEPTH_TO_CONVERSION;
 }
 

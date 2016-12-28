@@ -678,6 +678,7 @@
     </ClCompile>
     <ClCompile Include="EndGame6Men2Pairs.cpp" />
     <ClCompile Include="EndGame6Men3Equal.cpp" />
+    <ClCompile Include="EndGameBuild.cpp" />
     <ClCompile Include="EndgameDecompress.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>

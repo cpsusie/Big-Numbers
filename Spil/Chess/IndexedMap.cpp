@@ -5,6 +5,8 @@
 #include <Date.h>
 #include "IndexedMap.h"
 
+#ifndef NEWCOMPRESSION
+
 #define WRITEMOVEBITS(bitCount, shift)                                                                \
   { forEachPlayer(p) {                                                                                \
       for(ep = &first()+(int)p; ep <= lastElement; ep += 2) {                                         \
@@ -28,6 +30,8 @@
       }                                                                                               \
     }                                                                                                 \
   }
+
+#endif // NEWCOMPRESSION
 
 #ifdef TABLEBASE_BUILDER
 
@@ -198,6 +202,8 @@ void IndexedMap::convertIndex() {
   ((CompactArray<EndGameResult>&)*this) = copy;
 }
 
+#ifndef NEWCOMPRESSION
+
 void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) const { // Saved in format used by IndexedMap::load(ByteInputStream &s)
                                                                                         // defined last in this file
   DEFINEMETHODNAME;
@@ -306,10 +312,163 @@ void IndexedMap::saveCompressed(ByteOutputStream &s, const TablebaseInfo &info) 
   }
 }
 
+#else // NEWCOMPRESSION
+
+PositionTypeCounters IndexedMap::countWinnerPositionTypes() {
+  PositionTypeCounters result;
+  for(EndGameEntryIterator it = getIteratorAllWinnerEntries(); it.hasNext();) {
+    result.updateCount(it.next());
+  }
+  return result;
+}
+
+void IndexedMap::pruneAllPliesByNP(NotPrunedFlags np) {
+  const Player prunePlayer  = GETENEMY(NPGETPLAYER(np));
+  const BYTE   pruneParity  = 1-NPGETPARITY(np);
+  UINT64       prunedCount  = 0;
+  UINT64       winnerCount  = 0;
+  for(EndGameEntryIterator it = getIteratorAllWinnerEntries(); it.hasNext(); ) {
+    EndGameEntry &e = it.next();
+    winnerCount++;
+    if  ((e.getKey().getPlayerInTurn()      == prunePlayer)
+     || ((e.getValue().getMovesToEnd() & 1) == pruneParity))
+      {
+        e.getValue().prunePliesToEnd();
+        prunedCount++;
+      }
+  }
+  const UINT64 notPrunedCount = winnerCount - prunedCount;
+  verbose(_T("Pruned positions:%14s (=%.2lf%%)  Not pruned:%14s (=%.2lf%%)\n")
+         ,format1000(prunedCount).cstr()
+         ,PERCENT(prunedCount, winnerCount)
+         ,format1000(notPrunedCount).cstr()
+         ,PERCENT(notPrunedCount, winnerCount)
+         );
+}
+
+void IndexedMap::saveCompressed(BigEndianOutputStream &out, const TablebaseInfo &info) { // Saved in format used by IndexedMap::load(ByteInputStream &s)
+  DEFINEMETHODNAME;                                                               // defined last in this file
+  const EndGamePosIndex indexSize = m_keydef.getIndexSize();
+  if(info.m_indexCapacity != indexSize) {
+    throwInvalidArgumentException(method, _T("info.indexCapacity=%I64u, keydef.indexSize=%I64u"), info.m_indexCapacity, indexSize);
+  }
+  const EndGameResult *firstElement = &first();
+  const EndGameResult *lastElement  = getLastElement();
+  BYTE                 canWinFlags  = 0;
+  for(const EndGameResult *ep = firstElement; (canWinFlags != BOTHCANWIN) && ep <= lastElement;) {
+    switch((ep++)->getStatus()) {
+    case EG_WHITEWIN: canWinFlags |= WHITECANWIN; break;
+    case EG_BLACKWIN: canWinFlags |= BLACKCANWIN; break;
+    default         :;
+    }
+  }
+
+  if((info.getCanWinFlags() != canWinFlags) || (canWinFlags == 0)) {
+    throwInvalidArgumentException(method, _T("CanWinFlags inconsistent. info.canWinFlags:%d, counted:%d")
+                                 ,info.getCanWinFlags()
+                                 ,canWinFlags
+                                 );
+  }
+
+  UINT   maxPly          = 0;
+  INT64  wpCount = 0;
+  BitSet wpSet(indexSize);
+
+  for(const EndGameResult *ep = firstElement; ep <= lastElement; ep++) {
+    if(ep->isWinner()) {
+      wpSet.add(ep - firstElement);
+      wpCount++;
+      if(ep->getPliesToEnd() > maxPly) {
+        maxPly = ep->getPliesToEnd();
+      }
+    }
+  }
+
+  if(wpCount != info.getWinnerPositionCount().getTotal()) {
+    throwException(_T("Counted winnerPositions=%I64d != info.totalWinnerPosition:%s (=%I64u)")
+                  ,wpCount
+                  ,info.getWinnerPositionCount().toString().cstr()
+                  ,info.getWinnerPositionCount().getTotal());
+  }
+
+  if(maxPly != info.m_maxPlies.getMax()) {
+    throwInvalidArgumentException(method
+                                 ,_T("Calculated maxPly=%u != info.maxPlies:%s")
+                                 ,maxPly
+                                 ,info.m_maxPlies.toString().cstr());
+  }
+
+  out << wpSet;
+  verbose(_T("wpSet.(capacity,size):(%14s,%14s)\n")
+          ,format1000(wpSet.getCapacity()).cstr()
+          ,format1000(wpSet.size()).cstr());
+
+  wpSet.clear(); // save Space
+  if(canWinFlags == BOTHCANWIN) { // No need for indicating who wins. A winposition is the one indicated by canWinFlags
+    UINT64 count = 0;
+    BitSet whoWinSet(wpCount);
+    for(const EndGameResult *ep = firstElement;  ep <= lastElement; ep++) {
+      switch(ep->getStatus()) {
+      case EG_WHITEWIN:
+        count++;                // 0-bit
+        break;
+      case EG_BLACKWIN:
+        whoWinSet.add(count++); // 1-bit
+        break;
+      default         :         // do nothing
+        break;
+      }
+    }
+    out << whoWinSet;
+    verbose(_T("whoWinSet.(capacity,size):(%14s,%14s)\n")
+           ,format1000(whoWinSet.getCapacity()).cstr()
+           ,format1000(whoWinSet.size()).cstr());
+  }
+
+  pruneAllPliesByNP(info.getNPFlags());
+
+  BitSet npSet(wpCount);
+  INT64  npCount = 0;
+  for(const EndGameResult *ep = firstElement; ep <= lastElement; ep++) {
+    if(ep->isWinner()) {
+      if(ep->getPliesToEnd()) npSet.add(npCount);
+      npCount++;
+    }
+  }
+  out << npSet;
+  verbose(_T("npSet.(capacity,size):(%14s,%14s)\n")
+         ,format1000(npSet.getCapacity()).cstr()
+         ,format1000(npSet.size()).cstr());
+
+
+#define BUFFERSIZE 4096
+  ByteArray buffer(BUFFERSIZE);
+  UINT64 pliesByteCount = 0;
+  for(const EndGameResult *ep = firstElement; ep <= lastElement; ep++) {
+    if(ep->isWinner() && ep->getPliesToEnd()) {
+      buffer.append(BYTE(ep->getMovesToEnd()>>1));
+      if (buffer.size() == BUFFERSIZE) {
+        out.putBytes(buffer.getData(), BUFFERSIZE);
+        pliesByteCount += BUFFERSIZE;
+        buffer.clear(-1);
+      }
+    }
+  }
+  if (!buffer.isEmpty()) {
+    out.putBytes(buffer.getData(), buffer.size());
+    pliesByteCount += buffer.size();
+    buffer.clear();
+  }
+  verbose(_T("plyBytes:%14s\n"), format1000(pliesByteCount).cstr());
+}
+
+#endif // NEWCOMPRESSION
+
 // -------------------------------------------- Iterators --------------------------------------------
 
 class IndexedMapKeyIterator : public AbstractIterator {
 private:
+  DECLARECLASSNAME;
   IndexedMap                 &m_map;
   const EndGameKeyDefinition &m_keydef;
   EndGameResult              *m_firstElement, *m_lastElement;
@@ -327,6 +486,8 @@ public:
   void *next();
   void remove();
 };
+
+DEFINECLASSNAME(IndexedMapKeyIterator);
 
 IndexedMapKeyIterator::IndexedMapKeyIterator(IndexedMap &map)
 : m_map(map)
@@ -347,7 +508,7 @@ void IndexedMapKeyIterator::first() {
 
 void *IndexedMapKeyIterator::next() {
   if(!hasNext()) {
-    throwException(_T("IndexedMapKeyIterator::next:No such element"));
+    noNextElementError(s_className);
   }
   m_returnKey = m_keydef.indexToKey((m_current++) - m_firstElement);
   while(m_current <= m_lastElement && !m_current->exists()) {
@@ -357,7 +518,7 @@ void *IndexedMapKeyIterator::next() {
 }
 
 void IndexedMapKeyIterator::remove() {
-  unsupportedOperationError(_T("IndexedMapKeyIterator"));
+  unsupportedOperationError(__TFUNCTION__);
 }
 
 class IndexedMapEntry : public AbstractEntry {
@@ -404,7 +565,7 @@ public:
     return m_current <= m_lastElement;
   }
   void remove() {
-    unsupportedOperationError(_T("IndexedMapEntryIterator"));
+    unsupportedOperationError(__TFUNCTION__);
   }
   virtual UINT64 getCount() const = 0;
 
@@ -654,6 +815,8 @@ EndGameEntryIterator IndexedMap::getIteratorNonEmptyHelpInfo() {
 
 #else // !TABLEBASE_BUILDER ie chess-program
 
+#ifndef NEWCOMPRESSION
+
 IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
   m_positionIndex       = NULL;
   m_infoArray           = NULL;
@@ -679,7 +842,6 @@ public:
   BYTE m_bitsPerEntry;
   UINT m_bitSetIndexOffset;
   UINT m_arrayStartOffset;
-
   DecompressedHeader(const TablebaseInfo &info);
   DecompressedHeader(const String        &fileName);
   void save(ByteOutputStream &s);
@@ -853,7 +1015,7 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
     _ftprintf(logFile, _T("%s:%s\n"), key.toString(m_keydef).cstr(), eg.toString(true).cstr());
   }
   fclose(logFile);
-#endif
+#endif // __NEVER__
 
 }
 
@@ -862,14 +1024,14 @@ void IndexedMap::load() {
   const String fileName = m_keydef.getDecompressedFileName();
   const DecompressedHeader header(fileName);
   m_canWinFlags   = header.getCanWinFlags();
-  m_positionIndex = new BitSetFileIndex(fileName, header.m_bitSetIndexOffset);
+  m_positionIndex = new FileBitSetIndex(fileName, header.m_bitSetIndexOffset);
   m_infoArray     = new PackedFileArray(fileName, header.m_arrayStartOffset);
 //  verbose(_T("%s"), m_positionIndex->getInfoString().cstr());
 }
 
 EndGameResult IndexedMap::get(EndGameKey key) const {
   if(!isAllocated()) {
-    throwException(_T("Index not loaded"));
+    throwException(_T("%s:Index not loaded"), __TFUNCTION__);
   }
   const intptr_t index = m_positionIndex->getIndex((size_t)m_keydef.keyToIndex(key));
 
@@ -889,5 +1051,194 @@ EndGameResult IndexedMap::get(EndGameKey key) const {
     return EndGameResult((winner == WHITEPLAYER) ? EG_WHITEWIN : EG_BLACKWIN, (2*movesToEnd) + ((playerInTurn != winner ) ? 1 : 0));
   }
 }
+
+#else // NEWCOMPRESSION
+
+class DecompressedHeader : public TablebaseInfo {
+public:
+  BYTE   m_bitsPerEntry;
+  UINT64 m_wpIndexAddress;
+  UINT64 m_npIndexAddress;
+  UINT64 m_whoWinAddress;
+  UINT64 m_arrayAddress;
+
+  DecompressedHeader(const TablebaseInfo &info);
+  DecompressedHeader(const String &fileName) {
+    load(ByteInputFile(fileName));
+  }
+  void save(ByteOutputStream &s) {
+    s.putBytes((BYTE*)this, sizeof(DecompressedHeader));
+  }
+  void load(ByteInputStream  &s) {
+    s.getBytesForced((BYTE*)this, sizeof(DecompressedHeader));
+  }
+};
+
+DecompressedHeader::DecompressedHeader(const TablebaseInfo &info) : TablebaseInfo(info) {
+  m_bitsPerEntry   = 0;
+  m_wpIndexAddress = 0;
+  m_npIndexAddress = 0;
+  m_whoWinAddress  = 0;
+  m_arrayAddress   = 0;
+}
+
+IndexedMap::IndexedMap(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
+  init();
+}
+
+void IndexedMap::init() {
+  m_wpIndex   = NULL;
+  m_npIndex   = NULL;
+  m_whoWinSet = NULL;
+  m_infoArray = NULL;
+}
+
+IndexedMap::~IndexedMap() {
+  clear();
+}
+
+void IndexedMap::clear() {
+  delete m_wpIndex;
+  delete m_npIndex;
+  delete m_whoWinSet;
+  delete m_infoArray;
+
+  init();
+}
+
+// Read format written with IndexedMap::saveCompressed(BigEndianOutputStream &s);
+void IndexedMap::decompress(BigEndianInputStream &in, const TablebaseInfo &info) const {
+  const INT64 indexSize = m_keydef.getIndexSize();
+  if(info.m_indexCapacity != indexSize) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("info.indexCapacity=%s, keydef.indexSize=%s")
+                                 ,format1000(info.m_indexCapacity).cstr()
+                                 ,format1000(indexSize).cstr());
+  }
+
+  const BYTE  canWinFlags  = info.getCanWinFlags();
+  const bool  hasWhoWinSet = (canWinFlags == BOTHCANWIN); // do we need a BitSet to indicate who wins, or is the winner always the same
+  const int   maxPly       = info.m_maxPlies.getMax();
+  const int   maxMoves     = PLIESTOMOVES(maxPly);
+  const BYTE  bitsPerMove  = getBitCount(maxMoves);
+  const BYTE  bitsPerEntry = bitsPerMove - 1;
+
+  BitSet wpSet(10);
+  in >> wpSet;
+  const UINT64 wpCount = wpSet.size();
+
+  if(wpCount != info.getWinnerPositionCount().getTotal()) {
+    throwException(_T("Counted winnerPositions=%I64u != info.totalWinnerPosition:%s (=%s)")
+                  ,wpCount
+                  ,info.getWinnerPositionCount().toString().cstr()
+                  ,format1000(info.getWinnerPositionCount().getTotal()).cstr());
+  }
+
+  BitSet whoWinSet(10);
+  if(hasWhoWinSet) {
+    in >> whoWinSet;
+    if(whoWinSet.getCapacity() != wpCount) {
+      throwException(_T("WhoWinSet.capacity==%s != wpCount(=%s)")
+                    ,format1000(whoWinSet.getCapacity()).cstr()
+                    ,format1000(wpCount).cstr());
+    }
+  }
+  BitSet npSet(10);
+  in >> npSet;
+  if(npSet.getCapacity() != wpCount) {
+    throwException(_T("npSet.capacity==%s != winnerPositions(=%s)")
+                  ,format1000(npSet.getCapacity()).cstr()
+                  ,format1000(wpCount).cstr());
+  }
+
+  const UINT64 npCount = npSet.size();
+  PackedArray infoArray(max(1,bitsPerEntry));
+  infoArray.setCapacity(npCount);
+  infoArray.addZeroes(0,npCount);
+
+#define BUFFERSIZE 4096
+  BYTE buffer[BUFFERSIZE];
+  for (UINT64 i = 0; i < npCount;) {
+    const UINT n       = (UINT)min(ARRAYSIZE(buffer), (npCount-i));
+    const BYTE *bufEnd = buffer + n;
+    in.getBytesForced(buffer, n);
+    for(const BYTE *src = buffer; src < bufEnd;) {
+      infoArray.set(i++, *(src++));
+    }
+  }
+
+  // save decompressed format
+  ByteOutputFile          file(m_keydef.getDecompressedFileName());
+  ByteCounter             outputCounter;
+  CountedByteOutputStream out(outputCounter, file);
+
+  DecompressedHeader      header(info); // some parts undefined. define it below and rewrite it
+  BitSetIndex             wpIndex(wpSet);
+  BitSetIndex             npIndex(npSet);
+
+  header.save(out);
+  header.m_wpIndexAddress     = outputCounter.getCount();
+  wpIndex.save(out);
+
+  if(bitsPerEntry > 0) {
+    header.m_npIndexAddress   = outputCounter.getCount();
+    npIndex.save(out);
+  }
+  if(hasWhoWinSet) {
+    header.m_whoWinAddress    = outputCounter.getCount();
+    whoWinSet.save(out);
+  }
+  if(bitsPerEntry > 0) {
+    header.m_arrayAddress = outputCounter.getCount();
+    infoArray.save(out);
+  }
+  header.m_bitsPerEntry       = bitsPerEntry;
+  file.seek(0);
+  header.save(file);
+}
+
+void IndexedMap::load() {
+  clear();
+  const String fileName = m_keydef.getDecompressedFileName();
+  DecompressedHeader header(fileName);
+  m_canWinFlags    = header.getCanWinFlags();
+  m_npFlags        = header.getNPFlags();
+  m_wpIndex = new FileBitSetIndex(fileName, header.m_wpIndexAddress);
+  m_npIndex     = new FileBitSetIndex(fileName, header.m_npIndexAddress);
+  if (m_canWinFlags == BOTHCANWIN) {
+    m_whoWinSet = new FileBitSet(fileName, header.m_whoWinAddress);
+  }
+  m_infoArray      = new PackedFileArray(fileName, header.m_arrayAddress);
+}
+
+EndGameResult IndexedMap::get(EndGameKey key) const {
+  if(!isAllocated()) {
+    throwException(_T("%s:Index not loaded"), __TFUNCTION__);
+  }
+  const intptr_t index1 = m_wpIndex->getIndex((size_t)m_keydef.keyToIndex(key));
+  if(index1 < 0) {
+    return EGR_DRAW;
+  } else {
+    Player winner;
+    if(m_canWinFlags == BOTHCANWIN) {
+      winner = m_whoWinSet->contains(index1) ? BLACKPLAYER : WHITEPLAYER;
+    } else {
+      winner = (m_canWinFlags | WHITECANWIN) ? WHITEPLAYER : BLACKPLAYER;
+    }
+    const EndGamePositionStatus status = (winner==WHITEPLAYER) ? EG_WHITEWIN : EG_BLACKWIN;
+    const Player playerInTurn = key.getPlayerInTurn();
+    const Player NPPlayer     = NPGETPLAYER(m_npFlags);
+    if(winner == NPPlayer) {
+      const intptr_t index2 = m_npIndex->getIndex(index1);
+      if(index2 >= 0) {
+        const int info = m_infoArray->get(index2);
+        const int movesToEnd   = (info << 1) | NPGETPARITY(m_npFlags);
+        return EndGameResult(status, (2*movesToEnd) + ((playerInTurn != winner ) ? 1 : 0));
+      }
+    }
+    return EndGameResult(status, 0);
+  }
+}
+
+#endif // NEWCOMPRESSION
 
 #endif // TABLEBASE_BUILDER

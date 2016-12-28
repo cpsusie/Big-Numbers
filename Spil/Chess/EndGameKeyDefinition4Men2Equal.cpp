@@ -120,12 +120,12 @@ EndGamePosIndex EndGameKeyDefinition4Men2Equal::keyToIndex(EndGameKey key) const
   if(!key.kingsOnMainDiag1()) {                                         // kings off maindiag => p2, p3 anywhere
     ENCODE_KK_OFFDIAG(key);
   } else {                                                              // kings on    diag
-    switch(BOOL2MASK(IS_OFFMAINDIAG1, pos2, pos3)) {
+    switch(FBOOL2MASK(IS_OFFMAINDIAG1, pos2, pos3)) {
     case 0: ENCODE_KKP23_ONDIAG(           key  );                      // 2,3   on    diag
     case 1: ENCODE_KKP3_ONDIAG(            key  );                      //   3   on    diag
     case 2: ENCODE_KKP2_ONDIAG(            key  );                      // 2     on    diag
     case 3:                                                             // none  on    diag
-      switch(BOOL2MASK(IS_ABOVEMAINDIAG1, pos2, pos3)) {
+      switch(FBOOL2MASK(IS_ABOVEMAINDIAG1, pos2, pos3)) {
       case 0: ENCODE_KK_ONDIAG_NOFLIP(key    );                         // 2,3   below diag
       case 1: ENCODE_KK_ONDIAG_FLIPi( key,2,3);                         //   3   below diag
       case 2: ENCODE_KK_ONDIAG_FLIPi( key,3,2);                         // 2     below diag

@@ -726,6 +726,9 @@
     <ClCompile Include="..\Chess\EndGame6Men2Pairs.cpp">
       <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\EndGameBuild.cpp">
+      <Filter>EndGames</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">

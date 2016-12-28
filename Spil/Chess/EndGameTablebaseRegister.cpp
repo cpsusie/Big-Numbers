@@ -161,7 +161,7 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRRRK());  // King-Rook-Rook-Rook       / King
 
     // 6 men
-  add(new EndGameKBKBBB());
+  add(new EndGameKBKBBB()); // 3 equal (no pawns)
   add(new EndGameKBKNNN());
   add(new EndGameKBKQQQ());
   add(new EndGameKBKRRR());
@@ -173,7 +173,11 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKQKNNN());
   add(new EndGameKQKQQQ());
   add(new EndGameKQKRRR());
-  add(new EndGameKBBKBB());
+  add(new EndGameKRKBBB());
+  add(new EndGameKRKNNN());
+  add(new EndGameKRKQQQ());
+  add(new EndGameKRKRRR());
+  add(new EndGameKBBKBB()); // 2 pairs (no pawns)
   add(new EndGameKBBKNN());
   add(new EndGameKNNKNN());
   add(new EndGameKQQKBB());
@@ -184,11 +188,7 @@ TablebaseRegister::TablebaseRegister() {
   add(new EndGameKRRKNN());
   add(new EndGameKRRKRR());
   add(new EndGameKQRKBN());
-  add(new EndGameKQRKRR());
-  add(new EndGameKRKBBB());
-  add(new EndGameKRKNNN());
-  add(new EndGameKRKQQQ());
-  add(new EndGameKRKRRR());
+  add(new EndGameKQRKRR()); // 2 equal (no pawns)
 }
 
 TablebaseRegister::~TablebaseRegister() {

@@ -509,14 +509,14 @@ static void decode_kkp2345_ondiag6m3e(EndGameKey &key, EndGamePosIndex index) {
 }
 
 #define ENCODE_KKP23_ONDIAG_NOSWAP(key, i, j)                                                                                     \
-  switch(BOOL2MASK(IS_ABOVEMAINDIAG1, pos##i, pos##j)) {                                                                          \
+  switch(FBOOL2MASK(IS_ABOVEMAINDIAG1, pos##i, pos##j)) {                                                                         \
   case 0: ENCODE_KKP23_ONDIAG_NOFLIP(key,i,j);                                                                                    \
   case 1: ENCODE_KKP23_ONDIAG_FLIPi( key,i,j);                                                                                    \
   case 2: ENCODE_KKP23_ONDIAG_FLIPi( key,j,i);                                                                                    \
   case 3: impossibleEncodingError(key);                                                                                           \
   }
 
-#define ENCODE_KKP23_ONDIAG_PRESWAPi(key,i,j)                                                                                     \
+#define ENCODE_KKP23_ONDIAG_PRESWAPi(key, i, j)                                                                                   \
 { key.swapPos(3,i);                                                                                                               \
   ENCODE_KKP23_ONDIAG_NOSWAP(key,3,j);                                                                                            \
 }
@@ -601,7 +601,7 @@ EndGamePosIndex EndGameKeyDefinition6Men3Equal::keyToIndex(EndGameKey key) const
   } else if(!key.p2OnMainDiag1()) {                                     // kings on    diag
     ENCODE_KK_ONDIAG(key);
   } else {                                                              // kings,p2 on diag
-    switch(BOOL3MASK(IS_OFFMAINDIAG1, pos3, pos4, pos5)) {
+    switch(FBOOL3MASK(IS_OFFMAINDIAG1, pos3, pos4, pos5)) {
     case 0: ENCODE_KKP2345_ONDIAG(           key    );                  // 3,4,5 on    diag
     case 1: ENCODE_KKP245_ONDIAG_PRESWAP(    key    );                  //   4,5 on    diag
     case 2: ENCODE_KKP235_ONDIAG_PRESWAP(    key    );                  // 3,  5 on    diag
@@ -610,7 +610,7 @@ EndGamePosIndex EndGameKeyDefinition6Men3Equal::keyToIndex(EndGameKey key) const
     case 5: ENCODE_KKP23_ONDIAG_PRESWAPi(    key,4,5);                  //   4   on    diag
     case 6: ENCODE_KKP23_ONDIAG_NOSWAP(      key,4,5);                  // 3     on    diag
     case 7:                                                             // none  on    diag
-      switch(BOOL3MASK(IS_ABOVEMAINDIAG1, pos3, pos4, pos5)) {
+      switch(FBOOL3MASK(IS_ABOVEMAINDIAG1, pos3, pos4, pos5)) {
       case 0: ENCODE_KKP2_ONDIAG_NOFLIP(key      );                     // 3,4,5 below diag
       case 1: ENCODE_KKP2_ONDIAG_FLIPi( key,3,4,5);                     //   4,5 below diag
       case 2: ENCODE_KKP2_ONDIAG_FLIPi( key,4,3,5);                     // 3,  5 below diag
@@ -746,7 +746,7 @@ void EndGameKeyDefinition6Men3Equal::scanPositions(EndGameKeyWithOccupiedPositio
         for(int pi5 = 0; pi5 < ARRAYSIZE(s_offDiagIndexToPos); pi5++) {
           const int pos5 = s_offDiagIndexToPos[pi5];
           if(key.isOccupied(pos5)) continue;
-          switch(BOOL3MASK(IS_BELOWMAINDIAG1, pos3, pos4, pos5)) {
+          switch(FBOOL3MASK(IS_BELOWMAINDIAG1, pos3, pos4, pos5)) {
           case 0: continue; // none  below  3,4,5 above. skip
           case 1:           // 3     below    4,5 above. => pi3 > max(mirrorDiag1(pi4), mirrorDiag1(pi4)) and
             if(pos5 < pos4) { // Must have pos5 > pos4

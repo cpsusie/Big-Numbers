@@ -235,11 +235,8 @@ void _set3OffDiagPosFlipij(EndGameKey &key, EndGamePosIndex &addr, EndGamePosInd
 
 #define LENGTH_RANGETABLE3EQUAL(table) SUMSUM1TO(ARRAYSIZE(table))
 
-#define BOOL2MASK(f, x, y   ) ((f(x)?1:0) | (f(y)?2:0))
-#define BOOL3MASK(f, x, y, z) (BOOL2MASK(f, x, y) | (f(z)?4:0))
-
-#define KEYBOOL2MASK(key, f, i, j)    BOOL2MASK(f, key.getPosition(i), key.getPosition(j))
-#define KEYBOOL3MASK(key, f, i, j, k) BOOL3MASK(f, key.getPosition(i), key.getPosition(j), key.getPosition(k))
+#define KEYBOOL2MASK(key, f, i, j)    FBOOL2MASK(f, key.getPosition(i), key.getPosition(j))
+#define KEYBOOL3MASK(key, f, i, j, k) FBOOL3MASK(f, key.getPosition(i), key.getPosition(j), key.getPosition(k))
 
 
 // ---------------------------------------- Without pawns ----------------------------------------

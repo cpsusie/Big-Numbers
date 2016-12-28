@@ -143,7 +143,11 @@ DecompressJob::DecompressJob(const EndGameTablebaseList &list) {
   setSelectedLanguageForThread();
   m_jobQueue.addAll(list);
   m_jobQueueStartSize = (USHORT)m_jobQueue.size();
+#ifdef _DEBUG
+  const int cpuCount = 1;
+#else
   const int cpuCount = getProcessorCount();
+#endif // _DEBUG
   for (int i = 0; i < cpuCount; i++) {
     m_threadArray.add(new DecompressThread(m_jobQueue));
   }

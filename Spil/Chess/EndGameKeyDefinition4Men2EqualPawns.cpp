@@ -39,7 +39,7 @@ EndGameKeyDefinition4Men2EqualPawns::EndGameKeyDefinition4Men2EqualPawns(PieceKe
 EndGamePosIndex EndGameKeyDefinition4Men2EqualPawns::keyToIndex(EndGameKey key) const {
   UINT pos2 = key.getPosition(2);
   UINT pos3 = key.getPosition(3);
-  switch(BOOL2MASK(IS_KINGSIDE, pos2, pos3)) {
+  switch(FBOOL2MASK(IS_KINGSIDE, pos2, pos3)) {
   case 0: ENCODE_NOFLIP(key  );                         // 2,3 queenside
   case 1: ENCODE_FLIPi( key,2,3);                       //   3 queenside
   case 2: ENCODE_FLIPi( key,3,2);                       // 2   queenside

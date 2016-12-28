@@ -273,7 +273,7 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
       for(int i = 0; i < PAWN_POSCOUNT; i++) {
         const int pos4 = s_pawnIndexToPos[i];
         if(key.isOccupied(pos4)) continue;
-        switch(BOOL2MASK(IS_QUEENSIDE, pos3, pos4)) {
+        switch(FBOOL2MASK(IS_QUEENSIDE, pos3, pos4)) {
         case 0: // 2 queenside, 3, 4 kingside => pi2 > max(mirrorCol(pos3), mirrorCol(pos4))
           if(pos4 < pos3) { // 3, 4 kingside. Must have pos4 > pos3
             continue;
