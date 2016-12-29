@@ -15,14 +15,14 @@ public:
   }
 };
 
-class ProgressContainer {
+class ProgressProvider {
 public:
   virtual double getPercentDone() const = 0; // must return [0..100]
 };
 
 class TimeEstimator : private QueueList<_TimePctLogPoint>, private TimeoutHandler {
 private:
-  const ProgressContainer &m_progressContainer;
+  const ProgressProvider  &m_progressProvider;
   Timestamp                m_time0;
   double                   m_sumx,m_sumx2,m_sumy,m_sumxy;
   double                   m_a, m_b;
@@ -41,7 +41,7 @@ private:
   }
   double getTimeEstimate() const;
 public:
-  TimeEstimator(const ProgressContainer &progressContainer);
+  TimeEstimator(const ProgressProvider &progressProvider);
   ~TimeEstimator() {
     m_timer.stopTimer();
   }

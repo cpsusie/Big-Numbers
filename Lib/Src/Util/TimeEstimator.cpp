@@ -1,8 +1,8 @@
 #include "pch.h"
 #include <TimeEstimator.h>
 
-TimeEstimator::TimeEstimator(const ProgressContainer &progressContainer) 
-: m_progressContainer(progressContainer)
+TimeEstimator::TimeEstimator(const ProgressProvider &progressProvider)
+: m_progressProvider(progressProvider)
 , m_timer(1)
 , m_timeoutCount(0)
 {
@@ -15,7 +15,7 @@ void TimeEstimator::logTimeAndPct() {
   m_gate.wait();
 
   const Timestamp now;
-  const double    pctDone = m_progressContainer.getPercentDone();
+  const double    pctDone = m_progressProvider.getPercentDone();
   const size_t    n       = size();
   if(n == 0) {
     m_time0 = now;

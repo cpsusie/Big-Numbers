@@ -553,7 +553,7 @@ const void *IndexedMapEntry::key() const {
 
 class IndexedMapEntryIterator;
 
-class IndexedMapEntryIterator : public AbstractIterator, public ProgressContainer {
+class IndexedMapEntryIterator : public AbstractIterator, public ProgressProvider {
 private:
   IndexedMapEntryIterator &operator=(const IndexedMapEntryIterator &src); // not implemented
 protected:
