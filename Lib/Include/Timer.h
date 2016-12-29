@@ -24,6 +24,7 @@ public:
   inline int getId() const {
     return m_id;
   }
-  int getTimeout() const;
+  void setTimeout(int msec, bool repeatTimeout); // do nothing, if !timer.isRunning()
+  int  getTimeout() const;
   bool isRunning() const;
 };

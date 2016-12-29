@@ -1,23 +1,25 @@
 #include "pch.h"
 #include <Timer.h>
 
-#define KILLED          0x01
-#define REPEAT_TIMEOUT  0x02
-#define HANDLER_ACTIVE  0x04
+#define KILLED                 0x01
+#define REPEAT_TIMEOUT         0x02
+#define HANDLER_ACTIVE         0x04
+#define SETTIMEOUT_PENDING     0x08
 
-#define ISKILLED()        (m_state & KILLED         )
-#define ISREPEATTIMEOUT() (m_state & REPEAT_TIMEOUT )
-#define ISHANDLERACTIVE() (m_state & HANDLER_ACTIVE )
+#define ISKILLED()             (m_state & KILLED            )
+#define ISREPEATTIMEOUT()      (m_state & REPEAT_TIMEOUT    )
+#define ISHANDLERACTIVE()      (m_state & HANDLER_ACTIVE    )
+#define ISSETTIMEOUT_PENDING() (m_state & SETTIMEOUT_PENDING)
 
 class TimerThread : private Thread {
 private:
   Timer          &m_timer;
   Semaphore       m_timeout, m_stateSem;
-  unsigned char   m_state;
-  const int       m_msec; // msec
+  BYTE            m_state;
+  int             m_msec; // msec
   TimeoutHandler &m_handler;
-  void setFlag(unsigned char flag);
-  void clrFlag(unsigned char flag);
+  void setFlag(BYTE flag);
+  void clrFlag(BYTE flag);
 public:
   TimerThread(Timer *timer, int msec, TimeoutHandler &handler, bool repeatTimeout);
   ~TimerThread();
@@ -26,6 +28,7 @@ public:
   inline bool isKilled() const {
     return (m_state & KILLED) != 0;
   }
+  void setTimeout(int msec, bool repeatTimeout);
   inline int getTimeout() const {
     return m_msec;
   }
@@ -56,13 +59,29 @@ void TimerThread::kill() {
   }
 }
 
-void TimerThread::setFlag(unsigned char flags) {
+void TimerThread::setTimeout(int msec, bool repeatTimeout) {
+  m_stateSem.wait();
+
+  if(repeatTimeout) {
+    m_state |= REPEAT_TIMEOUT;
+  } else {
+    m_state &= ~REPEAT_TIMEOUT;
+  }
+  m_msec = msec;
+  if(!ISHANDLERACTIVE()) {
+    m_state |= SETTIMEOUT_PENDING;
+    m_timeout.signal();
+  }
+  m_stateSem.signal();
+}
+
+void TimerThread::setFlag(BYTE flags) {
   m_stateSem.wait();
   m_state |=  flags;
   m_stateSem.signal();
 }
 
-void TimerThread::clrFlag(unsigned char flags) {
+void TimerThread::clrFlag(BYTE flags) {
   m_stateSem.wait();
   m_state &= ~flags;
   m_stateSem.signal();
@@ -75,7 +94,10 @@ UINT TimerThread::run() {
     if(ISKILLED()) {
       break;
     }
-
+    if(ISSETTIMEOUT_PENDING()) {
+      clrFlag(SETTIMEOUT_PENDING);
+      continue;
+    }
     setFlag(HANDLER_ACTIVE);
     m_handler.handleTimeout(m_timer);
     clrFlag(HANDLER_ACTIVE);
@@ -136,4 +158,14 @@ int Timer::getTimeout() const {
 
   m_gate.signal();
   return result;
+}
+
+void Timer::setTimeout(int msec, bool repeatTimeout) {
+  m_gate.wait();
+
+  if(m_thread && !m_thread->isKilled()) {
+    m_thread->setTimeout(msec, repeatTimeout);
+  }
+
+  m_gate.signal();
 }
