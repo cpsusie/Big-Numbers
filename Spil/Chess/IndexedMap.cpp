@@ -2,7 +2,7 @@
 #include <ByteFile.h>
 #include <CountedByteStream.h>
 #include <BitStream.h>
-#include <Date.h>
+#include <TimeEstimator.h>
 #include "IndexedMap.h"
 
 #ifndef NEWCOMPRESSION
@@ -551,16 +551,23 @@ const void *IndexedMapEntry::key() const {
 
 // ---------------------------IndexedMapEntryIterator------------------------------------------------------------------
 
-class IndexedMapEntryIterator : public AbstractIterator {
+class IndexedMapEntryIterator;
+
+class IndexedMapEntryIterator : public AbstractIterator, public ProgressContainer {
+private:
+  IndexedMapEntryIterator &operator=(const IndexedMapEntryIterator &src); // not implemented
 protected:
   EndGameResult       *m_firstElement, *m_lastElement;
   EndGameResult       *m_current;
   IndexedMapEntry      m_entry;
   const UINT64         m_length;
   const Timestamp      m_startTime;
+  TimeEstimator       *m_timeEstimator;
   bool                 m_odd;
+  IndexedMapEntryIterator(const IndexedMapEntryIterator &src);
 public:
   IndexedMapEntryIterator(IndexedMap &map);
+  ~IndexedMapEntryIterator();
   bool hasNext() const {
     return m_current <= m_lastElement;
   }
@@ -577,16 +584,21 @@ public:
     return diff(m_startTime, Timestamp(), TMILLISECOND);
   }
 
-  double getMilliSecondsRemaining() const;
+  inline double getMilliSecondsRemaining() const {
+    return m_timeEstimator->getMilliSecondsRemaining();
+  }
 };
 
 IndexedMapEntryIterator::IndexedMapEntryIterator(IndexedMap &map)
-: m_entry(map)
+: m_entry(       map                                  )
 , m_firstElement((EndGameResult*)map.getFirstElement())
-, m_lastElement( (EndGameResult*)map.getLastElement())
-, m_length(map.size()*2)
+, m_lastElement( (EndGameResult*)map.getLastElement() )
+, m_length(      map.size()*2                         )
+, m_odd(         true                                 )
 {
-  for(m_odd = true, m_current = m_firstElement+1;; m_odd = false, m_current = m_firstElement) {
+  m_current = m_firstElement+1;
+  m_timeEstimator = new TimeEstimator(*this);
+  for(;; m_odd = false, m_current = m_firstElement) {
     for(; m_current <= m_lastElement; m_current+=2) {
       if(m_current->exists()) return;
     }
@@ -594,14 +606,20 @@ IndexedMapEntryIterator::IndexedMapEntryIterator(IndexedMap &map)
   }
 }
 
-double IndexedMapEntryIterator::getMilliSecondsRemaining() const {
-  const double pct = getPercentDone();
-  if(pct < 0.15) {
-    return 600000;
-  } else if(pct >= 100) {
-    return 0;
-  }
-  return getMilliSecondsUsed() / pct * (100.0-pct);
+IndexedMapEntryIterator::IndexedMapEntryIterator(const IndexedMapEntryIterator &src)
+: m_entry(       src.m_entry       )
+, m_firstElement(src.m_firstElement)
+, m_lastElement( src.m_lastElement )
+, m_current(     src.m_current     )
+, m_length(      src.m_length      )
+, m_startTime(   src.m_startTime   )
+, m_odd(         src.m_odd         )
+{
+  m_timeEstimator = new TimeEstimator(*this);
+}
+
+IndexedMapEntryIterator::~IndexedMapEntryIterator() {
+  delete m_timeEstimator;
 }
 
 UINT64 EndGameEntryIterator::getCount() {
