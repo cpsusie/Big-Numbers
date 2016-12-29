@@ -75,19 +75,8 @@ void TablebaseInfo::load(BigEndianInputStream &s) {
 }
 #endif // NEWCOMPRESSION
 
-#define WBWIDTH(n) (2*(n)+1)
 
-#define POSITIONWIDTH    14
-#define INDEXSIZEWIDTH   14
-#define UNDEFINEDWIDTH   11
-#define STALEMATEWIDTH   10
-#define MATEPOSWIDTH      9
-#define WINNERPOSWIDTH   14
-#define TERMPOSWIDTH     11
-#define NTPOSWIDTH       14
-#define MAXVARWIDTH       7
-#define VERSIONWIDTH      5
-
+#ifdef TABLEBASE_BUILDER
 static const TCHAR *POSITIONSTR     = _T("Positions");
 static const TCHAR *INDEXSIZESTR    = _T("Indexsize");
 static const TCHAR *UNDEFINEDSTR    = _T("Undefined");
@@ -156,7 +145,7 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
                                ,MAXVARWIDTH    , MAXVARSTR
                                ,VERSIONWIDTH   , VERSIONSTR
                                );
-      const String h2 = format(_T("%s %s %*s %*s %s")
+      const String h2 = format(_T("%s %s %*s %s")
                               ,FILLER(POSITIONWIDTH + INDEXSIZEWIDTH + UNDEFINEDWIDTH + STALEMATEWIDTH + 3)
                               ,wbHeader2(WINNERPOSWIDTH).cstr()
                               ,MAXVARWIDTH, plies ? _T("(plies)") : _T("(moves)")
@@ -178,7 +167,7 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   switch(f) {
   case TBIFORMAT_PRINT_TERMINALS:
     return format(_T("Undef:%*s Checkmates:(%s) Stalemates:%*s Term:(%s)")
-                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions      ).cstr()
+                 ,POSITIONWIDTH, format1000(m_undefinedPositions      ).cstr()
                  ,m_checkMatePositions.toString(  _T(','), MATEPOSWIDTH).cstr()
                  ,STALEMATEWIDTH, format1000(m_stalematePositions      ).cstr()
                  ,m_terminalWinPositions.toString(_T(','), TERMPOSWIDTH).cstr()
@@ -186,8 +175,8 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
 
   case TBIFORMAT_PRINT_NONTERMINALS:
     return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Term:(%s) Win:(%s) MaxVar:%s")
-                 ,POSITIONWIDTH , format1000(m_totalPositions    ).cstr()
-                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,POSITIONWIDTH, format1000(m_totalPositions    ).cstr()
+                 ,POSITIONWIDTH, format1000(m_undefinedPositions).cstr()
                  ,PERCENT(m_undefinedPositions, m_totalPositions )
                  ,(m_checkMatePositions + m_terminalWinPositions ).toString(_T(','), WINNERPOSWIDTH).cstr()
                  ,m_nonTerminalWinPositions.toString(_T(','), NTPOSWIDTH).cstr()
@@ -196,8 +185,8 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
 
   case TBIFORMAT_PRINT_UNDEFANDWINS:
     return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Win:(%s)")
-                 ,POSITIONWIDTH,  format1000(m_totalPositions    ).cstr()
-                 ,UNDEFINEDWIDTH, format1000(m_undefinedPositions).cstr()
+                 ,POSITIONWIDTH, format1000(m_totalPositions    ).cstr()
+                 ,POSITIONWIDTH, format1000(m_undefinedPositions).cstr()
                  ,PERCENT(m_undefinedPositions, m_totalPositions )
                  ,getWinnerPositionCount().toString(_T(','), WINNERPOSWIDTH).cstr()
                  );
@@ -229,6 +218,43 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   }
 }
 
+#define FORMATMAXVARIANT(v,plies) ((v) ? format(_T("%*d"), MAXVARFLDWIDTH, plies ? v : PLIESTOMOVES(v)).cstr() : _T("---"))
+
+String TablebaseInfo::formatMaxVariants(bool plies) const {
+  return format(_T("%s/%s")
+               ,FORMATMAXVARIANT(m_maxPlies.m_count[WHITEPLAYER], plies)
+               ,FORMATMAXVARIANT(m_maxPlies.m_count[BLACKPLAYER], plies)
+               );
+}
+
+int TablebaseInfo::getDataStringLength(TablebaseInfoStringFormat format) { // static
+  switch(format) {
+  case TBIFORMAT_PRINT_COLUMNS1:
+    return POSITIONWIDTH 
+         + INDEXSIZEWIDTH
+         + UNDEFINEDWIDTH
+         + STALEMATEWIDTH
+         + WBWIDTH(MATEPOSWIDTH)
+         + WBWIDTH(TERMPOSWIDTH)
+         + WBWIDTH(NTPOSWIDTH  )
+         + MAXVARWIDTH
+         + VERSIONWIDTH
+         + 9; // 1 extra space for each field
+  case TBIFORMAT_PRINT_COLUMNS2:
+    return POSITIONWIDTH 
+         + INDEXSIZEWIDTH
+         + UNDEFINEDWIDTH
+         + STALEMATEWIDTH
+         + WBWIDTH(WINNERPOSWIDTH)
+         + MAXVARWIDTH
+         + VERSIONWIDTH
+         + 7; // 1 extra space for each field
+  default                      :
+    return 0;
+  }
+}
+#endif // TABLEBASE_BUILDER
+
 PositionCount64 TablebaseInfo::getWinnerPositionCount() const {
   return m_checkMatePositions + m_terminalWinPositions + m_nonTerminalWinPositions;
 }
@@ -237,15 +263,6 @@ UINT64 TablebaseInfo::getWinnerPositionCount(Player winner) const {
   return m_checkMatePositions.m_count[winner]
        + m_terminalWinPositions.m_count[winner]
        + m_nonTerminalWinPositions.m_count[winner];
-}
-
-#define FORMATMAXVARIANT(v,plies) ((v) ? format(_T("%3d"), plies ? v : PLIESTOMOVES(v)).cstr() : _T("---"))
-
-String TablebaseInfo::formatMaxVariants(bool plies) const {
-  return format(_T("%3s/%3s")
-               ,FORMATMAXVARIANT(m_maxPlies.m_count[WHITEPLAYER], plies)
-               ,FORMATMAXVARIANT(m_maxPlies.m_count[BLACKPLAYER], plies)
-               );
 }
 
 #ifdef NEWCOMPRESSION

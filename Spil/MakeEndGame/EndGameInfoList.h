@@ -37,15 +37,17 @@ typedef unsigned int SortField;
 
 class EndGameInfoList : public Array<EndGameInfo> {
 private:
-  __int64    m_totalRawSize, m_totalCompressedSize;
+  __int64    m_totalPositions, m_totalRawSize, m_totalCompressedSize;
   const bool m_printAsPlies;
   StringArray m_errors;
+  // only defined for TBIFORMAT_PRINT_COLUMNS1/2
+  static int getLineLength(TablebaseInfoStringFormat format);
 public:
   EndGameInfoList(const EndGameTablebaseList &tablebaseList, IntArray &workSet, bool printAsPlies);
   EndGameInfoList &sort(SortField sf, bool reverseSort);
   bool add(const EndGameInfo &info);
-  String getHeaderString(TablebaseInfoStringFormat f) const;
+  String getHeaderString( TablebaseInfoStringFormat f) const;
   String getSummaryString(TablebaseInfoStringFormat f) const;
-  String toString(TablebaseInfoStringFormat f, bool includeErrors) const;
+  String toString(        TablebaseInfoStringFormat f, bool includeErrors) const;
 };
 

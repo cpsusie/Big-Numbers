@@ -451,11 +451,11 @@ void EndGameTablebase::checkInitialSetupFlags() {
 #define ENDLOOP_VERBOSE(m) m('\n')
 
 #define GENERATEFORWARD_VERBOSE(eosCh)                                    \
-{ verbose(_T("It:%3d(%s). Position:%11s/%-11s (%6.2lf%%). %s%c")          \
+{ verbose(_T("It:%3d(%s). Position:%*s/%-*s (%6.2lf%%). %s%c")            \
          ,iteration                                                       \
          ,it.getProgressStr().cstr()                                      \
-         ,format1000(m_positionsAnalyzed).cstr()                          \
-         ,format1000(m_info.m_totalPositions).cstr()                      \
+         ,POSITIONWIDTH, format1000(m_positionsAnalyzed).cstr()           \
+         ,POSITIONWIDTH, format1000(m_info.m_totalPositions).cstr()       \
          ,PERCENT(m_positionsAnalyzed, m_info.m_totalPositions)           \
          ,m_info.toString(TBIFORMAT_PRINT_TERMINALS).cstr()               \
          ,eosCh                                                           \
@@ -502,16 +502,16 @@ void EndGameTablebase::generateAllForwardPositions() {
   saveAllForwardPositions();
 }
 
-#define GENERATE_RETRO_VERBOSE(eosCh)                         \
-{ verbose(_T("It:%d.%d. Position:%11s/%-11s  %s. %s%c")       \
-         ,mainIteration                                       \
-         ,innerIteration                                      \
-         ,format1000(positionCount).cstr()                    \
-         ,format1000(m_info.m_totalPositions).cstr()          \
-         ,it.getProgressStr().cstr()                          \
-         ,m_info.toString(TBIFORMAT_PRINT_TERMINALS).cstr()   \
-         ,eosCh                                               \
-         );                                                   \
+#define GENERATE_RETRO_VERBOSE(eosCh)                               \
+{ verbose(_T("It:%d.%d. Position:%*s/%-*s  %s. %s%c")               \
+         ,mainIteration                                             \
+         ,innerIteration                                            \
+         ,POSITIONWIDTH, format1000(positionCount).cstr()           \
+         ,POSITIONWIDTH, format1000(m_info.m_totalPositions).cstr() \
+         ,it.getProgressStr().cstr()                                \
+         ,m_info.toString(TBIFORMAT_PRINT_TERMINALS).cstr()         \
+         ,eosCh                                                     \
+         );                                                         \
 }
 
 void EndGameTablebase::generateAllRetroPositions() {
@@ -750,7 +750,7 @@ void EndGameTablebase::findDTM() {
 }
 
 #define UNRAVEL_VERBOSE(eosCh)                                  \
-{ verbose(_T("%s:%3d %s %s New win:%s   %c")                    \
+{ verbose(_T("%s:%3d %s %s New win:%s%c")                       \
          ,EndGameKeyDefinition::getMetricName()                 \
          ,pliesToEnd                                            \
          ,it.getProgressStr().cstr()                            \
@@ -1000,7 +1000,7 @@ StartLoop0:
 { verbose(_T("Fix plies forward    :%3d     %s %s Modified:%11s (%s)%c")          \
          ,iteration                                                               \
          ,it.getProgressStr().cstr()                                              \
-         ,spaceString(getInfoLength(),'.').cstr()                                 \
+         ,getDottedLine()                                                         \
          ,format1000(changedPositions).cstr()                                     \
          ,loopChangeCount.toString('/').cstr()                                    \
          ,eosCh                                                                   \
@@ -1011,7 +1011,7 @@ StartLoop0:
 { verbose(_T("Fix plies retro      :%3d.%-3d %s %s Modified:%11s (%s)%c")         \
          ,iteration ,retroIteration                                               \
          ,it.getProgressStr().cstr()                                              \
-         ,spaceString(getInfoLength(),'.').cstr()                                 \
+         ,getDottedLine()                                                         \
          ,format1000(changedPositions).cstr()                                     \
          ,loopChangeCount.toString('/').cstr()                                    \
          ,eosCh                                                                   \
@@ -1528,6 +1528,11 @@ bool EndGameTablebase::isUsableMove(const Move &m) const {
   }
 }
 
+const TCHAR *EndGameTablebase::getDottedLine() {
+  static String line = spaceString(getInfoLength(),_T('.'));
+  return line.cstr();
+}
+
 int EndGameTablebase::getInfoLength() const {
   if(m_infoLength == 0) {
     m_infoLength = (int)m_info.toString(TBIFORMAT_PRINT_UNDEFANDWINS).length();
@@ -1706,12 +1711,14 @@ void EndGameTablebase::listPositionCount(FILE *f) {
   _ftprintf(f, _T("Total %s\n"), total.toString().cstr());
 }
 
-#define CONSISTENCYCHECK_VERBOSE(eosCh)         \
-{ verbose(_T("%s...%s%c")                       \
-         ,msg                                   \
-         ,it.getProgressStr().cstr()            \
-         ,eosCh                                 \
-         );                                     \
+#define CONSISTENCYCHECK_VERBOSE(eosCh)                                 \
+{ static const String dotString = spaceString(40-_tcslen(msg),_T('.')); \
+  verbose(_T("%s%s%s%c")                                                \
+         ,msg                                                           \
+         ,dotString.cstr()                                              \
+         ,it.getProgressStr().cstr()                                    \
+         ,eosCh                                                         \
+         );                                                             \
 }
 
 bool EndGameTablebase::checkConsistency(UINT flags) {
@@ -1797,7 +1804,8 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
 
 CheckHeader:
   if(flags & CHECK_HEADER) {
-    verbose(_T("Checking header information..."));
+    const TCHAR *msg = _T("Checking header information");
+    verbose(_T("%s%s"), msg, spaceString(40-_tcslen(msg),_T('.')).cstr());
     const MaxVariantCount maxPlies = findMaxPlies();
     if(m_info.m_maxPlies != maxPlies) {
       verbose(_T("\nHeader.maxVariantlength = [%s] <> calculated maxVariantlength = [%s].\n")

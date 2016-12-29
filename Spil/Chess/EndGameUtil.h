@@ -197,14 +197,6 @@ public:
   String toString(const Game &game, MoveStringFormat mf, bool depthInPlies);
 };
 
-typedef enum {
-  TBIFORMAT_PRINT_TERMINALS
- ,TBIFORMAT_PRINT_NONTERMINALS
- ,TBIFORMAT_PRINT_UNDEFANDWINS
- ,TBIFORMAT_PRINT_COLUMNS1
- ,TBIFORMAT_PRINT_COLUMNS2
-} TablebaseInfoStringFormat;
-
 class WrongVersionException : public Exception {
 public:
   WrongVersionException(const TCHAR *msg) : Exception(msg) {
@@ -308,7 +300,32 @@ typedef BYTE NotPrunedFlags;
 #define NPFLAGS(player,parity) ((NotPrunedFlags)(((player)<<1) | (parity)))
 #define NPGETPLAYER(npf)       ((Player)(((npf)>>1)&1))
 #define NPGETPARITY(npf)       ((npf)&1)
-#endif
+#endif // NEWCOMPRESSION
+
+#ifdef TABLEBASE_BUILDER
+typedef enum {
+  TBIFORMAT_PRINT_TERMINALS
+ ,TBIFORMAT_PRINT_NONTERMINALS
+ ,TBIFORMAT_PRINT_UNDEFANDWINS
+ ,TBIFORMAT_PRINT_COLUMNS1
+ ,TBIFORMAT_PRINT_COLUMNS2
+} TablebaseInfoStringFormat;
+
+#define WBWIDTH(n) (2*(n)+1)
+
+#define POSITIONWIDTH    14
+#define INDEXSIZEWIDTH   14
+#define UNDEFINEDWIDTH   11
+#define STALEMATEWIDTH   10
+#define MATEPOSWIDTH      9
+#define WINNERPOSWIDTH   14
+#define TERMPOSWIDTH     11
+#define NTPOSWIDTH       13
+#define MAXVARFLDWIDTH    3
+#define MAXVARWIDTH       WBWIDTH(MAXVARFLDWIDTH)
+#define VERSIONWIDTH      5
+
+#endif // TABLEBASE_BUILDER
 
 class TablebaseInfo {
 private:
@@ -340,8 +357,6 @@ public:
   void save(BigEndianOutputStream &s) const;
   void load(BigEndianInputStream  &s);
 #endif
-  String toString(TablebaseInfoStringFormat f, bool plies = true) const;
-  static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
 
   UINT64 getCheckMatePositions() const {
     return m_checkMatePositions.getTotal();
@@ -373,6 +388,13 @@ public:
   static String getProgramVersion() {
     return s_programVersion;
   }
+
+#ifdef TABLEBASE_BUILDER
+  // only defined for TBIFORMAT_PRINT_COLUMNS1/2
+  static int getDataStringLength(TablebaseInfoStringFormat format);
+  static String getColumnHeaders(TablebaseInfoStringFormat f, const String &headerLeft, const String &headerRight, bool plies);
+  String toString(TablebaseInfoStringFormat f, bool plies = true) const;
+#endif // TABLEBASE_BUILDER
 };
 
 class StreamProgress : public ByteCounter, public TimeoutHandler {

@@ -263,6 +263,7 @@ private:
   static void metricError(const TCHAR *method);                                                       // throw Exception
 
   int  getInfoLength() const;
+  const TCHAR *getDottedLine();
   EndGameResult &setAsStaleMatePosition(EndGameResult &result) {
     return setAsTerminalPosition(result, EG_DRAW, 0);
   }
