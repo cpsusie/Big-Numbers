@@ -21,6 +21,14 @@ DataPoint::DataPoint(const Point2D &p) {
   w = 1;
 }
 
+String DataPoint::toString() const {
+  return format(_T("(%s,%s,%s)")
+               ,::toString(x).cstr()
+               ,::toString(y).cstr()
+               ,::toString(w).cstr()
+               );
+}
+
 Polynomial::Polynomial(int degree) {
   m_coef.setDimension(degree+1);
 }
@@ -152,7 +160,7 @@ Polynomial Polynomial::dfdx() const {
   return result.trimLeadingZeroes();
 }
 
-// Devides the Polynomial p(x) by (x-root). That is Polynomial-division
+// Divides the Polynomial p(x) by (x-root). That is Polynomial-division
 Polynomial& Polynomial::operator/=(const Complex &root) {
   Complex q = m_coef[getDegree()];
   Polynomial newPoly(getDegree()-1);

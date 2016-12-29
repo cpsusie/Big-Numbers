@@ -13,6 +13,7 @@ public:
   DataPoint();
   DataPoint(const Real &x, const Real &y, const Real &w = 1);
   DataPoint(const Point2D &p);
+  String toString() const;
 };
 
 class AbstractDataFit : public Function {
