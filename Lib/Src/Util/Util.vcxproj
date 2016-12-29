@@ -365,6 +365,7 @@
     <ClInclude Include="..\..\Include\TextRect.h" />
     <ClInclude Include="..\..\Include\TextWin.h" />
     <ClInclude Include="..\..\Include\Thread.h" />
+    <ClInclude Include="..\..\Include\TimeEstimator.h" />
     <ClInclude Include="..\..\Include\TimeMeasure.h" />
     <ClInclude Include="..\..\Include\Timer.h" />
     <ClInclude Include="..\..\Include\TinyBitSet.h" />
@@ -570,6 +571,7 @@
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="ThreadPoolThread.cpp" />
     <ClCompile Include="Time.cpp" />
+    <ClCompile Include="TimeEstimator.cpp" />
     <ClCompile Include="TimeMeasure.cpp" />
     <ClCompile Include="TimePacker.cpp" />
     <ClCompile Include="Timer.cpp" />
