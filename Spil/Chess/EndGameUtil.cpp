@@ -166,7 +166,7 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
 String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
   switch(f) {
   case TBIFORMAT_PRINT_TERMINALS:
-    return format(_T("Undef:%*s Checkmates:(%s) Stalemates:%*s Term:(%s)")
+    return format(_T("Udef:%*s Checkmates:(%s) Stalemates:%*s Tm:(%s)")
                  ,POSITIONWIDTH, format1000(m_undefinedPositions      ).cstr()
                  ,m_checkMatePositions.toString(  _T(','), MATEPOSWIDTH).cstr()
                  ,STALEMATEWIDTH, format1000(m_stalematePositions      ).cstr()
@@ -174,7 +174,7 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                  );
 
   case TBIFORMAT_PRINT_NONTERMINALS:
-    return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Term:(%s) Win:(%s) MaxVar:%s")
+    return format(_T("Ps:%*s Udef:%*s(%5.2lf%%) Tm:(%s) Win:(%s) MaxVar:%s")
                  ,POSITIONWIDTH, format1000(m_totalPositions    ).cstr()
                  ,POSITIONWIDTH, format1000(m_undefinedPositions).cstr()
                  ,PERCENT(m_undefinedPositions, m_totalPositions )
@@ -184,7 +184,7 @@ String TablebaseInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                  );
 
   case TBIFORMAT_PRINT_UNDEFANDWINS:
-    return format(_T("Pos:%*s Undef:%*s (%5.2lf%%) Win:(%s)")
+    return format(_T("Ps:%*s Udef:%*s(%5.2lf%%) Win:(%s)")
                  ,POSITIONWIDTH, format1000(m_totalPositions    ).cstr()
                  ,POSITIONWIDTH, format1000(m_undefinedPositions).cstr()
                  ,PERCENT(m_undefinedPositions, m_totalPositions )
