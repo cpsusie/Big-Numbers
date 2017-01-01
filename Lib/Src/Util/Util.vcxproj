@@ -479,6 +479,7 @@
     <ClCompile Include="InputInt64.cpp" />
     <ClCompile Include="InputPassword.cpp" />
     <ClCompile Include="InputThread.cpp" />
+    <ClCompile Include="InterruptableRunnable.cpp" />
     <ClCompile Include="isatty.cpp" />
     <ClCompile Include="KeepAlive.cpp" />
     <ClCompile Include="KeyPressed.cpp" />

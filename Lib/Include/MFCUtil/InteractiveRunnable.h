@@ -12,37 +12,17 @@
 #define IR_SHOWPROGRESSMSG    0x20
 #define IR_SHOWPERCENT        0x40
 
-class InteractiveRunnable : public Runnable {
+class InteractiveRunnable : public InterruptableRunnable {
 private:
-  char      m_flags;
   Timestamp m_jobStartTime;
-
-  void setInterrupted() {
-    m_flags |= 2;
-  }
-  void setSuspended() {
-    m_flags |= 1;
-  }
-  void clrSuspended() {
-    m_flags &= ~1;
-  }
 
   USHORT getAvgSubProgressPercent();
 
   friend class ProgressWindow;
   friend class CProgressDlg;
 public:
-  InteractiveRunnable() {
-    m_flags = 0;
-  }
-  inline bool isSuspended() const {
-    return m_flags & 1;
-  }
-  inline bool isInterrupted() const {
-    return (m_flags & 2) != 0;
-  }
-  inline char isSuspendOrCancelButtonPressed() const {
-    return m_flags;
+  inline bool isSuspendOrCancelButtonPressed() const {
+    return isInterruptedOrSuspended();
   }
   virtual USHORT getMaxProgress() {                    // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
     return 0;
