@@ -27,7 +27,8 @@ BigEndianOutputStream &BigEndianOutputStream::operator<<(const BitSet &s) {
 BigEndianInputStream &BigEndianInputStream::operator>>(BitSet &s) {
   UINT64 capacity;
   *this >> capacity;
-  s.setCapacity(capacity);
+  CHECKUINT64ISVALIDSIZET(capacity);
+  s.setCapacity((size_t)capacity);
 #if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
   m_in.getBytesForced((BYTE*)s.getFirstAtom(), s.getAtomCount() * sizeof(BitSet::Atom));
 #else
