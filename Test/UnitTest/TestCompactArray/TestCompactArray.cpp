@@ -488,7 +488,7 @@ namespace TestCompactArray {
 
     TEST_METHOD(CompactArrayMeasureSort) {
       OUTPUT(_T("%7s SortTime (compare1)"), _T("Size"));
-      for (int size = 100; size < 3000000; size *= 1.07) {
+      for (int size = 100; size < 300000; size *= 1.07) {
         CompactArrayType a;
         for (int i = 0; i < size; i++) {
           a.add(CompactArrayElement(randInt(2 * size)));
@@ -499,7 +499,7 @@ namespace TestCompactArray {
         OUTPUT(_T("%7d %.3lf"), size, (getProcessTime() - start) / 1000000);
 
         for (size_t i = 1; i < a.size(); i++) {
-          if (comparator.compare(a[i - 1], a[i]) > 0) {
+          if (comparator.compare(a[i-1], a[i]) > 0) {
             OUTPUT(_T("Array not sorted. a[%d] = %d, a[%d] = %d"), i - 1, a[i - 1].n, i, a[i].n);
             verify(false);
           }
@@ -507,7 +507,7 @@ namespace TestCompactArray {
       }
 
       OUTPUT(_T("%7s SortTime (quickSort(compare3)"), _T("Size"));
-      for (int size = 100; size < 3000000; size *= 1.07) {
+      for (int size = 100; size < 300000; size *= 1.07) {
         CompactArrayElement *a = new CompactArrayElement[size];
         for (int i = 0; i < size; i++) {
           a[i] = randInt(2 * size);
@@ -518,7 +518,7 @@ namespace TestCompactArray {
         OUTPUT(_T("%7d %.3lf"), size, (getProcessTime() - start) / 1000000);
 
         for (int i = 1; i < size; i++) {
-          if (comparator.compare(a[i - 1], a[i]) > 0) {
+          if (comparator.compare(a[i-1], a[i]) > 0) {
             OUTPUT(_T("Array not sorted. a[%d] = %d, a[%d] = %d"), i - 1, a[i - 1].n, i, a[i].n);
             verify(false);
           }
