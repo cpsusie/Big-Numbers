@@ -7,6 +7,10 @@
 
 class Thread;
 
+HANDLE getCurrentThreadHandle(); // call DuplicateHandle(GetCurrentThread())
+                                 // returned Handle should be closed with CloseHandle()
+                                 // after use. Throw Exception on failure
+
 class UncaughtExceptionHandler {
 public:
   virtual void uncaughtException(Thread &thread, Exception &e) = 0;

@@ -676,6 +676,9 @@
     <ClCompile Include="InterruptableRunnable.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
+    <ClCompile Include="GetCurrentThreadHandle.cpp">
+      <Filter>Source Files\Process</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
