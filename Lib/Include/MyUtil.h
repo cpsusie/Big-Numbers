@@ -35,7 +35,8 @@ void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);
 String getMessageName(int msg);
 
 #define DEBUGTRACE debugLogLine(_T(__FILE__), __LINE__)
-
+#define ENTERFUNC  debugLog(_T("Enter %s\n"), __TFUNCTION__)
+#define LEAVEFUNC  debugLog(_T("Leave %s\n"), __TFUNCTION__)
 bool getDebuggerPresent();
 
 void *xmalloc(UINT n);
