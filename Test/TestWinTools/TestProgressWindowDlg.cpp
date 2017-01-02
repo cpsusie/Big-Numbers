@@ -48,8 +48,8 @@ BEGIN_MESSAGE_MAP(CTestProgressWindowDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestProgressWindowDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
-    return TRUE;
+  CDialog::OnInitDialog();
+  return TRUE;
 }
 
 class SomeJob : public InteractiveRunnable {
@@ -108,19 +108,15 @@ USHORT SomeJob::getSubProgressPercent(UINT i) {
 
 UINT SomeJob::run() {
   bool warningDone = false;
-  HANDLE thr = GetCurrentThread();
   for(;m_timeDoneMsec < m_totalMsec;) {
     if(isInterrupted()) {
       break;
     }
     if(isSuspended()) {
-      if((SuspendThread(thr) < 0) && !warningDone) {
-        AfxMessageBox(getLastErrorText().cstr(), MB_ICONWARNING);
-        warningDone = true;
-      }
+      suspend();
     }
     for(int i = 0; i < 1000000; i++);
-    m_timeDoneMsec = getThreadTime(thr);
+    m_timeDoneMsec = getThreadTime();
   }
   return 0;
 }

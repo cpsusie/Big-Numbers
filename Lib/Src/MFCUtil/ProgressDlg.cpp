@@ -15,6 +15,7 @@ CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &j
 , m_jobToDo(jobToDo)
 , m_updateRate(updateRate)
 , m_supportedFeatures(jobToDo.getSupportedFeatures())
+, m_timerRunning(false)
 {
   m_accelTable      = NULL;
 }
@@ -180,9 +181,7 @@ int CProgressDlg::moveControlsBelowUp(CWnd *win, int dh) {
 
 void CProgressDlg::OnCancel() {
   m_jobToDo.setInterrupted();
-  if(m_jobToDo.isSuspended()) {
-    resumeJob();
-  }
+  startTimer();
 }
 
 void CProgressDlg::OnButtonSuspend() {
@@ -194,9 +193,8 @@ void CProgressDlg::OnButtonSuspend() {
 }
 
 void CProgressDlg::resumeJob() {
-  m_jobToDo.clrSuspended();
-  m_thread.resume();
   setWindowText(getSuspendButton(), loadString(_IDC_BUTTONSUSPEND));
+  m_jobToDo.resume();
   startTimer();
 }
 
@@ -245,11 +243,18 @@ CStatic *CProgressDlg::getStaticTimeEstimate() {
 }
 
 void CProgressDlg::startTimer() {
-  SetTimer(1, m_updateRate, NULL);
+  if(!m_timerRunning) {
+    if(SetTimer(1, m_updateRate, NULL) == 1) {
+      m_timerRunning = true;
+    }
+  }
 }
 
 void CProgressDlg::stopTimer() {
-  KillTimer(1);
+  if(m_timerRunning) {
+    KillTimer(1);
+    m_timerRunning = false;
+  }
 }
 
 static String formatSeconds(double sec) {
@@ -326,7 +331,7 @@ void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
   }
   if(!m_thread.stillActive()) {
     setWaitCursor(false);
-    OnOK();
+    EndDialog(IDOK);
   }
   CDialog::OnTimer(nIDEvent);
 }

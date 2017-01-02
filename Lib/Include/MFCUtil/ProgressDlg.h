@@ -40,6 +40,7 @@ private:
   InteractiveRunnable &m_jobToDo;
   const UINT           m_updateRate;
   const int            m_supportedFeatures;
+  bool                 m_timerRunning;
   USHORT               m_jobCount;
   RollingAverageQueue  m_rollingAverage;
   String               m_timeElapsedLabel, m_timeRemaingLabel;
