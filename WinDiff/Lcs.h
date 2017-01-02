@@ -157,20 +157,20 @@ extern LcsComparator *stdLcsComparator;
 
 class IndexComparator : public Comparator<LcsElement> {
 protected:
-  LcsComparator &m_c;
-  CompareSubJob *m_subJob;
-  size_t         m_compareCount;
+  LcsComparator         &m_c;
+  InterruptableRunnable *m_runnable;
+  size_t                 m_compareCount;
   inline void incrCompareCount() {
     if((++m_compareCount & 0x3ff) == 0) {
-      m_subJob->checkInterruptAndSuspendFlags();
+      m_runnable->checkInterruptAndSuspendFlags();
     }
   }
 public:
   IndexComparator(LcsComparator &c) : m_c(c) {
     m_compareCount = 0;
   }
-  inline void setSubJob(CompareSubJob *subJob) {
-    m_subJob = subJob;
+  inline void setRunnable(InterruptableRunnable *runnable) {
+    m_runnable = runnable;
   }
   AbstractComparator *clone() const {
     return new IndexComparator(m_c);

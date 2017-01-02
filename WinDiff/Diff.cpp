@@ -84,7 +84,7 @@ static UINT getLineCount(const String &s) {
   return count;
 }
 
-void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la, CompareSubJob *subJob) const {
+void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
   String tmp;
   if(filter.hasDocFilter()) {
     tmp = filter.docFilter(buf);
@@ -107,11 +107,11 @@ void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la,
     if((nl > cp) && (*(nl-1) == _T('\r'))) {
       *(nl-1) = 0;
       la.add(cp);
-      { if(((la.size() & CHECK_INTERVAL) == 0) && subJob) subJob->checkInterruptAndSuspendFlags(); }
+      { if(((la.size() & CHECK_INTERVAL) == 0) && runnable) runnable->checkInterruptAndSuspendFlags(); }
     } else {    
       *nl = 0;
       la.add(cp);
-      { if(((la.size() & CHECK_INTERVAL) == 0) && subJob) subJob->checkInterruptAndSuspendFlags(); }
+      { if(((la.size() & CHECK_INTERVAL) == 0) && runnable) runnable->checkInterruptAndSuspendFlags(); }
     }
     if(*(cp = nl + 1) == _T('\r')) {
       cp++;
@@ -120,7 +120,7 @@ void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la,
   la.updateCapacity();
 }
 
-void DiffDoc::readFile(DiffFilter &filter, LineArray &la, CompareSubJob *subJob) const {
+void DiffDoc::readFile(DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
   FileContent content(m_name);
   m_lastReadTime = STAT(m_name).st_mtime;
   m_fileSize     = (UINT)content.size();
@@ -135,7 +135,7 @@ void DiffDoc::readFile(DiffFilter &filter, LineArray &la, CompareSubJob *subJob)
 
   String buf = content.converToString();
   content.clear();
-  processBuffer(buf.cstr(), filter, la, subJob);
+  processBuffer(buf.cstr(), filter, la, runnable);
 }
 
 time_t DiffDoc::getLastModifiedTime() const {
@@ -149,13 +149,13 @@ time_t DiffDoc::getLastModifiedTime() const {
   }
 }
 
-void DiffDoc::getLines(DiffFilter &filter, LineArray &la, CompareSubJob *subJob) const {
+void DiffDoc::getLines(DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
   switch(m_type) {
   case DIFFDOC_FILE:
-    readFile(filter, la, subJob);
+    readFile(filter, la, runnable);
     break;
   case DIFFDOC_BUF :
-    processBuffer(m_buf.cstr(), filter, la, subJob);
+    processBuffer(m_buf.cstr(), filter, la, runnable);
     break;
   }
 }

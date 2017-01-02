@@ -169,7 +169,7 @@ public:
   ,m_lineCount(a.size())
   ,m_estimateCompareCount((size_t)ESTIMATED_COMPARECOUNT(a.size()))
   {
-    m_cmp.setSubJob(this);
+    m_cmp.setRunnable(this);
   }
   UINT run() {
 #ifdef MEASURE_STEPTIME
