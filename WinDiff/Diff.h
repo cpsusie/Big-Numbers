@@ -80,8 +80,8 @@ private:
   mutable size_t       m_lineCount;
   mutable UINT         m_fileSize;
   void clear();
-  void processBuffer(const TCHAR *buf,    DiffFilter &filter, LineArray &la) const;
-  void readFile(     DiffFilter &filter, LineArray &la) const;
+  void processBuffer(const TCHAR *buf,    DiffFilter &filter, LineArray &la, CompareSubJob *subJob) const;
+  void readFile(     DiffFilter &filter, LineArray &la, CompareSubJob *subJob) const;
 
 public:
   DiffDoc();
@@ -89,7 +89,7 @@ public:
   ~DiffDoc();
   void setToFile(const TCHAR *fname);
   void setToBuf( const TCHAR *buf  );
-  void getLines(DiffFilter &filter, LineArray &s) const;
+  void getLines(DiffFilter &filter, LineArray &s, CompareSubJob *subJob = NULL) const;
 
   inline const String &getName() const {
     return m_name;

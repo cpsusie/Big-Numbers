@@ -4,9 +4,11 @@
 
 CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare) 
 : m_doc(*doc)
+, m_exe2(NULL)
 , m_recompare(recompare)
 {
   m_sumEstimatedTimeUnits = 0;
+  m_q = 0;
   addStep(0,_T(""));
 }
 
@@ -36,14 +38,14 @@ CompareJob::~CompareJob() {
 }
 
 String CompareJob::getProgressMessage(UINT index) {
-  m_sem.wait();
+  m_gate.wait();
   String result = m_progressMessage;
-  m_sem.signal();
+  m_gate.signal();
   return result;
 }
 
 void CompareJob::updateProgressMessage() {
-  m_sem.wait();
+  m_gate.wait();
 #ifdef MEASURE_STEPTIME
   m_progressMessage = format(_T("Step %2d/%2d (q=%.1lf%%:%s")
                             ,m_currentStep, m_stepArray.size()-1
@@ -53,7 +55,7 @@ void CompareJob::updateProgressMessage() {
   m_progressMessage = format(_T("%s"), m_stepArray[m_currentStep].m_msg);
 #endif
 
-  m_sem.signal();
+  m_gate.signal();
 }
 
 void CompareJob::incrProgress() {
@@ -77,13 +79,26 @@ void CompareJob::incrProgress() {
 
 void CompareJob::setSubProgressPercent(USHORT v) {
   m_subProgressPercent = min(v,100);
-  if(isSuspendOrCancelButtonPressed()) {
-    if(isInterrupted()) {
-      throwException(_T("Compare cancelled by user"));
-    } else if(isSuspended()) {
-      SuspendThread(GetCurrentThread());
+  checkInterruptAndSuspendFlags();
+}
+
+void CompareJob::handleInterruptOrSuspend() {
+  m_gate.wait();
+  if(isInterrupted()) {
+    if(m_exe2) {
+      m_exe2->setBothInterrupted();
+    } else {
+      m_gate.signal();
+      die(_T("Interrupted by user"));
     }
+  } else if(isSuspended()) {
+    if(m_exe2) m_exe2->setBothSuspended();
+    m_gate.signal();
+    suspend();
+    m_gate.wait();
+    if(m_exe2) m_exe2->resumeBoth();
   }
+  m_gate.signal();
 }
 
 void CompareJob::addStep(double estimatedTimeUnits, const TCHAR *msg) {
@@ -92,14 +107,13 @@ void CompareJob::addStep(double estimatedTimeUnits, const TCHAR *msg) {
 }
 
 UINT CompareJob::getEstimatedSecondsLeft() {
-  const double q = (m_timeUnitsDone + m_stepArray[m_currentStep].m_timeUnits * m_subProgressPercent/100) / m_sumEstimatedTimeUnits;
-
-  if(q == 0) {
+  const double q = (m_timeUnitsDone + getCurrentStep().m_timeUnits * m_subProgressPercent/100) / m_sumEstimatedTimeUnits;
+  m_q = minMax(q,0.0,1.0);
+  if(m_q == 0) {
     return 10;
-  } else if(q >= 1) {
+  } else if(m_q >= 1) {
     return 0;
   }
-  m_q = q;
   const double secondsUsed = diff(getJobStartTime(), Timestamp(), TSECOND);
 
   return (UINT)(secondsUsed / q * (1-q));
@@ -125,18 +139,43 @@ UINT CompareJob::run() {
   return 0;
 }
 
-void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {
-  m_job[0]  = &job1;
-  m_job[1]  = &job2;
+void CompareJob::setExecute2(Execute2 *exe2) {
+  m_gate.wait();
+  m_exe2 = exe2;
+  m_gate.signal();
+}
 
-  RunnableArray jobArray(2);
-  jobArray.add(m_job[0]);
-  jobArray.add(m_job[1]);
-  m_compareJob.incrProgress();
-  Timer timer(1);
-  timer.startTimer(300, *this, true);
-  ThreadPool::executeInParallel(jobArray);
-  timer.stopTimer();
+void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {
+  m_job[0] = &job1;
+  m_job[1] = &job2;
+
+  try {
+    m_compareJob.setExecute2(this);
+    RunnableArray jobArray(2);
+    jobArray.add(m_job[0]);
+    jobArray.add(m_job[1]);
+    m_compareJob.incrProgress();
+    Timer timer(1);
+    timer.startTimer(300, *this, true);
+    ThreadPool::executeInParallel(jobArray);
+    timer.stopTimer();
+    m_compareJob.setExecute2(NULL);
+  } catch (...) {
+    m_compareJob.setExecute2(NULL);
+    m_compareJob.setInterrupted();
+  }
+}
+
+void Execute2::setBothSuspended() {
+  for(int i = 0; i < ARRAYSIZE(m_job); i++) m_job[i]->setSuspended();
+}
+
+void Execute2::setBothInterrupted() {
+  for(int i = 0; i < ARRAYSIZE(m_job); i++) m_job[i]->setInterrupted();
+}
+
+void Execute2::resumeBoth() {
+  for(int i = 0; i < ARRAYSIZE(m_job); i++) m_job[i]->resume();
 }
 
 void Execute2::handleTimeout(Timer &timer) {

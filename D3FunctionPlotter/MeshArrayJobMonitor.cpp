@@ -134,7 +134,7 @@ private:
 public:
   MeshBuilderThread(InteractiveRunnable &runnable, MeshArrayJobMonitor &jobs);
   ~MeshBuilderThread();
-  unsigned int run();
+  UINT run();
 };
 
 MeshBuilderThread::MeshBuilderThread(InteractiveRunnable &runnable, MeshArrayJobMonitor &jobs) 
@@ -148,7 +148,7 @@ MeshBuilderThread::~MeshBuilderThread(){
   delete m_meshCreator;
 }
 
-unsigned int MeshBuilderThread::run() {
+UINT MeshBuilderThread::run() {
   double t;
   m_jobs.changeThreadCount(1);
   while(m_jobs.fetchJob(t)) {
@@ -222,7 +222,7 @@ public:
   UINT run();
 };
 
-unsigned int MeshArrayCreator::run() {
+UINT MeshArrayCreator::run() {
   const double stept = m_jobs.m_param.getTimeInterval().getLength() / (m_frameCount-1);
   double       t     = m_jobs.m_param.getTimeInterval().getFrom();
 

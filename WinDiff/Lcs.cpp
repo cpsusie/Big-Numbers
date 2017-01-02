@@ -94,14 +94,14 @@ void Lcs::dumpThresh() {
 // -------------------------------------------------------------------------------------
 
 int IndexComparator::compare(const LcsElement &e1, const LcsElement &e2) {
-  m_compareCount++;
+  incrCompareCount();
   const int c = m_c.compare(e1.m_s, e2.m_s);
   if(c) return c;
   return e1.m_index - e2.m_index;
 }
 
 int IndexComparatorR::compare(const LcsElement &e1, const LcsElement &e2) {
-  m_compareCount++;
+  incrCompareCount();
   const int c = m_c.compare(e1.m_s, e2.m_s);
   if(c) return c;
   return e2.m_index - e1.m_index;
@@ -120,7 +120,6 @@ public:
 int StdLcsComparator::compare(const TCHAR * const &s1, const TCHAR * const &s2) {
   return _tcscmp(s1, s2);
 }
-
 
 static StdLcsComparator stdlcscmp;
 LcsComparator *stdLcsComparator = &stdlcscmp;

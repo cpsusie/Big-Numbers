@@ -27,20 +27,22 @@ public:
 };
 
 class CompareJob : public InteractiveRunnable {
-private:
-  CWinDiffDoc &m_doc;
+  friend class Execute2;
 
+private:
+  CWinDiffDoc                 &m_doc;
+  Execute2                    *m_exe2;
   const bool                   m_recompare;
   USHORT                       m_currentStep;
   USHORT                       m_subProgressPercent;
   String                       m_progressMessage;
   CompactArray<_ProgressStep>  m_stepArray;
   double                       m_sumEstimatedTimeUnits, m_timeUnitsDone, m_q;
-  Semaphore                    m_sem;
+  mutable Semaphore            m_gate;
   Timestamp                    m_stepStartTime;
 
   void updateProgressMessage();
-
+  void setExecute2(Execute2 *exe2);
 public:
   CompareJob(CWinDiffDoc *doc, bool recompare);
   ~CompareJob();
@@ -50,10 +52,7 @@ public:
   }
 
   USHORT getProgress() {
-    return (USHORT)((m_timeUnitsDone 
-                   + m_subProgressPercent/100.0 * getCurrentStep().m_timeUnits
-                    ) / m_sumEstimatedTimeUnits * 1000
-                   );
+    return (USHORT)(m_q * getMaxProgress());
   }
 
   USHORT getSubProgressPercent(UINT index) {
@@ -79,13 +78,13 @@ public:
   void setSubProgressPercent(USHORT v);
 
   void addStep(double estimatedTimeUnits, const TCHAR *msg);
-
   UINT getEstimatedSecondsLeft();
 
   UINT run();
+  void handleInterruptOrSuspend();
 };
 
-class CompareSubJob : public Runnable {
+class CompareSubJob : public InterruptableRunnable {
 public:
   virtual USHORT getProgressPercent() const = 0;
   virtual size_t getWeight() const = 0;
@@ -100,4 +99,7 @@ public:
   }
   void run(CompareSubJob &job1, CompareSubJob &job2);
   void handleTimeout(Timer &timer);
+  void setBothSuspended();
+  void setBothInterrupted();
+  void resumeBoth();
 };

@@ -164,11 +164,12 @@ private:
   const size_t              m_estimateCompareCount;
 public:
   LcsSortJob(CompactArray<LcsElement> &a, IndexComparator &cmp)
-  : m_a(a)
-  , m_cmp(cmp)
+  :m_a(a)
+  ,m_cmp(cmp)
   ,m_lineCount(a.size())
   ,m_estimateCompareCount((size_t)ESTIMATED_COMPARECOUNT(a.size()))
   {
+    m_cmp.setSubJob(this);
   }
   UINT run() {
 #ifdef MEASURE_STEPTIME
