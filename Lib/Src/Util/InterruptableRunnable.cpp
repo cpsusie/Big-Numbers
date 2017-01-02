@@ -8,8 +8,8 @@ void InterruptableRunnable::setInterrupted() {
   }
 }
 
-void InterruptableRunnable::die() {
-  throwException(_T("Interrupted"));
+void InterruptableRunnable::die(const TCHAR *msg) {
+  throwException(_T("%s"), msg ? msg : _T("Interrupted"));
 }
 
 void InterruptableRunnable::resume() {
@@ -24,4 +24,12 @@ void InterruptableRunnable::suspend() {
   CloseHandle(m_thr);
   m_thr = INVALID_HANDLE_VALUE;
   clrSuspended();
+}
+
+void InterruptableRunnable::handleInterruptOrSuspend() {
+  if(isInterrupted()) {
+    die();
+  } else if(isSuspended()) {
+    suspend();
+  }
 }
