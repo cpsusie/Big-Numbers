@@ -57,8 +57,8 @@ BOOL CProgressDlg::OnInitDialog() {
     winSize.cy -= moveControlsBelowUp(&m_newProgressCtrl);
     m_newProgressCtrl.ShowWindow(SW_HIDE);
   } else {
-    m_newProgressCtrl.SetRange(0, m_jobToDo.getMaxProgress());
-    m_newProgressCtrl.SetPos(m_jobToDo.getProgress());
+    m_newProgressCtrl.SetRange(0, 1000);
+    m_newProgressCtrl.SetPos((int)(m_jobToDo.getPercentDone()*10));
   }
   int buttonh;
   bool hasButton = false;
@@ -266,32 +266,10 @@ static String formatSeconds(double sec) {
   }
 }
 
-void RollingAverageQueue::add(double n) {
-  if((UINT)m_queue.size() == m_maxQueueSize) {
-    m_currentSum -= m_queue.get();
-  }
-  m_queue.put(n);
-  m_currentSum += n;
-}
-
-void RollingAverageQueue::decrementMaxSize(UINT amount) {
-  const UINT newMaxSize = (amount >= m_maxQueueSize) ? 1 : m_maxQueueSize - amount;
-  while(m_queue.size() > newMaxSize) {
-    m_currentSum -= m_queue.get();
-  }
-  m_maxQueueSize = newMaxSize;
-}
-
-double RollingAverageQueue::getCurrentAverage() const {
-  return m_queue.size() ? (m_currentSum / m_queue.size()) : 0;
-}
-
 void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
   if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR | IR_SHOWTIMEESTIMATE | IR_SHOWPROGRESSMSG)) {
-    short progress   = 0;
     CompactShortArray subPercent;
     if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR | IR_SHOWTIMEESTIMATE)) {
-      progress = m_jobToDo.getProgress();
       if(m_supportedFeatures & IR_SUBPROGRESSBAR) {
         for(UINT i = 0; i < m_jobCount; i++) {
           subPercent.add(m_jobToDo.getSubProgressPercent(i));
@@ -299,28 +277,26 @@ void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
       }
     }
     if(m_supportedFeatures & (IR_PROGRESSBAR | IR_SUBPROGRESSBAR)) {
-      m_newProgressCtrl.SetPos(m_jobToDo.getProgress());
+      double promilleDone = m_jobToDo.getPercentDone() * 10;
 
       if(m_supportedFeatures & IR_SUBPROGRESSBAR) {
+        double sumSubPercent = 0;
         for(UINT i = 0; i < subPercent.size(); i++) {
-          getSubProgressCtrl(i)->SetPos(subPercent[i]);
+          const SHORT ss = subPercent[i];
+          getSubProgressCtrl(i)->SetPos(ss);
+          sumSubPercent += ss;
+        }
+        if(m_supportedFeatures & IR_AUTOCORRELATETIME) {
+          if(m_jobCount) promilleDone += sumSubPercent/10.0/m_jobCount;
         }
       }
+      m_newProgressCtrl.SetPos((int)promilleDone);
     }
     if(m_supportedFeatures & IR_SHOWTIMEESTIMATE) {
-      const int secondsElapsed = diff(m_jobToDo.getJobStartTime(), Timestamp(), TSECOND);
-      const int secondsLeft    = m_jobToDo.getEstimatedSecondsLeft();
-      if(secondsLeft < 6) {
-        if(m_rollingAverage.getMaxSize() > 5) {
-          m_rollingAverage.decrementMaxSize(1);
-        }
-      }
-      m_rollingAverage.add(secondsLeft);
-      String timeElapsedMsg   = format(_T("%s:%s"), m_timeElapsedLabel.cstr(), formatSeconds(secondsElapsed).cstr());
-      String timeRemainingMsg;
-      if(m_rollingAverage.isFull() || (m_rollingAverage.getCurrentSize() >= 5)) {
-        timeRemainingMsg = format(_T("%s:%s"), m_timeRemaingLabel.cstr(), formatSeconds(m_rollingAverage.getCurrentAverage()).cstr());
-      }
+      const double secondsElapsed   = diff(m_jobToDo.getJobStartTime(), Timestamp(), TSECOND);
+      const double secondsLeft      = m_jobToDo.getSecondsRemaining();
+      const String timeElapsedMsg   = format(_T("%s:%s"), m_timeElapsedLabel.cstr(), formatSeconds(secondsElapsed).cstr());
+      const String timeRemainingMsg = format(_T("%s:%s"), m_timeRemaingLabel.cstr(), formatSeconds(secondsLeft).cstr());
       setWindowText(getStaticTimeEstimate(), format(_T("%s       %s"), timeElapsedMsg.cstr(), timeRemainingMsg.cstr()));
     }
     if(m_supportedFeatures & IR_SHOWPROGRESSMSG) {

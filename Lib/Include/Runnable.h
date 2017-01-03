@@ -9,9 +9,14 @@ class InterruptableRunnable : public Runnable {
 private:
   HANDLE m_thr;
   BYTE   m_flags;
+
+  InterruptableRunnable(           const InterruptableRunnable &); // not implemented. not clonable
+  InterruptableRunnable &operator=(const InterruptableRunnable &); // not implemented
+
   void clrSuspended() {
     m_flags &= ~1;
   }
+
 protected:
   // the next 3 functions should only be called by this (operate on currentthread)
   void die(const TCHAR *msg = NULL);  // throw Exception. If msg = NULL, exception-text is "Interrupted"

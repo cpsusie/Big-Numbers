@@ -204,10 +204,10 @@ public:
   {
   }
 
-  USHORT getMaxProgress() {
+  double getMaxProgress() const {
     return m_frameCount;
   }
-  USHORT getProgress() {
+  double getProgress() const {
     return m_jobs.getJobsDone();
   }
   String getTitle() {

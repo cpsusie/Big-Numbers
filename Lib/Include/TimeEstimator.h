@@ -17,12 +17,12 @@ public:
 
 class ProgressProvider {
 public:
-  virtual double getWorkDone() const = 0; // must return [0..getMaxProgress()]
+  virtual double getProgress() const = 0; // must return [0..getMaxProgress()]
   virtual double getMaxProgress() const {
     return 100.0;
   }
   inline double getPercentDone() const {
-    return PERCENT(getWorkDone(),getMaxProgress());
+    return PERCENT(getProgress(),getMaxProgress());
   }
 };
 

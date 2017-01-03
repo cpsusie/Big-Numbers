@@ -10,7 +10,7 @@
 ProgressWindow::ProgressWindow(CWnd *parent, InteractiveRunnable &jobToDo, UINT delay, UINT updateRate) {
   Thread jobExecutor(jobToDo);
 
-  jobToDo.m_jobStartTime = Timestamp();
+  jobToDo.setStartTime();
   jobExecutor.start();
 
   while(delay) {

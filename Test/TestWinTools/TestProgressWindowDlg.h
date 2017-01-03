@@ -8,6 +8,7 @@ public:
     enum { IDD = IDD_TESTPROGRESSWINDOW_DIALOG };
     BOOL    m_hasMessageBox;
     BOOL    m_hasTimeEstimate;
+    BOOL    m_autoCorrelateEstimate;
     BOOL    m_interruptable;
     BOOL    m_hasProgressBar;
     BOOL    m_showPercent;

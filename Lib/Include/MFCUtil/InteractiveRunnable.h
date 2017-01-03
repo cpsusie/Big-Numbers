@@ -2,6 +2,7 @@
 
 #include <Date.h>
 #include <Runnable.h>
+#include <TimeEstimator.h>
 #include "WinTools.h"
 
 #define IR_PROGRESSBAR        0x01
@@ -9,25 +10,33 @@
 #define IR_INTERRUPTABLE      0x04
 #define IR_SUSPENDABLE        0x08
 #define IR_SHOWTIMEESTIMATE   0x10
-#define IR_SHOWPROGRESSMSG    0x20
-#define IR_SHOWPERCENT        0x40
+#define IR_AUTOCORRELATETIME  0x20
+#define IR_SHOWPROGRESSMSG    0x40
+#define IR_SHOWPERCENT        0x80
 
-class InteractiveRunnable : public InterruptableRunnable {
+class InteractiveRunnable : public InterruptableRunnable, public ProgressProvider {
 private:
-  Timestamp m_jobStartTime;
-
-  USHORT getAvgSubProgressPercent();
+  Timestamp      m_jobStartTime;
+  TimeEstimator *m_timeEstimator;
+  void setStartTime(); // set startTime til now, and if neccessary, allocate m_timeEstimator
+  void cleanup();
+protected:
+  double getAvgSubProgressPercent();
 
   friend class ProgressWindow;
-  friend class CProgressDlg;
 public:
+  InteractiveRunnable() : m_timeEstimator(NULL) {
+  }
+ ~InteractiveRunnable() {
+    cleanup();
+  }
   inline bool isSuspendOrCancelButtonPressed() const {
     return isInterruptedOrSuspended();
   }
-  virtual USHORT getMaxProgress() {                    // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  /*virtual*/ double getMaxProgress() const {                      // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
     return 0;
   }
-  virtual USHORT getProgress() {                       // do. Should return a short in the range [0..getMaxProgress()]
+  /*virtual*/ double getProgress() const {                         // do. Should return a value in the range [0..getMaxProgress()]
     return 0;
   };
   virtual USHORT getJobCount() const {
@@ -45,7 +54,9 @@ public:
   virtual int getSupportedFeatures() {                 // Should return any combination of IR_-constants
     return 0;
   }
-  virtual UINT getEstimatedSecondsLeft();
+  double getSecondsRemaining() const {
+    return m_timeEstimator ? (m_timeEstimator->getMilliSecondsRemaining()/1000) : 0;
+  }
 
   const Timestamp &getJobStartTime() const {
     return m_jobStartTime;

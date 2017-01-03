@@ -8,7 +8,6 @@ CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare)
 , m_recompare(recompare)
 {
   m_sumEstimatedTimeUnits = 0;
-  m_q = 0;
   addStep(0,_T(""));
 }
 
@@ -106,25 +105,11 @@ void CompareJob::addStep(double estimatedTimeUnits, const TCHAR *msg) {
   m_sumEstimatedTimeUnits += estimatedTimeUnits;
 }
 
-UINT CompareJob::getEstimatedSecondsLeft() {
-  const double q = (m_timeUnitsDone + getCurrentStep().m_timeUnits * m_subProgressPercent/100) / m_sumEstimatedTimeUnits;
-  m_q = minMax(q,0.0,1.0);
-  if(m_q == 0) {
-    return 10;
-  } else if(m_q >= 1) {
-    return 0;
-  }
-  const double secondsUsed = diff(getJobStartTime(), Timestamp(), TSECOND);
-
-  return (UINT)(secondsUsed / q * (1-q));
-}
-
 UINT CompareJob::run() {
   try {
     m_currentStep         = 0;
     m_subProgressPercent  = 0;
     m_timeUnitsDone       = 0;
-    m_q                   = 0;
     updateProgressMessage();
 
     if(m_recompare) {

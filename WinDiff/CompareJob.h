@@ -37,7 +37,7 @@ private:
   USHORT                       m_subProgressPercent;
   String                       m_progressMessage;
   CompactArray<_ProgressStep>  m_stepArray;
-  double                       m_sumEstimatedTimeUnits, m_timeUnitsDone, m_q;
+  double                       m_sumEstimatedTimeUnits, m_timeUnitsDone;
   mutable Semaphore            m_gate;
   Timestamp                    m_stepStartTime;
 
@@ -47,12 +47,12 @@ public:
   CompareJob(CWinDiffDoc *doc, bool recompare);
   ~CompareJob();
 
-  USHORT getMaxProgress() {
-    return 1000;
+  double getMaxProgress() const {
+    return m_sumEstimatedTimeUnits;
   }
 
-  USHORT getProgress() {
-    return (USHORT)(m_q * getMaxProgress());
+  double getProgress() const {
+    return m_timeUnitsDone + getCurrentStep().m_timeUnits * m_subProgressPercent/100;
   }
 
   USHORT getSubProgressPercent(UINT index) {
@@ -78,7 +78,6 @@ public:
   void setSubProgressPercent(USHORT v);
 
   void addStep(double estimatedTimeUnits, const TCHAR *msg);
-  UINT getEstimatedSecondsLeft();
 
   UINT run();
   void handleInterruptOrSuspend();

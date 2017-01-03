@@ -11,24 +11,26 @@
 
 CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd* pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent), m_jobCount(0)
 {
-    m_hasMessageBox     = TRUE;
-    m_hasTimeEstimate   = TRUE;
-    m_interruptable     = TRUE;
-    m_hasProgressBar    = TRUE;
-    m_showPercent       = FALSE;
-    m_hasSubProgressBar = FALSE;
-    m_suspendable       = FALSE;
-    m_delayMSec         = 600;
-    m_title             = _T("Some job");
-    m_jobTime           = 10;
-    m_updateRate        = 200;
-    m_jobCount          = 1;
+    m_hasMessageBox         = TRUE;
+    m_hasTimeEstimate       = TRUE;
+    m_autoCorrelateEstimate = FALSE;
+    m_interruptable         = TRUE;
+    m_hasProgressBar        = TRUE;
+    m_showPercent           = FALSE;
+    m_hasSubProgressBar     = FALSE;
+    m_suspendable           = FALSE;
+    m_delayMSec             = 600;
+    m_title                 = _T("Some job");
+    m_jobTime               = 10;
+    m_updateRate            = 200;
+    m_jobCount              = 1;
 }
 
 void CTestProgressWindowDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECKHASMESSAGEBOX, m_hasMessageBox);
   DDX_Check(pDX, IDC_CHECKHASTIMEESTIMATE, m_hasTimeEstimate);
+  DDX_Check(pDX, IDC_CHECKAUTOCORRELATEESTIMATE, m_autoCorrelateEstimate);
   DDX_Check(pDX, IDC_CHECKINTERRUPTABLE, m_interruptable);
   DDX_Check(pDX, IDC_CHECKSUPPORTPROGRESS, m_hasProgressBar);
   DDX_Check(pDX, IDC_CHECKSUPPORTPERCENT, m_showPercent);
@@ -56,8 +58,7 @@ class SomeJob : public InteractiveRunnable {
 private:
   const String       m_title;
   const unsigned int m_supportedFeatures;
-  double             m_timeDoneMsec;
-  double             m_totalMsec;
+  double             m_totalMsec, m_threadMsec;
   USHORT             m_jobCount;
 public:
   SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT m_jobCount);
@@ -66,20 +67,20 @@ public:
     return m_supportedFeatures;
   }
 
+  double getMaxProgress() const {
+    return m_totalMsec;
+  }
+  double getProgress() const;
   USHORT getSubProgressPercent(UINT index);
-  USHORT getProgress();
   USHORT getJobCount() const {
     return m_jobCount;
-  }
-  USHORT getMaxProgress() {
-    return 1000;
   }
   String getTitle() {
     return m_title;
   }
 
   String getProgressMessage(UINT index) {  
-    return format(_T("Job %d:%.1lf/%.0lf sec"), index, m_timeDoneMsec / 1000000, m_totalMsec / 1000000);
+    return format(_T("Job %d:%.1lf/%.0lf sec"), index, m_threadMsec / 1000000, m_totalMsec / 1000000);
   }
   
   UINT run();
@@ -90,25 +91,20 @@ SomeJob::SomeJob(const TCHAR *title, int seconds, UINT supportedFeatures, USHORT
 , m_supportedFeatures(supportedFeatures)
 , m_jobCount(jobCount)
 {
-  m_timeDoneMsec = 0;
   m_totalMsec    = (double)seconds * 1000000;
+  m_threadMsec   = 0;
 }
 
-USHORT SomeJob::getProgress() {
-  if(m_timeDoneMsec >= m_totalMsec) {
-    return getMaxProgress();
-  } else  {
-    return (short)((m_timeDoneMsec * getMaxProgress()) / m_totalMsec);
-  }
+double SomeJob::getProgress() const {
+  return m_threadMsec;
 }
 
 USHORT SomeJob::getSubProgressPercent(UINT i) {
-  return (short)fmod(m_timeDoneMsec / 10000.0,100);
+  return (short)fmod(m_threadMsec / 10000.0,100);
 }
 
 UINT SomeJob::run() {
-  bool warningDone = false;
-  for(;m_timeDoneMsec < m_totalMsec;) {
+  while(m_threadMsec < m_totalMsec) {
     if(isInterrupted()) {
       break;
     }
@@ -116,7 +112,7 @@ UINT SomeJob::run() {
       suspend();
     }
     for(int i = 0; i < 1000000; i++);
-    m_timeDoneMsec = getThreadTime();
+    m_threadMsec = getThreadTime();
   }
   return 0;
 }
@@ -124,13 +120,14 @@ UINT SomeJob::run() {
 void CTestProgressWindowDlg::OnButtonStartJob() {
   UpdateData();
   UINT supportedFeatures = 0;
-  if(m_hasProgressBar   ) supportedFeatures |= IR_PROGRESSBAR;
-  if(m_showPercent      ) supportedFeatures |= IR_SHOWPERCENT;
-  if(m_hasSubProgressBar) supportedFeatures |= IR_SUBPROGRESSBAR;
-  if(m_interruptable    ) supportedFeatures |= IR_INTERRUPTABLE;
-  if(m_suspendable      ) supportedFeatures |= IR_SUSPENDABLE;
-  if(m_hasTimeEstimate  ) supportedFeatures |= IR_SHOWTIMEESTIMATE;
-  if(m_hasMessageBox    ) supportedFeatures |= IR_SHOWPROGRESSMSG;
+  if(m_hasProgressBar       ) supportedFeatures |= IR_PROGRESSBAR;
+  if(m_showPercent          ) supportedFeatures |= IR_SHOWPERCENT;
+  if(m_hasSubProgressBar    ) supportedFeatures |= IR_SUBPROGRESSBAR;
+  if(m_interruptable        ) supportedFeatures |= IR_INTERRUPTABLE;
+  if(m_suspendable          ) supportedFeatures |= IR_SUSPENDABLE;
+  if(m_hasTimeEstimate      ) supportedFeatures |= IR_SHOWTIMEESTIMATE;
+  if(m_autoCorrelateEstimate) supportedFeatures |= IR_AUTOCORRELATETIME;
+  if(m_hasMessageBox        ) supportedFeatures |= IR_SHOWPROGRESSMSG;
 
   SomeJob job(m_title, m_jobTime , supportedFeatures, m_jobCount);
   ProgressWindow wnd(this, job, m_delayMSec, m_updateRate);

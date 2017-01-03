@@ -579,7 +579,7 @@ public:
   double getMaxProgress() const {
     return m_maxProgress;
   }
-  double getWorkDone() const {
+  double getProgress() const {
     return (double)(m_current - m_firstElement + (m_odd?0:m_maxProgress))/2;
   }
 

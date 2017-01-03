@@ -115,11 +115,11 @@ private:
 public:
   DecompressJob(const EndGameTablebaseList &list);
   ~DecompressJob();
-  USHORT getMaxProgress() {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
+  double getMaxProgress() const {         // Only called if getSupportedFeatures() contains IR_PROGRESSBAR, IR_SHOWTIMEESTIMATE or IR_SUBPROGRESSBAR
     return m_jobQueueStartSize;
   }
-  USHORT getProgress() {            // do. Should return a short in the range [0..getMaxProgress()]
-    return (USHORT)(m_jobQueueStartSize - m_jobQueue.size());
+  double getProgress() const {            // do. Should return a short in the range [0..getMaxProgress()]
+    return (m_jobQueueStartSize - m_jobQueue.size());
   };
   USHORT getSubProgressPercent(UINT index) {  // Only called if getSupportedFeatures() contains IR_SUBPROGRESSBAR
     return m_threadArray[index]->getSubProgress();
@@ -134,7 +134,10 @@ public:
     return m_title;
   }
   int getSupportedFeatures() {
-    return IR_PROGRESSBAR | IR_SUBPROGRESSBAR | IR_INTERRUPTABLE | IR_SUSPENDABLE | IR_SHOWPROGRESSMSG;
+    return IR_PROGRESSBAR   | IR_SUBPROGRESSBAR 
+         | IR_INTERRUPTABLE | IR_SUSPENDABLE 
+         | IR_SHOWPROGRESSMSG
+         | IR_AUTOCORRELATETIME;
   }
   UINT run();
 };

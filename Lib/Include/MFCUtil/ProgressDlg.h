@@ -2,37 +2,8 @@
 
 #include <afxcmn.h>			// MFC support for Windows Common Controls
 #include "resource.h"
-#include <Thread.h>
-#include <Date.h>
-#include <QueueList.h>
 #include "InteractiveRunnable.h"
 #include "ProgressWithPctCtrl.h"
-
-class RollingAverageQueue {
-private:
-  QueueList<double> m_queue;
-  UINT              m_maxQueueSize;
-  double            m_currentSum;
-public:
-  RollingAverageQueue(UINT maxQueueSize = 40) : m_maxQueueSize(maxQueueSize) {
-    m_currentSum = 0;
-  };
-  void add(double n);
-  void decrementMaxSize(UINT amount);
-  double getCurrentAverage() const;
-  UINT getCurrentSize() const {
-    return (int)m_queue.size();
-  }
-  UINT getMaxSize() const {
-    return m_maxQueueSize;
-  }
-  bool isFull() const {
-    return getCurrentSize() == m_maxQueueSize;
-  }
-  bool isEmpty() {
-    return m_queue.isEmpty();
-  }
-};
 
 class CProgressDlg : public CDialog {
 private:
@@ -42,7 +13,6 @@ private:
   const int            m_supportedFeatures;
   bool                 m_timerRunning;
   USHORT               m_jobCount;
-  RollingAverageQueue  m_rollingAverage;
   String               m_timeElapsedLabel, m_timeRemaingLabel;
   CProgressWithPctCtrl m_newProgressCtrl;
   HACCEL               m_accelTable;
