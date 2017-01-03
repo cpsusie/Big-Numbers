@@ -18,19 +18,21 @@ UINT ThreadPoolThread::run() {
       m_execute.wait();
       m_requestCount++;
       m_job->run();
-      m_resultQueue->put(NULL);
+      if(m_resultQueue) m_resultQueue->put(NULL);
     } catch(Exception e) {
-      m_resultQueue->put(STRDUP(e.what())); // indicating an error
+      if(m_resultQueue) m_resultQueue->put(STRDUP(e.what())); // indicating an error
     } catch(...) {
-      m_resultQueue->put(STRDUP(format(_T("Unknown exception received in BigRealThread %s"), getName().cstr()).cstr()));
+      if(m_resultQueue) m_resultQueue->put(STRDUP(format(_T("Unknown exception received in BigRealThread %s"), getName().cstr()).cstr()));
     }
+    m_resultQueue = NULL;
+    ThreadPool::releaseThread(this);
   }
   return 0;
 }
 
-void ThreadPoolThread::execute(Runnable &job, ThreadPoolResultQueue &resultQueue) {
+void ThreadPoolThread::execute(Runnable &job, ThreadPoolResultQueue *resultQueue) {
   m_job         = &job;
-  m_resultQueue = &resultQueue;
+  m_resultQueue = resultQueue;
   m_execute.signal();
 }
 

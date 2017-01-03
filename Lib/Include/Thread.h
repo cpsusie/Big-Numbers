@@ -134,7 +134,7 @@ private:
 public:
   ThreadPoolThread(int id);
   UINT run();
-  void execute(Runnable &job, ThreadPoolResultQueue &resultQueue);
+  void execute(Runnable &job, ThreadPoolResultQueue *resultQueue);
 };
 
 template <class T> class PoolIdentifiedResources : public CompactArray<T*> {
@@ -254,6 +254,7 @@ public:
 typedef CompactArray<Runnable*> RunnableArray;
 
 class ThreadPool {
+  friend class ThreadPoolThread;
 private:
   PoolThreadPoolThreads                          m_threadPool;
   PoolIdentifiedResources<ThreadPoolResultQueue> m_queuePool;
@@ -265,8 +266,10 @@ private:
   ThreadPool();
   ThreadPool(const ThreadPool &src);            // not implemented
   ThreadPool &operator=(const ThreadPool &src); // not implemented
+  static void releaseThread(ThreadPoolThread *thr);
 public:
   ~ThreadPool();
+  static void executeNoWait(Runnable &job);           // execute job without blocking. Exceptions are lost
   static void executeInParallel(RunnableArray &jobs); // Blocks until all jobs are done. If any of the jobs throws an exception
                                                       // the rest of the jobs will be terminated and an exception with the same
                                                       // message will be thrown to the caller

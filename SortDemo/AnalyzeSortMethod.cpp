@@ -47,7 +47,7 @@ String MeasureResult::toString() const {
                );
 }
 
-class AnalyzerThread : public Thread, public PropertyChangeListener {
+class SortMethodAnalyzer : public Runnable, public PropertyChangeListener {
 private:
   const SortMethodId  *m_sortMethod;
   InitializeParameters m_parameters;
@@ -56,39 +56,29 @@ private:
   MeasureResult measureSort(const InitializeParameters &parameters);
   void          analyzeSortMethod();
 public:
-  AnalyzerThread(int index);
-  ~AnalyzerThread();
+  SortMethodAnalyzer(const SortMethodId *sortMethod, const InitializeParameters &parameters);
+  ~SortMethodAnalyzer();
   inline bool isWindowTerminated() const {
     return m_windowTerminated;
   }
-  void start(const SortMethodId *sortMethod, const InitializeParameters &parameters);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  unsigned int run();
+  UINT run();
 };
 
-AnalyzerThread::AnalyzerThread(int index) : Thread(format(_T("Analayzer nr. %d"), index)) {
+SortMethodAnalyzer::SortMethodAnalyzer(const SortMethodId *sortMethod, const InitializeParameters &parameters) {
   m_windowTerminated = false;
-  setDeamon(true);
-}
-
-void AnalyzerThread::start(const SortMethodId *sortMethod, const InitializeParameters &parameters) {
-  setDeamon(true);
   m_sortMethod = sortMethod;
   m_parameters = parameters;
-  Thread::start();
 }
 
-AnalyzerThread::~AnalyzerThread() {
+SortMethodAnalyzer::~SortMethodAnalyzer() {
   while(!isWindowTerminated()) {
     m_printer->terminate();
     Sleep(30);
   }
-  while(stillActive()) {
-    Sleep(50);
-  }
 }
 
-void AnalyzerThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+void SortMethodAnalyzer::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   switch(id) {
   case LINEPRINTER_VISIBLE:
     break;
@@ -99,13 +89,13 @@ void AnalyzerThread::handlePropertyChanged(const PropertyContainer *source, int 
   }
 }
 
-unsigned int AnalyzerThread::run() {
+UINT SortMethodAnalyzer::run() {
   m_printer = CLinePrinterThread::newThread(this);
   analyzeSortMethod();
   return 0;
 }
 
-void AnalyzerThread::analyzeSortMethod() {
+void SortMethodAnalyzer::analyzeSortMethod() {
   Array<MeasureResult> data;
   m_printer->setTitle(format(_T("%s - %s element size:%d")
                             ,m_sortMethod->getName().cstr()
@@ -178,7 +168,7 @@ void SortTimeFunction::f() {
   }
 }
 
-MeasureResult AnalyzerThread::measureSort(const InitializeParameters &parameters) {
+MeasureResult SortMethodAnalyzer::measureSort(const InitializeParameters &parameters) {
   int compareCount;
   SortTimeFunction stm(m_sortMethod, parameters, compareCount);
   double timeUsage = measureTime(stm, MEASURE_PROCESSTIME);
@@ -186,40 +176,40 @@ MeasureResult AnalyzerThread::measureSort(const InitializeParameters &parameters
   return MeasureResult(parameters.m_elementCount, compareCount, timeUsage*1000);
 }
 
-class ThreadPool {
+class AnalyzerPool {
 private:
-  CompactArray<AnalyzerThread*> m_threadArray;
+  CompactArray<SortMethodAnalyzer*> m_analyzerArray;
 public:
-  void startThread(const SortMethodId *sortMethod, const InitializeParameters &parameters);
-  ~ThreadPool();
-  void pruneDoneThreads();
+  void startAnalyzer(const SortMethodId *sortMethod, const InitializeParameters &parameters);
+  ~AnalyzerPool();
+  void pruneDone();
 };
 
-ThreadPool::~ThreadPool() {
-  for(size_t i = 0; i < m_threadArray.size(); i++) {
-    delete m_threadArray[i];
+AnalyzerPool::~AnalyzerPool() {
+  for(size_t i = 0; i < m_analyzerArray.size(); i++) {
+    delete m_analyzerArray[i];
   }
-  m_threadArray.clear();
+  m_analyzerArray.clear();
 }
 
-void ThreadPool::pruneDoneThreads() {
-  for(size_t i = m_threadArray.size(); i--;) {
-    AnalyzerThread *thr = m_threadArray[i];
-    if(thr->isWindowTerminated()) {
-      delete thr;
-      m_threadArray.remove(i);
+void AnalyzerPool::pruneDone() {
+  for(size_t i = m_analyzerArray.size(); i--;) {
+    SortMethodAnalyzer *sma = m_analyzerArray[i];
+    if(sma->isWindowTerminated()) {
+      delete sma;
+      m_analyzerArray.remove(i);
     }
   }
 }
 
-void ThreadPool::startThread(const SortMethodId *sortMethod, const InitializeParameters &parameters) {
-  AnalyzerThread *newThread = new AnalyzerThread((int)m_threadArray.size());
-  m_threadArray.add(newThread);
-  newThread->start(sortMethod, parameters);
+void AnalyzerPool::startAnalyzer(const SortMethodId *sortMethod, const InitializeParameters &parameters) {
+  SortMethodAnalyzer *sma = new SortMethodAnalyzer(sortMethod, parameters);
+  m_analyzerArray.add(sma);
+  ThreadPool::executeNoWait(*sma);
 }
 
 void analyzeSortMethod(const SortMethodId *sortMethod, const InitializeParameters &parameters) {
-  static ThreadPool pool;
-  pool.pruneDoneThreads();
-  pool.startThread(sortMethod, parameters);
+  static AnalyzerPool pool;
+  pool.pruneDone();
+  pool.startAnalyzer(sortMethod, parameters);
 }

@@ -47,6 +47,13 @@ void ThreadPool::setPriorityBoost(bool disablePriorityBoost) { // static
   instance.m_gate.signal();
 }
 
+void ThreadPool::executeNoWait(Runnable &job) {
+  ThreadPool &instance = getInstance();
+  instance.m_gate.wait();  // get exclusive access to ThreadPool
+  instance.m_threadPool.fetchResource()->execute(job, NULL);
+  instance.m_gate.signal(); // open gate for other threads
+}
+
   // Blocks until all jobs are done. If any of the jobs throws an exception
   // the rest of the jobs will be terminated and an exception with the same
   // message will be thrown to the caller
@@ -63,31 +70,28 @@ void ThreadPool::executeInParallel(RunnableArray &jobs) { // static
   }
   ThreadPoolResultQueue *queue = instance.m_queuePool.fetchResource();
   for(size_t i = 0; i < jobs.size(); i++) {
-    threadArray[i]->execute(*jobs[i], *queue);
+    threadArray[i]->execute(*jobs[i], queue);
   }
   instance.m_gate.signal(); // open gate for other threads
 
   try {
     queue->waitForResults(jobs.size());
     instance.m_gate.wait();
-
-    for(size_t i = 0; i < threadArray.size(); i++) {
-      instance.m_threadPool.releaseResource(threadArray[i]);
-    }
     instance.m_queuePool.releaseResource(queue);
-
     instance.m_gate.signal();
   } catch(...) {
     instance.m_gate.wait();
-
-    for(size_t i = 0; i < threadArray.size(); i++) {
-      instance.m_threadPool.releaseResource(threadArray[i]);
-    }
     instance.m_queuePool.releaseResource(queue);
-
     instance.m_gate.signal();
     throw;
   }
+}
+
+void ThreadPool::releaseThread(ThreadPoolThread *thread) { // static
+  ThreadPool &instance = getInstance();
+  instance.m_gate.wait();
+  instance.m_threadPool.releaseResource(thread);
+  instance.m_gate.signal();
 }
 
 String ThreadPool::toString() { // static
