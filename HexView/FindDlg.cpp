@@ -69,8 +69,7 @@ SearchThread::SearchThread(SearchMachine &job) : Thread(job, _T("SearchThread"))
 
 SearchThread::~SearchThread() {
   m_quit = true;
-  m_job.interrupt();
-  resume();
+  m_job.setInterrupted();
   while(stillActive()) {
     Sleep(20);
   }
@@ -142,7 +141,7 @@ void CFindDlg::OnFindNext() {
     m_searchMachine.prepareSearch(forwardSearch, -1, (LPCTSTR)m_findWhat);
     m_searchThread->resume();
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
-    p->SetRange(0, m_searchMachine.getMaxProgress());
+    p->SetRange(0, (int)m_searchMachine.getMaxProgress());
     p->SetPos(0);
     startTimer();
   } catch(Exception e) {
@@ -173,7 +172,7 @@ void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
 
 void CFindDlg::OnCancel() {
   if(m_timerIsRunning) {
-    m_searchMachine.interrupt();
+    m_searchMachine.setInterrupted();
   } else {
     CDialog::OnCancel();
   }

@@ -34,7 +34,6 @@ SearchMachine::SearchMachine() {
   m_startPosition = 0;
   m_byteContainer = NULL;
   m_finished      = true;
-  m_interrupted   = false;
   m_size          = 0;
   m_fileIndex     = 0;
 }
@@ -55,7 +54,6 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
   }
   m_size          = m_byteContainer->getSize();
   m_finished      = false;
-  m_interrupted   = false;
   m_result.clear();
   m_resultMessage = _T("");
 }
@@ -63,7 +61,7 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
 UINT SearchMachine::run() {
   try {
     if((m_result = doSearch()).isEmpty()) {
-      m_resultMessage = m_interrupted
+      m_resultMessage = isInterrupted()
                       ? _T("Interrupted by user") 
                       : format(_T("Bytesequence <%s> not found"), 
                                 SearchPattern(m_findWhat).toString().cstr());
@@ -77,12 +75,8 @@ UINT SearchMachine::run() {
   return 0;
 }
 
-void SearchMachine::interrupt() {
-  m_interrupted = true;
-}
-
-USHORT SearchMachine::getProgress() {
-  const short maxValue = getMaxProgress();
+double SearchMachine::getProgress() const {
+  const double maxValue = getMaxProgress();
   if(m_forwardSearch) {
     const double total = (double)m_size - m_startPosition;
     return total ? (USHORT)(((double)(m_fileIndex - m_startPosition)*maxValue) / total) : maxValue;
@@ -106,7 +100,7 @@ AddrRange SearchMachine::doSearch() {
     sbc.fseek(m_startPosition);
     size_t headSize = 0;
     BYTE   buffer[0x10000];
-    for(m_fileIndex = m_startPosition; !m_interrupted;) {
+    for(m_fileIndex = m_startPosition; !isInterrupted();) {
       const int bytesRead = sbc.fread(sizeof(buffer) - (int)headSize, buffer + headSize);
       if(bytesRead == 0) {
         break;
@@ -126,7 +120,7 @@ AddrRange SearchMachine::doSearch() {
     intptr_t tailSize = 0;
     BYTE buffer[0x10000];
     bool BOF = false; // beginning_of_file
-    for(__int64 addr = m_startPosition + patternLength-1; addr >= (__int64)patternLength && !m_interrupted;) { // could be a match begining at m_startPosition-1
+    for(__int64 addr = m_startPosition + patternLength-1; addr >= (__int64)patternLength && !isInterrupted();) { // could be a match begining at m_startPosition-1
       const intptr_t bufferCapacity = ARRAYSIZE(buffer) - tailSize;
                      m_fileIndex    = addr - bufferCapacity;
       intptr_t       bytesNeeded    = bufferCapacity;

@@ -34,7 +34,6 @@ private:
   ByteContainer *m_byteContainer;
 
   bool           m_finished;
-  bool           m_interrupted;
   AddrRange      m_result;
   String         m_resultMessage;
   __int64        m_size;
@@ -62,9 +61,8 @@ public:
   }
 // ---------------------- Functions to implement InteractiveRunnable ---------------
   UINT run();
-  void interrupt();
-  USHORT getProgress();
-  USHORT getMaxProgress() {
+  double getProgress() const;
+  double getMaxProgress() const {
     return 1000;
   }
   String getTitle() {
@@ -78,11 +76,6 @@ public:
   bool isSet() const {
     return m_findWhat.length() > 0;
   }
-
-  bool isInterrupted() const {
-    return m_interrupted;
-  }
-
   bool isFinished() const {
     return m_finished;
   }
