@@ -12,9 +12,9 @@
 #define CHESSPLATFORM "x64/"
 #endif
 #ifdef _DEBUG
-#define CHESSCONF "Debug/"
+#define CHESSCONF "TablebaseBuilderDebug/"
 #else
-#define CHESSCONF "Release/"
+#define CHESSCONF "TablebaseBuilderRelease/"
 #endif
 
 #pragma comment(lib, CHESSLIBPATH CHESSPLATFORM CHESSCONF "Chesslib.lib")
