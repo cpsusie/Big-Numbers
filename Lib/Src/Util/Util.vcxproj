@@ -321,6 +321,7 @@
     <ClInclude Include="..\..\Include\HashMap.h" />
     <ClInclude Include="..\..\Include\HashSet.h" />
     <ClInclude Include="..\..\Include\InputThread.h" />
+    <ClInclude Include="..\..\Include\InterruptableRunnable.h" />
     <ClInclude Include="..\..\Include\Iterator.h" />
     <ClInclude Include="..\..\Include\KMPAutomate.h" />
     <ClInclude Include="..\..\Include\Language.h" />

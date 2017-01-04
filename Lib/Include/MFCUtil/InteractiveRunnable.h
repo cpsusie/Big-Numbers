@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Date.h>
-#include <Runnable.h>
+#include <InterruptableRunnable.h>
 #include <TimeEstimator.h>
 #include "WinTools.h"
 

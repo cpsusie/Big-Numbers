@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <Thread.h>
+#include <InterruptableRunnable.h>
 
 void InterruptableRunnable::setInterrupted() {
   m_flags |= 2;
