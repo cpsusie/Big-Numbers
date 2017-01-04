@@ -889,6 +889,9 @@
     <ClCompile Include="EndGameBuild.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
+    <ClCompile Include="AttackSetInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Chess.h">

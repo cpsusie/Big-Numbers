@@ -916,6 +916,23 @@ public:
 
 #endif
 
+class AttackSetInfo {
+public:
+  BYTE     m_pos;
+  FieldSet m_leftRow                    , m_rightRow;
+  FieldSet m_lowerCol                   , m_upperCol;
+  FieldSet m_lowerDiag1                 , m_upperDiag1;
+  FieldSet m_lowerDiag2                 , m_upperDiag2;
+  FieldSet m_kingAttacks                , m_knightAttacks;
+  FieldSet m_pawnAttacks[2];
+//FieldSet m_attackingWhitePawnPositions, m_attackingBlackPawnPositions;
+  AttackSetInfo() {}
+  AttackSetInfo(const FieldInfo &info);
+  void dump() const;
+  static void initArray();
+  static AttackSetInfo s_bitBoards[64];
+};
+
 class PlayerStateToPush {
 public:
   FieldAttacks       m_attackTable[64];       // Number of attacking pieces owned by m_player

@@ -358,7 +358,7 @@ BOOL CChessDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
   setControlText(IDD, this);
-
+  AttackSetInfo::initArray();
   buildAndMarkLanguageMenu();
   buildEngineMenues();
 
