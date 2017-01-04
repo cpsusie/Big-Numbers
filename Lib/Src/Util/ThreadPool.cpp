@@ -54,9 +54,19 @@ void ThreadPool::executeNoWait(Runnable &job) {
   instance.m_gate.signal(); // open gate for other threads
 }
 
-  // Blocks until all jobs are done. If any of the jobs throws an exception
-  // the rest of the jobs will be terminated and an exception with the same
-  // message will be thrown to the caller
+ // execute all jobs without blocking. Uncaught exceptions are lost.
+void ThreadPool::executeInParallelNoWait(RunnableArray &jobs) { // static
+  ThreadPool &instance = getInstance();
+  instance.m_gate.wait();  // get exclusive access to ThreadPool
+  for(size_t i = 0; i < jobs.size(); i++) {
+    instance.m_threadPool.fetchResource()->execute(*jobs[i], NULL);
+  }
+  instance.m_gate.signal(); // open gate for other threads
+}
+
+// Blocks until all jobs are done. If any of the jobs throws an exception
+// the rest of the jobs will be terminated and an exception with the same
+// message will be thrown to the caller
 void ThreadPool::executeInParallel(RunnableArray &jobs) { // static 
   if(jobs.size() == 0) {
     return;

@@ -269,10 +269,11 @@ private:
   static void releaseThread(ThreadPoolThread *thr);
 public:
   ~ThreadPool();
-  static void executeNoWait(Runnable &job);           // execute job without blocking. Exceptions are lost
-  static void executeInParallel(RunnableArray &jobs); // Blocks until all jobs are done. If any of the jobs throws an exception
-                                                      // the rest of the jobs will be terminated and an exception with the same
-                                                      // message will be thrown to the caller
+  static void executeNoWait(          Runnable &job);       // Execute job without blocking. Uncaught exceptions are lost.
+  static void executeInParallelNoWait(RunnableArray &jobs); // execute all jobs without blocking. Uncaught exceptions are lost.
+  static void executeInParallel(      RunnableArray &jobs); // Blocks until all jobs are done. If any of the jobs throws an exception
+                                                            // the rest of the jobs will be terminated and an exception with the same
+                                                            // message will be thrown to the caller.
 
   static int  getProcessorCount() {
     return getInstance().m_processorCount;
