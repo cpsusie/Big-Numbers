@@ -19,19 +19,15 @@ private:
   SynchronizedQueue<double>         m_jobQueue;
   SynchronizedQueue<MeshResult>     m_resultQueue;
   int                               m_jobCount;
-  int                               m_threadsRunning;
   mutable Semaphore                 m_gate;
-  Semaphore                         m_done;
   StringArray                       m_errors;
   void clearResultQueue();
 public:
   const MeshArrayJobParameter &m_param;
   MeshArrayJobMonitor(const MeshArrayJobParameter &param)
   : m_param(param)
-  , m_done(0)
   {
     m_jobCount       = 0;
-    m_threadsRunning = 0;
   }
   ~MeshArrayJobMonitor() {
     clearResultQueue();
@@ -45,8 +41,6 @@ public:
   void clearJobQueue();
   bool fetchJob(double &t);
   int  getJobsDone() const;
-  void waitUntilAllDone();
-  void changeThreadCount(int dt);
   MeshArray getResult();
 };
 
@@ -94,19 +88,6 @@ void MeshArrayJobMonitor::clearResultQueue() {
   m_gate.signal();
 }
 
-void MeshArrayJobMonitor::changeThreadCount(int dt) {
-  m_gate.wait();
-  m_threadsRunning += dt;
-  if(m_threadsRunning == 0) {
-    m_done.signal();
-  }
-  m_gate.signal();
-}
-
-void MeshArrayJobMonitor::waitUntilAllDone() {
-  m_done.wait();
-}
-
 static int meshResultCmpByTime(const MeshResult &m1, const MeshResult &m2) {
   return sign(m1.m_t - m2.m_t);
 }
@@ -126,80 +107,26 @@ MeshArray MeshArrayJobMonitor::getResult() {
   return result;
 }
 
-class MeshBuilderThread : public Thread {
+class MeshArrayCreator;
+
+class MeshBuilderWorker : public InterruptableRunnable {
 private:
-  InteractiveRunnable &m_runnable;
-  MeshArrayJobMonitor &m_jobs;
+  MeshArrayCreator    &m_arrayCreator;
   VariableMeshCreator *m_meshCreator;
+  MeshArrayJobMonitor &getJobMonitor();
 public:
-  MeshBuilderThread(InteractiveRunnable &runnable, MeshArrayJobMonitor &jobs);
-  ~MeshBuilderThread();
+  MeshBuilderWorker(MeshArrayCreator &arrayCreator);
+  ~MeshBuilderWorker();
   UINT run();
 };
 
-MeshBuilderThread::MeshBuilderThread(InteractiveRunnable &runnable, MeshArrayJobMonitor &jobs) 
-: m_runnable(runnable)
-, m_jobs(jobs)
-{
-  m_meshCreator = m_jobs.m_param.fetchMeshCreator();
-}
-
-MeshBuilderThread::~MeshBuilderThread(){
-  delete m_meshCreator;
-}
-
-UINT MeshBuilderThread::run() {
-  double t;
-  m_jobs.changeThreadCount(1);
-  while(m_jobs.fetchJob(t)) {
-    if(m_runnable.isInterrupted()) {
-      m_jobs.clearJobQueue();
-      break;
-    }
-    try {
-      m_jobs.addResult(t, m_meshCreator->createMesh(t));
-    } catch(Exception e) {
-      m_jobs.addError(e.what());
-    } catch(...) {
-      m_jobs.addError("Unknown Exception");
-    }
-  }
-  m_jobs.changeThreadCount(-1);
-  return 0;
-}
-
-class WorkerThreadArray :  public CompactArray<MeshBuilderThread*> {
-private:
-  InteractiveRunnable &m_runnable;
-  MeshArrayJobMonitor &m_jobs;
-public:
-  WorkerThreadArray(InteractiveRunnable *runnable, MeshArrayJobMonitor &jobs)
-  : m_runnable(*runnable)
-  , m_jobs(jobs) {
-  }
-  ~WorkerThreadArray();
-  void startNewThread();
-};
-
-void WorkerThreadArray::startNewThread() {
-  add(new MeshBuilderThread(m_runnable, m_jobs));
-  last()->start();
-}
-
-WorkerThreadArray::~WorkerThreadArray() {
-  for(size_t i = 0; i < size(); i++) {
-    delete (*this)[i];
-  }
-  clear();
-}
-
 class MeshArrayCreator : public InteractiveRunnable {
 private:
-  MeshArrayJobMonitor m_jobs;
+  MeshArrayJobMonitor m_jobMonitor;
   const UINT          m_frameCount;
 public:
   MeshArrayCreator(const MeshArrayJobParameter &param)
-  : m_jobs(param)
+  : m_jobMonitor(param)
   , m_frameCount(param.getFrameCount())
   {
   }
@@ -208,7 +135,7 @@ public:
     return m_frameCount;
   }
   double getProgress() const {
-    return m_jobs.getJobsDone();
+    return m_jobMonitor.getJobsDone();
   }
   String getTitle() {
     return "Creating Mesh Array";
@@ -216,26 +143,65 @@ public:
   int getSupportedFeatures() {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE;
   }
+  MeshArrayJobMonitor &getJobMonitor() {
+    return m_jobMonitor;
+  }
   MeshArray getResult() {
-    return m_jobs.getResult();
+    return m_jobMonitor.getResult();
   }
   UINT run();
 };
 
 UINT MeshArrayCreator::run() {
-  const double stept = m_jobs.m_param.getTimeInterval().getLength() / (m_frameCount-1);
-  double       t     = m_jobs.m_param.getTimeInterval().getFrom();
+  const double stept = getJobMonitor().m_param.getTimeInterval().getLength() / (m_frameCount-1);
+  double       t     = getJobMonitor().m_param.getTimeInterval().getFrom();
 
   for(UINT i = 0; i < m_frameCount; i++, t += stept) {
-    m_jobs.addJob(t);
+    m_jobMonitor.addJob(t);
   }
   const int processorCount = getProcessorCount();
-  WorkerThreadArray workers(this, m_jobs);
-  for(int i = 0; i < processorCount; i++) {
-    workers.startNewThread();
+  RunnableArray workerArray;
+  for (int i = 0; i < processorCount; i++) {
+    workerArray.add(new MeshBuilderWorker(*this));
   }
+  ThreadPool::executeInParallel(workerArray);
+  for(size_t i = 0; i < workerArray.size(); i++) {
+    delete workerArray[i];
+  }
+  workerArray.clear();
+  return 0;
+}
 
-  m_jobs.waitUntilAllDone();
+MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator &arrayCreator) 
+: m_arrayCreator(arrayCreator)
+{
+  m_meshCreator = getJobMonitor().m_param.fetchMeshCreator();
+}
+
+MeshBuilderWorker::~MeshBuilderWorker(){
+  delete m_meshCreator;
+}
+
+MeshArrayJobMonitor &MeshBuilderWorker::getJobMonitor() {
+  return m_arrayCreator.getJobMonitor();
+}
+
+UINT MeshBuilderWorker::run() {
+  MeshArrayJobMonitor &jm = getJobMonitor();
+  double t;
+  while(jm.fetchJob(t)) {
+    if(m_arrayCreator.isInterrupted()) {
+      jm.clearJobQueue();
+      break;
+    }
+    try {
+      jm.addResult(t, m_meshCreator->createMesh(t));
+    } catch(Exception e) {
+      jm.addError(e.what());
+    } catch(...) {
+      jm.addError("Unknown Exception");
+    }
+  }
   return 0;
 }
 
