@@ -5,9 +5,10 @@
 
 class FieldSet : public BitSet64 {
 public:
-  FieldSet() {
+  inline FieldSet() {
   }
   explicit FieldSet(int f,...); // terminate with -1
   String toString() const;
+  void dump() const;
 };
 
