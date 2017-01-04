@@ -1008,9 +1008,9 @@ void IndexedMap::decompress(ByteInputStream &s, const TablebaseInfo &info) const
   DecompressedHeader header(info); // parts undefined. defined it below and rewrite it
 
   header.save(out);
-  header.m_bitSetIndexOffset = (UINT)outputCounter.getCount();
+  header.m_bitSetIndexOffset = (UINT)(outputCounter.getCount());
   positionIndex.save(out);
-  header.m_arrayStartOffset  = (UINT)outputCounter.getCount();
+  header.m_arrayStartOffset  = (UINT)(outputCounter.getCount());
   positionInfoArray.save(out);
   header.m_bitsPerEntry      = bitsPerEntry;
   file.seek(0);

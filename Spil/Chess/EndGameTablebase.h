@@ -385,6 +385,8 @@ public:
     return m_positionIndex;
   }
 
+  TablebaseInfo         getInfo() const;
+
 #ifndef TABLEBASE_BUILDER
   static void           decompressAll();
   void                  decompress(ByteCounter *byteCounter = NULL) const;
@@ -396,7 +398,6 @@ public:
   void                  buildDTM();
   bool                  needBuild(bool recover) const;
   String                loadPacked();
-  TablebaseInfo         getInfo() const;
   String                save(    bool convert=false) const;
   String                compress(bool convert=false);
   void                  convert();

@@ -150,6 +150,7 @@ public:
   bool isAllocated() const {
     return m_positionIndex != NULL;
   }
+
   void decompress(ByteInputStream &s, const TablebaseInfo &info) const;
   void clear();
   void load();

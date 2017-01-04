@@ -21,6 +21,9 @@ protected:
   // the next 3 functions should only be called by this (operate on currentthread)
   void die(const TCHAR *msg = NULL);  // throw Exception. If msg = NULL, exception-text is "Interrupted"
   void suspend();
+  inline void setTerminated() {
+    m_flags |= 4;
+  }
   virtual void handleInterruptOrSuspend();
 
 public:
@@ -38,8 +41,11 @@ public:
   inline bool isSuspended() const {
     return (m_flags & 1) != 0;
   }
+  inline bool isTerminated() const {
+    return (m_flags & 4) != 0;
+  }
   inline bool isInterruptedOrSuspended() const {
-    return (m_flags != 0);
+    return (m_flags&3) != 0;
   }
 
 

@@ -87,6 +87,14 @@ void EndGameTablebase::unload() {
 
 #ifndef TABLEBASE_BUILDER
 
+TablebaseInfo EndGameTablebase::getInfo() const {
+  TablebaseInfo result;
+  if(exist(COMPRESSEDTABLEBASE)) {
+    result.load(DecompressFilter(ByteInputFile(getFileName(COMPRESSEDTABLEBASE))));
+  }
+  return result;
+}
+
 void EndGameTablebase::decompress(ByteCounter *byteCounter) const {
   const String fileName = getFileName(COMPRESSEDTABLEBASE);
   decompress(DecompressFilter(CountedByteInputStream(byteCounter?*byteCounter:(ByteCounter&)StreamProgress(fileName), ByteInputFile(fileName))));
