@@ -11,6 +11,12 @@ TimeEstimator::TimeEstimator(const ProgressProvider &progressProvider)
   m_timer.startTimer(200, *this, true);
 }
 
+TimeEstimator::~TimeEstimator() {
+  m_gate.wait();
+  m_timer.stopTimer();
+  m_gate.signal();
+}
+
 void TimeEstimator::logTimeAndPct() {
   m_gate.wait();
 
@@ -21,7 +27,7 @@ void TimeEstimator::logTimeAndPct() {
     m_time0 = now;
     appendLogPoint(0, pctDone);
   } else {
-    if(n >= 10) {
+    if(n >= 20) {
       removeFirst();
     }
     appendLogPoint(diff(m_time0, now, TMILLISECOND), pctDone);
@@ -44,7 +50,7 @@ void TimeEstimator::removeFirst() { // assume queue not empty
   const _TimePctLogPoint first = m_logQueue.get();
   if(first.m_msec < 800000) {
     subTimePct(first);
-  } else { // avoid truncation errors if mseconds becomre to large
+  } else { // avoid truncation errors if mseconds becomes to large
     m_time0.add(TMILLISECOND, (int)first.m_msec);
     initAllSums();
     for (Iterator<_TimePctLogPoint> it = m_logQueue.getIterator(); it.hasNext();) {
@@ -81,10 +87,11 @@ void TimeEstimator::calculateRegressionLine() const {
   const double n = (double)m_logQueue.size();
   m_needCalculateRegressionLine = false;
   if (n < 2) {
-    m_a = 0; // indicate we have no regressionLine
+    m_a = 0; // indicates no regressionLine
     return;
   }
-  m_a = (m_sumxy - m_sumx * m_sumy/n) / (m_sumx2 - sqr(m_sumx)/n);
+  const double nVarX = (m_sumx2 - sqr(m_sumx)/n);
+  m_a = nVarX ? ((m_sumxy - m_sumx * m_sumy/n) / nVarX) : 0;
   if(hasRegressionLine()) {
     m_b = (m_sumy - m_a * m_sumx) / n;
 /*
@@ -108,15 +115,10 @@ double TimeEstimator::getTimeEstimate() const { // assume hasRegressionLine()
 
 double TimeEstimator::getMilliSecondsRemaining() const {
   m_gate.wait();
-  double result;
   if(m_needCalculateRegressionLine) {
     calculateRegressionLine();
   }
-  if(hasRegressionLine()) {
-    result = getTimeEstimate();
-  } else {
-    result = 60000;
-  }
+  const double result = hasRegressionLine() ? getTimeEstimate() : 60000;
   m_gate.signal();
   return result;
 }

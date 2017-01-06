@@ -50,9 +50,7 @@ private:
   double getTimeEstimate() const;
 public:
   TimeEstimator(const ProgressProvider &progressProvider);
-  ~TimeEstimator() {
-    m_timer.stopTimer();
-  }
+  ~TimeEstimator();
   void handleTimeout(Timer &timer) {
     logTimeAndPct();
   }
