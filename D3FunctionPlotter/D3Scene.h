@@ -344,19 +344,19 @@ public:
     clear();
   }
   void add(const LPD3DXMESH &m) {
-    add((unsigned int)size(), m);
+    add((UINT)size(), m);
   }
-  void add(unsigned int index, const LPD3DXMESH &m, unsigned int count = 1);
+  void add(UINT index, const LPD3DXMESH &m, UINT count = 1);
   bool addAll(const MeshArray &src);
-  void remove(unsigned int index, unsigned int count = 1);
+  void remove(UINT index, UINT count = 1);
   void removeLast() {
-    remove((unsigned int)size()-1);
+    remove((UINT)size()-1);
   }
 
   void clear(int capacity=0);
 };
 
-LPD3DXMESH     createMeshFrom2DFunction(   DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided);
+LPD3DXMESH     createMeshFrom2DFunction(   DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);
 LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
 MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
 LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);

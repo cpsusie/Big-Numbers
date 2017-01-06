@@ -6,7 +6,7 @@ MeshArray &MeshArray::operator=(const MeshArray &src) {
   return *this;
 }
 
-void MeshArray::add(unsigned int index, const LPD3DXMESH &m, unsigned int count) {
+void MeshArray::add(UINT index, const LPD3DXMESH &m, UINT count) {
   CompactArray<LPD3DXMESH>::add(index, m, count);
   while(count--) {
     int ref = (*this)[index++]->AddRef();
@@ -25,7 +25,7 @@ bool MeshArray::addAll(const MeshArray &src) {
   }
 }
 
-void MeshArray::remove(unsigned int index, unsigned int count) {
+void MeshArray::remove(UINT index, UINT count) {
   if(count == 0) {
     return;
   }
