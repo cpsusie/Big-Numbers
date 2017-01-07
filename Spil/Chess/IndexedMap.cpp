@@ -370,7 +370,7 @@ void IndexedMap::saveCompressed(BigEndianOutputStream &out, const TablebaseInfo 
                                  );
   }
 
-  UINT   maxPly          = 0;
+  UINT   maxPly  = 0;
   INT64  wpCount = 0;
   BitSet wpSet(indexSize);
 
