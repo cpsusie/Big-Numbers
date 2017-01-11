@@ -708,7 +708,7 @@ void CEquationEdit::Create(CWnd *parent, int eqIndex) {
   m_checkVisible.SetFont(&m_font, FALSE);
 
   m_colorButton.Create(_T("Color")    , STD_STYLES                                          , dummyRect, parent  , getColorId()  );
-  m_colorButton.EnableOtherButton(_T("Others"));
+  m_colorButton.EnableOtherButton(_T("Other"));
   m_buttonDelete.Create(parent                                                              , dummyRect.TopLeft(), getDeleteId(),true);
 }
 
