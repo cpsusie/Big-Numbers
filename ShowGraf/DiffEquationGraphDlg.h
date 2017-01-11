@@ -81,7 +81,7 @@ private:
     CFont                        m_exprFont;
     String                       m_fullName;
     CompactArray<CEquationEdit*> m_equationControlArray;
-    CompactArray<ErrorPosition>  m_errorPosArray;
+    Array<ErrorPosition>         m_errorPosArray;
     CompactIntArray              m_currentAdjustSet;
     String                       m_currentText;
 

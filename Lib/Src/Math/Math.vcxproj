@@ -706,6 +706,7 @@
     <ClInclude Include="..\..\Include\Math\Rational.h" />
     <ClInclude Include="..\..\Include\Math\Real.h" />
     <ClInclude Include="..\..\Include\Math\Rectangle2D.h" />
+    <ClInclude Include="..\..\Include\Math\RungekuttaFehlBerg.h" />
     <ClInclude Include="..\..\Include\Math\SigmoidIterator.h" />
     <ClInclude Include="..\..\Include\Math\Simplex.h" />
     <ClInclude Include="..\..\Include\Math\Spherical.h" />

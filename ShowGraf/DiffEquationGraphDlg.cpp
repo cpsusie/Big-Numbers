@@ -622,47 +622,48 @@ CEquationEdit::CEquationEdit(CFont &font) : m_font(font) {
 
 CompactArray<CRect> CEquationEdit::calculateSubWinRect(const CRect &r) const {
   const int MARGIN = 15;
+  const int SPACE  = 8;
 
-  const int nameLeft     = r.left + MARGIN;
   const int nameWidth    = 40;
-  const int nameRight    = nameLeft + nameWidth;
   const int nameHeight   = 22;
+  const int nameLeft     = r.left + MARGIN;
+  const int nameRight    = nameLeft + nameWidth;
   const int nameTop      = r.CenterPoint().y - nameHeight/2;
 
+  const int lblWidth     = 22;
+  const int lblHeight    = nameHeight;
   const int lblLeft      = nameRight + 2;
-  const int lblWidth     = 30;
   const int lblRight     = lblLeft  + lblWidth;
   const int lblTop       = nameTop;
-  const int lblHeight    = nameHeight;
 
   const int delWidth     = 28;
   const int delHeight    = 23;
-  const int delRight     = r.right - MARGIN;
+  const int delRight     = r.right  - MARGIN;
   const int delLeft      = delRight - delWidth;
   const int delTop       = r.CenterPoint().y - delHeight/2;
 
   const int colorWidth   = 40;
-  const int colorRight   = delLeft  - 10;
-  const int colorLeft    = colorRight - colorWidth;
   const int colorHeight  = nameHeight;
+  const int colorRight   = delLeft    - SPACE;
+  const int colorLeft    = colorRight - colorWidth;
   const int colorTop     = r.CenterPoint().y - colorHeight/2;
 
-  const int visWidth     = 66;
-  const int visRight     = colorLeft  - 10;
-  const int visLeft      = visRight - visWidth;
+  const int visWidth     = 80;
   const int visHeight    = nameHeight;
+  const int visRight     = colorLeft - SPACE;
+  const int visLeft      = visRight  - visWidth;
   const int visTop       = r.CenterPoint().y - visHeight/2;
 
-  const int startVRight  = visLeft - 10;
   const int startVWidth  = 90;
-  const int startVLeft   = startVRight - startVWidth;
   const int startVHeight = nameHeight;
+  const int startVRight  = visLeft - SPACE;
+  const int startVLeft   = startVRight - startVWidth;
   const int startVTop    = r.CenterPoint().y - startVHeight/2;
 
-  const int exprLeft     = lblLeft  + lblWidth + 10;
-  const int exprRight    = max(exprLeft+10, startVLeft-10);
-  const int exprTop      = r.top;
+  const int exprLeft     = lblRight + SPACE;
   const int exprHeight   = r.Height();
+  const int exprRight    = max(exprLeft+SPACE, startVLeft-SPACE);
+  const int exprTop      = r.top;
 
   const CRect nameRect(  nameLeft  , nameTop  , nameRight    , nameTop   + nameHeight  );
   const CRect lblRect(   lblLeft   , lblTop   , lblRight     , lblTop    + lblHeight   );
@@ -689,22 +690,26 @@ void CEquationEdit::Create(CWnd *parent, int eqIndex) {
 #define STD_STYLES WS_VISIBLE | WS_TABSTOP | WS_CHILD
 
   m_exprId = EQEXPRFIELDID(eqIndex);
-  m_editName.Create(               STD_STYLES | ES_RIGHT    | WS_BORDER      , dummyRect, parent, getNameId()   );
+  m_editName.Create(               STD_STYLES | ES_RIGHT    | WS_BORDER                     , dummyRect, parent, getNameId()   );
   m_editName.SetFont(&m_font, FALSE);
 
-  m_label.Create(  _T("' = ")    , WS_VISIBLE | SS_CENTERIMAGE               , dummyRect, parent, getLabelId()  );
+  m_label.Create(  _T("' =")     , WS_VISIBLE | SS_CENTERIMAGE                              , dummyRect, parent, getLabelId()  );
   m_label.SetFont(&m_font, FALSE);
 
 #define EXPR_STYLE STD_STYLES | WS_VSCROLL | WS_BORDER | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN
 
-  CEdit::Create(                        EXPR_STYLE                                , dummyRect, parent, getExprId()   );
+  CEdit::Create(                        EXPR_STYLE                                          , dummyRect, parent, getExprId()   );
   ModifyStyleEx(0, WS_EX_CLIENTEDGE);
   SetFont(&m_font, FALSE);
 
-  m_editStartV.Create(                  STD_STYLES | ES_RIGHT        | WS_BORDER  , dummyRect, parent  , getStartVId() );
-  m_checkVisible.Create(_T("Visible:"), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT, dummyRect, parent  , getVisibleId());
-  m_colorButton.Create(_T("Color")    , STD_STYLES                                , dummyRect, parent  , getColorId()  );
-  m_buttonDelete.Create(parent                                                    , dummyRect.TopLeft(), getDeleteId(),true);
+  m_editStartV.Create(                  STD_STYLES | ES_RIGHT | ES_AUTOHSCROLL | WS_BORDER  , dummyRect, parent  , getStartVId() );
+  m_editStartV.SetFont(&m_font, FALSE);
+  m_checkVisible.Create(_T("Visible:"), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT          , dummyRect, parent  , getVisibleId());
+  m_checkVisible.SetFont(&m_font, FALSE);
+
+  m_colorButton.Create(_T("Color")    , STD_STYLES                                          , dummyRect, parent  , getColorId()  );
+  m_colorButton.EnableOtherButton(_T("Others"));
+  m_buttonDelete.Create(parent                                                              , dummyRect.TopLeft(), getDeleteId(),true);
 }
 
 #define FOREACHSUBWIN(i) for(Iterator<CWnd*> i = m_subWndArray.getIterator(); i.hasNext();) 

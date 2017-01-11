@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <Math/Expression/Expression.h>
-#include <Math/MathLib.h>
+#include <Math/RungekuttaFehlberg.h>
 #include "DiffEquationGraph.h"
 #include "DiffEquationSystem.h"
 

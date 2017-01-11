@@ -27,28 +27,6 @@ Vector newton(      VectorFunction &f, const Vector &x0, int maxit = 10, Real to
 Vector davidenko(   VectorFunction &f, const Vector &x0);
 Vector levenberg(   VectorFunction &f, const Vector &x0);
 
-class RungeKuttaFehlbergHandler;
-
-class RungeKuttaFehlberg {
-private:
-  VectorFunction            &m_diff;    // calculates f'(y), y[0] = x, y[1..dim] = y, so actually f(x,y)
-  RungeKuttaFehlbergHandler &m_handler; // called everytime m_y is set
-  Vector                     m_y;
-  void setValue(const Vector &v);
-public:
-  RungeKuttaFehlberg(VectorFunction &diff, RungeKuttaFehlbergHandler &handler);
-  const Vector &calculate(const Vector &start, Real v0end, Real eps);
-  const Vector &getvalue() const {
-    return m_y;
-  }
-  VectorFunction &getFunction() const {
-    return m_diff;
-  }
-};
-
-class RungeKuttaFehlbergHandler : public AlgorithmHandler<RungeKuttaFehlberg> {
-};
-
 ComplexVector roots(const Complex &c, int r);
 
 #define verifyEqualsInt(   expected, value)            verify(value == expected)
