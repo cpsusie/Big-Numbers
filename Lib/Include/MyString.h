@@ -41,27 +41,28 @@ public:
   String      &operator=(const TCHAR *s);
   TCHAR       &operator[](size_t index);                    // Returns TCHAR at position index
   const TCHAR &operator[](size_t index) const;              // Returns TCHAR at position index
-  inline TCHAR last() const { return m_len ? m_buf[m_len-1] : 0; }
-  TCHAR       *cstr()       { return m_buf; }
-  const TCHAR *cstr() const { return m_buf; }
+  inline TCHAR        last() const { return m_len ? m_buf[m_len-1] : 0; }
+  inline TCHAR       *cstr()       { return m_buf; }
+  inline const TCHAR *cstr() const { return m_buf; }
   String &remove(size_t pos, size_t count = 1);                      // Remove characters at position pos, pos+1, ...pos+count-1
   String &removeLast();                                              // Remove the last character if any.
   String &insert(size_t pos, TCHAR ch);                              // Insert ch into String at position pos
   String &insert(size_t pos, const String &s);                       // Insert s into String at position pos
-  friend bool    operator==( const String &lhs, const String &rhs);
-  friend bool    operator==( const String &lhs, const TCHAR  *rhs);
-  friend bool    operator!=( const String &lhs, const String &rhs);
-  friend bool    operator!=( const String &lhs, const TCHAR  *rhs);
 
-  friend bool    operator> ( const String &lhs, const String &rhs);
-  friend bool    operator< ( const String &lhs, const String &rhs);
-  friend bool    operator>=( const String &lhs, const String &rhs);
-  friend bool    operator<=( const String &lhs, const String &rhs);
+  inline int compare(const String &s) const {
+    return _tcscmp(m_buf, s.m_buf);
+  }
+  inline int compareIgnoreCase(const String &s) const {
+    return _tcsicmp(m_buf, s.m_buf);
+  }
+  inline bool equalsIgnoreCase(const String &s) const {
+    return compareIgnoreCase(s) == 0;
+  }
+
   friend String  operator+ ( const String &lhs, const String &rhs);
          String &operator+=( const String &rhs);                  // Append rhs to this
-         String &operator+=( const TCHAR *rhs);                   // Append rhs to this
-         String &operator+=( TCHAR ch);
-  bool equalsIgnoreCase(const String &s) const;
+         String &operator+=( const TCHAR  *rhs);                  // Append rhs to this
+         String &operator+=(       TCHAR   ch );
   String &replace(  TCHAR         from, TCHAR         to);        // Substitute every occurrence of from in s with to. Return this
   String &replace(  TCHAR         from, const TCHAR  *to);        // Substitute every occurrence of from in s with to. Return this
   String &replace(  const TCHAR  *from, TCHAR         to);
@@ -70,21 +71,21 @@ public:
   String &replace(  const String &from, TCHAR         to);
   String &replace(  const String &from, const String &to);
 
-  String &trim();                                                 // Remove leading and trailing spaces. Return this
-  String &trimLeft();                                             // Remove leading spaces. Return this
-  String &trimRight();                                                     // Remove trailing spaces. Return this
-  intptr_t     find(const TCHAR  *str, size_t from = 0) const;             // Return index of first occurrence of str starting at position from, -1 if not found
+  String &trim();                                                           // Remove leading and trailing spaces. Return this
+  String &trimLeft();                                                       // Remove leading spaces. Return this
+  String &trimRight();                                                      // Remove trailing spaces. Return this
+  intptr_t     find(const TCHAR  *str, size_t from = 0) const;              // Return index of first occurrence of str starting at position from, -1 if not found
   intptr_t     find(const String &str, size_t from = 0) const;
-  intptr_t     find(TCHAR         ch , size_t from = 0) const;             // Return index of first occurrence of ch starting at position from, -1 if not found
-  intptr_t    rfind(TCHAR         ch                  ) const;             // Return index of last occurrence of ch, -1 if not found
+  intptr_t     find(TCHAR         ch , size_t from = 0) const;              // Return index of first occurrence of ch starting at position from, -1 if not found
+  intptr_t    rfind(TCHAR         ch                  ) const;              // Return index of last occurrence of ch, -1 if not found
 
-  inline size_t length() const { return m_len; }                           // Return length og String
-  inline bool isEmpty() const { return m_len == 0; }
+  inline size_t length()  const { return m_len; }                           // Return length og String
+  inline bool   isEmpty() const { return m_len == 0; }
   friend String left(  const String &str, intptr_t length);                 // Return substring "s[0]s[1]...s[len-1]".                          ex. left("abc"  ,2)   = "ab"
   friend String right( const String &str, intptr_t length);                 // Return substring s[s.len-length],s[s.len-length+1]...s[s.len-1]. ex. right("abc" ,2)   = "bc"
   friend String substr(const String &str, intptr_t from, intptr_t length);  // Return substring "str[from]str[from+1]...str[from+length-1]"     ex. substr(abcd",1,2) = "bc"
   friend String rev(   const String &str);                                  // Return reverse String
-  friend String spaceString(std::streamsize length, TCHAR ch = _T(' '));           // Return String with length length, filled with ch. return "" if length <= 0
+  friend String spaceString(std::streamsize length, TCHAR ch = _T(' '));    // Return String with length length, filled with ch. return "" if length <= 0
 
   friend tostream &operator<<(tostream &f, const String &str);
   friend tistream &operator>>(tistream &f, String &str);
@@ -102,6 +103,39 @@ public:
   static const unsigned char *lowerCaseTranslate;
   static const unsigned char  upperCaseAccentTranslate[256];
 };
+
+inline bool operator==(const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) == 0;
+}
+inline bool operator==(const String &lhs, const TCHAR  *rhs) {
+  return _tcscmp(lhs.cstr(), rhs) == 0;
+}
+inline bool operator==(const TCHAR  *lhs, const String &rhs) {
+  return _tcscmp(lhs, rhs.cstr()) == 0;
+}
+
+inline bool operator!=(const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) != 0;
+}
+inline bool operator!=(const String &lhs, const TCHAR  *rhs) {
+  return _tcscmp(lhs.cstr(), rhs) != 0;
+}
+inline bool operator!=(const TCHAR  *lhs, const String &rhs) {
+  return _tcscmp(lhs, rhs.cstr()) != 0;
+}
+
+inline bool operator> (const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) > 0;
+}
+inline bool operator< (const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) < 0;
+}
+inline bool operator>=(const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) >= 0;
+}
+inline bool operator<=(const String &lhs, const String &rhs) {
+  return lhs.compare(rhs) <= 0;
+}
 
 String trim(       const String &str);                         // Return copy of str, without leading and trailing spaces
 String trimLeft(   const String &str);                         // Return copy og str, without leading spaces

@@ -303,7 +303,7 @@ String &String::replace(const String &from, TCHAR to) {
   TCHAR       *newBuf      = new TCHAR[newCapacity];
   TCHAR       *s, *d;
   for(s = m_buf, d = newBuf; s <= last;) {
-    if(MEMCMP(s,from.m_buf, fromLength)) {
+    if(MEMCMP(s, from.m_buf, fromLength)) {
       *(d++) = *(s++);
     } else { // replace
       *(d++) = to;
@@ -542,42 +542,6 @@ TCHAR &String::operator[](size_t index) {
 const TCHAR &String::operator[](size_t index) const {
   if(index >= m_len) indexError(index);
   return m_buf[index];
-}
-
-bool operator==(const String &lhs, const String &rhs) {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) == 0;
-}
-
-bool String::equalsIgnoreCase(const String &s) const {
-  return _tcsicmp(cstr(), s.cstr()) == 0;
-}
-
-bool operator==(const String &lhs, const TCHAR *rhs) {
-  return _tcscmp(lhs.m_buf, rhs) == 0;
-}
-
-bool operator!=(const String &lhs, const String &rhs) {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) != 0;
-}
-
-bool operator!=(const String &lhs, const TCHAR *rhs) {
-  return _tcscmp(lhs.m_buf, rhs) != 0;
-}
-
-bool operator>(const String &lhs, const String &rhs)  {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) > 0;
-}
-
-bool operator>=(const String &lhs, const String &rhs) {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) >= 0;
-}
-
-bool operator<(const String &lhs, const String &rhs)  {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) < 0;
-}
-
-bool operator<=(const String &lhs, const String &rhs) {
-  return _tcscmp(lhs.m_buf, rhs.m_buf) <= 0;
 }
 
 String vformat(const TCHAR *format, va_list argptr) {
