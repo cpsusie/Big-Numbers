@@ -79,10 +79,16 @@ void Pipe::init() {
   m_fd[0] = m_fd[1] = -1;
 }
 
-#define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
+#ifdef ENTERFUNC
+#undef ENTERFUNC
+#endif
+#ifdef LEAVEFUNC
+#undef LEAVEFUNC
+#endif
 
+#define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
 #define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), __TFUNCTION__).cstr()); m_level++; }
-#define EXITFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("exit  %s"), __TFUNCTION__).cstr()); }
+#define LEAVEFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("leave %s"), __TFUNCTION__).cstr()); }
 
 ExternProcess::ExternProcess(bool verbose) : m_verbose(verbose) {
   m_processHandle     = INVALID_HANDLE_VALUE;
@@ -123,7 +129,7 @@ String ArgArray::getCommandLine() const {
 void ExternProcess::start(bool silent, const String &program, const StringArray &args) {
   ENTERFUNC;
   start(silent, ArgArray(program, args));
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::start(bool silent, const String program, ...) {
@@ -133,13 +139,13 @@ void ExternProcess::start(bool silent, const String program, ...) {
   ArgArray argv(program, argptr);
   va_end(argptr);
   start(silent, argv);
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::vstart(bool silent, const String &program, va_list argptr) {
   ENTERFUNC;
   start(silent, ArgArray(program, argptr));
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::start(bool silent, const ArgArray &argv) {
@@ -192,10 +198,10 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
     CHDIR(oldWorkDir);
 
     critiacalSection.signal();
-    EXITFUNC;
+    LEAVEFUNC;
     throw;
   }
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::startSpawn(const String &program, const TCHAR * const *argv) {
@@ -231,7 +237,7 @@ void ExternProcess::startCreateProcess(const String &program, const String &comm
 void ExternProcess::stop() {
   ENTERFUNC;
   cleanup();
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::killProcess() {
@@ -240,7 +246,7 @@ void ExternProcess::killProcess() {
     TerminateProcess(m_processHandle, -1);
   }
   cleanup();
-  EXITFUNC;
+  LEAVEFUNC;
 }
 
 void ExternProcess::cleanup() {
@@ -260,7 +266,7 @@ void ExternProcess::cleanup() {
     setProcessHandle(INVALID_HANDLE_VALUE);
     VERBOSE("processhandle closed");
   }
-  EXITFUNC
+  LEAVEFUNC
 }
 
 void ExternProcess::send(const TCHAR *format,...) const {
@@ -274,7 +280,7 @@ void ExternProcess::send(const TCHAR *format,...) const {
   }
   va_end(argptr);
   fflush(m_output);
-  EXITFUNC
+  LEAVEFUNC
 }
 
 String ExternProcess::receive() {
@@ -284,7 +290,7 @@ String ExternProcess::receive() {
     line[0] = 0;
   }
   VERBOSE(line);
-  EXITFUNC
+  LEAVEFUNC
   return line;
 }
 
