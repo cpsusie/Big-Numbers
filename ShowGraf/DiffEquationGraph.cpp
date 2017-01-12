@@ -125,3 +125,19 @@ double DiffEquationGraph::getSmallestPositiveY() const {
   }
   return result;
 }
+
+void DiffEquationGraph::setStyle(GraphStyle style) {
+  __super::setStyle(style);
+  const size_t n = m_pointGraphArray.size();
+  for(size_t i = 0; i < n; i++) {
+    m_pointGraphArray[i]->setStyle(style);
+  }
+}
+
+void DiffEquationGraph::setVisible(bool visible) {
+  __super::setVisible(visible);
+  const size_t n = m_pointGraphArray.size();
+  for(size_t i = 0; i < n; i++) {
+    m_pointGraphArray[i]->setVisible(visible);
+  }
+}

@@ -33,4 +33,6 @@ public:
   bool   isPointGraph(void) const {
     return false;
   }
+  void   setStyle(GraphStyle style);
+  void   setVisible(bool visible);
 };

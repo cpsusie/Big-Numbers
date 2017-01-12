@@ -36,10 +36,10 @@ public:
     return *m_param;
   }
   virtual void calculate() {}
-  virtual bool isEmpty() const  = 0;
+  virtual bool isEmpty()      const = 0;
   virtual GraphType getType() const = 0;
   virtual double  distance(const CPoint &p, const RectangleTransformation &tr) const = 0;
-  inline double  distance(const Point2DP &p) const {;
+  inline double  distance(const Point2DP &p) const {
     return distance(p,RectangleTransformation::id);
   }
   static inline double getMinPositive(double x, double r) {
@@ -47,16 +47,16 @@ public:
   }
   virtual double  getSmallestPositiveX() const = 0;
   virtual double  getSmallestPositiveY() const = 0;
-  inline void setStyle(GraphStyle style) {
+  virtual void    setStyle(GraphStyle style) {
     m_param->m_style = style;
   }
   virtual void setRollSize(int size) {
   }
   virtual bool isPointGraph() const = 0;
-  inline void setVisible(bool visible) {
+  virtual void setVisible(bool visible) {
     m_visible = visible;
   }
-  inline bool isVisible() const {
+  virtual bool isVisible() const {
     return m_visible;
   }
 };
