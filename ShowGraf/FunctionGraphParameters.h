@@ -12,7 +12,7 @@ protected:
 public:
   String            m_expr;
   DoubleInterval    m_interval;
-  unsigned int      m_steps;
+  UINT              m_steps;
   TrigonometricMode m_trigonometricMode;
   FunctionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
 };

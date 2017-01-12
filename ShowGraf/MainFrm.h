@@ -78,6 +78,7 @@ protected:
     afx_msg void OnToolsFitPotensFunction();
     afx_msg void OnToolsFitCustomFunction();
     afx_msg void OnToolsPlotFunction();
+    afx_msg void OnToolsParametricCurve();
     afx_msg void OnToolsImplicitDefinedCurve();
     afx_msg void OnToolsDifferentialEquations();
     afx_msg void OnOptionsIgnoreErrors();

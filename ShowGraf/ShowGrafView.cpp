@@ -8,6 +8,7 @@
 #include "DataGraph.h"
 #include "DiffEquationGraphDlg.h"
 #include "FunctionGraphDlg.h"
+#include "ParametricGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
 #include "DataGraphDlg.h"
 
@@ -445,6 +446,15 @@ void CShowGrafView::OnSelectMenuEdit() {
       }
       break;
 
+    case PARAMETRICGRAPH:
+      { ParametricGraphParameters *param = (ParametricGraphParameters*)&g.getParam();
+        CParametricGraphDlg dlg(*param);
+        if(dlg.DoModal() == IDOK) {
+          g.calculate();
+        }
+      }
+      break;
+
     case ISOCURVEGRAPH    :
       { IsoCurveGraphParameters *param = (IsoCurveGraphParameters*)&g.getParam();
         CIsoCurveGraphDlg dlg(*param);
@@ -517,13 +527,14 @@ void CShowGrafView::initScale() {
 }
 
 void CShowGrafView::addGraphFromFile(const String &fileName) {
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < 5; i++) {
     try {
       switch(i) {
-      case 0: readFunctionFile(fileName); break;
-      case 1: readIsoFile(     fileName); break;
-      case 2: readDataFile(    fileName); break;
-      case 3: readDiffEqFile(  fileName); break;
+      case 0: readParametricFile(fileName); break;
+      case 1: readFunctionFile(  fileName); break;
+      case 2: readIsoFile(       fileName); break;
+      case 3: readDataFile(      fileName); break;
+      case 4: readDiffEqFile(    fileName); break;
       }
       return;
     } catch(Exception e) {
@@ -558,6 +569,14 @@ void CShowGrafView::readFunctionFile(const String &fileName) {
   FunctionGraphParameters param;
   param.load(fileName);
   Graph *g = new FunctionGraph(param);
+  m_graphArray.add(g);
+  initScaleIfSingleGraph();
+}
+
+void CShowGrafView::readParametricFile(const String &fileName) {
+  ParametricGraphParameters param;
+  param.load(fileName);
+  Graph *g = new ParametricGraph(param);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -691,6 +710,13 @@ void CShowGrafView::addDiffEquationGraph(DiffEquationGraphParameters &param) {
 
 void CShowGrafView::addFunctionGraph(FunctionGraphParameters &param) {
   m_graphArray.add(new FunctionGraph(param));
+  m_graphArray.select(m_graphArray.size()-1);
+  initScaleIfSingleGraph();
+  Invalidate(TRUE);
+}
+
+void CShowGrafView::addParametricGraph(ParametricGraphParameters &param) {
+  m_graphArray.add(new ParametricGraph(param));
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
   Invalidate(TRUE);

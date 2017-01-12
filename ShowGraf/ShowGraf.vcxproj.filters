@@ -37,18 +37,21 @@
     <Filter Include="Source Files\FunctionGraph\Include">
       <UniqueIdentifier>{cd6e31db-c70a-4c04-aa0b-f458884fd0ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ParametricGraph">
+      <UniqueIdentifier>{0d7259dd-3e9e-4b8b-b529-2c4f78ff177e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ParametricGraph\Include">
+      <UniqueIdentifier>{193d4f5f-9b1a-45ab-88a2-431e26c6d404}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CustomFit">
+      <UniqueIdentifier>{faa376b5-a72a-4cb7-9579-668370cf756f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CustomFit\Include">
+      <UniqueIdentifier>{d6881b51-e9da-4dfd-9885-ef0f5ba7b90f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CustomFitThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="CustomFitThreadDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DegreeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="FunctionFitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="GraphArray.cpp">
@@ -129,18 +132,27 @@
     <ClCompile Include="FunctionGraphParameters.cpp">
       <Filter>Source Files\FunctionGraph</Filter>
     </ClCompile>
+    <ClCompile Include="ParametricGraph.cpp">
+      <Filter>Source Files\ParametricGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricGraphParameters.cpp">
+      <Filter>Source Files\ParametricGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="ParametricGraphDlg.cpp">
+      <Filter>Source Files\ParametricGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFitThread.cpp">
+      <Filter>Source Files\CustomFit</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomFitThreadDlg.cpp">
+      <Filter>Source Files\CustomFit</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionFitter.cpp">
+      <Filter>Source Files\CustomFit</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CustomFitThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="CustomFitThreadDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DegreeDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FunctionFitter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Graph.h">
@@ -226,6 +238,24 @@
     </ClInclude>
     <ClInclude Include="FunctionGraphParameters.h">
       <Filter>Source Files\FunctionGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricGraph.h">
+      <Filter>Source Files\ParametricGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricGraphParameters.h">
+      <Filter>Source Files\ParametricGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ParametricGraphDlg.h">
+      <Filter>Source Files\ParametricGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomFitThread.h">
+      <Filter>Source Files\CustomFit\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomFitThreadDlg.h">
+      <Filter>Source Files\CustomFit\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionFitter.h">
+      <Filter>Source Files\CustomFit\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

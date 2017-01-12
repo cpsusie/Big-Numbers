@@ -301,6 +301,9 @@
     <ClCompile Include="IsoCurveGraphDlg.cpp" />
     <ClCompile Include="IsoCurveGraphParameters.cpp" />
     <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="ParametricGraph.cpp" />
+    <ClCompile Include="ParametricGraphDlg.cpp" />
+    <ClCompile Include="ParametricGraphParameters.cpp" />
     <ClCompile Include="PointGraph.cpp" />
     <ClCompile Include="RollsizeDlg.cpp" />
     <ClCompile Include="ShowGraf.cpp" />
@@ -346,6 +349,9 @@
     <ClInclude Include="IsoCurveGraphDlg.h" />
     <ClInclude Include="IsoCurveGraphParameters.h" />
     <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="ParametricGraph.h" />
+    <ClInclude Include="ParametricGraphDlg.h" />
+    <ClInclude Include="ParametricGraphParameters.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RollsizeDlg.h" />
     <ClInclude Include="ShowGraf.h" />

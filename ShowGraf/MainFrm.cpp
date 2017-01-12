@@ -3,6 +3,7 @@
 #include "MainFrm.h"
 #include "DiffEquationGraphDlg.h"
 #include "FunctionGraphDlg.h"
+#include "ParametricGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
 #include "IntervalDlg.h"
 #include "RollSizeDlg.h"
@@ -56,6 +57,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_TOOLS_FIT_POTENS_FUNCTION      , OnToolsFitPotensFunction      )
   ON_COMMAND(ID_TOOLS_FIT_CUSTOM_FUNCTION      , OnToolsFitCustomFunction      )
   ON_COMMAND(ID_TOOLS_PLOTFUNCTION             , OnToolsPlotFunction           )
+  ON_COMMAND(ID_TOOLS_PARAMETRICCURVE          , OnToolsParametricCurve        )
   ON_COMMAND(ID_TOOLS_IMPLICITDEFINEDCURVE     , OnToolsImplicitDefinedCurve   )
   ON_COMMAND(ID_TOOLS_DIFFERENTIALEQUATIONS    , OnToolsDifferentialEquations  )
   ON_COMMAND(ID_OPTIONS_IGNOREERRORS           , OnOptionsIgnoreErrors         )
@@ -350,6 +352,21 @@ void CMainFrame::OnToolsPlotFunction() {
   }
 }
 
+void CMainFrame::OnToolsParametricCurve() {
+  try {
+    ParametricGraphParameters &param = getView()->getParametricCurveParam();
+    param.m_color             = randomColor();
+    param.m_trigonometricMode = getTrigonometricMode();
+    param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
+    CParametricGraphDlg dlg(param);
+    if(dlg.DoModal() == IDOK) {
+      getView()->addParametricGraph(param);
+    }
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
 void CMainFrame::OnToolsImplicitDefinedCurve() {
   try {
     IsoCurveGraphParameters &param = getView()->getIsoCurveParam();
@@ -423,5 +440,3 @@ void CMainFrame::setTrigonometricMode(TrigonometricMode mode) {
 void CMainFrame::OnOptionsRadians() {  setTrigonometricMode(RADIANS); }
 void CMainFrame::OnOptionsDegrees() {  setTrigonometricMode(DEGREES); }
 void CMainFrame::OnOptionsGrads()   {  setTrigonometricMode(GRADS  ); }
-
-

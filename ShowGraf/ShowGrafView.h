@@ -3,6 +3,7 @@
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include "GraphArray.h"
 #include "FunctionGraph.h"
+#include "ParametricGraph.h"
 #include "IsoCurveGraph.h"
 #include "DiffEquationGraph.h"
 #include "CustomFitThread.h"
@@ -30,6 +31,7 @@ private:
     DataRange                   m_explicitRange;
     CCustomFitThread           *m_fitThread;
     FunctionGraphParameters     m_functionParam;
+    ParametricGraphParameters   m_parametricCurveParam;
     IsoCurveGraphParameters     m_isoCurveParam;
     DiffEquationGraphParameters m_diffEqParam;
 
@@ -65,11 +67,12 @@ public:
     void init();
     void initScale();
     void clear();
-    void addGraphFromFile(const String &fileName);
-    void readDataFile(    const String &fileName);
-    void readFunctionFile(const String &fileName);
-    void readIsoFile(     const String &fileName);
-    void readDiffEqFile(  const String &fileName);
+    void addGraphFromFile(  const String &fileName);
+    void readDataFile(      const String &fileName);
+    void readFunctionFile(  const String &fileName);
+    void readParametricFile(const String &fileName);
+    void readIsoFile(       const String &fileName);
+    void readDiffEqFile(    const String &fileName);
     void setGraphStyle(GraphStyle newStyle);
     void setXAxisType(AxisType type);
     void setYAxisType(AxisType type);
@@ -90,6 +93,10 @@ public:
       return m_functionParam;
     }
 
+    ParametricGraphParameters &getParametricCurveParam() {
+      return m_parametricCurveParam;
+    }
+
     IsoCurveGraphParameters &getIsoCurveParam() {
       return m_isoCurveParam;
     }
@@ -99,6 +106,7 @@ public:
     }
 
     void addFunctionGraph(    FunctionGraphParameters     &param);
+    void addParametricGraph(  ParametricGraphParameters   &param);
     void addIsoCurveGraph(    IsoCurveGraphParameters     &param);
     void addDiffEquationGraph(DiffEquationGraphParameters &param);
     void setTrigonometricMode(TrigonometricMode mode);
