@@ -1,7 +1,7 @@
 #pragma once
 
 #include <Math/Polynomial.h>
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 
 class CDegreeDlg : public CDialog {
 private:
@@ -33,8 +33,8 @@ protected:
 
 protected:
 
-	afx_msg void OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult);
-	virtual BOOL OnInitDialog();
+    afx_msg void OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult);
+    virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
 

@@ -15,33 +15,33 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
 , m_fp(fp)
 , CDialog(CCustomFitThreadDlg::IDD, pParent) {
 
-	m_expr  = expr;
-	setXInterval(range);
-	m_name  = _T("");
+  m_expr  = expr;
+  setXInterval(range);
+  m_name  = _T("");
   m_functionFitter = NULL;
   m_worker         = NULL;
 }
 
 void CCustomFitThreadDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_DATALIST, m_dataList);
-	DDX_Text(pDX, IDC_EDITEXPR , m_expr );
-	DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
-	DDX_Text(pDX, IDC_EDITXTO  , m_xTo  );
-	DDX_Text(pDX, IDC_EDITNAME , m_name );
+    DDX_Control(pDX, IDC_DATALIST, m_dataList);
+    DDX_Text(pDX, IDC_EDITEXPR , m_expr );
+    DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
+    DDX_Text(pDX, IDC_EDITXTO  , m_xTo  );
+    DDX_Text(pDX, IDC_EDITNAME , m_name );
 }
 
 
 BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
   ON_WM_TIMER()
-	ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
-	ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
-	ON_BN_CLICKED(IDC_BUTTONSTOP   , OnButtonStop   )
-	ON_BN_CLICKED(IDC_BUTTONPLOT   , OnButtonPlot   )
-	ON_BN_CLICKED(IDC_BUTTONRESTART, OnButtonRestart)
-	ON_COMMAND(ID_GOTO_NAME        , OnGotoName     )
-  ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
-	ON_COMMAND(ID_GOTO_XINTERVAL   , OnGotoXInterval)
+    ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
+    ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
+    ON_BN_CLICKED(IDC_BUTTONSTOP   , OnButtonStop   )
+    ON_BN_CLICKED(IDC_BUTTONPLOT   , OnButtonPlot   )
+    ON_BN_CLICKED(IDC_BUTTONRESTART, OnButtonRestart)
+    ON_COMMAND(ID_GOTO_NAME        , OnGotoName     )
+    ON_COMMAND(ID_GOTO_EXPR        , OnGotoFunction )
+    ON_COMMAND(ID_GOTO_XINTERVAL   , OnGotoXInterval)
 END_MESSAGE_MAP()
 
 BOOL CCustomFitThreadDlg::OnInitDialog() {
@@ -215,7 +215,7 @@ void CCustomFitThreadDlg::OnOK() {
   UpdateData();
   if(m_name.GetLength() == 0) {
     MessageBox(_T("Must specify name"));
-    GetDlgItem(IDC_EDITNAME)->SetFocus();	
+    GetDlgItem(IDC_EDITNAME)->SetFocus();
     return;
   }
   if(m_functionFitter == NULL) {
@@ -223,11 +223,11 @@ void CCustomFitThreadDlg::OnOK() {
     return;
   }
 
-  m_param            = ExpressionGraphParameters((LPCTSTR)m_name,getColor(),0,GSCURVE);
+  m_param            = FunctionGraphParameters((LPCTSTR)m_name,getColor(),0,GSCURVE);
   m_param.m_interval = getXInterval();
   m_param.m_expr     = m_functionFitter->toString().cstr();
 
-  m_fp.addExpressionGraph(m_param);
+  m_fp.addFunctionGraph(m_param);
 
   stopTimer();
   deallocateFunctionFitter();

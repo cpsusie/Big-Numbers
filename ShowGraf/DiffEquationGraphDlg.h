@@ -152,23 +152,23 @@ private:
     DECLARE_DYNAMIC(CDiffEquationGraphDlg)
 
 public:
-	CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = NULL);
-	virtual ~CDiffEquationGraphDlg();
+    CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = NULL);
+    virtual ~CDiffEquationGraphDlg();
   DiffEquationGraphParameters &m_param;
 
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_DIFFEQUATIONGRAPH_DIALOG };
+    enum { IDD = IDD_DIFFEQUATIONGRAPH_DIALOG };
 #endif
-  CString	m_style;
-  CString	m_name;
-  double	m_maxError;
-  double	m_xFrom;
-  double	m_xTo;
+  CString   m_style;
+  CString   m_name;
+  double    m_maxError;
+  double    m_xFrom;
+  double    m_xTo;
 
 protected:
-  	virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange* pDX);
 
-  	DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 public:
     virtual BOOL OnInitDialog();
     virtual BOOL PreTranslateMessage(MSG* pMsg);

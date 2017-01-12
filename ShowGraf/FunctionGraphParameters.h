@@ -4,7 +4,7 @@
 #include <Math/MathLib.h>
 #include "GraphParameters.h"
 
-class ExpressionGraphParameters : public GraphParameters {
+class FunctionGraphParameters : public GraphParameters {
 protected:
   void readFile( FILE *f);
   void writeFile(FILE *f);
@@ -14,13 +14,13 @@ public:
   DoubleInterval    m_interval;
   unsigned int      m_steps;
   TrigonometricMode m_trigonometricMode;
-  ExpressionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
+  FunctionGraphParameters(const String &name=_T("Untitled"), COLORREF color=BLACK, int rollSize=0, GraphStyle style=GSCURVE, TrigonometricMode trigonomtetricMode=RADIANS);
 };
 
 class FunctionPlotter {
 public:
   virtual void plotFunction(Function &f, COLORREF color) = 0;
   virtual void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color) = 0;
-  virtual void addExpressionGraph(ExpressionGraphParameters &param)      = 0;
+  virtual void addFunctionGraph(FunctionGraphParameters &param)      = 0;
 };
 

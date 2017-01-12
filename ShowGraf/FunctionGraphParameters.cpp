@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 
-ExpressionGraphParameters::ExpressionGraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style, TrigonometricMode trigonomtetricMode) 
+FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style, TrigonometricMode trigonomtetricMode) 
 : GraphParameters(name,color,rollSize,style) {
 
   m_trigonometricMode = trigonomtetricMode;
@@ -10,8 +10,7 @@ ExpressionGraphParameters::ExpressionGraphParameters(const String &name, COLORRE
   m_steps             = 500;
 }
 
-   
-void ExpressionGraphParameters::writeFile(FILE *f) {
+void FunctionGraphParameters::writeFile(FILE *f) {
   USES_CONVERSION;
   const TCHAR *tstyle = graphStyleToString(m_style);
   const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
@@ -30,7 +29,7 @@ void ExpressionGraphParameters::writeFile(FILE *f) {
   writeString(f, m_expr);
 }
 
-void ExpressionGraphParameters::readFile(FILE *f) {
+void FunctionGraphParameters::readFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double from, to;
   int steps;

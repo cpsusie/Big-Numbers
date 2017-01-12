@@ -20,7 +20,7 @@ public:
 class CCustomFitThreadDlg : public CDialog {
 private:
     HACCEL                    m_accelTable;
-    CListCtrl	                m_dataList;
+    CListCtrl                 m_dataList;
     CString                   m_name;
     CString                   m_expr;
     double                    m_xFrom;
@@ -53,7 +53,7 @@ public:
     const Point2DArray       &m_pointArray;
     FunctionPlotter          &m_fp;
     bool                      m_running;
-    ExpressionGraphParameters m_param;
+    FunctionGraphParameters   m_param;
 
     void allocateInfoFields(int n);
     void deallocateInfoFields();

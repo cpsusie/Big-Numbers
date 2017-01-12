@@ -2,7 +2,7 @@
 
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include "GraphArray.h"
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 #include "IsoCurveGraph.h"
 #include "DiffEquationGraph.h"
 #include "CustomFitThread.h"
@@ -29,7 +29,7 @@ private:
     bool                        m_xRelativeToFirst, m_yRelativeToFirst;
     DataRange                   m_explicitRange;
     CCustomFitThread           *m_fitThread;
-    ExpressionGraphParameters   m_plotParam;
+    FunctionGraphParameters     m_functionParam;
     IsoCurveGraphParameters     m_isoCurveParam;
     DiffEquationGraphParameters m_diffEqParam;
 
@@ -67,7 +67,7 @@ public:
     void clear();
     void addGraphFromFile(const String &fileName);
     void readDataFile(    const String &fileName);
-    void readExprFile(    const String &fileName);
+    void readFunctionFile(const String &fileName);
     void readIsoFile(     const String &fileName);
     void readDiffEqFile(  const String &fileName);
     void setGraphStyle(GraphStyle newStyle);
@@ -86,8 +86,8 @@ public:
 
     void setRollSize(int value);
 
-    ExpressionGraphParameters &getPlotParam() {
-      return m_plotParam;
+    FunctionGraphParameters &getFunctionParam() {
+      return m_functionParam;
     }
 
     IsoCurveGraphParameters &getIsoCurveParam() {
@@ -98,7 +98,7 @@ public:
       return m_diffEqParam;
     }
 
-    void addExpressionGraph(  ExpressionGraphParameters   &param);
+    void addFunctionGraph(    FunctionGraphParameters     &param);
     void addIsoCurveGraph(    IsoCurveGraphParameters     &param);
     void addDiffEquationGraph(DiffEquationGraphParameters &param);
     void setTrigonometricMode(TrigonometricMode mode);

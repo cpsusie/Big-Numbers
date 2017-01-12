@@ -2,7 +2,7 @@
 
 #include <Math/Expression/Expression.h>
 #include <Math/Matrix.h>
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 
 class FunctionFitter : public Expression, public Function {
 private:

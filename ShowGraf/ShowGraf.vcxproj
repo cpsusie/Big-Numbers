@@ -288,9 +288,9 @@
     <ClCompile Include="DiffEquationGraphDlg.cpp" />
     <ClCompile Include="DiffEquationGraphParameters.cpp" />
     <ClCompile Include="DiffEquationSystem.cpp" />
-    <ClCompile Include="ExpressionGraph.cpp" />
-    <ClCompile Include="ExpressionGraphParameters.cpp" />
-    <ClCompile Include="ExpressionGraphDlg.cpp" />
+    <ClCompile Include="FunctionGraph.cpp" />
+    <ClCompile Include="FunctionGraphParameters.cpp" />
+    <ClCompile Include="FunctionGraphDlg.cpp" />
     <ClCompile Include="FunctionFitter.cpp" />
     <ClCompile Include="GraphArray.cpp" />
     <ClCompile Include="GraphItem.cpp" />
@@ -332,9 +332,9 @@
     <ClInclude Include="DiffEquationGraphDlg.h" />
     <ClInclude Include="DiffEquationGraphParameters.h" />
     <ClInclude Include="DiffEquationSystem.h" />
-    <ClInclude Include="ExpressionGraph.h" />
-    <ClInclude Include="ExpressionGraphParameters.h" />
-    <ClInclude Include="ExpressionGraphDlg.h" />
+    <ClInclude Include="FunctionGraph.h" />
+    <ClInclude Include="FunctionGraphParameters.h" />
+    <ClInclude Include="FunctionGraphDlg.h" />
     <ClInclude Include="FunctionFitter.h" />
     <ClInclude Include="Graph.h" />
     <ClInclude Include="GraphArray.h" />

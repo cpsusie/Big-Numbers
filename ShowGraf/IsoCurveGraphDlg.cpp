@@ -28,17 +28,17 @@ void CIsoCurveGraphDlg::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CIsoCurveGraphDlg, CDialog)
-	ON_WM_SIZE()
+  ON_WM_SIZE()
   ON_COMMAND(   ID_FILE_NEW                                       , OnFileNew                   )
-	ON_COMMAND(   ID_FILE_OPEN                                      , OnFileOpen                  )
-	ON_COMMAND(   ID_FILE_SAVE                                      , OnFileSave                  )
-	ON_COMMAND(   ID_FILE_SAVE_AS                                   , OnFileSaveAs                )
-	ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                    , OnEditFindmatchingparentesis)
+  ON_COMMAND(   ID_FILE_OPEN                                      , OnFileOpen                  )
+  ON_COMMAND(   ID_FILE_SAVE                                      , OnFileSave                  )
+  ON_COMMAND(   ID_FILE_SAVE_AS                                   , OnFileSaveAs                )
+  ON_COMMAND(   ID_EDIT_FINDMATCHINGPARENTESIS                    , OnEditFindmatchingparentesis)
   ON_COMMAND(   ID_GOTO_NAME                                      , OnGotoName                  )
-	ON_COMMAND(   ID_GOTO_STYLE                                     , OnGotoStyle                 )
+  ON_COMMAND(   ID_GOTO_STYLE                                     , OnGotoStyle                 )
   ON_COMMAND(   ID_GOTO_EXPR                                      , OnGotoExpr                  )
-	ON_COMMAND(   ID_GOTO_XINTERVAL                                 , OnGotoXInterval             )
-	ON_COMMAND(   ID_GOTO_YINTERVAL                                 , OnGotoYInterval             )
+  ON_COMMAND(   ID_GOTO_XINTERVAL                                 , OnGotoXInterval             )
+  ON_COMMAND(   ID_GOTO_YINTERVAL                                 , OnGotoYInterval             )
   ON_COMMAND(   ID_GOTO_CELLSIZE                                  , OnGotoCellSize              )
 END_MESSAGE_MAP()
 
@@ -52,14 +52,14 @@ BOOL CIsoCurveGraphDlg::PreTranslateMessage(MSG* pMsg) {
 
 BOOL CIsoCurveGraphDlg::OnInitDialog() {
   CDialog::OnInitDialog();
-	
+
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_ISOCURVE));
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
   BOOL ret = m_exprFont.CreateFontIndirect(&lf);
   GetDlgItem(IDC_EDITEXPR)->SetFont(&m_exprFont, FALSE);
-	
+
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATICEXPRLABEL  , PCT_RELATIVE_Y_CENTER                 );
   m_layoutManager.addControl(IDC_EDITEXPR         , RELATIVE_SIZE         | RESIZE_FONT   );

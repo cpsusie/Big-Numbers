@@ -1,14 +1,14 @@
 #include "stdafx.h"
 #include <Math/Expression/Expression.h>
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 
-ExpressionGraph::ExpressionGraph(ExpressionGraphParameters &param) : PointGraph(new ExpressionGraphParameters(param)) {
+FunctionGraph::FunctionGraph(FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
   calculate();
 }
 
-void ExpressionGraph::calculate() {
+void FunctionGraph::calculate() {
   clear();
-  const ExpressionGraphParameters &param = *(ExpressionGraphParameters*)m_param;
+  const FunctionGraphParameters &param = *(FunctionGraphParameters*)m_param;
   Expression expr(param.m_trigonometricMode);
   expr.compile(param.m_expr, true);
 //  m_image = expressionToImage(theApp.m_device, expr, 18);
@@ -31,15 +31,15 @@ void ExpressionGraph::calculate() {
   updateDataRange();
 }
 
-void ExpressionGraph::setTrigonometricMode(TrigonometricMode mode) {
-  ExpressionGraphParameters &param = *(ExpressionGraphParameters*)m_param;
+void FunctionGraph::setTrigonometricMode(TrigonometricMode mode) {
+  FunctionGraphParameters &param = *(FunctionGraphParameters*)m_param;
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;
     calculate();
   }
 }
 
-void ExpressionGraph::paint(CCoordinateSystem &cs) {
+void FunctionGraph::paint(CCoordinateSystem &cs) {
   PointGraph::paint(cs);
 /*
   if(m_image.isEmpty()) return;

@@ -9,14 +9,14 @@
 
 CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd *pParent) : m_graph(g), CDialog(CDataGraphDlg::IDD, pParent) {
   m_name  = _T("");
-	m_style = _T("");
+    m_style = _T("");
 }
 
 void CDataGraphDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
-	DDX_Control(pDX, IDC_DATALIST, m_dataList);
+    DDX_Control(pDX, IDC_DATALIST, m_dataList);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
-	DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
+    DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
 BEGIN_MESSAGE_MAP(CDataGraphDlg, CDialog)

@@ -15,7 +15,7 @@ private:
 public:
     CDataGraphDlg(DataGraph &g, CWnd* pParent = NULL);
     DataGraph &m_graph;
-	enum { IDD = IDD_DATAGRAPH_DIALOG };
+    enum { IDD = IDD_DATAGRAPH_DIALOG };
     CListCtrl m_dataList;
     CString   m_name;
     CString   m_style;

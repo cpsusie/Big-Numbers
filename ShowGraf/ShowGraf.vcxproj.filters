@@ -19,9 +19,6 @@
     <Filter Include="Source Files\DiffEquationGraph">
       <UniqueIdentifier>{5e42f40a-3ec3-438c-8bf8-0453dbfd27bd}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ExpressionGraph">
-      <UniqueIdentifier>{42d63462-b45d-4f88-827b-46e3cbe49169}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\IsoCurveGraph">
       <UniqueIdentifier>{f112bb70-ef5b-4f13-8184-dce55fd1b014}</UniqueIdentifier>
     </Filter>
@@ -31,11 +28,14 @@
     <Filter Include="Source Files\DiffEquationGraph\Include">
       <UniqueIdentifier>{38b64cf5-29fa-48f0-b2c9-39506ae21257}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\ExpressionGraph\Include">
-      <UniqueIdentifier>{cd6e31db-c70a-4c04-aa0b-f458884fd0ae}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\IsoCurveGraph\Include">
       <UniqueIdentifier>{a5f506c2-9820-4dfc-b999-d4bab89c43e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FunctionGraph">
+      <UniqueIdentifier>{42d63462-b45d-4f88-827b-46e3cbe49169}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\FunctionGraph\Include">
+      <UniqueIdentifier>{cd6e31db-c70a-4c04-aa0b-f458884fd0ae}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -108,15 +108,6 @@
     <ClCompile Include="DiffEquationSystem.cpp">
       <Filter>Source Files\DiffEquationGraph</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionGraph.cpp">
-      <Filter>Source Files\ExpressionGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionGraphDlg.cpp">
-      <Filter>Source Files\ExpressionGraph</Filter>
-    </ClCompile>
-    <ClCompile Include="ExpressionGraphParameters.cpp">
-      <Filter>Source Files\ExpressionGraph</Filter>
-    </ClCompile>
     <ClCompile Include="IsoCurveFinder.cpp">
       <Filter>Source Files\IsoCurveGraph</Filter>
     </ClCompile>
@@ -128,6 +119,15 @@
     </ClCompile>
     <ClCompile Include="IsoCurveGraphParameters.cpp">
       <Filter>Source Files\IsoCurveGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionGraph.cpp">
+      <Filter>Source Files\FunctionGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionGraphDlg.cpp">
+      <Filter>Source Files\FunctionGraph</Filter>
+    </ClCompile>
+    <ClCompile Include="FunctionGraphParameters.cpp">
+      <Filter>Source Files\FunctionGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -206,15 +206,6 @@
     <ClInclude Include="DiffEquationSystem.h">
       <Filter>Source Files\DiffEquationGraph\Include</Filter>
     </ClInclude>
-    <ClInclude Include="ExpressionGraph.h">
-      <Filter>Source Files\ExpressionGraph\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpressionGraphDlg.h">
-      <Filter>Source Files\ExpressionGraph\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="ExpressionGraphParameters.h">
-      <Filter>Source Files\ExpressionGraph\Include</Filter>
-    </ClInclude>
     <ClInclude Include="IsoCurveFinder.h">
       <Filter>Source Files\IsoCurveGraph\Include</Filter>
     </ClInclude>
@@ -226,6 +217,15 @@
     </ClInclude>
     <ClInclude Include="IsoCurveGraphParameters.h">
       <Filter>Source Files\IsoCurveGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionGraph.h">
+      <Filter>Source Files\FunctionGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionGraphDlg.h">
+      <Filter>Source Files\FunctionGraph\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="FunctionGraphParameters.h">
+      <Filter>Source Files\FunctionGraph\Include</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

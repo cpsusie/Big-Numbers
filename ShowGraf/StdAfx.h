@@ -1,6 +1,6 @@
 #pragma once
 
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
+#define VC_EXTRALEAN        // Exclude rarely-used stuff from Windows headers
 
 #include "targetver.h"
 
@@ -17,7 +17,7 @@
 #include <afxext.h>     // MFC extensions
 
 #ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>			// MFC support for Windows Common Controls
+#include <afxcmn.h>         // MFC support for Windows Common Controls
 #endif // _AFX_NO_AFXCMN_SUPPORT
 
 #include <afxcontrolbars.h>     // MFC support for ribbons and control bars

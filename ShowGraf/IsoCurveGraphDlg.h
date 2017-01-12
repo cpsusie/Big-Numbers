@@ -10,14 +10,14 @@ private:
     CFont               m_exprFont;
     String              m_fullName;
 
-    CString	            m_name;
-    CString	            m_style;
-    CString	            m_expr;
-    double	            m_cellSize;
-    double	            m_xFrom;
-    double	            m_xTo;
-    double	            m_yFrom;
-    double	            m_yTo;
+    CString             m_name;
+    CString             m_style;
+    CString             m_expr;
+    double              m_cellSize;
+    double              m_xFrom;
+    double              m_xTo;
+    double              m_yFrom;
+    double              m_yTo;
 
     CComboBox *getStyleCombo() {
       return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);

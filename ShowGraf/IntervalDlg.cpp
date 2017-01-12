@@ -21,13 +21,13 @@ void CIntervalDlg::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CIntervalDlg, CDialog)
-	ON_COMMAND(ID_GOTO_XINTERVAL, OnGotoXInterval)
-	ON_COMMAND(ID_GOTO_YINTERVAL, OnGotoYInterval)
+    ON_COMMAND(ID_GOTO_XINTERVAL, OnGotoXInterval)
+    ON_COMMAND(ID_GOTO_YINTERVAL, OnGotoYInterval)
 END_MESSAGE_MAP()
 
 BOOL CIntervalDlg::OnInitDialog() {
   UpdateData(FALSE);
-	
+
   CDialog::OnInitDialog();
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_INTERVAL));
   OnGotoXInterval();

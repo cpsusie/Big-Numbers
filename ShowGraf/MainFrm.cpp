@@ -2,7 +2,7 @@
 #include "ShowGraf.h"
 #include "MainFrm.h"
 #include "DiffEquationGraphDlg.h"
-#include "ExpressionGraphDlg.h"
+#include "FunctionGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
 #include "IntervalDlg.h"
 #include "RollSizeDlg.h"
@@ -55,7 +55,7 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_TOOLS_FIT_EXPO_FUNCTION        , OnToolsFitExpoFunction        )
   ON_COMMAND(ID_TOOLS_FIT_POTENS_FUNCTION      , OnToolsFitPotensFunction      )
   ON_COMMAND(ID_TOOLS_FIT_CUSTOM_FUNCTION      , OnToolsFitCustomFunction      )
-  ON_COMMAND(ID_TOOLS_PLOT                     , OnToolsPlot                   )
+  ON_COMMAND(ID_TOOLS_PLOTFUNCTION             , OnToolsPlotFunction           )
   ON_COMMAND(ID_TOOLS_IMPLICITDEFINEDCURVE     , OnToolsImplicitDefinedCurve   )
   ON_COMMAND(ID_TOOLS_DIFFERENTIALEQUATIONS    , OnToolsDifferentialEquations  )
   ON_COMMAND(ID_OPTIONS_IGNOREERRORS           , OnOptionsIgnoreErrors         )
@@ -267,7 +267,7 @@ void CMainFrame::OnViewStyleCurve() {
 }
 
 void CMainFrame::OnViewStylePoint() {
-  getView()->setGraphStyle(GSPOINT);  	
+  getView()->setGraphStyle(GSPOINT);
   Invalidate(FALSE);
 }
 
@@ -329,13 +329,13 @@ void CMainFrame::OnToolsFitCustomFunction() {
   getView()->startCustomFitThread();
 }
 
-void CMainFrame::OnToolsPlot() {
+void CMainFrame::OnToolsPlotFunction() {
   try {
-    ExpressionGraphParameters &param = getView()->getPlotParam();
+    FunctionGraphParameters &param = getView()->getFunctionParam();
     param.m_color             = randomColor();
     param.m_trigonometricMode = getTrigonometricMode();
     param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
-    CExpressionGraphDlg dlg(param);
+    CFunctionGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
       Expression expr(param.m_trigonometricMode);
       expr.compile(param.m_expr, true);
@@ -343,7 +343,7 @@ void CMainFrame::OnToolsPlot() {
         MessageBox(expr.getErrors()[0].cstr(),_T("Error"),MB_ICONEXCLAMATION);
         return;
       }
-      getView()->addExpressionGraph(param);
+      getView()->addFunctionGraph(param);
     }
   } catch(Exception e) {
     showException(e);

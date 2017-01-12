@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include <Math/Expression/Expression.h>
 #include "Showgraf.h"
-#include "ExpressionGraphDlg.h"
+#include "FunctionGraphDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
-CExpressionGraphDlg::CExpressionGraphDlg(ExpressionGraphParameters &param, int showFlags, CWnd *pParent)
+CFunctionGraphDlg::CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags, CWnd *pParent)
 : m_param(param)
-, CDialog(CExpressionGraphDlg::IDD, pParent)
+, CDialog(CFunctionGraphDlg::IDD, pParent)
 {
   if(!m_param.hasName()) {
     m_param.setDefaultName();
@@ -17,7 +17,7 @@ CExpressionGraphDlg::CExpressionGraphDlg(ExpressionGraphParameters &param, int s
   m_showFlags = showFlags;
 }
 
-void CExpressionGraphDlg::DoDataExchange(CDataExchange* pDX) {
+void CFunctionGraphDlg::DoDataExchange(CDataExchange* pDX) {
   CDialog::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITEXPR, m_expr);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
@@ -28,7 +28,7 @@ void CExpressionGraphDlg::DoDataExchange(CDataExchange* pDX) {
   DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
 
-BEGIN_MESSAGE_MAP(CExpressionGraphDlg, CDialog)
+BEGIN_MESSAGE_MAP(CFunctionGraphDlg, CDialog)
   ON_WM_SIZE()
   ON_COMMAND(   ID_FILE_NEW                                       , OnFileNew                   )
   ON_COMMAND(   ID_FILE_OPEN                                      , OnFileOpen                  )
@@ -42,16 +42,16 @@ BEGIN_MESSAGE_MAP(CExpressionGraphDlg, CDialog)
   ON_COMMAND(   ID_GOTO_STEP                                      , OnGotoStep                  )
 END_MESSAGE_MAP()
 
-BOOL CExpressionGraphDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CFunctionGraphDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
   return CDialog::PreTranslateMessage(pMsg);
 }
 
-BOOL CExpressionGraphDlg::OnInitDialog() {
+BOOL CFunctionGraphDlg::OnInitDialog() {
   CDialog::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_EXPR));
+  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_FUNCTION));
   if(!(m_showFlags & SHOW_INTERVAL)) {
     GetDlgItem(IDC_STATICINTERVAL)->ShowWindow(SW_HIDE);
     GetDlgItem(IDC_EDITXFROM     )->ShowWindow(SW_HIDE);
@@ -94,13 +94,13 @@ BOOL CExpressionGraphDlg::OnInitDialog() {
   return FALSE;
 }
 
-void CExpressionGraphDlg::OnOK() {
+void CFunctionGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
   CDialog::OnOK();
 }
 
-bool CExpressionGraphDlg::validate() {
+bool CFunctionGraphDlg::validate() {
   if(m_name.GetLength() == 0) {
     OnGotoName();
     MessageBox(_T("Must specify name"));
@@ -128,40 +128,40 @@ bool CExpressionGraphDlg::validate() {
   return true;
 }
 
-void CExpressionGraphDlg::OnGotoExpr() {
+void CFunctionGraphDlg::OnGotoExpr() {
   GetDlgItem(IDC_EDITEXPR)->SetFocus(); 
 }
 
-void CExpressionGraphDlg::OnGotoName() {
+void CFunctionGraphDlg::OnGotoName() {
   gotoEditBox(this,IDC_EDITNAME);
 }
 
-void CExpressionGraphDlg::OnGotoStyle() {
+void CFunctionGraphDlg::OnGotoStyle() {
   getStyleCombo()->SetFocus();
 }
 
-void CExpressionGraphDlg::OnGotoXInterval() {
+void CFunctionGraphDlg::OnGotoXInterval() {
   gotoEditBox(this,IDC_EDITXFROM);
 }
 
-void CExpressionGraphDlg::OnGotoStep() {
+void CFunctionGraphDlg::OnGotoStep() {
   gotoEditBox(this,IDC_EDITSTEPS);
 }
 
-void CExpressionGraphDlg::OnSize(UINT nType, int cx, int cy) {
+void CFunctionGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
   CDialog::OnSize(nType, cx, cy);
 }
 
-void CExpressionGraphDlg::OnFileNew() {
-  ExpressionGraphParameters param;
+void CFunctionGraphDlg::OnFileNew() {
+  FunctionGraphParameters param;
   paramToWin(param);
   UpdateData(false);
 }
 
 static const TCHAR *fileDialogExtensions = _T("Expression-files (*.exp)\0*.exp\0All files (*.*)\0*.*\0\0");
 
-void CExpressionGraphDlg::OnFileOpen() {
+void CFunctionGraphDlg::OnFileOpen() {
   CFileDialog dlg(TRUE);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Open expression");
@@ -170,7 +170,7 @@ void CExpressionGraphDlg::OnFileOpen() {
   }
 
   try {
-    ExpressionGraphParameters param;
+    FunctionGraphParameters param;
     const String fileName = dlg.m_ofn.lpstrFile;
     param.load(fileName);
     paramToWin(param);
@@ -181,10 +181,10 @@ void CExpressionGraphDlg::OnFileOpen() {
   }
 }
 
-void CExpressionGraphDlg::OnFileSave() {
+void CFunctionGraphDlg::OnFileSave() {
   if(!UpdateData() || !validate()) return;
   
-  ExpressionGraphParameters param;
+  FunctionGraphParameters param;
   winToParam(param);
 
   if(param.hasDefaultName()) {
@@ -194,15 +194,15 @@ void CExpressionGraphDlg::OnFileSave() {
   }
 }
 
-void CExpressionGraphDlg::OnFileSaveAs() {
+void CFunctionGraphDlg::OnFileSaveAs() {
   if(!UpdateData() || !validate()) return;
   
-  ExpressionGraphParameters param;
+  FunctionGraphParameters param;
   winToParam(param);
   saveAs(param);
 }
 
-void CExpressionGraphDlg::saveAs(ExpressionGraphParameters &param) {
+void CFunctionGraphDlg::saveAs(FunctionGraphParameters &param) {
   CString objname = param.getFullName().cstr();
   CFileDialog dlg(FALSE,_T("*.exp"), objname);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
@@ -213,7 +213,7 @@ void CExpressionGraphDlg::saveAs(ExpressionGraphParameters &param) {
   save(dlg.m_ofn.lpstrFile, param);
 }
 
-void CExpressionGraphDlg::save(const String &fileName, ExpressionGraphParameters &param) {
+void CFunctionGraphDlg::save(const String &fileName, FunctionGraphParameters &param) {
   try {
     param.save(fileName);
     paramToWin(param);
@@ -224,22 +224,22 @@ void CExpressionGraphDlg::save(const String &fileName, ExpressionGraphParameters
   }
 }
 
-void CExpressionGraphDlg::addToRecent(const String &fileName) {
+void CFunctionGraphDlg::addToRecent(const String &fileName) {
   AfxGetApp()->AddToRecentFileList(fileName.cstr());
 }
 /*
-void CExpressionGraphDlg::OnFindMatchingParanthes() {
+void CFunctionGraphDlg::OnFindMatchingParanthes() {
   if(getFocusCtrlId(this) != IDC_EDITEXPR) {
     return;
   }
   gotoMatchingParanthes(this, IDC_EDITEXPR);
 }
 */
-void CExpressionGraphDlg::OnEditFindmatchingparentesis() {
+void CFunctionGraphDlg::OnEditFindmatchingparentesis() {
   gotoMatchingParanthes(this, IDC_EDITEXPR);
 }
 
-void CExpressionGraphDlg::paramToWin(const ExpressionGraphParameters &param) {
+void CFunctionGraphDlg::paramToWin(const FunctionGraphParameters &param) {
   m_fullName = param.getFullName();
   m_name     = param.getPartialName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
@@ -250,7 +250,7 @@ void CExpressionGraphDlg::paramToWin(const ExpressionGraphParameters &param) {
   m_steps    = param.m_steps;
 }
 
-void CExpressionGraphDlg::winToParam(ExpressionGraphParameters &param) {
+void CFunctionGraphDlg::winToParam(FunctionGraphParameters &param) {
   FileNameSplitter info(m_fullName);
   if(info.getFileName() != m_name) {
     m_fullName = info.setFileName(m_name).getFullPath();

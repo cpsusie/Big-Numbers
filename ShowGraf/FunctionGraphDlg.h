@@ -1,12 +1,12 @@
 #pragma once
 
-#include "ExpressionGraph.h"
+#include "FunctionGraph.h"
 #include <MFCUtil/LayoutManager.h>
 
 #define SHOW_INTERVAL 0x1
 #define SHOW_STEP     0x2
 
-class CExpressionGraphDlg : public CDialog {
+class CFunctionGraphDlg : public CDialog {
 private:
     HACCEL              m_accelTable;
     SimpleLayoutManager m_layoutManager;
@@ -14,7 +14,7 @@ private:
     String              m_fullName;
 
     CString             m_name;
-    CString	            m_style;
+    CString             m_style;
     CString             m_expr;
     double              m_xFrom;
     double              m_xTo;
@@ -28,17 +28,17 @@ private:
       return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
     }
     bool validate();
-    void paramToWin(            const ExpressionGraphParameters &param);
-    void winToParam(                  ExpressionGraphParameters &param);
-    void saveAs(                      ExpressionGraphParameters &param);
-    void save(const String &fileName, ExpressionGraphParameters &param);
+    void paramToWin(            const FunctionGraphParameters &param);
+    void winToParam(                  FunctionGraphParameters &param);
+    void saveAs(                      FunctionGraphParameters &param);
+    void save(const String &fileName, FunctionGraphParameters &param);
     void addToRecent(const String &fileName);
 
 public:
-    CExpressionGraphDlg(ExpressionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
-    ExpressionGraphParameters &m_param;
+    CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
+    FunctionGraphParameters &m_param;
 
-    enum { IDD = IDD_EXPRGRAPH_DIALOG };
+    enum { IDD = IDD_FUNCTIONGRAPH_DIALOG };
 
 public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);

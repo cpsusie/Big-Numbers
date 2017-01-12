@@ -10,7 +10,7 @@
 IMPLEMENT_DYNAMIC(CDiffEquationGraphDlg, CDialog)
 
 CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent)
-	: m_param(param)
+  : m_param(param)
   , CDialog(IDD_DIFFEQUATIONGRAPH_DIALOG, pParent)
 {
 }

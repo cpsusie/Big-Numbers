@@ -185,11 +185,11 @@ int IsoCurveFinder::getPointId(const HashedRectCorner &c1, const HashedRectCorne
 Point2D IsoCurveFinder::converge(const Point2D &p1, const Point2D &p2, bool p1Positive, int itCount) {
   Point2D pos, neg;
   if(p1Positive) {
-	pos = p1;
-	neg = p2;
+    pos = p1;
+    neg = p2;
   } else {
-	pos = p2;
-	neg = p1;
+    pos = p2;
+    neg = p1;
   }
   double v;
   for(int i = itCount = max(itCount, RES);;) {

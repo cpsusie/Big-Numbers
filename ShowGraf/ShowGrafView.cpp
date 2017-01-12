@@ -7,7 +7,7 @@
 #include "DataGraphParameters.h"
 #include "DataGraph.h"
 #include "DiffEquationGraphDlg.h"
-#include "ExpressionGraphDlg.h"
+#include "FunctionGraphDlg.h"
 #include "IsoCurveGraphDlg.h"
 #include "DataGraphDlg.h"
 
@@ -436,9 +436,9 @@ void CShowGrafView::OnSelectMenuEdit() {
   if(m_graphArray.getCurrentSelection() >= 0) {
     Graph &g = m_graphArray[m_graphArray.getCurrentSelection()].getGraph();
     switch(g.getType()) {
-    case EXPRESSIONGRAPH  :
-      { ExpressionGraphParameters *param = (ExpressionGraphParameters*)&g.getParam();
-        CExpressionGraphDlg dlg(*param);
+    case FUNCTIONGRAPH  :
+      { FunctionGraphParameters *param = (FunctionGraphParameters*)&g.getParam();
+        CFunctionGraphDlg dlg(*param);
         if(dlg.DoModal() == IDOK) {
           g.calculate();
         }
@@ -520,10 +520,10 @@ void CShowGrafView::addGraphFromFile(const String &fileName) {
   for (int i = 0; i < 4; i++) {
     try {
       switch(i) {
-      case 0: readExprFile(  fileName); break;
-      case 1: readIsoFile(   fileName); break;
-      case 2: readDataFile(  fileName); break;
-      case 3: readDiffEqFile(fileName); break;
+      case 0: readFunctionFile(fileName); break;
+      case 1: readIsoFile(     fileName); break;
+      case 2: readDataFile(    fileName); break;
+      case 3: readDiffEqFile(  fileName); break;
       }
       return;
     } catch(Exception e) {
@@ -554,10 +554,10 @@ void CShowGrafView::readDataFile(const String &fileName) {
   }
 }
 
-void CShowGrafView::readExprFile(const String &fileName) {
-  ExpressionGraphParameters param;
+void CShowGrafView::readFunctionFile(const String &fileName) {
+  FunctionGraphParameters param;
   param.load(fileName);
-  Graph *g = new ExpressionGraph(param);
+  Graph *g = new FunctionGraph(param);
   m_graphArray.add(g);
   initScaleIfSingleGraph();
 }
@@ -689,8 +689,8 @@ void CShowGrafView::addDiffEquationGraph(DiffEquationGraphParameters &param) {
   Invalidate(TRUE);
 }
 
-void CShowGrafView::addExpressionGraph(ExpressionGraphParameters &param) {
-  m_graphArray.add(new ExpressionGraph(param));
+void CShowGrafView::addFunctionGraph(FunctionGraphParameters &param) {
+  m_graphArray.add(new FunctionGraph(param));
   m_graphArray.select(m_graphArray.size()-1);
   initScaleIfSingleGraph();
   Invalidate(TRUE);
@@ -706,8 +706,8 @@ void CShowGrafView::addIsoCurveGraph(IsoCurveGraphParameters &param) {
 void CShowGrafView::setTrigonometricMode(TrigonometricMode mode) {
   for(size_t i = 0; i < m_graphArray.size(); i++) {
     Graph &g = m_graphArray[i].getGraph();
-    if(g.getType() == EXPRESSIONGRAPH) {
-      ((ExpressionGraph&)g).setTrigonometricMode(mode);
+    if(g.getType() == FUNCTIONGRAPH) {
+      ((FunctionGraph&)g).setTrigonometricMode(mode);
     }
   }
 }
@@ -769,12 +769,12 @@ void CShowGrafView::makeExpoFit() {
     Polynomial poly = fit;
     const double a = s * exp(poly.getCoef(0).re);
     const double b = exp(poly.getCoef(1).re);
-    ExpressionGraphParameters param;
+    FunctionGraphParameters param;
     param.setName(format(_T("Exponential fit of %s"), item->getPartialName().cstr()));
     param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
     param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * b^x"), a, b);
     param.m_interval = item->getGraph().getDataRange().getXInterval();
-    addExpressionGraph(param);
+    addFunctionGraph(param);
     Invalidate(TRUE);
   }
 }
@@ -812,12 +812,12 @@ void CShowGrafView::makePotensFit() {
     Polynomial poly = fit;
     const double a = s * exp(poly.getCoef(0).re);
     const double b = poly.getCoef(1).re;
-    ExpressionGraphParameters param;
+    FunctionGraphParameters param;
     param.setName(format(_T("potens fit of %s"), item->getPartialName().cstr()));
     param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
     param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * x^b"), a, b);
     param.m_interval = item->getGraph().getDataRange().getXInterval();
-    addExpressionGraph(param);
+    addFunctionGraph(param);
     Invalidate(TRUE);
   }
 }
