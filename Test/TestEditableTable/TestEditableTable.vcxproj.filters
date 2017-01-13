@@ -62,9 +62,6 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="res\TestEditableTable.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>

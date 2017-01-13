@@ -557,9 +557,7 @@ void CShowGrafView::readDataFile(const String &fileName) {
   Graph *g = new DataGraph(param);
   if(!g->isEmpty()) {
     m_graphArray.add(g);
-    if(m_graphArray.size() == 1) {
-      initScale();
-    }
+    initScaleIfSingleGraph();
   } else {
     delete g;
   }
