@@ -1,0 +1,372 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\TestEditableTable.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\TestEditableTable.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LISTFIELDDIALOG DIALOG DISCARDABLE  0, 0, 338, 147
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Field attributes"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITHEADER,57,17,31,13,ES_AUTOHSCROLL
+    COMBOBOX        IDC_COMBOFIELDTYPE,105,17,57,78,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Enabled",IDC_CHECKENABLED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,185,17,45,13
+    CONTROL         "&Lower limit",IDC_CHECKHASLOWERLIMIT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,55,49,13
+    CONTROL         "Exlusive",IDC_CHECKLOWERLIMITEXCLUSIVE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,77,55,44,13
+    EDITTEXT        IDC_EDITLOWERLIMIT,131,55,48,13,ES_RIGHT | 
+                    ES_AUTOHSCROLL
+    CONTROL         "&Upper limit",IDC_CHECKHASUPPERLIMIT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,17,76,49,13
+    CONTROL         "Exlusive",IDC_CHECKUPPERLIMITEXCLUSIVE,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,77,76,44,13
+    EDITTEXT        IDC_EDITUPPERLIMIT,131,76,48,13,ES_RIGHT | 
+                    ES_AUTOHSCROLL
+    CONTROL         "Show &zero",IDC_CHECKSHOWZERO,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,17,97,53,13
+    EDITTEXT        IDC_EDITDECIMALS,57,118,31,13,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Drop &down",IDC_RADIODROPDOWN,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,251,55,49,13
+    CONTROL         "Drop li&st",IDC_RADIODROPLIST,"Button",
+                    BS_AUTORADIOBUTTON,251,76,49,13
+    DEFPUSHBUTTON   "OK",IDOK,226,126,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,281,126,50,14
+    LTEXT           "&Header:",IDC_STATICHEADER,17,17,31,13,SS_CENTERIMAGE
+    LTEXT           "De&cimals:",IDC_STATICDECIMALS,17,120,31,13
+    GROUPBOX        "Numeric attributes",IDC_STATICNUMERICFRAME,7,42,179,98,
+                    BS_CENTER
+    GROUPBOX        "Combo box style",IDC_STATICCOMBOSTYLEFRAME,232,42,99,53,
+                    BS_CENTER
+    EDITTEXT        IDC_EDITWIDTH,280,17,39,13,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "&Width:",IDC_STATICWIDTH,245,17,24,13,SS_CENTERIMAGE
+END
+
+IDD_EDITSCHEMADIALOG DIALOG DISCARDABLE  0, 0, 569, 226
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Edit Schema"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,461,205,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,512,205,50,14
+    CONTROL         "List1",IDC_LISTBASESCHEMA,"SysListView32",LVS_REPORT | 
+                    WS_BORDER | WS_TABSTOP,7,7,532,190
+    PUSHBUTTON      "Up",IDC_BUTTONUP,547,88,15,15
+    PUSHBUTTON      "Down",IDC_BUTTONDOWN,547,110,15,15
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_TESTEDITABLETABLE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 460
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 240
+    END
+    IDD_LISTFIELDDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 331
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 140
+    END
+    IDD_EDITSCHEMADIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 562
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 219
+    END
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_LISTFIELDDIALOG DLGINIT
+BEGIN
+    IDC_COMBOFIELDTYPE, 0x403, 6, 0
+0x6853, 0x726f, 0x0074, 
+    IDC_COMBOFIELDTYPE, 0x403, 4, 0
+0x6e49, 0x0074, 
+    IDC_COMBOFIELDTYPE, 0x403, 6, 0
+0x6c46, 0x616f, 0x0074, 
+    IDC_COMBOFIELDTYPE, 0x403, 7, 0
+0x6f44, 0x6275, 0x656c, "\000" 
+    IDC_COMBOFIELDTYPE, 0x403, 7, 0
+0x7453, 0x7269, 0x676e, "\000" 
+    IDC_COMBOFIELDTYPE, 0x403, 13, 0
+0x7453, 0x6972, 0x676e, 0x4320, 0x6d6f, 0x6f62, "\000" 
+    IDC_COMBOFIELDTYPE, 0x403, 5, 0
+0x6f42, 0x6c6f, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Setup &model\tAlt+M...",      ID_EDIT_SETUPMODEL
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR_MAINDIALOG ACCELERATORS DISCARDABLE 
+BEGIN
+    "M",            ID_EDIT_SETUPMODEL,     VIRTKEY, ALT, NOINVERT
+END
+
+IDR_ACCELERATOR_LISTFIELDATTRIBUTE ACCELERATORS DISCARDABLE 
+BEGIN
+    "D",            ID_GOTODECIMALS,        VIRTKEY, ALT, NOINVERT
+    "H",            ID_GOTOHEADER,          VIRTKEY, ALT, NOINVERT
+    "W",            ID_GOTOWIDTH,           VIRTKEY, ALT, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About TestEditableTable"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "TestEditableTable Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2015",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_TESTEDITABLETABLE_DIALOG DIALOGEX 0, 0, 467, 247
+STYLE WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "TestEditableTable"
+MENU IDR_MAINFRAME
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDIT1,80,13,41,15,ES_AUTOHSCROLL
+    CONTROL         "Check 1",IDC_CHECK1,"Button",BS_AUTOCHECKBOX | 
+                    BS_NOTIFY | WS_TABSTOP,173,13,45,14
+    COMBOBOX        IDC_COMBO1,234,14,66,35,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    CONTROL         "List1",IDC_LIST,"SysListView32",LVS_SORTASCENDING | 
+                    LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,37,453,181
+    PUSHBUTTON      "&Insert 10",IDC_BUTTONINSERT10,7,226,50,14
+    PUSHBUTTON      "&Delete current",IDC_BUTTONDELETECURRENT,61,226,50,14
+    PUSHBUTTON      "&Clear table",IDC_BUTTONCLEARTABLE,115,226,50,14
+    PUSHBUTTON      "&Log table",IDC_BUTTOLOGTABLE,353,226,50,14
+    PUSHBUTTON      "&Reset Log",IDC_BUTTONRESETLOG,410,226,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_TESTEDITABLETABLE_DIALOG DLGINIT
+BEGIN
+    IDC_COMBO1, 0x403, 8, 0
+0x6c45, 0x6665, 0x6e61, 0x0074, 
+    IDC_COMBO1, 0x403, 6, 0
+0x6947, 0x6172, 0x0066, 
+    IDC_COMBO1, 0x403, 9, 0
+0xe64e, 0x6573, 0x6f68, 0x6e72, "\000" 
+    IDC_COMBO1, 0x403, 5, 0
+0xf84c, 0x6576, "\000" 
+    IDC_COMBO1, 0x403, 6, 0
+0x655a, 0x7262, 0x0061, 
+    IDC_COMBO1, 0x403, 9, 0
+0x6e41, 0x6974, 0x6f6c, 0x6570, "\000" 
+    0
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "TestEditableTable MFC Application\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "TestEditableTable\0"
+            VALUE "LegalCopyright", "Copyright (C) 2015\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "TestEditableTable.EXE\0"
+            VALUE "ProductName", "TestEditableTable Application\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About TestEditableTable..."
+END
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\TestEditableTable.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

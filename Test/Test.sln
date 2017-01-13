@@ -67,6 +67,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Compress", "Compress\compre
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestEditableTable", "TestEditableTable\TestEditableTable.vcxproj", "{2CA41E2B-A750-4441-8483-8883BB168364}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -319,6 +325,22 @@ Global
 		{1C00959C-9198-494E-B810-AF8210AE78AC}.Release|x64.Build.0 = Release|x64
 		{1C00959C-9198-494E-B810-AF8210AE78AC}.Release|x86.ActiveCfg = Release|Win32
 		{1C00959C-9198-494E-B810-AF8210AE78AC}.Release|x86.Build.0 = Release|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Debug|x64.ActiveCfg = Debug|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Debug|x64.Build.0 = Debug|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Debug|x86.ActiveCfg = Debug|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Debug|x86.Build.0 = Debug|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDDebug|x64.ActiveCfg = Debug|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDDebug|x64.Build.0 = Debug|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDDebug|x86.Build.0 = Debug|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDRelease|x64.ActiveCfg = Release|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDRelease|x64.Build.0 = Release|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDRelease|x86.ActiveCfg = Release|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.LDRelease|x86.Build.0 = Release|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Release|x64.ActiveCfg = Release|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Release|x64.Build.0 = Release|x64
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Release|x86.ActiveCfg = Release|Win32
+		{2CA41E2B-A750-4441-8483-8883BB168364}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
