@@ -277,6 +277,11 @@
     <ClCompile Include="CoordinateSystem\SystemPainter.cpp" />
     <ClCompile Include="CursorTools.cpp" />
     <ClCompile Include="DeleteButton.cpp" />
+    <ClCompile Include="EditListBooleanEditor.cpp" />
+    <ClCompile Include="EditListCtrl.cpp" />
+    <ClCompile Include="EditListNumericEditor.cpp" />
+    <ClCompile Include="EditListStringCombo.cpp" />
+    <ClCompile Include="EditListStringEditor.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
     <ClCompile Include="ExpressionGraphics.cpp" />
     <ClCompile Include="FileSink.cpp" />
@@ -325,6 +330,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TableModel.cpp" />
     <ClCompile Include="TextOut.cpp" />
     <ClCompile Include="TextOutTransparentBackground.cpp" />
     <ClCompile Include="Viewport2D.cpp" />
@@ -349,12 +355,18 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\NormalDistributionAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\DeleteButton.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\EditListBooleanEditor.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\EditListCtrl.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\EditListNumericEditor.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\EditListStringCombo.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\EditListStringEditor.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditWithSpinButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnable.h" />
     <ClInclude Include="..\..\Include\MFCUtil\LayoutManager.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h" />
     <ClInclude Include="..\..\Include\MFCUtil\OBMButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Picture.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
