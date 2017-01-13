@@ -341,7 +341,10 @@ typedef Array<const char*> StrArray;
 class StringArray : public Array<String> {
 public:
   StringArray() {}
-  StringArray(const char **strArray); // terminate with NULL-pointer
+  StringArray(const TCHAR **strArray); // terminate with NULL-pointer
+#ifdef UNICODE
+  StringArray(const char  **strArray); // terminate with NULL-pointer
+#endif
   StringArray(Tokenizer &tok);
   size_t maxLength() const;
   size_t minLength() const;

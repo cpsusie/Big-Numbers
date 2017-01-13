@@ -1,10 +1,18 @@
 #include "pch.h"
 
+StringArray::StringArray(const TCHAR **strArray) { // terminate with NULL-pointer
+  while(*strArray) {
+    add(*(strArray++));
+  }
+}
+
+#ifdef UNICODE
 StringArray::StringArray(const char **strArray) { // terminate with NULL-pointer
   while(*strArray) {
     add(*(strArray++));
   }
 }
+#endif
 
 StringArray::StringArray(Tokenizer &tok) {
   while(tok.hasNext()) {
