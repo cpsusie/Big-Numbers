@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
 
 LayoutAttribute::LayoutAttribute(SimpleLayoutManager *manager, int ctrlId, int flags)

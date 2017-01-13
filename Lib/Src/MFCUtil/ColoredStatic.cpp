@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <Tokenizer.h>
 #include <MFCUTIL/WinTools.h>
 #include <MFCUTIL/ColoredStatic.h>

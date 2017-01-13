@@ -55,7 +55,6 @@
 #define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
 
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
 #include <FileContent.h>
 #include <TinyBitSet.h>

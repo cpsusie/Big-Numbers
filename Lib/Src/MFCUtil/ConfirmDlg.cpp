@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <Tokenizer.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/ConfirmDlg.h>

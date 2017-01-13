@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include <MyUtil.h>
 #include <ByteArray.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/FileSink.h>

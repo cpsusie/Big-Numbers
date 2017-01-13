@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <Scandir.h>
 #include <Direct.h>
 #include <Tokenizer.h>

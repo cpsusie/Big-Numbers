@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 
 #ifndef WM_GETOBJECT
 #define WM_GETOBJECT                    0x003D

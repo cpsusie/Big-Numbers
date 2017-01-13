@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <shlobj.h>
 #include <MfCUtil/WinTools.h>
 #include <MFCUtil/Clipboard.h>

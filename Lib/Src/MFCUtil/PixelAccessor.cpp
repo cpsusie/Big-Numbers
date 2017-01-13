@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <CompactStack.h>
 #include <MFCUtil/PixRect.h>
 

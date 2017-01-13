@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <Math.h>
 #include <ByteFile.h>
 #include <ByteMemoryStream.h>

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <MFCUtil/WinTools.h>
 
 CRect getRelativeClientRect(const CWnd *wnd, int id) {

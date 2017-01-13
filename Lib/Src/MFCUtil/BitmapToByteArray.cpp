@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <ByteMemoryStream.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/FileSink.h>

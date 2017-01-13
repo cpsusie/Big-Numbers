@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
 #include <FileContent.h>
 #include <MFCUtil/WinTools.h>
 
