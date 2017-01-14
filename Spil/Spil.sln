@@ -27,6 +27,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Math", "..\Lib\Src\Math\Mat
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{93EAC87D-57D7-402C-A44D-9AC47581ED2B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "whist3", "WHIST3\Whist3.vcxproj", "{746998D9-8E1A-4DF9-9442-4BA821BCB095}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -213,6 +219,34 @@ Global
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
 		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Debug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDDebug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.LDRelease|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Profilling|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.Release|x86.Build.0 = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x64.ActiveCfg = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x64.Build.0 = Debug|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x86.ActiveCfg = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderDebug|x86.Build.0 = Debug|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
+		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

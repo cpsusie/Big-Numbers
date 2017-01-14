@@ -1,0 +1,450 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\whist3.rc2""   // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\whist3.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 278, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About whist3"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "Whist3 Version 1.0 af Jesper Grønning Mikkelsen",
+                    IDC_STATIC,40,10,155,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 1999",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,221,7,50,14,WS_GROUP
+END
+
+IDD_WHIST3_DIALOG DIALOGEX 0, 0, 358, 258
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "3-mands whist"
+MENU IDR_MAINFRAME
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Byt",IDC_SUBSTITUTE_OK,151,146,77,18
+    PUSHBUTTON      "Start",IDC_START_BUTTON,151,118,77,18,NOT WS_VISIBLE
+END
+
+IDD_IDENTIFY_DIALOG DIALOG DISCARDABLE  0, 0, 229, 134
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "3 mands whist"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_MYNAME_EDIT,70,19,56,14
+    CONTROL         "Jeg giver &kort",IDC_DEALER_RADIO,"Button",
+                    BS_AUTORADIOBUTTON | WS_GROUP,21,55,59,10
+    CONTROL         "Jeg giver &ikke kort",IDC_CONNECT_RADIO,"Button",
+                    BS_AUTORADIOBUTTON,21,71,74,10
+    EDITTEXT        IDC_DEALER_NAME_EDIT,98,101,73,14
+    DEFPUSHBUTTON   "OK",IDOK,172,7,50,14
+    PUSHBUTTON      "&Afslut",IDC_QUIT_BUTTON,172,24,50,14
+    LTEXT           "Indtast dit &navn:",IDC_STATIC,11,22,54,8
+    GROUPBOX        "Hvordan ønsker du at spille",IDC_STATIC,11,42,138,49
+    LTEXT           "Kortgivers &computernavn:",IDC_DEALER_NAME_TEXT,11,104,
+                    83,8
+END
+
+IDD_DECIDE_GAME_DIALOG DIALOG DISCARDABLE  0, 0, 366, 141
+STYLE DS_MODALFRAME | DS_CONTEXTHELP | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Vælg spil"
+FONT 8, "Courier New"
+BEGIN
+    CONTROL         "S&ol",IDC_SOL_RADIO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,21,30,26,10
+    CONTROL         "S&ans",IDC_SANS_RADIO,"Button",BS_AUTORADIOBUTTON,21,43,
+                    33,10
+    CONTROL         "S&par",IDC_SPAR_RADIO,"Button",BS_AUTORADIOBUTTON,21,56,
+                    31,10
+    CONTROL         "&Farve",IDC_FARVE_RADIO,"Button",BS_AUTORADIOBUTTON,21,
+                    69,34,10
+    CONTROL         "&1 point",IDC_1POINT_RADIO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,97,30,37,10
+    CONTROL         "&2 point",IDC_2POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    97,43,37,10
+    CONTROL         "&3 point",IDC_3POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    97,56,37,10
+    CONTROL         "&4 point",IDC_4POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    97,69,37,10
+    CONTROL         "&Klør",IDC_KLOER_RADIO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,22,106,32,10
+    CONTROL         "&Ruder",IDC_RUDER_RADIO,"Button",BS_AUTORADIOBUTTON,63,
+                    106,36,10
+    CONTROL         "&Hjerter",IDC_HJERTER_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    107,106,44,10
+    DEFPUSHBUTTON   "OK",IDOK,298,115,50,14
+    GROUPBOX        "Type",IDC_STATIC,15,15,62,70,BS_CENTER
+    GROUPBOX        "Point per stik",IDC_STATIC,91,15,67,70
+    GROUPBOX        "Allerede spillet",IDC_STATIC,170,15,178,91,BS_CENTER
+    LTEXT           "",IDC_PLAYEDGAMES_SOL,178,41,164,13
+    LTEXT           "",IDC_PLAYEDGAMES_SANS,178,56,164,13
+    LTEXT           "",IDC_PLAYEDGAMES_SPADES,178,71,164,13
+    LTEXT           "",IDC_PLAYEDGAMES_COLOURS,178,86,164,13
+    LTEXT           "",IDC_PLAYEDGAMES_NAMES,178,26,164,13
+    GROUPBOX        "Trumf",IDC_TRUMF_STATIC,15,96,143,27,BS_CENTER
+END
+
+IDD_SUMMARY_DIALOG DIALOGEX 0, 0, 215, 199
+STYLE DS_MODALFRAME | WS_POPUP
+EXSTYLE WS_EX_CLIENTEDGE
+FONT 8, "Courier New"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,158,178,50,14
+    LISTBOX         IDC_SUMMARY_LIST,7,8,201,158,LBS_SORT | 
+                    LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_BACKSIDE_DIALOG DIALOG DISCARDABLE  0, 0, 261, 250
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Vælg bagside"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,204,7,50,14
+END
+
+IDD_RULES_DIALOG DIALOG DISCARDABLE  0, 0, 300, 88
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Regler"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,243,7,50,14
+    EDITTEXT        IDC_TEXT,56,37,212,18,ES_AUTOHSCROLL | ES_READONLY
+    LTEXT           "Se",IDC_STATIC,40,38,14,13
+END
+
+IDD_DECIDE_GAME_TRAINING_DIALOG DIALOGEX 0, 0, 503, 308
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Decide game training"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Afslut",IDOK,426,7,70,20
+    CONTROL         "&Sol",IDC_SOL_RADIO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,24,40,42,13
+    CONTROL         "S&ans",IDC_SANS_RADIO,"Button",BS_AUTORADIOBUTTON,24,60,
+                    42,13
+    CONTROL         "S&par",IDC_SPAR_RADIO,"Button",BS_AUTORADIOBUTTON,24,80,
+                    42,13
+    CONTROL         "&Farve",IDC_FARVE_RADIO,"Button",BS_AUTORADIOBUTTON,24,
+                    100,42,13
+    CONTROL         "&1 point",IDC_1POINT_RADIO,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,137,40,38,13
+    CONTROL         "&2 point",IDC_2POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    137,60,40,13
+    CONTROL         "&3 point",IDC_3POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    137,80,40,13
+    CONTROL         "&4 point",IDC_4POINT_RADIO,"Button",BS_AUTORADIOBUTTON,
+                    137,100,40,13
+    PUSHBUTTON      "&Gem beslutning",IDC_BUTTON_SAVE,426,32,70,20
+    GROUPBOX        "Spil type",IDC_STATIC,15,25,109,95
+    GROUPBOX        "Point per stik",IDC_STATIC,130,25,108,95
+    PUSHBUTTON      "Generer &næste",IDC_BUTTON_NEXTDATA,426,57,70,20
+    CONTROL         "",IDC_CARDFRAME,"Static",SS_ETCHEDFRAME,7,153,489,148,
+                    WS_EX_CLIENTEDGE
+    PUSHBUTTON      "S&tart training",IDC_BUTTONTRAIN,426,105,70,20
+    PUSHBUTTON      "&Decide game",IDC_BUTTONDECIDE,427,82,69,18
+    LTEXT           "",IDC_TRAININGINFO,293,107,128,17,SS_SUNKEN
+    LTEXT           "",IDC_STATICSOLVALUE,74,41,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATICSANSVALUE,74,61,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATICSPARVALUE,74,81,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATICFARVEVALUE,74,101,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATIC1POINTVALUE,186,41,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATIC2POINTVALUE,186,61,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATIC3POINTVALUE,186,81,44,12,SS_SUNKEN
+    LTEXT           "",IDC_STATIC4POINTVALUE,186,101,44,12,SS_SUNKEN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_IDENTIFY_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 222
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 127
+    END
+
+    IDD_DECIDE_GAME_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 359
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 134
+    END
+
+    IDD_SUMMARY_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 208
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 192
+    END
+
+    IDD_BACKSIDE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 254
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 243
+    END
+
+    IDD_RULES_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 293
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 81
+    END
+
+    IDD_DECIDE_GAME_TRAINING_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 496
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 301
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&Spil"
+    BEGIN
+        MENUITEM "&Score\tCtrl+S",              ID_GAME_SUMMARY
+        MENUITEM "S&idste stik\tCtrl+Z",        ID_GAME_LASTTRICK
+        MENUITEM "&Bagside\tCtrl+B",            ID_GAME_BACKSIDE
+        MENUITEM SEPARATOR
+        MENUITEM "&Auto",                       ID_GAME_AUTOPLAY
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_GAME_EXIT
+        MENUITEM "&Training...",                ID_GAME_TRAIN
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&Regler",                     ID_HELP_REGLER
+        MENUITEM SEPARATOR
+        MENUITEM "&About",                      ID_HELP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_CARDS_BITMAP            BITMAP  DISCARDABLE     "res\\Cardsbmp.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "B",            ID_GAME_BACKSIDE,       VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_GAME_SUMMARY,        VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_GAME_TRAIN,          VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_GAME_LASTTRICK,      VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_IDENTIFY_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "C",            ID_GOTO_DEALERNAME,     VIRTKEY, ALT, NOINVERT
+    "N",            ID_GOTO_NAME,           VIRTKEY, ALT, NOINVERT
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 271
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_WHIST3_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 351
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 251
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040604b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "whist3 - 3 mands whist\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "whist3\0"
+            VALUE "LegalCopyright", "Copyright (C) 1999\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "whist3.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "whist3\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x406, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About whist3..."
+    IDS_SOCKETS_INIT_FAILED "Windows sockets initialization failed."
+END
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\whist3.rc2"   // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
