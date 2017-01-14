@@ -92,7 +92,7 @@ public:
   inline const Point2DArray &getDataPoints() const {
     return m_pointArray;
   }
-  
+  void    setDataPoints(const Point2DArray &a);
   void    setRollSize(int size);
   double  distance(const CPoint &p, const RectangleTransformation &tr) const;
   double  getSmallestPositiveX() const;

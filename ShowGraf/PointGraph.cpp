@@ -45,6 +45,12 @@ void PointGraph::addPoint(const Point2D &p) {
   m_dataProcessed = false;
 }
 
+void PointGraph::setDataPoints(const Point2DArray &a) {
+  m_pointArray = a;
+  updateDataRange();
+  m_dataProcessed = false;
+}
+
 void PointGraph::clear() {
   m_pointArray.clear();
   updateDataRange();
