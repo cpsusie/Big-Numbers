@@ -809,7 +809,7 @@ typelibDefinition           : number TYPELIB fileName
 afxDialogLayout             : identifier AFX_DIALOG_LAYOUT BEGIN layoutInfo END
 							;
 
-layoutInfo					: number
+layoutInfo					: numberList
 							;
 
 fileName                    : string
