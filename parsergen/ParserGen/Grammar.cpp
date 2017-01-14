@@ -801,20 +801,22 @@ String Grammar::itemToString(const LR1Item &item, int flags) const {
   const Production &prod = getProduction(item);
   result = format(_T(" (%3d)%c %-15s -> "), item.m_prod, item.m_kernelItem?'K':' ', getSymbol(prod.m_leftSide).m_name.cstr());
   for(int i = 0; i < item.m_dot; i++) {
-    result += format(_T("%s "), getSymbol(prod.m_rightSide[i]).m_name.cstr());
+    result += getSymbol(prod.m_rightSide[i]).m_name;
+    result += _T(" ");
   }
   result += ".";
-  for(int i = item.m_dot; i < prod.getLength(); i++) {
-    result += format(_T("%s "), getSymbol(prod.m_rightSide[i]).m_name.cstr());
+  const int n = prod.getLength();
+  const TCHAR *delimiter = _T("");
+  for(int i = item.m_dot; i < n; i++, delimiter = _T(" ")) {
+    result += delimiter;
+    result += getSymbol(prod.m_rightSide[i]).m_name;
   }
   if(flags & DUMP_LOOKAHEAD) {
     result += symbolSetToString(item.m_la);
   }
   
-  if(flags & DUMP_SUCC) {
-    if(item.m_succ >= 0) {
-      result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
-    }
+  if((flags & DUMP_SUCC) && (item.m_succ >= 0)) {
+    result += format(_T(" -> %d"), item.getSuccessor()); // ie not reduce-item
   }
   return result;
 }
