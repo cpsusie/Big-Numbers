@@ -227,7 +227,8 @@ extern const double M_E;
 #define RAD2GRAD(r) ((r) / M_PI * 180.0)
 #define GRAD2RAD(g) ((g) / 180.0 * M_PI)
 
-#define PERCENT(n,total) ((total)?((double)(n)*100/(total)):100.0)
+#define PERCENT( n,total) ((total)?((double)(n)*100 /(total)):100.0 )
+#define PERMILLE(n,total) ((total)?((double)(n)*1000/(total)):1000.0)
 
 #ifndef max
 #define max(x, y) ((x) > (y) ? (x) : (y))

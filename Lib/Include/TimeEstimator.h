@@ -24,6 +24,9 @@ public:
   inline double getPercentDone() const {
     return PERCENT(getProgress(),getMaxProgress());
   }
+  inline double getPermilleDone() const {
+    return PERMILLE(getProgress(),getMaxProgress());
+  }
 };
 
 class TimeEstimator : private TimeoutHandler {

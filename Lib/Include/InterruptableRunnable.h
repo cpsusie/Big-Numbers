@@ -22,7 +22,9 @@ protected:
     m_flags |= 4;
   }
   virtual void handleInterruptOrSuspend();
-
+  void clearAllFlags() { // if job has to be started again, use this to reset
+    m_flags = 0;
+  }
 public:
   inline InterruptableRunnable() : m_thr(INVALID_HANDLE_VALUE), m_flags(0) {
   }
@@ -44,7 +46,6 @@ public:
   inline bool isInterruptedOrSuspended() const {
     return (m_flags&3) != 0;
   }
-
 
   // Should should only be called by this, or method called directly og indirectly by this
   // (operate on currentthread, that is the thread executing this runnable)
