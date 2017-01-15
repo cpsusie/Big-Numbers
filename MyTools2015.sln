@@ -93,6 +93,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GrabXml", "GrabXml\GrabXml.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ChessLib", "Spil\ChessLib\ChessLib.vcxproj", "{A4B4AD89-4044-434A-BDA1-A984C3210A85}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spectrum", "Spectrum\Spectrum.vcxproj", "{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -613,6 +615,28 @@ Global
 		{A4B4AD89-4044-434A-BDA1-A984C3210A85}.TablebaseBuilderRelease|x64.Build.0 = TablebaseBuilderRelease|x64
 		{A4B4AD89-4044-434A-BDA1-A984C3210A85}.TablebaseBuilderRelease|x86.ActiveCfg = TablebaseBuilderRelease|Win32
 		{A4B4AD89-4044-434A-BDA1-A984C3210A85}.TablebaseBuilderRelease|x86.Build.0 = TablebaseBuilderRelease|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Debug|x64.ActiveCfg = Debug|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Debug|x86.ActiveCfg = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Debug|x86.Build.0 = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDDebug|x64.ActiveCfg = Debug|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDDebug|x64.Build.0 = Debug|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDDebug|x86.Build.0 = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDRelease|x64.ActiveCfg = Release|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDRelease|x64.Build.0 = Release|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDRelease|x86.ActiveCfg = Release|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.LDRelease|x86.Build.0 = Release|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Release|x64.ActiveCfg = Release|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Release|x86.ActiveCfg = Release|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.Release|x86.Build.0 = Release|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderDebug|x64.ActiveCfg = Debug|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderDebug|x64.Build.0 = Debug|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderDebug|x86.ActiveCfg = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderDebug|x86.Build.0 = Debug|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
+		{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
