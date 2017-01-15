@@ -216,7 +216,18 @@ CompactArray<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // s
   return result;
 }
 
-D3DCAPS9 PixRectDevice::getDeviceCaps() {
+bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) const {
+  const D3DDEVTYPE deviceType = getDeviceCaps().DeviceType;
+  const HRESULT    hr         = s_direct3d->CheckDeviceFormatConversion(adapter, deviceType, srcFormat, dstFormat);
+  switch (hr) {
+  case D3D_OK             : return true;
+  case D3DERR_NOTAVAILABLE: return false;
+  default                 : CHECKRESULT(hr);
+                            return false;
+  }
+}
+
+D3DCAPS9 PixRectDevice::getDeviceCaps() const {
   D3DCAPS9 caps;
   CHECK3DRESULT(m_device->GetDeviceCaps(&caps));
   return caps;
@@ -336,13 +347,23 @@ PixRect::PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT heigh
   const CSize sz(width, height);
   initSurfaces();
   create(type, sz, pixelFormat, pool);
-  fillRect(0,0,width,height, WHITE);
+  fillColor(WHITE);
+/*
+  if(isValidGDIFormat()) {
+    fillRect(0,0,width,height, WHITE);
+  }
+*/
 }
 
 PixRect::PixRect(PixRectDevice &device, PixRectType type, const CSize &size, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
   initSurfaces();
   create(type, size, pixelFormat, pool);
-  fillRect(0,0,size.cx,size.cy,WHITE);
+  fillColor(WHITE);
+/*
+  if(isValidGDIFormat()) {
+    fillRect(0,0,size.cx,size.cy,WHITE);
+  }
+*/
 }
 
 PixRect::PixRect(PixRectDevice &device, HBITMAP src, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
@@ -428,6 +449,11 @@ void PixRect::showPixRect(const PixRect *pr) { // static
   DeleteDC(screenDC);
 }
 
+void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
+  LPDIRECT3DSURFACE surface = getSurface();
+  m_device.getD3Device()->ColorFill(surface, r, color);
+  surface->Release();
+}
 
 void PixRect::checkType(const TCHAR *method, PixRectType expectedType) const {
   if (getType() != expectedType) {
@@ -473,6 +499,18 @@ bool PixRect::hasAlphaChannel(D3DFORMAT format) { //static
   case D3DFMT_MULTI2_ARGB8  :
   case D3DFMT_A16B16G16R16F :
   case D3DFMT_A32B32G32R32F :
+    return true;
+  default:
+    return false;
+  }
+}
+
+bool PixRect::isValidGDIFormat(D3DFORMAT format) { // static
+  switch(format) {
+  case D3DFMT_R5G6B5  :
+  case D3DFMT_X1R5G5B5:
+  case D3DFMT_R8G8B8  :
+  case D3DFMT_X8R8G8B8:
     return true;
   default:
     return false;
@@ -1043,18 +1081,8 @@ void PixRect::mask(int x, int y, int w, int h, ULONG op, const PixRect *src, int
     throwException(_T("PixRect::mask failed:%s"), errorMsg.cstr());
   }
 }
+
 /*
-void PixRect::fastCopy(const CRect &rect, const PixRect *src) {
-  DDBLTFX ddbfx;
-  ZeroMemory(&ddbfx, sizeof(DDBLTFX));
-  ddbfx.dwSize = sizeof(DDBLTFX);
-  ddbfx.dwROP  = SRCCOPY;
-
-  if(getArea(rect) != 0) {
-    CHECK3DRESULT(m_surface->Blt(&(CRect&)rect, src->m_surface, NULL, DDBLT_ROP | DDBLT_WAIT, &ddbfx));
-  }
-}
-
 PixRectClipper::PixRectClipper(HWND hwnd) {
   CHECK3DRESULT(PixRect::directDraw->CreateClipper(0, &m_clipper, NULL));
   CHECK3DRESULT(m_clipper->SetHWnd(0, hwnd));
@@ -1071,13 +1099,17 @@ void PixRect::setClipper(PixRectClipper *clipper) {
     CHECK3DRESULT(m_surface->SetClipper(NULL));
   }
 }
-
-void PixRect::copy(VIDEOHDR &videoHeader) {
-  CHECK3DRESULT(m_surface->Lock(NULL, &m_ddsd, DDLOCK_WAIT | DDLOCK_WRITEONLY, NULL));
-  memcpy(m_ddsd.lpSurface, videoHeader.lpData, videoHeader.dwBytesUsed); 
-  CHECK3DRESULT(m_surface->Unlock(NULL));
-}
 */
+void PixRect::copy(VIDEOHDR &videoHeader) {
+  D3DLOCKED_RECT lr;
+  CHECK3DRESULT(m_surface->LockRect(&lr, NULL, D3DLOCK_NOSYSLOCK));
+  memcpy(lr.pBits, videoHeader.lpData, videoHeader.dwBytesUsed); 
+  CHECK3DRESULT(m_surface->UnlockRect());
+}
+
+void PixRect::formatConversion(const PixRect &pr) {
+  CHECKRESULT(m_device.getD3Device()->StretchRect(pr.m_surface, NULL, m_surface, NULL, D3DTEXF_NONE));
+}
 
 
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static

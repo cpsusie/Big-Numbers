@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{EC9661C7-AA70-418D-BC1C-4F9A87837BFD}</ProjectGuid>
     <RootNamespace>MFCUtil</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
     <Keyword>MFCDLLProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -300,6 +300,7 @@
     <ClCompile Include="ListCtrlTools.cpp" />
     <ClCompile Include="MenuTools.cpp" />
     <ClCompile Include="Message.cpp" />
+    <ClCompile Include="MMCapture.cpp" />
     <ClCompile Include="MoveFileToTrachCan.cpp" />
     <ClCompile Include="MyPolygon.cpp" />
     <ClCompile Include="NofifyIcon.cpp" />
@@ -367,6 +368,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\InteractiveRunnable.h" />
     <ClInclude Include="..\..\Include\MFCUtil\LayoutManager.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ListCtrlChildTrait.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\MMCapture.h" />
     <ClInclude Include="..\..\Include\MFCUtil\OBMButton.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Picture.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />

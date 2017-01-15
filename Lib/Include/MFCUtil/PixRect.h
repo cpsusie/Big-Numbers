@@ -292,6 +292,7 @@ public:
   LPDIRECT3DDEVICE &getD3Device() {
     return m_device;
   }
+  bool supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT) const;
   LPDIRECT3DSURFACE getRenderTarget();
   void setRenderTarget(LPDIRECT3DSURFACE renderTarget);
   void setRenderTarget(PixRect *renderTarget);
@@ -304,7 +305,7 @@ public:
   }
   void set2DTransform(const CSize &size);
   static CompactArray<D3DDISPLAYMODE> getDisplayModes(UINT adapter = D3DADAPTER_DEFAULT);
-  D3DCAPS getDeviceCaps();
+  D3DCAPS getDeviceCaps() const;
   DECLARERESULTCHECKER;
   inline void resetException() {
     m_exceptionInProgress = false;
@@ -403,6 +404,10 @@ public:
     return hasAlphaChannel(getPixelFormat());
   } 
 
+  bool PixRect::isValidGDIFormat() const {
+    return isValidGDIFormat(getPixelFormat());
+  }
+
   inline D3DFORMAT getPixelFormat() const {
     return m_desc.Format;
   }
@@ -410,7 +415,8 @@ public:
     return m_desc.Pool;
   }
 
-  static bool hasAlphaChannel(D3DFORMAT format);
+  static bool hasAlphaChannel( D3DFORMAT format);
+  static bool isValidGDIFormat(D3DFORMAT format);
   static D3DFORMAT getPixelFormat(HBITMAP bm);
   static const TCHAR *getFormatName(D3DFORMAT format);
 
@@ -435,6 +441,7 @@ public:
   void polygon(const MyPolygon &polygon, D3DCOLOR color, bool invert=false, bool closingEdge=true);
   void ellipse(const CRect &rect, D3DCOLOR color, bool invert=false);
   void bezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, D3DCOLOR color, bool invert=false);
+  void fillColor(D3DCOLOR color, const CRect *r = NULL); // if r == NULL, whole area will be colored
   void fillRect(const CRect &rect, D3DCOLOR color, bool invert=false);
   void fillRect(const CPoint &p0, const CSize &size, D3DCOLOR color, bool invert=false);
   void fillRect(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert=false);
@@ -449,6 +456,7 @@ public:
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
   void drawText(const CPoint &p, const char *text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void copy(VIDEOHDR &videoHeader);  
+  void formatConversion(const PixRect &pr);
 
   inline bool contains(const CPoint &p) const {
     return (UINT)p.x < m_desc.Width && (UINT)p.y < m_desc.Height;
@@ -487,7 +495,6 @@ public:
   static void alphaBlend(HDC      dst, const CPoint &dp, const CSize &dS          , const PixRect &src, const CPoint &sp, const CSize &ss, int srcConstAlpha);
   static void alphaBlend(HDC      dst, const CRect  &dr                           , const PixRect &src, const CRect  &sr                 , int srcConstAlpha);
 
-  void fastCopy(const CRect &rect, const PixRect *src);
   void replicate(int x, int y, int w, int h, const PixRect *src);
   void fill(const CPoint &p, D3DCOLOR color);
   void fillTransparent(const CPoint &p, unsigned char alpha=255); // alpha = 0 => transparent, 255 = opaque
