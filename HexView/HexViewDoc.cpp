@@ -13,16 +13,6 @@ END_MESSAGE_MAP()
 
 CHexViewDoc::CHexViewDoc() {
   init();
-  TCHAR **argv = __targv;
-  *argv++;
-  TCHAR *name = *argv++;
-  if(name) {
-    try {
-      OnOpenDocument(name);
-    } catch(Exception e) {
-      AfxMessageBox(format(_T("%s:%s"), name, e.what()).cstr());
-    }
-  }
 }
 
 CHexViewDoc::~CHexViewDoc() {
@@ -37,11 +27,6 @@ void CHexViewDoc::OnOpenDocument(TCHAR *fname) {
   m_fileName         = fname;
   m_file             = f;
   m_stat             = st;
-  theApp.AddToRecentFileList(fname);
-  CWnd *mainWnd = theApp.GetMainWnd();
-  if(mainWnd) {
-    mainWnd->SetWindowText(getTitle().cstr());
-  }
 }
 
 void CHexViewDoc::close() {

@@ -56,20 +56,26 @@ END_MESSAGE_MAP()
 class SearchThread : public Thread {
 private:
   SearchMachine  &m_job;
-  bool            m_quit;
+  bool            m_quit, m_suspended;
 public:
   SearchThread(SearchMachine &target);
   ~SearchThread();
   UINT run();
+  bool isSuspended() const {
+    return m_suspended;
+  }
 };
 
 SearchThread::SearchThread(SearchMachine &job) : Thread(job, _T("SearchThread")), m_job(job) {
-  m_quit = false;
+  m_quit = m_suspended = false;
 }
 
 SearchThread::~SearchThread() {
   m_quit = true;
   m_job.setInterrupted();
+  if (isSuspended()) {
+    resume();
+  }
   while(stillActive()) {
     Sleep(20);
   }
@@ -78,7 +84,9 @@ SearchThread::~SearchThread() {
 UINT SearchThread::run() {
   while(!m_quit) {
     Thread::run();
+    m_suspended = true;
     suspend();
+    m_suspended = false;
   }
   return 0;
 }
@@ -141,7 +149,7 @@ void CFindDlg::OnFindNext() {
     m_searchMachine.prepareSearch(forwardSearch, -1, (LPCTSTR)m_findWhat);
     m_searchThread->resume();
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
-    p->SetRange(0, (int)m_searchMachine.getMaxProgress());
+    p->SetRange(0, 100);
     p->SetPos(0);
     startTimer();
   } catch(Exception e) {
@@ -166,7 +174,7 @@ void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
     }
   } else {
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
-    p->SetPos((int)m_searchMachine.getProgress());
+    p->SetPos((int)m_searchMachine.getPercentDone());
   }
 }
 

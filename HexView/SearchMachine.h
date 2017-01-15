@@ -38,7 +38,7 @@ private:
   String         m_resultMessage;
   __int64        m_size;
   __int64        m_fileIndex;
-
+  __int64        m_maxProgress;
   AddrRange doSearch();
 public:
 
@@ -61,10 +61,10 @@ public:
   }
 // ---------------------- Functions to implement InteractiveRunnable ---------------
   UINT run();
-  double getProgress() const;
   double getMaxProgress() const {
-    return 1000;
+    return (double)m_maxProgress;
   }
+  double getProgress() const;
   String getTitle() {
     return m_forwardSearch ? _T("Find next occurrence") : _T("Find previous occurrence");
   }

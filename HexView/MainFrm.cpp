@@ -166,11 +166,14 @@ void CMainFrame::errorMsg(const Exception &e) {
 
 #define INVALIDATE getView()->Invalidate(false)
 
-void CMainFrame::newFile(const String &fname, bool readOnly) {
+bool CMainFrame::newFile(const String &fname, bool readOnly) {
   try {
     CHexViewDoc  *doc  = getDoc();
     CHexViewView *view = getView();
     doc->OnOpenDocument((TCHAR*)fname.cstr());
+
+    setWindowText(this, doc->getTitle());
+
     if(!readOnly) {
       doc->setReadOnly(false);
     }
@@ -178,8 +181,10 @@ void CMainFrame::newFile(const String &fname, bool readOnly) {
     view->resetAnchor();
     view->ctrlHome(false);
     INVALIDATE;
+    return true;
   } catch(Exception e ) {
     errorMsg(e);
+    return false;
   }
 }
 
@@ -209,20 +214,19 @@ void CMainFrame::selectAndOpenFile(bool readOnly) {
   }
   const TCHAR *defaultExtTag = _T("DefaultExtention");
   CFileDialog dlg(TRUE);
-  CHexViewDoc *doc  = getDoc();
-  const String docName = doc->getFileName();
-  TCHAR fileName[256];
+  CHexViewDoc *doc           = getDoc();
+  const String docName       = doc->getFileName();
   if(docName.length() > 0) {
-    _tcscpy(fileName, docName.cstr());
-    dlg.m_ofn.lpstrFile = fileName;
+    _tcscpy(dlg.m_ofn.lpstrFile, docName.cstr());
   }
 
-  dlg.m_ofn.lpstrTitle  = readOnly ? _T("Open file") : _T("Open file for update");
-  dlg.m_ofn.lpstrFilter = fileExtensions;
+  dlg.m_ofn.lpstrTitle   = readOnly ? _T("Open file") : _T("Open file for update");
+  dlg.m_ofn.lpstrFilter  = fileExtensions;
   dlg.m_ofn.nFilterIndex = theApp.GetProfileInt(_T("Settings"),defaultExtTag,0);
   if((dlg.DoModal() == IDOK) && _tcslen(dlg.m_ofn.lpstrFile)) {
     theApp.WriteProfileInt( _T("Settings"),defaultExtTag, dlg.m_ofn.nFilterIndex);
     newFile(dlg.m_ofn.lpstrFile, readOnly);
+    theApp.addToRecentFileList(dlg.m_ofn.lpstrFile);
   }
 }
 
@@ -270,9 +274,18 @@ void CMainFrame::OnFileMruFile(int index) {
   if(!checkSave()) {
     return;
   }
-  const String name = theApp.getRecentFile(index);
-  if(name.length() > 0) {
-    newFile(name, !shiftKeyPressed());
+  const String fname = theApp.getRecentFile(index);
+  if(ACCESS(fname, 4) < 0) {
+    const int errorCode = errno;
+    MessageBox(getErrnoText().cstr(), _T("Error"), MB_ICONWARNING);
+    if(errorCode == ENOENT) {
+      theApp.removeFromRecentFiles(index);
+    }
+    return;
+  }
+
+  if(fname.length() > 0) {
+    newFile(fname, !shiftKeyPressed());
   }
 }
 
@@ -429,11 +442,11 @@ void CMainFrame::OnEditFind() {
 
 void CMainFrame::OnEditFindNext() {
   CHexViewDoc *doc = getDoc();
-  if(!m_searchMachine.isSet() || doc->getSize() == 0) {
+  if(!m_searchMachine.isSet() || (doc->getSize() == 0)) {
     return;
   }
   CHexViewView *view = getView();
-  __int64 addr = view->getCurrentAddr();
+  INT64 addr = view->getCurrentAddr();
   if(view->hasAnchor()) {
     const AddrRange selection = view->getSelection();
     if((selection.getLength() == m_searchMachine.getPatternLength()) && (addr == selection.getLast())) {
@@ -445,11 +458,11 @@ void CMainFrame::OnEditFindNext() {
 
 void CMainFrame::OnEditFindPrev() {
   CHexViewDoc *doc = getDoc();
-  if(!m_searchMachine.isSet() || doc->getSize() == 0) {
+  if(!m_searchMachine.isSet() || (doc->getSize() == 0)) {
     return;
   }
   CHexViewView *view = getView();
-  __int64 addr = view->getCurrentAddr()-1;
+  INT64 addr = view->getCurrentAddr()-1;
   if(view->hasAnchor()) {
     const AddrRange selection = view->getSelection();
     if((selection.getLength() == m_searchMachine.getPatternLength()) && (addr == selection.getLast()-1)) {
@@ -459,7 +472,7 @@ void CMainFrame::OnEditFindPrev() {
   searchText(addr, false);
 }
 
-void CMainFrame::searchText(unsigned __int64 startPos, bool forwardSearch) {
+void CMainFrame::searchText(UINT64 startPos, bool forwardSearch) {
   m_searchMachine.prepareSearch(forwardSearch, startPos, _T(""), getDoc());
   ProgressWindow prgWnd(this, m_searchMachine, 500);
 
@@ -478,7 +491,7 @@ void CMainFrame::searchText(unsigned __int64 startPos, bool forwardSearch) {
 
 void CMainFrame::OnEditGotoAddress() {
   CHexViewDoc *doc = getDoc();
-  const unsigned __int64 docSize = doc->getSize();
+  const UINT64 docSize = doc->getSize();
   if(docSize == 0) {
     return;
   }
@@ -647,7 +660,7 @@ void CMainFrame::OnViewLineSize() {
   CLineSizeDlg dlg;
   if(dlg.DoModal()) {
     CHexViewView *view = getView();
-    const __int64 addr = view->getCurrentAddr();
+    const INT64 addr = view->getCurrentAddr();
     view->updateSettings();
     view->setCurrentAddr(addr, true);
   }

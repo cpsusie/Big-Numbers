@@ -13,6 +13,7 @@ BEGIN_MESSAGE_MAP(CHexViewApp, CWinApp)
 END_MESSAGE_MAP()
 
 CHexViewApp::CHexViewApp() {
+	SetAppID(_T("HexView version 2.001"));
 }
 
 CHexViewApp theApp;
@@ -29,7 +30,6 @@ BOOL CHexViewApp::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-
 	CWinApp::InitInstance();
 
 	// Initialize OLE libraries
@@ -42,28 +42,47 @@ BOOL CHexViewApp::InitInstance() {
 
 	EnableTaskbarInteraction(FALSE);
 
-    SetRegistryKey(_T("JGMData"));
-    LoadStdProfileSettings(16);
+  SetRegistryKey(_T("JGMData"));
+  LoadStdProfileSettings(_AFX_MRU_MAX_COUNT);
 
-    CSingleDocTemplate* pDocTemplate;
-    pDocTemplate = new CSingleDocTemplate(
-        IDR_MAINFRAME,
-        RUNTIME_CLASS(CHexViewDoc),
-        RUNTIME_CLASS(CMainFrame),       // main SDI frame window
-        RUNTIME_CLASS(CHexViewView));
-    AddDocTemplate(pDocTemplate);
+  CSingleDocTemplate *pDocTemplate = new CSingleDocTemplate(IDR_MAINFRAME
+                                                           ,RUNTIME_CLASS(CHexViewDoc)
+                                                           ,RUNTIME_CLASS(CMainFrame)       // main SDI frame window
+                                                           ,RUNTIME_CLASS(CHexViewView));
+  AddDocTemplate(pDocTemplate);
 
-    CCommandLineInfo cmdInfo;
-//    ParseCommandLine(cmdInfo);
+  CCommandLineInfo cmdInfo;
+  ParseCommandLine(cmdInfo);
 
-    if(!ProcessShellCommand(cmdInfo)) {
-      return FALSE;
+  if(!ProcessShellCommand(cmdInfo)) {
+    return FALSE;
+  }
+
+  m_pMainWnd->ShowWindow(SW_SHOW);
+  m_pMainWnd->UpdateWindow();
+
+  TCHAR **argv = __targv;
+  *argv++;
+  TCHAR *name = *argv++;
+  if(name) {
+    if(((CMainFrame*)m_pMainWnd)->newFile(name, true)) {
+      addToRecentFileList(name);
     }
+  }
 
-    m_pMainWnd->ShowWindow(SW_SHOW);
-    m_pMainWnd->UpdateWindow();
+  return TRUE;
+}
 
-    return TRUE;
+void CHexViewApp::addToRecentFileList(const String &name) {
+  try {
+    CRecentFileList &list = *m_pRecentFileList;
+    list.Add(name.cstr());
+  } catch (CException * e) {
+    TCHAR strCause[1000];
+    e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
+    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __FUNCTION__, strCause);
+    e->Delete();
+  }
 }
 
 String CHexViewApp::getRecentFile(int index) {
@@ -73,6 +92,14 @@ String CHexViewApp::getRecentFile(int index) {
   } else {
     return (LPCTSTR)list[index];
   }
+}
+
+void CHexViewApp::removeFromRecentFiles(int index) {
+  CRecentFileList &list = *m_pRecentFileList;
+  if(index >= list.GetSize()) {
+    return;
+  }
+  list.Remove(index);
 }
 
 class CAboutDlg : public CDialog {

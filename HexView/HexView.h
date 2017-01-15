@@ -7,10 +7,11 @@
 class CHexViewApp : public CWinApp {
 public:
   CHexViewApp();
-  String getRecentFile(int index);
+  void   addToRecentFileList(const String &name);
+  String getRecentFile(        int index);
+  void   removeFromRecentFiles(int index);
   Settings m_settings;
   
-  public:
   virtual BOOL InitInstance();
 
   afx_msg void OnAppAbout();

@@ -36,14 +36,16 @@ SearchMachine::SearchMachine() {
   m_finished      = true;
   m_size          = 0;
   m_fileIndex     = 0;
+  m_maxProgress   = 10;
 }
 
 void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, const String &findWhat, ByteContainer *byteContainer) {
+  clearAllFlags();
   if(byteContainer != NULL) {
     m_byteContainer = byteContainer;
   }
   if(m_byteContainer == NULL) {
-    throwException(_T("SearchMachine::prepareSearch:ByteContainer not set"));
+    throwException(_T("%s:ByteContainer not set"), __TFUNCTION__);
   }
   if(findWhat.length() > 0) {
     m_findWhat = findWhat;
@@ -56,6 +58,8 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
   m_finished      = false;
   m_result.clear();
   m_resultMessage = _T("");
+
+  m_maxProgress = forwardSearch ? (m_size - m_startPosition) : m_startPosition;
 }
 
 UINT SearchMachine::run() {
@@ -76,18 +80,15 @@ UINT SearchMachine::run() {
 }
 
 double SearchMachine::getProgress() const {
-  const double maxValue = getMaxProgress();
   if(m_forwardSearch) {
-    const double total = (double)m_size - m_startPosition;
-    return total ? (USHORT)(((double)(m_fileIndex - m_startPosition)*maxValue) / total) : maxValue;
+    return (double)(m_fileIndex - m_startPosition);
   } else {
-    const double total = (double)m_startPosition;
-    return total ? (USHORT)((total - m_fileIndex)*maxValue / total) : maxValue;
+    return (double)(m_startPosition - m_fileIndex);
   }
 }
 
 AddrRange SearchMachine::doSearch() {
-  if(!isSet() || m_startPosition < 0 || m_startPosition >= m_size) {
+  if(!isSet() || (m_startPosition < 0) || (m_startPosition >= m_size)) {
     return AddrRange();
   }
 

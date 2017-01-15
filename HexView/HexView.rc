@@ -428,7 +428,7 @@ BEGIN
             VALUE "FileDescription", "View and Edit Binary Files"
             VALUE "FileVersion", "2, 0, 0, 1"
             VALUE "InternalName", "HexView"
-            VALUE "LegalCopyright", "Copyright (C) 2002-2013"
+            VALUE "LegalCopyright", "Copyright (C) 2002-2017"
             VALUE "OriginalFilename", "HexView.EXE"
             VALUE "ProductName", "HexView Application"
             VALUE "ProductVersion", "2, 0, 0, 1"

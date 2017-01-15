@@ -4,7 +4,6 @@
 
 class SaveAsJob : public InteractiveRunnable {
 private:
-  bool           m_interrupted;
   bool           m_ok;
   const String   m_newName;
   ByteContainer &m_src;
@@ -18,14 +17,11 @@ public:
 
   UINT run();
 
-  void interrupt() {
-    m_interrupted = true;
-  };
-
-  USHORT getProgress();
-
-  USHORT getMaxProgress() {
-    return 1000;
+  double getMaxProgress() const {
+    return (double)m_size;
+  }
+  double getProgress() const {
+    return (double)m_fileIndex;
   }
 
   String getTitle() {       // Title of progress-window
@@ -34,10 +30,6 @@ public:
 
   int getSupportedFeatures() { // Should return any combination of SUPPORT-constants
     return IR_INTERRUPTABLE | IR_PROGRESSBAR | IR_SHOWTIMEESTIMATE;
-  }
-
-  bool isInterrupted() const {
-    return m_interrupted;
   }
 
   bool isOk() const {

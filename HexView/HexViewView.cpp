@@ -836,6 +836,7 @@ void CHexViewView::OnDropFiles(HDROP hDropInfo) {
   TCHAR fname[256];
   DragQueryFile(hDropInfo, 0, fname, ARRAYSIZE(fname));
   getMainFrame()->newFile(fname, true);
+  theApp.addToRecentFileList(fname);
   CView::OnDropFiles(hDropInfo);
 }
 
