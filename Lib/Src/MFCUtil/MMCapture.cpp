@@ -2,7 +2,16 @@
 #include <MFCUtil/MMCapture.h>
 
 #pragma comment(lib,"winmm.lib")
-#pragma comment(lib,"/Program Files (x86)/Windows Kits/8.1/Lib/winv6.3/um/x86/vfw32.lib" ) 
+
+#define VFWLIBROOT "c:/Program Files (x86)/Windows Kits/8.1/Lib/winv6.3/um/"
+
+#ifdef IS32BIT
+#define VFWLIB VFWLIBROOT "x86/"
+#else
+#define VFWLIB VFWLIBROOT "x64/"
+#endif
+
+#pragma comment(lib, VFWLIB "vfw32.lib") 
 
 #define V(f) checkMMResult(_T(__FILE__),__LINE__,f)
 
