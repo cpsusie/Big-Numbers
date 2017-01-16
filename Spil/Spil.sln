@@ -33,6 +33,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "whist3", "WHIST3\Whist3.vcx
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GrabXml", "GrabXml\GrabXml.vcxproj", "{EB821404-54F5-49A3-A671-A11DE6484773}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4B4AD89-4044-434A-BDA1-A984C3210A85} = {A4B4AD89-4044-434A-BDA1-A984C3210A85}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -247,6 +252,34 @@ Global
 		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
 		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
 		{746998D9-8E1A-4DF9-9442-4BA821BCB095}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Debug|x64.ActiveCfg = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Debug|x64.Build.0 = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Debug|x86.ActiveCfg = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Debug|x86.Build.0 = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDDebug|x64.ActiveCfg = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDDebug|x64.Build.0 = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDDebug|x86.Build.0 = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDRelease|x64.ActiveCfg = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDRelease|x64.Build.0 = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDRelease|x86.ActiveCfg = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.LDRelease|x86.Build.0 = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Profilling|x64.ActiveCfg = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Profilling|x64.Build.0 = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Profilling|x86.ActiveCfg = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Profilling|x86.Build.0 = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Release|x64.ActiveCfg = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Release|x64.Build.0 = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Release|x86.ActiveCfg = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.Release|x86.Build.0 = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderDebug|x64.ActiveCfg = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderDebug|x64.Build.0 = Debug|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderDebug|x86.ActiveCfg = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderDebug|x86.Build.0 = Debug|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
+		{EB821404-54F5-49A3-A671-A11DE6484773}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
