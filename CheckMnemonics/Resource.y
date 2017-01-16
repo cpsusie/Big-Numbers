@@ -152,21 +152,21 @@ resourceDefinition          : bitmapDefinition                                  
                             ;
 
 
-bitmapDefinition            : identifier _BITMAP resourceAttributeList string
+bitmapDefinition            : resourceId _BITMAP resourceAttributeList string
                             ;
 
-iconDefinition              : identifier _ICON resourceAttributeList string
+iconDefinition              : resourceId _ICON resourceAttributeList string
                             ;
 
-customTypeDefinition        : identifier identifier resourceAttributeList string
+customTypeDefinition        : resourceId identifier resourceAttributeList string
                             ;
 
-dialogDefinition            : identifier DIALOG resourceAttributeList rectangleSpec
+dialogDefinition            : resourceId DIALOG resourceAttributeList rectangleSpec
                               dialogSpecList
                               BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $7, $5, NULL); }
                             ;
 
-extendedDialogDefinition    : identifier DIALOGEX rectangleSpec
+extendedDialogDefinition    : resourceId DIALOGEX rectangleSpec
                               extendedDialogSpecList
                               BEGIN opt_dialogControlSpecList END                       { $$ = newNode(getPos(1), dialogDefinition, $1, $6, $4, NULL);  }
                             ;
@@ -278,6 +278,7 @@ controlSpec                 : CONTROL controlId COMMA identifier COMMA string co
                             ;
 
 controlId                   : string
+                            | identifier
                             | number
                             ;
 
@@ -612,7 +613,8 @@ designSpecList              : designSpecList designSpec
 designSpec                  : marginSpec COMMA number
                             ;
 
-marginSpec                  : LEFTMARGIN
+marginSpec                  : /* empty */
+                            | LEFTMARGIN
                             | RIGHTMARGIN
                             | TOPMARGIN
                             | BOTTOMMARGIN
@@ -620,7 +622,7 @@ marginSpec                  : LEFTMARGIN
                             | VERTGUIDE
                             ;
 
-toolbarDefnition            : identifier TOOLBAR resourceAttributeList sizeSpec BEGIN buttonSpecList END
+toolbarDefnition            : resourceId TOOLBAR resourceAttributeList sizeSpec BEGIN buttonSpecList END
                             ;
 
 buttonSpecList              : buttonSpecList buttonSpec
@@ -631,7 +633,7 @@ buttonSpec                  : BUTTON identifier
                             | SEPARATOR
                             ;
 
-menuDefinition              : identifier menuType resourceAttributeList menuBody            { $$ = newNode(getPos(1), menuDefinition, $1, $4, NULL); }
+menuDefinition              : resourceId menuType resourceAttributeList menuBody            { $$ = newNode(getPos(1), menuDefinition, $1, $4, NULL); }
                             ;
 
 menuType                    : _MENU 
@@ -657,10 +659,6 @@ popupMenu                   : POPUP string menuItemModifierList menuBody        
 
 menuItem                    : _MENUITEM string COMMA identifierOrNumber menuItemModifierList { $$ = newNode(getPos(1), _MENUITEM, $2, $4, NULL); }
                             | _MENUITEM SEPARATOR                                            { $$ = NULL; }
-                            ;
-
-identifierOrNumber          : identifier
-                            | number
                             ;
 
 menuItemModifierList        : /* empty */
@@ -703,7 +701,7 @@ menuItemFlag                : _MFT_STRING
                             | _MFS_GAPDROP 
                             ;
 
-dialogInitDefinition        : identifier DLGINIT BEGIN constantElementList END
+dialogInitDefinition        : resourceId DLGINIT BEGIN constantElementList END
                             ;
 
 constantElementList         : constantElementList constantElement
@@ -714,7 +712,7 @@ constantElement             : constant
                             | COMMA constant
                             ;
 
-acceleratorsDefinition      : identifier ACCELERATORS resourceAttributeList BEGIN acceleratorList END { $$ = newNode(getPos(1), acceleratorsDefinition, $1, $5, NULL ); }
+acceleratorsDefinition      : resourceId ACCELERATORS resourceAttributeList BEGIN acceleratorList END { $$ = newNode(getPos(1), acceleratorsDefinition, $1, $5, NULL ); }
                             ;
 
 acceleratorList             : acceleratorList accelerator                       { $$ = newNode(getPos(1), COMMA, $1, $2, NULL); }
@@ -740,8 +738,8 @@ acceleratorModifier         : VIRTKEY                                           
                             | NOINVERT                                          { $$ = newNode(getPos(1), NOINVERT, NULL); }
                             ;
 
-rcdataDefinition            : identifier RCDATA resourceAttributeList BEGIN numberList END
-                            | identifier RCDATA resourceAttributeList string
+rcdataDefinition            : resourceId RCDATA resourceAttributeList BEGIN numberList END
+                            | resourceId RCDATA resourceAttributeList string
                             ;
 
 numberList                  : numberList COMMA number
@@ -769,7 +767,7 @@ stringList                  : stringList string
 languageDirective           : LANGUAGE constant COMMA constant                            { $$ = newNode(getPos(1), languageDirective, $2, $4, NULL); }
                             ;
 
-versionDefinition           : identifier VERSIONINFO resourceAttributeList versionSpecList BEGIN blockList END
+versionDefinition           : resourceId VERSIONINFO resourceAttributeList versionSpecList BEGIN blockList END
                             ;
 
 versionSpecList             : versionSpecList versionSpec
@@ -806,7 +804,7 @@ value                       : VALUE constantElementList
 typelibDefinition           : number TYPELIB fileName
                             ;
 
-afxDialogLayout             : identifier AFX_DIALOG_LAYOUT BEGIN layoutInfo END
+afxDialogLayout             : resourceId AFX_DIALOG_LAYOUT BEGIN layoutInfo END
 							;
 
 layoutInfo					: numberList
@@ -838,6 +836,13 @@ rectangleSpec               : number COMMA number COMMA number COMMA number
                             ;
 
 sizeSpec                    : number COMMA number
+                            ;
+
+resourceId					: identifierOrNumber
+							;
+
+identifierOrNumber          : identifier
+                            | number
                             ;
 
 number                      : NUMBER                                            { $$ = newNode( getPos(1), NUMBER, ttoi(getText()));       }

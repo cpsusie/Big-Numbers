@@ -25,5 +25,5 @@ public:
 };
 
 
-#line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
+#line 5 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
 

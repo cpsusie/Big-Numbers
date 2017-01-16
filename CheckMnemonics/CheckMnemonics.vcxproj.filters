@@ -9,10 +9,6 @@
       <UniqueIdentifier>{3112e226-8f7e-45df-a7ba-404b68594e0d}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{ccf570ab-3c3b-4260-8785-bf127a3aac77}</UniqueIdentifier>
-      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
-    </Filter>
     <Filter Include="Grammar">
       <UniqueIdentifier>{08866209-500c-4e91-af6f-38a5fb486bf5}</UniqueIdentifier>
     </Filter>
@@ -70,12 +66,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-    <Text Include="Resource.txt">
-      <Filter>Grammar</Filter>
-    </Text>
-  </ItemGroup>
-  <ItemGroup>
     <CustomBuild Include="Resource.lex">
       <Filter>Grammar</Filter>
     </CustomBuild>
@@ -84,8 +74,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CheckMnemonics.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
+    <Text Include="Resource.txt">
+      <Filter>Grammar</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -2,7 +2,6 @@
 #include "ResourceFile.h"
 
 //#define DUMPTREE
-#include <tchar.h>
 ResourceFile::ResourceFile(const String &fileName) {
   try {
     m_ok = true;
