@@ -147,7 +147,7 @@ void Execute2::run(CompareSubJob &job1, CompareSubJob &job2) {
     m_compareJob.setExecute2(NULL);
   } catch (...) {
     m_compareJob.setExecute2(NULL);
-    m_compareJob.setInterrupted();
+    throw;
   }
 }
 

@@ -475,8 +475,12 @@ void CWinDiffDoc::setDocs(const String &name1, const String &name2) { // always 
   setDoc(1, DIFFDOC_FILE, name2, false);
   try {
     recompare();
-    theApp.addToRecentFileList(name1.cstr());
-    theApp.addToRecentFileList(name2.cstr());
+    if(m_diff.getDoc(0).getLastReadTime()) {
+      theApp.addToRecentFileList(name1.cstr());
+    }
+    if(m_diff.getDoc(1).getLastReadTime()) {
+      theApp.addToRecentFileList(name2.cstr());
+    }
   } catch(CMemoryException *e) {
     TCHAR msg[1024];
     e->GetErrorMessage(msg, ARRAYSIZE(msg));
@@ -528,7 +532,7 @@ void CWinDiffDoc::updateDiffDoc(bool recompare) {
   if(mainWindow && !mainWindow->IsWindowVisible()) {
     mainWindow = NULL;
   }
-  ProgressWindow pgsWindow(mainWindow, job, 1000, 200);
+  ProgressWindow(mainWindow, job, 1000, 200);
 }
 
 CWinDiffDoc::~CWinDiffDoc() {
