@@ -1,10 +1,9 @@
 #include "pch.h"
 
 // The code in this file is only used for x86 compilation.
-// For x64 mode the 2 files Int128x64.asm and UInt128x64.asm
-// should be used instead. They execute much faster, because
-// they use 64-bit registers, and division functions are
-//  coded entirely in asembler.
+// For x64 mode the file Int128x64.asm should be used instead.
+// They execute much faster, because they use 64-bit registers,
+// and division functions are coded entirely in assembler.
 
 #ifndef _M_X64
 
@@ -86,8 +85,8 @@ void int128mul(void *dst, const void *x) {
       mov         dword ptr[ebp+12], eax
       mov         eax, dword ptr[ebx]      // 1. round
       mul         dword ptr[ecx]           // [edx:eax] = x[0]*y[0]
-      mov         dword ptr[ebp], eax
-      mov         dword ptr[ebp + 4], edx  // set dp{0:1]
+      mov         dword ptr[ebp]     , eax
+      mov         dword ptr[ebp +  4], edx // set result{0:1]
 
       mov         eax, dword ptr[ebx]      // 2. round
       mul         dword ptr[ecx + 4]       // [edx:eax] = x[0]*y[1]
@@ -97,9 +96,9 @@ void int128mul(void *dst, const void *x) {
       mul         dword ptr[ecx]           // [edx:eax] = x[1]*y[0]
       add         edi, eax                 //
       adc         esi, edx                 // [esi:edi] += [edx:eax]
-      pushfd                               // may be extra carry for dp[3]
-      add         dword ptr[ebp + 4], edi
-      adc         dword ptr[ebp + 8], esi  // dp[1:2] += [esi:edi]
+      pushfd                               // may be extra carry for result[3]
+      add         dword ptr[ebp +  4], edi
+      adc         dword ptr[ebp +  8], esi  // result[1:2] += [esi:edi]
 
       mov         eax, dword ptr[ebx]      // 3. round. extra carries are overflow
       mul         dword ptr[ecx + 8]       // [edx:eax] = x[0]*y[2]
@@ -113,8 +112,8 @@ void int128mul(void *dst, const void *x) {
       mul         dword ptr[ecx]           // [edx:eax] = x[2]*y[0]
       add         edi, eax                 //
       adc         esi, edx                 // [esi:edi] += [edx:eax]
-      add         dword ptr[ebp+8], edi
-      adc         dword ptr[ebp+12], esi   // prod[2:3] += [esi:edi]
+      add         dword ptr[ebp + 8 ], edi
+      adc         dword ptr[ebp + 12], esi   // result[2:3] += [esi:edi]
 
       mov         eax, dword ptr[ebx]      // 4. round. dont care about high end or carris. its overflow
       mul         dword ptr[ecx+12]        // [edx:eax] = x[0]*y[3]
@@ -128,7 +127,7 @@ void int128mul(void *dst, const void *x) {
       mov         eax, dword ptr[ebx+12]    
       mul         dword ptr[ecx]           // [edx:eax] = x[3]*y[0]
       add         edi, eax                 // edi += eax
-      add         dword ptr[ebp+12], edi   // prod[3] += edi
+      add         dword ptr[ebp+12], edi   // result[3] += edi
       popfd
       adc         dword ptr[ebp + 12],0    // add the saved carry to dp[3]
 
@@ -157,6 +156,7 @@ void int128shl(void *x, int shft) {
     shld        dword ptr[esi + 4], eax, cl   ; shift s4.i[1] adding bits from s4.i[0]
     shl         dword ptr[esi], cl            ; shift s4.i[0]
     jmp         End
+
 More32 :                                      ; 32 <= cl < 64
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi + 8]
@@ -171,6 +171,7 @@ More32 :                                      ; 32 <= cl < 64
     xor         eax, eax
     mov         dword ptr[esi], eax           ; s4.i[0] = 0
     jmp         End
+
 More64:                                       ; 64 <= cl < 96
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi + 4]
@@ -183,6 +184,7 @@ More64:                                       ; 64 <= cl < 96
     mov         dword ptr[esi], eax           ; s4.i[0] = 0
     mov         dword ptr[esi + 4], eax       ; s4.i[1] = 0
     jmp         End
+
 More96:                                       ; 96 <= cl < 128
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi]
@@ -193,6 +195,7 @@ More96:                                       ; 96 <= cl < 128
     mov         dword ptr[esi + 4], eax       ; s4.i[1] = 0
     mov         dword ptr[esi + 8], eax       ; s4.i[2] = 0
     jmp         End
+
 RetZero:
     xor         eax, eax                      ; return 0
     mov         dword ptr[esi   ], eax
@@ -223,6 +226,7 @@ void int128shr(void *x, int shft) {           // signed shift right
     shrd        dword ptr[esi + 8], eax, cl   ; shift s4[2] new bits from s4[3] (eax)
     sar         dword ptr[esi + 12], cl       ; shift s4[3]
     jmp         End
+
 More32 :                                      ; 32 <= cl < 64
     and         cl, 1Fh                       ; cl %= 32
     mov         eax, dword ptr[esi + 4]
@@ -240,6 +244,7 @@ More32 :                                      ; 32 <= cl < 64
     shrd        dword ptr[esi + 8], eax, cl   ; shift s4[1] new bits from eax (sign of s4[3])
     mov         dword ptr[esi + 12], eax      ; s4[3] = eax
     jmp         End
+
 More64:                                       ; 64 <= cl < 96
     and         cl, 1Fh                       ; cl %= 32
 
@@ -266,6 +271,7 @@ More96:                                       ; 96 <= cl < 128
     mov         dword ptr[esi + 8 ], eax      ; s4[2] = sign og s4[3]
     mov         dword ptr[esi + 12], eax      ; s4[3] = sign og s4[3]
     jmp         End
+
 RetSign:
     mov         eax, dword ptr[esi+12]
     sar         eax,1Fh
@@ -277,7 +283,7 @@ RetSign:
 End:;
 }
 
-void uint128shr(void *x, int shft) { // usigned shift right
+void uint128shr(void *x, int shft) { // unsigned shift right
   __asm {
     mov         ecx, shft                     ; ecx = shift count
     mov         esi, x
@@ -341,6 +347,7 @@ More96:                                       ; 96 <= cl < 128
     mov         dword ptr[esi + 8 ], eax      ; s4[2] = 0
     mov         dword ptr[esi + 12], eax      ; s4[3] = 0
     jmp         End
+
 RetZero:
     xor         eax,eax
     mov         dword ptr[esi   ], eax
@@ -364,6 +371,7 @@ static UINT getFirst16(const _uint128 &n, int &expo2) {
     jnz         SearchBit
     xor         edx, edx
     jmp         End1Result
+
 SearchBit:                             ; assume ecx hold the index of integer with first 1-bit
     add         edi, 4
     mov         edx, dword ptr [edi]
@@ -419,6 +427,7 @@ static UINT getFirst32(const _uint128 &n, int &expo2) {
     jnz         SearchBit
     xor         edx, edx
     jmp         End1Result
+
 SearchBit:                             ; assume ecx hold the index of integer with first 1-bit
     add         edi, 4
     mov         edx, dword ptr [edi]
@@ -442,6 +451,7 @@ End2Results:
     shl         ecx   , 5
     add         ecx   , eax
     mov         expo  , ecx
+
 End1Result:
     mov         result, edx
     popf
