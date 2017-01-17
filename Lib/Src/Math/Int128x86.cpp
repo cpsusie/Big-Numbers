@@ -362,49 +362,48 @@ static UINT getFirst16(const _uint128 &n, int &expo2) {
   UINT result, expo;
   __asm {
     pushf
-    mov         ecx, 4
-    mov         edi, n
-    add         edi, 12
-    xor         eax, eax
+    mov         ecx , 4
+    mov         edi , n
+    add         edi , 12
+    xor         eax , eax
     std
     repe        scasd
     jnz         SearchBit
-    xor         edx, edx
+    xor         edx , edx
     jmp         End1Result
 
-SearchBit:                             ; assume ecx hold the index of integer with first 1-bit
-    add         edi, 4
-    mov         edx, dword ptr [edi]
-    bsr         eax, edx               ; eax holds index of highest 1 bit
-    cmp         eax, 15
+SearchBit:                              ; assume ecx hold the index of integer with first 1-bit
+    add         edi , 4
+    mov         edx , dword ptr [edi]
+    bsr         eax , edx               ; eax holds index of highest 1 bit
+    cmp         eax , 15
     je          End2Results
     jg          TooManyBits
-    test        ecx, ecx               ; Get some bits from previous, if we got some
+    test        ecx , ecx               ; Get some bits from previous, if we got some
     je          End2Results
 
-    shl         ecx, 5
-    add         ecx, eax
+    shl         ecx , 5
+    add         ecx , eax
     mov         expo, ecx
 
-    mov         edi, dword ptr[edi-4]  ; edi = previous int
-    mov         ecx, 15
-    sub         ecx, eax               ; ecx = 15 - index of higest 1-bit
-    shld        edx, edi, cl           ; Shift edx left adding new bits from previous digit (edi)
+    mov         edi , dword ptr[edi-4]  ; edi = previous int
+    mov         ecx , 15
+    sub         ecx , eax               ; ecx = 15 - index of higest 1-bit
+    shld        edx , edi, cl           ; Shift edx left adding new bits from previous digit (edi)
     jmp         End1Result
 
-TooManyBits:                           ; assume eax = index of higest 1-bit in edx
-                                       ; and eax > 15
-    shl         ecx, 5
-    add         ecx, eax
+TooManyBits:                            ; assume eax = index of higest 1-bit in edx (>15)
+    shl         ecx , 5
+    add         ecx , eax
     mov         expo, ecx
-    mov         ecx, eax
-    sub         ecx, 15
-    shr         edx, cl
+    mov         ecx , eax
+    sub         ecx , 15
+    shr         edx , cl
     jmp         End1Result
 
 End2Results:
-    shl         ecx, 5
-    add         ecx, eax
+    shl         ecx , 5
+    add         ecx , eax
     mov         expo, ecx
 End1Result:
     mov         result, edx
@@ -509,62 +508,130 @@ public:
 void unsignedQuotRemainder(const _uint128 &a, const _uint128 &y, _uint128 *quot, _uint128 *rem) {
   _uint128 dummyRest;
 
-  int yExpo2;
-  const UINT         y16    = getFirst16(y, yExpo2);
-  const int          yScale = yExpo2 - getExpo2(y16);
-  _uint128          &rest = rem  ? *rem  : dummyRest;
-  rest = a;
-  if(quot) *quot = 0;
-  _uint128FastMul p;
-  int lastShift = 0;
-  for (int count = 0; rest >= y; count++) {
-    int restExpo2;
-    const UINT         rest32      = getFirst32(rest, restExpo2);
-    const int          rest32Expo2 = getExpo2(rest32);
-    UINT               q;
-    int                shift;
-    p = y;
-    if ((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
-      q  = (rest32 / (y16+1)) >> -shift;
-      shift = 0;
-      switch (q) {
-      case 0 : q = 1; break;
-      case 1 : break;
-      default: p *= q; break;
-      }
-    } else {
-      q = rest32 / (y16 + 1);
-      switch(q) {
-      case 0 : q = 1; break;
-      case 1 : break;
-      default: p *= q; break;
-      }
-      if(shift) int128shl(&p,shift);
-    }
-    if (quot) { // do we want the quot. If its NULL there's no need to do this
-      if (count) {
-        if (lastShift > shift) {
-          int128shl(quot, lastShift - shift);
-        }
-        __asm {
-          mov eax, q
-          mov esi, quot
-          add dword ptr[esi], eax
-          jnc AddDone
-          adc dword ptr[esi+4] ,0
-          adc dword ptr[esi+8] ,0
-          adc dword ptr[esi+12],0
-          AddDone:
+  if(y < 0x8000) {
+    int                yExpo2 = getExpo2((UINT)y);
+    const int          yScale = 15 - yExpo2;
+    const UINT         y16    = (UINT)y << yScale;
+    _uint128          &rest   = rem  ? *rem  : dummyRest;
+    rest = a;
+    if(quot) *quot = 0;
+    _uint128FastMul p;
+    int lastShift = 0;
+    for (int count = 0; rest >= y16; count++) {
+      int restExpo2;
+      const UINT         rest32      = getFirst32(rest, restExpo2);
+      const int          rest32Expo2 = getExpo2(rest32);
+      UINT               q;
+      int                shift;
+      p = y;
+      if ((shift = restExpo2 - rest32Expo2 + yScale) < 0) { // >= -31
+        q  = (rest32 / (y16+1)) >> -shift;
+        shift = 0;
+        switch (q) {
+        case 0 : q = 1; break;
+        case 1 : break;
+        default: p *= q; break;
         }
       } else {
-        *quot = q;
+        q = rest32 / (y16 + 1);
+        switch(q) {
+        case 0 : q = 1; break;
+        case 1 : break;
+        default: p *= q; break;
+        }
+        if(shift) int128shl(&p,shift);
       }
-      lastShift = shift;
+      if (quot) { // do we want the quot. If its NULL there's no need to do this
+        if (count) {
+          if (lastShift > shift) {
+            int128shl(quot, lastShift - shift);
+          }
+          __asm {
+            mov eax, q
+            mov esi, quot
+            add dword ptr[esi], eax
+            jnc AddDone1
+            adc dword ptr[esi+4] ,0
+            adc dword ptr[esi+8] ,0
+            adc dword ptr[esi+12],0
+          }
+        } else {
+          *quot = q;
+        }
+AddDone1:
+        lastShift = shift;
+      }
+      rest -= p;
     }
-    rest -= p;
-  }
-  if (lastShift && quot) {
-    int128shl(quot, lastShift);
+
+    // rest < 0xffff
+    if(quot) {
+      if (lastShift) {
+        int128shl(quot, lastShift);
+      }
+      *quot += (UINT)rest / (UINT)y;
+    }
+    if(rem) {
+      *rem = (UINT)rest % (UINT)y;
+    }
+  } else {
+    int                yExpo2;
+    const UINT         y16    = getFirst16(y, yExpo2);
+    const int          yScale = yExpo2 - getExpo2(y16);
+    _uint128          &rest   = rem  ? *rem  : dummyRest;
+    rest = a;
+    if(quot) *quot = 0;
+    _uint128FastMul p;
+    int lastShift = 0;
+    for (int count = 0; rest >= y; count++) {
+      int restExpo2;
+      const UINT         rest32      = getFirst32(rest, restExpo2);
+      const int          rest32Expo2 = getExpo2(rest32);
+      UINT               q;
+      int                shift;
+      p = y;
+      if ((shift = restExpo2 - rest32Expo2 - yScale) < 0) { // >= -31
+        q  = (rest32 / (y16+1)) >> -shift;
+        shift = 0;
+        switch (q) {
+        case 0 : q = 1; break;
+        case 1 : break;
+        default: p *= q; break;
+        }
+      } else {
+        q = rest32 / (y16 + 1);
+        switch(q) {
+        case 0 : q = 1; break;
+        case 1 : break;
+        default: p *= q; break;
+        }
+        if(shift) int128shl(&p,shift);
+      }
+      if (quot) { // do we want the quot. If its NULL there's no need to do this
+        if (count) {
+          if (lastShift > shift) {
+            int128shl(quot, lastShift - shift);
+          }
+          __asm {
+            mov eax, q
+            mov esi, quot
+            add dword ptr[esi], eax
+            jnc AddDone2
+            adc dword ptr[esi+4] ,0
+            adc dword ptr[esi+8] ,0
+            adc dword ptr[esi+12],0
+          }
+        } else {
+          *quot = q;
+        }
+AddDone2:
+        lastShift = shift;
+      }
+      rest -= p;
+    }
+    if (lastShift && quot) {
+      int128shl(quot, lastShift);
+    }
   }
 }
 

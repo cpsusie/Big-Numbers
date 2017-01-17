@@ -241,6 +241,21 @@ namespace TestInt128 {
       verify(r == expectedR);
     }
 
+    TEST_METHOD(TestDivision2a) {
+      for(int i = 0; i < 30; i++) {
+        int ystep = randInt(2,20);
+//        OUTPUT(_T("i:%d, ystep:%d"), i, ystep);
+        _uint128 x = _uint128(randInt64(), randInt64());
+        _uint128 y = randInt(1, 5);
+        for(int j = 0; y < 0x8000; j++, y += ystep) {
+          _uint128 d = x / y;
+          _uint128 r = x % y;
+          verify(y * d + r == x);
+          verify((d >= 0) && (r >= 0) && (r < y));
+        }
+      }
+    }
+
     TEST_METHOD(TestDivison3) {
       _uint128 x(0xfffffffffffffffui64, 0xffffffffffffffffui64); // 21267647932558653966460912964485513215
 
