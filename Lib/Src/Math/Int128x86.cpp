@@ -613,14 +613,14 @@ void uint128rem(void *dst, const void *x) {
 void int128neg(void *x) {
   __asm {
     mov         esi, x
-    not dword ptr[esi]
-    not dword ptr[esi + 4]
-    not dword ptr[esi + 8]
+    not dword ptr[esi     ]
+    not dword ptr[esi +  4]
+    not dword ptr[esi +  8]
     not dword ptr[esi + 12]
-    add dword ptr[esi]   ,1
-    adc dword ptr[esi+4 ],0
-    adc dword ptr[esi+8 ],0
-    adc dword ptr[esi+12],0
+    add dword ptr[esi     ], 1
+    adc dword ptr[esi +  4], 0
+    adc dword ptr[esi +  8], 0
+    adc dword ptr[esi + 12], 0
   }
 }
 
