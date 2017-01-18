@@ -62,13 +62,13 @@ CSize CCaptureDoc::getSizeInMillimeters() const {
 void CCaptureDoc::save(const String &fileName) {
   String extension = FileNameSplitter(fileName).getExtension();
   if(extension.equalsIgnoreCase(_T(".bmp"))) {
-    writeAsBMP(m_bitmap,fileName);
+    writeAsBMP(m_bitmap,ByteOutputFile(fileName));
   } else if(extension.equalsIgnoreCase(_T(".jpg"))) {
-    writeAsJPG(m_bitmap,fileName);
+    writeAsJPG(m_bitmap,ByteOutputFile(fileName));
   } else if(extension.equalsIgnoreCase(_T(".png"))) {
-    writeAsPNG(m_bitmap,fileName);
+    writeAsPNG(m_bitmap,ByteOutputFile(fileName));
   } else if(extension.equalsIgnoreCase(_T(".tiff"))) {
-    writeAsTIFF(m_bitmap,fileName);
+    writeAsTIFF(m_bitmap,ByteOutputFile(fileName));
   } else {
     throwException(_T("Unsupported fileformat:<%s>"),extension.cstr());
   }

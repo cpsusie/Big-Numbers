@@ -7,7 +7,7 @@
 // This is a data sink class which takes a file as a destination of picture data.
 class FileSink : public PLDataSink {
 private:
-  FILE *m_file;
+  FILE   *m_file;
   PLBYTE *m_dataBuffer;
 
 public:

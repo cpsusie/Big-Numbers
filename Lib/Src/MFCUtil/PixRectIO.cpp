@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include <PixRect.h>
-#include <Picture.h>
-#include <WinTools.h>
+#include <MFCUtil/WinTools.h>
+#include <MFCUtil/PixRect.h>
+#include <MFCUtil/Picture.h>
 
 typedef enum {
   PICTYPE_BMP
@@ -10,14 +10,14 @@ typedef enum {
  ,PICTYPE_TIFF
 } PictureFileFormat;
 
-static void writePixRect(PixRect *pr, FILE *f, PictureFileFormat format) {
+static void writePixRect(PixRect *pr, ByteOutputStream &out, PictureFileFormat format) {
   HBITMAP bm = *pr;
   try {
     switch(format) {
-    case PICTYPE_BMP : ::writeAsBMP( bm, f); break;
-    case PICTYPE_JPG : ::writeAsJPG( bm, f); break;
-    case PICTYPE_TIFF: ::writeAsTIFF(bm, f); break;
-    case PICTYPE_PNG : ::writeAsPNG( bm, f); break;
+    case PICTYPE_BMP : ::writeAsBMP( bm, out); break;
+    case PICTYPE_JPG : ::writeAsJPG( bm, out); break;
+    case PICTYPE_TIFF: ::writeAsTIFF(bm, out); break;
+    case PICTYPE_PNG : ::writeAsPNG( bm, out); break;
     default          :
       throwException(_T("Unknown pictureFormat:%d"), format);
     }
@@ -28,35 +28,20 @@ static void writePixRect(PixRect *pr, FILE *f, PictureFileFormat format) {
   }
 }
 
-static void writePixRect(PixRect *pr, const String &fileName, PictureFileFormat format) {
-  FILE *f = MKFOPEN(fileName, "wb");
-  try {
-    writePixRect(pr, f, format);
-    fclose(f);
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-
-void PixRect::writeAsBMP(const String &fileName) {  writePixRect(this, fileName, PICTYPE_BMP);  }
-void PixRect::writeAsBMP(FILE *f) {                 writePixRect(this, f       , PICTYPE_BMP);  }
-void PixRect::writeAsJPG(const String &fileName) {  writePixRect(this, fileName, PICTYPE_JPG);  }
-void PixRect::writeAsJPG(FILE *f) {                 writePixRect(this, f       , PICTYPE_JPG);  }
-void PixRect::writeAsPNG( const String &fileName) { writePixRect(this, fileName, PICTYPE_PNG);  }
-void PixRect::writeAsPNG( FILE *f) {                writePixRect(this, f       , PICTYPE_PNG);  }
-void PixRect::writeAsTIFF(const String &fileName) { writePixRect(this, fileName, PICTYPE_TIFF); }
-void PixRect::writeAsTIFF(FILE *f) {                writePixRect(this, f       , PICTYPE_TIFF); }
+void PixRect::writeAsBMP( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_BMP);  }
+void PixRect::writeAsJPG( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_JPG);  }
+void PixRect::writeAsPNG( ByteOutputStream &out) { writePixRect(this, out, PICTYPE_PNG);  }
+void PixRect::writeAsTIFF(ByteOutputStream &out) { writePixRect(this, out, PICTYPE_TIFF); }
 
 // ---------------------------------- load ------------------------------------
 
-PixRect *PixRect::load(FILE *f) { // static
+PixRect *PixRect::load(PixRectDevice &device, ByteInputStream &in) { // static
   PixRect *result = NULL;
   HDC      hdc    = NULL;
   try {
     CPicture picture; // handles BMP,JPEG,TIFF,PNG,GIF,ICO,,,...
-    picture.load(f);
-    result = new PixRect(picture.getWidth(), picture.getHeight());
+    picture.load(in);
+    result = new PixRect(device, PIXRECT_PLAINSURFACE, picture.getWidth(), picture.getHeight());
     HDC hdc = result->getDC();
     picture.show(hdc);
     result->releaseDC(hdc);
@@ -73,16 +58,3 @@ PixRect *PixRect::load(FILE *f) { // static
     throw;
   }
 }
-
-PixRect *PixRect::load(const String &fileName) { // static
-  FILE *f = FOPEN(fileName, "rb");
-  try {
-    PixRect *result = load(f);
-    fclose(f);
-    return result;
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
-

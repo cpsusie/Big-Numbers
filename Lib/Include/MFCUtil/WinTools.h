@@ -102,14 +102,10 @@ ByteArray &bitmapToByteArray(ByteArray &dst, HBITMAP bm);
 ByteArray &getBitmapBits(HBITMAP bm,       ByteArray &bytes,       BITMAPINFO &bmInfo);
 void       setBitmapBits(HBITMAP bm, const ByteArray &bytes, const BITMAPINFO &bmInfo);
 
-void writeAsBMP( HBITMAP bm, const String &fileName);
-void writeAsBMP( HBITMAP bm, FILE *f);
-void writeAsJPG( HBITMAP bm, const String &fileName);
-void writeAsJPG( HBITMAP bm, FILE *f);
-void writeAsPNG( HBITMAP bm, const String &fileName);
-void writeAsPNG( HBITMAP bm, FILE *f);
-void writeAsTIFF(HBITMAP bm, const String &fileName);
-void writeAsTIFF(HBITMAP bm, FILE *f);
+void writeAsBMP( HBITMAP bm, ByteOutputStream &out);
+void writeAsJPG( HBITMAP bm, ByteOutputStream &out);
+void writeAsPNG( HBITMAP bm, ByteOutputStream &out);
+void writeAsTIFF(HBITMAP bm, ByteOutputStream &out);
 
 HBITMAP cloneBitmap(HBITMAP bm);
 HBITMAP decodeAsPNG( const ByteArray &bytes, bool &hasAlpha);

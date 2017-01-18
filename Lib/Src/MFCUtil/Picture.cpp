@@ -144,8 +144,8 @@ CPicture &CPicture::loadFromResource(int resId, const String &typeName) {
   return *this;
 }
 
-CPicture &CPicture::load(FILE *f) {
-  FileContent content(f);
+CPicture &CPicture::load(ByteInputStream &in) {
+  FileContent content(in);
   loadPicture(content);
   return *this;
 }
@@ -469,14 +469,16 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   }
 }
 
-void CPicture::saveAsBitmap(const char *name) {
+void CPicture::saveAsBitmap(const String &name) {
   if(!isLoaded()) {
     throwException(_T("No picture to save"));
   }
   USES_CONVERSION;
+  String tmpName = name;
+  TCHAR *fname = tmpName.cstr();
   IDispatch *ptr;
   m_IPicture->QueryInterface(IID_IDispatch,(void**)&ptr);
-  OleSavePictureFile(ptr, A2OLE(name));
+  OleSavePictureFile(ptr, T2OLE(fname));
 }
 
 void CPicture::show(HDC hdc) const {

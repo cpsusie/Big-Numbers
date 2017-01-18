@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <ByteFile.h>
 #include <FileContent.h>
 
 FileContent::FileContent(const String &fileName) {
@@ -6,53 +7,48 @@ FileContent::FileContent(const String &fileName) {
 }
 
 FileContent::FileContent(FILE *f) {
-  load(f);
+  load(ByteInputFile(f));
+}
+
+FileContent::FileContent(ByteInputStream &in) {
+  load(in);
 }
 
 FileContent &FileContent::load(const String &fileName) {
-  FILE *f = NULL;
-  try {
-    f = FOPEN(fileName,_T("rb"));
-    load(f);
-    fclose(f);
-    f = NULL;
-    return *this;
-  } catch(...) {
-    if(f) fclose(f);
-    throw;
-  }
+  return load(ByteInputFile(fileName));
 }
 
 FileContent &FileContent::load(FILE *f) {
+  return load(ByteInputFile(f));
+}
+
+FileContent &FileContent::load(ByteInputStream &in) {
   clear();
 
   BYTE buffer[4096];
   intptr_t n;
-  while((n = FREAD(buffer,1,sizeof(buffer),f)) > 0) {
+  while((n = in.getBytes(buffer,sizeof(buffer))) > 0) {
     append(buffer, n);
   }
   return *this;
 }
 
+FileContent &FileContent::save(const String &fileName) {
+  return save(ByteOutputFile(fileName));
+}
+
 FileContent &FileContent::save(FILE *f) {
-  size_t s = size();
+  return save(ByteOutputFile(f));
+}
+
+FileContent &FileContent::save(ByteOutputStream &out) {
+  const size_t s = size();
   if(s > 0) {
-    FWRITE(getData(), 1, s, f);
+    out.putBytes(getData(), s);
   }
   return *this;
 }
 
-FileContent &FileContent::save(const String &fileName) {
-  FILE *f = MKFOPEN(fileName,_T("wb"));
-  try {
-    save(f);
-    fclose(f);
-    return *this;
-  } catch(...) {
-    fclose(f);
-    throw;
-  }
-}
 
 #ifdef UNICODE
 

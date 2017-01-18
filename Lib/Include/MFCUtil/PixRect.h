@@ -514,17 +514,12 @@ public:
   void fromBitmap( CBitmap &src);
   void toBitmap(   CBitmap &dst) const;
 
-  void writeAsBMP( const String &fileName);
-  void writeAsBMP( FILE *f);
-  void writeAsJPG( const String &fileName);
-  void writeAsJPG( FILE *f);
-  void writeAsPNG( const String &fileName);
-  void writeAsPNG( FILE *f);
-  void writeAsTIFF(const String &fileName);
-  void writeAsTIFF(FILE *f);
+  void writeAsBMP( ByteOutputStream &out);
+  void writeAsJPG( ByteOutputStream &out);
+  void writeAsPNG( ByteOutputStream &out);
+  void writeAsTIFF(ByteOutputStream &out);
 
-  static PixRect *load(const String &fileName);
-  static PixRect *load(FILE *f);
+  static PixRect *load(PixRectDevice &device, ByteInputStream &in);
 
   friend bool operator==(const PixRect &p1, const PixRect &p2);
   friend bool operator!=(const PixRect &p1, const PixRect &p2);

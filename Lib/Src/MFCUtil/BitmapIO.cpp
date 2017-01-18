@@ -21,11 +21,11 @@
 #pragma comment(lib, LIB_VERSION "common.lib")
 #pragma comment(lib, LIB_VERSION "zlib.lib")
 
-static void encodeBitmap(HBITMAP bm, FILE *f, PLPicEncoder &encoder) {
+static void encodeBitmap(HBITMAP bm, ByteOutputStream &out, PLPicEncoder &encoder) {
   PLWinBmp winBmp;
   winBmp.CreateFromHBitmap(bm);
-  FileSink sink(f);
-  encoder.SaveBmp(&winBmp,&sink);
+  ByteStreamSink sink(out);
+  encoder.SaveBmp(&winBmp, &sink);
 }
 
 #ifdef __NEVER__
@@ -142,49 +142,19 @@ static HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, boo
   }
 }
 
-static void encodeBitmap(HBITMAP bm, const String &fileName, PLPicEncoder &encoder) {
-  FILE *file = FOPEN(fileName,"wb");
-  try {
-    encodeBitmap(bm, file, encoder);
-    fclose(file);
-  } catch(...) {
-    fclose(file);
-    throw;
-  }
-}
-
 // ----------------------------------------- BMP -----------------------------------
 
-void writeAsBMP(HBITMAP bm, const String &fileName) {
-  encodeBitmap(bm, fileName, PLBmpEncoder());
-}
-
-void writeAsBMP(HBITMAP bm, FILE *f) {
-  encodeBitmap(bm, f, PLBmpEncoder());
+void writeAsBMP(HBITMAP bm, ByteOutputStream &out) {
+  encodeBitmap(bm, out, PLBmpEncoder());
 }
 
 // ----------------------------------------- JPG -----------------------------------
 
-void writeAsJPG(HBITMAP bm, const String &fileName) {
-  encodeBitmap(bm, fileName, PLJPEGEncoder());
-}
-
-void writeAsJPG(HBITMAP bm, FILE *f) {
-  encodeBitmap(bm, f, PLJPEGEncoder());
+void writeAsJPG(HBITMAP bm, ByteOutputStream &out) {
+  encodeBitmap(bm, out, PLJPEGEncoder());
 }
 
 // ----------------------------------------- PNG ------------------------------------
-
-void writeAsPNG(HBITMAP bm, const String &fileName) {
-  FILE *file = FOPEN(fileName,"wb");
-  try {
-    writeAsPNG(bm, file);
-    fclose(file);
-  } catch(...) {
-    fclose(file);
-    throw;
-  }
-}
 
 // need to swap Red and Blue channel because PNG-encoder does the same
 static HBITMAP swapRB(HBITMAP bm) {
@@ -212,7 +182,7 @@ static HBITMAP swapRB(HBITMAP bm) {
 }
 
 
-void writeAsPNG(HBITMAP bm, FILE *f) {
+void writeAsPNG(HBITMAP bm, ByteOutputStream &out) {
   const BITMAP info = getBitmapInfo(bm);
   HBITMAP bm1 = NULL;
   PLPNGEncoder encoder;
@@ -220,10 +190,10 @@ void writeAsPNG(HBITMAP bm, FILE *f) {
   try {
     if(info.bmBitsPixel == 32) {
       bm1 = swapRB(cloneBitmap(bm));
-      encodeBitmap(bm1, f, encoder);
+      encodeBitmap(bm1, out, encoder);
       DeleteObject(bm1); bm1 = NULL;
     } else {
-      encodeBitmap(bm, f, encoder);
+      encodeBitmap(bm, out, encoder);
     }
   } catch(...) {
     if(bm1) DeleteObject(bm1);
@@ -237,12 +207,8 @@ HBITMAP decodeAsPNG(const ByteArray &bytes, bool &hasAlpha) {
 
 // ----------------------------------------- TIFF-----------------------------------
 
-void writeAsTIFF(HBITMAP bm, const String &fileName) {
-  encodeBitmap(bm, fileName, PLTIFFEncoder());
-}
-
-void writeAsTIFF(HBITMAP bm, FILE *f) {
-  encodeBitmap(bm, f, PLTIFFEncoder());
+void writeAsTIFF(HBITMAP bm, ByteOutputStream &out) {
+  encodeBitmap(bm, out, PLTIFFEncoder());
 }
 
 HBITMAP decodeAsTIFF(const ByteArray &bytes, bool &hasAlpha) {

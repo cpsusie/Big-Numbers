@@ -311,6 +311,7 @@
     <ClCompile Include="PixRectBlend.cpp" />
     <ClCompile Include="PixRectError.cpp" />
     <ClCompile Include="PixRectFill.cpp" />
+    <ClCompile Include="PixRectIO.cpp" />
     <ClCompile Include="PixRectOperators.cpp" />
     <ClCompile Include="PixRectRotate.cpp" />
     <ClCompile Include="PixRectScale.cpp" />
