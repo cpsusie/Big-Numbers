@@ -273,7 +273,7 @@ public:
 //    unsigned op signed
 //    unsigned op unsigned
 //  For +,-,*,&,|,^,==,!= the called function is the same 
-//  regardles of signed/unsigned combinations.
+//  regardless of signed/unsigned combinations.
 //  For /,%,<,>,<=,>= however the signed function is used 
 //  only for the "signed op signed" combination.
 //  For left shift (<<) there is no difference for 
