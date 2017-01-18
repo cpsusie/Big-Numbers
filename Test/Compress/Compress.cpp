@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <Console.h>
 #include <ByteFile.h>
 #include "AdaptiveHuffmantree.h"
 #include "ArithmeticCoder.h"
@@ -16,7 +17,7 @@ static void usage() {
                       "      -a:Arithmetic encoding\n"
                       "      -z:zlib compression")
 #ifdef _USE_DCT
-                 "      -p:Picture encoding\n"
+                      "      -p:Picture encoding\n"
 #endif
          );
   exit(-1);
@@ -57,7 +58,7 @@ int main(int argc, char **argv) {
         continue;
 #ifdef _USE_DCT
       case 'p':
-        compressor = new PictureCoder;
+        compressor = new PictureCoder(Console::getWindow());
         continue;
 #endif
       case 'q':

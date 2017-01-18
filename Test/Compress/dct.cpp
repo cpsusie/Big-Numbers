@@ -3,6 +3,7 @@
 #ifdef _USE_DCT
 
 #include <Math.h>
+#include <CountedByteStream.h>
 #include "DCT.h"
 
 //#define DEBUGMODULE
@@ -40,8 +41,8 @@ void DCT::init(int quality) {
   for(int j = 0; j < DCTBlockSize; j++) {
     C[0][j] = Ct[j][0] = 1.0/sqrt(DCTBlockSize);
   }
-  for(i = 1; i < DCTBlockSize; i++) {
-    for(j = 0; j < DCTBlockSize; j++) {
+  for(int i = 1; i < DCTBlockSize; i++) {
+    for(int j = 0; j < DCTBlockSize; j++) {
       C[i][j] = Ct[j][i] = sqrt(2.0/DCTBlockSize) * cos(M_PI * (2*j+1)*i/(2.0*DCTBlockSize));
     }
   }
@@ -49,7 +50,7 @@ void DCT::init(int quality) {
   m_outputRunLength = 0;
 }
 
-int DCT::inputCode(BitFile &input) {
+int DCT::inputCode(BitInputStream &input) {
   if(m_inputRunLength > 0) {
     m_inputRunLength--;
     return 0;
@@ -71,7 +72,7 @@ int DCT::inputCode(BitFile &input) {
   return result - (1 << bitCount) + 1;
 }
 
-void DCT::outputCode(BitFile &output, int code) {
+void DCT::outputCode(BitOutputStream &output, int code) {
   if(code == 0) {
     m_outputRunLength++;
     return;
@@ -124,7 +125,7 @@ void DCT::dequantify(int data[DCTBlockSize][DCTBlockSize]) {
   }
 }
 
-void DCT::readDCTData(BitFile &input, int data[DCTBlockSize][DCTBlockSize]) {
+void DCT::readDCTData(BitInputStream &input, int data[DCTBlockSize][DCTBlockSize]) {
   for(int i = 0; i < DCTBlockSize*DCTBlockSize; i++) {
     const PixelPosition &p = pixelPosition[i];
     data[p.row][p.col] = inputCode(input);
@@ -133,7 +134,7 @@ void DCT::readDCTData(BitFile &input, int data[DCTBlockSize][DCTBlockSize]) {
 
 #define ROUND(a) (((a)<0)?(int)((a)-0.5) : ((int)((a)+0.5)))
 
-void DCT::writeDCTData(BitFile &output, int data[DCTBlockSize][DCTBlockSize]) {
+void DCT::writeDCTData(BitOutputStream &output, int data[DCTBlockSize][DCTBlockSize]) {
   for(int i = 0; i < DCTBlockSize*DCTBlockSize; i++) {
     const PixelPosition &p = pixelPosition[i];
     double result = data[p.row][p.col];
@@ -141,7 +142,7 @@ void DCT::writeDCTData(BitFile &output, int data[DCTBlockSize][DCTBlockSize]) {
   }
 }
 
-void DCT::forwardDCT(const unsigned char input[DCTBlockSize][DCTBlockSize], int output[DCTBlockSize][DCTBlockSize]) {
+void DCT::forwardDCT(const BYTE input[DCTBlockSize][DCTBlockSize], int output[DCTBlockSize][DCTBlockSize]) {
   double tmp[DCTBlockSize][DCTBlockSize];
   for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
@@ -152,7 +153,7 @@ void DCT::forwardDCT(const unsigned char input[DCTBlockSize][DCTBlockSize], int 
       tmp[i][j] = sum;
     }
   }
-  for(i = 0; i < DCTBlockSize; i++) {
+  for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
       double sum = 0;
       for(int k = 0; k < DCTBlockSize; k++) {
@@ -163,7 +164,7 @@ void DCT::forwardDCT(const unsigned char input[DCTBlockSize][DCTBlockSize], int 
   }
 }
 
-void DCT::inverseDCT(const int input[DCTBlockSize][DCTBlockSize], unsigned char output[DCTBlockSize][DCTBlockSize]) {
+void DCT::inverseDCT(const int input[DCTBlockSize][DCTBlockSize], BYTE output[DCTBlockSize][DCTBlockSize]) {
   double tmp[DCTBlockSize][DCTBlockSize];
   for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
@@ -174,7 +175,7 @@ void DCT::inverseDCT(const int input[DCTBlockSize][DCTBlockSize], unsigned char 
       tmp[i][j] = sum;
     }
   }
-  for(i = 0; i < DCTBlockSize; i++) {
+  for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
       double sum = 128;
       for(int k = 0; k < DCTBlockSize; k++) {
@@ -185,7 +186,7 @@ void DCT::inverseDCT(const int input[DCTBlockSize][DCTBlockSize], unsigned char 
       } else if(sum > 255) {
         output[i][j] = 255;
       } else {
-        output[i][j] = (unsigned char)(ROUND(sum));
+        output[i][j] = (BYTE)(ROUND(sum));
       }
     }
   }
@@ -210,7 +211,7 @@ void PixelBlock::getPixels(PixelAccessor *src, int row, int col, int part) {
   for(int i = 0, y = row; i < maxI; i++, y++) {
     for(int j = 0, x = col; j < maxJ; j++, x++) {
       D3DCOLOR value = src->getPixel(x,y);
-      m_pixels[i][j] = (unsigned char)((value >> shift)&0xff);
+      m_pixels[i][j] = (BYTE)((value >> shift)&0xff);
     }
   }
 }
@@ -231,37 +232,39 @@ void PixelBlock::putPixels(PixelAccessor *dst, int row, int col, int part) {
 }
 
 void PixelBlock::dump(int part, int row, int col, FILE *f) const {
-  fprintf(f,"---------Pixels (%d,%d,%d)----------------\n", part, row, col);
+  _ftprintf(f,_T("---------Pixels (%d,%d,%d)----------------\n"), part, row, col);
   for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
-      fprintf(f,"%4d",m_pixels[i][j]);
+      _ftprintf(f,_T("%4d"),m_pixels[i][j]);
     }
-    fprintf(f,"\n");
+    _ftprintf(f,_T("\n"));
   }
-  fprintf(f,"-------------------------------\n");
+  _ftprintf(f,_T("-------------------------------\n"));
 }
 
 void dump(const String &label, const int data[DCTBlockSize][DCTBlockSize], FILE *f) {
-  fprintf(f,"---------%s--------------------\n",label.cstr());
+  _ftprintf(f,_T("---------%s--------------------\n"),label.cstr());
   for(int i = 0; i < DCTBlockSize; i++) {
     for(int j = 0; j < DCTBlockSize; j++) {
-      fprintf(f,"%4d",data[i][j]);
+      _ftprintf(f,_T("%4d"),data[i][j]);
     }
-    fprintf(f,"\n");
+    _ftprintf(f,_T("\n"));
   }
-  fprintf(f,"-------------------------------\n");
+  _ftprintf(f,_T("-------------------------------\n"));
 }
 
-void DCT::writeImage(PixRect *p, FILE *output, unsigned char quality) {
-  BitFile out(output,WRITEMODE);
+void DCT::writeImage(PixRect *p, ByteOutputStream &output, BYTE quality) {
+  ByteCounter counter;
+  CountedByteOutputStream out1(counter, output);
+  BitOutputStream out(out1);
   PixelAccessor *pa = p->getPixelAccessor();
   init(quality);
-  int w = p->getWidth();
-  int h = p->getHeight();
+  const int w = p->getWidth();
+  const int h = p->getHeight();
 
   out.putBits(quality,8);
-  out.putBits((unsigned short)w,16);
-  out.putBits((unsigned short)h,16);
+  out.putBits((USHORT)w,16);
+  out.putBits((USHORT)h,16);
   for(int part = 0; part < 3; part++) {
     for(int row = 0; row < h; row += DCTBlockSize) {
       for(int col = 0; col < w; col += DCTBlockSize) {
@@ -287,17 +290,18 @@ void DCT::writeImage(PixRect *p, FILE *output, unsigned char quality) {
   }
   delete pa;
   outputCode(out,1);
-  out.close();
-  m_compressedSize = out.getSize();
+  m_compressedSize = (int)counter.getCount();
 }
 
-PixRect *DCT::readImage(FILE *input) {
-  BitFile in(input,READMODE);
-  int quality = in.getBits(8);
+PixRect *DCT::readImage(ByteInputStream &input) {
+  ByteCounter counter;
+  CountedByteInputStream in1(counter, input);
+  BitInputStream in(in1);
+  const int quality = in.getBits(8);
   init(quality);
-  long w = in.getBits(16);
-  long h = in.getBits(16);
-  PixRect *result = new PixRect(w,h);
+  const long w = in.getBits(16);
+  const long h = in.getBits(16);
+  PixRect *result = new PixRect(m_device, PIXRECT_PLAINSURFACE, w,h);
   result->fillRect(0,0,w,h,BLACK);
   PixelAccessor *pa = result->getPixelAccessor();
   for(int part = 0; part < 3; part++) {
@@ -324,27 +328,35 @@ PixRect *DCT::readImage(FILE *input) {
     }
   }
   delete pa;
-  m_compressedSize = in.getSize();
+  m_compressedSize = (int)counter.getCount();
   return result;
 }
 
-void PictureCoder::compress(FILE *input, FILE *output, int quality) {
-  PixRect *p = PixRect::load(input);
-  DCT dct;
+PictureCoder::PictureCoder(HWND hwnd) {
+  m_device.attach(hwnd);
+}
+
+void PictureCoder::compress(ResetableByteInputStream &input, ByteOutputStream &output, int quality) {
+  ByteCounter counter;
+  CountedByteInputStream in(counter, input);
+  PixRect *p = PixRect::load(m_device, in);
+  DCT dct(m_device);
   dct.writeImage(p,output,quality);
   delete p;
 
-  m_rawSize        = getSize(input);
+  m_rawSize        = counter.getCount();
   m_compressedSize = dct.getCompressedSize();
 }
 
-void PictureCoder::expand(FILE *input, FILE *output) {
-  DCT dct;
+void PictureCoder::expand(ByteInputStream &input, ByteOutputStream &output) {
+  DCT dct(m_device);
   PixRect *p = dct.readImage(input);
-  p->writeAsBMP(output);
+  ByteCounter counter;
+  CountedByteOutputStream out(counter, output);
+  p->writeAsBMP(out);
   delete p;
 
-  m_rawSize        = getSize(output);
+  m_rawSize        = counter.getCount();
   m_compressedSize = dct.getCompressedSize();
 }
 
