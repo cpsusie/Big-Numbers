@@ -1,7 +1,7 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include "Cube3D.h"
+#include <D3DGraphics/Cube3D.h>
 #include "PersistentParameter.h"
 
 class IsoSurfaceParameters : public PersistentParameter {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Rectangle2D.h>
+#include <Math/Rectangle2D.h>
 
 class ProfileRotationParameters {
 public:

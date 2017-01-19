@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Stack.h>
-#include <Array.h>
 #include <CompactArray.h>
 #include <CompactHashSet.h>
 #include <CompactHashMap.h>
@@ -122,7 +121,7 @@ public:
 
 class TriangleStrip {
 public:
-  UINT         m_vertexId[10];
+  UINT m_vertexId[10];
   char         m_count;
   inline TriangleStrip() : m_count(0) {
   }
@@ -146,8 +145,8 @@ public:
 
 class Face3 {                   // Parameter to receiveFace
 public:
-  UINT         m_i1,m_i2,m_i3;  // Indices into vertexArray
-  D3DCOLOR     m_color;
+  UINT m_i1,m_i2,m_i3;  // Indices into vertexArray
+  D3DCOLOR m_color;
   Face3() {}
   inline Face3(UINT i1, UINT i2, UINT i3, D3DCOLOR color) 
     : m_i1(i1), m_i2(i2), m_i3(i3), m_color(color)
@@ -194,20 +193,20 @@ public:
 
 class PolygonizerStatistics {
 public:
-  double       m_threadTime;
-  UINT         m_faceCount;
-  UINT         m_vertexCount;
-  UINT         m_cubeCount;
-  UINT         m_cornerCount;
-  UINT         m_edgeCount;
-  UINT         m_cornerHits;
-  UINT         m_edgeHits;
-  UINT         m_zeroHits;
-  UINT         m_evalCount;
-  UINT         m_doCubeCalls;
-  UINT         m_doTetraCalls;
-  UINT         m_nonProduktiveCalls;
-  String       m_hashStat;
+  double m_threadTime;
+  UINT   m_faceCount;
+  UINT   m_vertexCount;
+  UINT   m_cubeCount;
+  UINT   m_cornerCount;
+  UINT   m_edgeCount;
+  UINT   m_cornerHits;
+  UINT   m_edgeHits;
+  UINT   m_zeroHits;
+  UINT   m_evalCount;
+  UINT   m_doCubeCalls;
+  UINT   m_doTetraCalls;
+  UINT   m_nonProduktiveCalls;
+  String m_hashStat;
 
   PolygonizerStatistics();
   void clear();
@@ -218,7 +217,7 @@ class IsoSurfacePolygonizer {
 private:
   static Array<CompactArray<char> >     m_cubetable[256];
   IsoSurfaceEvaluator                  &m_eval;            // Implicit surface function
-  double                                m_size, m_delta;   // Cube size, normal delta
+  double                                m_cellSize, m_delta;   // Cube size, normal delta
   Cube3D                                m_boundingBox;     // bounding box
   Point3D                               m_start;           // Start point on surface
   bool                                  m_tetrahedralMode; // Use tetrahedral decomposition
@@ -259,7 +258,7 @@ private:
   inline void         putFace3(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
-      throwException("Invalid face(%u,%d,%d). vertexArray.size==%u", i1,i2,i3, m_vertexArray.size());
+      throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
 #endif
     m_face3Buffer.add(Face3(i1,i2,i3,m_color));
@@ -267,7 +266,7 @@ private:
   inline void         putFace3R(UINT i1, UINT i2, UINT i3) {
 #ifdef VALIDATE_PUTFACE
     if(i1 >= m_vertexArray.size() || i2 >= m_vertexArray.size() || i3 >= m_vertexArray.size()) {
-      throwException("Invalid face(%u,%d,%d). vertexArray.size==%u", i1,i2,i3, m_vertexArray.size());
+      throwException(_T("Invalid face(%u,%d,%d). vertexArray.size==%u"), i1,i2,i3, m_vertexArray.size());
     }
 #endif
     m_face3Buffer.add(Face3(i1,i3,i2,m_color));
@@ -279,27 +278,27 @@ private:
   inline bool         hasActiveCubes() const {
     return !m_cubeStack.isEmpty();
   }
-  inline StackedCube  getActiveCube() {
+  inline StackedCube      getActiveCube() {
     return m_cubeStack.pop();
   }
-  void                pushCube(const StackedCube &cube);
+  void                    pushCube(const StackedCube &cube);
 
-  UINT                getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
-  Point3D             getNormal(const Point3D &point);
+  UINT                    getVertexId(const HashedCubeCorner &c1, const HashedCubeCorner &c2);
+  Point3D                 getNormal(const Point3D &point);
   const HashedCubeCorner *getCorner(int i, int j, int k);
 
-  inline Point3D      getCornerPoint(const Point3DKey &key) const {
+  inline Point3D          getCornerPoint(const Point3DKey &key) const {
     return getCornerPoint(key.i,key.j,key.k);
   }
-  Point3D             getCornerPoint(int i, int j, int k) const;
-  Point3D             converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount = 0);
-  void                saveStatistics(double startTime);
-  void                dumpCornerMap();
+  Point3D                 getCornerPoint(int i, int j, int k) const;
+  Point3D                 converge(const Point3D &p1, const Point3D &p2, bool p1Positive, int itCount = 0);
+  void                    saveStatistics(double startTime);
+  void                    dumpCornerMap();
 public:
   IsoSurfacePolygonizer(IsoSurfaceEvaluator &eval);
   ~IsoSurfacePolygonizer();
   void polygonize(const Point3D &start
-                 ,double         size
+                 ,double         cellSize
                  ,const Cube3D  &boundingBox
                  ,bool           tetrahedralMode
                  );

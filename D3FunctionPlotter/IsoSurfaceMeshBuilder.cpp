@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Math/MathFunctions.h>
+#include <D3DGraphics/IsoSurfacePolygonizer.h>
 #include "MeshArrayJobMonitor.h"
-#include "IsoSurfacePolygonizer.h"
 
 /* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
 

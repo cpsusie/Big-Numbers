@@ -57,7 +57,7 @@ void checkD3DResult(const TCHAR *fileName, int line, HRESULT hr, bool exitOnErro
 void checkD3DResult(HRESULT hr, bool exitOnError) {
   if(hr != D3D_OK) {
     if(exitOnError) {
-      AfxMessageBox(format(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr()).cstr(), MB_ICONSTOP);
+      MessageBox(NULL, format(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr()).cstr(), _T("Error"), MB_ICONSTOP);
       exit(-1);
     } else {
       throwException(_T("D3D-error %s"), getD3DErrorMsg(hr).cstr());

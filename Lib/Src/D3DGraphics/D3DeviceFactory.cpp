@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "D3DeviceFactory.h"
+#include "pch.h"
+#include <MFCUtil/WinTools.h>
 
 DECLARE_THISFILE;
 

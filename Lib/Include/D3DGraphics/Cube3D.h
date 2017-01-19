@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Point3D.h"
+#include <Math/Point3D.h>
 
 class Cube3D {
 public:

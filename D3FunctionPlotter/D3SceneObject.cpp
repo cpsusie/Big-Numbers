@@ -2,14 +2,6 @@
 
 DECLARE_THISFILE;
 
-Vertex createVertex(double x, double y, double z) {
-  Vertex result;
-  result.x = (float)x;
-  result.y = (float)y;
-  result.z = (float)z;
-  return result;
-}
-
 // ------------------------------------------------ D3SceneObject ---------------------------------------------------
 
 void D3SceneObject::prepareDraw(unsigned int flags) {

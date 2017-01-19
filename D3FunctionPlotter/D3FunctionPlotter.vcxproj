@@ -74,13 +74,13 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
     <ExcludePath>$(ExcludePath)</ExcludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
@@ -89,12 +89,12 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\mytools2015\Lib\Include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include;C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\ucrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\um;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\winrt;C:\Program Files (x86)\Windows Kits\10\Include\10.0.10586.0\shared;C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6\Include\um;C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
+    <IncludePath>C:\mytools2015\Lib\Include;$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include</IncludePath>
     <LibraryPath>C:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib;$(LibraryPath)</LibraryPath>
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
@@ -297,20 +297,16 @@
     <ClCompile Include="ColormapDialog.cpp" />
     <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3CoordinateSystem.cpp" />
-    <ClCompile Include="D3DeviceFactory.cpp" />
     <ClCompile Include="D3DumpMesh.cpp" />
-    <ClCompile Include="D3Error.cpp" />
     <ClCompile Include="D3FunctionPlotter.cpp" />
     <ClCompile Include="D3FunctionPlotterDlg.cpp" />
     <ClCompile Include="D3LightControl.cpp" />
     <ClCompile Include="D3LightControlDirectional.cpp" />
     <ClCompile Include="D3LightControlPoint.cpp" />
     <ClCompile Include="D3LightControlSpot.cpp" />
-    <ClCompile Include="D3Math.cpp" />
     <ClCompile Include="D3Scene.cpp" />
     <ClCompile Include="D3SceneIO.cpp" />
     <ClCompile Include="D3SceneObject.cpp" />
-    <ClCompile Include="D3Spherical.cpp" />
     <ClCompile Include="D3TextureTools.cpp" />
     <ClCompile Include="D3ToString.cpp" />
     <ClCompile Include="DrawTool.cpp" />
@@ -323,23 +319,19 @@
     <ClCompile Include="IsoSurface.cpp" />
     <ClCompile Include="IsoSurfaceDlg.cpp" />
     <ClCompile Include="IsoSurfaceMeshBuilder.cpp" />
-    <ClCompile Include="IsosurfacePolygonizer.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MemoryLogThread.cpp" />
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
-    <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="ParametricSurface.cpp" />
     <ClCompile Include="ParametricSurfaceDlg.cpp" />
     <ClCompile Include="ParametricSurfaceMeshBuilder.cpp" />
     <ClCompile Include="PersistentParameter.cpp" />
-    <ClCompile Include="Profile.cpp" />
     <ClCompile Include="ProfileDlg.cpp" />
     <ClCompile Include="ProfilePainter.cpp" />
     <ClCompile Include="PropertyDlg.cpp" />
     <ClCompile Include="PropertyDlgThread.cpp" />
-    <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="SelectAndLoadProfile.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -362,14 +354,10 @@
     <ClInclude Include="ColormapDialog.h" />
     <ClInclude Include="colormap.h" />
     <ClInclude Include="ComboBoxExprHelp.h" />
-    <ClInclude Include="Cube3D.h" />
     <ClInclude Include="D3CoordinateSystem.h" />
-    <ClInclude Include="D3DeviceFactory.h" />
-    <ClInclude Include="D3Error.h" />
     <ClInclude Include="D3FunctionPlotter.h" />
     <ClInclude Include="D3FunctionPlotterDlg.h" />
     <ClInclude Include="D3LightControl.h" />
-    <ClInclude Include="D3Math.h" />
     <ClInclude Include="D3Scene.h" />
     <ClInclude Include="DrawTool.h" />
     <ClInclude Include="ExprDialog.h" />
@@ -379,16 +367,13 @@
     <ClInclude Include="IsoCurve.h" />
     <ClInclude Include="IsoSurface.h" />
     <ClInclude Include="IsoSurfaceDlg.h" />
-    <ClInclude Include="IsoSurfacePolygonizer.h" />
     <ClInclude Include="LightDlg.h" />
     <ClInclude Include="MaterialDlg.h" />
     <ClInclude Include="MemoryLogThread.h" />
     <ClInclude Include="MeshArrayJobMonitor.h" />
-    <ClInclude Include="MeshBuilder.h" />
     <ClInclude Include="ParametricSurfaceDlg.h" />
     <ClInclude Include="ParametricSurface.h" />
     <ClInclude Include="PersistentParameter.h" />
-    <ClInclude Include="Profile.h" />
     <ClInclude Include="ProfileDlg.h" />
     <ClInclude Include="ProfilePainter.h" />
     <ClInclude Include="PropertyDialog.h" />

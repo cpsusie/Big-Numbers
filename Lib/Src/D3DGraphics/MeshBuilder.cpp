@@ -1,6 +1,8 @@
-#include "stdafx.h"
+#include "pch.h"
+#include <comdef.h>
+#include <atlconv.h>
 #include <CompactHashMap.h>
-#include "MeshBuilder.h"
+#include <D3DGraphics/MeshBuilder.h>
 
 DECLARE_THISFILE;
 
@@ -449,7 +451,7 @@ LPD3DXMESH MeshBuilder::createMesh(DIRECT3DDEVICE device, bool doubleSided) cons
 
 void MeshBuilder::dump(const String &fileName) const {
   const String name = (fileName.length() > 0) ? fileName : _T("c:\\temp\\meshbuilderDump.txt");
-  FILE *f = MKFOPEN(name, "w");
+  FILE *f = MKFOPEN(name, _T("w"));
   USES_CONVERSION;
   fprintf(f, "MeshBuilder:\n");
   fprintf(f, "Vertices:%d\n", (int)m_vertices.size());

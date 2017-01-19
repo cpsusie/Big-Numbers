@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <HashMap.h>
-#include "D3DeviceFactory.h"
 #include "DrawTool.h"
 
 class BitmapKey {

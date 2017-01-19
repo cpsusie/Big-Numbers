@@ -1,14 +1,20 @@
 #include "pch.h"
 
-#pragma comment(lib,"d3d9.lib")
-#pragma comment(lib,"d3dx9.lib")
+#ifdef IS32BIT
+#define LIBDIR "x86/"
+#else
+#define LIBDIR "x64/"
+#endif
 
-D3DXMATRIX createIdentityMatrix() {
+#pragma comment(lib, LIBDIR "d3d9.lib")
+#pragma comment(lib, LIBDIR "d3dx9.lib")
+
+D3DXMATRIX  createIdentityMatrix() {
   D3DXMATRIX m;
   return *D3DXMatrixIdentity(&m);
 }
 
-D3DXMATRIX createTranslateMatrix(const D3DXVECTOR3 &v) {
+D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v) {
   D3DXMATRIX m;
   return *D3DXMatrixTranslation(&m,v.x,v.y,v.z);
 }
@@ -18,17 +24,17 @@ D3DXMATRIX createScaleMatrix(const D3DXVECTOR3 &s) {
   return *D3DXMatrixScaling(&m, s.x, s.y, s.z);
 }
 
-D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, float rad) {
+D3DXMATRIX createRotationMatrix(const D3DXVECTOR3 &axes, double rad) {
   D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, rad);
+  return *D3DXMatrixRotationAxis(&matRot, &axes, (float)rad);
 }
 
-D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, float rad) {
+D3DXVECTOR3 rotate(const D3DXVECTOR3 &v, const D3DXVECTOR3 &axes, double rad) {
   D3DXMATRIX matRot;
-  return *D3DXMatrixRotationAxis(&matRot, &axes, rad) * v;
+  return *D3DXMatrixRotationAxis(&matRot, &axes, (float)rad) * v;
 }
 
-D3DXVECTOR3 randomUnitVector() {
+static D3DXVECTOR3 randomUnitVector() {
   D3DXVECTOR3 v;
   v.x = (float)rand() / RAND_MAX;
   v.y = (float)rand() / RAND_MAX;
@@ -63,7 +69,7 @@ D3DXVECTOR3 createUnitVector(int i) {
   case 0 : return D3DXVECTOR3(1,0,0);
   case 1 : return D3DXVECTOR3(0,1,0);
   case 2 : return D3DXVECTOR3(0,0,1);
-  default: throwInvalidArgumentException(_T("createUnitVector"), _T("i=%d. Must be [0..2]"), i);
+  default: throwInvalidArgumentException(__TFUNCTION__, _T("i=%d. Must be [0..2]"), i);
            return D3DXVECTOR3(0,0,0);
   }
 }
@@ -81,12 +87,12 @@ D3DXVECTOR3 ortonormalVector(const D3DXVECTOR3 &v) {
 }
 
 D3DXMATRIX transpose(const D3DXMATRIX &m) {
-  D3DXMATRIX result;
+  D3DXMATRIX  result;
   return *D3DXMatrixTranspose(&result, &m);
 }
 
 D3DXMATRIX invers(const D3DXMATRIX &m) {
-  D3DXMATRIX result;
+  D3DXMATRIX  result;
   return *D3DXMatrixInverse(&result, NULL, &m);
 }
 
@@ -143,6 +149,14 @@ String toString(const D3DXMATRIX &m, int dec) {
   return result;
 }
 
+Vertex createVertex(double x, double y, double z) {
+  Vertex result;
+  result.x = (float)x;
+  result.y = (float)y;
+  result.z = (float)z;
+  return result;
+}
+
 // ---------------------------------------------------------------------------------
 
 D3PosDirUpScale::D3PosDirUpScale() {
@@ -194,12 +208,12 @@ void D3PosDirUpScale::setWorldMatrix(const D3DXMATRIX &world) {
   m_pos   = D3DXVECTOR3( world._41,  world._42,  world._43);
   m_dir   = D3DXVECTOR3(-world._31, -world._32, -world._33);
   m_up    = D3DXVECTOR3( world._21,  world._22,  world._23);
-  const double sx = length(D3DXVECTOR3(world._11,world._12,world._13));
-  const double sy = length(D3DXVECTOR3(world._21,world._22,world._23));
-  const double sz = length(D3DXVECTOR3(world._31,world._32,world._33));
-  m_scale = D3DXVECTOR3((float)sx,(float)sy,(float)sz);
-  m_dir /= (float)sz;
-  m_up  /= (float)sy;
+  const float sx = length(D3DXVECTOR3(world._11,world._12,world._13));
+  const float sy = length(D3DXVECTOR3(world._21,world._22,world._23));
+  const float sz = length(D3DXVECTOR3(world._31,world._32,world._33));
+  m_scale = D3DXVECTOR3(sx,sy,sz);
+  m_dir /= sz;
+  m_up  /= sy;
   updateView();
 }
 

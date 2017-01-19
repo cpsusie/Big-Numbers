@@ -1,5 +1,7 @@
 #pragma once
 
+#include "D3DeviceFactory.h"
+
 class VertexNormalIndex {
 public:
   unsigned int m_vIndex, m_nIndex;
@@ -39,6 +41,8 @@ public:
   }
   friend class MeshBuilder;
 };
+
+#define MAX16BITVERTEXCOUNT 0xfffe
 
 class MeshBuilder {
 private:

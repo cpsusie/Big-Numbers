@@ -6,8 +6,6 @@
 #include <Date.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
-#include "D3Math.h"
-#include "D3DeviceFactory.h"
 #include "Function2DSurface.h"
 #include "ParametricSurface.h"
 #include "IsoSurface.h"
@@ -54,8 +52,6 @@ D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 #define D3D_YELLOW D3DCOLOR_XRGB(255,255,  0)
 
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
-
-#define MAX16BITVERTEXCOUNT 0xfffe
 
 inline bool operator==(const MATERIAL &m1, const MATERIAL &m2) {
   return memcmp(&m1, &m2, sizeof(MATERIAL)) == 0;
@@ -376,97 +372,6 @@ LPDIRECT3DTEXTURE9 getTextureFromBitmap(    LPDIRECT3DDEVICE9 device, HBITMAP bm
 void dumpMesh(LPD3DXMESH mesh, const String &fileName="");
 void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f);
 void dumpIndexBuffer( LPDIRECT3DINDEXBUFFER9  indexBuffer , FILE *f);
-
-typedef struct Vertex {
-  float x, y, z;
-  enum FVF {
-    FVF_Flags = D3DFVF_XYZ
-  };
-  inline Vertex() {
-  }
-  inline Vertex(float  _x, float  _y, float  _z) { x  = _x ; y  = _y ; z  = _z ; }
-  inline Vertex(double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
-  inline Vertex(     const Point3D     &p)       { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
-  inline Vertex(     const D3DXVECTOR3 &v)       { x  = v.x; y  = v.y; z  = v.z; }
-  inline void setPos(const D3DXVECTOR3 &v)       { x  = v.x; y  = v.y; z  = v.z; }
-  inline operator D3DXVECTOR3() const {
-    return D3DXVECTOR3(x,y,z);
-  }
-  inline Vertex operator-() const { return Vertex(-x,-y,-z); } 
-} Vertex;
-
-Vertex createVertex(double x, double y, double z);
-
-typedef struct {
-  float x, y, z;
-  float nx, ny, nz;
-//  DWORD diffuse, specular;
-  enum FVF {
-    FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL/* | D3DFVF_DIFFUSE | D3DFVF_SPECULAR*/
-  };
-  inline void setPos(double _x, double _y, double _z)    { x  = (float)_x;  y  = (float)_y;  z  =  (float)_z; }
-  inline void setPos(   const Vertex      &v)            { x  = v.x; y  = v.y; z  = v.z; }
-  inline void setPos(   const D3DXVECTOR3 &v)            { x  = v.x; y  = v.y; z  = v.z; }
-  inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
-
-  inline void setNormal(double _x, double _y, double _z) { nx =  (float)_x; ny =  (float)_y; nz =  (float)_z; }
-  inline void setNormal(const D3DXVECTOR3 &n)            { nx = n.x; ny = n.y; nz = n.z; }
-  inline void setNormal(const Point3D     &n)            { nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; }
-
-  inline void setPosAndNormal(const Vertex      &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) { // ignore diffuse
-    setPos(v); setNormal(n);
-  }
-  inline void setPosAndNormal(const D3DXVECTOR3 &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) { // ignore diffuse
-    setPos(v); setNormal(n);
-  }
-  inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) { // ignore diffuse
-    setPos(v); setNormal(n);
-  }
-  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
-} VertexNormal;
-
-typedef struct {
-  float x, y, z;
-  float nx, ny, nz;
-  DWORD diffuse;
-  enum FVF {
-    FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE
-  };
-  inline void setPos(double _x, double _y, double _z)    { x  =  (float)_x; y  =  (float)_y; z  =  (float)_z; }
-  inline void setPos(   const Vertex      &v)            { x  = v.x; y  = v.y; z  = v.z; }
-  inline void setPos(   const D3DXVECTOR3 &v)            { x  = v.x; y  = v.y; z  = v.z; }
-  inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
-
-  inline void setNormal(double _x, double _y, double _z) { nx =  (float)_x; ny =  (float)_y; nz =  (float)_z; }
-  inline void setNormal(const D3DXVECTOR3 &n)            { nx = n.x; ny = n.y; nz = n.z; }
-  inline void setNormal(const Point3D     &n)            { nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; }
-
-  inline void setPosAndNormal(const Vertex      &v, const D3DXVECTOR3 &n, D3DCOLOR _diffuse) { 
-    setPos(v); setNormal(n);
-    diffuse = _diffuse;
-  }
-  inline void setPosAndNormal(const D3DXVECTOR3 &v, const D3DXVECTOR3 &n, D3DCOLOR _diffuse) { 
-    setPos(v); setNormal(n);
-    diffuse = _diffuse;
-  }
-  inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR _diffuse) {
-    setPos(v); setNormal(n);
-    diffuse = _diffuse;
-  }
-  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
-} VertexNormalDiffuse;
-
-typedef struct Line {
-  Vertex m_p1, m_p2;
-  inline Line() {}
-  inline Line(const Vertex &p1, const Vertex &p2) : m_p1(p1), m_p2(p2) {
-  }
-  inline Line(const Point3D &p1, const Point3D &p2) : m_p1(p1), m_p2(p2) {
-  }
-} Line;
-
-typedef CompactArray<Vertex>     VertexArray;
-typedef Array<VertexArray>       CurveArray;
 
 #define USE_SCENEMATERIAL  0x0001
 #define USE_SCENEFILLMODE  0x0002

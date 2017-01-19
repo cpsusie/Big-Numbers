@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Profile.h"
 #include "D3LightControl.h"
 
 D3LightControlDirectional::D3LightControlDirectional(D3Scene &scene, int lightIndex) : D3LightControl(scene, lightIndex) {

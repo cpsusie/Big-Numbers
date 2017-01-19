@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <ExternProcess.h>
-#include "MeshBuilder.h"
+#include <D3DGraphics/MeshBuilder.h>
 
 class Triangle {
 public:

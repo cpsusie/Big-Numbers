@@ -4,7 +4,7 @@
 #include <CompactHashMap.h>
 #include <Math/Polygon2D.h>
 #include <MFCUtil/AbstractMouseHandler.h>
-#include "Profile.h"
+#include <D3DGraphics/Profile.h>
 
 class ViewportContainer {
 public:

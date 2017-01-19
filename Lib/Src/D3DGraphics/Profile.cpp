@@ -15,20 +15,20 @@ Point2D createPoint2D(XMLDoc &xmldoc, XMLNodePtr node) {
 ProfileCurve::ProfileCurve(const PolygonCurve &src) {
   m_type = src.getType();
   const Point2DArray &pa = src.getAllPoints();
-  for(int i = 0; i < pa.size(); i++) {
+  for(size_t i = 0; i < pa.size(); i++) {
     addPoint(pa[i]);
   }
 }
 
 void ProfileCurve::move(const Point2D &dp) {
-  for(int i = 0; i < m_points.size(); i++) {
+  for(size_t i = 0; i < m_points.size(); i++) {
     m_points[i] += dp;
   }
 }
 
 Point2DArray ProfileCurve::getAllPoints() const {
   Point2DArray result;
-  for(int i = 0; i < m_points.size(); i++) {
+  for(size_t i = 0; i < m_points.size(); i++) {
     result.add(m_points[i]);
   }
   return result;
@@ -36,7 +36,7 @@ Point2DArray ProfileCurve::getAllPoints() const {
 
 CompactArray<Point2D*> ProfileCurve::getAllPointsRef() {
   CompactArray<Point2D*> result;
-  for(int i = 0; i < m_points.size(); i++) {
+  for(size_t i = 0; i < m_points.size(); i++) {
     result.add(&m_points[i]);
   }
   return result;
@@ -52,12 +52,12 @@ String ProfileCurve::toString() const {
   case TT_PRIM_LINE   : result = _T("line   :"); break;
   case TT_PRIM_QSPLINE: result = _T("qspline:"); break;
   case TT_PRIM_CSPLINE: result = _T("cspline:"); break;
-  default             : result = format(_T("unknown type:%d:"),m_type); break;
+  default             : result = format(_T("unknown type:%d:"), m_type); break;
   }
 
-  char *delim = "";
-  for(int i = 0; i < m_points.size(); i++, delim = "        ") {
-    result += format(_T("%s%s\n"),delim,m_points[i].toString().cstr());
+  TCHAR *delim = _T("");
+  for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
+    result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
   }
   return result;
 }
@@ -65,14 +65,14 @@ String ProfileCurve::toString() const {
 String ProfileCurve::toXML() {
   String type;
   switch(m_type) {
-  case TT_PRIM_LINE   : type = _T("line")   ; break;
+  case TT_PRIM_LINE   : type = _T("line"   ); break;
   case TT_PRIM_QSPLINE: type = _T("qspline"); break;
   case TT_PRIM_CSPLINE: type = _T("cspline"); break;
   }
   String result = _T("<profilecurve>\n");
   result += _T("  <type>") + type + _T("</type>\n");
 
-  for(int i = 0; i < m_points.size(); i++) {
+  for(size_t i = 0; i < m_points.size(); i++) {
     result += _T("  ") + m_points[i].toXML();
   }
   result += _T("</profilecurve>\n");
@@ -90,7 +90,7 @@ static ProfileCurve createProfileCurve(XMLDoc &xmldoc, XMLNodePtr &node) {
   } else if(type == _T("cspline")) {
     result.m_type = TT_PRIM_CSPLINE;
   } else {
-    throwException(_T("Illegal polygonCurveType:%s"),type.cstr());
+    throwException(_T("Illegal polygonCurveType:%s"), type.cstr());
   }
 
   for(XMLNodePtr c = xmldoc.findChild(node,_T("point")); c != NULL; c = c->nextSibling) {
@@ -100,7 +100,7 @@ static ProfileCurve createProfileCurve(XMLDoc &xmldoc, XMLNodePtr &node) {
 }
 
 bool operator==(const ProfileCurve   &p1, const ProfileCurve   &p2) {
-  return p1.m_type == p2.m_type && p1.m_points == p2.m_points;
+  return (p1.m_type == p2.m_type) && (p1.m_points == p2.m_points);
 }
 
 bool operator!=(const ProfileCurve   &p1, const ProfileCurve   &p2) {
@@ -116,7 +116,7 @@ ProfilePolygon::ProfilePolygon() {
 ProfilePolygon::ProfilePolygon(const GlyphPolygon &src) {
   m_start = src.m_start;
   m_closed = true;
-  for(int i = 0; i < src.m_polygonCurveArray.size(); i++) {
+  for(size_t i = 0; i < src.m_polygonCurveArray.size(); i++) {
     addCurve(src.m_polygonCurveArray[i]);
   }
 }
@@ -125,7 +125,7 @@ ProfilePolygon::ProfilePolygon(const GlyphPolygon &src) {
 Point2DArray ProfilePolygon::getAllPoints() const {
   Point2DArray result;
   result.add(m_start);
-  for(int i = 0; i < m_curveArray.size(); i++) {
+  for(size_t i = 0; i < m_curveArray.size(); i++) {
     result.addAll(m_curveArray[i].getAllPoints());
   }
   return result;
@@ -134,7 +134,7 @@ Point2DArray ProfilePolygon::getAllPoints() const {
 CompactArray<Point2D*> ProfilePolygon::getAllPointsRef() {
   CompactArray<Point2D*> result;
   result.add(&m_start);
-  for(int i = 0; i < m_curveArray.size(); i++) {
+  for(size_t i = 0; i < m_curveArray.size(); i++) {
     result.addAll(m_curveArray[i].getAllPointsRef());
   }
   return result;
@@ -154,7 +154,7 @@ Rectangle2D ProfilePolygon::getBoundingBox() const {
 }
 
 bool ProfilePolygon::isEmpty() const {
-  for(int i = 0; i < m_curveArray.size(); i++) {
+  for(size_t i = 0; i < m_curveArray.size(); i++) {
     if(!m_curveArray[i].isEmpty()) {
       return false;
     }
@@ -164,7 +164,7 @@ bool ProfilePolygon::isEmpty() const {
 
 void ProfilePolygon::move(const Point2D &dp) {
   m_start += dp;
-  for(int i = 0; i < m_curveArray.size(); i++) {
+  for(size_t i = 0; i < m_curveArray.size(); i++) {
     m_curveArray[i].move(dp);
   }
 }
@@ -173,12 +173,12 @@ void ProfilePolygon::reverseOrder() {
   ProfilePolygon result;
   result.m_closed = m_closed;
   Point2DArray points = getAllPoints();
-  int pindex = points.size() - 1;
+  int pindex = (int)points.size() - 1;
   result.m_start = points[pindex--];
-  for(int i = m_curveArray.size()-1; i >= 0; i--) {
+  for(intptr_t i = m_curveArray.size()-1; i >= 0; i--) {
     ProfileCurve &curve = m_curveArray[i];
     ProfileCurve newCurve(curve.m_type);
-    for(int j = 0; j < curve.m_points.size(); j++) {
+    for(size_t j = 0; j < curve.m_points.size(); j++) {
       newCurve.addPoint(points[pindex--]);
     }
     result.addCurve(newCurve);
@@ -190,18 +190,18 @@ void ProfilePolygon::reverseOrder() {
 }
 
 String ProfilePolygon::toString() const {
-  String result = format(_T("start:%s\n"),m_start.toString().cstr());
-  for(int p = 0; p < m_curveArray.size(); p++) {
-    result += m_curveArray[p].toString() + "\n";
+  String result = format(_T("start:%s\n"), m_start.toString().cstr());
+  for(size_t p = 0; p < m_curveArray.size(); p++) {
+    result += m_curveArray[p].toString() + _T("\n");
   }
   return result;
 }
 
 String ProfilePolygon::toXML() {
-  String result = "<profilepolygon>\n";
-  result += format(_T("<closed>%d</closed>\n"),m_closed?1:0);
+  String result = _T("<profilepolygon>\n");
+  result += format(_T("<closed>%d</closed>\n"), m_closed?1:0);
   result += _T("<start>") + m_start.toXML() + _T("</start>");
-  for(int p = 0; p < m_curveArray.size(); p++) {
+  for(size_t p = 0; p < m_curveArray.size(); p++) {
     result += m_curveArray[p].toXML();
   }
   result += _T("</profilepolygon>\n");
@@ -215,7 +215,7 @@ static ProfilePolygon createProfilePolygon(XMLDoc &xmldoc, XMLNodePtr &node) {
   if(startNode == NULL) {
     throwException(_T("Missing tag <start>"));
   }
-  result.m_start = createPoint2D(xmldoc,xmldoc.findChild(startNode,_T("point")));
+  result.m_start = createPoint2D(xmldoc,xmldoc.findChild(startNode, _T("point")));
   for(XMLNodePtr c = xmldoc.findChild(node,_T("profilecurve")); c != NULL; c = c->nextSibling) {
     result.addCurve(createProfileCurve(xmldoc,c));
   }
@@ -243,7 +243,7 @@ Profile::Profile(const String &xml, const String &name) {
 
 Point2DArray Profile::getAllPoints() const {
   Point2DArray result;
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getAllPoints());
   }
   return result;
@@ -251,7 +251,7 @@ Point2DArray Profile::getAllPoints() const {
 
 CompactArray<Point2D*> Profile::getAllPointsRef() {
   CompactArray<Point2D*> result;
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getAllPointsRef());
   }
   return result;
@@ -259,14 +259,14 @@ CompactArray<Point2D*> Profile::getAllPointsRef() {
 
 Point2DArray Profile::getCurvePoints() const {
   Point2DArray result;
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result.addAll(m_polygonArray[i].getCurvePoints());
   }
   return result;
 }
 
 bool Profile::isEmpty() const {
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     if(!m_polygonArray[i].isEmpty()) {
       return false;
     }
@@ -297,21 +297,21 @@ void Profile::addLineStrip(const Point2D *points, int n) {
 }
 
 void Profile::move(const Point2D &dp) {
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     m_polygonArray[i].move(dp);
   }
 }
 
 int Profile::findPolygonContainingPoint(const Point2D *p) const {
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     const ProfilePolygon &pp = m_polygonArray[i];
     if(pp.m_closed) {
       continue;
     }
     if(p == &pp.m_start) {
-      return i;
+      return (int)i;
     } else if(p == &pp.getLastPoint()) {
-      return i;
+      return (int)i;
     }
   }
   return -1;
@@ -360,11 +360,11 @@ void ProfilePolygon::apply(CurveOperator &op) const {
   Point2D pp = m_start;
   op.beginCurve();
   op.apply(pp);
-  for(int i = 0; i < m_curveArray.size(); i++) {
+  for(size_t i = 0; i < m_curveArray.size(); i++) {
     const ProfileCurve &curve = m_curveArray[i];
     switch(curve.m_type) {
     case TT_PRIM_LINE   :
-      { for(int j = 0; j < curve.m_points.size(); j++) {
+      { for(size_t j = 0; j < curve.m_points.size(); j++) {
           const Point2D &np = curve.m_points[j];
           op.apply(np);
           pp = np;
@@ -377,7 +377,7 @@ void ProfilePolygon::apply(CurveOperator &op) const {
       }
       break;
     case TT_PRIM_CSPLINE:
-      { for(int j = 0; j < curve.m_points.size(); j+=3) {
+      { for(size_t j = 0; j < curve.m_points.size(); j+=3) {
           const Point2D &end = curve.m_points[j+2];
           applyToBezier(pp,curve.m_points[j],curve.m_points[j+1],end, op,false);
           pp = end;
@@ -393,7 +393,7 @@ void ProfilePolygon::apply(CurveOperator &op) const {
 }
 
 void Profile::apply(CurveOperator &op) const {
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     m_polygonArray[i].apply(op);
   }
 }
@@ -417,17 +417,17 @@ void Profile::parseXML(const String &xml) {
 }
 
 String Profile::toXML() {
-  String result = "<profile>";
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  String result = _T("<profile>");
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result += m_polygonArray[i].toXML();
   }
-  result += "</profile>";
+  result += _T("</profile>");
   return result;
 }
 
 String Profile::toString() const {
   String result;
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     result += m_polygonArray[i].toString();
   }
   return result;
@@ -489,7 +489,7 @@ void Profile::save(const String &fileName) {
 }
 
 bool operator==(const Profile &p1, const Profile &p2) {
-  return p1.m_name == p2.m_name && p1.m_polygonArray == p2.m_polygonArray;
+  return (p1.m_name == p2.m_name) && (p1.m_polygonArray == p2.m_polygonArray);
 }
 
 bool operator!=(const Profile &p1, const Profile &p2) {
@@ -533,7 +533,7 @@ Point2DArray ProfilePolygon::getSmoothNormals() const { // return noOfPoints nor
   } else {
     result.add(findNormal(points[0],points[1]));
   }
-  for(int j = 1; j < points.size()-1; j++) {
+  for(size_t j = 1; j < points.size()-1; j++) {
     result.add(unit(findNormal(points[j-1],points[j]) + findNormal(points[j],points[j+1])));
   }
   if(points.size() >= 2) {
@@ -543,13 +543,12 @@ Point2DArray ProfilePolygon::getSmoothNormals() const { // return noOfPoints nor
       result.add(findNormal(points[points.size()-2],points.last()));
     }
   }
-
   return result;
 }
 
 Point2DArray Profile::getSmoothNormals() const { // return noOfPoints normals
   Point2DArray result;
-  for(int i = 0; i < m_polygonArray.size(); i++) {
+  for(size_t i = 0; i < m_polygonArray.size(); i++) {
     const ProfilePolygon &pp = m_polygonArray[i];
     result.addAll(pp.getSmoothNormals());
   }

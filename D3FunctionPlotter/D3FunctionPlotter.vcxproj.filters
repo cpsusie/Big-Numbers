@@ -33,13 +33,7 @@
     <ClCompile Include="D3CoordinateSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3DeviceFactory.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3DumpMesh.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3FunctionPlotter.cpp">
@@ -60,9 +54,6 @@
     <ClCompile Include="D3LightControlSpot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3Math.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3Scene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -70,9 +61,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3SceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3Spherical.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3TextureTools.cpp">
@@ -111,9 +99,6 @@
     <ClCompile Include="IsoSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IsosurfacePolygonizer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="LightDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -129,13 +114,7 @@
     <ClCompile Include="MeshArrayJobMonitor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PersistentParameter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Profile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProfileDlg.cpp">
@@ -148,9 +127,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PropertyDlgThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="RotateProfile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectAndLoadProfile.cpp">
@@ -188,16 +164,7 @@
     <ClInclude Include="ComboBoxExprHelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Cube3D.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="D3CoordinateSystem.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DeviceFactory.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3FunctionPlotter.h">
@@ -207,9 +174,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3LightControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3Math.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3Scene.h">
@@ -239,9 +203,6 @@
     <ClInclude Include="IsoSurfaceDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IsoSurfacePolygonizer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="LightDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -254,13 +215,7 @@
     <ClInclude Include="MeshArrayJobMonitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MeshBuilder.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="PersistentParameter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Profile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProfileDlg.h">

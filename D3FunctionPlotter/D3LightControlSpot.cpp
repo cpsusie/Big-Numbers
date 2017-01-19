@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "Profile.h"
 #include "D3LightControl.h"
 
 D3LightControlSpot::D3LightControlSpot(D3Scene &scene, int lightIndex) 
