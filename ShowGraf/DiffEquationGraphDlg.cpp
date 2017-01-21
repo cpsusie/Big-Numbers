@@ -334,7 +334,7 @@ void CDiffEquationGraphDlg::addEquation() {
   CEquationEdit *eq = new CEquationEdit(m_exprFont);
 
   const CompactIntArray oldTabOrder = getTabOrder(this);
-  eq->Create(this, getEquationCount());
+  eq->Create(this, (UINT)getEquationCount());
   eq->setVisibleChecked(true);
   m_equationControlArray.add(eq);
   distributeEquationRectangles(newTotalEqHeight);
@@ -361,7 +361,7 @@ void CDiffEquationGraphDlg::adjustTabOrder(const CompactIntArray &oldTabOrder) {
 }
 
 void CDiffEquationGraphDlg::distributeEquationRectangles(int totalEquationsHeight) {
-  const int eqCount = getEquationCount();
+  const size_t eqCount = getEquationCount();
   if(eqCount > 0) {
     const CRect  cr = getClientRect(this);
     CRect        totalRect;
@@ -374,7 +374,7 @@ void CDiffEquationGraphDlg::distributeEquationRectangles(int totalEquationsHeigh
 
     int eqiTop = totalRect.top;
     for(size_t i = 0; i < eqCount; i++) {
-      const int   eqh = totalRect.Height() / eqCount;
+      const int   eqh = (int)(totalRect.Height() / eqCount);
       const CRect eqr(totalRect.left, eqiTop, totalRect.right, eqiTop+eqh-3);
       getEquationEdit(i)->setWindowRect(eqr);
       eqiTop += eqh;
@@ -684,32 +684,35 @@ CompactArray<CRect> CEquationEdit::calculateSubWinRect(const CRect &r) const {
   return result;
 }
 
-void CEquationEdit::Create(CWnd *parent, int eqIndex) {
+void CEquationEdit::Create(CWnd *parent, UINT eqIndex) {
   const CRect dummyRect(10,10,30,30);
 
-#define STD_STYLES WS_VISIBLE | WS_TABSTOP | WS_CHILD
+#define STD_STYLES    WS_VISIBLE | WS_TABSTOP      | WS_CHILD
+#define NAME_STYLE    STD_STYLES | ES_RIGHT        | WS_BORDER
+#define LABEL_STYLE   WS_VISIBLE | SS_CENTERIMAGE
+#define EXPR_STYLE    STD_STYLES | WS_VSCROLL      | WS_BORDER      | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN
+#define STARTV_STYLE  STD_STYLES | ES_RIGHT        | ES_AUTOHSCROLL | WS_BORDER
+#define VISIBLE_STYLE STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT
 
   m_exprId = EQEXPRFIELDID(eqIndex);
-  m_editName.Create(               STD_STYLES | ES_RIGHT    | WS_BORDER                     , dummyRect, parent, getNameId()   );
+  m_editName.Create(                    NAME_STYLE   , dummyRect, parent  , getNameId()       );
   m_editName.SetFont(&m_font, FALSE);
 
-  m_label.Create(  _T("' =")     , WS_VISIBLE | SS_CENTERIMAGE                              , dummyRect, parent, getLabelId()  );
+  m_label.Create(  _T("' =")          , LABEL_STYLE  , dummyRect, parent  , getLabelId()      );
   m_label.SetFont(&m_font, FALSE);
 
-#define EXPR_STYLE STD_STYLES | WS_VSCROLL | WS_BORDER | ES_AUTOVSCROLL | ES_MULTILINE | ES_WANTRETURN
-
-  CEdit::Create(                        EXPR_STYLE                                          , dummyRect, parent, getExprId()   );
+  CEdit::Create(                        EXPR_STYLE   , dummyRect, parent  , getExprId()       );
   ModifyStyleEx(0, WS_EX_CLIENTEDGE);
   SetFont(&m_font, FALSE);
 
-  m_editStartV.Create(                  STD_STYLES | ES_RIGHT | ES_AUTOHSCROLL | WS_BORDER  , dummyRect, parent  , getStartVId() );
+  m_editStartV.Create(                  STARTV_STYLE , dummyRect, parent  , getStartVId()     );
   m_editStartV.SetFont(&m_font, FALSE);
-  m_checkVisible.Create(_T("Visible:"), STD_STYLES | BS_AUTOCHECKBOX | BS_LEFTTEXT          , dummyRect, parent  , getVisibleId());
+  m_checkVisible.Create(_T("Visible:"), VISIBLE_STYLE, dummyRect, parent  , getVisibleId()    );
   m_checkVisible.SetFont(&m_font, FALSE);
 
-  m_colorButton.Create(_T("Color")    , STD_STYLES                                          , dummyRect, parent  , getColorId()  );
+  m_colorButton.Create(_T("Color")    , STD_STYLES   , dummyRect, parent  , getColorId()      );
   m_colorButton.EnableOtherButton(_T("Other"));
-  m_buttonDelete.Create(parent                                                              , dummyRect.TopLeft(), getDeleteId(),true);
+  m_buttonDelete.Create(parent                       , dummyRect.TopLeft(), getDeleteId(),true);
 }
 
 #define FOREACHSUBWIN(i) for(Iterator<CWnd*> i = m_subWndArray.getIterator(); i.hasNext();) 
@@ -837,8 +840,8 @@ void CEquationEdit::addToLayoutManager(SimpleLayoutManager &layoutManager, int f
 }
 
 void CEquationEdit::removeFromLayoutManager(SimpleLayoutManager &layoutManager) {
-  for(int i = 0; i < m_subWndArray.size(); i++) {
-    layoutManager.removeControl(m_exprId + i);
+  for(size_t i = 0; i < m_subWndArray.size(); i++) {
+    layoutManager.removeControl((int)(m_exprId + i));
   }
 }
 

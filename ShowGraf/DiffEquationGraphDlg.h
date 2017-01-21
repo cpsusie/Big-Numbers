@@ -38,7 +38,7 @@ private:
 public:
   CEquationEdit(CFont &font);
   ~CEquationEdit();
-  void  Create(CWnd *parent, int eqIndex);
+  void  Create(CWnd *parent, UINT eqIndex);
   void  DoDataExchange(CDataExchange* pDX);
   void  addToLayoutManager(     SimpleLayoutManager &layoutManager, int flags);
   void  removeFromLayoutManager(SimpleLayoutManager &layoutManager);
@@ -135,8 +135,8 @@ private:
       return findEquationByCtrlId(getFocusCtrlId(this));
     }
     void gotoEquation(size_t index);
-    int  getEquationCount() const {
-      return (int)m_equationControlArray.size();
+    size_t getEquationCount() const {
+      return m_equationControlArray.size();
     }
     inline CEquationEdit *getEquationEdit(size_t index) const {
       return m_equationControlArray[index];
@@ -154,7 +154,7 @@ private:
 public:
     CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent = NULL);
     virtual ~CDiffEquationGraphDlg();
-  DiffEquationGraphParameters &m_param;
+    DiffEquationGraphParameters &m_param;
 
 #ifdef AFX_DESIGN_TIME
     enum { IDD = IDD_DIFFEQUATIONGRAPH_DIALOG };
