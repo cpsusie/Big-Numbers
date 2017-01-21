@@ -3,7 +3,7 @@
 #include "Point3D.h"
 
 class Spherical {
-private:
+protected:
   void init(double x, double y, double z);
 public:
   double r, fi, theta; // r distance to (0,0,0), fi angle between z-axis and (x,y,z), theta angle between x-axis and (x,y,z)

@@ -2,6 +2,7 @@
 
 #include "D3Error.h"
 #include <Math/MathLib.h>
+#include <Math/Spherical.h>
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
 
@@ -218,16 +219,17 @@ public:
   }
 };
 
-class D3Spherical {
-private:
-  void init(double x, double y, double z);
+class D3Spherical : public Spherical {
 public:
-  double r, phi, theta; // r distance to (0,0,0), phi angle between z-axis and (x,y,z), theta angle between x-axis and (x,y,z)
-                        // 0 <= r, 0 <= phi <= pi, 0 <= theta <= 2pi. theta > pi => y < 0
-  D3Spherical();
-  D3Spherical(const D3DXVECTOR3 &v);
-  D3Spherical(double x, double y, double z);
+  inline D3Spherical() : Spherical() {
+  }
+  inline D3Spherical(const Point3D &p) : Spherical(p) {
+  }
+  inline D3Spherical(double x, double y, double z) : Spherical(x,y,z) {
+  }
+  inline D3Spherical(const D3DXVECTOR3 &v) {
+    init(v.x, v.y, v.z);
+  }
   operator D3DXVECTOR3() const;
-  String toString(int dec = 1, bool rad = false) const;
 };
 
