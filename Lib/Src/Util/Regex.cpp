@@ -119,7 +119,7 @@ static inline bool isWordLetter(_TUCHAR ch) {
   return (ch < 256) && wordLetterSet.contains(ch);
 }
 
-static inline _TUCHAR translate(_TUCHAR ch, const unsigned char *table) {
+static inline _TUCHAR translate(_TUCHAR ch, const TCHAR *table) {
   return (ch < 256)? table[ch] : ch;
 }
 
@@ -477,9 +477,9 @@ void ByteInsertHandler::insertBytes(UINT addr, UINT incr) {
 class RegexScanner {
 private:
   const _TUCHAR *m_source, *m_current, *m_end;
-  const unsigned char *m_translateTable;
+  const TCHAR *m_translateTable;
 public:
-  RegexScanner(const TCHAR *source, const unsigned char *translateTable);
+  RegexScanner(const TCHAR *source, const TCHAR *translateTable);
   _TUCHAR        fetchRaw();
   _TUCHAR        fetch();
   _TUCHAR        look(UINT lookahead = 0) const;
@@ -491,7 +491,7 @@ public:
   static void    verror(int index, const TCHAR *format, va_list argptr);
 };
 
-RegexScanner::RegexScanner(const TCHAR *source, const unsigned char *translateTable) {
+RegexScanner::RegexScanner(const TCHAR *source, const TCHAR *translateTable) {
   m_source         = (_TUCHAR*)source;
   m_current        = m_source;
   m_end            = m_source + _tcsclen(source);
@@ -564,12 +564,12 @@ Regex::Regex() : m_fastMap(MAXCHARSETSIZE) {
   init();
 }
 
-Regex::Regex(const String &pattern, const unsigned char *translateTable) : m_fastMap(MAXCHARSETSIZE) {
+Regex::Regex(const String &pattern, const TCHAR *translateTable) : m_fastMap(MAXCHARSETSIZE) {
   init();
   compilePattern(pattern, translateTable);
 }
 
-Regex::Regex(const TCHAR *pattern, const unsigned char *translateTable) : m_fastMap(MAXCHARSETSIZE) {
+Regex::Regex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAXCHARSETSIZE) {
   init();
   compilePattern(pattern, translateTable);
 }
@@ -810,11 +810,11 @@ String CompilerStack::getDefinedRegStr(UINT regnum) const { // return a string w
   }
 }
 
-void Regex::compilePattern(const String &s, const unsigned char *translateTable) {
+void Regex::compilePattern(const String &s, const TCHAR *translateTable) {
   compilePattern(s.cstr(), translateTable);
 }
 
-void Regex::compilePattern(const TCHAR *s, const unsigned char *translateTable) {
+void Regex::compilePattern(const TCHAR *s, const TCHAR *translateTable) {
   if(!s) {
     RegexScanner::error(0,noRegExpressionMsg);
   }

@@ -3,7 +3,7 @@
 
 static const TCHAR *numberToBigMsg      = _T("Number too big");
 
-PatternScanner::PatternScanner(const TCHAR *source, size_t length, const unsigned char *translateTable) {
+PatternScanner::PatternScanner(const TCHAR *source, size_t length, const TCHAR *translateTable) {
   m_source          = (_TUCHAR*)source;
   m_end             = m_source + length;
   m_current         = m_source;

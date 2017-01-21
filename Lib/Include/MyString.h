@@ -99,9 +99,9 @@ public:
   ULONG hashCode() const;
 
   // works only for characters [0..255] 
-  static const unsigned char  upperCaseTranslate[256];
-  static const unsigned char *lowerCaseTranslate;
-  static const unsigned char  upperCaseAccentTranslate[256];
+  static const TCHAR  upperCaseTranslate[256];
+  static const TCHAR *lowerCaseTranslate;
+  static const TCHAR  upperCaseAccentTranslate[256];
 };
 
 inline bool operator==(const String &lhs, const String &rhs) {
@@ -184,8 +184,8 @@ TCHAR *strTabExpand(    TCHAR *dst, const TCHAR *src, int tabSize, TCHAR subst =
 int    findMatchingpParanthes(const TCHAR *str, int pos);
 
 
-int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,           const unsigned char translateTable[256]);
-int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, size_t n, const unsigned char translateTable[256]);
+int    strtabcmp(      const TCHAR *s1, const TCHAR *s2,           const TCHAR translateTable[256]);
+int    strntabcmp(     const TCHAR *s1, const TCHAR *s2, size_t n, const TCHAR translateTable[256]);
 TCHAR *streToUpperCase( TCHAR *s);
 TCHAR *streToLowerCase( TCHAR *s);
 int    streicmp(       const TCHAR *s1, const TCHAR *s2);

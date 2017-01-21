@@ -10,10 +10,10 @@
 
 class DFATransition {
 private:
-  int                     m_fromState, m_successor;
-  const CharacterSet     *m_set;
-  _TUCHAR                 m_ch;
-  mutable TransitionPath  m_path;
+  int                    m_fromState, m_successor;
+  const CharacterSet    *m_set;
+  _TUCHAR                m_ch;
+  mutable TransitionPath m_path;
   void cleanup();
   void copy(const DFATransition &src);
 public:
@@ -48,7 +48,7 @@ public:
   const DFAState              &m_state;
   short                        m_gridX, m_gridY;
   short                        m_loopTransitionIndex;
-  TinyBitSet<unsigned char>    m_dirOccupied;
+  BitSet8                      m_dirOccupied;
   CompactArray<DFAStatePoint*> m_pred;
 
   DFAStatePoint(const DFAState &state, int gridX, int gridY);

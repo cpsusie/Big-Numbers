@@ -1,8 +1,6 @@
 #include "pch.h"
 
-#ifndef UNICODE
-
-const unsigned char String::upperCaseAccentTranslate[256] = {
+const TCHAR String::upperCaseAccentTranslate[256] = {
    0,     1,     2,     3,    4,     5,     6,     7,    8,     9,    10,    11,   12,    13,    14,    15, 
   16,    17,    18,    19,   20,    21,    22,    23,   24,    25,    26,    27,   28,    29,    30,    31, 
   32,    33,    34,    35,   36,    37,    38,    39,   40,    41,    42,    43,   44,    45,    46,    47, 
@@ -21,12 +19,11 @@ const unsigned char String::upperCaseAccentTranslate[256] = {
  208,   'N',   'O',   'O',  'O',   'O',   '\\',  247,  '\\',  'U',   'U',   'U',  'Y',   'Y',   254,   'Y'
 };
 
-int streaicmp(const char *s1, const char *s2) {
+int streaicmp(const TCHAR *s1, const TCHAR *s2) {
   return strtabcmp(s1, s2, String::upperCaseAccentTranslate);
 }
 
-int strneaicmp(const char *s1, const char *s2, int n) {
+int strneaicmp(const TCHAR *s1, const TCHAR *s2, int n) {
   return strntabcmp(s1, s2, n, String::upperCaseAccentTranslate);
 }
 
-#endif

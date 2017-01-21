@@ -48,16 +48,16 @@ public:
 
 class _RegexCounterRange {
 public:
-  unsigned short m_minRepeat;
-  unsigned short m_maxRepeat;
-  BYTE           m_regno; // index of associated StateRegister (not counterRegister)
+  USHORT m_minRepeat;
+  USHORT m_maxRepeat;
+  BYTE   m_regno; // index of associated StateRegister (not counterRegister)
   _RegexCounterRange()
     : m_minRepeat(-1)
     , m_maxRepeat(-1)
   {
   }
 
-  _RegexCounterRange(unsigned short minRepeat, unsigned short maxRepeat, BYTE regno)
+  _RegexCounterRange(USHORT minRepeat, USHORT maxRepeat, BYTE regno)
     : m_minRepeat(minRepeat)
     , m_maxRepeat(maxRepeat)
     , m_regno(regno)
@@ -363,7 +363,7 @@ private:
   BitSet                     m_fastMap;          // search uses the fastmap, to skip quickly over totally implausible characters
   mutable _RegexCounterTable m_counterTable;     // Counters used in ...{m,n} constructs
   UINT                       m_counterTableSize; // Number of counters in use.
-  const unsigned char       *m_translateTable;   // Translate table to apply to all characters before comparing.
+  const TCHAR               *m_translateTable;   // Translate table to apply to all characters before comparing.
                                                  // Or NULL for no translation.
                                                  // The translation is applied to a pattern when it is compiled
                                                  // and to data when it is matched.
@@ -423,15 +423,15 @@ private:
   void storeResetCounter(                UINT addr,         BYTE counterIndex);
   void storeCountingJump( BYTE opcode,   UINT addr, int to, BYTE counterIndex);
   void storeShort(                       UINT addr, short s                  );
-  void appendUShort(                     unsigned short s                            );
+  void appendUShort(                     USHORT           s                  );
   void appendCharacter(TCHAR ch);
   void assertHasSpace(UINT addr, UINT count); // extend m_buffer if needed
 public:
   Regex();
-  Regex(const String &pattern, const unsigned char *translateTable = NULL);
-  Regex(const TCHAR  *pattern, const unsigned char *translateTable = NULL);
-  void compilePattern(const String &pattern, const unsigned char *translateTable = NULL);
-  void compilePattern(const TCHAR  *pattern, const unsigned char *translateTable = NULL);
+  Regex(const String &pattern, const TCHAR *translateTable = NULL);
+  Regex(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
+  void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
+  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
   intptr_t search(    const String &text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const; // search for the compiled expression in text
   intptr_t search(    const TCHAR  *text, bool forward = true, intptr_t startPos = -1, RegexRegisters *registers = NULL) const;
   bool     match(     const String &text, RegexRegisters *registers = NULL) const;  // check for exact match

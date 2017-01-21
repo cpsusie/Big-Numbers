@@ -65,7 +65,7 @@ private:
   void unmarkAllCharacters();
   bool checkPattern();
   void ajourDialogItems();
-  void enableDialogItems(TinyBitSet<unsigned short> flags);
+  void enableDialogItems(BitSet16 flags);
   void clearCodeWindow();
   String getCompiledCodeText() const;
   void fillCodeWindow(const String &codeText);

@@ -283,7 +283,7 @@ typedef enum {
 } DialogItemFlags;
 
 void CRegexDemoDlg::ajourDialogItems() {
-  TinyBitSet<unsigned short> flags;
+  BitSet16 flags;
 
   if(!m_patternDirty && m_patternOk) {
     flags.add(MENU_SEARCH);
@@ -331,7 +331,7 @@ void CRegexDemoDlg::ajourDialogItems() {
   setRegisterWindowMode();
 }
 
-void CRegexDemoDlg::enableDialogItems(TinyBitSet<unsigned short> flags) {
+void CRegexDemoDlg::enableDialogItems(BitSet16 flags) {
   const BOOL enableRegisters  = flags.contains(WIN_REGISTERS);
   const BOOL enableMatchStack = flags.contains(WIN_STACK    );
 
@@ -748,6 +748,7 @@ void CRegexDemoDlg::showDFAMatchState() {
   markCurrentChar(MATCH_DMARK    , state.getDBGTextCharIndex());
   markCurrentChar(LASTACCEPT_MARK, state.getDBGLastAcceptIndex());
   showCyclesText(format(_T("Cycles:%d"), m_regex.getCycleCount()));
+  m_regex.paint(getGraphicsWindow(), false);
 }
 
 void CRegexDemoDlg::clearCyclesWindow() {

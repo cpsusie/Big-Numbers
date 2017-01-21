@@ -11,12 +11,12 @@ DFARegex::DFARegex() : m_fastMap(10) {
   init();
 }
 
-DFARegex::DFARegex(const String &pattern, const unsigned char *translateTable) : m_fastMap(MAX_CHARS) {
+DFARegex::DFARegex(const String &pattern, const TCHAR *translateTable) : m_fastMap(MAX_CHARS) {
   init();
   compilePattern(pattern, translateTable);
 }
 
-DFARegex::DFARegex(const TCHAR *pattern, const unsigned char *translateTable) : m_fastMap(MAX_CHARS) {
+DFARegex::DFARegex(const TCHAR *pattern, const TCHAR *translateTable) : m_fastMap(MAX_CHARS) {
   init();
   compilePattern(pattern, translateTable);
 }
@@ -52,11 +52,11 @@ void DFARegex::init() {
 }
 
 
-void DFARegex::compilePattern(const TCHAR *pattern, const unsigned char *translateTable) {
+void DFARegex::compilePattern(const TCHAR *pattern, const TCHAR *translateTable) {
   compilePattern(String(pattern), translateTable);
 }
 
-void DFARegex::compilePattern(const String &pattern, const unsigned char *translateTable) {
+void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable) {
 #ifdef _DEBUG
     NFA nfa(m_stepHandler);
 #else

@@ -41,7 +41,7 @@ typedef enum {
 class PatternScanner {
 private:
   const _TUCHAR       *m_source, *m_end, *m_current, *m_lastStart, *m_currentStart;
-  const unsigned char *m_translateTable;
+  const TCHAR         *m_translateTable;
   UINT                 m_theNumber;
   BYTE                 m_theRegister;
   bool                 m_inSideCharClass, m_insideRange;
@@ -57,7 +57,7 @@ private:
   void verror(intptr_t index, const TCHAR *format, va_list argptr);
 
 public:
-  PatternScanner(const TCHAR *source, size_t length, const unsigned char *translateTable);
+  PatternScanner(const TCHAR *source, size_t length, const TCHAR *translateTable);
   inline bool eos() const {
     return m_current == m_end;
   }
@@ -89,7 +89,7 @@ public:
     return m_theCharacter;
   }
 
-  static inline _TUCHAR translate(_TUCHAR ch, const unsigned char *table) {
+  static inline _TUCHAR translate(_TUCHAR ch, const TCHAR *table) {
     return (ch < 256)? table[ch] : ch;
   }
 
@@ -147,7 +147,7 @@ private:
   void error( intptr_t index, const TCHAR *format,...);
   void verror(intptr_t index, const TCHAR *format, va_list argptr);
 public:
-  PatternParser(const String &pattern, NFA &nfa, const unsigned char *translateTable = NULL);
+  PatternParser(const String &pattern, NFA &nfa, const TCHAR *translateTable = NULL);
   PatternParser(PatternParser &src);                  // not defined
   PatternParser &operator=(const PatternParser &src); // not defined
   void thompsonConstruction();

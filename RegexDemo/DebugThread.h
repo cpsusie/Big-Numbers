@@ -47,7 +47,7 @@ public:
     m_ignoreCase = false;
   }
 
-  inline const unsigned char *getTranslateTable() const {
+  inline const TCHAR *getTranslateTable() const {
     return m_ignoreCase ? String::upperCaseTranslate : NULL;
   }
 

@@ -137,7 +137,7 @@ class DFARegex {
 private:
   DFATables             m_tables;
   BitSet                m_fastMap;
-  const unsigned char  *m_translateTable;   // Translate table to apply to all characters before comparing.
+  const TCHAR          *m_translateTable;   // Translate table to apply to all characters before comparing.
                                             // or NULL for no translation. Translation is applied to each 
                                             // character in a pattern when compiled and to characters in the
                                             // text string it is matched/matched
@@ -170,10 +170,10 @@ private:
 
 public:
   DFARegex();
-  DFARegex(           const String &pattern, const unsigned char *translateTable = NULL);
-  DFARegex(           const TCHAR  *pattern, const unsigned char *translateTable = NULL);
-  void compilePattern(const String &pattern, const unsigned char *translateTable = NULL);
-  void compilePattern(const TCHAR  *pattern, const unsigned char *translateTable = NULL);
+  DFARegex(           const String &pattern, const TCHAR *translateTable = NULL);
+  DFARegex(           const TCHAR  *pattern, const TCHAR *translateTable = NULL);
+  void compilePattern(const String &pattern, const TCHAR *translateTable = NULL);
+  void compilePattern(const TCHAR  *pattern, const TCHAR *translateTable = NULL);
   intptr_t  search(   const String &text, bool forward = true, intptr_t startPos = -1) const; // Search for the compiled expression in text
   intptr_t  search(   const TCHAR  *text, bool forward = true, intptr_t startPos = -1) const;
   intptr_t  search(   const TCHAR  *text, size_t size, bool forward = true, intptr_t startPos = -1) const;
@@ -204,7 +204,7 @@ public:
   UINT                    getCycleCount() const {
     return m_cycleCount;
   }
-  void paint(          CWnd *wnd, bool animate) const;
+  void paint(CWnd *wnd, bool animate) const;
   static int   getAllocatedNFAStates();
 #endif
 };

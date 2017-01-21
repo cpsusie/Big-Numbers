@@ -1,6 +1,6 @@
 #include "pch.h"
 
-const unsigned char String::upperCaseTranslate[256] = {
+const TCHAR String::upperCaseTranslate[256] = {
    0,     1,     2,     3,    4,     5,     6,     7,    8,     9,    10,    11,   12,    13,    14,    15, 
   16,    17,    18,    19,   20,    21,    22,    23,   24,    25,    26,    27,   28,    29,    30,    31, 
   32,    33,    34,    35,   36,    37,    38,    39,   40,    41,    42,    43,   44,    45,    46,    47, 
@@ -19,8 +19,8 @@ const unsigned char String::upperCaseTranslate[256] = {
  208,   209,   210,   211,  212,   213,   214,   247,  216,   217,   218,   219,  220,   221,   254,   255
 };
 
-static unsigned char _lowerCaseTranslate[256];
-const unsigned char *String::lowerCaseTranslate = _lowerCaseTranslate;
+static TCHAR _lowerCaseTranslate[256];
+const TCHAR *String::lowerCaseTranslate = _lowerCaseTranslate;
 
 class InitLowerCase {
 public:
