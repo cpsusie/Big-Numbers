@@ -1,9 +1,9 @@
 #pragma once
 
+#include "WinTools.h"
 #include <D3D9.h>
 #include <D3DX9.h>
 #include <vfw.h>
-#include <Array.h>
 #include <Math/Point2D.h>
 #include <Math/Rectangle2D.h>
 #include "ShapeFunctions.h"

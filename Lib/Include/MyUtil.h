@@ -48,7 +48,7 @@ void  xfree(void *p);
 #undef ARRAYSIZE
 #endif
 
-#define ARRAYSIZE(a)        (sizeof(a)/sizeof(a[0]))
+#define ARRAYSIZE(a)        (sizeof(a)/sizeof((a)[0]))
 #define LASTVALUE(a)        (a[ARRAYSIZE(a)-1])
 
 #define MALLOC(type, n)     (type*)xmalloc(sizeof(type)*(n))
@@ -130,8 +130,10 @@ String   searchenv(  const String &fileName, const String &envName);
 void argvExpand(int &argc, wchar_t **&argv);
 void argvExpand(int &argc, char    **&argv);
 
-wchar_t **argv2wargv(const char **argv);
-char    **wargv2argv(const wchar_t **targv);
+const wchar_t **argv2wargv(const char **argv);
+const char    **wargv2argv(const wchar_t **targv);
+
+const TCHAR   **argv2targv(const char **argv);
 
 String getModuleFileName(HMODULE module = NULL); // if module == NULL, path of executable
 String getUserName();
