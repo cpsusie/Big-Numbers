@@ -1,8 +1,7 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Scandir.h>
 #include <Direct.h>
 #include <Tokenizer.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/SelectDirDlg.h>
 
 #ifdef _DEBUG

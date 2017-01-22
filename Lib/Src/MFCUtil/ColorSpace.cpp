@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math.h>
 #include <MFCUtil/ColorSpace.h>
 

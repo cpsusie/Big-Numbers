@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/MMCapture.h>
 
 #pragma comment(lib,"winmm.lib")

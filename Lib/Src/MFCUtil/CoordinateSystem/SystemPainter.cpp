@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math/MathFunctions.h>
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>

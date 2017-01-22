@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/Coordinatesystem/DateAxisPainter.h>
 
 DateAxisPainter::DateAxisPainter(SystemPainter &systemPainter, bool xAxis) : LinearAxisPainter(systemPainter,xAxis, false) {

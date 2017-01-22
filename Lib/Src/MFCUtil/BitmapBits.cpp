@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 ByteArray &getBitmapBits(HBITMAP bm, ByteArray &bytes, BITMAPINFO &bmInfo) {
   const BITMAP info = getBitmapInfo(bm);

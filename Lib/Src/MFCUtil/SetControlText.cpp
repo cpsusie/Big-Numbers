@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void setControlText(int id, CWnd *wnd) {
   const String title = getWindowText(wnd);

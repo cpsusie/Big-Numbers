@@ -52,9 +52,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="pch.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Expression\AddentArray.cpp">
       <Filter>Source Files\Expression</Filter>
     </ClCompile>
@@ -321,6 +318,9 @@
     </ClCompile>
     <ClCompile Include="RungekuttaFehlberg.cpp">
       <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

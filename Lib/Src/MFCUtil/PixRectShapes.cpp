@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/PixRect.h>
 
 void PixRect::line(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert) {

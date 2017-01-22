@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math.h>
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>

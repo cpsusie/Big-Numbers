@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Tokenizer.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/ConfirmDlg.h>
 
 #ifdef _DEBUG

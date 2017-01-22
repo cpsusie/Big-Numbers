@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 #include <MFCUtil/GifCtrl.h>
 
 #ifdef _DEBUG

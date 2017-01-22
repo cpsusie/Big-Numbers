@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 ICONINFO getIconInfo(HICON icon) {
   ICONINFO info;

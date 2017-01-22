@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <FileContent.h>
-#include <MFCUtil/WinTools.h>
 
 void setWindowCursor(CWnd *wnd, const TCHAR *name) {
   setWindowCursor(wnd, ::LoadCursor(NULL,name));

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/PixRect.h>
 
 String get3DErrorMsg(HRESULT hr) {

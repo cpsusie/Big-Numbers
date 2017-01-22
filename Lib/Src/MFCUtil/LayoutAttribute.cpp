@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 LayoutAttribute::LayoutAttribute(SimpleLayoutManager *manager, int ctrlId, int flags)
 : m_manager(*manager)

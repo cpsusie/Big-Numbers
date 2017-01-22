@@ -52,10 +52,7 @@
 //	m_Picture.ShowBitmapResource(pDC, IDB_TEST, CPoint(0,0)); // Show Bitmap Resource
 //
 
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 #include <FileContent.h>
 #include <TinyBitSet.h>
 #include <wtypes.h>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/Coordinatesystem/DataRange.h>
 
 DataRange::DataRange() {

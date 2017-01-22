@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 #include <MFCUtil/ShapeFunctions.h>
 
 void applyToLine(const CPoint &p1, const CPoint &p2, PointOperator &op) {

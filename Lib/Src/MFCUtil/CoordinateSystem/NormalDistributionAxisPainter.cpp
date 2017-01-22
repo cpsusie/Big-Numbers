@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/NormalDistributionAxisPainter.h>
 

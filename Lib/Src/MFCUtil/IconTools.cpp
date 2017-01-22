@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <FileContent.h>
-#include <MFCUtil/WinTools.h>
 
 static HICON createImageHandle(HINSTANCE hInstance, bool isIcon, int colorResId, int maskResId, int xHotSpot=0, int yHotSpot=0) {
   HBITMAP colorBitmap = 0, maskBitmap = 0;

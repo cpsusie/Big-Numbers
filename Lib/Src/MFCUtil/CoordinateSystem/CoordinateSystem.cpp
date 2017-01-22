@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Date.h>
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>

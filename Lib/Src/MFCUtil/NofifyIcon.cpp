@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void notifyIconAdd(HWND hwnd, UINT uID, HICON hicon, const String &toolTip, int callbackMessage) {
   NOTIFYICONDATA tnid;

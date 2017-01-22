@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Tokenizer.h>
-#include <MFCUTIL/WinTools.h>
 #include <MFCUTIL/ColoredStatic.h>
 
 #ifdef _DEBUG

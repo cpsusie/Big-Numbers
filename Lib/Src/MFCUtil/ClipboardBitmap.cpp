@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <shlobj.h>
-#include <MfCUtil/WinTools.h>
 #include <MFCUtil/Clipboard.h>
 
 HBITMAP getClipboardBitmap() {

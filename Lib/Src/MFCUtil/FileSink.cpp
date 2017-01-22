@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/FileSink.h>
 #include <pldebug.h>
 

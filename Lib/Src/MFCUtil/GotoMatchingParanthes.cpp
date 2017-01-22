@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void gotoMatchingParanthes(CWnd *wnd, int id) {
   gotoMatchingParanthes((CEdit*)wnd->GetDlgItem(id));

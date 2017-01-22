@@ -21,12 +21,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport2D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -264,11 +258,9 @@
     <ClCompile Include="PixRectIO.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -365,12 +357,6 @@
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\SystemPainter.h">
       <Filter>Header Files\CoordinateSystem</Filter>
     </ClInclude>
-    <ClInclude Include="CoordinateSystem\stdafx.h">
-      <Filter>Source Files\CoordinateSystem</Filter>
-    </ClInclude>
-    <ClInclude Include="stdafx.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -401,6 +387,11 @@
     <ClInclude Include="..\..\Include\MFCUtil\MMCapture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CoordinateSystem\pch.h">
+      <Filter>Source Files\CoordinateSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

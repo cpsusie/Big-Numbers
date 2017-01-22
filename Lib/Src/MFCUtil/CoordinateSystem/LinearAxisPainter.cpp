@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/Coordinatesystem/LinearAxisPainter.h>
 
 LinearAxisPainter::LinearAxisPainter(SystemPainter &systemPainter, bool xAxis, bool initialize) : AbstractAxisPainter(systemPainter,xAxis) {

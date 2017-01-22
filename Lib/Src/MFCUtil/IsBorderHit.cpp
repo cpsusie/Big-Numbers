@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 bool isBorderHit(UINT hitTestCode) {
   switch(hitTestCode) {

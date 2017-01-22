@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void textOut(HDC hdc, const CPoint &p, const String &s) {
   textOut(hdc, p.x, p.y, s);

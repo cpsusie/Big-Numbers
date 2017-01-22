@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/Viewport2D.h>
 
 Viewport2D::Viewport2D(bool retainAspectRatio) {

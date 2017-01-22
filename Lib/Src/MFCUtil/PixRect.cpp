@@ -1,7 +1,6 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math.h>
 #include <float.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/PixRect.h>
 
 #pragma warning(disable : 4073)

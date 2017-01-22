@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/PixRect.h>
 
 class PolygonFiller : public PixRectOperator {

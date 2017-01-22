@@ -1,7 +1,5 @@
-#include "stdafx.h"
-
+#include "pch.h"
 #include <ByteArray.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/FileSink.h>
 #include <MFCUtil/ColorSpace.h>
 #include <plbmpenc.h>

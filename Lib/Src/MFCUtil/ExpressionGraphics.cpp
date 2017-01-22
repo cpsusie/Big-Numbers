@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <CompactHashMap.h>
 #include <MFCUtil/ExpressionGraphics.h>
 #include <Math/Expression/SumElement.h>

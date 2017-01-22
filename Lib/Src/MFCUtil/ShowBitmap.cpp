@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void DebugBitmap::showBitmap(HBITMAP bitmap) { // static
   HDC screenDC = NULL, tmpDC = NULL;

@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 CRect getRelativeClientRect(const CWnd *wnd, int id) {
   CWnd *subWin = wnd->GetDlgItem(id);

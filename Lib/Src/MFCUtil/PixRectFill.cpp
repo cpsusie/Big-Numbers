@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/PixRect.h>
 
 void PixRect::fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp) {

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <shlobj.h>
 #include <MFCUtil/Clipboard.h>
 

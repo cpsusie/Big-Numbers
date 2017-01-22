@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Tokenizer.h>
-#include <MFCUtil/WinTools.h>
 
 void enableMenuItem(const CWnd *wnd, UINT id, bool enabled) {
   CMenu *menu = wnd->GetMenu();

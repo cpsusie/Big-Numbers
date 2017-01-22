@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #ifndef WM_GETOBJECT
 #define WM_GETOBJECT                    0x003D

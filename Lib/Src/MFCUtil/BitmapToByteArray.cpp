@@ -1,6 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <ByteMemoryStream.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/FileSink.h>
 
 #include <PragmaLib.h>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Limits.h>
 #include <float.h>
 #include <MFCUtil/EditListNumericEditor.h>

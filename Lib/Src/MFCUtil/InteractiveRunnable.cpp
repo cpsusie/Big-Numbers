@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/InteractiveRunnable.h>
 
 #pragma warning(disable : 4244)

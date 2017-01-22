@@ -1,7 +1,6 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Thread.h>
 #include <Date.h>
-#include <MFCUtil/WinTools.h>
 #include <MFCUtil/ProgressWindow.h>
 #include <MFCUtil/resource.h>
 #include <MFCUtil/ProgressDlg.h>

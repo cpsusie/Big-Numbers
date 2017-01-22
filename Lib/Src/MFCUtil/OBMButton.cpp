@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 #include <MFCUtil/OBMButton.h>
 
 void OBMButton::Create(CWnd *parent, int res, int resD, int resI, const CPoint &pos, UINT id, bool tabStop) {

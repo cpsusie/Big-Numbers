@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <MFCUtil/PixRect.h>
 
 PixRectOperator::PixRectOperator(PixRect *pr) {

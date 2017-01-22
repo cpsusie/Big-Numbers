@@ -1,5 +1,4 @@
-#include "stdafx.h"
-#include <MFCUtil/WinTools.h>
+#include "pch.h"
 
 void addData(CListCtrl &ctrl, int row, int col, const String &str, bool newItem) {
   LVITEM lv;

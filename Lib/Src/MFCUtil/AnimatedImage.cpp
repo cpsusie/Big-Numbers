@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math.h>
 #include <ByteFile.h>
 #include <ByteMemoryStream.h>
