@@ -13,12 +13,11 @@
 
 #define OEMRESOURCE
 
-#include "targetver.h"
-
 #include <afxwin.h>         // MFC core and standard components
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
 #include <afxdtctl.h>       // MFC support for Internet Explorer 4 Common Controls
+#include <afxcontrolbars.h>     // MFC support for ribbons and control bars
 
 #ifndef _AFX_NO_DB_SUPPORT
 #include <afxdb.h>                      // MFC ODBC database classes

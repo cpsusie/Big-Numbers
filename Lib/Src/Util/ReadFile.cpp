@@ -25,9 +25,9 @@ bool readLine(FILE *f, String &str) {
     result = true;
     str += line;
     int last = (int)str.length()-1;
-    if((last > 0) && str[last] == _T('\n')) {
+    if((last >= 0) && str[last] == _T('\n')) {
       str.remove(last--);
-      if((last > 0) && str[last] == _T('\r')) {
+      if((last >= 0) && str[last] == _T('\r')) {
         str.remove(last);
       }
       break;

@@ -5,8 +5,7 @@
 #endif
 
 
-class CCaptureApp : public CWinAppEx
-{
+class CCaptureApp : public CWinAppEx {
 public:
     CCaptureApp();
     PixRectDevice m_device;
