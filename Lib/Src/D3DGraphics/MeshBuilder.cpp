@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Semaphore.h>
 #include <comdef.h>
 #include <atlconv.h>
 #include <CompactHashMap.h>
@@ -134,6 +135,8 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
   return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
 }
 
+static Semaphore   meshCreatorGate;
+
 template<class VertexType, class IndexType> class MeshCreator {
 private:
   const MeshBuilder &m_mb;
@@ -143,20 +146,25 @@ private:
   }
 
   LPD3DXMESH createMesh1NormalPerVertex(DIRECT3DDEVICE device, bool doubleSided) const {
-    const Array<Face> &faceArray        = m_mb.getFaceArray();
-    const VertexArray &vertexArray      = m_mb.getVertexArray();
-    const VertexArray &normalArray      = m_mb.getNormalArray();
+    const Array<Face> &faceArray         = m_mb.getFaceArray();
+    const VertexArray &vertexArray       = m_mb.getVertexArray();
+    const VertexArray &normalArray       = m_mb.getNormalArray();
 
-    const int          factor           = doubleSided ? 2 : 1;
-    const int          vertexCount1Side = (int)vertexArray.size();
-    const int          vertexCount      = vertexCount1Side * factor;
-    const int          faceCount1Side   = m_mb.getTriangleCount();
-    const int          faceCount        = faceCount1Side * factor;
+    const int          factor            = doubleSided ? 2 : 1;
+    const int          vertexCount1Side  = (int)vertexArray.size();
+    const int          vertexCount       = vertexCount1Side * factor;
+    const int          faceCount1Side    = m_mb.getTriangleCount();
+    const int          faceCount         = faceCount1Side * factor;
+    bool               inCriticalSection = false;
     BitSet             vertexDone(vertexCount1Side);
 
     LPD3DXMESH mesh = NULL;
     try {
+      meshCreatorGate.wait();
+      inCriticalSection = true;
       V(D3DXCreateMeshFVF(faceCount, vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
+      inCriticalSection = false;
+      meshCreatorGate.signal();
       VertexType *vertices;
       IndexType  *indexArray;
       V(mesh->LockVertexBuffer( 0, (void**)&vertices  ));
@@ -204,24 +212,32 @@ private:
         mesh->UnlockVertexBuffer();
         mesh->Release();
       }
+      if(inCriticalSection) {
+        meshCreatorGate.signal();
+      }
       throw;
     }
   }
 
   LPD3DXMESH createMeshManyNormalsPerVertex(DIRECT3DDEVICE device, bool doubleSided) const {
-    const Array<Face> &faceArray        = m_mb.getFaceArray();
-    const VertexArray &vertexArray      = m_mb.getVertexArray();
-    const VertexArray &normalArray      = m_mb.getNormalArray();
+    const Array<Face> &faceArray         = m_mb.getFaceArray();
+    const VertexArray &vertexArray       = m_mb.getVertexArray();
+    const VertexArray &normalArray       = m_mb.getNormalArray();
 
-    const int          factor           = doubleSided ? 2 : 1;
-    const int          vertexCount1Side = m_mb.getIndexCount();
-    const int          vertexCount      = vertexCount1Side * factor;
-    const int          faceCount1Side   = m_mb.getTriangleCount();
-    const int          faceCount        = faceCount1Side * factor;
+    const int          factor            = doubleSided ? 2 : 1;
+    const int          vertexCount1Side  = m_mb.getIndexCount();
+    const int          vertexCount       = vertexCount1Side * factor;
+    const int          faceCount1Side    = m_mb.getTriangleCount();
+    const int          faceCount         = faceCount1Side * factor;
+    bool               inCriticalSection = false;
 
     LPD3DXMESH mesh = NULL;
     try {
+      meshCreatorGate.wait();
+      inCriticalSection = true;
       V(D3DXCreateMeshFVF((DWORD)faceCount, (DWORD)vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
+      inCriticalSection = false;
+      meshCreatorGate.signal();
 
       VertexType *vertices;
       IndexType  *indexArray;
@@ -269,6 +285,9 @@ private:
         mesh->UnlockIndexBuffer();
         mesh->UnlockVertexBuffer();
         mesh->Release();
+      }
+      if(inCriticalSection) {
+        meshCreatorGate.signal();
       }
       throw;
     }
@@ -436,15 +455,15 @@ LPD3DXMESH MeshBuilder::createMesh(DIRECT3DDEVICE device, bool doubleSided) cons
 
   if(hasColors()) {
     if(use32Bit) {
-      return MeshCreator<VertexNormalDiffuse, unsigned long>(this).createMesh(device, doubleSided);
+      return MeshCreator<VertexNormalDiffuse, ULONG>(this).createMesh(device, doubleSided);
     } else {
-      return MeshCreator<VertexNormalDiffuse, unsigned short>(this).createMesh(device, doubleSided);
+      return MeshCreator<VertexNormalDiffuse, USHORT>(this).createMesh(device, doubleSided);
     }
   } else {
     if(use32Bit) {
-      return MeshCreator<VertexNormal, unsigned long>(this).createMesh(device, doubleSided);
+      return MeshCreator<VertexNormal, ULONG>(this).createMesh(device, doubleSided);
     } else {
-      return MeshCreator<VertexNormal, unsigned short>(this).createMesh(device, doubleSided);
+      return MeshCreator<VertexNormal, USHORT>(this).createMesh(device, doubleSided);
     }
   }
 }
@@ -452,25 +471,24 @@ LPD3DXMESH MeshBuilder::createMesh(DIRECT3DDEVICE device, bool doubleSided) cons
 void MeshBuilder::dump(const String &fileName) const {
   const String name = (fileName.length() > 0) ? fileName : _T("c:\\temp\\meshbuilderDump.txt");
   FILE *f = MKFOPEN(name, _T("w"));
-  USES_CONVERSION;
-  fprintf(f, "MeshBuilder:\n");
-  fprintf(f, "Vertices:%d\n", (int)m_vertices.size());
+  _ftprintf(f, _T("MeshBuilder:\n"));
+  _ftprintf(f, _T("Vertices:%d\n"), (int)m_vertices.size());
   for(int i = 0; i < (int)m_vertices.size(); i++) {
-    fprintf(f, "%5d %s\n", i, T2A(toString(m_vertices[i], 5).cstr()));
+    _ftprintf(f, _T("%5d %s\n"), i, toString(m_vertices[i], 5).cstr());
   }
-  fprintf(f, "Normals:%d\n", (int)m_normals.size());
+  _ftprintf(f, _T("Normals:%d\n"), (int)m_normals.size());
   for(int i = 0; i < (int)m_normals.size(); i++) {
-    fprintf(f, "%5d %s\n", i, T2A(toString(m_normals[i], 5).cstr()));
+    _ftprintf(f, _T("%5d %s\n"), i, toString(m_normals[i], 5).cstr());
   }
-  fprintf(f, "Faces:%d\n", (int)m_faceArray.size());
+  _ftprintf(f, _T("Faces:%d\n"), (int)m_faceArray.size());
   for(int i = 0; i < (int)m_faceArray.size(); i++) {
     const Face                            &face = m_faceArray[i];
     const CompactArray<VertexNormalIndex> &vna  = face.getIndices();
-    fprintf(f, "%5d %d ", i, (int)vna.size());
+    _ftprintf(f, _T("%5d %d "), i, (int)vna.size());
     for(int v = 0; v < (int)vna.size(); v++) {
-      fprintf(f, " %5d %5d", vna[v].m_vIndex, vna[v].m_nIndex);
+      _ftprintf(f, _T(" %5d %5d"), vna[v].m_vIndex, vna[v].m_nIndex);
     }
-    fprintf(f, "\n");
+    _ftprintf(f, _T("\n"));
   }
   fclose(f);
 }
