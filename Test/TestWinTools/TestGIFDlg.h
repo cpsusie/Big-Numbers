@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MyUtil.h>
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/GifCtrl.h>
 

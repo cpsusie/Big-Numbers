@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <MFCUtil/WinTools.h>
 #include "TestOBMBitmapsDlg.h"
 
 #ifdef _DEBUG

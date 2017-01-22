@@ -1,9 +1,7 @@
 #include "stdafx.h"
-#include "TestWinTools.h"
-#include "TestWinToolsDlg.h"
-#include "afxdialogex.h"
+#include <afxdialogex.h>
 #include <ProcessTools.h>
-#include <MFCUtil/WinTools.h>
+#include <MFCUtil/SelectDirDlg.h>
 #include "TestWinTools.h"
 #include "TestWinToolsDlg.h"
 #include "TestProgressWindowDlg.h"
@@ -14,7 +12,6 @@
 #include "TestObmButtonDlg.h"
 #include "TestGIFDlg.h"
 #include "TestColorControlDlg.h"
-#include <MFCUtil/SelectDirDlg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <MFCUtil/WinTools.h>
 #include "RunLayoutManagerDlg.h"
 
 #include "resource.h"

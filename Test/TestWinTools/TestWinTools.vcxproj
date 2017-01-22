@@ -232,9 +232,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="colormapctrl.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="RunLayoutManagerDlg.h" />
