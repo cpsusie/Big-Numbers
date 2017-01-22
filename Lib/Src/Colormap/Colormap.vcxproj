@@ -259,9 +259,6 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Colormap.cpp" />
     <ClCompile Include="ColormapCtrl.cpp" />
     <ClCompile Include="ColorMapGraphics.cpp" />
