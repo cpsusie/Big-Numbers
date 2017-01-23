@@ -2,6 +2,7 @@
 
 #include <HashSet.h>
 #include <BitSet.h>
+#include "Real.h"
 #include "AlgorithmHandler.h"
 
 typedef enum {
