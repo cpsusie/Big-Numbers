@@ -9,7 +9,7 @@ static Real dummy = 0;
 
 ExpressionWrapper::ExpressionWrapper() {
   m_expr = new Expression();
-  compile("0",false);
+  compile(_T("0"),false);
 }
 
 ExpressionWrapper::~ExpressionWrapper() {
@@ -66,7 +66,7 @@ Real ExpressionWrapper::evaluate() {
 String ExpressionWrapper::getErrorMessage() {
   Expression *e = M_EXPR;
   if(e->getErrors().size() == 0) {
-    return "No errors";
+    return _T("No errors");
   }
   return e->getErrors()[0];
 }

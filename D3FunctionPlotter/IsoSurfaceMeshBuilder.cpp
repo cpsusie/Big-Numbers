@@ -99,9 +99,9 @@ void IsoSurface::receiveFace(const Face3 &face) {
     m_lastVertexCount = size;
   }
   Face &f = m_mb.addFace();
-  f.addVertexAndNormalIndex(face.m_i1, face.m_i1);
-  f.addVertexAndNormalIndex(face.m_i2, face.m_i2);
-  f.addVertexAndNormalIndex(face.m_i3, face.m_i3);
+  f.addVertexAndNormalIndex(face.m_i1, face.m_i1,-1);
+  f.addVertexAndNormalIndex(face.m_i2, face.m_i2,-1);
+  f.addVertexAndNormalIndex(face.m_i3, face.m_i3,-1);
 }
 
 void IsoSurface::receiveDebugVertices(int id,...) {

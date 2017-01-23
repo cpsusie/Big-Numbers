@@ -70,6 +70,7 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_FILE_ISOSURFACE               , OnFileIsoSurface               )
   ON_COMMAND(ID_FILE_PROFILESURFACE           , OnFileProfileSurface           )
   ON_COMMAND(ID_FILE_READ3DPOINTSFROMFILE     , OnFileRead3DPointsFromFile     )
+  ON_COMMAND(ID_FILE_READOBJFILE              , OnFileReadObjFile              )
   ON_COMMAND(ID_FILE_EXIT                     , OnFileExit                     )
   ON_COMMAND(ID_FILE_NEXTTRY                  , OnFileNexttry                  )
   ON_COMMAND(ID_VIEW_FILLMODE_POINT           , OnViewFillmodePoint            )
@@ -563,6 +564,28 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
       setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(device, fileName, true)));
+      REPAINT();
+    }	
+  } catch(Exception e) {
+    showException(e);
+  }
+}
+
+void CD3FunctionPlotterDlg::OnFileReadObjFile() {
+  try {
+    static const TCHAR *fileExtensions = _T("Obj files (*.obj)\0*.obj\0"
+                                            "All files (*.*)\0*.*\0\0");
+
+    DIRECT3DDEVICE device = m_scene.getDevice();
+
+    CFileDialog dlg(TRUE);
+    dlg.m_ofn.lpstrFilter = fileExtensions;
+    dlg.m_ofn.lpstrTitle  = _T("Open Obj file");
+    if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+      return;
+    } else {
+      const String fileName = dlg.m_ofn.lpstrFile;
+      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(device, fileName, false)));
       REPAINT();
     }	
   } catch(Exception e) {

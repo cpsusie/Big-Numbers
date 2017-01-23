@@ -167,6 +167,7 @@ protected:
     afx_msg void OnFileIsoSurface();
     afx_msg void OnFileProfileSurface();
     afx_msg void OnFileRead3DPointsFromFile();
+    afx_msg void OnFileReadObjFile();
     afx_msg void OnFileExit();
     afx_msg void OnFileNexttry();
     afx_msg void OnViewFillmodePoint();

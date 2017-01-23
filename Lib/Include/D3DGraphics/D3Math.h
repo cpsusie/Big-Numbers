@@ -71,6 +71,14 @@ typedef struct Vertex {
 
 Vertex createVertex(double x, double y, double z);
 
+class TextureVertex {
+public:
+  float u, v;
+  inline String toString(int dec = 3) const {
+    return format(_T("%*f %*f"), dec, u, dec, v);
+  }
+};
+
 typedef struct {
   float x, y, z;
   float nx, ny, nz;

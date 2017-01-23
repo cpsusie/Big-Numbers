@@ -324,6 +324,7 @@
     <ClCompile Include="MemoryLogThread.cpp" />
     <ClCompile Include="MeshArray.cpp" />
     <ClCompile Include="MeshArrayJobMonitor.cpp" />
+    <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
     <ClCompile Include="ParametricSurface.cpp" />
     <ClCompile Include="ParametricSurfaceDlg.cpp" />
     <ClCompile Include="ParametricSurfaceMeshBuilder.cpp" />

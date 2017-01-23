@@ -7,7 +7,14 @@
 
 DECLARE_THISFILE;
 
-void MeshBuilder::clear(unsigned int capacity) {
+void Face::invertOrientation() {
+  UINT n = getIndexCount()-1;
+  for (UINT i = 0; i < n;) {
+    m_data.swap(i++,n--);
+  }
+}
+
+void MeshBuilder::clear(UINT capacity) {
   m_vertices.clear();
   m_normals.clear();
   m_faceArray.clear();
@@ -40,15 +47,33 @@ bool MeshBuilder::isEmpty() const {
   return true;
 }
 
+void MeshBuilder::adjustNegativeVertexIndex(int &v) {
+  assert(v < 0);
+  v += (int)m_vertices.size();
+  assert(v >= 0);
+}
+
+void MeshBuilder::adjustNegativeNormalIndex(int &n) {
+  assert(n < 0);
+  n += (int)m_normals.size();
+  assert(n >= 0);
+}
+
+void MeshBuilder::adjustNegativeTextureIndex(int &t) {
+  assert(t < 0);
+  t += (int)m_textureVertexArray.size();
+  assert(t >= 0);
+}
+
 class UInt {
 private:
-  unsigned int m_v;
+  UINT m_v;
 public:
   inline UInt() {
   }
-  inline UInt(unsigned int v) : m_v(v) {
+  inline UInt(UINT v) : m_v(v) {
   }
-  inline unsigned int hashCode() const {
+  inline UINT hashCode() const {
     return m_v;
   }
   inline bool operator==(const UInt u) const {
@@ -67,9 +92,9 @@ void MeshBuilder::check1NormalPerVertex() const {
 
   for(size_t i = 0; i < faceCount; i++) {
     const Face &face = m_faceArray[i];
-    const CompactArray<VertexNormalIndex> &vna = face.getIndices();
+    const CompactArray<VertexNormalTextureIndex> &vna = face.getIndices();
     for(size_t j = 0; j < vna.size(); j++) {
-      const VertexNormalIndex &vn = vna[j];
+      const VertexNormalTextureIndex &vn = vna[j];
       const UINT *np = vnMap.get(vn.m_vIndex);
       if(np) {
         if(*np != vn.m_nIndex) {
@@ -98,9 +123,9 @@ void MeshBuilder::validate() const {
   const int maxVertexIndex = (int)m_vertices.size()-1;
   const int maxNormalIndex = (int)m_normals.size() -1;
   for(size_t i = 0; i < m_faceArray.size(); i++) {
-    const CompactArray<VertexNormalIndex> &indexArray = m_faceArray[i].getIndices();
+    const CompactArray<VertexNormalTextureIndex> &indexArray = m_faceArray[i].getIndices();
     for(size_t j = 0; j < indexArray.size(); j++) {
-      const VertexNormalIndex &v = indexArray[j];
+      const VertexNormalTextureIndex &v = indexArray[j];
       if((int)v.m_vIndex > maxVertexIndex) {
         throwException(_T("Face %d reference undefined vertex %u. maxVertexIndex=%d"), (int)i, v.m_vIndex, maxVertexIndex);
       }
@@ -172,13 +197,13 @@ private:
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
-        const Face                            &face         = faceArray[i];
-        const CompactArray<VertexNormalIndex> &vnArray      = face.getIndices();
-        const int                              aSize        = (int)vnArray.size();
-        const D3DCOLOR                         diffuseColor = face.getDiffuseColor();
+        const Face                                   &face         = faceArray[i];
+        const CompactArray<VertexNormalTextureIndex> &vnArray      = face.getIndices();
+        const int                                     aSize        = (int)vnArray.size();
+        const D3DCOLOR                                diffuseColor = face.getDiffuseColor();
 
         for(int j = 0; j < aSize; j++) {
-          const VertexNormalIndex &vn = vnArray[j];
+          const VertexNormalTextureIndex &vn = vnArray[j];
           if(vertexDone.contains(vn.m_vIndex)) {
             continue;
           }
@@ -247,13 +272,13 @@ private:
       int vnCount1 = 0, vnCount2 = (int)vertexCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
-        const Face                            &face         = faceArray[i];
-        const CompactArray<VertexNormalIndex> &vnArray      = face.getIndices();
-        const int                              aSize        = (int)vnArray.size();
-        const D3DCOLOR                         diffuseColor = face.getDiffuseColor();
+        const Face                                   &face         = faceArray[i];
+        const CompactArray<VertexNormalTextureIndex> &vnArray      = face.getIndices();
+        const int                                     aSize        = (int)vnArray.size();
+        const D3DCOLOR                                diffuseColor = face.getDiffuseColor();
 
         for(int j = 0; j < aSize; j++) {
-          const VertexNormalIndex &vn = vnArray[j];
+          const VertexNormalTextureIndex &vn = vnArray[j];
           const Vertex &v = vertexArray[vn.m_vIndex];
           const Vertex &n = normalArray[vn.m_nIndex];
           vertices[vnCount1+j].setPosAndNormal(v, n, diffuseColor);
@@ -378,10 +403,10 @@ void MeshBuilder::pruneUnused() {
   unusedNormals.add( 0, nCount-1);
   const size_t faceCount = m_faceArray.size();
   for(size_t f = 0; f < faceCount; f++) {
-    const CompactArray<VertexNormalIndex> &vnArray = m_faceArray[f].m_data;
+    const CompactArray<VertexNormalTextureIndex> &vnArray = m_faceArray[f].m_data;
     size_t n = vnArray.size();
     if(n) {
-      for(const VertexNormalIndex *vnp = &vnArray[0]; n--; vnp++) {
+      for(const VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         unusedVertices.remove(vnp->m_vIndex);
         unusedNormals.remove( vnp->m_nIndex);
       }
@@ -411,10 +436,10 @@ void MeshBuilder::pruneUnused() {
     }
   }
   for(size_t f = 0; f < faceCount; f++) {
-    CompactArray<VertexNormalIndex> &vnArray = m_faceArray[f].m_data;
+    CompactArray<VertexNormalTextureIndex> &vnArray = m_faceArray[f].m_data;
     size_t n = vnArray.size();
     if(n) {
-      for(VertexNormalIndex *vnp = &vnArray[0]; n--; vnp++) {
+      for(VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         vnp->m_vIndex = vTranslate[vnp->m_vIndex];
         vnp->m_nIndex = nTranslate[vnp->m_nIndex];
       }
@@ -480,13 +505,17 @@ void MeshBuilder::dump(const String &fileName) const {
   for(int i = 0; i < (int)m_normals.size(); i++) {
     _ftprintf(f, _T("%5d %s\n"), i, toString(m_normals[i], 5).cstr());
   }
+  _ftprintf(f, _T("TextureVertices:%d\n"), (int)m_textureVertexArray.size());
+  for(int i = 0; i < (int)m_textureVertexArray.size(); i++) {
+    _ftprintf(f, _T("%5d %s\n"), i, m_textureVertexArray[i].toString(5).cstr());
+  }
   _ftprintf(f, _T("Faces:%d\n"), (int)m_faceArray.size());
   for(int i = 0; i < (int)m_faceArray.size(); i++) {
     const Face                            &face = m_faceArray[i];
-    const CompactArray<VertexNormalIndex> &vna  = face.getIndices();
+    const CompactArray<VertexNormalTextureIndex> &vna  = face.getIndices();
     _ftprintf(f, _T("%5d %d "), i, (int)vna.size());
     for(int v = 0; v < (int)vna.size(); v++) {
-      _ftprintf(f, _T(" %5d %5d"), vna[v].m_vIndex, vna[v].m_nIndex);
+      _ftprintf(f, _T(" %5d %5d %5d"), vna[v].m_vIndex, vna[v].m_nIndex, vna[v].m_tIndex);
     }
     _ftprintf(f, _T("\n"));
   }

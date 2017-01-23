@@ -66,7 +66,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
     f = FOPEN(nodeFileName, _T("r"));
     String line;
     readLine(f, line);
-    Tokenizer tok(line, " ");
+    Tokenizer tok(line, _T(" "));
     const int vertexCount = tok.getInt();
     Array<VertexWithFaceArray> vertexArray(vertexCount);
     for(int i = 0; i < vertexCount; i++) {
@@ -82,7 +82,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
 
     f = FOPEN(eleFileName, _T("r"));
     readLine(f, line);
-    Tokenizer tok1(line, " ");
+    Tokenizer tok1(line, _T(" "));
     const int faceCount = tok1.getInt();
     CompactArray<Triangle> faceArray(faceCount);
     for(int i = 0; i < faceCount; i++) {
@@ -126,9 +126,9 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
     for(int i = 0; i < faceCount; i++) {
       const Triangle &triangle = faceArray[i];
       Face           &face     = mb.addFace();
-      face.addVertexAndNormalIndex(triangle.v1, triangle.v1);
-      face.addVertexAndNormalIndex(triangle.v2, triangle.v2);
-      face.addVertexAndNormalIndex(triangle.v3, triangle.v3);
+      face.addVertexAndNormalIndex(triangle.v1, triangle.v1,-1);
+      face.addVertexAndNormalIndex(triangle.v2, triangle.v2,-1);
+      face.addVertexAndNormalIndex(triangle.v3, triangle.v3,-1);
     }
 
     UNLINK(nodeFileName);

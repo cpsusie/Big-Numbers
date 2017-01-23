@@ -52,22 +52,22 @@ LPD3DXMESH createMeshFrom2DFunction(DIRECT3DDEVICE device, Function2D &f, const 
   const double  stepy = yInterval.getLength() / (ny-1);
   Point2D p;
   p.x = xInterval.getFrom();
-  for(unsigned int i = 0; i < nx; i++, p.x += stepx) {
+  for(UINT i = 0; i < nx; i++, p.x += stepx) {
     p.y = yInterval.getFrom();
-    for(unsigned int j = 0; j < ny; j++, p.y += stepy) {
+    for(UINT j = 0; j < ny; j++, p.y += stepy) {
       Function2DPoint fp(f,p);
       mb.addVertex(fp.m_p);
       mb.addNormal(fp.m_n);
     }
   }
-  for(unsigned int i = 1; i < nx; i++) {
-    unsigned long index = (i-1)*ny;
-    for(unsigned int j = 1; j < ny; j++, index++) {
+  for(UINT i = 1; i < nx; i++) {
+    ULONG index = (i-1)*ny;
+    for(UINT j = 1; j < ny; j++, index++) {
       Face &face = mb.addFace();
-      face.addVertexAndNormalIndex(index     , index     );
-      face.addVertexAndNormalIndex(index+1   , index+1   );
-      face.addVertexAndNormalIndex(index+1+ny, index+1+ny);
-      face.addVertexAndNormalIndex(index  +ny, index  +ny);
+      face.addVertexAndNormalIndex(index     , index     ,-1);
+      face.addVertexAndNormalIndex(index+1   , index+1   ,-1);
+      face.addVertexAndNormalIndex(index+1+ny, index+1+ny,-1);
+      face.addVertexAndNormalIndex(index  +ny, index  +ny,-1);
     }
   }
   return mb.createMesh(device, doubleSided);
