@@ -109,7 +109,7 @@
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
@@ -153,7 +153,7 @@
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
@@ -197,7 +197,7 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>true</BrowseInformation>
@@ -240,7 +240,7 @@
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>None</DebugInformationFormat>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <BrowseInformation>true</BrowseInformation>

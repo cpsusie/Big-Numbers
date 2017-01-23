@@ -125,7 +125,7 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -171,7 +171,7 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -219,7 +219,7 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -267,7 +267,7 @@
     <Bscmake>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>$(IntDir)$(TargetName).bsc</OutputFile>
-      <PreserveSbr>true</PreserveSbr>
+      <PreserveSbr>false</PreserveSbr>
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
