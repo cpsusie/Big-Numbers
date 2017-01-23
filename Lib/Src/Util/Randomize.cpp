@@ -2,6 +2,8 @@
 #include <objbase.h>
 #include <Random.h>
 
+#pragma comment(lib, "ole32.lib")
+
 void randomize() {
   const __int64 seed = getRandomSeed();
   srand((UINT)seed);
