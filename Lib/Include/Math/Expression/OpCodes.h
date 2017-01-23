@@ -106,9 +106,9 @@ public:
     unsigned __int64 m_bytes;
     unsigned char    m_byte[8];
   };
-  unsigned int     m_size        : 6; // = [0..15]. We can take only 6
-  unsigned int     m_memAddrMode : 1;
-  unsigned int     m_regSrcMode  : 1;
+  UINT             m_size        : 6; // = [0..15]. We can take only 6
+  UINT             m_memAddrMode : 1;
+  UINT             m_regSrcMode  : 1;
   inline IntelOpcode(BYTE size, unsigned __int64 bytes, bool memAddrMode, bool regSrcMode)
     : m_bytes(swapBytes(bytes,size))
     , m_size(size)
@@ -228,12 +228,12 @@ public:
 #define B3INS(op)        IntelInstruction(3, op)
 #define B4INS(op)        IntelInstruction(4, op)
 
-// Instrcution defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REG_SRC)
-#define B1INSA(op)       IntelOpcode(1, op, true ,true)
-#define B2INSA(op)       IntelOpcode(2, op, true ,true)
-#define B3INSA(op)       IntelOpcode(3, op, true ,true)
-#define B4INSA(op)       IntelOpcode(4, op, true ,true)
-#define B2INSANOREG(op)  IntelOpcode(2, op, true,false)
+// Instruction defined with these macroes, must be combined with macroes MEM_ADDR_* (and evt. REG_SRC)
+#define B1INSA(op)       IntelOpcode(1, op, true , true)
+#define B2INSA(op)       IntelOpcode(2, op, true , true)
+#define B3INSA(op)       IntelOpcode(3, op, true , true)
+#define B4INSA(op)       IntelOpcode(4, op, true , true)
+#define B2INSANOREG(op)  IntelOpcode(2, op, true ,false)
 
 #define FPUINS(op)       B2INS(      op)
 #define FPUINSA(op)      B2INSANOREG(op)
@@ -359,15 +359,15 @@ public:
 #ifdef IS64BIT
 
 #define REX(op,r64)  (((r64)<8)?PREFIX48(op(r64)):PREFIX4C(op((r64)&7)))
-#define REX1(op,r64) (((r64)<8)?PREFIX48(op(r64)):PREFIX49(op((r64)&7))) // use for IMM operations
+#define REX1(op,r64) (((r64)<8)?PREFIX48(op(r64)):PREFIX49(op((r64)&7)))                // use for IMM operations
 
-#define MOV_R64_QWORD(       r64)              REX(MOV_R32_DWORD,r64)                  // Build src with MEM_ADDR-*,REG_SRC-macroes
-#define MOV_QWORD_R64(       r64)              REX(MOV_DWORD_R32,r64)                  // Build dst with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_R64_QWORD(       r64)              REX(MOV_R32_DWORD,r64)                   // Build src with MEM_ADDR-*,REG_SRC-macroes
+#define MOV_QWORD_R64(       r64)              REX(MOV_DWORD_R32,r64)                   // Build dst with MEM_ADDR-*,REG_SRC-macroes
 
-#define MOV_R64_IMM_QWORD(   r64)              REX1(MOV_R32_IMM_DWORD,r64)             // 8 byte operand
+#define MOV_R64_IMM_QWORD(   r64)              REX1(MOV_R32_IMM_DWORD,r64)              // 8 byte operand
 
-#define MOV_TO_RAX_IMM_ADDR_QWORD              PREFIX48(MOV_TO_EAX_IMM_ADDR_DWORD)           // 8 byte address
-#define MOV_FROM_RAX_IMM_ADDR_QWORD            PREFIX48(MOV_FROM_EAX_IMM_ADDR_DWORD)         // 8 byte address
+#define MOV_TO_RAX_IMM_ADDR_QWORD              PREFIX48(MOV_TO_EAX_IMM_ADDR_DWORD)      // 8 byte address
+#define MOV_FROM_RAX_IMM_ADDR_QWORD            PREFIX48(MOV_FROM_EAX_IMM_ADDR_DWORD)    // 8 byte address
 
 #endif
 
@@ -525,44 +525,44 @@ public:
 
 #define ADD_QWORD_R64(       r64)              REX(ADD_DWORD_R32     ,r64)
 #define ADD_R64_QWORD(       r64)              REX(ADD_R32_DWORD     ,r64)
-#define ADD_R64_IMM_DWORD(   r64)              REX1(ADD_R32_IMM_DWORD,r64)          // 4 byte operand
+#define ADD_R64_IMM_DWORD(   r64)              REX1(ADD_R32_IMM_DWORD,r64)              // 4 byte operand
 #define ADD_R64_IMM_BYTE(    r64)              REX1(ADD_R32_IMM_BYTE ,r64)
 
 #define OR_QWORD_R64(        r64)              REX(OR_DWORD_R32      ,r64)
 #define OR_R64_QWORD(        r64)              REX(OR_R32_DWORD      ,r64)
-#define OR_R64_IMM_DWORD(    r64)              REX1(OR_R32_IMM_DWORD ,r64)          // 4 byte operand
+#define OR_R64_IMM_DWORD(    r64)              REX1(OR_R32_IMM_DWORD ,r64)              // 4 byte operand
 
 #define AND_QWORD_R64(       r64)              REX(AND_DWORD_R32     ,r64)
 #define AND_R64_QWORD(       r64)              REX(AND_R32_DWORD     ,r64)
-#define AND_R64_IMM_DWORD(   r64)              REX1(AND_R32_IMM_DWORD,r64)          // 4 byte operand
+#define AND_R64_IMM_DWORD(   r64)              REX1(AND_R32_IMM_DWORD,r64)              // 4 byte operand
 
 #define SUB_QWORD_R64(       r64)              REX(SUB_DWORD_R32     ,r64)
 #define SUB_R64_QWORD(       r64)              REX(SUB_R32_DWORD     ,r64)
-#define SUB_R64_IMM_DWORD(   r64)              REX1(SUB_R32_IMM_DWORD,r64)          // 4 byte operand
+#define SUB_R64_IMM_DWORD(   r64)              REX1(SUB_R32_IMM_DWORD,r64)              // 4 byte operand
 #define SUB_R64_IMM_BYTE(    r64)              REX1(SUB_R32_IMM_BYTE ,r64)
 
 #define XOR_QWORD_R64(       r64)              REX(XOR_DWORD_R32     ,r64)
 #define XOR_R64_QWORD(       r64)              REX(XOR_R32_DWORD     ,r64)
-#define XOR_R64_IMM_DWORD(   r64)              REX1(XOR_R32_IMM_DWORD,r64)          // 4 byte operand
+#define XOR_R64_IMM_DWORD(   r64)              REX1(XOR_R32_IMM_DWORD,r64)              // 4 byte operand
 
 #define CMP_QWORD_R64(       r64)              REX(CMP_DWORD_R32     ,r64)
 #define CMP_R64_QWORD(       r64)              REX(CMP_R32_DWORD     ,r64)
-#define CMP_R64_IMM_DWORD(   r64)              REX1(CMP_R32_IMM_DWORD,r64)          // 4 byte operand
+#define CMP_R64_IMM_DWORD(   r64)              REX1(CMP_R32_IMM_DWORD,r64)              // 4 byte operand
 
-#define MUL_QWORD                              PREFIX48(MUL_DWORD)                  // (rdx:rax = rax * src  )
-#define IMUL_QWORD                             PREFIX48(IMUL_DWORD)                 // (rdx:rax = rax * src  )
+#define MUL_QWORD                              PREFIX48(MUL_DWORD)                      // (rdx:rax = rax * src  )
+#define IMUL_QWORD                             PREFIX48(IMUL_DWORD)                     // (rdx:rax = rax * src  )
 
-#define IMUL2_R64_DWORD(      r64)             REX(IMUL2_R32_DWORD   ,r64)          // 2 arguments       (r64 *= src           )
+#define IMUL2_R64_DWORD(      r64)             REX(IMUL2_R32_DWORD   ,r64)              // 2 arguments       (r64 *= src           )
 
-#define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)      // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
-#define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)      // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
+#define IMUL3_QWORD_IMM_DWORD(r64)             REX1(IMUL3_DWORD_IMM_DWORD,r64)          // 3 args, r64,src,4 byte operand (r64 = src * imm.dword)
+#define IMUL3_QWORD_IMM_BYTE( r64)             REX1(IMUL3_DWORD_IMM_BYTE ,r64)          // 3 args. r64.src.1 byte operand (r64 = src * imm.byte )
 
 #endif // IS32BIT
 
-#define CWDE                                   B1INS(0x98  )                        // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
-#define CBW                                    B2INS(0x6698)                        // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
-#define CDQ                                    B1INS(0x99  )                        // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
-#define CWD                                    B2INS(0x6699)                        // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
+#define CWDE                                   B1INS(0x98  )                            // Convert word to dword   Copy sign (bit 15) of AX  into higher 16 bits of EAX
+#define CBW                                    B2INS(0x6698)                            // Convert byte to word    Copy sign (bit 7)  of AL  into every bit of AH
+#define CDQ                                    B1INS(0x99  )                            // Convert dword to qword  Copy sign (bit 31) of EAX into every bit of EDX
+#define CWD                                    B2INS(0x6699)                            // Convert word to dword   Copy sign (bit 15) of AX  into every bit of DX
 
 // PUSH/POP _R8 not available
 
@@ -590,62 +590,62 @@ public:
 #define REP_MOVS_WORD                          B3INS(0xF366A5)
 
 
-// FPU instructionss
+// FPU instructions
 
-#define FADD_0i(  i)                           FPUINS(0xD8C0     | (i))                  // st(0) += st(i)
-#define FADD_i0(  i)                           FPUINS(0xDCC0     | (i))                  // st(i) += st(0)
-#define FADDP_i0( i)                           FPUINS(0xDEC0     | (i))                  // st(i) += st(0); pop st(0)
+#define FADD_0i(  i)                           FPUINS(0xD8C0     | (i))                 // st(0) += st(i)
+#define FADD_i0(  i)                           FPUINS(0xDCC0     | (i))                 // st(i) += st(0)
+#define FADDP_i0( i)                           FPUINS(0xDEC0     | (i))                 // st(i) += st(0); pop st(0)
 #define FADD                                   FADDP_i0(1)
 
-#define FMUL_0i(  i)                           FPUINS(0xD8C8     | (i))                  // st(0) *= st(i)
-#define FMUL_i0(  i)                           FPUINS(0xDCC8     | (i))                  // st(i) *= st(0)
-#define FMULP_i0( i)                           FPUINS(0xDEC8     | (i))                  // st(i) *= st(0); pop st(0)
+#define FMUL_0i(  i)                           FPUINS(0xD8C8     | (i))                 // st(0) *= st(i)
+#define FMUL_i0(  i)                           FPUINS(0xDCC8     | (i))                 // st(i) *= st(0)
+#define FMULP_i0( i)                           FPUINS(0xDEC8     | (i))                 // st(i) *= st(0); pop st(0)
 #define FMUL                                   FMULP_i0(1)
 
-#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                  // Compare st(0) to st(1..7)
-#define FCOMPP                                 FPUINS(0xDED9)                            // Compare st(0) to st(1); pop both
+#define FCOMP(    i)                           FPUINS(0xD8D8     | (i))                 // Compare st(0) to st(1..7)
+#define FCOMPP                                 FPUINS(0xDED9)                           // Compare st(0) to st(1); pop both
 
-#define FSUB_0i(  i)                           FPUINS(0xD8E0     | (i))                  // st(0) -= st(i)
-#define FSUBR_0i( i)                           FPUINS(0xD8E8     | (i))                  // st(0) =  st(i) - st(0)
-#define FSUBR_i0( i)                           FPUINS(0xDCE0     | (i))                  // st(i) =  st(0) - st(i)
-#define FSUB_i0(  i)                           FPUINS(0xDCE8     | (i))                  // st(i) -= st(0)
-#define FSUBRP_i0(i)                           FPUINS(0xDEE0     | (i))                  // st(i) =  st(0) - st(i); pop st(0)
-#define FSUBP_i0( i)                           FPUINS(0xDEE8     | (i))                  // st(i) -= st(0); pop st(0)
+#define FSUB_0i(  i)                           FPUINS(0xD8E0     | (i))                 // st(0) -= st(i)
+#define FSUBR_0i( i)                           FPUINS(0xD8E8     | (i))                 // st(0) =  st(i) - st(0)
+#define FSUBR_i0( i)                           FPUINS(0xDCE0     | (i))                 // st(i) =  st(0) - st(i)
+#define FSUB_i0(  i)                           FPUINS(0xDCE8     | (i))                 // st(i) -= st(0)
+#define FSUBRP_i0(i)                           FPUINS(0xDEE0     | (i))                 // st(i) =  st(0) - st(i); pop st(0)
+#define FSUBP_i0( i)                           FPUINS(0xDEE8     | (i))                 // st(i) -= st(0); pop st(0)
 #define FSUB                                   FSUBP_i0(1)
 
-#define FDIV_0i(  i)                           FPUINS(0xD8F0     | (i))                  // st(0) /= st(i)
-#define FDIVR_0i( i)                           FPUINS(0xD8F8     | (i))                  // st(0) =  st(i) / st(0)
-#define FDIVR_i0( i)                           FPUINS(0xDCF0     | (i))                  // st(i) =  st(0) / st(i)
-#define FDIV_i0(  i)                           FPUINS(0xDCF8     | (i))                  // st(i) /= st(0)
-#define FDIVRP_i0(i)                           FPUINS(0xDEF0     | (i))                  // st(i) =  st(0) / st(i); pop st(0)
-#define FDIVP_i0( i)                           FPUINS(0xDEF8     | (i))                  // st(i) /= st(0); pop st(0)
+#define FDIV_0i(  i)                           FPUINS(0xD8F0     | (i))                 // st(0) /= st(i)
+#define FDIVR_0i( i)                           FPUINS(0xD8F8     | (i))                 // st(0) =  st(i) / st(0)
+#define FDIVR_i0( i)                           FPUINS(0xDCF0     | (i))                 // st(i) =  st(0) / st(i)
+#define FDIV_i0(  i)                           FPUINS(0xDCF8     | (i))                 // st(i) /= st(0)
+#define FDIVRP_i0(i)                           FPUINS(0xDEF0     | (i))                 // st(i) =  st(0) / st(i); pop st(0)
+#define FDIVP_i0( i)                           FPUINS(0xDEF8     | (i))                 // st(i) /= st(0); pop st(0)
 #define FDIV                                   FDIVP_i0(1)
 
-#define FCOMI(    i)                           FPUINS(0xDBF0     | (i))                  // Compare st(0) to st(i) and set CPU-flags
-#define FCOMIP(   i)                           FPUINS(0xDFF0     | (i))                  // Compare st(0) to st(i) and set CPU-flags; pop st(0)
-#define FST(      i)                           FPUINS(0xDDD0     | (i))                  // Store st(0) into st(i)
-#define FSTP(     i)                           FPUINS(0xDDD8     | (i))                  // Store st(0) into st(i) and pop st(0)
+#define FCOMI(    i)                           FPUINS(0xDBF0     | (i))                 // Compare st(0) to st(i) and set CPU-flags
+#define FCOMIP(   i)                           FPUINS(0xDFF0     | (i))                 // Compare st(0) to st(i) and set CPU-flags; pop st(0)
+#define FST(      i)                           FPUINS(0xDDD0     | (i))                 // Store st(0) into st(i)
+#define FSTP(     i)                           FPUINS(0xDDD8     | (i))                 // Store st(0) into st(i) and pop st(0)
 
-#define FLD(      i)                           FPUINS(0xD9C0     | (i))                  // Push st(i) into st(0)
-#define FXCH(     i)                           FPUINS(0xD9C8     | (i))                  // Swap st(0) and st(i)
-#define FCHS                                   FPUINS(0xD9E0)                            // st(0) = -st(0)
-#define FTST                                   FPUINS(0xD9E4)                            // Compare st(0) to 0.0
-#define FLD1                                   FPUINS(0xD9E8)                            // push 1.0
-#define FLDL2T                                 FPUINS(0xD9E9)                            // push log2(10)
-#define FLDL2E                                 FPUINS(0xD9EA)                            // push log2(e)
-#define FLDPI                                  FPUINS(0xD9EB)                            // push pi
-#define FLDLG2                                 FPUINS(0xD9EC)                            // push log10(2)
-#define FLDLN2                                 FPUINS(0xD9ED)                            // push ln(2)
-#define FLDZ                                   FPUINS(0xD9EE)                            // push 0.0
+#define FLD(      i)                           FPUINS(0xD9C0     | (i))                 // Push st(i) into st(0)
+#define FXCH(     i)                           FPUINS(0xD9C8     | (i))                 // Swap st(0) and st(i)
+#define FCHS                                   FPUINS(0xD9E0)                           // st(0) = -st(0)
+#define FTST                                   FPUINS(0xD9E4)                           // Compare st(0) to 0.0
+#define FLD1                                   FPUINS(0xD9E8)                           // push 1.0
+#define FLDL2T                                 FPUINS(0xD9E9)                           // push log2(10)
+#define FLDL2E                                 FPUINS(0xD9EA)                           // push log2(e)
+#define FLDPI                                  FPUINS(0xD9EB)                           // push pi
+#define FLDLG2                                 FPUINS(0xD9EC)                           // push log10(2)
+#define FLDLN2                                 FPUINS(0xD9ED)                           // push ln(2)
+#define FLDZ                                   FPUINS(0xD9EE)                           // push 0.0
 
-#define FNSTSW_AX                              FPUINS(0xDFE0)                            // Store status word into CPU register AX
+#define FNSTSW_AX                              FPUINS(0xDFE0)                           // Store status word into CPU register AX
 #define SAHF                                   B1INS( 0x9E	)
 
 // These opcodes should all be used with MEM_ADDR_* to get the various addressing-modes
 
-#define FLDCW_WORD                             FPUINSA(0xD928)                           // load control word
-#define FNSTCW_WORD                            FPUINSA(0xD938)                           // store control word
-#define FNSTSW_WORD                            FPUINSA(0xDD38)                           // store status word
+#define FLDCW_WORD                             FPUINSA(0xD928)                          // load control word
+#define FNSTCW_WORD                            FPUINSA(0xD938)                          // store control word
+#define FNSTSW_WORD                            FPUINSA(0xDD38)                          // store status word
 
 // Real4 (float)
 #define FLD_DWORD                              FPUINSA(0xD900)
