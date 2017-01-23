@@ -4,7 +4,10 @@
 #include "stdafx.h"
 #include <stdio.h>
 #include <windows.h>
-  
+
+#pragma comment(lib, "Advapi32.lib")
+#pragma comment(lib, "User32.lib")
+
 BOOL MySystemShutdown(bool reboot) {
    HANDLE hToken;
    TOKEN_PRIVILEGES tkp;

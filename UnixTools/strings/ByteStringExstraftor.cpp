@@ -73,7 +73,7 @@ void ByteStringExtractor::appendChar(char ch) {
 }
 
 void ByteStringExtractor::outputString() {
-  if(m_strLength >= m_minLength) {
+  if(m_strLength >= (int)m_minLength) {
     appendChar('\0');
     printString(m_buf);
   }
