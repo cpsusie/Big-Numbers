@@ -121,7 +121,7 @@ void CalculatorPool::waitUntilAllTerminatedInternal() {
 
 void CalculatorPool::wakeAllInternal() {
   const CalculatorSet suspendedSet = m_calculatorsInState[CALC_SUSPENDED];
-  for(size_t i = 0; i < size(); i++) {
+  for(UINT i = 0; i < size(); i++) {
     if(suspendedSet.contains(i)) {
       (*this)[i]->wakeUp();
     }
@@ -129,7 +129,7 @@ void CalculatorPool::wakeAllInternal() {
 }
 
 void CalculatorPool::createAllPendinglMasks() {
-  unsigned long mask = 0;
+  ULONG mask = 0;
   for(int i = 0; i < s_CPUCount; i++) {
     if(m_existing.contains(i)) {
       mask |= CALC_SUSPEND_PENDING << (2*i);
@@ -256,8 +256,8 @@ void CalculatorPool::notifyIfChanged(CalculatorSet oldRunningSet) { // assume in
 String CalculatorPool::getStatesString() const {
   m_gate.wait();
   String result;
-  for(size_t i = 0; i < size(); i++) {
-    result += format(_T("(%d):%s "), (int)i, getStateName(getStateInternal(i)));
+  for(UINT i = 0; i < size(); i++) {
+    result += format(_T("(%u):%s "), i, getStateName(getStateInternal(i)));
   }
   m_gate.signal();
   return result;

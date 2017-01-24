@@ -29,8 +29,8 @@ private:
   inline UINT getIndex(const CPoint &p) const {
     return (p.y-m_rect.top) * m_width + (p.x-m_rect.left);
   }
-  inline CPoint getPoint(UINT index) const {
-    return CPoint(index % m_width + m_rect.left, index / m_width + m_rect.top);
+  inline CPoint getPoint(size_t index) const {
+    return CPoint((int)(index % m_width + m_rect.left), (int)(index / m_width + m_rect.top));
   }
 public:
   PointSet(const CRect &r) 

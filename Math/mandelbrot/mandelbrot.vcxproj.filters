@@ -13,6 +13,9 @@
       <UniqueIdentifier>{d0c9119c-7a78-4e64-97f4-68d889ffc923}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Asm Files">
+      <UniqueIdentifier>{abb9a16a-3e30-4dda-bab2-61ea86f8508c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ColorMapDlg.cpp">
@@ -122,5 +125,10 @@
     <CustomBuild Include="res\Mandelbrot.rc2">
       <Filter>Resource Files</Filter>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="MBLoop.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

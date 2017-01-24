@@ -6,6 +6,13 @@
 
 #define ASMOPTIMIZED
 
+
+#ifdef ASMOPTIMIZED
+#ifdef IS64BIT
+extern "C" UINT64 mbloop(const Double80 &x, const Double80 &y, UINT64 maxIteration);
+#endif
+#endif
+
 UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIteration) {
 #ifndef ASMOPTIMIZED
   Double80 x = X;
@@ -26,6 +33,9 @@ UINT MBCalculator::findITCountFast(const Real &X, const Real &Y, UINT maxIterati
 
 #else
 
+#ifdef IS64BIT
+  return (UINT)mbloop(X,Y, maxIteration);
+#else // IS32BIT
   Double80 x = X;
   Double80 y = Y;
 
@@ -98,8 +108,10 @@ return:
     mov    count,ecx
   }
   return count;
+#endif // IS32BIT
 
-#endif
+#endif // ASMOPTIMIZED
+
 }
 
 UINT MBCalculator::findITCountPaintOrbit(const Real &X, const Real &Y, UINT maxIteration) {

@@ -546,17 +546,17 @@ BOOL CMandelbrotDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
 
 // ----------------------------------- Message handlers ---------------------------------
 
-long CMandelbrotDlg::OnMsgStartCalculation(WPARAM wp, LPARAM lp) {
+LRESULT CMandelbrotDlg::OnMsgStartCalculation(WPARAM wp, LPARAM lp) {
   startCalculation();
   return 0;
 }
 
-long CMandelbrotDlg::OnMsgUpdateWindowState(WPARAM wp, LPARAM lp) {
+LRESULT CMandelbrotDlg::OnMsgUpdateWindowState(WPARAM wp, LPARAM lp) {
   updateWindowStateInternal();
   return 0;
 }
 
-long CMandelbrotDlg::OnMsgMovieDone(WPARAM wp, LPARAM lp) {
+LRESULT CMandelbrotDlg::OnMsgMovieDone(WPARAM wp, LPARAM lp) {
   OnFileStopMovie();
   return 0;
 }

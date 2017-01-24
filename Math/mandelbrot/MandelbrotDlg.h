@@ -268,7 +268,7 @@ public:
   void updateMovieMenuItem();
   void remoteStartCalculation();
 
-	enum { IDD = IDD_MANDELBROT_DIALOG };
+  enum { IDD = IDD_MANDELBROT_DIALOG };
 
 public:
   virtual BOOL PreTranslateMessage(MSG* pMsg);
@@ -281,12 +281,12 @@ protected:
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
-	afx_msg void OnSize(  UINT nType, int cx, int cy);
-	afx_msg void OnClose();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
+  afx_msg void OnSize(  UINT nType, int cx, int cy);
+  afx_msg void OnClose();
+  afx_msg void OnTimer(UINT_PTR nIDEvent);
   virtual BOOL OnInitDialog();
   virtual void OnOK();
-	afx_msg void OnCancel();
+  afx_msg void OnCancel();
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
   afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
@@ -295,34 +295,34 @@ protected:
   afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
   afx_msg void OnNcLButtonDown(UINT nHitTest, CPoint point);
   afx_msg void OnNcMouseMove(UINT nHitTest, CPoint point);
-	afx_msg void OnFileSaveRectangle();
-	afx_msg void OnFileSaveColorMap();
-	afx_msg void OnFileSaveImage();
-	afx_msg void OnFileLoadRectangle();
-	afx_msg void OnFileLoadColorMap();
-	afx_msg void OnFileMakeMovie();
-	afx_msg void OnFileStopMovie();
+  afx_msg void OnFileSaveRectangle();
+  afx_msg void OnFileSaveColorMap();
+  afx_msg void OnFileSaveImage();
+  afx_msg void OnFileLoadRectangle();
+  afx_msg void OnFileLoadColorMap();
+  afx_msg void OnFileMakeMovie();
+  afx_msg void OnFileStopMovie();
   afx_msg void OnFileExit();
-	afx_msg void OnEditCalculateImage();
-	afx_msg void OnEditSuspendCalculation();
-	afx_msg void OnEditAbortCalculation();
-	afx_msg void OnEditNewColorMap();
-    afx_msg void OnEditBack();
-	afx_msg void OnOptionsColorMap();
-	afx_msg void OnOptionsShowColorMap();
-    afx_msg void OnOptions32BitsFloatingPoint();
-    afx_msg void OnOptions64BitsFloatingPoint();
-    afx_msg void OnOptions80BitsFloatingPoint();
-    afx_msg void OnOptionsAnimateCalculation();
-	afx_msg void OnOptionsPaintOrbit();
-	afx_msg void OnOptionsUseEdgeDetection();
-	afx_msg void OnOptionsUseOnly1CPU();
-    afx_msg void OnOptionsRetainAspectRatio();
-    afx_msg void OnHelpAboutMandelbrot();
-    afx_msg long OnMsgStartCalculation( WPARAM wp, LPARAM lp);
-    afx_msg long OnMsgUpdateWindowState(WPARAM wp, LPARAM lp);
-    afx_msg long OnMsgMovieDone(        WPARAM wp, LPARAM lp);
-	afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
-    DECLARE_MESSAGE_MAP()
+  afx_msg void OnEditCalculateImage();
+  afx_msg void OnEditSuspendCalculation();
+  afx_msg void OnEditAbortCalculation();
+  afx_msg void OnEditNewColorMap();
+  afx_msg void OnEditBack();
+  afx_msg void OnOptionsColorMap();
+  afx_msg void OnOptionsShowColorMap();
+  afx_msg void OnOptions32BitsFloatingPoint();
+  afx_msg void OnOptions64BitsFloatingPoint();
+  afx_msg void OnOptions80BitsFloatingPoint();
+  afx_msg void OnOptionsAnimateCalculation();
+  afx_msg void OnOptionsPaintOrbit();
+  afx_msg void OnOptionsUseEdgeDetection();
+  afx_msg void OnOptionsUseOnly1CPU();
+  afx_msg void OnOptionsRetainAspectRatio();
+  afx_msg void OnHelpAboutMandelbrot();
+  afx_msg LRESULT OnMsgStartCalculation( WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgUpdateWindowState(WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgMovieDone(        WPARAM wp, LPARAM lp);
+  afx_msg void OnLButtonDblClk(UINT nFlags, CPoint point);
+  DECLARE_MESSAGE_MAP()
 };
 
