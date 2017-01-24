@@ -17,8 +17,6 @@ CD3FunctionPlotterApp theApp;
 
 BOOL CD3FunctionPlotterApp::InitInstance() {
 
-redirectDebugLog();
-
   AfxEnableControlContainer();
 
   try {

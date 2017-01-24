@@ -19,7 +19,7 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  protected:
+protected:
   virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
