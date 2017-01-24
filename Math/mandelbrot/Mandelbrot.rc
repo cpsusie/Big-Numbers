@@ -1,0 +1,380 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_JULIA_DIALOG DIALOG DISCARDABLE  0, 0, 335, 286
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Julia Set"
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_JULIA_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 328
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 279
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\mandelbrot.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\icon1.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_MARK_MASKBITMAP     BITMAP  DISCARDABLE     "res\\bitmap1.bmp"
+IDB_MARK_COLORBITMAP    BITMAP  DISCARDABLE     "res\\bmp00001.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        POPUP "Save"
+        BEGIN
+            MENUITEM "Save &Rectangle...",          ID_FILE_SAVERECTANGLE
+            MENUITEM "Save &Colormap...",           ID_FILE_SAVECOLORMAP
+            MENUITEM SEPARATOR
+            MENUITEM "Save Image...\tCtrl+S",       ID_FILE_SAVEIMAGE
+        END
+        POPUP "&Load"
+        BEGIN
+            MENUITEM "Load &Rectangle...",          ID_FILE_LOADRECTANGLE
+            MENUITEM "Load &Colormap...",           ID_FILE_LOADCOLORMAP
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Make &Movie...\tCtrl+M",      ID_FILE_MAKEMOVIE
+        MENUITEM SEPARATOR
+        MENUITEM "&Exit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Calculate image\tF5",        ID_EDIT_CALCULATEIMAGE
+        MENUITEM "&Suspend calculation\tAlt+S", ID_EDIT_SUSPENDCALCULATION
+        MENUITEM "&Abort calculation\tEsc",     ID_EDIT_ABORTCALCULATION
+        MENUITEM SEPARATOR
+        MENUITEM "&Generate new colormap\tAlt+G", ID_EDIT_NEWCOLORMAP
+        MENUITEM SEPARATOR
+        MENUITEM "&Back\tBackspace",            ID_EDIT_BACK
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "Color&map parameters...\tAlt+M", ID_OPTIONS_COLORMAP
+        MENUITEM "Sho&w colormap...\tAlt+W",    ID_OPTIONS_SHOWCOLORMAP
+        MENUITEM SEPARATOR
+        POPUP "&Precision"
+        BEGIN
+            MENUITEM "&32-bits floating point",     ID_OPTIONS_32BITSFLOATINGPOINT
+
+            MENUITEM "&64-bits floating point",     ID_OPTIONS_64BITSFLOATINGPOINT
+
+            MENUITEM "&80 bits floating point",     ID_OPTIONS_80BITSFLOATINGPOINT
+            , CHECKED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Animate calculation\tAlt+A", ID_OPTIONS_ANIMATE_CALCULATION
+
+        MENUITEM "Paint Or&bit\tAlt+B",         ID_OPTIONS_PAINTORBIT
+        MENUITEM "Use &edge detection\tAlt+E",  ID_OPTIONS_USEEDGEDETECTION
+        , CHECKED
+        MENUITEM "Use only &1 CPU\tAlt+1",      ID_OPTIONS_USEONLY1CPU
+        MENUITEM SEPARATOR
+        MENUITEM "&Retain aspect ratio\tAlt+R", ID_OPTIONS_RETAIN_ASPECTRATIO
+        , CHECKED
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About mandelbrot...",        ID_HELP_ABOUTMANDELBROT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_SHOWCOLORMAP_DIALOG DIALOG DISCARDABLE  0, 0, 433, 234
+STYLE WS_MAXIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Colormap"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Close",IDOK,383,220,50,14
+    CONTROL         "",IDC_STATIC_COLORMAPWINDOW,"Static",SS_BLACKFRAME | 
+                    SS_SUNKEN | WS_BORDER,60,0,373,210
+    CONTROL         "",IDC_STATIC_INTERVALWINDOW,"Static",SS_BLACKFRAME | 
+                    SS_SUNKEN | WS_BORDER,3,0,56,210
+END
+
+IDD_MANDELBROT_DIALOG DIALOGEX 0, 0, 367, 333
+STYLE WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | 
+    WS_THICKFRAME
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_APPWINDOW
+CAPTION "Mandelbrot"
+MENU IDR_MAINFRAME
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "to make Alt+Menu-kombinations work properly",
+                    IDC_BUTTONDUMMY,113,215,147,25,NOT WS_VISIBLE
+    CONTROL         "",IDC_STATIC_IMAGEWINDOW,"Static",SS_BLACKFRAME | 
+                    SS_SUNKEN | WS_BORDER,0,0,367,310
+    LTEXT           "",IDC_STATIC_MOUSEINFO,193,314,174,19,SS_SUNKEN | 
+                    WS_BORDER
+    LTEXT           "",IDC_STATIC_INFOWINDOW,0,314,183,19,SS_SUNKEN | 
+                    WS_BORDER
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About mandelbrot"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "mandelbrot Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2009",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_COLORMAP_DIALOG DIALOG DISCARDABLE  0, 0, 251, 99
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Coloring"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDIT_MAXITERATION,70,20,50,13,ES_AUTOHSCROLL
+    CONTROL         "&Random seed for colormap generator",
+                    IDC_CHECK_RANDOMSEED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,16,46,136,13
+    EDITTEXT        IDC_EDIT_SEED,194,46,50,13,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,139,78,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,194,78,50,14
+    LTEXT           "&Max iterations:",IDC_STATIC,16,20,47,13
+    LTEXT           "&Seed:",IDC_STATIC,166,46,22,13,SS_CENTERIMAGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+
+    IDD_COLORMAP_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 244
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 92
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+BEGIN
+    "1",            ID_OPTIONS_USEONLY1CPU, VIRTKEY, ALT, NOINVERT
+    "A",            ID_OPTIONS_ANIMATE_CALCULATION, VIRTKEY, ALT, NOINVERT
+    "B",            ID_OPTIONS_PAINTORBIT,  VIRTKEY, ALT, NOINVERT
+    "E",            ID_OPTIONS_USEEDGEDETECTION, VIRTKEY, ALT, NOINVERT
+    "G",            ID_EDIT_NEWCOLORMAP,    VIRTKEY, ALT, NOINVERT
+    "M",            ID_FILE_MAKEMOVIE,      VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_OPTIONS_COLORMAP,    VIRTKEY, ALT, NOINVERT
+    "R",            ID_OPTIONS_RETAIN_ASPECTRATIO, VIRTKEY, ALT, NOINVERT
+    "S",            ID_FILE_SAVEIMAGE,      VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_EDIT_SUSPENDCALCULATION, VIRTKEY, ALT, NOINVERT
+    VK_BACK,        ID_EDIT_BACK,           VIRTKEY, NOINVERT
+    VK_ESCAPE,      ID_EDIT_ABORTCALCULATION, VIRTKEY, NOINVERT
+    VK_F5,          ID_EDIT_CALCULATEIMAGE, VIRTKEY, NOINVERT
+    "W",            ID_OPTIONS_SHOWCOLORMAP, VIRTKEY, ALT, NOINVERT
+END
+
+IDR_COLORMAP_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "M",            ID_GOTO_MAXITERATION,   VIRTKEY, ALT, NOINVERT
+    "S",            ID_GOTO_SEED,           VIRTKEY, ALT, NOINVERT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,2
+ PRODUCTVERSION 1,0,0,2
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Mandelbrot image generator\0"
+            VALUE "FileVersion", "1, 0, 0, 2\0"
+            VALUE "InternalName", "Mandelbrot\0"
+            VALUE "LegalCopyright", "Copyright (C) 2009\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "Mandelbrot.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "Mandelbrot\0"
+            VALUE "ProductVersion", "1, 0, 0, 2\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About mandelbrot..."
+END
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\mandelbrot.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
