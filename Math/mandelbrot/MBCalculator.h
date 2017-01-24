@@ -91,8 +91,8 @@ public:
 #endif
 
 // None of these colors should be used in the generated colormap
-#define EMPTY_COLOR  RGB(255,255,255)
-#define FILL_COLOR   RGB(0  ,0  ,0  )
+#define EMPTY_COLOR        RGB(255,255,255)
+#define FILL_COLOR         RGB(  0,  0,  0)
 
 // if an element of the colormap equals FILL_COLOR use this one instead
 #define NEXTTO_EMPTY_COLOR RGB(255,255,254)
