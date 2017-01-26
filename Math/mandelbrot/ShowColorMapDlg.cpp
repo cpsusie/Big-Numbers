@@ -55,14 +55,14 @@ void CShowColorMapDlg::OnPaint() {
   const int colorWidth = m_maxIteration < 60000 ? 2 : 1;
 
   const CSize sz = getClientRect(this, IDC_STATIC_COLORMAPWINDOW).Size();
-  const int colorsPerRow = sz.cx / colorWidth;
-  int rows;
-  for(rows = 1; (m_maxIteration+1) > colorsPerRow * rows;) rows++;
-  int colorHeight = sz.cy / rows;
+  const UINT colorsPerRow = sz.cx / colorWidth;
+  UINT rows;
+  for(rows = 1; colorsPerRow * rows < (m_maxIteration+1);) rows++;
+  UINT colorHeight = sz.cy / rows;
 
   CompactArray<UINT> intervals;
   CPoint p(0,0);
-  for(int index = 0, rowCount = 0; index <= m_maxIteration; index++) {
+  for(UINT index = 0, rowCount = 0; index <= m_maxIteration; index++) {
     if(rowCount == 0) {
       intervals.add(index);
     }
@@ -85,10 +85,10 @@ void CShowColorMapDlg::OnPaint() {
   const int textHeight = getTextExtent(textDC, _T("10-10")).cy;
   int ty = (colorHeight-textHeight) / 2;
 
-  for(int i = 1; i < intervals.size(); i++, ty += colorHeight) {
+  for(size_t i = 1; i < intervals.size(); i++, ty += colorHeight) {
     const UINT from = intervals[i-1];
     const UINT to   = intervals[i]-1;
     const String s = format(_T("%d-%d"), from, to);
-    textDC.TextOut(2, ty, s.cstr(), s.length());
+    textOut(textDC, 2, ty, s);
   }
 }

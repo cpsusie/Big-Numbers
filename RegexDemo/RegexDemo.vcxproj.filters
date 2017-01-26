@@ -64,6 +64,9 @@
     <ClInclude Include="AutomatePainter.h">
       <Filter>Source Files\DFARegex\DFARegex Header files</Filter>
     </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CharacterMarker.cpp">

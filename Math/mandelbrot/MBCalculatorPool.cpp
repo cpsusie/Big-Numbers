@@ -240,17 +240,11 @@ void CalculatorPool::clearExistingInternal() {
 }
 
 void CalculatorPool::notifyIfChanged(bool oldIsActive) {            // assume in critical section
-  const bool newIsActive = isCalculationActive();
-  if(newIsActive != oldIsActive) {
-    notifyPropertyChanged(CALCULATIONACTIVE, &oldIsActive, &newIsActive);
-  }
+  setProperty(CALCULATIONACTIVE, oldIsActive, isCalculationActive());
 }
 
 void CalculatorPool::notifyIfChanged(CalculatorSet oldRunningSet) { // assume in critical section
-  const CalculatorSet newRunningSet = m_calculatorsInState[CALC_RUNNING];
-  if(newRunningSet != oldRunningSet) {
-    notifyPropertyChanged(RUNNINGSET, &oldRunningSet, &newRunningSet);
-  }
+  setProperty(RUNNINGSET, oldRunningSet, m_calculatorsInState[CALC_RUNNING]);
 }
 
 String CalculatorPool::getStatesString() const {

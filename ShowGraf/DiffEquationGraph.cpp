@@ -99,7 +99,7 @@ double DiffEquationGraph::distance(const CPoint &p, const RectangleTransformatio
   if(isEmpty()) return EMPTY_DISTANCE;
   const size_t n    = m_pointGraphArray.size();
   double       mind = m_pointGraphArray[0]->distance(p, tr);
-  for(int i = 1; (i < n) && (mind > 0); i++) {
+  for(size_t i = 1; (i < n) && (mind > 0); i++) {
     const double d = m_pointGraphArray[i]->distance(p, tr);
     if(d < mind) mind = d;
   }

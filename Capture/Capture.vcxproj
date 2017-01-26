@@ -329,6 +329,7 @@
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ScreenCapture.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\Capture.ico" />

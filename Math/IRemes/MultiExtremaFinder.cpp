@@ -19,7 +19,7 @@ ExtremaSearchJob::ExtremaSearchJob(Remes &remes, int index, const BigReal &l, co
 
 ExtremaSearchJob::~ExtremaSearchJob() {
   m_left = m_right = m_middle = 0;
-  BigRealThreadPool::releaseDigitPool(m_pool);
+  BigRealResourcePool::releaseDigitPool(m_pool);
 }
 
 unsigned int ExtremaSearchJob::run() {
@@ -54,7 +54,7 @@ MultiExtremaFinder::~MultiExtremaFinder() {
 }
 
 void MultiExtremaFinder::insertJob(int index, const BigReal &l, const BigReal &r, const BigReal &m) {
-  m_allJobs.add(new ExtremaSearchJob(m_remes, index, l, r, m, BigRealThreadPool::fetchDigitPool()));
+  m_allJobs.add(new ExtremaSearchJob(m_remes, index, l, r, m, BigRealResourcePool::fetchDigitPool()));
 }
 
 void MultiExtremaFinder::waitUntilAllThreadsTerminated() {
