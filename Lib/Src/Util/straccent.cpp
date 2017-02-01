@@ -23,7 +23,7 @@ int streaicmp(const TCHAR *s1, const TCHAR *s2) {
   return strtabcmp(s1, s2, String::upperCaseAccentTranslate);
 }
 
-int strneaicmp(const TCHAR *s1, const TCHAR *s2, int n) {
+int strneaicmp(const TCHAR *s1, const TCHAR *s2, size_t n) {
   return strntabcmp(s1, s2, n, String::upperCaseAccentTranslate);
 }
 

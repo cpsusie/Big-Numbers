@@ -26,7 +26,7 @@ public:
     return LinkedList<T>::size();
   }
   
-  T &operator[](int index) {
+  T &operator[](size_t index) {
     return LinkedList<T>::operator[](index);
   }
   
