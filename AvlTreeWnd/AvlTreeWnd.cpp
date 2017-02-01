@@ -4,8 +4,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 BEGIN_MESSAGE_MAP(CAvlTreeWndApp, CWinApp)
@@ -18,7 +16,6 @@ CAvlTreeWndApp::CAvlTreeWndApp() {
 CAvlTreeWndApp theApp;
 
 BOOL CAvlTreeWndApp::InitInstance() {
-//  AfxEnableControlContainer();
 
     CAvlTreeWndDlg dlg;
     m_pMainWnd = &dlg;
