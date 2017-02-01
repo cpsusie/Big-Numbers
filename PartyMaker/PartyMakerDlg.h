@@ -18,10 +18,6 @@ typedef enum {
 } WMPPlayState;
 
 class CPartyMakerDlg : public CDialog {
-public:
-  CPartyMakerDlg(CWnd *pParent = NULL);
-//  friend int CALLBACK compareFunc(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
-
 private:
   HACCEL              m_accelTable;
   HICON               m_hIcon;
@@ -30,11 +26,12 @@ private:
   MediaArray          m_mediaArray;
   MediaQueue         *m_mediaQueue;
   CFont               m_queueFont;
-  CBitmap             m_ascendingMark, m_descendingMark, m_currentTrackBitmap;
+  CBitmap             m_currentTrackBitmap;
   CDC                 m_currentTrackDC;
   CRect               m_currentTrackRect;
-  ComparatorCriteria  m_lastComparatorCriteria;
   MediaComparator     m_mediaComparator;
+  friend int CALLBACK compareMediaItems(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+
   String              m_currentPrefix;
   time_t              m_prefixTime;
   time_t              m_lastRefresh;
@@ -67,9 +64,7 @@ private:
   int          searchPrefix(const String &prefix) const;
   void         syncMediaList();
   void         showMediaList();
-#ifdef __NEVER__
   void         showHeaderSortMark();
-#endif
   void         sortMediaList(int headerIndex);
   void         showMediaQueue();
   void         enableEditOrderItem(bool enable);
@@ -98,17 +93,18 @@ private:
   bool         OnLButtonUp(  UINT nFlags, CPoint point);
   bool         OnMouseMove(  UINT nFlags, CPoint point);
 
-    enum { IDD = IDD_MAINDIALOG };
-    CListCtrl   m_allMedia;
-    CWMPPlayer4 m_player;
+  enum { IDD = IDD_MAINDIALOG };
+  CListCtrl   m_allMedia;
+  CWMPPlayer4 m_player;
 
 public:
+  CPartyMakerDlg(CWnd *pParent = NULL);
   const MediaArray &getMediaArray() const {
     return m_mediaArray;
   }
 
 public:
-  virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
@@ -160,6 +156,6 @@ protected:
     afx_msg void OnSortByTitle();
     afx_msg void OnSortByArtist();
     afx_msg void OnSortByAlbum();
-  DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 

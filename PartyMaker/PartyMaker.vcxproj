@@ -353,9 +353,7 @@
     <ClInclude Include="wmpstringcollection.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\ascending.bmp" />
     <Image Include="res\CheckFilesIcon.ico" />
-    <Image Include="res\descending.bmp" />
     <Image Include="res\PartymakerIcon.ico" />
     <Image Include="res\ReadFilesIcon.ico" />
     <Image Include="res\toolbar1.bmp" />

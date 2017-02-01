@@ -100,7 +100,7 @@ void MediaFile::clear() {
 static int countAlphaNum(const String &s) {
   int count = 0;
   for(const _TUCHAR *cp = (_TUCHAR*)s.cstr(); *cp; cp++) {
-    if(isalnum(*cp)) {
+    if(_istalnum(*cp)) {
       count++;
     }
   }

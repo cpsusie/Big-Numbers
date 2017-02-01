@@ -1,4 +1,5 @@
-// Microsoft Developer Studio generated include file.
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
 // Used by PartyMaker.rc
 //
 #define IDM_ABOUTBOX                    0x0010
@@ -34,8 +35,6 @@
 #define IDR_SEARCHMENU                  157
 #define IDD_SHOWDUPLICATESDIALOG        158
 #define IDR_SHOWDUPLICATES_ACCELERATOR  159
-#define IDB_ASCENDINGBITMAP             160
-#define IDB_DESCENDINGBITMAP            161
 #define IDD_SELECTDIRANDLISTNAMEDIALOG  162
 #define IDR_SELECTDIRANDLISTNAME_ACCELERATOR 163
 #define IDC_ALLMEDIA                    1001
@@ -131,7 +130,7 @@
 #define ID_SHOW_STATEMESSAGE            32816
 
 // Next default values for new objects
-//
+// 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        166

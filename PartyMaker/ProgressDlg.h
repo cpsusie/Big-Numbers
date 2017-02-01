@@ -2,6 +2,7 @@
 
 class CProgressDlg : public CDialog {
 private:
+  HICON               m_hIcon;
   LoadableMediaArray *m_mediaArray;
 public:
   CProgressDlg(LoadableMediaArray *mediaArray, CWnd *pParent = NULL);
@@ -10,13 +11,9 @@ public:
 
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-  HICON m_hIcon;
-
+  virtual BOOL OnInitDialog();
   virtual void OnCancel();
   afx_msg void OnTimer(UINT_PTR nIDEvent);
-  virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
 

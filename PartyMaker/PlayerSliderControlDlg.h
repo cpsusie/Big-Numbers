@@ -35,8 +35,8 @@ protected:
 protected:
   afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   virtual BOOL OnInitDialog();
-    virtual void OnCancel();
-    afx_msg void OnDefaultSettingButton();
+  virtual void OnCancel();
+  afx_msg void OnDefaultSettingButton();
   DECLARE_MESSAGE_MAP()
 };
 

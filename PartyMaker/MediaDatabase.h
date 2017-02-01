@@ -275,6 +275,12 @@ public:
   MediaComparator(CompareField field = CMP_ARTIST, bool asc = true);
 
   void setHeaderIndex(int index, bool asc = true);
+  inline int getHeaderIndex() const {
+    return m_sortCrit.m_headerIndex;
+  }
+  inline bool getAscending() const {
+    return m_sortCrit.m_asc;
+  }
   const ComparatorCriteria &getComparatorCriteria() const {
     return m_sortCrit;
   }

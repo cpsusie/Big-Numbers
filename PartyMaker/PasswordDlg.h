@@ -13,9 +13,7 @@ public:
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
 
-protected:
-  BOOL PasswordDlg::OnInitDialog();
-
+  BOOL OnInitDialog();
   virtual void OnOK();
   DECLARE_MESSAGE_MAP()
 };

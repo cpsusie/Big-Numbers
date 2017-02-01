@@ -31,7 +31,6 @@ public:
     CString m_drive;
     BOOL    m_recurseSubDir;
 
-
 public:
     virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:

@@ -249,13 +249,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\ascending.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\CheckFilesIcon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\descending.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\PartymakerIcon.ico">

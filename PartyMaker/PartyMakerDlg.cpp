@@ -144,9 +144,6 @@ BOOL CPartyMakerDlg::OnInitDialog() {
     m_allMedia.InsertColumn(2,_T("Album")      , LVCFMT_LEFT, 160);
     m_allMedia.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 
-    m_ascendingMark.LoadBitmap( IDB_ASCENDINGBITMAP );
-    m_descendingMark.LoadBitmap(IDB_DESCENDINGBITMAP);
-
     m_options.load();
     checkMenuItem(this, ID_OPTIONS_AUTOSELECT     , m_options.getAutoSelect());
     checkMenuItem(this, ID_OPTIONS_ALLOWDUPLICATES, m_options.getAllowDuplicates());
@@ -238,9 +235,7 @@ void CPartyMakerDlg::OnPaint() {
     dlgDC.SelectObject(oldBrush);
 
     showMediaQueue();
-#ifdef __NEVER__
     showHeaderSortMark();
-#endif
     showCurrentTrack(getPlayerState());
   }
 }
@@ -366,53 +361,6 @@ void CPartyMakerDlg::showMediaList() {
     startTimer();
   }
 }
-
-#ifdef __NEVER__
-void CPartyMakerDlg::showHeaderSortMark() {
-  CHeaderCtrl              *headerCtrl = m_allMedia.GetHeaderCtrl();
-  CRect                     headerRect;
-  const ComparatorCriteria &sortCrit = m_mediaComparator.getComparatorCriteria();
-/*
-  HDITEM hd;
-  hd.mask = HDI_FORMAT;
-  int ret = Header_GetItem(headerCtrl->m_hWnd, sortCrit.m_headerIndex, &hd);
-  hd.fmt |= (sortCrit.m_asc ? HDF_SORTDOWN : HDF_SORTUP);
-  ret = Header_SetItem(headerCtrl->m_hWnd, sortCrit.m_headerIndex, &hd);
-*/
-  headerCtrl->GetItemRect(sortCrit.m_headerIndex, &headerRect);
-  CClientDC dc(headerCtrl);
-  CDC srcDC;
-  srcDC.CreateCompatibleDC(NULL);
-  CBitmap *bitmap    = sortCrit.m_asc ? &m_ascendingMark : &m_descendingMark;
-  CBitmap *oldBitmap = srcDC.SelectObject(bitmap);
-  CBitmap maskBitmap;
-  const CSize bmSize = getBitmapSize(*bitmap);
-  maskBitmap.CreateBitmap(bmSize.cx, bmSize.cy, 1, 1, NULL);
-  CDC maskDC;
-  maskDC.CreateCompatibleDC(&dc);
-  CBitmap *oldMaskBitmap = maskDC.SelectObject(&maskBitmap);
-  maskDC.BitBlt(0,0,bmSize.cx, bmSize.cy, &srcDC, 0, 0, SRCCOPY);
-  maskDC.SelectObject(oldMaskBitmap);
-  DebugBitmap::showBitmap(maskBitmap);
-  HDITEM headerItem;
-  char textBuffer[256];
-  headerItem.mask       = HDI_TEXT;
-  headerItem.pszText    = textBuffer;
-  headerItem.cchTextMax = sizeof(textBuffer);
-  headerCtrl->GetItem(sortCrit.m_headerIndex, &headerItem);
-  const String headerText = headerItem.pszText;
-  dc.SelectObject(GetFont());
-  CSize textSize = getTextExtent(dc, headerText);
-
-  CPoint arrowPos(headerRect.left + textSize.cx + bmSize.cx,(headerRect.Height() - bmSize.cy)/2);
-  dc.BitBlt( arrowPos.x,arrowPos.y, bmSize.cx,bmSize.cy, NULL  , 0, 0, DSTINVERT);
-  dc.MaskBlt(arrowPos.x,arrowPos.y, bmSize.cx,bmSize.cy, &srcDC, 0,0, maskBitmap,0,0,MAKEROP4(DSTINVERT,SRCCOPY));
-  srcDC.SelectObject(oldBitmap);
-
-  m_lastComparatorCriteria = sortCrit;
-}
-
-#endif
 
 #define CHARHEIGHT 15
 
@@ -741,6 +689,11 @@ CWnd *CPartyMakerDlg::getQueueWnd() {
   return GetDlgItem(IDC_QUEUE);
 }
 
+static int CALLBACK compareMediaItems(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort) {
+  CPartyMakerDlg &dlg = *(CPartyMakerDlg*)lParamSort;
+  return dlg.m_mediaComparator.compare(dlg.m_mediaArray[lParam1], dlg.m_mediaArray[lParam2]);
+}
+
 void CPartyMakerDlg::sortMediaList(int headerIndex) {
   const ComparatorCriteria &sortCrit = m_mediaComparator.getComparatorCriteria();
   if(headerIndex == sortCrit.m_headerIndex) {
@@ -753,9 +706,8 @@ void CPartyMakerDlg::sortMediaList(int headerIndex) {
   if(selectedIndex >= 0) {
     selectedSourceURL = m_mediaArray[selectedIndex].getSourceURL();
   }
-
-  resetMediaList();
-  showMediaList();
+  m_allMedia.SortItemsEx(compareMediaItems, (DWORD_PTR)this);
+  m_mediaArray.sort(m_mediaComparator);
 
   if(selectedIndex >= 0) {
     const int newIndex = m_mediaArray.findBySourceURL(selectedSourceURL);
@@ -763,10 +715,29 @@ void CPartyMakerDlg::sortMediaList(int headerIndex) {
       setSelectedIndex(m_allMedia, newIndex);
     }
   }
-#ifdef __NEVER__
   showHeaderSortMark();
-#endif
   gotoToListBox();
+}
+
+void CPartyMakerDlg::showHeaderSortMark() {
+  CHeaderCtrl              *headerCtrl = m_allMedia.GetHeaderCtrl();
+  const int                 n          = headerCtrl->GetItemCount();
+  HDITEM                    hd;
+  memset(&hd, 0, sizeof(hd));
+  hd.mask = HDI_FORMAT;
+  for(int i = 0; i < n; i++) {
+    int ret = Header_GetItem(headerCtrl->m_hWnd, i, &hd);
+    if(i != m_mediaComparator.getHeaderIndex()) {
+      hd.fmt &= ~(HDF_SORTDOWN | HDF_SORTUP);
+    } else if(m_mediaComparator.getAscending()) {
+      hd.fmt |=  HDF_SORTUP;
+      hd.fmt &= ~HDF_SORTDOWN;
+    } else {
+      hd.fmt |=  HDF_SORTDOWN;
+      hd.fmt &= ~HDF_SORTUP;
+    }
+    ret = Header_SetItem(headerCtrl->m_hWnd, i, &hd);
+  }
 }
 
 void CPartyMakerDlg::OnButtonSearch() {

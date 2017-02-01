@@ -60,10 +60,7 @@ public:
 public:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
-  virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnChoose();
     afx_msg void OnCancel();
     afx_msg void OnOK();
@@ -76,6 +73,6 @@ protected:
     afx_msg void OnEditModifyInfo();
     afx_msg void OnSelChangeListResult();
     afx_msg void OnFindDuplicates();
-  DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };
 
