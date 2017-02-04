@@ -18,12 +18,11 @@ BEGIN_MESSAGE_MAP(CProgressWithPctCtrl, CProgressCtrl)
 	ON_WM_PAINT()
 END_MESSAGE_MAP()
 
-DEFINECLASSNAME(CProgressWithPctCtrl);
-
 void CProgressWithPctCtrl::substituteControl(CWnd *parent, int id) {
+  DEFINEMETHODNAME;
   CProgressCtrl *ctrl = (CProgressCtrl*)parent->GetDlgItem(id);
   if(ctrl == NULL) {
-    parent->MessageBox(format(_T("%s::%s:Control %d not found"), s_className, __FUNCTION__, id).cstr(), _T("Error"), MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Control %d not found"), method, id).cstr(), MB_ICONWARNING);
     return;
   }
   const int      style    = ctrl->GetStyle();
@@ -33,7 +32,7 @@ void CProgressWithPctCtrl::substituteControl(CWnd *parent, int id) {
   const COLORREF bkColor  = ctrl->GetBkColor();
   ctrl->DestroyWindow();
   if(!Create(style, rect, parent, id)) {
-    parent->MessageBox(format(_T("%s::%s::Create failed"), s_className, __FUNCTION__).cstr(), _T("Error"), MB_ICONWARNING);
+    AfxMessageBox(format(_T("%s:Create failed"), method).cstr(), MB_ICONWARNING);
     return;
   }
   ModifyStyleEx(0, exStyle);

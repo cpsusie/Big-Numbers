@@ -2,7 +2,6 @@
 
 class CProgressWithPctCtrl : public CProgressCtrl {
 private:
-  DECLARECLASSNAME;
   bool     m_showPct;
 public:
 	CProgressWithPctCtrl();
