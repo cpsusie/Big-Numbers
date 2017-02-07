@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
 #include "colormapctrl.h"
 
 class CTestColorControlDlg : public CDialog {
@@ -22,9 +21,9 @@ public:
     BOOL    m_sunken;
 
 public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     afx_msg void OnPaint();

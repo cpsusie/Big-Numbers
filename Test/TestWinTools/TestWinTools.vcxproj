@@ -245,6 +245,7 @@
     <ClInclude Include="TestOBMBitmapsDlg.h" />
     <ClInclude Include="TestOBMButtonDlg.h" />
     <ClInclude Include="TestProgressWindowDlg.h" />
+    <ClInclude Include="TestSliderWithTransformationDlg.h" />
     <ClInclude Include="TestWinTools.h" />
     <ClInclude Include="TestWinToolsDlg.h" />
     <ClInclude Include="_Font.h" />
@@ -266,6 +267,7 @@
     <ClCompile Include="TestOBMBitmapsDlg.cpp" />
     <ClCompile Include="TestOBMButtonDlg.cpp" />
     <ClCompile Include="TestProgressWindowDlg.cpp" />
+    <ClCompile Include="TestSliderWithTransformationDlg.cpp" />
     <ClCompile Include="TestWinTools.cpp" />
     <ClCompile Include="TestWinToolsDlg.cpp" />
   </ItemGroup>

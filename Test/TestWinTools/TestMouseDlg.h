@@ -9,7 +9,7 @@ private:
     void showFlags(const TCHAR *function, UINT flags);
     void releaseCreatedCursor();
 public:
-    CTestMouseDlg(CWnd* pParent = NULL);
+    CTestMouseDlg(CWnd *pParent = NULL);
     ~CTestMouseDlg();
 
     enum { IDD = IDD_TESTMOUSE_DIALOG };
@@ -17,10 +17,7 @@ public:
 public:
     virtual BOOL DestroyWindow();
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
     afx_msg void OnNormalSystemCursor();

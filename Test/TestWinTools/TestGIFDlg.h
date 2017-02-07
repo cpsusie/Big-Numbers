@@ -1,6 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/GifCtrl.h>
 
 class CTestGIFDlg : public CDialog {
@@ -12,14 +11,12 @@ private:
   void loadGifResource(int resId);
 public:
    
-    CTestGIFDlg(CWnd* pParent = NULL);
+    CTestGIFDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTGIF_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnButtonLoadGif();

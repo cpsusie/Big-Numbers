@@ -7,7 +7,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd* pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent), m_jobCount(0)
+CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd *pParent) : CDialog(CTestProgressWindowDlg::IDD, pParent), m_jobCount(0)
 {
     m_hasMessageBox         = TRUE;
     m_hasTimeEstimate       = TRUE;
@@ -24,27 +24,27 @@ CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd* pParent) : CDialog(CTestPro
     m_jobCount              = 1;
 }
 
-void CTestProgressWindowDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestProgressWindowDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  DDX_Check(pDX, IDC_CHECKHASMESSAGEBOX, m_hasMessageBox);
-  DDX_Check(pDX, IDC_CHECKHASTIMEESTIMATE, m_hasTimeEstimate);
-  DDX_Check(pDX, IDC_CHECKAUTOCORRELATEESTIMATE, m_autoCorrelateEstimate);
-  DDX_Check(pDX, IDC_CHECKINTERRUPTABLE, m_interruptable);
-  DDX_Check(pDX, IDC_CHECKSUPPORTPROGRESS, m_hasProgressBar);
-  DDX_Check(pDX, IDC_CHECKSUPPORTPERCENT, m_showPercent);
-  DDX_Check(pDX, IDC_CHECKSUPPORTSUBPROGRESS, m_hasSubProgressBar);
-  DDX_Check(pDX, IDC_CHECKSUSPENDABLE, m_suspendable);
-  DDX_Text(pDX, IDC_EDITDELAY, m_delayMSec);
-  DDX_Text(pDX, IDC_EDITTITLE, m_title);
-  DDX_Text(pDX, IDC_EDITJOBTIME, m_jobTime);
-  DDX_Text(pDX, IDC_EDITUPDATERATE, m_updateRate);
+  DDX_Check(pDX, IDC_CHECK_HASMESSAGEBOX, m_hasMessageBox);
+  DDX_Check(pDX, IDC_CHECK_HASTIMEESTIMATE, m_hasTimeEstimate);
+  DDX_Check(pDX, IDC_CHECK_AUTOCORRELATEESTIMATE, m_autoCorrelateEstimate);
+  DDX_Check(pDX, IDC_CHECK_INTERRUPTABLE, m_interruptable);
+  DDX_Check(pDX, IDC_CHECK_SUPPORTPROGRESS, m_hasProgressBar);
+  DDX_Check(pDX, IDC_CHECK_SUPPORTPERCENT, m_showPercent);
+  DDX_Check(pDX, IDC_CHECK_SUPPORTSUBPROGRESS, m_hasSubProgressBar);
+  DDX_Check(pDX, IDC_CHECK_SUSPENDABLE, m_suspendable);
+  DDX_Text(pDX, IDC_EDIT_DELAY, m_delayMSec);
+  DDX_Text(pDX, IDC_EDIT_TITLE, m_title);
+  DDX_Text(pDX, IDC_EDIT_JOBTIME, m_jobTime);
+  DDX_Text(pDX, IDC_EDIT_UPDATERATE, m_updateRate);
   DDV_MinMaxUInt(pDX, m_updateRate, 10, 2000);
-  DDX_Text(pDX, IDC_EDITJOBCOUNT, m_jobCount);
-	DDV_MinMaxUInt(pDX, m_jobCount, 1, 4);
+  DDX_Text(pDX, IDC_EDIT_JOBCOUNT, m_jobCount);
+    DDV_MinMaxUInt(pDX, m_jobCount, 1, 4);
 }
 
 BEGIN_MESSAGE_MAP(CTestProgressWindowDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTONSTARTJOB              , OnButtonStartJob )
+    ON_BN_CLICKED(IDC_BUTTON_STARTJOB              , OnButtonStartJob )
 END_MESSAGE_MAP()
 
 BOOL CTestProgressWindowDlg::OnInitDialog() {

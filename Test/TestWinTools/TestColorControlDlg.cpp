@@ -5,43 +5,43 @@
 #define new DEBUG_NEW
 #endif
 
-CTestColorControlDlg::CTestColorControlDlg(CWnd* pParent) : CDialog(CTestColorControlDlg::IDD, pParent) {
-    m_caption    = _T("");
-    m_hasBorder  = FALSE;
-    m_enabled    = FALSE;
-    m_visible    = TRUE;
-    m_clientEdge = FALSE;
-    m_modalFrame = FALSE;
-    m_staticEdge = FALSE;
-    m_sunken     = FALSE;
+CTestColorControlDlg::CTestColorControlDlg(CWnd *pParent) : CDialog(CTestColorControlDlg::IDD, pParent) {
+  m_caption      = _T("");
+  m_hasBorder    = FALSE;
+  m_enabled      = FALSE;
+  m_visible      = TRUE;
+  m_clientEdge   = FALSE;
+  m_modalFrame   = FALSE;
+  m_staticEdge   = FALSE;
+  m_sunken       = FALSE;
   m_pickingColor = false;
 }
 
-void CTestColorControlDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestColorControlDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  DDX_Text(   pDX, IDC_EDITCAPTION    , m_caption   );
-  DDX_Check(  pDX, IDC_CHECKBORDER    , m_hasBorder );
-  DDX_Check(  pDX, IDC_CHECKENABLED   , m_enabled   );
-  DDX_Check(  pDX, IDC_CHECKVISIBLE   , m_visible   );
-  DDX_Check(  pDX, IDC_CHECKCLIENTEDGE, m_clientEdge);
-  DDX_Check(  pDX, IDC_CHECKMODALFRAME, m_modalFrame);
-  DDX_Check(  pDX, IDC_CHECKSTATICEDGE, m_staticEdge);
-  DDX_Check(  pDX, IDC_CHECKSUNKEN    , m_sunken    );
-  DDX_Control(pDX, IDC_COLORMAPCTRL   , m_colormap  );
+  DDX_Text(   pDX, IDC_EDIT_CAPTION    , m_caption   );
+  DDX_Check(  pDX, IDC_CHECK_BORDER    , m_hasBorder );
+  DDX_Check(  pDX, IDC_CHECK_ENABLED   , m_enabled   );
+  DDX_Check(  pDX, IDC_CHECK_VISIBLE   , m_visible   );
+  DDX_Check(  pDX, IDC_CHECK_CLIENTEDGE, m_clientEdge);
+  DDX_Check(  pDX, IDC_CHECK_MODALFRAME, m_modalFrame);
+  DDX_Check(  pDX, IDC_CHECK_STATICEDGE, m_staticEdge);
+  DDX_Check(  pDX, IDC_CHECK_SUNKEN    , m_sunken    );
+  DDX_Control(pDX, IDC_COLORMAPCTRL    , m_colormap  );
 }
 
 BEGIN_MESSAGE_MAP(CTestColorControlDlg, CDialog)
   ON_WM_PAINT()
-  ON_BN_CLICKED(IDC_CHECKBORDER    , OnCheckBorder       )
-  ON_EN_CHANGE( IDC_EDITCAPTION    , OnChangeEditCaption )
-  ON_BN_CLICKED(IDC_BUTTONPICKCOLOR, OnButtonpickcolor   )
-  ON_BN_CLICKED(IDC_CHECKVISIBLE   , OnCheckVisible      )
-  ON_BN_CLICKED(IDC_CHECKENABLED   , OnCheckEnabled      )
-  ON_BN_CLICKED(IDC_CHECKCLIENTEDGE, OnCheckClientEdge   )
-  ON_BN_CLICKED(IDC_CHECKMODALFRAME, OnCheckModalFrame   )
-  ON_BN_CLICKED(IDC_CHECKSTATICEDGE, OnCheckStaticEdge   )
-  ON_BN_CLICKED(IDC_CHECKSUNKEN    , OnCheckSunken       )
-  ON_COMMAND(ID_GOTO_CAPTION       , OnGotoCaption       )
+  ON_BN_CLICKED(IDC_CHECK_BORDER    , OnCheckBorder       )
+  ON_EN_CHANGE( IDC_EDIT_CAPTION    , OnChangeEditCaption )
+  ON_BN_CLICKED(IDC_BUTTON_PICKCOLOR, OnButtonpickcolor   )
+  ON_BN_CLICKED(IDC_CHECK_VISIBLE   , OnCheckVisible      )
+  ON_BN_CLICKED(IDC_CHECK_ENABLED   , OnCheckEnabled      )
+  ON_BN_CLICKED(IDC_CHECK_CLIENTEDGE, OnCheckClientEdge   )
+  ON_BN_CLICKED(IDC_CHECK_MODALFRAME, OnCheckModalFrame   )
+  ON_BN_CLICKED(IDC_CHECK_STATICEDGE, OnCheckStaticEdge   )
+  ON_BN_CLICKED(IDC_CHECK_SUNKEN    , OnCheckSunken       )
+  ON_COMMAND(ID_GOTO_CAPTION        , OnGotoCaption       )
   ON_WM_LBUTTONDOWN()
   ON_WM_LBUTTONUP()
   ON_WM_SIZE()
@@ -50,21 +50,21 @@ END_MESSAGE_MAP()
 BOOL CTestColorControlDlg::OnInitDialog() {
   CDialog::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_TESTCOLORCONTROL_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_TESTCOLORCONTROL_ACCELERATOR));
 
   m_layoutManager.OnInitDialog(this);
-  m_layoutManager.addControl(IDC_COLORMAPCTRL    , RELATIVE_SIZE  );
-  m_layoutManager.addControl(IDC_STATICCOLOR     , RELATIVE_X_POS );
-  m_layoutManager.addControl(IDC_BUTTONPICKCOLOR , RELATIVE_X_POS );
-  m_layoutManager.addControl(IDC_CHECKVISIBLE    , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKBORDER     , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKSTATICEDGE , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKENABLED    , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKCLIENTEDGE , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKSUNKEN     , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_CHECKMODALFRAME , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
-  m_layoutManager.addControl(IDC_STATICCAPTION   , RELATIVE_Y_POS );
-  m_layoutManager.addControl(IDC_EDITCAPTION     , RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_COLORMAPCTRL     , RELATIVE_SIZE  );
+  m_layoutManager.addControl(IDC_STATIC_COLOR     , RELATIVE_X_POS );
+  m_layoutManager.addControl(IDC_BUTTON_PICKCOLOR , RELATIVE_X_POS );
+  m_layoutManager.addControl(IDC_CHECK_VISIBLE    , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_BORDER     , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_STATICEDGE , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_ENABLED    , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_CLIENTEDGE , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_SUNKEN     , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_CHECK_MODALFRAME , RELATIVE_Y_POS | PCT_RELATIVE_X_CENTER);
+  m_layoutManager.addControl(IDC_STATIC_CAPTION   , RELATIVE_Y_POS );
+  m_layoutManager.addControl(IDC_EDIT_CAPTION     , RELATIVE_Y_POS );
 
   m_enabled    = m_colormap.IsWindowEnabled();
   m_sunken     = m_colormap.GetSunken();
@@ -78,7 +78,7 @@ BOOL CTestColorControlDlg::OnInitDialog() {
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
-BOOL CTestColorControlDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTestColorControlDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -91,7 +91,7 @@ void CTestColorControlDlg::OnPaint() {
 }
 
 void CTestColorControlDlg::OnColorchangedColormapctrl() {
-  CWnd *st = GetDlgItem(IDC_STATICCOLOR);
+  CWnd *st = GetDlgItem(IDC_STATIC_COLOR);
   WINDOWPLACEMENT wp;
   st->GetWindowPlacement(&wp);
   CClientDC dc(this);
@@ -162,7 +162,7 @@ void CTestColorControlDlg::OnChangeEditCaption() {
 }
 
 void CTestColorControlDlg::OnGotoCaption() {
-  gotoEditBox(this, IDC_EDITCAPTION);
+  gotoEditBox(this, IDC_EDIT_CAPTION);
 }
 
 void CTestColorControlDlg::OnOK() {

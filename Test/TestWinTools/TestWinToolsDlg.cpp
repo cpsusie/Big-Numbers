@@ -12,6 +12,7 @@
 #include "TestObmButtonDlg.h"
 #include "TestGIFDlg.h"
 #include "TestColorControlDlg.h"
+#include "TestSliderWithTransformationDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -26,7 +27,7 @@ public:
 #endif
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     DECLARE_MESSAGE_MAP()
@@ -35,7 +36,7 @@ protected:
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
     CDialogEx::DoDataExchange(pDX);
 }
 
@@ -43,15 +44,13 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CTestWinToolsDlg dialog
-
-CTestWinToolsDlg::CTestWinToolsDlg(CWnd* pParent /*=NULL*/)
+CTestWinToolsDlg::CTestWinToolsDlg(CWnd *pParent /*=NULL*/)
     : CDialogEx(IDD_TESTWINTOOLS_DIALOG, pParent)
 {
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestWinToolsDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestWinToolsDlg::DoDataExchange(CDataExchange *pDX) {
     CDialogEx::DoDataExchange(pDX);
 }
 
@@ -59,17 +58,18 @@ BEGIN_MESSAGE_MAP(CTestWinToolsDlg, CDialogEx)
   ON_WM_SYSCOMMAND()
   ON_WM_PAINT()
   ON_WM_QUERYDRAGICON()
-  ON_COMMAND(ID_FILE_EXIT, OnFileExit)
-  ON_COMMAND(ID_TEST_PROGRESSWINDOW, OnTestProgressWindow)
-  ON_COMMAND(ID_TEST_TESTCONFIRMDIALOG, OnTestConfirmDialog)
-  ON_COMMAND(ID_TEST_LAYOUTMANAGER, OnTestLayoutManager)
-  ON_COMMAND(ID_TEST_MOUSE, OnTestMouse)
-  ON_COMMAND(ID_TEST_OBMBITMAPS, OnTestOBMBitmaps)
-  ON_COMMAND(ID_TEST_GIF, OnTestGif)
-  ON_COMMAND(ID_TEST_TESTCOLORCONTROL, OnTestColorControl)
-  ON_COMMAND(ID_TEST_TESTOBMBUTTON, OnTestOBMButton)
-  ON_COMMAND(ID_TEST_TESTSELECTFOLDER, OnTestSelectFolder)
   ON_WM_CLOSE()
+  ON_COMMAND(ID_FILE_EXIT             , OnFileExit                         )
+  ON_COMMAND(ID_TEST_PROGRESSWINDOW   , OnTestProgressWindow               )
+  ON_COMMAND(ID_TEST_TESTCONFIRMDIALOG, OnTestConfirmDialog                )
+  ON_COMMAND(ID_TEST_LAYOUTMANAGER    , OnTestLayoutManager                )
+  ON_COMMAND(ID_TEST_MOUSE            , OnTestMouse                        )
+  ON_COMMAND(ID_TEST_OBMBITMAPS       , OnTestOBMBitmaps                   )
+  ON_COMMAND(ID_TEST_GIF              , OnTestGif                          )
+  ON_COMMAND(ID_TEST_TESTCOLORCONTROL , OnTestColorControl                 )
+  ON_COMMAND(ID_TEST_TESTOBMBUTTON    , OnTestOBMButton                    )
+  ON_COMMAND(ID_TEST_TESTSELECTFOLDER , OnTestSelectFolder                 )
+  ON_COMMAND(ID_TEST_TESTSLIDERCONTROL, OnTestTestSliderWithTransformation )
 END_MESSAGE_MAP()
 
 BOOL CTestWinToolsDlg::OnInitDialog() {
@@ -78,7 +78,7 @@ BOOL CTestWinToolsDlg::OnInitDialog() {
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if (pSysMenu != NULL)   {
     BOOL bNameValid;
     CString strAboutMenu;
@@ -93,18 +93,18 @@ BOOL CTestWinToolsDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
 void CTestWinToolsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-    if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-        CAboutDlg dlgAbout;
-        dlgAbout.DoModal();
-    }   else {
-        CDialogEx::OnSysCommand(nID, lParam);
-    }
+  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg dlgAbout;
+    dlgAbout.DoModal();
+  } else {
+    CDialogEx::OnSysCommand(nID, lParam);
+  }
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -149,10 +149,10 @@ void CTestWinToolsDlg::showInfo() {
                            ,resCounters.m_userObjectCount
                            );
 
-  setWindowText(this, IDC_STATICINFO, msg);
+  setWindowText(this, IDC_STATIC_INFO, msg);
 }
 
-BOOL CTestWinToolsDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTestWinToolsDlg::PreTranslateMessage(MSG *pMsg) {
   if (TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
@@ -223,9 +223,14 @@ void CTestWinToolsDlg::OnTestSelectFolder() {
   if (dlg.DoModal() == IDOK) {
     m_currentDir = dlg.getSelectedDir();
     MessageBox(m_currentDir.cstr(), _T("Result"));
-  }
-  else {
+  } else {
     MessageBox(_T("Cancelled"), _T("Result"));
   }
   showInfo();
+}
+
+
+void CTestWinToolsDlg::OnTestTestSliderWithTransformation() {
+  CTestSliderWithTransformationDlg dlg;
+  dlg.DoModal();
 }

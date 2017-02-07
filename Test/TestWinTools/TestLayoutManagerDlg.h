@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
-
 class CTestLayoutManagerDlg : public CDialog {
 private:
   int getWindowFlags() const;
@@ -11,7 +9,7 @@ private:
   void setToDefault();
 
 public:
-    CTestLayoutManagerDlg(CWnd* pParent = NULL);
+    CTestLayoutManagerDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTLAYOUTMANAGER_DIALOG };
     BOOL    m_windowRetainAspectRatio;
@@ -68,9 +66,7 @@ public:
     BOOL    m_buttonConstantHeight;
     BOOL    m_buttonResizeFont;
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg void OnButtonOpenDialog();
     afx_msg void OnButtonSetToDefault();
     DECLARE_MESSAGE_MAP()

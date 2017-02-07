@@ -5,10 +5,10 @@
 #define new DEBUG_NEW
 #endif
 
-CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestOBMBitmapsDlg::IDD, pParent) {
+CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestOBMBitmapsDlg::IDD, pParent) {
 }
 
-void CTestOBMBitmapsDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestOBMBitmapsDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
 }
 

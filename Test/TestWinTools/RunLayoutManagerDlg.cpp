@@ -7,8 +7,8 @@
 #define new DEBUG_NEW
 #endif
 
-CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd* pParent /*=NULL*/)
-    : CDialog(CRunLayoutManagerDlg::IDD, pParent)
+CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent /*=NULL*/)
+: CDialog(CRunLayoutManagerDlg::IDD, pParent)
 {
 
   m_windowFlags = windowFlags;
@@ -18,7 +18,7 @@ CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int 
   redirectDebugLog();
 }
 
-void CRunLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
+void CRunLayoutManagerDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
 }
 
@@ -40,7 +40,7 @@ END_MESSAGE_MAP()
 BOOL CRunLayoutManagerDlg::OnInitDialog() {
   CDialog::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_RUNLAYOUTMANAGER_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_RUNLAYOUTMANAGER_ACCELERATOR));
 
   CListBox *list1 = (CListBox*)GetDlgItem(IDC_LIST1);
   for(int i = 0; i < 10; i++) {
@@ -74,7 +74,7 @@ BOOL CRunLayoutManagerDlg::OnInitDialog() {
   return TRUE;
 }
 
-BOOL CRunLayoutManagerDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CRunLayoutManagerDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }

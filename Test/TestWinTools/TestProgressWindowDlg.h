@@ -3,7 +3,7 @@
 class CTestProgressWindowDlg : public CDialog {
 private:
 public:
-    CTestProgressWindowDlg(CWnd* pParent = NULL);
+    CTestProgressWindowDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTPROGRESSWINDOW_DIALOG };
     BOOL    m_hasMessageBox;
@@ -20,7 +20,7 @@ public:
     UINT    m_updateRate;
     UINT    m_jobCount;
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     virtual BOOL OnInitDialog();

@@ -7,12 +7,12 @@ typedef struct {
 
 class CTestOBMBitmapsDlg : public CDialog {
 public:
-    CTestOBMBitmapsDlg(CWnd* pParent = NULL);
+    CTestOBMBitmapsDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTOBMBITMAPS_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
     void paintOBMBitmaps();

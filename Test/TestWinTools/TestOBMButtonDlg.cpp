@@ -6,11 +6,11 @@
 #define new DEBUG_NEW
 #endif
 
-CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestOBMButtonDlg::IDD, pParent) {
+CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestOBMButtonDlg::IDD, pParent) {
     m_buttonsEnabled = TRUE;
 }
 
-void CTestOBMButtonDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestOBMButtonDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_ENABLEBUTTONS, m_buttonsEnabled);
 }

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "TestWinTools.h"
 #include "TestWinToolsDlg.h"
 
 #ifdef _DEBUG

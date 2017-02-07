@@ -5,21 +5,21 @@
 #define new DEBUG_NEW
 #endif
 
-CTestConfirmDlg::CTestConfirmDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestConfirmDlg::IDD, pParent) {
+CTestConfirmDlg::CTestConfirmDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestConfirmDlg::IDD, pParent) {
     m_confirmMessage    = _T("Confirm");
     m_confirmCaption    = _T("ConfirmBox");
 }
 
-void CTestConfirmDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestConfirmDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
-    DDX_Text(pDX, IDC_EDITCONFIRMMESSAGE      , m_confirmMessage);
-    DDX_Text(pDX, IDC_EDITCONFIRMCAPTION      , m_confirmCaption);
+    DDX_Text(pDX, IDC_EDIT_CONFIRMMESSAGE      , m_confirmMessage);
+    DDX_Text(pDX, IDC_EDIT_CONFIRMCAPTION      , m_confirmCaption);
 }
 
 
 BEGIN_MESSAGE_MAP(CTestConfirmDlg, CDialog)
-    ON_BN_CLICKED(IDC_BUTTONTESTCONFIRM           , OnButtonTestConfirm           )
-    ON_BN_CLICKED(IDC_BUTTONSHOWSTANDARDMESSAGEBOX, OnButtonShowStandardMessageBox)
+    ON_BN_CLICKED(IDC_BUTTON_TESTCONFIRM           , OnButtonTestConfirm           )
+    ON_BN_CLICKED(IDC_BUTTON_SHOWSTANDARDMESSAGEBOX, OnButtonShowStandardMessageBox)
 END_MESSAGE_MAP()
 
 BOOL CTestConfirmDlg::OnInitDialog() {

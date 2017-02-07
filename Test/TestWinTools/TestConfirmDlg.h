@@ -3,16 +3,16 @@
 class CTestConfirmDlg : public CDialog {
 private:
   CComboBox *getConfirmButtonCombo() {
-    return (CComboBox*)GetDlgItem(IDC_COMBOCONFIRMBUTTONS);
+    return (CComboBox*)GetDlgItem(IDC_COMBO_CONFIRMBUTTONS);
   }
   CComboBox *getConfirmIconCombo() {
-    return (CComboBox*)GetDlgItem(IDC_COMBOCONFIRMICONS);
+    return (CComboBox*)GetDlgItem(IDC_COMBO_CONFIRMICONS);
   }
   int getSelectedConfirmButtons();
   int getSelectedConfirmIcon();
   void initComboItems();
 public:
-    CTestConfirmDlg(CWnd* pParent = NULL);
+    CTestConfirmDlg(CWnd *pParent = NULL);
 
     enum { IDD = IDD_TESTCONFIRMDLG_DIALOG };
     CString m_confirmCaption;
@@ -20,7 +20,7 @@ public:
 
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 

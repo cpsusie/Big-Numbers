@@ -5,7 +5,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestMouseDlg::CTestMouseDlg(CWnd* pParent) : CDialog(CTestMouseDlg::IDD, pParent) {
+CTestMouseDlg::CTestMouseDlg(CWnd *pParent) : CDialog(CTestMouseDlg::IDD, pParent) {
   m_systemCursor  = NULL;
   m_createdCursor = NULL;
 }
@@ -17,7 +17,7 @@ CTestMouseDlg::~CTestMouseDlg() {
   releaseCreatedCursor();
 }
 
-void CTestMouseDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestMouseDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
 }
 
@@ -62,9 +62,9 @@ BOOL CTestMouseDlg::OnInitDialog() {
   if(GetClassName(m_hWnd,classname,sizeof(classname)) == 0)
     ::MessageBox("Error GetClassName:%s",getLastErrorText().cstr());
   else
-    if(::GetClassInfo(AfxGetApp()->m_hInstance,classname,&wc) == 0)
+    if(::GetClassInfo(theApp.m_hInstance,classname,&wc) == 0)
       ::MessageBox("Error GetClassInfo:%s",getLastErrorText().cstr());
-  if(::UnregisterClass(classname,AfxGetApp()->m_hInstance) == 0)
+  if(::UnregisterClass(classname,theApp.m_hInstance) == 0)
       ::MessageBox("Error UnregisterClass(%s):%s",classname,getLastErrorText().cstr());
   wc.hCursor = NULL;
   if(::RegisterClass(&wc) == 0)
@@ -184,7 +184,7 @@ void CTestMouseDlg::OnUnclipCursor() {
 void CTestMouseDlg::OnCreateCursor() {
   try {
     releaseCreatedCursor();
-    m_createdCursor = createCursor(AfxGetApp()->m_hInstance, IDB_BITMAPCOLOR, IDB_BITMAPMASK, 24,24);
+    m_createdCursor = createCursor(theApp.m_hInstance, IDB_BITMAPCOLOR, IDB_BITMAPMASK, 24,24);
     setWindowCursor(this, m_createdCursor);
   } catch(Exception e) {
     MessageBox(e.what(), _T("CreateCursor failed"), MB_ICONEXCLAMATION);
@@ -276,7 +276,7 @@ void CTestMouseDlg::OnSelchangeComboMouseCursor() {
 void CTestMouseDlg::OnLoadAnimatedCursor() {
   try {
     ByteArray cursorData;
-    cursorData.loadFromResource(IDR_ANICURSOR1, _T("ANICURSORS"));
+    cursorData.loadFromResource(IDR_ANICURSOR, _T("ANICURSORS"));
     releaseCreatedCursor();
     m_createdCursor = (HCURSOR)CreateIconFromResourceEx((BYTE*)cursorData.getData(), (DWORD)cursorData.size(), FALSE, 0x00030000, 0, 0, LR_DEFAULTSIZE);
 //    m_createdCursor = (HCURSOR)CreateIconFromResource((BYTE*)cursorData.getData(), cursorData.size(), FALSE, 0x00030000);

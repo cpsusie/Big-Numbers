@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CTestLayoutManagerDlg::CTestLayoutManagerDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestLayoutManagerDlg::IDD, pParent) {
+CTestLayoutManagerDlg::CTestLayoutManagerDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestLayoutManagerDlg::IDD, pParent) {
   setToDefault();
 }
 
@@ -67,7 +67,7 @@ void CTestLayoutManagerDlg::setToDefault() {
   m_buttonConstantWidth         = TRUE;
   m_buttonConstantHeight        = TRUE;
 }
-void CTestLayoutManagerDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestLayoutManagerDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_WINDOW_RETAIN_ASPECTRATIO        , m_windowRetainAspectRatio     );
     DDX_Check(pDX, IDC_CHECK_WINDOW_RESIZE_FONT               , m_windowResizeFont            );

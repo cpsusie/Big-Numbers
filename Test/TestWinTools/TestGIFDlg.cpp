@@ -5,50 +5,50 @@
 #define new DEBUG_NEW
 #endif
 
-CTestGIFDlg::CTestGIFDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestGIFDlg::IDD, pParent) {
+CTestGIFDlg::CTestGIFDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestGIFDlg::IDD, pParent) {
 }
 
-void CTestGIFDlg::DoDataExchange(CDataExchange* pDX) {
+void CTestGIFDlg::DoDataExchange(CDataExchange *pDX) {
     CDialog::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestGIFDlg, CDialog)
     ON_WM_SIZE()
-    ON_BN_CLICKED(IDC_BUTTONLOADGIF          , OnButtonLoadGif          )
-    ON_BN_CLICKED(IDC_BUTTONLOADRESROUCE     , OnButtonLoadResouce      )
-    ON_BN_CLICKED(IDC_BUTTONLOADRESROUCEERROR, OnButtonLoadResroucEerror)
-    ON_BN_CLICKED(IDC_BUTTONSTART            , OnButtonStart            )
-    ON_BN_CLICKED(IDC_BUTTONSTOP             , OnButtonStop             )
-    ON_BN_CLICKED(IDC_BUTTONUNLOAD           , OnButtonUnload           )
-    ON_BN_CLICKED(IDC_BUTTONPAINTALL         , OnButtonPaintAll         )
-    ON_BN_CLICKED(IDC_BUTTONPAINTFIRST       , OnButtonPaintFirst       )
-    ON_BN_CLICKED(IDC_BUTTONPAINTNEXT        , OnButtonPaintNext        )
-    ON_BN_CLICKED(IDC_BUTTONPAINTPREV        , OnButtonPaintPrev        )
-    ON_BN_CLICKED(IDC_BUTTONCLEAR            , OnButtonClear            )
-    ON_BN_CLICKED(IDC_BUTTONHIDE             , OnButtonHide             )
+    ON_BN_CLICKED(IDC_BUTTON_LOADGIF          , OnButtonLoadGif          )
+    ON_BN_CLICKED(IDC_BUTTON_LOADRESROUCE     , OnButtonLoadResouce      )
+    ON_BN_CLICKED(IDC_BUTTON_LOADRESROUCEERROR, OnButtonLoadResroucEerror)
+    ON_BN_CLICKED(IDC_BUTTON_START            , OnButtonStart            )
+    ON_BN_CLICKED(IDC_BUTTON_STOP             , OnButtonStop             )
+    ON_BN_CLICKED(IDC_BUTTON_UNLOAD           , OnButtonUnload           )
+    ON_BN_CLICKED(IDC_BUTTON_PAINTALL         , OnButtonPaintAll         )
+    ON_BN_CLICKED(IDC_BUTTON_PAINTFIRST       , OnButtonPaintFirst       )
+    ON_BN_CLICKED(IDC_BUTTON_PAINTNEXT        , OnButtonPaintNext        )
+    ON_BN_CLICKED(IDC_BUTTON_PAINTPREV        , OnButtonPaintPrev        )
+    ON_BN_CLICKED(IDC_BUTTON_CLEAR            , OnButtonClear            )
+    ON_BN_CLICKED(IDC_BUTTON_HIDE             , OnButtonHide             )
 END_MESSAGE_MAP()
 
 BOOL CTestGIFDlg::OnInitDialog() {
     CDialog::OnInitDialog();
 
-    m_gif.substituteControl(this, IDC_STATICGIFAREA);
+    m_gif.substituteControl(this, IDC_STATIC_GIFAREA);
 
     m_layoutManager.OnInitDialog(this);
-    m_layoutManager.addControl(IDC_STATICGIFAREA          , RELATIVE_SIZE );
-    m_layoutManager.addControl(IDC_BUTTONLOADGIF          , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONLOADRESROUCE     , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONLOADRESROUCEERROR, RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONSTART            , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONSTOP             , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONPAINTALL         , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONPAINTFIRST       , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONPAINTNEXT        , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONPAINTPREV        , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONCLEAR            , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONHIDE             , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_BUTTONUNLOAD           , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDCANCEL                   , RELATIVE_X_POS);
-    m_layoutManager.addControl(IDC_STATICSTATE            , RELATIVE_X_POS | RELATIVE_HEIGHT);
+    m_layoutManager.addControl(IDC_STATIC_GIFAREA          , RELATIVE_SIZE );
+    m_layoutManager.addControl(IDC_BUTTON_LOADGIF          , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_LOADRESROUCE     , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_LOADRESROUCEERROR, RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_START            , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_STOP             , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_PAINTALL         , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_PAINTFIRST       , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_PAINTNEXT        , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_PAINTPREV        , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_CLEAR            , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_HIDE             , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_BUTTON_UNLOAD           , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDCANCEL                    , RELATIVE_X_POS);
+    m_layoutManager.addControl(IDC_STATIC_STATE            , RELATIVE_X_POS | RELATIVE_HEIGHT);
 
     m_frameIndex = 0;
     
@@ -159,10 +159,10 @@ void CTestGIFDlg::OnButtonClear() {
 void CTestGIFDlg::OnButtonHide() {
   if(m_gif.IsWindowVisible()) {
     m_gif.ShowWindow(SW_HIDE);
-    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText(_T("Show"));
+    GetDlgItem(IDC_BUTTON_HIDE)->SetWindowText(_T("Show"));
   } else {
     m_gif.ShowWindow(SW_SHOW);
-    GetDlgItem(IDC_BUTTONHIDE)->SetWindowText(_T("Hide"));
+    GetDlgItem(IDC_BUTTON_HIDE)->SetWindowText(_T("Hide"));
   }
   updateState();
 }
@@ -171,7 +171,7 @@ void CTestGIFDlg::updateState() {
   const CSize &sz = m_gif.getImageSize();
 
 //  const String comment = m_ai.isLoaded() ? m_ai.getComment().cstr() : "";
-  GetDlgItem(IDC_STATICSTATE)->SetWindowText(format(_T("Loaded   :%s\r\n"
+  GetDlgItem(IDC_STATIC_STATE)->SetWindowText(format(_T("Loaded   :%s\r\n"
                                                       "Suspended:%s\r\n"
                                                       "Painted  :%s\r\n"
                                                       "Playing  :%s\r\n"

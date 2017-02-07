@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MFCUtil/LayoutManager.h>
-
 class CRunLayoutManagerDlg : public CDialog {
 private:
   HACCEL              m_accelTable;
@@ -15,15 +13,15 @@ private:
   void enableLayoutMenues();
   void showLayout();
 public:
-    CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd* pParent = NULL);
+    CRunLayoutManagerDlg(int windowFlags, int list1Flags, int list2Flags, int buttonFlags, CWnd *pParent = NULL);
 
     enum { IDD = IDD_RUNTLAYOUTMANAGER_DIALOG };
 
 public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-//  virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT* pResult);
+    virtual void DoDataExchange(CDataExchange *pDX);
+//  virtual BOOL OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult);
 
 protected:
     virtual BOOL OnInitDialog();

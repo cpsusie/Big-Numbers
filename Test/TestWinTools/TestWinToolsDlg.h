@@ -1,7 +1,5 @@
 #pragma once
 
-#include <MyString.h>
-
 class CTestWinToolsDlg : public CDialogEx {
 private:
   HACCEL  m_accelTable;
@@ -10,21 +8,22 @@ private:
   void showInfo();
 
 public:
-    CTestWinToolsDlg(CWnd* pParent = NULL); // standard constructor
+    CTestWinToolsDlg(CWnd *pParent = NULL); // standard constructor
 
 #ifdef AFX_DESIGN_TIME
     enum { IDD = IDD_TESTWINTOOLS_DIALOG };
 #endif
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
 
 protected:
   virtual BOOL OnInitDialog();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   afx_msg void OnPaint();
   afx_msg HCURSOR OnQueryDragIcon();
+  afx_msg void OnClose();
   virtual void OnCancel();
   afx_msg void OnFileExit();
   afx_msg void OnTestProgressWindow();
@@ -36,8 +35,7 @@ protected:
   afx_msg void OnTestColorControl();
   afx_msg void OnTestOBMButton();
   afx_msg void OnTestSelectFolder();
+  afx_msg void OnTestTestSliderWithTransformation();
   
   DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnClose();
 };
