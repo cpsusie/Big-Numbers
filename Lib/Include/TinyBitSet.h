@@ -67,10 +67,9 @@ public:
     if(isEmpty()) {
       throwException(_T("%s:Set is empty"), __TFUNCTION__);
     }
-    CompactArray<unsigned char> members(64);
+    CompactArray<BYTE> members(64);
     T bits = m_bits;
-    char *delim = NULL;
-    for(unsigned char i = 0; bits; i++, bits >>= 1) {
+    for(BYTE i = 0; bits; i++, bits >>= 1) {
       if(bits & 1) {
         members.add(i);
       }
@@ -194,14 +193,14 @@ public:
   private:
     TinyBitSet<T> &m_set;
     int            m_next;
-    UINT           m_current;
+    int            m_current;
     bool           m_hasNext;
     void first() {
       if(m_set.isEmpty()) {
         m_hasNext = false;
       } else {
         m_hasNext = true;
-        for(m_next = m_set.getCapacity()-1;;m_next--) {
+        for(m_next = m_set.getCapacity()-1;; m_next--) {
           if(m_set.contains(m_next)) {
             break;
           }
