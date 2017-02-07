@@ -59,7 +59,7 @@ void Options::save() {
     settings.setValue(_T("currentcolor")    ,m_currentTrackColor );
     settings.setValue(_T("playqueuecolor")  ,m_mediaQueueColor   );
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONWARNING);
+    Message(_T("%s"), e.what());
   }
 }
 
@@ -79,7 +79,7 @@ void Options::load() {
     m_currentTrackColor = settings.getUint(  _T("currentcolor")    , defaultOptions.m_currentTrackColor );
     m_mediaQueueColor   = settings.getUint(  _T("playqueuecolor")  , defaultOptions.m_mediaQueueColor   );
   } catch(Exception e) {
-    AfxMessageBox(e.what(),MB_ICONWARNING);
+    Message(_T("%s"), e.what());
   }
 }
 

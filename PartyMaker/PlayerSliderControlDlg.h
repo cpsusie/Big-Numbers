@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Transformation.h>
+#include <MFCUtil/SliderCtrlWithTransformation.h>
 
 typedef enum {
   CONTROL_BALANCE
@@ -9,13 +9,11 @@ typedef enum {
 
 class CPlayerSliderControlDlg : public CDialog {
 private:
-  CWMPPlayer4         &m_player;
-  PlayerControlType    m_controlType;
-  LinearTransformation m_tr;
-  double               m_initialValue;
+  CWMPPlayer4                  &m_player;
+  CSliderCtrlWithTransformation m_sliderCtrl;
+  PlayerControlType             m_controlType;
+  double                        m_initialValue;
 
-  static LinearTransformation createTransformation(PlayerControlType type);
-  CSliderCtrl *getSlider();
   double getPlayerValue();
   void   setPlayerValue(double value);
   double getSliderPos();
@@ -31,8 +29,6 @@ public:
 
 protected:
   virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
   afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   virtual BOOL OnInitDialog();
   virtual void OnCancel();

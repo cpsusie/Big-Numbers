@@ -8,6 +8,7 @@
 
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/LayoutManager.h>
+#include <TinyBitSet.h>
 
 #include "wmpplayer4.h"
 #include "wmpmediacollection.h"

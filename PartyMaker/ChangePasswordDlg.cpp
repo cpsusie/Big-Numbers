@@ -33,14 +33,14 @@ END_MESSAGE_MAP()
 void CChangePasswordDlg::OnOK() {
   UpdateData(true);
   if(m_newPassword != m_newPassword2) {
-    MessageBox(_T("De indtastede passwords er ikke ens"),_T("Fejl"),MB_ICONWARNING);
+    Message(_T("De indtastede passwords er ikke ens"));
     GetDlgItem(IDC_NEWPASSWORDEDIT)->SetFocus();
   } else {
     try {
       Options::setPassword((LPCTSTR)m_oldPassword,(LPCTSTR)m_newPassword);
       CDialog::OnOK();
     } catch(Exception e) {
-      MessageBox(e.what(),_T("Fejl"),MB_ICONWARNING);
+      Message(e.what());
       m_tryCount++;
       if(m_tryCount == 3) {
         OnCancel();

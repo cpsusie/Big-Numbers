@@ -17,6 +17,14 @@ typedef enum {
  ,wmppsLast           = 12
 } WMPPlayState;
 
+typedef enum {
+  TIMER1_RUNNING
+ ,TIMER2_RUNNING
+ ,MOVECURSORON
+ ,PAUSEBUTTONISPAUSE
+ ,EDITORDERENABLED
+} DIALOGFLAG;
+
 class CPartyMakerDlg : public CDialog {
 private:
   HACCEL              m_accelTable;
@@ -37,13 +45,25 @@ private:
   time_t              m_lastRefresh;
   int                 m_selectedFromMediaQueue;
   MediaFile           m_currentMediaFile;
-  bool                m_moveCursorOn;
-  bool                m_pauseButtonIsPause;
-  bool                m_timerIsRunning;
-  bool                m_editOrderEnabled;
+  Semaphore           m_gate;
+  BitSet8             m_stateFlags;
 
-  void         startTimer();
+  void         setFlag(DIALOGFLAG flag) {
+    m_gate.wait(); m_stateFlags.add(flag); m_gate.signal();
+  }
+  void         clrFlag(DIALOGFLAG flag) {
+    m_gate.wait(); m_stateFlags.remove(flag); m_gate.signal();
+  }
+  void         setFlag(DIALOGFLAG flag, bool value) {
+    if(value) setFlag(flag); else clrFlag(flag);
+  }
+  bool         isFlagSet(DIALOGFLAG flag) const {
+    return m_stateFlags.contains(flag);
+  }
+  void         startTimer(int delayMsec=0);
   void         stopTimer();
+  void         onTimer1();
+  void         onTimer2();
   int          insertMediaFile(MediaFile &f);
   void         removeMediaFile(intptr_t index);
   void         resetMediaList();
@@ -158,4 +178,3 @@ protected:
     afx_msg void OnSortByAlbum();
     DECLARE_MESSAGE_MAP()
 };
-

@@ -179,17 +179,17 @@ BOOL CPartyMakerDlg::OnInitDialog() {
 
     randomize();
     m_lastRefresh            = 0;
-    m_timerIsRunning         = false;
-    m_pauseButtonIsPause     = true;
-    m_moveCursorOn           = false;
+    setFlag(PAUSEBUTTONISPAUSE);
     m_prefixTime             = 0;
     m_selectedFromMediaQueue = -1;
-    m_editOrderEnabled       = isMenuItemChecked(this, ID_FILE_EDITORDER);
+    if(isMenuItemChecked(this, ID_FILE_EDITORDER)) {
+      setFlag(EDITORDERENABLED);
+    }
     SetPriorityClass(GetCurrentProcess(),HIGH_PRIORITY_CLASS);
     m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
     gotoToListBox();
   } catch(Exception e) {
-    AfxMessageBox(format(_T("Fatal error:%s"), e.what()).cstr(), MB_ICONSTOP);
+    Message(_T("Fatal error:%s"), e.what());
     exit(-1);
   }
   startTimer();
@@ -379,7 +379,7 @@ void CPartyMakerDlg::showMediaQueue() {
       dc.TextOut(0,i*CHARHEIGHT,mediaQueueFormat(it.next()).cstr());
     }
   }
-  if((m_mediaQueue->size() > 1) != m_editOrderEnabled) {
+  if((m_mediaQueue->size() > 1) != isFlagSet(EDITORDERENABLED)) {
     enableEditOrderItem(m_mediaQueue->size() > 1);
   }
 }
@@ -388,7 +388,7 @@ void CPartyMakerDlg::enableEditOrderItem(bool enable) {
   if(enable && isPasswordProtected()) {
     return;
   }
-  m_editOrderEnabled = enable;
+  setFlag(EDITORDERENABLED, enable);
   enableMenuItem(this, ID_FILE_EDITORDER, enable);
 }
 
@@ -524,17 +524,17 @@ void CPartyMakerDlg::OnOK() {
 void CPartyMakerDlg::ajourPauseButton(WMPPlayState state) {
   switch(state) {
   case wmppsPlaying:
-    if(!m_pauseButtonIsPause) {
+    if(!isFlagSet(PAUSEBUTTONISPAUSE)) {
       checkMenuItem(this,ID_FILE_PAUSE,false);
       GetDlgItem(IDC_PAUSEBUTTON)->SetWindowText(_T("&Pause = Ctrl+P"));
-      m_pauseButtonIsPause = true;
+      setFlag(PAUSEBUTTONISPAUSE);
     }
     break;
   case wmppsPaused :
-    if(m_pauseButtonIsPause) {
+    if(isFlagSet(PAUSEBUTTONISPAUSE)) {
       checkMenuItem(this,ID_FILE_PAUSE,true);
       GetDlgItem(IDC_PAUSEBUTTON)->SetWindowText(_T("Fortsæt = Ctrl+P"));
-      m_pauseButtonIsPause = false;
+      clrFlag(PAUSEBUTTONISPAUSE);
     }
   }
 }
@@ -588,19 +588,6 @@ bool CPartyMakerDlg::isPasswordProtected() {
   return isMenuItemChecked(this,ID_FILE_PASSWORDPROTECT);
 }
 
-void CPartyMakerDlg::startTimer() {
-  if(!m_timerIsRunning && SetTimer(1,TIMERUPDATERATE,NULL)) {
-    m_timerIsRunning = true;
-  }
-}
-
-void CPartyMakerDlg::stopTimer() {
-  if(m_timerIsRunning) {
-    KillTimer(1);
-    m_timerIsRunning = false;
-  }
-}
-
 void CPartyMakerDlg::startNextNumber() {
   if(getPlayerState() != wmppsStopped) {
     stopPlayer();
@@ -651,7 +638,39 @@ CString CPartyMakerDlg::getPlayerPositionString() {
   return m_player.GetControls().GetCurrentPositionString();
 }
 
+void CPartyMakerDlg::startTimer(int delayMsec) {
+  if (isFlagSet(TIMER1_RUNNING) || isFlagSet(TIMER2_RUNNING)) {
+    return;
+  }
+  if (delayMsec) {
+    SetTimer(2, delayMsec, NULL);
+    setFlag(TIMER2_RUNNING);
+  } else {
+    SetTimer(1,TIMERUPDATERATE,NULL);
+    setFlag(TIMER1_RUNNING);
+  }
+}
+
+void CPartyMakerDlg::stopTimer() {
+  if(isFlagSet(TIMER2_RUNNING)) {
+    KillTimer(2);
+    clrFlag(TIMER2_RUNNING);
+  }
+  if(isFlagSet(TIMER1_RUNNING)) {
+    KillTimer(1);
+    clrFlag(TIMER1_RUNNING);
+  }
+}
+
 void CPartyMakerDlg::OnTimer(UINT_PTR nIDEvent) {
+  switch(nIDEvent) {
+  case 1: onTimer1(); break;
+  case 2: onTimer2(); break;
+  }
+  CDialog::OnTimer(nIDEvent);
+}
+
+void CPartyMakerDlg::onTimer1() {
   showMediaList();
   showMediaQueue();
   const WMPPlayState state = getPlayerState();
@@ -673,8 +692,12 @@ void CPartyMakerDlg::OnTimer(UINT_PTR nIDEvent) {
 
   showCurrentTrack(state);
   ajourPauseButton(state);
+}
 
-  CDialog::OnTimer(nIDEvent);
+void CPartyMakerDlg::onTimer2() {
+  KillTimer(2);
+  clrFlag(TIMER2_RUNNING);
+  startTimer();
 }
 
 void CPartyMakerDlg::gotoToListBox() {
@@ -711,7 +734,7 @@ void CPartyMakerDlg::sortMediaList(int headerIndex) {
 
   if(selectedIndex >= 0) {
     const int newIndex = m_mediaArray.findBySourceURL(selectedSourceURL);
-    if(newIndex >= 0 && newIndex < getMediaArraySize()) {
+    if((newIndex >= 0) && (newIndex < getMediaArraySize())) {
       setSelectedIndex(m_allMedia, newIndex);
     }
   }
@@ -863,7 +886,7 @@ void CPartyMakerDlg::OnEditCopy() {
     try {
       clipboardDropFile(m_hWnd,m_mediaArray[selected].getSourceURL());
     } catch(Exception e) {
-      MessageBox(format(_T("clipboardDropFiles failed:%s"),e.what()).cstr(),_T("Error"), MB_ICONWARNING);
+      Message(_T("clipboardDropFiles failed:%s"),e.what());
     }
   }
 }
@@ -1038,7 +1061,7 @@ void CPartyMakerDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     CMenu menu;
     int ret = menu.LoadMenu(IDR_CONTEXTMENU);
     if(!ret) {
-      AfxMessageBox(_T("Loadmenu failed"));
+      Message(_T("Loadmenu failed"));
       return;
     }
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
@@ -1212,7 +1235,8 @@ void CPartyMakerDlg::OnShowCount() {
                    ,(int)m_mediaArray.size()
                    ,durationString.cstr()
                    ).cstr()
-            ,_T("Total"));
+            ,_T("Total")
+            ,MB_ICONINFORMATION);
 }
 
 int CPartyMakerDlg::findMediaFileInMediaQueue(const CPoint &point) {
@@ -1250,7 +1274,7 @@ void CPartyMakerDlg::setMoveCursor(bool on) {
     setWindowCursor(GetDlgItem(IDC_PAUSEBUTTON ) , IDC_NO        );
     setWindowCursor(GetDlgItem(IDC_NEXTBUTTON  ) , IDC_NO        );
     setWindowCursor(GetDlgItem(IDC_VOLUMESLIDER) , IDC_NO        );
-    m_moveCursorOn = true;
+    setFlag(MOVECURSORON);
   } else {
     setWindowCursor(getQueueWnd()                , IDC_ARROW     );
     setWindowCursor(getCurrentTrackWnd()         , IDC_ARROW     );
@@ -1260,7 +1284,7 @@ void CPartyMakerDlg::setMoveCursor(bool on) {
     setWindowCursor(GetDlgItem(IDC_PAUSEBUTTON ) , IDC_ARROW     );
     setWindowCursor(GetDlgItem(IDC_NEXTBUTTON  ) , IDC_ARROW     );
     setWindowCursor(GetDlgItem(IDC_VOLUMESLIDER) , IDC_ARROW     );
-    m_moveCursorOn = false;
+    clrFlag(MOVECURSORON);
   }
 }
 
@@ -1280,7 +1304,7 @@ bool CPartyMakerDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 bool CPartyMakerDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-  if(m_moveCursorOn) {
+  if(isFlagSet(MOVECURSORON)) {
     setMoveCursor(false);
   }
   if(m_selectedFromMediaQueue < 0) {

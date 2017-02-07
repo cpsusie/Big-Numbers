@@ -34,11 +34,11 @@ String makeFileName(const String &ext) {
 }
 
 String makeErrorFileName() {
-  return makeFileName(_T("err"));
+  return makeFileName(_T("merr"));
 }
 
 String makeLogFileName() {
-  return makeFileName(_T("log"));
+  return makeFileName(_T("mlog"));
 }
 
 String MediaDatabase::getFileName() { // static
@@ -162,9 +162,9 @@ static const TCHAR *queueName = _T("partymakerqueue");
 
 CWMPPlaylist &MediaDatabase::getPlaylist() { // static
   if(playlist == NULL) {
-    CWMPPlayer4 &player = MediaDatabase::getPlayer();
+    CWMPPlayer4           &player       = MediaDatabase::getPlayer();
     CWMPPlaylistCollection plCollection = player.GetPlaylistCollection();
-    CWMPPlaylistArray plArray = plCollection.getByName(queueName);
+    CWMPPlaylistArray      plArray      = plCollection.getByName(queueName);
     if(plArray.GetCount() > 0) {
       playlist = plArray.Item(0);
       playlist.clear();
@@ -180,10 +180,10 @@ CWMPPlaylist MediaDatabase::createPlayList(const String &name) { // static
   if(name.equalsIgnoreCase(queueName)) {
     throwException(_T("Cannot use name of queue (=%s) as name for playlist"), queueName);
   }
-  CWMPPlayer4 &player = MediaDatabase::getPlayer();
+  CWMPPlayer4           &player       = MediaDatabase::getPlayer();
   CWMPPlaylistCollection plCollection = player.GetPlaylistCollection();
-  CWMPPlaylistArray plArray = plCollection.getByName(name.cstr());
-  CWMPPlaylist result;
+  CWMPPlaylistArray      plArray      = plCollection.getByName(name.cstr());
+  CWMPPlaylist           result;
   if(plArray.GetCount() > 0) {
     result = plArray.Item(0);
     result.clear();
@@ -292,10 +292,7 @@ void logError(const TCHAR *format,...) {
     return;
   }
 
-  time_t tt;
-  time(&tt);
-  struct tm *tm = localtime(&tt);
-  _ftprintf(f, _T("%02d-%02d-%d %2d:%02d"),tm->tm_mday,tm->tm_mon+1,tm->tm_year+1900,tm->tm_hour,tm->tm_min);
+  _ftprintf(f, _T("%s"), Timestamp().toString().cstr());
 
   va_list argptr;
   va_start(argptr,format);

@@ -11,7 +11,7 @@ CPlayerSliderControlDlg::CPlayerSliderControlDlg(CWMPPlayer4 &player, PlayerCont
 : CDialog(CPlayerSliderControlDlg::IDD, pParent)
 , m_player(player)
 , m_controlType(controlType)
-, m_tr(createTransformation(controlType)) {
+{
 }
 
 void CPlayerSliderControlDlg::DoDataExchange(CDataExchange *pDX) {
@@ -26,11 +26,20 @@ END_MESSAGE_MAP()
 BOOL CPlayerSliderControlDlg::OnInitDialog() {
   CDialog::OnInitDialog();
 
-  initSliderRange();
-  SetWindowText((m_controlType==CONTROL_BALANCE)?_T("Balance"):_T("Hastighed"));
+  switch(m_controlType) {
+  case CONTROL_BALANCE:
+    m_sliderCtrl.substituteControl(this, IDC_PLAYERCONTROLSLIDER, DoubleInterval(-100,100));
+    setWindowText(this, _T("Balance"));
+    break;
+  case CONTROL_SPEED  :
+    m_sliderCtrl.substituteControl(this, IDC_PLAYERCONTROLSLIDER, DoubleInterval(0.5 ,2  ));
+    setWindowText(this, _T("Hastighed"));
+    break;
+  default             :
+    throwException(_T("%s:Invalid controllType:%d"), m_controlType);
+  }
   m_initialValue = getPlayerValue();
   setSliderPos(m_initialValue);
-
   return TRUE;
 }
 
@@ -40,7 +49,7 @@ void CPlayerSliderControlDlg::OnCancel() {
 }
 
 void CPlayerSliderControlDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  setPlayerValue(getSliderPos());
+  setPlayerValue(m_sliderCtrl.getPos());
   showPlayerValue();
   CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
 }
@@ -77,17 +86,12 @@ void CPlayerSliderControlDlg::setPlayerValue(double value) {
   setSliderPos(value);
 }
 
-void CPlayerSliderControlDlg::initSliderRange() {
-  const DoubleInterval &range = m_tr.getFromInterval();
-  getSlider()->SetRange((int)range.getFrom(), (int)range.getTo(), TRUE);
-}
-
 double CPlayerSliderControlDlg::getSliderPos() {
-  return m_tr.forwardTransform(getSlider()->GetPos());
+  return m_sliderCtrl.getPos();
 }
 
 void CPlayerSliderControlDlg::setSliderPos(double value) {
-  getSlider()->SetPos((int)m_tr.backwardTransform(value));
+  m_sliderCtrl.setPos(value);
   showPlayerValue();
 }
 
@@ -112,23 +116,10 @@ void CPlayerSliderControlDlg::showSpeed() {
   const double factor    = getPlayerValue();
   const double origlen   = m_player.GetCurrentMedia().GetDuration();
   const double corriglen = origlen / factor;
-
-  GetDlgItem(IDC_STATICTEXT)->SetWindowText(format(_T("%d%%  %s -> %s"),(int)(factor*100.0),formatSeconds(origlen).cstr(),formatSeconds(corriglen).cstr()).cstr());
+  setWindowText(this, IDC_STATICTEXT, format(_T("%.1lf%%  %s -> %s"),factor*100.0, formatSeconds(origlen).cstr(),formatSeconds(corriglen).cstr()).cstr());
 }
 
 void CPlayerSliderControlDlg::showBalance() {
   const double factor    = getPlayerValue();
-  GetDlgItem(IDC_STATICTEXT)->SetWindowText(format(_T("%+d%%"), (int)factor).cstr());
-}
-
-CSliderCtrl *CPlayerSliderControlDlg::getSlider() {
-  return (CSliderCtrl*)GetDlgItem(IDC_PLAYERCONTROLSLIDER);
-}
-
-LinearTransformation CPlayerSliderControlDlg::createTransformation(PlayerControlType type) { // static
-  switch(type) {
-  case CONTROL_BALANCE: return LinearTransformation(DoubleInterval(-100,100), DoubleInterval(-100,100));
-  case CONTROL_SPEED  : return LinearTransformation(DoubleInterval(-200,200), DoubleInterval(0.5 ,2  ));
-  default             : return LinearTransformation(DoubleInterval(-100,100), DoubleInterval(0 ,  1  ));
-  }
+  setWindowText(this, IDC_STATICTEXT, format(_T("%+d%%"), (int)factor).cstr());
 }
