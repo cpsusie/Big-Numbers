@@ -1,5 +1,6 @@
-// Microsoft Developer Studio generated include file.
-// Used by prop.rc
+//{{NO_DEPENDENCIES}}
+// Microsoft Visual C++ generated include file.
+// Used by prOp.rc
 //
 
 // Next default values for new objects

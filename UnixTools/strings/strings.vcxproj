@@ -271,6 +271,7 @@
   <ItemGroup>
     <ClInclude Include="ByteStringExtractor.h" />
     <ClInclude Include="CStringExtractor.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="StringExtractor.h" />
     <ClInclude Include="targetver.h" />

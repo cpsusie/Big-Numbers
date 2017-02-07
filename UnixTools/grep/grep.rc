@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -47,7 +45,6 @@ END
 #endif    // APSTUDIO_INVOKED
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -70,33 +67,23 @@ BEGIN
     BEGIN
         BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "MyPaint\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "MyPaint\0"
-            VALUE "LegalCopyright", "Copyright © 2012\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "MyPaint.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "MyPaint\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "grep - search for text or regular experssions in a set of files"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "grep"
+            VALUE "LegalCopyright", "Copyright © 2012"
+            VALUE "OriginalFilename", "grep.exe"
+            VALUE "ProductName", "grep"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
         BLOCK "040604b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "grep\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "grep\0"
-            VALUE "LegalCopyright", "Copyright © 2008\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "grep.exe\0"
-            VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "grep\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
-            VALUE "SpecialBuild", "\0"
+            VALUE "FileDescription", "grep"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "grep"
+            VALUE "LegalCopyright", "Copyright © 2008"
+            VALUE "OriginalFilename", "grep.exe"
+            VALUE "ProductName", "grep"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -105,9 +92,7 @@ BEGIN
     END
 END
 
-#endif    // !_MAC
-
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
