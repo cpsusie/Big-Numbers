@@ -733,6 +733,7 @@
     <ClInclude Include="..\chess\IndexedMap.h" />
     <ClInclude Include="EndGameInfoList.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\chess\res\blackBishop.bmp" />

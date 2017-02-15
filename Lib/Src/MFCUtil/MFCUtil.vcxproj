@@ -348,6 +348,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\ColoredStatic.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColorSpace.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ComboBoxWithHistory.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\CommontCtrlManifest.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ConfirmDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AbstractAxisPainter.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CoordinateSystem\AxisType.h" />

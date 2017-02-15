@@ -34,4 +34,3 @@
 #endif
 #pragma comment(lib, CHESSLIB_VERSION "ChessLib.lib")
 
-//{{AFX_INSERT_LOCATION}}

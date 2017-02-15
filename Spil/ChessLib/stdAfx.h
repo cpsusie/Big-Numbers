@@ -13,4 +13,3 @@
 
 #include <ChessGame.h>
 
-//{{AFX_INSERT_LOCATION}}

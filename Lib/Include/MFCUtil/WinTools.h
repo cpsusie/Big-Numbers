@@ -6,6 +6,7 @@
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS      // some CString constructors will be explicit
+#define _AFX_ALL_WARNINGS                       // turns off MFC's hiding of some common and often safely ignored warning messages
 
 #define _AFX_NO_OLE_SUPPORT
 #define _AFX_NO_DB_SUPPORT
@@ -252,3 +253,5 @@ public:
 #pragma message("link with " LIB_VERSION)
 #endif
 #pragma comment(lib, LIB_VERSION "MFCUtil.lib")
+
+#include "CommontCtrlManifest.h"
