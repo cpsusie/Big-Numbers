@@ -172,7 +172,12 @@ public:
   inline bool operator>=(const SourcePosition &pos) const {
     return compare(pos) >= 0;
   }
-
+  bool operator==(const SourcePosition &pos) const {
+    return compare(pos) == 0;
+  }
+  bool operator!=(const SourcePosition &pos) const {
+    return !(*this == pos);
+  }
   String toString() const;
   friend class Scanner;
 
