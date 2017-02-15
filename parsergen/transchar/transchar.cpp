@@ -1,9 +1,5 @@
-// transchar.cpp : Defines the entry point for the console application.
-//
-
 #include "stdafx.h"
 #include <String.h>
-#include <MyUtil.h>
 #include "transcharlex.h"
 
 static char *translateLine(char *line) {
@@ -23,7 +19,7 @@ static char *translateLine(char *line) {
 
 static void translateCharacter(char *src, char *pat, unsigned char c) {
   char *s;
-  int l = strlen(pat);
+  size_t l = strlen(pat);
   while((s = strstr(src,pat)) != NULL) {
     *s = c;
     strcpy(s+1,s+l);
@@ -88,8 +84,7 @@ static char *translateCharacters(char *s) {
   return s;
 }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char **argv) {
   char line[100];
   char *s;
   double start;

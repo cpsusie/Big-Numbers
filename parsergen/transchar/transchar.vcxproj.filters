@@ -13,6 +13,9 @@
       <UniqueIdentifier>{3c54c250-e80d-48ce-914d-6404e4610266}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Grammar">
+      <UniqueIdentifier>{66067b28-fab2-4736-9d6b-ae63c95677ec}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="StdAfx.cpp">
@@ -34,9 +37,8 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="transchar.lex" />
+    <CustomBuild Include="transchar.lex">
+      <Filter>Source Files\Grammar</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

@@ -200,17 +200,6 @@ String getWord(const TCHAR *s, int pos) {
   return substr(tmp, start, end-start+1);
 }
 
-static int cmp(const SourcePosition &p1, const SourcePosition &p2) {
-  int c = p1.getLineNumber() - p2.getLineNumber();
-  if(c) return c;
-  return p1.getColumn() - p2.getColumn();
-}
-
-static bool operator>=(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) >= 0; }
-static bool operator<=(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) <= 0; }
-static bool operator==(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) == 0; }
-static bool operator!=(const SourcePosition &p1, const SourcePosition &p2) { return cmp(p1, p2) != 0; }
-
 void CParserDemoDlg::handleError(const SourcePosition &pos, const TCHAR *form, va_list argptr) {
   const String tmp = format(_T("error in (%d,%d):%s"), pos.getLineNumber(), pos.getColumn(), vformat(form, argptr).cstr());
   ((CListBox*)GetDlgItem(IDC_LISTERRORS))->AddString(tmp.cstr());

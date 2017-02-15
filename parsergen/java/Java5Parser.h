@@ -5,7 +5,7 @@
 
 const extern ParserTables *Java5Tables;
 
-#line 5 "C:\\mytools2015\\parsergen\\java\\Java5.y"
+#line 5 "C:\\mytools2015\\ParserGen\\java\\Java5.y"
 #pragma once
 
 #include <LRparser.h>

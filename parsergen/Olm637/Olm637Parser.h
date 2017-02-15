@@ -5,7 +5,7 @@
 
 const extern ParserTables *Olm637Tables;
 
-#line 5 "C:\\mytools2015\\parsergen\\Olm637\\Olm637.y"
+#line 5 "C:\\mytools2015\\ParserGen\\Olm637\\Olm637.y"
 #include "Olm637symbol.h"
 
 #define YYSTYPE int

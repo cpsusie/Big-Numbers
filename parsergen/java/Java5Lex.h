@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools2015\\parsergen\\java\\Java5.lex"
+#line 2 "C:\\mytools2015\\ParserGen\\java\\Java5.lex"
 #pragma once
 
  /* This part goes to javalex.h */

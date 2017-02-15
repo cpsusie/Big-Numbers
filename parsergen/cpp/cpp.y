@@ -12,8 +12,8 @@ class CppParser : public LRparser, public ParserTree {
 public:
   CppParser(CppLex *lex = NULL) : LRparser(*CppTables,lex) {}
   SyntaxNode *newNode( int token, ... );
-  void  appendError(const char *format, ...);
-  void	verror(const SourcePosition &pos, const char *format,va_list argptr);
+  void  appendError(const TCHAR *format, ...);
+  void	verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
 private:
   stype m_dollardollar,*m_stacktop,m_userstack[256];
   int	reduceAction(unsigned int prod);
@@ -73,7 +73,7 @@ private:
 %left	PLUS  MINUS				/* + -									*/
 %left	STAR  DIVOP				/* *  /   %								*/
 %right	SIZEOF UNOP INCOP		/*        sizeof     ! ~     ++ --      */
-%left	LB RB LP RP STRUCTOP	/*	[ ] ( )  . ->						*/
+%left	LB RB LPAR RPAR STRUCTOP	/*	[ ] ( )  . ->						*/
 %left   COLONCOLON
 %right  NEWOP DELETEOP
 
@@ -94,7 +94,6 @@ private:
   /* This part goes to the first part of cppaction.cpp */
 
 #include "stdafx.h"
-#include <MyUtil.h>
 #include "CppParser.h"
 
 %}
@@ -145,22 +144,22 @@ ext_decl	: var_decl
 			;
 
 var_decl	: name									%prec COMMA  /* This production is done first. */
-			| var_decl LP RP	    
-			| var_decl LP var_list RP
+			| var_decl LPAR RPAR	    
+			| var_decl LPAR var_list RPAR
 			| var_decl LB RB
 			| var_decl LB const_expr RB
 			| STAR var_decl							%prec UNOP
-			| LP var_decl RP 
+			| LPAR var_decl RPAR 
 			;
 
 funct_decl	: STAR funct_decl	      
 			| funct_decl LB RB	      
 			| funct_decl LB const_expr RB 
-			| LP funct_decl RP	      
-			| funct_decl LP RP	      
-			| name LP RP	      
-			| name LP name_list RP
-			| name LP var_list RP
+			| LPAR funct_decl RPAR	      
+			| funct_decl LPAR RPAR	      
+			| name LPAR RPAR	      
+			| name LPAR name_list RPAR
+			| name LPAR var_list RPAR
 			;
 
 name_list	: name
@@ -187,11 +186,11 @@ abstract_decl
 			;
 
 abs_decl	: /* eps */	
-			| LP abs_decl RP LP RP	
+			| LPAR abs_decl RPAR LPAR RPAR	
 			| STAR abs_decl		    
 			| abs_decl LB RB
 			| abs_decl LB const_expr RB
-			| LP abs_decl RP 	    
+			| LPAR abs_decl RPAR 	    
 			;
 
 struct_specifier
@@ -268,14 +267,14 @@ statement	: SEMI
 			| RETURN expr SEMI
 			| GOTO target SEMI	
 			| target COLON	statement
-			| IF LP test RP statement	
-			| IF LP test RP statement ELSE  statement			
-			| WHILE LP test RP	statement		
-			| DO statement WHILE LP test RP SEMI	
-			| FOR LP opt_expr SEMI test SEMI opt_expr RP statement
+			| IF LPAR test RPAR statement	
+			| IF LPAR test RPAR statement ELSE  statement			
+			| WHILE LPAR test RPAR	statement		
+			| DO statement WHILE LPAR test RPAR SEMI	
+			| FOR LPAR opt_expr SEMI test SEMI opt_expr RPAR statement
 			| BREAK SEMI		
 			| CONTINUE SEMI		
-			| SWITCH LP expr RP compound_stmt
+			| SWITCH LPAR expr RPAR compound_stmt
 			| CASE const_expr COLON
 			| DEFAULT COLON
 			| THROW expr SEMI
@@ -287,7 +286,7 @@ handler_list: exception_handler
 			;
 
 exception_handler:
-			  CATCH LP catch_type RP compound_stmt
+			  CATCH LPAR catch_type RPAR compound_stmt
 			;
 
 catch_type	: ELLIPSIS
@@ -302,15 +301,15 @@ test		: /* eps */
 			| expr      
 			;
 
-unary		: LP expr RP
+unary		: LPAR expr RPAR
 			| FCON	  	
 			| ICON	  	
 			| NAME 		
 			| string_const 							%prec COMMA
-			| SIZEOF LP string_const RP				%prec SIZEOF
-			| SIZEOF LP expr RP	     				%prec SIZEOF
-			| SIZEOF LP abstract_decl RP			%prec SIZEOF
-			| LP abstract_decl RP unary    		    %prec UNOP
+			| SIZEOF LPAR string_const RPAR				%prec SIZEOF
+			| SIZEOF LPAR expr RPAR	     				%prec SIZEOF
+			| SIZEOF LPAR abstract_decl RPAR			%prec SIZEOF
+			| LPAR abstract_decl RPAR unary    		    %prec UNOP
 			| MINUS	unary							%prec UNOP
 			| UNOP unary		
 			| unary INCOP		
@@ -319,8 +318,8 @@ unary		: LP expr RP
 			| STAR unary							%prec UNOP
 			| unary LB expr RB						%prec UNOP
 			| unary STRUCTOP NAME					%prec STRUCTOP
-			| unary LP args RP  	
-			| unary LP RP  	
+			| unary LPAR args RPAR  	
+			| unary LPAR RPAR  	
 			;
 
 args		: non_comma_expr						%prec COMMA   
@@ -392,17 +391,16 @@ name		: NAME
 
 %%
 
-void CppParser::verror(const SourcePosition &pos, const char *format, va_list argptr) {
-  char tmp[256],tmp2[256];
-  vsprintf(tmp,format,argptr);
-  sprintf(tmp2,"Error in line %d: %s", pos.getLineNumber(), tmp );
-  strReplace(tmp2,'\n',' ');
-  appendError("%s",tmp2);
+void CppParser::verror(const SourcePosition &pos, const TCHAR *form, va_list argptr) {
+  const String tmp = vformat(form,argptr);
+  String tmp2 = format(_T("Error in line %d: %s"), pos.getLineNumber(), tmp.cstr() );
+  tmp2.replace('\n',' ');
+  appendError(_T("%s"),tmp2.cstr());
 }
 
-void CppParser::appendError(const char *format,...) {
+void CppParser::appendError(const TCHAR *format,...) {
   va_list argptr;
   va_start(argptr,format);
-  vprintf(format,argptr);
+  _vtprintf(format,argptr);
   va_end(argptr);
 }

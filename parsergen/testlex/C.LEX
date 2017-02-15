@@ -3,7 +3,6 @@
 
  /* This part goes to clex.h */
 
-#include <MyUtil.h>
 #include <Scanner.h>
 #include "csymbol.h"
 
@@ -71,7 +70,7 @@ strlit	\"(\\.|[^\\\"])*\"
 
 {strlit}        return STRING; // (((\r\n)*{white}*)*{strlit})*
 
-\"(\\.|[^\\\"])*\r error(getPos(),"Adding missing \" to string constant\n");
+\"(\\.|[^\\\"])*\r error(getPos(),_T("Adding missing \" to string constant\n"));
                         return STRING;
 
 '.'                     |
@@ -125,7 +124,7 @@ strlit	\"(\\.|[^\\\"])*\"
 \n          ;
 \r          ;
 {white}+                ;
-.                       printf( "Illegal character <%c>\n", *getText());
+.                       _tprintf( _T("Illegal character <%c>\n"), *getText());
 %%
 
   /* This part goes to the last part of clex.cpp */

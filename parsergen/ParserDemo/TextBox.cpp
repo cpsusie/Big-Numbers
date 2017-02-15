@@ -6,12 +6,13 @@ CTextBox::CTextBox(CString &str) : m_str(str) {
   m_redBrush.CreateSolidBrush(RGB(255, 0, 0));
 }
 
+#pragma warning(disable:4312)
 BOOL CTextBox::CreateEx(DWORD dwStyle, DWORD dwExStyle, const RECT& rect, CWnd *pParentWnd, UINT nID) {
   BOOL ret = CWnd::CreateEx(0, _T("EDIT"), NULL
 	                         ,dwStyle | WS_CHILD
 	                         ,rect.left, rect.top
 	                         ,rect.right - rect.left, rect.bottom - rect.top
-	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL);
+	                         ,pParentWnd->GetSafeHwnd(), (HMENU)nID, NULL); 
   if(ret) {
     ret = ModifyStyleEx(0, dwExStyle);
   }

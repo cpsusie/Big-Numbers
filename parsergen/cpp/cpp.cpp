@@ -6,7 +6,7 @@
 #include "cppparser.h"
 
 static LexFileStream   input;
-static LexStringStream strstream(" ++kukkku->++--!=?:+=*=/=\n54.5e-33f");
+static LexStringStream strstream(_T(" ++kukkku->++--!=?:+=*=/=\n54.5e-33f"));
 //static stringstream strstream("54.5e-33f");
 
 /*
@@ -26,7 +26,10 @@ static void scan(Scanner &lex) {
   int token;
   do {
     token = lex.getNextLexeme();
-    printf("%2d %-20s : %s \n",lex.getLineNumber(),CppTables->getSymbolName(token),lex.getText());
+    _tprintf(_T("%2d %-20s : %s \n")
+            ,lex.getLineNumber()
+            ,CppTables->getSymbolName(token)
+            ,lex.getText());
   } while(token != 0);
 }
 
@@ -40,8 +43,8 @@ static void scanFile(char *fname) {
 void scanString() {
   for(;;) {
     printf("Enter String:");
-    char line[1024];
-    gets(line);
+    TCHAR line[1024];
+    GETS(line);
     LexStringStream strstream(line);
     CppLex lex;
     lex.newStream(&strstream);
@@ -54,12 +57,13 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   argv++;
-  if(*argv)
+  if(*argv) {
     scanFile(*argv);
-  else
+  } else {
     scanString();
+  }
   getchar();
   return 0;
 }

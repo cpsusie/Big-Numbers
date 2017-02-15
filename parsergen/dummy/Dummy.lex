@@ -8,13 +8,12 @@ public:
 
 %{
 
-#include <MyUtil.h>
-#include <string.h>
-#include <hashmap.h>
+#include "stdafx.h"
+#include <HashMap.h>
 #include "dummylex.h"
 #include "dummysymbol.h"
 
-static int nameOrKeyWord(const char *lexeme);
+static int nameOrKeyWord(const TCHAR *lexeme);
 
 %}
 
@@ -30,23 +29,26 @@ white   [\x00-\x09\x0b\s\n]		/* White space:				*/
 
 %%
 
+#include "stdafx.h"
+
 #ifdef __NEVER__
-  /* This part goes to the last part of dummylex.cpp */
+
+/* This part goes to the last part of dummylex.cpp */
 
 typedef struct {
-  char *m_name;
-  int   m_token;
+  TCHAR *m_name;
+  int    m_token;
 } KeyWord;
 
 static KeyWord keywordtable[] = {
- "WHILE"    ,WHILE
-,"DO"		,DO
-,"IF"       ,IF
-,"THEN"     ,THEN
-,"ELSE"     ,ELSE
-,"BEGIN"    ,BEGIN
-,"END"		,END
-,"SELECT"	,SELECT
+ _T("WHILE")    ,WHILE
+,_T("DO")		,DO
+,_T("IF")       ,IF
+,_T("THEN")     ,THEN
+,_T("ELSE")     ,ELSE
+,_T("BEGIN")    ,BEGIN
+,_T("END")		,END
+,_T("SELECT")	,SELECT
 };
 
 typedef StrHashMap<int> HashMapType;
@@ -61,13 +63,12 @@ public:
 
 static KeyWordMap keywords;
 
-static int nameOrKeyWord(const char *lexeme) {
-  char tmp[100];
-  int *p = keywords.find(strToUpperCase(strcpy(tmp,lexeme)));
+static int nameOrKeyWord(const TCHAR *lexeme) {
+  TCHAR tmp[100];
+  int *p = keywords.find(strToUpperCase(tcscpy(tmp,lexeme)));
   if(p) return *p;
-  else {
-    printf("lexeme:<%s>\n",lexeme);
-    return NAME;
-  }
+  _tprintf(_T("lexeme:<%s>\n"), lexeme);
+  return NAME;
 }
+
 #endif

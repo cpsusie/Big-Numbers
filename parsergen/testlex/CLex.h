@@ -2,12 +2,11 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools\\parsergen\\testlex\\C.lex"
+#line 2 "C:\\mytools2015\\ParserGen\\testlex\\C.lex"
 #pragma once
 
  /* This part goes to clex.h */
 
-#include <MyUtil.h>
 #include <Scanner.h>
 #include "csymbol.h"
 
@@ -18,5 +17,5 @@ public:
 
 extern void gotstructop();
 
-#line 5 "C:\\MYTOOLS\\PARSERGEN\\LIB\\lexgencpp.par"
+#line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

@@ -1,9 +1,9 @@
 State 0:
- (  0)K start           -> .S [EOI]
- (  1)  S               -> .a A d [EOI]
- (  2)  S               -> .a f c [EOI]
- (  3)  S               -> .b A c [EOI]
- (  4)  S               -> .b f d [EOI]
+ (  0)K start           -> .S[EOI]
+ (  1)  S               -> .a A d[EOI]
+ (  2)  S               -> .a f c[EOI]
+ (  3)  S               -> .b A c[EOI]
+ (  4)  S               -> .b f d[EOI]
 
    shift to 2 on a
    shift to 3 on b
@@ -15,40 +15,40 @@ State 1:
    accept on EOI
 
 State 2:
- (  1)K S               -> a .A d [EOI]
- (  2)K S               -> a .f c [EOI]
- (  5)  A               -> .f [d]
+ (  1)K S               -> a .A d[EOI]
+ (  2)K S               -> a .f c[EOI]
+ (  5)  A               -> .f[d]
 
    shift to 5 on f
    goto 4 on A
 
 State 3:
- (  3)K S               -> b .A c [EOI]
- (  4)K S               -> b .f d [EOI]
- (  5)  A               -> .f [c]
+ (  3)K S               -> b .A c[EOI]
+ (  4)K S               -> b .f d[EOI]
+ (  5)  A               -> .f[c]
 
    shift to 7 on f
    goto 6 on A
 
 State 4:
- (  1)K S               -> a A .d [EOI]
+ (  1)K S               -> a A .d[EOI]
 
    shift to 8 on d
 
 State 5:
- (  2)K S               -> a f .c [EOI]
+ (  2)K S               -> a f .c[EOI]
  (  5)K A               -> f .[d]
 
    shift to 9 on c
    reduce by 5 on d
 
 State 6:
- (  3)K S               -> b A .c [EOI]
+ (  3)K S               -> b A .c[EOI]
 
    shift to 10 on c
 
 State 7:
- (  4)K S               -> b f .d [EOI]
+ (  4)K S               -> b f .d[EOI]
  (  5)K A               -> f .[c]
 
    reduce by 5 on c

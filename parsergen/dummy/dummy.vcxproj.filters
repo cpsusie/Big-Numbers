@@ -13,6 +13,9 @@
       <UniqueIdentifier>{10f816a4-975a-4ed9-af19-4e2875448f7a}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Grammar">
+      <UniqueIdentifier>{c4f27ad8-c3a3-4fc7-a6d8-bba62648c01d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dummy.cpp">
@@ -46,10 +49,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="dummy.txt" />
+    <CustomBuild Include="DUMMY.LEX">
+      <Filter>Source Files\Grammar</Filter>
+    </CustomBuild>
+    <CustomBuild Include="DUMMY.Y">
+      <Filter>Source Files\Grammar</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="DUMMY.LEX" />
-    <CustomBuild Include="DUMMY.Y" />
+    <Text Include="dummy.txt">
+      <Filter>Source Files\Grammar</Filter>
+    </Text>
   </ItemGroup>
 </Project>

@@ -169,7 +169,7 @@ void CTestLexStreamDlg::OnButtonRead() {
       return;
     }
     buf = new TCHAR[m_count+1];
-    int got = m_stream.getChars((_TUCHAR*)buf, m_count);
+    intptr_t got = m_stream.getChars((_TUCHAR*)buf, m_count);
     if(got > 0) {
       buf[got] = 0;
       m_text += buf;

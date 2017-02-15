@@ -2,7 +2,7 @@
 #pragma once
 #include <Scanner.h>
 
-#line 2 "C:\\mytools\\parsergen\\testlex\\Test.lex"
+#line 2 "C:\\mytools2015\\ParserGen\\testlex\\Test.lex"
 #pragma once
 
  /* This part goes to clex.h */
@@ -17,5 +17,5 @@ public:
 };
 
 
-#line 5 "C:\\MYTOOLS\\PARSERGEN\\LIB\\lexgencpp.par"
+#line 5 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
 

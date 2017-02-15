@@ -13,6 +13,12 @@
       <UniqueIdentifier>{31e5d32a-6527-431c-9cbb-1e33b1c427d2}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Source Files\Grammar">
+      <UniqueIdentifier>{99f7eba3-fc8a-4d63-824e-6087b4fbb5f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test Files">
+      <UniqueIdentifier>{7c2b104c-bfd8-43f5-9664-d9040a0dde64}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="clex.cpp">
@@ -43,13 +49,20 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="C.LEX" />
-    <CustomBuild Include="test.lex" />
-    <CustomBuild Include="TESTFIL.DAT" />
-    <CustomBuild Include="testfil2.dat" />
-    <CustomBuild Include="testfil3.dat" />
+    <CustomBuild Include="C.LEX">
+      <Filter>Source Files\Grammar</Filter>
+    </CustomBuild>
+    <CustomBuild Include="test.lex">
+      <Filter>Source Files\Grammar</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TESTFIL.DAT">
+      <Filter>Test Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="testfil2.dat">
+      <Filter>Test Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="testfil3.dat">
+      <Filter>Test Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

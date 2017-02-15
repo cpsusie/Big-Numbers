@@ -1,7 +1,4 @@
-// testlex.cpp : Defines the entry point for the console application.
-//
 #include "stdafx.h"
-#include <MyUtil.h>
 #include "clex.h"
 
 static LexFileStream   input;
@@ -24,7 +21,7 @@ static void scan(Scanner &lex) {
   do {
     token = lex.getNextLexeme();
     switch(token) {
-#define casepr(name) case name:printf("line %2d %-10s:'%s'\n",lex.getLineNumber(),#name,lex.getText()); break
+#define casepr(name) case name:_tprintf(_T("line %2d %-10s:'%s'\n"),lex.getLineNumber(),_T(#name),lex.getText()); break
     casepr(_EOI_      );
     casepr(STRING     );
     casepr(ICON       );
@@ -79,7 +76,7 @@ static void scan(Scanner &lex) {
     casepr(DEFINE     );
     casepr(HASHMARK   );
     default:
-      printf("unknown token:%d:'%s'\n",token,lex.getText()); 
+      _tprintf(_T("unknown token:%d:'%s'\n"), token,lex.getText()); 
       break;
     }
   } while(token != _EOI_);
@@ -95,8 +92,8 @@ static void scanfile(char *fname) {
 void scanstring() {
   for(;;) {
     printf("Enter String:");
-    char line[1024];
-    gets(line);
+    TCHAR line[1024];
+    GETS(line);
     LexStringStream strstream(line);
     CLex lex;
     lex.newStream(&strstream);
@@ -109,11 +106,12 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char** argv) {
+int main(int argc, char **argv) {
   argv++;
-  if(*argv)
+  if(*argv) {
     scanfile(*argv);
-  else
+  } else {
     scanstring();
+  }
   return 0;
 }

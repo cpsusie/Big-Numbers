@@ -14,8 +14,6 @@ public:
  /* This part goes to the first part of exprlex.cpp */
 
 #include "stdafx.h"
-#include <string.h>
-#include <MyUtil.h>
 #include "transcharlex.h"
 
 %}

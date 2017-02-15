@@ -1,9 +1,9 @@
 State 0:
- (  0)K start           -> .S [EOI]
- (  1)  S               -> .a A d [EOI]
- (  2)  S               -> .a B c [EOI]
- (  3)  S               -> .b A c [EOI]
- (  4)  S               -> .b B d [EOI]
+ (  0)K start           -> .S[EOI]
+ (  1)  S               -> .a A d[EOI]
+ (  2)  S               -> .a B c[EOI]
+ (  3)  S               -> .b A c[EOI]
+ (  4)  S               -> .b B d[EOI]
 
    shift to 2 on a
    shift to 3 on b
@@ -15,32 +15,32 @@ State 1:
    accept on EOI
 
 State 2:
- (  1)K S               -> a .A d [EOI]
- (  2)K S               -> a .B c [EOI]
- (  5)  A               -> .f [d]
- (  6)  B               -> .f [c]
+ (  1)K S               -> a .A d[EOI]
+ (  2)K S               -> a .B c[EOI]
+ (  5)  A               -> .f[d]
+ (  6)  B               -> .f[c]
 
    shift to 6 on f
    goto 4 on A
    goto 5 on B
 
 State 3:
- (  3)K S               -> b .A c [EOI]
- (  4)K S               -> b .B d [EOI]
- (  5)  A               -> .f [c]
- (  6)  B               -> .f [d]
+ (  3)K S               -> b .A c[EOI]
+ (  4)K S               -> b .B d[EOI]
+ (  5)  A               -> .f[c]
+ (  6)  B               -> .f[d]
 
    shift to 6 on f
    goto 7 on A
    goto 8 on B
 
 State 4:
- (  1)K S               -> a A .d [EOI]
+ (  1)K S               -> a A .d[EOI]
 
    shift to 9 on d
 
 State 5:
- (  2)K S               -> a B .c [EOI]
+ (  2)K S               -> a B .c[EOI]
 
    shift to 10 on c
 
@@ -53,12 +53,12 @@ State 6:
 
 warning --- Reduce/reduce conflict on [c d] between prod 5 and prod 6. Choose prod 5.
 State 7:
- (  3)K S               -> b A .c [EOI]
+ (  3)K S               -> b A .c[EOI]
 
    shift to 11 on c
 
 State 8:
- (  4)K S               -> b B .d [EOI]
+ (  4)K S               -> b B .d[EOI]
 
    shift to 12 on d
 
