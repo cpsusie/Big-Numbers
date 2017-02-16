@@ -27,6 +27,7 @@ void InputThread::kill() {
 }
 
 UINT InputThread::run() {
+  DEFINEMETHODNAME;
   HANDLE handles[2];
   handles[0] = m_killed.getHandle();
   handles[1] = getHandle(m_input);
@@ -40,12 +41,11 @@ UINT InputThread::run() {
         continue;
       case WAIT_OBJECT_0 + 1: // input file has something for us
         { TCHAR line[4096];
-          if (!FGETS(line, ARRAYSIZE(line), m_input)) {
+          if (FGETS(line, ARRAYSIZE(line), m_input)) {
+            m_inputQueue.put(line);
+          } else {
             m_eoi = true;
             m_inputQueue.put(EMPTYSTRING);
-          }
-          else {
-            m_inputQueue.put(line);
           }
         }
         break;
@@ -56,17 +56,17 @@ UINT InputThread::run() {
   } catch(Exception e) {
     m_eoi = true;
     m_inputQueue.put(EMPTYSTRING);
-    if(m_verbose) debugLog(_T("Exception in inputthread:%s\n"), e.what());
+    verbose(_T("%s:%s\n"), method, e.what());
   } catch(...) {
     m_eoi = true;
     m_inputQueue.put(EMPTYSTRING);
-    if(m_verbose) debugLog(_T("unknown Exception in inputthread\n"));
+    verbose(_T("%s:Unknown exception\n"), method);
   }
   return 0;
 }
 
 void InputThread::readFile(const String &fileName) {
-  FILE *f = FOPEN(fileName, "r");
+  FILE *f = FOPEN(fileName, _T("r"));
   TCHAR line[1000];
   while(FGETS(line, ARRAYSIZE(line), f)) {
     m_inputQueue.put(line);
@@ -80,4 +80,17 @@ String InputThread::getLine(int timeoutInMilliseconds) {
     return EMPTYSTRING;
   }
   return s;
+}
+
+void InputThread::vverbose(const TCHAR *format, va_list argptr) {
+  if(m_verbose) {
+    vdebugLog(format, argptr);
+  }
+}
+
+void InputThread::verbose(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vverbose(format, argptr);
+  va_end(argptr);
 }

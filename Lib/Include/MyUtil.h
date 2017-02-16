@@ -29,6 +29,7 @@
 
 void redirectDebugLog(bool append = false, const TCHAR *fileName = NULL);
 void unredirectDebugLog();
+void vdebugLog(const TCHAR *format, va_list argptr);
 void debugLog(_In_z_ _Printf_format_string_ const TCHAR *format,...);
 void debugLogLine(const TCHAR *fileName, int line);
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);

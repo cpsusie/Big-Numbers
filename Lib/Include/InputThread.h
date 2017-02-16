@@ -13,10 +13,13 @@ private:
   bool         m_verbose;
   FILE        *m_input;
   Semaphore    m_killed;
+protected:
+  virtual void vverbose(const TCHAR *format, va_list argptr);
+  void          verbose(const TCHAR *format, ...);
 public:
   InputThread(FILE *input = stdin, bool verbose = false);
   virtual ~InputThread();
-  String getLine(int timeoutInMilliseconds = INFINITE); // throws TimeoutException on timeout
+  virtual String getLine(int timeoutInMilliseconds = INFINITE); // throws TimeoutException on timeout
   void kill();
   inline bool isInputReady() const {
     return !m_inputQueue.isEmpty();
@@ -24,7 +27,7 @@ public:
   inline bool endOfInput() const {
     return m_eoi;
   }
-  void readFile(const String &fileName);
+  virtual void readFile(const String &fileName);
   UINT run();
   void putMessage(const String &s) {
     m_inputQueue.put(s);

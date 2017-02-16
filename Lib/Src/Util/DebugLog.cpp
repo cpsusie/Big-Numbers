@@ -91,7 +91,14 @@ static bool stdoutAtty() {
   return traceFlags.contains(FLAG_STDOUTATTY);
 }
 
-void debugLog(const TCHAR *format,...) {
+void debugLog(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  vdebugLog(format, argptr);
+  va_end(argptr);
+}
+
+void vdebugLog(const TCHAR *format, va_list argptr) {
   if (traceFile == NULL) traceFile = stdout;
   if(!traceFlags.contains(FLAG_REDIDRECT) && (traceFile == stdout) && !stdoutAtty()) {
     redirectDebugLog();
@@ -106,10 +113,7 @@ void debugLog(const TCHAR *format,...) {
     _ftprintf(traceFile, _T("%s:"), Timestamp().toString(timeFormats[timeFormatCode]).cstr());
   }
 
-  va_list argptr;
-  va_start(argptr, format);
   _vftprintf(traceFile, format, argptr);
-  va_end(argptr);
   fflush(traceFile);
 }
 
