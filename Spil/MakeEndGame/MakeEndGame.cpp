@@ -281,9 +281,9 @@ static String makeTabebaseNameList() {
   return result;
 }
 
-static void usage(char *arg = NULL) {
+static void usage(TCHAR *arg = NULL) {
   if(arg) {
-    printf("Invalid argument:%s\n", arg);
+    _tprintf(_T("Invalid argument:%s\n"), arg);
   }
   _tprintf(_T("Usage: MakeEndGame [options] dbnames...\n"
             " Options: -b     : Build tablebase. If not specified, the tablebase will by build and saved.\n"
@@ -358,7 +358,7 @@ typedef enum {
  ,SELECT_NO_DUBLETS_ALLOWED_FILTER
 } DubletFilter;
 
-static int getCommandWhiteBlackFlags(const char *&cp) {
+static int getCommandWhiteBlackFlags(const TCHAR *&cp) {
   int flags = 0;
   for(;*cp; cp++) {
     switch(*cp) {
@@ -371,8 +371,8 @@ static int getCommandWhiteBlackFlags(const char *&cp) {
   return flags ? flags : (CMD_LISTWHITEWIN | CMD_LISTBLACKWIN);
 }
 
-int main(int argc, char **argv) {
-  const char *cp;
+int _tmain(int argc, TCHAR **argv) {
+  const TCHAR              *cp;
   bool                      logVerbose  = false;
   TablebaseMetric           metric      = DEPTH_TO_CONVERSION;
   int                       plies       = -1;
@@ -416,9 +416,9 @@ int main(int argc, char **argv) {
           commands |= CMD_RECOVER;
           continue;
         case 'm':
-          if(_stricmp(cp+1,"dtc") == 0) {
+          if(_tcsicmp(cp+1,_T("dtc")) == 0) {
             metric = DEPTH_TO_CONVERSION;
-          } else if(_stricmp(cp+1,"dtm") == 0) {
+          } else if(_tcsicmp(cp+1,_T("dtm")) == 0) {
             metric = DEPTH_TO_MATE;
           } else {
             usage(*argv);
@@ -441,7 +441,7 @@ int main(int argc, char **argv) {
           case 'e':
             cp++;
             commands |= CMD_LISTEXACTPLIES | getCommandWhiteBlackFlags(cp);
-            if((sscanf(cp, "%d", &plies) != 1) || (plies < 0)) {
+            if((_stscanf(cp, _T("%d"), &plies) != 1) || (plies < 0)) {
               usage();
             }
             break;
@@ -569,7 +569,7 @@ int main(int argc, char **argv) {
           break;
 
         case 's':
-          if((sscanf(cp+1, "%d", &menCount) != 1) || (menCount < 3) || (menCount > MAX_ENDGAME_PIECECOUNT)) {
+          if((_stscanf(cp+1, _T("%d"), &menCount) != 1) || (menCount < 3) || (menCount > MAX_ENDGAME_PIECECOUNT)) {
             usage();
           }
           break;
@@ -592,7 +592,7 @@ int main(int argc, char **argv) {
           commands |= CMD_CONVERT;
           continue;
         case 'R':
-          RemoteEndGameSubTablebase::remoteService(argv2wargv((const char**)argv));
+          RemoteEndGameSubTablebase::remoteService(argv);
           return 0;
         default :
           usage(*argv);
@@ -651,7 +651,7 @@ int main(int argc, char **argv) {
         }
       }
       if(!anyFound) {
-        fprintf(stderr, "%s doesn't match any registered tablebase.\n", *argv);
+        _ftprintf(stderr, _T("%s doesn't match any registered tablebase.\n"), *argv);
         usage();
       }
     }
