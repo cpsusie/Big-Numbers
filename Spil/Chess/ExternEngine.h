@@ -2,7 +2,7 @@
 
 #ifndef TABLEBASE_BUILDER
 
-#include "InputThread.h"
+#include <InputThread.h>
 
 typedef enum { // dont swap these. see optionsCmp in ExternEngine.cpp
   OptionTypeSpin
@@ -78,12 +78,21 @@ public:
   EngineOptionValueArray pruneDefaults(const EngineOptionValueArray &src) const;
 };
 
+class ExternInputThread : public InputThread {
+protected:
+  void vverbose(const TCHAR *format, va_list argptr);
+public:
+  ExternInputThread(FILE *input) : InputThread(input) {
+  }
+  String getLine(int timeoutInMilliseconds = INFINITE);
+};
+
 class ExternEngine : public EngineDescription, public OptionsAccessor {
 private:
   FILE                        *m_input;
   FILE                        *m_output;
   HANDLE                       m_processHandle;
-  InputThread                 *m_inputThread;
+  ExternInputThread           *m_inputThread;
   Game                        *m_tmpGame;
   bool                         m_busy;
   bool                         m_verbose;

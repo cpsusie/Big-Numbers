@@ -137,7 +137,7 @@ void ExternEngine::start(bool silent, const String program,...) {
 
     oldStdFiles.restoreStdFilesAndClose();
 
-    m_inputThread = new InputThread(m_input);
+    m_inputThread = new ExternInputThread(m_input);
 
     setBusy(false);
 
@@ -192,7 +192,7 @@ void ExternEngine::moveNow() {
   }
 }
 
-#define INTERRUPTLINE "#interrupt#"
+#define INTERRUPTLINE _T("#interrupt#")
 
 void ExternEngine::sendUCI() {
   m_optionArray.clear();
@@ -268,15 +268,26 @@ void ExternEngine::killProcess() {
   cleanup();
 }
 
-#ifdef _DEBUG
-#define DEBUGMSG(msg) verbose(_T("%s\n"), msg)
-#else
-#define DEBUGMSG(msg)
+#ifdef ENTERFUNC
+#undef ENTERFUNC
+#endif
+#ifdef LEAVEFUNC
+#undef LEAVEFUNC
 #endif
 
-void ExternEngine::cleanup() {
+#ifdef _DEBUG
+#define DEBUGMSG(msg) verbose(_T("%s\n"), msg)
+#define ENTERFUNC  verbose(_T("Enter %s\n"), __TFUNCTION__)
+#define LEAVEFUNC  verbose(_T("Leave %s\n"), __TFUNCTION__)
+#else
+#define DEBUGMSG(msg)
+#define ENTERFUNC
+#define LEAVEFUNC
+#endif
 
-  DEBUGMSG(_T("enter cleanup"));
+
+void ExternEngine::cleanup() {
+  ENTERFUNC;
   if(m_output) {
     fclose(m_output);
     m_output = NULL;
@@ -300,14 +311,15 @@ void ExternEngine::cleanup() {
   }
   m_optionArray.clear();
   setBusy(false);
+  LEAVEFUNC;
 }
 
 void ExternEngine::killInputThread() {
-  DEBUGMSG(_T("enter killInputThread()"));
+  ENTERFUNC;
 
   if(m_inputThread == NULL) {
-    DEBUGMSG(_T("inputThread already null. leaving"));
-    return;
+    DEBUGMSG(_T("inputThread already null"));
+    goto Return;
   }
   if(isBusy()) {
     DEBUGMSG(_T("putMessage(INTERRUPTLINE)"));
@@ -335,7 +347,8 @@ void ExternEngine::killInputThread() {
   }
   m_inputThread = NULL;
   DEBUGMSG(_T("m_inputThread set to NULL"));
-  DEBUGMSG(_T("leaving killInputThread()"));
+Return:
+  LEAVEFUNC;
 }
 
 void ExternEngine::notifyGameChanged(const Game &game) {
@@ -423,7 +436,7 @@ void ExternEngine::setParameters(const EngineOptionValueArray &valueArray) {
 void ExternEngine::setParameterValue(const EngineOptionValue &v) {
   const EngineOptionDescription *optionDesc = m_optionArray.findOptionByName(v.getName());
   if(optionDesc == NULL) {
-    AfxMessageBox(format(_T("Option %s not found for engine %s"), v.getName().cstr(), getName().cstr()).cstr(), MB_ICONWARNING);
+    Message(_T("Option %s not found for engine %s"), v.getName().cstr(), getName().cstr());
     return;
   }
   switch(optionDesc->getType()) {
@@ -465,17 +478,17 @@ void ExternEngine::send(const TCHAR *format,...) const {
 
 class EngineInfoLine {
 public:
-  int              m_depth;
-  int              m_seldepth;
-  String           m_score;
-  int              m_time;    // milliseconds
-  unsigned __int64 m_nodes;
-  UINT             m_nodesps;
-  String           m_pv;
-  String           m_string;
-  int              m_hashFull;
-  int              m_multiPV;
-  int              m_cpuLoad;
+  int     m_depth;
+  int     m_seldepth;
+  String  m_score;
+  int     m_time;    // milliseconds
+  UINT64  m_nodes;
+  UINT    m_nodesps;
+  String  m_pv;
+  String  m_string;
+  int     m_hashFull;
+  int     m_multiPV;
+  int     m_cpuLoad;
 
   EngineInfoLine() {
     reset();
@@ -489,13 +502,14 @@ public:
 };
 
 String ExternEngine::getLine(int milliseconds) {
+  DEFINEMETHODNAME;
   const EngineVerboseFields &evf = getOptions().getengineVerboseFields();
   try {
     EngineInfoLine infoLine;
     for(;;) {
       if(!isStarted()) {
         setBusy(false);
-        throwException(_T("Unexpected eof. Extern engine is dead"));
+        throwException(_T("%s:Unexpected eof. Extern engine is dead"), method);
       }
       String line = m_inputThread->getLine(milliseconds);
       Tokenizer tok(line, _T(" "));
@@ -515,7 +529,7 @@ String ExternEngine::getLine(int milliseconds) {
       }
     }
   } catch(Exception e) {
-    verbose(_T("getLine:Exception:%s\n"), e.what());
+    verbose(_T("%s:Exception:%s\n"), method, e.what());
     return INTERRUPTLINE;
   }
 }
@@ -567,6 +581,7 @@ void ExternEngine::vstartSpawn(const String &program, va_list argptr) {
 }
 
 void ExternEngine::vstartCreateProcess(const String &program, va_list argptr) {
+  DEFINEMETHODNAME;
   String commandLine = format(_T("\"%s\""), program.cstr());
   for(TCHAR *arg = va_arg(argptr, TCHAR*); arg; arg = va_arg(argptr, TCHAR*)) {
     commandLine += format(_T(" \"%s\""), arg);
@@ -589,7 +604,7 @@ void ExternEngine::vstartCreateProcess(const String &program, va_list argptr) {
     CloseHandle(processInfo.hThread); // hProcess will be closed when extern engine dies
     m_path = program;
   } else {
-    throwException(_T("createProcess %s failed. %s"), program.cstr(), getLastErrorText().cstr());
+    throwException(_T("%s:CreateProcess %s failed. %s"), method, program.cstr(), getLastErrorText().cstr());
   }
 }
 
@@ -609,6 +624,17 @@ String ExternEngine::toString() const {
     }
   }
   return result;
+}
+
+// --------------------------------------ExternInputThread---------------------------------------------
+
+void ExternInputThread::vverbose(const TCHAR *format, va_list argptr) {
+  const String tmp = vformat(format, argptr);
+  ::verbose(_T("%s.\n"), tmp.cstr());
+}
+
+String ExternInputThread::getLine(int timeoutInMilliseconds) {
+  return InputThread::getLine(timeoutInMilliseconds).trim();
 }
 
 // --------------------------------------EngineOptionDescription---------------------------------------------

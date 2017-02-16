@@ -182,9 +182,9 @@ private:
   void   OnLButtonDownDebugMode(UINT nFlags, CPoint point);
   void   OnMouseMoveDebugMode(  UINT nFlags, CPoint point);
   void   OnLButtonUpDebugMode(  UINT nFlags, CPoint point);
-  void   OnLButtonDownKRMode(UINT nFlags, CPoint point);
-  void   OnMouseMoveKRMode(  UINT nFlags, CPoint point);
-  void   OnLButtonUpKRMode(  UINT nFlags, CPoint point);
+  void   OnLButtonDownKRMode(   UINT nFlags, CPoint point);
+  void   OnMouseMoveKRMode(     UINT nFlags, CPoint point);
+  void   OnLButtonUpKRMode(     UINT nFlags, CPoint point);
   void   startThinking();
   void   stopThinking();
   void   startFindHint(int timeout);

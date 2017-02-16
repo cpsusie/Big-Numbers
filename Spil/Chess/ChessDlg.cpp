@@ -2402,11 +2402,11 @@ void CChessDlg::setBlackAutoPlayLevel(int level) { setPlayerAutoPlayLevel(BLACKP
 
 void CChessDlg::setPlayerAutoPlayLevel(Player player, int level) {
   static const int bothLevelItems[LEVELCOUNT] = {  ID_AUTOPLAY_BOTH_LEVEL_1
-                                                ,ID_AUTOPLAY_BOTH_LEVEL_2
-                                                ,ID_AUTOPLAY_BOTH_LEVEL_3
-                                                ,ID_AUTOPLAY_BOTH_LEVEL_4
-                                                ,ID_AUTOPLAY_BOTH_LEVEL_5
-                                                ,ID_AUTOPLAY_BOTH_LEVEL_6
+                                                  ,ID_AUTOPLAY_BOTH_LEVEL_2
+                                                  ,ID_AUTOPLAY_BOTH_LEVEL_3
+                                                  ,ID_AUTOPLAY_BOTH_LEVEL_4
+                                                  ,ID_AUTOPLAY_BOTH_LEVEL_5
+                                                  ,ID_AUTOPLAY_BOTH_LEVEL_6
   };
 
   static const int whiteLevelItems[LEVELCOUNT] = { ID_AUTOPLAY_WHITE_LEVEL_1
