@@ -35,7 +35,7 @@ template<class Ctype> void expandArgv(int &argc, Ctype **&argv) {
       intptr_t namecurs;
       int      done;
 
-      if(sizeof(Ctype) == 0) {
+      if(sizeof(Ctype) == 1) {
         struct _finddata_t finddata;
         for(done = 0, namecurs = _findfirst((char*)*cpp, &finddata);
           namecurs >= 0 && done == 0; done = _findnext(namecurs, &finddata)) {
