@@ -18,10 +18,11 @@ BEGIN_MESSAGE_MAP(CEdit2Lines, CEdit)
 END_MESSAGE_MAP()
 
 void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
+  DEFINEMETHODNAME;
   m_diff = &diff;
   CEdit *oldCtrl = (CEdit*)parent->GetDlgItem(id);
   if(oldCtrl == NULL) {
-    AfxMessageBox(format(_T("CEdit2Lines::substituteControl:Control with id=%d does not exist"), id).cstr(), MB_ICONWARNING);
+    Message(_T("%s:Control with id=%d does not exist"), method, id);
     return;
   }
   const String s = getWindowText(oldCtrl);
@@ -37,7 +38,7 @@ void CEdit2Lines::substituteControl(CWnd *parent, int id, const StrDiff &diff) {
   oldCtrl->DestroyWindow();
 
   if(!Create(style, wr, parent, id)) {
-    AfxMessageBox(_T("CEdit2Lines::substituteControl:Create failed"), MB_ICONWARNING);
+    Message(_T("%s:Create failed"), method);
     return;
   }
   setTabOrder(parent, tabOrder);

@@ -112,7 +112,7 @@ bool CDefineFileFormatDlg::validateAndAdd() {
   UpdateData();
   
   if(m_columnFrom > m_columnTo) {
-    MessageBox(_T("From > To"),NULL,MB_ICONWARNING);
+    Message(_T("From > To"));
     return false;
   }
   try {
@@ -248,18 +248,18 @@ bool CDefineFileFormatDlg::validate() {
   paramFromWindow(param);
   if(param.m_delimited) {
     if(param.m_delimiters.length() == 0) {
-      MessageBox(_T("Must specify fielddelimiters"),NULL,MB_ICONWARNING);
+      Message(_T("Must specify fielddelimiters"));
       OnGotoFieldDelimiter();
       return false;
     }
   }
   if(param.m_columns.size() == 0) {
-    MessageBox(_T("No columns specified"),NULL,MB_ICONWARNING);
+    Message(_T("No columns specified"));
     OnGotoColumnFrom();
     return false;
   }
   if((param.m_textQualifier != 0) && _tcschr(param.m_delimiters.cstr(),param.m_textQualifier) != NULL) {
-    MessageBox( _T("The textqualifier is member of the set of fielddelimiters"),NULL,MB_ICONWARNING);
+    Message(_T("The textqualifier is member of the set of fielddelimiters"));
     OnGotoTextQualifier();
     return false;
   }

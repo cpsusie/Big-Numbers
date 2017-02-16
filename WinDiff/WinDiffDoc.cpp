@@ -459,6 +459,7 @@ void CWinDiffDoc::setDoc(int id, DiffDocType type, const String &arg, bool recom
     } catch(...) {
       m_diff.setDoc(id, oldDoc);
       recompare();
+      throw;
     }
   }
 }

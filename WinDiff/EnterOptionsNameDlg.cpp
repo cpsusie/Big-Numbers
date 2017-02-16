@@ -41,13 +41,13 @@ void CEnterOptionsNameDlg::OnOK() {
   m_name.TrimLeft();
   m_name.TrimRight();
   if(m_name.GetLength() == 0) {
-    MessageBox(_T("Please enter a name"), _T("Error"), MB_ICONWARNING);
+    Message(_T("Please enter a name"));
     getNameCombo()->SetFocus();
     return;
   }
   const StringArray names = Options::getExistingNames();
   if(names.size() >= 9 && !names.contains((LPCTSTR)m_name)) {
-    MessageBox(_T("Max 9 different settings can be saved"), _T("Error"), MB_ICONWARNING);
+    Message(_T("Max 9 different settings can be saved"));
     getNameCombo()->SetFocus();
     return;
   }

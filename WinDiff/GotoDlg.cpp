@@ -28,7 +28,7 @@ BOOL CGotoDlg::OnInitDialog() {
 void CGotoDlg::OnOK() {
   UpdateData(); 
   if(m_line < 1) {
-    MessageBox(_T("Please enter a linenumber > 0"));
+    Message(_T("Please enter a linenumber > 0"));
   } else {
     CDialog::OnOK();
   }
