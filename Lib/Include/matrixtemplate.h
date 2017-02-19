@@ -62,7 +62,7 @@ private:
     return a;
   }
 
-  void cleanup() {
+  inline void cleanup() {
     delete[] m_a;
   }
 
@@ -73,7 +73,7 @@ protected:
   }
 
 public:
-  MatrixTemplate() {
+  inline MatrixTemplate() {
     init(1, 1, true);
   }
 
@@ -82,7 +82,7 @@ public:
     m_a[0] = coef;
   }
 
-  MatrixTemplate(size_t rows, size_t columns) {
+  inline MatrixTemplate(size_t rows, size_t columns) {
     init(rows, columns, true);
   }
 
@@ -196,16 +196,22 @@ public:
     return true;
   }
 
-  T &operator()(size_t r, size_t c) {
+  inline T &operator()(size_t r, size_t c) {
     checkIndex(r, c);
     return m_a[index(r,c)];
   }
 
-  const T &operator()(size_t r, size_t c) const {
+  inline const T &operator()(size_t r, size_t c) const {
     checkIndex(r, c);
     return m_a[index(r,c)];
   }
 
+  inline T &select() {
+    return m_a[randSizet(m_dim.getElementCount())];
+  }
+  inline const T &select() const {
+    return m_a[randSizet(m_dim.getElementCount())];
+  }
   T &subDiagonal(size_t row) { // row must be [1..getRowCount()-1]
     if(!isSquare()) {
       throwIndexException(_T("subDiagonal:Matrix not square"));

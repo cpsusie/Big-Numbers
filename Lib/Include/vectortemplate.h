@@ -41,8 +41,9 @@ private:
     return v;
   }
 
-  void cleanup() {
+  inline void cleanup() {
     delete[] m_e;
+    m_e = NULL;
   }
 
 protected:
@@ -102,7 +103,7 @@ public:
     return *this;
   }
 
-  size_t getDimension() const {
+  inline size_t getDimension() const {
     return m_dim;
   }
 
@@ -221,24 +222,31 @@ public:
     return *this;
   }
 
-  T &operator[](size_t n) {
+  inline T &operator[](size_t n) {
     checkIndex(n);
     return m_e[n];
   }
 
-  const T &operator[](size_t n) const {
+  inline const T &operator[](size_t n) const {
     checkIndex(n);
     return m_e[n];
   }
 
-  T &operator()(size_t n) {
+  inline T &operator()(size_t n) {
     checkIndex(n);
     return m_e[n];
   }
 
-  const T &operator()(size_t n) const {
+  inline const T &operator()(size_t n) const {
     checkIndex(n);
     return m_e[n];
+  }
+
+  inline T &select() {
+    return m_e[randSizet(m_dim)];
+  }
+  inline const T &select() const {
+    return m_e[randSizet(m_dim)];
   }
 
   T length() const {
@@ -264,7 +272,7 @@ public:
     return true;
   }
 
-  bool operator!=(const VectorTemplate<T> &v) const {
+  inline bool operator!=(const VectorTemplate<T> &v) const {
     return !(*this == v);
   }
 
@@ -297,7 +305,7 @@ public:
     return in;
   }
 
-  String getDimensionString() const {
+  inline String getDimensionString() const {
     return format(_T("Dimension=%s"), format1000(m_dim).cstr());
   }
 };

@@ -28,6 +28,9 @@ public:
   inline bool operator!=(const MatrixDimension &d) const {
     return (rowCount != d.rowCount) || (columnCount != d.columnCount);
   }
+  MatrixIndex randomIndex() const {
+    return MatrixIndex(randSizet(rowCount), randSizet(columnCount));
+  }
   inline bool isLegalIndex(const MatrixIndex &i) const {
     return (i.r < rowCount) && (i.c < columnCount);
   }
