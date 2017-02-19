@@ -1,0 +1,317 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\wordsepgraph.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\wordsepgraph.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_WORDSEPGRAPH_DIALOG DIALOGEX 0, 0, 430, 260
+STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_APPWINDOW
+CAPTION "wordsepgraph"
+MENU IDR_MENU1
+FONT 10, "Courier"
+BEGIN
+    LTEXT           "&Indtast ord:",IDC_STATIC,9,15,39,9
+    EDITTEXT        IDC_EDITORD,51,14,93,12,ES_AUTOHSCROLL
+    PUSHBUTTON      "&Del ord",IDC_BUTTONSEPARATE,13,35,45,14
+    LTEXT           "=",IDC_STATIC,148,15,8,8
+    LTEXT           "",IDC_STATICRESULT,157,16,263,9
+    PUSHBUTTON      "&Lær ord",IDC_BUTTONLEARN,64,35,45,14
+    LTEXT           "",IDC_MESSAGE,4,239,419,16,SS_SUNKEN
+    EDITTEXT        IDC_DETAILS,180,34,243,201,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_READONLY | WS_VSCROLL
+END
+
+IDD_DIALOGTRAININGPARAMDIALOG DIALOG DISCARDABLE  0, 0, 284, 177
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "TrainingParameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,227,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,227,24,50,14
+    EDITTEXT        IDC_EDITLEARNINGRATE,78,17,65,18,ES_AUTOHSCROLL
+    LTEXT           "Learnrate:",IDC_STATIC,11,20,38,17
+    LTEXT           "Momentum:",IDC_STATIC,11,45,39,15
+    EDITTEXT        IDC_EDITMOMENTUM,78,42,65,18,ES_AUTOHSCROLL
+    CONTROL         "Update only on error",IDC_RADIO_UPDATE_ON_ERROR_ONLY,
+                    "Button",BS_AUTORADIOBUTTON | WS_GROUP,56,111,115,13
+    CONTROL         "Update always",IDC_RADIO_UPDATEALWAYS,"Button",
+                    BS_AUTORADIOBUTTON,56,134,116,13
+    COMBOBOX        IDC_COMBOPRIORITY,78,67,106,48,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Priority of trainingthread:",IDC_STATIC,11,67,60,15
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About wordsepgraph"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "wordsepgraph Version 1.0",IDC_STATIC,40,10,119,8,
+                    SS_NOPREFIX
+    LTEXT           "Copyright (C) 2002",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_WORDSEPGRAPH_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 1
+        TOPMARGIN, 7
+    END
+    IDD_DIALOGTRAININGPARAMDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 277
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Load network\tCtrl+L",       ID_FILE_LOADNETWORK
+        MENUITEM "&Save network\tCtrl+S",       ID_FILE_SAVENETWORK
+        MENUITEM "Start &Training\tCtrl+T",     ID_FILE_STARTTRAINING
+        MENUITEM "St&op Training\tCtrl+O",      ID_FILE_STOPTRAINING, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "Training &data...\tCtrl+D",   ID_FILE_TRAININGDATA
+        MENUITEM "Error words...\tCtrl+E",      ID_FILE_ERRORWORDS
+        MENUITEM SEPARATOR
+        MENUITEM "&Quit",                       ID_FILE_QUIT
+    END
+    POPUP "Options"
+    BEGIN
+        MENUITEM "Trainingparameters...\tCtrl+P", 
+                                                ID_OPTIONS_TRAININGPARAMETERS
+
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR ACCELERATORS DISCARDABLE 
+BEGIN
+    "D",            ID_FILE_TRAININGDATA,   VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_FILE_ERRORWORDS,     VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_GOTO_EDITORD,        VIRTKEY, ALT, NOINVERT
+    "L",            ID_FILE_LOADNETWORK,    VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_STOPTRAINING,   VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_OPTIONS_TRAININGPARAMETERS, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "S",            ID_FILE_SAVENETWORK,    VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_FILE_STARTTRAINING,  VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          ID_FILE_QUIT,           VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_DIALOGTRAININGPARAMDIALOG DLGINIT
+BEGIN
+    IDC_COMBOPRIORITY, 0x403, 14, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x495f, 0x4c44, 0x0045, 
+    IDC_COMBOPRIORITY, 0x403, 16, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x4c5f, 0x574f, 0x5345, 0x0054, 
+    IDC_COMBOPRIORITY, 0x403, 22, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x425f, 0x4c45, 0x574f, 0x4e5f, 0x524f, 
+0x414d, 0x004c, 
+    IDC_COMBOPRIORITY, 0x403, 16, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x4e5f, 0x524f, 0x414d, 0x004c, 
+    IDC_COMBOPRIORITY, 0x403, 22, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x415f, 0x4f42, 0x4556, 0x4e5f, 0x524f, 
+0x414d, 0x004c, 
+    IDC_COMBOPRIORITY, 0x403, 17, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x485f, 0x4749, 0x4548, 0x5453, "\000" 
+    IDC_COMBOPRIORITY, 0x403, 23, 0
+0x5250, 0x4f49, 0x4952, 0x5954, 0x545f, 0x4d49, 0x5f45, 0x5243, 0x5449, 
+0x4349, 0x4c41, "\000" 
+    0
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "Separates words using backpropagation neural network\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "wordsepgraph\0"
+            VALUE "LegalCopyright", "Copyright (C) 2002\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "wordsepgraph.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "wordsepgraph\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About wordsepgraph..."
+END
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\wordsepgraph.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
