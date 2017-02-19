@@ -18,24 +18,25 @@ static float frandom(float from, float to) {
 }
 
 static void randomVector(float *v, int size)  {
-  for(int i = 0; i < size; i++ )
+  for(int i = 0; i < size; i++) {
     v[i] = frandom(-0.25, 0.25);
+  }
 }
 
 static void copyVector(float *dst, const float *src, int size) {
   memcpy(dst, src, size * sizeof(float));
 }
 
-static void writeVector( FILE *f, const float *v, int size) {
+static void writeVector(FILE *f, const float *v, int size) {
   for(int i = 0; i < size; i++) {
-    fprintf(f,"%15.12e\n",v[i]);
+    _ftprintf(f,_T("%15.12e\n"), v[i]);
   }
 }
 
 static void loadVector(FILE *f, float *v, int size) {
   for(int i = 0; i < size; i++) {
     if(fscanf(f,"%e",&v[i]) != 1) {
-      throwException("loadVector:Expected number");
+      throwException(_T("%s:Expected number"), __TFUNCTION__);
     }
   }
 }
@@ -94,13 +95,13 @@ void Bpn::propagateForward() {
   m_bpndraw->drawUnits(this);
 }
 
-void Bpn::computeOutputError(const Array<double> &target) {
+void Bpn::computeOutputError(const CompactDoubleArray &target) {
   float  *errors  = m_outunits->m_errors;
   float  *outputs = m_outunits->m_outputs;
   const int n     = m_outunits->m_noutputs;
 
   if(target.size() != n) {
-    throwException(_T("Bpn::computeoutputError:Wrong number of target values=%d. No. of output units=%d"), target. size(), n);
+    throwException(_T("%s:Wrong number of target values=%d. No. of output units=%d"), __TFUNCTION__, target. size(), n);
   }
   for(int i = 0; i < n; i++ ) {
     errors[i] = ((float)(target[i]) - outputs[i]) * outputs[i] * (1.0F - outputs[i]);
@@ -296,10 +297,10 @@ void BpnLayer::save(FILE *f) const {
   }
 }
 
-void Bpn::setInput(const Array<double> &in) {
+void Bpn::setInput(const CompactDoubleArray &in) {
   const int n   = m_inunits->m_noutputs;
   if(in.size() != n) {
-    throwException(_T("Bpn::setInputs:Wrong number of input-values=%d. No. of input units=%d"),in.size(),n);
+    throwException(_T("%s:Wrong number of input-values=%d. No. of input units=%d"),__TFUNCTION__, in.size(),n);
   }
   float *inputs = m_inunits->m_outputs;
   for(int i = 0; i < n; i++ ) {
@@ -307,7 +308,7 @@ void Bpn::setInput(const Array<double> &in) {
   }
 }
 
-Array<double> &Bpn::getOutput(Array<double> &out) const {
+CompactDoubleArray &Bpn::getOutput(CompactDoubleArray &out) const {
   int    n       = m_outunits->m_noutputs;
   float *outputs = m_outunits->m_outputs;
   out.clear();
@@ -317,31 +318,31 @@ Array<double> &Bpn::getOutput(Array<double> &out) const {
   return out;
 }
 
-void Bpn::learnLast(const Array<double> &output) {
+void Bpn::learnLast(const CompactDoubleArray &output) {
   computeOutputError(output);
   backPropagateError();
   adjustWeights();
 }
 
-void Bpn::learn(const Array<double> &input, const Array<double> &output) {
+void Bpn::learn(const CompactDoubleArray &input, const CompactDoubleArray &output) {
   setInput(input);
   propagateForward();
   learnLast(output);
 }
 
-Array<double> &Bpn::recognize(const Array<double> &input, Array<double> &output) {
+CompactDoubleArray &Bpn::recognize(const CompactDoubleArray &input, CompactDoubleArray &output) {
   setInput(input);
   propagateForward();
   return getOutput(output);
 }
 
-double Bpn::getPatternError(const Array<double> &target) const {
+double Bpn::getPatternError(const CompactDoubleArray &target) const {
   const float *outputs = m_outunits->m_outputs;
   const int    n       = m_outunits->m_noutputs;
   double       sum     = 0.0;
 
   if(target.size() != n) {
-    throwException(_T("Bpn::getPatternError:Wrong number of target values=%d. No. of output units=%d"), target.size(), n);
+    throwException(_T("%s:Wrong number of target values=%d. No. of output units=%d"), __TFUNCTION__, target.size(), n);
   }
 
   for(int  i = 0; i < n; i++ ) {
@@ -351,13 +352,14 @@ double Bpn::getPatternError(const Array<double> &target) const {
   return sum/2.0;
 }
 
-void Bpn::allocateLayers(const Array<int> &layerunits, bool bias) {
+void Bpn::allocateLayers(const CompactIntArray &layerunits, bool bias) {
+  DEFINEMETHODNAME;
   const int layerCount = (int)layerunits.size();
   if(layerCount > MAXLAYERCOUNT) {
-    throwException(_T("Bpn::allocateLayers called with %d layers. max=%d"), layerCount, MAXLAYERCOUNT);
+    throwException(_T("%s called with %d layers. max=%d"), method, layerCount, MAXLAYERCOUNT);
   }
   if(layerunits.size() < 3) {
-    throwException(_T("Bpn::allocateLayers called with %d layers. min=3"), layerCount);
+    throwException(_T("%s called with %d layers. min=3"), method, layerCount);
   }
   m_nhiddenlayers = layerCount - 2;
   m_bias          = bias;
@@ -366,12 +368,11 @@ void Bpn::allocateLayers(const Array<int> &layerunits, bool bias) {
   for(int i = 0; i < m_nhiddenlayers; i++) {
     m_hiddenlayers[i] = new BpnLayer(LAYER_HIDDEN,layerunits[i+1],layerunits[i], bias);
   }
-
   m_outunits = new BpnLayer(LAYER_OUTPUT,layerunits[layerCount-1], layerunits[layerCount-2], bias);
 }
 
-Array<int> Bpn::getLayerUnits() const {
-  Array<int> result;
+CompactIntArray Bpn::getLayerUnits() const {
+  CompactIntArray result;
   if(m_inunits == 0) {
     return result;
   }
@@ -426,13 +427,13 @@ void Bpn::save(const TCHAR *fileName) const {
 }
 
 void Bpn::save(FILE *f) const {
-  fprintf(f, "%c ", m_bias ? 'B' : 'U' );
-  fprintf(f, "%d ", m_inunits->size());
+  _ftprintf(f, _T("%c "), m_bias ? 'B' : 'U' );
+  _ftprintf(f, _T("%d "), m_inunits->size());
   for(int i = 0; i < m_nhiddenlayers; i++) {
-    fprintf(f, "%d ", m_hiddenlayers[i]->size());
+    _ftprintf(f, _T("%d "), m_hiddenlayers[i]->size());
   }
-  fprintf(f, "%d ", m_outunits->size());
-  fprintf(f, "0 \n");
+  _ftprintf(f, _T("%d "), m_outunits->size());
+  _ftprintf(f, _T("0 \n"));
 
   for(int i = 0; i < m_nhiddenlayers; i++) {
     m_hiddenlayers[i]->save(f);
@@ -441,27 +442,28 @@ void Bpn::save(FILE *f) const {
 }
 
 void Bpn::load(FILE *f) {
+  DEFINEMETHODNAME;
   char biaschar;
   if(fscanf(f, "%c",&biaschar) != 1) {
-    throwException("Bpn::load:Expected biaschar");
+    throwException(_T("%s:Expected biaschar"), method);
   }
   if(biaschar == 'B') {
     m_bias = true;
   } else if(biaschar == 'U') {
     m_bias = false;
   } else {
-    throwException("Bpn::load:Expected biaschar B/U");
+    throwException(_T("%s:Expected biaschar B/U"), method);
   }
 
-  Array<int> nunits;
+  CompactIntArray nunits;
   for(int i = 0;; i++ ) {
     if(i > MAXLAYERCOUNT) {
-      throwException(_T("Bpn::load:nhiddenlayers = %d too big (max = %d)"), i, MAXLAYERCOUNT);
+      throwException(_T("%s:nhiddenlayers = %d too big (max = %d)"), method, i, MAXLAYERCOUNT);
     }
     int units;
 
     if(fscanf(f, "%u", &units) != 1 ) {
-      throwException("Bpn::load:Illegal input:layerunits" );
+      throwException(_T("%s:Illegal input:layerunits"), method);
     }
     if(units == 0) {
       break;
@@ -496,7 +498,7 @@ void Bpn::load(const TCHAR *fileName) {
 }
 
 Bpn::Bpn(const Bpn &src) {
-  Array<int> layerunits = src.getLayerUnits();
+  CompactIntArray layerunits = src.getLayerUnits();
   initLayers();
   setGraphic(src.m_bpndraw);
   m_momentum     = src.m_momentum;
@@ -507,7 +509,7 @@ Bpn::Bpn(const Bpn &src) {
   }
 }
 
-Bpn::Bpn(const Array<int> &layerunits, bool bias) {
+Bpn::Bpn(const CompactIntArray &layerunits, bool bias) {
   initLayers();
   setGraphic(BPN_NODISP);
   m_learningrate  = 0.2F;
@@ -517,7 +519,7 @@ Bpn::Bpn(const Array<int> &layerunits, bool bias) {
 
 Bpn::Bpn(char *fname) {
   initLayers();
-  setGraphic( BPN_NODISP );
+  setGraphic(BPN_NODISP);
   m_learningrate  = 0.2F;
   m_momentum      = 0.9F;
   load(fname);
@@ -533,7 +535,7 @@ Bpn &Bpn::operator=(const Bpn &rhs) {
     return *this;
   }
   deallocateLayers();
-  Array<int> layerunits = rhs.getLayerUnits();
+  CompactIntArray layerunits = rhs.getLayerUnits();
   setGraphic( rhs.m_bpndraw);
   m_momentum     = rhs.m_momentum;
   m_learningrate = rhs.m_learningrate;
@@ -552,24 +554,23 @@ BpnGraphic *Bpn::setGraphic(BpnGraphic *gt) {
 
 void BpnLayer::list() const {
   for(int i = 0; i < m_noutputs; i++) {
-    printf("output:%lg\n", m_outputs[i]);
+    _tprintf(_T("output:%lg\n"), m_outputs[i]);
     for(int j = 0; j < m_ninputs; j++) {
-      printf("    Weight: %e %e\n", m_weights[i][j], m_lastdelta[i][j]);
+      _tprintf(_T("    Weight: %e %e\n"), m_weights[i][j], m_lastdelta[i][j]);
     }
   }
 }
 
 void Bpn::list() const {
 
-  printf( "----------------- BPN_LIST --------------\n" );
+  _tprintf( _T("----------------- BPN_LIST --------------\n") );
 
   m_inunits->list();
   m_hiddenlayers[0]->list();
   m_outunits->list();
 
-  printf( "-----------------------------------------\n" );
+  _tprintf( _T("-----------------------------------------\n") );
 }
-
 
 void BpnGraphic::drawWeights(Bpn *b) {
 }

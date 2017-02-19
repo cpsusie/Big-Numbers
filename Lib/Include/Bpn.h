@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Array.h"
+#include "CompactArray.h"
 
 typedef enum {
   LAYER_INPUT
@@ -52,19 +52,19 @@ private:
   BpnLayer    *m_inunits, *m_outunits, **m_hiddenlayers;
   float        m_momentum, m_learningrate;
   BpnGraphic  *m_bpndraw;
-  void   allocateLayers(const Array<int> &layerunits, bool bias);
+  void   allocateLayers(const CompactIntArray &layerunits, bool bias);
   void   deallocateLayers();
-  void   setInput(const Array<double> &in);
+  void   setInput(const CompactDoubleArray &in);
   void   layerPropagate(BpnLayer *lower, BpnLayer *upper);
   void   propagateForward();
-  void   computeOutputError(const Array<double> &target);
+  void   computeOutputError(const CompactDoubleArray &target);
   void   backPropagateError();
   void   adjustWeights();
   void   initLayers();
   void   copyLayers(const Bpn &src);
 public:
   Bpn(const Bpn &src);
-  Bpn(const Array<int> &nunits, bool bias = false);
+  Bpn(const CompactIntArray &nunits, bool bias = false);
   Bpn(char *fname);
   ~Bpn();
   Bpn &operator=(const Bpn &rhs);
@@ -74,11 +74,11 @@ public:
   void   load(const String &fileName);
   void   save(FILE *f) const;
   void   load(FILE *f);
-  void   learn(            const Array<double> &input, const Array<double> &output);
-  void   learnLast(        const Array<double> &output);
-  Array<double> &recognize(const Array<double> &input, Array<double> &output);
-  Array<double> &getOutput(Array<double> &out) const;
-  double getPatternError(  const Array<double> &target) const;
+  void   learn(            const CompactDoubleArray &input, const CompactDoubleArray &output);
+  void   learnLast(        const CompactDoubleArray &output);
+  CompactDoubleArray &recognize(const CompactDoubleArray &input, CompactDoubleArray &output);
+  CompactDoubleArray &getOutput(CompactDoubleArray &out) const;
+  double getPatternError(  const CompactDoubleArray &target) const;
   void   list() const;
   BpnGraphic *setGraphic(BpnGraphic *gt);
   float  getLearningRate() const         { return m_learningrate;     }
@@ -88,7 +88,7 @@ public:
   int    getInputCount()  const          { return m_inunits->size();  }
   int    getOutputCount() const          { return m_outunits->size(); }
   int    getHiddenLayerCount() const     { return m_nhiddenlayers;    }
-  Array<int> getLayerUnits() const;
+  CompactIntArray getLayerUnits() const;
   BpnLayer *getInputLayer()           { return m_inunits;             }
   BpnLayer *getHiddenLayer(int index) { return m_hiddenlayers[index]; }
   BpnLayer *getOutputLayer()          { return m_outunits;            }
