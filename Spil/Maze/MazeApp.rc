@@ -1,0 +1,316 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\MazeApp.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINICON            ICON                    "res\\MazeApp.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New maze\tCtrl+N",           ID_FILE_NEWMAZE
+        MENUITEM SEPARATOR
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_QUIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Find path\tCtrl+F",          ID_EDIT_FINDPATH
+        MENUITEM SEPARATOR
+        MENUITEM "&Clear\tCtrl+C",              ID_EDIT_CLEAR
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Keep track\tCtrl+K",         ID_OPTIONS_KEEPTRACK
+        POPUP "&Speed"
+        BEGIN
+            MENUITEM "&Slow\tCtrl+S",               ID_OPTIONS_SPEED_SLOW, CHECKED
+            MENUITEM "&Quick\tCtrl+Q",              ID_OPTIONS_SPEED_FAST
+        END
+        POPUP "&Door choice"
+        BEGIN
+            MENUITEM "&Left first\tCtrl+L",         ID_OPTIONS_DOORCHOICE_LEFTFIRST
+            MENUITEM "&Right first\tCtrl+R",        ID_OPTIONS_DOORCHOICE_RIGHTFIRST
+            MENUITEM "Rando&m\tCtrl+M",             ID_OPTIONS_DOORCHOICE_MIX, CHECKED
+        END
+        MENUITEM SEPARATOR
+        POPUP "Doorsi&ze"
+        BEGIN
+            MENUITEM "&1\tCtrl+1",                  ID_OPTIONS_DOORSIZE_1
+            MENUITEM "&2\tCtrl+2",                  ID_OPTIONS_DOORSIZE_2
+            MENUITEM "&3\tCtrl+3",                  ID_OPTIONS_DOORSIZE_3, CHECKED
+            MENUITEM "&4\tCtrl+4",                  ID_OPTIONS_DOORSIZE_4
+            MENUITEM "&5\tCtrl+5",                  ID_OPTIONS_DOORSIZE_5
+            MENUITEM "&6\tCtrl+6",                  ID_OPTIONS_DOORSIZE_6
+            MENUITEM "1&0\tCtrl+0",                 ID_OPTIONS_DOORSIZE_10
+        END
+        POPUP "&Type"
+        BEGIN
+            MENUITEM "&Easy\tCtrl+E",               ID_OPTIONS_LEVEL_EASY, CHECKED
+            MENUITEM "&Hard\tCtrl+H",               ID_OPTIONS_LEVEL_HARD
+            MENUITEM "He&xagonal\tCtrl+X",          ID_OPTIONS_LEVEL_HEXAGONAL
+            MENUITEM "&Triangular\tCtrl+T",         ID_OPTIONS_LEVEL_TRIANGULAR
+        END
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About Maze...",              ID_HELP_ABOUTMAZE
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR_MAINDIALOG ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_CLEAR,          VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_EDIT_FINDPATH,       VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEWMAZE,        VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_OPTIONS_DOORCHOICE_LEFTFIRST, VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_OPTIONS_DOORCHOICE_MIX, VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_OPTIONS_DOORCHOICE_RIGHTFIRST, VIRTKEY, CONTROL, NOINVERT
+    "1",            ID_OPTIONS_DOORSIZE_1,  VIRTKEY, CONTROL, NOINVERT
+    "0",            ID_OPTIONS_DOORSIZE_10, VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_OPTIONS_DOORSIZE_2,  VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_OPTIONS_DOORSIZE_3,  VIRTKEY, CONTROL, NOINVERT
+    "4",            ID_OPTIONS_DOORSIZE_4,  VIRTKEY, CONTROL, NOINVERT
+    "5",            ID_OPTIONS_DOORSIZE_5,  VIRTKEY, CONTROL, NOINVERT
+    "6",            ID_OPTIONS_DOORSIZE_6,  VIRTKEY, CONTROL, NOINVERT
+    "K",            ID_OPTIONS_KEEPTRACK,   VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_OPTIONS_LEVEL_EASY,  VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_OPTIONS_LEVEL_HARD,  VIRTKEY, CONTROL, NOINVERT
+    "X",            ID_OPTIONS_LEVEL_HEXAGONAL, VIRTKEY, CONTROL, NOINVERT
+    "Q",            ID_OPTIONS_SPEED_FAST,  VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_OPTIONS_SPEED_SLOW,  VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_OPTIONS_LEVEL_TRIANGULAR, VIRTKEY, CONTROL, NOINVERT
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (United States) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOGEX 0, 0, 303, 79
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About maze"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    ICON            IDR_MAINICON,IDC_STATIC,11,17,20,20
+    LTEXT           "Maze Version 1.4 by Jesper Grønning Mikkelsen",IDC_STATIC,40,10,191,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2007-2017",IDC_STATIC,40,27,119,8
+    DEFPUSHBUTTON   "OK",IDOK,246,7,50,14,WS_GROUP
+END
+
+IDD_MAINDIALOG DIALOGEX 0, 0, 484, 374
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_CLIENTEDGE | WS_EX_APPWINDOW
+CAPTION "Maze"
+MENU IDR_MAINMENU
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Button1",IDC_BUTTON1,330,64,50,14,NOT WS_VISIBLE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,4,0,1
+ PRODUCTVERSION 1,4,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "Maze"
+            VALUE "FileVersion", "1.4.0.1"
+            VALUE "InternalName", "Maze"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "Maze.EXE"
+            VALUE "ProductName", "Maze"
+            VALUE "ProductVersion", "1.4.0.1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 296
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 72
+    END
+
+    IDD_MAINDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 477
+        TOPMARGIN, 6
+        BOTTOMMARGIN, 367
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_MAINDIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About Maze..."
+END
+
+#endif    // English (United States) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\MazeApp.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
