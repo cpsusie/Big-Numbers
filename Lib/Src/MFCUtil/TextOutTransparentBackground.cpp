@@ -16,8 +16,8 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
   }
 
   SetTextColor(hdc, oldColor);
-  SelectObject(hdc, oldFont);
-  SetBkMode(hdc, oldMode);
+  SelectObject(hdc, oldFont );
+  SetBkMode(   hdc, oldMode );
 
   if(!ok) {
     throwException(_T("TextOut failed. %s"), errorMsg.cstr());
