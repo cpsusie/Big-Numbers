@@ -62,12 +62,24 @@ public:
   }
 };
 
+class ColoredTextFields : public Array<ColoredText> {
+private:
+  const Player m_player;
+public:
+  ColoredTextFields(Player player) : m_player(player) {
+  }
+  void add(bool error, const String &str);
+  void add(COLORREF backColor, COLORREF textColor, const String &str);
+  void print(HDC hdc, int x, int y     , TextAlignment align) const;
+  void print(HDC hdc, const CPoint &pos, TextAlignment align) const {
+    print(hdc, pos.x, pos.y, align);
+  }
+};
+
 void dtextOut(HDC dc, int x, int y,                           const String &str, COLORREF backColor = WHITE, COLORREF textColor = BLACK);
 void dtextOut(HDC dc, const CPoint &pos,                      const String &str, COLORREF backColor = WHITE, COLORREF textColor = BLACK);
 int  dtextOut(HDC dc, int x, int y,      TextAlignment align, const String &str, COLORREF backColor = WHITE, COLORREF textColor = BLACK);
 int  dtextOut(HDC dc, const CPoint &pos, TextAlignment align, const String &str, COLORREF backColor = WHITE, COLORREF textColor = BLACK);
-void dtextOut(HDC dc, int x, int y,      TextAlignment align, const Array<ColoredText> &strings);
-void dtextOut(HDC dc, const CPoint &pos, TextAlignment align, const Array<ColoredText> &strings);
 
 CPoint operator*(const CPoint &pt, double factor);
 CSize  operator*(const CSize  &sz, double factor);

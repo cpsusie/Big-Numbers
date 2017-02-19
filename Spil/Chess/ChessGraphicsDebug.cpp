@@ -8,6 +8,16 @@
 #define PLAYERTEXTCOLOR(player) ((player == WHITEPLAYER) ? WHITE : BLACK)
 #define PLAYERBKCOLOR(  player) ((player == WHITEPLAYER) ? BLACK : WHITE)
 
+void ColoredTextFields::add(bool error, const String &str) {
+  const COLORREF backColor = error ? RED : PLAYERBKCOLOR(m_player);
+  const COLORREF textColor = PLAYERTEXTCOLOR(m_player);
+  Array<ColoredText>::add(ColoredText(str, backColor, textColor));
+}
+
+void ColoredTextFields::add(COLORREF backColor, COLORREF textColor, const String &str) {
+  Array<ColoredText>::add(ColoredText(str, backColor, textColor));
+}
+
 #define FIELDSIZE m_resources.getFieldSize()
 
 bool DebugFlags::showState() const {
@@ -160,7 +170,7 @@ void ChessGraphics::initFieldTextOffsets(HDC dc) {
   *tp++ = FieldAttackTextPosition( ALIGN_LEFT  ,  0               , 0                          ); // FROM_UPPERDIAG2
 
 
-  tp = offsetsComputerPlayWhite;
+   tp   = offsetsComputerPlayWhite;
   *tp++ = offsetsComputerPlayBlack[FROM_RIGHT     ];                                              // FROM_LEFT
   *tp++ = offsetsComputerPlayBlack[FROM_LEFT      ];                                              // FROM_RIGHT
   *tp++ = offsetsComputerPlayBlack[FROM_ABOVE     ];                                              // FROM_BELOVE
@@ -170,7 +180,7 @@ void ChessGraphics::initFieldTextOffsets(HDC dc) {
   *tp++ = offsetsComputerPlayBlack[FROM_UPPERDIAG2];                                              // FROM_LOWERDIAG2
   *tp++ = offsetsComputerPlayBlack[FROM_LOWERDIAG2];                                              // FROM_UPPERDIAG2
 
-  tp = offsetSDA;
+   tp   = offsetSDA;
   *tp++ = FieldAttackTextPosition( ALIGN_LEFT, 2*charSize.cx, max(FIELDSIZE.cy - 2*charSize.cy, 2*charSize.cy));
   *tp++ = FieldAttackTextPosition( ALIGN_LEFT, 2*charSize.cx, charSize.cy                                     );
 }
@@ -188,7 +198,7 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT
     return;
   }
 
-  const bool isError     = (count1 != count2);
+  const bool isError     = (count1   != count2  );
   const bool isKingError = (hasKing1 != hasKing2);
   String attackStr, kingStr;
   const FieldAttackTextPosition *offset;
@@ -196,28 +206,25 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT
   switch(f) {
   case FROM_SHORTDISTANCE:
     offset    = getSDAOffset(player);
-    attackStr = isError ? format(_T("%d(%d)"),count1,count2) : format(_T("%d"),count1);
+    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : format(_T("%d"),count1);
     break;
   default                :
     offset    = getLDAOffset(f);
-    attackStr = isError ? format(_T("%d(%d)"),count1,count2) : (count1?format(_T("%d"),count1):_T(""));
+    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : (count1?format(_T("%d"),count1):_T(""));
     kingStr   = isKingError ? format(_T("%c(%c)"),(hasKing1?'K':' '),(hasKing2?'K':' ')) : (hasKing1?_T("K"):_T(""));
     break;
   }
 
-  Array<ColoredText> fieldText;
+  ColoredTextFields textFields(player);
 
   if(attackStr.length()) {
-    const COLORREF backColor = isError     ? RED : PLAYERBKCOLOR(player);
-    fieldText.add(ColoredText(attackStr, backColor, PLAYERTEXTCOLOR(player)));
+    textFields.add(isError, attackStr);
   }
 
   if(kingStr.length()) {
-    const COLORREF backColor = isKingError ? RED : PLAYERBKCOLOR(player);
-    fieldText.add(ColoredText(kingStr, backColor, PLAYERTEXTCOLOR(player)));
+    textFields.add(isKingError, kingStr);
   }
-
-  dtextOut(dc,p+offset->m_offset,offset->m_align,fieldText);
+  textFields.print(dc,p+offset->m_offset,offset->m_align);
 }
 
 // game1 is the currrent game. game2 is a referencegame which is initialized,
@@ -268,20 +275,21 @@ void ChessGraphics::paintStateString(HDC dc, int &line, const Game &game1, const
 void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Game &game1, const Game &game2) {
   bool showBWState = false;
 
-  Array<ColoredText> fieldText;
+  ColoredTextFields textFields(player);
 
-  fieldText.add(ColoredText(format(_T("%s:"), getPlayerNameEnglish(player)),WHITE,BLACK));
+  textFields.add(WHITE,BLACK,format(_T("%s:"), getPlayerNameEnglish(player)));
 
   if(m_debugFlags.m_flags.m_showMaterial) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No material"), RED, BLACK));
+    textFields.add(RED, BLACK, _T(" No material"));
 #else
-    const int mat1 = game1.getMaterial(player);
-    const int mat2 = game2.getMaterial(player);
-    if(mat1 != mat2) {
-      fieldText.add(ColoredText(format(_T("Material:%4d(%4d)"),mat1,mat2), RED, BLACK));
+    const int  mat1     = game1.getMaterial(player);
+    const int  mat2     = game2.getMaterial(player);
+    const bool matError = mat1 != mat2;
+    if(matError) {
+      textFields.add(RED  , BLACK, format(_T("Material:%4d(%4d)"), mat1,mat2));
     } else {
-      fieldText.add(ColoredText(format(_T("Material:%4d"),mat1), WHITE, BLACK));
+      textFields.add(WHITE, BLACK, format(_T("Material:%4d"), mat1));
     }
 #endif
     showBWState = true;
@@ -289,20 +297,20 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
 
   if(m_debugFlags.m_flags.m_showCheckingSDAPos) {
     int pos = game1.getCheckingSDAPosition(player);
-    fieldText.add(ColoredText(format(_T(" Checking SDA:[%s]"), (pos < 0) ? _T("-1") : getFieldName(pos)), WHITE, BLACK));
+    textFields.add(WHITE, BLACK, format(_T(" Checking SDA:[%s]"), (pos < 0) ? _T("-1") : getFieldName(pos)));
     showBWState = true;
   }
 
   if(m_debugFlags.m_flags.m_showBishopFlags) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No bishopflags"), RED, BLACK));
+    textFields.add(RED, BLACK, _T(" No bishopflags"));
 #else
     const BishopFlags bf1 = game1.getBishopFlags(player);
     const BishopFlags bf2 = game2.getBishopFlags(player);
     if(bf1 != bf2) {
-      fieldText.add(ColoredText(format(_T(" Bishops:[%s(%s)]"),getBishopFlagsToString(bf1).cstr(),getBishopFlagsToString(bf2).cstr()), RED, BLACK));
+      textFields.add(RED  , BLACK, format(_T(" Bishops:[%s(%s)]"),getBishopFlagsToString(bf1).cstr(),getBishopFlagsToString(bf2).cstr()));
     } else {
-      fieldText.add(ColoredText(format(_T(" Bishops:[%s]"),getBishopFlagsToString(bf1).cstr()), WHITE, BLACK));
+      textFields.add(WHITE, BLACK, format(_T(" Bishops:[%s]"),getBishopFlagsToString(bf1).cstr()));
     }
 #endif
     showBWState = true;
@@ -310,21 +318,21 @@ void ChessGraphics::paintStateString(HDC dc, int &line, Player player, const Gam
 
   if(m_debugFlags.m_flags.m_showPawnCount) {
 #ifdef TABLEBASE_BUILDER
-    fieldText.add(ColoredText(_T(" No pawnCount"), RED, BLACK));
+    textFields.add(RED, BLACK, _T(" No pawnCount"));
 #else
     const String s1 = game1.getPawnCountToString(player);
     const String s2 = game2.getPawnCountToString(player);
     if(s1 != s2) {
-      fieldText.add(ColoredText(format(_T(" PawnCount:[%s(%s)]"),s1.cstr(),s2.cstr()), RED, BLACK));
+      textFields.add(RED  , BLACK, format(_T(" PawnCount:[%s(%s)]"),s1.cstr(),s2.cstr()));
     } else {
-      fieldText.add(ColoredText(format(_T(" PawnCount:[%s]"),s1.cstr()), WHITE, BLACK));
+      textFields.add(WHITE, BLACK, format(_T(" PawnCount:[%s]"),s1.cstr()));
     }
 #endif
     showBWState = true;
   }
 
   if(showBWState) {
-    dtextOut(dc,0,line,ALIGN_LEFT,fieldText);
+    textFields.print(dc,0,line,ALIGN_LEFT);
     line += 12;
   }
 }
