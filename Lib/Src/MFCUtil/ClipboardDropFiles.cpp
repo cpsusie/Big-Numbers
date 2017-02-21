@@ -17,7 +17,11 @@ void clipboardDropFiles(HWND hwnd, StringArray &fnames) {
     df.pt.x   = 0;
     df.pt.y   = 0;
     df.fNC    = 0;
+#ifdef _UNICODE
+    df.fWide  = 1;
+#else
     df.fWide  = 0;
+#endif
 
     const String str = fnames.getAsDoubleNullTerminatedString();
     const int strLength = (int)str.length() + 1;
