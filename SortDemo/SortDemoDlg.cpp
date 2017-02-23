@@ -5,8 +5,6 @@
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
 #endif
 
 #define foreachPanel(p)      if(m_panels.size()) for(SortPanelWnd **_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
@@ -47,6 +45,7 @@ BEGIN_MESSAGE_MAP(CSortDemoDlg, CDialog)
 	ON_WM_LBUTTONDOWN()
 	ON_WM_LBUTTONUP()
 	ON_WM_MOUSEMOVE()
+  ON_COMMAND(IDOK, &CSortDemoDlg::OnIdok)
 END_MESSAGE_MAP()
 
 void CSortDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -69,9 +68,10 @@ void CSortDemoDlg::OnSize(UINT nType, int cx, int cy) {
 }
 
 void CSortDemoDlg::OnClose() {
-  OnOK();
+  OnFileExit();
 }
-
+void CSortDemoDlg::OnIdok() {
+}
 void CSortDemoDlg::OnCancel() {
 }
 
@@ -217,7 +217,7 @@ void CSortDemoDlg::OnFileResume() {
 }
 
 void CSortDemoDlg::OnFileExit() {
-  OnClose();  
+  EndDialog(IDOK);
 }
 
 void CSortDemoDlg::postStateShift(SortPanelWnd *panel, SortThreadState oldState, SortThreadState newState) {

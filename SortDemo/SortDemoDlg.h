@@ -90,5 +90,7 @@ protected:
 	afx_msg void OnMouseMove(UINT nFlags, CPoint point);
   afx_msg void OnToggleSortMethod(UINT id);
 	DECLARE_MESSAGE_MAP()
+public:
+  afx_msg void OnIdok();
 };
 
