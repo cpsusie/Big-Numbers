@@ -54,8 +54,9 @@ BOOL CShowDuplicatesDlg::OnInitDialog() {
   m_duplicateList.InsertColumn(1,_T("Medvirkende"), LVCFMT_LEFT, 130);
   m_duplicateList.InsertColumn(2,_T("Album")      , LVCFMT_LEFT, 160);
   m_duplicateList.InsertColumn(3,_T("Varighed")   , LVCFMT_LEFT,  40);
-  m_duplicateList.InsertColumn(4,_T("Størrelse")  , LVCFMT_LEFT,  50);
-  m_duplicateList.InsertColumn(5,_T("Filnavn")    , LVCFMT_LEFT, 450);
+  m_duplicateList.InsertColumn(4,_T("Beskyttet")  , LVCFMT_LEFT,  40);
+  m_duplicateList.InsertColumn(5,_T("Størrelse")  , LVCFMT_LEFT,  50);
+  m_duplicateList.InsertColumn(6,_T("Filnavn")    , LVCFMT_LEFT, 450);
   m_duplicateList.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_HEADERDRAGDROP);
 
   m_layoutManager.OnInitDialog(this);
@@ -144,8 +145,9 @@ void CShowDuplicatesDlg::addMediaFile(int i, const MediaFile &f) {
   addData(m_duplicateList, i, 1, f.getArtist());
   addData(m_duplicateList, i, 2, f.getAlbum());
   addData(m_duplicateList, i, 3, f.getDurationString());
-  addData(m_duplicateList, i, 4, format(_T("%8d"), f.getFileSize()));
-  addData(m_duplicateList, i, 5, f.getSourceURL());
+  addData(m_duplicateList, i, 4, boolToStr(f.getProtected()));
+  addData(m_duplicateList, i, 5, format(_T("%8d"), f.getFileSize()));
+  addData(m_duplicateList, i, 6, f.getSourceURL());
 }
 
 class MediaDuplicateComparator : public Comparator<MediaFile> {
@@ -265,7 +267,7 @@ void CShowDuplicatesDlg::OnEditDelete() {
     return;
   }
 
-  const String sourceURL = (LPCTSTR)m_duplicateList.GetItemText(selected, 5);
+  const String sourceURL = (LPCTSTR)m_duplicateList.GetItemText(selected, 6);
 
   if(moveFileToTrashCan(m_hWnd, sourceURL)) {
     removeMediaFile(selected, sourceURL);
