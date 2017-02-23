@@ -255,6 +255,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AnimatedImage.cpp" />
+    <ClCompile Include="AviFile.cpp" />
     <ClCompile Include="BitmapBits.cpp" />
     <ClCompile Include="BitmapIO.cpp" />
     <ClCompile Include="BitmapToByteArray.cpp" />
@@ -344,6 +345,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\AbstractMouseHandler.h" />
     <ClInclude Include="..\..\Include\MFCUtil\AnimatedImage.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\Avifile.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Clipboard.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColoredStatic.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColorSpace.h" />
