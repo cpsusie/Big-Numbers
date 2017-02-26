@@ -227,6 +227,7 @@
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <MinimalRebuild>true</MinimalRebuild>
     </ClCompile>
     <Midl>
       <TypeLibraryName>.\Debug\millerrabin.tlb</TypeLibraryName>
