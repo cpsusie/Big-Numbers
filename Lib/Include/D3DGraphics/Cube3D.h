@@ -47,3 +47,5 @@ public:
     return (m_lbn <= cube.m_lbn) && (cube.m_rtf <= m_rtf);
   }
 };
+
+#include "PragmaLib.h"

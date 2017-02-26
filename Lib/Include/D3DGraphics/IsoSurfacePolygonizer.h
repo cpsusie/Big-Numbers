@@ -308,5 +308,4 @@ public:
   inline const CompactArray<IsoSurfaceVertex> &getVertexArray() const {
     return m_vertexArray;
   }
-
 };

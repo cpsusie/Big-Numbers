@@ -272,6 +272,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

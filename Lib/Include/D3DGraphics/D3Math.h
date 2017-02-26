@@ -1,10 +1,12 @@
 #pragma once
 
-#include "D3Error.h"
+#include <D3D9.h>
+#include <D3DX9.h>
 #include <Math/MathLib.h>
 #include <Math/Spherical.h>
 #include <Math/Point2D.h>
 #include "Math/Point3D.h"
+#include "D3Error.h"
 
 //#define LEFTHANDED 
 
@@ -48,6 +50,11 @@ D3DXVECTOR3 operator*( const D3DXMATRIX  &m , const D3DXVECTOR3 &v);
 D3DXVECTOR3 operator*( const D3DXVECTOR3 &v,  const D3DXMATRIX  &m);
 float       det(       const D3DXMATRIX  &m);
 String      toString(  const D3DXMATRIX  &m, int dec = 3);
+
+inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
+  return length(p1 - p2);
+}
+
 #define     radians(x) D3DXToRadian(x)
 #define     degrees(x) D3DXToDegree(x)
 
@@ -241,3 +248,4 @@ public:
   operator D3DXVECTOR3() const;
 };
 
+#include "PragmaLib.h"

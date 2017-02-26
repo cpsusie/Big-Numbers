@@ -16,9 +16,4 @@ public:
   static D3DPRESENT_PARAMETERS getDefaultPresentParameters(HWND hwnd                      , UINT adapter = D3DADAPTER_DEFAULT);
 };
 
-#include <PragmaLib.h>
-
-#ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " LIB_VERSION)
-#endif
-#pragma comment(lib, LIB_VERSION "D3DGraphics.lib")
+#include "PragmaLib.h"

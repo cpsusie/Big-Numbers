@@ -67,5 +67,8 @@
     <ClInclude Include="targetver.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

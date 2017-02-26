@@ -1,14 +1,5 @@
 #include "pch.h"
 
-#ifdef IS32BIT
-#define LIBDIR "x86/"
-#else
-#define LIBDIR "x64/"
-#endif
-
-#pragma comment(lib, LIBDIR "d3d9.lib")
-#pragma comment(lib, LIBDIR "d3dx9.lib")
-
 D3DXMATRIX  createIdentityMatrix() {
   D3DXMATRIX m;
   return *D3DXMatrixIdentity(&m);
