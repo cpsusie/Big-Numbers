@@ -31,184 +31,6 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-static double angle(const vector &v1, const vector &v2) {
-  double a = acos(v1*v2 / v1.length() / v2.length());
-  return a * sign(det(v1,v2));
-}
-
-static double angle(const line &l1, const line &l2) {
-  vector v1(l1.m_p1 - l1.m_p2);
-  vector v2(l2.m_p1 - l2.m_p2);
-  return angle(v1,v2);
-}
-
-void line::paint(CDC &dc, const CRect &rect) const {
-  vector normal(m_p2.y - m_p1.y, m_p1.x - m_p2.x );
-  int stepx = sign(m_p2.x - m_p1.x);
-  int stepy = sign(m_p2.y - m_p1.y);
-  if(stepx == 0) { // lodret linie
-    dc.MoveTo(CPoint(m_p1.x,rect.top));
-    dc.LineTo(CPoint(m_p1.x,rect.bottom));
-  } else if(stepy == 0) { // vandret linie
-    dc.MoveTo(CPoint(rect.left,m_p1.y));
-    dc.LineTo(CPoint(rect.right,m_p1.y));
-  } else {
-    CPoint p1 = m_p1;
-    while(rect.PtInRect(p1)) {
-      CPoint pstepx(p1.x+stepx,p1.y);
-      CPoint pstepy(p1.x,p1.y+stepy);
-      if(abs((pstepx - m_p1) * normal) < abs((pstepy - m_p1) * normal))
-        p1 = pstepx;
-      else
-        p1 = pstepy;
-    }
-    CPoint p2 = m_p2;
-    while(rect.PtInRect(p2)) {
-      CPoint pstepx(p2.x-stepx,p2.y);
-      CPoint pstepy(p2.x,p2.y-stepy);
-      if(abs((pstepx - m_p2) * normal) < abs((pstepy - m_p2) * normal))
-        p2 = pstepx;
-      else
-        p2 = pstepy;
-    }
-    dc.MoveTo(p1);
-    dc.LineTo(p2);
-  }
-}
-
-double polygon::pointInside(const CPoint &p) const { // 1=inside, -1=outside, 0=edge
-  const size_t n = m_points.size();
-  if(n < 3) return -1;
-  vector v(p,m_points[0]);
-  double d = 0;
-  for(size_t i = 1; i <= n; i++) {
-    const vector vnext(p,m_points[i%n]);
-    d += angle(v,vnext);
-    v = vnext;
-  }
-  return (abs(d) > 1) ? 1 : -1; // d always +/- 2PI or 0
-}
-
-static void paintCross(CDC &dc, const CPoint &p) {
-  dc.MoveTo(p.x-2,p.y-2);
-  dc.LineTo(p.x+2,p.y+2);
-  dc.MoveTo(p.x-2,p.y+2);
-  dc.LineTo(p.x+2,p.y-2);
-}
-
-void polygon::paint(CDC &dc) const {
-  if(m_points.size() > 0) {
-    paintCross(dc,m_points[0]);
-//    textOut(dc, m_points[0],format(_T("p0:(%d,%d)"),m_points[0].x,m_points[0].y));
-    for(size_t i = 1; i < m_points.size(); i++) {
-      paintCross(dc,m_points[i]);
-      dc.MoveTo(m_points[i-1]);
-      dc.LineTo(m_points[i]);
-//    textOut(dc, m_points[i],format(_T("p%d:(%d,%d)"),(int)i, m_points[i].x,m_points[i].y));
-    }
-
-    dc.LineTo(m_points[0]);
-  }
-}
-
-int polygon::findNearest(const CPoint &p) const {
-  if(m_points.size() == 0) return -1;
-  int current        = 0;
-  double currentDist = dist(p,m_points[current]);
-  for(size_t i = 1; i < m_points.size(); i++) {
-    const double d = dist(p,m_points[i]);
-    if(d < currentDist) {
-      current = (int)i;
-      currentDist = d;
-    }
-  }
-  return current;
-}
-
-void polygon::removeNearest(const CPoint &p) {
-  const int n = findNearest(p);
-  if(n < 0) return;
-  m_points.remove(n);
-}
-
-class DeterminantComparator : public Comparator<CPoint> {
-private:
-  const CPoint m_bottomPoint;
-public:
-  DeterminantComparator(const CPoint &bottomPoint) : m_bottomPoint(bottomPoint) {
-  }
-  AbstractComparator *clone() const {
-    return new DeterminantComparator(m_bottomPoint);
-  }
-  int compare(const CPoint &p1, const CPoint &p2);
-};
-
-int DeterminantComparator::compare(const CPoint &p1, const CPoint &p2) {
-  const vector v1(m_bottomPoint, p1);
-  const vector v2(m_bottomPoint, p2);
-  return sign(det(v2,v1));
-}
-
-void polygon::convexHull() {
-  const int    lowest      = findBottomPoint();
-  const CPoint bottomPoint = m_points[lowest];
-  m_points.remove(lowest);
-  m_points.sort(DeterminantComparator(bottomPoint));
-  PointArray hull;
-  hull.add(bottomPoint);
-  hull.add(m_points[0]);
-  for(size_t i = 1; i < m_points.size(); i++) {
-    hull.add(m_points[i]);
-    const CPoint &pi = hull.last();
-    for(;;) {
-      if(hull.size() <= 3) break;
-      UINT j = (UINT)hull.size()-2;
-      vector v1(hull[j-1],pi);
-      vector v2(hull[j-1],hull[j]);
-      vector v3(hull[j-1],hull[0]);
-      if(sign(det(v2,v1)) != sign(det(v2,v3))) {
-        hull.remove(j);
-      } else {
-        break;
-      }
-    }
-  }
-  m_points = hull;
-}
-
-void polygon::addPoint(const CPoint &p) {
-  m_points.add(p);
-  if(m_points.size() <= 3) {
-    return;
-  }
-  convexHull();
-}
-
-int polygon::findTopPoint() const {
-  if(m_points.size() == 0) return -1;
-  int current    = 0;
-  int currentTop = m_points[current].y;
-  for(size_t i = 1; i < m_points.size(); i++) {
-    if(m_points[i].y < currentTop) {
-      current = (int)i;
-      currentTop = m_points[i].y;
-    }
-  }
-  return current;
-}
-
-int polygon::findBottomPoint() const {
-  if(m_points.size() == 0) return -1;
-  int current    = 0;
-  int currentTop = m_points[current].y;
-  for(size_t i = 1; i < m_points.size(); i++) {
-    if(m_points[i].y > currentTop) {
-      current = (int)i;
-      currentTop = m_points[i].y;
-    }
-  }
-  return current;
-}
 
 CPolygondistDlg::CPolygondistDlg(CWnd *pParent)
   : CDialog(CPolygondistDlg::IDD, pParent) {
@@ -226,8 +48,12 @@ BEGIN_MESSAGE_MAP(CPolygondistDlg, CDialog)
     ON_WM_LBUTTONUP()
     ON_WM_LBUTTONDOWN()
     ON_WM_RBUTTONDOWN()
-    ON_BN_CLICKED(IDC_BUTTONFINDMAXDIST, OnButtonfindmaxdist)
     ON_WM_MOUSEMOVE()
+    ON_COMMAND(ID_FILE_EXIT            , OnFileExit            )
+    ON_COMMAND(ID_TOOLS_FINDMAXDISTANCE, OnToolsFindmaxdistance)
+    ON_COMMAND(ID_HELP_ABOUTPOLYGONDIST, OnHelpAboutpolygondist)
+  ON_WM_CLOSE()
+  ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BOOL CPolygondistDlg::OnInitDialog() {
@@ -249,6 +75,8 @@ BOOL CPolygondistDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+
   return TRUE;
 }
 
@@ -259,6 +87,34 @@ void CPolygondistDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   } else {
     CDialog::OnSysCommand(nID, lParam);
   }
+}
+
+void CPolygondistDlg::OnOK() {
+}
+void CPolygondistDlg::OnCancel() {
+}
+void CPolygondistDlg::OnClose() {
+  OnFileExit();
+}
+void CPolygondistDlg::OnFileExit() {
+  EndDialog(IDOK);
+}
+void CPolygondistDlg::OnHelpAboutpolygondist() {
+  CAboutDlg dlg;
+  dlg.DoModal();
+}
+
+BOOL CPolygondistDlg::PreTranslateMessage(MSG *pMsg) {
+  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
+    return true;
+  }
+  return CDialog::PreTranslateMessage(pMsg);
+}
+
+void CPolygondistDlg::OnSize(UINT nType, int cx, int cy) {
+  CDialog::OnSize(nType, cx, cy);
+  clearMax();
+  Invalidate();
 }
 
 void CPolygondistDlg::OnPaint()  {
@@ -279,8 +135,14 @@ void CPolygondistDlg::OnPaint()  {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
-    CClientDC dc(this);
+    CClientDC dc(GetDlgItem(IDC_STATICPANEL));
     m_poly.paint(dc);
+    if(m_maxIndex1 >= 0) {
+      const CPoint &p1 = m_poly.point(m_maxIndex1);
+      const CPoint &p2 = m_poly.point(m_maxIndex2);
+      dc.MoveTo(p1);
+      dc.LineTo(p2);
+    }
   }
 }
 
@@ -288,58 +150,114 @@ HCURSOR CPolygondistDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
 }
 
+CPoint CPolygondistDlg::dlgToPanel(CPoint p) const {
+  ClientToScreen(&p);
+  GetDlgItem(IDC_STATICPANEL)->ScreenToClient(&p);
+  return p;
+}
+
+void CPolygondistDlg::showInfo(const TCHAR *format, ...) {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format, argptr);
+  va_end(argptr);
+  setWindowText(this, IDC_STATICINFO, msg);
+}
+
 void CPolygondistDlg::OnLButtonUp(UINT nFlags, CPoint point)  {
   CDialog::OnLButtonUp(nFlags, point);
 }
 
 void CPolygondistDlg::OnLButtonDown(UINT nFlags, CPoint point)  {
+  point = dlgToPanel(point);
   m_poly.addPoint(point);
+  clearMax();
   Invalidate();
   CDialog::OnLButtonDown(nFlags, point);
 }
 
 void CPolygondistDlg::OnRButtonDown(UINT nFlags, CPoint point)  {
+  point = dlgToPanel(point);
   m_poly.removeNearest(point);
+  clearMax();
   Invalidate();
   CDialog::OnRButtonDown(nFlags, point);
 }
 
-void CPolygondistDlg::OnButtonfindmaxdist()  {
-  int index1 = m_poly.findTopPoint();
-  int index2 = m_poly.findBottomPoint();
+#define RED   RGB(255,0,0)
+#define GREEN RGB(0,255,0)
+#define BLUE  RGB(0,0,255)
+
+void CPolygondistDlg::clearMax() {
+  m_maxIndex1 = m_maxIndex2 = -1;
+}
+
+void CPolygondistDlg::OnToolsFindmaxdistance() {
+  const UINT n      = m_poly.getPointCount();
+  UINT       index1 = m_poly.findTopPoint();
+  UINT       index2 = m_poly.findBottomPoint();
   if(index1 < 0) {
     MessageBox(_T("Ingen punkter i polygon"));
     return;
   }
-  CClientDC dc(this);
-  CRect r = getClientRect(this);
+  CWnd       *panel = GetDlgItem(IDC_STATICPANEL); 
+  CClientDC   dc(panel);
+  const CRect rect  = getClientRect(panel);
 
-  CPoint p1 = m_poly.point(index1);
-  CPoint p2 = m_poly.point(index2);
-  line l1(p1,CPoint(p1.x+1,p1.y));
-  line l2(p2,CPoint(p2.x-1,p2.y));
-  l1.paint(dc,r);
-  l2.paint(dc,r);
-  vector v1(l1.m_p1,l1.m_p2);
-  vector v2(l2.m_p1,l2.m_p2);
-  for(int i = 0; i < m_poly.pointCount(); i++) {
-    UINT newi1 = (index1 + 1) % m_poly.pointCount();
-    UINT newi2 = (index2 + 1) % m_poly.pointCount();
-    vector newv1(p1,m_poly.point(newi1));
-    vector newv2(p2,m_poly.point(newi2));
-    if(angle(v1,newv1) < angle(v2,newv2)) {
-      v1 = newv1;
-    } else {
-      v2 = newv2;
+  UINT          nextI1 = (index1 + 1) % n;
+  UINT          nextI2 = (index2 + 1) % n;
+  const CPoint *p1     = &m_poly.point(index1);
+  const CPoint *p2     = &m_poly.point(index2);
+  const CPoint *nextP1 = &m_poly.point(nextI1);
+  const CPoint *nextP2 = &m_poly.point(nextI2);
+  vector        v1(    *p1,CPoint(p1->x+10,p1->y));
+  vector        v2(    *p2,CPoint(p2->x-10,p2->y));
+  vector        nextV1(*p1,*nextP1);
+  vector        nextV2(*p2,*nextP2);
+  double        angle1 = angle(v1, nextV1);
+  double        angle2 = angle(v2, nextV2);
+
+  line(*p1,v1).paint(dc,rect, RED );
+  line(*p2,v2).paint(dc,rect, BLUE);
+  UINT max1, max2, maxDist2 = 0;
+  for(int i = 0; i < m_poly.getPointCount(); i++) {
+    const UINT d2 = dist2(*p1,*p2);
+    if (d2 > maxDist2) {
+      maxDist2 = d2;
+      max1 = index1;
+      max2 = index2;
     }
-    Sleep(1000);
+    if(angle1 < angle2) {
+      index1 = nextI1; nextI1 = (nextI1 + 1) % n;
+      p1     = nextP1; nextP1 = &m_poly.point(nextI1);
+      v1     = nextV1; nextV1 = vector(*p1,*nextP1);
+      v2     = -v1;
+      angle2 -= angle1;
+      angle1 = angle(v1,nextV1);
+      line(*p1, v1).paint(dc,rect, RED );
+      line(*p2, v2).paint(dc,rect, BLUE);
+    } else {
+      index2 = nextI2; nextI2 = (nextI2 + 1) % n;
+      p2     = nextP2; nextP2 = &m_poly.point(nextI2);
+      v2     = nextV2; nextV2 = vector(*p2,*nextP2);
+      v1     = -v2;
+      angle1 -= angle2;
+      angle2 = angle(v2, nextV2);
+
+      line(*p1, v1).paint(dc,rect, RED );
+      line(*p2, v2).paint(dc,rect, BLUE);
+    }
+    Sleep(2000);
   }
+  m_maxIndex1 = max1;
+  m_maxIndex2 = max2;
+  Invalidate();
+
 }
 
 void CPolygondistDlg::OnMouseMove(UINT nFlags, CPoint point)  {
-  CClientDC dc(this);
-
+  point = dlgToPanel(point);
   const double k = m_poly.pointInside(point);
-  textOut(dc,1,10,format(_T("(%3d,%3d):%lf      "),point.x,point.y,k));
+  showInfo(_T("(%3d,%3d):%lf      "),point.x,point.y, k);
   CDialog::OnMouseMove(nFlags, point);
 }

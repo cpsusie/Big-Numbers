@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{0A6A6946-0506-4AE4-9C3D-33C341A4557A}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>PolygonDist</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -263,8 +264,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="polygondist.cpp" />
-    <ClCompile Include="polygondistDlg.cpp" />
+    <ClCompile Include="PolygonDist.cpp" />
+    <ClCompile Include="PolygonDistDlg.cpp" />
+    <ClCompile Include="PolygonTools.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -277,22 +279,28 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="polygondist.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="polygondist.h" />
-    <ClInclude Include="polygondistDlg.h" />
-    <ClInclude Include="Resource.h" />
+    <ClInclude Include="PolygonDist.h" />
+    <ClInclude Include="PolygonDistDlg.h" />
+    <ClInclude Include="PolygonTools.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\polygondist.ico" />
+    <ResourceCompile Include="PolygonDist.rc" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\polygondist.rc2" />
+    <Image Include="res\PolygonDist.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\PolygonDist.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="polygondist.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>

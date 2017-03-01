@@ -15,10 +15,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="polygondist.cpp">
+    <ClCompile Include="PolygonDist.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="polygondistDlg.cpp">
+    <ClCompile Include="PolygonDistDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PolygonTools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp">
@@ -26,35 +29,38 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="polygondist.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="polygondist.h">
+    <ClInclude Include="PolygonDist.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="polygondistDlg.h">
+    <ClInclude Include="PolygonDistDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="StdAfx.h">
+    <ClInclude Include="PolygonTools.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\polygondist.ico">
+    <ResourceCompile Include="PolygonDist.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\PolygonDist.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\polygondist.rc2">
+    <None Include="res\PolygonDist.rc2">
       <Filter>Resource Files</Filter>
-    </CustomBuild>
+    </None>
   </ItemGroup>
 </Project>
