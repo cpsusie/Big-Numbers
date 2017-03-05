@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{A79A7585-7D8B-4527-BE0F-5042CDB7E29F}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>RegularPolyeder</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -114,7 +115,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Debug\regpoly.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug\RegularPolyeder.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -153,7 +154,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Debug\regpoly.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Debug\RegularPolyeder.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -191,7 +192,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Release\regpoly.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release\RegularPolyeder.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -228,7 +229,7 @@
       <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Midl>
-      <TypeLibraryName>.\Release\regpoly.tlb</TypeLibraryName>
+      <TypeLibraryName>.\Release\RegularPolyeder.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -246,7 +247,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="regpoly.cpp" />
+    <ClCompile Include="RegularPolyeder.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

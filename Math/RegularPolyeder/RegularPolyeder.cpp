@@ -156,21 +156,25 @@ static void find_okta_theta() {
 }
 
 // ----------------------------------------------------------
+typedef enum {
+  FORMAT_WAVEFRONT
+ ,FORMAT_MSDDRAW
+} PrintFormat;
 
 class Face {
 private:
-  int m_n;
+  int         m_n;
 public:
-  int m_p[5];
-  D3DXVECTOR3 normal;
+  int         m_p[5];
+  D3DXVECTOR3 m_normal;
 
   Face();
-  int  pcount() const { return m_n; }
+  int  getPointCount() const { return m_n; }
   void addPoint(int p);
   bool hasEdge(int i1, int i2) const;
   bool hasPoint(int p) const;
   void reverseOrder();
-  void print(FILE *f = stdout) const;
+  void print(FILE *f, PrintFormat pf) const;
 };
 
 Face::Face() {
@@ -183,53 +187,72 @@ void Face::addPoint(int p) {
 }
 
 bool Face::hasEdge(int i1, int i2) const {
-  for(int i = 0; i < m_n; i++)
+  for(int i = 0; i < m_n; i++) {
     if(m_p[i] == i1) {
       if(i > 0 && i < m_n - 1) {
-        if(m_p[i-1] == i2 || m_p[i+1] == i2)
+        if(m_p[i-1] == i2 || m_p[i+1] == i2) {
           return true;
+        }
       }
-      if(i == 0 && (m_p[m_n-1] == i2 || m_p[1] == i2))
+      if(i == 0 && (m_p[m_n-1] == i2 || m_p[1] == i2)) {
         return true;
-      if(i == m_n-1 && (m_p[0] == i2 || m_p[m_n-2] == i2))
+      }
+      if(i == m_n-1 && (m_p[0] == i2 || m_p[m_n-2] == i2)) {
         return true;
+      }
     }
+  }
   return false;
 }
 
 bool Face::hasPoint(int p) const {
-  for(int i = 0; i < m_n; i++)
-    if(m_p[i] == p)
+  for(int i = 0; i < m_n; i++) {
+    if(m_p[i] == p) {
       return true;
+    }
+  }
   return false;
 }
 
 bool operator==(const Face &p1, const Face &p2) {
-  int pcount = p1.pcount();
-  if(p2.pcount() != pcount)
+  const int pcount = p1.getPointCount();
+  if(p2.getPointCount() != pcount) {
     return false;
-  for(int i = 0; i < pcount; i++)
-    if(p1.m_p[i] != p2.m_p[i])
+  }
+  for(int i = 0; i < pcount; i++) {
+    if(p1.m_p[i] != p2.m_p[i]) {
       return false;
+    }
+  }
   return true;
 }
 
 void Face::reverseOrder() {
-  int n = m_n / 2;
-  for(int i = 0; i < n; i++)
+  const int n = m_n / 2;
+  for(int i = 0; i < n; i++) {
     ::swap(m_p[i],m_p[m_n-1-i]);
+  }
 }
 
-void Face::print(FILE *f) const {
-  _ftprintf(f,_T("%d;"),m_n);
-  for(int i = 0; i < m_n; i++)
-    _ftprintf(f,_T("%d%c"),m_p[i],(i==m_n-1)?';':',');
+void Face::print(FILE *f, PrintFormat pf) const {
+  switch(pf) {
+  case FORMAT_WAVEFRONT:
+  case FORMAT_MSDDRAW  :
+    { _ftprintf(f,_T("%d;"),m_n);
+      for(int i = 0; i < m_n; i++) {
+        _ftprintf(f,_T("%d%c"),m_p[i],(i==m_n-1)?';':',');
+      }
+    }
+    break;
+  }
 }
 
 class RegPolyEder {
 private:
+  const PrintFormat         m_printFormat;
   CompactArray<D3DXVECTOR3> m_points;
-  Array<Face>               m_faces;
+  CompactArray<Face>        m_faces;
+
   int         edgeCount(int i1, int i2) const;
   int         findFace(const Face &p) const;
   int         findPoint(const D3DXVECTOR3 &p) const;
@@ -239,29 +262,33 @@ private:
   void        adjustOrder();
   D3DXVECTOR3 getMiddlePoint(int f) const;
   void        makeFace(int corners, double theta, const D3DXVECTOR3 &start, const D3DXVECTOR3 &normal, const D3DXVECTOR3 &dir, int s);
-  bool        faceOrder(int f) const;
+  bool        hasRightFaceOrder(int f) const;
+  void        printWaveFront(FILE *f) const;
+  void        printDDraw(    FILE *f) const;
 public:
-  void print(FILE *f = stdout) const;
-  RegPolyEder(int facecount);
+  RegPolyEder(int facecount, PrintFormat pf);
   void scale(double factor);
   double sideLength()  const;
   double outerRadius() const;
   double innerRadius() const;
+  void print(FILE *f = stdout) const;
 };
 
 int RegPolyEder::findPoint(const D3DXVECTOR3 &p) const {
-  size_t pn = m_points.size();
+  const size_t pn = m_points.size();
   for(size_t i = 0; i < pn; i++) {
-    double d = dist(m_points[i],p);
+    const double d = dist(m_points[i],p);
     if(d < 1e-2) return (int)i;
   }
   return -1;
 }
 
 int RegPolyEder::findFace(const Face &p) const {
-  for(size_t i = 0; i < m_faces.size(); i++)
-    if(m_faces[i] == p)
+  for(size_t i = 0; i < m_faces.size(); i++) {
+    if(m_faces[i] == p) {
       return (int)i;
+    }
+  }
   return -1;
 }
 
@@ -279,8 +306,9 @@ D3DXVECTOR3 RegPolyEder::getNormal(int p) const {
   n.x = n.y = n.z = 0;
   for(size_t i = 0; i < m_faces.size(); i++) {
     const Face &face = m_faces[i];
-    if(face.hasPoint(p))
-      n += face.normal;
+    if(face.hasPoint(p)) {
+      n += face.m_normal;
+    }
   }
   return n;
 }
@@ -289,7 +317,7 @@ D3DXVECTOR3 RegPolyEder::getMiddlePoint(int f) const {
   D3DXVECTOR3 m;
   m.x = m.y = m.z = 0;
   const Face &face = m_faces[f];
-  int pcount = face.pcount();
+  const int pcount = face.getPointCount();
   for(int i = 0; i < pcount; i++) {
     const D3DXVECTOR3 &p = m_points[face.m_p[i]];
     m += p;
@@ -301,7 +329,7 @@ D3DXVECTOR3 RegPolyEder::getMiddlePoint(int f) const {
 void RegPolyEder::adjustPoints() {
   D3DXVECTOR3 m;
   m.x = m.y = m.z = 0;
-  size_t pn = m_points.size();
+  const size_t pn = m_points.size();
   for(size_t i = 0; i < pn; i++) {
     m += m_points[i];
   }
@@ -314,33 +342,44 @@ void RegPolyEder::adjustPoints() {
 void RegPolyEder::adjustNormals() {
   for(size_t f = 0; f < m_faces.size(); f++) {
     Face &face = m_faces[f];
-    face.normal = getMiddlePoint((int)f);
-    face.normal /= length(face.normal);
+    face.m_normal = getMiddlePoint((int)f);
+    face.m_normal /= length(face.m_normal);
   }
 }
 
 void RegPolyEder::adjustOrder() {
   for(size_t f = 0; f < m_faces.size(); f++) {
-    if(!faceOrder((int)f)) {
+    if(!hasRightFaceOrder((int)f)) {
       m_faces[f].reverseOrder();
     }
   }
 }
 
-bool RegPolyEder::faceOrder(int f) const {
+bool RegPolyEder::hasRightFaceOrder(int f) const {
   const Face &face = m_faces[f];
-  D3DXMATRIX m;
-  for(int i = 0; i < 3; i++) {
-    const D3DXVECTOR3 &p = m_points[face.m_p[i]];
-    m(0,i) = p.x; m(1,i) = p.y; m(2,i) = p.z;
+  switch(m_printFormat) {
+  case FORMAT_WAVEFRONT:
+    return crossProduct(m_points[face.m_p[0]], m_points[face.m_p[1]]) * m_points[face.m_p[2]] > 0;
+
+  case FORMAT_MSDDRAW  :
+    { D3DXMATRIX m;
+      for(int i = 0; i < 3; i++) {
+        const D3DXVECTOR3 &p = m_points[face.m_p[i]];
+        m(0,i) = p.x; m(1,i) = p.y; m(2,i) = p.z;
+      }
+      return det(m) > 0;
+    }
+  default:
+    throwInvalidArgumentException(__TFUNCTION__, _T("printformat=%d"), m_printFormat);
+    return false;
   }
-  return det(m) > 0;
 }
 
 void RegPolyEder::scale(double factor) {
   size_t pn = m_points.size();
-  for(size_t i = 0; i < pn; i++)
+  for(size_t i = 0; i < pn; i++) {
     m_points[i] *= (float)factor;
+  }
 }
 
 double RegPolyEder::sideLength() const {
@@ -357,6 +396,35 @@ double RegPolyEder::innerRadius() const {
 }
 
 void RegPolyEder::print(FILE *f) const {
+  switch(m_printFormat) {
+  case FORMAT_WAVEFRONT: printWaveFront(f); break;
+  case FORMAT_MSDDRAW  : printDDraw(f);     break;
+  }
+}
+
+void RegPolyEder::printWaveFront(FILE *f) const {
+  const size_t pn = m_points.size();
+  for (size_t i = 0; i < pn; i++) {
+    const D3DXVECTOR3 &v = m_points[i];
+    _ftprintf(f, _T("v %f %f %f\n"), v.x, v.y, v.z);
+  }
+  const size_t fn = m_faces.size();
+  for (size_t i = 0; i < fn; i++) {
+    const D3DXVECTOR3 normal = m_faces[i].m_normal;
+    _ftprintf(f, _T("vn %f %f %f\n"), normal.x, normal.y, normal.z);
+  }
+  for (size_t i = 0; i < fn; i++) {
+    const Face &face = m_faces[i];
+    const int pcount = face.getPointCount();
+    _ftprintf(f, _T("f"));
+    for(int p = 0; p < pcount; p++) {
+      _ftprintf(f, _T(" %d//%d"), face.m_p[p]+1, (int)i+1);
+    }
+    _ftprintf(f, _T("\n"));
+  }
+}
+
+void RegPolyEder::printDDraw(FILE *f) const {
   _ftprintf(f,_T("%s"),
               _T("xof 0303txt 0032\n\n"
                  "Header {\n"
@@ -375,7 +443,7 @@ void RegPolyEder::print(FILE *f) const {
   size_t fn = m_faces.size();
   _ftprintf(f,_T("%d;\n"),(int)fn);
   for(size_t i = 0; i < fn; i++) {
-    m_faces[i].print(f);
+    m_faces[i].print(f, FORMAT_MSDDRAW);
     _ftprintf(f,_T("%c\n"),(i == fn-1)?';':',');
   }
 
@@ -397,12 +465,12 @@ void RegPolyEder::print(FILE *f) const {
   _ftprintf(f,_T("%d;\n"), (int)fn);
   for(size_t i = 0; i < fn; i++) {
     const Face &face = m_faces[i];
-    ::print(face.normal,f);
+    ::print(face.m_normal,f);
     _ftprintf(f,_T("%c\n"),(i == fn-1)?';':',');
   }
   _ftprintf(f,_T("%d;\n"), (int)fn);
   for(size_t i = 0; i < fn; i++) {
-    int pcount = m_faces[i].pcount();
+    int pcount = m_faces[i].getPointCount();
     _ftprintf(f,_T("%d;"),pcount);
     for(int k = 0; k < pcount; k++) {
       _ftprintf(f,_T("%d%c"),(int)i,(k==pcount-1)?';':',');
@@ -436,7 +504,7 @@ void RegPolyEder::makeFace(int corners, double theta, const D3DXVECTOR3 &start, 
     p += d;
     d = rotate(d,normal,GRAD2RAD(s*v));
   }
-  f.normal = normal;
+  f.m_normal = normal;
 //  f.print();
 //  _tprintf(_T("\n"));
   if(findFace(f) < 0) {
@@ -465,7 +533,9 @@ void RegPolyEder::makeFace(int corners, double theta, const D3DXVECTOR3 &start, 
 #define dodeka_theta 63.43494655075848
 #define ikosa_theta  41.81031422363637
 
-RegPolyEder::RegPolyEder(int facecount) {
+RegPolyEder::RegPolyEder(int facecount, PrintFormat printFormat) 
+: m_printFormat(printFormat)
+{
   D3DXVECTOR3 start,normal,dir;
   start.x  = start.y  = start.z = 0;
   normal.x = normal.y = 0; normal.z = 1;
@@ -495,7 +565,7 @@ RegPolyEder::RegPolyEder(int facecount) {
 }
 
 static void usage(){
-  _ftprintf(stderr, _T("usage:regpoly [-ssize] [-e|-o|-i] [4|6|8|12|20]\n"));
+  _ftprintf(stderr, _T("Usage:RegularPolyeder [-ssize] [-fW|D] [-e|-o|-i] [4|6|8|12|20]\n"));
   exit(-1);
 }
 
@@ -506,16 +576,24 @@ typedef enum {
 } SCALEBY;
 
 int main(int argc, char **argv) {
-  char   *cp;
-  int     facecount = 4;
-  double  size      = 1;
-  SCALEBY scaleby   = SCALEBY_EDGELENGTH;
+  char       *cp;
+  int         faceCount   = 4;
+  double      size        = 1;
+  SCALEBY     scaleby     = SCALEBY_EDGELENGTH;
+  PrintFormat printFormat = FORMAT_WAVEFRONT;
 
   for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
     for(cp++; *cp; cp++) {
       switch(*cp) {
       case 's':
         if(sscanf(cp+1,"%le",&size) != 1) usage();
+        break;
+      case 'f':
+        switch (cp[1]) {
+        case 'W': printFormat = FORMAT_WAVEFRONT; break;
+        case 'D': printFormat = FORMAT_MSDDRAW  ; break;
+        default : usage();
+        }
         break;
       case 'e':
         scaleby = SCALEBY_EDGELENGTH; continue;
@@ -531,19 +609,24 @@ int main(int argc, char **argv) {
   }
 
   if(*argv) {
-    sscanf(*argv,"%d",&facecount);
+    sscanf(*argv, "%d", &faceCount);
   }
-  char *fname = "tetraeder.x";
-  switch(facecount) {
-  case 4: fname = "tetraeder.x" ; break;
-  case 6: fname = "hexaeder.x"  ; break;
-  case 8: fname = "oktaeder.x"  ; break;
-  case 12:fname = "dodekaeder.x"; break;
-  case 20:fname = "ikosaeder.x" ; break;
+  String fname = _T("tetraeder");
+  switch(faceCount) {
+  case 4: fname = _T("tetraeder" ); break;
+  case 6: fname = _T("hexaeder"  ); break;
+  case 8: fname = _T("oktaeder"  ); break;
+  case 12:fname = _T("dodekaeder"); break;
+  case 20:fname = _T("ikosaeder" ); break;
   }
 
+  if (printFormat == FORMAT_WAVEFRONT) {
+    fname += _T(".obj");
+  } else {
+    fname += _T(".x");
+  }
   try {
-    RegPolyEder polyEder(facecount);
+    RegPolyEder polyEder(faceCount, printFormat);
     double scaleFactor;
     switch(scaleby) {
     case SCALEBY_EDGELENGTH :
@@ -557,7 +640,7 @@ int main(int argc, char **argv) {
       break;
     }
     polyEder.scale(scaleFactor);
-    FILE *f = fopen(fname,"w");
+    FILE *f = fopen(fname, _T("w"));
     if(f != NULL) {
       polyEder.print(f);
       fclose(f);
