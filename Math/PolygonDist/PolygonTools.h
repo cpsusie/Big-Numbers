@@ -1,5 +1,7 @@
 #pragma once
 
+#include <MFCUtil/ViewPort2D.h>
+
 inline UINT dist2(const CPoint &p1, const CPoint &p2) {
   return sqr(p1.x-p2.x) + sqr(p1.y-p2.y);
 }
@@ -7,6 +9,8 @@ inline UINT dist2(const CPoint &p1, const CPoint &p2) {
 inline double dist(const CPoint &p1, const CPoint &p2) {
   return sqrt(dist2(p1,p2));
 }
+
+void paintCross(CDC &dc, const CPoint &p, COLORREF color=0, int size=2);
 
 class vector {
 public:
@@ -73,6 +77,9 @@ private:
   void paintVertex(CDC &dc, int index, const CPoint &center) const;
   CPoint getCenter() const;
 public:
+  inline void clear() {
+    m_points.clear();
+  }
   void paint(CDC &dc) const;
   void convexHull();
   void addPoint(const CPoint &p);

@@ -80,7 +80,12 @@ BEGIN
     END
     POPUP "Tools"
     BEGIN
-        MENUITEM "Find max distance\tCtrl+M",   ID_TOOLS_FINDMAXDISTANCE
+        MENUITEM "Draw 2 &lines\tF4",           ID_TOOLS_INTERSECTIONOFLINES
+        MENUITEM "Draw &polygon\tF5",           ID_TOOLS_DRAWPOLYGON
+        MENUITEM SEPARATOR
+        MENUITEM "Find &max distance\tCtrl+M",  ID_TOOLS_FINDMAXDISTANCE
+        MENUITEM "Find &intersection of lines\tCtrl+I", ID_TOOLS_FINDINTERSECTIONOFLINES
+        MENUITEM "&Clear\tAlt+C",               ID_TOOLS_CLEAR
     END
     POPUP "&Help"
     BEGIN
@@ -97,6 +102,10 @@ END
 IDR_MAINFRAME ACCELERATORS
 BEGIN
     "M",            ID_TOOLS_FINDMAXDISTANCE, VIRTKEY, CONTROL, NOINVERT
+    VK_F5,          ID_TOOLS_DRAWPOLYGON,   VIRTKEY, NOINVERT
+    "C",            ID_TOOLS_CLEAR,         VIRTKEY, ALT, NOINVERT
+    "I",            ID_TOOLS_FINDINTERSECTIONOFLINES, VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          ID_TOOLS_INTERSECTIONOFLINES, VIRTKEY, NOINVERT
 END
 
 #endif    // Danish (Denmark) resources

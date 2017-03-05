@@ -31,6 +31,12 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
+#define RED   RGB(255,0,0)
+#define GREEN RGB(0,255,0)
+#define BLUE  RGB(0,0,255)
+#define BLACK RGB(0,0,0  )
+#define WHITE RGB(255.255.255)
+
 
 CPolygondistDlg::CPolygondistDlg(CWnd *pParent)
   : CDialog(CPolygondistDlg::IDD, pParent) {
@@ -45,15 +51,19 @@ BEGIN_MESSAGE_MAP(CPolygondistDlg, CDialog)
     ON_WM_SYSCOMMAND()
     ON_WM_PAINT()
     ON_WM_QUERYDRAGICON()
-    ON_WM_LBUTTONUP()
+    ON_WM_CLOSE()
+    ON_WM_SIZE()
     ON_WM_LBUTTONDOWN()
+    ON_WM_LBUTTONUP()
     ON_WM_RBUTTONDOWN()
     ON_WM_MOUSEMOVE()
-    ON_COMMAND(ID_FILE_EXIT            , OnFileExit            )
-    ON_COMMAND(ID_TOOLS_FINDMAXDISTANCE, OnToolsFindmaxdistance)
-    ON_COMMAND(ID_HELP_ABOUTPOLYGONDIST, OnHelpAboutpolygondist)
-  ON_WM_CLOSE()
-  ON_WM_SIZE()
+    ON_COMMAND(ID_FILE_EXIT                    , OnFileExit                    )
+    ON_COMMAND(ID_TOOLS_INTERSECTIONOFLINES    , OnToolsIntersectionOfLines    )
+    ON_COMMAND(ID_TOOLS_DRAWPOLYGON            , OnToolsDrawPolygon            )
+    ON_COMMAND(ID_TOOLS_FINDMAXDISTANCE        , OnToolsFindMaxDistance        )
+    ON_COMMAND(ID_TOOLS_FINDINTERSECTIONOFLINES, OnToolsFindIntersectionOfLines)
+    ON_COMMAND(ID_HELP_ABOUTPOLYGONDIST        , OnHelpAboutPolygonDist        )
+  ON_COMMAND(ID_TOOLS_CLEAR, &CPolygondistDlg::OnToolsClear)
 END_MESSAGE_MAP()
 
 BOOL CPolygondistDlg::OnInitDialog() {
@@ -89,6 +99,10 @@ void CPolygondistDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   }
 }
 
+HCURSOR CPolygondistDlg::OnQueryDragIcon() {
+  return (HCURSOR)m_hIcon;
+}
+
 void CPolygondistDlg::OnOK() {
 }
 void CPolygondistDlg::OnCancel() {
@@ -99,7 +113,7 @@ void CPolygondistDlg::OnClose() {
 void CPolygondistDlg::OnFileExit() {
   EndDialog(IDOK);
 }
-void CPolygondistDlg::OnHelpAboutpolygondist() {
+void CPolygondistDlg::OnHelpAboutPolygonDist() {
   CAboutDlg dlg;
   dlg.DoModal();
 }
@@ -136,18 +150,35 @@ void CPolygondistDlg::OnPaint()  {
   } else {
     CDialog::OnPaint();
     CClientDC dc(GetDlgItem(IDC_STATICPANEL));
-    m_poly.paint(dc);
-    if(m_maxIndex1 >= 0) {
-      const CPoint &p1 = m_poly.point(m_maxIndex1);
-      const CPoint &p2 = m_poly.point(m_maxIndex2);
-      dc.MoveTo(p1);
-      dc.LineTo(p2);
+    switch(m_mode) {
+    case POLYGONMODE         : 
+      m_poly.paint(dc);
+      if(m_maxIndex1 >= 0) {
+        const CPoint &p1 = m_poly.point(m_maxIndex1);
+        const CPoint &p2 = m_poly.point(m_maxIndex2);
+        CPen pen;
+        pen.CreatePen(PS_SOLID, 1, BLACK);
+        CPen *oldPen = dc.SelectObject(&pen);
+        dc.MoveTo(p1);
+        dc.LineTo(p2);
+        dc.SelectObject(oldPen);
+      }
+      break;
+    case LINEINTERSECTIONMODE:
+      { const CRect r = getClientRect(this, IDC_STATICPANEL);
+        for(size_t i = 0; i < m_point4.size(); i++) {
+          paintCross(dc, m_point4[i]);
+        }
+        if(m_point4.size() >= 2) {
+          line(m_point4[0], m_point4[1]).paint(dc, r, BLACK);
+        }
+        if(m_point4.size() == 4) {
+          line(m_point4[2], m_point4[3]).paint(dc, r, BLACK);
+        }
+      }
+      break;
     }
   }
-}
-
-HCURSOR CPolygondistDlg::OnQueryDragIcon() {
-  return (HCURSOR)m_hIcon;
 }
 
 CPoint CPolygondistDlg::dlgToPanel(CPoint p) const {
@@ -164,35 +195,91 @@ void CPolygondistDlg::showInfo(const TCHAR *format, ...) {
   setWindowText(this, IDC_STATICINFO, msg);
 }
 
-void CPolygondistDlg::OnLButtonUp(UINT nFlags, CPoint point)  {
-  CDialog::OnLButtonUp(nFlags, point);
-}
-
 void CPolygondistDlg::OnLButtonDown(UINT nFlags, CPoint point)  {
   point = dlgToPanel(point);
-  m_poly.addPoint(point);
-  clearMax();
+  switch(m_mode) {
+  case POLYGONMODE         : OnLButtonDownPoly( nFlags, point); break;
+  case LINEINTERSECTIONMODE: OnLButtonDownLines(nFlags, point); break;
+  }
   Invalidate();
   CDialog::OnLButtonDown(nFlags, point);
 }
 
+void CPolygondistDlg::OnLButtonUp(UINT nFlags, CPoint point)  {
+  point = dlgToPanel(point);
+  switch(m_mode) {
+  case POLYGONMODE         : OnLButtonUpPoly( nFlags, point); break;
+  case LINEINTERSECTIONMODE: OnLButtonUpLines(nFlags, point); break;
+  }
+}
+
 void CPolygondistDlg::OnRButtonDown(UINT nFlags, CPoint point)  {
   point = dlgToPanel(point);
-  m_poly.removeNearest(point);
-  clearMax();
+  switch(m_mode) {
+  case POLYGONMODE         : OnRButtonDownPoly( nFlags, point); break;
+  case LINEINTERSECTIONMODE: OnRButtonDownLines(nFlags, point); break;
+  }
   Invalidate();
   CDialog::OnRButtonDown(nFlags, point);
 }
 
-#define RED   RGB(255,0,0)
-#define GREEN RGB(0,255,0)
-#define BLUE  RGB(0,0,255)
+// ------------------------------- lines ----------------------------------
+
+void CPolygondistDlg::OnLButtonDownLines(UINT nFlags, CPoint point) {
+  if (m_point4.size() < 4) {
+    m_point4.add(point);
+    enableMenuItem(this, ID_TOOLS_FINDINTERSECTIONOFLINES, m_point4.size() == 4);
+  }
+}
+
+void CPolygondistDlg::OnLButtonUpLines(UINT nFlags, CPoint point) {
+
+}
+void CPolygondistDlg::OnRButtonDownLines(UINT nFlags, CPoint point) {
+
+}
+
+// --------------------- Poly --------------------------------------------
+
+void CPolygondistDlg::OnLButtonDownPoly(UINT nFlags, CPoint point) {
+  m_poly.addPoint(point);
+  clearMax();
+}
+
+void CPolygondistDlg::OnLButtonUpPoly(UINT nFlags, CPoint point) {
+}
+
+void CPolygondistDlg::OnRButtonDownPoly(UINT nFlags, CPoint point) {
+  m_poly.removeNearest(point);
+  clearMax();
+}
+
+void CPolygondistDlg::OnMouseMove(UINT nFlags, CPoint point)  {
+  point = dlgToPanel(point);
+  const double k = m_poly.pointInside(point);
+  showInfo(_T("(%3d,%3d):%lf      "),point.x,point.y, k);
+  CDialog::OnMouseMove(nFlags, point);
+}
 
 void CPolygondistDlg::clearMax() {
   m_maxIndex1 = m_maxIndex2 = -1;
 }
 
-void CPolygondistDlg::OnToolsFindmaxdistance() {
+void CPolygondistDlg::clearPoly() {
+  m_poly.clear();
+  clearMax();
+}
+
+void CPolygondistDlg::clearLines() {
+  m_point4.clear();
+}
+
+void CPolygondistDlg::clearPanel() {
+  clearLines();
+  clearPoly();
+}
+
+void CPolygondistDlg::OnToolsFindMaxDistance() {
   const UINT n      = m_poly.getPointCount();
   UINT       index1 = m_poly.findTopPoint();
   UINT       index2 = m_poly.findBottomPoint();
@@ -255,9 +342,52 @@ void CPolygondistDlg::OnToolsFindmaxdistance() {
 
 }
 
-void CPolygondistDlg::OnMouseMove(UINT nFlags, CPoint point)  {
-  point = dlgToPanel(point);
-  const double k = m_poly.pointInside(point);
-  showInfo(_T("(%3d,%3d):%lf      "),point.x,point.y, k);
-  CDialog::OnMouseMove(nFlags, point);
+void CPolygondistDlg::OnToolsFindIntersectionOfLines() {
+  if (m_point4.size() == 4) {
+    const Line2D l1(m_point4[0], m_point4[1]);
+    const Line2D l2(m_point4[2], m_point4[3]);
+    bool intersect;
+    const Point2DP p = pointOfIntersection(l1,l2, intersect);
+    if (!intersect) {
+      Message(_T("lines do not intersect"));
+      return;
+    }
+    CPoint cp = p;
+
+    paintCross(CClientDC(GetDlgItem(IDC_STATICPANEL)), p, RED, 5);
+  }
+}
+
+void CPolygondistDlg::OnToolsDrawPolygon() {
+  setDialogMode(POLYGONMODE);
+}
+
+void CPolygondistDlg::OnToolsIntersectionOfLines() {
+  setDialogMode(LINEINTERSECTIONMODE);
+}
+
+void CPolygondistDlg::setDialogMode(DialogMode mode) {
+  if(mode != m_mode) {
+    m_mode = mode;
+    switch(m_mode) {
+    case POLYGONMODE         :
+      checkMenuItem( this, ID_TOOLS_DRAWPOLYGON            , true );
+      checkMenuItem( this, ID_TOOLS_INTERSECTIONOFLINES    , false);
+      enableMenuItem(this, ID_TOOLS_FINDMAXDISTANCE        , true );
+      enableMenuItem(this, ID_TOOLS_FINDINTERSECTIONOFLINES, false);
+      break;
+    case LINEINTERSECTIONMODE:
+      checkMenuItem( this, ID_TOOLS_DRAWPOLYGON            , false);
+      checkMenuItem( this, ID_TOOLS_INTERSECTIONOFLINES    , true );
+      enableMenuItem(this, ID_TOOLS_FINDMAXDISTANCE        , false);
+      enableMenuItem(this, ID_TOOLS_FINDINTERSECTIONOFLINES, false);
+      break;
+    }
+    clearPanel();
+  }
+}
+
+void CPolygondistDlg::OnToolsClear() {
+  clearPanel();
+  Invalidate();
 }

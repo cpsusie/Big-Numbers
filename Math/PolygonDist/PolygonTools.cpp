@@ -1,5 +1,4 @@
 #include "StdAfx.h"
-#include <MFCUtil/ViewPort2D.h>
 #include "PolygonTools.h"
 
 double angle(const vector &v1, const vector &v2) {
@@ -96,24 +95,28 @@ double polygon::pointInside(const CPoint &p) const { // 1=inside, -1=outside, 0=
   return (abs(d) > 1) ? 1 : -1; // d always +/- 2PI or 0
 }
 
-static void paintCross(CDC &dc, const CPoint &p) {
-  dc.MoveTo(p.x-2,p.y-2);
-  dc.LineTo(p.x+2,p.y+2);
-  dc.MoveTo(p.x-2,p.y+2);
-  dc.LineTo(p.x+2,p.y-2);
+void paintCross(CDC &dc, const CPoint &p, COLORREF color, int size) {
+  CPen pen;
+  pen.CreatePen(PS_SOLID, 1, color);
+  CPen *oldPen = dc.SelectObject(&pen);
+  dc.MoveTo(p.x-size,p.y-size);
+  dc.LineTo(p.x+size,p.y+size);
+  dc.MoveTo(p.x-size,p.y+size);
+  dc.LineTo(p.x+size,p.y-size);
+  dc.SelectObject(oldPen);
 }
 
 void polygon::paintVertex(CDC &dc, int index, const CPoint &center) const {
   const CPoint &p = m_points[index];
   paintCross(dc,p);
   const String str = format(_T("%d"), index);
-  const CSize tsz = getTextExtent(dc, str);
-  vector cp(center, p);
-  const double l = cp.length();
+  const CSize  tsz = getTextExtent(dc, str);
+  const vector cp  = (getPointCount() < 2) ? vector(-1,0) : vector(center, p);
+  const double l   = cp.length();
   const double tcx = p.x + (double)cp.m_p.x / l * tsz.cx/2;
   const double tcy = p.y + (double)cp.m_p.y / l * tsz.cy/2;
-  const int tx0 = (int)(tcx - tsz.cx/2);
-  const int ty0 = (int)(tcy - tsz.cy/2);
+  const int    tx0 = (int)(tcx - tsz.cx/2);
+  const int    ty0 = (int)(tcy - tsz.cy/2);
   textOut(dc, tx0, ty0, str);
 }
 
