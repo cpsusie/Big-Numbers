@@ -27,6 +27,33 @@ Point2D Point2D::rotate(double rad) const {
   return result;
 }
 
+Point2D pointOfIntersection(const Line2D &line1, const Line2D &line2, bool &intersect) {
+  const double A11 = line1.m_p1.y       - line1.m_p2.y;
+  const double A12 = line1.m_p2.x       - line1.m_p1.x;
+  const double A21 = line2.m_p1.y       - line2.m_p2.y;
+  const double A22 = line2.m_p2.x       - line2.m_p1.x;
+
+  const double d  = A11 * A22 - A12 * A21;
+  if (d == 0) {
+    intersect = false;
+    return Point2D(0,0);
+  }
+  intersect = true;
+
+  const double B1  = line1.m_p1.x * A11 + line1.m_p1.y * A12;
+  const double B2  = line2.m_p1.x * A21 + line2.m_p1.y * A22;
+
+//  A11*x + A12*y = B1
+//  A21*x + A22*y = B2
+// d = | A11 A12 |  dx = | B1 A12 |  dy = | A11 B1 |
+//     | A21 A22 |       | B2 A22 |       | A21 B2 |
+// Cramers rule: (x,y) = (dx/d, dy/d)
+
+  const double dx = B1  * A22 - B2  * A12;
+  const double dy = A11 * B2  - A21 * B1;
+  return Point2D(dx/d, dy/d);
+}
+
 double distanceFromLine(const Line2D &line, const Point2D &p) {
   return distanceFromLine(line.m_p1, line.m_p2, p);
 }

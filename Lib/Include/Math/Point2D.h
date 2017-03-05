@@ -100,22 +100,21 @@ public:
 class Line2D {
 public:
   Point2D m_p1, m_p2;
-  Line2D(const Point2D &p1, Point2D &p2) { m_p1 = p1; m_p2 = p2; }
+  Line2D(const Point2D &p1, const Point2D &p2) { m_p1 = p1; m_p2 = p2; }
 };
 
 inline double distance(const Point2D &p1, const Point2D &p2) {
   return sqrt(sqr(p1.x - p2.x) + sqr(p1.y - p2.y));
 }
 
-double distanceFromLine(const Line2D &line, const Point2D &p);
-double distanceFromLineSegment(const Line2D &line, const Point2D &p);
-double distanceFromLine(const Point2D &lp0, const Point2D &lp1, const Point2D &p);
-double distanceFromLineSegment(const Point2D &lp0, const Point2D &lp1, const Point2D &p);
+Point2D pointOfIntersection(    const Line2D  &line1, const Line2D  &line2, bool &intersect);
+double  distanceFromLine(       const Line2D  &line , const Point2D &p);
+double  distanceFromLineSegment(const Line2D  &line , const Point2D &p);
+double  distanceFromLine(       const Point2D &lp0  , const Point2D &lp1, const Point2D &p);
+double  distanceFromLineSegment(const Point2D &lp0  , const Point2D &lp1, const Point2D &p);
 
 inline Point2D unit(const Point2D &p) {
-  Point2D result(p);
-  result.normalize();
-  return result;
+  return Point2D(p).normalize();
 }
 
 inline Point2D operator*(double factor, const Point2D &p) {
@@ -124,6 +123,10 @@ inline Point2D operator*(double factor, const Point2D &p) {
 
 inline double det(const Point2D &p1, const Point2D &p2) {
   return p1.x*p2.y - p1.y*p2.x;
+}
+
+inline bool isParallel(const Line2D &line1, const Line2D &line2) {
+  return det(line1.m_p2 - line1.m_p1, line2.m_p2 - line2.m_p1) == 0;
 }
 
 double angle(const Point2D &p1, const Point2D &p2);  // angle in radians between p1 and p2
