@@ -1,0 +1,358 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\sudoku.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\sudoku.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&New game\tCtrl+N",           ID_FILE_NEWGAME
+        MENUITEM "Select game...\tCtrl+I",      ID_FILE_SELECTGAME
+        MENUITEM "&Empty game",                 ID_FILE_EMPTYGAME
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...\tCtrl+A",         ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Game"
+    BEGIN
+        MENUITEM "&Clear unmarked\tCtrl+C",     ID_GAME_CLEARUNMARKED
+        MENUITEM "&Unmark all fields\tCtrl+M",  ID_GAME_UNMARKALLFIELDS
+        MENUITEM "Mark &errors\tCtrl+E",        ID_GAME_ERRORS
+        MENUITEM SEPARATOR
+        MENUITEM "&Lock fields\tCtrl+L",        ID_GAME_LOCKFIELDS
+        MENUITEM "&Open all fields\tCtrl+F",    ID_GAME_OPENALLFIELDS
+        MENUITEM SEPARATOR
+        MENUITEM "Show &time\tCtrl+T",          ID_GAME_SHOWTIME
+        MENUITEM "&Pause\tCtrl+P",              ID_GAME_PAUSE
+        MENUITEM "&Reset timer",                ID_GAME_RESETTIMER
+        MENUITEM SEPARATOR
+        MENUITEM "Le&vel...\tCtrl+V",           ID_GAME_LEVEL
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About Sudoku...",            ID_HELP_ABOUTSUDOKU
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_ACCELERATOR1 ACCELERATORS DISCARDABLE 
+BEGIN
+    "A",            ID_FILE_SAVEAS,         VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_GAME_CLEARUNMARKED,  VIRTKEY, CONTROL, NOINVERT
+    "E",            ID_GAME_ERRORS,         VIRTKEY, CONTROL, NOINVERT
+    "F",            ID_GAME_OPENALLFIELDS,  VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_FILE_SELECTGAME,     VIRTKEY, CONTROL, NOINVERT
+    "L",            ID_GAME_LOCKFIELDS,     VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_GAME_UNMARKALLFIELDS, VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEWGAME,        VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_GAME_PAUSE,          VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "T",            ID_GAME_SHOWTIME,       VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_GAME_LEVEL,          VIRTKEY, CONTROL, NOINVERT
+    VK_F4,          ID_FILE_EXIT,           VIRTKEY, ALT, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOGLEVEL DIALOG DISCARDABLE  0, 0, 186, 153
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Level"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         "&Very Easy",IDC_RADIOVERY_EASY,"Button",
+                    BS_AUTORADIOBUTTON,26,30,47,10
+    CONTROL         "&Easy",IDC_RADIOEASY,"Button",BS_AUTORADIOBUTTON,26,46,
+                    55,11
+    CONTROL         "&Medium",IDC_RADIOMEDIUM,"Button",BS_AUTORADIOBUTTON,26,
+                    63,56,13
+    CONTROL         "&Difficult",IDC_RADIODIFFICULT,"Button",
+                    BS_AUTORADIOBUTTON,26,82,54,17
+    CONTROL         "Very D&ifficult",IDC_RADIOVERY_DIFFICULT,"Button",
+                    BS_AUTORADIOBUTTON,26,105,68,16
+    GROUPBOX        "",IDC_STATIC,15,22,83,108
+END
+
+IDD_DIALOGSELECTGAME DIALOG DISCARDABLE  0, 0, 186, 121
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select game"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDITSEED,46,63,73,15,ES_AUTOHSCROLL
+    LTEXT           "Select af number from 0 to 4294967295",IDC_STATIC,23,28,
+                    75,15
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOGLEVEL, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 146
+    END
+
+    IDD_DIALOGSELECTGAME, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 114
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 265, 54
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About sudoku"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "sudoku Version 1.1 by Jesper Grønning Mikkelsen",
+                    IDC_STATIC,40,10,166,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2005",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,208,7,50,14,WS_GROUP
+END
+
+IDD_SUDOKU_DIALOG DIALOGEX 0, 0, 204, 134
+STYLE DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
+    WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "Sudoku"
+MENU IDR_MENU1
+FONT 18, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "&Solve",IDSOLVE,133,7,63,14
+    GROUPBOX        "",IDC_FRAME1,12,10,98,103
+    GROUPBOX        "",IDC_FRAME3,12,43,98,36
+    GROUPBOX        "",IDC_FRAME2,44,10,33,103
+    PUSHBUTTON      "&Count solutions",IDC_BUTTONCOUNT,133,25,63,14
+    LTEXT           "",IDC_STATICMESSAGE,115,78,79,30
+    LTEXT           "",IDC_STATICTIME,133,54,31,9,NOT WS_VISIBLE,
+                    WS_EX_CLIENTEDGE
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 258
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 47
+    END
+
+    IDD_SUDOKU_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 196
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 127
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,1,0,1
+ PRODUCTVERSION 1,1,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "sudoku\0"
+            VALUE "FileVersion", "1, 1, 0, 1\0"
+            VALUE "InternalName", "sudoku\0"
+            VALUE "LegalCopyright", "Copyright (C) 2005\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "sudoku.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "sudoku\0"
+            VALUE "ProductVersion", "1, 1, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_ABOUTBOX            "&About sudoku..."
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\sudoku.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
