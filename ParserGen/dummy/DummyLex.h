@@ -2,9 +2,11 @@
 #pragma once
 #include <Scanner.h>
 
+#line 3 "C:\\mytools2015\\ParserGen\\dummy\\Dummy.lex"
 class DummyLex : public Scanner {
 public:
   int getNextLexeme();
 };
 
+#line 5 "C:\\mytools2015\\ParserGen\\lib\\lexgencpp.par"
 
