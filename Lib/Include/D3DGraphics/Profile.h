@@ -222,5 +222,4 @@ bool operator!=(const ProfilePolygon &p1, const ProfilePolygon &p2);
 bool operator==(const Profile        &p1, const Profile        &p2);
 bool operator!=(const Profile        &p1, const Profile        &p2);
 
-void applyToBezier(const Point2D &start, const Point2D &cp1, const Point2D &cp2, const Point2D &end, CurveOperator &op, bool applyStart=true);
 LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided);

@@ -2,6 +2,7 @@
 #include <XMLDoc.h>
 #include <FileNameSplitter.h>
 #include <D3DGraphics/Profile.h>
+#include <MFCUtil/ShapeFunctions.h>
 
 // ------------------------------------ ProfileCurve ------------------------------
 

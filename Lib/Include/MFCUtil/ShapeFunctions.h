@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Point2D.h>
+#include "Point2DP.h"
 
 class PointOperator {
 public:

@@ -1,8 +1,8 @@
-#include "pch.h.h"
+#include "pch.h"
 #include <Math.h>
 #include <float.h>
-#include <PixRect.h>
-#include <ColorSpace.h>
+#include <MFCUtil/PixRect.h>
+#include <MFCUtil/ColorSpace.h>
 
 // --------------------------------- GrayScaleFilter --------------------------------- 
 
@@ -30,7 +30,7 @@ void SobelFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,RGB_MAKE(255,255,255));
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -47,15 +47,15 @@ void SobelFilter::apply(const CPoint &p) {
       const D3DCOLOR c = m_pixelAccessor->getPixel(p.x+i,p.y+j);
       const int fx = Gx[i+1][j+1];
       if(fx != 0) {
-        sumxR += fx * RGB_GETRED(c);
-        sumxG += fx * RGB_GETGREEN(c);
-        sumxB += fx * RGB_GETBLUE(c);
+        sumxR += fx * ARGB_GETRED(c);
+        sumxG += fx * ARGB_GETGREEN(c);
+        sumxB += fx * ARGB_GETBLUE(c);
       }
       const int fy = Gy[i+1][j+1];
       if(fy != 0) {
-        sumyR += fy * RGB_GETRED(c);
-        sumyG += fy * RGB_GETGREEN(c);
-        sumyB += fy * RGB_GETBLUE(c);
+        sumyR += fy * ARGB_GETRED(c);
+        sumyG += fy * ARGB_GETGREEN(c);
+        sumyB += fy * ARGB_GETBLUE(c);
       }
     }
   }
@@ -66,7 +66,7 @@ void SobelFilter::apply(const CPoint &p) {
   if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
   if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
   if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
-  m_resultPixelAccessor->setPixel(p,RGB_MAKE(255-SUMR,255-SUMG,255-SUMB));
+  m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
 // --------------------------------- LaplaceFilter --------------------------------- 
@@ -87,8 +87,8 @@ void LaplaceFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,RGB_MAKE(255,255,255));
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,RGB_MAKE(255,255,255));
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -103,15 +103,15 @@ void LaplaceFilter::apply(const CPoint &p) {
     for(int j = -2; j <= 2; j++) {
       D3DCOLOR c = m_pixelAccessor->getPixel(p.x+i,p.y+j);
       int f = MASK[i+2][j+2];
-      SUMR += f * RGB_GETRED(c);
-      SUMG += f * RGB_GETGREEN(c);
-      SUMB += f * RGB_GETBLUE(c);
+      SUMR += f * ARGB_GETRED(c);
+      SUMG += f * ARGB_GETGREEN(c);
+      SUMB += f * ARGB_GETBLUE(c);
     }
   }
   if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
   if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
   if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
-  m_resultPixelAccessor->setPixel(p,RGB_MAKE(255-SUMR,255-SUMG,255-SUMB));
+  m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255-SUMR,255-SUMG,255-SUMB));
 }
 
 // --------------------------------- GaussFilter --------------------------------- 
@@ -132,8 +132,8 @@ void GaussFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,RGB_MAKE(255,255,255));
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,RGB_MAKE(255,255,255));
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -148,16 +148,16 @@ void GaussFilter::apply(const CPoint &p) {
     for(int j = -2; j <= 2; j++) {
       D3DCOLOR c = m_pixelAccessor->getPixel(p.x+i,p.y+j);
       int f = MASK[i+2][j+2];
-      SUMR += f * RGB_GETRED(c);
-      SUMG += f * RGB_GETGREEN(c);
-      SUMB += f * RGB_GETBLUE(c);
+      SUMR += f * ARGB_GETRED(c);
+      SUMG += f * ARGB_GETGREEN(c);
+      SUMB += f * ARGB_GETBLUE(c);
     }
   }
   SUMR /= 115; SUMG /= 115; SUMB /= 115;
   if(SUMR > 255) SUMR = 255; else if(SUMR < 0) SUMR = 0;
   if(SUMG > 255) SUMG = 255; else if(SUMG < 0) SUMG = 0;
   if(SUMB > 255) SUMB = 255; else if(SUMB < 0) SUMB = 0;
-  m_resultPixelAccessor->setPixel(p,RGB_MAKE(SUMR,SUMG,SUMB));
+  m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(SUMR,SUMG,SUMB));
 }
 
 
@@ -172,8 +172,8 @@ void EdgeDirectionFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,RGB_MAKE(255,255,255));
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,RGB_MAKE(255,255,255));
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -190,15 +190,15 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
       const D3DCOLOR c = m_pixelAccessor->getPixel(p.x+i,p.y+j);
       const int fx = Gx[i+1][j+1];
       if(fx != 0) {
-        sumxR += fx * RGB_GETRED(c);
-        sumxG += fx * RGB_GETGREEN(c);
-        sumxB += fx * RGB_GETBLUE(c);
+        sumxR += fx * ARGB_GETRED(c);
+        sumxG += fx * ARGB_GETGREEN(c);
+        sumxB += fx * ARGB_GETBLUE(c);
       }
       const int fy = Gy[i+1][j+1];
       if(fx != 0) {
-        sumyR += fy * RGB_GETRED(c);
-        sumyG += fy * RGB_GETGREEN(c);
-        sumyB += fy * RGB_GETBLUE(c);
+        sumyR += fy * ARGB_GETRED(c);
+        sumyG += fy * ARGB_GETGREEN(c);
+        sumyB += fy * ARGB_GETBLUE(c);
       }
     }
   }
@@ -217,23 +217,23 @@ void EdgeDirectionFilter::apply(const CPoint &p) {
   const double theta = atan2(sumY,sumX);
   if(theta >= 0) {
     if(theta <= GRAD2RAD(22.5) || theta >= GRAD2RAD(157.5)) { // edge almost horizontal
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(intensity,0,0,0));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(0,intensity,0,0));
     } else if(theta <= GRAD2RAD(67.5)) {                      // 22.5 <  theta <= 67.5  => edge SW-NE
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(intensity,intensity,0,1));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(1, intensity,intensity,0));
     } else if(theta <= GRAD2RAD(112.5)) {                     // 67.5 <  theta <= 112.5 => edge almost vertical
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(0,intensity,0,2));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(2, 0,intensity,0));
     } else {                                                  // 112.5 < theta <  157.5 => edge NW-SE
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(0,0,intensity,3));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(3, 0,0,intensity));
     }
   } else { // theta < 0
     if(theta >= GRAD2RAD(-22.5) || theta <= GRAD2RAD(-157.5)) { // edge almost horizontal
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(intensity,0,0,0));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(0,intensity,0,0));
     } else if(theta >= GRAD2RAD(-67.5)) {                       // -67.5  <= theta < -22.5  => edge NW-SE
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(0,0,intensity,3));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(3,0,0,intensity));
     } else if(theta >= GRAD2RAD(-112.5)) {                      // -112.5 <= theta < -67.5  => edge almost vertical
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(0,intensity,0,2));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(2,0,intensity,0));
     } else {                                                    // -157.5 < theta  < -112.5 => edge SW-NE
-      m_resultPixelAccessor->setPixel(p,RGBA_MAKE(intensity,intensity,0,1));
+      m_resultPixelAccessor->setPixel(p,D3DCOLOR_ARGB(1,intensity,intensity,0));
     }
   }
 }
@@ -262,30 +262,30 @@ CRect CannyEdgeFilter::getRect() const {
 
 void CannyEdgeFilter::apply(const CPoint &p) {
   D3DCOLOR c = m_pixelAccessor->getPixel(p);
-  switch(RGBA_GETALPHA(c)) {
-  case 0: if(RGB_GETRED(m_pixelAccessor->getPixel(p.x-1,p.y)) < threshold) {
+  switch(ARGB_GETALPHA(c)) {
+  case 0: if(ARGB_GETRED(m_pixelAccessor->getPixel(p.x-1,p.y)) < threshold) {
             m_resultPixelAccessor->setPixel(p.x-1,p.y,BLACK);
           } else {
-            m_resultPixelAccessor->setPixel(p.x-1,p.y,RGBA_SETALPHA(c,0));
+            m_resultPixelAccessor->setPixel(p.x-1,p.y,ARGB_SETALPHA(c,0));
           }
           break;
-  case 1:if(RGB_GETRED(m_pixelAccessor->getPixel(p.x-1,p.y-1)) < threshold)
+  case 1:if(ARGB_GETRED(m_pixelAccessor->getPixel(p.x-1,p.y-1)) < threshold)
             m_resultPixelAccessor->setPixel(p.x-1,p.y-1,BLACK);
           else
-            m_resultPixelAccessor->setPixel(p.x-1,p.y-1,RGBA_SETALPHA(c,0));
+            m_resultPixelAccessor->setPixel(p.x-1,p.y-1,ARGB_SETALPHA(c,0));
           break;
-  case 2:if(RGB_GETGREEN(m_pixelAccessor->getPixel(p.x,p.y-1)) < threshold)
+  case 2:if(ARGB_GETGREEN(m_pixelAccessor->getPixel(p.x,p.y-1)) < threshold)
             m_resultPixelAccessor->setPixel(p.x,p.y-1,BLACK);
           else
-            m_resultPixelAccessor->setPixel(p.x,p.y-1,RGBA_SETALPHA(c,0));
+            m_resultPixelAccessor->setPixel(p.x,p.y-1,ARGB_SETALPHA(c,0));
           break;
-  case 3: if(RGB_GETBLUE(m_pixelAccessor->getPixel(p.x+1,p.y-1)) < threshold)
+  case 3: if(ARGB_GETBLUE(m_pixelAccessor->getPixel(p.x+1,p.y-1)) < threshold)
             m_resultPixelAccessor->setPixel(p.x+1,p.y-1,BLACK);
           else
-            m_resultPixelAccessor->setPixel(p.x+1,p.y-1,RGBA_SETALPHA(c,0));
+            m_resultPixelAccessor->setPixel(p.x+1,p.y-1,ARGB_SETALPHA(c,0));
           break;
 
-  default: m_resultPixelAccessor->setPixel(p,RGB_MAKE(255,0,255));
+  default: m_resultPixelAccessor->setPixel(p,D3DCOLOR_XRGB(255,0,255));
            break;
 
   }

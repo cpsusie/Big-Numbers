@@ -1,0 +1,683 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+#ifdef _WIN32
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\MyPaint.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#include ""afxprint.rc""       // printing/print preview resources\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // Danish resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+IDC_CURSORPENCIL1       CURSOR  DISCARDABLE     "res\\PENCIL.CUR"
+IDC_CURSORHAIRCROSS     CURSOR  DISCARDABLE     "res\\cursorHairCross.cur"
+IDC_CURSORFILLCOLOR     CURSOR  DISCARDABLE     "res\\cursorFill.cur"
+IDC_CURSORMOVE4WAYS     CURSOR  DISCARDABLE     "res\\4WAY02.CUR"
+IDC_CURSORERASE         CURSOR  DISCARDABLE     "res\\cursorErase.cur"
+IDC_CURSORPENCIL        CURSOR  DISCARDABLE     "res\\cursorPen.cur"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ADJUSTLSHDIALOG DIALOG DISCARDABLE  0, 0, 255, 206
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Adjust colors"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,198,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,198,24,50,14
+    CONTROL         "",IDC_COLORMAPCTRL,
+                    "{5C04522B-C18B-4485-8389-5C896BF59881}",WS_TABSTOP,13,
+                    12,176,176
+END
+
+IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About MyPaint"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "MyPaint Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2012",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+IDD_DEGREEDIALOG DIALOG DISCARDABLE  0, 0, 186, 95
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Degree"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_EDITDEGREE,47,50,60,14,ES_AUTOHSCROLL
+    LTEXT           "Degree:",IDC_STATIC,13,50,28,14
+END
+
+IDD_SCALEDIALOG DIALOG DISCARDABLE  0, 0, 207, 149
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scale"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "Per&cent",IDC_RADIOPERCENT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,21,23,62,15
+    CONTROL         "Pi&xels",IDC_RADIOPIXELS,"Button",BS_AUTORADIOBUTTON | 
+                    WS_TABSTOP,21,43,38,15
+    EDITTEXT        IDC_SCALEWIDTHEDIT,60,89,36,12,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SCALEHEIGHTEDIT,60,109,36,12,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,150,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,150,24,50,14
+    LTEXT           "&Width:",IDC_STATICXLABEL1,24,91,31,10
+    LTEXT           "&Height:",IDC_STATICYLABEL1,24,111,31,10
+    LTEXT           "%",IDC_STATICXLABEL2,99,91,27,10
+    LTEXT           "%",IDC_STATICYLABEL2,99,111,29,10
+    GROUPBOX        "Size",IDC_STATIC,15,70,120,66
+    GROUPBOX        "Type",IDC_STATIC,15,14,120,48
+END
+
+IDD_TEXTDIALOG DIALOG DISCARDABLE  0, 0, 309, 202
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Text"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,252,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,252,24,50,14
+    EDITTEXT        IDC_EDITTEXT,56,50,213,63,ES_MULTILINE | ES_AUTOVSCROLL | 
+                    ES_AUTOHSCROLL
+    LTEXT           "&Text:",IDC_STATIC,15,73,21,15
+    EDITTEXT        IDC_EDITORIENTATION,56,126,48,18,ES_AUTOHSCROLL
+    LTEXT           "Orientation:",IDC_STATIC,15,129,40,16
+    PUSHBUTTON      "&Font...",IDC_BUTTONFONT,55,154,49,17
+END
+
+IDD_APPROXIMATEFILLDIALOG DIALOG DISCARDABLE  0, 0, 164, 75
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Approximate fill tolerance"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,107,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,107,24,50,14
+    LTEXT           "Tolerance:",IDC_STATIC,17,42,40,14
+    EDITTEXT        IDC_EDITTOLERANCE,59,41,35,13,ES_AUTOHSCROLL
+END
+
+IDD_ERASETOOLSIZEDIALOG DIALOG DISCARDABLE  0, 0, 186, 93
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Erasetool size"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    LTEXT           "Width:",IDC_STATIC,20,36,25,12
+    LTEXT           "Height:",IDC_STATIC,20,52,25,12
+    EDITTEXT        IDC_EDITWIDTH,51,33,33,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITHEIGHT,51,51,33,14,ES_AUTOHSCROLL
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_ADJUSTLSHDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 248
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 199
+    END
+
+    IDD_DEGREEDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_SCALEDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 200
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 142
+    END
+
+    IDD_TEXTDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 195
+    END
+
+    IDD_APPROXIMATEFILLDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 157
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 68
+    END
+
+    IDD_ERASETOOLSIZEDIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_ADJUSTLSHDIALOG DLGINIT
+BEGIN
+    IDC_COLORMAPCTRL, 0x376, 30, 0
+0x0000, 0x0000, 0x0000, 0x0001, 0x1b49, 0x0000, 0x1d8f, 0x0000, 0x0000, 
+0x0000, 0x0001, 0x0000, 0x0000, 0x0000, 0x0000, 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON    DISCARDABLE     "res\\MyPaint.ico"
+IDR_MYPAINTYPE          ICON    DISCARDABLE     "res\\MyPaintDoc.ico"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP  MOVEABLE PURE   "res\\Toolbar.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR DISCARDABLE  16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU PRELOAD DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "Insert...",                   ID_FILE_INSERT
+        MENUITEM SEPARATOR
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_GEM
+        MENUITEM "Save &As...",                 ID_FILE_GEM_SOM
+        MENUITEM SEPARATOR
+        MENUITEM "&Print...\tCtrl+P",           ID_FILE_PRINT
+        MENUITEM "Print Pre&view",              ID_FILE_PRINT_PREVIEW
+        MENUITEM "P&rint Setup...",             ID_FILE_PRINT_SETUP
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Undo\tCtrl+Z",               ID_EDIT_UNDO
+        MENUITEM "&Redo\tCtrl+Y",               ID_EDIT_REDO
+        MENUITEM SEPARATOR
+        MENUITEM "Cu&t\tCtrl+X",                ID_EDIT_CUT
+        MENUITEM "&Copy\tCtrl+C",               ID_EDIT_COPY
+        MENUITEM "&Paste\tCtrl+V",              ID_EDIT_PASTE
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+        MENUITEM "&Status Bar",                 ID_VIEW_STATUS_BAR
+    END
+    POPUP "&Options"
+    BEGIN
+        MENUITEM "&Color...",                   ID_OPTIONS_COLOR
+        POPUP "&Zoom"
+        BEGIN
+            MENUITEM "x 1\tCtrl + 1",               ID_OPTIONS_ZOOM_X1
+            MENUITEM "x 2\tCtrl + 2",               ID_OPTIONS_ZOOM_X2
+            MENUITEM "x 4\tCtrl + 4",               ID_OPTIONS_ZOOM_X4
+            MENUITEM "x 8\tCtrl + 8",               ID_OPTIONS_ZOOM_X8
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Appro&ximate fill tolerance...", 
+                                                ID_OPTIONS_APPROXIMATEFILLTOLERANCE
+
+        MENUITEM "Grab color",                  ID_OPTIONS_GRABCOLOR
+    END
+    POPUP "&Tools"
+    BEGIN
+        MENUITEM "&Pen",                        ID_TOOLS_PEN
+        MENUITEM "&Line",                       ID_TOOLS_LINE
+        MENUITEM SEPARATOR
+        MENUITEM "Rectangle",                   ID_TOOLS_RECTANGLE
+        MENUITEM "Polygon",                     ID_TOOLS_POLYGON
+        MENUITEM "Ellipse",                     ID_TOOLS_ELLIPSE
+        MENUITEM SEPARATOR
+        MENUITEM "Text",                        ID_TOOLS_TEXT
+        MENUITEM "Draw text",                   ID_TOOLS_DRAWTEXT
+        MENUITEM SEPARATOR
+        MENUITEM "Fill",                        ID_TOOLS_FILL
+        MENUITEM "Appro&ximate fill",           ID_TOOLS_APPROXIMATEFILL
+        MENUITEM "Fill transparent",            ID_TOOLS_FILLTRANSPARENT
+        MENUITEM "Change hue..",                ID_TOOLS_CHANGEHUE
+        MENUITEM SEPARATOR
+        MENUITEM "Move rectangle",              ID_TOOLS_MOVERECTANGLE
+        MENUITEM "Move region",                 ID_TOOLS_MOVEREGION
+        MENUITEM SEPARATOR
+        MENUITEM "Erase",                       ID_TOOLS_ERASE
+    END
+    POPUP "Fu&nctions"
+    BEGIN
+        MENUITEM "&Rotate...\tCtrl+R",          ID_FUNCTION_ROTATE
+        MENUITEM "Scale...\tCtrl+K",            ID_FUNCTION_SCALE
+        POPUP "Mirror"
+        BEGIN
+            MENUITEM "&Horizontal\tCtrl+H",         ID_FUNCTION_MIRROR_HORIZONTAL
+
+            MENUITEM "Vert&ical\tCtrl+I",           ID_FUNCTION_MIRROR_VERTICAL
+
+        END
+        MENUITEM "Make grayscale\tCtrl+G",      ID_FUNCTION_MAKEGRAYSCALE
+        MENUITEM "Change hue...\tCtrl+U",       ID_FUNCTION_CHANGEHUE
+        MENUITEM SEPARATOR
+        MENUITEM "Sobel edge-detection",        ID_FUNCTION_SOBELEDGEDETECTION
+
+        MENUITEM "Lapace edge-detection",       ID_FUNCTION_LAPACEEDGEDETECTION
+
+        MENUITEM "Canny edge-detection",        ID_FUNCTION_CANNYEDGEDETECTION
+
+        MENUITEM "Directional edge filter",     ID_FUNCTION_DIRECTIONFILTER
+        MENUITEM "Gauss filter",                ID_FUNCTION_GAUSSFILTER
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About MyPaint...",           ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS PRELOAD MOVEABLE PURE 
+BEGIN
+    "1",            ID_OPTIONS_ZOOM_X1,     VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_OPTIONS_ZOOM_X2,     VIRTKEY, CONTROL, NOINVERT
+    "4",            ID_OPTIONS_ZOOM_X4,     VIRTKEY, CONTROL, NOINVERT
+    "8",            ID_OPTIONS_ZOOM_X8,     VIRTKEY, CONTROL, NOINVERT
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    "G",            ID_FUNCTION_MAKEGRAYSCALE, VIRTKEY, CONTROL, NOINVERT
+    "H",            ID_FUNCTION_MIRROR_HORIZONTAL, VIRTKEY, CONTROL, 
+                                                    NOINVERT
+    "I",            ID_FUNCTION_MIRROR_VERTICAL, VIRTKEY, CONTROL, NOINVERT
+    "K",            ID_FUNCTION_SCALE,      VIRTKEY, CONTROL, NOINVERT
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
+    "P",            ID_FILE_PRINT,          VIRTKEY, CONTROL, NOINVERT
+    "R",            ID_FUNCTION_ROTATE,     VIRTKEY, CONTROL, NOINVERT
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL, NOINVERT
+    "U",            ID_FUNCTION_CHANGEHUE,  VIRTKEY, CONTROL, NOINVERT
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL, NOINVERT
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT, NOINVERT
+    VK_DELETE,      ID_DELETE,              VIRTKEY, NOINVERT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT, NOINVERT
+    VK_DOWN,        ID_SCROLL_LINE_DOWN,    VIRTKEY, NOINVERT
+    VK_END,         ID_SCROLL_TO_BOTTOM,    VIRTKEY, NOINVERT
+    VK_END,         ID_SCROLL_TO_RIGHT,     VIRTKEY, CONTROL, NOINVERT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY, NOINVERT
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT, NOINVERT
+    VK_HOME,        ID_SCROLL_TO_TOP,       VIRTKEY, NOINVERT
+    VK_HOME,        ID_SCROLL_TO_LEFT,      VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL, NOINVERT
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT, NOINVERT
+    VK_LEFT,        ID_SCROLL_LEFT,         VIRTKEY, NOINVERT
+    VK_NEXT,        ID_SCROLL_PAGE_DOWN,    VIRTKEY, NOINVERT
+    VK_NEXT,        ID_SCROLL_PAGE_RIGHT,   VIRTKEY, CONTROL, NOINVERT
+    VK_PRIOR,       ID_SCROLL_PAGE_UP,      VIRTKEY, NOINVERT
+    VK_PRIOR,       ID_SCROLL_PAGE_LEFT,    VIRTKEY, CONTROL, NOINVERT
+    VK_RIGHT,       ID_SCROLL_RIGHT,        VIRTKEY, NOINVERT
+    VK_UP,          ID_SCROLL_LINE_UP,      VIRTKEY, NOINVERT
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL, NOINVERT
+    "Y",            ID_EDIT_REDO,           VIRTKEY, CONTROL, NOINVERT
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL, NOINVERT
+END
+
+IDR_ACCELERATOR_SCALEDIALOG ACCELERATORS DISCARDABLE 
+BEGIN
+    "H",            ID_GOTO_HEIGHT,         VIRTKEY, ALT, NOINVERT
+    "W",            ID_GOTO_WIDTH,          VIRTKEY, ALT, NOINVERT
+END
+
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "\0"
+            VALUE "FileDescription", "MyPaint\0"
+            VALUE "FileVersion", "1, 0, 0, 1\0"
+            VALUE "InternalName", "MyPaint\0"
+            VALUE "LegalCopyright", "Copyright (C) 2012\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "MyPaint.EXE\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "MyPaint\0"
+            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+#endif    // !_MAC
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    IDR_MAINFRAME           "MyPaint\n\nMyPain\n\n\nMyPaint.Document\nMyPain Document"
+END
+
+STRINGTABLE PRELOAD DISCARDABLE 
+BEGIN
+    AFX_IDS_APP_TITLE       "MyPaint"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+    ID_FILE_PAGE_SETUP      "Change the printing options\nPage Setup"
+    ID_FILE_PRINT_SETUP     "Change the printer and printing options\nPrint Setup"
+    ID_FILE_PRINT           "Print the active document\nPrint"
+    ID_FILE_PRINT_PREVIEW   "Display full pages\nPrint Preview"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+    ID_VIEW_STATUS_BAR      "Show or hide the status bar\nToggle StatusBar"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    AFX_IDS_PREVIEW_CLOSE   "Close print preview mode\nCancel Preview"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    IDS_INFOFIELD           "My Documentinfo                                              "
+    IDS_MOUSEPOSITION       "MMM,MMM px"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_FILE_GEM             "Saves document"
+    ID_FILE_GEM_SOM         "Saves document with a new name"
+    ID_FILE_INSERT          "Adds another image to this"
+    ID_OPTIONS_COLOR        "Selects a new color "
+    ID_OPTIONS_ZOOM_X1      "No zoom"
+    ID_OPTIONS_ZOOM_X2      "Zoom factor 2"
+    ID_OPTIONS_ZOOM_X4      "Zoom factor 4"
+    ID_OPTIONS_ZOOM_X8      "Zoom factor 8"
+    ID_OPTIONS_GRABCOLOR    "Selects a color from the active image"
+    ID_TOOLS_PEN            "Draw with a pen"
+    ID_TOOLS_LINE           "Draw a line"
+END
+
+STRINGTABLE DISCARDABLE 
+BEGIN
+    ID_TOOLS_RECTANGLE      "Draw a rectangle"
+    ID_TOOLS_ELLIPSE        "Draw an ellipse"
+    ID_TOOLS_ERASE          "Erase portion of th image"
+    ID_FUNCTION_ROTATE      "Rotate image"
+    ID_FUNCTION_SCALE       "Scale image"
+    ID_FUNCTION_MIRROR_HORIZONTAL "Horizontal mirror"
+    ID_FUNCTION_MIRROR_VERTICAL "Vertical mirror"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\MyPaint.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#include "afxprint.rc"       // printing/print preview resources
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

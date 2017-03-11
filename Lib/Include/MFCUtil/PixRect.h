@@ -4,8 +4,7 @@
 #include <D3D9.h>
 #include <D3DX9.h>
 #include <vfw.h>
-#include <Math/Point2D.h>
-#include <Math/Rectangle2D.h>
+#include "Point2DP.h"
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
 
@@ -21,7 +20,6 @@ typedef D3DCAPS9           D3DCAPS;
 class PixRect;
 class PixRectFont;
 class GlyphCurveData;
-
 
 class PointCollector : public CurveOperator {
 public:
@@ -431,6 +429,8 @@ public:
   D3DCOLOR getPixel(UINT x, UINT y) const;
   void     setPixel(const CPoint &p, D3DCOLOR color);
   D3DCOLOR getPixel(const CPoint &p) const;
+  D3DCOLOR getAverageColor(const Rectangle2D &rect) const;
+  D3DCOLOR getAverageColor() const;
 
   void line(int x1, int y1, int x2, int y2, D3DCOLOR color, bool invert=false);
   void line(const CPoint &p1, const CPoint &p2, D3DCOLOR color, bool invert=false);
@@ -453,9 +453,9 @@ public:
   static PixRect *scaleImage( const PixRect *src, const ScaleParameters &param);
   static CSize    getRotatedSize(const CSize &size, double degree);
   void            drawRotated(const PixRect *src, const CPoint &dst, double degree);
-  void text(const CPoint &p, const char *text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
+  void text(const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void drawGlyph(const CPoint &p, const GlyphCurveData &glyphCurve, D3DCOLOR color, bool invert=false);
-  void drawText(const CPoint &p, const char *text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
+  void drawText( const CPoint &p, const String &text, const PixRectFont &font, D3DCOLOR color, bool invert=false);
   void copy(VIDEOHDR &videoHeader);  
   void formatConversion(const PixRect &pr);
 
@@ -526,7 +526,6 @@ public:
   friend bool operator!=(const PixRect &p1, const PixRect &p2);
 };
 
-
 class PolygonCurve {
 private:
   short          m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
@@ -557,7 +556,7 @@ public:
   Point2D             m_start;
   Array<PolygonCurve> m_polygonCurveArray;
   
-  GlyphPolygon(const Point2D &start) {
+  GlyphPolygon(const Point2DP &start) {
     m_start = start;
   }
 
@@ -567,7 +566,7 @@ public:
   
   Rectangle2D getBoundingBox() const;
   Point2DArray getAllPoints() const;
-  void move(const Point2D &dp);
+  void move(const Point2DP &dp);
   String toString() const;
   String toXML();
 };
@@ -577,7 +576,7 @@ private:
   Array<GlyphPolygon> m_glyphPolygonArray;
 public:
 
-  GlyphCurveData(HDC hdc, unsigned char ch, const MAT2 &m);
+  GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m);
   GlyphCurveData();
 
   String toString() const;
@@ -590,8 +589,8 @@ public:
     m_glyphPolygonArray.add(polygon);
   }
   
-  void addLine(const Point2D &p1, const Point2D &p2);
-  void move(const Point2D &dp);
+  void addLine(const Point2DP &p1, const Point2DP &p2);
+  void move(const Point2DP &dp);
   const Array<GlyphPolygon> &getPolygonArray() const {
     return m_glyphPolygonArray;
   }
@@ -602,22 +601,23 @@ public:
   PixRect         *m_pixRect;
   GLYPHMETRICS     m_metrics;
   GlyphCurveData   m_glyphCurveData;
-  unsigned char    m_ch;
+  _TUCHAR          m_ch;
 
-  GlyphData(HDC hdc, unsigned char ch, const MAT2 &m);
+  GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m);
   ~GlyphData();
 };
 
 class PixRectFont {
 private:
   void initGlyphData(float orientation);
+  PixRectDevice           &m_device;
 protected:
-  CFont            m_font;
-  TEXTMETRIC       m_textMetrics;
-  GlyphData       *m_glyphData[256];
+  CFont                    m_font;
+  TEXTMETRIC               m_textMetrics;
+  CompactArray<GlyphData*> m_glyphData;
 public:
-  PixRectFont();
-  PixRectFont(const LOGFONT &logfont, float orientation=0);
+  PixRectFont(PixRectDevice &device);
+  PixRectFont(PixRectDevice &device, const LOGFONT &logfont, float orientation=0);
  ~PixRectFont();
 
   void getLogFont(LOGFONT &logfont);
@@ -630,12 +630,12 @@ public:
     return m_textMetrics;
   }
   
-  const GlyphData *getGlyphData(unsigned char index) const;
+  const GlyphData *getGlyphData(_TUCHAR index) const;
 };
 
-void applyToGlyphPolygon(const GlyphPolygon &glyphPolygon, CurveOperator &op);
-void applyToGlyph(const GlyphCurveData &glyphCurve, CurveOperator &op);
-void applyToText(const char *text, const PixRectFont &font, TextOperator &op);
+void applyToGlyphPolygon(const GlyphPolygon   &glyphPolygon, CurveOperator &op);
+void applyToGlyph(       const GlyphCurveData &glyphCurve  , CurveOperator &op);
+void applyToText(        const String         &text        , const PixRectFont &font, TextOperator &op);
 
 #define DIRECTXROOTPATH  "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/"
 #if defined _M_IX86

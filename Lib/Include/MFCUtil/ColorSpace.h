@@ -69,6 +69,8 @@ D3DCOLOR getGrayColor(     D3DCOLOR  c);
 
 #define ARGB_TORGB(d3c) ((d3c) & 0x00ffffff)
 
+#define ARGB_SETALPHA(argb, x) (((x) << 24) | ((argb) & 0x00ffffff))
+
 #define GETLUMINANCE(d3c) (0.2126*ARGB_GETRED(d3c) + 0.7152*ARGB_GETGREEN(d3c) + 0.0722*ARGB_GETBLUE(d3c))
 
 #define D3DCOLOR2COLORREF(d3c) RGB(ARGB_GETRED(d3c), ARGB_GETGREEN(d3c), ARGB_GETBLUE(d3c))
