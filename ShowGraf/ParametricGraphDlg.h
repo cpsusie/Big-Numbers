@@ -39,12 +39,9 @@ public:
 
   enum { IDD = IDD_PARAMETRICGRAPH_DIALOG };
 
-public:
+protected:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange* pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();
@@ -59,5 +56,5 @@ protected:
     afx_msg void OnFileSave();
     afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindmatchingparentesis();
-  DECLARE_MESSAGE_MAP()
+    DECLARE_MESSAGE_MAP()
 };

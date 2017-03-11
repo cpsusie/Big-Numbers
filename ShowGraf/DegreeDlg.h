@@ -30,11 +30,8 @@ public:
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
-
-    afx_msg void OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult);
     virtual BOOL OnInitDialog();
-  DECLARE_MESSAGE_MAP()
+    afx_msg void OnDeltaposSpinDegree(NMHDR *pNMHDR, LRESULT *pResult);
+    DECLARE_MESSAGE_MAP()
 };
 

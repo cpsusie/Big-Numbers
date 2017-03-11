@@ -9,7 +9,7 @@ public:
     CShowGrafApp();
 
     String getRecentFile(int index);
-    public:
+public:
     virtual BOOL InitInstance();
     PixRectDevice m_device;
 

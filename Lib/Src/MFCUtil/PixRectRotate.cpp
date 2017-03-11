@@ -142,7 +142,7 @@ void PixRect::drawRotated(const PixRect *src, const CPoint &dst, double degree) 
   V(tmpRender->BeginScene(m_surface, &vp));
   m_device.set2DTransform(dstSize);
   m_device.setWorldMatrix(rotation.m_world);
-  const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(PIXRECT_TEXTURE     , true, D3DPOOL_DEFAULT);
+  const PixRect *texture = (src->getType() == PIXRECT_TEXTURE) ? src  : src->clone(true, PIXRECT_TEXTURE, D3DPOOL_DEFAULT);
 
   unsigned long clearColor = 0x00ff0000;
   V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));

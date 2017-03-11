@@ -114,9 +114,9 @@ public:
     void startPolynomialFitThread();
     void makeExpoFit();
     void makePotensFit();
-  public:
+public:
     virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-    protected:
+protected:
     virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
     virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
     virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);

@@ -67,7 +67,7 @@ void CShowGrafView::init() {
   m_rollSize         = 10;
   m_xRelativeToFirst = m_yRelativeToFirst = false;
 
-  TCHAR **argv       = __wargv;
+  TCHAR **argv       = __targv;
   int argc           = __argc;
   argvExpand(argc,argv);
   TCHAR *cp;

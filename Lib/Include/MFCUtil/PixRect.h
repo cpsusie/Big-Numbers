@@ -252,6 +252,7 @@ typedef enum {
   PIXRECT_TEXTURE
  ,PIXRECT_RENDERTARGET
  ,PIXRECT_PLAINSURFACE
+ ,PiXRECT_FORCE_DWORD = 0xffffffff
 } PixRectType;
 
 class PixRectDevice {
@@ -366,7 +367,7 @@ public:
   PixRect(PixRectDevice &device, HBITMAP src,                               D3DPOOL pool = D3DPOOL_FORCE_DWORD, D3DFORMAT pixelFormat = D3DFMT_FORCE_DWORD);
 
   virtual ~PixRect();
-  PixRect *clone(PixRectType type, bool cloneImage = false, D3DPOOL pool = D3DPOOL_FORCE_DWORD) const;
+  PixRect *clone(bool cloneImage = false, PixRectType type = PiXRECT_FORCE_DWORD, D3DPOOL pool = D3DPOOL_FORCE_DWORD) const;
   void moveToPool(D3DPOOL pool);
   static void showPixRect(const PixRect *pr);
 

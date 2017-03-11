@@ -374,7 +374,10 @@ PixRect::~PixRect() {
   destroy();
 }
 
-PixRect *PixRect::clone(PixRectType type, bool cloneImage, D3DPOOL pool) const {
+PixRect *PixRect::clone(bool cloneImage, PixRectType type, D3DPOOL pool) const {
+  if (type == PiXRECT_FORCE_DWORD) {
+    type = getType();
+  }
   if (type == PIXRECT_RENDERTARGET) {
     pool = D3DPOOL_DEFAULT;
   }
@@ -410,7 +413,7 @@ void PixRect::moveToPool(D3DPOOL pool) {
   if (getType() == PIXRECT_RENDERTARGET) {
     throwException(_T("%s:RenderTargets cannot be moved from D3DPOOL_DEFAULT"), method);
   }
-  PixRect *tmp = clone(getType(), true, pool);
+  PixRect *tmp = clone(true, getType(), pool);
   destroy();
   m_type = tmp->m_type;
   m_desc = tmp->m_desc;
@@ -1112,7 +1115,7 @@ void PixRect::formatConversion(const PixRect &pr) {
 
 
 PixRect *PixRect::mirror(const PixRect *src, bool vertical) { // static
-  PixRect *result = src->clone(src->getType());
+  PixRect *result = src->clone();
   const int width  = result->getWidth();
   const int height = result->getHeight();
   PixelAccessor *srcPA = PixelAccessor::createPixelAccessor((PixRect*)src);

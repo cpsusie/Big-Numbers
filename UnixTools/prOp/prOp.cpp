@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     device.attach(Console::getWindow());
 
     PixRect *p1 = PixRect::load(device, ByteInputFile(f1));
-    PixRect *p2 = (f2 != NULL) ? PixRect::load(device, ByteInputFile(f2)) : p1->clone(PIXRECT_PLAINSURFACE, true);
+    PixRect *p2 = (f2 != NULL) ? PixRect::load(device, ByteInputFile(f2)) : p1->clone(true, PIXRECT_PLAINSURFACE);
 
     const int w = p1->getWidth();
     const int h = p1->getHeight();

@@ -7,7 +7,7 @@ public:
     enum { IDD = IDD_ROLLSIZE_DIALOG };
     UINT    m_rollSize;
 
-    protected:
+protected:
     virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:

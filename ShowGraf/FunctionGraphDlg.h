@@ -40,12 +40,9 @@ public:
 
     enum { IDD = IDD_FUNCTIONGRAPH_DIALOG };
 
-public:
+protected:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();

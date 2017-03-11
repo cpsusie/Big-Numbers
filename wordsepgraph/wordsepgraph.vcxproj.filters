@@ -21,20 +21,15 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wordbpn.cpp">
+    <ClCompile Include="WordBPN.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wordsepgraph.cpp">
+    <ClCompile Include="WordSepGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="wordsepgraphDlg.cpp">
+    <ClCompile Include="WordSepGraphDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="wordsepgraph.rc">
-      <Filter>Source Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ParamDlg.h">
@@ -46,16 +41,16 @@
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wordbpn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wordsepgraph.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="wordsepgraphDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WordBPN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WordSepGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WordSepGraphDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -72,5 +67,10 @@
       <Filter>Resource Files</Filter>
     </CustomBuild>
     <CustomBuild Include="ORDLISTE" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WordSepGraph.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

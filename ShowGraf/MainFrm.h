@@ -14,7 +14,6 @@ public:
     virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
     virtual BOOL PreTranslateMessage(MSG* pMsg);
 
-public:
     CMainFrame();
     virtual ~CMainFrame();
     void showPositon(const CPoint &p);
@@ -35,7 +34,6 @@ protected:
     CToolBar    m_wndToolBar;
     CStatusBar  m_wndStatusBar;
 
-protected:
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
     afx_msg void OnFileNew();
     afx_msg void OnFileOpen();
@@ -88,5 +86,3 @@ protected:
 
   DECLARE_MESSAGE_MAP()
 };
-
-

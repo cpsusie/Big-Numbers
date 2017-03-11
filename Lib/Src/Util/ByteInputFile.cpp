@@ -18,7 +18,7 @@ ByteInputFile::ByteInputFile(FILE *f) {
   m_file    = f;
   m_oldMode = setFileMode(f, _O_BINARY);
 
-  init("");
+  init(EMPTYSTRING);
 }
 
 ByteInputFile::~ByteInputFile() {
@@ -40,7 +40,7 @@ void ByteInputFile::close() {
   if(!isOpen()) {
     return;
   }
-  if(m_name != "") {
+  if(m_name != EMPTYSTRING) {
     fclose(m_file);
   } else {
     setFileMode(m_file, m_oldMode);

@@ -1327,14 +1327,14 @@ bool RectFinder::handleRectangle(const ExpressionRectangle &r, const ExpressionR
 
 ExpressionImage::ExpressionImage(const ExpressionImage &src) {
   if(!src.isEmpty()) {
-    m_pr        = src.m_pr->clone(src.m_pr->getType(), true);
+    m_pr        = src.m_pr->clone(true);
     m_rectangle = src.m_rectangle;
     setParents();
   }
 }
 
 ExpressionImage::ExpressionImage(const PixRect *pr, const ExpressionRectangle &rectangle) {
-  m_pr        = pr->clone(pr->getType(), true);
+  m_pr        = pr->clone(true);
   m_rectangle = rectangle;
   setParents();
 }
@@ -1347,7 +1347,7 @@ ExpressionImage &ExpressionImage::operator=(const ExpressionImage &src) {
     clear();
   }
   if(!src.isEmpty()) {
-    m_pr        = src.m_pr->clone(src.m_pr->getType(), true);
+    m_pr        = src.m_pr->clone(true);
     m_rectangle = src.m_rectangle;
     setParents();
   }

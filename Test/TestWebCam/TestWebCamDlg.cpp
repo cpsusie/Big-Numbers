@@ -147,7 +147,7 @@ LRESULT CTestWebCamDlg::captureVideoStreamCallback(MMCapture &capture, PixRect *
   m_gate.wait();
   CRect r = image->getRect();
   if (m_lastImage == NULL) {
-    m_lastImage = image->clone(image->getType(), true, image->getPool());
+    m_lastImage = image->clone(true);
   } else {
     m_lastImage->rop(r, SRCCOPY, image, r);
   }

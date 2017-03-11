@@ -39,11 +39,9 @@ public:
 
     enum { IDD = IDD_ISOCURVEGRAPH_DIALOG };
 
-public:
+protected:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();

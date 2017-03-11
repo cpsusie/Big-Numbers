@@ -31,7 +31,7 @@ PixRect *PixRect::scaleImage(const PixRect *src, const ScaleParameters &param) {
   }
 
   if(resultRect == srcRect) {
-    return src->clone(src->getType(), true);
+    return src->clone(true);
   } else {
     PixRect *result = new PixRect(src->getDevice(), src->getType(), resultRect.Size(), src->getPool(), src->getPixelFormat());
     HDC dc = result->getDC();

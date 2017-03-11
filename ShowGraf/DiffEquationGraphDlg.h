@@ -167,9 +167,6 @@ public:
 
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
-    DECLARE_MESSAGE_MAP()
-public:
     virtual BOOL OnInitDialog();
     virtual BOOL PreTranslateMessage(MSG* pMsg);
     afx_msg void OnSize(UINT nType, int cx, int cy);
@@ -192,4 +189,5 @@ public:
     afx_msg void OnGotoStyle();
     afx_msg void OnGotoMaxError();
     afx_msg void OnGotoXInterval();
+    DECLARE_MESSAGE_MAP()
 };

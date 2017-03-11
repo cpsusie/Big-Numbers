@@ -16,13 +16,9 @@ public:
     double  m_minx;
     double  m_miny;
 
-  public:
+public:
     virtual BOOL PreTranslateMessage(MSG* pMsg);
-  protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
     virtual void OnOK();
     virtual BOOL OnInitDialog();
     afx_msg void OnGotoXInterval();

@@ -987,7 +987,7 @@ void CMandelbrotDlg::calculateMovedImage(const CSize &dp) {
 PixRect *CMandelbrotDlg::getCalculatedPart(const CSize &dp) {
   const int  adx    = abs(dp.cx);
   const int  ady    = abs(dp.cy);
-  PixRect   *result = m_pixRect->clone(PIXRECT_PLAINSURFACE, true);
+  PixRect   *result = m_pixRect->clone(true, PIXRECT_PLAINSURFACE);
   const int  w      = m_pixRect->getWidth();
   const int  h      = m_pixRect->getHeight();
   switch(getMoveDirection(dp)) {
@@ -1014,7 +1014,7 @@ MoveDirection CMandelbrotDlg::getMoveDirection(const CSize &dp) {
 
 void CMandelbrotDlg::pushImage() {
   if(!isCalculationActive()) {
-    m_pictureStack.push(FractalImage(getScale(),m_pixRect->clone(PIXRECT_PLAINSURFACE, true)));
+    m_pictureStack.push(FractalImage(getScale(),m_pixRect->clone(true, PIXRECT_PLAINSURFACE)));
     updateWindowStateInternal();
   }
 }

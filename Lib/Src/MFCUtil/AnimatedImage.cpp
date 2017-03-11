@@ -495,7 +495,7 @@ void GifFrame::dispose() const {
   case DISPOSAL_UNSPECIFIED:       // No disposal specified
   case DISPOSE_DO_NOT      :       // Leave image in place
     if(!m_owner->isDisposeTableFull()) {
-      m_owner->addToDisposeTable(m_owner->m_workPr->clone(m_owner->m_workPr->getType(), true));
+      m_owner->addToDisposeTable(m_owner->m_workPr->clone(true));
     }
     return;
   case DISPOSE_BACKGROUND  :       // Set area to background color
