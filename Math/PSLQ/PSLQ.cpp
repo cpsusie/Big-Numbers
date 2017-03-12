@@ -25,7 +25,7 @@ RotationMatrix::RotationMatrix(const BigRealMatrix &m, int row, int column) {
 }
 
 BigRealMatrix &operator*=(BigRealMatrix &m, const RotationMatrix &p) {
-  for(int r = max(p.m_row-1,0); r < m.getRowCount(); r++) {
+  for(size_t r = max(p.m_row-1,0); r < m.getRowCount(); r++) {
     BigReal &m1 = m(r,p.m_column);
     BigReal &m2 = m(r,p.m_column+1);
     BigReal r1  = m1*p.m_gamma + m2*p.m_sigma;
@@ -229,7 +229,7 @@ int PSLQ::getZeroComponent(const BigRealVector &y) {
   BigReal minimum,maximum;
   maximum = minimum = fabs(y[0]);
   int result = 0;
-  for(int i = 1; i < y.getDimension(); i++) {
+  for(UINT i = 1; i < y.getDimension(); i++) {
     BigReal tmp = fabs(y[i]);
     if(tmp < minimum) {
       minimum = tmp;

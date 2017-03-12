@@ -72,7 +72,7 @@ CPoint polygon::getCenter() const {
   const int n = getPointCount();
   if(n == 0) return CPoint(0,0);
   CPoint sum = m_points[0];
-  for (size_t i = 1; i < n; i++) {
+  for (int i = 1; i < n; i++) {
     const CPoint &p = m_points[i];
     sum.x += p.x;
     sum.y += p.y;
