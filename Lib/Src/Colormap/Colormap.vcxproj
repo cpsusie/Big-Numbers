@@ -77,19 +77,19 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.ocx</TargetExt>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTDebug32\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.ocx</TargetExt>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTDebug64\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.ocx</TargetExt>
-    <OutDir>..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -97,7 +97,7 @@
     <LinkIncremental>false</LinkIncremental>
     <TargetExt>.ocx</TargetExt>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTRelease64\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

@@ -17,16 +17,16 @@
     <DisplayString>{m_numerator,d} / {m_denominator,u}</DisplayString>
   </Type>
   <Type Name="_int128">
-    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn__int128"></DisplayString>
   </Type>
   <Type Name="_uint128">
-    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn__uint128"></DisplayString>
   </Type>
   <Type Name="Double80">
-    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Double80"></DisplayString>
   </Type>
   <Type Name="Number">
-    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_Number"></DisplayString>
+    <DisplayString LegacyAddin="C:\mytools2015\Lib\Win32\Release\NumberAddIn.dll" Export="AddIn_Number"></DisplayString>
   </Type>
   <Type Name="ExpressionVariable">
     <DisplayString>{Name={m_name} Value={m_value}}</DisplayString>

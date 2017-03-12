@@ -34,6 +34,16 @@ public:
   }
 };
 
+class PointCollector : public CurveOperator {
+public:
+  Point2DArray m_result;
+  void apply(const Point2D &p) {
+    m_result.add(p);
+  }
+  void line(const Point2D &from, const Point2D &to) {
+  };
+};
+
 void applyToLine(int x1, int y1, int x2, int y2, PointOperator &op);
 void applyToLine(const CPoint &p1, const CPoint &p2, PointOperator &op);
 void applyToRectangle(const CRect &rect, PointOperator &op);

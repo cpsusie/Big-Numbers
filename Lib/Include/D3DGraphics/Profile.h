@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/Rectangle2D.h>
+#include <MFCUtil/ShapeFunctions.h>
 
 class ProfileRotationParameters {
 public:
@@ -27,43 +27,6 @@ bool operator!=(const ProfileStretchParameters  &p1, const ProfileStretchParamet
 
 #define ROTATESMOOTH 1
 #define NORMALSMOOTH 2
-
-class CurveOperator : public Point2DOperator {
-private:
-  Point2D m_currentPoint;
-  bool    m_firstTime;
-public:
-  CurveOperator() {
-    beginCurve();
-  }
-  
-  void apply(const Point2D &p);
-  virtual void line(const Point2D &from, const Point2D &to) = 0;
-  
-  virtual void beginCurve() {
-    m_firstTime = true;
-  }
-  
-  virtual void endCurve() {};
-  
-  inline const Point2D &getCurrentPoint() const {
-    return m_currentPoint;
-  }
-  
-  inline bool firstPointInCurve() const {
-    return m_firstTime;
-  }
-};
-
-class PointCollector : public CurveOperator {
-public:
-  Point2DArray m_result;
-  void apply(const Point2D &p) {
-    m_result.add(p);
-  }
-  void line(const Point2D &from, const Point2D &to) {
-  };
-};
 
 class PolygonCurve {
 private:

@@ -78,23 +78,23 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTDebug32\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\..\MTDebug64\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
-    <OutDir>..\..\MTRelease32\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\..\MTRelease64\</OutDir>
+    <OutDir>..\..\$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;C:\mytools\Lib\src\zlib;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

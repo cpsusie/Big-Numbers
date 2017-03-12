@@ -25,7 +25,7 @@ String PolygonCurve::toString() const {
   }
 
   const TCHAR *delim = _T("");
-  for(int i = 0; i < m_points.size(); i++, delim = _T("        ")) {
+  for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
     result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
   }
   return result;
@@ -173,7 +173,7 @@ GlyphCurveData::GlyphCurveData(HDC hdc, _TUCHAR ch, const MAT2 &m) {
 
 Point2DArray GlyphCurveData::getAllPoints() const {
   Point2DArray result;
-  for(int i = 0; i < m_glyphPolygonArray.size(); i++) {
+  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
     result.addAll(m_glyphPolygonArray[i].getAllPoints());
   }
   return result;
@@ -198,7 +198,7 @@ void GlyphCurveData::addLine(const Point2DP &p1, const Point2DP &p2) {
 }
 
 void GlyphCurveData::move(const Point2DP &dp) {
-  for(int i = 0; i < m_glyphPolygonArray.size(); i++) {
+  for(size_t i = 0; i < m_glyphPolygonArray.size(); i++) {
     m_glyphPolygonArray[i].move(dp);
   }
 }
@@ -302,12 +302,12 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
   const Point2D *pp = &polygon.m_start;
   op.beginCurve();
   op.apply(*pp);
-  for(int i = 0; i < polygon.m_polygonCurveArray.size(); i++) {
+  for(size_t i = 0; i < polygon.m_polygonCurveArray.size(); i++) {
     const PolygonCurve &curve = polygon.m_polygonCurveArray[i];
     switch(curve.getType()) {
     case TT_PRIM_LINE   :
       { const Point2DArray &pa = curve.getAllPoints();
-        for(int j = 0; j < pa.size(); j++) {
+        for(size_t j = 0; j < pa.size(); j++) {
           const Point2D &np = pa[j];
           op.apply(np);
           pp = &np;
@@ -321,7 +321,7 @@ void applyToGlyphPolygon(const GlyphPolygon &polygon, CurveOperator &op) {
       break;
     case TT_PRIM_CSPLINE:
       { const Point2DArray &pa = curve.getAllPoints();
-        for(int j = 0; j < pa.size(); j+=3) {
+        for(size_t j = 0; j < pa.size(); j+=3) {
           const Point2D &end = pa[j+2];
           applyToBezier(*pp,pa[j],pa[j+1],end, op,false);
           pp = &end;

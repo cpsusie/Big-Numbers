@@ -21,16 +21,6 @@ class PixRect;
 class PixRectFont;
 class GlyphCurveData;
 
-class PointCollector : public CurveOperator {
-public:
-  Point2DArray m_result;
-  void apply(const Point2D &p) {
-    m_result.add(p);
-  }
-  void line(const Point2D &from, const Point2D &to) {
-  };
-};
-
 class TextOperator : public CurveOperator {
 public:
   virtual void beginGlyph(const Point2D &offset) = 0;

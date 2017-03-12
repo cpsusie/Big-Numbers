@@ -4,24 +4,21 @@
 
 #define LIBROOT "c:/mytools2015/lib/"
 
-#ifndef _M_X64
-#ifdef _DEBUG
-#define LIB_VERSION LIBROOT "MTDebug32/"
+#ifdef _M_X64
+#define _PLATFORM_ "x64/"
 #else
-#define LIB_VERSION LIBROOT "MTRelease32/"
+#define _PLATFORM_ "Win32/"
 #endif
-
-#else
 
 #ifdef _DEBUG
-#define LIB_VERSION LIBROOT "MTDebug64/"
+#define _CONFIGURATION_ "Debug/"
 #else
-#define LIB_VERSION LIBROOT "MTRelease64/"
+#define _CONFIGURATION_ "Release/"
 #endif
 
-#endif
+#define LIB_VERSION LIBROOT _PLATFORM_ _CONFIGURATION_
 
 #ifdef GIVE_LINK_MESSAGE
 #pragma message("link with " LIB_VERSION)
 #endif
-#pragma comment(lib, LIB_VERSION "util.lib")
+#pragma comment(lib, LIB_VERSION "Util.lib")
