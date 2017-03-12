@@ -1,0 +1,400 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\RegneTester.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\icon1.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_NAME_DIALOG DIALOG 0, 0, 286, 252
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Bedste tid"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITNAME,39,217,189,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,229,7,50,14
+    PUSHBUTTON      "&Annuller",IDC_CANCEL,229,26,50,14
+    LTEXT           "Navn:",IDC_STATIC,15,219,20,15
+    LTEXT           "Tillykke! Du har slået den bedste tid",IDC_STATIC,17,191,123,14
+    CONTROL         IDB_FIRST_HIGHSCOREIMAGE,IDC_HIGHSCOREIMAGE,"Static",SS_BITMAP,23,17,171,158
+END
+
+IDD_HIGHSCORE_DIALOG DIALOGEX 0, 0, 409, 247
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Bedste tider"
+FONT 8, "Courier New", 0, 0, 0x1
+BEGIN
+    CONTROL         "List1",IDC_LISTBESTTIME,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_NOSORTHEADER | WS_TABSTOP,6,105,394,117
+    DEFPUSHBUTTON   "Luk",IDOK,350,226,50,14
+    CONTROL         "Tab1",IDC_TABEXECISE,"SysTabControl32",WS_BORDER | WS_TABSTOP,6,90,395,133,WS_EX_STATICEDGE
+    CONTROL         IDB_BITMAPHIGHSCOREBANNER,IDC_STATIC,"Static",SS_BITMAP,6,7,395,82
+END
+
+IDD_PASSWORD_DIALOG DIALOG 0, 0, 238, 74
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Kodeord"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITPASSWORD,51,26,102,15,ES_PASSWORD | ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,181,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,181,24,50,14
+    LTEXT           "Kodeord:",IDC_STATIC,15,28,32,14
+END
+
+IDD_OPTIONS_DIALOG DIALOG 0, 0, 351, 184
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Indstillinger"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDITOLDPASSWORD,94,35,92,15,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITPASSWORD,94,61,92,15,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITCONFIRMPASSWORD,94,87,92,15,ES_PASSWORD | ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDITHIGSCOREPATH,92,127,223,16,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BUTTONFILE,322,125,22,16
+    DEFPUSHBUTTON   "OK",IDOK,294,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,294,24,50,14
+    LTEXT           "Gammelt kodeord:",IDC_STATIC,20,35,63,15
+    LTEXT           "Nyt kodeord:",IDC_STATIC,20,61,59,15
+    LTEXT           "Bekræft kodeord:",IDC_STATIC,20,87,59,15
+    LTEXT           "Sti til highscore:",IDC_STATIC,19,128,56,14
+END
+
+IDD_ABOUTBOX DIALOG 0, 0, 321, 185
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Om Regnetester"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Regnetester Version 1.1",IDC_STATIC,211,88,95,8,SS_NOPREFIX
+    DEFPUSHBUTTON   "OK",IDOK,264,7,50,14,WS_GROUP
+    ICON            IDR_MAINFRAME,IDC_STATIC,17,17,21,20,SS_REALSIZEIMAGE
+END
+
+IDD_REGNETESTER_DIALOG DIALOGEX 0, 0, 232, 110
+STYLE DS_SETFONT | DS_MODALFRAME | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "RegneTester"
+MENU IDR_MAINFRAME
+FONT 14, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    LTEXT           "",IDC_LEFTOPERAND,94,62,22,10,SS_SUNKEN
+    LTEXT           "",IDC_RIGHTOPERAND,128,62,22,10,SS_SUNKEN
+    LTEXT           "=",IDC_STATIC,155,62,8,8
+    EDITTEXT        IDC_EDITRESULT,167,62,24,12,ES_RIGHT | WS_DISABLED
+    LTEXT           "",IDC_TIME,167,16,50,8,SS_SUNKEN
+    LTEXT           "Tid:",IDC_STATIC,149,16,15,11
+    LTEXT           "Korrekte svar:",IDC_STATIC,119,31,44,9
+    LTEXT           "",IDC_ANSWERCOUNT,167,31,21,8,SS_SUNKEN
+    LTEXT           "x",IDC_STATIC_OPERATOR,120,62,8,8
+    CONTROL         IDB_BITMAPEINSTEIN,IDC_STATEIMAGEEINSTEIN,"Static",SS_BITMAP | SS_REALSIZEIMAGE,15,31,61,58
+    CONTROL         IDB_BITMAPTIMEWATCH,IDC_STATEIMAGEWATCH,"Static",SS_BITMAP | SS_REALSIZEIMAGE,23,33,46,53
+    PUSHBUTTON      "&Start",IDC_BUTTONSTART,42,16,34,11
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_NAME_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 279
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 245
+    END
+
+    IDD_HIGHSCORE_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 6
+        RIGHTMARGIN, 401
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 240
+    END
+
+    IDD_PASSWORD_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 231
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 67
+    END
+
+    IDD_OPTIONS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 344
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 177
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 314
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 178
+    END
+
+    IDD_REGNETESTER_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 103
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&Filer"
+    BEGIN
+        MENUITEM "&Bedste tider...\tCtrl+H",    ID_FILE_HIGHSCORE
+        MENUITEM "&Indstillinger...\tCtrl+I",   ID_FILE_INDSTILLINGER
+        MENUITEM SEPARATOR
+        MENUITEM "&Afslut",                     ID_FILE_AFSLUT
+    END
+    POPUP "&Tabel"
+    BEGIN
+        MENUITEM "&1-tabel\tCtrl+1",            ID_TABEL_1TABEL
+        MENUITEM "&2-tabel\tCtrl+2",            ID_TABEL_2TABEL
+        MENUITEM "&3-tabel\tCtrl+3",            ID_TABEL_3TABEL
+        MENUITEM "&4-tabel\tCtrl+4",            ID_TABEL_4TABEL
+        MENUITEM "&5-tabel\tCtrl+5",            ID_TABEL_5TABEL
+        MENUITEM "&6-tabel\tCtrl+6",            ID_TABEL_6TABEL
+        MENUITEM "&7-tabel\tCtrl+7",            ID_TABEL_7TABEL
+        MENUITEM "&8-tabel\tCtrl+8",            ID_TABEL_8TABEL
+        MENUITEM "&9-tabel\tCtrl+9",            ID_TABEL_9TABEL
+        MENUITEM "1&0-tabel\tCtrl+0",           ID_TABEL_10TABEL
+    END
+    POPUP "&Opgavetype"
+    BEGIN
+        MENUITEM "+\tAlt+P",                    ID_OPGAVETYPE_ADD
+        MENUITEM "-\tAlt+M",                    ID_OPGAVETYPE_SUBTRACT
+        MENUITEM "x\tAlt+G",                    ID_OPGAVETYPE_MULTIPLY, CHECKED
+        MENUITEM ":\tAlt+D",                    ID_OPGAVETYPE_DIVIDE
+    END
+    POPUP "&Hjælp"
+    BEGIN
+        MENUITEM "&Om Regnetester.,..",         ID_HELP_ABOUTREGNETESTER
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "0",            ID_TABEL_10TABEL,       VIRTKEY, CONTROL, NOINVERT
+    "1",            ID_TABEL_1TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "2",            ID_TABEL_2TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "3",            ID_TABEL_3TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "4",            ID_TABEL_4TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "5",            ID_TABEL_5TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "6",            ID_TABEL_6TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "7",            ID_TABEL_7TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "8",            ID_TABEL_8TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "9",            ID_TABEL_9TABEL,        VIRTKEY, CONTROL, NOINVERT
+    "D",            ID_OPGAVETYPE_DIVIDE,   VIRTKEY, ALT, NOINVERT
+    "G",            ID_OPGAVETYPE_MULTIPLY, VIRTKEY, ALT, NOINVERT
+    "H",            ID_FILE_HIGHSCORE,      VIRTKEY, CONTROL, NOINVERT
+    "I",            ID_FILE_INDSTILLINGER,  VIRTKEY, CONTROL, NOINVERT
+    "M",            ID_OPGAVETYPE_SUBTRACT, VIRTKEY, ALT, NOINVERT
+    "P",            ID_OPGAVETYPE_ADD,      VIRTKEY, ALT, NOINVERT
+    VK_RETURN,      IDOK,                   VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// OPTIONS
+//
+
+IDR_OPTIONS             OPTIONS                 "res\\options.bin"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAPHIGHSCOREBANNER BITMAP                  "res\\HighscoreBanner.bmp"
+
+IDB_BITMAPEINSTEIN      BITMAP                  "res\\EisteinImage.bmp"
+
+IDB_BITMAPGOLDMEDAL     BITMAP                  "res\\GoldMedal.bmp"
+
+IDB_BITMAPWINNER        BITMAP                  "res\\WinnerImage.bmp"
+
+IDB_BITMAPTIMEWATCH     BITMAP                  "res\\TimeWatch.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040604b0"
+        BEGIN
+            VALUE "FileDescription", "RegneTester MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "RegneTester"
+            VALUE "OriginalFilename", "RegneTester.EXE"
+            VALUE "ProductName", "RegneTester Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x406, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_HIGHSCORE_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_REGNETESTER_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&Om Regnetester..."
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\RegneTester.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

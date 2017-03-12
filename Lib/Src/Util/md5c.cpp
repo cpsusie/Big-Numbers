@@ -323,8 +323,12 @@ char *MD5Context::digest(const char *src) {
   return strFinal(m_strDigest);
 }
 
+#include <comdef.h>
+#include <atlconv.h>
+
 String MD5Context::digest(const String &s) {
-  throwException(_T("MD5Context::digest:Not implemented"));
-  return _T("");
-//  return digest(s.cstr());
+  USES_CONVERSION;
+  const char *src = T2A(s.cstr());
+  char *result = digest(src);
+  return result;
 }
