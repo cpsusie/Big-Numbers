@@ -355,6 +355,7 @@
     <ClInclude Include="..\..\Include\Scanner.h" />
     <ClInclude Include="..\..\Include\Semaphore.h" />
     <ClInclude Include="..\..\Include\Set.h" />
+    <ClInclude Include="..\..\Include\SocketStream.h" />
     <ClInclude Include="..\..\Include\Stack.h" />
     <ClInclude Include="..\..\Include\StreamParameters.h" />
     <ClInclude Include="..\..\Include\StringPool.h" />
@@ -509,6 +510,11 @@
     <ClCompile Include="PackedArray.cpp" />
     <ClCompile Include="PackedArrayStream.cpp" />
     <ClCompile Include="Packer.cpp" />
+    <ClCompile Include="PackerByteArray.cpp" />
+    <ClCompile Include="PackerStr.cpp" />
+    <ClCompile Include="PackerString.cpp" />
+    <ClCompile Include="PackerStringArray.cpp" />
+    <ClCompile Include="PackerWstr.cpp" />
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="pipe.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />
@@ -536,6 +542,7 @@
     <ClCompile Include="SetFileMode.cpp" />
     <ClCompile Include="Sleep.cpp" />
     <ClCompile Include="SocketErrorMessage.cpp" />
+    <ClCompile Include="SocketStream.cpp" />
     <ClCompile Include="SourcePosition.cpp" />
     <ClCompile Include="sprintbin.cpp" />
     <ClCompile Include="Stat.cpp" />

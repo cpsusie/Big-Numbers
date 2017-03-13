@@ -351,6 +351,9 @@ public:
   String getAsDoubleNullTerminatedString() const; // return a double 0-terminated string containing all strings of the array, each 0-terminated
 };
 
+Packer &operator<<(Packer &p,  const StringArray &strings);
+Packer &operator>>(Packer &p,        StringArray &strings);
+
 typedef Array<char>   CharArray;
 typedef Array<short>  ShortArray;
 typedef Array<int>    IntArray;

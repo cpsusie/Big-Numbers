@@ -677,6 +677,24 @@
       <Filter>Source Files\Process</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="PackerByteArray.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="PackerStr.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="PackerString.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="PackerStringArray.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="PackerWstr.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="SocketStream.cpp">
+      <Filter>Source Files\Stream</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -948,6 +966,9 @@
     </ClInclude>
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="..\..\Include\SocketStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

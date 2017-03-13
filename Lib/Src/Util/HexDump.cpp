@@ -2,13 +2,15 @@
 
 #define LINESIZE 16
 
-void hexdump(const void *data, int size, FILE *f) {
-  fprintf(f,"hexdump(size=%d)\n",size);
-  unsigned char *p = (unsigned char*)data;
-  fprintf(f,"------------------------------------------------------------\n");
-  for(int i = 0; i < size; i += LINESIZE) {
+#define FPRINTLINE(f) _ftprintf(f,_T("%s\n"), spaceString(60, _T('-')).cstr())
+
+void hexdump(const void *data, size_t size, FILE *f) {
+  fprintf(f,"hexdump(size=%I64u)\n",(UINT64)size);
+  const BYTE *p = (const BYTE*)data;
+  FPRINTLINE(f);
+  for(size_t i = 0; i < size; i += LINESIZE) {
     fprintf(f,"%p:",p+i);
-    int j;
+    size_t j;
     for(j = i; j < i+LINESIZE && j < size; j++) {
       fprintf(f,"%02x ",p[j]);
     }
@@ -21,7 +23,7 @@ void hexdump(const void *data, int size, FILE *f) {
     }
     fprintf(f,"\n");
   }
-  fprintf(f,"------------------------------------------------------------\n");
+  FPRINTLINE(f);
 }
 
 String bytesToString(const void *data, int size) {
