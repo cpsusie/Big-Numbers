@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <comdef.h>
+#include <atlconv.h>
 
 static ULONG typeFixedSize(DbFieldType type) {
   switch(type) {
@@ -35,20 +37,41 @@ static ULONG typeFixedSize(DbFieldType type) {
   case DBTYPE_TIMESTAMP  :
   case DBTYPE_TIMESTAMPN : return sizeof(Timestamp);
   default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("typeFixedSize:Invalid type (=%d)"),type);
+    throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Invalid type (=%d)"),__TFUNCTION__, type);
     return 0;
   }
 }
 
 ULONG ColumnInfo::size() const {
   switch(getType()) {
-  case DBTYPE_STRING :
-  case DBTYPE_STRINGN:
+  case DBTYPE_CSTRING :
+  case DBTYPE_CSTRINGN:
+  case DBTYPE_WSTRING :
+  case DBTYPE_WSTRINGN:
     return m_len;
   default:
     return typeFixedSize(getType());
   }
 };
+
+UINT ColumnInfo::getMaxStringLen() const {
+  switch(getType()) {
+  case DBTYPE_CSTRING    :
+  case DBTYPE_CSTRINGN   :
+    return m_len / sizeof(char);
+  case DBTYPE_WSTRING    :
+  case DBTYPE_WSTRINGN   :
+    return m_len / sizeof(wchar_t);
+  case DBTYPE_VARCHAR    :
+  case DBTYPE_VARCHARN   :
+    return m_len / sizeof(TCHAR);
+
+  default                :
+    throwSqlError(SQL_FATAL_ERROR,_T("%s:Type not String or varchar (=%s)")
+                                 ,__TFUNCTION__, getTypeString(getType()));
+    return 0;
+  }
+}
 
 int TableDefinition::findColumnIndex(const String &columnName) const {
   for(size_t i = 0; i < m_columns.size(); i++) {
@@ -97,9 +120,9 @@ void TableDefinition::init(TableType type, const String &tableName, const String
 
 void TableDefinition::addColumn(const ColumnDefinition &colDef) {
   ColumnDefinition col(colDef);
-  UINT fieldSize = adjustOffset(col);
+  const UINT fieldSize = adjustOffset(col);
   if(m_recSize + fieldSize > MAXRECSIZE) {
-    throwSqlError(SQL_RECSIZE_TOO_BIG,_T("Record-definition of <%s> exceeds %d bytes. size=%d bytes"),m_tableName.cstr(), MAXRECSIZE, m_recSize);
+    throwSqlError(SQL_RECSIZE_TOO_BIG,_T("Record-definition of <%s> exceeds %d bytes. size=%d bytes"), m_tableName.cstr(), MAXRECSIZE, m_recSize);
   }
   m_recSize += fieldSize;
   m_columns.add(col);
@@ -130,9 +153,9 @@ UINT TableDefinition::adjustOffset(ColumnDefinition &colDef) {
 KeyFileDefinition TableDefinition::getKeyFileDefinition(const IndexDefinition &indexDef) const {
   KeyFileDefinition keydef;
   for(UINT i = 0; i < indexDef.getColumnCount();i++) {
-    const IndexColumn &indexColumn = indexDef.getColumn(i);
-    const ColumnDefinition &col    = m_columns[indexColumn.m_col];
-    SortDirection sortdir = indexColumn.m_asc ? SORT_ASCENDING : SORT_DESCENDING;
+    const IndexColumn      &indexColumn = indexDef.getColumn(i);
+    const ColumnDefinition &col         = m_columns[indexColumn.m_col];
+    SortDirection           sortdir     = indexColumn.m_asc ? SORT_ASCENDING : SORT_DESCENDING;
     keydef.addKeyField(sortdir,col.getType(),col.m_len);
   }
   return keydef.addAddrField(indexDef.isUnique());
@@ -149,7 +172,7 @@ void TableInfo::init(const TableDefinition &tableDef) {
   m_recSize      = tableDef.getRecordSize();
   for(UINT i = 0; i < tableDef.getColumnCount(); i++) {
     const ColumnDefinition &colDef = tableDef.getColumn(i);
-    ColumnInfo col;
+    ColumnInfo              col;
     col.m_type   = colDef.getType();
     col.m_offset = colDef.m_offset;
     col.m_len    = colDef.m_len;
@@ -161,60 +184,97 @@ void TableInfo::init(const TableDefinition &tableDef) {
   }
 }
 
+#define CHECKFIELDINDEX(      n) checkFieldIndex(      n, __TFUNCTION__)
+#define THROWINVALIDFIELDTYPE(n) throwInvalidFieldType(n, __TFUNCTION__)
+#define THROWFIELDNOTSTRING(  n) throwFieldNotString(  n, __TFUNCTION__)
+
 #define GETVAR       { TupleField tmp; get(rec,n,tmp); if(tmp.isDefined()) tmp.get(v); }
 #define PUTVAR       { TupleField tmp(v); put(rec,n,tmp);                              }
 #define GETTUP(type) { type tmp; getBytes(rec,n,&tmp); v = tmp;                        }
 #define PUTTUP(type) { type tmp; v.get(tmp); putBytes(rec,n,&tmp);                     }
 
-void TableInfo::get(const RecordType &rec, UINT n,                char    &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const          char    &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       UCHAR    &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const UCHAR    &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,                short   &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const          short   &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       USHORT   &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const USHORT   &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,                int     &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const          int     &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       UINT     &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const UINT     &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,                long    &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const          long    &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       ULONG    &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const ULONG    &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,                INT64 &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const          INT64 &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       UINT64 &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const UINT64 &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       float            &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const float            &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       double           &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const double           &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       Date             &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const Date             &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       Time             &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const Time             &v) const { PUTVAR; }
-void TableInfo::get(const RecordType &rec, UINT n,       Timestamp        &v) const { GETVAR; }
-void TableInfo::put(      RecordType &rec, UINT n, const Timestamp        &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       char      &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const char      &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       UCHAR     &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const UCHAR     &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       short     &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const short     &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       USHORT    &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const USHORT    &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       int       &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const int       &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       UINT      &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const UINT      &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       long      &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const long      &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       ULONG     &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const ULONG     &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       INT64     &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const INT64     &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       UINT64    &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const UINT64    &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       float     &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const float     &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       double    &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const double    &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       Date      &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const Date      &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       Time      &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const Time      &v) const { PUTVAR; }
+void TableInfo::get(const RecordType &rec, UINT n,       Timestamp &v) const { GETVAR; }
+void TableInfo::put(      RecordType &rec, UINT n, const Timestamp &v) const { PUTVAR; }
 
 void TableInfo::get(const RecordType &rec, UINT n, String &v) const {
   if(!isDefined(rec,n)) {
     return;
   }
-  char tmp[MAXRECSIZE+1];
-  getBytes(rec,n,tmp);
-  tmp[m_columns[n].m_len] = 0;
-  v = tmp;
+  USES_CONVERSION;
+  switch(getColumn(n).getType()) {
+  case DBTYPE_CSTRING    :
+  case DBTYPE_CSTRINGN   :
+    { char tmp[MAXRECSIZE+1];
+      getBytes(rec,n,tmp);
+      tmp[m_columns[n].getMaxStringLen()] = 0;
+      v = tmp;
+    }
+    break;
+  case DBTYPE_WSTRING    :
+  case DBTYPE_WSTRINGN   :
+    { wchar_t tmp[MAXRECSIZE+1];
+      getBytes(rec,n,tmp);
+      tmp[m_columns[n].getMaxStringLen()] = 0;
+      v = tmp;
+    }
+    break;
+  default: THROWFIELDNOTSTRING(n);
+  }
 }
 
 void TableInfo::put(RecordType &rec, UINT n, const String &v) const {
-  if(v.length() > m_columns[n].m_len) {
-    throwSqlError(SQL_STRING_TOO_LONG,_T("TableInfo::put:String too long to fit in keyfield[%d]. len=%d. maxlen=%d"),n,v.length(),m_columns[n].m_len);
+  if(v.length() > m_columns[n].getMaxStringLen()) {
+    throwSqlError(SQL_STRING_TOO_LONG,_T("%s:String too long to fit in keyfield[%d]. len=%d. maxlen=%d")
+                                     ,__TFUNCTION__,n,(UINT)v.length(),m_columns[n].getMaxStringLen());
   }
-  TCHAR tmp[MAXRECSIZE+1];
-  memset(tmp,0,sizeof(tmp));
-  _tcscpy(tmp,v.cstr());
-  putBytes(rec,n,tmp);
+  USES_CONVERSION;
+  switch(getColumn(n).getType()) {
+  case DBTYPE_CSTRING    :
+  case DBTYPE_CSTRINGN   :
+    { char tmp[MAXRECSIZE+1];
+      memset(tmp,0,sizeof(tmp));
+      strcpy(tmp,T2A((TCHAR*)v.cstr()));
+      putBytes(rec,n,tmp);
+    }
+    break;
+  case DBTYPE_WSTRING    :
+  case DBTYPE_WSTRINGN   :
+    { wchar_t tmp[MAXRECSIZE+1];
+      memset(tmp,0,sizeof(tmp));
+      wcscpy(tmp,T2W((TCHAR*)v.cstr()));
+      putBytes(rec,n,tmp);
+    }
+    break;
+  default: THROWFIELDNOTSTRING(n);
+  }
 }
 
 void TableInfo::get(const RecordType &rec, UINT n, TupleField &v) const {
@@ -224,41 +284,42 @@ void TableInfo::get(const RecordType &rec, UINT n, TupleField &v) const {
   }
   switch(m_columns[n].getType()) {
   case DBTYPE_CHAR      :
-  case DBTYPE_CHARN     :GETTUP(char     ); break;
+  case DBTYPE_CHARN     : GETTUP(char     ); break;
   case DBTYPE_UCHAR     :
-  case DBTYPE_UCHARN    :GETTUP(UCHAR    ); break;
+  case DBTYPE_UCHARN    : GETTUP(UCHAR    ); break;
   case DBTYPE_SHORT     :
-  case DBTYPE_SHORTN    :GETTUP(short    ); break;
+  case DBTYPE_SHORTN    : GETTUP(short    ); break;
   case DBTYPE_USHORT    :
-  case DBTYPE_USHORTN   :GETTUP(USHORT   ); break;
+  case DBTYPE_USHORTN   : GETTUP(USHORT   ); break;
   case DBTYPE_INT       :
-  case DBTYPE_INTN      :GETTUP(int      ); break;
+  case DBTYPE_INTN      : GETTUP(int      ); break;
   case DBTYPE_UINT      :
-  case DBTYPE_UINTN     :GETTUP(UINT     ); break;
+  case DBTYPE_UINTN     : GETTUP(UINT     ); break;
   case DBTYPE_LONG      :
-  case DBTYPE_LONGN     :GETTUP(long     ); break;
+  case DBTYPE_LONGN     : GETTUP(long     ); break;
   case DBTYPE_ULONG     :
-  case DBTYPE_ULONGN    :GETTUP(ULONG    ); break;
+  case DBTYPE_ULONGN    : GETTUP(ULONG    ); break;
   case DBTYPE_INT64     :
-  case DBTYPE_INT64N    :GETTUP(INT64    ); break;
+  case DBTYPE_INT64N    : GETTUP(INT64    ); break;
   case DBTYPE_UINT64    :
-  case DBTYPE_UINT64N   :GETTUP(UINT64   ); break;
+  case DBTYPE_UINT64N   : GETTUP(UINT64   ); break;
   case DBTYPE_FLOAT     :
-  case DBTYPE_FLOATN    :GETTUP(float    ); break;
+  case DBTYPE_FLOATN    : GETTUP(float    ); break;
   case DBTYPE_DOUBLE    :
-  case DBTYPE_DOUBLEN   :GETTUP(double   ); break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :{ String  tmp; get(rec,n,tmp); v = tmp; } break;
+  case DBTYPE_DOUBLEN   : GETTUP(double   ); break;
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  : { String  tmp; get(rec,n,tmp); v = tmp; } break;
   case DBTYPE_VARCHAR   :
-  case DBTYPE_VARCHARN  :{ DbAddrFileFormat addrFF; getBytes(rec,n,&addrFF); DbAddr addr = addrFF; v = addr; } break;
+  case DBTYPE_VARCHARN  : { DbAddrFileFormat addrFF; getBytes(rec,n,&addrFF); DbAddr addr = addrFF; v = addr; } break;
   case DBTYPE_DATE      :
-  case DBTYPE_DATEN     :GETTUP(Date     ); break;
+  case DBTYPE_DATEN     : GETTUP(Date     ); break;
   case DBTYPE_TIME      :
-  case DBTYPE_TIMEN     :GETTUP(Time     ); break;
+  case DBTYPE_TIMEN     : GETTUP(Time     ); break;
   case DBTYPE_TIMESTAMP :
-  case DBTYPE_TIMESTAMPN:GETTUP(Timestamp); break;
-  default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("TableInfo::get:Invalid fieldtype. m_columns[%d]=%d"), n, m_columns[n].getType());
+  case DBTYPE_TIMESTAMPN: GETTUP(Timestamp); break;
+  default               : THROWINVALIDFIELDTYPE(n);
   }
 }
 
@@ -269,60 +330,71 @@ void TableInfo::put(RecordType &rec, UINT n, const TupleField &v) const {
   }
   switch(m_columns[n].getType()) {
   case DBTYPE_CHAR      :
-  case DBTYPE_CHARN     :PUTTUP(char     ); break;
+  case DBTYPE_CHARN     : PUTTUP(char     ); break;
   case DBTYPE_UCHAR     :
-  case DBTYPE_UCHARN    :PUTTUP(UCHAR    ); break;
+  case DBTYPE_UCHARN    : PUTTUP(UCHAR    ); break;
   case DBTYPE_SHORT     :
-  case DBTYPE_SHORTN    :PUTTUP(short    ); break;
+  case DBTYPE_SHORTN    : PUTTUP(short    ); break;
   case DBTYPE_USHORT    :
-  case DBTYPE_USHORTN   :PUTTUP(USHORT   ); break;
+  case DBTYPE_USHORTN   : PUTTUP(USHORT   ); break;
   case DBTYPE_INT       :
-  case DBTYPE_INTN      :PUTTUP(int      ); break;
+  case DBTYPE_INTN      : PUTTUP(int      ); break;
   case DBTYPE_UINT      :
-  case DBTYPE_UINTN     :PUTTUP(UINT     ); break;
+  case DBTYPE_UINTN     : PUTTUP(UINT     ); break;
   case DBTYPE_LONG      :
-  case DBTYPE_LONGN     :PUTTUP(long     ); break;
+  case DBTYPE_LONGN     : PUTTUP(long     ); break;
   case DBTYPE_ULONG     :
-  case DBTYPE_ULONGN    :PUTTUP(ULONG    ); break;
+  case DBTYPE_ULONGN    : PUTTUP(ULONG    ); break;
   case DBTYPE_INT64     :
-  case DBTYPE_INT64N    :PUTTUP(INT64    ); break;
+  case DBTYPE_INT64N    : PUTTUP(INT64    ); break;
   case DBTYPE_UINT64    :
-  case DBTYPE_UINT64N   :PUTTUP(UINT64   ); break;
+  case DBTYPE_UINT64N   : PUTTUP(UINT64   ); break;
   case DBTYPE_FLOAT     :
-  case DBTYPE_FLOATN    :PUTTUP(float    ); break;
+  case DBTYPE_FLOATN    : PUTTUP(float    ); break;
   case DBTYPE_DOUBLE    :
-  case DBTYPE_DOUBLEN   :PUTTUP(double   ); break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :{ String tmp; v.get(tmp); put(rec,n,tmp); } break;
+  case DBTYPE_DOUBLEN   : PUTTUP(double   ); break;
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  : { String tmp; v.get(tmp); put(rec,n,tmp); } break;
   case DBTYPE_VARCHAR   :
-  case DBTYPE_VARCHARN  :{ DbAddr addr; v.get(addr); DbAddrFileFormat addrFF; addrFF = addr; putBytes(rec,n,&addrFF); } break;
+  case DBTYPE_VARCHARN  : { DbAddr addr; v.get(addr); DbAddrFileFormat addrFF; addrFF = addr; putBytes(rec,n,&addrFF); } break;
   case DBTYPE_DATE      :
-  case DBTYPE_DATEN     :PUTTUP(Date     ); break;
+  case DBTYPE_DATEN     : PUTTUP(Date     ); break;
   case DBTYPE_TIME      :
-  case DBTYPE_TIMEN     :PUTTUP(Time     ); break;
+  case DBTYPE_TIMEN     : PUTTUP(Time     ); break;
   case DBTYPE_TIMESTAMP :
-  case DBTYPE_TIMESTAMPN:PUTTUP(Timestamp); break;
-  default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("TableInfo::put:Invalid fieldtype. m_columns[%d]=%d"), n, m_columns[n].getType());
+  case DBTYPE_TIMESTAMPN: PUTTUP(Timestamp); break;
+  default               : THROWINVALIDFIELDTYPE(n);
   }
 }
 
-void TableInfo::checkFieldIndex(UINT index) const {
-  if(index >= m_columns.size()) {
-    throwSqlError(SQL_INVALID_KEYCOUNT,_T("Field %d doesn't exist in table %s. No. of fields:%d")
-                 , index, m_fileName.cstr(),m_columns.size());
-  }
+void TableInfo::throwIndexOutOfRange(UINT index, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_KEYCOUNT,_T("%s:Field %u doesn't exist in table %s. No. of fields:%u")
+                                    ,method, index, m_fileName.cstr(),(UINT)m_columns.size());
+
 }
 
-void TableInfo::checkFieldCount(UINT fieldCount) const {
-  if(fieldCount > m_columns.size()) {
-    throwSqlError(SQL_INVALID_KEYCOUNT,_T("Invalid fieldcount (=%d). No. of fields:%d")
-                 , fieldCount, m_columns.size());
-  }
+void TableInfo::throwInvalidFieldCount(UINT fieldCount, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_KEYCOUNT,_T("%s:Invalid fieldcount (=%u). No. of fields:%u")
+                                    ,method, fieldCount, (UINT)m_columns.size());
+
+}
+
+void TableInfo::throwInvalidFieldType(UINT index, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Invalid fieldtype. m_columns[%d]=%d")
+                                     ,method, index, m_columns[index].getType());
+
+}
+
+void TableInfo::throwFieldNotString(UINT index, const TCHAR *method) const {
+  throwSqlError(SQL_FATAL_ERROR,_T("%s:Field %u not String (=%s)")
+                               ,method, index, getTypeString(m_columns[index].getType()));
+
 }
 
 void *TableInfo::getFieldAddr(const RecordType &rec, UINT n) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   return (char*)rec.m_data + m_columns[n].m_offset;
 }
 
@@ -365,7 +437,7 @@ int TableInfo::findPrimaryIndex() const {
 }
 
 ULONG TableInfo::getIndicatorOffset(UINT n) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   if(!isNullAllowed(m_columns[n].getType())) {
     throwSqlError(SQL_INVALID_FIELDTYPE,_T("Field %d:Null not allowed"),n);
   }

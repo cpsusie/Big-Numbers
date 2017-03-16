@@ -43,7 +43,7 @@ Packer &operator<<(Packer &p, const TableDefinition &tableDef) {
 Packer &operator>>(Packer &p, TableDefinition &tableDef) {
   UINT n;
   char type;
-  tableDef.init(TABLETYPE_USER,"");
+  tableDef.init(TABLETYPE_USER,EMPTYSTRING);
   p >> tableDef.m_tableName
     >> tableDef.m_fileName
     >> type

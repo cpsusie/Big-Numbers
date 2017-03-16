@@ -190,18 +190,28 @@ typedef enum {
  ,DBTYPE_FLOATN     = 22
  ,DBTYPE_DOUBLE     = 23
  ,DBTYPE_DOUBLEN    = 24
- ,DBTYPE_STRING     = 25
- ,DBTYPE_STRINGN    = 26
- ,DBTYPE_VARCHAR    = 27
- ,DBTYPE_VARCHARN   = 28
- ,DBTYPE_DATE       = 29
- ,DBTYPE_DATEN      = 30
- ,DBTYPE_TIME       = 31
- ,DBTYPE_TIMEN      = 32
- ,DBTYPE_TIMESTAMP  = 33
- ,DBTYPE_TIMESTAMPN = 34
- ,DBTYPE_DBADDR     = 35
+ ,DBTYPE_CSTRING    = 25
+ ,DBTYPE_CSTRINGN   = 26
+ ,DBTYPE_WSTRING    = 27
+ ,DBTYPE_WSTRINGN   = 28
+ ,DBTYPE_VARCHAR    = 29
+ ,DBTYPE_VARCHARN   = 30
+ ,DBTYPE_DATE       = 31
+ ,DBTYPE_DATEN      = 32
+ ,DBTYPE_TIME       = 33
+ ,DBTYPE_TIMEN      = 34
+ ,DBTYPE_TIMESTAMP  = 35
+ ,DBTYPE_TIMESTAMPN = 36
+ ,DBTYPE_DBADDR     = 37
 } DbFieldType;
+
+#ifndef UNICODE
+#define DBTYPE_TSTRING  DBTYPE_CSTRING
+#define DBTYPE_TSTRINGN DBTYPE_CSTRINGN
+#else
+#define DBTYPE_TSTRING  DBTYPE_WSTRING
+#define DBTYPE_TSTRINGN DBTYPE_WSTRINGN
+#endif // UNICODE
 
 // NB No DBADDRN ! DBTYPE_DBADDR must be odd !
 // NB! The "NULL-allowed-types" must be "not-NULL-allowed-types" + 1
@@ -227,9 +237,9 @@ typedef enum {
 class HostVarDescription {
 public:
   USHORT  sqltype;
-  ULONG   sqllen;
+  ULONG   sqllen; // in bytes
   HostVarDescription() { sqltype = 0; sqllen = 0; }
-  HostVarDescription(DbFieldType type, ULONG len);
+  HostVarDescription(DbFieldType type, ULONG len); // len in bytes
   DbFieldType getType() const { return (DbFieldType)sqltype; }
 };
 
@@ -253,14 +263,19 @@ public:
 
 class varchar {
 private:
-  ULONG  m_len; // in bytes
+  // in bytes
+  ULONG  m_len;
   BYTE  *m_data;
+
+   // len in bytes
   void init(ULONG len);
   void clear();
 
 public:
   varchar();
+  // len in bytes
   varchar(ULONG len );
+  // len in bytes
   varchar(ULONG len, const void *data);
   varchar(const varchar &src);
   varchar(const char    *src);
@@ -272,9 +287,11 @@ public:
   varchar &operator=(const wchar_t *rhs);
   varchar &operator=(const String  &rhs);
 
+  // len in bytes
   void setdata(ULONG len, const void *data);
         BYTE *data()        { return m_data; }
   const BYTE *data()  const { return m_data; }
+  // length of data in bytes
   ULONG len() const         { return m_len;  }
   void dump(FILE *f = stdout) const;
 };

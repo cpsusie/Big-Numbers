@@ -76,7 +76,7 @@ String Database::getNewFileName(const String &extension) const {
       return fileName;
     }
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 UCHAR Database::getMinColSeq() const {

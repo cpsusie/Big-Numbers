@@ -3,14 +3,14 @@
 static String datansprintf(DataFile &dbf, RecordType &rec, const TableInfo &tableInfo, UINT fieldCount) {
   String result;
 
-  tableInfo.checkFieldCount(fieldCount);
+  tableInfo.checkFieldCount(fieldCount,__TFUNCTION__);
 
   for(UINT i = 0; i < fieldCount; i++) {
     String tmp;
     switch(tableInfo.getColumn(i).getType()) {
     case DBTYPE_VARCHARN:
       if(!tableInfo.isDefined(rec,i)) { 
-        tmp = "null";
+        tmp = _T("null");
         break;
       }
       // continue case

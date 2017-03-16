@@ -2,7 +2,7 @@
 #include <io.h>
 #include <Console.h>
 
-const char *dbVersion = "V1.1.0.2";
+const char *dbVersion = "V2.1.0.2";
 
 /* -------------------- LOG-FILE FUNCTIONS -------------------- */
 
@@ -16,8 +16,8 @@ void LogFile::setCount(ULONG count, UINT64 end ) {
 
   lh.m_count = count;
   lh.m_end   = end;
-  FSEEK( m_f, 0 );
-  FWRITE(&lh,sizeof(LogFileHeader),1,m_f);
+  FSEEK( m_f, 0);
+  FWRITE(&lh, sizeof(LogFileHeader), 1, m_f);
   m_count = count;
   m_end   = end;
 }
@@ -42,18 +42,18 @@ typedef struct {
 } DbFileTransactionHead;
 
 void LogFile::log(const DbFile &dbf, UINT64 offset, const void *buf, ULONG size) {
-  if(!m_intmf) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Cannot log. No tmf startet"));
+  if(!m_inTMF) {
+    throwSqlError(SQL_NO_TRANSACTION, _T("Cannot log. No tmf startet"));
   }
-  if(GetCurrentThreadId() != m_threadid) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Transaction not started by this thread"));
+  if(GetCurrentThreadId() != m_threadId) {
+    throwSqlError(SQL_NO_TRANSACTION, _T("Transaction not started by this thread"));
   }
 
   DbFileTransactionHead trhead;
   if(dbf.getName().length() >= ARRAYSIZE(trhead.m_fileName)) {
-    throwSqlError(SQL_INVALID_FILENAME,_T("Filename <%s> too long"), dbf.getName().cstr());
+    throwSqlError(SQL_INVALID_FILENAME, _T("Filename <%s> too long"), dbf.getName().cstr());
   }
-  _tcscpy(trhead.m_fileName,dbf.getName().cstr());
+  _tcscpy(trhead.m_fileName, dbf.getName().cstr());
   trhead.m_offset   = offset;
   trhead.m_size     = size;
   trhead.m_prevhead = m_end;
@@ -71,107 +71,108 @@ ULONG LogFile::getCount() const {
 }
 
 bool LogFile::inTmf() const { 
-  return m_intmf && (m_threadid == GetCurrentThreadId());
+  return m_inTMF && (m_threadId == GetCurrentThreadId());
 }
 
 void LogFile::begin() {
   m_sem.wait();
-  m_threadid = GetCurrentThreadId();
+  m_threadId = GetCurrentThreadId();
   try {
-    setCount(0,sizeof(LogFileHeader));
-    m_intmf = true;
+    setCount(0, sizeof(LogFileHeader));
+    m_inTMF = true;
   } catch(...) {
-    m_threadid = 0;
+    m_threadId = 0;
     m_sem.signal();
     throw;
   }
 }
 
+void LogFile::checkThreadId() const {
+  if(GetCurrentThreadId() != m_threadId) {
+    throwSqlError(SQL_NO_TRANSACTION, _T("Transaction not started by this thread"));
+  }
+}
+
 void LogFile::commit() {
-  if(!m_intmf) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Cannot commit, No tmf started"));
+  if(!m_inTMF) {
+    throwSqlError(SQL_NO_TRANSACTION, _T("Cannot commit. No tmf started"));
   }
-  if(GetCurrentThreadId() != m_threadid) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Transaction not started by this thread"));
-  }
+  checkThreadId();
 
   setCount(0,sizeof(LogFileHeader));
-  m_intmf = false;
-  m_threadid = 0;
+  m_inTMF    = false;
+  m_threadId = 0;
   m_sem.signal();
 }
 
 void LogFile::abort() {
-  if(!m_intmf) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Cannot abort, No tmf started"));
+  if(!m_inTMF) {
+    throwSqlError(SQL_NO_TRANSACTION, _T("Cannot abort. No tmf started"));
   }
-  if(GetCurrentThreadId() != m_threadid) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Transaction not started by this thread"));
-  }
+  checkThreadId();
 
-  DbFileTransactionHead trhead;
-  DbFile               *dbf = NULL;
-  ULONG                 count;
-  UINT64                end;
-  ULONG                 currentBufferSize = 4096;
-  BYTE                 *buffer = new BYTE[currentBufferSize];
+  DbFile *dbf               = NULL;
+  ULONG   currentBufferSize = 4096;
+  BYTE   *buffer            = new BYTE[currentBufferSize];
+  String  errorMsg;
 
-  getHead(count,end);
-  for(ULONG i = 0; i < count; i++, end = trhead.m_prevhead) {
-    if(_lseeki64(_fileno(m_f), end - sizeof(trhead), SEEK_SET) < 0) {
-      goto cleanup;
-    }
-
-    if(fread(&trhead, sizeof(trhead), 1, m_f) != 1) {
-      goto cleanup;
-    }
-    if(dbf && trhead.m_fileName == dbf->getName()) {
-      delete dbf;
-      dbf = NULL;
-    }
-    if(!dbf) {
-      dbf = new DbFile(trhead.m_fileName, DBFMODE_READWRITE,NULL);
-      if(dbf == NULL) {
-        continue; // maybe removed
+  try {
+    DbFileTransactionHead trhead;
+    ULONG                 count;
+    UINT64                end;
+    getHead(count,end);
+    for(ULONG i = 0; i < count; i++, end = trhead.m_prevhead) {
+      FSEEK(m_f, end - sizeof(trhead));
+      FREAD(&trhead, sizeof(trhead), 1, m_f);
+      if(dbf && trhead.m_fileName == dbf->getName()) {
+        delete dbf;
+        dbf = NULL;
       }
-    }
-    if(trhead.m_size > currentBufferSize) { // resize buffer
-      delete[] buffer;
-      currentBufferSize = trhead.m_size;
-      buffer = new BYTE[currentBufferSize];
-    }
-    if(_lseeki64(_fileno(m_f),end - sizeof(trhead) - trhead.m_size, SEEK_SET) < 0) {
-      goto cleanup;
-    }
-    if(fread(buffer,trhead.m_size,1,m_f) != 1) {
-      goto cleanup;
+      if(!dbf) {
+        dbf = new DbFile(trhead.m_fileName, DBFMODE_READWRITE,NULL);
+        if(dbf == NULL) {
+          continue; // maybe removed
+        }
+      }
+      if(trhead.m_size > currentBufferSize) { // resize buffer
+        delete[] buffer;
+        currentBufferSize = trhead.m_size;
+        buffer = new BYTE[currentBufferSize];
+      }
+      FSEEK(m_f, end - sizeof(trhead) - trhead.m_size);
+      FREAD(buffer,trhead.m_size,1,m_f);
+
+  /* write back blocks to their original position */
+      dbf->write(trhead.m_offset, buffer, trhead.m_size);
     }
 
-/* write back blocks to their original position */
-    dbf->write(trhead.m_offset, buffer, trhead.m_size);
+    setCount(0,sizeof(LogFileHeader));
+    m_inTMF = false;
+  } catch(Exception e) {
+    errorMsg = e.what();
+  } catch (...) {
+    errorMsg = _T("Unknown exception in abort");
   }
-
-  setCount(0,sizeof(LogFileHeader));
-  m_intmf = false;
-cleanup:
   if(dbf) {
     delete dbf;
   }
   delete[] buffer;
-
-  m_threadid = 0;
+  m_threadId = 0;
   m_sem.signal();
+  if (errorMsg.length() > 0) {
+    throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
+  }
 }
 
 LogFile::LogFile(const String &fileName) {
-  m_f = fopen(fileName,"r+b");
+  m_f = fopen(fileName,_T("r+b"));
   if(!m_f) {
     throwSqlError(SQL_NO_LOG,_T("No logfile <%s>"),fileName.cstr());
   }
   getHead(m_count,m_end);
-  m_intmf = m_count > 0;
-  if(m_intmf) {
-    m_threadid = GetCurrentThreadId();;
+  m_inTMF = m_count > 0;
+  if(m_inTMF) {
+    m_threadId = GetCurrentThreadId();;
   }
 }
 
@@ -188,21 +189,21 @@ class FileSlot {
 public:
   FILE         *m_file;
   String        m_fileName;
-  ULONG m_lasttrans;
-  FileSlot(const String &fileName, ULONG lasttrans);
+  ULONG         m_lastTrans;
+  FileSlot(const String &fileName, ULONG lastTrans);
+  ~FileSlot();
   bool open();
   void close();
-  ~FileSlot();
 };
 
-FileSlot::FileSlot(const String &fileName, ULONG lasttrans) {
+FileSlot::FileSlot(const String &fileName, ULONG lastTrans) {
   m_fileName  = toUpperCase(fileName);
   m_file      = NULL;
-  m_lasttrans = lasttrans;
+  m_lastTrans = lastTrans;
 }
 
 bool FileSlot::open() {
-  m_file = fopen(m_fileName,"r+b");
+  m_file = fopen(m_fileName,_T("r+b"));
   return m_file != NULL;
 }
 
@@ -219,17 +220,17 @@ FileSlot::~FileSlot() {
 
 class FileSlotTable : public StringHashMap<FileSlot> {
 private:
-  static ULONG transcount;
-  ULONG nextTransCount();
-  void releaseFileSlot(FileSlot *fileSlot);
+  static ULONG s_transCount;
+  ULONG     nextTransCount();
+  void      releaseFileSlot(FileSlot *fileSlot);
   FileSlot *allocateFileSlot(const String &fileName);
 public:
-  FileSlot *getFileSlot(const String &fileName);
-  void closeFileSlot(const String &fileName);
-  void dump();
+  FileSlot *getFileSlot(  const String &fileName);
+  void      closeFileSlot(const String &fileName);
+  void      dump();
 };
 
-ULONG FileSlotTable::transcount = 0;
+ULONG FileSlotTable::s_transCount = 0;
 
 void FileSlotTable::releaseFileSlot(FileSlot *fileSlot) {
   fileSlot->close();
@@ -237,11 +238,11 @@ void FileSlotTable::releaseFileSlot(FileSlot *fileSlot) {
 }
 
 ULONG FileSlotTable::nextTransCount() {
-  ULONG result = transcount++;
-  if(transcount < result) { // wrapped around. reset all counters
+  const ULONG result = s_transCount++;
+  if(s_transCount < result) { // wrapped around. reset all counters
     for(Iterator<String> it = keySet().getIterator(); it.hasNext();) {
       FileSlot *fileSlot = get(it.next());
-      fileSlot->m_lasttrans = 0;
+      fileSlot->m_lastTrans = 0;
     }
   }
   return result;
@@ -253,13 +254,13 @@ FileSlot *FileSlotTable::allocateFileSlot(const String &fileName) {
     FileSlot *fileSlot = &it.next().getValue();
     while(it.hasNext()) {
       FileSlot &fs1 = it.next().getValue();
-      if(fs1.m_lasttrans < fileSlot->m_lasttrans) {
+      if(fs1.m_lastTrans < fileSlot->m_lastTrans) {
         fileSlot = &fs1;
       }
     }
     releaseFileSlot(fileSlot);
   }
-  FileSlot fileSlot(fileName,transcount);
+  FileSlot fileSlot(fileName,s_transCount);
   put(fileSlot.m_fileName,fileSlot);
   FileSlot *result = get(fileSlot.m_fileName);
   if(!result->open()) {
@@ -271,12 +272,12 @@ FileSlot *FileSlotTable::allocateFileSlot(const String &fileName) {
 }
 
 FileSlot *FileSlotTable::getFileSlot(const String &fileName) {
-  String tmp = toUpperCase(fileName);
-  FileSlot *result = get(tmp);
+  const String tmp    = toUpperCase(fileName);
+  FileSlot    *result = get(tmp);
   if(result == NULL) {
     result = allocateFileSlot(tmp);
   }
-  result->m_lasttrans = nextTransCount();
+  result->m_lastTrans = nextTransCount();
   return result;
 }
 
@@ -296,7 +297,7 @@ void FileSlotTable::dump() {
   Console::printf(40,line++,_T("slotTable.size:%2d"),size());
   for(Iterator<Entry<String,FileSlot> > it = entrySet().getIterator(); it.hasNext();line++) {
     FileSlot &slot = it.next().getValue();
-    Console::printf(40,line,_T("%-20s lasttrans:%d  "),slot.m_fileName.cstr(),slot.m_lasttrans);
+    Console::printf(40,line,_T("%-20s lastTrans:%d  "),slot.m_fileName.cstr(),slot.m_lastTrans);
   }
   for(;line < MAXFILESLOT; line++) {
     Console::clearRect(40,line,80,line);
@@ -312,7 +313,8 @@ void FileSlotTable::dump() {
 #pragma init_seg(lib)
 
 static FileSlotTable slotTable;
-static Semaphore m_filesem;
+
+Semaphore DbFile::s_filesem;
 
 DbFile::DbFile(const String &fileName, DbFileMode mode, LogFile *lf) {
   init(fileName,mode,lf);
@@ -328,24 +330,9 @@ DbFile::DbFile(const Database &db, const String &fileName, DbFileMode mode, bool
   }
 }
 
-extern "C" {
-WINBASEAPI BOOL WINAPI GetFileSizeEx(HANDLE hFile,PLARGE_INTEGER lpFileSize);
-}
-
 UINT64 DbFile::getSize() {
-  HANDLE fh = CreateFile(getName().cstr(), GENERIC_READ,FILE_SHARE_READ|FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_READONLY, NULL);
-  if(fh == INVALID_HANDLE_VALUE) {
-    throwSqlError(SQL_FATAL_ERROR, _T("DbFile::getSize:Cannot get handle to file %s:%s"), getName().cstr(), getLastErrorText().cstr());
-  }
-  LARGE_INTEGER li;
-  if(GetFileSizeEx(fh,&li) == 0) {
-    String errText = getLastErrorText();
-    CloseHandle(fh);
-    throwSqlError(SQL_FATAL_ERROR, _T("DbFile::getSize:GetFileSizeEx failed on %s:%s"), getName().cstr(), errText.cstr());
-  }
-  UINT64 result = li.QuadPart;
-  CloseHandle(fh);
-  return result;
+  struct _stati64 st;
+  return STAT64(m_fileName, st).st_size;
 }
 
 void DbFile::truncate() {
@@ -357,90 +344,66 @@ void DbFile::truncate() {
 }
 
 void DbFile::init(const String &fileName, DbFileMode mode, LogFile *lf) {
-  String tmp = toUpperCase(fileName);
-
   if(mode != DBFMODE_READWRITE && mode != DBFMODE_READONLY) {
-    throwSqlError(SQL_INVALID_FILEMODE,_T("Invalid filemode (=%d) on <%s>"),mode,tmp.cstr());
+    throwSqlError(SQL_INVALID_FILEMODE, _T("Invalid filemode (=%d) on <%s>"), mode, fileName.cstr());
   }
-
-  m_fileName = tmp;
+  m_fileName = toUpperCase(fileName);
   m_mode     = mode;
   m_logFile  = lf;
 }
 
 void DbFile::write(UINT64 offset, const void *buffer, UINT size) const {
   if(m_mode != DBFMODE_READWRITE) {
-    throwSqlError(SQL_WRITE_ERROR,_T("Writing to <%s>, Opened as readonly"),m_fileName.cstr());
+    throwSqlError(SQL_WRITE_ERROR, _T("Writing to <%s>, Opened as readonly"), m_fileName.cstr());
   }
-
   if(isBackLogged() && !m_logFile->inTmf()) {
-    throwSqlError(SQL_NO_TRANSACTION,_T("Cannot write to <%s>. No tmf startet"), m_fileName.cstr());
+    throwSqlError(SQL_NO_TRANSACTION, _T("Cannot write to <%s>. No tmf startet"), m_fileName.cstr());
   }
-
   if(size == 0) {
     return;
   }
-
-  m_filesem.wait();
+  String errorMsg;
+  s_filesem.wait();
   try {
     FileSlot *fileSlot = slotTable.getFileSlot(m_fileName);
-
-    if(_lseeki64(_fileno(fileSlot->m_file), offset, SEEK_SET) < 0) {
-      throwSqlError(SQL_SEEK_ERROR,_T("_lseeki64(%I64u) failed in <%s>:%s"),offset,m_fileName.cstr(),getErrnoText().cstr());
-    }
-
-    int bytesWritten;
-    if((bytesWritten = _write(_fileno(fileSlot->m_file), buffer, size)) != size) {
-      if(bytesWritten < 0) {
-        throwSqlError(SQL_WRITE_ERROR,_T("_write failed in <%s>:%s"),m_fileName.cstr(), getErrnoText().cstr());
-      } else {
-        throwSqlError(SQL_WRITE_ERROR,_T("_write %d bytes at offset %s to <%s> failed. Could only write %d bytes")
-                     ,size, format1000(offset).cstr(), m_fileName.cstr(), bytesWritten);
-      }
-    }
-
-//    if(_commit(fileno(fileSlot->m_file)) < 0) {
-//      throwSqlError(SQL_WRITE_ERROR,_T("_commit failed in <%s>:%s"),m_fileName.cstr(),getErrnoText().cstr();
-//    }
+    FSEEK(fileSlot->m_file, offset);
+    FWRITE(buffer, size, 1, fileSlot->m_file);
+  } catch(Exception e) {
+    errorMsg = e.what();
   } catch(...) {
-    m_filesem.signal();
-    throw;
+    errorMsg = _T("Unknown exception");
   }
-  m_filesem.signal();
+  s_filesem.signal();
+  if (errorMsg.length() > 0) {
+    throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
+  }
 }
 
 void DbFile::read(UINT64 offset, void *buffer, UINT size) const {
   if(size == 0) {
     return;
   }
-  m_filesem.wait();
+  String errorMsg;
+  s_filesem.wait();
   try {
     FileSlot *fileSlot = slotTable.getFileSlot(m_fileName);
-
-    if(_lseeki64(_fileno(fileSlot->m_file), offset, SEEK_SET) < 0) {
-      throwSqlError(SQL_SEEK_ERROR,_T("_lseeki64(%I64u) failed in <%s>:%s"),offset,m_fileName.cstr(),getErrnoText().cstr());
-    }
-    int bytesRead;
-    if((bytesRead = _read(_fileno(fileSlot->m_file),buffer, size)) != size) {
-      if(bytesRead < 0) {
-        throwSqlError(SQL_READ_ERROR,_T("_read failed in <%s>:%s"),m_fileName.cstr(), getErrnoText().cstr());
-      } else {
-        throwSqlError(SQL_READ_ERROR,_T("_read %d bytes at offset %s from <%s> failed. Could only read %d bytes")
-                     ,size, format1000(offset).cstr(), m_fileName.cstr(), bytesRead);
-      }
-    }
+    FSEEK(fileSlot->m_file, offset);
+    FREAD(buffer, size, 1, fileSlot->m_file);
+  } catch(Exception e) {
+    errorMsg = e.what();
   } catch(...) {
-    m_filesem.signal();
-    throw;
+    errorMsg = _T("Unknown exception");
   }
-  m_filesem.signal();
+  s_filesem.signal();
+  if (errorMsg.length() > 0) {
+    throwSqlError(SQL_FATAL_ERROR, _T("%s"), errorMsg.cstr());
+  }
 }
 
 void DbFile::appendLog(UINT64 offset, const void *buf, ULONG size) const {
   if(!isBackLogged()) {
     throwSqlError(SQL_FILE_NOT_BACKLOGGED,_T("Trying to log <%s> which is not isBackLogged\n"),m_fileName.cstr());
   }
-
   m_logFile->log(*this,offset,buf,size);
 }
 
@@ -448,22 +411,28 @@ void DbFile::create(const String &fileName) {
   if(exist(fileName)) {
     throwSqlError(SQL_CREATE_ERROR,_T("File <%s> already exists"),fileName.cstr());
   }
-  FILE *f = mkfopen(fileName,"w+b");
-  if(f != NULL) {
+  FILE *f = NULL;
+  try {
+    f = MKFOPEN(fileName, _T("w+b"));
     fclose(f);
-  } else {
-    throwSqlError(SQL_CREATE_ERROR,_T("Cannot create file <%s>"),fileName.cstr());
+  } catch(Exception e) {
+    throwSqlError(SQL_CREATE_ERROR,_T("%s"), e.what());
   }
 }
 
 void DbFile::destroy(const String &fileName) {
-  m_filesem.wait();
+  s_filesem.wait();
   slotTable.closeFileSlot(fileName);
-  if(unlink(fileName) < 0) {
-    m_filesem.signal();
-    throwSqlError(SQL_FILE_DELETE_ERROR,_T("Cannot delete <%s> %s"),fileName.cstr(),getErrnoText().cstr());
+  String errorMsg;
+  try {
+    UNLINK(fileName);
+  } catch (Exception e) {
+    errorMsg = e.what();
   }
-  m_filesem.signal();
+  s_filesem.signal();
+  if(errorMsg.length() > 0) {
+    throwSqlError(SQL_FILE_DELETE_ERROR,_T("%s"),errorMsg.cstr());
+  }
 }
 
 bool DbFile::exist(const String &fileName) { // static
@@ -471,13 +440,20 @@ bool DbFile::exist(const String &fileName) { // static
 }
 
 void DbFile::rename(const String &from, const String &to) {
-  m_filesem.wait();
+  s_filesem.wait();
+
   slotTable.closeFileSlot(from);
-  if(::rename(from,to) < 0) {
-    m_filesem.signal();
-    throwSqlError(SQL_FILE_RENAME_ERROR,_T("Cannot rename <%s> -> <%s>"),from.cstr(),to.cstr());
+  String errorMsg;
+  try {
+    RENAME(from,to);
+  } catch(Exception e) {
+    errorMsg = e.what();
   }
-  m_filesem.signal();
+  s_filesem.signal();
+
+  if(errorMsg.length() > 0) {
+    throwSqlError(SQL_FILE_RENAME_ERROR,_T("%s"),errorMsg.cstr());
+  }
 }
 
 String DbFile::dbFileName(const String &dbName, const String &fileName) {

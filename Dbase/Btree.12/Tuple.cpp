@@ -63,11 +63,13 @@ TuplePrintDefinition::TuplePrintDefinition(const HostVarDescriptionList &desc) {
     const HostVarDescription &h = desc[i];
     UINT w;
     switch(h.getType()) {
-    case DBTYPE_STRING  : 
+    case DBTYPE_CSTRING : 
+    case DBTYPE_WSTRING : 
     case DBTYPE_VARCHAR :
       w = h.sqllen + 2; // remember " in toString
       break;
-    case DBTYPE_STRINGN :
+    case DBTYPE_CSTRINGN:
+    case DBTYPE_WSTRINGN:
     case DBTYPE_VARCHARN:
       w = h.sqllen + 2;
       if(w < 4) w = 4;  // null possible

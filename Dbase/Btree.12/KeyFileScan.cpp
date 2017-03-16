@@ -103,7 +103,7 @@ void KeyFile::scanAsc(RelationType beginRelOp, const KeyType *beginKey, UINT beg
 
   readHead(kh, false);
 
-  m_keydef.checkKeyFieldCount(beginFieldCount);
+  m_keydef.checkKeyFieldCount(beginFieldCount, __TFUNCTION__);
 
   if(kh.m_root == DB_NULLADDR) {
     return;
@@ -117,7 +117,7 @@ void KeyFile::scanDesc(RelationType beginRelOp, const KeyType *beginKey, UINT be
 
   readHead(kh, false);
 
-  m_keydef.checkKeyFieldCount(beginFieldCount);
+  m_keydef.checkKeyFieldCount(beginFieldCount, __TFUNCTION__);
 
   if(kh.m_root == DB_NULLADDR) {
     return;

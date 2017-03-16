@@ -87,7 +87,7 @@ void Database::createDbDb() {
 
   DataFile::create(SYSTEM_DBDATA_FNAME);
   KeyFileDefinition keydef;
-  keydef.addKeyField(SORT_ASCENDING,DBTYPE_STRING, sizeof(dbdef.m_dbName));
+  keydef.addKeyField(SORT_ASCENDING,DBTYPE_TSTRING, ARRAYSIZE(dbdef.m_dbName));
   keydef.addAddrField(true);
   KeyFile::create( SYSTEM_DBKEY_FNAME, keydef);
   DbFile::create(SYSTEM_DBLOG_FNAME);

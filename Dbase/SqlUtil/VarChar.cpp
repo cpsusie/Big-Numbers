@@ -18,11 +18,12 @@ void varchar::init(ULONG len) {
   m_data = new BYTE[m_len+2]; // always have 2 extract zero bytes at the end, to make faster conversion to C-String
 }
 
-varchar::varchar() { init(0); }
+varchar::varchar() { init(0); ZEROTERMINATE(); }
 
 varchar::varchar(ULONG len) {
   init(len);
-  memset(m_data,0,m_len+sizeof(TCHAR));
+  if(m_len > 0) memset(m_data,0,m_len);
+  ZEROTERMINATE();
 }
 
 varchar::varchar(const varchar &src) {
@@ -35,7 +36,7 @@ varchar::~varchar() {
 }
 
 varchar::varchar(const char *src) {
-  init((ULONG)strlen(src)); // NB not + 1
+  init((ULONG)strlen(src)*sizeof(char)); // NB not + 1
   COPYDATA(src);
 }
 

@@ -2,6 +2,8 @@
 #include <math.h>
 #include <float.h>
 #include <limits.h>
+#include <comdef.h>
+#include <atlconv.h>
 
 #define MAX_I64 0x7fffffffffffffffi64
 #define sign(x) (((x) < 0) ? -1 : ((x) > 0) ? 1 : 0)
@@ -21,8 +23,10 @@ static double getDouble(UINT64 x) {
 void TupleField::allocate(DbFieldType type) {
   m_type = type;
   switch(type) {
-  case DBTYPE_STRING  :
-  case DBTYPE_STRINGN :
+  case DBTYPE_CSTRING  :
+  case DBTYPE_CSTRINGN :
+  case DBTYPE_WSTRING  :
+  case DBTYPE_WSTRINGN :
     m_string    = new String();
     break;
   case DBTYPE_VARCHAR :
@@ -46,8 +50,10 @@ void TupleField::allocate(DbFieldType type) {
 
 void TupleField::cleanup() {
   switch(m_type) {
-  case DBTYPE_STRING     :
-  case DBTYPE_STRINGN    :
+  case DBTYPE_CSTRING    :
+  case DBTYPE_CSTRINGN   :
+  case DBTYPE_WSTRING    :
+  case DBTYPE_WSTRINGN   :
     delete m_string;
     m_string    = NULL;
     break;
@@ -152,19 +158,19 @@ TupleField::TupleField(double v) {
 }
 
 TupleField::TupleField(const char *v) {
-  allocate(DBTYPE_STRING);
+  allocate(DBTYPE_TSTRING);
   m_defined = true;
   *m_string = v;
 }
 
 TupleField::TupleField(const wchar_t *v) {
-  allocate(DBTYPE_STRING);
+  allocate(DBTYPE_TSTRING);
   m_defined = true;
   *m_string = v;
 }
 
 TupleField::TupleField(const String &v) {
-  allocate(DBTYPE_STRING);
+  allocate(DBTYPE_TSTRING);
   m_defined = true;
   *m_string = v;
 }
@@ -245,8 +251,10 @@ TupleField::TupleField(const TupleField &rhs) {
   case DBTYPE_DOUBLEN   :
     m_double    = rhs.m_double;
     break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
     m_string    = new String(*rhs.m_string);
     break;
   case DBTYPE_VARCHAR   :
@@ -326,8 +334,10 @@ TupleField &TupleField::operator=(const TupleField &rhs) {
   case DBTYPE_DOUBLEN   :
     m_double   = rhs.m_double;
     break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
     *m_string  = *rhs.m_string;
     break;
   case DBTYPE_VARCHAR   :
@@ -622,8 +632,10 @@ void TupleField::get(String &v) const {
     return;
   }
   switch(m_type) {
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
     v = *m_string;
     break;
   case DBTYPE_VARCHAR   :
@@ -639,10 +651,15 @@ void TupleField::get(varchar &v) const {
   if(!isDefined()) {
     return;
   }
+  USES_CONVERSION;
   switch(m_type) {
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
-    v = m_string->cstr();
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+    { v = T2A((TCHAR*)(m_string->cstr()));  }
+    break;
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
+    { v = T2W((TCHAR*)(m_string->cstr()));  }
     break;
   case DBTYPE_VARCHAR   :
   case DBTYPE_VARCHARN  :
@@ -1252,8 +1269,10 @@ void TupleField::setValue(double v) {
     *this = v;
     break;
 
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
     *this = numberToString(v);
     break;
 
@@ -1287,8 +1306,10 @@ void TupleField::setValue(const String &v) {
     setValue(stringToNumber(v));
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       *this = v;
       break;
 
@@ -1323,8 +1344,10 @@ void TupleField::setValue(const Date &v) {
     setValue(dateToNumber(v));
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       *this = v.toString();
       break;
 
@@ -1354,8 +1377,10 @@ void TupleField::setValue(const Time &v) {
     setValue(timeToNumber(v));
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       *this = v.toString();
       break;
 
@@ -1385,8 +1410,10 @@ void TupleField::setValue(const Timestamp &v) {
     setValue(timestampToNumber(v));
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       *this = v.toString(ddMMyyyyhhmmssSSS);
       break;
 
@@ -1421,8 +1448,10 @@ void TupleField::setValue(const varchar &v) {
     setValue(stringToNumber(String((TCHAR*)v.data())));
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       *this = String((TCHAR*)v.data());
       break;
 
@@ -1447,7 +1476,8 @@ void TupleField::setValue(const varchar &v) {
       break;
 
     default:
-      throwSqlError(SQL_INVALIDCAST,_T("Invalid cast. Cannot cast varchar to %s"),getTypeString(m_type));
+      throwSqlError(SQL_INVALIDCAST,_T("Invalid cast. Cannot cast varchar to %s")
+                                   ,getTypeString(m_type));
     }
   }
 }
@@ -1466,8 +1496,10 @@ void TupleField::setType(DbFieldType newType) {
     newv.setValue(d);
   } else {
     switch(m_type) {
-    case DBTYPE_STRING    :
-    case DBTYPE_STRINGN   :
+    case DBTYPE_CSTRING   :
+    case DBTYPE_CSTRINGN  :
+    case DBTYPE_WSTRING   :
+    case DBTYPE_WSTRINGN  :
       { String str;
         get(str);
         newv.setValue(str);
@@ -1508,11 +1540,13 @@ void TupleField::setType(DbFieldType newType) {
 
 void TupleField::get(SqlApiVarList &hv) const {
   if(!isDefined()) {
-    if(!isNullAllowed(hv.getType()))
-      throwSqlError(SQL_NOINDICATOR,_T("Unable to return nullvalue in hostvar because no indicator is specified"));
+    if(!isNullAllowed(hv.getType())) {
+      throwSqlError(SQL_NOINDICATOR, _T("Unable to return nullvalue in hostvar because no indicator is specified"));
+    }
     *hv.sqlind = INDICATOR_UNDEFINED;
     return;
   }
+  USES_CONVERSION;
   switch(hv.getType()) {
   case DBTYPE_CHAR      :
   case DBTYPE_CHARN     :
@@ -1554,15 +1588,30 @@ void TupleField::get(SqlApiVarList &hv) const {
   case DBTYPE_DOUBLEN   :
     get(*(double*)hv.sqldata);
     break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
     { String s;
       get(s);
-      if(s.length() > hv.sqllen) {
+      const ULONG nbytes = (ULONG)s.length()*sizeof(char);
+      if(nbytes > hv.sqllen) {
         throwSqlError(SQL_STRING_TOO_LONG,_T("String too long to fit in hostvar"));
       }
-      memcpy(hv.sqldata,s.cstr(),s.length());
-      hv.sqllen = (ULONG)s.length();
+      const char    *cstr = T2A(s.cstr());
+      memcpy(hv.sqldata, cstr, nbytes);
+      hv.sqllen = nbytes;
+    }
+    break;
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
+    { String s;
+      get(s);
+      const ULONG nbytes = (ULONG)s.length()*sizeof(wchar_t);
+      if(nbytes > hv.sqllen) {
+        throwSqlError(SQL_STRING_TOO_LONG,_T("String too long to fit in hostvar"));
+      }
+      const wchar_t *wstr = T2W(s.cstr());
+      memcpy(hv.sqldata, wstr, nbytes);
+      hv.sqllen = nbytes;
     }
     break;
   case DBTYPE_VARCHAR   :
@@ -1638,13 +1687,17 @@ TupleField &TupleField::operator=(const SqlApiVarList &hv) {
   case DBTYPE_DOUBLEN   :
     *this = *(double*)hv.sqldata;
     break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
     *this = (char*)hv.sqldata;
+    break;
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
+    *this = (wchar_t*)hv.sqldata;
     break;
   case DBTYPE_VARCHAR   :
   case DBTYPE_VARCHARN  :
-    { varchar vch(hv.sqllen,hv.sqldata);
+    { varchar vch(hv.sqllen, hv.sqldata);
       *this = vch;
       break;
     }
@@ -1709,8 +1762,10 @@ String TupleField::toString() const {
   case DBTYPE_DOUBLE    :
   case DBTYPE_DOUBLEN   :
     TOSTRING(double,_T("%.10lg"));
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  :
     { String v;
       get(v);
       return String(_T("\"")) + v + _T("\"");

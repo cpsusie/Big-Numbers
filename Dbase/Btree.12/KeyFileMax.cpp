@@ -79,7 +79,7 @@ bool KeyFile::searchMax(RelationType relop, KeyType &key, UINT fieldCount) {
 
   readHead(header, false);
 
-  m_keydef.checkKeyFieldCount(fieldCount);
+  m_keydef.checkKeyFieldCount(fieldCount, __TFUNCTION__);
 
   switch(relop) {
   case RELOP_GE: // find the biggest key in file and check it

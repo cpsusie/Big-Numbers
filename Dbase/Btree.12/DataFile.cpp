@@ -27,7 +27,10 @@ void DataFile::init() {
   DataFileHeader header;
   readHead(header, false);
   if(strcmp(header.m_version,dbVersion) != 0) {
-    throwSqlError(SQL_WRONGDBVERSION,_T("Wrong database version for file %s. File verison=<%s>, program version=<%s>"),getName().cstr(),header.m_version, dbVersion);
+    const String programVersion = dbVersion;
+    const String fileVersion    = header.m_version;
+    throwSqlError(SQL_WRONGDBVERSION,_T("Wrong database version for file %s. File verison=<%s>, program version=<%s>")
+                                    ,getName().cstr(),fileVersion.cstr(), programVersion.cstr());
   }
 }
 

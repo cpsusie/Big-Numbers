@@ -80,7 +80,7 @@ bool KeyFile::searchMin(RelationType relop, KeyType &key, UINT fieldCount) {
 
   readHead(header, false);
 
-  m_keydef.checkKeyFieldCount(fieldCount);
+  m_keydef.checkKeyFieldCount(fieldCount, __TFUNCTION__);
 
   switch(relop) {
   case RELOP_LE: // find the smallest key in file and check it

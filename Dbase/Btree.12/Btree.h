@@ -158,14 +158,11 @@ public:
   inline DbMainType  getMainType() const { return ::getMainType(getType());    }
   inline bool        isAscending() const { return m_asc;                       }
   inline bool        isNullable()  const { return DBTYPE_NULLABLE(m_type);     }
-  // in bytes
-  inline UINT        getLen()      const { return m_len;        }
+  // In bytes
+  inline UINT        getLen()      const { return m_len;                       }
   inline UINT        getSize()     const { return (getMainType() == MAINTYPE_VARCHAR) ? (m_len + 1) : m_len; }
-  // in characters. only valie for m_type=DBTYPE_STRING/DBTYPE_STRINGN
-  inline UINT        getMaxStringLen() const {
-    assert(getMainType() == MAINTYPE_STRING);
-    return m_len / sizeof(TCHAR);
-  }
+  // In characters. Only valid for m_type=DBTYPE_STRING/DBTYPE_STRINGN/DBTYPE_VARCHAR/DBTYPE_VARCHARN
+  UINT               getMaxStringLen() const;
   inline UINT        getOffset()   const { return m_offset;                    }
 };
 
@@ -289,26 +286,49 @@ private:
   KeyField  m_field[MAXKEYFIELDCOUNT]; // Definition of the fields in the key
   USHORT    m_keySize;                 // Size of key (including datafields) in bytes
 
-  KeyFileDefinition &addField(bool keyField, SortDirection sortdir, DbFieldType type, int length);
+  KeyFileDefinition &addField(bool keyField, SortDirection sortdir, DbFieldType type, UINT length);
   KeyType           &setDefined(      KeyType &key, UINT n, bool defined ) const;
   void               getBytes(  const KeyType &key, UINT n,       void *v) const;
   void               putBytes(        KeyType &key, UINT n, const void *v) const;
+  void               throwFieldNotVarChar(  UINT n    , const TCHAR *method) const;
+  void               throwIndexOutOfRange(  UINT index, const TCHAR *method) const;
+  void               throwInvalidFieldCount(UINT n    , const TCHAR *method) const;
+  void               throwKeyFieldCount(    UINT n    , const TCHAR *method) const;
+  void               throwFieldNotDbAddr(   UINT n    , const TCHAR *method) const;
+  void               throwFieldNotString(   UINT n    , const TCHAR *method) const;
+  void               throwInvalidFieldType( UINT n    , const TCHAR *method) const;
 public:
   KeyFileDefinition() {
     init();
   }
   KeyFileDefinition(KeyFile &keyFile);
   KeyFileDefinition &init();
-  KeyFileDefinition &addKeyField( SortDirection sortDir, DbFieldType type, int length=0);
-  KeyFileDefinition &addDataField(                       DbFieldType type, int length=0); // Must be at least one keyfield before adding datafields.
+  // length only used for CSTRING(N),WSTRING(N) and VARCHAR(N).
+  // For CSTRING and WSTRING length is in characters.
+  // For VARCHAR length is in BYTES
+  KeyFileDefinition &addKeyField( SortDirection sortDir, DbFieldType type, UINT length=0);
+  KeyFileDefinition &addDataField(                       DbFieldType type, UINT length=0); // Must be at least one keyfield before adding datafields.
   // Cannot add keyfields when the first datafield has been added.
 
   KeyFileDefinition &addAddrField(bool unique);
-  void               checkFieldIsVarChar(UINT n    ) const;
-  void               checkFieldIndex(    UINT index) const;
-  void               checkFieldCount(    UINT n    ) const;
-  void               checkKeyFieldCount( UINT n    ) const;
-  void               checkFieldIsDbAddr( UINT n    ) const;
+  inline void        checkFieldIsVarChar(UINT n    , const TCHAR *method) const {
+    const KeyField &f = m_field[n];
+    if(f.getType() != DBTYPE_VARCHAR && f.getType() != DBTYPE_VARCHARN) {
+      throwFieldNotVarChar(n, method);
+    }
+  }
+  inline void        checkFieldIndex(    UINT index, const TCHAR *method) const {
+    if(index >= m_totalFieldCount) throwIndexOutOfRange(index, method);
+  }
+  inline void        checkFieldCount(    UINT n    , const TCHAR *method) const {
+    if(n     >  m_totalFieldCount) throwInvalidFieldCount(n, method);
+  }
+  inline void        checkKeyFieldCount( UINT n    , const TCHAR *method) const {
+    if(n     >  m_keyFieldCount  ) throwKeyFieldCount(n, method);
+  }
+  inline void        checkFieldIsDbAddr( UINT n    , const TCHAR *method) const {
+    if(m_field[n].getType() != DBTYPE_DBADDR) throwFieldNotDbAddr(n, method);
+  }
 
   inline UINT getSize() const { // Total size of key in bytes
     return m_keySize;
@@ -520,13 +540,14 @@ class DbFile;
 class LogFile {
 private:
   Semaphore m_sem;
-  ULONG     m_threadid;      
+  ULONG     m_threadId;
   FILE     *m_f;
-  bool      m_intmf;
+  bool      m_inTMF;
   ULONG     m_count;
   UINT64    m_end;
   void setCount( ULONG  count, UINT64 end );
   void getHead(  ULONG &count, UINT64 &end) const;
+  void checkThreadId() const;
 public:
   LogFile(const String &fname);
   ~LogFile();
@@ -542,6 +563,7 @@ class Database;
 
 class DbFile {
 private:
+  static Semaphore  s_filesem;
   LogFile          *m_logFile;
   String            m_fileName;
   DbFileMode        m_mode;
@@ -892,8 +914,8 @@ extern DbNames systemFileNames;
 #define SYSSTAT                   systemFileNames.SYSSTAT_LOGICALNAME
 
 typedef enum {
-  TABLETYPE_SYSTEM = 'S'
- ,TABLETYPE_USER   = 'U'
+  TABLETYPE_SYSTEM     = 'S'
+ ,TABLETYPE_USER       = 'U'
 } TableType;
 
 typedef enum {
@@ -905,7 +927,7 @@ typedef enum {
 class SysTableTableData {
 public:
   TCHAR          m_tableName[MAXTABLENAME+1];
-  TCHAR          m_fileName[MAXFILENAME+1];
+  TCHAR          m_fileName[ MAXFILENAME +1];
   ULONG          m_sequenceNo;
   char           m_tableType;
   USHORT         m_recSize;
@@ -913,20 +935,20 @@ public:
 
 class SysTableColumnData {
 public:
-  TCHAR          m_tableName[MAXTABLENAME+1];
+  TCHAR          m_tableName[   MAXTABLENAME+1];
   USHORT         m_colNo;
-  TCHAR          m_columnName[MAXCOLUMNNAME+1];
+  TCHAR          m_columnName[  MAXCOLUMNNAME+1];
   TCHAR          m_dbType[10];
   ULONG          m_offset;
-  ULONG          m_len;
+  ULONG          m_len; // in bytes
   char           m_nulls;
   TCHAR          m_defaultValue[MAXDEFAULTVALUE+1];
 };
 
 class SysTableUserData {
 public:
-  TCHAR           m_username[MAXUSERNAME+1];
-  TCHAR           m_password[MAXPASSWORD+1];
+  TCHAR          m_username[MAXUSERNAME+1];
+  TCHAR          m_password[MAXPASSWORD+1];
 };
 
 class SysTableCodeKey {
@@ -954,9 +976,9 @@ public:
 
 class SysTableDbData {
 public:
-  TCHAR  m_dbName[SQLAPI_MAXDBNAME+1]; /* must be the same length as dbName in sqlapi.h */
-  TCHAR  m_path[30];
-  UCHAR  m_colseq[256];
+  TCHAR          m_dbName[SQLAPI_MAXDBNAME+1]; /* must be the same length as dbName in sqlapi.h */
+  TCHAR          m_path[30];
+  UCHAR          m_colseq[256];
 };
 
 class IndexDefinition;
@@ -965,14 +987,14 @@ class SysTableIndexData {
 private:
   TCHAR          m_tableName[MAXTABLENAME+1];
   TCHAR          m_indexName[MAXINDEXNAME+1];
-  TCHAR          m_fileName[MAXFILENAME+1];
+  TCHAR          m_fileName[ MAXFILENAME+1];
   TCHAR          m_indexType;
   USHORT         m_colCount;
-  TCHAR          m_columns[MAXKEYFIELDCOUNT*4 + 1];
+  TCHAR          m_columns[  MAXKEYFIELDCOUNT*4 + 1];
   TCHAR          m_ascending[MAXKEYFIELDCOUNT+1];
 public:
   SysTableIndexData() {
-    memset(this,0,sizeof(SysTableIndexData));
+    memset(this, 0, sizeof(SysTableIndexData));
   }
   SysTableIndexData(const IndexDefinition &indexDef);
   friend class IndexDefinition;
@@ -1010,16 +1032,18 @@ Packer &operator>>(Packer &p,       IndexDefinition &indexDef);
 
 typedef Array<IndexDefinition> IndexArray;
 
-class ColumnInfo { // minimized version of ColumnDefinition
+class ColumnInfo { // minimized version of ColumnDefinition.
+                   // Don't add any membervariables with non-trivial constructor (used in CompactArray)
 public:
   DbFieldType    m_type;
   ULONG          m_offset; 
-  ULONG          m_len;
-  DbFieldType getType()     const { return m_type;                }
-  DbMainType  getMainType() const { return ::getMainType(m_type); }
-
-  ULONG size() const;
-  String toString() const;
+  ULONG          m_len; // in bytes
+  DbFieldType getType()         const { return m_type;                }
+  DbMainType  getMainType()     const { return ::getMainType(m_type); }
+  ULONG       size()            const;
+   // In characters
+  UINT        getMaxStringLen() const;
+  String      toString()        const;
 };
 
 class ColumnDefinition : public ColumnInfo {
@@ -1028,7 +1052,7 @@ public:
   bool           m_nullAllowed;
   String         m_defaultValue;
   ColumnDefinition(const SysTableColumnData &colData);
-  ColumnDefinition(DbFieldType type, const String &name, ULONG len = 0, const String defaultValue = "");
+  ColumnDefinition(DbFieldType type, const String &name, ULONG len = 0, const String defaultValue = EMPTYSTRING);
   ColumnDefinition() {}
   String toString() const;
 };
@@ -1071,7 +1095,7 @@ private:
   ULONG                      m_sequenceNo;
   String                     m_fileName;
   UINT                       m_recSize;
-  Array<ColumnInfo>          m_columns;
+  CompactArray<ColumnInfo>   m_columns;
   IndexArray                 m_indexArray;
   FieldSet                   m_allFields;
 
@@ -1081,46 +1105,54 @@ private:
   void            *getFieldAddr( const RecordType &rec, UINT n)                const;
   void             getBytes(     const RecordType &rec, UINT n,       void *v) const;
   void             putBytes(           RecordType &rec, UINT n, const void *v) const;
+  void             throwIndexOutOfRange(  UINT index     , const TCHAR *method) const;
+  void             throwInvalidFieldCount(UINT fieldCount, const TCHAR *method) const;
+  void             throwInvalidFieldType( UINT index     , const TCHAR *method) const;
+  void             throwFieldNotString(   UINT index     , const TCHAR *method) const;
 public:
-  void checkFieldIndex(UINT index     ) const;
-  void checkFieldCount(UINT fieldCount) const;
+  void checkFieldIndex(UINT index, const TCHAR *method) const {
+    if(index >= m_columns.size()) throwIndexOutOfRange(index, method);
+  }
+  void checkFieldCount(UINT fieldCount, const TCHAR *method) const {
+    if(fieldCount > m_columns.size()) throwInvalidFieldCount(fieldCount, method);
+  }
 //  TableInfo();
   TableInfo(const TableDefinition &tableDef, const IndexArray &indexArray);
 
-  void get(const RecordType &rec, UINT n,       char     &v) const;
-  void put(      RecordType &rec, UINT n, const char     &v) const;
-  void get(const RecordType &rec, UINT n,       UCHAR    &v) const;
-  void put(      RecordType &rec, UINT n, const UCHAR    &v) const;
-  void get(const RecordType &rec, UINT n,       short    &v) const;
-  void put(      RecordType &rec, UINT n, const short    &v) const;
-  void get(const RecordType &rec, UINT n,       USHORT   &v) const;
-  void put(      RecordType &rec, UINT n, const USHORT   &v) const;
-  void get(const RecordType &rec, UINT n,       int      &v) const;
-  void put(      RecordType &rec, UINT n, const int      &v) const;
-  void get(const RecordType &rec, UINT n,       UINT     &v) const;
-  void put(      RecordType &rec, UINT n, const UINT     &v) const;
-  void get(const RecordType &rec, UINT n,       long     &v) const;
-  void put(      RecordType &rec, UINT n, const long     &v) const;
-  void get(const RecordType &rec, UINT n,       ULONG    &v) const;
-  void put(      RecordType &rec, UINT n, const ULONG    &v) const;
-  void get(const RecordType &rec, UINT n,       INT64    &v) const;
-  void put(      RecordType &rec, UINT n, const INT64    &v) const;
-  void get(const RecordType &rec, UINT n,       UINT64   &v) const;
-  void put(      RecordType &rec, UINT n, const UINT64   &v) const;
-  void get(const RecordType &rec, UINT n,       float    &v) const;
-  void put(      RecordType &rec, UINT n, const float    &v) const;
-  void get(const RecordType &rec, UINT n,       double   &v) const;
-  void put(      RecordType &rec, UINT n, const double   &v) const;
-  void get(const RecordType &rec, UINT n,       String   &v) const;
-  void put(      RecordType &rec, UINT n, const String   &v) const;
-  void get(const RecordType &rec, UINT n,       Date     &v) const;
-  void put(      RecordType &rec, UINT n, const Date     &v) const;
-  void get(const RecordType &rec, UINT n,       Time     &v) const;
-  void put(      RecordType &rec, UINT n, const Time     &v) const;
-  void get(const RecordType &rec, UINT n,       Timestamp        &v) const;
-  void put(      RecordType &rec, UINT n, const Timestamp        &v) const;
-  void get(const RecordType &rec, UINT n,       TupleField       &v) const;
-  void put(      RecordType &rec, UINT n, const TupleField       &v) const;
+  void get(const RecordType &rec, UINT n,       char       &v) const;
+  void put(      RecordType &rec, UINT n, const char       &v) const;
+  void get(const RecordType &rec, UINT n,       UCHAR      &v) const;
+  void put(      RecordType &rec, UINT n, const UCHAR      &v) const;
+  void get(const RecordType &rec, UINT n,       short      &v) const;
+  void put(      RecordType &rec, UINT n, const short      &v) const;
+  void get(const RecordType &rec, UINT n,       USHORT     &v) const;
+  void put(      RecordType &rec, UINT n, const USHORT     &v) const;
+  void get(const RecordType &rec, UINT n,       int        &v) const;
+  void put(      RecordType &rec, UINT n, const int        &v) const;
+  void get(const RecordType &rec, UINT n,       UINT       &v) const;
+  void put(      RecordType &rec, UINT n, const UINT       &v) const;
+  void get(const RecordType &rec, UINT n,       long       &v) const;
+  void put(      RecordType &rec, UINT n, const long       &v) const;
+  void get(const RecordType &rec, UINT n,       ULONG      &v) const;
+  void put(      RecordType &rec, UINT n, const ULONG      &v) const;
+  void get(const RecordType &rec, UINT n,       INT64      &v) const;
+  void put(      RecordType &rec, UINT n, const INT64      &v) const;
+  void get(const RecordType &rec, UINT n,       UINT64     &v) const;
+  void put(      RecordType &rec, UINT n, const UINT64     &v) const;
+  void get(const RecordType &rec, UINT n,       float      &v) const;
+  void put(      RecordType &rec, UINT n, const float      &v) const;
+  void get(const RecordType &rec, UINT n,       double     &v) const;
+  void put(      RecordType &rec, UINT n, const double     &v) const;
+  void get(const RecordType &rec, UINT n,       String     &v) const;
+  void put(      RecordType &rec, UINT n, const String     &v) const;
+  void get(const RecordType &rec, UINT n,       Date       &v) const;
+  void put(      RecordType &rec, UINT n, const Date       &v) const;
+  void get(const RecordType &rec, UINT n,       Time       &v) const;
+  void put(      RecordType &rec, UINT n, const Time       &v) const;
+  void get(const RecordType &rec, UINT n,       Timestamp  &v) const;
+  void put(      RecordType &rec, UINT n, const Timestamp  &v) const;
+  void get(const RecordType &rec, UINT n,       TupleField &v) const;
+  void put(      RecordType &rec, UINT n, const TupleField &v) const;
 
   void                   initField(          RecordType &rec, UINT n)        const;
   bool                   isDefined(    const RecordType &rec, UINT n)        const;
@@ -1167,22 +1199,22 @@ private:
 
   TableDefinition readColumnDefinitions( const SysTableTableData &tabdata)    const;
 
-  void readIndexDefinitions(        const String            &tableName    ,
-                                    IndexArray              &indexArray   ) const;
-  void sysTabTableInsert(           const String            &tableName    ,
-                                    const String            &fileName     ,
-                                    ULONG                    sequenceNo   ,
-                                    char                     tableType    ,
-                                    USHORT                   recSize      );
+  void readIndexDefinitions(        const String            &tableName
+                                   ,IndexArray              &indexArray   ) const;
+  void sysTabTableInsert(           const String            &tableName
+                                   ,const String            &fileName
+                                   ,ULONG                    sequenceNo
+                                   ,char                     tableType
+                                   ,USHORT                   recSize      );
 
-  void sysTabColumnInsert(          const String            &tableName    , 
-                                    USHORT                   colno        ,
-                                    const String            &columnName   ,
-                                    DbFieldType              dbtype       ,
-                                    ULONG                    offset       ,
-                                    ULONG                    len          ,
-                                    char                     nulls        ,
-                                    const String            &defaultValue );
+  void sysTabColumnInsert(          const String            &tableName
+                                   ,USHORT                   colno
+                                   ,const String            &columnName
+                                   ,DbFieldType              dbtype
+                                   ,ULONG                    offset
+                                   ,ULONG                    len
+                                   ,char                     nulls
+                                   ,const String            &defaultValue = EMPTYSTRING);
 
   void sysTabIndexInsert(           const IndexDefinition   &index      );
   void removeFromCache(             const String            &tableName  );
@@ -1192,10 +1224,10 @@ public:
   ~Database();
   static void createDbDb();
   static void create(SysTableDbData &dbdef);
-  static void destroy(const String &dbName);
-  static bool exist(const String &dbName);
+  static void destroy(       const String   &dbName);
+  static bool exist(         const String   &dbName);
   static void sysTabDbDelete(const String   &dbName);
-  static void sysTabDbInsert(SysTableDbData &dbdef);
+  static void sysTabDbInsert(SysTableDbData &dbdef );
   static bool searchDbName(  const String   &dbName, SysTableDbData &dbdef );
   void trbegin();
   void trcommit();
@@ -1208,18 +1240,19 @@ public:
   LogFile *getLogFile() const { return m_logFile; }
   const String &getPath() const { return m_path;    }
 
-  void  dataFileScan(    const String         &tableName    ,DataFileScanner &scanner);
+  void  dataFileScan(    const String         &tableName
+                        ,DataFileScanner      &scanner      );
 
   String getNewFileName( const String         &extension    ) const;
 
   ULONG getMaxTableSequenceNo() const;
                 
-  void sysTabUserInsert( const String         &userName     , 
-                         const String         &password     );
+  void sysTabUserInsert( const String         &userName
+                        ,const String         &password     );
 
-  void sysTabCodeInsert( SysTableCodeKey      &key          , 
-                         void                 *rec          ,
-                         UINT                  size         );
+  void sysTabCodeInsert( SysTableCodeKey      &key
+                        ,void                 *rec
+                        ,UINT                  size         );
 
   void sysTabCodeDelete( const String         &fileName     );
 
@@ -1229,35 +1262,36 @@ public:
 
   void sysTabStatDelete( const String         &indexName    );
 
-  bool sysTabStatRead(   const String         &indexName    ,
-                         SysTableStatData     &stat         ) const;
+  bool sysTabStatRead(   const String         &indexName
+                        ,SysTableStatData     &stat         ) const;
 
-  void sysTabReadUser(   const String         &userName     ,
-                         SysTableUserData     &rec          ) const;
+  void sysTabReadUser(   const String         &userName
+                        ,SysTableUserData     &rec          ) const;
 
   void tableCreate(      const TableDefinition &tableDef    );
 
-  void tableCreateLike(  const String         &tableName    ,
-                         const String         &likeName     ,
-                         const String         &fileName     );
+  void tableCreateLike(  const String         &tableName
+                        ,const String         &likeName
+                        ,const String         &fileName     );
 
   void tableDrop(        const String         &tableName    );
 
   void indexCreate(      IndexDefinition      &indexDef     );
 
-  void indexDrop(        const String         &indexName    , bool forceDeletePrimary = false );
+  void indexDrop(        const String         &indexName
+                        ,bool  forceDeletePrimary = false   );
 
-  const TableDefinition &getTableDefinition(const String  &tableName ) const;
-  const TableDefinition &getTableDefinition(ULONG  sequenceNo) const;
+  const TableDefinition &getTableDefinition( const String  &tableName ) const;
+  const TableDefinition &getTableDefinition( ULONG          sequenceNo) const;
 
-  const TableInfo       &getTableInfo(      const String  &tableName ) const;
-  const TableInfo       &getTableInfo(      ULONG  sequenceNo) const;
+  const TableInfo       &getTableInfo(       const String  &tableName ) const;
+  const TableInfo       &getTableInfo(       ULONG          sequenceNo) const;
 
-  const IndexArray      &getIndexDefinitions(const String &tableName ) const;
-  const IndexDefinition &getIndexDefinition( const String &indexName ) const;
+  const IndexArray      &getIndexDefinitions(const String  &tableName ) const;
+  const IndexDefinition &getIndexDefinition( const String  &indexName ) const;
                      
-  void updateStatistics( const IndexDefinition &indexDef);
-  void updateStatistics( const String &tableName );
+  void updateStatistics( const IndexDefinition &indexDef  );
+  void updateStatistics( const String          &tableName );
   void updateStatistics();
 
   UCHAR getMinColSeq() const; // returns the character with the lowest colseq
@@ -1347,10 +1381,10 @@ private:
   bool           m_indexOnly;
   FieldSet       m_fieldSet;
 public:
-  TableCursor(Database               &db      ,
-              const TableCursorParam &param   ,
-              const Tuple            *beginKey,
-              const Tuple            *endKey  );
+  TableCursor(Database               &db
+             ,const TableCursorParam &param
+             ,const Tuple            *beginKey
+             ,const Tuple            *endKey  );
   ~TableCursor();
   void next(Tuple &tuple);
   bool hasNext() const;
@@ -1362,4 +1396,4 @@ public:
 #ifdef GIVE_LINK_MESSAGE
 #pragma message("link with " DBASELIB_VERSION)
 #endif
-#pragma comment(lib, DBASE_VERSION "Btree.lib")
+#pragma comment(lib, DBASE_VERSION "Btree12.lib")

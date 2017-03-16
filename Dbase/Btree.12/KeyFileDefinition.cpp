@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include <comdef.h>
+#include <atlconv.h>
 /*
 #define DEBUG
 */
@@ -17,6 +19,25 @@ KeyField::KeyField() {
   m_offset = 0;
 }
 
+UINT KeyField::getMaxStringLen() const {
+  switch(getType()) {
+  case DBTYPE_CSTRING    :
+  case DBTYPE_CSTRINGN   :
+    return m_len / sizeof(char);
+  case DBTYPE_WSTRING    :
+  case DBTYPE_WSTRINGN   :
+    return m_len / sizeof(wchar_t);
+  case DBTYPE_VARCHAR    :
+  case DBTYPE_VARCHARN   :
+    return m_len / sizeof(TCHAR);
+
+  default                :
+    throwSqlError(SQL_FATAL_ERROR,_T("%s:Type not String or varchar (=%s)")
+                                 ,__TFUNCTION__, getTypeString(getType()));
+    return 0;
+  }
+}
+
 KeyFileDefinition::KeyFileDefinition(KeyFile &keyFile) {
   *this = keyFile.getDefinition();
 }
@@ -26,11 +47,11 @@ KeyFileDefinition &KeyFileDefinition::init() {
   return *this;
 }
 
-KeyFileDefinition &KeyFileDefinition::addKeyField( SortDirection sortDir, DbFieldType type, int length) {
+KeyFileDefinition &KeyFileDefinition::addKeyField( SortDirection sortDir, DbFieldType type, UINT length) {
   return addField(true, sortDir, type, length);
 }
 
-KeyFileDefinition &KeyFileDefinition::addDataField(DbFieldType type, int length) {
+KeyFileDefinition &KeyFileDefinition::addDataField(DbFieldType type, UINT length) {
   return addField(false, SORT_ASCENDING, type, length); // SORT_ASCENDING could be SORT_DESCENDING, because field is not part of the ordering.
 }
 
@@ -44,9 +65,10 @@ bool KeyFileDefinition ::isUnique() const {
 }
 */
 
-KeyFileDefinition &KeyFileDefinition::addField(bool keyField, SortDirection sortdir, DbFieldType type, int length) {
+KeyFileDefinition &KeyFileDefinition::addField(bool keyField, SortDirection sortdir, DbFieldType type, UINT length) {
+  DEFINEMETHODNAME;
   if(m_totalFieldCount >= MAXKEYFIELDCOUNT) {
-    throwSqlError(SQL_KEY_TOO_BIG, _T("Too many fields in key. Max=%d"),MAXKEYFIELDCOUNT);
+    throwSqlError(SQL_KEY_TOO_BIG, _T("Too many fields in key. Max=%d"), MAXKEYFIELDCOUNT);
   }
 
   if(!keyField && getKeyFieldCount() == 0) {
@@ -63,40 +85,42 @@ KeyFileDefinition &KeyFileDefinition::addField(bool keyField, SortDirection sort
   case DBTYPE_CHAR      :
   case DBTYPE_CHARN     :
   case DBTYPE_UCHAR     :
-  case DBTYPE_UCHARN    : size = sizeof(char)          ; break;
+  case DBTYPE_UCHARN    : size = sizeof(char)            ; break;
   case DBTYPE_SHORT     :
   case DBTYPE_SHORTN    :
   case DBTYPE_USHORT    :
-  case DBTYPE_USHORTN   : size = sizeof(short)         ; break;
+  case DBTYPE_USHORTN   : size = sizeof(short)           ; break;
   case DBTYPE_INT       :
   case DBTYPE_INTN      :
   case DBTYPE_UINT      :
-  case DBTYPE_UINTN     : size = sizeof(int)           ; break;
+  case DBTYPE_UINTN     : size = sizeof(int)             ; break;
   case DBTYPE_LONG      :
   case DBTYPE_LONGN     :
   case DBTYPE_ULONG     :
-  case DBTYPE_ULONGN    : size = sizeof(long)          ; break;
+  case DBTYPE_ULONGN    : size = sizeof(long)            ; break;
   case DBTYPE_INT64     :
   case DBTYPE_INT64N    :
   case DBTYPE_UINT64    :
-  case DBTYPE_UINT64N   : size = sizeof(INT64)         ; break;
+  case DBTYPE_UINT64N   : size = sizeof(INT64)           ; break;
   case DBTYPE_FLOAT     :
-  case DBTYPE_FLOATN    : size = sizeof(float)         ; break;
+  case DBTYPE_FLOATN    : size = sizeof(float)           ; break;
   case DBTYPE_DOUBLE    :
-  case DBTYPE_DOUBLEN   : size = sizeof(double)        ; break;
-  case DBTYPE_DBADDR    : size = DBADDRSIZE            ; break; // 6
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   : size = length * sizeof(TCHAR); break;
+  case DBTYPE_DOUBLEN   : size = sizeof(double)          ; break;
+  case DBTYPE_DBADDR    : size = DBADDRSIZE              ; break; // 6
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  : size = length * sizeof(char)   ; break;
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  : size = length * sizeof(wchar_t); break;
   case DBTYPE_VARCHAR   :
-  case DBTYPE_VARCHARN  : size = length + 1            ; break;
+  case DBTYPE_VARCHARN  : size = length + 1              ; break;
   case DBTYPE_DATE      :
-  case DBTYPE_DATEN     : size = sizeof(Date)          ; break;
+  case DBTYPE_DATEN     : size = sizeof(Date)            ; break;
   case DBTYPE_TIME      :
-  case DBTYPE_TIMEN     : size = sizeof(Time)          ; break;
+  case DBTYPE_TIMEN     : size = sizeof(Time)            ; break;
   case DBTYPE_TIMESTAMP :
-  case DBTYPE_TIMESTAMPN: size = sizeof(Timestamp)     ; break;
+  case DBTYPE_TIMESTAMPN: size = sizeof(Timestamp)       ; break;
   default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("addField:Invalid fieldtype.%d"), type);
+    throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Invalid fieldtype. %d"), method, type);
   }
 
   int len = size;
@@ -122,49 +146,55 @@ KeyFileDefinition &KeyFileDefinition::addField(bool keyField, SortDirection sort
   return *this;
 }
 
-void KeyFileDefinition::checkFieldIndex(UINT index) const {
-  if(index >= m_totalFieldCount) {
-    throwSqlError(SQL_INVALID_KEYCOUNT,_T("KeyFileDefinition::checkFieldIndex:Field %d doesn't exist. No. of fields=%d")
-                                      ,index, m_totalFieldCount);
-  }
+void KeyFileDefinition::throwFieldNotVarChar(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Field %u not varchar"), method, n);
 }
 
-void KeyFileDefinition::checkFieldCount(UINT n) const {
-  if(n > m_totalFieldCount) {
-    throwSqlError(SQL_INVALID_KEYCOUNT,_T("KeyFileDefinition::checkFieldCount:Invalid fieldcount (=%d). No. of fields=%d")
-                                      ,n, m_totalFieldCount);
-  }
+void KeyFileDefinition::throwIndexOutOfRange(UINT index, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_KEYCOUNT,_T("%s:Field %u doesn't exist. No. of fields=%u")
+                                    ,method, index, m_totalFieldCount);
 }
 
-void KeyFileDefinition::checkKeyFieldCount(UINT n) const {
-  if(n > m_keyFieldCount) {
-    throwSqlError(SQL_INVALID_KEYCOUNT,_T("KeyFileDefinition::checkKeyFieldCount:Invalid fieldcount (=%d). No. of keyfields=%d")
-                                      ,n, m_keyFieldCount);
-  }
+void KeyFileDefinition::throwInvalidFieldCount(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_KEYCOUNT,_T("%s:Invalid fieldcount (=%u). No. of fields=%u")
+                                    ,method, n, m_totalFieldCount);
 }
 
-void KeyFileDefinition::checkFieldIsVarChar(UINT n) const {
-  const KeyField &f = m_field[n];
-  if(f.getType() != DBTYPE_VARCHAR && f.getType() != DBTYPE_VARCHARN) {
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("key-field::Field %d not varchar"),n);
-  }
+void KeyFileDefinition::throwKeyFieldCount(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_KEYCOUNT,_T("%s:Invalid keyFieldCount (=%u). No. of keyfields=%u")
+                                    ,method, n, m_keyFieldCount);
 }
 
-void KeyFileDefinition::checkFieldIsDbAddr(UINT n) const {
-  if(m_field[n].getType() != DBTYPE_DBADDR) {
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("key-field::Field %d not DBADDR"),n);
-  }
+void KeyFileDefinition::throwFieldNotDbAddr(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Field %u not DBADDR"), method, n);
 }
+
+void KeyFileDefinition::throwFieldNotString(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_FATAL_ERROR,_T("%s:Field %u not String (=%s)")
+                               ,method, n, getTypeString(m_field[n].getType()));
+}
+
+void KeyFileDefinition::throwInvalidFieldType(UINT n, const TCHAR *method) const {
+  throwSqlError(SQL_INVALID_FIELDTYPE,_T("%s:Invalid fieldtype. Keydef[%u]=%d")
+                                      ,method, n, m_field[n].getType());
+}
+
+#define CHECKFIELDISDBADDR(   n)  checkFieldIsDbAddr(   n, __TFUNCTION__)
+#define CHECKFIELDINDEX(      n)  checkFieldIndex(      n, __TFUNCTION__)
+#define CHECKFIELDCOUNT(      n)  checkFieldCount(      n, __TFUNCTION__)
+#define CHECKKEYFIELDCOUNT(   n)  checkKeyFieldCount(   n, __TFUNCTION__)
+#define CHECKFIELDISVARCHAR(  n)  checkFieldIsVarChar(  n, __TFUNCTION__)
+#define THROWINVALIDFIELDTYPE(n)  throwInvalidFieldType(n, __TFUNCTION__)
 
 USHORT KeyFileDefinition::getFieldOffset(UINT n) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   return m_field[n].getOffset();
 }
 
 USHORT KeyFileDefinition::getIndicatorOffset(UINT n) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   if(!isNullAllowed(m_field[n].getType())) {
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("key-field %d:Null not allowed"),n);
+    throwSqlError(SQL_INVALID_FIELDTYPE,_T("key-field %u:Null not allowed"),n);
   }
   return m_field[n].getOffset() + m_field[n].getSize();
 }
@@ -214,28 +244,63 @@ void KeyFileDefinition::get(const KeyType &key, UINT n,       String    &v) cons
   if(!isDefined(key,n)) {
     return;
   }
-  TCHAR tmp[MAXKEYSIZE+1];
-  getBytes(key,n,tmp);
-  tmp[m_field[n].getMaxStringLen()] = 0;
-  v = tmp;
+  switch (m_field[n].getType()) {
+  case DBTYPE_CSTRING :
+  case DBTYPE_CSTRINGN:
+    { char cstr[MAXKEYSIZE+1];
+      getBytes(key, n, cstr);
+      cstr[m_field[n].getMaxStringLen()] = 0;
+      v = cstr;
+    }
+    break;
+  case DBTYPE_WSTRING :
+  case DBTYPE_WSTRINGN:
+    { wchar_t wstr[MAXKEYSIZE+1];
+      getBytes(key, n, wstr);
+      wstr[m_field[n].getMaxStringLen()] = 0;
+      v = wstr;
+    }
+    break;
+  default:
+    throwFieldNotString(n, __TFUNCTION__);
+  }
 }
 
 void KeyFileDefinition::put(KeyType &key, UINT n, const String &v) const {
-  if(v.length() > m_field[n].getMaxStringLen()) {
-    throwSqlError(SQL_STRING_TOO_LONG,_T("KeyFileDefinition::put:String too long to fit in keyfield[%d]. len=%d. maxlen=%d"),n,v.length(),m_field[n].getLen());
+  const ULONG maxLen = m_field[n].getMaxStringLen();
+  if(v.length() > maxLen) {
+    throwSqlError(SQL_STRING_TOO_LONG,_T("%s:String too long to fit in keyfield[%u]. len=%u. maxStringLength=%u")
+                                     ,n,(UINT)v.length(),maxLen);
   }
-  TCHAR tmp[MAXKEYSIZE+1];
-  memset(tmp,0,sizeof(tmp));
-  _tcscpy(tmp,v.cstr());
-  putBytes(key,n,tmp);
+  USES_CONVERSION;
+  switch (m_field[n].getType()) {
+  case DBTYPE_CSTRING :
+  case DBTYPE_CSTRINGN:
+    { char tmp[MAXKEYSIZE+1];
+      memset(tmp, 0, sizeof(tmp));
+      strcpy(tmp, T2A((TCHAR*)v.cstr()));
+      putBytes(key, n, tmp);
+    }
+    break;
+  case DBTYPE_WSTRING :
+  case DBTYPE_WSTRINGN:
+    { wchar_t tmp[MAXKEYSIZE+1];
+      memset(tmp, 0, sizeof(tmp));
+      wcscpy(tmp, T2W((TCHAR*)v.cstr()));
+      putBytes(key, n, tmp);
+    }
+    break;
+  default:
+    throwFieldNotString(n, __TFUNCTION__);
+  }
 }
 
 void KeyFileDefinition::get(const KeyType &key, UINT n, varchar &v) const {
   if(!isDefined(key,n)) {
     return;
   }
-  checkFieldIndex(n);
-  checkFieldIsVarChar(n);
+  CHECKFIELDINDEX(n);
+  CHECKFIELDISVARCHAR(n);
   const KeyField &f = m_field[n];
   UCHAR *lenbyte = (UCHAR*)getFieldAddr(key,n);
   ULONG len = *lenbyte;
@@ -243,11 +308,11 @@ void KeyFileDefinition::get(const KeyType &key, UINT n, varchar &v) const {
 }
 
 void KeyFileDefinition::put(KeyType &key, UINT n, const varchar &v) const {
-  checkFieldIndex(n);
-  checkFieldIsVarChar(n);
+  CHECKFIELDINDEX(n);
+  CHECKFIELDISVARCHAR(n);
   if(v.len() > m_field[n].getLen()) {
-    throwSqlError(SQL_VARCHAR_TOO_LONG,_T("KeyFileDefinition::put:Varchar too long to fit in keyfield[%d]. len=%d. maxlen=%d")
-                                      ,n,v.len(),m_field[n].getLen());
+    throwSqlError(SQL_VARCHAR_TOO_LONG,_T("%s:Varchar too long to fit in keyfield[%u]. len=%u. maxlen=%u")
+                                      ,__TFUNCTION__, n,v.len(),m_field[n].getLen());
   }
   UCHAR *lenbyte = (UCHAR*)getFieldAddr(key,n);
   *(lenbyte++) = (UCHAR)v.len();
@@ -264,42 +329,43 @@ void KeyFileDefinition:: get(const KeyType &key, UINT n, TupleField &v) const {
   }
   switch(m_field[n].getType()) {
   case DBTYPE_CHAR      :
-  case DBTYPE_CHARN     :GETTUP(char          ); break;
+  case DBTYPE_CHARN     : GETTUP(char          ); break;
   case DBTYPE_UCHAR     :
-  case DBTYPE_UCHARN    :GETTUP(UCHAR         ); break;
+  case DBTYPE_UCHARN    : GETTUP(UCHAR         ); break;
   case DBTYPE_SHORT     :
-  case DBTYPE_SHORTN    :GETTUP(short         ); break;
+  case DBTYPE_SHORTN    : GETTUP(short         ); break;
   case DBTYPE_USHORT    :
-  case DBTYPE_USHORTN   :GETTUP(USHORT        ); break;
+  case DBTYPE_USHORTN   : GETTUP(USHORT        ); break;
   case DBTYPE_INT       :
-  case DBTYPE_INTN      :GETTUP(int           ); break;
+  case DBTYPE_INTN      : GETTUP(int           ); break;
   case DBTYPE_UINT      :
-  case DBTYPE_UINTN     :GETTUP(UINT          ); break;
+  case DBTYPE_UINTN     : GETTUP(UINT          ); break;
   case DBTYPE_LONG      :
-  case DBTYPE_LONGN     :GETTUP(long          ); break;
+  case DBTYPE_LONGN     : GETTUP(long          ); break;
   case DBTYPE_ULONG     :
-  case DBTYPE_ULONGN    :GETTUP(ULONG         ); break;
+  case DBTYPE_ULONGN    : GETTUP(ULONG         ); break;
   case DBTYPE_INT64     :
-  case DBTYPE_INT64N    :GETTUP(INT64         ); break;
+  case DBTYPE_INT64N    : GETTUP(INT64         ); break;
   case DBTYPE_UINT64    :
-  case DBTYPE_UINT64N   :GETTUP(UINT64        ); break;
+  case DBTYPE_UINT64N   : GETTUP(UINT64        ); break;
   case DBTYPE_FLOAT     :
-  case DBTYPE_FLOATN    :GETTUP(float         ); break;
+  case DBTYPE_FLOATN    : GETTUP(float         ); break;
   case DBTYPE_DOUBLE    :
-  case DBTYPE_DOUBLEN   :GETTUP(double        ); break;
-  case DBTYPE_DBADDR    :{ DbAddr addr = *(DbAddrFileFormat*)getFieldAddr(key,n); v = addr; } break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :{ String  tmp; get(key,n,tmp); v = tmp; } break;
+  case DBTYPE_DOUBLEN   : GETTUP(double        ); break;
+  case DBTYPE_DBADDR    : { DbAddr addr = *(DbAddrFileFormat*)getFieldAddr(key,n); v = addr; } break;
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  : { String  tmp; get(key,n,tmp); v = tmp; } break;
   case DBTYPE_VARCHAR   :
-  case DBTYPE_VARCHARN  :{ varchar tmp; get(key,n,tmp); v = tmp; } break;
+  case DBTYPE_VARCHARN  : { varchar tmp; get(key,n,tmp); v = tmp; } break;
   case DBTYPE_DATE      :
-  case DBTYPE_DATEN     :GETTUP(Date          ); break;
+  case DBTYPE_DATEN     : GETTUP(Date          ); break;
   case DBTYPE_TIME      :
-  case DBTYPE_TIMEN     :GETTUP(Time          ); break;
+  case DBTYPE_TIMEN     : GETTUP(Time          ); break;
   case DBTYPE_TIMESTAMP :
-  case DBTYPE_TIMESTAMPN:GETTUP(Timestamp     ); break;
-  default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("KeyFileDefinition::get:Invalid fieldtype. Keydef[%d]=%d"), n, m_field[n].getType());
+  case DBTYPE_TIMESTAMPN: GETTUP(Timestamp     ); break;
+  default               : THROWINVALIDFIELDTYPE(n);
   }
 }
 
@@ -310,54 +376,54 @@ void KeyFileDefinition:: put(KeyType &key, UINT n, const TupleField &v) const {
   }
   switch(m_field[n].getType()) {
   case DBTYPE_CHAR      :
-  case DBTYPE_CHARN     :PUTTUP(char          ); break;
+  case DBTYPE_CHARN     : PUTTUP(char          ); break;
   case DBTYPE_UCHAR     :
-  case DBTYPE_UCHARN    :PUTTUP(UCHAR         ); break;
+  case DBTYPE_UCHARN    : PUTTUP(UCHAR         ); break;
   case DBTYPE_SHORT     :
-  case DBTYPE_SHORTN    :PUTTUP(short         ); break;
+  case DBTYPE_SHORTN    : PUTTUP(short         ); break;
   case DBTYPE_USHORT    :
-  case DBTYPE_USHORTN   :PUTTUP(USHORT        ); break;
+  case DBTYPE_USHORTN   : PUTTUP(USHORT        ); break;
   case DBTYPE_INT       :
-  case DBTYPE_INTN      :PUTTUP(int           ); break;
+  case DBTYPE_INTN      : PUTTUP(int           ); break;
   case DBTYPE_UINT      :
-  case DBTYPE_UINTN     :PUTTUP(UINT          ); break;
+  case DBTYPE_UINTN     : PUTTUP(UINT          ); break;
   case DBTYPE_LONG      :
-  case DBTYPE_LONGN     :PUTTUP(long          ); break;
+  case DBTYPE_LONGN     : PUTTUP(long          ); break;
   case DBTYPE_ULONG     :
-  case DBTYPE_ULONGN    :PUTTUP(ULONG         ); break;
+  case DBTYPE_ULONGN    : PUTTUP(ULONG         ); break;
   case DBTYPE_INT64     :
-  case DBTYPE_INT64N    :PUTTUP(INT64         ); break;
+  case DBTYPE_INT64N    : PUTTUP(INT64         ); break;
   case DBTYPE_UINT64    :
-  case DBTYPE_UINT64N   :PUTTUP(UINT64        ); break;
+  case DBTYPE_UINT64N   : PUTTUP(UINT64        ); break;
   case DBTYPE_FLOAT     :
-  case DBTYPE_FLOATN    :PUTTUP(float         ); break;
+  case DBTYPE_FLOATN    : PUTTUP(float         ); break;
   case DBTYPE_DOUBLE    :
-  case DBTYPE_DOUBLEN   :PUTTUP(double        ); break;
-  case DBTYPE_DBADDR    :{ DbAddr addr; v.get(addr); *((DbAddrFileFormat*)getFieldAddr(key,n)) = addr; } break;
-  case DBTYPE_STRING    :
-  case DBTYPE_STRINGN   :{ String  tmp; v.get(tmp);  put(key,n,tmp); } break;
+  case DBTYPE_DOUBLEN   : PUTTUP(double        ); break;
+  case DBTYPE_DBADDR    : { DbAddr  addr; v.get(addr); *((DbAddrFileFormat*)getFieldAddr(key,n)) = addr; } break;
+  case DBTYPE_CSTRING   :
+  case DBTYPE_CSTRINGN  :
+  case DBTYPE_WSTRING   :
+  case DBTYPE_WSTRINGN  : { String  tmp; v.get(tmp);  put(key,n,tmp); } break;
   case DBTYPE_VARCHAR   :
-  case DBTYPE_VARCHARN  :{ varchar tmp; v.get(tmp);  put(key,n,tmp); } break;
+  case DBTYPE_VARCHARN  : { varchar tmp; v.get(tmp);  put(key,n,tmp); } break;
   case DBTYPE_DATE      :
-  case DBTYPE_DATEN     :PUTTUP(Date          ); break;
+  case DBTYPE_DATEN     : PUTTUP(Date          ); break;
   case DBTYPE_TIME      :
-  case DBTYPE_TIMEN     :PUTTUP(Time          ); break;
+  case DBTYPE_TIMEN     : PUTTUP(Time          ); break;
   case DBTYPE_TIMESTAMP :
-  case DBTYPE_TIMESTAMPN:PUTTUP(Timestamp     ); break;
-  default:
-    throwSqlError(SQL_INVALID_FIELDTYPE,_T("KeyFileDefinition::get:Invalid fieldtype. Keydef[%d]=%d")
-                                       ,n, m_field[n].getType());
+  case DBTYPE_TIMESTAMPN: PUTTUP(Timestamp     ); break;
+  default               : THROWINVALIDFIELDTYPE(n);
   }
 }
 
 void KeyFileDefinition::getBytes(const KeyType &key, UINT n, void *v) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   const KeyField &f = m_field[n];
   memcpy(v,getFieldAddr(key,n),f.getLen());
 }
 
 void KeyFileDefinition::putBytes(KeyType &key, UINT n, const void *v) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   const KeyField &f = m_field[n];
   memcpy(getFieldAddr(key,n),v,f.getLen());
   if(isNullAllowed(f.getType())) {
@@ -366,7 +432,7 @@ void KeyFileDefinition::putBytes(KeyType &key, UINT n, const void *v) const {
 }
 
 KeyType &KeyFileDefinition::initField(KeyType &key, UINT n) const {
-  checkFieldIndex(n);
+  CHECKFIELDINDEX(n);
   memset(getFieldAddr(key,n),0,m_field[n].getSize());
   return key;
 }
@@ -388,14 +454,14 @@ KeyType &KeyFileDefinition::setDefined(KeyType &key, UINT n, bool defined) const
 
 DbAddr KeyFileDefinition::getRecordAddr(const KeyType &key) const { /* get the last field of the key */
   const UINT n = m_totalFieldCount - 1;
-  checkFieldIsDbAddr(n);
+  CHECKFIELDISDBADDR(n);
   DbAddr addr = *((DbAddrFileFormat*)getFieldAddr(key,n));
   return addr;
 }
 
 KeyType &KeyFileDefinition::putRecordAddr(KeyType &key, const DbAddr &addr) const { /* set the last field of the key */
   const UINT n = m_totalFieldCount - 1;
-  checkFieldIsDbAddr(n);
+  CHECKFIELDISDBADDR(n);
   *((DbAddrFileFormat*)getFieldAddr(key,n)) = addr;
   return key;
 }
@@ -408,7 +474,7 @@ KeyType &KeyFileDefinition::putRecordAddr(KeyType &key, const DbAddr &addr) cons
 int KeyFileDefinition::keynCmp(const KeyType &key1, const KeyType &key2, UINT fieldCount) const {
   bool defined1, defined2;
 
-  checkKeyFieldCount(fieldCount);
+  CHECKKEYFIELDCOUNT(fieldCount);
 
 #define CMPRESULT(x)       (field.isAscending() ? (x) : -(x))
 
@@ -507,10 +573,18 @@ int KeyFileDefinition::keynCmp(const KeyType &key1, const KeyType &key2, UINT fi
       CMPPRIMITIVE(double);
       break;
 
-    case DBTYPE_STRINGN:
+    case DBTYPE_CSTRINGN:
       CMPNULLS;
-    case DBTYPE_STRING :
-      { int c = _tcsncmp((TCHAR*)getFieldAddr(key1,i),(TCHAR*)getFieldAddr(key2,i),field.getLen());
+    case DBTYPE_CSTRING :
+      { int c = strncmp((char*)getFieldAddr(key1,i),(char*)getFieldAddr(key2,i),field.getMaxStringLen());
+        if(c) return CMPRESULT(c);
+        break;
+      }
+
+    case DBTYPE_WSTRINGN:
+      CMPNULLS;
+    case DBTYPE_WSTRING :
+      { int c = _tcsncmp((TCHAR*)getFieldAddr(key1,i),(TCHAR*)getFieldAddr(key2,i),field.getMaxStringLen());
         if(c) return CMPRESULT(c);
         break;
       }
@@ -576,7 +650,7 @@ bool KeyFileDefinition::keynCmpRelOp(RelationType relop, const KeyType &key1, co
   case RELOP_TRUE : return true;
   case RELOP_FALSE: return false;
   default:
-    throwSqlError(SQL_INVALID_RELOP,_T("keynCmpRelOp::Invalid relop:%d"),relop);
+    throwSqlError(SQL_INVALID_RELOP,_T("%s::Invalid relop:%d"),__TFUNCTION__,relop);
   }
   return false;
 }
@@ -586,7 +660,7 @@ bool KeyFileDefinition::keyCmpRelOp(RelationType relop, const KeyType &key1, con
 }
 
 String KeyFileDefinition::sprintf(const KeyType &key, UINT fieldCount) const {
-  checkFieldCount(fieldCount);
+  CHECKFIELDCOUNT(fieldCount);
 
   String result;
   for(UINT i = 0; i < fieldCount; i++) {
@@ -606,15 +680,14 @@ void KeyFileDefinition::fprintf( FILE *f, const KeyType &key, UINT fieldCount ) 
 }
 
 KeyType &KeyFileDefinition::scanf(KeyType &key, UINT fieldCount) const {
-  checkFieldCount(fieldCount);
+  CHECKFIELDCOUNT(fieldCount);
 
   for(UINT i = 0; i < fieldCount; i++) {
     const KeyField &field = m_field[i];
 start:
-    if(field.getType() == DBTYPE_STRING || 
-       field.getType() == DBTYPE_STRINGN||
-       field.getType() == DBTYPE_VARCHAR||
-       field.getType() == DBTYPE_VARCHARN) {
+    if(field.getType() == DBTYPE_CSTRING || field.getType() == DBTYPE_CSTRINGN
+    || field.getType() == DBTYPE_WSTRING || field.getType() == DBTYPE_WSTRINGN
+    || field.getType() == DBTYPE_VARCHAR || field.getType() == DBTYPE_VARCHARN) {
       ::_tprintf(_T("Enter field %2u (%s(%d)):"),i,getTypeString(field.getType()), field.getLen());
     } else {
       ::_tprintf(_T("Enter field %2u (%-6s):"),i,getTypeString(field.getType()));

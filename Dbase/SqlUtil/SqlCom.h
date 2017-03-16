@@ -26,6 +26,7 @@ Packer &operator<<(Packer &p, const HostVarDescriptionList &hl );
 Packer &operator>>(Packer &p,       HostVarDescriptionList &hl );
 
 class HostVarList {
+private:
   UINT           m_n;
   SqlApiVarList *m_hostvar;
 public:
@@ -36,8 +37,8 @@ public:
   ~HostVarList();
   void describe( const HostVarDescriptionList &desc);
   void clear();
-        SqlApiVarList &operator[](int i)       { return m_hostvar[i]; }
-  const SqlApiVarList &operator[](int i) const { return m_hostvar[i]; }
+        SqlApiVarList &operator[](UINT i)       { return m_hostvar[i]; }
+  const SqlApiVarList &operator[](UINT i) const { return m_hostvar[i]; }
   UINT size() const { return m_n;          }
   void dump(FILE *f = stdout);
   friend Packer &operator<<(Packer &p, const HostVarList &h);
