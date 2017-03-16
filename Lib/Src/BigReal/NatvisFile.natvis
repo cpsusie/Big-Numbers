@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?> 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
   <Type Name="BigReal">
-    <DisplayString LegacyAddin="c:\mytools2015\lib\MTRelease32\NumberAddIn.dll" Export="AddIn_BigReal"></DisplayString>
+    <DisplayString LegacyAddin="c:\mytools2015\lib\Win32\Release\NumberAddIn.dll" Export="AddIn_BigReal"></DisplayString>
   </Type>
 </AutoVisualizer>

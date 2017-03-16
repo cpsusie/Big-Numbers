@@ -46,13 +46,13 @@ static void addDebugLine(const TCHAR *format, ...) {
   gate.signal();
 }
 
-void Semaphore::wait(const char *name, const char *file, int line) {
+void Semaphore::wait(const TCHAR *name, const TCHAR *file, int line) {
   addDebugLine(_T("Thread %08d %s(%d).wait()   in %s line %d\n")
                ,GetCurrentThreadId(), name, m_sem, file, line);
   wait();
 }
 
-void Semaphore::signal(const char *name, const char *file, int line) {
+void Semaphore::signal(const TCHAR *name, const TCHAR *file, int line) {
   addDebugLine(_T("Thread %08d %s(%d).signal() in %s line %d\n")
                ,GetCurrentThreadId(), name, m_sem, file, line);
   signal();

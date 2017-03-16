@@ -113,7 +113,7 @@ bool   readLine(FILE *f, String &str);
 
 void pause();
 void pause(const TCHAR *format, ...);
-#define PAUSE() pause(_T("%s line %d"), __FILE__, __LINE__)
+#define PAUSE() pause(_T("%s line %d"), _T(__FILE__), __LINE__)
 
 bool keyPressed(int vk);
 bool shiftKeyPressed();
@@ -131,10 +131,9 @@ String   searchenv(  const String &fileName, const String &envName);
 void argvExpand(int &argc, wchar_t **&argv);
 void argvExpand(int &argc, char    **&argv);
 
-const wchar_t **argv2wargv(const char **argv);
+const wchar_t **argv2wargv(const char    **argv );
 const char    **wargv2argv(const wchar_t **targv);
-
-const TCHAR   **argv2targv(const char **argv);
+const TCHAR   **argv2targv(const char    **argv );
 
 String getModuleFileName(HMODULE module = NULL); // if module == NULL, path of executable
 String getUserName();
@@ -154,7 +153,8 @@ double getThreadTime( HANDLE thread  = NULL); // do            if thread  == NUL
 double getSystemTime();
 
 extern int UseSafeNew; // assign something to this, and we use safe new_handler, which throws Exception on out of memory
-void hexdump(const void *data, int size, FILE *f = stdout);
+String hexdumpString(const void *data, int size);
+void   hexdump(      const void *data, int size, FILE *f = NULL); // if(f == NULL, use debugLog as output
 String bytesToString(const void *data, int size);
 
 TCHAR *newGUID(TCHAR *dst);

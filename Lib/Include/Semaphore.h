@@ -14,8 +14,8 @@ public:
   ~Semaphore();
   bool wait(int milliseconds=INFINITE); // return false on timeout, true if signaled, throws Exception on error
   void signal();
-  void wait(  const char *name, const char *file, int line);
-  void signal(const char *name, const char *file, int line);
+  void wait(  const TCHAR *name, const TCHAR *file, int line);
+  void signal(const TCHAR *name, const TCHAR *file, int line);
   HANDLE getHandle() const {
     return m_sem;
   }
@@ -23,12 +23,12 @@ public:
 
 #ifdef TRACESEMAPHORE
 
-#define WAIT(sem)   sem.wait(  #sem, __FILE__, __LINE__)
-#define SIGNAL(sem) sem.signal(#sem, __FILE__, __LINE__)
+#define WAIT(  sem) sem.wait(  _T(#sem), _T(__FILE__), __LINE__)
+#define SIGNAL(sem) sem.signal(_T(#sem), _T(__FILE__), __LINE__)
 
 #else
 
-#define WAIT(sem)   sem.wait()
+#define WAIT(  sem) sem.wait()
 #define SIGNAL(sem) sem.signal()
 
-#endif
+#endif // TRACESEMAPHORE
