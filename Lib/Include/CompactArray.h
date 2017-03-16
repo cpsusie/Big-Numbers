@@ -407,6 +407,24 @@ public:
     return binarySearchGE(key, FunctionComparator<T>(cmp));
   }
 
+  intptr_t binaryInsert(const T &key, Comparator<T> &cmp) {
+    intptr_t l = 0, r = size();
+    while(l < r) {
+      const intptr_t m = (l+r)/2;
+      if(cmp.compare(m_array[m], key) < 0) {
+        l = m + 1;
+      } else {
+        r = m;
+      }
+    }
+    add(r, key);
+    return r;
+  }
+
+  intptr_t binaryInsert(const T &key, int (*cmp)(const T &e1, const T &e2)) {
+    return binaryInsert(key, FunctionComparator<T>(cmp));
+  }
+
   bool operator==(const CompactArray<T> &a) const {
     size_t count = size();
     if(count != a.size()) {
