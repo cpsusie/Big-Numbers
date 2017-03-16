@@ -70,7 +70,7 @@ varchar &varchar::operator=(const char *rhs) {
 
 varchar &varchar::operator=(const wchar_t *rhs) {
   clear();
-  init((ULONG)wcslen(rhs)); // NB not + 1
+  init((ULONG)wcslen(rhs)*sizeof(wchar_t)); // NB not + 1
   COPYDATA(rhs);
   return *this;
 }
