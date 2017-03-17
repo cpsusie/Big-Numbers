@@ -100,7 +100,7 @@ public:
 %term UPDATE
 %term VALUES
 %term WHERE
-%term TYPECHAR
+%term TYPECHAR TYPEWCHAR
 %term TYPEVARCHAR
 %term TYPEDOUBLE
 %term TYPEFLOAT
@@ -547,7 +547,9 @@ col_def 		: name type_def opt_not_null opt_defaultvalue	{ $$ = newNode( getPos(1
 				;
 
 type_def		: opt_sign TYPECHAR 							{ $$ = newNode(getPos(2), TYPECHAR	   , $1,     NULL);  }
+                | opt_sign TYPEWCHAR 							{ $$ = newNode(getPos(2), TYPEWCHAR	   , $1,     NULL);  }
 				| opt_sign TYPECHAR LPAR number_const RPAR		{ $$ = newNode(getPos(2), TYPECHAR	   , $1, $4, NULL);  }
+				| opt_sign TYPEWCHAR LPAR number_const RPAR		{ $$ = newNode(getPos(2), TYPEWCHAR	   , $1, $4, NULL);  }
 				| opt_sign TYPESHORT							{ $$ = newNode(getPos(2), TYPESHORT	   , $1,     NULL);  }
 				| opt_sign TYPEINT								{ $$ = newNode(getPos(2), TYPEINT 	   , $1,     NULL);  }
 				| opt_sign TYPELONG 							{ $$ = newNode(getPos(2), TYPELONG	   , $1,     NULL);  }

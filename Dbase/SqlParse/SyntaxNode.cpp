@@ -1,18 +1,13 @@
 #include "stdafx.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sqlapi.h>
-#include "sqlsymbol.h"
-#include "parsertree.h"
 
 void SyntaxNode::init(int token) {
   m_token = token;
   m_userattributes.m_data = NULL;
 }
 
-SyntaxNode::SyntaxNode(const char *s, int token) {
+SyntaxNode::SyntaxNode(const TCHAR *s, int token) {
   init(token);
-  m_attributes.m_str    = new String(s);
+  m_attributes.m_str = new String(s);
 }
 
 SyntaxNode::SyntaxNode(double number) {
@@ -197,8 +192,8 @@ SyntaxNodeData::SyntaxNodeData(SyntaxNode *node) {
 }
 
 static void thrownochilderror(const SyntaxNode *n, int i) {
-  throwSqlError(SQL_FATAL_ERROR,_T("No child(%d) in SyntaxNode (line %d, token %d)"),
-    i,n->pos().getLineNumber(),n->token());
+  throwSqlError(SQL_FATAL_ERROR,_T("No child(%d) in SyntaxNode (line %d, token %d)")
+                               ,i,n->pos().getLineNumber(),n->token());
 }
 
 SyntaxNode *SyntaxNode::child(UINT i) const {

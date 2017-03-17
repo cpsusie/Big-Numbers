@@ -1,3 +1,5 @@
 #pragma once
 
-#include <MyUtil.h>
+#include <SqlApi.h>
+#include "SqlSymbol.h"
+#include "Parsertree.h"

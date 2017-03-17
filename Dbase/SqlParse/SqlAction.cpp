@@ -717,162 +717,172 @@ int SqlParser::reduceAction(unsigned int prod) {
     { m_dollardollar = newNode(getPos(2), TYPECHAR	   , getStackTop(1),     NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 162: /* type_def -> opt_sign TYPECHAR LPAR number_const RPAR */
+  case 162: /* type_def -> opt_sign TYPEWCHAR */
 #line 550 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+    { m_dollardollar = newNode(getPos(2), TYPEWCHAR	   , getStackTop(1),     NULL);  }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 163: /* type_def -> opt_sign TYPECHAR LPAR number_const RPAR */
+#line 551 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(2), TYPECHAR	   , getStackTop(4), getStackTop(1), NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 163: /* type_def -> opt_sign TYPESHORT */
-#line 551 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 164: /* type_def -> opt_sign TYPEWCHAR LPAR number_const RPAR */
+#line 552 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+    { m_dollardollar = newNode(getPos(2), TYPEWCHAR	   , getStackTop(4), getStackTop(1), NULL);  }
+#line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+    break;
+  case 165: /* type_def -> opt_sign TYPESHORT */
+#line 553 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(2), TYPESHORT	   , getStackTop(1),     NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 164: /* type_def -> opt_sign TYPEINT */
-#line 552 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 166: /* type_def -> opt_sign TYPEINT */
+#line 554 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(2), TYPEINT 	   , getStackTop(1),     NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 165: /* type_def -> opt_sign TYPELONG */
-#line 553 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 167: /* type_def -> opt_sign TYPELONG */
+#line 555 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(2), TYPELONG	   , getStackTop(1),     NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 166: /* type_def -> TYPEFLOAT */
-#line 554 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 168: /* type_def -> TYPEFLOAT */
+#line 556 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPEFLOAT	   ,         NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 167: /* type_def -> TYPEDOUBLE */
-#line 555 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 169: /* type_def -> TYPEDOUBLE */
+#line 557 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPEDOUBLE   ,         NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 168: /* type_def -> TYPEDATE */
-#line 556 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 170: /* type_def -> TYPEDATE */
+#line 558 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPEDATE	   ,         NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 169: /* type_def -> TYPETIME */
-#line 557 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 171: /* type_def -> TYPETIME */
+#line 559 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPETIME	   ,         NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 170: /* type_def -> TYPETIMESTAMP */
-#line 558 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 172: /* type_def -> TYPETIMESTAMP */
+#line 560 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPETIMESTAMP,         NULL);  }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 171: /* type_def -> TYPEVARCHAR LPAR number_const RPAR */
-#line 559 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 173: /* type_def -> TYPEVARCHAR LPAR number_const RPAR */
+#line 561 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), TYPEVARCHAR  , getStackTop(1),     NULL);	 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 172: /* opt_sign -> epsilon */
-#line 562 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 174: /* opt_sign -> epsilon */
+#line 564 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(0), SIGNED,NULL);	                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 173: /* opt_sign -> SIGNED */
-#line 563 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 175: /* opt_sign -> SIGNED */
+#line 565 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), SIGNED,NULL);	                 }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 174: /* opt_sign -> UNSIGNED */
-#line 564 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 176: /* opt_sign -> UNSIGNED */
+#line 566 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), UNSIGNED,NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 175: /* opt_not_null -> epsilon */
-#line 567 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 177: /* opt_not_null -> epsilon */
+#line 569 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(0), NULLVAL,NULL);                 } /* default null allowed */
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 176: /* opt_not_null -> NOT NULLVAL */
-#line 568 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 178: /* opt_not_null -> NOT NULLVAL */
+#line 570 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), NOT,
     																		newNode(getPos(2), NULLVAL,NULL),
     																		NULL );
     																}
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 177: /* opt_defaultvalue -> epsilon */
-#line 574 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 179: /* opt_defaultvalue -> epsilon */
+#line 576 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(0), DEFAULT, NULL);                }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 178: /* opt_defaultvalue -> DEFAULT constant */
-#line 575 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 180: /* opt_defaultvalue -> DEFAULT constant */
+#line 577 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode(getPos(1), DEFAULT, getStackTop(0), NULL);            }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 181: /* constant -> PLUS number_const */
-#line 580 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 183: /* constant -> PLUS number_const */
+#line 582 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = getStackTop(0);                                              }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 182: /* constant -> MINUS number_const */
-#line 581 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 184: /* constant -> MINUS number_const */
+#line 583 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), NUMBER, -getStackTop(0)->number());       }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 186: /* drop_stmt -> DROP TABLE name */
-#line 587 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 188: /* drop_stmt -> DROP TABLE name */
+#line 589 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), DROP,
     																		newNode(getPos(2), TABLE	, NULL),
     																		getStackTop(0), NULL );
     																}
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 187: /* drop_stmt -> DROP INDEX name */
-#line 591 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 189: /* drop_stmt -> DROP INDEX name */
+#line 593 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), DROP,
     																		newNode(getPos(2), INDEX	, NULL),
     																		getStackTop(0), NULL );
     																}
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 188: /* explain_stmt -> EXPLAIN stmt */
-#line 597 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 190: /* explain_stmt -> EXPLAIN stmt */
+#line 599 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), EXPLAIN, getStackTop(0), NULL	);           }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 189: /* name -> NAME */
-#line 600 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 191: /* name -> NAME */
+#line 602 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), NAME, getText());               }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 190: /* hostvar -> HOSTVAR */
-#line 603 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 192: /* hostvar -> HOSTVAR */
+#line 605 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), HOSTVAR, getText());            }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 191: /* param -> PARAM */
-#line 606 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 193: /* param -> PARAM */
+#line 608 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), PARAM, getText());              }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 192: /* number_const -> NUMBER */
-#line 609 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 194: /* number_const -> NUMBER */
+#line 611 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), NUMBER, _ttof(getText()));      }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 193: /* string_const -> STRING */
-#line 612 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 195: /* string_const -> STRING */
+#line 614 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), STRING, getText());             }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 194: /* date_const -> DATECONST */
-#line 615 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 196: /* date_const -> DATECONST */
+#line 617 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), DATECONST, ttoDate(getText())); }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 195: /* time_const -> TIMECONST */
-#line 618 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 197: /* time_const -> TIMECONST */
+#line 620 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), TIMECONST, ttoTime(getText())); }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
-  case 196: /* timestamp_const -> TIMESTAMPCONST */
-#line 621 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+  case 198: /* timestamp_const -> TIMESTAMPCONST */
+#line 623 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
     { m_dollardollar = newNode( getPos(1), TIMESTAMPCONST, ttoTimestamp(getText())); }
 #line 26 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
     break;
@@ -880,7 +890,7 @@ int SqlParser::reduceAction(unsigned int prod) {
   return 0;
 }
 
-#line 626 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
+#line 628 "C:\\mytools2015\\Dbase\\SqlParse\\Sql.y"
 Date SqlParser::ttoDate(const TCHAR *str) {
   try {
     return Date(str+1);

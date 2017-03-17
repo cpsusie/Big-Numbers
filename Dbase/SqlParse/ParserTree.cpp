@@ -232,61 +232,61 @@ void ParserTree::dumpTree(const String &filename) const {
   fclose(f);
 }
 
-String sprintTree(const SyntaxNode *n) {
-  switch(n->token()) {
-  case STRING         : return String(_T("\"")) + n->str() + _T("\"");
-  case NUMBER         : return format(_T("%lg"), n->number());
-  case NAME           : return n->name();
-  case DATECONST      : return String(_T("#")) + n->getDate().toString()      + _T("#");
-  case TIMECONST      : return String(_T("#")) + n->getTime().toString()      + _T("#");
-  case TIMESTAMPCONST : return String(_T("#")) + n->getTimestamp().toString() + _T("#");
-  case PARAM          : return n->param();
-  case HOSTVAR        : return n->hostvar();
-  case PLUS           : return String(_T("(")) + sprintTree(n->child(0)) + _T(" + ") + sprintTree(n->child(1)) + _T(")");
-  case MINUS          : if(n->childCount() == 1) {
-                          return String(_T("-(")) + sprintTree(n->child(0)) + _T(")");
+String SyntaxNode::toString() const {
+  switch(token()) {
+  case STRING         : return String(_T("\"")) + str() + _T("\"");
+  case NUMBER         : return format(_T("%lg"), number());
+  case NAME           : return name();
+  case DATECONST      : return String(_T("#")) + getDate().toString()      + _T("#");
+  case TIMECONST      : return String(_T("#")) + getTime().toString()      + _T("#");
+  case TIMESTAMPCONST : return String(_T("#")) + getTimestamp().toString() + _T("#");
+  case PARAM          : return param();
+  case HOSTVAR        : return hostvar();
+  case PLUS           : return String(_T("(")) + child(0)->toString() + _T(" + ") + child(1)->toString() + _T(")");
+  case MINUS          : if(childCount() == 1) {
+                          return String(_T("-(")) + child(0)->toString() + _T(")");
                         } else {
-                          return String(_T("(")) + sprintTree(n->child(0)) + _T(" - ")  + sprintTree(n->child(1)) + _T(")");
+                          return String(_T("(")) + child(0)->toString() + _T(" - ")  + child(1)->toString() + _T(")");
                         }
-  case MULT           : return String(_T("(")) + sprintTree(n->child(0))   + _T(" * ")  + sprintTree(n->child(1)) + _T(")");
-  case DIVOP          : return String(_T("(")) + sprintTree(n->child(0))   + _T(" / ")  + sprintTree(n->child(1)) + _T(")");
-  case MODOP          : return String(_T("(")) + sprintTree(n->child(0))   + _T(" % ")  + sprintTree(n->child(1)) + _T(")");
-  case EXPO           : return String(_T("(")) + sprintTree(n->child(0))   + _T(" ** ") + sprintTree(n->child(1)) + _T(")");
-  case DOT            : return sprintTree(n->child(0)) + _T(".") + sprintTree(n->child(1));
-  case CONCAT         : return String(_T("(")) + sprintTree(n->child(0))   + _T(" || ") + sprintTree(n->child(1)) + _T(")");
+  case MULT           : return String(_T("(")) + child(0)->toString()   + _T(" * ")  + child(1)->toString() + _T(")");
+  case DIVOP          : return String(_T("(")) + child(0)->toString()   + _T(" / ")  + child(1)->toString() + _T(")");
+  case MODOP          : return String(_T("(")) + child(0)->toString()   + _T(" % ")  + child(1)->toString() + _T(")");
+  case EXPO           : return String(_T("(")) + child(0)->toString()   + _T(" ** ") + child(1)->toString() + _T(")");
+  case DOT            : return child(0)->toString() + _T(".") + child(1)->toString();
+  case CONCAT         : return String(_T("(")) + child(0)->toString()   + _T(" || ") + child(1)->toString() + _T(")");
   case RELOPLT        :
   case RELOPLE        :
   case NOTEQ          :
   case RELOPGT        :
   case RELOPGE        :
-  case EQUAL          : return sprintTree(n->child(0)) + relopstring(n->token()) + sprintTree(n->child(1));
-  case AND            : return String(_T("(")) + sprintTree(n->child(0)) + _T(" AND ") + sprintTree(n->child(1)) + _T(")");
-  case OR             : return String(_T("(")) + sprintTree(n->child(0)) + _T(" OR ")  + sprintTree(n->child(1)) + _T(")");
-  case NOT            : return String(_T("not (")) + sprintTree(n->child(0)) + _T(")");
-  case COMMA          : return sprintTree(n->child(0)) + _T(",") + sprintTree(n->child(1));
-  case SUBSTRING      : return String(_T("substring(")) + 
-                               sprintTree(n->child(0)) + _T(",") + 
-                               sprintTree(n->child(1)) + _T(",") + 
-                               sprintTree(n->child(2)) +
+  case EQUAL          : return child(0)->toString() + relopstring(token()) + child(1)->toString();
+  case AND            : return String(_T("(")) + child(0)->toString() + _T(" AND ") + child(1)->toString() + _T(")");
+  case OR             : return String(_T("(")) + child(0)->toString() + _T(" OR ")  + child(1)->toString() + _T(")");
+  case NOT            : return String(_T("not (")) + child(0)->toString() + _T(")");
+  case COMMA          : return child(0)->toString() + _T(",") + child(1)->toString();
+  case SUBSTRING      : return String(_T("substring("))
+                             + child(0)->toString() + _T(",")
+                             + child(1)->toString() + _T(",")
+                             + child(2)->toString()+
                                _T(")"); 
   case NULLVAL        : return _T("null");
-  case LIKE           : if(n->childCount() == 2) {
-                          return sprintTree(n->child(0)) + _T(" like ") + sprintTree(n->child(1));
+  case LIKE           : if(childCount() == 2) {
+                          return child(0)->toString() + _T(" like ") + child(1)->toString();
                         } else {
                           return _T(" like ");
                         }
-  case ISNULL         : return sprintTree(n->child(0)) + _T(" is null");
-  case BETWEEN        : return sprintTree(n->child(0)) + _T(" between ") + 
-                               sprintTree(n->child(1)) + _T(" and ") + 
-                               sprintTree(n->child(2));
-  case INSYM          : return sprintTree(n->child(0)) + _T(" in ") + sprintTree(n->child(1));
+  case ISNULL         : return child(0)->toString() + _T(" is null");
+  case BETWEEN        : return child(0)->toString() + _T(" between ") + 
+                               child(1)->toString() + _T(" and ") + 
+                               child(2)->toString();
+  case INSYM          : return child(0)->toString() + _T(" in ") + child(1)->toString();
   case STAR           : return _T("*");
   case UNION          : 
-    return String(_T("(")) + sprintTree(n->child(0)) +  ((n->childCount()==3)?_T(" union all "):_T(" union ")) + sprintTree(n->child(1)) + _T(")");
+    return String(_T("(")) + child(0)->toString() +  ((childCount()==3)?_T(" union all "):_T(" union ")) + child(1)->toString() + _T(")");
   case INTERSECT      :
-    return String(_T("(")) + sprintTree(n->child(0)) + _T(" intersect ")     + sprintTree(n->child(1)) + _T(")");
+    return String(_T("(")) + child(0)->toString() + _T(" intersect ")     + child(1)->toString() + _T(")");
   case SETDIFFERENCE  :
-    return String(_T("(")) + sprintTree(n->child(0)) + _T(" setdifference ") + sprintTree(n->child(1)) + _T(")");
+    return String(_T("(")) + child(0)->toString() + _T(" setdifference ") + child(1)->toString() + _T(")");
   case WHERE          :
   case INTO           :
   case HAVING         :
@@ -294,19 +294,19 @@ String sprintTree(const SyntaxNode *n) {
   case ORDER          :
   case ACCESSS        :
   case MODE           :
-    if(n->childCount() == 0) {
-      return _T("");
+    if(childCount() == 0) {
+      return EMPTYSTRING;
     }
     break;
   case KEY            :
-    return String(_T("key ("))    + sprintTree(n->child(0)) + _T(")");
+    return String(_T("key ("))    + child(0)->toString() + _T(")");
   case TYPEVARCHAR        :
-    return String(_T("varchar(")) + sprintTree(n->child(0)) + _T(")");
+    return String(_T("varchar(")) + child(0)->toString() + _T(")");
   }
-  String s = SqlTables->getSymbolName(n->token());
-  int sons = n->childCount();
+  String s = SqlTables->getSymbolName(token());
+  int sons = childCount();
   for(int i = 0; i < sons; i++) {
-    String c = sprintTree(n->child(i));
+    String c = child(i)->toString();
     if(c.length() > 0) {
       s += String(_T(" ")) + c;
     }

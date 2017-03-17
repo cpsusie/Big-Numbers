@@ -710,6 +710,7 @@ static KeyWord keywordTable[] = {
   _T("UPDATE")			 ,UPDATE			,
   _T("VALUES")			 ,VALUES			,
   _T("VARCHAR") 		 ,TYPEVARCHAR 	    ,
+  _T("WCHAR")			 ,TYPEWCHAR			,
   _T("WHERE")			 ,WHERE				
 };
 

@@ -36,8 +36,8 @@ private:
   void init(int token);
 public:
   SyntaxNode(const SyntaxNode *src);
-  SyntaxNode(const char    *s, int token);
-  SyntaxNode(const wchar_t *s, int token);
+//  SyntaxNode(const char    *s, int token);
+  SyntaxNode(const TCHAR     *s, int token);
   SyntaxNode(double number);
   SyntaxNode(const Date      &d);
   SyntaxNode(const Time      &d);
@@ -65,6 +65,7 @@ public:
   int    getLikeOperatorIndex()           const;
   void   setData(SyntaxNodeData *p);
   SyntaxNodeData *getData()             const;
+  String toString() const;
 };
 
 typedef SyntaxNode *SyntaxNodeP;
@@ -107,7 +108,6 @@ public:
 
 void dumpSyntaxTree(const SyntaxNode *node, FILE *f = stdout, int level = 0);
 void dumpSyntaxTree(const SyntaxNode *node, const String &filename );
-String sprintTree(  const SyntaxNode *n);
 
 class NodeList : public SyntaxNodeArray {
 private:
