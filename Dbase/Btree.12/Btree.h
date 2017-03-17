@@ -5,8 +5,6 @@
 #include <Semaphore.h>
 #include <Date.h>
 
-extern const char *dbVersion;
-
 #define BIG_DBADDR
 
 #ifdef BIG_DBADDR
@@ -104,10 +102,13 @@ inline String toString(const DbAddrFileFormat &addr) {
 #define SETCONST(dst,src,type) { type *p = (type*)&(dst); *p = src; }
 #define SETCONSTSHORT(dst,src) SETCONST(dst,src,USHORT)
 
+class KeyFileDefinition;
+
 class KeyType {
 public:
   char m_data[MAXKEYSIZE];
   inline void init() { memset(m_data,0,sizeof(m_data)); }
+  String toString(const KeyFileDefinition &keydef) const;
 };
 
 class RecordType {
@@ -251,7 +252,7 @@ public:
   inline bool isDefined() const {
     return m_defined;
   }
-  
+
   TupleField &setUndefined(); // return this
   String toString() const;
   void dump(FILE *f = stdout) const;
@@ -415,7 +416,7 @@ public:
   inline void printf(const KeyType &key) const {
     fprintf(stdout, key);
   }
-  
+
   inline void printf(const KeyType &key, UINT fieldCount) const {
     fprintf(stdout, key, fieldCount);
   }
@@ -442,6 +443,7 @@ class KeyPageHeader {
 public:
   UINT      m_leafPage  : 1;
   UINT      m_itemCount : 15;
+  String toString() const;
 };
 
 #define KEY_DATASIZE (KEYPAGESIZE-sizeof(KeyPageHeader))
@@ -450,6 +452,7 @@ class KeyPageItem {
 public:
   DbAddrFileFormat  m_child; // Must be first element
   KeyType           m_key;   // Not every byte is written to file. sizeof(KeyType) is maximum keysize
+  String toString(const KeyFileDefinition &keydef) const;
 };
 
 class KeyPageInfo {
@@ -465,12 +468,15 @@ public:
   };
   KeyPageInfo(USHORT keySize);
   void init(USHORT keySize);
+  String toString() const;
 };
 
 class KeyPage {
 private:
-  KeyPageHeader        m_h;
-  UCHAR                m_items[KEY_DATASIZE];                      // m_h and m_items must be declared after each other. Written to file
+  KeyPageHeader        m_header;
+
+  // m_h and m_items must be declared after each other. Written to file
+  BYTE                 m_items[KEY_DATASIZE];
 
   const KeyPageInfo    m_pageInfo;                                 // These fields must be declared after m_items.
                                                                    // Everything after m_items is NOT written to file.
@@ -480,50 +486,103 @@ private:
 public:
   KeyPage(USHORT keySize);
   KeyPage(const KeyPageInfo &pageInfo);
-  void         init();                                     // Initialize u and m_items
-  void         setLeafPage(bool leafPage);
-  bool         isLeafPage()      const;
-  UINT         getItemSize()     const;
-  UINT         getKeySize()      const;
-  UINT         getHalfSize()     const;
-  UINT         getPageSize()     const;
-  UINT         getMaxItemCount() const;
+
+  // Initialize m_header and m_items
+  void         init(bool leafPage);
+  inline bool  isLeafPage()      const {
+    return m_header.m_leafPage ? true : false;
+  }
+  inline UINT  getItemSize()     const {
+    return m_pageInfo.m_itemSize;
+  }
+  inline UINT  getKeySize()      const {
+    return m_pageInfo.m_keySize;
+  }
+  inline UINT  getHalfSize()     const {
+    return isLeafPage() ? m_pageInfo.m_halfMaxKeyCount : m_pageInfo.m_halfMaxItemCount;
+  }
+  inline UINT  getPageSize()     const {
+    return m_pageInfo.m_pageSize;
+  }
+  inline UINT  getMaxItemCount() const {
+    return isLeafPage() ? m_pageInfo.m_maxKeyCount : m_pageInfo.m_maxItemCount;
+  }
   inline const KeyPageInfo   &getPageInfo() const {
     return m_pageInfo;
   }
-  void                 setItem(UINT i, const KeyPageItem &t);       // 1 <= i <= itemcount. For leafpages t.m_child must be DB_NULLADDR
+
+  // 1 <= i <= itemcount. For leafpages t.m_child must be DB_NULLADDR
+  void                 setItem(UINT i, const KeyPageItem &t);
   KeyPageItem         &getItem(UINT i,       KeyPageItem &t) const;
   KeyPageItem         &getLastItem(          KeyPageItem &t) const;
   KeyType             &setKey( UINT i, const KeyType     &key);
-  const KeyType       &getKey( UINT i) const;                       // 1 <= i <= itemcount
-  const KeyType       &getLastKey() const;
-  void                 setChild( UINT i, KeyPageAddr addr );        // 0 <= i <= itemcount. For leafpages addr must be DB_NULLADDR
-  KeyPageAddr          getChild( UINT i) const;                     // 0 <= i <= itemcount. Return DB_NULLADDR for leaf-pages
-  KeyPageAddr          getLastChild() const;                        // Return DB_NULLADDR for leaf-pages
+
+  // 1 <= i <= itemcount
+  const KeyType       &getKey( UINT i) const;
+  inline const KeyType &getLastKey() const {
+    return getKey(getItemCount());
+  };
+
+  // 0 <= i <= itemcount. For leafpages addr must be DB_NULLADDR
+  void                 setChild( UINT i, KeyPageAddr addr );
+
+  // 0 <= i <= itemcount. Return DB_NULLADDR for leaf-pages
+  KeyPageAddr          getChild( UINT i) const;
+
+  // Return DB_NULLADDR for leaf-pages
+  inline KeyPageAddr          getLastChild() const {
+    return getChild(getItemCount());
+  }
   void                 copyItems(int from, int to, const KeyPage &src, int start); // from <= to && to-from+1 <= src.getItemCount()-start
   int                  searchMinIndex(const KeyType &key, const KeyFileDefinition &keydef, UINT fieldCount);
   int                  searchMaxIndex(const KeyType &key, const KeyFileDefinition &keydef, UINT fieldCount);
   void                 setItemCount(UINT value);                    // 0 <= value <= getMaxItemCount()
-  USHORT               getItemCount() const;                        // Number of keys in page
-  void                 itemCountIncr();                             // itemcount < getMaxItemCount()
-  bool                 itemCountDecr();                             // itemcount > 0. Return true if underflow, ie itemCount becomes < getHalfSize()
-  void                 insertItem(UINT i, const KeyPageItem &t);    // i <= itemcount < getMaxItemCount(). For leafpages t.m_child must be DB_NULLADDR
-  bool                 removeItem(UINT i);                          // 0 < i <= itemcount.Return true on underflow. See condition for itemCountDecr.
-  bool                 isFull() const;
+  inline USHORT        getItemCount() const {                       // Number of keys in page
+    return m_header.m_itemCount;
+  }
+
+  // itemcount < getMaxItemCount()
+  void                 itemCountIncr();
+
+  // itemcount > 0. Return true if underflow, ie itemCount becomes < getHalfSize()
+  bool                 itemCountDecr();
+
+  // i <= itemcount < getMaxItemCount(). For leafpages t.m_child must be DB_NULLADDR
+  void                 insertItem(UINT i, const KeyPageItem &t);
+
+  // 1 <= i <= itemcount.Return true on underflow. See condition for itemCountDecr.
+  bool                 removeItem(UINT i);
+  inline bool          isFull() const {
+    return getItemCount() >= getMaxItemCount();
+  }
   KeyPageAddr          getNextFree() const;
   void                 setNextFree(KeyPageAddr addr);
   const TCHAR         *getTypeStr() const;
+  String toString(const KeyFileDefinition &keydef) const;
 };
 
-class KeyFileHeader {
+class DbFileHeader {
+protected:
+  void setFileVersion();
 public:
-  char              m_version[10];
+  char m_version[10];
+  String getDbFileVersion() const {
+    return m_version;
+  }
+  // will throw sqlError if version mismatch
+  void checkFileVersion(const String &fileName) const;
+};
+
+class KeyFileHeader : public DbFileHeader {
+public:
   DbAddrFileFormat  m_root;
   DbAddrFileFormat  m_freeList;
   ULONG             m_freeListSize;
   DbAddrFileFormat  m_last;
   KeyFileDefinition m_keydef;
-  UINT64            m_keyCount; // #elements in file.
+
+  // #elements in file.
+  UINT64            m_keyCount;
 
   void init(const KeyFileDefinition &keydef);
 };
@@ -547,16 +606,25 @@ private:
   UINT64    m_end;
   void setCount( ULONG  count, UINT64 end );
   void getHead(  ULONG &count, UINT64 &end) const;
-  void checkThreadId() const;
+  void throwInvalidThreadId() const;
+  inline void checkThreadId() const {
+    if(GetCurrentThreadId() != m_threadId) throwInvalidThreadId();
+  }
 public:
   LogFile(const String &fname);
   ~LogFile();
   void abort();
   void commit();
   void begin();
-  bool inTmf() const;
+  inline bool inTMF() const {
+    return m_inTMF && (m_threadId == GetCurrentThreadId());
+  }
   void log(const DbFile &dbf, UINT64 offset, const void *buf, ULONG size);
   ULONG getCount() const;
+  static const char *getDbProgramVersion();
+  static String      getDbProgramVersionString() {
+    return getDbProgramVersion();
+  }
 };
 
 class Database;
@@ -576,11 +644,17 @@ public:
   DbFile(const Database &db, const String &fileName, DbFileMode mode, bool systemFile);
   const String &getName() const { return m_fileName;        }
   DbFileMode    getMode() const { return m_mode;            }
-  UINT64        getSize(); // size of file in bytes
+
+  // size of file in bytes
+  UINT64        getSize();
   void          truncate();
   inline bool   isBackLogged()       const { return m_logFile != NULL; }
-  void          write(UINT64 offset, const void *buffer, UINT size) const; // write size bytes at offset from buffer to file
-  void          read( UINT64 offset,       void *buffer, UINT size) const; // read size bytes at offset from file into buffer
+
+  // write size bytes at offset from buffer to file
+  void          write(UINT64 offset, const void *buffer, UINT size) const;
+
+  // read size bytes at offset from file into buffer
+  void          read( UINT64 offset,       void *buffer, UINT size) const;
   static void   create( const String &fileName);
   static void   destroy(const String &fileName);
   static bool   exist(  const String &fileName);
@@ -590,9 +664,8 @@ public:
 
 #pragma pack(push,2)
 
-class DataFileHeader {
+class DataFileHeader : public DbFileHeader {
 public:
-  char              m_version[10];
   DbAddrFileFormat  m_freeTree;
   DbAddrFileFormat  m_freeList;
   DbAddrFileFormat  m_end;
@@ -660,12 +733,12 @@ private:
                                   FreePage     &c      ,
                                   int           s      ,
                                   bool         &h      );
-  void   freePageDel(             DbAddr        p      , 
+  void   freePageDel(             DbAddr        p      ,
                                   FreePage     &a      ,
                                   int           r      ,
                                   bool         &h      );
   void   freePageDelete(          DbAddr        a      ,
-                                  FreeKey      &key    , 
+                                  FreeKey      &key    ,
                                   bool         &h      );
   void   freeTreeInsert(          DbAddr        addr   ,
                                   ULONG         recSize);
@@ -674,7 +747,7 @@ private:
                                   FreePage     &page   ,
                                   int           level  ,
                                   FILE         *f      ) const;
-  void   freeAddrDump(            DbAddr        addr   , 
+  void   freeAddrDump(            DbAddr        addr   ,
                                   int           level  ,
                                   FILE         *f      ) const;
 
@@ -684,8 +757,12 @@ public:
   static void create( const String &fileName);
   DbAddr  insert(const void *rec, ULONG recSize);
   void    remove(     DbAddr addr);
-  void    truncate(); // remove all data!!! be careful
-  void    readRecord( DbAddr addr, void *rec, ULONG maxSize); // maxSize used to check that read recordsize <= maxSize
+
+  // remove all data!!! be careful
+  void    truncate();
+
+ // maxSize used to check that read recordsize <= maxSize
+  void    readRecord( DbAddr addr, void *rec, ULONG maxSize);
   void    update(     DbAddr addr, const void *rec);
   void    readVarChar(DbAddr addr, varchar &vchar) const;
   void    freeTreeDump(FILE *f = stdout) const;
@@ -703,15 +780,23 @@ public:
 
 class KeyFileInfo {
 public:
-  UINT64            m_size;              // Size of file in bytes
+
+  // Size of file in bytes
+  UINT64            m_size;
   KeyFileHeader     m_header;
-  KeyPageInfo       m_pageInfo;          
-  UINT              m_treeHeight;        // Height of btree.
-  UINT              m_dataPageCount;     // Number of pages in tree (containing data)
-  UINT              m_rootPageItemCount; // Number of items in rootpage
-  KeyPageAddr       m_rootPageIndex;     // Index of rootpage [starting at 1]
-  KeyPageAddr       m_rootPageAddress;   // Byte offset of rootpage
-  double            m_utilizationRate;   // #keys / (#pages * maxItemsPerPage) * 100
+  KeyPageInfo       m_pageInfo;
+  // Height of btree.
+  UINT              m_treeHeight;
+  // Number of pages in tree (containing data)
+  UINT              m_dataPageCount;
+  // Number of items in rootpage
+  UINT              m_rootPageItemCount;
+  // Index of rootpage [starting at 1]
+  KeyPageAddr       m_rootPageIndex;
+  // Byte offset of rootpage
+  KeyPageAddr       m_rootPageAddress;
+  // #keys / (#pages * maxItemsPerPage) * 100
+  double            m_utilizationRate;
   CompactIntArray   m_pageCountPerLevel;
   String toString() const;
 };
@@ -759,7 +844,7 @@ private:
                                ,int                 level
                                ,KeyFilePageScanner &scanner
                                ,int                 maxLevel = -1);
-                                
+
   KeyPageAddr  getFreeList();
   void         setFreeList(     KeyPageAddr addr, int dsize); // dsize = +/-1
   KeyPageAddr  getLast();
@@ -774,9 +859,11 @@ public:
 
   void         insert(        const KeyType &key);
   void         remove(        const KeyType &key);
-  void         update(        const KeyType &key); // update data part of the key. if keypart needs to be updated, use remove and insert
+  // update data part of the key. if keypart needs to be updated, use remove and insert
+  void         update(        const KeyType &key);
 
-  void         truncate(); // remove all keys !!! be careful
+  // remove all keys !!! be careful
+  void         truncate();
   void         readPage(      KeyPageAddr addr, KeyPage &page);
 
   bool         searchMin(     RelationType relop, KeyType &key, UINT fieldCount);
@@ -793,9 +880,15 @@ public:
                              ,KeyFileScanner &scanner );
 
   const KeyFileDefinition &getDefinition() const;
-  UINT                     getPageSize() const;   // Size of 1 page in bytes
-  UINT                     getFreePageCount();    // Number of released pages (length of freelist)
-  UINT                     getPageCount();        // Number of pages in btree, Containing data.
+
+  // Size of 1 page in bytes
+  UINT                     getPageSize() const;
+
+  // Number of released pages (length of freelist)
+  UINT                     getFreePageCount();
+
+  // Number of pages in btree, Containing data.
+  UINT                     getPageCount();
   KeyFileInfo              getInfo();
   UINT64                   getKeyCount();
   KeyPageAddr              getPageAddr(const KeyType &key);
@@ -844,7 +937,8 @@ public:
            );
 
  ~KeyCursor();
-  KeyType &next(KeyType &key); // return key;
+  // return key;
+  KeyType &next(KeyType &key);
   bool hasNext() const;
   const KeyFileDefinition &getKeyDef() const {
     return m_keydef;
@@ -940,7 +1034,8 @@ public:
   TCHAR          m_columnName[  MAXCOLUMNNAME+1];
   TCHAR          m_dbType[10];
   ULONG          m_offset;
-  ULONG          m_len; // in bytes
+  // in bytes
+  ULONG          m_len;
   char           m_nulls;
   TCHAR          m_defaultValue[MAXDEFAULTVALUE+1];
 };
@@ -976,7 +1071,8 @@ public:
 
 class SysTableDbData {
 public:
-  TCHAR          m_dbName[SQLAPI_MAXDBNAME+1]; /* must be the same length as dbName in sqlapi.h */
+   // must be the same length as dbName in sqlapi.h
+  TCHAR          m_dbName[SQLAPI_MAXDBNAME+1];
   TCHAR          m_path[30];
   UCHAR          m_colseq[256];
 };
@@ -1018,12 +1114,16 @@ public:
   CompactArray<IndexColumn> m_columns;
   IndexDefinition() {}
   IndexDefinition(const SysTableIndexData &indexData);
-  UINT               getColumnCount() const { return (UINT)m_columns.size(); }
-        IndexType    getIndexType()   const { return m_indexType;      }
-  const IndexColumn &getColumn(UINT i) const { return m_columns[i];     }
-  bool               columnIsMember(UINT colindex) const; // returns true if tablefield colindex is in this
-  bool               isUnique()       const { return getIndexType() == INDEXTYPE_PRIMARY || getIndexType() == INDEXTYPE_UNIQUE; }
-  int                getFieldIndex(UINT colindex) const; // returns the index of tablefield colindex in this, -1 if not member
+  inline UINT               getColumnCount()  const { return (UINT)m_columns.size(); }
+  inline IndexType          getIndexType()    const { return m_indexType;      }
+  inline const IndexColumn &getColumn(UINT i) const { return m_columns[i];     }
+
+   // returns true if tablefield colindex is in this
+  bool                      columnIsMember(UINT colindex) const;
+  inline bool               isUnique()       const { return getIndexType() == INDEXTYPE_PRIMARY || getIndexType() == INDEXTYPE_UNIQUE; }
+
+  // returns the index of tablefield colindex in this, -1 if not member
+  int                       getFieldIndex(UINT colindex) const;
   String toString() const;
   void dump(FILE *f = stdout) const;
 };
@@ -1032,14 +1132,16 @@ Packer &operator>>(Packer &p,       IndexDefinition &indexDef);
 
 typedef Array<IndexDefinition> IndexArray;
 
-class ColumnInfo { // minimized version of ColumnDefinition.
-                   // Don't add any membervariables with non-trivial constructor (used in CompactArray)
+// Minimized version of ColumnDefinition.
+// Don't add any membervariables with non-trivial constructor (used in CompactArray)
+class ColumnInfo {
 public:
   DbFieldType    m_type;
-  ULONG          m_offset; 
-  ULONG          m_len; // in bytes
-  DbFieldType getType()         const { return m_type;                }
-  DbMainType  getMainType()     const { return ::getMainType(m_type); }
+  ULONG          m_offset;
+  // in bytes
+  ULONG          m_len;
+  inline DbFieldType getType()         const { return m_type;                }
+  inline DbMainType  getMainType()     const { return ::getMainType(m_type); }
   ULONG       size()            const;
    // In characters
   UINT        getMaxStringLen() const;
@@ -1073,15 +1175,15 @@ public:
   void init(TableType type, const String &tableName, const String &fileName = EMPTYSTRING);
   void addColumn(const ColumnDefinition   &colDef );
   void addColumn(const SysTableColumnData &colData);
-  int                     findColumnIndex(const String &columnName) const;
-  KeyFileDefinition       getKeyFileDefinition(const IndexDefinition &indexDef) const;
-  UINT                    getRecordSize()   const { return m_recSize; }
-  const String           &getTableName()    const { return m_tableName;      }
-  TableType               getTableType()    const { return m_tableType;      }
-  const String           &getFileName()     const { return m_fileName;       }
-  ULONG                   getSequenceNo()   const { return m_sequenceNo;     }
-  const ColumnDefinition &getColumn(UINT i) const { return m_columns[i];     }
-  UINT                    getColumnCount()  const { return (UINT)m_columns.size(); }
+  int                            findColumnIndex(const String &columnName) const;
+  KeyFileDefinition              getKeyFileDefinition(const IndexDefinition &indexDef) const;
+  inline UINT                    getRecordSize()   const { return m_recSize; }
+  inline const String           &getTableName()    const { return m_tableName;      }
+  inline TableType               getTableType()    const { return m_tableType;      }
+  const inline String           &getFileName()     const { return m_fileName;       }
+  inline ULONG                   getSequenceNo()   const { return m_sequenceNo;     }
+  inline const ColumnDefinition &getColumn(UINT i) const { return m_columns[i];     }
+  inline UINT                    getColumnCount()  const { return (UINT)m_columns.size(); }
   String toString() const;
   void dump(FILE *f = stdout) const;
   friend Packer &operator<<(Packer &p, const TableDefinition &tableDef);
@@ -1090,7 +1192,8 @@ public:
 
 typedef CompactShortArray FieldSet;
 
-class TableInfo { // minimized version of TableDefinition
+// Minimized version of TableDefinition
+class TableInfo {
 private:
   ULONG                      m_sequenceNo;
   String                     m_fileName;
@@ -1154,23 +1257,27 @@ public:
   void get(const RecordType &rec, UINT n,       TupleField &v) const;
   void put(      RecordType &rec, UINT n, const TupleField &v) const;
 
-  void                   initField(          RecordType &rec, UINT n)        const;
-  bool                   isDefined(    const RecordType &rec, UINT n)        const;
-  void                   setUndefined(       RecordType &rec, UINT n)        const;
-  bool                   recordsEqual( const RecordType &rec1, const RecordType &rec2) const;
-  const ColumnInfo      &getColumn(UINT i)  const { return m_columns[i];                }
-  const FieldSet        &getAllFields()     const { return m_allFields;                 }
-  const IndexDefinition &getIndex( UINT i)  const { return m_indexArray[i];             }
-  const String          &getTableName()     const { return m_indexArray[0].m_tableName; }
-  const String          &getFileName()      const { return m_fileName;                  }
-  int                    getSequenceNo()    const { return m_sequenceNo;                }
-  UINT                   getColumnCount()   const { return (UINT)m_columns.size();      }
-  UINT                   getIndexCount()    const { return (UINT)m_indexArray.size();   }
-  UINT                   getRecordSize()    const { return m_recSize;                   }
+  void                          initField(          RecordType &rec, UINT n)        const;
+  bool                          isDefined(    const RecordType &rec, UINT n)        const;
+  void                          setUndefined(       RecordType &rec, UINT n)        const;
+  bool                          recordsEqual( const RecordType &rec1, const RecordType &rec2) const;
+  inline const ColumnInfo      &getColumn(UINT i)  const { return m_columns[i];                }
+  inline const FieldSet        &getAllFields()     const { return m_allFields;                 }
+  inline const IndexDefinition &getIndex( UINT i)  const { return m_indexArray[i];             }
+  inline const String          &getTableName()     const { return m_indexArray[0].m_tableName; }
+  inline const String          &getFileName()      const { return m_fileName;                  }
+  inline int                    getSequenceNo()    const { return m_sequenceNo;                }
+  inline UINT                   getColumnCount()   const { return (UINT)m_columns.size();      }
+  inline UINT                   getIndexCount()    const { return (UINT)m_indexArray.size();   }
+  inline UINT                   getRecordSize()    const { return m_recSize;                   }
   int                    findIndexNo(const String &indexName) const;
   int                    findPrimaryIndex() const;
-  KeyFileDefinition      getKeyFileDefinition(UINT index) const;               // index is pointer into m_indexArray
-  FieldSet               genFieldSet(UINT index, const FieldSet &fields) const; // index is pointer into m_indexArray
+
+  // index is pointer into m_indexArray
+  KeyFileDefinition      getKeyFileDefinition(UINT index) const;
+
+  // index is pointer into m_indexArray
+  FieldSet               genFieldSet(UINT index, const FieldSet &fields) const;
   String toString() const;
   void dump(FILE *f = stdout) const;
 };
@@ -1232,7 +1339,7 @@ public:
   void trbegin();
   void trcommit();
   void trabort();
-  bool inTmf() const { return m_logFile->inTmf(); }
+  inline bool inTMF() const { return m_logFile->inTMF(); }
   void close();
   void dataFileDump( const String &tableName, FILE *f = stdout);
   void KeyFiledump(  const String &indexName, FILE *f = stdout);
@@ -1246,7 +1353,7 @@ public:
   String getNewFileName( const String         &extension    ) const;
 
   ULONG getMaxTableSequenceNo() const;
-                
+
   void sysTabUserInsert( const String         &userName
                         ,const String         &password     );
 
@@ -1289,7 +1396,7 @@ public:
 
   const IndexArray      &getIndexDefinitions(const String  &tableName ) const;
   const IndexDefinition &getIndexDefinition( const String  &indexName ) const;
-                     
+
   void updateStatistics( const IndexDefinition &indexDef  );
   void updateStatistics( const String          &tableName );
   void updateStatistics();
@@ -1394,6 +1501,6 @@ public:
 };
 
 #ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " DBASELIB_VERSION)
+#pragma message("link with " DBASE_VERSION)
 #endif
 #pragma comment(lib, DBASE_VERSION "Btree12.lib")

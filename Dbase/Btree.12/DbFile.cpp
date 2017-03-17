@@ -2,9 +2,25 @@
 #include <io.h>
 #include <Console.h>
 
-const char *dbVersion = "V2.1.0.2";
-
 /* -------------------- LOG-FILE FUNCTIONS -------------------- */
+
+LogFile::LogFile(const String &fileName) {
+  m_f = fopen(fileName,_T("r+b"));
+  if(!m_f) {
+    throwSqlError(SQL_NO_LOG,_T("No logfile <%s>"),fileName.cstr());
+  }
+  getHead(m_count,m_end);
+  m_inTMF = m_count > 0;
+  if(m_inTMF) {
+    m_threadId = GetCurrentThreadId();;
+  }
+}
+
+LogFile::~LogFile() {
+  m_sem.wait();
+  if(m_f) fclose(m_f);
+  m_f = NULL;
+}
 
 typedef struct {
   ULONG  m_count;
@@ -70,10 +86,6 @@ ULONG LogFile::getCount() const {
   return count;
 }
 
-bool LogFile::inTmf() const { 
-  return m_inTMF && (m_threadId == GetCurrentThreadId());
-}
-
 void LogFile::begin() {
   m_sem.wait();
   m_threadId = GetCurrentThreadId();
@@ -84,12 +96,6 @@ void LogFile::begin() {
     m_threadId = 0;
     m_sem.signal();
     throw;
-  }
-}
-
-void LogFile::checkThreadId() const {
-  if(GetCurrentThreadId() != m_threadId) {
-    throwSqlError(SQL_NO_TRANSACTION, _T("Transaction not started by this thread"));
   }
 }
 
@@ -164,22 +170,26 @@ void LogFile::abort() {
   }
 }
 
-LogFile::LogFile(const String &fileName) {
-  m_f = fopen(fileName,_T("r+b"));
-  if(!m_f) {
-    throwSqlError(SQL_NO_LOG,_T("No logfile <%s>"),fileName.cstr());
-  }
-  getHead(m_count,m_end);
-  m_inTMF = m_count > 0;
-  if(m_inTMF) {
-    m_threadId = GetCurrentThreadId();;
-  }
+void LogFile::throwInvalidThreadId() const {
+  throwSqlError(SQL_NO_TRANSACTION, _T("Transaction not started by this thread"));
 }
 
-LogFile::~LogFile() {
-  m_sem.wait();
-  if(m_f) fclose(m_f);
-  m_f = NULL;
+const char *LogFile::getDbProgramVersion() { // static
+  static const char *dbVersion = "V2.1.0.3";
+  return dbVersion;
+}
+
+void DbFileHeader::setFileVersion() {
+  strcpy(m_version, LogFile::getDbProgramVersion());
+}
+
+void DbFileHeader::checkFileVersion(const String &fileName) const {
+  if(strcmp(LogFile::getDbProgramVersion(), m_version) != 0) {
+    throwSqlError(SQL_WRONGDBVERSION,_T("Wrong database version for file %s. File verison=<%s>, program version=<%s>")
+                                    ,fileName.cstr()
+                                    ,getDbFileVersion().cstr()
+                                    ,LogFile::getDbProgramVersionString().cstr());
+  }
 }
 
 /* define how many open files we have open at any time. except logfiles */
@@ -356,7 +366,7 @@ void DbFile::write(UINT64 offset, const void *buffer, UINT size) const {
   if(m_mode != DBFMODE_READWRITE) {
     throwSqlError(SQL_WRITE_ERROR, _T("Writing to <%s>, Opened as readonly"), m_fileName.cstr());
   }
-  if(isBackLogged() && !m_logFile->inTmf()) {
+  if(isBackLogged() && !m_logFile->inTMF()) {
     throwSqlError(SQL_NO_TRANSACTION, _T("Cannot write to <%s>. No tmf startet"), m_fileName.cstr());
   }
   if(size == 0) {

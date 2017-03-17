@@ -17,7 +17,7 @@ DataFile::DataFile(const Database &db, const String &fileName, DbFileMode mode, 
   init();
 };
 
-DataFile::DataFile(const String &fileName, DbFileMode mode, LogFile *lf) 
+DataFile::DataFile(const String &fileName, DbFileMode mode, LogFile *lf)
 : DbFile(fileName,mode,lf)
 {
   init();
@@ -26,20 +26,15 @@ DataFile::DataFile(const String &fileName, DbFileMode mode, LogFile *lf)
 void DataFile::init() {
   DataFileHeader header;
   readHead(header, false);
-  if(strcmp(header.m_version,dbVersion) != 0) {
-    const String programVersion = dbVersion;
-    const String fileVersion    = header.m_version;
-    throwSqlError(SQL_WRONGDBVERSION,_T("Wrong database version for file %s. File verison=<%s>, program version=<%s>")
-                                    ,getName().cstr(),fileVersion.cstr(), programVersion.cstr());
-  }
+  header.checkFileVersion(getName());
 }
 
-void DataFile::create( const String &name) {
+void DataFile::create(const String &name) {
   DataFileHeader header;
   header.init();
 
   DbFile::create(name);
-  DbFile file(name,DBFMODE_READWRITE, NULL);
+  DbFile file(name, DBFMODE_READWRITE, NULL);
 
   try {
     file.write(0,&header, sizeof(header));
@@ -60,7 +55,7 @@ void DataFile::truncate() {
 void DataFileHeader::init() {
   memset(this,0,sizeof(DataFileHeader));
 
-  strcpy(m_version,dbVersion);
+  setFileVersion();
   m_freeList = DB_NULLADDR;
   m_freeTree = DB_NULLADDR;
   m_end      = sizeof(DataFileHeader);
@@ -162,7 +157,7 @@ void DataFile::freePageInsert(DbAddr        a  ,
     while(l<r) {
       const int m = (l+r)/2;
       if(freeKeyCmpIns(apage.getKey(m),key) <= 0) {
-        l = m + 1; 
+        l = m + 1;
       } else {
         r = m;
       }
@@ -171,7 +166,7 @@ void DataFile::freePageInsert(DbAddr        a  ,
     if(r > 0 && freeKeyCmpIns(apage.getKey(r),key)==0) { // found DUPKEY
       throwSqlError(SQL_DBCORRUPTED,_T("Datafile <%s> corrupted. (dupkey in freelist)"),getName().cstr()); // something is quit qrong
     }
-  
+
     FreePageItem u;
     freePageInsert(apage.getChild(r), key, h, u);
 
@@ -315,7 +310,7 @@ void DataFile::freePageUnderflow(DbAddr    a ,
   }
 }
 
-void DataFile::freePageDel(DbAddr    p , 
+void DataFile::freePageDel(DbAddr    p ,
                            FreePage &a ,
                            int       r ,
                            bool     &h ) {
@@ -331,7 +326,7 @@ void DataFile::freePageDel(DbAddr    p ,
       freePageUnderflow(q, ppage, ppage.getItemCount(),h);
       write(p, &ppage, sizeof(ppage));
     }
-  } else {  
+  } else {
     // we have reached the bottom. page.child[page.itemcount] = a.child[r]
     if(isBackLogged()) {
       appendLog(p, &ppage,sizeof(ppage));
@@ -346,7 +341,7 @@ void DataFile::freePageDel(DbAddr    p ,
 }
 
 void DataFile::freePageDelete( DbAddr   a  ,
-                               FreeKey &key, 
+                               FreeKey &key,
                                bool    &h  ) {
   if(a == DB_NULLADDR) {
     h = false;
@@ -526,7 +521,7 @@ void DataFile::remove(DbAddr addr) {
   }
 
   freeTreeInsert(addr, page.m_recSize);
-  
+
   page.m_inUse = false;
   write(addr, &page, DATAPAGESIZE);
   writeHead(m_dh);

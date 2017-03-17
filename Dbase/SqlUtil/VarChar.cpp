@@ -2,8 +2,8 @@
 #include "SqlAPI.h"
 
 void varchar::clear() {
-  if(m_data != NULL) { 
-    delete[] m_data; 
+  if(m_data != NULL) {
+    delete[] m_data;
     m_data = NULL;
   }
 }

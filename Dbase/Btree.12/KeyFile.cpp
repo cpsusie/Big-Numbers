@@ -13,13 +13,7 @@ KeyFile::KeyFile(const String &fileName, DbFileMode mode, LogFile *lf) : DbFile(
 void KeyFile::init() {
   KeyFileHeader header;
   readHead(header, false);
-
-  if(strcmp(header.m_version, dbVersion) != 0) {
-    const String programVersion = dbVersion;
-    const String fileVersion    = header.m_version;
-    throwSqlError(SQL_WRONGDBVERSION,_T("Wrong database version for file %s. File verison=<%s>, program version=<%s>")
-                                    ,getName().cstr(),fileVersion.cstr(), programVersion.cstr());
-  }
+  header.checkFileVersion(getName());
   SETCONST(m_keydef, header.m_keydef, KeyFileDefinition);
   ((KeyPageInfo&)m_pageInfo).init(m_keydef.getSize());
 }
@@ -58,7 +52,7 @@ void KeyFile::truncate() { // remove all data!!! be careful
 void KeyFileHeader::init(const KeyFileDefinition &keydef) {
   memset(this,0,sizeof(KeyFileHeader));
 
-  strcpy(m_version,dbVersion);
+  setFileVersion();
   m_root         = DB_NULLADDR;
   m_freeList     = DB_NULLADDR;
   m_freeListSize = 0;
@@ -159,8 +153,7 @@ KeyPageAddr KeyFile::fetchNewPage(bool leafPage) {
   if(freeList == DB_NULLADDR) {
     try {
       addr = getLast() + 1;
-      page.init();
-      page.setLeafPage(leafPage);
+      page.init(leafPage);
       writePage(addr, page);
       setLast(addr);
     } catch(sqlca) {
@@ -173,8 +166,7 @@ KeyPageAddr KeyFile::fetchNewPage(bool leafPage) {
       logPage( freeList, page);
       freeList = page.getNextFree();
       setFreeList(freeList,-1);
-      page.init();
-      page.setLeafPage(leafPage);
+      page.init(leafPage);
       writePage(addr, page);
     } catch(sqlca) {
       return DB_NULLADDR;

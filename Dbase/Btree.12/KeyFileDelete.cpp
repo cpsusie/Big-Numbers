@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 void KeyFile::pageUnderflow(KeyPageAddr a, KeyPage &c, int s, bool &h) {
-  
+
   KeyPage apage(m_pageInfo);
   KeyPage bpage(m_pageInfo);
 
@@ -182,7 +182,7 @@ void KeyFile::remove(const KeyType &key) {
     readPage(rootAddr, rootPage);
     if(rootPage.getItemCount() == 0) {
       logPage(rootAddr, rootPage);
-      KeyPageAddr q = rootAddr; 
+      KeyPageAddr q = rootAddr;
       setRoot(rootPage.getChild(0),-1);
       releasePage(q);
       return;

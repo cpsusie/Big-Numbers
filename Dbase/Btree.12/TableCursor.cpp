@@ -127,19 +127,19 @@ bool isInteger(double d) {
 }
 
 bool validChar(double d) {
-  return isInteger(d) && (rangecmp(d,DBTYPE_CHAR) == 0  ); 
+  return isInteger(d) && (rangecmp(d,DBTYPE_CHAR) == 0  );
 }
 
 bool validUchar(double d) {
-  return isInteger(d) && (rangecmp(d,DBTYPE_UCHAR) == 0 ); 
+  return isInteger(d) && (rangecmp(d,DBTYPE_UCHAR) == 0 );
 }
 
 bool validShort(double d) {
-  return isInteger(d) && (rangecmp(d,DBTYPE_SHORT) == 0 ); 
+  return isInteger(d) && (rangecmp(d,DBTYPE_SHORT) == 0 );
 }
 
 bool validUshort(double d) {
-  return isInteger(d) && (rangecmp(d,DBTYPE_USHORT) == 0); 
+  return isInteger(d) && (rangecmp(d,DBTYPE_USHORT) == 0);
 }
 
 bool validInt(double d) {
@@ -160,7 +160,7 @@ bool validUlong(double d) {
 
 bool validFloat(double d) {
   float f = (float)d;
-  return (rangecmp(d,DBTYPE_FLOAT) == 0) && (f == d); 
+  return (rangecmp(d,DBTYPE_FLOAT) == 0) && (f == d);
 }
 
 static float roundDownToNearestFloat(double d);
@@ -419,7 +419,7 @@ TableCursorKey::TableCursorKey(const KeyFileDefinition &keydef, const Tuple *key
         }
         varchar vch;
         tupField.get(vch);
-          
+
         switch(getMainType(keyType)) {
         case MAINTYPE_STRING:
           { String    str((TCHAR*)vch.data());
@@ -485,7 +485,7 @@ void TableCursorKey::dump(FILE *f) const {
 
 TableCursor::TableCursor(Database               &db      ,
                          const TableCursorParam &param   ,
-                         const Tuple            *beginKey, 
+                         const Tuple            *beginKey,
                          const Tuple            *endKey) : m_db(db) {
   m_keyCursor  = NULL;
   m_sequenceNo = param.m_sequenceNo;

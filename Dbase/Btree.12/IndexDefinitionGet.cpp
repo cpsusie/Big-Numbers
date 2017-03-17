@@ -50,7 +50,7 @@ const IndexDefinition &Database::getIndexDefinition(const String &indexName) con
   if(indexName.length() > MAXINDEXNAME) {
     throwSqlError(SQL_INVALID_INDEXNAME,_T("Indexname <%s> is too long"), indexName.cstr() );
   }
-  
+
   const String tmpName = toUpperCase(indexName);
   IndexDefinition **indexDefpp = m_indexDefIndexNameCache.get(tmpName);
   if(indexDefpp == NULL) {

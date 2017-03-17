@@ -16,7 +16,7 @@ typedef enum {
   SQL_CALL_BIND      ,
   SQL_CALL_UNBIND    ,
   SQL_CALL_CREATE    ,
-  SQL_CALL_DROP      
+  SQL_CALL_DROP
 } SqlApiCallCode;
 
 #define SQL_CALL_CONNECT_RESET 3
@@ -166,43 +166,43 @@ public:
 /* must match the definitions of dbtypestr.cpp */
 typedef enum {
   DBTYPE_UNKNOWN    =  0
- ,DBTYPE_CHAR       =  1
- ,DBTYPE_CHARN      =  2
- ,DBTYPE_UCHAR      =  3
- ,DBTYPE_UCHARN     =  4
- ,DBTYPE_SHORT      =  5
- ,DBTYPE_SHORTN     =  6
- ,DBTYPE_USHORT     =  7
- ,DBTYPE_USHORTN    =  8
- ,DBTYPE_INT        =  9
- ,DBTYPE_INTN       = 10
- ,DBTYPE_UINT       = 11
- ,DBTYPE_UINTN      = 12
- ,DBTYPE_LONG       = 13
- ,DBTYPE_LONGN      = 14
- ,DBTYPE_ULONG      = 15
- ,DBTYPE_ULONGN     = 16
- ,DBTYPE_INT64      = 17
- ,DBTYPE_INT64N     = 18
- ,DBTYPE_UINT64     = 19 
- ,DBTYPE_UINT64N    = 20  
- ,DBTYPE_FLOAT      = 21
- ,DBTYPE_FLOATN     = 22
- ,DBTYPE_DOUBLE     = 23
- ,DBTYPE_DOUBLEN    = 24
- ,DBTYPE_CSTRING    = 25
- ,DBTYPE_CSTRINGN   = 26
- ,DBTYPE_WSTRING    = 27
- ,DBTYPE_WSTRINGN   = 28
- ,DBTYPE_VARCHAR    = 29
- ,DBTYPE_VARCHARN   = 30
- ,DBTYPE_DATE       = 31
- ,DBTYPE_DATEN      = 32
- ,DBTYPE_TIME       = 33
- ,DBTYPE_TIMEN      = 34
- ,DBTYPE_TIMESTAMP  = 35
- ,DBTYPE_TIMESTAMPN = 36
- ,DBTYPE_DBADDR     = 37
+ ,DBTYPE_DBADDR     =  1
+ ,DBTYPE_CHAR       =  3
+ ,DBTYPE_CHARN      =  4
+ ,DBTYPE_UCHAR      =  5
+ ,DBTYPE_UCHARN     =  6
+ ,DBTYPE_SHORT      =  7
+ ,DBTYPE_SHORTN     =  8
+ ,DBTYPE_USHORT     =  9
+ ,DBTYPE_USHORTN    = 10
+ ,DBTYPE_INT        = 11
+ ,DBTYPE_INTN       = 12
+ ,DBTYPE_UINT       = 13
+ ,DBTYPE_UINTN      = 14
+ ,DBTYPE_LONG       = 15
+ ,DBTYPE_LONGN      = 16
+ ,DBTYPE_ULONG      = 17
+ ,DBTYPE_ULONGN     = 18
+ ,DBTYPE_INT64      = 19
+ ,DBTYPE_INT64N     = 20
+ ,DBTYPE_UINT64     = 21
+ ,DBTYPE_UINT64N    = 22
+ ,DBTYPE_FLOAT      = 23
+ ,DBTYPE_FLOATN     = 24
+ ,DBTYPE_DOUBLE     = 25
+ ,DBTYPE_DOUBLEN    = 26
+ ,DBTYPE_CSTRING    = 27
+ ,DBTYPE_CSTRINGN   = 28
+ ,DBTYPE_WSTRING    = 29
+ ,DBTYPE_WSTRINGN   = 30
+ ,DBTYPE_VARCHAR    = 31
+ ,DBTYPE_VARCHARN   = 32
+ ,DBTYPE_DATE       = 33
+ ,DBTYPE_DATEN      = 34
+ ,DBTYPE_TIME       = 35
+ ,DBTYPE_TIMEN      = 36
+ ,DBTYPE_TIMESTAMP  = 37
+ ,DBTYPE_TIMESTAMPN = 38
 } DbFieldType;
 
 #ifndef UNICODE
@@ -243,7 +243,7 @@ public:
   DbFieldType getType() const { return (DbFieldType)sqltype; }
 };
 
-class SqlApiVarList : public HostVarDescription { 
+class SqlApiVarList : public HostVarDescription {
 public:
   void          *sqldata;
   short         *sqlind;
@@ -314,7 +314,7 @@ public:
 
 bool operator==(const SqlApiBindProgramId &p1, const SqlApiBindProgramId &p2);
 
-#define SQLAPI_MAXDBNAME   9 
+#define SQLAPI_MAXDBNAME   9
 #define SQLAPI_MAXSTMTSIZE 10000
 #define SQLAPI_MAXHOSTVAR  500
 
@@ -432,13 +432,12 @@ bool sqlapi_bndprogramidfread( FILE *bndfile,       SqlApiBindProgramId &program
 void sqlapi_bndstmtfwrite(     FILE *bndfile, const SqlApiBindStmt      &bndstmt  );
 bool sqlapi_bndstmtfread(      FILE *bndfile,       SqlApiBindStmt      &bndstmt  );
 
-
 #define DBASEROOT "c:/mytools2015/DBase/"
 #define DBASELIB DBASEROOT "Lib/"
 
 #define DBASE_VERSION DBASELIB _PLATFORM_ _CONFIGURATION_
 
 #ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " DBASELIB_VERSION)
+#pragma message("link with " DBASE_VERSION)
 #endif
 #pragma comment(lib, DBASE_VERSION "SqlUtil.lib")

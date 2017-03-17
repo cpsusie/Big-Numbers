@@ -906,7 +906,7 @@ TupleField operator!(const TupleField &v) {
 TupleField operator>(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
   case  1: return 1;
-  case  0: 
+  case  0:
   case -1: return 0;
   }
   return TupleField();
@@ -916,16 +916,16 @@ TupleField operator>=(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
   case  1:
   case  0: return 1;
-  case -1: return 0; 
+  case -1: return 0;
   }
   return TupleField();
 }
 
 TupleField operator<(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
-  case  1: 
+  case  1:
   case  0: return 0;
-  case -1: return 1; 
+  case -1: return 1;
   }
   return TupleField();
 }
@@ -934,7 +934,7 @@ TupleField operator<=(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
   case  1: return 0;
   case  0:
-  case -1: return 1; 
+  case -1: return 1;
   }
   return TupleField();
 }
@@ -943,7 +943,7 @@ TupleField operator==(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
   case  1: return 0;
   case  0: return 1;
-  case -1: return 0; 
+  case -1: return 0;
   }
   return TupleField();
 }
@@ -952,7 +952,7 @@ TupleField operator!=(const TupleField &tf1, const TupleField &tf2) {
   switch(compare(tf1,tf2)) {
   case  1: return 1;
   case  0: return 0;
-  case -1: return 1; 
+  case -1: return 1;
   }
   return TupleField();
 }
@@ -968,7 +968,7 @@ TupleField concat(const TupleField &tf1, const TupleField &tf2) {
 }
 
 // assume both tf1 and tf2 is defined and getMainType(tf1.getType()) == getMainType(tf2.getType()) == MAINTYPE_NUMERIC
-static int compareNumeric(const TupleField &tf1, const TupleField &tf2) { 
+static int compareNumeric(const TupleField &tf1, const TupleField &tf2) {
   switch(tf1.getType()) {
   case DBTYPE_INT64  :
   case DBTYPE_INT64N :

@@ -27,14 +27,14 @@ void Database::sysTabUserInsert(const String &username, const String &password) 
 }
 
 void Database::sysTabReadUser(const String &username, SysTableUserData &userrec) const {
-  
+
   DataFile datafile(  *this, SYSTEM_USERDATA_FNAME, DBFMODE_READONLY);
   KeyFile  indexfile( *this, SYSTEM_USERKEY_FNAME , DBFMODE_READONLY);
 
   KeyFileDefinition keydef(indexfile);
   KeyType userkey;
   keydef.put(userkey, 0, username );
-  bool found = indexfile.searchMin( RELOP_EQ, userkey, 1); 
+  bool found = indexfile.searchMin( RELOP_EQ, userkey, 1);
   if(!found) {
     throwSqlError(SQL_INVALID_USERNAME,_T("User <%s> doesn't exist"),username.cstr());
   }

@@ -63,8 +63,8 @@ TuplePrintDefinition::TuplePrintDefinition(const HostVarDescriptionList &desc) {
     const HostVarDescription &h = desc[i];
     UINT w;
     switch(h.getType()) {
-    case DBTYPE_CSTRING : 
-    case DBTYPE_WSTRING : 
+    case DBTYPE_CSTRING :
+    case DBTYPE_WSTRING :
     case DBTYPE_VARCHAR :
       w = h.sqllen + 2; // remember " in toString
       break;
@@ -91,7 +91,7 @@ bool operator==(const Tuple &t1, const Tuple &t2) {
       return false;
     }
   }
-  return true; 
+  return true;
 }
 
 bool operator!=(const Tuple &t1, const Tuple &t2) {

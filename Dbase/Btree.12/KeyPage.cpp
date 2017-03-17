@@ -22,51 +22,49 @@ void KeyPageInfo::init(USHORT keySize) {
   }
 }
 
-#define ISLEAFPAGE(page) (page)->m_h.m_leafPage
- 
+String KeyPageInfo::toString() const {
+  return format(_T("KeyPageInfo:\n"
+                   "   KeySize          : %u\n"
+                   "   HalfMaxKeyCount  : %u\n"
+                   "   MaxKeyCount      : %u\n"
+                   "   ItemSize         : %u\n"
+                   "   HalfMaxItemCount : %u\n"
+                   "   MaxItemCount     : %u\n"
+                   "   PageSize         : %u\n")
+               ,m_keySize
+               ,m_halfMaxKeyCount
+               ,m_maxKeyCount
+               ,m_itemSize
+               ,m_halfMaxItemCount
+               ,m_maxItemCount
+               ,m_pageSize
+               );
+}
+
+String KeyType::toString(const KeyFileDefinition &keydef) const {
+  return keydef.sprintf(*this);
+}
+
+String KeyPageHeader::toString() const {
+  return format(_T("KeyPageHeader:%s %u items"), m_leafPage?_T("Leaf   "):_T("Nonleaf"), m_itemCount);
+}
+
+String KeyPageItem::toString(const KeyFileDefinition &keydef) const {
+  return format(_T("KeyPageItem:<Key:%s, Child:%s>"), m_key.toString(keydef).cstr(), ::toString(m_child).cstr());
+}
+
 KeyPage::KeyPage(USHORT keySize) : m_pageInfo(keySize) {
-  setItemCount(0);
+  init(false);
 }
 
 KeyPage::KeyPage(const KeyPageInfo &pageInfo) : m_pageInfo(pageInfo) {
-  setItemCount(0);
+  init(false);
 }
 
-void KeyPage::init() {
+void KeyPage::init(bool leafPage) {
   memset(m_items,0,sizeof(m_items));
-  memset(&m_h,0,sizeof(m_h));
-}
-
-void KeyPage::setLeafPage(bool leafPage) {
-  m_h.m_leafPage = leafPage ? 1 : 0;
-}
-
-bool KeyPage::isLeafPage() const {
-  return ISLEAFPAGE(this) ? true : false;
-}
-
-UINT KeyPage::getItemSize() const {
-  return m_pageInfo.m_itemSize;
-}
-
-UINT KeyPage::getKeySize() const {
-  return m_pageInfo.m_keySize;
-}
-
-UINT KeyPage::getHalfSize() const {
-  return ISLEAFPAGE(this) ? m_pageInfo.m_halfMaxKeyCount : m_pageInfo.m_halfMaxItemCount;
-}
-
-UINT KeyPage::getPageSize() const {
-  return m_pageInfo.m_pageSize;
-}
-
-UINT KeyPage::getMaxItemCount() const {
-  return ISLEAFPAGE(this) ? m_pageInfo.m_maxKeyCount : m_pageInfo.m_maxItemCount;
-}
-
-USHORT KeyPage::getItemCount() const { 
-  return m_h.m_itemCount;
+  m_header.m_itemCount = 0;
+  m_header.m_leafPage  = leafPage ? 1 : 0;
 }
 
 #define NONLEAFPAGE_ITEM(page,i) ((KeyPageItem*)(&((page)->m_items[sizeof(DbAddrFileFormat) + (page)->m_pageInfo.m_itemSize * ((i)-1)])))
@@ -74,13 +72,13 @@ USHORT KeyPage::getItemCount() const {
 
 void KeyPage::setItem(UINT i, const KeyPageItem &t) {
 #ifdef _DEBUG
-  if(i < 1 || i > m_h.m_itemCount) {
+  if(i < 1 || i > m_header.m_itemCount) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getItem:Invalid argument:%d. Itemcount=%d\n")
-                                 ,i, m_h.m_itemCount);
+                                 ,i, m_header.m_itemCount);
   }
 #endif
 
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
 #ifdef _DEBUG
     if(t.m_child != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setItem in leafpage with non-null child"));
@@ -94,13 +92,13 @@ void KeyPage::setItem(UINT i, const KeyPageItem &t) {
 
 KeyPageItem &KeyPage::getItem(UINT i, KeyPageItem &t) const {
 #ifdef _DEBUG
-  if(i < 1 || i > m_h.m_itemCount) {
+  if(i < 1 || i > m_header.m_itemCount) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getItem:Invalid argument:%d. Itemcount=%d\n")
-                                 ,i, m_h.m_itemCount);
+                                 ,i, m_header.m_itemCount);
   }
 #endif
 
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     memcpy(&t.m_key, &getKey(i), getKeySize());
     t.m_child = DB_NULLADDR;
   } else {
@@ -114,7 +112,7 @@ KeyPageItem &KeyPage::getLastItem(KeyPageItem &t)  const {
 }
 
 KeyType &KeyPage::setKey(UINT i, const KeyType &key) {
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     return *(KeyType*)memcpy(LEAFPAGE_KEY(this, i), &key, m_pageInfo.m_keySize);
   } else {
     return *(KeyType*)memcpy(&NONLEAFPAGE_ITEM(this, i)->m_key, &key, m_pageInfo.m_keySize);
@@ -122,15 +120,11 @@ KeyType &KeyPage::setKey(UINT i, const KeyType &key) {
 }
 
 const KeyType &KeyPage::getKey(UINT i) const  {
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     return *LEAFPAGE_KEY(this,i);
   } else {
     return NONLEAFPAGE_ITEM(this,i)->m_key;
   }
-}
-
-const KeyType &KeyPage::getLastKey() const  {
-  return getKey(getItemCount());
 }
 
 void KeyPage::copyItems(int from, int to, const KeyPage &src, int start) {
@@ -140,7 +134,7 @@ void KeyPage::copyItems(int from, int to, const KeyPage &src, int start) {
   }
 
 #ifdef _DEBUG
-  if(ISLEAFPAGE(this) != ISLEAFPAGE(&src)) {
+  if(isLeafPage() != src.isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::copyItems:copying items from %s to %s")
                                  ,src.getTypeStr(), getTypeStr());
   }
@@ -154,7 +148,7 @@ void KeyPage::copyItems(int from, int to, const KeyPage &src, int start) {
   }
 #endif
 
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     memmove(LEAFPAGE_KEY(this, from), LEAFPAGE_KEY(&src, start), amount * m_pageInfo.m_keySize);
   } else {
     memmove(NONLEAFPAGE_ITEM(this, from), NONLEAFPAGE_ITEM(&src, start), amount * m_pageInfo.m_itemSize);
@@ -168,7 +162,7 @@ void KeyPage::setItemCount(UINT value) {
                                  ,value, getMaxItemCount());
   }
 #endif
-  m_h.m_itemCount = value;
+  m_header.m_itemCount = value;
 }
 
 void KeyPage::itemCountIncr() {
@@ -177,40 +171,40 @@ void KeyPage::itemCountIncr() {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::itemCountIncr:Page is full"));
   }
 #endif
-  m_h.m_itemCount++;
+  m_header.m_itemCount++;
 }
 
 bool KeyPage::itemCountDecr() {
 #ifdef _DEBUG
-  if(m_h.m_itemCount == 0) {
+  if(m_header.m_itemCount == 0) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::itemCountDecr:Itemcount=0"));
   }
 #endif
-  return --m_h.m_itemCount < getHalfSize();
+  return --m_header.m_itemCount < getHalfSize();
 }
 
-void KeyPage::insertItem(UINT i, const KeyPageItem &t) { 
+void KeyPage::insertItem(UINT i, const KeyPageItem &t) {
 #ifdef _DEBUG
   if(isFull()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::insertItem:Page is full"));
   }
 #endif
 
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
 #ifdef _DEBUG
     if(t.m_child != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::insertItem in leafpage with non-null-child"));
     }
 #endif
     itemCountIncr();
-    if(i < m_h.m_itemCount) {
-      memmove(LEAFPAGE_KEY(this, i+1), LEAFPAGE_KEY(this, i), m_pageInfo.m_keySize * (m_h.m_itemCount - i));
+    if(i < m_header.m_itemCount) {
+      memmove(LEAFPAGE_KEY(this, i+1), LEAFPAGE_KEY(this, i), m_pageInfo.m_keySize * (m_header.m_itemCount - i));
     }
     setKey(i, t.m_key);
   } else {
     itemCountIncr();
-    if(i < m_h.m_itemCount) {
-      memmove(NONLEAFPAGE_ITEM(this, i+1), NONLEAFPAGE_ITEM(this, i), m_pageInfo.m_itemSize * (m_h.m_itemCount - i));
+    if(i < m_header.m_itemCount) {
+      memmove(NONLEAFPAGE_ITEM(this, i+1), NONLEAFPAGE_ITEM(this, i), m_pageInfo.m_itemSize * (m_header.m_itemCount - i));
     }
     setItem(i, t);
   }
@@ -218,26 +212,22 @@ void KeyPage::insertItem(UINT i, const KeyPageItem &t) {
 
 bool KeyPage::removeItem(UINT i) {
 #ifdef _DEBUG
-  if(m_h.m_itemCount == 0) {
+  if(m_header.m_itemCount == 0) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::removeItem:Page is empty"));
   }
-  if(i > m_h.m_itemCount) {
-    throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::removeItem: Invalid argument. i=%d. m_itemCount=%d"), i, m_h.m_itemCount);
+  if(i > m_header.m_itemCount) {
+    throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::removeItem: Invalid argument. i=%d. m_itemCount=%d"), i, m_header.m_itemCount);
   }
 #endif
 
-  if(i < m_h.m_itemCount) {
-    if(ISLEAFPAGE(this)) {
-      memmove(LEAFPAGE_KEY(this, i), LEAFPAGE_KEY(this, i+1), m_pageInfo.m_keySize * (m_h.m_itemCount - i));
+  if(i < m_header.m_itemCount) {
+    if(isLeafPage()) {
+      memmove(LEAFPAGE_KEY(this, i), LEAFPAGE_KEY(this, i+1), m_pageInfo.m_keySize * (m_header.m_itemCount - i));
     } else {
-      memmove(NONLEAFPAGE_ITEM(this, i), NONLEAFPAGE_ITEM(this, i+1), m_pageInfo.m_itemSize * (m_h.m_itemCount - i));
+      memmove(NONLEAFPAGE_ITEM(this, i), NONLEAFPAGE_ITEM(this, i+1), m_pageInfo.m_itemSize * (m_header.m_itemCount - i));
     }
   }
   return itemCountDecr();
-}
-
-bool KeyPage::isFull() const {
-  return m_h.m_itemCount >= getMaxItemCount();
 }
 
 void KeyPage::setChild(UINT i, KeyPageAddr addr) {
@@ -247,7 +237,7 @@ void KeyPage::setChild(UINT i, KeyPageAddr addr) {
                                  ,i, getMaxItemCount());
   }
 #endif
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
 #ifdef _DEBUG
     if(addr != DB_NULLADDR) {
       throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setChild to non-null in leafpage"));
@@ -271,11 +261,7 @@ KeyPageAddr KeyPage::getChild(UINT i) const {
   }
 #endif
 
-  return ISLEAFPAGE(this) ? DB_NULLADDR : (i ? NONLEAFPAGE_ITEM(this,i)->m_child : getP0());
-}
-
-KeyPageAddr KeyPage::getLastChild() const {
-  return getChild(m_h.m_itemCount);
+  return isLeafPage() ? DB_NULLADDR : (i ? NONLEAFPAGE_ITEM(this,i)->m_child : getP0());
 }
 
 KeyPageAddr KeyPage::getNextFree() const {
@@ -283,14 +269,13 @@ KeyPageAddr KeyPage::getNextFree() const {
 }
 
 void KeyPage::setNextFree(KeyPageAddr addr) {
-  init();
-  setLeafPage(false);
+  init(false);
   setP0(addr);
 }
 
 KeyPageAddr KeyPage::getP0() const {
 #ifdef _DEBUG
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::getP0. Page is a leafPage"));
   }
 #endif
@@ -301,7 +286,7 @@ KeyPageAddr KeyPage::getP0() const {
 
 void KeyPage::setP0(const KeyPageAddr &addr) {
 #ifdef _DEBUG
-  if(ISLEAFPAGE(this)) {
+  if(isLeafPage()) {
     throwSqlError(SQL_FATAL_ERROR,_T("KeyPage::setP0. Page is a leafPage"));
   }
 #endif
@@ -311,8 +296,8 @@ void KeyPage::setP0(const KeyPageAddr &addr) {
   memcpy(m_items, &addrff, sizeof(DbAddrFileFormat));
 }
 
-/* Returns min index of page.item where keynCmp(item,key,fieldCount) >= 0. 
-   If none returns itemcount+1 
+/* Returns min index of page.item where keynCmp(item,key,fieldCount) >= 0.
+   If none returns itemcount+1
 */
 int KeyPage::searchMinIndex(const KeyType &key, const KeyFileDefinition &keydef, UINT fieldCount) {
   int l = 1;
@@ -328,8 +313,8 @@ int KeyPage::searchMinIndex(const KeyType &key, const KeyFileDefinition &keydef,
   return r;
 }
 
-/* Returns max index of page.item where keynCmp(item,key,fieldCount) <= 0. 
-   If none returns 0 
+/* Returns max index of page.item where keynCmp(item,key,fieldCount) <= 0.
+   If none returns 0
 */
 int KeyPage::searchMaxIndex(const KeyType &key, const KeyFileDefinition &keydef, UINT fieldCount) {
   int l = 1;
@@ -347,5 +332,22 @@ int KeyPage::searchMaxIndex(const KeyType &key, const KeyFileDefinition &keydef,
 }
 
 const TCHAR *KeyPage::getTypeStr() const {
-  return ISLEAFPAGE(this) ? _T("leafpage") : _T("non leafpage");
+  return isLeafPage() ? _T("leafpage") : _T("non leafpage");
+}
+
+String KeyPage::toString(const KeyFileDefinition &keydef) const {
+  String result = m_header.toString();
+  if(!isLeafPage()) {
+    result += format(_T("  P0  :%8s\n"), ::toString(getP0()).cstr());
+  }
+  for(UINT i = 1; i <= getItemCount(); i++) {
+    if(isLeafPage()) {
+      result += format(_T("  %3d:%s\n"), i, getKey(i).toString(keydef).cstr());
+    } else {
+      KeyPageItem item;
+      getItem(i, item);
+      result += format(_T("  P%-3d:%8s:%s\n"), i, ::toString(item.m_child).cstr(), item.m_key.toString(keydef).cstr());
+    }
+  }
+  return result;
 }

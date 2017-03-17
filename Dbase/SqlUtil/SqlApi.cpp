@@ -29,7 +29,7 @@ SqlApiCom::SqlApiCom(SqlApiCallCode             apicall  ,
   m_apicall   = apicall;
   m_apiopt    = apiopt;
   m_programid = programid;
-  m_ca        = ca; 
+  m_ca        = ca;
 }
 
 static BufferedSocket *sqlpipe = NULL;
@@ -209,10 +209,10 @@ static void execute_close(const SqlApiBindProgramId &programid,
   cca = com.m_ca;
 }
 
-static void execute_fetch(const SqlApiBindProgramId &programid, 
+static void execute_fetch(const SqlApiBindProgramId &programid   ,
                           int                        opt         ,
                           int                        out         ,
-                          SqlApiVarList             *varlist     , 
+                          SqlApiVarList             *varlist     ,
                           sqlca                     &cca) {
   (*sqlpipe) << SqlApiCom(SQL_CALL_FETCH, opt, programid);
   sqlpipe->send();
@@ -270,7 +270,7 @@ void sqlapi_call(int                    call     , // SqlApiCallCode
     case SQL_CALL_EXECUTE   :
       execute(bndprogramid, opt, in, out, varlist,cca);
       break;
-    
+
     default:
       throwSqlError(SQL_ERROR_INVALID_APICALL, _T("Invalid apicall (%s,%d,%d)"), bndprogramid. fileName, call, opt);
       break;
@@ -281,10 +281,10 @@ void sqlapi_call(int                    call     , // SqlApiCallCode
 }
 
 void sqlapi_bind(    const SqlApiBindProgramId   &programid,
-                     const SqlApiBindStmt        &bndstmt  , 
+                     const SqlApiBindStmt        &bndstmt  ,
                      StringArray                 &errmsg,
                      sqlca                       &cca ) {
-  
+
   cca.init();
 
   try {

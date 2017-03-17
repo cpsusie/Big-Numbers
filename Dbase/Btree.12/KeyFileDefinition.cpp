@@ -501,9 +501,9 @@ int KeyFileDefinition::keynCmp(const KeyType &key1, const KeyType &key2, UINT fi
   for(UINT i = 0; i < fieldCount; i++) {
     const KeyField &field = m_field[i];
     switch(field.getType()) {
-    case DBTYPE_CHARN  : 
+    case DBTYPE_CHARN  :
       CMPNULLS;
-    case DBTYPE_CHAR   : 
+    case DBTYPE_CHAR   :
       CMPPRIMITIVE(char);
       break;
 

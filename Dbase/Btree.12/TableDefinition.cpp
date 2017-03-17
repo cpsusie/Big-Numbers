@@ -500,8 +500,7 @@ String ColumnDefinition::toString() const {
                        , m_nullAllowed ? _T("NULL") : _T("NOT NULL")
                        , m_offset
                        , m_len
-                       
-    );
+                       );
   if(m_defaultValue.length() > 0) {
     result += _T(" <") + m_defaultValue + _T(">");
   }

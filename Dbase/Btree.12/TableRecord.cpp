@@ -245,7 +245,7 @@ void TableRecord::read(DbAddr addr, const FieldSet &fields) {
         if(vcAddr == DB_NULLADDR) {
           throwSqlError(SQL_DBCORRUPTED,_T("Datafile <%s> corrupted"),m_tableInfo.getFileName().cstr() );
         }
-        varchar vc;          
+        varchar vc;
         datafile.readVarChar(vcAddr,vc);
         putVarChar(col,vc);
       }

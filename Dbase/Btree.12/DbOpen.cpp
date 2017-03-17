@@ -12,7 +12,7 @@ Database::Database(const String &dbName) {
   if(!searchDbName( dbName, dbdef)) {
     throwSqlError(SQL_DB_NOT_EXIST,_T("Database <%s> doesn't exist"),dbName.cstr());
   }
-    
+
   m_dbName = dbdef.m_dbName;
   m_path   = dbdef.m_path;
   for(int i = 0; i < 256; i++) {
@@ -30,7 +30,7 @@ Database::Database(const String &dbName) {
 
 void Database::close() {
   if(m_logFile) {
-    if(m_logFile->inTmf()) {
+    if(m_logFile->inTMF()) {
       try {
         trabort();
       } catch(sqlca) {
@@ -49,21 +49,21 @@ Database::~Database() {
 }
 
 void Database::trbegin() {
-  if(m_logFile->inTmf()) {
+  if(m_logFile->inTMF()) {
     throwSqlError(SQL_NESTED_TRANSACTION,_T("trbegin:tmf already opened"));
   }
   m_logFile->begin();
 }
 
 void Database::trcommit() {
-  if(!m_logFile->inTmf()) {
+  if(!m_logFile->inTMF()) {
     throwSqlError(SQL_NO_TRANSACTION,_T("trcommit:No active tmf"));
   }
   m_logFile->commit();
 }
 
 void Database::trabort() {
-  if(!m_logFile->inTmf()) {
+  if(!m_logFile->inTMF()) {
     throwSqlError(SQL_NO_TRANSACTION,_T("trabort:No active tmf"));
   }
   m_logFile->abort();

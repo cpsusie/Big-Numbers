@@ -9,7 +9,7 @@ static String datansprintf(DataFile &dbf, RecordType &rec, const TableInfo &tabl
     String tmp;
     switch(tableInfo.getColumn(i).getType()) {
     case DBTYPE_VARCHARN:
-      if(!tableInfo.isDefined(rec,i)) { 
+      if(!tableInfo.isDefined(rec,i)) {
         tmp = _T("null");
         break;
       }

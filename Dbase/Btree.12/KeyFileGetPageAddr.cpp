@@ -14,7 +14,7 @@ KeyPageAddr KeyFile::getPageAddr(const KeyType &key) {
     while(l < r) {
       const int m = (l + r)/2;
       if(m_keydef.keyCmp(page.getKey(m),key) <= 0) {
-        l = m + 1; 
+        l = m + 1;
       } else {
         r = m;
       }

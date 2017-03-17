@@ -90,7 +90,7 @@ void Database::indexCreate(IndexDefinition &indexDef) {
       throwSqlError(SQL_INVALID_INDEXNAME,_T("Invalid indexname:<%s>"),indexDef.m_indexName.cstr());
     }
   }
-    
+
   if(DbFile::exist(indexDef.m_fileName)) {
     throwSqlError(SQL_FILE_ALREADY_EXIST,_T("File <%s> already exist"),indexDef.m_fileName.cstr());
   }
@@ -115,7 +115,7 @@ void Database::indexCreate(IndexDefinition &indexDef) {
     throwSqlError(SQL_INDEX_ALREADY_EXIST,_T("Index <%s> already exist"),indexDef.m_indexName.cstr());
   }
 
-  if(!inTmf()) {
+  if(!inTMF()) {
     throwSqlError(SQL_NO_TRANSACTION,_T("indexCreate:No active tmf"));
   }
 

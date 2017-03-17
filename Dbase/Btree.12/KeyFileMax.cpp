@@ -5,7 +5,7 @@
 */
 
 // returns max of dbf.key where keynCmp(dbf.key,key,fieldCount) <= 0
-// false if none found 
+// false if none found
 bool KeyFile::pageSearchMaxLE(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
 
   if(addr == DB_NULLADDR) {
@@ -63,7 +63,7 @@ bool KeyFile::pageSearchMaxLT(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
 bool KeyFile::pageSearchLast(KeyPageAddr addr, KeyType &key) {
   KeyPage page(m_pageInfo);
   bool ret;
-  
+
   for(ret = false; addr != DB_NULLADDR; addr = page.getLastChild()) {
     readPage(addr, page);
     key = page.getLastKey();
@@ -105,7 +105,7 @@ bool KeyFile::searchMax(RelationType relop, KeyType &key, UINT fieldCount) {
     } else {
       return false;
     }
-  
+
   case RELOP_LE:
     if(fieldCount == 0) {
       return pageSearchLast(header.m_root, key);

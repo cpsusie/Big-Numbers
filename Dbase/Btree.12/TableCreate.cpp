@@ -2,8 +2,8 @@
 
 ULONG Database::getMaxTableSequenceNo() const {
   KeyFile        index(*this, SYSTEM_TABLEKEY2_FNAME, DBFMODE_READONLY); // find max sequenceno
-  KeyCursor cursor(index, 
-                   RELOP_TRUE, NULL, 0, 
+  KeyCursor cursor(index,
+                   RELOP_TRUE, NULL, 0,
                    RELOP_TRUE, NULL, 0,
                    SORT_DESCENDING);
   KeyType key;
@@ -24,7 +24,7 @@ void Database::tableCreate(const TableDefinition &tableDef) {
   }
 
   String fileName = tableDef.getFileName();
-  
+
   if(fileName.length() == 0) {
     fileName = getNewFileName("DAT");
   }
@@ -57,7 +57,7 @@ void Database::tableCreate(const TableDefinition &tableDef) {
   sysTabTableInsert(tmpname,
                     fileName,
                     sequenceNo,
-                    TABLETYPE_USER, 
+                    TABLETYPE_USER,
                     tableDef.getRecordSize()
                     );
 

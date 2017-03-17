@@ -41,7 +41,7 @@ IndexDefinition::IndexDefinition(const SysTableIndexData &indexData) {
   m_fileName  = toUpperCase(indexData.m_fileName);
   m_indexType = (IndexType)indexData.m_indexType;
 
-  int i = 0; 
+  int i = 0;
   for(Tokenizer tok(indexData.m_columns,_T(" ")); i < indexData.m_colCount && tok.hasNext(); ) {
     m_columns.add(IndexColumn(tok.getInt(),indexData.m_ascending[i++] == 'A'));
   }

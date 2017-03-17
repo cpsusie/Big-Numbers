@@ -27,7 +27,7 @@ void Database::sysTabCodeDelete(const SysTableCodeKey &key) {
   keydef.put(keyt,0,String(key.m_filename));
   keydef.put(keyt,1,key.m_nr);
 
-  bool found = indexfile.searchMin(RELOP_EQ, keyt, 2 ); 
+  bool found = indexfile.searchMin(RELOP_EQ, keyt, 2 );
                                           /* search on first field */
   if(!found) {
     throwSqlError(SQL_NOT_FOUND,_T("Code <%s,%d> not found"),key.m_filename,key.m_nr);

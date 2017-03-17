@@ -44,7 +44,7 @@ void FreePage::itemCountDecr() {
   m_itemCount--;
 }
 
-void FreePage::insertItem(UINT i, const FreePageItem &t) { 
+void FreePage::insertItem(UINT i, const FreePageItem &t) {
   if(m_itemCount >= FREEPAGEMAXCOUNT) {
     throwSqlError(SQL_FATAL_ERROR,_T("FreePage::insertItem:Page is already full"));
   }

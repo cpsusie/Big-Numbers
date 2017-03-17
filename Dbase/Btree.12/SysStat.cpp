@@ -14,7 +14,7 @@ void Database::sysTabStatInsert(const SysTableStatData &stat) {
   KeyFileDefinition keydef(indexfile);
   KeyType key;
   keydef.put(key,0,String(rec.m_indexName));
-  bool found = indexfile.searchMin( RELOP_EQ, key, 1); 
+  bool found = indexfile.searchMin( RELOP_EQ, key, 1);
 
   if(found) {
     datafile.update(keydef.getRecordAddr(key),&rec);
@@ -35,7 +35,7 @@ void Database::sysTabStatDelete(const String &indexName) {
   KeyType           key;
   KeyFileDefinition keydef(indexfile);
   keydef.put(key,0,toUpperCase(indexName));
-  bool found = indexfile.searchMin( RELOP_EQ, key, 1); 
+  bool found = indexfile.searchMin( RELOP_EQ, key, 1);
 
   if(found) {
     datafile.remove(keydef.getRecordAddr(key));
@@ -51,7 +51,7 @@ bool Database::sysTabStatRead(const String &indexName, SysTableStatData &stat) c
   KeyType key;
   KeyFileDefinition keydef(indexfile);
   keydef.put(key,0,toUpperCase(indexName));
-  bool found = indexfile.searchMin( RELOP_EQ, key, 1); 
+  bool found = indexfile.searchMin( RELOP_EQ, key, 1);
 
   if(found) {
     datafile.readRecord(keydef.getRecordAddr(key),&stat, sizeof(SysTableStatData));
@@ -64,7 +64,7 @@ void Database::updateStatistics( const IndexDefinition &indexDef) {
 
   KeyFileDefinition keydef(indexfile);
   KeyCursor cursor(indexfile,
-                   RELOP_TRUE, NULL, 0, 
+                   RELOP_TRUE, NULL, 0,
                    RELOP_TRUE, NULL, 0,
                    SORT_ASCENDING
                   );
@@ -125,7 +125,7 @@ void Database::updateStatistics(const String &tableName) {
 void Database::updateStatistics() {
   KeyFile  indexfile( *this, SYSTEM_TABLEKEY1_FNAME, DBFMODE_READONLY);
   KeyCursor cursor(indexfile,
-                   RELOP_TRUE, NULL, 0, 
+                   RELOP_TRUE, NULL, 0,
                    RELOP_TRUE, NULL, 0,
                    SORT_ASCENDING
                   );
@@ -157,7 +157,7 @@ double SysTableStatData::selectivity(int fieldcount) const {
   case 2 : return m_field2;
   case 3 : return m_field3;
   case 4 : return m_field4;
-  default: 
+  default:
     if(m_field4 == 1)
       return pow(0.3333,fieldcount);
     else if(m_field4 == 0) // should not happen,

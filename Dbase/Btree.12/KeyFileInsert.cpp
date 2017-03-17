@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
-void KeyFile::pageInsert(KeyPageAddr    a  , 
-                         const KeyType &key, 
+void KeyFile::pageInsert(KeyPageAddr    a  ,
+                         const KeyType &key,
                          bool          &h  ,
                          KeyPageItem   &v  ) {
   if(a == DB_NULLADDR) {
@@ -17,7 +17,7 @@ void KeyFile::pageInsert(KeyPageAddr    a  ,
     while(l < r) {
       const int m = (l + r)/2;
       if(m_keydef.keyCmp(apage.getKey(m),key) <= 0) {
-        l = m + 1; 
+        l = m + 1;
       } else {
         r = m;
       }
@@ -44,8 +44,7 @@ void KeyFile::pageInsert(KeyPageAddr    a  ,
           throwSqlError(SQL_FETCHNEWPAGE_FAILED, _T("Cannot fetch new page in keyfile %s"), getName().cstr());
         }
         KeyPage bpage(m_pageInfo);
-        bpage.init();
-        bpage.setLeafPage(apage.isLeafPage());
+        bpage.init(apage.isLeafPage());
         const int halfSize = bpage.getHalfSize();
         bpage.setItemCount(halfSize); // will receive this amount of keyvalues
 
@@ -86,8 +85,7 @@ void KeyFile::insert(const KeyType &key) {
 
   if(h) { // we got item u back. Allocate new rootpage
     KeyPage newRootPage(m_pageInfo);
-    newRootPage.init();
-    newRootPage.setLeafPage(header.m_root == DB_NULLADDR);
+    newRootPage.init(header.m_root == DB_NULLADDR);
     newRootPage.setItemCount(1);
     newRootPage.setChild(0, header.m_root);
     newRootPage.setItem(1, u);

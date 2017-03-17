@@ -13,13 +13,13 @@ HostVarDescription::HostVarDescription(DbFieldType type, unsigned long len) {
 }
 
 Packer &operator<<(Packer &p, const HostVarDescription &h) {
-  p << h.sqltype 
+  p << h.sqltype
     << h.sqllen;
   return p;
 }
 
 Packer &operator>>(Packer &p, HostVarDescription &h) {
-  p >> h.sqltype 
+  p >> h.sqltype
     >> h.sqllen;
   return p;
 }
@@ -141,7 +141,7 @@ Packer &operator>>(Packer &p, HostVarList &h) {
     SqlApiVarList *v = h.m_hostvar;
     for(unsigned int i = 0; i < h.m_n; i++, v++) {
       v->sqlind = new short;
-      p >>  v->sqltype 
+      p >>  v->sqltype
         >>  v->sqllen
         >> *v->sqlind;
       v->sqldata = (void*)new char[v->sqllen];

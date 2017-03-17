@@ -16,7 +16,7 @@ void Database::tableDrop(const String &tableName) {
   KeyType tabkey;
   keydef1.put(tabkey,0,tmpname);
 
-  bool found = indexfile1.searchMin(RELOP_EQ, tabkey, 1 ); 
+  bool found = indexfile1.searchMin(RELOP_EQ, tabkey, 1 );
                                           /* search on first field */
   if(!found) {
     throwSqlError(SQL_INVALID_TABLENAME,_T("Table <%s> doesn't exist"), tableName.cstr() );

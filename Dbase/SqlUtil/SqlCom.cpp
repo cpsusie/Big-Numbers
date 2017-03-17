@@ -3,8 +3,8 @@
 #include <assert.h>
 #include "SqlCom.h"
 
-Packer &operator<<(Packer &p, const SqlApiCreateDb &crdb) { 
-  p << crdb.dbname 
+Packer &operator<<(Packer &p, const SqlApiCreateDb &crdb) {
+  p << crdb.dbname
     << crdb.drive;
   for(int i = 0; i < ARRAYSIZE(crdb.colseq); i++) {
     p << crdb.colseq[i];
@@ -12,8 +12,8 @@ Packer &operator<<(Packer &p, const SqlApiCreateDb &crdb) {
   return p;
 }
 
-Packer &operator>>(Packer &p, SqlApiCreateDb &crdb) { 
-  p >> crdb.dbname 
+Packer &operator>>(Packer &p, SqlApiCreateDb &crdb) {
+  p >> crdb.dbname
     >> crdb.drive;
   for(int i = 0; i < ARRAYSIZE(crdb.colseq); i++) {
     p >> crdb.colseq[i];
@@ -49,14 +49,14 @@ Packer &operator>>(Packer &p, SqlApiCom &com) {
   return p;
 }
 
-Packer &operator<<(Packer &p, const SqlApiBindProgramId &programid) { 
-  p << programid.fileName 
+Packer &operator<<(Packer &p, const SqlApiBindProgramId &programid) {
+  p << programid.fileName
     << programid.Timestamp;
   return p;
 }
 
-Packer &operator>>(Packer &p, SqlApiBindProgramId &programid) { 
-  p >> programid.fileName 
+Packer &operator>>(Packer &p, SqlApiBindProgramId &programid) {
+  p >> programid.fileName
     >> programid.Timestamp;
   return p;
 }

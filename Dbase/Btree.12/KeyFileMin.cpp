@@ -64,7 +64,7 @@ bool KeyFile::pageSearchMinGT(KeyPageAddr addr, KeyType &key, UINT fieldCount) {
 bool KeyFile::pageSearchFirst(KeyPageAddr addr, KeyType &key) {
   KeyPage page(m_pageInfo);
   bool ret;
-  
+
   for(ret = false; addr != DB_NULLADDR; addr = page.getChild(0)) {
     readPage(addr, page);
     key = page.getKey(1);

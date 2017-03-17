@@ -10,44 +10,45 @@ struct DbTypeAttribute {
 };
 
 static DbTypeAttribute DbTypeAttributeList[] = {
-  DBTYPE_UNKNOWN    , MAINTYPE_VOID      ,  4 ,  false , _T("UNKNOWN")   ,
-  DBTYPE_CHAR       , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("CHAR")      ,
-  DBTYPE_CHARN      , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("CHARN")     ,
-  DBTYPE_UCHAR      , MAINTYPE_NUMERIC   ,  3 ,  true  , _T("UCHAR")     ,
-  DBTYPE_UCHARN     , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("UCHARN")    ,
-  DBTYPE_SHORT      , MAINTYPE_NUMERIC   ,  6 ,  true  , _T("SHORT")     ,
-  DBTYPE_SHORTN     , MAINTYPE_NUMERIC   ,  6 ,  true  , _T("SHORTN")    ,
-  DBTYPE_USHORT     , MAINTYPE_NUMERIC   ,  5 ,  true  , _T("USHORT")    ,
-  DBTYPE_USHORTN    , MAINTYPE_NUMERIC   ,  5 ,  true  , _T("USHORTN")   ,
-  DBTYPE_INT        , MAINTYPE_NUMERIC   , 11 ,  true  , _T("INT")       ,
-  DBTYPE_INTN       , MAINTYPE_NUMERIC   , 11 ,  true  , _T("INTN")      ,
-  DBTYPE_UINT       , MAINTYPE_NUMERIC   , 10 ,  true  , _T("UINT")      ,
-  DBTYPE_UINTN      , MAINTYPE_NUMERIC   , 10 ,  true  , _T("UINTN")     ,
-  DBTYPE_LONG       , MAINTYPE_NUMERIC   , 11 ,  true  , _T("LONG")      ,
-  DBTYPE_LONGN      , MAINTYPE_NUMERIC   , 11 ,  true  , _T("LONGN")     ,
-  DBTYPE_ULONG      , MAINTYPE_NUMERIC   , 10 ,  true  , _T("ULONG")     ,
-  DBTYPE_ULONGN     , MAINTYPE_NUMERIC   , 10 ,  true  , _T("ULONGN")    ,
-  DBTYPE_INT64      , MAINTYPE_NUMERIC   , 21 ,  true  , _T("INT64")     ,
-  DBTYPE_INT64N     , MAINTYPE_NUMERIC   , 21 ,  true  , _T("INT64N")    ,
-  DBTYPE_UINT64     , MAINTYPE_NUMERIC   , 20 ,  true  , _T("UINT64")    ,
-  DBTYPE_UINT64N    , MAINTYPE_NUMERIC   , 20 ,  true  , _T("UINT64N")   ,
-  DBTYPE_FLOAT      , MAINTYPE_NUMERIC   , 12 ,  false , _T("FLOAT")     ,
-  DBTYPE_FLOATN     , MAINTYPE_NUMERIC   , 12 ,  false , _T("FLOATN")    ,
-  DBTYPE_DOUBLE     , MAINTYPE_NUMERIC   , 16 ,  false , _T("DOUBLE")    ,
-  DBTYPE_DOUBLEN    , MAINTYPE_NUMERIC   , 16 ,  false , _T("DOUBLEN")   ,
-  DBTYPE_CSTRING    , MAINTYPE_STRING    , 30 ,  false , _T("CSTRING")   ,
-  DBTYPE_CSTRINGN   , MAINTYPE_STRING    , 30 ,  false , _T("CSTRINGN")  ,
-  DBTYPE_WSTRING    , MAINTYPE_STRING    , 30 ,  false , _T("WSTRING")   ,
-  DBTYPE_WSTRINGN   , MAINTYPE_STRING    , 30 ,  false , _T("WSTRINGN")  ,
-  DBTYPE_VARCHAR    , MAINTYPE_VARCHAR   , 30 ,  false , _T("VARCHAR")   ,
-  DBTYPE_VARCHARN   , MAINTYPE_VARCHAR   , 30 ,  false , _T("VARCHARN")  ,
-  DBTYPE_DATE       , MAINTYPE_DATE      , 10 ,  false , _T("DATE")      ,
-  DBTYPE_DATEN      , MAINTYPE_DATE      , 10 ,  false , _T("DATEN")     ,
-  DBTYPE_TIME       , MAINTYPE_TIME      , 10 ,  false , _T("TIME")      ,
-  DBTYPE_TIMEN      , MAINTYPE_TIME      , 10 ,  false , _T("TIMEN")     ,
-  DBTYPE_TIMESTAMP  , MAINTYPE_TIMESTAMP , 19 ,  false , _T("TIMESTAMP") ,
-  DBTYPE_TIMESTAMPN , MAINTYPE_TIMESTAMP , 19 ,  false , _T("TIMESTAMPN"),
-  DBTYPE_DBADDR     , MAINTYPE_NUMERIC   , 10 ,  false , _T("DBADDR")
+  DBTYPE_UNKNOWN    , MAINTYPE_VOID      ,  4 ,  false , _T("UNKNOWN")   ,  //  0
+  DBTYPE_DBADDR     , MAINTYPE_NUMERIC   , 10 ,  false , _T("DBADDR")    ,  //  1
+  DBTYPE_UNKNOWN    , MAINTYPE_VOID      ,  4 ,  false , _T("UNKNOWN")   ,  //  2
+  DBTYPE_CHAR       , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("CHAR")      ,  //  3
+  DBTYPE_CHARN      , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("CHARN")     ,  //  4
+  DBTYPE_UCHAR      , MAINTYPE_NUMERIC   ,  3 ,  true  , _T("UCHAR")     ,  //  5
+  DBTYPE_UCHARN     , MAINTYPE_NUMERIC   ,  4 ,  true  , _T("UCHARN")    ,  //  6
+  DBTYPE_SHORT      , MAINTYPE_NUMERIC   ,  6 ,  true  , _T("SHORT")     ,  //  7
+  DBTYPE_SHORTN     , MAINTYPE_NUMERIC   ,  6 ,  true  , _T("SHORTN")    ,  //  8
+  DBTYPE_USHORT     , MAINTYPE_NUMERIC   ,  5 ,  true  , _T("USHORT")    ,  //  9
+  DBTYPE_USHORTN    , MAINTYPE_NUMERIC   ,  5 ,  true  , _T("USHORTN")   ,  // 10
+  DBTYPE_INT        , MAINTYPE_NUMERIC   , 11 ,  true  , _T("INT")       ,  // 11
+  DBTYPE_INTN       , MAINTYPE_NUMERIC   , 11 ,  true  , _T("INTN")      ,  // 12
+  DBTYPE_UINT       , MAINTYPE_NUMERIC   , 10 ,  true  , _T("UINT")      ,  // 13
+  DBTYPE_UINTN      , MAINTYPE_NUMERIC   , 10 ,  true  , _T("UINTN")     ,  // 14
+  DBTYPE_LONG       , MAINTYPE_NUMERIC   , 11 ,  true  , _T("LONG")      ,  // 15
+  DBTYPE_LONGN      , MAINTYPE_NUMERIC   , 11 ,  true  , _T("LONGN")     ,  // 16
+  DBTYPE_ULONG      , MAINTYPE_NUMERIC   , 10 ,  true  , _T("ULONG")     ,  // 17
+  DBTYPE_ULONGN     , MAINTYPE_NUMERIC   , 10 ,  true  , _T("ULONGN")    ,  // 18
+  DBTYPE_INT64      , MAINTYPE_NUMERIC   , 21 ,  true  , _T("INT64")     ,  // 19
+  DBTYPE_INT64N     , MAINTYPE_NUMERIC   , 21 ,  true  , _T("INT64N")    ,  // 20
+  DBTYPE_UINT64     , MAINTYPE_NUMERIC   , 20 ,  true  , _T("UINT64")    ,  // 21
+  DBTYPE_UINT64N    , MAINTYPE_NUMERIC   , 20 ,  true  , _T("UINT64N")   ,  // 22
+  DBTYPE_FLOAT      , MAINTYPE_NUMERIC   , 12 ,  false , _T("FLOAT")     ,  // 23
+  DBTYPE_FLOATN     , MAINTYPE_NUMERIC   , 12 ,  false , _T("FLOATN")    ,  // 24
+  DBTYPE_DOUBLE     , MAINTYPE_NUMERIC   , 16 ,  false , _T("DOUBLE")    ,  // 25
+  DBTYPE_DOUBLEN    , MAINTYPE_NUMERIC   , 16 ,  false , _T("DOUBLEN")   ,  // 26
+  DBTYPE_CSTRING    , MAINTYPE_STRING    , 30 ,  false , _T("CSTRING")   ,  // 27
+  DBTYPE_CSTRINGN   , MAINTYPE_STRING    , 30 ,  false , _T("CSTRINGN")  ,  // 28
+  DBTYPE_WSTRING    , MAINTYPE_STRING    , 30 ,  false , _T("WSTRING")   ,  // 29
+  DBTYPE_WSTRINGN   , MAINTYPE_STRING    , 30 ,  false , _T("WSTRINGN")  ,  // 30
+  DBTYPE_VARCHAR    , MAINTYPE_VARCHAR   , 30 ,  false , _T("VARCHAR")   ,  // 31
+  DBTYPE_VARCHARN   , MAINTYPE_VARCHAR   , 30 ,  false , _T("VARCHARN")  ,  // 32
+  DBTYPE_DATE       , MAINTYPE_DATE      , 10 ,  false , _T("DATE")      ,  // 33
+  DBTYPE_DATEN      , MAINTYPE_DATE      , 10 ,  false , _T("DATEN")     ,  // 34
+  DBTYPE_TIME       , MAINTYPE_TIME      , 10 ,  false , _T("TIME")      ,  // 35
+  DBTYPE_TIMEN      , MAINTYPE_TIME      , 10 ,  false , _T("TIMEN")     ,  // 36
+  DBTYPE_TIMESTAMP  , MAINTYPE_TIMESTAMP , 19 ,  false , _T("TIMESTAMP") ,  // 37
+  DBTYPE_TIMESTAMPN , MAINTYPE_TIMESTAMP , 19 ,  false , _T("TIMESTAMPN"),  // 38
 };
 
 class DbTypeNameHashMap : public StrHashMap<int> {
