@@ -1,27 +1,27 @@
 #include "stdafx.h"
 #include <ByteMemoryStream.h>
 
-void VirtualCode::dumpconst(FILE *f, unsigned int addr) const {
+void VirtualCode::dumpconst(FILE *f, UINT addr) const {
   TupleField v;
   v = getConst(addr);
   v.dump(f);
-  fprintf(f,"\n");
+  _ftprintf(f,_T("\n"));
 }
 
 void VirtualCode::dump(FILE *f) const {
   Instruction ins;
 //  hexdump((void*)m_code,20,stdout);
-  for(const unsigned char *p = m_code; p < m_code + m_head.m_dataOffset; p += ins.size()) {
+  for(const BYTE *p = m_code; p < m_code + m_head.m_dataOffset; p += ins.size()) {
     memcpy(&ins,p,sizeof(ins));
     VirtualOpCode opcode = ins.opcode();
-    fprintf(f,"%4d:",p - m_code);
+    _ftprintf(f,_T("%4u:"),(UINT)(p - m_code));
     switch(opcode) {
 
-#define casepr0(op)               case CODE##op: fprintf(f,"%-20s\n",                      #op                                  ); break;
-#define casepr1(op)               case CODE##op: fprintf(f,"%-20s adr  = %5d\n"           ,#op,ins.adr()                        ); break;
-#define casepr2(op)               case CODE##op: fprintf(f,"%-20s reg  = %1d index = %d\n",#op,ins.reg(),ins.index()            ); break;
-#define caseprtype(op)            case CODE##op: fprintf(f,"%-20s type = %s\n"            ,#op,getTypeString[ins.adr()]          ); break;
-#define caseprconst(op)           case CODE##op: fprintf(f,"%-20s adr  = %5d "            ,#op,ins.adr()); dumpconst(f,ins.adr()); break;
+#define casepr0(op)               case CODE##op: _ftprintf(f,_T("%-20s\n"),                      _T(#op)                                  ); break;
+#define casepr1(op)               case CODE##op: _ftprintf(f,_T("%-20s adr  = %5d\n")           ,_T(#op),ins.adr()                        ); break;
+#define casepr2(op)               case CODE##op: _ftprintf(f,_T("%-20s reg  = %1d index = %d\n"),_T(#op),ins.reg(),ins.index()            ); break;
+#define caseprtype(op)            case CODE##op: _ftprintf(f,_T("%-20s type = %s\n")            ,_T(#op),getTypeString[ins.adr()]         ); break;
+#define caseprconst(op)           case CODE##op: _ftprintf(f,_T("%-20s adr  = %5d ")            ,_T(#op),ins.adr()); dumpconst(f,ins.adr()); break;
 
     casepr0(CRTAB          )  /*0userTabCreate(data[top])                                      */
     casepr0(CRLIK          )  /* userTabCreatelike(top,top-1)                                  */
@@ -40,7 +40,7 @@ void VirtualCode::dump(FILE *f) const {
     caseprconst(PUSHCONST  )  /* push(data(ins.adr))                                           */
    
     case CODEPUSHADR:         /* push(ins.adr)                                                 */
-      fprintf(f,"%-20s adr  = %5d\n","PUSHADR",ins.adr());
+      _ftprintf(f,_T("%-20s adr  = %5d\n"),_T("PUSHADR"),ins.adr());
       { Instruction nextins;
         memcpy(&nextins,p+ins.size(),sizeof(nextins));
         switch(nextins.opcode()) {
@@ -121,7 +121,7 @@ void VirtualCode::dump(FILE *f) const {
     casepr1(JMPLE          )  /* if(status = -1 || status = 0) pcreg = ins.adr                 */
     casepr1(JMPLT          )  /*6if(status = -1  pcreg = ins.adr                               */
     default:
-      fprintf(f,"Unknown opcode:%ld adr = %5d\n",opcode,ins.adr());
+      _ftprintf(f,_T("Unknown opcode:%ld adr = %5d\n"),opcode,ins.adr());
       break;
     }
   }
@@ -129,5 +129,5 @@ void VirtualCode::dump(FILE *f) const {
     HostVarDescriptionList hl = getDescription();
     hl.dump(f);
   }
-  fprintf(f,"Total size:%d\n",totalSize());
+  _ftprintf(f,_T("Total size:%d\n"),totalSize());
 }
