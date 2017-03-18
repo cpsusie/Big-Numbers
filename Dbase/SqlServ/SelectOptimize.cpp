@@ -158,7 +158,7 @@ BitSet SelectStmt::findFieldsFixedByConstPredicate(FromTable *table, const Synta
 }
 
 void FromTable::checkFixedByUniqueKey() {
-  for(int i = 0; i < m_indexStat.size(); i++) {
+  for(size_t i = 0; i < m_indexStat.size(); i++) {
     const IndexDefinition &indexDef = m_indexStat[i].m_indexDef;
     if(indexDef.m_indexType == INDEXTYPE_NON_UNIQUE) continue;
     UINT c;
@@ -172,7 +172,7 @@ void FromTable::checkFixedByUniqueKey() {
       m_fixedByConst->invert(); // insert all members;
       m_joinSequence = m_belongsTo.m_noOfFixedTables++;
       m_fixed        = true;
-      m_usedIndex    = i;
+      m_usedIndex    = (int)i;
       m_asc          = true; // don't bother about this
       m_keyPredicates.m_beginKeyPredicate.m_relOpToken = EQUAL;
       m_keyPredicates.m_endKeyPredicate.m_relOpToken   = EQUAL;
@@ -189,7 +189,7 @@ void FromTable::checkFixedByUniqueKey() {
 // returns true if any fields where added to the set of fixed fields
 bool SelectStmt::addFieldsFixedByConstPredicate(const SyntaxNode *pred) {
   bool changed = false;
-  for(int i = 0; i < m_fromTable.size(); i++) {
+  for(size_t i = 0; i < m_fromTable.size(); i++) {
     FromTable *table = m_fromTable[i];
     BitSet fixedfields = findFieldsFixedByConstPredicate(table,pred,false);
     if(!(fixedfields - *(table->m_fixedByConst)).isEmpty()) {
@@ -216,9 +216,11 @@ static int turnInequality(int token) { // not negation
 void FromTable::calulateIndexOnly() {
   for(UINT i = 0; i < m_indexStat.size(); i++) {
     bool indexOnly = true;
-    for(int c = 0; indexOnly && c < m_attributes.size(); c++)
-      if(m_attributes[c].used() && !m_indexStat[i].m_indexDef.columnIsMember(c))
+    for(UINT c = 0; indexOnly && c < m_attributes.size(); c++) {
+      if(m_attributes[c].used() && !m_indexStat[i].m_indexDef.columnIsMember(c)) {
         indexOnly = false;
+      }
+    }
     m_indexStat[i].m_indexOnly = indexOnly;
   }
 }
@@ -286,7 +288,7 @@ int SelectStmt::setMaxJoinSequence(SyntaxNode *n) const { // n = <setExpr>
 
 double SelectStmt::rowsSelected(double &total) const {
   total = 1;
-  for(int i = 0; i < m_fromTable.size(); i++)
+  for(size_t i = 0; i < m_fromTable.size(); i++)
     total *= m_fromTable[i]->getTableSize();
   return m_selectivity * total;
 }
@@ -386,11 +388,8 @@ int SelectStmt::expressionMaxJoinSequence(const SyntaxNode *expr) const {
 }
 
 void Predicate::dump(FILE *f) const {
-  _ftprintf(f,_T("Predicate:\"%s\" ["),relopstring(m_relOpToken));
-  for(int i = 0; i < m_colIndex.size(); i++) {
-    _ftprintf(f,_T("%d,"),m_colIndex[i]);
-  }
-  _ftprintf(f,_T("]\n"));
+  _ftprintf(f,_T("Predicate:\"%s\" %s")
+             ,relopstring(m_relOpToken),m_colIndex.toStringBasicType().cstr());
 #ifdef TRACECOMP
   if(m_pred != NULL) {
     dumpSyntaxTree(m_pred);
@@ -399,7 +398,7 @@ void Predicate::dump(FILE *f) const {
 }
 
 bool Predicate::columnIsMember(short col) const {
-  for(int i = 0; i < m_colIndex.size(); i++) {
+  for(size_t i = 0; i < m_colIndex.size(); i++) {
     if(m_colIndex[i] == col) {
       return true;
     }
@@ -413,7 +412,7 @@ SyntaxNode *Predicate::findOpposite(FromTable *fromTable, int col) {
 
 //  dump();
 
-  for(int i = 0; i < left.size(); i++) {
+  for(size_t i = 0; i < left.size(); i++) {
     if(fromTable->m_belongsTo.expressionColumnIndex(fromTable,left[i]) == col) {
       return right[i];
     }
@@ -426,7 +425,7 @@ SyntaxNode *Predicate::findOpposite(FromTable *fromTable, int col) {
 }
 
 void PredicateList::dump(FILE *f) const {
-  for(int i = 0; i < size(); i++) {
+  for(size_t i = 0; i < size(); i++) {
     (*this)[i].dump(f);
   }
 }
@@ -434,7 +433,7 @@ void PredicateList::dump(FILE *f) const {
 void KeyPredicate::dump(FILE *f) const {
   _ftprintf(f,_T("fieldcount :%zd relop:'%s'\n"),m_expr.size(),relopstring(m_relOpToken));
 #ifdef TRACECOMP
-  for(int i = 0; i < m_expr.size(); i++) {
+  for(size_t i = 0; i < m_expr.size(); i++) {
     dumpSyntaxTree(m_expr[i],f);
   }
 #endif

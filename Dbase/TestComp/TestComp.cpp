@@ -7,6 +7,8 @@
 #include <MyString.h>
 //#include <SqlRegex.h>
 
+extern void testTupleField();
+
 static TCHAR *indexTypeStr(char type) {
   switch(type) {
   case INDEXTYPE_PRIMARY    : return _T("Primary key");
@@ -39,10 +41,12 @@ static String getCommand(FILE *f) { // reads command from f
       _tprintf(_T(">"));
     }
     TCHAR line[4000];
-    if(FGETS(line,ARRAYSIZE(line),f) == NULL && !isatty(f))
+    if(FGETS(line,ARRAYSIZE(line),f) == NULL && !isatty(f)) {
       break;
-    if(userbreak)
+    }
+    if(userbreak) {
       throw UserBreak();
+    }
     if(line[0] == '-') continue; // commentline
     String tmp = line;
     tmp.trimRight();
@@ -613,7 +617,8 @@ void Session::run(FILE *f) {
 
 static void usage() {
   _ftprintf(stderr,_T("Usage:testcomp [options] dbname [file]\n"
-                    "   options:\n")
+                      "      testComp -cDbName\n"
+                      "   Options:\n")
          );
   exit(-1);
 }
@@ -622,12 +627,9 @@ int _tmain(int argc, TCHAR **argv) {
   TCHAR *cp;
   TCHAR *dbname     = NULL;
 
-extern void testTupleField();
-extern void findbesthashmapsize();
-
-//  findbesthashmapsize();
+//  SqlLex::findBestHashMapSize();
 //  testTupleField();
-//  testSqlRegex();
+//  SqlRegex::testSqlRegex();
 
   try {
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
@@ -645,8 +647,9 @@ extern void findbesthashmapsize();
     }
 
     if(dbname == NULL) {
-      if(!*argv)
+      if(!*argv) {
         usage();
+      }
       dbname = *(argv++);
     }
     Database db(dbname);

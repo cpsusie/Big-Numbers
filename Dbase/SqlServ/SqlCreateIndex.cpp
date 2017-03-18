@@ -26,9 +26,9 @@ void CreateIndexData::dump(FILE *f) const {
   _ftprintf(f,_T("  tablename:<%s>\n"),m_tableName.cstr());
   _ftprintf(f,_T("  unique:%s\n")     ,boolToStr(m_unique));
   _ftprintf(f,_T("  colcount:%zd\n")  ,m_columns.size());
-  for(int i = 0; i < m_columns.size(); i++) {
+  for(size_t i = 0; i < m_columns.size(); i++) {
     const IndexColumnName &col = m_columns[i];
-    _ftprintf(f,_T("    colname[%d]:<%s> <%c>\n"),i,col.m_colName.cstr(),col.m_asc ? 'A':'D');
+    _ftprintf(f,_T("    colname[%zd]:<%s> <%c>\n"),i,col.m_colName.cstr(),col.m_asc ? 'A':'D');
   }
 }
 

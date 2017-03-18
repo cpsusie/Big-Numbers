@@ -63,6 +63,9 @@
     <ClCompile Include="TestTupleField.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TestSqlRegex.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SqlServ\SqlExec.h">

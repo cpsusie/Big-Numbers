@@ -284,6 +284,7 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="TestComp.cpp" />
+    <ClCompile Include="TestSqlRegex.cpp" />
     <ClCompile Include="TestTupleField.cpp" />
   </ItemGroup>
   <ItemGroup>

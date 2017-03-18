@@ -12,6 +12,7 @@ public:
   SqlLex(LRparser *parser=NULL);
   int getNextLexeme();
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  static void findBestHashMapSize();
 };
 
 %}
@@ -195,14 +196,10 @@ public:
     for(int i = 0; i < ARRAYSIZE(keywordTable); i++) {
       put(keywordTable[i].m_name,keywordTable[i].m_token);
 	}
-//	_tprintf(_T("maxlength:%d\n"),maxlength());
-//  iterator it = getiterator();
-//  for(it.first(); it.current(); it.next())
-//    _tprintf(_T("%-20s %d\n"),it.key(),it.elem());
   }
 };
 
-static KeyWordMap keywords(482);
+static KeyWordMap keywords(752);
 
 static int nameOrKeyWord(const TCHAR *lexeme) {
   TCHAR tmp[100];
@@ -222,15 +219,14 @@ void SqlLex::verror(const SourcePosition &pos, const TCHAR *format, va_list argp
   }
 }
 
-/*
-void findbesthashmapsize() {
+void SqlLex::findBestHashMapSize() { // static
   for(int tablesize = 57; tablesize < 2000; tablesize++) {
     KeyWordMap ht(tablesize);
-	_tprintf(_T("%4d %d\n"),tablesize,ht.maxlength());
-	if(ht.maxlength() == 1) {
-	  _tprintf(_T("tablesize:%d gives best hashmap\n"),tablesize);
+	const int maxcl = ht.getMaxChainLength();
+	_tprintf(_T("(%4d %d) "), tablesize, maxcl);
+	if(maxcl == 1) {
+	  _tprintf(_T("\nTablesize=%d gives best hashmap\n"), tablesize);
 	  exit(0);
 	}
   }
 }
-*/

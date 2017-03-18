@@ -16,6 +16,7 @@ public:
   SqlLex(LRparser *parser=NULL);
   int getNextLexeme();
   void verror(const SourcePosition &pos, const TCHAR *format, va_list argptr);
+  static void findBestHashMapSize();
 };
 
 

@@ -3,12 +3,12 @@
 #include "SqlRegex.h"
 
 bool isLike(const SqlRegex &regex, const String &pattern) {
-  return regex.match(pattern.cstr());
+  return regex.match(pattern);
 }
 
 bool isLike(const String &str, const String &pattern) {
-  SqlRegex regex(pattern.cstr());
-  return regex.match(str.cstr());
+  SqlRegex regex(pattern);
+  return regex.match(str);
 }
 
 String sqlSubString(const String &str, int from, int len) {
@@ -19,7 +19,7 @@ String sqlSubString(const String &str, int from, int len) {
   if(from < 0) {
     from = 0;
   }
-  if(from > str.length()) {
+  if(from > (int)str.length()) {
     return EMPTYSTRING;
   }
 
@@ -621,7 +621,7 @@ QueryOperator::QueryOperator(DbEngine &engine, int entrypoint) : m_vm(engine) {
 }
 
 void OperatorArray::clear() {
-  for(int i = 0; i < size(); i++)
+  for(size_t i = 0; i < size(); i++)
     delete (*this)[i];
   Array<QueryOperator*>::clear();
 }
@@ -631,7 +631,7 @@ OperatorArray::~OperatorArray() {
 }
 
 void PipeLineArray::clear() {
-  for(int i = 0; i < size(); i++)
+  for(size_t i = 0; i < size(); i++)
     delete (*this)[i];
   Array<PipeLine*>::clear();
 }

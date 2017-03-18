@@ -392,7 +392,7 @@ void SqlCompiler::genCreateIndex(SyntaxNode *n) { // n = create_stmt
     syntaxError(n->child(4),SQL_KEY_TOO_BIG,_T("Too many fields in index %s. Max number of fiels in index=%d"),indexName, MAXKEYFIELDCOUNT);
   }
 
-  for(int i = 0; i < columns.size(); i++) {
+  for(size_t i = 0; i < columns.size(); i++) {
     SyntaxNode *col = columns[i]->child(0);
     if(_tcslen(col->name()) > MAXCOLUMNNAME) {
       syntaxError(col,SQL_INVALID_COLUMNNAME,_T("Fieldname <%s> too long. Max length=%d"),col->name(), MAXCOLUMNNAME);
