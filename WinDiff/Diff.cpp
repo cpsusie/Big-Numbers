@@ -6,7 +6,7 @@
 //#define DUMP_DEBUG
 
 DiffDoc::DiffDoc() {
-  setToBuf(_T(""));
+  setToBuf(EMPTYSTRING);
   m_lineCount = 0;
 }
 
@@ -26,7 +26,7 @@ DiffDoc::~DiffDoc() {
 }
 
 void DiffDoc::clear() {
-  m_buf       = _T("");
+  m_buf       = EMPTYSTRING;
   m_fileSize  = 0;
   m_lineCount = 0;
 }
@@ -120,7 +120,7 @@ void DiffDoc::processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la,
   la.updateCapacity();
 }
 
-void DiffDoc::readFile(DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
+void DiffDoc::readTextFile(DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
   FileContent content(m_name);
   m_lastReadTime = STAT(m_name).st_mtime;
   m_fileSize     = (UINT)content.size();
@@ -152,7 +152,7 @@ time_t DiffDoc::getLastModifiedTime() const {
 void DiffDoc::getLines(DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const {
   switch(m_type) {
   case DIFFDOC_FILE:
-    readFile(filter, la, runnable);
+    readTextFile(filter, la, runnable);
     break;
   case DIFFDOC_BUF :
     processBuffer(m_buf.cstr(), filter, la, runnable);
@@ -296,19 +296,19 @@ void Diff::syncArrays(const LineArray &a, const LineArray &b, int &ai, int ato, 
         addDiffLine(a[ai], b[bi], ai, bi, CHANGEDLINES);
         ai++; bi++;
       } else if(ai < ato) {
-        addDiffLine(a[ai], _T(""), ai, -1, CHANGEDLINES);
+        addDiffLine(a[ai], EMPTYSTRING, ai, -1, CHANGEDLINES);
         ai++;
       } else {
-        addDiffLine(_T(""), b[bi], -1, bi, CHANGEDLINES);
+        addDiffLine(EMPTYSTRING, b[bi], -1, bi, CHANGEDLINES);
         bi++;
       }
     }
   }
   for(;ai < ato; ai++) {
-    addDiffLine(a[ai], _T(""), ai, -1, DELETEDLINES);
+    addDiffLine(a[ai], EMPTYSTRING, ai, -1, DELETEDLINES);
   }
   for(;bi < bto; bi++) {
-    addDiffLine(_T(""), b[bi], -1, bi, INSERTEDLINES);
+    addDiffLine(EMPTYSTRING, b[bi], -1, bi, INSERTEDLINES);
   }
 }
 

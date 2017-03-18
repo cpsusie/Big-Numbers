@@ -38,7 +38,7 @@ unsigned int InputThread::run() {
             continue;
           }
           if(tok.next() == _T("read") && tok.hasNext()) {
-            readFile(tok.next());
+            readTextFile(tok.next());
             continue;
           }
           m_inputQueue.put(line);
@@ -56,7 +56,7 @@ unsigned int InputThread::run() {
   }
 }
 
-void InputThread::readFile(const String &fileName) {
+void InputThread::readTextFile(const String &fileName) {
   FILE *f = FOPEN(fileName, _T("r"));
   TCHAR buffer[1000];
   while(FGETS(buffer,ARRAYSIZE(buffer),f)) {

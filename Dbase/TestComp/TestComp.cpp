@@ -441,7 +441,7 @@ bool Session::trySpecialCommand(const String &stmt) {
   case COMMAND_LIST:
     { if(arg1 == NULL)
         error(_T("Invalid syntax. Usage:list <filename>"));
-      _tprintf(_T("%s"),readFile(arg1).cstr());
+      _tprintf(_T("%s"), readTextFile(arg1).cstr());
       return true;
     }
   
@@ -484,7 +484,7 @@ bool Session::trySpecialCommand(const String &stmt) {
   case COMMAND_COMPILE:
     if(arg1 == NULL)
       error(_T("Invalid syntax. Usage:compile <filename>"));
-    compile(readFile(arg1));
+    compile(readTextFile(arg1));
     return true;
 
   case COMMAND_UPDATE:
@@ -501,7 +501,7 @@ bool Session::trySpecialCommand(const String &stmt) {
 
   case COMMAND_HELP:
     if(arg1 == NULL)
-      showhelp(_T(""));
+      showhelp(EMPTYSTRING);
     else
       showhelp(arg1);
     return true;
@@ -622,8 +622,8 @@ int _tmain(int argc, TCHAR **argv) {
   TCHAR *cp;
   TCHAR *dbname     = NULL;
 
-//extern void testTupleField();
-//extern void findbesthashmapsize();
+extern void testTupleField();
+extern void findbesthashmapsize();
 
 //  findbesthashmapsize();
 //  testTupleField();

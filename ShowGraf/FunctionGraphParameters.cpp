@@ -5,12 +5,12 @@ FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF co
 : GraphParameters(name,color,rollSize,style) {
 
   m_trigonometricMode = trigonomtetricMode;
-  m_expr              = _T("");
+  m_expr              = EMPTYSTRING;
   m_interval          = DoubleInterval(0,1);
   m_steps             = 500;
 }
 
-void FunctionGraphParameters::writeFile(FILE *f) {
+void FunctionGraphParameters::writeTextFile(FILE *f) {
   USES_CONVERSION;
   const TCHAR *tstyle = graphStyleToString(m_style);
   const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
@@ -29,7 +29,7 @@ void FunctionGraphParameters::writeFile(FILE *f) {
   writeString(f, m_expr);
 }
 
-void FunctionGraphParameters::readFile(FILE *f) {
+void FunctionGraphParameters::readTextFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double from, to;
   int steps;

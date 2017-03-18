@@ -21,8 +21,8 @@ public:
 
 class DiffEquationGraphParameters : public GraphParameters {
 protected:
-  void readFile( FILE *f);
-  void writeFile(FILE *f);
+  void readTextFile( FILE *f);
+  void writeTextFile(FILE *f);
 public:
   DiffEquationSystemDescription    m_equationsDescription;
   CompactArray<EquationAttributes> m_attrArray;

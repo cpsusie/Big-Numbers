@@ -7,7 +7,7 @@ const TCHAR *getPieceTypeShortNameEnglish(PieceType type) {
   case Rook  : return _T("R");
   case Bishop: return _T("B");
   case Knight: return _T("N");
-  case Pawn  : return _T("");
+  case Pawn  : return EMPTYSTRING;
   default    : throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), type);
                return _T("?");
   }
@@ -83,7 +83,7 @@ typedef struct {
 } AnnotationString;
 
 static const AnnotationString annotationStrings[] = {
-  _T("")  , NOANNOTATION
+  EMPTYSTRING  , NOANNOTATION
  ,_T("?") , BAD_MOVE
  ,_T("??"), VERYBAD_MOVE
  ,_T("!") , GOOD_MOVE
@@ -163,7 +163,7 @@ Game &Game::save(FILE *f) {
 
 Game &Game::load(FILE *f) {
   beginSetup();
-  String s = readFile(f);
+  String s = readTextFile(f);
   Tokenizer tok(s, _T(" "));
   parse(s);
   return endSetup();
@@ -171,7 +171,7 @@ Game &Game::load(FILE *f) {
 
 String Game::toString() const {
   String result = format(_T("%s"), getStartPosition().toString().cstr());
-  return result + format(_T("History\n%s\nEndHistory\n"), getHistory().toString(MOVE_FILEFORMAT).replace('\r',_T("")).cstr());
+  return result + format(_T("History\n%s\nEndHistory\n"), getHistory().toString(MOVE_FILEFORMAT).replace('\r',EMPTYSTRING).cstr());
 }
 
 Game &Game::operator=(const String &src) {

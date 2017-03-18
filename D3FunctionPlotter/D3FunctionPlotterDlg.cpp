@@ -539,7 +539,7 @@ void CD3FunctionPlotterDlg::OnFileProfileSurface() {
   const String fileName = "C:\\mytools\\D3FunctionPlotter\\SAMPLES\\bue.prf";
   try {
     FILE *f = FOPEN(fileName, "r");
-    Profile profile(readFile(f), fileName);
+    Profile profile(readTextFile(f), fileName);
     fclose(f);
     CProfileDlg dlg(profile);
     dlg.DoModal();
@@ -565,7 +565,7 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
       const String fileName = dlg.m_ofn.lpstrFile;
       setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(device, fileName, true)));
       REPAINT();
-    }	
+    }   
   } catch(Exception e) {
     showException(e);
   }
@@ -587,7 +587,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       const String fileName = dlg.m_ofn.lpstrFile;
       setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(device, fileName, false)));
       REPAINT();
-    }	
+    }   
   } catch(Exception e) {
     showException(e);
   }
@@ -1535,7 +1535,7 @@ void CD3FunctionPlotterDlg::setCurrentControl(CurrentObjectControl control) {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
     break;
   case CONTROL_CAMERA_KEEPFOCUS:
-    showInfo(_T(""));
+    showInfo(EMPTYSTRING);
     // nb continue case
   case CONTROL_CAMERA_WALK     :
     setSelectedObject(NULL);
@@ -1783,8 +1783,8 @@ void CD3FunctionPlotterDlg::show3DInfo() {
   double       zn          = m_scene.getNearViewPlane();
   const String focusStr    = hasFocusPoint() 
                            ? format(_T("Focuspoint:%s\n"), toString(m_focusPoint).cstr())
-                           : _T("");
-  const String rayStr      = m_pickedRay.isSet() ? format(_T("Picked ray:%s\n"), m_pickedRay.toString().cstr()) : _T("");
+                           : EMPTYSTRING;
+  const String rayStr      = m_pickedRay.isSet() ? format(_T("Picked ray:%s\n"), m_pickedRay.toString().cstr()) : EMPTYSTRING;
 
   showInfo(_T("Current Motion:%s Selected:%s\n%s View angel:%.1lf, zn:%.3lf\n%s\n%s%s%s\n%s")
            ,controlString(m_currentControl), getSelectedString().cstr()

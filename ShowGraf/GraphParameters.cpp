@@ -11,7 +11,7 @@ GraphParameters::GraphParameters(const String &name, COLORREF color, int rollSiz
 void GraphParameters::load(const String &fileName) {
   FILE *f = FOPEN(fileName, _T("r"));
   try {
-    readFile(f);
+    readTextFile(f);
     fclose(f);
     setName(fileName);
   } catch(...) {
@@ -25,7 +25,7 @@ void GraphParameters::save(const String &fileName) {
   try {
     f = FOPEN(fileName, _T("wb"));
     setName(fileName);
-    writeFile(f);
+    writeTextFile(f);
     fclose(f); f = NULL;
   } catch(Exception e) {
     if(f) {
@@ -125,10 +125,10 @@ void GraphParameters::writeString(FILE *f, const String &str) { // static
   fprintf(f, "\"%s\"\n", T2A(tmp.cstr()));
 }
 
-void GraphParameters::readFile(FILE *f) {
+void GraphParameters::readTextFile(FILE *f) {
   throwUnsupportedOperationException(__TFUNCTION__);
 }
 
-void GraphParameters::writeFile(FILE *f) {
+void GraphParameters::writeTextFile(FILE *f) {
   throwUnsupportedOperationException(__TFUNCTION__);
 }

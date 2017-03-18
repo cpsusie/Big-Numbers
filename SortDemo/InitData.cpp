@@ -247,7 +247,7 @@ void InitializeParameters::load() {
     m_periodCount         = key.getUint(   _T("periodcount")     , defaultValues.m_periodCount );
     m_fileName            = key.getString( _T("filename")        , defaultValues.m_fileName    );
     if(m_initMethod == IDC_RADIO_FILEDATA) {
-      readFile(m_fileName);
+      readTextFile(m_fileName);
     }
   } catch(Exception e) {
     setDefault();
@@ -266,7 +266,7 @@ void InitializeParameters::save() {
   key.setValue(_T("filename")        ,m_fileName                    );
 }
 
-void InitializeParameters::readFile(const String &fileName) {
+void InitializeParameters::readTextFile(const String &fileName) {
   FILE *f = FOPEN(fileName, _T("r"));
 
   TCHAR line[100];

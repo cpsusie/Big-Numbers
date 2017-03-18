@@ -14,8 +14,8 @@ Profile *selectAndLoadProfile() {
       return NULL;
     } else {
       file = FOPEN(dlg.m_ofn.lpstrFile,"r");
-      result = new Profile(readFile(file), dlg.m_ofn.lpstrFile);
-    }	
+      result = new Profile(readTextFile(file), dlg.m_ofn.lpstrFile);
+    }   
   } catch(Exception e) {
     showException(e);
   }

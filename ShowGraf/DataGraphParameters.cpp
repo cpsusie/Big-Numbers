@@ -28,11 +28,11 @@ DataGraphParameters::DataGraphParameters(const String &name
   m_yRelativeToFirst = yRelativeToFirst;
 }
 
-void DataGraphParameters::readFile(FILE *f) {
+void DataGraphParameters::readTextFile(FILE *f) {
   throwException(_T("%s:unsupported function"), __TFUNCTION__);
 }
 
-void DataGraphParameters::writeFile(FILE *f) {
+void DataGraphParameters::writeTextFile(FILE *f) {
   throwException(_T("%s:unsupported function"), __TFUNCTION__);
 }
 

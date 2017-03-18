@@ -107,8 +107,8 @@ int              DUP(    int   fd);
 void             DUP2(   int   fd1, int fd2); 
 HANDLE           GETHANDLE(FILE *f);
 
-String readFile(FILE *f);
-String readFile(const String &fileName);
+String readTextFile(FILE *f);
+String readTextFile(const String &fileName);
 bool   readLine(FILE *f, String &str);
 
 void pause();
@@ -120,10 +120,11 @@ bool shiftKeyPressed();
 bool ctrlKeyPressed();
 unsigned char toAscii(UINT virtualCode);
 
+String  inputString(  TCHAR *format, ...); // read String from stdin, terminate with enter. result string NOT containing '\n\r'
 String  inputPassword(TCHAR *format, ...); // read password from console
 int     inputInt(     TCHAR *format, ...); // read an integer from stdin
 INT64   inputInt64(   TCHAR *format, ...); // read an __int64 from stdin
-double  inputDouble(  TCHAR *format, ...); // read a double from stdin
+double  inputDouble(  TCHAR *format, ...); // read a  double  from stdin
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);

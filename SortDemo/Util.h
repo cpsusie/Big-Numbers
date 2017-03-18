@@ -29,7 +29,7 @@ public:
   CompactIntArray     m_fileData;
 
   InitializeParameters();
-  void readFile(const String &fileName);
+  void readTextFile(const String &fileName);
   void save();
   void load();
   void nextRandomSeed();

@@ -65,7 +65,7 @@ UINT InputThread::run() {
   return 0;
 }
 
-void InputThread::readFile(const String &fileName) {
+void InputThread::readTextFile(const String &fileName) {
   FILE *f = FOPEN(fileName, _T("r"));
   TCHAR line[1000];
   while(FGETS(line, ARRAYSIZE(line), f)) {

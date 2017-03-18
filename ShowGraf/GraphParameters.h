@@ -31,11 +31,11 @@ class GraphParameters {
 private:
   String     m_name;
 protected:
-  static String readString( FILE *f);
-  static void   writeString(FILE *f, const String &str);
-  static String readLine(   FILE *f);
-  virtual void  readFile(   FILE *f);
-  virtual void  writeFile(  FILE *f);
+  static String readString(   FILE *f);
+  static void   writeString(  FILE *f, const String &str);
+  static String readLine(     FILE *f);
+  virtual void  readTextFile( FILE *f);
+  virtual void  writeTextFile(FILE *f);
 public:
   COLORREF   m_color;
   int        m_rollSize;

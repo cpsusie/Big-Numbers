@@ -481,6 +481,7 @@
     <ClCompile Include="InputInt.cpp" />
     <ClCompile Include="InputInt64.cpp" />
     <ClCompile Include="InputPassword.cpp" />
+    <ClCompile Include="InputString.cpp" />
     <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="InterruptableRunnable.cpp" />
     <ClCompile Include="isatty.cpp" />
@@ -526,7 +527,7 @@
     <ClCompile Include="RandInt.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Randomize.cpp" />
-    <ClCompile Include="ReadFile.cpp" />
+    <ClCompile Include="ReadTextFile.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexHelp.cpp" />
     <ClCompile Include="Registry.cpp" />

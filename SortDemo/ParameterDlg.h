@@ -5,7 +5,7 @@ private:
     HACCEL                m_accelTable;
     InitializeParameters  m_parameters;
     void radioChecked(int radioChecked);
-    bool readFile(const String &fileName);
+    bool readTextFile(const String &fileName);
     void enableSeed();
     int getElementSize() const;
     void setElementSize(int v);
@@ -14,39 +14,39 @@ private:
     CComboBox *getComboElementSize() const;
     CComboBox *getComboRandomize()   const;
 public:
-	CParameterDlg(const InitializeParameters &parameters, CWnd* pParent = NULL);
+    CParameterDlg(const InitializeParameters &parameters, CWnd* pParent = NULL);
     const InitializeParameters &getParameters() const {
       return m_parameters;
     }
 
-	enum { IDD = IDD_PARAMETER_DIALOG };
-	int		m_initMethod;
-	UINT	m_elementCount;
-	UINT	m_seed;
-	UINT	m_periodCount;
-	CString	m_fileName;
+    enum { IDD = IDD_PARAMETER_DIALOG };
+    int     m_initMethod;
+    UINT    m_elementCount;
+    UINT    m_seed;
+    UINT    m_periodCount;
+    CString m_fileName;
 
-	public:
-	virtual BOOL PreTranslateMessage(MSG* pMsg);
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
+    public:
+    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    protected:
+    virtual void DoDataExchange(CDataExchange* pDX);
 
 protected:
 
-	virtual BOOL OnInitDialog();
-	afx_msg void OnRadioRandom();
-	afx_msg void OnRadioSorted();
-	afx_msg void OnRadioInverseSorted();
-	afx_msg void OnRadioSinus();
-	afx_msg void OnRadioFileData();
-	afx_msg void OnButtonBrowse();
+    virtual BOOL OnInitDialog();
+    afx_msg void OnRadioRandom();
+    afx_msg void OnRadioSorted();
+    afx_msg void OnRadioInverseSorted();
+    afx_msg void OnRadioSinus();
+    afx_msg void OnRadioFileData();
+    afx_msg void OnButtonBrowse();
     afx_msg void OnGotoElementCount();
     afx_msg void OnGotoElementSize();
     afx_msg void OnGotoPeriodCount();
     afx_msg void OnGotoFileName();
     afx_msg void OnGotoSeed();
-	virtual void OnOK();
-	afx_msg void OnSelchangeComboRandomize();
-	DECLARE_MESSAGE_MAP()
+    virtual void OnOK();
+    afx_msg void OnSelchangeComboRandomize();
+    DECLARE_MESSAGE_MAP()
 };
 

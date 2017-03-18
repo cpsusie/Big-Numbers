@@ -9,7 +9,7 @@ IsoCurveGraphParameters::IsoCurveGraphParameters(const String &name, COLORREF co
   m_cellSize          = 0.1;
 }
    
-void IsoCurveGraphParameters::writeFile(FILE *f) {
+void IsoCurveGraphParameters::writeTextFile(FILE *f) {
   USES_CONVERSION;
   const TCHAR *tstyle = graphStyleToString(m_style);
   const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
@@ -32,7 +32,7 @@ void IsoCurveGraphParameters::writeFile(FILE *f) {
   writeString(f, m_expr);
 }
 
-void IsoCurveGraphParameters::readFile(FILE *f) {
+void IsoCurveGraphParameters::readTextFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double bx,by,bw,bh,csz,x0,y0;
   int color, rollSize;

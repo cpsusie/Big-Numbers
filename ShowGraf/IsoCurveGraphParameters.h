@@ -7,8 +7,8 @@
 
 class IsoCurveGraphParameters : public GraphParameters {
 protected:
-  void readFile( FILE *f);
-  void writeFile(FILE *f);
+  void readTextFile( FILE *f);
+  void writeTextFile(FILE *f);
 public:
   String            m_expr;
   Rectangle2D       m_boundingBox;

@@ -10,7 +10,7 @@ private:
   MessageQueue m_inputQueue;
   bool         m_eoi;
   FILE        *m_input;
-  void readFile(const String &fileName);
+  void readTextFile(const String &fileName);
 public:
   InputThread(FILE *input = stdin);
   String getLine();

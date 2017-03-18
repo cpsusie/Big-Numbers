@@ -22,8 +22,8 @@ void CParameterDlg::DoDataExchange(CDataExchange* pDX) {
     DDX_Text(pDX, IDC_EDIT_ELEMENTCOUNT, m_elementCount);
     DDV_MinMaxUInt(pDX, m_elementCount, 2, 1000);
     DDX_Text(pDX, IDC_EDIT_PERIODCOUNT, m_periodCount);
-	DDX_Text(pDX, IDC_EDIT_FILENAME, m_fileName);
-	DDX_Text(pDX, IDC_EDIT_SEED, m_seed);
+    DDX_Text(pDX, IDC_EDIT_FILENAME, m_fileName);
+    DDX_Text(pDX, IDC_EDIT_SEED, m_seed);
 }
 
 BEGIN_MESSAGE_MAP(CParameterDlg, CDialog)
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CParameterDlg, CDialog)
     ON_COMMAND(ID_GOTO_PERIODCOUNT       , OnGotoPeriodCount    )
     ON_COMMAND(ID_GOTO_FILENAME          , OnGotoFileName       )
     ON_COMMAND(ID_GOTO_SEED              , OnGotoSeed           )
-	ON_CBN_SELCHANGE(IDC_COMBO_RANDOMIZE, OnSelchangeComboRandomize)
+    ON_CBN_SELCHANGE(IDC_COMBO_RANDOMIZE, OnSelchangeComboRandomize)
 END_MESSAGE_MAP()
 
 BOOL CParameterDlg::OnInitDialog() {
@@ -198,7 +198,7 @@ void CParameterDlg::OnButtonBrowse() {
 
   for(;;) {
     if((dlg.DoModal() == IDOK) && (_tcslen(dlg.m_ofn.lpstrFile) != 0)) {
-      if(readFile(dlg.m_ofn.lpstrFile)) {
+      if(readTextFile(dlg.m_ofn.lpstrFile)) {
         UpdateData(FALSE);
         return;
       }
@@ -208,9 +208,9 @@ void CParameterDlg::OnButtonBrowse() {
   }
 }
 
-bool CParameterDlg::readFile(const String &fileName) {
+bool CParameterDlg::readTextFile(const String &fileName) {
   try {
-    m_parameters.readFile(fileName);
+    m_parameters.readTextFile(fileName);
     m_elementCount = (UINT)m_parameters.m_elementCount;
     m_fileName     = m_parameters.m_fileName.cstr();
     return true;
@@ -239,7 +239,7 @@ void CParameterDlg::OnOK() {
       gotoEditBox(this,IDC_EDIT_FILENAME);
       return;
     }
-    if(!readFile(m_parameters.m_fileName)) {
+    if(!readTextFile(m_parameters.m_fileName)) {
       return;
     }
   }

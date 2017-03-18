@@ -33,7 +33,7 @@ public:
   CShwGraphDlg(CWnd* pParent = NULL);
 
   void readData(FILE *f);
-  void readFile(const String &fname);
+  void readTextFile(const String &fname);
   void addPoint(const Point2DP &p);
   void removePoint(intptr_t index);
   void movePoint(  intptr_t index, const CPoint &point);

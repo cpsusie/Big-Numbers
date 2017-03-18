@@ -56,7 +56,7 @@ String ProfileCurve::toString() const {
   default             : result = format(_T("unknown type:%d:"), m_type); break;
   }
 
-  TCHAR *delim = _T("");
+  TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
     result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
   }
@@ -450,7 +450,7 @@ void Profile::init() {
 }
 
 bool Profile::hasDefaultName() const {
-  return m_name != _T("") && m_name != _T("Untitled");
+  return m_name != EMPTYSTRING && m_name != _T("Untitled");
 }
 
 String Profile::getDisplayName() const {
@@ -458,7 +458,7 @@ String Profile::getDisplayName() const {
 }
 
 void Profile::read(FILE *f) {
-  parseXML(readFile(f));
+  parseXML(readTextFile(f));
 }
 
 void Profile::write(FILE *f) {

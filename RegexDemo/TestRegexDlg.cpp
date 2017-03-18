@@ -11,18 +11,18 @@ static char THIS_FILE[] = __FILE__;
 #endif
 
 CTestRegexDlg::CTestRegexDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestRegexDlg::IDD, pParent) {
-	m_text = _T("");
+  m_text = EMPTYSTRING;
 }
 
 
 void CTestRegexDlg::DoDataExchange(CDataExchange* pDX) {
     CDialog::DoDataExchange(pDX);
-	DDX_Text(pDX, IDC_EDITOUTPUT, m_text);
+    DDX_Text(pDX, IDC_EDITOUTPUT, m_text);
 }
 
 
 BEGIN_MESSAGE_MAP(CTestRegexDlg, CDialog)
-	ON_WM_SIZE()
+    ON_WM_SIZE()
 END_MESSAGE_MAP()
 
 BOOL CTestRegexDlg::OnInitDialog() {
@@ -41,7 +41,7 @@ BOOL CTestRegexDlg::OnInitDialog() {
     testRegex(output);
     fclose(output); output = NULL;
 
-    String s = readFile(_T("c:\\temp\\DebugTrace_testRE.txt"));
+    String s = readTextFile(_T("c:\\temp\\DebugTrace_testRE.txt"));
     s.replace('\n',_T("\r\n"));
 
     UNLINK(fileName);
@@ -63,5 +63,5 @@ BOOL CTestRegexDlg::OnInitDialog() {
 
 void CTestRegexDlg::OnSize(UINT nType, int cx, int cy) {
   CDialog::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);	
+  m_layoutManager.OnSize(nType, cx, cy);    
 }

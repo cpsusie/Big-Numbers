@@ -81,7 +81,7 @@ private:
   mutable UINT         m_fileSize;
   void clear();
   void processBuffer(const TCHAR *buf, DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const;
-  void readFile(                       DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const;
+  void readTextFile(                   DiffFilter &filter, LineArray &la, InterruptableRunnable *runnable) const;
 
 public:
   DiffDoc();

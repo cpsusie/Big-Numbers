@@ -5,13 +5,13 @@ ParametricGraphParameters::ParametricGraphParameters(const String &name, COLORRE
 : GraphParameters(name,color,rollSize,style) {
 
   m_trigonometricMode = trigonomtetricMode;
-  m_exprX             = _T("");
-  m_exprY             = _T("");
+  m_exprX             = EMPTYSTRING;
+  m_exprY             = EMPTYSTRING;
   m_interval          = DoubleInterval(0,1);
   m_steps             = 500;
 }
 
-void ParametricGraphParameters::writeFile(FILE *f) {
+void ParametricGraphParameters::writeTextFile(FILE *f) {
   USES_CONVERSION;
   const TCHAR *tstyle = graphStyleToString(m_style);
   const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
@@ -31,7 +31,7 @@ void ParametricGraphParameters::writeFile(FILE *f) {
   writeString(f, m_exprY);
 }
 
-void ParametricGraphParameters::readFile(FILE *f) {
+void ParametricGraphParameters::readTextFile(FILE *f) {
   char styleStr[100], trigoStr[100];
   double from, to;
   int steps;

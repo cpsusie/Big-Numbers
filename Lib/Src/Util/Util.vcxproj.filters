@@ -466,9 +466,6 @@
     <ClCompile Include="Registry.cpp">
       <Filter>Source Files\system</Filter>
     </ClCompile>
-    <ClCompile Include="ReadFile.cpp">
-      <Filter>Source Files\system</Filter>
-    </ClCompile>
     <ClCompile Include="SetFileMode.cpp">
       <Filter>Source Files\system</Filter>
     </ClCompile>
@@ -694,6 +691,12 @@
     </ClCompile>
     <ClCompile Include="SocketStream.cpp">
       <Filter>Source Files\Stream</Filter>
+    </ClCompile>
+    <ClCompile Include="InputString.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="ReadTextFile.cpp">
+      <Filter>Source Files\Misc</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

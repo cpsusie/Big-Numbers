@@ -9,7 +9,7 @@ DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, Gra
   m_eps               = 0.1;
 }
 
-void DiffEquationGraphParameters::writeFile(FILE *f) {
+void DiffEquationGraphParameters::writeTextFile(FILE *f) {
   USES_CONVERSION;
   const TCHAR *tstyle = graphStyleToString(m_style);
   const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
@@ -36,7 +36,7 @@ void DiffEquationGraphParameters::writeFile(FILE *f) {
   }
 }
 
-void DiffEquationGraphParameters::readFile(FILE *f) {
+void DiffEquationGraphParameters::readTextFile(FILE *f) {
   char   styleStr[100], trigoStr[100];
   double from, to, eps;
   UINT   dim;

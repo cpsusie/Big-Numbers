@@ -198,7 +198,7 @@ void CShwGraphDlg::OnDropFiles(HDROP hDropInfo) {
   int count = DragQueryFile(hDropInfo,-1,fname,ARRAYSIZE(fname));
 
   DragQueryFile(hDropInfo,0,fname,ARRAYSIZE(fname));
-  readFile(fname);
+  readTextFile(fname);
   CDialog::OnDropFiles(hDropInfo);
 }
 
@@ -292,7 +292,7 @@ intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index
   return found;
 }
 
-void CShwGraphDlg::readFile(const String &fname) {
+void CShwGraphDlg::readTextFile(const String &fname) {
   FILE *f = fopen(fname, _T("r"));
   if(f) {
     readData(f);
@@ -312,7 +312,7 @@ void CShwGraphDlg::OnFileOpen() {
   if(_tcslen(dlg.m_ofn.lpstrFile) == 0) {
     return;
   }
-  readFile(dlg.m_ofn.lpstrFile);
+  readTextFile(dlg.m_ofn.lpstrFile);
 }
 
 void CShwGraphDlg::OnFileQuit() {

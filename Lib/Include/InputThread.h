@@ -27,7 +27,7 @@ public:
   inline bool endOfInput() const {
     return m_eoi;
   }
-  virtual void readFile(const String &fileName);
+  virtual void readTextFile(const String &fileName);
   UINT run();
   void putMessage(const String &s) {
     m_inputQueue.put(s);
