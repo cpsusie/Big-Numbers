@@ -56,8 +56,8 @@ void OccupationMap::setOccupiedRect(const CRect &r) {
 
   CPoint tl = r.TopLeft();     tl.x = max(tl.x,0);             tl.y = max(tl.y,0);
   CPoint br = r.BottomRight(); br.x = min(br.x, m_winSize.cx); br.y = min(br.y, m_winSize.cy);
-  if(tl.x > br.x) ::swap(tl.x,br.x); // make sure we have the right orientation, no matter how r is
-  if(tl.y > br.y) ::swap(tl.y,br.y);
+  if(tl.x > br.x) std::swap(tl.x,br.x); // make sure we have the right orientation, no matter how r is
+  if(tl.y > br.y) std::swap(tl.y,br.y);
 
   const MatrixIndex itl(tl.y / m_cellSize.cy, tl.x / m_cellSize.cx);
   const MatrixIndex ibr(br.y / m_cellSize.cy, br.x / m_cellSize.cx);

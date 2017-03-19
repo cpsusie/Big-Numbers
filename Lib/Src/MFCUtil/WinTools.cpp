@@ -324,10 +324,10 @@ CSize pixelsToMillimeters(HDC hdc, const CSize &size) { // convert size in pixel
 CRect makePositiveRect(const CRect &r) {
   CRect result = r;
   if (result.Width() < 0) {
-    swap(result.left, result.right);
+    std::swap(result.left, result.right);
   }
   if (result.Height() < 0) {
-    swap(result.top, result.bottom);
+    std::swap(result.top, result.bottom);
   }
   return result;
 }

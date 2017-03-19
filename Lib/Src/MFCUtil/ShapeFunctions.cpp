@@ -8,14 +8,14 @@ void applyToLine(const CPoint &p1, const CPoint &p2, PointOperator &op) {
 void applyToLine(int x1, int y1, int x2, int y2, PointOperator &op) {
   if(x1 == x2) {
     if(y1 > y2) {
-      swap(y1,y2);
+      std::swap(y1,y2);
     }
     for(CPoint p = CPoint(x1,y1); p.y <= y2; p.y++) {
       op.apply(p);
     }
   } else if(y1 == y2) {
     if(x1 > x2) {
-      swap(x1,x2);
+      std::swap(x1,x2);
     }
     for(CPoint p = CPoint(x1,y1); p.x <= x2; p.x++) {
       op.apply(p);

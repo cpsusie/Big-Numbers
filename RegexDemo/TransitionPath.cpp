@@ -131,7 +131,7 @@ TransitionPath TransitionGrid::findShortestFreePath(const CPoint &from, const CP
       }
     }
     edge->clear(-1);
-    ::swap(edge,newPoints);
+    std::swap(edge,newPoints);
   }
   goal.setOccupied();
 

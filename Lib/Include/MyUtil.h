@@ -167,10 +167,11 @@ void quickSort(void *base, size_t nelem, size_t width, int (__cdecl *compare)(co
 
 void Message(const TCHAR *format, ... );
 
+/*
 template<class T> void swap(T &e1, T &e2) { 
   T tmp = e1; e1 = e2; e2 = tmp;
 }
- 
+*/ 
 String sprintbin(char    c);
 String sprintbin(UCHAR   c);
 String sprintbin(short   s);

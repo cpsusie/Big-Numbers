@@ -539,8 +539,8 @@ void SelectTool::startDragRect() {
 
 void SelectTool::redrawDragRect(const CPoint &point) {
   CRect newRect(m_mouseDownPoint,point);
-  if(newRect.left > newRect.right) ::swap(newRect.left,newRect.right);
-  if(newRect.top  > newRect.bottom) ::swap(newRect.top,newRect.bottom);
+  if(newRect.left > newRect.right ) std::swap(newRect.left,newRect.right);
+  if(newRect.top  > newRect.bottom) std::swap(newRect.top,newRect.bottom);
   SIZE size;
   size.cx = size.cy = 1;
   m_container.getViewport().getDC()->DrawDragRect(&newRect,size,m_dragRect,size);

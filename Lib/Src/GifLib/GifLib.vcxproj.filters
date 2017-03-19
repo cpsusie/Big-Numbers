@@ -8,6 +8,9 @@
     <Filter Include="Source Files">
       <UniqueIdentifier>{ef5831b2-c6d3-4ad4-987c-91963439215b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8b2c4edb-b8ac-4386-a03f-765254ae07d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="giflib-5.1.1\lib\dgif_lib.c">
@@ -33,27 +36,29 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="targetver.h" />
     <ClInclude Include="giflib-5.1.1\lib\getopt.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="giflib-5.1.1\lib\gif_hash.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="giflib-5.1.1\lib\gif_lib.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="giflib-5.1.1\lib\gif_lib_private.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="giflib-5.1.1\lib\stdbool.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="giflib-5.1.1\lib\stdint.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="giflib-5.1.1\lib\unistd.h">
-      <Filter>Source Files</Filter>
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="giflib-5.1.1\lib\gif_lib_private.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
