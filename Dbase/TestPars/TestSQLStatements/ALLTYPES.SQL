@@ -1,0 +1,23 @@
+create table alltypes (  
+  ucharfield     unsigned char not null,
+  ucharfieldn    unsigned char,
+  charfield      signed char not null,
+  charfieldn     signed char,
+  ushortfield    unsigned short not null,
+  ushortfieldn   unsigned short,
+  shortfield     signed short not null,
+  shortfieldn    signed short,
+  uintfield      unsigned int not null,
+  uintfieldn     unsigned int,
+  intfield       signed int not null,
+  intfieldn      signed int,
+  floatfield     float not null,
+  floatfieldn    float,
+  doublefield    double not null,
+  doublefieldn   double,
+  stringfield    char(30)  not null,
+  stringfieldn   char(30),
+  varcharfieldn  varchar(30),
+  varcharfield   varchar(30) not null,
+  primary key ( ucharfield )
+)

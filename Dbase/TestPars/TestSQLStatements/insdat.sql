@@ -1,0 +1,1 @@
+insert into tabdate values (currentdate - #1-5-2007#,currentdate + (#23-12-2005# + 5 - #24-12-2006#))

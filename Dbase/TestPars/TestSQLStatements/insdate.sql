@@ -1,0 +1,1 @@
+insert into tabdate values (1,#12-12-9999# + 100000)

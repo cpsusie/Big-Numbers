@@ -1,0 +1,1 @@
+select nullcolumn1 from lilletable where not (nullcolumn1 is not null)

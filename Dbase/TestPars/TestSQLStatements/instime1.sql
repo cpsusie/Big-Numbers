@@ -1,0 +1,1 @@
+insert into fisk values (#12:12:12#,timestamp(1,1,2005,12,34,56),currentdate)

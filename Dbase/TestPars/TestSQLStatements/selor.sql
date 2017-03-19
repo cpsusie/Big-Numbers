@@ -1,0 +1,1 @@
+select d from lilletable where firstcolumn = "a" or d = 1

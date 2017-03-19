@@ -1,0 +1,1 @@
+select * from lilletable where cast(firstcolumn as int) + 12 = 12

@@ -1,0 +1,1 @@
+select *,currentdate from mytable where f = currenttime

@@ -1,0 +1,1 @@
+select d from lilletable where not (ii = 2 and d = 3) or d = 1

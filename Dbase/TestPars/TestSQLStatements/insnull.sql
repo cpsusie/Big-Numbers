@@ -1,0 +1,1 @@
+insert into gg values ("str","1" || null)

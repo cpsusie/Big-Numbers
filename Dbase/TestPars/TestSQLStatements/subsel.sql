@@ -1,0 +1,1 @@
+select k,(select k+1 from ff where k > 1) from ff

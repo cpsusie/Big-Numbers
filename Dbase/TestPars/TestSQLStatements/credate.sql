@@ -1,0 +1,1 @@
+create table tabdate (ch char not null, d date, primary key (ch))

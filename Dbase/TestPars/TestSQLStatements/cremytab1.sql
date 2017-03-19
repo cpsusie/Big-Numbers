@@ -1,0 +1,22 @@
+create table mytable1 (  
+  firstcolumn char(30)  not null,
+  c1 unsigned char  not null default 2,
+  c2 signed   char  not null default 127,
+  cs1 unsigned char(1)  not null default "1",
+  cs2 signed   char(1)  not null default "a",
+  s  short          not null,
+  s1 unsigned short ,
+  s2 signed   short not null default -10101,
+  i  int            not null,
+  i1 unsigned int   not null,
+  i2 signed   int   not null,
+  l  long           not null,
+  l1 unsigned long  not null,
+  l2 signed   long  not null,
+  f  float          not null,
+  d  double         not null,
+  longss            char(26) not null default "1234567890123456",
+  varch1            varchar(254) not null,
+  varch2            varchar(222) default "fisk",
+  primary key ( firstcolumn, longss,c1,c2,s2 )
+)
