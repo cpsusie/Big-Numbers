@@ -283,23 +283,22 @@
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="TEST2.SQC">
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sqlprep test2.sqc  
-sqlbind -bfisk test2.bnd</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">sqlprep test2.sqc sqlbind -bfisk test2.bnd</Command>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">sqlprep test2.sqc sqlbind -bfisk test2.bnd</Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test2.cpp;test2.bnd;%(Outputs)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test2.cpp;test2.bnd</Outputs>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">test2.cpp;test2.bnd</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\sqlprep.exe;c:\bin\sqlbind.exe;c:\bin\sqlserv.exe;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">c:\bin\sqlprep.exe;c:\bin\sqlbind.exe;c:\bin\sqlserv.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">c:\bin\sqlprep.exe;c:\bin\sqlbind.exe;c:\bin\sqlserv.exe</AdditionalInputs>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sqlprep test2.sqc 
-sqlbind -bfisk test2.bnd </Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sqlprep test2.sqc 
-sqlbind -bfisk test2.bnd </Command>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test2.cpp;%(Outputs)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">test2.cpp</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\sqlprep.exe;%(AdditionalInputs)</AdditionalInputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\sqlprep.exe</AdditionalInputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">sqlprep test2.sqc sqlbind -bfisk test2.bnd</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sqlprep test2.sqc sqlbind -bfisk test2.bnd</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test2.cpp;test2.bnd</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">test2.cpp;test2.bnd</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\sqlprep.exe;c:\bin\sqlbind.exe;c:\bin\sqlserv.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\sqlprep.exe;c:\bin\sqlbind.exe;c:\bin\sqlserv.exe</AdditionalInputs>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pre-parsing SQL statements</Message>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pre-parsing SQL statements</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pre-parsing SQL statements</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pre-parsing SQL statements</Message>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
