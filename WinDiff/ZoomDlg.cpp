@@ -73,6 +73,15 @@ BOOL CZoomDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 BOOL CZoomDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+#ifdef __NEVER__
+  if (nFlags & MK_CONTROL) {
+    if(zDelta > 0) {
+      scrollRight();
+    } else {
+      scrollLeft();
+    }
+  } else 
+#endif
   if(zDelta > 0) {
     zoomIn();
   } else {
@@ -97,6 +106,29 @@ void CZoomDlg::zoomOut() {
   }
 }
 
+void CZoomDlg::scrollRight() {
+  scrollHorizontal(40);
+}
+void CZoomDlg::scrollLeft() {
+  scrollHorizontal(-40);
+}
+
+void CZoomDlg::scrollHorizontal(int n) {
+  CEdit *e = (CEdit*)GetDlgItem(IDC_EDIT2LINES);
+  LOGFONT lf;
+  m_font.GetLogFont(&lf);
+  SCROLLINFO info;
+  info.cbSize = sizeof(info);
+  e->GetScrollInfo(SB_HORZ, &info);
+  const int newPos = minMax(info.nPos + n, info.nMin, info.nMax);
+  const int amount = newPos - info.nPos;
+  if(amount != 0) {
+    e->SetScrollPos(SB_HORZ, newPos);
+    e->ScrollWindow(-amount,0);
+    UpdateWindow();
+  }
+}
+
 void CZoomDlg::OnCheckIgnorecase() {
   m_ignorecase = !m_ignorecase;
   m_cmp.setIgnoreCase(m_ignorecase? true : false);
@@ -113,4 +145,3 @@ void CZoomDlg::createAndSetFont(double scale) {
   m_font.CreateFontIndirect(&lf);
   GetDlgItem(IDC_EDIT2LINES)->SetFont(&m_font);
 }
-

@@ -18,6 +18,10 @@ private:
 
   void zoomIn();
   void zoomOut();
+  void scrollRight();
+  void scrollLeft();
+   // n characters. positive scrolls right, negative scroll left
+  void scrollHorizontal(int n);
   void createAndSetFont(double scale);
 public:
   CZoomDlg(const String &s1, const String &s2, CWnd *pParent = NULL);
