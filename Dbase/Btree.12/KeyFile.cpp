@@ -269,7 +269,7 @@ KeyFileInfo KeyFile::getInfo() {
     result.m_utilizationRate = 100;
   } else {
     const INT64 maxKeys = (INT64)nonLeafPageCount * m_pageInfo.m_maxItemCount + (INT64)leafPageCount * m_pageInfo.m_maxKeyCount;
-    result.m_utilizationRate = (double)((INT64)header.m_keyCount) / maxKeys * 100;
+    result.m_utilizationRate = PERCENT(header.m_keyCount, maxKeys);
   }
   return result;
 }
@@ -311,7 +311,7 @@ String KeyFileInfo::toString() const {
                      "  Utilization rate     : %.2lf%%\n"
                      "  Rootpage.keyCount    : %d\n"
                      "  Rootpage index       : %s\n")
-                  ,m_header.m_version
+                  ,m_header.getDbFileVersion().cstr()
                   ,sizeof(m_header)
                   ,format1000(m_pageInfo.m_pageSize).cstr()
                   ,m_header.m_keydef.getSize()

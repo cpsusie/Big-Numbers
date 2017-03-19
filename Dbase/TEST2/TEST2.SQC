@@ -1,0 +1,85 @@
+#include "stdafx.h"
+
+EXEC SQL INCLUDE SQLCA;
+
+EXEC SQL BEGIN DECLARE SECTION;
+  static char   dbname[20];
+  static short  dbnameindi;
+  static char   username[30];
+  static char   password[30];
+  static char   firstcolumn[30];
+  static short  s;
+  static unsigned short s1;
+  static short  s2;
+  static float  f;
+  static double d;
+  static int    i;
+  static unsigned int i1;
+  static int    i2;
+  static long   l;
+  static unsigned long l1;
+  static long   l2;
+  static char   varch1[20];
+  static char   ch[1];
+  static char   outstr[30];
+  static char   outint;
+EXEC SQL END   DECLARE SECTION;
+
+static void selectMyTable() {
+
+  exec sql
+    select
+      c1
+     ,longss
+    from mytable a 
+    where
+      a.i = cast("12" as int)
+    and
+      d = 1
+  union
+    select
+     c1
+    ,FIRSTCOLUMN
+    into
+     :s
+    ,:outstr
+    from mytable a
+    where
+      a.firstcolumn = :varch1
+  intersect
+    select
+     :s
+     ,firstcolumn
+    from mytable a
+    where
+      a.i = :d
+    and
+      a.firstcolumn = :varch1
+  end-exec
+}
+
+static void dbConnect() {
+  EXEC SQL CONNECT To :dbname user :username using :password;
+
+  if(sqlca.sqlcode != SQL_OK) {
+    printf("Cannot connect to database <%s>. sqlcode:%ld\n",dbname,sqlca.sqlcode);
+    exit(-1);
+  }
+}
+
+
+static void dbDisconnect() {
+  EXEC SQL CONNECT RESET;
+}
+
+int main(int argc, char **argv) {
+  strcpy(dbname   , "fisk");
+  strcpy(username , "ADM" );
+  strcpy(password , "ADM" );
+  dbConnect();
+  selectMyTable();
+  if(sqlca.sqlcode != SQL_OK) {
+    sqlca.dump();
+  }
+  return 0;
+}
