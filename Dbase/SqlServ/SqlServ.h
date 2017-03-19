@@ -521,7 +521,10 @@ public:
   CreateIndexData() {
     m_unique = false;
   }
-  void dump(FILE *f = stdout) const;
+  String toString() const;
+  inline void dump(FILE *f = stdout) const {
+    _ftprintf(f,_T("%s"), toString().cstr());
+  }
 };
 Packer &operator<<(Packer &p, const CreateIndexData &inx);
 Packer &operator>>(Packer &p,       CreateIndexData &inx);

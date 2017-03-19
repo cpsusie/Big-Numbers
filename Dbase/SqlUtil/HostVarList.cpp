@@ -24,6 +24,10 @@ Packer &operator>>(Packer &p, HostVarDescription &h) {
   return p;
 }
 
+String HostVarDescription::toString() const {
+  return format(_T("<Type:%s, len:%u>"), getTypeString((DbFieldType)sqltype));
+}
+
 // ----------------------------------------------------------------------------------
 
 HostVarList::HostVarList() {

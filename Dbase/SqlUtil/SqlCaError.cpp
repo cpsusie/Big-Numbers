@@ -27,8 +27,13 @@ void sqlca::seterror(long error, const TCHAR *format,...) {
 }
 
 void sqlca::dump(FILE *f) {
-  _ftprintf(f,_T("sqlca.code:%ld\n")     , sqlcode );
-  _ftprintf(f,_T("sqlca.sqlerrmc:<%s>\n"), sqlerrmc);
+  _ftprintf(f,_T("%s"), toString().cstr());
+}
+
+String sqlca::toString() const {
+  return format(_T("sqlca.code    :%ld\n"
+                   "sqlca.sqlerrmc:<%s>\n")
+               ,sqlcode, sqlerrmc);
 }
 
 void throwSqlError(long error, const TCHAR *format,...) {
@@ -39,4 +44,3 @@ void throwSqlError(long error, const TCHAR *format,...) {
   va_end(argptr);
   throw ca;
 }
-

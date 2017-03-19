@@ -4,7 +4,7 @@
 // = max(Instruction.adr)
 
 
-enum VirtualOpCode {
+typedef enum {
    CODECRTAB                  /*0userTabCreate(data[top])                                      */
   ,CODECRLIK                  /* userTabCreatelike(top-1,top)                                  */
   ,CODEDRTAB                  /* userTabDrop(top)                                              */
@@ -66,7 +66,7 @@ enum VirtualOpCode {
   ,CODEJMPGT                  /* if(status >  0) pcreg = ins.adr                               */
   ,CODEJMPLE                  /* if(status = -1 || status = 0) pcreg = ins.adr                 */
   ,CODEJMPLT                  /*6if(status = -1  pcreg = ins.adr                               */
-};
+} VirtualOpCode;
 
 class VirtualCodeHeader {
 public:
@@ -74,43 +74,68 @@ public:
   UINT                m_totalSize;
   UINT                m_dataOffset;
   int                 m_hostvarDescriptionList;
+  String toString() const;
 };
+
+#pragma pack(push,2)
 
 class Instruction {
 private:
-  static unsigned char inssizetable[];
-  unsigned char m_c[4];
+  static BYTE s_insSizeTable[];
+  UINT m_opcode : 8;
+  UINT m_addr   : 16;
+  UINT m_filler : 8;
 public:
-  VirtualOpCode opcode() const;
-  UINT  adr()    const;
-  UINT  reg()    const;
-  UINT  index()  const;
-  UINT  size()   const;
+  inline VirtualOpCode opcode() const {
+    return (VirtualOpCode)m_opcode;
+  }
+  inline UINT addr() const {
+    return m_addr;
+  }
+  inline UINT reg()  const {
+    return (addr() >> 14) & 3;
+  }
+  inline UINT index() const {
+    return addr() & 0x3fff;
+  }
+  inline UINT size() const {
+    return s_insSizeTable[opcode()];
+  }
   Instruction(VirtualOpCode _opcode);
   Instruction(VirtualOpCode _opcode, UINT _adr);
   Instruction(VirtualOpCode _opcode, UINT _reg, UINT _index);
   Instruction() {}
 };
 
+#pragma pack(pop)
+
 class VirtualCode {
 private:
   VirtualCodeHeader m_head;
   BYTE              m_code[MAXCODE];
-  void dumpconst(FILE *f, UINT addr) const;
+  inline String constToString(UINT addr) const {
+    return getConst(addr).toString();
+  }
 public:
-  VirtualCode()                  { m_head.m_totalSize = m_head.m_dataOffset = 0; m_head.m_hostvarDescriptionList = -1; }
+  friend class CodeGeneration;
+  inline VirtualCode() { 
+    m_head.m_totalSize = m_head.m_dataOffset = 0; 
+    m_head.m_hostvarDescriptionList = -1;
+  }
   UINT append(const void *data, UINT size);
   UINT append(const Packer &pack);
-  UINT totalSize()                     const { return m_head.m_totalSize; }
-  const BYTE *getCode(int index = 0)       const { return m_code + index;     }
-  void setProgramId(const SqlApiBindProgramId &programid) { m_head.m_programid  = programid; }
-  const SqlApiBindProgramId getProgramId() const { return m_head.m_programid; }
-  const BYTE *data(int adr)                const { return m_code + m_head.m_dataOffset + adr; }
-  void dump(FILE *f = stdout)              const;
-  HostVarDescriptionList getDescription()  const;
-  bool hasDescription()                    const { return m_head.m_hostvarDescriptionList >= 0; }
-  TupleField getConst(UINT addr)   const;
-  friend class CodeGeneration;
+  inline UINT totalSize()                   const { return m_head.m_totalSize; }
+  inline const BYTE *getCode(int index = 0) const { return m_code + index;     }
+  inline void setProgramId(const SqlApiBindProgramId &programid) { m_head.m_programid  = programid; }
+  const SqlApiBindProgramId getProgramId()  const { return m_head.m_programid; }
+  inline const BYTE *data(int adr)          const { return m_code + m_head.m_dataOffset + adr; }
+  HostVarDescriptionList getDescription()   const;
+  inline bool hasDescription()              const { return m_head.m_hostvarDescriptionList >= 0; }
+  TupleField getConst(UINT addr)            const;
+  String toString() const;
+  inline void dump(FILE *f = stdout) const {
+    _ftprintf(f, _T("%s"), toString().cstr());
+  }
 };
 
 class CodeGeneration {
@@ -144,12 +169,13 @@ public:
   UINT appendConst(Timestamp      d);
   void         fixins1( UINT pos, UINT adr);
   void         fixins2( UINT pos, UINT reg, UINT index );
-  int          currentCodeSize() const { return m_codesegment.totalSize(); }
+  inline int   currentCodeSize() const { return m_codesegment.totalSize(); }
   void         appendDesc( const HostVarDescriptionList &desc);
   void         appendDataToCode();
   void         splitCodeAndData(const VirtualCode &loadedcode);
-  const VirtualCode &getCode() const { return m_codesegment; }
-  void         dump( FILE *f = stdout ) const;
+  inline const VirtualCode &getCode() const { return m_codesegment; }
+  String       toString() const;
+  void         dump(FILE *f = stdout) const;
 };
 
 class CastParameter {
@@ -158,7 +184,8 @@ public:
   int          m_len;
   CastParameter(DbFieldType type, int len) { m_type = type;           m_len = len; }
   CastParameter()                          { m_type = DBTYPE_UNKNOWN; m_len = 0;   }
-  DbFieldType getType() const { return (DbFieldType)m_type; }
+  inline DbFieldType getType() const { return (DbFieldType)m_type; }
+  String toString() const;
 };
 
 Packer &operator<<(Packer &p, const CastParameter &v );

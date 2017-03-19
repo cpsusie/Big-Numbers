@@ -266,11 +266,10 @@ void VirtualMachine::run(int entrypoint) {
   TupleField v1,v2,v3,v4,v5,v6;
   const VirtualCode &vc    = m_engine.m_vc;
   Database          &db    = m_engine.m_db;
-  UINT       pcreg = entrypoint;
+  UINT               pcreg = entrypoint;
   for(;;) {
-    Instruction ins;
-    memcpy(&ins,vc.getCode(pcreg), sizeof(ins));
-    UINT currentpcreg = pcreg;
+    Instruction ins          = *(Instruction*)vc.getCode(pcreg);
+    UINT        currentpcreg = pcreg;
     pcreg += ins.size();
     try {
       switch(ins.opcode()) {
@@ -279,15 +278,14 @@ void VirtualMachine::run(int entrypoint) {
         break;
 
       case CODECRLIK      :
-        { String src, dst;
-          src = popString();
-          dst = popString();
-          db.tableCreateLike(dst.cstr(),src.cstr(),EMPTYSTRING);
+        { String src = popString();
+          String dst = popString();
+          db.tableCreateLike(dst,src,EMPTYSTRING);
           break;
         }
 
       case CODEDRTAB      :
-        db.tableDrop(popString().cstr());
+        db.tableDrop(popString());
         break;
 
       case CODECRINX      :
@@ -295,7 +293,7 @@ void VirtualMachine::run(int entrypoint) {
         break;
 
       case CODEDRINX      :
-        db.indexDrop(popString().cstr());
+        db.indexDrop(popString());
         break;
 
       case CODERETURN     :
@@ -334,16 +332,16 @@ void VirtualMachine::run(int entrypoint) {
         }
 
       case CODEPUSHHV     :
-        v1 = m_engine.m_hostvar[ins.adr()];
+        v1 = m_engine.m_hostvar[ins.addr()];
         m_stack.push(v1);
         break;
 
       case CODEPUSHCONST  :
-        m_stack.push(vc.getConst(ins.adr()));
+        m_stack.push(vc.getConst(ins.addr()));
         break;
 
       case CODEPUSHADR    :
-        v1 = ins.adr();
+        v1 = ins.addr();
         m_stack.push(v1);
         break;
 
@@ -441,7 +439,7 @@ void VirtualMachine::run(int entrypoint) {
         break;
 
       case CODECAST        :
-        m_stack.top() = sqlcast(m_stack.top(),vc.data(ins.adr()));
+        m_stack.top() = sqlcast(m_stack.top(),vc.data(ins.addr()));
         break;
 
       case CODEPUSHNULL        :
@@ -477,8 +475,8 @@ void VirtualMachine::run(int entrypoint) {
         break;
 
       case CODESENDEOF     :
-//        _tprintf(_T("sendeof til pipe %d\n"),ins.adr());
-        m_engine.m_pipelines[ins.adr()]->writeeof();
+//        _tprintf(_T("sendeof til pipe %d\n"),ins.addr());
+        m_engine.m_pipelines[ins.addr()]->writeeof();
         break;
 
       case CODERECEIVETUP  :
@@ -486,12 +484,12 @@ void VirtualMachine::run(int entrypoint) {
         break;
 
       case CODENEWOPERATOR :
-//        _tprintf(_T("starting new operator at address %d\n"),ins.adr());
-        m_engine.m_operators.add(new QueryOperator(m_engine,ins.adr()));
+//        _tprintf(_T("starting new operator at address %d\n"),ins.addr());
+        m_engine.m_operators.add(new QueryOperator(m_engine,ins.addr()));
         break;
 
       case CODEINITPIPES   :
-        m_engine.m_pipelines.init(ins.adr());
+        m_engine.m_pipelines.init(ins.addr());
         break;
 
       case CODECMP         :
@@ -499,7 +497,7 @@ void VirtualMachine::run(int entrypoint) {
         v2 = m_stack.pop();
         m_status = compare(v2,v1);
 //        _tprintf(_T("pcreg:%2d: compare("),pcreg); v2.dump(); _tprintf(_T(",")); v1.dump(); _tprintf(_T("):%d\n"),m_status);
-        if(m_status == -2) pcreg = ins.adr();
+        if(m_status == -2) pcreg = ins.addr();
         break;
 
       case CODECMPTRUE     :
@@ -507,7 +505,7 @@ void VirtualMachine::run(int entrypoint) {
         v2 = 1;
         m_status = compare(v1,v2);
 //        _tprintf(_T("pcreg:%2d: compare("),pcreg); v2.dump(); _tprintf(_T(",")); v1.dump(); _tprintf(_T("):%d\n"),m_status);
-        if(m_status == -2) pcreg = ins.adr();
+        if(m_status == -2) pcreg = ins.addr();
         break;
 
       case CODEEQ          :
@@ -554,40 +552,40 @@ void VirtualMachine::run(int entrypoint) {
       case CODEISLIKE      :
         v1 = m_stack.pop();
         v2 = m_stack.pop();
-        m_stack.push(isLike(ins.adr(),v2,v1));
+        m_stack.push(isLike(ins.addr(),v2,v1));
         break;
 
       case CODEJMPONDEFINED:
         v1 = m_stack.pop();
-        if(v1.isDefined()) pcreg = ins.adr();
+        if(v1.isDefined()) pcreg = ins.addr();
         break;
 
       case CODEJMP         :
-        pcreg = ins.adr();
+        pcreg = ins.addr();
         break;
 
       case CODEJMPEQ       :
-        if(m_status == 0) pcreg = ins.adr();
+        if(m_status == 0) pcreg = ins.addr();
         break;
 
       case CODEJMPNQ       :
-        if(m_status == 1 || m_status == -1) pcreg = ins.adr();
+        if(m_status == 1 || m_status == -1) pcreg = ins.addr();
         break;
 
       case CODEJMPGE       :
-        if(m_status >= 0) pcreg = ins.adr();
+        if(m_status >= 0) pcreg = ins.addr();
         break;
 
       case CODEJMPGT       :
-        if(m_status >  0) pcreg = ins.adr();
+        if(m_status >  0) pcreg = ins.addr();
         break;
 
       case CODEJMPLE       :
-        if(m_status == 0 || m_status == -1) pcreg = ins.adr();
+        if(m_status == 0 || m_status == -1) pcreg = ins.addr();
         break;
 
       case CODEJMPLT       :
-        if(m_status == -1) pcreg = ins.adr();
+        if(m_status == -1) pcreg = ins.addr();
         break;
 
       default:

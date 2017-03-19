@@ -1,0 +1,1 @@
+wc btree.12\*.cpp include\*.h sqlbind\*.sqc sqlparse\*.y sqlparse\*.lex sqlparse\nodelist.cpp sqlparse\parsertree.* sqlparse\tree*.cpp sqlprep\*.cpp sqlprep\lex.h sqlserv\*.cpp sqlserv\*.h sqlutil\*.cpp

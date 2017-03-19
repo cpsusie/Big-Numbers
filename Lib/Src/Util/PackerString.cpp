@@ -18,10 +18,10 @@ Packer &Packer::operator>>(String &s) {
   size_t l;
   *this >> l;
   switch(peekType()) {
-  case E_STR  :
+  case E_CSTR  :
     { char *tmp = new char[l+1];
       try {
-        getElement(E_STR, tmp, l);
+        getElement(E_CSTR, tmp, l);
         tmp[l] = 0;
         s = tmp;
         delete[] tmp;

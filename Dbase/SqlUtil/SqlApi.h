@@ -153,6 +153,7 @@ public:
   void seterror( long error, const TCHAR *format,...);
   sqlca(         long error, const TCHAR *format,...);
   void dump(FILE *f = stdout);
+  String toString() const;
 };
 
 #define SQLCODE sqlca.sqlcode
@@ -240,7 +241,8 @@ public:
   ULONG   sqllen; // in bytes
   HostVarDescription() { sqltype = 0; sqllen = 0; }
   HostVarDescription(DbFieldType type, ULONG len); // len in bytes
-  DbFieldType getType() const { return (DbFieldType)sqltype; }
+  inline DbFieldType getType() const { return (DbFieldType)sqltype; }
+  String toString() const;
 };
 
 class SqlApiVarList : public HostVarDescription {
@@ -306,8 +308,8 @@ int  compare(   const varchar &vc1, const varchar &vc2);
 
 class SqlApiBindProgramId {
 public:
-  TCHAR fileName[30];
-  TCHAR Timestamp[30];
+  TCHAR m_fileName[30];
+  TCHAR m_timestamp[30];
   SqlApiBindProgramId()                { memset(this,0  ,sizeof(SqlApiBindProgramId)); }
   SqlApiBindProgramId(const void *src) { memcpy(this,src,sizeof(SqlApiBindProgramId)); }
 };
@@ -355,9 +357,9 @@ public:
 };
 
 typedef struct {
-  TCHAR dbname[SQLAPI_MAXDBNAME + 1]; /* must be the same length as dbname in btree.h */
-  char  drive;
-  unsigned char colseq[256];
+  TCHAR         m_dbname[SQLAPI_MAXDBNAME + 1]; /* must be the same length as dbname in btree.h */
+  char          m_drive;
+  unsigned char m_colseq[256];
 } SqlApiCreateDb;
 
 class SqlApiCom {

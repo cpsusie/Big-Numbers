@@ -55,7 +55,7 @@ public:
   SqlApiCom      m_combuffer;
   ClientConnection(SOCKET s);
   ~ClientConnection();
-  Array<ClientCursor*> m_opencursor;
+  CompactArray<ClientCursor*> m_opencursor;
   void closeDatabase();
   bool readRequest();
   void writeReply();
@@ -110,9 +110,9 @@ void ClientConnection::executeCreateDb() {
   int i;
 
   m_p >> crdb;
-  _stprintf(dbdef.m_path,_T("%c:\\%s"),crdb.drive,crdb.dbname);
-  _tcscpy(dbdef.m_dbName,crdb.dbname);
-  for(i = 0; i < 256; i++ ) dbdef.m_colseq[i] = crdb.colseq[i];
+  _stprintf(dbdef.m_path,_T("%c:\\%s"),crdb.m_drive,crdb.m_dbname);
+  _tcscpy(dbdef.m_dbName,crdb.m_dbname);
+  for(i = 0; i < 256; i++ ) dbdef.m_colseq[i] = crdb.m_colseq[i];
   try {
     Database::create( dbdef );
     m_combuffer.m_ca.seterror(0);
@@ -199,7 +199,7 @@ void ClientConnection::executeBind() {
 void ClientConnection::executeUnbind() {
   try {
     m_db->trbegin();
-    m_db->sysTabCodeDelete(m_combuffer.m_programid.fileName);
+    m_db->sysTabCodeDelete(m_combuffer.m_programid.m_fileName);
     m_db->trcommit();
   } catch(sqlca ca) {
     if(m_db->inTMF()) m_db->trabort();
@@ -210,8 +210,9 @@ void ClientConnection::executeUnbind() {
 int ClientConnection::findClientCursor(const SqlApiBindProgramId &programid, int apiopt) {
   for(UINT i = 0; i < m_opencursor.size(); i++) {
     ClientCursor *cursor = m_opencursor[i];
-    if(cursor->m_programid == programid && cursor->m_apiopt == apiopt)
+    if(cursor->m_programid == programid && cursor->m_apiopt == apiopt) {
       return i;
+    }
   }
   return -1;
 }
@@ -220,8 +221,7 @@ void ClientConnection::executeOpenCursor() {
   if(findClientCursor(m_combuffer.m_programid,m_combuffer.m_apiopt) >= 0) {
     m_combuffer.m_ca.seterror(SQL_CURSOR_ALREADY_OPEN,_T("Cursor already open"));
     m_p.clear();
-  }
-  else {
+  } else {
     HostVarList hostvar;
     m_p >> hostvar;
     try {
@@ -235,31 +235,27 @@ void ClientConnection::executeOpenCursor() {
 }
 
 void ClientConnection::executeCloseCursor() {
-  int c = findClientCursor(m_combuffer.m_programid,m_combuffer.m_apiopt);
-  if(c < 0)
+  const int c = findClientCursor(m_combuffer.m_programid,m_combuffer.m_apiopt);
+  if(c < 0) {
     m_combuffer.m_ca.seterror(SQL_CURSOR_NOT_OPEN,_T("Cursor not open"));
-  else {
+  } else {
     delete m_opencursor[c];
-    m_opencursor.removeIndex(c);
+    m_opencursor.remove(c);
   }
   writeReply();
 }
 
 void ClientConnection::executeFetchCursor() {
-  int c = findClientCursor(m_combuffer.m_programid,m_combuffer.m_apiopt);
+  const int c = findClientCursor(m_combuffer.m_programid,m_combuffer.m_apiopt);
   if(c < 0) {
     m_combuffer.m_ca.seterror(SQL_CURSOR_NOT_OPEN,_T("Cursor not open"));
     m_p << m_combuffer;
-  }
-  else {
-    if(m_opencursor[c]->fetch()) {
-      m_p << m_combuffer;
-      m_p << m_opencursor[c]->m_fetchvarlist;
-    }
-    else {
-      m_opencursor[c]->getSqlca(m_combuffer.m_ca);
-      m_p << m_combuffer;
-    }
+  } else if(m_opencursor[c]->fetch()) {
+    m_p << m_combuffer;
+    m_p << m_opencursor[c]->m_fetchvarlist;
+  } else {
+    m_opencursor[c]->getSqlca(m_combuffer.m_ca);
+    m_p << m_combuffer;
   }
   m_p.send();
 }
@@ -313,69 +309,69 @@ UINT ServerThread::run() {
   try {
     while(cc.readRequest()) {
       switch(cc.m_combuffer.m_apicall) {
-        case SQL_CALL_CONNECT   :
-          switch(cc.m_combuffer.m_apiopt) {
-            case SQL_CALL_CONNECT_RESET:
-              cc.closeDatabase();
-              cc.writeReply();
-              break;
-            case SQL_CALL_CONNECT_DB:
-            case SQL_CALL_CONNECT_USING:
-              cc.executeConnect();
-              cc.writeReply();
-              break;
-          }
-          break;
-        case SQL_CALL_CREATE    :
-          cc.executeCreateDb();
+      case SQL_CALL_CONNECT   :
+        switch(cc.m_combuffer.m_apiopt) {
+        case SQL_CALL_CONNECT_RESET:
+          cc.closeDatabase();
           cc.writeReply();
           break;
-        case SQL_CALL_DROP      :
-          cc.executeDropDb();
+        case SQL_CALL_CONNECT_DB:
+        case SQL_CALL_CONNECT_USING:
+          cc.executeConnect();
           cc.writeReply();
           break;
-        case SQL_CALL_COMMIT    :
-        case SQL_CALL_IMMEDIATE :
-        case SQL_CALL_ROLLBACK  :
-        case SQL_CALL_PREPARE   :
-        case SQL_CALL_DESCRIBE  :
-          cc.writeReply();
-          break;
+        }
+        break;
+      case SQL_CALL_CREATE    :
+        cc.executeCreateDb();
+        cc.writeReply();
+        break;
+      case SQL_CALL_DROP      :
+        cc.executeDropDb();
+        cc.writeReply();
+        break;
+      case SQL_CALL_COMMIT    :
+      case SQL_CALL_IMMEDIATE :
+      case SQL_CALL_ROLLBACK  :
+      case SQL_CALL_PREPARE   :
+      case SQL_CALL_DESCRIBE  :
+        cc.writeReply();
+        break;
 
-        case SQL_CALL_OPEN      :
-          cc.executeOpenCursor();
-          break;
-        case SQL_CALL_CLOSE     :
-          cc.executeCloseCursor();
-          break;
-        case SQL_CALL_FETCH     :
-          cc.executeFetchCursor();
-          break;
-        case SQL_CALL_EXECUTE   :
+      case SQL_CALL_OPEN      :
+        cc.executeOpenCursor();
+        break;
+      case SQL_CALL_CLOSE     :
+        cc.executeCloseCursor();
+        break;
+      case SQL_CALL_FETCH     :
+        cc.executeFetchCursor();
+        break;
+      case SQL_CALL_EXECUTE   :
 #ifdef DEBUG_SERVER
-          _tprintf(_T("execute request: programid <%s,%s> apiopt:%d\n"),
-            cc.m_combuffer.m_programid.fileName,
-            cc.m_combuffer.m_programid.Timestamp,
-            cc.m_combuffer.m_apiopt);
-          _tprintf(_T("Now loading statement\n"));
+        _tprintf(_T("execute request: programid <%s,%s> apiopt:%d\n")
+                ,cc.m_combuffer.m_programid.m_fileName
+                ,cc.m_combuffer.m_programid.m_timestamp
+                ,cc.m_combuffer.m_apiopt);
+        _tprintf(_T("Now loading statement\n"));
 #endif
-          cc.execute();
-          cc.writeReply();
-          break;
+        cc.execute();
+        cc.writeReply();
+        break;
       
-       case SQL_CALL_BIND       :
-         cc.executeBind();
-         break;  
+      case SQL_CALL_BIND       :
+        cc.executeBind();
+        break;  
 
-       case SQL_CALL_UNBIND     :
-         cc.executeUnbind();
-         cc.writeReply();
-         break;
+      case SQL_CALL_UNBIND     :
+        cc.executeUnbind();
+        cc.writeReply();
+        break;
 
-       default:
-         cc.m_combuffer.m_ca.sqlcode = SQL_ERROR_INVALID_APICALL;
-         cc.writeReply();
-         break;
+      default:
+        cc.m_combuffer.m_ca.sqlcode = SQL_ERROR_INVALID_APICALL;
+        cc.writeReply();
+        break;
       }
     }
   } catch(sqlca ca) {
@@ -401,16 +397,17 @@ static unsigned short getPort() {
   if(envval == NULL)
     throwException(_T("%s not defined"),envvar);
   
-  if(((sm = _tcschr(envval,';')) == NULL) || _stscanf(sm+1,_T("%hd"),&portnr) != 1)
+  if(((sm = _tcschr(envval,';')) == NULL) || _stscanf(sm+1,_T("%hd"),&portnr) != 1) {
     throwException(_T("%s must contain servername and portnumber"),envvar);
+  }
   return portnr;
 }
 
-int main() {
+int _tmain(int argc, TCHAR *argv) {
   try {
     SOCKET listen = tcpCreate(getPort());
 
-    Array<ServerThread*> threads;
+    CompactArray<ServerThread*> threads;
 #ifdef DEBUG_SERVER
     _tprintf(_T("Server is running. waiting for connections...\n"));
 #endif
@@ -426,13 +423,13 @@ int main() {
 #ifdef DEBUG_SERVER
           _tprintf(_T("Removing Thread [%d]\n"),i); // her leakes et handle for hver gang !!!
 #endif
-          threads.removeIndex(i);
+          threads.remove(i);
           delete thr;
         }
       }
     }
   } catch(Exception e) {
-    _ftprintf(stderr,_T("%s\n"),e.what());
+    _ftprintf(stderr,_T("%s\n"), e.what());
     exit(-1);
   }
   return 0;

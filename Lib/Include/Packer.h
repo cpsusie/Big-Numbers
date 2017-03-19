@@ -16,7 +16,7 @@ public:
    ,E_LONG
    ,E_FLOAT
    ,E_DOUBLE
-   ,E_STR
+   ,E_CSTR
    ,E_WSTR
    ,E_VOID
    ,E_LONG_LONG

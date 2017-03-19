@@ -20,16 +20,17 @@ void sqlCreateIndex(Database &db, CreateIndexData &data) {
   db.indexCreate(indexDef);
 }
 
-void CreateIndexData::dump(FILE *f) const {
-  _ftprintf(f,_T("CreateIndexData:\n"));
-  _ftprintf(f,_T("  indexname:<%s>\n"),m_indexName.cstr());
-  _ftprintf(f,_T("  tablename:<%s>\n"),m_tableName.cstr());
-  _ftprintf(f,_T("  unique:%s\n")     ,boolToStr(m_unique));
-  _ftprintf(f,_T("  colcount:%zd\n")  ,m_columns.size());
+String CreateIndexData::toString() const {
+  String result = _T("CreateIndexData:\n");
+  result += format(_T("  Indexname  :<%s>\n"), m_indexName.cstr());
+  result += format(_T("  Tablename  :<%s>\n"), m_tableName.cstr());
+  result += format(_T("  Unique     :%s\n"  ), boolToStr(m_unique));
+  result += format(_T("  ColumnCount:%zd\n" ), m_columns.size());
   for(size_t i = 0; i < m_columns.size(); i++) {
     const IndexColumnName &col = m_columns[i];
-    _ftprintf(f,_T("    colname[%zd]:<%s> <%c>\n"),i,col.m_colName.cstr(),col.m_asc ? 'A':'D');
+    result += format(_T("    ColName[%zd]:<%s> <%c>\n"), i,col.m_colName.cstr(),col.m_asc ? 'A':'D');
   }
+  return result;
 }
 
 Packer &operator<<(Packer &p, const IndexColumnName &col) {

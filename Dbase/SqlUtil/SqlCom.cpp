@@ -4,19 +4,19 @@
 #include "SqlCom.h"
 
 Packer &operator<<(Packer &p, const SqlApiCreateDb &crdb) {
-  p << crdb.dbname
-    << crdb.drive;
-  for(int i = 0; i < ARRAYSIZE(crdb.colseq); i++) {
-    p << crdb.colseq[i];
+  p << crdb.m_dbname
+    << crdb.m_drive;
+  for(int i = 0; i < ARRAYSIZE(crdb.m_colseq); i++) {
+    p << crdb.m_colseq[i];
   }
   return p;
 }
 
 Packer &operator>>(Packer &p, SqlApiCreateDb &crdb) {
-  p >> crdb.dbname
-    >> crdb.drive;
-  for(int i = 0; i < ARRAYSIZE(crdb.colseq); i++) {
-    p >> crdb.colseq[i];
+  p >> crdb.m_dbname
+    >> crdb.m_drive;
+  for(int i = 0; i < ARRAYSIZE(crdb.m_colseq); i++) {
+    p >> crdb.m_colseq[i];
   }
   return p;
 }
@@ -50,14 +50,14 @@ Packer &operator>>(Packer &p, SqlApiCom &com) {
 }
 
 Packer &operator<<(Packer &p, const SqlApiBindProgramId &programid) {
-  p << programid.fileName
-    << programid.Timestamp;
+  p << programid.m_fileName
+    << programid.m_timestamp;
   return p;
 }
 
 Packer &operator>>(Packer &p, SqlApiBindProgramId &programid) {
-  p >> programid.fileName
-    >> programid.Timestamp;
+  p >> programid.m_fileName
+    >> programid.m_timestamp;
   return p;
 }
 
@@ -108,5 +108,6 @@ Packer &operator>>(Packer &p, SqlApiBindStmt &stmt) {
 }
 
 bool operator==(const SqlApiBindProgramId &p1, const SqlApiBindProgramId &p2) {
-  return (_tcscmp(p1.fileName,p2.fileName) == 0) && (_tcscmp(p1.Timestamp,p2.Timestamp) == 0);
+  return (_tcscmp(p1.m_fileName ,p2.m_fileName ) == 0) 
+      && (_tcscmp(p1.m_timestamp,p2.m_timestamp) == 0);
 }

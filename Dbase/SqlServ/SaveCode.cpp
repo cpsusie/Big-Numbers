@@ -21,10 +21,10 @@ void sqlSaveCode( Database            &db       ,
   SysTableCodeKey codekey;
 
   vc.setProgramId(programid);
-  _tcscpy(codekey.m_filename,programid.fileName);
+  _tcscpy(codekey.m_filename,programid.m_fileName);
   codekey.m_nr    = nr;
 
-  if(codelookup(db, programid.fileName, nr))
+  if(codelookup(db, programid.m_fileName, nr))
     db.sysTabCodeDelete(codekey);
 
 #ifdef DEBUGMODULE
@@ -47,7 +47,7 @@ void sqlLoadCode(  const Database            &db        ,
 
   KeyFileDefinition keydef(indexfile);
   KeyType key;
-  keydef.put(key,0,String(programid.fileName));
+  keydef.put(key,0,String(programid.m_fileName));
   keydef.put(key,1,nr);
 
   bool found = indexfile.searchMin( RELOP_EQ, key, 2);
@@ -57,9 +57,9 @@ void sqlLoadCode(  const Database            &db        ,
 #endif
 
   if(!found)
-    throwSqlError(SQL_UNKNOWN_PROGRAMID,_T("Unknown programfile:<%s>"),programid.fileName);
+    throwSqlError(SQL_UNKNOWN_PROGRAMID,_T("Unknown programfile:<%s>"),programid.m_fileName);
   datafile.readRecord( keydef.getRecordAddr(key), &vc, sizeof(VirtualCode));
 
-  if(_tcscmp(vc.getProgramId().Timestamp,programid.Timestamp) != 0)
-    throwSqlError(SQL_TIMESTAMP_MISMATCH,_T("Timestamp mismatch on <%s>"),programid.fileName);
+  if(_tcscmp(vc.getProgramId().m_timestamp,programid.m_timestamp) != 0)
+    throwSqlError(SQL_TIMESTAMP_MISMATCH,_T("Timestamp mismatch on <%s>"),programid.m_fileName);
 }

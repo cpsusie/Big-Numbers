@@ -1,7 +1,6 @@
 #pragma once
 
-#include <stdio.h>
-#include <sqlapi.h>
+#include <SqlApi.h>
 #include <Regex.h>
 
 // translates sql-like-pattern with wildcards '%' and '_' to normal regular expression

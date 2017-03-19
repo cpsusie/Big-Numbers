@@ -1,0 +1,244 @@
+#include "targetver.h"
+#include <sqlapi.h>
+#include <comdef.h>
+#include <atlconv.h>
+
+EXEC SQL INCLUDE SQLCA;
+
+EXEC SQL BEGIN DECLARE SECTION;
+
+  static char dbname[20];
+  static char username[30];
+  static char password[30];
+
+EXEC SQL END DECLARE SECTION;
+
+static void dbConnect() {
+  
+  EXEC SQL CONNECT TO :dbname user :username using :password;
+
+  if(sqlca.sqlcode != SQL_OK) {
+    printf("Cannot connect to database <%s>\n",dbname);
+    sqlca.dump();
+    exit(-1);
+  }
+}
+
+static void dbDisconnect() {
+  EXEC SQL CONNECT RESET END-EXEC
+}
+
+static bool verbose = false;
+
+static void message(const TCHAR *format,...) {
+  if(!verbose) return;
+  va_list argptr;
+  va_start(argptr,format);
+  _vtprintf(format, argptr);
+  va_end(argptr);
+}
+
+static bool bindProgram(const String &inputfname) {
+  SqlApiBindProgramId programid;
+  SqlApiBindStmt      bndstmt;
+  FILE               *bndfile;
+  String              tmpStmt;
+  bool                allok = true;
+
+  bndfile = fopen( inputfname, _T("rb"));
+  if(!bndfile) {
+    _tperror(inputfname.cstr());
+    return false;
+  }
+  if(!sqlapi_bndprogramidfread(bndfile,programid)) {
+    _ftprintf(stderr,_T("sqlapi_bndprogramidfread failed on %s\n"),inputfname.cstr());
+    fclose(bndfile);
+    return false;
+  }
+
+  sqlapi_unbind(programid.m_fileName,sqlca);
+
+  while(sqlapi_bndstmtfread(bndfile,bndstmt)) {
+    tmpStmt = bndstmt.m_stmt;
+    message(_T("Now bind <%s ...>\n"),left(tmpStmt.replace(_T('\n'),_T(' ')),60).cstr());
+    StringArray errmsg;
+
+    sqlapi_bind(programid,bndstmt,errmsg,sqlca);
+
+    if(sqlca.sqlcode != SQL_OK) {
+      if(errmsg.size() == 0) {
+        sqlca.dump();
+      } else {
+        for(size_t i = 0; i < errmsg.size(); i++) {
+          _tprintf(_T("%s\n"),errmsg[i].cstr());
+        }
+      }
+      allok = false;
+    }
+  }
+
+  fclose(bndfile);
+  return allok;
+}
+
+static bool bindProgram(const String &db, TCHAR **filenames) {
+  USES_CONVERSION;
+  bool        allok  = true;
+  const char *adbstr = T2A(db.cstr());
+
+  strcpy(dbname  ,adbstr);
+  strcpy(username,"ADM");
+  strcpy(password,"ADM");
+
+  dbConnect();
+
+  for(;*filenames; filenames++) {
+    if(bindProgram(*filenames)) {
+      message(_T("Bind %s succeeded.\n"),*filenames);
+    } else {
+      allok = false;
+      _tprintf(_T("Bind %s failed.\n"), *filenames);
+      break;
+    }
+  }
+  dbDisconnect();
+  return allok;
+}
+
+static bool unbindProgram(const String &db, TCHAR **filenames) {
+  USES_CONVERSION;
+  bool        allok  = true;
+  const char *adbstr = T2A(db.cstr());
+
+  strcpy(dbname  ,adbstr);
+  strcpy(username,"ADM" );
+  strcpy(password,"ADM" );
+
+  dbConnect();
+
+  for(;*filenames; filenames++) {
+    sqlapi_unbind(*filenames,sqlca);
+    if(sqlca.sqlcode == SQL_OK) {
+      message(_T("Unbind %s succeeded.\n"),*filenames);
+    } else if(sqlca.sqlcode == SQL_NOT_FOUND) {
+      _tprintf(_T("Warning:")); sqlca.dump();
+    } else {
+      allok = false;
+      sqlca.dump();
+      _tprintf(_T("Unbind %s failed.\n"), *filenames);
+      break;
+    }
+  }
+
+  dbDisconnect();
+  return allok;
+}
+
+static bool createDatabase(const String &dbname) {
+  SqlApiCreateDb crdb;
+  int i;
+
+  if(dbname.length() >= ARRAYSIZE(crdb.m_dbname)) {
+    _ftprintf(stderr,_T("dbname <%s> too long. Maxsize=%zd\n"),dbname.cstr(),ARRAYSIZE(crdb.m_dbname)-1);
+    return false;
+  }
+  memset(&crdb,0,sizeof(crdb));
+  _tcscpy(crdb.m_dbname,dbname.cstr());
+  crdb.m_drive = 'c';
+  for(i=0;i<256;i++) crdb.m_colseq[i] = i;
+  sqlapi_createdb( crdb, sqlca);
+  if(sqlca.sqlcode != SQL_OK) {
+    _tprintf(_T("create database failed. "));
+    sqlca.dump();
+    return false;
+  } else {
+    message(_T("create database <%s> succeeded\n"),dbname.cstr());
+    return true;
+  }
+}
+
+static bool dropDatabase(const String &dbname) {
+  sqlapi_dropdb( dbname.cstr(), sqlca);
+  if(sqlca.sqlcode != SQL_OK) {
+    _tprintf(_T("drop database failed. "));
+    sqlca.dump();
+    return false;
+  } else {
+    message(_T("drop database <%s> succeeded\n"),dbname.cstr());
+    return true;
+  }
+}
+
+static void usage() {
+  fprintf( stderr, 
+           "Usage:sqlbind [-v] -cdatabase : Create database\n"
+           "      sqlbind [-v] -ddatabase : Drop database\n"
+           "      sqlbind [-v] -bdatabase files : Bind files to database\n"
+           "      sqlbind [-v] -udatabase files : Unbind programfiles (use extension .sqc)\n"
+         );
+  exit(-1);
+}
+
+typedef enum {
+  CREATEDB,
+  DROPDB  ,
+  BINDPROGRAM,
+  UNBINDPROGRAM
+} command;
+
+int _tmain( int argc, TCHAR **argv ) {
+  TCHAR *cp;
+  TCHAR *dbname = NULL;
+  command cmd;
+
+  argvExpand(argc, argv);
+
+  for( argv++; *argv && *(cp = *argv) == '-'; argv++ ) {
+    for( cp++; *cp; cp++ ) {
+      switch( *cp ) {
+        case 'c':
+          cmd = CREATEDB;
+          dbname = cp + 1;
+          break;
+        case 'd':
+          cmd = DROPDB;
+          dbname = cp + 1;
+          break;
+        case 'b':
+          cmd = BINDPROGRAM;
+          dbname = cp + 1;
+          break;
+        case 'u':
+          cmd = UNBINDPROGRAM;
+          dbname = cp + 1;
+          break;
+        case 'v':
+          verbose = true;
+          break;
+        default :
+          usage();
+      }
+      break;
+    }
+  }
+
+  if(dbname == NULL || _tcslen(dbname) == 0) usage();
+
+  switch(cmd) {
+  case BINDPROGRAM:
+	if( !*argv ) usage();
+	return bindProgram(dbname,argv) ? 0 : -1;
+	break;
+  case UNBINDPROGRAM:
+	if(!*argv ) usage();
+	return unbindProgram(dbname,argv) ? 0 : -1;
+	break;
+  case CREATEDB:
+	return createDatabase(dbname) ? 0 : -1;
+	break;
+  case DROPDB:
+	return dropDatabase(dbname) ? 0 : -1;
+	break;
+  }
+  return 0;
+}

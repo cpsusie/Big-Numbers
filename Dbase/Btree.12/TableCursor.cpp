@@ -15,10 +15,13 @@ private:
   bool putField(      int i, double           d);
 public:
   RelationType   m_relop;
-  UINT   m_fieldCount;
+  UINT           m_fieldCount;
   KeyType        m_key;
   TableCursorKey(const KeyFileDefinition &keydef, const Tuple *keyTuple, UINT fieldCount, RelationType relop);
-  void dump(FILE *f = stdout) const;
+  String toString() const;
+  inline void dump(FILE *f = stdout) const {
+    _ftprintf(f, _T("%s"), toString().cstr());
+  }
 };
 
 static int rangecmp(double d, int type) {
@@ -369,15 +372,17 @@ TableCursorKey::TableCursorKey(const KeyFileDefinition &keydef, const Tuple *key
   }
   const Tuple &tuple = *keytuple;
   if(fieldCount > tuple.size()) {
-    throwSqlError(SQL_FATAL_ERROR,_T("TableCursorKey:invalid fieldCount (=%d) specified. Tuple.size = %d"),fieldCount,tuple.size());
+    throwSqlError(SQL_FATAL_ERROR,_T("TableCursorKey:invalid fieldCount (=%d) specified. Tuple.size = %zd")
+                                 ,fieldCount,tuple.size());
   }
   for(UINT i = 0; i < fieldCount; i++) {
     DbFieldType tupleType = tuple[i].getType();
     DbFieldType keyType = keydef.getFieldDef(i).getType();
 
     if(!isCompatibleType(keyType,tupleType)) {
-       throwSqlError(SQL_TYPEMISMATCH,_T("Incompatible types in keydefinition(%s) and tupledefinition(%s)"),
-                     getTypeString(keyType),getTypeString(tupleType));
+       throwSqlError(SQL_TYPEMISMATCH,_T("Incompatible types in keydefinition(%s) and tupledefinition(%s)")
+                     ,getTypeString(keyType)
+                     ,getTypeString(tupleType));
     }
 
     const TupleField &tupField = tuple[i];
@@ -467,20 +472,19 @@ TableCursorKey::TableCursorKey(const KeyFileDefinition &keydef, const Tuple *key
       break;
 
     default:
-      throwSqlError(SQL_FATAL_ERROR,_T("TableCursorKey:Invalid DbMainType :%d"),getMainType(tupleType));
+      throwSqlError(SQL_FATAL_ERROR,_T("TableCursorKey:Invalid DbMainType :%d")
+                                   ,getMainType(tupleType));
       break;
     }
   }
 }
 
-void TableCursorKey::dump(FILE *f) const {
-  _ftprintf(f,_T("TableCursorKey:\n"));
-  _ftprintf(f,_T("  fieldCount:%d\n"),m_fieldCount);
-  _ftprintf(f,_T("  relop     :%s\n"),relOpString(m_relop));
-  _ftprintf(f,_T("  key       :"));
-  m_keydef.fprintf(f,m_key,m_fieldCount);
-  _ftprintf(f,_T("\n"));
-  fflush(stdout);
+String TableCursorKey::toString() const {
+  String result = _T("TableCursorKey:\n");
+  result += format(_T("  FieldCount:%d\n"), m_fieldCount);
+  result += format(_T("  relop     :%s\n"), relOpString(m_relop));
+  result += format(_T("  Key       :%s\n"), m_keydef.sprintf(m_key,m_fieldCount).cstr());
+  return result;
 }
 
 TableCursor::TableCursor(Database               &db      ,
@@ -541,7 +545,7 @@ TupleField fieldFromKey(const KeyFileDefinition &keydef, const KeyType &key, USH
 
 void TableCursor::next(Tuple &t) {
   if(t.size() != m_fieldSet.size()) {
-    throwSqlError(SQL_INVALID_NO_OF_COLUMNS,_T("Tablecursor::fetch:Invalid number of columns specified in Tuple (=%d) expected %d")
+    throwSqlError(SQL_INVALID_NO_OF_COLUMNS,_T("Tablecursor::fetch:Invalid number of columns specified in Tuple (=%zd) expected %zd")
                  ,t.size(), m_fieldSet.size());
   }
 
@@ -628,22 +632,16 @@ Packer &operator>>(Packer &p, TableCursorParam &param) {
   return p;
 }
 
-void TableCursorParam::dump(FILE *f) const {
-  _ftprintf(f,_T("TableCursorParam:\n"));
-  _ftprintf(f,_T("  sequenceno     :%d\n"), m_sequenceNo                   );
-  _ftprintf(f,_T("  indexname      :%s\n"), m_indexName.cstr()             );
-  _ftprintf(f,_T("  indexonly      :%s\n"), boolToStr(m_indexOnly)         );
-  _ftprintf(f,_T("  beginRelOp     :%s\n"), relOpString(m_beginRelOp)      );
-  _ftprintf(f,_T("  beginfieldcount:%d\n"), m_beginFieldCount              );
-  _ftprintf(f,_T("  endRelOp       :%s\n"), relOpString(m_endRelOp)        );
-  _ftprintf(f,_T("  endfieldcount  :%d\n"), m_endFieldCount                );
-  _ftprintf(f,_T("  direction      :%s\n"), (m_dir == SORT_ASCENDING) ? _T("ASC") : _T("DESC"));
-  _ftprintf(f,_T("  FieldSet       :<"));
-  for(size_t i = 0; i < m_fieldSet.size(); i++) {
-    if(i > 0) {
-      _ftprintf(f,_T(","));
-    }
-    _ftprintf(f,_T("%d"),m_fieldSet[i]);
-  }
-  _ftprintf(f,_T(">\n"));
+String TableCursorParam::toString() const {
+  String result = _T("TableCursorParam:\n");
+  result += format(_T("  Sequenceno     :%d\n"), m_sequenceNo                   );
+  result += format(_T("  Indexname      :%s\n"), m_indexName.cstr()             );
+  result += format(_T("  Indexonly      :%s\n"), boolToStr(m_indexOnly)         );
+  result += format(_T("  BeginRelOp     :%s\n"), relOpString(m_beginRelOp)      );
+  result += format(_T("  Beginfieldcount:%d\n"), m_beginFieldCount              );
+  result += format(_T("  EndRelOp       :%s\n"), relOpString(m_endRelOp)        );
+  result += format(_T("  Endfieldcount  :%d\n"), m_endFieldCount                );
+  result += format(_T("  Direction      :%s\n"), (m_dir == SORT_ASCENDING) ? _T("ASC") : _T("DESC"));
+  result += format(_T("  FieldSet       :%s")  , m_fieldSet.toStringBasicType().cstr());
+  return result;
 }

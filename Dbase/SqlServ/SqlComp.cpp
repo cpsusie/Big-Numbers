@@ -671,11 +671,11 @@ SqlCompiler::SqlCompiler(const Database            &db,
 #ifdef TRACECOMP
   if(ok()) {
     FILE *mm = fopen(_T("c:\\temp\\testcode.txt"),_T("a"));
-	if(mm != NULL) {
-		_ftprintf(mm,_T("statement:%s\n"),bndstmt.m_stmt);
-		m_code.dump(mm);
-		fclose(mm);
-	}
+	  if(mm != NULL) {
+		  _ftprintf(mm,_T("statement:%s\n"),bndstmt.m_stmt);
+		  m_code.dump(mm);
+		  fclose(mm);
+	  }
   }
 #endif
 

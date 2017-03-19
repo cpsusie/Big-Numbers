@@ -159,7 +159,7 @@ static void connect(const SqlApiBindProgramId &programid,
       break;
 
     default:
-      throwSqlError(SQL_ERROR_INVALID_APICALL,_T("Invalid connectoption (%s,%d)"),programid.fileName,opt);
+      throwSqlError(SQL_ERROR_INVALID_APICALL,_T("Invalid connectoption (%s,%d)"),programid.m_fileName,opt);
       break;
   }
 }
@@ -272,7 +272,7 @@ void sqlapi_call(int                    call     , // SqlApiCallCode
       break;
 
     default:
-      throwSqlError(SQL_ERROR_INVALID_APICALL, _T("Invalid apicall (%s,%d,%d)"), bndprogramid. fileName, call, opt);
+      throwSqlError(SQL_ERROR_INVALID_APICALL, _T("Invalid apicall (%s,%d,%d)"), bndprogramid.m_fileName, call, opt);
       break;
     }
   } catch(sqlca ca) {
@@ -311,7 +311,7 @@ void sqlapi_unbind(   const TCHAR                *filename ,
   try {
     SqlApiBindProgramId programid;
     memset(&programid,0,sizeof(programid));
-    _tcsncpy(programid.fileName,filename,ARRAYSIZE(programid.fileName)-1);
+    _tcsncpy(programid.m_fileName,filename,ARRAYSIZE(programid.m_fileName)-1);
     (*sqlpipe) << SqlApiCom(SQL_CALL_UNBIND,0,programid);
 
     sqlpipe->send();

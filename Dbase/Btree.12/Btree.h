@@ -1474,7 +1474,9 @@ public:
   SortDirection  m_dir;
   FieldSet       m_fieldSet;
   String toString() const;
-  void dump(FILE *f = stdout) const;
+  inline void dump(FILE *f = stdout) const {
+    _ftprintf(f, _T("%s"), toString().cstr());
+  }
 };
 
 Packer &operator<<(Packer &p, const TableCursorParam &param);
