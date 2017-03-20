@@ -18,7 +18,7 @@ void TextWin::initConsole() {
   s_oldImage   = new TextRect(w,h);
   s_oldImage->copy(0,0,s_console,0,0,w,h,TR_ALL);
   s_background = new TextWin(0,0,w,h);
-  s_background->set(0,0,w,h,TR_ALL,' ', FOREGROUND_WHITE | BACKGROUND_GREEN | BACKGROUND_BLUE);
+  s_background->set(0,0,w,h,TR_ALL,_T(' '), FOREGROUND_WHITE | BACKGROUND_GREEN | BACKGROUND_BLUE);
 }
 
 void TextWin::unInitConsole() {
@@ -173,10 +173,11 @@ void TextWin::copy(int x, int y, TextRect *src, int l, int t, int w, int h, int 
   repaint(x, y, w, h);
 }
 
-void TextWin::set( int l, int t, int w, int h, int op, ...) {
+void TextWin::set(int l, int t, int w, int h, int op, ...) {
   va_list argptr;
   va_start(argptr, op);
   m_trect->vset(l, t, w, h, op, argptr);
+  va_end(argptr);
   repaint(l, t, w, h);
 }
 

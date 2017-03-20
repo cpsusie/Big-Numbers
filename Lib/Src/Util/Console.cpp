@@ -424,9 +424,9 @@ int Console::getKey() {
     INPUT_RECORD r;
     DWORD res;
     BOOL ret = ReadConsoleInput(s_hStdIn, &r, 1, &res);
-//    consoleprintf(1,1,"key:%3d scancode:%d  ",r.Event.KeyEvent.uChar.AsciiChar,r.Event.KeyEvent.wVirtualScanCode);
+    Console::printf(1,1,_T("key:%3d scancode:%d  "),KEY_EVENT_RECORD_TCHAR(r.Event.KeyEvent),r.Event.KeyEvent.wVirtualScanCode);
     if(r.EventType == KEY_EVENT && r.Event.KeyEvent.bKeyDown && r.Event.KeyEvent.uChar.AsciiChar != 0) {
-      return r.Event.KeyEvent.uChar.AsciiChar;
+      return KEY_EVENT_RECORD_TCHAR(r.Event.KeyEvent);
     }
   }
 }

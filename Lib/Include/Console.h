@@ -82,6 +82,12 @@ public:
   static bool keyPressed();
 };
 
+#ifdef UNICODE
+#define KEY_EVENT_RECORD_TCHAR(keyEvent) ((keyEvent).uChar.UnicodeChar)
+#else
+#define KEY_EVENT_RECORD_TCHAR(keyEvent) ((keyEvent).uChar.AsciiChar)
+#endif
+
 // return from getKey
 #define KEY_ENTER          13
 #define KEY_ESCAPE         27
@@ -140,7 +146,7 @@ public:
 #define EVENT3(type, arg1, arg2)              (((type)          << 25) \
                                             | (((arg1)  & 0xff) << 16) \
                                             |  ((arg2)  & 0xffff))
-#define EVENT5(type, state, down, scan, ascii) (((type)          << 25) \
+#define EVENT5(type, state, down, scan, ascii) (((type)         << 25) \
                                             | (((down)  & 0x1)  << 24) \
                                             | (((state) & 0xff) << 16) \
                                             | (((scan)  & 0xff) <<  8) \
@@ -252,12 +258,12 @@ public:
 
 class Menu : public ConsoleWindow {
 private:
-  Array<MenuItem*> m_items;
-  int              m_left, m_top, m_width, m_height, m_startmenu;
-  bool             m_isSubMenu;
-  WORD             m_borderColor, m_textColor, m_selTextColor, m_highLiteColor;
-  ConsoleWindow   *m_hostWindow;
-  bool             m_shadowed;
+  CompactArray<MenuItem*> m_items;
+  int                     m_left, m_top, m_width, m_height, m_startmenu;
+  bool                    m_isSubMenu;
+  WORD                    m_borderColor, m_textColor, m_selTextColor, m_highLiteColor;
+  ConsoleWindow          *m_hostWindow;
+  bool                    m_shadowed;
   void drawItem(int i, bool selected);
   int  totalItems();
   void findSize();

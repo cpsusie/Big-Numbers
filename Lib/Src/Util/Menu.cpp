@@ -41,6 +41,7 @@ MenuItem::MenuItem(MenuItemType type, const String &text, int command) {
 
   m_subMenu = NULL;
   m_checked = false;
+  m_enabled = true;
   m_command = command;
 }
 
@@ -281,7 +282,7 @@ bool Menu::wantEvent(int event) {
   }
   if(EVENTSTATE(event) & ALT_PRESSED) {
     int ch = EVENTASCII(event);
-    for(int i = 0; i < (int)m_items.size(); i++) {
+    for(size_t i = 0; i < m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_highlite >= 0 && tolower(ch) == tolower(item->m_text[item->m_highlite]) && item->m_enabled) {
         return true;
@@ -293,14 +294,14 @@ bool Menu::wantEvent(int event) {
 
 bool Menu::handleEvent(int event) {
   if(m_hostWindow == NULL) {
-    throwException("no hostwindow in menu");
+    throwException(_T("no hostwindow in menu"));
   }
   if(EVENTSTATE(event) & ALT_PRESSED) {
     int ch = EVENTASCII(event);
-    for(int i = 0; i < (int)m_items.size(); i++) {
+    for(size_t i = 0; i < m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_highlite >= 0 && tolower(ch) == tolower(item->m_text[item->m_highlite]) && item->m_enabled) {
-        m_startmenu = i;
+        m_startmenu = (int)i;
         postEvent(KEYEVENT(0,1,SCAN_ENTER,0));
         int ret = domodal(m_left,m_top);
         if(ret >= 0) {
@@ -317,7 +318,7 @@ bool Menu::handleEvent(int event) {
 void Menu::findSize() {
   if(m_isSubMenu) {
     m_width = 0;
-    for(int i = 0; i < (int)m_items.size(); i++) {
+    for(size_t i = 0; i < m_items.size(); i++) {
       MenuItem *item = m_items[i];
       if(item->m_type == MENUITEMTEXT || item->m_type == MENUITEMPOPUP) {
         int l = (int)item->m_text.length();
@@ -379,10 +380,12 @@ void Menu::drawItem(int i, bool selected) {
     int x = 1;
     int y = i + 1;
     if(item->m_type == MENUITEMSEPARATOR) {
-      String sp(spaceString(m_width-1,(char)196));
-      getWin()->printf(x, y, attr, _T("%s"), sp.cstr());
-//      getWin()->printf(x-1,y, m_borderColor, "%c",199);
-//      getWin()->printf(x+m_width-1,y,m_borderColor, "%c",182);
+      const FrameChars &f = FrameChars::getFrameChars(SINGLE_FRAME);
+      String line = format(_T("%c%s%c")
+                          ,FrameChars::s_leftVertSingleLineDoubleBorder
+                          ,spaceString(m_width-1,f.m_horz).cstr()
+                          ,FrameChars::s_rightVertSingleLineDoubleBorder);
+      getWin()->printf(x-1, y, attr, _T("%s"), line.cstr());
     } else {
       getWin()->printf(x, y, attr, _T("%c %-*.*s"),
                        item->m_checked?251:' ', m_width - 3, m_width - 3, item->m_text.cstr());
@@ -445,18 +448,18 @@ void Menu::draw(int left, int top) {
 }
 
 bool Menu::deleteItem(int id) {
-  for(int i = 0; i < (int)m_items.size(); i++) {
+  for(size_t i = 0; i < m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_command == id) {
       if(item->m_subMenu) {
         delete item->m_subMenu;
       }
-      m_items.removeIndex(i);
+      m_items.remove(i);
       delete item;
       return true;
     }
   }
-  for(int i = 0; i < (int)m_items.size(); i++) {
+  for(size_t i = 0; i < m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_subMenu) {
       if(item->m_subMenu->deleteItem(id)) {
@@ -472,7 +475,7 @@ void Menu::removeMenuItem(int id) {
 }
 
 MenuItem *Menu::findMenuItem(int id) {
-  for(int i = 0; i < (int)m_items.size(); i++) {
+  for(size_t i = 0; i < m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_type == MENUITEMPOPUP) {
       MenuItem *si = item->m_subMenu->findMenuItem(id);
@@ -512,7 +515,7 @@ bool Menu::menuItemEnabled(  int id) {
 
 int Menu::totalItems() {
   int sum = 0;
-  for(int i = 0; i < (int)m_items.size(); i++) {
+  for(size_t i = 0; i < m_items.size(); i++) {
     if(m_items[i]->m_type == MENUITEMPOPUP) {
       sum += m_items[i]->m_subMenu->totalItems();
     }
@@ -540,7 +543,7 @@ Menu::Menu(StaticMenuItem *items) {
       i++;
       break;
     case MENUITEMSEPARATOR:
-      m_items.add(new MenuItem(MENUITEMSEPARATOR, _T(""), 0));
+      m_items.add(new MenuItem(MENUITEMSEPARATOR, EMPTYSTRING, 0));
       i++;
       break;
     case MENUITEMPOPUP    :
@@ -571,7 +574,7 @@ Menu::Menu(StaticMenuItem *items) {
 
   if(tabulatorPosition > 0) {
     tabulatorPosition += 2;
-    for(int i = 0; i < (int)m_items.size(); i++) {
+    for(size_t i = 0; i < m_items.size(); i++) {
       MenuItem *item = m_items[i];
       TCHAR *tab = _tcschr(item->m_text.cstr(),_T('\t'));
       if(tab != NULL) {
@@ -583,7 +586,7 @@ Menu::Menu(StaticMenuItem *items) {
 }
 
 Menu::~Menu() {
-  for(int i = 0; i < (int)m_items.size(); i++) {
+  for(size_t i = 0; i < m_items.size(); i++) {
     MenuItem *item = m_items[i];
     if(item->m_subMenu != NULL) {
       delete item->m_subMenu;

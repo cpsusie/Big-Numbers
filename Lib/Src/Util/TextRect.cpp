@@ -60,7 +60,8 @@ void MemoryBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w, 
     CHAR_INFO *dst = m_p + r*getWidth() + l;
     int c;
     switch(op) {
-    case TR_TEXT:
+    case TR_ATEXT:
+    case TR_WTEXT:
       for(c = l; c < right; c++) {
         (dst++)->Char = (src++)->Char;
       }
@@ -70,7 +71,8 @@ void MemoryBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w, 
         (dst++)->Attributes = (src++)->Attributes;
       }
       break;
-    case TR_ALL :
+    case TR_ATEXT | TR_ATTR:
+    case TR_WTEXT | TR_ATTR:
       memcpy(dst, src, sizeof(CHAR_INFO)*w);
       src += w;
       break;
@@ -114,13 +116,13 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
   int right = l + w;
 
   switch(op) {
-  case TR_TEXT:
-    { TCHAR *buffer = NULL;
+  case TR_ATEXT:
+    { char *buffer = NULL;
       try {
-        buffer = new TCHAR[w];
+        buffer = new char[w];
         for(int r = 0; r < h; r++) {
           const CHAR_INFO *csrc = src + r*w;
-          TCHAR       *tmp  = buffer;
+          char            *tmp  = buffer;
           for(int c = l; c < right; c++) {
             *(tmp++) = (csrc++)->Char.AsciiChar;
           }
@@ -128,7 +130,31 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
           pos.X = l;
           pos.Y = t + r;
           DWORD nw;
-          CHECK(WriteConsoleOutputCharacter(m_console, buffer, w, pos, &nw));
+          CHECK(WriteConsoleOutputCharacterA(m_console, buffer, w, pos, &nw));
+        }
+        delete[] buffer; buffer = NULL;
+      } catch(...) {
+        if(buffer) delete[] buffer;
+        throw;
+      }
+    }
+    break;
+
+  case TR_WTEXT:
+    { wchar_t *buffer = NULL;
+      try {
+        buffer = new wchar_t[w];
+        for(int r = 0; r < h; r++) {
+          const CHAR_INFO *csrc = src + r*w;
+          wchar_t         *tmp  = buffer;
+          for(int c = l; c < right; c++) {
+            *(tmp++) = (csrc++)->Char.UnicodeChar;
+          }
+          COORD pos;
+          pos.X = l;
+          pos.Y = t + r;
+          DWORD nw;
+          CHECK(WriteConsoleOutputCharacterW(m_console, buffer, w, pos, &nw));
         }
         delete[] buffer; buffer = NULL;
       } catch(...) {
@@ -162,7 +188,7 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
     }
     break;
 
-  case TR_ALL :
+  case TR_ATEXT | TR_ATTR:
     { int maxLinesInBlock = MAXCONSOPBUFSIZE / sizeof(CHAR_INFO) / w;
       int linesInBlock;
       for(int topLine = 0; topLine < h; topLine += linesInBlock) {
@@ -180,20 +206,51 @@ void ConsoleBufferOp::putRect(const CHAR_INFO *src, int op, int l, int t, int w,
         r.Right      = l + w;
         r.Bottom     = t + topLine + linesInBlock - 1;
         try {
-          CHECK(WriteConsoleOutput(m_console, src + w*topLine, bufferSize, buffer, &r));
+          CHECK(WriteConsoleOutputA(m_console, src + w*topLine, bufferSize, buffer, &r));
         } catch(Exception e) {
           throwException(_T("%s. putRect(%d,%d,%d,%d), r:(%d,%d,%d,%d),bufferSize:(%d,%d),maxLinesInBlock:%d")
                         ,e.what(), l,t,w,h,r.Left,r.Top,r.Right,r.Bottom,bufferSize.X,bufferSize.Y,maxLinesInBlock);
         }
       }
-      break;
     }
+    break;
+  case TR_WTEXT | TR_ATTR:
+    { int maxLinesInBlock = MAXCONSOPBUFSIZE / sizeof(CHAR_INFO) / w;
+      int linesInBlock;
+      for(int topLine = 0; topLine < h; topLine += linesInBlock) {
+        linesInBlock = h - topLine;
+        if(linesInBlock > maxLinesInBlock) {
+          linesInBlock = maxLinesInBlock;
+        }
+        COORD bufferSize, buffer;
+        bufferSize.X = w;
+        bufferSize.Y = h;
+        buffer.X     = buffer.Y = 0;
+        SMALL_RECT r;
+        r.Left       = l;
+        r.Top        = t + topLine;
+        r.Right      = l + w;
+        r.Bottom     = t + topLine + linesInBlock - 1;
+        try {
+          CHECK(WriteConsoleOutputW(m_console, src + w*topLine, bufferSize, buffer, &r));
+        } catch(Exception e) {
+          throwException(_T("%s. putRect(%d,%d,%d,%d), r:(%d,%d,%d,%d),bufferSize:(%d,%d),maxLinesInBlock:%d")
+                        ,e.what(), l,t,w,h,r.Left,r.Top,r.Right,r.Bottom,bufferSize.X,bufferSize.Y,maxLinesInBlock);
+        }
+      }
+    }
+    break;
+  default:
+    if (op != 0) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("op=%#x"), op);
+    }
+    break;
   }
 }
 
 TextRect::TextRect(int w, int h) {
   if((w < 0) || (h < 0)) {
-    throwException(_T("TextRect:invalid argument (%d,%d)"), w, h);
+    throwInvalidArgumentException(__TFUNCTION__,_T("(w,h)=(%d,%d)"), w, h);
   }
   m_bufferOp   = new MemoryBufferOp(w,h);
   m_tempBuffer = NULL;
@@ -285,16 +342,18 @@ void TextRect::vset(int l, int t, int w, int h, int op, va_list argptr) {
   }
 
   CHAR_INFO arg;
-  if(op & TR_TEXT) {
-    arg.Char.AsciiChar = va_arg(argptr,int);
+  if(op & TR_ATEXT) {
+    assert((op & TR_WTEXT) == 0);
+    arg.Char.AsciiChar   = va_arg(argptr, int);
+  } else if (op & TR_WTEXT) {
+    arg.Char.UnicodeChar = va_arg(argptr, int);
   }
   if(op & TR_ATTR) {
-    arg.Attributes     = va_arg(argptr,WORD);
+    arg.Attributes       = va_arg(argptr,WORD);
   }
 
-
   CHAR_INFO *buffer = allocateTempBuffer(w*h);
-  CHAR_INFO *tmp = buffer;
+  CHAR_INFO *tmp    = buffer;
   for(int r = 0; r < h; r++) {
     for(int c = 0; c < w; c++) {
       *(tmp++) = arg;
@@ -311,11 +370,11 @@ void TextRect::set(int l, int t, int w, int h, int op, ...) {
   va_end(argptr);
 }
 
-int TextRect::text(int x, int y, WORD color, const TCHAR *text) {
+int TextRect::atext(int x, int y, WORD color, const char *text) {
   if(y < 0 || y >= getHeight()) {
     return 0;
   }
-  int length = (int)_tcsclen(text);
+  int length = (int)strlen(text);
   if(x < 0) {
     length  += x;
     text -= x;
@@ -325,16 +384,37 @@ int TextRect::text(int x, int y, WORD color, const TCHAR *text) {
   if(length <= 0) {
     return 0;
   }
-
   CHAR_INFO *buffer = allocateTempBuffer(length);
-  CHAR_INFO *tmp = buffer;
+  CHAR_INFO *tmp    = buffer;
   for(int i = 0; i < length; i++,tmp++) {
     tmp->Attributes     = color;
-    tmp->Char.AsciiChar = char(*(text++));
+    tmp->Char.AsciiChar = *(text++);
   }
+  m_bufferOp->putRect(buffer,TR_ATEXT|TR_ATTR,x,y,length,1);
+  return length;
+}
 
-  m_bufferOp->putRect(buffer,TR_ALL,x,y,length,1);
-
+int TextRect::wtext(int x, int y, WORD color, const wchar_t *text) {
+  if(y < 0 || y >= getHeight()) {
+    return 0;
+  }
+  int length = (int)wcslen(text);
+  if(x < 0) {
+    length  += x;
+    text -= x;
+    x = 0;
+  }
+  length = Min(length,getWidth() - x);
+  if(length <= 0) {
+    return 0;
+  }
+  CHAR_INFO *buffer = allocateTempBuffer(length);
+  CHAR_INFO *tmp    = buffer;
+  for(int i = 0; i < length; i++,tmp++) {
+    tmp->Attributes      = color;
+    tmp->Char.UnicodeChar= *(text++);
+  }
+  m_bufferOp->putRect(buffer,TR_WTEXT|TR_ATTR,x,y,length,1);
   return length;
 }
 
@@ -351,16 +431,24 @@ void TextRect::printf(int x, int y, WORD color, const TCHAR *format,...) {
 
 void TextRect::rectangle(int left, int top, int right, int bottom, FrameType type, WORD color) {
   const FrameChars &f   = FrameChars::getFrameChars(type);
-  String            tmp = spaceString(right-left-1,f.m_horz);
-  printf(left  , top   , color, _T("%c"), f.m_ul);
-  text(left+1  , top   , color, tmp.cstr()  );
-  printf(right , top   , color, _T("%c"), f.m_ur);
+  TCHAR             lineStr[4096], charStr[2];
+  const int         len = min(ARRAYSIZE(lineStr)-2,right-left-1);
+  MEMSET(lineStr, f.m_horz, len);
+  lineStr[len] = 0;
+  charStr[1]   = 0;
 
+#define SETCORNER(x,y,ch) { charStr[0] = ch; text(x,y,color,charStr); }
+
+  SETCORNER(left, top , f.m_ul);
+  text(left+1, top   , color, lineStr);
+  SETCORNER(right,top,f.m_ur);
+
+  charStr[0] = f.m_vert;
   for(int y = top+1; y < bottom; y++) {
-    printf(left , y, color, _T("%c"), f.m_vert);
-    printf(right, y, color, _T("%c"), f.m_vert);
+    text(left , y, color, charStr);
+    text(right, y, color, charStr);
   }
-  printf(left  , bottom, color, _T("%c"), f.m_ll);
-  text(left+1  , bottom, color, tmp.cstr()  );
-  printf(right , bottom, color, _T("%c"), f.m_lr);
+  SETCORNER(left  , bottom, f.m_ll);
+  text(left+1, bottom, color, lineStr);
+  SETCORNER(right , bottom, f.m_lr);
 }
