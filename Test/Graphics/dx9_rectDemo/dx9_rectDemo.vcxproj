@@ -195,9 +195,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="dx9_rectDemo.h" />
     <ClInclude Include="dx9_rectDemoDlg.h" />
     <ClInclude Include="Resource.h" />

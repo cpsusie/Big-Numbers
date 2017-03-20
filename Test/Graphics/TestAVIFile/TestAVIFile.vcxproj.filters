@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{a42d78a6-6444-426f-a772-82af3d4714ac}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d2f3664c-050b-485b-8513-bbfc036659c9}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{badf223a-eaad-472f-a7f8-4e6ca995dacc}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FrameCountDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GetAvailableEncoders.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MovieThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestAVIFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestAVIFileDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="TestAVIFile.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FrameCountDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MovieThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAVIFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TestAVIFileDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\TestAVIFile.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\TestAVIFile.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

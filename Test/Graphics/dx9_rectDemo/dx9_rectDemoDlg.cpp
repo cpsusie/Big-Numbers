@@ -833,7 +833,7 @@ String getD3DErrorMsg(HRESULT hr) {
 
 #ifdef _DEBUG
 
-void checkD3DResult(char *fileName, int line, HRESULT hr) {
+void checkD3DResult(TCHAR *fileName, int line, HRESULT hr) {
   if(hr != D3D_OK) {
     AfxMessageBox(format(_T("D3D-error %s in %s, line %d"), getD3DErrorMsg(hr).cstr(), fileName, line).cstr(), MB_ICONSTOP);
     exit(-1);;

@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ab33e301-bafc-49e0-a8f5-9d22d7e642cc}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{41174211-9b5b-4816-aedd-1b87c467126a}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{8936e0a1-d2e3-4690-9262-657490206d37}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dx9_dot3_bump_mapping.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="dx9_dot3_bump_mapping.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="checker_with_numbers.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="codesampler.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="stone_wall.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="stone_wall_normal_map.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="test_normal_map.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

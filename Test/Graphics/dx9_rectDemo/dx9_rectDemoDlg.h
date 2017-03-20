@@ -4,13 +4,12 @@
 #include <d3dx9.h>
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/Picture.h>
-#include <MFCUtil/WinTools.h>
 
 #ifdef _DEBUG
 
-void checkD3DResult(char *fileName, int line, HRESULT hr);
+void checkD3DResult(TCHAR *fileName, int line, HRESULT hr);
 
-#define CHECKD3DRESULT(hr) checkD3DResult(__FILE__,__LINE__,hr)
+#define CHECKD3DRESULT(hr) checkD3DResult(_T(__FILE__),__LINE__,hr)
 
 #else
 
