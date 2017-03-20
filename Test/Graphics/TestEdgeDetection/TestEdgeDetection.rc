@@ -1,0 +1,307 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+#pragma code_page(1252)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\TestEdgeDetection.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\TestEdgeDetection.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_BITMAP_E            BITMAP                  "res\\bitmap1.bmp"
+
+IDB_BITMAP_N            BITMAP                  "res\\bmp00001.bmp"
+
+IDB_BITMAP_S            BITMAP                  "res\\bmp00002.bmp"
+
+IDB_BITMAP_W            BITMAP                  "res\\bmp00003.bmp"
+
+IDB_BITMAP_NODIR        BITMAP                  "res\\bmp00004.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_TESTEDGEDETECTION_DIALOG DIALOGEX 0, 0, 365, 295
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+EXSTYLE WS_EX_APPWINDOW
+CAPTION "TestEdgeDetection"
+MENU IDR_MAINFRAME
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    PUSHBUTTON      "dummy Button",IDC_dummyBUTTON,219,97,66,40,NOT WS_VISIBLE
+    CONTROL         "",IDC_PIXELAREA,"Static",SS_BLACKFRAME | SS_SUNKEN | WS_BORDER,7,7,351,245
+    CONTROL         IDB_BITMAP_W,IDC_STATICDIRIMAGE,"Static",SS_BITMAP,97,262,28,26
+    LTEXT           "Current search direction",IDC_STATICDIRTEXT,7,271,81,17,SS_CENTERIMAGE
+END
+
+IDD_DIRECTION_DIALOG DIALOG 0, 0, 218, 160
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Direction"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Cancel",IDCANCEL,161,139,50,14
+    PUSHBUTTON      "N",IDC_BUTTONN,59,46,32,25
+    PUSHBUTTON      "W",IDC_BUTTONW,18,84,32,25
+    PUSHBUTTON      "E",IDC_BUTTONE,104,84,32,25
+    PUSHBUTTON      "S",IDC_BUTTONS,59,122,32,25
+    LTEXT           "",IDC_STATICMSG,7,7,204,25,SS_SUNKEN
+END
+
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About TestEdgeDetection"
+FONT 8, "MS Sans Serif"
+BEGIN
+    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
+    LTEXT           "TestEdgeDetection Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
+    LTEXT           "Copyright (C) 2015",IDC_STATIC,40,25,119,8
+    DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_TESTEDGEDETECTION_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 358
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 288
+    END
+
+    IDD_DIRECTION_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 153
+    END
+
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 228
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 48
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Reset\tAlt+R",               ID_EDIT_RESET
+        MENUITEM "Circel\tAlt+C",               ID_EDIT_CIRCEL
+        MENUITEM "&Line\tAlt+L",                ID_EDIT_LINE
+        MENUITEM SEPARATOR
+        MENUITEM "Search North\tUp",            ID_EDIT_N
+        MENUITEM "Search South\tDown",          ID_EDIT_S
+        MENUITEM "Search East\tRight",          ID_EDIT_E
+        MENUITEM "Search West\tLeft",           ID_EDIT_W
+        MENUITEM "No search\tSpace",            ID_EDIT_NOSEARCH
+        MENUITEM SEPARATOR
+        MENUITEM "Go\tF5",                      ID_EDIT_GO, GRAYED
+        MENUITEM "Single step\tF10",            ID_EDIT_SINGLESTEP, GRAYED
+        MENUITEM "Toggle breakpoint\tF9",       ID_EDIT_TOGGLEBREAKPOINT
+        MENUITEM "Fill after edge detected\tF3", ID_EDIT_DOFILL
+        MENUITEM SEPARATOR
+        MENUITEM "Test &Arrrow",                ID_EDIT_TESTARRROW
+        MENUITEM "Test Edge &Matrix",           ID_EDIT_TESTEDGEMATRIX
+        MENUITEM "Show fillInfo\tF7",           ID_EDIT_SHOWFILLINFO
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "C",            ID_EDIT_CIRCEL,         VIRTKEY, ALT, NOINVERT
+    "L",            ID_EDIT_LINE,           VIRTKEY, ALT, NOINVERT
+    "R",            ID_EDIT_RESET,          VIRTKEY, ALT, NOINVERT
+    VK_DOWN,        ID_EDIT_S,              VIRTKEY, NOINVERT
+    VK_F10,         ID_EDIT_SINGLESTEP,     VIRTKEY, NOINVERT
+    VK_F3,          ID_EDIT_DOFILL,         VIRTKEY, NOINVERT
+    VK_F5,          ID_EDIT_GO,             VIRTKEY, NOINVERT
+    VK_F7,          ID_EDIT_SHOWFILLINFO,   VIRTKEY, NOINVERT
+    VK_F9,          ID_EDIT_TOGGLEBREAKPOINT, VIRTKEY, NOINVERT
+    VK_LEFT,        ID_EDIT_W,              VIRTKEY, NOINVERT
+    VK_RIGHT,       ID_EDIT_E,              VIRTKEY, NOINVERT
+    VK_SPACE,       ID_EDIT_NOSEARCH,       VIRTKEY, NOINVERT
+    VK_UP,          ID_EDIT_N,              VIRTKEY, NOINVERT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "FileDescription", "TestEdgeDetection MFC Application"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "TestEdgeDetection"
+            VALUE "LegalCopyright", "Copyright (C) 2015"
+            VALUE "OriginalFilename", "TestEdgeDetection.EXE"
+            VALUE "ProductName", "TestEdgeDetection Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TESTEDGEDETECTION_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDS_ABOUTBOX            "&About TestEdgeDetection..."
+END
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\TestEdgeDetection.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
