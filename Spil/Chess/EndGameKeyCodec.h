@@ -63,13 +63,13 @@ extern const char _wkD3BkI2P[55];
 #define GET_RANGESTART3EQUAL(f, index) ((UINT64)(f) * SUMSUM1TO(index))
 
 #define SORT2(i,j)                  \
-{ if((i) > (j)) swap(i, j);         \
+{ if((i) > (j)) std::swap(i, j);    \
 }
 
 #define SORT3(i,j,k)                \
 { SORT2(i, j);                      \
   if((j) > (k)) {                   \
-    swap(j, k);                     \
+    std::swap(j, k);                \
     SORT2(i, j);                    \
   }                                 \
 }

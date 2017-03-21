@@ -28,13 +28,14 @@ String packedArrayToString(const PackedArray &a) {
   return result;
 }
 
+#ifdef __NEVER__
+
 #ifndef NEWCOMPRESSION
 void IndexedMap::saveCompressedNew(ByteOutputStream &out, const TablebaseInfo &info) const {
 #else
 void IndexedMap::saveCompressedNew(BigEndianOutputStream &out, const TablebaseInfo &info) {
 #endif
   throwException(_T("%s:%s:Not supported"), m_keydef.getName().cstr(), __TFUNCTION__);
-#ifdef __NEVER__
   DEFINEMETHODNAME;
   const EndGamePosIndex indexSize = m_keydef.getIndexSize();
   if(info.m_indexCapacity != indexSize) {
@@ -151,5 +152,6 @@ void IndexedMap::saveCompressedNew(BigEndianOutputStream &out, const TablebaseIn
   }
   PackedArrayCompressor(zcompressor).compress(evenMovesArray, out);
   PackedArrayCompressor(zcompressor).compress(oddMovesArray , out);
-#endif // __NEVER__
 }
+
+#endif // __NEVER__

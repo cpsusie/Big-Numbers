@@ -12,7 +12,7 @@ protected:
   const EndGameKeyDefinition &m_keydef;
 
 public:
-  EndGameSubTablebase(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
+  inline EndGameSubTablebase(const EndGameKeyDefinition &keydef) : m_keydef(keydef) {
   }
 
   virtual String load(ByteCounter *byteCounter = NULL) = 0;
@@ -28,11 +28,11 @@ public:
   virtual bool allKeysFound() const = 0;
 #endif
 
-  const EndGameKeyDefinition &getKeyDefinition() const {
+  inline const EndGameKeyDefinition &getKeyDefinition() const {
     return m_keydef;
   }
 
-  String getPositionTypeString() const {
+  inline String getPositionTypeString() const {
     return m_keydef.toString(true);
   }
 
@@ -71,10 +71,10 @@ public:
   RemoteEndGameSubTablebase(const EndGameKeyDefinition &keydef);
   String load(ByteCounter *byteCounter);
   void unload();
-  bool isLoaded() const {
+  inline bool isLoaded() const {
     return m_loaded;
   }
-  bool isRemote() const {
+  inline bool isRemote() const {
     return true;
   }
   EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const;
@@ -97,7 +97,7 @@ private:
 public:
   SubTablebaseKey();
   SubTablebaseKey(const Move &m);
-  unsigned long hashCode() const;
+  ULONG hashCode() const;
   bool operator==(const SubTablebaseKey &key) const;
 };
 
@@ -112,7 +112,7 @@ public:
   EndGamePositionStatus getPositionStatus(const Game &game) const;
   EndGameResult         getPositionResult(const Game &game) const;
   void unload();
-  bool isRemote() const {
+  inline bool isRemote() const {
     return m_tablebase ? m_tablebase->isRemote() : false;
   }
 #ifdef TABLEBASE_BUILDER
@@ -195,7 +195,7 @@ private:
   EndGameKey     transformGameKey(   const GameKey    &key) const;
   EndGameKey     transformEndGameKey(const EndGameKey &key, SymmetricTransformation st) const;
 
-  String         toString(const EndGameKey &key, bool initFormat=false) const {
+  inline String  toString(const EndGameKey &key, bool initFormat=false) const {
     return key.toString(m_keydef, initFormat);
   }
   EndGamePositionStatus isTerminalMove(const Game &game, const Move &m, UINT *pliesToEnd = NULL) const;
@@ -233,8 +233,8 @@ private:
   }
   MaxVariantCount findMaxPlies() const;
 
-  void resetInitialSetupFlags();
-  void checkInitialSetupFlags();
+  void   resetInitialSetupFlags();
+  void   checkInitialSetupFlags();
   String saveAllForwardPositions(bool convert = false);
   String loadAllForwardPositions();
   String saveAllRetroPositions(  bool convert = false);
@@ -243,9 +243,9 @@ private:
   void   loadPacked(const String &fileName);
   void   loadPacked(ByteInputStream &s);
   String save( const String     &fileName, bool convert) const;
-  void save(   ByteOutputStream &s) const;
-  void saveNew(ByteOutputStream &s) const;
-  void fixupBackup(bool force = false);
+  void   save(   ByteOutputStream &s) const;
+  void   saveNew(ByteOutputStream &s) const;
+  void   fixupBackup(bool force = false);
 
   void compress(   ByteOutputStream &s);
   void compressNew(ByteOutputStream &s);
@@ -253,7 +253,7 @@ private:
   void stopLogging();
   void startVerboseTrigger(int sec = 10);
   void stopVerboseTrigger();
-  bool isVerboseTriggerStarted() const {
+  inline bool isVerboseTriggerStarted() const {
     return m_verboseTimer.isRunning();
   }
   void verbose(const TCHAR *format, ...) const;
@@ -264,11 +264,11 @@ private:
 
   int  getInfoLength() const;
   const TCHAR *getDottedLine();
-  EndGameResult &setAsStaleMatePosition(EndGameResult &result) {
+  inline EndGameResult &setAsStaleMatePosition(EndGameResult &result) {
     return setAsTerminalPosition(result, EG_DRAW, 0);
   }
 
-  EndGameResult &setAsCheckMatePosition(EndGameResult &result, EndGamePositionStatus status) {
+  inline EndGameResult &setAsCheckMatePosition(EndGameResult &result, EndGamePositionStatus status) {
     assert(status >= EG_WHITEWIN);
     return setAsTerminalPosition(result, status, 0);
   }
@@ -345,7 +345,7 @@ public:
 
   String                load(ByteCounter *byteCounter = NULL);
   void                  unload();
-  int                   getLoadRefCount() const {
+  inline int            getLoadRefCount() const {
     return m_loadRefCount;
   }
   EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const;
@@ -359,21 +359,21 @@ public:
   __time64_t            getFileTime(TablebaseFileType fileType) const;
   UINT64                getFileSize(TablebaseFileType fileType) const;
 
-  bool isLoaded() const {
+  inline bool isLoaded() const {
     return m_positionIndex.isAllocated();
   }
 
-  bool contains(const EndGameKey &key) const {
+  inline bool contains(const EndGameKey &key) const {
     return m_positionIndex.isAllocated() && m_positionIndex.get(key).exists();
   }
 
-  bool isRemote() const {
+  inline bool isRemote() const {
     return false;
   }
 
   static void gameResultError(const Game &game);                       // throws Exception
 
-  String toString(const Game &game) const {
+  inline String toString(const Game &game) const {
     return m_keydef.getEndGameKey(game.getKey()).toString(m_keydef);
   }
 
@@ -381,7 +381,7 @@ public:
   static       EndGameTablebaseList  getExistingEndGameTablebases();
   static       EndGameTablebase     &getInstanceByName(const String &name);
   static       EndGameTablebase     *getInstanceBySignature(const PositionSignature &signature, bool &swap);
-  IndexedMap &getIndex() {
+  inline IndexedMap &getIndex() {
     return m_positionIndex;
   }
 

@@ -71,10 +71,13 @@ SubTablebasePositionInfo::SubTablebasePositionInfo(const Game &game) {
       m_tablebase->LOADASSUBTABLEBASE();
     } catch(Exception e) {
       error = true;
-    } catch(CMemoryException *e) {
+    }
+#ifdef __AFXWIN_H__
+    catch(CMemoryException *e) {
       error = true;
       e->Delete();
     }
+#endif
     if(error) {
       m_tablebase->unload();
       m_tablebase = new RemoteEndGameSubTablebase(m_tablebase->getKeyDefinition());

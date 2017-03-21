@@ -1,0 +1,361 @@
+#include "stdafx.h"
+
+static void usage() {
+  fprintf(stderr, "Usage:PrintEndGameTree file\n");
+  exit(-1);
+}
+
+static FILE *openChessFile(const String &name) {
+  FILE *f = fopen(name,"r");
+  if(f != NULL) {
+    return f;
+  } else {
+    FileNameSplitter info(name);
+    if(info.getExtension().length() == 0) {
+      info.setExtension("chs");
+    }
+    const String newName = info.getFullPath();
+    return FOPEN(newName, "r");
+  }
+}
+
+static void loadGame(Game &game, const String &fileName) {
+  FILE *f = openChessFile(fileName);
+  Game tmp;
+  try {
+    tmp.load(f);
+    fclose(f);
+  } catch(...) {
+    fclose(f);
+    throw;
+  }
+  game = tmp;
+}
+
+class MoveFinder {
+private:
+  EndGameTablebase *m_tablebase;
+  void load(const Game &game);
+  void unload();
+  bool isLoaded() const {
+    return m_tablebase != NULL;
+  }
+public:
+  MoveFinder();
+  ~MoveFinder();
+  MoveResultArray getAllMoves(const Game &game);
+};
+
+MoveFinder::MoveFinder() {
+  EndGameKeyDefinition::setDbPath("c:\\temp\\ChessEndGames");
+  EndGameKeyDefinition::setMetric(DEPTH_TO_MATE);
+  m_tablebase = NULL;
+}
+
+MoveFinder::~MoveFinder() {
+  unload();
+}
+
+void MoveFinder::load(const Game &game) {
+  unload();
+  const PositionSignature signature = game.getPositionSignature();
+  bool swap;
+
+  m_tablebase = EndGameTablebase::getInstanceBySignature(signature, swap);
+  if(m_tablebase == NULL) {
+    throwException("Tablebase %s not found", signature.toString().cstr());
+  }
+  m_tablebase->load();
+}
+
+void MoveFinder::unload() {
+  if(isLoaded()) {
+    m_tablebase->unload();
+    m_tablebase = NULL;
+  }
+}
+
+MoveResultArray MoveFinder::getAllMoves(const Game &game) {
+  bool swap;
+  if(!isLoaded() || !m_tablebase->getKeyDefinition().getPositionSignature().match(game.getPositionSignature(), swap)) {
+    load(game);
+  }
+  return m_tablebase->getAllMoves(game).sort();
+}
+
+class MoveIndexWithReplies {
+public:
+  unsigned int    m_index;
+  MoveBase        m_move;
+  MoveResultArray m_defenceMoves;
+  MoveIndexWithReplies(unsigned int index, const MoveBase &m, const MoveResultArray &a) : m_index(index), m_move(m), m_defenceMoves(a) {
+    m_defenceMoves.sort();
+  }
+  double sumMovesToEnd() const;
+  String toString() const;
+};
+
+double MoveIndexWithReplies::sumMovesToEnd() const {
+  if(m_defenceMoves.size() == 0) {
+    return 0;
+  } else {
+    const int maxMoves = m_defenceMoves[0].m_result.getMovesToEnd();
+
+    int sum   = 0;
+    int count = 0;
+    for(int i = 0; i < m_defenceMoves.size(); i++) {
+      const int moves = m_defenceMoves[i].m_result.getMovesToEnd();
+      if(moves < maxMoves-5) {
+        break;
+      }
+      sum += moves;
+      count++;
+    }
+    return (double)sum;
+  }
+}
+
+String MoveIndexWithReplies::toString() const {
+  String result = format("%2d:%s", m_index,m_move.toString().cstr());
+  for(int i = 0; i < m_defenceMoves.size(); i++) {
+    if(i > 0) {
+      result += "        ";
+    }
+    result += m_defenceMoves[i].toString();
+    result += "\n";
+  }
+  result += format("sum:%.2lf\n", sumMovesToEnd());
+  return result;
+}
+
+static int replyCmp(const MoveIndexWithReplies &r1, const MoveIndexWithReplies &r2) {
+  return sign(r1.sumMovesToEnd() - r2.sumMovesToEnd());
+
+  const MoveResultArray &a1 = r1.m_defenceMoves;
+  const MoveResultArray &a2 = r2.m_defenceMoves;
+  if(a1.size() == 0) {
+    return -1;
+  } else if(a2.size() == 0) {
+    return 1;
+  }
+  for(int i = 0; i < a1.size() && i < a2.size(); i++) {
+    const int d = (int)(a1[i].m_result.getPliesToEnd()) - (int)(a2[i].m_result.getPliesToEnd());
+    if(d) {
+      return d;
+    }
+  }
+  if(i == a1.size()) {
+    return -1;
+  } else if(i == a2.size()) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+class GameTree {
+private:
+  MoveFinder                     m_moveFinder;
+  Game                           m_game;
+  static CompactHashSet<GameKey> positionsDone;
+  static bool                    atStartOfLine;
+  static void newLine();
+  static void printLines(int level, unsigned char ch);
+  static void printf(const char *format, ...);
+  void        printTree(int level);
+  bool        printMove(const MoveWithResult &mr, int level, unsigned char ch=179); // return true if game.position is a terminal move, ie. mate of capture
+  int         findBestWinnerMove(const MoveResultArray &a);
+  MoveResultArray getAllMovesInCurrentPosition() {
+    return m_moveFinder.getAllMoves(m_game);
+  }
+
+public:
+  GameTree(const Game &game);
+};
+
+bool GameTree::atStartOfLine = true;
+CompactHashSet<GameKey> GameTree::positionsDone;
+
+GameTree::GameTree(const Game &game) {
+  positionsDone.clear();
+  m_game = game;
+  printTree(0);
+}
+
+void GameTree::printTree(int level) {
+  const MoveResultArray a = getAllMovesInCurrentPosition();
+  switch(a.size()) {
+  case 0:
+    return;
+  case 1:
+    { if(printMove(a[0], level)) {
+        return;
+      }
+      m_game.executeMove(a[0]);
+      if(!positionsDone.contains(m_game.getKey())) {
+        printTree(level);
+      }
+      m_game.unExecuteLastMove();
+    }
+    break;
+  default: // many moves
+    { const EndGameResult r0 = a[0].m_result;
+      if(r0.isWinner() && STATUSTOWINNER(r0.getStatus()) == m_game.getPlayerInTurn()) {
+        const MoveWithResult &mr = a[findBestWinnerMove(a)];
+        if(printMove(mr, level)) {
+          return;
+        }
+        m_game.executeMove(mr);
+        if(!positionsDone.contains(m_game.getKey())) {
+          printTree(level);
+        }
+        m_game.unExecuteLastMove();
+      } else if(a[1].m_result != r0) { // only one best looser move
+        printMove(a[0], level);
+        m_game.executeMove(a[0]);
+        if(!positionsDone.contains(m_game.getKey())) {
+          printTree(level);
+        }
+        m_game.unExecuteLastMove();
+      } else {
+        for(int i = 0; i < a.size(); i++) {
+          if(a[i].m_result != r0) {
+            break;
+          }
+          printMove(a[i], level, (i == 0)?195:179);
+          m_game.executeMove(a[i]);
+          printTree(level+1);
+          m_game.unExecuteLastMove();
+        }
+      }
+    }
+    break;
+  }
+}
+
+#define ISCAPTURE(move) (!m_game.isPositionEmpty(move.m_to))
+
+bool GameTree::printMove(const MoveWithResult &mr, int level, unsigned char ch) {
+  const ExecutableMove move = m_game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
+  const int            no   = PLIESTOMOVES(m_game.getPlyCount())+1;
+
+  bool nl;
+  if(m_game.getPlayerInTurn() == WHITEPLAYER) {
+    if(!atStartOfLine) newLine();
+    printLines(level, ch);
+    printf("%2d. ", no);
+    nl = false;
+  } else {
+    if(atStartOfLine) {
+      printLines(level, ch);
+      printf("%2d.    -    ", no);
+    }
+    printf(", ");
+    nl = true;
+  }
+  printf("%-8s", move.toString().cstr());
+  if(ISCAPTURE(mr) || (mr.m_result.getPliesToEnd() == 1)) {
+    newLine();
+    return true;
+  } else if(nl) {
+    newLine();
+  }
+  return false;
+}
+
+int GameTree::findBestWinnerMove(const MoveResultArray &a) {
+  BitSet candidates(a.size());
+  const int minPliesToEnd = a[0].m_result.getPliesToEnd();
+  candidates.add(0);
+  int candidateCount = 1;
+  for(int i = 1; i < a.size(); i++) {
+    if(a[i].m_result.getPliesToEnd() == minPliesToEnd) {
+      candidates.add(i);
+      candidateCount++;
+    } else {
+      break;
+    }
+  }
+  if(candidateCount == 1) {
+    return 0;
+  } else {
+    Array<MoveIndexWithReplies> ca;
+    for(Iterator<unsigned int> it = candidates.getIterator(); it.hasNext();) {
+      const unsigned int index = it.next();
+      const MoveBase &m = a[index];
+      m_game.executeMove(m);
+      ca.add(MoveIndexWithReplies(index, m, getAllMovesInCurrentPosition()));
+      m_game.unExecuteLastMove();
+    }
+    ca.sort(replyCmp);
+/*
+    printf("\n");
+    for(int i = 0; i < ca.size(); i++) {
+      printf("%s\n", ca[i].toString().cstr());
+    }
+    pause();
+*/
+    return ca[0].m_index;
+  }
+}
+
+void GameTree::newLine() { // static 
+  printf("\n");
+  atStartOfLine = true;
+}
+
+void GameTree::printLines(int level, unsigned char ch) {
+  if(!atStartOfLine || level == 0) {
+    return;
+  }
+  for(int i = 0; i < level-1; i++) {
+    printf(" %c",179);
+  }
+  printf(" %c", ch);
+}
+
+void GameTree::printf(const char *format, ...) { // static 
+  va_list argptr;
+  va_start(argptr, format);
+  vprintf(format,argptr);
+  atStartOfLine = false;
+}
+
+#pragma warning(disable:4065)
+
+int main(int argc, char **argv) {
+  char *cp;
+
+  for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
+    for(cp++; *cp; cp++) {
+      switch(*cp) {
+      default: usage();
+      }
+    }
+  }
+
+  if(!*argv) {
+    usage();
+  }
+  const String fileName = *(argv++);
+
+  try {
+    redirectVerbose(VERBOSENULL);
+    Game game;
+    loadGame(game, fileName);
+    switch(game.getPositionType()) {
+    case NORMAL_POSITION   :
+    case DRAW_POSITION     :
+      throwException("This is not an endgame");
+      break;
+    case TABLEBASE_POSITION:
+      GameTree tree(game);
+      break;
+    }
+  } catch(exception e) {
+    fprintf(stderr, "%s\n", e.what());
+    return -1;
+  }
+
+  return 0;
+}
