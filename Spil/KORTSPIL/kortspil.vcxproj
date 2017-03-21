@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{7A6B7608-2033-4282-94DA-7B5C680F660A}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>Kortspil</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">

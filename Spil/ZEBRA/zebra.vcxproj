@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{442C2E9E-61A3-404F-A14B-E0DBAAECFD58}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>Zebra</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
