@@ -264,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="adler32.c" />
+    <ClCompile Include="compress.c" />
     <ClCompile Include="crc32.c" />
     <ClCompile Include="deflate.c" />
     <ClCompile Include="gzclose.c" />
