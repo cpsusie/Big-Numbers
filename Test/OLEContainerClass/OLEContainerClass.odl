@@ -1,0 +1,42 @@
+// OLEContainerClass.odl : type library source for OLEContainerClass.exe
+
+// This file will be processed by the MIDL compiler to produce the
+// type library (OLEContainerClass.tlb).
+
+[ uuid(EF3288D0-B9C6-4212-82E8-75D54A4A615A), version(1.0) ]
+library OLEContainerClass
+{
+	importlib("stdole32.tlb");
+	importlib("stdole2.tlb");
+
+
+	//  Primary dispatch interface for COLEContainerClassDoc
+	
+	[ uuid(2A8FCBEA-37C2-4561-BD3F-E3117DEAF484) ]
+	dispinterface IOLEContainerClass
+	{
+		properties:
+			// NOTE - ClassWizard will maintain property information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_PROP(COLEContainerClassDoc)
+			//}}AFX_ODL_PROP
+			
+		methods:
+			// NOTE - ClassWizard will maintain method information here.
+			//    Use extreme caution when editing this section.
+			//{{AFX_ODL_METHOD(COLEContainerClassDoc)
+			//}}AFX_ODL_METHOD
+
+	};
+
+	//  Class information for COLEContainerClassDoc
+	
+	[ uuid(A03FEFA9-8FC7-4FD3-9729-1807C544131B) ]
+	coclass Document
+	{
+		[default] dispinterface IOLEContainerClass;
+	};
+
+	//{{AFX_APPEND_ODL}}
+	//}}AFX_APPEND_ODL}}
+};
