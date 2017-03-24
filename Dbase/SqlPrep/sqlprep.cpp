@@ -299,12 +299,13 @@ void Parser::emit(TCHAR *format,...) {
 
 void Parser::emitLineMark(int line) {
   if(m_genLineMarks) {
+    if(line==0) line++;
     emit(_T("#line %ld \"%s\"\n"),line,absolutFileName());
   }
 }
 
 void Parser::emitLineMark() {
-  emitLineMark(yypos().m_line);
+  emitLineMark(yypos().m_line-1);
 }
 
 
