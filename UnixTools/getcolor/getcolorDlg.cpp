@@ -142,8 +142,11 @@ void CGetcolorDlg::displayColor(const POINT &pt) {
   const int b = GetBValue(c);
 
   setWindowText(st, format(_T("      (r,g,b):(%d,%d,%d)"),r,g,b));
-  stdc.SelectObject(CreateSolidBrush(c));
+  CBrush brush;
+  brush.CreateSolidBrush(c);
+  CBrush *oldBrush = stdc.SelectObject(&brush);
   stdc.Rectangle(0,0,15,15);
+  stdc.SelectObject(oldBrush);
 }
 
 BOOL CGetcolorDlg::PreTranslateMessage(MSG *pMsg) {
