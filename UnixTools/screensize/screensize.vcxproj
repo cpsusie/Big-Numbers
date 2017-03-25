@@ -23,6 +23,7 @@
     <SccLocalPath />
     <ProjectGuid>{E7002B6B-2E61-48D5-BBA3-77A8E45E27DC}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>ScreenSize</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
