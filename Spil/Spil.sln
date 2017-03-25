@@ -12,13 +12,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "4paaStribe", "4paaStribe\4p
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kalaha", "kalaha\kalaha.vcxproj", "{5CF1B594-0B8E-4607-A3A9-7F1EF6ADB2F8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kortspil", "KORTSPIL\kortspil.vcxproj", "{7A6B7608-2033-4282-94DA-7B5C680F660A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Kortspil", "KORTSPIL\kortspil.vcxproj", "{7A6B7608-2033-4282-94DA-7B5C680F660A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakeChessOpeningLib", "MakeChessOpeningLib\MakeChessOpeningLib.vcxproj", "{F96FD707-EF81-446C-8675-6DBD6CCF1454}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MicroMax", "MicroMax\MicroMax.vcxproj", "{FA5CB810-8D14-4385-AEE8-29703628D520}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "nim", "nim\nim.vcxproj", "{EC4DA502-B72F-4ED9-B792-AC5EBAC9EE6E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Nim", "nim\nim.vcxproj", "{EC4DA502-B72F-4ED9-B792-AC5EBAC9EE6E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OneOrTwo", "OneOrTwo\OneOrTwo.vcxproj", "{19DAA7F6-21FF-45A3-9FEC-A237E543DC9A}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -26,9 +26,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "OneOrTwo", "OneOrTwo\OneOrT
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "reversi", "reversi\reversi.vcxproj", "{D10F02A2-A637-400A-A669-BBE0C46F6B60}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Reversi", "reversi\reversi.vcxproj", "{D10F02A2-A637-400A-A669-BBE0C46F6B60}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sudoku", "sudoku\sudoku.vcxproj", "{0AC09061-ED8B-4F10-B3F5-8FFB5EE8087D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sudoku", "sudoku\sudoku.vcxproj", "{0AC09061-ED8B-4F10-B3F5-8FFB5EE8087D}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
@@ -36,9 +36,9 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sudoku", "sudoku\sudoku.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Think", "think\think.vcxproj", "{DFE4D908-CB80-4778-AC4C-3E5A79E33554}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "turist", "TURIST\turist.vcxproj", "{8CC06489-C9F2-4DDE-A54C-447B48BAC9F7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Turist", "TURIST\turist.vcxproj", "{8CC06489-C9F2-4DDE-A54C-447B48BAC9F7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "zebra", "ZEBRA\zebra.vcxproj", "{442C2E9E-61A3-404F-A14B-E0DBAAECFD58}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Zebra", "ZEBRA\zebra.vcxproj", "{442C2E9E-61A3-404F-A14B-E0DBAAECFD58}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Quarto", "quarto\quarto.vcxproj", "{15238F4C-1E9D-49A1-B1E8-F25537C8A41F}"
 EndProject
@@ -71,6 +71,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PrintEndGameTree", "PrintEn
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "30", "30\30.vcxproj", "{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConvertChsFiles", "ConvertChsFiles\ConvertChs.vcxproj", "{B1A3DA27-3698-4404-87ED-431D47916D70}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -568,14 +574,10 @@ Global
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Debug|x64.Build.0 = Debug|x64
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Debug|x86.ActiveCfg = Debug|Win32
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Debug|x86.Build.0 = Debug|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDDebug|x64.ActiveCfg = Release|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDDebug|x64.Build.0 = Release|Win32
+		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDDebug|x64.ActiveCfg = Release|x64
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDDebug|x86.ActiveCfg = Debug|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDDebug|x86.Build.0 = Debug|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDRelease|x64.ActiveCfg = Release|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDRelease|x64.Build.0 = Release|Win32
+		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDRelease|x64.ActiveCfg = Release|x64
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDRelease|x86.ActiveCfg = Release|Win32
-		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.LDRelease|x86.Build.0 = Release|Win32
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Profilling|x64.ActiveCfg = Release|Win32
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Profilling|x64.Build.0 = Release|Win32
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.Profilling|x86.ActiveCfg = Release|Win32
@@ -590,6 +592,34 @@ Global
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
 		{E836A9F9-E3DB-49CC-B57C-868E4721A0A3}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Debug|x64.ActiveCfg = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Debug|x64.Build.0 = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Debug|x86.ActiveCfg = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Debug|x86.Build.0 = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDDebug|x64.ActiveCfg = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDDebug|x64.Build.0 = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDDebug|x86.Build.0 = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDRelease|x64.ActiveCfg = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDRelease|x64.Build.0 = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDRelease|x86.ActiveCfg = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.LDRelease|x86.Build.0 = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Profilling|x64.ActiveCfg = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Profilling|x64.Build.0 = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Profilling|x86.ActiveCfg = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Profilling|x86.Build.0 = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Release|x64.ActiveCfg = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Release|x64.Build.0 = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Release|x86.ActiveCfg = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.Release|x86.Build.0 = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderDebug|x64.ActiveCfg = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderDebug|x64.Build.0 = Debug|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderDebug|x86.ActiveCfg = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderDebug|x86.Build.0 = Debug|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderRelease|x64.ActiveCfg = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderRelease|x64.Build.0 = Release|x64
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderRelease|x86.ActiveCfg = Release|Win32
+		{B1A3DA27-3698-4404-87ED-431D47916D70}.TablebaseBuilderRelease|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
