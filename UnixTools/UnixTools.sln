@@ -772,7 +772,6 @@ Global
 		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDRelease|x64.ActiveCfg = Release|x64
 		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDRelease|x86.ActiveCfg = Release|Win32
 		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x64.ActiveCfg = Release|x64
-		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x64.Build.0 = Release|x64
 		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x86.ActiveCfg = Release|Win32
 		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
