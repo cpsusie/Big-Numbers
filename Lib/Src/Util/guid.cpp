@@ -1,6 +1,8 @@
 #include "pch.h"
 #include <objbase.h>
 
+#pragma comment(lib, "ole32.lib")
+
 GUID *newGUID(GUID *guid) {
   HRESULT hr = CoCreateGuid(guid);
   if(hr != S_OK) {
