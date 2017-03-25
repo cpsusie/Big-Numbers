@@ -1,8 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <Math.h>
-#include <Math/MathLib.h>
-#include <Math/Expression/Expression.h>
 
 static void printExpressionList(double x, Array<Expression> &expressionList) {
   for(size_t v = 0; v < expressionList.size(); v++) {
