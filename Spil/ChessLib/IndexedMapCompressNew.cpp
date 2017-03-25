@@ -12,15 +12,15 @@ String packedArrayToString(const PackedArray &a) {
                         ,a.getBitsPerItem()
                         ,format1000(a.size()).cstr());
 #define AW 4
-  const size_t n = a.size();
   result += _T("        ");
-  for(size_t i = 0; i < 10; i++) {
+  for(int i = 0; i < 10; i++) {
     result += format(_T("%*d"), AW, i);
   }
   result += _T("\n");
-  for(size_t i = 0; i < n; i++) {
+  const UINT64 n = a.size();
+  for(UINT64 i = 0; i < n; i++) {
     if(i % 10 == 0) {
-      result += format(_T("%7d "), i);
+      result += format(_T("%7I64u "), i);
     }
     result += format(_T("%*d"), AW, a.get(i));
     if(((i % 10) == 9) || (i == n-1)) result += _T("\n");

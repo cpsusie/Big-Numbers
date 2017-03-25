@@ -86,7 +86,8 @@ public:
   String expand(ByteInputStream &in, BitSet &dst) {
     INT64 capacity;
     in.getBytesForced((BYTE*)&capacity, sizeof(capacity));
-    dst.setCapacity(capacity);
+    CHECKUINT64ISVALIDSIZET(capacity);
+    dst.setCapacity((size_t)capacity);
     m_compressor.expand(in, BitSetOutputStream(dst));
     return m_compressor.getRatios();
   }
