@@ -108,13 +108,13 @@ typedef struct {
 
 class CPUInfo {
 public:
-  String           m_vendor;
-  VersionInfo      m_versionInfo;
-  CPUBasics        m_CPUBasics;
-  FeatureInfo      m_featureInfo;
-  String           m_processorBrandString;
-  unsigned __int64 m_processorSerialNumber;
-  String           m_processorType;
+  String      m_vendor;
+  VersionInfo m_versionInfo;
+  CPUBasics   m_CPUBasics;
+  FeatureInfo m_featureInfo;
+  String      m_processorBrandString;
+  UINT64      m_processorSerialNumber;
+  String      m_processorType;
 
   static bool CPUSupportsId();
   CPUInfo();

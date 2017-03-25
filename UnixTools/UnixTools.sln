@@ -213,6 +213,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GetVersion", "GetVersion\Ge
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SqlBeauty", "sqlbeauty\sqlbeauty.vcxproj", "{78943868-DD36-45CF-B46A-DB188CE8E646}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GetCPUId", "GetCpuId\GetCpuId.vcxproj", "{59B4C899-288A-46DC-809F-1104BB0B5D3C}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -758,6 +763,18 @@ Global
 		{78943868-DD36-45CF-B46A-DB188CE8E646}.Release|x64.Build.0 = Release|x64
 		{78943868-DD36-45CF-B46A-DB188CE8E646}.Release|x86.ActiveCfg = Release|Win32
 		{78943868-DD36-45CF-B46A-DB188CE8E646}.Release|x86.Build.0 = Release|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Debug|x64.ActiveCfg = Debug|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Debug|x64.Build.0 = Debug|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Debug|x86.ActiveCfg = Debug|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Debug|x86.Build.0 = Debug|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDDebug|x64.ActiveCfg = Debug|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDRelease|x64.ActiveCfg = Release|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.LDRelease|x86.ActiveCfg = Release|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x64.ActiveCfg = Release|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x64.Build.0 = Release|x64
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x86.ActiveCfg = Release|Win32
+		{59B4C899-288A-46DC-809F-1104BB0B5D3C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

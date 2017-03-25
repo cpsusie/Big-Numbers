@@ -101,12 +101,12 @@ String FeatureInfo::getFlagText(FeatureFlag flag, bool longDescription) const {
   for(int i = 0; i < ARRAYSIZE(featureFlagText); i++) {
     if(featureFlagText[i].m_flag == flag) {
       if(longDescription)
-        return String(featureFlagText[flag].m_name) + "\t:" + featureFlagText[flag].m_desc;
+        return String(featureFlagText[flag].m_name) + _T("\t:") + featureFlagText[flag].m_desc;
       else
         return featureFlagText[flag].m_name;
     }
   }
-  return "";
+  return EMPTYSTRING;
 }
 
 String FeatureInfo::toString(bool longDescription) const {
@@ -245,4 +245,58 @@ bool CPUInfo::CPUSupportsId() { // static
 
   return true;
 }
+
+#else
+
+// this fucks up in x64 mode !!!!!!
+
+extern "C" {
+void   getCPUBrandString(char *dst);
+int    getCPUData(char *vendor, UINT &versionInfo, UINT &cpuBasics, UINT &featureInfo);
+UINT64 getCPUSerialNumber();
+};
+
+CPUInfo::CPUInfo() {
+  throwException(_T("CPUInfo not implemented in x64-mode"));
+
+  char vendor[20];
+  memset(vendor,0,sizeof(vendor));
+/*
+  _tprintf(_T("vendor       :%p\n"), vendor);
+  _tprintf(_T("this:%p\n"), this);
+  _tprintf(_T("m_versionInfo:%p, size:%zd\n"), &m_versionInfo, sizeof(m_versionInfo));
+  _tprintf(_T("m_CPUBasic   :%p, size:%zd\n"), &m_CPUBasics  , sizeof(m_CPUBasics  ));
+  _tprintf(_T("m_featureInfo:%p, size:%zd\n"), &m_featureInfo, sizeof(m_featureInfo));
+*/
+  DEBUGTRACE;
+  if(getCPUData(vendor, (UINT&)m_versionInfo, (UINT&)m_CPUBasics, (UINT&)m_featureInfo) >= 3) {
+  DEBUGTRACE;
+    m_processorSerialNumber = 7; // getCPUSerialNumber();
+  DEBUGTRACE;
+  } else {
+    m_processorSerialNumber = 0;
+  }
+  printf("vendor(ascii):<%s>\n", vendor);
+  char brandString[49];
+  DEBUGTRACE;
+  getCPUBrandString(brandString);
+  DEBUGTRACE;
+  printf("brand(ascii):<%s>\n", brandString);
+
+  m_vendor               = vendor;
+  DEBUGTRACE;
+  m_processorBrandString = brandString;
+  DEBUGTRACE;
+  _tprintf(_T("processorType:%d\n"), m_versionInfo.processorType);
+  m_processorType        = processorTypeStr[m_versionInfo.processorType];
+  DEBUGTRACE;
+}
+
+bool CPUInfo::CPUSupportsId() { // static
+  // TODO: missing code
+  return true;
+}
+
 #endif
+
+
