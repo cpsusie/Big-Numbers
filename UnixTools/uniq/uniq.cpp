@@ -15,7 +15,7 @@ static void removeDuplicates(FILE *f, Comparator<TCHAR*> &comp) {
     if(comp.compare(last,current) != 0) {
       _tprintf(_T("%s\n"), last);
     }
-    swap(last,current);
+    std::swap(last,current);
   }
   if(last) {
     _tprintf(_T("%s\n"), last);
@@ -40,7 +40,7 @@ static void countDuplicates(FILE *f, Comparator<TCHAR*> &comp) {
     } else {
       _tprintf(_T("%lu %s\n"), count, last);
       count = 1;
-      swap(last,current);
+      std::swap(last,current);
     }
   }
   if(count > 0) {
