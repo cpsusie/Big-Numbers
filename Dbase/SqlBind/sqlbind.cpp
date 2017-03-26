@@ -2,8 +2,8 @@ static char sqlapi_program_id[240] = {
 115,  0,113,  0,108,  0, 98,  0,105,  0,110,  0,100,  0, 46,  0,115,  0,113,  0,
  99,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
- 83,  0,117,  0,110,  0, 32,  0, 77,  0, 97,  0,114,  0, 32,  0, 49,  0, 57,  0,
- 32,  0, 49,  0, 55,  0, 58,  0, 48,  0, 52,  0, 58,  0, 50,  0, 48,  0, 32,  0,
+ 83,  0,117,  0,110,  0, 32,  0, 77,  0, 97,  0,114,  0, 32,  0, 50,  0, 54,  0,
+ 32,  0, 49,  0, 52,  0, 58,  0, 51,  0, 56,  0, 58,  0, 49,  0, 49,  0, 32,  0,
  50,  0, 48,  0, 49,  0, 55,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -13,7 +13,7 @@ static char sqlapi_program_id[240] = {
   0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
 
 };
-/* sqlbind.sqc Sun Mar 19 17:04:20 2017 */
+/* sqlbind.sqc Sun Mar 26 14:38:11 2017 */
 #line 1 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 #include "targetver.h"
 #include <sqlapi.h>
@@ -57,24 +57,24 @@ static void dbConnect() {
 #line 18 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 {
   SqlApiVarList sqlapi_varl[3];
-#line 20 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[0].sqltype = 29;
   sqlapi_varl[0].sqllen  = 20;
   sqlapi_varl[0].sqldata = (void*)dbname;
   sqlapi_varl[0].sqlind = 0L;
-#line 20 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[1].sqltype = 29;
   sqlapi_varl[1].sqllen  = 30;
   sqlapi_varl[1].sqldata = (void*)username;
   sqlapi_varl[1].sqlind = 0L;
-#line 20 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_varl[2].sqltype = 29;
   sqlapi_varl[2].sqllen  = 30;
   sqlapi_varl[2].sqldata = (void*)password;
   sqlapi_varl[2].sqlind = 0L;
-#line 20 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
   sqlapi_call(1,5,sqlapi_program_id,3,0,sqlapi_varl,sqlca);
-#line 20 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 19 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 }
 #line 18 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 #line 17 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -95,7 +95,7 @@ static void dbDisconnect() {
 #line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 {
   sqlapi_call(1,3,sqlapi_program_id,0,0,NULL,sqlca);
-#line 29 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
+#line 28 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 }
 #line 27 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
 #line 27 "C:/mytools2015/Dbase/SqlBind/sqlbind.sqc"
@@ -297,22 +297,26 @@ int _tmain( int argc, TCHAR **argv ) {
   }
 
   if(dbname == NULL || _tcslen(dbname) == 0) usage();
-
-  switch(cmd) {
-  case BINDPROGRAM:
-	if( !*argv ) usage();
-	return bindProgram(dbname,argv) ? 0 : -1;
-	break;
-  case UNBINDPROGRAM:
-	if(!*argv ) usage();
-	return unbindProgram(dbname,argv) ? 0 : -1;
-	break;
-  case CREATEDB:
-	return createDatabase(dbname) ? 0 : -1;
-	break;
-  case DROPDB:
-	return dropDatabase(dbname) ? 0 : -1;
-	break;
+  try {
+    switch(cmd) {
+    case BINDPROGRAM:
+      if( !*argv ) usage();
+      return bindProgram(dbname,argv) ? 0 : -1;
+      break;
+    case UNBINDPROGRAM:
+      if(!*argv ) usage();
+      return unbindProgram(dbname,argv) ? 0 : -1;
+      break;
+    case CREATEDB:
+      return createDatabase(dbname) ? 0 : -1;
+      break;
+    case DROPDB:
+      return dropDatabase(dbname) ? 0 : -1;
+      break;
+    }
+  } catch(Exception e) {
+    _ftprintf(stderr, _T("Exception:%s\n"), e.what());
+    return -1;
   }
   return 0;
 }

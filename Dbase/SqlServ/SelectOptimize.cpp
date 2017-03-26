@@ -1409,11 +1409,11 @@ void SelectStmt::permuterJoinSequence(int nelem) {
     FromTable **p2 = &m_fromTable[nelem];
     for(int i = m_noOfFixedTables; i < nelem; i++) {
       FromTable **p1 = &m_fromTable[i];
-      swap((*p1)->m_joinSequence,(*p2)->m_joinSequence);
-      swap(*p1,*p2);
+      std::swap((*p1)->m_joinSequence,(*p2)->m_joinSequence);
+      std::swap(*p1,*p2);
       permuterJoinSequence( nelem );
-      swap(*p1,*p2);
-      swap((*p1)->m_joinSequence,(*p2)->m_joinSequence);
+      std::swap(*p1,*p2);
+      std::swap((*p1)->m_joinSequence,(*p2)->m_joinSequence);
     }
   }
 }

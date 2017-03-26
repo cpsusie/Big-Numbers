@@ -276,6 +276,14 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">sqlbind.cpp</Outputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">c:\bin\sqlprep.exe</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">c:\bin\sqlprep.exe</AdditionalInputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Pre-parsing SQL statements</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Pre-parsing SQL statements</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pre-parsing SQL statements</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pre-parsing SQL statements</Message>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

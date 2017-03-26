@@ -223,22 +223,26 @@ int _tmain( int argc, TCHAR **argv ) {
   }
 
   if(dbname == NULL || _tcslen(dbname) == 0) usage();
-
-  switch(cmd) {
-  case BINDPROGRAM:
-	if( !*argv ) usage();
-	return bindProgram(dbname,argv) ? 0 : -1;
-	break;
-  case UNBINDPROGRAM:
-	if(!*argv ) usage();
-	return unbindProgram(dbname,argv) ? 0 : -1;
-	break;
-  case CREATEDB:
-	return createDatabase(dbname) ? 0 : -1;
-	break;
-  case DROPDB:
-	return dropDatabase(dbname) ? 0 : -1;
-	break;
+  try {
+    switch(cmd) {
+    case BINDPROGRAM:
+      if( !*argv ) usage();
+      return bindProgram(dbname,argv) ? 0 : -1;
+      break;
+    case UNBINDPROGRAM:
+      if(!*argv ) usage();
+      return unbindProgram(dbname,argv) ? 0 : -1;
+      break;
+    case CREATEDB:
+      return createDatabase(dbname) ? 0 : -1;
+      break;
+    case DROPDB:
+      return dropDatabase(dbname) ? 0 : -1;
+      break;
+    }
+  } catch(Exception e) {
+    _ftprintf(stderr, _T("Exception:%s\n"), e.what());
+    return -1;
   }
   return 0;
 }

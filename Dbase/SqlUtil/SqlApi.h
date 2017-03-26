@@ -140,8 +140,6 @@ typedef enum {
 
 #define SQL_FATAL_ERROR               -9999
 
-#include <String.h>
-
 class sqlca {
 public:
   long  sqlcode;       /* SQL return code */
