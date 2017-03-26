@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/MathException.h>
 
 void throwMathException(const TCHAR *format,...) {
   va_list argptr;

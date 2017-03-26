@@ -1,5 +1,8 @@
-#include "stdafx.h"
-#include "MeshArrayJobMonitor.h"
+#include "pch.h"
+#include <Math/Expression/ExpressionWrapper.h>
+#include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/Function2DSurface.h>
+#include "D3DGraphics/MeshArrayJobMonitor.h"
 
 class Function2DPoint {
 public:

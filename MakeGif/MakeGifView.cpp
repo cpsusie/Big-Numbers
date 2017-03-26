@@ -177,5 +177,5 @@ void CMakeGifView::showPanelSize() {
                      ,rectToString(r2).cstr());
 
   CClientDC dc(GetDlgItem(IDC_IMAGEPANEL));
-  dc.TextOut(10,10, msg.cstr(), msg.length());
+  textOut(dc, 10,10, msg);
 }

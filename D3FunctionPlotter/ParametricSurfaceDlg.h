@@ -1,5 +1,6 @@
 #pragma once
 
+#include <D3DGraphics/ParametricSurface.h>
 #include "ExprDialog.h"
 
 class CParametricSurfaceDlg : public CExprDialog {

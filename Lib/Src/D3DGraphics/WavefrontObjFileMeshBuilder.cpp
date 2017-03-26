@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <HashMap.h>
 #include <D3DGraphics/MeshBuilder.h>
 

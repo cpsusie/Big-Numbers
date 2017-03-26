@@ -1,9 +1,12 @@
 #include "pch.h"
 
+#include <StreamParameters.h>
 #include <Math/Int128.h>
 
 #include <comdef.h>
 #include <atlconv.h>
+
+using namespace std;
 
 #define BASICSTRING basic_string<Ctype, char_traits<Ctype>, allocator<Ctype> >
 

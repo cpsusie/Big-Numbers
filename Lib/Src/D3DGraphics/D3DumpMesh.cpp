@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
+#include <D3DGraphics/D3Scene.h>
 
 DECLARE_THISFILE;
 
@@ -27,41 +28,39 @@ void dumpMesh(LPD3DXMESH mesh, const String &fileName) {
 }
 
 void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f) {
-  USES_CONVERSION;
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));
   const int itemSize = FVFToSize(desc.FVF);
-  fprintf(f, "Description:\n%s"
-             "ItemSize :%d\n"
-             "ItemCount:%d\n"
-           , T2A(toString(desc).cstr())
-           , itemSize
-           , desc.Size/itemSize
-         );
+  _ftprintf(f, _T("Description:\n%s"
+                  "ItemSize :%d\n"
+                  "ItemCount:%d\n")
+               ,toString(desc).cstr()
+               ,itemSize
+               ,desc.Size/itemSize
+           );
   void *bufferItems = NULL;
   V(vertexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
 
   int index = 0;
   for(size_t bp = 0; bp < desc.Size; bp += itemSize, index++) {
     const String str = vertexToString(((const char*)bufferItems) + bp, desc.FVF, 5);
-    fprintf(f, "%4d:%s\n", index, T2A(str.cstr()));
+    _ftprintf(f, _T("%4d:%s\n"), index, str.cstr());
   }
   V(vertexBuffer->Unlock());
 }
 
 void dumpIndexBuffer(LPDIRECT3DINDEXBUFFER9 indexBuffer, FILE *f) {
-  USES_CONVERSION;
   D3DINDEXBUFFER_DESC desc;
   V(indexBuffer->GetDesc(&desc));
   const int itemSize  = formatToSize(desc.Format);
   const int itemCount = desc.Size/itemSize;
-  fprintf(f, "Description:\n%s"
-             "ItemSize :%d\n"
-             "ItemCount:%d\n"
-            ,T2A(toString(desc).cstr())
-            ,itemSize
-            ,itemCount
-          );
+  _ftprintf(f, _T("Description:\n%s"
+                  "ItemSize :%d\n"
+                  "ItemCount:%d\n")
+             ,toString(desc).cstr()
+             ,itemSize
+             ,itemCount
+           );
   void *bufferItems = NULL;
   V(indexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
 

@@ -7,6 +7,6 @@
 #include <D3DGraphics/D3Math.h>
 #include <D3DGraphics/D3Error.h>
 #include <D3DGraphics/Profile.h>
-#include "D3Scene.h"
+#include <D3DGraphics/D3Scene.h>
 #include "resource.h"       // main symbols
 

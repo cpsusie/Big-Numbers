@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #pragma warning(disable: 4786)  // name truncated to 255 chars
 

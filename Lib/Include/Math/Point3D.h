@@ -71,3 +71,6 @@ public:
 };
 
 double angle(const Point3D &p1, const Point3D &p2);  // angle in radians between p1 and p2
+
+typedef FunctionTemplate<Point3D, Point3D> Point3DFunction;
+typedef FunctionTemplate<Point3D, Real>    Function3D;

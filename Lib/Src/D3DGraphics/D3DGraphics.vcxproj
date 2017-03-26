@@ -250,7 +250,27 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3DeviceFactory.cpp" />
+    <ClCompile Include="D3DumpMesh.cpp" />
+    <ClCompile Include="D3LightControl.cpp" />
+    <ClCompile Include="D3LightControlDirectional.cpp" />
+    <ClCompile Include="D3LightControlPoint.cpp" />
+    <ClCompile Include="D3LightControlSpot.cpp" />
+    <ClCompile Include="D3Scene.cpp" />
+    <ClCompile Include="D3SceneIO.cpp" />
+    <ClCompile Include="D3SceneObject.cpp" />
+    <ClCompile Include="D3TextureTools.cpp" />
+    <ClCompile Include="D3ToString.cpp" />
+    <ClCompile Include="Function2DSurface.cpp" />
+    <ClCompile Include="Function2DSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="IsoSurface.cpp" />
+    <ClCompile Include="IsoSurfaceDebugObject.cpp" />
+    <ClCompile Include="IsoSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="MeshArray.cpp" />
+    <ClCompile Include="MeshArrayJobMonitor.cpp" />
+    <ClCompile Include="ParametricSurface.cpp" />
+    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -262,16 +282,28 @@
     <ClCompile Include="D3Spherical.cpp" />
     <ClCompile Include="IsoSurfacePolygonizer.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
+    <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
+    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
+    <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\PersistentParameter.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="pch.h" />

@@ -1,8 +1,7 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include "MathLib.h"
-#include "Point2D.h"
+#include "Matrix.h"
 
 #define MAXDEGREE 30
 #define MAXM (MAXDEGREE+2)

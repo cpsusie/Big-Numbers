@@ -10,7 +10,19 @@ typedef VectorTemplate<Real>      Vector;
 typedef MatrixTemplate<Real>      Matrix;
 typedef LUMatrixTemplate<Real>    LUMatrix;
 
-typedef VectorTemplate<Complex>   ComplexVector;
+typedef FunctionTemplate<Vector,Vector>     VectorFunction;
+typedef FunctionTemplate<Vector,Real>       VectorToRFunction;
+typedef FunctionTemplate<Real,Vector>       RToVectorFunction;
+
+Vector getGradient( VectorToRFunction &f, const Vector &x);
+Vector getGradient1(VectorToRFunction &f, const Vector &x);
+Vector getGradient( VectorToRFunction &f, const Vector &x0, const Real &y0);
+Matrix getJacobi(   VectorFunction    &f, const Vector &x);
+Matrix getJacobi(   VectorFunction    &f, const Vector &x0, const Vector &y0);
+
+Vector newton(      VectorFunction &f, const Vector &x0, int maxit = 10, Real tolerance = 1e-10);
+Vector davidenko(   VectorFunction &f, const Vector &x0);
+Vector levenberg(   VectorFunction &f, const Vector &x0);
 
 class ComplexMatrix : public MatrixTemplate<Complex> {
 public:

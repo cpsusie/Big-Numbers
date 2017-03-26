@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Math.h>
 #include <Math/MathFunctions.h>
 #include <Math/Expression/Expression.h>
-#include "ExpressionWrapper.h"
+#include <Math/Expression/ExpressionWrapper.h>
 
 static Real dummy = 0;
 #define M_EXPR ((Expression*)m_expr)

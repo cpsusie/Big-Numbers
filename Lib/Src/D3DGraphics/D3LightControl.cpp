@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "D3LightControl.h"
+#include "pch.h"
+#include <D3DGraphics/D3LightControl.h>
 
 DECLARE_THISFILE;
 

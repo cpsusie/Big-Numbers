@@ -1,6 +1,8 @@
 #pragma once
 
 #include <StrStream.h>
+#include <MatrixTemplate.h>
+#include "MathLib.h"
 #include "Point2D.h"
 #include "Real.h"
 
@@ -101,3 +103,8 @@ tistream &operator>>(tistream &in , Complex &c);
 tostream &operator<<(tostream &out, const Complex &c);
 
 StrStream &operator<<(StrStream &stream, const Complex &c);
+
+typedef FunctionTemplate<Complex,Complex>   ComplexFunction;
+typedef VectorTemplate<Complex>   ComplexVector;
+
+ComplexVector roots(const Complex &c, int r);

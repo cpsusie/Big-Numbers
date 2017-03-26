@@ -365,7 +365,7 @@ _int128::_int128(const char *str) {
     }
   }
   if (!ok) {
-    throw exception("_int128:string is not an integer");
+    throwMathException(_T("_int128:string is not an integer"));
   }
 }
 
@@ -396,7 +396,7 @@ _int128::_int128(const wchar_t *str) {
     }
   }
   if (!ok) {
-    throw exception("_int128:string is not an integer");
+    throwMathException(_T("_int128:string is not an integer"));
   }
 }
 
@@ -445,6 +445,6 @@ _uint128::_uint128(const wchar_t *str) {
     ok = parseDec(str) != NULL;
   }
   if (!ok) {
-    throw exception("_uint128:string is not an integer");
+    throwMathException(_T("_uint128:string is not an integer"));
   }
 }

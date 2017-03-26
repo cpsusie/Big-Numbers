@@ -1,5 +1,6 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Tokenizer.h>
+#include <D3DGraphics/Function2DSurface.h>
 
 Function2DSurfaceParameters::Function2DSurfaceParameters() {
   m_expr          = "";

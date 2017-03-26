@@ -1,5 +1,6 @@
-#include "stdafx.h"
-#include "D3LightControl.h"
+#include "pch.h"
+#include <D3DGraphics/D3LightControl.h>
+#include <D3DGraphics/MeshCreators.h>
 
 D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex) 
 : D3LightControl(scene, lightIndex)

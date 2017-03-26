@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/Matrix.h>
 
 Vector getGradient(VectorToRFunction &f, const Vector &x) {
   return getGradient(f,x,f(x));

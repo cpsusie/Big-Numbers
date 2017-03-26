@@ -2,7 +2,6 @@
 #include <BitSet.h>
 #include <Tokenizer.h>
 #include <Math/Simplex.h>
-#include <Math/MathException.h>
 
 #define EPS 1e-8
 

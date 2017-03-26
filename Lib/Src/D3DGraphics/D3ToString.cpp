@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
+#include <D3DGraphics/D3Scene.h>
 
 #define caseStr(f) case f: return _T(#f)
 
@@ -127,7 +128,7 @@ String usageToString(DWORD usage) {
   addFlag(D3DUSAGE_QUERY_SRGBWRITE                 );
   addFlag(D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING  );
   addFlag(D3DUSAGE_QUERY_VERTEXTEXTURE             );
-  addFlag(D3DUSAGE_QUERY_WRAPANDMIP	               );
+  addFlag(D3DUSAGE_QUERY_WRAPANDMIP                );
 
 /* Usages for Vertex/Index buffers */
   addFlag(D3DUSAGE_WRITEONLY                       );

@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/MathException.h>
 #include <Math/Matrix.h>
 
 #define Sign(u,v) ( (v)>=0.0 ? fabs(u) : -fabs(u) )

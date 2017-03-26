@@ -1,7 +1,5 @@
 #include "pch.h"
 #include <Math/Matrix.h>
-#include <Math/MathFunctions.h>
-#include <Math/MathException.h>
 
 #ifdef __NEVER__
 

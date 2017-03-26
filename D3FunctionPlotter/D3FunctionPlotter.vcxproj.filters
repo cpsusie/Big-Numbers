@@ -27,13 +27,7 @@
     <ClCompile Include="ColormapDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3AnimatedSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3CoordinateSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3DumpMesh.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="D3FunctionPlotter.cpp">
@@ -42,61 +36,19 @@
     <ClCompile Include="D3FunctionPlotterDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3LightControl.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlDirectional.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlPoint.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3LightControlSpot.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3Scene.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneIO.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3SceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3TextureTools.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="D3ToString.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DrawTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExprDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExpressionWrapper.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Function2DSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Function2DSurfaceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Function2DSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="IsoCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IsoSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IsoSurfaceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="IsoSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="LightDlg.cpp">
@@ -106,15 +58,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MemoryLogThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshArray.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MeshArrayJobMonitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PersistentParameter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProfileDlg.cpp">
@@ -141,19 +84,7 @@
     <ClCompile Include="colormap.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParametricSurfaceDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParametricSurface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WavefrontObjFileMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -176,31 +107,16 @@
     <ClInclude Include="D3FunctionPlotterDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D3LightControl.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3Scene.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DrawTool.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ExprDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ExpressionWrapper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Function2DSurface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Function2DSurfaceDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IsoCurve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IsoSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IsoSurfaceDlg.h">
@@ -213,12 +129,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MemoryLogThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MeshArrayJobMonitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PersistentParameter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ProfileDlg.h">
@@ -246,9 +156,6 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="ParametricSurfaceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ParametricSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">

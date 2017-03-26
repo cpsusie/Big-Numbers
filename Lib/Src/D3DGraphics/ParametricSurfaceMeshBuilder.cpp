@@ -1,5 +1,8 @@
-#include "stdafx.h"
-#include "MeshArrayJobMonitor.h"
+#include "pch.h"
+#include <Math/Expression/ExpressionWrapper.h>
+#include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/ParametricSurface.h>
+#include "D3DGraphics/MeshArrayJobMonitor.h"
 
 class ParametricSurfacePoint {
 public:

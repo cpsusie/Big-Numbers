@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Math/MathLib.h>
+#include <Math/Matrix.h>
 #include <Math/Expression/Expression.h>
 
 class DiffEquationDescription {

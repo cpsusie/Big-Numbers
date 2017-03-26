@@ -8,6 +8,7 @@
 #include "ParametricSurfaceDlg.h"
 #include "IsoSurfaceDlg.h"
 #include "ProfileDlg.h"
+#include <D3DGraphics/MeshCreators.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

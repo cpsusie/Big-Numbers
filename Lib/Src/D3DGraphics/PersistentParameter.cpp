@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "PersistentParameter.h"
+#include "pch.h"
+#include "D3DGraphics/PersistentParameter.h"
 
 void PersistentParameter::load(const String &fileName) {
   FILE *f = FOPEN(fileName, "r");

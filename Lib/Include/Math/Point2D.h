@@ -2,6 +2,7 @@
 
 #include "MyUtil.h"         // MFC core and standard components
 #include <Math.h>
+#include <Math/MathLib.h>
 
 class Point2D {
 public:
@@ -136,10 +137,9 @@ public:
   virtual void apply(const Point2D &p) = 0;
 };
 
-class Point2DFunction {
-public:
-  virtual Point2D operator()(const Point2D &p) = 0;
-};
+typedef FunctionTemplate<Point2D, Point2D> Point2DFunction;
+typedef FunctionTemplate<Point2D, Real>    Function2D;
+
 
 //inline float fixedToFloat(const FIXED &x) {
 //  return (float)x.value + (float)x.fract / 0x10000u;

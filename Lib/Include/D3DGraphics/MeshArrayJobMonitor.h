@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ExpressionWrapper.h"
-#include <D3DGraphics/MeshBuilder.h>
+#include <NumberInterval.h>
+#include <D3DGraphics/MeshArray.h>
 
 class VariableMeshCreator {
 public:

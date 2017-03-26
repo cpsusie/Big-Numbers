@@ -1,0 +1,2536 @@
+/* ####----####+-+-+-+-+D3AnimatedSurface.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><31.08.2016 16:40:43><31.08.2016 16:40:43><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+DECLARE_THISFILE;
+
+class MeshAnimationThread : public Thread {
+private:
+  D3AnimatedSurface &m_surface;
+  int               &m_nextMeshIndex;
+  const UINT         m_frameCount;
+  Semaphore          m_timeout;
+  double             m_sleepTime;
+  bool               m_killed;
+  bool               m_running;
+  bool               m_forward;
+  AnimationType      m_type;
+  void nextIndex();
+  int  getSleepTime() const;
+public:
+  MeshAnimationThread(D3AnimatedSurface &surface) 
+    : m_surface(surface)
+    , m_nextMeshIndex(m_surface.m_nextMeshIndex)
+    , m_frameCount((UINT)m_surface.m_meshArray.size())
+    , m_timeout(0)
+  {
+    m_killed    = false;
+    m_running   = false;
+    m_type      = ANIMATE_FORWARD;
+    m_forward   = true;
+    m_sleepTime = 50;
+    resume();
+  }
+  void go(AnimationType type);
+  void stop();
+  void kill();
+  void scaleSpeed(double factor);
+  bool isRunning() const {
+    return m_running;
+  }
+  AnimationType getAnimationType() const {
+    return m_type;
+  }
+  unsigned int run();
+};
+
+void MeshAnimationThread::go(AnimationType type) {
+  if(isRunning()) {
+    return;
+  }
+  m_type = type;
+  switch(type) {
+  case ANIMATE_FORWARD    :
+    m_forward = true;
+    break;
+  case ANIMATE_BACKWARD   :
+    m_forward = false;
+    break;
+  case ANIMATE_ALTERNATING:
+    break;
+  }
+
+  m_running = true;
+  m_timeout.signal();
+}
+
+void MeshAnimationThread::stop() {
+  if(!isRunning()) {
+    return;
+  }
+  m_running = false;
+}
+
+void MeshAnimationThread::kill() {
+  m_killed = true;
+  go(ANIMATE_FORWARD);
+  for(int i = 0; stillActive() && (i < 100); i++) {
+    Sleep(20);
+  }
+  if(stillActive()) {
+    AfxMessageBox(_T("Cannot not stop animationThread"), MB_ICONSTOP);
+  }
+}
+
+void MeshAnimationThread::scaleSpeed(double factor) {
+  if(factor == 0) {
+    return;
+  }
+  m_sleepTime /= factor;
+  if(m_sleepTime < 1) {
+    m_sleepTime = 1;
+  }
+}
+
+unsigned int MeshAnimationThread::run() {
+  for(;;) {
+    m_timeout.wait(m_running ? getSleepTime() : INFINITE);
+    if(m_killed) {
+      break;
+    }
+    m_surface.getScene().setAnimationFrameIndex(m_surface.m_lastRenderedIndex, m_nextMeshIndex);
+    nextIndex();
+  }
+  return 0;
+}
+
+int MeshAnimationThread::getSleepTime() const {
+  switch(getAnimationType()) {
+  case ANIMATE_FORWARD    :
+  case ANIMATE_BACKWARD   :
+    return (int)m_sleepTime;
+  case ANIMATE_ALTERNATING:
+    { const double m = (double)m_frameCount/2;
+      return (int)(m_sleepTime * (1.0 + sqr(fabs((double)m_nextMeshIndex - m) / m*2)));
+    }
+  }
+  return (int)m_sleepTime;
+}
+
+void MeshAnimationThread::nextIndex() { //  invariant:m_nextMeshIndex = [0..m_frameCount-1]
+  switch(getAnimationType()) {
+  case ANIMATE_FORWARD    :
+    m_nextMeshIndex = (m_nextMeshIndex + 1) % m_frameCount;
+    break;
+  case ANIMATE_BACKWARD   :
+    if(--m_nextMeshIndex < 0) {
+      m_nextMeshIndex = m_frameCount-1;
+    }
+    break;
+  case ANIMATE_ALTERNATING:
+    if(m_forward) {
+      if(++m_nextMeshIndex == m_frameCount-1) {
+        m_forward = false;
+      }
+    } else {
+      if(--m_nextMeshIndex == 0) {
+        m_forward = true;
+      }
+    }
+    break;
+  }
+}
+
+D3AnimatedSurface::D3AnimatedSurface(D3Scene &scene, const MeshArray &meshArray) : D3SceneObject(scene) {
+  m_meshArray         = meshArray;
+  m_nextMeshIndex     = 0;
+  m_lastRenderedIndex = -1;
+  m_animator          = new MeshAnimationThread(*this);
+}
+
+D3AnimatedSurface::~D3AnimatedSurface() {
+  m_animator->kill();
+  delete m_animator;
+}
+
+void D3AnimatedSurface::startAnimation(AnimationType type) {
+  m_animator->go(type);
+}
+
+void D3AnimatedSurface::stopAnimation() {
+  m_animator->stop();
+}
+
+bool D3AnimatedSurface::isRunning() const {
+  return m_animator->isRunning();
+}
+
+AnimationType D3AnimatedSurface::getAnimationType() const {
+  return m_animator->getAnimationType();
+}
+
+void D3AnimatedSurface::scaleSpeed(double factor) { // sleepTime /= factor
+  m_animator->scaleSpeed(factor);
+}
+
+void D3AnimatedSurface::draw() {
+  D3AnimatedSurface::prepareDraw();
+  V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
+}
+
+LPD3DXMESH D3AnimatedSurface::getMesh() {
+  if(m_lastRenderedIndex < 0) {
+    return NULL;
+  }
+  return m_meshArray[m_lastRenderedIndex];
+}
+
+/* ####----####+-+-+-+-+D3LightControl.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><11.07.2016 16:37:15><11.07.2016 16:37:15><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "D3LightControl.h"
+
+DECLARE_THISFILE;
+
+D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
+  m_scale = 1;
+#ifdef USE_RENDEREFFECT
+  m_effect = NULL;
+#endif
+}
+
+D3LightControl::~D3LightControl() {
+#ifdef USE_RENDEREFFECT
+  SAFE_RELEASE(m_effect);
+#endif
+}
+
+LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
+  DWORD *rgdwAdjacency = new DWORD[mesh->GetNumFaces() * 3];
+  if(rgdwAdjacency == NULL ) {
+    throwException(_T("Out of memory"));
+  }
+
+  try {
+    V(mesh->GenerateAdjacency(1e-6f, rgdwAdjacency));
+    V(mesh->OptimizeInplace(D3DXMESHOPT_VERTEXCACHE, rgdwAdjacency, NULL, NULL, NULL));
+    delete[] rgdwAdjacency;
+  } catch(...) {
+    delete[] rgdwAdjacency;
+    throw;
+  }
+  return mesh;
+}
+
+LIGHT D3LightControl::getLightParam() const {
+  const LIGHT result = m_scene.getLightParam(m_lightIndex);
+  assert(result.Type == getLightType());
+  return result;
+}
+
+D3DXMATRIX D3LightControl::createWorldMatrix(const D3DVECTOR &pos, const D3DVECTOR *dir) const {
+  D3PosDirUpScale pdus;
+
+  if(dir != NULL) {
+    D3DXVECTOR3 up;
+    for(;;) {
+      const D3DXVECTOR3 right = crossProduct(ortonormalVector(*dir), createUnitVector(1));
+      if(length(right) > 0) {
+        up = crossProduct(*dir, unitVector(right));
+        break;
+      }
+    }
+    pdus.setOrientation(*dir, up);
+  }
+  pdus.setPos(pos);
+  pdus.setScale(D3DXVECTOR3(m_scale, m_scale, m_scale));
+  return pdus.getWorldMatrix();
+}
+
+MATERIAL D3LightControl::getMaterial() const {
+  MATERIAL mat;
+  ZeroMemory(&mat, sizeof(MATERIAL));
+  D3DCOLORVALUE color = getColor();
+  mat.Diffuse  = color;
+  mat.Specular = color;
+  mat.Power = 0.7f;
+#define EMSIVEFACTOR 0.4f
+  mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR,1);
+  return mat;
+}
+
+D3DCOLORVALUE D3LightControl::getColor() const {
+  const LIGHT light = getLightParam();
+  return light.m_enabled ? light.Diffuse : getDisabledColor();
+}
+
+D3PosDirUpScale D3LightControl::getPDUS() const {
+  D3PosDirUpScale pdus;
+  pdus.setWorldMatrix(getWorldMatrix());
+  return pdus;
+}
+
+#ifndef USE_RENDEREFFECT
+
+void D3LightControl::draw() {
+  prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
+  V(getDevice()->SetMaterial(&getMaterial()));
+  V(m_mesh->DrawSubset(0));
+}
+
+#else
+
+void D3LightControl::draw() {
+  prepareEffect();
+  UINT passCount;
+  V(m_effect->Begin( &passCount, 0));
+  for(UINT pass = 0; pass < passCount; pass++) {
+    V(m_effect->BeginPass(pass));
+    V(m_mesh->DrawSubset(0));
+    V(m_effect->EndPass());
+  }
+  V(m_effect->End());
+}
+
+void D3LightControl::prepareEffect() {
+  D3Scene &scene = getScene();
+  if(m_effect == NULL) {
+    createEffect();
+  }
+
+  const D3PosDirUpScale &pdus   = scene.getCameraPDUS();
+  const D3DXMATRIX       mView  = pdus.getViewMatrix();
+  const D3DXMATRIX       mProj  = scene.getProjMatrix();
+  const D3DXVECTOR3      camPos = pdus.getPos();
+  const D3DXMATRIX       mWorld = getWorldMatrix();
+  const D3DCOLORVALUE    color  = getColor();
+
+  V(m_effect->SetTechnique( m_renderWith1LightNoTextureHandle));
+  V(m_effect->SetVector(    m_materialDiffuseColorHandle, (D3DXVECTOR4*)&color));
+
+  D3DXVECTOR3 vEyePt = unitVector(camPos);
+
+  V(m_effect->SetValue(m_lightDirHandle, &vEyePt, sizeof(D3DXVECTOR3)));
+
+  // Rotate arrow model to point towards origin
+  D3DXMATRIXA16 worldViewProj = mWorld * mView * mProj;
+
+  V(m_effect->SetMatrix(m_worldViewProjectionHandle, &worldViewProj));
+  V(m_effect->SetMatrix(m_worldHandle, &mWorld));
+}
+
+void D3LightControl::createEffect() {
+  const char *effectSourceText = 
+      "float4   g_MaterialDiffuseColor;    // Material's diffuse color                             \r\n"
+      "float3   g_LightDir;                // Light's direction in world space                     \r\n"
+      "float4x4 g_mWorld;                  // World matrix for object                              \r\n"
+      "float4x4 g_mWorldViewProjection;    // World * View * Projection matrix                     \r\n"
+      "                                                                                            \r\n"
+      "struct VS_OUTPUT                                                                            \r\n"
+      "{                                                                                           \r\n"
+      "    float4 Position   : POSITION;   // vertex position                                      \r\n"
+      "    float4 Diffuse    : COLOR0;     // vertex diffuse color                                 \r\n"
+      "};                                                                                          \r\n"
+      "                                                                                            \r\n"
+      "VS_OUTPUT RenderWith1LightNoTextureVS( float4 vPos    : POSITION,                           \r\n"
+      "                                       float3 vNormal : NORMAL )                            \r\n"
+      "{                                                                                           \r\n"
+      "    VS_OUTPUT Output;                                                                       \r\n"
+      "                                                                                            \r\n"
+      "    // Transform the position from object space to homogeneous projection space             \r\n"
+      "    Output.Position = mul(vPos, g_mWorldViewProjection);                                    \r\n"
+      "                                                                                            \r\n"
+      "    // Transform the normal from object space to world space                                \r\n"
+      "    float3 vNormalWorldSpace;                                                               \r\n"
+      "    vNormalWorldSpace = normalize(mul(vNormal, (float3x3)g_mWorld)); // normal (world space)\r\n"
+      "                                                                                            \r\n"
+      "    // Compute simple directional lighting equation                                         \r\n"
+      "    Output.Diffuse.rgb = g_MaterialDiffuseColor * max(0,dot(vNormalWorldSpace, g_LightDir));\r\n"
+      "    Output.Diffuse.a = 1.0f;                                                                \r\n"
+      "                                                                                            \r\n"
+      "    return Output;                                                                          \r\n"
+      "}                                                                                           \r\n"
+      "                                                                                            \r\n"
+      "float4 RenderWith1LightNoTexturePS(float4 Diffuse : COLOR0) : COLOR0                        \r\n"
+      "{                                                                                           \r\n"
+      "    return Diffuse;                                                                         \r\n"
+      "}                                                                                           \r\n"
+      "                                                                                            \r\n"
+      "technique RenderWith1LightNoTexture                                                         \r\n"
+      "{                                                                                           \r\n"
+      "    pass P0                                                                                 \r\n"
+      "    {                                                                                       \r\n"
+      "        VertexShader = compile vs_2_0 RenderWith1LightNoTextureVS();                        \r\n"
+      "        PixelShader  = compile ps_2_0 RenderWith1LightNoTexturePS();                        \r\n"
+      "    }                                                                                       \r\n"
+      "}                                                                                           \r\n"
+      ;
+
+  const int textlen = (int)strlen(effectSourceText);
+  DWORD Flags = D3DXFX_NOT_CLONEABLE;
+#ifdef D3DXFX_LARGEADDRESS_HANDLE
+  Flags |= D3DXFX_LARGEADDRESSAWARE;
+#endif
+
+  V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, NULL));
+
+  // Save technique handles for use when rendering
+  m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"    );
+  m_materialDiffuseColorHandle      = m_effect->GetParameterByName( NULL, "g_MaterialDiffuseColor" );
+  m_lightDirHandle                  = m_effect->GetParameterByName( NULL, "g_LightDir"             );
+  m_worldHandle                     = m_effect->GetParameterByName( NULL, "g_mWorld"               );
+  m_worldViewProjectionHandle       = m_effect->GetParameterByName( NULL, "g_mWorldViewProjection" );
+}
+
+#endif
+/* ####----####+-+-+-+-+D3LightControlDirectional.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><19.01.2017 21:18:55><19.01.2017 21:18:55><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "D3LightControl.h"
+
+D3LightControlDirectional::D3LightControlDirectional(D3Scene &scene, int lightIndex) : D3LightControl(scene, lightIndex) {
+  setSize(0.4f);
+  setSphereRadius(2);
+  setName(format(_T("Directional light (%d)"), lightIndex));
+  m_mesh = createArrowMesh();
+}
+
+static const Point2D dirLightMeshProfilePoints[] = {
+  Point2D(1   ,   0 ) 
+ ,Point2D(1   , 0.1 ) 
+ ,Point2D(0.47, 0.1 ) 
+ ,Point2D(0.47, 0.25)
+ ,Point2D(0   , 0   )
+};
+
+LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
+  Profile prof;
+  prof.addLineStrip(dirLightMeshProfilePoints, ARRAYSIZE(dirLightMeshProfilePoints));
+  ProfileRotationParameters param;
+  param.m_alignx     = 2;
+  param.m_aligny     = 1;
+  param.m_rad        = radians(360);
+  param.m_edgeCount  = 20;
+  param.m_smoothness = ROTATESMOOTH;
+  param.m_rotateAxis = 2;
+  LPD3DXMESH mesh = rotateProfile(getDevice(), prof, param, false);
+
+  return optimizeMesh(mesh);
+}
+
+/*
+void D3LightControlDirectional::OnD3D9ResetDevice( const D3DSURFACE_DESC &pBackBufferSurfaceDesc) {
+  m_arcBall.SetWindow( pBackBufferSurfaceDesc.Width, pBackBufferSurfaceDesc.Height );
+}
+
+void D3LightControlDirectional::StaticOnD3D9LostDevice() {
+  if(m_effect) {
+    m_effect->OnLostDevice();
+  }
+}
+*/
+
+D3DXMATRIX D3LightControlDirectional::getWorldMatrix() const {
+  const LIGHT light = getLightParam();
+  return createWorldMatrix(-m_sphereRadius * light.Direction, &light.Direction);
+}
+/* ####----####+-+-+-+-+D3LightControlPoint.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><06.07.2016 15:04:22><29.10.2015 20:41:41><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "D3LightControl.h"
+
+D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex) 
+: D3LightControl(scene, lightIndex)
+{
+  setSize(0.08f);
+  setName(format(_T("Point light (%d)"), lightIndex));
+  m_mesh = createSphereMesh(getDevice(), 1);
+  optimizeMesh(m_mesh);
+}
+
+D3DXMATRIX D3LightControlPoint::getWorldMatrix() const {
+  return createWorldMatrix(getLightParam().Position);
+}
+/* ####----####+-+-+-+-+D3LightControlSpot.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><19.01.2017 21:20:38><19.01.2017 21:20:38><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "D3LightControl.h"
+
+D3LightControlSpot::D3LightControlSpot(D3Scene &scene, int lightIndex) 
+: D3LightControl(scene, lightIndex)
+{
+  setSize(0.4f);
+  m_mesh = createSpotMesh();
+  setName(format(_T("Spot light (%d)"), lightIndex));
+}
+
+static const Point2D spotMeshProfilePoints[] = {
+  Point2D(1.0 ,   0 )
+ ,Point2D(1.0 , 0.1 )
+ ,Point2D(0.3 , 0.1 )
+ ,Point2D(0.25, 0.13)
+ ,Point2D(0.0 , 0.17)
+ ,Point2D(0.00, 0.00)
+};
+
+LPD3DXMESH D3LightControlSpot::createSpotMesh() {
+  Profile prof;
+  prof.addLineStrip(spotMeshProfilePoints, ARRAYSIZE(spotMeshProfilePoints));
+
+  ProfileRotationParameters param;
+  param.m_alignx     = 2;
+  param.m_aligny     = 1;
+  param.m_rad        = radians(360);
+  param.m_edgeCount  = 20;
+  param.m_smoothness = ROTATESMOOTH | NORMALSMOOTH;
+  param.m_rotateAxis = 2;
+  LPD3DXMESH mesh = rotateProfile(getDevice(), prof, param, false);
+
+  return optimizeMesh(mesh);
+}
+
+D3DXMATRIX D3LightControlSpot::getWorldMatrix() const {
+  LIGHT param = getLightParam();
+  return createWorldMatrix(param.Position, &param.Direction);
+}
+/* ####----####+-+-+-+-+D3SceneIO.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><06.07.2016 20:15:51><06.07.2016 20:15:51><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <ByteFile.h>
+
+void D3Scene::saveState(const String &fileName) const {
+  save(ByteOutputFile(fileName));
+  
+}
+
+void D3Scene::loadState(const String &fileName) {
+  load(ByteInputFile(fileName));
+}
+
+void D3Scene::save(ByteOutputStream &s) const {
+  s.putBytes(      (BYTE*)(&m_cameraPDUS      ), sizeof(m_cameraPDUS     ));
+  s.putBytes(      (BYTE*)(&m_objectPDUS      ), sizeof(m_objectPDUS     ));
+  s.putBytes(      (BYTE*)(&m_viewAngel       ), sizeof(m_viewAngel      ));
+  s.putBytes(      (BYTE*)(&m_nearViewPlane   ), sizeof(m_nearViewPlane  ));
+  s.putBytes(      (BYTE*)(&m_material        ), sizeof(m_material       ));
+  s.putBytes(      (BYTE*)(&m_fillMode        ), sizeof(m_fillMode       ));
+  s.putBytes(      (BYTE*)(&m_shadeMode       ), sizeof(m_shadeMode      ));
+  s.putBytes(      (BYTE*)(&m_backgroundColor ), sizeof(m_backgroundColor));
+}
+
+void D3Scene::load(ByteInputStream  &s) {
+  s.getBytesForced((BYTE*)(&m_cameraPDUS      ), sizeof(m_cameraPDUS     ));
+  s.getBytesForced((BYTE*)(&m_objectPDUS      ), sizeof(m_objectPDUS     ));
+  s.getBytesForced((BYTE*)(&m_viewAngel       ), sizeof(m_viewAngel      ));
+  s.getBytesForced((BYTE*)(&m_nearViewPlane   ), sizeof(m_nearViewPlane  ));
+  s.getBytesForced((BYTE*)(&m_material        ), sizeof(m_material       ));
+  s.getBytesForced((BYTE*)(&m_fillMode        ), sizeof(m_fillMode       ));
+  s.getBytesForced((BYTE*)(&m_shadeMode       ), sizeof(m_shadeMode      ));
+  s.getBytesForced((BYTE*)(&m_backgroundColor ), sizeof(m_backgroundColor));
+}
+/* ####----####+-+-+-+-+D3SceneObject.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><11.07.2016 00:01:17><19.01.2017 19:53:26><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+DECLARE_THISFILE;
+
+// ------------------------------------------------ D3SceneObject ---------------------------------------------------
+
+void D3SceneObject::prepareDraw(unsigned int flags) {
+  if(flags & USE_SCENEFILLMODE ) {
+    V(getDevice()->SetRenderState(D3DRS_FILLMODE,  m_scene.getFillMode()));
+  }
+  if(flags & USE_SCENESHADEMODE) {
+    V(getDevice()->SetRenderState(D3DRS_SHADEMODE, m_scene.getShadeMode()));
+  }
+  if(flags & USE_SCENEMATERIAL) {
+    V(getDevice()->SetMaterial(&m_scene.getMaterial()));
+  }
+}
+
+bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
+  LPD3DXMESH mesh = ((D3SceneObject*)this)->getMesh();
+  if(mesh == NULL) {
+    return false;
+  }
+  const D3DXMATRIX m = invers(getWorldMatrix());
+  D3DXVECTOR3 vOrig = m * ray.m_orig;
+  D3DXVECTOR3 vDir  = ray.m_dir * m;
+
+  BOOL         hit;
+  DWORD        faceIndex;
+  float        pu,pv;
+  V(D3DXIntersect(mesh
+                 ,&vOrig
+                 ,&vDir
+                 ,&hit
+                 ,&faceIndex
+                 ,&pu,&pv
+                 ,&dist
+                 ,NULL // when these parameters are NULL, only the closest intersection (if any) will be recognized (dist)
+                 ,NULL
+                 ));
+
+  if(hit && info != NULL) {
+    info->m_faceIndex = faceIndex;
+    void  *indexItems;
+    LPDIRECT3DINDEXBUFFER9 indexBuffer;
+    V(mesh->GetIndexBuffer(&indexBuffer));
+    D3DINDEXBUFFER_DESC desc;
+    V(indexBuffer->GetDesc(&desc));
+    const bool use32Bit = desc.Format == D3DFMT_INDEX32;;
+    V(indexBuffer->Lock(0,0,&indexItems, D3DLOCK_READONLY));
+
+    const int vertex0Index = faceIndex * 3;
+    if(use32Bit) {
+      unsigned long *ip = (unsigned long*)indexItems;
+      info->m_i1 = ip[vertex0Index+0];
+      info->m_i2 = ip[vertex0Index+1];
+      info->m_i3 = ip[vertex0Index+2];
+    } else {
+      unsigned short *ip = (unsigned short*)indexItems;
+      info->m_i1 = ip[vertex0Index+0];
+      info->m_i2 = ip[vertex0Index+1];
+      info->m_i3 = ip[vertex0Index+2];
+    }
+    V(indexBuffer->Unlock());
+  }
+
+  return hit ? true : false;
+}
+
+// ------------------------------------------------ SceneObjectWithVertexBuffer ---------------------------------------------------
+
+SceneObjectWithVertexBuffer::SceneObjectWithVertexBuffer(D3Scene &scene) : D3SceneObject(scene) {
+  m_vertexBuffer   = NULL;
+  m_primitiveCount = 0;
+}
+
+SceneObjectWithVertexBuffer::~SceneObjectWithVertexBuffer() {
+  if(m_vertexBuffer != NULL) {
+    m_vertexBuffer->Release();
+  }
+}
+
+void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf) {
+  const UINT bufferSize = (UINT)(vertexSize*count);
+  V(getDevice()->CreateVertexBuffer(bufferSize, 0, fvf, D3DPOOL_DEFAULT, &m_vertexBuffer, NULL));
+  m_vertexSize = vertexSize;
+  m_fvf        = fvf;
+  void *bufferItems = NULL;
+  V(m_vertexBuffer->Lock(0, bufferSize, &bufferItems, 0));
+  return bufferItems;
+}
+
+void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
+  V(m_vertexBuffer->Unlock());
+}
+
+void SceneObjectWithVertexBuffer::prepareDraw(UINT flags) {
+  V(getDevice()->SetStreamSource( 0, m_vertexBuffer, 0, m_vertexSize));
+  V(getDevice()->SetFVF(m_fvf));
+  D3SceneObject::prepareDraw(flags);
+}
+
+#define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
+
+
+// ------------------------------------------------ SceneObjectWithIndexBuffer ---------------------------------------------------
+
+SceneObjectWithIndexBuffer::SceneObjectWithIndexBuffer(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
+  m_indexBuffer = NULL;
+}
+ 
+SceneObjectWithIndexBuffer::~SceneObjectWithIndexBuffer() {
+  if(m_indexBuffer != NULL) {
+    m_indexBuffer->Release();
+  }
+}
+
+void *SceneObjectWithIndexBuffer::allocateIndexBuffer(bool int32, int count) {
+  const int itemSize = int32 ? sizeof(long) : sizeof(short);
+  const int bufferSize = count * itemSize;
+  void *bufferItems = NULL;
+  V(getDevice()->CreateIndexBuffer(bufferSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_indexBuffer, NULL));
+  V(m_indexBuffer->Lock(0,0,&bufferItems, 0));
+  return bufferItems;
+}
+
+void SceneObjectWithIndexBuffer::unlockIndexBuffer() {
+  V(m_indexBuffer->Unlock());
+}
+
+void SceneObjectWithIndexBuffer::prepareDraw(UINT flags) {
+  SceneObjectWithVertexBuffer::prepareDraw(flags);
+  V(getDevice()->SetIndices(m_indexBuffer));
+}
+
+#define GETLOCKEDSHORTBUFFER(count) (unsigned short*)allocateIndexBuffer(false, count)
+#define GETLOCKEDLONGBUFFER( count) (unsigned long* )allocateIndexBuffer(true , count)
+
+// ------------------------------------------------ D3LineArray -----------------------------------------------------------
+
+SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObject(scene) {
+  m_mesh = mesh;
+}
+
+SceneObjectWithMesh::~SceneObjectWithMesh() {
+  releaseMesh();
+}
+
+void SceneObjectWithMesh::createMesh(DWORD faceCount, DWORD vertexCount, DWORD fvf) {
+  releaseMesh();
+  V(D3DXCreateMeshFVF(faceCount, vertexCount, D3DXMESH_SYSTEMMEM/*|D3DXMESH_32BIT*/, fvf, getDevice(), &m_mesh));
+}
+
+void SceneObjectWithMesh::releaseMesh() {
+  if(m_mesh) {
+    m_mesh->Release();
+    m_mesh = NULL;
+  }
+}
+
+void *SceneObjectWithMesh::lockVertexBuffer() {
+  void *vertices;
+  V(m_mesh->LockVertexBuffer( 0, &vertices));
+  return vertices;
+}
+
+void *SceneObjectWithMesh::lockIndexBuffer() {
+  void *items;
+  V(m_mesh->LockIndexBuffer( 0, &items));
+  return items;
+}
+
+void SceneObjectWithMesh::unlockVertexBuffer() {
+  V(m_mesh->UnlockVertexBuffer());
+}
+
+void SceneObjectWithMesh::unlockIndexBuffer() {
+  V(m_mesh->UnlockIndexBuffer());
+}
+
+void SceneObjectWithMesh::draw() {
+  prepareDraw();
+  V(m_mesh->DrawSubset(0));
+}
+
+// -----------------------------------------------------------------------------------------------------------
+
+
+D3LineArray::D3LineArray(D3Scene &scene, const Line *lines, int n) : SceneObjectWithVertexBuffer(scene) {
+  initBuffer(lines, n);
+}
+
+D3LineArray::D3LineArray(D3Scene &scene, const Vertex p1, const Vertex p2) : SceneObjectWithVertexBuffer(scene) {
+  Line lines[12], *lp = lines, *ll;
+  lp->m_p1 = p1;                           lp->m_p2 = createVertex(p1.x,p2.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p2.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p1.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p1.x,p1.y,p1.z); ll = lp++;
+
+  lp->m_p1 = createVertex(p1.x,p1.y,p2.z); lp->m_p2 = createVertex(p1.x,p2.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p2.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p1.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p1.x,p1.y,p2.z); ll = lp++;
+  for(int i = 0; i < 4; i++) {
+    lines[i+8].m_p1 = lines[i  ].m_p1;
+    lines[i+8].m_p2 = lines[i+4].m_p1;
+  }
+  initBuffer(lines, 12);
+}
+
+void D3LineArray::initBuffer(const Line *lines, int n) {
+  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, 2*n);
+  m_primitiveCount = n;
+  memcpy(vertices, lines, sizeof(Line)*n);
+  unlockVertexBuffer();
+}
+
+void D3LineArray::draw() {
+  prepareDraw();
+  V(getDevice()->DrawPrimitive( D3DPT_LINELIST , 0, m_primitiveCount));
+}
+
+// ----------------------------------------------------- D3LineArrow ------------------------------------------------------
+
+D3DCOLORVALUE colorToColorValue(D3DCOLOR c) {
+  D3DCOLORVALUE result;
+  result.r = ((float)(RGB_GETRED(  c))) / (float)255.0;
+  result.g = ((float)(RGB_GETGREEN(c))) / (float)255.0;
+  result.b = ((float)(RGB_GETBLUE( c))) / (float)255.0;
+  result.a = 1.0;
+  return result;
+}
+
+D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color) : SceneObjectWithVertexBuffer(scene) {
+#define FANCOUNT 14
+#define ITEMCOUNT (5 + 2 * FANCOUNT)
+
+  const D3DXVECTOR3 v  = (D3DXVECTOR3)to - (D3DXVECTOR3)from;
+  const D3DXVECTOR3 vn = unitVector(v);
+
+  VertexNormal *vertices = GETLOCKEDVERTEXBUFFER(VertexNormal, ITEMCOUNT);
+
+  vertices[0].setPos(from);
+  vertices[1].setPosAndNormal(to, vn);
+  const D3DXVECTOR3 cirkelCenter = (D3DXVECTOR3)to - 0.1f * vn;
+  D3DXVECTOR3   radius1 = ortonormalVector(v) * 0.04f;
+  D3DXVECTOR3   p       = cirkelCenter + radius1;
+  VertexNormal *vtx1    = vertices + 2;
+  vtx1->setPosAndNormal(p, radius1); vtx1++;
+
+  D3DXVECTOR3 radius2 = radius1;
+  VertexNormal *vtx2 = vertices + FANCOUNT + 3;
+  vtx2->setPosAndNormal(cirkelCenter, -vn); vtx2++;
+  vtx2->setPosAndNormal(p,            -vn); vtx2++;
+
+  for(int i = 0; i < FANCOUNT; i++) {
+    radius1 = rotate(radius1, v ,  radians(360.0f/FANCOUNT));
+    radius2 = rotate(radius2, v, -radians(360.0f/FANCOUNT));
+    vtx1[i].setPosAndNormal(cirkelCenter + radius1, unitVector(radius1));
+    vtx2[i].setPosAndNormal(cirkelCenter + radius2, -vn);
+  }
+  unlockVertexBuffer();
+  setColor(color);
+}
+
+void D3LineArrow::draw() {
+  prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
+  V(getDevice()->SetMaterial(&getMaterial()));
+  V(getDevice()->DrawPrimitive( D3DPT_LINELIST   , 0, 1));
+  V(getDevice()->DrawPrimitive( D3DPT_TRIANGLEFAN, 1, FANCOUNT));
+  V(getDevice()->DrawPrimitive( D3DPT_TRIANGLEFAN, FANCOUNT+3,FANCOUNT));
+}
+
+void D3LineArrow::setColor(D3DCOLOR color) {
+  m_color = color;
+}
+
+MATERIAL D3LineArrow::getMaterial() const {
+  MATERIAL mat;
+  ZeroMemory(&mat, sizeof(MATERIAL));
+  const D3DCOLORVALUE cv = colorToColorValue(m_color);
+  mat.Diffuse  = cv;
+//  mat.Ambient  = cv;
+  mat.Emissive = cv;
+  return mat;
+}
+
+// ----------------------------------------------- D3Curve ------------------------------------------------------------
+
+D3Curve::D3Curve(D3Scene &scene, const VertexArray &points) : SceneObjectWithVertexBuffer(scene) {
+  m_primitiveCount = (int)points.size()-1;
+
+  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, (UINT)points.size());
+  memcpy(vertices, points.getBuffer(), sizeof(Vertex)*points.size());
+  unlockVertexBuffer();
+}
+
+void D3Curve::draw() {
+  prepareDraw();
+  V(getDevice()->DrawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount));
+}
+
+D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObjectWithVertexBuffer(scene) {
+  int totalVertexCount = 0;
+
+  for(size_t i = 0; i < curves.size(); i++) {
+    const int vertexCount = (int)curves[i].size();
+    m_curveSize.add(vertexCount);
+    totalVertexCount += vertexCount;
+  }
+  Vertex *vertices = GETLOCKEDVERTEXBUFFER(Vertex, totalVertexCount);
+
+  int startIndex = 0;
+  for(size_t i = 0; i < curves.size(); i++) {
+    const VertexArray &a     = curves[i];
+    const int          count = (int)a.size();
+    memcpy(vertices+startIndex, a.getBuffer(), sizeof(Vertex)*count);
+    startIndex += count;
+  }
+  unlockVertexBuffer();
+}
+
+void D3CurveArray::draw() {
+  prepareDraw();
+  int startIndex = 0;
+  for(size_t i = 0; i < m_curveSize.size(); i++) {
+    const int vertexCount = m_curveSize[i];
+    V(getDevice()->DrawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1));
+    startIndex += vertexCount;
+  }
+}
+
+// -----------------------------------------------------------------------------------------------------------
+
+#define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)
+
+CurveArray createSphereObject(double r) {
+  CurveArray curves;
+  for(int fi = 0; fi < 180; fi += 45) {
+    SINCOS(fi, RcosFi, RsinFi);
+    RcosFi *= r;
+    RsinFi *= r;
+    VertexArray va;
+    for(int theta = 0; theta < 360; theta += 5) {
+      SINCOS(theta, cosTheta, sinTheta);
+      va.add(createVertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+    }
+    curves.add(va);
+  }
+  for(int fi = -180+30; fi < 180; fi += 30) {
+    SINCOS(fi, RcosFi, RsinFi);
+    RcosFi *= r;
+    RsinFi *= r;
+    VertexArray va;
+    for(int theta = 0; theta < 360; theta += 5) {
+      SINCOS(theta, cosTheta, sinTheta);
+      va.add(createVertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+    }
+    curves.add(va);
+  }
+
+  return curves;
+}
+/* ####----####+-+-+-+-+D3TextureTools.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><11.07.2016 00:05:19><11.07.2016 00:05:19><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+DECLARE_THISFILE;
+
+LPDIRECT3DTEXTURE9 loadTextureFromFile(LPDIRECT3DDEVICE9 device, const String &fileName) {
+  LPDIRECT3DTEXTURE9 result;
+  V(D3DXCreateTextureFromFileEx( device
+                                ,fileName.cstr()
+                                ,D3DX_DEFAULT, D3DX_DEFAULT, 1
+                                ,D3DUSAGE_DYNAMIC
+                                ,D3DFMT_A8R8G8B8
+                                ,D3DPOOL_DEFAULT
+                                ,D3DX_FILTER_NONE
+                                ,D3DX_FILTER_NONE
+                                ,0xffffffff
+                                ,NULL
+                                ,NULL
+                                ,&result));
+
+  return result;
+}
+
+LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray &ba) {
+  LPDIRECT3DTEXTURE9 result;
+  V(D3DXCreateTextureFromFileInMemoryEx(device
+                                       ,ba.getData(), (UINT)ba.size()
+                                       ,D3DX_DEFAULT, D3DX_DEFAULT, 1
+                                       ,D3DUSAGE_DYNAMIC
+                                       ,D3DFMT_A8R8G8B8
+                                       ,D3DPOOL_DEFAULT
+                                       ,D3DX_FILTER_NONE
+                                       ,D3DX_FILTER_NONE
+                                       ,0xffffffff
+                                       ,NULL
+                                       ,NULL
+                                       ,&result));
+  return result;
+}
+
+LPDIRECT3DTEXTURE9 loadTextureFromResource(LPDIRECT3DDEVICE9 device, int resId, const String &typeName) {
+  ByteArray tmp;
+  tmp.loadFromResource(resId, typeName.cstr());
+  return loadTextureFromByteArray(device, tmp);
+}
+
+LPDIRECT3DTEXTURE9 getTextureFromBitmap(LPDIRECT3DDEVICE9 device, HBITMAP bm) {
+  ByteArray tmp;
+  return loadTextureFromByteArray(device, bitmapToByteArray(tmp, bm));
+}
+
+/* ####----####+-+-+-+-+D3ToString.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><12.10.2016 19:13:43><12.10.2016 19:13:43><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+#define caseStr(f) case f: return _T(#f)
+
+String toString(D3DFORMAT f) {
+  switch(f) {
+  caseStr(D3DFMT_UNKNOWN              );
+  caseStr(D3DFMT_R8G8B8               );
+  caseStr(D3DFMT_A8R8G8B8             );
+  caseStr(D3DFMT_X8R8G8B8             );
+  caseStr(D3DFMT_R5G6B5               );
+  caseStr(D3DFMT_X1R5G5B5             );
+  caseStr(D3DFMT_A1R5G5B5             );
+  caseStr(D3DFMT_A4R4G4B4             );
+  caseStr(D3DFMT_R3G3B2               );
+  caseStr(D3DFMT_A8                   );
+  caseStr(D3DFMT_A8R3G3B2             );
+  caseStr(D3DFMT_X4R4G4B4             );
+  caseStr(D3DFMT_A2B10G10R10          );
+  caseStr(D3DFMT_A8B8G8R8             );
+  caseStr(D3DFMT_X8B8G8R8             );
+  caseStr(D3DFMT_G16R16               );
+  caseStr(D3DFMT_A2R10G10B10          );
+  caseStr(D3DFMT_A16B16G16R16         );
+  caseStr(D3DFMT_A8P8                 );
+  caseStr(D3DFMT_P8                   );
+  caseStr(D3DFMT_L8                   );
+  caseStr(D3DFMT_A8L8                 );
+  caseStr(D3DFMT_A4L4                 );
+  caseStr(D3DFMT_V8U8                 );
+  caseStr(D3DFMT_L6V5U5               );
+  caseStr(D3DFMT_X8L8V8U8             );
+  caseStr(D3DFMT_Q8W8V8U8             );
+  caseStr(D3DFMT_V16U16               );
+  caseStr(D3DFMT_A2W10V10U10          );
+  caseStr(D3DFMT_UYVY                 );
+  caseStr(D3DFMT_R8G8_B8G8            );
+  caseStr(D3DFMT_YUY2                 );
+  caseStr(D3DFMT_G8R8_G8B8            );
+  caseStr(D3DFMT_DXT1                 );
+  caseStr(D3DFMT_DXT2                 );
+  caseStr(D3DFMT_DXT3                 );
+  caseStr(D3DFMT_DXT4                 );
+  caseStr(D3DFMT_DXT5                 );
+  caseStr(D3DFMT_D16_LOCKABLE         );
+  caseStr(D3DFMT_D32                  );
+  caseStr(D3DFMT_D15S1                );
+  caseStr(D3DFMT_D24S8                );
+  caseStr(D3DFMT_D24X8                );
+  caseStr(D3DFMT_D24X4S4              );
+  caseStr(D3DFMT_D16                  );
+  caseStr(D3DFMT_D32F_LOCKABLE        );
+  caseStr(D3DFMT_D24FS8               );
+  caseStr(D3DFMT_D32_LOCKABLE         );
+  caseStr(D3DFMT_S8_LOCKABLE          );
+  caseStr(D3DFMT_L16                  );
+  caseStr(D3DFMT_VERTEXDATA           );
+  caseStr(D3DFMT_INDEX16              );
+  caseStr(D3DFMT_INDEX32              );
+  caseStr(D3DFMT_Q16W16V16U16         );
+  caseStr(D3DFMT_MULTI2_ARGB8         );
+  caseStr(D3DFMT_R16F                 );
+  caseStr(D3DFMT_G16R16F              );
+  caseStr(D3DFMT_A16B16G16R16F        );
+  caseStr(D3DFMT_R32F                 );
+  caseStr(D3DFMT_G32R32F              );
+  caseStr(D3DFMT_A32B32G32R32F        );
+  caseStr(D3DFMT_CxV8U8               );
+  caseStr(D3DFMT_A1                   );
+  caseStr(D3DFMT_A2B10G10R10_XR_BIAS  );
+  caseStr(D3DFMT_BINARYBUFFER         );
+  default: return format(_T("Unknown format:%d"), f);
+  }
+}
+
+String toString(D3DPOOL pool) {
+  switch(pool) {
+  caseStr(D3DPOOL_DEFAULT             );
+  caseStr(D3DPOOL_MANAGED             );
+  caseStr(D3DPOOL_SYSTEMMEM           );
+  caseStr(D3DPOOL_SCRATCH             );
+  default: return format(_T("Unknown pool:%d"), pool);
+  }
+}
+
+String toString(D3DRESOURCETYPE type) {
+  switch(type) {
+  caseStr(D3DRTYPE_SURFACE            );
+  caseStr(D3DRTYPE_VOLUME             );
+  caseStr(D3DRTYPE_TEXTURE            );
+  caseStr(D3DRTYPE_VOLUMETEXTURE      );
+  caseStr(D3DRTYPE_CUBETEXTURE        );
+  caseStr(D3DRTYPE_VERTEXBUFFER       );
+  caseStr(D3DRTYPE_INDEXBUFFER        );
+  default: return format(_T("Unknown resourcetype:%d"), type);
+  }
+}
+
+String usageToString(DWORD usage) {
+  if(usage == 0) {
+    return "0";
+  }
+  String result;
+  String delim = "";
+
+#undef  addFlag
+#define addFlag(flag) if(usage & flag) { result += delim + #flag; delim="|"; }
+
+  addFlag(D3DUSAGE_RENDERTARGET                    );
+  addFlag(D3DUSAGE_DEPTHSTENCIL                    );
+  addFlag(D3DUSAGE_DYNAMIC                         );
+
+#if !defined(D3D_DISABLE_9EX)
+  addFlag(D3DUSAGE_NONSECURE                       );
+#endif
+
+// When passed to CheckDeviceFormat, D3DUSAGE_AUTOGENMIPMAP may return
+// D3DOK_NOAUTOGEN if the device doesn't support autogeneration for that format.
+// D3DOK_NOAUTOGEN is a success code, not a failure code... the SUCCEEDED and FAILED macros
+// will return true and false respectively for this code.
+  addFlag(D3DUSAGE_AUTOGENMIPMAP                   );
+  addFlag(D3DUSAGE_DMAP                            );
+
+  addFlag(D3DUSAGE_QUERY_LEGACYBUMPMAP             );
+  addFlag(D3DUSAGE_QUERY_SRGBREAD                  );
+  addFlag(D3DUSAGE_QUERY_FILTER                    );
+  addFlag(D3DUSAGE_QUERY_SRGBWRITE                 );
+  addFlag(D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING  );
+  addFlag(D3DUSAGE_QUERY_VERTEXTEXTURE             );
+  addFlag(D3DUSAGE_QUERY_WRAPANDMIP                );
+
+/* Usages for Vertex/Index buffers */
+  addFlag(D3DUSAGE_WRITEONLY                       );
+  addFlag(D3DUSAGE_SOFTWAREPROCESSING              );
+  addFlag(D3DUSAGE_DONOTCLIP                       );
+  addFlag(D3DUSAGE_POINTS                          );
+  addFlag(D3DUSAGE_RTPATCHES                       );
+  addFlag(D3DUSAGE_NPATCHES                        );
+
+#if !defined(D3D_DISABLE_9EX)
+  addFlag(D3DUSAGE_TEXTAPI                         );
+  addFlag(D3DUSAGE_RESTRICTED_CONTENT              );
+  addFlag(D3DUSAGE_RESTRICT_SHARED_RESOURCE        );
+  addFlag(D3DUSAGE_RESTRICT_SHARED_RESOURCE_DRIVER );
+#endif
+  return result;
+}
+
+String FVFToString(DWORD fvf) {
+  String result;
+  String delim = "";
+
+#undef  caseAddStr
+#define caseAddStr(s) case s: result += delim + #s; delim="|"; break;
+
+  switch(fvf & D3DFVF_POSITION_MASK) {
+  caseAddStr(D3DFVF_XYZ              )
+  caseAddStr(D3DFVF_XYZRHW           )
+  caseAddStr(D3DFVF_XYZB1            )
+  caseAddStr(D3DFVF_XYZB2            )
+  caseAddStr(D3DFVF_XYZB3            )
+  caseAddStr(D3DFVF_XYZB4            )
+  caseAddStr(D3DFVF_XYZB5            )
+  caseAddStr(D3DFVF_XYZW             )
+  }
+
+#undef  addFlag
+#define addFlag(flag) if(fvf & flag) { result += delim + #flag; delim="|"; }
+
+  addFlag(D3DFVF_NORMAL              );
+  addFlag(D3DFVF_PSIZE               );
+  addFlag(D3DFVF_DIFFUSE             );
+  addFlag(D3DFVF_SPECULAR            );
+
+  switch(fvf & D3DFVF_TEXCOUNT_MASK) {
+  caseAddStr(D3DFVF_TEX1             );
+  caseAddStr(D3DFVF_TEX2             );
+  caseAddStr(D3DFVF_TEX3             );
+  caseAddStr(D3DFVF_TEX4             );
+  caseAddStr(D3DFVF_TEX5             );
+  caseAddStr(D3DFVF_TEX6             );
+  caseAddStr(D3DFVF_TEX7             );
+  caseAddStr(D3DFVF_TEX8             );
+  }
+
+  addFlag(D3DFVF_LASTBETA_UBYTE4  );
+  addFlag(D3DFVF_LASTBETA_D3DCOLOR);
+
+  return result;
+}
+
+static const int textureCoordFlotCount[] = {
+  2  // D3DFVF_TEXTUREFORMAT2 0 Two floating point values
+ ,3  // D3DFVF_TEXTUREFORMAT3 1 Three floating point values
+ ,4  // D3DFVF_TEXTUREFORMAT4 2 Four floating point values
+ ,1  // D3DFVF_TEXTUREFORMAT1 3 One floating point value
+};
+
+#define MASK_TEXTUREFORMAT(fvf, CoordIndex) (((fvf) >> ((CoordIndex)*2 + 16)) & 0x3)
+
+int FVFToSize(DWORD fvf) {
+  int bytes = 0;
+
+#undef  caseAddBytes
+#define caseAddBytes(s, type) case s: bytes += sizeof(type); break;
+
+  switch(fvf & D3DFVF_POSITION_MASK) {
+  caseAddBytes(D3DFVF_XYZ              ,D3DXVECTOR3    )
+  caseAddBytes(D3DFVF_XYZRHW           ,D3DXVECTOR4    )
+/*
+  caseAddBytes(D3DFVF_XYZB1            )
+  caseAddBytes(D3DFVF_XYZB2            )
+  caseAddBytes(D3DFVF_XYZB3            )
+  caseAddBytes(D3DFVF_XYZB4            )
+  caseAddBytes(D3DFVF_XYZB5            )
+*/
+  caseAddBytes(D3DFVF_XYZW             ,D3DXVECTOR4)
+  }
+
+#undef  addFlagBytes
+#define addFlagBytes(flag, type) if(fvf & flag) { bytes += sizeof(type); }
+
+  addFlagBytes(D3DFVF_NORMAL           ,D3DXVECTOR3    );
+  addFlagBytes(D3DFVF_PSIZE            ,float          );
+  addFlagBytes(D3DFVF_DIFFUSE          ,DWORD          );
+  addFlagBytes(D3DFVF_SPECULAR         ,DWORD          );
+
+  switch(fvf & D3DFVF_TEXCOUNT_MASK) {
+  case D3DFVF_TEX1:
+  case D3DFVF_TEX2:
+  case D3DFVF_TEX3:
+  case D3DFVF_TEX4:
+  case D3DFVF_TEX5:
+  case D3DFVF_TEX6:
+  case D3DFVF_TEX7:
+  case D3DFVF_TEX8:
+    { const int count = D3Scene::getTextureCoordCount();
+      for(int coordIndex = 0; coordIndex < 4; coordIndex++) {
+        bytes += textureCoordFlotCount[MASK_TEXTUREFORMAT(fvf, coordIndex)] * sizeof(float);
+      }
+    }
+    break;
+  }
+/*
+  addFlagBytes(D3DFVF_LASTBETA_UBYTE4  );
+  addFlagBytes(D3DFVF_LASTBETA_D3DCOLOR);
+*/
+  return bytes;
+}
+
+String vertexToString(const char *v, DWORD fvf, int dec) {
+  const int n = dec+3;
+  String result;
+  const char *delimiter = "";
+
+#define addTagName(tag)      { result += delimiter; result += tag; result += ":"; }
+#define addTypeStr(type)     { result += toString(*(type*)v); v += sizeof(type); delimiter = ", "; }
+#define addTypeStrD(type)    { result += toString(*(type*)v, dec); v += sizeof(type); delimiter = ", "; }
+#define caseAddElement( s, type) case D3DFVF##_##s:     { addTagName(#s); addTypeStr(type); } break;
+#define caseAddElementD(s, type) case D3DFVF##_##s:     { addTagName(#s); addTypeStrD(type); } break;
+#define addFlagElement( s, type) if(fvf & D3DFVF##_##s) { addTagName(#s); addTypeStr(type); }
+#define addFlagElementD(s, type) if(fvf & D3DFVF##_##s) { addTagName(#s); addTypeStrD(type); }
+
+  switch(fvf & D3DFVF_POSITION_MASK) {
+  caseAddElementD(XYZ              ,D3DXVECTOR3    )
+  caseAddElementD(XYZRHW           ,D3DXVECTOR4    )
+/*
+  caseAddBytes(XYZB1            )
+  caseAddBytes(XYZB2            )
+  caseAddBytes(XYZB3            )
+  caseAddBytes(XYZB4            )
+  caseAddBytes(XYZB5            )
+*/
+  caseAddElementD(XYZW             ,D3DXVECTOR4    )
+  }
+
+  addFlagElementD(NORMAL           ,D3DXVECTOR3    );
+  addFlagElementD(PSIZE            ,float          );
+  addFlagElement( DIFFUSE          ,D3PCOLOR       );
+  addFlagElement( SPECULAR         ,D3PCOLOR       );
+
+  switch(fvf & D3DFVF_TEXCOUNT_MASK) {
+  case D3DFVF_TEX1:
+  case D3DFVF_TEX2:
+  case D3DFVF_TEX3:
+  case D3DFVF_TEX4:
+  case D3DFVF_TEX5:
+  case D3DFVF_TEX6:
+  case D3DFVF_TEX7:
+  case D3DFVF_TEX8:
+    { const int count = D3Scene::getTextureCoordCount();
+      for(int coordIndex = 0; coordIndex < 4; coordIndex++) {
+        const int floatCount = textureCoordFlotCount[MASK_TEXTUREFORMAT(fvf, coordIndex)];
+        result += delimiter + format(_T("TEXCOORDINDEX(%d):("), coordIndex);
+        for(int i = 0; i < floatCount; i++, v += sizeof(float)) {
+          result += format(_T(" %*.*f"), n,dec, *(float*)v);
+        }
+        result += ")";
+        delimiter = ",";
+      }
+    }
+    break;
+  }
+/*
+  addFlagBytes(LASTBETA_UBYTE4  );
+  addFlagBytes(LASTBETA_D3DCOLOR);
+*/
+  return result;
+
+}
+
+int formatToSize(D3DFORMAT f) {
+  switch(f) {
+  case D3DFMT_INDEX16: return sizeof(short);
+  case D3DFMT_INDEX32: return sizeof(long );
+  default            : throwInvalidArgumentException(__TFUNCTION__, _T("f=%d"), f);
+                       return 1;
+  }
+}
+
+String toString(const D3DVERTEXBUFFER_DESC &desc) {
+  return format(_T("Type      :%s\n"
+                   "Format    :%s\n"
+                   "Pool      :%s\n"
+                   "FVF       :%s\n"
+                   "Usage     :%s\n"
+                   "Buffersize:%s bytes\n")
+               ,toString(     desc.Type  ).cstr()
+               ,toString(     desc.Format).cstr()
+               ,toString(     desc.Pool  ).cstr()
+               ,FVFToString(  desc.FVF   ).cstr()
+               ,usageToString(desc.Usage ).cstr()
+               ,format1000(   desc.Size  ).cstr()
+               );
+}
+
+String toString(const D3DINDEXBUFFER_DESC &desc) {
+  return format(_T("Type      :%s\n"
+                "Format    :%s\n"
+                "Pool      :%s\n"
+                "Usage     :%s\n"
+                "Buffersize:%s bytes\n")
+               ,toString(     desc.Type  ).cstr()
+               ,toString(     desc.Format).cstr()
+               ,toString(     desc.Pool  ).cstr()
+               ,usageToString(desc.Usage ).cstr()
+               ,format1000(   desc.Size  ).cstr()
+               );
+}
+
+String toString(const D3DDISPLAYMODE &mode) {
+  return format(_T("(W,H)       :(%d,%d)\n"
+                "Refresh rate:%d\n"
+                "Format      :%s\n")
+               ,mode.Width, mode.Height
+               ,mode.RefreshRate
+               ,toString(mode.Format).cstr()
+               );
+}
+/* ####----####+-+-+-+-+ExpressionWrapper.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:22><23.01.2017 14:36:46><23.01.2017 14:36:46><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <Math.h>
+#include <Math/MathFunctions.h>
+#include <Math/Expression/Expression.h>
+#include "ExpressionWrapper.h"
+
+static Real dummy = 0;
+#define M_EXPR ((Expression*)m_expr)
+
+ExpressionWrapper::ExpressionWrapper() {
+  m_expr = new Expression();
+  compile(_T("0"),false);
+}
+
+ExpressionWrapper::~ExpressionWrapper() {
+  delete M_EXPR;
+}
+
+ExpressionWrapper::ExpressionWrapper(const String &text, bool machineCode) {
+  m_expr = new Expression();
+  compile(text, machineCode);
+  if(!ok()) {
+    const String msg = getErrorMessage();
+    delete M_EXPR;
+    throwException(msg);
+  }
+}
+
+void ExpressionWrapper::compile(const String &text, bool machineCode) {
+  Expression *e = M_EXPR;
+  e->compile(text, machineCode);
+
+  m_xp = getVariableByName(_T("x"));
+  m_yp = getVariableByName(_T("y"));
+  m_zp = getVariableByName(_T("z"));
+  m_tp = getVariableByName(_T("t"));
+}
+
+Real ExpressionWrapper::operator()(const Point2D &p) {
+  *m_xp = p.x;
+  *m_yp = p.y;
+  return M_EXPR->evaluate();
+}
+
+Real ExpressionWrapper::operator()(const Point3D &p) {
+  *m_xp = p.x;
+  *m_yp = p.y;
+  *m_zp = p.z;
+  return M_EXPR->evaluate();
+}
+
+bool ExpressionWrapper::ok() {
+  Expression *e = M_EXPR;
+  return e->isOk();
+}
+
+Real *ExpressionWrapper::getVariableByName(const String &name) {
+  const ExpressionVariable *var = M_EXPR->getVariable(name);
+  return var == NULL ? &dummy : &M_EXPR->getValueRef(*var);
+}
+
+Real ExpressionWrapper::evaluate() {
+  return M_EXPR->evaluate();
+}
+
+String ExpressionWrapper::getErrorMessage() {
+  Expression *e = M_EXPR;
+  if(e->getErrors().size() == 0) {
+    return _T("No errors");
+  }
+  return e->getErrors()[0];
+}
+
+bool ExpressionWrapper::isReturnTypeReal() const {
+  return M_EXPR->getReturnType() == EXPR_RETURN_REAL;
+}
+
+bool ExpressionWrapper::isReturnTypeBool() const {
+  return M_EXPR->getReturnType() == EXPR_RETURN_BOOL;
+}
+/* ####----####+-+-+-+-+Function2DSurface.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><31.08.2016 18:01:14><31.08.2016 18:01:14><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <Tokenizer.h>
+
+Function2DSurfaceParameters::Function2DSurfaceParameters() {
+  m_expr          = "";
+  m_xInterval     = DoubleInterval(-10,10);
+  m_yInterval     = DoubleInterval(-10,10);
+  m_timeInterval  = DoubleInterval(0,10);
+  m_pointCount    = 10;
+  m_frameCount    = 20;
+  m_includeTime   = false;
+  m_machineCode   = true;
+  m_doubleSided   = true;
+}
+
+void Function2DSurfaceParameters::write(FILE *f) {
+  fprintf(f,"%u %lf %lf %lf %lf %d %d"
+           ,m_pointCount
+           ,m_xInterval.getFrom()
+           ,m_xInterval.getTo()
+           ,m_yInterval.getFrom()
+           ,m_yInterval.getTo()
+           ,m_machineCode
+           ,m_includeTime
+         );
+  if(m_includeTime) {
+    fprintf(f, " %lf %lf %u", m_timeInterval.getFrom(), m_timeInterval.getTo(), m_frameCount);
+  }
+  fprintf(f, " %d", m_doubleSided);
+  fprintf(f, "\n");
+  writeString(f, m_expr);
+}
+
+void Function2DSurfaceParameters::read(FILE *f) {
+  m_machineCode  = false;
+  m_includeTime  = false;
+  m_timeInterval = DoubleInterval(0,20);
+  String line = readLine(f);
+  Tokenizer tok(line, _T(" "));
+  m_pointCount = tok.getInt();
+  m_xInterval.setFrom(tok.getDouble());
+  m_xInterval.setTo(tok.getDouble());
+  m_yInterval.setFrom(tok.getDouble());
+  m_yInterval.setTo(tok.getDouble());
+  if(tok.hasNext()) {
+    m_machineCode = tok.getInt() ? true : false;
+    if(tok.hasNext()) {
+      m_includeTime = tok.getInt() ? true : false;
+      if(m_includeTime) {
+        m_timeInterval.setFrom(tok.getDouble());
+        m_timeInterval.setTo(tok.getDouble());
+        m_frameCount = tok.getInt();
+      }
+      if(tok.hasNext()) {
+        m_doubleSided = tok.getInt() ? true : false;
+      }
+    }
+  }
+  m_expr = readString(f);
+}
+/* ####----####+-+-+-+-+Function2DSurfaceMeshBuilder.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><22.01.2017 22:01:35><22.01.2017 22:01:35><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "MeshArrayJobMonitor.h"
+
+class Function2DPoint {
+public:
+  Vertex m_p;
+  Vertex m_n;
+  Function2DPoint(Function2D &f, const Point2D &p);
+};
+
+Function2DPoint::Function2DPoint(Function2D &f, const Point2D &p) {
+  const double z = f(p);
+  m_p = Vertex(p.x, p.y, z);
+#define EPS 1e-5
+  Point2D px,py;
+
+  px.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
+  px.y = p.y;
+  py.x = p.x;
+  py.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
+  const double dfx = (f(px) - z)/(px.x-p.x);
+  const double dfy = (f(py) - z)/(py.y-p.y);
+  m_n = Vertex(unitVector(D3DXVECTOR3((float)-dfx, (float)-dfy, 1.0f)));
+}
+
+#ifdef __NEVER__
+static void findMax16BitMeshVertexCount(DIRECT3DDEVICE device) {
+  unsigned int l = 100;
+  unsigned int h = 0xfffff;
+  while(l < h-1) {
+    int vertexCount = (l+h)/2;
+    LPD3DXMESH mesh = NULL;
+    HRESULT hr = D3DXCreateMeshFVF(10000, vertexCount, D3DXMESH_SYSTEMMEM, VertexNormal::FVF_Flags, device, &mesh);
+    if(hr != D3D_OK) {
+      h = vertexCount - 1;
+    } else {
+      l = vertexCount;
+      mesh->Release();
+    }
+  }
+  AfxMessageBox(format(_T("l:%d, h:%d"), l, h).cstr());
+}
+#endif
+
+LPD3DXMESH createMeshFrom2DFunction(DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
+  nx = max(nx, 2);
+  ny = max(ny, 2);
+
+  MeshBuilder mb;
+  mb.clear((nx+1)*(ny+1));
+  const double  stepx = xInterval.getLength() / (nx-1);
+  const double  stepy = yInterval.getLength() / (ny-1);
+  Point2D p;
+  p.x = xInterval.getFrom();
+  for(UINT i = 0; i < nx; i++, p.x += stepx) {
+    p.y = yInterval.getFrom();
+    for(UINT j = 0; j < ny; j++, p.y += stepy) {
+      Function2DPoint fp(f,p);
+      mb.addVertex(fp.m_p);
+      mb.addNormal(fp.m_n);
+    }
+  }
+  for(UINT i = 1; i < nx; i++) {
+    ULONG index = (i-1)*ny;
+    for(UINT j = 1; j < ny; j++, index++) {
+      Face &face = mb.addFace();
+      face.addVertexAndNormalIndex(index     , index     ,-1);
+      face.addVertexAndNormalIndex(index+1   , index+1   ,-1);
+      face.addVertexAndNormalIndex(index+1+ny, index+1+ny,-1);
+      face.addVertexAndNormalIndex(index  +ny, index  +ny,-1);
+    }
+  }
+  return mb.createMesh(device, doubleSided);
+}
+
+LPD3DXMESH createMesh(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+  if(param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
+  }
+  ExpressionWrapper f(param.m_expr, param.m_machineCode);
+  return createMeshFrom2DFunction(device, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
+}
+
+class VariableFunction2DMeshCreator : public VariableMeshCreator {
+private:
+  DIRECT3DDEVICE                    m_device;
+  const Function2DSurfaceParameters &m_param;
+  mutable ExpressionWrapper         m_expr;
+public:
+  VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
+  LPD3DXMESH createMesh(double time) const;
+};
+
+VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
+: m_device(device)
+, m_param(param)
+{
+  m_expr.compile(m_param.m_expr, m_param.m_machineCode);
+  if(!m_expr.ok()) {
+    throwException(_T("%s"), m_expr.getErrorMessage().cstr());
+  }
+}
+
+LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
+  m_expr.setT(time);
+  return createMeshFrom2DFunction(m_device
+                                 ,m_expr
+                                 ,m_param.getXInterval()
+                                 ,m_param.getYInterval()
+                                 ,m_param.m_pointCount
+                                 ,m_param.m_pointCount
+                                 ,m_param.m_doubleSided
+                                 );
+}
+
+class Function2DMeshArrayJobParameter : public MeshArrayJobParameter {
+private:
+  DIRECT3DDEVICE                    m_device;
+  const Function2DSurfaceParameters &m_param;
+public:
+  Function2DMeshArrayJobParameter(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
+    : m_device(device)
+    , m_param(param)
+  {
+  }
+  const DoubleInterval &getTimeInterval() const {
+    return m_param.getTimeInterval();
+  }
+  UINT getFrameCount() const {
+    return m_param.m_frameCount;
+  }
+  VariableMeshCreator *fetchMeshCreator() const {
+    return new VariableFunction2DMeshCreator(m_device, m_param);
+  }
+};
+
+MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+  if(!param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
+  }
+  return Function2DMeshArrayJobParameter(device, param).createMeshArray(wnd);
+}
+/* ####----####+-+-+-+-+IsoSurface.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><31.08.2016 17:10:42><31.08.2016 17:10:42><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "IsoSurface.h"
+
+IsoSurfaceParameters::IsoSurfaceParameters() {
+  m_expr             = "";
+  m_cellSize         = 0.25;
+  m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
+  m_tetrahedral      = true;
+  m_adaptiveCellSize = false;
+  m_originOutside    = false;
+  m_machineCode      = true;
+  m_doubleSided      = false;
+  m_includeTime      = false;
+  m_timeInterval     = DoubleInterval(0,10);
+  m_frameCount       = 20;
+}
+
+void IsoSurfaceParameters::write(FILE *f) {
+  const Point3D &lbn = m_boundingBox.m_lbn;
+  const Point3D &rtf = m_boundingBox.m_rtf;
+
+  fprintf(f,"%lf %le %le %le %le %le %le %d %d %d %d %d %d",
+            m_cellSize
+           ,lbn.x,lbn.y,lbn.z
+           ,rtf.x,rtf.y,rtf.z
+           ,m_tetrahedral
+           ,m_adaptiveCellSize
+           ,m_originOutside
+           ,m_machineCode
+           ,m_doubleSided
+           ,m_includeTime
+         );
+  if(m_includeTime) {
+    fprintf(f, " %lf %lf %d", m_timeInterval.getFrom(), m_timeInterval.getTo(), m_frameCount);
+  }
+  fprintf(f, "\n");
+  writeString(f, m_expr);
+}
+
+#define GETBOOL(tok) tok.getInt() ? true : false
+
+void IsoSurfaceParameters::read(FILE *f) {
+  String line = readLine(f);
+  Tokenizer tok(line, " ");
+
+  m_machineCode  = true;
+  m_doubleSided  = false;
+  m_includeTime  = false;
+  m_timeInterval = DoubleInterval(0,20);
+
+  m_cellSize     = tok.getDouble();
+
+  Point3D &lbn   = m_boundingBox.m_lbn;
+  Point3D &rtf   = m_boundingBox.m_rtf;
+
+  lbn.x = tok.getDouble(); lbn.y = tok.getDouble(); lbn.z = tok.getDouble();
+  rtf.x = tok.getDouble(); rtf.y = tok.getDouble(); rtf.z = tok.getDouble();
+
+  m_tetrahedral      = GETBOOL(tok);
+  m_adaptiveCellSize = GETBOOL(tok);
+  m_originOutside    = GETBOOL(tok);
+  if(tok.hasNext()) {
+    m_machineCode   = GETBOOL(tok);
+    if(tok.hasNext()) {
+      m_doubleSided = GETBOOL(tok);
+      if(tok.hasNext()) {
+        m_includeTime = GETBOOL(tok);
+        if(m_includeTime) {
+          m_timeInterval.setFrom(tok.getDouble());
+          m_timeInterval.setTo(tok.getDouble());
+          m_frameCount = tok.getInt();
+        }
+      }
+    }
+  }
+  m_expr = readString(f);
+}
+/* ####----####+-+-+-+-+IsoSurfaceMeshBuilder.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><22.01.2017 22:01:35><22.01.2017 22:01:35><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <Math/MathFunctions.h>
+#include <D3DGraphics/IsoSurfacePolygonizer.h>
+#include "MeshArrayJobMonitor.h"
+
+/* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
+
+class IsoSurface : public IsoSurfaceEvaluator {
+private:
+  IsoSurfaceParameters                  m_param;
+  ExpressionWrapper                     m_exprWrapper;
+  bool                                  m_reverseSign;
+  Real                                 *m_xp,*m_yp,*m_zp,*m_tp;
+  int                                   m_lastVertexCount;
+  MeshBuilder                           m_mb;
+  PolygonizerStatistics                 m_statistics;
+  const CompactArray<IsoSurfaceVertex> *m_vertexArray;
+  CompactArray<Point3D>                 m_debugPoints;
+
+public:
+  IsoSurface(const IsoSurfaceParameters &param);
+  void   createData();
+  double evaluate(const Point3D &p);
+  void   receiveFace(const Face3 &face);
+  void   receiveDebugVertices(int id,...);
+  const  IsoSurfaceParameters &getParam() const {
+    return m_param;
+  }
+  String getInfoMessage() const;
+  const MeshBuilder &getMeshbuilder() const {
+    return m_mb;
+  }
+
+  void setT(double t) {
+    *m_tp = t;
+  }
+  const CompactArray<Point3D> &getDebugPoints() const {
+    return m_debugPoints;
+  }
+};
+
+IsoSurface::IsoSurface(const IsoSurfaceParameters &param) 
+: m_param(param)
+, m_exprWrapper(param.m_expr,param.m_machineCode)
+{
+  m_xp = m_exprWrapper.getVariableByName("x");
+  m_yp = m_exprWrapper.getVariableByName("y");
+  m_zp = m_exprWrapper.getVariableByName("z");
+  m_tp = m_exprWrapper.getVariableByName("t");
+}
+
+void IsoSurface::createData() {
+  Point3D origin(0,0,0);
+
+  m_reverseSign     = false; // dont delete this. Used in evaluate !!
+  m_reverseSign     = m_param.m_originOutside == (evaluate(origin) < 0);
+  m_lastVertexCount = 0;
+  m_mb.clear(30000);
+
+  IsoSurfacePolygonizer polygonizer(*this);
+  m_vertexArray = &polygonizer.getVertexArray();
+
+  polygonizer.polygonize(Point3D(0,0,0)
+                        ,m_param.m_cellSize
+                        ,m_param.m_boundingBox
+                        ,m_param.m_tetrahedral);
+  if(m_mb.isEmpty()) {
+    throwException(_T("No polygons generated. Cannot create object"));
+  }
+
+  m_statistics = polygonizer.getStatistics();
+  m_mb.validate();
+//  m_mb.dump();
+//  m_mb.optimize();
+}
+
+String IsoSurface::getInfoMessage() const {
+  return m_statistics.toString();
+}
+
+double IsoSurface::evaluate(const Point3D &p) {
+  *m_xp = p.x;
+  *m_yp = p.y;
+  *m_zp = p.z;
+  if(m_reverseSign) {
+    return -getDouble(m_exprWrapper.evaluate());
+  } else {
+    return getDouble(m_exprWrapper.evaluate());
+  }
+}
+
+void IsoSurface::receiveFace(const Face3 &face) {
+  const int size = (int)m_vertexArray->size();
+  if(size > m_lastVertexCount) {
+    for(const IsoSurfaceVertex *sv = &(*m_vertexArray)[m_lastVertexCount], *last = &m_vertexArray->last(); sv <= last; sv++) {
+      m_mb.addVertex(sv->m_position);
+      m_mb.addNormal(sv->m_normal);
+    }
+    m_lastVertexCount = size;
+  }
+  Face &f = m_mb.addFace();
+  f.addVertexAndNormalIndex(face.m_i1, face.m_i1,-1);
+  f.addVertexAndNormalIndex(face.m_i2, face.m_i2,-1);
+  f.addVertexAndNormalIndex(face.m_i3, face.m_i3,-1);
+}
+
+void IsoSurface::receiveDebugVertices(int id,...) {
+  va_list argptr;
+  va_start(argptr, id);
+  m_debugPoints.add((*m_vertexArray)[id].m_position);
+  while((id = va_arg(argptr,int)) != -1) {
+    m_debugPoints.add((*m_vertexArray)[id].m_position);
+  }
+  va_end(argptr);
+}
+
+class IsoSurfaceDebugObject : public SceneObjectWithMesh {
+private:
+  D3LineArray *m_debugLines;
+public:
+  IsoSurfaceDebugObject(D3Scene &scene, LPD3DXMESH mesh) : SceneObjectWithMesh(scene, mesh) {
+    m_debugLines = NULL;
+  }
+  ~IsoSurfaceDebugObject() {
+    delete m_debugLines;
+  }
+  void createDebugLines(IsoSurface &surface);
+  void draw();
+};
+
+void IsoSurfaceDebugObject::draw() {
+  SceneObjectWithMesh::draw();
+  if(m_debugLines) {
+    m_debugLines->draw();
+  }
+}
+
+void IsoSurfaceDebugObject::createDebugLines(IsoSurface &surface) {
+  const CompactArray<Point3D> &pointArray = surface.getDebugPoints();
+  if(pointArray.size() > 0) {
+    const double  u = surface.getParam().m_cellSize / 8;
+    const Point3D e1(u,0,0),e2(0,u,0),e3(0,0,u);
+    CompactArray<Line> lines;
+    for(size_t i = 0; i < pointArray.size(); i++) {
+      const Point3D &p = pointArray[i];
+      lines.add(Line(p-e1,p+e1));
+      lines.add(Line(p-e2,p+e2));
+      lines.add(Line(p-e3,p+e3));
+    }
+    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), (int)lines.size());
+  }
+}
+
+D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene, const IsoSurfaceParameters &param) {
+  IsoSurface surface(param);
+  surface.createData();
+  LPD3DXMESH mesh = surface.getMeshbuilder().createMesh(scene.getDevice(), param.m_doubleSided);
+  IsoSurfaceDebugObject *object = new IsoSurfaceDebugObject(scene, mesh);
+  object->createDebugLines(surface);
+  return object;
+}
+
+LPD3DXMESH createMesh(DIRECT3DDEVICE device, IsoSurface &surface) {
+  surface.createData();
+  return surface.getMeshbuilder().createMesh(device, surface.getParam().m_doubleSided);
+}
+
+LPD3DXMESH createMesh(DIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
+  if(param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
+  }
+  return createMesh(device, IsoSurface(param));
+}
+
+class VariableIsoSurfaceMeshCreator : public VariableMeshCreator {
+private:
+  DIRECT3DDEVICE     m_device;
+  mutable IsoSurface m_surface;
+public:
+  VariableIsoSurfaceMeshCreator(DIRECT3DDEVICE device, const IsoSurfaceParameters &param)
+  : m_device(device)
+  , m_surface(param)
+  {
+  }
+  LPD3DXMESH createMesh(double time) const;
+};
+
+LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time) const {
+  m_surface.setT(time);
+  return ::createMesh(m_device, m_surface);
+}
+
+class IsoSurfaceMeshArrayJobParameter : public MeshArrayJobParameter {
+private:
+  DIRECT3DDEVICE              m_device;
+  const IsoSurfaceParameters &m_param;
+public:
+  IsoSurfaceMeshArrayJobParameter(DIRECT3DDEVICE device, const IsoSurfaceParameters &param)
+    : m_device(device)
+    , m_param(param) {
+  }
+  const DoubleInterval &getTimeInterval() const {
+    return m_param.getTimeInterval();
+  }
+  UINT getFrameCount() const {
+    return m_param.m_frameCount;
+  }
+  VariableMeshCreator *fetchMeshCreator() const {
+    return new VariableIsoSurfaceMeshCreator(m_device, m_param);
+  }
+};
+
+MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
+  if(!param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
+  }
+  return IsoSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
+}
+
+LPD3DXMESH createSphereMesh(DIRECT3DDEVICE device, double radius) {
+  IsoSurfaceParameters param;
+  const double bb       = ceil(radius + 1);
+  param.setName(format(_T("sphere radius %.2lf"), radius));
+  param.m_boundingBox   = Cube3D(Point3D(-bb,-bb,-bb), Point3D( bb, bb, bb));
+  param.m_expr          = format(_T("x*x+y*y+z*z-%lf"), radius*radius);
+  param.m_machineCode   = true;
+  param.m_originOutside = false;
+  param.m_cellSize      = radius / 5;
+  param.m_tetrahedral   = false;
+  param.m_doubleSided   = false;
+  return createMesh(device, param);
+}
+/* ####----####+-+-+-+-+IsoSurfaceMeshBuilderMarchingCube.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><06.07.2016 15:04:23><29.10.2015 20:41:41><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+#pragma warning(disable: 4786)  // name truncated to 255 chars
+
+#include "ExpressionWrapper.h"
+#include "MarchingCube/MarchingCube.h"
+#include "MarchingCube/IsoMesherMC.h"
+#include "MarchingCube/IsoMesherDC.h"
+#include "MeshBuilder.h"
+
+using namespace ThreeD;
+
+class FieldFunction : public Isosurface {
+private:
+  ExpressionWrapper m_exprWrapper;
+  float             m_delta;
+  bool              m_reverseSign;
+  Real             *m_xp,*m_yp,*m_zp,*m_tp;
+
+public:
+  FieldFunction(const IsoSurfaceParameters &param);
+  void fDensity(float x0, float y0, float z0, float dz, int pointCount, float *densities);
+  void fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal);
+};
+
+FieldFunction::FieldFunction(const IsoSurfaceParameters &param) {
+  m_exprWrapper.compile(param.m_expr, param.m_machineCode);
+  if(!m_exprWrapper.ok()) {
+    throwException(_T("%s"), m_exprWrapper.getErrorMessage().cstr());
+  }
+  m_xp    = m_exprWrapper.getVariableByName("x");
+  m_yp    = m_exprWrapper.getVariableByName("y");
+  m_zp    = m_exprWrapper.getVariableByName("z");
+  m_tp    = m_exprWrapper.getVariableByName("t");
+  m_delta = param.m_size / 100;
+
+  m_reverseSign     = false; // dont delete this. Used in fDensity !!
+  float sample;
+  fDensity(0,0,0,0,1,&sample);
+  m_reverseSign     = param.m_originOutside == (sample < 0);
+  m_bbox.set(param.m_boundingBox.m_lbn, param.m_boundingBox.m_rtf);
+}
+
+void FieldFunction::fDensity(float x0, float y0, float z0, float dz, int pointCount, float *densities) {
+  *m_xp = x0; *m_yp = y0; *m_zp = z0;
+  if(m_reverseSign) {
+    for(int i = 0; i < pointCount; i++, (*m_zp) += dz) {
+      densities[i] = -m_exprWrapper.evaluate();
+    }
+  } else {
+    for(int i = 0; i < pointCount; i++, (*m_zp) += dz) {
+      densities[i] = m_exprWrapper.evaluate();
+    }
+  }
+}
+
+void FieldFunction::fNormal(const D3DXVECTOR3 &point, D3DXVECTOR3 &normal) {
+  *m_xp = point.x; *m_yp = point.y; *m_zp = point.z;
+  const double f0 = m_exprWrapper.evaluate();
+                   *m_xp += m_delta; normal.x = m_exprWrapper.evaluate() - f0;
+  *m_xp = point.x; *m_yp += m_delta; normal.y = m_exprWrapper.evaluate() - f0;
+  *m_yp = point.y; *m_zp += m_delta; normal.z = m_exprWrapper.evaluate() - f0;
+  normal = m_reverseSign ? -unitVector(normal) : unitVector(normal);
+}
+
+
+LPD3DXMESH createMeshMarchingCube(DIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
+  FieldFunction ff(param);
+  IsoMesherMC meshCreator(ff);
+
+  const float cellSize = param.m_size;
+
+  meshCreator.setVoxelSize(cellSize, cellSize, cellSize);
+  Mesh        *mesh = meshCreator.createMesh();
+  if(mesh == NULL) {
+    throwException(_T("No polygons generated. Cannot create object"));
+  }
+//  mesh->computeVertexNormals();
+  MeshBuilder mb    = mesh->getMeshBuilder();
+  return mb.createMesh(device, param.m_doubleSided);
+}
+/* ####----####+-+-+-+-+MeshArray.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><06.01.2017 18:28:44><06.01.2017 18:28:44><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+
+MeshArray &MeshArray::operator=(const MeshArray &src) {
+  clear((int)src.getCapacity());
+  addAll(src);
+  return *this;
+}
+
+void MeshArray::add(UINT index, const LPD3DXMESH &m, UINT count) {
+  CompactArray<LPD3DXMESH>::add(index, m, count);
+  while(count--) {
+    int ref = (*this)[index++]->AddRef();
+  }
+}
+
+bool MeshArray::addAll(const MeshArray &src) {
+  size_t index = size();
+  if(!CompactArray<LPD3DXMESH>::addAll(src)) {
+    return false;
+  } else {
+    while(index < size()) {
+      int ref = (*this)[index++]->AddRef();
+    }
+    return true;
+  }
+}
+
+void MeshArray::remove(UINT index, UINT count) {
+  if(count == 0) {
+    return;
+  }
+  for(int i = index, j = count; j--;) {
+    int ref = (*this)[i++]->Release();
+  }
+  CompactArray<LPD3DXMESH>::remove(index, count);
+}
+
+void MeshArray::clear(int capacity) {
+  for(size_t i = 0; i < size(); i++) {
+    int ref = (*this)[i]->Release();
+  }
+  CompactArray<LPD3DXMESH>::clear(capacity);
+}
+/* ####----####+-+-+-+-+MeshArrayJobMonitor.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><06.01.2017 18:28:44><06.01.2017 18:28:44><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <SynchronizedQueue.h>
+#include <MFCUtil/ProgressWindow.h>
+#include <CPUInfo.h>
+#include "MeshArrayJobMonitor.h"
+
+class MeshResult {
+public:
+  double     m_t;
+  LPD3DXMESH m_mesh;
+  MeshResult() : m_t(0), m_mesh(NULL) {
+  }
+  MeshResult(double t, LPD3DXMESH mesh) : m_t(t), m_mesh(mesh) {
+  }
+};
+
+class MeshArrayJobMonitor {
+private:
+  CompactStack<double>              m_jobStack;
+  CompactArray<MeshResult>          m_resultArray;
+  int                               m_jobCount;
+  mutable Semaphore                 m_gate;
+  StringArray                       m_errors;
+  void clearResultQueue();
+public:
+  const MeshArrayJobParameter &m_param;
+  MeshArrayJobMonitor(const MeshArrayJobParameter &param)
+  : m_param(param)
+  {
+    m_jobCount = 0;
+  }
+  ~MeshArrayJobMonitor() {
+    clearResultQueue();
+  }
+  void addJob(  double t);
+  bool fetchJob(double &t);
+  void clearJobQueue();
+  void addResult(double t, LPD3DXMESH mesh);
+  void addError(const String &msg);
+  int  getJobsDone() const;
+  MeshArray getResult();
+};
+
+void MeshArrayJobMonitor::addResult(double t, LPD3DXMESH mesh) {
+  m_gate.wait();
+  m_resultArray.add(MeshResult(t, mesh));
+  m_gate.signal();
+}
+
+void MeshArrayJobMonitor::addError(const String &msg) {
+  m_gate.wait();
+  m_errors.add(msg);
+  m_gate.signal();
+}
+
+void MeshArrayJobMonitor::clearJobQueue() {
+  m_gate.wait();
+  m_jobStack.clear();
+  m_gate.signal();
+}
+
+void MeshArrayJobMonitor::addJob(double t) {
+  m_gate.wait();
+  m_jobStack.push(t);
+  m_jobCount++;
+  m_gate.signal();
+}
+
+bool MeshArrayJobMonitor::fetchJob(double &t) {
+  m_gate.wait();
+  bool result;
+  if(m_jobStack.isEmpty()) {
+    result = false;
+  } else {
+    t = m_jobStack.pop();
+    result = true;
+  }
+  m_gate.signal();
+  return result;
+}
+
+int MeshArrayJobMonitor::getJobsDone() const {
+  m_gate.wait();
+  const int n = (int)(m_resultArray.size() + m_errors.size());
+  m_gate.signal();
+  return n;
+}
+
+void MeshArrayJobMonitor::clearResultQueue() { // private. No need to synchronize
+  for(size_t i = 0; i < m_resultArray.size(); i++) {
+    m_resultArray[i].m_mesh->Release();
+  }
+  m_resultArray.clear();
+}
+
+static int meshResultCmpByTime(const MeshResult &m1, const MeshResult &m2) {
+  return sign(m1.m_t - m2.m_t);
+}
+
+MeshArray MeshArrayJobMonitor::getResult() {
+  m_gate.wait();
+  CompactArray<MeshResult> tmp = m_resultArray;
+  tmp.sort(meshResultCmpByTime);
+  MeshArray result;
+  for(size_t i = 0; i < tmp.size(); i++) {
+    result.add(tmp[i].m_mesh);
+  }
+  tmp.clear();
+  clearResultQueue();
+  m_gate.signal();
+  return result;
+}
+
+class MeshArrayCreator;
+
+class MeshBuilderWorker : public Runnable {
+private:
+  MeshArrayCreator    &m_arrayCreator;
+  VariableMeshCreator *m_meshCreator;
+  MeshArrayJobMonitor &getJobMonitor();
+public:
+  MeshBuilderWorker(MeshArrayCreator *arrayCreator);
+  ~MeshBuilderWorker();
+  UINT run();
+};
+
+class MeshArrayCreator : public InteractiveRunnable {
+private:
+  MeshArrayJobMonitor m_jobMonitor;
+  const UINT          m_frameCount;
+public:
+  MeshArrayCreator(const MeshArrayJobParameter &param)
+  : m_jobMonitor(param)
+  , m_frameCount(param.getFrameCount())
+  {
+  }
+
+  double getMaxProgress() const {
+    return m_frameCount;
+  }
+  double getProgress() const {
+    return m_jobMonitor.getJobsDone();
+  }
+  String getTitle() {
+    return "Creating Mesh Array";
+  }
+  int getSupportedFeatures() {
+    return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE;
+  }
+  MeshArrayJobMonitor &getJobMonitor() {
+    return m_jobMonitor;
+  }
+  MeshArray getResult() {
+    return m_jobMonitor.getResult();
+  }
+  UINT run();
+};
+
+UINT MeshArrayCreator::run() {
+  const double stept = getJobMonitor().m_param.getTimeInterval().getLength() / (m_frameCount-1);
+  double       t     = getJobMonitor().m_param.getTimeInterval().getFrom();
+
+  for(UINT i = 0; i < m_frameCount; i++, t += stept) {
+    m_jobMonitor.addJob(t);
+  }
+  const int processorCount = getProcessorCount();
+  RunnableArray workerArray;
+  for (int i = 0; i < processorCount; i++) {
+    workerArray.add(new MeshBuilderWorker(this));
+  }
+  ThreadPool::executeInParallel(workerArray);
+  for(size_t i = 0; i < workerArray.size(); i++) {
+    delete workerArray[i];
+  }
+  workerArray.clear();
+  return 0;
+}
+
+MeshBuilderWorker::MeshBuilderWorker(MeshArrayCreator *arrayCreator) 
+: m_arrayCreator(*arrayCreator)
+{
+  m_meshCreator = getJobMonitor().m_param.fetchMeshCreator();
+}
+
+MeshBuilderWorker::~MeshBuilderWorker(){
+  delete m_meshCreator;
+}
+
+MeshArrayJobMonitor &MeshBuilderWorker::getJobMonitor() {
+  return m_arrayCreator.getJobMonitor();
+}
+
+UINT MeshBuilderWorker::run() {
+  MeshArrayJobMonitor &jm = getJobMonitor();
+  double t;
+  while(jm.fetchJob(t)) {
+    if(m_arrayCreator.isInterrupted()) {
+      jm.clearJobQueue();
+      break;
+    }
+    try {
+      jm.addResult(t, m_meshCreator->createMesh(t));
+    } catch(Exception e) {
+      jm.addError(e.what());
+    } catch(...) {
+      jm.addError("Unknown Exception");
+    }
+  }
+  return 0;
+}
+
+MeshArray MeshArrayJobParameter::createMeshArray(CWnd *wnd) {
+  MeshArrayCreator mac(*this);
+  ProgressWindow(wnd, mac, 300, 200);
+  if(mac.isInterrupted()) {
+    throwException(_T("Interrupted by user"));
+  };
+  return mac.getResult();
+}
+/* ####----####+-+-+-+-+ParametricSurface.cpp+-+-+-+-+####-+-+-+-+-+<30.08.2016 22:21:13><31.08.2016 18:26:35><31.08.2016 18:26:35><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include <Tokenizer.h>
+
+ParametricSurfaceParameters::ParametricSurfaceParameters() {
+  m_exprX         = "";
+  m_exprY         = "";
+  m_exprZ         = "";
+  m_tInterval     = DoubleInterval(-10,10);
+  m_sInterval     = DoubleInterval(-10,10);
+  m_timeInterval  = DoubleInterval(0,10);
+  m_tStepCount    = 10;
+  m_sStepCount    = 10;
+  m_frameCount    = 20;
+  m_includeTime   = false;
+  m_machineCode   = true;
+  m_doubleSided   = true;
+}
+
+void ParametricSurfaceParameters::write(FILE *f) {
+  fprintf(f,"%u %u %lf %lf %lf %lf %d %d"
+           ,m_tStepCount
+           ,m_sStepCount
+           ,m_tInterval.getFrom(),m_tInterval.getTo()
+           ,m_sInterval.getFrom(),m_sInterval.getTo()
+           ,m_machineCode
+           ,m_includeTime
+         );
+  if(m_includeTime) {
+    fprintf(f, " %lf %lf %u", m_timeInterval.getFrom(), m_timeInterval.getTo(), m_frameCount);
+  }
+  fprintf(f, " %d", m_doubleSided);
+  fprintf(f, "\n");
+  writeString(f, m_exprX);
+  writeString(f, m_exprY);
+  writeString(f, m_exprZ);
+}
+
+void ParametricSurfaceParameters::read(FILE *f) {
+  m_machineCode  = false;
+  m_includeTime  = false;
+  m_timeInterval = DoubleInterval(0,20);
+  String line    = readLine(f);
+  Tokenizer tok(line, _T(" "));
+  m_tStepCount = tok.getInt();
+  m_sStepCount = tok.getInt();
+  m_tInterval.setFrom(tok.getDouble());
+  m_tInterval.setTo(tok.getDouble());
+  m_sInterval.setFrom(tok.getDouble());
+  m_sInterval.setTo(tok.getDouble());
+  if(tok.hasNext()) {
+    m_machineCode = tok.getInt() ? true : false;
+    if(tok.hasNext()) {
+      m_includeTime = tok.getInt() ? true : false;
+      if(m_includeTime) {
+        m_timeInterval.setFrom(tok.getDouble());
+        m_timeInterval.setTo(tok.getDouble());
+        m_frameCount = tok.getInt();
+      }
+      if(tok.hasNext()) {
+        m_doubleSided = tok.getInt() ? true : false;
+      }
+    }
+  }
+  m_exprX = readString(f);
+  m_exprY = readString(f);
+  m_exprZ = readString(f);
+}
+/* ####----####+-+-+-+-+ParametricSurfaceMeshBuilder.cpp+-+-+-+-+####-+-+-+-+-+<31.08.2016 19:21:18><22.01.2017 22:01:35><22.01.2017 22:01:35><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "MeshArrayJobMonitor.h"
+
+class ParametricSurfacePoint {
+public:
+  Vertex m_p;
+  Vertex m_n;
+  ParametricSurfacePoint(ParametricSurface &ps, const Point2D &p);
+};
+
+ParametricSurfacePoint::ParametricSurfacePoint(ParametricSurface &f, const Point2D &p) {
+  const Point3D v = f(p);
+  m_p = Vertex(v.x, v.y, v.z);
+#define EPS 1e-5
+  Point2D  pt = p, ps = p;
+
+  pt.x = (fabs(p.x) < 2) ? (p.x+EPS) : p.x * (1+EPS);
+  ps.y = (fabs(p.y) < 2) ? (p.y+EPS) : p.y * (1+EPS);
+  const Point3DP vt = (f(pt) - v) / (pt.x - p.x);
+  const Point3DP vs = (f(ps) - v) / (ps.y - p.y);
+  m_n = Vertex(unitVector(crossProduct(vt, vs)));
+}
+
+class ExprParametricSurface : public ParametricSurface {
+private:
+  ExpressionWrapper m_exprX, m_exprY, m_exprZ;
+
+  Real *m_tXp, *m_sXp, *m_timeXp;
+  Real *m_tYp, *m_sYp, *m_timeYp;
+  Real *m_tZp, *m_sZp, *m_timeZp;
+
+public:
+  ExprParametricSurface(const ParametricSurfaceParameters &param);
+  void setTime(double time) {
+    *m_timeXp = *m_timeYp = *m_timeZp = time;
+  }
+  Point3D operator()(const Point2D &ts);
+};
+
+ExprParametricSurface::ExprParametricSurface(const ParametricSurfaceParameters &param) 
+: m_exprX(param.m_exprX, param.m_machineCode)
+, m_exprY(param.m_exprY, param.m_machineCode)
+, m_exprZ(param.m_exprZ, param.m_machineCode)
+{
+  m_tXp    = m_exprX.getVariableByName("t");
+  m_sXp    = m_exprX.getVariableByName("s");
+  m_timeXp = m_exprX.getVariableByName("time");
+
+  m_tYp    = m_exprY.getVariableByName("t");
+  m_sYp    = m_exprY.getVariableByName("s");
+  m_timeYp = m_exprY.getVariableByName("time");
+
+  m_tZp    = m_exprZ.getVariableByName("t");
+  m_sZp    = m_exprZ.getVariableByName("s");
+  m_timeZp = m_exprZ.getVariableByName("time");
+}
+
+Point3D ExprParametricSurface::operator()(const Point2D &ts) {
+  *m_tXp = *m_tYp = *m_tZp = ts.x;
+  *m_sXp = *m_sYp = *m_sZp = ts.y;
+  return Point3D(m_exprX.evaluate(), m_exprY.evaluate(), m_exprZ.evaluate());
+}
+
+LPD3DXMESH createMeshFromParametricSurface(DIRECT3DDEVICE device, ParametricSurface &sf, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
+  nt = max(nt, 2);
+  ns = max(ns, 2);
+
+  MeshBuilder mb;
+  mb.clear((nt+1)*(ns+1));
+  const double  stept = tInterval.getLength() / (nt-1);
+  const double  steps = sInterval.getLength() / (ns-1);
+  Point2D p;
+  p.x = tInterval.getFrom();
+  for(UINT i = 0; i < nt; i++, p.x += stept) {
+    p.y = sInterval.getFrom();
+    for(UINT j = 0; j < ns; j++, p.y += steps) {
+      ParametricSurfacePoint sp(sf,p);
+      mb.addVertex(sp.m_p);
+      mb.addNormal(sp.m_n);
+    }
+  }
+  for(UINT i = 1; i < nt; i++) {
+    UINT index = (i-1)*ns;
+    for(UINT j = 1; j < ns; j++, index++) {
+      Face &face = mb.addFace();
+      face.addVertexAndNormalIndex(index     , index     ,-1);
+      face.addVertexAndNormalIndex(index+1   , index+1   ,-1);
+      face.addVertexAndNormalIndex(index+1+ns, index+1+ns,-1);
+      face.addVertexAndNormalIndex(index  +ns, index  +ns,-1);
+    }
+  }
+  return mb.createMesh(device, doubleSided);
+}
+
+LPD3DXMESH createMesh(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+  if(param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
+  }
+  ExprParametricSurface ps(param);
+  return createMeshFromParametricSurface(device, ps, param.getTInterval(), param.getSInterval(), param.m_tStepCount, param.m_sStepCount, param.m_doubleSided);
+}
+
+class VariableParametricSurfaceMeshCreator : public VariableMeshCreator {
+private:
+  DIRECT3DDEVICE                    m_device;
+  const ParametricSurfaceParameters &m_param;
+  mutable ExprParametricSurface      m_ps;
+public:
+  VariableParametricSurfaceMeshCreator(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
+  LPD3DXMESH createMesh(double time) const;
+};
+
+VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
+: m_device(device)
+, m_param(param)
+, m_ps(param)
+{
+}
+
+LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time) const {
+  m_ps.setTime(time);
+  return createMeshFromParametricSurface(m_device
+                                        ,m_ps
+                                        ,m_param.getTInterval()
+                                        ,m_param.getSInterval()
+                                        ,m_param.m_tStepCount
+                                        ,m_param.m_sStepCount
+                                        ,m_param.m_doubleSided
+                                        );
+}
+
+class ParametricSurfaceMeshArrayJobParameter : public MeshArrayJobParameter {
+private:
+  DIRECT3DDEVICE                    m_device;
+  const ParametricSurfaceParameters &m_param;
+public:
+  ParametricSurfaceMeshArrayJobParameter(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
+    : m_device(device)
+    , m_param(param)
+  {
+  }
+  const DoubleInterval &getTimeInterval() const {
+    return m_param.getTimeInterval();
+  }
+  UINT getFrameCount() const {
+    return m_param.m_frameCount;
+  }
+  VariableMeshCreator *fetchMeshCreator() const {
+    return new VariableParametricSurfaceMeshCreator(m_device, m_param);
+  }
+};
+
+MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+  if(!param.m_includeTime) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
+  }
+  return ParametricSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
+}
+/* ####----####+-+-+-+-+PersistentParameter.cpp+-+-+-+-+####-+-+-+-+-+<06.07.2016 15:04:23><31.08.2016 18:21:02><31.08.2016 18:21:02><81B6>+-+-+-+-+####----#### */
+#include "pch.h"
+#include "PersistentParameter.h"
+
+void PersistentParameter::load(const String &fileName) {
+  FILE *f = FOPEN(fileName, "r");
+  try {
+    read(f);
+    fclose(f);
+  } catch(...) {
+    fclose(f);
+    throw;
+  }
+}
+
+void PersistentParameter::save(const String &fileName) {
+  FILE *f = FOPEN(fileName, "w");
+  try {
+    write(f);
+    fclose(f);
+  } catch(...) {
+    fclose(f);
+    throw;
+  }
+}
+
+char *fgetline(char *line, int size, FILE *f) {
+  if (!fgets(line, size, f)) return NULL;
+  char *nl = strchr(line, '\n');
+  if (nl) *nl = 0;
+  return line;
+}
+
+#define nextChar() ch = fgetc(f)
+String PersistentParameter::readString(FILE *f) { // static
+  String result;
+  int ch;
+  nextChar();
+  while(!feof(f) && isspace(ch)) nextChar();
+  if(ch == '\"') {
+    for(nextChar(); !feof(f) && (ch != '\"'); nextChar()) {
+      result += ch;
+    }
+  } else {
+    throwException(_T("Invalid input. Expected \""));
+  }
+  result.replace('\n', _T("\xd\xa"));
+  return result;
+}
+
+String PersistentParameter::readLine(FILE *f) { // static
+  char line[2024];
+  if(!fgetline(line, sizeof(line), f)) {
+    throwException(_T("Unexpected end-of-file"));
+  }
+  return line;
+}
+
+void PersistentParameter::writeString(FILE *f, const String &str) { // static
+  String tmp = str;
+  tmp.replace(_T("\xd\xa"), _T("\n")).trimRight();
+  USES_CONVERSION;
+  fprintf(f, "\"%s\"\n", T2A(tmp.cstr()));
+}
+
+String PersistentParameter::getDisplayName() const {
+  return FileNameSplitter(getName()).getFileName();
+}

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MathLib.h"
+#include "Matrix.h"
 
 class RungeKuttaFehlbergHandler;
 
@@ -23,3 +23,5 @@ public:
 
 class RungeKuttaFehlbergHandler : public AlgorithmHandler<RungeKuttaFehlberg> {
 };
+
+void rungeKuttaStep(Vector &v, Real step, VectorFunction &diff);

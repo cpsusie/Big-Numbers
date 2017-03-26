@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Math/MathException.h>
 #include <Math/Matrix.h>
 
 void setToRandom(Vector &v) {

@@ -23,9 +23,6 @@
 #endif
 
 
-class Function2D : public FunctionTemplate<Point2D, Real> {
-};
-
 class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
 };
 

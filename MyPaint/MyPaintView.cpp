@@ -312,7 +312,7 @@ void CMyPaintView::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 EdgeMark *CMyPaintView::findEdgeMark(const CPoint &point) {
-  for(int i = 0; i < m_edgeMark.size(); i++) {
+  for(size_t i = 0; i < m_edgeMark.size(); i++) {
     EdgeMark &m = m_edgeMark[i];
     if(m.isVisible() && m.getActiveRect().PtInRect(point)) {
       return &m;

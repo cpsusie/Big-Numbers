@@ -1,6 +1,6 @@
 #pragma once
 
-#include "IsoSurface.h"
+#include <D3DGraphics/IsoSurface.h>
 #include "ExprDialog.h"
 
 class CIsoSurfaceDlg : public CExprDialog {

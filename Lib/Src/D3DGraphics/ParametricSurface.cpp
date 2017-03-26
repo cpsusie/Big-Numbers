@@ -1,10 +1,11 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Tokenizer.h>
+#include <D3DGraphics/ParametricSurface.h>
 
 ParametricSurfaceParameters::ParametricSurfaceParameters() {
-  m_exprX         = "";
-  m_exprY         = "";
-  m_exprZ         = "";
+  m_exprX         = EMPTYSTRING;
+  m_exprY         = EMPTYSTRING;
+  m_exprZ         = EMPTYSTRING;
   m_tInterval     = DoubleInterval(-10,10);
   m_sInterval     = DoubleInterval(-10,10);
   m_timeInterval  = DoubleInterval(0,10);

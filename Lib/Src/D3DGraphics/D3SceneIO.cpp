@@ -1,5 +1,6 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <ByteFile.h>
+#include <D3DGraphics/D3Scene.h>
 
 void D3Scene::saveState(const String &fileName) const {
   save(ByteOutputFile(fileName));

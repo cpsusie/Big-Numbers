@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ExprDialog.h"
+#include <D3DGraphics/Function2DSurface.h>
 
 class CFunction2DSurfaceDlg : public CExprDialog {
 private:

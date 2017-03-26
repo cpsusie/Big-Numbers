@@ -1,5 +1,7 @@
 #pragma once
 
+#include <D3DGraphics/D3Scene.h>
+
 #define USE_RENDEREFFECT
 
 class D3LightControl : public SceneObjectWithMesh {

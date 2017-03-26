@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "IsoSurface.h"
+#include "pch.h"
+#include "D3DGraphics/IsoSurface.h"
 
 IsoSurfaceParameters::IsoSurfaceParameters() {
   m_expr             = "";

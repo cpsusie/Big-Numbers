@@ -95,7 +95,7 @@ void CMakeGifDoc::Dump(CDumpContext& dc) const {
 
 
 static int readGifStreamFunction(GifFileType *gf, GifByteType *buffer, int n) {
-  return ((ByteInputStream*)gf->UserData)->getBytes((BYTE*)buffer, n);
+  return (int)(((ByteInputStream*)gf->UserData)->getBytes((BYTE*)buffer, n));
 }
 
 static int writeGifStreamFunction(GifFileType *gf, const GifByteType *buffer, int n) {

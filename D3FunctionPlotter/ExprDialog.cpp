@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include <Scanner.h>
 #include <Math/Expression/Expression.h>
-#include "ExpressionWrapper.h"
+#include <Math/Expression/ExpressionWrapper.h>
 #include "ExprDialog.h"
 
 void CExprDialog::createExprFont() {

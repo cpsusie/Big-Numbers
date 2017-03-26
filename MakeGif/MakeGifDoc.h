@@ -74,7 +74,7 @@ public:
 
   CSize getGifSize() const;
   int   getImageCount() const {
-    return m_rawPrArray.size();
+    return (int)m_rawPrArray.size();
   }
 
   bool addImagesToGif();

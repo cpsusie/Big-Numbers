@@ -156,7 +156,7 @@ CSize PixRectArray::getMaxSize() const {
 void PixRectArray::paintAll(HDC dc, const CRect &rect) const {
   const CSize rSize         = rect.Size();
   const CSize maxSize       = getMaxSize();
-  const int   n             = size();
+  const int   n             = (int)size();
   int         availableArea = getArea(rSize);
 
   double       scaleFactor;

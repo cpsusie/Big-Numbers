@@ -6,9 +6,7 @@
 #include <Date.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
-#include "Function2DSurface.h"
-#include "ParametricSurface.h"
-#include "IsoSurface.h"
+#include "MeshArray.h"
 
 class D3SceneObject;
 class D3LightControl;
@@ -121,12 +119,13 @@ String usageToString( DWORD           usage     );
 String FVFToString(   DWORD           fvf       );
 int    FVFToSize(     DWORD           fvf       );
 String toString(const D3DDISPLAYMODE &mode      );
-String vertexToString(const char *v, DWORD FVF  , int dec=3);
-
-String toString(      D3PCOLOR              c   );
 String toString(const D3DCOLORVALUE        &c   );
 String toString(const D3DVERTEXBUFFER_DESC &desc);
 String toString(const D3DINDEXBUFFER_DESC  &desc);
+
+String vertexToString(const char *v, DWORD FVF  , int dec=3);
+
+String toString(      D3PCOLOR              c   );
 
 class D3Scene : public PropertyContainer {
 private:
@@ -171,8 +170,8 @@ private:
   D3DXMATRIX getTransformation(D3DTRANSFORMSTATETYPE id) const;
   int getFirstFreeLightIndex() const; // return -1 if none exist
   D3LightControl *findLightControlByLightIndex(int lightIndex);
-  D3LightControl *addLightControl(    unsigned int lightIndex);
-  void destroyLightControl(           unsigned int lightIndex);
+  D3LightControl *addLightControl(    UINT lightIndex);
+  void destroyLightControl(           UINT lightIndex);
 public:
   D3Scene();
   ~D3Scene();
@@ -263,26 +262,26 @@ public:
   void enableSpecular(bool enabled);
   bool isSpecularEnabled() const;
 
-  void setLightDirection(          unsigned int index, const D3DXVECTOR3 &dir);
-  void setLightPosition(           unsigned int index, const D3DXVECTOR3 &pos);
-  String getLightString(           unsigned int index) const;
+  void setLightDirection(          UINT index, const D3DXVECTOR3 &dir);
+  void setLightPosition(           UINT index, const D3DXVECTOR3 &pos);
+  String getLightString(           UINT index) const;
   String getLightString() const;
 
   LIGHT getDefaultLightParam(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
   void setLightParam(              const LIGHT &param);
-  LIGHT getLightParam(             unsigned int index) const;
-  inline D3DLIGHTTYPE getLightType(unsigned int index) const {
+  LIGHT getLightParam(             UINT index) const;
+  inline D3DLIGHTTYPE getLightType(UINT index) const {
     return getLightParam(index).Type;
   }
-  void removeLight(                unsigned int index);
-  void setLightEnabled(            unsigned int index, bool enabled);
-  inline bool isLightEnabled(      unsigned int index) const {
+  void removeLight(                UINT index);
+  void setLightEnabled(            UINT index, bool enabled);
+  inline bool isLightEnabled(      UINT index) const {
     return m_lightsEnabled->contains(index);
   }
-  inline bool isLightDefined(      unsigned int index) const {
+  inline bool isLightDefined(      UINT index) const {
     return m_lightsDefined->contains(index);
   }
-  inline bool isLightVisible(      unsigned int index) const {
+  inline bool isLightVisible(      UINT index) const {
     return getLightsVisible().contains(index);
   }
   inline const BitSet &getLightsDefined() const {
@@ -292,7 +291,7 @@ public:
     return *m_lightsEnabled;
   }
   BitSet getLightsVisible() const;
-  void setLightControlVisible(     unsigned int index, bool visible);
+  void setLightControlVisible(     UINT index, bool visible);
 
   inline int getMaxLightCount() const {
     return m_maxLightCount;
@@ -326,41 +325,6 @@ public:
   void load(ByteInputStream  &s);
 };
 
-class MeshArray : public CompactArray<LPD3DXMESH> {
-public:
-  MeshArray() {
-  }
-  explicit MeshArray(unsigned int capacity) : CompactArray<LPD3DXMESH>(capacity) {
-  }
-  MeshArray::MeshArray(const MeshArray &src) : CompactArray<LPD3DXMESH>(src.getCapacity()) {
-    addAll(src);
-  }
-  MeshArray &operator=(const MeshArray &src);
-  ~MeshArray() {
-    clear();
-  }
-  void add(const LPD3DXMESH &m) {
-    add((UINT)size(), m);
-  }
-  void add(UINT index, const LPD3DXMESH &m, UINT count = 1);
-  bool addAll(const MeshArray &src);
-  void remove(UINT index, UINT count = 1);
-  void removeLast() {
-    remove((UINT)size()-1);
-  }
-
-  void clear(int capacity=0);
-};
-
-LPD3DXMESH     createMeshFrom2DFunction(   DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);
-LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
-MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
-LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
-MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
-LPD3DXMESH     createMesh(                 DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-MeshArray      createMeshArray(CWnd *wnd,  DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-LPD3DXMESH     createSphereMesh(           DIRECT3DDEVICE device, double                            radius);
-D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene,        const IsoSurfaceParameters        &param);
 LPD3DXMESH     createMeshFromVertexFile(   DIRECT3DDEVICE device, const String &fileName, bool doubleSided);
 LPD3DXMESH     createMeshFromObjFile(      DIRECT3DDEVICE device, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
@@ -370,7 +334,7 @@ LPDIRECT3DTEXTURE9 loadTextureFromResource( LPDIRECT3DDEVICE9 device, int resId,
 LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray &ba);
 LPDIRECT3DTEXTURE9 getTextureFromBitmap(    LPDIRECT3DDEVICE9 device, HBITMAP bm);
 
-void dumpMesh(LPD3DXMESH mesh, const String &fileName="");
+void dumpMesh(LPD3DXMESH mesh, const String &fileName=EMPTYSTRING);
 void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f);
 void dumpIndexBuffer( LPDIRECT3DINDEXBUFFER9  indexBuffer , FILE *f);
 
@@ -390,7 +354,7 @@ protected:
     return m_scene.m_device;
   }
 public:
-  D3SceneObject(D3Scene &scene, const String &name="Untitled") : m_scene(scene) {
+  D3SceneObject(D3Scene &scene, const String &name=_T("Untitled")) : m_scene(scene) {
     m_visible  = true;
     m_name     = name;
     m_userData = NULL;

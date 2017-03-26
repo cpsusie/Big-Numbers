@@ -1,6 +1,5 @@
 #include "pch.h"
 #include <Math/Matrix.h>
-#include <Math/MathException.h>
 
 ComplexMatrix::ComplexMatrix() : MatrixTemplate<Complex>() {
 }

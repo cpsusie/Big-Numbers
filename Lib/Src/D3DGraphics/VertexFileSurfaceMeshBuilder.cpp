@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <ExternProcess.h>
 #include <D3DGraphics/MeshBuilder.h>
 

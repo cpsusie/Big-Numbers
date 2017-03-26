@@ -1,7 +1,10 @@
 #pragma once
 
 #include <MFCUtil/LayoutManager.h>
-#include "D3LightControl.h"
+#include <D3DGraphics/D3LightControl.h>
+#include <D3DGraphics/Function2DSurface.h>
+#include <D3DGraphics/ParametricSurface.h>
+#include <D3DGraphics/IsoSurface.h>
 #include "D3CoordinateSystem.h"
 #include "MemoryLogThread.h"
 #include "PropertyDlgThread.h"

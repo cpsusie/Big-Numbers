@@ -1,8 +1,8 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <SynchronizedQueue.h>
 #include <MFCUtil/ProgressWindow.h>
 #include <CPUInfo.h>
-#include "MeshArrayJobMonitor.h"
+#include <D3DGraphics/MeshArrayJobMonitor.h>
 
 class MeshResult {
 public:
@@ -142,7 +142,7 @@ public:
     return m_jobMonitor.getJobsDone();
   }
   String getTitle() {
-    return "Creating Mesh Array";
+    return _T("Creating Mesh Array");
   }
   int getSupportedFeatures() {
     return IR_PROGRESSBAR | IR_INTERRUPTABLE | IR_SHOWTIMEESTIMATE;

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <iostream>
-#include <Math/MathException.h>
+#include <Math/Matrix.h>
 
 //#define DEBUGNEWTON
 

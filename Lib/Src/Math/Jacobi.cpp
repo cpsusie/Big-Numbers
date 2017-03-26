@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <Math/Matrix.h>
 
 Matrix getJacobi(VectorFunction &f, const Vector &x) {
   return getJacobi(f,x,f(x));

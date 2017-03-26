@@ -1,5 +1,6 @@
-#include "stdafx.h"
-#include "D3LightControl.h"
+#include "pch.h"
+#include <D3DGraphics/D3LightControl.h>
+#include <D3DGraphics/Profile.h>
 
 D3LightControlSpot::D3LightControlSpot(D3Scene &scene, int lightIndex) 
 : D3LightControl(scene, lightIndex)

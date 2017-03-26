@@ -1,7 +1,9 @@
-#include "stdafx.h"
-#include <Math/MathFunctions.h>
+#include "pch.h"
+#include <Math/Expression/ExpressionWrapper.h>
+#include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/IsoSurface.h>
 #include <D3DGraphics/IsoSurfacePolygonizer.h>
-#include "MeshArrayJobMonitor.h"
+#include "D3DGraphics/MeshArrayJobMonitor.h"
 
 /* ---------------- Implicit surface polygonizer supportfunctions ------------------- */
 
@@ -112,52 +114,6 @@ void IsoSurface::receiveDebugVertices(int id,...) {
     m_debugPoints.add((*m_vertexArray)[id].m_position);
   }
   va_end(argptr);
-}
-
-class IsoSurfaceDebugObject : public SceneObjectWithMesh {
-private:
-  D3LineArray *m_debugLines;
-public:
-  IsoSurfaceDebugObject(D3Scene &scene, LPD3DXMESH mesh) : SceneObjectWithMesh(scene, mesh) {
-    m_debugLines = NULL;
-  }
-  ~IsoSurfaceDebugObject() {
-    delete m_debugLines;
-  }
-  void createDebugLines(IsoSurface &surface);
-  void draw();
-};
-
-void IsoSurfaceDebugObject::draw() {
-  SceneObjectWithMesh::draw();
-  if(m_debugLines) {
-    m_debugLines->draw();
-  }
-}
-
-void IsoSurfaceDebugObject::createDebugLines(IsoSurface &surface) {
-  const CompactArray<Point3D> &pointArray = surface.getDebugPoints();
-  if(pointArray.size() > 0) {
-    const double  u = surface.getParam().m_cellSize / 8;
-    const Point3D e1(u,0,0),e2(0,u,0),e3(0,0,u);
-    CompactArray<Line> lines;
-    for(size_t i = 0; i < pointArray.size(); i++) {
-      const Point3D &p = pointArray[i];
-      lines.add(Line(p-e1,p+e1));
-      lines.add(Line(p-e2,p+e2));
-      lines.add(Line(p-e3,p+e3));
-    }
-    m_debugLines = new D3LineArray(m_scene, lines.getBuffer(), (int)lines.size());
-  }
-}
-
-D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene, const IsoSurfaceParameters &param) {
-  IsoSurface surface(param);
-  surface.createData();
-  LPD3DXMESH mesh = surface.getMeshbuilder().createMesh(scene.getDevice(), param.m_doubleSided);
-  IsoSurfaceDebugObject *object = new IsoSurfaceDebugObject(scene, mesh);
-  object->createDebugLines(surface);
-  return object;
 }
 
 LPD3DXMESH createMesh(DIRECT3DDEVICE device, IsoSurface &surface) {

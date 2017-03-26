@@ -2,7 +2,7 @@
 
 #include <NumberInterval.h>
 #include <Math/Rectangle2D.h>
-#include "PersistentParameter.h"
+#include <D3DGraphics/PersistentParameter.h>
 
 class IsoCurveParameters : public PersistentParameter {
 public:

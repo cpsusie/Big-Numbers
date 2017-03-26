@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "pch.h"
+#include <D3DGraphics/MeshArray.h>
 
 MeshArray &MeshArray::operator=(const MeshArray &src) {
   clear((int)src.getCapacity());

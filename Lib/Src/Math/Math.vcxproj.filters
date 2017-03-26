@@ -322,6 +322,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Expression\ExpressionWrapper.cpp">
+      <Filter>Source Files\Expression</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -486,6 +489,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Include\Math\RungekuttaFehlBerg.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\Math\Expression\ExpressionWrapper.h">
+      <Filter>Header Files\Expression</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
