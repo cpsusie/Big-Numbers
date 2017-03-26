@@ -64,7 +64,7 @@ Point3D ExprParametricSurface::operator()(const Point2D &ts) {
   return Point3D(m_exprX.evaluate(), m_exprY.evaluate(), m_exprZ.evaluate());
 }
 
-LPD3DXMESH createMeshFromParametricSurface(DIRECT3DDEVICE device, ParametricSurface &sf, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
+LPD3DXMESH createMeshFromParametricSurface(LPDIRECT3DDEVICE device, ParametricSurface &sf, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
   nt = max(nt, 2);
   ns = max(ns, 2);
 
@@ -95,7 +95,7 @@ LPD3DXMESH createMeshFromParametricSurface(DIRECT3DDEVICE device, ParametricSurf
   return mb.createMesh(device, doubleSided);
 }
 
-LPD3DXMESH createMesh(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
@@ -105,15 +105,15 @@ LPD3DXMESH createMesh(DIRECT3DDEVICE device, const ParametricSurfaceParameters &
 
 class VariableParametricSurfaceMeshCreator : public VariableMeshCreator {
 private:
-  DIRECT3DDEVICE                    m_device;
+  LPDIRECT3DDEVICE                   m_device;
   const ParametricSurfaceParameters &m_param;
   mutable ExprParametricSurface      m_ps;
 public:
-  VariableParametricSurfaceMeshCreator(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
+  VariableParametricSurfaceMeshCreator(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
   LPD3DXMESH createMesh(double time) const;
 };
 
-VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
+VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
 : m_device(device)
 , m_param(param)
 , m_ps(param)
@@ -134,10 +134,10 @@ LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time) const {
 
 class ParametricSurfaceMeshArrayJobParameter : public MeshArrayJobParameter {
 private:
-  DIRECT3DDEVICE                    m_device;
+  LPDIRECT3DDEVICE                   m_device;
   const ParametricSurfaceParameters &m_param;
 public:
-  ParametricSurfaceMeshArrayJobParameter(DIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
+  ParametricSurfaceMeshArrayJobParameter(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
     : m_device(device)
     , m_param(param)
   {
@@ -153,7 +153,7 @@ public:
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }

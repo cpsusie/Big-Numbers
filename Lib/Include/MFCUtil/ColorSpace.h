@@ -134,3 +134,9 @@ public:
   CIEXYZ1931Color getCIEXYZ1931Color(const CIEXYZ1931Color &white) const;
   String toString() const;
 };
+
+#define WHITE D3DCOLOR_XRGB(255, 255, 255)
+#define BLACK D3DCOLOR_XRGB(0  , 0  , 0  )
+#define RED   D3DCOLOR_XRGB(255, 0  , 0  )
+#define GREEN D3DCOLOR_XRGB(0  , 255, 0  )
+#define BLUE  D3DCOLOR_XRGB(0  , 0  , 255)

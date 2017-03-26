@@ -6,6 +6,7 @@
 #include <Date.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
+#include <MFCUtil/PixRect.h>
 #include "MeshArray.h"
 
 class D3SceneObject;
@@ -31,15 +32,6 @@ typedef enum {
  ,SP_ANIMATIONFRAMEINDEX
 } D3SceneProperty;
 
-#define MATERIAL       D3DMATERIAL9
-
-#define RGB_GETRED(d3c)      ((BYTE)((d3c)>>16))
-#define RGB_GETGREEN(d3c)    ((BYTE)(((WORD)(d3c)) >> 8))
-#define RGB_GETBLUE( d3c)    ((BYTE)(d3c))
-
-#define D3DCOLOR2COLORREF(c) RGB(RGB_GETRED(c), RGB_GETGREEN(c), RGB_GETBLUE(c))
-#define COLORREF2D3DCOLOR(c) D3DCOLOR_XRGB(GetRValue(c), GetGValue(c), GetBValue(c))
-
 D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 
 #define D3D_BLACK  D3DCOLOR_XRGB(  0,  0,  0)
@@ -51,11 +43,11 @@ D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
 
-inline bool operator==(const MATERIAL &m1, const MATERIAL &m2) {
-  return memcmp(&m1, &m2, sizeof(MATERIAL)) == 0;
+inline bool operator==(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
+  return memcmp(&m1, &m2, sizeof(D3DMATERIAL)) == 0;
 }
 
-inline bool operator!=(const MATERIAL &m1, const MATERIAL &m2) {
+inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
   return !(m1 == m2);
 }
 
@@ -110,7 +102,7 @@ public:
 };
 
 String toString(const LIGHT          &light     );
-String toString(const MATERIAL       &material  );
+String toString(const D3DMATERIAL    &material  );
 String toString(      D3DFORMAT       f         );
 int    formatToSize(  D3DFORMAT       f         );
 String toString(      D3DPOOL         pool      );
@@ -133,9 +125,9 @@ private:
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
 
-  static MATERIAL getDefaultMaterial();
+  static D3DMATERIAL getDefaultMaterial();
   HWND                              m_hwnd;
-  DIRECT3DDEVICE                    m_device;
+  LPDIRECT3DDEVICE                  m_device;
   D3DFILLMODE                       m_fillMode;
   D3DSHADEMODE                      m_shadeMode;
   D3DCOLOR                          m_backgroundColor;
@@ -143,7 +135,7 @@ private:
   static int                        m_textureCoordCount;
   BitSet                           *m_lightsEnabled;
   BitSet                           *m_lightsDefined;
-  MATERIAL                          m_material;
+  D3DMATERIAL                       m_material;
   CompactArray<D3SceneObject*>      m_objectArray;
   int                               m_oldObjectCount;
   D3PosDirUpScale                   m_cameraPDUS, m_objectPDUS;
@@ -182,7 +174,7 @@ public:
   HWND getHwnd() {
     return m_hwnd;
   }
-  DIRECT3DDEVICE getDevice() const {
+  LPDIRECT3DDEVICE getDevice() const {
     return m_device;
   }
   void addSceneObject(   D3SceneObject *obj);
@@ -238,9 +230,9 @@ public:
   D3DXVECTOR3 getCameraRight() const {
     return m_cameraPDUS.getRight();
   }
-  void setCameraPos(const D3DXVECTOR3 &pos);
+  void setCameraPos(        const D3DXVECTOR3 &pos);
   void setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  void setCameraLookAt(const D3DXVECTOR3 &point);
+  void setCameraLookAt(     const D3DXVECTOR3 &point);
   String getCameraString() const {
     return format(_T("Cam:(%s)"), m_cameraPDUS.toString().cstr());
   }
@@ -262,14 +254,14 @@ public:
   void enableSpecular(bool enabled);
   bool isSpecularEnabled() const;
 
-  void setLightDirection(          UINT index, const D3DXVECTOR3 &dir);
-  void setLightPosition(           UINT index, const D3DXVECTOR3 &pos);
+  void   setLightDirection(        UINT index, const D3DXVECTOR3 &dir);
+  void   setLightPosition(         UINT index, const D3DXVECTOR3 &pos);
   String getLightString(           UINT index) const;
   String getLightString() const;
 
-  LIGHT getDefaultLightParam(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
-  void setLightParam(              const LIGHT &param);
-  LIGHT getLightParam(             UINT index) const;
+  LIGHT  getDefaultLightParam(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
+  void   setLightParam(            const LIGHT &param);
+  LIGHT  getLightParam(            UINT index) const;
   inline D3DLIGHTTYPE getLightType(UINT index) const {
     return getLightParam(index).Type;
   }
@@ -291,7 +283,7 @@ public:
     return *m_lightsEnabled;
   }
   BitSet getLightsVisible() const;
-  void setLightControlVisible(     UINT index, bool visible);
+  void setLightControlVisible(UINT index, bool visible);
 
   inline int getMaxLightCount() const {
     return m_maxLightCount;
@@ -303,10 +295,10 @@ public:
     return (int)m_lightsEnabled->size();
   }
 
-  const MATERIAL &getMaterial() const {
+  const D3DMATERIAL &getMaterial() const {
     return m_material;
   }
-  void setMaterial(const MATERIAL &material);
+  void setMaterial(const D3DMATERIAL &material);
   String getMaterialString() const;
 
   void setBackgroundColor(D3DCOLOR color);
@@ -325,18 +317,18 @@ public:
   void load(ByteInputStream  &s);
 };
 
-LPD3DXMESH     createMeshFromVertexFile(   DIRECT3DDEVICE device, const String &fileName, bool doubleSided);
-LPD3DXMESH     createMeshFromObjFile(      DIRECT3DDEVICE device, const String &fileName, bool doubleSided);
-//LPD3DXMESH     createMeshMarchingCube(     DIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
+LPD3DXMESH     createMeshFromVertexFile(   LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
+LPD3DXMESH     createMeshFromObjFile(      LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
+//LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 
-LPDIRECT3DTEXTURE9 loadTextureFromFile(     LPDIRECT3DDEVICE9 device, const String &fileName);
-LPDIRECT3DTEXTURE9 loadTextureFromResource( LPDIRECT3DDEVICE9 device, int resId, const String &typeName);
-LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray &ba);
-LPDIRECT3DTEXTURE9 getTextureFromBitmap(    LPDIRECT3DDEVICE9 device, HBITMAP bm);
+LPDIRECT3DTEXTURE loadTextureFromFile(     LPDIRECT3DDEVICE device, const String &fileName);
+LPDIRECT3DTEXTURE loadTextureFromResource( LPDIRECT3DDEVICE device, int resId, const String &typeName);
+LPDIRECT3DTEXTURE loadTextureFromByteArray(LPDIRECT3DDEVICE device, ByteArray &ba);
+LPDIRECT3DTEXTURE getTextureFromBitmap(    LPDIRECT3DDEVICE device, HBITMAP bm);
 
 void dumpMesh(LPD3DXMESH mesh, const String &fileName=EMPTYSTRING);
-void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f);
-void dumpIndexBuffer( LPDIRECT3DINDEXBUFFER9  indexBuffer , FILE *f);
+void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER vertexBuffer, FILE *f);
+void dumpIndexBuffer( LPDIRECT3DINDEXBUFFER  indexBuffer , FILE *f);
 
 #define USE_SCENEMATERIAL  0x0001
 #define USE_SCENEFILLMODE  0x0002
@@ -350,7 +342,7 @@ protected:
   String   m_name;
   bool     m_visible;
   void    *m_userData;
-  DIRECT3DDEVICE getDevice() const {
+  LPDIRECT3DDEVICE getDevice() const {
     return m_scene.m_device;
   }
 public:
@@ -422,10 +414,10 @@ public:
 
 class SceneObjectWithVertexBuffer : public D3SceneObject {
 protected:
-  int                     m_primitiveCount;
-  DWORD                   m_fvf;
-  int                     m_vertexSize;
-  LPDIRECT3DVERTEXBUFFER9 m_vertexBuffer;
+  int                    m_primitiveCount;
+  DWORD                  m_fvf;
+  int                    m_vertexSize;
+  LPDIRECT3DVERTEXBUFFER m_vertexBuffer;
   void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
   void unlockVertexBuffer();
   void prepareDraw(UINT flags = USE_SCENEPARAMS);
@@ -433,14 +425,14 @@ public:
   SceneObjectWithVertexBuffer(D3Scene &scene);
   ~SceneObjectWithVertexBuffer();
 
-  inline LPDIRECT3DVERTEXBUFFER9 &getVertexBuffer() {
+  inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
     return m_vertexBuffer;
   }
 };
 
 class SceneObjectWithIndexBuffer : public SceneObjectWithVertexBuffer {
 protected:
-  LPDIRECT3DINDEXBUFFER9 m_indexBuffer;
+  LPDIRECT3DINDEXBUFFER m_indexBuffer;
   void *allocateIndexBuffer(bool int32, int count);
   void unlockIndexBuffer();
   void prepareDraw(UINT flags = USE_SCENEPARAMS);
@@ -519,8 +511,8 @@ public:
 
 class D3LineArrow : public SceneObjectWithVertexBuffer {
 private:
-  D3DCOLOR m_color;
-  MATERIAL getMaterial() const;
+  D3DCOLOR    m_color;
+  D3DMATERIAL getMaterial() const;
 public:
   D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color = 0);
   void setColor(D3DCOLOR color);

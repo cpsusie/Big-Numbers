@@ -45,7 +45,7 @@ static CSize getTextureSize(LPDIRECT3DTEXTURE9 texture) {
   return sz;
 }
 
-static void set2DProjection(LPDIRECT3DDEVICE9 device, const CSize &winSize) {
+static void set2DProjection(LPDIRECT3DDEVICE device, const CSize &winSize) {
   D3DMATRIX matProj;
   memset(&matProj, 0, sizeof(D3DMATRIX));
   const float app_scale_x = 1, app_scale_y = 1;
@@ -69,11 +69,11 @@ static D3DXMATRIX create2DRotationWorld(const D3DXVECTOR2 &center, double rad) {
   return *D3DXMatrixAffineTransformation2D(&m, 1, &center, (float)rad, NULL);
 }
 
-static void setWorldMatrix(LPDIRECT3DDEVICE9 device, const D3DXMATRIX &m) {
+static void setWorldMatrix(LPDIRECT3DDEVICE device, const D3DXMATRIX &m) {
   V(device->SetTransform(D3DTS_WORLD, &m));
 }
 
-static void alphaBlend(LPDIRECT3DDEVICE9 device, LPDIRECT3DTEXTURE9 texture, const CRect &dstRect) {
+static void alphaBlend(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CRect &dstRect) {
   const CPoint topLeft     = dstRect.TopLeft();
   const CSize  size        = dstRect.Size();
   const CSize  textureSize = getTextureSize(texture);
@@ -110,7 +110,7 @@ static void alphaBlend(LPDIRECT3DDEVICE9 device, LPDIRECT3DTEXTURE9 texture, con
   V(device->DrawPrimitiveUP(D3DPT_TRIANGLEFAN, 2, p, sizeof(BlendVertex)));
 }
 
-static void render(LPDIRECT3DDEVICE9 device, LPDIRECT3DTEXTURE9 texture, const CSize &bmSize, HBITMAP result, const CSize &trSize) {
+static void render(LPDIRECT3DDEVICE device, LPDIRECT3DTEXTURE texture, const CSize &bmSize, HBITMAP result, const CSize &trSize) {
   unsigned long clearColor = 0xffffffff;
   V(device->Clear(0, NULL, D3DCLEAR_TARGET, clearColor, 1.0f, 0));
 
@@ -157,7 +157,7 @@ static Rectangle2D getTransformedRectangle(const D3DXMATRIX &m, const CSize bmSi
   return trCorners.getBoundingBox();
 }
 
-HBITMAP rotateBitmap(LPDIRECT3DDEVICE9 device, HBITMAP bm, double degree) {
+HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
   const BITMAP      bmInfo          = getBitmapInfo(bm);
   const CSize       bmSize          = CSize(bmInfo.bmWidth, bmInfo.bmHeight);
   const D3DXVECTOR2 rotCenter       = D3DXVECTOR2((float)bmSize.cx/2, (float)bmSize.cy/2);
@@ -195,7 +195,7 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE9 device, HBITMAP bm, double degree) {
 
   setWorldMatrix(device, worldMatrix);
 
-  LPDIRECT3DTEXTURE9 texture = getTextureFromBitmap(device, bm);
+  LPDIRECT3DTEXTURE texture = getTextureFromBitmap(device, bm);
   render(device, texture, bmSize, result, trSize);
   texture->Release();
 

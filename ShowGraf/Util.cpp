@@ -94,9 +94,9 @@ CFont *scaleFont(CFont *src, double scale) {
 }
 
 COLORREF randomColor() {
-  int c1 = rand() % 256;
-  int c2 = 255 - c1;
-  int c3 = (c1+c2)/2;
-  return rand()%2==0?RGB(c1,c2,c3):RGB(c1,c3,c2);
+  const int c1 = randInt(256);
+  const int c2 = 255 - c1;
+  const int c3 = (c1+c2)/2;
+  return (randInt(2)==0)?RGB(c1,c2,c3):RGB(c1,c3,c2);
 }
 

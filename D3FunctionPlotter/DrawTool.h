@@ -40,9 +40,9 @@ typedef enum {
 
 void              createBitmapCache(HWND hwnd);
 void              destroyBitmapCache();
-LPDIRECT3DDEVICE9 getBitmapCacheDevice();
+LPDIRECT3DDEVICE  getBitmapCacheDevice();
 CBitmap          *getBitmap(int id, int degree);
-HBITMAP           rotateBitmap(LPDIRECT3DDEVICE9 device, HBITMAP bm, double degree);
+HBITMAP           rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree);
 
 class RectMark : public CRect { // screen rect
 public:
@@ -219,9 +219,9 @@ private:
   void startDragRect();
   void redrawDragRect(const CPoint &point);
   void endDragRect();
-  ProfilePolygon *findNearestPolygon(const CPoint &p);
-  Point2D         *findNearestPoint(  const CPoint &p);
-  void moveSelectedPoints(  const Point2D &dp);
+  ProfilePolygon *findNearestPolygon(const CPoint  &p);
+  Point2D        *findNearestPoint(  const CPoint  &p);
+  void            moveSelectedPoints(const Point2D &dp);
   CPoint               m_lastMousePoint;
   CPoint               m_mouseDownPoint;
   CRect                m_dragRect;

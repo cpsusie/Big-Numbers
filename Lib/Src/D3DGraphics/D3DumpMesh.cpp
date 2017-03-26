@@ -6,8 +6,8 @@ DECLARE_THISFILE;
 // -----------------------------------------------------------------------------------------------------------
 
 void dumpMesh(LPD3DXMESH mesh, const String &fileName) {
-  LPDIRECT3DVERTEXBUFFER9 vertexBuffer;
-  LPDIRECT3DINDEXBUFFER9  indexBuffer;
+  LPDIRECT3DVERTEXBUFFER vertexBuffer;
+  LPDIRECT3DINDEXBUFFER  indexBuffer;
 
   V(mesh->GetVertexBuffer(&vertexBuffer));
   V(mesh->GetIndexBuffer( &indexBuffer ));
@@ -27,7 +27,7 @@ void dumpMesh(LPD3DXMESH mesh, const String &fileName) {
   vertexBuffer->Release();
 }
 
-void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f) {
+void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER vertexBuffer, FILE *f) {
   D3DVERTEXBUFFER_DESC desc;
   V(vertexBuffer->GetDesc(&desc));
   const int itemSize = FVFToSize(desc.FVF);
@@ -49,7 +49,7 @@ void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER9 vertexBuffer, FILE *f) {
   V(vertexBuffer->Unlock());
 }
 
-void dumpIndexBuffer(LPDIRECT3DINDEXBUFFER9 indexBuffer, FILE *f) {
+void dumpIndexBuffer(LPDIRECT3DINDEXBUFFER indexBuffer, FILE *f) {
   D3DINDEXBUFFER_DESC desc;
   V(indexBuffer->GetDesc(&desc));
   const int itemSize  = formatToSize(desc.Format);

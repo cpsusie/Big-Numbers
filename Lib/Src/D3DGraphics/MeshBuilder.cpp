@@ -170,7 +170,7 @@ private:
     return D3DXMESH_SYSTEMMEM | ((sizeof(IndexType) == sizeof(long)) ? D3DXMESH_32BIT : 0);
   }
 
-  LPD3DXMESH createMesh1NormalPerVertex(DIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMesh1NormalPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
     const Array<Face> &faceArray         = m_mb.getFaceArray();
     const VertexArray &vertexArray       = m_mb.getVertexArray();
     const VertexArray &normalArray       = m_mb.getNormalArray();
@@ -244,7 +244,7 @@ private:
     }
   }
 
-  LPD3DXMESH createMeshManyNormalsPerVertex(DIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMeshManyNormalsPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
     const Array<Face> &faceArray         = m_mb.getFaceArray();
     const VertexArray &vertexArray       = m_mb.getVertexArray();
     const VertexArray &normalArray       = m_mb.getNormalArray();
@@ -322,7 +322,7 @@ public:
   MeshCreator(const MeshBuilder *mb) : m_mb(*mb) {
   }
 
-  LPD3DXMESH createMesh(DIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
     if(m_mb.has1NormalPerVertex()) {
       return createMesh1NormalPerVertex(device, doubleSided);
     } else {
@@ -471,7 +471,7 @@ void MeshBuilder::pruneUnused() {
 #endif
 }
 
-LPD3DXMESH MeshBuilder::createMesh(DIRECT3DDEVICE device, bool doubleSided) const {
+LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
   if(!isOk()) {
     throwException(_T("MeshBuilder inconsistent"));
   }

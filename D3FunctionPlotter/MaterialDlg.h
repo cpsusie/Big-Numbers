@@ -3,13 +3,13 @@
 #include "ColormapDialog.h"
 #include "colormap.h"
 
-class CMaterialDlg : public CColormapDialog<MATERIAL> {
+class CMaterialDlg : public CColormapDialog<D3DMATERIAL> {
 private:
   D3Scene &m_scene;
   String   m_origName;
 
   void   resetControls();
-  void   valueToWindow(const MATERIAL &v);
+  void   valueToWindow(const D3DMATERIAL &v);
   void   showPower(double v);
   void   setSliderPower(double v);
   float  getSliderPower() const;

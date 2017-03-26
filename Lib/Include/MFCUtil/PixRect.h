@@ -1,21 +1,12 @@
 #pragma once
 
 #include "WinTools.h"
-#include <D3D9.h>
-#include <D3DX9.h>
+#include "D3DeviceFactory.h"
 #include <vfw.h>
 #include "Point2DP.h"
+#include "PolygonCurve.h"
 #include "ShapeFunctions.h"
 #include "ColorSpace.h"
-
-#define WHITE D3DCOLOR_XRGB(255, 255, 255)
-#define BLACK D3DCOLOR_XRGB(0, 0, 0)
-
-typedef LPDIRECT3D9        LPDIRECT3D;
-typedef LPDIRECT3DDEVICE9  LPDIRECT3DDEVICE;
-typedef LPDIRECT3DTEXTURE9 LPDIRECT3DTEXTURE;
-typedef LPDIRECT3DSURFACE9 LPDIRECT3DSURFACE;
-typedef D3DCAPS9           D3DCAPS;
 
 class PixRect;
 class PixRectFont;
@@ -245,12 +236,6 @@ typedef enum {
 
 class PixRectDevice {
 private:
-  static LPDIRECT3D  s_direct3d;
-
-  static void initialize();
-  static void uninitialize();
-  friend class InitDirectX;
-
   LPDIRECT3DDEVICE   m_device;
   LPDIRECT3DSURFACE  m_renderTarget;
   D3DFORMAT          m_defaultPixelFormat; // same format as the screen
@@ -516,31 +501,6 @@ public:
   friend bool operator!=(const PixRect &p1, const PixRect &p2);
 };
 
-class PolygonCurve {
-private:
-  short          m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
-  Point2DArray   m_points;
-public:
-  void addPoint(const Point2D &p) {
-    m_points.add(p);
-  }
-
-  PolygonCurve(short type) {
-    m_type = type;
-  }
-
-  Rectangle2D getBoundingBox() const;
-  inline const Point2DArray &getAllPoints() const {
-    return m_points;
-  }
-  void move(const Point2D &dp);
-  inline short getType() const {
-    return m_type;
-  }
-  String toString() const;
-  String toXML();
-};
-
 class GlyphPolygon {
 public:
   Point2D             m_start;
@@ -626,13 +586,3 @@ public:
 void applyToGlyphPolygon(const GlyphPolygon   &glyphPolygon, CurveOperator &op);
 void applyToGlyph(       const GlyphCurveData &glyphCurve  , CurveOperator &op);
 void applyToText(        const String         &text        , const PixRectFont &font, TextOperator &op);
-
-#define DIRECTXROOTPATH  "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/"
-#if defined _M_IX86
-#define DIRECTXLIB DIRECTXROOTPATH "x86/"
-#elif defined _M_X64
-#define DIRECTXLIB DIRECTXROOTPATH "x64/"
-#endif
-
-#pragma comment(lib, DIRECTXLIB "d3d9.lib")
-#pragma comment(lib, DIRECTXLIB "d3dx9.lib")

@@ -58,9 +58,9 @@ D3DXMATRIX D3LightControl::createWorldMatrix(const D3DVECTOR &pos, const D3DVECT
   return pdus.getWorldMatrix();
 }
 
-MATERIAL D3LightControl::getMaterial() const {
-  MATERIAL mat;
-  ZeroMemory(&mat, sizeof(MATERIAL));
+D3DMATERIAL D3LightControl::getMaterial() const {
+  D3DMATERIAL mat;
+  ZeroMemory(&mat, sizeof(D3DMATERIAL));
   D3DCOLORVALUE color = getColor();
   mat.Diffuse  = color;
   mat.Specular = color;

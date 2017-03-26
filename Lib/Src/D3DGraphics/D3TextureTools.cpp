@@ -1,9 +1,10 @@
 #include "pch.h"
+#include <D3DGraphics/D3Scene.h>
 
 DECLARE_THISFILE;
 
-LPDIRECT3DTEXTURE9 loadTextureFromFile(LPDIRECT3DDEVICE9 device, const String &fileName) {
-  LPDIRECT3DTEXTURE9 result;
+LPDIRECT3DTEXTURE loadTextureFromFile(LPDIRECT3DDEVICE device, const String &fileName) {
+  LPDIRECT3DTEXTURE result;
   V(D3DXCreateTextureFromFileEx( device
                                 ,fileName.cstr()
                                 ,D3DX_DEFAULT, D3DX_DEFAULT, 1
@@ -20,8 +21,8 @@ LPDIRECT3DTEXTURE9 loadTextureFromFile(LPDIRECT3DDEVICE9 device, const String &f
   return result;
 }
 
-LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray &ba) {
-  LPDIRECT3DTEXTURE9 result;
+LPDIRECT3DTEXTURE loadTextureFromByteArray(LPDIRECT3DDEVICE device, ByteArray &ba) {
+  LPDIRECT3DTEXTURE result;
   V(D3DXCreateTextureFromFileInMemoryEx(device
                                        ,ba.getData(), (UINT)ba.size()
                                        ,D3DX_DEFAULT, D3DX_DEFAULT, 1
@@ -37,13 +38,13 @@ LPDIRECT3DTEXTURE9 loadTextureFromByteArray(LPDIRECT3DDEVICE9 device, ByteArray 
   return result;
 }
 
-LPDIRECT3DTEXTURE9 loadTextureFromResource(LPDIRECT3DDEVICE9 device, int resId, const String &typeName) {
+LPDIRECT3DTEXTURE loadTextureFromResource(LPDIRECT3DDEVICE device, int resId, const String &typeName) {
   ByteArray tmp;
   tmp.loadFromResource(resId, typeName.cstr());
   return loadTextureFromByteArray(device, tmp);
 }
 
-LPDIRECT3DTEXTURE9 getTextureFromBitmap(LPDIRECT3DDEVICE9 device, HBITMAP bm) {
+LPDIRECT3DTEXTURE getTextureFromBitmap(LPDIRECT3DDEVICE device, HBITMAP bm) {
   ByteArray tmp;
   return loadTextureFromByteArray(device, bitmapToByteArray(tmp, bm));
 }

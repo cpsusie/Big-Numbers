@@ -42,12 +42,12 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
 
   if(hit && info != NULL) {
     info->m_faceIndex = faceIndex;
-    void  *indexItems;
-    LPDIRECT3DINDEXBUFFER9 indexBuffer;
+    void *indexItems;
+    LPDIRECT3DINDEXBUFFER indexBuffer;
     V(mesh->GetIndexBuffer(&indexBuffer));
     D3DINDEXBUFFER_DESC desc;
     V(indexBuffer->GetDesc(&desc));
-    const bool use32Bit = desc.Format == D3DFMT_INDEX32;;
+    const bool use32Bit = desc.Format == D3DFMT_INDEX32;
     V(indexBuffer->Lock(0,0,&indexItems, D3DLOCK_READONLY));
 
     const int vertex0Index = faceIndex * 3;
@@ -225,9 +225,9 @@ void D3LineArray::draw() {
 
 D3DCOLORVALUE colorToColorValue(D3DCOLOR c) {
   D3DCOLORVALUE result;
-  result.r = ((float)(RGB_GETRED(  c))) / (float)255.0;
-  result.g = ((float)(RGB_GETGREEN(c))) / (float)255.0;
-  result.b = ((float)(RGB_GETBLUE( c))) / (float)255.0;
+  result.r = ((float)(ARGB_GETRED(  c))) / (float)255.0;
+  result.g = ((float)(ARGB_GETGREEN(c))) / (float)255.0;
+  result.b = ((float)(ARGB_GETBLUE( c))) / (float)255.0;
   result.a = 1.0;
   return result;
 }
@@ -276,9 +276,9 @@ void D3LineArrow::setColor(D3DCOLOR color) {
   m_color = color;
 }
 
-MATERIAL D3LineArrow::getMaterial() const {
-  MATERIAL mat;
-  ZeroMemory(&mat, sizeof(MATERIAL));
+D3DMATERIAL D3LineArrow::getMaterial() const {
+  D3DMATERIAL mat;
+  ZeroMemory(&mat, sizeof(D3DMATERIAL));
   const D3DCOLORVALUE cv = colorToColorValue(m_color);
   mat.Diffuse  = cv;
 //  mat.Ambient  = cv;

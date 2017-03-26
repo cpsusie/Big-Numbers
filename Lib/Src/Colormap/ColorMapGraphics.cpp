@@ -224,9 +224,6 @@ void ColorMapGraphics::initBitmaps(CDC &dc) {
 #define MAPCROSSWIDTH  3
 #define MAPCURSORHALFSIZE (MAPCURSORSIZE/2)
 
-#define BLACK RGB(0,0,0)
-#define WHITE RGB(255,255,255)
-
   m_posBitmap.CreateBitmap(MAPCURSORSIZE,MAPCURSORSIZE,dc.GetDeviceCaps(PLANES),dc.GetDeviceCaps(BITSPIXEL),NULL);
   m_dc.SelectObject(m_posBitmap);
   CBrush blackBrush;

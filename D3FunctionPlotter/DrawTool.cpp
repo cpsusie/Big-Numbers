@@ -82,12 +82,6 @@ bool PolygonSet::pointOnMarkRect(const CPoint &p) {
 
 char infostr[400];
 
-#define RED   RGB(255,0,0)
-#define BLUE  RGB(0,0,200)
-#define WHITE RGB(255,255,255)
-#define BLACK RGB(0,0,0)
-
-
 DrawTool::DrawTool(ViewportContainer *container) : m_container(*container) {
   initState();
   m_blackBrush.CreateSolidBrush(0);

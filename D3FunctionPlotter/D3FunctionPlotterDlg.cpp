@@ -383,7 +383,7 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
   } else if(source == m_materialDlgThread->getPropertyContainer()) {
     switch(id) {
     case SP_MATERIALPARAMETERS:
-      m_scene.setMaterial(*(MATERIAL*)newValue);
+      m_scene.setMaterial(*(D3DMATERIAL*)newValue);
       break;
     }
   } else if(source == m_currentEditor) {
@@ -411,7 +411,7 @@ HCURSOR CD3FunctionPlotterDlg::OnQueryDragIcon() {
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters *param) {
-  DIRECT3DDEVICE device = m_scene.getDevice();
+  LPDIRECT3DDEVICE device = m_scene.getDevice();
   if(param->m_includeTime) {
     setCalculatedObject(new D3AnimatedSurface(m_scene, createMeshArray(this, device, *param)), param);
   } else {
@@ -425,7 +425,7 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 */
 
 void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *param) {
-  DIRECT3DDEVICE device = m_scene.getDevice();
+  LPDIRECT3DDEVICE device = m_scene.getDevice();
   if(param->m_includeTime) {
     setCalculatedObject(new D3AnimatedSurface(m_scene, createMeshArray(this, device, *param)), param);
   } else {
@@ -434,7 +434,7 @@ void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *par
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
-  DIRECT3DDEVICE device = m_scene.getDevice();
+  LPDIRECT3DDEVICE device = m_scene.getDevice();
 
 //  if(param->m_adaptiveCellSize) {
 //    setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshMarchingCube(device, *param)), param);
@@ -555,7 +555,7 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
                                             "Data files (*.dat)\0*.dat\0"
                                             "All files (*.*)\0*.*\0\0");
 
-    DIRECT3DDEVICE device = m_scene.getDevice();
+    LPDIRECT3DDEVICE device = m_scene.getDevice();
 
     CFileDialog dlg(TRUE);
     dlg.m_ofn.lpstrFilter = fileExtensions;
@@ -577,7 +577,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
     static const TCHAR *fileExtensions = _T("Obj files (*.obj)\0*.obj\0"
                                             "All files (*.*)\0*.*\0\0");
 
-    DIRECT3DDEVICE device = m_scene.getDevice();
+    LPDIRECT3DDEVICE device = m_scene.getDevice();
 
     CFileDialog dlg(TRUE);
     dlg.m_ofn.lpstrFilter = fileExtensions;

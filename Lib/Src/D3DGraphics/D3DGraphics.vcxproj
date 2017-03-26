@@ -251,7 +251,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D3AnimatedSurface.cpp" />
-    <ClCompile Include="D3DeviceFactory.cpp" />
     <ClCompile Include="D3DumpMesh.cpp" />
     <ClCompile Include="D3LightControl.cpp" />
     <ClCompile Include="D3LightControlDirectional.cpp" />
@@ -290,7 +289,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\D3DeviceFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />

@@ -17,5 +17,3 @@ CFont *scaleFont(CFont *src, double scale);
 COLORREF randomColor();
 
 void errorMessage(TCHAR *format,...);
-
-#define RED   RGB(255,0,0)

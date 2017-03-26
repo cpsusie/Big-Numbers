@@ -24,7 +24,7 @@ private:
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   virtual D3DCOLORVALUE getColor() const;
-  MATERIAL getMaterial() const;
+  D3DMATERIAL getMaterial() const;
 
 #ifdef USE_RENDEREFFECT
   void prepareEffect();

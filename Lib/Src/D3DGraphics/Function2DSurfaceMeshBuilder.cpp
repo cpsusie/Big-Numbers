@@ -27,7 +27,7 @@ Function2DPoint::Function2DPoint(Function2D &f, const Point2D &p) {
 }
 
 #ifdef __NEVER__
-static void findMax16BitMeshVertexCount(DIRECT3DDEVICE device) {
+static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
   unsigned int l = 100;
   unsigned int h = 0xfffff;
   while(l < h-1) {
@@ -45,7 +45,7 @@ static void findMax16BitMeshVertexCount(DIRECT3DDEVICE device) {
 }
 #endif
 
-LPD3DXMESH createMeshFrom2DFunction(DIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
+LPD3DXMESH createMeshFrom2DFunction(LPDIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
   nx = max(nx, 2);
   ny = max(ny, 2);
 
@@ -76,7 +76,7 @@ LPD3DXMESH createMeshFrom2DFunction(DIRECT3DDEVICE device, Function2D &f, const 
   return mb.createMesh(device, doubleSided);
 }
 
-LPD3DXMESH createMesh(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
@@ -86,15 +86,15 @@ LPD3DXMESH createMesh(DIRECT3DDEVICE device, const Function2DSurfaceParameters &
 
 class VariableFunction2DMeshCreator : public VariableMeshCreator {
 private:
-  DIRECT3DDEVICE                    m_device;
+  LPDIRECT3DDEVICE                   m_device;
   const Function2DSurfaceParameters &m_param;
-  mutable ExpressionWrapper         m_expr;
+  mutable ExpressionWrapper          m_expr;
 public:
-  VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
+  VariableFunction2DMeshCreator(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
   LPD3DXMESH createMesh(double time) const;
 };
 
-VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
+VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
 : m_device(device)
 , m_param(param)
 {
@@ -118,10 +118,10 @@ LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
 
 class Function2DMeshArrayJobParameter : public MeshArrayJobParameter {
 private:
-  DIRECT3DDEVICE                    m_device;
+  LPDIRECT3DDEVICE                   m_device;
   const Function2DSurfaceParameters &m_param;
 public:
-  Function2DMeshArrayJobParameter(DIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
+  Function2DMeshArrayJobParameter(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
     : m_device(device)
     , m_param(param)
   {
@@ -137,7 +137,7 @@ public:
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, DIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }

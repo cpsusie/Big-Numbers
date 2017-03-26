@@ -1,6 +1,7 @@
 #pragma once
 
 #include <MFCUtil/ShapeFunctions.h>
+#include <MFCUtil/PolygonCurve.h>
 
 class ProfileRotationParameters {
 public:
@@ -24,37 +25,8 @@ bool operator!=(const ProfileRotationParameters &p1, const ProfileRotationParame
 bool operator==(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
 bool operator!=(const ProfileStretchParameters  &p1, const ProfileStretchParameters  &p2);
 
-
 #define ROTATESMOOTH 1
 #define NORMALSMOOTH 2
-
-class PolygonCurve {
-private:
-  short          m_type; // TT_PRIM_LINE, TT_PRIM_QSPLINE or TT_PRIM_CSPLINE
-  Point2DArray   m_points;
-public:
-  inline PolygonCurve &addPoint(const Point2D &p) {
-    m_points.add(p); return *this;
-  }
-  inline PolygonCurve &addPoint(double x, double y) {
-    return addPoint(Point2D(x,y));
-  }
-
-  inline PolygonCurve(short type) {
-    m_type = type;
-  }
-
-  Rectangle2D getBoundingBox() const;
-  inline const Point2DArray &getAllPoints() const {
-    return m_points;
-  }
-  void move(const Point2D &dp);
-  inline short getType() const {
-    return m_type;
-  }
-  String toString() const;
-  String toXML();
-};
 
 class ProfileCurve {
 public:
@@ -73,14 +45,13 @@ public:
   inline ProfileCurve &addPoint(double x, double y) {
     return addPoint(Point2D(x,y));
   }
-
   inline Point2D &getLastPoint() {
     return m_points.last();
   }
-  const Point2D &getLastPoint() const {
+  inline const Point2D &getLastPoint() const {
     return m_points.last();
   }
-  bool isEmpty() const {
+  inline bool isEmpty() const {
     return m_points.isEmpty();
   }
   Rectangle2D getBoundingBox() const;

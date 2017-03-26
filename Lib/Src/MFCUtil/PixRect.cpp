@@ -2,11 +2,10 @@
 #include <Math.h>
 #include <float.h>
 #include <MFCUtil/PixRect.h>
+#include <MFCUtil/D3DeviceFactory.h>
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
-
-#pragma comment(lib,"d3d9.lib")
 
 #ifdef assert
 #undef assert
@@ -17,45 +16,6 @@
 #else
 #define assert(exp)
 #endif
-
-class InitDirectX {
-public:
-  InitDirectX();
-  ~InitDirectX();
-};
-
-InitDirectX::InitDirectX() {
-  PixRectDevice::initialize();
-}
-
-InitDirectX::~InitDirectX() {
-  PixRectDevice::uninitialize();
-}
-
-static InitDirectX initDirectX;
-
-LPDIRECT3D         PixRectDevice::s_direct3d = NULL;
-
-void PixRectDevice::initialize() { // static
-  try {
-    s_direct3d = Direct3DCreate9(D3D_SDK_VERSION);
-    if (s_direct3d == NULL) {
-      throwException(_T("%s. Failed to create Direct3D object"), __TFUNCTION__);
-    }
-//    CHECK3DRESULT(directDraw->SetCooperativeLevel(NULL, DDSCL_NORMAL));
-  } catch(Exception e) {
-    MessageBox(NULL, e.what(), _T("Error"), MB_OK|MB_ICONSTOP);
-    abort();
-  } catch(...) {
-    MessageBox(NULL, _T("Unknown exception"), _T("Error"), MB_OK|MB_ICONSTOP);
-    abort();
-  }
-}
-
-void PixRectDevice::uninitialize() { // static
-  s_direct3d->Release();
-  s_direct3d = NULL;
-}
 
 CSize getSurfaceSize(LPDIRECT3DSURFACE surface) {
   D3DSURFACE_DESC desc;
@@ -114,13 +74,7 @@ void PixRectDevice::attach(HWND hwnd, bool windowed, const CSize *size) {
   param.BackBufferHeight       = sz.cy;
   param.PresentationInterval   = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-  CHECK3DRESULT(s_direct3d->CreateDevice(
-                         D3DADAPTER_DEFAULT
-                        ,D3DDEVTYPE_HAL
-                        ,hwnd
-                        ,D3DCREATE_FPU_PRESERVE | D3DCREATE_SOFTWARE_VERTEXPROCESSING
-                        ,&param
-                        ,&m_device));
+  m_device = D3DeviceFactory::createDevice(hwnd, &param, D3DADAPTER_DEFAULT);
 
   D3DDISPLAYMODE displayMode;
   CHECK3DRESULT(m_device->GetDisplayMode(0, &displayMode));
@@ -202,28 +156,9 @@ void PixRectDevice::setRenderTarget(PixRect *renderTarget) {
   set2DTransform(renderTarget->getSize());
 }
 
-CompactArray<D3DDISPLAYMODE> PixRectDevice::getDisplayModes(UINT adapter) { // static
-  CompactArray<D3DDISPLAYMODE> result;
-  D3DDISPLAYMODE adapterMode;
-  CHECKRESULT(s_direct3d->GetAdapterDisplayMode(adapter, &adapterMode));
-  const UINT modeCount = s_direct3d->GetAdapterModeCount(adapter, adapterMode.Format);
-  for (UINT mode = 0; mode < modeCount; mode++) {
-    D3DDISPLAYMODE dp;
-    CHECKRESULT(s_direct3d->EnumAdapterModes(adapter, adapterMode.Format, mode, &dp));
-    result.add(dp);
-  };
-  return result;
-}
-
 bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter) const {
   const D3DDEVTYPE deviceType = getDeviceCaps().DeviceType;
-  const HRESULT    hr         = s_direct3d->CheckDeviceFormatConversion(adapter, deviceType, srcFormat, dstFormat);
-  switch (hr) {
-  case D3D_OK             : return true;
-  case D3DERR_NOTAVAILABLE: return false;
-  default                 : CHECKRESULT(hr);
-                            return false;
-  }
+  return D3DeviceFactory::supportFormatConversion(deviceType, srcFormat, dstFormat, adapter);
 }
 
 D3DCAPS9 PixRectDevice::getDeviceCaps() const {

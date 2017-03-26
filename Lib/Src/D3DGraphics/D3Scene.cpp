@@ -250,9 +250,9 @@ void LIGHT ::setOuterAngle(float rad) {
   }
 }
 
-MATERIAL D3Scene::getDefaultMaterial() { // static
-  MATERIAL material;
-  ZeroMemory(&material, sizeof(MATERIAL));
+D3DMATERIAL D3Scene::getDefaultMaterial() { // static
+  D3DMATERIAL material;
+  ZeroMemory(&material, sizeof(D3DMATERIAL));
   material.Ambient  = D3DXCOLOR(0.10f, 0.10f, 0.16f, 1.0f);
   material.Diffuse  = D3DXCOLOR(0.1f, 0.086f, 0.29f, 1.0f);
   material.Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
@@ -478,7 +478,7 @@ String toString(const LIGHT &light) {
   return "";
 }
 
-String toString(const MATERIAL  &material) {
+String toString(const D3DMATERIAL  &material) {
   return format(_T("Mat:Amb:%s, Dif:%s, Spec:%s Emi:%s, Pow:%.2f")
                ,toString(material.Ambient).cstr()
                ,toString(material.Diffuse).cstr()
@@ -490,14 +490,14 @@ String toString(const MATERIAL  &material) {
 
 String toString(D3PCOLOR c) {
   const D3DCOLOR cc = c;
-  return format(_T("R:%3d G:%dd B:%3d"), RGB_GETRED(cc), RGB_GETGREEN(cc), RGB_GETBLUE(cc));
+  return format(_T("R:%3d G:%dd B:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc));
 }
 
 String toString(const D3DCOLORVALUE &c) {
   return format(_T("R:%.2f G:%.2f B:%.2f"), c.r,c.g,c.b);
 }
 
-void D3Scene::setMaterial(const MATERIAL &material) {
+void D3Scene::setMaterial(const D3DMATERIAL &material) {
   setProperty(SP_MATERIALPARAMETERS, m_material, material);
 }
 

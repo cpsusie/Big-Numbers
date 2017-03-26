@@ -1,6 +1,6 @@
 #pragma once
 
-#include "D3DeviceFactory.h"
+#include <MFCUtil/D3DeviceFactory.h>
 
 class VertexNormalTextureIndex {
 public:
@@ -147,7 +147,7 @@ public:
   void optimize();
 */
 
-  LPD3DXMESH createMesh(DIRECT3DDEVICE device, bool doubleSided) const;
+  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
   void dump(const String &fileName = "") const;
 };

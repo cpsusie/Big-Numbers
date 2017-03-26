@@ -6,7 +6,7 @@
 #endif
 
 CMaterialDlg::CMaterialDlg(D3Scene &scene, PropertyChangeListener *listener) 
-: CColormapDialog<MATERIAL>(CMaterialDlg::IDD, SP_MATERIALPARAMETERS, NULL)
+: CColormapDialog<D3DMATERIAL>(CMaterialDlg::IDD, SP_MATERIALPARAMETERS, NULL)
 , m_scene(scene)
 {
   if(listener) {
@@ -45,14 +45,14 @@ LRESULT CMaterialDlg::OnMsgResetControls(WPARAM wp, LPARAM lp) {
 void CMaterialDlg::resetControls() {
   setNotifyEnabled(false);
 
-  const MATERIAL &v = getStartValue();
+  const D3DMATERIAL &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 
   setNotifyEnabled(true);
 }
 
-void CMaterialDlg::valueToWindow(const MATERIAL &v) {
+void CMaterialDlg::valueToWindow(const D3DMATERIAL &v) {
   setSliderPower(v.Power);
   setD3DCOLORVALUE(IDC_COLORMAP_AMBIENT , v.Ambient );
   setD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE , v.Diffuse );
@@ -61,7 +61,7 @@ void CMaterialDlg::valueToWindow(const MATERIAL &v) {
 }
 
 void CMaterialDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
-  MATERIAL v = getCurrentValue();
+  D3DMATERIAL v = getCurrentValue();
   v.Power = getSliderPower();
   setCurrentValue(v);
   showPower(v.Power);
@@ -95,7 +95,7 @@ void CMaterialDlg::OnClose() {
 }
 
 void CMaterialDlg::OnCancel() {
-  const MATERIAL &v = getStartValue();
+  const D3DMATERIAL &v = getStartValue();
   setCurrentValue(v);
   valueToWindow(v);
 }
@@ -109,27 +109,27 @@ END_EVENTSINK_MAP()
 
 
 void CMaterialDlg::OnColorchangedColormapAmbient(){
-  MATERIAL v = getCurrentValue();
+  D3DMATERIAL v = getCurrentValue();
   v.Ambient = getD3DCOLORVALUE(IDC_COLORMAP_AMBIENT);
   setCurrentValue(v);
 }
 
 
 void CMaterialDlg::OnColorchangedColormapDiffuse() {
-  MATERIAL v = getCurrentValue();
+  D3DMATERIAL v = getCurrentValue();
   v.Diffuse = getD3DCOLORVALUE(IDC_COLORMAP_DIFFUSE);
   setCurrentValue(v);
 }
 
 void CMaterialDlg::OnColorchangedColormapSpecular() {
-  MATERIAL v = getCurrentValue();
+  D3DMATERIAL v = getCurrentValue();
   v.Specular = getD3DCOLORVALUE(IDC_COLORMAP_SPECULAR);
   setCurrentValue(v);
 }
 
 
 void CMaterialDlg::OnColorchangedColormapEmissive() {
-  MATERIAL v = getCurrentValue();
+  D3DMATERIAL v = getCurrentValue();
   v.Emissive = getD3DCOLORVALUE(IDC_COLORMAP_EMISSIVE);
   setCurrentValue(v);
 }

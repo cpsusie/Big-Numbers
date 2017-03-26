@@ -19,14 +19,14 @@ public:
 
 class BitmapCache : public CompactHashMap<BitmapKey,CBitmap*> {
 private:
-  HWND              m_hwnd;
-  LPDIRECT3DDEVICE9 m_device;
+  HWND             m_hwnd;
+  LPDIRECT3DDEVICE m_device;
 
   D3DPRESENT_PARAMETERS getPresentParameters() const;
   void initDevice();
   void releaseDevice();
 public:
-  LPDIRECT3DDEVICE9 getDevice() {
+  LPDIRECT3DDEVICE getDevice() {
     return m_device;
   }
   BitmapCache(HWND hwnd);
@@ -81,7 +81,6 @@ BitmapCache::~BitmapCache() {
 }
 
 D3DPRESENT_PARAMETERS BitmapCache::getPresentParameters() const {
-
   D3DPRESENT_PARAMETERS param;
   ZeroMemory(&param, sizeof(param));
 
@@ -133,7 +132,7 @@ static CBitmap *cloneBitmap(CBitmap *bm) {
   return result;
 }
 
-static CBitmap *rotate(LPDIRECT3DDEVICE9 device, CBitmap *b0, double degree) {
+static CBitmap *rotate(LPDIRECT3DDEVICE device, CBitmap *b0, double degree) {
   HBITMAP bm = rotateBitmap(device, *b0, degree);
   CBitmap *result = createFromHandle(bm);
   DeleteObject(bm);
@@ -156,6 +155,6 @@ CBitmap *getBitmap(int id, int degree) {
   return *b;
 }
 
-LPDIRECT3DDEVICE9 getBitmapCacheDevice() {
+LPDIRECT3DDEVICE getBitmapCacheDevice() {
   return bitmapCache ? bitmapCache->getDevice() : NULL;
 }
