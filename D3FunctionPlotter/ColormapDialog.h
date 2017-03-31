@@ -2,6 +2,7 @@
 #include "colormap.h"
 #include <Hashmap.h>
 #include <Math/Transformation.h>
+#include <MFCUtil/ColorSpace.h>
 #include "PropertyDialog.h"
 
 #define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
