@@ -364,7 +364,7 @@ MeshBuilder Mesh::getMeshBuilder() const {
           mb.addVertex(*vertexp);
           mb.addNormal(normal);
         }
-        mbFace.addVertexAndNormalIndex(vertexIndex, vertexIndex);
+        mbFace.addVertexNormalIndex(vertexIndex, vertexIndex);
       }
     }
   }

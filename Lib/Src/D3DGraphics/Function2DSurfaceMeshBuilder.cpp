@@ -67,10 +67,10 @@ LPD3DXMESH createMeshFrom2DFunction(LPDIRECT3DDEVICE device, Function2D &f, cons
     ULONG index = (i-1)*ny;
     for(UINT j = 1; j < ny; j++, index++) {
       Face &face = mb.addFace();
-      face.addVertexAndNormalIndex(index     , index     ,-1);
-      face.addVertexAndNormalIndex(index+1   , index+1   ,-1);
-      face.addVertexAndNormalIndex(index+1+ny, index+1+ny,-1);
-      face.addVertexAndNormalIndex(index  +ny, index  +ny,-1);
+      face.addVertexNormalIndex(index     , index     );
+      face.addVertexNormalIndex(index+1   , index+1   );
+      face.addVertexNormalIndex(index+1+ny, index+1+ny);
+      face.addVertexNormalIndex(index  +ny, index  +ny);
     }
   }
   return mb.createMesh(device, doubleSided);

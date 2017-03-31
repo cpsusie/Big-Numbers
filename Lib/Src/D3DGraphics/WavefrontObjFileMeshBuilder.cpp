@@ -99,15 +99,15 @@ void MeshBuilder::parseWavefrontObjFile(FILE *f) {
             if (v < 0) adjustNegativeVertexIndex( v); else v--;
             if (t < 0) adjustNegativeTextureIndex(t); else t--;
             if (n < 0) adjustNegativeNormalIndex( n); else n--;
-            f.addVertexAndNormalIndex(v,n,t);
+            f.addVertexNormalTextureIndex(v,n,t);
           } else if(_stscanf(s.cstr(), _T("%d//%d"), &v, &n) == 2) {
             if (v < 0) adjustNegativeVertexIndex( v); else v--;
             if (n < 0) adjustNegativeNormalIndex( n); else n--;
-            f.addVertexAndNormalIndex(v,n,-1);
+            f.addVertexNormalIndex(v,n);
           } else if(_stscanf(s.cstr(), _T("%d/%d"), &v, &t) == 2) {
             if (v < 0) adjustNegativeVertexIndex( v); else v--;
             if (t < 0) adjustNegativeTextureIndex(t); else t--;
-            f.addVertexAndNormalIndex(v,-1,t);
+            f.addVertexTextureIndex(v,t);
           } else {
             throwException(_T("Invalid format for vertexData in line %d:<%s>"), lineCount, s.cstr());
           }

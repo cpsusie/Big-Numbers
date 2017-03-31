@@ -46,6 +46,7 @@ public:
   inline bool contains(const Cube3D &cube) const {
     return (m_lbn <= cube.m_lbn) && (cube.m_rtf <= m_rtf);
   }
+  inline Point3D getCenter() const {
+    return (m_lbn + m_rtf)/2.0;
+  }
 };
-
-#include "PragmaLib.h"

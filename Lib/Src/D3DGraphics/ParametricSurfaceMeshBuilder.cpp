@@ -86,10 +86,10 @@ LPD3DXMESH createMeshFromParametricSurface(LPDIRECT3DDEVICE device, ParametricSu
     UINT index = (i-1)*ns;
     for(UINT j = 1; j < ns; j++, index++) {
       Face &face = mb.addFace();
-      face.addVertexAndNormalIndex(index     , index     ,-1);
-      face.addVertexAndNormalIndex(index+1   , index+1   ,-1);
-      face.addVertexAndNormalIndex(index+1+ns, index+1+ns,-1);
-      face.addVertexAndNormalIndex(index  +ns, index  +ns,-1);
+      face.addVertexNormalIndex(index     , index     );
+      face.addVertexNormalIndex(index+1   , index+1   );
+      face.addVertexNormalIndex(index+1+ns, index+1+ns);
+      face.addVertexNormalIndex(index  +ns, index  +ns);
     }
   }
   return mb.createMesh(device, doubleSided);

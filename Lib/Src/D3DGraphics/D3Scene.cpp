@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3LightControl.h>
 
 DECLARE_THISFILE;
@@ -40,8 +41,8 @@ void D3Scene::init(HWND hwnd) {
 
   m_device = D3DeviceFactory::createDevice(m_hwnd);
 
-  D3DCAPS9 deviceCaps;
-  V(m_device-> GetDeviceCaps(&deviceCaps));
+  D3DCAPS deviceCaps;
+  V(m_device->GetDeviceCaps(&deviceCaps));
 
   m_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
   m_maxLightCount     = deviceCaps.MaxActiveLights;
@@ -536,7 +537,7 @@ void D3Scene::render() {
   setProperty(SP_RENDERTIME, m_renderTime, Timestamp());
 }
 
-D3Ray D3Scene::getPickRay(const CPoint &point) {
+D3Ray D3Scene::getPickRay(const CPoint &point) const {
   const CSize winSize = getClientRect(m_hwnd).Size();
 
   const D3DXMATRIX matProj = getProjMatrix();
@@ -551,9 +552,9 @@ D3Ray D3Scene::getPickRay(const CPoint &point) {
   return D3Ray(camWorld*v, v*camWorld);
 }
 
-D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECTOR3 *hitPoint, D3PickedInfo *info) {
-  const D3Ray ray = getPickRay(point);
-  float        minDist       = -1;
+D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECTOR3 *hitPoint, D3PickedInfo *info) const {
+  const D3Ray    ray           = getPickRay(point);
+  float          minDist       = -1;
   D3SceneObject *closestObject = NULL;
   for(size_t i = 0; i < m_objectArray.size(); i++) {
     D3SceneObject *obj = m_objectArray[i];

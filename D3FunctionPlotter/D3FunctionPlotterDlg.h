@@ -25,9 +25,9 @@ typedef enum {
 
 class CD3FunctionPlotterDlg : public CDialog, public PropertyChangeListener {
 private:
-    HACCEL                     m_accelTable;
-    SimpleLayoutManager        m_layoutManager;
-    MemoryLogThread            m_memlogThread;
+    HACCEL                      m_accelTable;
+    SimpleLayoutManager         m_layoutManager;
+    MemoryLogThread             m_memlogThread;
 
     CPropertyDlgThread         *m_lightDlgThread, *m_materialDlgThread;
     D3Scene                     m_scene;

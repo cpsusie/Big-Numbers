@@ -387,6 +387,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\PixRect.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Point2DP.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PolygonCurve.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />

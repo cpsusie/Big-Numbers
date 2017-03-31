@@ -3,14 +3,6 @@
 #include <MFCUtil/Viewport2D.h>
 #include <MFCUtil/PixRect.h>
 
-#ifdef IS32BIT
-#define D3DX9DIR "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x86/"
-#else // IS64BIT
-#define D3DX9DIR "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/x64/"
-#endif
-
-#pragma comment(lib, D3DX9DIR "d3dx9.lib")
-
 class RotationData {
 public:
   const CRect  m_rect;

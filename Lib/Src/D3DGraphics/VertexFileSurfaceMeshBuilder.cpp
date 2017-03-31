@@ -126,9 +126,9 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
     for(int i = 0; i < faceCount; i++) {
       const Triangle &triangle = faceArray[i];
       Face           &face     = mb.addFace();
-      face.addVertexAndNormalIndex(triangle.v1, triangle.v1,-1);
-      face.addVertexAndNormalIndex(triangle.v2, triangle.v2,-1);
-      face.addVertexAndNormalIndex(triangle.v3, triangle.v3,-1);
+      face.addVertexNormalIndex(triangle.v1, triangle.v1);
+      face.addVertexNormalIndex(triangle.v2, triangle.v2);
+      face.addVertexNormalIndex(triangle.v3, triangle.v3);
     }
 
     UNLINK(nodeFileName);

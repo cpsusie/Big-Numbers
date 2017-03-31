@@ -118,19 +118,29 @@ int MeshBuilder::getIndexCount() const {
 }
 
 void MeshBuilder::validate() const {
-  m_validated  = true;
-  m_validateOk = false;
-  const int maxVertexIndex = (int)m_vertices.size()-1;
-  const int maxNormalIndex = (int)m_normals.size() -1;
-  for(size_t i = 0; i < m_faceArray.size(); i++) {
+  m_validated   = true;
+  m_validateOk  = false;
+
+  const int maxVertexIndex  = (int)m_vertices.size()           - 1;
+  const int maxNormalIndex  = (int)m_normals.size()            - 1;
+  const int maxTextureIndex = (int)m_textureVertexArray.size() - 1;
+  m_hasNormals  = maxNormalIndex  >= 0;
+  m_hasTextures = maxTextureIndex >= 0;
+  const size_t faceCount = m_faceArray.size();
+  for(size_t i = 0; i < faceCount; i++) {
     const CompactArray<VertexNormalTextureIndex> &indexArray = m_faceArray[i].getIndices();
-    for(size_t j = 0; j < indexArray.size(); j++) {
-      const VertexNormalTextureIndex &v = indexArray[j];
-      if((int)v.m_vIndex > maxVertexIndex) {
-        throwException(_T("Face %d reference undefined vertex %u. maxVertexIndex=%d"), (int)i, v.m_vIndex, maxVertexIndex);
+    const size_t                                  indexCount = indexArray.size();
+    if(indexCount == 0) continue;
+    const VertexNormalTextureIndex *last = &indexArray.last();
+    for(const VertexNormalTextureIndex *vntp = &indexArray.first(); vntp <= last ; vntp++) {
+      if(vntp->m_vIndex > maxVertexIndex) {
+        throwException(_T("Face %zu/%zu references undefined vertex %d. maxVertexIndex=%d"), i, vntp->m_vIndex, maxVertexIndex);
       }
-      if((int)v.m_nIndex > maxNormalIndex) {
-        throwException(_T("Face %d reference undefined normal %u. maxNormalIndex=%d"), (int)i, v.m_nIndex, maxNormalIndex);
+      if(vntp->m_nIndex > maxNormalIndex) {
+        throwException(_T("Face %zu/%zu references undefined normal %d. maxNormalIndex=%d"), i, vntp->m_nIndex, maxNormalIndex);
+      }
+      if(vntp->m_tIndex > maxTextureIndex) {
+        throwException(_T("Face %zu%zu references undefined textureVertex %d. maxTextureVertexIndex=%d"), i, vntp->m_tIndex, maxTextureIndex);
       }
     }
   }
@@ -171,17 +181,18 @@ private:
   }
 
   LPD3DXMESH createMesh1NormalPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
-    const Array<Face> &faceArray         = m_mb.getFaceArray();
-    const VertexArray &vertexArray       = m_mb.getVertexArray();
-    const VertexArray &normalArray       = m_mb.getNormalArray();
+    const Array<Face>        &faceArray         = m_mb.getFaceArray();
+    const VertexArray        &vertexArray       = m_mb.getVertexArray();
+    const VertexArray        &normalArray       = m_mb.getNormalArray();
+    const TextureVertexArray &textureArray      = m_mb.getTextureVertexArray();
 
-    const int          factor            = doubleSided ? 2 : 1;
-    const int          vertexCount1Side  = (int)vertexArray.size();
-    const int          vertexCount       = vertexCount1Side * factor;
-    const int          faceCount1Side    = m_mb.getTriangleCount();
-    const int          faceCount         = faceCount1Side * factor;
-    bool               inCriticalSection = false;
-    BitSet             vertexDone(vertexCount1Side);
+    const int                 factor            = doubleSided ? 2 : 1;
+    const int                 vertexCount1Side  = (int)vertexArray.size();
+    const int                 vertexCount       = vertexCount1Side * factor;
+    const int                 faceCount1Side    = m_mb.getTriangleCount();
+    const int                 faceCount         = faceCount1Side * factor;
+    bool                      inCriticalSection = false;
+    BitSet                    vertexDone(vertexCount1Side);
 
     LPD3DXMESH mesh = NULL;
     try {
@@ -208,11 +219,17 @@ private:
             continue;
           }
           vertexDone.add(vn.m_vIndex);
-          const Vertex &v = vertexArray[vn.m_vIndex];
-          const Vertex &n = normalArray[vn.m_nIndex];
-          vertices[vn.m_vIndex].setPosAndNormal(v, n, diffuseColor);
+          VertexType &v1 = vertices[vn.m_vIndex];
+          v1.setPos(vertexArray[vn.m_vIndex]);
+          if(vn.m_nIndex >= 0) v1.setNormal(normalArray[vn.m_nIndex]);
+          if(vn.m_tIndex >= 0) v1.setTexture(textureArray[vn.m_tIndex]);
+          v1.setDiffuse(diffuseColor);
           if(doubleSided) {
-            vertices[vn.m_vIndex + vertexCount1Side].setPosAndNormal(v,-n, diffuseColor);
+            VertexType &v2 = vertices[vn.m_vIndex + vertexCount1Side];
+            v2.setPos(vertexArray[vn.m_vIndex]);
+            if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[vn.m_nIndex]);
+            if(vn.m_tIndex >= 0) v2.setTexture(textureArray[vn.m_tIndex]);
+            v2.setDiffuse(diffuseColor);
           }
         }
         for(int j = 2; j < aSize; j++) {
@@ -245,16 +262,16 @@ private:
   }
 
   LPD3DXMESH createMeshManyNormalsPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
-    const Array<Face> &faceArray         = m_mb.getFaceArray();
-    const VertexArray &vertexArray       = m_mb.getVertexArray();
-    const VertexArray &normalArray       = m_mb.getNormalArray();
-
-    const int          factor            = doubleSided ? 2 : 1;
-    const int          vertexCount1Side  = m_mb.getIndexCount();
-    const int          vertexCount       = vertexCount1Side * factor;
-    const int          faceCount1Side    = m_mb.getTriangleCount();
-    const int          faceCount         = faceCount1Side * factor;
-    bool               inCriticalSection = false;
+    const Array<Face>        &faceArray          = m_mb.getFaceArray();
+    const VertexArray        &vertexArray        = m_mb.getVertexArray();
+    const VertexArray        &normalArray        = m_mb.getNormalArray();
+    const TextureVertexArray &textureArray       = m_mb.getTextureVertexArray();
+    const int                 factor             = doubleSided ? 2 : 1;
+    const int                 vertexCount1Side   = m_mb.getIndexCount();
+    const int                 vertexCount        = vertexCount1Side * factor;
+    const int                 faceCount1Side     = m_mb.getTriangleCount();
+    const int                 faceCount          = faceCount1Side * factor;
+    bool                      inCriticalSection  = false;
 
     LPD3DXMESH mesh = NULL;
     try {
@@ -279,12 +296,18 @@ private:
 
         for(int j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
-          const Vertex &v = vertexArray[vn.m_vIndex];
-          const Vertex &n = normalArray[vn.m_nIndex];
-          vertices[vnCount1+j].setPosAndNormal(v, n, diffuseColor);
+          VertexType                     &v1 = vertices[vnCount1+j];
+          v1.setPos(vertexArray[vn.m_vIndex]);
+          if(vn.m_nIndex >= 0) v1.setNormal(normalArray[vn.m_nIndex]);
+          if(vn.m_tIndex >= 0) v1.setTexture(textureArray[vn.m_tIndex]);
+          v1.setDiffuse(diffuseColor);
 
           if(doubleSided) {
-            vertices[vnCount2+j].setPosAndNormal(v,-n, diffuseColor);
+            VertexType                     &v2 = vertices[vnCount2+j];
+            v2.setPos(vertexArray[vn.m_vIndex]);
+            if(vn.m_nIndex >= 0) v2.setNormal(-normalArray[vn.m_nIndex]);
+            if(vn.m_tIndex >= 0) v2.setTexture(textureArray[vn.m_tIndex]);
+            v2.setDiffuse(diffuseColor);
           }
         }
 
@@ -395,12 +418,15 @@ void MeshBuilder::optimize() {
 }
 */
 void MeshBuilder::pruneUnused() {
-  const size_t vCount = getVertexArray().size();
-  const size_t nCount = getNormalArray().size();
-  BitSet unusedVertices(vCount);
-  BitSet unusedNormals(nCount);
-  unusedVertices.add(0, vCount-1);
-  unusedNormals.add( 0, nCount-1);
+  const int vCount = getVertexCount();
+  const int nCount = getNormalCount();
+  const int tCount = getTextureCount();
+  BitSet unusedVertices(vCount  );
+  BitSet unusedNormals( nCount+1);
+  BitSet unusedTextures(tCount+1);
+  if(vCount > 0) unusedVertices.add(0, vCount-1);
+  if(nCount > 0) unusedNormals.add( 0, nCount-1);
+  if(tCount > 0) unusedTextures.add(0, tCount-1);
   const size_t faceCount = m_faceArray.size();
   for(size_t f = 0; f < faceCount; f++) {
     const CompactArray<VertexNormalTextureIndex> &vnArray = m_faceArray[f].m_data;
@@ -408,19 +434,22 @@ void MeshBuilder::pruneUnused() {
     if(n) {
       for(const VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         unusedVertices.remove(vnp->m_vIndex);
-        unusedNormals.remove( vnp->m_nIndex);
+        if(vnp->m_nIndex >= 0) unusedNormals.remove( vnp->m_nIndex);
+        if(vnp->m_tIndex >= 0) unusedTextures.remove(vnp->m_tIndex);
       }
     }
   }
-  if(unusedVertices.isEmpty() && unusedNormals.isEmpty()) {
+  if(unusedVertices.isEmpty() 
+  && unusedNormals.isEmpty() 
+  && unusedTextures.isEmpty()) {
 #ifdef DUMP_PRUNECOUNT
-    debugLog(_T("Pruned 0 vertices, 0 normals\n"));
+    debugLog(_T("Pruned 0 vertices, 0 normals, 0 textureVertices\n"));
 #endif
     return;
   }
-  CompactIntArray vTranslate(vCount),nTranslate(nCount);
+  CompactIntArray vTranslate(vCount), nTranslate(nCount), tTranslate(tCount);
   int lastIndex = 0;
-  for(size_t i = 0; i < vCount; i++) {
+  for(int i = 0; i < vCount; i++) {
     if(unusedVertices.contains(i)) {
       vTranslate.add(-1);
     } else {
@@ -428,11 +457,19 @@ void MeshBuilder::pruneUnused() {
     }
   }
   lastIndex = 0;
-  for(size_t i = 0; i < nCount; i++) {
+  for(int i = 0; i < nCount; i++) {
     if(unusedNormals.contains(i)) {
       nTranslate.add(-1);
     } else {
       nTranslate.add(lastIndex++);
+    }
+  }
+  lastIndex = 0;
+  for(int i = 0; i < tCount; i++) {
+    if(unusedTextures.contains(i)) {
+      tTranslate.add(-1);
+    } else {
+      tTranslate.add(lastIndex++);
     }
   }
   for(size_t f = 0; f < faceCount; f++) {
@@ -441,16 +478,22 @@ void MeshBuilder::pruneUnused() {
     if(n) {
       for(VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         vnp->m_vIndex = vTranslate[vnp->m_vIndex];
-        vnp->m_nIndex = nTranslate[vnp->m_nIndex];
+        if(vnp->m_nIndex >= 0) {
+          vnp->m_nIndex = nTranslate[vnp->m_nIndex];
+        }
+        if(vnp->m_tIndex >= 0) {
+          vnp->m_tIndex = tTranslate[vnp->m_tIndex];
+        }
       }
     }
   }
   vTranslate.clear();
   nTranslate.clear();
+  tTranslate.clear();
 
   VertexArray tmp = m_vertices;
   m_vertices.clear();
-  for(size_t i = 0; i < vCount; i++) {
+  for(int i = 0; i < vCount; i++) {
     if(!unusedVertices.contains(i)) {
       m_vertices.add(tmp[i]);
     }
@@ -458,15 +501,23 @@ void MeshBuilder::pruneUnused() {
 
   tmp = m_normals;
   m_normals.clear();
-  for(size_t i = 0; i < nCount; i++) {
+  for(int i = 0; i < nCount; i++) {
     if(!unusedNormals.contains(i)) {
       m_normals.add(tmp[i]);
     }
   }
+  TextureVertexArray tmpt = m_textureVertexArray;
+  m_textureVertexArray.clear();
+  for(int i = 0; i < tCount; i++) {
+    if(!unusedTextures.contains(i)) {
+      m_textureVertexArray.add(tmpt[i]);
+    }
+  }
 #ifdef DUMP_PRUNECOUNT
-  debugLog(_T("Pruned %s vertices, %s normals\n")
+  debugLog(_T("Pruned %s vertices, %s normals, %s texturevertices\n")
           ,format1000(unusedVertices.size()).cstr()
-          ,format1000(unusedNormals.size()).cstr()
+          ,format1000(unusedNormals.size() ).cstr()
+          ,format1000(unusedTextures.size()).cstr()
           );
 #endif
 }
@@ -478,17 +529,65 @@ LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) co
 
   const bool use32Bit = use32BitIndices(doubleSided);
 
-  if(hasColors()) {
-    if(use32Bit) {
-      return MeshCreator<VertexNormalDiffuse, ULONG>(this).createMesh(device, doubleSided);
+  if(hasNormals()) {
+    if (hasTextureVertices()) {
+      if(hasColors()) {
+        if(use32Bit) {
+          return MeshCreator<VertexNormalDiffuseTex1, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexNormalDiffuseTex1, USHORT>(this).createMesh(device, doubleSided);
+        }
+      } else { // no colors
+        if(use32Bit) {
+          return MeshCreator<VertexNormalTex1, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexNormalTex1, USHORT>(this).createMesh(device, doubleSided);
+        }
+      }
     } else {
-      return MeshCreator<VertexNormalDiffuse, USHORT>(this).createMesh(device, doubleSided);
+      if(hasColors()) {
+        if(use32Bit) {
+          return MeshCreator<VertexNormalDiffuse, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexNormalDiffuse, USHORT>(this).createMesh(device, doubleSided);
+        }
+      } else {
+        if(use32Bit) {
+          return MeshCreator<VertexNormal, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexNormal, USHORT>(this).createMesh(device, doubleSided);
+        }
+      }
     }
-  } else {
-    if(use32Bit) {
-      return MeshCreator<VertexNormal, ULONG>(this).createMesh(device, doubleSided);
-    } else {
-      return MeshCreator<VertexNormal, USHORT>(this).createMesh(device, doubleSided);
+  } else { // no normals
+    if (hasTextureVertices()) {
+      if(hasColors()) {
+        if(use32Bit) {
+          return MeshCreator<VertexDiffuseTex1, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexDiffuseTex1, USHORT>(this).createMesh(device, doubleSided);
+        }
+      } else { // no colors
+        if(use32Bit) {
+          return MeshCreator<VertexTex1, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexTex1, USHORT>(this).createMesh(device, doubleSided);
+        }
+      }
+    } else { // no textures
+      if(hasColors()) {
+        if(use32Bit) {
+          return MeshCreator<VertexDiffuse, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<VertexDiffuse, USHORT>(this).createMesh(device, doubleSided);
+        }
+      } else {
+        if(use32Bit) {
+          return MeshCreator<Vertex, ULONG>(this).createMesh(device, doubleSided);
+        } else {
+          return MeshCreator<Vertex, USHORT>(this).createMesh(device, doubleSided);
+        }
+      }
     }
   }
 }

@@ -25,12 +25,17 @@ public:
   static bool supportFormatConversion(D3DDEVTYPE deviceType, D3DFORMAT srcFormat, D3DFORMAT dstFormat, UINT adapter = D3DADAPTER_DEFAULT);
 };
 
+#include "PragmaLib.h"
+
 #define DIRECTXROOTPATH  "C:/Program Files (x86)/Microsoft DirectX SDK (June 2010)/Lib/"
-#if defined _M_IX86
-#define DIRECTXLIB DIRECTXROOTPATH "x86/"
-#elif defined _M_X64
-#define DIRECTXLIB DIRECTXROOTPATH "x64/"
+#ifdef _M_X64
+#define _DIRECTXPLATFORM_ "x64/"
+#else
+#define _DIRECTXPLATFORM_ "x86/"
 #endif
 
-#pragma comment(lib, DIRECTXLIB "d3d9.lib")
-#pragma comment(lib, DIRECTXLIB "d3dx9.lib")
+#define DIRECTXLIB_VERSION DIRECTXROOTPATH _DIRECTXPLATFORM_
+
+#pragma comment(lib, DIRECTXLIB_VERSION "d3d9.lib" )
+#pragma comment(lib, DIRECTXLIB_VERSION "d3dx9.lib")
+

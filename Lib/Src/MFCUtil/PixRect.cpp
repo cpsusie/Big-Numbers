@@ -161,8 +161,8 @@ bool PixRectDevice::supportFormatConversion(D3DFORMAT srcFormat, D3DFORMAT dstFo
   return D3DeviceFactory::supportFormatConversion(deviceType, srcFormat, dstFormat, adapter);
 }
 
-D3DCAPS9 PixRectDevice::getDeviceCaps() const {
-  D3DCAPS9 caps;
+D3DCAPS PixRectDevice::getDeviceCaps() const {
+  D3DCAPS caps;
   CHECK3DRESULT(m_device->GetDeviceCaps(&caps));
   return caps;
 }

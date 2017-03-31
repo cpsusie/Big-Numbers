@@ -247,11 +247,6 @@ public:
   static void showBitmap(HBITMAP bitmap); // paint bitmap in upper left corner of the screen.
 };
 
-#include <PragmaLib.h>
-
-#ifdef GIVE_LINK_MESSAGE
-#pragma message("link with " LIB_VERSION)
-#endif
-#pragma comment(lib, LIB_VERSION "MFCUtil.lib")
-
 #include "CommontCtrlManifest.h"
+
+#include "PragmaLib.h"

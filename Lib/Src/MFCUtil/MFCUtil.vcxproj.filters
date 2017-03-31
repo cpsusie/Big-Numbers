@@ -434,6 +434,9 @@
     <ClInclude Include="..\..\Include\MFCUtil\D3DeviceFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PragmaLib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

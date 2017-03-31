@@ -140,11 +140,11 @@ void ProfileRotator::line(const Point2D &from, const Point2D &to) {
     }
     if(m_param.m_rotateAxis == m_param.m_alignx) {
       for(int i = 0; i < 4; i++) {
-        face.addVertexAndNormalIndex(pIndex[i],nIndex[i],-1);
+        face.addVertexNormalIndex(pIndex[i],nIndex[i]);
       }
     } else {
       for(int i = 3; i >= 0; i--) {
-        face.addVertexAndNormalIndex(pIndex[i],nIndex[i],-1);
+        face.addVertexNormalIndex(pIndex[i],nIndex[i]);
       }
     }
   }

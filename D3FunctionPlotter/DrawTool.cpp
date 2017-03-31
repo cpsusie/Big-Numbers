@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include <Tokenizer.h>
 #include <MFCUtil/Clipboard.h>
+#include <MFCUtil/ColorSpace.h>
 #include "DrawTool.h"
 #include "ProfilePainter.h"
 

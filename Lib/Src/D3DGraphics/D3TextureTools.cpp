@@ -49,3 +49,8 @@ LPDIRECT3DTEXTURE getTextureFromBitmap(LPDIRECT3DDEVICE device, HBITMAP bm) {
   return loadTextureFromByteArray(device, bitmapToByteArray(tmp, bm));
 }
 
+LPDIRECT3DTEXTURE loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id) {
+  CBitmap bm;
+  bm.LoadBitmapW(id);
+  return getTextureFromBitmap(device, bm);
+}

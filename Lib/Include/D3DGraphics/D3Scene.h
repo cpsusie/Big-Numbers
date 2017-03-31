@@ -6,8 +6,9 @@
 #include <Date.h>
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
-#include <MFCUtil/PixRect.h>
+#include <MFCUtil/D3DeviceFactory.h>
 #include "MeshArray.h"
+#include "D3Math.h"
 
 class D3SceneObject;
 class D3LightControl;
@@ -308,8 +309,8 @@ public:
   static inline int getTextureCoordCount() {
     return m_textureCoordCount;
   }
-  D3Ray getPickRay(const CPoint &point);
-  D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL);
+  D3Ray getPickRay(const CPoint &point) const;
+  D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
   void saveState(const String &fileName) const;
   void loadState(const String &fileName);
@@ -317,14 +318,15 @@ public:
   void load(ByteInputStream  &s);
 };
 
-LPD3DXMESH     createMeshFromVertexFile(   LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
-LPD3DXMESH     createMeshFromObjFile(      LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
+LPD3DXMESH        createMeshFromVertexFile(     LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
+LPD3DXMESH        createMeshFromObjFile(        LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
 
-LPDIRECT3DTEXTURE loadTextureFromFile(     LPDIRECT3DDEVICE device, const String &fileName);
-LPDIRECT3DTEXTURE loadTextureFromResource( LPDIRECT3DDEVICE device, int resId, const String &typeName);
-LPDIRECT3DTEXTURE loadTextureFromByteArray(LPDIRECT3DDEVICE device, ByteArray &ba);
-LPDIRECT3DTEXTURE getTextureFromBitmap(    LPDIRECT3DDEVICE device, HBITMAP bm);
+LPDIRECT3DTEXTURE loadTextureFromFile(          LPDIRECT3DDEVICE device, const String &fileName);
+LPDIRECT3DTEXTURE loadTextureFromResource(      LPDIRECT3DDEVICE device, int resId, const String &typeName);
+LPDIRECT3DTEXTURE loadTextureFromByteArray(     LPDIRECT3DDEVICE device, ByteArray &ba);
+LPDIRECT3DTEXTURE getTextureFromBitmap(         LPDIRECT3DDEVICE device, HBITMAP bm);
+LPDIRECT3DTEXTURE loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id);
 
 void dumpMesh(LPD3DXMESH mesh, const String &fileName=EMPTYSTRING);
 void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER vertexBuffer, FILE *f);
@@ -342,7 +344,7 @@ protected:
   String   m_name;
   bool     m_visible;
   void    *m_userData;
-  LPDIRECT3DDEVICE getDevice() const {
+  inline LPDIRECT3DDEVICE getDevice() const {
     return m_scene.m_device;
   }
 public:

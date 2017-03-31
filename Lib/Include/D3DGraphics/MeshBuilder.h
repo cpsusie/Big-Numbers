@@ -1,12 +1,13 @@
 #pragma once
 
 #include <MFCUtil/D3DeviceFactory.h>
+#include <D3DGraphics/D3Math.h>
 
 class VertexNormalTextureIndex {
 public:
-  UINT m_vIndex, m_nIndex, m_tIndex;
+  int m_vIndex, m_nIndex, m_tIndex;
   inline VertexNormalTextureIndex() {}
-  inline VertexNormalTextureIndex(UINT vIndex, UINT nIndex, UINT tIndex)
+  inline VertexNormalTextureIndex(int vIndex, int nIndex, int tIndex)
     : m_vIndex(vIndex), m_nIndex(nIndex), m_tIndex(tIndex)
   {
   }
@@ -18,6 +19,9 @@ public:
   inline ULONG hashCode() const {
     return (m_vIndex * 100981 + m_nIndex) * 997 + m_tIndex;
   }
+  String toString() const {
+    return format(_T("VertexNormalTextureIndex(v:%4d,n:%4d,t:%4d"), m_vIndex, m_nIndex, m_tIndex);
+  }
 };
 
 class Face {
@@ -25,11 +29,17 @@ private:
   CompactArray<VertexNormalTextureIndex> m_data;
   D3DCOLOR                               m_diffuseColor;
 public:
-  Face(D3DCOLOR diffuseColor) { 
+  Face(D3DCOLOR diffuseColor, size_t capacity=3) : m_data(capacity) { 
     m_diffuseColor = diffuseColor;
   }
-  inline void addVertexAndNormalIndex(UINT vIndex, UINT nIndex, UINT tIndex) {
+  inline void addVertexNormalTextureIndex(int vIndex, int nIndex, int tIndex) {
     m_data.add(VertexNormalTextureIndex(vIndex, nIndex, tIndex));
+  }
+  inline void addVertexNormalIndex(int vIndex, int nIndex) {
+    m_data.add(VertexNormalTextureIndex(vIndex, nIndex, -1));
+  }
+  inline void addVertexTextureIndex(int vIndex, int tIndex) {
+    m_data.add(VertexNormalTextureIndex(vIndex, -1, tIndex));
   }
   inline int getTriangleCount() const {
     return (int)m_data.size() - 2;
@@ -45,6 +55,10 @@ public:
   }
   void invertOrientation();
   friend class MeshBuilder;
+  String toString() const {
+    return format(_T("Face(Color:%#8x, IndexCount:%zu\nIndexArray:%s\n")
+                 ,m_diffuseColor, m_data.size(), m_data.toString().cstr());
+  }
 };
 
 #define MAX16BITVERTEXCOUNT 0xfffe
@@ -53,8 +67,10 @@ class MeshBuilder {
 private:
   VertexArray                 m_vertices;
   VertexArray                 m_normals;
-  CompactArray<TextureVertex> m_textureVertexArray;
+  TextureVertexArray          m_textureVertexArray;
   Array<Face>                 m_faceArray;
+  mutable bool                m_hasNormals          : 1;
+  mutable bool                m_hasTextures         : 1;
   bool                        m_hasColors           : 1;
   mutable bool                m_vertexNormalChecked : 1;
   mutable bool                m_1NormalPerVertex    : 1;
@@ -105,21 +121,31 @@ public:
   }
   inline int addTextureVertex(const TextureVertex &vt) {
     m_textureVertexArray.add(vt);
-    return (int)m_textureVertexArray.size();
+    return (int)m_textureVertexArray.size()-1;
   }
-  inline Face &addFace(D3DCOLOR color) {
-    m_faceArray.add(Face(color));
+  inline int addTextureVertex(float u, float v) {
+    m_textureVertexArray.add(TextureVertex(u,v));
+    return (int)m_textureVertexArray.size()-1;
+  }
+  inline Face &addFace(D3DCOLOR color, size_t capacity=3) {
+    m_faceArray.add(Face(color, capacity));
     m_vertexNormalChecked = m_validated = false;
     m_hasColors                         = true;
     return m_faceArray.last();
   }
-  inline Face &addFace() {
-    m_faceArray.add(Face(-1));
+  inline Face &addFace(size_t capacity=3) {
+    m_faceArray.add(Face(-1, capacity));
     m_vertexNormalChecked = m_validated = false;
     return m_faceArray.last();
   }
+  inline int getVertexCount() const {
+    return (int)m_vertices.size();
+  }
   inline int getNormalCount() const {
     return (int)m_normals.size();
+  }
+  inline int getTextureCount() const {
+    return (int)m_textureVertexArray.size();
   }
   int getTriangleCount()       const;
   int getIndexCount()          const;
@@ -127,6 +153,12 @@ public:
   bool isOk()                  const;
   bool has1NormalPerVertex()   const;
   bool isEmpty()               const;
+  inline bool hasNormals() const {
+    return m_hasNormals;
+  }
+  inline bool hasTextureVertices() const {
+    return m_hasTextures;
+  }
   inline bool hasColors()      const {
     return m_hasColors;
   }
@@ -140,16 +172,15 @@ public:
   inline const VertexArray &getNormalArray() const {
     return m_normals;
   }
-  inline const CompactArray<TextureVertex> &getTextureVertexArray() const {
+  inline const TextureVertexArray &getTextureVertexArray() const {
     return m_textureVertexArray;
   }
 /*
   void optimize();
 */
-
   LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
-  void dump(const String &fileName = "") const;
+  void dump(const String &fileName = EMPTYSTRING) const;
 };
 
 #define DUMP_PRUNECOUNT
