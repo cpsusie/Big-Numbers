@@ -20,7 +20,7 @@ public:
   inline ULONG hashCode() const {
     return (m_vIndex * 100981 + m_nIndex) * 997 + m_tIndex;
   }
-  String toString() const {
+  inline String toString() const {
     return format(_T("VertexNormalTextureIndex(v:%4d,n:%4d,t:%4d"), m_vIndex, m_nIndex, m_tIndex);
   }
 };
@@ -32,7 +32,7 @@ private:
   VNTIArray m_data;
   D3DCOLOR  m_diffuseColor;
 public:
-  Face(D3DCOLOR diffuseColor, size_t capacity=3) : m_data(capacity) { 
+  inline Face(D3DCOLOR diffuseColor, size_t capacity=3) : m_data(capacity) {
     m_diffuseColor = diffuseColor;
   }
   inline void addVertexNormalTextureIndex(int vIndex, int nIndex, int tIndex) {
@@ -61,7 +61,7 @@ public:
   }
   void invertOrientation();
   friend class MeshBuilder;
-  String toString() const {
+  inline String toString() const {
     return format(_T("Face(Color:%#8x, IndexCount:%zu\nIndexArray:%s\n")
                  ,m_diffuseColor, m_data.size(), m_data.toString().cstr());
   }
