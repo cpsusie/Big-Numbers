@@ -140,14 +140,6 @@ String toString(const D3DXMATRIX &m, int dec) {
   return result;
 }
 
-Vertex createVertex(double x, double y, double z) {
-  Vertex result;
-  result.x = (float)x;
-  result.y = (float)y;
-  result.z = (float)z;
-  return result;
-}
-
 // ---------------------------------------------------------------------------------
 
 D3PosDirUpScale::D3PosDirUpScale() {

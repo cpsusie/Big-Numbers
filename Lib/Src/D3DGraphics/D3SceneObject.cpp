@@ -194,15 +194,15 @@ D3LineArray::D3LineArray(D3Scene &scene, const Line *lines, int n) : SceneObject
 
 D3LineArray::D3LineArray(D3Scene &scene, const Vertex p1, const Vertex p2) : SceneObjectWithVertexBuffer(scene) {
   Line lines[12], *lp = lines, *ll;
-  lp->m_p1 = p1;                           lp->m_p2 = createVertex(p1.x,p2.y,p1.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p2.y,p1.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p1.y,p1.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p1.x,p1.y,p1.z); ll = lp++;
+  lp->m_p1 = p1;                           lp->m_p2 = Vertex(p1.x,p2.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p2.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p1.y,p1.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p1.x,p1.y,p1.z); ll = lp++;
 
-  lp->m_p1 = createVertex(p1.x,p1.y,p2.z); lp->m_p2 = createVertex(p1.x,p2.y,p2.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p2.y,p2.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p2.x,p1.y,p2.z); ll = lp++;
-  lp->m_p1 = ll->m_p2;                     lp->m_p2 = createVertex(p1.x,p1.y,p2.z); ll = lp++;
+  lp->m_p1 = Vertex(p1.x,p1.y,p2.z);       lp->m_p2 = Vertex(p1.x,p2.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p2.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p2.x,p1.y,p2.z); ll = lp++;
+  lp->m_p1 = ll->m_p2;                     lp->m_p2 = Vertex(p1.x,p1.y,p2.z); ll = lp++;
   for(int i = 0; i < 4; i++) {
     lines[i+8].m_p1 = lines[i  ].m_p1;
     lines[i+8].m_p2 = lines[i+4].m_p1;
@@ -243,23 +243,23 @@ D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D
   VertexNormal *vertices = GETLOCKEDVERTEXBUFFER(VertexNormal, ITEMCOUNT);
 
   vertices[0].setPos(from);
-  vertices[1].setPosAndNormal(to, vn);
+  vertices[1].setPos(to); vertices[1].setNormal(vn);
   const D3DXVECTOR3 cirkelCenter = (D3DXVECTOR3)to - 0.1f * vn;
   D3DXVECTOR3   radius1 = ortonormalVector(v) * 0.04f;
   D3DXVECTOR3   p       = cirkelCenter + radius1;
   VertexNormal *vtx1    = vertices + 2;
-  vtx1->setPosAndNormal(p, radius1); vtx1++;
+  vtx1->setPos(p); vtx1->setNormal(radius1); vtx1++;
 
-  D3DXVECTOR3 radius2 = radius1;
+  D3DXVECTOR3   radius2 = radius1;
   VertexNormal *vtx2 = vertices + FANCOUNT + 3;
-  vtx2->setPosAndNormal(cirkelCenter, -vn); vtx2++;
-  vtx2->setPosAndNormal(p,            -vn); vtx2++;
+  vtx2->setPos(cirkelCenter); vtx2->setNormal(-vn); vtx2++;
+  vtx2->setPos(p);            vtx2->setNormal(-vn); vtx2++;
 
   for(int i = 0; i < FANCOUNT; i++) {
     radius1 = rotate(radius1, v,  radians(360.0f/FANCOUNT));
     radius2 = rotate(radius2, v, -radians(360.0f/FANCOUNT));
-    vtx1[i].setPosAndNormal(cirkelCenter + radius1, unitVector(radius1));
-    vtx2[i].setPosAndNormal(cirkelCenter + radius2, -vn);
+    vtx1[i].setPos(cirkelCenter + radius1); vtx1[i].setNormal(unitVector(radius1));
+    vtx2[i].setPos(cirkelCenter + radius2); vtx2[i].setNormal(-vn);
   }
   unlockVertexBuffer();
   setColor(color);
@@ -345,7 +345,7 @@ CurveArray createSphereObject(double r) {
     VertexArray va;
     for(int theta = 0; theta < 360; theta += 5) {
       SINCOS(theta, cosTheta, sinTheta);
-      va.add(createVertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+      va.add(Vertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
     }
     curves.add(va);
   }
@@ -356,7 +356,7 @@ CurveArray createSphereObject(double r) {
     VertexArray va;
     for(int theta = 0; theta < 360; theta += 5) {
       SINCOS(theta, cosTheta, sinTheta);
-      va.add(createVertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+      va.add(Vertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
     }
     curves.add(va);
   }

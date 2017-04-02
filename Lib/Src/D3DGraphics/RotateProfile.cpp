@@ -23,7 +23,7 @@ public:
 };
 
 Vertex Point2DTo3DConverter::convertPoint(const Point2D &p) {
-  Vertex result = createVertex(0,0,0);
+  Vertex result(0,0,0);
   switch(m_alignx) {
   case 0:
     result.x = (float)p.x;

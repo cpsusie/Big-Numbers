@@ -3,10 +3,10 @@
 #include <D3DGraphics/D3Error.h>
 
 D3CoordinateSystem::D3CoordinateSystem(D3Scene &scene) : D3SceneObject(scene, _T("CoordinateSystem")) {
-  m_box   = new D3LineArray(scene, createVertex(-1,-1,-1), createVertex(1,1,1));
-  m_xaxes = new D3LineArrow(scene, createVertex(-1, 0, 0), createVertex(1,0,0), D3D_RED  );
-  m_yaxes = new D3LineArrow(scene, createVertex( 0,-1, 0), createVertex(0,1,0), D3D_GREEN);
-  m_zaxes = new D3LineArrow(scene, createVertex( 0, 0,-1), createVertex(0,0,1), D3D_BLUE);
+  m_box   = new D3LineArray(scene, Vertex(-1,-1,-1), Vertex(1,1,1));
+  m_xaxes = new D3LineArrow(scene, Vertex(-1, 0, 0), Vertex(1,0,0), D3D_RED  );
+  m_yaxes = new D3LineArrow(scene, Vertex( 0,-1, 0), Vertex(0,1,0), D3D_GREEN);
+  m_zaxes = new D3LineArrow(scene, Vertex( 0, 0,-1), Vertex(0,0,1), D3D_BLUE);
 }
 
 D3CoordinateSystem::~D3CoordinateSystem() {

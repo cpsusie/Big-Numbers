@@ -60,7 +60,9 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   inline void setPos(   const Vertex      &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
   inline void setPos(   const D3DXVECTOR3 &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
   inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; } \
-  inline Vertex operator-() const { return Vertex(-x,-y,-z); }
+  inline Vertex operator-() const                        { return Vertex(     -x,-y,-z); }                      \
+  inline operator D3DXVECTOR3() const                    { return D3DXVECTOR3( x, y, z); }                      \
+  inline operator Point3D()     const                    { return Point3D(     x, y, z); }
 
 #define NORMAL_TRAITS                                                                                           \
   inline void setNormal(double _x, double _y, double _z) { nx = (float)_x ; ny = (float)_y ; nz = (float)_z ; } \
@@ -93,9 +95,13 @@ class TextureVertex {
 public:
   float u, v;
   inline TextureVertex() {}
-  inline TextureVertex(float _u, float _v) : u(_u), v(_v) {
+  inline TextureVertex(float  _u, float  _v ) : u(_u), v(_v) {
   }
-  inline TextureVertex(double _u, double _v) : u((float)_u), v((float)_v) {
+  inline TextureVertex(double _u, double _v ) : u((float)_u), v((float)_v) {
+  }
+  inline TextureVertex(const D3DXVECTOR2 &_v) : u(_v.x), v(_v.y) {
+  }
+  inline TextureVertex(const Point2D     &p ) : u((float)p.x), v((float)p.y) {
   }
 };
 
@@ -110,6 +116,7 @@ typedef struct Vertex {
   };
   inline Vertex() {
   }
+  inline Vertex(int    _x, int    _y, int    _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
   inline Vertex(float  _x, float  _y, float  _z) { x  = _x        ; y  = _y        ; z  = _z        ; }
   inline Vertex(double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
   inline Vertex(     const Point3D     &p)       { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
@@ -119,16 +126,7 @@ typedef struct Vertex {
   EMPTY_NORMAL_TRAITS
   EMPTY_DIFFUSE_TRAITS
   EMPTY_TEXTURE_TRAITS
-
-  inline operator D3DXVECTOR3() const {
-    return D3DXVECTOR3(x,y,z);
-  }
-  inline operator Point3D() const {
-    return Point3D(x,y,z);
-  }
 } Vertex;
-
-Vertex createVertex(double x, double y, double z);
 
 typedef struct {
   float x, y, z;
@@ -140,17 +138,19 @@ typedef struct {
   NORMAL_TRAITS
   EMPTY_DIFFUSE_TRAITS
   EMPTY_TEXTURE_TRAITS
-
-  inline void setPosAndNormal(const Vertex      &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) {
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
-  inline void setPosAndNormal(const D3DXVECTOR3 &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) {
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
-  inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) {
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
 } VertexNormal;
+
+typedef struct {
+  float x, y, z;
+  DWORD diffuse;
+  enum FVF {
+    FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE
+  };
+  POSITION_TRAITS
+  EMPTY_NORMAL_TRAITS
+  DIFFUSE_TRAITS
+  EMPTY_TEXTURE_TRAITS
+} VertexDiffuse;
 
 typedef struct {
   float x, y, z;
@@ -163,31 +163,7 @@ typedef struct {
   NORMAL_TRAITS
   DIFFUSE_TRAITS
   EMPTY_TEXTURE_TRAITS
-
-  inline void setPosAndNormal(const Vertex      &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse) { 
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
-  inline void setPosAndNormal(const D3DXVECTOR3 &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse) { 
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
-  inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse) {
-    setPos(v); setNormal(n); setDiffuse(diffuse);
-  }
 } VertexNormalDiffuse;
-
-typedef struct {
-  float x, y, z;
-  float nx, ny, nz;
-  DWORD diffuse;
-  float tu, tv;
-  enum FVF {
-      FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1
-  };
-  POSITION_TRAITS
-  NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  TEXTURE_TRAITS
-} VertexNormalDiffuseTex1;
 
 typedef struct {
   float x, y, z;
@@ -217,18 +193,6 @@ typedef struct {
 typedef struct {
   float x, y, z;
   DWORD diffuse;
-  enum FVF {
-    FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE
-  };
-  POSITION_TRAITS
-  EMPTY_NORMAL_TRAITS
-  DIFFUSE_TRAITS
-  EMPTY_TEXTURE_TRAITS
-} VertexDiffuse;
-
-typedef struct {
-  float x, y, z;
-  DWORD diffuse;
   float tu, tv;
   enum FVF {
       FVF_Flags = D3DFVF_XYZ | D3DFVF_DIFFUSE | D3DFVF_TEX1
@@ -238,6 +202,20 @@ typedef struct {
   DIFFUSE_TRAITS
   TEXTURE_TRAITS
 } VertexDiffuseTex1;
+
+typedef struct {
+  float x, y, z;
+  float nx, ny, nz;
+  DWORD diffuse;
+  float tu, tv;
+  enum FVF {
+      FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1
+  };
+  POSITION_TRAITS
+  NORMAL_TRAITS
+  DIFFUSE_TRAITS
+  TEXTURE_TRAITS
+} VertexNormalDiffuseTex1;
 
 typedef struct Line {
   Vertex m_p1, m_p2;
