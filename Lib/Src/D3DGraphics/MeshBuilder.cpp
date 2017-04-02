@@ -91,8 +91,7 @@ void MeshBuilder::check1NormalPerVertex() const {
   CompactHashMap<UInt, UINT> vnMap(2*m_vertices.size() + 241);
 
   for(size_t i = 0; i < faceCount; i++) {
-    const Face &face = m_faceArray[i];
-    const CompactArray<VertexNormalTextureIndex> &vna = face.getIndices();
+    const VNTIArray &vna = m_faceArray[i].getIndices();
     for(size_t j = 0; j < vna.size(); j++) {
       const VertexNormalTextureIndex &vn = vna[j];
       const UINT *np = vnMap.get(vn.m_vIndex);
@@ -128,8 +127,8 @@ void MeshBuilder::validate() const {
   m_hasTextures = maxTextureIndex >= 0;
   const size_t faceCount = m_faceArray.size();
   for(size_t i = 0; i < faceCount; i++) {
-    const CompactArray<VertexNormalTextureIndex> &indexArray = m_faceArray[i].getIndices();
-    const size_t                                  indexCount = indexArray.size();
+    const VNTIArray &indexArray = m_faceArray[i].getIndices();
+    const size_t     indexCount = indexArray.size();
     if(indexCount == 0) continue;
     const VertexNormalTextureIndex *last = &indexArray.last();
     for(const VertexNormalTextureIndex *vntp = &indexArray.first(); vntp <= last ; vntp++) {
@@ -180,8 +179,8 @@ Cube3D MeshBuilder::getBoundingBox() const {
   for(i = 0; i < faceCount; i++) {
     const Face &f = m_faceArray[i];
     if(f.isEmpty()) continue;
-    const size_t n = f.getIndexCount();
-    const CompactArray<VertexNormalTextureIndex> &a = f.getIndices();
+    const size_t     n = f.getIndexCount();
+    const VNTIArray &a = f.getIndices();
     for(size_t j = 0; j < n; j++) {
       const int vi = a[j].m_vIndex;
       if((vi >= 0) && (vi <= maxVertexIndex)) {
@@ -250,10 +249,10 @@ private:
       IndexType *ip1 = indexArray, *ip2 = indexArray + 3*faceCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
-        const Face                                   &face         = faceArray[i];
-        const CompactArray<VertexNormalTextureIndex> &vnArray      = face.getIndices();
-        const int                                     aSize        = (int)vnArray.size();
-        const D3DCOLOR                                diffuseColor = face.getDiffuseColor();
+        const Face      &face         = faceArray[i];
+        const VNTIArray &vnArray      = face.getIndices();
+        const int        aSize        = (int)vnArray.size();
+        const D3DCOLOR   diffuseColor = face.getDiffuseColor();
 
         for(int j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
@@ -331,10 +330,10 @@ private:
       int vnCount1 = 0, vnCount2 = (int)vertexCount1Side;
 
       for(size_t i = 0; i < faceArray.size(); i++) {
-        const Face                                   &face         = faceArray[i];
-        const CompactArray<VertexNormalTextureIndex> &vnArray      = face.getIndices();
-        const int                                     aSize        = (int)vnArray.size();
-        const D3DCOLOR                                diffuseColor = face.getDiffuseColor();
+        const Face      &face         = faceArray[i];
+        const VNTIArray &vnArray      = face.getIndices();
+        const int        aSize        = (int)vnArray.size();
+        const D3DCOLOR   diffuseColor = face.getDiffuseColor();
 
         for(int j = 0; j < aSize; j++) {
           const VertexNormalTextureIndex &vn = vnArray[j];
@@ -503,8 +502,8 @@ void MeshBuilder::pruneUnused() {
   if(tCount > 0) unusedTextures.add(0, tCount-1);
   const size_t faceCount = m_faceArray.size();
   for(size_t f = 0; f < faceCount; f++) {
-    const CompactArray<VertexNormalTextureIndex> &vnArray = m_faceArray[f].m_data;
-    size_t n = vnArray.size();
+    const VNTIArray &vnArray = m_faceArray[f].getIndices();
+    size_t           n       = vnArray.size();
     if(n) {
       for(const VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         unusedVertices.remove(vnp->m_vIndex);
@@ -547,8 +546,8 @@ void MeshBuilder::pruneUnused() {
     }
   }
   for(size_t f = 0; f < faceCount; f++) {
-    CompactArray<VertexNormalTextureIndex> &vnArray = m_faceArray[f].m_data;
-    size_t n = vnArray.size();
+    VNTIArray &vnArray = m_faceArray[f].m_data;
+    size_t     n       = vnArray.size();
     if(n) {
       for(VertexNormalTextureIndex *vnp = &vnArray[0]; n--; vnp++) {
         vnp->m_vIndex = vTranslate[vnp->m_vIndex];

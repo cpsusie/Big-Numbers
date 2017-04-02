@@ -11,6 +11,8 @@
 #define IDB_BOARDBITMAP                 130
 #define IDB_MARKEDFIELDBITMAP           131
 #define IDC_INVISIBLECURSOR             164
+#define IDB_UNMARKEDFILELDBITMAP        167
+#define IDB_UNMARKEDFIELDBITMAP         167
 #define IDC_GAMEINFO                    1000
 #define IDC_STATICGAMEWINDOW            1001
 #define IDC_COLORMAPEMISSIVE            1010
@@ -34,7 +36,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        167
+#define _APS_NEXT_RESOURCE_VALUE        168
 #define _APS_NEXT_COMMAND_VALUE         32786
 #define _APS_NEXT_CONTROL_VALUE         1024
 #define _APS_NEXT_SYMED_VALUE           101

@@ -75,6 +75,9 @@
     <Image Include="res\MarkedField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="res\UnmarkedField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\cursor1.cur">

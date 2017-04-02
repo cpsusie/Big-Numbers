@@ -33,41 +33,26 @@ float       GameBoardObject::s_gridLines[5];
 #define EDGE0INDEX 6
 #define EDGE4INDEX 10
 
-class MarkedFieldObject : public SceneObjectWithMesh {
-private:
-  static LPDIRECT3DTEXTURE s_markTexture;
-  Field  m_field;
-  Cube3D m_cube;
-  LPDIRECT3DTEXTURE getTexture();
-  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, int row, int col, Cube3D &cube);
+LPDIRECT3DTEXTURE BoardFieldObject::s_unmarkedTexture = NULL;
+LPDIRECT3DTEXTURE BoardFieldObject::s_markTexture     = NULL;
 
-public:
-  MarkedFieldObject(D3Scene &scene, int row, int col, Cube3D &cube);
-  D3PosDirUpScale getPDUS() {
-    return D3Scene::getOrigo();
-  }
-  void draw();
-};
-
-LPDIRECT3DTEXTURE MarkedFieldObject::s_markTexture = NULL;
-
-MarkedFieldObject::MarkedFieldObject(D3Scene &scene, int row, int col, Cube3D &cube)
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), row, col, cube))
+BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
+: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), row, col))
 {
   m_field.m_row = row;
   m_field.m_col = col;
-  m_cube = cube;
-  setName(format(_T("%s,%s"), m_field.toString().cstr(), m_cube.toString().cstr()));
+  m_selected    = false;
+  setName(format(_T("%s"), m_field.toString().cstr()));
 }
 
-LPD3DXMESH MarkedFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int col, Cube3D &cube) {
+LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int col) {
   MeshBuilder mb;
   const float *gridLines = GameBoardObject::s_gridLines;
   int vindex[2][2];
   int tindex[2][2];
   for(short r = 0; r < 2; r++) {
     for(short c = 0; c < 2; c++) {
-      vindex[r][c] = mb.addVertex(gridLines[row+r],0.035f,gridLines[col+c]);
+      vindex[r][c] = mb.addVertex(gridLines[row+r],0,gridLines[col+c]);
       tindex[r][c] = mb.addTextureVertex(r,c);
     }
   }
@@ -76,19 +61,25 @@ LPD3DXMESH MarkedFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int c
   face.addVertexTextureIndex(vindex[1][0], tindex[1][0]);
   face.addVertexTextureIndex(vindex[1][1], tindex[1][1]);
   face.addVertexTextureIndex(vindex[0][1], tindex[0][1]);
-  cube = mb.getBoundingBox();
   return mb.createMesh(device, false);
 }
 
-LPDIRECT3DTEXTURE MarkedFieldObject::getTexture() {
-  if (s_markTexture == NULL) {
-    s_markTexture  = loadTextureFromBitmapResource(getDevice(), IDB_MARKEDFIELDBITMAP);
+LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
+  if(marked) {
+    if (s_markTexture == NULL) {
+      s_markTexture = loadTextureFromBitmapResource(getDevice(), IDB_MARKEDFIELDBITMAP);
+    }
+    return s_markTexture;
+  } else {
+    if (s_unmarkedTexture == NULL) {
+      s_unmarkedTexture = loadTextureFromBitmapResource(getDevice(), IDB_UNMARKEDFIELDBITMAP);
+    }
+    return s_unmarkedTexture;
   }
-  return s_markTexture;
 }
 
-void MarkedFieldObject::draw() {
-  drawMeshUsingTexture(getDevice(), getMesh(), getTexture());
+void BoardFieldObject::draw() {
+  drawMeshUsingTexture(getDevice(), getMesh(), getTexture(m_selected));
 }
 
 LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
@@ -113,6 +104,9 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
 
   for(int r = 0; r < BOARDSIZE; r++) {
     for(int c = 0; c < BOARDSIZE; c++) {
+      if((EDGE0INDEX <= r) && (r < EDGE4INDEX) && (EDGE0INDEX <= c) && (c < EDGE4INDEX)) {
+        continue;
+      }
       Face &face = mb.addFace();
       face.addVertexTextureIndex(vindex[r  ][c  ], tindex[r  ][c  ]);
       face.addVertexTextureIndex(vindex[r+1][c  ], tindex[r+1][c  ]);
@@ -139,9 +133,7 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
   try {
     return mb.createMesh(device, false);
   } catch (...) {
-#ifdef _DEBUG
-    debugLog(_T("%s\n%s"), __TFUNCTION__, indentString(mb.toString(), 2).cstr());
-#endif
+//    debugLog(_T("%s\n%s"), __TFUNCTION__, indentString(mb.toString(), 2).cstr());
     throw;
   }
 }
@@ -153,11 +145,9 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
   m_boardTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP      );
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
-      Cube3D tmpCube;
-      MarkedFieldObject *mfo = new MarkedFieldObject(scene, r, c, tmpCube);
-      m_markFieldObject[r][c] = mfo;
+      BoardFieldObject *mfo = new BoardFieldObject(scene, r, c);
+      m_fieldObject[r][c] = mfo;
       m_scene.addSceneObject(mfo);
-      mfo->setVisible(false);
 //      debugLog(_T("MarkField:\n%s"), indentString(mfo->toString(),2).cstr());
     }
   }
@@ -168,8 +158,8 @@ GameBoardObject::~GameBoardObject() {
   if(m_boardTexture) m_boardTexture->Release();
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
-      if(m_markFieldObject[r][c]) {
-        delete m_markFieldObject[r][c];
+      if(m_fieldObject[r][c]) {
+        delete m_fieldObject[r][c];
       }
     }
   }
@@ -183,49 +173,39 @@ void GameBoardObject::markField(const Field &f) {
   if(!f.isValid()) return;
   unmarkCurrent();
   m_currentField = f;
-  setCurrentVisible(true);
+  setCurrentSelected(true);
 }
 
 void GameBoardObject::unmarkCurrent() {
   if(!hasCurrentField()) return;
-  setCurrentVisible(false);
+  setCurrentSelected(false);
   m_currentField.m_row = m_currentField.m_col = -1;
 }
 
-void GameBoardObject::setCurrentVisible(bool visible) {
-  D3SceneObject *obj = m_markFieldObject[m_currentField.m_row][m_currentField.m_col];
-  obj->setVisible(visible);
-/*
-  if(visible) {
-    debugLog(_T("setVisible(%s), currentField:%s, obj:%s\n")
-            ,boolToStr(visible)
-            ,m_currentField.toString().cstr()
-            ,obj->getName().cstr());
-  }
-*/
+void GameBoardObject::setCurrentSelected(bool selected) {
+  BoardFieldObject *fld = m_fieldObject[m_currentField.m_row][m_currentField.m_col];
+  fld->setSelected(selected);
 }
 
 Field GameBoardObject::getFieldFromPoint(const CPoint &p) const {
   D3DXVECTOR3    hitPoint;
   D3PickedInfo   info;
   D3SceneObject *obj = m_scene.getPickedObject(p, PICK_ALL, &hitPoint, &info);
-  if(obj != this) {
+  if(obj == NULL || obj == this) {
     return NOFIELD;
   }
 //  debugLog(_T("getFieldFromPoint(%d,%d):hitPoint:%s, %s\n"), p.x,p.y, ::toString(hitPoint).cstr(), info.toString().cstr());
   for (int r = 0; r < ROWCOUNT; r++) {
-    if((s_gridLines[r] <= hitPoint.x) && (hitPoint.x <= s_gridLines[r+1])) {
-      for(int c = 0; c < COLCOUNT; c++) {
-        if((s_gridLines[c] <= hitPoint.z) && (hitPoint.z <= s_gridLines[c+1])) {
-          Field result;
-          result.m_row = r;
-          result.m_col = c;
+    for(int c = 0; c < COLCOUNT; c++) {
+      if(m_fieldObject[r][c] == obj) {
+        Field result;
+        result.m_row = r;
+        result.m_col = c;
 //          debugLog(_T("Found field %s\n"), result.toString().cstr());
-          return result;
-        }
+        return result;
       }
     }
   }
-  debugLog(_T("No field selected\n"));
+//  debugLog(_T("No field selected\n"));
   return NOFIELD;
 }

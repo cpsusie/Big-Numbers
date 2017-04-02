@@ -76,6 +76,8 @@ IDB_BOARDBITMAP         BITMAP                  "Res\\board.bmp"
 
 IDB_MARKEDFIELDBITMAP   BITMAP                  "res\\MarkedField.bmp"
 
+IDB_UNMARKEDFIELDBITMAP BITMAP                  "res\\UnmarkedField.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
