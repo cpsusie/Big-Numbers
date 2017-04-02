@@ -19,14 +19,6 @@ InitAttributes::InitAttributes() {
 
 static InitAttributes dummy;
 
-bool Field::isValid() const {
-  return (m_row >= 0) && (m_row < ROWCOUNT) && (m_col >= 0) && (m_col < COLCOUNT);
-}
-
-String Field::toString() const {
-  return format(_T("%d,%d"), m_row, m_col);
-}
-
 const Move  NOMOVE(0,0,NOBRICK);
 const Field NOFIELD = { -1,-1 };
 
@@ -75,10 +67,6 @@ Move::Move(const String &s) {
   if(m_brick < 0 || m_brick >= FIELDCOUNT) {
     throwException(_T("Invalid brick:<%s>"), s.cstr());
   }
-}
-
-String Move::toString() const {
-  return format(_T("%d,%d,%d"), m_field.m_row, m_field.m_col, m_brick);
 }
 
 Game::Game() {

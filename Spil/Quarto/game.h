@@ -1,13 +1,13 @@
 #pragma once
 
 #define ISWITHTOP(attr)  (((attr) & 1)?true:false)
-#define ISSQUARE(attr)   (((attr) & 2)?true:false)
-#define ISBIG(attr)      (((attr) & 4)?true:false)
-#define ISBLACK(attr)    (((attr) & 8)?true:false)
+#define ISSQUARE( attr)  (((attr) & 2)?true:false)
+#define ISBIG(    attr)  (((attr) & 4)?true:false)
+#define ISBLACK(  attr)  (((attr) & 8)?true:false)
 
-#define ROWCOUNT 4
-#define COLCOUNT 4
-#define FIELDCOUNT ROWCOUNT*COLCOUNT
+#define ROWCOUNT   4
+#define COLCOUNT   4
+#define FIELDCOUNT (ROWCOUNT*COLCOUNT)
 
 class Brick {
 public:
@@ -18,9 +18,15 @@ class Field {
 public:
   char m_row;
   char m_col;
-  inline bool isField() const { return m_row >= 0; }
-  bool isValid() const;
-  String toString() const;
+  inline bool isField() const {
+    return m_row >= 0;
+  }
+  inline bool isValid() const {
+    return ((BYTE)m_row < ROWCOUNT) && ((BYTE)m_col < COLCOUNT);
+  }
+  inline String toString() const {
+    return isField() ? format(_T("(%d,%d)"),m_row,m_col) : _T("NOFIELD");
+  }
 };
 
 typedef CompactArray<Field> FieldArray;
@@ -32,19 +38,23 @@ public:
   Field m_field;
   char  m_brick;
   Move(BYTE r, BYTE c, char brick);
-  Move(const Field &f, char brick) : m_field(f), m_brick(brick) {
+  inline Move(const Field &f, char brick) : m_field(f), m_brick(brick) {
   }
   Move();
   Move(const String &s);
-  inline bool isMove() const { return m_brick != NOBRICK; }
-  String toString() const;
+  inline bool isMove() const {
+    return m_brick != NOBRICK;
+  }
+  inline String toString() const {
+    return format(_T("%s,%s"), m_field.toString().cstr(),(isMove()?format(_T("%d"), m_brick).cstr() : _T("NOBRICK")));
+  }
 };
 
 extern const Move  NOMOVE;
 extern const Field NOFIELD;
 
 typedef enum {
-  HUMAN_PLAYER = -1,
+  HUMAN_PLAYER     = -1,
   COMPUTER_PLAYER  =  1
 } Player;
 
@@ -57,7 +67,7 @@ public:
   int            m_score;
   bool           m_gameOver;
   bool           m_hasWinner;
-  BYTE  m_board[ROWCOUNT][COLCOUNT];
+  BYTE           m_board[ROWCOUNT][COLCOUNT];
 };
 
 class Game {

@@ -21,7 +21,9 @@ private:
 public:
   GameBoardObject(D3Scene &scene);
   ~GameBoardObject();
-  D3DXMATRIX getWorldMatrix() const;
+  D3PosDirUpScale getPDUS() {
+    return D3Scene::getOrigo();
+  }
   bool hasCurrentField() const {
     return m_currentField.isField();
   }

@@ -27,6 +27,9 @@ private:
   D3Scene                 m_scene;
   int                     m_selectedBrick;
   String                  m_gameName;
+#ifdef _DEBUG
+  D3SceneObject          *m_coordinateSystem;
+#endif
   GameBoardObject        *m_boardObject;
 //  GameSceneObject        *m_brickMarkerTable[16];
 //  GameSceneObject        *m_brickObject[FIELDCOUNT];
@@ -142,8 +145,8 @@ protected:
 /*
   afx_msg void OnViewLeft();
   afx_msg void OnViewRight();
-  afx_msg void OnViewResetView();
 */
+  afx_msg void OnViewResetView();
   afx_msg void OnViewLight1();
 /*
   afx_msg void OnViewLight2();

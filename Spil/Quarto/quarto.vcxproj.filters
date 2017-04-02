@@ -69,9 +69,6 @@
     <Image Include="res\board.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\markedBoard.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\quarto.ico">
       <Filter>Resource Files</Filter>
     </Image>

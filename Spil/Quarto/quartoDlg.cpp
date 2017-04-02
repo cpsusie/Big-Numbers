@@ -4,6 +4,7 @@
 #include "QuartoDlg.h"
 #include <D3DGraphics/Cube3D.h>
 #include <D3DGraphics/MeshBuilder.h>
+#include <D3DGraphics/D3CoordinateSystem.h>
 #include "AboutBox.h"
 
 #ifdef _DEBUG
@@ -13,7 +14,7 @@
 DECLARE_THISFILE;
 
 CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
-    m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
+    m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
     m_initdone             = false;
     m_selectedBrick        = NOBRICK;
     m_startPlayer          = HUMAN_PLAYER;
@@ -22,7 +23,7 @@ CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
 }
 
 void CQuartoDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
@@ -43,8 +44,8 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_COMMAND(ID_FILE_EXIT             , OnFileExit            )
     ON_COMMAND(ID_VIEW_LEFT             , OnViewLeft            )
     ON_COMMAND(ID_VIEW_RIGHT            , OnViewRight           )
-    ON_COMMAND(ID_VIEW_RESETVIEW        , OnViewResetView       )
 */
+    ON_COMMAND(ID_VIEW_RESETVIEW        , OnViewResetView       )
 
     ON_COMMAND(ID_VIEW_LIGHT1           , OnViewLight1          )
 /*
@@ -89,10 +90,14 @@ BOOL CQuartoDlg::OnInitDialog() {
     }
   }
 
-  SetIcon(m_hIcon, TRUE);           // Set big icon
-  SetIcon(m_hIcon, FALSE);      // Set small icon
+  SetIcon(m_hIcon, TRUE );
+  SetIcon(m_hIcon, FALSE);
 
   m_scene.init(getGameWindow()->m_hWnd);
+#ifdef _DEBUG
+  m_coordinateSystem  = new D3CoordinateSystem(m_scene);
+  m_scene.addSceneObject(m_coordinateSystem);
+#endif
 
   try {
     randomize();
@@ -133,7 +138,7 @@ void CQuartoDlg::OnPaint() {
 LRESULT CQuartoDlg::OnMsgRefreshView(WPARAM wp, LPARAM lp) {
   CClientDC   dc(getGameWindow());
   const CSize sz = getGameRect().Size();
-  dc.FillSolidRect( 0,0, sz.cx, sz.cy, BACKGROUNDCOLOR);
+  dc.FillSolidRect(0,0, sz.cx, sz.cy, BACKGROUNDCOLOR);
   render();
   return 0;
 }
@@ -168,12 +173,12 @@ void CQuartoDlg::createBoard() {
 }
 
 void CQuartoDlg::createLight() {
-  LIGHT light = m_scene.getDefaultLightParam(D3DLIGHT_DIRECTIONAL);
-  D3DXVECTOR3 pos = D3DXVECTOR3(-2*BOARDSIZE+HALFSIZE,BOARDSIZE,HALFSIZE);
-  D3DXVECTOR3 dir = unitVector(m_boardCenter - pos);
-  light.Diffuse   = colorToColorValue(D3DCOLOR_XRGB(192,192,192));
-  light.Position  = pos;
-  light.Direction = dir;
+  LIGHT       light = m_scene.getDefaultLightParam(D3DLIGHT_DIRECTIONAL);
+  D3DXVECTOR3 pos   = D3DXVECTOR3(-2*BOARDSIZE+HALFSIZE,BOARDSIZE,HALFSIZE);
+  D3DXVECTOR3 dir   = unitVector(m_boardCenter - pos);
+  light.Diffuse     = colorToColorValue(D3DCOLOR_XRGB(192,192,192));
+  light.Position    = pos;
+  light.Direction   = dir;
   m_scene.setLightParam(light);
   m_scene.setLightEnabled(light.m_lightIndex, true);
 }
@@ -184,8 +189,8 @@ void CQuartoDlg::toggleLight(int index, bool on) {
 }
 
 void CQuartoDlg::resetCamera() {
-  m_scene.setCameraPos(D3DXVECTOR3(0, 13.48f, 9.86f));
-  m_scene.setCameraOrientation(D3DXVECTOR3(0,-0.754f, -0.657f), D3DXVECTOR3(0,0,1));
+  m_scene.setCameraPos(D3DXVECTOR3(0, 10, -15.97f));
+  m_scene.setCameraOrientation(D3DXVECTOR3(0,-0.53f, 0.846f), D3DXVECTOR3(0,0,1));
   setWindowSize(this, CSize(947, 614));
 }
 
@@ -589,7 +594,7 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 #else
 void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  if(m_game.isGameOver() || m_game.getPlayerInTurn() != HUMAN_PLAYER) {
+  if(m_game.isGameOver() || (m_game.getPlayerInTurn() != HUMAN_PLAYER)) {
     return;
   }
 /*
@@ -870,12 +875,14 @@ void CQuartoDlg::turnBoard(int degree) {
   m_boardFrame->SetOrientation(scene,dir.x,dir.y,dir.z,up.x,up.y,up.z);
   m_d3.paint();
 }
+#endif
 
 void CQuartoDlg::OnViewResetView() {
   resetCamera();
-  m_d3.paint();
+  m_scene.render();
 }
 
+#ifdef __HIDE__
 void CQuartoDlg::OnOptionsLevelExpert() {
   checkMenuItem(this, ID_OPTIONS_LEVEL_BEGINNER, false);
   checkMenuItem(this, ID_OPTIONS_LEVEL_EXPERT  , true );
