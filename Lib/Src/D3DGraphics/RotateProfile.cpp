@@ -2,21 +2,23 @@
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/Profile.h>
 
-ProfileRotationParameters::ProfileRotationParameters(int rotateAxis, int alignx, int aligny, double rad, int edgeCount, int smoothness) {
+ProfileRotationParameters::ProfileRotationParameters(int rotateAxis, int alignx, int aligny, double rad, int edgeCount, int smoothness, bool useColor, D3DCOLOR color) {
   m_rotateAxis = rotateAxis;
   m_alignx     = alignx;
   m_aligny     = aligny;
   m_rad        = rad;
   m_edgeCount  = edgeCount;
   m_smoothness = smoothness;
+  m_useColor   = useColor;
+  m_color      = color;
 }
 
 class Point2DTo3DConverter {
 protected:
   int m_alignx, m_aligny;
 public:
-  Vertex convertPoint(const Point2D &p);
-  VertexArray  convertPoints(const Point2DArray &p);
+  Vertex      convertPoint( const Point2D      &p);
+  VertexArray convertPoints(const Point2DArray &p);
   Point2DTo3DConverter(int alignx, int aligny) { m_alignx = alignx; m_aligny = aligny; }
   int getAlignx() const { return m_alignx; }
   int getAligny() const { return m_aligny; }
@@ -105,7 +107,9 @@ void ProfileRotator::line(const Point2D &from, const Point2D &to) {
     m_meshNormalIndex  = m_meshBuilder.addNormal(normal.x,normal.y,normal.z);
   }
   if(m_pointsInOneSlice > 0) {
-    Face &face = m_meshBuilder.addFace();
+    Face &face = m_param.m_useColor 
+               ? m_meshBuilder.addFace(m_param.m_color)
+               : m_meshBuilder.addFace();
     int pIndex[4],nIndex[4];
     pIndex[0] = m_meshPointIndex - m_pointsInOneSlice;
     pIndex[1] = m_meshPointIndex - m_pointsInOneSlice - 1;
@@ -156,11 +160,9 @@ LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, con
   }
 
   MeshBuilder meshBuilder;
-  const double step = param.m_rad / param.m_edgeCount;
-
-  D3DXVECTOR3 rotaxis = createUnitVector(param.m_rotateAxis);
-
-  const double nrotOffset  = (param.m_smoothness & ROTATESMOOTH)?0.5:0;
+  const double      step       = param.m_rad / param.m_edgeCount;
+  const D3DXVECTOR3 rotaxis    = createUnitVector(param.m_rotateAxis);
+  const double      nrotOffset = (param.m_smoothness & ROTATESMOOTH)?0.5:0;
 
   int pointsInOneSlice  = 0;
   int normalsInOneSlice = 0;
@@ -172,7 +174,7 @@ LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, con
       const ProfilePolygon &pp = profile.m_polygonArray[i];
       Point2DArray normals2D   = (param.m_smoothness & NORMALSMOOTH) ? pp.getSmoothNormals() : pp.getFlatNormals();
       VertexArray  normals3D   = Point2DTo3DConverter(param.m_alignx,param.m_aligny).convertPoints(normals2D);
-      pp.apply(ProfileRotator(param,pointsInOneSlice,normalsInOneSlice,normals3D,vRotation,nRotation, meshBuilder));
+      pp.apply(ProfileRotator(param, pointsInOneSlice, normalsInOneSlice, normals3D, vRotation, nRotation, meshBuilder));
     }
     if(pointsInOneSlice == 0) {
       pointsInOneSlice  = (int)meshBuilder.getVertexArray().size();

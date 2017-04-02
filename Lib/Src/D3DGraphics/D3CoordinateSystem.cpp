@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3CoordinateSystem.h>
 #include <D3DGraphics/D3Error.h>
 

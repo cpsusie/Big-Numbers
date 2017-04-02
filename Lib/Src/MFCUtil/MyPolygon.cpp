@@ -27,10 +27,10 @@ void PolygonFiller::checkAndFill(const CPoint &p) {
   if(m_pixelAccessor->getPixel(p) == 0)
     switch(m_polygon.contains(p)) {
     case 1:
-      m_pixelAccessor->fill(p,WHITE);
+      m_pixelAccessor->fill(p,D3D_WHITE);
       break;
     case -1:
-      m_pixelAccessor->fill(p,D3DCOLOR_XRGB(255,0,0));
+      m_pixelAccessor->fill(p,D3D_RED);
       m_pointsOutside.add(p);
       break;
     case 0:
@@ -40,7 +40,7 @@ void PolygonFiller::checkAndFill(const CPoint &p) {
 
 void PolygonFiller::restoreBlackOutSideRegion() {
   for(size_t i = 0; i < m_pointsOutside.size(); i++) {
-    m_pixelAccessor->fill(m_pointsOutside[i],BLACK);
+    m_pixelAccessor->fill(m_pointsOutside[i],D3D_BLACK);
   }
 }
 
@@ -59,7 +59,7 @@ void PixRect::fillPolygon(const MyPolygon &polygon, D3DCOLOR color, bool invert)
   PixRect *pmask = new PixRect(m_device, getType(), rect.Size(), getPool(), getPixelFormat());
   psrc->fillRect(0,0,rect.Width(),rect.Height(),color);
   pmask->fillRect(0,0,rect.Width(),rect.Height(),0);   // set mask to black
-  pmask->polygon(poly,WHITE);                          // draw white frame around polygon on mask
+  pmask->polygon(poly,D3D_WHITE);                      // draw white frame around polygon on mask
 
   PolygonFiller *polygonFiller = new PolygonFiller(pmask, poly);
   poly.applyToEdge(*polygonFiller);

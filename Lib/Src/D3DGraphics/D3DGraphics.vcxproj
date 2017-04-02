@@ -253,6 +253,7 @@
     <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
+    <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="MeshToString.cpp" />
     <ClCompile Include="D3LightControl.cpp" />
     <ClCompile Include="D3LightControlDirectional.cpp" />

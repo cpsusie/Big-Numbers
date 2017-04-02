@@ -189,4 +189,6 @@ public:
   String toString() const;
 };
 
+Cube3D getBoundingBox(LPD3DXMESH mesh);
+
 #define DUMP_PRUNECOUNT

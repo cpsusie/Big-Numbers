@@ -12,6 +12,9 @@
 class Brick {
 public:
   static BYTE attr[FIELDCOUNT];
+  static inline bool isValid(char brick) {
+    return (BYTE)brick < FIELDCOUNT;
+  }
 };
 
 class Field {

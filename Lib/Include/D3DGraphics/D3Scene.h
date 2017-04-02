@@ -35,13 +35,6 @@ typedef enum {
 
 D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 
-#define D3D_BLACK  D3DCOLOR_XRGB(  0,  0,  0)
-#define D3D_WHITE  D3DCOLOR_XRGB(255,255,255)
-#define D3D_RED    D3DCOLOR_XRGB(255,  0,  0)
-#define D3D_GREEN  D3DCOLOR_XRGB(0  ,255,  0)
-#define D3D_BLUE   D3DCOLOR_XRGB(0  ,0  ,255)
-#define D3D_YELLOW D3DCOLOR_XRGB(255,255,  0)
-
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
 
 inline bool operator==(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
@@ -487,7 +480,7 @@ public:
     return format(_T("%s\nMesh:\n%s")
                  ,getName().cstr()
                  ,indentString(::toString(getMesh()),2).cstr());
-}
+  }
 };
 
 class D3LineArray : public SceneObjectWithVertexBuffer {

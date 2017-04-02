@@ -281,10 +281,10 @@ PixRect::PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT heigh
   const CSize sz(width, height);
   initSurfaces();
   create(type, sz, pixelFormat, pool);
-  fillColor(WHITE);
+  fillColor(D3D_WHITE);
 /*
   if(isValidGDIFormat()) {
-    fillRect(0,0,width,height, WHITE);
+    fillRect(0,0,width,height, D3D_WHITE);
   }
 */
 }
@@ -292,10 +292,10 @@ PixRect::PixRect(PixRectDevice &device, PixRectType type, UINT width, UINT heigh
 PixRect::PixRect(PixRectDevice &device, PixRectType type, const CSize &size, D3DPOOL pool, D3DFORMAT pixelFormat) : m_device(device) {
   initSurfaces();
   create(type, size, pixelFormat, pool);
-  fillColor(WHITE);
+  fillColor(D3D_WHITE);
 /*
   if(isValidGDIFormat()) {
-    fillRect(0,0,size.cx,size.cy,WHITE);
+    fillRect(0,0,size.cx,size.cy,D3D_WHITE);
   }
 */
 }
@@ -466,7 +466,7 @@ void PixRect::setSize(const CSize &size) {
   copy.rop(0, 0, areaToCopy.cx, areaToCopy.cy, SRCCOPY, this, 0,0);
   destroy();
   createPlainSurface(size, copy.getPixelFormat(), getPool());
-  fillRect(getRect(), WHITE);
+  fillRect(getRect(), D3D_WHITE);
   rop(0,0, areaToCopy.cx, areaToCopy.cy, SRCCOPY, &copy, 0, 0);
 }
 

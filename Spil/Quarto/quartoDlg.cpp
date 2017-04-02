@@ -2,7 +2,6 @@
 #include <Random.h>
 #include "Quarto.h"
 #include "QuartoDlg.h"
-#include <D3DGraphics/Cube3D.h>
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/D3CoordinateSystem.h>
 #include "AboutBox.h"
@@ -16,7 +15,6 @@ DECLARE_THISFILE;
 CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
     m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
     m_initdone             = false;
-    m_selectedBrick        = NOBRICK;
     m_startPlayer          = HUMAN_PLAYER;
     m_adjustingCameraFlags = 0;
 //    memset(m_brickMarkerTable, 0, sizeof(m_brickMarkerTable));
@@ -36,12 +34,12 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_WM_LBUTTONDOWN()
     ON_WM_RBUTTONDOWN()
     ON_WM_RBUTTONUP()
-/*
     ON_COMMAND(ID_FILE_NEW              , OnFileNew             )
     ON_COMMAND(ID_FILE_OPEN             , OnFileOpen            )
     ON_COMMAND(ID_FILE_SAVE             , OnFileSave            )
     ON_COMMAND(ID_FILE_SAVEAS           , OnFileSaveAs          )
     ON_COMMAND(ID_FILE_EXIT             , OnFileExit            )
+/*
     ON_COMMAND(ID_VIEW_LEFT             , OnViewLeft            )
     ON_COMMAND(ID_VIEW_RIGHT            , OnViewRight           )
 */
@@ -52,8 +50,8 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_COMMAND(ID_VIEW_LIGHT2           , OnViewLight2          )
     ON_COMMAND(ID_OPTIONS_LEVEL_BEGINNER, OnOptionsLevelBeginner)
     ON_COMMAND(ID_OPTIONS_LEVEL_EXPERT  , OnOptionsLevelExpert  )
-    ON_COMMAND(ID_OPTIONS_COLOREDGAME   , OnOptionsColoredGame  )
 */
+    ON_COMMAND(ID_OPTIONS_COLOREDGAME   , OnOptionsColoredGame  )
     ON_COMMAND(ID_HELP_ABOUTQUARTO      , OnHelpAboutquarto     )
     ON_COMMAND(ID_DUMP_SETUP            , OnDumpSetup           )
     ON_MESSAGE(ID_MSG_REFRESH_VIEW      , OnMsgRefreshView      )
@@ -103,7 +101,7 @@ BOOL CQuartoDlg::OnInitDialog() {
     randomize();
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
     createScene();
-//    OnFileNew();
+    OnFileNew();
   } catch(Exception e) {
     Message(_T("%s"),e.what());
     exit(-1);
@@ -161,7 +159,6 @@ void CQuartoDlg::createScene() {
 //  m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
 
   createBoard();
-//  createBricks();
   resetCamera();
   createLight();
 }
@@ -185,12 +182,12 @@ void CQuartoDlg::createLight() {
 
 void CQuartoDlg::toggleLight(int index, bool on) {
   m_scene.setLightEnabled(index, on);
-  m_scene.render();
+  render();
 }
 
 void CQuartoDlg::resetCamera() {
-  m_scene.setCameraPos(D3DXVECTOR3(0, 10, -15.97f));
-  m_scene.setCameraOrientation(D3DXVECTOR3(0,-0.53f, 0.846f), D3DXVECTOR3(0,0,1));
+  m_scene.setCameraPos(D3DXVECTOR3(0, -13.52f, 9.35f));
+  m_scene.setCameraOrientation(D3DXVECTOR3(0, 0.749f, -0.662f), D3DXVECTOR3(0,0,1));
   setWindowSize(this, CSize(947, 614));
 }
 
@@ -204,248 +201,42 @@ D3DXVECTOR3 CQuartoDlg::getCameraPosition() {
   return m_scene.getCameraPos();
 }
 
-#ifdef __HIDE__
-void CQuartoDlg::initFieldCenter() {
-  for(int r = 0; r < ROWCOUNT; r++) {
-    for(int c = 0; c < COLCOUNT; c++) {
-      LPDIRECT3DRMFACE face = m_boardFace[r][c];
-      int n = face->GetVertexCount();
-      D3DVECTOR middle;
-      middle.x = middle.y = middle.z = 0;
-      for(int i = 0; i < n; i++) {
-        D3DVECTOR vertex, normal;
-        face->GetVertex(i,&vertex,&normal);
-        middle += vertex;
-      }
-      middle /= n;
-      m_fieldCenter[r][c] = middle;
-    }
-  }
-}
-#endif
-
 void CQuartoDlg::selectField(const Field &f) {
   if(f.isValid()) {
     m_boardObject->markField(f);
   } else {
-    m_boardObject->unmarkCurrent();
+    m_boardObject->unmarkCurrentField();
   }
 }
 
-#ifdef __HIDE__
 void CQuartoDlg::selectBrick(int b) {
-  if(m_selectedBrick != NOBRICK) {
-    unmarkBrick(m_selectedBrick);
-  }
-  m_selectedBrick = b;
-  if(m_selectedBrick != NOBRICK) {
-    markBrick(m_selectedBrick);
-  }
-}
-#endif
-
-#ifdef __HIDE__
-void CQuartoDlg::markBrick(int b) {
-  m_d3.getSceneFrame()->AddVisual(getBrickMarker(b));
-}
-
-void CQuartoDlg::unmarkBrick(int b) {
-  m_d3.getSceneFrame()->DeleteVisual(getBrickMarker(b));
-}
-
-static void addVertex(LPDIRECT3DRMMESHBUILDER meshBuilder, const D3DVECTOR &p) {
-  int i = meshBuilder->AddVertex(p.x,p.y,p.z);
-}
-
-LPDIRECT3DRMMESHBUILDER CQuartoDlg::getBrickMarker(int b) {
-  if(m_brickMarkerTable[b] == NULL) {
-    LPDIRECT3DRMFRAME scene = m_d3.getSceneFrame();
-    LPDIRECT3DRMFRAME frame = m_brickFrame[b];
-
-    D3DRMBOX box = m_d3.getBoundingBox(frame);
-    D3DVECTOR pos;
-    m_brickFrame[b]->GetPosition(scene, &pos);
-    box.min += pos;
-    box.max += pos;
-
-    D3DVECTOR c1 = createVector(box.min.x,box.min.y,box.min.z);
-    D3DVECTOR c2 = createVector(box.max.x,box.min.y,box.min.z);
-    D3DVECTOR c3 = createVector(box.max.x,box.min.y,box.max.z);
-    D3DVECTOR c4 = createVector(box.min.x,box.min.y,box.max.z);
-
-    LPDIRECT3DRMMESHBUILDER meshBuilder = m_d3.createMeshBuilder(format(_T("brick %d"), b));
-
-    addVertex(meshBuilder, c1);
-    addVertex(meshBuilder, c2);
-    addVertex(meshBuilder, c3);
-    addVertex(meshBuilder, c4);
-    meshBuilder->AddNormal(0,1,0);
-
-    LPDIRECT3DRMFACE face;
-    CHECK3DRESULT(meshBuilder->CreateFace(&face));
-    face->AddVertexNormalIndexed(3,0);
-    face->AddVertexNormalIndexed(2,0);
-    face->AddVertexNormalIndexed(1,0);
-    face->AddVertexNormalIndexed(0,0);
-
-    face->SetColor(RGBA_MAKE(250,0,0,255));
-    face->Release();
-
-    CHECK3DRESULT(meshBuilder->SetQuality(D3DRMFILL_SOLID|D3DRMSHADE_GOURAUD|D3DRMLIGHT_ON));
-
-    m_brickMarkerTable[b] = meshBuilder;
-  }
-  return m_brickMarkerTable[b];
-}
-
-void CQuartoDlg::createBricks() {
-  m_brickMaterial[0] = createMaterial(RGB(0,0,155), RGB(0,0,255));
-  m_brickMaterial[1] = createMaterial(RGB(155,0,0), RGB(255,0,0));
-
-  for(int i = 0; i < FIELDCOUNT; i++) {
-    BYTE attr = Brick::attr[i];
-    LPDIRECT3DRMMESHBUILDER m = createBrick(ISBIG(attr),ISBLACK(attr),ISSQUARE(attr),ISWITHTOP(attr));
-    LPDIRECT3DRMFRAME frame = m_d3.createFrame(_T("BRICK"),m_d3.getSceneFrame());
-    frame->AddVisual(m);
-    m_d3.addInnerSide(frame);
-    frame->SetMaterialMode(D3DRMMATERIAL_FROMMESH);
-    m_brickFrame[i] = frame;
-//    m_d3.createShadow(m_brickFrame[i],m_light);
-  }
-}
-
-static const Point2D smallProfile1[] = { 
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,1   ),
-  Point2D( 0   ,1   )
-};
-
-static const Point2D smallProfile2[] = { 
-  Point2D( 0    ,0  ),
-  Point2D( 0.6  ,0  ),
-  Point2D( 0.6  ,0.6),
-  Point2D( 0.75 ,0.6),
-  Point2D( 0.75 ,1  ),
-  Point2D( 0    ,1  )
-};
-
-static const Point2D bigProfile1[] = { 
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,2   ),
-  Point2D( 0   ,2   )
-};
-
-static const Point2D bigProfile2[] = { 
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,1.6 ),
-  Point2D( 0.75,1.6 ),
-  Point2D( 0.75,2   ),
-  Point2D( 0   ,2   )
-};
-
-LPDIRECT3DRMMATERIAL CQuartoDlg::createMaterial(COLORREF emissive, COLORREF specular) {
-  LPDIRECT3DRMMATERIAL material = m_d3.createMaterial(5);
-  setMaterialColor(material,emissive,specular);
-  return material;
-}
-
-void CQuartoDlg::setMaterialColor(LPDIRECT3DRMMATERIAL material, COLORREF emissive, COLORREF specular) {
-  float r = (float)GetRValue(emissive) / 255;
-  float g = (float)GetGValue(emissive) / 255;
-  float b = (float)GetBValue(emissive) / 255;
-  material->SetEmissive(r,g,b);
-  r = (float)GetRValue(specular) / 255;
-  g = (float)GetGValue(specular) / 255;
-  b = (float)GetBValue(specular) / 255;
-  material->SetSpecular(r,g,b);
-}
-
-LPDIRECT3DRMMESHBUILDER CQuartoDlg::createBrick(bool big, bool black,  bool square, bool top) {
-  Profile profile;
-  if(big){
-    if(top) {
-      profile = createProfile(bigProfile2,ARRAYSIZE(bigProfile2));
-    } else {
-      profile = createProfile(bigProfile1,ARRAYSIZE(bigProfile1));
-    }
+  if(Brick::isValid(b)) {
+    markBrick(b);
   } else {
-    if(top) {
-      profile = createProfile(smallProfile2,ARRAYSIZE(smallProfile2));
-    } else {
-      profile = createProfile(smallProfile1,ARRAYSIZE(smallProfile1));
-    }
+    unmarkCurrentBrick();
   }
-
-  ProfileRotationParameters parm;
-  parm.m_alignx     = 0;
-  parm.m_aligny     = 1;
-  parm.m_rotateAxis = 1;
-  parm.m_rad        = 2*M_PI;
-  parm.m_edgeCount  = square?4:20;
-  parm.m_smoothness = square?0:ROTATESMOOTH;
-  LPDIRECT3DRMMESHBUILDER mesh = m_d3.rotateProfile(profile,parm);
-  mesh->SetMaterial(m_brickMaterial[black?1:0]);
-
-  return mesh;
 }
 
-Profile CQuartoDlg::createProfile(const Point2D *data, int n) {
-  Point2DArray points;
-  for(int i = 0; i < n; i++) {
-    points.add(data[i]);
-  }
-  return createProfile(points);
+void CQuartoDlg::markBrick(int b) {
+  m_boardObject->markBrick(b);
 }
 
-Profile CQuartoDlg::createProfile(const Point2DArray &points) {
-  Profile result;
-  ProfilePolygon polygon;
-  ProfileCurve curve(TT_PRIM_LINE);
-  polygon.m_start = points[0];
-  polygon.m_closed = false;
-  for(int i = 1; i < points.size(); i++) {
-    curve.addPoint(points[i]);
-  }
-  polygon.addCurve(curve);
-  polygon.reverseOrder();
-  result.addPolygon(polygon);
-  
-  return result;
+void CQuartoDlg::unmarkCurrentBrick() {
+  m_boardObject->unmarkCurrentBrick();
 }
 
 int CQuartoDlg::getBrickFromPoint(const CPoint &p) const {
-  LPDIRECT3DRMFRAME frame = ((C3D&)m_d3).pickFrame(p);
-  if(frame == NULL) {
-    return NOBRICK;
-  }
-  for(int b = 0; b < FIELDCOUNT; b++) {
-    if(m_brickFrame[b] == frame) {
-      return b;
-    }
-  }
-  return NOBRICK;
+  CPoint np = p;
+  ClientToScreen(&np);
+  getGameWindow()->ScreenToClient(&np);
+  return m_boardObject->getBrickFromPoint(np);
 }
-#endif
 
 Field CQuartoDlg::getFieldFromPoint(const CPoint &p) const {
   CPoint np = p;
   ClientToScreen(&np);
   getGameWindow()->ScreenToClient(&np);
   return m_boardObject->getFieldFromPoint(np);
-/*
-  Field f;
-  for(f.m_row = 0; f.m_row < ROWCOUNT; f.m_row++) {
-    for(f.m_col = 0; f.m_col < COLCOUNT; f.m_col++) {
-      if(m_boardFace[f.m_row][f.m_col] == e.m_face) {
-        return f;
-      }
-    }
-  }
-*/
-  return NOFIELD;
 }
 
 void CQuartoDlg::OnRButtonDown(UINT nFlags, CPoint point) {
@@ -597,17 +388,15 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(m_game.isGameOver() || (m_game.getPlayerInTurn() != HUMAN_PLAYER)) {
     return;
   }
-/*
   const int b = getBrickFromPoint(point);
   if(b != NOBRICK) {
     if(m_game.isSelectableBrick(b)) {
       selectBrick(b);
       selectField(NOFIELD);
-      m_d3.paint();
+      render();
       return;
     }
   }
-*/
   const Field f = getFieldFromPoint(point);
 //  if(f.isField()) {
 //    if(!m_game.isEmpty(f) || (getSelectedBrick() == NOBRICK)) {
@@ -634,7 +423,6 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 #endif
 
-#ifdef _HIDE_
 void CQuartoDlg::OnFileNew() {
   newGame(isMenuItemChecked(this,ID_OPTIONS_COLOREDGAME), m_startPlayer);
   m_startPlayer = OPPONENT(m_startPlayer);
@@ -642,7 +430,7 @@ void CQuartoDlg::OnFileNew() {
   if(m_game.getPlayerInTurn() == HUMAN_PLAYER) {
     Invalidate();
   } else {
-    executeMove(findMove());
+//    executeMove(findMove());
   }
 }
 
@@ -711,7 +499,6 @@ void CQuartoDlg::save(const String &name) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
 }
-#endif
 
 void CQuartoDlg::OnCancel() {
 }
@@ -726,13 +513,15 @@ void CQuartoDlg::OnFileExit() {
 void CQuartoDlg::OnClose() {
   OnFileExit();
 }
-/*
+
 void CQuartoDlg::newGame(bool colored, Player startPlayer, const String &name) {
   m_game.newGame(colored, startPlayer);
   refreshGraphics();
   setGameName(name);
   render();
 }
+
+/*
 
 void CQuartoDlg::executeMove(const Move &m) {
   m_game.executeMove(m);
@@ -763,7 +552,6 @@ void CQuartoDlg::endGame() {
   }
 }
 */
-#ifdef _HIDE_
 void CQuartoDlg::refreshGraphics() {
   resetBrickPositions(m_game.isColored());
   const CompactArray<Move> &list = m_game.getHistory();
@@ -775,27 +563,11 @@ void CQuartoDlg::refreshGraphics() {
 }
 
 void CQuartoDlg::resetBrickPositions(bool colored) {
-  selectBrick(NOBRICK);
-  LPDIRECT3DRMFRAME scene = m_d3.getSceneFrame();
-  for(int i = 0; i < FIELDCOUNT; i++) {
-    LPDIRECT3DRMFRAME b = m_brickFrame[i];
-    m_boardFrame->DeleteChild(b);
-    m_d3.getSceneFrame()->AddChild(b);
-    if(colored) {
-      b->SetPosition(scene,(float)((i%8)*2+0.85),(float)0.01,(float)((i/8)*17.3-0.6) );
-    } else {
-      b->SetPosition(scene,(float)((i%8)*2+0.85),(float)0.01,(float)((i/8)*2-0.8) );
-    }
-    b->SetOrientation(scene,0,0,1, 0,1,0);
-  }
+  m_boardObject->resetBrickPositions(colored);
 }
 
 void CQuartoDlg::updateGraphicsDoingMove(const Move &m) {
-  LPDIRECT3DRMFRAME b = m_brickFrame[m.m_brick];
-  m_d3.getSceneFrame()->DeleteChild(b);
-  m_boardFrame->AddChild(b);
-  const D3DVECTOR &pos = getFieldCenter(m.m_field);
-  b->SetPosition(m_boardFrame,pos.x,pos.y,pos.z);
+  m_boardObject->setBrickOnField(m.m_brick, m.m_field);
 }
 
 void CQuartoDlg::setGameName(const String &name) {
@@ -803,6 +575,8 @@ void CQuartoDlg::setGameName(const String &name) {
   SetWindowText(name.cstr());
 }
 
+
+#ifdef _HIDE_
 void CQuartoDlg::flashWinnerBlocks() {
   const FieldArray wf = m_game.getWinnerFields();
   if(wf.size() != 4) {
@@ -879,7 +653,7 @@ void CQuartoDlg::turnBoard(int degree) {
 
 void CQuartoDlg::OnViewResetView() {
   resetCamera();
-  m_scene.render();
+  render();
 }
 
 #ifdef __HIDE__
@@ -892,12 +666,12 @@ void CQuartoDlg::OnOptionsLevelBeginner() {
   checkMenuItem(this, ID_OPTIONS_LEVEL_BEGINNER, true );
   checkMenuItem(this, ID_OPTIONS_LEVEL_EXPERT  , false);
 }
+#endif
 
 void CQuartoDlg::OnOptionsColoredGame() {
   toggleMenuItem(this, ID_OPTIONS_COLOREDGAME);
   OnFileNew();
 }
-#endif
 
 void CQuartoDlg::OnViewLight1() {
   toggleLight(0, toggleMenuItem(this, ID_VIEW_LIGHT1));

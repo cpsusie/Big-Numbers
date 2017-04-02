@@ -267,6 +267,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AboutBox.cpp" />
+    <ClCompile Include="BrickObject.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="GameBoardObject.cpp" />
     <ClCompile Include="quarto.cpp" />
@@ -288,7 +289,7 @@
   <ItemGroup>
     <ClInclude Include="AboutBox.h" />
     <ClInclude Include="game.h" />
-    <ClInclude Include="GameBoardObject.h" />
+    <ClInclude Include="GraphicObjects.h" />
     <ClInclude Include="quarto.h" />
     <ClInclude Include="quartoDlg.h" />
     <ClInclude Include="Resource.h" />

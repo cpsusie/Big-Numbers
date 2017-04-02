@@ -30,7 +30,7 @@ void SobelFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -87,8 +87,8 @@ void LaplaceFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,D3D_WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -132,8 +132,8 @@ void GaussFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,D3D_WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }
@@ -172,8 +172,8 @@ void EdgeDirectionFilter::setPixRect(PixRect *src) {
   } else {
     m_result         = src->clone();
     const CSize size = src->getSize();
-    m_result->rectangle(0,0,size.cx-1,size.cy-1,WHITE);
-    m_result->rectangle(1,1,size.cx-2,size.cy-2,WHITE);
+    m_result->rectangle(0,0,size.cx-1,size.cy-1,D3D_WHITE);
+    m_result->rectangle(1,1,size.cx-2,size.cy-2,D3D_WHITE);
     m_resultPixelAccessor = m_result->getPixelAccessor();
   }
 }

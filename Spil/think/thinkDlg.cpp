@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "think.h"
+#include <MFCUtil/ColorSpace.h>
 #include "thinkDlg.h"
 
 #ifdef _DEBUG
@@ -76,12 +77,6 @@ void CThinkDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CDialog::OnSysCommand(nID, lParam);
   }
 }
-
-#define BLACK RGB(0,0,0)
-#define RED   RGB(255,0,0)
-#define BLUE  RGB(0,0,255)
-#define WHITE RGB(255,255,255)
-#define GRAY  RGB(192,192,192)
 
 void CThinkDlg::drawLine(CClientDC &dc, int x1, int y1, int x2, int y2) {
   CPen mypen;

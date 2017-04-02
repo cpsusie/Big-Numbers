@@ -2,16 +2,19 @@
 
 #include <MFCUtil/ShapeFunctions.h>
 #include <MFCUtil/PolygonCurve.h>
+#include <D3DGraphics/D3Math.h>
 
 class ProfileRotationParameters {
 public:
-  ProfileRotationParameters(int rotateAxis=0, int alignx=0, int aligny=1, double rad=2*D3DX_PI, int edgeCount=20, int smoothness=0);
-  int    m_rotateAxis;
-  int    m_alignx;
-  int    m_aligny;
-  double m_rad;
-  int    m_edgeCount;
-  int    m_smoothness;
+  ProfileRotationParameters(int rotateAxis=0, int alignx=0, int aligny=1, double rad=2*D3DX_PI, int edgeCount=20, int smoothness=0, bool useColor=false, D3DCOLOR color=0);
+  int      m_rotateAxis;
+  int      m_alignx;
+  int      m_aligny;
+  double   m_rad;
+  int      m_edgeCount;
+  int      m_smoothness;
+  bool     m_useColor;
+  D3DCOLOR m_color;
 };
 
 class ProfileStretchParameters {

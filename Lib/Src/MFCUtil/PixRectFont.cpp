@@ -69,7 +69,7 @@ GlyphData::GlyphData(PixRectDevice &device, HDC hdc, _TUCHAR ch, const MAT2 &m) 
     for(int x = 0; x < width; rowBits++) {
       for(BYTE mask = 0x80; mask && x < width; x++, mask >>= 1) {
         if(*rowBits&mask) {
-          pa->setPixel(x,y,WHITE);
+          pa->setPixel(x,y,D3D_WHITE);
 //          fprintf(logFile,"#");
         }
 //      else {

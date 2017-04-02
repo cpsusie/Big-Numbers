@@ -135,8 +135,20 @@ public:
   String toString() const;
 };
 
-#define WHITE D3DCOLOR_XRGB(255, 255, 255)
-#define BLACK D3DCOLOR_XRGB(0  , 0  , 0  )
-#define RED   D3DCOLOR_XRGB(255, 0  , 0  )
-#define GREEN D3DCOLOR_XRGB(0  , 255, 0  )
-#define BLUE  D3DCOLOR_XRGB(0  , 0  , 255)
+// D3DCOLOR constants
+#define D3D_BLACK  D3DCOLOR_XRGB(  0,  0,  0)
+#define D3D_WHITE  D3DCOLOR_XRGB(255,255,255)
+#define D3D_RED    D3DCOLOR_XRGB(255,  0,  0)
+#define D3D_GREEN  D3DCOLOR_XRGB(0  ,255,  0)
+#define D3D_BLUE   D3DCOLOR_XRGB(0  ,0  ,255)
+#define D3D_GREY   D3DCOLOR_XRGB(192,192,192)
+#define D3D_YELLOW D3DCOLOR_XRGB(255,255,  0)
+
+// COLORREF constants
+#define BLACK      RGB(0  ,0  ,0  )
+#define WHITE      RGB(255,255,255)
+#define RED        RGB(255,0  ,0  )
+#define BLUE       RGB(0  ,0  ,255)
+#define GREEN      RGB(0  ,255,0  )
+#define GREY       RGB(192,192,192)
+#define YELLOW     RGB(255,255,0  )

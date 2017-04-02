@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <MFCUtil/ColorSpace.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -109,11 +110,6 @@ BOOL CReversiDlg::PreTranslateMessage(MSG* pMsg) {
 // If you add a minimize button to your dialog, you will need the code below
 // to draw the icon.  For MFC applications using the document/view model,
 // this is automatically done for you by the framework.
-
-#define BLACK RGB(0,0,0)
-#define RED   RGB(255,0,0)
-#define BLUE  RGB(0,0,255)
-#define WHITE RGB(255,255,255)
 
 void CReversiDlg::drawLine(CDC &dc, int x1, int y1, int x2, int y2) {
   CPen mypen,*origpen;

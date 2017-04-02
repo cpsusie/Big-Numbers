@@ -2,9 +2,6 @@
 #include <MFCUtil/WinTools.h>
 #include "ChessGraphics.h"
 
-#define RED   RGB(255,0,0)
-#define BLUE  RGB(0,0,255)
-
 #define PLAYERTEXTCOLOR(player) ((player == WHITEPLAYER) ? WHITE : BLACK)
 #define PLAYERBKCOLOR(  player) ((player == WHITEPLAYER) ? BLACK : WHITE)
 

@@ -1,15 +1,13 @@
 #include "pch.h"
 #include <Date.h>
 #include <MFCUtil/WinTools.h>
+#include <MFCUtil/ColorSpace.h>
 #include <MFCUtil/Coordinatesystem/SystemPainter.h>
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
-
-#define WHITE RGB(255,255,255)
-#define BLACK RGB(0,0,0)
 
 DEFINECLASSNAME(CCoordinateSystem);
 

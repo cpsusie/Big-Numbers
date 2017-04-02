@@ -195,7 +195,7 @@ AlignedTextImage::AlignedTextImage(PixRectDevice &device, FontCache &fontCache, 
   setSize(size);
   hdc    = getDC();
   oldGDI = SelectObject(hdc, *font);
-  if(backgroundColor != WHITE) {
+  if(backgroundColor != D3D_WHITE) {
     SetBkColor(hdc, D3DCOLOR2COLORREF(backgroundColor));
   }
 //  if(!textFont) SetTextColor(hdc, RGB(0,0,128));
@@ -333,7 +333,7 @@ ExpressionPainter::ExpressionPainter(PixRectDevice &device, const Expression &ex
 , m_decimals(    decimals       )
 , m_maxWidth(    maxWidth       )
 {
-  m_backgroundColor = WHITE;
+  m_backgroundColor = D3D_WHITE;
   m_getNumberActive = false;
 }
 
@@ -354,13 +354,13 @@ PixRect *ExpressionPainter::paintExpression(int fontSize) {
 }
 
 AlignedImage *ExpressionPainter::createImage(const CSize &size) {
-  AlignedImage *image = (m_backgroundColor != WHITE) ? new AlignedImage(m_device, 0, size, m_backgroundColor) : new AlignedImage(m_device, 0, size);
+  AlignedImage *image = (m_backgroundColor != D3D_WHITE) ? new AlignedImage(m_device, 0, size, m_backgroundColor) : new AlignedImage(m_device, 0, size);
   m_imageTable.add(image);
   return image;
 }
 
 AlignedImage *ExpressionPainter::createTextImage(const CSize &size) {
-  AlignedImage *image = (m_backgroundColor != WHITE) 
+  AlignedImage *image = (m_backgroundColor != D3D_WHITE) 
                       ? new AlignedTextImage(m_device, s_fontCache, size, m_backgroundColor) 
                       : new AlignedTextImage(m_device, s_fontCache, size);
   m_imageTable.add(image);
@@ -686,7 +686,7 @@ AlignedImage *ExpressionPainter::getPowerImage(const ExpressionNode *n, int font
 
 //  m_backgroundColor       = D3DCOLOR_XRGB(255,0,0);
   AlignedImage *expoImage = getParenthesizedImage(exponent, n, expoFontSize, expoRect);
-//  m_backgroundColor       = WHITE;
+//  m_backgroundColor       = D3D_WHITE;
 
   if(baseImage->getImageType() == NORMAL_IMAGE) {
     baseImage->setAlignment(0);
@@ -717,7 +717,7 @@ AlignedImage *ExpressionPainter::getRootImage(const ExpressionNode *n, int fontS
   
 //  m_backgroundColor = D3DCOLOR_XRGB(255,0,0);
   AlignedImage         *rootSignImage = getOpImage(ROOT, rootSignFontSize, rootSignRect);
-//  m_backgroundColor = WHITE;
+//  m_backgroundColor = D3D_WHITE;
 
 //  PixRect *rootCopy = rootSignImage->clone(true);
 //  PixRect::showPixRect(rootCopy);
@@ -935,7 +935,7 @@ AlignedImage *ExpressionPainter::getIndexedImage(const ExpressionNode *n, int fo
   leftRect.addChild(endRect).addChild(opRect).addChild(startRect);
   AlignedImage *leftImage        = stackImages(leftRect, true, endExprImage, operatorImage, startAssignImage, NULL);
   leftImage->setAlignment(endExprImage->getHeight() + operatorImage->getHeight()/2);
-//  m_backgroundColor = WHITE;
+//  m_backgroundColor = D3D_WHITE;
   AlignedImage *rightImage       = getImage(n->child(2), fontSize, rightRect);
   rect.addChild(leftRect).addChild(rightRect);
   return concatImages(rect, leftImage, rightImage, NULL);

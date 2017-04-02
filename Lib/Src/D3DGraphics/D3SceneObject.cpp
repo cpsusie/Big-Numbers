@@ -98,7 +98,7 @@ void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
 }
 
 void SceneObjectWithVertexBuffer::prepareDraw(UINT flags) {
-  V(getDevice()->SetStreamSource( 0, m_vertexBuffer, 0, m_vertexSize));
+  V(getDevice()->SetStreamSource(0, m_vertexBuffer, 0, m_vertexSize));
   V(getDevice()->SetFVF(m_fvf));
   D3SceneObject::prepareDraw(flags);
 }
@@ -162,13 +162,13 @@ void SceneObjectWithMesh::releaseMesh() {
 
 void *SceneObjectWithMesh::lockVertexBuffer() {
   void *vertices;
-  V(m_mesh->LockVertexBuffer( 0, &vertices));
+  V(m_mesh->LockVertexBuffer(0, &vertices));
   return vertices;
 }
 
 void *SceneObjectWithMesh::lockIndexBuffer() {
   void *items;
-  V(m_mesh->LockIndexBuffer( 0, &items));
+  V(m_mesh->LockIndexBuffer(0, &items));
   return items;
 }
 
@@ -219,7 +219,7 @@ void D3LineArray::initBuffer(const Line *lines, int n) {
 
 void D3LineArray::draw() {
   prepareDraw();
-  V(getDevice()->DrawPrimitive( D3DPT_LINELIST , 0, m_primitiveCount));
+  V(getDevice()->DrawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount));
 }
 
 // ----------------------------------------------------- D3LineArrow ------------------------------------------------------

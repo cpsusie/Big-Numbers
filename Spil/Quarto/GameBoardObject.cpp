@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <D3DGraphics/MeshBuilder.h>
-#include "GameBoardObject.h"
+#include "GraphicObjects.h"
 
 DECLARE_THISFILE;
 
@@ -151,7 +151,12 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
 //      debugLog(_T("MarkField:\n%s"), indentString(mfo->toString(),2).cstr());
     }
   }
-  m_currentField.m_row = m_currentField.m_col = -1;
+  for (BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
+    m_scene.addSceneObject(m_brickObject[attr] = new BrickObject(m_scene, attr));
+  }
+  resetBrickPositions(false);
+  m_currentField = NOFIELD;
+  m_currentBrick = NOBRICK;
 }
 
 GameBoardObject::~GameBoardObject() {
@@ -163,49 +168,102 @@ GameBoardObject::~GameBoardObject() {
       }
     }
   }
+  for(int i = 0; i < ARRAYSIZE(m_brickObject); i++) {
+    delete m_brickObject[i];
+  }
 }
 
 void GameBoardObject::draw() {
   drawMeshUsingTexture(getDevice(), getMesh(), m_boardTexture);
 }
 
+#define BRICKZ 0.05f
+
+D3DXVECTOR3 GameBoardObject::getFieldCenter(const Field &f) const {
+  assert(f.isValid());
+  return D3DXVECTOR3((s_gridLines[f.m_row]+s_gridLines[f.m_row+1])/2
+                    ,(s_gridLines[f.m_col]+s_gridLines[f.m_col+1])/2
+                    ,BRICKZ
+                    );
+}
+
+void GameBoardObject::resetBrickPositions(bool colored) {
+  for(int i = 0; i < ARRAYSIZE(m_brickObject); i++) {
+    BrickObject *b = m_brickObject[i];
+    const float x = (float)((i%8)*2-HALFSIZE+0.85);
+    if(colored) {
+      b->setPos(D3DXVECTOR3(x, (float)((i/8)*(BOARDSIZE-1.5f)-HALFSIZE+0.85),BRICKZ));
+    } else {
+      b->setPos(D3DXVECTOR3(x, (float)((i/8)*2-HALFSIZE-0.8f)               ,BRICKZ));
+    }
+  }
+}
+
+void GameBoardObject::setBrickOnField(BYTE brick, const Field &f) {
+  m_brickObject[brick]->setPos(getFieldCenter(f));
+}
+
 void GameBoardObject::markField(const Field &f) {
   if(!f.isValid()) return;
-  unmarkCurrent();
+  unmarkCurrentField();
   m_currentField = f;
-  setCurrentSelected(true);
+  setCurrentFieldSelected(true);
 }
 
-void GameBoardObject::unmarkCurrent() {
+void GameBoardObject::unmarkCurrentField() {
   if(!hasCurrentField()) return;
-  setCurrentSelected(false);
-  m_currentField.m_row = m_currentField.m_col = -1;
+  setCurrentFieldSelected(false);
+  m_currentField = NOFIELD;
 }
 
-void GameBoardObject::setCurrentSelected(bool selected) {
+void GameBoardObject::setCurrentFieldSelected(bool selected) {
   BoardFieldObject *fld = m_fieldObject[m_currentField.m_row][m_currentField.m_col];
   fld->setSelected(selected);
 }
 
+void GameBoardObject::markBrick(char brick) {
+  if(!Brick::isValid(brick)) return;
+  unmarkCurrentBrick();
+  m_currentBrick = brick;
+  setCurrentBrickSelected(true);
+}
+
+void GameBoardObject::unmarkCurrentBrick() {
+  if(hasCurrentBrick()) setCurrentBrickSelected(false);
+  m_currentBrick = NOBRICK;
+}
+
+void GameBoardObject::setCurrentBrickSelected(bool selected) {
+  m_brickObject[m_currentBrick]->setMarked(selected);
+}
+
+int GameBoardObject::getBrickFromPoint(const CPoint &p) const {
+  const D3SceneObject *obj = m_scene.getPickedObject(p);
+  if((obj == NULL) || (obj == this)) {
+    return NOBRICK;
+  }
+  for(int b = 0; b < FIELDCOUNT; b++) {
+    if(m_brickObject[b] == obj) {
+      return b;
+    }
+  }
+  return NOBRICK;
+}
+
 Field GameBoardObject::getFieldFromPoint(const CPoint &p) const {
-  D3DXVECTOR3    hitPoint;
-  D3PickedInfo   info;
-  D3SceneObject *obj = m_scene.getPickedObject(p, PICK_ALL, &hitPoint, &info);
+  const D3SceneObject *obj = m_scene.getPickedObject(p);
   if(obj == NULL || obj == this) {
     return NOFIELD;
   }
-//  debugLog(_T("getFieldFromPoint(%d,%d):hitPoint:%s, %s\n"), p.x,p.y, ::toString(hitPoint).cstr(), info.toString().cstr());
   for (int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
       if(m_fieldObject[r][c] == obj) {
         Field result;
         result.m_row = r;
         result.m_col = c;
-//          debugLog(_T("Found field %s\n"), result.toString().cstr());
         return result;
       }
     }
   }
-//  debugLog(_T("No field selected\n"));
   return NOFIELD;
 }
