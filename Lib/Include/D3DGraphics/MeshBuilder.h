@@ -2,6 +2,7 @@
 
 #include <MFCUtil/D3DeviceFactory.h>
 #include <D3DGraphics/D3Math.h>
+#include <D3DGraphics/Cube3D.h>
 
 class VertexNormalTextureIndex {
 public:
@@ -24,10 +25,12 @@ public:
   }
 };
 
+typedef CompactArray<VertexNormalTextureIndex> VNTIArray;
+
 class Face {
 private:
-  CompactArray<VertexNormalTextureIndex> m_data;
-  D3DCOLOR                               m_diffuseColor;
+  VNTIArray m_data;
+  D3DCOLOR  m_diffuseColor;
 public:
   Face(D3DCOLOR diffuseColor, size_t capacity=3) : m_data(capacity) { 
     m_diffuseColor = diffuseColor;
@@ -47,7 +50,10 @@ public:
   inline UINT getIndexCount() const {
     return (UINT)m_data.size();
   }
-  inline const CompactArray<VertexNormalTextureIndex> &getIndices() const {
+  inline bool isEmpty() const {
+    return m_data.isEmpty();
+  }
+  inline const VNTIArray &getIndices() const {
     return m_data;
   }
   inline int getDiffuseColor() const {
@@ -175,12 +181,12 @@ public:
   inline const TextureVertexArray &getTextureVertexArray() const {
     return m_textureVertexArray;
   }
-/*
+
   void optimize();
-*/
+  Cube3D getBoundingBox() const;
   LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
-  void dump(const String &fileName = EMPTYSTRING) const;
+  String toString() const;
 };
 
 #define DUMP_PRUNECOUNT

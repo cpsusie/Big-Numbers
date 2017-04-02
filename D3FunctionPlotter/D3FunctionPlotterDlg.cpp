@@ -152,6 +152,8 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   setShadeMode(   m_scene.getShadeMode()  );
 
   m_coordinateSystem  = new D3CoordinateSystem(m_scene);
+  m_scene.addSceneObject(m_coordinateSystem);
+
   m_lightDlgThread    = CPropertyDlgThread::startThread(new CLightDlg(   m_scene, this));
   m_materialDlgThread = CPropertyDlgThread::startThread(new CMaterialDlg(m_scene, this));
 

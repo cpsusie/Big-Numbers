@@ -4,7 +4,8 @@
 
 DECLARE_THISFILE;
 
-int D3Scene::m_textureCoordCount;
+int                   D3Scene::s_textureCoordCount;
+const D3PosDirUpScale D3Scene::s_pdusOrigo;
 
 D3Scene::D3Scene() {
   m_device            = NULL;
@@ -44,7 +45,7 @@ void D3Scene::init(HWND hwnd) {
   D3DCAPS deviceCaps;
   V(m_device->GetDeviceCaps(&deviceCaps));
 
-  m_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
+  s_textureCoordCount = deviceCaps.FVFCaps & D3DFVFCAPS_TEXCOORDCOUNTMASK;
   m_maxLightCount     = deviceCaps.MaxActiveLights;
   m_lightsEnabled     = new BitSet(m_maxLightCount);
   m_lightsDefined     = new BitSet(m_maxLightCount);

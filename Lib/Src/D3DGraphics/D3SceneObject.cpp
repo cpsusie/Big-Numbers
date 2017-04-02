@@ -6,7 +6,7 @@ DECLARE_THISFILE;
 
 // ------------------------------------------------ D3SceneObject ---------------------------------------------------
 
-void D3SceneObject::prepareDraw(unsigned int flags) {
+void D3SceneObject::prepareDraw(UINT flags) {
   if(flags & USE_SCENEFILLMODE ) {
     V(getDevice()->SetRenderState(D3DRS_FILLMODE,  m_scene.getFillMode()));
   }
@@ -19,7 +19,7 @@ void D3SceneObject::prepareDraw(unsigned int flags) {
 }
 
 bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
-  LPD3DXMESH mesh = ((D3SceneObject*)this)->getMesh();
+  LPD3DXMESH mesh = getMesh();
   if(mesh == NULL) {
     return false;
   }
@@ -43,6 +43,8 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
 
   if(hit && info != NULL) {
     info->m_faceIndex = faceIndex;
+    info->m_tv.u = pu;
+    info->m_tv.v = pv;
     void *indexItems;
     LPDIRECT3DINDEXBUFFER indexBuffer;
     V(mesh->GetIndexBuffer(&indexBuffer));
@@ -53,19 +55,18 @@ bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInf
 
     const int vertex0Index = faceIndex * 3;
     if(use32Bit) {
-      unsigned long *ip = (unsigned long*)indexItems;
+      const ULONG *ip = (ULONG*)indexItems;
       info->m_i1 = ip[vertex0Index+0];
       info->m_i2 = ip[vertex0Index+1];
       info->m_i3 = ip[vertex0Index+2];
     } else {
-      unsigned short *ip = (unsigned short*)indexItems;
+      const USHORT *ip = (USHORT*)indexItems;
       info->m_i1 = ip[vertex0Index+0];
       info->m_i2 = ip[vertex0Index+1];
       info->m_i3 = ip[vertex0Index+2];
     }
     V(indexBuffer->Unlock());
   }
-
   return hit ? true : false;
 }
 
@@ -104,7 +105,6 @@ void SceneObjectWithVertexBuffer::prepareDraw(UINT flags) {
 
 #define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
 
-
 // ------------------------------------------------ SceneObjectWithIndexBuffer ---------------------------------------------------
 
 SceneObjectWithIndexBuffer::SceneObjectWithIndexBuffer(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
@@ -118,9 +118,9 @@ SceneObjectWithIndexBuffer::~SceneObjectWithIndexBuffer() {
 }
 
 void *SceneObjectWithIndexBuffer::allocateIndexBuffer(bool int32, int count) {
-  const int itemSize = int32 ? sizeof(long) : sizeof(short);
-  const int bufferSize = count * itemSize;
-  void *bufferItems = NULL;
+  const int itemSize    = int32 ? sizeof(long) : sizeof(short);
+  const int bufferSize  = count * itemSize;
+  void     *bufferItems = NULL;
   V(getDevice()->CreateIndexBuffer(bufferSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_indexBuffer, NULL));
   V(m_indexBuffer->Lock(0,0,&bufferItems, 0));
   return bufferItems;
@@ -135,8 +135,8 @@ void SceneObjectWithIndexBuffer::prepareDraw(UINT flags) {
   V(getDevice()->SetIndices(m_indexBuffer));
 }
 
-#define GETLOCKEDSHORTBUFFER(count) (unsigned short*)allocateIndexBuffer(false, count)
-#define GETLOCKEDLONGBUFFER( count) (unsigned long* )allocateIndexBuffer(true , count)
+#define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)
+#define GETLOCKEDLONGBUFFER( count) (ULONG* )allocateIndexBuffer(true , count)
 
 // ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
@@ -256,7 +256,7 @@ D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D
   vtx2->setPosAndNormal(p,            -vn); vtx2++;
 
   for(int i = 0; i < FANCOUNT; i++) {
-    radius1 = rotate(radius1, v ,  radians(360.0f/FANCOUNT));
+    radius1 = rotate(radius1, v,  radians(360.0f/FANCOUNT));
     radius2 = rotate(radius2, v, -radians(360.0f/FANCOUNT));
     vtx1[i].setPosAndNormal(cirkelCenter + radius1, unitVector(radius1));
     vtx2[i].setPosAndNormal(cirkelCenter + radius2, -vn);
@@ -360,6 +360,5 @@ CurveArray createSphereObject(double r) {
     }
     curves.add(va);
   }
-
   return curves;
 }

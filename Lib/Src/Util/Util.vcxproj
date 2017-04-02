@@ -477,6 +477,7 @@
     <ClCompile Include="HashSetImpl.cpp" />
     <ClCompile Include="HashSetIterator.cpp" />
     <ClCompile Include="HexDump.cpp" />
+    <ClCompile Include="IndentString.cpp" />
     <ClCompile Include="InputDouble.cpp" />
     <ClCompile Include="InputInt.cpp" />
     <ClCompile Include="InputInt64.cpp" />

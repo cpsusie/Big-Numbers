@@ -67,7 +67,10 @@ public:
     return (x <= p.x) && (y <= p.y) && (z <= p.z);
   }
 
-  String toString(int dec = 3) const;
+  inline String toString(int dec = 3) const {
+    const int n = dec+3;
+    return format(_T("(% *.*lf,% *.*lf,% *.*lf)"), n,dec,x, n,dec,y, n,dec,z);
+  }
 };
 
 double angle(const Point3D &p1, const Point3D &p2);  // angle in radians between p1 and p2

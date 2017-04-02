@@ -18,8 +18,3 @@ double angle(const Point3D &p1, const Point3D &p2) {
     }
   }
 }
-
-String Point3D::toString(int dec) const {
-  const int n = dec+3;
-  return format(_T("(% *.*f,% *.*f,% *.*f)"), n,dec,x, n,dec,y, n,dec,z);
-}

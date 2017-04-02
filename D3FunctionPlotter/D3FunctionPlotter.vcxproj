@@ -295,7 +295,6 @@
     <ClCompile Include="ColorDlg.cpp" />
     <ClCompile Include="colormap.cpp" />
     <ClCompile Include="ColormapDialog.cpp" />
-    <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="D3FunctionPlotter.cpp" />
     <ClCompile Include="D3FunctionPlotterDlg.cpp" />
     <ClCompile Include="DrawTool.cpp" />
@@ -332,7 +331,6 @@
     <ClInclude Include="ColormapDialog.h" />
     <ClInclude Include="colormap.h" />
     <ClInclude Include="ComboBoxExprHelp.h" />
-    <ClInclude Include="D3CoordinateSystem.h" />
     <ClInclude Include="D3FunctionPlotter.h" />
     <ClInclude Include="D3FunctionPlotterDlg.h" />
     <ClInclude Include="DrawTool.h" />

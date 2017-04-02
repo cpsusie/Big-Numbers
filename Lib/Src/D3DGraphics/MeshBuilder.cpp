@@ -154,6 +154,7 @@ bool MeshBuilder::isOk() const {
   return m_validateOk;
 }
 
+
 bool MeshBuilder::has1NormalPerVertex() const {
   if(!m_vertexNormalChecked) {
     check1NormalPerVertex();
@@ -168,6 +169,47 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
   const int    faceCount1Side   = getTriangleCount();
   const int    faceCount        = faceCount1Side * factor;
   return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
+}
+
+Cube3D MeshBuilder::getBoundingBox() const {
+  Cube3D       result(Point3D(0,0,0),Point3D(0,0,0));
+  const size_t faceCount = m_faceArray.size();
+  size_t       i;
+  bool         firstTime = true;
+  const int    maxVertexIndex  = (int)m_vertices.size() - 1;
+  for(i = 0; i < faceCount; i++) {
+    const Face &f = m_faceArray[i];
+    if(f.isEmpty()) continue;
+    const size_t n = f.getIndexCount();
+    const CompactArray<VertexNormalTextureIndex> &a = f.getIndices();
+    for(size_t j = 0; j < n; j++) {
+      const int vi = a[j].m_vIndex;
+      if((vi >= 0) && (vi <= maxVertexIndex)) {
+        const Vertex &v = m_vertices[vi];
+        if(firstTime) {
+          result.m_rtf = result.m_lbn = v;
+          firstTime = false;
+        } else {
+          if(v.x < result.m_lbn.x) {
+            result.m_lbn.x = v.x;
+          } else if(v.x > result.m_rtf.x) {
+            result.m_rtf.x = v.x;
+          }
+          if(v.y < result.m_lbn.y) {
+            result.m_lbn.y = v.y;
+          } else if(v.y > result.m_rtf.y) {
+            result.m_rtf.y = v.y;
+          }
+          if(v.z < result.m_lbn.z) {
+            result.m_lbn.z = v.z;
+          } else if(v.z > result.m_rtf.z) {
+            result.m_rtf.z = v.z;
+          }
+        }
+      }
+    }
+  }
+  return result;
 }
 
 static Semaphore   meshCreatorGate;
@@ -342,7 +384,7 @@ private:
   }
 
 public:
-  MeshCreator(const MeshBuilder *mb) : m_mb(*mb) {
+  MeshCreator(const MeshBuilder &mb) : m_mb(mb) {
   }
 
   LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
@@ -354,69 +396,101 @@ public:
   }
 };
 
-/*
-typedef struct {
-  const Vertex *m_v, *m_n;
-  int m_faceIndex, m_vindex;
-} TmpVertex;
+template<class VertexType> class MeshCreator1 {
+private:
+  const MeshBuilder &m_mb;
+public:
+  MeshCreator1(const MeshBuilder &mb) : m_mb(mb) {
+  }
+  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
+    if(m_mb.use32BitIndices(doubleSided)) {
+      return MeshCreator<VertexType, ULONG >(m_mb).createMesh(device, doubleSided);
+    } else {
+      return MeshCreator<VertexType, USHORT>(m_mb).createMesh(device, doubleSided);
+    }
+  }
+};
 
-static int tmpVertexCmp(const TmpVertex &tv1, const TmpVertex &tv2) {
-  const Vertex &v1 = *tv1.m_v;
-  const Vertex &v2 = *tv2.m_v;
+typedef struct {
+  const Vertex        *m_v, *m_n;
+  const TextureVertex *m_t;
+  int m_faceIndex, m_index;
+} TmpVNTI;
+
+static int tmpVertexCmp(const TmpVNTI &tv1, const TmpVNTI &tv2) {
+  const Vertex *v1 = tv1.m_v, *v2 = tv2.m_v;
   int c;
-  c = sign(v1.x - v2.x); if(c) return c;
-  c = sign(v1.y - v2.y); if(c) return c;
-  c = sign(v1.z - v2.z); if(c) return c;
-  const Vertex &n1 = *tv1.m_n;
-  const Vertex &n2 = *tv2.m_n;
-  c = sign(n1.x - n2.x); if(c) return c;
-  c = sign(n1.y - n2.y); if(c) return c;
-  c = sign(n1.z - n2.z); if(c) return c;
+  c = sign(v1->x - v2->x); if(c) return c;
+  c = sign(v1->y - v2->y); if(c) return c;
+  c = sign(v1->z - v2->z); if(c) return c;
+  const Vertex *n1 = tv1.m_n, *n2 = tv2.m_n;
+  if(n1 != n2) {
+    if(!n2) {
+      return 1;
+    } else if(!n1) {
+      return -1;
+    } else {
+      c = sign(n1->x - n2->x); if(c) return c;
+      c = sign(n1->y - n2->y); if(c) return c;
+      c = sign(n1->z - n2->z); if(c) return c;
+    }
+  }
+  const TextureVertex *t1 = tv1.m_t, *t2 = tv2.m_t;
+  if(t1 != t2) {
+    if(!t2) {
+      return 1;
+    } else if(!t1) {
+      return -1;
+    } else {
+      c = sign(t1->u - t2->u); if(c) return c;
+      c = sign(t1->v - t2->v); if(c) return c;
+    }
+  }
   return 0;
 }
 
-inline bool operator==(const TmpVertex &tv1, const TmpVertex &tv2) {
+inline bool operator==(const TmpVNTI &tv1, const TmpVNTI &tv2) {
   return tmpVertexCmp(tv1, tv2) == 0;
 }
 
 void MeshBuilder::optimize() {
-  const int faceCount = m_faceArray.size();
-
-  CompactArray<TmpVertex> tvArray;
+  const int             faceCount = (int)m_faceArray.size();
+  CompactArray<TmpVNTI> tmpArray;
   for(int f = 0; f < faceCount; f++) {
-    const Face                            &face         = m_faceArray[f];
-    const CompactArray<VertexNormalIndex> &vnArray      = face.getIndices();
-    const int                              aSize        = vnArray.size();
+    const VNTIArray &a     = m_faceArray[f].getIndices();
+    const int        aSize = (int)a.size();
     for(int v = 0; v < aSize; v++) {
-      const VertexNormalIndex &vn = vnArray[v];
-      TmpVertex tv;
-      tv.m_faceIndex = f;
-      tv.m_vindex    = v;
-      tv.m_v         = &m_vertices[vn.m_vIndex];
-      tv.m_n         = &m_normals[vn.m_nIndex];
-      tvArray.add(tv);
+      const VertexNormalTextureIndex &vnti = a[v];
+      tmpArray.add(TmpVNTI());
+      TmpVNTI &tmp    = tmpArray.last();
+      tmp.m_faceIndex = f;
+      tmp.m_index     = v;
+      tmp.m_v         = &m_vertices[vnti.m_vIndex];
+      tmp.m_n         = (vnti.m_nIndex<0) ? NULL : &m_normals[           vnti.m_nIndex];
+      tmp.m_t         = (vnti.m_tIndex<0) ? NULL : &m_textureVertexArray[vnti.m_tIndex];
     }
   }
-  const int n = tvArray.size();
+  const size_t n = tmpArray.size();
   if(n > 0) {
-    tvArray.sort(tmpVertexCmp);
-    TmpVertex               *lastTv = &tvArray[0];
-    const VertexNormalIndex *lastVn = &m_faceArray[lastTv->m_faceIndex].m_data[lastTv->m_vindex];
-    for(int i = 1; i < n; i++) {
-      TmpVertex *tv = &tvArray[i];
-      if(*tv == *lastTv) {
-        VertexNormalIndex &vn = m_faceArray[tv->m_faceIndex].m_data[tv->m_vindex];
+    tmpArray.sort(tmpVertexCmp);
+    TmpVNTI                        *lastTmp = &tmpArray[0];
+    const VertexNormalTextureIndex *lastVn  = &m_faceArray[lastTmp->m_faceIndex].m_data[lastTmp->m_index];
+    for(size_t i = 1; i < n; i++) {
+      TmpVNTI &tmp = tmpArray[i];
+      if(tmp == *lastTmp) {
+        VertexNormalTextureIndex &vn = m_faceArray[tmp.m_faceIndex].m_data[tmp.m_index];
         vn.m_vIndex = lastVn->m_vIndex;
         vn.m_nIndex = lastVn->m_nIndex;
+        vn.m_tIndex = lastVn->m_tIndex;
       } else {
-        lastTv = tv;
-        lastVn = &m_faceArray[lastTv->m_faceIndex].m_data[lastTv->m_vindex];
+        lastTmp = &tmp;
+        lastVn  = &m_faceArray[tmp.m_faceIndex].m_data[tmp.m_index];
       }
     }
+    pruneUnused();
   }
-  pruneUnused();
 }
-*/
+
 void MeshBuilder::pruneUnused() {
   const int vCount = getVertexCount();
   const int nCount = getNormalCount();
@@ -526,97 +600,42 @@ LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) co
   if(!isOk()) {
     throwException(_T("MeshBuilder inconsistent"));
   }
+//  debugLog(_T("%s:\n%s"), __TFUNCTION__           , indentString(toString()     , 2).cstr());
 
-  const bool use32Bit = use32BitIndices(doubleSided);
+  MeshBuilder copy(*this);
+//  debugLog(_T("%s:\n%s"), _T("Copy (unoptimized)"), indentString(copy.toString(), 2).cstr());
 
-  if(hasNormals()) {
-    if (hasTextureVertices()) {
-      if(hasColors()) {
-        if(use32Bit) {
-          return MeshCreator<VertexNormalDiffuseTex1, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexNormalDiffuseTex1, USHORT>(this).createMesh(device, doubleSided);
-        }
+  copy.optimize();
+//  debugLog(_T("%s:\n%s"), _T("Copy (optimized)")  , indentString(copy.toString(), 2).cstr());
+
+  if(copy.hasNormals()) {
+    if(copy.hasTextureVertices()) {
+      if(copy.hasColors()) {
+        return MeshCreator1<VertexNormalDiffuseTex1>(copy).createMesh(device, doubleSided);
       } else { // no colors
-        if(use32Bit) {
-          return MeshCreator<VertexNormalTex1, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexNormalTex1, USHORT>(this).createMesh(device, doubleSided);
-        }
+        return MeshCreator1<VertexNormalTex1>(       copy).createMesh(device, doubleSided);
       }
     } else {
-      if(hasColors()) {
-        if(use32Bit) {
-          return MeshCreator<VertexNormalDiffuse, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexNormalDiffuse, USHORT>(this).createMesh(device, doubleSided);
-        }
+      if(copy.hasColors()) {
+        return MeshCreator1<VertexNormalDiffuse>(    copy).createMesh(device, doubleSided);
       } else {
-        if(use32Bit) {
-          return MeshCreator<VertexNormal, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexNormal, USHORT>(this).createMesh(device, doubleSided);
-        }
+        return MeshCreator1<VertexNormal>(           copy).createMesh(device, doubleSided);
       }
     }
   } else { // no normals
-    if (hasTextureVertices()) {
-      if(hasColors()) {
-        if(use32Bit) {
-          return MeshCreator<VertexDiffuseTex1, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexDiffuseTex1, USHORT>(this).createMesh(device, doubleSided);
-        }
+    if(copy.hasTextureVertices()) {
+      if(copy.hasColors()) {
+        return MeshCreator1<VertexDiffuseTex1>(      copy).createMesh(device, doubleSided);
       } else { // no colors
-        if(use32Bit) {
-          return MeshCreator<VertexTex1, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexTex1, USHORT>(this).createMesh(device, doubleSided);
-        }
+        return MeshCreator1<VertexTex1>(             copy).createMesh(device, doubleSided);
       }
     } else { // no textures
-      if(hasColors()) {
-        if(use32Bit) {
-          return MeshCreator<VertexDiffuse, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<VertexDiffuse, USHORT>(this).createMesh(device, doubleSided);
-        }
+      if(copy.hasColors()) {
+        return MeshCreator1<VertexDiffuse>(          copy).createMesh(device, doubleSided);
       } else {
-        if(use32Bit) {
-          return MeshCreator<Vertex, ULONG>(this).createMesh(device, doubleSided);
-        } else {
-          return MeshCreator<Vertex, USHORT>(this).createMesh(device, doubleSided);
-        }
+        return MeshCreator1<Vertex>(                 copy).createMesh(device, doubleSided);
       }
     }
   }
 }
 
-void MeshBuilder::dump(const String &fileName) const {
-  const String name = (fileName.length() > 0) ? fileName : _T("c:\\temp\\meshbuilderDump.txt");
-  FILE *f = MKFOPEN(name, _T("w"));
-  _ftprintf(f, _T("MeshBuilder:\n"));
-  _ftprintf(f, _T("Vertices:%d\n"), (int)m_vertices.size());
-  for(int i = 0; i < (int)m_vertices.size(); i++) {
-    _ftprintf(f, _T("%5d %s\n"), i, toString(m_vertices[i], 5).cstr());
-  }
-  _ftprintf(f, _T("Normals:%d\n"), (int)m_normals.size());
-  for(int i = 0; i < (int)m_normals.size(); i++) {
-    _ftprintf(f, _T("%5d %s\n"), i, toString(m_normals[i], 5).cstr());
-  }
-  _ftprintf(f, _T("TextureVertices:%d\n"), (int)m_textureVertexArray.size());
-  for(int i = 0; i < (int)m_textureVertexArray.size(); i++) {
-    _ftprintf(f, _T("%5d %s\n"), i, m_textureVertexArray[i].toString(5).cstr());
-  }
-  _ftprintf(f, _T("Faces:%d\n"), (int)m_faceArray.size());
-  for(int i = 0; i < (int)m_faceArray.size(); i++) {
-    const Face                            &face = m_faceArray[i];
-    const CompactArray<VertexNormalTextureIndex> &vna  = face.getIndices();
-    _ftprintf(f, _T("%5d %d "), i, (int)vna.size());
-    for(int v = 0; v < (int)vna.size(); v++) {
-      _ftprintf(f, _T(" %5d %5d %5d"), vna[v].m_vIndex, vna[v].m_nIndex, vna[v].m_tIndex);
-    }
-    _ftprintf(f, _T("\n"));
-  }
-  fclose(f);
-}

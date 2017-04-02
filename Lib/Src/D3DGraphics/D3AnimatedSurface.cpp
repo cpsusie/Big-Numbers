@@ -177,7 +177,7 @@ void D3AnimatedSurface::draw() {
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
 }
 
-LPD3DXMESH D3AnimatedSurface::getMesh() {
+LPD3DXMESH D3AnimatedSurface::getMesh() const {
   if(m_lastRenderedIndex < 0) {
     return NULL;
   }

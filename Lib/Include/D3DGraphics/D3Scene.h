@@ -91,15 +91,22 @@ typedef enum {
 
 #define PICK_MASK(type) (1 << (type))
 
-#define PICK_VISUALOBJECT   PICK_MASK(SOTYPE_VISUALOBJECT)
-#define PICK_LIGHTCONTROL   PICK_MASK(SOTYPE_LIGHTCONTROL)
+#define PICK_VISUALOBJECT   PICK_MASK(SOTYPE_VISUALOBJECT  )
+#define PICK_LIGHTCONTROL   PICK_MASK(SOTYPE_LIGHTCONTROL  )
 #define PICK_ANIMATEDOBJECT PICK_MASK(SOTYPE_ANIMATEDOBJECT)
-#define PICK_ALL (-1)
+#define PICK_ALL            (-1)
 
 class D3PickedInfo {
 public:
-  int m_faceIndex;
-  int m_i1,m_i2,m_i3;           // Indices into vertexArray
+  int           m_faceIndex;
+  int           m_i1, m_i2, m_i3;           // Indices into vertexArray
+  TextureVertex m_tv;
+  inline String toString() const {
+    return format(_T("Face:%d (%5d,%5d,%5d) %s")
+                 ,m_faceIndex
+                 ,m_i1, m_i2, m_i3
+                 ,::toString(m_tv).cstr());
+  }
 };
 
 String toString(const LIGHT          &light     );
@@ -125,6 +132,7 @@ private:
   static LIGHT getDefaultDirectionalLight();
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
+  static const D3PosDirUpScale s_pdusOrigo;
 
   static D3DMATERIAL getDefaultMaterial();
   HWND                              m_hwnd;
@@ -133,7 +141,7 @@ private:
   D3DSHADEMODE                      m_shadeMode;
   D3DCOLOR                          m_backgroundColor;
   int                               m_maxLightCount;
-  static int                        m_textureCoordCount;
+  static int                        s_textureCoordCount;
   BitSet                           *m_lightsEnabled;
   BitSet                           *m_lightsDefined;
   D3DMATERIAL                       m_material;
@@ -307,7 +315,10 @@ public:
     return m_backgroundColor;
   }
   static inline int getTextureCoordCount() {
-    return m_textureCoordCount;
+    return s_textureCoordCount;
+  }
+  static inline const D3PosDirUpScale &getOrigo() {
+    return s_pdusOrigo;
   }
   D3Ray getPickRay(const CPoint &point) const;
   D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
@@ -328,9 +339,9 @@ LPDIRECT3DTEXTURE loadTextureFromByteArray(     LPDIRECT3DDEVICE device, ByteArr
 LPDIRECT3DTEXTURE getTextureFromBitmap(         LPDIRECT3DDEVICE device, HBITMAP bm);
 LPDIRECT3DTEXTURE loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id);
 
-void dumpMesh(LPD3DXMESH mesh, const String &fileName=EMPTYSTRING);
-void dumpVertexBuffer(LPDIRECT3DVERTEXBUFFER vertexBuffer, FILE *f);
-void dumpIndexBuffer( LPDIRECT3DINDEXBUFFER  indexBuffer , FILE *f);
+String toString(LPD3DXMESH             mesh        );
+String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
+String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 
 #define USE_SCENEMATERIAL  0x0001
 #define USE_SCENEFILLMODE  0x0002
@@ -372,7 +383,7 @@ public:
   void setVisible(bool visible) {
     m_visible = visible;
   }
-  virtual LPD3DXMESH getMesh() {
+  virtual LPD3DXMESH getMesh() const {
     return NULL;
   }
   inline bool isVisible() const {
@@ -412,6 +423,9 @@ public:
   virtual SceneObjectType getType() const {
     return SOTYPE_VISUALOBJECT;
   }
+  virtual String toString() const {
+    return getName();
+  }
 };
 
 class SceneObjectWithVertexBuffer : public D3SceneObject {
@@ -430,6 +444,11 @@ public:
   inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
     return m_vertexBuffer;
   }
+  String toString() const {
+    return format(_T("%s\nVertexBuffer:\n%s")
+                 ,__super::toString().cstr()
+                 ,indentString(::toString(m_vertexBuffer),2).cstr());
+  }
 };
 
 class SceneObjectWithIndexBuffer : public SceneObjectWithVertexBuffer {
@@ -441,6 +460,11 @@ protected:
 public:
   SceneObjectWithIndexBuffer(D3Scene &scene);
   ~SceneObjectWithIndexBuffer();
+  String toString() const {
+    return format(_T("%s\nIndexBuffer:\n%s")
+                 ,__super::toString().cstr()
+                 ,indentString(::toString(m_indexBuffer),2).cstr());
+  }
 };
 
 class SceneObjectWithMesh : public D3SceneObject {
@@ -455,10 +479,15 @@ protected:
 public:
   SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL); // if mesh != NULL, it will be released when Object is destroyed
   ~SceneObjectWithMesh();
-  LPD3DXMESH getMesh() {
+  LPD3DXMESH getMesh() const {
     return m_mesh;
   }
   void draw();
+  String toString() const {
+    return format(_T("%s\nMesh:\n%s")
+                 ,getName().cstr()
+                 ,indentString(::toString(getMesh()),2).cstr());
+}
 };
 
 class D3LineArray : public SceneObjectWithVertexBuffer {
@@ -504,7 +533,7 @@ public:
   bool isRunning() const;
   AnimationType getAnimationType() const;
   void scaleSpeed(double factor); // sleepTime /= factor
-  LPD3DXMESH getMesh();
+  LPD3DXMESH getMesh() const;
   void draw();
   SceneObjectType getType() const {
     return SOTYPE_ANIMATEDOBJECT;

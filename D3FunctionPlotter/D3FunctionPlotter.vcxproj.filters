@@ -27,9 +27,6 @@
     <ClCompile Include="ColormapDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="D3CoordinateSystem.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3FunctionPlotter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -96,9 +93,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ComboBoxExprHelp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3CoordinateSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3FunctionPlotter.h">

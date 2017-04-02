@@ -698,6 +698,9 @@
     <ClCompile Include="ReadTextFile.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="IndentString.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -980,8 +983,6 @@
     <CustomBuild Include="BitSetx64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="GetCPUInfo.asm">
-      <Filter>Source Files\Asm Files</Filter>
-    </CustomBuild>
+    <CustomBuild Include="CPUInfox64.asm" />
   </ItemGroup>
 </Project>

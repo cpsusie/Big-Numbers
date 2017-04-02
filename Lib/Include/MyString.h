@@ -151,6 +151,7 @@ String format1000(ULONG            n);
 String format1000(INT64            n);
 String format1000(UINT64           n);
 String formatSize(size_t           n);
+String indentString(const String &s, UINT n);
 
 ULONG         stringHash(    const String &str);                        // Very common used hashfunction
 int           stringHashCmp( const String &key, const String &elem);

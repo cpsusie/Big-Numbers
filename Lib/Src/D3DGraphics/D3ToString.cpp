@@ -99,13 +99,12 @@ String toString(D3DRESOURCETYPE type) {
 
 String usageToString(DWORD usage) {
   if(usage == 0) {
-    return "0";
+    return _T("0");
   }
-  String result;
-  String delim = "";
+  String result, delim;
 
 #undef  addFlag
-#define addFlag(flag) if(usage & flag) { result += delim + #flag; delim="|"; }
+#define addFlag(flag) if(usage & flag) { result += delim + _T(#flag); delim = _T("|"); }
 
   addFlag(D3DUSAGE_RENDERTARGET                    );
   addFlag(D3DUSAGE_DEPTHSTENCIL                    );
@@ -148,11 +147,10 @@ String usageToString(DWORD usage) {
 }
 
 String FVFToString(DWORD fvf) {
-  String result;
-  String delim = "";
+  String result, delim;
 
 #undef  caseAddStr
-#define caseAddStr(s) case s: result += delim + #s; delim="|"; break;
+#define caseAddStr(s) case s: result += delim + _T(#s); delim=_T("|"); break;
 
   switch(fvf & D3DFVF_POSITION_MASK) {
   caseAddStr(D3DFVF_XYZ              )
@@ -166,7 +164,7 @@ String FVFToString(DWORD fvf) {
   }
 
 #undef  addFlag
-#define addFlag(flag) if(fvf & flag) { result += delim + #flag; delim="|"; }
+#define addFlag(flag) if(fvf & flag) { result += delim + _T(#flag); delim=_T("|"); }
 
   addFlag(D3DFVF_NORMAL              );
   addFlag(D3DFVF_PSIZE               );
@@ -227,7 +225,7 @@ int FVFToSize(DWORD fvf) {
   addFlagBytes(D3DFVF_SPECULAR         ,DWORD          );
 
   switch(fvf & D3DFVF_TEXCOUNT_MASK) {
-  case D3DFVF_TEX1:
+  case D3DFVF_TEX1: bytes += 2*sizeof(float); break;
   case D3DFVF_TEX2:
   case D3DFVF_TEX3:
   case D3DFVF_TEX4:
@@ -235,11 +233,7 @@ int FVFToSize(DWORD fvf) {
   case D3DFVF_TEX6:
   case D3DFVF_TEX7:
   case D3DFVF_TEX8:
-    { const int count = D3Scene::getTextureCoordCount();
-      for(int coordIndex = 0; coordIndex < 4; coordIndex++) {
-        bytes += textureCoordFlotCount[MASK_TEXTUREFORMAT(fvf, coordIndex)] * sizeof(float);
-      }
-    }
+    throwException(_T("%s:TEX2-TEX8 not implemented yet"), __TFUNCTION__);
     break;
   }
 /*
@@ -250,21 +244,26 @@ int FVFToSize(DWORD fvf) {
 }
 
 String vertexToString(const char *v, DWORD fvf, int dec) {
-  const int n = dec+3;
-  String result;
-  const char *delimiter = "";
+  const int    width = dec + 3;
+  String       result;
+  const TCHAR *delimiter = EMPTYSTRING;
 
-#define addTagName(tag)      { result += delimiter; result += tag; result += ":"; }
-#define addTypeStr(type)     { result += toString(*(type*)v); v += sizeof(type); delimiter = ", "; }
-#define addTypeStrD(type)    { result += toString(*(type*)v, dec); v += sizeof(type); delimiter = ", "; }
-#define caseAddElement( s, type) case D3DFVF##_##s:     { addTagName(#s); addTypeStr(type); } break;
-#define caseAddElementD(s, type) case D3DFVF##_##s:     { addTagName(#s); addTypeStrD(type); } break;
-#define addFlagElement( s, type) if(fvf & D3DFVF##_##s) { addTagName(#s); addTypeStr(type); }
-#define addFlagElementD(s, type) if(fvf & D3DFVF##_##s) { addTagName(#s); addTypeStrD(type); }
+#define addTagName(        tag ) { result += delimiter; result += tag; result += _T(":"); }
+#define addTypeStr(        type) { result += toString(*(type*)v);             v += sizeof(type); delimiter = _T(", "); }
+#define addTypeStrD(       type) { result += toString(*(type*)v, dec);        v += sizeof(type); delimiter = _T(", "); }
+#define addTypeStrDW(      type) { result += toString(*(type*)v, dec, width); v += sizeof(type); delimiter = _T(", "); }
+#define caseAddElement( s, type) case D3DFVF##_##s:     { addTagName(_T(#s)); addTypeStr( type); } break
+#define caseAddElementD(s, type) case D3DFVF##_##s:     { addTagName(_T(#s)); addTypeStrD(type); } break
+#define addFlagElement( s, type) if(fvf & D3DFVF##_##s) { addTagName(_T(#s)); addTypeStr( type); }
+#define addFlagElementD(s, type) if(fvf & D3DFVF##_##s) { addTagName(_T(#s)); addTypeStrD(type); }
+#define addTextureStr(    index) addTagName(format(_T("TEX%d"), index)); \
+                                 addTypeStrD(TextureVertex);             \
+                                 break
 
+#define caseTexture(coordIndex) case D3DFVF_TEX##coordIndex: addTextureStr(coordIndex)
   switch(fvf & D3DFVF_POSITION_MASK) {
-  caseAddElementD(XYZ              ,D3DXVECTOR3    )
-  caseAddElementD(XYZRHW           ,D3DXVECTOR4    )
+  caseAddElementD(XYZ              ,D3DXVECTOR3    );
+  caseAddElementD(XYZRHW           ,D3DXVECTOR4    );
 /*
   caseAddBytes(XYZB1            )
   caseAddBytes(XYZB2            )
@@ -272,42 +271,28 @@ String vertexToString(const char *v, DWORD fvf, int dec) {
   caseAddBytes(XYZB4            )
   caseAddBytes(XYZB5            )
 */
-  caseAddElementD(XYZW             ,D3DXVECTOR4    )
+  caseAddElementD(XYZW             ,D3DXVECTOR4    );
   }
-
   addFlagElementD(NORMAL           ,D3DXVECTOR3    );
   addFlagElementD(PSIZE            ,float          );
   addFlagElement( DIFFUSE          ,D3PCOLOR       );
   addFlagElement( SPECULAR         ,D3PCOLOR       );
 
   switch(fvf & D3DFVF_TEXCOUNT_MASK) {
-  case D3DFVF_TEX1:
-  case D3DFVF_TEX2:
-  case D3DFVF_TEX3:
-  case D3DFVF_TEX4:
-  case D3DFVF_TEX5:
-  case D3DFVF_TEX6:
-  case D3DFVF_TEX7:
-  case D3DFVF_TEX8:
-    { const int count = D3Scene::getTextureCoordCount();
-      for(int coordIndex = 0; coordIndex < 4; coordIndex++) {
-        const int floatCount = textureCoordFlotCount[MASK_TEXTUREFORMAT(fvf, coordIndex)];
-        result += delimiter + format(_T("TEXCOORDINDEX(%d):("), coordIndex);
-        for(int i = 0; i < floatCount; i++, v += sizeof(float)) {
-          result += format(_T(" %*.*f"), n,dec, *(float*)v);
-        }
-        result += ")";
-        delimiter = ",";
-      }
-    }
-    break;
+  caseTexture(1);
+  caseTexture(2);
+  caseTexture(3);
+  caseTexture(4);
+  caseTexture(5);
+  caseTexture(6);
+  caseTexture(7);
+  caseTexture(8);
   }
 /*
   addFlagBytes(LASTBETA_UBYTE4  );
   addFlagBytes(LASTBETA_D3DCOLOR);
 */
   return result;
-
 }
 
 int formatToSize(D3DFORMAT f) {
@@ -323,24 +308,24 @@ String toString(const D3DVERTEXBUFFER_DESC &desc) {
   return format(_T("Type      :%s\n"
                    "Format    :%s\n"
                    "Pool      :%s\n"
-                   "FVF       :%s\n"
                    "Usage     :%s\n"
+                   "FVF       :%s\n"
                    "Buffersize:%s bytes\n")
                ,toString(     desc.Type  ).cstr()
                ,toString(     desc.Format).cstr()
                ,toString(     desc.Pool  ).cstr()
-               ,FVFToString(  desc.FVF   ).cstr()
                ,usageToString(desc.Usage ).cstr()
+               ,FVFToString(  desc.FVF   ).cstr()
                ,format1000(   desc.Size  ).cstr()
                );
 }
 
 String toString(const D3DINDEXBUFFER_DESC &desc) {
   return format(_T("Type      :%s\n"
-                "Format    :%s\n"
-                "Pool      :%s\n"
-                "Usage     :%s\n"
-                "Buffersize:%s bytes\n")
+                   "Format    :%s\n"
+                   "Pool      :%s\n"
+                   "Usage     :%s\n"
+                   "Buffersize:%s bytes\n")
                ,toString(     desc.Type  ).cstr()
                ,toString(     desc.Format).cstr()
                ,toString(     desc.Pool  ).cstr()
@@ -351,8 +336,8 @@ String toString(const D3DINDEXBUFFER_DESC &desc) {
 
 String toString(const D3DDISPLAYMODE &mode) {
   return format(_T("(W,H)       :(%d,%d)\n"
-                "Refresh rate:%d\n"
-                "Format      :%s\n")
+                   "Refresh rate:%d\n"
+                   "Format      :%s\n")
                ,mode.Width, mode.Height
                ,mode.RefreshRate
                ,toString(mode.Format).cstr()

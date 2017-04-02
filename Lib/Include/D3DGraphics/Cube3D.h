@@ -49,4 +49,7 @@ public:
   inline Point3D getCenter() const {
     return (m_lbn + m_rtf)/2.0;
   }
+  inline String toString(int dec = 3) const {
+    return format(_T("Cube:(%s,%s)"), m_lbn.toString(dec).cstr(), m_rtf.toString(dec).cstr());
+  }
 };

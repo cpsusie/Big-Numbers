@@ -59,13 +59,15 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   inline void setPos(   double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; } \
   inline void setPos(   const Vertex      &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
   inline void setPos(   const D3DXVECTOR3 &v)            { x  = v.x       ; y  = v.y       ; z  = v.z       ; } \
-  inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
+  inline void setPos(   const Point3D     &p)            { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; } \
+  inline Vertex operator-() const { return Vertex(-x,-y,-z); }
 
 #define NORMAL_TRAITS                                                                                           \
   inline void setNormal(double _x, double _y, double _z) { nx = (float)_x ; ny = (float)_y ; nz = (float)_z ; } \
   inline void setNormal(const Vertex                 &n) { nx = n.x       ; ny = n.y       ; nz = n.z       ; } \
   inline void setNormal(const D3DXVECTOR3            &n) { nx = n.x       ; ny = n.y       ; nz = n.z       ; } \
-  inline void setNormal(const Point3D                &n) { nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; }
+  inline void setNormal(const Point3D                &n) { nx = (float)n.x; ny = (float)n.y; nz = (float)n.z; } \
+  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
 
 #define EMPTY_NORMAL_TRAITS inline void setNormal(const Vertex &n) { ; /* do nothing */ }
 
@@ -95,10 +97,11 @@ public:
   }
   inline TextureVertex(double _u, double _v) : u((float)_u), v((float)_v) {
   }
-  inline String toString(int dec = 3) const {
-    return format(_T("%*f %*f"), dec, u, dec, v);
-  }
 };
+
+inline String toString(const TextureVertex &tv, int dec = 3) {
+  return format(_T("(%*.*f,%*.*f)"), dec+3,dec, tv.u, dec+3,dec, tv.v);
+}
 
 typedef struct Vertex {
   float x, y, z;
@@ -107,10 +110,10 @@ typedef struct Vertex {
   };
   inline Vertex() {
   }
-  inline Vertex(float  _x, float  _y, float  _z) { x  = _x ; y  = _y ; z  = _z ; }
+  inline Vertex(float  _x, float  _y, float  _z) { x  = _x        ; y  = _y        ; z  = _z        ; }
   inline Vertex(double _x, double _y, double _z) { x  = (float)_x ; y  = (float)_y ; z  = (float)_z ; }
   inline Vertex(     const Point3D     &p)       { x  = (float)p.x; y  = (float)p.y; z  = (float)p.z; }
-  inline Vertex(     const D3DXVECTOR3 &v)       { x  = v.x; y  = v.y; z  = v.z; }
+  inline Vertex(     const D3DXVECTOR3 &v)       { x  = v.x       ; y  = v.y       ; z  = v.z       ; }
 
   POSITION_TRAITS
   EMPTY_NORMAL_TRAITS
@@ -120,7 +123,9 @@ typedef struct Vertex {
   inline operator D3DXVECTOR3() const {
     return D3DXVECTOR3(x,y,z);
   }
-  inline Vertex operator-() const { return Vertex(-x,-y,-z); } 
+  inline operator Point3D() const {
+    return Point3D(x,y,z);
+  }
 } Vertex;
 
 Vertex createVertex(double x, double y, double z);
@@ -131,7 +136,6 @@ typedef struct {
   enum FVF {
     FVF_Flags = D3DFVF_XYZ | D3DFVF_NORMAL
   };
-
   POSITION_TRAITS
   NORMAL_TRAITS
   EMPTY_DIFFUSE_TRAITS
@@ -146,7 +150,6 @@ typedef struct {
   inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse=-1) {
     setPos(v); setNormal(n); setDiffuse(diffuse);
   }
-  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
 } VertexNormal;
 
 typedef struct {
@@ -170,7 +173,6 @@ typedef struct {
   inline void setPosAndNormal(const Point3D     &v, const D3DXVECTOR3 &n, D3DCOLOR diffuse) {
     setPos(v); setNormal(n); setDiffuse(diffuse);
   }
-  inline void reverseNormal() { nx*=-1; ny*=-1; nz*=-1; }
 } VertexNormalDiffuse;
 
 typedef struct {
@@ -287,9 +289,9 @@ public:
   const D3DXVECTOR3 &getScale() const {
     return m_scale;
   }
-  void setPos(const D3DXVECTOR3 &pos);
+  void setPos(        const D3DXVECTOR3 &pos);
   void setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  void setScale(const D3DXVECTOR3 &scale);
+  void setScale(      const D3DXVECTOR3 &scale);
 
   D3DXMATRIX  getWorldMatrix()    const;
   D3DXMATRIX  getViewMatrix()     const;
@@ -301,7 +303,7 @@ public:
 
   String toString() const;
   inline bool operator==(const D3PosDirUpScale &pdus) const {
-    return m_pos == pdus.m_pos && m_dir == pdus.m_dir && m_up == pdus.m_up && m_scale == pdus.m_scale;
+    return (m_pos == pdus.m_pos) && (m_dir == pdus.m_dir) && (m_up == pdus.m_up) && (m_scale == pdus.m_scale);
   }
   inline bool operator!=(const D3PosDirUpScale &pdus) const {
     return !(*this == pdus);
