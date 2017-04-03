@@ -18,8 +18,8 @@ KeyFileWrapper::KeyFileWrapper(const String &fileName, int keySize, int valueSiz
   m_file = new KeyFile(m_fileName, DBFMODE_READWRITE, NULL);
 
   const KeyFileDefinition &keydef = m_file->getDefinition();
-  SETCONST(m_keyFieldCount, keydef.getKeyFieldCount(), unsigned int);
-  SETCONST(m_valueOffset  , keydef.getFieldOffset(m_keyFieldCount), unsigned int);
+  SETCONST(m_keyFieldCount, keydef.getKeyFieldCount(), UINT);
+  SETCONST(m_valueOffset  , keydef.getFieldOffset(m_keyFieldCount), UINT);
   m_key.init();
   m_fileKey.init();
   m_size = m_file->getKeyCount();
@@ -33,20 +33,20 @@ KeyFileWrapper::~KeyFileWrapper() {
 void KeyFileWrapper::create(const String &fileName) {
   KeyFileDefinition keydef;
   int i;
-  for(i = m_keySize; i >= 4; i -= sizeof(unsigned int)) {
+  for(i = m_keySize; i >= 4; i -= sizeof(UINT)) {
     keydef.addKeyField(SORT_ASCENDING,DBTYPE_UINT);
   }
-  for(; i >= 2; i -= sizeof(unsigned short)) {
+  for(; i >= 2; i -= sizeof(USHORT)) {
     keydef.addKeyField(SORT_ASCENDING,DBTYPE_USHORT);
   }
   if(i == 1) {
     keydef.addKeyField(SORT_ASCENDING,DBTYPE_UCHAR);
   }
 
-  for(i = m_valueSize; i >= 4; i -= sizeof(unsigned int)) {
+  for(i = m_valueSize; i >= 4; i -= sizeof(UINT)) {
     keydef.addDataField(DBTYPE_UINT);
   }
-  for(; i >= 2; i -= sizeof(unsigned short)) {
+  for(; i >= 2; i -= sizeof(USHORT)) {
     keydef.addDataField(DBTYPE_USHORT);
   }
   if(i == 1) {
@@ -108,7 +108,7 @@ bool KeyFileWrapper::remove(const void *key) {
       m_fileKey = m_key;
       return false;
     } else {
-      throwException(_T("FileMap::remove:%s"), ca.sqlerrmc);
+      throwException(_T("%s:%s"), __TFUNCTION__, ca.sqlerrmc);
       return false;
     }
   }
@@ -121,7 +121,7 @@ void KeyFileWrapper::update(const void *key, const void *value) {
   try {
     m_file->update(tmpKey);
   } catch(sqlca ca) {
-    throwException(_T("FileMap::update:%s"), ca.sqlerrmc);
+    throwException(_T("%s:%s"), __TFUNCTION__, ca.sqlerrmc);
   }
 }
 
@@ -132,7 +132,7 @@ void KeyFileWrapper::clear() {
     m_key.init();
     m_size = 0;
   } catch(sqlca ca) {
-    throwException(_T("FileMap::clear:%s"), ca.sqlerrmc);
+    throwException(_T("%s:%s"), __TFUNCTION__, ca.sqlerrmc);
   }
 }
 
@@ -160,6 +160,8 @@ void KeyFileWrapper::load(ByteInputStream &s) {
   m_size = m_file->getKeyCount();
 }
 
+DEFINECLASSNAME(FileHashMapKeyIterator);
+
 FileHashMapKeyIterator::FileHashMapKeyIterator(KeyFileWrapper &keyFile) 
   : m_keyFile(keyFile)
   , m_keyCursor(keyFile.getFile(), RELOP_TRUE, NULL, 0, RELOP_TRUE, NULL, 0, SORT_ASCENDING)
@@ -177,7 +179,7 @@ bool FileHashMapKeyIterator::hasNext() const {
 
 void *FileHashMapKeyIterator::next() {
   if(!hasNext()) {
-    throwException("FileHashMapKeyIterator::next:No such element");
+    noNextElementError(s_className);
   }
   m_keyCursor.next(m_buffer);
   m_hasElement = true;
@@ -186,11 +188,13 @@ void *FileHashMapKeyIterator::next() {
 
 void FileHashMapKeyIterator::remove() {
   if(!m_hasElement) {
-    throwException("FileHashMapKeyIterator::remove:No current element");
+    noCurrentElementError(s_className);
   }
   m_hasElement = false;
   m_keyFile.remove(&m_buffer);
 }
+
+DEFINECLASSNAME(FileHashMapEntryIterator);
 
 void FileHashMapEntryIterator::flush() {
   if(memcmp(m_buffer.m_value, m_fileValue, m_valueSize) != 0) {
@@ -256,7 +260,7 @@ bool FileHashMapEntryIterator::hasNext() const {
 
 void *FileHashMapEntryIterator::next() {
   if(!hasNext()) {
-    throwException("FileHashMapEntryIterator::next:No such element");
+    noNextElementError(s_className);
   }
   flush();
   m_keyCursor.next(m_key);
@@ -267,7 +271,7 @@ void *FileHashMapEntryIterator::next() {
 
 void FileHashMapEntryIterator::remove() {
   if(!m_hasElement) {
-    throwException("FileHashMapEntryIterator::remove:No current element");
+    noCurrentElementError(s_className);
   }
   m_keyFile->remove(m_fileKey.m_data);
   m_hasElement = false;

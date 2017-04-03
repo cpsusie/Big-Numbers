@@ -31,18 +31,18 @@ EXEC SQL BEGIN DECLARE SECTION;
   static Date     dddd2;
 EXEC SQL END   DECLARE SECTION;
 
-static void xchecksql(char *file,int line) {
+static void xchecksql(TCHAR *file,int line) {
   if(sqlca.sqlcode != SQL_OK) {
-    printf("sql failure in %s line %d\n",file,line);
+    _tprintf(_T("sql failure in %s line %d\n"),file,line);
     sqlca.dump();
     exit(-1);
   }
 }
 
-#define checkSql() xchecksql(__FILE__,__LINE__)
+#define checkSql() xchecksql(_T(__FILE__),__LINE__)
 
 /*
-static selectff() {
+static void selectff() {
 
   exec sql
     select t || (select t from ff union select (substring(t,1,2) || t) from ff)
@@ -58,7 +58,7 @@ static selectff() {
 }
 */
 
-static selectMyTable() {
+static void selectMyTable() {
   exec sql
     select firstcolumn
       into :firstcolumn
@@ -187,7 +187,6 @@ static void insertLilleTable() {
 
   checkSql();
 }
-
 
 static void selectLilleTable() {
   EXEC SQL

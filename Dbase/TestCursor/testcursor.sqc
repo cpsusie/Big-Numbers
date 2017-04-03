@@ -3,38 +3,38 @@
 EXEC SQL INCLUDE SQLCA;
 
 EXEC SQL BEGIN DECLARE SECTION;
-  static char	  dbname[20];
-  static short	  dbnameindi;
-  static char	  username[30];
-  static char	  password[30];
-  static char	  firstcolumn[30];
-  static short	  s;
+  static char	          dbname[20];
+  static short	        dbnameindi;
+  static char	          username[30];
+  static char	          password[30];
+  static char	          firstcolumn[30];
+  static short	        s;
   static unsigned short s1;
-  static short	  s2;
-  static float	  f;
-  static double   d;
-  static int	  i;
-  static unsigned int i1;
-  static int	  i2;
-  static long	  l;
-  static unsigned long l1;
-  static long	  l2;
-  static char	  varch1[20];
-  static char	  longss[27];
-  static varchar  myvarchar(512);
-  static char	  nullcolumn1[7];
-  static double   dd;
-  static int	  ii;
-  static int      mm;
-  static Date     dddd1;
-  static Date     dddd2;
-EXEC SQL END   DECLARE SECTION;
+  static short	        s2;
+  static float	        f;
+  static double         d;
+  static int	          i;
+  static unsigned int   i1;
+  static int	          i2;
+  static long	          l;
+  static unsigned long  l1;
+  static long	          l2;
+  static char	          varch1[20];
+  static char	          longss[27];
+  static varchar        myvarchar(512);
+  static char	          nullcolumn1[7];
+  static double         dd;
+  static int	          ii;
+  static int            mm;
+  static Date           dddd1;
+  static Date           dddd2;
+EXEC SQL END DECLARE SECTION;
 
 static void xchecksql(TCHAR *file,int line) {
   if(sqlca.sqlcode != SQL_OK && sqlca.sqlcode != SQL_NOT_FOUND) {
-	_tprintf(_T("sql failure in %s line %d\n"), file, line);
-	sqlca.dump();
-	exit(-1);
+	  _tprintf(_T("sql failure in %s line %d\n"), file, line);
+	  sqlca.dump();
+	  exit(-1);
   }
 }
 
@@ -75,7 +75,6 @@ static void closeCursor() {
   END-EXEC
 }
 
-
 static void dbConnect() {
   EXEC SQL CONNECT TO :dbname user :username using :password;
 
@@ -87,9 +86,9 @@ static void dbDisconnect() {
 }
 
 int main(int argc, char **argv) {
-  strcpy(dbname   , "fisk");
-  strcpy(username , "ADM" );
-  strcpy(password , "ADM" );
+  strcpy(dbname  , "fisk");
+  strcpy(username, "ADM" );
+  strcpy(password, "ADM" );
 
   dbConnect();
   checkSql();

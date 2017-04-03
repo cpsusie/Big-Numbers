@@ -52,6 +52,7 @@ public:
 
 class FileHashMapKeyIterator : public AbstractIterator {
 private:
+  DECLARECLASSNAME;
   KeyFileWrapper &m_keyFile;
   KeyCursor       m_keyCursor;
   KeyType         m_buffer;
@@ -66,6 +67,7 @@ public:
 
 class FileHashMapEntryIterator : public AbstractIterator {
 private:
+  DECLARECLASSNAME;
   class IteratorEntry : public AbstractEntry {
   private:
     const void *m_key;
