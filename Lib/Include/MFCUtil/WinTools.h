@@ -151,6 +151,8 @@ void textOutTransparentBackground(HDC hdc, const CPoint &p, const String &s, CFo
 void textOut(                     HDC hdc, const CPoint &p, const String &s);
 void textOut(                     HDC hdc, int x, int y, const String &s);
 
+void Message(const TCHAR *format, ... );
+
 void   addData(                     CListCtrl &ctrl, int row, int col, const String &str, bool newItem = false);
 String getItemString(         const CListCtrl &ctrl, int row, int col);
 void   setSelectedIndex(            CListCtrl &ctrl, int index);

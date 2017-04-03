@@ -6,18 +6,9 @@
 #include <LDA.h>
 
 #define CHESSLIBPATH "c:/mytools2015/spil/chesslib/"
-#ifdef IS32BIT
-#define CHESSPLATFORM "x86/"
-#else
-#define CHESSPLATFORM "x64/"
-#endif
-#ifdef _DEBUG
-#define CHESSCONF "TablebaseBuilderDebug/"
-#else
-#define CHESSCONF "TablebaseBuilderRelease/"
-#endif
+#define _CHESSCONF_ "TablebaseBuilder" _CONFIGURATION_
 
-#pragma comment(lib, CHESSLIBPATH CHESSPLATFORM CHESSCONF "Chesslib.lib")
+#pragma comment(lib, CHESSLIBPATH _PLATFORM_ _CHESSCONF_ "Chesslib.lib")
 
 
 #ifdef _DEBUG

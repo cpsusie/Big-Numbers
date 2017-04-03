@@ -206,7 +206,7 @@ void OpeningLibrary::addGame(const String &name) {
     Game game;
     game.load(f);
     String fileName = FileNameSplitter(name).getFileName();
-    const int currentNameIndex = m_nameArray.size();
+    const USHORT currentNameIndex = (USHORT)m_nameArray.size();
     m_nameArray.add(fileName);
 
     if(game.getStartPosition() != GameKey::getStartUpPosition()) {
@@ -219,7 +219,7 @@ void OpeningLibrary::addGame(const String &name) {
 
     game.newGame();
 
-    for(int i = 0; i < history.size(); i++) {
+    for(size_t i = 0; i < history.size(); i++) {
       const ExecutableMove &m = history[i];
       LibraryTransition *t = m_stateArray[state].findTransitionByMove(m, true);
       game.executeMove(m);
@@ -234,7 +234,7 @@ void OpeningLibrary::addGame(const String &name) {
         if(stateP != NULL) {
           nextState = *stateP;
         } else {
-          nextState = m_stateArray.size();
+          nextState = (int)m_stateArray.size();
           m_stateArray.add(LibraryState(nextState, GETENEMY(m.getPlayer())));
           gameKeyStateMap.put(key, nextState);
         }
@@ -273,28 +273,28 @@ int TransitionComparator::compare(const LibraryTransition &t1, const LibraryTran
 void OpeningLibrary::reduceEmptyStates() {
   IntHashMap<int> conversionMap;
   int nonEmptyStateCount = 0;
-  for(int state = 0; state < m_stateArray.size(); state++) {
+  for(size_t state = 0; state < m_stateArray.size(); state++) {
     const LibraryState &st = m_stateArray[state];
     if(st.m_transitionArray.size()) {
-      conversionMap.put(state, nonEmptyStateCount++);
+      conversionMap.put((int)state, nonEmptyStateCount++);
     }
   }
   const int emptyWhiteToMove = nonEmptyStateCount;
   const int emptyBlackToMove = nonEmptyStateCount + 1;
-  for(state = 0; state < m_stateArray.size(); state++) {
+  for(size_t state = 0; state < m_stateArray.size(); state++) {
     const LibraryState &st = m_stateArray[state];
     if(st.m_transitionArray.size() == 0) {
-      conversionMap.put(state, (st.m_playerInTurn == WHITEPLAYER) ? emptyWhiteToMove : emptyBlackToMove);
+      conversionMap.put((int)state, (st.m_playerInTurn == WHITEPLAYER) ? emptyWhiteToMove : emptyBlackToMove);
     }
   }
 
   Array<LibraryState> newStateArray;
-  for(state = 0; state < m_stateArray.size(); state++) {
+  for(size_t state = 0; state < m_stateArray.size(); state++) {
     const LibraryState &st = m_stateArray[state];
     if(st.m_transitionArray.size()) {
       LibraryState newState = st;
       newState.m_id = *conversionMap.get(newState.m_id);
-      for(int t = 0; t < newState.m_transitionArray.size(); t++) {
+      for(size_t t = 0; t < newState.m_transitionArray.size(); t++) {
         int &nextState = newState.m_transitionArray[t].m_nextState;
         nextState = *conversionMap.get(nextState);
       }
@@ -306,7 +306,7 @@ void OpeningLibrary::reduceEmptyStates() {
   m_stateArray = newStateArray;
 
   TransitionComparator comparator(this);
-  for(state = 0; state < m_stateArray.size(); state++) {
+  for(size_t state = 0; state < m_stateArray.size(); state++) {
     LibraryState &st = m_stateArray[state];
     if(st.m_transitionArray.size() > 1) {
       st.m_transitionArray.sort(comparator);

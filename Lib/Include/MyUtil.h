@@ -165,8 +165,6 @@ GUID  *newGUID(GUID *guid);
 void quickSort(void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void quickSort(void *base, size_t nelem, size_t width, int (__cdecl *compare)(const void*, const void*));
 
-void Message(const TCHAR *format, ... );
-
 /*
 template<class T> void swap(T &e1, T &e2) { 
   T tmp = e1; e1 = e2; e2 = tmp;

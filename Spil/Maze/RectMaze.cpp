@@ -16,10 +16,10 @@ void RectMaze::drawWall(CDC &dc, int x1, int y1, int x2, int y2) {
   if(x1 == x2) {
     if(y1 == y2)
       return;
-    if(y1 > y2) swap(y1,y2);
+    if(y1 > y2) std::swap(y1,y2);
     drawLine(dc,doorWidth*x1,doorWidth*y1,doorWidth*x2,doorWidth*y2,m_wallPen);
   } else {
-    if(x1 > x2) swap(x1,x2);
+    if(x1 > x2) std::swap(x1,x2);
     drawLine(dc,doorWidth*x1,doorWidth*y1,doorWidth*x2,doorWidth*y2,m_wallPen);
   }
 }
@@ -29,10 +29,10 @@ void RectMaze::eraseWall(CDC &dc, int x1, int y1, int x2, int y2) {
   if(x1 == x2) {
     if(y1 == y2)
       return;
-    if(y1 > y2) swap(y1,y2);
+    if(y1 > y2) std::swap(y1,y2);
     drawLine(dc,doorWidth*x1,doorWidth*y1+1,doorWidth*x2,doorWidth*y2-1,m_erasePen);
   } else {
-    if(x1 > x2) swap(x1,x2);
+    if(x1 > x2) std::swap(x1,x2);
     drawLine(dc,doorWidth*x1+1,doorWidth*y1,doorWidth*x2-1,doorWidth*y2,m_erasePen);
   }
 }

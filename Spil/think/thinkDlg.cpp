@@ -135,7 +135,7 @@ void CThinkDlg::drawBoard() {
   const int   w     = crect.Width();
   const int   h     = crect.Height();
   CClientDC dc(this);
-  dc.SetBkColor(GRAY);
+  dc.SetBkColor(GREY);
   for(int r = 0; r <= BSIZE; r++) {
     const CRect rect = getRect(r,0);
     drawLine(dc,rect1.left,rect.top,rect2.left,rect.top);

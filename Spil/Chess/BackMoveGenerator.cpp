@@ -422,10 +422,11 @@ bool BackMoveGenerator::isNonCapturingPromotion(int promotedPos, const FieldSet 
 #define PRINTF(args) verbose args
 #define CLEARTRACE() clearVerbose()
 
-#define CHECK_NOT_CORNER(r, c)                                                                                                               \
-{ if(!INSIDEBOARD(r, c) || IS_CORNERFIELD(MAKE_POSITION(r, c))) {                                                                            \
-    AfxMessageBox(format(_T("line %d:Invalid (r,c):(%d,%d) sourceFieldSet:<%s>"), __LINE__, r, c, sourceFieldSet.toString().cstr()).cstr()); \
-  }                                                                                                                                          \
+#define CHECK_NOT_CORNER(r, c)                                                                                           \
+{ if(!INSIDEBOARD(r, c) || IS_CORNERFIELD(MAKE_POSITION(r, c))) {                                                        \
+    _tprintf(_T("line %d:Invalid (r,c):(%d,%d) sourceFieldSet:<%s>"), __LINE__, r, c, sourceFieldSet.toString().cstr()); \
+    pause();                                                                                                             \
+  }                                                                                                                      \
 }
 
 #else

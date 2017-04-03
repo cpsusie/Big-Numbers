@@ -228,15 +228,15 @@ String statusToString(PositionStatus status) {
 
 LineIntersectionKey::LineIntersectionKey(int n, int i1, int i2, int i3, int i4) {
   if(i1 < i2) {
-    swap(i1,i2);
+    std::swap(i1,i2);
   }
   if(i3 < i4) {
-    swap(i3,i4);
+    std::swap(i3,i4);
   }
   int l1 = i1 * n + i2;
   int l2 = i3 * n + i4;
   if(l1 < l2) {
-    swap(l1,l2);
+    std::swap(l1,l2);
   }
   m_hashCode = l1 * n * n + l2;
 }
