@@ -196,9 +196,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="explorer1.h" />
     <ClInclude Include="GrabXml.h" />
     <ClInclude Include="GrabXmlDlg.h" />
