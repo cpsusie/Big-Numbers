@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "GrabXml.h"
 #include "GrabXmlDlg.h"
 
 #ifdef _DEBUG
@@ -16,7 +15,6 @@ CGrabXmlApp::CGrabXmlApp() {
   // TODO: add construction code here,
   // Place all significant initialization in InitInstance
 }
-
 
 CGrabXmlApp theApp;
 

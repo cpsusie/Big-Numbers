@@ -1,15 +1,13 @@
 #include "stdafx.h"
-#include "GrabXml.h"
 #include "GrabXmlDlg.h"
 #include "afxdialogex.h"
 #include <Game.h>
 #include <LDA.h>
 
 #define CHESSLIBPATH "c:/mytools2015/spil/chesslib/"
-#define _CHESSCONF_ "TablebaseBuilder" _CONFIGURATION_
+#define _CHESSCONF_  "TablebaseBuilder" _CONFIGURATION_
 
 #pragma comment(lib, CHESSLIBPATH _PLATFORM_ _CHESSCONF_ "Chesslib.lib")
-
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -25,8 +23,6 @@ public:
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
@@ -41,7 +37,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 CGrabXmlDlg::CGrabXmlDlg(CWnd* pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(_T("")) {
-  m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
 void CGrabXmlDlg::DoDataExchange(CDataExchange* pDX) {

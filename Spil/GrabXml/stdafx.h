@@ -5,3 +5,4 @@
 #include <MFCUtil/WinTools.h>
 #include <MFCUtil/LayoutManager.h>
 
+#include "GrabXml.h"
