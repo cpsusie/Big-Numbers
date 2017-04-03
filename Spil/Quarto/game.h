@@ -1,5 +1,7 @@
 #pragma once
 
+#include <TinyBitSet.h>
+
 #define ISWITHTOP(attr)  (((attr) & 1)?true:false)
 #define ISSQUARE( attr)  (((attr) & 2)?true:false)
 #define ISBIG(    attr)  (((attr) & 4)?true:false)
@@ -17,8 +19,14 @@ public:
   }
 };
 
+typedef BitSet16 BrickSet;
+
 class Field {
 public:
+  inline Field() {
+  }
+  inline Field(int r, int c) : m_row(r), m_col(c) {
+  }
   char m_row;
   char m_col;
   inline bool isField() const {
@@ -66,7 +74,7 @@ typedef enum {
 class PushableGameState {
 public:
   Player         m_playerInTurn;
-  unsigned short m_unused;
+  BitSet16       m_unused;
   int            m_score;
   bool           m_gameOver;
   bool           m_hasWinner;
@@ -92,12 +100,12 @@ private:
   friend class MoveEvaluator;
 public:
   Game();
-  explicit Game(const String &s);
-  void   newGame(bool colored, Player startPlayer);
-  int    getBrickCount() const;
-  inline bool brickUnUsed(int          b) const { return ((1 << b) & m_state.m_unused) ? true  : false; }
-  inline bool brickUsed(  int          b) const { return ((1 << b) & m_state.m_unused) ? false : true;  }
-  inline bool isEmpty(    const Field &f) const { return m_state.m_board[f.m_row][f.m_col] == 0;        }
+  explicit    Game(const String &s);
+  void        newGame(bool colored, Player startPlayer);
+  int         getBrickCount() const;
+  inline bool brickUnUsed(int          b) const { return  m_state.m_unused.contains(b);           }
+  inline bool brickUsed(  int          b) const { return !m_state.m_unused.contains(b);           }
+  inline bool isEmpty(    const Field &f) const { return  m_state.m_board[f.m_row][f.m_col] == 0; }
   inline Player getBrickOwner(int b) const { // only valid in colored games
     return ISBLACK(Brick::attr[b]) ? COMPUTER_PLAYER : HUMAN_PLAYER;
   }
@@ -123,14 +131,13 @@ private:
   int               m_maxDepth;
   int               m_bestScore;
   Move              m_bestMove;
-  PushableGameState m_stateStack[STACKSIZE];
-  int               m_stackTop;
+  PushableGameState m_stateStack[STACKSIZE], *top;
   Game              m_game;
   int               m_evalCount;
-
-  void push()    { m_stateStack[m_stackTop++] = m_game.m_state; }
-  void pop()     { m_game.m_state = m_stateStack[--m_stackTop]; }
-  void restore() { m_game.m_state = m_stateStack[m_stackTop-1]; }
+  inline void initStack() { top = m_stateStack; top--; }
+  inline void push()      { *(++top) = m_game.m_state; }
+  inline void pop()       { top--; }
+  inline void restore()   { m_game.m_state = *top; }
   int maximize(int c_min, int depth);
   int minimize(int c_max, int depth);
 public:

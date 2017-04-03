@@ -41,20 +41,11 @@ static String getString(Tokenizer &tok) {
   return tok.next();
 }
 
-static int getInt(Tokenizer &tok) {
-  const String s = getString(tok);
-  int value;
-  if(_stscanf(s.cstr(), _T("%d"), &value) != 1) {
-    throwException(_T("Expected int:<%s>"), s.cstr());
-  }
-  return value;
-}
-
 Move::Move(const String &s) {
   Tokenizer tok(s, _T(","));
-  m_field.m_row = getInt(tok);
-  m_field.m_col = getInt(tok);
-  m_brick       = getInt(tok);
+  m_field.m_row = tok.getInt();
+  m_field.m_col = tok.getInt();
+  m_brick       = tok.getInt();
   if(tok.hasNext()) {
     throwException(_T("Expected end-of-line:<%s>"), s.cstr());
   }
@@ -76,12 +67,12 @@ Game::Game() {
 Game::Game(const String &s) {
   Tokenizer tok(s, _T("\n"));
   int intValue;
-  intValue = getInt(tok);
+  intValue = tok.getInt();
   if(intValue != COMPUTER_PLAYER && intValue != HUMAN_PLAYER) {
     throwException(_T("Unexepected value for startplayer:%d"), intValue);
   }
   const Player startPlayer = (Player)intValue;
-  intValue = getInt(tok);
+  intValue = tok.getInt();
   const bool coloredGame = (intValue != 0);
 
   CompactArray<Move> tmpList;
@@ -115,13 +106,13 @@ void Game::newGame(bool colored, Player startPlayer) {
     }
   }
   m_state.m_playerInTurn = m_startPlayer;
-  m_state.m_unused       = 0xffff;
+  m_state.m_unused.addAll();
   m_state.m_gameOver     = false;
   m_state.m_hasWinner    = false;
 };
 
-#define BRICKUNUSED(b) ((1 << (b)) & m_state.m_unused) 
-#define ONBOARD(r,c)   ((r) >= 0 && (r) < ROWCOUNT && (c) >= 0 && (c) < COLCOUNT)
+#define BRICKUNUSED(b) (m_state.m_unused.contains(b)) 
+#define ONBOARD(r,c)   (((BYTE)(r) < ROWCOUNT) && ((BYTE)(c) < COLCOUNT))
 
 int Game::firstBrick() const {
   if(m_colored) {
@@ -221,12 +212,12 @@ void Game::nextMove(Move &m) const {
 
 void Game::doMove(const Move &m, int lookahead) {
   m_state.m_board[m.m_field.m_row][m.m_field.m_col] = Brick::attr[m.m_brick];
-  m_state.m_unused &= ~(1 << m.m_brick); 
+  m_state.m_unused.remove(m.m_brick); 
   if(isWinnerMove(m)) {
     m_state.m_gameOver  = true;
     m_state.m_hasWinner = true;
     m_state.m_score     = m_state.m_playerInTurn * (MAX_SCORE - lookahead);
-  } else if(m_state.m_unused == 0) {
+  } else if(m_state.m_unused.isEmpty()) {
     m_state.m_gameOver = true;
   } else {
     m_state.m_playerInTurn = OPPONENT(m_state.m_playerInTurn);
@@ -266,34 +257,27 @@ int Game::getBrickOnField(const Field &f) const {
   return NOBRICK;
 }
 
-static Field createField(int r, int c) {
-  Field f;
-  f.m_row = r;
-  f.m_col = c;
-  return f;
-}
-
 static FieldArray getFieldsInRow(int r) {
   FieldArray result;
-  for(int c = 0; c < COLCOUNT; c++) result.add(createField(r, c));
+  for(int c = 0; c < COLCOUNT; c++) result.add(Field(r, c));
   return result;
 }
 
 static FieldArray getFieldsInColumn(int c) {
   FieldArray result;
-  for(int r = 0; r < ROWCOUNT; r++) result.add(createField(r, c));
+  for(int r = 0; r < ROWCOUNT; r++) result.add(Field(r, c));
   return result;
 }
 
 static FieldArray getFieldsInDiag1() {
   FieldArray result;
-  for(int r = 0; r < ROWCOUNT; r++) result.add(createField(r, r));
+  for(int r = 0; r < ROWCOUNT; r++) result.add(Field(r, r));
   return result;
 }
 
 static FieldArray getFieldsInDiag2() {
   FieldArray result;
-  for(int r = 0; r < ROWCOUNT; r++) result.add(createField(r, COLCOUNT-1-r));
+  for(int r = 0; r < ROWCOUNT; r++) result.add(Field(r, COLCOUNT-1-r));
   return result;
 }
 
@@ -348,18 +332,17 @@ bool Game::isWinnerMove(const Move &m) const {
   } else if((r == ROWCOUNT-1-c) && (m_state.m_board[0][3] & m_state.m_board[1][2] & m_state.m_board[2][1] & m_state.m_board[3][0])) {
     return true;
   }
-
   return false;
 }
 
 Move Game::findRandomMove() const {
-  if(m_state.m_unused == 0) {
+  if(m_state.m_unused.isEmpty()) {
     return NOMOVE;
   }
   int r,c,b;
   for(;;) {
-    r = rand() % ROWCOUNT;
-    c = rand() % COLCOUNT;
+    r = randInt(ROWCOUNT);
+    c = randInt(COLCOUNT);
     if(m_state.m_board[r][c] == 0) {
       break;
     }
@@ -367,12 +350,12 @@ Move Game::findRandomMove() const {
   for(;;) {
     if(m_colored) {
       if(m_state.m_playerInTurn == COMPUTER_PLAYER) {
-        b = rand() % (FIELDCOUNT/2) + FIELDCOUNT/2;
+        b = randInt(FIELDCOUNT/2,FIELDCOUNT);
       } else {
-        b = rand() % (FIELDCOUNT/2);
+        b = randInt(FIELDCOUNT/2);
       }
     } else {
-      b = rand() % FIELDCOUNT;
+      b = randInt(FIELDCOUNT);
     }
     if(BRICKUNUSED(b)) {
       break;
@@ -380,7 +363,6 @@ Move Game::findRandomMove() const {
   }
   return Move(r,c,b);
 }
-
 
 /* --------------- A L P H A - B E T A  P R U N I N G -------- */
 
@@ -400,17 +382,14 @@ int MoveEvaluator::maximize(int c_min, int depth) {
     int v = MIN_SCORE;
     for(; p.isMove() && !done; m_game.nextMove(p)) {
       m_game.doMove(p,depth);
-
       const int e = minimize(v, depth+1);
       if(e > v) {
         v = e;
         r = p;
       }
-
       if(v >= c_min) {
         done = true;
       }
-
       restore();
     }
     pop();
@@ -437,16 +416,13 @@ int MoveEvaluator::minimize(int c_max, int depth) {
     int v = MAX_SCORE;
     for(; p.isMove() && !done; m_game.nextMove(p)) {
       m_game.doMove(p,depth);
-
       const int e = maximize(v, depth+1);
       if(e < v) {
         v = e;
       }
-
       if(v <= c_max) {
         done = true;
       }
-
       restore();
     }
     pop();
@@ -458,14 +434,13 @@ Move MoveEvaluator::findMove(int lookahead) {
   m_bestScore = MIN_SCORE;
   m_bestMove  = NOMOVE;
   m_maxDepth  = lookahead;
-  m_stackTop  = 0;
   m_evalCount = 0;
 
   if(m_game.getBrickCount() < 3) { // just to speed up first Move
     m_bestScore = 0;
     return m_game.findRandomMove();
   }
-
+  initStack();
   maximize(MAX_SCORE, 0);
   if(!m_bestMove.isMove()) {
     return m_game.findRandomMove();
@@ -473,4 +448,3 @@ Move MoveEvaluator::findMove(int lookahead) {
     return m_bestMove;
   }
 }
-

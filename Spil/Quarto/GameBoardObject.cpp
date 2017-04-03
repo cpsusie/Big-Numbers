@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include <D3DGraphics/MeshBuilder.h>
 #include "GraphicObjects.h"
 
 DECLARE_THISFILE;
@@ -151,7 +150,7 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
 //      debugLog(_T("MarkField:\n%s"), indentString(mfo->toString(),2).cstr());
     }
   }
-  for (BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
+  for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
     m_scene.addSceneObject(m_brickObject[attr] = new BrickObject(m_scene, attr));
   }
   resetBrickPositions(false);
@@ -237,6 +236,12 @@ void GameBoardObject::setCurrentBrickSelected(bool selected) {
   m_brickObject[m_currentBrick]->setMarked(selected);
 }
 
+void GameBoardObject::setBricksVisible(BrickSet set, bool visible) {
+  for(Iterator<UINT> it = set.getIterator(); it.hasNext();) {
+    m_brickObject[it.next()]->setVisible(visible);
+  }
+}
+
 int GameBoardObject::getBrickFromPoint(const CPoint &p) const {
   const D3SceneObject *obj = m_scene.getPickedObject(p);
   if((obj == NULL) || (obj == this)) {
@@ -255,13 +260,10 @@ Field GameBoardObject::getFieldFromPoint(const CPoint &p) const {
   if(obj == NULL || obj == this) {
     return NOFIELD;
   }
-  for (int r = 0; r < ROWCOUNT; r++) {
+  for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
       if(m_fieldObject[r][c] == obj) {
-        Field result;
-        result.m_row = r;
-        result.m_col = c;
-        return result;
+        return Field(r,c);
       }
     }
   }

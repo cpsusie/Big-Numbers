@@ -4,14 +4,14 @@
 
 DECLARE_THISFILE;
 
-static const Point2D smallProfile1[] = { 
+static const Point2D smallProfileNoTop[] = {
   Point2D( 0   ,0   ),
   Point2D( 0.6 ,0   ),
   Point2D( 0.6 ,1   ),
   Point2D( 0   ,1   )
 };
 
-static const Point2D smallProfile2[] = { 
+static const Point2D smallProfileWithTop[] = {
   Point2D( 0    ,0  ),
   Point2D( 0.6  ,0  ),
   Point2D( 0.6  ,0.6),
@@ -20,14 +20,14 @@ static const Point2D smallProfile2[] = {
   Point2D( 0    ,1  )
 };
 
-static const Point2D bigProfile1[] = { 
+static const Point2D bigProfileNoTop[] = {
   Point2D( 0   ,0   ),
   Point2D( 0.6 ,0   ),
   Point2D( 0.6 ,2   ),
   Point2D( 0   ,2   )
 };
 
-static const Point2D bigProfile2[] = { 
+static const Point2D bigProfileWithTop[] = {
   Point2D( 0   ,0   ),
   Point2D( 0.6 ,0   ),
   Point2D( 0.6 ,1.6 ),
@@ -60,7 +60,7 @@ static Profile createProfile(const Point2DArray &points) {
   ProfileCurve curve(TT_PRIM_LINE);
   polygon.m_start = points[0];
   polygon.m_closed = false;
-  for(int i = 1; i < points.size(); i++) {
+  for(size_t i = 1; i < points.size(); i++) {
     curve.addPoint(points[i]);
   }
   polygon.addCurve(curve);
@@ -71,7 +71,7 @@ static Profile createProfile(const Point2DArray &points) {
 }
 
 static Profile createProfile(const Point2D *data, int n) {
-  Point2DArray points;
+  Point2DArray points(n);
   for(int i = 0; i < n; i++) {
     points.add(data[i]);
   }
@@ -82,15 +82,15 @@ LPD3DXMESH BrickObject::createMesh(LPDIRECT3DDEVICE device, BYTE attr) { // stat
   Profile profile;
   if(ISBIG(attr)) {
     if(ISWITHTOP(attr)) {
-      profile = createProfile(bigProfile2,ARRAYSIZE(bigProfile2));
+      profile = createProfile(bigProfileWithTop,ARRAYSIZE(bigProfileWithTop));
     } else {
-      profile = createProfile(bigProfile1,ARRAYSIZE(bigProfile1));
+      profile = createProfile(bigProfileNoTop,ARRAYSIZE(bigProfileNoTop));
     }
   } else {
     if(ISWITHTOP(attr)) {
-      profile = createProfile(smallProfile2,ARRAYSIZE(smallProfile2));
+      profile = createProfile(smallProfileWithTop,ARRAYSIZE(smallProfileWithTop));
     } else {
-      profile = createProfile(smallProfile1,ARRAYSIZE(smallProfile1));
+      profile = createProfile(smallProfileNoTop,ARRAYSIZE(smallProfileNoTop));
     }
   }
 
@@ -133,6 +133,7 @@ BrickObject::~BrickObject() {
 
 void BrickObject::draw() {
   getDevice()->SetRenderState(D3DRS_LIGHTING, TRUE);
+  prepareDraw();
   getMesh()->DrawSubset(0);
   if(m_marked) {
     m_brickMarker->draw();

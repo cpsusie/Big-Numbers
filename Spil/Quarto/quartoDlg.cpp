@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include <Random.h>
-#include "Quarto.h"
-#include "QuartoDlg.h"
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/D3CoordinateSystem.h>
+#include "QuartoDlg.h"
 #include "AboutBox.h"
 
 #ifdef _DEBUG
@@ -14,10 +13,8 @@ DECLARE_THISFILE;
 
 CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
     m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
-    m_initdone             = false;
     m_startPlayer          = HUMAN_PLAYER;
     m_adjustingCameraFlags = 0;
-//    memset(m_brickMarkerTable, 0, sizeof(m_brickMarkerTable));
 }
 
 void CQuartoDlg::DoDataExchange(CDataExchange *pDX) {
@@ -56,9 +53,6 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_COMMAND(ID_DUMP_SETUP            , OnDumpSetup           )
     ON_MESSAGE(ID_MSG_REFRESH_VIEW      , OnMsgRefreshView      )
 END_MESSAGE_MAP()
-
-#undef checkhres
-#define checkhres() CHECKHRESULT(__FILE__,__LINE__,m_d3.getLastError())
 
 HCURSOR CQuartoDlg::OnQueryDragIcon() {
   return (HCURSOR)m_hIcon;
@@ -106,8 +100,6 @@ BOOL CQuartoDlg::OnInitDialog() {
     Message(_T("%s"),e.what());
     exit(-1);
   }
-
-  m_initdone = true;
   return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -116,7 +108,6 @@ BOOL CQuartoDlg::OnInitDialog() {
 void CQuartoDlg::OnPaint() {
   if(IsIconic()) {
     CPaintDC dc(this);
-
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
     // Center icon in client rectangle
@@ -156,8 +147,6 @@ BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CQuartoDlg::createScene() {
-//  m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
-
   createBoard();
   resetCamera();
   createLight();
@@ -173,7 +162,8 @@ void CQuartoDlg::createLight() {
   LIGHT       light = m_scene.getDefaultLightParam(D3DLIGHT_DIRECTIONAL);
   D3DXVECTOR3 pos   = D3DXVECTOR3(-2*BOARDSIZE+HALFSIZE,BOARDSIZE,HALFSIZE);
   D3DXVECTOR3 dir   = unitVector(m_boardCenter - pos);
-  light.Diffuse     = colorToColorValue(D3DCOLOR_XRGB(192,192,192));
+  light.Diffuse     = colorToColorValue(D3D_WHITE);
+  light.Specular    = colorToColorValue(D3D_WHITE);
   light.Position    = pos;
   light.Direction   = dir;
   m_scene.setLightParam(light);
@@ -398,13 +388,13 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     }
   }
   const Field f = getFieldFromPoint(point);
-//  if(f.isField()) {
-//    if(!m_game.isEmpty(f) || (getSelectedBrick() == NOBRICK)) {
-//      return;
-//    }
+  if(f.isField()) {
+    if(!m_game.isEmpty(f) || (getSelectedBrick() == NOBRICK)) {
+      return;
+    }
     selectField(f);
     render();
-/*
+
     Sleep(500);
     const Move move(getSelectedField(), getSelectedBrick());
     executeMove(move);
@@ -419,9 +409,8 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       endGame();
     }
   }
-*/
 }
-#endif
+#endif // TESTMARKFIELD
 
 void CQuartoDlg::OnFileNew() {
   newGame(isMenuItemChecked(this,ID_OPTIONS_COLOREDGAME), m_startPlayer);
@@ -430,7 +419,7 @@ void CQuartoDlg::OnFileNew() {
   if(m_game.getPlayerInTurn() == HUMAN_PLAYER) {
     Invalidate();
   } else {
-//    executeMove(findMove());
+    executeMove(findMove());
   }
 }
 
@@ -521,8 +510,6 @@ void CQuartoDlg::newGame(bool colored, Player startPlayer, const String &name) {
   render();
 }
 
-/*
-
 void CQuartoDlg::executeMove(const Move &m) {
   m_game.executeMove(m);
   updateGraphicsDoingMove(m);
@@ -551,7 +538,7 @@ void CQuartoDlg::endGame() {
     break;
   }
 }
-*/
+
 void CQuartoDlg::refreshGraphics() {
   resetBrickPositions(m_game.isColored());
   const CompactArray<Move> &list = m_game.getHistory();
@@ -575,31 +562,22 @@ void CQuartoDlg::setGameName(const String &name) {
   SetWindowText(name.cstr());
 }
 
-
-#ifdef _HIDE_
 void CQuartoDlg::flashWinnerBlocks() {
   const FieldArray wf = m_game.getWinnerFields();
   if(wf.size() != 4) {
     return;
   }
-  CompactArray<LPDIRECT3DRMFRAME> wba;
+  BrickSet bset;
   for(int f = 0; f < wf.size(); f++) {
     const int b = m_game.getBrickOnField(wf[f]);
     if(b == NOBRICK) {
       return;
     }
-    wba.add(m_brickFrame[b]);
+    bset.add(b);
   }
-  for(int i = 0; i < 3; i++) {
-    for(int j = 0; j < wba.size(); j++) {
-      m_boardFrame->DeleteChild(wba[j]);
-    }
-    m_d3.paint();
-    Sleep(300);
-    for(j = 0; j < wba.size(); j++) {
-      m_boardFrame->AddChild(wba[j]);
-    }
-    m_d3.paint();
+  for(int i = 0; i < 6; i++) {
+    m_boardObject->setBricksVisible(bset,(i&1)!=0);
+    m_scene.render();
     Sleep(300);
   }
 }
@@ -613,14 +591,12 @@ Move CQuartoDlg::findMove() {
   } else {
     lookahead = (m_game.getBrickCount() < 8) ? 2 : isMenuItemChecked(this,ID_OPTIONS_LEVEL_EXPERT) ? 4 : 2;
   }
-
   const Move m = eval.findMove(lookahead);
 
   theApp.EndWaitCursor();
   showInfo(_T("Score:%d evalCount:%d"),eval.getBestScore(),eval.getEvalCount());
   return m;
 }
-#endif
 
 void CQuartoDlg::showInfo(const TCHAR *format,...) {
   va_list argptr;
@@ -656,7 +632,6 @@ void CQuartoDlg::OnViewResetView() {
   render();
 }
 
-#ifdef __HIDE__
 void CQuartoDlg::OnOptionsLevelExpert() {
   checkMenuItem(this, ID_OPTIONS_LEVEL_BEGINNER, false);
   checkMenuItem(this, ID_OPTIONS_LEVEL_EXPERT  , true );
@@ -666,7 +641,6 @@ void CQuartoDlg::OnOptionsLevelBeginner() {
   checkMenuItem(this, ID_OPTIONS_LEVEL_BEGINNER, true );
   checkMenuItem(this, ID_OPTIONS_LEVEL_EXPERT  , false);
 }
-#endif
 
 void CQuartoDlg::OnOptionsColoredGame() {
   toggleMenuItem(this, ID_OPTIONS_COLOREDGAME);

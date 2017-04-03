@@ -1,25 +1,14 @@
 #pragma once
 
 #include <D3DGraphics/D3Scene.h>
-#include <D3DGraphics/Profile.h>
 #include "GraphicObjects.h"
 
 #define DEVELOPER_MODE
 
 class CQuartoDlg : public CDialog {
-public:
-  CQuartoDlg(CWnd *pParent = NULL);
-  
-  enum { IDD = IDD_DIALOGQUARTO };
-
-public:
-  virtual BOOL PreTranslateMessage(MSG *pMsg);
-  virtual void DoDataExchange(CDataExchange *pDX);
-
 private:
   HICON                   m_hIcon;
   HACCEL                  m_accelTable;
-  bool                    m_initdone;
   int                     m_adjustingCameraFlags;
   CPoint                  m_rbuttonDownPoint;
   D3DXVECTOR3             m_startCamPos;
@@ -55,9 +44,7 @@ private:
   }
 
   void resetBrickPositions(bool colored);
-/*
   void flashWinnerBlocks();
-*/
   void updateGraphicsDoingMove(const Move &m);
   void refreshGraphics();
 #ifdef DEVELOPER_MODE
@@ -78,12 +65,10 @@ private:
     return !m_gameName.equalsIgnoreCase(_T("Untitled"));
   }
   void        newGame(bool colored, Player startPlayer, const String &name = _T("Untitled"));
-/*
   void        executeMove(const Move &m);
 
   Move        findMove();
   void        endGame();
-*/
   int         getBrickFromPoint(const CPoint &p) const;
   Field       getFieldFromPoint(const CPoint &p) const;
   void        markBrick(  int b);
@@ -101,6 +86,14 @@ private:
   void        turnBoard(int degree);
 */
   void        toggleLight(int index, bool on);
+public:
+  CQuartoDlg(CWnd *pParent = NULL);
+  
+  enum { IDD = IDD_DIALOGQUARTO };
+
+  virtual BOOL PreTranslateMessage(MSG *pMsg);
+  virtual void DoDataExchange(CDataExchange *pDX);
+
 protected:
   virtual void OnCancel();
   virtual void OnOK();
@@ -128,9 +121,9 @@ protected:
   afx_msg void OnViewLight1();
 /*
   afx_msg void OnViewLight2();
+*/
   afx_msg void OnOptionsLevelBeginner();
   afx_msg void OnOptionsLevelExpert();
-*/
   afx_msg void OnOptionsColoredGame();
   afx_msg void OnHelpAboutquarto();
   afx_msg void OnDumpSetup();

@@ -81,6 +81,7 @@ public:
   void unmarkCurrentField();
   void markBrick(char brick);
   void unmarkCurrentBrick();
+  void setBricksVisible(BrickSet set, bool visible);
   const Field getCurrentField() const {
     return m_currentField;
   }
