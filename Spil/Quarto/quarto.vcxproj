@@ -268,10 +268,10 @@
   <ItemGroup>
     <ClCompile Include="AboutBox.cpp" />
     <ClCompile Include="BrickObject.cpp" />
-    <ClCompile Include="game.cpp" />
+    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameBoardObject.cpp" />
-    <ClCompile Include="quarto.cpp" />
-    <ClCompile Include="quartoDlg.cpp" />
+    <ClCompile Include="Quarto.cpp" />
+    <ClCompile Include="QuartoDlg.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -284,14 +284,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="quarto.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="AboutBox.h" />
-    <ClInclude Include="game.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="GraphicObjects.h" />
-    <ClInclude Include="quarto.h" />
-    <ClInclude Include="quartoDlg.h" />
+    <ClInclude Include="Quarto.h" />
+    <ClInclude Include="QuartoDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
@@ -305,6 +302,9 @@
   <ItemGroup>
     <CustomBuild Include="res\cursor1.cur" />
     <CustomBuild Include="res\quarto.rc2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Quarto.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
