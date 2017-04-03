@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "TestLexStream.h"
 #include "TestLexStreamDlg.h"
 
 #ifdef _DEBUG
@@ -22,8 +21,8 @@ BOOL CTestLexStreamApp::InitInstance() {
       CTestLexStreamDlg dlg;
       m_pMainWnd = &dlg;
       INT_PTR nResponse = dlg.DoModal();
-      if (nResponse == IDOK) {
-      } else if (nResponse == IDCANCEL) {
+      if(nResponse == IDOK) {
+      } else if(nResponse == IDCANCEL) {
       }
     } catch(Exception e) {
       AfxMessageBox(e.what(), MB_ICONWARNING);
