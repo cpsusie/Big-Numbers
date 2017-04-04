@@ -26,27 +26,27 @@
 class ParametricSurface : public FunctionTemplate<Point2D, Point3D> {
 };
 
-float       operator*(   const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-float       length(      const D3DXVECTOR3 &v);
-float       angle(       const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
-D3DXVECTOR3 unitVector(  const D3DXVECTOR3 &v);
+float       operator*(            const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+float       length(               const D3DXVECTOR3 &v);
+float       angle(                const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+D3DXVECTOR3 unitVector(           const D3DXVECTOR3 &v);
 D3DXVECTOR3 createUnitVector(int i); // i = [0..2] giving ((1,0,0) or (0,1,0) or (0,0,1)
-D3DXVECTOR3 rotate(      const D3DXVECTOR3 &v , const D3DXVECTOR3 &axes, double rad);
-D3DXVECTOR3 crossProduct(const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
+D3DXVECTOR3 rotate(               const D3DXVECTOR3 &v , const D3DXVECTOR3 &axes, double rad);
+D3DXVECTOR3 crossProduct(         const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2);
 D3DXVECTOR3 randomUnitVector();
-D3DXVECTOR3 ortonormalVector(const D3DXVECTOR3 &v);
-String      toString(    const D3DXVECTOR3 &v, int dec = 3);
-String      toString(    const D3DXVECTOR4 &v, int dec = 3);
-D3DXMATRIX  transpose( const D3DXMATRIX  &m);
-D3DXMATRIX  invers(    const D3DXMATRIX  &m);
+D3DXVECTOR3 ortonormalVector(     const D3DXVECTOR3 &v);
+String      toString(             const D3DXVECTOR3 &v, int dec = 3);
+String      toString(             const D3DXVECTOR4 &v, int dec = 3);
+D3DXMATRIX  transpose(            const D3DXMATRIX  &m);
+D3DXMATRIX  invers(               const D3DXMATRIX  &m);
 D3DXMATRIX  createIdentityMatrix();
 D3DXMATRIX  createTranslateMatrix(const D3DXVECTOR3 &v);
 D3DXMATRIX  createScaleMatrix(    const D3DXVECTOR3 &s);
 D3DXMATRIX  createRotationMatrix( const D3DXVECTOR3 &axis, double rad);
-D3DXVECTOR3 operator*( const D3DXMATRIX  &m , const D3DXVECTOR3 &v);
-D3DXVECTOR3 operator*( const D3DXVECTOR3 &v,  const D3DXMATRIX  &m);
-float       det(       const D3DXMATRIX  &m);
-String      toString(  const D3DXMATRIX  &m, int dec = 3);
+D3DXVECTOR3 operator*(            const D3DXMATRIX  &m, const D3DXVECTOR3 &v);
+D3DXVECTOR3 operator*(            const D3DXVECTOR3 &v, const D3DXMATRIX  &m);
+float       det(                  const D3DXMATRIX  &m);
+String      toString(             const D3DXMATRIX  &m, int dec = 3);
 
 inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   return length(p1 - p2);
@@ -246,40 +246,54 @@ public:
 };
 
 class D3PosDirUpScale {
+private:
   D3DXVECTOR3 m_pos, m_dir, m_up, m_scale;
   D3DXMATRIX  m_view;
-  void updateView();
-  void dumpWorld();
+  D3PosDirUpScale &updateView();
 public:
   D3PosDirUpScale();
-  const D3DXVECTOR3 &getPos() const {
+  inline const D3DXVECTOR3 &getPos() const {
     return m_pos;
   }
-  const D3DXVECTOR3 &getDir() const {
+  inline const D3DXVECTOR3 &getDir() const {
     return m_dir;
   }
-  const D3DXVECTOR3 &getUp() const {
+  inline const D3DXVECTOR3 &getUp() const {
     return m_up;
   }
-  D3DXVECTOR3 getRight() const {
+  inline D3DXVECTOR3 getRight() const {
     return crossProduct(m_dir, m_up);
   }
-  const D3DXVECTOR3 &getScale() const {
+  inline const D3DXVECTOR3 &getScale() const {
     return m_scale;
   }
-  void setPos(        const D3DXVECTOR3 &pos);
-  void setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  void setScale(      const D3DXVECTOR3 &scale);
+  D3PosDirUpScale &setPos(const D3DXVECTOR3 &pos) {
+    m_pos = pos;
+    return updateView();
+  }
+  D3PosDirUpScale &setOrientation( const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
+  inline D3PosDirUpScale &setScale(const D3DXVECTOR3 &scale) {
+    m_scale = scale;
+    return *this;
+  }
+  D3PosDirUpScale &setWorldMatrix(const D3DXMATRIX &world);
 
-  D3DXMATRIX  getWorldMatrix()    const;
-  D3DXMATRIX  getViewMatrix()     const;
-  D3DXMATRIX  getRotationMatrix() const;
-  D3DXMATRIX  getScaleMatrix()    const;
+  inline D3DXMATRIX getWorldMatrix() const {
+    D3DXMATRIX result;
+    return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z) * invers(m_view);
+  }
+  inline const D3DXMATRIX &getViewMatrix() const {
+    return m_view;
+  }
+  inline D3DXMATRIX        getRotationMatrix() const {
+    return D3PosDirUpScale(*this).setPos(D3DXVECTOR3(0,0,0)).setScale(D3DXVECTOR3(1,1,1)).getWorldMatrix();
+  }
+  inline D3DXMATRIX        getScaleMatrix()    const {
+    D3DXMATRIX result;
+    return *D3DXMatrixScaling(&result, m_scale.x, m_scale.y, m_scale.z);
+  }
   
-  void setWorldMatrix(const D3DXMATRIX &world);
-//  void setViewMatrix( const D3DXMATRIX &view );
-
-  String toString() const;
+  String toString(int dec=3) const;
   inline bool operator==(const D3PosDirUpScale &pdus) const {
     return (m_pos == pdus.m_pos) && (m_dir == pdus.m_dir) && (m_up == pdus.m_up) && (m_scale == pdus.m_scale);
   }
@@ -290,20 +304,19 @@ public:
 
 class D3Ray {
 public:
-  D3DXVECTOR3 m_orig;
-  D3DXVECTOR3 m_dir;
-  D3Ray() : m_orig(0, 0, 0), m_dir(0, 0, 0) {
+  D3DXVECTOR3 m_orig,m_dir;
+  inline D3Ray() : m_orig(0, 0, 0), m_dir(0, 0, 0) {
   }
-  D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &m_dir) : m_orig(orig), m_dir(unitVector(m_dir)) {
+  inline D3Ray(const D3DXVECTOR3 &orig, const D3DXVECTOR3 &m_dir) : m_orig(orig), m_dir(unitVector(m_dir)) {
   }
-  void clear() {
+  inline void clear() {
     m_dir = m_orig = D3DXVECTOR3(0,0,0);
   }
-  bool isSet() const {
+  inline bool isSet() const {
     return length(m_dir) > 0;
   }
-  String toString() const {
-    return format(_T("Orig:(%s), Dir:(%s)"), ::toString(m_orig).cstr(), ::toString(m_dir).cstr());;
+  inline String toString(int dec=3) const {
+    return format(_T("Orig:%s, Dir:%s"), ::toString(m_orig,dec).cstr(), ::toString(m_dir,dec).cstr());
   }
 };
 

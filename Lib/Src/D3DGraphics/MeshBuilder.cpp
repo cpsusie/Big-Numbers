@@ -601,10 +601,10 @@ LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) co
   }
 //  debugLog(_T("%s:\n%s"), __TFUNCTION__           , indentString(toString()     , 2).cstr());
 
-  MeshBuilder copy(*this);
+  const MeshBuilder &copy = *this;
 //  debugLog(_T("%s:\n%s"), _T("Copy (unoptimized)"), indentString(copy.toString(), 2).cstr());
 
-  copy.optimize();
+//  copy.optimize();
 //  debugLog(_T("%s:\n%s"), _T("Copy (optimized)")  , indentString(copy.toString(), 2).cstr());
 
   if(copy.hasNormals()) {
@@ -637,4 +637,3 @@ LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) co
     }
   }
 }
-

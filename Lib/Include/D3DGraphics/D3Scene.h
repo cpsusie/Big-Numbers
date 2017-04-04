@@ -172,10 +172,10 @@ public:
   void initTrans();
   void render();
   void OnSize();
-  HWND getHwnd() {
+  inline HWND getHwnd() {
     return m_hwnd;
   }
-  LPDIRECT3DDEVICE getDevice() const {
+  inline LPDIRECT3DDEVICE getDevice() const {
     return m_device;
   }
   void addSceneObject(   D3SceneObject *obj);
@@ -191,58 +191,58 @@ public:
     return m_shadeMode;
   }
 
-  const D3PosDirUpScale &getObjPDUS() const {
+  inline const D3PosDirUpScale &getObjPDUS() const {
     return m_objectPDUS;
   }
-  const D3DXVECTOR3 &getObjPos() const {
+  inline const D3DXVECTOR3 &getObjPos() const {
     return m_objectPDUS.getPos();
   }
-  const D3DXVECTOR3 &getObjDir() const {
+  inline const D3DXVECTOR3 &getObjDir() const {
     return m_objectPDUS.getDir();
   }
-  const D3DXVECTOR3 &getObjUp() const {
+  inline const D3DXVECTOR3 &getObjUp() const {
     return m_objectPDUS.getUp();
   }
-  D3DXVECTOR3 getObjRight() const {
+  inline D3DXVECTOR3 getObjRight() const {
     return m_objectPDUS.getRight();
   }
-  const D3DXVECTOR3 &getObjScale() const {
+  inline const D3DXVECTOR3 &getObjScale() const {
     return m_objectPDUS.getScale();
   }
   void setObjPos(        const D3DXVECTOR3 &pos);
   void setObjOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
   void setObjScale(const D3DXVECTOR3 &scale);
-  String getObjString() const {
-    return format(_T("Obj:(%s)"), m_objectPDUS.toString().cstr());
+  inline String getObjString() const {
+    return format(_T("Object:%s"), m_objectPDUS.toString().cstr());
   }
 
-  const D3PosDirUpScale &getCameraPDUS() const {
+  inline const D3PosDirUpScale &getCameraPDUS() const {
     return m_cameraPDUS;
   }
-  const D3DXVECTOR3 &getCameraPos() const {
+  inline const D3DXVECTOR3 &getCameraPos() const {
     return m_cameraPDUS.getPos();
   }
-  const D3DXVECTOR3 &getCameraDir() const {
+  inline const D3DXVECTOR3 &getCameraDir() const {
     return m_cameraPDUS.getDir();
   }
-  const D3DXVECTOR3 &getCameraUp() const {
+  inline const D3DXVECTOR3 &getCameraUp() const {
     return m_cameraPDUS.getUp();
   }
-  D3DXVECTOR3 getCameraRight() const {
+  inline D3DXVECTOR3 getCameraRight() const {
     return m_cameraPDUS.getRight();
   }
   void setCameraPos(        const D3DXVECTOR3 &pos);
   void setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
   void setCameraLookAt(     const D3DXVECTOR3 &point);
-  String getCameraString() const {
-    return format(_T("Cam:(%s)"), m_cameraPDUS.toString().cstr());
+  inline String getCameraString() const {
+    return format(_T("Camera:%s"), m_cameraPDUS.toString().cstr());
   }
   void setViewAngel(float angel);
-  float getViewAngel() const {
+  inline float getViewAngel() const {
     return m_viewAngel;
   }
   void setNearViewPlane(float zn);
-  float getNearViewPlane() const {
+  inline float getNearViewPlane() const {
     return m_nearViewPlane;
   }
   inline D3DXMATRIX getProjMatrix() const {
@@ -296,14 +296,14 @@ public:
     return (int)m_lightsEnabled->size();
   }
 
-  const D3DMATERIAL &getMaterial() const {
+  inline const D3DMATERIAL &getMaterial() const {
     return m_material;
   }
   void setMaterial(const D3DMATERIAL &material);
   String getMaterialString() const;
 
   void setBackgroundColor(D3DCOLOR color);
-  D3DCOLOR getBackgroundColor() const {
+  inline D3DCOLOR getBackgroundColor() const {
     return m_backgroundColor;
   }
   static inline int getTextureCoordCount() {
@@ -312,7 +312,7 @@ public:
   static inline const D3PosDirUpScale &getOrigo() {
     return s_pdusOrigo;
   }
-  D3Ray getPickRay(const CPoint &point) const;
+  D3Ray          getPickRay(     const CPoint &point) const;
   D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
   void saveState(const String &fileName) const;
@@ -359,20 +359,20 @@ public:
   virtual ~D3SceneObject() {
   };
 
-  D3Scene &getScene() {
+  inline D3Scene &getScene() {
     return m_scene;
   }
-  const D3Scene &getScene() const {
+  inline const D3Scene &getScene() const {
     return m_scene;
   }
-  void *getUserData() {
+  inline void *getUserData() {
     return m_userData;
   }
-  void setUserData(void *p) {
+  inline void setUserData(void *p) {
     m_userData = p;
   }
   void prepareDraw(UINT flags = USE_SCENEPARAMS);
-  void setVisible(bool visible) {
+  inline void setVisible(bool visible) {
     m_visible = visible;
   }
   virtual LPD3DXMESH getMesh() const {
@@ -387,29 +387,29 @@ public:
   virtual D3DXMATRIX getWorldMatrix() const {
     return getPDUS().getWorldMatrix();
   }
-  D3DXVECTOR3 getPos() const {
+  inline const D3DXVECTOR3 &getPos() const {
     return getPDUS().getPos();
   }
-  D3DXVECTOR3 getDir() const {
+  inline const D3DXVECTOR3 &getDir() const {
     return getPDUS().getDir();
   }
-  D3DXVECTOR3 getUp() const {
+  inline const D3DXVECTOR3 &getUp() const {
     return getPDUS().getUp();
   }
-  D3DXVECTOR3 getRight() const {
+  inline D3DXVECTOR3 getRight() const {
     return getPDUS().getRight();
   }
-  const D3DXVECTOR3 &getScale() const {
+  inline const D3DXVECTOR3 &getScale() const {
     return getPDUS().getScale();
   }
 
   virtual void draw() = 0;
   bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
-  String getName() const {
+  inline const String &getName() const {
     return m_name;
   }
-  void setName(const String &name) {
+  inline void setName(const String &name) {
     m_name = name;
   }
   virtual SceneObjectType getType() const {

@@ -1225,7 +1225,7 @@ void CD3FunctionPlotterDlg::setInfoVisible(bool visible) {
 
   if(visible) {
     upperRect = getWindowRect(get3DPanel());
-    upperRect.bottom = cl.Height() - 100;
+    upperRect.bottom = cl.Height() - 220;
     lowerRect = CRect(upperRect.left, upperRect.bottom, upperRect.right, cl.bottom);
   } else {
     upperRect = cl;
