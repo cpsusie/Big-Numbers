@@ -55,9 +55,9 @@ void CQuartoDlg::setMaterialColor(LPDIRECT3DRMMATERIAL material, COLORREF emissi
 */
 
 static Profile createProfile(const Point2DArray &points) {
-  Profile result;
+  Profile        result;
   ProfilePolygon polygon;
-  ProfileCurve curve(TT_PRIM_LINE);
+  ProfileCurve   curve(TT_PRIM_LINE);
   polygon.m_start = points[0];
   polygon.m_closed = false;
   for(size_t i = 1; i < points.size(); i++) {
@@ -111,7 +111,7 @@ class BrickMarker : public D3LineArray {
 private:
   D3PosDirUpScale &m_pdus;
 public:
-  BrickMarker(D3Scene &scene, const Cube3D &box, D3PosDirUpScale &pdus)
+  BrickMarker(D3Scene &scene, const D3DXCube3 &box, D3PosDirUpScale &pdus)
     : D3LineArray(scene, box.m_lbn, box.m_rtf)
     , m_pdus(pdus)
   {}
@@ -120,11 +120,15 @@ public:
   }
 };
 
-
 BrickObject::BrickObject(D3Scene &scene, BYTE attr)
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice(), attr)) {
   m_marked = false;
   m_brickMarker = new BrickMarker(scene, getBoundingBox(getMesh()), m_pdus);
+  setName(format(_T("Brick(%d):%s")
+                ,attr
+                ,Brick::toString(attr).cstr()
+                )
+         );
 }
 
 BrickObject::~BrickObject() {
@@ -139,3 +143,11 @@ void BrickObject::draw() {
     m_brickMarker->draw();
   }
 }
+
+#ifdef _DEBUG
+String BrickObject::toString() const {
+  return format(_T("%s\nPDUS:\n%s")
+               ,getName().cstr()
+               ,indentString(getPDUS().toString(),2).cstr());
+}
+#endif

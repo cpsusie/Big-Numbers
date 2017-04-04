@@ -3,6 +3,15 @@
 
 BYTE Brick::attr[FIELDCOUNT];
 
+String Brick::toString(BYTE attr) { // static
+  String result;
+  result  = ISWITHTOP(attr) ? _T("top"    ) : _T("no top");
+  result += ISSQUARE( attr) ? _T(",square") : _T(",round");
+  result += ISBIG(    attr) ? _T(",big"   ) : _T(",small");
+  result += ISBLACK(  attr) ? _T(",blue"  ) : _T(",red"  );
+  return result;
+}
+
 #define MIN_SCORE -9999
 #define MAX_SCORE 9999
 

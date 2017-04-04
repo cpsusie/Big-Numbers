@@ -17,6 +17,7 @@ public:
   static inline bool isValid(char brick) {
     return (BYTE)brick < FIELDCOUNT;
   }
+  static String toString(BYTE attr);
 };
 
 typedef BitSet16 BrickSet;

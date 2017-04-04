@@ -558,8 +558,7 @@ void CQuartoDlg::updateGraphicsDoingMove(const Move &m) {
 }
 
 void CQuartoDlg::setGameName(const String &name) {
-  m_gameName = name;
-  SetWindowText(name.cstr());
+  setWindowText(this, m_gameName = name);
 }
 
 void CQuartoDlg::flashWinnerBlocks() {
@@ -603,7 +602,7 @@ void CQuartoDlg::showInfo(const TCHAR *format,...) {
   va_start(argptr, format);
   const String s = vformat(format, argptr);
   va_end(argptr);
-  GetDlgItem(IDC_GAMEINFO)->SetWindowText(s.cstr());
+  setWindowText(this, IDC_GAMEINFO, s);
 }
 
 #ifdef __HIDE__

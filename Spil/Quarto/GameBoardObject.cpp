@@ -38,10 +38,11 @@ LPDIRECT3DTEXTURE BoardFieldObject::s_markTexture     = NULL;
 BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice(), row, col))
 {
-  m_field.m_row = row;
-  m_field.m_col = col;
   m_selected    = false;
-  setName(format(_T("%s"), m_field.toString().cstr()));
+  m_center      = getPos() + getBoundingBox(getMesh()).getCenter();
+#ifdef _DEBUG
+  setName(format(_T("Field(%d,%d) Center:%s"), row,col, ::toString(m_center).cstr()));
+#endif
 }
 
 LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int col) {
@@ -80,6 +81,19 @@ LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 void BoardFieldObject::draw() {
   drawMeshUsingTexture(getDevice(), getMesh(), getTexture(m_selected));
 }
+
+#ifdef _DEBUG
+String BoardFieldObject::toString() const {
+  return getName() + _T("\n")
+       + indentString(format(_T("PDUS:\n%s")
+                            ,indentString(getPDUS().toString()
+                                         ,2
+                                         ).cstr()
+                            )
+                     ,2
+                     );
+}
+#endif
 
 LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
   MeshBuilder mb;
@@ -140,14 +154,19 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
 GameBoardObject::GameBoardObject(D3Scene &scene) 
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice()))
 {
-//  debugLog(_T("GameBoardObject:\n%s"), indentString(toString(),2).cstr());
+  setName(_T("Board"));
+#ifdef _DEBUG
+  debugLog(_T("GameBoardObject:\n%s"), indentString(toString(),2).cstr());
+#endif
   m_boardTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP      );
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
       BoardFieldObject *mfo = new BoardFieldObject(scene, r, c);
       m_fieldObject[r][c] = mfo;
       m_scene.addSceneObject(mfo);
-//      debugLog(_T("MarkField:\n%s"), indentString(mfo->toString(),2).cstr());
+#ifdef _DEBUG
+      debugLog(_T("%s\n"), indentString(mfo->toString(),2).cstr());
+#endif
     }
   }
   for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
@@ -177,14 +196,6 @@ void GameBoardObject::draw() {
 }
 
 #define BRICKZ 0.05f
-
-D3DXVECTOR3 GameBoardObject::getFieldCenter(const Field &f) const {
-  assert(f.isValid());
-  return D3DXVECTOR3((s_gridLines[f.m_row]+s_gridLines[f.m_row+1])/2
-                    ,(s_gridLines[f.m_col]+s_gridLines[f.m_col+1])/2
-                    ,BRICKZ
-                    );
-}
 
 void GameBoardObject::resetBrickPositions(bool colored) {
   for(int i = 0; i < ARRAYSIZE(m_brickObject); i++) {
@@ -269,3 +280,12 @@ Field GameBoardObject::getFieldFromPoint(const CPoint &p) const {
   }
   return NOFIELD;
 }
+
+#ifdef _DEBUG
+String GameBoardObject::toString() const {
+  return format(_T("%s BoundingBox:%s")
+                ,getName().cstr()
+                ,getBoundingBox(getMesh()).toString().cstr()
+               );
+}
+#endif

@@ -12,7 +12,7 @@ class BoardFieldObject : public SceneObjectWithMesh {
 private:
   static LPDIRECT3DTEXTURE s_unmarkedTexture;
   static LPDIRECT3DTEXTURE s_markTexture;
-  Field                    m_field;
+  D3DXVECTOR3              m_center;
   bool                     m_selected;
   LPDIRECT3DTEXTURE getTexture(bool marked);
   static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, int row, int col);
@@ -23,8 +23,19 @@ public:
   }
   inline void setSelected(bool selected) {
     m_selected = selected;
+#ifdef _DEBUG
+    if(selected) {
+      debugLog(_T("Select %s\n"), getName().cstr());
+    }
+#endif
+  }
+  inline const D3DXVECTOR3 &getCenter() const {
+    return m_center;
   }
   void draw();
+#ifdef _DEBUG
+  String toString() const;
+#endif
 };
 
 class BrickObject : public SceneObjectWithMesh {
@@ -41,11 +52,25 @@ public:
   }
   inline void setPos(const D3DXVECTOR3 &pos) {
     m_pdus.setPos(pos);
+#ifdef _DEBUG
+    debugLog(_T("New position(%s) %s\nPDUS:\n%s")
+            ,getName().cstr()
+            ,::toString(pos).cstr()
+            ,indentString(getPDUS().toString(),2).cstr());
+#endif
   }
   inline void setMarked(bool marked) {
     m_marked = marked;
+#ifdef _DEBUG
+    if (marked) {
+      debugLog(_T("Mark %s\n"), getName().cstr());
+    }
+#endif
   }
   void draw();
+#ifdef _DEBUG
+  String toString() const;
+#endif
 };
 
 class GameBoardObject : public SceneObjectWithMesh {
@@ -73,7 +98,9 @@ public:
   inline bool hasCurrentBrick() const {
     return m_currentBrick != NOBRICK;
   }
-  D3DXVECTOR3 getFieldCenter(const Field &f) const;
+  D3DXVECTOR3 getFieldCenter(const Field &f) const {
+    return m_fieldObject[f.m_row][f.m_col]->getCenter();
+  }
 
   void resetBrickPositions(bool colored);
   void setBrickOnField(BYTE brick, const Field &f);
@@ -91,4 +118,7 @@ public:
   void draw();
   int   getBrickFromPoint(const CPoint &p) const;
   Field getFieldFromPoint(const CPoint &p) const;
+#ifdef _DEBUG
+  String toString() const;
+#endif
 };
