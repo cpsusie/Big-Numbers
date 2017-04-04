@@ -170,8 +170,8 @@ bool MeshBuilder::use32BitIndices(bool doubleSided) const {
   return (vertexCount > MAX16BITVERTEXCOUNT) || (faceCount > MAX16BITVERTEXCOUNT);
 }
 
-Cube3D MeshBuilder::getBoundingBox() const {
-  Cube3D       result(Point3D(0,0,0),Point3D(0,0,0));
+D3DXCube3 MeshBuilder::getBoundingBox() const {
+  D3DXCube3    result;
   const size_t faceCount = m_faceArray.size();
   size_t       i;
   bool         firstTime = true;

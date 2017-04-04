@@ -4,7 +4,7 @@
 
 DECLARE_THISFILE;
 
-Cube3D getBoundingBox(LPD3DXMESH mesh) {
+D3DXCube3 getBoundingBox(LPD3DXMESH mesh) {
   LPDIRECT3DVERTEXBUFFER vertexBuffer;
 //  LPDIRECT3DINDEXBUFFER  indexBuffer;
 
@@ -16,7 +16,7 @@ Cube3D getBoundingBox(LPD3DXMESH mesh) {
   const int itemSize = FVFToSize(desc.FVF);
   void *bufferItems = NULL;
   V(vertexBuffer->Lock(0, 0, &bufferItems, D3DLOCK_READONLY));
-  Cube3D result;
+  D3DXCube3 result;
   bool   firstTime = true;
   for(size_t bp = 0; bp < desc.Size; bp += itemSize) {
     const Vertex &v = *(Vertex*)(((const char*)bufferItems) + bp);

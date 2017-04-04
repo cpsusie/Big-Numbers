@@ -1,55 +1,59 @@
 #pragma once
 
 #include <Math/Point3D.h>
+#include <D3DX9.h>
 
-class Cube3D {
+template<class C, class V> class Cube3DTemplate {
 public:
-  Point3D m_lbn;
-  Point3D m_rtf;
-  Cube3D() {
+  C m_lbn;
+  C m_rtf;
+  Cube3DTemplate() {
   }
-  Cube3D(const Point3D &lbn, const Point3D &rtf) : m_lbn(lbn), m_rtf(rtf) {
+  Cube3DTemplate(const C &lbn, const C &rtf) : m_lbn(lbn), m_rtf(rtf) {
   }
-  inline double getLength() const { // dimension x
+  inline V getLength() const { // dimension x
     return m_rtf.x - m_lbn.x;
   }
-  inline double getHeight() const { // dimension y
+  inline V getHeight() const { // dimension y
     return m_rtf.y - m_lbn.y;
   }
-  inline double getDepth() const {  // dimension z
+  inline V getDepth() const {  // dimension z
     return m_rtf.z - m_lbn.z;
   }
-  inline double volume() const {
+  inline V volume() const {
     return getLength() * getHeight() * getDepth();
   }
-  inline double getMinX() const {
+  inline V getMinX() const {
     return m_lbn.x;
   }
-  inline double getMaxX() const {
+  inline V getMaxX() const {
     return m_rtf.x;
   }
-  inline double getMinY() const {
+  inline V getMinY() const {
     return m_lbn.y;
   }
-  inline double getMaxY() const {
+  inline V getMaxY() const {
     return m_rtf.y;
   }
-  inline double getMinZ() const {
+  inline V getMinZ() const {
     return m_lbn.z;
   }
-  inline double getMaxZ() const {
+  inline V getMaxZ() const {
     return m_rtf.z;
   }
-  inline bool contains(const Point3D &p) const {
+  inline bool contains(const C &p) const {
     return (m_lbn <= p) && (p <= m_rtf);
   }
-  inline bool contains(const Cube3D &cube) const {
+  inline bool contains(const Cube3DTemplate &cube) const {
     return (m_lbn <= cube.m_lbn) && (cube.m_rtf <= m_rtf);
   }
-  inline Point3D getCenter() const {
+  inline C getCenter() const {
     return (m_lbn + m_rtf)/2.0;
   }
   inline String toString(int dec = 3) const {
-    return format(_T("Cube:(%s,%s)"), m_lbn.toString(dec).cstr(), m_rtf.toString(dec).cstr());
+    return format(_T("Cube:(%s,%s)"), ::toString(m_lbn, dec).cstr(), ::toString(m_rtf, dec).cstr());
   }
 };
+
+typedef Cube3DTemplate<Point3D    , double> Cube3D;
+typedef Cube3DTemplate<D3DXVECTOR3, float>  D3DXCube3;

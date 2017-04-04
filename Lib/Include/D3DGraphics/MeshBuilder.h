@@ -183,12 +183,12 @@ public:
   }
 
   void optimize();
-  Cube3D getBoundingBox() const;
+  D3DXCube3 getBoundingBox() const;
   LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
   String toString() const;
 };
 
-Cube3D getBoundingBox(LPD3DXMESH mesh);
+D3DXCube3 getBoundingBox(LPD3DXMESH mesh);
 
 #define DUMP_PRUNECOUNT
