@@ -12,9 +12,9 @@
 DECLARE_THISFILE;
 
 CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
-    m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
-    m_startPlayer          = HUMAN_PLAYER;
-    m_adjustingCameraFlags = 0;
+  m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
+  m_startPlayer          = HUMAN_PLAYER;
+  m_adjustingCameraFlags = 0;
 }
 
 void CQuartoDlg::DoDataExchange(CDataExchange *pDX) {
@@ -176,8 +176,8 @@ void CQuartoDlg::toggleLight(int index, bool on) {
 }
 
 void CQuartoDlg::resetCamera() {
-  m_scene.setCameraPos(D3DXVECTOR3(0, -13.52f, 9.35f));
-  m_scene.setCameraOrientation(D3DXVECTOR3(0, 0.749f, -0.662f), D3DXVECTOR3(0,0,1));
+  m_scene.setCameraPos(D3DXVECTOR3(0, 8.102f, -15.757f));
+  m_scene.setCameraOrientation(D3DXVECTOR3(0, -0.457f, 0.889f), D3DXVECTOR3(0,0,1));
   setWindowSize(this, CSize(947, 614));
 }
 
@@ -266,7 +266,7 @@ void CQuartoDlg::OnMouseMove(UINT nFlags, CPoint point) {
 }
 
 BOOL CQuartoDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
-  float factor = (zDelta > 0) ? 0.3f : -0.3f;
+  const float factor = (zDelta > 0) ? 0.3f : -0.3f;
   D3DXVECTOR3 dir = m_scene.getCameraDir();
   m_scene.setCameraPos(getCameraPosition() + factor * dir);
   render();
@@ -325,10 +325,10 @@ void CQuartoDlg::adjustCameraAngle(const CPoint &p) {
 
 #ifdef DEVELOPER_MODE
 void CQuartoDlg::showCameraData() {
-  const D3DXVECTOR3  bc = getBoardCenter();
-  D3DXVECTOR3        cp = getCameraPosition();
-  D3DXVECTOR3        cd = m_scene.getCameraDir();
-  D3DXVECTOR3        cu = m_scene.getCameraUp();
+  const D3DXVECTOR3 bc = getBoardCenter();
+  const D3DXVECTOR3 cp = getCameraPosition();
+  const D3DXVECTOR3 cd = m_scene.getCameraDir();
+  const D3DXVECTOR3 cu = m_scene.getCameraUp();
 
   showInfo(_T("BoardCenter:%s\r\nCamera(Pos:%s, Dir:%s, Up%s")
           ,toString(bc).cstr()
@@ -340,9 +340,9 @@ void CQuartoDlg::showCameraData() {
 #endif
 
 void CQuartoDlg::adjustCameraPos(const CPoint &p) {
-  D3DXVECTOR3        cp = getCameraPosition();
-  D3DXVECTOR3        cr = m_scene.getCameraRight();
-  D3DXVECTOR3        cu = m_scene.getCameraUp();
+  const D3DXVECTOR3 cp = getCameraPosition();
+  const D3DXVECTOR3 cr = m_scene.getCameraRight();
+  const D3DXVECTOR3 cu = m_scene.getCameraUp();
 
   const float dx = (float)(p.x - m_rbuttonDownPoint.x)/10.0f;
   const float dy = (float)(p.y - m_rbuttonDownPoint.y)/10.0f;
@@ -541,7 +541,7 @@ void CQuartoDlg::endGame() {
 
 void CQuartoDlg::refreshGraphics() {
   resetBrickPositions(m_game.isColored());
-  const CompactArray<Move> &list = m_game.getHistory();
+  const MoveArray &list = m_game.getHistory();
   for(int i = 0; i < list.size(); i++) {
     updateGraphicsDoingMove(list[i]);
   }

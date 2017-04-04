@@ -62,6 +62,8 @@ public:
   }
 };
 
+typedef CompactArray<Move> MoveArray;
+
 extern const Move  NOMOVE;
 extern const Field NOFIELD;
 
@@ -89,7 +91,7 @@ private:
 
   bool               m_colored;
   Player             m_startPlayer;
-  CompactArray<Move> m_moveList;
+  MoveArray          m_moveList;
   PushableGameState  m_state;
 
   void   doMove(const Move &m, int lookahead = 0);
@@ -120,7 +122,7 @@ public:
   int    evaluate()        const { return m_state.m_score;        }
   bool   hasWinner()       const { return m_state.m_hasWinner;    }
   FieldArray getWinnerFields() const;
-  const CompactArray<Move> &getHistory() const {
+  const MoveArray &getHistory() const {
     return m_moveList;
   }
   String toString() const;

@@ -84,7 +84,7 @@ Game::Game(const String &s) {
   intValue = tok.getInt();
   const bool coloredGame = (intValue != 0);
 
-  CompactArray<Move> tmpList;
+  MoveArray tmpList;
   while(tok.hasNext()) {
     tmpList.add(Move(getString(tok)));
   }

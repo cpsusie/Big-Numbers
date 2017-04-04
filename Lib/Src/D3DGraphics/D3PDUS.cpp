@@ -3,8 +3,8 @@
 D3PosDirUpScale::D3PosDirUpScale() {
   m_pos   = D3DXVECTOR3(0,0,0);
   m_scale = D3DXVECTOR3(1,1,1);
-  m_dir   = D3DXVECTOR3(0,1,0);
-  m_up    = D3DXVECTOR3(0,0,1);
+  m_dir   = D3DXVECTOR3(0,0,1);
+  m_up    = D3DXVECTOR3(0,1,0);
   updateView();
 }
 

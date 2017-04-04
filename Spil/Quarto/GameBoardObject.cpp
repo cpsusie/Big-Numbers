@@ -156,7 +156,7 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
 {
   setName(_T("Board"));
 #ifdef _DEBUG
-  debugLog(_T("GameBoardObject:\n%s"), indentString(toString(),2).cstr());
+  debugLog(_T("%s"), toString().cstr());
 #endif
   m_boardTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP      );
   for(int r = 0; r < ROWCOUNT; r++) {
@@ -195,16 +195,16 @@ void GameBoardObject::draw() {
   drawMeshUsingTexture(getDevice(), getMesh(), m_boardTexture);
 }
 
-#define BRICKZ 0.05f
+#define BRICKY 0.05f
 
 void GameBoardObject::resetBrickPositions(bool colored) {
   for(int i = 0; i < ARRAYSIZE(m_brickObject); i++) {
     BrickObject *b = m_brickObject[i];
     const float x = (float)((i%8)*2-HALFSIZE+0.85);
     if(colored) {
-      b->setPos(D3DXVECTOR3(x, (float)((i/8)*(BOARDSIZE-1.5f)-HALFSIZE+0.85),BRICKZ));
+      b->setPos(D3DXVECTOR3(x,BRICKY, (float)((i/8)*(BOARDSIZE-1.5f)-HALFSIZE+0.85)));
     } else {
-      b->setPos(D3DXVECTOR3(x, (float)((i/8)*2-HALFSIZE-0.8f)               ,BRICKZ));
+      b->setPos(D3DXVECTOR3(x,BRICKY, (float)((i/8)*2-HALFSIZE-0.8f)               ));
     }
   }
 }
