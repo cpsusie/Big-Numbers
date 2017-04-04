@@ -10,7 +10,6 @@
 #include "MeshArray.h"
 #include "D3Math.h"
 
-class D3SceneObject;
 class D3LightControl;
 
 typedef enum {
@@ -126,6 +125,7 @@ private:
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
   static const D3PosDirUpScale s_pdusOrigo;
+  friend class D3SceneObject;
 
   static D3DMATERIAL getDefaultMaterial();
   HWND                              m_hwnd;
@@ -146,7 +146,6 @@ private:
   Timestamp                         m_renderTime;
   bool                              m_initDone;
   
-  friend class D3SceneObject;
   void notifyPropertyChanged(int id, const void *oldValue, const void *newValue);
   void notifyIfObjectArrayChanged();
   void initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up);

@@ -252,6 +252,7 @@
   <ItemGroup>
     <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3CoordinateSystem.cpp" />
+    <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="MeshToString.cpp" />

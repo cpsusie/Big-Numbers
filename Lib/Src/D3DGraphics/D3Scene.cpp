@@ -5,6 +5,10 @@
 DECLARE_THISFILE;
 
 int                   D3Scene::s_textureCoordCount;
+
+#pragma warning(disable : 4073)
+#pragma init_seg(lib)
+
 const D3PosDirUpScale D3Scene::s_pdusOrigo;
 
 D3Scene::D3Scene() {

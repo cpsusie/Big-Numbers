@@ -191,4 +191,4 @@ public:
 
 D3DXCube3 getBoundingBox(LPD3DXMESH mesh);
 
-#define DUMP_PRUNECOUNT
+//#define DUMP_PRUNECOUNT
