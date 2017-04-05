@@ -294,10 +294,12 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="res\Blackfield.bmp" />
     <Image Include="res\board.bmp" />
-    <Image Include="res\MarkedField.bmp" />
+    <Image Include="res\BoardSide.bmp" />
+    <Image Include="res\GreenField.bmp" />
     <Image Include="res\quarto.ico" />
-    <Image Include="res\UnmarkedField.bmp" />
+    <Image Include="res\WhiteField.bmp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\cursor1.cur" />

@@ -70,10 +70,16 @@
     <Image Include="res\quarto.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\MarkedField.bmp">
+    <Image Include="res\Blackfield.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\UnmarkedField.bmp">
+    <Image Include="res\WhiteField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\GreenField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BoardSide.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

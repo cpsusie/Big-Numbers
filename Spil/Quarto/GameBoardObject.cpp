@@ -21,38 +21,55 @@ static void drawMeshUsingTexture(LPDIRECT3DDEVICE device, LPD3DXMESH mesh, LPDIR
   V(mesh->DrawSubset(0));
 }
 
-const float GameBoardObject::s_vertexPos[] = {
-  0.0f     , 0.024408f, 0.048816f, 0.073224f, 0.097632f, 0.12204f 
- ,0.146447f, 0.323223f, 0.5f     , 0.676777f, 0.85355f 
- ,0.87796f , 0.902368f, 0.926776f, 0.951184f, 0.97559f , 1.0f
+#define XGRID(i) (((137.0f+((float)(i))/4.0f*750.0f))/1024.0f)
+#define YGRID(i) (((139.0f+((float)(i))/4.0f*750.0f))/1024.0f)
+
+const float GameBoardObject::s_vertexXPos[] = {
+  0.0f,XGRID(0), XGRID(1), XGRID(2), XGRID(3), XGRID(4),1.0f
 };
 
-float       GameBoardObject::s_gridLines[5];
+const float GameBoardObject::s_vertexYPos[] = {
+  0.0f,YGRID(0), YGRID(1), YGRID(2), YGRID(3), YGRID(4),1.0f
+};
 
-#define EDGE0INDEX 6
-#define EDGE4INDEX 10
+float GameBoardObject::s_xgridLines[5];
+float GameBoardObject::s_ygridLines[5];
 
-LPDIRECT3DTEXTURE BoardFieldObject::s_unmarkedTexture = NULL;
-LPDIRECT3DTEXTURE BoardFieldObject::s_markTexture     = NULL;
+#define GRIDPOSCOUNT ARRAYSIZE(s_vertexXPos)
+#define EDGE0INDEX 1
+#define EDGE4INDEX 5
+
+#ifndef _DEBUG
+LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
+  NULL
+ ,NULL
+ ,NULL
+};
+#endif
 
 BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice(), row, col))
+, m_field(row,col)
 {
   m_selected    = false;
   m_center      = getPos() + getBoundingBox(getMesh()).getCenter();
+
 #ifdef _DEBUG
+  m_texture[0] = createTexture(false);
+  m_texture[1] = createTexture(true );
   setName(format(_T("Field(%d,%d) Center:%s"), row,col, ::toString(m_center).cstr()));
 #endif
 }
 
 LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int col) {
   MeshBuilder mb;
-  const float *gridLines = GameBoardObject::s_gridLines;
+  const float *xgridLines = GameBoardObject::s_xgridLines;
+  const float *ygridLines = GameBoardObject::s_ygridLines;
   int vindex[2][2];
   int tindex[2][2];
   for(short r = 0; r < 2; r++) {
     for(short c = 0; c < 2; c++) {
-      vindex[r][c] = mb.addVertex(gridLines[row+r],0,gridLines[col+c]);
+      vindex[r][c] = mb.addVertex(xgridLines[row+r],0,ygridLines[col+c]);
       tindex[r][c] = mb.addTextureVertex(r,c);
     }
   }
@@ -64,18 +81,58 @@ LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int co
   return mb.createMesh(device, false);
 }
 
-LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
-  if(marked) {
-    if (s_markTexture == NULL) {
-      s_markTexture = loadTextureFromBitmapResource(getDevice(), IDB_MARKEDFIELDBITMAP);
-    }
-    return s_markTexture;
-  } else {
-    if (s_unmarkedTexture == NULL) {
-      s_unmarkedTexture = loadTextureFromBitmapResource(getDevice(), IDB_UNMARKEDFIELDBITMAP);
-    }
-    return s_unmarkedTexture;
+static int fieldResId[] = {
+  IDB_WHITEFIELDBITMAP
+ ,IDB_BLACKFIELDBITMAP
+ ,IDB_GREENFIELDBITMAP
+};
+
+#define ISWHITEFIELD(    f       ) (((f).m_row+(f).m_col)&1)
+#define GETFIELDRESINDEX(f,marked) ((marked)?2:ISWHITEFIELD(f)?0:1)
+#define GETFIELDRESID(   f,marked) fieldResId[GETFIELDRESINDEX(f,marked)]
+
+#ifdef _DEBUG
+CFont *BoardFieldObject::getFont() { // static 
+  static CFont font;
+  if(font.m_hObject==NULL) {
+    font.CreateFont(22, 22, 0, 0, 400, FALSE, FALSE, 0, ANSI_CHARSET, OUT_DEFAULT_PRECIS
+                    ,CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY
+                    ,DEFAULT_PITCH | FF_MODERN
+                    ,_T("Courier") );
   }
+  return &font;
+}
+
+LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
+  CBitmap bm;
+  const int resId = GETFIELDRESID(m_field,marked);
+  bm.LoadBitmap(GETFIELDRESID(m_field,marked));
+  CSize sz = getBitmapSize(bm);
+  sz.cx/= 2; sz.cy/=2;
+  HDC screenDC = getScreenDC();
+  HDC bmDC     = CreateCompatibleDC(screenDC);
+  DeleteDC(screenDC);
+  SelectObject(bmDC, bm);
+  textOutTransparentBackground(bmDC
+                              ,CPoint(sz.cx-30, sz.cy-6)
+                              ,m_field.toString()
+                              ,*getFont()
+                              ,ISWHITEFIELD(m_field)?BLACK:WHITE);
+  DeleteDC(bmDC);
+  return getTextureFromBitmap(getDevice(), bm);
+}
+#endif
+
+LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
+#ifdef _DEBUG
+  return m_texture[marked?1:0];
+#else
+  const int index = GETFIELDRESINDEX(m_field,marked);
+  if(s_texture[index] == NULL) {
+    s_texture[index] = loadTextureFromBitmapResource(getDevice(), GETFIELDRESID(m_field,marked));
+  }
+  return s_texture[index];
+#endif
 }
 
 void BoardFieldObject::draw() {
@@ -95,47 +152,50 @@ String BoardFieldObject::toString() const {
 }
 #endif
 
-LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
+class BoardSideObject : public SceneObjectWithMesh {
+private:
+  LPDIRECT3DTEXTURE m_boardSideTexture;
+  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device);
+public:
+  BoardSideObject(D3Scene &scene);
+  ~BoardSideObject();
+  inline D3PosDirUpScale getPDUS() const {
+    return D3Scene::getOrigo();
+  }
+  void draw();
+};
+
+BoardSideObject::BoardSideObject(D3Scene &scene)
+: SceneObjectWithMesh(scene, createMesh(scene.getDevice()))
+{
+  m_boardSideTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDSIDEBITMAP);
+}
+
+BoardSideObject::~BoardSideObject() {
+  m_boardSideTexture->Release();
+}
+
+LPD3DXMESH BoardSideObject::createMesh(LPDIRECT3DDEVICE device) { // static
   MeshBuilder mb;
 
-  int vindex[BOARDSIZE+1][BOARDSIZE+1];
-  int tindex[BOARDSIZE+1][BOARDSIZE+1];
-  for(int r = 0; r <= BOARDSIZE; r++) {
-    for(int c = 0; c <= BOARDSIZE; c++) {
-      vindex[r][c] = mb.addVertex(BOARDSIZE*(s_vertexPos[r]-0.5f),0,BOARDSIZE*(s_vertexPos[c]-0.5f));
-      tindex[r][c] = mb.addTextureVertex(s_vertexPos[r],s_vertexPos[c]);
-    }
-  }
-  for(int i = 0; i < ARRAYSIZE(s_gridLines); i++) {
-    s_gridLines[i] = BOARDSIZE*(s_vertexPos[i+EDGE0INDEX]-0.5f);
-  }
-  int textureCorners[4];
-  textureCorners[0] = tindex[0        ][0        ];
-  textureCorners[1] = tindex[BOARDSIZE][0        ];
-  textureCorners[2] = tindex[BOARDSIZE][BOARDSIZE];
-  textureCorners[3] = tindex[0        ][BOARDSIZE];
-
-  for(int r = 0; r < BOARDSIZE; r++) {
-    for(int c = 0; c < BOARDSIZE; c++) {
-      if((EDGE0INDEX <= r) && (r < EDGE4INDEX) && (EDGE0INDEX <= c) && (c < EDGE4INDEX)) {
-        continue;
-      }
-      Face &face = mb.addFace();
-      face.addVertexTextureIndex(vindex[r  ][c  ], tindex[r  ][c  ]);
-      face.addVertexTextureIndex(vindex[r+1][c  ], tindex[r+1][c  ]);
-      face.addVertexTextureIndex(vindex[r+1][c+1], tindex[r+1][c+1]);
-      face.addVertexTextureIndex(vindex[r  ][c+1], tindex[r  ][c+1]);
-    }
-  }
-
+  const int  ltn = mb.addVertex(-HALFSIZE,0           ,-HALFSIZE); // left  top    near corner
+  const int  ltf = mb.addVertex(-HALFSIZE,0           , HALFSIZE); // left  top    far  corner
+  const int  rtf = mb.addVertex( HALFSIZE,0           , HALFSIZE); // right top    far  corner
+  const int  rtn = mb.addVertex( HALFSIZE,0           ,-HALFSIZE); // right top    near corner
   const int  lbn = mb.addVertex(-HALFSIZE,-BOARDHEIGHT,-HALFSIZE); // left  bottom near corner
   const int  lbf = mb.addVertex(-HALFSIZE,-BOARDHEIGHT, HALFSIZE); // left  bottom far  corner
   const int  rbf = mb.addVertex( HALFSIZE,-BOARDHEIGHT, HALFSIZE); // right bottom far  corner
   const int  rbn = mb.addVertex( HALFSIZE,-BOARDHEIGHT,-HALFSIZE); // right bottom near corner
-  const int &ltn = vindex[0        ][0        ];                   // left  top    near corner
-  const int &ltf = vindex[0        ][BOARDSIZE];                   // left  top    far  corner
-  const int &rtf = vindex[BOARDSIZE][BOARDSIZE];                   // right top    far  corner
-  const int &rtn = vindex[BOARDSIZE][0        ];                   // right top    near corner
+  const int  tx00 = mb.addTextureVertex(0,0);
+  const int  tx01 = mb.addTextureVertex(0,1);
+  const int  tx10 = mb.addTextureVertex(1,0);
+  const int  tx11 = mb.addTextureVertex(1,1);
+
+  int textureCorners[4];
+  textureCorners[0] = tx00;
+  textureCorners[1] = tx10;
+  textureCorners[2] = tx11;
+  textureCorners[3] = tx01;
 
   makeSquareFace(mb,lbn,rbn,rbf,lbf, textureCorners);              // bottom
   makeSquareFace(mb,lbn,lbf,ltf,ltn, textureCorners);              // left side
@@ -151,14 +211,56 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
   }
 }
 
+void BoardSideObject::draw() {
+  drawMeshUsingTexture(getDevice(), getMesh(), m_boardSideTexture);
+}
+
+LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
+  MeshBuilder mb;
+
+  int vindex[GRIDPOSCOUNT][GRIDPOSCOUNT];
+  int tindex[GRIDPOSCOUNT][GRIDPOSCOUNT];
+  for(int r = 0; r < GRIDPOSCOUNT; r++) {
+    for(int c = 0; c < GRIDPOSCOUNT; c++) {
+      vindex[r][c] = mb.addVertex(BOARDSIZE*(s_vertexXPos[r]-0.5f),0,BOARDSIZE*(s_vertexYPos[c]-0.5f));
+      tindex[r][c] = mb.addTextureVertex(s_vertexXPos[r],s_vertexYPos[c]);
+    }
+  }
+  for(int i = 0; i < ARRAYSIZE(s_xgridLines); i++) {
+    s_xgridLines[i] = BOARDSIZE*(s_vertexXPos[i+EDGE0INDEX]-0.5f);
+    s_ygridLines[i] = BOARDSIZE*(s_vertexYPos[i+EDGE0INDEX]-0.5f);
+  }
+
+  for(int r = 0; r < GRIDPOSCOUNT-1; r++) {
+    for(int c = 0; c < GRIDPOSCOUNT-1; c++) {
+      if((EDGE0INDEX <= r) && (r < EDGE4INDEX) && (EDGE0INDEX <= c) && (c < EDGE4INDEX)) {
+        continue;
+      }
+      Face &face = mb.addFace();
+      face.addVertexTextureIndex(vindex[r  ][c  ], tindex[r  ][c  ]);
+      face.addVertexTextureIndex(vindex[r+1][c  ], tindex[r+1][c  ]);
+      face.addVertexTextureIndex(vindex[r+1][c+1], tindex[r+1][c+1]);
+      face.addVertexTextureIndex(vindex[r  ][c+1], tindex[r  ][c+1]);
+    }
+  }
+
+  try {
+    return mb.createMesh(device, false);
+  } catch (...) {
+//    debugLog(_T("%s\n%s"), __TFUNCTION__, indentString(mb.toString(), 2).cstr());
+    throw;
+  }
+}
+
 GameBoardObject::GameBoardObject(D3Scene &scene) 
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice()))
 {
   setName(_T("Board"));
 #ifdef _DEBUG
-  debugLog(_T("%s"), toString().cstr());
+  debugLog(_T("%s\n"), toString().cstr());
 #endif
-  m_boardTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP      );
+  m_boardTexture     = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP    );
+  m_boardSideObject  = new BoardSideObject(scene);
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
       BoardFieldObject *mfo = new BoardFieldObject(scene, r, c);
@@ -178,6 +280,7 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
 }
 
 GameBoardObject::~GameBoardObject() {
+  delete m_boardSideObject;
   if(m_boardTexture) m_boardTexture->Release();
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {
@@ -193,6 +296,7 @@ GameBoardObject::~GameBoardObject() {
 
 void GameBoardObject::draw() {
   drawMeshUsingTexture(getDevice(), getMesh(), m_boardTexture);
+  m_boardSideObject->draw();
 }
 
 #define BRICKY 0.05f

@@ -5,60 +5,42 @@
 DECLARE_THISFILE;
 
 static const Point2D smallProfileNoTop[] = {
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,1   ),
-  Point2D( 0   ,1   )
+  Point2D( 0    ,0   )
+ ,Point2D( 0.6  ,0   )
+ ,Point2D( 0.6  ,1   )
+ ,Point2D( 0    ,1   )
 };
 
 static const Point2D smallProfileWithTop[] = {
-  Point2D( 0    ,0  ),
-  Point2D( 0.6  ,0  ),
-  Point2D( 0.6  ,0.6),
-  Point2D( 0.75 ,0.6),
-  Point2D( 0.75 ,1  ),
-  Point2D( 0    ,1  )
+  Point2D( 0    ,0   )
+ ,Point2D( 0.6  ,0   )
+ ,Point2D( 0.6  ,0.6 )
+ ,Point2D( 0.75 ,0.6 )
+ ,Point2D( 0.75 ,1   )
+ ,Point2D( 0    ,1   )
 };
 
 static const Point2D bigProfileNoTop[] = {
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,2   ),
-  Point2D( 0   ,2   )
+  Point2D( 0    ,0   )
+ ,Point2D( 0.6  ,0   )
+ ,Point2D( 0.6  ,2   )
+ ,Point2D( 0    ,2   )
 };
 
 static const Point2D bigProfileWithTop[] = {
-  Point2D( 0   ,0   ),
-  Point2D( 0.6 ,0   ),
-  Point2D( 0.6 ,1.6 ),
-  Point2D( 0.75,1.6 ),
-  Point2D( 0.75,2   ),
-  Point2D( 0   ,2   )
+  Point2D( 0    ,0   )
+ ,Point2D( 0.6  ,0   )
+ ,Point2D( 0.6  ,1.6 )
+ ,Point2D( 0.75 ,1.6 )
+ ,Point2D( 0.75 ,2   )
+ ,Point2D( 0    ,2   )
 };
-/*
-LPDIRECT3DRMMATERIAL CQuartoDlg::createMaterial(COLORREF emissive, COLORREF specular) {
-  LPDIRECT3DRMMATERIAL material = m_d3.createMaterial(5);
-  setMaterialColor(material,emissive,specular);
-  return material;
-}
-
-void CQuartoDlg::setMaterialColor(LPDIRECT3DRMMATERIAL material, COLORREF emissive, COLORREF specular) {
-  float r = (float)GetRValue(emissive) / 255;
-  float g = (float)GetGValue(emissive) / 255;
-  float b = (float)GetBValue(emissive) / 255;
-  material->SetEmissive(r,g,b);
-  r = (float)GetRValue(specular) / 255;
-  g = (float)GetGValue(specular) / 255;
-  b = (float)GetBValue(specular) / 255;
-  material->SetSpecular(r,g,b);
-}
-*/
 
 static Profile createProfile(const Point2DArray &points) {
   Profile        result;
   ProfilePolygon polygon;
   ProfileCurve   curve(TT_PRIM_LINE);
-  polygon.m_start = points[0];
+  polygon.m_start  = points[0];
   polygon.m_closed = false;
   for(size_t i = 1; i < points.size(); i++) {
     curve.addPoint(points[i]);
@@ -101,8 +83,6 @@ LPD3DXMESH BrickObject::createMesh(LPDIRECT3DDEVICE device, BYTE attr) { // stat
   param.m_rad        = 2*M_PI;
   param.m_edgeCount  = ISSQUARE(attr) ? 4 : 20;
   param.m_smoothness = ISSQUARE(attr) ? 0 : ROTATESMOOTH;
-  param.m_useColor   = true;
-  param.m_color      = ISBLACK( attr) ? D3D_BLUE : D3D_RED;
 
   return rotateProfile(device, profile, param, true);
 }
@@ -120,9 +100,16 @@ public:
   }
 };
 
+D3DMATERIAL *BrickObject::s_material[2] = {
+  NULL
+ ,NULL
+};
+
 BrickObject::BrickObject(D3Scene &scene, BYTE attr)
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), attr)) {
-  m_marked = false;
+: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), attr))
+, m_attr(attr)
+, m_marked(false)
+{
   m_brickMarker = new BrickMarker(scene, getBoundingBox(getMesh()), m_pdus);
   setName(format(_T("Brick(%d):%s")
                 ,attr
@@ -135,9 +122,23 @@ BrickObject::~BrickObject() {
   delete m_brickMarker;
 }
 
+const D3DMATERIAL *BrickObject::getMaterial() const {
+  const int index = ISBLACK(m_attr) ? 0 : 1;
+  if(s_material[index] == NULL) {
+    D3DMATERIAL *mat = new D3DMATERIAL(getScene().getMaterial());
+    s_material[index] = mat;
+    mat->Diffuse  = colorToColorValue(ISBLACK(m_attr) ? D3D_BLUE : D3D_RED);
+    mat->Specular = colorToColorValue(D3D_WHITE);
+    mat->Ambient  = colorToColorValue(D3D_BLACK);
+    mat->Emissive = mat->Ambient;
+  }
+  return s_material[index];
+}
+
 void BrickObject::draw() {
   getDevice()->SetRenderState(D3DRS_LIGHTING, TRUE);
-  prepareDraw();
+  prepareDraw(USE_SCENEFILLMODE|USE_SCENESHADEMODE);
+  getDevice()->SetMaterial(getMaterial());
   getMesh()->DrawSubset(0);
   if(m_marked) {
     m_brickMarker->draw();

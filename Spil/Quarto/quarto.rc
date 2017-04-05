@@ -74,9 +74,13 @@ IDR_MAINFRAME           ICON                    "res\\quarto.ico"
 
 IDB_BOARDBITMAP         BITMAP                  "Res\\board.bmp"
 
-IDB_MARKEDFIELDBITMAP   BITMAP                  "res\\MarkedField.bmp"
+IDB_BLACKFIELDBITMAP    BITMAP                  "res\\Blackfield.bmp"
 
-IDB_UNMARKEDFIELDBITMAP BITMAP                  "res\\UnmarkedField.bmp"
+IDB_WHITEFIELDBITMAP    BITMAP                  "res\\WhiteField.bmp"
+
+IDB_GREENFIELDBITMAP    BITMAP                  "res\\GreenField.bmp"
+
+IDB_BOARDSIDEBITMAP     BITMAP                  "res\\BoardSide.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////

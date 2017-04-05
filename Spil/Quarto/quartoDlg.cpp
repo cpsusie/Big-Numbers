@@ -150,6 +150,7 @@ void CQuartoDlg::createScene() {
   createBoard();
   resetCamera();
   createLight();
+  bool spec = m_scene.isSpecularEnabled();
 }
 
 void CQuartoDlg::createBoard() {
@@ -160,12 +161,15 @@ void CQuartoDlg::createBoard() {
 
 void CQuartoDlg::createLight() {
   LIGHT       light = m_scene.getDefaultLightParam(D3DLIGHT_DIRECTIONAL);
-  D3DXVECTOR3 pos   = D3DXVECTOR3(-2*BOARDSIZE+HALFSIZE,BOARDSIZE,HALFSIZE);
-  D3DXVECTOR3 dir   = unitVector(m_boardCenter - pos);
   light.Diffuse     = colorToColorValue(D3D_WHITE);
   light.Specular    = colorToColorValue(D3D_WHITE);
-  light.Position    = pos;
-  light.Direction   = dir;
+  light.Ambient     = colorToColorValue(D3D_WHITE);
+  light.Direction   = -m_scene.getCameraUp();
+  m_scene.setLightParam(light);
+  m_scene.setLightEnabled(light.m_lightIndex, true);
+
+  light.m_lightIndex = m_scene.getLightEnabledCount();
+  light.Direction    = m_scene.getCameraDir();
   m_scene.setLightParam(light);
   m_scene.setLightEnabled(light.m_lightIndex, true);
 }
@@ -389,6 +393,13 @@ void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   }
   const Field f = getFieldFromPoint(point);
   if(f.isField()) {
+#ifdef _DEBUG
+    if(nFlags & MK_CONTROL) {
+      selectField(f);
+      render();
+      return;
+    }
+#endif
     if(!m_game.isEmpty(f) || (getSelectedBrick() == NOBRICK)) {
       return;
     }

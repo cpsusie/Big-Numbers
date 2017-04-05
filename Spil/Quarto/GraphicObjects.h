@@ -10,10 +10,16 @@
 
 class BoardFieldObject : public SceneObjectWithMesh {
 private:
-  static LPDIRECT3DTEXTURE s_unmarkedTexture;
-  static LPDIRECT3DTEXTURE s_markTexture;
+#ifdef _DEBUG
+  LPDIRECT3DTEXTURE        m_texture[2]; // 0=unmarked,1=marked
+  LPDIRECT3DTEXTURE createTexture(bool marked);
+  static CFont     *getFont();
+#else
+  static LPDIRECT3DTEXTURE s_texture[3]; // 0=white,1=black,2=marked
+#endif
   D3DXVECTOR3              m_center;
   bool                     m_selected;
+  Field                    m_field;
   LPDIRECT3DTEXTURE getTexture(bool marked);
   static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, int row, int col);
 public:
@@ -24,9 +30,7 @@ public:
   inline void setSelected(bool selected) {
     m_selected = selected;
 #ifdef _DEBUG
-    if(selected) {
-      debugLog(_T("Select %s\n"), getName().cstr());
-    }
+    if(selected) debugLog(_T("Select %s\n"), getName().cstr());
 #endif
   }
   inline const D3DXVECTOR3 &getCenter() const {
@@ -40,10 +44,13 @@ public:
 
 class BrickObject : public SceneObjectWithMesh {
 private:
-  D3PosDirUpScale   m_pdus;
-  D3SceneObject    *m_brickMarker;
-  bool              m_marked;
-  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, BYTE attr);
+  static D3DMATERIAL *s_material[2];
+  const BYTE          m_attr;               
+  D3PosDirUpScale     m_pdus;
+  D3SceneObject      *m_brickMarker;
+  bool                m_marked;
+  const D3DMATERIAL  *getMaterial() const;
+  static LPD3DXMESH   createMesh(LPDIRECT3DDEVICE device, BYTE attr);
 public:
   BrickObject(D3Scene &scene, BYTE attr);
   ~BrickObject();
@@ -62,9 +69,7 @@ public:
   inline void setMarked(bool marked) {
     m_marked = marked;
 #ifdef _DEBUG
-    if (marked) {
-      debugLog(_T("Mark %s\n"), getName().cstr());
-    }
+    if (marked) debugLog(_T("Mark %s\n"), toString().cstr());
 #endif
   }
   void draw();
@@ -75,9 +80,10 @@ public:
 
 class GameBoardObject : public SceneObjectWithMesh {
 private:
-  static const float s_vertexPos[];
-  static float       s_gridLines[5];
+  static const float s_vertexXPos[], s_vertexYPos[];
+  static float       s_xgridLines[5], s_ygridLines[5];
   LPDIRECT3DTEXTURE  m_boardTexture;
+  D3SceneObject     *m_boardSideObject;
   BoardFieldObject  *m_fieldObject[ROWCOUNT][COLCOUNT];
   BrickObject       *m_brickObject[FIELDCOUNT];
   Field              m_currentField;
@@ -98,10 +104,9 @@ public:
   inline bool hasCurrentBrick() const {
     return m_currentBrick != NOBRICK;
   }
-  D3DXVECTOR3 getFieldCenter(const Field &f) const {
+  inline D3DXVECTOR3 getFieldCenter(const Field &f) const {
     return m_fieldObject[f.m_row][f.m_col]->getCenter();
   }
-
   void resetBrickPositions(bool colored);
   void setBrickOnField(BYTE brick, const Field &f);
   void markField(const Field &f);
@@ -109,15 +114,15 @@ public:
   void markBrick(char brick);
   void unmarkCurrentBrick();
   void setBricksVisible(BrickSet set, bool visible);
-  const Field getCurrentField() const {
+  inline const Field getCurrentField() const {
     return m_currentField;
   }
-  char getCurrentBrick() const {
+  inline char getCurrentBrick() const {
     return m_currentBrick;
   }
-  void draw();
   int   getBrickFromPoint(const CPoint &p) const;
   Field getFieldFromPoint(const CPoint &p) const;
+  void draw();
 #ifdef _DEBUG
   String toString() const;
 #endif
