@@ -109,9 +109,18 @@ void   gotoMatchingParanthes(      CEdit *edit);
 CompactIntArray getTabOrder(CWnd *wnd);
 void            setTabOrder(CWnd *wnd, const CompactIntArray &tabOrderArray);
 
-void   setWindowCursor(            CWnd *wnd, const TCHAR *name);
-void   setWindowCursor(            CWnd *wnd, int resId);
-void   setWindowCursor(            CWnd *wnd, HCURSOR cursor);
+void   setWindowCursor(     HWND  wnd, const TCHAR *name);
+void   setWindowCursor(     HWND  wnd, int resId);
+void   setWindowCursor(     HWND  wnd, HCURSOR cursor);
+inline void setWindowCursor(CWnd *wnd, const TCHAR *name) {
+  ::setWindowCursor(wnd->m_hWnd, name);
+}
+inline void setWindowCursor(CWnd *wnd, int resId) {
+  ::setWindowCursor(wnd->m_hWnd, resId);
+}
+inline void setWindowCursor(CWnd *wnd, HCURSOR cursor) {
+  ::setWindowCursor(wnd->m_hWnd, cursor);
+}
 void   setSystemCursor(            int   id , const TCHAR *name);
 void   setSystemCursor(            int   id , int resId);
 void   setSystemCursor(            int   id , HCURSOR cursor);

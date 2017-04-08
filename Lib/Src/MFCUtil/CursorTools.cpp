@@ -1,16 +1,16 @@
 #include "pch.h"
 #include <FileContent.h>
 
-void setWindowCursor(CWnd *wnd, const TCHAR *name) {
+void setWindowCursor(HWND wnd, const TCHAR *name) {
   setWindowCursor(wnd, ::LoadCursor(NULL,name));
 }
 
-void setWindowCursor(CWnd *wnd, int resId) { 
-  setWindowCursor(wnd,AfxGetApp()->LoadCursor(resId));
+void setWindowCursor(HWND wnd, int resId) { 
+  setWindowCursor(wnd, AfxGetApp()->LoadCursor(resId));
 }
 
-void setWindowCursor(CWnd *wnd, HCURSOR cursor) {
-  SetClassLongPtr(wnd->m_hWnd,GCLP_HCURSOR,(LONG_PTR)cursor);
+void setWindowCursor(HWND wnd, HCURSOR cursor) {
+  SetClassLongPtr(wnd,GCLP_HCURSOR,(LONG_PTR)cursor);
 }
 
 void setSystemCursor(int id, const TCHAR *name) {
