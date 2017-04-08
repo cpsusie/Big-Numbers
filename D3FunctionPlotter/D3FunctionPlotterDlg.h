@@ -6,8 +6,8 @@
 #include <D3DGraphics/ParametricSurface.h>
 #include <D3DGraphics/IsoSurface.h>
 #include "D3DGraphics/D3CoordinateSystem.h"
+#include <D3DGraphics/PropertyDlgThread.h>
 #include "MemoryLogThread.h"
-#include "PropertyDlgThread.h"
 
 typedef enum {
   CONTROL_IDLE
@@ -104,11 +104,8 @@ private:
           D3LightControl *getSelectedLightControl();
     const D3LightControl *getSelectedLightControl() const;
     void setLightControlsVisible(bool visible);
-    void addLightControl(   int lightIndex, bool redraw=true);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-    void removeLightControl(int lightIndex, bool redraw=true);
-    void removeAllLightControls();
 
     void onMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
     void onMouseMoveObjectPos(            UINT nFlags, CPoint pt);

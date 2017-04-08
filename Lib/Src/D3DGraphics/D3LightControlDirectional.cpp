@@ -32,19 +32,11 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
   return optimizeMesh(mesh);
 }
 
-/*
-void D3LightControlDirectional::OnD3D9ResetDevice( const D3DSURFACE_DESC &pBackBufferSurfaceDesc) {
-  m_arcBall.SetWindow( pBackBufferSurfaceDesc.Width, pBackBufferSurfaceDesc.Height );
-}
-
-void D3LightControlDirectional::StaticOnD3D9LostDevice() {
-  if(m_effect) {
-    m_effect->OnLostDevice();
-  }
-}
-*/
-
 D3DXMATRIX D3LightControlDirectional::getWorldMatrix() const {
   const LIGHT light = getLightParam();
-  return createWorldMatrix(-m_sphereRadius * light.Direction, &light.Direction);
+  return D3PosDirUpScale()
+           .setPos(-m_sphereRadius * light.Direction)
+           .setScaleAll(getSize())
+           .setOrientation(light.Direction, ortonormalVector(light.Direction))
+           .getWorldMatrix();
 }

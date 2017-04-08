@@ -8,7 +8,7 @@ class D3LightControl : public SceneObjectWithMesh {
 private:
 
   const int m_lightIndex;
-  float     m_scale;
+  float     m_size;
 
 #ifdef USE_RENDEREFFECT
   LPD3DXEFFECT  m_effect;
@@ -35,10 +35,11 @@ protected:
   }
 
   void setSize(float size) {
-    m_scale = size;
+    m_size = size;
   }
-  D3DXMATRIX createWorldMatrix(const D3DVECTOR &pos, const D3DVECTOR *dir = NULL) const;
-
+  float getSize() const {
+    return m_size;
+  }
 public:
   D3LightControl(D3Scene &scene, int lightIndex);
   D3LightControl(           const D3LightControl &src); // not defined
@@ -65,12 +66,8 @@ private:
   float m_sphereRadius;
 
   LPD3DXMESH createArrowMesh();
-
 public:
   D3LightControlDirectional(D3Scene &scene, int lightIndex);
-//  void        OnD3D9ResetDevice( const D3DSURFACE_DESC &pBackBufferSurfaceDesc );
-//  static void StaticOnD3D9LostDevice();
-//  static void StaticOnD3D9DestroyDevice();
 
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_DIRECTIONAL;
@@ -97,13 +94,11 @@ public:
 class D3LightControlSpot : public D3LightControl {
 private:
   LPD3DXMESH createSpotMesh();
-
 public:
   D3LightControlSpot(D3Scene &scene, int lightIndex);
 
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_SPOT;
   }
-
   D3DXMATRIX getWorldMatrix() const;
 };

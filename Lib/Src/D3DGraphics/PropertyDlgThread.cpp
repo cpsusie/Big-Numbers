@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "PropertyDlgThread.h"
+#include "pch.h"
+#include <D3DGraphics/PropertyDlgThread.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

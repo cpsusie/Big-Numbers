@@ -7,7 +7,7 @@
 #endif //APSTUDIO_INVOKED
 
 #include <MFCUtil/MFCUtil.rc>
-
+#include <D3DGraphics/D3DGraphics.rc>
 /////////////////////////////////////////////////////////////////////////////
 // Add manually edited resources here...
 

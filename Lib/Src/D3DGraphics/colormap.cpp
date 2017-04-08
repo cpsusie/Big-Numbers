@@ -4,8 +4,8 @@
 //  Microsoft Visual C++, your modifications will be overwritten.
 
 
-#include "stdafx.h"
-#include "colormap.h"
+#include "pch.h"
+#include <D3DGraphics/colormap.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // CColormap

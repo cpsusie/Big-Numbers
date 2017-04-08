@@ -1,0 +1,231 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Danish (Denmark) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
+LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_LIGHT_DIALOG DIALOGEX 0, 0, 203, 429
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Light parameters"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_COLORMAP_AMBIENT,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,4,161,105
+    CONTROL         "",IDC_COLORMAP_DIFFUSE,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,112,161,105
+    CONTROL         "",IDC_COLORMAP_SPECULAR,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,220,161,105
+    CONTROL         "Slider1",IDC_SLIDER_RANGE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,331,76,12
+    CONTROL         "Slider1",IDC_SLIDER_CONSTANTATTENUATION,
+                    "msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,347,76,12
+    CONTROL         "Slider1",IDC_SLIDER_LINEARATTENUATION,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,363,76,12
+    CONTROL         "Slider1",IDC_SLIDER_QUADRATICATTENUATION,
+                    "msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,379,76,12
+    CONTROL         "Slider1",IDC_SLIDER_FALLOFF,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,395,76,12
+    DEFPUSHBUTTON   "Close",ID_HIDEWINDOW,118,415,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,163,415,40,14
+    LTEXT           "Range",IDC_STATIC_RANGE,11,331,61,13,SS_CENTERIMAGE
+    LTEXT           "Constant attenuation",IDC_STATIC_CONSTANTATTENUATION,11,347,69,13,SS_CENTERIMAGE
+    LTEXT           "Linear attenuation",IDC_STATIC_LINEARATTENUATION,11,363,69,13,SS_CENTERIMAGE
+    LTEXT           "Quadratic attenuation",IDC_STATIC_QUADRATICATTENUATION,11,379,69,13,SS_CENTERIMAGE
+    LTEXT           "Fall off",IDC_STATIC_FALLOFF,11,395,69,13,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_RANGEVALUE,170,331,33,13,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDC_STATIC_CONSTANTATTVALUE,170,347,33,13,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDC_STATIC_LINEARATTVALUE,170,363,33,13,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDC_STATIC_QUADRATICATTVALUE,170,379,33,13,SS_CENTERIMAGE | SS_SUNKEN
+    LTEXT           "",IDC_STATIC_FALLOFFVALUE,170,395,33,13,SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_MATERIAL_DIALOG DIALOGEX 0, 0, 201, 453
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Material parameters"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    CONTROL         "",IDC_COLORMAP_AMBIENT,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,0,156,107
+    CONTROL         "",IDC_COLORMAP_DIFFUSE,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,108,156,102
+    CONTROL         "",IDC_COLORMAP_SPECULAR,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,210,156,109
+    CONTROL         "Slider1",IDC_SLIDER_POWER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,32,324,114,16
+    CONTROL         "",IDC_COLORMAP_EMISSIVE,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,342,156,110
+    DEFPUSHBUTTON   "Close",ID_HIDEWINDOW,161,420,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,161,439,40,14
+    LTEXT           "Power",IDC_STATIC,3,324,26,16,SS_CENTERIMAGE
+    LTEXT           "",IDC_STATIC_POWER,157,325,32,16,SS_CENTERIMAGE | SS_SUNKEN
+END
+
+IDD_COLOR_DIALOG DIALOGEX 0, 0, 194, 190
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Color"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,83,169,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,137,169,50,14
+    CONTROL         "",IDC_COLORMAP_COLOR,
+                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,7,7,180,150
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+
+    IDD_LIGHT_DIALOG, DIALOG
+    BEGIN
+    END
+
+    IDD_MATERIAL_DIALOG, DIALOG
+    BEGIN
+    END
+
+    IDD_COLOR_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 187
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 183
+    END
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_COLOR_DIALOG DLGINIT
+BEGIN
+    IDC_COLORMAP_COLOR, 0x376, 35, 0
+0x0000, 0x0000, 0x0000, 0x0001, 0x1be8, 0x0000, 0x1938, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x00ff, 0x0000, 0x0000, 0x0000, "\000" 
+    0
+END
+
+IDD_LIGHT_DIALOG DLGINIT
+BEGIN
+    IDC_COLORMAP_AMBIENT, 0x376, 49, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x1903, 0x0000, 0x11ac, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x07ff, 0x0041, 0x006d, 0x0062, 0x0069, 
+0x0065, 0x006e, 0x0074, 0x0100, 0x0000, 0x0000, "\000" 
+    IDC_COLORMAP_DIFFUSE, 0x376, 49, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x1903, 0x0000, 0x11ac, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x07ff, 0x0044, 0x0069, 0x0066, 0x0066, 
+0x0075, 0x0073, 0x0065, 0x0100, 0x0000, 0x0000, "\000" 
+    IDC_COLORMAP_SPECULAR, 0x376, 51, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x1903, 0x0000, 0x11ac, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x08ff, 0x0053, 0x0070, 0x0065, 0x0063, 
+0x0075, 0x006c, 0x0061, 0x0072, 0x0100, 0x0000, 0x0000, "\000" 
+    0
+END
+
+IDD_MATERIAL_DIALOG DLGINIT
+BEGIN
+    IDC_COLORMAP_AMBIENT, 0x376, 49, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x182f, 0x0000, 0x11fc, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x07ff, 0x0041, 0x006d, 0x0062, 0x0069, 
+0x0065, 0x006e, 0x0074, 0x0100, 0x0000, 0x0000, "\000" 
+    IDC_COLORMAP_DIFFUSE, 0x376, 49, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x182f, 0x0000, 0x1128, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x07ff, 0x0044, 0x0069, 0x0066, 0x0066, 
+0x0075, 0x0073, 0x0065, 0x0100, 0x0000, 0x0000, "\000" 
+    IDC_COLORMAP_SPECULAR, 0x376, 51, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x182f, 0x0000, 0x124b, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x08ff, 0x0053, 0x0070, 0x0065, 0x0063, 
+0x0075, 0x006c, 0x0061, 0x0072, 0x0100, 0x0000, 0x0000, "\000" 
+    IDC_COLORMAP_EMISSIVE, 0x376, 51, 0
+0x0000, 0x0000, 0x0001, 0x0001, 0x182f, 0x0000, 0x1280, 0x0000, 0x0044, 
+0x0000, 0x01ff, 0x0000, 0xfeff, 0x08ff, 0x0045, 0x006d, 0x0069, 0x0073, 
+0x0073, 0x0069, 0x0076, 0x0065, 0x0100, 0x0000, 0x0000, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_COLOR_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_LIGHT_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MATERIAL_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+#endif    // Danish (Denmark) resources
+/////////////////////////////////////////////////////////////////////////////
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

@@ -1,6 +1,5 @@
-#include "stdafx.h"
-#include "d3functionplotter.h"
-#include "ColorDlg.h"
+#include "pch.h"
+#include <D3DGraphics/ColorDlg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

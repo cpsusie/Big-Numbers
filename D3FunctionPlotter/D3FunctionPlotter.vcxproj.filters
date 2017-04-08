@@ -21,12 +21,6 @@
     <ClCompile Include="BitmapRotate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ColorDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ColormapDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="D3FunctionPlotter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,12 +42,6 @@
     <ClCompile Include="IsoSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="LightDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MaterialDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MemoryLogThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -61,12 +49,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ProfilePainter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="PropertyDlgThread.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="SelectAndLoadProfile.cpp">
@@ -78,20 +60,11 @@
     <ClCompile Include="TurnableRect.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="colormap.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
     <ClCompile Include="ParametricSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ColorDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ColormapDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ComboBoxExprHelp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -116,12 +89,6 @@
     <ClInclude Include="IsoSurfaceDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LightDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MaterialDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="MemoryLogThread.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -131,23 +98,11 @@
     <ClInclude Include="ProfilePainter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PropertyDialog.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="PropertyDlgThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="StdAfx.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="colormap.h">
-      <Filter>Resource Files</Filter>
-    </ClInclude>
-    <ClInclude Include="_Font.h">
-      <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="ParametricSurfaceDlg.h">
       <Filter>Header Files</Filter>
@@ -183,7 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="D3FunctionPlotter.rc">
-      <Filter>Resource Files</Filter>
+      <Filter>Source Files</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

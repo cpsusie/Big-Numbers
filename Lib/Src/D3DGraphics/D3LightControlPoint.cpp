@@ -12,5 +12,8 @@ D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
 }
 
 D3DXMATRIX D3LightControlPoint::getWorldMatrix() const {
-  return createWorldMatrix(getLightParam().Position);
+  return D3PosDirUpScale()
+           .setScaleAll(getSize())
+           .setPos(getLightParam().Position)
+           .getWorldMatrix();
 }

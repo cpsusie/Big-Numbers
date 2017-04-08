@@ -1,5 +1,6 @@
 #pragma once
 
+#include "D3Scene.h"
 #include "ColormapDialog.h"
 #include "colormap.h"
 
@@ -18,13 +19,10 @@ private:
     const LIGHT getCurrentValue() const;
 public:
     CLightDlg(D3Scene &scene, PropertyChangeListener *listener);
-	enum { IDD = IDD_LIGHT_DIALOG };
-
-    public:
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+	  enum { IDD = IDD_LIGHT_DIALOG };
 
 protected:
+    virtual void DoDataExchange(CDataExchange* pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
   	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
@@ -42,4 +40,3 @@ private:
   void OnColorchangedColormapDiffuse();
   void OnColorchangedColormapSpecular();
 };
-

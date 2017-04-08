@@ -36,6 +36,10 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
 }
 
 D3DXMATRIX D3LightControlSpot::getWorldMatrix() const {
-  LIGHT param = getLightParam();
-  return createWorldMatrix(param.Position, &param.Direction);
+  const LIGHT param = getLightParam();
+  return D3PosDirUpScale()
+           .setPos(param.Position)
+           .setScaleAll(getSize())
+           .setOrientation(param.Direction, ortonormalVector(param.Direction))
+           .getWorldMatrix();
 }

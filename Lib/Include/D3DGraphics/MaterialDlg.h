@@ -1,5 +1,6 @@
 #pragma once
 
+#include "D3Scene.h"
 #include "ColormapDialog.h"
 #include "colormap.h"
 

@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "LightDlg.h"
-#include "MaterialDlg.h"
-#include "ColorDlg.h"
+#include <D3DGraphics/LightDlg.h>
+#include <D3DGraphics/MaterialDlg.h>
+#include <D3DGraphics/ColorDlg.h>
 #include "D3FunctionPlotter.h"
 #include "D3FunctionPlotterDlg.h"
 #include "Function2DSurfaceDlg.h"

@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "MaterialDlg.h"
+#include "pch.h"
+#include <D3DGraphics/MaterialDlg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -126,7 +126,6 @@ void CMaterialDlg::OnColorchangedColormapSpecular() {
   v.Specular = getD3DCOLORVALUE(IDC_COLORMAP_SPECULAR);
   setCurrentValue(v);
 }
-
 
 void CMaterialDlg::OnColorchangedColormapEmissive() {
   D3DMATERIAL v = getCurrentValue();

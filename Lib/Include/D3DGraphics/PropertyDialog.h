@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PropertyContainer.h>
+#include <D3DGraphics/resource.h>
 
 inline void putWindowBesideMainWindow(CWnd *wnd) {
   putWindowBesideWindow(wnd, AfxGetApp()->GetMainWnd());
@@ -11,10 +12,12 @@ private:
   const int m_propertyId;
   bool      m_notifyEnabled;
   bool      m_visible;
+  bool      m_showWinActive;
 protected:
   PropertyDialog(int resId, int propertyId, CWnd *pParent) : CDialog(resId, pParent), m_propertyId(propertyId) {
     m_notifyEnabled = false;
     m_visible       = false;
+    m_showWinActive = false; // to prevent infinte recursion
   }
   inline void setNotifyEnabled(bool enable) {
     m_notifyEnabled = enable;

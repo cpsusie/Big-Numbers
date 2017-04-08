@@ -306,7 +306,7 @@ BitSet D3Scene::getLightsVisible() const {
   return result;
 }
 
-void D3Scene::setLightControlVisible(unsigned int index, bool visible) {
+void D3Scene::setLightControlVisible(UINT index, bool visible) {
   D3LightControl *lc = findLightControlByLightIndex(index);
   if(lc == NULL) {
     lc = addLightControl(index);
@@ -316,7 +316,7 @@ void D3Scene::setLightControlVisible(unsigned int index, bool visible) {
   }
 }
 
-D3LightControl *D3Scene::addLightControl(unsigned int lightIndex) {
+D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
   if(!isLightDefined(lightIndex)) {
     return NULL;
   }
@@ -335,7 +335,7 @@ D3LightControl *D3Scene::addLightControl(unsigned int lightIndex) {
   return result;
 }
 
-void D3Scene::destroyLightControl(unsigned int lightIndex) {
+void D3Scene::destroyLightControl(UINT lightIndex) {
   D3LightControl *lc = findLightControlByLightIndex(lightIndex);
   if(lc == NULL) {
     return;
@@ -344,21 +344,21 @@ void D3Scene::destroyLightControl(unsigned int lightIndex) {
   delete lc;
 }
 
-void D3Scene::removeLight(unsigned int index) {
+void D3Scene::removeLight(UINT index) {
   if(isLightDefined(index)) {
     if(isLightEnabled(index)) {
       m_lightsEnabled->remove(index);
     }
     destroyLightControl(index);
-    const unsigned int oldCount = getLightCount();
+    const UINT oldCount = getLightCount();
     m_lightsDefined->remove(index);
     V(m_device->LightEnable(index, FALSE));
-    const unsigned int newCount = oldCount - 1;
+    const UINT newCount = oldCount - 1;
     notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
   }
 }
 
-void D3Scene::setLightEnabled(unsigned int index, bool enabled) {
+void D3Scene::setLightEnabled(UINT index, bool enabled) {
   if(!isLightDefined(index)) {
     return;
   }
@@ -367,7 +367,7 @@ void D3Scene::setLightEnabled(unsigned int index, bool enabled) {
   setLightParam(param);
 }
 
-void D3Scene::setLightDirection(unsigned int index, const D3DXVECTOR3 &dir) {
+void D3Scene::setLightDirection(UINT index, const D3DXVECTOR3 &dir) {
   if(!isLightDefined(index)) {
     return;
   }
@@ -376,7 +376,7 @@ void D3Scene::setLightDirection(unsigned int index, const D3DXVECTOR3 &dir) {
   setLightParam(param);
 }
 
-void D3Scene::setLightPosition( unsigned int index, const D3DXVECTOR3 &pos) {
+void D3Scene::setLightPosition( UINT index, const D3DXVECTOR3 &pos) {
   if(!isLightDefined(index)) {
     return;
   }
@@ -390,14 +390,14 @@ void D3Scene::setLightParam(const LIGHT &param) {
     return;
   }
   if(!isLightDefined(param.m_lightIndex)) {
-    const unsigned int oldCount = getLightCount();
+    const UINT oldCount = getLightCount();
     V(m_device->SetLight(param.m_lightIndex, &param));
     V(m_device->LightEnable(param.m_lightIndex, param.m_enabled?TRUE:FALSE));
     m_lightsDefined->add(param.m_lightIndex);
     if(param.m_enabled) {
       m_lightsEnabled->add(param.m_lightIndex);
     }
-    const unsigned int newCount = oldCount + 1;
+    const UINT newCount = oldCount + 1;
     notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
   } else {
     const LIGHT oldLp = getLightParam(param.m_lightIndex);
@@ -422,7 +422,7 @@ D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
   return NULL;
 }
 
-LIGHT D3Scene::getLightParam(unsigned int index) const {
+LIGHT D3Scene::getLightParam(UINT index) const {
   LIGHT lp;
   if(!isLightDefined(index)) {
     memset(&lp, 0xff, sizeof(lp));
@@ -444,7 +444,7 @@ int D3Scene::getFirstFreeLightIndex() const {
   return -1;
 }
 
-String D3Scene::getLightString(unsigned int index) const {
+String D3Scene::getLightString(UINT index) const {
   if(!isLightDefined(index)) {
     return "undefined";
   } else {

@@ -28,6 +28,9 @@ D3PosDirUpScale &D3PosDirUpScale::setWorldMatrix(const D3DXMATRIX &world) {
 }
 
 D3PosDirUpScale &D3PosDirUpScale::updateView() {
+  if (length(crossProduct(m_dir, m_up)) == 0) {
+    int fisk = 0;
+  }
   D3DXVECTOR3 lookAt = m_pos + m_dir;
   D3DXMatrixLookAt(&m_view, &m_pos, &lookAt, &m_up);
   return *this;

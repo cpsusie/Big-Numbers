@@ -4,7 +4,7 @@
 DECLARE_THISFILE;
 
 D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
-  m_scale = 1;
+  m_size = 1;
 #ifdef USE_RENDEREFFECT
   m_effect = NULL;
 #endif
@@ -37,25 +37,6 @@ LIGHT D3LightControl::getLightParam() const {
   const LIGHT result = m_scene.getLightParam(m_lightIndex);
   assert(result.Type == getLightType());
   return result;
-}
-
-D3DXMATRIX D3LightControl::createWorldMatrix(const D3DVECTOR &pos, const D3DVECTOR *dir) const {
-  D3PosDirUpScale pdus;
-
-  if(dir != NULL) {
-    D3DXVECTOR3 up;
-    for(;;) {
-      const D3DXVECTOR3 right = crossProduct(ortonormalVector(*dir), createUnitVector(1));
-      if(length(right) > 0) {
-        up = crossProduct(*dir, unitVector(right));
-        break;
-      }
-    }
-    pdus.setOrientation(*dir, up);
-  }
-  pdus.setPos(pos);
-  pdus.setScale(D3DXVECTOR3(m_scale, m_scale, m_scale));
-  return pdus.getWorldMatrix();
 }
 
 D3DMATERIAL D3LightControl::getMaterial() const {
@@ -182,8 +163,12 @@ void D3LightControl::createEffect() {
 #ifdef D3DXFX_LARGEADDRESS_HANDLE
   Flags |= D3DXFX_LARGEADDRESSAWARE;
 #endif
-
-  V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, NULL));
+  try {
+    LPD3DXBUFFER compilerErrors;
+    V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, &compilerErrors));
+  } catch (Exception e) {
+    throwException(_T("%s:%s"), e.what(), _T("D3DXCreateEffect"));
+  }
 
   // Save technique handles for use when rendering
   m_renderWith1LightNoTextureHandle = m_effect->GetTechniqueByName( "RenderWith1LightNoTexture"    );

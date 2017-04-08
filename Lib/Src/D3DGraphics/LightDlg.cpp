@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "LightDlg.h"
+#include "pch.h"
+#include <D3DGraphics/LightDlg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

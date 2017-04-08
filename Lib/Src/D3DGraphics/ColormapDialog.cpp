@@ -1,5 +1,5 @@
-#include "stdafx.h"
-#include "ColormapDialog.h"
+#include "pch.h"
+#include <D3DGraphics/ColormapDialog.h>
 
 D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c) {
   D3DCOLORVALUE result;
@@ -9,4 +9,3 @@ D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c) {
   result.a = 1.0f;
   return result;
 }
-

@@ -250,9 +250,14 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ColorDlg.cpp" />
+    <ClCompile Include="colormap.cpp" />
+    <ClCompile Include="ColormapDialog.cpp" />
     <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="D3PDUS.cpp" />
+    <ClCompile Include="LightDlg.cpp" />
+    <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
     <ClCompile Include="MeshToBoundingBox.cpp" />
     <ClCompile Include="MeshToString.cpp" />
@@ -287,11 +292,16 @@
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="Profile.cpp" />
+    <ClCompile Include="PropertyDlg.cpp" />
+    <ClCompile Include="PropertyDlgThread.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\D3DGraphics\ColorDlg.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\colormap.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\ColormapDialog.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3CoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
@@ -301,6 +311,8 @@
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\LightDlg.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\MaterialDlg.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArray.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshArrayJobMonitor.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
@@ -309,8 +321,15 @@
     <ClInclude Include="..\..\Include\D3DGraphics\PersistentParameter.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\PropertyDialog.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\PropertyDlgThread.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\_Font.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\Include\D3DGraphics\D3DGraphics.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
