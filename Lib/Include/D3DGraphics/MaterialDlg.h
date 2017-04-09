@@ -4,28 +4,28 @@
 #include "ColormapDialog.h"
 #include "colormap.h"
 
-class CMaterialDlg : public CColormapDialog<D3DMATERIAL> {
+class CMaterialDlg : public CColormapDialog<MATERIAL> {
 private:
-  D3Scene &m_scene;
   String   m_origName;
 
-  void   resetControls();
-  void   valueToWindow(const D3DMATERIAL &v);
-  void   showPower(double v);
-  void   setSliderPower(double v);
-  float  getSliderPower() const;
+  void  resetControls();
+  void  valueToWindow(const MATERIAL &v);
+  void  showPower(double v);
+  void  setSliderPower(double v);
+  float getSliderPower() const;
+  void  setSliderTransparency(double v);
+  float getSliderTransparency() const;
+  void  showTransparency(double v);
 public:
-    CMaterialDlg(D3Scene &scene, PropertyChangeListener *listener);
+  CMaterialDlg(PropertyChangeListener *listener);
 
 	enum { IDD = IDD_MATERIAL_DIALOG };
 
-public:
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
     virtual BOOL OnInitDialog();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
+    afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
 	  afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
 	  afx_msg void OnHideWindow();

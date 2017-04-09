@@ -163,11 +163,13 @@ void D3LightControl::createEffect() {
 #ifdef D3DXFX_LARGEADDRESS_HANDLE
   Flags |= D3DXFX_LARGEADDRESSAWARE;
 #endif
+  LPD3DXBUFFER compilerErrors = NULL;
   try {
-    LPD3DXBUFFER compilerErrors;
     V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, &compilerErrors));
   } catch (Exception e) {
-    throwException(_T("%s:%s"), e.what(), _T("D3DXCreateEffect"));
+    const String errorMsg = (char*)compilerErrors->GetBufferPointer();
+    AfxMessageBox(errorMsg.cstr(), MB_ICONWARNING);
+    return;
   }
 
   // Save technique handles for use when rendering

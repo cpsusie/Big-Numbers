@@ -14,7 +14,7 @@ void D3SceneObject::prepareDraw(UINT flags) {
     V(getDevice()->SetRenderState(D3DRS_SHADEMODE, m_scene.getShadeMode()));
   }
   if(flags & USE_SCENEMATERIAL) {
-    V(getDevice()->SetMaterial(&m_scene.getMaterial()));
+    V(getDevice()->SetMaterial(&m_scene.getMaterial(getMaterialIndex())));
   }
 }
 

@@ -44,9 +44,19 @@ inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
   return !(m1 == m2);
 }
 
+class MATERIAL : public D3DMATERIAL { // sent to listener for id=SP_MATERIALPARAMETERS
+public:
+  int m_index;
+  inline MATERIAL() : m_index(-1) {
+  }
+  inline bool isDefined() const {
+    return m_index >= 0;
+  }
+};
+
 class LIGHT : public D3DLIGHT9 { // sent to listener for id=SP_LIGHTPARAMETERS
 public:
-  int   m_lightIndex;
+  int   m_index;
   bool  m_enabled;
 
   // only valid for spot lights
@@ -57,6 +67,9 @@ public:
   }
   inline float getOuterAngle() const {
     return Phi;
+  }
+  inline bool isEnabled() const {
+    return m_enabled;
   }
 };
 
@@ -101,33 +114,32 @@ public:
   }
 };
 
-String toString(const LIGHT          &light     );
-String toString(const D3DMATERIAL    &material  );
-String toString(      D3DFORMAT       f         );
-int    formatToSize(  D3DFORMAT       f         );
-String toString(      D3DPOOL         pool      );
-String toString(      D3DRESOURCETYPE type      );
-String usageToString( DWORD           usage     );
-String FVFToString(   DWORD           fvf       );
-int    FVFToSize(     DWORD           fvf       );
-String toString(const D3DDISPLAYMODE &mode      );
-String toString(const D3DCOLORVALUE        &c   );
-String toString(const D3DVERTEXBUFFER_DESC &desc);
-String toString(const D3DINDEXBUFFER_DESC  &desc);
+String toString(const LIGHT                &light    );
+String toString(const MATERIAL             &material );
+String toString(      D3DFORMAT             f        );
+int    formatToSize(  D3DFORMAT             f        );
+String toString(      D3DPOOL               pool     );
+String toString(      D3DRESOURCETYPE       type     );
+String usageToString( DWORD                 usage    );
+String FVFToString(   DWORD                 fvf      );
+int    FVFToSize(     DWORD                 fvf      );
+String toString(const D3DDISPLAYMODE       &mode     );
+String toString(      D3PCOLOR              c        ,bool showAlpha=false);
+String toString(const D3DCOLORVALUE        &c        ,bool showAlpha=false);
+String toString(const D3DVERTEXBUFFER_DESC &desc     );
+String toString(const D3DINDEXBUFFER_DESC  &desc     );
 
 String vertexToString(const char *v, DWORD FVF  , int dec=3);
-
-String toString(      D3PCOLOR              c   );
 
 class D3Scene : public PropertyContainer {
 private:
   static LIGHT getDefaultDirectionalLight();
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
+  static D3DMATERIAL getDefaultMaterial();
   static const D3PosDirUpScale s_pdusOrigo;
   friend class D3SceneObject;
 
-  static D3DMATERIAL getDefaultMaterial();
   HWND                              m_hwnd;
   LPDIRECT3DDEVICE                  m_device;
   D3DFILLMODE                       m_fillMode;
@@ -137,7 +149,7 @@ private:
   static int                        s_textureCoordCount;
   BitSet                           *m_lightsEnabled;
   BitSet                           *m_lightsDefined;
-  D3DMATERIAL                       m_material;
+  CompactArray<MATERIAL>            m_materials;
   CompactArray<D3SceneObject*>      m_objectArray;
   int                               m_oldObjectCount;
   D3PosDirUpScale                   m_cameraPDUS, m_objectPDUS;
@@ -155,13 +167,14 @@ private:
                    ,const D3DXVECTOR3 &scale = D3DXVECTOR3(1,1, 1));
   void updateViewMatrix();
   void updateProjMatrix();
-  void setProjMatrix( const D3DXMATRIX &m);
+  void setProjMatrix(       const D3DXMATRIX &m);
   inline void setViewMatrix(const D3DXMATRIX &m) {
     setTransformation(D3DTS_VIEW, m);
   }
   void setTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
   D3DXMATRIX getTransformation(D3DTRANSFORMSTATETYPE id) const;
   int getFirstFreeLightIndex() const; // return -1 if none exist
+  int getFirstFreeMaterialIndex();
   D3LightControl *findLightControlByLightIndex(int lightIndex);
   D3LightControl *addLightControl(    UINT lightIndex);
   void destroyLightControl(           UINT lightIndex);
@@ -296,10 +309,20 @@ public:
     return (int)m_lightsEnabled->size();
   }
 
-  inline const D3DMATERIAL &getMaterial() const {
-    return m_material;
+  inline const MATERIAL &getMaterial(UINT index) const {
+    return m_materials[index];
   }
-  void setMaterial(const D3DMATERIAL &material);
+  void setMaterial(const MATERIAL &material);
+  int  addMaterial(const D3DMATERIAL &material);
+  void removeMaterial(UINT index);
+  inline bool isMaterialDefined(UINT index) const {
+    return (index < m_materials.size()) && (m_materials[index].m_index == index);
+  }
+  const BitSet getMaterialsDefined() const;
+  inline int getMaterialCount() const {
+    return (int)getMaterialsDefined().size();
+  }
+  String getMaterialString(UINT index) const;
   String getMaterialString() const;
 
   void setBackgroundColor(D3DCOLOR color);
@@ -380,6 +403,9 @@ public:
   }
   inline bool isVisible() const {
     return m_visible;
+  }
+  virtual int getMaterialIndex() const {
+    return 0;
   }
   virtual D3PosDirUpScale getPDUS() const {
     return m_scene.getObjPDUS();

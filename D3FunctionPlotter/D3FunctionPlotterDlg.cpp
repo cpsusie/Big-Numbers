@@ -154,8 +154,8 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_coordinateSystem  = new D3CoordinateSystem(m_scene);
   m_scene.addSceneObject(m_coordinateSystem);
 
-  m_lightDlgThread    = CPropertyDlgThread::startThread(new CLightDlg(   m_scene, this));
-  m_materialDlgThread = CPropertyDlgThread::startThread(new CMaterialDlg(m_scene, this));
+  m_lightDlgThread    = CPropertyDlgThread::startThread(new CLightDlg(   this));
+  m_materialDlgThread = CPropertyDlgThread::startThread(new CMaterialDlg(this));
 
   checkMenuItem(this, ID_VIEW_SPECULAR, m_scene.isSpecularEnabled());
   createInitialObject();
@@ -385,7 +385,7 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
   } else if(source == m_materialDlgThread->getPropertyContainer()) {
     switch(id) {
     case SP_MATERIALPARAMETERS:
-      m_scene.setMaterial(*(D3DMATERIAL*)newValue);
+      m_scene.setMaterial(*(MATERIAL*)newValue);
       break;
     }
   } else if(source == m_currentEditor) {
@@ -472,7 +472,7 @@ void CD3FunctionPlotterDlg::setSelectedObject(D3SceneObject *obj) {
   if(lc) {
     m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
   } else if(obj) {
-    m_materialDlgThread->setCurrentDialogProperty(&m_scene.getMaterial());
+    m_materialDlgThread->setCurrentDialogProperty(&m_scene.getMaterial(obj->getMaterialIndex()));
   }
 }
 
@@ -1284,7 +1284,7 @@ void CD3FunctionPlotterDlg::addLight(D3DLIGHTTYPE type) {
       break;
     }
     m_scene.setLightParam(lp);
-    m_scene.setLightControlVisible(lp.m_lightIndex, true);
+    m_scene.setLightControlVisible(lp.m_index, true);
     REPAINT();
   } catch(Exception e) {
     showException(e);
@@ -1581,7 +1581,7 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 
 void CD3FunctionPlotterDlg::OnObjectEditMaterial() {
   if(m_selectedSceneObject && m_selectedSceneObject == m_calculatedObject) {
-    m_materialDlgThread->setCurrentDialogProperty(&m_scene.getMaterial());
+    m_materialDlgThread->setCurrentDialogProperty(&m_scene.getMaterial(m_selectedSceneObject->getMaterialIndex()));
     m_materialDlgThread->setDialogVisible(true);
     m_lightDlgThread->setDialogVisible(false);
   }

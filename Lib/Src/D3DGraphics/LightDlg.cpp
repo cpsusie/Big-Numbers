@@ -5,21 +5,19 @@
 #define new DEBUG_NEW
 #endif
 
-CLightDlg::CLightDlg(D3Scene &scene, PropertyChangeListener *listener) 
+CLightDlg::CLightDlg(PropertyChangeListener *listener) 
 : CColormapDialog<LIGHT>(CLightDlg::IDD, SP_LIGHTPARAMETERS, NULL)
-, m_scene(scene)
 {
   if(listener) {
     addPropertyChangeListener(listener);
   }
-
 }
 
-void CLightDlg::DoDataExchange(CDataExchange* pDX) {
+void CLightDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_COLORMAP_AMBIENT, m_colormapAmbient);
+  DDX_Control(pDX, IDC_COLORMAP_AMBIENT , m_colormapAmbient );
   DDX_Control(pDX, IDC_COLORMAP_SPECULAR, m_colormapSpecular);
-  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE, m_colormapDiffuse);
+  DDX_Control(pDX, IDC_COLORMAP_DIFFUSE , m_colormapDiffuse );
 }
 
 BEGIN_MESSAGE_MAP(CLightDlg, CDialog)
@@ -56,15 +54,11 @@ void CLightDlg::resetControls() {
   setNotifyEnabled(true);
 }
 
-LIGHT CLightDlg::getLightFromScene() const {
-  return m_scene.getLightParam(getStartValue().m_lightIndex);
-}
-
 static LIGHT &copyNonColors(LIGHT &dst, const LIGHT &src) {
-  if(dst.m_lightIndex != src.m_lightIndex || dst.Type != src.Type) {
+  if(dst.m_index != src.m_index || dst.Type != src.Type) {
     AfxMessageBox(format(_T("copyNonColors:dst.(index,type):(%d,%d), src.(index,type):(%d,%d)")
-                        ,dst.m_lightIndex, dst.Type
-                        ,src.m_lightIndex, src.Type
+                        ,dst.m_index, dst.Type
+                        ,src.m_index, src.Type
                         ).cstr(), MB_ICONWARNING);
   }
   dst.Position  = src.Position; // these fields are not modified from this dialog
@@ -77,25 +71,24 @@ static LIGHT &copyNonColors(LIGHT &dst, const LIGHT &src) {
 
 void CLightDlg::setCurrentValue(const LIGHT &v) {
   LIGHT l = v;
-  copyNonColors(l, getLightFromScene());
+  copyNonColors(l, getStartValue());
   CPropertyDialog<LIGHT>::setCurrentValue(l);
   ajourSliders(l);
 }
 
 const LIGHT CLightDlg::getCurrentValue() const {
   LIGHT l = CPropertyDialog<LIGHT>::getCurrentValue();
-  return copyNonColors(l, getLightFromScene());
+  return copyNonColors(l, getStartValue());
 }
 
 void CLightDlg::valueToWindow(const LIGHT &v) {
-  const TCHAR *lightTypeStr = _T("");
+  const TCHAR *lightTypeStr = EMPTYSTRING;
   switch(v.Type) {
   case D3DLIGHT_DIRECTIONAL    : lightTypeStr = _T("Directional"); break;
   case D3DLIGHT_POINT          : lightTypeStr = _T("Point")      ; break;
   case D3DLIGHT_SPOT           : lightTypeStr = _T("Spot")       ; break;
   }
-
-  setWindowText(this, format(_T("%s (%s light %d)"), m_origName.cstr(), lightTypeStr, v.m_lightIndex));
+  setWindowText(this, format(_T("%s (%s light %d)"), m_origName.cstr(), lightTypeStr, v.m_index));
 
   setSliderValue(IDC_SLIDER_RANGE               , v.Range        );
   setSliderValue(IDC_SLIDER_CONSTANTATTENUATION , v.Attenuation0 );
@@ -143,7 +136,7 @@ void CLightDlg::showSliderValues(const LIGHT &v) {
 void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   const int   ctrlId = pScrollBar->GetDlgCtrlID();
   const float pos    = getSliderValue(ctrlId);
-  LIGHT v = getCurrentValue();
+  LIGHT       v      = getCurrentValue();
   switch(ctrlId) {
   case IDC_SLIDER_RANGE                 :
     v.Range        = pos;

@@ -6,25 +6,24 @@
 
 class CLightDlg : public CColormapDialog<LIGHT> {
 private:
-    D3Scene &m_scene;
     String   m_origName;
+    LIGHT    m_origLight;
 
     void  resetControls();
     void  valueToWindow(   const LIGHT &v);
     void  ajourSliders(    const LIGHT &v);
     void  enableSliders(   const LIGHT &v);
     void  showSliderValues(const LIGHT &v);
-    LIGHT getLightFromScene() const;
     void  setCurrentValue( const LIGHT &v);
     const LIGHT getCurrentValue() const;
 public:
-    CLightDlg(D3Scene &scene, PropertyChangeListener *listener);
+    CLightDlg(PropertyChangeListener *listener);
 	  enum { IDD = IDD_LIGHT_DIALOG };
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar);
+    afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
   	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
 	  afx_msg void OnHideWindow();

@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
-// Used by D3FunctionPlotter.rc
+// Used by D3DGraphics.rc
 //
 #define IDD_LIGHT_DIALOG                700
 #define IDD_MATERIAL_DIALOG             701
@@ -27,6 +27,8 @@
 #define IDC_STATIC_RANGEVALUE           6024
 #define IDC_STATIC_POWER                6025
 #define IDC_SLIDER_POWER                6026
+#define IDC_STATIC_TRANSPARENCY         6027
+#define IDC_SLIDER_TRANSPARENCY         6028
 #define ID_HIDEWINDOW                   6040
 #define ID_MSG_RESETCONTROLS            32771
 
@@ -36,7 +38,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        207
 #define _APS_NEXT_COMMAND_VALUE         33259
-#define _APS_NEXT_CONTROL_VALUE         1233
+#define _APS_NEXT_CONTROL_VALUE         1235
 #define _APS_NEXT_SYMED_VALUE           103
 #endif
 #endif

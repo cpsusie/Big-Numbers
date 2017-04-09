@@ -1,7 +1,7 @@
 #pragma once
 #include "colormap.h"
 #include <Hashmap.h>
-#include <Math/Transformation.h>
+#include <MFCUtil/SliderCtrlWithTransformation.h>
 #include <MFCUtil/ColorSpace.h>
 #include "PropertyDialog.h"
 
@@ -10,67 +10,29 @@ D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
 
 template<class T> class CColormapDialog : public CPropertyDialog<T>  {
 private:
-  IntHashMap<IntervalTransformation*> m_sliderTransformMap;
-
-  IntervalTransformation *getTransformation(int ctrlId) {
-    IntervalTransformation **tpp = m_sliderTransformMap.get(ctrlId);
-    return tpp ? *tpp : NULL;
-  }
-  const IntervalTransformation *getTransformation(int ctrlId) const {
-    IntervalTransformation * const *tpp = m_sliderTransformMap.get(ctrlId);
-    return tpp ? *tpp : NULL;
-  }
-  void removeTransformation(int ctrlId) {
-    IntervalTransformation *trans = getTransformation(ctrlId);
-    if(trans != NULL) {
-      delete trans;
-      m_sliderTransformMap.remove(ctrlId);
-    }
-  }
-
-  void addTransformation(int ctrlId, double from, double to, unsigned int stepCount, bool logarithmic) {
-    removeTransformation(ctrlId);
-    if(logarithmic) {
-      m_sliderTransformMap.put(ctrlId, new LogarithmicTransformation(DoubleInterval(from, to), DoubleInterval(1, stepCount)));
-    } else {
-      m_sliderTransformMap.put(ctrlId, new LinearTransformation(     DoubleInterval(from, to), DoubleInterval(1, stepCount)));
-    }
-  }
-
-  void unknownSliderException(int ctrlId) const {
-    throwException(_T("SliderCtrl with id %d not initialized"), ctrlId);
-  }
-
+  CompactArray<CSliderCtrlWithTransformation*> m_sliderArray;
 public:
   CColormapDialog(int resId, int propertyId, CWnd *pParent) : CPropertyDialog<T>(resId, propertyId, pParent) {
   }
-
   ~CColormapDialog() {
-    for(Iterator<Entry<int, IntervalTransformation*> > it = m_sliderTransformMap.entrySet().getIterator(); it.hasNext();) {
-      Entry<int, IntervalTransformation*> &e = it.next();
-      delete e.getValue();
+    for (size_t i = 0; i < m_sliderArray.size(); i++) {
+      delete m_sliderArray[i];
     }
+    m_sliderArray.clear();
   }
-
 protected:
-  void initSlider(int ctrlId, double from, double to, unsigned int stepCount = 100, bool logarithmic = false) {
-    addTransformation(ctrlId, from, to, stepCount, logarithmic);
-
-    CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(ctrlId);
-    slider->SetRange(1, stepCount);
-    slider->SetPos(1);
+  void initSlider(int ctrlId, double from, double to, UINT stepCount = 100, IntervalScale type=LINEAR) {
+    m_sliderArray.add(new CSliderCtrlWithTransformation());
+    CSliderCtrlWithTransformation &ctrl = *m_sliderArray.last();
+    ctrl.substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
   }
 
   float getSliderValue(int ctrlId) const {
-    const IntervalTransformation *transform = getTransformation(ctrlId);
-    if(transform == NULL) unknownSliderException(ctrlId);
-    return (float)transform->backwardTransform(((CSliderCtrl*)GetDlgItem(ctrlId))->GetPos());
+    return (float)((CSliderCtrlWithTransformation*)GetDlgItem(ctrlId))->getPos();
   }
 
   void setSliderValue(int ctrlId, double value) {
-    const IntervalTransformation *transform = getTransformation(ctrlId);
-    if(transform == NULL) unknownSliderException(ctrlId);
-    ((CSliderCtrl*)GetDlgItem(ctrlId))->SetPos((int)transform->forwardTransform(value));
+    ((CSliderCtrlWithTransformation*)GetDlgItem(ctrlId))->setPos(value);
   }
 
   D3DCOLORVALUE getD3DCOLORVALUE(int ctrlId) {

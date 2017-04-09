@@ -55,7 +55,7 @@ void D3Scene::init(HWND hwnd) {
   m_lightsDefined     = new BitSet(m_maxLightCount);
 
   setLightParam(getDefaultLightParam());
-  setMaterial(getDefaultMaterial());
+  addMaterial(  getDefaultMaterial());
 
   initTrans();
 
@@ -126,17 +126,17 @@ void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
 
 void D3Scene::initObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
   D3PosDirUpScale newObj = m_objectPDUS;
-  newObj.setPos(pos);
-  newObj.setOrientation(dir, up);
-  newObj.setScale(scale);
+  newObj.setPos(pos)
+        .setOrientation(dir, up)
+        .setScale(scale);
   setProperty(SP_OBJECTORIENTATION, m_objectPDUS, newObj);
 }
 
 void D3Scene::initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
   D3PosDirUpScale newCam = m_cameraPDUS;
-  newCam.setPos(pos);
-  newCam.setOrientation(lookAt - pos, up);
-  newCam.setScale(D3DXVECTOR3(1,1,1));
+  newCam.setPos(pos)
+        .setOrientation(lookAt - pos, up)
+        .setScale(D3DXVECTOR3(1,1,1));
   setProperty(SP_CAMERAORIENTATION, m_cameraPDUS, newCam);
 }
 
@@ -159,7 +159,7 @@ void D3Scene::setNearViewPlane(float zn) {
 }
 
 void D3Scene::updateProjMatrix() {
-  const CRect cl = getClientRect(m_hwnd);
+  const CRect cl = getClientRect(getHwnd());
   D3DXMATRIX matProj;
   setProjMatrix(*D3DXMatrixPerspectiveFov(&matProj, m_viewAngel, (float)cl.Width()/cl.Height(), m_nearViewPlane, 200.0f));
 }
@@ -190,7 +190,7 @@ LIGHT D3Scene::getDefaultLightParam(D3DLIGHTTYPE type) { // static
   case D3DLIGHT_SPOT           : result = getDefaultSpotLight();        break;
   default                      : result = getDefaultDirectionalLight(); break;
   }
-  result.m_lightIndex = getFirstFreeLightIndex();
+  result.m_index = getFirstFreeLightIndex();
   return result;
 }
 
@@ -376,7 +376,7 @@ void D3Scene::setLightDirection(UINT index, const D3DXVECTOR3 &dir) {
   setLightParam(param);
 }
 
-void D3Scene::setLightPosition( UINT index, const D3DXVECTOR3 &pos) {
+void D3Scene::setLightPosition(UINT index, const D3DXVECTOR3 &pos) {
   if(!isLightDefined(index)) {
     return;
   }
@@ -386,26 +386,30 @@ void D3Scene::setLightPosition( UINT index, const D3DXVECTOR3 &pos) {
 }
 
 void D3Scene::setLightParam(const LIGHT &param) {
-  if((param.m_lightIndex < 0) || (param.m_lightIndex >= m_maxLightCount)) {
+  if((param.m_index < 0) || (param.m_index >= m_maxLightCount)) {
     return;
   }
-  if(!isLightDefined(param.m_lightIndex)) {
+  if(!isLightDefined(param.m_index)) {
     const UINT oldCount = getLightCount();
-    V(m_device->SetLight(param.m_lightIndex, &param));
-    V(m_device->LightEnable(param.m_lightIndex, param.m_enabled?TRUE:FALSE));
-    m_lightsDefined->add(param.m_lightIndex);
+    V(m_device->SetLight(param.m_index, &param));
+    V(m_device->LightEnable(param.m_index, param.m_enabled?TRUE:FALSE));
+    m_lightsDefined->add(param.m_index);
     if(param.m_enabled) {
-      m_lightsEnabled->add(param.m_lightIndex);
+      m_lightsEnabled->add(param.m_index);
     }
     const UINT newCount = oldCount + 1;
     notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
   } else {
-    const LIGHT oldLp = getLightParam(param.m_lightIndex);
+    const LIGHT oldLp = getLightParam(param.m_index);
     if(param != oldLp) {
-      V(m_device->SetLight(param.m_lightIndex, &param));
-      V(m_device->LightEnable(param.m_lightIndex, param.m_enabled?TRUE:FALSE));
+      V(m_device->SetLight(param.m_index, &param));
+      V(m_device->LightEnable(param.m_index, param.m_enabled?TRUE:FALSE));
       if(param.m_enabled != oldLp.m_enabled) {
-        if(param.m_enabled) m_lightsEnabled->add(param.m_lightIndex); else m_lightsEnabled->remove(param.m_lightIndex);
+        if(param.m_enabled) {
+          m_lightsEnabled->add(param.m_index);
+        } else {
+          m_lightsEnabled->remove(param.m_index);
+        }
       }
       notifyPropertyChanged(SP_LIGHTPARAMETERS, &oldLp, &param);
     }
@@ -429,8 +433,8 @@ LIGHT D3Scene::getLightParam(UINT index) const {
   } else {
     V(m_device->GetLight(index, &lp));
   }
-  lp.m_lightIndex = index;
-  lp.m_enabled    = isLightEnabled(index);
+  lp.m_index   = index;
+  lp.m_enabled = isLightEnabled(index);
   return lp;
 }
 
@@ -481,34 +485,100 @@ String toString(const LIGHT &light) {
                                           ,colStr.cstr()
                                           );
   }
-  return "";
+  return EMPTYSTRING;
 }
 
-String toString(const D3DMATERIAL  &material) {
+String toString(const MATERIAL &material) {
   return format(_T("Mat:Amb:%s, Dif:%s, Spec:%s Emi:%s, Pow:%.2f")
                ,toString(material.Ambient).cstr()
-               ,toString(material.Diffuse).cstr()
+               ,toString(material.Diffuse,true).cstr()
                ,toString(material.Specular).cstr()
                ,toString(material.Emissive).cstr()
                ,material.Power
                );
 }
 
-String toString(D3PCOLOR c) {
+String toString(D3PCOLOR c, bool showAlpha) {
   const D3DCOLOR cc = c;
-  return format(_T("R:%3d G:%dd B:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc));
+  if(showAlpha) {
+    return format(_T("R:%3d G:%dd B:%3d A:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc), ARGB_GETALPHA(cc));
+  } else {
+    return format(_T("R:%3d G:%dd B:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc));
+  }
 }
 
-String toString(const D3DCOLORVALUE &c) {
-  return format(_T("R:%.2f G:%.2f B:%.2f"), c.r,c.g,c.b);
+String toString(const D3DCOLORVALUE &c, bool showAlpha) {
+  if(showAlpha) {
+    return format(_T("R:%.2f G:%.2f B:%.2f A:%.2f"), c.r,c.g,c.b, c.a);
+  } else {
+    return format(_T("R:%.2f G:%.2f B:%.2f"), c.r,c.g,c.b);
+  }
 }
 
-void D3Scene::setMaterial(const D3DMATERIAL &material) {
-  setProperty(SP_MATERIALPARAMETERS, m_material, material);
+int D3Scene::addMaterial(const D3DMATERIAL &material) {
+  const int index = getFirstFreeMaterialIndex();
+  MATERIAL m;
+  ((D3DMATERIAL&)m) = material;
+  m.m_index = index;
+  setProperty(SP_MATERIALPARAMETERS, m_materials[index], m);
+
+  return index;
+}
+
+int D3Scene::getFirstFreeMaterialIndex() {
+  const size_t n = m_materials.size();
+  for (size_t i = 0; i < n; i++) {
+    if (m_materials[i].m_index < 0) {
+      return (int)i;
+    }
+  }
+  m_materials.add(MATERIAL());
+  return (int)n;
+}
+
+void D3Scene::removeMaterial(UINT index) {
+  if(index >= m_materials.size()) return;
+  m_materials[index].m_index = -1;
+}
+
+const BitSet D3Scene::getMaterialsDefined() const {
+  const size_t n = m_materials.size();
+  BitSet result(n+1);
+  for (size_t i = 0; i < n; i++) {
+    if (m_materials[i].m_index == i) {
+      result.add(i);
+    }
+  }
+  return result;
+}
+
+void D3Scene::setMaterial(const MATERIAL &material) {
+  if (!material.isDefined()) {
+    addMaterial(material);
+  } else {
+    const UINT index = material.m_index;
+    if(index >= m_materials.size()) {
+      throwInvalidArgumentException(__TFUNCTION__, _T("index=%u, materialCount=%zd"), index, m_materials.size());
+    }
+    if(material != m_materials[index]) {
+      setProperty(SP_MATERIALPARAMETERS, m_materials[index], material);
+    }
+  }
+}
+
+String D3Scene::getMaterialString(UINT index) const {
+  return toString(m_materials[index]);
 }
 
 String D3Scene::getMaterialString() const {
-  return toString(m_material);
+  String result;
+  BitSet materialSet = getMaterialsDefined();
+  for(Iterator<size_t> it = materialSet.getIterator(); it.hasNext(); ) {
+    const UINT index = (UINT)it.next();
+    if(result.length()) result += "\n";
+    result += format(_T("Material %3d:%s"), index, getMaterialString(index).cstr());
+  }
+  return result;
 }
 
 void D3Scene::setBackgroundColor(D3DCOLOR color) {
@@ -583,7 +653,7 @@ D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECT
 
 void D3Scene::OnSize() {
   if(m_device) {
-    D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(m_hwnd);
+    D3DPRESENT_PARAMETERS present = D3DeviceFactory::getDefaultPresentParameters(getHwnd());
     if(present.BackBufferWidth && present.BackBufferHeight) {
       V(m_device->ResetEx(&present, NULL));
       updateProjMatrix();
