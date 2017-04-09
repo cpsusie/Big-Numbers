@@ -72,6 +72,7 @@ public:
   inline bool isEnabled() const {
     return m_enabled;
   }
+  void setDefaultColors();
 };
 
 inline bool operator==(const LIGHT &l1, const LIGHT &l2) {
@@ -298,7 +299,7 @@ public:
     return *m_lightsEnabled;
   }
   BitSet getLightsVisible() const;
-  void setLightControlVisible(UINT index, bool visible);
+  D3LightControl *setLightControlVisible(UINT index, bool visible);
 
   inline int getMaxLightCount() const {
     return m_maxLightCount;

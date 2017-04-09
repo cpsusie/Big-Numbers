@@ -24,7 +24,11 @@ protected:
   void initSlider(int ctrlId, double from, double to, UINT stepCount = 100, IntervalScale type=LINEAR) {
     m_sliderArray.add(new CSliderCtrlWithTransformation());
     CSliderCtrlWithTransformation &ctrl = *m_sliderArray.last();
-    ctrl.substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
+    try {
+      ctrl.substituteControl(this, ctrlId, DoubleInterval(from,to), stepCount, type);
+    } catch (Exception e) {
+      Message(_T("%s"), e.what());
+    }
   }
 
   float getSliderValue(int ctrlId) const {

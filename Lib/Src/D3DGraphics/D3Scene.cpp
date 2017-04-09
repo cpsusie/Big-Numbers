@@ -63,7 +63,7 @@ void D3Scene::init(HWND hwnd) {
   V(m_device->SetRenderState(D3DRS_ZENABLE         , TRUE));
   V(m_device->SetRenderState(D3DRS_AMBIENT         , D3DCOLOR_XRGB(50, 50, 50)));
   V(m_device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE));
-//  V(m_device->SetRenderState( D3DRS_ALPHABLENDENABLE, FALSE ));
+  V(m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE));
 
   m_initDone = true;
 }
@@ -198,12 +198,9 @@ LIGHT D3Scene::getDefaultDirectionalLight() {  // static
   LIGHT lp;
   ZeroMemory(&lp, sizeof(lp));
   lp.Type         = D3DLIGHT_DIRECTIONAL;
-  lp.Ambient      = D3DXCOLOR(   0.11f,  0.10f,  0.19f, 1.0f);
-  lp.Diffuse      = D3DXCOLOR(   0.74f,  0.74f,  0.74f, 1.0f);//D3DXCOLOR(   0.17f,  0.13f,  0.78f, 1.0f);
-  lp.Specular     = D3DXCOLOR(   0.85f,  0.84f,  0.95f, 1.0f);
+  lp.setDefaultColors();
   lp.Direction    = unitVector(D3DXVECTOR3(0.175f, -0.385f, -0.88f));
   lp.m_enabled    = true;
-
   return lp;
 }
 
@@ -211,12 +208,10 @@ LIGHT D3Scene::getDefaultPointLight() {  // static
   LIGHT lp;
   ZeroMemory(&lp, sizeof(lp));
   lp.Type         = D3DLIGHT_POINT;
-  lp.Diffuse      = D3DXCOLOR(   0.17f,  0.13f,  0.78f, 1.0f);
-  lp.Specular     = D3DXCOLOR(   0.85f,  0.84f,  0.95f, 1.0f);
-  lp.Position     = D3DXVECTOR3( 1, 1, 1);
+  lp.setDefaultColors();
+  lp.Position     = D3DXVECTOR3(1, 1, 1);
   lp.Range        = 100;
-  lp.Attenuation0 = 0.16f;
-  lp.Attenuation1 = 0.12f;
+  lp.Attenuation1 = 1;
   lp.m_enabled    = true;
   return lp;
 }
@@ -225,10 +220,11 @@ LIGHT D3Scene::getDefaultSpotLight() { // static
   LIGHT lp;
   ZeroMemory(&lp, sizeof(lp));
   lp.Type         = D3DLIGHT_SPOT;
-  lp.Diffuse      = D3DXCOLOR(   0.5f,  0.5f,  0.5f, 1.0f);
+  lp.setDefaultColors();
   lp.Position     = D3DXVECTOR3( 1, 1, 1);
   lp.Direction    = -unitVector(lp.Position);
   lp.Range        = 100;
+  lp.Attenuation1 = 1;
   lp.Falloff      = 1;
   lp.Theta        = radians(10); // inner angle
   lp.Phi          = radians(15); // outer angle
@@ -256,12 +252,19 @@ void LIGHT ::setOuterAngle(float rad) {
   }
 }
 
+void LIGHT::setDefaultColors() {
+  Ambient  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
+  Diffuse  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
+  Specular = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
+}
+
 D3DMATERIAL D3Scene::getDefaultMaterial() const {
   D3DMATERIAL material;
   ZeroMemory(&material, sizeof(D3DMATERIAL));
   material.Ambient  = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
   material.Diffuse  = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
   material.Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
+  material.Emissive = D3DXCOLOR(0     , 0     , 0    , 0   );
   material.Power    = 9.73f;
   return material;
 }
@@ -306,7 +309,7 @@ BitSet D3Scene::getLightsVisible() const {
   return result;
 }
 
-void D3Scene::setLightControlVisible(UINT index, bool visible) {
+D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
   D3LightControl *lc = findLightControlByLightIndex(index);
   if(lc == NULL) {
     lc = addLightControl(index);
@@ -314,6 +317,7 @@ void D3Scene::setLightControlVisible(UINT index, bool visible) {
   if(lc) {
     lc->setVisible(visible);
   }
+  return lc;
 }
 
 D3LightControl *D3Scene::addLightControl(UINT lightIndex) {

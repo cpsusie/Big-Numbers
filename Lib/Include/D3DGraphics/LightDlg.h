@@ -7,7 +7,6 @@
 class CLightDlg : public CColormapDialog<LIGHT> {
 private:
     String   m_origName;
-    LIGHT    m_origLight;
 
     void  resetControls();
     void  valueToWindow(   const LIGHT &v);
@@ -15,11 +14,10 @@ private:
     void  enableSliders(   const LIGHT &v);
     void  showSliderValues(const LIGHT &v);
     void  setCurrentValue( const LIGHT &v);
-    const LIGHT getCurrentValue() const;
 public:
     CLightDlg(PropertyChangeListener *listener);
 	  enum { IDD = IDD_LIGHT_DIALOG };
-
+    static LIGHT &copyModifiableValues(LIGHT &dst, const LIGHT &src);
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();

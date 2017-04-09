@@ -32,9 +32,9 @@ BOOL CLightDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   m_origName = getWindowText(this);
 
-  initSlider(IDC_SLIDER_RANGE               , 0, 100);
-  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0, 100);
-  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0, 100);
+  initSlider(IDC_SLIDER_RANGE               , 0.001 , 100, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001 , 100, 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001, 100, 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0, 100);
   initSlider(IDC_SLIDER_FALLOFF             , 0, 300);
   return TRUE;
@@ -54,31 +54,21 @@ void CLightDlg::resetControls() {
   setNotifyEnabled(true);
 }
 
-static LIGHT &copyNonColors(LIGHT &dst, const LIGHT &src) {
-  if(dst.m_index != src.m_index || dst.Type != src.Type) {
-    AfxMessageBox(format(_T("copyNonColors:dst.(index,type):(%d,%d), src.(index,type):(%d,%d)")
-                        ,dst.m_index, dst.Type
-                        ,src.m_index, src.Type
-                        ).cstr(), MB_ICONWARNING);
-  }
-  dst.Position  = src.Position; // these fields are not modified from this dialog
-  dst.Direction = src.Direction;
-  dst.Theta     = src.Theta;
-  dst.Phi       = src.Phi;
-  dst.m_enabled = src.m_enabled;
-  return dst;
-}
-
 void CLightDlg::setCurrentValue(const LIGHT &v) {
-  LIGHT l = v;
-  copyNonColors(l, getStartValue());
-  CPropertyDialog<LIGHT>::setCurrentValue(l);
-  ajourSliders(l);
+  CPropertyDialog<LIGHT>::setCurrentValue(v);
+  ajourSliders(v);
 }
 
-const LIGHT CLightDlg::getCurrentValue() const {
-  LIGHT l = CPropertyDialog<LIGHT>::getCurrentValue();
-  return copyNonColors(l, getStartValue());
+LIGHT &CLightDlg::copyModifiableValues(LIGHT &dst, const LIGHT &src) { // static
+  dst.Diffuse      = src.Diffuse;
+  dst.Specular     = src.Specular;
+  dst.Ambient      = src.Ambient;
+  dst.Range        = src.Range;
+  dst.Attenuation0 = src.Attenuation0;
+  dst.Attenuation1 = src.Attenuation1;
+  dst.Attenuation2 = src.Attenuation2;
+  dst.Falloff      = src.Falloff;
+  return dst;
 }
 
 void CLightDlg::valueToWindow(const LIGHT &v) {
@@ -126,11 +116,11 @@ void CLightDlg::enableSliders(const LIGHT &v) {
 }
 
 void CLightDlg::showSliderValues(const LIGHT &v) {
-  GetDlgItem(IDC_STATIC_RANGEVALUE          )->SetWindowText(format(_T("%.1f"), v.Range        ).cstr());
-  GetDlgItem(IDC_STATIC_CONSTANTATTVALUE    )->SetWindowText(format(_T("%.2f"), v.Attenuation0 ).cstr());
-  GetDlgItem(IDC_STATIC_LINEARATTVALUE      )->SetWindowText(format(_T("%.2f"), v.Attenuation1 ).cstr());
-  GetDlgItem(IDC_STATIC_QUADRATICATTVALUE   )->SetWindowText(format(_T("%.2f"), v.Attenuation2 ).cstr());
-  GetDlgItem(IDC_STATIC_FALLOFFVALUE        )->SetWindowText(format(_T("%.2f"), v.Falloff      ).cstr());
+  setWindowText(this, IDC_STATIC_RANGEVALUE         ,format(_T("%.3f"), v.Range        ));
+  setWindowText(this, IDC_STATIC_CONSTANTATTVALUE   ,format(_T("%.3f"), v.Attenuation0 ));
+  setWindowText(this, IDC_STATIC_LINEARATTVALUE     ,format(_T("%.3f"), v.Attenuation1 ));
+  setWindowText(this, IDC_STATIC_QUADRATICATTVALUE  ,format(_T("%.3f"), v.Attenuation2 ));
+  setWindowText(this, IDC_STATIC_FALLOFFVALUE       ,format(_T("%.3f"), v.Falloff      ));
 }
 
 void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
@@ -160,8 +150,8 @@ void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
 }
 
 BEGIN_EVENTSINK_MAP(CLightDlg, CDialog)
-  ON_EVENT(CLightDlg, IDC_COLORMAP_AMBIENT, 1, CLightDlg::OnColorchangedColormapAmbient, VTS_NONE)
-  ON_EVENT(CLightDlg, IDC_COLORMAP_DIFFUSE, 1, CLightDlg::OnColorchangedColormapDiffuse, VTS_NONE)
+  ON_EVENT(CLightDlg, IDC_COLORMAP_AMBIENT , 1, CLightDlg::OnColorchangedColormapAmbient, VTS_NONE)
+  ON_EVENT(CLightDlg, IDC_COLORMAP_DIFFUSE , 1, CLightDlg::OnColorchangedColormapDiffuse, VTS_NONE)
   ON_EVENT(CLightDlg, IDC_COLORMAP_SPECULAR, 1, CLightDlg::OnColorchangedColormapSpecular, VTS_NONE)
 END_EVENTSINK_MAP()
 
