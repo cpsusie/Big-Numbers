@@ -120,9 +120,6 @@ void CQuartoDlg::OnPaint() {
 LRESULT CQuartoDlg::OnMsgRender(WPARAM wp, LPARAM lp) {
   BYTE flags = (BYTE)wp;
   if(flags & RENDER_3D) {
-    CClientDC   dc(getGameWindow());
-    const CSize sz = getGameRect().Size();
-    dc.FillSolidRect(0,0, sz.cx, sz.cy, BACKGROUNDCOLOR);
     m_scene.render();
   }
   if(flags & RENDER_INFO) {
@@ -457,10 +454,10 @@ void CQuartoDlg::flashWinnerBlocks() {
     }
     bset.add(b);
   }
-  for(int i = 0; i < 6; i++) {
+  for(int i = 0; i < 8; i++) {
     m_boardObject->setBricksVisible(bset,(i&1)!=0);
-    render(RENDER_3D);
-    Sleep(300);
+    m_scene.render();
+    Sleep(400);
   }
 }
 

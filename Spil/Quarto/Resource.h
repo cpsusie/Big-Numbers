@@ -64,16 +64,37 @@
 #define ID_HIDE_LIGHTCONTROLS           32879
 #define ID_LIGHTCONTROL_HIDE            32880
 #define ID_LIGHTCONTROL_SPOTAT          32881
-#define ID_RESETPOSITIONS               32890
-#define ID_SAVESCENEPARAMETERS          32901
-#define ID_LOADSCENEPARAMETERS          32902
+#define ID_SELECT_LIGHT0                32900
+#define ID_SELECT_LIGHT1                32901
+#define ID_SELECT_LIGHT2                32902
+#define ID_SELECT_LIGHT3                32903
+#define ID_SELECT_LIGHT4                32904
+#define ID_SELECT_LIGHT5                32905
+#define ID_SELECT_LIGHT6                32906
+#define ID_SELECT_LIGHT7                32907
+#define ID_SELECT_LIGHT8                32908
+#define ID_SELECT_LIGHT9                32909
+#define ID_SELECT_LIGHT10               32910
+#define ID_SELECT_LIGHT11               32911
+#define ID_SELECT_LIGHT12               32912
+#define ID_SELECT_LIGHT13               32913
+#define ID_SELECT_LIGHT14               32914
+#define ID_SELECT_LIGHT15               32915
+#define ID_SELECT_LIGHT16               32916
+#define ID_SELECT_LIGHT17               32917
+#define ID_SELECT_LIGHT18               32918
+#define ID_SELECT_LIGHT19               32919
+#define ID_SELECT_LIGHT20               32920
+#define ID_RESETPOSITIONS               32930
+#define ID_SAVESCENEPARAMETERS          32931
+#define ID_LOADSCENEPARAMETERS          32932
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        174
-#define _APS_NEXT_COMMAND_VALUE         32799
+#define _APS_NEXT_COMMAND_VALUE         32801
 #define _APS_NEXT_CONTROL_VALUE         1025
 #define _APS_NEXT_SYMED_VALUE           101
 #endif

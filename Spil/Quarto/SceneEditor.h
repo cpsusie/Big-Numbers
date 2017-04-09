@@ -22,6 +22,13 @@ typedef enum {
 #define RENDER_INFO 0x2
 #define RENDER_ALL  (RENDER_3D|RENDER_INFO)
 
+typedef enum {
+  SE_STATEENABLED
+ ,SE_STATEHANDLEPROPERTYCHANGES
+ ,SE_STATEHANDLEMESSAGES
+ ,SE_MOUSEVISIBLE
+} StateFlags;
+
 class D3SceneContainer {
 public:
   virtual D3Scene &getScene()               = 0;
@@ -36,10 +43,9 @@ private:
     D3SceneContainer           *m_sceneContainer;
     CurrentObjectControl        m_currentControl;
     CPoint                      m_lastMouse;
-    bool                        m_editorEnabled;
+    BitSet8                     m_stateFlags;
     D3SceneObject              *m_selectedSceneObject;
     PropertyContainer          *m_currentEditor;
-    bool                        m_mouseVisible;
     D3DXVECTOR3                 m_focusPoint;
     D3DXVECTOR3                 m_pickedPoint;
     D3Ray                       m_pickedRay;
@@ -88,6 +94,28 @@ private:
     void rotateCameraLeftRight(double angle);
 
     void setMouseVisible(bool visible);
+    inline bool isMouseVisible() const {
+      return m_stateFlags.contains(SE_MOUSEVISIBLE);
+    }
+    inline void enablePropertyChanges() {
+      m_stateFlags.add(SE_STATEHANDLEPROPERTYCHANGES);
+    }
+    inline void disablePropertyChanges() {
+      m_stateFlags.remove(SE_STATEHANDLEPROPERTYCHANGES);
+    }
+    inline bool isPropertyChangesEnabled() const {
+      return m_stateFlags.contains(SE_STATEHANDLEPROPERTYCHANGES);
+    }
+    inline void enableMessages() {
+      return m_stateFlags.add(SE_STATEHANDLEMESSAGES);
+    }
+    inline void disableMessages() {
+      return m_stateFlags.remove(SE_STATEHANDLEMESSAGES);
+    }
+    inline bool isMessagesEnabled() const {
+      return m_stateFlags.contains(SE_STATEHANDLEMESSAGES);
+    }
+    String stateFlagsToString() const;
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
@@ -113,7 +141,6 @@ private:
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-
 
     void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
     void OnMouseMoveObjectPos(            UINT nFlags, CPoint pt);
@@ -174,7 +201,7 @@ public:
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
     void setEnabled(bool enabled);
     inline bool isEnabled() const {
-      return m_editorEnabled;
+      return m_stateFlags.contains(SE_STATEENABLED);
     }
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;

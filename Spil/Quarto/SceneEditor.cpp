@@ -11,9 +11,8 @@ SceneEditor::SceneEditor() {
   m_selectedSceneObject = NULL;
   m_lightDlgThread      = NULL;
   m_materialDlgThread   = NULL;
-  m_mouseVisible        = true;
-  m_editorEnabled       = false;
   m_paramFileName       = _T("Untitled");
+  m_stateFlags.add(SE_MOUSEVISIBLE);
 }
 
 SceneEditor::~SceneEditor() {
@@ -44,7 +43,21 @@ void SceneEditor::close() {
 }
 
 void SceneEditor::setEnabled(bool enabled) {
-  m_editorEnabled = enabled;
+  if (enabled) {
+    m_stateFlags.add(SE_STATEENABLED);
+    enablePropertyChanges();
+  } else {
+    OnLightControlHide();
+    if(m_lightDlgThread->isDialogVisible()) {
+      m_lightDlgThread->setDialogVisible(false);
+    }
+    if(m_materialDlgThread->isDialogVisible()) {
+      m_materialDlgThread->setDialogVisible(false);
+    }
+    disablePropertyChanges();
+    m_stateFlags.remove(SE_STATEENABLED);
+  }
+  setMouseVisible(true);
 }
 
 #define MK_CTRLSHIFT (MK_CONTROL | MK_SHIFT)
@@ -57,15 +70,20 @@ static USHORT getCtrlShiftState() {
 }
 
 void SceneEditor::setMouseVisible(bool visible) {
-  if(visible == m_mouseVisible) {
+  if(visible == isMouseVisible()) {
     return;
   }
-  ShowCursor(visible?TRUE:FALSE);
-  m_mouseVisible = visible;
+  if(visible) {
+    ShowCursor(TRUE);
+    m_stateFlags.add(SE_MOUSEVISIBLE);
+  } else {
+    ShowCursor(FALSE);
+    m_stateFlags.remove(SE_MOUSEVISIBLE);
+  }
 }
 
 void SceneEditor::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(!m_editorEnabled) return;
+  if(!isPropertyChangesEnabled()) return;
   if(source == &getScene()) {
     switch(id) {
     case SP_FILLMODE                :
@@ -92,7 +110,8 @@ void SceneEditor::handlePropertyChanged(const PropertyContainer *source, int id,
     switch(id) {
     case SP_LIGHTPARAMETERS:
       { const LIGHT &lp = *(LIGHT*)newValue;
-        getScene().setLightParam(lp);
+        LIGHT tmp = getScene().getLightParam(lp.m_index); // to keep pos and direction as they are
+        getScene().setLightParam(CLightDlg::copyModifiableValues(tmp, lp));
       }
       break;
     }
@@ -168,11 +187,13 @@ void SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
   switch(m_currentControl) {
   case CONTROL_SPOTLIGHTPOINT:
     setCurrentControl(CONTROL_IDLE);
+    render(RENDER_INFO);
     break;
   case CONTROL_OBJECT_POS:
   case CONTROL_CAMERA_WALK:
     setMouseVisible(true);
     ReleaseCapture();
+    render(RENDER_INFO);
     break;
   }
 }
@@ -249,7 +270,7 @@ BOOL SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
 }
 
 BOOL SceneEditor::PreTranslateMessage(MSG *pMsg) {
-  if(!m_editorEnabled) return false;
+  if(!isEnabled()) return false;
   switch(pMsg->message) {
   case WM_KEYDOWN:
     switch(pMsg->wParam) {
@@ -308,6 +329,12 @@ BOOL SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()         ; return true;
     case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()        ; return true;
     case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()        ; return true;
+    default:
+      if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
+        const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
+        setSelectedObject(getScene().setLightControlVisible(index, true));
+        return true;
+      }
     }
   }
   return false;
@@ -453,10 +480,10 @@ void SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoi
   case MK_CONTROL  :
   case MK_SHIFT    :
   case MK_CTRLSHIFT:
-    { m_editorEnabled = false;
+    { disablePropertyChanges();
       const D3DXVECTOR3 objFocus = invers(pdus.getRotationMatrix()) * (m_focusPoint - pdus.getPos());
       OnMouseWheelObjectPos(nFlags, zDelta, pt);
-      m_editorEnabled = true;
+      enablePropertyChanges();
       getScene().setObjPos(m_focusPoint - getScene().getObjPDUS().getRotationMatrix() * objFocus);
     }
     break;
@@ -465,11 +492,11 @@ void SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoi
 
 void SceneEditor::OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
   const D3PosDirUpScale pdus = getScene().getObjPDUS();
-  m_editorEnabled = false;
+  disablePropertyChanges();
 
   const D3DXVECTOR3 objFocus = invers(pdus.getScaleMatrix()) * (m_focusPoint - pdus.getPos());
   OnMouseWheelObjectScale(nFlags, zDelta, pt);
-  m_editorEnabled = true;
+  enablePropertyChanges();
   getScene().setObjPos(m_focusPoint - getScene().getObjPDUS().getScaleMatrix() * objFocus);
 }
 
@@ -548,9 +575,9 @@ void SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint 
             D3DXVECTOR3 newPos = camPos + unitVector(up) * radius / 20.0f * (float)sign(zDelta);
       const D3DXVECTOR3 newDir = unitVector(center - newPos);
       const D3DXVECTOR3 newUp  = crossProduct(getScene().getCameraRight(), newDir);
-      m_editorEnabled = false;
+      disablePropertyChanges();
       getScene().setCameraPos(center - newDir * radius);
-      m_editorEnabled = true;
+      enablePropertyChanges();
       getScene().setCameraOrientation(newDir, newUp);
     }
     break;
@@ -558,9 +585,9 @@ void SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint 
     { const D3DXVECTOR3 right  = getScene().getCameraRight();
             D3DXVECTOR3 newPos = camPos + unitVector(right) * radius / 20.0f * (float)sign(zDelta);
       const D3DXVECTOR3 newDir = unitVector(center - newPos);
-      m_editorEnabled = false;
+      disablePropertyChanges();
       getScene().setCameraPos(center - newDir * radius);
-      m_editorEnabled = true;
+      enablePropertyChanges();
       getScene().setCameraOrientation(newDir, getScene().getCameraUp());
     }
     break;
@@ -853,6 +880,26 @@ void SceneEditor::showContextMenu(CMenu &menu, CPoint point) {
   TrackPopupMenu(*menu.GetSubMenu(0), TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, 0, *getMessageWindow(),NULL);
 }
 
+static String lightMenuText(const LIGHT &light) {
+  const TCHAR enabledChar = light.m_enabled?_T('+'):_T('-');
+
+  switch(light.Type) {
+  case D3DLIGHT_DIRECTIONAL: return format(_T("%3d%c Directional. Dir:%s")
+                                          ,light.m_index,enabledChar
+                                          ,toString(light.Direction).cstr());
+  case D3DLIGHT_POINT      : return format(_T("%3d%c Point. Pos:%s")
+                                          ,light.m_index,enabledChar
+                                          ,toString(light.Position).cstr()
+                                          );
+  case D3DLIGHT_SPOT       : return format(_T("%3d%c Spot. Pos:%s, Dir:%s")
+                                          ,light.m_index,enabledChar
+                                          ,toString(light.Position).cstr()
+                                          ,toString(light.Direction).cstr()
+                                          );
+  }
+  return EMPTYSTRING;
+}
+
 void SceneEditor::OnContextMenuBackground(CPoint point) {
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_BACKGROUND);
@@ -871,7 +918,18 @@ void SceneEditor::OnContextMenuBackground(CPoint point) {
   if(visibleLightCount == getScene().getLightCount()) {
     removeMenuCommand(menu, ID_SHOW_LIGHTCONTROLS);
   }
-  showContextMenu(menu, point);
+  const CompactArray<LIGHT> lights = getScene().getAllLights();
+  BitSet definedLights(getScene().getMaxLightCount());
+  for(size_t i = 0; i < lights.size(); i++) {
+    const LIGHT &l = lights[i];
+    definedLights.add(l.m_index);
+    setMenuItemText(menu, ID_SELECT_LIGHT0 + l.m_index, lightMenuText(l));
+   }
+   definedLights.invert().remove(21,definedLights.getCapacity()-1);
+   for (Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
+     removeMenuItem(&menu, (int)it.next() + ID_SELECT_LIGHT0);
+   }
+   showContextMenu(menu, point);
 }
 
 void SceneEditor::OnContextMenuVisualObject(CPoint point) {
@@ -1188,7 +1246,7 @@ void SceneEditor::OnLoadSceneParameters() {
 
 String SceneEditor::getSelectedString() const {
   if(m_selectedSceneObject == NULL) {
-    return "--";
+    return _T("--");
   } else {
     return m_selectedSceneObject->getName();
   }
@@ -1212,6 +1270,16 @@ const TCHAR *controlString(CurrentObjectControl control) {
   }
 }
 
+String SceneEditor::stateFlagsToString() const {
+  String result = _T("(");
+  if(isEnabled())                result += _T("enabled ");
+  if(isMessagesEnabled())        result += _T("msg ");
+  if(isPropertyChangesEnabled()) result += _T("prop ");
+  if(isMouseVisible())           result += _T("mouse");
+  result += _T(")");
+  return result;
+}
+
 String SceneEditor::toString() const {
   const String camStr      = getScene().getCameraString();
   const String objStr      = getScene().getObjString();
@@ -1225,8 +1293,10 @@ String SceneEditor::toString() const {
   const String rayStr      = m_pickedRay.isSet() ? format(_T("Picked ray:%s\n"), m_pickedRay.toString().cstr()) : EMPTYSTRING;
 
   
-  return format(_T("Current Motion:%s Selected:%s\n%s View angel:%.1lf, zn:%.3lf\n%s\n%s%s%s\n%s")
-               ,controlString(m_currentControl), getSelectedString().cstr()
+  return format(_T("Current Motion:%s Selected:%s %s\n%s View angel:%.1lf, zn:%.3lf\n%s\n%s%s%s\n%s")
+               ,controlString(m_currentControl)
+               ,getSelectedString().cstr()
+               ,stateFlagsToString().cstr()
                ,camStr.cstr(), degrees(viewAngel), zn
                ,objStr.cstr()
                ,focusStr.cstr()
