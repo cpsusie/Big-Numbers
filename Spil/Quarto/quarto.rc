@@ -122,6 +122,61 @@ BEGIN
     END
 END
 
+IDR_CONTEXT_MENU_BACKGROUND MENU
+BEGIN
+    POPUP "Background contextmenu"
+    BEGIN
+        MENUITEM "Move camera (walk && rotate)", ID_CONTROL_CAMERA_WALK
+        MENUITEM SEPARATOR
+        MENUITEM "Show lights",                 ID_SHOW_LIGHTCONTROLS
+        MENUITEM "Hide lights",                 ID_HIDE_LIGHTCONTROLS
+        POPUP "Add light"
+        BEGIN
+            MENUITEM "Directional",                 ID_ADDLIGHT_DIRECTIONAL
+            MENUITEM "Point",                       ID_ADDLIGHT_POINT
+            MENUITEM "Spot",                        ID_ADDLIGHT_SPOT
+        END
+        MENUITEM "Adjust ambient light...",     ID_EDIT_AMBIENTLIGHT
+        MENUITEM "Adjust background color...",  ID_EDIT_BACKGROUNDCOLOR
+        MENUITEM SEPARATOR
+        MENUITEM "Panic - Reset positions",     ID_RESETPOSITIONS
+        MENUITEM "Move && rotate object",       ID_CONTROL_OBJECT_MOVEROTATE
+        MENUITEM SEPARATOR
+        MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
+        MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
+
+
+    END
+END
+
+IDR_CONTEXT_MENU_LIGHTCONTROL MENU
+BEGIN
+    POPUP "lightcontrol contextmenu"
+    BEGIN
+        MENUITEM "Switch on",                   ID_LIGHT_ENSABLE
+        MENUITEM "Switch off",                  ID_LIGHT_DISABLE
+        MENUITEM "Adjust colors...",            ID_LIGHT_ADJUSTCOLORS
+        MENUITEM "Adjust angles",               ID_LIGHT_ADJUSTANGLES
+        MENUITEM "Point at",                    ID_LIGHTCONTROL_SPOTAT
+        MENUITEM SEPARATOR
+        MENUITEM "Hide",                        ID_LIGHTCONTROL_HIDE
+        MENUITEM "Remove",                      ID_LIGHT_REMOVE
+    END
+END
+
+IDR_CONTEXT_MENU_VISUALOBJECT MENU
+BEGIN
+    POPUP "Visual object contextmenu"
+    BEGIN
+        MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
+        MENUITEM SEPARATOR
+        MENUITEM "Move && Rotate (keep focus)", ID_CONTROL_OBJECT_KEEPFOCUS
+        MENUITEM "Move camera (keep focus)",    ID_CONTROL_CAMERA_KEEPFOCUS
+        MENUITEM SEPARATOR
+        MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
+    END
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -134,8 +189,6 @@ BEGIN
     "C",            ID_OPTIONS_COLOREDGAME, VIRTKEY, CONTROL, NOINVERT
     "D",            ID_DUMP_SETUP,          VIRTKEY, SHIFT, CONTROL, NOINVERT
     "E",            ID_OPTIONS_LEVEL_EXPERT, VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_VIEW_LIGHT1,         VIRTKEY, CONTROL, NOINVERT
-    "L",            ID_VIEW_LIGHT2,         VIRTKEY, SHIFT, CONTROL, NOINVERT
     "N",            ID_FILE_NEW,            VIRTKEY, CONTROL, NOINVERT
     "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL, NOINVERT
     "R",            ID_VIEW_RESETVIEW,      VIRTKEY, CONTROL, NOINVERT
@@ -150,25 +203,25 @@ END
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 0, 0, 286, 55
+IDD_ABOUTBOX DIALOGEX 0, 0, 286, 55
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About quarto"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    ICON            IDR_MAINFRAME,IDC_STATIC,11,17,21,20
+    ICON            IDR_MAINFRAME,IDC_STATICABOUTICON,11,17,20,20
     LTEXT           "Quarto Version 1.0 by Jesper Grønning Mikkelsen",IDC_STATIC,40,10,163,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2009",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,229,7,50,14,WS_GROUP
 END
 
-IDD_DIALOGQUARTO DIALOGEX 0, 0, 617, 340
+IDD_DIALOGQUARTO DIALOGEX 0, 0, 617, 407
 STYLE DS_SETFONT | DS_3DLOOK | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "Quarto"
 MENU IDR_MAINFRAME
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
-    LTEXT           "",IDC_GAMEINFO,0,306,616,34,SS_SUNKEN | WS_BORDER
+    LTEXT           "",IDC_GAMEINFO,0,304,616,103,SS_SUNKEN | WS_BORDER
     CONTROL         "",IDC_STATICGAMEWINDOW,"Static",SS_BLACKFRAME | SS_SUNKEN,0,0,617,305
     PUSHBUTTON      "",IDC_BUTTON_DUMMY,278,328,45,11,NOT WS_VISIBLE
 END
@@ -192,6 +245,7 @@ BEGIN
 
     IDD_DIALOGQUARTO, DIALOG
     BEGIN
+        BOTTOMMARGIN, 340
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -254,6 +308,11 @@ BEGIN
     0, 100, 100, 0,
     0, 0, 100, 100,
     0, 0, 0, 0
+END
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 

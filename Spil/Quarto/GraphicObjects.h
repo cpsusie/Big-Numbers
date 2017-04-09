@@ -8,7 +8,19 @@
 #define HALFSIZE    (BOARDSIZE/2)
 #define GAMECOLOR   D3DCOLOR_XRGB(235,235,122)
 
-class BoardFieldObject : public SceneObjectWithMesh {
+class BordObjectWithTexture : public SceneObjectWithMesh {
+protected:
+  void drawWithTexture(LPDIRECT3DTEXTURE texture);
+public:
+  BordObjectWithTexture(D3Scene &scene, LPD3DXMESH mesh)
+    : SceneObjectWithMesh(scene, mesh)
+  {}
+  int getMaterialIndex() const {
+    return -1;
+  }
+};
+
+class BoardFieldObject : public BordObjectWithTexture {
 private:
 #ifdef _DEBUG
   LPDIRECT3DTEXTURE        m_texture[2]; // 0=unmarked,1=marked
@@ -36,7 +48,9 @@ public:
   inline const D3DXVECTOR3 &getCenter() const {
     return m_center;
   }
-  void draw();
+  void draw() {
+    drawWithTexture(getTexture(m_selected));
+  }
 #ifdef _DEBUG
   String toString() const;
 #endif
@@ -44,12 +58,10 @@ public:
 
 class BrickObject : public SceneObjectWithMesh {
 private:
-  static D3DMATERIAL *s_material[2];
   const BYTE          m_attr;               
   D3PosDirUpScale     m_pdus;
   D3SceneObject      *m_brickMarker;
   bool                m_marked;
-  const D3DMATERIAL  *getMaterial() const;
   static LPD3DXMESH   createMesh(LPDIRECT3DDEVICE device, BYTE attr);
 public:
   BrickObject(D3Scene &scene, BYTE attr);
@@ -72,13 +84,16 @@ public:
     if (marked) debugLog(_T("Mark %s\n"), toString().cstr());
 #endif
   }
+  int getMaterialIndex() const {
+    return ISBLACK(m_attr) ? 1:2;
+  }
   void draw();
 #ifdef _DEBUG
   String toString() const;
 #endif
 };
 
-class GameBoardObject : public SceneObjectWithMesh {
+class GameBoardObject : public BordObjectWithTexture {
 private:
   static const float s_vertexXPos[], s_vertexYPos[];
   static float       s_xgridLines[5], s_ygridLines[5];
@@ -89,6 +104,7 @@ private:
   Field              m_currentField;
   char               m_currentBrick;
   static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device);
+  void addBrickMaterials();
   friend class BoardFieldObject ;
   void setCurrentFieldSelected(bool selected);
   void setCurrentBrickSelected(bool selected);

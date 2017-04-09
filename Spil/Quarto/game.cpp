@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 
-BYTE Brick::attr[FIELDCOUNT];
+BYTE Brick::s_attr[FIELDCOUNT];
 
 String Brick::toString(BYTE attr) { // static
   String result;
@@ -22,7 +22,7 @@ public:
 
 InitAttributes::InitAttributes() {
   for(int i = 0; i < FIELDCOUNT; i++) {
-    Brick::attr[i] = ((~i & 0xf) << 4) | i;
+    Brick::s_attr[i] = ((~i & 0xf) << 4) | i;
   }
 }
 
@@ -220,7 +220,7 @@ void Game::nextMove(Move &m) const {
 }
 
 void Game::doMove(const Move &m, int lookahead) {
-  m_state.m_board[m.m_field.m_row][m.m_field.m_col] = Brick::attr[m.m_brick];
+  m_state.m_board[m.m_field.m_row][m.m_field.m_col] = Brick::s_attr[m.m_brick];
   m_state.m_unused.remove(m.m_brick); 
   if(isWinnerMove(m)) {
     m_state.m_gameOver  = true;
@@ -258,7 +258,7 @@ int Game::getBrickOnField(const Field &f) const {
   }
   const BYTE attr = m_state.m_board[f.m_row][f.m_col];
   for(int b = 0; b < FIELDCOUNT; b++) {
-    if(Brick::attr[b] == attr) {
+    if(Brick::s_attr[b] == attr) {
       return b;
     }
   }

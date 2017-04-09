@@ -100,11 +100,6 @@ public:
   }
 };
 
-D3DMATERIAL *BrickObject::s_material[2] = {
-  NULL
- ,NULL
-};
-
 BrickObject::BrickObject(D3Scene &scene, BYTE attr)
 : SceneObjectWithMesh(scene, createMesh(scene.getDevice(), attr))
 , m_attr(attr)
@@ -122,23 +117,9 @@ BrickObject::~BrickObject() {
   delete m_brickMarker;
 }
 
-const D3DMATERIAL *BrickObject::getMaterial() const {
-  const int index = ISBLACK(m_attr) ? 0 : 1;
-  if(s_material[index] == NULL) {
-    D3DMATERIAL *mat = new D3DMATERIAL(getScene().getMaterial());
-    s_material[index] = mat;
-    mat->Diffuse  = colorToColorValue(ISBLACK(m_attr) ? D3D_BLUE : D3D_RED);
-    mat->Specular = colorToColorValue(D3D_WHITE);
-    mat->Ambient  = colorToColorValue(D3D_BLACK);
-    mat->Emissive = mat->Ambient;
-  }
-  return s_material[index];
-}
-
 void BrickObject::draw() {
   getDevice()->SetRenderState(D3DRS_LIGHTING, TRUE);
-  prepareDraw(USE_SCENEFILLMODE|USE_SCENESHADEMODE);
-  getDevice()->SetMaterial(getMaterial());
+  prepareDraw();
   getMesh()->DrawSubset(0);
   if(m_marked) {
     m_brickMarker->draw();

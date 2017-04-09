@@ -13,7 +13,7 @@
 
 class Brick {
 public:
-  static BYTE attr[FIELDCOUNT];
+  static BYTE s_attr[FIELDCOUNT];
   static inline bool isValid(char brick) {
     return (BYTE)brick < FIELDCOUNT;
   }
@@ -110,7 +110,7 @@ public:
   inline bool brickUsed(  int          b) const { return !m_state.m_unused.contains(b);           }
   inline bool isEmpty(    const Field &f) const { return  m_state.m_board[f.m_row][f.m_col] == 0; }
   inline Player getBrickOwner(int b) const { // only valid in colored games
-    return ISBLACK(Brick::attr[b]) ? COMPUTER_PLAYER : HUMAN_PLAYER;
+    return ISBLACK(Brick::s_attr[b]) ? COMPUTER_PLAYER : HUMAN_PLAYER;
   }
   int    getBrickOnField(const Field &f) const;
   bool   isSelectableBrick(int b) const;

@@ -11,14 +11,15 @@ static void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3, int 
   f2.addVertexTextureIndex(v1, texcoor[3]);
 }
 
-static void drawMeshUsingTexture(LPDIRECT3DDEVICE device, LPD3DXMESH mesh, LPDIRECT3DTEXTURE texture) {
+void BordObjectWithTexture::drawWithTexture(LPDIRECT3DTEXTURE texture) {
+  LPDIRECT3DDEVICE device = getDevice();
   V(device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
 	V(device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
   V(device->SetTexture(     0, texture));
   V(device->SetRenderState(    D3DRS_LIGHTING        , FALSE));
   V(device->SetRenderState(    D3DRS_ALPHABLENDENABLE, FALSE));
   V(device->SetRenderState(    D3DRS_ZENABLE         , TRUE )); 
-  V(mesh->DrawSubset(0));
+  V(getMesh()->DrawSubset(0));
 }
 
 #define XGRID(i) (((137.0f+((float)(i))/4.0f*750.0f))/1024.0f)
@@ -48,7 +49,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
 #endif
 
 BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), row, col))
+: BordObjectWithTexture(scene, createMesh(scene.getDevice(), row, col))
 , m_field(row,col)
 {
   m_selected    = false;
@@ -135,10 +136,6 @@ LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 #endif
 }
 
-void BoardFieldObject::draw() {
-  drawMeshUsingTexture(getDevice(), getMesh(), getTexture(m_selected));
-}
-
 #ifdef _DEBUG
 String BoardFieldObject::toString() const {
   return getName() + _T("\n")
@@ -152,7 +149,7 @@ String BoardFieldObject::toString() const {
 }
 #endif
 
-class BoardSideObject : public SceneObjectWithMesh {
+class BoardSideObject : public BordObjectWithTexture {
 private:
   LPDIRECT3DTEXTURE m_boardSideTexture;
   static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device);
@@ -162,11 +159,13 @@ public:
   inline D3PosDirUpScale getPDUS() const {
     return D3Scene::getOrigo();
   }
-  void draw();
+  void draw() {
+    drawWithTexture(m_boardSideTexture);
+  }
 };
 
 BoardSideObject::BoardSideObject(D3Scene &scene)
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice()))
+: BordObjectWithTexture(scene, createMesh(scene.getDevice()))
 {
   m_boardSideTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDSIDEBITMAP);
 }
@@ -211,10 +210,6 @@ LPD3DXMESH BoardSideObject::createMesh(LPDIRECT3DDEVICE device) { // static
   }
 }
 
-void BoardSideObject::draw() {
-  drawMeshUsingTexture(getDevice(), getMesh(), m_boardSideTexture);
-}
-
 LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
   MeshBuilder mb;
 
@@ -253,7 +248,7 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
 }
 
 GameBoardObject::GameBoardObject(D3Scene &scene) 
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice()))
+: BordObjectWithTexture(scene, createMesh(scene.getDevice()))
 {
   setName(_T("Board"));
 #ifdef _DEBUG
@@ -271,12 +266,28 @@ GameBoardObject::GameBoardObject(D3Scene &scene)
 #endif
     }
   }
+  addBrickMaterials();
   for(BYTE attr = 0; attr < ARRAYSIZE(m_brickObject); attr++) {
     m_scene.addSceneObject(m_brickObject[attr] = new BrickObject(m_scene, attr));
   }
   resetBrickPositions(false);
   m_currentField = NOFIELD;
   m_currentBrick = NOBRICK;
+}
+
+#define MATERIAL_DIFFUSE_BLACK D3DCOLOR_XRGB(66,56,196)
+#define MATERIAL_DIFFUSE_WHITE D3DCOLOR_XRGB(216,50,50)
+
+void GameBoardObject::addBrickMaterials() {
+  for(int i = 0; i < 2; i++) {
+    MATERIAL mat = getScene().getMaterial(0);
+    mat.Diffuse  = colorToColorValue(i ? MATERIAL_DIFFUSE_BLACK : MATERIAL_DIFFUSE_WHITE);
+    mat.Specular = colorToColorValue(D3D_WHITE);
+    mat.Ambient  = colorToColorValue(D3D_BLACK);
+    mat.Emissive = mat.Ambient;
+    mat.Power    = 200.0f;
+    getScene().addMaterial(mat);
+  }
 }
 
 GameBoardObject::~GameBoardObject() {
@@ -295,7 +306,7 @@ GameBoardObject::~GameBoardObject() {
 }
 
 void GameBoardObject::draw() {
-  drawMeshUsingTexture(getDevice(), getMesh(), m_boardTexture);
+  drawWithTexture(m_boardTexture);
   m_boardSideObject->draw();
 }
 

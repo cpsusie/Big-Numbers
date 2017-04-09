@@ -2,16 +2,15 @@
 
 #include <D3DGraphics/D3Scene.h>
 #include "GraphicObjects.h"
+#include "SceneEditor.h"
 
 #define DEVELOPER_MODE
 
-class CQuartoDlg : public CDialog {
+class CQuartoDlg : public CDialog, public D3SceneContainer {
 private:
   HICON                   m_hIcon;
   HACCEL                  m_accelTable;
-  int                     m_adjustingCameraFlags;
-  CPoint                  m_rbuttonDownPoint;
-  D3DXVECTOR3             m_startCamPos;
+  SceneEditor             m_editor;
   D3DXVECTOR3             m_boardCenter;
   D3Scene                 m_scene;
   String                  m_gameName;
@@ -26,34 +25,30 @@ private:
   void createLight();
   void createBoard();
   void resetCamera();
-  void render();
-
-  CStatic *getGameWindow() const {
+  void resetScene();
+  void showEditorInfo();
+  inline void setEditMode(bool value) {
+    m_editor.setEnabled(value);
+    showInfo(EMPTYSTRING);
+  }
+  inline CStatic *getGameWindow() const {
     return (CStatic*)GetDlgItem(IDC_STATICGAMEWINDOW);
   }
-  CRect    getGameRect() {
+  inline CRect getGameRect() {
     return getClientRect(this, IDC_STATICGAMEWINDOW);
   }
-  void setCameraPosition(const D3DXVECTOR3 &pos);
+  CPoint   get3DPanelPoint(CPoint point, bool screenRelative) const;
+  void     setCameraPosition(const D3DXVECTOR3 &pos);
   D3DXVECTOR3 getCameraPosition();
-  const D3DXVECTOR3 &getBoardCenter() const {
+  inline const D3DXVECTOR3 &getBoardCenter() const {
     return m_boardCenter;
   }
   inline const D3DXVECTOR3 getFieldCenter(const Field &f) const {
     return m_boardObject->getFieldCenter(f);
   }
-
   void resetBrickPositions(bool colored);
   void flashWinnerBlocks();
   void updateGraphicsDoingMove(const Move &m);
-  void refreshGraphics();
-#ifdef DEVELOPER_MODE
-  void showCameraData();
-#endif
-  void startAdjustCamera(const CPoint &p, int flags);
-  void endAdjustCamera();
-  void adjustCameraAngle(const CPoint &p);
-  void adjustCameraPos(  const CPoint &p);
 
   void showCursor(bool show);
   void setGameName(const String &name);
@@ -85,29 +80,37 @@ private:
 /*
   void        turnBoard(int degree);
 */
-  void        toggleLight(int index, bool on);
 public:
   CQuartoDlg(CWnd *pParent = NULL);
   
+  D3Scene &getScene() {
+    return m_scene;
+  }
+  CWnd    *getMessageWindow() {
+    return this;
+  }
+  CWnd    *get3DWindow() {
+    return getGameWindow();
+  }
+  void render(BYTE renderFlags) {
+    PostMessage(ID_MSG_RENDER, renderFlags, 0);
+  }
   enum { IDD = IDD_DIALOGQUARTO };
 
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
-  virtual void OnCancel();
   virtual void OnOK();
-  afx_msg LRESULT OnMsgRefreshView(WPARAM wp, LPARAM lp);
-  afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
+  virtual void OnCancel();
+  afx_msg LRESULT OnMsgRender( WPARAM wp , LPARAM lp    );
+  afx_msg void    OnSysCommand(UINT   nID, LPARAM lParam);
   afx_msg HCURSOR OnQueryDragIcon();
   virtual BOOL OnInitDialog();
   afx_msg void OnPaint();
   afx_msg void OnClose();
-  afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
-  afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
-  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-  afx_msg void OnRButtonUp(  UINT nFlags, CPoint point);
+  afx_msg void OnLButtonDown(  UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDblClk(UINT nFlags, CPoint point);
   afx_msg void OnFileNew();
   afx_msg void OnFileOpen();
   afx_msg void OnFileSave();
@@ -118,10 +121,6 @@ protected:
   afx_msg void OnViewRight();
 */
   afx_msg void OnViewResetView();
-  afx_msg void OnViewLight1();
-/*
-  afx_msg void OnViewLight2();
-*/
   afx_msg void OnOptionsLevelBeginner();
   afx_msg void OnOptionsLevelExpert();
   afx_msg void OnOptionsColoredGame();

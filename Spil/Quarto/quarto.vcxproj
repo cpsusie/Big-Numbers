@@ -267,6 +267,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AboutBox.cpp" />
+    <ClCompile Include="SceneEditor.cpp" />
     <ClCompile Include="BrickObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameBoardObject.cpp" />
@@ -290,6 +291,7 @@
     <ClInclude Include="Quarto.h" />
     <ClInclude Include="QuartoDlg.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SceneEditor.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
