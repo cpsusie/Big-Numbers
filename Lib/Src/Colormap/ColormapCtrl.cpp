@@ -397,8 +397,18 @@ void CColormapCtrl::gotoField(int field) {
   case IDC_COLORSCALE  :
     SetFocus();
     break;
+  case IDC_EDITRED        :
+  case IDC_EDITGREEN      :
+  case IDC_EDITBLUE       :
+  case IDC_EDITHUE        :
+  case IDC_EDITSATURATION :
+  case IDC_EDITLUMINATION :
+    gotoEditBox(this, field);
+    break;
   default:
-    GetDlgItem(field)->SetFocus();
+    { CWnd *wnd = GetDlgItem(field);
+      if(wnd) wnd->SetFocus();
+    }
     break;
   }
 }
