@@ -61,14 +61,15 @@ String getMenuItemText(          HMENU menu,  int pos);
 int    getMenuItemType(          HMENU menu,  UINT         pos);
 
 void   checkMenuItem(            HMENU menu, UINT          id, bool checked);
-HMENU  findMenuByString(         HMENU menu, const String &s, int &index);    // see comment at enableMenuItem
-HMENU  findMenuContainingId(     HMENU menu, UINT         id, int &index);
+HMENU  findMenuByString(         HMENU menu, const String &s , int &index);    // see comment at enableMenuItem
+HMENU  findMenuContainingId(     HMENU menu, UINT          id, int &index);
 HMENU  getSubMenu(               HMENU menu, const String &s);                // see comment at enableMenuItem
-void   insertMenuItem(           HMENU menu, UINT         pos, const String &itemText, UINT         commandId);
-void   insertMenuSeparator(      HMENU menu, UINT         pos);
-HMENU  insertSubMenu(            HMENU menu, UINT         pos, const String &text);
-void   removeMenuItem(           HMENU menu, UINT         pos);
+void   insertMenuItem(           HMENU menu, UINT          pos, const String &itemText, UINT         commandId);
+void   insertMenuSeparator(      HMENU menu, UINT          pos);
+HMENU  insertSubMenu(            HMENU menu, UINT          pos, const String &text);
+//void   removeMenuItem(           HMENU menu, UINT          pos);
 void   removeAllMenuItems(       HMENU menu);                                 // recursive destroy all submenus
+String setMenuItemText(          HMENU menu, UINT          id , const String &itemText); // returns old itemtext
 
 
 CRect  getRelativeClientRect(const CWnd *wnd, int id);

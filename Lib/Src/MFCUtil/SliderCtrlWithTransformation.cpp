@@ -104,6 +104,8 @@ double CSliderCtrlWithTransformation::getPos() const {
 
 void CSliderCtrlWithTransformation::setPos(double pos) {
   ASSERTCREATED();
+  const DoubleInterval &iv = m_tr->getFromInterval();
+  pos = minMax(pos, iv.getFrom(), iv.getTo());
   const int p = (int)m_tr->forwardTransform(pos);
   SetPos(p);
 }

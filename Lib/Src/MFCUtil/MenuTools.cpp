@@ -265,6 +265,36 @@ void removeAllMenuItems(HMENU menu) {
   }
 }
 
+static String setItemText(HMENU menu, UINT index, const String &itemText) {
+  MENUITEMINFO itemInfo;
+  itemInfo.cbSize = sizeof(MENUITEMINFO);
+  itemInfo.fMask = MIIM_TYPE;
+  itemInfo.fType = MFT_STRING;
+  itemInfo.dwTypeData = NULL;
+  GetMenuItemInfo(menu, index, TRUE, &itemInfo);
+  const int bufferSize = itemInfo.cch+1;
+  TCHAR *buffer = new TCHAR[bufferSize];
+  itemInfo.dwTypeData = buffer;
+  itemInfo.cch++;
+  GetMenuItemInfo(menu, index, TRUE, &itemInfo);
+  String result = itemInfo.dwTypeData ? itemInfo.dwTypeData : EMPTYSTRING;
+  String tmp = itemText;
+  delete[] buffer;
+  itemInfo.dwTypeData = tmp.cstr();
+  SetMenuItemInfo(menu, index, TRUE, &itemInfo);
+  return result;
+}
+
+String setMenuItemText(HMENU menu, UINT id , const String &itemText) {
+  int index;
+  menu = findMenuContainingId(menu, id, index);
+  if(menu == NULL) {
+    return EMPTYSTRING;
+  } else {
+    return setItemText(menu, index, itemText);
+  }
+}
+
 void removeMenuItem(CMenu *menu, UINT id) {
   bool done = menu->RemoveMenu(id, MF_BYCOMMAND) != 0;
 }
@@ -315,9 +345,11 @@ HMENU insertSubMenu(HMENU menu, UINT pos, const String &text) {
   return sm;
 }
 
+/*
 void removeMenuItem(HMENU menu, UINT pos) {
   RemoveMenu(menu, MF_BYPOSITION, pos);
 }
+*/
 
 String getMenuItemText(const CWnd *wnd, UINT id) {
   int index;
@@ -348,23 +380,7 @@ String setMenuItemText(const CWnd *wnd, UINT id, const String &itemText) {
   if(menu == NULL) {
     return EMPTYSTRING;
   } else {
-    MENUITEMINFO itemInfo;
-    itemInfo.cbSize = sizeof(MENUITEMINFO);
-    itemInfo.fMask = MIIM_TYPE;
-    itemInfo.fType = MFT_STRING;
-    itemInfo.dwTypeData = NULL;
-    menu->GetMenuItemInfo(index, &itemInfo, true);
-    const int bufferSize = itemInfo.cch+1;
-    TCHAR *buffer = new TCHAR[bufferSize];
-    itemInfo.dwTypeData = buffer;
-    itemInfo.cch++;
-    menu->GetMenuItemInfo(index,&itemInfo, true);
-    String result = itemInfo.dwTypeData ? itemInfo.dwTypeData : EMPTYSTRING;
-    String tmp = itemText;
-    delete[] buffer;
-    itemInfo.dwTypeData = tmp.cstr();
-    SetMenuItemInfo(menu->m_hMenu, index, true, &itemInfo);
-    return result;
+    return setItemText(*menu, index, itemText);
   }
 }
 
