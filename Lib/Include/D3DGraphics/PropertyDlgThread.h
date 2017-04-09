@@ -15,7 +15,6 @@ protected:
   CPropertyDlgThread();
   virtual ~CPropertyDlgThread();
 
-
   DECLARE_MESSAGE_MAP()
 public:
   void setCurrentDialogProperty(const void *v);
@@ -27,9 +26,7 @@ public:
     return m_dlg;
   }
 
-    public:
   virtual BOOL InitInstance();
-
   static CPropertyDlgThread *startThread(PropertyDialog *dlg);
 };
 

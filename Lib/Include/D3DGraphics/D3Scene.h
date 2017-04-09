@@ -26,6 +26,7 @@ typedef enum {
  ,SP_AMBIENTLIGHT
  ,SP_SPECULARENABLED
  ,SP_MATERIALPARAMETERS
+ ,SP_MATERIALCOUNT
  ,SP_RENDERTIME
  ,SP_OBJECTCOUNT
  ,SP_BACKGROUNDCOLOR
@@ -46,7 +47,7 @@ inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
 
 class MATERIAL : public D3DMATERIAL { // sent to listener for id=SP_MATERIALPARAMETERS
 public:
-  int m_index;
+  int m_index;   // if < 0, material is undefined.
   inline MATERIAL() : m_index(-1) {
   }
   inline bool isDefined() const {
@@ -136,7 +137,6 @@ private:
   static LIGHT getDefaultDirectionalLight();
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
-  static D3DMATERIAL getDefaultMaterial();
   static const D3PosDirUpScale s_pdusOrigo;
   friend class D3SceneObject;
 
@@ -276,6 +276,7 @@ public:
   LIGHT  getDefaultLightParam(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
   void   setLightParam(            const LIGHT &param);
   LIGHT  getLightParam(            UINT index) const;
+  const CompactArray<LIGHT> getAllLights() const;
   inline D3DLIGHTTYPE getLightType(UINT index) const {
     return getLightParam(index).Type;
   }
@@ -309,11 +310,16 @@ public:
     return (int)m_lightsEnabled->size();
   }
 
+  D3DMATERIAL getDefaultMaterial() const;
   inline const MATERIAL &getMaterial(UINT index) const {
     return m_materials[index];
   }
+  const CompactArray<MATERIAL> &getAllMaterials() const {
+    return m_materials;
+  }
   void setMaterial(const MATERIAL &material);
   int  addMaterial(const D3DMATERIAL &material);
+
   void removeMaterial(UINT index);
   inline bool isMaterialDefined(UINT index) const {
     return (index < m_materials.size()) && (m_materials[index].m_index == index);
@@ -342,6 +348,8 @@ public:
   void loadState(const String &fileName);
   void save(ByteOutputStream &s) const;
   void load(ByteInputStream  &s);
+  void saveLights(ByteOutputStream &s) const;
+  void loadLights(ByteInputStream  &s);
 };
 
 LPD3DXMESH        createMeshFromVertexFile(     LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
@@ -358,11 +366,10 @@ String toString(LPD3DXMESH             mesh        );
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
 String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 
-#define USE_SCENEMATERIAL  0x0001
 #define USE_SCENEFILLMODE  0x0002
 #define USE_SCENESHADEMODE 0x0004
 
-#define USE_SCENEPARAMS  (USE_SCENEMATERIAL | USE_SCENEFILLMODE | USE_SCENESHADEMODE)
+#define USE_SCENEPARAMS  (USE_SCENEFILLMODE | USE_SCENESHADEMODE)
 
 class D3SceneObject {
 protected:
@@ -406,6 +413,12 @@ public:
   }
   virtual int getMaterialIndex() const {
     return 0;
+  }
+  const MATERIAL &getMaterial() const {
+    return getScene().getMaterial(getMaterialIndex());
+  }
+  inline bool hasMaterial() const {
+    return getMaterialIndex() >= 0;
   }
   virtual D3PosDirUpScale getPDUS() const {
     return m_scene.getObjPDUS();

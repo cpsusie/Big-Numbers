@@ -64,14 +64,14 @@ protected:
     }
     m_prevValue = m_currentValue;
   }
-  T getPrevValue() const {
+  const T &getPrevValue() const {
     return m_prevValue;
   }
 public:
   void setStartValue(const T &v) {
     m_startValue = v;
   }
-  T getCurrentValue() const {
+  const T &getCurrentValue() const {
     return m_currentValue;
   }
   void setStartProperty(const void *v) {

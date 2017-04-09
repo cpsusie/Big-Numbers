@@ -63,7 +63,7 @@ bool CPropertyDlgThread::isDialogVisible() const {
 }
 
 void CPropertyDlgThread::noDialogException(const TCHAR *method) {
-  throwException(_T("CPropertyDlgThread::%s:Dialog has terminated"), method);
+  throwException(_T("%s:Dialog has terminated"), method);
 }
 
 void CPropertyDlgThread::setCurrentDialogProperty(const void *v) {

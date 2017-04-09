@@ -20,6 +20,7 @@ void D3Scene::save(ByteOutputStream &s) const {
   s.putBytes(      (BYTE*)(&m_shadeMode       ), sizeof(m_shadeMode      ));
   s.putBytes(      (BYTE*)(&m_backgroundColor ), sizeof(m_backgroundColor));
   m_materials.save(s);
+  saveLights(s);
 }
 
 void D3Scene::load(ByteInputStream &s) {
@@ -31,4 +32,17 @@ void D3Scene::load(ByteInputStream &s) {
   s.getBytesForced((BYTE*)(&m_shadeMode       ), sizeof(m_shadeMode      ));
   s.getBytesForced((BYTE*)(&m_backgroundColor ), sizeof(m_backgroundColor));
   m_materials.load(s);
+  loadLights(s);
+}
+
+void D3Scene::saveLights(ByteOutputStream &s) const {
+  getAllLights().save(s);
+}
+
+void D3Scene::loadLights(ByteInputStream &s) {
+  CompactArray<LIGHT> lightArray;
+  lightArray.load(s);
+  for (size_t i = 0; i < lightArray.size(); i++) {
+    setLightParam(lightArray[i]);
+  }
 }

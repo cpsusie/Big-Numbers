@@ -256,11 +256,11 @@ void LIGHT ::setOuterAngle(float rad) {
   }
 }
 
-D3DMATERIAL D3Scene::getDefaultMaterial() { // static
+D3DMATERIAL D3Scene::getDefaultMaterial() const {
   D3DMATERIAL material;
   ZeroMemory(&material, sizeof(D3DMATERIAL));
-  material.Ambient  = D3DXCOLOR(0.10f, 0.10f, 0.16f, 1.0f);
-  material.Diffuse  = D3DXCOLOR(0.1f, 0.086f, 0.29f, 1.0f);
+  material.Ambient  = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
+  material.Diffuse  = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
   material.Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
   material.Power    = 9.73f;
   return material;
@@ -438,6 +438,15 @@ LIGHT D3Scene::getLightParam(UINT index) const {
   return lp;
 }
 
+const CompactArray<LIGHT> D3Scene::getAllLights() const {
+  BitSet lightSet = getLightsDefined();
+  CompactArray<LIGHT> result(lightSet.size());
+  for (Iterator<size_t> it = lightSet.getIterator(); it.hasNext();) {
+    result.add(getLightParam((UINT)it.next()));
+  }
+  return result;
+}
+
 int D3Scene::getFirstFreeLightIndex() const {
   for(int i = 0; i < m_maxLightCount; i++) {
     if(!isLightDefined(i)) {
@@ -520,8 +529,10 @@ int D3Scene::addMaterial(const D3DMATERIAL &material) {
   MATERIAL m;
   ((D3DMATERIAL&)m) = material;
   m.m_index = index;
+  const int oldCount = getMaterialCount();
+  const int newCount = oldCount+1;
   setProperty(SP_MATERIALPARAMETERS, m_materials[index], m);
-
+  notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
   return index;
 }
 
@@ -537,8 +548,13 @@ int D3Scene::getFirstFreeMaterialIndex() {
 }
 
 void D3Scene::removeMaterial(UINT index) {
-  if(index >= m_materials.size()) return;
+  if((index == 0) || (index >= m_materials.size())) { // cannot remove material 0
+    return;
+  }
+  const int oldCount = getMaterialCount();
+  const int newCount = oldCount-1;
   m_materials[index].m_index = -1;
+  notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
 }
 
 const BitSet D3Scene::getMaterialsDefined() const {
