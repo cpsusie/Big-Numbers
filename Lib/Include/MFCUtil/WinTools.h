@@ -40,36 +40,38 @@
 #include "LayoutManager.h"
 
 // ex. if s == "0/2", this will enable/disable the third menuitem in first pulldown-menu of the windows menu
-void   enableMenuItem(     const CWnd  *wnd , const String &s, bool enabled);
-void   enableMenuItem(     const CWnd  *wnd , UINT         id, bool enabled);
-bool   enableSubMenuContainingId(const CWnd  *wnd , UINT   id, bool enabled); // return true if done, false if not
-bool   enableSubMenuContainingId(CMenu *menu, UINT         id, bool enabled); // do
+int    getMenuItemType(                HMENU menu,  UINT          pos);
+HMENU  findMenuByString(               HMENU menu,  const String &s , int &index);  // see comment at enableMenuItem
+HMENU  findMenuContainingId(           HMENU menu,  UINT          id, int &index);
+void   enableMenuItem(                 HMENU menu,  UINT          id, bool enabled);
+void   checkMenuItem(                  HMENU menu,  UINT          id, bool checked);
+bool   enableSubMenuContainingId(      HMENU menu,  UINT          id, bool enabled); // do
+bool   isMenuItemChecked(              HMENU menu,  UINT          id );
+void   insertMenuItem(                 HMENU menu,  UINT          pos, const String &itemText, UINT         commandId);
+void   insertMenuSeparator(            HMENU menu,  UINT          pos);
+HMENU  insertSubMenu(                  HMENU menu,  UINT          pos, const String &text);
+void   removeMenuItem(                 HMENU menu,  UINT          id );
+bool   removeSubMenuContainingId(      HMENU menu,  UINT          id );
+bool   menuItemExists(                 HMENU menu,  UINT          id );
 
-bool   isMenuItemChecked(  const CWnd  *wnd,  UINT         id);
-void   checkMenuItem(      const CWnd  *wnd,  UINT         id, bool checked);
-bool   toggleMenuItem(     const CWnd  *wnd,  UINT         id);
-void   insertMenuItem(     const CWnd  *wnd,  UINT         afterId, int flags, const String &itemText, UINT commandId); // flags = 0,MF_SEPARATOR
-void   removeMenuItem(     const CWnd  *wnd,  UINT         id);
-void   removeMenuItem(     const CWnd  *wnd,  const String &s);           // see comment at enableMenuItem
-void   removeMenuItem(           CMenu *menu, UINT         id);
-bool   removeSubMenuContainingId(const CWnd  *wnd,  UINT id);
-bool   removeSubMenuContainingId(CMenu *menu, UINT         id);
-bool   menuItemExists(     const CWnd  *wnd,  UINT         id);
-String getMenuItemText(    const CWnd  *wnd,  UINT         id);
-String setMenuItemText(    const CWnd  *wnd,  UINT         id, const String &itemText); // returns old itemtext
-String getMenuItemText(          HMENU menu,  int pos);
-int    getMenuItemType(          HMENU menu,  UINT         pos);
+String getMenuItemText(                HMENU menu,  int           pos);
+String setMenuItemText(                HMENU menu,  UINT          id , const String &itemText); // returns old itemtext
+HMENU  getSubMenu(                     HMENU menu,  const String &s);               // see comment at enableMenuItem
+void   removeAllMenuItems(             HMENU menu);                                 // recursive destroy all submenus
 
-void   checkMenuItem(            HMENU menu, UINT          id, bool checked);
-HMENU  findMenuByString(         HMENU menu, const String &s , int &index);    // see comment at enableMenuItem
-HMENU  findMenuContainingId(     HMENU menu, UINT          id, int &index);
-HMENU  getSubMenu(               HMENU menu, const String &s);                // see comment at enableMenuItem
-void   insertMenuItem(           HMENU menu, UINT          pos, const String &itemText, UINT         commandId);
-void   insertMenuSeparator(      HMENU menu, UINT          pos);
-HMENU  insertSubMenu(            HMENU menu, UINT          pos, const String &text);
-//void   removeMenuItem(           HMENU menu, UINT          pos);
-void   removeAllMenuItems(       HMENU menu);                                 // recursive destroy all submenus
-String setMenuItemText(          HMENU menu, UINT          id , const String &itemText); // returns old itemtext
+void   enableMenuItem(           const CWnd  *wnd , UINT          id, bool enabled);
+void   enableMenuItem(           const CWnd  *wnd , const String &s , bool enabled);
+void   checkMenuItem(            const CWnd  *wnd,  UINT          id, bool checked);
+bool   enableSubMenuContainingId(const CWnd  *wnd , UINT          id, bool enabled); // return true if done, false if not
+bool   isMenuItemChecked(        const CWnd  *wnd,  UINT          id        );
+void   insertMenuItem(           const CWnd  *wnd,  UINT          afterId, int flags, const String &itemText, UINT commandId); // flags = 0,MF_SEPARATOR
+void   removeMenuItem(           const CWnd  *wnd,  UINT          id        );
+void   removeMenuItem(           const CWnd  *wnd,  const String &s);           // see comment at enableMenuItem
+bool   removeSubMenuContainingId(const CWnd  *wnd,  UINT          id        );
+bool   menuItemExists(           const CWnd  *wnd,  UINT          id        );
+String getMenuItemText(          const CWnd  *wnd,  UINT          id        );
+String setMenuItemText(          const CWnd  *wnd,  UINT          id, const String &itemText); // returns old itemtext
+bool   toggleMenuItem(           const CWnd  *wnd,  UINT          id        );
 
 
 CRect  getRelativeClientRect(const CWnd *wnd, int id);
