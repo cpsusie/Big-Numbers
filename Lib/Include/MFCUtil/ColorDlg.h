@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ColormapDialog.h"
+#include "resource.h"
 #include "colormap.h"
 
 class CColorDlg : public CColormapDialog<D3DCOLOR> {
@@ -9,7 +10,7 @@ private:
 public:
   CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd *pParent = NULL);
 
-	enum { IDD = IDD_COLOR_DIALOG };
+	enum { IDD = _IDD_COLOR_DIALOG };
 
 protected:
   virtual void DoDataExchange(CDataExchange* pDX);

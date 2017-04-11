@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/ColormapDialog.h>
+#include <MFCUtil/ColormapDialog.h>
 
 D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c) {
   D3DCOLORVALUE result;

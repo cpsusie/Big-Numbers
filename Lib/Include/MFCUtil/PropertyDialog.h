@@ -1,7 +1,6 @@
 #pragma once
 
 #include <PropertyContainer.h>
-#include <D3DGraphics/resource.h>
 
 inline void putWindowBesideMainWindow(CWnd *wnd) {
   putWindowBesideWindow(wnd, AfxGetApp()->GetMainWnd());

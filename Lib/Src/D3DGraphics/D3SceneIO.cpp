@@ -4,7 +4,6 @@
 
 void D3Scene::saveState(const String &fileName) const {
   save(ByteOutputFile(fileName));
-  
 }
 
 void D3Scene::loadState(const String &fileName) {
@@ -42,6 +41,10 @@ void D3Scene::saveLights(ByteOutputStream &s) const {
 void D3Scene::loadLights(ByteInputStream &s) {
   CompactArray<LIGHT> lightArray;
   lightArray.load(s);
+  BitSet definedLights = getLightsDefined();
+  for (Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
+    removeLight((UINT)it.next());
+  }
   for (size_t i = 0; i < lightArray.size(); i++) {
     setLightParam(lightArray[i]);
   }

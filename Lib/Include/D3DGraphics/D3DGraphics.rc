@@ -68,7 +68,7 @@ BEGIN
     CONTROL         "Slider1",IDC_SLIDER_QUADRATICATTENUATION,
                     "msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,379,76,12
     CONTROL         "Slider1",IDC_SLIDER_FALLOFF,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,85,395,76,12
-    DEFPUSHBUTTON   "Close",ID_HIDEWINDOW,118,415,40,14
+    DEFPUSHBUTTON   "Close",ID_BUTTON_HIDEWINDOW,118,415,40,14
     PUSHBUTTON      "Cancel",IDCANCEL,163,415,40,14
     LTEXT           "Range",IDC_STATIC_RANGE,11,331,61,13,SS_CENTERIMAGE
     LTEXT           "Constant attenuation",IDC_STATIC_CONSTANTATTENUATION,11,347,69,13,SS_CENTERIMAGE
@@ -96,7 +96,7 @@ BEGIN
     CONTROL         "Slider1",IDC_SLIDER_POWER,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,32,324,114,16
     CONTROL         "",IDC_COLORMAP_EMISSIVE,
                     "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,0,342,156,110
-    DEFPUSHBUTTON   "Close",ID_HIDEWINDOW,166,420,40,14
+    DEFPUSHBUTTON   "Close",ID_BUTTON_HIDEWINDOW,166,420,40,14
     PUSHBUTTON      "Cancel",IDCANCEL,166,439,40,14
     LTEXT           "Power",IDC_STATIC,3,324,26,16,SS_CENTERIMAGE
     LTEXT           "",IDC_STATIC_POWER,157,325,32,16,SS_CENTERIMAGE | SS_SUNKEN
@@ -106,17 +106,118 @@ BEGIN
     LTEXT           "Transparent",IDC_STATIC,159,254,47,16,SS_CENTERIMAGE
 END
 
-IDD_COLOR_DIALOG DIALOGEX 0, 0, 194, 190
-STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Color"
-FONT 8, "MS Sans Serif", 0, 0, 0x0
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_CONTEXT_MENU_BACKGROUND MENU
 BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,83,169,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,137,169,50,14
-    CONTROL         "",IDC_COLORMAP_COLOR,
-                    "{B4097DDA-446A-4AB9-B210-3AF19276DF6C}",WS_TABSTOP,7,7,180,150
+    POPUP "Background contextmenu"
+    BEGIN
+        MENUITEM "Move camera (walk && rotate)", ID_CONTROL_CAMERA_WALK
+        MENUITEM "Move && rotate object",       ID_CONTROL_OBJECT_MOVEROTATE
+        MENUITEM SEPARATOR
+        POPUP "Light"
+        BEGIN
+            MENUITEM "Show lights",                 ID_SHOW_LIGHTCONTROLS
+            MENUITEM "Hide lights",                 ID_HIDE_LIGHTCONTROLS
+            POPUP "Add light"
+            BEGIN
+                MENUITEM "Directional",                 ID_ADDLIGHT_DIRECTIONAL
+                MENUITEM "Point",                       ID_ADDLIGHT_POINT
+                MENUITEM "Spot",                        ID_ADDLIGHT_SPOT
+            END
+            MENUITEM "Adjust ambient light...",     ID_EDIT_AMBIENTLIGHT
+            MENUITEM "Adjust background color...",  ID_EDIT_BACKGROUNDCOLOR
+            POPUP "Select Light"
+            BEGIN
+                MENUITEM "Light 0",                     ID_SELECT_LIGHT0
+                MENUITEM "Light 1",                     ID_SELECT_LIGHT1
+                MENUITEM "Light 2",                     ID_SELECT_LIGHT2
+                MENUITEM "Light 3",                     ID_SELECT_LIGHT3
+                MENUITEM "Light 4",                     ID_SELECT_LIGHT4
+                MENUITEM "Light 5",                     ID_SELECT_LIGHT5
+                MENUITEM "Light 6",                     ID_SELECT_LIGHT6
+                MENUITEM "Light 7",                     ID_SELECT_LIGHT7
+                MENUITEM "Light 8",                     ID_SELECT_LIGHT8
+                MENUITEM "Light 9",                     ID_SELECT_LIGHT9
+                MENUITEM "Light 10",                    ID_SELECT_LIGHT10
+                MENUITEM "Light 11",                    ID_SELECT_LIGHT11
+                MENUITEM "Light 12",                    ID_SELECT_LIGHT12
+                MENUITEM "Light 13",                    ID_SELECT_LIGHT13
+                MENUITEM "Light 14",                    ID_SELECT_LIGHT14
+                MENUITEM "Light 15",                    ID_SELECT_LIGHT15
+                MENUITEM "Light 16",                    ID_SELECT_LIGHT16
+                MENUITEM "Light 17",                    ID_SELECT_LIGHT17
+                MENUITEM "Light 18",                    ID_SELECT_LIGHT18
+                MENUITEM "Light 19",                    ID_SELECT_LIGHT19
+                MENUITEM "Light 20",                    ID_SELECT_LIGHT20
+            END
+        END
+        POPUP "Fillmode"
+        BEGIN
+            MENUITEM "Wireframe",                  ID_FILLMODE_WIREFRAME
+            MENUITEM "Solid",                      ID_FILLMODE_SOLID
+            MENUITEM "Point",                      ID_FILLMODE_POINT
+        END
+        POPUP "Shading"
+        BEGIN
+            MENUITEM "Flat",                       ID_SHADING_FLAT
+            MENUITEM "Gouraud",                    ID_SHADING_GOURAUD
+            MENUITEM "Phong",                      ID_SHADING_PHONG, GRAYED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Enable specular highlights",     ID_ENABLE_SPECULARHIGHLIGHT
+        MENUITEM "Disable specular highlights",    ID_DISABLE_SPECULARHIGHLIGHT
+        MENUITEM "Show coordinatesystem",          ID_SHOWCOORDINATESYSTEM
+        MENUITEM "Hide coordinatesystem",          ID_HIDECOORDINATESYSTEM
+        MENUITEM SEPARATOR
+        MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
+        MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
+    END
 END
 
+IDR_CONTEXT_MENU_LIGHTCONTROL MENU
+BEGIN
+    POPUP "lightcontrol contextmenu"
+    BEGIN
+        MENUITEM "Switch on",                   ID_LIGHT_ENSABLE
+        MENUITEM "Switch off",                  ID_LIGHT_DISABLE
+        MENUITEM "Adjust colors...",            ID_LIGHT_ADJUSTCOLORS
+        MENUITEM "Adjust angles",               ID_LIGHT_ADJUSTANGLES
+        MENUITEM "Point at",                    ID_LIGHTCONTROL_SPOTAT
+        MENUITEM SEPARATOR
+        MENUITEM "Hide",                        ID_LIGHTCONTROL_HIDE
+        MENUITEM "Remove",                      ID_LIGHT_REMOVE
+    END
+END
+
+IDR_CONTEXT_MENU_VISUALOBJECT MENU
+BEGIN
+    POPUP "Visual object contextmenu"
+    BEGIN
+        MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
+        MENUITEM "Move && Rotate (keep focus)", ID_CONTROL_OBJECT_KEEPFOCUS
+        MENUITEM "Move camera (keep focus)",    ID_CONTROL_CAMERA_KEEPFOCUS
+        MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
+        MENUITEM "Scale (keep focus)",          ID_CONTROL_OBJECT_SCALE_KEEPFOCUS
+        MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
+        POPUP "Animation"
+        BEGIN
+            MENUITEM "Start animation",                  ID_OBJECT_STARTANIMATION
+            MENUITEM "Start animation backwards",        ID_OBJECT_STARTBCKANIMATION
+            MENUITEM "Start alternating animation",      ID_OBJECT_STARTALTANIMATION
+            MENUITEM "Reverse animation",                ID_OBJECT_REVERSEANIMATION
+            MENUITEM "Stop animaton",                    ID_OBJECT_STOPANIMATION
+            MENUITEM "Adjust speed",                     ID_OBJECT_CONTROL_SPEED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
+        MENUITEM SEPARATOR
+        MENUITEM "Remove",                      ID_OBJECT_REMOVE
+    END
+END
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -134,14 +235,6 @@ BEGIN
     BEGIN
         RIGHTMARGIN, 206
     END
-
-    IDD_COLOR_DIALOG, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 187
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 183
-    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -150,14 +243,6 @@ END
 //
 // Dialog Info
 //
-
-IDD_COLOR_DIALOG DLGINIT
-BEGIN
-    IDC_COLORMAP_COLOR, 0x376, 35, 0
-0x0000, 0x0000, 0x0000, 0x0001, 0x1be8, 0x0000, 0x1938, 0x0000, 0x0044, 
-0x0000, 0x01ff, 0x0000, 0xfeff, 0x00ff, 0x0000, 0x0000, 0x0000, "\000" 
-    0
-END
 
 IDD_LIGHT_DIALOG DLGINIT
 BEGIN
@@ -202,11 +287,6 @@ END
 //
 // AFX_DIALOG_LAYOUT
 //
-
-IDD_COLOR_DIALOG AFX_DIALOG_LAYOUT
-BEGIN
-    0
-END
 
 IDD_LIGHT_DIALOG AFX_DIALOG_LAYOUT
 BEGIN

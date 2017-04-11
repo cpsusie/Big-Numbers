@@ -1,25 +1,27 @@
-#include "stdafx.h"
+#include "pch.h"
+#include <ByteFile.h>
+#include <MFCUtil/ColorDlg.h>
 #include <D3DGraphics/LightDlg.h>
 #include <D3DGraphics/MaterialDlg.h>
-#include <D3DGraphics/ColorDlg.h>
-#include <ByteFile.h>
-#include "SceneEditor.h"
+#include <D3DGraphics/D3SceneEditor.h>
+#include <D3DGraphics/D3CoordinateSystem.h>
 
-SceneEditor::SceneEditor() {
+D3SceneEditor::D3SceneEditor() {
   m_sceneContainer     = NULL;
   m_currentEditor      = NULL;
   m_currentSceneObject = NULL;
+  m_coordinateSystem   = NULL;
   m_lightDlgThread     = NULL;
   m_materialDlgThread  = NULL;
   m_paramFileName      = _T("Untitled");
   m_stateFlags.add(SE_MOUSEVISIBLE);
 }
 
-SceneEditor::~SceneEditor() {
+D3SceneEditor::~D3SceneEditor() {
   close();
 }
 
-void SceneEditor::init(D3SceneContainer *sceneContainer) {
+void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_sceneContainer    = sceneContainer;
   m_lightDlgThread    = CPropertyDlgThread::startThread(new CLightDlg(   this));
   m_materialDlgThread = CPropertyDlgThread::startThread(new CMaterialDlg(this));
@@ -28,7 +30,7 @@ void SceneEditor::init(D3SceneContainer *sceneContainer) {
   getScene().addPropertyChangeListener(this);
 }
 
-void SceneEditor::close() {
+void D3SceneEditor::close() {
   getScene().removePropertyChangeListener(this);
   if (m_lightDlgThread) {
     m_lightDlgThread->kill();
@@ -40,9 +42,9 @@ void SceneEditor::close() {
   }
 }
 
-void SceneEditor::setEnabled(bool enabled) {
+void D3SceneEditor::setEnabled(bool enabled) {
   if (enabled) {
-    m_stateFlags.add(SE_STATEENABLED);
+    m_stateFlags.add(SE_ENABLED);
     enablePropertyChanges();
     enableRender();
     render(RENDER_INFO);
@@ -55,7 +57,7 @@ void SceneEditor::setEnabled(bool enabled) {
       m_materialDlgThread->setDialogVisible(false);
     }
     disablePropertyChanges();
-    m_stateFlags.remove(SE_STATEENABLED);
+    m_stateFlags.remove(SE_ENABLED);
     render(RENDER_INFO);
     disableRender();
   }
@@ -71,7 +73,7 @@ static USHORT getCtrlShiftState() {
   return flags;
 }
 
-void SceneEditor::setMouseVisible(bool visible) {
+void D3SceneEditor::setMouseVisible(bool visible) {
   if(visible == isMouseVisible()) {
     return;
   }
@@ -84,7 +86,7 @@ void SceneEditor::setMouseVisible(bool visible) {
   }
 }
 
-void SceneEditor::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
   if(!isPropertyChangesEnabled()) return;
   if(source == &getScene()) {
     switch(id) {
@@ -131,20 +133,7 @@ void SceneEditor::handlePropertyChanged(const PropertyContainer *source, int id,
   }
 }
 
-void SceneEditor::setCurrentObject(D3SceneObject *obj) {
-  m_currentSceneObject = obj;
-  const D3LightControl *lc = getCurrentLightControl();
-  if(lc) {
-    m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
-  } else if(obj) {
-    if(obj->hasMaterial()) {
-      m_materialDlgThread->setCurrentDialogProperty(&obj->getMaterial());
-    }
-  }
-  render(RENDER_INFO);
-}
-
-void SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
+void D3SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
   m_lastMouse = point;
   m_pickedRay = getScene().getPickRay(m_lastMouse);
   switch(m_currentControl) {
@@ -153,8 +142,7 @@ void SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
     break;
 
   default:
-    { D3DXVECTOR3 hitPoint;
-      D3SceneObject *pickedObj = getScene().getPickedObject(point, PICK_ALL, &hitPoint);
+    { D3SceneObject *pickedObj = getScene().getPickedObject(point, PICK_ALL, &m_pickedPoint, &m_pickedInfo);
       if(pickedObj == NULL) {
         if(m_currentControl != CONTROL_CAMERA_WALK) {
           setCurrentObject(NULL);
@@ -163,8 +151,8 @@ void SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
           setMouseVisible(false);
           getMessageWindow()->SetCapture();
         }
+        m_pickedInfo.clear();
       } else {
-        m_pickedPoint = hitPoint;
         setCurrentObject(pickedObj);
         switch(pickedObj->getType()) {
         case SOTYPE_VISUALOBJECT  :
@@ -181,7 +169,7 @@ void SceneEditor::OnLButtonDown(UINT nFlags, CPoint point) {
   }
 }
 
-void SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
+void D3SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
   switch(m_currentControl) {
   case CONTROL_SPOTLIGHTPOINT:
     setCurrentControl(CONTROL_IDLE);
@@ -196,21 +184,20 @@ void SceneEditor::OnLButtonUp(UINT nFlags, CPoint point) {
   }
 }
 
-void SceneEditor::OnContextMenu(CWnd *pwnd, CPoint point) {
+void D3SceneEditor::OnContextMenu(CWnd *pwnd, CPoint point) {
   m_lastMouse = screenPTo3DP(point);
   m_pickedRay = getScene().getPickRay(m_lastMouse);
-  D3DXVECTOR3 hitPoint;
-  D3SceneObject *pickedObject = getScene().getPickedObject(m_lastMouse, PICK_ALL, &hitPoint);
+  D3SceneObject *pickedObject = getScene().getPickedObject(m_lastMouse, PICK_ALL, &m_pickedPoint, &m_pickedInfo);
   if(pickedObject == NULL) {
     OnContextMenuBackground(point);
+    m_pickedInfo.clear();
   } else {
-    m_pickedPoint = hitPoint;
     setCurrentObject(pickedObject);
     OnContextMenuSceneObject(point);
   }
 }
 
-void SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
+void D3SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
   if(!(nFlags & MK_LBUTTON)) {
     return;
   }
@@ -231,10 +218,10 @@ void SceneEditor::OnMouseMove(UINT nFlags, CPoint point) {
   m_lastMouse = point;
 }
 
-void SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
+void D3SceneEditor::OnLButtonDblClk(UINT nFlags, CPoint point) {
 }
 
-BOOL SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
+BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   switch(m_currentControl) {
   case CONTROL_CAMERA_WALK           :
     OnMouseWheelCameraWalk(          nFlags, zDelta, pt);
@@ -267,7 +254,7 @@ BOOL SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   return FALSE;
 }
 
-BOOL SceneEditor::PreTranslateMessage(MSG *pMsg) {
+BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
   if(!isEnabled()) return false;
   switch(pMsg->message) {
   case WM_KEYDOWN:
@@ -295,38 +282,48 @@ BOOL SceneEditor::PreTranslateMessage(MSG *pMsg) {
     return true;
   case WM_COMMAND:
     switch (pMsg->wParam) {
-    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()           ; return true;
-    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()         ; return true;
-    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()     ; return true;
-    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus(); return true;
-    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()    ; return true;
-    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()           ; return true;
-    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()         ; return true;
-    case ID_OBJECT_REMOVE                 : OnObjectRemove()               ; return true;
-    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()       ; return true;
-    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()    ; return true;
-    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()    ; return true;
-    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()     ; return true;
-    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()        ; return true;
-    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()         ; return true;
-    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()          ; return true;
-    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()     ; return true;
-    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()           ; return true;
-    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()        ; return true;
-    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()        ; return true;
-    case ID_ADDLIGHT_POINT                : OnAddLightPoint()              ; return true;
-    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()               ; return true;
-    case ID_LIGHT_REMOVE                  : OnLightRemove()                ; return true;
-    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)          ; return true;
-    case ID_LIGHT_DISABLE                 : setLightEnabled(false)         ; return true;
-    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()          ; return true;
-    case ID_LIGHT_ADJUSTANGLES            : OnLightAdjustAngles()          ; return true;
-    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)  ; return true;
-    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false) ; return true;
-    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()           ; return true;
-    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()         ; return true;
-    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()        ; return true;
-    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()        ; return true;
+    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()             ; return true;
+    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()           ; return true;
+    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()       ; return true;
+    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()  ; return true;
+    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()      ; return true;
+    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()             ; return true;
+    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()           ; return true;
+    case ID_OBJECT_REMOVE                 : OnObjectRemove()                 ; return true;
+    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()         ; return true;
+    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()      ; return true;
+    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()      ; return true;
+    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()       ; return true;
+    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()          ; return true;
+    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()           ; return true;
+    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()            ; return true;
+    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()       ; return true;
+    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()             ; return true;
+    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()          ; return true;
+    case ID_FILLMODE_POINT                : OnFillmodePoint()                ; return true;
+    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()            ; return true;
+    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                ; return true;
+    case ID_SHADING_FLAT                  : OnShadingFlat()                  ; return true;
+    case ID_SHADING_GOURAUD               : OnShadingGouraud()               ; return true;
+    case ID_SHADING_PHONG                 : OnShadingPhong()                 ; return true;
+    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().enableSpecular(true)  ; return true;
+    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().enableSpecular(false) ; return true;
+    case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true) ; return true;
+    case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false); return true;
+    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()          ; return true;
+    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                ; return true;
+    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                 ; return true;
+    case ID_LIGHT_REMOVE                  : OnLightRemove()                  ; return true;
+    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)            ; return true;
+    case ID_LIGHT_DISABLE                 : setLightEnabled(false)           ; return true;
+    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()            ; return true;
+    case ID_LIGHT_ADJUSTANGLES            : OnLightAdjustAngles()            ; return true;
+    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)    ; return true;
+    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)   ; return true;
+    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()             ; return true;
+    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()           ; return true;
+    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()          ; return true;
+    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()          ; return true;
     default:
       if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
@@ -340,7 +337,7 @@ BOOL SceneEditor::PreTranslateMessage(MSG *pMsg) {
 
 // ---------------------------------- Controlling object -----------------------------------------
 
-void SceneEditor::OnMouseMoveObjectPos(UINT nFlags, CPoint pt) {
+void D3SceneEditor::OnMouseMoveObjectPos(UINT nFlags, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     moveCurrentObjectXY(pt);
@@ -358,7 +355,7 @@ void SceneEditor::OnMouseMoveObjectPos(UINT nFlags, CPoint pt) {
   }
 }
 
-void SceneEditor::moveCurrentObjectXY(CPoint pt) {
+void D3SceneEditor::moveCurrentObjectXY(CPoint pt) {
   const D3DXVECTOR3 dp             = getCurrentObjectPos() - m_pickedPoint;
   const float       dist           = length(m_pickedPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = getScene().getPickRay(pt);
@@ -368,7 +365,7 @@ void SceneEditor::moveCurrentObjectXY(CPoint pt) {
   m_pickedPoint = newPickedPoint;
 }
 
-void SceneEditor::moveCurrentObjectXZ(CPoint pt) {
+void D3SceneEditor::moveCurrentObjectXZ(CPoint pt) {
   const D3DXVECTOR3 dp             = getCurrentObjectPos() - m_pickedPoint;
   const float       dist           = length(m_pickedPoint - m_pickedRay.m_orig);
   const D3Ray       newPickedRay   = getScene().getPickRay(pt);
@@ -385,22 +382,22 @@ void SceneEditor::moveCurrentObjectXZ(CPoint pt) {
   m_pickedPoint = newPickedPoint;
 }
 
-D3DXVECTOR3 SceneEditor::getCurrentObjectPos() {
-  D3SceneObject *obj = m_currentSceneObject;
+D3DXVECTOR3 D3SceneEditor::getCurrentObjectPos() {
+  D3SceneObject *obj = getCurrentObject();
   assert(obj != NULL);
   switch(obj->getType()) {
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_LIGHTCONTROL  :
   case SOTYPE_ANIMATEDOBJECT:
-return obj->getPos();
+    return obj->getPos();
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("type=%d"), obj->getType());
     return D3DXVECTOR3(0,0,0);
   }
 }
 
-void SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
-  D3SceneObject *obj = getCurrentVisualObject();
+void D3SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
+  D3SceneObject *obj = getCurrentObject();
   if(obj == NULL) return;
   switch(obj->getType()) {
   case SOTYPE_LIGHTCONTROL:
@@ -415,21 +412,21 @@ void SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
   }
 }
 
-void SceneEditor::setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
+void D3SceneEditor::setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   obj->getPDUS().setOrientation(dir, up);
   render(RENDER_ALL);
 }
 
-void SceneEditor::setCurrentObjectScale(const D3DXVECTOR3 &scale) {
+void D3SceneEditor::setCurrentObjectScale(const D3DXVECTOR3 &scale) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   obj->getPDUS().setScale(scale);
   render(RENDER_ALL);
 }
 
-void SceneEditor::OnMouseWheelObjectPos(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelObjectPos(UINT nFlags, short zDelta, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     { const D3DXVECTOR3 objPos = getCurrentObjectPos();
@@ -452,7 +449,7 @@ void SceneEditor::OnMouseWheelObjectPos(UINT nFlags, short zDelta, CPoint pt) {
   }
 }
 
-void SceneEditor::rotateCurrentObjectFrwBckw(double angle1, double angle2) {
+void D3SceneEditor::rotateCurrentObjectFrwBckw(double angle1, double angle2) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
@@ -463,7 +460,7 @@ void SceneEditor::rotateCurrentObjectFrwBckw(double angle1, double angle2) {
   setCurrentObjectOrientation(newDir, newUp);
 }
 
-void SceneEditor::rotateCurrentObjectLeftRight(double angle) {
+void D3SceneEditor::rotateCurrentObjectLeftRight(double angle) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
@@ -477,7 +474,7 @@ void SceneEditor::rotateCurrentObjectLeftRight(double angle) {
 #define VADJUST_Z    0x04
 #define VADJUST_ALL  (VADJUST_X | VADJUST_Y | VADJUST_Z)
 
-void SceneEditor::OnMouseWheelObjectScale(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelObjectScale(UINT nFlags, short zDelta, CPoint pt) {
   const double factor = (1.0+(double)sign(zDelta)*0.04);
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           : adjustCurrentObjectScale(VADJUST_ALL, factor); break;
@@ -487,7 +484,7 @@ void SceneEditor::OnMouseWheelObjectScale(UINT nFlags, short zDelta, CPoint pt) 
   }
 }
 
-void SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
@@ -514,7 +511,7 @@ void SceneEditor::OnMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoi
   }
 }
 
-void SceneEditor::OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
@@ -526,7 +523,7 @@ void SceneEditor::OnMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CP
   setCurrentObjectPos(m_focusPoint - pdus.getScaleMatrix() * objFocus);
 }
 
-void SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
   const double factor = (1.0+(double)sign(zDelta)*0.04);
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj && obj->isRunning()) {
@@ -534,7 +531,7 @@ void SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint p
   }
 }
 
-void SceneEditor::adjustCurrentObjectScale(int component, double factor) {
+void D3SceneEditor::adjustCurrentObjectScale(int component, double factor) {
   D3SceneObject *obj = getCurrentVisualObject();
   if(obj == NULL) return;
   D3PosDirUpScale &pdus = obj->getPDUS();
@@ -553,7 +550,7 @@ void SceneEditor::adjustCurrentObjectScale(int component, double factor) {
 
 // ------------------------------------- controlling camera -----------------------------------------
 
-void SceneEditor::OnMouseMoveCameraWalk(UINT nFlags, CPoint pt) {
+void D3SceneEditor::OnMouseMoveCameraWalk(UINT nFlags, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     walkWithCamera(double(pt.y - m_lastMouse.y) / -20, double(pt.x - m_lastMouse.x) / -400.0);
@@ -570,7 +567,7 @@ void SceneEditor::OnMouseMoveCameraWalk(UINT nFlags, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseWheelCameraWalk( UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelCameraWalk( UINT nFlags, short zDelta, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
     walkWithCamera((double)sign(zDelta) * 0.25, 0);
@@ -590,7 +587,7 @@ void SceneEditor::OnMouseWheelCameraWalk( UINT nFlags, short zDelta, CPoint pt) 
   }
 }
 
-void SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
   const D3DXVECTOR3     &center  = m_focusPoint;
         D3PosDirUpScale  camPDUS = getScene().getCameraPDUS();
   const float            radius  = length(center - camPDUS.getPos());
@@ -619,7 +616,7 @@ void SceneEditor::OnMouseWheelCameraKeepFocus(UINT nFlags, short zDelta, CPoint 
   }
 }
 
-void SceneEditor::walkWithCamera(double dist, double angle) {
+void D3SceneEditor::walkWithCamera(double dist, double angle) {
   D3PosDirUpScale    pdus = getScene().getCameraPDUS();
   const D3DXVECTOR3 &dir  = pdus.getDir();
   const D3DXVECTOR3 &up   = pdus.getUp();
@@ -628,7 +625,7 @@ void SceneEditor::walkWithCamera(double dist, double angle) {
         .setOrientation(rotate(dir, up, angle), up));
 }
 
-void SceneEditor::sidewalkWithCamera(double upDist, double rightDist) {
+void D3SceneEditor::sidewalkWithCamera(double upDist, double rightDist) {
   D3PosDirUpScale pdus = getScene().getCameraPDUS();
   getScene().setCameraPDUS(
      pdus.setPos(pdus.getPos() 
@@ -637,7 +634,7 @@ void SceneEditor::sidewalkWithCamera(double upDist, double rightDist) {
 
 }
 
-void SceneEditor::rotateCameraUpDown(double angle) {
+void D3SceneEditor::rotateCameraUpDown(double angle) {
   D3PosDirUpScale   pdus  = getScene().getCameraPDUS();
   const D3DXVECTOR3 right = pdus.getRight();
   getScene().setCameraPDUS(
@@ -646,7 +643,7 @@ void SceneEditor::rotateCameraUpDown(double angle) {
       ,rotate(pdus.getUp() , right, angle)));
 }
 
-void SceneEditor::rotateCameraLeftRight(double angle) {
+void D3SceneEditor::rotateCameraLeftRight(double angle) {
   D3PosDirUpScale    pdus = getScene().getCameraPDUS();
   const D3DXVECTOR3 &dir  = pdus.getDir();
   getScene().setCameraPDUS(
@@ -657,7 +654,7 @@ void SceneEditor::rotateCameraLeftRight(double angle) {
 
 // ------------------------------------- controlling lights -----------------------------------------
 
-void SceneEditor::OnMouseMoveLight(UINT nFlags, CPoint pt) {
+void D3SceneEditor::OnMouseMoveLight(UINT nFlags, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   if(lc) {
     switch(lc->getLightType()) {
@@ -671,7 +668,7 @@ void SceneEditor::OnMouseMoveLight(UINT nFlags, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
+void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   switch(nFlags & MK_CTRLSHIFT) {
@@ -688,7 +685,7 @@ void SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
+void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   const LIGHT       param = lc->getLightParam();
@@ -714,7 +711,7 @@ void SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   switch(lc->getLightType()) {
@@ -724,7 +721,7 @@ void SceneEditor::OnMouseWheelLight(UINT nFlags, short zDelta, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_DIRECTIONAL));
   D3LightControlDirectional &ctrl = *(D3LightControlDirectional*)lc;
@@ -746,7 +743,7 @@ void SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoint
   }
 }
 
-void SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   D3LightControlPoint &ctrl = *(D3LightControlPoint*)lc;
@@ -766,7 +763,7 @@ void SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   D3LightControlSpot &ctrl = *(D3LightControlSpot*)lc;
@@ -789,7 +786,7 @@ void SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) {
   }
 }
 
-void SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint pt) {
+void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint pt) {
   const D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL || (lc->getLightType() != D3DLIGHT_SPOT)) {
     return;
@@ -809,11 +806,11 @@ void SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint p
 }
 // ------------------------------------------------------------------------------------------------------------
 
-void SceneEditor::OnAddLightDirectional() { addLight(D3DLIGHT_DIRECTIONAL); }
-void SceneEditor::OnAddLightPoint()       { addLight(D3DLIGHT_POINT);       }
-void SceneEditor::OnAddLightSpot()        { addLight(D3DLIGHT_SPOT);        }
+void D3SceneEditor::OnAddLightDirectional() { addLight(D3DLIGHT_DIRECTIONAL); }
+void D3SceneEditor::OnAddLightPoint()       { addLight(D3DLIGHT_POINT);       }
+void D3SceneEditor::OnAddLightSpot()        { addLight(D3DLIGHT_SPOT);        }
 
-void SceneEditor::addLight(D3DLIGHTTYPE type) {
+void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
   LIGHT lp = getScene().getDefaultLightParam(type);
   switch(type) {
   case D3DLIGHT_DIRECTIONAL:
@@ -830,7 +827,20 @@ void SceneEditor::addLight(D3DLIGHTTYPE type) {
   getScene().setLightControlVisible(lp.m_index, true);
 }
 
-D3SceneObject *SceneEditor::getCurrentVisualObject() {
+void D3SceneEditor::setCurrentObject(D3SceneObject *obj) {
+  m_currentSceneObject = obj;
+  const D3LightControl *lc = getCurrentLightControl();
+  if(lc) {
+    m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
+  } else if(obj) {
+    if(obj->hasMaterial()) {
+      m_materialDlgThread->setCurrentDialogProperty(&obj->getMaterial());
+    }
+  }
+  render(RENDER_INFO);
+}
+
+D3SceneObject *D3SceneEditor::getCurrentVisualObject() {
   if(m_currentSceneObject == NULL) {
     return NULL;
   }
@@ -843,28 +853,28 @@ D3SceneObject *SceneEditor::getCurrentVisualObject() {
   }
 }
 
-D3AnimatedSurface *SceneEditor::getCurrentAnimatedobject() const {
+D3AnimatedSurface *D3SceneEditor::getCurrentAnimatedobject() const {
   if(m_currentSceneObject == NULL || m_currentSceneObject->getType() != SOTYPE_ANIMATEDOBJECT) {
     return NULL;
   }
   return (D3AnimatedSurface*)m_currentSceneObject;
 }
 
-D3LightControl *SceneEditor::getCurrentLightControl() {
+D3LightControl *D3SceneEditor::getCurrentLightControl() {
   if((m_currentSceneObject == NULL) || (m_currentSceneObject->getType() != SOTYPE_LIGHTCONTROL)) {
     return NULL;
   }
   return (D3LightControl*)m_currentSceneObject;
 }
 
-const D3LightControl *SceneEditor::getCurrentLightControl() const {
+const D3LightControl *D3SceneEditor::getCurrentLightControl() const {
   if((m_currentSceneObject == NULL) || (m_currentSceneObject->getType() != SOTYPE_LIGHTCONTROL)) {
     return NULL;
   }
   return (D3LightControl*)m_currentSceneObject;
 }
 
-void SceneEditor::setLightControlsVisible(bool visible) {
+void D3SceneEditor::setLightControlsVisible(bool visible) {
   BitSet visibleLightSet = getScene().getLightsVisible();
   if(visible) {
     BitSet missing = getScene().getLightsDefined() - visibleLightSet;
@@ -885,7 +895,7 @@ void SceneEditor::setLightControlsVisible(bool visible) {
   render(RENDER_ALL);
 }
 
-void SceneEditor::setSpotToPointAt(CPoint point) {
+void D3SceneEditor::setSpotToPointAt(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
     return;
@@ -900,7 +910,7 @@ void SceneEditor::setSpotToPointAt(CPoint point) {
   getScene().setLightParam(param);
 }
 
-void SceneEditor::OnContextMenuSceneObject(CPoint point) {
+void D3SceneEditor::OnContextMenuSceneObject(CPoint point) {
   switch(m_currentSceneObject->getType()) {
   case SOTYPE_VISUALOBJECT  :
   case SOTYPE_ANIMATEDOBJECT:
@@ -912,7 +922,7 @@ void SceneEditor::OnContextMenuSceneObject(CPoint point) {
   }
 }
 
-CMenu &SceneEditor::loadMenu(CMenu &menu, int id) {
+CMenu &D3SceneEditor::loadMenu(CMenu &menu, int id) {
   const int ret = menu.LoadMenu(id);
   if(!ret) {
     throwException(_T("Loadmenu(%d) failed"), id);
@@ -920,7 +930,7 @@ CMenu &SceneEditor::loadMenu(CMenu &menu, int id) {
   return menu;
 }
 
-void SceneEditor::showContextMenu(CMenu &menu, CPoint point) {
+void D3SceneEditor::showContextMenu(CMenu &menu, CPoint point) {
   TrackPopupMenu(*menu.GetSubMenu(0), TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, 0, *getMessageWindow(),NULL);
 }
 
@@ -944,17 +954,9 @@ static String lightMenuText(const LIGHT &light) {
   return EMPTYSTRING;
 }
 
-void SceneEditor::OnContextMenuBackground(CPoint point) {
+void D3SceneEditor::OnContextMenuBackground(CPoint point) {
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_BACKGROUND);
-  int checkedItem = -1;
-  switch(m_currentControl) {
-  case CONTROL_CAMERA_WALK     : checkedItem = ID_CONTROL_CAMERA_WALK     ; break;
-  case CONTROL_CAMERA_KEEPFOCUS: checkedItem = ID_CONTROL_CAMERA_KEEPFOCUS; break;
-  }
-  if(checkedItem != -1) {
-    checkMenuItem(menu, checkedItem, true);
-  }
   const int visibleLightCount = (int)getScene().getLightsVisible().size();
   if(visibleLightCount == 0) {
     removeMenuItem(menu,ID_HIDE_LIGHTCONTROLS);
@@ -973,12 +975,30 @@ void SceneEditor::OnContextMenuBackground(CPoint point) {
    for (Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
      removeMenuItem(menu, (int)it.next() + ID_SELECT_LIGHT0);
    }
+   switch(getScene().getFillMode()) {
+   case D3DFILL_POINT    : removeMenuItem(menu, ID_FILLMODE_POINT      ); break;
+   case D3DFILL_WIREFRAME: removeMenuItem(menu, ID_FILLMODE_WIREFRAME  ); break;
+   case D3DFILL_SOLID    : removeMenuItem(menu, ID_FILLMODE_SOLID      ); break;
+   }
+   switch(getScene().getShadeMode()) {
+   case D3DSHADE_FLAT    : removeMenuItem(menu, ID_SHADING_FLAT        ); break;
+   case D3DSHADE_GOURAUD : removeMenuItem(menu, ID_SHADING_GOURAUD     ); break;
+   case D3DSHADE_PHONG   : removeMenuItem(menu, ID_SHADING_PHONG       ); break;
+   }
+   removeMenuItem(menu, isCoordinateSystemVisible()
+                       ?ID_SHOWCOORDINATESYSTEM
+                       :ID_HIDECOORDINATESYSTEM);
+   removeMenuItem(menu, getScene().isSpecularEnabled()
+                       ?ID_ENABLE_SPECULARHIGHLIGHT
+                       :ID_DISABLE_SPECULARHIGHLIGHT);
+
+   m_sceneContainer->modifyContextMenu(*menu.GetSubMenu(0));
    showContextMenu(menu, point);
 }
 
-void SceneEditor::OnContextMenuVisualObject(CPoint point) {
+void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
   CMenu menu;
-  loadMenu(menu, IDR_CONTEXT_MENU_VISUALOBJECT );
+  loadMenu(menu, IDR_CONTEXT_MENU_VISUALOBJECT);
 
   int checkedItem = -1;
   switch(m_currentControl) {
@@ -1017,50 +1037,54 @@ void SceneEditor::OnContextMenuVisualObject(CPoint point) {
     }
     break;
   }
+  if(m_currentSceneObject) {
+    m_currentSceneObject->modifyContextMenu(*menu.GetSubMenu(0));
+  }
   showContextMenu(menu, point);
 }
 
-void SceneEditor::OnContextMenuLightControl(CPoint point) {
+void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
+  const LIGHT light = lc->getLightParam();
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_LIGHTCONTROL);
-  if(getScene().isLightEnabled(lc->getLightIndex())) { // light is on
+  if(light.isEnabled()) { // light is on
     removeMenuItem(menu, ID_LIGHT_ENSABLE);
-  } else {                                          // light is off
+  } else {                                             // light is off
     removeMenuItem(menu, ID_LIGHT_DISABLE      );
     removeMenuItem(menu, ID_LIGHT_ADJUSTCOLORS );
     removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT);
   }
-  if(lc->getLightType() != D3DLIGHT_SPOT) {
+  if(light.Type != D3DLIGHT_SPOT) {
     removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT);
     removeMenuItem(menu, ID_LIGHT_ADJUSTANGLES );
   }
   showContextMenu(menu, point);
 }
 
-void SceneEditor::OnControlCameraWalk()      {  setCurrentControl(CONTROL_CAMERA_WALK        ); }
-void SceneEditor::OnControlObjectPos()       {  setCurrentControl(CONTROL_OBJECT_POS         ); }
-void SceneEditor::OnControlObjectScale()     {  setCurrentControl(CONTROL_OBJECT_SCALE       ); }
+void D3SceneEditor::OnControlCameraWalk()      {  setCurrentControl(CONTROL_CAMERA_WALK        ); }
+void D3SceneEditor::OnControlObjectPos()       {  setCurrentControl(CONTROL_OBJECT_POS         ); }
+void D3SceneEditor::OnControlObjectScale()     {  setCurrentControl(CONTROL_OBJECT_SCALE       ); }
 
-void SceneEditor::OnControlObjectMoveRotate() {
+void D3SceneEditor::OnControlObjectMoveRotate() {
 //  setSelectedObject(m_calculatedObject);
   setCurrentControl(CONTROL_OBJECT_POS);
 }
 
-void SceneEditor::OnControlObjectKeepFocus() {
+void D3SceneEditor::OnControlObjectKeepFocus() {
   if(moveLastMouseToFocusPoint()) {
     setCurrentControl(CONTROL_OBJECT_POS_KEEPFOCUS);
   }
 }
 
-void SceneEditor::OnControlObjectScaleKeepFocus() {
+void D3SceneEditor::OnControlObjectScaleKeepFocus() {
   if(moveLastMouseToFocusPoint()) {
     setCurrentControl(CONTROL_OBJECT_SCALE_KEEPFOCUS);
   }
 }
 
-bool SceneEditor::moveLastMouseToFocusPoint() {
+bool D3SceneEditor::moveLastMouseToFocusPoint() {
   D3DXVECTOR3 hitPoint;
   D3SceneObject *obj = getScene().getPickedObject(m_lastMouse, ~PICK_LIGHTCONTROL, &hitPoint);
   if((obj == NULL) || (obj != m_currentSceneObject)) {
@@ -1076,20 +1100,18 @@ bool SceneEditor::moveLastMouseToFocusPoint() {
   return true;
 }
 
-void SceneEditor::OnControlCameraKeepFocus() {
-  D3SceneObject *obj = getScene().getPickedObject(m_lastMouse, ~PICK_LIGHTCONTROL, &m_focusPoint);
-  if(obj == NULL) {
-    return;
-  }
+void D3SceneEditor::OnControlCameraKeepFocus() {
+  D3SceneObject *obj = getScene().getPickedObject(m_lastMouse, ~PICK_LIGHTCONTROL, &m_focusPoint, &m_pickedInfo);
+  if(obj == NULL) return;
   getScene().setCameraLookAt(m_focusPoint);
   setCurrentControl(CONTROL_CAMERA_KEEPFOCUS);
 }
 
-void SceneEditor::OnObjectControlSpeed() {
+void D3SceneEditor::OnObjectControlSpeed() {
   setCurrentControl(CONTROL_ANIMATION_SPEED);
 }
 
-void SceneEditor::setCurrentControl(CurrentObjectControl control) {
+void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
   m_currentControl = control;
   switch(m_currentControl) {
   case CONTROL_OBJECT_POS:
@@ -1115,7 +1137,7 @@ void SceneEditor::setCurrentControl(CurrentObjectControl control) {
   }
 }
 
-void SceneEditor::OnObjectEditMaterial() {
+void D3SceneEditor::OnObjectEditMaterial() {
   if(m_currentSceneObject 
   && m_currentSceneObject->getType() == SOTYPE_VISUALOBJECT
   && m_currentSceneObject->hasMaterial()) {
@@ -1126,29 +1148,29 @@ void SceneEditor::OnObjectEditMaterial() {
   }
 }
 
-void SceneEditor::OnObjectResetScale() {
+void D3SceneEditor::OnObjectResetScale() {
   getScene().getObjPDUS().setScaleAll(1);
 }
 
-void SceneEditor::OnObjectStartAnimation() {
+void D3SceneEditor::OnObjectStartAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj == NULL) return;
   obj->startAnimation(ANIMATE_FORWARD);
 }
 
-void SceneEditor::OnObjectStartBckAnimation() {
+void D3SceneEditor::OnObjectStartBckAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj == NULL) return;
   obj->startAnimation(ANIMATE_BACKWARD);
 }
 
-void SceneEditor::OnObjectStartAltAnimation() {
+void D3SceneEditor::OnObjectStartAltAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj == NULL) return;
   obj->startAnimation(ANIMATE_ALTERNATING);
 }
 
-void SceneEditor::OnObjectReverseAnimation() {
+void D3SceneEditor::OnObjectReverseAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if((obj == NULL) || !obj->isRunning()) return;
   switch(obj->getAnimationType()) {
@@ -1165,13 +1187,13 @@ void SceneEditor::OnObjectReverseAnimation() {
   }
 }
 
-void SceneEditor::OnObjectStopAnimation() {
+void D3SceneEditor::OnObjectStopAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj == NULL) return;
   obj->stopAnimation();
 }
 
-void SceneEditor::OnObjectRemove() {
+void D3SceneEditor::OnObjectRemove() {
   if(m_currentSceneObject == NULL) return;
   getScene().removeSceneObject(m_currentSceneObject);
   delete m_currentSceneObject;
@@ -1179,12 +1201,12 @@ void SceneEditor::OnObjectRemove() {
   render(RENDER_ALL);
 }
 
-void SceneEditor::setLightEnabled(bool enabled) {
+void D3SceneEditor::setLightEnabled(bool enabled) {
   getScene().setLightEnabled(getCurrentLightControl()->getLightIndex(), enabled);
   render(RENDER_ALL);
 }
 
-void SceneEditor::OnLightAdjustColors() {
+void D3SceneEditor::OnLightAdjustColors() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
@@ -1193,22 +1215,22 @@ void SceneEditor::OnLightAdjustColors() {
   setCurrentControl(CONTROL_LIGHTCOLOR);
 }
 
-void SceneEditor::OnLightAdjustAngles() {
+void D3SceneEditor::OnLightAdjustAngles() {
   setCurrentControl(CONTROL_SPOTANGLES);
 }
 
-void SceneEditor::OnLightControlSpotAt() {
+void D3SceneEditor::OnLightControlSpotAt() {
   setCurrentControl(CONTROL_SPOTLIGHTPOINT);
 }
 
-void SceneEditor::OnLightControlHide() {
+void D3SceneEditor::OnLightControlHide() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   getScene().setLightControlVisible(lc->getLightIndex(), false);
   render(RENDER_ALL);
 }
 
-void SceneEditor::OnLightRemove() {
+void D3SceneEditor::OnLightRemove() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
   const int lightIndex = lc->getLightIndex();
@@ -1217,21 +1239,7 @@ void SceneEditor::OnLightRemove() {
   render(RENDER_ALL);
 }
 
-void SceneEditor::OnEditBackgroundColor() {
-  const D3DCOLOR oldColor = getScene().getBackgroundColor();
-  CColorDlg dlg("Background color", SP_BACKGROUNDCOLOR, oldColor);
-  dlg.addPropertyChangeListener(this);
-  m_currentEditor = &dlg;
-  setCurrentControl(CONTROL_BACKGROUNDCOLOR);
-
-  if(dlg.DoModal() != IDOK) {
-    getScene().setBackgroundColor(oldColor);
-  }
-  m_currentEditor = NULL;
-  setCurrentControl(CONTROL_IDLE);
-}
-
-void SceneEditor::OnEditAmbientLight() {
+void D3SceneEditor::OnEditAmbientLight() {
   const D3DCOLOR oldColor = getScene().getGlobalAmbientColor();
   CColorDlg dlg("Ambient color", SP_AMBIENTLIGHT, oldColor);
   dlg.addPropertyChangeListener(this);
@@ -1245,9 +1253,47 @@ void SceneEditor::OnEditAmbientLight() {
   setCurrentControl(CONTROL_IDLE);
 }
 
+void D3SceneEditor::OnEditBackgroundColor() {
+  const D3DCOLOR oldColor = getScene().getBackgroundColor();
+  CColorDlg dlg("Background color", SP_BACKGROUNDCOLOR, oldColor);
+  dlg.addPropertyChangeListener(this);
+  m_currentEditor = &dlg;
+  setCurrentControl(CONTROL_BACKGROUNDCOLOR);
+
+  if(dlg.DoModal() != IDOK) {
+    getScene().setBackgroundColor(oldColor);
+  }
+  m_currentEditor = NULL;
+  setCurrentControl(CONTROL_IDLE);
+}
+
+void D3SceneEditor::OnFillmodePoint()     { getScene().setFillMode(D3DFILL_POINT     ); }
+void D3SceneEditor::OnFillmodeWireframe() { getScene().setFillMode(D3DFILL_WIREFRAME ); }
+void D3SceneEditor::OnFillmodeSolid()     { getScene().setFillMode(D3DFILL_SOLID     ); }
+
+void D3SceneEditor::OnShadingFlat()       { getScene().setShadeMode(D3DSHADE_FLAT    ); }
+void D3SceneEditor::OnShadingGouraud()    { getScene().setShadeMode(D3DSHADE_GOURAUD ); }
+void D3SceneEditor::OnShadingPhong()      { getScene().setShadeMode(D3DSHADE_PHONG   ); }
+
+void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
+  if(visible) {
+    if(m_coordinateSystem == NULL) {
+      m_coordinateSystem  = new D3CoordinateSystem(getScene());
+      getScene().addSceneObject(m_coordinateSystem);
+    } else {
+      m_coordinateSystem->setVisible(true);
+    }
+  } else {
+    if(isCoordinateSystemVisible()) {
+      m_coordinateSystem->setVisible(false);
+    }
+  }
+  render(RENDER_3D);
+}
+
 static const TCHAR *extensions = _T("Scene-files (*.scn)\0*.scn\0\0");
 
-void SceneEditor::OnSaveSceneParameters() {
+void D3SceneEditor::OnSaveSceneParameters() {
   CFileDialog dlg(FALSE, _T("*.scn"), m_paramFileName.cstr());
   dlg.m_ofn.lpstrFilter = extensions;
   dlg.m_ofn.lpstrTitle  = _T("Save scene parameters");
@@ -1266,7 +1312,7 @@ void SceneEditor::OnSaveSceneParameters() {
   }
 }
 
-void SceneEditor::OnLoadSceneParameters() {
+void D3SceneEditor::OnLoadSceneParameters() {
   CFileDialog dlg(TRUE, _T("*.scn"), m_paramFileName.cstr());
   dlg.m_ofn.lpstrFilter = extensions;
   dlg.m_ofn.lpstrTitle = _T("Load scene parameters");
@@ -1283,14 +1329,6 @@ void SceneEditor::OnLoadSceneParameters() {
     m_paramFileName = dlg.m_ofn.lpstrFile;
   } catch(Exception e) {
     Message(_T("%s"), e.what());
-  }
-}
-
-String SceneEditor::getSelectedString() const {
-  if(m_currentSceneObject == NULL) {
-    return _T("--");
-  } else {
-    return m_currentSceneObject->getName();
   }
 }
 
@@ -1316,28 +1354,32 @@ const TCHAR *controlString(CurrentObjectControl control) {
   }
 }
 
-String SceneEditor::stateFlagsToString() const {
+String D3SceneEditor::stateFlagsToString() const {
   String result = _T("(");
-  if(isEnabled())                result += _T("enabled ");
-  if(isMessagesEnabled())        result += _T("msg ");
-  if(isPropertyChangesEnabled()) result += _T("prop ");
-  if(isMouseVisible())           result += _T("mouse");
+  const TCHAR *delim = NULL;
+#define ADDDELIM { if(delim) result += delim; else delim=_T(" "); }
+  if(isEnabled())                { ADDDELIM; result += _T("enabled"); }
+  if(isPropertyChangesEnabled()) { ADDDELIM; result += _T("prop");    }
+  if(isMouseVisible())           { ADDDELIM; result += _T("mouse");   }
   result += _T(")");
   return result;
 }
 
-String SceneEditor::toString() const {
+String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
-  const float  viewAngel   = getScene().getViewAngel();
-  double       zn          = getScene().getNearViewPlane();
 
   String result = format(_T("Current Motion:%s Selected:%s %s")
                         ,controlString(m_currentControl)
-                        ,getSelectedString().cstr()
+                        ,m_currentSceneObject?m_currentSceneObject->getName().cstr():_T("--")
                         ,stateFlagsToString().cstr()
                         );
   if(m_pickedRay.isSet()) {
     result += format(_T("\nPicked ray:%s"), m_pickedRay.toString().cstr());
+    if (m_pickedInfo.isSet()) {
+      result += format(_T("\nPicked point:%s, info:%s")
+                      ,::toString(m_pickedPoint).cstr()
+                      ,m_pickedInfo.toString().cstr());
+    }
   }
   switch (m_currentControl) {
   case CONTROL_IDLE                  :
@@ -1345,12 +1387,14 @@ String SceneEditor::toString() const {
   case CONTROL_CAMERA_WALK           :
     return result + format(_T("\n%s\nView angel:%.1lf, zn:%.3lf")
                            ,getScene().getCameraString().cstr()
-                           ,degrees(viewAngel), zn);
+                           ,degrees(getScene().getViewAngel())
+                           ,getScene().getNearViewPlane());
 
   case CONTROL_CAMERA_KEEPFOCUS      :
     result += format(_T("\n%s\nView angel:%.1lf, zn:%.3lf")
                     ,getScene().getCameraString().cstr()
-                    ,degrees(viewAngel), zn);
+                    ,degrees(getScene().getViewAngel())
+                    ,getScene().getNearViewPlane());
     if(hasFocusPoint()) {
       result += format(_T("\nFocuspoint:%s"), ::toString(m_focusPoint).cstr());
     }
@@ -1389,8 +1433,8 @@ String SceneEditor::toString() const {
       if(obj) {
         result += format(_T("\nFrames/sec:%.2lf"), obj->getFramePerSec());
       }
+      return result;
     }
-    break;
   case CONTROL_MATERIAL              :
     if(m_currentSceneObject && m_currentSceneObject->hasMaterial()) {
       result += format(_T("\nMaterial:%s"), ::toString(m_currentSceneObject->getMaterial()).cstr());

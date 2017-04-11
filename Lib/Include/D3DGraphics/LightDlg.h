@@ -1,8 +1,9 @@
 #pragma once
 
+#include <MFCUtil/ColormapDialog.h>
+#include <MFCUtil/colormap.h>
+#include <D3DGraphics/resource.h>
 #include "D3Scene.h"
-#include "ColormapDialog.h"
-#include "colormap.h"
 
 class CLightDlg : public CColormapDialog<LIGHT> {
 private:

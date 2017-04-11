@@ -1,8 +1,9 @@
 #pragma once
 
+#include <TinyBitSet.h>
 #include <MFCUtil/WinTools.h>
+#include <MFCUtil/PropertyDlgThread.h>
 #include <D3DGraphics/D3LightControl.h>
-#include <D3DGraphics/PropertyDlgThread.h>
 
 typedef enum {
   CONTROL_IDLE
@@ -27,12 +28,10 @@ typedef enum {
 #define RENDER_ALL  (RENDER_3D|RENDER_INFO)
 
 typedef enum {
-  SE_STATEENABLED
- ,SE_STATEHANDLEPROPERTYCHANGES
- ,SE_STATEHANDLEMESSAGES
+  SE_ENABLED
+ ,SE_HANDLEPROPERTYCHANGES
  ,SE_RENDERENABLED
  ,SE_MOUSEVISIBLE
-
 } StateFlags;
 
 class D3SceneContainer {
@@ -41,22 +40,25 @@ public:
   virtual CWnd    *getMessageWindow()       = 0;
   virtual CWnd    *get3DWindow()            = 0;
   virtual void     render(BYTE renderFlags) = 0; // any combination of RENDER_3D,RENDER_INFO
+  virtual void     modifyContextMenu(CMenu &menu) {
+  }
 };
 
-class SceneEditor : public PropertyChangeListener {
+class D3SceneEditor : public PropertyChangeListener {
 private:
     CPropertyDlgThread         *m_lightDlgThread, *m_materialDlgThread;
     D3SceneContainer           *m_sceneContainer;
     CurrentObjectControl        m_currentControl;
-    D3SceneObject              *m_currentSceneObject;
+    D3SceneObject              *m_currentSceneObject, *m_coordinateSystem;
     PropertyContainer          *m_currentEditor;
     BitSet8                     m_stateFlags;
     CPoint                      m_lastMouse;
     D3DXVECTOR3                 m_focusPoint;
     D3DXVECTOR3                 m_pickedPoint;
     D3Ray                       m_pickedRay;
+    D3PickedInfo                m_pickedInfo;
     String                      m_paramFileName;
-
+    
     inline CWnd *getMessageWindow() const {
       return m_sceneContainer->getMessageWindow();
     }
@@ -111,35 +113,23 @@ private:
       return m_stateFlags.contains(SE_RENDERENABLED);
     }
     inline void enablePropertyChanges() {
-      m_stateFlags.add(SE_STATEHANDLEPROPERTYCHANGES);
+      m_stateFlags.add(SE_HANDLEPROPERTYCHANGES);
     }
     inline void disablePropertyChanges() {
-      m_stateFlags.remove(SE_STATEHANDLEPROPERTYCHANGES);
+      m_stateFlags.remove(SE_HANDLEPROPERTYCHANGES);
     }
     inline bool isPropertyChangesEnabled() const {
-      return m_stateFlags.contains(SE_STATEHANDLEPROPERTYCHANGES);
-    }
-    inline void enableMessages() {
-      return m_stateFlags.add(SE_STATEHANDLEMESSAGES);
-    }
-    inline void disableMessages() {
-      return m_stateFlags.remove(SE_STATEHANDLEMESSAGES);
-    }
-    inline bool isMessagesEnabled() const {
-      return m_stateFlags.contains(SE_STATEHANDLEMESSAGES);
+      return m_stateFlags.contains(SE_HANDLEPROPERTYCHANGES);
     }
     String stateFlagsToString() const;
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
     void setCurrentControl(CurrentObjectControl control);
-    void setCurrentObject(D3SceneObject *obj);
     bool moveLastMouseToFocusPoint();
 
     String getSelectedString() const;
 
-    D3SceneObject        *getCurrentVisualObject();
-    D3AnimatedSurface    *getCurrentAnimatedobject() const;
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
 
@@ -198,6 +188,13 @@ private:
     void OnAddLightSpot();
     void OnEditAmbientLight();
     void OnEditBackgroundColor();
+    void OnFillmodePoint();
+    void OnFillmodeWireframe();
+    void OnFillmodeSolid();
+    void OnShadingFlat();
+    void OnShadingGouraud();
+    void OnShadingPhong();
+    void setCoordinateSystemVisible(bool visible);
     void setLightEnabled(bool enabled);
     void OnLightRemove();
     void OnLButtonDown(  UINT nFlags, CPoint point);
@@ -207,14 +204,37 @@ private:
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
     void OnContextMenu(  CWnd *pwnd, CPoint point);
 public:
-    SceneEditor();
-    ~SceneEditor();
+    D3SceneEditor();
+    ~D3SceneEditor();
     void init(D3SceneContainer *sceneContainer);
     void close();
     void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
     void setEnabled(bool enabled);
     inline bool isEnabled() const {
-      return m_stateFlags.contains(SE_STATEENABLED);
+      return m_stateFlags.contains(SE_ENABLED);
+    }
+    void               setCurrentObject(D3SceneObject *obj);
+
+    inline D3SceneObject *getCurrentObject() const {
+      return m_currentSceneObject;
+    }
+    // return NULL, if type not {SOTYPE_VISUALOBJECT, SOTYPE_ANIMATEDOBJECT, }
+    D3SceneObject     *getCurrentVisualObject(); 
+    D3AnimatedSurface *getCurrentAnimatedobject() const;
+    inline const D3DXVECTOR3 &getFocurPoint() const {
+      return m_focusPoint;
+    }
+    inline const D3DXVECTOR3 &getPickedPoint() const {
+      return m_pickedPoint;
+    }
+    inline const D3Ray &getPickedRay() const {
+      return m_pickedRay;
+    }
+    inline const D3PickedInfo &getPickedInfo() const {
+      return m_pickedInfo;
+    }
+    inline bool isCoordinateSystemVisible() const {
+      return m_coordinateSystem && (m_coordinateSystem->isVisible());
     }
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;

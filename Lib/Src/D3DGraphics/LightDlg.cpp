@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/resource.h>
 #include <D3DGraphics/LightDlg.h>
 
 #ifdef _DEBUG
@@ -23,8 +24,8 @@ void CLightDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CLightDlg, CDialog)
   ON_WM_HSCROLL()
 	ON_WM_SHOWWINDOW()
-  ON_MESSAGE(ID_MSG_RESETCONTROLS, OnMsgResetControls)
-	ON_BN_CLICKED(ID_HIDEWINDOW    , OnHideWindow      )
+  ON_MESSAGE(_ID_MSG_RESETCONTROLS   , OnMsgResetControls)
+	ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW , OnHideWindow      )
 	ON_WM_CLOSE()
 END_MESSAGE_MAP()
 
@@ -33,9 +34,9 @@ BOOL CLightDlg::OnInitDialog() {
   m_origName = getWindowText(this);
 
   initSlider(IDC_SLIDER_RANGE               , 0.001 , 100, 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001 , 100, 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001, 100, 200, LOGARITHMIC);
-  initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0, 100);
+  initSlider(IDC_SLIDER_CONSTANTATTENUATION , 0.001 , 10 , 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_LINEARATTENUATION   , 0.0001, 10 , 200, LOGARITHMIC);
+  initSlider(IDC_SLIDER_QUADRATICATTENUATION, 0.0001, 10 , 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_FALLOFF             , 0, 300);
   return TRUE;
 }

@@ -263,7 +263,10 @@
     <ClCompile Include="ClipboardBitmap.cpp" />
     <ClCompile Include="ClipboardDropFiles.cpp" />
     <ClCompile Include="ClipboardText.cpp" />
+    <ClCompile Include="ColorDlg.cpp" />
     <ClCompile Include="ColoredStatic.cpp" />
+    <ClCompile Include="colormap.cpp" />
+    <ClCompile Include="ColormapDialog.cpp" />
     <ClCompile Include="ColorSpace.cpp" />
     <ClCompile Include="ComboBoxWithHistory.cpp" />
     <ClCompile Include="ConfirmDlg.cpp" />
@@ -327,6 +330,8 @@
     <ClCompile Include="ProgressDlg.cpp" />
     <ClCompile Include="ProgressWindow.cpp" />
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
+    <ClCompile Include="PropertyDlg.cpp" />
+    <ClCompile Include="PropertyDlgThread.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SetControlText.cpp" />
     <ClCompile Include="ShapeFunctions.cpp" />
@@ -353,7 +358,10 @@
     <ClInclude Include="..\..\Include\MFCUtil\AnimatedImage.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Avifile.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Clipboard.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ColorDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColoredStatic.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\colormap.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ColormapDialog.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ColorSpace.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ComboBoxWithHistory.h" />
     <ClInclude Include="..\..\Include\MFCUtil\CommontCtrlManifest.h" />
@@ -391,6 +399,8 @@
     <ClInclude Include="..\..\Include\MFCUtil\ProgressDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWindow.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDialog.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDlgThread.h" />
     <ClInclude Include="..\..\Include\MFCUtil\resource.h" />
     <ClInclude Include="..\..\Include\MFCUtil\SelectDirDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h" />
@@ -398,6 +408,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\StaticBottomAligned.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h" />
     <ClInclude Include="..\..\Include\MFCUtil\WinTools.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\_Font.h" />
     <ClInclude Include="CoordinateSystem\pch.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />

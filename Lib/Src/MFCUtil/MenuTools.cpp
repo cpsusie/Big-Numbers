@@ -155,12 +155,20 @@ void insertMenuItem(HMENU menu, UINT pos, const String &itemText, UINT commandId
   BOOL ok = InsertMenuItem(menu, pos, true, &info);
 }
 
+void appendMenuItem(HMENU menu, const String &itemText, UINT commandId) {
+  insertMenuItem(menu, GetMenuItemCount(menu), itemText, commandId);
+}
+
 void insertMenuSeparator(HMENU menu, UINT pos) {
   MENUITEMINFO info;
   info.cbSize     = sizeof(info);
   info.fMask      = MIIM_TYPE ;
   info.fType      = MFT_SEPARATOR;
   InsertMenuItem(menu, pos, true, &info);
+}
+
+void appendMenuSeparator(HMENU menu) {
+  insertMenuSeparator(menu, GetMenuItemCount(menu));
 }
 
 HMENU insertSubMenu(HMENU menu, UINT pos, const String &text) {
@@ -174,6 +182,10 @@ HMENU insertSubMenu(HMENU menu, UINT pos, const String &text) {
   info.hSubMenu   = sm;
   InsertMenuItem(menu, pos, true, &info);
   return sm;
+}
+
+HMENU appendSubMenu(HMENU menu, const String &text) {
+  return insertSubMenu(menu, GetMenuItemCount(menu), text);
 }
 
 void removeMenuItem(HMENU menu, UINT id) {

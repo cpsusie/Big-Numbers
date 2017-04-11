@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <MFCUtil/resource.h>
 #include <D3DGraphics/MaterialDlg.h>
 
 #ifdef _DEBUG
@@ -25,8 +26,8 @@ BEGIN_MESSAGE_MAP(CMaterialDlg, CDialog)
     ON_WM_HSCROLL()
     ON_WM_VSCROLL()
 	  ON_WM_SHOWWINDOW()
-    ON_MESSAGE(ID_MSG_RESETCONTROLS, OnMsgResetControls)
-	  ON_BN_CLICKED(ID_HIDEWINDOW    , OnHideWindow      )
+    ON_MESSAGE(_ID_MSG_RESETCONTROLS  , OnMsgResetControls)
+	  ON_BN_CLICKED(ID_BUTTON_HIDEWINDOW, OnHideWindow      )
 	  ON_WM_CLOSE()
 END_MESSAGE_MAP()
 

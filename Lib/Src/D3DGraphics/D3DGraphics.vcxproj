@@ -250,12 +250,10 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="ColorDlg.cpp" />
-    <ClCompile Include="colormap.cpp" />
-    <ClCompile Include="ColormapDialog.cpp" />
     <ClCompile Include="D3AnimatedSurface.cpp" />
     <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="D3PDUS.cpp" />
+    <ClCompile Include="D3SceneEditor.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
@@ -292,22 +290,18 @@
     <ClCompile Include="MeshBuilder.cpp" />
     <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="Profile.cpp" />
-    <ClCompile Include="PropertyDlg.cpp" />
-    <ClCompile Include="PropertyDlgThread.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
     <ClCompile Include="WavefrontObjFileMeshBuilder.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\Include\D3DGraphics\ColorDlg.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\colormap.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\ColormapDialog.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3CoordinateSystem.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Error.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
@@ -321,10 +315,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\PersistentParameter.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\PropertyDialog.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\PropertyDlgThread.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\_Font.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>

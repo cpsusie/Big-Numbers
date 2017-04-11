@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/PropertyDialog.h>
+#include <MFCUtil/PropertyDialog.h>
 
 void PropertyDialog::OnShowWindow(BOOL bShow, UINT nStatus) {
   CDialog::OnShowWindow(bShow, nStatus);

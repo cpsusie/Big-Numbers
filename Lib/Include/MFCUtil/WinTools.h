@@ -48,8 +48,11 @@ void   checkMenuItem(                  HMENU menu,  UINT          id, bool check
 bool   enableSubMenuContainingId(      HMENU menu,  UINT          id, bool enabled); // do
 bool   isMenuItemChecked(              HMENU menu,  UINT          id );
 void   insertMenuItem(                 HMENU menu,  UINT          pos, const String &itemText, UINT         commandId);
+void   appendMenuItem(                 HMENU menu,                     const String &itemText, UINT         commandId);
 void   insertMenuSeparator(            HMENU menu,  UINT          pos);
+void   appendMenuSeparator(            HMENU menu                    );
 HMENU  insertSubMenu(                  HMENU menu,  UINT          pos, const String &text);
+HMENU  appendSubMenu(                  HMENU menu,                     const String &text);
 void   removeMenuItem(                 HMENU menu,  UINT          id );
 bool   removeSubMenuContainingId(      HMENU menu,  UINT          id );
 bool   menuItemExists(                 HMENU menu,  UINT          id );

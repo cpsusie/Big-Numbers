@@ -5,7 +5,7 @@
 
 
 #include "pch.h"
-#include <D3DGraphics/colormap.h>
+#include <MFCUtil/colormap.h>
 
 /////////////////////////////////////////////////////////////////////////////
 // CColormap

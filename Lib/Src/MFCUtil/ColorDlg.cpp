@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/ColorDlg.h>
+#include <MFCUtil/ColorDlg.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -15,7 +15,7 @@ CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd
 
 void CColorDlg::DoDataExchange(CDataExchange *pDX) {
   CDialog::DoDataExchange(pDX);
-  DDX_Control(pDX, IDC_COLORMAP_COLOR, m_color);
+  DDX_Control(pDX, _IDC_COLORMAP_COLOR, m_color);
 }
 
 BEGIN_MESSAGE_MAP(CColorDlg, CDialog)
@@ -26,17 +26,17 @@ BOOL CColorDlg::OnInitDialog() {
   setWindowText(this, m_caption);
   const D3DCOLOR color = getStartValue();
   setCurrentValue(color);
-  setD3DCOLOR(IDC_COLORMAP_COLOR, color);
+  setD3DCOLOR(_IDC_COLORMAP_COLOR, color);
   putWindowBesideParent();
   setNotifyEnabled(true);
   return TRUE;
 }
 
 BEGIN_EVENTSINK_MAP(CColorDlg, CColormapDialog)
-  ON_EVENT(CColorDlg, IDC_COLORMAP_COLOR, 1, CColorDlg::OnColorchangedColormapColor, VTS_NONE)
+  ON_EVENT(CColorDlg, _IDC_COLORMAP_COLOR, 1, CColorDlg::OnColorchangedColormapColor, VTS_NONE)
 END_EVENTSINK_MAP()
 
 
 void CColorDlg::OnColorchangedColormapColor() {
-  setCurrentValue(getD3DCOLOR(IDC_COLORMAP_COLOR));
+  setCurrentValue(getD3DCOLOR(_IDC_COLORMAP_COLOR));
 }

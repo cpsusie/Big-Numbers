@@ -104,11 +104,21 @@ public:
   int           m_faceIndex;
   int           m_i1, m_i2, m_i3;           // Indices into vertexArray
   TextureVertex m_tv;
-  inline String toString() const {
-    return format(_T("Face:%d (%5d,%5d,%5d) %s")
+  inline D3PickedInfo() : m_faceIndex(-1) {
+  }
+  inline void clear() {
+    m_faceIndex = -1;
+  }
+  inline bool isSet() const {
+    return m_faceIndex >= 0;
+  }
+  inline String toString(int dec=3) const {
+    return isSet() 
+         ? format(_T("Face:%d (%5d,%5d,%5d) %s")
                  ,m_faceIndex
                  ,m_i1, m_i2, m_i3
-                 ,::toString(m_tv).cstr());
+                 ,::toString(m_tv, dec).cstr())
+         : EMPTYSTRING;
   }
 };
 
@@ -385,6 +395,8 @@ public:
   }
   virtual int getMaterialIndex() const {
     return 0;
+  }
+  virtual void modifyContextMenu(CMenu &menu) {
   }
   virtual String toString() const {
     return getName();

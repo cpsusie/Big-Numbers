@@ -1,5 +1,6 @@
 #include "pch.h"
-#include <D3DGraphics/PropertyDlgThread.h>
+#include <MFCUtil/resource.h>
+#include <MFCUtil/PropertyDlgThread.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -71,7 +72,7 @@ void CPropertyDlgThread::setCurrentDialogProperty(const void *v) {
   if(m_dlg == NULL) noDialogException(method);
   m_dlg->setStartProperty(v);
   if(m_dlg->isVisible()) {
-    m_dlg->PostMessage(ID_MSG_RESETCONTROLS);
+    m_dlg->PostMessage(_ID_MSG_RESETCONTROLS);
   }
 }
 
