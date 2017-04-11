@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include <MyUtil.h>
-#include <String.h>
-#include <Array.h>
 #include <Tokenizer.h>
 #include <io.h>
 
@@ -10,6 +7,7 @@
 class Interval {
 public:
   UINT l,r;
+  inline Interval() {}
   Interval(TCHAR *s, int maxpos);
 };
 
@@ -41,9 +39,10 @@ Interval::Interval(TCHAR *s, int maxpos) {
   l--;
 }
 
-static Array<Interval> scanIntervals(const char *cp, int maxpos) {
-  Array<Interval> result;
-  for(Tokenizer tok(cp,_T(",")); tok.hasNext(); ) {
+static CompactArray<Interval> scanIntervals(const TCHAR *cp, int maxpos) {
+  CompactArray<Interval> result;
+  String tmp(cp);
+  for(Tokenizer tok(tmp,_T(",")); tok.hasNext(); ) {
     result.add(Interval(tok.next().cstr(), maxpos));
   }
   return result;
@@ -55,13 +54,13 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char  *cp;
+int _tmain(int argc, TCHAR **argv) {
+  TCHAR *cp;
   TCHAR *format;
   bool   fieldSelection = false;
   bool   linefeed       = false;
   String delimiters     = _T(" \t");
-  Array<Interval> intervalList;
+  CompactArray<Interval> intervalList;
 
   try {
     for(argv++;*argv && *(cp = *argv) == '-';argv++) {
@@ -99,7 +98,7 @@ int main(int argc, char **argv) {
     TCHAR line[MAXLEN];
     while(FGETS(line, ARRAYSIZE(line), f)) {
       if(fieldSelection) {
-        Array<String> fieldArray;
+        StringArray fieldArray;
         Tokenizer tok(line, delimiters);
         while(tok.hasNext()) {
           fieldArray.add(tok.next());
