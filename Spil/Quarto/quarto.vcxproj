@@ -267,7 +267,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AboutBox.cpp" />
-    <ClCompile Include="SceneEditor.cpp" />
     <ClCompile Include="BrickObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameBoardObject.cpp" />
@@ -291,7 +290,6 @@
     <ClInclude Include="Quarto.h" />
     <ClInclude Include="QuartoDlg.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="SceneEditor.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -304,7 +302,6 @@
     <Image Include="res\WhiteField.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\cursor1.cur" />
     <CustomBuild Include="res\quarto.rc2" />
   </ItemGroup>
   <ItemGroup>

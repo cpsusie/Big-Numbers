@@ -2,7 +2,7 @@
 
 #include <D3DGraphics/D3Scene.h>
 #include "GraphicObjects.h"
-#include "SceneEditor.h"
+#include <D3DGraphics/D3SceneEditor.h>
 
 #define DEVELOPER_MODE
 
@@ -10,12 +10,9 @@ class CQuartoDlg : public CDialog, public D3SceneContainer {
 private:
   HICON                   m_hIcon;
   HACCEL                  m_accelTable;
-  SceneEditor             m_editor;
+  D3SceneEditor           m_editor;
   D3Scene                 m_scene;
   String                  m_gameName;
-#ifdef _DEBUG
-  D3SceneObject          *m_coordinateSystem;
-#endif
   GameBoardObject        *m_boardObject;
   Game                    m_game;
   Player                  m_startPlayer;
@@ -30,9 +27,6 @@ private:
     m_editor.setEnabled(value);
     showInfo(EMPTYSTRING);
   }
-  inline CStatic *getGameWindow() const {
-    return (CStatic*)GetDlgItem(IDC_STATICGAMEWINDOW);
-  }
   inline CRect getGameRect() {
     return getClientRect(this, IDC_STATICGAMEWINDOW);
   }
@@ -45,7 +39,6 @@ private:
   void flashWinnerBlocks();
   void updateGraphicsDoingMove(const Move &m);
 
-  void showCursor(bool show);
   void setGameName(const String &name);
   const String &getGameName() const {
     return m_gameName;
@@ -83,7 +76,7 @@ public:
     return this;
   }
   CWnd    *get3DWindow() {
-    return getGameWindow();
+    return GetDlgItem(IDC_STATICGAMEWINDOW);
   }
   void render(BYTE renderFlags) {
     PostMessage(ID_MSG_RENDER, renderFlags, 0);

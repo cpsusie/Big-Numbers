@@ -75,13 +75,8 @@ BOOL CQuartoDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
 
-  m_scene.init(getGameWindow()->m_hWnd);
+  m_scene.init(get3DWindow()->m_hWnd);
   m_editor.init(this);
-
-#ifdef _DEBUG
-  m_coordinateSystem  = new D3CoordinateSystem(m_scene);
-  m_scene.addSceneObject(m_coordinateSystem);
-#endif
 
   try {
     randomize();
@@ -168,9 +163,9 @@ void CQuartoDlg::createLight() {
 }
 
 void CQuartoDlg::resetCamera() {
-  m_scene.setCameraPos(D3DXVECTOR3(0, 8.102f, -15.757f));
-  D3DXVECTOR3 camDir = unitVector(D3DXVECTOR3(0, -0.457f, 0.889f));
-  D3DXVECTOR3 camUp(0,0,1);
+  m_scene.setCameraPos(D3DXVECTOR3(-1.325f, 8.512f, -16.106f));
+  D3DXVECTOR3 camDir = unitVector(D3DXVECTOR3(0, -0.455f, 0.891f));
+  D3DXVECTOR3 camUp(0,0.891f,0.455f);
   camUp -= camDir * (camDir*camUp);
   camUp = unitVector(camUp);
 //  float s = camDir * camUp;
@@ -213,7 +208,7 @@ CPoint CQuartoDlg::get3DPanelPoint(CPoint point, bool screenRelative) const {
   if(!screenRelative) {
     ClientToScreen(&point);
   }
-  getGameWindow()->ScreenToClient(&point);
+  ((CQuartoDlg*)this)->get3DWindow()->ScreenToClient(&point);
   return point;
 }
 
@@ -269,14 +264,6 @@ void CQuartoDlg::OnRButtonDblClk(UINT nFlags, CPoint point) {
     render(RENDER_3D);
   }
   CDialog::OnRButtonDblClk(nFlags, point);
-}
-
-void CQuartoDlg::showCursor(bool show) {
-  if(show) {
-    while(ShowCursor(TRUE) <= 0);
-  } else {
-    while(ShowCursor(FALSE) > 0);
-  }
 }
 
 int CQuartoDlg::getBrickFromPoint(const CPoint &p) const {

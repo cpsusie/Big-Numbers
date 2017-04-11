@@ -14,4 +14,4 @@ public:
     DECLARE_MESSAGE_MAP()
 };
 
-
+extern CD3FunctionPlotterApp theApp;
