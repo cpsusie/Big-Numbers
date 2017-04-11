@@ -1,0 +1,1 @@
+sun -y%1 -p10,0 | cut -c7-10,4-5,1-2,29- | showgraf -Dx
