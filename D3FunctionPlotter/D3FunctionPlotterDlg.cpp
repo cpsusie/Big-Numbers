@@ -334,7 +334,6 @@ void CD3FunctionPlotterDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
-
     m_scene.render();
     show3DInfo();
   }
@@ -357,11 +356,7 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
     switch(id) {
     case SP_FILLMODE                :
     case SP_SHADEMODE               :
-    case SP_CAMERAPOS               :
-    case SP_CAMERAORIENTATION       :
-    case SP_OBJECTPOS               :
-    case SP_OBJECTORIENTATION       :
-    case SP_OBJECTSCALE             :
+    case SP_CAMERAPDUS              :
     case SP_PROJECTIONTRANSFORMATION:
     case SP_LIGHTPARAMETERS         :
     case SP_AMBIENTLIGHT            :
@@ -378,7 +373,8 @@ void CD3FunctionPlotterDlg::handlePropertyChanged(const PropertyContainer *sourc
     switch(id) {
     case SP_LIGHTPARAMETERS:
       { const LIGHT &lp = *(LIGHT*)newValue;
-        m_scene.setLightParam(lp);
+        LIGHT tmp = m_scene.getLightParam(lp.m_index);
+        m_scene.setLightParam(CLightDlg::copyModifiableValues(tmp, lp));
       }
       break;
     }
@@ -474,9 +470,10 @@ void CD3FunctionPlotterDlg::setSelectedObject(D3SceneObject *obj) {
   } else if(obj) {
     m_materialDlgThread->setCurrentDialogProperty(&m_scene.getMaterial(obj->getMaterialIndex()));
   }
+  show3DInfo();
 }
 
-static const String stateFileName = "c:\\temp\\D3FunctionPlotter.dat";
+static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
 
 void CD3FunctionPlotterDlg::OnFileSaveState() {
   try {
@@ -539,7 +536,7 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
 }
 
 void CD3FunctionPlotterDlg::OnFileProfileSurface() {
-  const String fileName = "C:\\mytools\\D3FunctionPlotter\\SAMPLES\\bue.prf";
+  const String fileName = _T("C:\\mytools\\D3FunctionPlotter\\SAMPLES\\bue.prf");
   try {
     FILE *f = FOPEN(fileName, "r");
     Profile profile(readTextFile(f), fileName);
@@ -655,6 +652,7 @@ void CD3FunctionPlotterDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     }
     break;
   }
+  show3DInfo();
 }
 
 void CD3FunctionPlotterDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
@@ -669,6 +667,7 @@ void CD3FunctionPlotterDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     setSelectedObject(pickedObject);
     onContextMenuSceneObject(point);
   }
+  show3DInfo();
 }
 
 void CD3FunctionPlotterDlg::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -683,6 +682,7 @@ void CD3FunctionPlotterDlg::OnLButtonUp(UINT nFlags, CPoint point) {
     ReleaseCapture();
     break;
   }
+  show3DInfo();
   CDialog::OnLButtonUp(nFlags, point);
 }
 
@@ -697,6 +697,7 @@ void CD3FunctionPlotterDlg::OnMouseMove(UINT nFlags, CPoint point) {
     break;
   case CONTROL_OBJECT_POS    :
     onMouseMoveObjectPos(nFlags, point);
+    REPAINT();
     break;
   case CONTROL_LIGHT          :
     onMouseMoveLight(nFlags, point);
@@ -755,15 +756,19 @@ BOOL CD3FunctionPlotterDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
     break;
   case CONTROL_OBJECT_POS            :
     onMouseWheelObjectPos(           nFlags, zDelta, pt);
+    REPAINT();
     break;
   case CONTROL_OBJECT_SCALE          :
     onMouseWheelObjectScale(         nFlags, zDelta, pt);
+    REPAINT();
     break;
   case CONTROL_OBJECT_POS_KEEPFOCUS  :
     onMouseWheelObjectPosKeepFocus(  nFlags, zDelta, pt);
+    REPAINT();
     break;
   case CONTROL_OBJECT_SCALE_KEEPFOCUS:
     onMouseWheelObjectScaleKeepFocus(nFlags, zDelta, pt);
+    REPAINT();
     break;
   case CONTROL_CAMERA_KEEPFOCUS      :
     onMouseWheelCameraKeepFocus(     nFlags, zDelta, pt);
@@ -830,7 +835,7 @@ void CD3FunctionPlotterDlg::moveSceneObjectXZ(CPoint pt, SceneObjectType type, i
 D3DXVECTOR3 CD3FunctionPlotterDlg::getSceneObjectPos(SceneObjectType type, int lightIndex) {
   switch(type) {
   case SOTYPE_VISUALOBJECT:
-    return m_scene.getObjPos();
+    return m_scene.getObjPDUS().getPos();
     break;
   case SOTYPE_LIGHTCONTROL:
     return m_scene.getLightParam(lightIndex).Position;
@@ -844,7 +849,7 @@ D3DXVECTOR3 CD3FunctionPlotterDlg::getSceneObjectPos(SceneObjectType type, int l
 void CD3FunctionPlotterDlg::setSceneObjectPos(const D3DXVECTOR3 &pos, SceneObjectType type, int lightIndex) {
   switch(type) {
   case SOTYPE_VISUALOBJECT:
-    m_scene.setObjPos(pos);
+    m_scene.getObjPDUS().setPos(pos);
     break;
   case SOTYPE_LIGHTCONTROL:
     m_scene.setLightPosition(lightIndex, pos);
@@ -857,12 +862,12 @@ void CD3FunctionPlotterDlg::setSceneObjectPos(const D3DXVECTOR3 &pos, SceneObjec
 void CD3FunctionPlotterDlg::onMouseWheelObjectPos(UINT nFlags, short zDelta, CPoint pt) {
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
-    { const D3DXVECTOR3 objPos = m_scene.getObjPos();
+    { const D3DXVECTOR3 objPos = m_scene.getObjPDUS().getPos();
       const D3DXVECTOR3 camPos = m_scene.getCameraPos();
       const D3DXVECTOR3 dir    = objPos - camPos;
       const float       dist   = length(dir);
       if(dist > 0) {
-        m_scene.setObjPos(objPos + unitVector(dir) * dist / 30.0 * (float)sign(zDelta));
+        m_scene.getObjPDUS().setPos(objPos + unitVector(dir) * dist / 30.0 * (float)sign(zDelta));
       }
     }
     break;
@@ -881,14 +886,16 @@ void CD3FunctionPlotterDlg::onMouseWheelObjectPos(UINT nFlags, short zDelta, CPo
 void CD3FunctionPlotterDlg::rotateObjectFrwBckw(double angle1, double angle2) {
   const D3DXVECTOR3 cameraUp    = m_scene.getCameraUp();
   const D3DXVECTOR3 cameraRight = m_scene.getCameraRight();
-  const D3DXVECTOR3 objDir      = rotate(rotate(m_scene.getObjDir(),cameraUp,angle1),cameraRight,angle2);
-  const D3DXVECTOR3 objUp       = rotate(rotate(m_scene.getObjUp() ,cameraUp,angle1),cameraRight,angle2);
-  m_scene.setObjOrientation(objDir, objUp);
+  D3PosDirUpScale &pdus = m_scene.getObjPDUS();
+  const D3DXVECTOR3 objDir      = rotate(rotate(pdus.getDir(),cameraUp,angle1),cameraRight,angle2);
+  const D3DXVECTOR3 objUp       = rotate(rotate(pdus.getUp() ,cameraUp,angle1),cameraRight,angle2);
+  pdus.setOrientation(objDir, objUp);
 }
 
 void CD3FunctionPlotterDlg::rotateObjectLeftRight(double angle) {
   const D3DXVECTOR3 cameraDir = m_scene.getCameraDir();
-  m_scene.setObjOrientation(rotate(m_scene.getObjDir(),cameraDir, angle), rotate(m_scene.getObjUp(), cameraDir, angle));
+  D3PosDirUpScale &pdus = m_scene.getObjPDUS();
+  pdus.setOrientation(rotate(pdus.getDir(),cameraDir, angle), rotate(pdus.getUp(), cameraDir, angle));
 }
 
 #define VADJUST_X    0x01
@@ -907,7 +914,7 @@ void CD3FunctionPlotterDlg::onMouseWheelObjectScale(UINT nFlags, short zDelta, C
 }
 
 void CD3FunctionPlotterDlg::onMouseWheelObjectPosKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
-  const D3PosDirUpScale pdus = m_scene.getObjPDUS();
+  D3PosDirUpScale &pdus = m_scene.getObjPDUS();
 
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           :
@@ -915,7 +922,7 @@ void CD3FunctionPlotterDlg::onMouseWheelObjectPosKeepFocus(UINT nFlags, short zD
       const float       dist    = length(m_focusPoint - camPos);
       D3DXVECTOR3       dp      = pdus.getPos() - m_focusPoint;
       m_focusPoint = camPos + (float)(dist * (1.0 - (float)sign(zDelta)/30)) * m_scene.getCameraDir();
-      m_scene.setObjPos(m_focusPoint + dp);
+      pdus.setPos(m_focusPoint + dp);
     }
     break;
   case MK_CONTROL  :
@@ -925,20 +932,20 @@ void CD3FunctionPlotterDlg::onMouseWheelObjectPosKeepFocus(UINT nFlags, short zD
       const D3DXVECTOR3 objFocus = invers(pdus.getRotationMatrix()) * (m_focusPoint - pdus.getPos());
       onMouseWheelObjectPos(nFlags, zDelta, pt);
       m_propertyChangeHandlerEnabled = true;
-      m_scene.setObjPos(m_focusPoint - m_scene.getObjPDUS().getRotationMatrix() * objFocus);
+      pdus.setPos(m_focusPoint - pdus.getRotationMatrix() * objFocus);
     }
     break;
   }
 }
 
 void CD3FunctionPlotterDlg::onMouseWheelObjectScaleKeepFocus(UINT nFlags, short zDelta, CPoint pt) {
-  const D3PosDirUpScale pdus = m_scene.getObjPDUS();
+  D3PosDirUpScale &pdus = m_scene.getObjPDUS();
   m_propertyChangeHandlerEnabled = false;
 
   const D3DXVECTOR3 objFocus = invers(pdus.getScaleMatrix()) * (m_focusPoint - pdus.getPos());
   onMouseWheelObjectScale(nFlags, zDelta, pt);
   m_propertyChangeHandlerEnabled = true;
-  m_scene.setObjPos(m_focusPoint - m_scene.getObjPDUS().getScaleMatrix() * objFocus);
+  pdus.setPos(m_focusPoint - pdus.getScaleMatrix() * objFocus);
 }
 
 void CD3FunctionPlotterDlg::onMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint pt) {
@@ -950,7 +957,8 @@ void CD3FunctionPlotterDlg::onMouseWheelAnimationSpeed(UINT nFlags, short zDelta
 }
 
 void CD3FunctionPlotterDlg::adjustScale(int component, double factor) {
-  D3DXVECTOR3 scale = m_scene.getObjScale();
+  D3PosDirUpScale &pdus = m_scene.getObjPDUS();
+  D3DXVECTOR3 scale = pdus.getScale();
   if(component & VADJUST_X) {
     scale.x *= (float)factor;
   }
@@ -960,7 +968,7 @@ void CD3FunctionPlotterDlg::adjustScale(int component, double factor) {
   if(component & VADJUST_Z) {
     scale.z *= (float)factor;
   }
-  m_scene.setObjScale(scale);
+  pdus.setScale(scale);
 }
 
 // ------------------------------------- controlling camera -----------------------------------------
@@ -1508,7 +1516,7 @@ bool CD3FunctionPlotterDlg::moveLastMouseToFocusPoint() {
   const float       distance = length(camPos - hitPoint);
   m_focusPoint = camPos + distance * m_scene.getCameraDir();
 
-  m_scene.setObjPos(m_focusPoint + dp);
+  m_scene.getObjPDUS().setPos(m_focusPoint + dp);
   return true;
 }
 
@@ -1551,7 +1559,6 @@ void CD3FunctionPlotterDlg::setCurrentControl(CurrentObjectControl control) {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     break;
   }
-  show3DInfo();
 }
 
 void CD3FunctionPlotterDlg::OnResetPositions() {
@@ -1588,7 +1595,7 @@ void CD3FunctionPlotterDlg::OnObjectEditMaterial() {
 }
 
 void CD3FunctionPlotterDlg::OnObjectResetScale() {
-  m_scene.setObjScale(D3DXVECTOR3(1,1,1));
+  m_scene.getObjPDUS().setScaleAll(1);
 }
 
 void CD3FunctionPlotterDlg::OnObjectStartAnimation() {

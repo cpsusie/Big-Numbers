@@ -156,9 +156,6 @@ private:
 public:
   BoardSideObject(D3Scene &scene);
   ~BoardSideObject();
-  inline D3PosDirUpScale getPDUS() const {
-    return D3Scene::getOrigo();
-  }
   void draw() {
     drawWithTexture(m_boardSideTexture);
   }

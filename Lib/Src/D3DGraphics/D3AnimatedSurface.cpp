@@ -34,6 +34,7 @@ public:
   void stop();
   void kill();
   void scaleSpeed(double factor);
+  double getFramesPerSec() const;
   bool isRunning() const {
     return m_running;
   }
@@ -91,7 +92,11 @@ void MeshAnimationThread::scaleSpeed(double factor) {
   }
 }
 
-unsigned int MeshAnimationThread::run() {
+double MeshAnimationThread::getFramesPerSec() const {
+  return m_running ? 1000.0/m_sleepTime : 0;
+}
+
+UINT MeshAnimationThread::run() {
   for(;;) {
     m_timeout.wait(m_running ? getSleepTime() : INFINITE);
     if(m_killed) {
@@ -170,6 +175,10 @@ AnimationType D3AnimatedSurface::getAnimationType() const {
 
 void D3AnimatedSurface::scaleSpeed(double factor) { // sleepTime /= factor
   m_animator->scaleSpeed(factor);
+}
+
+double D3AnimatedSurface::getFramePerSec() const {
+  return m_animator->getFramesPerSec();
 }
 
 void D3AnimatedSurface::draw() {

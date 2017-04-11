@@ -16,6 +16,10 @@ typedef enum {
  ,CONTROL_SPOTLIGHTPOINT
  ,CONTROL_SPOTANGLES
  ,CONTROL_ANIMATION_SPEED
+ ,CONTROL_MATERIAL
+ ,CONTROL_LIGHTCOLOR
+ ,CONTROL_BACKGROUNDCOLOR
+ ,CONTROL_AMBIENTLIGHTCOLOR
 } CurrentObjectControl;
 
 #define RENDER_3D   0x1
@@ -26,7 +30,9 @@ typedef enum {
   SE_STATEENABLED
  ,SE_STATEHANDLEPROPERTYCHANGES
  ,SE_STATEHANDLEMESSAGES
+ ,SE_RENDERENABLED
  ,SE_MOUSEVISIBLE
+
 } StateFlags;
 
 class D3SceneContainer {
@@ -42,10 +48,10 @@ private:
     CPropertyDlgThread         *m_lightDlgThread, *m_materialDlgThread;
     D3SceneContainer           *m_sceneContainer;
     CurrentObjectControl        m_currentControl;
-    CPoint                      m_lastMouse;
-    BitSet8                     m_stateFlags;
-    D3SceneObject              *m_selectedSceneObject;
+    D3SceneObject              *m_currentSceneObject;
     PropertyContainer          *m_currentEditor;
+    BitSet8                     m_stateFlags;
+    CPoint                      m_lastMouse;
     D3DXVECTOR3                 m_focusPoint;
     D3DXVECTOR3                 m_pickedPoint;
     D3Ray                       m_pickedRay;
@@ -60,16 +66,12 @@ private:
     D3Scene &getScene() const {
       return m_sceneContainer->getScene();
     }
-    inline CPoint screenPToMessageP(CPoint p) const {
-      getMessageWindow()->ScreenToClient(&p);
-      return p;
-    }
     inline CPoint screenPTo3DP(CPoint p) const {
       get3DWindow()->ScreenToClient(&p);
       return p;
     }
     inline void render(BYTE flags) {
-      m_sceneContainer->render(flags);
+      if(isRenderEnabled()) m_sceneContainer->render(flags);
     }
 
     inline bool hasFocusPoint() const {
@@ -78,15 +80,17 @@ private:
           || m_currentControl == CONTROL_CAMERA_KEEPFOCUS
           ;
     }
-    void rotateObjectFrwBckw(  double angle1 , double angle2);
-    void rotateObjectLeftRight(double angle) ;
-    void adjustScale(          int component, double factor);
+    void rotateCurrentObjectFrwBckw(  double angle1 , double angle2);
+    void rotateCurrentObjectLeftRight(double angle) ;
+    void adjustCurrentObjectScale(int component, double factor);
 
-    void moveSceneObjectXY(CPoint pt, SceneObjectType type, int lightIndex = -1);
-    void moveSceneObjectXZ(CPoint pt, SceneObjectType type, int lightIndex = -1);
+    void moveCurrentObjectXY(CPoint pt);
+    void moveCurrentObjectXZ(CPoint pt);
 
-    D3DXVECTOR3 getSceneObjectPos(SceneObjectType type, int lightIndex);
-    void        setSceneObjectPos(const D3DXVECTOR3 &pos, SceneObjectType type, int lightIndex);
+    D3DXVECTOR3 getCurrentObjectPos();
+    void        setCurrentObjectPos(        const D3DXVECTOR3 &pos);
+    void        setCurrentObjectOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
+    void        setCurrentObjectScale(      const D3DXVECTOR3 &pos);
 
     void walkWithCamera(       double dist   , double angle);
     void sidewalkWithCamera(   double upDist , double rightDist);
@@ -96,6 +100,15 @@ private:
     void setMouseVisible(bool visible);
     inline bool isMouseVisible() const {
       return m_stateFlags.contains(SE_MOUSEVISIBLE);
+    }
+    inline void enableRender() {
+      m_stateFlags.add(SE_RENDERENABLED);
+    }
+    inline void disableRender() {
+      m_stateFlags.remove(SE_RENDERENABLED);
+    }
+    inline bool isRenderEnabled() const {
+      return m_stateFlags.contains(SE_RENDERENABLED);
     }
     inline void enablePropertyChanges() {
       m_stateFlags.add(SE_STATEHANDLEPROPERTYCHANGES);
@@ -120,15 +133,15 @@ private:
     void showContextMenu(CMenu &menu, CPoint point);
 
     void setCurrentControl(CurrentObjectControl control);
-    void setSelectedObject(  D3SceneObject *obj);
+    void setCurrentObject(D3SceneObject *obj);
     bool moveLastMouseToFocusPoint();
 
     String getSelectedString() const;
 
-    D3SceneObject        *getSelectedVisualObject();
-    D3AnimatedSurface    *getSelectedAnimatedobject();
-          D3LightControl *getSelectedLightControl();
-    const D3LightControl *getSelectedLightControl() const;
+    D3SceneObject        *getCurrentVisualObject();
+    D3AnimatedSurface    *getCurrentAnimatedobject() const;
+          D3LightControl *getCurrentLightControl();
+    const D3LightControl *getCurrentLightControl() const;
 
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
@@ -153,12 +166,12 @@ private:
     void OnMouseWheelCameraKeepFocus(     UINT nFlags, short zDelta, CPoint pt);
 
     void OnMouseMoveLight(                UINT nFlags, CPoint pt);
-    void OnMouseMoveLightPoint(           D3LightControlPoint       &ctrl, UINT nFlags, CPoint pt);
-    void OnMouseMoveLightSpot(            D3LightControlSpot        &ctrl, UINT nFlags, CPoint pt);
+    void OnMouseMoveLightPoint(           UINT nFlags, CPoint pt);
+    void OnMouseMoveLightSpot(            UINT nFlags, CPoint pt);
     void OnMouseWheelLight(               UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightPoint(          D3LightControlPoint       &ctrl, UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightDirectional(    D3LightControlDirectional &ctrl, UINT nFlags, short zDelta, CPoint pt);
-    void OnMouseWheelLightSpot(           D3LightControlSpot        &ctrl, UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseWheelLightPoint(          UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseWheelLightDirectional(    UINT nFlags, short zDelta, CPoint pt);
+    void OnMouseWheelLightSpot(           UINT nFlags, short zDelta, CPoint pt);
     void OnMouseWheelLightSpotAngle(      UINT nFlags, short zDelta, CPoint pt);
 
     void OnContextMenuBackground(  CPoint point);

@@ -15,11 +15,7 @@ class D3LightControl;
 typedef enum {
   SP_FILLMODE
  ,SP_SHADEMODE
- ,SP_CAMERAPOS
- ,SP_CAMERAORIENTATION
- ,SP_OBJECTPOS
- ,SP_OBJECTORIENTATION
- ,SP_OBJECTSCALE
+ ,SP_CAMERAPDUS
  ,SP_PROJECTIONTRANSFORMATION
  ,SP_LIGHTPARAMETERS
  ,SP_LIGHTCOUNT
@@ -205,27 +201,9 @@ public:
     return m_shadeMode;
   }
 
-  inline const D3PosDirUpScale &getObjPDUS() const {
+  inline D3PosDirUpScale &getObjPDUS() {
     return m_objectPDUS;
   }
-  inline const D3DXVECTOR3 &getObjPos() const {
-    return m_objectPDUS.getPos();
-  }
-  inline const D3DXVECTOR3 &getObjDir() const {
-    return m_objectPDUS.getDir();
-  }
-  inline const D3DXVECTOR3 &getObjUp() const {
-    return m_objectPDUS.getUp();
-  }
-  inline D3DXVECTOR3 getObjRight() const {
-    return m_objectPDUS.getRight();
-  }
-  inline const D3DXVECTOR3 &getObjScale() const {
-    return m_objectPDUS.getScale();
-  }
-  void setObjPos(        const D3DXVECTOR3 &pos);
-  void setObjOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  void setObjScale(const D3DXVECTOR3 &scale);
   inline String getObjString() const {
     return format(_T("Object:%s"), m_objectPDUS.toString().cstr());
   }
@@ -245,9 +223,10 @@ public:
   inline D3DXVECTOR3 getCameraRight() const {
     return m_cameraPDUS.getRight();
   }
-  void setCameraPos(        const D3DXVECTOR3 &pos);
-  void setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up);
-  void setCameraLookAt(     const D3DXVECTOR3 &point);
+  void setCameraPDUS(       const D3PosDirUpScale &pdus);
+  void setCameraPos(        const D3DXVECTOR3     &pos);
+  void setCameraOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
+  void setCameraLookAt(     const D3DXVECTOR3     &point);
   inline String getCameraString() const {
     return format(_T("Camera:%s"), m_cameraPDUS.toString().cstr());
   }
@@ -264,7 +243,7 @@ public:
   }
 
   void setAnimationFrameIndex(int &oldValue, int newValue);
-  D3DCOLOR getGlobalAmbientColor() const;
+  D3PCOLOR getGlobalAmbientColor() const;
   void setGlobalAmbientColor(D3DCOLOR color);
   void enableSpecular(bool enabled);
   bool isSpecularEnabled() const;
@@ -333,7 +312,7 @@ public:
   String getMaterialString() const;
 
   void setBackgroundColor(D3DCOLOR color);
-  inline D3DCOLOR getBackgroundColor() const {
+  inline D3PCOLOR getBackgroundColor() const {
     return m_backgroundColor;
   }
   static inline int getTextureCoordCount() {
@@ -373,6 +352,11 @@ String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 #define USE_SCENEPARAMS  (USE_SCENEFILLMODE | USE_SCENESHADEMODE)
 
 class D3SceneObject {
+private:
+  const D3PosDirUpScale &getConstPDUS() const {
+    return ((D3SceneObject*)this)->getPDUS();
+  }
+
 protected:
   D3Scene &m_scene;
   String   m_name;
@@ -389,7 +373,22 @@ public:
   }
   virtual ~D3SceneObject() {
   };
-
+  virtual SceneObjectType getType() const {
+    return SOTYPE_VISUALOBJECT;
+  }
+  virtual void draw() = 0;
+  virtual LPD3DXMESH getMesh() const {
+    return NULL;
+  }
+  virtual D3PosDirUpScale &getPDUS() {
+    return m_scene.getObjPDUS();
+  }
+  virtual int getMaterialIndex() const {
+    return 0;
+  }
+  virtual String toString() const {
+    return getName();
+  }
   inline D3Scene &getScene() {
     return m_scene;
   }
@@ -406,14 +405,8 @@ public:
   inline void setVisible(bool visible) {
     m_visible = visible;
   }
-  virtual LPD3DXMESH getMesh() const {
-    return NULL;
-  }
   inline bool isVisible() const {
     return m_visible;
-  }
-  virtual int getMaterialIndex() const {
-    return 0;
   }
   const MATERIAL &getMaterial() const {
     return getScene().getMaterial(getMaterialIndex());
@@ -421,29 +414,36 @@ public:
   inline bool hasMaterial() const {
     return getMaterialIndex() >= 0;
   }
-  virtual D3PosDirUpScale getPDUS() const {
-    return m_scene.getObjPDUS();
-  }
-  virtual D3DXMATRIX getWorldMatrix() const {
-    return getPDUS().getWorldMatrix();
+  D3DXMATRIX getWorldMatrix() const {
+    return getConstPDUS().getWorldMatrix();
   }
   inline const D3DXVECTOR3 &getPos() const {
-    return getPDUS().getPos();
+    return getConstPDUS().getPos();
   }
   inline const D3DXVECTOR3 &getDir() const {
-    return getPDUS().getDir();
+    return getConstPDUS().getDir();
   }
   inline const D3DXVECTOR3 &getUp() const {
-    return getPDUS().getUp();
+    return getConstPDUS().getUp();
   }
   inline D3DXVECTOR3 getRight() const {
-    return getPDUS().getRight();
+    return getConstPDUS().getRight();
   }
-  inline const D3DXVECTOR3 &getScale() const {
-    return getPDUS().getScale();
+  inline D3DXVECTOR3 getScale() const {
+    return getConstPDUS().getScale();
   }
-
-  virtual void draw() = 0;
+  inline void setPos(const D3DXVECTOR3 &pos) {
+    getPDUS().setPos(pos);
+  }
+  inline void setOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
+    getPDUS().setOrientation(dir,up);
+  }
+  inline void setScale(const D3DXVECTOR3 &scale) {
+    getPDUS().setScale(scale);
+  }
+  inline void setScaleAll(float scale) {
+    getPDUS().setScaleAll(scale);
+  }
   bool intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info = NULL) const;
 
   inline const String &getName() const {
@@ -451,12 +451,6 @@ public:
   }
   inline void setName(const String &name) {
     m_name = name;
-  }
-  virtual SceneObjectType getType() const {
-    return SOTYPE_VISUALOBJECT;
-  }
-  virtual String toString() const {
-    return getName();
   }
 };
 
@@ -565,6 +559,7 @@ public:
   bool isRunning() const;
   AnimationType getAnimationType() const;
   void scaleSpeed(double factor); // sleepTime /= factor
+  double getFramePerSec() const;
   LPD3DXMESH getMesh() const;
   void draw();
   SceneObjectType getType() const {
@@ -583,17 +578,15 @@ public:
 };
 
 class D3PickRayArrow : public D3LineArrow {
+private:
+  D3PosDirUpScale m_pdus;
 public:
   D3PickRayArrow(D3Scene &scene, const D3Ray &ray) : D3LineArrow(scene, ray.m_orig, ray.m_orig + 2 * ray.m_dir) {
-  }
-  D3DXMATRIX getWorldMatrix() const {
     D3DXMATRIX m;
-    return *D3DXMatrixIdentity(&m);
+    m_pdus.setWorldMatrix(*D3DXMatrixIdentity(&m));
   }
-  D3PosDirUpScale getPDUS() const {
-    D3PosDirUpScale pdus;
-    pdus.setWorldMatrix(getWorldMatrix());
-    return pdus;
+  D3PosDirUpScale &getPDUS() {
+    return m_pdus;
   }
 };
 

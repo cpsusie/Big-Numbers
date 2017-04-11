@@ -11,7 +11,6 @@ private:
   HICON                   m_hIcon;
   HACCEL                  m_accelTable;
   SceneEditor             m_editor;
-  D3DXVECTOR3             m_boardCenter;
   D3Scene                 m_scene;
   String                  m_gameName;
 #ifdef _DEBUG
@@ -39,10 +38,6 @@ private:
   }
   CPoint   get3DPanelPoint(CPoint point, bool screenRelative) const;
   void     setCameraPosition(const D3DXVECTOR3 &pos);
-  D3DXVECTOR3 getCameraPosition();
-  inline const D3DXVECTOR3 &getBoardCenter() const {
-    return m_boardCenter;
-  }
   inline const D3DXVECTOR3 getFieldCenter(const Field &f) const {
     return m_boardObject->getFieldCenter(f);
   }
@@ -77,9 +72,7 @@ private:
     return m_boardObject->getCurrentField();
   }
   void        showInfo(const TCHAR *format,...);
-/*
   void        turnBoard(int degree);
-*/
 public:
   CQuartoDlg(CWnd *pParent = NULL);
   
@@ -116,10 +109,8 @@ protected:
   afx_msg void OnFileSave();
   afx_msg void OnFileSaveAs();
   afx_msg void OnFileExit();
-/*
   afx_msg void OnViewLeft();
   afx_msg void OnViewRight();
-*/
   afx_msg void OnViewResetView();
   afx_msg void OnOptionsLevelBeginner();
   afx_msg void OnOptionsLevelExpert();

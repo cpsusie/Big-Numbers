@@ -32,11 +32,9 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
   return optimizeMesh(mesh);
 }
 
-D3DXMATRIX D3LightControlDirectional::getWorldMatrix() const {
+D3PosDirUpScale &D3LightControlDirectional::getPDUS() {
   const LIGHT light = getLightParam();
-  return D3PosDirUpScale()
-           .setPos(-m_sphereRadius * light.Direction)
-           .setScaleAll(getSize())
-           .setOrientation(light.Direction, ortonormalVector(light.Direction))
-           .getWorldMatrix();
+  return m_pdus.setPos(-m_sphereRadius * light.Direction)
+               .setScaleAll(getSize())
+               .setOrientation(light.Direction, ortonormalVector(light.Direction));
 }

@@ -11,9 +11,7 @@ D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
   optimizeMesh(m_mesh);
 }
 
-D3DXMATRIX D3LightControlPoint::getWorldMatrix() const {
-  return D3PosDirUpScale()
-           .setScaleAll(getSize())
-           .setPos(getLightParam().Position)
-           .getWorldMatrix();
+D3PosDirUpScale &D3LightControlPoint::getPDUS() {
+  return m_pdus.setScaleAll(getSize())
+               .setPos(getLightParam().Position);
 }

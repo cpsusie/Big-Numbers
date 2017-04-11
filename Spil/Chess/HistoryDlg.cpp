@@ -199,7 +199,7 @@ bool CHistoryDlg::showContextMenu(CWnd* pWnd, CPoint point) {
   }
   m_selectedPly = plyIndex;
   if(!m_history[m_selectedPly].hasAnnotation()) {
-    removeMenuItem(&menu, ID_REMOVE_ANNOTATION);
+    removeMenuItem(menu, ID_REMOVE_ANNOTATION);
   }
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
   return true;

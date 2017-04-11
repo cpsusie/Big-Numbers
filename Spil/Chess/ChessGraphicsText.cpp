@@ -47,7 +47,7 @@ void ColoredTextFields::print(HDC hdc, int x, int y, TextAlignment align) const 
     break;
 
   case ALIGN_RIGHT :
-    { for(int i = (int)n; i-- >= 0;) {
+    { for(int i = (int)n; i-- > 0;) {
         const ColoredText &str = (*this)[i];
         x -= dtextOut(hdc,x,y,align,str,str.m_backColor,str.m_textColor);
       }

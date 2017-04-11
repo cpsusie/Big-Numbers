@@ -84,40 +84,20 @@ void D3Scene::setShadeMode(D3DSHADEMODE shadeMode) {
   setProperty(SP_SHADEMODE, m_shadeMode, shadeMode);
 }
 
-void D3Scene::setObjPos(const D3DXVECTOR3 &pos) {
-  const D3DXVECTOR3 oldPos = m_objectPDUS.getPos();
-  if(pos != oldPos) {
-    m_objectPDUS.setPos(pos);
-    notifyPropertyChanged(SP_OBJECTPOS, &oldPos, &pos);
-  }
-}
-
-void D3Scene::setObjOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
-  D3PosDirUpScale newObj = m_objectPDUS;
-  newObj.setOrientation(dir, up);
-  setProperty(SP_OBJECTORIENTATION, m_objectPDUS,  newObj);
-}
-
-void D3Scene::setObjScale(const D3DXVECTOR3 &scale) {
-  if(scale != getObjScale()) {
-    const D3DXVECTOR3 oldScale = getObjScale();
-    m_objectPDUS.setScale(scale);
-    notifyPropertyChanged(SP_OBJECTSCALE, &oldScale,  &scale);
-  }
+void D3Scene::setCameraPDUS(const D3PosDirUpScale &pdus) {
+  setProperty(SP_CAMERAPDUS, m_cameraPDUS, pdus);
 }
 
 void D3Scene::setCameraPos(const D3DXVECTOR3 &pos) {
-  const D3DXVECTOR3 oldPos = m_cameraPDUS.getPos();
-  if(pos != oldPos) {
-    m_cameraPDUS.setPos(pos);
-    notifyPropertyChanged(SP_CAMERAPOS, &oldPos, &pos);
-  }
+  D3PosDirUpScale newCam = m_cameraPDUS;
+  newCam.setPos(pos);
+  setCameraPDUS(newCam);
 }
 
 void D3Scene::setCameraOrientation(const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up) {
   D3PosDirUpScale newCam = m_cameraPDUS;
   newCam.setOrientation(dir, up);
-  setProperty(SP_CAMERAORIENTATION, m_cameraPDUS, newCam);
+  setCameraPDUS(newCam);
 }
 
 void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
@@ -125,11 +105,9 @@ void D3Scene::setCameraLookAt(const D3DXVECTOR3 &point) {
 }
 
 void D3Scene::initObjTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &dir, const D3DXVECTOR3 &up, const D3DXVECTOR3 &scale) {
-  D3PosDirUpScale newObj = m_objectPDUS;
-  newObj.setPos(pos)
-        .setOrientation(dir, up)
-        .setScale(scale);
-  setProperty(SP_OBJECTORIENTATION, m_objectPDUS, newObj);
+  m_objectPDUS.setPos(pos)
+              .setOrientation(dir, up)
+              .setScale(scale);
 }
 
 void D3Scene::initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt, const D3DXVECTOR3 &up) {
@@ -137,7 +115,7 @@ void D3Scene::initCameraTrans(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &lookAt,
   newCam.setPos(pos)
         .setOrientation(lookAt - pos, up)
         .setScale(D3DXVECTOR3(1,1,1));
-  setProperty(SP_CAMERAORIENTATION, m_cameraPDUS, newCam);
+  setCameraPDUS(newCam);
 }
 
 void D3Scene::updateViewMatrix() {
@@ -269,7 +247,7 @@ D3DMATERIAL D3Scene::getDefaultMaterial() const {
   return material;
 }
 
-D3DCOLOR D3Scene::getGlobalAmbientColor() const {
+D3PCOLOR D3Scene::getGlobalAmbientColor() const {
   D3DCOLOR color;
   V(m_device->GetRenderState(D3DRS_AMBIENT, &color));
   return color;

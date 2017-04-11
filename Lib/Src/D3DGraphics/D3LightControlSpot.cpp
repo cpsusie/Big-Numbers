@@ -35,11 +35,9 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
   return optimizeMesh(mesh);
 }
 
-D3DXMATRIX D3LightControlSpot::getWorldMatrix() const {
+D3PosDirUpScale &D3LightControlSpot::getPDUS() {
   const LIGHT param = getLightParam();
-  return D3PosDirUpScale()
-           .setPos(param.Position)
-           .setScaleAll(getSize())
-           .setOrientation(param.Direction, ortonormalVector(param.Direction))
-           .getWorldMatrix();
+  return m_pdus.setPos(param.Position)
+               .setScaleAll(getSize())
+               .setOrientation(param.Direction, ortonormalVector(param.Direction));
 }

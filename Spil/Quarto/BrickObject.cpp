@@ -130,6 +130,6 @@ void BrickObject::draw() {
 String BrickObject::toString() const {
   return format(_T("%s\nPDUS:\n%s")
                ,getName().cstr()
-               ,indentString(getPDUS().toString(),2).cstr());
+               ,indentString(((BrickObject*)this)->getPDUS().toString(),2).cstr());
 }
 #endif

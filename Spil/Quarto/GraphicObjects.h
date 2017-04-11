@@ -66,18 +66,18 @@ private:
 public:
   BrickObject(D3Scene &scene, BYTE attr);
   ~BrickObject();
-  D3PosDirUpScale getPDUS() const {
+  D3PosDirUpScale &getPDUS() {
     return m_pdus;
   }
+#ifdef _DEBUG
   inline void setPos(const D3DXVECTOR3 &pos) {
     m_pdus.setPos(pos);
-#ifdef _DEBUG
     debugLog(_T("New position(%s) %s\nPDUS:\n%s")
             ,getName().cstr()
             ,::toString(pos).cstr()
             ,indentString(getPDUS().toString(),2).cstr());
-#endif
   }
+#endif
   inline void setMarked(bool marked) {
     m_marked = marked;
 #ifdef _DEBUG
@@ -111,9 +111,6 @@ private:
 public:
   GameBoardObject(D3Scene &scene);
   ~GameBoardObject();
-  inline D3PosDirUpScale getPDUS() const {
-    return D3Scene::getOrigo();
-  }
   inline bool hasCurrentField() const {
     return m_currentField.isField();
   }

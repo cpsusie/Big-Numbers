@@ -2,6 +2,7 @@
 #include <Random.h>
 #include <D3DGraphics/MeshBuilder.h>
 #include <D3DGraphics/D3CoordinateSystem.h>
+#include <D3DGraphics/D3Math.h>
 #include "QuartoDlg.h"
 #include "AboutBox.h"
 
@@ -32,10 +33,8 @@ BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
     ON_COMMAND(ID_FILE_SAVE             , OnFileSave            )
     ON_COMMAND(ID_FILE_SAVEAS           , OnFileSaveAs          )
     ON_COMMAND(ID_FILE_EXIT             , OnFileExit            )
-/*
     ON_COMMAND(ID_VIEW_LEFT             , OnViewLeft            )
     ON_COMMAND(ID_VIEW_RIGHT            , OnViewRight           )
-*/
     ON_COMMAND(ID_VIEW_RESETVIEW        , OnViewResetView       )
     ON_COMMAND(ID_OPTIONS_LEVEL_BEGINNER, OnOptionsLevelBeginner)
     ON_COMMAND(ID_OPTIONS_LEVEL_EXPERT  , OnOptionsLevelExpert  )
@@ -150,7 +149,6 @@ void CQuartoDlg::createScene() {
 void CQuartoDlg::createBoard() {
   m_boardObject = new GameBoardObject(m_scene);
   m_scene.addSceneObject(m_boardObject);
-  m_boardCenter = m_boardObject->getPos();
 }
 
 void CQuartoDlg::createLight() {
@@ -171,18 +169,20 @@ void CQuartoDlg::createLight() {
 
 void CQuartoDlg::resetCamera() {
   m_scene.setCameraPos(D3DXVECTOR3(0, 8.102f, -15.757f));
-  m_scene.setCameraOrientation(D3DXVECTOR3(0, -0.457f, 0.889f), D3DXVECTOR3(0,0,1));
+  D3DXVECTOR3 camDir = unitVector(D3DXVECTOR3(0, -0.457f, 0.889f));
+  D3DXVECTOR3 camUp(0,0,1);
+  camUp -= camDir * (camDir*camUp);
+  camUp = unitVector(camUp);
+//  float s = camDir * camUp;
+
+  m_scene.setCameraOrientation(camDir,camUp);
   setWindowSize(this, CSize(947, 614));
 }
 
 // always look directly to center of board
 void CQuartoDlg::setCameraPosition(const D3DXVECTOR3 &pos) {
   m_scene.setCameraPos(pos);
-  m_scene.setCameraLookAt(getBoardCenter());
-}
-
-D3DXVECTOR3 CQuartoDlg::getCameraPosition() {
-  return m_scene.getCameraPos();
+  m_scene.setCameraLookAt(m_boardObject->getPos());
 }
 
 void CQuartoDlg::selectField(const Field &f) {
@@ -485,7 +485,6 @@ void CQuartoDlg::showInfo(const TCHAR *format,...) {
   setWindowText(this, IDC_GAMEINFO, s);
 }
 
-#ifdef __HIDE__
 void CQuartoDlg::OnViewLeft() {
   turnBoard(-90);
 }
@@ -495,16 +494,16 @@ void CQuartoDlg::OnViewRight() {
 }
 
 void CQuartoDlg::turnBoard(int degree) {
-  LPDIRECT3DRMFRAME scene = m_d3.getSceneFrame();
-  D3DVECTOR dir,up,axis;
-  axis.x = axis.z = 0;
-  axis.y = 1;
-  m_boardFrame->GetOrientation(scene,&dir,&up);
-  dir = rotate(dir,axis,GRAD2RAD(degree));
-  m_boardFrame->SetOrientation(scene,dir.x,dir.y,dir.z,up.x,up.y,up.z);
-  m_d3.paint();
+  const D3DXVECTOR3     &axis    = m_boardObject->getUp();
+  const D3DXVECTOR3     &origo   = m_boardObject->getPos();
+  D3PosDirUpScale        camPDUS = m_scene.getCameraPDUS();
+  const D3DXMATRIX       m       = createRotationMatrix(axis, GRAD2RAD(degree));
+  const D3DXVECTOR3      newPos  = m * (camPDUS.getPos()-origo) + origo;
+  const D3DXVECTOR3      newDir  = m * camPDUS.getDir();
+  const D3DXVECTOR3      newUp   = m * camPDUS.getUp();
+  m_scene.setCameraPDUS(camPDUS.setPos(newPos).setOrientation(newDir, newUp));
+  render(RENDER_3D);
 }
-#endif
 
 void CQuartoDlg::OnViewResetView() {
   resetCamera();

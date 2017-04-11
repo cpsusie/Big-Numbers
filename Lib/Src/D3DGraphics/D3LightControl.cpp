@@ -38,7 +38,7 @@ LIGHT D3LightControl::getLightParam() const {
   assert(result.Type == getLightType());
   return result;
 }
-
+/*
 D3DMATERIAL D3LightControl::getMaterial() const {
   D3DMATERIAL mat;
   ZeroMemory(&mat, sizeof(D3DMATERIAL));
@@ -50,16 +50,11 @@ D3DMATERIAL D3LightControl::getMaterial() const {
   mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR,1);
   return mat;
 }
+*/
 
 D3DCOLORVALUE D3LightControl::getColor() const {
   const LIGHT light = getLightParam();
   return light.m_enabled ? light.Diffuse : getDisabledColor();
-}
-
-D3PosDirUpScale D3LightControl::getPDUS() const {
-  D3PosDirUpScale pdus;
-  pdus.setWorldMatrix(getWorldMatrix());
-  return pdus;
 }
 
 #ifndef USE_RENDEREFFECT

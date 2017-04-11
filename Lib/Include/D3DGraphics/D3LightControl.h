@@ -7,8 +7,8 @@
 class D3LightControl : public SceneObjectWithMesh {
 private:
 
-  const int m_lightIndex;
-  float     m_size;
+  const int       m_lightIndex;
+  float           m_size;
 
 #ifdef USE_RENDEREFFECT
   LPD3DXEFFECT  m_effect;
@@ -24,6 +24,7 @@ private:
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   virtual D3DCOLORVALUE getColor() const;
+  D3PosDirUpScale m_pdus;
   D3DMATERIAL getMaterial() const;
 
 #ifdef USE_RENDEREFFECT
@@ -56,8 +57,6 @@ public:
   }
   LIGHT getLightParam() const;
 
-  D3PosDirUpScale getPDUS() const;
-
   void draw();
 };
 
@@ -79,7 +78,7 @@ public:
   inline void setSphereRadius(float radius) {
     m_sphereRadius = radius;
   }
-  D3DXMATRIX getWorldMatrix() const;
+  D3PosDirUpScale &getPDUS();
 };
 
 class D3LightControlPoint : public D3LightControl {
@@ -88,7 +87,7 @@ public:
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_POINT;
   }
-  D3DXMATRIX getWorldMatrix() const;
+  D3PosDirUpScale &getPDUS();
 };
 
 class D3LightControlSpot : public D3LightControl {
@@ -100,5 +99,5 @@ public:
   D3DLIGHTTYPE getLightType() const {
     return D3DLIGHT_SPOT;
   }
-  D3DXMATRIX getWorldMatrix() const;
+  D3PosDirUpScale &getPDUS();
 };
