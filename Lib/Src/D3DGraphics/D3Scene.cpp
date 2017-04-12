@@ -667,14 +667,27 @@ void D3Scene::addSceneObject(D3SceneObject *obj) {
 void D3Scene::removeSceneObject(D3SceneObject *obj) {
   const int index = (int)m_objectArray.getFirstIndex(obj);
   if(index >= 0) {
+    if (obj->getType() == SOTYPE_ANIMATEDOBJECT) {
+      ((D3AnimatedSurface*)obj)->stopAnimation();
+    }
     m_objectArray.remove(index);
   }
   notifyIfObjectArrayChanged();
 }
 
 void D3Scene::removeAllSceneObjects() {
-  m_objectArray.clear();
-  notifyIfObjectArrayChanged();
+  while(getObjectCount() > 0) {
+    removeSceneObject(m_objectArray.last());
+  }
+}
+
+void D3Scene::stopAllAnimations() {
+  for (size_t i = 0; i < m_objectArray.size(); i++) {
+    D3SceneObject *obj = m_objectArray[i];
+    if (obj->getType() == SOTYPE_ANIMATEDOBJECT) {
+      ((D3AnimatedSurface*)obj)->stopAnimation();
+    }
+  }
 }
 
 void D3Scene::notifyIfObjectArrayChanged() {

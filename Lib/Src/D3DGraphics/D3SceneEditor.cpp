@@ -400,10 +400,11 @@ void D3SceneEditor::setCurrentObjectPos(const D3DXVECTOR3 &pos) {
   D3SceneObject *obj = getCurrentObject();
   if(obj == NULL) return;
   switch(obj->getType()) {
-  case SOTYPE_LIGHTCONTROL:
+  case SOTYPE_LIGHTCONTROL  :
     getScene().setLightPosition(getCurrentLightControl()->getLightIndex(), pos);
     // continue case
-  case SOTYPE_VISUALOBJECT:
+  case SOTYPE_VISUALOBJECT  :
+  case SOTYPE_ANIMATEDOBJECT:
     obj->setPos(pos);
     render(RENDER_ALL);
     break;

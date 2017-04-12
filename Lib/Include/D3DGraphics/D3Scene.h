@@ -201,7 +201,10 @@ public:
   void addSceneObject(   D3SceneObject *obj);
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
-
+  void stopAllAnimations();
+  inline int getObjectCount() const {
+    return (int)m_objectArray.size();
+  }
   void setFillMode(D3DFILLMODE fillMode);
   inline D3DFILLMODE getFillMode() const {
     return m_fillMode;
