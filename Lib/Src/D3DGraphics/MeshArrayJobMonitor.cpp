@@ -23,8 +23,8 @@ private:
   StringArray                       m_errors;
   void clearResultQueue();
 public:
-  const MeshArrayJobParameter &m_param;
-  MeshArrayJobMonitor(const MeshArrayJobParameter &param)
+  const AbstractMeshArrayJobParameter &m_param;
+  MeshArrayJobMonitor(const AbstractMeshArrayJobParameter &param)
   : m_param(param)
   {
     m_jobCount = 0;
@@ -115,9 +115,9 @@ class MeshArrayCreator;
 
 class MeshBuilderWorker : public Runnable {
 private:
-  MeshArrayCreator    &m_arrayCreator;
-  VariableMeshCreator *m_meshCreator;
-  MeshArrayJobMonitor &getJobMonitor();
+  MeshArrayCreator            &m_arrayCreator;
+  AbstractVariableMeshCreator *m_meshCreator;
+  MeshArrayJobMonitor         &getJobMonitor();
 public:
   MeshBuilderWorker(MeshArrayCreator *arrayCreator);
   ~MeshBuilderWorker();
@@ -129,7 +129,7 @@ private:
   MeshArrayJobMonitor m_jobMonitor;
   const UINT          m_frameCount;
 public:
-  MeshArrayCreator(const MeshArrayJobParameter &param)
+  MeshArrayCreator(const AbstractMeshArrayJobParameter &param)
   : m_jobMonitor(param)
   , m_frameCount(param.getFrameCount())
   {
@@ -209,7 +209,7 @@ UINT MeshBuilderWorker::run() {
   return 0;
 }
 
-MeshArray MeshArrayJobParameter::createMeshArray(CWnd *wnd) {
+MeshArray AbstractMeshArrayJobParameter::createMeshArray(CWnd *wnd) {
   MeshArrayCreator mac(*this);
   ProgressWindow(wnd, mac, 300, 200);
   if(mac.isInterrupted()) {

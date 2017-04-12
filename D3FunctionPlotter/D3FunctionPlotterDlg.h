@@ -8,6 +8,8 @@
 #include "D3DGraphics/D3SceneEditor.h"
 #include "MemoryLogThread.h"
 
+//#define LOGMEMORY
+
 class CD3FunctionPlotterDlg : public CDialog, public D3SceneContainer {
 private:
     HICON                       m_hIcon;
@@ -15,7 +17,9 @@ private:
     SimpleLayoutManager         m_layoutManager;
     D3Scene                     m_scene;
     D3SceneEditor               m_editor;
+#ifdef LOGMEMORY
     MemoryLogThread             m_memlogThread;
+#endif
     Function2DSurfaceParameters m_function2DSurfaceParam;
     ParametricSurfaceParameters m_parametricSurfaceParam;
     IsoSurfaceParameters        m_isoSurfaceParam;

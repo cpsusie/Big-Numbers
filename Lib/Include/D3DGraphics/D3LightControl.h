@@ -2,15 +2,13 @@
 
 #include <D3DGraphics/D3Scene.h>
 
-#define USE_RENDEREFFECT
-
 class D3LightControl : public SceneObjectWithMesh {
 private:
+  static bool   s_renderEffectEnabled;
+  const int     m_lightIndex;
+  int           m_materialIndex;
+  float         m_size;
 
-  const int       m_lightIndex;
-  float           m_size;
-
-#ifdef USE_RENDEREFFECT
   LPD3DXEFFECT  m_effect;
   D3DXHANDLE    m_renderWith1LightNoTextureHandle;
   D3DXHANDLE    m_materialDiffuseColorHandle;
@@ -19,26 +17,23 @@ private:
   D3DXHANDLE    m_worldHandle;
 
   void createEffect();
-#endif
-
+  void createMaterial();
+  void setMaterialColors() const;
+  void setMaterialColors(D3DMATERIAL &mat) const;
 protected:
   static LPD3DXMESH &optimizeMesh(LPD3DXMESH &mesh);
   virtual D3DCOLORVALUE getColor() const;
   D3PosDirUpScale m_pdus;
-  D3DMATERIAL getMaterial() const;
-
-#ifdef USE_RENDEREFFECT
   void prepareEffect();
-#endif
 
   inline D3DCOLORVALUE getDisabledColor() const {
     return D3DXCOLOR(0.1f,0.1f,0.1f,1);
   }
 
-  void setSize(float size) {
+  inline void setSize(float size) {
     m_size = size;
   }
-  float getSize() const {
+  inline float getSize() const {
     return m_size;
   }
 public:
@@ -52,11 +47,20 @@ public:
   }
   virtual D3DLIGHTTYPE getLightType() const = 0;
 
-  int getLightIndex() const {
+  inline int getLightIndex() const {
     return m_lightIndex;
+  }
+  int getMaterialIndex() const {
+    return s_renderEffectEnabled ? -1 : m_materialIndex;
   }
   LIGHT getLightParam() const;
 
+  static inline void enableRenderEffect(bool enabled) {
+    s_renderEffectEnabled = enabled;
+  }
+  static inline bool isRenderEffectEnabled() {
+    return s_renderEffectEnabled;
+  }
   void draw();
 };
 

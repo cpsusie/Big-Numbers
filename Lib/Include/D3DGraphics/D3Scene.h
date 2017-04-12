@@ -359,8 +359,8 @@ String toString(LPD3DXMESH             mesh        );
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
 String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 
-#define USE_SCENEFILLMODE  0x0002
-#define USE_SCENESHADEMODE 0x0004
+#define USE_SCENEFILLMODE  0x0001
+#define USE_SCENESHADEMODE 0x0002
 
 #define USE_SCENEPARAMS  (USE_SCENEFILLMODE | USE_SCENESHADEMODE)
 
@@ -385,7 +385,7 @@ public:
     m_userData = NULL;
   }
   virtual ~D3SceneObject() {
-  };
+  }
   virtual SceneObjectType getType() const {
     return SOTYPE_VISUALOBJECT;
   }
@@ -404,10 +404,7 @@ public:
   virtual String toString() const {
     return getName();
   }
-  inline D3Scene &getScene() {
-    return m_scene;
-  }
-  inline const D3Scene &getScene() const {
+  inline D3Scene &getScene() const {
     return m_scene;
   }
   inline void *getUserData() {

@@ -3,18 +3,18 @@
 #include <NumberInterval.h>
 #include <D3DGraphics/MeshArray.h>
 
-class VariableMeshCreator {
+class AbstractVariableMeshCreator {
 public:
   virtual LPD3DXMESH createMesh(double time) const = 0;
-  virtual ~VariableMeshCreator() {
+  virtual ~AbstractVariableMeshCreator() {
   }
 };
 
-class MeshArrayJobParameter {
+class AbstractMeshArrayJobParameter {
 public:
   virtual const DoubleInterval &getTimeInterval()    const = 0;
   virtual UINT                  getFrameCount()      const = 0;
-  virtual VariableMeshCreator  *fetchMeshCreator()   const = 0;
+  virtual AbstractVariableMeshCreator  *fetchMeshCreator()   const = 0;
   MeshArray createMeshArray(CWnd *wnd);
 
 };

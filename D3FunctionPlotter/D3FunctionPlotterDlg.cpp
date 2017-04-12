@@ -88,7 +88,6 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
       pSysMenu->AppendMenu(MF_STRING, IDM_ABOUTBOX, strAboutMenu);
     }
   }
-
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
 
@@ -107,7 +106,9 @@ BOOL CD3FunctionPlotterDlg::OnInitDialog() {
   m_scene.setLightDirection(0, rotate(m_scene.getCameraDir(), m_scene.getCameraRight(), 0.2f));
 
   setInfoVisible(isMenuItemChecked(this, ID_VIEW_SHOW3DINFO));
+#ifdef LOGMEMORY
   m_memlogThread.start();
+#endif
 
   String title = getWindowText(this);
   String architecture, compileMode;
@@ -165,7 +166,7 @@ static Line tetraEder[] = {
 
 void CD3FunctionPlotterDlg::createInitialObject() {
   try {
-  D3LineArray *tt = new D3LineArray(m_scene, tetraEder, ARRAYSIZE(tetraEder));
+//  D3LineArray *tt = new D3LineArray(m_scene, tetraEder, ARRAYSIZE(tetraEder));
 //  setCalculatedObject(tt);
 
   createSaddle();
@@ -195,8 +196,8 @@ D3SceneObject *CD3FunctionPlotterDlg::createRotatedProfile() {
 }
 
 void CD3FunctionPlotterDlg::createSaddle() {
-  m_function2DSurfaceParam.setName("Saddle");
-  m_function2DSurfaceParam.m_expr        = "(x*x-y*y)/2";
+  m_function2DSurfaceParam.setName(_T("Saddle"));
+  m_function2DSurfaceParam.m_expr        = _T("(x*x-y*y)/2");
   m_function2DSurfaceParam.m_xInterval   =  DoubleInterval(-1,1);
   m_function2DSurfaceParam.m_yInterval   =  DoubleInterval(-1,1);
   m_function2DSurfaceParam.m_pointCount  = 20;
@@ -219,8 +220,7 @@ BOOL CD3FunctionPlotterDlg::PreTranslateMessage(MSG *pMsg) {
 
 void CD3FunctionPlotterDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
     CDialog::OnSysCommand(nID, lParam);
   }
@@ -232,12 +232,11 @@ void CD3FunctionPlotterDlg::OnPaint() {
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width() - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
@@ -328,7 +327,6 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
     }
 //  }
 }
-
 
 void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentParameter *param) {
   if(m_calculatedObject) {

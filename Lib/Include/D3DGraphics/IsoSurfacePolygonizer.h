@@ -70,7 +70,7 @@ public:
   inline Point3DKey() {}
   inline Point3DKey(int _i, int _j, int _k) : i(_i), j(_j), k(_k) {
   }
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return (i*2347 + j) * 2341 + k;
   }
   inline bool operator==(const Point3DKey &key) const {
@@ -98,7 +98,7 @@ public:
   inline CubeEdgeHashKey(const Point3DKey &key1, const Point3DKey &key2) : m_key1(key1), m_key2(key2) {
     checkAndSwap();
   }
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return m_key1.hashCode() + m_key2.hashCode();
   }
   inline bool operator==(const CubeEdgeHashKey &k) const {
@@ -122,7 +122,7 @@ public:
 class TriangleStrip {
 public:
   UINT m_vertexId[10];
-  char         m_count;
+  char m_count;
   inline TriangleStrip() : m_count(0) {
   }
   inline TriangleStrip(UINT v0, UINT v1, UINT v2) : m_count(3) {
@@ -213,9 +213,44 @@ public:
   String toString() const;
 };
 
+class PolygonizerCubeArray : public Array<CompactArray<char> > {
+private:
+  const BYTE m_index;
+public:
+  PolygonizerCubeArray(UINT index);
+#ifdef DUMP_CUBETABLE
+  String toString() const;
+#endif
+};
+
+class PolygonizerCubeArrayTable {
+private:
+  PolygonizerCubeArray *m_table[256];
+public:
+  inline PolygonizerCubeArrayTable() {
+    for (UINT i = 0; i < ARRAYSIZE(m_table); i++) {
+      m_table[i] = new PolygonizerCubeArray(i);
+    }
+#ifdef DUMP_CUBETABLE
+    debugLog(_T("CubeArray:\n%s"), toString().cstr());
+#endif
+  }
+  ~PolygonizerCubeArrayTable() {
+    for(UINT i = 0; i < ARRAYSIZE(m_table); i++) {
+      delete m_table[i];
+    }
+  }
+  inline const PolygonizerCubeArray &get(UINT index) const {
+    return *m_table[index];
+  }
+#ifdef DUMP_CUBETABLE
+  String toString() const;
+#endif
+};
+           
 class IsoSurfacePolygonizer {
 private:
-  static Array<CompactArray<char> >     m_cubetable[256];
+  static PolygonizerCubeArrayTable      s_cubetable;
   IsoSurfaceEvaluator                  &m_eval;            // Implicit surface function
   double                                m_cellSize, m_delta;   // Cube size, normal delta
   Cube3D                                m_boundingBox;     // bounding box
@@ -229,13 +264,6 @@ private:
   CompactArray<Face3>                   m_face3Buffer;
   PolygonizerStatistics                 m_statistics;
   D3DCOLOR                              m_color;
-
-  friend class InitPolygonizerCubeTable;
-  static void         makeCubeTable();
-  static void         clearCubeTable();
-#ifdef DUMP_CUBETABLE
-  static void         dumpCubeTable(const String &fileName="");
-#endif
 
   Point3D             findStartPoint(const Point3D &start);
   IsoSurfaceTest      findStartPoint(bool positive, const Point3D &start);

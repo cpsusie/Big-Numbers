@@ -3,17 +3,16 @@
 
 DECLARE_THISFILE;
 
+bool D3LightControl::s_renderEffectEnabled = false;
+
 D3LightControl::D3LightControl(D3Scene &scene, int lightIndex) : SceneObjectWithMesh(scene), m_lightIndex(lightIndex) {
-  m_size = 1;
-#ifdef USE_RENDEREFFECT
-  m_effect = NULL;
-#endif
+  m_size          =  1;
+  m_materialIndex = -1;
+  m_effect        = NULL;
 }
 
 D3LightControl::~D3LightControl() {
-#ifdef USE_RENDEREFFECT
   SAFE_RELEASE(m_effect);
-#endif
 }
 
 LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
@@ -38,45 +37,55 @@ LIGHT D3LightControl::getLightParam() const {
   assert(result.Type == getLightType());
   return result;
 }
-/*
-D3DMATERIAL D3LightControl::getMaterial() const {
-  D3DMATERIAL mat;
-  ZeroMemory(&mat, sizeof(D3DMATERIAL));
-  D3DCOLORVALUE color = getColor();
+
+void D3LightControl::setMaterialColors(D3DMATERIAL &mat) const {
+  const D3DCOLORVALUE color = getColor();
   mat.Diffuse  = color;
   mat.Specular = color;
-  mat.Power = 0.7f;
 #define EMSIVEFACTOR 0.4f
   mat.Emissive = D3DXCOLOR(color.r*EMSIVEFACTOR, color.g*EMSIVEFACTOR, color.b*EMSIVEFACTOR,1);
-  return mat;
 }
-*/
+
+void D3LightControl::createMaterial() {
+  if(hasMaterial()) return;
+  D3DMATERIAL mat;
+  ZeroMemory(&mat, sizeof(D3DMATERIAL));
+  setMaterialColors(mat);
+  mat.Power = 0.7f;
+  m_materialIndex = getScene().addMaterial(mat);
+}
+
+void D3LightControl::setMaterialColors() const {
+  MATERIAL mat = getScene().getMaterial(getMaterialIndex());
+  setMaterialColors(mat);
+  getScene().setMaterial(mat);
+}
 
 D3DCOLORVALUE D3LightControl::getColor() const {
   const LIGHT light = getLightParam();
   return light.m_enabled ? light.Diffuse : getDisabledColor();
 }
 
-#ifndef USE_RENDEREFFECT
-
 void D3LightControl::draw() {
-  prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
-  V(getDevice()->SetMaterial(&getMaterial()));
-  V(m_mesh->DrawSubset(0));
-}
-
-#else
-
-void D3LightControl::draw() {
-  prepareEffect();
-  UINT passCount;
-  V(m_effect->Begin( &passCount, 0));
-  for(UINT pass = 0; pass < passCount; pass++) {
-    V(m_effect->BeginPass(pass));
+  if(!s_renderEffectEnabled) {
+    if(!hasMaterial()) {
+      createMaterial();
+    } else {
+      setMaterialColors();
+    }
+    prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
     V(m_mesh->DrawSubset(0));
-    V(m_effect->EndPass());
+  } else {
+    prepareEffect();
+    UINT passCount;
+    V(m_effect->Begin( &passCount, 0));
+    for(UINT pass = 0; pass < passCount; pass++) {
+      V(m_effect->BeginPass(pass));
+      V(m_mesh->DrawSubset(0));
+      V(m_effect->EndPass());
+    }
+    V(m_effect->End());
   }
-  V(m_effect->End());
 }
 
 void D3LightControl::prepareEffect() {
@@ -174,5 +183,3 @@ void D3LightControl::createEffect() {
   m_worldHandle                     = m_effect->GetParameterByName( NULL, "g_mWorld"               );
   m_worldViewProjectionHandle       = m_effect->GetParameterByName( NULL, "g_mWorldViewProjection" );
 }
-
-#endif

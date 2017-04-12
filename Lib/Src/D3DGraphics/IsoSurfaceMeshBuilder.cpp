@@ -128,7 +128,7 @@ LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const IsoSurfaceParameters &param
   return createMesh(device, IsoSurface(param));
 }
 
-class VariableIsoSurfaceMeshCreator : public VariableMeshCreator {
+class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
   LPDIRECT3DDEVICE   m_device;
   mutable IsoSurface m_surface;
@@ -146,7 +146,7 @@ LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time) const {
   return ::createMesh(m_device, m_surface);
 }
 
-class IsoSurfaceMeshArrayJobParameter : public MeshArrayJobParameter {
+class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
   LPDIRECT3DDEVICE            m_device;
   const IsoSurfaceParameters &m_param;
@@ -161,7 +161,7 @@ public:
   UINT getFrameCount() const {
     return m_param.m_frameCount;
   }
-  VariableMeshCreator *fetchMeshCreator() const {
+  AbstractVariableMeshCreator *fetchMeshCreator() const {
     return new VariableIsoSurfaceMeshCreator(m_device, m_param);
   }
 };

@@ -106,6 +106,7 @@ BEGIN
     LTEXT           "Transparent",IDC_STATIC,159,254,47,16,SS_CENTERIMAGE
 END
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Menu
@@ -157,21 +158,21 @@ BEGIN
         END
         POPUP "Fillmode"
         BEGIN
-            MENUITEM "Wireframe",                  ID_FILLMODE_WIREFRAME
-            MENUITEM "Solid",                      ID_FILLMODE_SOLID
-            MENUITEM "Point",                      ID_FILLMODE_POINT
+            MENUITEM "Wireframe",                   ID_FILLMODE_WIREFRAME
+            MENUITEM "Solid",                       ID_FILLMODE_SOLID
+            MENUITEM "Point",                       ID_FILLMODE_POINT
         END
         POPUP "Shading"
         BEGIN
-            MENUITEM "Flat",                       ID_SHADING_FLAT
-            MENUITEM "Gouraud",                    ID_SHADING_GOURAUD
-            MENUITEM "Phong",                      ID_SHADING_PHONG, GRAYED
+            MENUITEM "Flat",                        ID_SHADING_FLAT
+            MENUITEM "Gouraud",                     ID_SHADING_GOURAUD
+            MENUITEM "Phong",                       ID_SHADING_PHONG, GRAYED
         END
         MENUITEM SEPARATOR
-        MENUITEM "Enable specular highlights",     ID_ENABLE_SPECULARHIGHLIGHT
-        MENUITEM "Disable specular highlights",    ID_DISABLE_SPECULARHIGHLIGHT
-        MENUITEM "Show coordinatesystem",          ID_SHOWCOORDINATESYSTEM
-        MENUITEM "Hide coordinatesystem",          ID_HIDECOORDINATESYSTEM
+        MENUITEM "Enable specular highlights",  ID_ENABLE_SPECULARHIGHLIGHT
+        MENUITEM "Disable specular highlights", ID_DISABLE_SPECULARHIGHLIGHT
+        MENUITEM "Show coordinatesystem",       ID_SHOWCOORDINATESYSTEM
+        MENUITEM "Hide coordinatesystem",       ID_HIDECOORDINATESYSTEM
         MENUITEM SEPARATOR
         MENUITEM "Save scene parameters...",    ID_SAVESCENEPARAMETERS
         MENUITEM "Load scene parameters...",    ID_LOADSCENEPARAMETERS
@@ -190,6 +191,8 @@ BEGIN
         MENUITEM SEPARATOR
         MENUITEM "Hide",                        ID_LIGHTCONTROL_HIDE
         MENUITEM "Remove",                      ID_LIGHT_REMOVE
+        MENUITEM "Use rendereffect",            ID_LIGHTCONTROL_ENABLEEFFECT
+        MENUITEM "Normal rendering",            ID_LIGHTCONTROL_DISABLEEFFECT
     END
 END
 
@@ -205,12 +208,12 @@ BEGIN
         MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
         POPUP "Animation"
         BEGIN
-            MENUITEM "Start animation",                  ID_OBJECT_STARTANIMATION
-            MENUITEM "Start animation backwards",        ID_OBJECT_STARTBCKANIMATION
-            MENUITEM "Start alternating animation",      ID_OBJECT_STARTALTANIMATION
-            MENUITEM "Reverse animation",                ID_OBJECT_REVERSEANIMATION
-            MENUITEM "Stop animaton",                    ID_OBJECT_STOPANIMATION
-            MENUITEM "Adjust speed",                     ID_OBJECT_CONTROL_SPEED
+            MENUITEM "Start animation",             ID_OBJECT_STARTANIMATION
+            MENUITEM "Start animation backwards",   ID_OBJECT_STARTBCKANIMATION
+            MENUITEM "Start alternating animation", ID_OBJECT_STARTALTANIMATION
+            MENUITEM "Reverse animation",           ID_OBJECT_REVERSEANIMATION
+            MENUITEM "Stop animaton",               ID_OBJECT_STOPANIMATION
+            MENUITEM "Adjust speed",                ID_OBJECT_CONTROL_SPEED
         END
         MENUITEM SEPARATOR
         MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
@@ -218,6 +221,7 @@ BEGIN
         MENUITEM "Remove",                      ID_OBJECT_REMOVE
     END
 END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //

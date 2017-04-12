@@ -84,7 +84,7 @@ LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters
   return createMeshFrom2DFunction(device, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
 }
 
-class VariableFunction2DMeshCreator : public VariableMeshCreator {
+class VariableFunction2DMeshCreator : public AbstractVariableMeshCreator {
 private:
   LPDIRECT3DDEVICE                   m_device;
   const Function2DSurfaceParameters &m_param;
@@ -116,7 +116,7 @@ LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
                                  );
 }
 
-class Function2DMeshArrayJobParameter : public MeshArrayJobParameter {
+class Function2DMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
   LPDIRECT3DDEVICE                   m_device;
   const Function2DSurfaceParameters &m_param;
@@ -132,7 +132,7 @@ public:
   UINT getFrameCount() const {
     return m_param.m_frameCount;
   }
-  VariableMeshCreator *fetchMeshCreator() const {
+  AbstractVariableMeshCreator *fetchMeshCreator() const {
     return new VariableFunction2DMeshCreator(m_device, m_param);
   }
 };

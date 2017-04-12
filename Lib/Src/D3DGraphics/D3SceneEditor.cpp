@@ -282,48 +282,50 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     return true;
   case WM_COMMAND:
     switch (pMsg->wParam) {
-    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()             ; return true;
-    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()           ; return true;
-    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()       ; return true;
-    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()  ; return true;
-    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()      ; return true;
-    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()             ; return true;
-    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()           ; return true;
-    case ID_OBJECT_REMOVE                 : OnObjectRemove()                 ; return true;
-    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()         ; return true;
-    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()      ; return true;
-    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()      ; return true;
-    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()       ; return true;
-    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()          ; return true;
-    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()           ; return true;
-    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()            ; return true;
-    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()       ; return true;
-    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()             ; return true;
-    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()          ; return true;
-    case ID_FILLMODE_POINT                : OnFillmodePoint()                ; return true;
-    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()            ; return true;
-    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                ; return true;
-    case ID_SHADING_FLAT                  : OnShadingFlat()                  ; return true;
-    case ID_SHADING_GOURAUD               : OnShadingGouraud()               ; return true;
-    case ID_SHADING_PHONG                 : OnShadingPhong()                 ; return true;
-    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().enableSpecular(true)  ; return true;
-    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().enableSpecular(false) ; return true;
-    case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true) ; return true;
-    case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false); return true;
-    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()          ; return true;
-    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                ; return true;
-    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                 ; return true;
-    case ID_LIGHT_REMOVE                  : OnLightRemove()                  ; return true;
-    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)            ; return true;
-    case ID_LIGHT_DISABLE                 : setLightEnabled(false)           ; return true;
-    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()            ; return true;
-    case ID_LIGHT_ADJUSTANGLES            : OnLightAdjustAngles()            ; return true;
-    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)    ; return true;
-    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)   ; return true;
-    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()             ; return true;
-    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()           ; return true;
-    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()          ; return true;
-    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()          ; return true;
+    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()              ; return true;
+    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()            ; return true;
+    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()        ; return true;
+    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()   ; return true;
+    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()       ; return true;
+    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()              ; return true;
+    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()            ; return true;
+    case ID_OBJECT_REMOVE                 : OnObjectRemove()                  ; return true;
+    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()          ; return true;
+    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()       ; return true;
+    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()       ; return true;
+    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()        ; return true;
+    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()           ; return true;
+    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()            ; return true;
+    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()             ; return true;
+    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()        ; return true;
+    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()              ; return true;
+    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()           ; return true;
+    case ID_FILLMODE_POINT                : OnFillmodePoint()                 ; return true;
+    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()             ; return true;
+    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                 ; return true;
+    case ID_SHADING_FLAT                  : OnShadingFlat()                   ; return true;
+    case ID_SHADING_GOURAUD               : OnShadingGouraud()                ; return true;
+    case ID_SHADING_PHONG                 : OnShadingPhong()                  ; return true;
+    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().enableSpecular(true)   ; return true;
+    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().enableSpecular(false)  ; return true;
+    case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)  ; return true;
+    case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false) ; return true;
+    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()           ; return true;
+    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                 ; return true;
+    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                  ; return true;
+    case ID_LIGHT_REMOVE                  : OnLightRemove()                   ; return true;
+    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)             ; return true;
+    case ID_LIGHT_DISABLE                 : setLightEnabled(false)            ; return true;
+    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()             ; return true;
+    case ID_LIGHT_ADJUSTANGLES            : OnLightAdjustAngles()             ; return true;
+    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)     ; return true;
+    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)    ; return true;
+    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()              ; return true;
+    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()            ; return true;
+    case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true) ; return true;
+    case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false); return true;
+    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()           ; return true;
+    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()           ; return true;
     default:
       if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
@@ -529,6 +531,7 @@ void D3SceneEditor::OnMouseWheelAnimationSpeed(UINT nFlags, short zDelta, CPoint
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if(obj && obj->isRunning()) {
     obj->scaleSpeed(factor);
+    render(RENDER_INFO);
   }
 }
 
@@ -896,6 +899,13 @@ void D3SceneEditor::setLightControlsVisible(bool visible) {
   render(RENDER_ALL);
 }
 
+void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
+  if (enabled != D3LightControl::isRenderEffectEnabled()) {
+    D3LightControl::enableRenderEffect(enabled);
+    render(RENDER_3D);
+  }
+}
+
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
@@ -1061,6 +1071,10 @@ void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
     removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT);
     removeMenuItem(menu, ID_LIGHT_ADJUSTANGLES );
   }
+  removeMenuItem(menu
+                ,D3LightControl::isRenderEffectEnabled()
+                ?ID_LIGHTCONTROL_ENABLEEFFECT
+                :ID_LIGHTCONTROL_DISABLEEFFECT);
   showContextMenu(menu, point);
 }
 
@@ -1139,9 +1153,7 @@ void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
 }
 
 void D3SceneEditor::OnObjectEditMaterial() {
-  if(m_currentSceneObject 
-  && m_currentSceneObject->getType() == SOTYPE_VISUALOBJECT
-  && m_currentSceneObject->hasMaterial()) {
+  if(m_currentSceneObject && m_currentSceneObject->hasMaterial()) {
     m_materialDlgThread->setCurrentDialogProperty(&m_currentSceneObject->getMaterial());
     m_materialDlgThread->setDialogVisible(true);
     m_lightDlgThread->setDialogVisible(false);
@@ -1153,45 +1165,57 @@ void D3SceneEditor::OnObjectResetScale() {
   getScene().getObjPDUS().setScaleAll(1);
 }
 
-void D3SceneEditor::OnObjectStartAnimation() {
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
+typedef enum {
+  ANIMATION_STOPPED
+ ,ANIMATION_FORWARD
+ ,ANIMATION_BACKWARDS
+ ,ANIMATION_ALTERNATING
+} AnimationState;
+
+static void setCurrentAnimationState(D3AnimatedSurface *obj, AnimationState newState) {
   if(obj == NULL) return;
-  obj->startAnimation(ANIMATE_FORWARD);
+  switch(newState) {
+  case ANIMATION_STOPPED    :
+    if(obj->isRunning()) obj->stopAnimation();
+    break;
+  case ANIMATION_FORWARD    : 
+    if(obj->isRunning()) obj->stopAnimation();
+    obj->startAnimation(ANIMATE_FORWARD    );
+    break;
+  case ANIMATION_BACKWARDS  :
+    if(obj->isRunning()) obj->stopAnimation();
+    obj->startAnimation(ANIMATE_BACKWARD   );
+    break;
+  case ANIMATION_ALTERNATING:
+    if(obj->isRunning()) obj->stopAnimation();
+    obj->startAnimation(ANIMATE_ALTERNATING);
+    break;
+  }
+}
+
+void D3SceneEditor::OnObjectStartAnimation() {
+  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_FORWARD);
 }
 
 void D3SceneEditor::OnObjectStartBckAnimation() {
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
-  if(obj == NULL) return;
-  obj->startAnimation(ANIMATE_BACKWARD);
+  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_BACKWARDS);
 }
 
 void D3SceneEditor::OnObjectStartAltAnimation() {
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
-  if(obj == NULL) return;
-  obj->startAnimation(ANIMATE_ALTERNATING);
+  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_ALTERNATING);
 }
 
 void D3SceneEditor::OnObjectReverseAnimation() {
   D3AnimatedSurface *obj = getCurrentAnimatedobject();
   if((obj == NULL) || !obj->isRunning()) return;
   switch(obj->getAnimationType()) {
-  case ANIMATE_FORWARD    :
-    obj->stopAnimation();
-    obj->startAnimation(ANIMATE_BACKWARD);
-    break;
-  case ANIMATE_BACKWARD   :
-    obj->stopAnimation();
-    obj->startAnimation(ANIMATE_FORWARD);
-    break;
-  case ANIMATE_ALTERNATING:
-    break;
+  case ANIMATE_FORWARD    : setCurrentAnimationState(obj, ANIMATION_BACKWARDS); break;
+  case ANIMATE_BACKWARD   : setCurrentAnimationState(obj, ANIMATION_FORWARD  ); break;
   }
 }
 
 void D3SceneEditor::OnObjectStopAnimation() {
-  D3AnimatedSurface *obj = getCurrentAnimatedobject();
-  if(obj == NULL) return;
-  obj->stopAnimation();
+  setCurrentAnimationState(getCurrentAnimatedobject(), ANIMATION_STOPPED);
 }
 
 void D3SceneEditor::OnObjectRemove() {
