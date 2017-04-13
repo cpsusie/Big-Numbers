@@ -148,7 +148,7 @@ void IsoSurfacePolygonizer::addSurfaceVertices(const StackedCube &cube) {
     doTetra(cube, RTN, LBF, LTF, RBF);
     doTetra(cube, RTN, LTF, RTF, RBF);
   } else {
-    doCube(cube);            // or polygonize the cube directly:
+    doCube(cube);         // or polygonize the cube directly:
   }
   flushFaceBuffer();
 }
@@ -218,14 +218,14 @@ void IsoSurfacePolygonizer::doCube(const StackedCube &cube) {
 void IsoSurfacePolygonizer::doTetra(const HashedCubeCorner &a, const HashedCubeCorner &b, const HashedCubeCorner &c, const HashedCubeCorner &d) {
   m_statistics.m_doTetraCalls++;
 
-  unsigned char index = 0;
-  if(a.m_positive) index += 8;
-  if(b.m_positive) index += 4;
-  if(c.m_positive) index += 2;
-  if(d.m_positive) index += 1;
+  BYTE index = 0;
+  if(a.m_positive) index |= 8;
+  if(b.m_positive) index |= 4;
+  if(c.m_positive) index |= 2;
+  if(d.m_positive) index |= 1;
   // index is now 4-bit number representing one of the 16 possible cases
 
-  int ab = -1, ac= -1, ad = -1, bc = -1, bd = -1, cd = -1;
+  int ab, ac, ad, bc, bd, cd;
   if(a.m_positive != b.m_positive) ab = getVertexId(a, b);
   if(a.m_positive != c.m_positive) ac = getVertexId(a, c);
   if(a.m_positive != d.m_positive) ad = getVertexId(a, d);
@@ -496,11 +496,9 @@ void IsoSurfacePolygonizer::dumpCornerMap() {
 
 #define KEY_GT(k1,k2) (((k1).i>(k2).i) || ((k1).i==(k2).i && ((k1).j>(k2).j || ((k1).j==(k2).j && (k1).k>(k2).k))))
 
-#define SWAPKEYS(k1,k2) { const Point3DKey tmp=k1; k1=k2; k2=tmp; }
-
 void CubeEdgeHashKey::checkAndSwap() {
   if(KEY_GT(m_key1, m_key2)) {
-    SWAPKEYS(m_key1, m_key2);
+    std::swap(m_key1, m_key2);
   }
 }
 
@@ -583,7 +581,7 @@ static String intArrayToString(const CompactIntArray &a) {
   } else {
     String result = format(_T("%d:%s"), (int)0, format1000(a[0]).cstr());
     for(size_t i = 1; i < a.size(); i++) {
-      result += format(_T(", %d:%s"), (int)i, format1000(a[i]).cstr());
+      result += format(_T(", %zd:%s"), i, format1000(a[i]).cstr());
     }
     return result;
   }
