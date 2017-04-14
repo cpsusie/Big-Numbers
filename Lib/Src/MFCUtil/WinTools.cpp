@@ -196,14 +196,19 @@ void putWindowBesideWindow(CWnd *wnd, CWnd *otherWindow) {
       top    = bottom - sz.cy;
     }
   }
-  if((screenSize.cx - opr.right >= sz.cx) || (opr.left < sz.cx/2)) {
-    left  = opr.right + 8;
+  const int spaceRightFor = screenSize.cx - opr.right;
+  const int spaceLeftFor  = opr.left;
+  if((spaceRightFor >= sz.cx) || (opr.left < sz.cx/2)) {
+    left  = opr.right + 4;
     right = left + sz.cx;
   } else if(opr.left > sz.cx) {
-    right = opr.left - 8;
+    right = opr.left - 4;
     left  = right - sz.cx;
+  } else if(spaceLeftFor > spaceRightFor) { // put it leftmost
+    left  = 0;
+    right = sz.cx;
   } else {
-    right = opr.right;
+    right = screenSize.cx-1;
     left  = right - sz.cx;
   }
   const CRect wr(left,top, right, bottom);

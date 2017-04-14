@@ -64,7 +64,7 @@ Point3D ExprParametricSurface::operator()(const Point2D &ts) {
   return Point3D(m_exprX.evaluate(), m_exprY.evaluate(), m_exprZ.evaluate());
 }
 
-LPD3DXMESH createMeshFromParametricSurface(LPDIRECT3DDEVICE device, ParametricSurface &sf, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
+LPD3DXMESH createMeshFromParametricSurface(AbstractMeshFactory &amf, ParametricSurface &sf, const DoubleInterval &tInterval, const DoubleInterval &sInterval, UINT nt, UINT ns, bool doubleSided) {
   nt = max(nt, 2);
   ns = max(ns, 2);
 
@@ -92,29 +92,29 @@ LPD3DXMESH createMeshFromParametricSurface(LPDIRECT3DDEVICE device, ParametricSu
       face.addVertexNormalIndex(index  +ns, index  +ns);
     }
   }
-  return mb.createMesh(device, doubleSided);
+  return mb.createMesh(amf, doubleSided);
 }
 
-LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
   ExprParametricSurface ps(param);
-  return createMeshFromParametricSurface(device, ps, param.getTInterval(), param.getSInterval(), param.m_tStepCount, param.m_sStepCount, param.m_doubleSided);
+  return createMeshFromParametricSurface(amf, ps, param.getTInterval(), param.getSInterval(), param.m_tStepCount, param.m_sStepCount, param.m_doubleSided);
 }
 
 class VariableParametricSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
-  LPDIRECT3DDEVICE                   m_device;
+  AbstractMeshFactory               &m_amf;
   const ParametricSurfaceParameters &m_param;
   mutable ExprParametricSurface      m_ps;
 public:
-  VariableParametricSurfaceMeshCreator(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
+  VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param);
   LPD3DXMESH createMesh(double time) const;
 };
 
-VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
-: m_device(device)
+VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param)
+: m_amf(amf)
 , m_param(param)
 , m_ps(param)
 {
@@ -122,7 +122,7 @@ VariableParametricSurfaceMeshCreator::VariableParametricSurfaceMeshCreator(LPDIR
 
 LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time) const {
   m_ps.setTime(time);
-  return createMeshFromParametricSurface(m_device
+  return createMeshFromParametricSurface(m_amf
                                         ,m_ps
                                         ,m_param.getTInterval()
                                         ,m_param.getSInterval()
@@ -134,11 +134,11 @@ LPD3DXMESH VariableParametricSurfaceMeshCreator::createMesh(double time) const {
 
 class ParametricSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  LPDIRECT3DDEVICE                   m_device;
+  AbstractMeshFactory               &m_amf;
   const ParametricSurfaceParameters &m_param;
 public:
-  ParametricSurfaceMeshArrayJobParameter(LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param)
-    : m_device(device)
+  ParametricSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const ParametricSurfaceParameters &param)
+    : m_amf(amf)
     , m_param(param)
   {
   }
@@ -149,13 +149,13 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    return new VariableParametricSurfaceMeshCreator(m_device, m_param);
+    return new VariableParametricSurfaceMeshCreator(m_amf, m_param);
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const ParametricSurfaceParameters &param) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
-  return ParametricSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
+  return ParametricSurfaceMeshArrayJobParameter(amf, param).createMeshArray(wnd);
 }

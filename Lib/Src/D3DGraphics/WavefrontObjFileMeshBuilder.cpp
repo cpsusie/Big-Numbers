@@ -130,14 +130,14 @@ void MeshBuilder::parseWavefrontObjFile(FILE *f) {
   }
 }
 
-LPD3DXMESH createMeshFromObjFile(LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided) {
+LPD3DXMESH createMeshFromObjFile(AbstractMeshFactory &amf, const String &fileName, bool doubleSided) {
   FILE *f = NULL;
   try {
     f = FOPEN(fileName, _T("r"));
     MeshBuilder mb;
     mb.parseWavefrontObjFile(f);
     fclose(f);
-    return mb.createMesh(device, false);
+    return mb.createMesh(amf, false);
   } catch(...) {
     if(f) {
       fclose(f);

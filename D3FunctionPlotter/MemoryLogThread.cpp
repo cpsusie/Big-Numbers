@@ -3,7 +3,7 @@
 #include <Date.h>
 #include "MemoryLogThread.h"
 
-unsigned int MemoryLogThread::run() {
+UINT MemoryLogThread::run() {
   setDeamon(true);
   for(;;) {
     const PROCESS_MEMORY_COUNTERS mem = getProcessMemoryUsage();

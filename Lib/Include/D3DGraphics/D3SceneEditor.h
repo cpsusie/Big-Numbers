@@ -15,7 +15,7 @@ typedef enum {
  ,CONTROL_CAMERA_KEEPFOCUS
  ,CONTROL_LIGHT
  ,CONTROL_SPOTLIGHTPOINT
- ,CONTROL_SPOTANGLES
+ ,CONTROL_SPOTLIGHTANGLES
  ,CONTROL_ANIMATION_SPEED
  ,CONTROL_MATERIAL
  ,CONTROL_LIGHTCOLOR
@@ -121,14 +121,11 @@ private:
     inline bool isPropertyChangesEnabled() const {
       return m_stateFlags.contains(SE_HANDLEPROPERTYCHANGES);
     }
-    String stateFlagsToString() const;
     CMenu &loadMenu(CMenu &menu, int id);
     void showContextMenu(CMenu &menu, CPoint point);
 
     void setCurrentControl(CurrentObjectControl control);
     bool moveLastMouseToFocusPoint();
-
-    String getSelectedString() const;
 
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
@@ -180,7 +177,7 @@ private:
     void OnObjectResetScale();
     void OnObjectRemove();
     void OnLightAdjustColors();
-    void OnLightAdjustAngles();
+    void OnLightAdjustSpotAngles();
     void OnLightControlSpotAt();
     void OnLightControlHide();
     void OnAddLightDirectional();
@@ -203,6 +200,8 @@ private:
     void OnLButtonDblClk(UINT nFlags, CPoint point);
     BOOL OnMouseWheel(   UINT nFlags, short zDelta, CPoint pt);
     void OnContextMenu(  CWnd *pwnd, CPoint point);
+    String stateFlagsToString() const;
+    String getSelectedString() const;
 public:
     D3SceneEditor();
     ~D3SceneEditor();

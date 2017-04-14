@@ -3,6 +3,24 @@
 
 #define caseStr(f) case f: return _T(#f)
 
+String toString(D3DFILLMODE mode) {
+  switch(mode) {
+  caseStr(D3DFILL_POINT    );
+  caseStr(D3DFILL_WIREFRAME);
+  caseStr(D3DFILL_SOLID    );
+  default: return format(_T("Unknown fillMode:%d"), mode);
+  }
+}
+
+String toString(D3DSHADEMODE mode) {
+  switch(mode) {
+  caseStr(D3DSHADE_FLAT    );
+  caseStr(D3DSHADE_GOURAUD );
+  caseStr(D3DSHADE_PHONG   );
+  default: return format(_T("Unknown shadeMode:%d"), mode);
+  }
+}
+
 String toString(D3DFORMAT f) {
   switch(f) {
   caseStr(D3DFMT_UNKNOWN              );

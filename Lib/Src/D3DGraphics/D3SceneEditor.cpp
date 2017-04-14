@@ -90,16 +90,11 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
   if(!isPropertyChangesEnabled()) return;
   if(source == &getScene()) {
     switch(id) {
-    case SP_FILLMODE                :
-    case SP_SHADEMODE               :
     case SP_CAMERAPDUS              :
     case SP_PROJECTIONTRANSFORMATION:
     case SP_LIGHTPARAMETERS         :
-    case SP_AMBIENTLIGHT            :
-    case SP_SPECULARENABLED         :
     case SP_MATERIALPARAMETERS      :
     case SP_OBJECTCOUNT             :
-    case SP_BACKGROUNDCOLOR         :
       render(RENDER_ALL);
       break;
     case SP_ANIMATIONFRAMEINDEX     :
@@ -125,9 +120,11 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
     switch(id) {
     case SP_BACKGROUNDCOLOR:
       getScene().setBackgroundColor(*(D3DCOLOR*)newValue);
+      render(RENDER_ALL);
       break;
     case SP_AMBIENTLIGHT           :
-      getScene().setGlobalAmbientColor(*(D3DCOLOR*)newValue);
+      getScene().setAmbientColor(*(D3DCOLOR*)newValue);
+      render(RENDER_ALL);
       break;
     }
   }
@@ -247,7 +244,7 @@ BOOL D3SceneEditor::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   case CONTROL_LIGHT                 :
     OnMouseWheelLight(               nFlags, zDelta, pt);
     return TRUE;
-  case CONTROL_SPOTANGLES            :
+  case CONTROL_SPOTLIGHTANGLES            :
     OnMouseWheelLightSpotAngle(      nFlags, zDelta, pt);
     return TRUE;
   }
@@ -282,50 +279,50 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     return true;
   case WM_COMMAND:
     switch (pMsg->wParam) {
-    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()              ; return true;
-    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()            ; return true;
-    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()        ; return true;
-    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()   ; return true;
-    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()       ; return true;
-    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()              ; return true;
-    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()            ; return true;
-    case ID_OBJECT_REMOVE                 : OnObjectRemove()                  ; return true;
-    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()          ; return true;
-    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()       ; return true;
-    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()       ; return true;
-    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()        ; return true;
-    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()           ; return true;
-    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()            ; return true;
-    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()             ; return true;
-    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()        ; return true;
-    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()              ; return true;
-    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()           ; return true;
-    case ID_FILLMODE_POINT                : OnFillmodePoint()                 ; return true;
-    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()             ; return true;
-    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                 ; return true;
-    case ID_SHADING_FLAT                  : OnShadingFlat()                   ; return true;
-    case ID_SHADING_GOURAUD               : OnShadingGouraud()                ; return true;
-    case ID_SHADING_PHONG                 : OnShadingPhong()                  ; return true;
-    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().enableSpecular(true)   ; return true;
-    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().enableSpecular(false)  ; return true;
-    case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)  ; return true;
-    case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false) ; return true;
-    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()           ; return true;
-    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                 ; return true;
-    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                  ; return true;
-    case ID_LIGHT_REMOVE                  : OnLightRemove()                   ; return true;
-    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)             ; return true;
-    case ID_LIGHT_DISABLE                 : setLightEnabled(false)            ; return true;
-    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()             ; return true;
-    case ID_LIGHT_ADJUSTANGLES            : OnLightAdjustAngles()             ; return true;
-    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)     ; return true;
-    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)    ; return true;
-    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()              ; return true;
-    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()            ; return true;
-    case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true) ; return true;
-    case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false); return true;
-    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()           ; return true;
-    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()           ; return true;
+    case ID_CONTROL_OBJECT_POS            : OnControlObjectPos()                ; return true;
+    case ID_CONTROL_OBJECT_SCALE          : OnControlObjectScale()              ; return true;
+    case ID_CONTROL_OBJECT_KEEPFOCUS      : OnControlObjectKeepFocus()          ; return true;
+    case ID_CONTROL_OBJECT_SCALE_KEEPFOCUS: OnControlObjectScaleKeepFocus()     ; return true;
+    case ID_CONTROL_OBJECT_MOVEROTATE     : OnControlObjectMoveRotate()         ; return true;
+    case ID_OBJECT_RESETSCALE             : OnObjectResetScale()                ; return true;
+    case ID_OBJECT_ADJUSTMATERIAL         : OnObjectEditMaterial()              ; return true;
+    case ID_OBJECT_REMOVE                 : OnObjectRemove()                    ; return true;
+    case ID_OBJECT_STARTANIMATION         : OnObjectStartAnimation()            ; return true;
+    case ID_OBJECT_STARTBCKANIMATION      : OnObjectStartBckAnimation()         ; return true;
+    case ID_OBJECT_STARTALTANIMATION      : OnObjectStartAltAnimation()         ; return true;
+    case ID_OBJECT_REVERSEANIMATION       : OnObjectReverseAnimation()          ; return true;
+    case ID_OBJECT_STOPANIMATION          : OnObjectStopAnimation()             ; return true;
+    case ID_OBJECT_CONTROL_SPEED          : OnObjectControlSpeed()              ; return true;
+    case ID_CONTROL_CAMERA_WALK           : OnControlCameraWalk()               ; return true;
+    case ID_CONTROL_CAMERA_KEEPFOCUS      : OnControlCameraKeepFocus()          ; return true;
+    case ID_EDIT_AMBIENTLIGHT             : OnEditAmbientLight()                ; return true;
+    case ID_EDIT_BACKGROUNDCOLOR          : OnEditBackgroundColor()             ; return true;
+    case ID_FILLMODE_POINT                : OnFillmodePoint()                   ; return true;
+    case ID_FILLMODE_WIREFRAME            : OnFillmodeWireframe()               ; return true;
+    case ID_FILLMODE_SOLID                : OnFillmodeSolid()                   ; return true;
+    case ID_SHADING_FLAT                  : OnShadingFlat()                     ; return true;
+    case ID_SHADING_GOURAUD               : OnShadingGouraud()                  ; return true;
+    case ID_SHADING_PHONG                 : OnShadingPhong()                    ; return true;
+    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().setSpecularEnable(true)  ; return true;
+    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().setSpecularEnable(false) ; return true;
+    case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)    ; return true;
+    case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false)   ; return true;
+    case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()             ; return true;
+    case ID_ADDLIGHT_POINT                : OnAddLightPoint()                   ; return true;
+    case ID_ADDLIGHT_SPOT                 : OnAddLightSpot()                    ; return true;
+    case ID_LIGHT_REMOVE                  : OnLightRemove()                     ; return true;
+    case ID_LIGHT_ENSABLE                 : setLightEnabled(true)               ; return true;
+    case ID_LIGHT_DISABLE                 : setLightEnabled(false)              ; return true;
+    case ID_LIGHT_ADJUSTCOLORS            : OnLightAdjustColors()               ; return true;
+    case ID_LIGHT_ADJUSTSPOTANGLES        : OnLightAdjustSpotAngles()           ; return true;
+    case ID_SHOW_LIGHTCONTROLS            : setLightControlsVisible(true)       ; return true;
+    case ID_HIDE_LIGHTCONTROLS            : setLightControlsVisible(false)      ; return true;
+    case ID_LIGHTCONTROL_HIDE             : OnLightControlHide()                ; return true;
+    case ID_LIGHTCONTROL_SPOTAT           : OnLightControlSpotAt()              ; return true;
+    case ID_LIGHTCONTROL_ENABLEEFFECT     : setLightControlRenderEffect(true)   ; return true;
+    case ID_LIGHTCONTROL_DISABLEEFFECT    : setLightControlRenderEffect(false)  ; return true;
+    case ID_SAVESCENEPARAMETERS           : OnSaveSceneParameters()             ; return true;
+    case ID_LOADSCENEPARAMETERS           : OnLoadSceneParameters()             ; return true;
     default:
       if ((ID_SELECT_LIGHT0 <= pMsg->wParam) && (pMsg->wParam <= ID_SELECT_LIGHT20)) {
         const int index = (int)pMsg->wParam - ID_SELECT_LIGHT0;
@@ -986,16 +983,6 @@ void D3SceneEditor::OnContextMenuBackground(CPoint point) {
    for (Iterator<size_t> it = definedLights.getIterator(); it.hasNext();) {
      removeMenuItem(menu, (int)it.next() + ID_SELECT_LIGHT0);
    }
-   switch(getScene().getFillMode()) {
-   case D3DFILL_POINT    : removeMenuItem(menu, ID_FILLMODE_POINT      ); break;
-   case D3DFILL_WIREFRAME: removeMenuItem(menu, ID_FILLMODE_WIREFRAME  ); break;
-   case D3DFILL_SOLID    : removeMenuItem(menu, ID_FILLMODE_SOLID      ); break;
-   }
-   switch(getScene().getShadeMode()) {
-   case D3DSHADE_FLAT    : removeMenuItem(menu, ID_SHADING_FLAT        ); break;
-   case D3DSHADE_GOURAUD : removeMenuItem(menu, ID_SHADING_GOURAUD     ); break;
-   case D3DSHADE_PHONG   : removeMenuItem(menu, ID_SHADING_PHONG       ); break;
-   }
    removeMenuItem(menu, isCoordinateSystemVisible()
                        ?ID_SHOWCOORDINATESYSTEM
                        :ID_HIDECOORDINATESYSTEM);
@@ -1021,12 +1008,7 @@ void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
   }
   switch(m_currentSceneObject->getType()) {
   case SOTYPE_VISUALOBJECT  :
-    removeMenuItem(menu, ID_OBJECT_STARTANIMATION   );
-    removeMenuItem(menu, ID_OBJECT_STARTBCKANIMATION);
-    removeMenuItem(menu, ID_OBJECT_STARTALTANIMATION);
-    removeMenuItem(menu, ID_OBJECT_REVERSEANIMATION );
-    removeMenuItem(menu, ID_OBJECT_STOPANIMATION    );
-    removeMenuItem(menu, ID_OBJECT_CONTROL_SPEED    );
+    removeSubMenuContainingId(menu, ID_OBJECT_STARTANIMATION   );
     break;
 
   case SOTYPE_ANIMATEDOBJECT:
@@ -1048,6 +1030,24 @@ void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
     }
     break;
   }
+  if(!m_currentSceneObject->hasFillMode()) {
+    removeSubMenuContainingId(menu, ID_FILLMODE_WIREFRAME);
+  } else {
+    switch (m_currentSceneObject->getFillMode()) {
+    case D3DFILL_SOLID     : removeMenuItem(menu, ID_FILLMODE_SOLID    ); break;
+    case D3DFILL_WIREFRAME : removeMenuItem(menu, ID_FILLMODE_WIREFRAME); break;
+    case D3DFILL_POINT     : removeMenuItem(menu, ID_FILLMODE_POINT    ); break;
+    }
+  }
+  if(!m_currentSceneObject->hasShadeMode()) {
+    removeSubMenuContainingId(menu, ID_SHADING_FLAT);
+  } else {
+    switch (m_currentSceneObject->getShadeMode()) {
+    case D3DSHADE_FLAT     : removeMenuItem(menu, ID_SHADING_FLAT    ); break;
+    case D3DSHADE_GOURAUD  : removeMenuItem(menu, ID_SHADING_GOURAUD ); break;
+    case D3DSHADE_PHONG    : removeMenuItem(menu, ID_SHADING_PHONG   ); break;
+    }
+  }
   if(m_currentSceneObject) {
     m_currentSceneObject->modifyContextMenu(*menu.GetSubMenu(0));
   }
@@ -1068,8 +1068,8 @@ void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
     removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT);
   }
   if(light.Type != D3DLIGHT_SPOT) {
-    removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT);
-    removeMenuItem(menu, ID_LIGHT_ADJUSTANGLES );
+    removeMenuItem(menu, ID_LIGHTCONTROL_SPOTAT    );
+    removeMenuItem(menu, ID_LIGHT_ADJUSTSPOTANGLES );
   }
   removeMenuItem(menu
                 ,D3LightControl::isRenderEffectEnabled()
@@ -1240,8 +1240,8 @@ void D3SceneEditor::OnLightAdjustColors() {
   setCurrentControl(CONTROL_LIGHTCOLOR);
 }
 
-void D3SceneEditor::OnLightAdjustAngles() {
-  setCurrentControl(CONTROL_SPOTANGLES);
+void D3SceneEditor::OnLightAdjustSpotAngles() {
+  setCurrentControl(CONTROL_SPOTLIGHTANGLES);
 }
 
 void D3SceneEditor::OnLightControlSpotAt() {
@@ -1265,13 +1265,13 @@ void D3SceneEditor::OnLightRemove() {
 }
 
 void D3SceneEditor::OnEditAmbientLight() {
-  const D3DCOLOR oldColor = getScene().getGlobalAmbientColor();
+  const D3DCOLOR oldColor = getScene().getAmbientColor();
   CColorDlg dlg("Ambient color", SP_AMBIENTLIGHT, oldColor);
   dlg.addPropertyChangeListener(this);
   m_currentEditor = &dlg;
   setCurrentControl(CONTROL_AMBIENTLIGHTCOLOR);
   if(dlg.DoModal() != IDOK) {
-    getScene().setGlobalAmbientColor(oldColor);
+    getScene().setAmbientColor(oldColor);
     getScene().render();
   }
   m_currentEditor = NULL;
@@ -1292,18 +1292,17 @@ void D3SceneEditor::OnEditBackgroundColor() {
   setCurrentControl(CONTROL_IDLE);
 }
 
-void D3SceneEditor::OnFillmodePoint()     { getScene().setFillMode(D3DFILL_POINT     ); }
-void D3SceneEditor::OnFillmodeWireframe() { getScene().setFillMode(D3DFILL_WIREFRAME ); }
-void D3SceneEditor::OnFillmodeSolid()     { getScene().setFillMode(D3DFILL_SOLID     ); }
-
-void D3SceneEditor::OnShadingFlat()       { getScene().setShadeMode(D3DSHADE_FLAT    ); }
-void D3SceneEditor::OnShadingGouraud()    { getScene().setShadeMode(D3DSHADE_GOURAUD ); }
-void D3SceneEditor::OnShadingPhong()      { getScene().setShadeMode(D3DSHADE_PHONG   ); }
+void D3SceneEditor::OnFillmodePoint()     { getCurrentObject()->setFillMode(D3DFILL_POINT     ); render(RENDER_ALL); }
+void D3SceneEditor::OnFillmodeWireframe() { getCurrentObject()->setFillMode(D3DFILL_WIREFRAME ); render(RENDER_ALL); }
+void D3SceneEditor::OnFillmodeSolid()     { getCurrentObject()->setFillMode(D3DFILL_SOLID     ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingFlat()       { getCurrentObject()->setShadeMode(D3DSHADE_FLAT    ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingGouraud()    { getCurrentObject()->setShadeMode(D3DSHADE_GOURAUD ); render(RENDER_ALL); }
+void D3SceneEditor::OnShadingPhong()      { getCurrentObject()->setShadeMode(D3DSHADE_PHONG   ); render(RENDER_ALL); }
 
 void D3SceneEditor::setCoordinateSystemVisible(bool visible) {
   if(visible) {
     if(m_coordinateSystem == NULL) {
-      m_coordinateSystem  = new D3CoordinateSystem(getScene());
+      m_coordinateSystem = new D3CoordinateSystem(getScene());
       getScene().addSceneObject(m_coordinateSystem);
     } else {
       m_coordinateSystem->setVisible(true);
@@ -1369,7 +1368,7 @@ const TCHAR *controlString(CurrentObjectControl control) {
   caseStr(CAMERA_KEEPFOCUS       )
   caseStr(LIGHT                  )
   caseStr(SPOTLIGHTPOINT         )
-  caseStr(SPOTANGLES             )
+  caseStr(SPOTLIGHTANGLES        )
   caseStr(ANIMATION_SPEED        )
   caseStr(MATERIAL               )
   caseStr(LIGHTCOLOR             )
@@ -1390,13 +1389,28 @@ String D3SceneEditor::stateFlagsToString() const {
   return result;
 }
 
+String D3SceneEditor::getSelectedString() const {
+  if(m_currentSceneObject == NULL) {
+    return _T("--");
+  } else {
+    String result = m_currentSceneObject->getName();
+    if(m_currentSceneObject->hasFillMode()) {
+      result += format(_T(" %s"), ::toString(m_currentSceneObject->getFillMode()).cstr());
+    }
+    if(m_currentSceneObject->hasShadeMode()) {
+      result += format(_T(" %s"), ::toString(m_currentSceneObject->getShadeMode()).cstr());
+    }
+    return result;
+  }
+}
+
 String D3SceneEditor::toString() const {
   if(!isEnabled()) return EMPTYSTRING;
 
-  String result = format(_T("Current Motion:%s Selected:%s %s")
+  String result = format(_T("Current Motion:%s State:%s Selected:%s")
                         ,controlString(m_currentControl)
-                        ,m_currentSceneObject?m_currentSceneObject->getName().cstr():_T("--")
                         ,stateFlagsToString().cstr()
+                        ,getSelectedString().cstr()
                         );
   if(m_pickedRay.isSet()) {
     result += format(_T("\nPicked ray:%s"), m_pickedRay.toString().cstr());
@@ -1446,7 +1460,7 @@ String D3SceneEditor::toString() const {
   case CONTROL_LIGHTCOLOR            :
   case CONTROL_LIGHT                 :
   case CONTROL_SPOTLIGHTPOINT        :
-  case CONTROL_SPOTANGLES            :
+  case CONTROL_SPOTLIGHTANGLES       :
     { const D3LightControl *lc = getCurrentLightControl();
       if(lc) {
         result += format(_T("\nLight:%s"), ::toString(lc->getLightParam()).cstr());
@@ -1471,7 +1485,7 @@ String D3SceneEditor::toString() const {
                           ,::toString(getScene().getBackgroundColor(),false).cstr());
   case CONTROL_AMBIENTLIGHTCOLOR     :
     return result + format(_T("\nAmbient color:%s")
-                          ,::toString(getScene().getGlobalAmbientColor(),false).cstr());
+                          ,::toString(getScene().getAmbientColor(),false).cstr());
   }
   return result;
 }

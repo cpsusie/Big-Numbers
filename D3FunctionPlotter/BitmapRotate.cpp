@@ -195,7 +195,7 @@ HBITMAP rotateBitmap(LPDIRECT3DDEVICE device, HBITMAP bm, double degree) {
 
   setWorldMatrix(device, worldMatrix);
 
-  LPDIRECT3DTEXTURE texture = getTextureFromBitmap(device, bm);
+  LPDIRECT3DTEXTURE texture = AbstractTextureFactory::getTextureFromBitmap(device, bm);
   render(device, texture, bmSize, result, trSize);
   texture->Release();
 

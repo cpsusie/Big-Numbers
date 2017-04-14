@@ -221,7 +221,7 @@ private:
     return D3DXMESH_SYSTEMMEM | ((sizeof(IndexType) == sizeof(long)) ? D3DXMESH_32BIT : 0);
   }
 
-  LPD3DXMESH createMesh1NormalPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMesh1NormalPerVertex(AbstractMeshFactory &amf, bool doubleSided) const {
     const Array<Face>        &faceArray         = m_mb.getFaceArray();
     const VertexArray        &vertexArray       = m_mb.getVertexArray();
     const VertexArray        &normalArray       = m_mb.getNormalArray();
@@ -239,7 +239,7 @@ private:
     try {
       meshCreatorGate.wait();
       inCriticalSection = true;
-      V(D3DXCreateMeshFVF(faceCount, vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
+      mesh = amf.allocateMesh(VertexType::FVF_Flags, faceCount, vertexCount, getMeshFlags());
       inCriticalSection = false;
       meshCreatorGate.signal();
       VertexType *vertices;
@@ -302,7 +302,7 @@ private:
     }
   }
 
-  LPD3DXMESH createMeshManyNormalsPerVertex(LPDIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMeshManyNormalsPerVertex(AbstractMeshFactory &amf, bool doubleSided) const {
     const Array<Face>        &faceArray          = m_mb.getFaceArray();
     const VertexArray        &vertexArray        = m_mb.getVertexArray();
     const VertexArray        &normalArray        = m_mb.getNormalArray();
@@ -318,7 +318,7 @@ private:
     try {
       meshCreatorGate.wait();
       inCriticalSection = true;
-      V(D3DXCreateMeshFVF((DWORD)faceCount, (DWORD)vertexCount, getMeshFlags(), VertexType::FVF_Flags, device, &mesh));
+      mesh = amf.allocateMesh(VertexType::FVF_Flags, (DWORD)faceCount, (DWORD)vertexCount, getMeshFlags());
       inCriticalSection = false;
       meshCreatorGate.signal();
 
@@ -386,11 +386,11 @@ public:
   MeshCreator(const MeshBuilder &mb) : m_mb(mb) {
   }
 
-  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const {
     if(m_mb.has1NormalPerVertex()) {
-      return createMesh1NormalPerVertex(device, doubleSided);
+      return createMesh1NormalPerVertex(amf, doubleSided);
     } else {
-      return createMeshManyNormalsPerVertex(device, doubleSided);
+      return createMeshManyNormalsPerVertex(amf, doubleSided);
     }
   }
 };
@@ -401,11 +401,11 @@ private:
 public:
   MeshCreator1(const MeshBuilder &mb) : m_mb(mb) {
   }
-  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
+  LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const {
     if(m_mb.use32BitIndices(doubleSided)) {
-      return MeshCreator<VertexType, ULONG >(m_mb).createMesh(device, doubleSided);
+      return MeshCreator<VertexType, ULONG >(m_mb).createMesh(amf, doubleSided);
     } else {
-      return MeshCreator<VertexType, USHORT>(m_mb).createMesh(device, doubleSided);
+      return MeshCreator<VertexType, USHORT>(m_mb).createMesh(amf, doubleSided);
     }
   }
 };
@@ -595,7 +595,7 @@ void MeshBuilder::pruneUnused() {
 #endif
 }
 
-LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const {
+LPD3DXMESH MeshBuilder::createMesh(AbstractMeshFactory &amf, bool doubleSided) const {
   if(!isOk()) {
     throwException(_T("MeshBuilder inconsistent"));
   }
@@ -610,29 +610,29 @@ LPD3DXMESH MeshBuilder::createMesh(LPDIRECT3DDEVICE device, bool doubleSided) co
   if(copy.hasNormals()) {
     if(copy.hasTextureVertices()) {
       if(copy.hasColors()) {
-        return MeshCreator1<VertexNormalDiffuseTex1>(copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexNormalDiffuseTex1>(copy).createMesh(amf, doubleSided);
       } else { // no colors
-        return MeshCreator1<VertexNormalTex1>(       copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexNormalTex1>(       copy).createMesh(amf, doubleSided);
       }
     } else {
       if(copy.hasColors()) {
-        return MeshCreator1<VertexNormalDiffuse>(    copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexNormalDiffuse>(    copy).createMesh(amf, doubleSided);
       } else {
-        return MeshCreator1<VertexNormal>(           copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexNormal>(           copy).createMesh(amf, doubleSided);
       }
     }
   } else { // no normals
     if(copy.hasTextureVertices()) {
       if(copy.hasColors()) {
-        return MeshCreator1<VertexDiffuseTex1>(      copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexDiffuseTex1>(      copy).createMesh(amf, doubleSided);
       } else { // no colors
-        return MeshCreator1<VertexTex1>(             copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexTex1>(             copy).createMesh(amf, doubleSided);
       }
     } else { // no textures
       if(copy.hasColors()) {
-        return MeshCreator1<VertexDiffuse>(          copy).createMesh(device, doubleSided);
+        return MeshCreator1<VertexDiffuse>(          copy).createMesh(amf, doubleSided);
       } else {
-        return MeshCreator1<Vertex>(                 copy).createMesh(device, doubleSided);
+        return MeshCreator1<Vertex>(                 copy).createMesh(amf, doubleSided);
       }
     }
   }

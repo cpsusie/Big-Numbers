@@ -45,7 +45,7 @@ static void findMax16BitMeshVertexCount(LPDIRECT3DDEVICE device) {
 }
 #endif
 
-LPD3DXMESH createMeshFrom2DFunction(LPDIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
+LPD3DXMESH createMeshFrom2DFunction(AbstractMeshFactory &amf, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, unsigned int nx, unsigned int ny, bool doubleSided) {
   nx = max(nx, 2);
   ny = max(ny, 2);
 
@@ -73,29 +73,29 @@ LPD3DXMESH createMeshFrom2DFunction(LPDIRECT3DDEVICE device, Function2D &f, cons
       face.addVertexNormalIndex(index  +ny, index  +ny);
     }
   }
-  return mb.createMesh(device, doubleSided);
+  return mb.createMesh(amf, doubleSided);
 }
 
-LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
   ExpressionWrapper f(param.m_expr, param.m_machineCode);
-  return createMeshFrom2DFunction(device, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
+  return createMeshFrom2DFunction(amf, f, param.getXInterval(), param.getYInterval(), param.m_pointCount, param.m_pointCount, param.m_doubleSided);
 }
 
 class VariableFunction2DMeshCreator : public AbstractVariableMeshCreator {
 private:
-  LPDIRECT3DDEVICE                   m_device;
+  AbstractMeshFactory               &m_amf;
   const Function2DSurfaceParameters &m_param;
   mutable ExpressionWrapper          m_expr;
 public:
-  VariableFunction2DMeshCreator(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
+  VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param);
   LPD3DXMESH createMesh(double time) const;
 };
 
-VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
-: m_device(device)
+VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param)
+: m_amf(amf)
 , m_param(param)
 {
   m_expr.compile(m_param.m_expr, m_param.m_machineCode);
@@ -106,7 +106,7 @@ VariableFunction2DMeshCreator::VariableFunction2DMeshCreator(LPDIRECT3DDEVICE de
 
 LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
   m_expr.setT(time);
-  return createMeshFrom2DFunction(m_device
+  return createMeshFrom2DFunction(m_amf
                                  ,m_expr
                                  ,m_param.getXInterval()
                                  ,m_param.getYInterval()
@@ -118,11 +118,11 @@ LPD3DXMESH VariableFunction2DMeshCreator::createMesh(double time) const {
 
 class Function2DMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  LPDIRECT3DDEVICE                   m_device;
+  AbstractMeshFactory               &m_amf;
   const Function2DSurfaceParameters &m_param;
 public:
-  Function2DMeshArrayJobParameter(LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param)
-    : m_device(device)
+  Function2DMeshArrayJobParameter(AbstractMeshFactory &amf, const Function2DSurfaceParameters &param)
+    : m_amf(amf)
     , m_param(param)
   {
   }
@@ -133,13 +133,13 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    return new VariableFunction2DMeshCreator(m_device, m_param);
+    return new VariableFunction2DMeshCreator(m_amf, m_param);
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const Function2DSurfaceParameters &param) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
-  return Function2DMeshArrayJobParameter(device, param).createMeshArray(wnd);
+  return Function2DMeshArrayJobParameter(amf, param).createMeshArray(wnd);
 }

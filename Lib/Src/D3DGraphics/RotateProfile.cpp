@@ -154,7 +154,7 @@ void ProfileRotator::line(const Point2D &from, const Point2D &to) {
   }
 }
 
-LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided) {
+LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided) {
   if(param.m_alignx == param.m_aligny) {
     throwException(_T("alignx == aligny (=%d) in rotateProfile. Must be different "),param.m_alignx);
   }
@@ -181,7 +181,7 @@ LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, con
       normalsInOneSlice = meshBuilder.getNormalCount();
     }
   }
-  return meshBuilder.createMesh(device, doubleSided);
+  return meshBuilder.createMesh(amf, doubleSided);
 }
 
 /*

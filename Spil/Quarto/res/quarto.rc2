@@ -11,4 +11,5 @@
 // Add manually edited resources here...
 
 /////////////////////////////////////////////////////////////////////////////
+#include <MFCUtil/MFCUtil.rc>
 #include <D3DGraphics/D3DGraphics.rc>

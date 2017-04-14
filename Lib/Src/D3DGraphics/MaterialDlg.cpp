@@ -6,8 +6,8 @@
 #define new DEBUG_NEW
 #endif
 
-CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener) 
-: CColormapDialog<MATERIAL>(CMaterialDlg::IDD, SP_MATERIALPARAMETERS, NULL)
+CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent) 
+: CColormapDialog<MATERIAL>(CMaterialDlg::IDD, SP_MATERIALPARAMETERS, pParent)
 {
   if(listener) {
     addPropertyChangeListener(listener);

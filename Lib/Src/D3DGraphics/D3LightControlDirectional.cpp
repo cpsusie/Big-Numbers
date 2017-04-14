@@ -27,7 +27,7 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
   param.m_edgeCount  = 20;
   param.m_smoothness = ROTATESMOOTH;
   param.m_rotateAxis = 2;
-  LPD3DXMESH mesh = rotateProfile(getDevice(), prof, param, false);
+  LPD3DXMESH mesh = rotateProfile(getScene(), prof, param, false);
 
   return optimizeMesh(mesh);
 }

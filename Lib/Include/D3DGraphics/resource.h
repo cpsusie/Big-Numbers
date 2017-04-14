@@ -66,7 +66,7 @@
 #define ID_LIGHT_ENSABLE                34194
 #define ID_LIGHT_DISABLE                34195
 #define ID_LIGHT_ADJUSTCOLORS           34196
-#define ID_LIGHT_ADJUSTANGLES           34197
+#define ID_LIGHT_ADJUSTSPOTANGLES       34197
 #define ID_SHOW_LIGHTCONTROLS           34198
 #define ID_HIDE_LIGHTCONTROLS           34199
 #define ID_LIGHTCONTROL_HIDE            34200

@@ -1,23 +1,9 @@
 #include "pch.h"
-#include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3Scene.h>
 
 DECLARE_THISFILE;
 
 // ------------------------------------------------ D3SceneObject ---------------------------------------------------
-
-void D3SceneObject::prepareDraw(UINT flags) {
-  if(flags & USE_SCENEFILLMODE ) {
-    V(getDevice()->SetRenderState(D3DRS_FILLMODE,  m_scene.getFillMode()));
-  }
-  if(flags & USE_SCENESHADEMODE) {
-    V(getDevice()->SetRenderState(D3DRS_SHADEMODE, m_scene.getShadeMode()));
-  }
-  const int materialIndex = getMaterialIndex();
-  if(materialIndex >= 0) {
-    V(getDevice()->SetMaterial(&m_scene.getMaterial(materialIndex)));
-  }
-}
 
 bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
   LPD3DXMESH mesh = getMesh();
@@ -85,10 +71,11 @@ SceneObjectWithVertexBuffer::~SceneObjectWithVertexBuffer() {
 }
 
 void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf) {
-  const UINT bufferSize = (UINT)(vertexSize*count);
-  V(getDevice()->CreateVertexBuffer(bufferSize, 0, fvf, D3DPOOL_DEFAULT, &m_vertexBuffer, NULL));
-  m_vertexSize = vertexSize;
-  m_fvf        = fvf;
+  UINT bufferSize;
+  m_vertexBuffer = getScene().allocateVertexBuffer(fvf, count, &bufferSize);
+  m_vertexSize   = vertexSize;
+  m_fvf          = fvf;
+  assert(bufferSize == vertexSize * count);
   void *bufferItems = NULL;
   V(m_vertexBuffer->Lock(0, bufferSize, &bufferItems, 0));
   return bufferItems;
@@ -96,12 +83,6 @@ void *SceneObjectWithVertexBuffer::allocateVertexBuffer(int vertexSize, UINT cou
 
 void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
   V(m_vertexBuffer->Unlock());
-}
-
-void SceneObjectWithVertexBuffer::prepareDraw(UINT flags) {
-  V(getDevice()->SetStreamSource(0, m_vertexBuffer, 0, m_vertexSize));
-  V(getDevice()->SetFVF(m_fvf));
-  D3SceneObject::prepareDraw(flags);
 }
 
 #define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
@@ -119,10 +100,8 @@ SceneObjectWithIndexBuffer::~SceneObjectWithIndexBuffer() {
 }
 
 void *SceneObjectWithIndexBuffer::allocateIndexBuffer(bool int32, int count) {
-  const int itemSize    = int32 ? sizeof(long) : sizeof(short);
-  const int bufferSize  = count * itemSize;
-  void     *bufferItems = NULL;
-  V(getDevice()->CreateIndexBuffer(bufferSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &m_indexBuffer, NULL));
+  void *bufferItems = NULL;
+  m_indexBuffer = getScene().allocateIndexBuffer(int32, count);
   V(m_indexBuffer->Lock(0,0,&bufferItems, 0));
   return bufferItems;
 }
@@ -131,17 +110,16 @@ void SceneObjectWithIndexBuffer::unlockIndexBuffer() {
   V(m_indexBuffer->Unlock());
 }
 
-void SceneObjectWithIndexBuffer::prepareDraw(UINT flags) {
-  SceneObjectWithVertexBuffer::prepareDraw(flags);
-  V(getDevice()->SetIndices(m_indexBuffer));
-}
-
 #define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)
 #define GETLOCKEDLONGBUFFER( count) (ULONG* )allocateIndexBuffer(true , count)
 
 // ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
-SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh) : D3SceneObject(scene) {
+SceneObjectWithMesh::SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh) 
+: D3SceneObject(scene)
+, m_fillMode(D3DFILL_SOLID)
+, m_shadeMode(D3DSHADE_GOURAUD)
+{
   m_mesh = mesh;
 }
 
@@ -151,14 +129,11 @@ SceneObjectWithMesh::~SceneObjectWithMesh() {
 
 void SceneObjectWithMesh::createMesh(DWORD faceCount, DWORD vertexCount, DWORD fvf) {
   releaseMesh();
-  V(D3DXCreateMeshFVF(faceCount, vertexCount, D3DXMESH_SYSTEMMEM/*|D3DXMESH_32BIT*/, fvf, getDevice(), &m_mesh));
+  m_mesh = getScene().allocateMesh(fvf, faceCount, vertexCount, D3DXMESH_SYSTEMMEM);
 }
 
 void SceneObjectWithMesh::releaseMesh() {
-  if(m_mesh) {
-    m_mesh->Release();
-    m_mesh = NULL;
-  }
+  SAFE_RELEASE(m_mesh);
 }
 
 void *SceneObjectWithMesh::lockVertexBuffer() {
@@ -182,8 +157,10 @@ void SceneObjectWithMesh::unlockIndexBuffer() {
 }
 
 void SceneObjectWithMesh::draw() {
-  prepareDraw();
-  V(m_mesh->DrawSubset(0));
+  setFillAndShadeMode();
+  setSceneMaterial();
+  setLightingEnable(true);
+  drawSubset(0);
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -219,20 +196,12 @@ void D3LineArray::initBuffer(const Line *lines, int n) {
 }
 
 void D3LineArray::draw() {
-  prepareDraw();
-  V(getDevice()->DrawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount));
+  setStreamSource();
+  setLightingEnable(true);
+  drawPrimitive(D3DPT_LINELIST, 0, m_primitiveCount);
 }
 
 // ----------------------------------------------------- D3LineArrow ------------------------------------------------------
-
-D3DCOLORVALUE colorToColorValue(D3DCOLOR c) {
-  D3DCOLORVALUE result;
-  result.r = ((float)(ARGB_GETRED(  c))) / (float)255.0;
-  result.g = ((float)(ARGB_GETGREEN(c))) / (float)255.0;
-  result.b = ((float)(ARGB_GETBLUE( c))) / (float)255.0;
-  result.a = 1.0;
-  return result;
-}
 
 D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color) : SceneObjectWithVertexBuffer(scene) {
 #define FANCOUNT 14
@@ -263,29 +232,34 @@ D3LineArrow::D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D
     vtx2[i].setPos(cirkelCenter + radius2); vtx2[i].setNormal(-vn);
   }
   unlockVertexBuffer();
+  m_materialIndex = -1;
   setColor(color);
 }
 
 void D3LineArrow::draw() {
-  prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
-  V(getDevice()->SetMaterial(&getMaterial()));
-  V(getDevice()->DrawPrimitive( D3DPT_LINELIST   , 0, 1));
-  V(getDevice()->DrawPrimitive( D3DPT_TRIANGLEFAN, 1, FANCOUNT));
-  V(getDevice()->DrawPrimitive( D3DPT_TRIANGLEFAN, FANCOUNT+3,FANCOUNT));
+  getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
+  setStreamSource();
+  setLightingEnable(true);
+  setSceneMaterial();
+  drawPrimitive( D3DPT_LINELIST   , 0         , 1       );
+  drawPrimitive( D3DPT_TRIANGLEFAN, 1         , FANCOUNT);
+  drawPrimitive( D3DPT_TRIANGLEFAN, FANCOUNT+3, FANCOUNT);
 }
 
 void D3LineArrow::setColor(D3DCOLOR color) {
-  m_color = color;
-}
-
-D3DMATERIAL D3LineArrow::getMaterial() const {
-  D3DMATERIAL mat;
-  ZeroMemory(&mat, sizeof(D3DMATERIAL));
-  const D3DCOLORVALUE cv = colorToColorValue(m_color);
-  mat.Diffuse  = cv;
-//  mat.Ambient  = cv;
-  mat.Emissive = cv;
-  return mat;
+  const D3DCOLORVALUE cv = colorToColorValue(color);
+  if(hasMaterial()) {
+    MATERIAL mat = getMaterial();
+    mat.Diffuse  = cv;
+    mat.Emissive = cv;
+    getScene().setMaterial(mat);
+  } else {
+    D3DMATERIAL mat;
+    memset(&mat, 0, sizeof(mat));
+    mat.Diffuse  = cv;
+    mat.Emissive = cv;
+    m_materialIndex = getScene().addMaterial(mat);
+  }
 }
 
 // ----------------------------------------------- D3Curve ------------------------------------------------------------
@@ -299,8 +273,9 @@ D3Curve::D3Curve(D3Scene &scene, const VertexArray &points) : SceneObjectWithVer
 }
 
 void D3Curve::draw() {
-  prepareDraw();
-  V(getDevice()->DrawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount));
+  setStreamSource();
+  setLightingEnable(true);
+  drawPrimitive(D3DPT_LINESTRIP, 0, m_primitiveCount);
 }
 
 D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObjectWithVertexBuffer(scene) {
@@ -324,11 +299,12 @@ D3CurveArray::D3CurveArray(D3Scene &scene, const CurveArray &curves) : SceneObje
 }
 
 void D3CurveArray::draw() {
-  prepareDraw();
+  setStreamSource();
+  setLightingEnable(true);
   int startIndex = 0;
   for(size_t i = 0; i < m_curveSize.size(); i++) {
     const int vertexCount = m_curveSize[i];
-    V(getDevice()->DrawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1));
+    drawPrimitive(D3DPT_LINESTRIP, startIndex, vertexCount-1);
     startIndex += vertexCount;
   }
 }
@@ -336,28 +312,25 @@ void D3CurveArray::draw() {
 // -----------------------------------------------------------------------------------------------------------
 
 #define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)
+#define RSINCOS(degree,r,c,s) SINCOS(degree,c,s); c*=r; s*=r
 
 CurveArray createSphereObject(double r) {
   CurveArray curves;
   for(int fi = 0; fi < 180; fi += 45) {
-    SINCOS(fi, RcosFi, RsinFi);
-    RcosFi *= r;
-    RsinFi *= r;
+    RSINCOS(fi, r, RcosFi, RsinFi);
     VertexArray va;
     for(int theta = 0; theta < 360; theta += 5) {
-      SINCOS(theta, cosTheta, sinTheta);
-      va.add(Vertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
+      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
     }
     curves.add(va);
   }
   for(int fi = -180+30; fi < 180; fi += 30) {
-    SINCOS(fi, RcosFi, RsinFi);
-    RcosFi *= r;
-    RsinFi *= r;
+    RSINCOS(fi, r, RcosFi, RsinFi);
     VertexArray va;
     for(int theta = 0; theta < 360; theta += 5) {
-      SINCOS(theta, cosTheta, sinTheta);
-      va.add(Vertex(RsinFi*cosTheta, RsinFi*sinTheta, RcosFi));
+      RSINCOS(theta, RsinFi, RcosTheta, RsinTheta);
+      va.add(Vertex(RcosTheta, RsinTheta, RcosFi));
     }
     curves.add(va);
   }

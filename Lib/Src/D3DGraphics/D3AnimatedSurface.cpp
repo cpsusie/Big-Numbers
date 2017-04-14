@@ -182,7 +182,7 @@ double D3AnimatedSurface::getFramePerSec() const {
 }
 
 void D3AnimatedSurface::draw() {
-  D3AnimatedSurface::prepareDraw();
+  setSceneMaterial();
   V(m_meshArray[m_lastRenderedIndex = m_nextMeshIndex]->DrawSubset(0));
 }
 
@@ -192,4 +192,3 @@ LPD3DXMESH D3AnimatedSurface::getMesh() const {
   }
   return m_meshArray[m_lastRenderedIndex];
 }
-

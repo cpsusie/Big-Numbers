@@ -30,7 +30,7 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
   param.m_edgeCount  = 20;
   param.m_smoothness = ROTATESMOOTH | NORMALSMOOTH;
   param.m_rotateAxis = 2;
-  LPD3DXMESH mesh = rotateProfile(getDevice(), prof, param, false);
+  LPD3DXMESH mesh = rotateProfile(getScene(), prof, param, false);
 
   return optimizeMesh(mesh);
 }

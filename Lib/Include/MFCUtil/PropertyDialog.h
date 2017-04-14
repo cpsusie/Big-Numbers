@@ -3,7 +3,7 @@
 #include <PropertyContainer.h>
 
 inline void putWindowBesideMainWindow(CWnd *wnd) {
-  putWindowBesideWindow(wnd, AfxGetApp()->GetMainWnd());
+  putWindowBesideWindow(wnd, AfxGetApp()->m_pMainWnd);
 }
 
 class PropertyDialog : public CDialog, public PropertyContainer {

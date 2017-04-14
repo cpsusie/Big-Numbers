@@ -7,13 +7,13 @@
 #include "IsoSurface.h"
 #include "MeshArray.h"
 
-LPD3DXMESH     createMeshFrom2DFunction(   LPDIRECT3DDEVICE device, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);
-LPD3DXMESH     createMesh(                 LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
-MeshArray      createMeshArray(CWnd *wnd,  LPDIRECT3DDEVICE device, const Function2DSurfaceParameters &param);
-LPD3DXMESH     createMesh(                 LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
-MeshArray      createMeshArray(CWnd *wnd,  LPDIRECT3DDEVICE device, const ParametricSurfaceParameters &param);
-LPD3DXMESH     createMesh(                 LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-MeshArray      createMeshArray(CWnd *wnd,  LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-LPD3DXMESH     createSphereMesh(           LPDIRECT3DDEVICE device, double                            radius);
+LPD3DXMESH     createMeshFrom2DFunction(   AbstractMeshFactory &amf, Function2D &f, const DoubleInterval &xInterval, const DoubleInterval &yInterval, UINT nx, UINT ny, bool doubleSided);
+LPD3DXMESH     createMesh(                 AbstractMeshFactory &amf, const Function2DSurfaceParameters &param);
+MeshArray      createMeshArray(CWnd *wnd,  AbstractMeshFactory &amf, const Function2DSurfaceParameters &param);
+LPD3DXMESH     createMesh(                 AbstractMeshFactory &amf, const ParametricSurfaceParameters &param);
+MeshArray      createMeshArray(CWnd *wnd,  AbstractMeshFactory &amf, const ParametricSurfaceParameters &param);
+LPD3DXMESH     createMesh(                 AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);
+MeshArray      createMeshArray(CWnd *wnd,  AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);
+LPD3DXMESH     createSphereMesh(           AbstractMeshFactory &amf, double                            radius);
 
-D3SceneObject *createIsoSurfaceDebugObject(D3Scene &scene,        const IsoSurfaceParameters        &param);
+D3SceneObject *createIsoSurfaceDebugObject(AbstractMeshFactory &amf, const IsoSurfaceParameters        &param);

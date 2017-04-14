@@ -254,6 +254,7 @@
     <ClCompile Include="D3CoordinateSystem.cpp" />
     <ClCompile Include="D3PDUS.cpp" />
     <ClCompile Include="D3SceneEditor.cpp" />
+    <ClCompile Include="D3SceneRenderState.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="MaterialDlg.cpp" />
     <ClCompile Include="MeshBuilderToString.cpp" />
@@ -266,7 +267,7 @@
     <ClCompile Include="D3Scene.cpp" />
     <ClCompile Include="D3SceneIO.cpp" />
     <ClCompile Include="D3SceneObject.cpp" />
-    <ClCompile Include="D3TextureTools.cpp" />
+    <ClCompile Include="D3TextureFactory.cpp" />
     <ClCompile Include="D3ToString.cpp" />
     <ClCompile Include="Function2DSurface.cpp" />
     <ClCompile Include="Function2DSurfaceMeshBuilder.cpp" />
@@ -302,6 +303,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3Math.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3Scene.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3SceneEditor.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\D3TextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />

@@ -18,20 +18,18 @@ private:
   float getSliderTransparency() const;
   void  showTransparency(double v);
 public:
-  CMaterialDlg(PropertyChangeListener *listener);
-
-	enum { IDD = IDD_MATERIAL_DIALOG };
-
+  CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
+  enum { IDD = IDD_MATERIAL_DIALOG };
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
     afx_msg void OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-	  afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
-	  afx_msg void OnHideWindow();
-  	virtual void OnCancel();
-	  afx_msg void OnClose();
+    afx_msg void OnHideWindow();
+    virtual void OnCancel();
+    afx_msg void OnClose();
     DECLARE_MESSAGE_MAP()
 private:
   CColormap m_colormapAmbient;
@@ -44,4 +42,3 @@ private:
   void OnColorchangedColormapSpecular();
   void OnColorchangedColormapEmissive();
 };
-

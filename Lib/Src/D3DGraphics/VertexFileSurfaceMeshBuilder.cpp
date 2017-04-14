@@ -142,7 +142,7 @@ static MeshBuilder &createMeshBuilderFromNodefile(const String &nodeFileName, Me
   }
 }
 
-LPD3DXMESH createMeshFromVertexFile(LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided) {
+LPD3DXMESH createMeshFromVertexFile(AbstractMeshFactory &amf, const String &fileName, bool doubleSided) {
   MeshBuilder mb;
-  return createMeshBuilderFromNodefile(convertVertexFile(fileName), mb).createMesh(device, doubleSided);
+  return createMeshBuilderFromNodefile(convertVertexFile(fileName), mb).createMesh(amf, doubleSided);
 }

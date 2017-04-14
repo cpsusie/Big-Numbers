@@ -7,29 +7,27 @@
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
 #include <MFCUtil/D3DeviceFactory.h>
+#include "D3TextureFactory.h"
+#include "MeshBuilder.h"
 #include "MeshArray.h"
 #include "D3Math.h"
 
 class D3LightControl;
+class D3SceneObject;
 
 typedef enum {
-  SP_FILLMODE
- ,SP_SHADEMODE
+  SP_BACKGROUNDCOLOR
+ ,SP_AMBIENTLIGHT
  ,SP_CAMERAPDUS
  ,SP_PROJECTIONTRANSFORMATION
  ,SP_LIGHTPARAMETERS
  ,SP_LIGHTCOUNT
- ,SP_AMBIENTLIGHT
- ,SP_SPECULARENABLED
  ,SP_MATERIALPARAMETERS
  ,SP_MATERIALCOUNT
  ,SP_RENDERTIME
  ,SP_OBJECTCOUNT
- ,SP_BACKGROUNDCOLOR
  ,SP_ANIMATIONFRAMEINDEX
 } D3SceneProperty;
-
-D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
 
@@ -124,6 +122,8 @@ public:
 
 String toString(const LIGHT                &light    );
 String toString(const MATERIAL             &material );
+String toString(      D3DFILLMODE           mode     );
+String toString(      D3DSHADEMODE          mode     );
 String toString(      D3DFORMAT             f        );
 int    formatToSize(  D3DFORMAT             f        );
 String toString(      D3DPOOL               pool     );
@@ -139,19 +139,41 @@ String toString(const D3DINDEXBUFFER_DESC  &desc     );
 
 String vertexToString(const char *v, DWORD FVF  , int dec=3);
 
-class D3Scene : public PropertyContainer {
+class D3SceneRenderState {
+public:
+  D3DFILLMODE  m_fillMode;
+  D3DSHADEMODE m_shadeMode;
+  D3DCOLOR     m_backgroundColor;
+  D3DCOLOR     m_ambientColor;
+  DWORD        m_fvf;
+  bool         m_zEnable                 : 1;
+  bool         m_normalizeNormals        : 1;
+  bool         m_alphaBlendEnable        : 1;
+  bool         m_lighting                : 1;
+  bool         m_specularHighLightEnable : 1;
+  int          m_selectedMaterialIndex;
+
+  D3SceneRenderState() {
+    setDefault();
+  }
+  void getValuesFromDevice(LPDIRECT3DDEVICE device);
+  void setValuesToDevice(  LPDIRECT3DDEVICE device);
+  void setDefault();
+};
+
+class D3Scene : public PropertyContainer
+              , public AbstractMeshFactory
+              , public AbstractTextureFactory
+{
 private:
   static LIGHT getDefaultDirectionalLight();
   static LIGHT getDefaultPointLight();
   static LIGHT getDefaultSpotLight();
   static const D3PosDirUpScale s_pdusOrigo;
-  friend class D3SceneObject;
 
   HWND                              m_hwnd;
   LPDIRECT3DDEVICE                  m_device;
-  D3DFILLMODE                       m_fillMode;
-  D3DSHADEMODE                      m_shadeMode;
-  D3DCOLOR                          m_backgroundColor;
+  D3SceneRenderState                m_renderState;
   int                               m_maxLightCount;
   static int                        s_textureCoordCount;
   BitSet                           *m_lightsEnabled;
@@ -178,6 +200,10 @@ private:
   inline void setViewMatrix(const D3DXMATRIX &m) {
     setTransformation(D3DTS_VIEW, m);
   }
+  template<class T> void setRenderState(D3DRENDERSTATETYPE id, T value) {
+    FV(m_device->SetRenderState(id, (DWORD)value));
+  }
+
   void setTransformation(D3DTRANSFORMSTATETYPE id, const D3DXMATRIX &m);
   D3DXMATRIX getTransformation(D3DTRANSFORMSTATETYPE id) const;
   int getFirstFreeLightIndex() const; // return -1 if none exist
@@ -195,9 +221,6 @@ public:
   inline HWND getHwnd() {
     return m_hwnd;
   }
-  inline LPDIRECT3DDEVICE getDevice() const {
-    return m_device;
-  }
   void addSceneObject(   D3SceneObject *obj);
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
@@ -205,13 +228,124 @@ public:
   inline int getObjectCount() const {
     return (int)m_objectArray.size();
   }
-  void setFillMode(D3DFILLMODE fillMode);
-  inline D3DFILLMODE getFillMode() const {
-    return m_fillMode;
+
+  D3Scene &setFillMode(D3DFILLMODE fillMode) {
+    if(fillMode != getFillMode()) {
+      setRenderState(D3DRS_FILLMODE, fillMode);
+      m_renderState.m_fillMode = fillMode;
+    }
+    return *this;
   }
-  void setShadeMode(D3DSHADEMODE shadeMode);
+  inline D3DFILLMODE getFillMode() const {
+    return m_renderState.m_fillMode;
+  }
+  D3Scene &setShadeMode(D3DSHADEMODE shadeMode) {
+    if(shadeMode != getShadeMode()) {
+      setRenderState(D3DRS_SHADEMODE, shadeMode);
+      m_renderState.m_shadeMode = shadeMode;
+    }
+    return *this;
+  }
   inline D3DSHADEMODE getShadeMode() const {
-    return m_shadeMode;
+    return m_renderState.m_shadeMode;
+  }
+  D3Scene &setBackgroundColor(D3DCOLOR color) {
+    setProperty(SP_BACKGROUNDCOLOR, m_renderState.m_backgroundColor, color);
+    return *this;
+  }
+  inline D3PCOLOR getBackgroundColor() const {
+    return m_renderState.m_backgroundColor;
+  }
+  D3Scene &setAmbientColor(D3DCOLOR color) {
+    if(color != getAmbientColor()) {
+      setRenderState(D3DRS_AMBIENT, color);
+      setProperty(SP_AMBIENTLIGHT, m_renderState.m_ambientColor,color);
+    }
+    return *this;
+  }
+  inline D3PCOLOR getAmbientColor() const {
+    return m_renderState.m_ambientColor;
+  }
+  D3Scene &D3Scene::setFVF(DWORD fvf) {
+    if(fvf != getFVF()) {
+      FV(m_device->SetFVF(fvf));
+      m_renderState.m_fvf = fvf;
+    }
+    return *this;
+  }
+  inline DWORD getFVF() const {
+    return m_renderState.m_fvf;
+  }
+  D3Scene &setZEnable(bool enabled) {
+    if(enabled != isZEnable()) {
+      setRenderState(D3DRS_AMBIENT, enabled ? TRUE : FALSE);
+      m_renderState.m_zEnable = enabled;
+    }
+    return *this;
+  }
+  bool isZEnable() const {
+    return m_renderState.m_zEnable;
+  }
+  D3Scene &setNormalizeNormalsEnable(bool enabled) {
+    if(enabled != isNormalizeNormalsEnable()) {
+      setRenderState(D3DRS_NORMALIZENORMALS, enabled ? TRUE : FALSE);
+      m_renderState.m_normalizeNormals = enabled;
+    }
+    return *this;
+  }
+  bool isNormalizeNormalsEnable() const {
+    return m_renderState.m_normalizeNormals;
+  }
+  D3Scene &D3Scene::setAlphaBlendEnable(bool enabled) {
+    if(enabled != isAlphaBlendEnable()) {
+      setRenderState(D3DRS_ALPHABLENDENABLE, enabled ? TRUE : FALSE);
+      m_renderState.m_alphaBlendEnable = enabled;
+    }
+    return *this;
+  }
+  bool isAlphaBlendEnable() const {
+    return m_renderState.m_alphaBlendEnable;
+  }
+  D3Scene &setLightingEnable(bool enabled) {
+    if(enabled != isLightingEnable()) {
+      setRenderState(D3DRS_LIGHTING, enabled ? TRUE : FALSE);
+      m_renderState.m_lighting = enabled;
+    }
+    return *this;
+  }
+  inline bool isLightingEnable() const {
+    return m_renderState.m_lighting;
+  }
+  D3Scene &setSpecularEnable(bool enabled) {
+    if(enabled != isSpecularEnabled()) {
+      setRenderState(D3DRS_SPECULARENABLE, enabled ? TRUE : FALSE);
+      m_renderState.m_specularHighLightEnable = enabled;
+    }
+    return *this;
+  }
+  inline bool isSpecularEnabled() const {
+    return m_renderState.m_specularHighLightEnable;
+  }
+  D3Scene &selectMaterial(int materialIndex) {
+    if(materialIndex != m_renderState.m_selectedMaterialIndex) {
+      if((UINT)materialIndex < m_materials.size()) {
+        m_device->SetMaterial(&getMaterial(materialIndex));
+      }
+      m_renderState.m_selectedMaterialIndex = materialIndex;
+    }
+    return *this;
+  }
+  inline D3Scene &unselectMaterial() {
+    m_renderState.m_selectedMaterialIndex = -1;
+    return *this;
+  }
+  inline D3Scene &setSamplerState(DWORD sampler, D3DSAMPLERSTATETYPE type, DWORD value) {
+    FV(m_device->SetSamplerState(sampler, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
+    return *this;
+  }
+  inline D3Scene &setTexture(DWORD stage, LPDIRECT3DTEXTURE texture) {
+    FV(m_device->SetTexture(stage, texture));
+    return *this;
   }
 
   inline D3PosDirUpScale &getObjPDUS() {
@@ -256,10 +390,6 @@ public:
   }
 
   void setAnimationFrameIndex(int &oldValue, int newValue);
-  D3PCOLOR getGlobalAmbientColor() const;
-  void setGlobalAmbientColor(D3DCOLOR color);
-  void enableSpecular(bool enabled);
-  bool isSpecularEnabled() const;
 
   void   setLightDirection(        UINT index, const D3DXVECTOR3 &dir);
   void   setLightPosition(         UINT index, const D3DXVECTOR3 &pos);
@@ -312,8 +442,8 @@ public:
   }
   void setMaterial(const MATERIAL &material);
   int  addMaterial(const D3DMATERIAL &material);
-
   void removeMaterial(UINT index);
+
   inline bool isMaterialDefined(UINT index) const {
     return (index < m_materials.size()) && (m_materials[index].m_index == index);
   }
@@ -324,45 +454,67 @@ public:
   String getMaterialString(UINT index) const;
   String getMaterialString() const;
 
-  void setBackgroundColor(D3DCOLOR color);
-  inline D3PCOLOR getBackgroundColor() const {
-    return m_backgroundColor;
-  }
   static inline int getTextureCoordCount() {
     return s_textureCoordCount;
   }
   static inline const D3PosDirUpScale &getOrigo() {
     return s_pdusOrigo;
   }
+  inline void setStreamSource(LPDIRECT3DVERTEXBUFFER buffer, int vertexSize, DWORD fvf) {
+    FV(m_device->SetStreamSource(0, buffer, 0, vertexSize));
+    setFVF(fvf);
+  }
+  inline void setIndices(LPDIRECT3DINDEXBUFFER indexBuffer) {
+    FV(m_device->SetIndices(indexBuffer));
+  }
+  inline void drawPrimitive(D3DPRIMITIVETYPE pt, int startVertex, int primitiveCount) {
+    FV(m_device->DrawPrimitive(pt, startVertex, primitiveCount));
+  }
+  inline void drawIndexedPrimitive(D3DPRIMITIVETYPE pt, int baseVertexIndex, UINT minVertexIndex, UINT numVertices, UINT startIndex, UINT primCount) {
+    FV(m_device->DrawIndexedPrimitive(pt, baseVertexIndex, minVertexIndex, numVertices, startIndex, primCount));
+  }
   D3Ray          getPickRay(     const CPoint &point) const;
   D3SceneObject *getPickedObject(const CPoint &point, long mask = PICK_ALL, D3DXVECTOR3 *hitPoint = NULL, D3PickedInfo *info = NULL) const;
 
+  LPDIRECT3DVERTEXBUFFER  allocateVertexBuffer(DWORD fvf , UINT count, UINT *bufferSize = NULL);
+  LPDIRECT3DINDEXBUFFER   allocateIndexBuffer( bool int32, UINT count, UINT *bufferSize = NULL);
+  LPD3DXMESH              allocateMesh(        DWORD fvf , UINT faceCount, UINT vertexCount, DWORD options) {
+    LPD3DXMESH mesh;
+    FV(D3DXCreateMeshFVF(faceCount, vertexCount, options, fvf, m_device, &mesh));
+    return mesh;
+  }
+  LPDIRECT3DTEXTURE loadTextureFromFile(const String &fileName) {
+    return AbstractTextureFactory::loadTextureFromFile(m_device, fileName);
+  }
+  LPDIRECT3DTEXTURE loadTextureFromResource(int resId, const String &typeName) {
+    return AbstractTextureFactory::loadTextureFromResource(m_device, resId, typeName);
+  }
+  LPDIRECT3DTEXTURE loadTextureFromByteArray(ByteArray &ba) {
+    return AbstractTextureFactory::loadTextureFromByteArray(m_device, ba);
+  }
+  LPDIRECT3DTEXTURE getTextureFromBitmap(HBITMAP bm) {
+    return AbstractTextureFactory::getTextureFromBitmap(m_device, bm);
+  }
+  LPDIRECT3DTEXTURE loadTextureFromBitmapResource(int id) {
+    return AbstractTextureFactory::loadTextureFromBitmapResource(m_device, id);
+  }
+
+  LPD3DXEFFECT      compileEffect(const String &srcText, StringArray &errorMsg);
   void saveState(const String &fileName) const;
   void loadState(const String &fileName);
-  void save(ByteOutputStream &s) const;
-  void load(ByteInputStream  &s);
+  void save(      ByteOutputStream &s) const;
+  void load(      ByteInputStream  &s);
   void saveLights(ByteOutputStream &s) const;
   void loadLights(ByteInputStream  &s);
 };
 
-LPD3DXMESH        createMeshFromVertexFile(     LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
-LPD3DXMESH        createMeshFromObjFile(        LPDIRECT3DDEVICE device, const String &fileName, bool doubleSided);
+LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
+LPD3DXMESH        createMeshFromObjFile(        AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-
-LPDIRECT3DTEXTURE loadTextureFromFile(          LPDIRECT3DDEVICE device, const String &fileName);
-LPDIRECT3DTEXTURE loadTextureFromResource(      LPDIRECT3DDEVICE device, int resId, const String &typeName);
-LPDIRECT3DTEXTURE loadTextureFromByteArray(     LPDIRECT3DDEVICE device, ByteArray &ba);
-LPDIRECT3DTEXTURE getTextureFromBitmap(         LPDIRECT3DDEVICE device, HBITMAP bm);
-LPDIRECT3DTEXTURE loadTextureFromBitmapResource(LPDIRECT3DDEVICE device, int id);
 
 String toString(LPD3DXMESH             mesh        );
 String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
 String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
-
-#define USE_SCENEFILLMODE  0x0001
-#define USE_SCENESHADEMODE 0x0002
-
-#define USE_SCENEPARAMS  (USE_SCENEFILLMODE | USE_SCENESHADEMODE)
 
 class D3SceneObject {
 private:
@@ -371,18 +523,29 @@ private:
   }
 
 protected:
-  D3Scene &m_scene;
-  String   m_name;
-  bool     m_visible;
-  void    *m_userData;
-  inline LPDIRECT3DDEVICE getDevice() const {
-    return m_scene.m_device;
+  D3Scene     &m_scene;
+  String       m_name;
+  bool         m_visible;
+  void        *m_userData;
+  inline void setFillAndShadeMode() {
+    m_scene.setFillMode(getFillMode()).setShadeMode(getShadeMode());
+  }
+  inline void setSceneMaterial() {
+    if(hasMaterial()) m_scene.selectMaterial(getMaterialIndex());
+  }
+  inline void setLightingEnable(bool enabled) {
+    m_scene.setLightingEnable(enabled);
+  }
+  inline void drawPrimitive(D3DPRIMITIVETYPE pt, int startVertex, int count) {
+    m_scene.drawPrimitive(pt, startVertex, count);
   }
 public:
-  D3SceneObject(D3Scene &scene, const String &name=_T("Untitled")) : m_scene(scene) {
-    m_visible  = true;
-    m_name     = name;
-    m_userData = NULL;
+  D3SceneObject(D3Scene &scene, const String &name=_T("Untitled")) 
+    : m_scene(scene)
+    , m_name(name)
+    , m_visible(true)
+    , m_userData(NULL)
+  {
   }
   virtual ~D3SceneObject() {
   }
@@ -413,12 +576,27 @@ public:
   inline void setUserData(void *p) {
     m_userData = p;
   }
-  void prepareDraw(UINT flags = USE_SCENEPARAMS);
   inline void setVisible(bool visible) {
     m_visible = visible;
   }
   inline bool isVisible() const {
     return m_visible;
+  }
+  virtual bool hasFillMode() const {
+    return false;
+  }
+  virtual void setFillMode(D3DFILLMODE fillMode) {
+  }
+  virtual D3DFILLMODE getFillMode() const {
+    return D3DFILL_SOLID;
+  }
+  virtual bool hasShadeMode() const {
+    return false;
+  }
+  virtual void setShadeMode(D3DSHADEMODE shadeMode) {
+  }
+  virtual D3DSHADEMODE getShadeMode() const {
+    return D3DSHADE_GOURAUD;
   }
   const MATERIAL &getMaterial() const {
     return getScene().getMaterial(getMaterialIndex());
@@ -474,7 +652,10 @@ protected:
   LPDIRECT3DVERTEXBUFFER m_vertexBuffer;
   void *allocateVertexBuffer(int vertexSize, UINT count, DWORD fvf);
   void unlockVertexBuffer();
-  void prepareDraw(UINT flags = USE_SCENEPARAMS);
+  inline void setStreamSource() {
+    getScene().setStreamSource(m_vertexBuffer, m_vertexSize, m_fvf);
+  }
+
 public:
   SceneObjectWithVertexBuffer(D3Scene &scene);
   ~SceneObjectWithVertexBuffer();
@@ -494,7 +675,11 @@ protected:
   LPDIRECT3DINDEXBUFFER m_indexBuffer;
   void *allocateIndexBuffer(bool int32, int count);
   void unlockIndexBuffer();
-  void prepareDraw(UINT flags = USE_SCENEPARAMS);
+
+  inline void setIndices() {
+    getScene().setIndices(m_indexBuffer);
+  }
+
 public:
   SceneObjectWithIndexBuffer(D3Scene &scene);
   ~SceneObjectWithIndexBuffer();
@@ -506,6 +691,9 @@ public:
 };
 
 class SceneObjectWithMesh : public D3SceneObject {
+private:
+  D3DFILLMODE  m_fillMode;
+  D3DSHADEMODE m_shadeMode;
 protected:
   LPD3DXMESH m_mesh;
   void createMesh(DWORD faceCount, DWORD vertexCount, DWORD fvf);
@@ -514,11 +702,32 @@ protected:
   void unlockVertexBuffer();
   void unlockIndexBuffer();
   void releaseMesh();
+  inline void drawSubset(DWORD attribId) {
+    FV(m_mesh->DrawSubset(attribId));
+  }
 public:
   SceneObjectWithMesh(D3Scene &scene, LPD3DXMESH mesh = NULL); // if mesh != NULL, it will be released when Object is destroyed
   ~SceneObjectWithMesh();
   LPD3DXMESH getMesh() const {
     return m_mesh;
+  }
+  virtual bool hasFillMode() const {
+    return true;
+  }
+  void setFillMode(D3DFILLMODE fillMode) {
+    m_fillMode = fillMode;
+  }
+  D3DFILLMODE getFillMode() const {
+    return m_fillMode;
+  }
+  virtual bool hasShadeMode() const {
+    return true;
+  }
+  void setShadeMode(D3DSHADEMODE shadeMode) {
+    m_shadeMode = shadeMode;
+  }
+  D3DSHADEMODE getShadeMode() const {
+    return m_shadeMode;
   }
   void draw();
   String toString() const {
@@ -581,10 +790,12 @@ public:
 
 class D3LineArrow : public SceneObjectWithVertexBuffer {
 private:
-  D3DCOLOR    m_color;
-  D3DMATERIAL getMaterial() const;
+  int m_materialIndex;
 public:
   D3LineArrow(D3Scene &scene, const Vertex &from, const Vertex &to, D3DCOLOR color = 0);
+  int getMaterialIndex() const {
+    return m_materialIndex;
+  }
   void setColor(D3DCOLOR color);
   void draw();
 };

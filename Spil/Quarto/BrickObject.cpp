@@ -60,7 +60,7 @@ static Profile createProfile(const Point2D *data, int n) {
   return createProfile(points);
 }
 
-LPD3DXMESH BrickObject::createMesh(LPDIRECT3DDEVICE device, BYTE attr) { // static
+LPD3DXMESH BrickObject::createMesh(AbstractMeshFactory &amf, BYTE attr) { // static
   Profile profile;
   if(ISBIG(attr)) {
     if(ISWITHTOP(attr)) {
@@ -84,7 +84,7 @@ LPD3DXMESH BrickObject::createMesh(LPDIRECT3DDEVICE device, BYTE attr) { // stat
   param.m_edgeCount  = ISSQUARE(attr) ? 4 : 20;
   param.m_smoothness = ISSQUARE(attr) ? 0 : ROTATESMOOTH;
 
-  return rotateProfile(device, profile, param, true);
+  return rotateProfile(amf, profile, param, true);
 }
 
 class BrickMarker : public D3LineArray {
@@ -101,7 +101,7 @@ public:
 };
 
 BrickObject::BrickObject(D3Scene &scene, BYTE attr)
-: SceneObjectWithMesh(scene, createMesh(scene.getDevice(), attr))
+: SceneObjectWithMesh(scene, createMesh(scene, attr))
 , m_attr(attr)
 , m_marked(false)
 {
@@ -118,9 +118,11 @@ BrickObject::~BrickObject() {
 }
 
 void BrickObject::draw() {
-  getDevice()->SetRenderState(D3DRS_LIGHTING, TRUE);
-  prepareDraw();
-  getMesh()->DrawSubset(0);
+  getScene().setLightingEnable(true)
+            .setSpecularEnable(true);
+  setSceneMaterial();
+  setFillAndShadeMode();
+  drawSubset(0);
   if(m_marked) {
     m_brickMarker->draw();
   }

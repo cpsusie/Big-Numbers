@@ -138,7 +138,6 @@ void CQuartoDlg::createScene() {
   createBoard();
   resetCamera();
   createLight();
-  m_scene.enableSpecular(true);
 }
 
 void CQuartoDlg::createBoard() {

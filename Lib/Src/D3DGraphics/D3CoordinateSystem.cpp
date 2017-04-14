@@ -19,7 +19,6 @@ D3CoordinateSystem::~D3CoordinateSystem() {
 }
 
 void D3CoordinateSystem::draw() {
-  getDevice()->SetRenderState(D3DRS_LIGHTING, TRUE);
   m_box->draw();
   m_xaxes->draw();
   m_yaxes->draw();

@@ -2,7 +2,8 @@
 
 #include <MFCUtil/ShapeFunctions.h>
 #include <MFCUtil/PolygonCurve.h>
-#include <D3DGraphics/D3Math.h>
+#include "D3Math.h"
+#include "MeshBuilder.h"
 
 class ProfileRotationParameters {
 public:
@@ -159,4 +160,4 @@ bool operator!=(const ProfilePolygon &p1, const ProfilePolygon &p2);
 bool operator==(const Profile        &p1, const Profile        &p2);
 bool operator!=(const Profile        &p1, const Profile        &p2);
 
-LPD3DXMESH rotateProfile(LPDIRECT3DDEVICE9EX device, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided);
+LPD3DXMESH rotateProfile(AbstractMeshFactory &amf, const Profile &profile, const ProfileRotationParameters &param, bool doubleSided);

@@ -4,7 +4,7 @@
 
 DECLARE_THISFILE;
 
-int                   D3Scene::s_textureCoordCount;
+int D3Scene::s_textureCoordCount;
 
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
@@ -16,9 +16,6 @@ D3Scene::D3Scene() {
   m_oldObjectCount    = 0;
   m_lightsEnabled     = NULL;
   m_lightsDefined     = NULL;
-  m_fillMode          = D3DFILL_SOLID;
-  m_shadeMode         = D3DSHADE_GOURAUD;
-  m_backgroundColor   = D3DCOLOR_COLORVALUE(.8f, .8f, .8f, 1.0f);
   m_initDone          = false;
 }
 
@@ -59,12 +56,7 @@ void D3Scene::init(HWND hwnd) {
 
   initTrans();
 
-  enableSpecular(true);
-  V(m_device->SetRenderState(D3DRS_ZENABLE         , TRUE));
-  V(m_device->SetRenderState(D3DRS_AMBIENT         , D3DCOLOR_XRGB(50, 50, 50)));
-  V(m_device->SetRenderState(D3DRS_NORMALIZENORMALS, TRUE));
-  V(m_device->SetRenderState(D3DRS_ALPHABLENDENABLE, TRUE));
-
+  m_renderState.setValuesToDevice(m_device);
   m_initDone = true;
 }
 
@@ -74,14 +66,6 @@ void D3Scene::initTrans() {
   updateProjMatrix();
   initCameraTrans(D3DXVECTOR3(0,-5,0), D3DXVECTOR3(0,0,0), D3DXVECTOR3(0,0,1));
   initObjTrans();
-}
-
-void D3Scene::setFillMode(D3DFILLMODE fillMode) {
-  setProperty(SP_FILLMODE, m_fillMode, fillMode);
-}
-
-void D3Scene::setShadeMode(D3DSHADEMODE shadeMode) {
-  setProperty(SP_SHADEMODE, m_shadeMode, shadeMode);
 }
 
 void D3Scene::setCameraPDUS(const D3PosDirUpScale &pdus) {
@@ -245,35 +229,6 @@ D3DMATERIAL D3Scene::getDefaultMaterial() const {
   material.Emissive = D3DXCOLOR(0     , 0     , 0    , 0   );
   material.Power    = 9.73f;
   return material;
-}
-
-D3PCOLOR D3Scene::getGlobalAmbientColor() const {
-  D3DCOLOR color;
-  V(m_device->GetRenderState(D3DRS_AMBIENT, &color));
-  return color;
-}
-
-void D3Scene::setGlobalAmbientColor(D3DCOLOR color) {
-  const D3DCOLOR oldColor = getGlobalAmbientColor();
-  if(color != oldColor) {
-    V(m_device->SetRenderState(D3DRS_AMBIENT, color));
-    notifyPropertyChanged(SP_AMBIENTLIGHT, &oldColor, &color);
-  }
-}
-
-void D3Scene::enableSpecular(bool enabled) {
-  const bool oldValue = isSpecularEnabled();
-  if(enabled != oldValue) {
-    DWORD b = enabled ? TRUE : FALSE;
-    V(m_device->SetRenderState( D3DRS_SPECULARENABLE, b));
-    notifyPropertyChanged(SP_SPECULARENABLED, &oldValue, &enabled);
-  }
-}
-
-bool D3Scene::isSpecularEnabled() const {
-  DWORD value;
-  V(m_device->GetRenderState(D3DRS_SPECULARENABLE, &value));
-  return value ? true : false;
 }
 
 BitSet D3Scene::getLightsVisible() const {
@@ -536,14 +491,15 @@ void D3Scene::removeMaterial(UINT index) {
   const int oldCount = getMaterialCount();
   const int newCount = oldCount-1;
   m_materials[index].m_index = -1;
+  unselectMaterial();
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
 }
 
 const BitSet D3Scene::getMaterialsDefined() const {
   const size_t n = m_materials.size();
   BitSet result(n+1);
-  for (size_t i = 0; i < n; i++) {
-    if (m_materials[i].m_index == i) {
+  for(size_t i = 0; i < n; i++) {
+    if(m_materials[i].m_index == i) {
       result.add(i);
     }
   }
@@ -558,9 +514,8 @@ void D3Scene::setMaterial(const MATERIAL &material) {
     if(index >= m_materials.size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index=%u, materialCount=%zd"), index, m_materials.size());
     }
-    if(material != m_materials[index]) {
-      setProperty(SP_MATERIALPARAMETERS, m_materials[index], material);
-    }
+    setProperty(SP_MATERIALPARAMETERS, m_materials[index], material);
+    unselectMaterial();
   }
 }
 
@@ -579,21 +534,16 @@ String D3Scene::getMaterialString() const {
   return result;
 }
 
-void D3Scene::setBackgroundColor(D3DCOLOR color) {
-  setProperty(SP_BACKGROUNDCOLOR, m_backgroundColor, color);
-}
-
 void D3Scene::render() {
   V(m_device->Clear(0
                    ,NULL
                    ,D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER
-                   ,m_backgroundColor
+                   ,getBackgroundColor()
                    ,1.0f
                    ,0
                    ));
 
   updateViewMatrix();
-  V(m_device->SetRenderState(D3DRS_LIGHTING        , TRUE));
 
   V(m_device->BeginScene());
   for(size_t i = 0; i < m_objectArray.size(); i++) {
@@ -647,6 +597,47 @@ D3SceneObject *D3Scene::getPickedObject(const CPoint &point, long mask, D3DXVECT
     *hitPoint = ray.m_orig + minDist * ray.m_dir;
   }
   return closestObject;
+}
+
+LPDIRECT3DVERTEXBUFFER D3Scene::allocateVertexBuffer(DWORD fvf, UINT count, UINT *bufferSize) {
+  const UINT vertexSize = ::FVFToSize(fvf);
+  UINT tmp;
+  UINT &totalSize  = bufferSize ? *bufferSize : tmp;
+  totalSize = vertexSize*count;
+  LPDIRECT3DVERTEXBUFFER result;
+  V(m_device->CreateVertexBuffer(totalSize, 0, fvf, D3DPOOL_DEFAULT, &result, NULL));
+  return result;
+}
+
+LPDIRECT3DINDEXBUFFER D3Scene::allocateIndexBuffer(bool int32, UINT count, UINT *bufferSize) {
+  const int itemSize = int32 ? sizeof(long) : sizeof(short);
+  UINT tmp;
+  UINT &totalSize    = bufferSize ? *bufferSize : tmp;
+  totalSize = itemSize*count;
+  LPDIRECT3DINDEXBUFFER result;
+  V(m_device->CreateIndexBuffer(totalSize, 0, int32 ? D3DFMT_INDEX32 : D3DFMT_INDEX16, D3DPOOL_DEFAULT, &result, NULL));
+  return result;
+}
+
+LPD3DXEFFECT D3Scene::compileEffect(const String &srcText, StringArray &errorMsg) {
+  LPD3DXEFFECT effect         = NULL;
+  LPD3DXBUFFER compilerErrors = NULL;
+  DWORD        flags          = D3DXFX_NOT_CLONEABLE;
+#ifdef D3DXFX_LARGEADDRESS_HANDLE
+  flags |= D3DXFX_LARGEADDRESSAWARE;
+#endif
+  USES_CONVERSION;
+  const char *text = T2A(srcText.cstr());
+  int textLen = (int)strlen(text);
+  try {
+    V(D3DXCreateEffect(m_device, text, textLen, NULL, NULL, flags, NULL, &effect, &compilerErrors));
+    return effect;
+  } catch (Exception e) {
+    const String errorText = (char*)compilerErrors->GetBufferPointer();
+    errorMsg = StringArray(Tokenizer(errorText, _T("\n\r")));
+    return NULL;
+  }
+
 }
 
 void D3Scene::OnSize() {

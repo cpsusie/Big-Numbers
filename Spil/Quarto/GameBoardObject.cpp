@@ -12,14 +12,13 @@ static void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3, int 
 }
 
 void BordObjectWithTexture::drawWithTexture(LPDIRECT3DTEXTURE texture) {
-  LPDIRECT3DDEVICE device = getDevice();
-  V(device->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR));
-	V(device->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR));
-  V(device->SetTexture(     0, texture));
-  V(device->SetRenderState(    D3DRS_LIGHTING        , FALSE));
-  V(device->SetRenderState(    D3DRS_ALPHABLENDENABLE, FALSE));
-  V(device->SetRenderState(    D3DRS_ZENABLE         , TRUE )); 
-  V(getMesh()->DrawSubset(0));
+  getScene().setSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR)
+            .setSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR)
+            .setTexture(     0, texture)
+            .setLightingEnable(  false)
+            .setAlphaBlendEnable(false)
+            .setZEnable(         true);
+  drawSubset(0);
 }
 
 #define XGRID(i) (((137.0f+((float)(i))/4.0f*750.0f))/1024.0f)
@@ -49,7 +48,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::s_texture[3] = {
 #endif
 
 BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
-: BordObjectWithTexture(scene, createMesh(scene.getDevice(), row, col))
+: BordObjectWithTexture(scene, createMesh(scene, row, col))
 , m_field(row,col)
 {
   m_selected    = false;
@@ -62,7 +61,7 @@ BoardFieldObject::BoardFieldObject(D3Scene &scene, int row, int col)
 #endif
 }
 
-LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int col) {
+LPD3DXMESH BoardFieldObject::createMesh(AbstractMeshFactory &amf, int row, int col) {
   MeshBuilder mb;
   const float *xgridLines = GameBoardObject::s_xgridLines;
   const float *ygridLines = GameBoardObject::s_ygridLines;
@@ -79,7 +78,7 @@ LPD3DXMESH BoardFieldObject::createMesh(LPDIRECT3DDEVICE device, int row, int co
   face.addVertexTextureIndex(vindex[1][0], tindex[1][0]);
   face.addVertexTextureIndex(vindex[1][1], tindex[1][1]);
   face.addVertexTextureIndex(vindex[0][1], tindex[0][1]);
-  return mb.createMesh(device, false);
+  return mb.createMesh(amf, false);
 }
 
 static int fieldResId[] = {
@@ -120,7 +119,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::createTexture(bool marked) {
                               ,*getFont()
                               ,ISWHITEFIELD(m_field)?BLACK:WHITE);
   DeleteDC(bmDC);
-  return getTextureFromBitmap(getDevice(), bm);
+  return getScene().getTextureFromBitmap(bm);
 }
 #endif
 
@@ -152,7 +151,7 @@ String BoardFieldObject::toString() const {
 class BoardSideObject : public BordObjectWithTexture {
 private:
   LPDIRECT3DTEXTURE m_boardSideTexture;
-  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device);
+  static LPD3DXMESH createMesh(AbstractMeshFactory &amf);
 public:
   BoardSideObject(D3Scene &scene);
   ~BoardSideObject();
@@ -162,16 +161,16 @@ public:
 };
 
 BoardSideObject::BoardSideObject(D3Scene &scene)
-: BordObjectWithTexture(scene, createMesh(scene.getDevice()))
+: BordObjectWithTexture(scene, createMesh(scene))
 {
-  m_boardSideTexture = loadTextureFromBitmapResource(getDevice(), IDB_BOARDSIDEBITMAP);
+  m_boardSideTexture = scene.loadTextureFromBitmapResource(IDB_BOARDSIDEBITMAP);
 }
 
 BoardSideObject::~BoardSideObject() {
   m_boardSideTexture->Release();
 }
 
-LPD3DXMESH BoardSideObject::createMesh(LPDIRECT3DDEVICE device) { // static
+LPD3DXMESH BoardSideObject::createMesh(AbstractMeshFactory &amf) { // static
   MeshBuilder mb;
 
   const int  ltn = mb.addVertex(-HALFSIZE,0           ,-HALFSIZE); // left  top    near corner
@@ -200,14 +199,14 @@ LPD3DXMESH BoardSideObject::createMesh(LPDIRECT3DDEVICE device) { // static
   makeSquareFace(mb,rbn,lbn,ltn,rtn, textureCorners);              // front side
 
   try {
-    return mb.createMesh(device, false);
+    return mb.createMesh(amf, false);
   } catch (...) {
 //    debugLog(_T("%s\n%s"), __TFUNCTION__, indentString(mb.toString(), 2).cstr());
     throw;
   }
 }
 
-LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
+LPD3DXMESH GameBoardObject::createMesh(AbstractMeshFactory &amf) { // static
   MeshBuilder mb;
 
   int vindex[GRIDPOSCOUNT][GRIDPOSCOUNT];
@@ -237,7 +236,7 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
   }
 
   try {
-    return mb.createMesh(device, false);
+    return mb.createMesh(amf, false);
   } catch (...) {
 //    debugLog(_T("%s\n%s"), __TFUNCTION__, indentString(mb.toString(), 2).cstr());
     throw;
@@ -245,13 +244,13 @@ LPD3DXMESH GameBoardObject::createMesh(LPDIRECT3DDEVICE device) { // static
 }
 
 GameBoardObject::GameBoardObject(D3Scene &scene) 
-: BordObjectWithTexture(scene, createMesh(scene.getDevice()))
+: BordObjectWithTexture(scene, createMesh(scene))
 {
   setName(_T("Board"));
 #ifdef _DEBUG
   debugLog(_T("%s\n"), toString().cstr());
 #endif
-  m_boardTexture     = loadTextureFromBitmapResource(getDevice(), IDB_BOARDBITMAP    );
+  m_boardTexture     = scene.loadTextureFromBitmapResource(IDB_BOARDBITMAP);
   m_boardSideObject  = new BoardSideObject(scene);
   for(int r = 0; r < ROWCOUNT; r++) {
     for(int c = 0; c < COLCOUNT; c++) {

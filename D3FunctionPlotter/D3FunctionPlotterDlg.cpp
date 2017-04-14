@@ -190,7 +190,7 @@ D3SceneObject *CD3FunctionPlotterDlg::createRotatedProfile() {
   param.m_edgeCount  = 20;
   param.m_smoothness = NORMALSMOOTH | ROTATESMOOTH;
   param.m_rotateAxis = 0;
-  SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, rotateProfile(m_scene.getDevice(), prof, param, true));
+  SceneObjectWithMesh *obj = new SceneObjectWithMesh(m_scene, rotateProfile(m_scene, prof, param, true));
   obj->setName(prof.getDisplayName());
   return obj;
 }
@@ -292,11 +292,10 @@ public:
 };
 
 void CD3FunctionPlotterDlg::setCalculatedObject(Function2DSurfaceParameters *param) {
-  LPDIRECT3DDEVICE device = m_scene.getDevice();
   if(param->m_includeTime) {
-    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, device, *param)), param);
+    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
   } else {
-    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(device, *param)), param);
+    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
   }
 }
 /*
@@ -306,24 +305,22 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 */
 
 void CD3FunctionPlotterDlg::setCalculatedObject(ParametricSurfaceParameters *param) {
-  LPDIRECT3DDEVICE device = m_scene.getDevice();
   if(param->m_includeTime) {
-    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, device, *param)), param);
+    setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
   } else {
-    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(device, *param)), param);
+    setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
   }
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
-  LPDIRECT3DDEVICE device = m_scene.getDevice();
 
 //  if(param->m_adaptiveCellSize) {
 //    setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshMarchingCube(device, *param)), param);
 //  } else {
     if(param->m_includeTime) {
-      setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, device, *param)), param);
+      setCalculatedObject(new D3AnimatedFunctionSurface(m_scene, createMeshArray(this, m_scene, *param)), param);
     } else {
-      setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(device, *param)), param);
+      setCalculatedObject(new D3FunctionSurface(m_scene, createMesh(m_scene, *param)), param);
     }
 //  }
 }
@@ -425,8 +422,6 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
                                             "Data files (*.dat)\0*.dat\0"
                                             "All files (*.*)\0*.*\0\0");
 
-    LPDIRECT3DDEVICE device = m_scene.getDevice();
-
     CFileDialog dlg(TRUE);
     dlg.m_ofn.lpstrFilter = fileExtensions;
     dlg.m_ofn.lpstrTitle  = _T("Open Vertex file");
@@ -434,7 +429,7 @@ void CD3FunctionPlotterDlg::OnFileRead3DPointsFromFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(device, fileName, true)));
+      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromVertexFile(m_scene, fileName, true)));
       REPAINT();
     }   
   } catch(Exception e) {
@@ -447,8 +442,6 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
     static const TCHAR *fileExtensions = _T("Obj files (*.obj)\0*.obj\0"
                                             "All files (*.*)\0*.*\0\0");
 
-    LPDIRECT3DDEVICE device = m_scene.getDevice();
-
     CFileDialog dlg(TRUE);
     dlg.m_ofn.lpstrFilter = fileExtensions;
     dlg.m_ofn.lpstrTitle  = _T("Open Obj file");
@@ -456,7 +449,7 @@ void CD3FunctionPlotterDlg::OnFileReadObjFile() {
       return;
     } else {
       const String fileName = dlg.m_ofn.lpstrFile;
-      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(device, fileName, false)));
+      setCalculatedObject(new SceneObjectWithMesh(m_scene, createMeshFromObjFile(m_scene, fileName, false)));
       REPAINT();
     }   
   } catch(Exception e) {

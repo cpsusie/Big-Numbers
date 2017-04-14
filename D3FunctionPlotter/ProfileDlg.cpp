@@ -233,7 +233,7 @@ void CProfileDlg::refresh3d() {
 void CProfileDlg::rotateProfile() {
   try {
     if(!m_profile.isEmpty()) {
-      LPD3DXMESH mesh = ::rotateProfile(m_scene.getDevice(), m_profile, getRotateParameters(), true);
+      LPD3DXMESH mesh = ::rotateProfile(m_scene, m_profile, getRotateParameters(), true);
       set3DObject(new SceneObjectWithMesh(m_scene, mesh));
     }
   } catch(Exception e) {

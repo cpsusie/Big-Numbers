@@ -33,7 +33,7 @@ private:
   bool                     m_selected;
   Field                    m_field;
   LPDIRECT3DTEXTURE getTexture(bool marked);
-  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, int row, int col);
+  static LPD3DXMESH createMesh(AbstractMeshFactory &amf, int row, int col);
 public:
   BoardFieldObject(D3Scene &scene, int row, int col);
   D3PosDirUpScale getPDUS() const {
@@ -62,7 +62,7 @@ private:
   D3PosDirUpScale     m_pdus;
   D3SceneObject      *m_brickMarker;
   bool                m_marked;
-  static LPD3DXMESH   createMesh(LPDIRECT3DDEVICE device, BYTE attr);
+  static LPD3DXMESH   createMesh(AbstractMeshFactory &amf, BYTE attr);
 public:
   BrickObject(D3Scene &scene, BYTE attr);
   ~BrickObject();
@@ -103,7 +103,7 @@ private:
   BrickObject       *m_brickObject[FIELDCOUNT];
   Field              m_currentField;
   char               m_currentBrick;
-  static LPD3DXMESH createMesh(LPDIRECT3DDEVICE device);
+  static LPD3DXMESH createMesh(AbstractMeshFactory &amf);
   void addBrickMaterials();
   friend class BoardFieldObject ;
   void setCurrentFieldSelected(bool selected);

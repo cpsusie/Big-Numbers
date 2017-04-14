@@ -16,18 +16,18 @@ private:
     void  showSliderValues(const LIGHT &v);
     void  setCurrentValue( const LIGHT &v);
 public:
-    CLightDlg(PropertyChangeListener *listener);
-	  enum { IDD = IDD_LIGHT_DIALOG };
+    CLightDlg(PropertyChangeListener *listener, CWnd *pParent = NULL);
+    enum { IDD = IDD_LIGHT_DIALOG };
     static LIGHT &copyModifiableValues(LIGHT &dst, const LIGHT &src);
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar);
-  	afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
+    afx_msg void OnShowWindow(BOOL bShow, UINT nStatus);
     afx_msg LRESULT OnMsgResetControls(WPARAM wp, LPARAM lp);
-	  afx_msg void OnHideWindow();
-	  virtual void OnCancel();
-	  afx_msg void OnClose();
+    afx_msg void OnHideWindow();
+    virtual void OnCancel();
+    afx_msg void OnClose();
     DECLARE_MESSAGE_MAP()
 private:
   CColormap m_colormapAmbient;

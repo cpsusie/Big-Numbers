@@ -54,7 +54,7 @@ protected:
     ((CColormap*)GetDlgItem(ctrlId))->SetColor(D3DCOLOR2COLORREF(cr));
   }
 
-  void putWindowBesideParent() {
+  inline void putWindowBesideParent() {
     if(GetParent()) {
       putWindowBesideWindow(this, GetParent());
     }

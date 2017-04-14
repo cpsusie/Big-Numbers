@@ -4,6 +4,6 @@
 
 class MemoryLogThread : public Thread {
 public:
-  unsigned int run();
+  UINT run();
 };
 

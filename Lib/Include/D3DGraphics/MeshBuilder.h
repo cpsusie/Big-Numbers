@@ -69,6 +69,11 @@ public:
 
 #define MAX16BITVERTEXCOUNT 0xfffe
 
+class AbstractMeshFactory {
+public:
+  virtual LPD3DXMESH allocateMesh(DWORD fvf, UINT faceCount, UINT vertexCount, DWORD options) = 0;
+};
+
 class MeshBuilder {
 private:
   VertexArray                 m_vertices;
@@ -184,7 +189,7 @@ public:
 
   void optimize();
   D3DXCube3 getBoundingBox() const;
-  LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, bool doubleSided) const;
+  LPD3DXMESH createMesh(AbstractMeshFactory &amf, bool doubleSided) const;
   void parseWavefrontObjFile(FILE *f);
   String toString() const;
 };

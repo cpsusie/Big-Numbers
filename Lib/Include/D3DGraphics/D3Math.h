@@ -52,6 +52,9 @@ inline float dist(const D3DXVECTOR3 &p1, const D3DXVECTOR3 &p2) {
   return length(p1 - p2);
 }
 
+D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
+
+
 #define     radians(x) D3DXToRadian(x)
 #define     degrees(x) D3DXToDegree(x)
 

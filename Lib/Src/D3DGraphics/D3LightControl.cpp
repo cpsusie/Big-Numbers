@@ -73,15 +73,15 @@ void D3LightControl::draw() {
     } else {
       setMaterialColors();
     }
-    prepareDraw(USE_SCENEFILLMODE | USE_SCENESHADEMODE);
-    V(m_mesh->DrawSubset(0));
+    getScene().setFillMode(D3DFILL_SOLID).setShadeMode(D3DSHADE_GOURAUD);
+    drawSubset(0);
   } else {
     prepareEffect();
     UINT passCount;
     V(m_effect->Begin( &passCount, 0));
     for(UINT pass = 0; pass < passCount; pass++) {
       V(m_effect->BeginPass(pass));
-      V(m_mesh->DrawSubset(0));
+      drawSubset(0);
       V(m_effect->EndPass());
     }
     V(m_effect->End());
@@ -162,16 +162,10 @@ void D3LightControl::createEffect() {
       "}                                                                                           \r\n"
       ;
 
-  const int textlen = (int)strlen(effectSourceText);
-  DWORD Flags = D3DXFX_NOT_CLONEABLE;
-#ifdef D3DXFX_LARGEADDRESS_HANDLE
-  Flags |= D3DXFX_LARGEADDRESSAWARE;
-#endif
-  LPD3DXBUFFER compilerErrors = NULL;
-  try {
-    V(D3DXCreateEffect(getDevice(), effectSourceText, textlen, NULL, NULL, Flags, NULL, &m_effect, &compilerErrors));
-  } catch (Exception e) {
-    const String errorMsg = (char*)compilerErrors->GetBufferPointer();
+  StringArray compilerErrors;
+  m_effect = getScene().compileEffect(effectSourceText, compilerErrors);
+  if(m_effect == NULL) {
+    const String errorMsg = compilerErrors.toString(_T('\n'));
     AfxMessageBox(errorMsg.cstr(), MB_ICONWARNING);
     return;
   }

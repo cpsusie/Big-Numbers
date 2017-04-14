@@ -116,25 +116,25 @@ void IsoSurface::receiveDebugVertices(int id,...) {
   va_end(argptr);
 }
 
-LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, IsoSurface &surface) {
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, IsoSurface &surface) {
   surface.createData();
-  return surface.getMeshbuilder().createMesh(device, surface.getParam().m_doubleSided);
+  return surface.getMeshbuilder().createMesh(amf, surface.getParam().m_doubleSided);
 }
 
-LPD3DXMESH createMesh(LPDIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
+LPD3DXMESH createMesh(AbstractMeshFactory &amf, const IsoSurfaceParameters &param) {
   if(param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=true"));
   }
-  return createMesh(device, IsoSurface(param));
+  return createMesh(amf, IsoSurface(param));
 }
 
 class VariableIsoSurfaceMeshCreator : public AbstractVariableMeshCreator {
 private:
-  LPDIRECT3DDEVICE   m_device;
-  mutable IsoSurface m_surface;
+  AbstractMeshFactory &m_amf;
+  mutable IsoSurface   m_surface;
 public:
-  VariableIsoSurfaceMeshCreator(LPDIRECT3DDEVICE device, const IsoSurfaceParameters &param)
-  : m_device(device)
+  VariableIsoSurfaceMeshCreator(AbstractMeshFactory &amf, const IsoSurfaceParameters &param)
+  : m_amf(amf)
   , m_surface(param)
   {
   }
@@ -143,16 +143,16 @@ public:
 
 LPD3DXMESH VariableIsoSurfaceMeshCreator::createMesh(double time) const {
   m_surface.setT(time);
-  return ::createMesh(m_device, m_surface);
+  return ::createMesh(m_amf, m_surface);
 }
 
 class IsoSurfaceMeshArrayJobParameter : public AbstractMeshArrayJobParameter {
 private:
-  LPDIRECT3DDEVICE            m_device;
+  AbstractMeshFactory        &m_amf;
   const IsoSurfaceParameters &m_param;
 public:
-  IsoSurfaceMeshArrayJobParameter(LPDIRECT3DDEVICE device, const IsoSurfaceParameters &param)
-    : m_device(device)
+  IsoSurfaceMeshArrayJobParameter(AbstractMeshFactory &amf, const IsoSurfaceParameters &param)
+    : m_amf(amf)
     , m_param(param) {
   }
   const DoubleInterval &getTimeInterval() const {
@@ -162,18 +162,18 @@ public:
     return m_param.m_frameCount;
   }
   AbstractVariableMeshCreator *fetchMeshCreator() const {
-    return new VariableIsoSurfaceMeshCreator(m_device, m_param);
+    return new VariableIsoSurfaceMeshCreator(m_amf, m_param);
   }
 };
 
-MeshArray createMeshArray(CWnd *wnd, LPDIRECT3DDEVICE device, const IsoSurfaceParameters &param) {
+MeshArray createMeshArray(CWnd *wnd, AbstractMeshFactory &amf, const IsoSurfaceParameters &param) {
   if(!param.m_includeTime) {
     throwInvalidArgumentException(__TFUNCTION__, _T("param.includeTime=false"));
   }
-  return IsoSurfaceMeshArrayJobParameter(device, param).createMeshArray(wnd);
+  return IsoSurfaceMeshArrayJobParameter(amf, param).createMeshArray(wnd);
 }
 
-LPD3DXMESH createSphereMesh(LPDIRECT3DDEVICE device, double radius) {
+LPD3DXMESH createSphereMesh(AbstractMeshFactory &amf, double radius) {
   IsoSurfaceParameters param;
   const double bb       = ceil(radius + 1);
   param.setName(format(_T("sphere radius %.2lf"), radius));
@@ -184,5 +184,5 @@ LPD3DXMESH createSphereMesh(LPDIRECT3DDEVICE device, double radius) {
   param.m_cellSize      = radius / 5;
   param.m_tetrahedral   = false;
   param.m_doubleSided   = false;
-  return createMesh(device, param);
+  return createMesh(amf, param);
 }
