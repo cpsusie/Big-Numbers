@@ -737,6 +737,13 @@ public:
   }
 };
 
+class SceneObjectBox : public SceneObjectWithMesh {
+private:
+  void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
+public:
+  SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube);
+};
+
 class D3LineArray : public SceneObjectWithVertexBuffer {
 private:
   void initBuffer(const Line *lines, int n);

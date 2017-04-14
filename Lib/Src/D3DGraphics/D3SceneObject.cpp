@@ -309,6 +309,39 @@ void D3CurveArray::draw() {
   }
 }
 
+void SceneObjectBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3) {
+  Face &f = mb.addFace();
+  const int nIndex = mb.addNormal(mb.calculateNormal(v0,v1,v2));
+  f.addVertexNormalIndex(v0, nIndex);
+  f.addVertexNormalIndex(v1, nIndex);
+  f.addVertexNormalIndex(v2, nIndex);
+  f.addVertexNormalIndex(v3, nIndex);
+}
+
+SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube) 
+: SceneObjectWithMesh(scene)
+{
+  MeshBuilder mb;
+
+  const int  lbn = mb.addVertex(cube.m_lbn.x,cube.m_lbn.y,cube.m_lbn.z); // left  bottom near corner
+  const int  lbf = mb.addVertex(cube.m_lbn.x,cube.m_lbn.y,cube.m_rtf.z); // left  bottom far  corner
+  const int  ltn = mb.addVertex(cube.m_lbn.x,cube.m_rtf.y,cube.m_lbn.z); // left  top    near corner
+  const int  ltf = mb.addVertex(cube.m_lbn.x,cube.m_rtf.y,cube.m_rtf.z); // left  top    far  corner
+  const int  rbn = mb.addVertex(cube.m_rtf.x,cube.m_lbn.y,cube.m_lbn.z); // right bottom near corner
+  const int  rbf = mb.addVertex(cube.m_rtf.x,cube.m_lbn.y,cube.m_rtf.z); // right bottom far  corner
+  const int  rtn = mb.addVertex(cube.m_rtf.x,cube.m_rtf.y,cube.m_lbn.z); // right top    near corner
+  const int  rtf = mb.addVertex(cube.m_rtf.x,cube.m_rtf.y,cube.m_rtf.z); // right top    far  corner
+
+  makeSquareFace(mb,lbn,lbf,rbf,rbn);              // bottom
+  makeSquareFace(mb,ltn,rtn,rtf,ltf);              // top
+  makeSquareFace(mb,lbn,ltn,ltf,lbf);              // left side
+  makeSquareFace(mb,lbf,ltf,rtf,rbf);              // back side
+  makeSquareFace(mb,rbf,rtf,rtn,rbn);              // right side
+  makeSquareFace(mb,rbn,rtn,ltn,lbn);              // front side
+
+  m_mesh = mb.createMesh(getScene(), false);
+}
+
 // -----------------------------------------------------------------------------------------------------------
 
 #define SINCOS(degree,c,s) double c = radians(degree), s; sincos(c,s)

@@ -62,6 +62,9 @@ public:
     void render(BYTE renderFlags) {
       PostMessage(ID_MSG_RENDER, renderFlags, 0);
     }
+    void modifyContextMenu(CMenu &menu) {
+      appendMenuItem(menu, _T("Add box"), ID_ADDBOXOBJECT);
+    }
     enum { IDD = IDR_MAINFRAME };
 
     virtual BOOL PreTranslateMessage(MSG *pMsg);
@@ -90,6 +93,7 @@ protected:
     afx_msg void OnViewShow3dinfo();
     afx_msg void OnResetPositions();
     afx_msg void OnObjectEditFunction();
+    afx_msg void OnAddBoxObject();
     afx_msg LRESULT OnMsgRender(WPARAM wp, LPARAM lp);
     DECLARE_MESSAGE_MAP()
 };

@@ -149,6 +149,12 @@ public:
     m_vertexNormalChecked = m_validated = false;
     return m_faceArray.last();
   }
+  static D3DXVECTOR3 calculateNormal(const D3DXVECTOR3 &v0, const D3DXVECTOR3 &v1, const D3DXVECTOR3 &v2) {
+    return unitVector(crossProduct(v2-v0, v1-v0));
+  }
+  inline D3DXVECTOR3 calculateNormal(int v0, int v1, int v2) const {
+    return calculateNormal(m_vertices[v0], m_vertices[v1], m_vertices[v2]);
+  }
   inline int getVertexCount() const {
     return (int)m_vertices.size();
   }

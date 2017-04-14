@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
   ON_COMMAND(ID_VIEW_SHOW3DINFO               , OnViewShow3dinfo               )
   ON_COMMAND(ID_RESETPOSITIONS                , OnResetPositions               )
   ON_COMMAND(ID_OBJECT_EDITFUNCTION           , OnObjectEditFunction           )
+  ON_COMMAND(ID_ADDBOXOBJECT                  , OnAddBoxObject                 )
   ON_MESSAGE(ID_MSG_RENDER                    , OnMsgRender                    )
 END_MESSAGE_MAP()
 
@@ -538,6 +539,12 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
     AfxMessageBox(format(_T("Unknown PersistentParameterType:%d"), param->getType()).cstr());
     break;
   }
+}
+
+void CD3FunctionPlotterDlg::OnAddBoxObject() {
+  D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
+  m_scene.addSceneObject(new SceneObjectBox(m_scene, cube));
+  render(RENDER_ALL);
 }
 
 void CD3FunctionPlotterDlg::show3DInfo() {
