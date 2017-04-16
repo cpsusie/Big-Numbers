@@ -2,7 +2,9 @@
 
 #include <TinyBitSet.h>
 #include <MFCUtil/WinTools.h>
-#include <MFCUtil/PropertyDlgThread.h>
+#include <MFCUtil/PropertyDialogMap.h>
+#include <D3DGraphics/Light.h>
+#include <D3DGraphics/Material.h>
 #include <D3DGraphics/D3LightControl.h>
 
 typedef enum {
@@ -46,18 +48,18 @@ public:
 
 class D3SceneEditor : public PropertyChangeListener {
 private:
-    CPropertyDlgThread         *m_lightDlgThread, *m_materialDlgThread;
-    D3SceneContainer           *m_sceneContainer;
-    CurrentObjectControl        m_currentControl;
-    D3SceneObject              *m_currentSceneObject, *m_coordinateSystem;
-    PropertyContainer          *m_currentEditor;
-    BitSet8                     m_stateFlags;
-    CPoint                      m_lastMouse;
-    D3DXVECTOR3                 m_focusPoint;
-    D3DXVECTOR3                 m_pickedPoint;
-    D3Ray                       m_pickedRay;
-    D3PickedInfo                m_pickedInfo;
-    String                      m_paramFileName;
+    D3SceneContainer                 *m_sceneContainer;
+    CurrentObjectControl              m_currentControl;
+    D3SceneObject                    *m_currentSceneObject, *m_coordinateSystem;
+    PropertyDialogMap                 m_propertyDialogMap;
+    PropertyContainer                *m_currentEditor;
+    BitSet8                           m_stateFlags;
+    CPoint                            m_lastMouse;
+    D3DXVECTOR3                       m_focusPoint;
+    D3DXVECTOR3                       m_pickedPoint;
+    D3Ray                             m_pickedRay;
+    D3PickedInfo                      m_pickedInfo;
+    String                            m_paramFileName;
     
     inline CWnd *getMessageWindow() const {
       return m_sceneContainer->getMessageWindow();
@@ -130,6 +132,7 @@ private:
           D3LightControl *getCurrentLightControl();
     const D3LightControl *getCurrentLightControl() const;
     void setLightControlRenderEffect(bool enabled);
+    void setSpecularEnable(          bool enabled);
     void OnSaveSceneParameters();
     void OnLoadSceneParameters();
     void OnControlObjectMoveRotate();
@@ -141,7 +144,6 @@ private:
     void setLightControlsVisible(bool visible);
     void addLight(D3DLIGHTTYPE type);
     void setSpotToPointAt(CPoint point);
-
     void OnMouseMoveCameraWalk(           UINT nFlags, CPoint pt);
     void OnMouseMoveObjectPos(            UINT nFlags, CPoint pt);
     void OnMouseWheelObjectPos(           UINT nFlags, short zDelta, CPoint pt);
@@ -238,4 +240,3 @@ public:
     BOOL PreTranslateMessage(MSG *pMsg);
     String toString() const;
 };
-

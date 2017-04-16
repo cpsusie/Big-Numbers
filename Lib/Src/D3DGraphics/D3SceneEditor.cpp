@@ -1,6 +1,7 @@
 #include "pch.h"
 #include <ByteFile.h>
 #include <MFCUtil/ColorDlg.h>
+#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/LightDlg.h>
 #include <D3DGraphics/MaterialDlg.h>
 #include <D3DGraphics/D3SceneEditor.h>
@@ -11,8 +12,6 @@ D3SceneEditor::D3SceneEditor() {
   m_currentEditor      = NULL;
   m_currentSceneObject = NULL;
   m_coordinateSystem   = NULL;
-  m_lightDlgThread     = NULL;
-  m_materialDlgThread  = NULL;
   m_paramFileName      = _T("Untitled");
   m_stateFlags.add(SE_MOUSEVISIBLE);
 }
@@ -23,8 +22,8 @@ D3SceneEditor::~D3SceneEditor() {
 
 void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
   m_sceneContainer    = sceneContainer;
-  m_lightDlgThread    = CPropertyDlgThread::startThread(new CLightDlg(   this));
-  m_materialDlgThread = CPropertyDlgThread::startThread(new CMaterialDlg(this));
+  m_propertyDialogMap.addDialog(new CLightDlg(   this));
+  m_propertyDialogMap.addDialog(new CMaterialDlg(this));
 
   m_currentControl = CONTROL_IDLE;
   getScene().addPropertyChangeListener(this);
@@ -32,14 +31,7 @@ void D3SceneEditor::init(D3SceneContainer *sceneContainer) {
 
 void D3SceneEditor::close() {
   getScene().removePropertyChangeListener(this);
-  if (m_lightDlgThread) {
-    m_lightDlgThread->kill();
-    m_lightDlgThread = NULL;
-  }
-  if (m_materialDlgThread) {
-    m_materialDlgThread->kill();
-    m_materialDlgThread = NULL;
-  }
+  m_propertyDialogMap.clear();
 }
 
 void D3SceneEditor::setEnabled(bool enabled) {
@@ -50,12 +42,7 @@ void D3SceneEditor::setEnabled(bool enabled) {
     render(RENDER_INFO);
   } else {
     OnLightControlHide();
-    if(m_lightDlgThread->isDialogVisible()) {
-      m_lightDlgThread->setDialogVisible(false);
-    }
-    if(m_materialDlgThread->isDialogVisible()) {
-      m_materialDlgThread->setDialogVisible(false);
-    }
+    m_propertyDialogMap.hideDialog();
     disablePropertyChanges();
     m_stateFlags.remove(SE_ENABLED);
     render(RENDER_INFO);
@@ -101,17 +88,18 @@ void D3SceneEditor::handlePropertyChanged(const PropertyContainer *source, int i
       render(RENDER_3D);
       break;
     }
-  } else if(source == m_lightDlgThread->getPropertyContainer()) {
+  } else if(m_propertyDialogMap.hasPropertyContainer(source)) {
     switch(id) {
     case SP_LIGHTPARAMETERS:
       { const LIGHT &lp = *(LIGHT*)newValue;
-        LIGHT tmp = getScene().getLightParam(lp.m_index); // to keep pos and direction as they are
-        getScene().setLightParam(CLightDlg::copyModifiableValues(tmp, lp));
+        LIGHT tmp = getScene().getLight(lp.m_index); // to keep pos and direction as they are
+        if (tmp.m_index != lp.m_index) {
+          Message(_T("%s:Light %d is undefined")
+                 ,__TFUNCTION__,lp.m_index);
+        }
+        getScene().setLight(CLightDlg::copyModifiableValues(tmp, lp));
       }
       break;
-    }
-  } else if(source == m_materialDlgThread->getPropertyContainer()) {
-    switch(id) {
     case SP_MATERIALPARAMETERS:
       getScene().setMaterial(*(MATERIAL*)newValue);
       break;
@@ -303,8 +291,8 @@ BOOL D3SceneEditor::PreTranslateMessage(MSG *pMsg) {
     case ID_SHADING_FLAT                  : OnShadingFlat()                     ; return true;
     case ID_SHADING_GOURAUD               : OnShadingGouraud()                  ; return true;
     case ID_SHADING_PHONG                 : OnShadingPhong()                    ; return true;
-    case ID_ENABLE_SPECULARHIGHLIGHT      : getScene().setSpecularEnable(true)  ; return true;
-    case ID_DISABLE_SPECULARHIGHLIGHT     : getScene().setSpecularEnable(false) ; return true;
+    case ID_ENABLE_SPECULARHIGHLIGHT      : setSpecularEnable(true)             ; return true;
+    case ID_DISABLE_SPECULARHIGHLIGHT     : setSpecularEnable(false)            ; return true;
     case ID_SHOWCOORDINATESYSTEM          : setCoordinateSystemVisible(true)    ; return true;
     case ID_HIDECOORDINATESYSTEM          : setCoordinateSystemVisible(false)   ; return true;
     case ID_ADDLIGHT_DIRECTIONAL          : OnAddLightDirectional()             ; return true;
@@ -689,7 +677,7 @@ void D3SceneEditor::OnMouseMoveLightPoint(UINT nFlags, CPoint pt) {
 void D3SceneEditor::OnMouseMoveLightSpot(UINT nFlags, CPoint pt) {
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
-  const LIGHT       param = lc->getLightParam();
+  const LIGHT       param = lc->getLight();
   const D3DXVECTOR3 pos   = param.Position;
   const D3DXVECTOR3 dir   = param.Direction;
 
@@ -726,7 +714,7 @@ void D3SceneEditor::OnMouseWheelLightDirectional(UINT nFlags, short zDelta, CPoi
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_DIRECTIONAL));
   D3LightControlDirectional &ctrl = *(D3LightControlDirectional*)lc;
-  const D3DXVECTOR3 dir = ctrl.getLightParam().Direction;
+  const D3DXVECTOR3 dir = ctrl.getLight().Direction;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           : 
     ctrl.setSphereRadius(ctrl.getSphereRadius() * (1.0f-(float)sign(zDelta)*0.04f));
@@ -748,7 +736,7 @@ void D3SceneEditor::OnMouseWheelLightPoint(UINT nFlags, short zDelta, CPoint pt)
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_POINT));
   D3LightControlPoint &ctrl = *(D3LightControlPoint*)lc;
-  const D3DXVECTOR3 pos = ctrl.getLightParam().Position;
+  const D3DXVECTOR3 pos = ctrl.getLight().Position;
   switch(nFlags & MK_CTRLSHIFT) {
   case 0           : 
     getScene().setLightPosition(ctrl.getLightIndex(), pos + getScene().getCameraDir()   * (float)sign(zDelta)*0.04f);
@@ -768,7 +756,7 @@ void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) 
   D3LightControl *lc = getCurrentLightControl();
   assert(lc && (lc->getLightType() == D3DLIGHT_SPOT));
   D3LightControlSpot &ctrl = *(D3LightControlSpot*)lc;
-  const LIGHT       param = ctrl.getLightParam();
+  const LIGHT       param = ctrl.getLight();
   const D3DXVECTOR3 pos   = param.Position;
   const D3DXVECTOR3 dir   = param.Direction;
   switch(nFlags & MK_CTRLSHIFT) {
@@ -790,9 +778,10 @@ void D3SceneEditor::OnMouseWheelLightSpot(UINT nFlags, short zDelta, CPoint pt) 
 void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint pt) {
   const D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL || (lc->getLightType() != D3DLIGHT_SPOT)) {
+    setCurrentControl(CONTROL_IDLE);
     return;
   }
-  LIGHT light = lc->getLightParam();
+  LIGHT light = lc->getLight();
   switch(nFlags) {
   case 0           :
     light.setInnerAngle(light.getInnerAngle() * (1.0f - (float)sign(zDelta) / 10.0f));
@@ -803,7 +792,7 @@ void D3SceneEditor::OnMouseWheelLightSpotAngle(UINT nFlags, short zDelta, CPoint
   default:
     return;
   }
-  getScene().setLightParam(light);
+  getScene().setLight(light);
 }
 // ------------------------------------------------------------------------------------------------------------
 
@@ -812,7 +801,7 @@ void D3SceneEditor::OnAddLightPoint()       { addLight(D3DLIGHT_POINT);       }
 void D3SceneEditor::OnAddLightSpot()        { addLight(D3DLIGHT_SPOT);        }
 
 void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
-  LIGHT lp = getScene().getDefaultLightParam(type);
+  D3DLIGHT lp = D3Scene::getDefaultLight(type);
   switch(type) {
   case D3DLIGHT_DIRECTIONAL:
     break;
@@ -824,18 +813,17 @@ void D3SceneEditor::addLight(D3DLIGHTTYPE type) {
     lp.Direction = unitVector((getScene().getCameraPos() + 5 * getScene().getCameraDir()) - lp.Position);
     break;
   }
-  getScene().setLightParam(lp);
-  getScene().setLightControlVisible(lp.m_index, true);
+  getScene().setLightControlVisible(getScene().addLight(lp), true);
 }
 
 void D3SceneEditor::setCurrentObject(D3SceneObject *obj) {
   m_currentSceneObject = obj;
   const D3LightControl *lc = getCurrentLightControl();
-  if(lc) {
-    m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
-  } else if(obj) {
-    if(obj->hasMaterial()) {
-      m_materialDlgThread->setCurrentDialogProperty(&obj->getMaterial());
+  if(m_propertyDialogMap.isDialogVisible()) {
+    if(lc) {
+      m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, &lc->getLight());
+    } else if(obj && obj->hasMaterial()) {
+      m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, &obj->getMaterial());
     }
   }
   render(RENDER_INFO);
@@ -855,7 +843,8 @@ D3SceneObject *D3SceneEditor::getCurrentVisualObject() {
 }
 
 D3AnimatedSurface *D3SceneEditor::getCurrentAnimatedobject() const {
-  if(m_currentSceneObject == NULL || m_currentSceneObject->getType() != SOTYPE_ANIMATEDOBJECT) {
+  if((m_currentSceneObject == NULL) 
+  || (m_currentSceneObject->getType() != SOTYPE_ANIMATEDOBJECT)) {
     return NULL;
   }
   return (D3AnimatedSurface*)m_currentSceneObject;
@@ -903,19 +892,23 @@ void D3SceneEditor::setLightControlRenderEffect(bool enabled) {
   }
 }
 
+void D3SceneEditor::setSpecularEnable(bool enabled) {
+  getScene().setSpecularEnable(enabled);
+  render(RENDER_3D);
+}
+
 void D3SceneEditor::setSpotToPointAt(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if((lc == NULL) || (lc->getLightType() != D3DLIGHT_SPOT)) {
+    setCurrentControl(CONTROL_IDLE);
     return;
   }
   D3DXVECTOR3 pointInSpace;
   D3SceneObject *obj = getScene().getPickedObject(point, ~PICK_LIGHTCONTROL, &pointInSpace);
-  if(obj == NULL) {
-    return;
-  }
-  LIGHT param = lc->getLightParam();
+  if(obj == NULL) return;
+  LIGHT param = lc->getLight();
   param.Direction = unitVector(pointInSpace - param.Position);
-  getScene().setLightParam(param);
+  getScene().setLight(param);
 }
 
 void D3SceneEditor::OnContextMenuSceneObject(CPoint point) {
@@ -1057,7 +1050,7 @@ void D3SceneEditor::OnContextMenuVisualObject(CPoint point) {
 void D3SceneEditor::OnContextMenuLightControl(CPoint point) {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  const LIGHT light = lc->getLightParam();
+  const LIGHT light = lc->getLight();
   CMenu menu;
   loadMenu(menu, IDR_CONTEXT_MENU_LIGHTCONTROL);
   if(light.isEnabled()) { // light is on
@@ -1154,9 +1147,7 @@ void D3SceneEditor::setCurrentControl(CurrentObjectControl control) {
 
 void D3SceneEditor::OnObjectEditMaterial() {
   if(m_currentSceneObject && m_currentSceneObject->hasMaterial()) {
-    m_materialDlgThread->setCurrentDialogProperty(&m_currentSceneObject->getMaterial());
-    m_materialDlgThread->setDialogVisible(true);
-    m_lightDlgThread->setDialogVisible(false);
+    m_propertyDialogMap.showDialog(SP_MATERIALPARAMETERS, &m_currentSceneObject->getMaterial());
     setCurrentControl(CONTROL_MATERIAL);
   }
 }
@@ -1234,9 +1225,7 @@ void D3SceneEditor::setLightEnabled(bool enabled) {
 void D3SceneEditor::OnLightAdjustColors() {
   D3LightControl *lc = getCurrentLightControl();
   if(lc == NULL) return;
-  m_lightDlgThread->setCurrentDialogProperty(&lc->getLightParam());
-  m_lightDlgThread->setDialogVisible(true);
-  m_materialDlgThread->setDialogVisible(false);
+  m_propertyDialogMap.showDialog(SP_LIGHTPARAMETERS, &lc->getLight());
   setCurrentControl(CONTROL_LIGHTCOLOR);
 }
 
@@ -1420,20 +1409,25 @@ String D3SceneEditor::toString() const {
                       ,m_pickedInfo.toString().cstr());
     }
   }
+  switch(m_propertyDialogMap.getVisibleDialogId()) {
+  case SP_LIGHTPARAMETERS   :
+    result += format(_T("\nDlg-light:%s")
+                    ,((LIGHT*)m_propertyDialogMap.getProperty(SP_LIGHTPARAMETERS))->toString().cstr());
+    break;
+  case SP_MATERIALPARAMETERS:
+    result += format(_T("\nDlg-material:%s")
+                    ,((MATERIAL*)m_propertyDialogMap.getProperty(SP_MATERIALPARAMETERS))->toString().cstr());
+    break;
+  }
+
   switch (m_currentControl) {
   case CONTROL_IDLE                  :
     return result;
   case CONTROL_CAMERA_WALK           :
-    return result + format(_T("\n%s\nView angel:%.1lf, zn:%.3lf")
-                           ,getScene().getCameraString().cstr()
-                           ,degrees(getScene().getViewAngel())
-                           ,getScene().getNearViewPlane());
+    return result + format(_T("\n%s"), getScene().getCameraString().cstr());
 
   case CONTROL_CAMERA_KEEPFOCUS      :
-    result += format(_T("\n%s\nView angel:%.1lf, zn:%.3lf")
-                    ,getScene().getCameraString().cstr()
-                    ,degrees(getScene().getViewAngel())
-                    ,getScene().getNearViewPlane());
+    result += format(_T("\n%s"), getScene().getCameraString().cstr());
     if(hasFocusPoint()) {
       result += format(_T("\nFocuspoint:%s"), ::toString(m_focusPoint).cstr());
     }
@@ -1463,7 +1457,7 @@ String D3SceneEditor::toString() const {
   case CONTROL_SPOTLIGHTANGLES       :
     { const D3LightControl *lc = getCurrentLightControl();
       if(lc) {
-        result += format(_T("\nLight:%s"), ::toString(lc->getLightParam()).cstr());
+        result += format(_T("\n%s"), lc->getLight().toString().cstr());
       }
       return result;
     }
@@ -1476,7 +1470,7 @@ String D3SceneEditor::toString() const {
     }
   case CONTROL_MATERIAL              :
     if(m_currentSceneObject && m_currentSceneObject->hasMaterial()) {
-      result += format(_T("\nMaterial:%s"), ::toString(m_currentSceneObject->getMaterial()).cstr());
+      result += format(_T("\nMaterial:%s"), m_currentSceneObject->getMaterial().toString().cstr());
     }
     return result;
     

@@ -3,6 +3,14 @@
 #include <MyUtil.h>
 #include "WinTools.h"
 
+class D3PCOLOR {
+public:
+  const D3DCOLOR m_color;
+  inline D3PCOLOR(D3DCOLOR c) : m_color(c) {}
+  inline operator D3DCOLOR() const { return m_color; }
+  String toString(bool showAlpha=false) const;
+};
+
 class RGBColor {
 public:
   float m_red;        // 0..1
@@ -75,6 +83,11 @@ D3DCOLOR getGrayColor(     D3DCOLOR  c);
 
 #define D3DCOLOR2COLORREF(d3c) RGB(ARGB_GETRED(d3c), ARGB_GETGREEN(d3c), ARGB_GETBLUE(d3c))
 #define COLORREF2D3DCOLOR(cr) D3DCOLOR_XRGB(GetRValue(cr), GetGValue(cr), GetBValue(cr))
+
+#define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
+D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
+
+D3DCOLORVALUE colorToColorValue(D3DCOLOR c);
 
 class ColorComparator {
 public:

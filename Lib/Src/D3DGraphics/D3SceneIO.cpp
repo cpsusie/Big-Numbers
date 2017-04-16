@@ -42,6 +42,6 @@ void D3Scene::loadLights(ByteInputStream &s) {
     removeLight((UINT)it.next());
   }
   for (size_t i = 0; i < lightArray.size(); i++) {
-    setLightParam(lightArray[i]);
+    setLight(lightArray[i]);
   }
 }

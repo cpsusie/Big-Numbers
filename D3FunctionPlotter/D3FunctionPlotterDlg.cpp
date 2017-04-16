@@ -35,7 +35,6 @@ END_MESSAGE_MAP()
 
 CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(CD3FunctionPlotterDlg::IDD, pParent) {
   m_hIcon                = theApp.LoadIcon(IDR_MAINFRAME);
-  m_calculatedObject     = NULL;
   m_infoVisible          = false;
 }
 
@@ -327,19 +326,29 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 }
 
 void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentParameter *param) {
-  if(m_calculatedObject) {
-    m_scene.removeSceneObject(m_calculatedObject);
-    delete m_calculatedObject;
+  D3SceneObject *oldObj = getCalculatedObject();
+  if(oldObj) {
+    m_scene.removeSceneObject(oldObj);
+    delete oldObj;
   }
-  m_calculatedObject = obj;
-  if(m_calculatedObject) {
-    m_scene.addSceneObject(m_calculatedObject);
-    m_calculatedObject->setUserData(param);
+  if(obj) {
+    obj->setUserData(param);
     if(param) {
-      m_calculatedObject->setName(param->getDisplayName());
+      obj->setName(param->getDisplayName());
     }
+    m_scene.addSceneObject(obj);
   }
   m_editor.setCurrentObject(obj);
+}
+
+D3SceneObject *CD3FunctionPlotterDlg::getCalculatedObject() const {
+  for(Iterator<D3SceneObject*> it = m_scene.getObjectIterator(); it.hasNext();) {
+    D3SceneObject *obj = it.next();
+    if(obj->getUserData() != NULL) {
+      return obj;
+    }
+  }
+  return NULL;
 }
 
 static const String stateFileName = _T("c:\\temp\\D3FunctionPlotter.dat");
@@ -524,7 +533,9 @@ void CD3FunctionPlotterDlg::OnResetPositions() {
 }
 
 void CD3FunctionPlotterDlg::OnObjectEditFunction() {
-  PersistentParameter *param = (PersistentParameter*)m_calculatedObject->getUserData();
+  D3SceneObject *calcObj = getCalculatedObject();
+  if(!calcObj) return;
+  PersistentParameter *param = (PersistentParameter*)calcObj->getUserData();
   switch(param->getType()) {
   case PP_2DFUNCTION       :
     OnFileFunctionSurface();
@@ -543,13 +554,13 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
 
 void CD3FunctionPlotterDlg::OnAddBoxObject() {
   D3DXCube3 cube(D3DXVECTOR3(-1,-1,-1), D3DXVECTOR3(1,1,1));
-  m_scene.addSceneObject(new SceneObjectBox(m_scene, cube));
+  const int matIndex = m_scene.addMaterial(D3Scene::getDefaultMaterial());
+  m_scene.addSceneObject(new SceneObjectBox(m_scene, cube, matIndex));
   render(RENDER_ALL);
 }
 
 void CD3FunctionPlotterDlg::show3DInfo() {
   if(!m_infoVisible) return;
-
   showInfo(_T("%s"), m_editor.toString().cstr());
 }
 
@@ -558,5 +569,5 @@ void CD3FunctionPlotterDlg::showInfo(const TCHAR *format, ...) {
   va_start(argptr, format);
   const String msg = vformat(format, argptr);
   va_end(argptr);
-  getInfoPanel()->SetWindowText(msg.cstr());
+  setWindowText(getInfoPanel(), msg);
 }

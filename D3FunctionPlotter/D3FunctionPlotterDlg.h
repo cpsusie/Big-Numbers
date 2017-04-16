@@ -24,11 +24,8 @@ private:
     ParametricSurfaceParameters m_parametricSurfaceParam;
     IsoSurfaceParameters        m_isoSurfaceParam;
     bool                        m_infoVisible;
-    D3SceneObject              *m_calculatedObject;
     D3CoordinateSystem         *m_coordinateSystem;
 
-    void setFillMode( D3DFILLMODE  fillMode );
-    void setShadeMode(D3DSHADEMODE shadeMode);
     CWnd *getInfoPanel() {
       return GetDlgItem(IDC_STATIC_INFOPANEL);
     }
@@ -36,8 +33,6 @@ private:
     void setInfoVisible(bool visible);
     void showInfo(const TCHAR *format, ...);
     void show3DInfo();
-    CMenu &loadMenu(CMenu &menu, int id);
-    void showContextMenu(CMenu &menu, CPoint point);
     void createInitialObject();
     CPoint get3DPanelPoint(CPoint point, bool screenRelative) const;
     D3SceneObject *createRotatedProfile();
@@ -47,6 +42,7 @@ private:
     void setCalculatedObject(Function2DSurfaceParameters *param);
     void setCalculatedObject(ParametricSurfaceParameters *param);
     void setCalculatedObject(IsoSurfaceParameters        *param);
+    D3SceneObject *getCalculatedObject() const;
 
 public:
     CD3FunctionPlotterDlg(CWnd *pParent = NULL);
@@ -67,11 +63,9 @@ public:
     }
     enum { IDD = IDR_MAINFRAME };
 
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
-    protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-
 protected:
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();

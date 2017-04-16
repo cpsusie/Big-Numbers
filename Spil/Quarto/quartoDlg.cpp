@@ -146,19 +146,16 @@ void CQuartoDlg::createBoard() {
 }
 
 void CQuartoDlg::createLight() {
-  LIGHT       light = m_scene.getDefaultLightParam(D3DLIGHT_DIRECTIONAL);
+  D3DLIGHT light = D3Scene::getDefaultLight();
   light.Diffuse     = colorToColorValue(D3D_WHITE);
   light.Specular    = colorToColorValue(D3D_WHITE);
   light.Ambient     = colorToColorValue(D3D_WHITE);
   light.Direction   = m_scene.getCameraUp();
   light.Direction.y *= -1;
-  m_scene.setLightParam(light);
-  m_scene.setLightEnabled(light.m_index, true);
+  m_scene.addLight(light);
 
-  light.m_index = m_scene.getLightEnabledCount();
-  light.Direction    = m_scene.getCameraDir();
-  m_scene.setLightParam(light);
-  m_scene.setLightEnabled(light.m_index, true);
+  light.Direction   = m_scene.getCameraDir();
+  m_scene.addLight(light);
 }
 
 void CQuartoDlg::resetCamera() {

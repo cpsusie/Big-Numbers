@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <MFCUtil/ColorSpace.h>
+#include <D3DGraphics/D3ToString.h>
 #include <D3DGraphics/D3LightControl.h>
 
 DECLARE_THISFILE;
@@ -51,11 +51,12 @@ void D3Scene::init(HWND hwnd) {
   m_lightsEnabled     = new BitSet(m_maxLightCount);
   m_lightsDefined     = new BitSet(m_maxLightCount);
 
-  setLightParam(getDefaultLightParam());
+  addLight(     getDefaultLight());
   addMaterial(  getDefaultMaterial());
 
   initTrans();
-
+  m_renderState.getValuesFromDevice(m_device);
+  m_renderState.setDefault();
   m_renderState.setValuesToDevice(m_device);
   m_initDone = true;
 }
@@ -120,6 +121,14 @@ void D3Scene::setNearViewPlane(float zn) {
   }
 }
 
+String D3Scene::getCameraString() const {
+  return format(_T("Camera:View angel:%.1lf, Near view:%.3lf\n%s")
+               ,degrees(getViewAngel())
+               ,getNearViewPlane()
+               ,m_cameraPDUS.toString().cstr()
+               );
+  }
+
 void D3Scene::updateProjMatrix() {
   const CRect cl = getClientRect(getHwnd());
   D3DXMATRIX matProj;
@@ -144,91 +153,11 @@ D3DXMATRIX D3Scene::getTransformation(D3DTRANSFORMSTATETYPE id) const {
   return m;
 }
 
-LIGHT D3Scene::getDefaultLightParam(D3DLIGHTTYPE type) { // static
+// -------------------------------- LIGHT ------------------------------------
+D3DLIGHT D3Scene::getDefaultLight(D3DLIGHTTYPE type) { // static
   LIGHT result;
-  switch(type) {
-  case D3DLIGHT_DIRECTIONAL    : result = getDefaultDirectionalLight(); break;
-  case D3DLIGHT_POINT          : result = getDefaultPointLight();       break;
-  case D3DLIGHT_SPOT           : result = getDefaultSpotLight();        break;
-  default                      : result = getDefaultDirectionalLight(); break;
-  }
-  result.m_index = getFirstFreeLightIndex();
+  result.setDefault(type);
   return result;
-}
-
-LIGHT D3Scene::getDefaultDirectionalLight() {  // static
-  LIGHT lp;
-  ZeroMemory(&lp, sizeof(lp));
-  lp.Type         = D3DLIGHT_DIRECTIONAL;
-  lp.setDefaultColors();
-  lp.Direction    = unitVector(D3DXVECTOR3(0.175f, -0.385f, -0.88f));
-  lp.m_enabled    = true;
-  return lp;
-}
-
-LIGHT D3Scene::getDefaultPointLight() {  // static
-  LIGHT lp;
-  ZeroMemory(&lp, sizeof(lp));
-  lp.Type         = D3DLIGHT_POINT;
-  lp.setDefaultColors();
-  lp.Position     = D3DXVECTOR3(1, 1, 1);
-  lp.Range        = 100;
-  lp.Attenuation1 = 1;
-  lp.m_enabled    = true;
-  return lp;
-}
-
-LIGHT D3Scene::getDefaultSpotLight() { // static
-  LIGHT lp;
-  ZeroMemory(&lp, sizeof(lp));
-  lp.Type         = D3DLIGHT_SPOT;
-  lp.setDefaultColors();
-  lp.Position     = D3DXVECTOR3( 1, 1, 1);
-  lp.Direction    = -unitVector(lp.Position);
-  lp.Range        = 100;
-  lp.Attenuation1 = 1;
-  lp.Falloff      = 1;
-  lp.Theta        = radians(10); // inner angle
-  lp.Phi          = radians(15); // outer angle
-  lp.m_enabled    = true;
-  return lp;
-}
-
-void LIGHT ::setInnerAngle(float rad) {
-  if((rad < 0) || (rad > D3DX_PI)) {
-    return;
-  }
-  Theta = rad;
-  if(Theta > Phi) {
-    Phi = Theta;
-  }
-}
-
-void LIGHT ::setOuterAngle(float rad) {
-  if((rad < 0) || (rad > D3DX_PI)) {
-    return;
-  }
-  Phi = rad;
-  if(Phi < Theta) {
-    Theta = Phi;
-  }
-}
-
-void LIGHT::setDefaultColors() {
-  Ambient  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
-  Diffuse  = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
-  Specular = D3DXCOLOR(   1.0f ,  1.0f ,  1.0f , 1.0f);
-}
-
-D3DMATERIAL D3Scene::getDefaultMaterial() const {
-  D3DMATERIAL material;
-  ZeroMemory(&material, sizeof(D3DMATERIAL));
-  material.Ambient  = D3DXCOLOR(0.10f , 0.10f , 0.16f, 1.0f);
-  material.Diffuse  = D3DXCOLOR(0.1f  , 0.086f, 0.29f, 1.0f);
-  material.Specular = D3DXCOLOR(0.835f, 0.808f, 0.95f, 1.0f);
-  material.Emissive = D3DXCOLOR(0     , 0     , 0    , 0   );
-  material.Power    = 9.73f;
-  return material;
 }
 
 BitSet D3Scene::getLightsVisible() const {
@@ -243,6 +172,10 @@ BitSet D3Scene::getLightsVisible() const {
 }
 
 D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
+  if(!isLightDefined(index)) {
+    Message(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
+    return NULL;
+  }
   D3LightControl *lc = findLightControlByLightIndex(index);
   if(lc == NULL) {
     lc = addLightControl(index);
@@ -253,104 +186,95 @@ D3LightControl *D3Scene::setLightControlVisible(UINT index, bool visible) {
   return lc;
 }
 
-D3LightControl *D3Scene::addLightControl(UINT lightIndex) {
-  if(!isLightDefined(lightIndex)) {
+D3LightControl *D3Scene::addLightControl(UINT index) {
+  if(!isLightDefined(index)) {
+    Message(_T("%s:Light %d is undefined"), __TFUNCTION__, index);
     return NULL;
   }
-  D3LightControl *result = findLightControlByLightIndex(lightIndex);
-  if(result != NULL) {
-    return result;
-  }
-  LIGHT param = getLightParam(lightIndex);
+  D3LightControl *result = findLightControlByLightIndex(index);
+  if(result != NULL) return result;
+  LIGHT param = getLight(index);
   switch(param.Type) {
-  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, lightIndex); break;
-  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, lightIndex); break;
-  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, lightIndex); break;
-  default                      : throwException(_T("Unknown lighttype for light %d:%d"), lightIndex, param.Type);
+  case D3DLIGHT_DIRECTIONAL    : result = new D3LightControlDirectional(*this, index); break;
+  case D3DLIGHT_POINT          : result = new D3LightControlPoint(      *this, index); break;
+  case D3DLIGHT_SPOT           : result = new D3LightControlSpot(       *this, index); break;
+  default                      : throwException(_T("Unknown lighttype for light %d:%d"), index, param.Type);
   }
   addSceneObject(result);
   return result;
 }
 
-void D3Scene::destroyLightControl(UINT lightIndex) {
-  D3LightControl *lc = findLightControlByLightIndex(lightIndex);
-  if(lc == NULL) {
-    return;
-  }
+void D3Scene::destroyLightControl(UINT index) {
+  D3LightControl *lc = findLightControlByLightIndex(index);
+  if(lc == NULL) return;
   removeSceneObject(lc);
   delete lc;
 }
 
+int D3Scene::addLight(const D3DLIGHT &light) {
+  const UINT oldCount = getLightCount();
+  const UINT index    = getFirstFreeLightIndex();
+  V(m_device->SetLight(   index, &light));
+  V(m_device->LightEnable(index, TRUE  ));
+  m_lightsDefined->add(index);
+  m_lightsEnabled->add(index);
+  const UINT newCount = oldCount + 1;
+  notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
+  return index;
+}
+
 void D3Scene::removeLight(UINT index) {
-  if(isLightDefined(index)) {
-    if(isLightEnabled(index)) {
-      m_lightsEnabled->remove(index);
-    }
-    destroyLightControl(index);
-    const UINT oldCount = getLightCount();
-    m_lightsDefined->remove(index);
-    V(m_device->LightEnable(index, FALSE));
-    const UINT newCount = oldCount - 1;
-    notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
+  if(!isLightDefined(index)) return;
+  if(isLightEnabled(index)) {
+    m_lightsEnabled->remove(index);
   }
+  destroyLightControl(index);
+  const UINT oldCount = getLightCount();
+  m_lightsDefined->remove(index);
+  V(m_device->LightEnable(index, FALSE));
+  const UINT newCount = oldCount - 1;
+  notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
 }
 
 void D3Scene::setLightEnabled(UINT index, bool enabled) {
-  if(!isLightDefined(index)) {
-    return;
-  }
-  LIGHT param = getLightParam(index);
+  if(!isLightDefined(index)) return;
+  LIGHT param = getLight(index);
   param.m_enabled = enabled;
-  setLightParam(param);
+  setLight(param);
 }
 
 void D3Scene::setLightDirection(UINT index, const D3DXVECTOR3 &dir) {
-  if(!isLightDefined(index)) {
-    return;
-  }
-  LIGHT param = getLightParam(index);
+  if(!isLightDefined(index)) return;
+  LIGHT param = getLight(index);
   param.Direction = unitVector(dir);
-  setLightParam(param);
+  setLight(param);
 }
 
 void D3Scene::setLightPosition(UINT index, const D3DXVECTOR3 &pos) {
-  if(!isLightDefined(index)) {
-    return;
-  }
-  LIGHT param = getLightParam(index);
+  if(!isLightDefined(index)) return;
+  LIGHT param = getLight(index);
   param.Position = pos;
-  setLightParam(param);
+  setLight(param);
 }
 
-void D3Scene::setLightParam(const LIGHT &param) {
-  if((param.m_index < 0) || (param.m_index >= m_maxLightCount)) {
+void D3Scene::setLight(const LIGHT &param) {
+  if(!isLightDefined(param.m_index)) {
+    Message(_T("%s:Light %d is undefined")
+            ,__TFUNCTION__, param.m_index);
     return;
   }
-  if(!isLightDefined(param.m_index)) {
-    const UINT oldCount = getLightCount();
-    V(m_device->SetLight(param.m_index, &param));
-    V(m_device->LightEnable(param.m_index, param.m_enabled?TRUE:FALSE));
-    m_lightsDefined->add(param.m_index);
+  const LIGHT oldLp = getLight(param.m_index);
+  if(param == oldLp) return;
+  V(m_device->SetLight(param.m_index, &param));
+  V(m_device->LightEnable(param.m_index, param.m_enabled?TRUE:FALSE));
+  if(param.m_enabled != oldLp.m_enabled) {
     if(param.m_enabled) {
       m_lightsEnabled->add(param.m_index);
-    }
-    const UINT newCount = oldCount + 1;
-    notifyPropertyChanged(SP_LIGHTCOUNT, &oldCount, &newCount);
-  } else {
-    const LIGHT oldLp = getLightParam(param.m_index);
-    if(param != oldLp) {
-      V(m_device->SetLight(param.m_index, &param));
-      V(m_device->LightEnable(param.m_index, param.m_enabled?TRUE:FALSE));
-      if(param.m_enabled != oldLp.m_enabled) {
-        if(param.m_enabled) {
-          m_lightsEnabled->add(param.m_index);
-        } else {
-          m_lightsEnabled->remove(param.m_index);
-        }
-      }
-      notifyPropertyChanged(SP_LIGHTPARAMETERS, &oldLp, &param);
+    } else {
+      m_lightsEnabled->remove(param.m_index);
     }
   }
+  notifyPropertyChanged(SP_LIGHTPARAMETERS, &oldLp, &param);
 }
 
 D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
@@ -363,15 +287,15 @@ D3LightControl *D3Scene::findLightControlByLightIndex(int lightIndex) {
   return NULL;
 }
 
-LIGHT D3Scene::getLightParam(UINT index) const {
+LIGHT D3Scene::getLight(UINT index) const {
   LIGHT lp;
   if(!isLightDefined(index)) {
     memset(&lp, 0xff, sizeof(lp));
   } else {
     V(m_device->GetLight(index, &lp));
+    lp.m_index   = index;
+    lp.m_enabled = isLightEnabled(index);
   }
-  lp.m_index   = index;
-  lp.m_enabled = isLightEnabled(index);
   return lp;
 }
 
@@ -379,7 +303,7 @@ const CompactArray<LIGHT> D3Scene::getAllLights() const {
   BitSet lightSet = getLightsDefined();
   CompactArray<LIGHT> result(lightSet.size());
   for (Iterator<size_t> it = lightSet.getIterator(); it.hasNext();) {
-    result.add(getLightParam((UINT)it.next()));
+    result.add(getLight((UINT)it.next()));
   }
   return result;
 }
@@ -395,80 +319,36 @@ int D3Scene::getFirstFreeLightIndex() const {
 }
 
 String D3Scene::getLightString(UINT index) const {
-  if(!isLightDefined(index)) {
-    return "undefined";
-  } else {
-    return toString(getLightParam(index)) + (isLightEnabled(index) ? ":on":":off");
-  }
+  return isLightDefined(index)
+        ? getLight(index).toString()
+        : format(_T("Light[%d]:Undefined"), index);
 }
 
 String D3Scene::getLightString() const {
   String result;
   BitSet lightSet = getLightsDefined();
   for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext(); ) {
-    UINT index = (UINT)it.next();
+    const UINT index = (UINT)it.next();
     if(result.length()) result += "\n";
-    result += format(_T("Light %2d:%s"), index, getLightString(index).cstr());
+    result += getLightString(index);
   }
   return result;
 }
 
-String toString(const LIGHT &light) {
-  String colStr = format(_T("Amb:%s, Dif:%s, Spec:%s")
-                        ,toString(light.Ambient).cstr()
-                        ,toString(light.Diffuse).cstr()
-                        ,toString(light.Specular).cstr()
-                        );
-  switch(light.Type) {
-  case D3DLIGHT_DIRECTIONAL: return format(_T("Dir  :%s Colors:%s"), toString(light.Direction).cstr(), colStr.cstr());
-  case D3DLIGHT_POINT      : return format(_T("Point:%s, Range:%.2f Colors:%s"), toString(light.Position).cstr(), light.Range, colStr.cstr());
-  case D3DLIGHT_SPOT       : return format(_T("Spot. Pos:%s, Dir:%s, Range:%.2f Inner:%.1f, Outer:%.1f Colors:%s")
-                                          ,toString(light.Position).cstr()
-                                          ,toString(light.Direction).cstr()
-                                          ,light.Range
-                                          ,D3DXToDegree(light.Theta)
-                                          ,D3DXToDegree(light.Phi)
-                                          ,colStr.cstr()
-                                          );
-  }
-  return EMPTYSTRING;
-}
-
-String toString(const MATERIAL &material) {
-  return format(_T("Mat:Amb:%s, Dif:%s, Spec:%s Emi:%s, Pow:%.2f")
-               ,toString(material.Ambient).cstr()
-               ,toString(material.Diffuse,true).cstr()
-               ,toString(material.Specular).cstr()
-               ,toString(material.Emissive).cstr()
-               ,material.Power
-               );
-}
-
-String toString(D3PCOLOR c, bool showAlpha) {
-  const D3DCOLOR cc = c;
-  if(showAlpha) {
-    return format(_T("R:%3d G:%dd B:%3d A:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc), ARGB_GETALPHA(cc));
-  } else {
-    return format(_T("R:%3d G:%dd B:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc));
-  }
-}
-
-String toString(const D3DCOLORVALUE &c, bool showAlpha) {
-  if(showAlpha) {
-    return format(_T("R:%.2f G:%.2f B:%.2f A:%.2f"), c.r,c.g,c.b, c.a);
-  } else {
-    return format(_T("R:%.2f G:%.2f B:%.2f"), c.r,c.g,c.b);
-  }
+// ---------------------------- MATERIAL -----------------------------
+D3DMATERIAL D3Scene::getDefaultMaterial() { // static
+  MATERIAL result;
+  result.setDefault();
+  return result;
 }
 
 int D3Scene::addMaterial(const D3DMATERIAL &material) {
-  const int index = getFirstFreeMaterialIndex();
-  MATERIAL m;
+  const int oldCount = getMaterialCount();
+  const int index    = getFirstFreeMaterialIndex();
+  MATERIAL &m = m_materials[index];
   ((D3DMATERIAL&)m) = material;
   m.m_index = index;
-  const int oldCount = getMaterialCount();
   const int newCount = oldCount+1;
-  setProperty(SP_MATERIALPARAMETERS, m_materials[index], m);
   notifyPropertyChanged(SP_MATERIALCOUNT, &oldCount, &newCount);
   return index;
 }
@@ -514,13 +394,13 @@ void D3Scene::setMaterial(const MATERIAL &material) {
     if(index >= m_materials.size()) {
       throwInvalidArgumentException(__TFUNCTION__, _T("index=%u, materialCount=%zd"), index, m_materials.size());
     }
-    setProperty(SP_MATERIALPARAMETERS, m_materials[index], material);
     unselectMaterial();
+    setProperty(SP_MATERIALPARAMETERS, m_materials[index], material);
   }
 }
 
 String D3Scene::getMaterialString(UINT index) const {
-  return toString(m_materials[index]);
+  return m_materials[index].toString();
 }
 
 String D3Scene::getMaterialString() const {
@@ -529,7 +409,7 @@ String D3Scene::getMaterialString() const {
   for(Iterator<size_t> it = materialSet.getIterator(); it.hasNext(); ) {
     const UINT index = (UINT)it.next();
     if(result.length()) result += "\n";
-    result += format(_T("Material %3d:%s"), index, getMaterialString(index).cstr());
+    result += getMaterialString(index);
   }
   return result;
 }

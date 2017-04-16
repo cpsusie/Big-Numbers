@@ -33,7 +33,7 @@ LPD3DXMESH D3LightControlDirectional::createArrowMesh() {
 }
 
 D3PosDirUpScale &D3LightControlDirectional::getPDUS() {
-  const LIGHT light = getLightParam();
+  const LIGHT light = getLight();
   return m_pdus.setPos(-m_sphereRadius * light.Direction)
                .setScaleAll(getSize())
                .setOrientation(light.Direction, ortonormalVector(light.Direction));

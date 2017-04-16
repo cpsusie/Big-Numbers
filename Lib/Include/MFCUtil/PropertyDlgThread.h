@@ -9,7 +9,7 @@ private:
   bool            m_inModalLoop    : 1;
   bool            m_killed         : 1;
 
-  void noDialogException(const TCHAR *method);
+  void noDialogException(const TCHAR *method) const;
   DECLARE_DYNCREATE(CPropertyDlgThread)
 protected:
   CPropertyDlgThread();
@@ -18,14 +18,17 @@ protected:
   DECLARE_MESSAGE_MAP()
 public:
   void setCurrentDialogProperty(const void *v);
+  const void *getCurrentDialogProperty() const;
   void reposition();
   void setDialogVisible(bool visible);
   bool isDialogVisible() const;
   void kill();
-  PropertyContainer *getPropertyContainer() {
+  inline PropertyContainer *getPropertyContainer() {
     return m_dlg;
   }
-
+  inline int getPropertyId() const {
+    return m_dlg->getPropertyId();
+  }
   virtual BOOL InitInstance();
   static CPropertyDlgThread *startThread(PropertyDialog *dlg);
 };

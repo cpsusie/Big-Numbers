@@ -1,12 +1,9 @@
 #pragma once
 #include "colormap.h"
 #include <Hashmap.h>
-#include <MFCUtil/SliderCtrlWithTransformation.h>
-#include <MFCUtil/ColorSpace.h>
+#include "SliderCtrlWithTransformation.h"
+#include "ColorSpace.h"
 #include "PropertyDialog.h"
-
-#define D3DCOLORVALUE2COLORREF(c) RGB((DWORD)((c.r)*255.f),(DWORD)((c.g)*255.f),(DWORD)((c.b)*255.f))
-D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c);
 
 template<class T> class CColormapDialog : public CPropertyDialog<T>  {
 private:

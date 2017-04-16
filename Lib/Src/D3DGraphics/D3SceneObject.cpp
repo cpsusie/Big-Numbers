@@ -1,5 +1,6 @@
 #include "pch.h"
 #include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3ToString.h>
 
 DECLARE_THISFILE;
 
@@ -7,9 +8,8 @@ DECLARE_THISFILE;
 
 bool D3SceneObject::intersectsWithRay(const D3Ray &ray, float &dist, D3PickedInfo *info) const {
   LPD3DXMESH mesh = getMesh();
-  if(mesh == NULL) {
-    return false;
-  }
+  if(mesh == NULL) return false;
+
   const D3DXMATRIX m = invers(getWorldMatrix());
   D3DXVECTOR3 vOrig = m * ray.m_orig;
   D3DXVECTOR3 vDir  = ray.m_dir * m;
@@ -87,6 +87,12 @@ void SceneObjectWithVertexBuffer::unlockVertexBuffer() {
 
 #define GETLOCKEDVERTEXBUFFER(type, count) (type*)allocateVertexBuffer(sizeof(type), count, type::FVF_Flags)
 
+String SceneObjectWithVertexBuffer::toString() const {
+  return format(_T("%s\nVertexBuffer:\n%s")
+                ,__super::toString().cstr()
+                ,indentString(::toString(m_vertexBuffer),2).cstr());
+}
+
 // ------------------------------------------------ SceneObjectWithIndexBuffer ---------------------------------------------------
 
 SceneObjectWithIndexBuffer::SceneObjectWithIndexBuffer(D3Scene &scene) : SceneObjectWithVertexBuffer(scene) {
@@ -112,6 +118,12 @@ void SceneObjectWithIndexBuffer::unlockIndexBuffer() {
 
 #define GETLOCKEDSHORTBUFFER(count) (USHORT*)allocateIndexBuffer(false, count)
 #define GETLOCKEDLONGBUFFER( count) (ULONG* )allocateIndexBuffer(true , count)
+
+String SceneObjectWithIndexBuffer::toString() const {
+  return format(_T("%s\nIndexBuffer:\n%s")
+                ,__super::toString().cstr()
+                ,indentString(::toString(m_indexBuffer),2).cstr());
+}
 
 // ------------------------------------------------ D3LineArray -----------------------------------------------------------
 
@@ -161,6 +173,12 @@ void SceneObjectWithMesh::draw() {
   setSceneMaterial();
   setLightingEnable(true);
   drawSubset(0);
+}
+
+String SceneObjectWithMesh::toString() const {
+  return format(_T("%s\nMesh:\n%s")
+                ,getName().cstr()
+                ,indentString(::toString(getMesh()),2).cstr());
 }
 
 // -----------------------------------------------------------------------------------------------------------
@@ -318,8 +336,10 @@ void SceneObjectBox::makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int
   f.addVertexNormalIndex(v3, nIndex);
 }
 
-SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube) 
+SceneObjectBox::SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex) 
 : SceneObjectWithMesh(scene)
+, m_materialIndex(materialIndex)
+, m_pdus(scene.getObjPDUS())
 {
   MeshBuilder mb;
 

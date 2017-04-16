@@ -266,7 +266,6 @@
     <ClCompile Include="ColorDlg.cpp" />
     <ClCompile Include="ColoredStatic.cpp" />
     <ClCompile Include="colormap.cpp" />
-    <ClCompile Include="ColormapDialog.cpp" />
     <ClCompile Include="ColorSpace.cpp" />
     <ClCompile Include="ComboBoxWithHistory.cpp" />
     <ClCompile Include="ConfirmDlg.cpp" />
@@ -332,6 +331,7 @@
     <ClCompile Include="ProgressWithPctCtrl.cpp" />
     <ClCompile Include="PropertyDlg.cpp" />
     <ClCompile Include="PropertyDlgThread.cpp" />
+    <ClCompile Include="PropertyDialogMap.cpp" />
     <ClCompile Include="SelectDirDlg.cpp" />
     <ClCompile Include="SetControlText.cpp" />
     <ClCompile Include="ShapeFunctions.cpp" />
@@ -401,6 +401,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\ProgressWithPctCtrl.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialog.h" />
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDlgThread.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogMap.h" />
     <ClInclude Include="..\..\Include\MFCUtil\resource.h" />
     <ClInclude Include="..\..\Include\MFCUtil\SelectDirDlg.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ShapeFunctions.h" />

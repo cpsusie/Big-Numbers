@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <D3DGraphics/D3Scene.h>
+#include <D3DGraphics/D3ToString.h>
 
 DECLARE_THISFILE;
 

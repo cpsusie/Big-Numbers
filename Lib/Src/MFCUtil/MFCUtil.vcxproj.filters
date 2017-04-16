@@ -289,13 +289,13 @@
     <ClCompile Include="colormap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ColormapDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PropertyDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PropertyDlgThread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PropertyDialogMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -468,6 +468,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDlgThread.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogMap.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

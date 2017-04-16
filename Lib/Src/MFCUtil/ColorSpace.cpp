@@ -4,6 +4,15 @@
 
 #pragma warning(disable : 4244)
 
+String D3PCOLOR::toString(bool showAlpha) const {
+  const D3DCOLOR cc = *this;
+  if(showAlpha) {
+    return format(_T("R:%3d G:%dd B:%3d A:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc), ARGB_GETALPHA(cc));
+  } else {
+    return format(_T("R:%3d G:%dd B:%3d"), ARGB_GETRED(cc), ARGB_GETGREEN(cc), ARGB_GETBLUE(cc));
+  }
+}
+
 RGBColor::RGBColor(float red, float green, float blue) { 
   m_red   = red; 
   m_green = green; 
@@ -247,6 +256,24 @@ LumaChromColor::operator D3DCOLOR() const {
 D3DCOLOR getGrayColor(D3DCOLOR c) {
   const int lum = GETLUMINANCE(c);
   return D3DCOLOR_XRGB(lum, lum, lum);
+}
+
+D3DCOLORVALUE colorToColorValue(D3DCOLOR c) {
+  D3DCOLORVALUE result;
+  result.r = ((float)(ARGB_GETRED(  c))) / (float)255.0;
+  result.g = ((float)(ARGB_GETGREEN(c))) / (float)255.0;
+  result.b = ((float)(ARGB_GETBLUE( c))) / (float)255.0;
+  result.a = 1.0;
+  return result;
+}
+
+D3DCOLORVALUE COLORREF2COLORVALUE(COLORREF c) {
+  D3DCOLORVALUE result;
+  result.r = ((float)(GetRValue(c))) / 255.0f;
+  result.g = ((float)(GetGValue(c))) / 255.0f;
+  result.b = ((float)(GetBValue(c))) / 255.0f;
+  result.a = 1.0f;
+  return result;
 }
 
 bool SimpleColorComparator::equals(const D3DCOLOR &c1, const D3DCOLOR &c2) {

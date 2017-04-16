@@ -32,9 +32,13 @@ LPD3DXMESH &D3LightControl::optimizeMesh(LPD3DXMESH &mesh) { // static
   return mesh;
 }
 
-LIGHT D3LightControl::getLightParam() const {
-  const LIGHT result = m_scene.getLightParam(m_lightIndex);
-  assert(result.Type == getLightType());
+LIGHT D3LightControl::getLight() const {
+  const LIGHT result = m_scene.getLight(m_lightIndex);
+  if ((result.m_index != m_lightIndex) || (result.Type != getLightType())) {
+    Message(_T("%s:Light %d is undefined")
+           ,__TFUNCTION__
+           ,m_lightIndex);
+  }
   return result;
 }
 
@@ -62,7 +66,7 @@ void D3LightControl::setMaterialColors() const {
 }
 
 D3DCOLORVALUE D3LightControl::getColor() const {
-  const LIGHT light = getLightParam();
+  const LIGHT light = getLight();
   return light.m_enabled ? light.Diffuse : getDisabledColor();
 }
 
@@ -166,7 +170,7 @@ void D3LightControl::createEffect() {
   m_effect = getScene().compileEffect(effectSourceText, compilerErrors);
   if(m_effect == NULL) {
     const String errorMsg = compilerErrors.toString(_T('\n'));
-    AfxMessageBox(errorMsg.cstr(), MB_ICONWARNING);
+    Message(_T("%s"), errorMsg.cstr());
     return;
   }
 

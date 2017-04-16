@@ -38,6 +38,7 @@ public:
     return m_visible;
   }
   virtual void setStartProperty(const void *v) = 0;
+  virtual const void *getCurrentProperty() const = 0;
   virtual void reposition() {
     putWindowBesideMainWindow(this);
   }
@@ -69,6 +70,9 @@ protected:
 public:
   void setStartValue(const T &v) {
     m_startValue = v;
+  }
+  const void *getCurrentProperty() const {
+    return &m_currentValue;
   }
   const T &getCurrentValue() const {
     return m_currentValue;

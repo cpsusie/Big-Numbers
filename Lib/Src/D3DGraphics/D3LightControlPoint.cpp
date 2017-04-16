@@ -13,5 +13,5 @@ D3LightControlPoint::D3LightControlPoint(D3Scene &scene, int lightIndex)
 
 D3PosDirUpScale &D3LightControlPoint::getPDUS() {
   return m_pdus.setScaleAll(getSize())
-               .setPos(getLightParam().Position);
+               .setPos(getLight().Position);
 }

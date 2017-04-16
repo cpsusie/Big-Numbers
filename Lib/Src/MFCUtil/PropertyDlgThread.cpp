@@ -63,7 +63,7 @@ bool CPropertyDlgThread::isDialogVisible() const {
   return m_dlg && m_dlg->isVisible();
 }
 
-void CPropertyDlgThread::noDialogException(const TCHAR *method) {
+void CPropertyDlgThread::noDialogException(const TCHAR *method) const {
   throwException(_T("%s:Dialog has terminated"), method);
 }
 
@@ -74,6 +74,12 @@ void CPropertyDlgThread::setCurrentDialogProperty(const void *v) {
   if(m_dlg->isVisible()) {
     m_dlg->PostMessage(_ID_MSG_RESETCONTROLS);
   }
+}
+
+const void *CPropertyDlgThread::getCurrentDialogProperty() const {
+  DEFINEMETHODNAME;
+  if(m_dlg == NULL) noDialogException(method);
+  return m_dlg->getCurrentProperty();
 }
 
 void CPropertyDlgThread::reposition() {

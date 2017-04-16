@@ -1,7 +1,6 @@
 #include "pch.h"
 #include <MFCUtil/ColorSpace.h>
 #include <D3DGraphics/D3CoordinateSystem.h>
-#include <D3DGraphics/D3Error.h>
 
 D3CoordinateSystem::D3CoordinateSystem(D3Scene &scene) : D3SceneObject(scene, _T("CoordinateSystem")) {
   m_box   = new D3LineArray(scene, Vertex(-1,-1,-1), Vertex(1,1,1));

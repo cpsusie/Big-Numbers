@@ -53,7 +53,7 @@ public:
   int getMaterialIndex() const {
     return s_renderEffectEnabled ? -1 : m_materialIndex;
   }
-  LIGHT getLightParam() const;
+  LIGHT getLight() const;
 
   static inline void enableRenderEffect(bool enabled) {
     s_renderEffectEnabled = enabled;

@@ -36,7 +36,7 @@ LPD3DXMESH D3LightControlSpot::createSpotMesh() {
 }
 
 D3PosDirUpScale &D3LightControlSpot::getPDUS() {
-  const LIGHT param = getLightParam();
+  const LIGHT param = getLight();
   return m_pdus.setPos(param.Position)
                .setScaleAll(getSize())
                .setOrientation(param.Direction, ortonormalVector(param.Direction));

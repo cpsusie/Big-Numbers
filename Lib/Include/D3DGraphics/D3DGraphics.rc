@@ -121,16 +121,14 @@ BEGIN
         MENUITEM SEPARATOR
         POPUP "Light"
         BEGIN
-            MENUITEM "Show lights",                 ID_SHOW_LIGHTCONTROLS
-            MENUITEM "Hide lights",                 ID_HIDE_LIGHTCONTROLS
             POPUP "Add light"
             BEGIN
                 MENUITEM "Directional",                 ID_ADDLIGHT_DIRECTIONAL
                 MENUITEM "Point",                       ID_ADDLIGHT_POINT
                 MENUITEM "Spot",                        ID_ADDLIGHT_SPOT
             END
-            MENUITEM "Adjust ambient light...",     ID_EDIT_AMBIENTLIGHT
-            MENUITEM "Adjust background color...",  ID_EDIT_BACKGROUNDCOLOR
+            MENUITEM "Show lights",                 ID_SHOW_LIGHTCONTROLS
+            MENUITEM "Hide lights",                 ID_HIDE_LIGHTCONTROLS
             POPUP "Select Light"
             BEGIN
                 MENUITEM "Light 0",                     ID_SELECT_LIGHT0
@@ -155,9 +153,12 @@ BEGIN
                 MENUITEM "Light 19",                    ID_SELECT_LIGHT19
                 MENUITEM "Light 20",                    ID_SELECT_LIGHT20
             END
+            MENUITEM SEPARATOR
+            MENUITEM "Adjust ambient light...",     ID_EDIT_AMBIENTLIGHT
+            MENUITEM "Adjust background color...",  ID_EDIT_BACKGROUNDCOLOR
+            MENUITEM "Enable specular highlights",  ID_ENABLE_SPECULARHIGHLIGHT
+            MENUITEM "Disable specular highlights", ID_DISABLE_SPECULARHIGHLIGHT
         END
-        MENUITEM "Enable specular highlights",  ID_ENABLE_SPECULARHIGHLIGHT
-        MENUITEM "Disable specular highlights", ID_DISABLE_SPECULARHIGHLIGHT
         MENUITEM "Show coordinatesystem",       ID_SHOWCOORDINATESYSTEM
         MENUITEM "Hide coordinatesystem",       ID_HIDECOORDINATESYSTEM
         MENUITEM SEPARATOR
@@ -177,9 +178,9 @@ BEGIN
         MENUITEM "Point at",                    ID_LIGHTCONTROL_SPOTAT
         MENUITEM SEPARATOR
         MENUITEM "Hide",                        ID_LIGHTCONTROL_HIDE
+        MENUITEM "Remove",                      ID_LIGHT_REMOVE
         MENUITEM "Use rendereffect",            ID_LIGHTCONTROL_ENABLEEFFECT
         MENUITEM "Normal rendering",            ID_LIGHTCONTROL_DISABLEEFFECT
-        MENUITEM "Remove",                      ID_LIGHT_REMOVE
     END
 END
 
@@ -187,12 +188,12 @@ IDR_CONTEXT_MENU_VISUALOBJECT MENU
 BEGIN
     POPUP "Visual object contextmenu"
     BEGIN
-        MENUITEM "Move && Rotate",                  ID_CONTROL_OBJECT_POS
-        MENUITEM "Move && Rotate (keep focus)",     ID_CONTROL_OBJECT_KEEPFOCUS
-        MENUITEM "Move camera (keep focus)",        ID_CONTROL_CAMERA_KEEPFOCUS
-        MENUITEM "Scale",                           ID_CONTROL_OBJECT_SCALE
-        MENUITEM "Scale (keep focus)",              ID_CONTROL_OBJECT_SCALE_KEEPFOCUS
-        MENUITEM "Reset scale",                     ID_OBJECT_RESETSCALE
+        MENUITEM "Move && Rotate",              ID_CONTROL_OBJECT_POS
+        MENUITEM "Move && Rotate (keep focus)", ID_CONTROL_OBJECT_KEEPFOCUS
+        MENUITEM "Move camera (keep focus)",    ID_CONTROL_CAMERA_KEEPFOCUS
+        MENUITEM "Scale",                       ID_CONTROL_OBJECT_SCALE
+        MENUITEM "Scale (keep focus)",          ID_CONTROL_OBJECT_SCALE_KEEPFOCUS
+        MENUITEM "Reset scale",                 ID_OBJECT_RESETSCALE
         MENUITEM SEPARATOR
         POPUP "Fillmode"
         BEGIN
@@ -206,7 +207,7 @@ BEGIN
             MENUITEM "Gouraud",                     ID_SHADING_GOURAUD
             MENUITEM "Phong",                       ID_SHADING_PHONG, GRAYED
         END
-        MENUITEM "Material...",                     ID_OBJECT_ADJUSTMATERIAL
+        MENUITEM "Material...",                 ID_OBJECT_ADJUSTMATERIAL
         MENUITEM SEPARATOR
         POPUP "Animation"
         BEGIN
@@ -217,7 +218,7 @@ BEGIN
             MENUITEM "Stop animaton",               ID_OBJECT_STOPANIMATION
             MENUITEM "Adjust speed",                ID_OBJECT_CONTROL_SPEED
         END
-        MENUITEM "Remove",                          ID_OBJECT_REMOVE
+        MENUITEM "Remove",                      ID_OBJECT_REMOVE
     END
 END
 

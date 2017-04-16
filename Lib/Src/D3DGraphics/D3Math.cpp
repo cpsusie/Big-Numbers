@@ -141,15 +141,4 @@ String toString(const D3DXMATRIX &m, int dec) {
   return result;
 }
 
-D3DCOLORVALUE colorToColorValue(D3DCOLOR c) {
-  D3DCOLORVALUE result;
-  result.r = ((float)(ARGB_GETRED(  c))) / (float)255.0;
-  result.g = ((float)(ARGB_GETGREEN(c))) / (float)255.0;
-  result.b = ((float)(ARGB_GETBLUE( c))) / (float)255.0;
-  result.a = 1.0;
-  return result;
-}
-
-
-// ---------------------------------------------------------------------------------
 

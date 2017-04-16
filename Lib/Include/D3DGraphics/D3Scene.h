@@ -7,9 +7,12 @@
 #include <PropertyContainer.h>
 #include <NumberInterval.h>
 #include <MFCUtil/D3DeviceFactory.h>
+#include <MFCUtil/ColorSpace.h>
 #include "D3TextureFactory.h"
 #include "MeshBuilder.h"
 #include "MeshArray.h"
+#include "Light.h"
+#include "Material.h"
 #include "D3Math.h"
 
 class D3LightControl;
@@ -30,59 +33,6 @@ typedef enum {
 } D3SceneProperty;
 
 #define SAFE_RELEASE(p)      { if (p) { (p)->Release(); (p)=NULL; } }
-
-inline bool operator==(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
-  return memcmp(&m1, &m2, sizeof(D3DMATERIAL)) == 0;
-}
-
-inline bool operator!=(const D3DMATERIAL &m1, const D3DMATERIAL &m2) {
-  return !(m1 == m2);
-}
-
-class MATERIAL : public D3DMATERIAL { // sent to listener for id=SP_MATERIALPARAMETERS
-public:
-  int m_index;   // if < 0, material is undefined.
-  inline MATERIAL() : m_index(-1) {
-  }
-  inline bool isDefined() const {
-    return m_index >= 0;
-  }
-};
-
-class LIGHT : public D3DLIGHT9 { // sent to listener for id=SP_LIGHTPARAMETERS
-public:
-  int   m_index;
-  bool  m_enabled;
-
-  // only valid for spot lights
-  void setInnerAngle(float rad); // maintain invariant:0 <= Theta <= Phi <= pi
-  void setOuterAngle(float rad);
-  inline float getInnerAngle() const {
-    return Theta;
-  }
-  inline float getOuterAngle() const {
-    return Phi;
-  }
-  inline bool isEnabled() const {
-    return m_enabled;
-  }
-  void setDefaultColors();
-};
-
-inline bool operator==(const LIGHT &l1, const LIGHT &l2) {
-  return memcmp(&l1, &l2, sizeof(LIGHT)) == 0;
-}
-
-inline bool operator!=(const LIGHT &l1, const LIGHT &l2) {
-  return !(l1 == l2);
-}
-
-class D3PCOLOR {
-public:
-  const D3DCOLOR m_color;
-  inline D3PCOLOR(D3DCOLOR c) : m_color(c) {}
-  inline operator D3DCOLOR() const { return m_color; }
-};
 
 typedef enum {
   SOTYPE_VISUALOBJECT
@@ -120,25 +70,6 @@ public:
   }
 };
 
-String toString(const LIGHT                &light    );
-String toString(const MATERIAL             &material );
-String toString(      D3DFILLMODE           mode     );
-String toString(      D3DSHADEMODE          mode     );
-String toString(      D3DFORMAT             f        );
-int    formatToSize(  D3DFORMAT             f        );
-String toString(      D3DPOOL               pool     );
-String toString(      D3DRESOURCETYPE       type     );
-String usageToString( DWORD                 usage    );
-String FVFToString(   DWORD                 fvf      );
-int    FVFToSize(     DWORD                 fvf      );
-String toString(const D3DDISPLAYMODE       &mode     );
-String toString(      D3PCOLOR              c        ,bool showAlpha=false);
-String toString(const D3DCOLORVALUE        &c        ,bool showAlpha=false);
-String toString(const D3DVERTEXBUFFER_DESC &desc     );
-String toString(const D3DINDEXBUFFER_DESC  &desc     );
-
-String vertexToString(const char *v, DWORD FVF  , int dec=3);
-
 class D3SceneRenderState {
 public:
   D3DFILLMODE  m_fillMode;
@@ -146,6 +77,9 @@ public:
   D3DCOLOR     m_backgroundColor;
   D3DCOLOR     m_ambientColor;
   DWORD        m_fvf;
+  D3DCULL      m_cullMode;
+  D3DBLEND     m_srcBlend;
+  D3DBLEND     m_dstBlend;
   bool         m_zEnable                 : 1;
   bool         m_normalizeNormals        : 1;
   bool         m_alphaBlendEnable        : 1;
@@ -166,9 +100,6 @@ class D3Scene : public PropertyContainer
               , public AbstractTextureFactory
 {
 private:
-  static LIGHT getDefaultDirectionalLight();
-  static LIGHT getDefaultPointLight();
-  static LIGHT getDefaultSpotLight();
   static const D3PosDirUpScale s_pdusOrigo;
 
   HWND                              m_hwnd;
@@ -224,6 +155,9 @@ public:
   void addSceneObject(   D3SceneObject *obj);
   void removeSceneObject(D3SceneObject *obj);
   void removeAllSceneObjects();
+  Iterator<D3SceneObject*> getObjectIterator() const {
+    return ((D3Scene*)this)->m_objectArray.getIterator();
+  }
   void stopAllAnimations();
   inline int getObjectCount() const {
     return (int)m_objectArray.size();
@@ -276,6 +210,37 @@ public:
   inline DWORD getFVF() const {
     return m_renderState.m_fvf;
   }
+  inline D3DCULL getCullMode() const {
+    return m_renderState.m_cullMode;
+  }
+  inline D3Scene &setCullMode(D3DCULL cullMode) {
+    if(cullMode != getCullMode()) {
+      setRenderState(D3DRS_CULLMODE, cullMode);
+      m_renderState.m_cullMode = cullMode;
+    }
+    return *this;
+  }
+  inline D3DBLEND getSrcBlend() const {
+    return m_renderState.m_srcBlend;
+  }
+  inline D3Scene &setSrcBlend(D3DBLEND blend) {
+    if(blend != getSrcBlend()) {
+      setRenderState(D3DRS_SRCBLEND, blend);
+      m_renderState.m_srcBlend = blend;
+    }
+    return *this;
+  }
+  inline D3DBLEND getDstBlend() const {
+    return m_renderState.m_dstBlend;
+  }
+  inline D3Scene &setDstBlend(D3DBLEND blend) {
+    if(blend != getDstBlend()) {
+      setRenderState(D3DRS_DESTBLEND, blend);
+      m_renderState.m_dstBlend = blend;
+    }
+    return *this;
+  }
+
   D3Scene &setZEnable(bool enabled) {
     if(enabled != isZEnable()) {
       setRenderState(D3DRS_AMBIENT, enabled ? TRUE : FALSE);
@@ -329,7 +294,17 @@ public:
   D3Scene &selectMaterial(int materialIndex) {
     if(materialIndex != m_renderState.m_selectedMaterialIndex) {
       if((UINT)materialIndex < m_materials.size()) {
-        m_device->SetMaterial(&getMaterial(materialIndex));
+        const MATERIAL &mat = getMaterial(materialIndex);
+        FV(m_device->SetMaterial(&mat));
+        if (mat.Diffuse.a < 1.0) {
+          setCullMode(D3DCULL_CCW)
+         .setZEnable(false)
+         .setAlphaBlendEnable(true)
+         .setSrcBlend(D3DBLEND_SRCALPHA)
+         .setDstBlend(D3DBLEND_INVSRCALPHA);
+        } else {
+          setCullMode(D3DCULL_CCW).setZEnable(true).setAlphaBlendEnable(false);
+        }
       }
       m_renderState.m_selectedMaterialIndex = materialIndex;
     }
@@ -374,9 +349,7 @@ public:
   void setCameraPos(        const D3DXVECTOR3     &pos);
   void setCameraOrientation(const D3DXVECTOR3     &dir, const D3DXVECTOR3 &up);
   void setCameraLookAt(     const D3DXVECTOR3     &point);
-  inline String getCameraString() const {
-    return format(_T("Camera:%s"), m_cameraPDUS.toString().cstr());
-  }
+  String getCameraString() const;
   void setViewAngel(float angel);
   inline float getViewAngel() const {
     return m_viewAngel;
@@ -391,18 +364,15 @@ public:
 
   void setAnimationFrameIndex(int &oldValue, int newValue);
 
-  void   setLightDirection(        UINT index, const D3DXVECTOR3 &dir);
-  void   setLightPosition(         UINT index, const D3DXVECTOR3 &pos);
-  String getLightString(           UINT index) const;
-  String getLightString() const;
+// --------------------------- LIGHT ----------------------------
 
-  LIGHT  getDefaultLightParam(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
-  void   setLightParam(            const LIGHT &param);
-  LIGHT  getLightParam(            UINT index) const;
+  void   setLight(            const LIGHT &param);
+  LIGHT  getLight(            UINT index) const;
   const CompactArray<LIGHT> getAllLights() const;
   inline D3DLIGHTTYPE getLightType(UINT index) const {
-    return getLightParam(index).Type;
+    return getLight(index).Type;
   }
+  int  addLight(                   const D3DLIGHT &light);
   void removeLight(                UINT index);
   void setLightEnabled(            UINT index, bool enabled);
   inline bool isLightEnabled(      UINT index) const {
@@ -411,14 +381,14 @@ public:
   inline bool isLightDefined(      UINT index) const {
     return m_lightsDefined->contains(index);
   }
-  inline bool isLightVisible(      UINT index) const {
-    return getLightsVisible().contains(index);
-  }
   inline const BitSet &getLightsDefined() const {
     return *m_lightsDefined;
   }
   inline const BitSet &getLightsEnabled() const {
     return *m_lightsEnabled;
+  }
+  inline bool isLightVisible(UINT index) const {
+    return getLightsVisible().contains(index);
   }
   BitSet getLightsVisible() const;
   D3LightControl *setLightControlVisible(UINT index, bool visible);
@@ -432,8 +402,15 @@ public:
   inline int getLightEnabledCount() const {
     return (int)m_lightsEnabled->size();
   }
+  void   setLightDirection(        UINT index, const D3DXVECTOR3 &dir);
+  void   setLightPosition(         UINT index, const D3DXVECTOR3 &pos);
+  String getLightString(           UINT index) const;
+  String getLightString() const;
 
-  D3DMATERIAL getDefaultMaterial() const;
+  static D3DLIGHT getDefaultLight(D3DLIGHTTYPE type = D3DLIGHT_DIRECTIONAL);
+
+// --------------------------- MATERIAL ----------------------------
+
   inline const MATERIAL &getMaterial(UINT index) const {
     return m_materials[index];
   }
@@ -451,6 +428,7 @@ public:
   inline int getMaterialCount() const {
     return (int)getMaterialsDefined().size();
   }
+  static D3DMATERIAL getDefaultMaterial();
   String getMaterialString(UINT index) const;
   String getMaterialString() const;
 
@@ -511,10 +489,6 @@ public:
 LPD3DXMESH        createMeshFromVertexFile(     AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 LPD3DXMESH        createMeshFromObjFile(        AbstractMeshFactory &amf, const String &fileName, bool doubleSided);
 //LPD3DXMESH     createMeshMarchingCube(     LPDIRECT3DDEVICE device, const IsoSurfaceParameters        &param);
-
-String toString(LPD3DXMESH             mesh        );
-String toString(LPDIRECT3DVERTEXBUFFER vertexBuffer);
-String toString(LPDIRECT3DINDEXBUFFER  indexBuffer );
 
 class D3SceneObject {
 private:
@@ -663,11 +637,7 @@ public:
   inline LPDIRECT3DVERTEXBUFFER &getVertexBuffer() {
     return m_vertexBuffer;
   }
-  String toString() const {
-    return format(_T("%s\nVertexBuffer:\n%s")
-                 ,__super::toString().cstr()
-                 ,indentString(::toString(m_vertexBuffer),2).cstr());
-  }
+  String toString() const;
 };
 
 class SceneObjectWithIndexBuffer : public SceneObjectWithVertexBuffer {
@@ -683,11 +653,7 @@ protected:
 public:
   SceneObjectWithIndexBuffer(D3Scene &scene);
   ~SceneObjectWithIndexBuffer();
-  String toString() const {
-    return format(_T("%s\nIndexBuffer:\n%s")
-                 ,__super::toString().cstr()
-                 ,indentString(::toString(m_indexBuffer),2).cstr());
-  }
+  String toString() const;
 };
 
 class SceneObjectWithMesh : public D3SceneObject {
@@ -730,18 +696,22 @@ public:
     return m_shadeMode;
   }
   void draw();
-  String toString() const {
-    return format(_T("%s\nMesh:\n%s")
-                 ,getName().cstr()
-                 ,indentString(::toString(getMesh()),2).cstr());
-  }
+  String toString() const;
 };
 
 class SceneObjectBox : public SceneObjectWithMesh {
 private:
+  int             m_materialIndex;
+  D3PosDirUpScale m_pdus;
   void makeSquareFace(MeshBuilder &mb, int v0, int v1, int v2, int v3);
 public:
-  SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube);
+  SceneObjectBox(D3Scene &scene, const D3DXCube3 &cube, int materialIndex = 0);
+  D3PosDirUpScale &getPDUS() {
+    return m_pdus;
+  }
+  int getMaterialIndex() const {
+    return m_materialIndex;
+  }
 };
 
 class D3LineArray : public SceneObjectWithVertexBuffer {
