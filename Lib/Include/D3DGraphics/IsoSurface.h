@@ -1,8 +1,6 @@
 #pragma once
 
-#include <NumberInterval.h>
-#include "Cube3D.h"
-#include "PersistentParameter.h"
+#include <PersistentParameter.h>
 
 class IsoSurfaceParameters : public PersistentParameter {
 public:
@@ -20,8 +18,9 @@ public:
 
   IsoSurfaceParameters();
 
-  void read( FILE *f);
-  void write(FILE *f);
+  void putDataToDoc(XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
+
   const DoubleInterval &getTimeInterval() const {
     return m_timeInterval;
   }

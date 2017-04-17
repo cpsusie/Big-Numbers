@@ -2,8 +2,7 @@
 
 #pragma once
 
-#include <NumberInterval.h>
-#include "PersistentParameter.h"
+#include <PersistentParameter.h>
 
 class ParametricSurfaceParameters : public PersistentParameter {
 public:
@@ -19,8 +18,8 @@ public:
   bool           m_doubleSided;
 
   ParametricSurfaceParameters();
-  void read( FILE *f);
-  void write(FILE *f);
+  void putDataToDoc(XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
   const DoubleInterval &getTInterval() const {
     return m_tInterval;
   }

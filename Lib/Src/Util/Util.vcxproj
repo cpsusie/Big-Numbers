@@ -342,6 +342,7 @@
     <ClInclude Include="..\..\Include\ObjectManager.h" />
     <ClInclude Include="..\..\Include\PackedArray.h" />
     <ClInclude Include="..\..\Include\Packer.h" />
+    <ClInclude Include="..\..\Include\PersistentParameter.h" />
     <ClInclude Include="..\..\Include\PragmaLib.h" />
     <ClInclude Include="..\..\Include\PriorityQueue.h" />
     <ClInclude Include="..\..\Include\ProcessTools.h" />
@@ -378,6 +379,7 @@
     <ClInclude Include="..\..\Include\VectorTemplate.h" />
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />
+    <ClInclude Include="..\..\Include\XMLUtil.h" />
     <ClInclude Include="pch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
     </ClInclude>
@@ -518,6 +520,7 @@
     <ClCompile Include="PackerStringArray.cpp" />
     <ClCompile Include="PackerWstr.cpp" />
     <ClCompile Include="Pause.cpp" />
+    <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="pipe.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />
     <ClCompile Include="ProcessInfo.cpp" />
@@ -606,6 +609,7 @@
     <ClCompile Include="xfree.cpp" />
     <ClCompile Include="xmalloc.cpp" />
     <ClCompile Include="XmlDoc.cpp" />
+    <ClCompile Include="XMLUtil.cpp" />
     <ClCompile Include="xrealloc.cpp" />
     <ClCompile Include="xstrdup.cpp" />
   </ItemGroup>

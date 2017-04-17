@@ -1,8 +1,9 @@
 #include "stdafx.h"
+#include <XMLUtil.h>
+#include <MFCUtil/2DXML.h>
 #include "IsoCurve.h"
 
 IsoCurveParameters::IsoCurveParameters() {
-  m_expr             = "";
   m_cellSize         = 0.25;
   m_boundingBox      = Rectangle2D(-5,-5,10,10);
   m_machineCode      = true;
@@ -11,47 +12,29 @@ IsoCurveParameters::IsoCurveParameters() {
   m_frameCount       = 20;
 }
 
-void IsoCurveParameters::write(FILE *f) {
-  const DoubleInterval xInterval = m_boundingBox.getXInterval();
-  const DoubleInterval yInterval = m_boundingBox.getXInterval();
-
-  fprintf(f,"%lf %le %le %le %le %d %d",
-            m_cellSize
-           ,xInterval.getFrom(), xInterval.getTo()
-           ,yInterval.getFrom(), yInterval.getTo()
-           ,m_machineCode
-           ,m_includeTime
-         );
-  if(m_includeTime) {
-    fprintf(f, " %lf %lf %d", m_tInterval.getFrom(), m_tInterval.getTo(), m_frameCount);
+void IsoCurveParameters::putDataToDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.createRoot(_T("IsoCurve"));
+  doc.setValue( root  , _T("expr"        ), m_expr        );
+  doc.setValue( root  , _T("cellsize"    ), m_cellSize    );
+  setValue(doc, root  , _T("boundingbox" ), m_boundingBox );
+  doc.setValue( root  , _T("machinecode" ), m_machineCode );
+  doc.setValue( root  , _T("includetime" ), m_includeTime );
+  if (m_includeTime) {
+    setValue(doc, root, _T("timeinterval"), m_tInterval   );
+    doc.setValue( root, _T("framecount"  ), m_frameCount  );
   }
-  fprintf(f, "\n");
-  writeString(f, m_expr);
 }
 
-#define GETBOOL(tok) tok.getInt() ? true : false
-
-void IsoCurveParameters::read(FILE *f) {
-  String line = readLine(f);
-  Tokenizer tok(line, " ");
-
-  m_machineCode = true;
-  m_includeTime = false;
-  m_tInterval   = DoubleInterval(0,20);
-  m_cellSize    = tok.getDouble();
-
-  double xFrom, xTo, yFrom, yTo;
-
-  xFrom = tok.getDouble(), xTo = tok.getDouble();
-  yFrom = tok.getDouble(); yTo = tok.getDouble();
-
-  m_boundingBox = Rectangle2D(xFrom, yFrom, xTo-xFrom,yTo-yFrom);
-  m_machineCode = GETBOOL(tok);
-  m_includeTime = GETBOOL(tok);
-  if(m_includeTime) {
-    m_tInterval.setFrom(tok.getDouble());
-    m_tInterval.setTo(tok.getDouble());
-    m_frameCount = tok.getInt();
+void IsoCurveParameters::getDataFromDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  checkTag(root, _T("IsoCurve"));
+  doc.getValueLF(root, _T("expr"          ), m_expr        );
+  doc.getValue(  root, _T("cellsize"      ), m_cellSize    );
+  getValue(doc,  root, _T("boundingbox"   ), m_boundingBox );
+  doc.getValue(  root, _T("machinecode"   ), m_machineCode );
+  doc.getValue(  root, _T("includetime"   ), m_includeTime );
+  if (m_includeTime) {
+    getValue(doc, root, _T("timeinterval"), m_tInterval   );
+    doc.getValue( root, _T("framecount"  ), m_frameCount  );
   }
-  m_expr = readString(f);
 }

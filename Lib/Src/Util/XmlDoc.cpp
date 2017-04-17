@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <Array.h>
 #include <Tokenizer.h>
 #include <XMLDoc.h>
 
@@ -13,28 +12,29 @@ void XMLDoc::checkResult(HRESULT hr, int line) {
 
 #define V(f) checkResult(f, __LINE__)
 
-static String toxml(const TCHAR *s) {
+static String toXML(const TCHAR *s) {
   String result;
-  unsigned char ch;
-  for(unsigned char *t = (unsigned char*)s; *t; t++) {
+  _TUCHAR ch;
+  for(_TUCHAR *t = (_TUCHAR*)s; *t; t++) {
     switch(ch = *t) {
-    case '<': 
-      result += "&lt;";
+    case _T('\"'):
+      result += _T("&quot;");
       break;
-
-    case '>': 
-      result += "&gt;";
+    case _T('\''):
+      result += _T("&apos;");
       break;
-
-    case '&':
-      result += "&amp;";
+    case _T('<'): 
+      result += _T("&lt;");
       break;
-
+    case _T('>'): 
+      result += _T("&gt;");
+      break;
+    case _T('&'):
+      result += _T("&amp;");
+      break;
     default:
-      if(ch >= 128) {
-        result += format(_T("&#%d;"), ch);
-      } else if(ch < 32) {
-        result += _T("#");
+      if((ch >= 128) || (ch < 32)) {
+        result += format(_T("&#x%x;"), ch);
       } else {
         result += ch;
       }
@@ -49,7 +49,7 @@ XMLDoc::XMLDoc() {
 }
 
 void XMLDoc::clear() {
-  BSTR empty(_T(""));
+  BSTR empty(EMPTYSTRING);
   VARIANT_BOOL vb = m_doc->loadXML(empty);
 }
 
@@ -65,9 +65,9 @@ void XMLDoc::loadFromString(const String &XML) {
   clear();
   String str(XML);
   
-  intptr_t start = str.find("encoding");
+  intptr_t start = str.find(_T("encoding"));
   if(start >= 0) {
-    intptr_t slut=str.find(" ?",start);
+    intptr_t slut=str.find(_T(" ?"),start);
     str.remove(start,slut-start);
   }
 
@@ -161,14 +161,15 @@ XMLNodePtr XMLDoc::createNode(const TCHAR *nodeName, bool force) {
 }
 
 XMLNodePtr XMLDoc::createNode(const XMLNodePtr &parent, const TCHAR *nodeName, bool force) {
+  DEFINEMETHODNAME;
   if(parent == NULL) {
-    throwException(_T("XMLDoc::createNode:Illegal argument. parent=NULL"));
+    throwInvalidArgumentException(method, _T("parent=NULL"));
   }
   if(nodeName == NULL || _tcsclen(nodeName) == 0) {
-    throwException(_T("XMLDoc::createNode:Illegal argument. nodeName=%s"), nodeName?nodeName:_T("null"));
+    throwInvalidArgumentException(method, _T("nodeName=%s"), nodeName?nodeName:_T("null"));
   }
 
-  StringArray tokens(Tokenizer(nodeName,"."));
+  StringArray tokens(Tokenizer(nodeName,_T(".")));
 
   // Create path if we got any dots
   XMLNodePtr node = parent;
@@ -264,39 +265,6 @@ void XMLDoc::setText(const XMLNodePtr &node, const TCHAR *value) {
 }
 
 // ---------------------------------------------------------------------------------------------------
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, const String &value, bool force) {
-  setValue(findNode(nodeName),tagName,value.cstr(),force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, const TCHAR *value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, int              value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, float            value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, double           value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, const Date      &value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, const Timestamp &value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-void XMLDoc::setValue(const TCHAR *nodeName, const TCHAR *tagName, bool             value, bool force) {
-  setValue(findNode(nodeName),tagName,value,force);
-}
-
-// ---------------------------------------------------------------------------------------------------
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, const String    &value, bool force) {
   setValue(node,tagName,value.cstr(),force);
@@ -309,6 +277,11 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, cons
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, int              value, bool force) {
   TCHAR buf[12];
   setValue(node,tagName,_itot(value,buf,10),force);
+}
+
+void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, UINT             value, bool force) {
+  const String s = format(_T("%u"), value);
+  setValue(node,tagName,s.cstr(),force);
 }
 
 void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, float            value, bool force) {
@@ -334,35 +307,6 @@ void XMLDoc::setValue(const XMLNodePtr     &node,     const TCHAR *tagName, bool
 }
 // ---------------------------------------------------------------------------------------------------
 
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, String      &value, int instans) {   
-  getValue(findNode(nodeName),tagName,value,instans);
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, int         &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, float       &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, double      &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, Date        &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);        
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, Timestamp   &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);        
-}
-
-void XMLDoc::getValue(const TCHAR *nodeName, const TCHAR *tagName, bool        &value, int instans) {
-  getValue(findNode(nodeName),tagName,value,instans);        
-}
-// ---------------------------------------------------------------------------------------------------
-
 void XMLDoc::getValue(const XMLNodePtr     &node,     const TCHAR *tagName, String      &value, int instans) {
   VARIANT NodeValue = getVariant(node,tagName,instans);
 
@@ -380,12 +324,21 @@ void XMLDoc::getValue(const XMLNodePtr     &node,     const TCHAR *tagName, Stri
   }
 }
 
+void XMLDoc::getValueLF(const XMLNodePtr   &node,     const TCHAR *tagName, String      &value, int instans) {
+  getValue(node, tagName, value, instans);
+  value.replace(_T('\n'), _T("\r\n"));
+}
+
 void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, int         &value, int instans) {
   String str;
   getValue(node,tagName,str,instans);
   if(_stscanf(str.cstr(),_T("%d"),&value) != 1) {
     throwException(_T("Invalid content. Tag=\"%s\". content=\"%s\". Must be numeric"),tagName,str.cstr());
   }
+}
+
+void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, UINT        &value, int instans) {
+  getValue(node, tagName, (int&)value, instans);
 }
 
 void XMLDoc::getValue(const XMLNodePtr &node, const TCHAR *tagName, float       &value, int instans) {
@@ -454,4 +407,3 @@ VARIANT XMLDoc::getVariant(const XMLNodePtr &node, const TCHAR *tagName, int ins
   }
   return result;
 }
-

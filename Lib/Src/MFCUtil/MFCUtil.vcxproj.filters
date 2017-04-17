@@ -298,6 +298,9 @@
     <ClCompile Include="PropertyDialogMap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="2DXML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -471,6 +474,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\PropertyDialogMap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\2DXML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

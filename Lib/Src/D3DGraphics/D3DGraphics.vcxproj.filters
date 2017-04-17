@@ -74,9 +74,6 @@
     <ClCompile Include="ParametricSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PersistentParameter.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -137,6 +134,9 @@
     <ClCompile Include="FVF.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="3DXML.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h">
@@ -178,9 +178,6 @@
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Include\D3DGraphics\PersistentParameter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3LightControl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -218,6 +215,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\3DXML.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

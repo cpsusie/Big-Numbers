@@ -701,6 +701,12 @@
     <ClCompile Include="IndentString.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="PersistentParameter.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="XMLUtil.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -973,6 +979,12 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="..\..\Include\SocketStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\PersistentParameter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\XMLUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

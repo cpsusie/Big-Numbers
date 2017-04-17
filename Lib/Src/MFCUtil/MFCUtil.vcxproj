@@ -254,6 +254,7 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2DXML.cpp" />
     <ClCompile Include="AnimatedImage.cpp" />
     <ClCompile Include="AviFile.cpp" />
     <ClCompile Include="BitmapBits.cpp" />
@@ -354,6 +355,7 @@
     <ClCompile Include="WinTools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Include\MFCUtil\2DXML.h" />
     <ClInclude Include="..\..\Include\MFCUtil\AbstractMouseHandler.h" />
     <ClInclude Include="..\..\Include\MFCUtil\AnimatedImage.h" />
     <ClInclude Include="..\..\Include\MFCUtil\Avifile.h" />

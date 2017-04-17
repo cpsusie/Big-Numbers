@@ -292,7 +292,7 @@
     <ClCompile Include="D3Spherical.cpp" />
     <ClCompile Include="IsoSurfacePolygonizer.cpp" />
     <ClCompile Include="MeshBuilder.cpp" />
-    <ClCompile Include="PersistentParameter.cpp" />
+    <ClCompile Include="3DXML.cpp" />
     <ClCompile Include="Profile.cpp" />
     <ClCompile Include="RotateProfile.cpp" />
     <ClCompile Include="VertexFileSurfaceMeshBuilder.cpp" />
@@ -320,7 +320,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\MeshBuilder.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\MeshCreators.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\ParametricSurface.h" />
-    <ClInclude Include="..\..\Include\D3DGraphics\PersistentParameter.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\3DXML.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\PragmaLib.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Profile.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\resource.h" />

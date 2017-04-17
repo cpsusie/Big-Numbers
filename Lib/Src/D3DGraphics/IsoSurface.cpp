@@ -1,8 +1,9 @@
 #include "pch.h"
+#include <XMLUtil.h>
+#include <D3DGraphics/3DXML.h>
 #include "D3DGraphics/IsoSurface.h"
 
 IsoSurfaceParameters::IsoSurfaceParameters() {
-  m_expr             = "";
   m_cellSize         = 0.25;
   m_boundingBox      = Cube3D(Point3D(-5,-5,-5), Point3D( 5, 5, 5));
   m_tetrahedral      = true;
@@ -15,63 +16,37 @@ IsoSurfaceParameters::IsoSurfaceParameters() {
   m_frameCount       = 20;
 }
 
-void IsoSurfaceParameters::write(FILE *f) {
-  const Point3D &lbn = m_boundingBox.m_lbn;
-  const Point3D &rtf = m_boundingBox.m_rtf;
-
-  fprintf(f,"%lf %le %le %le %le %le %le %d %d %d %d %d %d",
-            m_cellSize
-           ,lbn.x,lbn.y,lbn.z
-           ,rtf.x,rtf.y,rtf.z
-           ,m_tetrahedral
-           ,m_adaptiveCellSize
-           ,m_originOutside
-           ,m_machineCode
-           ,m_doubleSided
-           ,m_includeTime
-         );
+void IsoSurfaceParameters::putDataToDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.createRoot(_T("IsoSurface"));
+  doc.setValue(  root, _T("expr"              ), m_expr            );
+  doc.setValue(  root, _T("cellsize"          ), m_cellSize        );
+  setValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
+  doc.setValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
+  doc.setValue(  root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
+  doc.setValue(  root, _T("originoutside"     ), m_originOutside   );
+  doc.setValue(  root, _T("machinecode"       ), m_machineCode     );
+  doc.setValue(  root, _T("doublesided"       ), m_doubleSided     );
+  doc.setValue(  root, _T("includetime"       ), m_includeTime     );
   if(m_includeTime) {
-    fprintf(f, " %lf %lf %d", m_timeInterval.getFrom(), m_timeInterval.getTo(), m_frameCount);
+    setValue(doc, root, _T("timeinterval"     ), m_timeInterval    );
+    doc.setValue( root, _T("framecount"       ), m_frameCount      );
   }
-  fprintf(f, "\n");
-  writeString(f, m_expr);
 }
 
-#define GETBOOL(tok) tok.getInt() ? true : false
-
-void IsoSurfaceParameters::read(FILE *f) {
-  String line = readLine(f);
-  Tokenizer tok(line, " ");
-
-  m_machineCode  = true;
-  m_doubleSided  = false;
-  m_includeTime  = false;
-  m_timeInterval = DoubleInterval(0,20);
-
-  m_cellSize     = tok.getDouble();
-
-  Point3D &lbn   = m_boundingBox.m_lbn;
-  Point3D &rtf   = m_boundingBox.m_rtf;
-
-  lbn.x = tok.getDouble(); lbn.y = tok.getDouble(); lbn.z = tok.getDouble();
-  rtf.x = tok.getDouble(); rtf.y = tok.getDouble(); rtf.z = tok.getDouble();
-
-  m_tetrahedral      = GETBOOL(tok);
-  m_adaptiveCellSize = GETBOOL(tok);
-  m_originOutside    = GETBOOL(tok);
-  if(tok.hasNext()) {
-    m_machineCode   = GETBOOL(tok);
-    if(tok.hasNext()) {
-      m_doubleSided = GETBOOL(tok);
-      if(tok.hasNext()) {
-        m_includeTime = GETBOOL(tok);
-        if(m_includeTime) {
-          m_timeInterval.setFrom(tok.getDouble());
-          m_timeInterval.setTo(tok.getDouble());
-          m_frameCount = tok.getInt();
-        }
-      }
-    }
+void IsoSurfaceParameters::getDataFromDoc(XMLDoc &doc) {
+  XMLNodePtr root = doc.getRoot();
+  checkTag(root, _T("IsoSurface"));
+  doc.getValueLF(root, _T("expr"              ), m_expr            );
+  doc.getValue(  root, _T("cellsize"          ), m_cellSize        );
+  getValue( doc, root, _T("boundingbox"       ), m_boundingBox     );
+  doc.getValue(  root, _T("tetrahedral"       ), m_tetrahedral     );
+  doc.getValue(  root, _T("adaptivecellsize"  ), m_adaptiveCellSize);
+  doc.getValue(  root, _T("originoutside"     ), m_originOutside   );
+  doc.getValue(  root, _T("machinecode"       ), m_machineCode     );
+  doc.getValue(  root, _T("doublesided"       ), m_doubleSided     );
+  doc.getValue(  root, _T("includetime"       ), m_includeTime     );
+  if(m_includeTime) {
+    getValue(doc, root, _T("timeinterval"     ), m_timeInterval    );
+    doc.getValue( root, _T("framecount"       ), m_frameCount      );
   }
-  m_expr = readString(f);
 }

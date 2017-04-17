@@ -1,7 +1,6 @@
 #pragma once
 
-#include <NumberInterval.h>
-#include "PersistentParameter.h"
+#include <PersistentParameter.h>
 
 class Function2DSurfaceParameters : public PersistentParameter {
 public:
@@ -16,8 +15,8 @@ public:
   bool           m_doubleSided;
 
   Function2DSurfaceParameters();
-  void read( FILE *f);
-  void write(FILE *f);
+  void putDataToDoc(XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
   const DoubleInterval &getXInterval() const {
     return m_xInterval;
   }

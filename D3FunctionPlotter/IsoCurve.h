@@ -1,8 +1,8 @@
 #pragma once
 
 #include <NumberInterval.h>
+#include <PersistentParameter.h>
 #include <Math/Rectangle2D.h>
-#include <D3DGraphics/PersistentParameter.h>
 
 class IsoCurveParameters : public PersistentParameter {
 public:
@@ -17,8 +17,8 @@ public:
 
   IsoCurveParameters();
 
-  void read( FILE *f);
-  void write(FILE *f);
+  void putDataToDoc(  XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
 
   const DoubleInterval &getTInterval() const {
     return m_tInterval;
