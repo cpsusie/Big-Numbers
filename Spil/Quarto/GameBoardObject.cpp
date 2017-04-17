@@ -129,7 +129,7 @@ LPDIRECT3DTEXTURE BoardFieldObject::getTexture(bool marked) {
 #else
   const int index = GETFIELDRESINDEX(m_field,marked);
   if(s_texture[index] == NULL) {
-    s_texture[index] = loadTextureFromBitmapResource(getDevice(), GETFIELDRESID(m_field,marked));
+    s_texture[index] = getScene().loadTextureFromBitmapResource(GETFIELDRESID(m_field,marked));
   }
   return s_texture[index];
 #endif
