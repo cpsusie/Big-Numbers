@@ -1,2 +1,1 @@
-0.250000 -1.000000e+001 -1.000000e+001 -1.000000e+001 1.000000e+001 1.000000e+001 1.000000e+001 1 0 0 1 0 0
-"1-x*x*y*y-y*y*z*z-x*x*z*z"
+<IsoSurface><expr>1-x*x*y*y-y*y*z*z-x*x*z*z</expr><cellsize>2.500000000000000e-01</cellsize><boundingbox><lbn><x>-1.000000000000000e+01</x><y>-1.000000000000000e+01</y><z>-1.000000000000000e+01</z></lbn><rtf><x>1.000000000000000e+01</x><y>1.000000000000000e+01</y><z>1.000000000000000e+01</z></rtf></boundingbox><tetrahedral>1</tetrahedral><adaptivecellsize>0</adaptivecellsize><originoutside>0</originoutside><machinecode>1</machinecode><doublesided>0</doublesided><includetime>0</includetime></IsoSurface>

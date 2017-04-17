@@ -1,6 +1,3 @@
-40 40 0.000000 1.000000 -1.000000 1.000000 1 0 1
-"R = 3;
-(R + s*cos(pi*t)) * cos(2*pi*t)"
-"R = 3;
-(R + s*cos(pi*t)) * sin(2*pi*t)"
-"s*sin(pi*t)"
+<ParametricSurface><exprx>R = 3;
+(R + s*cos(pi*t)) * cos(2*pi*t)</exprx><expry>R = 3;
+(R + s*cos(pi*t)) * sin(2*pi*t)</expry><exprz>s*sin(pi*t)</exprz><tinterval><from>0.000000000000000e+00</from><to>1.000000000000000e+00</to></tinterval><sinterval><from>-1.000000000000000e+00</from><to>1.000000000000000e+00</to></sinterval><tstepcount>40</tstepcount><sstepcount>40</sstepcount><machinecode>1</machinecode><doublesided>1</doublesided><includetime>0</includetime></ParametricSurface>

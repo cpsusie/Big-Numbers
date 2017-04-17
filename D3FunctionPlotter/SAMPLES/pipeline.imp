@@ -1,5 +1,4 @@
-0.250000 -5 -5 -5 5 5 5 1 0 0 1 0 0
-"1
+<IsoSurface><expr>1
 -(sqr(2*x)+sqr(2*y))**-2
 -(sqr(2*y)+sqr(2*z))**-2
--(sqr(2*x)+sqr(2*z))**-2"
+-(sqr(2*x)+sqr(2*z))**-2</expr><cellsize>2.500000000000000e-01</cellsize><boundingbox><lbn><x>-5.000000000000000e+00</x><y>-5.000000000000000e+00</y><z>-5.000000000000000e+00</z></lbn><rtf><x>5.000000000000000e+00</x><y>5.000000000000000e+00</y><z>5.000000000000000e+00</z></rtf></boundingbox><tetrahedral>1</tetrahedral><adaptivecellsize>0</adaptivecellsize><originoutside>0</originoutside><machinecode>1</machinecode><doublesided>0</doublesided><includetime>0</includetime></IsoSurface>
