@@ -183,7 +183,7 @@ void CIsoCurveGraphDlg::OnFileSave() {
   if(param.hasDefaultName()) {
     saveAs(param);
   } else {
-    save(param.getFullName(), param);
+    save(param.getName(), param);
   }
 }
 
@@ -196,7 +196,7 @@ void CIsoCurveGraphDlg::OnFileSaveAs() {
 }
 
 void CIsoCurveGraphDlg::saveAs(IsoCurveGraphParameters &param) {
-  CString objname = param.getFullName().cstr();
+  CString objname = param.getName().cstr();
   CFileDialog dlg(FALSE,_T("*.iso"), objname);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save expression");
@@ -234,8 +234,8 @@ void CIsoCurveGraphDlg::OnEditFindmatchingparentesis() {
 }
 
 void CIsoCurveGraphDlg::paramToWin(const IsoCurveGraphParameters &param) {
-  m_fullName = param.getFullName();
-  m_name     = param.getPartialName().cstr();
+  m_fullName = param.getName();
+  m_name     = param.getDisplayName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
   getColorButton()->SetColor(param.m_color);
   m_expr     = param.m_expr.cstr();

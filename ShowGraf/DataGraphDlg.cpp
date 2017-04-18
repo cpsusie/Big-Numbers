@@ -37,8 +37,8 @@ BOOL CDataGraphDlg::OnInitDialog() {
 
   const GraphParameters &param = m_graph.getParam();
   getColorButton()->SetColor(param.m_color);
-  m_fullName = param.getFullName();
-  m_name     = param.getPartialName().cstr();
+  m_fullName = param.getName();
+  m_name     = param.getDisplayName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
 
   UpdateData(FALSE);

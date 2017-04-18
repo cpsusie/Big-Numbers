@@ -440,3 +440,46 @@ void CMainFrame::setTrigonometricMode(TrigonometricMode mode) {
 void CMainFrame::OnOptionsRadians() {  setTrigonometricMode(RADIANS); }
 void CMainFrame::OnOptionsDegrees() {  setTrigonometricMode(DEGREES); }
 void CMainFrame::OnOptionsGrads()   {  setTrigonometricMode(GRADS  ); }
+
+#ifdef __NEVER__
+#include <Scandir.h>
+
+template<class T> class FileConverter {
+private:
+  void convertFile(const String &name) {
+    T v;
+    try {
+      v.oldLoad(name);
+    } catch (Exception e) {
+      throwException(_T("Error loading %s:%s"), name.cstr(), e.what());
+    }
+    FileNameSplitter fs(name);
+    fs.setDir(fs.getDir() + _T("New"));
+    const String outName = fs.getAbsolutePath();
+    try {
+      v.save(outName);
+    } catch (Exception e) {
+      throwException(_T("Error saving %s:%s"), outName.cstr(), e.what());
+    }
+  }
+public:
+  void convertAllFiles(const String &ext) {
+    const String dir = _T("c:\\mytools2015\\Showgraf\\samples\\");
+    DirList list = scandir(dir + _T("*.") + ext);
+    for (size_t i = 0; i < list.size(); i++) {
+      convertFile(FileNameSplitter::getChildName(dir, list[i].name));
+    }
+  }
+};
+
+void CMainFrame::OnFileConvertscripts() {
+  try {
+    FileConverter<IsoCurveGraphParameters    >().convertAllFiles(_T("iso"));
+    FileConverter<FunctionGraphParameters    >().convertAllFiles(_T("exp"));
+    FileConverter<ParametricGraphParameters  >().convertAllFiles(_T("par"));
+    FileConverter<DiffEquationGraphParameters>().convertAllFiles(_T("deq"));
+  } catch (Exception e) {
+    showException(e);
+  }
+}
+#endif

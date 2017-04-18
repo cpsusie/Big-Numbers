@@ -15,14 +15,10 @@ public:
   COLORREF m_color;
   EquationAttributes() : m_startValue(0), m_visible(false), m_color(0)  {
   }
-  EquationAttributes(const String &str);
   String toString() const;
 };
 
 class DiffEquationGraphParameters : public GraphParameters {
-protected:
-  void readTextFile( FILE *f);
-  void writeTextFile(FILE *f);
 public:
   DiffEquationSystemDescription    m_equationsDescription;
   CompactArray<EquationAttributes> m_attrArray;
@@ -35,4 +31,9 @@ public:
   }
   DiffEquationSet getVisibleEquationSet() const;
   Vector getStartVector() const;
+  void putDataToDoc(XMLDoc &doc);
+  void getDataFromDoc(XMLDoc &doc);
+  int getType() const {
+    return DIFFEQUATIONGRAPH;
+  }
 };

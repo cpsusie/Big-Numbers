@@ -39,7 +39,7 @@ public:
   CEquationEdit(CFont &font);
   ~CEquationEdit();
   void  Create(CWnd *parent, UINT eqIndex);
-  void  DoDataExchange(CDataExchange* pDX);
+  void  DoDataExchange(CDataExchange *pDX);
   void  addToLayoutManager(     SimpleLayoutManager &layoutManager, int flags);
   void  removeFromLayoutManager(SimpleLayoutManager &layoutManager);
   void  setWindowRect(const CRect &r);
@@ -166,9 +166,9 @@ public:
   double    m_xTo;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
     afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnDestroy();
     afx_msg void OnBnClickedButtonaddeq();

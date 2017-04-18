@@ -1,13 +1,1 @@
-0.000000 1000.000000 1.000000e-01 Curve RADIANS 4
-"S"
-"N=2000; a=0.08;       -a/N*S*I"
-"1999 true 00808000"
-"I"
-"N=2000; a=0.08; g=0.01; d = 0.001; a/N*S*I - g*I - d*I"
-"1 true 000000ff"
-"R"
-"g=0.01; g*I"
-"0 true 00ff0000"
-"D"
-"d=0.001; d*I"
-"0 true 00000000"
+<DiffEquation><interval><from>0.000000000000000e+00</from><to>1.000000000000000e+03</to></interval><eps>1.000000000000000e-01</eps><style>curve</style><trigo>radians</trigo><dim>4</dim><equations><eq0><name>S</name><expr>N=2000; a=0.08;       -a/N*S*I</expr><attr><start>1.999000000000000e+03</start><color>00808000</color><visible>1</visible></attr></eq0><eq1><name>I</name><expr>N=2000; a=0.08; g=0.01; d = 0.001; a/N*S*I - g*I - d*I</expr><attr><start>1.000000000000000e+00</start><color>000000ff</color><visible>1</visible></attr></eq1><eq2><name>R</name><expr>g=0.01; g*I</expr><attr><start>0.000000000000000e+00</start><color>00ff0000</color><visible>1</visible></attr></eq2><eq3><name>D</name><expr>d=0.001; d*I</expr><attr><start>0.000000000000000e+00</start><color>00000000</color><visible>1</visible></attr></eq3></equations></DiffEquation>

@@ -1,16 +1,20 @@
 #include "pch.h"
 #include <PersistentParameter.h>
 
+const TCHAR *PersistentParameter::s_defaultName = _T("Untitled");
+
 void PersistentParameter::save(const String &fileName) {
   XMLDoc doc;
   putDataToDoc(doc);
   doc.saveToFile(fileName);
+  setName(fileName);
 }
 
 void PersistentParameter::load(const String &fileName) {
   XMLDoc doc;
   doc.loadFromFile(fileName);
   getDataFromDoc(doc);
+  setName(fileName);
 }
 
 void PersistentParameter::checkTag(XMLNodePtr node, const TCHAR *expectedTag) { // static

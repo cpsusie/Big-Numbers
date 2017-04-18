@@ -68,7 +68,7 @@ int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) {
   dc.SelectObject(font);
   int result = 0;
   for(size_t i = 0; i < size(); i++) {
-    const CSize cs = dc.GetTextExtent(getItem(i).getPartialName().cstr());
+    const CSize cs = dc.GetTextExtent(getItem(i).getDisplayName().cstr());
     if(cs.cx > result) {
       result = cs.cx;
     }

@@ -400,7 +400,7 @@ void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
       MessageBox(_T("Loadmenu failed"), _T("Error"), MB_ICONEXCLAMATION);
       return;
     }
-    removeMenuItem(&menu, m_graphArray.getSelectedItem()->getGraph().isVisible() ? ID_SELECTMENU_SHOW : ID_SELECTMENU_HIDE);
+    removeMenuItem(menu, m_graphArray.getSelectedItem()->getGraph().isVisible() ? ID_SELECTMENU_SHOW : ID_SELECTMENU_HIDE);
     ClientToScreen(&point);
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,point.x+10,point.y, this );
   } else {
@@ -794,7 +794,7 @@ void CShowGrafView::makeExpoFit() {
     const double a = s * exp(poly.getCoef(0).re);
     const double b = exp(poly.getCoef(1).re);
     FunctionGraphParameters param;
-    param.setName(format(_T("Exponential fit of %s"), item->getPartialName().cstr()));
+    param.setName(format(_T("Exponential fit of %s"), item->getDisplayName().cstr()));
     param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
     param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * b^x"), a, b);
     param.m_interval = item->getGraph().getDataRange().getXInterval();
@@ -837,7 +837,7 @@ void CShowGrafView::makePotensFit() {
     const double a = s * exp(poly.getCoef(0).re);
     const double b = poly.getCoef(1).re;
     FunctionGraphParameters param;
-    param.setName(format(_T("potens fit of %s"), item->getPartialName().cstr()));
+    param.setName(format(_T("potens fit of %s"), item->getDisplayName().cstr()));
     param.m_color = getShiftedColor(item->getGraph().getParam().m_color);
     param.m_expr  = format(_T("a = %lg;\r\nb = %lg;\r\na * x^b"), a, b);
     param.m_interval = item->getGraph().getDataRange().getXInterval();

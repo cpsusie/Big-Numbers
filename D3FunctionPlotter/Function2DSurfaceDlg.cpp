@@ -167,7 +167,6 @@ void CFunction2DSurfaceDlg::OnFileOpen() {
   try {
     Function2DSurfaceParameters param;
     param.load(dlg.m_ofn.lpstrFile);
-    param.setName(dlg.m_ofn.lpstrFile);
     paramToWin(param);
   } catch(Exception e) {
     showException(e);
@@ -214,7 +213,6 @@ void CFunction2DSurfaceDlg::saveAs(Function2DSurfaceParameters &param) {
 
 void CFunction2DSurfaceDlg::save(const String &fileName, Function2DSurfaceParameters &param) {
   try {
-    param.setName(fileName);
     param.save(fileName);
     paramToWin(param);
   } catch(Exception e) {

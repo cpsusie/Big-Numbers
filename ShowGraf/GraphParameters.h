@@ -1,7 +1,17 @@
 #pragma once
 
+#include <PersistentParameter.h>
 #include <MFCUtil/Viewport2D.h>
 #include <Math/Expression/Expression.h>
+
+typedef enum {
+  POINTGRAPH
+ ,FUNCTIONGRAPH
+ ,PARAMETRICGRAPH
+ ,DATAGRAPH
+ ,ISOCURVEGRAPH
+ ,DIFFEQUATIONGRAPH
+} GraphType;
 
 typedef enum {
   GSCURVE,
@@ -27,42 +37,41 @@ public:
   static DataReader LinearDataReader, LogarithmicDataReader, NormalDistributionDataReader, DateTimeDataReader;
 };
 
-class GraphParameters {
-private:
-  String     m_name;
+
+void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode  trigoMode);
+void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode);
+void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle         style    );
+void getValue(XMLDoc &doc, XMLNodePtr n, GraphStyle        &style    );
+
+class GraphParameters : public PersistentParameter {
 protected:
-  static String readString(   FILE *f);
-  static void   writeString(  FILE *f, const String &str);
-  static String readLine(     FILE *f);
-  virtual void  readTextFile( FILE *f);
-  virtual void  writeTextFile(FILE *f);
+  void setStdValues(XMLDoc &doc, XMLNodePtr n);
+  void getStdValues(XMLDoc &doc, XMLNodePtr n);
 public:
   COLORREF   m_color;
   int        m_rollSize;
   GraphStyle m_style;
   GraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style);
   
-  void setName(const String &name);
-  const String &getFullName() const {
-    return m_name;
-  }
-  String getPartialName() const;
-  bool hasName() const {
-    return m_name.length() > 0;
-  }
-  bool hasDefaultName() const {
-    return m_name == _T("Untitled");
-  }
-
-  void setDefaultName() {
-    m_name = _T("Untitled");
-  }
-
-  void load(const String &fileName);
-  void save(const String &fileName);
-
   static const TCHAR      *graphStyleToString(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
   static const TCHAR      *trigonometricModeToString(TrigonometricMode mode);
   static TrigonometricMode trigonometricModeFromString(const String &str);
+};
+
+class PointGraphParameters : public GraphParameters {
+public:
+  PointGraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style)
+    : GraphParameters(name, color, rollSize, style)
+  {
+  }
+  void putDataToDoc(XMLDoc &doc) {
+    throwUnsupportedOperationException(__TFUNCTION__);
+  }
+  void getDataFromDoc(XMLDoc &doc) {
+    throwUnsupportedOperationException(__TFUNCTION__);
+  }
+  int getType() const {
+    return POINTGRAPH;
+  }
 };

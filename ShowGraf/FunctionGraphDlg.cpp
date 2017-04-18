@@ -190,7 +190,7 @@ void CFunctionGraphDlg::OnFileSave() {
   if(param.hasDefaultName()) {
     saveAs(param);
   } else {
-    save(param.getFullName(), param);
+    save(param.getName(), param);
   }
 }
 
@@ -203,7 +203,7 @@ void CFunctionGraphDlg::OnFileSaveAs() {
 }
 
 void CFunctionGraphDlg::saveAs(FunctionGraphParameters &param) {
-  CString objname = param.getFullName().cstr();
+  CString objname = param.getName().cstr();
   CFileDialog dlg(FALSE,_T("*.exp"), objname);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save expression");
@@ -240,8 +240,8 @@ void CFunctionGraphDlg::OnEditFindmatchingparentesis() {
 }
 
 void CFunctionGraphDlg::paramToWin(const FunctionGraphParameters &param) {
-  m_fullName = param.getFullName();
-  m_name     = param.getPartialName().cstr();
+  m_fullName = param.getName();
+  m_name     = param.getDisplayName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
   getColorButton()->SetColor(param.m_color);
   m_expr     = param.m_expr.cstr();

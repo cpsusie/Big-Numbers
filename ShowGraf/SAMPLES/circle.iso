@@ -1,2 +1,1 @@
--10.000000 -10.000000 20.000000 20.000000 0.100000 0.000000 0.000000 Curve RADIANS 00d67f29 0
-"x^2+y^2-4"
+<IsoCurve><expr>x^2+y^2-4</expr><boundingbox><x>-1.000000000000000e+01</x><y>-1.000000000000000e+01</y><w>2.000000000000000e+01</w><h>2.000000000000000e+01</h></boundingbox><cellsize>1.000000000000000e-01</cellsize><trigo>radians</trigo><style>curve</style><color>00d67f29</color><rollsize>0</rollsize></IsoCurve>

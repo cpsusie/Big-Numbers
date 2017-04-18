@@ -34,14 +34,14 @@ private:
     void addToRecent(const String &fileName);
 
 public:
-    CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd* pParent = NULL);
+    CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
     IsoCurveGraphParameters &m_param;
 
     enum { IDD = IDD_ISOCURVEGRAPH_DIALOG };
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();

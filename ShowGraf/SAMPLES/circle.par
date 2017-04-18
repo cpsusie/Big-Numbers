@@ -1,3 +1,1 @@
-0.000000 6.290000 500 Curve RADIANS 00d67f29 0
-"cos(t)*4"
-"sin(t)*4"
+<ParametricCurve><exprx>cos(t)*4</exprx><expry>sin(t)*4</expry><interval><from>0.000000000000000e+00</from><to>6.290000000000000e+00</to></interval><steps>500</steps><trigo>radians</trigo><style>curve</style><color>00d67f29</color><rollsize>0</rollsize></ParametricCurve>

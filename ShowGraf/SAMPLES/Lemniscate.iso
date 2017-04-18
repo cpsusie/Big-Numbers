@@ -1,4 +1,2 @@
--10.000000 -10.000000 20.000000 20.000000 0.030000 0.010000 0.100000 Curve RADIANS 00ff0000 0
-"a=2;
-(x^2+y^2)^2 - 2*a^2*(x^2-y^2)"
-
+<IsoCurve><expr>a=2;
+(x^2+y^2)^2 - 2*a^2*(x^2-y^2)</expr><boundingbox><x>-1.000000000000000e+01</x><y>-1.000000000000000e+01</y><w>2.000000000000000e+01</w><h>2.000000000000000e+01</h></boundingbox><cellsize>3.000000000000000e-02</cellsize><trigo>radians</trigo><style>curve</style><color>00ff0000</color><rollsize>0</rollsize></IsoCurve>

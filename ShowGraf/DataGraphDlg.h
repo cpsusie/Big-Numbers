@@ -69,12 +69,9 @@ public:
     DataGraph    &m_graph;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
+    afx_msg void OnSize(UINT nType, int cx, int cy);
     DECLARE_MESSAGE_MAP()
-public:
-  afx_msg void OnSize(UINT nType, int cx, int cy);
 };

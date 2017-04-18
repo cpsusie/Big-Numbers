@@ -193,7 +193,7 @@ void CParametricGraphDlg::OnFileSave() {
   if(param.hasDefaultName()) {
     saveAs(param);
   } else {
-    save(param.getFullName(), param);
+    save(param.getName(), param);
   }
 }
 
@@ -206,7 +206,7 @@ void CParametricGraphDlg::OnFileSaveAs() {
 }
 
 void CParametricGraphDlg::saveAs(ParametricGraphParameters &param) {
-  CString objname = param.getFullName().cstr();
+  CString objname = param.getName().cstr();
   CFileDialog dlg(FALSE,_T("*.par"), objname);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save parametric curve");
@@ -243,8 +243,8 @@ void CParametricGraphDlg::OnEditFindmatchingparentesis() {
 }
 
 void CParametricGraphDlg::paramToWin(const ParametricGraphParameters &param) {
-  m_fullName = param.getFullName();
-  m_name     = param.getPartialName().cstr();
+  m_fullName = param.getName();
+  m_name     = param.getDisplayName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
   getColorButton()->SetColor(param.m_color);
   m_exprX    = param.m_exprX.cstr();

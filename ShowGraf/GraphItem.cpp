@@ -11,7 +11,7 @@ COLORREF getComplementColor(COLORREF color) {
 }
 
 void GraphItem::paintButton(CDC &dc, bool selected) {
-  const CString buttonText = m_graph->getParam().getPartialName().cstr();
+  const CString buttonText = m_graph->getParam().getDisplayName().cstr();
   dc.FillSolidRect(&m_buttonRect,m_graph->getParam().m_color);
   CRect tr = m_buttonRect;
   tr.left += 5; tr.top += 4; tr.right -= 3; tr.bottom -= 3;

@@ -35,11 +35,6 @@ public:
   ParametricSurfaceParameters m_param;
   CString                     m_name;
 
-public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-	virtual void DoDataExchange(CDataExchange* pDX);
-
 private:
   CString m_exprX;
   CString m_exprY;
@@ -58,6 +53,8 @@ private:
   BOOL    m_machineCode;
 
 protected:
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+	  virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
     virtual void OnOK();

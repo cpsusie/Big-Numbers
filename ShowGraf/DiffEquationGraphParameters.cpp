@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <XMLUtil.h>
 #include "DiffEquationGraph.h"
 
 DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, GraphStyle style, TrigonometricMode trigonomtetricMode)
@@ -9,59 +10,67 @@ DiffEquationGraphParameters::DiffEquationGraphParameters(const String &name, Gra
   m_eps               = 0.1;
 }
 
-void DiffEquationGraphParameters::writeTextFile(FILE *f) {
-  USES_CONVERSION;
-  const TCHAR *tstyle = graphStyleToString(m_style);
-  const TCHAR *ttrigo = trigonometricModeToString(m_trigonometricMode);
-  const char  *astyle = T2A(tstyle);
-  const char  *atrigo = T2A(ttrigo);
-  const DiffEquationSystemDescription &eqDescArray = m_equationsDescription;
-  const UINT   dim    = (UINT)eqDescArray.size();
+static void setValue(XMLDoc &doc, XMLNodePtr parent, const EquationAttributes &attr) {
+  XMLNodePtr n = doc.createNode(parent, _T("attr"));
+  doc.setValue(n, _T("start"  ), attr.m_startValue);
+  doc.setValue(n, _T("color"  ), format(_T("%08x"), attr.m_color));
+  doc.setValue(n, _T("visible"), attr.m_visible   );
+}
 
+static void getValue(XMLDoc &doc, XMLNodePtr parent, EquationAttributes &attr) {
+  XMLNodePtr n = PersistentParameter::getChild(doc, parent, _T("attr"));
+  doc.getValue(n, _T("start"  ), attr.m_startValue);
+  String str;
+  doc.getValue(n, _T("color"  ), str              );
+  _stscanf(str.cstr(), _T("%x"), &attr.m_color    );
+  doc.getValue(n, _T("visible"), attr.m_visible   );
+}
+
+void DiffEquationGraphParameters::putDataToDoc(XMLDoc &doc) {
+  const DiffEquationSystemDescription &eqDescArray = m_equationsDescription;
+  const UINT dim = (UINT)eqDescArray.size();
+  
   assert(dim == m_attrArray.size());
-  fprintf(f, "%lf %lf %le %s %s %d\n"
-    , m_interval.getFrom()
-    , m_interval.getTo()
-    , m_eps
-    , astyle
-    , atrigo
-    , dim
-  );
+
+  XMLNodePtr root = doc.createRoot(_T("DiffEquation"));
+  setValue(doc, root, _T("interval" ), m_interval         );
+  doc.setValue( root, _T("eps"      ), m_eps              );
+  setValue(doc, root                 , m_style            );
+  setValue(doc, root                 , m_trigonometricMode);
+  doc.setValue( root, _T("dim"      ), dim                );
+
+  XMLNodePtr eqListNode = doc.createNode(root,_T("equations"));
   for (UINT i = 0; i < dim; i++) {
-    const DiffEquationDescription &eq   = eqDescArray[i];
+    const DiffEquationDescription &desc = eqDescArray[i];
     const EquationAttributes      &attr = m_attrArray[i];
-    writeString(f, eq.m_name);
-    writeString(f, eq.m_expr);
-    writeString(f, attr.toString());
+    XMLNodePtr eq = doc.createNode(eqListNode, format(_T("eq%d"),i).cstr());
+    doc.setValue( eq, _T("name"), desc.m_name);
+    doc.setValue( eq, _T("expr"), desc.m_expr);
+    setValue(doc, eq            , attr       );
   }
 }
 
-void DiffEquationGraphParameters::readTextFile(FILE *f) {
-  char   styleStr[100], trigoStr[100];
-  double from, to, eps;
-  UINT   dim;
-  if (fscanf(f, "%lf %lf %le %s %s %d\n", &from, &to, &eps, &styleStr, &trigoStr, &dim) != 6) {
-    throwException(_T("Invalid input in line 1"));
+void DiffEquationGraphParameters::getDataFromDoc(XMLDoc &doc) {
+  int dim;
+  XMLNodePtr root = doc.getRoot();
+  checkTag(     root, _T("DiffEquation"));
+  getValue(doc, root, _T("interval" ), m_interval         );
+  doc.getValue( root, _T("eps"      ), m_eps              );
+  getValue(doc, root                 , m_style            );
+  getValue(doc, root                 , m_trigonometricMode);
+  doc.getValue( root, _T("dim"      ), dim                );
+
+  XMLNodePtr eqListNode = getChild(doc, root, _T("equations"));
+  for (int i = 0; i < dim; i++) {
+    XMLNodePtr eq = getChild(doc, eqListNode, format(_T("eq%d"),i).cstr());
+    DiffEquationDescription desc;
+    EquationAttributes      attr;
+    doc.getValue(  eq, _T("name"), desc.m_name);
+    doc.getValueLF(eq, _T("expr"), desc.m_expr);
+    getValue( doc, eq            , attr       );
+    m_equationsDescription.add(desc);
+    m_attrArray.add(attr);
   }
-
-  m_interval.setFrom(from);
-  m_interval.setTo(to);
-  m_eps               = eps;
-  m_style             = graphStyleFromString(styleStr);
-  m_trigonometricMode = trigonometricModeFromString(trigoStr);
-
-  DiffEquationSystemDescription    eqDescArray(dim);
-  CompactArray<EquationAttributes> attrArray(  dim);
-
-  for (UINT i = 0; i < dim; i++) {
-    const String             name = readString(f);
-    const String             expr = readString(f);
-    const EquationAttributes attr(readString(f));
-    eqDescArray.add(DiffEquationDescription(name, expr));
-    attrArray.add(attr);
-  }
-  m_equationsDescription = eqDescArray;
-  m_attrArray            = attrArray;
 }
 
 DiffEquationSet DiffEquationGraphParameters::getVisibleEquationSet() const {
@@ -81,13 +90,6 @@ Vector DiffEquationGraphParameters::getStartVector() const {
     result[i] = m_attrArray[i-1].m_startValue;
   }
   return result;
-}
-
-EquationAttributes::EquationAttributes(const String &str) {
-  Tokenizer tok(str, _T(" "));
-  m_startValue = tok.getDouble();
-  m_visible    = tok.getBool();
-  m_color      = tok.getUint(true);
 }
 
 String EquationAttributes::toString() const {

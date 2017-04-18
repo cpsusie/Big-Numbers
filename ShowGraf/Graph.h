@@ -6,15 +6,6 @@
 
 #define EMPTY_DISTANCE 1e40
 
-typedef enum {
-  POINTGRAPH
- ,FUNCTIONGRAPH
- ,PARAMETRICGRAPH
- ,DATAGRAPH
- ,ISOCURVEGRAPH
- ,DIFFEQUATIONGRAPH
-} GraphType;
-
 class Graph : public CoordinateSystemObject {
 private:
   bool m_visible;

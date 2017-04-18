@@ -6,8 +6,10 @@
 class PersistentParameter {
 private:
   String m_name;
+protected:
+  static const TCHAR *s_defaultName;
 public:
-  PersistentParameter() : m_name(_T("Untitled")) {
+  PersistentParameter() : m_name(s_defaultName) {
   }
   void load(const String &fileName);
   void save(const String &fileName);
@@ -21,8 +23,14 @@ public:
   inline void setName(const String &name) {
     m_name = name;
   }
+  inline void setDefaultName() {
+    setName(s_defaultName);
+  }
+  inline bool hasName() const {
+    return m_name.length() > 0;
+  }
   inline bool hasDefaultName() const {
-    return m_name == _T("Untitled");
+    return m_name == s_defaultName;
   }
   String getDisplayName() const;
   virtual int getType() const = 0;

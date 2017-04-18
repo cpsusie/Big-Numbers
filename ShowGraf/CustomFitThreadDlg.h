@@ -68,8 +68,8 @@ public:
     void stopTimer();
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnTimer(UINT_PTR nIDEvent);
     virtual void OnOK();

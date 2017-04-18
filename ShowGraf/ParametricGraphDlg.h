@@ -32,7 +32,7 @@ private:
     void addToRecent(const String &fileName);
 
 public:
-  CParametricGraphDlg(ParametricGraphParameters &param, CWnd* pParent = NULL);
+  CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent = NULL);
   virtual ~CParametricGraphDlg();
 
   ParametricGraphParameters &m_param;
@@ -40,8 +40,8 @@ public:
   enum { IDD = IDD_PARAMETRICGRAPH_DIALOG };
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     virtual void OnOK();
     afx_msg void OnGotoName();

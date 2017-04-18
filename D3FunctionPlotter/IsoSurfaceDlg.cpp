@@ -206,7 +206,6 @@ void CIsoSurfaceDlg::OnFileOpen() {
   try {
     IsoSurfaceParameters param;
     param.load(dlg.m_ofn.lpstrFile);
-    param.setName(dlg.m_ofn.lpstrFile);
     paramToWin(param);
   } catch(Exception e) {
     showException(e);
@@ -234,7 +233,6 @@ void CIsoSurfaceDlg::OnFileSaveAs() {
   if(!validate()) {
     return;
   }
-  
   IsoSurfaceParameters param;
   winToParam(param);
   saveAs(param);
@@ -253,7 +251,6 @@ void CIsoSurfaceDlg::saveAs(IsoSurfaceParameters &param) {
 
 void CIsoSurfaceDlg::save(const String &fileName, IsoSurfaceParameters &param) {
   try {
-    param.setName(fileName);
     param.save(fileName);
     paramToWin(param);
   } catch(Exception e) {

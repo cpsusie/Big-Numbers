@@ -220,7 +220,7 @@ void CDiffEquationGraphDlg::OnFileSave() {
   if(param.hasDefaultName()) {
     saveAs(param);
   } else {
-    save(param.getFullName(), param);
+    save(param.getName(), param);
   }
 }
 
@@ -254,8 +254,8 @@ void CDiffEquationGraphDlg::OnEditPreverror() {
 
 void CDiffEquationGraphDlg::paramToWin(const DiffEquationGraphParameters &param) {
   assert(param.m_equationsDescription.size() == param.m_attrArray.size());
-  m_fullName = param.getFullName();
-  m_name     = param.getPartialName().cstr();
+  m_fullName = param.getName();
+  m_name     = param.getDisplayName().cstr();
   m_style    = GraphParameters::graphStyleToString(param.m_style);
   m_xFrom    = param.m_interval.getMin();
   m_xTo      = param.m_interval.getMax();
@@ -300,7 +300,7 @@ void CDiffEquationGraphDlg::winToEquation(size_t index, DiffEquationDescription 
 }
 
 void CDiffEquationGraphDlg::saveAs(DiffEquationGraphParameters &param) {
-  CString objname = param.getFullName().cstr();
+  CString objname = param.getName().cstr();
   CFileDialog dlg(FALSE,_T("*.deq"), objname);
   dlg.m_ofn.lpstrFilter = fileDialogExtensions;
   dlg.m_ofn.lpstrTitle  = _T("Save Differentialequation");

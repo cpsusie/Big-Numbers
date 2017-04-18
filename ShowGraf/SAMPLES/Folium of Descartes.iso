@@ -1,3 +1,2 @@
--10.000000 -10.000000 20.000000 20.000000 0.100000 0.000000 0.000000 ??????????? ??????????? 000000ff 0
-"a=2;
-x^3+y^3 - 3*a*x*y"
+<IsoCurve><expr>a=2;
+x^3+y^3 - 3*a*x*y</expr><boundingbox><x>-1.000000000000000e+01</x><y>-1.000000000000000e+01</y><w>2.000000000000000e+01</w><h>2.000000000000000e+01</h></boundingbox><cellsize>1.000000000000000e-01</cellsize><trigo>radians</trigo><style>curve</style><color>000000ff</color><rollsize>0</rollsize></IsoCurve>

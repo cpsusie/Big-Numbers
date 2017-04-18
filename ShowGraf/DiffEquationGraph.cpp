@@ -71,7 +71,7 @@ void DiffEquationGraph::calculate() {
     const EquationAttributes      &attr  = param.m_attrArray[index];
     const DiffEquationDescription &desc  = param.m_equationsDescription[index];
     vectorGraphMap.add(index+1); // v[0] is x, so add 1 to get mapping right
-    m_pointGraphArray.add(new PointGraph(new GraphParameters(desc.m_name, attr.m_color, 1, param.m_style)));
+    m_pointGraphArray.add(new PointGraph(new PointGraphParameters(desc.m_name, attr.m_color, 1, param.m_style)));
   }
   DiffEquationHandler handler(*this, vectorGraphMap);
   RungeKuttaFehlberg(eq, handler).calculate(param.getStartVector(), param.m_interval.getTo(), param.m_eps);

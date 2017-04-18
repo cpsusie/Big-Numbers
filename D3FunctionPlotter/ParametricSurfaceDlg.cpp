@@ -208,7 +208,6 @@ void CParametricSurfaceDlg::OnFileOpen() {
   try {
     ParametricSurfaceParameters param;
     param.load(dlg.m_ofn.lpstrFile);
-    param.setName(dlg.m_ofn.lpstrFile);
     paramToWin(param);
   } catch(Exception e) {
     showException(e);
@@ -254,7 +253,6 @@ void CParametricSurfaceDlg::saveAs(ParametricSurfaceParameters &param) {
 
 void CParametricSurfaceDlg::save(const String &fileName, ParametricSurfaceParameters &param) {
   try {
-    param.setName(  fileName);
     param.save(fileName);
     paramToWin(param);
   } catch(Exception e) {
