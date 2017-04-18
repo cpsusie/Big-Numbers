@@ -1,7 +1,7 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <XMLUtil.h>
 #include <MFCUtil/2DXML.h>
-#include "IsoCurve.h"
+#include <D3DGraphics/IsoCurve.h>
 
 IsoCurveParameters::IsoCurveParameters() {
   m_cellSize         = 0.25;

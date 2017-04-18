@@ -23,7 +23,7 @@ public:
   const DoubleInterval &getTInterval() const {
     return m_tInterval;
   }
-  PersistentParameterType getType() const {
+  int getType() const {
     return PP_ISOCURVE;
   }
 };

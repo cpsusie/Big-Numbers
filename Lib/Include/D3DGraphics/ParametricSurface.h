@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include <PersistentParameter.h>
 
 class ParametricSurfaceParameters : public PersistentParameter {
@@ -29,7 +27,7 @@ public:
   const DoubleInterval &getTimeInterval() const {
     return m_timeInterval;
   }
-  PersistentParameterType getType() const {
+  int getType() const {
     return PP_PARAMETRICSURFACE;
   }
 };

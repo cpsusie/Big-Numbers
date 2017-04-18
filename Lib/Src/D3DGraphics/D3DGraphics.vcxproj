@@ -256,6 +256,7 @@
     <ClCompile Include="D3SceneEditor.cpp" />
     <ClCompile Include="D3SceneRenderState.cpp" />
     <ClCompile Include="FVF.cpp" />
+    <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="LightDlg.cpp" />
     <ClCompile Include="Material.cpp" />
@@ -309,6 +310,7 @@
     <ClInclude Include="..\..\Include\D3DGraphics\D3TextureFactory.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\D3ToString.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Function2DSurface.h" />
+    <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsoSurface.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\IsosurfacePolygonizer.h" />
     <ClInclude Include="..\..\Include\D3DGraphics\Light.h" />

@@ -137,6 +137,9 @@
     <ClCompile Include="3DXML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="IsoCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\D3DGraphics\Cube3D.h">
@@ -218,6 +221,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\D3DGraphics\3DXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\D3DGraphics\IsoCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -26,7 +26,7 @@ public:
   const DoubleInterval &getTimeInterval() const {
     return m_timeInterval;
   }
-  PersistentParameterType getType() const {
+  int getType() const {
     return PP_2DFUNCTION;
   }
 };

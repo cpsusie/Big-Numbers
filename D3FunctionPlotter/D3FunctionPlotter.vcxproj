@@ -297,7 +297,6 @@
     <ClCompile Include="DrawTool.cpp" />
     <ClCompile Include="ExprDialog.cpp" />
     <ClCompile Include="Function2DSurfaceDlg.cpp" />
-    <ClCompile Include="IsoCurve.cpp" />
     <ClCompile Include="IsoSurfaceDlg.cpp" />
     <ClCompile Include="MemoryLogThread.cpp" />
     <ClCompile Include="ParametricSurfaceDlg.cpp" />
@@ -326,7 +325,6 @@
     <ClInclude Include="DrawTool.h" />
     <ClInclude Include="ExprDialog.h" />
     <ClInclude Include="Function2DSurfaceDlg.h" />
-    <ClInclude Include="IsoCurve.h" />
     <ClInclude Include="IsoSurfaceDlg.h" />
     <ClInclude Include="MemoryLogThread.h" />
     <ClInclude Include="ParametricSurfaceDlg.h" />

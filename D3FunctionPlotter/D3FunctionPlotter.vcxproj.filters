@@ -36,9 +36,6 @@
     <ClCompile Include="Function2DSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IsoCurve.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="IsoSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -81,9 +78,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Function2DSurfaceDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="IsoCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="IsoSurfaceDlg.h">

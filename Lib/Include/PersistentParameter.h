@@ -3,13 +3,6 @@
 #include <XmlDoc.h>
 #include <NumberInterval.h>
 
-typedef enum {
-  PP_2DFUNCTION
- ,PP_PARAMETRICSURFACE
- ,PP_ISOSURFACE
- ,PP_ISOCURVE
-} PersistentParameterType;
-
 class PersistentParameter {
 private:
   String m_name;
@@ -32,5 +25,5 @@ public:
     return m_name == _T("Untitled");
   }
   String getDisplayName() const;
-  virtual PersistentParameterType getType() const = 0;
+  virtual int getType() const = 0;
 };
