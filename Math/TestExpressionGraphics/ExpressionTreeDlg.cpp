@@ -146,9 +146,9 @@ void CExpressionTreeDlg::OnContextMenu(CWnd* pWnd, CPoint point) {
     return;
   }
   if(m_selectedNode->isBreakPoint()) {
-    removeMenuItem(&menu, ID_SETBREAKPOINT);
+    removeMenuItem(menu, ID_SETBREAKPOINT);
   } else {
-	removeMenuItem(&menu, ID_CLEARBREAKPOINT);
+	removeMenuItem(menu, ID_CLEARBREAKPOINT);
   }
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, point.x,point.y, this);
 }

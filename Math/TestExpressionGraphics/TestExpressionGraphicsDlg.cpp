@@ -762,22 +762,22 @@ void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {
     { setContextWindow(mouseWinId, getImageFromWinId(mouseWinId).findLeastRectangle(mouseDown));
       if(!loadMenu(menu, IDR_CONTEXTMENU)) return;
       if(hasDebugThread()) {
-        removeMenuItem(&menu, ID_CONTEXTMENU_TOSTANDARDFORM);
-        removeMenuItem(&menu, ID_CONTEXTMENU_TOCANONCALFORM);
-        removeMenuItem(&menu, ID_CONTEXTMENU_TONUMERICFORM );
-        removeMenuItem(&menu, ID_CONTEXTMENU_EXPAND        );
-        removeMenuItem(&menu, ID_CONTEXTMENU_MULTIPLY      );
+        removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM);
+        removeMenuItem(menu, ID_CONTEXTMENU_TOCANONCALFORM);
+        removeMenuItem(menu, ID_CONTEXTMENU_TONUMERICFORM );
+        removeMenuItem(menu, ID_CONTEXTMENU_EXPAND        );
+        removeMenuItem(menu, ID_CONTEXTMENU_MULTIPLY      );
       } else {
         switch(getContextExpression()->getTreeForm()) {
-        case TREEFORM_STANDARD  : removeMenuItem(&menu, ID_CONTEXTMENU_TOSTANDARDFORM); break;
-        case TREEFORM_CANONICAL : removeMenuItem(&menu, ID_CONTEXTMENU_TOCANONCALFORM); break;
-        case TREEFORM_NUMERIC   : removeMenuItem(&menu, ID_CONTEXTMENU_TONUMERICFORM ); break;
+        case TREEFORM_STANDARD  : removeMenuItem(menu, ID_CONTEXTMENU_TOSTANDARDFORM); break;
+        case TREEFORM_CANONICAL : removeMenuItem(menu, ID_CONTEXTMENU_TOCANONCALFORM); break;
+        case TREEFORM_NUMERIC   : removeMenuItem(menu, ID_CONTEXTMENU_TONUMERICFORM ); break;
         }
         if(!isContextNodeExpandable()) {
-          removeMenuItem(&menu, ID_CONTEXTMENU_EXPAND        );
+          removeMenuItem(menu, ID_CONTEXTMENU_EXPAND        );
         }
         if(!isContextNodeMultiplyable()) {
-          removeMenuItem(&menu, ID_CONTEXTMENU_MULTIPLY      );
+          removeMenuItem(menu, ID_CONTEXTMENU_MULTIPLY      );
         }
       }
       break;
