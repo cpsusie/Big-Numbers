@@ -15,7 +15,11 @@ private:
     return (UINT)__popcnt(i);
   }
   static inline UINT getSize(UINT64 i) {
+#ifdef IS64BIT
     return (UINT)__popcnt64(i);
+#else
+    return getSize((ULONG)i) + getSize((ULONG)(i>>32));
+#endif
   }
   void throwIndexOutOfRange(const TCHAR *method, UINT i) const {
     throwInvalidArgumentException(method, _T("Value i=%u out of range, capacity=%u"), i, getCapacity());

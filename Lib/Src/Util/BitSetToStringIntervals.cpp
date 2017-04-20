@@ -2,20 +2,16 @@
 #include <String.h>
 #include <BitSet.h>
 
-#if _BITSET_ATOMSIZE == 32
-#define FORMATUINT(v) format(_T("%u"), v)
-#elif _BITSET_ATOMSIZE == 64
-#define FORMATUINT(v) format(_T("%I64u"), v)
-#endif // _BITSET_ATOMSIZE == 64
+#define FORMATSIZET(v) format(_T("%zu"), v)
 
-#define FLUSHRANGE()                                                                \
-{ if(delim) result += delim; else delim = _T(",");                                  \
-  if(first == last) {                                                               \
-    result += FORMATUINT(first);                                                    \
-  } else {                                                                          \
-    const TCHAR *formatStr = (first + 1 == last) ? _T("%s%s") : _T("%s-%s");        \
-    result += format(formatStr, FORMATUINT(first).cstr(), FORMATUINT(last).cstr()); \
-  }                                                                                 \
+#define FLUSHRANGE()                                                                  \
+{ if(delim) result += delim; else delim = _T(",");                                    \
+  if(first == last) {                                                                 \
+    result += FORMATSIZET(first);                                                     \
+  } else {                                                                            \
+    const TCHAR *formatStr = (first + 1 == last) ? _T("%s%s") : _T("%s-%s");          \
+    result += format(formatStr, FORMATSIZET(first).cstr(), FORMATSIZET(last).cstr()); \
+  }                                                                                   \
 }
 
 String BitSet::toStringIntervals() const {

@@ -104,27 +104,99 @@ namespace TestBitSet {
     return genRandomMatrix(result, dim, size);
   }
 
-  class BitSetTimeTester : public MeasurableFunction {
+  class BitSetIteratorTimeTester : public MeasurableFunction {
   private:
     BitSet m_a;
   public:
-    BitSetTimeTester();
-    void f();
+    BitSetIteratorTimeTester();
+    void f() {
+      for (Iterator<size_t> it = m_a.getIterator(); it.hasNext(); it.next());
+    }
   };
 
-  BitSetTimeTester::BitSetTimeTester() : m_a(2000) {
+  BitSetIteratorTimeTester::BitSetIteratorTimeTester() : m_a(2000) {
     m_a = genRandomSet(10000, 5000);
   }
 
-  void BitSetTimeTester::f() {
-    for (Iterator<size_t> it = m_a.getIterator(); it.hasNext(); it.next());
-  }
+#ifdef __MEASURETIMES__
+  class BitSetSizeTimeTester : public MeasurableFunction {
+  private:
+    const BitSet &m_a;
+    size_t        m_size;
+  public:
+    BitSetSizeTimeTester(const BitSet &a) : m_a(a) {
+    }
+    ~BitSetSizeTimeTester() {
+      OUTPUT(_T("Bitset.size():%zd"), m_size);
+    }
+    void f() {
+      m_size = m_a.size();
+    }
+  };
 
-	TEST_CLASS(TestBitSet)
-	{
+  class BitSetOldSizeTimeTester : public MeasurableFunction {
+  private:
+    const BitSet &m_a;
+    size_t        m_size;
+  public:
+    BitSetOldSizeTimeTester(const BitSet &a) : m_a(a) {}
+    ~BitSetOldSizeTimeTester() {
+      OUTPUT(_T("Bitset.oldSize():%zd"), m_size);
+    }
+    void f() {
+      m_size = m_a.oldSize();
+    }
+  };
+
+  class BitSetGetIndexTimeTester : public MeasurableFunction {
+  private:
+    const BitSet     &m_a;
+    CompactSizetArray m_values;
+    size_t m_result[100];
+  public:
+    BitSetGetIndexTimeTester(const BitSet &a) : m_a(a) {
+      for (Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+         m_values.add(it.next());
+         if(m_values.size() >= ARRAYSIZE(m_result)) break;
+      }
+    }
+    void f() {
+      for(size_t i = 0; i < ARRAYSIZE(m_result); i++) {
+        m_result[i] = m_a.getIndex(m_values[i]);
+      }
+    }
+    const size_t *getResult() const {
+      return m_result;
+    }
+  };
+
+  class BitSetOldGetIndexTimeTester : public MeasurableFunction {
+  private:
+    const BitSet     &m_a;
+    CompactSizetArray m_values;
+    size_t m_result[100];
+  public:
+    BitSetOldGetIndexTimeTester(const BitSet &a) : m_a(a) {
+      for (Iterator<size_t> it = ((BitSet&)m_a).getReverseIterator(); it.hasNext();) {
+         m_values.add(it.next());
+         if(m_values.size() >= ARRAYSIZE(m_result)) break;
+      }
+    }
+    void f() {
+      for(size_t i = 0; i < ARRAYSIZE(m_result); i++) {
+        m_result[i] = m_a.oldGetIndex(m_values[i]);
+      }
+    }
+    const size_t *getResult() const {
+      return m_result;
+    }
+  };
+#endif
+
+	TEST_CLASS(TestBitSet) {
     public:
 
-    TEST_METHOD(BitSetPrimiteveOperations) {
+    TEST_METHOD(BitSetTestPrimitiveOperations) {
       BitSet a(33);
       verify(a.size() == 0);
       verify(a.isEmpty());
@@ -246,7 +318,7 @@ namespace TestBitSet {
 
     TEST_METHOD(BitSetMeasureIteratorTime) {
       randomize();
-      BitSetTimeTester bstt;
+      BitSetIteratorTimeTester bstt;
 
       double msec = measureTime(bstt);
 
@@ -256,12 +328,40 @@ namespace TestBitSet {
     TEST_METHOD(BitSetTestSize) {
       for (int test = 0; test < 40; test++) {
         const BitSet s(genRandomSet(test + 300));
-        const size_t oldSize = s.oldsize();
+        const size_t oldSize = s.oldSize();
         const size_t size    = s.size();
         verify(oldSize == size);
       }
     }
 
+#ifdef __MEASURETIMES__
+    TEST_METHOD(BitSetMeasureSize) {
+      randomize();
+      for(int i = 0; i < 10; i++) {
+        const size_t capacity = 10000000*(i+1);
+        const BitSet m_a = genRandomSet(capacity, 3*capacity/4);
+        BitSetSizeTimeTester bstt1(m_a);
+        double msec = measureTime(bstt1);
+        OUTPUT(_T("BitSetSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
+        BitSetOldSizeTimeTester bstt2(m_a);
+        msec = measureTime(bstt2);
+        OUTPUT(_T("BitSet.oldSize time(cap=%zd):%.3le msec"), capacity, msec * 1000);
+      }
+    }
+    TEST_METHOD(BitSetMeasureGetIndex) {
+      randomize();
+      for(int i = 0; i < 10; i++) {
+        const size_t capacity = 10000000*(i+1);
+        const BitSet m_a = genRandomSet(capacity, 3*capacity/4);
+        BitSetGetIndexTimeTester bstt1(m_a);
+        double msec = measureTime(bstt1);
+        OUTPUT(_T("BitSet.getIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
+        BitSetOldGetIndexTimeTester bstt2(m_a);
+        msec = measureTime(bstt2);
+        OUTPUT(_T("BitSet.oldGetIndex() time(cap=%zd %.3le msec"), capacity, msec * 1000);
+      }
+    }
+#endif
     static intptr_t getIntIndex(const BitSet &s, size_t e) {
       if (!s.contains(e)) {
         return -1;
@@ -283,7 +383,7 @@ namespace TestBitSet {
           const size_t e = it.next();
           const intptr_t index1 = getIntIndex(s, e);
           const intptr_t index2 = s.getIndex(e);
-          //      OUTPUT(_T("e:%3d. index1:%3d, index2:%3d"), e, index1, index2);
+//            OUTPUT(_T("e:%3d. index1:%3d, index2:%3d"), e, index1, index2);
           verify(index1 == index2);
         }
       }
@@ -380,22 +480,6 @@ namespace TestBitSet {
     }
 
     TEST_METHOD(TestBitSetIndex) {
-      /*
-      {
-      for(double capacity = 10; capacity < 650000000; capacity *= 1.4) {
-      BitSet s(10);
-      genRandomSet(s, (int)capacity, -1);
-      BitSetIndex bi(s);
-      }
-      return;
-      }
-      */
-      /*
-      for(;;) {
-      const unsigned int capacity = inputInt(_T("Enter capacity:"));
-      testAllBitSetIndices(capacity);
-      }
-      */
       randomize();
       testAllBitSetIndices(6600000);
     }

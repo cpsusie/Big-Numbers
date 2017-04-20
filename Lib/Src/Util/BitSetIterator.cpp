@@ -3,11 +3,6 @@
 #include <BitSet.h>
 #include <Random.h>
 
-#define BITSINATOM      (sizeof(BitSet::Atom)*8)
-#define ATOMINDEX(i)    ((i)/BITSINATOM)
-#define MASKATOM(i)     BitSet::mask[i]
-#define ATOMBIT(i)      ((BitSet::Atom)1<<((i)%BITSINATOM))
-
 Iterator<size_t> BitSet::getIterator(size_t start, size_t end) {
   return Iterator<size_t>(new BitSetIterator(*this, start, end));
 }
@@ -44,8 +39,8 @@ void BitSetIterator::first(size_t start, size_t end) {
 
 #ifndef BITSET_ASM_OPTIMIZED
   const BitSet::Atom *firstAtom = m_s.m_p;
-  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
+  const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   const BitSet::Atom *q         = p;
 
 SearchFirst1Bit:
@@ -58,18 +53,18 @@ SearchFirst1Bit:
   if(q > p) {
     const BitSet::Atom a = *q;
     for(size_t j = 0;; j++) {
-      if(a & ATOMBIT(j)) {
-        m_hasNext = (m_next = (q-firstAtom) * BITSINATOM + j) <= m_end;
+      if(a & _BS_ATOMBIT(j)) {
+        m_hasNext = (m_next = (q-firstAtom) * _BS_BITSINATOM + j) <= m_end;
         return;
       }
     }
   } else {
-    size_t j = start % BITSINATOM;
-    const BitSet::Atom a = *q & ~MASKATOM(j);
+    size_t j = start % _BS_BITSINATOM;
+    const BitSet::Atom a = *q & ~_BS_MASKATOM(j);
     if(a) {
       for(;;j++) {
-        if(a & ATOMBIT(j)) {
-          m_hasNext = (m_next = (q-firstAtom) * BITSINATOM + j) <= m_end;
+        if(a & _BS_ATOMBIT(j)) {
+          m_hasNext = (m_next = (q-firstAtom) * _BS_BITSINATOM + j) <= m_end;
           return;
         }
       }
@@ -82,8 +77,8 @@ SearchFirst1Bit:
 
 #ifdef IS32BIT
   const BitSet::Atom *firstAtom = m_s.m_p;
-  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
+  const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   end                           = m_end;
   unsigned long i;
   int hasNext;
@@ -106,7 +101,7 @@ SearchNonZeroAtom:
     mov edx, dword ptr[edi]
     cmp edi, p
     ja  ScanBitsForward
-    mov ecx, start        ; mask edx &= ~MASKATOM(start % BITSINATOM)
+    mov ecx, start        ; mask edx &= ~_BS_MASKATOM(start % _BS_BITSINATOM)
     and ecx, 31
     mov eax, 1
     shl eax, cl
@@ -150,13 +145,13 @@ void *BitSetIterator::next() { // throw Exception if no more
   }
 
 #ifndef BITSET_ASM_OPTIMIZED
-  size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM;
+  size_t i = _BS_ATOMINDEX(m_next), j = m_next % _BS_BITSINATOM;
   if(j) {
-    const BitSet::Atom a = m_s.m_p[i] & ~MASKATOM(j);
+    const BitSet::Atom a = m_s.m_p[i] & ~_BS_MASKATOM(j);
     if(a) {
       for(;;j++) {
-        if(a & ATOMBIT(j)) {
-          m_hasNext = (m_next = i * BITSINATOM + j) <= m_end;
+        if(a & _BS_ATOMBIT(j)) {
+          m_hasNext = (m_next = i * _BS_BITSINATOM + j) <= m_end;
           return &m_current;
         }
       }
@@ -164,7 +159,7 @@ void *BitSetIterator::next() { // throw Exception if no more
     i++;
   }
   const BitSet::Atom *p       = m_s.m_p + i;
-  const BitSet::Atom *endAtom = m_s.m_p + ATOMINDEX(m_end);
+  const BitSet::Atom *endAtom = m_s.m_p + _BS_ATOMINDEX(m_end);
 
   while((*p==0) && (p++ < endAtom));
   if(p > endAtom) {
@@ -173,8 +168,8 @@ void *BitSetIterator::next() { // throw Exception if no more
   }
   const BitSet::Atom a = *p; // a != 0
   for(j = 0;; j++) {
-    if(a & ATOMBIT(j)) {
-      m_hasNext = (m_next = (p - m_s.m_p) * BITSINATOM + j) <= m_end;
+    if(a & _BS_ATOMBIT(j)) {
+      m_hasNext = (m_next = (p - m_s.m_p) * _BS_BITSINATOM + j) <= m_end;
       return &m_current;
     }
   }
@@ -182,10 +177,10 @@ void *BitSetIterator::next() { // throw Exception if no more
 #else // BITSET_ASM_OPTIMIZED
 
 #ifdef IS32BIT
-  size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM;
+  size_t i = _BS_ATOMINDEX(m_next), j = m_next % _BS_BITSINATOM;
   const BitSet::Atom *firstAtom = m_s.m_p;
   const size_t        end       = m_end;
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(end);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(end);
   int                 hasNext;
 
   __asm {
@@ -287,8 +282,8 @@ void BitSetReverseIterator::first(size_t start, size_t end) { // actually last
 #ifndef BITSET_ASM_OPTIMIZED
 
   const BitSet::Atom *firstAtom = m_s.m_p;
-  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
+  const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   const BitSet::Atom *q         = p;
 
 SearchRFirst1Bit:
@@ -301,19 +296,19 @@ SearchRFirst1Bit:
 
   if(q < p) {
     const BitSet::Atom a = *q; // a != 0
-    for(size_t j = BITSINATOM - 1;; j--) {
-      if(a & ATOMBIT(j)) {
-        m_hasNext = (m_next = (q - firstAtom) * BITSINATOM + j) >= m_end;
+    for(size_t j = _BS_BITSINATOM - 1;; j--) {
+      if(a & _BS_ATOMBIT(j)) {
+        m_hasNext = (m_next = (q - firstAtom) * _BS_BITSINATOM + j) >= m_end;
         return;
       }
     }
   } else {
-    size_t j = start % BITSINATOM;
-    const BitSet::Atom a = *q & MASKATOM(j+1);
+    size_t j = start % _BS_BITSINATOM;
+    const BitSet::Atom a = *q & _BS_MASKATOM(j+1);
     if(a) {
       for(;;j--) {
-        if(a & ATOMBIT(j)) {
-          m_hasNext = (m_next = (q - firstAtom) * BITSINATOM + j) >= m_end;
+        if(a & _BS_ATOMBIT(j)) {
+          m_hasNext = (m_next = (q - firstAtom) * _BS_BITSINATOM + j) >= m_end;
           return;
         }
       }
@@ -326,8 +321,8 @@ SearchRFirst1Bit:
 
 #ifdef IS32BIT
   const BitSet::Atom *firstAtom = m_s.m_p;
-  const BitSet::Atom *p         = firstAtom + ATOMINDEX(start);
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(m_end);
+  const BitSet::Atom *p         = firstAtom + _BS_ATOMINDEX(start);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(m_end);
   end                           = m_end;
   unsigned long i;
   int hasNext;
@@ -351,7 +346,7 @@ SearchRNonZeroAtom:
     cmp edi, p
     jb ScanBitsBackward
                     
-    mov ecx, start          ; mask edx &= MASKATOM(start % BITSINATOM + 1)
+    mov ecx, start          ; mask edx &= _BS_MASKATOM(start % _BS_BITSINATOM + 1)
     and ecx, 31
     cmp ecx, 31
     je  ScanBitsBackward    ; if start%32+1==32 no masking, all bits should be searched
@@ -397,13 +392,13 @@ void *BitSetReverseIterator::next() { // Actually previous. throw Exception if n
   }
 
 #ifndef BITSET_ASM_OPTIMIZED
-  size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM + 1;
-  if(j < BITSINATOM) {
-    const BitSet::Atom a = m_s.m_p[i] & MASKATOM(j);
+  size_t i = _BS_ATOMINDEX(m_next), j = m_next % _BS_BITSINATOM + 1;
+  if(j < _BS_BITSINATOM) {
+    const BitSet::Atom a = m_s.m_p[i] & _BS_MASKATOM(j);
     if(a) {
       for(;;j--) {
-        if(a & ATOMBIT(j)) {
-          m_hasNext = (m_next = i * BITSINATOM + j) >= m_end;
+        if(a & _BS_ATOMBIT(j)) {
+          m_hasNext = (m_next = i * _BS_BITSINATOM + j) >= m_end;
           return &m_current;
         }
       }
@@ -412,7 +407,7 @@ void *BitSetReverseIterator::next() { // Actually previous. throw Exception if n
   }
 
   const BitSet::Atom *p         = m_s.m_p + i;
-  const BitSet::Atom *endAtom   = m_s.m_p + ATOMINDEX(m_end);
+  const BitSet::Atom *endAtom   = m_s.m_p + _BS_ATOMINDEX(m_end);
 
   while((*p == 0) && (p-- > endAtom));
   if(p < endAtom) {
@@ -420,9 +415,9 @@ void *BitSetReverseIterator::next() { // Actually previous. throw Exception if n
     return &m_current;
   }
   const BitSet::Atom a = *p; // a != 0
-  for(j = BITSINATOM - 1;; j--) {
-    if(a & ATOMBIT(j)) {
-      m_hasNext = (m_next = (p - m_s.m_p) * BITSINATOM + j) >= m_end;
+  for(j = _BS_BITSINATOM - 1;; j--) {
+    if(a & _BS_ATOMBIT(j)) {
+      m_hasNext = (m_next = (p - m_s.m_p) * _BS_BITSINATOM + j) >= m_end;
       return &m_current;
     }
   }
@@ -430,10 +425,10 @@ void *BitSetReverseIterator::next() { // Actually previous. throw Exception if n
 #else // BITSET_ASM_OPTIMIZED
 
 #ifdef IS32BIT
-  size_t i = ATOMINDEX(m_next), j = m_next % BITSINATOM + 1;
+  size_t i = _BS_ATOMINDEX(m_next), j = m_next % _BS_BITSINATOM + 1;
   const BitSet::Atom *firstAtom = m_s.m_p;
   const size_t        end       = m_end;
-  const BitSet::Atom *endAtom   = firstAtom + ATOMINDEX(end);
+  const BitSet::Atom *endAtom   = firstAtom + _BS_ATOMINDEX(end);
   int                 hasNext;
 
   __asm {

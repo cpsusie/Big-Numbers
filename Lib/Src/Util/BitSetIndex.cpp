@@ -38,9 +38,9 @@ intptr_t BitSetIndex::getIndex(size_t i) const {
 }
 
 String BitSetIndex::getInfoString() const {
-  return format(_T("\nBitStIndex:info\nBitSet.capacity:%s (in bytes:%s)\nRangeTable.size:%s (in bytes:%s)\n")
+  return format(_T("\nBitSetIndex:info\nBitSet.capacity:%s (in bytes:%s)\nRangeTable.size:%s (in bytes:%s)\n")
                ,format1000(m_bitSet.getCapacity()).cstr()
-               ,format1000(m_bitSet.getCapacity() /_BITSET_ATOMSIZE).cstr()
+               ,format1000(m_bitSet.getCapacity() / 8).cstr()
                ,format1000(m_rangeTable.size()).cstr()
                ,format1000(m_rangeTable.size()*sizeof(INT64)).cstr()
                );
