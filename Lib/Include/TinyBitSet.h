@@ -5,29 +5,46 @@
 
 template<class T> class TinyBitSet {
 private:
+  static inline UINT getSize(BYTE b) {
+    return __popcnt(b);
+  }
+  static inline UINT getSize(USHORT s) {
+    return (UINT)__popcnt16(s);
+  }
+  static inline UINT getSize(ULONG i) {
+    return (UINT)__popcnt(i);
+  }
+  static inline UINT getSize(UINT64 i) {
+    return (UINT)__popcnt64(i);
+  }
+  void throwIndexOutOfRange(const TCHAR *method, UINT i) const {
+    throwInvalidArgumentException(method, _T("Value i=%u out of range, capacity=%u"), i, getCapacity());
+  }
+  void throwInvalidAB(const TCHAR *method, UINT a, UINT b) const {
+    throwInvalidArgumentException(method, _T("(a=%u,b=%u), capacity=%u"), a,b, getCapacity());
+  }
+
   T m_bits; // T must be unsigned char,short,long or __int64 for this to compile
+protected:
   inline explicit TinyBitSet(T bits) : m_bits(bits) {
   };
-  inline T mask(UINT i) const {
-    return (i==getCapacity()) ? -1 : (((T)1<<i) - 1);
-  }
 public:
-  TinyBitSet() : m_bits(0) {
+  inline TinyBitSet() : m_bits(0) {
   }
-/*
-  TinyBitSet(int a,...) : m_bits(0) {
-    va_list argptr;
-    va_start(argptr,a);
-    for(;a >= 0; a = va_arg(argptr, int)) {
-      add(a);
-    }
-    va_end(argptr);
+  inline T getBits() const {
+    return m_bits;
   }
-*/
+  inline UINT getCapacity() const {
+    return sizeof(T) * 8;
+  }
+  inline T mask(UINT i) const {
+    return (i>=getCapacity()) ? -1 : (((T)1<<i) - 1);
+  }
   inline bool contains(UINT i) const {
-    return (m_bits & ((T)1<<i)) != 0;
+    return (i>=getCapacity()) ? false : ((m_bits & ((T)1<<i)) != 0);
   }
   inline void add(UINT i) {
+    if(i >= getCapacity()) throwIndexOutOfRange(__TFUNCTION__, i);
     m_bits |= ((T)1<<i);
   }
   inline TinyBitSet &operator+=(UINT i) {
@@ -35,16 +52,21 @@ public:
     return *this;
   }
   inline void remove(UINT i) {
+    if(i >= getCapacity()) throwIndexOutOfRange(__TFUNCTION__, i);
     m_bits &= ~((T)1<<i);
   }
-  inline TinyBitSet &operator-=(UINT pos) {
-    remove(pos);
+  inline TinyBitSet &operator-=(UINT i) {
+    remove(i);
     return *this;
   }
   inline void add(UINT a, UINT b) {
+    if(b >= getCapacity()) throwInvalidAB(__TFUNCTION__, a,b);
+    if(a > b) return;
     m_bits |= ~mask(a) & mask(b + 1);
   }
   inline void remove(UINT a, UINT b) {
+    if(b >= getCapacity()) throwInvalidAB(__TFUNCTION__, a,b);
+    if(a > b) return;
     m_bits &= mask(a) | ~mask(b + 1);
   }
   inline void clear() {
@@ -56,12 +78,8 @@ public:
   inline void invert() {
     m_bits = ~m_bits;
   }
-  int size() const {
-    int result = 0;
-    for(T b = m_bits; b; b &= (b-1)) {
-      result++;
-    }
-    return result;
+  inline UINT size() const {
+    return getSize(m_bits);
   }
   UINT select() const {                     // Returns a random element from non empty set. throws Exception if set is empty
     if(isEmpty()) {
@@ -75,10 +93,6 @@ public:
       }
     }
     return members.select();
-  }
-
-  inline UINT getCapacity() const {
-    return sizeof(T) * 8;
   }
   inline bool isEmpty() const {
     return m_bits == 0;
@@ -148,24 +162,33 @@ public:
 
   class TinyBitSetIterator : public AbstractIterator {
   private:
-    TinyBitSet<T> &m_set;
-    UINT           m_next;
-    UINT           m_current;
-    bool           m_hasNext;
-    void first() {
-      if(m_set.isEmpty()) {
-        m_hasNext = false;
-      } else {
-        m_hasNext = true;
-        for(m_next = 0;;m_next++) {
-          if(m_set.contains(m_next)) {
-            break;
+    TinyBitSet &m_set;
+    UINT        m_next, m_current, m_end;
+    bool        m_hasNext;
+
+    inline void setCurrentUndefined() {
+      m_current = -1;
+    }
+    void first(UINT start, UINT end) {
+      m_end     = min(m_set.getCapacity()-1, end);
+      m_hasNext = false;
+      setCurrentUndefined();
+      if(start > m_end) return;
+      if((m_set.getBits() & ~m_set.mask(start))) {
+        for(;;start++) {
+          if(m_set.contains(start)) {
+            m_hasNext = (m_next = start) <= m_end;
+            return;
           }
         }
       }
     }
   public:
-    TinyBitSetIterator(TinyBitSet<T> &set) : m_set(set) { first(); }
+    inline TinyBitSetIterator(TinyBitSet &set, UINT start, UINT end)
+      : m_set(set)
+    {
+      first(start, end);
+    }
     AbstractIterator *clone() {
       return new TinyBitSetIterator(*this);
     }
@@ -176,14 +199,23 @@ public:
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetIterator"));
       }
-      for(m_current = m_next; ++m_next < m_set.getCapacity();) {
-        if(m_set.contains(m_next)) {
-          break;
+      if((m_current = m_next++) >= m_end) {
+        m_hasNext = false;
+        return &m_current;
+      }
+      if(!(m_set.getBits() & ~m_set.mask(m_next))) {
+        m_hasNext = false;
+      } else {
+        for(;;m_next++) {
+          if(m_set.contains(m_next)) {
+            m_hasNext = (m_next <= m_end);
+            break;
+          }
         }
       }
-      m_hasNext = (m_next < m_set.getCapacity());
       return &m_current;
     }
+
     void remove() {;
       m_set.remove(m_current);
     }
@@ -191,24 +223,36 @@ public:
 
   class TinyBitSetReverseIterator : public AbstractIterator {
   private:
-    TinyBitSet<T> &m_set;
-    int            m_next;
-    int            m_current;
-    bool           m_hasNext;
-    void first() {
-      if(m_set.isEmpty()) {
-        m_hasNext = false;
-      } else {
-        m_hasNext = true;
-        for(m_next = m_set.getCapacity()-1;; m_next--) {
-          if(m_set.contains(m_next)) {
-            break;
+    TinyBitSet &m_set;
+    UINT        m_next, m_current, m_end;
+    bool        m_hasNext;
+
+    inline void setCurrentUndefined() {
+      m_current = -1;
+    }
+    void first(UINT start, UINT end) {
+      start = min(start, m_set.getCapacity()-1);
+      m_hasNext = false;
+      m_end = end;
+      setCurrentUndefined();
+      if(start < m_end) {
+        return;
+      }
+      if(m_set.getBits() & m_set.mask(start+1)) {
+        for(;;start--) {
+          if(m_set.contains(start)) {
+            m_hasNext = (m_next = start) >= m_end;
+            return;
           }
         }
       }
     }
   public:
-    TinyBitSetReverseIterator(TinyBitSet<T> &set) : m_set(set) { first(); }
+    inline TinyBitSetReverseIterator(TinyBitSet &set, UINT start, UINT end)
+      : m_set(set)
+    {
+      first(start, end);
+    }
     AbstractIterator *clone() {
       return new TinyBitSetReverseIterator(*this);
     }
@@ -219,24 +263,38 @@ public:
       if(!m_hasNext) {
         noNextElementError(_T("TinyBitSetReverseIterator"));
       }
-      for(m_current = m_next; --m_next >= 0;) {
-        if(m_set.contains(m_next)) {
-          break;
+      if((m_current = m_next) <= m_end) {
+        m_hasNext = false;
+        return &m_current;
+      }
+      if((m_set.getBits() & m_set.mask(m_next--)) == 0) {
+        m_hasNext = false;
+      } else {
+        for(;;m_next--) {
+          if(m_set.contains(m_next)) {
+            m_hasNext = (m_next >= m_end);
+            break;
+          }
         }
       }
-      m_hasNext = (m_next >= 0);
       return &m_current;
     }
+
     void remove() {
       m_set.remove(m_current);
     }
   };
 
-  Iterator<UINT> getIterator() {        // iterator that iterates elements of bitset in ascending  order
-    return Iterator<UINT>(new TinyBitSetIterator(*this));
+  // Iterates elements of bitset in ascending order,
+  // beginning from smallest element >= start
+  Iterator<UINT> getIterator(UINT start = 0, UINT end = -1) {
+    return Iterator<UINT>(new TinyBitSetIterator(*this, start, end));
   }
-  Iterator<UINT> getReverseIterator() { // iterator that iterates elements of bitset in descending order
-    return Iterator<UINT>(new TinyBitSetReverseIterator(*this));
+
+  // Iterates elements of bitset in descending order,
+  // beginning from biggest element <= start
+  Iterator<UINT> getReverseIterator(UINT start = -1, UINT end = 0) {
+    return Iterator<UINT>(new TinyBitSetReverseIterator(*this, start, end));
   }
 
   String toString() const {
@@ -258,13 +316,41 @@ public:
 };
 
 class BitSet8 : public TinyBitSet<BYTE> {
+public:
+  inline BitSet8() {}
+  inline BitSet8(const TinyBitSet<BYTE> &src) : TinyBitSet<BYTE>(src) {
+  }
 };
 
 class BitSet16 : public TinyBitSet<USHORT> {
+public:
+  inline BitSet16() {}
+  inline BitSet16(const TinyBitSet<USHORT> &src) : TinyBitSet<USHORT>(src) {
+  }
+  inline BitSet16(const TinyBitSet<BYTE>   &src) : TinyBitSet<USHORT>(src.getBits()) {
+  }
 };
 
 class BitSet32 : public TinyBitSet<ULONG> {
+public:
+  inline BitSet32() {}
+  inline BitSet32(const TinyBitSet<ULONG>  &src) : TinyBitSet<ULONG>(src) {
+  }
+  inline BitSet32(const TinyBitSet<USHORT> &src) : TinyBitSet<ULONG>(src.getBits()) {
+  }
+  inline BitSet32(const TinyBitSet<BYTE>   &src) : TinyBitSet<ULONG>(src.getBits()) {
+  }
 };
 
 class BitSet64 : public TinyBitSet<UINT64> {
+public:
+  inline BitSet64() {}
+  inline BitSet64(const TinyBitSet<UINT64> &src) : TinyBitSet<UINT64>(src) {
+  }
+  inline BitSet64(const TinyBitSet<ULONG>  &src) : TinyBitSet<UINT64>(src.getBits()) {
+  }
+  inline BitSet64(const TinyBitSet<USHORT> &src) : TinyBitSet<UINT64>(src.getBits()) {
+  }
+  inline BitSet64(const TinyBitSet<BYTE>   &src) : TinyBitSet<UINT64>(src.getBits()) {
+  }
 };
