@@ -202,7 +202,7 @@ PictureFormatType CPicture::getFormatTypeFromFileName(const String &fileName) { 
 CPicture &CPicture::load(const String &fileName) {
   FileContent content;
   bool fileContentRead = false;
-  TinyBitSet<unsigned short> readMethodsTried;
+  BitSet16 readMethodsTried;
   int index = getExtensionTypeIndexFromFileName(fileName);
   String firstErrorMessage;
   for(int count = 0; count < ARRAYSIZE(extensionTable); count++, index = (index+1) % ARRAYSIZE(extensionTable)) {

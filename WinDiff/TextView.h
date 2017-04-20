@@ -32,7 +32,7 @@ typedef enum {
  ,HIGHLIGhT_COMPAREEQUAL
 } TextViewFlags;
 
-class ViewFlags : public TinyBitSet<unsigned char> {
+class ViewFlags : public BitSet8 {
 public:
 #ifdef _DEBUG
   String toString() const;

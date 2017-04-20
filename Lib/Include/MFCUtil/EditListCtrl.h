@@ -78,7 +78,7 @@ public:
   int findColumnIndex(UINT column) const;
 };
 
-class EditListCtrlFlags : public TinyBitSet<UCHAR> {
+class EditListCtrlFlags : public BitSet8 {
 public:
   String toString() const;
 };
