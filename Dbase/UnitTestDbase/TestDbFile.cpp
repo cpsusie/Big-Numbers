@@ -4,10 +4,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestDbFile {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestDbFile) {
     public:
-
-#include "UnitTestTraits.h"
 
     TEST_METHOD(testDbFile) {
       Array<DbFile> fileTable;

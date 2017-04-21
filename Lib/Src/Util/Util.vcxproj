@@ -376,6 +376,7 @@
     <ClInclude Include="..\..\Include\TreeMap.h" />
     <ClInclude Include="..\..\Include\TreeSet.h" />
     <ClInclude Include="..\..\Include\Unicode.h" />
+    <ClInclude Include="..\..\Include\UnitTestTraits.h" />
     <ClInclude Include="..\..\Include\VectorTemplate.h" />
     <ClInclude Include="..\..\Include\WildCardRegex.h" />
     <ClInclude Include="..\..\Include\XmlDoc.h" />

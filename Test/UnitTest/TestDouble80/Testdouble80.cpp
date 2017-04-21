@@ -12,22 +12,11 @@ using namespace std;
 
 #define endl _T("\n")
 
-#ifdef verify
-#undef verify
-#endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-
 static const double EPS = 3e-14;
 
 namespace TestDouble80 {		
 
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+#include <UnitTestTraits.h>
 
   class LOG : public StrStream {
   public:

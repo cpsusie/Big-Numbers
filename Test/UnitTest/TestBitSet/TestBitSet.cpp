@@ -7,27 +7,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-void myVerify(bool b, const TCHAR *s) {
-  if (!b) {
-    Assert::IsTrue(b, s);
-  }
-}
-
-#ifdef verify
-#undef verify
-#endif
-//#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-#define verify(expr) myVerify(expr, _T(#expr))
-
-
 namespace TestBitSet {
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+
+#include <UnitTestTraits.h>
 
   BitSet &genRandomSet(BitSet &dst, size_t capacity, intptr_t size) {
     dst.clear();

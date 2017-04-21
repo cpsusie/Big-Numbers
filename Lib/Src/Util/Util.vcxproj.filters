@@ -987,6 +987,9 @@
     <ClInclude Include="..\..\Include\XMLUtil.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\UnitTestTraits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />

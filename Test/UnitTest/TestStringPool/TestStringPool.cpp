@@ -6,20 +6,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#ifdef verify
-#undef verify
-#endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-
 namespace TestStringPool {		
 
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+#include <UnitTestTraits.h>
 
   static String generateTestString(size_t i) {
     return format(_T("Dette er en teststring med nr %8s"), format1000(i).cstr());

@@ -6,7 +6,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestUserRecord {
 
-#include "UnitTestTraits.h"
+#include <UnitTestTraits.h>
 
 #define DBNAME    _T("TEST")
 #define TABLENAME _T("testTable")

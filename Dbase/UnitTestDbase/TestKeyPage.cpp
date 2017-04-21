@@ -5,10 +5,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestKeyPage {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestKeyPage) {
     public:
-
-#include "UnitTestTraits.h"
 
     static bool itemsEqual(const KeyFileDefinition &keydef, const KeyPageItem &i1, const KeyPageItem &i2) {
       return keydef.keyCmp(i1.m_key,i2.m_key) == 0 && i1.m_child == i2.m_child;

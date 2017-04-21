@@ -6,21 +6,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#ifdef verify
-#undef verify
-#endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
+namespace TestCompressFilter {
 
-namespace TestCompressFilter
-{		
-
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+#include <UnitTestTraits.h>
 
   static ByteArray randomByteArray(unsigned int size) {
     BYTE *buf = new BYTE[size];

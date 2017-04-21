@@ -4,10 +4,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestKeyDefinition {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestKeyDefinition) {
     public:
-
-#include "UnitTestTraits.h"
 
     TEST_METHOD(testKeyDefAddKeyField) {
       KeyFileDefinition keydef;

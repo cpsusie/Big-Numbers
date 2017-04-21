@@ -5,7 +5,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestDataFile {
 
-#include "UnitTestTraits.h"
+#include <UnitTestTraits.h>
 
 #define TESTFILENAME _T("testDataFile.dat")
 

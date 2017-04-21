@@ -5,10 +5,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestDatabase {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestDatabase) {
     public:
-
-#include "UnitTestTraits.h"
 
     void createDestroy(const String &dbname) {
       OUTPUT(_T("test create/destroy database"));

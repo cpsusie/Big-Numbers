@@ -6,9 +6,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestVarChar {
 
-  TEST_CLASS(TestVarChar) {
+#include <UnitTestTraits.h>
 
-#include "UnitTestTraits.h"
+  TEST_CLASS(TestVarChar) {
 
     public:
       TEST_METHOD(TestVarCharPrimitives) {

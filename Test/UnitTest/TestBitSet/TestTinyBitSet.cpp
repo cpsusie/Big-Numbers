@@ -5,22 +5,9 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-extern void myVerify(bool b, const TCHAR *s);
-
-#ifdef verify
-#undef verify
-#endif
-//#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-#define verify(expr) myVerify(expr, _T(#expr))
-
 namespace TestTinyBitSet {
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+
+#include <UnitTestTraits.h>
 
   template<class BS> BS &genRandomSet(BS &dst, int size) {
     const UINT capacity = dst.getCapacity();

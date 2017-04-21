@@ -5,10 +5,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestTableCursor {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestTableCursor) {
     public:
-
-#include "UnitTestTraits.h"
 
 #define DBNAME _T("TEST")
 #define TABLENAME _T("testTable")

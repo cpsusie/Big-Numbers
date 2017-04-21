@@ -6,10 +6,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestTupleFields {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(TestTupleFields) {
     public:
-
-#include "UnitTestTraits.h"
 
     static void verifyEquals(const TupleField &t1, const TupleField &t2) {
       TupleField cmp = t1 == t2;

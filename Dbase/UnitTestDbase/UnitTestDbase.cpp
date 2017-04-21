@@ -5,10 +5,10 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestBtree12 {
 
+#include <UnitTestTraits.h>
+
   TEST_CLASS(UnitTest1) {
     public:
-
-#include "UnitTestTraits.h"
 
     TEST_METHOD(OutputSizes) {
 

@@ -7,27 +7,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 using namespace std;
 
-static void myVerify(bool b, TCHAR *str) {
-  if (!b) {
-    Assert::IsTrue(b, str);
-  }
-}
-
-#ifdef verify
-#undef verify
-#endif
-//#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-#define verify(expr) myVerify(expr, _T(#expr))
-
 namespace TestInt128 {		
 
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+#include <UnitTestTraits.h>
 
   template<class OUTSTREAM> OUTSTREAM &setFormat(OUTSTREAM &os, ios::_Fmtflags baseFlag, unsigned int width, int showPos, int showBase, int uppercase, ios::_Fmtflags adjustFlag) {
     os.setf(baseFlag  , ios::basefield);

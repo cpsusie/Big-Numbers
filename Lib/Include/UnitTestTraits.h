@@ -1,9 +1,15 @@
 #pragma once
 
+static void myVerify(bool b, TCHAR *str) {
+  if (!b) {
+    Assert::IsTrue(b, str);
+  }
+}
+
 #ifdef verify
 #undef verify
 #endif
-#define verify(expr) Assert::IsTrue((expr), _T(#expr))
+#define verify(expr) myVerify(expr, _T(#expr))
 
 void OUTPUT(const TCHAR *format, ...) {
   va_list argptr;

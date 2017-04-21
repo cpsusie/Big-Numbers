@@ -5,9 +5,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace UnitTestDbAddrFileFormat {
 
-  TEST_CLASS(TestDbAddrFileFormat) {
+#include <UnitTestTraits.h>
 
-#include "UnitTestTraits.h"
+  TEST_CLASS(TestDbAddrFileFormat) {
 
     public:
 

@@ -7,11 +7,6 @@
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-#ifdef verify
-#undef verify
-#endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-
 #define VERIFYOP(op, maxError) {                                                                     \
   const Rational rBinResult = r1 op r2; const double dBinResult = d1 op d2;                          \
   const double   dFromR     = getDouble(rBinResult);                                                 \
@@ -30,14 +25,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace TestRational {		
 
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
-
+#include <UnitTestTraits.h>
 
 	TEST_CLASS(TestRational) {
     public:

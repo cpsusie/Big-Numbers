@@ -15,20 +15,9 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 #define AND &&
 #define OR  ||
 
-#ifdef verify
-#undef verify
-#endif
-#define verify(expr) Assert::IsTrue(expr, _T(#expr))
-
 namespace TestExpression {
 
-  void OUTPUT(const TCHAR *format, ...) {
-    va_list argptr;
-    va_start(argptr, format);
-    const String msg = vformat(format, argptr);
-    va_end(argptr);
-    Logger::WriteMessage(msg.cstr());
-  }
+#include <UnitTestTraits.h>
 
   class LOG : public std::wostringstream {
   public:

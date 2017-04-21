@@ -7,7 +7,7 @@ namespace UnitTestKeyFile {
 
 #define TESTFILENAME _T("testKeyFile.key")
 
-#include "UnitTestTraits.h"
+#include <UnitTestTraits.h>
 
   class KeyFileTester : DbFileTester {
   private:
