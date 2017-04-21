@@ -311,9 +311,9 @@ void Image::copySurfaceToTexture(IDirect3DTexture9 *dst, IDirect3DSurface9 *src)
 
 void Image::alphaBlend(IDirect3DTexture9 *texture, int x, int y, int w, int h) { // static
 
-  struct CUSTOMVERTEX {
+  typedef struct {
     float x,y, z;
-  };
+  } CUSTOMVERTEX;
   CHECKD3DRESULT(m_device->SetFVF(D3DFVF_TEX2 | D3DFVF_TEXCOORDSIZE2(0) | D3DFVF_TEXCOORDSIZE2(0))); // D3DFVF_XYZ | D3DFVF_DIFFUSE ));
   CHECKD3DRESULT(m_device->SetRenderState(D3DRS_BLENDOP  , D3DBLENDOP_ADD      ));
   CHECKD3DRESULT(m_device->SetRenderState(D3DRS_SRCBLEND , D3DBLEND_INVSRCCOLOR)); // D3DBLEND_SRCALPHA   ));
@@ -326,12 +326,13 @@ void Image::alphaBlend(IDirect3DTexture9 *texture, int x, int y, int w, int h) {
 
 //  CHECKD3DRESULT(m_device->SetTextureStageState(0, D3DTSS_ALPHAOP, D3DTOP_BLENDTEXTUREALPHA));
 //  CHECKD3DRESULT(m_device->SetTextureStageState(0, D3DTSS_TEXCOORDINDEX, D3DTSS_TCI_CAMERASPACEPOSITION | 1));
+#define CV(x,y,z) (float)(x),(float)(y),(float)(z)
 
 CUSTOMVERTEX vertices[] = {
-    {x  , y  ,0},
-    {x+w, y  ,0},
-    {x+w, y+h,0},
-    {x,   y+h,0},
+    CV(x  , y  ,0)
+   ,CV(x+w, y  ,0)
+   ,CV(x+w, y+h,0)
+   ,CV(x,   y+h,0)
   };
 
   CHECKD3DRESULT(m_device->DrawPrimitiveUP(D3DPT_LINELIST/*D3DPT_TRIANGLESTRIP*/, 4, vertices, sizeof(vertices[0])));
