@@ -4,6 +4,64 @@
 #include <Math.h>
 #include <Math/MathLib.h>
 
+class Size2D {
+public:
+  double cx, cy;
+  inline Size2D() {
+    cx = cy = 0;
+  }
+
+  inline Size2D(double _cx, double _cy) : cx(_cx), cy(_cy) {
+  }
+  inline Size2D operator-(const Size2D &s) const {
+    return Size2D(cx-s.cx, cy-s.cy);
+  }
+  inline Size2D operator+(const Size2D &s) const {
+    return Size2D(cx+s.cx, cy+s.cy);
+  }
+  inline Size2D operator*(double factor) const {
+    return Size2D(cx*factor, cy*factor);
+  }
+  inline Size2D operator/(double factor) const {
+    return Size2D(cx/factor, cy/factor);
+  }
+  inline Size2D &operator*=(double factor) {
+    cx *= factor;
+    cy *= factor;
+    return *this;
+  }
+  inline Size2D &operator/=(double factor) {
+    cx /= factor;
+    cy /= factor;
+    return *this;
+  }
+
+  inline double length() const {
+    return sqrt(cx*cx + cy*cy);
+  }
+  inline double area() const {
+    return cx*cy;
+  }
+  inline Size2D &normalize() {
+    const double l = length();
+    if(l != 0) {
+      *this /= l;
+    }
+    return *this;
+  }
+
+  inline bool operator==(const Size2D &s) const {
+    return (cx==s.cx) && (cy==s.cy);
+  }
+  inline bool operator!=(const Size2D &s) const {
+    return !(*this == s);
+  }
+  inline String toString(int dec = 3) const {
+    const int n = dec+3;
+    return format(_T("(% *.*f,% *.*f)"), n,dec,cx, n,dec,cy);
+  }
+};
+
 class Point2D {
 public:
   double x, y;
@@ -18,13 +76,17 @@ public:
   inline Point2D operator-() const {
     return Point2D(-x, -y);
   }
-
+  inline Point2D operator+(const Point2D &p) const {
+    return Point2D(x+p.x, y+p.y);
+  }
   inline Point2D operator-(const Point2D &p) const {
     return Point2D(x-p.x, y-p.y);
   }
-
-  inline Point2D operator+(const Point2D &p) const {
-    return Point2D(x+p.x, y+p.y);
+  inline Point2D operator+(const Size2D &s) const {
+    return Point2D(x+s.cx, y+s.cy);
+  }
+  inline Point2D operator-(const Size2D &s) const {
+    return Point2D(x-s.cx, y-s.cy);
   }
 
   inline Point2D operator%(const Point2D &p) const { // x+=p1.x, y-=p1.y
@@ -40,31 +102,36 @@ public:
   inline double operator*(const Point2D &p) const {
     return x*p.x + y*p.y;
   }
-
   inline Point2D &operator+=(const Point2D &p) {
     x += p.x;
     y += p.y;
     return *this;
   }
-
   inline Point2D &operator-=(const Point2D &p) {
     x -= p.x;
     y -= p.y;
     return *this;
   }
-
+  inline Point2D &operator+=(const Size2D &s) {
+    x += s.cx;
+    y += s.cy;
+    return *this;
+  }
+  inline Point2D &operator-=(const Size2D &s) {
+    x -= s.cx;
+    y -= s.cy;
+    return *this;
+  }
   inline Point2D &operator*=(double factor) {
     x *= factor;
     y *= factor;
     return *this;
   }
-
   inline Point2D &operator/=(double factor) {
     x /= factor;
     y /= factor;
     return *this;
   }
-
   Point2D rotate(double rad) const;
   inline double length() const {
     return sqrt(x*x + y*y);
