@@ -159,7 +159,7 @@ Game &Game::setGameAfterPly(const Game &src, int ply) {
 }
 
 Game &Game::setGameAfterPly(const GameKey &startKey, const GameHistory &history, int ply) {
-  *this = startKey;;
+  *this = startKey;
   resetCapturedPieceTypes(WHITEPLAYER);
   resetCapturedPieceTypes(BLACKPLAYER);
   for(int i = 0; i <= ply; i++) {

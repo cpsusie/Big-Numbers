@@ -22,7 +22,6 @@
 #endif
 
 #define CTRL_INITDONE         0x01
-#define CTRL_NEEDREPAINT      0x02
 #define CTRL_FIRSTPAINTDONE   0x04
 #define CTRL_THINKENABLED     0x08
 #define CTRL_VERBOSEATGAMEEND 0x10
@@ -85,7 +84,7 @@ void CChessDlg::commonInit() {
   for(int i = 0; i < ARRAYSIZE(m_timerIsRunning); i++) {
     m_timerIsRunning[i] = false;
   }
-  m_controlFlags      = CTRL_NEEDREPAINT | CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
+  m_controlFlags      = CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
 
   if(s_instanceCount++ == 0) {
     // redirect verbose to traceWindow
@@ -150,8 +149,7 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_COMMAND(ID_EDIT_ROTATERIGHT                , OnEditRotateRight                )
   ON_COMMAND(ID_EDIT_ROTATELEFT                 , OnEditRotateLeft                 )
   ON_COMMAND(ID_EDIT_ROTATE180                  , OnEditRotate180                  )
-  ON_COMMAND(ID_EDIT_WHITETOMOVE                , OnEditSetWhiteToMove             )
-  ON_COMMAND(ID_EDIT_BLACKTOMOVE                , OnEditSetBlackToMove             )
+  ON_COMMAND(ID_EDIT_SWITCHPLAYERINTURN         , OnEditSwitchPlayerInTurn         )
   ON_COMMAND(ID_EDIT_ENDSETUP                   , OnEditEndSetup                   )
   ON_COMMAND(ID_ESCAPE                          , OnEscape                         )
   ON_COMMAND(ID_EDIT_VALIDATE_BOARD             , OnEditValidateBoard              )
@@ -295,8 +293,6 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_COMMAND(ID_TEST_SHOWFEN                    ,	OnTestShowFEN                    )
   ON_MESSAGE(ID_MSG_MOVEFINDERSTATE_CHANGED     , OnMsgMoveFinderStateChanged      )
   ON_MESSAGE(ID_MSG_ENGINE_CHANGED              , OnMsgEngineChanged               )
-  ON_MESSAGE(ID_MSG_PLAYERINTURN_CHANGED        , OnMsgGraphicsPlayerInTurnChanged )
-  ON_MESSAGE(ID_MSG_COMPUTERPLAYER_CHANGED      , OnMsgComputerPlayerChanged       )
   ON_MESSAGE(ID_MSG_TRACEWINDOW_CHANGED         , OnMsgTraceWindowChanged          )
   ON_MESSAGE(ID_MSG_SHOW_SELECTED_MOVE          , OnMsgShowSelectedHistoryMove     )
   ON_MESSAGE(ID_MSG_REMOTESTATE_CHANGED         , OnMsgRemoteStateChanged          )
@@ -324,7 +320,7 @@ void CChessDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
   switch(nState) {
   case WA_INACTIVE    :
     clrControlFlag(CTRL_APPACTIVE);
-    m_graphics->unmarkMouse(BOARDDC);
+    m_graphics->unmarkMouse();
     break;
   case WA_ACTIVE      :
   case WA_CLICKACTIVE :
@@ -353,7 +349,7 @@ BOOL CChessDlg::OnInitDialog() {
   SetIcon(m_hIcon, FALSE);        // Set small icon
 
   theApp.m_device.attach(m_hWnd);
-  m_graphics = new ChessGraphics();
+  m_graphics = new ChessGraphics(this);
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_MAINFRAME));
 
@@ -392,7 +388,7 @@ BOOL CChessDlg::OnInitDialog() {
     removeMenuItem(           this, ID_EDIT_SETUPSTARTPOSITION     );
     removeMenuItem(           this, ID_EDIT_ENDSETUP               );
     removeMenuItem(           this, ID_EDIT_VALIDATE_BOARD         );
-    removeSubMenuContainingId(this, ID_EDIT_WHITETOMOVE            );
+    removeMenuItem(           this, ID_EDIT_SWITCHPLAYERINTURN     );
     removeSubMenuContainingId(this, ID_EDIT_SWAPCOLORS             );
     removeSubMenuContainingId(this, ID_LEVEL_EDIT_TIMESETTINGS     );
     removeMenuItem(           this, ID_HELP_ABOUTCHESS             );
@@ -415,7 +411,6 @@ BOOL CChessDlg::OnInitDialog() {
 
 void CChessDlg::attachPropertyContainers() {
   s_traceThread->addPropertyChangeListener(  this);
-  m_graphics->addPropertyChangeListener(    this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
     mf.addPropertyChangeListener(  this);
@@ -425,7 +420,6 @@ void CChessDlg::attachPropertyContainers() {
 }
 
 void CChessDlg::detachAllPropertyContainers() {
-  m_graphics->removePropertyChangeListener(    this);
   s_traceThread->removePropertyChangeListener(  this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
@@ -468,10 +462,11 @@ void CChessDlg::errorMessage(const Exception &e) const {
 void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   m_layoutManager.OnSizing(fwSide, pRect);
   CDialog::OnSizing(fwSide, pRect);
-
-  m_graphics->setBoardSize(getClientRect(this).Size());
-  getOptions().setBoardSize(m_graphics->flushImage(BOARDDC, true));
+  m_graphics->render();
+//  getOptions().setBoardSize();
 }
+
+// ------------------------- Painting ---------------------------
 
 void CChessDlg::OnPaint() {
   if(IsIconic()) {
@@ -491,35 +486,30 @@ void CChessDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
-
-    if(isControlFlagSet(CTRL_NEEDREPAINT)) {
-      repaint();
-    } else {
-      flushImage();
-    }
+    repaint();
   }
 }
 
 void CChessDlg::invalidate() {
-  setControlFlag(CTRL_NEEDREPAINT);
   if(isInitDone()) {
     Invalidate(FALSE);
   }
 }
 
 void CChessDlg::repaint() {
-  m_graphics->paintBoard();
-
-  updateTitle();
-  flushImage();
-  clrControlFlag(CTRL_NEEDREPAINT);
+  m_graphics->beginPaint();
   if(!isControlFlagSet(CTRL_FIRSTPAINTDONE)) {
     ::SetActiveWindow(m_hWnd);
+    m_graphics->paintAll();
     setControlFlag(CTRL_FIRSTPAINTDONE);
   }
+  m_graphics->endPaint();
+  ajourMenuItemsEnableStatus();
+  updateTitle();
 }
 
-void CChessDlg::paintGamePosition(bool flush) {
+void CChessDlg::paintGamePosition() {
+  m_graphics->beginPaint();
   try {
     switch(getDialogMode()) {
     case PLAYMODE:
@@ -533,25 +523,15 @@ void CChessDlg::paintGamePosition(bool flush) {
       m_graphics->markLastMoveAsComputerMove();
       break;
     }
-    m_graphics->paintGamePosition();
-    if(flush) {
-      flushImage();
-    }
+    m_graphics->paintGamePositions();
+    m_graphics->endPaint();
   } catch(Exception e) {
+    m_graphics->endPaint();
     errorMessage(e);
   }
 }
 
-void CChessDlg::flushImage() {
-  try {
-    if(isInitDone()) {
-      m_graphics->flushImage(BOARDDC, false);
-      ajourMenuItemsEnableStatus();
-    }
-  } catch(Exception e) {
-    errorMessage(e);
-  }
-}
+// ------------------------- Menu handling ---------------------------
 
 void CChessDlg::ajourMenuItemsEnableStatus() {
   const DialogMode mode = getDialogMode();
@@ -635,11 +615,8 @@ void CChessDlg::enableEditBoardMenuItems(bool startEdit, bool editEnabled) {
   enableMenuItem(           this, ID_EDIT_CLEARBOARD        , editEnabled);
   enableMenuItem(           this, ID_EDIT_SETUPSTARTPOSITION, editEnabled);
   enableSubMenuContainingId(this, ID_EDIT_SWAPCOLORS        , editEnabled);
-  enableSubMenuContainingId(this, ID_EDIT_WHITETOMOVE       , editEnabled);
-  enableMenuItem(           this, ID_EDIT_WHITETOMOVE       , editEnabled);
-  enableMenuItem(           this, ID_EDIT_BLACKTOMOVE       , editEnabled);
+  enableMenuItem(           this, ID_EDIT_SWITCHPLAYERINTURN, editEnabled);
 }
-
 void CChessDlg::enableStartThinking() {
   bool moveNowEnabled = false;
   bool thinkEnabled   = false;
@@ -742,28 +719,30 @@ void CChessDlg::resetEscapeMenuText(bool enabled) {
   enableMenuItem(this, ID_ESCAPE, enabled);
 }
 
+// ------------------------- Dialog mode ---------------------------
+
 void CChessDlg::pushDialogMode(const DialogSettings &settings) {
   const bool hasMode       = m_modeStack.getHeight() > 0;
-  const DialogMode oldMode = getDialogMode();;
+  const DialogMode oldMode = getDialogMode();
   m_modeStack.push(settings);
   setDialogMode(settings);
-  ajourMenuItemsEnableStatus();
   if(hasMode) {
     const DialogMode newMode = m_modeStack.top().m_mode;
     notifyPropertyChanged(DIALOGMODE, &oldMode, &newMode);
 //    verbose(_T("Property DIALOGMODE changed. old:%d, new:%d\n"), oldMode, newMode);
   }
+  invalidate();
 }
 
 void CChessDlg::popDialogMode() {
   const DialogMode oldMode = m_modeStack.pop().m_mode;
   setDialogMode(m_modeStack.top());
-  invalidate();
   const DialogMode newMode = m_modeStack.top().m_mode;
   if(newMode != oldMode) {
     notifyPropertyChanged(DIALOGMODE, &oldMode, &newMode);
 //    verbose(_T("Property DIALOGMODE changed. old:%d, new:%d\n"), oldMode, newMode);
   }
+  invalidate();
 }
 
 void CChessDlg::setDialogMode(const DialogSettings &settings) {
@@ -772,7 +751,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
     setGameSettings();
-    m_graphics->setModeText(_T(""), BOARDDC);
+    m_graphics->setModeText(EMPTYSTRING);
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     updateTitle();
     break;
@@ -781,7 +760,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_editHistory.beginEdit(m_game));
     setGameSettings();
-    m_graphics->setModeText(loadString(IDS_EDITMODETEXT), BOARDDC);
+    m_graphics->setModeText(loadString(IDS_EDITMODETEXT));
     setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
     break;
 
@@ -789,7 +768,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
     setGameSettings();
-    m_graphics->setModeText(loadString(IDS_DEBUGMODETEXT), BOARDDC);
+    m_graphics->setModeText(loadString(IDS_DEBUGMODETEXT));
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     break;
 
@@ -797,8 +776,8 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
     setGameSettings();
-    m_graphics->setModeText(loadString(IDS_AUTOPLAYMODETEXT), BOARDDC);
-    m_graphics->unmarkMouse(BOARDDC);
+    m_graphics->setModeText(loadString(IDS_AUTOPLAYMODETEXT));
+    m_graphics->unmarkMouse();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     updateTitle();
     startThinking();
@@ -808,7 +787,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
     setGameSettings();
-    m_graphics->setModeText(loadString(IDS_ANALYZEMODETEXT), BOARDDC);
+    m_graphics->setModeText(loadString(IDS_ANALYZEMODETEXT));
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     break;
 
@@ -816,7 +795,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
     stopAllBackgroundActivity(true);
     m_graphics->setGame(m_game);
     setGameSettings();
-    m_graphics->setModeText(_T("Find Knight Route"), BOARDDC);
+    m_graphics->setModeText(_T("Find Knight Route"));
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     m_selectedPosition = -1;
     break;
@@ -837,20 +816,7 @@ void CChessDlg::showHintMessageBox(const ExecutableMove move) {
 }
 
 void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(source == m_graphics) {
-    switch(id) {
-    case GRAPHICS_PLAYERINTURN:
-      { const Player newPlayer = *(Player*)newValue;
-        PostMessage(ID_MSG_PLAYERINTURN_CHANGED, newPlayer, 0);
-      }
-      break;
-    case GRAPHICS_COMPUTERPLAYER:
-      { const Player newPlayer = *(Player*)newValue;
-        PostMessage(ID_MSG_COMPUTERPLAYER_CHANGED, newPlayer, 0);
-      }
-      break;
-    }
-  } else if(source == s_traceThread) {
+  if(source == s_traceThread) {
     switch(id) {
     case TRACEWINDOW_ACTIVE:
       PostMessage(ID_MSG_TRACEWINDOW_CHANGED);
@@ -969,23 +935,6 @@ LRESULT CChessDlg::OnMsgRemoteStateChanged(WPARAM wp, LPARAM lp) {
   } else {
     invalidate();
   }
-  return 0;
-}
-
-LRESULT CChessDlg::OnMsgGraphicsPlayerInTurnChanged(WPARAM wp, LPARAM lp) {
-#ifdef _DEBUGDLG
-  verbose(_T("OnMsgGraphicsPlayerInTurnChanged(%d,%d)\n"), wp, lp);
-#endif
-  const Player player = (Player)wp;
-  checkMenuItem(this, ID_EDIT_WHITETOMOVE, player == WHITEPLAYER);
-  checkMenuItem(this, ID_EDIT_BLACKTOMOVE, player == BLACKPLAYER);
-  m_watch.setPlayerInTurn(player);
-
-  return 0;
-}
-
-LRESULT CChessDlg::OnMsgComputerPlayerChanged(WPARAM wp, LPARAM lp) {
-  setVisibleClocks();
   return 0;
 }
 
@@ -1306,13 +1255,13 @@ void CChessDlg::OnFileResign() {
 void CChessDlg::OnFileExit() {
   stopAllBackgroundActivity(true);
   detachAllPropertyContainers();
-  CDialog::OnOK(); //PostMessage(WM_QUIT);
+  EndDialog(IDOK);
 }
 
 LRESULT CChessDlg::OnMsgShowSelectedHistoryMove(WPARAM wp, LPARAM lp) {
   try {
     getCurrentGame().setGameAfterPly(m_savedGame, (int)lp);
-    m_graphics->paintGamePosition(BOARDDC);
+    m_graphics->paintGamePositions();
   } catch(Exception e) {
     errorMessage(e);
   }
@@ -1329,9 +1278,8 @@ void CChessDlg::activateOptions() {
   setBlackAutoPlayLevel(          options.getAutoPlayLevel(BLACKPLAYER)       );
   enableTestMenu(                 options.hasTestMenu()                       );
   setGameSettings();
-  setClientRectSize(this,         m_graphics->setBoardSize(options.getBoardSize()));
+  setClientRectSize(this,         options.getBoardSize()                      );
   setTraceWindowVisible(          options.getTraceWindowVisible()             );
-
 }
 
 void CChessDlg::setComputerPlayer(Player computerPlayer) {
@@ -1430,7 +1378,7 @@ void CChessDlg::OnLButtonDownPlayMode(UINT nFlags, CPoint point) {
 
   const Piece *selectedPiece = m_graphics->getSelectedPiece();
   if(selectedPiece == NULL) {
-    m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+    m_graphics->markSelectedPiece(m_selectedPosition);
   } else if(game.getLegalDestinationFields(selectedPiece).contains(m_selectedPosition)) {
     const int from = selectedPiece->getPosition();
     if(game.mustSelectPromotion(from, m_selectedPosition)) {
@@ -1440,9 +1388,9 @@ void CChessDlg::OnLButtonDownPlayMode(UINT nFlags, CPoint point) {
     }
   } else if(m_selectedPosition == selectedPiece->getPosition()) {
     unmarkAll();
-    m_graphics->markMouse(m_selectedPosition, BOARDDC);
+    m_graphics->markMouse(m_selectedPosition);
   } else {
-    m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+    m_graphics->markSelectedPiece(m_selectedPosition);
   }
 }
 
@@ -1496,7 +1444,7 @@ void CChessDlg::OnMouseMovePlayMode(UINT nFlags, CPoint point) {
   if(getPlayerInTurn() != getHumanPlayer()) {
     return;
   }
-  m_graphics->markMouse(getBoardPosition(point), BOARDDC);
+  m_graphics->markMouse(getBoardPosition(point));
 }
 
 // --------------------------------------------------------------------------------------
@@ -1551,7 +1499,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
     if(getOptions().getAnimateMoves()) {
       const bool clockRunning = m_watch.isRunning();
       if(clockRunning) pauseClock();
-      m_graphics->animateMove(m, BOARDDC);
+      m_graphics->animateMove(m);
       if(clockRunning) resumeClock();
     }
 
@@ -1560,8 +1508,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
     }
 
     game.executeMove(m);
-    paintGamePosition(false);
-    flushImage();
+    paintGamePosition();
     setGameResult(game.findGameResult());
     if(getGameResult() != NORESULT) {
       stopClock();
@@ -1583,7 +1530,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
       case WHITE_CHECKMATE                    :
       case BLACK_CHECKMATE                    :
         if(getOptions().getAnimateCheckmate()) {
-          m_graphics->animateCheckMate(BOARDDC);
+          m_graphics->animateCheckMate();
         }
         handleEndGameForPlayMode(loadString(GAMERESULTTOWINNER(getGameResult()) == getHumanPlayer() ? IDS_MSG_HUMAN_WIN : IDS_MSG_COMPUTER_WIN)
                                 ,loadString(IDS_CHECKMATE)
@@ -1612,7 +1559,6 @@ void CChessDlg::executeMove(const MoveBase &m) {
     break;
 
   case DEBUGMODE:
-    flushImage();
     break;
 
   case AUTOPLAYMODE:
@@ -1630,7 +1576,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
     case WHITE_CHECKMATE                   :
     case BLACK_CHECKMATE                   :
       if(getOptions().getAnimateCheckmate()) {
-        m_graphics->animateCheckMate(BOARDDC);
+        m_graphics->animateCheckMate();
       }
       handleEndGameForAutoPlayMode(loadString((game.getGameResult()==WHITE_CHECKMATE)? IDS_MSG_BLACK_WIN : IDS_MSG_WHITE_WIN)
                                   ,loadString(IDS_CHECKMATE));
@@ -1852,6 +1798,7 @@ void CChessDlg::OnEditStartSetup() {
 
 void CChessDlg::OnEditTurnBoard() {
   setComputerPlayer(GETENEMY(getComputerPlayer()));
+  setVisibleClocks();
   invalidate();
 }
 
@@ -1899,8 +1846,9 @@ void CChessDlg::OnEditSetupStartPosition() {
   }
 }
 
-void CChessDlg::OnEditSetWhiteToMove() { setPlayerInTurn(WHITEPLAYER); }
-void CChessDlg::OnEditSetBlackToMove() { setPlayerInTurn(BLACKPLAYER); }
+void CChessDlg::OnEditSwitchPlayerInTurn() {
+  setPlayerInTurn(GETENEMY(m_editHistory.getGame().getPlayerInTurn()));
+}
 
 void CChessDlg::setPlayerInTurn(Player player) {
   try {
@@ -1950,7 +1898,7 @@ void CChessDlg::OnLButtonDownEditMode(UINT nFlags, CPoint point) {
   } else {
     const OffboardPiece *obp = m_graphics->getOffboardPieceByPosition(point);
     if(obp != NULL) {
-      m_graphics->startDragPiece(point, obp, BOARDDC);
+      m_graphics->beginDragPiece(point, obp);
       m_editHistory.saveState();
     }
   }
@@ -1962,10 +1910,10 @@ void CChessDlg::OnLButtonUpEditMode(UINT nFlags, CPoint point) {
   if(m_removedPiece != EMPTYPIECEKEY) {
     const Player rp = GET_PLAYER_FROMKEY(m_removedPiece);
     game.resetCapturedPieceTypes(rp);
-    m_graphics->repaintOffboardPieces(rp, BOARDDC);
+    m_graphics->repaintOffboardPieces(rp);
   } else if(m_graphics->isDragging()) {
     game.resetCapturedPieceTypes(GET_PLAYER_FROMKEY(m_graphics->getDraggedPiece()));
-    m_graphics->endDragPiece(BOARDDC);
+    m_graphics->endDragPiece();
   }
   game.initState();
   m_selectedPiece = m_removedPiece = EMPTYPIECEKEY;
@@ -1974,17 +1922,16 @@ void CChessDlg::OnLButtonUpEditMode(UINT nFlags, CPoint point) {
 
 void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
   const int newPos = getBoardPosition(point);
-  bool doFlush = false;
   if((nFlags & MK_LBUTTON) == 0) {
     m_selectedPiece = m_removedPiece = EMPTYPIECEKEY;
     if(newPos != m_graphics->getMouseField()) {
-      m_graphics->markMouse(newPos, BOARDDC);
+      m_graphics->markMouse(newPos);
     }
   } else {
     Game &game = getCurrentGame();
     if(m_graphics->isDragging()) {
       if(!isValidPosition(newPos)) {   // drag piece outside board
-        m_graphics->dragPiece(point, BOARDDC);
+        m_graphics->dragPiece(point);
       } else {                         // drag piece from outside board to a valid board position
         try {
           const PieceKey dpKey = m_graphics->getDraggedPiece();
@@ -1994,25 +1941,27 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
           m_selectedPiece      = dpKey;
           m_selectedPosition   = newPos;
 
+          m_graphics->beginPaint();
           m_graphics->endDragPiece();
-          m_graphics->paintGamePosition();
-          doFlush = true;
+          m_graphics->markMouse(newPos);
+          m_graphics->endPaint();
         } catch(Exception e) {
 //          m_graphics->dragPiece(point);
         }
       }
     } else { // !dragging
       if((m_selectedPiece != EMPTYPIECEKEY) && isValidPosition(m_selectedPosition) && (newPos != m_selectedPosition)) {
-        doFlush = true;
         if(!isValidPosition(newPos)) { // drag piece from a valid board position to a position outside the board
           const PieceKey key = game.removePieceAtPosition(m_selectedPosition, false);
           if(key != EMPTYPIECEKEY) {
             game.setPieceAtPosition(m_removedPiece, m_selectedPosition);
             game.initState();
-
+            m_graphics->beginPaint();
             m_graphics->unmarkMouse();
-            m_graphics->paintGamePosition();
-            m_graphics->startDragPiece(point, key, BOARDDC);
+            m_graphics->paintGamePositions();
+            m_graphics->endPaint();
+
+            m_graphics->beginDragPiece(point, key);
             m_selectedPiece = m_removedPiece = EMPTYPIECEKEY;
           }
         } else {                       // drag piece from one field to another
@@ -2022,11 +1971,14 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
             const PieceKey newRemovedPiece = game.setPieceAtPosition(m_selectedPiece, newPos); // can throw
             game.initState();
 
+            m_graphics->beginPaint();
             m_graphics->unmarkMouse();
-            m_graphics->paintGamePosition();
+            m_graphics->paintGamePositions();
 
             m_removedPiece     = newRemovedPiece;
             m_selectedPosition = newPos;
+            m_graphics->markMouse(newPos);
+            m_graphics->endPaint();
           } catch(Exception e) {
             game.setPieceAtPosition(oldKey, m_selectedPosition); // set it back again
             game.initState();
@@ -2034,10 +1986,6 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
         }
       }
     }
-  }
-  if(doFlush) {
-    m_graphics->markMouse(newPos);
-    flushImage();
   }
 }
 
@@ -2464,10 +2412,12 @@ void CChessDlg::OnView() {
 
 void CChessDlg::setView() {
   const Options &options = getOptions();
-  m_graphics->setShowFieldNames(  options.getShowFieldNames()  , BOARDDC);
-  m_graphics->setShowLegalMoves(  options.getShowLegalMoves()  , BOARDDC);
-  m_graphics->setShowPlayerInTurn(options.getShowPlayerInTurn(), BOARDDC);
+  m_graphics->beginPaint();
+  m_graphics->setShowFieldNames(  options.getShowFieldNames()  );
+  m_graphics->setShowLegalMoves(  options.getShowLegalMoves()  );
+  m_graphics->setShowPlayerInTurn(options.getShowPlayerInTurn());
   setVisibleClocks();
+  m_graphics->endPaint();
 }
 
 // ------------------------------ Settings/Level + Clock -----------------------------------------------
@@ -2554,7 +2504,7 @@ void CChessDlg::setVisibleClocks() {
       break;
     }
   }
-  m_graphics->setVisibleClocks(visible, BOARDDC);
+  m_graphics->setVisibleClocks(visible);
   if(!visible) {
     stopClock();
   } else if(visible != oldVisible) {
@@ -2629,7 +2579,7 @@ void CChessDlg::updateClock() {
     m_watch.getSecondsRemaining(WHITEPLAYER)
    ,m_watch.getSecondsRemaining(BLACKPLAYER)
   };
-  m_graphics->showClocks(t[WHITEPLAYER], t[BLACKPLAYER], BOARDDC);
+  m_graphics->showClocks(t[WHITEPLAYER], t[BLACKPLAYER]);
 
   if(isGameWithTimeLimit() && (getPlayerInTurn() == getHumanPlayer()) && (t[getPlayerInTurn()] == 0)) {
     stopClock();
@@ -2806,7 +2756,6 @@ void CChessDlg::setGameSettings() {
   checkMenuItem( this, ID_OPENINGLIBRARY_ENABLED  , options.isOpeningLibraryEnabled()  );
   checkMenuItem( this, ID_ENDGAMETABLEBASE_ENABLED, options.isEndGameTablebaseEnabled());
   enableMenuItem(this, ID_TABLEBASE_SETTINGS      , options.isEndGameTablebaseEnabled());
-  flushImage();
 }
 
 // ------------------------------ Settings/Log Window -----------------------------------------------
@@ -2919,7 +2868,7 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
     annotation = BAD_MOVE;
   }
   if(selectedPiece == NULL) {
-    m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+    m_graphics->markSelectedPiece(m_selectedPosition);
   } else if(game.getLegalDestinationFields(selectedPiece).contains(m_selectedPosition)) {
     const int from = selectedPiece->getPosition();
     if(game.mustSelectPromotion(from, m_selectedPosition)) {
@@ -2929,9 +2878,9 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
     }
   } else if(m_selectedPosition == selectedPiece->getPosition()) {
     unmarkAll();
-    m_graphics->markMouse(m_selectedPosition, BOARDDC);
+    m_graphics->markMouse(m_selectedPosition);
   } else {
-    m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+    m_graphics->markSelectedPiece(m_selectedPosition);
   }
 }
 
@@ -2940,7 +2889,7 @@ void CChessDlg::OnLButtonUpDebugMode(UINT nFlags, CPoint point) {
 }
 
 void CChessDlg::OnMouseMoveDebugMode(UINT nFlags, CPoint point) {
-  m_graphics->markMouse(getBoardPosition(point), BOARDDC);
+  m_graphics->markMouse(getBoardPosition(point));
 }
 
 // ------------------------------ Mousehandlers KnightRoute Mode ------------------------------------------
@@ -2951,18 +2900,20 @@ void CChessDlg::OnLButtonDownKRMode(UINT nFlags, CPoint point) {
 
   if(m_selectedPosition < 0) {
     m_selectedPosition = pos;
-    m_graphics->markField(m_selectedPosition, YELLOWMARK, BOARDDC);
+    m_graphics->markField(m_selectedPosition, YELLOWMARK);
   } else if (pos == m_selectedPosition) {
-    m_graphics->unmarkField(m_selectedPosition, BOARDDC);
+    m_graphics->unmarkField(m_selectedPosition);
     m_selectedPosition = -1;
   } else {
-    m_graphics->markField(pos, YELLOWMARK, BOARDDC);
+    m_graphics->markField(pos, YELLOWMARK);
     String str = findShortestKnightRoute(m_selectedPosition, pos);
     putClipboard(*this, str);
     MessageBox(str.cstr(), _T("Best Knight route"));
-    m_graphics->unmarkField(pos               , BOARDDC);
-    m_graphics->unmarkField(m_selectedPosition, BOARDDC);
+    m_graphics->beginPaint();
+    m_graphics->unmarkField(pos               );
+    m_graphics->unmarkField(m_selectedPosition);
     m_selectedPosition = -1;
+    m_graphics->endPaint();
   }
 }
 
@@ -3026,66 +2977,67 @@ void CChessDlg::OnTestDebug() {
 void CChessDlg::OnTestFindknightroute() {
   if(!getOptions().hasTestMenu()) return;
   pushDialogMode(KNIGHTROUTEMODE);
+  invalidate();
 }
 
 void CChessDlg::OnTestShowFieldAttacks() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowFieldAttacks(   toggleMenuItem(this, ID_TEST_SHOWFIELDATTACKS    ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowMaterial() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowMaterial(      toggleMenuItem(this, ID_TEST_SHOWMATERIAL        ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowCheckingSDAPos() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowCheckingSDAPos( toggleMenuItem(this, ID_TEST_SHOWCHECKINGSDAPOS  ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowBishopFlags() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowBishopFlags(    toggleMenuItem(this, ID_TEST_SHOWBISHOPFLAGS     ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowPawnCount() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowPawnCount(      toggleMenuItem(this, ID_TEST_SHOWPAWNCOUNT       ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowPositionRepeats() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowPositionRepeats(toggleMenuItem(this, ID_TEST_SHOWPOSITIONREPEATS ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowLastCapture() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowLastCapture(    toggleMenuItem(this, ID_TEST_SHOWLASTCAPTURE     ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowLastMoveInfo() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowLastMoveInfo(   toggleMenuItem(this, ID_TEST_SHOWLASTMOVEINFO    ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowSetupMode() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowSetupMode(      toggleMenuItem(this, ID_TEST_SHOWSETUPMODE       ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestShowFEN() {
   if(!getOptions().hasTestMenu()) return;
   m_graphics->setShowFEN(      toggleMenuItem(this, ID_TEST_SHOWFEN                   ));
-  flushImage();
+  invalidate();
 }
 
 void CChessDlg::OnTestMoveBackwards() {

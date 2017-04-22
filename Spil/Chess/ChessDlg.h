@@ -160,8 +160,7 @@ private:
   void   startNewGame();
   void   invalidate();
   void   repaint();
-  void   paintGamePosition(bool flush = true);
-  void   flushImage();
+  void   paintGamePosition();
   void   executeMove(const MoveBase &m);
   void   executePromotion(PieceType promoteTo);
   void   selectAndExecutePromotion(const CPoint &point, MoveAnnotation annotation = NOANNOTATION);
@@ -311,8 +310,7 @@ protected:
 	afx_msg void OnEditRotateRight();
 	afx_msg void OnEditRotateLeft();
 	afx_msg void OnEditRotate180();
-	afx_msg void OnEditSetWhiteToMove();
-	afx_msg void OnEditSetBlackToMove();
+	afx_msg void OnEditSwitchPlayerInTurn();
 	afx_msg void OnEditEndSetup();
 	afx_msg void OnEscape();
 	afx_msg void OnEditValidateBoard();
@@ -457,8 +455,6 @@ protected:
   afx_msg LRESULT OnMsgMoveFinderStateChanged(      WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnMsgEngineChanged(               WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgExternEngineChanged(         WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgGraphicsPlayerInTurnChanged( WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgComputerPlayerChanged(       WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgTraceWindowChanged(          WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
 	afx_msg LRESULT OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);

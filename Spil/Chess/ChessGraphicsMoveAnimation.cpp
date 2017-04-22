@@ -2,59 +2,28 @@
 #include <Math.h>
 #include "ChessGraphicsAnimation.h"
 
-PixRect *MovePieceAnimation::background          = NULL;
-int      MovePieceAnimation::animationsAllocated = 0;
-
-MovePieceAnimation::MovePieceAnimation(ChessGraphics *graphics, HDC dc, const int from, const int to, int steps)
-: m_resources(graphics->getResources())
-, m_dc(dc)
+MoveSinglePieceAnimation::MoveSinglePieceAnimation(ChessGraphics *graphics, const int from, const int to, int steps)
+: AbstractPieceMoveAnimation(graphics, graphics->getPieceImage(from), graphics->getFieldSize(true))
 , m_from(graphics->getFieldPosition(from, true))
 , m_to(  graphics->getFieldPosition(to  , true))
-, m_pieceImage(graphics->getPieceImage(from))
-, m_size(graphics->getFieldSize(true))
-, m_scale(graphics->getResources().getScale())
 , m_it(0,1, steps ? steps : (int)(sqrt(Game::getKingDistance(from,to))*28))
 {
-  const CSize boardSize = m_resources.getBoardSize();
-  if(animationsAllocated++ == 0) {
-    background = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, boardSize);
-  };
 
-  m_oldBackground = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_size);
-  m_pos           = m_from;
-  initPaintedPoint();
-  initBackgroundPoint();
-
-  graphics->restoreBackground(graphics->getFieldPosition(from, false), graphics->getFieldSize(false), true, dc);
-  PixRect::bitBlt(background, ORIGIN, boardSize, SRCCOPY, dc, ORIGIN);
-  m_restoredPoint.x = m_restoredPoint.y = -1;
-
+  m_pos = m_from;
+  const CRect startRect1(m_graphics.getFieldPosition(from, false), m_graphics.getFieldSize(false));
+  m_graphics.restoreBackground(startRect1);
   paintImage(m_pos);
 }
 
-MovePieceAnimation::~MovePieceAnimation() {
-  delete m_oldBackground;
-  if(--animationsAllocated == 0) {
-    delete background;
-  }
-}
-
-void MovePieceAnimation::paint() {
+void MoveSinglePieceAnimation::paint() {
   paintImage(m_pos);
 }
 
-void MovePieceAnimation::unpaint() {
-  restoreBackground();
+void MoveSinglePieceAnimation::unpaint() {
+  restoreImageRect(m_hdc);
 }
 
-void MovePieceAnimation::flush() {
-  if(m_restoredPoint.x >= 0) {
-    PixRect::bitBlt(m_dc, m_restoredPoint, m_size, SRCCOPY, background, m_restoredPoint);
-  }
-  PixRect::bitBlt(m_dc, m_paintedPoint, m_size, SRCCOPY, background, m_paintedPoint);
-}
-
-bool MovePieceAnimation::step() {
+bool MoveSinglePieceAnimation::step() {
   if(!m_it.hasNext()) {
     return false;
   }
@@ -63,32 +32,23 @@ bool MovePieceAnimation::step() {
   return true;
 }
 
-void MovePieceAnimation::paintImage(const CPoint &p) {
-  restoreBackground();
-  saveBackground(p);
-  m_pieceImage->paintImage(*background, p, m_scale);
-  m_paintedPoint = p;
-}
-
-void MovePieceAnimation::initPaintedPoint() {
-  m_paintedPoint.x = m_paintedPoint.y = -1;
-}
-
-void MovePieceAnimation::saveBackground(const CPoint &p) {
-  if(p.x >= 0 && p.y >= 0) {
-    m_oldBackground->rop(ORIGIN, m_size, SRCCOPY, background, p);
-    m_backgroundPoint = p;
+void MoveAnimation::addMovePiece(const int from, const int to) {
+  add(new MoveSinglePieceAnimation(m_graphics, from, to, m_steps));
+  if(size() == 1) {
+    m_steps = (*this)[0]->getSteps();
   }
 }
 
-void MovePieceAnimation::restoreBackground() {
-  if(m_backgroundPoint.x >= 0) {
-    background->rop(m_backgroundPoint, m_size, SRCCOPY, m_oldBackground, ORIGIN);
-    m_restoredPoint = m_backgroundPoint;
-    initBackgroundPoint();
+void MoveAnimation::animate() {
+  const int sleepTime = (size() == 1) ? 15 : 10;
+  const int n = (int)size();
+  for(bool cont = true; cont;) {
+    for(int i = n; i--;) (*this)[i]->paint();
+    if(sleepTime) Sleep(sleepTime);
+    cont = false;
+    for(int i = 0; i < n; i++) {
+      (*this)[i]->unpaint();
+      cont |= (*this)[i]->step();
+    }
   }
-}
-
-void MovePieceAnimation::initBackgroundPoint() {
-  m_backgroundPoint.x = m_backgroundPoint.y = -1;
 }

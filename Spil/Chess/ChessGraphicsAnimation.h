@@ -4,68 +4,105 @@
 #include <Math/SigmoidIterator.h>
 #include "ChessGraphics.h"
 
-class PieceDragger {
+class ChessAnimation {
 private:
-  const ChessResources &m_resources;
-  const OffboardPiece  &m_obp;
+  PixRect *m_savedPr;
+  CRect    m_savedRect;
+protected:
+  ChessGraphics &m_graphics;
+  HDC            m_hdc;
+  const ChessResources &getResources() const {
+    return m_graphics.getResources();
+  }
+  void saveImageRect(   HDC src, const CRect &r);
+  void restoreImageRect(HDC dst);
+  inline const CRect getSavedRect() const {
+    return m_savedRect;
+  }
+  ChessAnimation(ChessGraphics *graphics) 
+    : m_graphics(*graphics)
+    , m_hdc(GetDC(graphics->m_hwnd))
+    , m_savedPr(NULL)
+    , m_savedRect(0,0,0,0)
+  {}
+  ~ChessAnimation() {
+    ReleaseDC(m_graphics.m_hwnd, m_hdc);
+    if(m_savedPr) delete m_savedPr;
+  }
+};
+
+class AbstractPieceMoveAnimation : public ChessAnimation {
+private:
+  PixRect              *m_helper;
+protected:
   const Image          *m_pieceImage;
-  PixRect              *m_background, *m_oldBackground, *m_helper;
-  CPoint                m_lastTopLeft, m_lastDragPoint, m_savedDragPoint, m_lastPaintedPoint;
-  CSize                 m_size;
-  void saveDragPosition(const CPoint &p);
-  void restoreDragPosition(HDC dc = NULL);
-  void paintImage(const CPoint &p, HDC dc);
-  void unpaintImage(HDC dc);
-  void initPaintedPoint();
+  const CSize           m_scaledImageSize;
+  const CSize           m_scaledFieldSize;
+  const double          m_scale;
+  void paintImage(const CPoint &p);
 public:
-  PieceDragger(ChessGraphics *graphics, const CPoint &point, const OffboardPiece *obp, HDC dc);
- ~PieceDragger();
-  void drag(const CPoint &point, HDC dc);
-  void endDrag(HDC dc);
+  AbstractPieceMoveAnimation(ChessGraphics *graphics, const Image *image, const CSize &size)
+    : ChessAnimation(graphics)
+    , m_pieceImage(image)
+    , m_scaledImageSize(graphics->getResources().scaleSize(image->getRect().Size()))
+    , m_scaledFieldSize(graphics->getFieldSize(true))
+    , m_scale(graphics->getResources().getAvgScale())
+    , m_helper(new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE,size))
+  {
+  }
+  ~AbstractPieceMoveAnimation() {
+    delete m_helper;
+  }
+};
+
+class MoveSinglePieceAnimation : public AbstractPieceMoveAnimation {
+private:
+  const Point2DP        m_from, m_to;
+  Point2DP              m_pos;
+  SigmoidIterator       m_it;
+public:
+  MoveSinglePieceAnimation(ChessGraphics *graphics, const int from, const int to, int steps = 0);
+  bool step();
+  void paint();
+  void unpaint();
+  UINT getSteps() const {
+    return m_it.getSteps();
+  }
+};
+
+class MoveAnimation : private CompactArray<MoveSinglePieceAnimation*> {
+private:
+  ChessGraphics *m_graphics;
+  int            m_steps;
+public:
+  MoveAnimation(ChessGraphics *graphics) : m_graphics(graphics), m_steps(0) {
+  }
+  ~MoveAnimation() {
+    for (size_t i = 0; i < size(); i++) delete (*this)[i];
+    clear();
+  }
+  void addMovePiece(const int from, const int to);
+  void animate();
+};
+
+class PieceDragger : public AbstractPieceMoveAnimation {
+private:
+  const OffboardPiece  &m_obp;
+  CPoint                m_offset; // offset of mouse-click to topLeft of image
+public:
+  PieceDragger(ChessGraphics *graphics, const CPoint &point, const OffboardPiece *obp);
+  void drag(const CPoint &point);
+  void endDrag();
 
   PieceKey getPieceKey() const {
     return m_obp.getKey();
   }
 };
 
-class MovePieceAnimation {
+class RotatePieceAnimation : public ChessAnimation {
 private:
-  static PixRect       *background;
-  static int            animationsAllocated;
-  const ChessResources &m_resources;
-  HDC                   m_dc;
-  const Point2DP        m_from, m_to;
-  const Image          *m_pieceImage;
-  const CSize           m_size;
-  const double          m_scale;
-  PixRect              *m_oldBackground;
-  Point2DP              m_pos;
-  SigmoidIterator       m_it;
-  CPoint                m_paintedPoint, m_backgroundPoint, m_restoredPoint;
-  void paintImage(const CPoint &p);
-  void initPaintedPoint();
-  void saveBackground(const CPoint &p);
-  void restoreBackground();
-  void initBackgroundPoint();
+  const int m_position;
 public:
-  MovePieceAnimation(ChessGraphics *graphics, HDC dc, const int from, const int to, int steps = 0);
-  ~MovePieceAnimation();
-  bool step();
-  void paint();
-  void unpaint();
-  void flush();
-  UINT getSteps() const {
-    return m_it.getSteps();
-  }
-};
-
-class RotatePieceAnimation {
-private:
-  ChessGraphics    &m_graphics;
-  HDC               m_dc;
-  const int         m_position;
-public:
-  RotatePieceAnimation(ChessGraphics *graphics, HDC dc, int position);
+  RotatePieceAnimation(ChessGraphics *graphics, int position);
   void animate();
 };
-

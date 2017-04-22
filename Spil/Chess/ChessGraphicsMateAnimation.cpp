@@ -2,9 +2,8 @@
 #include <Math.h>
 #include "ChessGraphicsAnimation.h"
 
-RotatePieceAnimation::RotatePieceAnimation(ChessGraphics *graphics, HDC dc, int position)
-: m_graphics(*graphics)
-, m_dc(dc)
+RotatePieceAnimation::RotatePieceAnimation(ChessGraphics *graphics, int position)
+: ChessAnimation(graphics)
 , m_position(position)
 {
 }
@@ -15,11 +14,11 @@ void RotatePieceAnimation::animate() {
   const CSize           boardSize   = m_graphics.getBoardSize(true);
   const CSize           fieldSize   = m_graphics.getFieldSize(true);
   const int             fieldSize45 = (int)(fieldSize.cx*1.42); // maximal size of rotated square. (= fieldsize/cos(45) = ceil(fieldsize * sqrt(2)))
-  const double          scale       = m_graphics.getResources().getScale();
+  const double          scale       = m_graphics.getResources().getAvgScale();
   PixRect               pr45(theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45, fieldSize45);
   PixRect               boardWithoutKing(theApp.m_device, PIXRECT_PLAINSURFACE, boardSize);
 
-  PixRect::bitBlt(&boardWithoutKing, ORIGIN,boardSize, SRCCOPY, m_dc, ORIGIN);
+  PixRect::bitBlt(&boardWithoutKing, ORIGIN,boardSize, SRCCOPY, m_hdc, ORIGIN);
   HDC tmpDC = boardWithoutKing.getDC();
   m_graphics.getResources().getFieldMarkImage(CHECKEDKING)->paintImage(tmpDC, pos, scale);
   boardWithoutKing.releaseDC(tmpDC);
@@ -32,7 +31,7 @@ void RotatePieceAnimation::animate() {
   for(SigmoidIterator it(0,180,30); it.hasNext();) {
     PixRect::bitBlt(tmpDC, 0,0,fieldSize45,fieldSize45, SRCCOPY, &boardWithoutKing, pos2.x,pos2.y); // paint background (checkedKing) on tmpDC
     pieceImage->paintImage(tmpDC, pos1, scale, it.next());
-    BitBlt(m_dc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
+    BitBlt(m_hdc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
     Sleep(40);
   }
 

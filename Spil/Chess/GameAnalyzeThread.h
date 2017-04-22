@@ -6,7 +6,7 @@ private:
   Semaphore m_gotParameters;
   const String      *m_name;
   const GameKey     *m_startPosition;
-  const GameHistory *m_history;;
+  const GameHistory *m_history;
   int                m_plyIndex;
 
 protected:

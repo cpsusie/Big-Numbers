@@ -477,6 +477,7 @@ void Options::save() {
       subKey.setValue(SPEEDINCREMENT,stp.getSecondsIncr());
       subKey.setValue(ENGINE        , po.m_engineName    );
     }
+    clrDirty();
 
   } catch(Exception e) {
     AfxMessageBox(e.what(), MB_ICONWARNING);
@@ -555,6 +556,7 @@ void Options::load() {
   } catch(Exception e) {
     setDefault();
   }
+  clrDirty();
 }
 
 void Options::load(FILE *f) {
@@ -615,88 +617,87 @@ void Options::save(FILE *f) {
   _ftprintf(f,_T("EndSettings\n"));
 }
 
-
 void Options::setShowFieldNames(bool show) {
   if(show != m_showFieldNames) {
     m_showFieldNames = show;
-    save();
+    setDirty();
   }
 }
 
 void Options::setShowLegalMoves(bool show) {
   if(show != m_showLegalMoves) {
     m_showLegalMoves = show;
-    save();
+    setDirty();
   }
 }
 
 void Options::setShowPlayerInTurn(bool show) {
   if(show != m_showPlayerInTurn) {
     m_showPlayerInTurn = show;
-    save();
+    setDirty();
   }
 }
 
 void Options::setAnimateMoves(bool animate) {
   if(animate != m_animateMoves) {
     m_animateMoves = animate;
-    save();
+    setDirty();
   }
 }
 
 void Options::setAnimateCheckmate(bool animate) {
   if(animate != m_animateCheckmate) {
     m_animateCheckmate = animate;
-    save();
+    setDirty();
   }
 }
 
 void Options::setAskForNewGame(bool ask) {
   if(ask != m_askForNewGame) {
     m_askForNewGame = ask;
-    save();
+    setDirty();
   }
 }
 
 void Options::setComputerPlayer(Player computerPlayer) {
   if(computerPlayer != m_computerPlayer) {
     m_computerPlayer = computerPlayer;
-    save();
+    setDirty();
   }
 }
 
 void Options::setShowComputerTime(bool show) {
   if(show != m_showComputerTime) {
     m_showComputerTime = show;
-    save();
+    setDirty();
   }
 }
 
 void Options::setValidateAfterEdit(bool validate) {
   if(validate != m_validateAfterEdit) {
     m_validateAfterEdit = validate;
-    save();
+    setDirty();
   }
 }
 
 void Options::setTraceWindowVisible(bool visible) {
   if(visible != m_traceWindowVisible) {
     m_traceWindowVisible = visible;
-    save();
+    setDirty();
   }
 }
 
 void Options::setTraceFontSize(int size) {
   if(size != m_traceFontSize) {
     m_traceFontSize = size;
-    save();
+    setDirty();
   }
 }
 
 void Options::setHistoryFontSize(int size) {
   if(size != m_historyFontSize) {
     m_historyFontSize = size;
-    save();
+    setDirty();
   }
 }
 
@@ -709,14 +710,14 @@ void Options::setGameInitialDir(const String &dir) {
 
   if(!tmp.equalsIgnoreCase(m_gameInitialDir)) {
     m_gameInitialDir = tmp;
-    save();
+    setDirty();
   }
 }
 
 bool Options::setLangID(LANGID langID) {
   if(PRIMARYLANGID(langID) != PRIMARYLANGID(m_langID)) {
     m_langID = Language::getBestSupportedLanguage(langID).m_langID;
-    save();
+    setDirty();
     return true;
   }
   return false;
@@ -736,84 +737,84 @@ int Options::getSelectedLanguageIndex() const {
 void Options::setBoardSize(const CSize &size) {
   if(size != m_boardSize) {
     m_boardSize = size;
-    save();
+    setDirty();
   }
 }
 
 void Options::setNormalPlayLevel(int level) {
   if(level != m_normalPlayLevel) {
     m_normalPlayLevel = level;
-    save();
+    setDirty();
   }
 }
 
 void Options::setLevelTimeout(const LevelTimeout &lt) {
   if(lt != m_levelTimeout) {
     m_levelTimeout = lt;
-    save();
+    setDirty();
   }
 }
 
 void Options::enableOpeningLibrary(bool enabled) {
   if(enabled != m_openingLibraryEnabled) {
     m_openingLibraryEnabled = enabled;
-    save();
+    setDirty();
   }
 }
 
 void Options::enableEndGameTablebase(bool enabled) {
   if(enabled != m_endGameTablebaseEnabled) {
     m_endGameTablebaseEnabled = enabled;
-    save();
+    setDirty();
   }
 }
 
 void Options::setEndGameTablebasePath(const String &path) {
   if(path != m_endGameTablebasePath) {
     m_endGameTablebasePath = path;
-    save();
+    setDirty();
   }
 }
 
 void Options::setEndGameTablebaseMetric(TablebaseMetric metric) {
   if(metric != m_endGameTablebaseMetric) {
     m_endGameTablebaseMetric = metric;
-    save();
+    setDirty();
   }
 }
 
 void Options::setEndGameDefendStrength(int defendStrength) {
   if(defendStrength != m_endGameDefendStrength) {
     m_endGameDefendStrength = defendStrength;
-    save();
+    setDirty();
   }
 }
 
 void Options::setMaxMovesWithoutCaptureOrPawnMove(int maxMoves) {
   if(maxMoves != m_maxMovesWithoutCaptureOrPawnMove) {
     m_maxMovesWithoutCaptureOrPawnMove = maxMoves;
-    save();
+    setDirty();
   }
 }
 
 void Options::setMoveFormat(MoveStringFormat moveFormat) {
   if(moveFormat != m_moveFormat) {
     m_moveFormat = moveFormat;
-    save();
+    setDirty();
   }
 }
 
 void Options::setDepthInPlies(bool plies) {
   if(plies != m_depthInPlies) {
     m_depthInPlies = plies;
-    save();
+    setDirty();
   }
 }
 
 void Options::setConnectedToServer(bool connected) {
   if(connected != m_connectedToServer) {
     m_connectedToServer = connected;
-    save();
+    setDirty();
   }
 }
 
@@ -821,28 +822,28 @@ void Options::setServerComputerName(const String &computerName) {
   const String s = trim(computerName);
   if(s != m_serverComputerName) {
     m_serverComputerName = s;
-    save();
+    setDirty();
   }
 }
 
 void Options::enableTestMenu(bool enabled) {
   if(enabled != m_testMenuEnabled) {
     m_testMenuEnabled = enabled;
-    save();
+    setDirty();
   }
 }
 
 void Options::setShowEngineConsole(bool show) {
   if(show != m_showEngineConsole) {
     m_showEngineConsole = show;
-    save();
+    setDirty();
   }
 }
 
 void Options::setEngineVerboseFields(const EngineVerboseFields &evf) {
   if (evf != m_engineVerboseFields) {
     m_engineVerboseFields = evf;
-    save();
+    setDirty();
   }
 }
 
@@ -850,7 +851,7 @@ void Options::setAutoPlayLevel(Player player, int level) {
   PlayerOptions &po = m_playerOptions[player];
   if(level != po.m_autoPlayLevel) {
     po.m_autoPlayLevel = level;
-    save();
+    setDirty();
   }
 }
 
@@ -858,7 +859,7 @@ void Options::setTimeParameters(Player player, const TimeParameters &parameters)
   PlayerOptions &po = m_playerOptions[player];
   if(parameters != po.m_timeParameters) {
     po.m_timeParameters = parameters;
-    save();
+    setDirty();
   }
 }
 
@@ -866,7 +867,7 @@ void Options::setSpeedTimeParameters(Player player, const TimeParameters &parame
   PlayerOptions &po = m_playerOptions[player];
   if(parameters != po.m_speedChessParameters) {
     po.m_speedChessParameters = parameters;
-    save();
+    setDirty();
   }
 }
 
@@ -874,7 +875,7 @@ void Options::setEngineName(Player player, const String &name) {
   PlayerOptions &po = m_playerOptions[player];
   if(name != po.m_engineName) {
     po.m_engineName = name;
-    save();
+    setDirty();
   }
 }
 

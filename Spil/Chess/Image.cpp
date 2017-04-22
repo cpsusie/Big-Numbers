@@ -107,6 +107,11 @@ void Image::paintImage(HDC dc, const CPoint &dst, double scale, double rotation)
   paintImage(dc, dst, getSize(), ORIGIN, scale, rotation);
 }
 
+CSize Image::getSize(double scale) const {
+  const CSize sz1 = PixRect::getSize();
+  return (scale == 1) ? sz1 : CSize((int)round(sz1.cx * scale), (int)round(sz1.cy * scale));
+}
+
 void Image::paintImage(HDC dc, const CPoint &dst, const CSize &size, const CPoint &src, double scale, double rotation) const {
   if(rotation != 0) {
     paintRotated(dc, dst, size, src, scale, rotation);

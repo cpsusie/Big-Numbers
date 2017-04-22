@@ -337,8 +337,7 @@
 #define ID_EDIT_ROTATERIGHT             32805
 #define ID_EDIT_ROTATELEFT              32806
 #define ID_EDIT_ROTATE180               32807
-#define ID_EDIT_WHITETOMOVE             32810
-#define ID_EDIT_BLACKTOMOVE             32811
+#define ID_EDIT_SWITCHPLAYERINTURN      32810
 #define ID_EDIT_ENDSETUP                32812
 #define ID_ESCAPE                       32813
 #define ID_EDIT_VALIDATE_BOARD          32814
@@ -507,8 +506,6 @@
 #define ID_OPENING_EXPAND               33220
 #define ID_MSG_MOVEFINDERSTATE_CHANGED  33250
 #define ID_MSG_ENGINE_CHANGED           33251
-#define ID_MSG_PLAYERINTURN_CHANGED     33252
-#define ID_MSG_COMPUTERPLAYER_CHANGED   33253
 #define ID_MSG_TRACEWINDOW_CHANGED      33254
 #define ID_MSG_SHOW_SELECTED_MOVE       33255
 #define ID_MSG_REMOTESTATE_CHANGED      33256
@@ -531,13 +528,15 @@
 #define ID_INTERESTING_MOVE             33284
 #define ID_DOUBIOUS_MOVE                33285
 #define ID_REMOVE_ANNOTATION            33286
+#define ID_REDIGER_SKIFTSPILLERITR33307 33307
+#define ID_EDIT_SWITCHPLAYERTOMOVE      33308
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        426
-#define _APS_NEXT_COMMAND_VALUE         33307
+#define _APS_NEXT_COMMAND_VALUE         33309
 #define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           117
 #endif

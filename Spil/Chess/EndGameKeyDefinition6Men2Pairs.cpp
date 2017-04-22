@@ -612,7 +612,7 @@ void EndGameKeyDefinition6Men2Pairs::scanPositions(EndGameKeyWithOccupiedPositio
             if(pi2 > pi3) {
               if(pi2 - 28 > pi3) continue;
             } else {
-              if(pi2 > pi3 - 28) continue;;
+              if(pi2 > pi3 - 28) continue;
             }
           }
           key.setPosition(3,pos3);

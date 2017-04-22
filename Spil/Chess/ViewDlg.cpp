@@ -10,7 +10,7 @@ CViewDlg::CViewDlg(CWnd* pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
   const Options &options = getOptions();
 
   m_animateCheckmate = options.getAnimateCheckmate();
-  m_animateMoves     = options.getAnimateMoves();;
+  m_animateMoves     = options.getAnimateMoves();
   m_askForNewGame    = options.getAskForNewGame();
   m_showPlayerInTurn = options.getShowPlayerInTurn();
   m_showComputerTime = options.getShowComputerTime();

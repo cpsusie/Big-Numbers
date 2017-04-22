@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Chess.h"
 #include "ChessDlg.h"
+#include <Timer.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -14,6 +15,24 @@ CChessApp::CChessApp() {
 }
 
 CChessApp theApp;
+
+class OptionsSaver : public TimeoutHandler {
+private:
+  Options  &m_options;
+  Semaphore m_gate;
+public:
+  OptionsSaver(Options &options) : m_options(options) {
+  }
+  void handleTimeout(Timer &timer) {
+    saveIfDirty();
+  }
+  void saveIfDirty() {
+    m_gate.wait();
+//    debugLog(_T("Options.dirty:%s\n"), boolToStr(m_options.isDirty()));
+    if(m_options.isDirty()) m_options.save();
+    m_gate.signal();
+  }
+};
 
 BOOL CChessApp::InitInstance() {
 
@@ -50,8 +69,13 @@ BOOL CChessApp::InitInstance() {
       setCurrentLanguage(m_options.getLangID());
       CChessDlg dlg(argument);
       m_pMainWnd = &dlg;
+      Timer        saveOptionsTimer(1);
+      OptionsSaver saveOptions(m_options);
+      saveOptionsTimer.startTimer(10000, saveOptions, true);
       dlg.DoModal();
       m_pMainWnd = NULL;
+      saveOptionsTimer.stopTimer();
+      saveOptions.saveIfDirty();
     }
   } catch(Exception e) {
     AfxMessageBox(format(_T("Exception:%s"), e.what()).cstr(), MB_ICONSTOP);

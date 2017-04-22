@@ -238,7 +238,7 @@ bool BackMoveGenerator::checksEnemyKing(int kingPos, const Piece *piece, int fro
   }
   switch(piece->getType()) {
   case King  :
-    return KINGSADJACENT(kingPos, from);;
+    return KINGSADJACENT(kingPos, from);
 
   case Queen :
     switch(KING_DIRECTION(piece->m_enemyState, from)) {

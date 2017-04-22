@@ -15,7 +15,7 @@ void ColoredTextFields::add(COLORREF backColor, COLORREF textColor, const String
   Array<ColoredText>::add(ColoredText(str, backColor, textColor));
 }
 
-#define FIELDSIZE m_resources.getFieldSize()
+#define FIELDSIZE ((CSize)m_resources.getFieldSize())
 
 bool DebugFlags::showState() const {
   return m_flags.m_showMaterial
@@ -33,30 +33,31 @@ DebugFlags::DebugFlags() {
   m_anySet = 0;
 }
 
-void ChessGraphics::paintDebugInfo(HDC dc) {
+void ChessGraphics::paintDebugInfo() {
   int line = 10;
-
-  HGDIOBJ oldFont = SelectObject(dc, m_resources.getDebugFont());
+  HDC hdc = GetDC(m_hwnd);
+  HGDIOBJ oldFont = SelectObject(hdc, m_resources.getDebugFont());
   try {
     if(m_debugFlags.showState() || m_debugFlags.m_flags.m_showFieldAttacks) {
       Game game1 = *m_game;
       game1.initState(false, &m_game->getKey());
       if(m_debugFlags.m_flags.m_showFieldAttacks) {
-        paintFieldAttacks(dc, *m_game, game1);
+        paintFieldAttacks(hdc, *m_game, game1);
       }
       if(m_debugFlags.showState()) {
-        paintStateString(dc, line, *m_game, game1);
+        paintStateString(hdc, line, *m_game, game1);
       }
     }
 
     if(m_debugFlags.m_flags.m_showLastMoveInfo) {
-      paintLastMove(dc, line);
+      paintLastMove(hdc, line);
     }
 
-    SelectObject(dc, oldFont);
-
+    SelectObject(hdc, oldFont);
+    ReleaseDC(m_hwnd, hdc);
   } catch(...) {
-    SelectObject(dc, oldFont);
+    SelectObject(hdc, oldFont);
+    ReleaseDC(m_hwnd, hdc);
     throw;
   }
 }

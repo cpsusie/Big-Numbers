@@ -24,6 +24,7 @@ public:
   void makeOpaque();
   void paintImage(PixRect &pr, const CPoint &dst, double scale = 1.0, double rotation = 0) const;
   void paintImage(HDC      dc, const CPoint &dst, double scale = 1.0, double rotation = 0) const;
+  CSize getSize(double scale = 1.0) const;
 };
 
 typedef CompactArray<Image*> ImageArray;

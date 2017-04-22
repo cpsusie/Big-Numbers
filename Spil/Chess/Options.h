@@ -253,15 +253,25 @@ public:
 };
 
 class Options : public DefaultOptions {
+private:
   static EngineRegister s_engineRegister;
   static void loadEngineRegister();
+  bool m_dirty;
+  inline void setDirty() {
+    m_dirty = true;
+  }
+  inline void clrDirty() {
+    m_dirty = false;
+  }
 public:
   Options();
   void save(); // to registry
   void load();
   void save(FILE *f);
   void load(FILE *f);
-
+  bool isDirty() const {
+    return m_dirty;
+  }
   void setShowFieldNames(        bool                show                                );
   void setShowLegalMoves(        bool                show                                );
   void setShowPlayerInTurn(      bool                show                                );
