@@ -17,7 +17,7 @@ CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
 , m_startOffset(      game.startWithBlack() ? 1 : 0)
 , m_lastPlyIndex(     game.getPlyCount()        - 1)
 {
-  m_historyStr  = _T("");
+  m_historyStr  = EMPTYSTRING;
   m_markedPly   = -1;
   m_origHistory = m_history;
 }

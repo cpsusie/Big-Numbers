@@ -625,7 +625,7 @@ void Tableau::traceDegeneracy(int pivotRow, int pivotColumn, const Real &minRati
   }
   const int constraintCount = getConstraintCount();
   String traceString;
-  TCHAR *delimiter = _T("");
+  TCHAR *delimiter = EMPTYSTRING;
   for(int r = 1; r <= constraintCount; r++) {
     if(r == pivotRow) {
       continue;
@@ -685,7 +685,7 @@ String Tableau::toString(int fieldSize, int decimals) const {
   const String separatorLine = format(_T("%s\n"), spaceString(12 + (width+1) * (fieldSize+1) + 3,_T('_')).cstr());
 
   String result;
-  result += format(_T("%-23sB %-*s"), format(_T("size:%dx%d"),getConstraintCount(),getWidth()).cstr(),fieldSize-8,_T(""));
+  result += format(_T("%-23sB %-*s"), format(_T("size:%dx%d"),getConstraintCount(),getWidth()).cstr(),fieldSize-8,EMPTYSTRING);
 
   for(int col = 1; col <= width; col++) {
     result += format(_T("%*s "), fieldSize, getVariableName(col).cstr());

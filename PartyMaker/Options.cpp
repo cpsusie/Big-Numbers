@@ -31,7 +31,7 @@ void DefaultOptions::setDefault() {
   m_confirmChoise     = false;
   m_autoSelect        = false;
   m_allowDuplicates   = false;
-  m_md5password       = _T("");
+  m_md5password       = EMPTYSTRING;
   m_maxChoise         = 20;
   m_volume            = 50;
   m_backgroundColor   = RGB(216,233,236);
@@ -106,7 +106,7 @@ void Options::setPassword(const String &oldPassword, const String &newPassword) 
 
   String newMD5Password;
   if(newPassword.length() == 0) {
-    newMD5Password = _T("");
+    newMD5Password = EMPTYSTRING;
   } else {
     MD5Context md5;
     newMD5Password = md5.digest(newPassword);

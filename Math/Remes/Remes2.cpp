@@ -441,7 +441,7 @@ void Remes::genCppFunction(FILE *f) {
     _ftprintf(f, _T("   "));
     BYTE *c = (BYTE*)&coef;
     for(int j = 0 ; j < sizeof(coef); j++, c++) {
-      _ftprintf(f,  _T("0x%02x%s"), *c, j == sizeof(coef) - 1 ? _T("") : _T(",") );
+      _ftprintf(f,  _T("0x%02x%s"), *c, j == sizeof(coef) - 1 ? EMPTYSTRING : _T(",") );
     }
     _ftprintf(f, _T("%s /* %20.16le */\n"), i == m_N ? _T(" ") : _T(","), coef);
   }
@@ -475,7 +475,7 @@ void Remes::genCpp80BitFunction(FILE *f) {
     _ftprintf( f, _T("   ") );
     BYTE *c = (BYTE*)&coef;
     for(int j = 0 ; j < sizeof(coef); j++, c++ ) {
-      _ftprintf( f, _T("0x%02x%s"), *c, j == sizeof(coef) - 1 ? _T("") : _T(",") );
+      _ftprintf( f, _T("0x%02x%s"), *c, j == sizeof(coef) - 1 ? EMPTYSTRING : _T(",") );
     }
     _ftprintf( f, _T("%s /* %s */\n"), i == m_N ? _T(" ") : _T(","), toString(coef).cstr());
   }
@@ -539,5 +539,5 @@ void Remes::genHeader(FILE *f) {
             m_M,m_K
            ,m_name
            ,toString(m_left).cstr(), toString(m_right).cstr()
-           ,m_relative?_T("relative "):_T(""),toString(m_maxError).cstr() );
+           ,m_relative?_T("relative "):EMPTYSTRING,toString(m_maxError).cstr() );
 }

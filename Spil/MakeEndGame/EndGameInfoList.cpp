@@ -54,7 +54,7 @@ String EndGameInfoList::getHeaderString(TablebaseInfoStringFormat f) const {
                                ,TIMESTAMPWIDTH, _T("Checktime"))
                         ,m_printAsPlies);
   default:
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 
@@ -81,7 +81,7 @@ String EndGameInfo::toString(TablebaseInfoStringFormat f, bool plies) const {
                 );
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("f=%d"), f);
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 

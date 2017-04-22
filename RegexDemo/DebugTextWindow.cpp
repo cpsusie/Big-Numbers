@@ -58,7 +58,7 @@ void CDebugTextWindow::substituteControl(CWnd *parent, int id) {
 
 void CDebugTextWindow::clear() {
   ResetContent();
-  m_codeText = _T("");
+  m_codeText = EMPTYSTRING;
 }
 
 void CDebugTextWindow::scrollToBottom() {
@@ -77,7 +77,7 @@ void CDebugTextWindow::setText(const String &text) {
   ResetContent();
   m_textLines = StringArray(Tokenizer(text, _T("\n")));
   for(size_t i = 0; i < m_textLines.size(); i++) {
-    AddString(_T(""));
+    AddString(EMPTYSTRING);
   }
   m_codeText = text;
 }

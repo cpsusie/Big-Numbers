@@ -5,8 +5,8 @@
 
 #ifdef _DEBUG
 #define DBG_addToDFALog(s)        { if(m_NFA.m_stepHandler) { m_logString += s; } }
-#define DBG_callDFAStepHandler(s) { DBG_addToDFALog(s); DBG_callCompilerHandler(m_logString, _T(""),_T(""),-1); }
-#define DBG_resetDFALog()           m_logString = _T("")
+#define DBG_callDFAStepHandler(s) { DBG_addToDFALog(s); DBG_callCompilerHandler(m_logString, EMPTYSTRING,EMPTYSTRING,-1); }
+#define DBG_resetDFALog()           m_logString = EMPTYSTRING
 #else
 #define DBG_addToDFALog(s)
 #define DBG_callDFAStepHandler(s)

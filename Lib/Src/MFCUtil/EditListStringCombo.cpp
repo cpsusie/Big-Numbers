@@ -73,7 +73,7 @@ BOOL CEditListStringCombo::Create(CWnd *parent, int id, const StringArray &strin
 
 String CEditListStringCombo::getListString(int index) const {
   if((index < 0) || (index >= GetCount())) {
-    return _T("");
+    return EMPTYSTRING;
   }
   CString str;
   GetLBText(index, str);

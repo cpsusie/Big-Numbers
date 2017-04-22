@@ -155,7 +155,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG *pMsg) {
     CPoint mp = getView()->getCurrentMousePoint();
     m_wndStatusBar.SetPaneText(1,format(_T("%3d,%3d px"),mp.x,mp.y).cstr());
   } else {
-    m_wndStatusBar.SetPaneText(1,_T(""));
+    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
   }
 
 //m_wndStatusBar.SetPaneText(2,getDocument()->getInfo().cstr());
@@ -218,7 +218,7 @@ static String getLoadFileName() {
   dlg.m_ofn.Flags |= OFN_FILEMUSTEXIST | OFN_EXPLORER | OFN_ENABLESIZING;
 
   if(dlg.DoModal() != IDOK) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     return dlg.m_ofn.lpstrFile;
   }

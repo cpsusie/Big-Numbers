@@ -26,7 +26,7 @@ void ListBox::drawItem(int i, bool selected) {
     attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
   }
 
-  TCHAR *s = (i >= (int)m_strings.size()) ? _T("") : m_strings[i].cstr();
+  TCHAR *s = (i >= (int)m_strings.size()) ? EMPTYSTRING : m_strings[i].cstr();
 
   tw->printf(getLeft() + 1, getTop() + i + 1 - m_scrollOffset, attr, _T("%-*.*s"), getWidth()-2,getWidth()-2,s);
 }

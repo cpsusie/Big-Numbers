@@ -278,7 +278,7 @@ void C4PaaStribeDlg::showMessage(TCHAR *format, ... ) {
 void C4PaaStribeDlg::newGame() {
   m_starter = OPPONENT(m_starter);
   m_game.init(m_starter);
-  showMessage(_T(""));
+  showMessage(EMPTYSTRING);
   Invalidate(FALSE);
   if(m_game.playerInTurn() == ME) {
     executeMachineMove();
@@ -336,7 +336,7 @@ void C4PaaStribeDlg::executeMove(Move m, Player who) {
 
 Move C4PaaStribeDlg::executeMachineMove() {
   int br = m_game.getBrickCount();
-  String scoreMsg, winnerMsg = _T("");
+  String scoreMsg, winnerMsg = EMPTYSTRING;
   int lookahead;
   if(isMenuItemChecked(this, ID_OPTIONS_BEGYNDER)) {
     lookahead = 6;
@@ -349,7 +349,7 @@ Move C4PaaStribeDlg::executeMachineMove() {
   if(isMenuItemChecked(this, ID_OPTIONS_VISEVALUERINGSFUNKTION)) {
     scoreMsg = format(_T("Score:%d evalCount:%s eval/sec:%s"),m_game.getBestScore(),format1000(m_game.getEvalCount()).cstr(), format1000(m_game.getEvalCountPerSecond()).cstr());
   } else {
-    scoreMsg = _T("");
+    scoreMsg = EMPTYSTRING;
   }
 
   if(m_game.getBestScore() > MAX_SCORE - 100 ) {

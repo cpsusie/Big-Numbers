@@ -7,7 +7,7 @@
 bool LexScanner::nextLine() {
   bool ret = true;
   if(_fgetts(m_lineBuffer, ARRAYSIZE(m_lineBuffer), m_input) == NULL) {
-    _tcscpy(m_lineBuffer, _T(""));
+    _tcscpy(m_lineBuffer, EMPTYSTRING);
     ret = false;
   } else {
     m_lineNo++;
@@ -150,7 +150,7 @@ start: // restart here if we meet a comment /*...*/ of //
 
   if(m_debug) {
     _tprintf(_T("%s\n"), m_lineBuffer);
-    _tprintf(_T("%*.*s^\n"), (int)(m_text - m_lineBuffer), (int)(m_text - m_lineBuffer), _T(""));
+    _tprintf(_T("%*.*s^\n"), (int)(m_text - m_lineBuffer), (int)(m_text - m_lineBuffer), EMPTYSTRING);
     _tprintf(_T("lex:lineno:%2d. token:%2d yytext:[%*.*s] yyleng:%d\n")
             , m_lineNo, m_token, m_length, m_length, m_text, m_length );
     pause();

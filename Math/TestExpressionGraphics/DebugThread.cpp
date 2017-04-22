@@ -86,7 +86,7 @@ unsigned int DebugThread::run() {
     m_expr.reduce();
   } catch(Exception e) {
     m_errorMsg = e.what();
-    notifyPropertyChanged(THREAD_ERROR, _T(""), m_errorMsg.cstr());
+    notifyPropertyChanged(THREAD_ERROR, EMPTYSTRING, m_errorMsg.cstr());
   } catch(bool) {
     // ignore. thrown after resume, when killed
   }

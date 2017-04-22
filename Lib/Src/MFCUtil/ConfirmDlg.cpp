@@ -121,7 +121,7 @@ BOOL CConfirmDlg::OnInitDialog() {
   CSize iconSize(0, 0);
   int msgBottom;
   if(m_icon) {
-    m_iconCtrl.Create( _T(""), SS_WHITEFRAME|WS_CHILD|WS_VISIBLE, CRect(58,47,99,62), messageArea, _IDC_STATICICON);
+    m_iconCtrl.Create( EMPTYSTRING, SS_WHITEFRAME|WS_CHILD|WS_VISIBLE, CRect(58,47,99,62), messageArea, _IDC_STATICICON);
     iconSize = getIconSize(m_icon);
     setWindowSize(&m_iconCtrl, iconSize);
     if(iconSize.cy > textSize.cy) {

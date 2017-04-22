@@ -36,7 +36,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-CGrabXmlDlg::CGrabXmlDlg(CWnd* pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(_T("")) {
+CGrabXmlDlg::CGrabXmlDlg(CWnd* pParent /*=NULL*/) : CDialogEx(IDD_GRABXML_DIALOG, pParent), m_url(EMPTYSTRING) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 

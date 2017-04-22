@@ -8,7 +8,7 @@
 #endif
 
 PasswordDlg::PasswordDlg(CWnd *pParent) : CDialog(PasswordDlg::IDD, pParent) {
-    m_password = _T("");
+    m_password = EMPTYSTRING;
     m_tryCount = 0;
 }
 

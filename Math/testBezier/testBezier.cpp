@@ -78,12 +78,12 @@ int main(int argc, char **argv) {
   BinomialTable binomial;
   const int maxN = 23;
   for(int n = 0; n <= maxN; n++) {
-    _tprintf(_T("n=%3d %*s"), n, FIELDSIZE*(maxN-n)/2,_T(""));
+    _tprintf(_T("n=%3d %*s"), n, FIELDSIZE*(maxN-n)/2,EMPTYSTRING);
     for(int k = 0; k <= n; k++) {
       const String vstr   = format(_T("%.0lf"), binomial(n,k));
       const int    vlen   = (int)vstr.length();
       const int    filler = (FIELDSIZE-1-vlen)/2;
-      _tprintf(_T("%-*s%-*s"), filler,_T("") , FIELDSIZE-filler, vstr.cstr());
+      _tprintf(_T("%-*s%-*s"), filler,EMPTYSTRING , FIELDSIZE-filler, vstr.cstr());
     }
     _tprintf((n<maxN) ? _T("\n") : _T("\n\n"));
   }

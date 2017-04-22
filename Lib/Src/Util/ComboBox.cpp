@@ -200,7 +200,7 @@ void ComboBox::drawItem(int i, bool selected) {
     attr = REVERSEVIDEO | BACKGROUND_INTENSITY;
   }
 
-  const TCHAR *s = (i >= (int)m_list.size()) ? _T("") : m_list[i].cstr();
+  const TCHAR *s = (i >= (int)m_list.size()) ? EMPTYSTRING : m_list[i].cstr();
 
   int dl = 1;
   int dt = 1;

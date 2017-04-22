@@ -125,7 +125,7 @@ String RemoteEndGameSubTablebase::loadPacked() {
 
 String RemoteEndGameSubTablebase::load(bool packed) {
   if(m_socket != INVALID_SOCKET) {
-    return _T("");
+    return EMPTYSTRING;
   }
 
   static int portNumber = -1;

@@ -19,7 +19,7 @@ END_MESSAGE_MAP()
 
 BOOL CEditListBooleanEditor::Create(CWnd *parent, int id) {
   const CRect r(CPoint(0,0), getCheckBoxSize());
-  const BOOL ok = CButton::Create(_T(""), WS_CHILD | BS_AUTOCHECKBOX | BS_NOTIFY, r, parent, id);
+  const BOOL ok = CButton::Create(EMPTYSTRING, WS_CHILD | BS_AUTOCHECKBOX | BS_NOTIFY, r, parent, id);
   if(ok) {
     ModifyStyleEx(0, /*WS_EX_STATICEDGE | */WS_EX_CLIENTEDGE);
   }

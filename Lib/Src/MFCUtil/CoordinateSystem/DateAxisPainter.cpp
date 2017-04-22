@@ -109,7 +109,7 @@ String DateAxisPainter::getText(double x) {
   case TMONTH      : return t.toString(MMyyyy);
   case TYEAR       : return t.toString(yyyy);
   default          : throwException(_T("DateAxisPainter::getText:Illegal timecomponent(=%d)"),(int)m_timeComponent);
-                     return _T("");
+                     return EMPTYSTRING;
   }
 }
 

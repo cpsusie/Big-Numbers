@@ -666,7 +666,7 @@ void RegistryKey::setValue(const RegistryValue &value) const {
 // ---------------------------------------------RegistryValue-------------------------------------------------------
 
 RegistryValue::RegistryValue() {
-  init(_T(""), REG_NONE, 0);
+  init(EMPTYSTRING, REG_NONE, 0);
 }
 
 RegistryValue::RegistryValue(const String &name, const BYTE *bytes, unsigned long size, unsigned long type) {
@@ -802,7 +802,7 @@ void RegistryValue::cleanup() {
 
 void RegistryValue::reset() {
   cleanup();
-  init(_T(""),REG_NONE,0);
+  init(EMPTYSTRING,REG_NONE,0);
 }
 
 void RegistryValue::setBuffer(const void *src) {

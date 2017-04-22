@@ -57,7 +57,7 @@ void SearchMachine::prepareSearch(bool forwardSearch, __int64 startPosition, con
   m_size          = m_byteContainer->getSize();
   m_finished      = false;
   m_result.clear();
-  m_resultMessage = _T("");
+  m_resultMessage = EMPTYSTRING;
 
   m_maxProgress = forwardSearch ? (m_size - m_startPosition) : m_startPosition;
 }
@@ -184,7 +184,7 @@ String SearchPattern::toString() const {
   }
   byteFormat = _T("%s") + byteFormat;
   const TCHAR *form      = byteFormat.cstr();
-  const TCHAR *delimiter = _T("");
+  const TCHAR *delimiter = EMPTYSTRING;
   for(size_t i = 0; i < size(); i++, delimiter = _T(" ")) {
     result += format(form, delimiter, (*this)[i]);
   }

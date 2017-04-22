@@ -460,7 +460,7 @@ void ExternEngine::send(const TCHAR *format,...) const {
   va_start(argptr, format);
   String line = vformat(format, argptr);
   va_end(argptr);
-  line.replace('\n',_T(""));
+  line.replace('\n',EMPTYSTRING);
   verbose(_T("send <%s>\n"), line.cstr());
   USES_CONVERSION;
   const char *aline = T2A(line.cstr());
@@ -771,7 +771,7 @@ String EngineOptionDescription::getDefaultAsString() const {
   case OptionTypeCombo   :
   case OptionTypeString  : return getDefaultString();
   case OptionTypeButton  :
-  default                : return _T("");
+  default                : return EMPTYSTRING;
   }
 }
 
@@ -884,7 +884,7 @@ InfoHashMap::InfoHashMap() {
 }
 
 void EngineInfoLine::reset() {
-  m_pv = m_score = m_string = _T("");
+  m_pv = m_score = m_string = EMPTYSTRING;
   m_depth    = 0;
   m_seldepth = 0;
   m_time     = 0;

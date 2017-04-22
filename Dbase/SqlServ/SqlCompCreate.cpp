@@ -80,7 +80,7 @@ void SqlCompiler::checkNumberRange(SyntaxNode *n, unsigned char dbtype) {
 
 void SqlCompiler::checkDefault(SyntaxNode *n, ColumnDefinition &col) {
   if(n->childCount() == 0) {
-    col.m_defaultValue = _T("");
+    col.m_defaultValue = EMPTYSTRING;
     return;
   }
   SyntaxNode *defaultValue = n->child(0);

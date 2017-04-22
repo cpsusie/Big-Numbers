@@ -45,7 +45,7 @@ String EndGameTablebase::load(ByteCounter *byteCounter) {
   m_loadRefCount++;
   if(isLoaded()) {
     END_LOADUNLOAD_CRITICAL_SECTION;
-    return _T("");
+    return EMPTYSTRING;
   }
   String result;
 #ifdef TABLEBASE_BUILDER
@@ -298,7 +298,7 @@ String EndGameTablebase::getFileName(TablebaseFileType fileType) const {
   case COMPRESSEDTABLEBASE  : return m_keydef.getCompressedFileName();    // available to both makeEndGame and chess-program
   default                   : throwInvalidArgumentException(__TFUNCTION__, _T("fileType=%d"), fileType);
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 void EndGameTablebase::capturedPieceTypeError(PieceType pieceType) const { // throws an Exception

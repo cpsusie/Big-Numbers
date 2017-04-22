@@ -23,7 +23,7 @@ SortPanelWnd::SortPanelWnd(CSortDemoDlg *parent, int methodId)
   m_sortThread     = NULL;
 
   const CRect r(0,0,100,100);
-  BOOL ok = Create( _T(""), WS_VISIBLE|WS_CHILD|SS_WHITERECT, r, parent, parent->getNextCtrlId());
+  BOOL ok = Create( EMPTYSTRING, WS_VISIBLE|WS_CHILD|SS_WHITERECT, r, parent, parent->getNextCtrlId());
   if(!ok) {
     throwException(_T("cannot cerate panel"));
   }

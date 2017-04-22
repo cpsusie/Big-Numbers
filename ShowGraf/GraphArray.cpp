@@ -4,7 +4,7 @@
 void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) {
   Viewport2D &vp = cs.getViewport();
   findButtonPositions(*vp.getDC(),buttonFont,buttonPanelRect);
-  m_error = _T("");
+  m_error = EMPTYSTRING;
   for(size_t i = 0; i < size(); i++) {
     try {
       getItem(i).paint(cs, buttonFont,(int)i==m_selected);

@@ -45,7 +45,7 @@ void CCoordinateSystem::substituteControl(CWnd *parent, int id) {
   }
   ctrl->DestroyWindow();
 
-  if(!Create(_T(""), style, rect, parent, id)) {
+  if(!Create(EMPTYSTRING, style, rect, parent, id)) {
     parent->MessageBox(format(_T("%s:Create failed"), method).cstr(), _T("Error"), MB_ICONWARNING);
     return;
   }

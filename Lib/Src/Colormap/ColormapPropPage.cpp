@@ -48,7 +48,7 @@ CColormapPropPage::CColormapPropPage() :
 {
   m_sunken     = FALSE;
   m_hasBorder  = FALSE;
-  m_caption    = _T("");
+  m_caption    = EMPTYSTRING;
   m_clientEdge = FALSE;
   m_staticEdge = FALSE;
   m_modalFrame = FALSE;

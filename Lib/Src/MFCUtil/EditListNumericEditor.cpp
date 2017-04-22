@@ -107,7 +107,7 @@ double CEditListNumericEditor::getDoubleValue() {
 
 String CEditListNumericEditor::valueToString(double v) const {
   if(v == 0) {
-    return (m_flags & LF_NUM_SHOW_ZERO) ? _T("0") : _T("");
+    return (m_flags & LF_NUM_SHOW_ZERO) ? _T("0") : EMPTYSTRING;
   } else {
     if(isIntegerType()) {
       return format(_T("%.0lf"), v);

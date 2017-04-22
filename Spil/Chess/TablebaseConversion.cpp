@@ -54,13 +54,13 @@ void EndGameTablebase::convert() {
   } catch(...) {
     unload();
 
-//    if(f1Dst != _T("")) unlink(f1Dst);
-//    if(f2Dst != _T("")) unlink(f2Dst);
+//    if(f1Dst != EMPTYSTRING) unlink(f1Dst);
+//    if(f2Dst != EMPTYSTRING) unlink(f2Dst);
 
-//    if(f3Dst != _T("")) unlink(f3Dst);
-    if(f4Dst != _T("")) unlink(f4Dst);
-//    if(f5Dst != _T("")) unlink(f5Dst);
-    if(f6Dst != _T("")) unlink(f6Dst);
+//    if(f3Dst != EMPTYSTRING) unlink(f3Dst);
+    if(f4Dst != EMPTYSTRING) unlink(f4Dst);
+//    if(f5Dst != EMPTYSTRING) unlink(f5Dst);
+    if(f6Dst != EMPTYSTRING) unlink(f6Dst);
     EndGameKeyDefinition::setMetric(DEPTH_TO_CONVERSION);
     throw;
   }

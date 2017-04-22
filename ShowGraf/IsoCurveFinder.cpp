@@ -309,7 +309,7 @@ String StackedRectangle::toString() const {
 
 static String intArrayToString(const CompactIntArray &a) {
   if(a.size() == 0) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     String result = format(_T("%d:%s"), 0, format1000(a[0]).cstr());
     for(size_t i = 1; i < a.size(); i++) {

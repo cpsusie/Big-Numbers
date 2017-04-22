@@ -741,7 +741,7 @@ void CHexViewView::showCaret() {
                           ,m_caret.x    , m_caret.y      , m_maxCaret.x   , m_maxCaret.y
                           ,m_anchor
                           ,getSelection().toString().cstr()
-                          ,m_shift ? _T("shift") : _T(""));
+                          ,m_shift ? _T("shift") : EMPTYSTRING);
 
   theApp.GetMainWnd()->SetWindowText(tmp.cstr());
 */

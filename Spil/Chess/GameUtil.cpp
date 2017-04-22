@@ -505,7 +505,7 @@ static void loadStrings() {
   pieceShortName.add(loadString(IDS_ROOKSHORTNAME  ));
   pieceShortName.add(loadString(IDS_BISHOPSHORTNAME));
   pieceShortName.add(loadString(IDS_KNIGHTSHORTNAME));
-  pieceShortName.add(_T(""));
+  pieceShortName.add(EMPTYSTRING);
 }
 
 static void unloadStrings() {
@@ -587,7 +587,7 @@ String getCastleString(MoveType type) {
 
 String getPinnedStateToString(PinnedState ps) {
   switch(ps) {
-  case NOT_PINNED         : return _T("");
+  case NOT_PINNED         : return EMPTYSTRING;
   case PINNED_TO_ROW      : return _T("-");
   case PINNED_TO_COL      : return _T("|");
   case PINNED_TO_DIAG1    : return _T("/");
@@ -599,7 +599,7 @@ String getPinnedStateToString(PinnedState ps) {
 
 String GameHistory::toString(MoveStringFormat mf, int width) const {
   if(size() == 0) {
-    return _T("");
+    return EMPTYSTRING;
   }
   StringArray strList;
   const bool firstIsBlack = ((*this)[0].getPlayer() == BLACKPLAYER);
@@ -648,7 +648,7 @@ String getKingAttackStateToString(KingAttackState attackState) {
 
 const TCHAR *getAnnotationToString(MoveAnnotation annotation) {
   switch(annotation) {
-  case NOANNOTATION        : return _T("");
+  case NOANNOTATION        : return EMPTYSTRING;
   case BAD_MOVE            : return _T("?");
   case VERYBAD_MOVE        : return _T("??");
   case GOOD_MOVE           : return _T("!");
@@ -656,7 +656,7 @@ const TCHAR *getAnnotationToString(MoveAnnotation annotation) {
   case INTERESTING_MOVE    : return _T("!?");
   case DOUBIOUS_MOVE       : return _T("?!");
   default                  : throwInvalidArgumentException(__TFUNCTION__, _T("annotation=%d"), annotation);
-                             return _T("");
+                             return EMPTYSTRING;
   }
 }
 
@@ -771,10 +771,10 @@ String secondsToString(double msec, bool showMilliSeconds) {
 
 String getPositionArrayToString(PositionArray positions) {
   if(positions == NULL) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     String result;
-    const TCHAR *delimiter = _T("");
+    const TCHAR *delimiter = EMPTYSTRING;
     for(int count = *(positions)++; count--; delimiter=_T(",")) {
       result += format(_T("%s%s"), delimiter, _getFieldName(*(positions++)).cstr());
     }
@@ -924,7 +924,7 @@ void setCurrentLanguage(LANGID langID) {
 String getResourceFileName(const String &fileName) {
   FileNameSplitter fInfo(__FILE__);
   fInfo.setDir(FileNameSplitter::getChildName(fInfo.getDir(),_T("res")));
-  return fInfo.setExtension(_T("")).setFileName(fileName).getAbsolutePath();
+  return fInfo.setExtension(EMPTYSTRING).setFileName(fileName).getAbsolutePath();
 }
 
 String createTempFileName() {

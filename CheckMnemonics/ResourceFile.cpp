@@ -104,7 +104,7 @@ void ResourceFile::analyze() const {
 void ResourceFile::analyzeCurrentSection() const {
   for(size_t i = 0; i < m_currentSection->m_menues.size(); i++) {
     const MenuDefinition &menu = m_currentSection->m_menues[i];
-    analyzeMenu(menu.getId(), _T(""), menu.getItems());
+    analyzeMenu(menu.getId(), EMPTYSTRING, menu.getItems());
   }
   for(size_t i = 0; i < m_currentSection->m_acceleratorDefinitions.size(); i++) {
     analyzeAccelerator(m_currentSection->m_acceleratorDefinitions[i]);
@@ -118,7 +118,7 @@ static String findFirstStringUsingAltLetter(const StringArray &a, TCHAR ch) {
   ch = _totupper(ch);
   for(size_t i = 0; i < a.size(); i++) {
     String t = a[i];
-    t.replace(_T("&&"), _T(""));
+    t.replace(_T("&&"), EMPTYSTRING);
     intptr_t index = t.find('&');
     if(index >= 0 && index < (int)t.length()-1) {
       const TCHAR c = _totupper(t[index+1]);
@@ -134,7 +134,7 @@ BitSet ResourceFile::getAltLetterSet(const StringArray &a, const String &contain
   BitSet altSet(256);
   for(size_t i = 0; i < a.size(); i++) {
     String t = a[i];
-    t.replace(_T("&&"), _T(""));
+    t.replace(_T("&&"), EMPTYSTRING);
     intptr_t index = t.find('&');
     if(index >= 0 && index < (int)t.length()-1) {
       const TCHAR ch = _totupper(t[index+1]);
@@ -212,7 +212,7 @@ void ResourceFile::analyzeDialog(const DialogDefinition &dialog) const {
           _tprintf(_T("menuHotKey:%-40s accel:%s\n"), menuItem->getHotKey().toString().cstr(), accArray[0]->toString().cstr());
           if(accArray.size() > 1) {
             for(size_t i = 1; i < accArray.size(); i++) {
-              _tprintf(_T("%-52saccel:%s\n"), _T(""), accArray[i]->toString().cstr());
+              _tprintf(_T("%-52saccel:%s\n"), EMPTYSTRING, accArray[i]->toString().cstr());
             }
           }
 */

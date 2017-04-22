@@ -75,7 +75,7 @@ String MemUsagePrinter::formatMemoryAmount(double bytes) {
   case MBYTE:
     return format(_T("%15s"), add1000Points(format(_T("%.2lf"), MegaBytes(bytes))).cstr()) + " Mb";
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 void MemUsagePrinter::show() {

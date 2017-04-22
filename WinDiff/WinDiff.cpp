@@ -153,7 +153,7 @@ void CWinDiffApp::addToRecentFileList(LPCTSTR lpszPathName) {
 String CWinDiffApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
-    return _T("");
+    return EMPTYSTRING;
   }
   CString name = list[index];
   return name.GetBuffer(name.GetLength());

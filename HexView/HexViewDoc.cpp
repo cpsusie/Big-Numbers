@@ -37,7 +37,7 @@ void CHexViewDoc::close() {
 }
 
 void CHexViewDoc::init() {
-  m_fileName      = _T("");
+  m_fileName      = EMPTYSTRING;
   m_file          = NULL;
   m_readOnly      = true;
   resetStat();
@@ -71,11 +71,11 @@ void CHexViewDoc::setReadOnly(bool readOnly) {
 }
 
 String CHexViewDoc::getTitle() const {
-  return m_file ? format(_T("HexView - %s%s (%s bytes)"), getFileName().cstr(), (IsModified()?_T(" *"):_T("")), format1000(getSize()).cstr()) : _T("HexView");
+  return m_file ? format(_T("HexView - %s%s (%s bytes)"), getFileName().cstr(), (IsModified()?_T(" *"):EMPTYSTRING), format1000(getSize()).cstr()) : _T("HexView");
 }
 
 const TCHAR *CHexViewDoc::getModeString() const {
-  return m_file ? m_readOnly ? _T("Read only") : _T("Edit") : _T("");
+  return m_file ? m_readOnly ? _T("Read only") : _T("Edit") : EMPTYSTRING;
 }
 
 void CHexViewDoc::getBytes(unsigned __int64 start, UINT length, ByteArray &dst) {

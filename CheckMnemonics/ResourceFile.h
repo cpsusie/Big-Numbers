@@ -44,7 +44,7 @@ public:
   }
   virtual String toString() const = 0;
   void clear() {
-    m_id = _T("");
+    m_id = EMPTYSTRING;
   }
 };
 

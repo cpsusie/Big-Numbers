@@ -36,7 +36,7 @@ namespace TestRegex {
 
 
 #ifdef _DEBUG
-    OUTPUT(_T("Pattern:<%s>%s"), pattern.cstr(), ignoreCase ? _T(" Ignore case") : _T(""));
+    OUTPUT(_T("Pattern:<%s>%s"), pattern.cstr(), ignoreCase ? _T(" Ignore case") : EMPTYSTRING);
     OUTPUT(_T("%s\nFastMap:%s"), regex.toString().cstr(), regex.fastMapToString().cstr());
 #endif
 

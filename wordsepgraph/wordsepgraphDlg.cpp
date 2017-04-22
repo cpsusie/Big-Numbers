@@ -32,8 +32,8 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CWordsepgraphDlg::CWordsepgraphDlg(CWnd *pParent) : CDialog(CWordsepgraphDlg::IDD, pParent) {
-  m_ord            = _T("");
-  m_details        = _T("");
+  m_ord            = EMPTYSTRING;
+  m_details        = EMPTYSTRING;
   m_hIcon          = theApp.LoadIcon(IDR_MAINFRAME);
   m_trainerThread  = NULL;
   m_timerIsRunning = false;
@@ -151,12 +151,12 @@ void CWordsepgraphDlg::OnOK() {
 
 void CWordsepgraphDlg::showResultDetail(const String &word) {
   String w = word;
-  w.replace('-',_T(""));
+  w.replace('-',EMPTYSTRING);
   CClientDC dc(this);
   dc.SelectObject(&m_printFont);
   dc.SetBkColor(RGB(192,192,192));
   WordWindowList wwl(w);
-  m_details = _T("");
+  m_details = EMPTYSTRING;
   for(size_t i = 0; i < wwl.size(); i++) {
     m_network.separateWordWindow(wwl[i]);
     const float result = m_network.getNetOutput();
@@ -169,7 +169,7 @@ void CWordsepgraphDlg::OnButtonSeparate() {
   try {
     UpdateData();
     String word = (LPCTSTR)m_ord;
-    word.replace('-',_T(""));
+    word.replace('-',EMPTYSTRING);
     const String result = m_network.separateWord(word);
 //    debugLog(_T("\"%s\"->\"%s\"\n"), word.cstr(), result.cstr());
     setWindowText(this, IDC_STATICRESULT, result);
@@ -184,7 +184,7 @@ void CWordsepgraphDlg::OnButtonLearn() {
     UpdateData();
     String word = (LPCTSTR)m_ord;
     m_network.learnWord(word);
-    word.replace('-',_T(""));
+    word.replace('-',EMPTYSTRING);
     word = m_network.separateWord(word);
     setWindowText(this, IDC_STATICRESULT, word);
     showResultDetail(word);
@@ -335,7 +335,7 @@ UINT TrainigThread::run() {
       for(i = 0; i < fejlord.size(); i++) {
         int index = fejlord[i];
         WordWindowCheck *wwc = wwmap.get(trainingData[index].m_window);
-        tmp.add(format(_T("%-40s %s"),(wwc)?wwc->m_ord.cstr():_T(""),trainingData[index].toString().cstr()));
+        tmp.add(format(_T("%-40s %s"),(wwc)?wwc->m_ord.cstr():EMPTYSTRING,trainingData[index].toString().cstr()));
       }
       tmp.sort(stringHashCmp);
       for(i = 0; i < tmp.size(); i++) {

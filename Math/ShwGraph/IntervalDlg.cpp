@@ -7,10 +7,10 @@
 #endif
 
 IntervalDlg::IntervalDlg(CWnd* pParent /*=NULL*/) : CDialog(IntervalDlg::IDD, pParent) {
-    m_maxxstr = _T("");
-    m_maxystr = _T("");
-    m_minxstr = _T("");
-    m_minystr = _T("");
+    m_maxxstr = EMPTYSTRING;
+    m_maxystr = EMPTYSTRING;
+    m_minxstr = EMPTYSTRING;
+    m_minystr = EMPTYSTRING;
     m_autoscaley = FALSE;
 }
 

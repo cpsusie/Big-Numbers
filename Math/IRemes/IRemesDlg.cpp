@@ -25,7 +25,7 @@ void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(_T("")), m_maxSearchEIterations(0)
+CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pParent), m_name(EMPTYSTRING), m_maxSearchEIterations(0)
 {
   m_M                    = 1;
   m_K                    = 1;
@@ -216,7 +216,7 @@ void CIRemesDlg::showThreadState() {
 //    resetRemesState = true;
   }
   if(resetRemesState) {
-    setWindowText(this, IDC_STATICSTATE, _T(""));
+    setWindowText(this, IDC_STATICSTATE, EMPTYSTRING);
   }
   setWindowText(this, IDC_STATICTHREADSTATE, str);
 }
@@ -765,14 +765,14 @@ void CIRemesDlg::setSubMK(int subM, int subK) {
   if (subM != m_subM) {
     String str = ((subM>=0) && ((subM!=m_M) || (m_M!=m_MTo)))
                ? format(_T("%u"), subM) 
-               : _T("");
+               : EMPTYSTRING;
     setWindowText(this, IDC_STATICSUBM, str);
     m_subM = subM;
   }
   if (subK != m_subK) {
     String str = ((subK>=0) && ((subK!=m_K) || (m_K!=m_KTo)))
                ? format(_T("%u"), subK) 
-               : _T("");
+               : EMPTYSTRING;
     setWindowText(this, IDC_STATICSUBK, str);
     m_subK = subK;
   }

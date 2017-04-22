@@ -26,7 +26,7 @@ void LRparser::initialize() {
   m_errorCount    = 0;
   m_done          = false;
   m_input         = 0;
-  m_text          = _T("");
+  m_text          = EMPTYSTRING;
   m_textLength    = 0;
   parserStackInit();
 }
@@ -209,7 +209,7 @@ int LRparser::parseStep() { // return 0 on continue, != 0 terminate parse
       gotptoken    = true;
 //      printf(_T("<%s> at (%d,%d)\n"),m_yyText,m_yyPos.m_lineno,m_yyPos.m_col);
     } else { // no previous token
-      m_text       = _T("");
+      m_text       = EMPTYSTRING;
       m_textLength = 0;
       gotptoken    = false;
     }

@@ -3,7 +3,7 @@
 
 KMPAutomate::KMPAutomate() {
   initPointers();
-  compilePattern(_T(""));
+  compilePattern(EMPTYSTRING);
 }
 
 KMPAutomate::KMPAutomate(const String &pattern, bool forwardSearch, const unsigned char *translateTable) {

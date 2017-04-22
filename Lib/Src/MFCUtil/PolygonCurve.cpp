@@ -22,7 +22,7 @@ String PolygonCurve::toString() const {
   default             : result = format(_T("unknown type:%d:"), m_type); break;
   }
 
-  const TCHAR *delim = _T("");
+  const TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < m_points.size(); i++, delim = _T("        ")) {
     result += format(_T("%s%s\n"), delim, m_points[i].toString().cstr());
   }

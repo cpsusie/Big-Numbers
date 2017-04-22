@@ -53,7 +53,7 @@ String DialogField::getSelText() {
   if(isSelected()) {
     return substr(m_str, m_selStart, m_selEnd - m_selStart);
   } else {
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 

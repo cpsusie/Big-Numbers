@@ -88,7 +88,7 @@ void CHexViewApp::addToRecentFileList(const String &name) {
 String CHexViewApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     return (LPCTSTR)list[index];
   }

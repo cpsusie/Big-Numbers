@@ -68,7 +68,7 @@ String PlayerList::getName(UINT playerId) const {
     throwInvalidArgumentException(__TFUNCTION__,_T("playerId=%d. Must be [0..2]"),m_count);
   }
   if(playerId > m_count) {
-    return _T("");
+    return EMPTYSTRING;
   }
   return m_name[playerId];
 }

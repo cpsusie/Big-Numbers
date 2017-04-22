@@ -145,7 +145,7 @@ void GrammarTables::printCpp(MarginFile &output, bool useTableCompression) const
                    "%*s,action, successor, productionLength, leftSide\n"
                    "%*s,rightSideTable, symbolName\n"
                    "%*s,%d, %d, %d, %d);\n\n")
-                   ,column,_T(""),column,_T(""),column,_T("")
+                   ,column,EMPTYSTRING,column,EMPTYSTRING,column,EMPTYSTRING
                    ,getTerminalCount(), getSymbolCount(), getProductionCount(), getStateCount());
 
   const int pointerSize = sizeof(void*);

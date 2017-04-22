@@ -804,7 +804,7 @@ String CompilerStack::getDefinedRegStr(UINT regnum) const { // return a string w
     regSet.remove(top(h).m_regno);
   }
   if(regSet.isEmpty()) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     return format(_T("Defined %s %s"), (regSet.size()==1)?_T("is"):_T("are"), regSet.toString().cstr());
   }
@@ -851,7 +851,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
 
   while(!scanner.eos()) {
 
-    DBG_callCompilerHandler(_T(""));
+    DBG_callCompilerHandler(EMPTYSTRING);
 
     DBG_saveIndex(commandChar);
     const int commandStartIndex = scanner.getIndex();
@@ -1206,7 +1206,7 @@ void Regex::compilePattern1(const TCHAR *pattern) {
     }
   }
 
-  DBG_callCompilerHandler(_T(""));
+  DBG_callCompilerHandler(EMPTYSTRING);
 
   m_fastMap = first(0, m_codeSize, &m_matchEmpty);
   m_hasCompiled = true;

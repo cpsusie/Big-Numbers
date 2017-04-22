@@ -33,7 +33,7 @@ BitSet32  TestStatistic::s_timeToPrint;
 static    SetTimeToPrint timerEventHandler;
 
 const String TestStatistic::s_signaturString[] = {
-  _T("")
+  EMPTYSTRING
  ,_T("(const BigReal &f)")
  ,_T("(const BigReal &x, unsigned int digits)")
  ,_T("(const BigReal &x, const BigReal &f)")

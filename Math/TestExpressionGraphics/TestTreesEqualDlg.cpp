@@ -8,8 +8,8 @@
 #endif
 
 CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestTreesEqualDlg::IDD, pParent) {
-	m_expr1 = _T("");
-	m_expr2 = _T("");
+	m_expr1 = EMPTYSTRING;
+	m_expr2 = EMPTYSTRING;
 
   m_focusCtrlId = -1;
 }
@@ -100,7 +100,7 @@ void CTestTreesEqualDlg::OnTestTreesEqual() {
     const ExpressionNode *root1 = m_e[0].getRoot();
     const ExpressionNode *root2 = m_e[1].getRoot();
     const bool            eq    = m_e[0].treesEqual(root1, root2);
-    MessageBox(format(_T("Exspressions are %sequal"), eq?_T(""):_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
+    MessageBox(format(_T("Exspressions are %sequal"), eq?EMPTYSTRING:_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
@@ -109,7 +109,7 @@ void CTestTreesEqualDlg::OnTestTreesEqual() {
 void CTestTreesEqualDlg::OnTestTreesEqualMinus() {
   try {
     const bool eq = m_e[0].equalMinus(m_e[1]);
-    MessageBox(format(_T("Exspressions are %sNegative-Equal"), eq?_T(""):_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
+    MessageBox(format(_T("Exspressions are %sNegative-Equal"), eq?EMPTYSTRING:_T("not ")).cstr(), _T("Test"), MB_ICONINFORMATION);
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }

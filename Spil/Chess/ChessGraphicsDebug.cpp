@@ -208,8 +208,8 @@ void ChessGraphics::paintFieldAttacks(HDC dc, const CPoint &p, UINT count1, UINT
     break;
   default                :
     offset    = getLDAOffset(f);
-    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : (count1?format(_T("%d"),count1):_T(""));
-    kingStr   = isKingError ? format(_T("%c(%c)"),(hasKing1?'K':' '),(hasKing2?'K':' ')) : (hasKing1?_T("K"):_T(""));
+    attackStr = isError     ? format(_T("%d(%d)"),count1,count2) : (count1?format(_T("%d"),count1):EMPTYSTRING);
+    kingStr   = isKingError ? format(_T("%c(%c)"),(hasKing1?'K':' '),(hasKing2?'K':' ')) : (hasKing1?_T("K"):EMPTYSTRING);
     break;
   }
 

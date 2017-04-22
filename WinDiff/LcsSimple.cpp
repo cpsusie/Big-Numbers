@@ -38,8 +38,8 @@ void LcsSimple::init(const LineArray &a, const LineArray &b) {
   const size_t bs = b.size();
   m_A.clear();
   m_B.clear();
-  m_A.add(LcsElement(-1,_T(""))); // add a dummy-Element to make the real Elements from [1..n]
-  m_B.add(LcsElement(-1,_T(""))); // do
+  m_A.add(LcsElement(-1,EMPTYSTRING)); // add a dummy-Element to make the real Elements from [1..n]
+  m_B.add(LcsElement(-1,EMPTYSTRING)); // do
   if(as >= bs) {
     m_seqReversed = false;
     for(UINT i = 0; i < as; i++) {

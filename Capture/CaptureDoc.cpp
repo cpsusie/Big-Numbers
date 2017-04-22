@@ -36,7 +36,7 @@ BOOL CCaptureDoc::OnNewDocument() {
   if (!CDocument::OnNewDocument()) {
     return FALSE;
   }
-  SetTitle(_T(""));
+  SetTitle(EMPTYSTRING);
   resetImage();
   return TRUE;
 }

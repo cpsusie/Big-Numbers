@@ -475,7 +475,7 @@ LoadableMediaArray::LoadableMediaArray() : m_mediaCollection(MediaDatabase::getM
   m_progressThread = NULL;
   m_busy           = false;
   m_cancelled      = false;
-  m_dir            = _T("");
+  m_dir            = EMPTYSTRING;
   initFileName();
 }
 
@@ -714,10 +714,10 @@ void MusicDirList::init(const String &dir) {
     String dir;
     if(s.equalsIgnoreCase(_T("(N)"))) {
       active = false;
-      dir = tok.hasNext() ? tok.next() : _T("");
+      dir = tok.hasNext() ? tok.next() : EMPTYSTRING;
     } else if(s.equalsIgnoreCase(_T("(Y)"))) {
       active = true;
-      dir = tok.hasNext() ? tok.next() : _T("");
+      dir = tok.hasNext() ? tok.next() : EMPTYSTRING;
     } else {
       dir = s;
     }

@@ -75,7 +75,7 @@ void CurrentWork::handlePropertyChanged(const PropertyContainer *source, int id,
 
 void CurrentWork::update() {
   if(m_currentTablebase == NULL) {
-    updateMessageField(_T(""));
+    updateMessageField(EMPTYSTRING);
   } else {
     updateMessageField(_T(" - Currently working on %s - metric:%s")
                       ,m_currentTablebase->getName().cstr()

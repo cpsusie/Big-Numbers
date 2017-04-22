@@ -9,7 +9,7 @@
 
 
 DisplayPoly::DisplayPoly(CWnd* pParent /*=NULL*/) : CDialog(DisplayPoly::IDD, pParent) {
-  m_fisk = _T("");
+  m_fisk = EMPTYSTRING;
   counter = 0;
 }
 

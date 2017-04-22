@@ -471,8 +471,8 @@ void BigRealTestClass::testQuotRemainder() {
         , quotient.toString().cstr()
         , remainder64.toString().cstr()
         , remainder.toString().cstr()
-        , (qerror64 ? format(_T("qdiff:%s\n"), qdiff64.toString().cstr()).cstr() : _T(""))
-        , (rerror64 ? format(_T("rdiff:%s\n"), rdiff64.toString().cstr()).cstr() : _T(""))
+        , (qerror64 ? format(_T("qdiff:%s\n"), qdiff64.toString().cstr()).cstr() : EMPTYSTRING)
+        , (rerror64 ? format(_T("rdiff:%s\n"), rdiff64.toString().cstr()).cstr() : EMPTYSTRING)
       );
 
 #ifdef IS64BIT
@@ -485,7 +485,7 @@ void BigRealTestClass::testQuotRemainder() {
         f = OKFile2;
       }
 
-      header = _T("");
+      header = EMPTYSTRING;
       if (qerror128 || rerror128) {
         if (qerror128) header += _T("Q2-error ");
         if (rerror128) header += _T("R2-error");
@@ -501,8 +501,8 @@ void BigRealTestClass::testQuotRemainder() {
         , quotient.toString().cstr()
         , remainder128.toString().cstr()
         , remainder.toString().cstr()
-        , (qerror128 ? format(_T("qdiff:%s\n"), qdiff128.toString().cstr()).cstr() : _T(""))
-        , (rerror128 ? format(_T("rdiff:%s\n"), rdiff128.toString().cstr()).cstr() : _T(""))
+        , (qerror128 ? format(_T("qdiff:%s\n"), qdiff128.toString().cstr()).cstr() : EMPTYSTRING)
+        , (rerror128 ? format(_T("rdiff:%s\n"), rdiff128.toString().cstr()).cstr() : EMPTYSTRING)
       );
 #endif // IS64BIT
 

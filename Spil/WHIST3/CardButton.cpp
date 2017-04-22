@@ -25,7 +25,7 @@ void CardButton::SetPosition(int x, int y, bool redraw) {
 }
 
 void CardButton::Create(int x, int y) {
-  if(!CBitmapButton::Create(_T("")
+  if(!CBitmapButton::Create(EMPTYSTRING
                            ,WS_CHILD|WS_VISIBLE|BS_OWNERDRAW|BS_NOTIFY
                            ,CRect(x,y,x+CardBitmap::getCardWidth(),y+CardBitmap::getCardHeight())
                            ,m_parent

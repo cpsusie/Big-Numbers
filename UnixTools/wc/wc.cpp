@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
     if(isatty(stdin)) {
       usage();
     }
-    wordCounter.wc(_T(""),stdin);
+    wordCounter.wc(EMPTYSTRING,stdin);
   } else {
     FileTreeWalker::traverseArgv(argv, wordCounter, recurse);
     wordCounter.printTotal();

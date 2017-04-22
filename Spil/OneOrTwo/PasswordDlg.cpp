@@ -8,7 +8,7 @@
 #endif
 
 CPasswordDlg::CPasswordDlg(CWnd *pParent) : CDialog(CPasswordDlg::IDD, pParent) {
-  m_password = _T("");
+  m_password = EMPTYSTRING;
 }
 
 void CPasswordDlg::DoDataExchange(CDataExchange *pDX) {

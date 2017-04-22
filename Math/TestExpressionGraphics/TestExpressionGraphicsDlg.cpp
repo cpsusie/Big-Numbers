@@ -35,7 +35,7 @@ END_MESSAGE_MAP()
 
 CTestExpressionGraphicsDlg::CTestExpressionGraphicsDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestExpressionGraphicsDlg::IDD, pParent), m_numberFormat(0)
 {
-    m_exprText        = _T("");
+    m_exprText        = EMPTYSTRING;
     m_x               = 0.0;
     m_hIcon           = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
     m_debugExpr       = NULL;
@@ -358,7 +358,7 @@ void CTestExpressionGraphicsDlg::createThread(Expression &expr) {
 }
 
 void CTestExpressionGraphicsDlg::destroyThread() {
-  m_debugError = _T("");
+  m_debugError = EMPTYSTRING;
   if(hasDebugThread()) {
     m_debugThread->kill();
     switch(m_debugWinId) {
@@ -1172,18 +1172,18 @@ void CTestExpressionGraphicsDlg::clearDerivedImage() {
 
 void CTestExpressionGraphicsDlg::clearResultValue() {
   m_flags.remove(HASFVALUE);
-  setWindowText(this, IDC_EDITRESULTVALUE, _T(""));
+  setWindowText(this, IDC_EDITRESULTVALUE, EMPTYSTRING);
   clearDerivedValue1();
 }
 
 void CTestExpressionGraphicsDlg::clearDerivedValue1() {
   m_flags.remove(HASDERIVEDVALUE1);
-  setWindowText(this, IDC_EDITDERIVEDVALUE1, _T(""));
+  setWindowText(this, IDC_EDITDERIVEDVALUE1, EMPTYSTRING);
 }
 
 void CTestExpressionGraphicsDlg::clearDerivedValue2() {
   m_flags.remove(HASDERIVEDVALUE2);
-  setWindowText(this, IDC_EDITDERIVEDVALUE2, _T(""));
+  setWindowText(this, IDC_EDITDERIVEDVALUE2, EMPTYSTRING);
 }
 
 void CTestExpressionGraphicsDlg::showDebugInfo(const TCHAR *format,...) {
@@ -1195,7 +1195,7 @@ void CTestExpressionGraphicsDlg::showDebugInfo(const TCHAR *format,...) {
 }
 
 void CTestExpressionGraphicsDlg::clearDebugInfo() {
-  showDebugInfo(_T(""));
+  showDebugInfo(EMPTYSTRING);
 }
 
 static int variableNameCompare(const ExpressionVariableWithValue &v1, const ExpressionVariableWithValue &v2) {

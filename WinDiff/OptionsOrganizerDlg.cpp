@@ -30,7 +30,7 @@ BOOL COptionsOrganizerDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
-  m_nameListCtrl.InsertColumn( 0,_T(""),LVCFMT_LEFT, 200);
+  m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
   updateListCtrl();
   GetDlgItem(IDC_LISTOPTIONNAMES)->SetFocus();
   setSelectedIndex(m_nameListCtrl, 0);

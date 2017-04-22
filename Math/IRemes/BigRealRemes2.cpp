@@ -108,7 +108,7 @@ void Remes::solve(const UINT M, const UINT K) {
   m_errorValue.setDimAndPrecision(       dimension, m_digits);
   m_extremaStringArray.clear();
   for(UINT i = 0; i < dimension; i++) {
-    m_extremaStringArray.add(_T(""));
+    m_extremaStringArray.add(EMPTYSTRING);
   }
   initSolveState();
   initCoefficientVector(dimension);
@@ -154,7 +154,7 @@ RestartMainIteration:
       }
 
       if(m_MMQuot <= m_lastMMQuot) {
-        setProperty(WARNING, m_warning, _T(""));
+        setProperty(WARNING, m_warning, EMPTYSTRING);
       } else {
         const String msg = format(_T("MinMaxQuot=%s > last MinMaxQuot=%s"), FormatBigReal(m_MMQuot).cstr(), FormatBigReal(m_lastMMQuot).cstr());
         if(m_mainIteration < 2) {
@@ -451,7 +451,7 @@ void Remes::resetExtremaCount() {
   m_minExtremumIndex = -1;
   m_maxExtremumIndex = -1;
   for(size_t i = 0; i < m_extremaStringArray.size(); i++) {
-    m_extremaStringArray[i] = _T("");
+    m_extremaStringArray[i] = EMPTYSTRING;
   }
   setProperty(EXTREMACOUNT, m_extremaCount, 0);
 }

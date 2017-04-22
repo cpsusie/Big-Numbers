@@ -177,7 +177,7 @@ namespace TestBitSet {
 
 
   Element::Element() {
-    f = new String(_T(""));
+    f = new String(EMPTYSTRING);
   }
 
   Element::Element(int v) {
@@ -311,7 +311,7 @@ namespace TestBitSet {
       line += format(_T("%sc[%2d] = %.5lf"), ((i % 5) == 0) ? _T("      ") : _T(", "), i, (double)counters[i] / SAMPLE_COUNT);
       if ((i % 5) == 4) {
         OUTPUT(_T("%s"), line.cstr());
-        line = _T("");
+        line = EMPTYSTRING;
       }
     }
     if (line.length() > 0) {

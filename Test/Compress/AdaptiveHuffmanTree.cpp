@@ -245,9 +245,9 @@ String AdaptivHuffmanTree::getCodeString(UINT ch) const {
 
 void AdaptivHuffmanTree::dump(int index, int level) const {
   const HuffmanNode &n = m_nodes[index];
-  _tprintf(_T("%*.*sindex:%-3d parent:%-3d weight:%-3d"),level,level,_T(""),index, n.m_parent, n.m_weight);
+  _tprintf(_T("%*.*sindex:%-3d parent:%-3d weight:%-3d"),level,level,EMPTYSTRING,index, n.m_parent, n.m_weight);
   if(n.m_childIsLeaf) {
-    _tprintf(_T(" %s%*.*s%s"), getDisplayString(n.m_child).cstr(),40-level,40-level,_T(""),getCodeString(n.m_child).cstr());
+    _tprintf(_T(" %s%*.*s%s"), getDisplayString(n.m_child).cstr(),40-level,40-level,EMPTYSTRING,getCodeString(n.m_child).cstr());
   }
 
   _tprintf(_T("\n"));

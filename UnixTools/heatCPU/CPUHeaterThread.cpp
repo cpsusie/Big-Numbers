@@ -84,7 +84,7 @@ void CPUHeaterThread::infiniteLoop() {
     }
     if(m_wantedCPULoad == 0) {
       if(m_infoWnd) {
-        m_infoWnd->SetWindowText(_T(""));
+        m_infoWnd->SetWindowText(EMPTYSTRING);
       }
       suspend();
     } else {

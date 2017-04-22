@@ -8,11 +8,11 @@ static String forceToString(const SyntaxNode *n) {
   case STRING    : return n->getString();
   default        : ParserTree::dumpSyntaxTree(n);
                    throwException(_T("forceToString:symbol must be NUMBER,IDENTIFIER or STRING"));
-                   return _T("");
+                   return EMPTYSTRING;
   }
 }
 
-LanguageDirective::LanguageDirective(const ResourceFile *rf) : ResourceDefinition(LANGUAGE_DIRECTIVE, _T(""),rf) {
+LanguageDirective::LanguageDirective(const ResourceFile *rf) : ResourceDefinition(LANGUAGE_DIRECTIVE, EMPTYSTRING,rf) {
 }
 
 LanguageDirective::LanguageDirective(const SyntaxNode *n, const ResourceFile *rf) 
@@ -22,7 +22,7 @@ LanguageDirective::LanguageDirective(const SyntaxNode *n, const ResourceFile *rf
 
 void LanguageDirective::clear() {
   ResourceDefinition::clear();
-  m_subLangId = _T("");
+  m_subLangId = EMPTYSTRING;
 }
 
 String LanguageDirective::toString() const {
@@ -93,7 +93,7 @@ StringArray DialogDefinition::getControlStringWithAltNeedingAccelerator() const 
       { const String &visibleText = getControlText(ctrl);
         String t = visibleText;
       
-        t.replace(_T("&&"),_T(""));
+        t.replace(_T("&&"),EMPTYSTRING);
         intptr_t index = t.find('&');
         if(index >= 0 && index < (int)t.length()-1) {
           result.add(visibleText);
@@ -148,7 +148,7 @@ static const TCHAR *menuTypeName(MenuItemType type) {
 }
 
 String MenuItem::toString(int level) const {
-  return format(_T("%*.*s%-10s%-30s"), level,level,_T(""), format(_T("%s:"), menuTypeName(m_type)).cstr(), format(_T("<%s>"), m_visibleText.cstr()).cstr());
+  return format(_T("%*.*s%-10s%-30s"), level,level,EMPTYSTRING, format(_T("%s:"), menuTypeName(m_type)).cstr(), format(_T("<%s>"), m_visibleText.cstr()).cstr());
 }
 
 MenuTextItem::MenuTextItem(const SyntaxNode *n) : MenuItem(MENU_TEXT) {
@@ -214,7 +214,7 @@ MenuHotKey::MenuHotKey(const String &s) {
     } else if(p.equalsIgnoreCase(_T("shift")) || p.equalsIgnoreCase(_T("shft"))) {
       m_flags |= ACC_SHIFT;
     } else if(!tok.hasNext()) {
-      p.replace(_T("&&"),_T("§#")).replace(_T("&"),_T("")).replace(_T("§#"),_T("&&")).replace(_T('.'),_T(""));
+      p.replace(_T("&&"),_T("§#")).replace(_T("&"),EMPTYSTRING).replace(_T("§#"),_T("&&")).replace(_T('.'),EMPTYSTRING);
       m_key = p;
     }
   }

@@ -429,7 +429,7 @@ void CEditListCtrl::modelValueToList(const ListCell &cell, bool newItem) {
   case LFT_BOOL :
     { const bool v     = *(bool*)m_model->getValueAt(cell.y, cell.x);
       lv.mask          = LVIF_TEXT;
-      lv.pszText       = _T("");
+      lv.pszText       = EMPTYSTRING;
       setItem(lv, newItem);
     }
     break;

@@ -10,7 +10,7 @@
 CSelectBreakStatesDlg::CSelectBreakStatesDlg(const ParserTables &tables, BitSet &stateSet, CWnd *pParent)
 : CDialog(CSelectBreakStatesDlg::IDD, pParent), m_tables(tables), m_stateSet(stateSet)
 {
-  m_states = _T("");
+  m_states = EMPTYSTRING;
 }
 
 void CSelectBreakStatesDlg::DoDataExchange(CDataExchange *pDX) {

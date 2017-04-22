@@ -241,7 +241,7 @@ String EngineOptionControl::getStringValue() const {
     return getWindowText(m_ctrl);
   default:;
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 void EngineOptionControl::validate() const {

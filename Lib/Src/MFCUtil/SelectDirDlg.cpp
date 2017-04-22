@@ -11,7 +11,7 @@
 CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd* pParent) : CDialog(CSelectDirDlg::IDD, pParent) {
 	//{{AFX_DATA_INIT(CSelectDirDlg)
 	m_dir = startDir.cstr();
-	m_drive = _T("");
+	m_drive = EMPTYSTRING;
 	//}}AFX_DATA_INIT
 }
 

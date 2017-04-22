@@ -75,12 +75,12 @@ String MoveBase::toSimpleFormat(bool uciFormat) const {
   case PROMOTION    :
     return format(_T("%s%s%s%s")
                  ,getFieldName(m_from)
-                 ,uciFormat?_T(""):_T("-")
+                 ,uciFormat?EMPTYSTRING:_T("-")
                  ,getFieldName(m_to)
                  ,getPieceTypeShortNameEnglish(Game::legalPromotions[m_promoteIndex]));
 
   default:
-    return format(_T("%s%s%s"), getFieldName(m_from), uciFormat?_T(""):_T("-"), getFieldName(m_to));
+    return format(_T("%s%s%s"), getFieldName(m_from), uciFormat?EMPTYSTRING:_T("-"), getFieldName(m_to));
   }
 }
 
@@ -134,7 +134,7 @@ String Move::toString(MoveStringFormat mf) const {
   case MOVE_UCIFORMAT   : return toStringUCIFormat();
   case MOVE_DEBUGFORMAT : return toStringDebugFormat();
   default               : throwInvalidArgumentException(__TFUNCTION__, _T("mf=%d"), mf);
-                          return _T("");
+                          return EMPTYSTRING;
   }
 }
 
@@ -165,7 +165,7 @@ String Move::toStringLongFormat() const {
 
   default:
     throwException(_T("Unknown moveType:%d"),m_type);
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 
@@ -180,7 +180,7 @@ String Move::toStringDebugFormat() const {
                   ,m_piece->getShortName().cstr()
                   ,getFieldName(m_from)
                   ,m_capturedPiece ? 'x' : '-'
-                  ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():_T("")),getFieldName(m_to)).cstr()
+                  ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():EMPTYSTRING),getFieldName(m_to)).cstr()
                   ,m_dirIndex
                   ,m_moveIndex
                   ,getMoveDirectionName(m_direction).cstr());
@@ -190,7 +190,7 @@ String Move::toStringDebugFormat() const {
                   ,getMoveTypeName(m_type).cstr()
                   ,getFieldName(m_from)
                   ,m_capturedPiece ? 'x' : '-'
-                  ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():_T("")),getFieldName(m_to)).cstr()
+                  ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():EMPTYSTRING),getFieldName(m_to)).cstr()
                   ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]).cstr()
                   ,m_dirIndex
                   ,m_moveIndex
@@ -215,7 +215,7 @@ String Move::toStringDebugFormat() const {
 
   default:
     throwException(_T("Unknown moveType:%d"),m_type);
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 
@@ -238,7 +238,7 @@ ExecutableMove &ExecutableMove::setNoMove() {
   m_player            = WHITEPLAYER;
   m_pieceType         = NoPiece;
   m_capturedPieceType = NoPiece;
-  m_uniqueString      = _T("");
+  m_uniqueString      = EMPTYSTRING;
   m_kingAttackState   = KING_NOT_ATTACKED;
   m_checkMate         = false;
   return *this;
@@ -325,7 +325,7 @@ String ExecutableMove::toString(MoveStringFormat mf) const {
   case MOVE_UCIFORMAT   : return toStringUCIFormat();
   case MOVE_DEBUGFORMAT : return toStringDebugFormat()   + getAnnotationToString(m_annotation);
   default               : throwInvalidArgumentException(__TFUNCTION__, _T("mf=%d"), mf);
-                          return _T("");
+                          return EMPTYSTRING;
   }
 }
 
@@ -447,7 +447,7 @@ String ExecutableMove::toStringDebugFormat() const {
                   ,getPieceTypeShortName(m_pieceType).cstr()
                   ,getFieldName(m_from)
                   ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
-                  ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():_T(""))
+                  ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():EMPTYSTRING)
                                     ,getFieldName(m_to)).cstr()
                   ,getCheckString()
                   ,m_dirIndex
@@ -459,7 +459,7 @@ String ExecutableMove::toStringDebugFormat() const {
                   ,getMoveTypeName(m_type).cstr()
                   ,getFieldName(m_from)
                   ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
-                  ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():_T(""))
+                  ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():EMPTYSTRING)
                                     ,getFieldName(m_to)).cstr()
                   ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]).cstr()
                   ,getCheckString()
@@ -497,7 +497,7 @@ const TCHAR *ExecutableMove::getCheckString() const {
     return _T("#");
   }
   switch(m_kingAttackState) {
-  case KING_NOT_ATTACKED           : return _T("");
+  case KING_NOT_ATTACKED           : return EMPTYSTRING;
   case KING_LD_ATTACKED_FROM_ROW   :
   case KING_LD_ATTACKED_FROM_COL   :
   case KING_LD_ATTACKED_FROM_DIAG1 :

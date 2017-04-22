@@ -369,7 +369,7 @@ BOOL CChessDlg::OnInitDialog() {
   m_layoutManager.OnInitDialog(this, RETAIN_ASPECTRATIO);
   switch(getDialogMode()) {
   case PLAYMODE:
-    if(m_startupFileName != _T("")) {
+    if(m_startupFileName != EMPTYSTRING) {
       try {
         load(m_startupFileName);
       } catch(Exception e) {
@@ -1468,7 +1468,7 @@ String CChessDlg::getGameResultToString() {
     if(game.getPositionType() == DRAW_POSITION) {
       return format(_T("%s\n%s"), loadString(IDS_MSG_INSUFFICIENT_MATERIAL).cstr(), loadString(IDS_DRAW).cstr());
     } else {
-      return _T("");
+      return EMPTYSTRING;
     }
   case WHITE_CHECKMATE           : return loadString(IDS_MSG_BLACK_WIN);
   case BLACK_CHECKMATE           : return loadString(IDS_MSG_WHITE_WIN);

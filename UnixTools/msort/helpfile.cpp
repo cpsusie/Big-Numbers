@@ -6,7 +6,7 @@
 TCHAR HelpFile::s_drive = _T('c');
 
 HelpFile::HelpFile() {
-  _tcscpy(m_name, _T(""));
+  _tcscpy(m_name, EMPTYSTRING);
   m_f = NULL;
 }
 

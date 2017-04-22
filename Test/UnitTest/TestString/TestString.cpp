@@ -46,15 +46,15 @@ namespace TestString {
 
       s2 = _T("    ");
       s2.trimLeft();
-      verify(s2 == _T(""));
+      verify(s2 == EMPTYSTRING);
 
       s2 = _T("    ");
       s2.trimRight();
-      verify(s2 == _T(""));
+      verify(s2 == EMPTYSTRING);
       s2.trimLeft();
-      verify(s2 == _T(""));
+      verify(s2 == EMPTYSTRING);
       s2.trimRight();
-      verify(s2 == _T(""));
+      verify(s2 == EMPTYSTRING);
 
       s2 = s1;
       s2.trim();
@@ -74,7 +74,7 @@ namespace TestString {
       verify(s2[1] == _T('b'));
       verify(s2.length() == 12);
       verify(substr(s2, 1, 2) == _T("bc"));
-      verify(substr(s2, -1, 10) == _T(""));
+      verify(substr(s2, -1, 10) == EMPTYSTRING);
       verify(substr(s2, 1, 11) == _T("bcABCÊ¯Â∆ÿ≈"));
       verify(substr(s2, 1, 1000) == _T("bcABCÊ¯Â∆ÿ≈"));
 
@@ -99,7 +99,7 @@ namespace TestString {
       verify(s2.last() == _T('≈'));
 
       verify(!s2.isEmpty());
-      s2 = _T("");
+      s2 = EMPTYSTRING;
       verify(s2.isEmpty());
       s2.removeLast();
       verify(s2.isEmpty());
@@ -155,7 +155,7 @@ namespace TestString {
       verify(s2 == _T("axbxc"));
 
       s2 = _T("a--b--c-");
-      String fromStr = _T("");
+      String fromStr = EMPTYSTRING;
       s2.replace(fromStr, _T('x'));
       verify(s2 == _T("a--b--c-"));
 
@@ -176,30 +176,30 @@ namespace TestString {
       s2.replace(_T('x'), _T("MM"));
       verify(s2 == _T("a----b----c"));
 
-      s2.replace(_T('-'), _T(""));
+      s2.replace(_T('-'), EMPTYSTRING);
       verify(s2 == _T("abc"));
 
       verify(left(s2, 2) == _T("ab"));
       verify(left(s2, 3) == _T("abc"));
       verify(left(s2, 4) == _T("abc"));
-      verify(left(s2, 0) == _T(""));
-      verify(left(s2, -1) == _T(""));
+      verify(left(s2, 0) == EMPTYSTRING);
+      verify(left(s2, -1) == EMPTYSTRING);
 
-      verify(right(s2, -1) == _T(""));
-      verify(right(s2, 0) == _T(""));
+      verify(right(s2, -1) == EMPTYSTRING);
+      verify(right(s2, 0) == EMPTYSTRING);
       verify(right(s2, 2) == _T("bc"));
       verify(right(s2, 3) == _T("abc"));
       verify(right(s2, 4) == _T("abc"));
 
       s2 = _T("a--b--c");
-      s2.replace(_T("--"), _T(""));
+      s2.replace(_T("--"), EMPTYSTRING);
       verify(s2 == _T("abc"));
 
       s2 = _T("fisk1fisk2fisk3");
       s2.replace(_T("fisk"), _T("fusk"));
       verify(s2 == _T("fusk1fusk2fusk3"));
 
-      s2.replace(_T(""), _T("bbb"));
+      s2.replace(EMPTYSTRING, _T("bbb"));
       verify(s2 == _T("fusk1fusk2fusk3"));
 
       s2.replace(_T("f"), _T("bbb"));
@@ -228,7 +228,7 @@ namespace TestString {
       res += s2;
       verify(res == _T("null"));
 
-      TCHAR *emptyString = _T("");
+      TCHAR *emptyString = EMPTYSTRING;
       res += emptyString;
       verify(res == _T("null"));
 

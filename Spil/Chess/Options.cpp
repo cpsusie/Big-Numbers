@@ -74,7 +74,7 @@ void DefaultOptions::setDefault() {
   m_moveFormat                       = MOVE_SHORTFORMAT;
   m_depthInPlies                     = false;
   m_connectedToServer                = false;
-  m_serverComputerName               = _T("");
+  m_serverComputerName               = EMPTYSTRING;
   m_testMenuEnabled                  = false;
   m_showEngineConsole                = false;
   m_engineVerboseFields.setDefault();
@@ -134,7 +134,7 @@ bool TimeParameters::operator!=(const TimeParameters &tp) const {
 
 String TimeLimit::toString() const {
   const double sec = (double)m_timeout / 1000.0;
-  return format(_T("%d:%.3lf%s"), GET_MINUTES(sec), fmod(sec, 60), m_softLimit?_T(" +"):_T(""));
+  return format(_T("%d:%.3lf%s"), GET_MINUTES(sec), fmod(sec, 60), m_softLimit?_T(" +"):EMPTYSTRING);
 }
 
 LevelTimeout::LevelTimeout() {
@@ -341,7 +341,7 @@ static void saveLevelTimeout(RegistryKey key, const LevelTimeout &lt) {
 static LevelTimeout loadLevelTimeout(RegistryKey key, const LevelTimeout &defaultValue) {
   LevelTimeout result;
   for(int level = 1; level <= LEVELCOUNT; level++) {
-    const String tmp = key.getString(format(_T("%d"), level),_T(""));
+    const String tmp = key.getString(format(_T("%d"), level),EMPTYSTRING);
     double timeout;
     if(_stscanf(tmp.cstr(),_T("%le"), &timeout) != 1 || timeout <= 0) {
       timeout = defaultValue.getTimeout(level);
@@ -352,15 +352,15 @@ static LevelTimeout loadLevelTimeout(RegistryKey key, const LevelTimeout &defaul
 }
 
 static void saveEngineDescription(RegistryKey key, const EngineDescription &desc) {
-  key.setValue(_T("")      , desc.getName());
+  key.setValue(EMPTYSTRING      , desc.getName());
   key.setValue(EEAUTHOR, desc.getAuthor());
   key.setValue(EEPATH  , desc.getPath());
 }
 
 static void loadEngineDescription(RegistryKey key, EngineDescription &desc) {
-  desc.m_name   = key.getString(_T("")      , _T(""));
-  desc.m_author = key.getString(EEAUTHOR, _T(""));
-  desc.m_path   = key.getString(EEPATH  , _T(""));
+  desc.m_name   = key.getString(EMPTYSTRING      , EMPTYSTRING);
+  desc.m_author = key.getString(EEAUTHOR, EMPTYSTRING);
+  desc.m_path   = key.getString(EEPATH  , EMPTYSTRING);
 }
 
 EngineVerboseFields::EngineVerboseFields() {
@@ -520,7 +520,7 @@ void Options::load() {
     m_openingLibraryEnabled    = key.getBool(  OPENINGLIBRARYENABLED   , defaultOptions.isOpeningLibraryEnabled()   );
     m_endGameTablebaseEnabled  = key.getBool(  ENDGAMETABLEBASEENABLED , defaultOptions.isEndGameTablebaseEnabled() );
     m_endGameTablebasePath     = key.getString(ENDGAMETABLEBASEPATH    , defaultOptions.getEndGameTablebasePath()   );
-    m_endGameTablebaseMetric   = stringToMetric(key.getString(ENDGAMETABLEBASEMETRIC,_T("")), defaultOptions.getEndGameTablebaseMetric());
+    m_endGameTablebaseMetric   = stringToMetric(key.getString(ENDGAMETABLEBASEMETRIC,EMPTYSTRING), defaultOptions.getEndGameTablebaseMetric());
 
     m_endGameDefendStrength    = key.getInt(   ENDGAMEDEFENDSTRENGTH   , defaultOptions.getEndGameDefendStrength()  );
     m_maxMovesWithoutCaptureOrPawnMove = key.getInt(MAXMOVESWITHOUTCAPTURE  , defaultOptions.getMaxMovesWithoutCaptureOrPawnMove());
@@ -922,7 +922,7 @@ void Options::saveEngineRegister(EngineRegister &engines) { // static
   s_engineRegister = engines;
   forEachPlayer(p) {
     if(getOptions().getCurrentEngineIndex(p) < 0) {
-      getOptions().setEngineName(p, _T(""));
+      getOptions().setEngineName(p, EMPTYSTRING);
     }
   }
 }

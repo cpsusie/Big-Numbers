@@ -114,15 +114,15 @@ namespace TestRegistry {
   static Array<String> registryErrors;
 
   void traverseRegistryKey(RegistryKey &key, int level = 0) {
-    OUTPUT(_T("%*.*sKey:%s"), level, level, _T(""), key.getName().cstr());
+    OUTPUT(_T("%*.*sKey:%s"), level, level, EMPTYSTRING, key.getName().cstr());
     bool headerDone = false;
     for (Iterator<RegistryValue> itv = key.getValueIterator(); itv.hasNext();) {
       if (!headerDone) {
-        OUTPUT(_T("  %*.*s%-20s %-12.12s %s"), level, level, _T(""), _T("Name"), _T("Type"), _T("Data"));
+        OUTPUT(_T("  %*.*s%-20s %-12.12s %s"), level, level, EMPTYSTRING, _T("Name"), _T("Type"), _T("Data"));
         headerDone = true;
       }
       const RegistryValue &value = itv.next();
-      OUTPUT(_T("  %*.*s%-20.20s %-12.12s %-70.70s"), level, level, _T(""), value.getName().cstr(), value.getTypeString().cstr(), value.toString().cstr());
+      OUTPUT(_T("  %*.*s%-20.20s %-12.12s %-70.70s"), level, level, EMPTYSTRING, value.getName().cstr(), value.getTypeString().cstr(), value.toString().cstr());
     }
     for (Iterator<String> it = key.getSubKeyIterator(); it.hasNext();) {
       String child = it.next();

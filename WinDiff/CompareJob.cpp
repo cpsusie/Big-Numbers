@@ -10,7 +10,7 @@ CompareJob::CompareJob(CWinDiffDoc *doc, bool recompare)
   m_sumEstimatedTimeUnits = 0;
   m_currentStep           = 0;
   m_subProgressPercent    = 0;
-  addStep(0,_T(""));
+  addStep(0,EMPTYSTRING);
 }
 
 #ifdef MEASURE_STEPTIME

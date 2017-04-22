@@ -9,12 +9,12 @@
 
 DecideGameDialog::DecideGameDialog(int myId, const PlayerList &players, const GameHistory &gameHistory, CWnd* pParent) : CDialog(DecideGameDialog::IDD, pParent) {
   m_selectedPointButton = -1;
-  m_playedGamesColours  = _T("");
-  m_playedGamesNames    = _T("");
-  m_playedGamesSol      = _T("");
-  m_playedGamesSpades   = _T("");
+  m_playedGamesColours  = EMPTYSTRING;
+  m_playedGamesNames    = EMPTYSTRING;
+  m_playedGamesSol      = EMPTYSTRING;
+  m_playedGamesSpades   = EMPTYSTRING;
   m_gameType            = -1;
-  m_playedGamesSans     = _T("");
+  m_playedGamesSans     = EMPTYSTRING;
   m_suit                = -1;
 
   m_myId        = myId;

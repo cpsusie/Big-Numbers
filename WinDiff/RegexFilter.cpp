@@ -9,7 +9,7 @@ RegexFilter::RegexFilter() {
 void RegexFilter::clear() {
   m_matchCase      = false;
   m_matchWholeWord = false;
-  m_regex          = _T("");
+  m_regex          = EMPTYSTRING;
 }
 
 bool RegexFilter::operator==(const RegexFilter &ref) const {
@@ -27,7 +27,7 @@ void RegexFilter::compile() {
 
 //  _tprintf(_T("tmp:<%s>\n"),tmp.cstr());
   m_reg.compilePattern(tmp, m_matchCase ? NULL : String::upperCaseTranslate);
-  intptr_t index = m_reg.search(_T(""));
+  intptr_t index = m_reg.search(EMPTYSTRING);
   if(index == 0 && m_reg.getResultLength() == 0) {
     throwException(_T("regular expression <%s> matches every String"),m_regex.cstr());
   }
@@ -63,7 +63,7 @@ void RegexFilter::saveData(RegistryKey &key, const RegexFilter &rf) { // static
 void RegexFilter::loadData(RegistryKey &key, RegexFilter &rf) { // static
   rf.m_matchCase      = key.getBool(  CASESENSITIVE  , false );
   rf.m_matchWholeWord = key.getBool(  WHOLEWORDSONLY , false );
-  rf.m_regex          = key.getString(REGEX          , _T(""));
+  rf.m_regex          = key.getString(REGEX          , EMPTYSTRING);
   if(!rf.isEmpty()) {
     rf.compile();
   }

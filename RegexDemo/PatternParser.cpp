@@ -37,7 +37,7 @@ static const TCHAR *tokenStr[] = {
  ,TOKENSTR(REGISTER     )
 };
 
-#define DBG_callParserHandler() { DBG_callCompilerHandler(buildCodeString(), m_callStack.toString(), _T(""), m_scanner.getIndex()); }
+#define DBG_callParserHandler() { DBG_callCompilerHandler(buildCodeString(), m_callStack.toString(), EMPTYSTRING, m_scanner.getIndex()); }
 
 void PatternParser::enter(const TCHAR *function) {
   if(m_NFA.m_stepHandler) {

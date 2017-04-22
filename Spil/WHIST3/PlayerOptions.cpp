@@ -26,8 +26,8 @@ static RegistryKey getKey() {
 void Options::load() {
   try {
     RegistryKey key = getKey();
-    m_myName     = key.getString(_T("name")      ,_T("")   );
-    m_dealerName = key.getString(_T("dealername"),_T("")   );
+    m_myName     = key.getString(_T("name")      ,EMPTYSTRING   );
+    m_dealerName = key.getString(_T("dealername"),EMPTYSTRING   );
     m_connected  = key.getBool(  _T("connected") ,false);
     m_backside   = key.getInt(   _T("backside")  ,53   );
   } catch(Exception e) {

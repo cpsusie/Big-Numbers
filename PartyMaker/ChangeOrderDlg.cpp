@@ -29,7 +29,7 @@ BOOL CChangeOrderDlg::OnInitDialog() {
     insertMediaFile(i,m_mediaQueue[i]);
   }
   CListBox *lb = getListBox();
-  lb->InsertString((int)m_mediaQueue.size(),_T(""));
+  lb->InsertString((int)m_mediaQueue.size(),EMPTYSTRING);
   CDialog::OnInitDialog();
 
   gotoToListBox();
@@ -152,5 +152,5 @@ void CChangeOrderDlg::OnEditRandom() {
   for(size_t i = 0; i < m_editList.size(); i++) {
     insertMediaFileIntoListBox(i,m_editList[i]);
   }
-  lb->InsertString((int)m_mediaQueue.size(),_T(""));
+  lb->InsertString((int)m_mediaQueue.size(),EMPTYSTRING);
 }

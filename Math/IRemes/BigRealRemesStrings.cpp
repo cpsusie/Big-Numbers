@@ -14,7 +14,7 @@ String Remes::getHeaderString() const {
                ,m_targetFunction.getName().cstr()
                ,getDouble(m_domain.getFrom())
                ,getDouble(m_domain.getTo())
-               ,m_useRelativeError ? _T("relative ") : _T("")
+               ,m_useRelativeError ? _T("relative ") : EMPTYSTRING
                ,getDouble(m_maxError) 
                );
 }

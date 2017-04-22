@@ -55,8 +55,8 @@ String AcceptAction::dumpFormat() const {
                       ,left(trim(m_sourceText), 50).replace('\n', ' ').replace('\t', ' ').cstr());
   if(m_anchor) {
     res += format(_T(" Anchor: %s%s")
-                  ,m_anchor & ANCHOR_START ? _T("start ") : _T("")
-                  ,m_anchor & ANCHOR_END   ? _T("end")    : _T(""));
+                  ,m_anchor & ANCHOR_START ? _T("start ") : EMPTYSTRING
+                  ,m_anchor & ANCHOR_END   ? _T("end")    : EMPTYSTRING);
   }
   return res;
 }

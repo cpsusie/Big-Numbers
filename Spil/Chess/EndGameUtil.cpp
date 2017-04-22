@@ -159,7 +159,7 @@ String TablebaseInfo::getColumnHeaders(TablebaseInfoStringFormat f, const String
       );
     }
   default:
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 

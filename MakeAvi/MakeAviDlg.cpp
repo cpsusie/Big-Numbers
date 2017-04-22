@@ -87,7 +87,7 @@ BOOL CMakeAviDlg::OnInitDialog() {
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_MAINDIALOG));
   CListCtrl &nameList = m_nameList;
 
-  nameList.InsertColumn(0,_T("")      , LVCFMT_LEFT, 290);
+  nameList.InsertColumn(0,EMPTYSTRING      , LVCFMT_LEFT, 290);
   nameList.SetExtendedStyle(LVS_EX_FULLROWSELECT);
 
   m_layoutManager.OnInitDialog(this);
@@ -281,7 +281,7 @@ void CMakeAviDlg::updateWindowState() {
   const UINT totalFrameCount = (UINT)m_nameArray.size();
   UINT usedFrameCount = 0;
   if(totalFrameCount == 0) {
-    setWindowText(this, IDC_STATICTOTALLENGTH, _T(""));
+    setWindowText(this, IDC_STATICTOTALLENGTH, EMPTYSTRING);
   } else {
     usedFrameCount = totalFrameCount / m_useEvery;
     setWindowText(this, IDC_STATICTOTALLENGTH, format(_T("Total length:%.1lf sec"), (double)usedFrameCount / m_framePerSecond));

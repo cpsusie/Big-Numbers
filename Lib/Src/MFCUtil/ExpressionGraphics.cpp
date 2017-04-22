@@ -1264,7 +1264,7 @@ String ExpressionRectangle::toString() const {
 }
 
 void ExpressionRectangle::dump(int level) const { // recursive dump to debugLog
-  debugLog(_T("%*.*s%s\n"), level,level,_T(""), toString().cstr());
+  debugLog(_T("%*.*s%s\n"), level,level,EMPTYSTRING, toString().cstr());
   for(size_t i = 0; i < m_children.size(); i++) {
     m_children[i].dump(level+2);
   }

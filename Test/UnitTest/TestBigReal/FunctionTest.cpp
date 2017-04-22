@@ -414,7 +414,7 @@ void testAssignOperators(TestStatistic &stat) {
 
   for(int i = 0; i < 100; i++) {
     if(stat.isTimeToPrint()) {
-      stat.printLoopMessage(_T(""));
+      stat.printLoopMessage(EMPTYSTRING);
     }
 
     BigReal x = stat.getRandom(20,5);

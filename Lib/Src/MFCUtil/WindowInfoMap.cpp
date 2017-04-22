@@ -29,7 +29,7 @@ String WindowInfo::toString() const {
 
 String WindowInfo::toString(const Array<WindowInfoField> &fields) const {
   String result;
-  TCHAR *delimiter = _T("");
+  TCHAR *delimiter = EMPTYSTRING;
 
   for(int i = 0; i < fields.size(); i++) {
     if(i > 0) {
@@ -78,7 +78,7 @@ String WindowInfo::toString(const Array<WindowInfoField> &fields) const {
 
 String WindowInfo::getStyleToString(DWORD style) { // static 
   String result;
-  TCHAR *delimiter = _T("");
+  TCHAR *delimiter = EMPTYSTRING;
 #define APPENDIFSTYLESET(s) if(style & WS_##s) { result += delimiter; result += _T(#s); delimiter = _T(" "); }
   APPENDIFSTYLESET(POPUP        );
   APPENDIFSTYLESET(CHILD        );
@@ -102,7 +102,7 @@ String WindowInfo::getStyleToString(DWORD style) { // static
 
 String WindowInfo::getExStyleToString(DWORD exStyle) { // static
   String result;
-  TCHAR *delimiter = _T("");
+  TCHAR *delimiter = EMPTYSTRING;
 #define APPENDIFEXSTYLESET(s) if(exStyle & WS_EX_##s) { result += delimiter; result += _T(#s); delimiter = _T(" "); }
   APPENDIFEXSTYLESET(DLGMODALFRAME   );
   APPENDIFEXSTYLESET(NOPARENTNOTIFY  );

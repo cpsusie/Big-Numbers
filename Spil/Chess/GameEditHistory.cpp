@@ -4,7 +4,7 @@
 #ifdef _DEBUG
 #define CHECKINVARIANT    checkInvariant(__LINE__)
 #define TRACESTATE(label) printState(_T(#label))
-#define PRINTKEY0()       verbose(_T("key0  :%s\n"), m_key0.toString().replace('\n',_T("")).cstr())
+#define PRINTKEY0()       verbose(_T("key0  :%s\n"), m_key0.toString().replace('\n',EMPTYSTRING).cstr())
 #else
 #define CHECKINVARIANT
 #define TRACESTATE(label)
@@ -157,8 +157,8 @@ void GameEditHistory::printState(const TCHAR *function) const {
          ,boolToStr(canRedo())
    );
    verbose(_T("m_game:%s\nlast  :%s\n")
-         ,m_game.getKey().toString().replace('\n',_T("")).cstr()
-         ,(m_history.size() == 0)?_T("---") : m_history.last().toString().replace('\n',_T("")).cstr()
+         ,m_game.getKey().toString().replace('\n',EMPTYSTRING).cstr()
+         ,(m_history.size() == 0)?_T("---") : m_history.last().toString().replace('\n',EMPTYSTRING).cstr()
           );
 }
 

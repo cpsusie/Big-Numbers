@@ -39,7 +39,7 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pParent), m_textBox(m_input) {
-  m_input = _T("");
+  m_input = EMPTYSTRING;
   m_breakOnProduction = FALSE;
   m_breakOnError      = FALSE;
   m_breakOnState      = FALSE;
@@ -187,7 +187,7 @@ String getWord(const TCHAR *s, int pos) {
   _TUCHAR chClass = CharacterClass::charClass[ch];
 
   if(_istspace(ch)) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     while((start > 0) && (CharacterClass::charClass[(unsigned char)(s[start-1])] == chClass)) {
       start--;
@@ -393,14 +393,14 @@ void CParserDemoDlg::OnPaint() {
     int i;
     for(i = 0; i < maxElement; i++) {
       const ParserStackElement &elem   = m_parser.getStackElement(i);
-      const TCHAR *symbolString = (i == 0) ? _T("") : m_parser.getUserStack()[i]->getSymbol(); // (i == 0) ? _T(""= : m_parser.getSymbolName(elem.m_symbol);
+      const TCHAR *symbolString = (i == 0) ? EMPTYSTRING : m_parser.getUserStack()[i]->getSymbol(); // (i == 0) ? _T(""= : m_parser.getSymbolName(elem.m_symbol);
       printf(dc, POSX, POSY(i), RECTWIDTH, _T("%3d (%2d,%2d) %s")
             ,elem.m_state
             ,elem.m_pos.getLineNumber(),elem.m_pos.getColumn()
             ,symbolString);
     }
     for(;i < RECTHEIGHT-1;i++) {
-      printf(dc, POSX, POSY(i), RECTWIDTH, _T(""));
+      printf(dc, POSX, POSY(i), RECTWIDTH, EMPTYSTRING);
     }
 
 //    dc.SetBkColor(RGB(255, 255, 255));

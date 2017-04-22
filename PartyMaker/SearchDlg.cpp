@@ -16,7 +16,7 @@ SearchDlg::SearchDlg(const MediaArray &mediaArray, bool showMenu, CWnd *pParent)
 {
     m_workerThread   = NULL;
     m_timerIsRunning = false;
-    m_searchText = _T("");
+    m_searchText = EMPTYSTRING;
 }
 
 SearchDlg::~SearchDlg() {
@@ -283,7 +283,7 @@ void SearchThread::startSearch(const String &searchText) {
 void SearchThread::stop() {
   m_requestQueue.clear();
   m_state |= STATE_STOP | STATE_KILL;
-  m_requestQueue.put(_T(""));
+  m_requestQueue.put(EMPTYSTRING);
 }
 
 UINT SearchThread::run() {

@@ -19,7 +19,7 @@ String LibraryMove::toString() const {
   return format(_T("(%s-%s%s)")
                 ,getFieldName(m_from)
                 ,getFieldName(m_to)
-                ,m_goodMove?_T(""):_T("?"));
+                ,m_goodMove?EMPTYSTRING:_T("?"));
 }
 
 Packer &operator<<(Packer &p, const LibraryTransition &t) {
@@ -32,7 +32,7 @@ Packer &operator>>(Packer &p,       LibraryTransition &t) {
 
 String LibraryTransition::toString() const {
   String result = LibraryMove::toString() + _T("->") + format(_T("%-4d. <"),m_nextState);
-  const TCHAR *delimiter = _T("");
+  const TCHAR *delimiter = EMPTYSTRING;
   for(size_t i = 0; i < m_nameIndex.size(); i++, delimiter = _T(",")) {
     result += format(_T("%s%d"), delimiter, m_nameIndex[i]);
   }

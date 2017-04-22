@@ -117,7 +117,7 @@ void CListBoxDiffMarks::setLines(const StringArray &lines) {
   }
   ResetContent();
   for(size_t i = 0; i < lines.size(); i++) {
-    AddString(_T(""));
+    AddString(EMPTYSTRING);
   }
   m_lastContent = lines;
 }

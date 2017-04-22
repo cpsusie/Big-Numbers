@@ -79,7 +79,7 @@ void CCheckFilesDlg::stopTimer() {
 }
 
 void CCheckFilesDlg::OnTimer(UINT nIDEvent) {
-  const TCHAR *fname = _T("");
+  const TCHAR *fname = EMPTYSTRING;
   int index = m_worker->m_index;
   if(index < m_worker->m_mediaArray.size()) {
     fname = m_worker->m_mediaArray[index].getFileName();

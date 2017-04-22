@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 static void findent(FILE *f, int level) {
-  _ftprintf(f,_T("%*.*s"),level,level,_T(""));
+  _ftprintf(f,_T("%*.*s"),level,level,EMPTYSTRING);
 }
 
 StatementSymbolInfo::StatementSymbolInfo(StatementTable &ft, unsigned short colIndex, SyntaxNode *n) : 
@@ -246,7 +246,7 @@ SelectExpressionList::SelectExpressionList(const NodeList &list) {
 
 void SelectExpressionList::dump(const SqlCompiler &compiler, FILE *f, int level) const {
   for(UINT i = 0; i < size(); i++) {
-    _ftprintf(f,_T("%*.*s%-8s %s\n"),level,level,_T(""),getMainTypeString((*this)[i].m_type),(*this)[i].m_expr->toString().cstr());
+    _ftprintf(f,_T("%*.*s%-8s %s\n"),level,level,EMPTYSTRING,getMainTypeString((*this)[i].m_type),(*this)[i].m_expr->toString().cstr());
   }
 }
 

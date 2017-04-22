@@ -250,7 +250,7 @@ void CDraw3dDlg::sidewalkWithCamera(double up, double right) {
 }
 
 void CDraw3dDlg::OnMouseMove(UINT nFlags, CPoint point) {
-  const TCHAR *msg = _T("");
+  const TCHAR *msg = EMPTYSTRING;
   if(nFlags & MK_LBUTTON) {
     if(nFlags & MK_CONTROL) {
       if(nFlags & MK_SHIFT) {

@@ -94,7 +94,7 @@ bool Options::remove(int index) { // static
   return true;
 }
 
-static const TCHAR *NAME               = _T("");
+static const TCHAR *NAME               = EMPTYSTRING;
 static const TCHAR *IGNOREWHITESPACE   = _T("IgnoreWhiteSpace");
 static const TCHAR *IGNORECASE         = _T("IgnoreCase");
 static const TCHAR *IGNORESTRINGS      = _T("IgnoreStrings");
@@ -244,7 +244,7 @@ void Options::setDefaultOptionName(const String &name) { // static
 }
 
 String Options::getDefaultOptionName() { // static
-  return getOptionsRootKey().getString(DEFAULTNAME, _T(""));
+  return getOptionsRootKey().getString(DEFAULTNAME, EMPTYSTRING);
 }
 
 Options Options::getDefaultOptions() { // static

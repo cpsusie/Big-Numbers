@@ -473,7 +473,7 @@ void CMainFrame::OnEditFindPrev() {
 }
 
 void CMainFrame::searchText(UINT64 startPos, bool forwardSearch) {
-  m_searchMachine.prepareSearch(forwardSearch, startPos, _T(""), getDoc());
+  m_searchMachine.prepareSearch(forwardSearch, startPos, EMPTYSTRING, getDoc());
   ProgressWindow prgWnd(this, m_searchMachine, 500);
 
   AddrRange result = m_searchMachine.getResult();

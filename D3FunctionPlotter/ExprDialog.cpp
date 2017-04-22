@@ -148,7 +148,7 @@ String CExprDialog::getExprSyntax(int index) {
   const ExpressionDescription *helpList = ExpressionDescription::getHelpList();
   const int count = ExpressionDescription::getHelpListSize();
   if(index < 0 || index >= count) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     return helpList[index].getSyntax();
   }

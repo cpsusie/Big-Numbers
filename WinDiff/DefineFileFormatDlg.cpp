@@ -13,8 +13,8 @@
 CDefineFileFormatDlg::CDefineFileFormatDlg(FileFormat &param, const String &sampleline, CWnd *pParent)  : CDialog(CDefineFileFormatDlg::IDD, pParent), m_param(param) {
   m_columnFrom         = 1;
   m_columnTo           = 1;
-  m_fieldDelimiter     = _T("");
-  m_textQualifier      = _T("");
+  m_fieldDelimiter     = EMPTYSTRING;
+  m_textQualifier      = EMPTYSTRING;
   m_sampleLine         = sampleline.cstr();
   m_multipleDelimiters = FALSE;
 

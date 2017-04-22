@@ -70,7 +70,7 @@ public:
       testTokenizer(3, _T("a,b\t c"), _T("\t"), 0, 0, _T("a,b"), _T(" c"), NULL);
       testTokenizer(4, _T("a,b\t c"), _T("\t, "), 0, 0, _T("a"), _T("b"), _T("c"), NULL);
       testTokenizer(5, _T("a,b\t\" c\""), _T("\t, "), _T('"'), 0, _T("a"), _T("b"), _T("\" c\""), NULL);
-      testTokenizer(6, _T("a,b\t\tc\t"), _T("\t"), _T('"'), TOK_SINGLEDELIMITERS, _T("a,b"), _T(""), _T("c"), NULL);
+      testTokenizer(6, _T("a,b\t\tc\t"), _T("\t"), _T('"'), TOK_SINGLEDELIMITERS, _T("a,b"), EMPTYSTRING, _T("c"), NULL);
     }
   };
 }

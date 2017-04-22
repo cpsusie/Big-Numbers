@@ -8,9 +8,9 @@
 #endif
 
 CChangePasswordDlg::CChangePasswordDlg(CWnd *pParent) : CDialog(CChangePasswordDlg::IDD, pParent) {
-    m_oldPassword  = _T("");
-    m_newPassword  = _T("");
-    m_newPassword2 = _T("");
+    m_oldPassword  = EMPTYSTRING;
+    m_newPassword  = EMPTYSTRING;
+    m_newPassword2 = EMPTYSTRING;
     m_tryCount = 0;
 }
 

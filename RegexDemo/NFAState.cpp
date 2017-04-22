@@ -10,8 +10,8 @@ String AcceptType::toString() const {
     String result = _T("Accepting");
     if(m_acceptAttribute & ANCHOR_BOTH) {
       result += format(_T(" Anchor: %s%s")
-                      ,m_acceptAttribute & ANCHOR_START ? _T("start ") : _T("")
-                      ,m_acceptAttribute & ANCHOR_END   ? _T("end")    : _T(""));
+                      ,m_acceptAttribute & ANCHOR_START ? _T("start ") : EMPTYSTRING
+                      ,m_acceptAttribute & ANCHOR_END   ? _T("end")    : EMPTYSTRING);
     }
     return result;
   }

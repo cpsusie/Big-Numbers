@@ -187,7 +187,7 @@ Expression &Expression::multiplyMarkedNodes() {
 
 String Expression::toString() const {
   const ExpressionNode *root = getRoot();
-  return root ? root->toString() : _T("");
+  return root ? root->toString() : EMPTYSTRING;
 }
 
 void Expression::print(const ExpressionNode *n, FILE *f) const {

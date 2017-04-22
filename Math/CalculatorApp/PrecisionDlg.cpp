@@ -35,7 +35,7 @@ void PrecisionDlg::OnOK() {
     return;
   }
   if(m_precision < 1 || m_precision > MAXPRECISION) {
-    MessageBox(format(_T("Please enter an integer between 1 and %d"), MAXPRECISION).cstr(), _T(""), MB_ICONEXCLAMATION);  
+    MessageBox(format(_T("Please enter an integer between 1 and %d"), MAXPRECISION).cstr(), EMPTYSTRING, MB_ICONEXCLAMATION);  
     OnGotoPrecision();
     return;
   }

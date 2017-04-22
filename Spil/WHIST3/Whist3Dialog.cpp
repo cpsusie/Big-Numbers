@@ -42,7 +42,7 @@ CWhist3Dialog::CWhist3Dialog(CWnd* pParent) : CDialog(CWhist3Dialog::IDD, pParen
 
   try {
     const Options &options = getOptions();
-    m_player = new Whist3Player(options.m_myName, this, options.m_connected ? options.m_dealerName : _T(""));
+    m_player = new Whist3Player(options.m_myName, this, options.m_connected ? options.m_dealerName : EMPTYSTRING);
   } catch(Exception e) {
     fatalError(_T("%s"),e.what());
   }
@@ -425,7 +425,7 @@ LRESULT CWhist3Dialog::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
     break;
 
   case STATE_ASK_PLAYAGAIN:
-    myMessage(_T(""));
+    myMessage(EMPTYSTRING);
     postCommand(ID_ASK_PLAYAGAIN);
     break;
 
@@ -445,7 +445,7 @@ LRESULT CWhist3Dialog::OnMsgStateChanged(WPARAM wp, LPARAM lp) {
 }
 
 void CWhist3Dialog::initGameTypeMessage() {
-  m_gameTypeMessage = _T("");
+  m_gameTypeMessage = EMPTYSTRING;
 }
 
 void CWhist3Dialog::setGameTypeMessage() {
@@ -458,7 +458,7 @@ void CWhist3Dialog::setGameTypeMessage() {
 }
 
 void CWhist3Dialog::OnAskPlayAgain() {
-  if(MessageBox( _T("Vil du spille igen"),_T(""), MB_YESNO + MB_ICONQUESTION) != IDYES) {
+  if(MessageBox( _T("Vil du spille igen"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) != IDYES) {
     exit(0);
   }
   m_sync.signal();
@@ -569,7 +569,7 @@ void CWhist3Dialog::OnHelpAbout() {
 }
 
 void CWhist3Dialog::OnGameExit() {
-  if(MessageBox( _T("Er du sikker på at du vil stoppe"),_T(""), MB_YESNO + MB_ICONQUESTION) == IDYES) {
+  if(MessageBox( _T("Er du sikker på at du vil stoppe"),EMPTYSTRING, MB_YESNO + MB_ICONQUESTION) == IDYES) {
     PostMessage(WM_QUIT);
   }
 }

@@ -125,7 +125,7 @@ void MarkableEditField::putValue(int v) {
   if(v > 0) {
     str = format(_T("%d"), v);
   } else {
-    str = _T("");
+    str = EMPTYSTRING;
   }
   setWindowText(this, str);
 }

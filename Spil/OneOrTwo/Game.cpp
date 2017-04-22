@@ -212,7 +212,7 @@ String MoveWithResult::toString() const {
 
 String setToString(const PositionSet &s) {
   String result;
-  const TCHAR *delimiter = _T("");
+  const TCHAR *delimiter = EMPTYSTRING;
   for(int p = 0; p < 32; p++) {
     if(s & (1<<p)) {
       result += format(_T("%s%2d"), delimiter, p);

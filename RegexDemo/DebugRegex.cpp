@@ -39,11 +39,11 @@ intptr_t DebugRegex::search(const String &text, bool forward) {
 String DebugRegex::registersToString() const {
   switch(m_type) {
   case EMACS_REGEX: return m_registers.toString(m_text);
-  case DFA_REGEX  : return _T("");
+  case DFA_REGEX  : return EMPTYSTRING;
   default         : throwUnknownTypeException();
 
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 String DebugRegex::codeToString() const {
@@ -52,7 +52,7 @@ String DebugRegex::codeToString() const {
   case DFA_REGEX  : return m_DFARegex.toString();
   default         : throwUnknownTypeException();
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 String DebugRegex::fastMapToString() const {
@@ -61,12 +61,12 @@ String DebugRegex::fastMapToString() const {
   case DFA_REGEX  : return m_DFARegex.fastMapToString();
   default         : throwUnknownTypeException();
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 String DebugRegex::getDFATablesToString() const {
   if(!hasDFATables()) {
-    return _T("");
+    return EMPTYSTRING;
   }
   return m_DFARegex.tableToString();
 }
@@ -169,7 +169,7 @@ CompileParameters DebugRegex::getLastCompiledPattern() const {
   case DFA_REGEX  : return m_lastCompiledParameters[m_type];
   default         : throwUnknownTypeException();
   }
-  return _T("");
+  return EMPTYSTRING;
 }
 
 void DebugRegex::throwUnknownTypeException() const {

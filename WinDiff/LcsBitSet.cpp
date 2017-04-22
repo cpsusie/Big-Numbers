@@ -36,8 +36,8 @@ void LcsBitSet::init1(const LineArray &a, const LineArray &b) { // assume b.size
   m_m = a.size();
   m_n = b.size();
 
-  A.add(LcsElement(-1,_T(""))); // add a dummy-LcsElement to make the real elements from [1..n]
-  B.add(LcsElement(-1,_T(""))); // do
+  A.add(LcsElement(-1,EMPTYSTRING)); // add a dummy-LcsElement to make the real elements from [1..n]
+  B.add(LcsElement(-1,EMPTYSTRING)); // do
 
   for(size_t i = 0; i < m_m; i++) {
     A.add(LcsElement((int)i+1, a[i]));

@@ -1176,7 +1176,7 @@ MonotonityMatrix::~MonotonityMatrix() {
 }
 
 static void findent(FILE *f, int level) {
-  _ftprintf(f,_T("%*.*s"),level,level,_T(""));
+  _ftprintf(f,_T("%*.*s"),level,level,EMPTYSTRING);
 }
 
 // try to match orderby with position=match, using index-columns [from..ordergivenbyindex.size()-1]

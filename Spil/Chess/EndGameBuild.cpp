@@ -26,7 +26,7 @@ void EndGameTablebase::load(ByteInputStream &s) {
 
 String EndGameTablebase::loadPacked() {
   if(m_packedIndex != NULL) {
-    return _T("");
+    return EMPTYSTRING;
   }
   const String fileName = getFileName(ALLTABLEBASE);
   loadPacked(fileName);
@@ -150,7 +150,7 @@ void EndGameTablebase::build(bool recover) {
   doBuild(buildStep);
 
   verbose(_T("%s%-16s%s\n\n")
-         ,TablebaseInfo::getColumnHeaders(TBIFORMAT_PRINT_COLUMNS1, _T("Final tablebase:"),_T(""), true).cstr()
+         ,TablebaseInfo::getColumnHeaders(TBIFORMAT_PRINT_COLUMNS1, _T("Final tablebase:"),EMPTYSTRING, true).cstr()
          ,getName().cstr()
          ,getInfo().toString(TBIFORMAT_PRINT_COLUMNS1).cstr());
 }
@@ -787,7 +787,7 @@ void EndGameTablebase::unravelWinnerPositions(int minPliesToEnd) {
     pliesToEnd++;
   } while(changed || ((int)pliesToEnd <= max((int)m_info.m_maxPlies.getMax(), minPliesToEnd)));
 
-//  verbose(_T("%27s%s\n"), _T(""), m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr());
+//  verbose(_T("%27s%s\n"), EMPTYSTRING, m_info.toString(TBIFORMAT_PRINT_NONTERMINALS).cstr());
 }
 
 bool EndGameTablebase::analyzeRetro(const EndGameEntry &entry, PositionCount64 &winnerCount, UINT pliesToEnd) {
@@ -1110,7 +1110,7 @@ void EndGameTablebase::verboseHelpInfo(const String &label) {
 void EndGameTablebase::fixupForwardPlies(EndGameEntryIterator &it, int iteration, UINT64 &changedPositions) {
   PositionCount64 loopChangeCount;
 
-  verbose(_T("%-70s\r"),_T(""));
+  verbose(_T("%-70s\r"),EMPTYSTRING);
   verbose(_T("Positions to check:%s\n"), format1000(it.getCount()).cstr());
 
   while(it.hasNext()) {

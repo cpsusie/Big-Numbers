@@ -73,13 +73,13 @@ void IdentifyDialog::OnOK() {
   m_myName     = trim(m_myName);
   m_dealerName = trim(m_dealerName);
 
-  if(m_myName == _T("")) {
+  if(m_myName == EMPTYSTRING) {
     UpdateData(false);
     MessageBox(_T("Indtast dit navn"),_T("Udfyld navn"), MB_ICONEXCLAMATION );
     OnGotoName();
     return;
   }
-  if(m_connected && m_dealerName == _T("")) {
+  if(m_connected && m_dealerName == EMPTYSTRING) {
     UpdateData(false);
     MessageBox(_T("Indtast kortgivers computernavn"), _T("Udfyld computernavn"), MB_ICONEXCLAMATION);
     OnGotoDealerName();

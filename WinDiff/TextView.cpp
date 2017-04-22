@@ -357,7 +357,7 @@ void TextView::paint(CDC *pDC) {
     pDC->FillSolidRect(textL,textB, w    , h, WHITE               );
 /*
     paintLineNumber( pDC, y, -1);
-    paintTextSegment(pDC, 0, y, m_winSize.cx+1, WHITE, WHITE, _T(""));
+    paintTextSegment(pDC, 0, y, m_winSize.cx+1, WHITE, WHITE, EMPTYSTRING);
 */
   }
   if(isActive()) {
@@ -580,7 +580,7 @@ static void setColor(CDC *pDC, const COLORREF &tc, const COLORREF &bc) {
 void TextView::paintLineNumber(CDC *pDC, int y, int lineno) {
   String tmp;
   if(lineno < 0) {
-    tmp = format(_T("%*.*s"), m_margin, m_margin, _T(""));
+    tmp = format(_T("%*.*s"), m_margin, m_margin, EMPTYSTRING);
   } else if(getShow1000Separator()) {
     tmp = format(_T("%*s "), m_margin - 1, format1000(lineno+1).cstr());
   } else {
@@ -784,7 +784,7 @@ void TextView::paintTextLine(CDC *pDC, int y) {
 
   case DELETEDLINES :
     if(id == 1) {
-      paintTextLine(pDC, y, GREY, GREY      , _T("")                    , lineSeg);
+      paintTextLine(pDC, y, GREY, GREY      , EMPTYSTRING                    , lineSeg);
     } else {
       paintTextLine(pDC, y, BLUE, GREY      , df.getText(id).getString(), lineSeg);
     }
@@ -794,7 +794,7 @@ void TextView::paintTextLine(CDC *pDC, int y) {
     if(id == 1) {
       paintTextLine(pDC, y, GREEN,GREY      , df.getText(id).getString(), lineSeg);
     } else {
-      paintTextLine(pDC, y, GREY, GREY      , _T("")                    , lineSeg);
+      paintTextLine(pDC, y, GREY, GREY      , EMPTYSTRING                    , lineSeg);
     }
     break;
   }
@@ -804,7 +804,7 @@ void TextView::paintTextLine(CDC *pDC, int y) {
 
 const TCHAR *TextView::getString(int index) const {
   if(index < 0 || index >= m_diff->getLineCount()) {
-    return _T("");
+    return EMPTYSTRING;
   }
   return m_diff->getDiffLine(index).getText(getId()).getString();
 }
@@ -850,11 +850,11 @@ String TextView::getOrigString(int index) {
 String TextView::getCurrentOrigString(int offset) {
   int index = getCurrentLine() + offset;
   if(index >= m_diff->getLineCount() || index < 0) {
-    return _T("");
+    return EMPTYSTRING;
   }
   const DiffLine &dl = m_diff->getDiffLine(index);
   const int l = dl.getText(getId()).getIndex();
-  return (l < 0) ? _T("") : getOrigString(l);
+  return (l < 0) ? EMPTYSTRING : getOrigString(l);
 }
 
 static bool inline isWordLetter(_TUCHAR ch) {
@@ -863,7 +863,7 @@ static bool inline isWordLetter(_TUCHAR ch) {
 
 String getWord(const String &str, UINT pos) {
   if(pos >= str.length()) {
-    return _T("");
+    return EMPTYSTRING;
   }
   int start = pos, end = pos;
 
@@ -890,7 +890,7 @@ String getWord(const String &str, UINT pos) {
       end++;
     }
   } else if(_istspace(s[pos])) {
-    return _T("");
+    return EMPTYSTRING;
   }
   return substr(str, start, end-start+1);
 }
@@ -1477,7 +1477,7 @@ String TextView::getTextLines(const TextPositionPair &tp) {
 
 String TextView::getSelectedText() {
   if(m_anchor.isEmpty()) {
-    return _T("");
+    return EMPTYSTRING;
   }
   return getTextLines(getSelectedRange());
 }

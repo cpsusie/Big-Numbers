@@ -7,7 +7,7 @@ StringExtractor::StringExtractor(UINT minLength, bool showNames, bool verbose)
 , m_showNames(showNames)
 , m_verbose(  verbose  )
 {
-  m_currentName = _T("");
+  m_currentName = EMPTYSTRING;
   if(verbose) {
     m_screenWidth = Console::getWindowSize(STD_ERROR_HANDLE).X - 1;
   }
@@ -19,7 +19,7 @@ void StringExtractor::handleFileName(const TCHAR *name, DirListEntry &info) {
     m_currentName = name;
     verbose(name);
     extractStrings(name);
-    verbose(_T(""));
+    verbose(EMPTYSTRING);
   } catch(Exception e) {
     _ftprintf(stderr, _T("strings:%s\n"), e.what());
   }
@@ -27,7 +27,7 @@ void StringExtractor::handleFileName(const TCHAR *name, DirListEntry &info) {
 
 void StringExtractor::printString(const char *str) {
   if(m_outputAtTTY && m_verbose) {
-    verbose(_T(""));
+    verbose(EMPTYSTRING);
   }
   if(m_showNames) {
     _tprintf(_T("%s:"), m_currentName);

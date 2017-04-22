@@ -17,7 +17,7 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
 
   m_expr  = expr;
   setXInterval(range);
-  m_name  = _T("");
+  m_name  = EMPTYSTRING;
   m_functionFitter = NULL;
   m_worker         = NULL;
 }
@@ -166,7 +166,7 @@ CStatic *CCustomFitThreadDlg::infofield(int i) {
   rect.left   = 10;
   rect.right  = rect.left + 200;
   CStatic *st = new CStatic;
-  st->Create(_T(""),WS_VISIBLE | WS_GROUP | WS_TABSTOP,rect,this,FIELDID(i));
+  st->Create(EMPTYSTRING,WS_VISIBLE | WS_GROUP | WS_TABSTOP,rect,this,FIELDID(i));
   return st;
 }
 

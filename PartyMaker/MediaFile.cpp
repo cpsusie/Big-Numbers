@@ -85,12 +85,12 @@ MediaFile::MediaFile(CWMPMedia media) {
 
 void MediaFile::clear() {
   m_media       = NULL;
-  m_sourceURL   = _T("");
-  m_title       = _T("");
-  m_artist      = _T("");
-  m_composer    = _T("");
-  m_genre       = _T("");
-  m_album       = _T("");
+  m_sourceURL   = EMPTYSTRING;
+  m_title       = EMPTYSTRING;
+  m_artist      = EMPTYSTRING;
+  m_composer    = EMPTYSTRING;
+  m_genre       = EMPTYSTRING;
+  m_album       = EMPTYSTRING;
   m_duration    = 0;
   m_protected   = true;
   m_trackNumber = 0;
@@ -201,7 +201,7 @@ void MediaFile::read(ByteInputStream &s, String &str) { // static
   UINT l;
   s.getBytesForced((BYTE*)&l, sizeof(l));
   if(l == 0) {
-    str = _T("");
+    str = EMPTYSTRING;
     return;
   }
 

@@ -112,7 +112,7 @@ static ButtonAttribute *getAttribute(int id) {
 }
 
 CCalculatorDlg::CCalculatorDlg(CWnd* pParent /*=NULL*/)	: CDialog(CCalculatorDlg::IDD, pParent) {
-  m_display = _T("");
+  m_display = EMPTYSTRING;
   m_calc = new CalculatorThread();
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -600,12 +600,12 @@ void CCalculatorDlg::showStatus() {
   if(m_calc->getMemoryIndicator()) {
     SetDlgItemText(IDC_MEMORYINDICATOR, _T("M"));
   } else {
-    SetDlgItemText(IDC_MEMORYINDICATOR, _T("") );
+    SetDlgItemText(IDC_MEMORYINDICATOR, EMPTYSTRING );
   }
   int plevel = m_calc->getParanthesLevel();
 
   if(plevel == 0) {
-    SetDlgItemText(IDC_PARANTHESLEVEL, _T("")  );
+    SetDlgItemText(IDC_PARANTHESLEVEL, EMPTYSTRING  );
   } else {
     TCHAR tmp[20];
     _stprintf(tmp,_T("(=%d"), plevel);
@@ -725,7 +725,7 @@ void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent) {
     if(now - m_enterTime >= 10) {
       stopTimer();
       waitCursor(false);
-      int iresult = MessageBox(_T("The requested operation may take a very long time to complete.\n\rDo you want to continue?"),_T("")
+      int iresult = MessageBox(_T("The requested operation may take a very long time to complete.\n\rDo you want to continue?"),EMPTYSTRING
                               ,MB_YESNO + MB_ICONQUESTION);
       time(&m_enterTime);
       if(iresult == IDNO) {

@@ -612,7 +612,7 @@ void Remes::setExtremum(const int index, const BigReal &x) {
   m_extrema[index]    = x;
   m_errorValue[index] = errorFunction(x);
   if(m_verbose) {
-    printExtremum(index,_T(""));
+    printExtremum(index,EMPTYSTRING);
   }
 }
 
@@ -761,7 +761,7 @@ void Remes::generateHeader(FILE *f) {
    ,m_targetFunction.getName().cstr()
    ,getDouble(m_left)
    ,getDouble(m_right)
-   ,m_useRelativeError ? _T("relative ") : _T("")
+   ,m_useRelativeError ? _T("relative ") : EMPTYSTRING
    ,getDouble(m_maxError) );
 }
 

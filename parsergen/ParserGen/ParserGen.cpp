@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
   char     *cp;
   String    implOutputDir   = _T(".");
   String    headerOutputDir = implOutputDir;
-  String    templateName    = _T("");
+  String    templateName    = EMPTYSTRING;
   CodeFlags flags;
   bool      callWizard      = false;
   Language  language        = CPP;
@@ -150,8 +150,8 @@ int main(int argc, char **argv) {
       }
     }
 
-    String skeletonFileName = _T("");
-    String wizardTemplate   = _T("");
+    String skeletonFileName = EMPTYSTRING;
+    String wizardTemplate   = EMPTYSTRING;
     switch(language) {
 	  case CPP :
       skeletonFileName = _T("parsergencpp.par");

@@ -119,7 +119,7 @@ template<class T> String thinMapToString(const T *a, size_t size) {
 
 String DFATables::toString() const {
   if(m_stateCount == 0) {
-    return _T("");
+    return EMPTYSTRING;
   }
   String result;
   if(countNonZeroes(m_charMap, MAX_CHARS) <= 40) {

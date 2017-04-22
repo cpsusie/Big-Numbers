@@ -63,7 +63,7 @@ void FileFormat::loadData(RegistryKey &key, FileFormat &param) { // static
   param.m_multipleDelimiters =               key.getBool(  MULTIPLEDELIMITERS , defaultValues.m_multipleDelimiters );
   const String txtq          =               key.getString(TEXTQUALIFIER      , format(_T("%c"), defaultValues.m_textQualifier));
   param.m_textQualifier      = txtq.length() ? txtq[0] : _T('\"');
-  param.columnsFromString(                   key.getString(COLUMNS            ,_T("")     ));
+  param.columnsFromString(                   key.getString(COLUMNS            ,EMPTYSTRING     ));
 }
 
 bool FileFormat::remove(const String &name) { // static
@@ -225,7 +225,7 @@ String FileFormat::stripColumns(const String &s) const {
 
   if(m_delimited) {
     StringArray fields;
-    fields.add(_T("")); // add dummystring to make real fields indexed from 1... as m_columns are
+    fields.add(EMPTYSTRING); // add dummystring to make real fields indexed from 1... as m_columns are
     Tokenizer tok(s.cstr(),m_delimiters.cstr(),m_textQualifier,m_multipleDelimiters?0:TOK_SINGLEDELIMITERS);
     while(tok.hasNext()) {
       fields.add(tok.next());

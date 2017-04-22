@@ -1137,7 +1137,7 @@ bool isPrintable(BYTE ch) {
 
 BOOL CPartyMakerDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    m_currentPrefix = _T("");
+    m_currentPrefix = EMPTYSTRING;
     return true;
   }
 
@@ -1150,7 +1150,7 @@ BOOL CPartyMakerDlg::PreTranslateMessage(MSG *pMsg) {
     case VK_END  :
     case VK_NEXT :
     case VK_PRIOR:
-      m_currentPrefix = _T("");
+      m_currentPrefix = EMPTYSTRING;
       if(GetFocus() != &m_allMedia) {
         gotoToListBox();
         return true;
@@ -1163,7 +1163,7 @@ BOOL CPartyMakerDlg::PreTranslateMessage(MSG *pMsg) {
           findStringInMediaList(ch);
           return true;
         } else {
-          m_currentPrefix = _T("");
+          m_currentPrefix = EMPTYSTRING;
         }
       }
       break;

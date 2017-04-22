@@ -13,8 +13,8 @@ String ExpressionVariable::toString() const {
   return format(_T("Variable:[Name:%-10s valueIndex:%2d %-9s %-9s %-9s]")
               , format(_T("<%s>"), m_name.cstr()).cstr()
               , m_valueIndex
-              , (m_constant ? _T("constant") : _T(""))
-              , (m_loopVar  ? _T("loop var") : _T(""))
+              , (m_constant ? _T("constant") : EMPTYSTRING)
+              , (m_loopVar  ? _T("loop var") : EMPTYSTRING)
               , (m_defined  ? _T("defined" ) : _T("undefined")));
 }
 

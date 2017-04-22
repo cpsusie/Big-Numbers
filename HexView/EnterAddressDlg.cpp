@@ -14,7 +14,7 @@ CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd* pParent)
   m_addrUppercase = settings.getAddrHexUppercase();
 
   m_changeEditAddressActive = false;
-    m_addressText = _T("");
+    m_addressText = EMPTYSTRING;
 }
 
 void CEnterAddressDlg::DoDataExchange(CDataExchange* pDX) {

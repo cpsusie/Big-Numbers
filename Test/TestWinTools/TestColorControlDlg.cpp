@@ -6,7 +6,7 @@
 #endif
 
 CTestColorControlDlg::CTestColorControlDlg(CWnd *pParent) : CDialog(CTestColorControlDlg::IDD, pParent) {
-  m_caption      = _T("");
+  m_caption      = EMPTYSTRING;
   m_hasBorder    = FALSE;
   m_enabled      = FALSE;
   m_visible      = TRUE;

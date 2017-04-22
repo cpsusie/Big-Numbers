@@ -218,7 +218,7 @@ BOOL CSudokuDlg::PreTranslateMessage(MSG *pMsg) {
 }
 
 void CSudokuDlg::OnSolve() {
-  showMessage(_T(""));
+  showMessage(EMPTYSTRING);
   Game        game;
   FieldMatrix m = getMatrix();
   if(game.solve(m)) {
@@ -344,7 +344,7 @@ void CSudokuDlg::OnFileEmptyGame() {
   FieldMatrix m;
   putMatrix(m);
   OnGameOpenAllFields();
-  showMessage(_T(""));
+  showMessage(EMPTYSTRING);
   setName(_T("Untitled"));
 }
 

@@ -111,7 +111,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, bool ply) const {
 
   default          :
     throwException(_T("%s:status=%d"), __TFUNCTION__, getStatus());
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 
@@ -134,7 +134,7 @@ TCHAR *EndGameResult::toStr(TCHAR *dst, Player playerInTurn, bool ply) const {
     }
   default:
     throwException(_T("%s:Unknown status:%d"), __TFUNCTION__, getStatus());
-    return _T("");
+    return EMPTYSTRING;
   }
 }
 

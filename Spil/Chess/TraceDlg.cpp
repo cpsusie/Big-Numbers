@@ -120,8 +120,8 @@ LRESULT  CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
 
 LRESULT  CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
   m_textQueue.clear();
-  m_textBox->SetWindowText(_T(""));
-  m_messageField->SetWindowText(_T(""));
+  m_textBox->SetWindowText(EMPTYSTRING);
+  m_messageField->SetWindowText(EMPTYSTRING);
   m_caretPos = 0;
   return 0;
 }

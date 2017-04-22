@@ -425,7 +425,7 @@ TCHAR *EndGameKeyDefinition::createKeyString(TCHAR *dst, EndGameKey key, bool in
   return _tcscat(createWhiteKeyString(dst, key), createBlackKeyString(blackStr, key));
 }
 
-static const TCHAR *shortNames[]    = { _T(""),_T("K"),_T("Q"),_T("R"),_T("B"),_T("N"),_T("") };
+static const TCHAR *shortNames[]    = { EMPTYSTRING,_T("K"),_T("Q"),_T("R"),_T("B"),_T("N"),EMPTYSTRING };
 static const TCHAR *playerShortName = _T("WB");
 #define GETFIELDNAME(pos) Game::fieldInfo[pos].m_name
 
@@ -1422,7 +1422,7 @@ String SelfCheckStatusPrinter::getSummaryString() const {
 
 void EndGameKeyDefinition::doSelfCheck(bool checkSym, bool listUnused, bool orderByLength) const {
   verbose(_T("Running %scodec test for keydefinition %-15s [%s]. Indexsize:%s\n")
-         ,checkSym?_T("extended "):_T("")
+         ,checkSym?_T("extended "):EMPTYSTRING
          ,getCodecName().cstr()
          ,toString().cstr()
          ,format1000(getIndexSize()).cstr());

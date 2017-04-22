@@ -279,7 +279,7 @@ void CReversiDlg::computerMove() {
       showWinner();
     } else
       if(userMustPass()) {
-        MessageBox(_T("You must pass"), _T(""), MB_ICONINFORMATION);
+        MessageBox(_T("You must pass"), EMPTYSTRING, MB_ICONINFORMATION);
         startTimer();
       } else {
         m_computerTurn = false;
@@ -300,7 +300,7 @@ void CReversiDlg::OnLButtonDown(UINT nFlags, CPoint point) {
         showWinner();
       } else {
         if(computerMustPass()) {
-          MessageBox(_T("I must pass"),_T(""), MB_ICONINFORMATION);
+          MessageBox(_T("I must pass"),EMPTYSTRING, MB_ICONINFORMATION);
           return;
         } else {
           m_computerTurn = true;

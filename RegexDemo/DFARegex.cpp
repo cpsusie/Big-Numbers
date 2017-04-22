@@ -66,7 +66,7 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
   try {
     NFAState::releaseAll();
 
-    DBG_setCodeText(_T(""));
+    DBG_setCodeText(EMPTYSTRING);
 
     m_translateTable = translateTable;
     m_hasCompiled = false;
@@ -88,7 +88,7 @@ void DFARegex::compilePattern(const String &pattern, const TCHAR *translateTable
     setDBGCharIndexForAcceptStates(pattern.length());
 #endif
 
-    _DBG_callCompilerHandler(m_stepHandler, toString(), _T(""), fastMapToString(), -1)
+    _DBG_callCompilerHandler(m_stepHandler, toString(), EMPTYSTRING, fastMapToString(), -1)
 
     nfa.clear();
     NFAState::releaseAll();

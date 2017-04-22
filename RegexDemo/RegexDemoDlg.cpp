@@ -31,8 +31,8 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CRegexDemoDlg::CRegexDemoDlg(CWnd* pParent) : CDialog(CRegexDemoDlg::IDD, pParent) {
-	m_pattern     = _T("");
-	m_target      = _T("");
+	m_pattern     = EMPTYSTRING;
+	m_target      = EMPTYSTRING;
   m_hIcon       = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
   m_debugThread = NULL;
 }
@@ -603,7 +603,7 @@ void CRegexDemoDlg::showException(Exception &e) {
 
 void CRegexDemoDlg::clearThreadState() {
   setCurrentCodeLine(-1);
-  setWindowText(this, IDC_STATICSTACK, _T(""));
+  setWindowText(this, IDC_STATICSTACK, EMPTYSTRING);
   unmarkAllCharacters(SEARCH_POSMARK );
   unmarkAllCharacters(MATCH_STARTMARK);
   unmarkAllCharacters(MATCH_DMARK    );
@@ -752,7 +752,7 @@ void CRegexDemoDlg::showDFAMatchState() {
 }
 
 void CRegexDemoDlg::clearCyclesWindow() {
-  showCyclesText(_T(""));
+  showCyclesText(EMPTYSTRING);
 }
 
 void CRegexDemoDlg::showCyclesText(const String &text) {
@@ -765,7 +765,7 @@ void CRegexDemoDlg::showResult(const String &result, const String &registerStrin
 }
 
 void CRegexDemoDlg::clearRegisterWindow() {
-  setWindowText(getRegistersWindow(), _T(""));
+  setWindowText(getRegistersWindow(), EMPTYSTRING);
 }
 
 void CRegexDemoDlg::setRegisterWindowMode() {
@@ -812,8 +812,8 @@ void CRegexDemoDlg::showMatchStack(const _RegexMatchState &state) {
 }
 
 void CRegexDemoDlg::clearCodeWindow() {
-  getCodeWindow()->setText(_T(""));
-  setWindowText(this, IDC_STATICFASTMAP, _T(""));
+  getCodeWindow()->setText(EMPTYSTRING);
+  setWindowText(this, IDC_STATICFASTMAP, EMPTYSTRING);
   m_codeWindow.setAllowMarking(false);
 }
 

@@ -617,15 +617,15 @@ BOOL CMainFrame::doPreTranslateMessage(MSG* pMsg) {
     CStatusBarCtrl &statusBar =  m_wndStatusBar.GetStatusBarCtrl();
     CClientDC dc(&statusBar);
 
-    m_wndStatusBar.SetPaneText(1,_T(""));
+    m_wndStatusBar.SetPaneText(1,EMPTYSTRING);
     textOutTransparentBackground(dc, rect.TopLeft()+CSize(2,1), _T("Deleted lines"), *statusBar.GetFont(), BLUE);
 
     m_wndStatusBar.GetItemRect(2,&rect);
-    m_wndStatusBar.SetPaneText(2,_T(""));
+    m_wndStatusBar.SetPaneText(2,EMPTYSTRING);
     textOutTransparentBackground(dc, rect.TopLeft()+CSize(2,1), _T("Changed lines"), *statusBar.GetFont(), RED);
 
     m_wndStatusBar.GetItemRect(3,&rect);
-    m_wndStatusBar.SetPaneText(3,_T(""));
+    m_wndStatusBar.SetPaneText(3,EMPTYSTRING);
     textOutTransparentBackground(dc, rect.TopLeft()+CSize(2,1), _T("Inserted lines"), *statusBar.GetFont(), GREEN);
   }
   return ret;

@@ -234,7 +234,7 @@ UINT FindDuplicatesThread::run() {
   } catch(...) {
     // ignore
   }
-  showMessage(_T(""));
+  showMessage(EMPTYSTRING);
   return 0;
 }
 

@@ -292,7 +292,7 @@ String CalculatorInfo::toString() const {
     tmp += format(_T("(%d,%d) "), p.x,p.y);
   }
   result += format(_T("First %d edgePoints:(%s)\n"), i, tmp.cstr());
-  tmp = _T("");
+  tmp = EMPTYSTRING;
   it = ((CalculatorInfo*)this)->m_innerSet.getIterator();
   for(i = 0; (i < 20) && it.hasNext(); i++) {
     const CPoint p = m_innerSet.next(it);

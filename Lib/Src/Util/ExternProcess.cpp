@@ -86,7 +86,7 @@ void Pipe::init() {
 #undef LEAVEFUNC
 #endif
 
-#define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, _T(""), msg)
+#define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, EMPTYSTRING, msg)
 #define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), __TFUNCTION__).cstr()); m_level++; }
 #define LEAVEFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("leave %s"), __TFUNCTION__).cstr()); }
 

@@ -383,7 +383,7 @@ int ExpressionNode::compare(ExpressionNode *n) {
 }
 
 String &ExpressionNode::addLeftMargin(String &s, int level) { // static
-  s += format(_T("%*.*s%2d:"), level*2, level*2, _T(""), level);
+  s += format(_T("%*.*s%2d:"), level*2, level*2, EMPTYSTRING, level);
   return s;
 }
 
@@ -416,7 +416,7 @@ BitSet ExpressionNodeArray::getNonConstantNodes() const {
 
 String ExpressionNodeArray::toString() const {
   if(size() == 0) {
-    return _T("");
+    return EMPTYSTRING;
   } else {
     String result = format(_T("(%s)"), (*this)[0]->toString().cstr());
     for(size_t i = 1; i < size(); i++) {

@@ -61,7 +61,7 @@ static const int legalCodePages[] = {
 
 String FileContent::converToString(UINT codePage) const {
   if(size() == 0) {
-    return _T("");
+    return EMPTYSTRING;
   }
 
   const BYTE *data      = getData();

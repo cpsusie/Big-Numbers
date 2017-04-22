@@ -806,7 +806,7 @@ String Grammar::itemToString(const LR1Item &item, int flags) const {
   }
   result += ".";
   const int n = prod.getLength();
-  const TCHAR *delimiter = _T("");
+  const TCHAR *delimiter = EMPTYSTRING;
   for(int i = item.m_dot; i < n; i++, delimiter = _T(" ")) {
     result += delimiter;
     result += getSymbol(prod.m_rightSide[i]).m_name;

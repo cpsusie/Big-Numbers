@@ -11,8 +11,8 @@ CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd *pParent)
 , m_model(g)
 , CDialog(CDataGraphDlg::IDD, pParent)
 {
-  m_name  = _T("");
-  m_style = _T("");
+  m_name  = EMPTYSTRING;
+  m_style = EMPTYSTRING;
 }
 
 void CDataGraphDlg::DoDataExchange(CDataExchange* pDX) {

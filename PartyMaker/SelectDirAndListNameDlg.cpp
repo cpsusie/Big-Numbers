@@ -16,9 +16,9 @@ CSelectDirAndListNameDlg::CSelectDirAndListNameDlg(Options &options, CWnd *pPare
 {
   m_timerIsRunning = false;
 
-    m_listName = _T("");
-    m_dir = _T("");
-    m_drive = _T("");
+    m_listName = EMPTYSTRING;
+    m_dir = EMPTYSTRING;
+    m_drive = EMPTYSTRING;
     m_recurseSubDir = FALSE;
 }
 

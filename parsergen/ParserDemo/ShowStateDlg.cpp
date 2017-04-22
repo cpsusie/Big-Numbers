@@ -8,7 +8,7 @@
 #endif
 
 ShowStateDlg::ShowStateDlg(CDialog *mainDialog, CWnd *pParent): CDialog(ShowStateDlg::IDD, pParent), m_mainDialog(mainDialog) {
-	m_data = _T("");
+	m_data = EMPTYSTRING;
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 

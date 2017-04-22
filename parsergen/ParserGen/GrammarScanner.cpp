@@ -21,7 +21,7 @@ GrammarScanner::~GrammarScanner() {
 
 void GrammarScanner::nextLine() {
   if(_fgetts(m_lineBuffer, ARRAYSIZE(m_lineBuffer), m_input) == NULL) {
-    _tcscpy(m_lineBuffer, _T(""));
+    _tcscpy(m_lineBuffer, EMPTYSTRING);
   } else {
     m_currentPos.incrLineNumber();
   }

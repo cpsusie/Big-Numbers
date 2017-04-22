@@ -57,7 +57,7 @@ BOOL CShowDirAndArgDlg::OnInitDialog() {
     const String ev = *env;
     Tokenizer tok(ev, _T("="));
     const String name  = tok.next();
-    const String value = tok.hasNext()?tok.next():_T("");
+    const String value = tok.hasNext()?tok.next():EMPTYSTRING;
     addData(*list, count, 0, name, true);
     addData(*list, count, 1, value);
   }

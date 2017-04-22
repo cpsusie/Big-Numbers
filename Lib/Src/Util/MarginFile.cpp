@@ -37,7 +37,7 @@ void MarginFile::close() {
 
 void MarginFile::indent() {
   if(m_leftMargin > 0) {
-    _ftprintf(m_file,_T("%*.*s"),m_leftMargin,m_leftMargin,_T(""));
+    _ftprintf(m_file,_T("%*.*s"),m_leftMargin,m_leftMargin,EMPTYSTRING);
   }
   m_lineStart = false;
   m_currentLineLength = m_leftMargin;

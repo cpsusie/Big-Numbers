@@ -29,7 +29,7 @@ SortMethodId::SortMethodId(int methodId, SortMethod sortMethod)
 {
   m_menuText = loadString(m_methodId);
   m_name     = m_menuText;
-  m_name.replace('&',_T(""));
+  m_name.replace('&',EMPTYSTRING);
 }
 
 const SortMethodId &SortMethodId::getMethodById(int methodId) { // static

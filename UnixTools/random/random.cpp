@@ -117,7 +117,7 @@ static void printRandom(Random &rnd, bool integer,double low, double high) {
 
 static void printRandomLine(Random &rnd, Array<RandomParameters> &param) {
   size_t dim = param.size();
-  TCHAR *delim = _T("");
+  TCHAR *delim = EMPTYSTRING;
   for(size_t i = 0; i < dim; i++, delim = _T(" ")) {
     _tprintf(_T("%s%lg"), delim, param[i].getRandom(rnd));
   }
