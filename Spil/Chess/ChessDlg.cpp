@@ -462,8 +462,9 @@ void CChessDlg::errorMessage(const Exception &e) const {
 void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   m_layoutManager.OnSizing(fwSide, pRect);
   CDialog::OnSizing(fwSide, pRect);
-  m_graphics->render();
-//  getOptions().setBoardSize();
+  m_graphics->beginPaint();
+  m_graphics->endPaint();
+  getOptions().setBoardSize(m_graphics->getBoardSize(true));
 }
 
 // ------------------------- Painting ---------------------------

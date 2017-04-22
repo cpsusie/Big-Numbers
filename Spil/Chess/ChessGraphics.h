@@ -263,7 +263,7 @@ class PieceDragger;
 class ChessGraphics {
   friend class ChessAnimation;
   friend class AbstractPieceMoveAnimation;
-  friend class RotatePieceAnimation;
+  friend class MateAnimation;
 
 private:
   HWND                        m_hwnd;

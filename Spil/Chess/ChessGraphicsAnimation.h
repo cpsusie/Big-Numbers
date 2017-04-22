@@ -103,10 +103,10 @@ public:
   }
 };
 
-class RotatePieceAnimation : public ChessAnimation {
+class MateAnimation : public ChessAnimation {
 private:
   const int m_position;
 public:
-  RotatePieceAnimation(ChessGraphics *graphics, int position);
+  MateAnimation(ChessGraphics *graphics, int position);
   void animate();
 };

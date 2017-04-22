@@ -215,8 +215,10 @@ void ChessGraphics::paintAll() {
     paintField(pos);
   }
 
-  repaintOffboardPieces(WHITEPLAYER);
-  repaintOffboardPieces(BLACKPLAYER);
+  clearOffboardPieces(WHITEPLAYER);
+  clearOffboardPieces(BLACKPLAYER);
+  paintOffboardPieces(WHITEPLAYER);
+  paintOffboardPieces(BLACKPLAYER);
 
   paintModeText();
   if(m_visibleClocks) {
@@ -740,7 +742,7 @@ void ChessGraphics::showClocks(UINT whiteTime, UINT blackTime) {
 void ChessGraphics::animateCheckMate() {
   const Player player  = m_game->getPlayerInTurn();
   const int    kingPos = m_game->getKingPosition(player);
-  RotatePieceAnimation(this, kingPos).animate();
+  MateAnimation(this, kingPos).animate();
   m_kingFlags[player] = KING_HAS_CHECKMARK | KING_UPSIDEDOWN;
   paintField(kingPos);
 }

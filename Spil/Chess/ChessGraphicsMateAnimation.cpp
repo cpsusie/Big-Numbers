@@ -2,39 +2,31 @@
 #include <Math.h>
 #include "ChessGraphicsAnimation.h"
 
-RotatePieceAnimation::RotatePieceAnimation(ChessGraphics *graphics, int position)
+MateAnimation::MateAnimation(ChessGraphics *graphics, int position)
 : ChessAnimation(graphics)
 , m_position(position)
 {
 }
 
-void RotatePieceAnimation::animate() {
+void MateAnimation::animate() {
   const Image          *pieceImage  = m_graphics.getPieceImage(m_position);
-  const Point2DP        pos         = m_graphics.getFieldPosition(m_position, true);
-  const CSize           boardSize   = m_graphics.getBoardSize(true);
-  const CSize           fieldSize   = m_graphics.getFieldSize(true);
-  const int             fieldSize45 = (int)(fieldSize.cx*1.42); // maximal size of rotated square. (= fieldsize/cos(45) = ceil(fieldsize * sqrt(2)))
-  const double          scale       = m_graphics.getResources().getAvgScale();
-  PixRect               pr45(theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45, fieldSize45);
-  PixRect               boardWithoutKing(theApp.m_device, PIXRECT_PLAINSURFACE, boardSize);
-  HDC                   hdc = GetDC(m_graphics.m_hwnd);
-  PixRect::bitBlt(&boardWithoutKing, ORIGIN,boardSize, SRCCOPY, hdc, ORIGIN);
-  HDC tmpDC = boardWithoutKing.getDC();
-  m_graphics.getResources().getFieldMarkImage(CHECKEDKING)->paintImage(tmpDC, pos, scale);
-  boardWithoutKing.releaseDC(tmpDC);
+  const Point2DP        pos         = m_graphics.getFieldPosition(m_position, false);
+  const Size2DS         fieldSize   = m_graphics.getFieldSize(false);
+  const Size2DS         fieldSize45 = fieldSize * 1.42;  // maximal size of rotated square. (= fieldsize/cos(45) = ceil(fieldsize * sqrt(2)))
+  const Size2DS         margin      = (fieldSize45-fieldSize)/2;
+  const Point2DP        pos1        = ORIGIN + margin;
+  const Point2DP        pos2        = pos    - margin;
+  PixRect               background(theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45);
+  PixRect               helper(    theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45);
 
-  const CPoint pos1((fieldSize45-fieldSize.cx)/2,(fieldSize45-fieldSize.cy)/2);
-  const CPoint pos2((int)(pos.x-pos1.x),(int)(pos.y-pos1.y));
-
-  tmpDC = pr45.getDC();
+  background.rop(ORIGIN, fieldSize45, SRCCOPY, m_graphics.m_bufferPr, pos2);
+  getResources().getFieldMarkImage(CHECKEDKING)->paintImage(background, ORIGIN+margin);
 
   for(SigmoidIterator it(0,180,30); it.hasNext();) {
-    PixRect::bitBlt(tmpDC, 0,0,fieldSize45,fieldSize45, SRCCOPY, &boardWithoutKing, pos2.x,pos2.y); // paint background (checkedKing) on tmpDC
-    pieceImage->paintImage(tmpDC, pos1, scale, it.next());
-    BitBlt(hdc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
+    helper.rop(ORIGIN, fieldSize45, SRCCOPY, &background, ORIGIN);
+    pieceImage->paintImage(helper, pos1, 1, it.next());
+    m_graphics.m_bufferPr->rop(pos2, fieldSize45, SRCCOPY, &helper, ORIGIN);
+    m_graphics.render();
     Sleep(40);
   }
-
-  pr45.releaseDC(tmpDC);
-  ReleaseDC(m_graphics.m_hwnd, hdc);
 }
