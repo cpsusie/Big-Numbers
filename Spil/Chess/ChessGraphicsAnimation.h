@@ -72,6 +72,12 @@ class MoveAnimation : private CompactArray<MoveSinglePieceAnimation*> {
 private:
   ChessGraphics *m_graphics;
   int            m_steps;
+  inline void beginPaint() {
+    m_graphics->beginPaint();
+  }
+  inline void endPaint() {
+    m_graphics->endPaint();
+  }
 public:
   MoveAnimation(ChessGraphics *graphics) : m_graphics(graphics), m_steps(0) {
   }
