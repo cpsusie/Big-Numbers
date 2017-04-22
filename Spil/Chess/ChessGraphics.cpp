@@ -49,15 +49,13 @@ void ChessGraphics::reopen() {
 
 void ChessGraphics::allocate() {
   m_bufferPr      = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_resources.getBoardSize0()         );
-  m_selectedOldPr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, m_resources.getSelectionFrameSize0());
   m_resources.setClientRectSize(getClientRect(m_hwnd).Size());
 }
 
 void ChessGraphics::deallocate() {
   delete m_bufferPr;
-  m_bufferPr = NULL;
-  delete m_selectedOldPr;
-  m_selectedOldPr = NULL;
+  m_selectedRect.cleanup();
+  m_bufferPr   = NULL;
   m_paintLevel = 0;
 }
 
@@ -563,13 +561,17 @@ const OffboardPiece *ChessGraphics::getOffboardPieceByKey(PieceKey key) const {
 
 void ChessGraphics::beginDragPiece(const CPoint &point, PieceKey key) {
   const OffboardPiece *obp = getOffboardPieceByKey(key);
+  pushLevel();
   beginDragPiece(m_resources.scalePoint(obp->CenterPoint()), obp);
   dragPiece(point);
+  popLevel();
 }
 
 void ChessGraphics::beginDragPiece(const CPoint &point, const OffboardPiece *obp) {
+  pushLevel();
   m_pieceDragger = new PieceDragger(this, point, obp);
   paintGamePositions();
+  popLevel();
 }
 
 void ChessGraphics::dragPiece(const CPoint &point) {
@@ -582,8 +584,10 @@ void ChessGraphics::endDragPiece() {
   delete m_pieceDragger;
   m_pieceDragger = NULL;
 
+  pushLevel();
   repaintOffboardPieces(p);
   paintGamePositions();
+  popLevel();
 }
 
 PieceKey ChessGraphics::getDraggedPiece() const {
@@ -904,7 +908,7 @@ void ChessGraphics::markMouse(int pos) {
 
   const CRect r = getSelectionFrameRect(pos);
 
-  m_selectedOldPr->rop(m_selectedOldPr->getRect(), SRCCOPY, m_bufferPr, r.TopLeft());
+  saveImageRect(m_selectedRect, r);
   m_resources.getSelectionFrameImage()->paintImage(*m_bufferPr, r.TopLeft());
   popLevel();
 }
@@ -914,7 +918,7 @@ int ChessGraphics::unmarkMouse() {
   if(isValidPosition(m_mouseField)) {
     pushLevel();
     const CRect r = getSelectionFrameRect(m_mouseField);
-    m_bufferPr->rop(r, SRCCOPY, m_selectedOldPr, ORIGIN);
+    restoreImageRect(m_selectedRect);
     m_mouseField = -1;
     popLevel();
   }
@@ -1019,6 +1023,32 @@ void ChessGraphics::unmarkSelectedPiece() {
     m_selectedPieceField = -1;
     unmarkLegalMoves();
     popLevel();
+  }
+}
+
+PixRect *SavedImageRect::getPixRect(const CSize &size) {
+  if(m_pr == NULL || needResize(m_pr->getSize(), size)) {
+    cleanup();
+    m_pr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size);
+  }
+  return m_pr;
+}
+
+void SavedImageRect::save(const PixRect *src, const CRect &r) {
+  PixRect *dst = getPixRect(r.Size());
+  dst->rop(CRect(ORIGIN, r.Size()), SRCCOPY, src, r);
+  m_rect = r;
+}
+
+void SavedImageRect::restore(PixRect *dst) const {
+  if(m_pr == NULL) return;
+  dst->rop(m_rect, SRCCOPY, m_pr, CRect(ORIGIN, m_rect.Size()));
+}
+
+void SavedImageRect::cleanup() {
+  if(m_pr) {
+    delete m_pr;
+    m_pr = NULL;
   }
 }
 

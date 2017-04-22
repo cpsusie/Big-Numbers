@@ -17,8 +17,8 @@ void RotatePieceAnimation::animate() {
   const double          scale       = m_graphics.getResources().getAvgScale();
   PixRect               pr45(theApp.m_device, PIXRECT_PLAINSURFACE, fieldSize45, fieldSize45);
   PixRect               boardWithoutKing(theApp.m_device, PIXRECT_PLAINSURFACE, boardSize);
-
-  PixRect::bitBlt(&boardWithoutKing, ORIGIN,boardSize, SRCCOPY, m_hdc, ORIGIN);
+  HDC                   hdc = GetDC(m_graphics.m_hwnd);
+  PixRect::bitBlt(&boardWithoutKing, ORIGIN,boardSize, SRCCOPY, hdc, ORIGIN);
   HDC tmpDC = boardWithoutKing.getDC();
   m_graphics.getResources().getFieldMarkImage(CHECKEDKING)->paintImage(tmpDC, pos, scale);
   boardWithoutKing.releaseDC(tmpDC);
@@ -31,9 +31,10 @@ void RotatePieceAnimation::animate() {
   for(SigmoidIterator it(0,180,30); it.hasNext();) {
     PixRect::bitBlt(tmpDC, 0,0,fieldSize45,fieldSize45, SRCCOPY, &boardWithoutKing, pos2.x,pos2.y); // paint background (checkedKing) on tmpDC
     pieceImage->paintImage(tmpDC, pos1, scale, it.next());
-    BitBlt(m_hdc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
+    BitBlt(hdc, pos2.x,pos2.y,fieldSize45,fieldSize45, tmpDC, 0,0, SRCCOPY);
     Sleep(40);
   }
 
   pr45.releaseDC(tmpDC);
+  ReleaseDC(m_graphics.m_hwnd, hdc);
 }

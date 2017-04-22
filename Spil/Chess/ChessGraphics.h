@@ -234,10 +234,35 @@ public:
   }
 };
 
+class SavedImageRect { // to save/restore a part of Graphics.m_bufferPr;
+private:
+  PixRect *m_pr;
+  CRect    m_rect;
+  static bool needResize(const CSize &oldSize, const CSize &newSize) {
+    return (newSize.cx > oldSize.cx) || (newSize.cy > oldSize.cy);
+  }
+  PixRect *getPixRect(const CSize &size);
+  SavedImageRect(           const SavedImageRect &src); // not implemented
+  SavedImageRect &operator=(const SavedImageRect &src);
+public:
+  SavedImageRect() : m_pr(NULL), m_rect(0, 0, 0, 0) {
+  }
+  ~SavedImageRect() {
+    cleanup();
+  }
+  void cleanup();
+  void save(   const PixRect *src, const CRect &r);
+  void restore(PixRect *dst) const;
+  const CRect &getSavedRect() const {
+    return m_rect;
+  }
+};
+
+class PieceDragger;
+
 class ChessGraphics {
   friend class ChessAnimation;
-  friend class MoveSinglePieceAnimation;
-  friend class PieceDragger;
+  friend class AbstractPieceMoveAnimation;
   friend class RotatePieceAnimation;
 
 private:
@@ -246,7 +271,8 @@ private:
   GameKey                     m_lastFlushedGameKey;
   BYTE                        m_paintLevel;
   ChessResources              m_resources;
-  PixRect                    *m_bufferPr, *m_selectedOldPr;
+  PixRect                    *m_bufferPr;
+  SavedImageRect              m_selectedRect;
   int                         m_mouseField    , m_selectedPieceField;
   int                         m_computerFrom  , m_computerTo;
   PieceDragger               *m_pieceDragger;
@@ -317,15 +343,21 @@ private:
   const FieldAttackTextPosition *getLDAOffset(AttackInfoField f);
   const FieldAttackTextPosition *getSDAOffset(Player player);
 
-  void markFields(           const FieldSet &fields, FieldMark mark);
-  void unmarkFields(         const FieldSet &fields);
+  void markFields(            const FieldSet &fields, FieldMark mark);
+  void unmarkFields(          const FieldSet &fields);
   void markMatingPositions();
-  void paintEmptyField(      int pos);
-  void paintField(           int pos);
-  void paintOffboardPieces(  Player player);
-  void restoreBackground(    const CRect  &r);
-  void restoreBackground(    const CPoint &p, const CSize &size);
-  void addFieldNameRectangle(const CPoint &corner1, const CPoint &corner2, const CSize &charSize);
+  void paintEmptyField(       int pos);
+  void paintField(            int pos);
+  void paintOffboardPieces(   Player player);
+  void restoreBackground(     const CRect  &r);
+  void restoreBackground(     const CPoint &p, const CSize &size);
+  inline void saveImageRect(SavedImageRect &sr, const CRect &r) const {
+    sr.save(m_bufferPr, r);
+  }
+  inline void restoreImageRect(const SavedImageRect &sr) const {
+    sr.restore(m_bufferPr);
+  }
+  void addFieldNameRectangle( const CPoint &corner1, const CPoint &corner2, const CSize &charSize);
   void updatePlayerIndicator();
   CSize flushImage();
   MoveBaseArray getLegalMoves() const;

@@ -6,47 +6,45 @@
 
 class ChessAnimation {
 private:
-  PixRect *m_savedPr;
-  CRect    m_savedRect;
+  SavedImageRect m_save;
 protected:
   ChessGraphics &m_graphics;
-  HDC            m_hdc;
   const ChessResources &getResources() const {
     return m_graphics.getResources();
   }
-  void saveImageRect(   HDC src, const CRect &r);
-  void restoreImageRect(HDC dst);
-  inline const CRect getSavedRect() const {
-    return m_savedRect;
+  void restoreBackground(const CRect &r) {
+    m_graphics.restoreBackground(r);
   }
-  ChessAnimation(ChessGraphics *graphics) 
-    : m_graphics(*graphics)
-    , m_hdc(GetDC(graphics->m_hwnd))
-    , m_savedPr(NULL)
-    , m_savedRect(0,0,0,0)
-  {}
-  ~ChessAnimation() {
-    ReleaseDC(m_graphics.m_hwnd, m_hdc);
-    if(m_savedPr) delete m_savedPr;
+  void saveImageRect(const CRect &r) {
+    m_graphics.saveImageRect(m_save, r);
+  }
+  void restoreImageRect() {
+    m_graphics.restoreImageRect(m_save);
+  }
+  inline const CRect &getSavedRect() const {
+    return m_save.getSavedRect();
+  }
+  CPoint unscalePoint(const CPoint &p) const {
+    return m_graphics.getResources().unscalePoint(p);
+  }
+  ChessAnimation(ChessGraphics *graphics) : m_graphics(*graphics) {
   }
 };
 
 class AbstractPieceMoveAnimation : public ChessAnimation {
 private:
-  PixRect              *m_helper;
+  PixRect     *m_helper;
 protected:
-  const Image          *m_pieceImage;
-  const CSize           m_scaledImageSize;
-  const CSize           m_scaledFieldSize;
-  const double          m_scale;
+  const Image *m_pieceImage;
+  const CSize  m_imageSize;
+  const CSize  m_fieldSize;
   void paintImage(const CPoint &p);
 public:
   AbstractPieceMoveAnimation(ChessGraphics *graphics, const Image *image, const CSize &size)
     : ChessAnimation(graphics)
     , m_pieceImage(image)
-    , m_scaledImageSize(graphics->getResources().scaleSize(image->getRect().Size()))
-    , m_scaledFieldSize(graphics->getFieldSize(true))
-    , m_scale(graphics->getResources().getAvgScale())
+    , m_imageSize(graphics->getResources().getImageSize0())
+    , m_fieldSize(graphics->getResources().getFieldSize0())
     , m_helper(new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE,size))
   {
   }

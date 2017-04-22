@@ -1959,10 +1959,9 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
             m_graphics->beginPaint();
             m_graphics->unmarkMouse();
             m_graphics->paintGamePositions();
-            m_graphics->endPaint();
-
             m_graphics->beginDragPiece(point, key);
             m_selectedPiece = m_removedPiece = EMPTYPIECEKEY;
+            m_graphics->endPaint();
           }
         } else {                       // drag piece from one field to another
           const PieceKey oldKey = game.removePieceAtPosition(m_selectedPosition);
@@ -1974,7 +1973,6 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
             m_graphics->beginPaint();
             m_graphics->unmarkMouse();
             m_graphics->paintGamePositions();
-
             m_removedPiece     = newRemovedPiece;
             m_selectedPosition = newPos;
             m_graphics->markMouse(newPos);
