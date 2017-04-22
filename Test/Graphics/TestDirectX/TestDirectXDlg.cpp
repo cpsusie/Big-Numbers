@@ -131,15 +131,15 @@ DEBUGTRACE;
 }
 
 HCURSOR CTestDirectXDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CTestDirectXDlg::OnFileExit() {
-  OnClose();
+  EndDialog(IDOK);
 }
 
 void CTestDirectXDlg::OnClose() {
-  PostMessage(WM_QUIT);
+  OnFileExit();
 }
 
 void CTestDirectXDlg::OnOK() { /* ignore */ }

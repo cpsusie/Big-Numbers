@@ -735,6 +735,9 @@ bool Cdx9_rectDemoDlg::render() {
   rectangle(CPoint(center.x - 100, center.y - 100), CSize(200,200), outlineColor);
   */
 
+  D3DSURFACE_DESC boardDesc, renderDesc;
+  CHECKD3DRESULT(m_boardSurface->GetDesc(&boardDesc ));
+  CHECKD3DRESULT(m_renderTarget->GetDesc(&renderDesc));
   CHECKD3DRESULT(m_device->UpdateSurface(m_boardSurface, NULL, m_renderTarget, NULL));
 
   CSize textureSize(74,74); // = getSize(m_someTexture);
@@ -742,6 +745,8 @@ bool Cdx9_rectDemoDlg::render() {
   alphaBlend(m_someTexture, CRect(leftTop,textureSize));
 
   CHECKD3DRESULT(m_device->EndScene());
+  D3DSURFACE_DESC oldRenderDesc;
+  CHECKD3DRESULT(oldRenderTarget->GetDesc(&oldRenderDesc));
 
   CHECKD3DRESULT(m_device->StretchRect(m_renderTarget, NULL, oldRenderTarget, NULL, D3DTEXF_NONE));
   CHECKD3DRESULT(m_device->SetRenderTarget(0, oldRenderTarget));
