@@ -23,6 +23,9 @@ ChessGraphics::ChessGraphics(CWnd *wnd) : m_hwnd(*wnd) {
 
   m_game                   = NULL;
   m_paintLevel             = 0;
+#ifdef _DEBUG
+  m_maxPaintLevel          = 0;
+#endif
   m_computerPlayer         = BLACKPLAYER;
   m_visibleClocks          = 0;
   m_mouseField             = m_selectedPieceField = -1;
@@ -144,11 +147,13 @@ void ChessGraphics::setShowLegalMoves(bool show) {
   if(show != m_showLegalMoves) {
     pushLevel();
     m_showLegalMoves = show;
-    markLegalMoves();
-  } else {
-    unmarkLegalMoves();
+    if(show) {
+      markLegalMoves();
+    } else {
+      unmarkLegalMoves();
+    }
+    popLevel();
   }
-  popLevel();
 }
 
 void ChessGraphics::setShowPlayerInTurn(bool show) {

@@ -22,11 +22,11 @@
 #endif
 
 #define CTRL_INITDONE         0x01
-#define CTRL_FIRSTPAINTDONE   0x04
-#define CTRL_THINKENABLED     0x08
-#define CTRL_VERBOSEATGAMEEND 0x10
-#define CTRL_AUTOUPDATETITLE  0x20
-#define CTRL_APPACTIVE        0x40
+#define CTRL_FIRSTPAINTDONE   0x02
+#define CTRL_THINKENABLED     0x04
+#define CTRL_VERBOSEATGAMEEND 0x08
+#define CTRL_AUTOUPDATETITLE  0x10
+#define CTRL_APPACTIVE        0x20
 
 #define setControlFlag(  flag)   m_controlFlags |=  (flag)
 #define clrControlFlag(  flag)   m_controlFlags &= ~(flag)
@@ -618,6 +618,7 @@ void CChessDlg::enableEditBoardMenuItems(bool startEdit, bool editEnabled) {
   enableSubMenuContainingId(this, ID_EDIT_SWAPCOLORS        , editEnabled);
   enableMenuItem(           this, ID_EDIT_SWITCHPLAYERINTURN, editEnabled);
 }
+
 void CChessDlg::enableStartThinking() {
   bool moveNowEnabled = false;
   bool thinkEnabled   = false;

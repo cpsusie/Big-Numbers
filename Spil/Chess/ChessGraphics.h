@@ -270,6 +270,9 @@ private:
   const Game                 *m_game;
   GameKey                     m_lastFlushedGameKey;
   BYTE                        m_paintLevel;
+#ifdef _DEBUG
+  BYTE                        m_maxPaintLevel;
+#endif
   ChessResources              m_resources;
   PixRect                    *m_bufferPr;
   SavedImageRect              m_selectedRect;
@@ -291,14 +294,31 @@ private:
   UINT                        m_remainingTime[2];
   DebugFlags                  m_debugFlags;
   CSize                       m_lastDebugFieldSize;
+#ifdef _DEBUG
+  inline void checkPaintLevel() {
+    if (m_paintLevel > m_maxPaintLevel) {
+      m_maxPaintLevel = m_paintLevel;
+    }
+  }
+#endif
   inline void pushLevel() {
     if(m_paintLevel++ == 0) {
       m_resources.setClientRectSize(getClientRect(m_hwnd).Size());
     }
+#ifdef _DEBUG
+    checkPaintLevel();
+#endif
   }
   inline void popLevel() {
+#ifdef _DEBUG
+    if(m_paintLevel == 0) {
+      AfxMessageBox(format(_T("%s:m_paintLevel already 0"), __TFUNCTION__).cstr());
+    }
+#endif
     if(--m_paintLevel == 0) flushImage();
   }
+  // should only be called from popLevel()
+  CSize flushImage();
   void allocate();
   void deallocate();
   void paintSelectedPiece();
@@ -359,7 +379,6 @@ private:
   }
   void addFieldNameRectangle( const CPoint &corner1, const CPoint &corner2, const CSize &charSize);
   void updatePlayerIndicator();
-  CSize flushImage();
   MoveBaseArray getLegalMoves() const;
 public:
   ChessGraphics(CWnd *wnd);
