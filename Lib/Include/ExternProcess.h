@@ -27,16 +27,23 @@ private:
   static int run(              bool silent, const ArgArray &argv);
 
   void cleanup();
-  void killProcess();
 
   void setProcessHandle(HANDLE handle) {
     m_processHandle = handle;
+  }
+protected:
+  void killProcess();
+  inline FILE *getInput() {
+    return m_input;
+  }
+  inline FILE *getOutput() {
+    return m_output;
   }
 public:
   ExternProcess(bool verbose = false);                 // if verbose, functioncalls will be traced with debugLog
   ExternProcess(const ExternProcess &src);             // not defined. ExternProcess not cloneable
   ExternProcess &operator=(const ExternProcess &src);  // do
- ~ExternProcess();
+  virtual ~ExternProcess();
 
   void start( bool silent, const String &program, const StringArray &args);
   void vstart(bool silent, const String &program, va_list argptr); // no wait
@@ -56,7 +63,10 @@ public:
   inline bool isStarted() const {
     return m_input != NULL;
   }
-  void setVerbose(bool verbose) {
+  inline void setVerbose(bool verbose) {
     m_verbose = verbose;
+  }
+  inline bool isVerbose() const {
+    return m_verbose;
   }
 };

@@ -86,9 +86,15 @@ void Pipe::init() {
 #undef LEAVEFUNC
 #endif
 
+#ifdef _DEBUG
 #define VERBOSE(msg) if(m_verbose) debugLog(_T("%*.*s%s\n"), m_level, m_level, EMPTYSTRING, msg)
 #define ENTERFUNC if(m_verbose) { VERBOSE(::format(_T("enter %s"), __TFUNCTION__).cstr()); m_level++; }
 #define LEAVEFUNC if(m_verbose) { m_level--;  VERBOSE(::format(_T("leave %s"), __TFUNCTION__).cstr()); }
+#else
+#define VERBOSE(msg)
+#define ENTERFUNC
+#define LEAVEFUNC
+#endif
 
 ExternProcess::ExternProcess(bool verbose) : m_verbose(verbose) {
   m_processHandle     = INVALID_HANDLE_VALUE;
