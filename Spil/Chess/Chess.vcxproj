@@ -2430,6 +2430,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EngineInfoLine.cpp" />
     <ClCompile Include="EngineOptionControl.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -2440,6 +2441,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="EngineOptionDescription.cpp" />
     <ClCompile Include="EngineOptionsDlg.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -2490,6 +2492,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
+    <ClCompile Include="ExternInputThread.cpp" />
     <ClCompile Include="FieldInfo.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -2782,16 +2785,6 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
     <ClCompile Include="MoveFinderExternEngine.cpp">
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderDebug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderDebug|x64'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
-      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
-    </ClCompile>
-    <ClCompile Include="MoveFinderNegamax.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -3212,7 +3205,6 @@
     <ClInclude Include="MessageDlgThread.h" />
     <ClInclude Include="MoveFinderEndGame.h" />
     <ClInclude Include="MoveFinderExternEngine.h" />
-    <ClInclude Include="MoveFinderNegamax.h" />
     <ClInclude Include="MoveFinderNormalPlay.h" />
     <ClInclude Include="MoveFinderRandom.h" />
     <ClInclude Include="MoveFinderRemotePlayer.h" />

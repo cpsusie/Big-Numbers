@@ -33,7 +33,7 @@ public:
   }
 
   void stopThinking(bool stopImmediately = true);
-  void openOptionsDialog();
+  void runOptionsDialog();
   void setVerbose(bool verbose);
   void notifyGameChanged(const Game &game);
   void notifyMove(const MoveBase &move);

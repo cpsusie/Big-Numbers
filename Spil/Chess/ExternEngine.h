@@ -2,6 +2,7 @@
 
 #ifndef TABLEBASE_BUILDER
 
+#include <ExternProcess.h>
 #include <InputThread.h>
 
 typedef enum { // dont swap these. see optionsCmp in ExternEngine.cpp
@@ -16,14 +17,14 @@ class EngineOptionDescription {
 private:
   String               m_name;
   EngineOptionType     m_type;
-  const unsigned short m_index;
+  const USHORT         m_index;
   int                  m_min, m_max;
   int                  m_defaultInt;
   bool                 m_defaultBool;
   String               m_defaultString;
   StringArray          m_comboValues;
 public:
-  EngineOptionDescription(String line, unsigned short index);
+  EngineOptionDescription(String line, USHORT index);
   const String &getName() const {
     return m_name;
   }
@@ -31,7 +32,7 @@ public:
   inline EngineOptionType getType() const {
     return m_type;
   }
-  unsigned short getIndex() const {
+  USHORT getIndex() const {
     return m_index;
   }
   int getMin() const {
@@ -48,21 +49,21 @@ public:
   }
   int getValueIndex(const String &str) const;
   String toString() const;
-  bool operator==(const EngineOptionDescription &op) const {
+  inline bool operator==(const EngineOptionDescription &op) const {
     return toString() == op.toString();
   }
-  bool operator!=(const EngineOptionDescription &op) const {
+  inline bool operator!=(const EngineOptionDescription &op) const {
     return !(*this == op);
   }
-  bool getDefaultBool() const {
+  inline bool getDefaultBool() const {
     assert(getType() == OptionTypeCheckbox);
     return m_defaultBool;
   }
-  int getDefaultInt() const {
+  inline int getDefaultInt() const {
     assert(getType()== OptionTypeSpin);
     return m_defaultInt;
   }
-  const String &getDefaultString() const {
+  inline const String &getDefaultString() const {
     assert((getType() == OptionTypeCombo) || (getType() == OptionTypeString));
     return m_defaultString;
   }
@@ -78,6 +79,31 @@ public:
   EngineOptionValueArray pruneDefaults(const EngineOptionValueArray &src) const;
 };
 
+class EngineInfoLine {
+public:
+  int     m_depth;
+  int     m_seldepth;
+  String  m_score;
+  int     m_time;    // milliseconds
+  UINT64  m_nodes;
+  UINT    m_nodesps;
+  String  m_pv;
+  String  m_string;
+  int     m_hashFull;
+  int     m_multiPV;
+  int     m_cpuLoad;
+
+  inline EngineInfoLine() {
+    reset();
+  }
+  EngineInfoLine &operator+=(const String &line);
+  String toString(const EngineVerboseFields &evf) const;
+  void reset();
+  inline bool isReady() const {
+    return m_score.length() > 0;
+  }
+};
+
 class ExternInputThread : public InputThread {
 protected:
   void vverbose(const TCHAR *format, va_list argptr);
@@ -87,33 +113,35 @@ public:
   String getLine(int timeoutInMilliseconds = INFINITE);
 };
 
-class ExternEngine : public EngineDescription, public OptionsAccessor {
+#define EXE_UCIOK    0x1
+#define EXE_BUSY     0x2
+
+#define setStateFlags(  flags)   m_stateFlags |=  (flags)
+#define clrStateFlags(  flags)   m_stateFlags &= ~(flags)
+#define clrAllStateFlags()       m_stateFlags = 0
+#define isStateFlagsSet(flags) ((m_stateFlags &   (flags)) == (flags))
+
+class ExternEngine : public ExternProcess, public OptionsAccessor {
 private:
-  FILE                        *m_input;
-  FILE                        *m_output;
-  HANDLE                       m_processHandle;
   ExternInputThread           *m_inputThread;
+  EngineDescription            m_desc;
   Game                        *m_tmpGame;
-  bool                         m_busy;
-  bool                         m_verbose;
+  BYTE                         m_stateFlags;
+  ExecutableMove               m_bestMove;
+  mutable int                  m_callLevel;
   EngineOptionDescriptionArray m_optionArray;
-  void stop();
-  void start(bool silent, const String program, ...); // cannot use String &, because va_start will fail
-  void vstartSpawn(        const String &program, va_list argptr);
-  void vstartCreateProcess(const String &program, va_list argptr);
-  void waitUntilIdle();
-  void send(const TCHAR *format,...) const;
+  void quit();
+  void waitUntilIdle(int timeout = 1000);
   void cleanup();
   void killProcess();
-  void killInputThread();
+  void deleteInputThread();
+  inline bool hasInputThread() const {
+    return m_inputThread!=NULL;
+  }
   String getLine(int milliseconds = INFINITE); // throw TimeoutException on timeout
-
-  void setBusy(         bool newValue) {
-    m_busy = newValue;
-  }
-  void setProcessHandle(HANDLE handle) {
-    m_processHandle = handle;
-  }
+#ifdef _DEBUG
+  void send(const TCHAR *format,...) const;
+#endif
   void sendUCI();
   void sortOptions();
   void sendPosition(const Game &game) const;
@@ -124,20 +152,28 @@ public:
   ExternEngine(const String &path);
  ~ExternEngine();
   void start();
-  bool isStarted() const {
-    return m_input != NULL;
+  inline bool isStarting() const {
+    return isStarted() && !isStateFlagsSet(EXE_UCIOK);
   }
-  bool isBusy() const {
-    return m_busy;
+  inline bool isReady() const {
+    return isStarted() && isStateFlagsSet(EXE_UCIOK);
+  }
+  inline bool isBusy() const {
+    return isReady()   && isStateFlagsSet(EXE_BUSY);
+  }
+  inline bool isIdle() const {
+    return isReady()   && !isStateFlagsSet(EXE_BUSY);
   }
   void  notifyGameChanged(const Game &game);
+  const EngineDescription &getDescription() const {
+    return m_desc;
+  }
   ExecutableMove findBestMove(const Game &game, const TimeLimit &timeLimit, bool hint);
   void  stopSearch();
   void  moveNow();
-  void  setVerbose(bool verbose);
 
+  String flagsToString() const;
   String toString() const;
-  static String getPositionString(const Game &game);
   const EngineOptionDescriptionArray &getOptionDescriptionArray() const {
     return m_optionArray;
   }

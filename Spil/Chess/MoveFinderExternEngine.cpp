@@ -24,7 +24,7 @@ MoveFinderExternEngine::~MoveFinderExternEngine() {
 }
 
 
-void MoveFinderExternEngine::openOptionsDialog() {
+void MoveFinderExternEngine::runOptionsDialog() {
   m_optionsDlgThread = CEngineOptionsDlgThread::startThread(this);
 }
 
@@ -48,7 +48,7 @@ ExecutableMove MoveFinderExternEngine::findBestMove(Game &game, const TimeLimit 
 }
 
 String MoveFinderExternEngine::getName() const {
-  return m_externEngine.getName();
+  return m_externEngine.getDescription().getName();
 }
 
 void MoveFinderExternEngine::stopThinking(bool stopImmediately) {
@@ -76,4 +76,4 @@ String MoveFinderExternEngine::getStateString(Player computerPlayer, bool detail
   return m_externEngine.toString();
 }
 
-#endif
+#endif // TABLEBASE_BUILDER

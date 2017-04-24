@@ -13,7 +13,7 @@
 
 CEngineOptionsDlg::CEngineOptionsDlg(CEngineOptionsDlgThread &thread)
 : m_player(thread.getPlayer())
-, m_engineName(thread.getEngine().getName())
+, m_engineName(thread.getEngine().getDescription().getName())
 , m_optionArray(thread.getEngine().getOptionDescriptionArray())
 , m_thread(&thread)
 , m_engine(&thread.getEngine())

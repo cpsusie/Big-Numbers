@@ -38,7 +38,6 @@ public:
 protected:
     virtual ~CEngineOptionsDlgThread();
 
-
     DECLARE_MESSAGE_MAP()
 };
 

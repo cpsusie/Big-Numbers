@@ -826,9 +826,6 @@
     <ClCompile Include="MoveFinderExternEngine.cpp">
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
-    <ClCompile Include="MoveFinderNegamax.cpp">
-      <Filter>Source Files\MoveFinders</Filter>
-    </ClCompile>
     <ClCompile Include="MoveFinderNormalPlay.cpp">
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
@@ -891,6 +888,15 @@
     </ClCompile>
     <ClCompile Include="ChessAnimation.cpp">
       <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineInfoLine.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternInputThread.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="EngineOptionDescription.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1030,9 +1036,6 @@
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
     <ClInclude Include="MoveFinderExternEngine.h">
-      <Filter>Source Files\MoveFinders\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="MoveFinderNegamax.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
     <ClInclude Include="MoveFinderNormalPlay.h">
