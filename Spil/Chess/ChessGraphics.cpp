@@ -19,7 +19,7 @@
 
 ChessGraphics::ChessGraphics(CWnd *wnd) : m_hwnd(*wnd) {
   allocate();
-  m_lastFlushedGameKey.clear(WHITEPLAYER);
+  m_flushedGameKey.clear(WHITEPLAYER);
 
   m_game                   = NULL;
   m_paintLevel             = 0;
@@ -82,7 +82,10 @@ Rectangle2DR ChessGraphics::getFieldRect(int pos, bool scaled) const {
 void ChessGraphics::setGame(const Game &game) {
   if(&game != m_game) {
     m_game = &game;
+    pushLevel();
     unmarkAll();
+    paintAll();
+    popLevel();
   }
 }
 
@@ -242,11 +245,8 @@ void ChessGraphics::paintGamePositions() {
 
   const GameKey &gameKey = m_game->getKey();
 
-//  String keyStr      = gameKey.toString();
-//  String lastFlushed = m_lastFlushedGameKey.toString();
-
   for(int pos = 0; pos < 64; pos++) {
-    const PieceKey oldpk = m_lastFlushedGameKey.m_pieceKey[pos];
+    const PieceKey oldpk = m_flushedGameKey.m_pieceKey[pos];
     const PieceKey newpk = gameKey.m_pieceKey[pos];
     if(newpk != oldpk) {
       if(newpk == EMPTYPIECEKEY) {
@@ -709,10 +709,11 @@ CSize ChessGraphics::flushImage() {
 
   render();
 
-  m_lastFlushedGameKey = m_game->getKey();
   if(m_debugFlags.m_anySet) {
     paintDebugInfo();
   }
+  setProperty(FLUSHEDGAMEKEY , m_flushedGameKey , m_game->getKey());
+  setProperty(FLUSHEDMODETEXT, m_flushedModeText, m_modeText);
   return m_resources.getBoardSize();
 }
 

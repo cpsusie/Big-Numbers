@@ -159,7 +159,6 @@ private:
   }
   void   startNewGame();
   void   invalidate();
-  void   repaint();
   void   paintGamePosition();
   void   executeMove(const MoveBase &m);
   void   executePromotion(PieceType promoteTo);
@@ -253,7 +252,6 @@ private:
   void saveInitialDir(const String &fileName);
   String getFileExtensions() const;
   void stopAllBackgroundActivity(bool stopAll);
-  void unmarkAll();
   void applySymmetricTransformation(SymmetricTransformation st, bool paint=true);
   void setGameToPosition0();
   bool hasSamePartialHistory() const;

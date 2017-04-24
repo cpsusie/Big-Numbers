@@ -1,5 +1,6 @@
 #pragma once
 
+#include <PropertyContainer.h>
 #include "AnimatedImage.h"
 
 class OffboardPiece : public CRect {
@@ -260,7 +261,12 @@ public:
 
 class PieceDragger;
 
-class ChessGraphics {
+typedef enum {
+  FLUSHEDGAMEKEY
+ ,FLUSHEDMODETEXT
+} GraphicsProperty;
+
+class ChessGraphics : public PropertyContainer {
   friend class ChessAnimation;
   friend class AbstractPieceMoveAnimation;
   friend class MateAnimation;
@@ -268,7 +274,7 @@ class ChessGraphics {
 private:
   HWND                        m_hwnd;
   const Game                 *m_game;
-  GameKey                     m_lastFlushedGameKey;
+  GameKey                     m_flushedGameKey;
   BYTE                        m_paintLevel;
 #ifdef _DEBUG
   BYTE                        m_maxPaintLevel;
@@ -290,6 +296,7 @@ private:
   bool                        m_showPlayerInTurn;
   CRect                       m_playerIndicatorRect;
   String                      m_modeText;
+  String                      m_flushedModeText;
   CRect                       m_modeTextRect;
   UINT                        m_remainingTime[2];
   DebugFlags                  m_debugFlags;

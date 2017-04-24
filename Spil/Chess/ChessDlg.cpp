@@ -1,9 +1,8 @@
 #include "stdafx.h"
 #include <Process.h>
-#include <MFCUtil/WinTools.h>
+#include <Language.h>
 #include <MFCUtil/Clipboard.h>
 #include "MFCUtil/ConfirmDlg.h"
-#include <Language.h>
 #include "Chess.h"
 #include "ChessDlg.h"
 #include "AboutDlg.h"
@@ -39,7 +38,8 @@
 int              CChessDlg::s_instanceCount = 0;
 CTraceDlgThread *CChessDlg::s_traceThread   = NULL;
 
-#define BOARDDC (isInitDone() ? ((HDC)CClientDC(this)) : NULL)
+#define BEGINPAINT() m_graphics->beginPaint()
+#define ENDPAINT()   m_graphics->endPaint()
 
 CChessDlg::CChessDlg(const String &startupFileName, CWnd* pParent)
 : CDialog(CChessDlg::IDD, pParent)
@@ -411,6 +411,7 @@ BOOL CChessDlg::OnInitDialog() {
 
 void CChessDlg::attachPropertyContainers() {
   s_traceThread->addPropertyChangeListener(  this);
+  m_graphics->addPropertyChangeListener(     this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
     mf.addPropertyChangeListener(  this);
@@ -420,6 +421,7 @@ void CChessDlg::attachPropertyContainers() {
 }
 
 void CChessDlg::detachAllPropertyContainers() {
+  m_graphics->removePropertyChangeListener(     this);
   s_traceThread->removePropertyChangeListener(  this);
   forEachPlayer(p) {
     MoveFinderThread &mf = getMoveFinder(p);
@@ -462,8 +464,8 @@ void CChessDlg::errorMessage(const Exception &e) const {
 void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   m_layoutManager.OnSizing(fwSide, pRect);
   CDialog::OnSizing(fwSide, pRect);
-  m_graphics->beginPaint();
-  m_graphics->endPaint();
+  BEGINPAINT();
+  ENDPAINT();
   getOptions().setBoardSize(m_graphics->getBoardSize(true));
 }
 
@@ -487,7 +489,14 @@ void CChessDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
-    repaint();
+
+    BEGINPAINT();
+    if(!isControlFlagSet(CTRL_FIRSTPAINTDONE)) {
+      ::SetActiveWindow(m_hWnd);
+      m_graphics->paintAll();
+      setControlFlag(CTRL_FIRSTPAINTDONE);
+    }
+    ENDPAINT();
   }
 }
 
@@ -497,20 +506,8 @@ void CChessDlg::invalidate() {
   }
 }
 
-void CChessDlg::repaint() {
-  m_graphics->beginPaint();
-  if(!isControlFlagSet(CTRL_FIRSTPAINTDONE)) {
-    ::SetActiveWindow(m_hWnd);
-    m_graphics->paintAll();
-    setControlFlag(CTRL_FIRSTPAINTDONE);
-  }
-  m_graphics->endPaint();
-  ajourMenuItemsEnableStatus();
-  updateTitle();
-}
-
 void CChessDlg::paintGamePosition() {
-  m_graphics->beginPaint();
+  BEGINPAINT();
   try {
     switch(getDialogMode()) {
     case PLAYMODE:
@@ -525,9 +522,9 @@ void CChessDlg::paintGamePosition() {
       break;
     }
     m_graphics->paintGamePositions();
-    m_graphics->endPaint();
+    ENDPAINT();
   } catch(Exception e) {
-    m_graphics->endPaint();
+    ENDPAINT();
     errorMessage(e);
   }
 }
@@ -733,7 +730,6 @@ void CChessDlg::pushDialogMode(const DialogSettings &settings) {
     notifyPropertyChanged(DIALOGMODE, &oldMode, &newMode);
 //    verbose(_T("Property DIALOGMODE changed. old:%d, new:%d\n"), oldMode, newMode);
   }
-  invalidate();
 }
 
 void CChessDlg::popDialogMode() {
@@ -744,69 +740,84 @@ void CChessDlg::popDialogMode() {
     notifyPropertyChanged(DIALOGMODE, &oldMode, &newMode);
 //    verbose(_T("Property DIALOGMODE changed. old:%d, new:%d\n"), oldMode, newMode);
   }
-  invalidate();
 }
 
 void CChessDlg::setDialogMode(const DialogSettings &settings) {
   switch(settings.m_mode) {
   case PLAYMODE   :
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(EMPTYSTRING);
+    setVisibleClocks();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
-    updateTitle();
+    ENDPAINT();
+
     break;
 
   case EDITMODE   :
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_editHistory.beginEdit(m_game));
     setGameSettings();
     m_graphics->setModeText(loadString(IDS_EDITMODETEXT));
+    setVisibleClocks();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_HAND));
+    ENDPAINT();
     break;
 
   case DEBUGMODE   :
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(loadString(IDS_DEBUGMODETEXT));
+    setVisibleClocks();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
+    ENDPAINT();
     break;
 
   case AUTOPLAYMODE:
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(loadString(IDS_AUTOPLAYMODETEXT));
     m_graphics->unmarkMouse();
+    setVisibleClocks();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
-    updateTitle();
+    ENDPAINT();
     startThinking();
     break;
 
   case ANALYZEMODE:
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(loadString(IDS_ANALYZEMODETEXT));
+    setVisibleClocks();
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
+    ENDPAINT();
     break;
 
   case KNIGHTROUTEMODE:
     stopAllBackgroundActivity(true);
+    BEGINPAINT();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(_T("Find Knight Route"));
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
     m_selectedPosition = -1;
+    setVisibleClocks();
+    ENDPAINT();
     break;
 
   default:
     invalidModeError(__TFUNCTION__);
     return;
   }
-  setVisibleClocks();
 }
 
 void CChessDlg::showHintMessageBox(const ExecutableMove move) {
@@ -818,7 +829,15 @@ void CChessDlg::showHintMessageBox(const ExecutableMove move) {
 }
 
 void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(source == s_traceThread) {
+  if(source == m_graphics) {
+    switch(id) {
+    case FLUSHEDGAMEKEY :
+    case FLUSHEDMODETEXT:
+      ajourMenuItemsEnableStatus();
+      updateTitle();
+      break;
+    }
+  } else if(source == s_traceThread) {
     switch(id) {
     case TRACEWINDOW_ACTIVE:
       PostMessage(ID_MSG_TRACEWINDOW_CHANGED);
@@ -969,14 +988,14 @@ BOOL CChessDlg::PreTranslateMessage(MSG* pMsg) {
 
 Game &CChessDlg::getCurrentGame1() {
   switch(getDialogMode()) {
-  case PLAYMODE    : return m_game;
-  case EDITMODE    : return m_editHistory.getGame();
-  case DEBUGMODE   : return m_game;
-  case AUTOPLAYMODE: return m_game;
-  case ANALYZEMODE : return m_game;
+  case PLAYMODE       : return m_game;
+  case EDITMODE       : return m_editHistory.saveState();
+  case DEBUGMODE      : return m_game;
+  case AUTOPLAYMODE   : return m_game;
+  case ANALYZEMODE    : return m_game;
   case KNIGHTROUTEMODE: return m_game;
-  default          : invalidModeError(__TFUNCTION__);
-                     return m_game;
+  default             : invalidModeError(__TFUNCTION__);
+                        return m_game;
   }
 }
 
@@ -1036,24 +1055,21 @@ void CChessDlg::updateTitle() {
   setWindowText(this, title);
 }
 
-void CChessDlg::unmarkAll() {
-  m_graphics->unmarkAll();
-  ajourMenuItemsEnableStatus();
-}
-
 void CChessDlg::startNewGame()              {  newGame(getOptions().getComputerPlayer()); }
 void CChessDlg::OnFileNewGameYouPlayWhite() {  newGame(BLACKPLAYER);                      }
 void CChessDlg::OnFileNewGameYouPlayBlack() {  newGame(WHITEPLAYER);                      }
 
 void CChessDlg::newGame(Player computerPlayer) {
   stopAllBackgroundActivity(true);
+  BEGINPAINT();
   getCurrentGame().newGame();
   setGameSettings();
   notifyGameChanged(getCurrentGame());
   setComputerPlayer(computerPlayer);
-  unmarkAll();
+  m_graphics->unmarkAll();
+  m_graphics->paintAll();
   OnSettingsResetClock();
-  invalidate();
+  ENDPAINT();
 }
 
 String CChessDlg::getFileExtensions() const {
@@ -1085,7 +1101,6 @@ void CChessDlg::OnFileLoadGame() {
     load(fileName);
     saveInitialDir(fileName);
     if(thinkWasEnabled) setControlFlag(CTRL_THINKENABLED);
-    paintGamePosition();
   } catch(Exception e) {
     if(thinkWasEnabled) setControlFlag(CTRL_THINKENABLED);
     errorMessage(e);
@@ -1184,18 +1199,21 @@ void CChessDlg::load(const String &fileName) {
     fclose(f);
     throw;
   }
-  const bool wasSetupMode = getCurrentGame().isSetupMode();
+  Game &cg = getCurrentGame();
+  const bool isEditMode = cg.isSetupMode();
   stopAllBackgroundActivity(true);
   FileNameSplitter nameInfo(fileName);
+  BEGINPAINT();
   setComputerPlayer(options.getComputerPlayer());
-  getCurrentGame() = tmp;
+  cg = tmp;
   setGameSettings();
-  if(wasSetupMode) {
-    getCurrentGame().beginSetup();
+  if(isEditMode) {
+    cg.beginSetup();
   }
   setGameName(fileName);
-  notifyGameChanged(getCurrentGame());
-  invalidate();
+  notifyGameChanged(cg);
+  paintGamePosition();
+  ENDPAINT();
 }
 
 void CChessDlg::OnFilePlayRemote() {
@@ -1238,7 +1256,7 @@ void CChessDlg::OnFileShowHistory() {
         game.getMove(ply).setAnnotation(dlg.getAnnotation(ply));
       }
     }
-    repaint();
+    invalidate();
   } catch(Exception e) {
     errorMessage(e);
   }
@@ -1389,7 +1407,7 @@ void CChessDlg::OnLButtonDownPlayMode(UINT nFlags, CPoint point) {
       executeMove(game.generateMove(from, m_selectedPosition, NoPiece));
     }
   } else if(m_selectedPosition == selectedPiece->getPosition()) {
-    unmarkAll();
+    m_graphics->unmarkAll();
     m_graphics->markMouse(m_selectedPosition);
   } else {
     m_graphics->markSelectedPiece(m_selectedPosition);
@@ -1491,7 +1509,7 @@ String CChessDlg::getFiftyMovesString() const {
 void CChessDlg::executeMove(const MoveBase &m) {
   Game &game = getCurrentGame();
   stopAllBackgroundActivity(false);
-  unmarkAll();
+  m_graphics->unmarkAll();
   const Player playerWhoMoved = game.getPlayerInTurn();
 
   if(m.isMove()) {
@@ -1613,16 +1631,16 @@ void CChessDlg::executeBackMove(const Move &m) { // always debugMode
   unmarkAll();
   if(m.isMove()) {
     if(getOptions().getAnimateMoves()) {
-      m_graphics->animateMove(m, BOARDDC);
+      m_graphics->animateMove(m);
     }
     game.doBackMove(m);
-    repaint();
+    invalidate();
   }
 }
 
 void CChessDlg::unExecuteLastBackMove() {
   getCurrentGame().undoBackMove();
-  repaint();
+  invalidate();
 }
 
 #endif
@@ -1799,14 +1817,16 @@ void CChessDlg::OnEditStartSetup() {
 }
 
 void CChessDlg::OnEditTurnBoard() {
+  BEGINPAINT();
   setComputerPlayer(GETENEMY(getComputerPlayer()));
   setVisibleClocks();
-  invalidate();
+  ENDPAINT();
 }
 
 void CChessDlg::OnEditEndSetup() {
+  BEGINPAINT();
   try {
-    unmarkAll();
+    m_graphics->unmarkAll();
     if(m_editHistory.isModified()) {
       m_game = m_editHistory.getGame().validateBoard(getOptions().getValidateAfterEdit());
       m_game.endSetup();
@@ -1817,6 +1837,7 @@ void CChessDlg::OnEditEndSetup() {
   } catch(Exception e) {
     errorMessage(e);
   }
+  ENDPAINT();
 }
 
 void CChessDlg::OnEditRemove() {
@@ -1943,10 +1964,10 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
           m_selectedPiece      = dpKey;
           m_selectedPosition   = newPos;
 
-          m_graphics->beginPaint();
+          BEGINPAINT();
           m_graphics->endDragPiece();
           m_graphics->markMouse(newPos);
-          m_graphics->endPaint();
+          ENDPAINT();
         } catch(Exception e) {
 //          m_graphics->dragPiece(point);
         }
@@ -1958,12 +1979,12 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
           if(key != EMPTYPIECEKEY) {
             game.setPieceAtPosition(m_removedPiece, m_selectedPosition);
             game.initState();
-            m_graphics->beginPaint();
+            BEGINPAINT();
             m_graphics->unmarkMouse();
             m_graphics->paintGamePositions();
             m_graphics->beginDragPiece(point, key);
             m_selectedPiece = m_removedPiece = EMPTYPIECEKEY;
-            m_graphics->endPaint();
+            ENDPAINT();
           }
         } else {                       // drag piece from one field to another
           const PieceKey oldKey = game.removePieceAtPosition(m_selectedPosition);
@@ -1972,13 +1993,13 @@ void CChessDlg::OnMouseMoveEditMode(UINT nFlags, CPoint point) {
             const PieceKey newRemovedPiece = game.setPieceAtPosition(m_selectedPiece, newPos); // can throw
             game.initState();
 
-            m_graphics->beginPaint();
+            BEGINPAINT();
             m_graphics->unmarkMouse();
             m_graphics->paintGamePositions();
             m_removedPiece     = newRemovedPiece;
             m_selectedPosition = newPos;
             m_graphics->markMouse(newPos);
-            m_graphics->endPaint();
+            ENDPAINT();
           } catch(Exception e) {
             game.setPieceAtPosition(oldKey, m_selectedPosition); // set it back again
             game.initState();
@@ -2116,7 +2137,8 @@ void CChessDlg::editUndo(UndoMode mode) {
             return;
           }
           stopAllBackgroundActivity(true);
-          unmarkAll();
+          BEGINPAINT();
+          m_graphics->unmarkAll();
           switch(mode) {
           case UNDO_MOVE:
             if(getPlayerInTurn() == getHumanPlayer()) {
@@ -2140,6 +2162,7 @@ void CChessDlg::editUndo(UndoMode mode) {
             break;
           }
           paintGamePosition();
+          ENDPAINT();
           notifyGameChanged(getCurrentGame());
         }
       }
@@ -2153,11 +2176,13 @@ void CChessDlg::editUndo(UndoMode mode) {
     case DEBUGMODE  :
     case ANALYZEMODE:
       if(getPlyCount() > m_startPlyIndex) {
-        unmarkAll();
+        BEGINPAINT();
+        m_graphics->unmarkAll();
         for(int count = (mode == UNDO_ALL) ? (getPlyCount() - m_startPlyIndex) : 1; count--;) {
           unExecuteLastPly();
         }
         paintGamePosition();
+        ENDPAINT();
         notifyGameChanged(getCurrentGame());
       }
       break;
@@ -2412,12 +2437,12 @@ void CChessDlg::OnView() {
 
 void CChessDlg::setView() {
   const Options &options = getOptions();
-  m_graphics->beginPaint();
+  BEGINPAINT();
   m_graphics->setShowFieldNames(  options.getShowFieldNames()  );
   m_graphics->setShowLegalMoves(  options.getShowLegalMoves()  );
   m_graphics->setShowPlayerInTurn(options.getShowPlayerInTurn());
   setVisibleClocks();
-  m_graphics->endPaint();
+  ENDPAINT();
 }
 
 // ------------------------------ Settings/Level + Clock -----------------------------------------------
@@ -2847,15 +2872,15 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
   if(isMenuItemChecked(this, ID_TEST_MOVEBACKWARDS)) {
     game.setEndGameKeyDefinition();
     if(selectedPiece == NULL) {
-      m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+      m_graphics->markSelectedPiece(m_selectedPosition);
     } else if(game.getLegalSourceFields(selectedPiece).contains(m_selectedPosition)) {
       const int to = selectedPiece->getPosition();
       executeBackMove(game.generateBackMove(m_selectedPosition, to));
     } else if(m_selectedPosition == selectedPiece->getPosition()) {
       unmarkAll();
-      m_graphics->markMouse(m_selectedPosition, BOARDDC);
+      m_graphics->markMouse(m_selectedPosition);
     } else {
-      m_graphics->markSelectedPiece(m_selectedPosition, BOARDDC);
+      m_graphics->markSelectedPiece(m_selectedPosition);
     }
     return;
   }
@@ -2877,7 +2902,7 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
       executeMove(game.generateMove(from, m_selectedPosition, NoPiece, annotation));
     }
   } else if(m_selectedPosition == selectedPiece->getPosition()) {
-    unmarkAll();
+    m_graphics->unmarkAll();
     m_graphics->markMouse(m_selectedPosition);
   } else {
     m_graphics->markSelectedPiece(m_selectedPosition);
@@ -2909,18 +2934,18 @@ void CChessDlg::OnLButtonDownKRMode(UINT nFlags, CPoint point) {
     String str = findShortestKnightRoute(m_selectedPosition, pos);
     putClipboard(*this, str);
     MessageBox(str.cstr(), _T("Best Knight route"));
-    m_graphics->beginPaint();
+    BEGINPAINT();
     m_graphics->unmarkField(pos               );
     m_graphics->unmarkField(m_selectedPosition);
     m_selectedPosition = -1;
-    m_graphics->endPaint();
+    ENDPAINT();
   }
 }
 
 void CChessDlg::OnLButtonUpKRMode(UINT nFlags, CPoint point) {
 }
 void CChessDlg::OnMouseMoveKRMode(UINT nFlags, CPoint point) {
-//  m_graphics->markMouse(getBoardPosition(point), BOARDDC);
+//  m_graphics->markMouse(getBoardPosition(point));
 }
 
 // -------------------------------- Test functions -------------------------------------------------------
