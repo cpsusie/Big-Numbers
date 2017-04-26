@@ -19,6 +19,9 @@ public:
   inline Size2D operator+(const Size2D &s) const {
     return Size2D(cx+s.cx, cy+s.cy);
   }
+  friend inline Size2D operator*(double factor, const Size2D &s) {
+    return Size2D(factor*s.cx, factor*s.cy);
+  }
   inline Size2D operator*(double factor) const {
     return Size2D(cx*factor, cy*factor);
   }
