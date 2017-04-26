@@ -11,7 +11,6 @@ public:
   }
   inline OffboardPiece(const CPoint &p, const CSize &size, PieceKey key) : CRect(p,size), m_key(key) {
   }
-
   inline OffboardPiece(const CRect &rect, PieceKey key) : CRect(rect), m_key(key) {
   }
   inline Player getPlayer() const {

@@ -3252,7 +3252,7 @@
     <Image Include="res\PinkField.bmp" />
     <Image Include="res\PlayerIndicator.bmp" />
     <Image Include="res\PurpleField.bmp" />
-    <Image Include="res\SelectionFrame.bmp" />
+    <Image Include="res\SelectionFrame.png" />
     <Image Include="res\SrcFieldMark.bmp" />
     <Image Include="res\WhiteBishop.bmp" />
     <Image Include="res\WhiteKing.bmp" />

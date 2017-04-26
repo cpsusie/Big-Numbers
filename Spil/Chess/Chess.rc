@@ -118,13 +118,16 @@ IDR_OPENINGLIBRARY      OPENINGLIBRARY          "res\\OpenLib.dat"
 
 IDR_BOARD               JPG                     "res\\Board.jpg"
 
+/////////////////////////////////////////////////////////////////////////////
+//
+// PNG
+//
+IDB_SELECTIONFRAME      PNG                     "res\\selectionFrame.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
-
-IDB_SELECTIONFRAME      BITMAP                  "res\\selectionFrame.bmp"
 
 IDB_BITMAPBLACKBISHOP   BITMAP                  "res\\blackBishop.bmp"
 

@@ -15,6 +15,8 @@ Image         *ChessResources::s_playerIndicator;
 CFont          ChessResources::s_boardTextFont;
 CFont          ChessResources::s_debugInfoFont;
 
+#define MINSCALE 0.4
+
 ChessResources::ChessResources()
 : m_hourGlassImage(     IDB_HOURGLASS, 6)
 {
@@ -71,7 +73,7 @@ void ChessResources::load() {
     s_markImage.add(new Image(fma.m_resid, fma.m_type, fma.m_transparentWhite));
   }
 
-  s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_BITMAP, true);
+  s_selectionFrameImage     = new Image(IDB_SELECTIONFRAME , RESOURCE_PNG);
   s_playerIndicator         = new Image(IDB_PLAYERINDICATOR, RESOURCE_BITMAP, true);
 
   static const int pieceImages[][7] = {
@@ -125,8 +127,8 @@ void ChessResources::unload() {
 }
 
 CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { // for promote-menu
-  const int size0 = (int)s_fieldSize0.cx;
-  const int size  = 56;
+  const Size2DS size0     = s_fieldSize0;
+  const CSize   imageSize = Size2DS(max(getAvgScale()*0.8,MINSCALE) * size0);
   PixRect pr(theApp.m_device, PIXRECT_PLAINSURFACE, s_fieldSize0);
   pr.rop(ORIGIN
         ,s_fieldSize0
@@ -138,12 +140,11 @@ CBitmap &ChessResources::getSmallPieceBitmap(CBitmap &dst, PieceKey pk) const { 
   getPieceImage(pk)->paintImage(pr, ORIGIN);
 
   HDC tmpDC = CreateCompatibleDC(NULL);
-  CDC *dcp = CDC::FromHandle(tmpDC);
-  dst.CreateBitmap(size, size, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
-  CBitmap *oldBitmap = dcp->SelectObject(&dst);
-  SetStretchBltMode(*dcp, COLORONCOLOR /*HALFTONE*/);
-  PixRect::stretchBlt(*dcp, 0,0,size,size,SRCCOPY,&pr,0,0,size0,size0);
-  dcp->SelectObject(oldBitmap);
+  dst.CreateBitmap(imageSize.cx, imageSize.cy, GetDeviceCaps(tmpDC, PLANES), GetDeviceCaps(tmpDC, BITSPIXEL), NULL);
+  HGDIOBJ oldBitmap = SelectObject(tmpDC, dst);
+  SetStretchBltMode(tmpDC, COLORONCOLOR /*HALFTONE*/);
+  PixRect::stretchBlt(tmpDC, ORIGIN,imageSize,SRCCOPY,&pr,ORIGIN,size0);
+  SelectObject(tmpDC, oldBitmap);
   DeleteDC(tmpDC);
   return dst;
 }
@@ -155,8 +156,8 @@ const Image *ChessResources::getFieldMarkImage(FieldMark m) const {
 void ChessResources::setClientRectSize(const CSize &size) {
   if(size != m_crSize) {
     m_crSize  = size;
-    m_scale.x = max((double)m_crSize.cx / m_boardSize0.cx, 0.4);
-    m_scale.y = max((double)m_crSize.cy / m_boardSize0.cy, 0.4);
+    m_scale.x = max((double)m_crSize.cx / m_boardSize0.cx, MINSCALE);
+    m_scale.y = max((double)m_crSize.cy / m_boardSize0.cy, MINSCALE);
   }
 }
 

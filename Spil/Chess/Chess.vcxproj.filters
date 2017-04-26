@@ -1148,9 +1148,6 @@
     <Image Include="res\PurpleField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\SelectionFrame.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\SrcFieldMark.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -1179,6 +1176,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\YellowField.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SelectionFrame.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
