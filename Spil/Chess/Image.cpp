@@ -9,7 +9,25 @@
 Image::Image(const CSize &size) : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, size) {
 }
 
-Image::Image(int resId, ImageType type, bool transparentWhite) : PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, 1, 1,D3DPOOL_FORCE_DWORD, transparentWhite?D3DFMT_A8R8G8B8:D3DFMT_X8R8G8B8) {
+static D3DFORMAT getPixelFormat(ImageType type, bool transparentWhite) {
+  switch (type) {
+  case RESOURCE_BITMAP:
+  case RESOURCE_JPEG  :
+    return transparentWhite?D3DFMT_A8R8G8B8:D3DFMT_X8R8G8B8;
+  case RESOURCE_PNG   :
+    return D3DFMT_A8R8G8B8;
+  default:
+    return D3DFMT_X8R8G8B8;
+  }
+}
+
+Image::Image(int resId, ImageType type, bool transparentWhite)
+  : PixRect(theApp.m_device
+           ,PIXRECT_PLAINSURFACE
+           ,1, 1
+           ,D3DPOOL_FORCE_DWORD
+           ,::getPixelFormat(type,transparentWhite))
+{
   DEFINEMETHODNAME;
   switch(type) {
   case RESOURCE_BITMAP:
@@ -18,12 +36,20 @@ Image::Image(int resId, ImageType type, bool transparentWhite) : PixRect(theApp.
   case RESOURCE_JPEG  :
     loadJPG(resId);
     break;
+  case RESOURCE_PNG   :
+    loadPNG(resId);
+    break;
   default:
     throwInvalidArgumentException(method, _T("Imagetype=%d"), type);
   }
-  makeOpaque();
-  if(transparentWhite) {
-    makeWhiteTransparent();
+  if(type == RESOURCE_PNG) {
+    preMultiplyAlpha();
+    m_hasTransparentPixels = true;
+  } else {
+    makeOpaque();
+    if(transparentWhite) {
+      makeWhiteTransparent();
+    }
   }
 }
 
@@ -84,6 +110,16 @@ void Image::loadBMP( int resId) {
 void Image::loadJPG(int resId) {
   CPicture picture;
   picture.loadFromResource(resId, _T("JPG"));
+  const CSize size = picture.getSize();
+  setSize(size);
+  HDC dc = getDC();
+  picture.show(dc, CRect(0,0,size.cx,size.cy));
+  releaseDC(dc);
+}
+
+void Image::loadPNG(int resId) {
+  CPicture picture;
+  picture.loadFromResource(resId, _T("PNG"));
   const CSize size = picture.getSize();
   setSize(size);
   HDC dc = getDC();
