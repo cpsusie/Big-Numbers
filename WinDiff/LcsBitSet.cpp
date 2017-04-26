@@ -119,9 +119,8 @@ BitSetWithPlus::BitSetWithPlus(UINT size) : BitSet(size) {
 BitSetWithPlus::BitSetWithPlus(BitSet &src) : BitSet(src) {
 }
 
-#if _BITSET_ATOMSIZE != 32
-#error "BitSet::_BITSET_ATOMSIZE must be 32"
-#endif
+#pragma message("Assume _BS_BITSINATOM == 32")
+
 BitSetWithPlus BitSetWithPlus::operator+(const BitSetWithPlus &rhs) const {
   size_t s1 = getAtomCount();
   size_t s2 = rhs.getAtomCount();
