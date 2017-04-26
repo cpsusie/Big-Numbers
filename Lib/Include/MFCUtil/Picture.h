@@ -24,18 +24,19 @@ private:
 	IPicture *m_IPicture; // same as LPPICTURE (typedef IPicture __RPC_FAR *LPPICTURE)
 	CSize     m_size;     // size in pixels ignore what current device context uses)
 	LONG      m_weight;   // size of the image object in bytes (file or resource)
-    bool      m_hasAlpha;
-    void copyPictureData(const CPicture &src);
-    void initPictureData();
-    void setSize();
-    static HICON loadIcon(  const String &fileName);
-    static HICON loadCursor(const String &fileName);
-    void loadPicture(       const ByteArray &bytes);
-    void createPictureFromIcon(HICON icon);
-    void createPictureFromBitmap(HBITMAP bitmap);
-    void loadAsFormat(const ByteArray &bytes, PictureFormatType ft);
-    void loadAsIcon(  const String &fileName);
-    void loadAsCursor(const String &fileName);
+  bool      m_hasAlpha;
+  void copyPictureData(const CPicture &src);
+  void initPictureData();
+  void setSize();
+  static HICON loadIcon(  const String &fileName);
+  static HICON loadCursor(const String &fileName);
+  void loadPicture(       const ByteArray &bytes);
+  void createPictureFromIcon(HICON icon);
+  void createPictureFromBitmap(HBITMAP bitmap);
+  void loadAsFormat(const ByteArray &bytes, PictureFormatType ft);
+  void loadAsIcon(  const String &fileName);
+  void loadAsCursor(const String &fileName);
+  void load(const ByteArray &bytes, int firstIndex=-1);
 public:
 	CPicture();
   CPicture(const CPicture &src);

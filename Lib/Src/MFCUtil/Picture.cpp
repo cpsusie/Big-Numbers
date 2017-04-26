@@ -137,13 +137,13 @@ void CPicture::freePictureData() {
 CPicture &CPicture::loadFromResource(int resId, const String &typeName) {
   ByteArray ba;
   ba.loadFromResource(resId, typeName.cstr());
-  loadPicture(ba);
+  load(ba);
   return *this;
 }
 
 CPicture &CPicture::load(ByteInputStream &in) {
   FileContent content(in);
-  loadPicture(content);
+  load(content);
   return *this;
 }
 
@@ -198,7 +198,7 @@ PictureFormatType CPicture::getFormatTypeFromFileName(const String &fileName) { 
 }
 
 // open a file and load it into ipicture (interface)
-// (.bmp .dib .emf .gif .ico .jpg .wmf)
+// (.bmp .dib .emf .gif .ico .jpg, .png, .tiff .wmf)
 CPicture &CPicture::load(const String &fileName) {
   FileContent content;
   bool fileContentRead = false;
@@ -241,6 +241,41 @@ CPicture &CPicture::load(const String &fileName) {
   }
   throwException(firstErrorMessage);
   return *this;
+}
+
+// Cannot handle icon or cursor
+void CPicture::load(const ByteArray &bytes, int firstIndex) {
+  BitSet16 readMethodsTried;
+  String firstErrorMessage;
+  int index = (firstIndex >= 0) ? firstIndex : 0;
+  for(int count = 0; count < ARRAYSIZE(extensionTable); count++, index = (index+1) % ARRAYSIZE(extensionTable)) {
+    const ExtensionType &et = extensionTable[index];
+    const ReadMethod     rm = et.m_readMethod;
+    if(readMethodsTried.contains(rm)) {
+      continue;
+    }
+    readMethodsTried.add(rm);
+    try {
+      switch(rm) {
+      case RM_ICON   :
+      case RM_CURSOR :
+        break;
+      case RM_PICTURE:
+      case RM_PNG    :
+      case RM_TIFF   :
+        loadAsFormat(bytes, et.m_type);
+        break;
+      }
+      if(isLoaded()) {
+        return;
+      }
+    } catch(Exception e) {
+      if(firstErrorMessage.length() == 0) {
+        firstErrorMessage = e.what();
+      }
+    }
+  }
+  throwException(firstErrorMessage);
 }
 
 void CPicture::loadAsFormat(const ByteArray &bytes, PictureFormatType ft) {
@@ -495,9 +530,9 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
   const int width  = MulDiv(srcRect.Width() , HIMETRIC_INCH, 96);
   const int height = MulDiv(srcRect.Height(), HIMETRIC_INCH, 96);
 
-  if(hasAlpha()) {
+//  if(hasAlpha()) {
 
-  } else {
+//  } else {
     const HRESULT hr = m_IPicture->Render(dc
                                          ,dstRect.left
                                          ,dstRect.top
@@ -512,7 +547,7 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
     if(FAILED(hr)) {
       throwException(_T("%s"), getErrorText(hr).cstr());
     }
-  }
+//  }
 }
 
 void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // static

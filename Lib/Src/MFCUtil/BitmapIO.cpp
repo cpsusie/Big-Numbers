@@ -26,9 +26,15 @@ static void encodeBitmap(HBITMAP bm, ByteOutputStream &out, PLPicEncoder &encode
   encoder.SaveBmp(&winBmp, &sink);
 }
 
-#ifdef __NEVER__
+#ifdef TEST_DECODEBITMAP
+#include <MFCUtil/PixRect.h>
+
 static void showAlphaBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
-  PixRect pr(bm);
+  HWND hwnd = GetDesktopWindow();
+
+  PixRectDevice device;
+  device.attach(hwnd, true);
+  PixRect pr(device, bm);
   const CSize size = pr.getSize();
 
   pr.preMultiplyAlpha();
@@ -41,7 +47,6 @@ static void showAlphaBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
   PixRect::bitBlt(dst, p, size, SRCCOPY, tmpDst, CPoint(0,0));
   delete tmpDst;
 }
-#endif
 
 static void showNormalBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
   HDC srcDC = CreateCompatibleDC(dst);
@@ -51,6 +56,7 @@ static void showNormalBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
   SelectObject(srcDC, oldGdi);
   delete srcDC;
 }
+#endif TEST_DECODEBITMAP
 
 static HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, bool &hasAlpha) {
   HDC     dc     = NULL;
@@ -118,15 +124,15 @@ static HBITMAP decodeToBitmap(const ByteArray &bytes, PLPicDecoder &decoder, boo
       DeleteDC(dc);
       hasAlpha = winBmp.HasAlpha();
 
-/*
+#ifdef TEST_DECODEBITMAP
       HDC screenDC = getScreenDC();
-      if() {
+      if(hasAlpha) {
         showAlphaBitmap(screenDC, CPoint(100,100), bitmap);
       } else {
         showNormalBitmap(screenDC, CPoint(100,100), bitmap);
       }
       DeleteDC(screenDC);
-*/
+#endif
       return bitmap;
     } catch(PLTextException e) {
       const String errMsg = e;
@@ -173,7 +179,7 @@ static HBITMAP swapRB(HBITMAP bm) {
   DWORD *p = pixelArray;
   for(int i = pixelCount; i--;) {
     const DWORD c = *p;
-    *(p++) = COLORREF2D3DCOLOR(c) | (c&0xff000000);
+    *(p++) = (c & 0xff00ff00) | ((c>>16)&0xff) | ((c<<16)&0x00ff0000);
   }
   SetDIBits(hdc, bm, 0, info.bmHeight, pixelArray, &bmInfo, DIB_RGB_COLORS);
   return bm;

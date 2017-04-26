@@ -577,7 +577,7 @@ const PLPixelFormat &PLWinBmp::pixelFormatFromBMI(const BITMAPINFOHEADER * pBMI)
     case 24:
       return PLPixelFormat::R8G8B8;
     case 32:
-      return PLPixelFormat::X8R8G8B8;
+      return PLPixelFormat::A8R8G8B8;
   }
   return PLPixelFormat::DONTCARE;
 }
