@@ -635,8 +635,8 @@ IDR_MAINFRAME           ICON                    "res\\WinDiff.ico"
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,0,0,0
- PRODUCTVERSION 2,0,0,0
+ FILEVERSION 2,0,0,1
+ PRODUCTVERSION 2,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -652,12 +652,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "Compare 2 textfiles"
-            VALUE "FileVersion", "2, 0, 0, 0"
+            VALUE "FileVersion", "2.0.0.1"
             VALUE "InternalName", "windiff"
-            VALUE "LegalCopyright", "Copyright (C) 2005-2016"
+            VALUE "LegalCopyright", "Copyright (C) 2005-2017"
             VALUE "OriginalFilename", "Windiff.EXE"
             VALUE "ProductName", "Windiff"
-            VALUE "ProductVersion", "2, 0, 0, 0"
+            VALUE "ProductVersion", "2.0.0.1"
         END
     END
     BLOCK "VarFileInfo"

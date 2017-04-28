@@ -162,11 +162,13 @@ protected:
   size_t                 m_compareCount;
   inline void incrCompareCount() {
     if((++m_compareCount & 0x3ff) == 0) {
-      m_runnable->checkInterruptAndSuspendFlags();
+      if(m_runnable) {
+        m_runnable->checkInterruptAndSuspendFlags();
+      }
     }
   }
 public:
-  IndexComparator(LcsComparator &c) : m_c(c) {
+  IndexComparator(LcsComparator &c) : m_c(c), m_runnable(NULL) {
     m_compareCount = 0;
   }
   inline void setRunnable(InterruptableRunnable *runnable) {
