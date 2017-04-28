@@ -1085,25 +1085,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\BlackBishop.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\BlackKing.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\BlackKnight.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\BlackMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\BlackPawn.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\BlackQueen.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\BlackRook.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\BlueField.bmp">
@@ -1151,34 +1133,49 @@
     <Image Include="res\SrcFieldMark.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\WhiteBishop.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\WhiteKing.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\WhiteKnight.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\WhiteMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\WhitePawn.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\WhiteQueen.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Image2\whiteRook.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\WhiteRook.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\YellowField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\SelectionFrame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteBishop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteKing.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteKnight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhitePawn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteQueen.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\WhiteRook.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackBishop.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackKing.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackKnight.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackPawn.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackQueen.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\BlackRook.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

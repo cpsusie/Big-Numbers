@@ -98,7 +98,8 @@ void ChessResources::load() {
   forEachPlayer(p) {
     ImageArray &imageArray = s_pieceImage[p];
     for(int i = 0; i < ARRAYSIZE(pieceImages[p]); i++) {
-      imageArray.add(new Image(pieceImages[p][i], RESOURCE_BITMAP, true));
+      imageArray.add(new Image(pieceImages[p][i]
+                              ,i?RESOURCE_PNG:RESOURCE_BITMAP, true));
     }
   }
 

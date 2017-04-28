@@ -129,29 +129,29 @@ IDB_SELECTIONFRAME      PNG                     "res\\selectionFrame.png"
 // Bitmap
 //
 
-IDB_BITMAPBLACKBISHOP   BITMAP                  "res\\blackBishop.bmp"
+IDB_BITMAPBLACKBISHOP   PNG                     "res\\BlackBishop.png"
 
-IDB_BITMAPBLACKKING     BITMAP                  "res\\blackKing.bmp"
+IDB_BITMAPBLACKKING     PNG                     "res\\BlackKing.png"
 
-IDB_BITMAPBLACKKNIGHT   BITMAP                  "res\\blackKnight.bmp"
+IDB_BITMAPBLACKKNIGHT   PNG                     "res\\BlackKnight.png"
 
-IDB_BITMAPBLACKPAWN     BITMAP                  "res\\blackPawn.bmp"
+IDB_BITMAPBLACKPAWN     PNG                     "res\\BlackPawn.png"
 
-IDB_BITMAPBLACKQUEEN    BITMAP                  "res\\blackQueen.bmp"
+IDB_BITMAPBLACKQUEEN    PNG                     "res\\BlackQueen.png"
 
-IDB_BITMAPBLACKROOK     BITMAP                  "res\\blackRook.bmp"
+IDB_BITMAPBLACKROOK     PNG                     "res\\BlackRook.png"
 
-IDB_BITMAPWHITEBISHOP   BITMAP                  "res\\whiteBishop.bmp"
+IDB_BITMAPWHITEBISHOP   PNG                     "res\\WhiteBishop.png"
 
-IDB_BITMAPWHITEKING     BITMAP                  "res\\whiteKing.bmp"
+IDB_BITMAPWHITEKING     PNG                     "res\\WhiteKing.png"
 
-IDB_BITMAPWHITEKNIGHT   BITMAP                  "res\\whiteKnight.bmp"
+IDB_BITMAPWHITEKNIGHT   PNG                     "res\\WhiteKnight.png"
 
-IDB_BITMAPWHITEPAWN     BITMAP                  "res\\whitePawn.bmp"
+IDB_BITMAPWHITEPAWN     PNG                     "res\\WhitePawn.png"
 
-IDB_BITMAPWHITEQUEEN    BITMAP                  "res\\whiteQueen.bmp"
+IDB_BITMAPWHITEQUEEN    PNG                     "res\\WhiteQueen.png"
 
-IDB_BITMAPWHITEROOK     BITMAP                  "res\\whiteRook.bmp"
+IDB_BITMAPWHITEROOK     PNG                     "res\\WhiteRook.png"
 
 IDB_YELLOWFIELD         BITMAP                  "res\\yellowField.bmp"
 

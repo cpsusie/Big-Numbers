@@ -3230,13 +3230,13 @@
     <ClInclude Include="ViewDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\BlackBishop.bmp" />
-    <Image Include="res\BlackKing.bmp" />
-    <Image Include="res\BlackKnight.bmp" />
+    <Image Include="res\BlackBishop.png" />
+    <Image Include="res\BlackKing.png" />
+    <Image Include="res\BlackKnight.png" />
     <Image Include="res\BlackMark.bmp" />
-    <Image Include="res\BlackPawn.bmp" />
-    <Image Include="res\BlackQueen.bmp" />
-    <Image Include="res\BlackRook.bmp" />
+    <Image Include="res\BlackPawn.png" />
+    <Image Include="res\BlackQueen.png" />
+    <Image Include="res\BlackRook.png" />
     <Image Include="res\BlueField.bmp" />
     <Image Include="res\Board.jpg" />
     <Image Include="res\CheckedKing.bmp" />
@@ -3246,7 +3246,6 @@
     <Image Include="res\DstFieldMark.bmp" />
     <Image Include="res\GreenField.bmp" />
     <Image Include="res\Hourglasses.bmp" />
-    <Image Include="res\Image2\whiteRook.bmp" />
     <Image Include="res\NoPiece.bmp" />
     <Image Include="res\OpeningTreeImages.bmp" />
     <Image Include="res\PinkField.bmp" />
@@ -3254,13 +3253,13 @@
     <Image Include="res\PurpleField.bmp" />
     <Image Include="res\SelectionFrame.png" />
     <Image Include="res\SrcFieldMark.bmp" />
-    <Image Include="res\WhiteBishop.bmp" />
-    <Image Include="res\WhiteKing.bmp" />
-    <Image Include="res\WhiteKnight.bmp" />
+    <Image Include="res\WhiteBishop.png" />
+    <Image Include="res\WhiteKing.png" />
+    <Image Include="res\WhiteKnight.png" />
     <Image Include="res\WhiteMark.bmp" />
-    <Image Include="res\WhitePawn.bmp" />
-    <Image Include="res\WhiteQueen.bmp" />
-    <Image Include="res\WhiteRook.bmp" />
+    <Image Include="res\WhitePawn.png" />
+    <Image Include="res\WhiteQueen.png" />
+    <Image Include="res\WhiteRook.png" />
     <Image Include="res\YellowField.bmp" />
   </ItemGroup>
   <ItemGroup>
