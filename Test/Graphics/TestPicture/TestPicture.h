@@ -9,7 +9,7 @@
 class CTestPictureApp : public CWinApp {
 public:
     CTestPictureApp();
-
+    PixRectDevice m_device;
     virtual BOOL InitInstance();
     DECLARE_MESSAGE_MAP()
 };

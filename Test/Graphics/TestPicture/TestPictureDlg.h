@@ -23,8 +23,9 @@ private:
   bool                m_isDragging;
   CPoint              m_lastMouse, m_mouseDown, m_mouseDownOffset;
   int                 m_infoWindowHeight;
-  HDC                 m_workDC;
-  HBITMAP             m_workBitmap;
+  PixRect            *m_workPr;
+  void allocateWorkPr(const CSize &sz);
+  void deallocateWorkPr();
   void setCurrentImageIndex(int index);
   int getCurrentImageIndex() const {
     return m_currentImageIndex;
@@ -39,7 +40,8 @@ private:
   void showTitle();
   void savePicture(PictureFileFormat fileFormat);
   void setInfoWindowVisible(bool visible);
-  HDC getWorkDC();
+  HDC  getWorkDC();
+  void releaseWorkDC(HDC dc);
   CWnd *getImageWin() {
     return GetDlgItem(IDC_STATICIMAGEFRAME);
   }

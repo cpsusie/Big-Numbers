@@ -11,9 +11,8 @@
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
-
-    enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
@@ -31,14 +30,13 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 CTestPictureDlg::CTestPictureDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestPictureDlg::IDD, pParent) {
-    m_hIcon      = theApp.LoadIcon(IDR_MAINFRAME);
-    m_workDC     = NULL;
-    m_workBitmap = NULL;
-    m_lastMouse  = CPoint(0,0);
+  m_hIcon      = theApp.LoadIcon(IDR_MAINFRAME);
+  m_workPr     = NULL;
+  m_lastMouse  = CPoint(0,0);
 }
 
 void CTestPictureDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+  CDialog::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestPictureDlg, CDialog)
@@ -88,6 +86,7 @@ BOOL CTestPictureDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
   
+  theApp.m_device.attach(*this);
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   m_layoutManager.OnInitDialog(this);
@@ -140,6 +139,7 @@ BOOL CTestPictureDlg::PreTranslateMessage(MSG *pMsg) {
 void CTestPictureDlg::OnSize(UINT nType, int cx, int cy) {
   CDialog::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
+  Invalidate(FALSE);
 }
 
 void CTestPictureDlg::OnPaint() {
@@ -149,49 +149,54 @@ void CTestPictureDlg::OnPaint() {
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
     // Center icon in client rectangle
-    const int cxIcon = GetSystemMetrics(SM_CXICON);
-    const int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    const int x = (rect.Width()  - cxIcon + 1) / 2;
-    const int y = (rect.Height() - cyIcon + 1) / 2;
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width()  - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
 
-    // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
     Image   &image    = getCurrentImage();
-    HDC      hdc      = getWorkDC();
+    HDC      wdc      = getWorkDC();
     CWnd    *imageWin = getImageWin();
     CRect    clRect   = getClientRect(imageWin);
     if(image.isLoaded()) {
-      image.show(hdc, clRect, isMenuItemChecked(this, ID_VIEW_KEEPASPECTRATIO));
+      image.show(wdc, clRect, isMenuItemChecked(this, ID_VIEW_KEEPASPECTRATIO));
     }
-    BitBlt(CClientDC(imageWin),0,0,clRect.Width(), clRect.Height(), hdc, 0,0,SRCCOPY);
+    BitBlt(CClientDC(imageWin),0,0,clRect.Width(), clRect.Height(), wdc, 0,0,SRCCOPY);
+    releaseWorkDC(wdc);
     ajourMenuItems();
     showInfo();
     showTitle();
   }
 }
 
+void CTestPictureDlg::allocateWorkPr(const CSize &sz) {
+  deallocateWorkPr();
+  m_workPr = new PixRect(theApp.m_device, PIXRECT_PLAINSURFACE, sz, D3DPOOL_DEFAULT, D3DFMT_A8R8G8B8);
+}
+
+void CTestPictureDlg::deallocateWorkPr() {
+  if(m_workPr) {
+    delete m_workPr;
+    m_workPr = NULL;
+  }
+}
+
 HDC CTestPictureDlg::getWorkDC() {
   const CSize sz = getClientRect(getImageWin()).Size();
-  if(m_workDC == NULL) {
-    m_workDC = CreateCompatibleDC(NULL);
+  if((m_workPr == NULL) || (m_workPr->getSize() != sz)) {
+    allocateWorkPr(sz);
   }
-  if((m_workBitmap == NULL) || (getBitmapSize(m_workBitmap) != sz)) {
-    if(m_workBitmap) {
-      DeleteObject(m_workBitmap);
-      m_workBitmap = NULL;
-    }
-    HDC screenDC = getScreenDC();
-    m_workBitmap = CreateCompatibleBitmap(screenDC, sz.cx, sz.cy);
-    DeleteDC(screenDC);
-  }
-  SelectObject(m_workDC, m_workBitmap);
-  SelectObject(m_workDC, GetSysColorBrush(COLOR_BTNFACE));
-  Rectangle(m_workDC,0,0,sz.cx,sz.cy);
-  return m_workDC;
+  D3DCOLOR backColor = ::GetSysColor(COLOR_BTNFACE);
+  m_workPr->fillColor(backColor);
+  return m_workPr->getDC();
+}
+
+void CTestPictureDlg::releaseWorkDC(HDC dc) {
+  m_workPr->releaseDC(dc);
 }
 
 void CTestPictureDlg::ajourMenuItems() {
@@ -386,7 +391,7 @@ void CTestPictureDlg::OnFileLoad() {
     m_extensionIndex = dlg.m_ofn.nFilterIndex;
 
     Image &image = getCurrentImage();
-    image.load(fileName.cstr());
+    image.load(fileName);
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
     return;
