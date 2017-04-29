@@ -384,7 +384,7 @@ void CPicture::createPictureFromBitmap(HBITMAP bitmap) {
     throwLastErrorOnSysCallException(_T("OleCreatePictureIndirect"));
   } else if(m_IPicture != NULL) {
     setSize();
-  } 
+  }
 }
 
 void CPicture::setSize() {
@@ -513,8 +513,13 @@ void CPicture::saveAsBitmap(const String &name) {
   OleSavePictureFile(ptr, T2OLE(fname));
 }
 
+
 void CPicture::show(HDC hdc) const {
   show(hdc, getRectangle());
+}
+
+void CPicture::show(HDC hdc, const CPoint &p) {
+  show(hdc, CRect(p,getSize()));
 }
 
 void CPicture::show(HDC hdc, const CRect &dstRect) const {
@@ -525,29 +530,63 @@ void CPicture::show(HDC dc, const CRect &dstRect, const CRect &srcRect) const {
   if(!isLoaded()) {
     throwException(_T("No picture"));
   }
+  if(!hasAlpha()) {
+    render(dc, dstRect, srcRect);
+  } else {
+    const int blendCaps = GetDeviceCaps(dc, SHADEBLENDCAPS);
+    switch (blendCaps) {
+    case SB_NONE       :
+      { const CSize &srcsz = srcRect.Size();
+        const CSize  dstsz = dstRect.Size();
+        HBITMAP picBM   = CreateBitmap(srcsz.cx, srcsz.cy,1,32,NULL);
+        HBITMAP tmpBM   = CreateBitmap(dstsz.cx, dstsz.cy,1,32,NULL);
+        HDC     picDC   = CreateCompatibleDC(NULL);
+        HDC     tmpDC   = CreateCompatibleDC(NULL);
+        HGDIOBJ picOld  = SelectObject(picDC,picBM);
+        HGDIOBJ tmpOld  = SelectObject(tmpDC,tmpBM); // to hold original dst-rect
+        try {
+          BitBlt(tmpDC, 0,0,dstsz.cx,dstsz.cy,dc, dstRect.left,dstRect.top,SRCCOPY);
+          render(picDC, CRect(0,0,srcsz.cx,srcsz.cy), srcRect);
+          preMultiplyAlpha(picBM);
+          alphaBlend(tmpDC, 0,0,dstsz.cx,dstsz.cy,picDC, 0,0,srcsz.cx,srcsz.cy,255);
+          BitBlt(dc, dstRect.left,dstRect.top, dstsz.cx,dstsz.cy,tmpDC, 0,0,SRCCOPY);
+          SelectObject(picDC,picOld); DeleteDC(picDC); DeleteObject(picBM);
+          SelectObject(tmpDC,tmpOld); DeleteDC(tmpDC); DeleteObject(tmpBM);
+        } catch (...) {
+          SelectObject(picDC,picOld); DeleteDC(picDC); DeleteObject(picBM);
+          SelectObject(tmpDC,tmpOld); DeleteDC(tmpDC); DeleteObject(tmpBM);
+          throw;
+        }
+      }
+      break;
+    case SB_CONST_ALPHA:
+    case SB_PIXEL_ALPHA:
+      render(dc, dstRect, srcRect);
+      break;
+    }
+  }
+}
+
+void CPicture::render(HDC dst, const CRect &dstRect, const CRect &srcRect) const {
   const int left   = MulDiv(srcRect.left    , HIMETRIC_INCH, 96);
   const int bottom = MulDiv(srcRect.bottom  , HIMETRIC_INCH, 96);
   const int width  = MulDiv(srcRect.Width() , HIMETRIC_INCH, 96);
   const int height = MulDiv(srcRect.Height(), HIMETRIC_INCH, 96);
 
-//  if(hasAlpha()) {
-
-//  } else {
-    const HRESULT hr = m_IPicture->Render(dc
-                                         ,dstRect.left
-                                         ,dstRect.top
-                                         ,dstRect.Width()
-                                         ,dstRect.Height()
-                                         ,left
-                                         ,bottom
-                                         ,width
-                                         ,-height
-                                         ,&dstRect);
+  const HRESULT hr = m_IPicture->Render(dst
+                                       ,dstRect.left
+                                       ,dstRect.top
+                                       ,dstRect.Width()
+                                       ,dstRect.Height()
+                                       ,left
+                                       ,bottom
+                                       ,width
+                                       ,-height
+                                       ,&dstRect);
   
-    if(FAILED(hr)) {
-      throwException(_T("%s"), getErrorText(hr).cstr());
-    }
-//  }
+  if(FAILED(hr)) {
+    throwException(_T("%s:%s"), __TFUNCTION__, getErrorText(hr).cstr());
+  }
 }
 
 void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // static
@@ -557,7 +596,7 @@ void CPicture::showBitmapResource(HDC hdc, int resId, const CPoint &p) { // stat
 
   CBitmap bm;
   if(!bm.LoadBitmap(resId)) {
-	throwException(_T("Cannot find bitmap resource:%d"), resId);
+	  throwException(_T("Cannot find bitmap resource:%d"), resId);
   }
   const BITMAP bmInfo = getBitmapInfo(bm);
   HDC srcDC = NULL;
@@ -600,7 +639,7 @@ void CPicture::updateSizeOnDC(CDC *pDC) {
 
   // use a "standard" print (when printing)
   if(pDC->IsPrinting()) {
-	currentDPI_X = 96;
+    currentDPI_X = 96;
     currentDPI_Y = 96;
   } else {
     currentDPI_X = pDC->GetDeviceCaps(LOGPIXELSX);

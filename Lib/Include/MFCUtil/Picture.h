@@ -37,6 +37,7 @@ private:
   void loadAsIcon(  const String &fileName);
   void loadAsCursor(const String &fileName);
   void load(const ByteArray &bytes, int firstIndex=-1);
+  void render(HDC dst, const CRect &dstRect, const CRect &srcRect) const;
 public:
 	CPicture();
   CPicture(const CPicture &src);
@@ -59,11 +60,12 @@ public:
   void show(HDC hdc) const;
 	void show(HDC hdc, const CRect &dstRect) const;
   void show(HDC hdc, const CRect &dstRect, const CRect &srcRect) const;
+  void show(HDC hdc, const CPoint &p);
 	static void showBitmapResource(HDC hdc, int resId, const CPoint &p);
 	void updateSizeOnDC(CDC *pDC);
   int getWidth()         const { return m_size.cx;  }
   int getHeight()        const { return m_size.cy;  }
   int getWeight()        const { return m_weight;   }
   const CSize &getSize() const { return m_size;     }
-  CRect getRectangle()   const { return CRect(0, 0, m_size.cx, m_size.cy); }
+  CRect getRectangle()   const { return CRect(ORIGIN, m_size); }
 };

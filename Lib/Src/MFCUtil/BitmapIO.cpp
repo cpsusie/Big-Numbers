@@ -25,7 +25,7 @@ static void encodeBitmap(HBITMAP bm, ByteOutputStream &out, PLPicEncoder &encode
   ByteStreamSink sink(out);
   encoder.SaveBmp(&winBmp, &sink);
 }
-
+//#define TEST_DECODEBITMAP
 #ifdef TEST_DECODEBITMAP
 #include <MFCUtil/PixRect.h>
 
@@ -34,17 +34,17 @@ static void showAlphaBitmap(HDC dst, const CPoint &p, HBITMAP bm) {
 
   PixRectDevice device;
   device.attach(hwnd, true);
-  PixRect pr(device, bm);
-  const CSize size = pr.getSize();
+  PixRect pr(device, bm, D3DPOOL_DEFAULT);
+  CRect r0(ORIGIN, pr.getSize());
 
   pr.preMultiplyAlpha();
 
   PixRect *tmpDst = pr.clone();
-  PixRect::bitBlt(tmpDst, CPoint(0,0), size, SRCCOPY, dst, p);
+  PixRect::bitBlt(tmpDst, r0, SRCCOPY, dst, p);
   HDC tmpDC = tmpDst->getDC();
-  PixRect::alphaBlend(tmpDC, 0, 0, size.cx, size.cy,  pr, 0, 0, size.cx, size.cy, 255);
+  PixRect::alphaBlend(tmpDC, r0, pr, r0, 255);
   tmpDst->releaseDC(tmpDC);
-  PixRect::bitBlt(dst, p, size, SRCCOPY, tmpDst, CPoint(0,0));
+  PixRect::bitBlt(dst, p, r0.Size(), SRCCOPY, tmpDst, ORIGIN);
   delete tmpDst;
 }
 

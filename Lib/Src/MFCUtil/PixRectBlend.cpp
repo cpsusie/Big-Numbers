@@ -11,18 +11,13 @@ void PixRect::alphaBlend(PixRect &dst, const CRect &dr, const PixRect &src, cons
   alphaBlend(dst, dr.left, dr.top, dr.Width(), dr.Height(), src, sr.left, sr.top, sr.Width(), sr.Height(), srcConstAlpha);
 }
 
-#define AC_SRC_ALPHA                0x01
-
-#pragma comment(lib, "MSIMG32.lib")
-
 void PixRect::alphaBlend(PixRect &dst, int x, int y, int w, int h, const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
-  HDC dc = NULL;
+  HDC dstDC = dst.getDC();
   try {
-    dc = dst.getDC();
-    alphaBlend(dc, x, y, w, h, src, sx, sy, sw, sh, srcConstAlpha);
-    dst.releaseDC(dc);
+    alphaBlend(dstDC, x, y, w, h, src, sx, sy, sw, sh, srcConstAlpha);
+    dst.releaseDC(dstDC);
   } catch(...) {
-    if(dc) dst.releaseDC(dc);
+    dst.releaseDC(dstDC);
     throw;
   }
 }
@@ -36,22 +31,13 @@ void PixRect::alphaBlend(HDC dst, const CRect &dr, const PixRect &src, const CRe
 }
 
 void PixRect::alphaBlend(HDC dst, int x, int y, int w, int h,  const PixRect &src, int sx, int sy, int sw, int sh, int srcConstAlpha) {  // static 
-  String errMsg;
   HDC srcDC = src.getDC();
-
-  BLENDFUNCTION blendFunction;
-  blendFunction.BlendOp             = AC_SRC_OVER;
-  blendFunction.BlendFlags          = 0;
-  blendFunction.SourceConstantAlpha = srcConstAlpha;
-  blendFunction.AlphaFormat         = AC_SRC_ALPHA;
-
-  BOOL ok = AlphaBlend(dst, x,y,w,h, srcDC, sx,sy,sw,sh, blendFunction);
-  if(!ok) {
-    errMsg = getLastErrorText();
-  }
-  src.releaseDC(srcDC);
-  if(!ok) {
-    throwException(_T("AlphaBlend failed:%s"), errMsg.cstr());
+  try {
+    ::alphaBlend(dst, x,y,w,h, srcDC, sx,sy,sw,sh, srcConstAlpha);
+    src.releaseDC(srcDC);
+  } catch (...) {
+    src.releaseDC(srcDC);
+    throw;
   }
 }
 

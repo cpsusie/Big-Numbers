@@ -255,6 +255,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2DXML.cpp" />
+    <ClCompile Include="AlphaBlend.cpp" />
     <ClCompile Include="AnimatedImage.cpp" />
     <ClCompile Include="AviFile.cpp" />
     <ClCompile Include="BitmapBits.cpp" />

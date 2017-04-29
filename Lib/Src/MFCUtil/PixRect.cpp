@@ -383,10 +383,31 @@ void PixRect::showPixRect(const PixRect *pr) { // static
   DeleteDC(screenDC);
 }
 
+bool PixRect::canUseColorFill() const {
+  switch (getType()) {
+  case PIXRECT_RENDERTARGET: return true;
+  case PIXRECT_PLAINSURFACE: return getPool() == D3DPOOL_DEFAULT;
+  default                  : return false;
+  }
+}
+
 void PixRect::fillColor(D3DCOLOR color, const CRect *r) {
-  LPDIRECT3DSURFACE surface = getSurface();
-  m_device.getD3Device()->ColorFill(surface, r, color);
-  surface->Release();
+  if(canUseColorFill()) {
+    LPDIRECT3DSURFACE surface = getSurface();
+    CHECK3DRESULT(m_device.getD3Device()->ColorFill(surface, r, color));
+    surface->Release();
+  } else {
+    CRect tmpr;
+    if (r == NULL) {
+      tmpr = CRect(CPoint(0,0), getSize());
+      r = &tmpr;
+    }
+    HBRUSH hbr = CreateSolidBrush(D3DCOLOR2COLORREF(color));
+    HDC hdc = getDC();
+    FillRect(hdc, r, hbr);
+    DeleteObject(hbr);
+    releaseDC(hdc);
+  }
 }
 
 void PixRect::checkType(const TCHAR *method, PixRectType expectedType) const {

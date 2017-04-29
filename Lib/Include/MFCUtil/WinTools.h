@@ -158,6 +158,9 @@ void writeAsJPG( HBITMAP bm, ByteOutputStream &out);
 void writeAsPNG( HBITMAP bm, ByteOutputStream &out);
 void writeAsTIFF(HBITMAP bm, ByteOutputStream &out);
 
+void alphaBlend(HDC dst, int x, int y, int w, int h,  HDC src, int sx, int sy, int sw, int sh, int srcConstAlpha);
+void preMultiplyAlpha(HBITMAP bm);
+
 HBITMAP cloneBitmap(HBITMAP bm);
 HBITMAP decodeAsPNG( const ByteArray &bytes, bool &hasAlpha);
 HBITMAP decodeAsTIFF(const ByteArray &bytes, bool &hasAlpha);

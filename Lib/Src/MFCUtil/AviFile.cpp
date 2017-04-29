@@ -213,7 +213,7 @@ HBITMAP CAviFile::readFrame() {
   if(SetDIBits(m_dc, m_bitmap, 0, m_bitmapInfoHeader.biHeight, m_lpBits,&bmInfo, DIB_RGB_COLORS) == 0) {
     throwLastErrorOnSysCallException(_T("SetDIBits"));
   }
-  return m_bitmap;;
+  return m_bitmap;
 }
 
 void CAviFile::appendFrameFirstTime(HBITMAP bm) {

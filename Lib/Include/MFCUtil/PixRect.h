@@ -322,6 +322,7 @@ private:
   void fill(const CPoint &p, D3DCOLOR color, ColorComparator &cmp);
   void init(HBITMAP src, D3DFORMAT pixelFormat, D3DPOOL pool);
   void checkHasAlphaChannel() const; // throw Exception if no alpha-channel
+  bool canUseColorFill() const;
   LPDIRECT3DSURFACE getSurface() const;
   LPDIRECT3DSURFACE cloneSurface(D3DPOOL pool) const;
   D3DLOCKED_RECT    lockRect(  DWORD Flags, const CRect *rect = NULL);
