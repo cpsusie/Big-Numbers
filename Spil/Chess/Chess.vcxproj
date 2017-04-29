@@ -3243,7 +3243,7 @@
     <Image Include="res\Chess.ico" />
     <Image Include="res\DeleteMark.bmp" />
     <Image Include="res\DialogBackground.jpg" />
-    <Image Include="res\DstFieldMark.bmp" />
+    <Image Include="res\DstFieldMark.png" />
     <Image Include="res\GreenField.bmp" />
     <Image Include="res\Hourglasses.bmp" />
     <Image Include="res\NoPiece.bmp" />
@@ -3252,7 +3252,7 @@
     <Image Include="res\PlayerIndicator.bmp" />
     <Image Include="res\PurpleField.bmp" />
     <Image Include="res\SelectionFrame.png" />
-    <Image Include="res\SrcFieldMark.bmp" />
+    <Image Include="res\SrcFieldMark.png" />
     <Image Include="res\WhiteBishop.png" />
     <Image Include="res\WhiteKing.png" />
     <Image Include="res\WhiteKnight.png" />

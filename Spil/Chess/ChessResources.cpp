@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Math.h>
-#include <MFCUtil/WinTools.h>
 #include "ChessGraphics.h"
 
 int            ChessResources::s_instanceCount    = 0;
@@ -62,8 +61,8 @@ static const FieldMarkAttributes fmattr[] = {
  ,PURPLEMARK    , IDB_PURPLEFIELD , RESOURCE_BITMAP, false
  ,YELLOWMARK    , IDB_YELLOWFIELD , RESOURCE_BITMAP, false
  ,CHECKEDKING   , IDB_CHECKEDKING , RESOURCE_BITMAP, false
- ,MOVEFROMMARK  , IDB_SRCMARK     , RESOURCE_BITMAP, true
- ,MOVETOMARK    , IDB_DSTMARK     , RESOURCE_BITMAP, true
+ ,MOVEFROMMARK  , IDB_SRCMARK     , RESOURCE_PNG   , true
+ ,MOVETOMARK    , IDB_DSTMARK     , RESOURCE_PNG   , true
 };
 
 void ChessResources::load() {

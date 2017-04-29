@@ -119,7 +119,9 @@ IDR_BOARD               JPG                     "res\\Board.jpg"
 //
 // PNG
 //
-IDB_SELECTIONFRAME      PNG                     "res\\selectionFrame.png"
+IDB_SELECTIONFRAME      PNG                     "res\\SelectionFrame.png"
+IDB_SRCMARK             PNG                     "res\\SrcFieldMark.png"
+IDB_DSTMARK             PNG                     "res\\DstFieldMark.png"
 
 IDB_BITMAPBLACKBISHOP   PNG                     "res\\BlackBishop.png"
 IDB_BITMAPBLACKKING     PNG                     "res\\BlackKing.png"
@@ -135,6 +137,7 @@ IDB_BITMAPWHITEPAWN     PNG                     "res\\WhitePawn.png"
 IDB_BITMAPWHITEQUEEN    PNG                     "res\\WhiteQueen.png"
 IDB_BITMAPWHITEROOK     PNG                     "res\\WhiteRook.png"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
@@ -144,8 +147,6 @@ IDB_BLUEFIELD           BITMAP                  "res\\blueField.bmp"
 IDB_CHECKEDKING         BITMAP                  "res\\checkedKing.bmp"
 IDB_PURPLEFIELD         BITMAP                  "res\\purpleField.bmp"
 IDB_PINKFIELD           BITMAP                  "res\\pinkField.bmp"
-IDB_SRCMARK             BITMAP                  "res\\srcfieldMark.bmp"
-IDB_DSTMARK             BITMAP                  "res\\DstFieldMark.bmp"
 IDB_HOURGLASS           BITMAP                  "res\\Hourglasses.bmp"
 IDB_PLAYERINDICATOR     BITMAP                  "res\\PlayerIndicator.bmp"
 IDB_BITMAPNOPIECE       BITMAP                  "res\\NoPiece.bmp"

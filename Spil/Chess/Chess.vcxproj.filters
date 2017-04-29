@@ -1106,9 +1106,6 @@
     <Image Include="res\DialogBackground.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\DstFieldMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\GreenField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -1128,9 +1125,6 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\PurpleField.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\SrcFieldMark.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\WhiteMark.bmp">
@@ -1176,6 +1170,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="res\BlackRook.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DstFieldMark.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\SrcFieldMark.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
