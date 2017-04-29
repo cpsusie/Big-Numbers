@@ -292,6 +292,10 @@ void CTestPictureDlg::OnClose() {
 }
 
 void CTestPictureDlg::OnFileExit() {
+  deallocateWorkPr();
+  m_image[0].unload();
+  m_image[1].unload();
+  theApp.m_device.detach();
   EndDialog(IDOK);
 }
 
