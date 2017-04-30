@@ -41,7 +41,7 @@ void MoveAnimation::addMovePiece(const int from, const int to) {
 }
 
 void MoveAnimation::animate() {
-  const int sleepTime = (size() == 1) ? 15 : 10;
+  const int sleepTime = 15;
   const int n = (int)size();
   beginPaint();
   for(bool cont = true; cont;) {
