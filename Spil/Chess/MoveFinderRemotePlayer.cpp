@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "MoveFinderRemotePlayer.h"
 
-MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, SocketChannel channel)
-: AbstractMoveFinder(player)
+MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, MFTRQueue &msgQueue, SocketChannel channel)
+: AbstractMoveFinder(player, msgQueue)
 , m_channel(channel)
 {
   m_receivedMove.setNoMove();
@@ -14,7 +14,7 @@ void MoveFinderRemotePlayer::disConnect() {
 
 MoveFinderRemotePlayer::~MoveFinderRemotePlayer() {
   try {
-    stopThinking();
+    stopSearch();
     disConnect();
   } catch(...) {
   }
@@ -61,31 +61,17 @@ String MoveFinderRemotePlayer::receiveMove() {
   }
 }
 
-ExecutableMove MoveFinderRemotePlayer::findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint) {
-  initSearch(game, timeLimit, talking);
+void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param, bool talking) {
+  initSearch(param, talking);
   const String s = receiveMove();
-  ExecutableMove result;
+  PrintableMove result;
   if(s.length() == 0) {
     m_receivedMove = result.setNoMove();
   } else {
-    result = game.generateMove(s);
+    result = m_game.generateMove(s);
     m_receivedMove = result;
   }
-  return result;
-}
-
-String MoveFinderRemotePlayer::getName() const {
-  return _T("Remote computer");
-}
-
-void MoveFinderRemotePlayer::stopThinking(bool stopImmediately) {
-  AbstractMoveFinder::stopThinking(stopImmediately);
-  if(stopImmediately) {
-    interrupt();
-  }
-}
-
-void MoveFinderRemotePlayer::setVerbose(bool verbose) {
+  return putResult(result);
 }
 
 void MoveFinderRemotePlayer::notifyGameChanged(const Game &game) {
@@ -98,8 +84,4 @@ void MoveFinderRemotePlayer::notifyMove(const MoveBase &move) {
   if(move != m_receivedMove) {
     sendMove(move);
   }
-}
-
-String MoveFinderRemotePlayer::getStateString(Player computerPlayer, bool detailed) {
-  return _T("remote");
 }

@@ -136,7 +136,7 @@ Game &Game::setPlayerInTurn(Player player) {
   return *this;
 }
 
-int Game::getKingDistance(int pos1, int pos2) { // static
+int Game::getWalkDistance(int pos1, int pos2) { // static
   const int dr = ::abs(GETROW(pos1)-GETROW(pos2));
   const int dc = ::abs(GETCOL(pos1)-GETCOL(pos2));
   return max(dr, dc);
@@ -150,7 +150,7 @@ Game &Game::validateBoard(bool intensive) {
     }
   }
 
-  if(KINGSADJACENT(m_playerState[WHITEPLAYER].m_king->getPosition(),m_playerState[BLACKPLAYER].m_king->getPosition())) {
+  if(POSADJACENT(m_playerState[WHITEPLAYER].m_king->getPosition(),m_playerState[BLACKPLAYER].m_king->getPosition())) {
     throwUserException(IDS_MSG_KINGS_ATTACK_EACHOTHER);
   }
 

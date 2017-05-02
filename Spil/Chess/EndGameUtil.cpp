@@ -417,9 +417,7 @@ String MoveResultArray::toString(const Game &game, MoveStringFormat mf, bool dep
   sort();
   StringArray msa;
   for(size_t i = 0; i < size(); i++) {
-    const MoveWithResult &mr = (*this)[i];
-    const ExecutableMove em = game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
-    msa.add(em.toString(mf));
+    msa.add(PrintableMove(game,(*this)[i]).toString(mf));
   }
   const int maxMoveStrLength = (int)msa.maxLength();
   String result;

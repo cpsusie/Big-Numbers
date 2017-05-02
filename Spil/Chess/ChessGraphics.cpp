@@ -427,7 +427,7 @@ void ChessGraphics::paintKing(Player player) {
     if(newFlags != flags) {
       flags = newFlags;
       const int mousePos = getMouseField();
-      const bool umm = Game::getKingDistance(pos, mousePos) <= 1; // unmarkMouse-paint-markMouse
+      const bool umm = Game::getWalkDistance(pos, mousePos) <= 1; // unmarkMouse-paint-markMouse
       if(umm) {
         unmarkMouse();
       }

@@ -71,7 +71,7 @@ void EndGameKeyDefinition5Men1Pawn2Equal::scanPositions(EndGameKeyWithOccupiedPo
       break;
     case 1:
       for(pos = 0; pos < 64; pos++) {
-        if(KINGSADJACENT(key.getWhiteKingPosition(), pos) || key.isOccupied(pos)) continue;
+        if(POSADJACENT(key.getWhiteKingPosition(), pos) || key.isOccupied(pos)) continue;
         key.setPosition(1,pos);
         scanPositions(key, pIndex+1);
         key.clearField(pos);

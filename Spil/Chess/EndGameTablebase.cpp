@@ -183,14 +183,11 @@ static MoveWithResult transformMove(const Game game, const MoveWithResult &m, bo
   }
 }
 
-ExecutableMove EndGameTablebase::findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const {
+PrintableMove EndGameTablebase::findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const {
   allMoves = getAllMoves(game);
-  if(allMoves.isEmpty()) {
-    return ExecutableMove();
-  } else {
-    const MoveBase &m = allMoves.selectBestMove(defendStrength);
-    return game.generateMove(m.getFrom(), m.getTo(), m.getPromoteTo());
-  }
+  return allMoves.isEmpty()
+       ? PrintableMove()
+       : PrintableMove(game, allMoves.selectBestMove(defendStrength));
 }
 
 MoveResultArray EndGameTablebase::getAllMoves(const Game &game) const {

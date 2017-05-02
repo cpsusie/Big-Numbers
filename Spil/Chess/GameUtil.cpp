@@ -14,7 +14,7 @@ bool Game::mustSelectPromotion(int from, int to) const {
   return (piece->getType() == Pawn) && (GETROW(to) == GETPROMOTEROW(piece->getPlayer()));
 }
 
-ExecutableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnnotation annotation) const {
+PrintableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnnotation annotation) const {
   const Piece *piece = getPieceAtPosition(from);
   if(piece == NULL || piece->getPlayer() != PLAYERINTURN) {
     throwException(_T("%s-%s is not a legal move in the current position")
@@ -27,7 +27,7 @@ ExecutableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnn
     if(move.m_piece == piece && move.m_to == to
       && (move.m_type != PROMOTION || legalPromotions[move.m_promoteIndex] == promoteTo)) {
       move.setAnnotation(annotation);
-      return ExecutableMove(*this, move);
+      return PrintableMove(*this, move);
     }
   }
   throwException(_T("%s%s-%s not a legal move in position[%s]")
@@ -35,10 +35,10 @@ ExecutableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnn
                 ,getFieldName(from),getFieldName(to)
                 ,m_gameKey.toString().cstr()
                 );
-  return ExecutableMove();
+  return PrintableMove();
 }
 
-static bool moveMatchAnyFormat(const ExecutableMove &m, const String &s) {
+static bool moveMatchAnyFormat(const PrintableMove &m, const String &s) {
   return (m.toString(MOVE_SHORTFORMAT  ).equalsIgnoreCase(s)
       ||  m.toString(MOVE_LONGFORMAT   ).equalsIgnoreCase(s)
       ||  m.toString(MOVE_FILEFORMAT   ).equalsIgnoreCase(s)
@@ -47,7 +47,7 @@ static bool moveMatchAnyFormat(const ExecutableMove &m, const String &s) {
          );
 }
 
-ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
+PrintableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
   if(mf == -1) { // unknown format. try all
     String tmp = trim(s);
     const intptr_t qMark  = tmp.find('?');
@@ -62,13 +62,13 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
     move.setAnnotation(NOANNOTATION);
     MoveGenerator &mg = getMoveGenerator();
     for(bool more = mg.firstMove(move); more; more = mg.nextMove(move)) {
-      const ExecutableMove em(*this, move);
+      const PrintableMove em(*this, move);
       if(moveMatchAnyFormat(em, tmp)) {
         move.setAnnotation(annotation);
-        return ExecutableMove(*this, move);
+        return PrintableMove(*this, move);
       }
     }
-    const ExecutableMove nullMove;
+    const PrintableMove nullMove;
     if(moveMatchAnyFormat(nullMove, tmp)) {
       return nullMove;
     }
@@ -91,13 +91,13 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
         move.setAnnotation(NOANNOTATION);
         MoveGenerator &mg = getMoveGenerator();
         for(bool more = mg.firstMove(move); more; more = mg.nextMove(move)) {
-          ExecutableMove em(*this, move);
+          PrintableMove em(*this, move);
           if(em.toString(mf).equalsIgnoreCase(tmp)) {
             move.setAnnotation(annotation);
-            return ExecutableMove(*this, move);
+            return PrintableMove(*this, move);
           }
         }
-        const ExecutableMove nullMove;
+        const PrintableMove nullMove;
         if(nullMove.toString(mf).equalsIgnoreCase(tmp)) {
           return nullMove;
         }
@@ -109,10 +109,10 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
         MoveGenerator &mg = getMoveGenerator();
         for(bool more = mg.firstMove(move); more; more = mg.nextMove(move)) {
           if(move.toString(mf).equalsIgnoreCase(s)) {
-            return ExecutableMove(*this, move);
+            return PrintableMove(*this, move);
           }
         }
-        const ExecutableMove nullMove;
+        const PrintableMove nullMove;
         if(nullMove.toString(mf).equalsIgnoreCase(s)) {
           return nullMove;
         }
@@ -123,7 +123,7 @@ ExecutableMove Game::generateMove(const String &s, MoveStringFormat mf) const {
     }
   }
   throwException(_T("%s is not a legal move"), s.cstr());
-  return ExecutableMove();
+  return PrintableMove();
 }
 
 Move Game::generateMove(const MoveBase &m) const {

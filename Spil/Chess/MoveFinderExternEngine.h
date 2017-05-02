@@ -11,9 +11,11 @@ private:
   ExternEngine             m_externEngine;
   CEngineOptionsDlgThread *m_optionsDlgThread;
 public:
-  MoveFinderExternEngine(Player player);
+  MoveFinderExternEngine(Player player, MFTRQueue &msgQueue);
   ~MoveFinderExternEngine();
-  ExecutableMove findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint);
+  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void stopSearch();
+  void moveNow();
   String getName() const;
 
   EngineType getEngineType()  const {
@@ -32,7 +34,6 @@ public:
     return NORMAL_POSITION;
   }
 
-  void stopThinking(bool stopImmediately = true);
   void runOptionsDialog();
   void setVerbose(bool verbose);
   void notifyGameChanged(const Game &game);

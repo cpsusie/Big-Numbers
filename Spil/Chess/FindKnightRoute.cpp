@@ -45,4 +45,3 @@ String findShortestKnightRoute(UINT from, UINT to) {
   }
   return result;
 }
-

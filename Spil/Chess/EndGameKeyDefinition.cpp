@@ -384,7 +384,7 @@ EndGameKey EndGameKeyDefinition::getNormalizedKey(EndGameKey key, EndGamePosInde
 void EndGameKeyDefinition::validateKey(EndGameKey key, const TCHAR *msg) const {
   const UINT wkPos = key.getWhiteKingPosition();
   const UINT bkPos = key.getBlackKingPosition();
-  if(KINGSADJACENT(wkPos, bkPos)) {
+  if(POSADJACENT(wkPos, bkPos)) {
     throwException(msg, key.toString(*this).cstr(), key.toString(*this).cstr());
   }
   for(UINT i = 2; i < m_totalPieceCount; i++) {
@@ -1582,7 +1582,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
         if(allPreviousOnDiag) {
           for(int i = 0; i < ARRAYSIZE(s_subDiagIndexToPos); i++) { // for all sub- and diagonal-positions
             const int pos = s_subDiagIndexToPos[i];
-            if(KINGSADJACENT(wkPos, pos)) continue;
+            if(POSADJACENT(wkPos, pos)) continue;
             key.setPosition(1, pos);
             if(nextScanner) {
               (this->*(nextScanner))(key, 2, IS_ONMAINDIAG1(pos));
@@ -1593,7 +1593,7 @@ void EndGameKeyDefinition::sym8PositionScanner(EndGameKeyWithOccupiedPositions &
           }
         } else {
           for(int pos = 0; pos < 64; pos++) { // for all positions
-            if(KINGSADJACENT(wkPos, pos)) continue;
+            if(POSADJACENT(wkPos, pos)) continue;
             key.setPosition(1, pos);
             if(nextScanner) {
               (this->*(nextScanner))(key, 2, false);
@@ -1763,7 +1763,7 @@ void AllPositionScanner::allPositions() {
 void AllPositionScanner::blackKingPositions() {
   const int wkPos = m_key.getWhiteKingPosition();
   for(int pos = 0; pos < 64; pos++) {
-    if(KINGSADJACENT(wkPos, pos)) {
+    if(POSADJACENT(wkPos, pos)) {
       continue;
     }
     setPosAndScanNext(pos);

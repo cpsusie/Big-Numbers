@@ -1,11 +1,10 @@
 #include "stdafx.h"
 #include "MoveFinderRandom.h"
 
-ExecutableMove MoveFinderRandomPlay::findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint) {
-  initSearch(game, timeLimit, talking);
+void MoveFinderRandomPlay::findBestMove(const FindMoveRequestParam &param, bool talking) {
+  initSearch(param, talking);
   randomize();
-  const Move m = game.getRandomMove();
-  return ExecutableMove(game, m);
+  putResult(m_game.getRandomMove());
 }
 
 String MoveFinderRandomPlay::getName() const {

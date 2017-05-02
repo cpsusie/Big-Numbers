@@ -6,7 +6,7 @@ MoveSinglePieceAnimation::MoveSinglePieceAnimation(ChessGraphics *graphics, cons
 : AbstractPieceMoveAnimation(graphics, graphics->getPieceImage(from), graphics->getFieldSize(false))
 , m_from(graphics->getFieldPosition(from, false))
 , m_to(  graphics->getFieldPosition(to  , false))
-, m_it(0,1, steps ? steps : (int)(sqrt(Game::getKingDistance(from,to))*28))
+, m_it(0,1, steps ? steps : (int)(sqrt(Game::getWalkDistance(from,to))*28))
 {
 
   m_pos = m_from;

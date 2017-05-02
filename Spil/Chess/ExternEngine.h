@@ -4,6 +4,7 @@
 
 #include <ExternProcess.h>
 #include <InputThread.h>
+#include "MoveFinderThreadRequest.h"
 
 typedef enum { // dont swap these. see optionsCmp in ExternEngine.cpp
   OptionTypeSpin
@@ -104,59 +105,78 @@ public:
   }
 };
 
-class ExternInputThread : public InputThread {
-protected:
-  void vverbose(const TCHAR *format, va_list argptr);
-public:
-  ExternInputThread(FILE *input) : InputThread(input) {
-  }
-  String getLine(int timeoutInMilliseconds = INFINITE);
-};
+#define EXE_UCIOK         0x1
+#define EXE_BUSY          0x2
+#define EXE_KILLED        0x4
+#define EXE_THREADRUNNING 0x8
 
-#define EXE_UCIOK    0x1
-#define EXE_BUSY     0x2
-
-#define setStateFlags(  flags)   m_stateFlags |=  (flags)
-#define clrStateFlags(  flags)   m_stateFlags &= ~(flags)
-#define clrAllStateFlags()       m_stateFlags = 0
 #define isStateFlagsSet(flags) ((m_stateFlags &   (flags)) == (flags))
 
-class ExternEngine : public ExternProcess, public OptionsAccessor {
+class ExternEngine : public ExternProcess, public Thread, public OptionsAccessor {
 private:
-  ExternInputThread           *m_inputThread;
+  const Player                 m_player;
   EngineDescription            m_desc;
-  Game                        *m_tmpGame;
-  BYTE                         m_stateFlags;
-  ExecutableMove               m_bestMove;
-  mutable int                  m_callLevel;
   EngineOptionDescriptionArray m_optionArray;
-  void quit();
-  void waitUntilIdle(int timeout = 1000);
-  void cleanup();
+  InputThread                 *m_inputThread;
+  MFTRQueue                   *m_msgQueue;
+  mutable Game                 m_game;
+  bool                         m_hint;
+  BYTE                         m_stateFlags;
+  Semaphore                    m_gate;
+  mutable int                  m_callLevel;
+
   void killProcess();
+  void cleanup();
   void deleteInputThread();
-  inline bool hasInputThread() const {
-    return m_inputThread!=NULL;
+  void waitUntilNotBusy(int timeout = 2000);
+  void putInterruptLine();
+  void sendUCI();
+  void sortOptions();
+  void sendPosition() const;
+
+  inline void setStateFlags(BYTE flags) {
+    m_gate.wait();
+    m_stateFlags |= flags;
+    m_gate.signal();
   }
-  String getLine(int milliseconds = INFINITE); // throw TimeoutException on timeout
+
+  inline void clrStateFlags(BYTE flags) {
+    m_gate.wait();
+    m_stateFlags &= ~flags;
+    m_gate.signal();
+  }
+
+  inline void clrAllStateFlags() {
+    m_gate.wait();
+    m_stateFlags = 0;
+    m_gate.signal();
+  }
+
+  // timeout in milliseconds. If INFINTE, thread is blocked until input arrives
+  String getLine(int timeout = INFINITE); // throw TimeoutException on timeout
 #ifdef _DEBUG
   void send(const TCHAR *format,...) const;
 #endif
-  void sendUCI();
-  void sortOptions();
-  void sendPosition(const Game &game) const;
-  void setDebug(bool on);
+  void   setDebug(bool on);
   String getBeautifiedVariant(const String &pv) const;
-  void setParameterValue(const EngineOptionValue &v);
+  void   setParameterValue(const EngineOptionValue &v);
+  void   debugMsg(const TCHAR *format, ...) const;
+  bool   hasInput() const {
+    return m_inputThread != NULL;
+  }
 public:
-  ExternEngine(const String &path);
+  ExternEngine(Player player, const String &path);
  ~ExternEngine();
-  void start();
+  void start(MFTRQueue *msgQueue = NULL);
+  void quit();
   inline bool isStarting() const {
     return isStarted() && !isStateFlagsSet(EXE_UCIOK);
   }
   inline bool isReady() const {
-    return isStarted() && isStateFlagsSet(EXE_UCIOK);
+    return isStarted() && hasInput() && isStateFlagsSet(EXE_UCIOK);
+  }
+  inline bool isThreadRunning() const {
+    return isStateFlagsSet(EXE_THREADRUNNING);
   }
   inline bool isBusy() const {
     return isReady()   && isStateFlagsSet(EXE_BUSY);
@@ -168,10 +188,10 @@ public:
   const EngineDescription &getDescription() const {
     return m_desc;
   }
-  ExecutableMove findBestMove(const Game &game, const TimeLimit &timeLimit, bool hint);
+  void  findBestMove(const FindMoveRequestParam &param);
   void  stopSearch();
   void  moveNow();
-
+  UINT run();
   String flagsToString() const;
   String toString() const;
   const EngineOptionDescriptionArray &getOptionDescriptionArray() const {

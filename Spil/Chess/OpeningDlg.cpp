@@ -62,7 +62,7 @@ BOOL COpeningDlg::PreTranslateMessage(MSG* pMsg) {
 void COpeningDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const LibraryState &state, Game &g) {
   for(size_t i = 0; i < state.m_transitionArray.size(); i++) {
     const LibraryTransition &tr = state.m_transitionArray[i];
-    ExecutableMove m = g.generateMove(tr.m_from,tr.m_to);
+    PrintableMove            m  = g.generateMove(tr.m_from,tr.m_to);
     String label = format(_T("%d. %s%s"), g.getPlyCount()/2+1, m.toString(MOVE_SHORTFORMAT).cstr(), tr.m_goodMove?EMPTYSTRING:_T("?"));
     HTREEITEM q = ctrl->InsertItem(label.cstr(), state.m_playerInTurn, state.m_playerInTurn, p);
     g.executeMove(m);

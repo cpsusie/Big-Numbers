@@ -8,60 +8,63 @@
 #include "SocketChannel.h"
 
 typedef enum {
-  MOVEFINDER_IDLE
- ,MOVEFINDER_BUSY
- ,MOVEFINDER_MOVEREADY
- ,MOVEFINDER_ERROR
- ,MOVEFINDER_KILLED
-} MoveFinderState;
+  MFTS_IDLE            // Start state of MoveFinderThread. Goes here whenever ready for work
+ ,MFTS_PREPARESEARCH   // Thread is preparing a search for best move
+ ,MFTS_BUSY            // MoveFinderThread is busy finding a move
+ ,MFTS_STOPPENDING     // MoveFinder is busy, and has received REQUEST_STOPSEARCH (NOT MOVENOW)
+ ,MFTS_MOVEREADY       // Thread has got a new move ready for the dialog
+ ,MFTS_ERROR           // Some error has happened to the thread
+ ,MFTS_KILLED          // MoveFinderThread run as long state is not MFTS_KILLED
+} MoveFinderThreadState;
 
 typedef enum {
-  MOVEFINDER_STATE
- ,MOVEFINDER_REMOTE
- ,MOVEFINDER_CONNECTED
- ,MOVEFINDER_ENGINE
-} MoveFinderProperty;
-
-typedef enum {
-  REQUEST_FINDMOVE
- ,REQUEST_NULLMOVE
- ,REQUEST_RESET
- ,REQUEST_KILL
-} MoveFinderRequest;
+  MFTP_STATE           // MoveFinderThreadState. Id of notifications when MoveFinderThread.m_state changes
+ ,MFTP_REMOTE          // bool.                  Id of notifications when MoveFinderThread.m_channel goes from disconnected -> connected or vice versa
+ ,MFTP_MOVEFINDER      // AbstractMoveFinder*    Id of notifications when MoveFinderThread.m_moveFinder is changed
+} MoveFinderThreadProperty;
 
 class MoveFinderThread : public Thread, public PropertyContainer, public PropertyChangeListener, OptionsAccessor {
 private:
 
   static OpeningLibrary s_openingLibrary;
 
-  const Player                         m_player;
-  MoveFinderState                      m_state;
-  SynchronizedQueue<MoveFinderRequest> m_inputQueue;
-  Game                                 m_game;
-  TimeLimit                            m_timeLimit;
-  bool                                 m_hint;
-  ExecutableMove                       m_bestMove;
-  String                               m_errorMessage;
-  Semaphore                            m_notBusy, m_gate;
-  AbstractMoveFinder                  *m_moveFinder;
-  SocketChannel                        m_channel;
+  const Player          m_player;
+  MoveFinderThreadState m_state;
+  MFTRQueue             m_inputQueue;
+  AbstractMoveFinder   *m_moveFinder;
+  SocketChannel         m_channel;
+  SearchMoveResult      m_searchResult;
+  String                m_errorMessage;
+  mutable Semaphore     m_gate;
+  mutable BYTE          m_callLevel;
 
-  void putRequest(MoveFinderRequest request) {
+  void putRequest(MoveFinderThreadRequest request) {
     m_inputQueue.put(request);
   }
-  bool newMoveFinderNeeded() const;
-  bool isRightNormalPlayMoveFinder() const;
+  bool isNewMoveFinderNeeded(      const FindMoveRequestParam &param) const;
+  bool isRightNormalPlayMoveFinder(const FindMoveRequestParam &param) const;
+  void allocateMoveFinder(         const FindMoveRequestParam &param);
+  AbstractMoveFinder *newMoveFinderNormalPlay(const FindMoveRequestParam &param);
   bool isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const;
-  EndGameTablebase *findMatchingTablebase() const;
-  AbstractMoveFinder *newMoveFinderNormalPlay();
-  void allocateMoveFinder();
-  ExecutableMove findMove();
-  MoveFinderState getState() const {
+  EndGameTablebase *findMatchingTablebase(const Game &g) const;
+  void handleFindMoveRequest(   FindMoveRequestParam    param);
+  void handleNullMoveRequest();
+  void handleStopSearchRequest();
+  void handleMoveNowRequest();
+  void handleGameChangedRequest(const Game             &game);
+  void handleFetchMoveRequest(  const SearchMoveResult &searchResult);
+  void handleResetRequest();
+  void handleDisconnectRequest();
+  void handleKillRequest();
+  inline MoveFinderThreadState getState() const {
     return m_state;
   }
-  void setState(     MoveFinderState     newState  );
-  void setMoveFinder(AbstractMoveFinder *moveFinder);
+  void setState(     MoveFinderThreadState  newState  );
+  void setMoveFinder(AbstractMoveFinder    *moveFinder);
   void handleTcpException(const TcpException &e);
+  void checkState(const TCHAR *method, int line, MoveFinderThreadState s1,...) const;
+  void debugMsg(const TCHAR *format,...) const;
+
 public:
   MoveFinderThread(Player player);
   ~MoveFinderThread();
@@ -70,34 +73,45 @@ public:
   Player getPlayer() const {
     return m_player;
   }
-  bool isBusy() const {
-    return getState() == MOVEFINDER_BUSY;
+  inline bool isBusy() const {
+    return (m_state == MFTS_BUSY) || (m_state == MFTS_STOPPENDING);
   }
 
-  bool isHint() const {
-    return m_hint;
-  }
-  ExecutableMove getMove() const;
   void startThinking(const Game &game, const TimeLimit &timeLimit, bool hint);
-  void stopThinking(bool stopImmediately = true);
+  void stopSearch();
   void resetMoveFinder();
+
+  // Only valid in state MFTS_BUSY
   void moveNow();
-  bool notifyGameChanged(const Game &game);
+
+  // Only valid in state MFTS_MOVEREADY
+  SearchMoveResult getSearchResult() const;
+
+  void notifyGameChanged(const Game &game);     
+
+  // Only valid in state MFTS_IDLE
   bool notifyMove(const MoveBase &m);
+
+  // Only valid in state MFTS_IDLE
   bool acceptUndoMove();
 
-  bool isRemote() const {
+  inline bool isRemote() const {
     return m_channel.isOpen();
   }
-  void setRemote(const SocketChannel &channel);
-  void disconnect();
+
+  // Only valid in state MFTS_IDLE
+  void setRemote(const Game &game, const SocketChannel &channel);
+
+  // Only valid in state MFTS_IDLE
+  void disconnect();                            
+
   static const OpeningLibrary &getOpeningLibrary();
 
-  PositionType getPositionType() const;
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void printState(Player computerPlayer, bool detailed);
   String getName() const;
   const String &getErrorMessage() const {
     return m_errorMessage;
   }
+  static const TCHAR *getStateName(  MoveFinderThreadState   state  );
 };

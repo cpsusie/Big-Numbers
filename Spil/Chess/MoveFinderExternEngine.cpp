@@ -4,25 +4,24 @@
 
 #include "MoveFinderExternEngine.h"
 
-MoveFinderExternEngine::MoveFinderExternEngine(Player player)
-: AbstractMoveFinder(player)
-, m_externEngine(Options::getEnginePathByPlayer(player))
+MoveFinderExternEngine::MoveFinderExternEngine(Player player, MFTRQueue &msgQueue)
+: AbstractMoveFinder(player, msgQueue)
+, m_externEngine(player, Options::getEnginePathByPlayer(player))
 {
-  m_externEngine.start();
+  m_externEngine.start(&m_msgQueue);
   m_externEngine.setParameters(getOptions().getEngineOptionValues(player, getOptions().getPlayerOptions(player).m_engineName));
   m_optionsDlgThread = NULL;
 }
 
 MoveFinderExternEngine::~MoveFinderExternEngine() {
   try {
-    stopThinking();
+    m_externEngine.quit();
     if(m_optionsDlgThread) {
       m_optionsDlgThread->closeThread();
     }
   } catch(...) {
   }
 }
-
 
 void MoveFinderExternEngine::runOptionsDialog() {
   m_optionsDlgThread = CEngineOptionsDlgThread::startThread(this);
@@ -37,13 +36,13 @@ void MoveFinderExternEngine::handlePropertyChanged(const PropertyContainer *sour
   }
 }
 
-ExecutableMove MoveFinderExternEngine::findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint) {
-  initSearch(game, timeLimit, talking);
-  const ExecutableMove m = checkForSingleMove();
+void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param, bool talking) {
+  initSearch(param, talking);
+  const PrintableMove m = checkForSingleMove();
   if(m.isMove()) {
-    return m;
+    putResult(m);
   } else {
-    return m_externEngine.findBestMove(game, timeLimit, hint);
+    m_externEngine.findBestMove(param);
   }
 }
 
@@ -51,13 +50,12 @@ String MoveFinderExternEngine::getName() const {
   return m_externEngine.getDescription().getName();
 }
 
-void MoveFinderExternEngine::stopThinking(bool stopImmediately) {
-  AbstractMoveFinder::stopThinking(stopImmediately);
-  if(stopImmediately) {
-    m_externEngine.stopSearch();
-  } else {
-    m_externEngine.moveNow();
-  }
+void MoveFinderExternEngine::stopSearch() {
+  m_externEngine.stopSearch();
+}
+
+void MoveFinderExternEngine::moveNow() {
+  m_externEngine.moveNow();
 }
 
 void MoveFinderExternEngine::setVerbose(bool verbose) {

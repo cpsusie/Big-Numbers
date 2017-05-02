@@ -4,9 +4,13 @@
 
 class MoveFinderRandomPlay : public AbstractMoveFinder {
 public:
-  MoveFinderRandomPlay(Player player) : AbstractMoveFinder(player) {
+  MoveFinderRandomPlay(Player player, MFTRQueue &msgQueue) : AbstractMoveFinder(player, msgQueue) {
   }
-  ExecutableMove findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint);
+  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void stopSearch() {
+  }
+  void moveNow() {
+  }
   String getName() const;
 
   EngineType getEngineType()  const {

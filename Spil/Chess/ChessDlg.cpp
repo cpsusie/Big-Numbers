@@ -81,10 +81,7 @@ void CChessDlg::commonInit() {
   m_selectedPiece  = m_removedPiece = EMPTYPIECEKEY;
   forEachPlayer(p) m_moveFinder[p] = new MoveFinderThread(p);
   m_plotThread     = NULL;
-  for(int i = 0; i < ARRAYSIZE(m_timerIsRunning); i++) {
-    m_timerIsRunning[i] = false;
-  }
-  m_controlFlags      = CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
+  m_controlFlags   = CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
 
   if(s_instanceCount++ == 0) {
     // redirect verbose to traceWindow
@@ -820,7 +817,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
   }
 }
 
-void CChessDlg::showHintMessageBox(const ExecutableMove move) {
+void CChessDlg::showHintMessageBox(const PrintableMove move) {
   if(move.isMove()) {
     MessageBox(move.toString(getOptions().getMoveFormat()).cstr(), _T("Hint"), MB_OK | MB_ICONEXCLAMATION);
   } else {
@@ -847,15 +844,15 @@ void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, c
     forEachPlayer(p) {
       if(source == &getMoveFinder(p)) {
         switch(id) {
-        case MOVEFINDER_STATE:
-          { const MoveFinderState newState = *(MoveFinderState*)newValue;
+        case MFTP_STATE:
+          { const MoveFinderThreadState newState = *(MoveFinderThreadState*)newValue;
             PostMessage(ID_MSG_MOVEFINDERSTATE_CHANGED, p, newState);
           }
           break;
-        case MOVEFINDER_ENGINE:
+        case MFTP_MOVEFINDER:
           PostMessage(ID_MSG_ENGINE_CHANGED, p, 0);
           break;
-        case MOVEFINDER_REMOTE:
+        case MFTP_REMOTE:
           { const bool oldRemote = *(bool*)oldValue;
             const bool newRemote = *(bool*)newValue;
             PostMessage(ID_MSG_REMOTESTATE_CHANGED, oldRemote, newRemote);
@@ -883,20 +880,21 @@ LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
 #ifdef _DEBUGDLG
   verbose(_T("OnMsgMoveFinderStateChanged(%d,%d)\n"), wp, lp);
 #endif
-  const Player          player     = (Player)wp;
-  const MoveFinderState newState   = (MoveFinderState)lp;
-  MoveFinderThread     &moveFinder = getMoveFinder(player);
+  const Player                player     = (Player)wp;
+  const MoveFinderThreadState newState   = (MoveFinderThreadState)lp;
+  MoveFinderThread           &moveFinder = getMoveFinder(player);
   try {
     switch(newState) {
-    case MOVEFINDER_BUSY:
+    case MFTS_BUSY:
       startComputerTimeTimer();
       break;
-    case MOVEFINDER_MOVEREADY:
+    case MFTS_MOVEREADY:
       { stopComputerTimeTimer();
-        const ExecutableMove move = moveFinder.getMove();
+        const SearchMoveResult result = moveFinder.getSearchResult();
+        const PrintableMove   move(getCurrentGame(),result.m_move);
         switch(getDialogMode()) {
         case PLAYMODE:
-          if(moveFinder.isHint()) {
+          if(result.isHint()) {
             showHintMessageBox(move);
           } else {
             executeMove(move);
@@ -912,7 +910,7 @@ LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
 
         case ANALYZEMODE:
           enableStartThinking();
-          showHintMessageBox(moveFinder.getMove());
+          showHintMessageBox(move);
           break;
         case KNIGHTROUTEMODE:
           break;
@@ -922,10 +920,10 @@ LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
         }
       }
       break;
-    case MOVEFINDER_IDLE:
+    case MFTS_IDLE:
       stopComputerTimeTimer(); // interrupted by user
       break;
-    case MOVEFINDER_ERROR:
+    case MFTS_ERROR:
       stopComputerTimeTimer();
       errorMessage(_T("%s"), moveFinder.getErrorMessage().cstr());
       if(getDialogMode() == AUTOPLAYMODE) {
@@ -937,7 +935,7 @@ LRESULT CChessDlg::OnMsgMoveFinderStateChanged(WPARAM wp, LPARAM lp) {
     errorMessage(e);
   }
 
-  if(newState == MOVEFINDER_BUSY) {
+  if(newState == MFTS_BUSY) {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_WAIT));
   } else {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
@@ -1230,7 +1228,7 @@ void CChessDlg::OnFilePlayRemote() {
     } else {
       ch.write(getCurrentGame());
     }
-    getMoveFinder(getComputerPlayer()).setRemote(ch);
+    getMoveFinder(getComputerPlayer()).setRemote(getCurrentGame(), ch);
     invalidate();
   }
 }
@@ -1314,22 +1312,22 @@ void CChessDlg::setGameResult(GameResult gameResult) {
 //    verbose(_T("Property GAMERESULT changed. old:%s, new:%s\n"), ::getGameResultToString(oldResult).cstr(), ::getGameResultToString(gameResult).cstr());
 }
 
-bool CChessDlg::notifyMove(const MoveBase &m) {
-  return notifyMove(WHITEPLAYER, m) && notifyMove(BLACKPLAYER, m);
+bool CChessDlg::notifyMove(const MoveBase &move) {
+  return notifyMove(WHITEPLAYER, move) && notifyMove(BLACKPLAYER, move);
 }
 
-bool CChessDlg::notifyMove(Player player, const MoveBase &m) {
-  return getMoveFinder(player).notifyMove(m);
+bool CChessDlg::notifyMove(Player player, const MoveBase &move) {
+  return getMoveFinder(player).notifyMove(move);
 }
 
-bool CChessDlg::notifyGameChanged(const Game &game) {
-  bool ret = notifyGameChanged(WHITEPLAYER, game) && notifyGameChanged(BLACKPLAYER, game);
+void CChessDlg::notifyGameChanged(const Game &game) {
+  notifyGameChanged(WHITEPLAYER, game);
+  notifyGameChanged(BLACKPLAYER, game);
   setGameResult(game.findGameResult());
-  return ret;
 }
 
-bool CChessDlg::notifyGameChanged(Player player, const Game &game) {
-  return getMoveFinder(player).notifyGameChanged(game);
+void CChessDlg::notifyGameChanged(Player player, const Game &game) {
+  getMoveFinder(player).notifyGameChanged(game);
 }
 
 // ------------------------------ Mousehandlers -----------------------------------------------
@@ -1452,7 +1450,7 @@ void CChessDlg::OnPromoteToKnight() { executePromotion(Knight); }
 void CChessDlg::executePromotion(PieceType promoteTo) {
   Game &game = getCurrentGame();
   const Piece *selectedPiece = m_graphics->getSelectedPiece();
-  const ExecutableMove move = game.generateMove(selectedPiece->getPosition(), m_selectedPosition, promoteTo, m_selectedAnnotation);
+  const PrintableMove move   = game.generateMove(selectedPiece->getPosition(), m_selectedPosition, promoteTo, m_selectedAnnotation);
   executeMove(move);
 }
 
@@ -1753,7 +1751,7 @@ void CChessDlg::stopThinking() {
     return;
   }
   forEachPlayer(p) {
-    getMoveFinder(p).stopThinking();
+    getMoveFinder(p).stopSearch();
   }
 }
 
@@ -1783,7 +1781,7 @@ void CChessDlg::startTimer(UINT timerId, UINT milliSeconds) {
     return;
   }
   if(SetTimer(timerId, milliSeconds, NULL)) {
-    m_timerIsRunning[timerId] = true;
+    m_timersRunning.add(timerId);
     ajourMenuItemsEnableStatus();
   } else {
     errorMessage(_T("Cannot start timer %d"), timerId);
@@ -1793,7 +1791,7 @@ void CChessDlg::startTimer(UINT timerId, UINT milliSeconds) {
 void CChessDlg::stopTimer(UINT timerId) {
   if(isTimerRunning(timerId)) {
     KillTimer(timerId);
-    m_timerIsRunning[timerId] = false;
+    m_timersRunning.remove(timerId);
     ajourMenuItemsEnableStatus();
   }
 }
@@ -1803,7 +1801,7 @@ bool CChessDlg::isTimerRunning(UINT timerId) const {
     errorMessage(_T("isTimerRunning:Invalid argument. timerId=%d. Valid interval=[%d..%d]"), timerId, 1, MAXTIMERID);
     return false;
   }
-  return m_timerIsRunning[timerId];
+  return m_timersRunning.contains(timerId);
 }
 
 // --------------------------------------------- Edit functions -------------------------------------------

@@ -235,7 +235,7 @@ void EndGameKeyDefinition5Men3EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   case 1:
     { const int wkPos = key.getWhiteKingPosition();
       for(int pos = 0; pos < 64; pos++) {
-        if(KINGSADJACENT(wkPos, pos) || key.isOccupied(pos)) continue;
+        if(POSADJACENT(wkPos, pos) || key.isOccupied(pos)) continue;
         key.setPosition(pIndex, pos);
         scanPositions(key, 2);
         key.clearField(pos);

@@ -79,7 +79,7 @@ void EndGameKeyDefinition2Pawns::scanPositions(EndGameKeyWithOccupiedPositions &
     case 1:
       { const int wkPos = key.getWhiteKingPosition();
         for(int pos = 0; pos < 64; pos++) {
-          if(KINGSADJACENT(wkPos, pos)) continue;
+          if(POSADJACENT(wkPos, pos)) continue;
           key.setPosition(1, pos);
           scanPositions(key, 2, nextScanner);
           key.clearField(pos);

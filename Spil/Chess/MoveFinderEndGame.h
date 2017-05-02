@@ -9,10 +9,14 @@ private:
   static String          s_currentDbPath;
   static TablebaseMetric s_currentMetric;
 public:
-  MoveFinderEndGame(Player player, EndGameTablebase *tablebase);
+  MoveFinderEndGame(Player player, MFTRQueue &msgQueue, EndGameTablebase *tablebase);
   ~MoveFinderEndGame();
 
-  ExecutableMove findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint); // timeout millisceonds
+  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void stopSearch() {
+  }
+  void moveNow() {
+  }
 
   String getName() const;
   EngineType getEngineType()  const {

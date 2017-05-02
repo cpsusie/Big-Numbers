@@ -265,7 +265,7 @@ static const int kingSearchMiddle[64] = {
 };
 
 int PlayerState::evaluateKingSeachMiddle() const {
-  return 2*kingSearchMiddle[m_king->m_position] + Game::getKingDistance(m_king->m_position,m_king->m_enemyState.m_king->m_position);
+  return 2*kingSearchMiddle[m_king->m_position] + Game::getWalkDistance(m_king->m_position,m_king->m_enemyState.m_king->m_position);
 }
 
 int PlayerState::noEvaluation() const {
@@ -502,7 +502,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
         throwUserException(IDS_MSG_s_CANNOT_HAVE_TWO_KINGS, getPlayerName(m_player).cstr());
       }
       const Piece *enemyKing = m_king->m_enemyState.m_king;
-      if(enemyKing && enemyKing->isOnBoard() && KINGSADJACENT(pos, enemyKing->getPosition())) {
+      if(enemyKing && enemyKing->isOnBoard() && POSADJACENT(pos, enemyKing->getPosition())) {
         throwUserException(IDS_MSG_KINGS_ATTACK_EACHOTHER);
       }
     }
@@ -632,7 +632,7 @@ bool PlayerState::setKingAttackStateBackMove() {
 bool PlayerState::hasOpposition() const {
   const int kingPos1 = m_king->m_position;
   const int kingPos2 = m_king->m_enemyState.m_king->m_position;
-  return Game::getKingDistance(kingPos1,kingPos2) == 2
+  return Game::getWalkDistance(kingPos1,kingPos2) == 2
       && (GETROW(kingPos1) == GETROW(kingPos2) || GETCOL(kingPos1) == GETCOL(kingPos2));
 }
 

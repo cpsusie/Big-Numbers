@@ -58,7 +58,7 @@ bool Game::pieceAttacksAnyPosition(const Piece *piece, const FieldSet &positions
       if(m_gameKey.getEPSquare() > 0
       && positions.contains(m_gameKey.getEPSquare())
       && GETROW(piece->m_position) == GETROW(m_gameKey.getEPSquare())
-      && getKingDistance(piece->m_position,m_gameKey.getEPSquare()) == 1) {
+      && getWalkDistance(piece->m_position,m_gameKey.getEPSquare()) == 1) {
         return true;
       }
     }

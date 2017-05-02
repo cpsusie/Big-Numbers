@@ -1752,8 +1752,9 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
             const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
             for(UINT i = 0; i < allMoves.size(); i++) {
               const MoveWithResult &mr = allMoves[i];
-              const ExecutableMove em = m_workGame.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
-              verbose(_T("%-7s - %s\n"), em.toString(MOVE_SHORTFORMAT).cstr(), mr.m_result.toString(true).cstr());
+              verbose(_T("%-7s - %s\n")
+                     ,PrintableMove(m_workGame,mr).toString(MOVE_SHORTFORMAT).cstr()
+                     ,mr.m_result.toString(true).cstr());
             }
           }
           if(flags & CHECK_RETURN_ON_ERROR) {
@@ -1782,8 +1783,9 @@ bool EndGameTablebase::checkConsistency(UINT flags) {
           const MoveResultArray allMoves = getAllMoves(m_workGame.getKey());
           for(UINT i = 0; i < allMoves.size(); i++) {
             const MoveWithResult &mr = allMoves[i];
-            const ExecutableMove em = m_workGame.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
-            verbose(_T("%-7s - %s\n"), em.toString(MOVE_SHORTFORMAT).cstr(), mr.m_result.toString(true).cstr());
+            verbose(_T("%-7s - %s\n")
+                   ,PrintableMove(m_workGame, mr).toString(MOVE_SHORTFORMAT).cstr()
+                   ,mr.m_result.toString(true).cstr());
           }
         }
         if(flags & CHECK_RETURN_ON_ERROR) {

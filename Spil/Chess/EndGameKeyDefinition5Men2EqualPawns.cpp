@@ -133,7 +133,7 @@ void EndGameKeyDefinition5Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   case 1:
   case 2:
     { for(int pos = 0; pos < 64; pos++) {
-        if(((pIndex == 1) && KINGSADJACENT(key.getWhiteKingPosition(), pos)) || key.isOccupied(pos)) {
+        if(((pIndex == 1) && POSADJACENT(key.getWhiteKingPosition(), pos)) || key.isOccupied(pos)) {
           continue;
         }
         key.setPosition(pIndex, pos);

@@ -108,7 +108,7 @@ void EndGameKeyDefinition4Men2EqualPawns::scanPositions(EndGameKeyWithOccupiedPo
   case 1:
     { const int wkPos = key.getWhiteKingPosition();
       for(int pos = 0; pos < 64; pos++) {
-        if((KINGSADJACENT(wkPos, pos)) || key.isOccupied(pos)) {
+        if((POSADJACENT(wkPos, pos)) || key.isOccupied(pos)) {
           continue;
         }
         key.setPosition(pIndex, pos);

@@ -1,110 +1,449 @@
 #include "stdafx.h"
 #include "TraceDlgThread.h"
 #include "MoveFinderThread.h"
-#include "MoveFinderNormalPlay.h"
 #include "MoveFinderRandom.h"
 #include "MoveFinderEndGame.h"
 #include "MoveFinderExternEngine.h"
 #include "MoveFinderRemotePlayer.h"
 
-OpeningLibrary MoveFinderThread::s_openingLibrary;
-
-static TCHAR *getStateName(MoveFinderState state) {
-#define caseStr(s) case MOVEFINDER_##s: return _T(#s);
-  switch(state) {
-  caseStr(BUSY     )
-  caseStr(IDLE     )
-  caseStr(MOVEREADY)
-  caseStr(ERROR    )
-  caseStr(KILLED   )
-  default:return _T("??");
-  }
-#undef caseStr
-}
-
-#define STATESTR() getStateName(getState())
-
-#ifdef _DEBUG
-
-static TCHAR *getRequestName(MoveFinderRequest request) {
-#define caseStr(s) case REQUEST_##s: return _T(#s);
-  switch(request) {
-  caseStr(FINDMOVE)
-  caseStr(NULLMOVE)
-  caseStr(RESET   )
-  caseStr(KILL    )
-  default:return _T("??");
-  }
-#undef caseStr
-}
-
-#define DEBUGMSG(msg) { verbose(_T("MoveFinderThread(%s):"),getPlayerNameEnglish(m_player)); verbose msg; }
-#else
-#define DEBUGMSG(msg)
+#ifdef ENTERFUNC
+#undef ENTERFUNC
+#endif
+#ifdef LEAVEFUNC
+#undef LEAVEFUNC
 #endif
 
-MoveFinderThread::MoveFinderThread(Player player) : m_player(player), m_notBusy(0) {
-  setDeamon(true);
-  m_state                = MOVEFINDER_IDLE;
-  m_hint                 = false;
-  m_moveFinder           = NULL;
+#define STATESTR()  getStateName(getState())
+#define PLAYERSTR() ((m_player==WHITEPLAYER)?_T("W"):_T("B"))
+
+#define _PRINT_DEBUGMSG
+#define _DEBUG_CHECKSTATE
+#define _TRACE_ENTERLEAVE
+
+#ifdef _PRINT_DEBUGMSG
+#define DEBUGMSG(...) debugMsg(__VA_ARGS__)
+#else
+#define DEBUGMSG(...)
+#endif
+
+#ifdef _DEBUG_CHECKSTATE
+#define CHECKSTATE(s1,...) checkState(__TFUNCTION__, __LINE__, s1, __VA_ARGS__ ,-1)
+#else 
+#define CHECKSTATE(s1,...)
+#endif // _DEBUG_CHECKSTATES
+
+#ifdef _TRACE_ENTERLEAVE
+
+#define ENTERFUNCPARAM(...) {                    \
+  debugMsg(_T("Enter %s(%s)"), __TFUNCTION__     \
+          ,format(__VA_ARGS__).cstr());          \
+  m_callLevel+= 2;                               \
 }
 
+#define ENTERFUNC() ENTERFUNCPARAM(_T(""))
+
+#define LEAVEFUNC() {                            \
+  m_callLevel-= 2;                               \
+  debugMsg(_T("Leave %s"),__TFUNCTION__);        \
+}
+
+#else
+
+#define ENTERFUNCPARAM(...)
+#define ENTERFUNC()
+#define LEAVEFUNC()
+
+#endif // _TRACE_ENTERLEAVE
+
+OpeningLibrary MoveFinderThread::s_openingLibrary;
+
+// public
+MoveFinderThread::MoveFinderThread(Player player) : m_player(player) {
+  setDeamon(true);
+  m_state      = MFTS_IDLE;
+  m_callLevel  = 0;
+  m_moveFinder = NULL;
+}
+
+// public
 MoveFinderThread::~MoveFinderThread() {
-  resetMoveFinder();
+  ENTERFUNC();
+  putRequest(REQUEST_RESET);
   putRequest(REQUEST_KILL);
   while(stillActive()) {
     Sleep(20);
   }
+  LEAVEFUNC();
 }
 
+// public
 void MoveFinderThread::resetMoveFinder() {
-  stopThinking();
+  ENTERFUNC();
   putRequest(REQUEST_RESET);
+  LEAVEFUNC();
 }
 
+// public
 void MoveFinderThread::startThinking(const Game &game, const TimeLimit &timeLimit, bool hint) {
+  ENTERFUNC();
   const bool talking = getOptions().getTraceWindowVisible();
   if(talking) {
     clearVerbose();
   }
-
-  DEBUGMSG((_T("enter startThinking. State:%s\n"), STATESTR()))
-
   const GameResult gr = game.findGameResult();
   if(isBusy()) {
-    verbose(_T("startThinking called while already busy\n"));
+    DEBUGMSG(_T("StartThinking called while already busy"));
+    putRequest(REQUEST_RESET);
   } else if(gr != NORESULT) {
     putRequest(REQUEST_NULLMOVE);
   } else {
-    m_game                 = game;
-    m_timeLimit            = timeLimit;
-    m_hint                 = hint;
-    m_bestMove.setNoMove();
-    putRequest(REQUEST_FINDMOVE);
-
-    DEBUGMSG((_T("leave startThinking(). State:%s\n"), STATESTR()))
+    m_gate.wait();
+    m_searchResult.m_move.setNoMove();
+    putRequest(MoveFinderThreadRequest(game, timeLimit, hint));
+    m_gate.signal();
   }
+  LEAVEFUNC();
 }
 
-void MoveFinderThread::stopThinking(bool stopImmediately) {
-  if(isBusy()) {
-    DEBUGMSG((_T("enter stopThinking(Immediately=%s). State:%s\n"), boolToStr(stopImmediately), STATESTR()))
-    if(m_moveFinder) {
-      m_moveFinder->stopThinking(stopImmediately);
-    }
-    while(isBusy()) {
-      DEBUGMSG((_T("wait until not busy. State=%s\n"), STATESTR()))
-      m_notBusy.wait();
-    }
-    DEBUGMSG((_T("leave stopThinking. State:%s\n"), STATESTR()))
+// public
+void MoveFinderThread::stopSearch() {
+  ENTERFUNC();
+  m_gate.wait();
+  if(getState() == MFTS_BUSY) {
+    setState(MFTS_STOPPENDING);
+    putRequest(REQUEST_STOPSEARCH);
   }
+  m_gate.signal();
+  LEAVEFUNC();
 }
 
+// public
 void MoveFinderThread::moveNow() {
-  stopThinking(false);
+  ENTERFUNC();
+  m_gate.wait();
+  if(getState() == MFTS_BUSY) {
+    putRequest(REQUEST_MOVENOW);
+  }
+  m_gate.signal();
+  LEAVEFUNC();
 }
 
+// public
+SearchMoveResult MoveFinderThread::getSearchResult() const {
+  ENTERFUNC();
+  CHECKSTATE(MFTS_MOVEREADY);
+  LEAVEFUNC();
+  return m_searchResult;
+}
+
+// public
+void MoveFinderThread::notifyGameChanged(const Game &game) {
+  ENTERFUNC();
+  putRequest(MoveFinderThreadRequest(game));
+  LEAVEFUNC();
+}
+
+// public
+bool MoveFinderThread::notifyMove(const MoveBase &move) {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE,MFTS_MOVEREADY);
+  bool result;
+  try {
+    if(m_moveFinder) {
+      m_moveFinder->notifyMove(move);
+    }
+    setState(MFTS_IDLE);
+    result = true;
+  } catch(TcpException e) {
+    handleTcpException(e);
+    result = false;
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+  return result;
+}
+
+// public
+bool MoveFinderThread::acceptUndoMove() {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE,MFTS_PREPARESEARCH,MFTS_BUSY,MFTS_MOVEREADY);
+  bool result;
+  try {
+    result = m_moveFinder ? m_moveFinder->acceptUndoMove() : true;
+  } catch(TcpException e) {
+    handleTcpException(e);
+    result = false;
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+  return result;
+}
+
+// Only called from outside
+void MoveFinderThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
+  ENTERFUNC();
+  if(id == TRACEWINDOW_ACTIVE) {
+    m_gate.wait();
+    if(m_moveFinder != NULL) {
+      const bool verbose = *(const bool*)newValue;
+      m_moveFinder->setVerbose(verbose);
+    }
+    m_gate.signal();
+  }
+  LEAVEFUNC();
+}
+
+// mainloop
+UINT MoveFinderThread::run() {
+  ENTERFUNC();
+  setSelectedLanguageForThread();
+
+  while(getState() != MFTS_KILLED) {
+    DEBUGMSG(_T("Waiting for request"));
+
+    const MoveFinderThreadRequest request = m_inputQueue.get();
+
+    DEBUGMSG(_T("Got request %s"), request.toString().cstr());
+
+    switch(request.getType()) {
+    case REQUEST_FINDMOVE  :
+      try {
+        handleFindMoveRequest(request.getFindMoveParam());
+      } catch(TcpException e) {
+        m_errorMessage = e.what();
+        setState(MFTS_ERROR);
+        disconnect();
+      } catch(Exception e) {
+        m_errorMessage = e.what();
+        setState(MFTS_ERROR);
+        putRequest(REQUEST_RESET);
+      } catch(CSimpleException *e) {
+        TCHAR msg[1024];
+        e->GetErrorMessage(msg, sizeof(msg));
+        e->Delete();
+        m_errorMessage = msg;
+        setState(MFTS_ERROR);
+        putRequest(REQUEST_RESET);
+      } catch(...) {
+        m_errorMessage = format(_T("Unknown Exception (State=%s)"), STATESTR());
+        setState(MFTS_ERROR);
+        putRequest(REQUEST_RESET);
+      }
+      break;
+
+    case REQUEST_NULLMOVE  :
+      handleNullMoveRequest();
+      break;
+
+    case REQUEST_STOPSEARCH:
+      handleStopSearchRequest();
+      break;
+
+    case REQUEST_MOVENOW   :
+      handleMoveNowRequest();
+      break;
+
+    case REQUEST_FETCHMOVE :
+      handleFetchMoveRequest(request.getSearchResult());
+      break;
+
+    case REQUEST_GAMECHANGED:
+      handleGameChangedRequest(request.getGameChangedParam().getGame());
+      break;
+
+    case REQUEST_RESET     :
+      handleResetRequest();
+      break;
+
+    case REQUEST_DISCONNECT:
+      handleDisconnectRequest();
+      break;
+
+    case REQUEST_KILL      :
+      handleKillRequest();
+      break;
+
+    default                :
+      DEBUGMSG(_T("Invalid request:%s"), request.toString().cstr());
+      break;
+    }
+  }
+  LEAVEFUNC();
+  return 0;
+}
+
+// private
+void MoveFinderThread::handleFindMoveRequest(FindMoveRequestParam param) {
+  ENTERFUNC();
+
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE);
+  setState(MFTS_PREPARESEARCH);
+  m_gate.signal();
+
+  const bool talking = getOptions().getTraceWindowVisible();
+
+  if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {
+    const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), talking);
+    if(libMove.isMove()) {
+      setMoveFinder(NULL);
+      setState(MFTS_BUSY);
+      putRequest(MoveFinderThreadRequest(libMove, param.isHint()));
+      LEAVEFUNC();
+      return;
+    }
+  }
+
+  if(isNewMoveFinderNeeded(param)) {
+    allocateMoveFinder(param);
+  }
+
+  m_gate.wait();
+  if(m_moveFinder != NULL) {
+    if(getState() == MFTS_PREPARESEARCH) {
+      setState(MFTS_BUSY);
+      m_moveFinder->findBestMove(param, talking);
+    } else {
+      // do nothing!! User has pressed undo, so state is idle
+    }
+  } else {
+    setState(MFTS_IDLE);
+    m_gate.signal();
+    LEAVEFUNC();
+    throwException(_T("No moveFinder allocated"));
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleNullMoveRequest() {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE);
+  m_searchResult.clear();
+  setState(MFTS_MOVEREADY);
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleStopSearchRequest() {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_STOPPENDING);
+  if(m_moveFinder) {
+    m_moveFinder->stopSearch();
+  }
+  setState(MFTS_IDLE);
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleMoveNowRequest() {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE, MFTS_BUSY);
+  if((getState() == MFTS_BUSY) && m_moveFinder) {
+    m_moveFinder->moveNow();
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleFetchMoveRequest(const SearchMoveResult &searchResult) {
+  ENTERFUNC();
+  m_gate.wait();
+  switch(getState()) {
+  case MFTS_IDLE       :
+    break;
+  case MFTS_STOPPENDING:
+    setState(MFTS_IDLE);
+    break;
+  case MFTS_BUSY       :
+    m_searchResult = searchResult;
+    setState(m_searchResult.isMove() ? MFTS_MOVEREADY : MFTS_IDLE);
+    break;
+  default              :
+    CHECKSTATE(MFTS_IDLE, MFTS_BUSY, MFTS_STOPPENDING);
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleGameChangedRequest(const Game &game) {
+  ENTERFUNC();
+  CHECKSTATE(MFTS_IDLE,MFTS_PREPARESEARCH,MFTS_BUSY,MFTS_STOPPENDING,MFTS_MOVEREADY);
+  if(isBusy()) {
+    stopSearch();
+    DEBUGMSG(_T("While(isBusy())"));
+    for(int count = 0; isBusy() && count < 10; count++) {
+      Sleep(100);
+    }
+    DEBUGMSG(_T("End while"));
+    if(isBusy()) {
+      DEBUGMSG(_T("Still busy. putRequest(REQUEST_RESET)"));
+      putRequest(REQUEST_RESET);
+      LEAVEFUNC();
+      return;
+    }
+  }
+
+  m_gate.wait();
+
+  try {
+    if(m_moveFinder) {
+      m_moveFinder->notifyGameChanged(game);
+    }
+    setState(MFTS_IDLE);
+  } catch(TcpException e) {
+    handleTcpException(e);
+  }
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleResetRequest() {
+  ENTERFUNC();
+  setMoveFinder(NULL);
+  setState(MFTS_IDLE);
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleDisconnectRequest() {
+  ENTERFUNC();
+  setRemote(Game(), SocketChannel());
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleKillRequest() {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE);
+  setState(MFTS_KILLED);
+  m_gate.signal();
+  LEAVEFUNC();
+}
+
+// private
+void MoveFinderThread::handleTcpException(const TcpException &e) {
+  ENTERFUNC();
+  m_errorMessage = e.what();
+  disconnect();
+  setState(MFTS_ERROR);
+  putRequest(REQUEST_RESET);
+  LEAVEFUNC();
+}
+
+// private
 const OpeningLibrary &MoveFinderThread::getOpeningLibrary() { // static
   if(!s_openingLibrary.isLoaded()) {
     s_openingLibrary.load(IDR_OPENINGLIBRARY);
@@ -112,84 +451,8 @@ const OpeningLibrary &MoveFinderThread::getOpeningLibrary() { // static
   return s_openingLibrary;
 }
 
-UINT MoveFinderThread::run() {
-  setSelectedLanguageForThread();
-
-  while(getState() != MOVEFINDER_KILLED) {
-    DEBUGMSG((_T("waiting for request. State:%s\n"), STATESTR()))
-
-    const MoveFinderRequest request = m_inputQueue.get();
-
-    DEBUGMSG((_T("got request %s\n"), getRequestName(request)))
-
-    setState(MOVEFINDER_BUSY);
-
-    switch(request) {
-    case REQUEST_FINDMOVE:
-      try {
-        m_bestMove = findMove();
-        setState((m_moveFinder && (m_moveFinder->getStopCode() & STOP_IMMEDIATELY)) ? MOVEFINDER_IDLE : MOVEFINDER_MOVEREADY);
-      } catch(TcpException e) {
-        m_errorMessage = e.what();
-        disconnect();
-        setState(MOVEFINDER_ERROR);
-      } catch(Exception e) {
-        m_errorMessage = e.what();
-        setState(MOVEFINDER_ERROR);
-      } catch(CSimpleException *e) {
-        TCHAR msg[1024];
-        e->GetErrorMessage(msg, sizeof(msg));
-        e->Delete();
-        m_errorMessage = msg;
-        setState(MOVEFINDER_ERROR);
-      } catch(...) {
-        m_errorMessage = format(_T("Unknown Exception. State=%s"), STATESTR());
-        setState(MOVEFINDER_ERROR);
-      }
-      break;
-
-    case REQUEST_NULLMOVE:
-      m_bestMove.setNoMove();
-      setState(MOVEFINDER_MOVEREADY);
-      break;
-
-    case REQUEST_RESET:
-      setMoveFinder(NULL);
-      setState(MOVEFINDER_IDLE);
-      break;
-
-    case REQUEST_KILL:
-      DEBUGMSG((_T("killed\n"), getPlayerNameEnglish(m_player)))
-      setState(MOVEFINDER_KILLED);
-      break;
-    }
-  }
-  return 0;
-}
-
-ExecutableMove MoveFinderThread::findMove() {
-  const bool talking = getOptions().getTraceWindowVisible();
-
-  if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {
-    const ExecutableMove libMove = getOpeningLibrary().findLibraryMove(m_game, talking);
-    if(libMove.isMove()) {
-      setMoveFinder(NULL);
-      return libMove;
-    }
-  }
-
-  if(newMoveFinderNeeded()) {
-    allocateMoveFinder();
-  }
-  if(m_moveFinder != NULL) {
-    return m_moveFinder->findBestMove(m_game, m_timeLimit, talking, m_hint);
-  } else {
-    throwException(_T("No moveFinder allocated"));
-  }
-  return ExecutableMove();
-}
-
-bool MoveFinderThread::newMoveFinderNeeded() const {
+// private
+bool MoveFinderThread::isNewMoveFinderNeeded(const FindMoveRequestParam &param) const {
   if(m_moveFinder == NULL) {
     return true;
   }
@@ -197,18 +460,18 @@ bool MoveFinderThread::newMoveFinderNeeded() const {
     return !m_moveFinder->isRemote();
   }
 
-  const PositionType gamePositionType = m_game.getPositionType();
+  const PositionType gamePositionType = param.getGame().getPositionType();
   switch(gamePositionType) {
   case NORMAL_POSITION      :
-    return !isRightNormalPlayMoveFinder();
+    return !isRightNormalPlayMoveFinder(param);
 
   case DRAW_POSITION     :
     return m_moveFinder->getPositionType() != NORMAL_POSITION;
 
   case TABLEBASE_POSITION    :
-    { EndGameTablebase *tablebase = findMatchingTablebase();
+    { EndGameTablebase *tablebase = findMatchingTablebase(param.getGame());
       if(tablebase == NULL) {
-        return !isRightNormalPlayMoveFinder();
+        return !isRightNormalPlayMoveFinder(param);
       } else {
         return !isRightTablebaseMoveFinder(tablebase);
       }
@@ -221,13 +484,14 @@ bool MoveFinderThread::newMoveFinderNeeded() const {
   }
 }
 
-bool MoveFinderThread::isRightNormalPlayMoveFinder() const {
+// private
+bool MoveFinderThread::isRightNormalPlayMoveFinder(const FindMoveRequestParam &param) const {
   if(m_moveFinder->getPositionType() != NORMAL_POSITION) {
     return false;
   }
 
 #ifndef TABLEBASE_BUILDER
-  if(m_timeLimit.m_timeout == 0) {
+  if(param.getTimeLimit().m_timeout == 0) {
     return m_moveFinder->getEngineType() == RANDOM_ENGINE;
   }
 
@@ -237,6 +501,7 @@ bool MoveFinderThread::isRightNormalPlayMoveFinder() const {
 #endif
 }
 
+// private
 bool MoveFinderThread::isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const {
   if(m_moveFinder->getPositionType() != TABLEBASE_POSITION) {
     return false;
@@ -245,178 +510,162 @@ bool MoveFinderThread::isRightTablebaseMoveFinder(EndGameTablebase *tablebase) c
   return ((MoveFinderEndGame*)m_moveFinder)->getPositionSignature().match(tablebase->getKeyDefinition().getPositionSignature(), swapPlayers);
 }
 
-EndGameTablebase *MoveFinderThread::findMatchingTablebase() const {
+// private
+EndGameTablebase *MoveFinderThread::findMatchingTablebase(const Game &g) const {
   if(!getOptions().isEndGameTablebaseEnabled()) {
     return NULL;
   }
   bool swapPlayers;
-  EndGameTablebase *db = EndGameTablebase::getInstanceBySignature(m_game.getPositionSignature(), swapPlayers);
+  EndGameTablebase *db = EndGameTablebase::getInstanceBySignature(g.getPositionSignature(), swapPlayers);
   return (db && (db->exist(DECOMPRESSEDTABLEBASE) || db->exist(COMPRESSEDTABLEBASE))) ? db : NULL;
 }
 
-void MoveFinderThread::allocateMoveFinder() {
+// private
+void MoveFinderThread::allocateMoveFinder(const FindMoveRequestParam &param) {
   if(isRemote()) {
-    setMoveFinder(new MoveFinderRemotePlayer(getPlayer(), m_channel));
+    setMoveFinder(new MoveFinderRemotePlayer(getPlayer(), m_inputQueue, m_channel));
     return;
   }
-  switch(m_game.getPositionType()) {
+  switch(param.getGame().getPositionType()) {
   case NORMAL_POSITION  :
   case DRAW_POSITION    :
-    setMoveFinder(newMoveFinderNormalPlay());
+    setMoveFinder(newMoveFinderNormalPlay(param));
     break;
 
   case TABLEBASE_POSITION:
-    { EndGameTablebase *tablebase = findMatchingTablebase();
+    { EndGameTablebase *tablebase = findMatchingTablebase(param.getGame());
       if(tablebase == NULL) {
-        setMoveFinder(newMoveFinderNormalPlay());
+        setMoveFinder(newMoveFinderNormalPlay(param));
       } else {
-        setMoveFinder(new MoveFinderEndGame(getPlayer(), tablebase));
+        setMoveFinder(new MoveFinderEndGame(getPlayer(), m_inputQueue, tablebase));
       }
     }
     break;
   }
 }
 
-AbstractMoveFinder *MoveFinderThread::newMoveFinderNormalPlay() {
+// private
+AbstractMoveFinder *MoveFinderThread::newMoveFinderNormalPlay(const FindMoveRequestParam &param) {
 #ifndef TABLEBASE_BUILDER
-  if(m_timeLimit.m_timeout == 0) {
-    return new MoveFinderRandomPlay(getPlayer());
+  if(param.getTimeLimit().m_timeout == 0) {
+    return new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
   } else {
-    return new MoveFinderExternEngine(getPlayer());
+    return new MoveFinderExternEngine(getPlayer(), m_inputQueue);
   }
 #else
-    return new MoveFinderRandomPlay(getPlayer());
+    return new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
 #endif
 }
 
-ExecutableMove MoveFinderThread::getMove() const {
-  if(getState() != MOVEFINDER_MOVEREADY) {
-    throwException(_T("No move ready. State=%s"), STATESTR());
+class StateStringifier : public AbstractStringifier<UINT> {
+public:
+  String toString(const UINT &state) {
+    return MoveFinderThread::getStateName((MoveFinderThreadState)state);
   }
-  return m_bestMove;
-}
+};
 
-void MoveFinderThread::handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue) {
-  if(id == TRACEWINDOW_ACTIVE) {
-    m_gate.wait();
-    if(m_moveFinder != NULL) {
-      const bool verbose = *(const bool*)newValue;
-      m_moveFinder->setVerbose(verbose);
-    }
-    m_gate.signal();
+class StateSet : public BitSet32 {
+public:
+  String toString() const {
+    return BitSet32::toString(&StateStringifier());
   }
-}
+};
 
-PositionType MoveFinderThread::getPositionType() const {
-  return m_moveFinder ? m_moveFinder->getPositionType() : m_game.getPositionType();
-}
-
-bool MoveFinderThread::notifyGameChanged(const Game &game) {
-  try {
-    if(m_moveFinder) {
-      m_moveFinder->notifyGameChanged(game);
-    }
-    return true;
-  } catch(TcpException e) {
-    handleTcpException(e);
-    return false;
+// private
+void MoveFinderThread::checkState(const TCHAR *method, int line, MoveFinderThreadState s1,...) const {
+  StateSet expectedStates;
+  va_list argptr;
+  va_start(argptr,s1);
+  expectedStates.add(s1);
+  MoveFinderThreadState s;
+  while((int)(s = va_arg(argptr,MoveFinderThreadState)) >= 0) {
+    expectedStates.add(s);
   }
-}
-
-bool MoveFinderThread::notifyMove(const MoveBase &move) {
-  try {
-    if(m_moveFinder) {
-      m_moveFinder->notifyMove(move);
-    }
-    return true;
-  } catch(TcpException e) {
-    handleTcpException(e);
-    return false;
+  if (!expectedStates.contains(m_state)) {
+    const String errMsg = format(_T("Invalid state in %s(%s) line %d. m_state=%s. Expected={%s}")
+                                ,method, getPlayerNameEnglish(getPlayer()), line
+                                ,getStateName(m_state)
+                                ,expectedStates.toString().cstr()
+                                );
+    verbose(_T("%s\n"), errMsg.cstr());
+    throwException(errMsg);
   }
 }
 
-bool MoveFinderThread::acceptUndoMove() {
-  try {
-    return m_moveFinder ? m_moveFinder->acceptUndoMove() : true;
-  } catch(TcpException e) {
-    handleTcpException(e);
-    return false;
-  }
-}
-
-void MoveFinderThread::handleTcpException(const TcpException &e) {
-  m_errorMessage = e.what();
-  disconnect();
-  setState(MOVEFINDER_ERROR);
-}
-
+// public
 String MoveFinderThread::getName() const {
-  if(m_moveFinder) {
-    return m_moveFinder->getName();
-  } else {
-    return _T("none");
-  }
+  m_gate.wait();
+  const String result = m_moveFinder ? m_moveFinder->getName() : _T("None");
+  m_gate.signal();
+  return result;
 }
 
-void MoveFinderThread::setState(MoveFinderState newState) {
+//private
+void MoveFinderThread::setState(MoveFinderThreadState newState) {
   if(newState != m_state) {
-    m_gate.wait();
-    DEBUGMSG((_T("state %s -> %s\n"), getStateName(m_state), getStateName(newState)));
-    setProperty(MOVEFINDER_STATE, m_state, newState);
-    m_gate.signal();
-
-    if(newState != MOVEFINDER_BUSY) {
-      m_notBusy.signal();
-    }
+    DEBUGMSG(_T("Stateshift:%s->%s"), STATESTR(), getStateName(newState));
+    setProperty(MFTP_STATE, m_state, newState);
   }
 }
 
+// private
 void MoveFinderThread::setMoveFinder(AbstractMoveFinder *moveFinder) {
+  ENTERFUNC();
+  m_gate.wait();
   if(moveFinder != m_moveFinder) {
-    m_gate.wait();
+
+    DEBUGMSG(_T("Change movefinder(%s->%s)")
+            ,m_moveFinder?m_moveFinder->getName().cstr():_T("NULL")
+            ,moveFinder  ?  moveFinder->getName().cstr():_T("NULL"));
 
     const AbstractMoveFinder *old = m_moveFinder;
-    setProperty(MOVEFINDER_ENGINE, m_moveFinder, moveFinder);
+    setProperty(MFTP_MOVEFINDER, m_moveFinder, moveFinder);
 
     if(old != NULL) {
       delete old;
     }
-    m_gate.signal();
   }
+  m_gate.signal();
+  LEAVEFUNC();
 }
 
-void MoveFinderThread::setRemote(const SocketChannel &channel) {
+// public
+void MoveFinderThread::setRemote(const Game &game, const SocketChannel &channel) {
+  ENTERFUNC();
+  m_gate.wait();
+  CHECKSTATE(MFTS_IDLE);
+
   const bool oldRemote = isRemote();
   m_channel = channel;
   const bool newRemote = isRemote();
   if(newRemote != oldRemote) {
-    m_gate.wait();
 
-    notifyPropertyChanged(MOVEFINDER_REMOTE, &oldRemote, &newRemote);
+    notifyPropertyChanged(MFTP_REMOTE, &oldRemote, &newRemote);
 
-    m_gate.signal();
-
-    if(newMoveFinderNeeded()) {
-      allocateMoveFinder();
+    FindMoveRequestParam param(game, TimeLimit(), false);
+    if(isNewMoveFinderNeeded(param)) {
+      allocateMoveFinder(param);
     }
   }
+  m_gate.signal();
+  LEAVEFUNC();
 }
 
+// public
 void MoveFinderThread::disconnect() {
-  setRemote(SocketChannel());
+  ENTERFUNC();
+  putRequest(REQUEST_DISCONNECT);
+  LEAVEFUNC();
 }
 
+// public
 void MoveFinderThread::printState(Player computerPlayer, bool detailed) {
   String result;
   m_gate.wait();
   result = format(_T("MoveFinderThread\n"
-                     "   state           : %s\n"
-                     "   Timeout         : %s\n"
-                     "   Hint            : %s\n"
+                     "   State           : %s\n"
                      "   Remote          : %s\n")
                  ,STATESTR()
-                 ,m_timeLimit.toString().cstr()
-                 ,boolToStr(m_hint)
                  ,boolToStr(isRemote())
                  );
   if(m_moveFinder) {
@@ -428,4 +677,34 @@ void MoveFinderThread::printState(Player computerPlayer, bool detailed) {
 
   m_gate.signal();
   verbose(_T("%s\n"), result.cstr());
+}
+
+// public
+const TCHAR *MoveFinderThread::getStateName(MoveFinderThreadState state) { // static 
+#define caseStr(s) case MFTS_##s: return _T(#s);
+  switch(state) {
+  caseStr(IDLE         )
+  caseStr(PREPARESEARCH)
+  caseStr(BUSY         )
+  caseStr(STOPPENDING  )
+  caseStr(MOVEREADY    )
+  caseStr(ERROR        )
+  caseStr(KILLED       )
+  default:return _T("??");
+  }
+#undef caseStr
+}
+
+// private
+void MoveFinderThread::debugMsg(const TCHAR *format, ...) const {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format,argptr);
+  va_end(argptr);
+  verbose(_T("%s:%*.*s%s (state=%s)\n")
+         ,PLAYERSTR()
+         ,m_callLevel,m_callLevel, EMPTYSTRING
+         ,msg.cstr()
+         ,STATESTR()
+         );
 }

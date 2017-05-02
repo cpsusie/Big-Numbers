@@ -11,221 +11,210 @@
 #undef LEAVEFUNC
 #endif
 
-#ifdef _DEBUG
-#define DEBUGMSG(msg)                                 \
-  verbose(_T("%*.*s%s\n")                             \
-         ,m_callLevel, m_callLevel, EMPTYSTRING       \
-         ,msg);
+#define _PRINT_DEBUGMSG
+#define _TRACE_ENTERLEAVE
 
-#define ENTERFUNC     {                               \
-  verbose(_T("%*.*sEnter %s\n")                       \
-         ,m_callLevel, m_callLevel, EMPTYSTRING       \
-         ,__TFUNCTION__);                             \
-  m_callLevel+= 2;                                    \
+#define PLAYERSTR() ((m_player==WHITEPLAYER)?_T("W"):_T("B"))
+
+#ifdef _PRINT_DEBUGMSG
+#define DEBUGMSG(...) debugMsg(__VA_ARGS__)
+#else
+#define DEBUGMSG(...)
+#endif // _DEBUG
+
+#ifdef _TRACE_ENTERLEAVE
+
+#define ENTERFUNCPARAM(...) {                    \
+  debugMsg(_T("Enter %s(%s)"),__TFUNCTION__      \
+          ,format(__VA_ARGS__).cstr());          \
+  m_callLevel += 2;                              \
 }
 
-#define ENTERFUNCPARAM(str) {                         \
-  verbose(_T("%*.*sEnter %s(%s)\n")                   \
-         ,m_callLevel, m_callLevel, EMPTYSTRING       \
-         ,__TFUNCTION__,str.cstr());                  \
-  m_callLevel+= 2;                                    \
-}
+#define ENTERFUNC() ENTERFUNCPARAM(_T(""))
 
-#define LEAVEFUNC     {                               \
-  m_callLevel-= 2;                                    \
-  verbose(_T("%*.*sLeave %s %s\n")                    \
-         ,m_callLevel, m_callLevel,EMPTYSTRING        \
-         ,__TFUNCTION__                               \
-         ,flagsToString().cstr()                      \
-         );                                           \
+#define LEAVEFUNC() {                            \
+  m_callLevel -=  2;                             \
+  debugMsg(_T("Leave %s"),__TFUNCTION__);        \
 }
 
 #else
-#define DEBUGMSG(msg)
-#define ENTERFUNC
-#define ENTERFUNCPARAM(str)
-#define LEAVEFUNC
-#endif
+#define ENTERFUNCPARAM(...)
+#define ENTERFUNC()
+#define LEAVEFUNC()
+#endif // _TRACE_ENTERLEAVE
 
 #define INTERRUPTLINE _T("#interrupt#")
 
-ExternEngine::ExternEngine(const String &path) : m_desc(path) {
-  m_inputThread       = NULL;
-  m_tmpGame           = NULL;
-  m_callLevel         = 0;
+// public
+ExternEngine::ExternEngine(Player player, const String &path)
+: m_player(player)
+, m_desc(path)
+, m_inputThread(NULL)
+, m_msgQueue(NULL)
+, m_stateFlags(0)
+, m_callLevel(0)
+{
+  ENTERFUNC();
   clrAllStateFlags();
+  LEAVEFUNC();
 }
 
+// public
 ExternEngine::~ExternEngine() {
-  ENTERFUNC;
+  ENTERFUNC();
   quit();
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
-void ExternEngine::start() {
-  ENTERFUNC;
+class RedirectingInputThread : public InputThread {
+protected:
+  // the only purpose with this is to redirect verbose-messages to ::verbose
+  void vverbose(const TCHAR *format, va_list argptr) {
+    ::verbose(_T("%s.\n"), vformat(format, argptr).cstr());
+  }
+public:
+  RedirectingInputThread(FILE *input) : InputThread(input) {
+  }
+  String getLine(int timeoutInMilliseconds = INFINITE) {
+    return InputThread::getLine(timeoutInMilliseconds).trim();
+  }
+};
+
+
+// public
+void ExternEngine::start(MFTRQueue *msgQueue) {
+  ENTERFUNC();
   __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
-  m_inputThread = new ExternInputThread(getInput());
+  m_msgQueue    = msgQueue;
+  m_inputThread = new RedirectingInputThread(getInput());
   sendUCI();
-  m_tmpGame = new Game;
-  LEAVEFUNC;
+  if(m_msgQueue) {
+    resume();
+  }
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::quit() {
-  ENTERFUNC;
+  ENTERFUNC();
   stopSearch();
   if(isStarted()) {
     send(_T("quit\n"));
   }
   cleanup();
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
 void ExternEngine::killProcess() {
-  ENTERFUNC;
+  ENTERFUNC();
   cleanup();
   __super::killProcess();
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
 void ExternEngine::cleanup() {
-  ENTERFUNC;
-  deleteInputThread();
-  if(m_tmpGame != NULL) {
-    delete m_tmpGame;
-    m_tmpGame = NULL;
-    DEBUGMSG(_T("tmpGame deleted"));
+  ENTERFUNC();
+  if(isThreadRunning()) {
+    setStateFlags(EXE_KILLED);
+    putInterruptLine();
+    while(isThreadRunning()) Sleep(100);
   }
+  deleteInputThread();
   m_optionArray.clear();
   clrAllStateFlags();
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
 void ExternEngine::deleteInputThread() {
-  ENTERFUNC;
-  if(m_inputThread == NULL) {
-    DEBUGMSG(_T("inputThread already null"));
-    goto Return;
-  }
-  if(isBusy()) {
-    DEBUGMSG(_T("putMessage(INTERRUPTLINE)"));
-    m_inputThread->putMessage(INTERRUPTLINE);
-  }
-  for(int j = 0; j < 2; j++) {
-    for(int i = 0; i < 10; i++) {
-      if(!m_inputThread->stillActive()) {
-        break;
-      }
-      Sleep(20);
-    }
-    if(m_inputThread->stillActive()) {
-      __super::killProcess();
-    }
-  }
-  if(!m_inputThread->stillActive()) {
-    DEBUGMSG(_T("trying to delete m_inputThread"));
-    delete m_inputThread;
-    DEBUGMSG(_T("m_inputThread deleted"));
+  ENTERFUNC();
+  if(!hasInput()) {
+    DEBUGMSG(_T("InputThread already null"));
   } else {
-    verbose(_T("cannot kill inputthread\n"));
-  }
-  m_inputThread = NULL;
-  DEBUGMSG(_T("m_inputThread set to NULL"));
-Return:
-  LEAVEFUNC;
-}
-
-void ExternEngine::moveNow() {
-  ENTERFUNC;
-  if(isReady()) {
-    send(_T("stop\n"));
-  }
-  LEAVEFUNC;
-}
-
-void ExternEngine::stopSearch() {
-  ENTERFUNC;
-  if(isReady()) {
-    send(_T("stop\n"));
-    waitUntilIdle();
-  }
-  LEAVEFUNC;
-}
-
-ExecutableMove ExternEngine::findBestMove(const Game &game, const TimeLimit &timeLimit, bool hint) {
-  ENTERFUNC;
-  ExecutableMove result;
-  if(isIdle()) {
-    *m_tmpGame = game;
-    sendPosition(game);
-    send(_T("go %s\n"), (timeLimit.m_timeout == INFINITE) ? _T("infinite") : format(_T("movetime %d"), timeLimit.m_timeout).cstr());
-    setStateFlags(EXE_BUSY);
-
-    for(;;) {
-      const String line = getLine();
-      Tokenizer tok(line, _T(" "));
-      if(tok.hasNext()) {
-        const String reply = tok.next();
-        if(reply == _T("bestmove")) {
-          clrStateFlags(EXE_BUSY);
-          result = game.generateMove(tok.next(), MOVE_UCIFORMAT);
-          break;
-        } else if(reply == INTERRUPTLINE) {
+    if(isBusy()) {
+      putInterruptLine();
+    }
+    for(int j = 0; j < 2; j++) {
+      for(int i = 0; i < 10; i++) {
+        if(!m_inputThread->stillActive()) {
           break;
         }
+        Sleep(20);
+      }
+      if(m_inputThread->stillActive()) {
+        __super::killProcess();
       }
     }
+    if(!m_inputThread->stillActive()) {
+      DEBUGMSG(_T("Trying to delete inputThread"));
+      delete m_inputThread;
+      DEBUGMSG(_T("InputThread deleted"));
+    } else {
+      verbose(_T("Cannot kill inputthread\n"));
+    }
+    m_inputThread = NULL;
+    DEBUGMSG(_T("InputThread set to NULL"));
   }
-  LEAVEFUNC;
-  return result;
+  LEAVEFUNC();
 }
 
-void ExternEngine::waitUntilIdle(int timeout) {
-  ENTERFUNCPARAM(format(_T("timeout=%d"),timeout));
+// private
+void ExternEngine::waitUntilNotBusy(int timeout) {
+  ENTERFUNCPARAM(_T("timeout=%d"), timeout);
   const int sleepTime = 100; // msec
   const int count = timeout / sleepTime;
-  for(int i = 0; isIdle() && i < count; i++) {
+  for(int i = 0; isBusy() && i < count; i++) {
     Sleep(sleepTime);
   }
-  if(!isIdle()) {
+  if(isBusy()) {
     killProcess();
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
+void ExternEngine::putInterruptLine() { // only called by cleanup and deleteInputThread
+  DEBUGMSG(_T("putMessage(INTERRUPTLINE)"));
+  m_inputThread->putMessage(INTERRUPTLINE);
+}
+
+// private
 void ExternEngine::sendUCI() {
-  ENTERFUNC;
+  ENTERFUNC();
   m_optionArray.clear();
 
   String line;
   try {
     String name, author;
     while((line = getLine(2000)) != INTERRUPTLINE) {
-      DEBUGMSG(line.cstr());
+      DEBUGMSG(_T("%s"), line.cstr());
     }
     send(_T("uci\n"));
 
     Timestamp startTime;
     while((line = getLine(500)) != _T("uciok")) {
       if(diff(startTime, Timestamp(), TSECOND) > 10) {
-        LEAVEFUNC;
         throwException(_T("timeout"));
       }
       Tokenizer tok(line, _T(" "));
       if(tok.hasNext()) {
         const String command = tok.next();
-        if(command == _T("id")) {
+        if(command == _T("option")) {
+          m_optionArray.add(EngineOptionDescription(tok.getRemaining(), (unsigned short)m_optionArray.size()));
+          continue;
+        } else if(command == _T("id")) {
           const String s = tok.next();
           if(s == _T("name")) {
             name = tok.getRemaining();
+            continue;
           } else if(s == _T("author")) {
             author = tok.getRemaining();
+            continue;
           }
-        } else if(command == _T("option")) {
-          m_optionArray.add(EngineOptionDescription(tok.getRemaining(), (unsigned short)m_optionArray.size()));
-        } else {
-          DEBUGMSG(format(_T("reply:<%s>"), line.cstr()).cstr());
         }
+        DEBUGMSG(_T("Unknown reply:<%s>"), line.cstr());
       }
     }
     sortOptions();
@@ -233,11 +222,11 @@ void ExternEngine::sendUCI() {
     m_desc.m_author = author;
     setStateFlags(EXE_UCIOK);
   } catch(Exception e) {
-    DEBUGMSG(format(_T("Exception <%s>. last line read:<%s\n"), e.what(), line.cstr()).cstr());
-    LEAVEFUNC;
+    DEBUGMSG(_T("Exception <%s>. Last line read:<%s>\n"), e.what(), line.cstr());
+    LEAVEFUNC();
     throwException(_T("Wrong or no reply on command \"uci\". Doesn't seem to be a UCI chess engine"));
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
 static int optionsCmp(const EngineOptionDescription &op1, const EngineOptionDescription &op2) {
@@ -248,51 +237,92 @@ static int optionsCmp(const EngineOptionDescription &op1, const EngineOptionDesc
   }
 }
 
+// private
 void ExternEngine::sortOptions() {
   m_optionArray.sort(optionsCmp);
 }
 
 EngineDescription ExternEngine::getUCIReply(const String &path) { // static
-  ExternEngine engine(path);
+  ExternEngine engine(WHITEPLAYER, path); // player not used
   engine.start();
   return engine.getDescription();
 }
 
+// public
+void ExternEngine::findBestMove(const FindMoveRequestParam &param) {
+  ENTERFUNC();
+  if(!isIdle()) {
+    DEBUGMSG(_T("engine.isIdle=false"));
+  } else {
+    m_game = param.getGame();
+    m_hint = param.isHint();
+    sendPosition();
+    const int timeout = param.getTimeLimit().m_timeout;
+    send(_T("go %s\n"), (timeout == INFINITE) ? _T("infinite") : format(_T("movetime %d"), timeout).cstr());
+    setStateFlags(EXE_BUSY);
+  }
+  LEAVEFUNC();
+}
+
+// public
+void ExternEngine::stopSearch() {
+  ENTERFUNC();
+  if(isReady()) {
+    send(_T("stop\n"));
+    waitUntilNotBusy();
+  }
+  LEAVEFUNC();
+}
+
+// public
+void ExternEngine::moveNow() {
+  ENTERFUNC();
+  if(isReady()) {
+    send(_T("stop\n"));
+  }
+  LEAVEFUNC();
+}
+
+// public
 void ExternEngine::notifyGameChanged(const Game &game) {
-  ENTERFUNC;
+  ENTERFUNC();
   if(isReady()) {
     send(_T("ucinewgame\n"));
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
 void ExternEngine::setDebug(bool on) {
-  ENTERFUNC;
+  ENTERFUNC();
   if(isReady()) {
     send(_T("debug %s\n"), on ? _T("on") : _T("off"));
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
-void ExternEngine::sendPosition(const Game &game) const {
-  ENTERFUNC;
+// private
+void ExternEngine::sendPosition() const {
+  ENTERFUNC();
   if(isIdle()) {
-    send(_T("%s"), game.toUCIString().cstr());
+    send(_T("%s"), m_game.toUCIString().cstr());
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::setParameterValue(const EngineOptionDescription &option, int value) {
-  ENTERFUNC;
+  ENTERFUNC();
   assert(option.getType() == OptionTypeSpin);
   if(isIdle()) {
     send(_T("setoption name %s value %d\n"), option.getName().cstr(), value);
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::setParameterValue(const EngineOptionDescription &option, bool value) {
-  ENTERFUNC;
+  ENTERFUNC();
   assert(option.getType() == OptionTypeCheckbox);
   if(isIdle()) {
     if(&option == &EngineOptionDescription::debugOption) {
@@ -301,41 +331,45 @@ void ExternEngine::setParameterValue(const EngineOptionDescription &option, bool
       send(_T("setoption name %s value %s\n"), option.getName().cstr(), value ? _T("true") : _T("false"));
     }
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::setParameterValue(const EngineOptionDescription &option, const String &value) {
-  ENTERFUNC;
+  ENTERFUNC();
   assert((option.getType() == OptionTypeCombo) || (option.getType() == OptionTypeString));
   if(isIdle()) {
     send(_T("setoption name %s value %s\n"), option.getName().cstr(), value.cstr());
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::clickButton(const EngineOptionDescription &option) {
-  ENTERFUNC;
+  ENTERFUNC();
   assert(option.getType() == OptionTypeButton);
   if(isIdle()) {
     send(_T("setoption name %s\n"), option.getName().cstr());
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// public
 void ExternEngine::setParameters(const EngineOptionValueArray &valueArray) {
-  ENTERFUNC;
+  ENTERFUNC();
   for(Iterator<EngineOptionValue> it = valueArray.getIterator(); it.hasNext();) {
     setParameterValue(it.next());
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
+// private
 void ExternEngine::setParameterValue(const EngineOptionValue &v) {
-  ENTERFUNC;
+  ENTERFUNC();
   const EngineOptionDescription *optionDesc = m_optionArray.findOptionByName(v.getName());
   if(optionDesc == NULL) {
     Message(_T("Option %s not found for engine %s"), v.getName().cstr(), m_desc.getName().cstr());
-    LEAVEFUNC;
+    LEAVEFUNC();
     return;
   }
   switch(optionDesc->getType()) {
@@ -351,87 +385,118 @@ void ExternEngine::setParameterValue(const EngineOptionValue &v) {
     setParameterValue(*optionDesc, v.getBoolValue());
     break;
   }
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 
 #ifdef _DEBUG
-void ExternEngine::send(const TCHAR *format,...) const {
-  ENTERFUNC;
+void ExternEngine::send(const TCHAR *fmt,...) const {
+  ENTERFUNC();
   va_list argptr;
-  va_start(argptr, format);
-  String line = vformat(format, argptr);
+  va_start(argptr, fmt);
+  String line = vformat(fmt, argptr);
   va_end(argptr);
   line.replace('\n',EMPTYSTRING);
-  DEBUGMSG(line.cstr());
+  DEBUGMSG(_T("%s"), line.cstr());
   __super::send(_T("%s\n"), line.cstr());
-  LEAVEFUNC;
+  LEAVEFUNC();
 }
 #endif
 
-String ExternEngine::getLine(int milliseconds) {
-  DEFINEMETHODNAME;
-  ENTERFUNC;
+UINT ExternEngine::run() {
+  ENTERFUNC();
+  if (!isReady()) {
+    verbose(_T("%s:Extern process not started\n"), __TFUNCTION__);
+    LEAVEFUNC();
+    return 0;
+  }
+  setStateFlags(EXE_THREADRUNNING);
   const EngineVerboseFields &evf = getOptions().getengineVerboseFields();
   try {
     EngineInfoLine infoLine;
-    for(;;) {
-      if(!isStarted()) {
-        clrStateFlags(EXE_BUSY);
-        LEAVEFUNC;
-        throwException(_T("%s:Unexpected eof. Extern engine not started"), method);
-      }
-      String line = m_inputThread->getLine(milliseconds);
+    while(!isStateFlagsSet(EXE_KILLED)) {
+      const String line = getLine();
       Tokenizer tok(line, _T(" "));
-      if(tok.hasNext() && tok.next() == _T("info")) {
-        if(isVerbose()) {
-          infoLine += tok.getRemaining();
-          if(infoLine.isReady()) {
-            verbose(_T("%s"), infoLine.toString(evf).cstr());
-            if(evf.m_pv && (infoLine.m_pv.length() > 0)) {
-              updateMessageField(_T("%s"), getBeautifiedVariant(infoLine.m_pv).cstr());
+      if(tok.hasNext()) {
+        const String reply = tok.next();
+        if(reply == _T("info")) {
+          if(isVerbose()) {
+            infoLine += tok.getRemaining();
+            if(infoLine.isReady()) {
+              verbose(_T("%s"), infoLine.toString(evf).cstr());
+              if(evf.m_pv && (infoLine.m_pv.length() > 0)) {
+                updateMessageField(_T("%s"), getBeautifiedVariant(infoLine.m_pv).cstr());
+              }
+              infoLine.reset();
             }
-            infoLine.reset();
           }
+        } else if(reply == _T("bestmove")) {
+          const PrintableMove result = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
+          clrStateFlags(EXE_BUSY);
+          if(m_msgQueue) {
+            m_msgQueue->put(MoveFinderThreadRequest(result, m_hint));
+          } else {
+            verbose(_T("bestMove:%s\n"), result.toString());
+          }
+        } else if(reply == INTERRUPTLINE) {
+          continue;
         }
-      } else {
-        LEAVEFUNC;
-        return line;
       }
     }
   } catch(Exception e) {
-    DEBUGMSG(format(_T("%s:Exception:%s\n"), method, e.what()).cstr());
-    LEAVEFUNC;
-    return INTERRUPTLINE;
+    verbose(_T("Exception:%s\n"), e.what());
   }
+  clrStateFlags(EXE_THREADRUNNING);
+  LEAVEFUNC();
+  return 0;
 }
 
+// private
+String ExternEngine::getLine(int timeout) {
+  DEFINEMETHODNAME;
+//  ENTERFUNC();
+  try {
+    if(!isStarted() || !hasInput()) {
+      clrStateFlags(EXE_BUSY);
+      throwException(_T("%s:Unexpected eof. Extern engine not started"), method);
+    }
+//    LEAVEFUNC();
+    return m_inputThread->getLine(timeout);
+  } catch(Exception e) {
+    DEBUGMSG(_T("%s:Exception:%s"), method, e.what());
+  }
+//  LEAVEFUNC();
+  return INTERRUPTLINE;
+}
+
+// private
 String ExternEngine::getBeautifiedVariant(const String &pv) const {
-  const int startPly    = m_tmpGame->getPlyCount();
+  const int startPly    = m_game.getPlyCount();
   int       moveCounter = startPly/2 + 1;
   String    result;
-  if(m_tmpGame->getPlayerInTurn() == BLACKPLAYER) {
+  if(m_game.getPlayerInTurn() == BLACKPLAYER) {
     result = format(_T("%d. -"), moveCounter);
   }
   try {
     for(Tokenizer tok(pv, _T(" ")); tok.hasNext();) {
-      const ExecutableMove m = m_tmpGame->generateMove(tok.next(), MOVE_UCIFORMAT);
-      if(m_tmpGame->getPlayerInTurn() == WHITEPLAYER) {
+      const PrintableMove m = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
+      if(m_game.getPlayerInTurn() == WHITEPLAYER) {
         result += format(_T("%d. %s"), moveCounter, m.toString().cstr());
       } else {
         result += format(_T(", %s "), m.toString().cstr());
         moveCounter++;
       }
-      m_tmpGame->doMove(m_tmpGame->generateMove(m));
+      m_game.doMove(m_game.generateMove(m));
     }
   } catch(Exception e) {
     result += e.what();
   }
-  while(m_tmpGame->getPlyCount() > startPly) {
-    m_tmpGame->undoMove();
+  while(m_game.getPlyCount() > startPly) {
+    m_game.undoMove();
   }
   return result;
 }
 
+// public
 String ExternEngine::flagsToString() const {
   String result;
   const TCHAR *delim = NULL;
@@ -444,13 +509,16 @@ String ExternEngine::flagsToString() const {
 #define addFlag(f) if(isStateFlagsSet(EXE_##f)) addStr(#f);
 
   if(isStarted())      addStr(_T("STARTED"));
-  if(hasInputThread()) addStr(_T("INPUT"));
-  addFlag(UCIOK  );
-  addFlag(BUSY   );
+  if(hasInput())       addStr(_T("HASINPUT"));
+  addFlag(UCIOK        );
+  addFlag(BUSY         );
+  addFlag(THREADRUNNING);
+  addFlag(KILLED       );
   if(isVerbose())      addStr(_T("VERBOSE"));
   return result;
 }
 
+// public
 String ExternEngine::toString() const {
   String result = flagsToString();
   if(isStarted()) {
@@ -463,6 +531,20 @@ String ExternEngine::toString() const {
     }
   }
   return result;
+}
+
+// private
+void ExternEngine::debugMsg(const TCHAR *format, ...) const {
+  va_list argptr;
+  va_start(argptr, format);
+  const String msg = vformat(format,argptr);
+  va_end(argptr);
+  verbose(_T("%s:%*.*s%s (%s)\n")
+         ,PLAYERSTR()
+         ,m_callLevel,m_callLevel, EMPTYSTRING
+         ,msg.cstr()
+         ,flagsToString().cstr()
+         );
 }
 
 #endif // TABLEBASE_BUILDER

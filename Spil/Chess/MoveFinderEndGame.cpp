@@ -6,8 +6,8 @@
 String          MoveFinderEndGame::s_currentDbPath;
 TablebaseMetric MoveFinderEndGame::s_currentMetric;
 
-MoveFinderEndGame::MoveFinderEndGame(Player player, EndGameTablebase *tablebase)
-: AbstractMoveFinder(player)
+MoveFinderEndGame::MoveFinderEndGame(Player player, MFTRQueue &msgQueue, EndGameTablebase *tablebase)
+: AbstractMoveFinder(player, msgQueue)
 , m_tablebase(tablebase)
 {
 }
@@ -16,8 +16,8 @@ MoveFinderEndGame::~MoveFinderEndGame() {
   m_tablebase->unload();
 }
 
-ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint) {
-  initSearch(game, timeLimit, talking);
+void MoveFinderEndGame::findBestMove(const FindMoveRequestParam &param, bool talking) {
+  initSearch(param, talking);
 
   if(!m_tablebase->isLoaded()
    || (s_currentDbPath != EndGameKeyDefinition::getDbPath())
@@ -34,20 +34,20 @@ ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &time
       verbose(_T("Tablebase %s. Metric:%s\n"), m_tablebase->getName().cstr(), EndGameKeyDefinition::getMetricName(s_currentMetric));
     }
   }
-  MoveResultArray allMoves(game.getPlayerInTurn());
+  MoveResultArray allMoves(m_game.getPlayerInTurn());
   const Options &options = getOptions();
-  ExecutableMove result = m_tablebase->findBestMove(game, allMoves, options.getEndGameDefendStrength());
+  PrintableMove  result  = m_tablebase->findBestMove(m_game, allMoves, options.getEndGameDefendStrength());
   if(result.isMove()) {
     if(isVerbose()) {
-      verbose(_T("%s"), allMoves.toString(game, options.getMoveFormat(), options.getDepthInPlies()).cstr());
+      verbose(_T("%s"), allMoves.toString(m_game, options.getMoveFormat(), options.getDepthInPlies()).cstr());
     }
   } else {
-    switch(game.findGameResult()) {
+    switch(m_game.findGameResult()) {
     case NORESULT                          :
       throwException(_T("%s(%s):Cannot find best move in position [%s]")
                     ,__TFUNCTION__
                     ,m_tablebase->getPositionTypeString().cstr()
-                    ,m_tablebase->toString(game).cstr());
+                    ,m_tablebase->toString(m_game).cstr());
 
     case WHITE_CHECKMATE           :
     case BLACK_CHECKMATE           :
@@ -60,7 +60,7 @@ ExecutableMove MoveFinderEndGame::findBestMove(Game &game, const TimeLimit &time
       break;
     }
   }
-  return result;
+  putResult(result);
 }
 
 String MoveFinderEndGame::getName() const {

@@ -3,6 +3,17 @@
 #include "AbstractMoveFinder.h"
 #include "SocketChannel.h"
 
+typedef enum {
+  CMD_GETGAME
+ ,CMD_GETMOVE
+ ,CMD_ASKACCEPTUNDO
+ ,CMD_UNDOACCEPTED
+ ,CMD_UNDOREFUSED
+ ,CMD_RESIGN
+ ,CMD_OFFERDRAW
+ ,CMD_INTERRUPT
+} MoveFinderCommand;
+
 class MoveFinderRemotePlayer : public AbstractMoveFinder, public OptionsAccessor {
 private:
   SocketChannel  m_channel;
@@ -14,10 +25,19 @@ private:
   void              interrupt();
   void              disConnect();
 public:
-  MoveFinderRemotePlayer(Player player, SocketChannel channel);
+  MoveFinderRemotePlayer(Player player, MFTRQueue &msgQueue, SocketChannel channel);
   ~MoveFinderRemotePlayer();
-  ExecutableMove findBestMove(Game &game, const TimeLimit &timeLimit, bool talking, bool hint);
-  String getName() const;
+  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void stopSearch() {
+    interrupt();
+  }
+
+  void moveNow() {
+  }
+
+  String getName() const {
+    return _T("Remote computer");
+  }
 
   EngineType getEngineType()  const {
     return REMOTE_ENGINE;
@@ -27,12 +47,14 @@ public:
     return NORMAL_POSITION;
   }
 
-  void stopThinking(bool stopImmediately = true);
-  void setVerbose(bool verbose);
+  void setVerbose(bool verbose) {
+  }
   void notifyGameChanged(const Game &game);
   void notifyMove(const MoveBase &move);
 
-  String getStateString(Player computerPlayer, bool detailed);
+  String getStateString(Player computerPlayer, bool detailed) {
+    return _T("remote");
+  }
 
   bool isConnected() const {
     return m_channel.isOpen();

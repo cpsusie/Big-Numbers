@@ -618,14 +618,16 @@ public:
   String toStringEnglish()      const;
 };
 
+// No constructors here, for speed
 class MoveBase {
 private:
   String toSimpleFormat(bool uciFormat) const;
 protected:
-  String toStringFileFormat()   const {
+  static const String s_nomoveString;
+  inline String toStringFileFormat()   const {
     return toSimpleFormat(false);
   }
-  String toStringUCIFormat() const {
+  inline String toStringUCIFormat() const {
     return toSimpleFormat(true);
   }
 public:
@@ -687,16 +689,21 @@ public:
 
 typedef CompactArray<MoveBase> MoveBaseArray;
 
-class Move : public MoveBase {
+class Move : public MoveBase { // No constructors here, for speed
 private:
   String toStringLongFormat()  const;
   String toStringDebugFormat() const;
 public:
-  Piece        *m_piece;
-  Piece        *m_capturedPiece;
+  Piece *m_piece;
+  Piece *m_capturedPiece;
   Move &setNoMove();                                            // Return *this
   String toString(MoveStringFormat mf = MOVE_LONGFORMAT) const; // Do not accept SHORTFORMAT
-
+  inline PieceType getPieceType() const {
+    return m_piece ? m_piece->getType() : NoPiece;
+  }
+  inline PieceType getCapturedPieceType() const {
+    return m_capturedPiece ? m_capturedPiece->getType() : NoPiece;
+  }
 #ifdef TABLEBASE_BUILDER
   Move makeBackMove() const;
 #endif
@@ -712,7 +719,7 @@ public:
   EnPassantMove(const Move &m);
 };
 
-class ExecutableMove : public MoveBase { // Contains no pointers
+class PrintableMove : public MoveBase { // Contains no pointers
 private:
   Player          m_player;
   PieceType       m_pieceType;
@@ -729,22 +736,22 @@ private:
   String toStringDebugFormat() const;
 
 public:
-  ExecutableMove() {
+  PrintableMove() {
     setNoMove();
   }
-  ExecutableMove &setNoMove();
-  ExecutableMove(const Game &game, const Move &m);
+  PrintableMove(const Game &game, const MoveBase &m);
+  PrintableMove &setNoMove();
   String toString(MoveStringFormat mf = MOVE_SHORTFORMAT) const;
   Player getPlayer() const {
     return m_player;
   }
-  bool operator==(const ExecutableMove &m) const; // compares all fields
-  bool operator!=(const ExecutableMove &m) const {
+  bool operator==(const PrintableMove &m) const; // compares all fields
+  bool operator!=(const PrintableMove &m) const {
     return !(*this == m);
   }
 };
 
-class GameHistory : public Array<ExecutableMove> {
+class GameHistory : public Array<PrintableMove> {
 public:
   String toString(MoveStringFormat mf = MOVE_SHORTFORMAT, int width = -1) const;
 };
@@ -1402,7 +1409,7 @@ public:
 
 #ifndef TABLEBASE_BUILDER
   String toUCIString() const;
-  String toFENString() const;    // Current position in FEN-format
+  String toFENString() const;             // Current position in FEN-format
   Game &fromFENString(const String &s);
 
   inline int getPositionRepeats() const {
@@ -1484,7 +1491,7 @@ public:
     return m_stackSize == 0;
   }
 
-  static int getKingDistance(int pos1, int pos2); // Return the number of moves it takes to move king from pos1 to pos2.
+  static int getWalkDistance(int pos1, int pos2); // Return the number of moves it takes to move king from pos1 to pos2.
 
   void setName(const String &name) {
     m_name = name;
@@ -1510,29 +1517,29 @@ public:
   MoveBase       unExecuteLastMove();
   bool           mustSelectPromotion(int from, int to) const;
   Move           generateMove(const MoveBase &m) const;
-  ExecutableMove generateMove(int from, int to, PieceType promoteTo = NoPiece, MoveAnnotation annotation = NOANNOTATION) const;
-  ExecutableMove generateMove(const String &s, MoveStringFormat mf = (MoveStringFormat)-1) const;
+  PrintableMove  generateMove(int from, int to, PieceType promoteTo = NoPiece, MoveAnnotation annotation = NOANNOTATION) const;
+  PrintableMove  generateMove(const String &s, MoveStringFormat mf = (MoveStringFormat)-1) const;
 
   Move getRandomMove() const;
 
-  bool isGameOver() const {
+  inline bool isGameOver() const {
     return (m_gameResult != NORESULT) || (getPositionType() == DRAW_POSITION);
   }
 
   bool isCheckmate(Player player) const;
-  bool isCheckmate() const {
+  inline bool isCheckmate() const {
     return isCheckmate(PLAYERINTURN);
   };
 
   bool isSingleMovePosition() const; // return true, if there is only one possible move
 
-  GameResult getGameResult() const { // Only valid after executeMove/unExecuteLastMove
+  inline GameResult getGameResult() const { // Only valid after executeMove/unExecuteLastMove
     return m_gameResult;
   }
 
   GameResult findGameResult() const;
 
-  CastleState getCastleState(Player player) const {
+  inline CastleState getCastleState(Player player) const {
     return m_gameKey.d.m_castleState[player];
   }
 
@@ -1544,13 +1551,13 @@ public:
   PositionSignature      getPositionSignature() const;
   void                   resetCapturedPieceTypes(Player player);
 
-  String getMoveString(const Move &m, MoveStringFormat mf=MOVE_LONGFORMAT) const;
+  String getMoveString(const MoveBase &m, MoveStringFormat mf=MOVE_LONGFORMAT) const;
 
-  static String getFieldInfoAsString(int pos) {
+  static inline String getFieldInfoAsString(int pos) {
     return fieldInfo[pos].toString();
   }
 
-  const GameStackElement *getGameStack() const {
+  inline const GameStackElement *getGameStack() const {
     return m_gameStack;
   }
 
@@ -1559,17 +1566,17 @@ public:
   }
 
   const GameKey &getStartPosition() const;
-  bool startWithWhite() const {
+  inline bool startWithWhite() const {
     return getStartPosition().d.m_playerInTurn == WHITEPLAYER;
   }
-  bool startWithBlack() const {
+  inline bool startWithBlack() const {
     return getStartPosition().d.m_playerInTurn == BLACKPLAYER;
   }
 };
 
 String secondsToString(double msec, bool showMilliSeconds=true);
 
-#define KINGSADJACENT(wkPos,bkPos) (Game::getKingDistance(wkPos,bkPos) <= 1)
+#define POSADJACENT(wkPos,bkPos) (Game::getWalkDistance(wkPos,bkPos) <= 1)
 
 #define GETDIAG1(         pos)     Game::fieldInfo[pos].m_diag1
 #define GETDIAG2(         pos)     Game::fieldInfo[pos].m_diag2

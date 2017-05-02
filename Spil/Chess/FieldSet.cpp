@@ -10,18 +10,15 @@ FieldSet::FieldSet(int f,...) {
   va_end(argptr);
 }
 
-String FieldSet::toString() const {
-  String result = _T("(");
-  Iterator<UINT> it = ((FieldSet*)this)->getIterator();
-  if(it.hasNext()) {
-    result += getFieldName(it.next());
-    while(it.hasNext()) {
-      result += ',';
-      result += getFieldName(it.next());
-    }
+class FieldStringifier : public AbstractStringifier<UINT> {
+public:
+  String toString(const UINT &position) {
+    return getFieldName(position);
   }
-  result += _T(")");
-  return result;
+};
+
+String FieldSet::toString() const {
+  return BitSet64::toString(&FieldStringifier());
 }
 
 void FieldSet::dump() const {

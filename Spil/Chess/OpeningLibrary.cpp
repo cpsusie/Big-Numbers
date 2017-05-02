@@ -61,7 +61,7 @@ void LibraryState::checkPlayer(int line, Player player) const {
   }
 }
 
-void LibraryState::checkAnnotation(int line, const ExecutableMove &m, const LibraryTransition &t) const {
+void LibraryState::checkAnnotation(int line, const PrintableMove &m, const LibraryTransition &t) const {
   const bool goodMove = m.isGoodMove();
   if(goodMove != t.m_goodMove) {
     throwException(_T("OpeningLibrary line %d:Annotation mismatch in state %d. state.m_goodMove=%s, Move=%s")
@@ -72,7 +72,7 @@ void LibraryState::checkAnnotation(int line, const ExecutableMove &m, const Libr
   }
 }
 
-int LibraryState::findNextState(const ExecutableMove &m, bool validateAnnotation) const {
+int LibraryState::findNextState(const PrintableMove &m, bool validateAnnotation) const {
   checkPlayer(__LINE__, m.getPlayer());
   for(size_t i = 0; i < m_transitionArray.size(); i++) {
     const LibraryTransition &t = m_transitionArray[i];
@@ -88,7 +88,7 @@ int LibraryState::findNextState(const ExecutableMove &m, bool validateAnnotation
   return -1;
 }
 
-LibraryTransition *LibraryState::findTransitionByMove(const ExecutableMove &m, bool validateAnnotation) {
+LibraryTransition *LibraryState::findTransitionByMove(const PrintableMove &m, bool validateAnnotation) {
   checkPlayer(__LINE__, m.getPlayer());
   for(size_t i = 0; i < m_transitionArray.size(); i++) {
     LibraryTransition *t = &m_transitionArray[i];
@@ -104,7 +104,7 @@ LibraryTransition *LibraryState::findTransitionByMove(const ExecutableMove &m, b
   return NULL;
 }
 
-const LibraryTransition *LibraryState::findTransitionByMove(const ExecutableMove &m) const {
+const LibraryTransition *LibraryState::findTransitionByMove(const PrintableMove &m) const {
   checkPlayer(__LINE__, m.getPlayer());
   for(size_t i = 0; i < m_transitionArray.size(); i++) {
     const LibraryTransition *t = &m_transitionArray[i];
@@ -127,7 +127,7 @@ int LibraryState::findTransitionIndexByNameIndex(int nameIndex) const {
   return -1;
 }
 
-ExecutableMove LibraryState::findGoodMove(const Game &game) const {
+PrintableMove LibraryState::findGoodMove(const Game &game) const {
   checkPlayer(__LINE__,game.getPlayerInTurn());
   CompactIntArray goodMoves;
   for(UINT i = 0; i < m_transitionArray.size(); i++) {
@@ -138,7 +138,7 @@ ExecutableMove LibraryState::findGoodMove(const Game &game) const {
   }
   randomize();
   if(goodMoves.size() == 0) {
-    return ExecutableMove();
+    return PrintableMove();
   } else {
     const LibraryTransition &t = m_transitionArray[goodMoves.select()];
     return game.generateMove(t.m_from,t.m_to);
@@ -220,7 +220,7 @@ void OpeningLibrary::addGame(const String &name) {
     game.newGame();
 
     for(size_t i = 0; i < history.size(); i++) {
-      const ExecutableMove &m = history[i];
+      const PrintableMove &m = history[i];
       LibraryTransition *t = m_stateArray[state].findTransitionByMove(m, true);
       game.executeMove(m);
       if(t != NULL) {
@@ -411,11 +411,11 @@ void OpeningLibrary::load(int resId) {
   p >> *this;
 }
 
-ExecutableMove OpeningLibrary::findLibraryMove(const Game &game, bool talking) const {
+PrintableMove OpeningLibrary::findLibraryMove(const Game &game, bool talking) const {
   const int stateIndex = getStateIndex(game);
 
   if(stateIndex < 0) {
-    return ExecutableMove();
+    return PrintableMove();
   } else {
     const LibraryState &state = m_stateArray[stateIndex];
     if(talking) {

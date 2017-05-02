@@ -262,7 +262,7 @@ EndGamePosIndex EndGameKeyDefinition::encodeKKSym8(EndGameKey key) { // static
 
 #ifdef _DEBUG
   if((wki < 0)
-   || KINGSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition())
+   || POSADJACENT(key.getWhiteKingPosition(), key.getBlackKingPosition())
    || (WK_INDEX_ONDIAG(wki) && IS_ABOVEMAINDIAG1(key.getBlackKingPosition()))) {
     throwException(_T("%s:Cannot encode kings:[%s,%s]")
                   ,__TFUNCTION__
@@ -350,7 +350,7 @@ void test2KingsSym8() {
   for(int wki = 0; wki < ARRAYSIZE(EndGameKeyDefinition::s_whiteKingIndexToPos); wki++) {
     const UINT wkPos = EndGameKeyDefinition::s_whiteKingIndexToPos[wki];
     for(int bkPos = 0; bkPos < 64; bkPos++) {
-      if(!KINGSADJACENT(wkPos,bkPos) && (WK_INDEX_OFFDIAG(wki) || !IS_ABOVEMAINDIAG1(bkPos))) {
+      if(!POSADJACENT(wkPos,bkPos) && (WK_INDEX_OFFDIAG(wki) || !IS_ABOVEMAINDIAG1(bkPos))) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);

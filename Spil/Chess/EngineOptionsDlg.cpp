@@ -35,7 +35,7 @@ CEngineOptionsDlg::CEngineOptionsDlg(Player player)
 
 EngineOptionDescriptionArray CEngineOptionsDlg::createEngineOptionDescriptionArray(Player player) { // static
   try {
-    ExternEngine engine(Options::getEnginePathByPlayer(player));
+    ExternEngine engine(player,Options::getEnginePathByPlayer(player));
     engine.start();
     EngineOptionDescriptionArray result = engine.getOptionDescriptionArray();
     return result; //.removeOptionsByType(OptionTypeButton);

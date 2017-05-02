@@ -351,7 +351,7 @@ public:
   EndGamePositionStatus getPositionStatus(const Game &game, bool swapPlayers) const;
   EndGameResult         getPositionResult(const Game &game, bool swapPlayers) const;
 
-  ExecutableMove        findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const; // defendStrength = [0..100]
+  PrintableMove         findBestMove(const Game &game, MoveResultArray &allMoves, int defendStrength) const; // defendStrength = [0..100]
   MoveResultArray       getAllMoves( const Game &game) const; // assume game.positionSignature.match(keydef.positionSignature)
 
   bool                  exist(TablebaseFileType recoverFile) const;

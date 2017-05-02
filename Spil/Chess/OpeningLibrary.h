@@ -27,7 +27,7 @@ public:
 class LibraryState {
 private:
   void checkPlayer(    int line, Player player) const;
-  void checkAnnotation(int line, const ExecutableMove &m, const LibraryTransition &t) const;
+  void checkAnnotation(int line, const PrintableMove &m, const LibraryTransition &t) const;
 public:
   int                      m_id;
   Player                   m_playerInTurn;
@@ -36,12 +36,12 @@ public:
   }
   LibraryState(int id, Player playerInTurn) : m_id(id), m_playerInTurn(playerInTurn) {
   }
-  int                      findNextState(       const ExecutableMove &m, bool validateAnnotation) const;
-        LibraryTransition *findTransitionByMove(const ExecutableMove &m, bool validateAnnotation);
-  const LibraryTransition *findTransitionByMove(const ExecutableMove &m) const;
+  int                      findNextState(       const PrintableMove &m, bool validateAnnotation) const;
+        LibraryTransition *findTransitionByMove(const PrintableMove &m, bool validateAnnotation);
+  const LibraryTransition *findTransitionByMove(const PrintableMove &m) const;
   int                      findTransitionIndexByNameIndex(int nameIndex) const;
 
-  ExecutableMove findGoodMove(const Game &game) const;
+  PrintableMove findGoodMove(const Game &game) const;
   String toString() const;
 };
 
@@ -69,7 +69,7 @@ public:
 #endif
 
   void load(int resId);
-  ExecutableMove findLibraryMove(const Game &game, bool talking) const;
+  PrintableMove findLibraryMove(const Game &game, bool talking) const;
 
   bool isLoaded() const {
     return !m_nameArray.isEmpty();

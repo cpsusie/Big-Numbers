@@ -238,7 +238,7 @@ bool BackMoveGenerator::checksEnemyKing(int kingPos, const Piece *piece, int fro
   }
   switch(piece->getType()) {
   case King  :
-    return KINGSADJACENT(kingPos, from);
+    return POSADJACENT(kingPos, from);
 
   case Queen :
     switch(KING_DIRECTION(piece->m_enemyState, from)) {
@@ -324,12 +324,12 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
             case WHITEPLAYER:
               { const Piece *ldaPiece = m_game.findFirstPieceInDirection(pos, MD_DOWN);
                 return ldaPiece && LONGDISTANCE_ATTACKS(WHITEPLAYER, ldaPiece, ATTACKS_PARALLEL)
-                    && (Game::getKingDistance(pos, ldaPiece->m_position) > 2);
+                    && (Game::getWalkDistance(pos, ldaPiece->m_position) > 2);
               }
             case BLACKPLAYER:
               { const Piece *ldaPiece = m_game.findFirstPieceInDirection(pos, MD_UP);
                 return ldaPiece && LONGDISTANCE_ATTACKS(BLACKPLAYER, ldaPiece, ATTACKS_PARALLEL)
-                    && (Game::getKingDistance(pos, ldaPiece->m_position) > 2);
+                    && (Game::getWalkDistance(pos, ldaPiece->m_position) > 2);
               }
             default:INVALIDPLAYERERROR(enemy);
                     return false;
@@ -367,8 +367,8 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
     const Player enemy     = king->getEnemy();
     const Piece *rcPiece   = m_game.findLDAttackingPiece(enemy, pos, false);
     const Piece *diagPiece = m_game.findLDAttackingPiece(enemy, pos, true );
-    const int    rcDist    = Game::getKingDistance(pos, rcPiece->m_position  );
-    const int    diagDist  = Game::getKingDistance(pos, diagPiece->m_position);
+    const int    rcDist    = Game::getWalkDistance(pos, rcPiece->m_position  );
+    const int    diagDist  = Game::getWalkDistance(pos, diagPiece->m_position);
 
     if(rcDist > diagDist) {                // Moved piece must be the diagonal-moving piece, ie a bishop
       if(diagPiece->getType() != Bishop) { // a queen will do, if its a newly promoted pawn, moving forward, not capturing.
@@ -473,8 +473,8 @@ bool BackMoveGenerator::isCapturingPromotion(int promotedPos, int uncoveredPos, 
 bool BackMoveGenerator::isPossibleRowColCheck(const FieldAttacks &attInfo, int pos) const {
   const int rowPos = m_game.findFirstPieceInDirection(pos, attInfo.m_attackInfo.m_fromLeft  ?MD_LEFT:MD_RIGHT)->getPosition();
   const int colPos = m_game.findFirstPieceInDirection(pos, attInfo.m_attackInfo.m_fromBelove?MD_DOWN:MD_UP   )->getPosition();
-  const int rowDistance = Game::getKingDistance(pos, rowPos);
-  const int colDistance = Game::getKingDistance(pos, colPos);
+  const int rowDistance = Game::getWalkDistance(pos, rowPos);
+  const int colDistance = Game::getWalkDistance(pos, colPos);
   if(IS_INNERFIELD(pos)) { // One of the attacking (Q or R) must be a newly promoted pawn capturing and uncovering the other (Q or R)
     if(rowDistance == 1) {
       return (colDistance > 1) && isPromotePosition(rowPos);
@@ -1526,8 +1526,8 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
   const Piece *rcPiece   = m_game.findFirstPieceInDirection(ppa);
   const Piece *diagPiece = m_game.findFirstPieceInDirection(dpa);
 
-  const int rcDist   = Game::getKingDistance(kingPos, rcPiece->m_position );
-  const int diagDist = Game::getKingDistance(kingPos, diagPiece->m_position);
+  const int rcDist   = Game::getWalkDistance(kingPos, rcPiece->m_position );
+  const int diagDist = Game::getWalkDistance(kingPos, diagPiece->m_position);
 
   if(rcDist > diagDist) {                                                           // Moved piece must be the diagonal-moving piece, ie a bishop
     if((diagPiece->getType() != Bishop)                                             // A queen can't do it
@@ -1555,7 +1555,7 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
       direction   = (GETROW(sourceField) < GETROW(diagPiece->m_position)) ? MD_UPDIAG1 : MD_DOWNDIAG1;
       break;
     }
-    if(!isValidPosition(sourceField) || (Game::getKingDistance(sourceField, kingPos) >= rcDist)) {
+    if(!isValidPosition(sourceField) || (Game::getWalkDistance(sourceField, kingPos) >= rcDist)) {
       return NULL;
     }
     return (Piece*)diagPiece;
@@ -1585,7 +1585,7 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
       direction   = (GETCOL(sourceField) < GETCOL(rcPiece->m_position))   ? MD_RIGHT : MD_LEFT;
       break;
     }
-    if(!isValidPosition(sourceField) || (Game::getKingDistance(sourceField, kingPos) >= diagDist)) {
+    if(!isValidPosition(sourceField) || (Game::getWalkDistance(sourceField, kingPos) >= diagDist)) {
       return NULL;
     }
     return (Piece*)rcPiece;

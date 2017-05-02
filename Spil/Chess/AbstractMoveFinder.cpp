@@ -2,36 +2,34 @@
 #include "AbstractMoveFinder.h"
 #include "TraceDlgThread.h"
 
-AbstractMoveFinder::AbstractMoveFinder(Player player) : m_player(player) {
-  m_stopCode = 0;
+AbstractMoveFinder::AbstractMoveFinder(Player player, MFTRQueue &msgQueue)
+: m_player(player)
+, m_msgQueue(msgQueue)
+{
   m_verbose  = false;
 }
 
-void AbstractMoveFinder::initSearch(Game &game, const TimeLimit &timeLimit, bool talking) {
-  m_game = &game;
+void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param, bool talking) {
+  m_game = param.getGame();
 #ifndef TABLEBASE_BUILDER
-  m_game->setMaxPositionRepeat(1);
+  m_game.setMaxPositionRepeat(1);
 #endif
-  m_timeLimit  = timeLimit;
-  m_stopCode   = 0;
+  m_timeLimit  = param.getTimeLimit();
+  m_hint       = param.isHint();
   setVerbose(talking);
 }
 
-void AbstractMoveFinder::stopThinking(bool stopImmediately) {
-  if(stopImmediately) {
-    m_stopCode = STOPPED_BY_USER | STOP_IMMEDIATELY;
-  } else {
-    m_stopCode = STOPPED_BY_USER | STOP_WHENMOVEFOUND;
-  }
+void AbstractMoveFinder::putResult(const MoveBase &m) {
+  m_msgQueue.put(MoveFinderThreadRequest(m, m_hint));
 }
 
-ExecutableMove AbstractMoveFinder::checkForSingleMove() {
-  if(m_game->isSingleMovePosition()) { // dont waste time to think. just return the only possible move
-    const ExecutableMove result = ExecutableMove(*m_game, m_game->getRandomMove());
+PrintableMove AbstractMoveFinder::checkForSingleMove() {
+  if(m_game.isSingleMovePosition()) { // dont waste time to think. just return the only possible move
+    const PrintableMove result(m_game, m_game.getRandomMove());
     if(isVerbose()) {
       verbose(format(_T("%s:%s\n"), loadString(IDS_MSG_ONLY_1_MOVE).cstr(), result.toString().cstr()).cstr());
     }
     return result;
   }
-  return ExecutableMove();
+  return PrintableMove();
 }

@@ -1575,7 +1575,7 @@ void testKKWithPawn() {
   EndGamePosIndex maxIndex = 0;
   for(int wkPos = 0; wkPos < 64; wkPos++) {
     for(int bkPos = 0; bkPos < 64; bkPos++) {
-      if(!KINGSADJACENT(wkPos,bkPos)) {
+      if(!POSADJACENT(wkPos,bkPos)) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);
@@ -1618,7 +1618,7 @@ void testLeftWKKWithPawn() {
       continue;
     }
     for(int bkPos = 0; bkPos < 64; bkPos++) {
-      if(!KINGSADJACENT(wkPos,bkPos)) {
+      if(!POSADJACENT(wkPos,bkPos)) {
         EndGameKey key;
         key.setWhiteKingPosition(wkPos);
         key.setBlackKingPosition(bkPos);

@@ -17,10 +17,9 @@ GameHistory Game::getHistory() const {
   Game tmp = getStartPosition();
   GameHistory result;
   for(UINT i = 0; i < m_stackSize; i++) {
-    const Move          &m1 = getMove(i);
-    const ExecutableMove m2 = tmp.generateMove(m1.getFrom(), m1.getTo(), m1.getPromoteTo(), m1.getAnnotation());
-    result.add(m2);
-    tmp.executeMove(m2);
+    const PrintableMove m(tmp,getMove(i));
+    result.add(m);
+    tmp.executeMove(m);
   }
   return result;
 }
@@ -47,6 +46,6 @@ const Move &Game::getMove(UINT ply) const { // ply must be in range [0..m_stackS
   return m_gameStack[ply];
 }
 
-String Game::getMoveString(const Move &m, MoveStringFormat mf) const {
-  return ExecutableMove(*this, m).toString(mf);
+String Game::getMoveString(const MoveBase &m, MoveStringFormat mf) const {
+  return PrintableMove(*this, m).toString(mf);
 }
