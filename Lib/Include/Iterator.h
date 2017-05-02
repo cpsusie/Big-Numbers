@@ -57,4 +57,14 @@ public:
     assert(m_it != NULL);
     m_it->remove();
   }
+
+  String toString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
+    const TCHAR *delim = NULL;
+    String result;
+    while(hasNext()) {
+      if(delim) result += delim; else delim = delimiter;
+      result += sf.toString(next());
+    }
+    return result;
+  }
 };

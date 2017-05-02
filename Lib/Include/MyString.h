@@ -172,6 +172,37 @@ String toString(UINT64           n , int precision = 0, int width = 0, int flags
 String toString(float            x , int precision = 6, int width = 0, int flags = 0);
 String toString(double           x , int precision = 6, int width = 0, int flags = 0);
 
+template<class T> class AbstractStringifier {
+public:
+  virtual String toString(const T &e) = 0;
+};
+
+class IntStringifier : public AbstractStringifier<int> {
+public:
+  String toString(const int &e);
+};
+
+class UIntStringifier : public AbstractStringifier<UINT> {
+public:
+  String toString(const UINT &e);
+};
+
+class Int64Stringifier : public AbstractStringifier<INT64> {
+public:
+  String toString(const INT64 &e);
+};
+
+class UInt64Stringifier : public AbstractStringifier<UINT64> {
+public:
+  String toString(const UINT64 &e);
+};
+
+class SizeTStringifier : public AbstractStringifier<size_t> {
+public:
+  String toString(const size_t &e);
+};
+
+
 TCHAR *strRemove(       TCHAR *s  , TCHAR ch);              // Remove any occurence of ch in s
 TCHAR *strReplace(      TCHAR *s  , TCHAR from, TCHAR to);  // Substitute every occurence of from in s with to, return s.
 TCHAR *strReplace(      TCHAR *dst, const TCHAR *src,       TCHAR  from, const TCHAR *to);

@@ -301,15 +301,13 @@ public:
     return Iterator<UINT>(new TinyBitSetReverseIterator(*this, start, end));
   }
 
-  String toString() const {
+  String toString(AbstractStringifier<UINT> *sf = NULL, const TCHAR *delim = _T(",")) const {
     String result = _T("(");
-    T bits = m_bits;
-    TCHAR *delim = NULL;
-    for(int i = 0; bits; i++, bits >>= 1) {
-      if(bits & 1) {
-        if(delim) result += delim; else delim = _T(",");
-        result += format(_T("%d"), i);
-      }
+    Iterator<UINT> it = ((TinyBitSet*)this)->getIterator();
+    if (sf) {
+      result += it.toString(*sf, delim);
+    } else {
+      result += it.toString(UIntStringifier(), delim);
     }
     return result + _T(")");
   }

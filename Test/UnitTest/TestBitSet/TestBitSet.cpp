@@ -306,7 +306,7 @@ namespace TestBitSet {
 
       OUTPUT(_T("BitSetIterator time:%.3le msec"), msec * 1000);
     }
-
+#ifdef __NEVER__
     TEST_METHOD(BitSetTestSize) {
       for (int test = 0; test < 40; test++) {
         const BitSet s(genRandomSet(test + 300));
@@ -315,6 +315,7 @@ namespace TestBitSet {
         verify(oldSize == size);
       }
     }
+#endif
 
 #ifdef __MEASURETIMES__
     TEST_METHOD(BitSetMeasureSize) {

@@ -707,6 +707,9 @@
     <ClCompile Include="XMLUtil.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="PrimitiveStringifiers.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

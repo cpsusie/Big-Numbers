@@ -312,6 +312,15 @@ public:
     return shuffle(0, size());
   }
 
+  CompactArray<T> &reverse() {
+    if(size() == 0) return *this;
+    for (T *p1 = &first(), *p2 = &last(); p1 < p2; p1++, p2--) {
+      const T tmp = *p1; *p1 = *p2; *p2 = tmp;
+    }
+    m_updateCount++;
+    return *this;
+  }
+
   bool generateAllPermuations(PermutationHandler &handler) {
     return permuter(size(), handler);
   }
@@ -482,31 +491,31 @@ public:
     m_size = (size_t)size64;
   }
 
-  String toString() const {
-    String result = _T("{");
+  String toString(const TCHAR *delimiter = _T(",")) const {
+    String result = _T("(");
     if(m_size) {
       const T *p = m_array;
       result += (p++)->toString();
       for(size_t i = m_size-1; i--;) {
-        result += _T(",");
+        result += delimiter;
         result += (p++)->toString();
       }
     }
-    result += _T("}");
+    result += _T(")");
     return result;
   }
 
-  String toStringBasicType() const {
-    String result = _T("{");
+  String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
+    String result = _T("(");
     if(m_size) {
       const T *p = m_array;
       result += ::toString(*(p++));
       for(size_t i = m_size-1; i--;) {
-        result += _T(",");
+        result += delimiter;
         result += ::toString(*(p++));
       }
     }
-    result += _T("}");
+    result += _T(")");
     return result;
   }
 

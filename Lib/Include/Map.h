@@ -25,6 +25,10 @@ public:
   const V &getValue() const {
     return *(V*)value();
   }
+
+  String toString() const {
+    return _T("(") + getKey().toString() + _T(",") + getValue().toString() + _T(")");
+  }
 };
 
 class AbstractMap {
@@ -245,15 +249,13 @@ public:
     }
   }
 
-  String toString() const {
+  String toString(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
-    size_t count = 0;
+    const TCHAR *delim = NULL;
     for(Iterator<Entry<K, V> > it = ((Map<K, V>*)this)->getIterator(); it.hasNext();) {
       const Entry<K, V> &entry = it.next();
-      if(count++) {
-        result += _T(",");
-      }
-      result += _T("(") + entry.getKey().toString() + _T(",") + entry.getValue().toString() + _T(")");
+      if(delim) result += delim; else delim = delimiter;
+      result += entry.toString();
     }
     result += _T(")");
     return result;

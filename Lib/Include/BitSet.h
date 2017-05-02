@@ -203,13 +203,14 @@ public:
   friend tostream &operator<<(tostream &s, const BitSet &rhs);
   tostream &dump(tostream &s = tcout) const;
   void dump(FILE *f = stdout) const;
-  String toString() const;
+  String toString(AbstractStringifier<size_t> *sf = NULL, const TCHAR *delim = _T(",")) const;
   String toStringIntervals() const;
 
+#ifdef __NEVER__
   size_t   oldSize() const;                            // Number of elements, slow version
   intptr_t oldGetIndex(size_t i) const;                // Return number of elements < i. if i not in set -1 is returned
   size_t   oldGetCount(size_t from, size_t to) const;  // Return number of elements between from and to. both included.
-
+#endif
 };
 
 class AbstractBitSetIterator : public AbstractIterator {

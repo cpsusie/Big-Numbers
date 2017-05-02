@@ -523,6 +523,7 @@
     <ClCompile Include="Pause.cpp" />
     <ClCompile Include="PersistentParameter.cpp" />
     <ClCompile Include="pipe.cpp" />
+    <ClCompile Include="PrimitiveStringifiers.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />
     <ClCompile Include="ProcessInfo.cpp" />
     <ClCompile Include="ProcessTime.cpp" />

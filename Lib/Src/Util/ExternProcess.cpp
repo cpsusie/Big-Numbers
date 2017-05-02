@@ -260,17 +260,17 @@ void ExternProcess::cleanup() {
   if(m_output) {
     fclose(m_output);
     m_output = NULL;
-    VERBOSE("m_output closed");
+    VERBOSE(_T("m_output closed"));
   }
   if(m_input) {
     fclose(m_input);
     m_input = NULL;
-    VERBOSE("m_input closed");
+    VERBOSE(_T("m_input closed"));
   }
   if(m_processHandle != INVALID_HANDLE_VALUE) {
     BOOL ret = CloseHandle(m_processHandle);
     setProcessHandle(INVALID_HANDLE_VALUE);
-    VERBOSE("processhandle closed");
+    VERBOSE(_T("processhandle closed"));
   }
   LEAVEFUNC
 }

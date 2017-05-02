@@ -236,7 +236,7 @@ public:
     }
   }
 
-  String toString(TCHAR delimiter = _T(',')) const {
+  String toString(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     Iterator<T> it = ((Collection<T>*)this)->getIterator();
     if(it.hasNext()) {
@@ -250,7 +250,7 @@ public:
     return result;
   }
 
-  String toStringBasicType(TCHAR delimiter = _T(',')) const {
+  String toStringBasicType(const TCHAR *delimiter = _T(",")) const {
     String result = _T("(");
     Iterator<T> it = ((Collection<T>*)this)->getIterator();
     if(it.hasNext()) {
@@ -263,6 +263,14 @@ public:
     result += _T(")");
     return result;
   }
+
+  String toString(AbstractStringifier<T> &sf, TCHAR *delimiter = _T(",")) const {
+    String result = _T("(");
+    result += ((Collection<T>*)this)->getIterator().toString(sf, delim);
+    result += _T(")");
+    return result;
+  }
+
 };
 
 template<class S, class T, class D=StreamDelimiter> S &operator<<(S &out, const Collection<T> &c) {

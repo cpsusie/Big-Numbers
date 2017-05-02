@@ -452,16 +452,13 @@ tostream& operator<<(tostream &s, const BitSet &rhs) {
   return s << rhs.toString();
 }
 
-String BitSet::toString() const {
+String BitSet::toString(AbstractStringifier<size_t> *sf, const TCHAR *delim) const {
   String result = _T("(");
-  TCHAR tmp[40];
   Iterator<size_t> it = ((BitSet*)this)->getIterator();
-  if(it.hasNext()) {
-    result += _i64tot(it.next(), tmp, 10);
-    while(it.hasNext()) {
-      result += _T(',');
-      result += _i64tot(it.next(), tmp, 10);
-    }
+  if(sf) {
+    result += it.toString(*sf, delim);
+  } else {
+    result += it.toString(SizeTStringifier(),delim);
   }
   result += _T(")");
   return result;
@@ -513,8 +510,10 @@ void BitSet::getRangeTable(CompactInt64Array &rangeTable, BYTE shift) const {
   }
 }
 
+#ifdef __NEVER__
 #define BYTECOUNT(size) (((size)-1) / 8 + 1)
 #define BYTEINDEX(i)    ((i)/8)
+
 
 size_t BitSet::oldSize() const {
   const BYTE *p = (const BYTE*)m_p;
@@ -578,3 +577,5 @@ size_t BitSet::oldGetCount(size_t from, size_t to) const {
     return setBitsCount[p[fromIndex] & (~_BS_MASKATOM(from%8) & _BS_MASKATOM(to%8+1))];
   }
 }
+
+#endif // __NVER__
