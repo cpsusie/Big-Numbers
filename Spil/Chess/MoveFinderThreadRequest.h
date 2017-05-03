@@ -48,6 +48,14 @@ public:
   }
 };
 
+class GameChangedRequestParam : public MoveFinderRequestParamGame {
+public:
+  GameChangedRequestParam(const Game &game)
+    : MoveFinderRequestParamGame(game)
+  {
+  }
+};
+
 class SearchMoveResult {
 public:
   MoveBase m_move;
@@ -64,13 +72,16 @@ public:
   }
 };
 
+class FetchMoveRequestParam : public SearchMoveResult {
+};
+
 class MoveFinderThreadRequest {
 private:
   MoveFinderThreadRequestType m_type;
   union {
-    FindMoveRequestParam       *m_findMoveParam;
-    MoveFinderRequestParamGame *m_gameChangedParam;
-    SearchMoveResult            m_searchResult;
+    FindMoveRequestParam    *m_findMoveParam;
+    GameChangedRequestParam *m_gameChangedParam;
+    FetchMoveRequestParam    m_fetchMoveParam;
   } m_data;
   void release();
   void addRef();
@@ -90,10 +101,10 @@ public:
   inline MoveFinderThreadRequestType getType() const {
     return m_type;
   }
-  const FindMoveRequestParam       &getFindMoveParam()    const;
-  const MoveFinderRequestParamGame &getGameChangedParam() const;
-  const SearchMoveResult           &getSearchResult()     const;
-  inline const TCHAR               *getRequestName()      const {
+  const FindMoveRequestParam     &getFindMoveParam()    const;
+  const GameChangedRequestParam  &getGameChangedParam() const;
+  const FetchMoveRequestParam    &getFetchMoveParam()   const;
+  inline const TCHAR             *getRequestName()      const {
     return getRequestName(m_type);
   }
   static const TCHAR *getRequestName(MoveFinderThreadRequestType request);
@@ -102,4 +113,3 @@ public:
 
 class MFTRQueue : public SynchronizedQueue<MoveFinderThreadRequest> {
 };
-

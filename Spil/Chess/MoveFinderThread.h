@@ -47,12 +47,12 @@ private:
   AbstractMoveFinder *newMoveFinderNormalPlay(const FindMoveRequestParam &param);
   bool isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const;
   EndGameTablebase *findMatchingTablebase(const Game &g) const;
-  void handleFindMoveRequest(   FindMoveRequestParam    param);
+  void handleFindMoveRequest(   const FindMoveRequestParam    &param);
   void handleNullMoveRequest();
   void handleStopSearchRequest();
   void handleMoveNowRequest();
-  void handleGameChangedRequest(const Game             &game);
-  void handleFetchMoveRequest(  const SearchMoveResult &searchResult);
+  void handleGameChangedRequest(const GameChangedRequestParam &param);
+  void handleFetchMoveRequest(  const FetchMoveRequestParam   &param);
   void handleResetRequest();
   void handleDisconnectRequest();
   void handleKillRequest();

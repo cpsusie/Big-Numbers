@@ -18,7 +18,7 @@
 
 #define _PRINT_DEBUGMSG
 #define _DEBUG_CHECKSTATE
-#define _TRACE_ENTERLEAVE
+//#define _TRACE_ENTERLEAVE
 
 #ifdef _PRINT_DEBUGMSG
 #define DEBUGMSG(...) debugMsg(__VA_ARGS__)
@@ -30,7 +30,7 @@
 #define CHECKSTATE(s1,...) checkState(__TFUNCTION__, __LINE__, s1, __VA_ARGS__ ,-1)
 #else 
 #define CHECKSTATE(s1,...)
-#endif // _DEBUG_CHECKSTATES
+#endif // _DEBUG_CHECKSTATE
 
 #ifdef _TRACE_ENTERLEAVE
 
@@ -246,11 +246,11 @@ UINT MoveFinderThread::run() {
       break;
 
     case REQUEST_FETCHMOVE :
-      handleFetchMoveRequest(request.getSearchResult());
+      handleFetchMoveRequest(request.getFetchMoveParam());
       break;
 
     case REQUEST_GAMECHANGED:
-      handleGameChangedRequest(request.getGameChangedParam().getGame());
+      handleGameChangedRequest(request.getGameChangedParam());
       break;
 
     case REQUEST_RESET     :
@@ -275,7 +275,7 @@ UINT MoveFinderThread::run() {
 }
 
 // private
-void MoveFinderThread::handleFindMoveRequest(FindMoveRequestParam param) {
+void MoveFinderThread::handleFindMoveRequest(const FindMoveRequestParam &param) {
   ENTERFUNC();
 
   m_gate.wait();
@@ -355,7 +355,7 @@ void MoveFinderThread::handleMoveNowRequest() {
 }
 
 // private
-void MoveFinderThread::handleFetchMoveRequest(const SearchMoveResult &searchResult) {
+void MoveFinderThread::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
   ENTERFUNC();
   m_gate.wait();
   switch(getState()) {
@@ -365,7 +365,7 @@ void MoveFinderThread::handleFetchMoveRequest(const SearchMoveResult &searchResu
     setState(MFTS_IDLE);
     break;
   case MFTS_BUSY       :
-    m_searchResult = searchResult;
+    m_searchResult = param;
     setState(m_searchResult.isMove() ? MFTS_MOVEREADY : MFTS_IDLE);
     break;
   default              :
@@ -376,7 +376,7 @@ void MoveFinderThread::handleFetchMoveRequest(const SearchMoveResult &searchResu
 }
 
 // private
-void MoveFinderThread::handleGameChangedRequest(const Game &game) {
+void MoveFinderThread::handleGameChangedRequest(const GameChangedRequestParam &param) {
   ENTERFUNC();
   CHECKSTATE(MFTS_IDLE,MFTS_PREPARESEARCH,MFTS_BUSY,MFTS_STOPPENDING,MFTS_MOVEREADY);
   if(isBusy()) {
@@ -398,7 +398,7 @@ void MoveFinderThread::handleGameChangedRequest(const Game &game) {
 
   try {
     if(m_moveFinder) {
-      m_moveFinder->notifyGameChanged(game);
+      m_moveFinder->notifyGameChanged(param.getGame());
     }
     setState(MFTS_IDLE);
   } catch(TcpException e) {
@@ -494,7 +494,6 @@ bool MoveFinderThread::isRightNormalPlayMoveFinder(const FindMoveRequestParam &p
   if(param.getTimeLimit().m_timeout == 0) {
     return m_moveFinder->getEngineType() == RANDOM_ENGINE;
   }
-
   return m_moveFinder->getEngineType() == EXTERN_ENGINE;
 #else
   return m_moveFinder->getEngineType() == RANDOM_ENGINE;
@@ -603,8 +602,13 @@ String MoveFinderThread::getName() const {
 //private
 void MoveFinderThread::setState(MoveFinderThreadState newState) {
   if(newState != m_state) {
-    DEBUGMSG(_T("Stateshift:%s->%s"), STATESTR(), getStateName(newState));
-    setProperty(MFTP_STATE, m_state, newState);
+    if(m_state == MFTS_KILLED) {
+      DEBUGMSG(_T("State already set to killed. No more transitions allowed"));
+      return;
+    } else {
+      DEBUGMSG(_T("Stateshift:%s->%s"), STATESTR(), getStateName(newState));
+      setProperty(MFTP_STATE, m_state, newState);
+    }
   }
 }
 

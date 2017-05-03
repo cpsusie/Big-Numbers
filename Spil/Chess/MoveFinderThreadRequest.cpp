@@ -10,14 +10,14 @@ MoveFinderThreadRequest::MoveFinderThreadRequest(const Game &game, const TimeLim
 MoveFinderThreadRequest::MoveFinderThreadRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
-  m_data.m_gameChangedParam = new MoveFinderRequestParamGame(game);
+  m_data.m_gameChangedParam = new GameChangedRequestParam(game);
 }
 
 MoveFinderThreadRequest::MoveFinderThreadRequest(const MoveBase &move, bool hint)
 :m_type(REQUEST_FETCHMOVE)
 {
-  m_data.m_searchResult.m_move = move;
-  m_data.m_searchResult.m_hint = hint;
+  m_data.m_fetchMoveParam.m_move = move;
+  m_data.m_fetchMoveParam.m_hint = hint;
 }
 
 MoveFinderThreadRequest::MoveFinderThreadRequest(MoveFinderThreadRequestType type) {
@@ -100,7 +100,7 @@ const FindMoveRequestParam &MoveFinderThreadRequest::getFindMoveParam() const {
   return *m_data.m_findMoveParam; // to make compiler happy
 }
 
-const MoveFinderRequestParamGame &MoveFinderThreadRequest::getGameChangedParam() const {
+const GameChangedRequestParam &MoveFinderThreadRequest::getGameChangedParam() const {
   switch (getType()) {
   case REQUEST_GAMECHANGED: return *m_data.m_gameChangedParam;
   default                 : throwInvalidType(__TFUNCTION__);
@@ -108,12 +108,12 @@ const MoveFinderRequestParamGame &MoveFinderThreadRequest::getGameChangedParam()
   return *m_data.m_gameChangedParam; // to make compiler happy
 }
 
-const SearchMoveResult &MoveFinderThreadRequest::getSearchResult() const {
+const FetchMoveRequestParam &MoveFinderThreadRequest::getFetchMoveParam() const {
   switch (getType()) {
-  case REQUEST_FETCHMOVE: return m_data.m_searchResult;
+  case REQUEST_FETCHMOVE: return m_data.m_fetchMoveParam;
   default               : throwInvalidType(__TFUNCTION__);
   }
-  return m_data.m_searchResult; // to make compiler happy
+  return m_data.m_fetchMoveParam; // to make compiler happy
 }
 
 String MoveFinderThreadRequest::toString() const {

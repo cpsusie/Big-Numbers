@@ -11,8 +11,8 @@
 #undef LEAVEFUNC
 #endif
 
-#define _PRINT_DEBUGMSG
-#define _TRACE_ENTERLEAVE
+//#define _PRINT_DEBUGMSG
+//#define _TRACE_ENTERLEAVE
 
 #define PLAYERSTR() ((m_player==WHITEPLAYER)?_T("W"):_T("B"))
 
