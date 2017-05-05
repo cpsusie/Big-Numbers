@@ -4,7 +4,7 @@
 #include <MFCUTIL/LayoutManager.h>
 #include "ChessGraphics.h"
 #include "GameEditHistory.h"
-#include "MoveFinderThread.h"
+#include "ChessPlayer.h"
 #include "StopWatch.h"
 #include "TraceDlgThread.h"
 #include <PropertyContainer.h>
@@ -73,7 +73,7 @@ private:
   BitSet8                 m_timersRunning;
   ChessWatch              m_watch;
   String                  m_origEscapeMenuText;
-  MoveFinderThread       *m_moveFinder[2];
+  ChessPlayer            *m_chessPlayer[2];
   PlotWinsPValuesThread  *m_plotThread;
 
   void   commonInit();
@@ -88,8 +88,8 @@ private:
   inline int getPlyCount() const {
     return getCurrentGame().getPlyCount();
   }
-  inline MoveFinderThread &getMoveFinder(Player player) {
-    return *m_moveFinder[player];
+  inline ChessPlayer &getChessPlayer(Player player) {
+    return *m_chessPlayer[player];
   }
   void   setGameAfterPly(int ply);
   void   ajourMenuItemsEnableStatus();
@@ -136,14 +136,14 @@ private:
   bool   notifyMove(         Player player, const MoveBase &move);
   void   notifyGameChanged(                 const Game     &game);
   void   notifyGameChanged(  Player player, const Game     &game);
-  inline bool   isRemote(           Player player) const {
-    return m_moveFinder[player]->isRemote();
+  inline bool   isRemote(    Player player) const {
+    return m_chessPlayer[player]->isRemote();
   }
   inline bool   isRemoteGame() const {
     return isRemote(WHITEPLAYER) || isRemote(BLACKPLAYER);
   }
   inline bool   isThinking(         Player player) const {
-    return m_moveFinder[player]->isBusy();
+    return m_chessPlayer[player]->isBusy();
   }
   inline bool   isThinking() const {
     return isThinking(WHITEPLAYER) || isThinking(BLACKPLAYER);
@@ -258,7 +258,6 @@ private:
 
   enum { IDD = IDD_MAINFRAME };
 
-public:
 protected:
   virtual BOOL PreTranslateMessage(MSG *pMsg);
   virtual void DoDataExchange(CDataExchange *pDX);
@@ -447,9 +446,8 @@ protected:
   afx_msg void OnTestPlotWinsPValues();
   afx_msg void OnTestShowEngineConsole();
   afx_msg void OnTestShowFEN();
-  afx_msg LRESULT OnMsgMoveFinderStateChanged(      WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgChessPlayerStateChanged(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgEngineChanged(               WPARAM wp, LPARAM lp);
-  afx_msg LRESULT OnMsgExternEngineChanged(         WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgTraceWindowChanged(          WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);

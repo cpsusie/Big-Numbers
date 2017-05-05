@@ -49,8 +49,8 @@
 ExternEngine::ExternEngine(Player player, const String &path)
 : m_player(player)
 , m_desc(path)
-, m_inputThread(NULL)
-, m_msgQueue(NULL)
+, m_inputThread( NULL)
+, m_moveReceiver(NULL)
 , m_stateFlags(0)
 , m_callLevel(0)
 {
@@ -82,13 +82,13 @@ public:
 
 
 // public
-void ExternEngine::start(MFTRQueue *msgQueue) {
+void ExternEngine::start(MoveReceiver *mr) {
   ENTERFUNC();
   __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
-  m_msgQueue    = msgQueue;
-  m_inputThread = new RedirectingInputThread(getInput());
+  m_moveReceiver = mr;
+  m_inputThread  = new RedirectingInputThread(getInput());
   sendUCI();
-  if(m_msgQueue) {
+  if(m_moveReceiver) {
     resume();
   }
   LEAVEFUNC();
@@ -249,15 +249,14 @@ EngineDescription ExternEngine::getUCIReply(const String &path) { // static
 }
 
 // public
-void ExternEngine::findBestMove(const FindMoveRequestParam &param) {
+void ExternEngine::findBestMove(const Game &game, const TimeLimit &timeLimit) {
   ENTERFUNC();
   if(!isIdle()) {
     DEBUGMSG(_T("engine.isIdle=false"));
   } else {
-    m_game = param.getGame();
-    m_hint = param.isHint();
+    m_game = game;
     sendPosition();
-    const int timeout = param.getTimeLimit().m_timeout;
+    const int timeout = timeLimit.m_timeout;
     send(_T("go %s\n"), (timeout == INFINITE) ? _T("infinite") : format(_T("movetime %d"), timeout).cstr());
     setStateFlags(EXE_BUSY);
   }
@@ -432,8 +431,8 @@ UINT ExternEngine::run() {
         } else if(reply == _T("bestmove")) {
           const PrintableMove result = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
           clrStateFlags(EXE_BUSY);
-          if(m_msgQueue) {
-            m_msgQueue->put(MoveFinderThreadRequest(result, m_hint));
+          if(m_moveReceiver) {
+            m_moveReceiver->putMove(result);
           } else {
             verbose(_T("bestMove:%s\n"), result.toString());
           }

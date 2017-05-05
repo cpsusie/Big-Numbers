@@ -4,11 +4,11 @@
 
 #include "MoveFinderExternEngine.h"
 
-MoveFinderExternEngine::MoveFinderExternEngine(Player player, MFTRQueue &msgQueue)
+MoveFinderExternEngine::MoveFinderExternEngine(Player player, ChessPlayerRequestQueue &msgQueue)
 : AbstractMoveFinder(player, msgQueue)
 , m_externEngine(player, Options::getEnginePathByPlayer(player))
 {
-  m_externEngine.start(&m_msgQueue);
+  m_externEngine.start(this);
   m_externEngine.setParameters(getOptions().getEngineOptionValues(player, getOptions().getPlayerOptions(player).m_engineName));
   m_optionsDlgThread = NULL;
 }
@@ -40,9 +40,9 @@ void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param, boo
   initSearch(param, talking);
   const PrintableMove m = checkForSingleMove();
   if(m.isMove()) {
-    putResult(m);
+    putMove(m);
   } else {
-    m_externEngine.findBestMove(param);
+    m_externEngine.findBestMove(param.getGame(), param.getTimeLimit());
   }
 }
 

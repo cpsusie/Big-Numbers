@@ -11,7 +11,7 @@ private:
   ExternEngine             m_externEngine;
   CEngineOptionsDlgThread *m_optionsDlgThread;
 public:
-  MoveFinderExternEngine(Player player, MFTRQueue &msgQueue);
+  MoveFinderExternEngine(Player player, ChessPlayerRequestQueue &msgQueue);
   ~MoveFinderExternEngine();
   void findBestMove(const FindMoveRequestParam &param, bool talking);
   void stopSearch();

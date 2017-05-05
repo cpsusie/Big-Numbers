@@ -4,7 +4,7 @@
 
 #include <ExternProcess.h>
 #include <InputThread.h>
-#include "MoveFinderThreadRequest.h"
+#include "ChessPlayerRequest.h"
 
 typedef enum { // dont swap these. see optionsCmp in ExternEngine.cpp
   OptionTypeSpin
@@ -118,9 +118,8 @@ private:
   EngineDescription            m_desc;
   EngineOptionDescriptionArray m_optionArray;
   InputThread                 *m_inputThread;
-  MFTRQueue                   *m_msgQueue;
+  MoveReceiver                *m_moveReceiver;
   mutable Game                 m_game;
-  bool                         m_hint;
   BYTE                         m_stateFlags;
   Semaphore                    m_gate;
   mutable int                  m_callLevel;
@@ -167,7 +166,7 @@ private:
 public:
   ExternEngine(Player player, const String &path);
  ~ExternEngine();
-  void start(MFTRQueue *msgQueue = NULL);
+  void start(MoveReceiver *mr = NULL);
   void quit();
   inline bool isStarting() const {
     return isStarted() && !isStateFlagsSet(EXE_UCIOK);
@@ -188,7 +187,7 @@ public:
   const EngineDescription &getDescription() const {
     return m_desc;
   }
-  void  findBestMove(const FindMoveRequestParam &param);
+  void  findBestMove(const Game &game, const TimeLimit &timeLimit);
   void  stopSearch();
   void  moveNow();
   UINT run();

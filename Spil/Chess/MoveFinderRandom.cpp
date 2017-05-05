@@ -4,7 +4,7 @@
 void MoveFinderRandomPlay::findBestMove(const FindMoveRequestParam &param, bool talking) {
   initSearch(param, talking);
   randomize();
-  putResult(m_game.getRandomMove());
+  putMove(m_game.getRandomMove());
 }
 
 String MoveFinderRandomPlay::getName() const {
@@ -12,6 +12,6 @@ String MoveFinderRandomPlay::getName() const {
 }
 
 String MoveFinderRandomPlay::getStateString(Player computerPlayer, bool detailed) {
-  return _T("No state for MoveFinderRandomPlay\n");
+  return _T("No state for MoveFinderRandomPlay");
 }
 

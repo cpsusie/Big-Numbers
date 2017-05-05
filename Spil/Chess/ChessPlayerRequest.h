@@ -10,14 +10,14 @@ typedef enum { // When put these request into the request-queue, caller never ha
  ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state MFTS_IDLE
  ,REQUEST_DISCONNECT   // Only valid if connected. Disconnect remoteMoveFinder
  ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to MFTS_KILLED
-} MoveFinderThreadRequestType;
+} ChessPlayerRequestType;
 
-class MoveFinderRequestParamGame {
+class RequestParamGame {
 private:
   const Game       m_game;
   BYTE             m_refCount;
 public:
-  MoveFinderRequestParamGame(const Game &game)
+  RequestParamGame(const Game &game)
     : m_game(game)
     , m_refCount(1)
   {
@@ -29,13 +29,13 @@ public:
   }
 };
 
-class FindMoveRequestParam : public MoveFinderRequestParamGame {
+class FindMoveRequestParam : public RequestParamGame {
 private:
   const TimeLimit  m_timeLimit;
   const bool       m_hint;
 public:
   FindMoveRequestParam(const Game &game, const TimeLimit &timeLimit, bool hint)
-    : MoveFinderRequestParamGame(game)
+    : RequestParamGame(game)
     , m_timeLimit(timeLimit)
     , m_hint(hint)
   {
@@ -48,10 +48,10 @@ public:
   }
 };
 
-class GameChangedRequestParam : public MoveFinderRequestParamGame {
+class GameChangedRequestParam : public RequestParamGame {
 public:
   GameChangedRequestParam(const Game &game)
-    : MoveFinderRequestParamGame(game)
+    : RequestParamGame(game)
   {
   }
 };
@@ -75,9 +75,9 @@ public:
 class FetchMoveRequestParam : public SearchMoveResult {
 };
 
-class MoveFinderThreadRequest {
+class ChessPlayerRequest {
 private:
-  MoveFinderThreadRequestType m_type;
+  ChessPlayerRequestType m_type;
   union {
     FindMoveRequestParam    *m_findMoveParam;
     GameChangedRequestParam *m_gameChangedParam;
@@ -89,16 +89,16 @@ private:
   void throwInvalidType(const TCHAR *method) const;
 public:
   // REQUEST_FINDMOVE
-  MoveFinderThreadRequest(const Game &game, const TimeLimit &timeLimit, bool hint);
+  ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint);
   // REQUEST_GAMECHANGED  
-  MoveFinderThreadRequest(const Game &game);
+  ChessPlayerRequest(const Game &game);
   // REQUEST_FETCHMOVE    
-  MoveFinderThreadRequest(const MoveBase &move, bool hint);
-  MoveFinderThreadRequest(MoveFinderThreadRequestType type);
-  MoveFinderThreadRequest(const MoveFinderThreadRequest &src);
-  ~MoveFinderThreadRequest();
-  MoveFinderThreadRequest &operator=(const MoveFinderThreadRequest &src);
-  inline MoveFinderThreadRequestType getType() const {
+  ChessPlayerRequest(const MoveBase &move, bool hint);
+  ChessPlayerRequest(ChessPlayerRequestType type);
+  ChessPlayerRequest(const ChessPlayerRequest &src);
+  ~ChessPlayerRequest();
+  ChessPlayerRequest &operator=(const ChessPlayerRequest &src);
+  inline ChessPlayerRequestType getType() const {
     return m_type;
   }
   const FindMoveRequestParam     &getFindMoveParam()    const;
@@ -107,9 +107,14 @@ public:
   inline const TCHAR             *getRequestName()      const {
     return getRequestName(m_type);
   }
-  static const TCHAR *getRequestName(MoveFinderThreadRequestType request);
+  static const TCHAR *getRequestName(ChessPlayerRequestType request);
   String toString() const;
 };
 
-class MFTRQueue : public SynchronizedQueue<MoveFinderThreadRequest> {
+class ChessPlayerRequestQueue : public SynchronizedQueue<ChessPlayerRequest> {
+};
+
+class MoveReceiver {
+public:
+  virtual void putMove(const MoveBase &move) = 0;
 };

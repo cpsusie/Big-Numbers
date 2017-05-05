@@ -2,7 +2,7 @@
 #include "AbstractMoveFinder.h"
 #include "TraceDlgThread.h"
 
-AbstractMoveFinder::AbstractMoveFinder(Player player, MFTRQueue &msgQueue)
+AbstractMoveFinder::AbstractMoveFinder(Player player, ChessPlayerRequestQueue &msgQueue)
 : m_player(player)
 , m_msgQueue(msgQueue)
 {
@@ -19,8 +19,8 @@ void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param, bool talk
   setVerbose(talking);
 }
 
-void AbstractMoveFinder::putResult(const MoveBase &m) {
-  m_msgQueue.put(MoveFinderThreadRequest(m, m_hint));
+void AbstractMoveFinder::putMove(const MoveBase &m) {
+  m_msgQueue.put(ChessPlayerRequest(m, m_hint));
 }
 
 PrintableMove AbstractMoveFinder::checkForSingleMove() {

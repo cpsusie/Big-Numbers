@@ -2814,7 +2814,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="MoveFinderThread.cpp">
+    <ClCompile Include="ChessPlayer.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -2824,7 +2824,7 @@
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='TablebaseBuilderRelease|x64'"> /Zm200   /Zm200 </AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="MoveFinderThreadRequest.cpp" />
+    <ClCompile Include="ChessPlayerRequest.cpp" />
     <ClCompile Include="MoveGenerator.cpp">
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|Win32'"> /Zm200   /Zm200 </AdditionalOptions>
       <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Release|x64'"> /Zm200   /Zm200 </AdditionalOptions>
@@ -3199,8 +3199,8 @@
     <ClInclude Include="MoveFinderExternEngine.h" />
     <ClInclude Include="MoveFinderRandom.h" />
     <ClInclude Include="MoveFinderRemotePlayer.h" />
-    <ClInclude Include="MoveFinderThread.h" />
-    <ClInclude Include="MoveFinderThreadRequest.h" />
+    <ClInclude Include="ChessPlayer.h" />
+    <ClInclude Include="ChessPlayerRequest.h" />
     <ClInclude Include="OpeningDlg.h" />
     <ClInclude Include="OpeningDlgThread.h" />
     <ClInclude Include="OpeningLibrary.h" />

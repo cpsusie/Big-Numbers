@@ -334,7 +334,7 @@ static CSize loadSize(RegistryKey key, const CSize &defaultValue) {
 
 static void saveLevelTimeout(RegistryKey key, const LevelTimeout &lt) {
   for(int level = 1; level <= LEVELCOUNT; level++) {
-    key.setValue(format(_T("%d"),level) , format(_T("%.2lf"), lt.getTimeout(level)));
+    key.setValue(format(_T("%d"),level), format(_T("%.2lf"), lt.getTimeout(level)));
   }
 }
 
@@ -352,15 +352,15 @@ static LevelTimeout loadLevelTimeout(RegistryKey key, const LevelTimeout &defaul
 }
 
 static void saveEngineDescription(RegistryKey key, const EngineDescription &desc) {
-  key.setValue(EMPTYSTRING      , desc.getName());
-  key.setValue(EEAUTHOR, desc.getAuthor());
-  key.setValue(EEPATH  , desc.getPath());
+  key.setValue(EMPTYSTRING, desc.getName());
+  key.setValue(EEAUTHOR   , desc.getAuthor());
+  key.setValue(EEPATH     , desc.getPath());
 }
 
 static void loadEngineDescription(RegistryKey key, EngineDescription &desc) {
-  desc.m_name   = key.getString(EMPTYSTRING      , EMPTYSTRING);
-  desc.m_author = key.getString(EEAUTHOR, EMPTYSTRING);
-  desc.m_path   = key.getString(EEPATH  , EMPTYSTRING);
+  desc.m_name   = key.getString(EMPTYSTRING, EMPTYSTRING);
+  desc.m_author = key.getString(EEAUTHOR   , EMPTYSTRING);
+  desc.m_path   = key.getString(EEPATH     , EMPTYSTRING);
 }
 
 EngineVerboseFields::EngineVerboseFields() {
@@ -536,7 +536,7 @@ void Options::load() {
     m_engineVerboseFields      = loadEngineVerboseFields(getSubKey(ENGINEVERBOSEFIELDS), defaultOptions.getengineVerboseFields());
 
     forEachPlayer(p) {
-      RegistryKey subKey = getSubKey(p);
+      RegistryKey                subKey = getSubKey(p);
       PlayerOptions             &po     = m_playerOptions[p];
 
       const PlayerOptions       &defPo  = defaultOptions.getPlayerOptions(p);

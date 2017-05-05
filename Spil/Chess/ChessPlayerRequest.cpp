@@ -1,26 +1,26 @@
 #include "stdafx.h"
 #include "AbstractMoveFinder.h"
 
-MoveFinderThreadRequest::MoveFinderThreadRequest(const Game &game, const TimeLimit &timeLimit, bool hint)
+ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint)
 :m_type(REQUEST_FINDMOVE)
 {
   m_data.m_findMoveParam = new FindMoveRequestParam(game,timeLimit,hint);
 }
 
-MoveFinderThreadRequest::MoveFinderThreadRequest(const Game &game)
+ChessPlayerRequest::ChessPlayerRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
   m_data.m_gameChangedParam = new GameChangedRequestParam(game);
 }
 
-MoveFinderThreadRequest::MoveFinderThreadRequest(const MoveBase &move, bool hint)
+ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
 :m_type(REQUEST_FETCHMOVE)
 {
   m_data.m_fetchMoveParam.m_move = move;
   m_data.m_fetchMoveParam.m_hint = hint;
 }
 
-MoveFinderThreadRequest::MoveFinderThreadRequest(MoveFinderThreadRequestType type) {
+ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
   switch (type) {
   case REQUEST_NULLMOVE     :
   case REQUEST_STOPSEARCH   :
@@ -36,18 +36,18 @@ MoveFinderThreadRequest::MoveFinderThreadRequest(MoveFinderThreadRequestType typ
   }
 }
 
-MoveFinderThreadRequest::MoveFinderThreadRequest(const MoveFinderThreadRequest &src) 
+ChessPlayerRequest::ChessPlayerRequest(const ChessPlayerRequest &src) 
 : m_type(src.getType())
 , m_data(src.m_data)
 {
   addRef();
 }
 
-MoveFinderThreadRequest::~MoveFinderThreadRequest() {
+ChessPlayerRequest::~ChessPlayerRequest() {
   release();
 }
 
-void MoveFinderThreadRequest::addRef() {
+void ChessPlayerRequest::addRef() {
   switch(m_type) {
   case REQUEST_FINDMOVE   :
     m_data.m_findMoveParam->addRef();
@@ -60,7 +60,7 @@ void MoveFinderThreadRequest::addRef() {
   }
 }
 
-void MoveFinderThreadRequest::release() {
+void ChessPlayerRequest::release() {
   switch(m_type) {
   case REQUEST_FINDMOVE   :
     if(m_data.m_findMoveParam->release() == 0) {
@@ -78,11 +78,11 @@ void MoveFinderThreadRequest::release() {
   cleanData();
 }
 
-void MoveFinderThreadRequest::cleanData() {
+void ChessPlayerRequest::cleanData() {
   memset(&m_data, 0, sizeof(m_data));
 }
 
-MoveFinderThreadRequest &MoveFinderThreadRequest::operator=(const MoveFinderThreadRequest &src) {
+ChessPlayerRequest &ChessPlayerRequest::operator=(const ChessPlayerRequest &src) {
   if(&src != this) {
     release();
     m_type = src.m_type;
@@ -92,7 +92,7 @@ MoveFinderThreadRequest &MoveFinderThreadRequest::operator=(const MoveFinderThre
   return *this;
 }
 
-const FindMoveRequestParam &MoveFinderThreadRequest::getFindMoveParam() const {
+const FindMoveRequestParam &ChessPlayerRequest::getFindMoveParam() const {
   switch (getType()) {
   case REQUEST_FINDMOVE   : return *m_data.m_findMoveParam;
   default                 : throwInvalidType(__TFUNCTION__);
@@ -100,7 +100,7 @@ const FindMoveRequestParam &MoveFinderThreadRequest::getFindMoveParam() const {
   return *m_data.m_findMoveParam; // to make compiler happy
 }
 
-const GameChangedRequestParam &MoveFinderThreadRequest::getGameChangedParam() const {
+const GameChangedRequestParam &ChessPlayerRequest::getGameChangedParam() const {
   switch (getType()) {
   case REQUEST_GAMECHANGED: return *m_data.m_gameChangedParam;
   default                 : throwInvalidType(__TFUNCTION__);
@@ -108,7 +108,7 @@ const GameChangedRequestParam &MoveFinderThreadRequest::getGameChangedParam() co
   return *m_data.m_gameChangedParam; // to make compiler happy
 }
 
-const FetchMoveRequestParam &MoveFinderThreadRequest::getFetchMoveParam() const {
+const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
   switch (getType()) {
   case REQUEST_FETCHMOVE: return m_data.m_fetchMoveParam;
   default               : throwInvalidType(__TFUNCTION__);
@@ -116,15 +116,15 @@ const FetchMoveRequestParam &MoveFinderThreadRequest::getFetchMoveParam() const 
   return m_data.m_fetchMoveParam; // to make compiler happy
 }
 
-String MoveFinderThreadRequest::toString() const {
+String ChessPlayerRequest::toString() const {
   return getRequestName(m_type);
 }
 
-void MoveFinderThreadRequest::throwInvalidType(const TCHAR *method) const {
+void ChessPlayerRequest::throwInvalidType(const TCHAR *method) const {
   throwException(_T("%s:Request type is %s"), method, getRequestName());
 }
 
-const TCHAR *MoveFinderThreadRequest::getRequestName(MoveFinderThreadRequestType request) { // static
+const TCHAR *ChessPlayerRequest::getRequestName(ChessPlayerRequestType request) { // static
 #define caseStr(s) case REQUEST_##s: return _T(#s);
   switch(request) {
   caseStr(FINDMOVE   )

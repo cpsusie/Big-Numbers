@@ -6,7 +6,7 @@
 String          MoveFinderEndGame::s_currentDbPath;
 TablebaseMetric MoveFinderEndGame::s_currentMetric;
 
-MoveFinderEndGame::MoveFinderEndGame(Player player, MFTRQueue &msgQueue, EndGameTablebase *tablebase)
+MoveFinderEndGame::MoveFinderEndGame(Player player, ChessPlayerRequestQueue &msgQueue, EndGameTablebase *tablebase)
 : AbstractMoveFinder(player, msgQueue)
 , m_tablebase(tablebase)
 {
@@ -60,7 +60,7 @@ void MoveFinderEndGame::findBestMove(const FindMoveRequestParam &param, bool tal
       break;
     }
   }
-  putResult(result);
+  putMove(result);
 }
 
 String MoveFinderEndGame::getName() const {
@@ -70,25 +70,25 @@ String MoveFinderEndGame::getName() const {
 String MoveFinderEndGame::getStateString(Player computerPlayer, bool detailed) {
   String result;
   if(m_tablebase) {
-    result = format(_T("Current tablebase:%s\n"), m_tablebase->getName().cstr());
+    result = format(_T("Current tablebase:%s"), m_tablebase->getName().cstr());
     if(m_tablebase->isLoaded()) {
-      result += _T("  Loaded\n");
+      result += _T("\n  Loaded");
     } else {
-      result += _T("  Not loaded\n");
+      result += _T("\n  Not loaded");
     }
-    result += format(_T("  LoadRefCount:%d\n"), m_tablebase->getLoadRefCount());
+    result += format(_T("\n  LoadRefCount:%d"), m_tablebase->getLoadRefCount());
   }
-  result += format(_T("  Current metric:%s\n"), EndGameKeyDefinition::getMetricName());
+  result += format(_T("\n  Current metric:%s"), EndGameKeyDefinition::getMetricName());
   const EndGameTablebaseList list = EndGameTablebase::getExistingEndGameTablebases();
   String allLoadedString;
   for(size_t i = 0; i < list.size(); i++) {
     const EndGameTablebase *tb = list[i];
     if(tb->isLoaded()) {
-      allLoadedString += format(_T("%5s refcount:%d\n"), tb->getName().cstr(), tb->getLoadRefCount());
+      allLoadedString += format(_T("\n%5s refcount:%d"), tb->getName().cstr(), tb->getLoadRefCount());
     }
   }
   if(allLoadedString.length() > 0) {
-    result += format(_T("All loaded tablebases:\n%s"), allLoadedString.cstr());
+    result += format(_T("\nAll loaded tablebases:\n%s"), allLoadedString.cstr());
   }
   return result;
 }

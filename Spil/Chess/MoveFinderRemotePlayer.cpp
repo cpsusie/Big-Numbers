@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MoveFinderRemotePlayer.h"
 
-MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, MFTRQueue &msgQueue, SocketChannel channel)
+MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, ChessPlayerRequestQueue &msgQueue, SocketChannel channel)
 : AbstractMoveFinder(player, msgQueue)
 , m_channel(channel)
 {
@@ -71,7 +71,7 @@ void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param, boo
     result = m_game.generateMove(s);
     m_receivedMove = result;
   }
-  return putResult(result);
+  return putMove(result);
 }
 
 void MoveFinderRemotePlayer::notifyGameChanged(const Game &game) {

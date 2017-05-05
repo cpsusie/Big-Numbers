@@ -9,7 +9,7 @@ private:
   static String          s_currentDbPath;
   static TablebaseMetric s_currentMetric;
 public:
-  MoveFinderEndGame(Player player, MFTRQueue &msgQueue, EndGameTablebase *tablebase);
+  MoveFinderEndGame(Player player, ChessPlayerRequestQueue &msgQueue, EndGameTablebase *tablebase);
   ~MoveFinderEndGame();
 
   void findBestMove(const FindMoveRequestParam &param, bool talking);

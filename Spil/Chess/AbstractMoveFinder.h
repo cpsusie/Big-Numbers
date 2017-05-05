@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MoveFinderThreadRequest.h"
+#include "ChessPlayerRequest.h"
 
 typedef enum {
   INTERN_ENGINE
@@ -9,31 +9,31 @@ typedef enum {
  ,RANDOM_ENGINE
 } EngineType;
 
-class AbstractMoveFinder {
+class AbstractMoveFinder : public MoveReceiver {
 private:
-  bool          m_verbose;
-  const Player  m_player;
+  bool                     m_verbose;
+  const Player             m_player;
+  ChessPlayerRequestQueue &m_msgQueue;
 protected:
-  MFTRQueue    &m_msgQueue;
-  Game          m_game;
-  TimeLimit     m_timeLimit;
-  bool          m_hint;
+  Game                     m_game;
+  TimeLimit                m_timeLimit;
+  bool                     m_hint;
 
   void initSearch(const FindMoveRequestParam &param, bool talking);
   bool isVerbose() {
     return m_verbose;
   }
-  void putResult(const MoveBase &m);
   PrintableMove checkForSingleMove();
 public:
   // msgQueue is for sending messages back to owner.
   // Dont get message from it!! only put
-  AbstractMoveFinder(Player player, MFTRQueue &msgQueue);
+  AbstractMoveFinder(Player player, ChessPlayerRequestQueue &msgQueue);
   virtual ~AbstractMoveFinder() {
   }
   Player getPlayer() const {
     return m_player;
   }
+  void putMove(const MoveBase &m);
   // Should return immediately. dont wait for engine to finish search
   virtual void           findBestMove(const FindMoveRequestParam &param, bool verbose) = 0;
   virtual void           stopSearch()               = 0;

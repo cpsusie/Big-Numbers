@@ -832,9 +832,6 @@
     <ClCompile Include="MoveFinderRemotePlayer.cpp">
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
-    <ClCompile Include="MoveFinderThread.cpp">
-      <Filter>Source Files\MoveFinders</Filter>
-    </ClCompile>
     <ClCompile Include="GameAnalyzeThread.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -892,14 +889,17 @@
     <ClCompile Include="EngineOptionDescription.cpp">
       <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
-    <ClCompile Include="MoveFinderThreadRequest.cpp">
-      <Filter>Source Files\MoveFinders</Filter>
-    </ClCompile>
     <ClCompile Include="PrintableMove.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MoveBase.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessPlayer.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
+    </ClCompile>
+    <ClCompile Include="ChessPlayerRequest.cpp">
+      <Filter>Source Files\MoveFinders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1047,9 +1047,6 @@
     <ClInclude Include="MoveFinderRemotePlayer.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
-    <ClInclude Include="MoveFinderThread.h">
-      <Filter>Source Files\MoveFinders\Include</Filter>
-    </ClInclude>
     <ClInclude Include="AbstractMoveFinder.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
@@ -1083,7 +1080,10 @@
     <ClInclude Include="EndGame6MenNoPawns.h">
       <Filter>EndGames\6Men\6MenNoPawns</Filter>
     </ClInclude>
-    <ClInclude Include="MoveFinderThreadRequest.h">
+    <ClInclude Include="ChessPlayer.h">
+      <Filter>Source Files\MoveFinders\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="ChessPlayerRequest.h">
       <Filter>Source Files\MoveFinders\Include</Filter>
     </ClInclude>
   </ItemGroup>
