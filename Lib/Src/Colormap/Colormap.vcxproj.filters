@@ -27,7 +27,7 @@
     <ClCompile Include="ColormapPropPage.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ColorMapGraphics.cpp">
+    <ClCompile Include="ColormapGraphics.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -50,7 +50,7 @@
     <ClInclude Include="ColormapPropPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ColorMapGraphics.h">
+    <ClInclude Include="ColormapGraphics.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

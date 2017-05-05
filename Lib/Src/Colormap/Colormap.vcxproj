@@ -261,7 +261,7 @@
   <ItemGroup>
     <ClCompile Include="Colormap.cpp" />
     <ClCompile Include="ColormapCtrl.cpp" />
-    <ClCompile Include="ColorMapGraphics.cpp" />
+    <ClCompile Include="ColormapGraphics.cpp" />
     <ClCompile Include="ColormapPropPage.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -273,7 +273,7 @@
   <ItemGroup>
     <ClInclude Include="Colormap.h" />
     <ClInclude Include="ColormapCtrl.h" />
-    <ClInclude Include="ColorMapGraphics.h" />
+    <ClInclude Include="ColormapGraphics.h" />
     <ClInclude Include="ColormapPropPage.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
