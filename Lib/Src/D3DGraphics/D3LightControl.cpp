@@ -169,7 +169,7 @@ void D3LightControl::createEffect() {
   StringArray compilerErrors;
   m_effect = getScene().compileEffect(effectSourceText, compilerErrors);
   if(m_effect == NULL) {
-    const String errorMsg = compilerErrors.toString(_T('\n'));
+    const String errorMsg = compilerErrors.toString(_T("\n"));
     Message(_T("%s"), errorMsg.cstr());
     return;
   }

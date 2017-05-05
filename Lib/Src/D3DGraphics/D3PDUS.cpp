@@ -56,6 +56,6 @@ String D3PosDirUpScale::toString(int dec) const {
                ,::toString(m_up,dec).cstr()
                ,::toString(getRight(),dec).cstr()
                ,::toString(m_scale,dec).cstr()
-               ,a.toString(_T('\n')).remove(0,1).removeLast().cstr()
+               ,a.toString(_T("\n")).remove(0,1).removeLast().cstr()
                );
 }
