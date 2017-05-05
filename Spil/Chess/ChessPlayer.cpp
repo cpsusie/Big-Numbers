@@ -6,6 +6,11 @@
 #include "MoveFinderExternEngine.h"
 #include "MoveFinderRemotePlayer.h"
 
+//#define _PRINT_DEBUGMSG
+#define _DEBUG_CHECKSTATE
+//#define _TRACE_ENTERLEAVE
+
+
 #ifdef ENTERFUNC
 #undef ENTERFUNC
 #endif
@@ -14,17 +19,12 @@
 #endif
 
 #define STATESTR()  getStateName(getState())
-#define PLAYERSTR() ((m_player==WHITEPLAYER)?_T("W"):_T("B"))
-
-#define _PRINT_DEBUGMSG
-#define _DEBUG_CHECKSTATE
-//#define _TRACE_ENTERLEAVE
 
 #ifdef _PRINT_DEBUGMSG
 #define DEBUGMSG(...) debugMsg(__VA_ARGS__)
 #else
 #define DEBUGMSG(...)
-#endif
+#endif // _PRINT_DEBUGMSG
 
 #ifdef _DEBUG_CHECKSTATE
 #define CHECKSTATE(s1,...) checkState(__TFUNCTION__, __LINE__, s1, __VA_ARGS__ ,-1)
@@ -706,7 +706,7 @@ void ChessPlayer::debugMsg(const TCHAR *format, ...) const {
   const String msg = vformat(format,argptr);
   va_end(argptr);
   verbose(_T("%s:%*.*s%s (state=%s)\n")
-         ,PLAYERSTR()
+         ,getPlayerShortNameEnglish(m_player)
          ,m_callLevel,m_callLevel, EMPTYSTRING
          ,msg.cstr()
          ,STATESTR()

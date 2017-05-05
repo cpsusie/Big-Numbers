@@ -1,5 +1,14 @@
 #include "stdafx.h"
 
+const TCHAR *getPlayerShortNameEnglish(Player player) {
+  switch(player) {
+  case WHITEPLAYER: return _T("W");
+  case BLACKPLAYER: return _T("B");
+  default         : INVALIDPLAYERERROR(player);
+                    return _T("?");
+  }
+}
+
 const TCHAR *getPieceTypeShortNameEnglish(PieceType type) {
   switch(type) {
   case King  : return _T("K");

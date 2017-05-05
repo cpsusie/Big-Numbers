@@ -102,10 +102,12 @@ END
 // remains consistent on all systems.
 IDR_MAINFRAME           ICON                    "res\\chess.ico"
 
+
 /////////////////////////////////////////////////////////////////////////////
 //
 // OPENINGLIBRARY
 //
+
 IDR_OPENINGLIBRARY      OPENINGLIBRARY          "res\\OpenLib.dat"
 
 
@@ -113,28 +115,43 @@ IDR_OPENINGLIBRARY      OPENINGLIBRARY          "res\\OpenLib.dat"
 //
 // JPG
 //
+
 IDR_BOARD               JPG                     "res\\Board.jpg"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // PNG
 //
+
 IDB_SELECTIONFRAME      PNG                     "res\\SelectionFrame.png"
+
 IDB_SRCMARK             PNG                     "res\\SrcFieldMark.png"
+
 IDB_DSTMARK             PNG                     "res\\DstFieldMark.png"
 
 IDB_BITMAPBLACKBISHOP   PNG                     "res\\BlackBishop.png"
+
 IDB_BITMAPBLACKKING     PNG                     "res\\BlackKing.png"
+
 IDB_BITMAPBLACKKNIGHT   PNG                     "res\\BlackKnight.png"
+
 IDB_BITMAPBLACKPAWN     PNG                     "res\\BlackPawn.png"
+
 IDB_BITMAPBLACKQUEEN    PNG                     "res\\BlackQueen.png"
+
 IDB_BITMAPBLACKROOK     PNG                     "res\\BlackRook.png"
 
 IDB_BITMAPWHITEBISHOP   PNG                     "res\\WhiteBishop.png"
+
 IDB_BITMAPWHITEKING     PNG                     "res\\WhiteKing.png"
+
 IDB_BITMAPWHITEKNIGHT   PNG                     "res\\WhiteKnight.png"
+
 IDB_BITMAPWHITEPAWN     PNG                     "res\\WhitePawn.png"
+
 IDB_BITMAPWHITEQUEEN    PNG                     "res\\WhiteQueen.png"
+
 IDB_BITMAPWHITEROOK     PNG                     "res\\WhiteRook.png"
 
 
@@ -142,24 +159,39 @@ IDB_BITMAPWHITEROOK     PNG                     "res\\WhiteRook.png"
 //
 // Bitmap
 //
+
 IDB_YELLOWFIELD         BITMAP                  "res\\yellowField.bmp"
+
 IDB_BLUEFIELD           BITMAP                  "res\\blueField.bmp"
+
 IDB_CHECKEDKING         BITMAP                  "res\\checkedKing.bmp"
+
 IDB_PURPLEFIELD         BITMAP                  "res\\purpleField.bmp"
+
 IDB_PINKFIELD           BITMAP                  "res\\pinkField.bmp"
+
 IDB_HOURGLASS           BITMAP                  "res\\Hourglasses.bmp"
+
 IDB_PLAYERINDICATOR     BITMAP                  "res\\PlayerIndicator.bmp"
+
 IDB_BITMAPNOPIECE       BITMAP                  "res\\NoPiece.bmp"
+
 IDB_BITMAPWHITEBLACK    BITMAP                  "res\\OpeningTreeImages.bmp"
+
 IDB_GREENFIELD          BITMAP                  "res\\GreenField.bmp"
+
 IDB_BITMAPWHITEMARK     BITMAP                  "res\\WhiteMark.bmp"
+
 IDB_BITMAPBLACKMARK     BITMAP                  "res\\BlackMark.bmp"
+
 IDB_BITMAPDELETEMARK    BITMAP                  "res\\DeleteMark.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
+
 IDD_MAINFRAME DIALOGEX 0, 0, 957, 407
 STYLE DS_SETFONT | DS_NOIDLEMSG | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
@@ -835,12 +867,13 @@ END
 //
 // Accelerator
 //
+
 IDR_MAINFRAME ACCELERATORS
 BEGIN
     VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, NOINVERT
     "U",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "S",            ID_EDIT_SWITCHPLAYERINTURN,    VIRTKEY, ALT, NOINVERT
+    "S",            ID_EDIT_SWITCHPLAYERINTURN, VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
     VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
@@ -979,6 +1012,8 @@ STRINGTABLE
 BEGIN
     IDS_WHITEPLAYERNAME     "Hvid"
     IDS_BLACKPLAYERNAME     "Sort"
+    IDS_WHITEPLAYERSHORTNAME "H"
+    IDS_BLACKPLAYERSHORTNAME "S"
     IDS_BOTH_LABEL          "Begge"
 END
 
@@ -1190,10 +1225,22 @@ STRINGTABLE
 BEGIN
     IDC_STATIC_SECONDS_LC   "sek."
     IDC_CHECK_RESETCLOCKS   "Nulstil &ure"
+END
+
+STRINGTABLE
+BEGIN
     IDC_STATIC_TEXT         "Tekst:"
+END
+
+STRINGTABLE
+BEGIN
     IDC_BUTTON_HIDE         "&Luk"
     IDC_BUTTON_CLEAR        "&Slet alt"
     IDC_CHECK_KEEPTEXT      "&Behold text"
+END
+
+STRINGTABLE
+BEGIN
     IDC_BUTTON_EXPAND       "&Ekspander"
     IDC_BUTTON_EXPANDALL    "Ekspander &alle"
 END
@@ -1533,7 +1580,7 @@ BEGIN
     VK_F5,          ID_AUTOPLAY_NO_RESTART, VIRTKEY, CONTROL, NOINVERT
     VK_F5,          ID_AUTOPLAY_RESTART_AT_END, VIRTKEY, SHIFT, CONTROL, NOINVERT
     "G",            ID_BLACK_ENGINE_GETSTATE, VIRTKEY, SHIFT, CONTROL, NOINVERT
-    "S",            ID_EDIT_SWITCHPLAYERINTURN,    VIRTKEY, ALT, NOINVERT
+    "S",            ID_EDIT_SWITCHPLAYERINTURN, VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_CLEARBOARD,     VIRTKEY, ALT, NOINVERT
     "C",            ID_EDIT_COPY_FEN,       VIRTKEY, CONTROL, NOINVERT
     VK_F2,          ID_EDIT_ENDSETUP,       VIRTKEY, NOINVERT
@@ -1666,6 +1713,8 @@ STRINGTABLE
 BEGIN
     IDS_WHITEPLAYERNAME     "White"
     IDS_BLACKPLAYERNAME     "Black"
+    IDS_WHITEPLAYERSHORTNAME "W"
+    IDS_BLACKPLAYERSHORTNAME "B"
     IDS_BOTH_LABEL          "Both"
 END
 
@@ -1877,10 +1926,22 @@ STRINGTABLE
 BEGIN
     IDC_STATIC_SECONDS_LC   "sec."
     IDC_CHECK_RESETCLOCKS   "&Reset clocks"
+END
+
+STRINGTABLE
+BEGIN
     IDC_STATIC_TEXT         "Text:"
+END
+
+STRINGTABLE
+BEGIN
     IDC_BUTTON_HIDE         "C&lose"
     IDC_BUTTON_CLEAR        "&Clear"
     IDC_CHECK_KEEPTEXT      "&Keep log"
+END
+
+STRINGTABLE
+BEGIN
     IDC_BUTTON_EXPAND       "&Expand"
     IDC_BUTTON_EXPANDALL    "Expand &all"
 END
@@ -1961,7 +2022,7 @@ LANGUAGE 9, 1
 #if !defined(_AFXDLL)
 #include "afxribbon.rc"   // MFC ribbon and control bar resources
 #endif
-#endif
-
+#endif
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
+

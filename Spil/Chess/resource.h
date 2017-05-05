@@ -85,7 +85,9 @@
 #define IDS_PROMOTED_PAWN_PLUR          238
 #define IDS_WHITEPLAYERNAME             240
 #define IDS_BLACKPLAYERNAME             241
-#define IDS_BOTH_LABEL                  242
+#define IDS_WHITEPLAYERSHORTNAME        242
+#define IDS_BLACKPLAYERSHORTNAME        243
+#define IDS_BOTH_LABEL                  244
 #define IDS_MSG_s_CANNOT_HAVE_TWO_KINGS 260
 #define IDS_MSG_CANNOT_ADD_ANOTHER_s_s  261
 #define IDS_MSG_s_HAS_NO_KING           262

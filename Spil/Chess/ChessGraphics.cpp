@@ -62,13 +62,14 @@ void ChessGraphics::deallocate() {
   m_paintLevel = 0;
 }
 
+// r,c might be an invalid position. See paintFieldNames
 Point2DP ChessGraphics::getFieldPosition(int r, int c, bool scaled) const {
-  const Size2D fs    = FIELDSIZE(scaled);
-  if(m_computerPlayer == WHITEPLAYER) {
-    return UPPERLEFTCORNER(scaled) + Size2D(fs.cx*(7-c),fs.cy*r);
-  } else {
-    return UPPERLEFTCORNER(scaled) + Size2D((fs.cx*c)  ,fs.cy*(7-r));
-  }
+  const Size2D fs = FIELDSIZE(scaled);
+  return UPPERLEFTCORNER(scaled) 
+       + ((m_computerPlayer == WHITEPLAYER) 
+        ? Size2D( fs.cx*(7-c),fs.cy * r   )
+        : Size2D((fs.cx* c  ),fs.cy *(7-r)))
+        ;
 }
 
 Point2DP ChessGraphics::getFieldPosition(int pos, bool scaled) const {
@@ -90,23 +91,16 @@ void ChessGraphics::setGame(const Game &game) {
 }
 
 int ChessGraphics::getBoardPosition(const CPoint &point) const {
-  CPoint result = point - UPPERLEFTCORNER(true);
-  if(result.x < 0 || result.y < 0) {
-    return -1;
-  }
-  const CSize &fs = FIELDSIZE(true);
+  CPoint       result = point - UPPERLEFTCORNER(true);
+  const CSize &fs     = FIELDSIZE(true);
   result.x /= fs.cx;
   result.y /= fs.cy;
-  if(m_computerPlayer == WHITEPLAYER) {
-    result.x = 7-result.x;
-  } else {
-    result.y = 7-result.y;
-  }
-  if(result.x >= 0 && result.x <= 7 && result.y >= 0 && result.y <= 7) {
-    return MAKE_POSITION(result.y,result.x);
-  } else {
+
+  if(!isValidPosition(result.x, result.y)) {
     return -1;
   }
+  const int pos = MAKE_POSITION(result.y,result.x);
+  return (m_computerPlayer == WHITEPLAYER) ? MIRRORCOLUMN(pos) : MIRRORROW(pos);
 }
 
 void ChessGraphics::setComputerPlayer(Player computerPlayer) {
@@ -192,7 +186,7 @@ void ChessGraphics::setShowBackMoves(bool show) {
 }
 
 const Image *ChessGraphics::getPieceImage(int pos) const {
-  const Piece *piece = m_game->getPieceAtPosition(pos);
+  const Piece *piece = m_game ? m_game->getPieceAtPosition(pos) : NULL;
   return piece ? m_resources.getPieceImage(piece) : NULL;
 }
 
@@ -338,11 +332,9 @@ void ChessGraphics::initPlayerIndicatorRect() {
 void ChessGraphics::paintPlayerIndicator() {
   pushLevel();
   unpaintPlayerIndicator();
-  const Image *image    = m_resources.getPlayerIndicatorImage();
+  const Image  *image    = m_resources.getPlayerIndicatorImage();
   const Size2DS markSize = image->getSize();
-  Size2DS offset = FIELDSIZE0 - markSize;
-  offset.cx /= 2;
-  offset.cy /= 2;
+  const Size2DS offset   = (FIELDSIZE0 - markSize)/2;
 
   const Point2DP pos = getFieldPosition((m_game->getPlayerInTurn() == WHITEPLAYER)?-1:8
                                        ,(m_computerPlayer          == WHITEPLAYER)?8:-1, false) + offset;
@@ -408,6 +400,7 @@ void ChessGraphics::paintKings() {
 }
 
 void ChessGraphics::paintKing(Player player) {
+  if(m_game == NULL) return;
   pushLevel();
   BYTE &flags = m_kingFlags[player];
   const Piece   *king  = m_game->getPlayerState(player).m_king;

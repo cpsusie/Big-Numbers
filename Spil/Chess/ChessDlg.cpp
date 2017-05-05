@@ -744,6 +744,7 @@ void CChessDlg::setDialogMode(const DialogSettings &settings) {
   case PLAYMODE   :
     stopAllBackgroundActivity(true);
     BEGINPAINT();
+    m_graphics->unmarkAll();
     m_graphics->setGame(m_game);
     setGameSettings();
     m_graphics->setModeText(EMPTYSTRING);
@@ -1556,7 +1557,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
         break;
 
       case STALEMATE                          :
-        handleEndGameForPlayMode(format(loadString(IDS_MSG_s_STALEMATE).cstr(), getPlayerName(game.getPlayerInTurn()).cstr())
+        handleEndGameForPlayMode(format(loadString(IDS_MSG_s_STALEMATE).cstr(), getPlayerName(game.getPlayerInTurn()))
                                 ,loadString(IDS_STALEMATE));
         break;
 
@@ -1601,7 +1602,7 @@ void CChessDlg::executeMove(const MoveBase &m) {
       break;
 
     case STALEMATE                         :
-      handleEndGameForAutoPlayMode(format(loadString(IDS_MSG_s_STALEMATE).cstr(), getPlayerName(game.getPlayerInTurn()).cstr()), loadString(IDS_STALEMATE));
+      handleEndGameForAutoPlayMode(format(loadString(IDS_MSG_s_STALEMATE).cstr(), getPlayerName(game.getPlayerInTurn())), loadString(IDS_STALEMATE));
       break;
 
 #ifndef TABLEBASE_BUILDER

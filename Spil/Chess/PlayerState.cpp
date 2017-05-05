@@ -483,7 +483,7 @@ void PlayerState::validatePromotionCount() const {
     const String pmcStr = loadString(promotionCount>1?IDS_PROMOTED_PAWN_PLUR:IDS_PROMOTED_PAWN); // PromotionCount
     const String pobStr = getPieceTypeName(Pawn,pawnsOnBoard>1);                                 // PawnOnBoard
     throwUserException(IDS_MSG_s_HAVE_d_s_AND_d_s_ON_THE_BOARD_s
-                      ,getPlayerName(m_player).cstr()
+                      ,getPlayerName(m_player)
                       ,promotionCount
                       ,pmcStr.cstr()
                       ,pawnsOnBoard
@@ -499,7 +499,7 @@ void PlayerState::validateAddPieceAtPosition(PieceType pieceType, int pos, bool 
   switch(pieceType) {
   case King  :
     { if(getPieceCountOnBoard(King) > 0) {
-        throwUserException(IDS_MSG_s_CANNOT_HAVE_TWO_KINGS, getPlayerName(m_player).cstr());
+        throwUserException(IDS_MSG_s_CANNOT_HAVE_TWO_KINGS, getPlayerName(m_player));
       }
       const Piece *enemyKing = m_king->m_enemyState.m_king;
       if(enemyKing && enemyKing->isOnBoard() && POSADJACENT(pos, enemyKing->getPosition())) {

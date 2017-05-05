@@ -9,7 +9,7 @@ bool Game::mustSelectPromotion(int from, int to) const {
   if(piece == NULL || piece->getPlayer() != PLAYERINTURN) {
     throwException(_T("Internal error:mustSelectPromotion(%s,%s):Piece=%s")
                   ,getFieldName(from),getFieldName(to)
-                  ,piece?getPlayerName(piece->getPlayer()).cstr():_T("NULL"));
+                  ,piece?getPlayerName(piece->getPlayer()):_T("NULL"));
   }
   return (piece->getType() == Pawn) && (GETROW(to) == GETPROMOTEROW(piece->getPlayer()));
 }
@@ -474,14 +474,18 @@ String getSymmetricTransformationToString(SymmetricTransformation st) {
 #pragma init_seg(lib)
 
 static StringArray playerName;
+static StringArray playerShortName;
 static StringArray pieceName;
 static StringArray pieceName_plur;
 static StringArray pieceShortName;
 
 
 static void loadStrings() {
-  playerName.add(loadString(IDS_WHITEPLAYERNAME));
-  playerName.add(loadString(IDS_BLACKPLAYERNAME));
+  playerName.add(     loadString(IDS_WHITEPLAYERNAME     ));
+  playerName.add(     loadString(IDS_BLACKPLAYERNAME     ));
+
+  playerShortName.add(loadString(IDS_WHITEPLAYERSHORTNAME));
+  playerShortName.add(loadString(IDS_BLACKPLAYERSHORTNAME));
 
   pieceName.add(_T("?"));
   pieceName.add(loadString(IDS_KINGNAME       ));
@@ -510,6 +514,7 @@ static void loadStrings() {
 
 static void unloadStrings() {
   playerName.clear();
+  playerShortName.clear();
   pieceName.clear();
   pieceName_plur.clear();
   pieceShortName.clear();
@@ -529,16 +534,25 @@ public:
 
 static StringTableLoader stringsLoader;
 
-String getPlayerName(Player player) {
+const TCHAR *getPlayerName(Player player) {
   switch(player) {
   case WHITEPLAYER :
-  case BLACKPLAYER : return playerName[player];
+  case BLACKPLAYER : return playerName[player].cstr();
   default          : INVALIDPLAYERERROR(player);
                      return _T("?");
   }
 }
 
-String getPieceTypeName(PieceType pieceType, bool plur) {
+const TCHAR *getPlayerShortName(Player player) {
+  switch(player) {
+  case WHITEPLAYER :
+  case BLACKPLAYER : return playerShortName[player].cstr();
+  default          : INVALIDPLAYERERROR(player);
+                     return _T("?");
+  } 
+}
+
+const TCHAR *getPieceTypeName(PieceType pieceType, bool plur) {
   switch(pieceType) {
   case NoPiece :
   case King    :
@@ -546,13 +560,13 @@ String getPieceTypeName(PieceType pieceType, bool plur) {
   case Rook    :
   case Bishop  :
   case Knight  :
-  case Pawn    : return plur ? pieceName_plur[pieceType] : pieceName[pieceType];
+  case Pawn    : return plur ? pieceName_plur[pieceType].cstr() : pieceName[pieceType].cstr();
   default      : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                  return _T("?");
   }
 }
 
-String getPieceTypeShortName(PieceType pieceType) {
+const TCHAR *getPieceTypeShortName(PieceType pieceType) {
   switch(pieceType) {
   case NoPiece :
   case King    :
@@ -560,7 +574,7 @@ String getPieceTypeShortName(PieceType pieceType) {
   case Rook    :
   case Bishop  :
   case Knight  :
-  case Pawn    : return pieceShortName[pieceType];
+  case Pawn    : return pieceShortName[pieceType].cstr();
   default      : throwInvalidArgumentException(__TFUNCTION__, _T("pieceType=%d"), pieceType);
                  return _T("?");
   }
@@ -725,12 +739,12 @@ void invalidPlayerError(const TCHAR *method, Player player) {
   throwException(_T("%s:Invalid player:%d"), method, player);
 }
 
-char getColumnName(int position) {
-  return 'a' + GETCOL(position);
+TCHAR getColumnName(int position) {
+  return _T('a') + GETCOL(position);
 }
 
-char getRowName(int position) {
-  return '1' + GETROW(position);
+TCHAR getRowName(int position) {
+  return _T('1') + GETROW(position);
 }
 
 const TCHAR *getFieldColorName(FieldColor color) {

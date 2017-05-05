@@ -92,7 +92,7 @@ String Move::toStringDebugFormat() const {
                   ,getFieldName(m_from)
                   ,m_capturedPiece ? 'x' : '-'
                   ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():EMPTYSTRING),getFieldName(m_to)).cstr()
-                  ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]).cstr()
+                  ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex])
                   ,m_dirIndex
                   ,m_moveIndex
                   ,getMoveDirectionName(m_direction).cstr());

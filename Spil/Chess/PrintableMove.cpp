@@ -134,14 +134,14 @@ String PrintableMove::toStringShortFormat() const {
     } else {
       if(m_capturedPieceType != NoPiece) {
         return format(_T("%s%sx%s%s")
-                     ,getPieceTypeShortName(m_pieceType).cstr()
+                     ,getPieceTypeShortName(m_pieceType)
                      ,m_uniqueString.cstr()
                      ,getFieldName(m_to)
                      ,getCheckString()
                      );
       } else {
         return format(_T("%s%s%s%s")
-                     ,getPieceTypeShortName(m_pieceType).cstr()
+                     ,getPieceTypeShortName(m_pieceType)
                      ,m_uniqueString.cstr()
                      ,getFieldName(m_to)
                      ,getCheckString()
@@ -154,13 +154,13 @@ String PrintableMove::toStringShortFormat() const {
       return format(_T("%cx%s%s%s")
                    ,getColumnName(m_from)
                    ,getFieldName(m_to)
-                   ,getPieceTypeShortName(getPromoteTo()).cstr()
+                   ,getPieceTypeShortName(getPromoteTo())
                    ,getCheckString()
                    );
     } else {
       return format(_T("%s%s%s")
                    ,getFieldName(m_to)
-                   ,getPieceTypeShortName(getPromoteTo()).cstr()
+                   ,getPieceTypeShortName(getPromoteTo())
                    ,getCheckString()
                    );
     }
@@ -189,7 +189,7 @@ String PrintableMove::toStringLongFormat() const {
   case NORMALMOVE   :
   case PROMOTION    :
     { String result = format(_T("%s%s%c%s")
-                            ,getPieceTypeShortName(m_pieceType).cstr()
+                            ,getPieceTypeShortName(m_pieceType)
                             ,getFieldName(m_from)
                             ,(m_capturedPieceType != NoPiece) ? 'x' : '-'
                             ,getFieldName(m_to));
@@ -225,10 +225,10 @@ String PrintableMove::toStringDebugFormat() const {
   case NORMALMOVE    :
     return format(_T("Type:%s, %s%s%s%s%s, dirIndex:%d, moveIndex:%d, dir:%s")
                  ,getMoveTypeName(m_type).cstr()
-                 ,getPieceTypeShortName(m_pieceType).cstr()
+                 ,getPieceTypeShortName(m_pieceType)
                  ,getFieldName(m_from)
                  ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
-                 ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():EMPTYSTRING)
+                 ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType):EMPTYSTRING)
                                    ,getFieldName(m_to)).cstr()
                  ,getCheckString()
                  ,m_dirIndex
@@ -240,9 +240,9 @@ String PrintableMove::toStringDebugFormat() const {
                  ,getMoveTypeName(m_type).cstr()
                  ,getFieldName(m_from)
                  ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
-                 ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType).cstr():EMPTYSTRING)
+                 ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType):EMPTYSTRING)
                                    ,getFieldName(m_to)).cstr()
-                 ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]).cstr()
+                 ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex])
                  ,getCheckString()
                  ,m_dirIndex
                  ,m_moveIndex
@@ -263,7 +263,7 @@ String PrintableMove::toStringDebugFormat() const {
                  ,getMoveTypeName(m_type).cstr()
                  ,getCastleString(m_type).cstr()
                  ,getCheckString()
-                 ,getPieceTypeShortName(m_pieceType).cstr()
+                 ,getPieceTypeShortName(m_pieceType)
                  ,getFieldName(m_from)
                  ,getFieldName(m_to)
                  ,getMoveDirectionName(m_direction).cstr());

@@ -4,6 +4,9 @@
 
 #include "ExternEngine.h"
 
+//#define _PRINT_DEBUGMSG
+//#define _TRACE_ENTERLEAVE
+
 #ifdef ENTERFUNC
 #undef ENTERFUNC
 #endif
@@ -11,16 +14,11 @@
 #undef LEAVEFUNC
 #endif
 
-//#define _PRINT_DEBUGMSG
-//#define _TRACE_ENTERLEAVE
-
-#define PLAYERSTR() ((m_player==WHITEPLAYER)?_T("W"):_T("B"))
-
 #ifdef _PRINT_DEBUGMSG
 #define DEBUGMSG(...) debugMsg(__VA_ARGS__)
 #else
 #define DEBUGMSG(...)
-#endif // _DEBUG
+#endif // _PRINT_DEBUGMSG
 
 #ifdef _TRACE_ENTERLEAVE
 
@@ -38,9 +36,11 @@
 }
 
 #else
+
 #define ENTERFUNCPARAM(...)
 #define ENTERFUNC()
 #define LEAVEFUNC()
+
 #endif // _TRACE_ENTERLEAVE
 
 #define INTERRUPTLINE _T("#interrupt#")
@@ -539,7 +539,7 @@ void ExternEngine::debugMsg(const TCHAR *format, ...) const {
   const String msg = vformat(format,argptr);
   va_end(argptr);
   verbose(_T("%s:%*.*s%s (%s)\n")
-         ,PLAYERSTR()
+         ,getPlayerShortNameEnglish(m_player)
          ,m_callLevel,m_callLevel, EMPTYSTRING
          ,msg.cstr()
          ,flagsToString().cstr()

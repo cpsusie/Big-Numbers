@@ -96,14 +96,14 @@ typedef enum {
  ,TABLEBASE_POSITION
 } PositionType;
 
-typedef unsigned char  CastleState;
-typedef unsigned char  BishopFlags;
-typedef unsigned char  AttackAttribute;
-typedef unsigned char  PinnedState;
-typedef unsigned char  PieceKey;
-typedef unsigned char  KingAttackState;
+typedef BYTE  CastleState;
+typedef BYTE  BishopFlags;
+typedef BYTE  AttackAttribute;
+typedef BYTE  PinnedState;
+typedef BYTE  PieceKey;
+typedef BYTE  KingAttackState;
 typedef const int     *PositionArray;
-typedef unsigned char  SymmetricTransformation;
+typedef BYTE  SymmetricTransformation;
 
 // Dont modify these, without making the corresponding changes in GameKey::castleScore
 #define SHORTCASTLE_ALLOWED          0x01
@@ -195,7 +195,7 @@ typedef enum {
 #define LONGDISTANCE_ATTACKS( player, piece, attr) ((piece->getPlayer() == player) && LD_ATTACKS(piece, attr))
 
 #define EMPTYPIECEKEY                    ((PieceKey)0)
-#define MAKE_PIECEKEY(player, pieceType) ((PieceKey)(((unsigned char)(player)<<3) + (unsigned char)(pieceType)))
+#define MAKE_PIECEKEY(player, pieceType) ((PieceKey)(((BYTE)(player)<<3) + (BYTE)(pieceType)))
 #define GET_PLAYER_FROMKEY(pieceKey)     ((Player)(((pieceKey)>>3)&1))
 #define GET_TYPE_FROMKEY(pieceKey)       ((PieceType)((pieceKey)&0x7))
 
@@ -221,21 +221,23 @@ int pieceTypeCmp(const PieceType &p1, const PieceType &p2);
 
 int            getStartPieceCount(                PieceType               pieceType    ); // Number of pieces for 1 player of the given PieceType
                                                                                           // in the startconfiguration
-String         getPieceTypeName(                  PieceType               pieceType, bool plur = false); // Language specific name of piece of the given PieceType.
-                                                                                          // First letter uppercase.
+const TCHAR   *getPieceTypeName(                  PieceType               pieceType, bool plur = false); // Language specific name of piece of the given PieceType.
+                                                                                                         // First letter uppercase.
                                                                                           // plur=true gives pluralis form of the name
-String         getPieceTypeShortName(             PieceType               pieceType    ); // Language specific short name of the given PieceType
+const TCHAR   *getPieceTypeShortName(             PieceType               pieceType    ); // Language specific short name of the given PieceType
 const TCHAR   *getPieceTypeNameEnglish(           PieceType               pieceType, bool plur = false);
 const TCHAR   *getPieceTypeShortNameEnglish(      PieceType               type         ); // English short name of the given PieceType.
                                                                                           // King="K", Queen="Q", Rook="R" etc.
 void           reloadStrings();
-String         getPlayerName(                     Player                  player        ); // Language specific name of the given Player. First letter uppercase.
-const TCHAR   *getPlayerNameEnglish(              Player                  player        ); // WHITEPLAYER="white", BLACKPLAYER="black"
+const TCHAR   *getPlayerName(                     Player                  player        ); // Language specific name of the given Player.       First letter uppercase.
+const TCHAR   *getPlayerShortName(                Player                  player        ); // Language specific short name of the given Player. Uppercase
+const TCHAR   *getPlayerNameEnglish(              Player                  player        ); // WHITEPLAYER="white", BLACKPLAYER="black".         Lowercase
+const TCHAR   *getPlayerShortNameEnglish(         Player                  player        ); // WHITEPLAYER="W", BLACKPLAYER="B".                 Uppercase
 String         getPieceNameEnglish(               PieceKey                key           ); // ex. white king, black pawn, empty...
 const TCHAR   *getFieldName(                      int                     position      ); // a1,a2,..,b1,b2,...,h1,h8
 const TCHAR   *getFieldName(                      int row, int col                      ); // = getFieldName(MAKE_POSITION(row,col))
-char           getColumnName(                     int                     position      ); // 'a'..'h'
-char           getRowName(                        int                     position      ); // '1'..'8'
+TCHAR          getColumnName(                     int                     position      ); // 'a'..'h'
+TCHAR          getRowName(                        int                     position      ); // '1'..'8'
 const TCHAR   *getFieldColorName(                 FieldColor              color         ); // {"white","black"}
 const TCHAR   *getFieldColorName(                 int                     position      ); // = getFieldColorName(getFieldColor(position))
 String         getBishopFlagsToString(            BishopFlags             bishopFlags   ); // Converts the bits in bishopFlags to String, "[W][B]". For debug
@@ -860,7 +862,7 @@ public:
     return d.m_EPSquare;
   }
 
-  unsigned long hashCode() const;
+  ULONG hashCode() const;
 
   GameKey transform(       SymmetricTransformation st) const; // Return key obtained by doing the specified transformations on this
   static int transform(    int pos, SymmetricTransformation st);
@@ -951,9 +953,9 @@ public:
   int                m_totalMaterial;         // Sum of m_materialValue of not captured pieces belonging to player
   int                m_positionalScore;       // Sum of positional scores for not captured pieces belonging to player
   BishopFlags        m_bishopFlags;           // Any combination of WHITEFIELD_BISHOP and BLACKFIELD_BISHOP
-  unsigned char      m_pawnMask;              // 1 bit for each pawn. bit 0=A-pawn, bit 1=B-pawn, etc.
-  unsigned char      m_doublePawnMask;        // Bit c is set if m_pawnCount[c] > 1
-  unsigned char      m_pawnCount[8];          // Indexed by column. Number of pawns in each column
+  BYTE               m_pawnMask;              // 1 bit for each pawn. bit 0=A-pawn, bit 1=B-pawn, etc.
+  BYTE               m_doublePawnMask;        // Bit c is set if m_pawnCount[c] > 1
+  BYTE               m_pawnCount[8];          // Indexed by column. Number of pawns in each column
 
   void incrementPawnCount(int col);
   void decrementPawnCount(int col);

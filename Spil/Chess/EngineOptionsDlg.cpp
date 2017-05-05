@@ -143,7 +143,7 @@ BOOL CEngineOptionsDlg::OnInitDialog() {
 
   setControlText(IDD, this);
 
-  SetWindowText(format(_T("Options for %s(%s)"), m_engineName.cstr(), getPlayerName(m_player).cstr()).cstr());
+  setWindowText(this, format(_T("Options for %s(%s)"), m_engineName.cstr(), getPlayerName(m_player)));
 
   const int ctrlHeight = getClientRect(GetDlgItem(IDOK)).Height();
 

@@ -146,7 +146,7 @@ Game &Game::validateBoard(bool intensive) {
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
     if(state.m_king == NULL || !state.m_king->m_onBoard) {
-      throwUserException(IDS_MSG_s_HAS_NO_KING, getPlayerName(p).cstr());
+      throwUserException(IDS_MSG_s_HAS_NO_KING, getPlayerName(p));
     }
   }
 
@@ -159,11 +159,11 @@ Game &Game::validateBoard(bool intensive) {
   forEachPlayer(player) {
     PlayerState &state = m_playerState[player];
     if(player != PLAYERINTURN && IS_KINGINCHECK(player)) {
-      throwUserException(IDS_MSG_s_KING_IS_IN_CHECK, getPlayerName(player).cstr());
+      throwUserException(IDS_MSG_s_KING_IS_IN_CHECK, getPlayerName(player));
     }
     const int pawnsOnBoard = getPieceCountOnBoard(Pawn, player);
     if(pawnsOnBoard > 8) {
-      throwUserException(IDS_MSG_s_CAN_ONLY_HAVE_8_PAWNS, getPlayerName(player).cstr());
+      throwUserException(IDS_MSG_s_CAN_ONLY_HAVE_8_PAWNS, getPlayerName(player));
     }
     state.validatePromotionCount();
   }
@@ -318,7 +318,7 @@ void Game::initAttackCounters(bool validate) {
         const int diag2Attacks           = ATT_DOWNDIAG2(attackInfo)   + ATT_UPDIAG2(attackInfo);
         const int pawnAttacks            = pawnDiag1 + pawnDiag2;
 
-        const String kingStr       = getPlayerName(GETENEMY(player)) + _T(" ") + toLowerCase(getPieceTypeName(King));
+        const String kingStr       = format(_T("%s %s"), getPlayerName(GETENEMY(player)), toLowerCase(getPieceTypeName(King)).cstr());
         const String impossibleStr = loadString(IDS_IMPOSSIBLE);
 
         if(ATT_LEFT(attackInfo) && ATT_RIGHT(attackInfo)) {
