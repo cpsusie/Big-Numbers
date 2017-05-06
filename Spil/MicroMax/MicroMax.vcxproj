@@ -247,10 +247,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Board.cpp" />
-    <ClCompile Include="BoardConfigration.cpp" />
+    <ClCompile Include="BoardConfig.cpp" />
     <ClCompile Include="BoardEdit.cpp" />
     <ClCompile Include="GameUtil.cpp" />
-    <ClCompile Include="InputThread.cpp" />
     <ClCompile Include="MicroMax48Winboard.cpp" />
     <ClCompile Include="OccupationMap.cpp" />
     <ClCompile Include="StdAfx.cpp">
@@ -269,7 +268,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Board.h" />
-    <ClInclude Include="InputThread.h" />
     <ClInclude Include="MicroMax.h" />
     <ClInclude Include="OccupationMap.h" />
     <ClInclude Include="resource.h" />

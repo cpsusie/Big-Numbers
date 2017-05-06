@@ -111,34 +111,34 @@ String Board::getGameResultString(GameResult result) { // static
 #ifdef _DEBUG
 
 String Board::toString(int computerSide, bool detailed) {   // static 
-  return bc.toString(getHistorySize(), computerSide, detailed);
+  return s_bc.toString(getHistorySize(), computerSide, detailed);
 }
 
 String Board::getHistoryString() { // static 
-  if(historySize == 0) {
+  if(s_historySize == 0) {
     return EMPTYSTRING;
   }
-  int moveIndex = 0, moveNumber = bc.m_startMoveNumber;
+  int moveIndex = 0, moveNumber = s_bc.m_startMoveNumber;
   String result;
-  if(boardHistory[0].m_side == BLACK) {
-    result += format(_T("%3d.   -   , %s\n"), moveNumber++, moveHistory[moveIndex++].toString().cstr());
+  if(s_boardHistory[0].m_side == BLACK) {
+    result += format(_T("%3d.   -   , %s\n"), moveNumber++, s_moveHistory[moveIndex++].toString().cstr());
   }
-  for(;moveIndex < historySize; moveIndex += 2) {
+  for(;moveIndex < s_historySize; moveIndex += 2) {
     result += format(_T("%3d. %s , %s\n")
                     ,moveNumber++
-                    ,moveHistory[moveIndex].toString().cstr()
-                    ,(moveIndex+1<historySize) ? moveHistory[moveIndex+1].toString().cstr() : EMPTYSTRING);
+                    ,s_moveHistory[moveIndex].toString().cstr()
+                    ,(moveIndex+1<s_historySize) ? s_moveHistory[moveIndex+1].toString().cstr() : EMPTYSTRING);
   }
   return result;
 }
 
 String Board::getBoardHistoryString(bool detailed) { // static 
   String result;
-  for(int i = 0; i < historySize; i++) {
-    result += boardHistory[i].toString(BLACK, detailed);
-    result += format(_T("%s\n"), moveHistory[i].toString().cstr());
+  for(int i = 0; i < s_historySize; i++) {
+    result += s_boardHistory[i].toString(BLACK, detailed);
+    result += format(_T("%s\n"), s_moveHistory[i].toString().cstr());
   }
-  result +=  bc.toString(BLACK, detailed);
+  result +=  s_bc.toString(BLACK, detailed);
   return result;
 }
 
@@ -174,7 +174,7 @@ String fieldValuesToString() {
   String result;
   for(int r = 0; r < 8; r++) {
     for(int c = 0; c < 8; c++) {
-      result += format(_T("%3d "), getFieldValue(MAKEPOS(r,c)));
+      result += format(_T("%3d "), BoardConfig::getFieldValue(MAKEPOS(r,c)));
     }
     result += _T("\n");
   }
@@ -187,7 +187,7 @@ String pawnPushBonusToString() {
     result += format(_T("pawn push bonus(%s):\n"), getSideStr(side));
     for(int r = 8; r--;) {
       for(int c = 0; c < 8; c++) {
-        result += format(_T("%3d "), getPawnPushBonus(side, MAKEPOS(r,c)));
+        result += format(_T("%3d "), BoardConfig::getPawnPushBonus(side, MAKEPOS(r,c)));
       }
       result += _T("\n");
     }

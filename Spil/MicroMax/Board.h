@@ -2,7 +2,6 @@
 
 #include <Date.h>
 #include <MyAssert.h>
-#include "InputThread.h"
 #include "OccupationMap.h"
 
 #define MASK88       0x88
@@ -72,8 +71,6 @@
 
 #define STOP_IMMEDIATELY     0x01
 #define STOP_WHENMOVEFOUND   0x02
-#define STOPPED_BY_USER      0x04
-#define STOPPED_BY_TIMER     0x08
 
 typedef enum {
   GR_NORESULT
@@ -90,11 +87,8 @@ const TCHAR *getPieceName( char pieceType); // king,queen,rook,...
 String       getPieceName1(char piece);     // white king, white queen...black king,black queen...
 #endif
 
-int         getPieceValue(char pieceType);
 TCHAR      *getFieldName( TCHAR *dst, char pos);
 String      getFieldName( char pos);
-int         getFieldValue(char pos);
-int         getPawnPushBonus(int side, int pos);
 char        getPieceType( char letter);    // letter = P,N,B,R,Q,K
 String      fieldValuesToString();
 String      pawnPushBonusToString();
@@ -154,7 +148,7 @@ public:
   HashElement   *m_next;
   FastMove       m_move;
   short          m_score;
-  unsigned char  m_depth;
+  BYTE           m_depth;
   bool           m_cutAlpha : 1;
   bool           m_cutBeta  : 1;
   String getVariantString() const;
@@ -266,11 +260,14 @@ public:
 
 #endif
 
-class BoardConfiguration {
+class BoardConfig {
 private:
   TCHAR *getFENBoardString( TCHAR *dst) const;
   TCHAR *getFENCastleString(TCHAR *dst) const;
   TCHAR *getFENEpString(    TCHAR *dst) const;
+  static const int  s_pieceValue[8];
+  static int        s_fieldValue[120];
+  static int        s_accumulatedPawnPushBonus[2][120];
 public:
   char          m_field[129];         // board: half of 16x8+dummy (index S)
   int           m_EP;                 // Ep-square. if == S e.p. not allowed
@@ -286,15 +283,16 @@ public:
   PlayerConfig  m_player[2];
 #endif
 
-  inline bool operator==(const BoardConfiguration &bc) const {
-    return memcmp(this, &bc, offsetof(BoardConfiguration, m_R)) == 0;
+  inline bool operator==(const BoardConfig &bc) const {
+    return memcmp(this, &bc, offsetof(BoardConfig, m_R)) == 0;
   }
 
-  inline bool operator!=(const BoardConfiguration &bc) const {
+  inline bool operator!=(const BoardConfig &bc) const {
     return !(*this==bc);
   }
 
-  BoardConfiguration();
+  BoardConfig();
+  static void initOnce();
   void clear();
   void setupStartBoard();
   void setupBoard(Tokenizer &tok);
@@ -304,6 +302,15 @@ public:
     PlayerConfig::ajourKnightBonusTable(m_R);
   };
 #endif
+  static inline int getFieldValue(char pos) {
+    return s_fieldValue[pos];
+  }
+  static inline int getPawnPushBonus(int side, int pos) {
+    return s_accumulatedPawnPushBonus[side>>4][pos];
+  }
+  static inline int getPieceValue(char pieceType) {
+    return s_pieceValue[pieceType];
+  }
 
   String getFENString(int historySize = 0) const;
 #ifdef _DEBUG
@@ -327,21 +334,21 @@ class Board {
 private:
   friend class HashElement;
   friend class TableSet;
-  static int                       zobristIndex[1024];   // hash-index translation table
-  static int                       zobristKey[  1024];   // hash-key   translation table
-  static HashElement              *hashMap;              // hash table, MAPSIZE entries
-  static BoardConfiguration        bc;                   // bc is the workingboard
-  static BoardConfiguration        savedBoard;
-  static int                       maxDepth;             // Maximum depth of the search
-  static Move                      m_bestMove, m_usableMove;
-  static bool                      moveFound;
-  static int                       stopSearchCode;
-  static int                       stopOnIterationDone;
-  static bool                      gameOver;
-  static SearchStatistic           searchStatistic;
-  static BoardConfiguration        boardHistory[1024];
-  static Move                      moveHistory[1024];
-  static int                       historySize;
+  static const char               *s_stepList[];
+  static int                       s_zobristIndex[1024];   // hash-index translation table
+  static int                       s_zobristKey[  1024];   // hash-key   translation table
+  static HashElement              *s_hashMap;              // hash table, MAPSIZE entries
+  static BoardConfig               s_bc;                   // bc is the workingboard
+  static BoardConfig               s_savedBoard;
+  static int                       s_maxDepth;             // Maximum depth of the search
+  static Move                      s_bestMove, s_usableMove;
+  static bool                      s_moveFound;
+  static int                       s_stopCode;
+  static bool                      s_gameOver;
+  static SearchStatistic           s_searchStatistic;
+  static BoardConfig               s_boardHistory[1024];
+  static Move                      s_moveHistory[1024];
+  static int                       s_historySize;
 
 
   static void initEngine();
@@ -353,28 +360,28 @@ private:
   static int getZobristKey(  int t);
 
   static inline void switchSide() {
-    bc.m_side ^= COLORBITS;
+    s_bc.m_side ^= COLORBITS;
   }
   static bool isDrawByRepetition();
-  static void resetStopCodes();
   static inline bool isVerbose() {
-    return searchStatistic.m_verbose;
+    return s_searchStatistic.m_verbose;
+  }
+  static inline void resetStopCode() {
+    s_stopCode = 0;
   }
 public:
-
   Board() {
     initEngine();
   }
   static void initGame();
   static void setup(const String &position);
-  static const char *stepList[];
 
   static inline int getSide() {
-    return bc.m_side;
+    return s_bc.m_side;
   }
   static void setSide(int side);
   static inline bool isGameOver() {
-    return gameOver;
+    return s_gameOver;
   }
   static GameResult getGameResult();
 
@@ -382,44 +389,49 @@ public:
 
   static bool findMove();
 
-  static void stopSearch(int stopCode);
+  static inline void stopSearch() {
+    s_stopCode = STOP_IMMEDIATELY;
+  }
+  static inline void moveNow() {
+    s_stopCode = STOP_WHENMOVEFOUND;
+  }
   static inline Move getBestMove() {
-    return m_bestMove;
+    return s_bestMove;
   }
 
-  static int getTimeUsed() {
-    return (int)searchStatistic.getTimeUsed();
+  static inline int getTimeUsed() {
+    return (int)getSearchStatistic().getTimeUsed();
   }
   static inline UINT getNodeCount() {
-    return searchStatistic.m_nodeCount;
+    return getSearchStatistic().m_nodeCount;
   }
 
   static void executeMove(const Move &move);
   static inline int getMaxDepth() {
-    return maxDepth;
+    return s_maxDepth;
   }
   static void setMaxDepth(int n) {
-    maxDepth = n;
+    s_maxDepth = n;
   }
-  static bool isFiftyMoves() {
-    return bc.m_fiftyMoves >= 100;
+  static inline bool isFiftyMoves() {
+    return s_bc.m_fiftyMoves >= 100;
   }
   static inline int getHistorySize() {
-    return historySize;
+    return s_historySize;
   }
-  static inline const BoardConfiguration &getConfiguration() {
-    return bc;
+  static inline const BoardConfig &getConfig() {
+    return s_bc;
   }
-  static inline void setConfiguration(const BoardConfiguration &src) {
-    bc = src;
+  static inline void setConfig(const BoardConfig &src) {
+    s_bc = src;
   }
 
-  static const SearchStatistic &getSearchStatistic() {
-    return searchStatistic;
+  static inline const SearchStatistic &getSearchStatistic() {
+    return s_searchStatistic;
   }
 #ifdef _DEBUG
   static void validate() {
-    bc.validate();
+    s_bc.validate();
   }
   static String toString(int computerSide = BLACK, bool detailed = false);
   static String getHistoryString();

@@ -1,10 +1,51 @@
 #include "stdafx.h"
 
-BoardConfiguration::BoardConfiguration() {
+#define MATFACTOR 37
+
+#define P_VALUE  MATFACTOR* 2
+#define N_VALUE  MATFACTOR* 7
+#define B_VALUE  MATFACTOR* 8
+#define R_VALUE  MATFACTOR*12
+#define Q_VALUE  MATFACTOR*23
+#define K_VALUE  MATFACTOR*(-1)
+
+const int BoardConfig::s_pieceValue[8] = {
+//-  WP       BP      N       K       B       R       Q
+  0, P_VALUE, P_VALUE,N_VALUE,K_VALUE,B_VALUE,R_VALUE,Q_VALUE
+};
+
+int BoardConfig::s_fieldValue[120];
+int BoardConfig::s_accumulatedPawnPushBonus[2][120];
+
+#ifndef EXPERIMENTAL
+#define CENTER_R 3.5
+#define CENTER_C 4
+#else
+#define CENTER_R 3.5
+#define CENTER_C 3.5
+#endif
+
+#define sqr(x) ((x)*(x))
+
+BoardConfig::BoardConfig() {
   clear();
 }
 
-void BoardConfiguration::clear() {
+void BoardConfig::initOnce() { // static
+  memset(s_fieldValue    ,0, sizeof(s_fieldValue    ));
+  memset(s_accumulatedPawnPushBonus, 0, sizeof(s_accumulatedPawnPushBonus));
+
+  for(int row = 0; row < 8; row++) {
+    const int whitePawnBonus = ((row >= 5) && (row < 7)) ? (64 + s_accumulatedPawnPushBonus[0][MAKEPOS(row-1,0)]) : 0;
+    for(int col = 8; col--;) {
+      s_fieldValue[MAKEPOS(row,col)] = 28 - (int)(sqr(row-CENTER_R)+sqr(col-CENTER_C)); // center-points table
+      s_accumulatedPawnPushBonus[0][MAKEPOS(  row,col)] = whitePawnBonus;
+      s_accumulatedPawnPushBonus[1][MAKEPOS(7-row,col)] = whitePawnBonus;
+    }
+  }
+}
+
+void BoardConfig::clear() {
   memset(m_field, 0, sizeof(m_field));
   m_side            = WHITE;
   m_EP              = S;
@@ -13,7 +54,7 @@ void BoardConfiguration::clear() {
   initOccupationMap();
 }
 
-static const char startPosition[8]   = { 
+static const char startPosition[8]   = {
   ROOK
  ,KNIGHT|HASMOVED
  ,BISHOP|HASMOVED
@@ -24,7 +65,7 @@ static const char startPosition[8]   = {
  ,ROOK
 }; // initial piece setup
 
-void BoardConfiguration::setupStartBoard() {
+void BoardConfig::setupStartBoard() {
   clear();
   for(int col = 8; col--;) {
     m_field[MAKEPOS(7,col)] = (m_field[MAKEPOS(0,col)] = startPosition[col]|WHITE)^COLORBITS;
@@ -37,7 +78,7 @@ void BoardConfiguration::setupStartBoard() {
   initOccupationMap();
 }
 
-void BoardConfiguration::setupBoard(Tokenizer &tok) { // tok should contain a valid FEN-string
+void BoardConfig::setupBoard(Tokenizer &tok) { // tok should contain a valid FEN-string
   clear();
   const String pieces = tok.next();
   Tokenizer tok1(pieces,_T("/"));
@@ -51,16 +92,16 @@ void BoardConfiguration::setupBoard(Tokenizer &tok) { // tok should contain a va
       const int fld = MAKEPOS(rank,file);
       char piece;
       switch(*cp) {
-      case 'K': piece = WHITEKING   | HASMOVED                   ; break; 
-      case 'Q': piece = WHITEQUEEN  | HASMOVED                   ; break; 
-      case 'R': piece = WHITEROOK   | HASMOVED                   ; break; 
-      case 'B': piece = WHITEBISHOP | HASMOVED                   ; break; 
-      case 'N': piece = WHITEKNIGHT | HASMOVED                   ; break; 
-      case 'P': piece = WHITEPAWN   | ((rank==1) ? 0 : HASMOVED) ; break; 
+      case 'K': piece = WHITEKING   | HASMOVED                   ; break;
+      case 'Q': piece = WHITEQUEEN  | HASMOVED                   ; break;
+      case 'R': piece = WHITEROOK   | HASMOVED                   ; break;
+      case 'B': piece = WHITEBISHOP | HASMOVED                   ; break;
+      case 'N': piece = WHITEKNIGHT | HASMOVED                   ; break;
+      case 'P': piece = WHITEPAWN   | ((rank==1) ? 0 : HASMOVED) ; break;
       case 'k': piece = BLACKKING   | HASMOVED                   ; break;
-      case 'q': piece = BLACKQUEEN  | HASMOVED                   ; break; 
-      case 'r': piece = BLACKROOK   | HASMOVED                   ; break; 
-      case 'b': piece = BLACKBISHOP | HASMOVED                   ; break; 
+      case 'q': piece = BLACKQUEEN  | HASMOVED                   ; break;
+      case 'r': piece = BLACKROOK   | HASMOVED                   ; break;
+      case 'b': piece = BLACKBISHOP | HASMOVED                   ; break;
       case 'n': piece = BLACKKNIGHT | HASMOVED                   ; break;
       case 'p': piece = BLACKPAWN   | ((rank==6) ? 0 : HASMOVED) ; break;
       default:
@@ -160,7 +201,7 @@ void BoardConfiguration::setupBoard(Tokenizer &tok) { // tok should contain a va
   initOccupationMap();
 }
 
-void BoardConfiguration::initOccupationMap() {
+void BoardConfig::initOccupationMap() {
   m_occupationMap.clear();
 
 #ifdef USE_KNIGHTBONUS
@@ -194,7 +235,7 @@ void BoardConfiguration::initOccupationMap() {
 }
 
 #ifdef _DEBUG
-String BoardConfiguration::toString(int historySize, int computerSide, bool detailed) const {
+String BoardConfig::toString(int historySize, int computerSide, bool detailed) const {
   static const char *pl       = ".?pnkbrq?P?NKBRQ";
   static const char *line     = "  +-----------------+\n";
   static const TCHAR *letters  = _T("a b c d e f g h");
@@ -239,7 +280,7 @@ String BoardConfiguration::toString(int historySize, int computerSide, bool deta
   return result;
 }
 
-String BoardConfiguration::getFENString(int historySize) const {
+String BoardConfig::getFENString(int historySize) const {
   TCHAR boardStr[300], castleStr[20], EpStr[10];
   return format(_T("%s %c %s %s %d %d")
                ,getFENBoardString(boardStr)
@@ -251,7 +292,7 @@ String BoardConfiguration::getFENString(int historySize) const {
                );
 }
 
-TCHAR *BoardConfiguration::getFENBoardString(TCHAR *dst) const {
+TCHAR *BoardConfig::getFENBoardString(TCHAR *dst) const {
 #define FLUSHEMPTY() if(emptyCount) { *(cp++) = '0' + emptyCount; emptyCount = 0; }
   TCHAR *cp = dst;
   for(int rank = 7; rank >= 0; rank--) {
@@ -287,17 +328,17 @@ TCHAR *BoardConfiguration::getFENBoardString(TCHAR *dst) const {
   return dst;
 }
 
-TCHAR *BoardConfiguration::getFENEpString(TCHAR *dst) const {
+TCHAR *BoardConfig::getFENEpString(TCHAR *dst) const {
   return (m_EP==S) ? _tcscpy(dst, _T("-")) : getFieldName(dst, m_EP);
 }
 
-TCHAR *BoardConfiguration::getFENCastleString(TCHAR *dst) const {
+TCHAR *BoardConfig::getFENCastleString(TCHAR *dst) const {
   static const char wbKRRPos[][3] = {
     { E1, H1, A1 }
    ,{ E8, H8, A8 }
   };
   TCHAR *cp = dst;
-  for(int player = WHITE; player <= BLACK; player <<= 1) { 
+  for(int player = WHITE; player <= BLACK; player <<= 1) {
     const TCHAR *kqStr  = (player == WHITE) ? _T("KQ") : _T("kq");
     const char  *krrPos = (player == WHITE) ? wbKRRPos[0] : wbKRRPos[1];
     if(m_field[krrPos[0]] == (KING|player)) {
@@ -316,7 +357,7 @@ TCHAR *BoardConfiguration::getFENCastleString(TCHAR *dst) const {
   return dst;
 }
 
-void BoardConfiguration::validate() const {
+void BoardConfig::validate() const {
   int count[2];
   count[0] = count[1] = 0;
   for(int row = 8; row--;) {

@@ -7,8 +7,8 @@
 // Added under-promotion
 // Added timerthread to trigger "timeout and move" when the timelimit mseconds
 // has been used
-// Read input in a separate thread, to make interaction with program while
-// searching possible
+// Read input in a separate thread, to enable interaction with program while
+// searching
 //*****************************************************************************
 // version 4.8 features:
 // - recursive negamax search
@@ -31,7 +31,6 @@
 #include <Timer.h>
 #include <FileVersion.h>
 #include <Tokenizer.h>
-#include "InputThread.h"
 #include "Board.h"
 
 static int    maxTime       = 5*60*1000; // Time left in milliseconds to do maxMoves moves. default 5 minutes
@@ -103,20 +102,20 @@ private:
 public:
   MoveFinder(InputThread &input);
   ~MoveFinder();
-  unsigned int run();
+  UINT run();
   void handleTimeout(Timer &timer);
   void findBestMove(int timeLimit) {              // timelimit in msec
     m_msgQueue.put(Command(FINDMOVE, getThinkTime(timeLimit)));
   }
-  void stopSearch(int stopCode);
-
+  void stopSearch();
+  void moveNow();
   const Move &getBestMove() const {
     return m_bestMove;
   }
   const TCHAR *getErrorMessage() const {
     return m_errorMessage.cstr();
   }
-  unsigned int getSearchTime() const {
+  UINT getSearchTime() const {
     return m_searchTime;
   }
   void replyAnswer() const;
@@ -138,7 +137,7 @@ MoveFinder::~MoveFinder() {
 }
 
 void MoveFinder::kill() {
-  stopSearch(STOP_IMMEDIATELY);
+  stopSearch();
   m_msgQueue.put(KILL);
   while(stillActive()) {
     Sleep(20);
@@ -146,12 +145,15 @@ void MoveFinder::kill() {
 }
 
 void MoveFinder::handleTimeout(Timer &timer) {
-  stopSearch(STOP_WHENMOVEFOUND | STOPPED_BY_TIMER);
+  moveNow();
 }
 
-void MoveFinder::stopSearch(int stopCode) {
-//  reply("stopSearch(stopCode:%#x\n", stopCode);
-  board.stopSearch(stopCode);
+void MoveFinder::stopSearch() {
+  board.stopSearch();
+}
+
+void MoveFinder::moveNow() {
+  board.moveNow();
 }
 
 #ifdef _DEBUG
@@ -195,7 +197,7 @@ UINT MoveFinder::run() {
       const Command cmd = m_msgQueue.get();
       m_busy = true;
       switch(cmd.getType()) {
-      case FINDMOVE: // evaluate move and eventually execute it and measure time used 
+      case FINDMOVE: // evaluate best move and measure time used
         { const double startTime = getThreadTime();
           try {
             m_bestMove = evaluateMove(cmd.getParam());
@@ -224,7 +226,7 @@ UINT MoveFinder::run() {
   return 0;
 }
 
-// Think up a move 
+// Think up a move. hangs until timelimit or stopCode is catched
 // When a search is started, we start a timer at the same time, which will call this->timeoutHandler() when
 // the given timelimit mseconds has elapsed. 
 Move MoveFinder::evaluateMove(int timeLimit) {
@@ -317,7 +319,7 @@ void MoveFinder::waitWhileSearchBusy() {
     Tokenizer tok(line, _T(" "));
     const String command = tok.next();
     if(command == _T("stop")) {
-      stopSearch(STOP_WHENMOVEFOUND | STOPPED_BY_USER);
+      moveNow();
     } else if(command == _T("#searchdone#")) {
       if(lastLine.length() > 0) {
         m_input.putMessage(lastLine);
@@ -325,7 +327,7 @@ void MoveFinder::waitWhileSearchBusy() {
       return;
     } else {
       lastLine = line;
-      stopSearch(STOP_IMMEDIATELY | STOPPED_BY_USER);
+      stopSearch();
     }
   }
 }
@@ -350,8 +352,8 @@ void MoveFinder::replyAnswer() const {
 }
 
 int main(int argc, char **argv) {
-  InputThread *input      = new InputThread;
-  MoveFinder  *moveFinder = new MoveFinder(*input);
+  InputThread input;
+  MoveFinder  moveFinder(input);
 
 #ifdef _DEBUG
   replyMessage(_T("main:threadId:%d"), GetCurrentThreadId());
@@ -361,9 +363,9 @@ int main(int argc, char **argv) {
     String line;
     try {
       fflush(stdout);
-      if(input->endOfInput()) break;
-      line = input->getLine();
-      if(input->endOfInput()) break;
+      if(input.endOfInput()) break;
+      line = input.getLine();
+      if(input.endOfInput()) break;
 
       if(handleStdCommands(line)) {
         continue;
@@ -375,14 +377,21 @@ int main(int argc, char **argv) {
         board.initGame();
         continue;
       }
+      if (command == _T("read")) {
+        if(!tok.hasNext()) continue;
+        String fileName = tok.next();
+        input.readTextFile(fileName);
+        continue;
+      }
+
       if(command == _T("quit")) {
         break;
       }
       if(command == _T("go")) {
-        unsigned int timeLimit = INFINITE;
-        bool         ponder    = false;
-        unsigned int maxNodes  = INFINITE;
-        unsigned int maxDepth  = Board::getMaxDepth();
+        UINT timeLimit = INFINITE;
+        bool ponder    = false;
+        UINT maxNodes  = INFINITE;
+        UINT maxDepth  = Board::getMaxDepth();
         while(tok.hasNext()) {
           const String option = tok.next();
           if(option == _T("infinite")) {
@@ -408,9 +417,9 @@ int main(int argc, char **argv) {
             movesLeft = tok.getInt();
           }
         }
-        moveFinder->findBestMove(timeLimit);
-        moveFinder->waitWhileSearchBusy();
-        moveFinder->replyAnswer();
+        moveFinder.findBestMove(timeLimit);
+        moveFinder.waitWhileSearchBusy();
+        moveFinder.replyAnswer();
         continue;
       }
       if(command == _T("position")) {
@@ -428,6 +437,5 @@ int main(int argc, char **argv) {
       replyMessage(_T("Unknown Exception"));
     }
   }
-  delete moveFinder;
   return 0;
 }
