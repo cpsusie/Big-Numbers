@@ -304,10 +304,10 @@ void clearVerbose();
 void redirectVerbose(VerboseReceiver *receiver);
 void log(const TCHAR *format, ...);                            // log only to logfile if open
 void vlog(const TCHAR *format, va_list argptr);
-void setVerboseLogging(bool on);                              // If on is true, everything logged by verbose or log will go to logfile
-                                                              // which has an automatic generated, unique name
-                                                              // (template "c:\temp\chess<timestamp>.log")
-                                                              // If on is false, an open logfil will be closed
+void setVerboseLogging(bool on);                               // If on is true, everything logged by verbose or log will go to logfile
+                                                               // which has an automatic generated, unique name
+                                                               // (template "c:\temp\chess<timestamp>.log")
+                                                               // If on is false, an open logfil will be closed
 
 class Direction {
 public:

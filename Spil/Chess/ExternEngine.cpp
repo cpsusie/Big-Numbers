@@ -82,7 +82,7 @@ public:
 
 
 // public
-void ExternEngine::start(MoveReceiver *mr) {
+void ExternEngine::start(AbstractMoveReceiver *mr) {
   ENTERFUNC();
   __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
   m_moveReceiver = mr;
@@ -222,7 +222,7 @@ void ExternEngine::sendUCI() {
     m_desc.m_author = author;
     setStateFlags(EXE_UCIOK);
   } catch(Exception e) {
-    DEBUGMSG(_T("Exception <%s>. Last line read:<%s>\n"), e.what(), line.cstr());
+    DEBUGMSG(_T("Exception <%s>. Last line read:<%s>"), e.what(), line.cstr());
     LEAVEFUNC();
     throwException(_T("Wrong or no reply on command \"uci\". Doesn't seem to be a UCI chess engine"));
   }
@@ -402,9 +402,10 @@ void ExternEngine::send(const TCHAR *fmt,...) const {
 #endif
 
 UINT ExternEngine::run() {
+  DEFINEMETHODNAME;
   ENTERFUNC();
-  if (!isReady()) {
-    verbose(_T("%s:Extern process not started\n"), __TFUNCTION__);
+  if(!isReady()) {
+    m_moveReceiver->putError(_T("%s:Extern process not started"), method);
     LEAVEFUNC();
     return 0;
   }
@@ -431,18 +432,16 @@ UINT ExternEngine::run() {
         } else if(reply == _T("bestmove")) {
           const PrintableMove result = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
           clrStateFlags(EXE_BUSY);
-          if(m_moveReceiver) {
-            m_moveReceiver->putMove(result);
-          } else {
-            verbose(_T("bestMove:%s\n"), result.toString());
-          }
+          m_moveReceiver->putMove(result);
         } else if(reply == INTERRUPTLINE) {
           continue;
         }
       }
     }
   } catch(Exception e) {
-    verbose(_T("Exception:%s\n"), e.what());
+    m_moveReceiver->putError(_T("%s:Exception:%s"), method, e.what());
+  } catch (...) {
+    m_moveReceiver->putError(_T("%s:Unknown exception"), method);
   }
   clrStateFlags(EXE_THREADRUNNING);
   LEAVEFUNC();
@@ -519,10 +518,10 @@ String ExternEngine::flagsToString() const {
 
 // public
 String ExternEngine::toString() const {
-  String result = flagsToString();
+  String result = format(_T("Flags  :%s"), flagsToString().cstr());
   if(isStarted()) {
     if(m_optionArray.size() > 0) {
-      result += _T("Options:\n");
+      result += _T("\nOptions:\n");
       for(size_t i = 0; i < m_optionArray.size(); i++) {
         const EngineOptionDescription &option = m_optionArray[i];
         result += format(_T("  %s\n"), option.toString().cstr());

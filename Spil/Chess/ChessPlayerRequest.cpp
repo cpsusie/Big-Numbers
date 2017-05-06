@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "AbstractMoveFinder.h"
 
-ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint)
+//#define TEST_REFCOUNT
+
+ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
 :m_type(REQUEST_FINDMOVE)
 {
-  m_data.m_findMoveParam = new FindMoveRequestParam(game,timeLimit,hint);
+  m_data.m_findMoveParam = new FindMoveRequestParam(game, timeLimit, hint, verbose);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const Game &game)
@@ -18,6 +20,12 @@ ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
 {
   m_data.m_fetchMoveParam.m_move = move;
   m_data.m_fetchMoveParam.m_hint = hint;
+}
+
+ChessPlayerRequest::ChessPlayerRequest(const String &errMsg, bool error)
+:m_type(REQUEST_SHOWMESSAGE)
+{
+  m_data.m_showMessageParam = new ShowMessageRequestParam(errMsg, error);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
@@ -48,33 +56,53 @@ ChessPlayerRequest::~ChessPlayerRequest() {
 }
 
 void ChessPlayerRequest::addRef() {
+  int refCount = 0;
   switch(m_type) {
   case REQUEST_FINDMOVE   :
-    m_data.m_findMoveParam->addRef();
+    refCount = m_data.m_findMoveParam->addRef();
     break;
   case REQUEST_GAMECHANGED:
-    m_data.m_gameChangedParam->addRef();
+    refCount = m_data.m_gameChangedParam->addRef();
+    break;
+  case REQUEST_SHOWMESSAGE:
+    refCount = m_data.m_showMessageParam->addRef();
     break;
   default                 :
     break; // do nothing
   }
+#ifdef TEST_REFCOUNT
+  if (refCount > 0) {
+    verbose(_T("request(%s).addRef(). refCount=%d\n"), toString().cstr(), refCount);
+  }
+#endif
 }
 
 void ChessPlayerRequest::release() {
+  int refCount = 500;
   switch(m_type) {
   case REQUEST_FINDMOVE   :
-    if(m_data.m_findMoveParam->release() == 0) {
+    if((refCount=m_data.m_findMoveParam->release()) == 0) {
       delete m_data.m_findMoveParam;
     }
     break;
   case REQUEST_GAMECHANGED:
-    if(m_data.m_gameChangedParam->release() == 0) {
+    if((refCount = m_data.m_gameChangedParam->release()) == 0) {
       delete m_data.m_gameChangedParam;
+    }
+    break;
+  case REQUEST_SHOWMESSAGE  :
+    if ((refCount = m_data.m_showMessageParam->release()) == 0) {
+      delete m_data.m_showMessageParam;
     }
     break;
   default:
     break; // do nothing
   }
+#ifdef TEST_REFCOUNT
+  if (refCount != 500) {
+    verbose(_T("request(%s).release(). refCount=%d\n"), toString().cstr(), refCount);
+  }
+#endif
   cleanData();
 }
 
@@ -116,6 +144,14 @@ const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
   return m_data.m_fetchMoveParam; // to make compiler happy
 }
 
+const ShowMessageRequestParam &ChessPlayerRequest::getShowMessageParam() const {
+  switch (getType()) {
+  case REQUEST_SHOWMESSAGE: return *m_data.m_showMessageParam;
+  default                 : throwInvalidType(__TFUNCTION__);
+  }
+  return *m_data.m_showMessageParam; // to make compiler happy
+}
+
 String ChessPlayerRequest::toString() const {
   return getRequestName(m_type);
 }
@@ -133,6 +169,7 @@ const TCHAR *ChessPlayerRequest::getRequestName(ChessPlayerRequestType request) 
   caseStr(MOVENOW    )
   caseStr(FETCHMOVE  )
   caseStr(GAMECHANGED)
+  caseStr(SHOWMESSAGE)
   caseStr(RESET      )
   caseStr(DISCONNECT )
   caseStr(KILL       )

@@ -118,7 +118,7 @@ private:
   EngineDescription            m_desc;
   EngineOptionDescriptionArray m_optionArray;
   InputThread                 *m_inputThread;
-  MoveReceiver                *m_moveReceiver;
+  AbstractMoveReceiver        *m_moveReceiver;
   mutable Game                 m_game;
   BYTE                         m_stateFlags;
   Semaphore                    m_gate;
@@ -166,7 +166,7 @@ private:
 public:
   ExternEngine(Player player, const String &path);
  ~ExternEngine();
-  void start(MoveReceiver *mr = NULL);
+  void start(AbstractMoveReceiver *mr = NULL); // only when mr!=NULL, the thread will be started
   void quit();
   inline bool isStarting() const {
     return isStarted() && !isStateFlagsSet(EXE_UCIOK);

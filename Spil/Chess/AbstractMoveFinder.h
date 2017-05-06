@@ -9,7 +9,7 @@ typedef enum {
  ,RANDOM_ENGINE
 } EngineType;
 
-class AbstractMoveFinder : public MoveReceiver {
+class AbstractMoveFinder : public AbstractMoveReceiver {
 private:
   bool                     m_verbose;
   const Player             m_player;
@@ -19,7 +19,7 @@ protected:
   TimeLimit                m_timeLimit;
   bool                     m_hint;
 
-  void initSearch(const FindMoveRequestParam &param, bool talking);
+  void initSearch(const FindMoveRequestParam &param);
   bool isVerbose() {
     return m_verbose;
   }
@@ -34,8 +34,9 @@ public:
     return m_player;
   }
   void putMove(const MoveBase &m);
+  void putError(const TCHAR *fmt,...);
   // Should return immediately. dont wait for engine to finish search
-  virtual void           findBestMove(const FindMoveRequestParam &param, bool verbose) = 0;
+  virtual void           findBestMove(const FindMoveRequestParam &param) = 0;
   virtual void           stopSearch()               = 0;
   virtual void           moveNow()                  = 0;
   virtual String         getName()            const = 0;

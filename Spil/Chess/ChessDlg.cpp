@@ -845,7 +845,7 @@ void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, c
     forEachPlayer(p) {
       if(source == &getChessPlayer(p)) {
         switch(id) {
-        case CPP_STATE:
+        case CPP_STATE      :
           { const ChessPlayerState newState = *(ChessPlayerState*)newValue;
             PostMessage(ID_MSG_CHESSPLAYERSTATE_CHANGED, p, newState);
           }
@@ -853,12 +853,24 @@ void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, c
         case CPP_MOVEFINDER:
           PostMessage(ID_MSG_ENGINE_CHANGED, p, 0);
           break;
-        case CPP_REMOTE:
+        case CPP_REMOTE     :
           { const bool oldRemote = *(bool*)oldValue;
             const bool newRemote = *(bool*)newValue;
             PostMessage(ID_MSG_REMOTESTATE_CHANGED, oldRemote, newRemote);
           }
           break;
+        case CPP_MESSAGETEXT:
+          { const String msg = *(String*)newValue;
+            if(msg.length() > 0) {
+              stopComputerTimeTimer();
+              errorMessage(_T("%s"), msg.cstr());
+              if(getDialogMode() == AUTOPLAYMODE) {
+                popDialogMode();
+              }
+            }
+          }
+          break;
+
         }
         break;
       }
@@ -923,13 +935,6 @@ LRESULT CChessDlg::OnMsgChessPlayerStateChanged(WPARAM wp, LPARAM lp) {
       break;
     case CPS_IDLE:
       stopComputerTimeTimer(); // interrupted by user
-      break;
-    case CPS_ERROR:
-      stopComputerTimeTimer();
-      errorMessage(_T("%s"), cp.getErrorMessage().cstr());
-      if(getDialogMode() == AUTOPLAYMODE) {
-        popDialogMode();
-      }
       break;
     }
   } catch(Exception e) {

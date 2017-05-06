@@ -36,12 +36,15 @@ void MoveFinderExternEngine::handlePropertyChanged(const PropertyContainer *sour
   }
 }
 
-void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param, bool talking) {
-  initSearch(param, talking);
+void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param) {
+  initSearch(param);
   const PrintableMove m = checkForSingleMove();
   if(m.isMove()) {
     putMove(m);
   } else {
+    if(!m_externEngine.isReady() || !m_externEngine.isThreadRunning()) {
+      throwException(_T("Extern engine is dead"));
+    }
     m_externEngine.findBestMove(param.getGame(), param.getTimeLimit());
   }
 }

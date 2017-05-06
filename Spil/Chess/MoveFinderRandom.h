@@ -6,7 +6,7 @@ class MoveFinderRandomPlay : public AbstractMoveFinder {
 public:
   MoveFinderRandomPlay(Player player, ChessPlayerRequestQueue &msgQueue) : AbstractMoveFinder(player, msgQueue) {
   }
-  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void findBestMove(const FindMoveRequestParam &param);
   void stopSearch() {
   }
   void moveNow() {

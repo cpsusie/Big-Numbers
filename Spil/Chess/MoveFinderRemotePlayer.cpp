@@ -61,8 +61,8 @@ String MoveFinderRemotePlayer::receiveMove() {
   }
 }
 
-void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param, bool talking) {
-  initSearch(param, talking);
+void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param) {
+  initSearch(param);
   const String s = receiveMove();
   PrintableMove result;
   if(s.length() == 0) {

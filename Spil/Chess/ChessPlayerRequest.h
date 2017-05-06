@@ -7,23 +7,28 @@ typedef enum { // When put these request into the request-queue, caller never ha
  ,REQUEST_MOVENOW      // Only valid if state == MOVE_BUSY. Stop the current search, at soon as a move is ready and goto MFTS_MOVEREADY
  ,REQUEST_FETCHMOVE    // Send from actual moveFinder back to MoveFinderThread
  ,REQUEST_GAMECHANGED  // The game is changed, (new game, edit game, etc.)
+ ,REQUEST_SHOWMESSAGE  // Show a message. mostly used for errormessages from moveFinder. Show and if param.m_reset then reset
  ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state MFTS_IDLE
  ,REQUEST_DISCONNECT   // Only valid if connected. Disconnect remoteMoveFinder
  ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to MFTS_KILLED
 } ChessPlayerRequestType;
 
-class RequestParamGame {
+class RequestParamRefCount {
 private:
-  const Game       m_game;
-  BYTE             m_refCount;
+  BYTE m_refCount;
 public:
-  RequestParamGame(const Game &game)
-    : m_game(game)
-    , m_refCount(1)
-  {
+  RequestParamRefCount() : m_refCount(1) {
   }
-  inline void addRef()  { m_refCount++;        }
+  inline int  addRef()  { return ++m_refCount; }
   inline int  release() { return --m_refCount; }
+};
+
+class RequestParamGame : public RequestParamRefCount {
+private:
+  const Game m_game;
+public:
+  RequestParamGame(const Game &game) : m_game(game) {
+  }
   inline const Game &getGame() const {
     return m_game;
   }
@@ -31,28 +36,48 @@ public:
 
 class FindMoveRequestParam : public RequestParamGame {
 private:
-  const TimeLimit  m_timeLimit;
-  const bool       m_hint;
+  const TimeLimit m_timeLimit;
+  const bool      m_hint;
+  const bool      m_verbose;
 public:
-  FindMoveRequestParam(const Game &game, const TimeLimit &timeLimit, bool hint)
+  FindMoveRequestParam(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
     : RequestParamGame(game)
     , m_timeLimit(timeLimit)
     , m_hint(hint)
+    , m_verbose(verbose)
   {
   }
-  inline const TimeLimit getTimeLimit() const {
+  inline const TimeLimit &getTimeLimit() const {
     return m_timeLimit;
   }
-  inline const bool isHint() const {
+  inline bool isHint() const {
     return m_hint;
+  }
+  inline bool isVerbose() const {
+    return m_verbose;
   }
 };
 
 class GameChangedRequestParam : public RequestParamGame {
 public:
-  GameChangedRequestParam(const Game &game)
-    : RequestParamGame(game)
+  GameChangedRequestParam(const Game &game) : RequestParamGame(game)
   {
+  }
+};
+
+class ShowMessageRequestParam : public RequestParamRefCount {
+private:
+  const String m_msg;
+  const bool   m_error;
+public:
+  ShowMessageRequestParam(const String &msg, bool error)
+    : m_msg(msg), m_error(error) {
+  }
+  inline const String &getMessage() const {
+    return m_msg;
+  }
+  inline bool isError() const {
+    return m_error;
   }
 };
 
@@ -79,9 +104,10 @@ class ChessPlayerRequest {
 private:
   ChessPlayerRequestType m_type;
   union {
-    FindMoveRequestParam    *m_findMoveParam;
-    GameChangedRequestParam *m_gameChangedParam;
-    FetchMoveRequestParam    m_fetchMoveParam;
+    FindMoveRequestParam    *m_findMoveParam;    // m_type = REQUEST_FINDMOVE
+    GameChangedRequestParam *m_gameChangedParam; // m_type = REQUEST_GAMECHANGED
+    FetchMoveRequestParam    m_fetchMoveParam;   // m_type = REQUEST_FETCHMOVE
+    ShowMessageRequestParam *m_showMessageParam; // m_type = REQUEST_SHOWMESSAGE
   } m_data;
   void release();
   void addRef();
@@ -89,11 +115,13 @@ private:
   void throwInvalidType(const TCHAR *method) const;
 public:
   // REQUEST_FINDMOVE
-  ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint);
-  // REQUEST_GAMECHANGED  
+  ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose);
+  // REQUEST_GAMECHANGED
   ChessPlayerRequest(const Game &game);
-  // REQUEST_FETCHMOVE    
+  // REQUEST_FETCHMOVE
   ChessPlayerRequest(const MoveBase &move, bool hint);
+  // REQUEST_SHOWMESSAGE
+  ChessPlayerRequest(const String &msg, bool error);
   ChessPlayerRequest(ChessPlayerRequestType type);
   ChessPlayerRequest(const ChessPlayerRequest &src);
   ~ChessPlayerRequest();
@@ -104,6 +132,7 @@ public:
   const FindMoveRequestParam     &getFindMoveParam()    const;
   const GameChangedRequestParam  &getGameChangedParam() const;
   const FetchMoveRequestParam    &getFetchMoveParam()   const;
+  const ShowMessageRequestParam  &getShowMessageParam() const;
   inline const TCHAR             *getRequestName()      const {
     return getRequestName(m_type);
   }
@@ -114,7 +143,8 @@ public:
 class ChessPlayerRequestQueue : public SynchronizedQueue<ChessPlayerRequest> {
 };
 
-class MoveReceiver {
+class AbstractMoveReceiver {
 public:
-  virtual void putMove(const MoveBase &move) = 0;
+  virtual void putMove(const MoveBase &move)  = 0;
+  virtual void putError(const TCHAR *fmt,...) = 0;
 };

@@ -16,8 +16,8 @@ MoveFinderEndGame::~MoveFinderEndGame() {
   m_tablebase->unload();
 }
 
-void MoveFinderEndGame::findBestMove(const FindMoveRequestParam &param, bool talking) {
-  initSearch(param, talking);
+void MoveFinderEndGame::findBestMove(const FindMoveRequestParam &param) {
+  initSearch(param);
 
   if(!m_tablebase->isLoaded()
    || (s_currentDbPath != EndGameKeyDefinition::getDbPath())

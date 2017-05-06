@@ -27,7 +27,7 @@ private:
 public:
   MoveFinderRemotePlayer(Player player, ChessPlayerRequestQueue &msgQueue, SocketChannel channel);
   ~MoveFinderRemotePlayer();
-  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void findBestMove(const FindMoveRequestParam &param);
   void stopSearch() {
     interrupt();
   }

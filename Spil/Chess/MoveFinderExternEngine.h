@@ -13,7 +13,7 @@ private:
 public:
   MoveFinderExternEngine(Player player, ChessPlayerRequestQueue &msgQueue);
   ~MoveFinderExternEngine();
-  void findBestMove(const FindMoveRequestParam &param, bool talking);
+  void findBestMove(const FindMoveRequestParam &param);
   void stopSearch();
   void moveNow();
   String getName() const;

@@ -9,18 +9,26 @@ AbstractMoveFinder::AbstractMoveFinder(Player player, ChessPlayerRequestQueue &m
   m_verbose  = false;
 }
 
-void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param, bool talking) {
+void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param) {
   m_game = param.getGame();
 #ifndef TABLEBASE_BUILDER
   m_game.setMaxPositionRepeat(1);
 #endif
   m_timeLimit  = param.getTimeLimit();
   m_hint       = param.isHint();
-  setVerbose(talking);
+  setVerbose(param.isVerbose());
 }
 
 void AbstractMoveFinder::putMove(const MoveBase &m) {
   m_msgQueue.put(ChessPlayerRequest(m, m_hint));
+}
+
+void AbstractMoveFinder::putError(const TCHAR *fmt, ...) {
+  va_list argptr;
+  va_start(argptr, fmt);
+  const String msg = vformat(fmt, argptr);
+  va_end(argptr);
+  m_msgQueue.put(ChessPlayerRequest(msg, true));
 }
 
 PrintableMove AbstractMoveFinder::checkForSingleMove() {

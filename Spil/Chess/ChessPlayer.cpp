@@ -10,7 +10,6 @@
 #define _DEBUG_CHECKSTATE
 //#define _TRACE_ENTERLEAVE
 
-
 #ifdef ENTERFUNC
 #undef ENTERFUNC
 #endif
@@ -92,14 +91,13 @@ void ChessPlayer::startSearch(const Game &game, const TimeLimit &timeLimit, bool
   }
   const GameResult gr = game.findGameResult();
   if(isBusy()) {
-    DEBUGMSG(_T("%s called while already busy"), __TFUNCTION__);
-    putRequest(REQUEST_RESET);
+    putRequest(ChessPlayerRequest(format(_T("%s called while already busy"), __TFUNCTION__),true));
   } else if(gr != NORESULT) {
     putRequest(REQUEST_NULLMOVE);
   } else {
     m_gate.wait();
     m_searchResult.m_move.setNoMove();
-    putRequest(ChessPlayerRequest(game, timeLimit, hint));
+    putRequest(ChessPlayerRequest(game, timeLimit, hint, talking));
     m_gate.signal();
   }
   LEAVEFUNC();
@@ -212,24 +210,16 @@ UINT ChessPlayer::run() {
       try {
         handleFindMoveRequest(request.getFindMoveParam());
       } catch(TcpException e) {
-        m_errorMessage = e.what();
-        setState(CPS_ERROR);
-        disconnect();
+        handleTcpException(e);
       } catch(Exception e) {
-        m_errorMessage = e.what();
-        setState(CPS_ERROR);
-        putRequest(REQUEST_RESET);
+        putRequest(ChessPlayerRequest(e.what(), true));
       } catch(CSimpleException *e) {
         TCHAR msg[1024];
         e->GetErrorMessage(msg, sizeof(msg));
         e->Delete();
-        m_errorMessage = msg;
-        setState(CPS_ERROR);
-        putRequest(REQUEST_RESET);
+        putRequest(ChessPlayerRequest(msg, true));
       } catch(...) {
-        m_errorMessage = format(_T("Unknown Exception (State=%s)"), STATESTR());
-        setState(CPS_ERROR);
-        putRequest(REQUEST_RESET);
+        putRequest(ChessPlayerRequest(format(_T("Unknown Exception (State=%s)"), STATESTR()), true));
       }
       break;
 
@@ -251,6 +241,10 @@ UINT ChessPlayer::run() {
 
     case REQUEST_GAMECHANGED:
       handleGameChangedRequest(request.getGameChangedParam());
+      break;
+
+    case REQUEST_SHOWMESSAGE:
+      handleShowMessageRequest(request.getShowMessageParam());
       break;
 
     case REQUEST_RESET     :
@@ -279,14 +273,12 @@ void ChessPlayer::handleFindMoveRequest(const FindMoveRequestParam &param) {
   ENTERFUNC();
 
   m_gate.wait();
-  CHECKSTATE(CPS_IDLE);
+  CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
   setState(CPS_PREPARESEARCH);
   m_gate.signal();
 
-  const bool talking = getOptions().getTraceWindowVisible();
-
   if(getOptions().isOpeningLibraryEnabled() && !isRemote()) {
-    const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), talking);
+    const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), param.isVerbose());
     if(libMove.isMove()) {
       setMoveFinder(NULL);
       setState(CPS_BUSY);
@@ -304,7 +296,7 @@ void ChessPlayer::handleFindMoveRequest(const FindMoveRequestParam &param) {
   if(m_moveFinder != NULL) {
     if(getState() == CPS_PREPARESEARCH) {
       setState(CPS_BUSY);
-      m_moveFinder->findBestMove(param, talking);
+      m_moveFinder->findBestMove(param);
     } else {
       // do nothing!! User has pressed undo, so state is idle
     }
@@ -370,6 +362,7 @@ void ChessPlayer::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
     break;
   default              :
     CHECKSTATE(CPS_IDLE, CPS_BUSY, CPS_STOPPENDING);
+    break;
   }
   m_gate.signal();
   LEAVEFUNC();
@@ -387,8 +380,7 @@ void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param)
     }
     DEBUGMSG(_T("End while"));
     if(isBusy()) {
-      DEBUGMSG(_T("Still busy. putRequest(REQUEST_RESET)"));
-      putRequest(REQUEST_RESET);
+      putRequest(ChessPlayerRequest(_T("Still busy"),true));
       LEAVEFUNC();
       return;
     }
@@ -408,10 +400,18 @@ void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param)
   LEAVEFUNC();
 }
 
+void ChessPlayer::handleShowMessageRequest(const ShowMessageRequestParam &param) {
+  setProperty(CPP_MESSAGETEXT, m_messageText, param.getMessage());
+  if (param.isError()) {
+    putRequest(REQUEST_RESET);
+  }
+}
+
 // private
 void ChessPlayer::handleResetRequest() {
   ENTERFUNC();
   setMoveFinder(NULL);
+  setProperty(CPP_MESSAGETEXT, m_messageText, _T(""));
   setState(CPS_IDLE);
   LEAVEFUNC();
 }
@@ -436,10 +436,8 @@ void ChessPlayer::handleKillRequest() {
 // private
 void ChessPlayer::handleTcpException(const TcpException &e) {
   ENTERFUNC();
-  m_errorMessage = e.what();
   disconnect();
-  setState(CPS_ERROR);
-  putRequest(REQUEST_RESET);
+  putRequest(ChessPlayerRequest(e.what(), true));
   LEAVEFUNC();
 }
 
@@ -646,7 +644,7 @@ void ChessPlayer::setRemote(const Game &game, const SocketChannel &channel) {
 
     notifyPropertyChanged(CPP_REMOTE, &oldRemote, &newRemote);
 
-    const FindMoveRequestParam param(game, TimeLimit(), false);
+    const FindMoveRequestParam param(game, TimeLimit(), false, false);
     if(isNewMoveFinderNeeded(param)) {
       allocateMoveFinder(param);
     }
@@ -667,17 +665,23 @@ void ChessPlayer::printState(Player computerPlayer, bool detailed) {
   String result;
   m_gate.wait();
   result = format(_T("ChessPlayer\n"
-                     "   State           : %s\n"
-                     "   Remote          : %s\n")
+                     "  State           : %s\n"
+                     "  Remote          : %s\n")
                  ,STATESTR()
                  ,boolToStr(isRemote())
                  );
+  String mfStr;
   if(m_moveFinder) {
-    result += format(_T("   Movefinder      : %s\n"), m_moveFinder->getName().cstr());
-    result += format(_T("     state:\n%s"), m_moveFinder->getStateString(computerPlayer, detailed).cstr());
+    mfStr           = format(_T("%s\n"), m_moveFinder->getName().cstr());
+    String stateStr = format(_T("State:\n%s")
+                             ,indentString(m_moveFinder->getStateString(computerPlayer, detailed)
+                                          ,2
+                                          ).cstr());
+    mfStr  += indentString(stateStr, 2);
   } else {
-    result += _T("   No movefinder allocated");
+    mfStr = _T("NULL");
   }
+  result += indentString(format(_T("Movefinder      : %s"), mfStr.cstr()),2);
 
   m_gate.signal();
   verbose(_T("%s\n"), result.cstr());
@@ -692,7 +696,6 @@ const TCHAR *ChessPlayer::getStateName(ChessPlayerState state) { // static
   caseStr(BUSY         )
   caseStr(STOPPENDING  )
   caseStr(MOVEREADY    )
-  caseStr(ERROR        )
   caseStr(KILLED       )
   default:return _T("??");
   }

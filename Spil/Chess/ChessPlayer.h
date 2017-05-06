@@ -13,7 +13,6 @@ typedef enum {
  ,CPS_BUSY            // ChessPlayer is busy finding a move
  ,CPS_STOPPENDING     // MoveFinder is busy, and has received REQUEST_STOPSEARCH (NOT MOVENOW)
  ,CPS_MOVEREADY       // Thread has got a new move ready for the dialog
- ,CPS_ERROR           // Some error has happened to the thread
  ,CPS_KILLED          // ChessPlayer run as long state is not CPS_KILLED
 } ChessPlayerState;
 
@@ -21,6 +20,7 @@ typedef enum {
   CPP_STATE           // ChessPlayerState.   Id of notifications when ChessPlayer.m_state changes
  ,CPP_REMOTE          // bool.               Id of notifications when ChessPlayer.m_channel goes from disconnected -> connected or vice versa
  ,CPP_MOVEFINDER      // AbstractMoveFinder* Id of notifications when ChessPlayer.m_moveFinder is changed
+ ,CPP_MESSAGETEXT     // String*             Id of notification  when ChessPlayer.m_msg is changed
 } ChessPlayerProperty;
 
 class ChessPlayer : public Thread, public PropertyContainer, public PropertyChangeListener, OptionsAccessor {
@@ -34,7 +34,7 @@ private:
   AbstractMoveFinder     *m_moveFinder;
   SocketChannel           m_channel;
   SearchMoveResult        m_searchResult;
-  String                  m_errorMessage;
+  String                  m_messageText;
   mutable Semaphore       m_gate;
   mutable BYTE            m_callLevel;
 
@@ -52,6 +52,7 @@ private:
   void handleStopSearchRequest();
   void handleMoveNowRequest();
   void handleGameChangedRequest(const GameChangedRequestParam &param);
+  void handleShowMessageRequest(const ShowMessageRequestParam &param);
   void handleFetchMoveRequest(  const FetchMoveRequestParam   &param);
   void handleResetRequest();
   void handleDisconnectRequest();
@@ -110,8 +111,5 @@ public:
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
   void printState(Player computerPlayer, bool detailed);
   String getName() const;
-  const String &getErrorMessage() const {
-    return m_errorMessage;
-  }
   static const TCHAR *getStateName(ChessPlayerState state);
 };
