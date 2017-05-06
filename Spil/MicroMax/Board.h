@@ -369,6 +369,7 @@ private:
   static inline void resetStopCode() {
     s_stopCode = 0;
   }
+  static String getUCIScoreStr(int score);
 public:
   Board() {
     initEngine();

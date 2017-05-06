@@ -207,6 +207,16 @@ bool Board::isDrawByRepetition() { // static
   return false;
 }
 
+String Board::getUCIScoreStr(int score) { // static
+  if (score >= MAXSCORE - 30) {
+    return format(_T("mate %d"), MAXSCORE-score);
+  } else if(score <= MINSCORE + 30) {
+    return format(_T("mate %d"), MINSCORE-score);
+  } else {
+    return format(_T("cp %d"), score);
+  }
+}
+
 GameResult Board::getGameResult() { // static
   int count = 0;
 // Search last 50 states with this stm for third repeat 
@@ -560,7 +570,7 @@ C:
       if(isVerbose()) {
         if(depth > 2) {
           static TCHAR varStr[1000];
-          reply(_T("info depth %d score cp %d nodes %u pv %s\n"), depth, bestScore, s_searchStatistic.m_nodeCount, a.getVariantStr(varStr));
+          reply(_T("info depth %d score %s nodes %u pv %s\n"), depth, getUCIScoreStr(bestScore).cstr(), s_searchStatistic.m_nodeCount, a.getVariantStr(varStr));
         }
       }
     }
