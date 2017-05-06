@@ -130,7 +130,7 @@ private:
   void   setWhiteExternEngine(int index);
   void   setBlackExternEngine(int index);
   void   setExternEngine(    Player player, int startMenuId, int index);
-  void   engineGetState(     Player player);
+  void   enginePrintState(   Player player);
   void   engineEditSettings( Player player);
   bool   notifyMove(                        const MoveBase &move);
   bool   notifyMove(         Player player, const MoveBase &move);
@@ -447,6 +447,7 @@ protected:
   afx_msg void OnTestShowEngineConsole();
   afx_msg void OnTestShowFEN();
   afx_msg LRESULT OnMsgChessPlayerStateChanged(     WPARAM wp, LPARAM lp);
+  afx_msg LRESULT OnMsgChessPlayerMsgChanged(       WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgEngineChanged(               WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgTraceWindowChanged(          WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);

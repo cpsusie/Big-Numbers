@@ -109,7 +109,7 @@ public:
   static const OpeningLibrary &getOpeningLibrary();
 
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  void printState(Player computerPlayer, bool detailed);
+  String toString(Player computerPlayer, bool detailed) const;
   String getName() const;
   static const TCHAR *getStateName(ChessPlayerState state);
 };

@@ -287,8 +287,9 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_COMMAND(ID_TEST_SAVETOEXTERNENGINE         , OnTestSaveToExternEngine         )
   ON_COMMAND(ID_TEST_PLOTWINSPVALUES            , OnTestPlotWinsPValues            )
   ON_COMMAND(ID_TEST_SHOWENGINECONSOLE          , OnTestShowEngineConsole          )
-  ON_COMMAND(ID_TEST_SHOWFEN                    ,	OnTestShowFEN                    )
+  ON_COMMAND(ID_TEST_SHOWFEN                    , OnTestShowFEN                    )
   ON_MESSAGE(ID_MSG_CHESSPLAYERSTATE_CHANGED    , OnMsgChessPlayerStateChanged     )
+  ON_MESSAGE(ID_MSG_CHESSPLAYERMSG_CHANGED      , OnMsgChessPlayerMsgChanged       )
   ON_MESSAGE(ID_MSG_ENGINE_CHANGED              , OnMsgEngineChanged               )
   ON_MESSAGE(ID_MSG_TRACEWINDOW_CHANGED         , OnMsgTraceWindowChanged          )
   ON_MESSAGE(ID_MSG_SHOW_SELECTED_MOVE          , OnMsgShowSelectedHistoryMove     )
@@ -860,17 +861,8 @@ void CChessDlg::handlePropertyChanged(const PropertyContainer *source, int id, c
           }
           break;
         case CPP_MESSAGETEXT:
-          { const String msg = *(String*)newValue;
-            if(msg.length() > 0) {
-              stopComputerTimeTimer();
-              errorMessage(_T("%s"), msg.cstr());
-              if(getDialogMode() == AUTOPLAYMODE) {
-                popDialogMode();
-              }
-            }
-          }
+          SendMessage(ID_MSG_CHESSPLAYERMSG_CHANGED, (WPARAM)newValue, 0);
           break;
-
         }
         break;
       }
@@ -940,13 +932,23 @@ LRESULT CChessDlg::OnMsgChessPlayerStateChanged(WPARAM wp, LPARAM lp) {
   } catch(Exception e) {
     errorMessage(e);
   }
-
   if(newState == CPS_BUSY) {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_WAIT));
   } else {
     setWindowCursor(this, MAKEINTRESOURCE(OCR_NORMAL));
   }
   ajourMenuItemsEnableStatus();
+  return 0;
+}
+
+LRESULT CChessDlg::OnMsgChessPlayerMsgChanged(WPARAM wp, LPARAM lp) {
+  const String msg = *(String*)wp;
+  if(msg.length() == 0) return 0;
+  stopComputerTimeTimer();
+  errorMessage(_T("%s"), msg.cstr());
+  if(getDialogMode() == AUTOPLAYMODE) {
+    popDialogMode();
+  }
   return 0;
 }
 
@@ -2622,8 +2624,8 @@ void CChessDlg::updateClock() {
 
 void CChessDlg::OnWhiteEngineSettings() { engineEditSettings(WHITEPLAYER); }
 void CChessDlg::OnBlackEngineSettings() { engineEditSettings(BLACKPLAYER); }
-void CChessDlg::OnWhiteEngineGetState() { engineGetState(    WHITEPLAYER); }
-void CChessDlg::OnBlackEngineGetState() { engineGetState(    BLACKPLAYER); }
+void CChessDlg::OnWhiteEngineGetState() { enginePrintState(  WHITEPLAYER); }
+void CChessDlg::OnBlackEngineGetState() { enginePrintState(  BLACKPLAYER); }
 
 void CChessDlg::engineEditSettings(Player player) {
 #ifndef TABLEBASE_BUILDER
@@ -2636,9 +2638,9 @@ void CChessDlg::engineEditSettings(Player player) {
 #endif
 }
 
-void CChessDlg::engineGetState(Player player) {
+void CChessDlg::enginePrintState(Player player) {
   if(isTraceWindowVisible()) {
-    getChessPlayer(player).printState(getComputerPlayer(), shiftKeyPressed());
+    verbose(_T("%s\n"), getChessPlayer(player).toString(getComputerPlayer(), shiftKeyPressed()).cstr());
   }
 }
 
@@ -2731,7 +2733,9 @@ void CChessDlg::setBlackExternEngine(int index) { setExternEngine(BLACKPLAYER, I
 void CChessDlg::setExternEngine(Player player, int startMenuId, int index) {
   const EngineRegister &engines = Options::getEngineRegister();
   if(index > (int)engines.size()) {
-    errorMessage(_T("setExternEngine:Invalid argument. index=%d size of engine register=%d"), index, engines.size());
+    errorMessage(_T("%s:Invalid argument. index=%d size of engine register=%d")
+                ,__TFUNCTION__
+                , index, engines.size());
     return;
   }
   if(index >= 0) {

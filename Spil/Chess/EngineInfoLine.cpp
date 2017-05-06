@@ -125,7 +125,7 @@ String EngineInfoLine::toString(const EngineVerboseFields &evf) const {
     if(evf.m_time    ) result += format(_T("time:%6.2lf "   ), (double)m_time/1000         );
     if(evf.m_nodes   ) result += format(_T("nodes:%13s "    ), format1000(m_nodes  ).cstr());
     if(evf.m_nodesps ) result += format(_T("nodes/sec:%10s "), format1000(m_nodesps).cstr());
-    if(evf.m_score   ) result += format(_T("score%-6s "     ), m_score.cstr()              );
+    if(evf.m_score   ) result += format(_T("score:%-6s "    ), m_score.cstr()              );
     if(evf.m_cpuLoad ) result += m_cpuLoad  ? format(_T("CPU:%4.1lf%% "     ), (double)m_cpuLoad/10.0) : _T("          ");
     if(evf.m_hashfull) result += m_hashFull ? format(_T("HashLoad:%4.1lf%% "), (double)m_hashFull/10.0) : _T("               ");
     if(result.length()) result += _T("\n");

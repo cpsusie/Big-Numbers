@@ -293,7 +293,7 @@ String Game::toUCIString() const {
       result += _T(" ") + toLowerCase(getMove(ply).toString(MOVE_UCIFORMAT));
     }
   }
-  return result + _T("\n");
+  return result;
 }
 
 String Game::toFENString() const {

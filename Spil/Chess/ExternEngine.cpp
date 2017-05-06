@@ -84,12 +84,17 @@ public:
 // public
 void ExternEngine::start(AbstractMoveReceiver *mr) {
   ENTERFUNC();
-  __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
-  m_moveReceiver = mr;
-  m_inputThread  = new RedirectingInputThread(getInput());
-  sendUCI();
-  if(m_moveReceiver) {
-    resume();
+  try {
+    __super::start(!Options::getOptions().getShowEngineConsole(), m_desc.getPath(), NULL);
+    m_moveReceiver = mr;
+    m_inputThread  = new RedirectingInputThread(getInput());
+    sendUCI();
+    if(m_moveReceiver) {
+      resume();
+    }
+  } catch (...) {
+    LEAVEFUNC();
+    throw;
   }
   LEAVEFUNC();
 }
@@ -163,13 +168,18 @@ void ExternEngine::deleteInputThread() {
 // private
 void ExternEngine::waitUntilNotBusy(int timeout) {
   ENTERFUNCPARAM(_T("timeout=%d"), timeout);
-  const int sleepTime = 100; // msec
+  const int sleepTime = 150; // msec
   const int count = timeout / sleepTime;
   for(int i = 0; isBusy() && i < count; i++) {
     Sleep(sleepTime);
   }
   if(isBusy()) {
+    const String name = getDescription().getName();
     killProcess();
+    m_moveReceiver->putError(_T("Extern engine %s did not reply with \"bestmove\"\n"
+                                "before timeout (%d msec). Process is killed")
+                            ,name.cstr(), timeout
+                            );
   }
   LEAVEFUNC();
 }
@@ -252,7 +262,7 @@ EngineDescription ExternEngine::getUCIReply(const String &path) { // static
 void ExternEngine::findBestMove(const Game &game, const TimeLimit &timeLimit) {
   ENTERFUNC();
   if(!isIdle()) {
-    DEBUGMSG(_T("engine.isIdle=false"));
+    DEBUGMSG(_T("engine.isIdle()=false"));
   } else {
     m_game = game;
     sendPosition();
@@ -266,7 +276,7 @@ void ExternEngine::findBestMove(const Game &game, const TimeLimit &timeLimit) {
 // public
 void ExternEngine::stopSearch() {
   ENTERFUNC();
-  if(isReady()) {
+  if(isBusy()) {
     send(_T("stop\n"));
     waitUntilNotBusy();
   }
@@ -276,9 +286,7 @@ void ExternEngine::stopSearch() {
 // public
 void ExternEngine::moveNow() {
   ENTERFUNC();
-  if(isReady()) {
-    send(_T("stop\n"));
-  }
+  stopSearch();
   LEAVEFUNC();
 }
 
@@ -304,7 +312,7 @@ void ExternEngine::setDebug(bool on) {
 void ExternEngine::sendPosition() const {
   ENTERFUNC();
   if(isIdle()) {
-    send(_T("%s"), m_game.toUCIString().cstr());
+    send(_T("%s\n"), m_game.toUCIString().cstr());
   }
   LEAVEFUNC();
 }
@@ -471,11 +479,12 @@ String ExternEngine::getBeautifiedVariant(const String &pv) const {
   const int startPly    = m_game.getPlyCount();
   int       moveCounter = startPly/2 + 1;
   String    result;
+  bool      ok = true;
   if(m_game.getPlayerInTurn() == BLACKPLAYER) {
     result = format(_T("%d. -"), moveCounter);
   }
   try {
-    for(Tokenizer tok(pv, _T(" ")); tok.hasNext();) {
+    for(Tokenizer tok(pv, _T(" ")); tok.hasNext() && ok;) {
       const PrintableMove m = m_game.generateMove(tok.next(), MOVE_UCIFORMAT);
       if(m_game.getPlayerInTurn() == WHITEPLAYER) {
         result += format(_T("%d. %s"), moveCounter, m.toString().cstr());
@@ -486,10 +495,17 @@ String ExternEngine::getBeautifiedVariant(const String &pv) const {
       m_game.doMove(m_game.generateMove(m));
     }
   } catch(Exception e) {
-    result += e.what();
+    result = e.what();
+    ok = false;
   }
   while(m_game.getPlyCount() > startPly) {
     m_game.undoMove();
+  }
+  if(!ok) {
+    m_moveReceiver->putError(_T("%s"), result.cstr());
+    return format(_T("Invalid reply from %s:%s")
+                 ,getDescription().getName().cstr()
+                 ,pv.cstr());
   }
   return result;
 }

@@ -7,8 +7,8 @@
 #include "MoveFinderRemotePlayer.h"
 
 //#define _PRINT_DEBUGMSG
-#define _DEBUG_CHECKSTATE
 //#define _TRACE_ENTERLEAVE
+#define _DEBUG_CHECKSTATE
 
 #ifdef ENTERFUNC
 #undef ENTERFUNC
@@ -661,12 +661,13 @@ void ChessPlayer::disconnect() {
 }
 
 // public
-void ChessPlayer::printState(Player computerPlayer, bool detailed) {
+String ChessPlayer::toString(Player computerPlayer, bool detailed) const {
   String result;
   m_gate.wait();
-  result = format(_T("ChessPlayer\n"
+  result = format(_T("ChessPlayer %s\n"
                      "  State           : %s\n"
                      "  Remote          : %s\n")
+                 ,getPlayerNameEnglish(m_player)
                  ,STATESTR()
                  ,boolToStr(isRemote())
                  );
@@ -674,9 +675,9 @@ void ChessPlayer::printState(Player computerPlayer, bool detailed) {
   if(m_moveFinder) {
     mfStr           = format(_T("%s\n"), m_moveFinder->getName().cstr());
     String stateStr = format(_T("State:\n%s")
-                             ,indentString(m_moveFinder->getStateString(computerPlayer, detailed)
-                                          ,2
-                                          ).cstr());
+                            ,indentString(m_moveFinder->getStateString(computerPlayer, detailed)
+                                         ,2
+                                         ).cstr());
     mfStr  += indentString(stateStr, 2);
   } else {
     mfStr = _T("NULL");
@@ -684,7 +685,7 @@ void ChessPlayer::printState(Player computerPlayer, bool detailed) {
   result += indentString(format(_T("Movefinder      : %s"), mfStr.cstr()),2);
 
   m_gate.signal();
-  verbose(_T("%s\n"), result.cstr());
+  return result;
 }
 
 // public

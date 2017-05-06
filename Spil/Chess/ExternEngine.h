@@ -178,10 +178,10 @@ public:
     return isStateFlagsSet(EXE_THREADRUNNING);
   }
   inline bool isBusy() const {
-    return isReady()   && isStateFlagsSet(EXE_BUSY);
+    return isReady() && isStateFlagsSet(EXE_BUSY);
   }
   inline bool isIdle() const {
-    return isReady()   && !isStateFlagsSet(EXE_BUSY);
+    return isReady() && !isStateFlagsSet(EXE_BUSY);
   }
   void  notifyGameChanged(const Game &game);
   const EngineDescription &getDescription() const {
