@@ -674,6 +674,7 @@
     <ClCompile Include="..\Chess\LDAWalk.cpp" />
     <ClCompile Include="..\Chess\ManualPositions.cpp" />
     <ClCompile Include="..\Chess\Move.cpp" />
+    <ClCompile Include="..\Chess\MoveBase.cpp" />
     <ClCompile Include="..\Chess\MoveGenerator.cpp" />
     <ClCompile Include="..\Chess\MoveTable.cpp" />
     <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
@@ -681,6 +682,7 @@
     <ClCompile Include="..\Chess\Piece.cpp" />
     <ClCompile Include="..\Chess\PlayerState.cpp" />
     <ClCompile Include="..\Chess\PositionSignature.cpp" />
+    <ClCompile Include="..\Chess\PrintableMove.cpp" />
     <ClCompile Include="..\Chess\RemoteEndGameSubTablebase.cpp" />
     <ClCompile Include="..\Chess\SubTablebase.cpp" />
     <ClCompile Include="..\Chess\TablebaseConversion.cpp" />

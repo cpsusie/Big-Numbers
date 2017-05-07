@@ -110,7 +110,7 @@ public:
 #define EXE_KILLED        0x4
 #define EXE_THREADRUNNING 0x8
 
-#define isStateFlagsSet(flags) ((m_stateFlags &   (flags)) == (flags))
+#define isStateFlagsSet(flags) ((m_stateFlags & (flags)) == (flags))
 
 class ExternEngine : public ExternProcess, public Thread, public OptionsAccessor {
 private:

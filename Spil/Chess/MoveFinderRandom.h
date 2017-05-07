@@ -25,6 +25,6 @@ public:
     return NORMAL_POSITION;
   }
 
-  String getStateString(Player computerPlayer, bool detailed);
+  String getStateString(bool detailed);
 };
 

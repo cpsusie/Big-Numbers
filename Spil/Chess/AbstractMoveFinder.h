@@ -48,7 +48,7 @@ public:
   virtual void           setVerbose(bool verbose) {
     m_verbose = verbose;
   }
-  virtual String getStateString(Player computerPlayer, bool detailed) = 0;
+  virtual String getStateString(bool detailed) = 0;
   virtual void notifyGameChanged(const Game &game) {
   };
   virtual void notifyMove(const MoveBase &move) {

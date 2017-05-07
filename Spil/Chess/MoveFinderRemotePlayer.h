@@ -52,7 +52,7 @@ public:
   void notifyGameChanged(const Game &game);
   void notifyMove(const MoveBase &move);
 
-  String getStateString(Player computerPlayer, bool detailed) {
+  String getStateString(bool detailed) {
     return _T("remote");
   }
 

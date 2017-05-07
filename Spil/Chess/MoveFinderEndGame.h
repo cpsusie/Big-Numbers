@@ -33,6 +33,6 @@ public:
     return m_tablebase->getKeyDefinition().getPositionSignature();
   }
 
-  String getStateString(Player computerPlayer, bool detailed);
+  String getStateString(bool detailed);
 
 };

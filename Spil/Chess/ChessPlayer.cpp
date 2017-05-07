@@ -6,7 +6,7 @@
 #include "MoveFinderExternEngine.h"
 #include "MoveFinderRemotePlayer.h"
 
-//#define _PRINT_DEBUGMSG
+#define _PRINT_DEBUGMSG
 //#define _TRACE_ENTERLEAVE
 #define _DEBUG_CHECKSTATE
 
@@ -260,7 +260,7 @@ UINT ChessPlayer::run() {
       break;
 
     default                :
-      DEBUGMSG(_T("Invalid request:%s"), request.toString().cstr());
+      debugMsg(_T("Invalid request:%s"), request.toString().cstr());
       break;
     }
   }
@@ -661,7 +661,7 @@ void ChessPlayer::disconnect() {
 }
 
 // public
-String ChessPlayer::toString(Player computerPlayer, bool detailed) const {
+String ChessPlayer::toString(bool detailed) const {
   String result;
   m_gate.wait();
   result = format(_T("ChessPlayer %s\n"
@@ -675,7 +675,7 @@ String ChessPlayer::toString(Player computerPlayer, bool detailed) const {
   if(m_moveFinder) {
     mfStr           = format(_T("%s\n"), m_moveFinder->getName().cstr());
     String stateStr = format(_T("State:\n%s")
-                            ,indentString(m_moveFinder->getStateString(computerPlayer, detailed)
+                            ,indentString(m_moveFinder->getStateString(detailed)
                                          ,2
                                          ).cstr());
     mfStr  += indentString(stateStr, 2);

@@ -729,6 +729,12 @@
     <ClCompile Include="..\Chess\EndGameBuild.cpp">
       <Filter>EndGames</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\MoveBase.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\PrintableMove.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\chess\FieldNames.h">

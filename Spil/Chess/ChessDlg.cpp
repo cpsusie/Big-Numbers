@@ -2639,7 +2639,7 @@ void CChessDlg::engineEditSettings(Player player) {
 
 void CChessDlg::enginePrintState(Player player) {
   if(isTraceWindowVisible()) {
-    verbose(_T("%s\n"), getChessPlayer(player).toString(getComputerPlayer(), shiftKeyPressed()).cstr());
+    verbose(_T("%s\n"), getChessPlayer(player).toString(shiftKeyPressed()).cstr());
   }
 }
 

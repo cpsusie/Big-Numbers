@@ -67,7 +67,7 @@ String MoveFinderEndGame::getName() const {
   return format(_T("Tablebase %s"), m_tablebase->getName().cstr());
 }
 
-String MoveFinderEndGame::getStateString(Player computerPlayer, bool detailed) {
+String MoveFinderEndGame::getStateString(bool detailed) {
   String result;
   if(m_tablebase) {
     result = format(_T("Current tablebase:%s"), m_tablebase->getName().cstr());

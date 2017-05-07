@@ -40,7 +40,7 @@ public:
   void notifyMove(const MoveBase &move);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
-  String getStateString(Player computerPlayer, bool detailed);
+  String getStateString(bool detailed);
 
 };
 
