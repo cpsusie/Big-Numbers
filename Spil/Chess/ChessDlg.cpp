@@ -302,8 +302,7 @@ HCURSOR CChessDlg::OnQueryDragIcon() {
 
 void CChessDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout(this);
-    dlgAbout.DoModal();
+    CAboutDlg(this).DoModal();
   } else {
     CDialog::OnSysCommand(nID, lParam);
   }

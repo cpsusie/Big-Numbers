@@ -475,8 +475,8 @@ void ChessGraphics::animateMove(const MoveBase &m) {
 
 const CPoint &ChessGraphics::getFirstOffboardPiecePosition(Player player) const {
   static const CPoint pos[] = {
-    Point2DP(UPPERLEFTCORNER(false).x - FIELDSIZE0.cx*2 -  80, UPPERLEFTCORNER(false).y)
-   ,Point2DP(UPPERLEFTCORNER(false).x + FIELDSIZE0.cx*8 + 160, UPPERLEFTCORNER(false).y)
+    Point2DP(UPPERLEFT0.x - FIELDSIZE0.cx*2 -  80, UPPERLEFT0.y)
+   ,Point2DP(UPPERLEFT0.x + FIELDSIZE0.cx*8 + 160, UPPERLEFT0.y)
   };
   return pos[ISLEFTSIDE(player)?0:1];
 }
