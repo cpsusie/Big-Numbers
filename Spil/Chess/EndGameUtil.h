@@ -283,6 +283,7 @@ public:
   }
 };
 
+// Bits for TablebaseInfo.m_stateFlags
 #define TBISTATE_CONSISTENT          0x01
 #define TBISTATE_NONWINNERFIXED      0x02
 #define TBISTATE_WINNERFORWARD1FIXED 0x04
