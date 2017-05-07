@@ -374,11 +374,8 @@ MoveBaseArray Game::getLegalBackMoves(const Piece *piece) const {
 #endif
 
 PositionSignature Game::getPositionSignature() const {
-  PositionSignature result;
-  forEachPlayer(p) {
-    result.m_pieceTypes[p] = m_playerState[p].getPlayerSignature();
-  }
-  return result;
+  return PositionSignature(m_playerState[WHITEPLAYER].getPlayerSignature()
+                          ,m_playerState[BLACKPLAYER].getPlayerSignature());
 }
 
 void Game::resetCapturedPieceTypes(Player player) {

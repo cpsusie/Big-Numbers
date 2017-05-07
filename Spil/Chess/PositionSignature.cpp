@@ -92,7 +92,7 @@ void PositionSignature::invalidArgument(const String &str) { // static
 }
 
 PositionSignature::PositionSignature(const String &str) {
-  PlayerSignature *ps = m_pieceTypes;
+  PlayerSignature *ps = m_playerSignature;
   const TCHAR *cp = str.cstr();
   if(*(cp++) != 'K') {
     invalidArgument(str);
@@ -102,7 +102,7 @@ PositionSignature::PositionSignature(const String &str) {
   for(;*cp; cp++) {
     switch(*cp) {
     case 'K':
-      if(ps == m_pieceTypes) {
+      if(ps == m_playerSignature) {
         ps++;
       } else {
         invalidArgument(str);
@@ -133,23 +133,6 @@ PositionSignature::PositionSignature(const String &str) {
   }
 }
 
-PositionSignature PositionSignature::swapPlayers() const {
-  PositionSignature result;
-  result.m_pieceTypes[BLACKPLAYER] = m_pieceTypes[WHITEPLAYER];
-  result.m_pieceTypes[WHITEPLAYER] = m_pieceTypes[BLACKPLAYER];
-  return result;
-}
-
-bool PositionSignature::operator==(const PositionSignature &ps) const {
-  return (m_pieceTypes[WHITEPLAYER] == ps.m_pieceTypes[WHITEPLAYER])
-      && (m_pieceTypes[BLACKPLAYER] == ps.m_pieceTypes[BLACKPLAYER]);
-}
-
-bool PositionSignature::operator!=(const PositionSignature &ps) const {
-  return (m_pieceTypes[WHITEPLAYER] != ps.m_pieceTypes[WHITEPLAYER])
-      || (m_pieceTypes[BLACKPLAYER] != ps.m_pieceTypes[BLACKPLAYER]);
-}
-
 bool PositionSignature::match(const PositionSignature &pt, bool &swap) const {
   if(*this == pt) {
     swap = false;
@@ -164,8 +147,8 @@ bool PositionSignature::match(const PositionSignature &pt, bool &swap) const {
 
 String PositionSignature::toString(bool longNames) const {
   if(longNames) {
-    return m_pieceTypes[WHITEPLAYER].toString(true ) + _T("/") + m_pieceTypes[BLACKPLAYER].toString(true );
+    return m_playerSignature[WHITEPLAYER].toString(true ) + _T("/") + m_playerSignature[BLACKPLAYER].toString(true );
   } else {
-    return m_pieceTypes[WHITEPLAYER].toString(false) +       m_pieceTypes[BLACKPLAYER].toString(false);
+    return m_playerSignature[WHITEPLAYER].toString(false) +       m_playerSignature[BLACKPLAYER].toString(false);
   }
 }

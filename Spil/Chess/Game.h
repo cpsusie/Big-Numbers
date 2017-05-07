@@ -188,7 +188,7 @@ typedef enum {
 #define GETPROMOTEROW(player)            ((player==WHITEPLAYER)?7:0)
 #define GETPAWNSTARTROW(player)          ((player==WHITEPLAYER)?1:6)
 
-#define INSIDEBOARD(row, col)            ((((row) >= 0) && ((row) < 8)) && (((col) >= 0) && ((col) < 8)))
+#define INSIDEBOARD(row, col)            (((UINT)(row) < 8) && ((UINT)(col) < 8))
 
 #define LD_ATTACKS(piece, attr)          ((piece->m_attackAttribute & ((attr)|ATTACKS_LONGDISTANCE)) > ATTACKS_LONGDISTANCE)
 
@@ -466,43 +466,58 @@ public:
 
 class PositionSignature {
 private:
-  PlayerSignature m_pieceTypes[2];
-  friend class Game;
-  friend class GameKey;
-  friend class EndGameKeyDefinition;
+  PlayerSignature m_playerSignature[2];
   static void invalidArgument(const String &str);
 public:
-  void add(PieceKey pk) {
-    m_pieceTypes[GET_PLAYER_FROMKEY(pk)].add(GET_TYPE_FROMKEY(pk));
+  inline void add(PieceKey pk) {
+    m_playerSignature[GET_PLAYER_FROMKEY(pk)].add(GET_TYPE_FROMKEY(pk));
   }
-  PositionSignature() {}
+  inline PositionSignature() {}
   PositionSignature(const String &str);
-  PositionSignature swapPlayers() const;
-  bool operator==(const PositionSignature &ps) const;
-  bool operator!=(const PositionSignature &ps) const;
+  inline PositionSignature(PlayerSignature ws, PlayerSignature bs) {
+    m_playerSignature[WHITEPLAYER] = ws;
+    m_playerSignature[BLACKPLAYER] = bs;
+  }
+
+  inline PositionSignature swapPlayers() const {
+    return PositionSignature(m_playerSignature[BLACKPLAYER],m_playerSignature[WHITEPLAYER]);
+  }
+
+  inline bool operator==(const PositionSignature &ps) const {
+    return (m_playerSignature[WHITEPLAYER] == ps.m_playerSignature[WHITEPLAYER])
+        && (m_playerSignature[BLACKPLAYER] == ps.m_playerSignature[BLACKPLAYER]);
+  }
+  inline bool operator!=(const PositionSignature &ps) const {
+    return (m_playerSignature[WHITEPLAYER] != ps.m_playerSignature[WHITEPLAYER])
+        || (m_playerSignature[BLACKPLAYER] != ps.m_playerSignature[BLACKPLAYER]);
+  }
   bool match(const PositionSignature &ps, bool &swap) const;
 
   inline bool isEmpty() const {
-    return m_pieceTypes[0].isEmpty() || m_pieceTypes[1].isEmpty();
+    return m_playerSignature[0].isEmpty() || m_playerSignature[1].isEmpty();
   }
   inline int getPieceCount(Player player) const {
-    return m_pieceTypes[player].getPieceCount();
+    return m_playerSignature[player].getPieceCount();
   }
   inline PlayerSignature getPlayerSignature(Player player) const {
-    return m_pieceTypes[player];
+    return m_playerSignature[player];
   }
 #ifdef TEST_HASHFACTOR
   static int hashFactor;
   long hashCode() const;
 #else
   inline ULONG hashCode() const {
-    return (m_pieceTypes[WHITEPLAYER].hashCode() * 2716389) ^ m_pieceTypes[BLACKPLAYER].hashCode();
+    return (m_playerSignature[WHITEPLAYER].hashCode() * 2716389) 
+          ^ m_playerSignature[BLACKPLAYER].hashCode();
   }
 #endif
 
   String toString(bool longNames = false) const;
 };
 
+class Game;
+class GameKey;
+class EndGameKeyDefinition;
 class Move;
 
 #define DECLARE_COMMON_FRIENDS                     \
