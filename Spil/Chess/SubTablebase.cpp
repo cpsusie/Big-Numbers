@@ -15,7 +15,7 @@ SubTablebaseKey::SubTablebaseKey(const Move &m) {
   m_promoteTo        = m.getPromoteTo();
 }
 
-unsigned long SubTablebaseKey::hashCode() const {
+ULONG SubTablebaseKey::hashCode() const {
   return ((((((m_promoteTo << 4) | m_capturedPieceKey) << 3) | m_moveType) << 1) | m_movingPlayer);
 }
 

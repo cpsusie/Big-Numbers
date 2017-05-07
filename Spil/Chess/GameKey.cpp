@@ -180,9 +180,9 @@ String GameKey::toFENString(int plyCountWithoutCaptureOrPawnMove, int moveNumber
 
 #define HASHCOUNT (sizeof(GameKey)/sizeof(long))
 
-unsigned long GameKey::hashCode() const {
-  unsigned long result = 0;
-  for(unsigned long *l = (unsigned long*)this, count=HASHCOUNT; count--;) {
+ULONG GameKey::hashCode() const {
+  ULONG result = 0;
+  for(ULONG *l = (ULONG*)this, count = HASHCOUNT; count--;) {
     result = result * 13 + *(l++);
   }
   return result;

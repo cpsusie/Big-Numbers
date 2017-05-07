@@ -234,7 +234,7 @@ EndGameTablebase &EndGameTablebase::getInstanceByName(const String &name) { // s
 
 int PositionSignature::hashFactor =  2716389;
 
-unsigned long PositionSignature::hashCode() const {
+ULONG PositionSignature::hashCode() const {
   return (m_pieceTypes[WHITEPLAYER].hashCode() * hashFactor ) ^ m_pieceTypes[BLACKPLAYER].hashCode();
 }
 #define DUMPHASHFACTOR() verbose(_T("HashFactor:%8d, "), PositionSignature::hashFactor);

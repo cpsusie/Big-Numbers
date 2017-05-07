@@ -968,7 +968,7 @@ EngineOptionValueArray Options::getEngineOptionValues(Player player, const Strin
     if(value.getType() == REG_SZ) {
       result.setValue(value.getName(), (String)value);
     } else {
-      result.setValue(value.getName(), (int)((unsigned long)value));
+      result.setValue(value.getName(), (int)((ULONG)value));
     }
   }
   return result;

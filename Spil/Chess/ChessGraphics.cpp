@@ -645,7 +645,7 @@ const CPoint ChessGraphics::getTimeTextPosition(int i) const {
 const CSize &ChessGraphics::getTimeTextSize() const {
   static CSize size(0,0);
   if(size.cx == 0) {
-    HDC tmpDC = CreateCompatibleDC(NULL);
+    HDC     tmpDC   = CreateCompatibleDC(NULL);
     HGDIOBJ oldFont = SelectObject(tmpDC, m_resources.getBoardFont());
     size = getTextExtent(tmpDC, _T("00:00:00"));
     SelectObject(tmpDC, oldFont);
@@ -663,11 +663,11 @@ const CRect &ChessGraphics::getTimeTextRect(int i) const {
 
 void ChessGraphics::paintClocks() {
   int posIndex = m_computerPlayer;
-
-  for(Player player = WHITEPLAYER; player <= BLACKPLAYER; NEXTPLAYER(player), posIndex ^= 1) {
+  forEachPlayer(player) {
     if(m_visibleClocks & (1 << player)) {
       paintClock(getTimeTextPosition(posIndex), m_remainingTime[player]);
     }
+    posIndex ^= 1;
   }
 }
 
@@ -730,9 +730,10 @@ void ChessGraphics::showClocks(UINT whiteTime, UINT blackTime) {
 
   pushLevel();
   const CSize &textSize = getTimeTextSize();
-  for(Player player = WHITEPLAYER; player <= BLACKPLAYER; NEXTPLAYER(player), posIndex ^= 1) {
+  forEachPlayer(p) {
     const CPoint &textPos = getTimeTextPosition(posIndex);
     restoreBackground(textPos, textSize);
+    posIndex ^= 1;
   }
   paintClocks();
   popLevel();

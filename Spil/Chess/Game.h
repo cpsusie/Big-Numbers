@@ -454,7 +454,7 @@ public:
   }
   int getPieceCount() const;
   int getPieceCount(PieceType pt) const;
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return m_hashCode;
   }
   String toString(bool longNames) const;
@@ -495,7 +495,7 @@ public:
   static int hashFactor;
   long hashCode() const;
 #else
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return (m_pieceTypes[WHITEPLAYER].hashCode() * 2716389) ^ m_pieceTypes[BLACKPLAYER].hashCode();
   }
 #endif
@@ -806,7 +806,7 @@ public:
     AttackDirectionInfo1 m_attackDirectionInfo1;
     AttackDirectionInfo2 m_attackDirectionInfo2;
     AttackTypeInfo       m_attackTypeInfo;
-    unsigned long        m_isAttacked : 12;     // Dont interpret this as a count of attacking pieces. Only zero check is valid
+    ULONG                m_isAttacked : 12;     // Dont interpret this as a count of attacking pieces. Only zero check is valid
   };
   bool isLDAttackedFromDir(MoveDirection direction) const;
   inline bool isRCAttacked() const {

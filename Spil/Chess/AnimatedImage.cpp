@@ -111,7 +111,7 @@ UINT AnimatedImage::run() {
           break;
         }
       }
-      Sleep((unsigned long)(m_frameIndex ? m_sleepTimeMs : m_sleepAtEnd));
+      Sleep((ULONG)(m_frameIndex ? m_sleepTimeMs : m_sleepAtEnd));
     }
     if(m_removeWhenDone) {
       restoreBackground();

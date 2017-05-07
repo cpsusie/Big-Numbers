@@ -177,17 +177,17 @@ class GameKeyWithRepeatCount : public GameKey {
   friend bool operator==(const GameKeyWithRepeatCount &key1, const GameKeyWithRepeatCount &key2);
 public:
   GameKeyWithRepeatCount(const Game &g);
-  unsigned long hashCode() const;
+  ULONG hashCode() const;
 };
 
 GameKeyWithRepeatCount::GameKeyWithRepeatCount(const Game &g) : GameKey(g.getKey()), m_repeatCount(g.getPositionRepeats()) {
 }
 
-static unsigned long gameKeyHash(const GameKeyWithRepeatCount &key) {
+static ULONG gameKeyHash(const GameKeyWithRepeatCount &key) {
   return key.hashCode();
 }
 
-unsigned long GameKeyWithRepeatCount::hashCode() const {
+ULONG GameKeyWithRepeatCount::hashCode() const {
   return GameKey::hashCode() * 3 + m_repeatCount;
 }
 

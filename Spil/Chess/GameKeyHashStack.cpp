@@ -86,7 +86,7 @@ void GameKeyHashStack::clear() {
 }
 
 int GameKeyHashStack::push(const GameKey &gameKey) {
-  const unsigned long index = gameKey.hashCode() % m_hashCapacity;
+  const ULONG index = gameKey.hashCode() % m_hashCapacity;
   GameKeyHashElement *q = m_hashTable[index], *n;
   for(n = q; n; n = n->m_next) {
     if(*n == gameKey) {
