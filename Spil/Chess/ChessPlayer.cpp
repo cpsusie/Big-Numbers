@@ -251,6 +251,10 @@ UINT ChessPlayer::run() {
       handleResetRequest();
       break;
 
+    case REQUEST_CONNECT   :
+      handleConnectRequest(request.getConnectParam());
+      break;
+
     case REQUEST_DISCONNECT:
       handleDisconnectRequest();
       break;
@@ -417,9 +421,35 @@ void ChessPlayer::handleResetRequest() {
 }
 
 // private
+void ChessPlayer::handleConnectRequest(const ConnectRequestParam &param) {
+  ENTERFUNC();
+  setRemote(param.getChannel());
+  LEAVEFUNC();
+}
+
+// private
 void ChessPlayer::handleDisconnectRequest() {
   ENTERFUNC();
-  setRemote(Game(), SocketChannel());
+  setRemote(SocketChannel());
+  LEAVEFUNC();
+}
+
+// private
+void ChessPlayer::setRemote(const SocketChannel &channel) {
+  ENTERFUNC();
+  CHECKSTATE(CPS_IDLE);
+
+  const bool oldRemote = isRemote();
+  m_channel = channel;
+  const bool newRemote = isRemote();
+  if(newRemote != oldRemote) {
+    if(newRemote) {
+      allocateRemoteMoveFinder();
+    } else {
+      putRequest(REQUEST_RESET);
+    }
+    notifyPropertyChanged(CPP_REMOTE, &oldRemote, &newRemote);
+  }
   LEAVEFUNC();
 }
 
@@ -517,12 +547,14 @@ EndGameTablebase *ChessPlayer::findMatchingTablebase(const Game &g) const {
   return (db && (db->exist(DECOMPRESSEDTABLEBASE) || db->exist(COMPRESSEDTABLEBASE))) ? db : NULL;
 }
 
+void ChessPlayer::allocateRemoteMoveFinder() {
+  assert(isRemote());
+  setMoveFinder(new MoveFinderRemotePlayer(getPlayer(), m_inputQueue, m_channel));
+}
+
 // private
 void ChessPlayer::allocateMoveFinder(const FindMoveRequestParam &param) {
-  if(isRemote()) {
-    setMoveFinder(new MoveFinderRemotePlayer(getPlayer(), m_inputQueue, m_channel));
-    return;
-  }
+  assert(!isRemote());
   switch(param.getGame().getPositionType()) {
   case NORMAL_POSITION  :
   case DRAW_POSITION    :
@@ -631,25 +663,9 @@ void ChessPlayer::setMoveFinder(AbstractMoveFinder *moveFinder) {
   LEAVEFUNC();
 }
 
-// public
-void ChessPlayer::setRemote(const Game &game, const SocketChannel &channel) {
+void ChessPlayer::connect(const SocketChannel &channel) {
   ENTERFUNC();
-  m_gate.wait();
-  CHECKSTATE(CPS_IDLE);
-
-  const bool oldRemote = isRemote();
-  m_channel = channel;
-  const bool newRemote = isRemote();
-  if(newRemote != oldRemote) {
-
-    notifyPropertyChanged(CPP_REMOTE, &oldRemote, &newRemote);
-
-    const FindMoveRequestParam param(game, TimeLimit(), false, false);
-    if(isNewMoveFinderNeeded(param)) {
-      allocateMoveFinder(param);
-    }
-  }
-  m_gate.signal();
+  putRequest(channel);
   LEAVEFUNC();
 }
 

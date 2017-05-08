@@ -6,36 +6,31 @@ class CConnectDlg : public CDialog, public OptionsAccessor {
 private:
     HACCEL        m_accelTable;
     SOCKET        m_listener;
+    Game         &m_game;
     SocketChannel m_channel;
-    Player        m_myColor;
+    Player        m_remotePlayer;
     bool          m_timerIsRunning;
     void   enableComputerName();
     void   startTimer();
     void   stopTimer();
     void   makeHandshake();
 public:
-	CConnectDlg(CWnd* pParent = NULL);
+	CConnectDlg(Game &game, CWnd *pParent = NULL);
 
-    const SocketChannel &getSocketChannel() {
-      return m_channel;
-    }
+  const SocketChannel &getSocketChannel() {
+    return m_channel;
+  }
 
-    Player getPlayer() const {
-      return m_myColor;
-    }
-
+  Player getRemotePlayer() const { // returns the ChessPlayer that should be connected.
+    return m_remotePlayer;
+  }
 	enum { IDD = IDD_CONNECT_DIALOG };
 	CString	m_serverComputerName;
-	int		m_connectedToServer;
-
+	int		  m_connectedToServer;
 
 public:
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
 	virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
 	virtual void OnOK();
 	virtual BOOL OnInitDialog();
   afx_msg void OnGotoComputerName();
@@ -45,4 +40,3 @@ protected:
 	virtual void OnCancel();
 	DECLARE_MESSAGE_MAP()
 };
-

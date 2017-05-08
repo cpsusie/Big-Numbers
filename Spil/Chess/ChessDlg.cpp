@@ -1222,21 +1222,18 @@ void CChessDlg::load(const String &fileName) {
 }
 
 void CChessDlg::OnFilePlayRemote() {
-  CConnectDlg dlg;
+  CConnectDlg dlg(getCurrentGame());
   if(dlg.DoModal() == IDOK) {
     stopAllBackgroundActivity(true);
-    const Player player = dlg.getPlayer();
-    setComputerPlayer(GETENEMY(player));
     const SocketChannel &ch = dlg.getSocketChannel();
-
     if(getOptions().isConnectedToServer()) {
-      ch.read(getCurrentGame());
+      BEGINPAINT();
+      setComputerPlayer(dlg.getRemotePlayer());
+      paintGamePosition();
+      ENDPAINT();
       notifyGameChanged(getCurrentGame());
-    } else {
-      ch.write(getCurrentGame());
     }
-    getChessPlayer(getComputerPlayer()).setRemote(getCurrentGame(), ch);
-    invalidate();
+    getChessPlayer(getComputerPlayer()).connect(ch);
   }
 }
 

@@ -9,12 +9,12 @@
 
 #define PORTNUMBER 3571
 
-CConnectDlg::CConnectDlg(CWnd* pParent /*=NULL*/) : CDialog(CConnectDlg::IDD, pParent) {
+CConnectDlg::CConnectDlg(Game &game, CWnd *pParent /*=NULL*/) : m_game(game), CDialog(CConnectDlg::IDD, pParent) {
   const Options &options = getOptions();
   m_serverComputerName = options.getServerComputerName().cstr();
   m_connectedToServer  = options.isConnectedToServer() ? 1 : 0;
-  m_listener = INVALID_SOCKET;
-  m_timerIsRunning = false;
+  m_listener           = INVALID_SOCKET;
+  m_timerIsRunning     = false;
 }
 
 void CConnectDlg::DoDataExchange(CDataExchange* pDX) {
@@ -91,12 +91,10 @@ void CConnectDlg::makeHandshake() {
   try {
     if(options.isConnectedToServer()) {
       const String serverName = options.getServerComputerName();
-      USES_CONVERSION;
-      const char *aserverName = T2A(serverName.cstr());
-      SOCKET writeS = tcpOpen(PORTNUMBER, aserverName);
-      SOCKET readS  = tcpOpen(PORTNUMBER, aserverName);
-      m_channel = SocketChannel(readS, writeS);
-      m_channel.read(m_myColor);
+      m_channel = SocketChannel(PORTNUMBER, serverName);
+      m_channel.read(m_remotePlayer);
+      m_channel.read(m_game);
+      m_remotePlayer = GETENEMY(m_remotePlayer);
       CDialog::OnOK();
     } else {
       m_listener = tcpCreate(PORTNUMBER);
@@ -115,13 +113,11 @@ void CConnectDlg::makeHandshake() {
 void CConnectDlg::OnTimer(UINT_PTR nIDEvent) {
   if(tcpPoll(m_listener)) {
     stopTimer();
-    SOCKET readS  = tcpAccept(m_listener);
-    SOCKET writeS = tcpAccept(m_listener);
-    m_channel = SocketChannel(readS, writeS);
+    m_channel = SocketChannel(m_listener);
     CLOSESOCKET(m_listener);
-    const Player remotePlayer = getOptions().getComputerPlayer();
-    m_myColor = GETENEMY(remotePlayer);
-    m_channel.write(remotePlayer);
+    m_remotePlayer = getOptions().getComputerPlayer();
+    m_channel.write(m_remotePlayer);
+    m_channel.write(m_game        );
     CDialog::OnOK();
   }
   CDialog::OnTimer(nIDEvent);

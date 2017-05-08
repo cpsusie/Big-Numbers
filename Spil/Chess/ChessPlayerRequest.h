@@ -1,29 +1,23 @@
 #pragma once
 
+#include <RefCountedObject.h>
+#include "SocketChannel.h"
+
 typedef enum { // When put these request into the request-queue, caller never hangs. only deliver the request and return immediately
-  REQUEST_FINDMOVE     // Only valid if state == MFTS_IDLE. Ask MoveFinderThread the best move.
- ,REQUEST_NULLMOVE     // Only valid if state == MFTS_IDLE. Request NullMove, ie. empty move
- ,REQUEST_STOPSEARCH   // if state==MFTS_BUSY then set state=MFTS_STOPPENDING, and ask the movefinder to stop the search as soon as possible
- ,REQUEST_MOVENOW      // Only valid if state == MOVE_BUSY. Stop the current search, at soon as a move is ready and goto MFTS_MOVEREADY
+  REQUEST_FINDMOVE     // Only valid if state == CPS_IDLE. Ask MoveFinderThread the best move.
+ ,REQUEST_NULLMOVE     // Only valid if state == CPS_IDLE. Request NullMove, ie. empty move
+ ,REQUEST_STOPSEARCH   // if state==CPS_BUSY then set state=CPS_STOPPENDING, and ask the movefinder to stop the search as soon as possible
+ ,REQUEST_MOVENOW      // Only valid if state == CPS_BUSY. Stop the current search, at soon as a move is ready and goto CPS_MOVEREADY
  ,REQUEST_FETCHMOVE    // Send from actual moveFinder back to MoveFinderThread
  ,REQUEST_GAMECHANGED  // The game is changed, (new game, edit game, etc.)
  ,REQUEST_SHOWMESSAGE  // Show a message. mostly used for errormessages from moveFinder. Show and if param.m_reset then reset
  ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state MFTS_IDLE
+ ,REQUEST_CONNECT      // Only valid if state == CPS_IDLE 
  ,REQUEST_DISCONNECT   // Only valid if connected. Disconnect remoteMoveFinder
  ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to MFTS_KILLED
 } ChessPlayerRequestType;
 
-class RequestParamRefCount {
-private:
-  BYTE m_refCount;
-public:
-  RequestParamRefCount() : m_refCount(1) {
-  }
-  inline int  addRef()  { return ++m_refCount; }
-  inline int  release() { return --m_refCount; }
-};
-
-class RequestParamGame : public RequestParamRefCount {
+class RequestParamGame : public RefCountedObject {
 private:
   const Game m_game;
 public:
@@ -65,7 +59,20 @@ public:
   }
 };
 
-class ShowMessageRequestParam : public RequestParamRefCount {
+class ConnectRequestParam : public RefCountedObject {
+private:
+  const SocketChannel m_channel;
+public:
+  ConnectRequestParam(const SocketChannel &channel)
+    : m_channel(channel)
+  {
+  }
+  const inline SocketChannel &getChannel() const {
+    return m_channel;
+  }
+};
+
+class ShowMessageRequestParam : public RefCountedObject {
 private:
   const String m_msg;
   const bool   m_error;
@@ -108,11 +115,17 @@ private:
     GameChangedRequestParam *m_gameChangedParam; // m_type = REQUEST_GAMECHANGED
     FetchMoveRequestParam    m_fetchMoveParam;   // m_type = REQUEST_FETCHMOVE
     ShowMessageRequestParam *m_showMessageParam; // m_type = REQUEST_SHOWMESSAGE
+    ConnectRequestParam     *m_connectParam;     // m_type = REQUEST_CONNECT
   } m_data;
   void release();
-  void addRef();
+  void addref();
   void cleanData();
-  void throwInvalidType(const TCHAR *method) const;
+  inline void throwInvalidType(const TCHAR *method) const {
+    throwException(_T("%s:Request type is %s"), method, getRequestName());
+  }
+  inline void checkType(const TCHAR *method, ChessPlayerRequestType expectedType) const {
+    if(getType() != expectedType) throwInvalidType(method);
+  }
 public:
   // REQUEST_FINDMOVE
   ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose);
@@ -121,7 +134,9 @@ public:
   // REQUEST_FETCHMOVE
   ChessPlayerRequest(const MoveBase &move, bool hint);
   // REQUEST_SHOWMESSAGE
-  ChessPlayerRequest(const String &msg, bool error);
+  ChessPlayerRequest(const String &msgText, bool error);
+  // REQUEST_CONNECT
+  ChessPlayerRequest(const SocketChannel &channel);
   ChessPlayerRequest(ChessPlayerRequestType type);
   ChessPlayerRequest(const ChessPlayerRequest &src);
   ~ChessPlayerRequest();
@@ -133,6 +148,7 @@ public:
   const GameChangedRequestParam  &getGameChangedParam() const;
   const FetchMoveRequestParam    &getFetchMoveParam()   const;
   const ShowMessageRequestParam  &getShowMessageParam() const;
+  const ConnectRequestParam      &getConnectParam()     const;
   inline const TCHAR             *getRequestName()      const {
     return getRequestName(m_type);
   }

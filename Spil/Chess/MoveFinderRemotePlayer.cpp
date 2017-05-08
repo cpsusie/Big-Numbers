@@ -9,7 +9,7 @@ MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, ChessPlayerRequest
 }
 
 void MoveFinderRemotePlayer::disConnect() {
-  m_channel.close();
+  m_channel.clear();
 }
 
 MoveFinderRemotePlayer::~MoveFinderRemotePlayer() {

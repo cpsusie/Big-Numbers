@@ -22,10 +22,17 @@ ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
   m_data.m_fetchMoveParam.m_hint = hint;
 }
 
-ChessPlayerRequest::ChessPlayerRequest(const String &errMsg, bool error)
+ChessPlayerRequest::ChessPlayerRequest(const String &msgText, bool error)
 :m_type(REQUEST_SHOWMESSAGE)
 {
-  m_data.m_showMessageParam = new ShowMessageRequestParam(errMsg, error);
+  m_data.m_showMessageParam = new ShowMessageRequestParam(msgText, error);
+}
+
+  // REQUEST_CONNECT
+ChessPlayerRequest::ChessPlayerRequest(const SocketChannel &channel)
+:m_type(REQUEST_CONNECT)
+{
+  m_data.m_connectParam = new ConnectRequestParam(channel);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
@@ -48,25 +55,29 @@ ChessPlayerRequest::ChessPlayerRequest(const ChessPlayerRequest &src)
 : m_type(src.getType())
 , m_data(src.m_data)
 {
-  addRef();
+  addref();
 }
 
 ChessPlayerRequest::~ChessPlayerRequest() {
   release();
 }
 
-void ChessPlayerRequest::addRef() {
+void ChessPlayerRequest::addref() {
   int refCount = 0;
   switch(m_type) {
   case REQUEST_FINDMOVE   :
-    refCount = m_data.m_findMoveParam->addRef();
+    refCount = m_data.m_findMoveParam->addref();
     break;
   case REQUEST_GAMECHANGED:
-    refCount = m_data.m_gameChangedParam->addRef();
+    refCount = m_data.m_gameChangedParam->addref();
     break;
   case REQUEST_SHOWMESSAGE:
-    refCount = m_data.m_showMessageParam->addRef();
+    refCount = m_data.m_showMessageParam->addref();
     break;
+  case REQUEST_CONNECT    :
+    refCount = m_data.m_connectParam->addref();
+    break;
+
   default                 :
     break; // do nothing
   }
@@ -95,6 +106,11 @@ void ChessPlayerRequest::release() {
       delete m_data.m_showMessageParam;
     }
     break;
+  case REQUEST_CONNECT      :
+    if((refCount = m_data.m_connectParam->release()) == 0) {
+      delete m_data.m_connectParam;
+    }
+    break;
   default:
     break; // do nothing
   }
@@ -115,49 +131,38 @@ ChessPlayerRequest &ChessPlayerRequest::operator=(const ChessPlayerRequest &src)
     release();
     m_type = src.m_type;
     m_data = src.m_data;
-    addRef();
+    addref();
   }
   return *this;
 }
 
 const FindMoveRequestParam &ChessPlayerRequest::getFindMoveParam() const {
-  switch (getType()) {
-  case REQUEST_FINDMOVE   : return *m_data.m_findMoveParam;
-  default                 : throwInvalidType(__TFUNCTION__);
-  }
-  return *m_data.m_findMoveParam; // to make compiler happy
+  checkType(__TFUNCTION__, REQUEST_FINDMOVE);
+  return *m_data.m_findMoveParam;
 }
 
 const GameChangedRequestParam &ChessPlayerRequest::getGameChangedParam() const {
-  switch (getType()) {
-  case REQUEST_GAMECHANGED: return *m_data.m_gameChangedParam;
-  default                 : throwInvalidType(__TFUNCTION__);
-  }
-  return *m_data.m_gameChangedParam; // to make compiler happy
+  checkType(__TFUNCTION__, REQUEST_GAMECHANGED);
+  return *m_data.m_gameChangedParam;
 }
 
 const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
-  switch (getType()) {
-  case REQUEST_FETCHMOVE: return m_data.m_fetchMoveParam;
-  default               : throwInvalidType(__TFUNCTION__);
-  }
-  return m_data.m_fetchMoveParam; // to make compiler happy
+  checkType(__TFUNCTION__, REQUEST_FETCHMOVE);
+  return m_data.m_fetchMoveParam;
 }
 
 const ShowMessageRequestParam &ChessPlayerRequest::getShowMessageParam() const {
-  switch (getType()) {
-  case REQUEST_SHOWMESSAGE: return *m_data.m_showMessageParam;
-  default                 : throwInvalidType(__TFUNCTION__);
-  }
-  return *m_data.m_showMessageParam; // to make compiler happy
+  checkType(__TFUNCTION__, REQUEST_SHOWMESSAGE);
+  return *m_data.m_showMessageParam;
+}
+
+const ConnectRequestParam &ChessPlayerRequest::getConnectParam() const {
+  checkType(__TFUNCTION__, REQUEST_CONNECT);
+  return *m_data.m_connectParam;
 }
 
 String ChessPlayerRequest::toString() const {
   return getRequestName(m_type);
-}
-
-void ChessPlayerRequest::throwInvalidType(const TCHAR *method) const {
-  throwException(_T("%s:Request type is %s"), method, getRequestName());
 }
 
 const TCHAR *ChessPlayerRequest::getRequestName(ChessPlayerRequestType request) { // static
@@ -171,6 +176,7 @@ const TCHAR *ChessPlayerRequest::getRequestName(ChessPlayerRequestType request) 
   caseStr(GAMECHANGED)
   caseStr(SHOWMESSAGE)
   caseStr(RESET      )
+  caseStr(CONNECT    )
   caseStr(DISCONNECT )
   caseStr(KILL       )
   default:return _T("??");

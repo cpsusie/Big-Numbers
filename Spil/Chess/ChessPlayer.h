@@ -44,6 +44,7 @@ private:
   bool isNewMoveFinderNeeded(      const FindMoveRequestParam &param) const;
   bool isRightNormalPlayMoveFinder(const FindMoveRequestParam &param) const;
   void allocateMoveFinder(         const FindMoveRequestParam &param);
+  void allocateRemoteMoveFinder();
   AbstractMoveFinder *newMoveFinderNormalPlay(const FindMoveRequestParam &param);
   bool isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const;
   EndGameTablebase *findMatchingTablebase(const Game &g) const;
@@ -55,17 +56,18 @@ private:
   void handleShowMessageRequest(const ShowMessageRequestParam &param);
   void handleFetchMoveRequest(  const FetchMoveRequestParam   &param);
   void handleResetRequest();
+  void handleConnectRequest(    const ConnectRequestParam     &param);
   void handleDisconnectRequest();
   void handleKillRequest();
   inline ChessPlayerState getState() const {
     return m_state;
   }
-  void setState(     ChessPlayerState  newState  );
-  void setMoveFinder(AbstractMoveFinder    *moveFinder);
+  void setState(     ChessPlayerState                   newState  );
+  void setMoveFinder(AbstractMoveFinder                *moveFinder);
+  void setRemote(const SocketChannel &channel);
   void handleTcpException(const TcpException &e);
   void checkState(const TCHAR *method, int line, ChessPlayerState s1,...) const;
   void debugMsg(const TCHAR *format,...) const;
-
 public:
   ChessPlayer(Player player);
   ~ChessPlayer();
@@ -101,7 +103,7 @@ public:
   }
 
   // Only valid in state CPS_IDLE
-  void setRemote(const Game &game, const SocketChannel &channel);
+  void connect(const SocketChannel &channel);
 
   // Only valid in state CPS_IDLE
   void disconnect();                            

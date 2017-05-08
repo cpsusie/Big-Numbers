@@ -4,26 +4,31 @@
 
 #define CLOSESOCKET(s) if(s != INVALID_SOCKET) { tcpClose(s); s = INVALID_SOCKET; }
 
+class SocketPair;
+
 class SocketChannel {
 private:
-  SOCKET m_readSocket, m_writeSocket;
+  SocketPair *m_socketPair;
   void read(void        *dst, size_t size) const;
   void write(const void *src, size_t size) const;
+  void addref();  // if(m_socketPair != NULL) then call m_socketPair->addref()
+  void release(); // if(m_socketPair != NULL) then call m_socketPair->release()
+                  // and return-value = 0 then delete m_socketPair
 public:
-  SocketChannel() {
+  SocketChannel() : m_socketPair(NULL) {
+  }
+  SocketChannel(int portnr, const String &serverName); // call tcpOpen   twice
+  SocketChannel(SOCKET listener);                      // call tcpAccept twice
+  SocketChannel(const SocketChannel &src);
+  virtual ~SocketChannel() {
     clear();
   }
-  SocketChannel(SOCKET readSocket, SOCKET writeSocket) : m_readSocket(readSocket), m_writeSocket(writeSocket) {
-  }
-  SocketChannel(int port); // create an internal socketpair
+  SocketChannel &operator=(const SocketChannel &src);
+
   inline bool isOpen() const {
-    return m_readSocket != INVALID_SOCKET;
+    return m_socketPair != NULL;
   }
-  void close();
-  void clear(); // Only reset descriptors to INVALID_SOCKET
-  const SOCKET &getReadSocket() const {
-    return m_readSocket;
-  }
+  void clear(); // call release() and and set m_socketPair = NULL
 
   void    write(const String   &s     ) const;
   String &read(       String   &s     ) const;

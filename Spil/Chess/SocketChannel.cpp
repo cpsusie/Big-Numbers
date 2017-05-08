@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include <RefCountedObject.h>
 #include "SocketChannel.h"
 
 class SocketConnecter : public Thread {
@@ -21,44 +22,88 @@ UINT SocketConnecter::run() {
   return 0;
 }
 
-SocketChannel::SocketChannel(int port) {
-  m_readSocket = m_writeSocket = INVALID_SOCKET;
-  SOCKET listener = INVALID_SOCKET;
-  try {
-    listener = tcpCreate(port);
-    SocketConnecter scThread(port, m_readSocket);
-    m_writeSocket = tcpAccept(listener);
-    CLOSESOCKET(listener);
-  } catch(...) {
-    CLOSESOCKET(listener);
-    close();
-    throw;
-  }
+class SocketPair : public RefCountedObject {
+public:
+  SOCKET m_readSocket, m_writeSocket;
+  SocketPair(SOCKET rs, SOCKET ws);
+  ~SocketPair();
+};
+
+SocketPair::SocketPair(SOCKET rs, SOCKET ws) 
+: m_readSocket(rs), m_writeSocket(ws)
+{
+  assert(rs != INVALID_SOCKET);
+  assert(ws != INVALID_SOCKET);
 }
 
-void SocketChannel::close() {
+SocketPair::~SocketPair() {
   CLOSESOCKET(m_readSocket );
   CLOSESOCKET(m_writeSocket);
+#ifdef _DEBUG
+  debugLog(_T("SocketPair deleted\n"));
+#endif
+}
+
+SocketChannel::SocketChannel(int portnr, const String &serverName) {
+  USES_CONVERSION;
+  const char *aserverName = T2A(serverName.cstr());
+  SOCKET ws = tcpOpen(portnr, aserverName);
+  SOCKET rs = tcpOpen(portnr, aserverName);
+  m_socketPair = new SocketPair(rs,ws);
+}
+
+SocketChannel::SocketChannel(SOCKET listener) {
+  SOCKET rs = tcpAccept(listener);
+  SOCKET ws = tcpAccept(listener);
+  m_socketPair = new SocketPair(rs,ws);
+}
+
+SocketChannel::SocketChannel(const SocketChannel &src) {
+  m_socketPair = src.m_socketPair;
+  addref();
+}
+
+SocketChannel &SocketChannel::operator=(const SocketChannel &src) {
+  if(this != &src) {
+    clear();
+    m_socketPair = src.m_socketPair;
+    addref();
+  }
+  return *this;
 }
 
 void SocketChannel::clear() {
-  m_readSocket = m_writeSocket = INVALID_SOCKET;
+  release();
+  m_socketPair = NULL;
+}
+
+void SocketChannel::addref() {
+  if(m_socketPair) m_socketPair->addref();
+}
+
+void SocketChannel::release() {
+  if (m_socketPair && (m_socketPair->release() == 0)) {
+    delete m_socketPair;
+  }
 }
 
 void SocketChannel::read(void *dst, size_t size) const {
-  tcpRead(m_readSocket, dst, size);
+  assert(isOpen());
+  tcpRead(m_socketPair->m_readSocket, dst, size);
 }
 
 void SocketChannel::write(const void *src, size_t size) const {
-  tcpWrite(m_writeSocket, src, size);
+  assert(isOpen());
+  tcpWrite(m_socketPair->m_writeSocket, src, size);
 }
 
 void SocketChannel::write(const String &s) const {
-  tcpWriteString(m_writeSocket, s);
+  assert(isOpen());
+  tcpWriteString(m_socketPair->m_writeSocket, s);
 }
 
 String &SocketChannel::read(String &s) const {
-  return s = tcpReadString(m_readSocket);
+  return s = tcpReadString(m_socketPair->m_readSocket);
 }
 
 void SocketChannel::write(const Player &player) const {
