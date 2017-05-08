@@ -349,6 +349,7 @@
     <ClInclude Include="..\..\Include\PropertyContainer.h" />
     <ClInclude Include="..\..\Include\QueueList.h" />
     <ClInclude Include="..\..\Include\Random.h" />
+    <ClInclude Include="..\..\Include\RefCountedObject.h" />
     <ClInclude Include="..\..\Include\Regex.h" />
     <ClInclude Include="..\..\Include\Registry.h" />
     <ClInclude Include="..\..\Include\Runnable.h" />
@@ -534,6 +535,7 @@
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Randomize.cpp" />
     <ClCompile Include="ReadTextFile.cpp" />
+    <ClCompile Include="RefCountedObject.cpp" />
     <ClCompile Include="Regex.cpp" />
     <ClCompile Include="RegexHelp.cpp" />
     <ClCompile Include="Registry.cpp" />

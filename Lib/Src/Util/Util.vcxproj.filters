@@ -710,6 +710,9 @@
     <ClCompile Include="PrimitiveStringifiers.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="RefCountedObject.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -991,6 +994,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\UnitTestTraits.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\RefCountedObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
