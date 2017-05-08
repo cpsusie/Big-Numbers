@@ -1,23 +1,26 @@
 #include "pch.h"
 #include <Tcp.h>
 
+#define DEFAULTBUFSIZE 1024
+
 String tcpReadString(SOCKET s) {
   size_t len;
   tcpRead(s, &len, sizeof(len));
   if(len == 0) {
-    return "";
+    return EMPTYSTRING;
   }
+  TCHAR tmpBuf[DEFAULTBUFSIZE+1];
   TCHAR *buf = NULL;
   try {
-    buf = new TCHAR[len+1];
+    buf = (len <= DEFAULTBUFSIZE) ? tmpBuf : new TCHAR[len+1];
     tcpRead(s, buf, len*sizeof(TCHAR));
     buf[len] = 0;
     const String result = buf;
-    delete[] buf;
+    if(buf != tmpBuf) delete[] buf;
     buf = NULL;
     return result;
   } catch(...) {
-    delete[] buf;
+    if(buf != tmpBuf) delete[] buf;
     buf = NULL;
     throw;
   }
@@ -30,4 +33,3 @@ void tcpWriteString(SOCKET s, const String &str) {
     tcpWrite(s, str.cstr(), len*sizeof(TCHAR));
   }
 }
-
