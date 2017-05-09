@@ -477,6 +477,7 @@
     <ClCompile Include="..\Chess\LDAWalk.cpp" />
     <ClCompile Include="..\Chess\ManualPositions.cpp" />
     <ClCompile Include="..\Chess\Move.cpp" />
+    <ClCompile Include="..\Chess\MoveBase.cpp" />
     <ClCompile Include="..\Chess\MoveGenerator.cpp" />
     <ClCompile Include="..\Chess\MoveTable.cpp" />
     <ClCompile Include="..\Chess\PackedIndexedMap.cpp" />
@@ -484,6 +485,7 @@
     <ClCompile Include="..\Chess\Piece.cpp" />
     <ClCompile Include="..\Chess\PlayerState.cpp" />
     <ClCompile Include="..\Chess\PositionSignature.cpp" />
+    <ClCompile Include="..\Chess\PrintableMove.cpp" />
     <ClCompile Include="..\Chess\RemoteEndGameSubTablebase.cpp" />
     <ClCompile Include="..\Chess\SubTablebase.cpp" />
     <ClCompile Include="..\Chess\UpdateBishopMove.cpp" />
@@ -505,19 +507,12 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Chess\res\BlackBishop.bmp" />
-    <Image Include="..\Chess\res\BlackKing.bmp" />
-    <Image Include="..\Chess\res\BlackKnight.bmp" />
     <Image Include="..\Chess\res\BlackMark.bmp" />
-    <Image Include="..\Chess\res\BlackPawn.bmp" />
-    <Image Include="..\Chess\res\BlackQueen.bmp" />
-    <Image Include="..\Chess\res\BlackRook.bmp" />
     <Image Include="..\Chess\res\BlueField.bmp" />
     <Image Include="..\Chess\res\Board.jpg" />
     <Image Include="..\Chess\res\CheckedKing.bmp" />
     <Image Include="..\Chess\res\Chess.ico" />
     <Image Include="..\Chess\res\DeleteMark.bmp" />
-    <Image Include="..\Chess\res\DstFieldMark.bmp" />
     <Image Include="..\Chess\res\GreenField.bmp" />
     <Image Include="..\Chess\res\Hourglasses.bmp" />
     <Image Include="..\Chess\res\NoPiece.bmp" />
@@ -525,15 +520,7 @@
     <Image Include="..\Chess\res\PinkField.bmp" />
     <Image Include="..\Chess\res\PlayerIndicator.bmp" />
     <Image Include="..\Chess\res\PurpleField.bmp" />
-    <Image Include="..\Chess\res\SelectionFrame.bmp" />
-    <Image Include="..\Chess\res\SrcFieldMark.bmp" />
-    <Image Include="..\Chess\res\WhiteBishop.bmp" />
-    <Image Include="..\Chess\res\WhiteKing.bmp" />
-    <Image Include="..\Chess\res\WhiteKnight.bmp" />
     <Image Include="..\Chess\res\WhiteMark.bmp" />
-    <Image Include="..\Chess\res\WhitePawn.bmp" />
-    <Image Include="..\Chess\res\WhiteQueen.bmp" />
-    <Image Include="..\Chess\res\WhiteRook.bmp" />
     <Image Include="..\Chess\res\YellowField.bmp" />
   </ItemGroup>
   <ItemGroup>

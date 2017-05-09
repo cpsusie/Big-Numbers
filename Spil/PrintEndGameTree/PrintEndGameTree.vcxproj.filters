@@ -771,27 +771,15 @@
     <ClCompile Include="..\Chess\EndGameKQRKRR.cpp">
       <Filter>Source Files\Game\EndGames\6Men\6MenNoPawns</Filter>
     </ClCompile>
+    <ClCompile Include="..\Chess\MoveBase.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Chess\PrintableMove.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\Chess\res\BlackBishop.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\BlackKing.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\BlackKnight.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
     <Image Include="..\Chess\res\BlackMark.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\BlackPawn.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\BlackQueen.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\BlackRook.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\BlueField.bmp">
@@ -807,9 +795,6 @@
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\DeleteMark.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\DstFieldMark.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\GreenField.bmp">
@@ -833,31 +818,7 @@
     <Image Include="..\Chess\res\PurpleField.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
-    <Image Include="..\Chess\res\SelectionFrame.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\SrcFieldMark.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhiteBishop.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhiteKing.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhiteKnight.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
     <Image Include="..\Chess\res\WhiteMark.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhitePawn.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhiteQueen.bmp">
-      <Filter>Source Files\Game\Resource Files</Filter>
-    </Image>
-    <Image Include="..\Chess\res\WhiteRook.bmp">
       <Filter>Source Files\Game\Resource Files</Filter>
     </Image>
     <Image Include="..\Chess\res\YellowField.bmp">

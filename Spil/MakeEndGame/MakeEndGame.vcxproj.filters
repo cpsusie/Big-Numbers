@@ -66,25 +66,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\chess\res\blackBishop.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\blackKing.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\blackKnight.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Chess\res\BlackMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\blackPawn.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\blackQueen.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\blackRook.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\chess\res\blueField.bmp">
@@ -111,9 +93,6 @@
     <Image Include="..\chess\res\DialogBackground.jpg">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\chess\res\DstFieldMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\chess\res\GreenField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
@@ -135,34 +114,10 @@
     <Image Include="..\chess\res\purpleField.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\chess\res\selectionFrame.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\chess\res\Image2\Skull.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\chess\res\srcfieldMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whiteBishop.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whiteKing.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whiteKnight.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\Chess\res\WhiteMark.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whitePawn.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whiteQueen.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\chess\res\whiteRook.bmp">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\chess\res\yellowField.bmp">

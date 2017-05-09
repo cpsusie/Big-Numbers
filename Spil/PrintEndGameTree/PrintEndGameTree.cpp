@@ -196,7 +196,7 @@ private:
   void        printDoneMark();
          void indent();
   void        printTree();
-  bool        printMove(const MoveWithResult &mr, ExecutableMove *em = NULL); // return true if game.position is a terminal move, ie. mate of capture
+  bool        printMove(const MoveWithResult &mr, PrintableMove *em = NULL); // return true if game.position is a terminal move, ie. mate of capture
   void        printMoveStack() const;
   int         findBestWinnerMove(const MoveResultArray &a);
   MoveResultArray getAllMovesInCurrentPosition() {
@@ -269,7 +269,7 @@ void GameTree::printTree() {
       for(UINT i = 0; i < n; i++) {
         const MoveWithResult &mi = a[i];
         const bool last = (i == n-1);
-        ExecutableMove em;
+        PrintableMove em;
         printMove(mi, &em);
         m_game.executeMove(mi);
 
@@ -290,8 +290,8 @@ void GameTree::printTree() {
 
 #define ISCAPTURE(move) (!m_game.isPositionEmpty(move.m_to))
 
-bool GameTree::printMove(const MoveWithResult &mr, ExecutableMove *em) {
-  const ExecutableMove move       = m_game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
+bool GameTree::printMove(const MoveWithResult &mr, PrintableMove *em) {
+  const PrintableMove move        = m_game.generateMove(mr.getFrom(), mr.getTo(), mr.getPromoteTo());
   const bool           isTerminal = (ISCAPTURE(mr) || (mr.m_result.getPliesToEnd() == 1));
   const int            no         = (m_game.getStartPosition().getPlayerInTurn() == WHITEPLAYER) ? PLIESTOMOVES(m_game.getPlyCount()+1) : PLIESTOMOVES(m_game.getPlyCount())+1;
   bool nl;

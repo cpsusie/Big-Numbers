@@ -750,32 +750,31 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\chess\res\blackBishop.bmp" />
-    <Image Include="..\chess\res\blackKing.bmp" />
-    <Image Include="..\chess\res\blackKnight.bmp" />
-    <Image Include="..\chess\res\blackPawn.bmp" />
-    <Image Include="..\chess\res\blackQueen.bmp" />
-    <Image Include="..\chess\res\blackRook.bmp" />
+    <Image Include="..\Chess\res\BlackBishop.png" />
+    <Image Include="..\Chess\res\BlackKing.png" />
+    <Image Include="..\Chess\res\BlackKnight.png" />
+    <Image Include="..\Chess\res\BlackPawn.png" />
+    <Image Include="..\Chess\res\BlackQueen.png" />
+    <Image Include="..\Chess\res\BlackRook.png" />
     <Image Include="..\chess\res\blueField.bmp" />
     <Image Include="..\chess\res\Board.jpg" />
     <Image Include="..\chess\res\checkedKing.bmp" />
     <Image Include="..\chess\res\Chess.ico" />
     <Image Include="..\chess\res\DialogBackground.jpg" />
-    <Image Include="..\chess\res\DstFieldMark.bmp" />
+    <Image Include="..\Chess\res\DstFieldMark.png" />
     <Image Include="..\chess\res\Hourglasses.bmp" />
     <Image Include="..\chess\res\NoPiece.bmp" />
     <Image Include="..\chess\res\OpeningTreeImages.bmp" />
     <Image Include="..\chess\res\pinkField.bmp" />
     <Image Include="..\chess\res\PlayerIndicator.bmp" />
     <Image Include="..\chess\res\purpleField.bmp" />
-    <Image Include="..\chess\res\selectionFrame.bmp" />
-    <Image Include="..\chess\res\srcfieldMark.bmp" />
-    <Image Include="..\chess\res\whiteBishop.bmp" />
-    <Image Include="..\chess\res\whiteKing.bmp" />
-    <Image Include="..\chess\res\whiteKnight.bmp" />
-    <Image Include="..\chess\res\whitePawn.bmp" />
-    <Image Include="..\chess\res\whiteQueen.bmp" />
-    <Image Include="..\chess\res\whiteRook.bmp" />
+    <Image Include="..\Chess\res\SrcFieldMark.png" />
+    <Image Include="..\Chess\res\WhiteBishop.png" />
+    <Image Include="..\Chess\res\WhiteKing.png" />
+    <Image Include="..\Chess\res\WhiteKnight.png" />
+    <Image Include="..\Chess\res\WhitePawn.png" />
+    <Image Include="..\Chess\res\WhiteQueen.png" />
+    <Image Include="..\Chess\res\WhiteRook.png" />
     <Image Include="..\chess\res\yellowField.bmp" />
   </ItemGroup>
   <ItemGroup>
