@@ -68,8 +68,6 @@ BOOL CAsciiwDlg::OnInitDialog() {
     }
   }
 
-  // Set the icon for this dialog.  The framework does this automatically
-  //  when the application's main window is not a dialog
   SetIcon(m_hIcon, TRUE);         // Set big icon
   SetIcon(m_hIcon, FALSE);        // Set small icon
   
@@ -98,8 +96,7 @@ void CAsciiwDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
-  }
-  else {
+  } else {
     CDialog::OnSysCommand(nID, lParam);
   }
 }
@@ -110,12 +107,12 @@ String formatCh3(int ch) {
   else {
     switch(ch) {
 
-    case 0 : return " ";
+    case 0 : return _T(" ");
 //    case 7 : return "bel";
 //    case 8 : return "bs ";
-    case 9 : return "tab";
-    case 10: return "lf ";
-    case 13: return "cr ";
+    case 9 : return _T("tab");
+    case 10: return _T("lf ");
+    case 13: return _T("cr ");
 
     default: 
       return format(_T("%c"), ch);
@@ -196,13 +193,11 @@ void CAsciiwDlg::OnPaint() {
 
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
-    // Center icon in client rectangle
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
+    int   cxIcon = GetSystemMetrics(SM_CXICON);
+    int   cyIcon = GetSystemMetrics(SM_CYICON);
+    CRect rect   = getClientRect(this);
+    int   x      = (rect.Width() - cxIcon + 1) / 2;
+    int   y      = (rect.Height() - cyIcon + 1) / 2;
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
@@ -218,7 +213,7 @@ void CAsciiwDlg::OnPaint() {
 }
 
 HCURSOR CAsciiwDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CAsciiwDlg::OnFileExit() {

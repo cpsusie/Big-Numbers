@@ -47,13 +47,13 @@ public:
     return (m_flags&3) != 0;
   }
 
-  // Should should only be called by this, or method called directly og indirectly by this
-  // (operate on currentthread, that is the thread executing this runnable)
+  // Should only be called by this, or methods called directly or indirectly by this.
+  // (operate on currentThread, that is the thread executing this runnable)
   inline void checkInterruptAndSuspendFlags() {
     if(isInterruptedOrSuspended()) {
       handleInterruptOrSuspend();
     }
   }
-  // should only be called by foreign thread to wake up this
+  // Should only be called by foreign thread to wake up this
   void resume();
 };
