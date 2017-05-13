@@ -43,12 +43,12 @@ namespace UnitTestTupleFields {
 try {                                                                                                    \
   stmt;                                                                                                  \
   _ftprintf(stderr,_T("%s did not throw sqlca in %s line %d. Expected sqlcode=%d")                       \
-                  ,_T(#stmt),_T(__FILE__),__LINE__,expectedError);                                       \
+                  ,_T(#stmt),__TFILE__,__LINE__,expectedError);                                          \
   verify(false);                                                                                         \
 } catch(sqlca ca) {                                                                                      \
   if(ca.sqlcode != expectedError) {                                                                      \
     OUTPUT(_T("Wrong sqlcode received from %s in %s line %d. sqlca.sqlcode=%d. Expected=%d")             \
-                    ,_T(#stmt),_T(__FILE__),__LINE__,ca.sqlcode,expectedError);                          \
+                    ,_T(#stmt),__TFILE__,__LINE__,ca.sqlcode,expectedError);                             \
     OUTPUT(_T("sqlca:%s"), ca.toString().cstr());                                                        \
     verify(false);                                                                                       \
   }                                                                                                      \

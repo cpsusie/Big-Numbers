@@ -8,7 +8,7 @@
 
 #ifdef DEBUG_REGISTRY
 
-static const TCHAR *thisFile = _T(__FILE__);
+static const TCHAR *thisFile = __TFILE__;
 static FILE *logFile = NULL;
 
 class InitLogFile {

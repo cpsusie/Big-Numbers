@@ -35,7 +35,7 @@ void debugLogLine(const TCHAR *fileName, int line);
 void debugLogSetTimePrefix(bool prefixWithDate, bool prefixWithTime);
 String getMessageName(int msg);
 
-#define DEBUGTRACE debugLogLine(_T(__FILE__), __LINE__)
+#define DEBUGTRACE debugLogLine(__TFILE__, __LINE__)
 #define ENTERFUNC  debugLog(_T("Enter %s\n"), __TFUNCTION__)
 #define LEAVEFUNC  debugLog(_T("Leave %s\n"), __TFUNCTION__)
 bool getDebuggerPresent();
@@ -113,7 +113,7 @@ bool   readLine(FILE *f, String &str);
 
 void pause();
 void pause(const TCHAR *format, ...);
-#define PAUSE() pause(_T("%s line %d"), _T(__FILE__), __LINE__)
+#define PAUSE() pause(_T("%s line %d"), __TFILE__, __LINE__)
 
 bool keyPressed(int vk);
 bool shiftKeyPressed();
@@ -146,7 +146,7 @@ String getLastErrorText();
 void checkResult(const TCHAR *fileName, int line, ULONG   hresult);
 void checkResult(const TCHAR *fileName, int line, HRESULT hresult);
 void checkResult(const TCHAR *fileName, int line, BOOL    ok     );
-#define CHECKRESULT(result) checkResult(_T(__FILE__), __LINE__, result)
+#define CHECKRESULT(result) checkResult(__TFILE__, __LINE__, result)
 
 void   sleep(int seconds);
 double getProcessTime(HANDLE process = NULL); // microseconds. if process == NULL, return time for current Process

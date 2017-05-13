@@ -73,7 +73,7 @@ static void xchecksql(TCHAR *file,int line) {
   }
 }
 
-#define checkSql() xchecksql(_T(__FILE__),__LINE__)
+#define checkSql() xchecksql(__TFILE__,__LINE__)
 
 static void openCursor() {
   dd = 12;

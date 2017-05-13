@@ -2,7 +2,7 @@
 #include <limits.h>
 #include <Math/Rational.h>
 
-const TCHAR *thisFile              = _T(__FILE__);
+const TCHAR *thisFile              = __TFILE__;
 DEFINECLASSNAME(Rational);
 
 #define SAFEPROD(a,b) Rational::safeProd(a,b,__LINE__)

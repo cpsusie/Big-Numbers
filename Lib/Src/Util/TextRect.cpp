@@ -12,7 +12,7 @@ public:
   void putRect(const CHAR_INFO *src, int op, int l, int t, int w, int h);
 };
 
-static const TCHAR *thisFile = _T(__FILE__);
+static const TCHAR *thisFile = __TFILE__;
 
 class ConsoleBufferOp : public TextRectBufferOp {
 private:

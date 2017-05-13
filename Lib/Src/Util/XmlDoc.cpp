@@ -6,7 +6,7 @@ using namespace std;
 
 void XMLDoc::checkResult(HRESULT hr, int line) {
   if(FAILED(hr)) {
-    throwException(_T("%s line %d:%s"), _T(__FILE__), line, getErrorText(hr).cstr());
+    throwException(_T("%s line %d:%s"), __TFILE__, line, getErrorText(hr).cstr());
   }
 }
 

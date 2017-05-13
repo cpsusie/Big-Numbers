@@ -12,7 +12,7 @@
 #endif
 
 #ifdef _DEBUG
-#define assert(exp) (void)( (exp) || (xassert(_T(__FILE__), __LINE__, _T(#exp)), 0) )
+#define assert(exp) (void)( (exp) || (xassert(__TFILE__, __LINE__, _T(#exp)), 0) )
 #else
 #define assert(exp)
 #endif

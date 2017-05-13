@@ -88,7 +88,7 @@ BigReal getRelativeError(const BigReal &x, const BigReal &x0) {
   return x0.isZero() ? fabs(x) : fabs(rQuot(x-x0,x0,20));
 }
 
-static const TCHAR *thisFile = _T(__FILE__);
+static const TCHAR *thisFile = __TFILE__;
 
 const String &getSourceDir() {
   static String sourceDir;

@@ -13,7 +13,7 @@
 
 #pragma comment(lib, VFWLIB "vfw32.lib") 
 
-#define V(f) checkMMResult(_T(__FILE__),__LINE__,f)
+#define V(f) checkMMResult(__TFILE__,__LINE__,f)
 
 // ******************************************** Raw Callback functions ********************************************
 

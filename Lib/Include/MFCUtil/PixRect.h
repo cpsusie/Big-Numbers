@@ -23,7 +23,7 @@ String get3DErrorMsg(HRESULT hr);
 
 #ifdef _DEBUG
 #define DECLARERESULTCHECKER void check3DResult(TCHAR *fileName, int line, HRESULT hr) const
-#define CHECK3DRESULT(hr) check3DResult(_T(__FILE__),__LINE__,hr)
+#define CHECK3DRESULT(hr) check3DResult(__TFILE__,__LINE__,hr)
 #else
 #define DECLARERESULTCHECKER void check3DResult(HRESULT hr) const
 #define CHECK3DRESULT(hr) check3DResult(hr)

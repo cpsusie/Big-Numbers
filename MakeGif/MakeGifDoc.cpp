@@ -119,7 +119,7 @@ static void throwGifErrorCode(int errorCode, const TCHAR *fileName, int line) {
                );
 }
 
-#define THROWGIFERROR(code) throwGifErrorCode(code, _T(__FILE__), __LINE__)
+#define THROWGIFERROR(code) throwGifErrorCode(code, __TFILE__, __LINE__)
 
 static GifFileType *loadGif(ByteInputStream &in) {
   int error;

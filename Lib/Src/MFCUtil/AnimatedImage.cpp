@@ -8,7 +8,7 @@
 #pragma warning(disable : 4244)
 
 void checkGifErrorCode(int errorCode, const TCHAR *fileName, int line);
-#define THROWGIFERROR(code) throwGifErrorCode(code, _T(__FILE__), __LINE__)
+#define THROWGIFERROR(code) throwGifErrorCode(code, __TFILE__, __LINE__)
 
 String gifErrorCodeToString(int errorCode) {
   const char *errorMsg = GifErrorString(errorCode);

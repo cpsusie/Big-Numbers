@@ -56,7 +56,7 @@ public:
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr);
 
-#define CHECKD3DRESULT(v) checkD3DResult(_T(__FILE__),__LINE__,v)
+#define CHECKD3DRESULT(v) checkD3DResult(__TFILE__,__LINE__,v)
 
 #else
 

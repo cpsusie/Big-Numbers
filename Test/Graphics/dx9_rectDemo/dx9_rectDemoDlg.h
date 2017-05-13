@@ -9,7 +9,7 @@
 
 void checkD3DResult(TCHAR *fileName, int line, HRESULT hr);
 
-#define CHECKD3DRESULT(hr) checkD3DResult(_T(__FILE__),__LINE__,hr)
+#define CHECKD3DRESULT(hr) checkD3DResult(__TFILE__,__LINE__,hr)
 
 #else
 

@@ -536,7 +536,7 @@ void xstopcomp(const SyntaxNode *n, TCHAR *file, int line);
 #define DEBUG_SQLCOMP
 
 #ifdef DEBUG_SQLCOMP
-#define stopcomp(n) xstopcomp(n,_T(__FILE__),__LINE__)
+#define stopcomp(n) xstopcomp(n,__TFILE__,__LINE__)
 #else
 #define stopcomp(n) 
 #endif

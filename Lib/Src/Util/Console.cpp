@@ -10,7 +10,7 @@ HANDLE Console::s_hStdOut = GetStdHandle( STD_OUTPUT_HANDLE );
 HANDLE Console::s_hStdErr = GetStdHandle( STD_ERROR_HANDLE  );
 Semaphore Console::s_gate;
 
-static const TCHAR *thisFile = _T(__FILE__);
+static const TCHAR *thisFile = __TFILE__;
 
 void Console::checkSysCall(DWORD c, int line) {
   if(!c) throwException(_T("Error in %s line %d:%s"), thisFile, line, getLastErrorText().cstr());

@@ -23,8 +23,8 @@ public:
 
 #ifdef TRACESEMAPHORE
 
-#define WAIT(  sem) sem.wait(  _T(#sem), _T(__FILE__), __LINE__)
-#define SIGNAL(sem) sem.signal(_T(#sem), _T(__FILE__), __LINE__)
+#define WAIT(  sem) sem.wait(  _T(#sem), __TFILE__, __LINE__)
+#define SIGNAL(sem) sem.signal(_T(#sem), __TFILE__, __LINE__)
 
 #else
 

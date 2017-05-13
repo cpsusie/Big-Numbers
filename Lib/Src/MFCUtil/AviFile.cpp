@@ -312,6 +312,6 @@ void CAviFile::checkIsReadMode() {
 void CAviFile::checkAVIResult(int line, HRESULT hr) {
   if(hr != S_OK) {
     releaseMemory();
-    throwException(_T("Error in %s line %d:%s"), _T(__FILE__), line, formatAviMessage(hr).cstr());
+    throwException(_T("Error in %s line %d:%s"), __TFILE__, line, formatAviMessage(hr).cstr());
   }
 }
