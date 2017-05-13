@@ -340,9 +340,4 @@ inline int doubleHashCmp(const double &d1, const double &d2 ) {
   return sign(d1 - d2);
 }
 
-ULONG strHash(      const TCHAR * const &s                          );
-int   strHashCmp(   const TCHAR * const &s1, const TCHAR * const &s2);
-ULONG striHash(     const TCHAR * const &s                          );
-int   striHashCmp(  const TCHAR * const &s1, const TCHAR * const &s2);
-
 #include "Array.h"

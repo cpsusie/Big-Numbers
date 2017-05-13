@@ -1,6 +1,6 @@
 #include "pch.h"
 
-static const unsigned char eCharClass[256] = {
+static const BYTE eCharClass[256] = {
   0x20  /*   0  ctrl */
  ,0x20  /*   1  ctrl */
  ,0x20  /*   2  ctrl */
@@ -270,46 +270,46 @@ static const unsigned char eCharClass[256] = {
 #define HEX            0x80    /* hexadecimal digit */
 
 int eIsalpha( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & (UPPER | LOWER));
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & (UPPER | LOWER));
 }
 
 int eIsupper( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & UPPER);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & UPPER);
 }
 
 int eIslower( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & LOWER);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & LOWER);
 }
 
 int eIsdigit( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & DIGIT);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & DIGIT);
 }
 
 int eIsxdigit(int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & HEX);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & HEX);
 }
 
 int eIsspace( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & SPACE);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & SPACE);
 }
 
 int eIspunct( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & PUNCT);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & PUNCT);
 }
 
 int eIsalnum( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & (UPPER | LOWER | DIGIT));
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & (UPPER | LOWER | DIGIT));
 }
 
 int eIsprint( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & (UPPER | LOWER | DIGIT | PUNCT | SPACE));
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & (UPPER | LOWER | DIGIT | PUNCT | SPACE));
 }
 
 int eIsgraph( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & (UPPER | LOWER | DIGIT | PUNCT));
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & (UPPER | LOWER | DIGIT | PUNCT));
 }
 
 int eIscntrl( int c) {
-  return (c == EOF) ? 0 : (eCharClass[(unsigned char)c] & CONTROL);
+  return (c == EOF) ? 0 : (eCharClass[(BYTE)c] & CONTROL);
 }
 

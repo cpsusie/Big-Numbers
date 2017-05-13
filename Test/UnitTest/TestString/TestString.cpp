@@ -301,12 +301,39 @@ namespace TestString {
       s1.printf(_T("%s %d"), _T("fisk"), 1);
       verify(s1 == _T("fisk 1"));
 
-      unsigned long hash1 = s1.hashCode();
+      const ULONG hash1 = s1.hashCode();
       s2 = s1 + _T("fusk");
-      unsigned long hash2 = s2.hashCode();
+      const ULONG hash2 = s2.hashCode();
 
       verify(hash1 != hash2);
 
+    }
+
+    TEST_METHOD(testStringCompare) {
+      String s1(_T("JOHNSTON"));
+      String s2(_T("johnston"));
+      String s3(_T("JOHN_HENRY"));
+      String s4(_T("john_henry"));
+      String s5(_T("JOHNSTON "));
+
+      verify(s1.compare(s2) < 0);
+      verify(s1 < s2);
+      verify(s1.compareIgnoreCase(s2) == 0);
+
+      verify(s1.compare(s3) < 0);
+      verify(s1 < s3);
+      verify(s1.compareIgnoreCase(s3) > 0);
+
+      verify(s3.compare(s4) < 0);
+      verify(s3 < s4);
+      verify(s3.compareIgnoreCase(s4) == 0);
+
+      verify(s1.compare(s5) < 0);
+      verify(s1 < s5);
+
+      verify(s2.compare(s5) > 0);
+      verify(s2 > s5);
+      verify(s2.compareIgnoreCase(s5) < 0);
     }
   };
 }

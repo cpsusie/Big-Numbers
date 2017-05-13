@@ -1,10 +1,10 @@
 #include "pch.h"
 
-ULONG stringHash(const String &str) {
-  return strHash(str.cstr());
+ULONG stringHash(const String &s) {
+  return strnHash(s.cstr(), s.length());
 }
 
-int stringHashCmp(String const &key, String const &elem) {
-  return strHashCmp(key.cstr(), elem.cstr());
+int stringHashCmp(String const &s1, String const &s2) {
+  return strnHashCmp(s1.cstr(), s2.cstr(), s1.length(), s2.length());
 }
 

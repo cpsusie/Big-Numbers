@@ -713,6 +713,12 @@
     <ClCompile Include="RefCountedObject.cpp">
       <Filter>Source Files\Misc</Filter>
     </ClCompile>
+    <ClCompile Include="StrnHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="StrniHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">

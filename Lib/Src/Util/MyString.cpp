@@ -164,11 +164,6 @@ String &String::operator+=(const TCHAR *rhs) {
   return *this;
 }
 
-String &String::operator+=(TCHAR ch) {
-  TCHAR tmp[] = { ch, 0 };
-  return *this += tmp;
-}
-
 String operator+(const String &lhs, const String &rhs) {
   String result;
   delete[] result.m_buf;
@@ -256,13 +251,6 @@ String &String::remove(size_t pos, size_t count) {
     }
     m_len -= count;
     m_buf[m_len] = 0;
-  }
-  return *this;
-}
-
-String &String::removeLast() {
-  if(m_len > 0) {
-    remove(m_len-1,1);
   }
   return *this;
 }
@@ -493,21 +481,6 @@ String substr(const String &str, intptr_t from, intptr_t length) {
   }
 }
 
-String trim(const String &str) {
-  String result(str);
-  return result.trim();
-}
-
-String trimLeft(const String &str) {
-  String result(str);
-  return result.trimLeft();
-}
-
-String trimRight(const String &str) {
-  String result(str);
-  return result.trimRight();
-}
-
 String &String::trim() {
   strTrim(m_buf);
   m_len = _tcsclen(m_buf);
@@ -532,22 +505,6 @@ void String::indexError(size_t index) const {
                                , format1000(index).cstr()
                                , m_buf
                                , format1000(m_len).cstr());
-}
-
-TCHAR &String::operator[](size_t index) {
-  if(index >= m_len) indexError(index);
-  return m_buf[index];
-}
-
-const TCHAR &String::operator[](size_t index) const {
-  if(index >= m_len) indexError(index);
-  return m_buf[index];
-}
-
-String vformat(const TCHAR *format, va_list argptr) {
-  String result;
-  result.vprintf(format, argptr);
-  return result;
 }
 
 String format(const TCHAR *format, ...) {
@@ -591,8 +548,4 @@ String &String::vprintf(const TCHAR *format, va_list argptr) {
     tmp = new TCHAR[bufSize];
   }
   return *this;
-}
-
-ULONG String::hashCode() const {
-  return strHash(cstr());
 }

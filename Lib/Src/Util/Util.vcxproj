@@ -565,6 +565,8 @@
     <ClCompile Include="StringIHash.cpp" />
     <ClCompile Include="StringIO.cpp" />
     <ClCompile Include="StringPool.cpp" />
+    <ClCompile Include="StrnHash.cpp" />
+    <ClCompile Include="StrniHash.cpp" />
     <ClCompile Include="StrRemove.cpp" />
     <ClCompile Include="StrReplace1.cpp" />
     <ClCompile Include="StrReplace2.cpp" />
