@@ -1629,19 +1629,19 @@ void CChessDlg::executeMove(const PrintableMove &m) {
 #ifdef TABLEBASE_BUILDER
 void CChessDlg::executeBackMove(const Move &m) { // always debugMode
   Game &game = getCurrentGame();
-  unmarkAll();
+  m_graphics->unmarkAll();
   if(m.isMove()) {
     if(getOptions().getAnimateMoves()) {
       m_graphics->animateMove(m);
     }
     game.doBackMove(m);
-    invalidate();
+    paintGamePosition();
   }
 }
 
 void CChessDlg::unExecuteLastBackMove() {
   getCurrentGame().undoBackMove();
-  invalidate();
+  paintGamePosition();
 }
 
 #endif
@@ -2882,8 +2882,10 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
       const int to = selectedPiece->getPosition();
       executeBackMove(game.generateBackMove(m_selectedPosition, to));
     } else if(m_selectedPosition == selectedPiece->getPosition()) {
-      unmarkAll();
+      BEGINPAINT();
+      m_graphics->unmarkAll();
       m_graphics->markMouse(m_selectedPosition);
+      ENDPAINT();
     } else {
       m_graphics->markSelectedPiece(m_selectedPosition);
     }
@@ -2907,8 +2909,10 @@ void CChessDlg::OnLButtonDownDebugMode(UINT nFlags, CPoint point) {
       executeMove(game.generateMove(from, m_selectedPosition, NoPiece, annotation));
     }
   } else if(m_selectedPosition == selectedPiece->getPosition()) {
+    BEGINPAINT();
     m_graphics->unmarkAll();
     m_graphics->markMouse(m_selectedPosition);
+    ENDPAINT();
   } else {
     m_graphics->markSelectedPiece(m_selectedPosition);
   }

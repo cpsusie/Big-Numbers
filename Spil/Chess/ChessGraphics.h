@@ -473,7 +473,7 @@ public:
   inline void setShowLastMoveInfo(   bool show) { m_debugFlags.m_flags.m_showLastMoveInfo    = show;  }
   inline void setShowSetupMode(      bool show) { m_debugFlags.m_flags.m_showSetupMode       = show;  }
   inline void setShowFEN(            bool show) { m_debugFlags.m_flags.m_showFEN             = show;  }
-  inline void setShowBackMoves(      bool show);
+  void setShowBackMoves(      bool show);
   inline void resetAllDebugFlags() {
     m_debugFlags.m_anySet = 0;
   }
