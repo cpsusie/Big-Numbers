@@ -9,17 +9,22 @@ ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLi
   m_data.m_findMoveParam = new FindMoveRequestParam(game, timeLimit, hint, verbose);
 }
 
+ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
+:m_type(REQUEST_FETCHMOVE)
+{
+  m_data.m_fetchMoveParam = new FetchMoveRequestParam(SearchMoveResult(move, hint));
+}
+
 ChessPlayerRequest::ChessPlayerRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
   m_data.m_gameChangedParam = new GameChangedRequestParam(game);
 }
 
-ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
-:m_type(REQUEST_FETCHMOVE)
+ChessPlayerRequest::ChessPlayerRequest(const PrintableMove &move)
+: m_type(REQUEST_MOVEDONE)
 {
-  m_data.m_fetchMoveParam.m_move = move;
-  m_data.m_fetchMoveParam.m_hint = hint;
+  m_data.m_moveDoneParam = new MoveDoneRequestParam(move);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const String &msgText, bool error)
@@ -68,8 +73,14 @@ void ChessPlayerRequest::addref() {
   case REQUEST_FINDMOVE   :
     refCount = m_data.m_findMoveParam->addref();
     break;
+  case REQUEST_FETCHMOVE  :
+    refCount = m_data.m_fetchMoveParam->addref();
+    break;
   case REQUEST_GAMECHANGED:
     refCount = m_data.m_gameChangedParam->addref();
+    break;
+  case REQUEST_MOVEDONE   :
+    refCount = m_data.m_moveDoneParam->addref();
     break;
   case REQUEST_SHOWMESSAGE:
     refCount = m_data.m_showMessageParam->addref();
@@ -91,14 +102,24 @@ void ChessPlayerRequest::addref() {
 void ChessPlayerRequest::release() {
   int refCount = 500;
   switch(m_type) {
-  case REQUEST_FINDMOVE   :
+  case REQUEST_FINDMOVE     :
     if((refCount=m_data.m_findMoveParam->release()) == 0) {
       delete m_data.m_findMoveParam;
     }
     break;
-  case REQUEST_GAMECHANGED:
+  case REQUEST_FETCHMOVE    :
+    if((refCount = m_data.m_fetchMoveParam->release()) == 0) {
+      delete m_data.m_fetchMoveParam;
+    }
+    break;
+  case REQUEST_GAMECHANGED  :
     if((refCount = m_data.m_gameChangedParam->release()) == 0) {
       delete m_data.m_gameChangedParam;
+    }
+    break;
+  case REQUEST_MOVEDONE     :
+    if ((refCount = m_data.m_moveDoneParam->release()) == 0) {
+      delete m_data.m_moveDoneParam;
     }
     break;
   case REQUEST_SHOWMESSAGE  :
@@ -141,14 +162,19 @@ const FindMoveRequestParam &ChessPlayerRequest::getFindMoveParam() const {
   return *m_data.m_findMoveParam;
 }
 
+const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
+  checkType(__TFUNCTION__, REQUEST_FETCHMOVE);
+  return *m_data.m_fetchMoveParam;
+}
+
 const GameChangedRequestParam &ChessPlayerRequest::getGameChangedParam() const {
   checkType(__TFUNCTION__, REQUEST_GAMECHANGED);
   return *m_data.m_gameChangedParam;
 }
 
-const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
-  checkType(__TFUNCTION__, REQUEST_FETCHMOVE);
-  return m_data.m_fetchMoveParam;
+const MoveDoneRequestParam &ChessPlayerRequest::getMoveDoneParam() const {
+  checkType(__TFUNCTION__, REQUEST_MOVEDONE);
+  return *m_data.m_moveDoneParam;
 }
 
 const ShowMessageRequestParam &ChessPlayerRequest::getShowMessageParam() const {
@@ -174,6 +200,7 @@ const TCHAR *ChessPlayerRequest::getRequestName(ChessPlayerRequestType request) 
   caseStr(MOVENOW    )
   caseStr(FETCHMOVE  )
   caseStr(GAMECHANGED)
+  caseStr(MOVEDONE   )
   caseStr(SHOWMESSAGE)
   caseStr(RESET      )
   caseStr(CONNECT    )

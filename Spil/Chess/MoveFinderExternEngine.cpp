@@ -70,9 +70,6 @@ void MoveFinderExternEngine::notifyGameChanged(const Game &game) {
   m_externEngine.notifyGameChanged(game);
 }
 
-void MoveFinderExternEngine::notifyMove(const MoveBase &move) {
-}
-
 String MoveFinderExternEngine::getStateString(bool detailed) {
   return m_externEngine.toString();
 }

@@ -17,7 +17,6 @@ typedef enum {
 class MoveFinderRemotePlayer : public AbstractMoveFinder, public OptionsAccessor {
 private:
   SocketChannel  m_channel;
-  MoveBase       m_receivedMove;
   void              sendCommand(MoveFinderCommand cmd);
   MoveFinderCommand getCommand();
   void              sendMove(const MoveBase &m);
@@ -39,8 +38,8 @@ public:
     return _T("Remote computer");
   }
 
-  EngineType getEngineType()  const {
-    return REMOTE_ENGINE;
+  MoveFinderType getType()  const {
+    return REMOTE_PLAYER;
   }
 
   PositionType getPositionType() const {
@@ -50,7 +49,7 @@ public:
   void setVerbose(bool verbose) {
   }
   void notifyGameChanged(const Game &game);
-  void notifyMove(const MoveBase &move);
+  void notifyMove(const PrintableMove &m);
 
   String getStateString(bool detailed) {
     return _T("remote");

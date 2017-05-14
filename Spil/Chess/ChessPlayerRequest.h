@@ -10,6 +10,7 @@ typedef enum { // When put these request into the request-queue, caller never ha
  ,REQUEST_MOVENOW      // Only valid if state == CPS_BUSY. Stop the current search, at soon as a move is ready and goto CPS_MOVEREADY
  ,REQUEST_FETCHMOVE    // Send from actual moveFinder back to MoveFinderThread
  ,REQUEST_GAMECHANGED  // The game is changed, (new game, edit game, etc.)
+ ,REQUEST_MOVEDONE     // A move has been executed
  ,REQUEST_SHOWMESSAGE  // Show a message. mostly used for errormessages from moveFinder. Show and if param.m_reset then reset
  ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state MFTS_IDLE
  ,REQUEST_CONNECT      // Only valid if state == CPS_IDLE 
@@ -59,6 +60,18 @@ public:
   }
 };
 
+class MoveDoneRequestParam : public RefCountedObject {
+private:
+  const PrintableMove m_move;
+public:
+  MoveDoneRequestParam(const PrintableMove &m) : m_move(m)
+  {
+  }
+  const PrintableMove &getMove() const {
+    return m_move;
+  }
+};
+
 class ConnectRequestParam : public RefCountedObject {
 private:
   const SocketChannel m_channel;
@@ -92,6 +105,11 @@ class SearchMoveResult {
 public:
   MoveBase m_move;
   bool     m_hint;
+  SearchMoveResult() {
+    clear();
+  }
+  SearchMoveResult(const MoveBase &m, bool hint) : m_move(m), m_hint(hint) {
+  }
   inline void clear() {
     m_hint = false;
     m_move.setNoMove();
@@ -104,7 +122,15 @@ public:
   }
 };
 
-class FetchMoveRequestParam : public SearchMoveResult {
+class FetchMoveRequestParam : public RefCountedObject {
+private:
+  const SearchMoveResult m_result;
+public:
+  FetchMoveRequestParam(const SearchMoveResult &result) : m_result(result) {
+  }
+  const SearchMoveResult &getSearchResult() const {
+    return m_result;
+  }
 };
 
 class ChessPlayerRequest {
@@ -112,8 +138,9 @@ private:
   ChessPlayerRequestType m_type;
   union {
     FindMoveRequestParam    *m_findMoveParam;    // m_type = REQUEST_FINDMOVE
+    FetchMoveRequestParam   *m_fetchMoveParam;   // m_type = REQUEST_FETCHMOVE
     GameChangedRequestParam *m_gameChangedParam; // m_type = REQUEST_GAMECHANGED
-    FetchMoveRequestParam    m_fetchMoveParam;   // m_type = REQUEST_FETCHMOVE
+    MoveDoneRequestParam    *m_moveDoneParam;    // m_type = REQUEST_MOVEDONE
     ShowMessageRequestParam *m_showMessageParam; // m_type = REQUEST_SHOWMESSAGE
     ConnectRequestParam     *m_connectParam;     // m_type = REQUEST_CONNECT
   } m_data;
@@ -129,10 +156,12 @@ private:
 public:
   // REQUEST_FINDMOVE
   ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose);
-  // REQUEST_GAMECHANGED
-  ChessPlayerRequest(const Game &game);
   // REQUEST_FETCHMOVE
   ChessPlayerRequest(const MoveBase &move, bool hint);
+  // REQUEST_GAMECHANGED
+  ChessPlayerRequest(const Game &game);
+  // REQUEST_MOVEDONE
+  ChessPlayerRequest(const PrintableMove &move);
   // REQUEST_SHOWMESSAGE
   ChessPlayerRequest(const String &msgText, bool error);
   // REQUEST_CONNECT
@@ -146,6 +175,7 @@ public:
   }
   const FindMoveRequestParam     &getFindMoveParam()    const;
   const GameChangedRequestParam  &getGameChangedParam() const;
+  const MoveDoneRequestParam     &getMoveDoneParam()    const;
   const FetchMoveRequestParam    &getFetchMoveParam()   const;
   const ShowMessageRequestParam  &getShowMessageParam() const;
   const ConnectRequestParam      &getConnectParam()     const;

@@ -3,11 +3,11 @@
 #include "ChessPlayerRequest.h"
 
 typedef enum {
-  INTERN_ENGINE
- ,EXTERN_ENGINE
- ,REMOTE_ENGINE
- ,RANDOM_ENGINE
-} EngineType;
+  EXTERN_ENGINE
+ ,TABLEBASE_PLAYER
+ ,REMOTE_PLAYER
+ ,RANDOM_PLAYER
+} MoveFinderType;
 
 class AbstractMoveFinder : public AbstractMoveReceiver {
 private:
@@ -40,10 +40,7 @@ public:
   virtual void           stopSearch()               = 0;
   virtual void           moveNow()                  = 0;
   virtual String         getName()            const = 0;
-  virtual EngineType     getEngineType()      const = 0;
-  bool                   isRemote()           const {
-    return getEngineType() == REMOTE_ENGINE;
-  }
+  virtual MoveFinderType getType()            const = 0;
   virtual PositionType   getPositionType()    const = 0;
   virtual void           setVerbose(bool verbose) {
     m_verbose = verbose;
@@ -51,7 +48,7 @@ public:
   virtual String getStateString(bool detailed) = 0;
   virtual void notifyGameChanged(const Game &game) {
   };
-  virtual void notifyMove(const MoveBase &move) {
+  virtual void notifyMove(const PrintableMove &m) {
   }
   virtual bool acceptUndoMove() {
     return true;

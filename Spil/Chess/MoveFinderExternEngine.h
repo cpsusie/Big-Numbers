@@ -18,16 +18,12 @@ public:
   void moveNow();
   String getName() const;
 
-  EngineType getEngineType()  const {
+  MoveFinderType getType()  const {
     return EXTERN_ENGINE;
   }
 
   ExternEngine &getEngine() {
     return m_externEngine;
-  }
-
-  bool isRemote() const {
-    return false;
   }
 
   PositionType getPositionType() const {
@@ -37,7 +33,6 @@ public:
   void runOptionsDialog();
   void setVerbose(bool verbose);
   void notifyGameChanged(const Game &game);
-  void notifyMove(const MoveBase &move);
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
 
   String getStateString(bool detailed);

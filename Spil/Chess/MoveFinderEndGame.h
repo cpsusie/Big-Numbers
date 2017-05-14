@@ -19,11 +19,8 @@ public:
   }
 
   String getName() const;
-  EngineType getEngineType()  const {
-    return INTERN_ENGINE;
-  }
-  bool isRemote() const {
-    return false;
+  MoveFinderType getType()  const {
+    return TABLEBASE_PLAYER;
   }
   PositionType getPositionType() const {
     return TABLEBASE_POSITION;

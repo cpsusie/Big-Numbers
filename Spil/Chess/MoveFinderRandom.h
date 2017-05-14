@@ -13,12 +13,8 @@ public:
   }
   String getName() const;
 
-  EngineType getEngineType()  const {
-    return RANDOM_ENGINE;
-  }
-
-  bool isRemote() const {
-    return false;
+  MoveFinderType getType()  const {
+    return RANDOM_PLAYER;
   }
 
   PositionType getPositionType() const {

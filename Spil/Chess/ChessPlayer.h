@@ -53,6 +53,7 @@ private:
   void handleStopSearchRequest();
   void handleMoveNowRequest();
   void handleGameChangedRequest(const GameChangedRequestParam &param);
+  void handleMoveDoneRequest(   const MoveDoneRequestParam    &param);
   void handleShowMessageRequest(const ShowMessageRequestParam &param);
   void handleFetchMoveRequest(  const FetchMoveRequestParam   &param);
   void handleResetRequest();
@@ -93,7 +94,7 @@ public:
   void notifyGameChanged(const Game &game);     
 
   // Only valid in state CPS_IDLE
-  bool notifyMove(const MoveBase &m);
+  void notifyMove(const PrintableMove &m);
 
   // Only valid in state CPS_IDLE
   bool acceptUndoMove();

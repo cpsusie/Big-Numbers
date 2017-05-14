@@ -132,10 +132,10 @@ private:
   void   setExternEngine(    Player player, int startMenuId, int index);
   void   enginePrintState(   Player player);
   void   engineEditSettings( Player player);
-  bool   notifyMove(                        const MoveBase &move);
-  bool   notifyMove(         Player player, const MoveBase &move);
-  void   notifyGameChanged(                 const Game     &game);
-  void   notifyGameChanged(  Player player, const Game     &game);
+  void   notifyMove(                        const PrintableMove &move);
+  void   notifyMove(         Player player, const PrintableMove &move);
+  void   notifyGameChanged(                 const Game          &game);
+  void   notifyGameChanged(  Player player, const Game          &game);
   inline bool   isRemote(    Player player) const {
     return m_chessPlayer[player]->isRemote();
   }
@@ -160,7 +160,7 @@ private:
   void   startNewGame();
   void   invalidate();
   void   paintGamePosition();
-  void   executeMove(const MoveBase &m);
+  void   executeMove(const PrintableMove &m);
   void   executePromotion(PieceType promoteTo);
   void   selectAndExecutePromotion(const CPoint &point, MoveAnnotation annotation = NOANNOTATION);
   void   executeBackMove(const Move &m);

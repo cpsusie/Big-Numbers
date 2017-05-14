@@ -1163,7 +1163,7 @@ void CChessDlg::save(Game &game, const String &name) {
   if(info.getExtension().length() == 0) {
     info.setExtension(_T("chs"));
   }
-  String fileName = info.getFullPath();
+  const String fileName = info.getFullPath();
   FILE *f = MKFOPEN(fileName,_T("w"));
   try {
     game.save(f);
@@ -1316,12 +1316,13 @@ void CChessDlg::setGameResult(GameResult gameResult) {
 //    verbose(_T("Property GAMERESULT changed. old:%s, new:%s\n"), ::getGameResultToString(oldResult).cstr(), ::getGameResultToString(gameResult).cstr());
 }
 
-bool CChessDlg::notifyMove(const MoveBase &move) {
-  return notifyMove(WHITEPLAYER, move) && notifyMove(BLACKPLAYER, move);
+void CChessDlg::notifyMove(const PrintableMove &move) {
+  notifyMove(WHITEPLAYER, move);
+  notifyMove(BLACKPLAYER, move);
 }
 
-bool CChessDlg::notifyMove(Player player, const MoveBase &move) {
-  return getChessPlayer(player).notifyMove(move);
+void CChessDlg::notifyMove(Player player, const PrintableMove &move) {
+  getChessPlayer(player).notifyMove(move);
 }
 
 void CChessDlg::notifyGameChanged(const Game &game) {
@@ -1508,16 +1509,14 @@ String CChessDlg::getFiftyMovesString() const {
   return format(loadString(IDS_MSG_d_MOVES_RULE).cstr(), getOptions().getMaxMovesWithoutCaptureOrPawnMove());
 }
 
-void CChessDlg::executeMove(const MoveBase &m) {
+void CChessDlg::executeMove(const PrintableMove &m) {
   Game &game = getCurrentGame();
   stopAllBackgroundActivity(false);
   m_graphics->unmarkAll();
   const Player playerWhoMoved = game.getPlayerInTurn();
 
   if(m.isMove()) {
-    if(!notifyMove(m)) {
-      return;
-    }
+    notifyMove(m);
     if(getOptions().getAnimateMoves()) {
       const bool clockRunning = m_watch.isRunning();
       if(clockRunning) pauseClock();
@@ -1902,7 +1901,7 @@ void CChessDlg::OnEditRotate180()    { applySymmetricTransformation(TRANSFORM_RO
 void CChessDlg::applySymmetricTransformation(SymmetricTransformation st, bool paint) {
   try {
     GameKey key = m_editHistory.saveState().getKey();
-    Game g = key.transform(st);
+    Game    g   = key.transform(st);
     g.beginSetup();
     m_editHistory.getGame() = g;
     if(paint) {
@@ -2219,7 +2218,8 @@ void CChessDlg::OnEditRedo() {
     case AUTOPLAYMODE:
       break;
     case ANALYZEMODE:
-      executeMove(m_savedGame.getMove(getCurrentGame().getPlyCount()));
+      errorMessage(_T("%s not implemented in analyzeMode"), __TFUNCTION__);
+      // OnEditRedoexecuteMove(m_savedGame.getMove(getCurrentGame().getPlyCount()));
       break;
     default:
       invalidModeError(__TFUNCTION__);

@@ -6,7 +6,7 @@
 #include "MoveFinderExternEngine.h"
 #include "MoveFinderRemotePlayer.h"
 
-#define _PRINT_DEBUGMSG
+//#define _PRINT_DEBUGMSG
 //#define _TRACE_ENTERLEAVE
 #define _DEBUG_CHECKSTATE
 
@@ -107,9 +107,20 @@ void ChessPlayer::startSearch(const Game &game, const TimeLimit &timeLimit, bool
 void ChessPlayer::stopSearch() {
   ENTERFUNC();
   m_gate.wait();
-  if(getState() == CPS_BUSY) {
+  switch(getState()) {
+  case CPS_IDLE         :
+    break;
+  case CPS_PREPARESEARCH:
+    setState(CPS_IDLE);
+    break;
+  case CPS_BUSY         :
     setState(CPS_STOPPENDING);
     putRequest(REQUEST_STOPSEARCH);
+    break;
+  case CPS_MOVEREADY    :
+  case CPS_STOPPENDING  :
+  case CPS_KILLED       :
+    break;
   }
   m_gate.signal();
   LEAVEFUNC();
@@ -129,37 +140,28 @@ void ChessPlayer::moveNow() {
 // public
 SearchMoveResult ChessPlayer::getSearchResult() const {
   ENTERFUNC();
+  m_gate.wait();
   CHECKSTATE(CPS_MOVEREADY);
+  const SearchMoveResult result = m_searchResult;
+  m_gate.signal();
   LEAVEFUNC();
-  return m_searchResult;
+  return result;
 }
 
 // public
 void ChessPlayer::notifyGameChanged(const Game &game) {
   ENTERFUNC();
+  CHECKSTATE(CPS_IDLE, CPS_MOVEREADY, CPS_STOPPENDING);
   putRequest(ChessPlayerRequest(game));
   LEAVEFUNC();
 }
 
 // public
-bool ChessPlayer::notifyMove(const MoveBase &move) {
+void ChessPlayer::notifyMove(const PrintableMove &m) {
   ENTERFUNC();
-  m_gate.wait();
-  CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
-  bool result;
-  try {
-    if(m_moveFinder) {
-      m_moveFinder->notifyMove(move);
-    }
-    setState(CPS_IDLE);
-    result = true;
-  } catch(TcpException e) {
-    handleTcpException(e);
-    result = false;
-  }
-  m_gate.signal();
+  CHECKSTATE(CPS_IDLE, CPS_MOVEREADY);
+  putRequest(ChessPlayerRequest(m));
   LEAVEFUNC();
-  return result;
 }
 
 // public
@@ -206,7 +208,7 @@ UINT ChessPlayer::run() {
     DEBUGMSG(_T("Got request %s"), request.toString().cstr());
 
     switch(request.getType()) {
-    case REQUEST_FINDMOVE  :
+    case REQUEST_FINDMOVE   :
       try {
         handleFindMoveRequest(request.getFindMoveParam());
       } catch(TcpException e) {
@@ -223,19 +225,19 @@ UINT ChessPlayer::run() {
       }
       break;
 
-    case REQUEST_NULLMOVE  :
+    case REQUEST_NULLMOVE   :
       handleNullMoveRequest();
       break;
 
-    case REQUEST_STOPSEARCH:
+    case REQUEST_STOPSEARCH :
       handleStopSearchRequest();
       break;
 
-    case REQUEST_MOVENOW   :
+    case REQUEST_MOVENOW    :
       handleMoveNowRequest();
       break;
 
-    case REQUEST_FETCHMOVE :
+    case REQUEST_FETCHMOVE  :
       handleFetchMoveRequest(request.getFetchMoveParam());
       break;
 
@@ -243,27 +245,31 @@ UINT ChessPlayer::run() {
       handleGameChangedRequest(request.getGameChangedParam());
       break;
 
+    case REQUEST_MOVEDONE   :
+      handleMoveDoneRequest(request.getMoveDoneParam());
+      break;
+
     case REQUEST_SHOWMESSAGE:
       handleShowMessageRequest(request.getShowMessageParam());
       break;
 
-    case REQUEST_RESET     :
+    case REQUEST_RESET      :
       handleResetRequest();
       break;
 
-    case REQUEST_CONNECT   :
+    case REQUEST_CONNECT    :
       handleConnectRequest(request.getConnectParam());
       break;
 
-    case REQUEST_DISCONNECT:
+    case REQUEST_DISCONNECT :
       handleDisconnectRequest();
       break;
 
-    case REQUEST_KILL      :
+    case REQUEST_KILL       :
       handleKillRequest();
       break;
 
-    default                :
+    default                 :
       debugMsg(_T("Invalid request:%s"), request.toString().cstr());
       break;
     }
@@ -285,8 +291,14 @@ void ChessPlayer::handleFindMoveRequest(const FindMoveRequestParam &param) {
     const PrintableMove libMove = getOpeningLibrary().findLibraryMove(param.getGame(), param.isVerbose());
     if(libMove.isMove()) {
       setMoveFinder(NULL);
-      setState(CPS_BUSY);
-      putRequest(ChessPlayerRequest(libMove, param.isHint()));
+      m_gate.wait();
+      if(getState() == CPS_PREPARESEARCH) {
+        setState(CPS_BUSY);
+        putRequest(ChessPlayerRequest(libMove, param.isHint()));
+      } else {
+        // do nothing!! User has pressed undo, so state is idle
+      }
+      m_gate.signal();
       LEAVEFUNC();
       return;
     }
@@ -361,7 +373,7 @@ void ChessPlayer::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
     setState(CPS_IDLE);
     break;
   case CPS_BUSY       :
-    m_searchResult = param;
+    m_searchResult = param.getSearchResult();
     setState(m_searchResult.isMove() ? CPS_MOVEREADY : CPS_IDLE);
     break;
   default              :
@@ -375,7 +387,7 @@ void ChessPlayer::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
 // private
 void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param) {
   ENTERFUNC();
-  CHECKSTATE(CPS_IDLE,CPS_PREPARESEARCH,CPS_BUSY,CPS_STOPPENDING,CPS_MOVEREADY);
+  CHECKSTATE(CPS_IDLE); // ,CPS_PREPARESEARCH),CPS_BUSY,CPS_STOPPENDING,CPS_MOVEREADY);
   if(isBusy()) {
     stopSearch();
     DEBUGMSG(_T("While(isBusy())"));
@@ -404,6 +416,22 @@ void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param)
   LEAVEFUNC();
 }
 
+// private
+void ChessPlayer::handleMoveDoneRequest(const MoveDoneRequestParam &param) {
+  m_gate.wait();
+  CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
+  try {
+    if(m_moveFinder) {
+      m_moveFinder->notifyMove(param.getMove());
+    }
+    setState(CPS_IDLE);
+  } catch(TcpException e) {
+    handleTcpException(e);
+  }
+  m_gate.signal();
+}
+
+// private
 void ChessPlayer::handleShowMessageRequest(const ShowMessageRequestParam &param) {
   setProperty(CPP_MESSAGETEXT, m_messageText, param.getMessage());
   if (param.isError()) {
@@ -485,7 +513,7 @@ bool ChessPlayer::isNewMoveFinderNeeded(const FindMoveRequestParam &param) const
     return true;
   }
   if(isRemote()) {
-    return !m_moveFinder->isRemote();
+    return m_moveFinder->getType() != REMOTE_PLAYER;
   }
 
   const PositionType gamePositionType = param.getGame().getPositionType();
@@ -520,11 +548,11 @@ bool ChessPlayer::isRightNormalPlayMoveFinder(const FindMoveRequestParam &param)
 
 #ifndef TABLEBASE_BUILDER
   if(param.getTimeLimit().m_timeout == 0) {
-    return m_moveFinder->getEngineType() == RANDOM_ENGINE;
+    return m_moveFinder->getType() == RANDOM_PLAYER;
   }
-  return m_moveFinder->getEngineType() == EXTERN_ENGINE;
+  return m_moveFinder->getType() == EXTERN_ENGINE;
 #else
-  return m_moveFinder->getEngineType() == RANDOM_ENGINE;
+  return m_moveFinder->getType() == RANDOM_PLAYER;
 #endif
 }
 

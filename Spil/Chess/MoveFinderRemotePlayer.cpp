@@ -5,7 +5,6 @@ MoveFinderRemotePlayer::MoveFinderRemotePlayer(Player player, ChessPlayerRequest
 : AbstractMoveFinder(player, msgQueue)
 , m_channel(channel)
 {
-  m_receivedMove.setNoMove();
 }
 
 void MoveFinderRemotePlayer::disConnect() {
@@ -65,11 +64,8 @@ void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param) {
   initSearch(param);
   const String s = receiveMove();
   PrintableMove result;
-  if(s.length() == 0) {
-    m_receivedMove = result.setNoMove();
-  } else {
+  if(s.length() > 0) {
     result = m_game.generateMove(s);
-    m_receivedMove = result;
   }
   return putMove(result);
 }
@@ -77,11 +73,10 @@ void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param) {
 void MoveFinderRemotePlayer::notifyGameChanged(const Game &game) {
   sendCommand(CMD_GETGAME);
   m_channel.write(game);
-  m_receivedMove.setNoMove();
 }
 
-void MoveFinderRemotePlayer::notifyMove(const MoveBase &move) {
-  if(move != m_receivedMove) {
-    sendMove(move);
+void MoveFinderRemotePlayer::notifyMove(const PrintableMove &m) {
+  if(m.getPlayer() != getPlayer()) {
+    sendMove(m);
   }
 }
