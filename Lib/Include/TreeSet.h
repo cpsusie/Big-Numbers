@@ -170,9 +170,9 @@ public:
   }
 };
 
-class UShortTreeSet : public TreeSet<unsigned short>  {
+class UShortTreeSet : public TreeSet<USHORT>  {
 public:
-  UShortTreeSet() : TreeSet<unsigned short>(ushortHashCmp) {
+  UShortTreeSet() : TreeSet<USHORT>(ushortHashCmp) {
   }
 };
 
@@ -194,21 +194,21 @@ public:
   }
 };
 
-class ULongTreeSet : public TreeSet<unsigned long> {
+class ULongTreeSet : public TreeSet<ULONG> {
 public:
-  ULongTreeSet() : TreeSet<unsigned long>(ulongHashCmp) {
+  ULongTreeSet() : TreeSet<ULONG>(ulongHashCmp) {
   }
 };
 
-class Int64TreeSet : public TreeSet<__int64> {
+class Int64TreeSet : public TreeSet<INT64> {
 public:
-  Int64TreeSet() : TreeSet<__int64>(int64HashCmp) {
+  Int64TreeSet() : TreeSet<INT64>(int64HashCmp) {
   }
 };
 
-class UInt64TreeSet : public TreeSet<unsigned __int64> {
+class UInt64TreeSet : public TreeSet<UINT64> {
 public:
-  UInt64TreeSet() : TreeSet<unsigned __int64>(uint64HashCmp) {
+  UInt64TreeSet() : TreeSet<UINT64>(uint64HashCmp) {
   }
 };
 

@@ -150,7 +150,7 @@ private:
   }
 
   void openPageFile() const {
-    m_pageFile = MKFOPEN(getPageFileName(), "w+b");
+    m_pageFile = MKFOPEN(getPageFileName(), _T("w+b"));
     resetPageFileSize();
   }
 

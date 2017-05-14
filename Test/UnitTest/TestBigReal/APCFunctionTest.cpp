@@ -97,7 +97,7 @@ static bool checkBiasedExpr(const BigReal &APCresult, const BigReal &x0, const c
     quotient = fabs(rQuot(x0, APCresult, 15));
     return (BIGREAL_1 <= quotient) && (quotient <= maxTolerance);
   default:
-    tcout << "Invalid bias:'" << bias << "'" << NEWLINE;
+    tcout << _T("Invalid bias:'") << bias << _T("'") << NEWLINE;
     throwException(_T("Invalid bias: =%c"), bias);
     return false;
   }

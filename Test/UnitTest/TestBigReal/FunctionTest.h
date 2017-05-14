@@ -18,15 +18,15 @@ public:
 
 class FunctionTest1ArgND64D80 : public AbstractFunctionTest {
 private:
-  const bool           m_xexponentialStep;
+  const bool            m_xexponentialStep;
   const BigReal         m_xfrom, m_xto;
   BigRealFunction1      m_f1;
-  DoubleFunction1      m_f1_64;
-  Double80Function1    m_f1_80;
+  DoubleFunction1       m_f1_64;
+  Double80Function1     m_f1_80;
 public:
   FunctionTest1ArgND64D80(const String        &functionName
                          ,bool                 exponentialStep, const BigReal &from, const BigReal &to
-                         ,BigRealFunction1      f
+                         ,BigRealFunction1     f
                          ,DoubleFunction1      f64
                          ,Double80Function1    f80) : AbstractFunctionTest(functionName)
                                                     , m_xexponentialStep(exponentialStep), m_xfrom(from), m_xto(to)
@@ -38,18 +38,18 @@ public:
 
 class FunctionTest2ArgND64D80 : public AbstractFunctionTest {
 private:
-  const bool           m_xexponentialStep;
+  const bool            m_xexponentialStep;
   const BigReal         m_xfrom, m_xto;
-  const bool           m_yexponentialStep;
+  const bool            m_yexponentialStep;
   const BigReal         m_yfrom, m_yto;
   BigRealFunction2      m_f2;
-  DoubleFunction2      m_f2_64;
-  Double80Function2    m_f2_80;
+  DoubleFunction2       m_f2_64;
+  Double80Function2     m_f2_80;
 public:
   FunctionTest2ArgND64D80(const String        &functionName
                          ,bool                 xexponentialStep, const BigReal &xfrom, const BigReal &xto
                          ,bool                 yexponentialStep, const BigReal &yfrom, const BigReal &yto
-                         ,BigRealFunction2      f
+                         ,BigRealFunction2     f
                          ,DoubleFunction2      f64
                          ,Double80Function2    f80) : AbstractFunctionTest(functionName)
                                                     , m_xexponentialStep(xexponentialStep), m_xfrom(xfrom), m_xto(xto)
@@ -63,13 +63,13 @@ public:
 
 class FunctionTest1ArgRelative : public AbstractFunctionTest {
 private:
-  const bool           m_xexponentialStep;
+  const bool            m_xexponentialStep;
   const BigReal         m_xfrom, m_xto;
   rBigRealFunction1     m_rf1;
 public:
   FunctionTest1ArgRelative(const String        &functionName
                           ,bool                 exponentialStep, const BigReal &from, const BigReal &to
-                          ,rBigRealFunction1     f) : AbstractFunctionTest(functionName)
+                          ,rBigRealFunction1    f) : AbstractFunctionTest(functionName)
                                                    , m_xexponentialStep(exponentialStep), m_xfrom(from), m_xto(to)
                                                    , m_rf1(f)
   {
@@ -79,16 +79,16 @@ public:
 
 class FunctionTest2ArgRelative : public AbstractFunctionTest {
 private:
-  const bool           m_xexponentialStep;
+  const bool            m_xexponentialStep;
   const BigReal         m_xfrom, m_xto;
-  const bool           m_yexponentialStep;
+  const bool            m_yexponentialStep;
   const BigReal         m_yfrom, m_yto;
   rBigRealFunction2     m_rf2;
 public:
   FunctionTest2ArgRelative(const String        &functionName
                           ,bool                 xexponentialStep, const BigReal &xfrom, const BigReal &xto
                           ,bool                 yexponentialStep, const BigReal &yfrom, const BigReal &yto
-                          ,rBigRealFunction2     f) : AbstractFunctionTest(functionName)
+                          ,rBigRealFunction2    f) : AbstractFunctionTest(functionName)
                                                    , m_xexponentialStep(xexponentialStep), m_xfrom(xfrom), m_xto(xto)
                                                    , m_yexponentialStep(yexponentialStep), m_yfrom(yfrom), m_yto(yto)
                                                    , m_rf2(f)
@@ -101,14 +101,14 @@ typedef bool (*BinaryOperatorCheckFunction)(const BigReal &x, const BigReal &y, 
 
 class ExactBinaryOperatorTest : public AbstractFunctionTest {
 private:
-  BigRealBinaryOperator        m_op2;
+  BigRealBinaryOperator       m_op2;
   BinaryOperatorCheckFunction m_check;
 public:
-  ExactBinaryOperatorTest(const String               &functionName
+  ExactBinaryOperatorTest(const String                &functionName
                          ,BigRealBinaryOperator        op
-                         ,BinaryOperatorCheckFunction check) : AbstractFunctionTest(functionName)
-                                                             , m_op2(op)
-                                                             , m_check(check)
+                         ,BinaryOperatorCheckFunction  check) : AbstractFunctionTest(functionName)
+                                                              , m_op2(op)
+                                                              , m_check(check)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -117,16 +117,16 @@ public:
 
 class OperatorTest2ArgND64D80Pool : public AbstractFunctionTest {
 private:
-  BigRealFunction2Pool  m_f2Pool;
+  BigRealFunction2Pool m_f2Pool;
   DoubleFunction2      m_f2_64;
   Double80Function2    m_f2_80;
   void specialTest(int threadId, DigitPool *pool);
 public:
-  OperatorTest2ArgND64D80Pool(const String        &functionName
+  OperatorTest2ArgND64D80Pool(const String         &functionName
                              ,BigRealFunction2Pool  f
-                             ,DoubleFunction2      f64
-                             ,Double80Function2    f80): AbstractFunctionTest(functionName)
-                                                       , m_f2Pool(f), m_f2_64(f64), m_f2_80(f80) 
+                             ,DoubleFunction2       f64
+                             ,Double80Function2     f80) : AbstractFunctionTest(functionName)
+                                                         , m_f2Pool(f), m_f2_64(f64), m_f2_80(f80) 
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -137,7 +137,7 @@ private:
   rBigRealFunction2Pool m_rf2Pool;
 public:
   OperatorTest2ArgRelative(const String &functionName,rBigRealFunction2Pool f) : AbstractFunctionTest(functionName)
-                                                                              , m_rf2Pool(f)
+                                                                               , m_rf2Pool(f)
   {
   }
   void runTest(int threadId, DigitPool *pool);
@@ -184,7 +184,7 @@ void testAssignOperators(           TestStatistic &stat);
 void testIntegerDivision(           TestStatistic &stat);
 void testModulus(                   TestStatistic &stat);
 void testPi(                        TestStatistic &stat);
-void testReadWriteBigReal(           TestStatistic &stat);
+void testReadWriteBigReal(          TestStatistic &stat);
 void testReadWriteInteger(          TestStatistic &stat);
 
 #define MAXDIGITS       400
@@ -214,7 +214,7 @@ private:
 public:
   TesterJob(int id) : m_id(id) {
   }
-  unsigned int run();
+  UINT run();
   static int getRunningCount() {
     return s_runningCount;
   }
@@ -237,7 +237,7 @@ public:
 
 inline void testFunction(const String     &functionName
                         ,bool              exponentialStep, const BigReal &from, const BigReal &to
-                        ,BigRealFunction1   f
+                        ,BigRealFunction1  f
                         ,DoubleFunction1   f64 = NULL
                         ,Double80Function1 f80 = NULL) {
   TesterJob::addFunctionTest(new FunctionTest1ArgND64D80(functionName, exponentialStep, from, to, f, f64, f80));
@@ -245,32 +245,32 @@ inline void testFunction(const String     &functionName
 
 inline void testFunction(const String     &functionName
                         ,bool              exponentialStep, const BigReal &from, const BigReal &to
-                        ,rBigRealFunction1  f) {
+                        ,rBigRealFunction1 f) {
   TesterJob::addFunctionTest(new FunctionTest1ArgRelative(functionName, exponentialStep, from, to, f));
 }
 
 inline void testFunction(const String     &functionName
                         ,bool              xExponentialStep, const BigReal &xFrom, const BigReal &xTo
                         ,bool              yExponentialStep, const BigReal &yFrom, const BigReal &yTo
-                        ,BigRealFunction2   f
+                        ,BigRealFunction2  f
                         ,DoubleFunction2   f64 = NULL
                         ,Double80Function2 f80 = NULL) {
   TesterJob::addFunctionTest(new FunctionTest2ArgND64D80(functionName
-                                                           ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
-                                                           ,f, f64, f80
-                                                           ));
+                                                        ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
+                                                        ,f, f64, f80
+                                                        ));
 }
 
 inline void testExactBinaryOperator(const String               &functionName
-                                   ,BigRealBinaryOperator        op
+                                   ,BigRealBinaryOperator       op
                                    ,BinaryOperatorCheckFunction check) {
   TesterJob::addFunctionTest(new ExactBinaryOperatorTest(functionName, op, check));
 }
 
-inline void testOperator(const String       &functionName
+inline void testOperator(const String        &functionName
                         ,BigRealFunction2Pool op
-                        ,DoubleFunction2     op64 = NULL
-                        ,Double80Function2   op80 = NULL) { 
+                        ,DoubleFunction2      op64 = NULL
+                        ,Double80Function2    op80 = NULL) { 
   TesterJob::addFunctionTest(new OperatorTest2ArgND64D80Pool(functionName, op, op64, op80));
 }
 
@@ -283,9 +283,9 @@ inline void testFunction(const String &functionName
                         ,bool yExponentialStep, const BigReal &yFrom, const BigReal &yTo
                         ,rBigRealFunction2 f) {
   TesterJob::addFunctionTest(new FunctionTest2ArgRelative(functionName
-                                                            ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
-                                                            ,f
-                                                             ));
+                                                         ,xExponentialStep, xFrom, xTo,yExponentialStep, yFrom, yTo
+                                                         ,f
+                                                          ));
 }
 
 class DigitMonitorThread : public Thread {
@@ -294,5 +294,5 @@ public:
     setDeamon(true);
     start();
   }
-  unsigned int run();
+  UINT run();
 };

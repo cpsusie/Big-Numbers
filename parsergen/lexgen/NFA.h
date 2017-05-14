@@ -53,8 +53,8 @@ private:
   void parseHeadBody(SourceText &source);
   void readHead();
   void readTail();
-  void enter(const char *function);
-  void leave(const char *function);
+  void enter(const TCHAR *function);
+  void leave(const TCHAR *function);
   AcceptAction *acceptString(int anchor);
   void generateID(NFAstate *state);
   NFAstate *parse();

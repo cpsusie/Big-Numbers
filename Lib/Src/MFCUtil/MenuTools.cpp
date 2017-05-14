@@ -78,7 +78,7 @@ int getMenuItemType(HMENU menu, UINT pos) {
 
 HMENU findMenuByString(HMENU menu, const String &s, int &index) {
   if(menu == NULL) return NULL;
-  for(Tokenizer tok(s,"/"); menu != NULL && tok.hasNext();) {
+  for(Tokenizer tok(s,_T("/")); menu != NULL && tok.hasNext();) {
     String str = tok.next();
     index = findMenuItemIndexByString(menu, str);
     if(index < 0) {

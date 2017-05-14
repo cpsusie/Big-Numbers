@@ -13,7 +13,7 @@ Profile *selectAndLoadProfile() {
     if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
       return NULL;
     } else {
-      file = FOPEN(dlg.m_ofn.lpstrFile,"r");
+      file = FOPEN(dlg.m_ofn.lpstrFile,_T("r"));
       result = new Profile(readTextFile(file), dlg.m_ofn.lpstrFile);
     }   
   } catch(Exception e) {

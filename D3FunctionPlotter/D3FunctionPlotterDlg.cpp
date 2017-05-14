@@ -416,7 +416,7 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
 void CD3FunctionPlotterDlg::OnFileProfileSurface() {
   const String fileName = _T("C:\\mytools\\D3FunctionPlotter\\SAMPLES\\bue.prf");
   try {
-    FILE *f = FOPEN(fileName, "r");
+    FILE *f = FOPEN(fileName, _T("r"));
     Profile profile(readTextFile(f), fileName);
     fclose(f);
     CProfileDlg dlg(profile);

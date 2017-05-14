@@ -16,7 +16,7 @@ private:
   }
   void parseTermDef();
   void parseHeadBody(SourceText &source);
-  void parseActionBody(const SourcePosition &sourcePos, Array<short> &usedDollar, const Production &prod);
+  void parseActionBody(const SourcePosition &sourcePos, CompactShortArray &usedDollar, const Production &prod);
   void parseProduction();
   void parseRightSide(int leftside);
   SymbolModifier parseModifier();

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GrammarCode.h"
 
-static void printUncompressedActionArrayJava(MarginFile &output, const char *tableType, const int index, const ActionArray &actions) {
+static void printUncompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ActionArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 0"), tableType, index);
@@ -16,7 +16,7 @@ static void printUncompressedActionArrayJava(MarginFile &output, const char *tab
   output.printf(_T("};\n"));
 }
 
-static void printCompressedActionArrayJava(MarginFile &output, const char *tableType, const int index, const ActionArray &actions) {
+static void printCompressedActionArrayJava(MarginFile &output, const TCHAR *tableType, const int index, const ActionArray &actions) {
   const int actionCount = (int)actions.size();
   output.setLeftMargin(4);
   output.printf(_T("%s act%04d[] = { 1"), tableType, index);
@@ -66,7 +66,7 @@ void GrammarTables::printJava(MarginFile &output, bool useTableCompression) cons
   const int stateCount      = getStateCount();
   const int productionCount = getProductionCount();
 
-  const char *tableType = "private static final short";
+  const TCHAR *tableType = _T("private static final short");
 
   for(int s = 0; s < stateCount; s++) {
     const ActionArray &actions = m_stateActions[s];
@@ -112,8 +112,8 @@ void GrammarTables::printJava(MarginFile &output, bool useTableCompression) cons
     if(count > 0) {
       output.setLeftMargin(4);
       output.printf(_T("%s succ%04d[] = {"), tableType, s);
-      char *delim = "";
-      for(int a = 0; a < count; a++, delim=",") {
+      TCHAR *delim = EMPTYSTRING;
+      for(int a = 0; a < count; a++, delim=_T(",")) {
         const ParserAction &pa = succlist[a];
         output.printf(_T("%s%4d,%4d"), delim, pa.m_token, pa.m_action);
         if(a % 5 == 4 && a != count-1) {

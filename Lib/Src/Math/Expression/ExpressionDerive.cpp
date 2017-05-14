@@ -187,7 +187,7 @@ SNode Expression::D(SNode n, const String &name) {
     return unaryExpression(RETURNREAL, D(n.left(), name));
 
   case RETURNBOOL:
-    throwException("Cannot get derived of boolean expression");
+    throwException(_T("Cannot get derived of boolean expression"));
 
   case INDEXEDSUM:
     return indexSum(n.child(0), n.child(1), D(n.child(2), name));

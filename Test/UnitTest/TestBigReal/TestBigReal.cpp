@@ -102,23 +102,23 @@ static inline Double80 quot(const Double80 &x, const Double80 &y) {
 #pragma check_stack()
 
 static void testSum() {
-  testOperator("sum", sum, sum, sum);
-  testOperator("rSum", rSum);
+  testOperator(_T("sum" ), sum, sum, sum);
+  testOperator(_T("rSum"), rSum);
 }
 
 static void testDif() {
-  testOperator("dif", dif, diff, diff);
-  testOperator("rDif",rDif);
+  testOperator(_T("dif" ), dif, diff, diff);
+  testOperator(_T("rDif"),rDif);
 }
 
 static void testProd() { 
-  testOperator("prod", prod, prod, prod);
-  testOperator("rProd",rProd);
+  testOperator(_T("prod" ), prod, prod, prod);
+  testOperator(_T("rProd"),rProd);
 }
 
 static void testQuot() {
-  testOperator("quot", quot, quot, quot);
-  testOperator("rQuot", rQuot);
+  testOperator(_T("quot" ), quot, quot, quot);
+  testOperator(_T("rQuot"), rQuot);
 }
 
 static void testQuot3() {
@@ -130,11 +130,11 @@ static void testAssignOperators() {
 }
 
 static void testQuotLinear32() {
-  testOperator("quotLinear32", BigReal::quotLinear32);
+  testOperator(_T("quotLinear32"), BigReal::quotLinear32);
 }
 
 static void testQuotLinear64() {
-  testOperator("quotLinear64", BigReal::quotLinear64);
+  testOperator(_T("quotLinear64"), BigReal::quotLinear64);
 }
 
 static void testIntegerDivision() {
@@ -150,11 +150,11 @@ static bool checkMinus(const BigReal &x, const BigReal &y, const BigReal &result
 }
 
 static void testOperatorPlus() {
-  testExactBinaryOperator( "operatorPlus",operator+,checkPlus);
+  testExactBinaryOperator( _T("operatorPlus"),operator+,checkPlus);
 }
 
 static void testOperatorMinus() {
-  testExactBinaryOperator( "operatorMinus",operator-,checkMinus);
+  testExactBinaryOperator( _T("operatorMinus"),operator-,checkMinus);
 }
 
 static void testModulus() {
@@ -174,7 +174,7 @@ static bool checkModulus(const BigReal &x, const BigReal &y, const BigReal &resu
 }
 
 static void testOperatorModulus() {
-  testExactBinaryOperator( "operatorMod",operator%,checkModulus);
+  testExactBinaryOperator( _T("operatorMod"),operator%,checkModulus);
 }
 
 static void testExactBinaryOperators() {
@@ -188,35 +188,35 @@ static void testExactBinaryOperators() {
 static void testSqrt() {
   const BigReal from = 0;
   const BigReal to   = 100;
-  testFunction("sqrt" , true, from, to, sqrt, sqrt, sqrt);
-  testFunction("rSqrt", true, from, to, rSqrt);
+  testFunction(_T("sqrt" ), true, from, to, sqrt, sqrt, sqrt);
+  testFunction(_T("rSqrt"), true, from, to, rSqrt);
 }
 
 static void testExp() {
   const BigReal from = -200;
   const BigReal to   = 100;
-  testFunction("exp" , false, from, to, exp, exp, exp);
-  testFunction("rExp", false, from, to, rExp);
+  testFunction(_T("exp" ), false, from, to, exp, exp, exp);
+  testFunction(_T("rExp"), false, from, to, rExp);
 }
 
 static void testLn() {
   const BigReal from = e(1, -100);
   const BigReal to   = 100;
-  testFunction("ln" , true, from, to, ln, log, log);
-  testFunction("rLn", true, from, to, rLn);
+  testFunction(_T("ln" ), true, from, to, ln, log, log);
+  testFunction(_T("rLn"), true, from, to, rLn);
 }
 
 static void testLog10() {
   const BigReal from = e(1,-100);
   const BigReal to   = 100;
-  testFunction("log10" , true, from, to, log10, log10, log10);
-  testFunction("rLog10", true, from, to, rLog10);
+  testFunction(_T("log10" ), true, from, to, log10, log10, log10);
+  testFunction(_T("rLog10"), true, from, to, rLog10);
 }
 
 static void testLn1() {
   const BigReal from = e(1, -100);
   const BigReal to   = 100;
-  testFunction("ln1", true, from, to, ln1);
+  testFunction(_T("ln1"), true, from, to, ln1);
 }
 
 static void testLog() {
@@ -224,8 +224,8 @@ static void testLog() {
   const BigReal baseTo   = 10;
   const BigReal yFrom    = e(1, -100);
   const BigReal yTo      = 100;
-  testFunction("log" , false, baseFrom, baseTo, true, yFrom, yTo, log);
-  testFunction("rLog", false, baseFrom, baseTo, true, yFrom, yTo, rLog);
+  testFunction(_T("log" ), false, baseFrom, baseTo, true, yFrom, yTo, log);
+  testFunction(_T("rLog"), false, baseFrom, baseTo, true, yFrom, yTo, rLog);
 }
 
 static void testPow() {
@@ -233,8 +233,8 @@ static void testPow() {
   const BigReal baseTo   = 10;
   const BigReal yFrom    = -100;
   const BigReal yTo      = 100;
-  testFunction("pow" , false, baseFrom, baseTo, false, yFrom, yTo, pow, pow, pow);
-  testFunction("rPow", false, baseFrom, baseTo, false, yFrom, yTo, rPow);
+  testFunction(_T("pow" ), false, baseFrom, baseTo, false, yFrom, yTo, pow, pow, pow);
+  testFunction(_T("rPow"), false, baseFrom, baseTo, false, yFrom, yTo, rPow);
 }
 
 static void testPi() {
@@ -244,8 +244,8 @@ static void testPi() {
 static void testSin() {
   const BigReal from = -100;
   const BigReal to   = 100;
-  testFunction("sin" , false, from, to, sin, sin, sin);
-  testFunction("rSin", false, from, to, rSin);
+  testFunction(_T("sin" ), false, from, to, sin, sin, sin);
+  testFunction(_T("rSin"), false, from, to, rSin);
 }
 
 static void testCosPiThird(TestStatistic &stat) {
@@ -259,51 +259,51 @@ static void testCosPiThird(TestStatistic &stat) {
 static void testCos() {
   const BigReal from = -100;
   const BigReal to   = 100;
-  testFunction("cos" , false, from, to, cos, cos, cos);
-  testFunction("rCos", false, from, to, rCos);
+  testFunction(_T("cos" ), false, from, to, cos, cos, cos);
+  testFunction(_T("rCos"), false, from, to, rCos);
   TesterJob::addFunctionTest(new RawFunctionTest(_T("cos(pi/3)"), testCosPiThird));
 }
 
 static void testTan() {
   const BigReal from = -100;
   const BigReal to   = 100;
-  testFunction("tan" , false, from, to, tan, tan, tan);
-  testFunction("rTan", false, from, to, rTan);
+  testFunction(_T("tan" ), false, from, to, tan, tan, tan);
+  testFunction(_T("rTan"), false, from, to, rTan);
 }
 
 static void testCot() {
   const BigReal from = -99;
   const BigReal to   = 100;
-  testFunction("cot" , false, from, to, cot, cot, cot);
-  testFunction("rCot", false, from, to, rCot);
+  testFunction(_T("cot" ), false, from, to, cot, cot, cot);
+  testFunction(_T("rCot"), false, from, to, rCot);
 }
 
 static void testAsin() {
   const BigReal from = -1;
   const BigReal to   = 1;
-  testFunction("asin" , false, from, to, asin, asin, asin);
-  testFunction("rAsin", false, from, to, rAsin);
+  testFunction(_T("asin" ), false, from, to, asin, asin, asin);
+  testFunction(_T("rAsin"), false, from, to, rAsin);
 }
 
 static void testAcos() {
   const BigReal from = -1;
   const BigReal to   = 1;
-  testFunction("acos" , false, from, to, acos, acos, acos);
-  testFunction("rAcos", false, from, to, rAcos);
+  testFunction(_T("acos" ), false, from, to, acos, acos, acos);
+  testFunction(_T("rAcos"), false, from, to, rAcos);
 }
 
 static void testAtan() {
   const BigReal from = -99;
   const BigReal to   = 100;
-  testFunction("atan" , false, from, to, atan, atan, atan);
-  testFunction("rAtan", false, from, to, rAtan);
+  testFunction(_T("atan" ), false, from, to, atan, atan, atan);
+  testFunction(_T("rAtan"), false, from, to, rAtan);
 }
 
 static void testAcot() {
   const BigReal from = -99;
   const BigReal to   = 100;
-  testFunction("acot" , false, from, to, acot, acot, acot);
-  testFunction("rAcot", false, from, to, rAcot);
+  testFunction(_T("acot" ), false, from, to, acot, acot, acot);
+  testFunction(_T("rAcot"), false, from, to, rAcot);
 }
 
 static void testReadWriteBigReal() {

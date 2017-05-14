@@ -87,9 +87,9 @@ public:
   }
 };
 
-template <class T> class UShortTreeMap : public TreeMap<unsigned short, T>  {
+template <class T> class UShortTreeMap : public TreeMap<USHORT, T>  {
 public:
-  UShortTreeMap() : TreeMap<unsigned short, T>(ushortHashCmp) {
+  UShortTreeMap() : TreeMap<USHORT, T>(ushortHashCmp) {
   }
 };
 
@@ -111,21 +111,21 @@ public:
   }
 };
 
-template <class T> class ULongTreeMap : public TreeMap<unsigned long, T> {
+template <class T> class ULongTreeMap : public TreeMap<ULONG, T> {
 public:
-  ULongTreeMap() : TreeMap<unsigned long, T>(ulongHashCmp) {
+  ULongTreeMap() : TreeMap<ULONG, T>(ulongHashCmp) {
   }
 };
 
-template <class T> class Int64TreeMap       : public TreeMap<__int64, T> {
+template <class T> class Int64TreeMap       : public TreeMap<INT64, T> {
 public:
-  Int64TreeMap()   : TreeMap<__int64, T>(int64HashCmp) {
+  Int64TreeMap()   : TreeMap<INT64, T>(int64HashCmp) {
   }
 };
 
-template <class T> class UInt64TreeMap      : public TreeMap<unsigned __int64, T> {
+template <class T> class UInt64TreeMap      : public TreeMap<UINT64, T> {
 public:
-  UInt64TreeMap()   : TreeMap<unsigned __int64, T>(uint64HashCmp) {
+  UInt64TreeMap()   : TreeMap<UINT64, T>(uint64HashCmp) {
   }
 };
 
@@ -141,15 +141,15 @@ public:
   }
 };
 
-template <class T> class StrTreeMap : public TreeMap<const char*, T> {
+template <class T> class StrTreeMap : public TreeMap<const TCHAR*, T> {
 public:
-  StrTreeMap() : TreeMap<const char*, T>(strHashCmp) {
+  StrTreeMap() : TreeMap<const TCHAR*, T>(strHashCmp) {
   }
 };
 
-template <class T> class StrITreeMap : public TreeMap<const char*, T> {
+template <class T> class StrITreeMap : public TreeMap<const TCHAR*, T> {
 public:
-  StrITreeMap() : TreeMap<const char*, T>(striHashCmp) {
+  StrITreeMap() : TreeMap<const TCHAR*, T>(striHashCmp) {
   }
 };
 

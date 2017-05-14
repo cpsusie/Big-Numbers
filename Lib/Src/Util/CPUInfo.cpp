@@ -114,9 +114,9 @@ String FeatureInfo::toString(bool longDescription) const {
   for(FeatureFlag flag = FPU_FLAG; flag <= PBE_FLAG; flag = (FeatureFlag)((int)flag + 1)) {
     if(isSet(flag)) {
       if(longDescription) {
-        result += "\n";
+        result += _T("\n");
       } else if(result.length() > 0) {
-        result += ", ";
+        result += _T(", ");
       }
       result += getFlagText(flag,longDescription);
     }

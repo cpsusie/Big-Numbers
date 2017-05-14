@@ -1036,9 +1036,9 @@ void CEditListCtrl::trace(const TCHAR  *format, ...) {
 
 /*
 static String itemStateToString(UINT state) {
-  String      result = "(";
-  const char *delim  = "";
-#define IFLIVS(n) if(state&(LVIS_##n)) { result += delim; result += #n; delim = ","; }
+  String       result = _T("(");
+  const TCHAR *delim  = EMPTYSTRING;
+#define IFLIVS(n) if(state&(LVIS_##n)) { result += delim; result += #n; delim = _T(","); }
   IFLIVS(ACTIVATING    );
   IFLIVS(CUT           );
   IFLIVS(DROPHILITED   );
@@ -1061,17 +1061,17 @@ String CEditListCtrl::infoToString() const {
 /*
   if(selMark >= 0) {
     const UINT state = GetItemState(selMark, -1);
-    infoStr += ", state:" + itemStateToString(state);
+    infoStr += _T(", state:") + itemStateToString(state);
   }
 */
   return infoStr;
 }
 
 String EditListCtrlFlags::toString() const {
-  String       result = "(";
-  const  char *delim  = "";
+  String        result = _T("(");
+  const  TCHAR *delim  = EMPTYSTRING;
 
-#define IFSET(f) if(contains(f)) { result += delim; result += #f; delim = ","; }
+#define IFSET(f) if(contains(f)) { result += delim; result += _T(#f); delim = _T(","); }
 
   IFSET(INIT_DONE           )
   IFSET(HANDLE_ITEM_CHANGED )
@@ -1079,6 +1079,6 @@ String EditListCtrlFlags::toString() const {
   IFSET(COMMITACTIVE        )
   IFSET(GOTERROR            )
   IFSET(MSGWASMOUSECLICK    );
-  result += ")";
+  result += _T(")");
   return result;
 }

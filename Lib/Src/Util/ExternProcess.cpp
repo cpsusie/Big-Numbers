@@ -24,9 +24,9 @@ public:
   bool isOpen(int index) const {
     return m_fd[index] != -1;
   }
-  FILE *getFile(int index, const char *mode) {
+  FILE *getFile(int index, const TCHAR *mode) {
     assert(isOpen(index));
-    return _fdopen(m_fd[index], mode);
+    return _tfdopen(m_fd[index], mode);
   }
 };
 
@@ -188,8 +188,8 @@ void ExternProcess::start(bool silent, const ArgArray &argv) {
 
     CHDIR(oldWorkDir);
 
-    m_output = stdinPipe.getFile( WRITE_FD, "wt");
-    m_input  = stdoutPipe.getFile(READ_FD , "rt");
+    m_output = stdinPipe.getFile( WRITE_FD, _T("wt"));
+    m_input  = stdoutPipe.getFile(READ_FD , _T("rt"));
 
     oldStdFiles.restoreStdFilesAndClose();
 

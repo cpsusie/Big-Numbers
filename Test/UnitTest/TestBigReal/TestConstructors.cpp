@@ -30,9 +30,9 @@ static void checkExact(int line, int x, DigitPool *pool) {
   const int x1 = getInt(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                          << NEWLINE
-           << "x  :" << iparam(12)   << x                                << NEWLINE
-           << "x1 :" << iparam(12)   << x1  << " difference:" << x1  - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                              << NEWLINE
+           << _T("x  :") << iparam(12)   << x                                    << NEWLINE
+           << _T("x1 :") << iparam(12)   << x1  << _T(" difference:") << x1  - x << NEWLINE;
     throwException(_T("%s line %d. x=%d"), getFileName().cstr(), line, x);
   }
 }
@@ -43,9 +43,9 @@ static void checkExact(int line, unsigned int x, DigitPool *pool) {
   const unsigned int x1 = getUint(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                       << NEWLINE
-           << "x :" << iparam(12)   << x                              << NEWLINE
-           << "x1:" << iparam(12)   << x1 << " difference:" << x1 - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                           << NEWLINE
+           << _T("x :") << iparam(12)   << x                                  << NEWLINE
+           << _T("x1:") << iparam(12)   << x1 << _T(" difference:") << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%u"), getFileName().cstr(), line, x);
   }
 }
@@ -56,9 +56,9 @@ static void checkExact(int line, __int64 x, DigitPool *pool) {
   const __int64 x1 = getInt64(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                           << NEWLINE
-           << "x  :" << iparam(12)     << x                               << NEWLINE
-           << "x1 :" << iparam(12)     << x1  << " difference:" << x1 - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                               << NEWLINE
+           << _T("x  :") << iparam(12)     << x                                   << NEWLINE
+           << _T("x1 :") << iparam(12)     << x1  << _T(" difference:") << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%I64d"), getFileName().cstr(), line, x);
   }
 }
@@ -69,9 +69,9 @@ static void checkExact(int line, unsigned __int64 x, DigitPool *pool) {
   const unsigned __int64 x1 = getUint64(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                       << NEWLINE
-           << "x :" << iparam(12)   << x                              << NEWLINE
-           << "x1:" << iparam(12)   << x1 << " difference:" << x1 - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                           << NEWLINE
+           << _T("x :") << iparam(12)   << x                                  << NEWLINE
+           << _T("x1:") << iparam(12)   << x1 << _T(" difference:") << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%I64u"), getFileName().cstr(), line, x);
   }
 }
@@ -94,9 +94,9 @@ static void checkExact(int line, _int128 x, DigitPool *pool) {
   const _int128 x1 = getInt128(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                          << NEWLINE
-           << "x   :" << iparam(35)   << x                               << NEWLINE
-           << "x1  :" << iparam(35)   << x1 << " difference:" << x1  - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                              << NEWLINE
+           << _T("x   :") << iparam(35)   << x                                   << NEWLINE
+           << _T("x1  :") << iparam(35)   << x1 << _T(" difference:") << x1  - x << NEWLINE;
     throwException(_T("%s line %d. x=%s"), getFileName().cstr(), line, toString(x).cstr());
   }
 }
@@ -107,9 +107,9 @@ static void checkExact(int line, _uint128 x, DigitPool *pool) {
   const _uint128 x1 = getUint128(n);
 
   if(x1 != x) {
-    ERRLOG << getFileName() << " line " << line                           << NEWLINE
-           << "x :" << iparam(35)       << x                              << NEWLINE
-           << "x1:" << iparam(35)       << x1 << " difference:" << x1 - x << NEWLINE;
+    ERRLOG << getFileName() << _T(" line ") << line                               << NEWLINE
+           << _T("x :") << iparam(35)       << x                                  << NEWLINE
+           << _T("x1:") << iparam(35)       << x1 << _T(" difference:") << x1 - x << NEWLINE;
     throwException(_T("%s line %d. x=%s"), getFileName().cstr(), line, toString(x).cstr());
   }
 }

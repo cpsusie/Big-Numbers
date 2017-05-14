@@ -45,17 +45,17 @@ ExprParametricSurface::ExprParametricSurface(const ParametricSurfaceParameters &
 , m_exprY(param.m_exprY, param.m_machineCode)
 , m_exprZ(param.m_exprZ, param.m_machineCode)
 {
-  m_tXp    = m_exprX.getVariableByName("t");
-  m_sXp    = m_exprX.getVariableByName("s");
-  m_timeXp = m_exprX.getVariableByName("time");
+  m_tXp    = m_exprX.getVariableByName(_T("t"   ));
+  m_sXp    = m_exprX.getVariableByName(_T("s"   ));
+  m_timeXp = m_exprX.getVariableByName(_T("time"));
 
-  m_tYp    = m_exprY.getVariableByName("t");
-  m_sYp    = m_exprY.getVariableByName("s");
-  m_timeYp = m_exprY.getVariableByName("time");
+  m_tYp    = m_exprY.getVariableByName(_T("t"   ));
+  m_sYp    = m_exprY.getVariableByName(_T("s"   ));
+  m_timeYp = m_exprY.getVariableByName(_T("time"));
 
-  m_tZp    = m_exprZ.getVariableByName("t");
-  m_sZp    = m_exprZ.getVariableByName("s");
-  m_timeZp = m_exprZ.getVariableByName("time");
+  m_tZp    = m_exprZ.getVariableByName(_T("t"   ));
+  m_sZp    = m_exprZ.getVariableByName(_T("s"   ));
+  m_timeZp = m_exprZ.getVariableByName(_T("time"));
 }
 
 Point3D ExprParametricSurface::operator()(const Point2D &ts) {

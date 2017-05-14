@@ -119,7 +119,7 @@ tostream &TestStatistic::getErrorLog(bool logTime) { // static
     FileNameSplitter finfo(getModuleFileName());
     finfo.setDir(getSourceDir()).setFileName(finfo.getFileName() + _T("Errors")).setExtension(_T("log"));
     const String fileName = finfo.getFullPath();
-    FILE *f = MKFOPEN(fileName, "a"); fclose(f);
+    FILE *f = MKFOPEN(fileName, _T("a")); fclose(f);
     s_errorLogStream = new tofstream(fileName.cstr(), ios::out | ios::app | ios::unitbuf);
   }
   if(logTime) {

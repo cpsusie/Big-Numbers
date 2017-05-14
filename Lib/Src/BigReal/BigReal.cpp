@@ -35,18 +35,18 @@ void BigReal::insertDigit(BRDigitType n) {
 #include <CallCounter.h>
 
 #ifdef COUNT_CALLS
-#define DECLARE_CALLCOUNTER(name) static CallCounter _callCounter(name);
-#define COUNTKEYCALL(n)                              _callCounter.incr(n)
-#define COUNTCALL()                                  _callCounter.incr()
+#define DECLARE_CALLCOUNTER static CallCounter _callCounter(__TFUNCTION__);
+#define COUNTKEYCALL(n)                        _callCounter.incr(n)
+#define COUNTCALL()                            _callCounter.incr()
 #else
-#define DECLARE_CALLCOUNTER(name)
+#define DECLARE_CALLCOUNTER
 #define COUNTKEYCALL(n)
 #define COUNTCALL()
 #endif
 
 // Assume *this != zero. ie m_first != NULL (and m_last != NULL)
 void BigReal::insertZeroDigits(size_t count) { 
-  DECLARE_CALLCOUNTER("insertZeroDigits");
+  DECLARE_CALLCOUNTER;
 
   COUNTKEYCALL(count);
 
@@ -63,7 +63,7 @@ void BigReal::insertZeroDigits(size_t count) {
 
 
 void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
-  DECLARE_CALLCOUNTER("insertZeroDigitsAfter");
+  DECLARE_CALLCOUNTER;
 
   COUNTKEYCALL(count);
 
@@ -90,7 +90,7 @@ void BigReal::insertZeroDigitsAfter(Digit *p, size_t count) {
 }
 
 void BigReal::insertBorrowDigitsAfter(Digit *p, size_t count) {
-  DECLARE_CALLCOUNTER("insertBorrowDigitsAfter");
+  DECLARE_CALLCOUNTER;
 
   COUNTKEYCALL(count);
 
@@ -145,7 +145,7 @@ void BigReal::trimTail() { // assume m_first != NULL => m_last != NULL and m_las
 
 // Assume src != zero && length <= src.getLength() && m_first == m_last == NULL
 void BigReal::copyDigits(const BigReal &src, size_t length) {
-  DECLARE_CALLCOUNTER("copyDigits");
+  DECLARE_CALLCOUNTER;
 
   COUNTKEYCALL(length);
 
@@ -169,7 +169,7 @@ void BigReal::copyDigits(const BigReal &src, size_t length) {
 
 // Assume src != zero && m_first == m_last == NULL
 void BigReal::copyAllDigits(const BigReal &src) {
-  DECLARE_CALLCOUNTER("copyAllDigits");
+  DECLARE_CALLCOUNTER;
 
   COUNTCALL();
 

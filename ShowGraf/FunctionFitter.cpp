@@ -62,7 +62,7 @@ void FunctionFitter::dumpVarList(FILE *f) {
   const ExpressionVariableArray a = getAllVariables();
   for(size_t i = 0; i < a.size(); i++) {
     const ExpressionVariableWithValue &v = a[i];
-    if(v.getName() == "x") {
+    if(v.getName() == _T("x")) {
       continue;
     }
     _ftprintf(f, _T("%s:%le\n"), v.getName().cstr(), v.getValue());
@@ -74,7 +74,7 @@ String FunctionFitter::toString() const {
   String result;
   for(int i = 0; i < n; i++) {
     const String &name = getParamName(i);
-    if(name == "x") {
+    if(name == _T("x")) {
       continue;
     }
     result += format(_T("%s = %lg;\r\n"), name.cstr(), getParamValue(i));
@@ -141,7 +141,7 @@ double FunctionFitter::d2SSD_dx2(const Vector &gradient, double &dydx, double x0
 void FunctionFitter::plotSSD() {
   String fname = format(_T("c:\\temp\\ssd%05d.dat"),m_iteration);
 
-  FILE *f = fopen(fname,"w");
+  FILE *f = fopen(fname,_T("w"));
   Vector gradient(m_parameterValue.size());
   computeGradient(gradient);
   Vector origParam = getParam();
@@ -228,7 +228,7 @@ FunctionFitter::FunctionFitter(const String &expr, const Point2DArray &data) : m
   const ExpressionVariableArray va = getAllVariables();
   for(size_t i = 0; i < va.size(); i++) {
     const ExpressionVariableWithValue &v = va[i];
-    if(v.getName() == "x") {
+    if(v.getName() == _T("x")) {
       m_x = &getValueRef(v);
       continue;
     }

@@ -239,7 +239,7 @@ void AnimatedImage::unload() {
   m_frameTable.clear();
   clearDisposeTable();
   m_size = CSize(0,0);
-  m_comment = "";
+  m_comment = EMPTYSTRING;
   if(m_workPr) {
     delete m_workPr;
     m_workPr = NULL;
@@ -395,7 +395,7 @@ void AnimatedImage::paintAllFrames(const CRect &r) {
 
 void AnimatedImage::startAnimation(const CPoint &p) {
   if(!isLoaded()) {
-    throwException("No images loaded");
+    throwException(_T("No images loaded"));
   }
   hide();
   saveBackground(p);

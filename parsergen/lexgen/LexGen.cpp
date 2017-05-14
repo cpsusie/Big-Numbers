@@ -92,39 +92,39 @@ static void printOutputFiles(const String &templateName
   TablesWriter     tablesWriter(    dfa, verbose, lineDirectives);
   NewFileHandler   newFileHandler;
 
-  writer.addKeywordHandler("FILEHEAD"     , headerWriter     );
-  writer.addKeywordHandler("CLASSHEAD"    , driverHeadWriter );
-  writer.addKeywordHandler("CLASSTAIL"    , driverTailWriter );
-  writer.addKeywordHandler("TABLES"       , tablesWriter     );
-  writer.addKeywordHandler("ACTIONS"      , actionsWriter    );
-  writer.addKeywordHandler("NEWFILE"      , newFileHandler   );
-  writer.addKeywordHandler("NEWHEADERFILE", newFileHandler   );
-  writer.addMacro("LEXNAME"  , lexName);
-  writer.addMacro("OUTPUTDIR", implOutputDir);
-  writer.addMacro("HEADERDIR", headerOutputDir);
+  writer.addKeywordHandler(_T("FILEHEAD"     ), headerWriter     );
+  writer.addKeywordHandler(_T("CLASSHEAD"    ), driverHeadWriter );
+  writer.addKeywordHandler(_T("CLASSTAIL"    ), driverTailWriter );
+  writer.addKeywordHandler(_T("TABLES"       ), tablesWriter     );
+  writer.addKeywordHandler(_T("ACTIONS"      ), actionsWriter    );
+  writer.addKeywordHandler(_T("NEWFILE"      ), newFileHandler   );
+  writer.addKeywordHandler(_T("NEWHEADERFILE"), newFileHandler   );
+  writer.addMacro(_T("LEXNAME"  ), lexName);
+  writer.addMacro(_T("OUTPUTDIR"), implOutputDir);
+  writer.addMacro(_T("HEADERDIR"), headerOutputDir);
   writer.generateOutput();
 }
 
 static void usage() {
-  fprintf(stderr, 
-    "Usage:lexgen [options] input.\n"
-    " -mS: Use String S as template rather than lexgenXXX.par.\n"
-    " -l : Suppress #line directives in output.\n"
-    " -b : Suppress break-statements in output.\n"
-    " -v[level] :Verbose.\n"
-    "    level: 0: print DFA-states to generated cpp-file.\n"
-    "         : 1: dump NFA- and DFA-states to stdout.\n"
-    "         : 2: dump DFA-construction steps stdout.\n"
-    "    Default level = 0.\n"
-    " -wS: lex-wizard. write template lex-file with classname Slex to stdout.\n"
-	" -j : Generate java-lex. Default is C++.\n"
-    " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
+  _ftprintf(stderr, 
+    _T("Usage:lexgen [options] input.\n"
+       " -mS: Use String S as template rather than lexgenXXX.par.\n"
+       " -l : Suppress #line directives in output.\n"
+       " -b : Suppress break-statements in output.\n"
+       " -v[level] :Verbose.\n"
+       "    level: 0: print DFA-states to generated cpp-file.\n"
+       "         : 1: dump NFA- and DFA-states to stdout.\n"
+       "         : 2: dump DFA-construction steps stdout.\n"
+       "    Default level = 0.\n"
+       " -wS: lex-wizard. write template lex-file with classname Slex to stdout.\n"
+	     " -j : Generate java-lex. Default is C++.\n"
+       " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n")
   );
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int _tmain(int argc, TCHAR **argv) {
+  TCHAR *cp;
   String implOutputDir   = _T(".");
   String headerOutputDir = implOutputDir;
   String templateName    = EMPTYSTRING;
@@ -134,7 +134,7 @@ int main(int argc, char **argv) {
   bool   DFAVerbose      = false;
   bool   lineDirectives  = true;
   bool   callWizard      = false;
-  char  *wizardName      = "";
+  TCHAR *wizardName      = EMPTYSTRING;
   Language language      = CPP;
 
   try {
@@ -154,7 +154,7 @@ int main(int argc, char **argv) {
         case 'v':
           verbose        = true;
           { int level;
-            if(sscanf(cp+1, "%d", &level) != 1)
+            if(_stscanf(cp+1, _T("%d"), &level) != 1)
               continue;
             switch(level) {
             case 2: DFAVerbose = true; // continue case
@@ -224,9 +224,9 @@ int main(int argc, char **argv) {
       }
       String lexFileName = *argv;
       if(templateName.length() == 0) { // template not specified in argv
-        templateName = searchenv(skeletonFileName, "LIB");
+        templateName = searchenv(skeletonFileName, _T("LIB"));
         if(templateName.length() == 0) {
-          throwException(_T("template <%s> not found in environment LIB-path\n"), skeletonFileName.cstr());
+          throwException(_T("Template <%s> not found in environment LIB-path\n"), skeletonFileName.cstr());
         }
       } else { // -mS options used. Check if templatefile S exist
         if(ACCESS(templateName, 0) < 0) {

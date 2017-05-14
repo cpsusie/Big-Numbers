@@ -72,7 +72,7 @@ String getProcessCommandLine(HANDLE hProcess) {
     // of memory
     lpBuffer = new BYTE[sysInfo.dwPageSize];
     if(lpBuffer == NULL) {
-      throwException("Out of memory");
+      throwException(_T("Out of memory"));
     }
 
     // first of all, use VirtualQuery to get the start of the memory

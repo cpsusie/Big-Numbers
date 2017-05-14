@@ -132,6 +132,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakeGif", "MakeGif\MakeGif.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheckRefCount", "CheckRefCount\CheckRefCount.vcxproj", "{2B0AD9A8-B9DD-451E-A217-04FACD806851}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FindStrings", "FindStrings\FindStrings.vcxproj", "{6370C4C8-7A7A-4580-8F5C-29909DFC957E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -700,6 +702,26 @@ Global
 		{2B0AD9A8-B9DD-451E-A217-04FACD806851}.Release|x64.Build.0 = Release|x64
 		{2B0AD9A8-B9DD-451E-A217-04FACD806851}.Release|x86.ActiveCfg = Release|Win32
 		{2B0AD9A8-B9DD-451E-A217-04FACD806851}.Release|x86.Build.0 = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Debug|x64.ActiveCfg = Debug|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Debug|x64.Build.0 = Debug|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Debug|x86.ActiveCfg = Debug|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Debug|x86.Build.0 = Debug|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDDebug|x64.ActiveCfg = Debug|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDDebug|x64.Build.0 = Debug|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDDebug|x86.Build.0 = Debug|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDRelease|x64.ActiveCfg = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDRelease|x64.Build.0 = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDRelease|x86.ActiveCfg = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.LDRelease|x86.Build.0 = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Profilling|x64.ActiveCfg = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Profilling|x64.Build.0 = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Profilling|x86.ActiveCfg = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Profilling|x86.Build.0 = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Release|x64.ActiveCfg = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Release|x64.Build.0 = Release|x64
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Release|x86.ActiveCfg = Release|Win32
+		{6370C4C8-7A7A-4580-8F5C-29909DFC957E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

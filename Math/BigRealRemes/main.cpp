@@ -7,7 +7,7 @@
 
 class LogFunction : public RemesTargetFunction {
 private:
-  unsigned int                  m_digits;
+  UINT                          m_digits;
   const NumberInterval<BigReal> m_interval;
 public:
   BigReal operator()(const BigReal &x);
@@ -24,7 +24,7 @@ public:
     return m_digits;
   }
 
-  LogFunction(unsigned int digits) : m_interval(-1,8) {
+  LogFunction(UINT digits) : m_interval(-1,8) {
     m_digits = digits;
   }
 };
@@ -38,7 +38,7 @@ BigReal LogFunction::operator()(const BigReal &x) {
 
 class ExpFunction : public RemesTargetFunction {
 private:
-  unsigned int                 m_digits;
+  UINT                          m_digits;
   const NumberInterval<BigReal> m_interval;
 public:
   BigReal operator()(const BigReal &x);
@@ -55,7 +55,7 @@ public:
     return m_digits;
   }
 
-  ExpFunction(unsigned int digits) : m_interval(0,0.5) {
+  ExpFunction(UINT digits) : m_interval(0,0.5) {
     m_digits = digits;
   }
 };
@@ -69,13 +69,13 @@ BigReal ExpFunction::operator()(const BigReal &x) {
 
 class RatioanalFunction1 : public RemesTargetFunction {
 private:
-  unsigned int                 m_digits;
+  UINT                          m_digits;
   const NumberInterval<BigReal> m_interval;
 public:
   BigReal operator()(const BigReal &x);
 
   String getName() const {
-    return "Rational1";
+    return _T("Rational1");
   }
   
   const NumberInterval<BigReal> &getInterval() const {
@@ -86,7 +86,7 @@ public:
     return m_digits;
   }
 
-  RatioanalFunction1(unsigned int digits) : m_interval(-1,1) {
+  RatioanalFunction1(UINT digits) : m_interval(-1,1) {
     m_digits = digits;
   }
 };
@@ -98,8 +98,8 @@ BigReal RatioanalFunction1::operator()(const BigReal &x) {
 
   BigReal x2 = rProd(x,x,m_digits);
   BigReal x3 = rProd(x,x2,m_digits);
-  BigReal p = c1*x3 - x2 - x + c3;
-  BigReal q = c1*x3 + x2 - c2*x + BIGREAL_1;
+  BigReal p  = c1*x3 - x2 - x + c3;
+  BigReal q  = c1*x3 + x2 - c2*x + BIGREAL_1;
   BigReal result = rQuot(p, rSqrt(q,m_digits), m_digits);
 
   return result;
@@ -150,7 +150,7 @@ static void doJob(Remes &remes, int m, int k, bool genCFunction, bool useDouble8
 
 static void usage() {
   _ftprintf(stderr,_T("Usage:remes [options]\n"
-                      "  options:\n"
+                      "  Options:\n"
                       "    -mfrom[-to] : Degree of a. Default m = 2.\n"
                       "                  If to is specified, m will run through the interval [from..to]\n"
                       "    -kfrom[-to] : Degree of b. Default k = 2.\n"
@@ -165,8 +165,8 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char *cp;
+int _tmain(int argc, TCHAR **argv) {
+  TCHAR *cp;
   IntInterval M,K;
   int from,to;
   bool genCFunction    = false;
@@ -184,8 +184,8 @@ int main(int argc, char **argv) {
     for(cp++;*cp; cp++) {
       switch(*cp) {
       case 'm':
-        if(sscanf(cp+1,"%u-%u",&from,&to) != 2) {
-          if(sscanf(cp+1,"%u",&from) != 1) {
+        if(_stscanf(cp+1,_T("%u-%u"), &from,&to) != 2) {
+          if(_stscanf(cp+1,_T("%u"), &from) != 1) {
             usage();
           }
           to = from;
@@ -201,14 +201,14 @@ int main(int argc, char **argv) {
         break;
 
       case 'k':
-        if(sscanf(cp+1,"%u-%u",&from,&to) != 2) {
-          if(sscanf(cp+1,"%u",&from) != 1) {
+        if(_stscanf(cp+1, _T("%u-%u"), &from,&to) != 2) {
+          if(_stscanf(cp+1, _T("%u"), &from) != 1) {
             usage();
           }
           to = from;
         }
         if(from > to) {
-          _ftprintf(stderr,_T("Illegal interval [%d-%d]\n"),from,to);
+          _ftprintf(stderr,_T("Illegal interval [%d-%d]\n"), from, to);
           exit(-1);
         }
         if(from < 0 || to > 20) {
@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
         break;
 
       case 'd':
-        if(sscanf(cp+1,"%u",&digits) != 1) {
+        if(_stscanf(cp+1,_T("%u"), &digits) != 1) {
           usage();
         }
         break;
@@ -229,7 +229,7 @@ int main(int argc, char **argv) {
 
       case 'c':
         genCFunction = true;
-        if(strcmp(cp+1,"80") == 0) {
+        if(_tcscmp(cp+1,_T("80")) == 0) {
           useDouble80 = true;
           break;
         }

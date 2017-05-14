@@ -3,38 +3,54 @@
 
 //#define DEBUGLEX
 
+#ifdef ENTERFUNC
+#undef ENTERFUNC
+#endif
+#ifdef LEAVEFUNC
+#undef LEAVEFUNC
+#endif
+
 #ifdef DEBUGLEX
 
-void NFAparser::enter(const char *function) {
-  String input = (char*)m_scanner.getInput();
-  input.replace('\n', ' ').replace('\r', "");
-  String next = String("'") + binToAscii(getLexeme()) + "'.";
+void NFAparser::enter(const TCHAR *function) {
+  String input = m_scanner.getInput();
+  input.replace(_T('\n'), _T(' ')).replace(_T('\r'), EMPTYSTRING);
+  String next = String(_T("'")) + binToAscii(getLexeme()) + _T("'.");
   int i1 = m_recurseLevel;
   int i2 = max(30 - i1, 0);
-  printf(_T("%*.*senter %-17s%*.*s next=%-7s Follow=\")%s\"\n", i1, i1, "", function, i2, i2, "", next.cstr(), input.cstr());
+  _tprintf(_T("%*.*senter %-17s%*.*s next=%-7s Follow=\")%s\"\n")
+             ,i1, i1, EMPTYSTRING, function
+             ,i2, i2, EMPTYSTRING, next.cstr(), input.cstr());
   fflush(stdout);
   m_recurseLevel++;
 }
 
-void NFAparser::leave(const char *function) {
+void NFAparser::leave(const TCHAR *function) {
   m_recurseLevel--;
-  String input = (char*)m_scanner.getInput();
-  input.replace('\n', ' ').replace('\r', "");
-  String next = String("'") + binToAscii(getLexeme()) + "'.";
+  String input = m_scanner.getInput();
+  input.replace(_T('\n'), _T(' ')).replace(_T('\r'), EMPTYSTRING);
+  String next = String(_T("'")) + binToAscii(getLexeme()) + _T("'.");
   int i1 = m_recurseLevel;
   int i2 = max(30 - i1, 0);
-  printf(_T("%*.*sleave %-17s%*.*s next=%-7s Follow=\")%s\"\n", i1, i1, "", function, i2, i2, "", next.cstr(), input.cstr()); 
+  _tprintf(_T("%*.*sleave %-17s%*.*s next=%-7s Follow=\")%s\"\n")
+          ,i1, i1, EMPTYSTRING, function
+          ,i2, i2, EMPTYSTRING, next.cstr(), input.cstr());
   fflush(stdout);
 }
 
-#define ENTER(f) enter(f)
-#define LEAVE(f) leave(f)
+#define ENTERFUNC enter(__TFUNCTION__)
+#define LEAVEFUNC leave(__TFUNCTION__)
 
+#define ENTER(label) enter(_T(label))
+#define LEAVE(label) leave(_T(label))
 
 #else
 
-#define ENTER(f)
-#define LEAVE(f)
+#define ENTERFUNC
+#define LEAVEFUNC
+
+#define ENTER(label)
+#define LEAVE(label)
 
 #endif
 
@@ -72,7 +88,7 @@ void NFAparser::expr(NFAstate *&startp, NFAstate *&endp) {
   //    catExpr();
   //  }
 
-  ENTER("expr");
+  ENTERFUNC;
 
   catExpr(startp, endp);
 
@@ -95,7 +111,7 @@ void NFAparser::expr(NFAstate *&startp, NFAstate *&endp) {
     endp            = p;
   }
 
-  LEAVE("expr");
+  LEAVEFUNC;
 }
 
 void NFAparser::catExpr(NFAstate *&startp, NFAstate *&endp) {
@@ -121,7 +137,7 @@ void NFAparser::catExpr(NFAstate *&startp, NFAstate *&endp) {
   //    factor();
   //  }
 
-  ENTER("catExpr");
+  ENTERFUNC;
 
   factor(startp, endp);
 
@@ -135,7 +151,7 @@ void NFAparser::catExpr(NFAstate *&startp, NFAstate *&endp) {
     endp = e2_end;
   }
 
-  LEAVE("catExpr");
+  LEAVEFUNC;
 }
 
 bool NFAparser::firstInCatExpr(Token tok) {
@@ -170,7 +186,7 @@ void NFAparser::factor(NFAstate *&startp, NFAstate *&endp) {
   //          | term QUEST
   //          ;
 
-  ENTER("factor");
+  ENTERFUNC;
 
   term(startp, endp);
 
@@ -193,7 +209,7 @@ void NFAparser::factor(NFAstate *&startp, NFAstate *&endp) {
     nextToken();
   }
 
-  LEAVE("factor");
+  LEAVEFUNC;
 }
 
 void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
@@ -215,7 +231,7 @@ void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
   // The [] is nonstandard. It matches a space ' ', tab '\t', formfeed '\f', or newline '\n',
   // but not a carriage return '\r'.
 
-  ENTER("term");
+  ENTERFUNC;
 
   if(match(LPAR)) { // ( expr )
     nextToken();
@@ -269,7 +285,7 @@ void NFAparser::term(NFAstate *&startp, NFAstate *&endp) {
     endp = startp->m_next1 = new NFAstate;
   }
 
-  LEAVE("term");
+  LEAVEFUNC;
 }
 
 void NFAparser::characterInterval(BitSet &set) {
@@ -286,7 +302,7 @@ void NFAparser::characterInterval(BitSet &set) {
   //                     | character DASH character
   //                     ;
 
-  ENTER("characterInterval");
+  ENTERFUNC;
 
   if(match(DASH)) {       // Treat [-...] as a literal dash
     warning(_T("'-' at start of character class."));
@@ -319,8 +335,7 @@ void NFAparser::characterInterval(BitSet &set) {
       LEAVE("ccl");
     }
   }
-
-  LEAVE("characterInterval");
+  LEAVEFUNC;
 }
 
 AcceptAction *NFAparser::acceptString(int anchor) {
@@ -367,7 +382,7 @@ NFAstate *NFAparser::rule() {
   NFAstate *end    = NULL;
   int       anchor = ANCHOR_NONE;
 
-  ENTER("rule");
+  ENTERFUNC;
 
   if(match(CIRCUMFLEX)) { // Anchor bol (beginning of line)
     start =  new NFAstate('\n');
@@ -398,7 +413,7 @@ NFAstate *NFAparser::rule() {
   end->m_accept = acceptString(anchor);
   nextToken(); // skip past EOS
 
-  LEAVE("rule");
+  LEAVEFUNC;
 
   return start;
 }
@@ -407,7 +422,7 @@ NFAstate *NFAparser::machine() {
   NFAstate *start;
   NFAstate *p;
 
-  ENTER("machine");
+  ENTERFUNC;
 
   p = start  = new NFAstate;
   p->m_next1 = rule();
@@ -418,7 +433,7 @@ NFAstate *NFAparser::machine() {
     p->m_next1 = rule();
   }
 
-  LEAVE("machine");
+  LEAVEFUNC;
 
   return start;
 }

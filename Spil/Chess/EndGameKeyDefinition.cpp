@@ -131,7 +131,7 @@ int findTableRange(const EndGamePosIndex *rangeTable, UINT size, EndGamePosIndex
 
 // this is an alternative way to calculate the offset in the tables generated
 // by INIT_RANGETABLE3EQUAL. But it's much slower than tablelookup, at least
-// in C-code. Maybe some assemlber-route would do it faster. But who cares
+// in C-code. Maybe some assembler-routine would do it faster. But who cares
 
 static int findRange3Equal(EndGamePosIndex index, EndGamePosIndex m) {
   m /= 2;
@@ -154,40 +154,40 @@ static void test2Equal() {
   EndGamePosIndex lastIndex  = LASTVALUE(testTable);
 goto StartTimeMeasure;
   bool ok = true;
-  for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
-    const int       rOld   = findTableRange(testTable, ARRAYSIZE(testTable), i);
-    const int       rNew   = findRange3Equal(i, maxadr);
+  for(EndGamePosIndex i    = firstIndex; i <= lastIndex; i++) {
+    const int rOld = findTableRange(testTable, ARRAYSIZE(testTable), i);
+    const int rNew = findRange3Equal(i, maxadr);
     if(rNew != rOld) {
-      printf("findTableRange(%6llu):%4d, findRange3Equal(%6llu, %4llu):%4d\n", i, rOld, i, maxadr, rNew);
+      _tprintf(_T("findTableRange(%6llu):%4d, findRange3Equal(%6llu, %4llu):%4d\n")
+              , i, rOld, i, maxadr, rNew);
       const int rNew   = findRange3Equal(i, maxadr);
       ok = false;
     }
-    if (i % 5000000 == 0) {
-      printf("%.2lf%%\r", PERCENT(i,lastIndex));
+    if(i % 5000000 == 0) {
+      _tprintf(_T("%.2lf%%\r"), PERCENT(i,lastIndex));
     }
   }
-  printf(ok?"All ok!\n" : "Errors found\n");
+  _tprintf(ok?_T("All ok!\n") : _T("Errors found\n"));
 
   double startTime = getProcessTime();
   for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
-    const int       rOld   = findTableRange(testTable, ARRAYSIZE(testTable), i);
-    if (i % 5000000 == 0) {
+    const int rOld = findTableRange(testTable, ARRAYSIZE(testTable), i);
+    if(i % 5000000 == 0) {
       _tprintf(_T("%11s : %3d ... %.2lf%% \r"), format1000(i).cstr(), rOld, PERCENT(i,lastIndex));
     }
   }
   const double findTableRangeTime = getProcessTime() - startTime;
-  printf("Time(findTableRange):%.4lf sec\n", findTableRangeTime/1000000);
+  _tprintf(_T("Time(findTableRange):%.4lf sec\n"), findTableRangeTime/1000000);
 
   startTime = getProcessTime();
   for(EndGamePosIndex i = firstIndex; i <= lastIndex; i++) {
-    const int       rNew   = findRange3Equal(i, maxadr);
-    if (i % 5000000 == 0) {
+    const int rNew = findRange3Equal(i, maxadr);
+    if(i % 5000000 == 0) {
       _tprintf(_T("%11s : %3d ... %.2lf%% \r"), format1000(i).cstr(), rNew, PERCENT(i,lastIndex));
     }
   }
   const double findRange3EqualTime = getProcessTime() - startTime;
-  printf("Time(findRange3Equal):%.4lf sec\n", findRange3EqualTime/1000000);
-
+  _tprintf(_T("Time(findRange3Equal):%.4lf sec\n"), findRange3EqualTime/1000000);
 }
 
 #endif // __NEVER__

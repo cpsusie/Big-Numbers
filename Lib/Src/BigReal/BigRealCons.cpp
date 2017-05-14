@@ -36,10 +36,10 @@ void BigReal::init(UINT n) {
   }
 }
 
-void BigReal::init(__int64 n) {
+void BigReal::init(INT64 n) {
   init();
   if(n) {
-    unsigned __int64 un;
+    UINT64 un;
     if(n < 0) {
       m_negative = true;
       un = -n;
@@ -56,7 +56,7 @@ void BigReal::init(__int64 n) {
   }
 }
 
-void BigReal::init(unsigned __int64 n) {
+void BigReal::init(UINT64 n) {
   init();
   if(n) {
     m_expo = -1;

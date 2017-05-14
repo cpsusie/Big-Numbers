@@ -4,10 +4,10 @@
 
 static String getModifierString(SymbolModifier modifier) {
   switch(modifier) {
-  case NO_MODIFIER       : return "";
-  case ZEROORONE         : return "?";
-  case ZEROORMANY        : return "*";
-  case ONEORMANY         : return "+";
+  case NO_MODIFIER       : return EMPTYSTRING;
+  case ZEROORONE         : return _T("?");
+  case ZEROORMANY        : return _T("*");
+  case ONEORMANY         : return _T("+");
   default                : throwException(_T("Invalid modifier:%d"), modifier);
                            return ""; 
   }
@@ -211,7 +211,7 @@ void Grammar::addClosureProductions() {
         case ZEROORMANY : // *
         case ONEORMANY  : // +
           { GrammarSymbol &m = getSymbol(symbol);
-            String ntName = m.m_name + "_plus";
+            String ntName = m.m_name + _T("_plus");
             int nt = findSymbol(ntName);
             if(nt < 0) {
               nt = addNonTerminal(ntName, prod.m_pos);
@@ -804,7 +804,7 @@ String Grammar::itemToString(const LR1Item &item, int flags) const {
     result += getSymbol(prod.m_rightSide[i]).m_name;
     result += _T(" ");
   }
-  result += ".";
+  result += _T(".");
   const int n = prod.getLength();
   const TCHAR *delimiter = EMPTYSTRING;
   for(int i = item.m_dot; i < n; i++, delimiter = _T(" ")) {
@@ -830,10 +830,10 @@ String Grammar::stateToString(const LR1State &state, int flags) const {
     if(isShiftItem(item) && !(flags & DUMP_SHIFTITEMS)) {
       continue;
     }
-    result += itemToString(state.m_items[i], flags) + "\n";
+    result += itemToString(state.m_items[i], flags) + _T("\n");
   }
   if(flags & DUMP_ACTIONS) {
-    result += "\n";
+    result += _T("\n");
     const ActionArray &actions    = m_result[state.m_index].m_actions;
     const ActionArray &successors = m_result[state.m_index].m_succs;
     for(size_t i = 0; i < actions.size(); i++) {

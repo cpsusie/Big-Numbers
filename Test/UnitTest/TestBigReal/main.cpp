@@ -61,7 +61,7 @@ static void testShortProd() {
   BigReal::enableDebugString(false);
 
   for(int i = 0; i < 500000;) {
-    if((i++)%10000 == 9999) printf("i:%d\r", i);
+    if((i++)%10000 == 9999) _tprintf(_T("i:%d\r"), i);
     int lengthX = randInt(4,500);
     int lengthY = randInt(4,500);
     int expoX   = randInt(-500,500);
@@ -97,11 +97,11 @@ static void testShortProd() {
     }
 
     if(p1 != p2) {
-      printf("x:%s\ny:%s\npref:%s\np2:%s\n"
-            ,x.toString().cstr()
-            ,y.toString().cstr()
-            ,p1.toString().cstr()
-            ,p2.toString().cstr()
+      _tprintf(_T("x:%s\ny:%s\npref:%s\np2:%s\n")
+              ,x.toString().cstr()
+              ,y.toString().cstr()
+              ,p1.toString().cstr()
+              ,p2.toString().cstr()
             );
       pause();
     }
@@ -143,7 +143,7 @@ static void testRandomBigReal() {
     const FullFormatBigReal high = inputBigReal(pool, _T("Enter high:"));
 
     String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), low.toString().cstr(), high.toString().cstr(), length);
-    FILE *f = FOPEN(fileName, "w");
+    FILE *f = FOPEN(fileName, _T("w"));
     for(int i = 0; i < count; i++) {
       FullFormatBigReal x = rnd.nextBigReal(low, high, length, &pool);
       _ftprintf(f, _T("%s\n"), x.toString().cstr());
@@ -157,7 +157,7 @@ static void testAPCSum() {
   for(;;) {
     const FullFormatBigReal x = inputBigReal(pool, _T("Enter x:"));
     const FullFormatBigReal y = inputBigReal(pool, _T("Enter y:"));
-    printf("Enter bias ('<','>','#'):");
+    _tprintf(_T("Enter bias ('<','>','#'):"));
     char bias = getchar();
     FullFormatBigReal p = BigReal::apcSum(bias, x, y, &pool);
 
@@ -254,20 +254,20 @@ void SpecialTestClass::runTest() {
 }
 
 static void usage() {
-  fprintf(stderr, "Usage:TestBigReal [-s] [-p] [-tThreadCount]\n"
-                  "   -s: Run special test. Default is standard numbertest.\n"
-                  "   -p: Set all threads priority to ABOVE_NORMAL.\n"
-                  "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n."
-         );
+  _ftprintf(stderr, _T("Usage:TestBigReal [-s] [-p] [-tThreadCount]\n"
+                       "   -s: Run special test. Default is standard numbertest.\n"
+                       "   -p: Set all threads priority to ABOVE_NORMAL.\n"
+                       "   -tThreadcount: run testnumber with the specified number of threads. Default is the number of cores in the CPU\n.")
+           );
   exit(-1);
 }
 
-int main(int argc, char **argv) {
+int _tmain(int argc, TCHAR **argv) {
   try {
-    bool highPriority = false;
-    bool specialTest  = false;
-    int  threadCount  = 0;
-    char *cp;
+    bool   highPriority = false;
+    bool   specialTest  = false;
+    int    threadCount  = 0;
+    TCHAR *cp;
     for(argv++; *argv && *(cp = *argv) == '-'; argv++) {
       for(cp++; *cp; cp++) {
         switch(*cp) {
@@ -275,7 +275,7 @@ int main(int argc, char **argv) {
                   continue;
         case 's': specialTest  = true;
                   continue;
-        case 't': if((sscanf(cp+1, "%lu", &threadCount) != 1) || (threadCount == 0)) {
+        case 't': if((_stscanf(cp+1, _T("%lu"), &threadCount) != 1) || (threadCount == 0)) {
                     usage();
                   }
                   break;

@@ -3,14 +3,14 @@
 #include <ProcessTools.h>
 
 static int dwordcmp(const DWORD &p1, const DWORD &p2) {
-  return p1 - p2;
+  return (int)p1 - (int)p2;
 }
 
 double getMemoryUsage() {
   try {
     enableTokenPrivilege(SE_DEBUG_NAME,true);
   } catch(Exception e) {
-    _tprintf(_T("%s\n"),e.what());
+    _tprintf(_T("%s\n"), e.what());
   }
 
   double total = 0;
@@ -21,7 +21,7 @@ double getMemoryUsage() {
       PROCESS_MEMORY_COUNTERS pm = getProcessMemoryUsage(processIds[i]);
       total += pm.WorkingSetSize;
     } catch(Exception e) {
-//    _tprintf("%d:%s\n",ProcessIDs[i],e.what());
+//    _tprintf(_T("%d:%s\n"),ProcessIDs[i], e.what());
     }
   }
   return total;
@@ -71,9 +71,9 @@ static String add1000Points(const String &s) {
 String MemUsagePrinter::formatMemoryAmount(double bytes) {
   switch(m_format) {
   case KBYTE:
-    return format(_T("%15s"), add1000Points(format(_T("%.2lf"), KiloBytes(bytes))).cstr()) + " Kb";
+    return format(_T("%15s"), add1000Points(format(_T("%.2lf"), KiloBytes(bytes))).cstr()) + _T(" Kb");
   case MBYTE:
-    return format(_T("%15s"), add1000Points(format(_T("%.2lf"), MegaBytes(bytes))).cstr()) + " Mb";
+    return format(_T("%15s"), add1000Points(format(_T("%.2lf"), MegaBytes(bytes))).cstr()) + _T(" Mb");
   }
   return EMPTYSTRING;
 }
@@ -104,8 +104,8 @@ static void usage() {
   exit(-1);
 }
 
-int main(int argc, char **argv) {
-  char      *cp;
+int _tmain(int argc, TCHAR **argv) {
+  TCHAR     *cp;
   bool       monitoring = false;
   ByteFormat format     = MBYTE;
   int        seconds    = 1;
@@ -120,7 +120,7 @@ int main(int argc, char **argv) {
         format = KBYTE;
         continue;
       case 's':
-        if(sscanf(cp+1, "%d", &seconds) != 1) {
+        if(_stscanf(cp+1, _T("%d"), &seconds) != 1) {
           usage();
         }
         if(seconds < 1) {

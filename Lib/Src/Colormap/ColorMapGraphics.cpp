@@ -26,7 +26,7 @@ void ColorMapGraphics::setControl(CWnd *wnd) {
   m_wnd = wnd;
 }
 
-LabelledRect::LabelledRect(int left,int top,int right,int bottom,const char *label) : CRect(left,top,right,bottom) {
+LabelledRect::LabelledRect(int left,int top,int right,int bottom, const TCHAR *label) : CRect(left,top,right,bottom) {
   m_label = label;
 }
 
@@ -37,7 +37,7 @@ void ColorMapGraphics::init(const CRect &rect) {
   int marg = borderVisible() ? 4 : 2;
   clientRect.left   += marg;
   clientRect.right  -= marg;
-  if(borderVisible() && m_caption != "") {
+  if(borderVisible() && m_caption != EMPTYSTRING) {
     clientRect.top += 14;
   } else {
     clientRect.top += marg;
@@ -54,16 +54,16 @@ void ColorMapGraphics::init(const CRect &rect) {
   int left = clientRect.right - 2*FIELDWIDTH - 35;
   int top  = clientRect.bottom - 3*FIELDSTEP;
 
-  m_redFieldRect        = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Red"  ); top += FIELDSTEP;
-  m_greenFieldRect      = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Green"); top += FIELDSTEP;
-  m_blueFieldRect       = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Blue" ); top += FIELDSTEP;
+  m_redFieldRect        = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Red"  )); top += FIELDSTEP;
+  m_greenFieldRect      = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Green")); top += FIELDSTEP;
+  m_blueFieldRect       = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Blue" )); top += FIELDSTEP;
 
   left += FIELDWIDTH + 35;
   top  = clientRect.bottom - 3*FIELDSTEP;
 
-  m_hueFieldRect        = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Hue"); top += FIELDSTEP;
-  m_saturationFieldRect = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Sat"); top += FIELDSTEP;
-  m_luminationFieldRect = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,"Lum"); top += FIELDSTEP;
+  m_hueFieldRect        = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Hue")); top += FIELDSTEP;
+  m_saturationFieldRect = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Sat")); top += FIELDSTEP;
+  m_luminationFieldRect = LabelledRect(left,top,left+FIELDWIDTH,top+FIELDHEIGHT,_T("Lum")); top += FIELDSTEP;
 
   m_resultRect.left     = clientRect.left;
   m_resultRect.top      = m_redFieldRect.top;
@@ -389,7 +389,7 @@ void ColorMapGraphics::draw(CDC &dc, BOOL enabled) {
 
 void ColorMapGraphics::drawBorder(CDC &dc) {
   UINT edgeStyle = m_modalFrame ? EDGE_BUMP : m_clientEdge ? EDGE_RAISED : m_sunken ? EDGE_SUNKEN : EDGE_ETCHED;
-  if(m_caption == "") {
+  if(m_caption == EMPTYSTRING) {
     dc.DrawEdge(m_rect,edgeStyle,BF_RECT);
   } else {
     CRect r = m_rect;

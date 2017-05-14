@@ -31,7 +31,7 @@ private:
   signed int       m_rack;
   inline void nextByte() {
     if((m_rack = m_src.getByte()) == EOF) {
-      throwException("BitInputStream:Unexpected end of input");
+      throwException(_T("BitInputStream:Unexpected end of input"));
     }
   }
 public:
@@ -53,4 +53,3 @@ public:
   intptr_t getBytes(BYTE *dst, size_t n);                 // do
   int getByte();                                          // do
 };
-

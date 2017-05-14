@@ -140,6 +140,7 @@ private:
   AbstractMap *m_map;
   bool         m_deleteMap;
   int        (*m_cmp)(const void *e1, const void *e2);
+  void selectError(const TCHAR *method) const;
 public:
   ValueCollection(AbstractMap *map, bool deleteMap,int (*cmp)(const void *e1, const void *e2)) : m_map(map) {
     m_deleteMap = deleteMap;
@@ -193,16 +194,20 @@ bool ValueCollection::contains(const void *e) const {
 
 const void *ValueCollection::select() const {
   if(size() == 0) {
-    throwException("ValueCollection::select:Cannot select element from empty collection.");
+    selectError(__TFUNCTION__);
   }
   return m_map->selectEntry()->value();
 }
 
 void *ValueCollection::select() {
   if(size() == 0) {
-    throwException("ValueCollection::select:Cannot select element from empty collection.");
+    selectError(__TFUNCTION__);
   }
   return m_map->selectEntry()->value();
+}
+
+void ValueCollection::selectError(const TCHAR *method) const {
+  throwException(_T("%s:Cannot select element from empty collection"), method);
 }
 
 // ------------------------------------ValueIterator-----------------------------------------------------

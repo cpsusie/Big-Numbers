@@ -55,7 +55,7 @@ bool CExprDialog::validate(int id) {
 
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
-    Tokenizer tok(msg, ":");
+    Tokenizer tok(msg, _T(":"));
     String posStr = tok.next();
     int line, col;
     String tmp;

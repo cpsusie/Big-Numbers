@@ -15,7 +15,7 @@ TextAlignment longToTextAlignment(long value);
 class LabelledRect : public CRect {
 public:
   CString m_label;
-  LabelledRect(int left,int top,int right,int bottom,const char *label);
+  LabelledRect(int left,int top,int right,int bottom,const TCHAR *label);
   LabelledRect() {}
 };
 

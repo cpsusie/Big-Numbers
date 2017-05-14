@@ -78,15 +78,15 @@ public:
 
 template <class K, class V> class HashMap : public Map<K, V> {
 public:
-  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K &key1, const K &key2), size_t capacity = 31)
+  HashMap(ULONG (*hash)(const K &key), int (*comparator)(const K &key1, const K &key2), size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, FunctionComparator<K>(comparator), capacity))
   {
   }
-  HashMap(unsigned long (*hash)(const K &key), int (*comparator)(const K *key1, const K *key2), size_t capacity = 31)
+  HashMap(ULONG (*hash)(const K &key), int (*comparator)(const K *key1, const K *key2), size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, FunctionComparator<K>(comparator), capacity))
   {
   }
-  HashMap(unsigned long (*hash)(const K &key), Comparator<K> &comparator, size_t capacity = 31)
+  HashMap(ULONG (*hash)(const K &key), Comparator<K> &comparator, size_t capacity = 31)
     : Map<K, V>(new HashMapImpl(ObjectManager<K>(), ObjectManager<V>(), (HashFunction)hash, comparator, capacity))
   {
   }

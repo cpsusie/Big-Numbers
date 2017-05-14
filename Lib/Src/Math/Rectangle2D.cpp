@@ -25,15 +25,15 @@ Rectangle2D Point2DArray::getBoundingBox() const {
 }
 
 String Point2DRefArray::toString(int dec) const {
-  String result = "(";
+  String result = _T("(");
   if(size()) {
     const Point2D * const *p = &first();
     result += (*(p++))->toString(dec);
     for(size_t i = size()-1; i--;) {
-      result += ",";
+      result += _T(",");
       result += (*(p++))->toString(dec);
     }
   }
-  result += ")";
+  result += _T(")");
   return result;
 }

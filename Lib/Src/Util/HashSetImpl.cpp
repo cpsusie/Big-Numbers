@@ -2,29 +2,13 @@
 #include <Random.h>
 #include <HashSet.h>
 
-#ifdef __NEVER__
-static FILE *traceFile = NULL;
-#define TRACE_NEW(p)    fprintf(traceFile, "new %p %s(%d)\n", p, __FILE__, __LINE__)
-#define TRACE_DELETE(p) fprintf(traceFile, "delete %p %s(%d)\n", p, __FILE__, __LINE__)
+//#define TRACE_MEMORY
 
-class FileInitializer {
-public:
-  FileInitializer();
- ~FileInitializer();
-};
+#ifdef TRACE_MEMORY
 
-FileInitializer::FileInitializer() {
-  traceFile = FOPEN("c:\\temp\\pointers.txt", "w");
-}
+#define TRACE_NEW(p)    debugLog(_T("new %p %s(%d)\n")   , p, __TFILE__, __LINE__)
+#define TRACE_DELETE(p) debugLog(_T("delete %p %s(%d)\n"), p, __TFILE__, __LINE__)
 
-FileInitializer::~FileInitializer() {
-  if(traceFile != NULL) {
-    fclose(traceFile);
-    traceFile = NULL;
-  }
-}
-
-static FileInitializer initFile;
 #else
 
 #define TRACE_NEW(p)
@@ -248,7 +232,7 @@ void HashSetImpl::resize(size_t newCapacity) {
 }
 
 bool HashSetImpl::insertNode(HashSetNode *n) {
-  unsigned long hashIndex = m_hash(n->m_key) % getCapacity();
+  ULONG hashIndex = m_hash(n->m_key) % getCapacity();
   for(HashSetNode *q = m_table->m_table[hashIndex]; q; q = q->m_next) {
     if(m_comparator->cmp(n->m_key, q->m_key) == 0) {
       return false; // duplicate key
@@ -282,7 +266,7 @@ bool HashSetImpl::add(const void *key) {
 }
 
 bool HashSetImpl::remove(const void *key) {
-  const unsigned long hashIndex = m_hash(key) % getCapacity();
+  const ULONG hashIndex = m_hash(key) % getCapacity();
   for(HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       m_table->remove(p);
@@ -307,14 +291,12 @@ void *HashSetImpl::select() {
 }
 
 const void *HashSetImpl::getMin() const {
-  DEFINEMETHODNAME;
-  throwUnsupportedOperationException(method);
+  throwUnsupportedOperationException(__TFUNCTION__);
   return NULL;
 }
 
 const void *HashSetImpl::getMax() const {
-  DEFINEMETHODNAME;
-  throwUnsupportedOperationException(method);
+  throwUnsupportedOperationException(__TFUNCTION__);
   return NULL;
 }
 
@@ -325,7 +307,7 @@ AbstractIterator *HashSetImpl::getIterator() {
 }
 
 const HashSetNode *HashSetImpl::findNode(const void *key) const {
-  const unsigned long hashIndex = m_hash(key) % getCapacity();
+  const ULONG hashIndex = m_hash(key) % getCapacity();
   for(const HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       return p;
@@ -335,7 +317,7 @@ const HashSetNode *HashSetImpl::findNode(const void *key) const {
 }
 
 HashSetNode *HashSetImpl::findNode(const void *key) {
-  const unsigned long hashIndex = m_hash(key) % getCapacity();
+  const ULONG hashIndex = m_hash(key) % getCapacity();
   for(HashSetNode *p = m_table->m_table[hashIndex]; p; p = p->m_next) {
     if(m_comparator->cmp(key, p->m_key) == 0) {
       return p;
@@ -344,10 +326,10 @@ HashSetNode *HashSetImpl::findNode(const void *key) {
   return NULL;
 }
 
-#ifdef __CHECK_INTEGRITY
+#ifdef __HASHSET_CHECK_INTEGRITY
 
 static int countcall = 0;
-void HashSetImpl::checktable(const char *label) const {
+void HashSetImpl::checktable(const TCHAR *label) const {
   countcall++;
   size_t n = getCapacity();
   size_t count = 0;
@@ -362,7 +344,7 @@ void HashSetImpl::checktable(const char *label) const {
     }
   }
   if(count != size()) {
-    printf("%s:count simple:%d size:%d\n", label, count, size());
+    _tprintf(_T("%s:count simple:%d size:%d\n"), label, count, size());
     pause();
   }
   count = 0;
@@ -375,13 +357,14 @@ void HashSetImpl::checktable(const char *label) const {
     last = p;
   }
   if(last != m_table->m_lastLink) {
-    printf("%s %d:lastnode != lastlink\n", label, countcall);
+    _tprintf(_T("%s %d:lastnode != lastlink\n"), label, countcall);
     pause();
   }
   if(count != size()) {
-    printf("%s %d:count link:%d size:%d\n", label, countcall, count, size());
+    _tprintf(_T("%s %d:count link:%d size:%d\n"), label, countcall, count, size());
     pause();
   }
 }
 
-#endif
+#endif __HASHSET_CHECK_INTEGRITY
+

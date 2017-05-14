@@ -39,7 +39,7 @@ String getLegalColorNames() {
   String result;
   for(int i = 0; i < ARRAYSIZE(colorNameArray); i++) {
     const ColorName &cn = colorNameArray[i];
-    if(i > 0) result += ",";
+    if(i > 0) result += _T(",");
     result += cn.m_name;
   }
   return result;

@@ -81,7 +81,7 @@ bool PolygonSet::pointOnMarkRect(const CPoint &p) {
   return m_boundingBox.pointOnMarkRect(p);
 }
 
-char infostr[400];
+TCHAR infostr[400];
 
 DrawTool::DrawTool(ViewportContainer *container) : m_container(*container) {
   initState();
@@ -94,7 +94,7 @@ DrawTool::~DrawTool() {
 }
 
 BOOL DrawTool::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
-  sprintf(infostr,"nchar:%c (#%x), nFlags:%08x     ",nChar,nChar,nFlags);
+  _stprintf(infostr,_T("nchar:%c (#%x), nFlags:%08x     "),nChar,nChar,nFlags);
   switch(nChar) {
   case VK_DELETE:
     deleteSelected();
@@ -213,7 +213,7 @@ void DrawTool::repaintProfile() {
 void DrawTool::drawState() {
   m_container.getViewport().getDC()->TextOut(10,10,stateString(m_state));
   Viewport2D &vp = m_container.getViewport();
-  Tokenizer tok(infostr,"\n");
+  Tokenizer tok(infostr,_T("\n"));
   int y = 20;
   while(tok.hasNext()) {
     m_container.getViewport().getDC()->TextOut(10,y+=20,tok.next().cstr());

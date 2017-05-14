@@ -16,25 +16,25 @@ static void verbose(int level, TCHAR *format, ...) {
 }
 
 static void usage() {
-  fprintf(stderr,
-    "Usage:parsergen [options] file\n"
-    " -mS: Use String S as template rather than parsergenXXX.par.\n"
-    " -l : Suppress #line directives in output.\n"
-    " -b : Suppress break-statements in output.\n"
-    " -a : No reduceactions generated.\n"
-    " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
-    " -h : Write lookahead symbols in docfile.\n"
-    " -c : Disable parser tables compression. (states where all actions are reduce with the same prod). Default is on\n"
-    " -v[level]:verbose.\n"
-    "     level = 0 -> silence.\n"
-    "     level = 1 -> write main steps in process.\n"
-    "     level = 2 -> write warnings to stdout.\n"
-    "     default level is 1.\n"
-    " -ffile :dump first1-sets to file.\n"
-    " -wS: Parsergen-wizard. write template grammar-file with classname S to stdout.\n"
-    " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
-    " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize >= 1. default tabsize=4.\n"
-    " -j : Generate java-parser. Default is C++.\n"
+  _ftprintf(stderr,
+    _T("Usage:parsergen [options] file\n"
+       " -mS: Use String S as template rather than parsergenXXX.par.\n"
+       " -l : Suppress #line directives in output.\n"
+       " -b : Suppress break-statements in output.\n"
+       " -a : No reduceactions generated.\n"
+       " -n : Generate nonterminalsymbols in XXXSymbol.h/XXXSymbol.java).\n"
+       " -h : Write lookahead symbols in docfile.\n"
+       " -c : Disable parser tables compression. (states where all actions are reduce with the same prod). Default is on\n"
+       " -v[level]:verbose.\n"
+       "     level = 0 -> silence.\n"
+       "     level = 1 -> write main steps in process.\n"
+       "     level = 2 -> write warnings to stdout.\n"
+       "     default level is 1.\n"
+       " -ffile :dump first1-sets to file.\n"
+       " -wS: Parsergen-wizard. write template grammar-file with classname S to stdout.\n"
+       " -Ooutputdir1[,outputdir2]: Output goes to outputdir1. If outputdir2 specified, .h-files will go here.\n"
+       " -ttabsize:Tabulatorcharater will expand to this many spaces. tabsize >= 1. default tabsize=4.\n"
+       " -j : Generate java-parser. Default is C++.\n")
   );
   exit(-1);
 }
@@ -56,17 +56,17 @@ void checkhas2reduce(Grammar &g) {
 }
 */
 
-int main(int argc, char **argv) {
-  char     *cp;
+int _tmain(int argc, TCHAR **argv) {
+  TCHAR    *cp;
   String    implOutputDir   = _T(".");
   String    headerOutputDir = implOutputDir;
   String    templateName    = EMPTYSTRING;
   CodeFlags flags;
   bool      callWizard      = false;
   Language  language        = CPP;
-  char     *wizardName      = "";
+  TCHAR    *wizardName      = EMPTYSTRING;
   int       tabSize         = 4;
-  String    first1File      = "";
+  String    first1File;
 
   redirectDebugLog();
   try {
@@ -80,7 +80,7 @@ int main(int argc, char **argv) {
           }
           break;
         case 'v':
-          if(sscanf(cp+1, "%d", &verboseLevel) != 1) {
+          if(_stscanf(cp+1, _T("%d"), &verboseLevel) != 1) {
             verboseLevel = 1; 
             continue;
           }
@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
           break;
         case 'O':
           { const String a = cp+1;
-            Tokenizer tok(a, ",");
+            Tokenizer tok(a, _T(","));
             if(tok.hasNext()) {
               implOutputDir = tok.next();
             } else {
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
           wizardName = cp+1;
           break;
         case 't':
-          if(sscanf(cp+1, "%d", &tabSize) != 1 || tabSize < 1) {
+          if((_stscanf(cp+1, _T("%d"), &tabSize) != 1) || (tabSize < 1)) {
             usage();
           }
           break;
@@ -176,9 +176,9 @@ int main(int argc, char **argv) {
       }
 
       if(templateName.length() == 0) { // template not specified in argv
-        templateName = searchenv(skeletonFileName, "LIB");
+        templateName = searchenv(skeletonFileName, _T("LIB"));
         if(templateName.length() == 0) {
-          throwException(_T("template <%s> not found in environment LIB-path\n"), skeletonFileName.cstr());
+          throwException(_T("Template <%s> not found in environment LIB-path\n"), skeletonFileName.cstr());
         }
       } else { // -mS options used. Check if templatefile S exist
         if(ACCESS(templateName, 0) < 0) {
@@ -206,7 +206,7 @@ int main(int argc, char **argv) {
                          ,flags);
 
         if(first1File.length() != 0) {
-          FILE *f = MKFOPEN(first1File, "w");
+          FILE *f = MKFOPEN(first1File, _T("w"));
           grammar.dumpFirst1Sets(f);
           fclose(f);
         }

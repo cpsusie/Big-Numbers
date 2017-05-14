@@ -1255,7 +1255,7 @@ void D3SceneEditor::OnLightRemove() {
 
 void D3SceneEditor::OnEditAmbientLight() {
   const D3DCOLOR oldColor = getScene().getAmbientColor();
-  CColorDlg dlg("Ambient color", SP_AMBIENTLIGHT, oldColor);
+  CColorDlg dlg(_T("Ambient color"), SP_AMBIENTLIGHT, oldColor);
   dlg.addPropertyChangeListener(this);
   m_currentEditor = &dlg;
   setCurrentControl(CONTROL_AMBIENTLIGHTCOLOR);
@@ -1269,7 +1269,7 @@ void D3SceneEditor::OnEditAmbientLight() {
 
 void D3SceneEditor::OnEditBackgroundColor() {
   const D3DCOLOR oldColor = getScene().getBackgroundColor();
-  CColorDlg dlg("Background color", SP_BACKGROUNDCOLOR, oldColor);
+  CColorDlg dlg(_T("Background color"), SP_BACKGROUNDCOLOR, oldColor);
   dlg.addPropertyChangeListener(this);
   m_currentEditor = &dlg;
   setCurrentControl(CONTROL_BACKGROUNDCOLOR);

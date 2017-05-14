@@ -42,7 +42,7 @@ PLBYTE *FileSource::GetBufferPtr(int MinBytesInBuffer) {
 }
 
 PLBYTE *FileSource::ReadEverything() {
-  throwException("FileSource::ReadEverything:Not implemented");
+  throwException(_T("%s:Not implemented"), __TFUNCTION__);
   return NULL;
 }
 

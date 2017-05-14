@@ -45,10 +45,10 @@ IsoSurface::IsoSurface(const IsoSurfaceParameters &param)
 : m_param(param)
 , m_exprWrapper(param.m_expr,param.m_machineCode)
 {
-  m_xp = m_exprWrapper.getVariableByName("x");
-  m_yp = m_exprWrapper.getVariableByName("y");
-  m_zp = m_exprWrapper.getVariableByName("z");
-  m_tp = m_exprWrapper.getVariableByName("t");
+  m_xp = m_exprWrapper.getVariableByName(_T("x"));
+  m_yp = m_exprWrapper.getVariableByName(_T("y"));
+  m_zp = m_exprWrapper.getVariableByName(_T("z"));
+  m_tp = m_exprWrapper.getVariableByName(_T("t"));
 }
 
 void IsoSurface::createData() {

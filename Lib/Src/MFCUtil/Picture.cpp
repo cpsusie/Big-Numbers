@@ -478,11 +478,11 @@ void CPicture::loadPictureData(const BYTE *pBuffer, int size) {
   } else {
     if((hr = OleLoadPicture(pStream, size, false, IID_IPicture, (LPVOID*)&m_IPicture)) != S_OK) {
       switch(hr) {
-      case E_OUTOFMEMORY: errormsg = "Ran out of memory";           break;
-      case E_UNEXPECTED : errormsg = "An internal error occurred";  break;
-      case E_POINTER    : errormsg = "Invalid pointer";             break;
-      case E_NOINTERFACE: errormsg = "No such interface supported"; break;
-      default           : errormsg = getErrorText(hr);              break;
+      case E_OUTOFMEMORY: errormsg = _T("Ran out of memory"          ); break;
+      case E_UNEXPECTED : errormsg = _T("An internal error occurred" ); break;
+      case E_POINTER    : errormsg = _T("Invalid pointer"            ); break;
+      case E_NOINTERFACE: errormsg = _T("No such interface supported"); break;
+      default           : errormsg = getErrorText(hr);                  break;
       }
       ok = false;
     } else if(m_IPicture != NULL) {

@@ -805,17 +805,17 @@ typelibDefinition           : number TYPELIB fileName
                             ;
 
 afxDialogLayout             : resourceId AFX_DIALOG_LAYOUT BEGIN layoutInfo END
-							;
+							              ;
 
-layoutInfo					: numberList
-							;
+layoutInfo					        : numberList
+							              ;
 
 fileName                    : string
                             | name
                             ;
 
 name                        : identifier                                        { $$ = newNode( getPos(1), STRING, $1->getName().cstr());                                 }
-                            | name DOT identifier                               { $$ = newNode( getPos(1), STRING, String($1->getString() + "." + $3->getName()).cstr()); }
+                            | name DOT identifier                               { $$ = newNode( getPos(1), STRING, String($1->getString() + _T(".") + $3->getName()).cstr()); }
                             ;
 
 exprList                    : exprList COMMA expr
@@ -838,8 +838,8 @@ rectangleSpec               : number COMMA number COMMA number COMMA number
 sizeSpec                    : number COMMA number
                             ;
 
-resourceId					: identifierOrNumber
-							;
+resourceId					        : identifierOrNumber
+							              ;
 
 identifierOrNumber          : identifier
                             | number
@@ -887,4 +887,3 @@ String ResourceParser::stripQuotes(const String &s) { // static
     return s;
   }
 }
-

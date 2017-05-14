@@ -65,7 +65,7 @@ namespace TestBigArray {
 
 #ifdef _DEBUG
   void TestArray::show() const {
-    printf("\n");
+    _tprintf(_T("\n"));
     //  list();
     ((BigArray<BigElement>&)m_bigArray).show();
     //  pause();

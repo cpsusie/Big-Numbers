@@ -27,9 +27,9 @@ const String hhmm              = _T("hh:mm");
 const String hhmmss            = _T("hh:mm:ss");
 const String hhmmssSSS         = _T("hh:mm:ss:SSS");
 
-const String ddMMyyyyhhmm      = ddMMyyyy + " " + hhmm;
-const String ddMMyyyyhhmmss    = ddMMyyyy + " " + hhmmss;
-const String ddMMyyyyhhmmssSSS = ddMMyyyy + " " + hhmmssSSS;
+const String ddMMyyyyhhmm      = ddMMyyyy + _T(" ") + hhmm;
+const String ddMMyyyyhhmmss    = ddMMyyyy + _T(" ") + hhmmss;
+const String ddMMyyyyhhmmssSSS = ddMMyyyy + _T(" ") + hhmmssSSS;
 
 Date::Date() {
   time_t tt;

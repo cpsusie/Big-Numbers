@@ -203,7 +203,7 @@ UINT MeshBuilderWorker::run() {
     } catch(Exception e) {
       jm.addError(e.what());
     } catch(...) {
-      jm.addError("Unknown Exception");
+      jm.addError(_T("Unknown Exception"));
     }
   }
   return 0;

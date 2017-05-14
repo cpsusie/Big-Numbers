@@ -179,6 +179,7 @@ public:
   }
 
   bool operator==(const Map<K, V> &m) const {
+    DEFINEMETHODNAME;
     const size_t n = size();
     if(n != m.size()) {
       return false;
@@ -195,10 +196,10 @@ public:
       }
     }
     if(count != n) {
-      throwException(_T("Map.operator==:iterators returned %d elements, size=%d"), count, n);
+      throwException(_T("%s:Iterators returned %zd elements, size=%zd"), method, count, n);
     }
     if(it1.hasNext() || it2.hasNext()) {
-      throwException("Map.operator==:iterators didn't return same number of elements");
+      throwException(_T("%s:Iterators didn't return same number of elements"), method);
     }
     return true;
   }
@@ -223,24 +224,28 @@ public:
   }
 
   void load(ByteInputStream &s) {
+    DEFINEMETHODNAME;
     Packer header;
     int keySize, valueSize;
     size_t size;
     if(!header.read(s)) {
-      throwException("Map.load:Couldn't read header");
+      throwException(_T("%s:Couldn't read header"), method);
     }
     header >> keySize >> valueSize >> size;
     if(keySize != sizeof(K)) {
-      throwException(_T("Map.load:Invalid keysize:%d bytes. Expected keysize = %d bytes"), keySize, sizeof(K));
+      throwException(_T("%s:Invalid keysize:%d bytes. Expected keysize = %d bytes")
+                    ,method, keySize, sizeof(K));
     }
     if(valueSize != sizeof(V)) {
-      throwException(_T("Map.load:Invalid valuesize:%d bytes. Expected valuesize = %d bytes"), valueSize, sizeof(V));
+      throwException(_T("%s:Invalid valuesize:%d bytes. Expected valuesize = %d bytes")
+                    ,method, valueSize, sizeof(V));
     }
     clear();
     for(size_t i = 0; i < size; i++) {
       Packer p;
       if(!p.read(s)) {
-        throwException(_T("Map.load:Unexpected eos. Expected %d entries. got %d"), size, i);
+        throwException(_T("%s:Unexpected eos. Expected %zd entries. got %zd")
+                      ,method, size, i);
       }
       K key;
       V value;

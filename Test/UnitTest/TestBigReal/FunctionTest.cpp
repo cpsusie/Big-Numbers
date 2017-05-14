@@ -8,7 +8,7 @@ void FunctionTest1ArgND64D80::runTest(int threadId, DigitPool *pool) {
 
   FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
   Array<BigReal>    testData       = generateTestData(from,to, m_xexponentialStep);
-  TestStatistic    stat(threadId, m_functionName, pool, XF, testData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
+  TestStatistic     stat(threadId, m_functionName, pool, XF, testData.size() * MAXDIGITS / DIGITSTEP, maxTolerance);
 
   for(size_t i = 0; i < testData.size(); i++) {
     const BigReal &x           = testData[i];
@@ -90,10 +90,10 @@ void ExactBinaryOperatorTest::runTest(int threadId, DigitPool *pool) {
                                  );
           }
           if(!m_check(x, y, result)) {
-            ERRLOG << "Error in " << m_functionName         << NEWLINE
-                   <<"x:"      << FullFormatBigReal(x)      << NEWLINE
-                   <<"y:"      << FullFormatBigReal(y)      << NEWLINE
-                   <<"result:" << FullFormatBigReal(result) << NEWLINE;
+            ERRLOG << _T("Error in ") << m_functionName            << NEWLINE
+                   << _T("x:"       ) << FullFormatBigReal(x)      << NEWLINE
+                   << _T("y:"       ) << FullFormatBigReal(y)      << NEWLINE
+                   << _T("result:"  ) << FullFormatBigReal(result) << NEWLINE;
             throwException(_T("Error in %s"), m_functionName.cstr());
           }
         }
@@ -104,8 +104,8 @@ void ExactBinaryOperatorTest::runTest(int threadId, DigitPool *pool) {
 }
 
 void OperatorTest2ArgND64D80Pool::specialTest(int threadId, DigitPool *pool) {
-  BigReal                 x("8.356696602362382269528160105890000e+009", pool);
-  BigReal                 y("8.356810893959301561557443735160000e+009", pool);
+  BigReal x(_T("8.356696602362382269528160105890000e+009"), pool);
+  BigReal y(_T("8.356810893959301561557443735160000e+009"), pool);
 // test dif on these numbers will give a relative error about 6.13e-12 wihch is > 1e-12. but because the 2 numbers are almost equal
 // We will loose precsion when first converted to double and then subtracted. In fact the relative error can become very big
 // when 2 almost equal floating-point numbers are subtracted!!. So we have to accept an error > 1e-12 now and then
@@ -123,7 +123,7 @@ void OperatorTest2ArgND64D80Pool::specialTest(int threadId, DigitPool *pool) {
   bool yeq = y1_64 == y64;
 
   const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
-  TestStatistic          stat(threadId, m_functionName, pool, XYF, MAXDIGITS, maxTolerance);
+  TestStatistic           stat(threadId, m_functionName, pool, XYF, MAXDIGITS, maxTolerance);
 
   const BigReal exactResult = m_f2Pool(x, y, maxTolerance, pool);
 
@@ -146,9 +146,9 @@ void OperatorTest2ArgND64D80Pool::runTest(int threadId, DigitPool *pool) {
 //  specialTest(threadId, pool); // se comment if you get an error
 //  return;
 
-  const int              length         = 30;
+  const int               length         = 30;
   const FullFormatBigReal maxTolerance   = e(pool->get1(),-MAXDIGITS-6);
-  TestStatistic          stat(threadId, m_functionName, pool, XYF, (sqr((MAXSCALE - MINSCALE + 1)) * MAXDIGITS) / (sqr(SCALESTEP)*DIGITSTEP), maxTolerance);
+  TestStatistic           stat(threadId, m_functionName, pool, XYF, (sqr((MAXSCALE - MINSCALE + 1)) * MAXDIGITS) / (sqr(SCALESTEP)*DIGITSTEP), maxTolerance);
 
   for(int xScale = MINSCALE; xScale <= MAXSCALE; xScale += SCALESTEP) {
     for(int yScale = MINSCALE; yScale <= MAXSCALE; yScale += SCALESTEP) {
@@ -298,7 +298,7 @@ void testQuot3(TestStatistic &stat) {
 }
 
 static const ConstBigReal pi2000(
-  "3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938"
+_T("3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679821480865132823066470938"
   "446095505822317253594081284811174502841027019385211055596446229489549303819644288109756659334461284756482337867831652712019091"
   "456485669234603486104543266482133936072602491412737245870066063155881748815209209628292540917153643678925903600113305305488204"
   "665213841469519415116094330572703657595919530921861173819326117931051185480744623799627495673518857527248912279381830119491298"
@@ -313,7 +313,7 @@ static const ConstBigReal pi2000(
   "872027559602364806654991198818347977535663698074265425278625518184175746728909777727938000816470600161452491921732172147723501"
   "414419735685481613611573525521334757418494684385233239073941433345477624168625189835694855620992192221842725502542568876717904"
   "946016534668049886272327917860857843838279679766814541009538837863609506800642251252051173929848960841284886269456042419652850"
-  "222106611863067442786220391949450471237137869609563643719172874677646575739624138908658326459958133904780275901");
+  "222106611863067442786220391949450471237137869609563643719172874677646575739624138908658326459958133904780275901"));
 
 
 void testPi(TestStatistic &stat) {
@@ -335,10 +335,10 @@ void testPi(TestStatistic &stat) {
     const FullFormatBigReal error = fabs(result-pi2000);
     if(error > tolerance) {
       Console::setCursorPos(1,5);
-      ERRLOG << "Error in pi"                                                 << NEWLINE
-             << "Tolerance    :" << tolerance                                 << NEWLINE
-             << "pi(tolerance):" << FullFormatBigReal(result)                 << NEWLINE
-             << "Difference = fabs(pi(tolerance)-pi2000):" << nparam << error << NEWLINE;
+      ERRLOG << _T("Error in pi"   )                                              << NEWLINE
+             << _T("Tolerance    :") << tolerance                                 << NEWLINE
+             << _T("pi(tolerance):") << FullFormatBigReal(result)                 << NEWLINE
+             << _T("Difference = fabs(pi(tolerance)-pi2000):") << nparam << error << NEWLINE;
       throwException(_T("Error in pi"));
     } else {
       stat.update(error, tolerance);
@@ -463,12 +463,12 @@ void testAssignOperators(TestStatistic &stat) {
 void testGetFirst(TestStatistic &stat) {
   DigitPool *pool = stat.getDigitPool();
 
-  static const char *list[] = {
-    "1234567890123456"
-   ,"98765432109876543210"
-   ,"0"
-   ,"12"
-   ,"1"
+  static const TCHAR *list[] = {
+    _T("1234567890123456"    )
+   ,_T("98765432109876543210")
+   ,_T("0"                   )
+   ,_T("12"                  )
+   ,_T("1"                   )
   };
 
   const int minExponent = -10;
@@ -478,7 +478,7 @@ void testGetFirst(TestStatistic &stat) {
   stat.setTotalTestCount(totalTestCount);
 
   for(int i = 0; i < ARRAYSIZE(list); i++) {
-    const char *str = list[i];
+    const TCHAR *str = list[i];
     BigReal x(str, pool);
     for(int exponent = minExponent; exponent < maxExponent; exponent++) {
       FullFormatBigReal X(e(x,exponent));
@@ -493,12 +493,12 @@ void testGetFirst(TestStatistic &stat) {
         }
 
         String result = format(_T("%0*lu"),k,X.getFirst32(k));
-        const int len     = (int)strlen(str);
+        const int len     = (int)_tcslen(str);
         const int missing = k - len;
         String expected = substr(str + spaceString(missing,_T('0')),0,k);
         if(result != expected) {
-          ERRLOG << "getFirst(" << X << "," << k << ")=" << result << NEWLINE
-                 << "Expected:" << expected                        << NEWLINE;
+          ERRLOG << _T("getFirst(") << X << _T(",") << k << _T(")=") << result << NEWLINE
+                 << _T("Expected:") << expected                                << NEWLINE;
           throwException(_T("Error in getFirst32"));
         }
       }
@@ -508,7 +508,7 @@ void testGetFirst(TestStatistic &stat) {
 }
 
 void testReadWriteBigReal(TestStatistic &stat) {
-  const char    *fileName = "numbers.dat";
+  const TCHAR   *fileName = _T("numbers.dat");
   const int      count    = 500;
   tofstream      out(fileName);
   size_t         i;
@@ -545,7 +545,7 @@ void testReadWriteBigReal(TestStatistic &stat) {
 }
 
 void testReadWriteInteger(TestStatistic &stat) {
-  const char    *fileName = "integers.dat";
+  const TCHAR   *fileName = _T("integers.dat");
   const int      count    = 500;
   tofstream      out(fileName);
   size_t         i;
@@ -579,7 +579,7 @@ void testReadWriteInteger(TestStatistic &stat) {
   stat.setEndMessageToOk();
 }
 
-unsigned int DigitMonitorThread::run() {
+UINT DigitMonitorThread::run() {
   for(;;) {
     Sleep(3000);
     _tprintf(_T("Total digits allocated:%s\n")

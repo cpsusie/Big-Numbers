@@ -329,7 +329,7 @@ String D3Scene::getLightString() const {
   BitSet lightSet = getLightsDefined();
   for(Iterator<size_t> it = lightSet.getIterator(); it.hasNext(); ) {
     const UINT index = (UINT)it.next();
-    if(result.length()) result += "\n";
+    if(result.length()) result += _T("\n");
     result += getLightString(index);
   }
   return result;
@@ -408,7 +408,7 @@ String D3Scene::getMaterialString() const {
   BitSet materialSet = getMaterialsDefined();
   for(Iterator<size_t> it = materialSet.getIterator(); it.hasNext(); ) {
     const UINT index = (UINT)it.next();
-    if(result.length()) result += "\n";
+    if(result.length()) result += _T("\n");
     result += getMaterialString(index);
   }
   return result;

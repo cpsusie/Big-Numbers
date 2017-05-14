@@ -6,7 +6,7 @@
 #pragma warning(disable:4312)
 
 
-#line 33 "C:\\mytools2015\\parsergen\\lib\\parsergencpp.par"
+#line 33 "C:\\mytools2015\\ParserGen\\lib\\parsergencpp.par"
 
 #pragma warning(disable : 4312)
 

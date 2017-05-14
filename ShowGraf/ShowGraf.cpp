@@ -59,7 +59,7 @@ BOOL CShowGrafApp::InitInstance() {
 String CShowGrafApp::getRecentFile(int index) {
   CRecentFileList &list = *m_pRecentFileList;
   if(index >= list.GetSize()) {
-    return "";
+    return EMPTYSTRING;
   }
   CString name = list[index];
   return (LPCTSTR)name;

@@ -3,7 +3,7 @@
 
 GrammarParser::GrammarParser(const String &fileName, int tabSize, Grammar &g) : m_lex(fileName, tabSize), m_grammar(g) {
   m_currentPrecedence = 0;
-  m_grammar.addTerminal("EOI", TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
+  m_grammar.addTerminal(_T("EOI"), TERMINAL, m_currentPrecedence, SourcePosition(0, 0)); /* always make EOI symbol no. 0, see skeletonparser parser.cpp */
   m_grammar.setName(fileName);
 }
 
@@ -199,8 +199,8 @@ void GrammarParser::parseRightSide(int leftSide) {
 
   if(m_token == LCURL) { 
     SourcePosition sourcePos = m_lex.getSourcePos();
-    Array<short> usedDollar;
-    m_actionBody = "";
+    CompactShortArray usedDollar;
+    m_actionBody = EMPTYSTRING;
     m_lex.collectBegin();
     next(); 
     parseActionBody(sourcePos, usedDollar, prod);
@@ -233,7 +233,7 @@ SymbolModifier GrammarParser::parseModifier() {
   }
 }
 
-void GrammarParser::parseActionBody(const SourcePosition &sourcePos, Array<short> &usedDollar, const Production &prod) {
+void GrammarParser::parseActionBody(const SourcePosition &sourcePos, CompactShortArray &usedDollar, const Production &prod) {
   for(;;) {
     switch(m_token) {
     case LCURL:
@@ -270,7 +270,7 @@ void GrammarParser::parseActionBody(const SourcePosition &sourcePos, Array<short
         next();
         if(m_token != NUMBER) {
           m_lex.error(_T("Expected number."));
-          m_actionBody += "$ ";
+          m_actionBody += _T("$ ");
         } else {
           const int prodLength = prod.getLength();
           const int symbolIndex  = (int)m_lex.getNumber();

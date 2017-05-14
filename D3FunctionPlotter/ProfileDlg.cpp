@@ -333,7 +333,7 @@ void CProfileDlg::save(const String &fileName) {
     if(extension.length() == 0) {
       fullName = FileNameSplitter(fileName).setExtension(_T("prf")).getFullPath();
     }
-    file = FOPEN(fullName,"w");
+    file = FOPEN(fullName,_T("w"));
     m_profile.write(file);
     setProfileName(fullName);
     m_lastSavedProfile = m_profile;

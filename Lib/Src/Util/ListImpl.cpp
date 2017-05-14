@@ -7,16 +7,16 @@
 
 class AutoCounter {
 public:
-  char *m_name;
-  int   m_counter;
-  AutoCounter(char *name) { m_name = name; m_counter = 0; }
-  ~AutoCounter() { printf("count(%s):%d\n",m_name,m_counter); }
+  TCHAR *m_name;
+  int    m_counter;
+  AutoCounter(TCHAR *name) { m_name = name; m_counter = 0; }
+  ~AutoCounter() { _tprintf(_T("count(%s):%d\n"), m_name, m_counter); }
   AutoCounter &operator++(int k) { m_counter++; return *this;}
 };
 
-static AutoCounter resizecounter("resize");
-static AutoCounter descounter("destructor");
-static AutoCounter initcounter("init");
+static AutoCounter resizecounter(_T("resize"    ));
+static AutoCounter descounter(   _T("destructor"));
+static AutoCounter initcounter(  _T("init"      ));
 
 #endif
 

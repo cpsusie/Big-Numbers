@@ -27,7 +27,7 @@ void ResourceChecker::checkResources(const String &fileName) {
   try {
 
 #ifdef DUMPSYMBOLS
-    log = MKFOPEN(_T("c:\\temp\\checkMnemonics.txt"), _T("w"9);
+    log = MKFOPEN(_T("c:\\temp\\checkMnemonics.txt"), _T("w"));
 #endif
     if (m_verbose) {
       _tprintf(_T("Analyzing %s\n"), fileName.cstr());

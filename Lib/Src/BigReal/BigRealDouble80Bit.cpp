@@ -157,7 +157,7 @@ BigReal::BigReal(const Double80 &x) {
 }
 
 Double80 getDouble80(const BigReal &x) {
-  static const char *method = "getDouble80";
+  DEFINEMETHODNAME;
 
   if(x.isZero()) {
     return Double80::zero;

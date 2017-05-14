@@ -33,7 +33,7 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
   }
 
   _tprintf(_T("measureProduct:splitLength:%d\n"), (int)BigReal::s_splitLength);
-  const String dir                    = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod%s"),Date().toString("yyyyMMdd").cstr()));
+  const String dir                    = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod%s"),Date().toString(_T("yyyyMMdd")).cstr()));
   const String splitProductFileName1  = format(_T("splitProduct%d.dat") , BigReal::s_splitLength);
   const String splitProductRFileName1 = format(_T("splitProductR%d.dat"), BigReal::s_splitLength);
   const String shortProductFileName1 = _T("shortProduct.dat");
@@ -48,13 +48,13 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
   double factor = root((double)maxProductLength/minProductLength, stepCount);
 
   if(measureSplitProd) {
-    FILE *f = MKFOPEN(splitProductFileName ,"w"); fclose(f);
+    FILE *f = MKFOPEN(splitProductFileName ,_T("w")); fclose(f);
   }
   if(measureSplitProdRealTime) {
-    FILE *f = MKFOPEN(splitProductRFileName,"w"); fclose(f);
+    FILE *f = MKFOPEN(splitProductRFileName,_T("w")); fclose(f);
   }
   if(measureShortProd) {
-    FILE *f = MKFOPEN(shortProductFileName ,"w"); fclose(f);
+    FILE *f = MKFOPEN(shortProductFileName ,_T("w")); fclose(f);
   }
 
   for(double d = minProductLength; d <= maxProductLength; d *= factor) {
@@ -74,21 +74,21 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
     if(measureSplitProd) {
       const double t = measureTime(mSplitProd, MEASURE_PROCESSTIME);
       _tprintf(_T("time(splitProd):%12.3le "), t); fflush(stdout);
-      FILE *f = FOPEN(splitProductFileName, "a");
+      FILE *f = FOPEN(splitProductFileName, _T("a"));
       _ftprintf(f,_T("%d %.3le\n"), p, t);
       fclose(f);
     }
     if(measureSplitProdRealTime) {
       const double t = measureTime(mSplitProd, MEASURE_REALTIME);
       _tprintf(_T("time(splitProd):%12.3le "), t); fflush(stdout);
-      FILE *f = FOPEN(splitProductRFileName, "a");
+      FILE *f = FOPEN(splitProductRFileName, _T("a"));
       _ftprintf(f,_T("%d %.3le\n"), p, t);
       fclose(f);
     }
     if(measureShortProd) {
       const double t = measureTime(mShortProd, MEASURE_PROCESSTIME);
       _tprintf(_T("time(shortProd):%12.3le"), t);
-      FILE *f = FOPEN(shortProductFileName, "a");
+      FILE *f = FOPEN(shortProductFileName, _T("a"));
       _ftprintf(f,_T("%d %.3le\n"), p, t);
       fclose(f);
     }
@@ -156,12 +156,12 @@ float TimeMatrix::getTotalTimeUsage(size_t column) const {
 
 void BigRealTestClass::measureSplitLength() {
   TimeMatrix timeMatrix;
-  const String dir = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod-PROCTIME%s"),Date().toString("yyyyMMdd").cstr()));
+  const String dir = FileNameSplitter::getChildName(getSignatureSubDir(), format(_T("prod-PROCTIME%s"),Date().toString(_T("yyyyMMdd")).cstr()));
   for(int xLength = 4000; xLength <= 40000; xLength = (int)(1.3*xLength)) {
     for(int yLength = xLength; yLength <= 40000; yLength = (int)(1.3*yLength)) {
 
       const String fileName = FileNameSplitter::getChildName(dir, format(_T("splitfac%05d_%05d.dat"), xLength, yLength));
-      FILE *dataFile = MKFOPEN(fileName, "w");
+      FILE *dataFile = MKFOPEN(fileName, _T("w"));
 
       TimeArray ta;
       for(BigReal::s_splitLength = 40; BigReal::s_splitLength <= BigReal::getMaxSplitLength(); BigReal::s_splitLength++) {
@@ -190,7 +190,7 @@ void BigRealTestClass::measureSplitLength() {
   }
   const TimeArray averageTime = timeMatrix.getAverageArray();
   const String fileName = FileNameSplitter::getChildName(dir, _T("splitAverageTime.dat"));
-  FILE *dataFile = MKFOPEN(fileName, "w");
+  FILE *dataFile = MKFOPEN(fileName, _T("w"));
   for (size_t i = 0; i < averageTime.size(); i++) {
     _ftprintf(dataFile,_T("%d %.3le\n"), (int)averageTime[i].m_splitLength, (double)averageTime[i].m_time);
   }
@@ -199,12 +199,12 @@ void BigRealTestClass::measureSplitLength() {
 
 class TimeUsageMethod {
 public:
-  char *m_method;
-  double m_timeUsage;
-  TimeUsageMethod(char *method, double timeUsge);
+  const TCHAR *m_method;
+  double       m_timeUsage;
+  TimeUsageMethod(const TCHAR *method, double timeUsge);
 };
 
-TimeUsageMethod::TimeUsageMethod(char *method, double timeUsage) {
+TimeUsageMethod::TimeUsageMethod(const TCHAR *method, double timeUsage) {
   m_method    = method;
   m_timeUsage = timeUsage;
 }
@@ -214,13 +214,13 @@ static int timeUsageMethodCmp(const TimeUsageMethod &t1, const TimeUsageMethod &
 }
 
 void BigRealTestClass::measureQuot() {
-  tofstream dataFile("quotMeasure.dat");
+  tofstream dataFile(_T("quotMeasure.dat"));
 
-  const String header = "ResultDigits y                              "
-                        "MTime32(L)  ETime32(L)  q32(L )=MT/ET    "
-                        "MTime64(L)  ETime64(L)  q64(l )=M32/M64  "
-                        "MTime128(L) ETime128(L) q128(l)=M32/M128 "
-                        "MTime(N)    ETime(N)    q(N)   =MT/ET    ";
+  const String header = _T("ResultDigits y                              "
+                           "MTime32(L)  ETime32(L)  q32(L )=MT/ET    "
+                           "MTime64(L)  ETime64(L)  q64(l )=M32/M64  "
+                           "MTime128(L) ETime128(L) q128(l)=M32/M128 "
+                           "MTime(N)    ETime(N)    q(N)   =MT/ET    ");
 
   tcout     << header << NEWLINE;
   dataFile  << header << NEWLINE;
@@ -254,14 +254,14 @@ void BigRealTestClass::measureQuot() {
 
       BigReal f = e(1,expo10x0 - expo10y0 - p);
 
-      TimeUsageMethod l32( "L32" ,measureTime(MeasureBinaryOperator(QUOTLINEAR32 , xArray, yArray, f)));
-      TimeUsageMethod l64( "L64" ,measureTime(MeasureBinaryOperator(QUOTLINEAR64 , xArray, yArray, f)));
+      TimeUsageMethod l32( _T("L32" ),measureTime(MeasureBinaryOperator(QUOTLINEAR32 , xArray, yArray, f)));
+      TimeUsageMethod l64( _T("L64" ),measureTime(MeasureBinaryOperator(QUOTLINEAR64 , xArray, yArray, f)));
 #ifdef IS64BIT
-      TimeUsageMethod l128("L128",measureTime(MeasureBinaryOperator(QUOTLINEAR128, xArray, yArray, f)));
+      TimeUsageMethod l128(_T("L128"),measureTime(MeasureBinaryOperator(QUOTLINEAR128, xArray, yArray, f)));
 #else
-      TimeUsageMethod l128("L128 (undefined)", 1);
+      TimeUsageMethod l128(_T("L128 (undefined)"), 1);
 #endif // IS64BIT
-      TimeUsageMethod lnt( "N"   ,measureTime(MeasureBinaryOperator(QUOTNEWTON   , xArray, yArray, f)));
+      TimeUsageMethod lnt( _T("N"   ),measureTime(MeasureBinaryOperator(QUOTNEWTON   , xArray, yArray, f)));
 
       Array<TimeUsageMethod> ta;
       ta.add(l32);
@@ -336,8 +336,8 @@ void BigRealTestClass::measureQuotRemainder() {
 
   tcout    << header << NEWLINE;
 
-  const BigReal yStep1 = e(BigReal("165"),-2);
-  const BigReal yStep2 = BigReal("2.1234567891");
+  const BigReal yStep1 = e(BigReal(_T("165")),-2);
+  const BigReal yStep2 = BigReal(_T("2.1234567891"));
   const BigReal yStart = e(BIGREAL_1,-50);
   const BigReal yEnd   = e(BIGREAL_1, 50);
 
@@ -354,13 +354,13 @@ void BigRealTestClass::measureQuotRemainder() {
 
     double QRTime[3] = { 0, 0, 0 };
 
-    TimeUsageMethod oldQR(   "oldQR"   , measureTime(MeasureBinaryOperator(OPERATOR_MOD   , xArray, yArray, f), MEASURE_REALTIME));
-    TimeUsageMethod newQR64( "newQR64" , measureTime(MeasureBinaryOperator(OPERATOR_MOD64 , xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod oldQR(   _T("oldQR")   , measureTime(MeasureBinaryOperator(OPERATOR_MOD   , xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod newQR64( _T("newQR64") , measureTime(MeasureBinaryOperator(OPERATOR_MOD64 , xArray, yArray, f), MEASURE_REALTIME));
     QRTime[0] = oldQR.m_timeUsage;
     QRTime[1] = newQR64.m_timeUsage;
 
 #ifdef IS64BIT
-    TimeUsageMethod newQR128("newQR128", measureTime(MeasureBinaryOperator(OPERATOR_MOD128, xArray, yArray, f), MEASURE_REALTIME));
+    TimeUsageMethod newQR128(_T("newQR128"), measureTime(MeasureBinaryOperator(OPERATOR_MOD128, xArray, yArray, f), MEASURE_REALTIME));
     QRTime[2] = newQR128.m_timeUsage;
 #endif
 
@@ -405,15 +405,15 @@ void BigRealTestClass::testQuotRemainder() {
 
 #ifdef TRYLOOP
 
-  FILE *ErrorFile1 = FOPEN("c:\\temp\\QR1Errors.txt", "w");
-  FILE *OKFile1    = FOPEN("c:\\temp\\QR1Ok.txt"    , "w");
-  FILE *ErrorFile2 = FOPEN("c:\\temp\\QR2Errors.txt", "w");
-  FILE *OKFile2    = FOPEN("c:\\temp\\QR2Ok.txt"    , "w");
+  FILE *ErrorFile1 = FOPEN(_T("c:\\temp\\QR1Errors.txt"), _T("w"));
+  FILE *OKFile1    = FOPEN(_T("c:\\temp\\QR1Ok.txt"    ), _T("w"));
+  FILE *ErrorFile2 = FOPEN(_T("c:\\temp\\QR2Errors.txt"), _T("w"));
+  FILE *OKFile2    = FOPEN(_T("c:\\temp\\QR2Ok.txt"    ), _T("w"));
 
-  const BigReal xStep1("1.235");
-  const BigReal xStep2("2.12234191");
-  const BigReal yStep1("1.621");
-  const BigReal yStep2("2.567891");
+  const BigReal xStep1(_T("1.235"     ));
+  const BigReal xStep2(_T("2.12234191"));
+  const BigReal yStep1(_T("1.621"     ));
+  const BigReal yStep2(_T("2.567891"  ));
   const BigReal xStart = e(BIGREAL_1,-50, pool);
   const BigReal xEnd   = e(BIGREAL_1, 50, pool);
   const BigReal yStart = e(BIGREAL_1,-50, pool);
@@ -489,8 +489,7 @@ void BigRealTestClass::testQuotRemainder() {
       if (qerror128 || rerror128) {
         if (qerror128) header += _T("Q2-error ");
         if (rerror128) header += _T("R2-error");
-      }
-      else {
+      } else {
         header = _T("OK");
       }
 
@@ -505,7 +504,6 @@ void BigRealTestClass::testQuotRemainder() {
         , (rerror128 ? format(_T("rdiff:%s\n"), rdiff128.toString().cstr()).cstr() : EMPTYSTRING)
       );
 #endif // IS64BIT
-
     }
   }
   fclose(OKFile2   );
@@ -519,7 +517,7 @@ void BigRealTestClass::testQuotRemainder() {
   for(;;) {
     const FullFormatBigReal x = inputBigReal(*pool, _T("Enter x:"));
     const FullFormatBigReal y = inputBigReal(*pool, _T("Enter y:"));
-    BigInt            quotient1( pool), quotient( pool);
+    BigInt             quotient1( pool), quotient( pool);
     FullFormatBigReal  remainder1(pool), remainder(pool);
 
     quotRemainder(x, y, &quotient, &remainder);
@@ -560,10 +558,10 @@ void BigRealTestClass::testMultiThreadedProduct() {
 
 
 void BigRealTestClass::testLnEstimate() {
-  tofstream sStd("lnStd.dat"   );
-  tofstream sNum("lnNum.dat"   );
+  tofstream sStd(_T("lnStd.dat")   );
+  tofstream sNum(_T("lnNum.dat")   );
 //  tofstream sD64("lnD64.dat"   );
-  tofstream sNumDiff("lnNumDiff.dat");
+  tofstream sNumDiff(_T("lnNumDiff.dat"));
 //  tofstream sD64Diff("lnD64Diff.dat");
 
   for(double i = 1; i <= 10+1e-6; i+=0.01) {
@@ -595,7 +593,7 @@ void BigRealTestClass::testFullFormat() {
           break;
       } while(BigReal::getExpo10(x) != i-1);
       if(!x.isZero()) {
-        BigInt lx(floor(log(BigReal(10),x,BigReal("1e-10"))));
+        BigInt lx(floor(log(BigReal(10),x,BigReal(_T("1e-10")))));
         tcout << _T("lx:") << lx << _T(" i:") << i << _T("\n");
         continue;
       }
@@ -717,8 +715,8 @@ void BigRealTestClass::testTruncRound() {
 #ifdef INTERACTIVE
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
-    const int              digits    = inputInt(_T("Enter digits:"));
-    const int              decDigits = BigReal::getExpo10(x) + 1;
+    const int               digits    = inputInt(_T("Enter digits:"));
+    const int               decDigits = BigReal::getExpo10(x) + 1;
 
     FullFormatBigReal x1(x, pool), xRef(pool);
     try {
@@ -765,13 +763,12 @@ void BigRealTestClass::testTruncRound() {
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in %s:%s\n")
-                ,cutDigits, expo10, length
-                ,FullFormatBigReal(x).toString().cstr()
-                ,RTXT, e.what()
-                );
+                  ,cutDigits, expo10, length
+                  ,FullFormatBigReal(x).toString().cstr()
+                  ,RTXT, e.what()
+                  );
           BigReal x3(x);
           x3.RF(cutDigits);
-
           continue;
         }
         X1 = REFF(x, cutDigits - decDigits);
@@ -779,11 +776,11 @@ void BigRealTestClass::testTruncRound() {
         if(x1 != X1) {
           mismatchCount++;
           _tprintf(_T("%8d %6d %6d %40s %30s %30s\n")
-                 ,cutDigits, expo10, length
-                 ,FullFormatBigReal(x).toString().cstr()
-                 ,FullFormatBigReal(X1).toString().cstr()
-                 ,FullFormatBigReal(x1).toString().cstr()
-                 );
+                  ,cutDigits, expo10, length
+                  ,FullFormatBigReal(x).toString().cstr()
+                  ,FullFormatBigReal(X1).toString().cstr()
+                  ,FullFormatBigReal(x1).toString().cstr()
+                  );
           X1 = REFF(x, cutDigits - decDigits);
           BigReal x3(x);
           x3.RF(cutDigits);
@@ -808,7 +805,7 @@ void BigRealTestClass::testCopyrTrunc() {
 #ifdef INTERACTIVE
   for(;;) {
     const FullFormatBigReal x         = inputBigReal(*pool, _T("Enter x:"));
-    const int              digits    = inputInt(_T("Enter digits:"));
+    const int               digits    = inputInt(_T("Enter digits:"));
 
     FullFormatBigReal x1(1, pool), xRef(x, pool);
     try {
@@ -818,18 +815,17 @@ void BigRealTestClass::testCopyrTrunc() {
       x1.assertIsValidBigReal();
       if(x1 != xRef) {
         _tprintf(_T("x1.copyrTrunc(x,%d) gives another result than xRef.rTrunc(%d)\nx = %s\n, x1.copyrTunc(x,%d) = %s\nxRef.rTrunc(%d) = %s\n")
-                ,digits
-                ,digits
-                ,x.toString().cstr()
-                ,digits, x1.toString().cstr()
-                ,digits, xRef.toString().cstr()
-                );
+                 ,digits
+                 ,digits
+                 ,x.toString().cstr()
+                 ,digits, x1.toString().cstr()
+                 ,digits, xRef.toString().cstr()
+                 );
       }
     } catch(Exception e) {
       _tprintf(_T("%s\n"), e.what());
       continue;
     }
-
     _tprintf(_T("x.%s(%d) = %s\n"), RTXT, digits, x1.toString().cstr());
   }
 #else
@@ -849,7 +845,7 @@ void BigRealTestClass::testCopyrTrunc() {
         const BRExpoType decDigits = BigReal::getExpo10(x) + 1;
 
         FullFormatBigReal x1(x);
-        FullFormatBigReal x2(BigReal("1230139182731039182371230912837", pool), pool);
+        FullFormatBigReal x2(BigReal(_T("1230139182731039182371230912837"), pool), pool);
         FullFormatBigReal xz(pool);
         FullFormatBigReal ref(x);
         ref.rTrunc(cutDigits);
@@ -860,11 +856,10 @@ void BigRealTestClass::testCopyrTrunc() {
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x1:%s\n")
-                ,cutDigits, expo10, length
-                ,x.toString().cstr()
-                ,e.what()
-                );
-
+                  ,cutDigits, expo10, length
+                  ,x.toString().cstr()
+                  ,e.what()
+                  );
           continue;
         }
 
@@ -874,11 +869,10 @@ void BigRealTestClass::testCopyrTrunc() {
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in x2:%s\n")
-                ,cutDigits, expo10, length
-                ,x.toString().cstr()
-                ,e.what()
-                );
-
+                  ,cutDigits, expo10, length
+                  ,x.toString().cstr()
+                  ,e.what()
+                  );
           continue;
         }
 
@@ -888,11 +882,10 @@ void BigRealTestClass::testCopyrTrunc() {
         } catch(Exception e) {
           exceptionCount++;
           _tprintf(_T("%8d %6d %6d %40s Expt in xz:%s\n")
-                ,cutDigits, expo10, length
-                ,x.toString().cstr()
-                ,e.what()
-                );
-
+                  ,cutDigits, expo10, length
+                  ,x.toString().cstr()
+                  ,e.what()
+                  );
           continue;
         }
 
@@ -967,7 +960,6 @@ void BigRealTestClass::testFractionate() {
 
     x.fractionate(NULL, &fraction);
     _tprintf(_T("fracpart2:%s\n"), fraction.toString().cstr());
-
   }
 }
 

@@ -181,7 +181,7 @@ void CShowGrafView::init() {
     }
   }
   if(*argv == NULL) {
-    DataGraphParameters param("stdin"
+    DataGraphParameters param(_T("stdin")
                              ,getColor(0)
                              ,m_onePerLine
                              ,isMenuItemChecked(ID_OPTIONS_IGNOREERRORS)

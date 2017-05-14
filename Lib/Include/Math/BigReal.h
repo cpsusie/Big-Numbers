@@ -381,10 +381,10 @@ private:
     m_low      = 0;
     m_negative = false;
   }
-  void init(           int    n);
-  void init(unsigned   int    n);
-  void init(         __int64  n);
-  void init(unsigned __int64  n);
+  void init(int               n);
+  void init(UINT              n);
+  void init(INT64             n);
+  void init(UINT64            n);
   void init(const    _int128 &n);
   void init(        _uint128  n);
   void init(float             x);

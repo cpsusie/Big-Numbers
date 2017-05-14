@@ -398,7 +398,6 @@ int GrammarTables::printSuccessorArrayCpp(MarginFile &output, unsigned int state
   
   output.setLeftMargin(0);
   output.printf(_T("%s succ%04d[] = { %2d"), TABLETYPE, state, count);
-  char *delim = "";
   for(int a = 0; a < count; a++) {
     const ParserAction &pa = succlist[a];
     output.printf(_T(",%4d,%4d"), pa.m_token, pa.m_action);
@@ -479,7 +478,7 @@ int GrammarTables::printRightSideTableCpp(MarginFile &output) const {
   for(int p = 0; p < productionCount; p++) {
     totalItemCount += (int)m_rightSide[p].size();
   }
-  char *delim = " ";
+  TCHAR *delim = _T(" ");
   output.printf(_T("%s rightSideTable[%d] = {\n"), TABLETYPE, totalItemCount);
   output.setLeftMargin(2);
   for(int p = 0; p < productionCount; p++) {
@@ -488,7 +487,7 @@ int GrammarTables::printRightSideTableCpp(MarginFile &output) const {
       continue;
     }
     output.printf(_T("/* %3d */ "), p);
-    for(size_t i = 0; i < r.size(); i++, delim = ",") {
+    for(size_t i = 0; i < r.size(); i++, delim = _T(",")) {
       output.printf(_T("%s%3d"), delim, r[i]);
     }
     output.printf(_T("\n"));
