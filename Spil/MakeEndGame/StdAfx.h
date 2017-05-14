@@ -6,19 +6,9 @@
 
 #define CHESSLIB_ROOT "C:/mytools2015/Spil/ChessLib/"
 
-#ifndef _M_X64
-#define CHESSLIB_PLATFORM "Win32/"
-#else
-#define CHESSLIB_PLATFORM "X64/"
-#endif
+#define CHESSLIB_CONFIG "TablebaseBuilder" _CONFIGURATION_
 
-#ifdef _DEBUG
-#define CHESSLIB_CONFIG "TablebaseBuilderDebug/"
-#else
-#define CHESSLIB_CONFIG "TablebaseBuilderRelease/"
-#endif
-
-#define CHESSLIB_VERSION CHESSLIB_ROOT CHESSLIB_PLATFORM CHESSLIB_CONFIG 
+#define CHESSLIB_VERSION CHESSLIB_ROOT _PLATFORM_ CHESSLIB_CONFIG
 
 #ifdef GIVE_LINK_MESSAGE
 #pragma message(__FILE__ ":link with " CHESSLIB_VERSION)
