@@ -49,7 +49,7 @@ public:
     return m_comboValues;
   }
   int getValueIndex(const String &str) const;
-  String toString() const;
+  String toString(int nameLength=20) const;
   inline bool operator==(const EngineOptionDescription &op) const {
     return toString() == op.toString();
   }
@@ -73,11 +73,14 @@ public:
 };
 
 class EngineOptionDescriptionArray : public Array<EngineOptionDescription> {
+private:
+  int findMaxNameLength() const;
 public:
   const EngineOptionDescription *findOptionByName(const String &optionName) const; // return NULL if not found
   EngineOptionValueArray createDefaultValueArray(const String &engineName) const;
   EngineOptionDescriptionArray &removeOptionsByType(EngineOptionType type); // return *this
   EngineOptionValueArray pruneDefaults(const EngineOptionValueArray &src) const;
+  String toString() const;
 };
 
 class EngineInfoLine {
@@ -121,7 +124,8 @@ private:
   AbstractMoveReceiver        *m_moveReceiver;
   mutable Game                 m_game;
   BYTE                         m_stateFlags;
-  Semaphore                    m_gate;
+  Semaphore                    m_gate, m_threadIsStarted;
+
   mutable int                  m_callLevel;
 
   void killProcess();

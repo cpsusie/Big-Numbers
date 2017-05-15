@@ -118,13 +118,13 @@ String EngineOptionDescription::getLabelName() const {
   return result.replace('_',' ');
 }
 
-String EngineOptionDescription::toString() const {
+String EngineOptionDescription::toString(int nameLength) const {
   switch(m_type) {
-  case OptionTypeCheckbox: return format(_T("%-20s Checkbox default:%s")                 , m_name.cstr(), boolToStr(m_defaultBool));
-  case OptionTypeSpin    : return format(_T("%-20s Spin     default:%6d  range:[%d..%d]"), m_name.cstr(), m_defaultInt, m_min, m_max);
-  case OptionTypeCombo   : return format(_T("%-20s Combobox default:<%s> values:[%s]")   , m_name.cstr(), m_defaultString.cstr(), m_comboValues.toString().cstr());
-  case OptionTypeButton  : return format(_T("%-20s Button")                              , m_name.cstr());
-  case OptionTypeString  : return format(_T("%-20s String   default:<%s>")               , m_name.cstr(), m_defaultString.cstr());
+  case OptionTypeCheckbox: return format(_T("%-*s Checkbox default:%s")                 , nameLength, m_name.cstr(), boolToStr(m_defaultBool));
+  case OptionTypeSpin    : return format(_T("%-*s Spin     default:%6d  range:[%d..%d]"), nameLength, m_name.cstr(), m_defaultInt, m_min, m_max);
+  case OptionTypeCombo   : return format(_T("%-*s Combobox default:<%s> values:[%s]")   , nameLength, m_name.cstr(), m_defaultString.cstr(), m_comboValues.toString().cstr());
+  case OptionTypeButton  : return format(_T("%-*s Button")                              , nameLength, m_name.cstr());
+  case OptionTypeString  : return format(_T("%-*s String   default:<%s>")               , nameLength, m_name.cstr(), m_defaultString.cstr());
   }
   return format(_T("%s:Unknown type:%d"), m_name.cstr(), m_type);
 }
@@ -207,6 +207,26 @@ EngineOptionValueArray EngineOptionDescriptionArray::pruneDefaults(const EngineO
     if(prune) {
       result.removeIndex(i);
     }
+  }
+  return result;
+}
+
+String EngineOptionDescriptionArray::toString() const {
+  const int nl = findMaxNameLength();
+  String result;
+  for(size_t i = 0; i < size(); i++) {
+    const EngineOptionDescription &option = (*this)[i];
+    result += format(_T("%s\n"), option.toString(nl).cstr());
+  }
+  return result;
+}
+
+int EngineOptionDescriptionArray::findMaxNameLength() const {
+  int result = 0;
+  for(size_t i = 0; i < size(); i++) {
+    const EngineOptionDescription &option = (*this)[i];
+    const int l = (int)option.getName().length();
+    if(l > result) result = l;
   }
   return result;
 }

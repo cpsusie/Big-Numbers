@@ -52,6 +52,7 @@ ExternEngine::ExternEngine(Player player, const String &path)
 , m_inputThread( NULL)
 , m_moveReceiver(NULL)
 , m_stateFlags(0)
+, m_threadIsStarted(0)
 , m_callLevel(0)
 {
   ENTERFUNC();
@@ -80,7 +81,6 @@ public:
   }
 };
 
-
 // public
 void ExternEngine::start(AbstractMoveReceiver *mr) {
   ENTERFUNC();
@@ -91,6 +91,9 @@ void ExternEngine::start(AbstractMoveReceiver *mr) {
     sendUCI();
     if(m_moveReceiver) {
       resume();
+      if(!m_threadIsStarted.wait(500)) {
+        throwException(_T("Extern enginethread did not start withinh 500 msec."));
+      }
     }
   } catch (...) {
     LEAVEFUNC();
@@ -418,6 +421,7 @@ UINT ExternEngine::run() {
     return 0;
   }
   setStateFlags(EXE_THREADRUNNING);
+  m_threadIsStarted.signal();
   const EngineVerboseFields &evf = getOptions().getengineVerboseFields();
   try {
     EngineInfoLine infoLine;
@@ -538,10 +542,7 @@ String ExternEngine::toString() const {
   if(isStarted()) {
     if(m_optionArray.size() > 0) {
       result += _T("\nOptions:\n");
-      for(size_t i = 0; i < m_optionArray.size(); i++) {
-        const EngineOptionDescription &option = m_optionArray[i];
-        result += format(_T("  %s\n"), option.toString().cstr());
-      }
+      result += indentString(m_optionArray.toString(), 2);
     }
   }
   return result;

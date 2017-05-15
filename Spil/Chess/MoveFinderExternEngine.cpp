@@ -43,7 +43,7 @@ void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param) {
     putMove(m);
   } else {
     if(!m_externEngine.isReady() || !m_externEngine.isThreadRunning()) {
-      throwException(_T("Extern engine is dead:State:%s"), m_externEngine.toString().cstr());
+      throwException(_T("Extern engine is dead:Flags:%s"), m_externEngine.flagsToString().cstr());
     }
     m_externEngine.findBestMove(param.getGame(), param.getTimeLimit());
   }
