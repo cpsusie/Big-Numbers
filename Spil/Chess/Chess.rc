@@ -351,28 +351,6 @@ BEGIN
     LTEXT           "",IDC_STATIC_WAITING,20,105,231,14
 END
 
-IDD_PIECEVALUE_DIALOG DIALOG 0, 0, 330, 136
-STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Plot Wins/PieceValue"
-FONT 8, "MS Sans Serif"
-BEGIN
-    CONTROL         "&King",IDC_RADIO_KING,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,39,25,55,12
-    CONTROL         "&Dronning",IDC_RADIO_QUEEN,"Button",BS_AUTORADIOBUTTON,39,41,55,12
-    CONTROL         "&Tårn",IDC_RADIO_ROOK,"Button",BS_AUTORADIOBUTTON,39,57,55,12
-    CONTROL         "&Løber",IDC_RADIO_BISHOP,"Button",BS_AUTORADIOBUTTON,39,73,55,12
-    CONTROL         "&Springer",IDC_RADIO_KNIGHT,"Button",BS_AUTORADIOBUTTON,39,89,55,12
-    CONTROL         "&Bonde",IDC_RADIO_PAWN,"Button",BS_AUTORADIOBUTTON,39,105,55,12
-    EDITTEXT        IDC_EDIT_FROM,173,64,36,13,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_TO,226,64,36,13,ES_AUTOHSCROLL
-    EDITTEXT        IDC_EDIT_STEP,173,82,36,13,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,273,7,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,273,24,50,14
-    LTEXT           "Interval:",IDC_STATIC,117,64,45,13
-    LTEXT           "-",IDC_STATIC,215,66,8,13
-    GROUPBOX        "Brik",IDC_STATIC,31,17,74,106,BS_CENTER
-    LTEXT           "Skridtlængde:",IDC_STATIC,117,86,45,13
-END
-
 IDD_TABLEBASE_DIALOG DIALOG 0, 0, 298, 190
 STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "{Tablebase settings}"
@@ -783,7 +761,6 @@ BEGIN
         MENUITEM "Transformer slutspilsposition", ID_TEST_TRANSFORMPOSITION
         MENUITEM "Normaliser slutspilsposition", ID_TEST_NORMALIZEPOSITION
         MENUITEM "Gem til ekstern motor...",    ID_TEST_SAVETOEXTERNENGINE
-        MENUITEM "Plot Wins/P.Values...",       ID_TEST_PLOTWINSPVALUES
         MENUITEM "Vis Konsol for Motor",        ID_TEST_SHOWENGINECONSOLE
         MENUITEM "Find knight Route",           ID_TEST_FINDKNIGHTROUTE
     END
@@ -2022,7 +1999,8 @@ LANGUAGE 9, 1
 #if !defined(_AFXDLL)
 #include "afxribbon.rc"   // MFC ribbon and control bar resources
 #endif
-#endif
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
 

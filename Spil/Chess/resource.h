@@ -14,7 +14,6 @@
 #define IDD_SELECTDIR_DIALOG            108
 #define IDD_TIMESETTINGS_DIALOG         109
 #define IDD_CONNECT_DIALOG              111
-#define IDD_PIECEVALUE_DIALOG           112
 #define IDD_TABLEBASE_DIALOG            113
 #define IDD_VIEW_DIALOG                 114
 #define IDD_ENGINES_DIALOG              115
@@ -262,15 +261,6 @@
 #define IDC_STATIC_COMPUTERNAME         1133
 #define IDC_GROUP_CONNECTMETHOD         1134
 #define IDC_STATIC_WAITING              1135
-#define IDC_RADIO_KING                  1141
-#define IDC_RADIO_QUEEN                 1142
-#define IDC_RADIO_ROOK                  1143
-#define IDC_RADIO_BISHOP                1144
-#define IDC_RADIO_KNIGHT                1145
-#define IDC_RADIO_PAWN                  1146
-#define IDC_EDIT_FROM                   1147
-#define IDC_EDIT_TO                     1148
-#define IDC_EDIT_STEP                   1149
 #define IDC_STATIC_MAXMOVES             1151
 #define IDC_EDIT_DEFENDSTRENGTH         1152
 #define IDC_RADIO_METRIC_DTC            1153
@@ -480,7 +470,6 @@
 #define ID_TEST_NORMALIZEPOSITION       33154
 #define ID_TEST_SHOWMESSAGE             33155
 #define ID_TEST_SAVETOEXTERNENGINE      33156
-#define ID_TEST_PLOTWINSPVALUES         33157
 #define ID_TEST_SHOWENGINECONSOLE       33158
 #define ID_TEST_SHOWFEN                 33159
 #define ID_TEST_FINDKNIGHTROUTE         33160

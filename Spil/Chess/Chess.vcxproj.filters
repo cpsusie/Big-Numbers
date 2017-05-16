@@ -163,9 +163,6 @@
     <ClCompile Include="PlayerState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PlotWinsPValuesThread.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="PositionSignature.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -796,9 +793,6 @@
     <ClCompile Include="OpeningDlgThread.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
-    <ClCompile Include="PieceValueDlg.cpp">
-      <Filter>Source Files\Dialogs</Filter>
-    </ClCompile>
     <ClCompile Include="SelectOpeningDlg.cpp">
       <Filter>Source Files\Dialogs</Filter>
     </ClCompile>
@@ -930,9 +924,6 @@
     <ClInclude Include="Options.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PlotWinsPValuesThread.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1003,9 +994,6 @@
       <Filter>Source Files\Dialogs\Include</Filter>
     </ClInclude>
     <ClInclude Include="OpeningDlgThread.h">
-      <Filter>Source Files\Dialogs\Include</Filter>
-    </ClInclude>
-    <ClInclude Include="PieceValueDlg.h">
       <Filter>Source Files\Dialogs\Include</Filter>
     </ClInclude>
     <ClInclude Include="SelectOpeningDlg.h">

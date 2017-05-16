@@ -27,10 +27,7 @@ BOOL COpeningDlg::OnInitDialog() {
   CDialog::OnInitDialog();
   setControlText(IDD, this);
 
-  CString title;
-  GetWindowText(title);
-  m_dialogName = title;
-
+  m_dialogName = getWindowText(this);
   m_lib.load(IDR_OPENINGLIBRARY);
   if(!m_lib.isEmpty()) {
     m_images.Create(IDB_BITMAPWHITEBLACK, 12,1,RGB(255,255,255));
@@ -135,9 +132,9 @@ void COpeningDlg::OnOpeningExpand() {
   }
 }
 
-void COpeningDlg::OnSelChangedOpeningTree(NMHDR* pNMHDR, LRESULT* pResult) {
+void COpeningDlg::OnSelChangedOpeningTree(NMHDR *pNMHDR, LRESULT *pResult) {
   try {
-    SetWindowText(format(_T("%s:%s"), m_dialogName.cstr(), getActiveOpenings().cstr()).cstr());
+    setWindowText(this, format(_T("%s:%s"), m_dialogName.cstr(), getActiveOpenings().cstr()));
   } catch(Exception e) {
     MessageBox(e.what());
   }
@@ -159,9 +156,7 @@ Game &COpeningDlg::getSelectedVariant(Game &g) {
     _stscanf((LPCTSTR)f,_T("%d. %s"), &n, ms);
     moves.add(ms);
   }
-  for(size_t i = 0; i < moves.size()/2; i++) {
-    moves.swap(i,moves.size()-i-1);
-  }
+  moves.reverse();
   for(size_t i = 0; i < moves.size(); i++) {
     g.executeMove(g.generateMove(moves[i]));
   }

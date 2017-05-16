@@ -80,7 +80,6 @@ void CChessDlg::commonInit() {
   m_gameResult     = NORESULT;
   m_selectedPiece  = m_removedPiece = EMPTYPIECEKEY;
   forEachPlayer(p) m_chessPlayer[p]  = new ChessPlayer(p);
-  m_plotThread     = NULL;
   m_controlFlags   = CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE | CTRL_APPACTIVE;
 
   if(s_instanceCount++ == 0) {
@@ -285,7 +284,6 @@ BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_COMMAND(ID_TEST_TRANSFORMPOSITION          , OnTestTransformEndGamePosition   )
   ON_COMMAND(ID_TEST_NORMALIZEPOSITION          , OnTestNormalizeEndGamePosition   )
   ON_COMMAND(ID_TEST_SAVETOEXTERNENGINE         , OnTestSaveToExternEngine         )
-  ON_COMMAND(ID_TEST_PLOTWINSPVALUES            , OnTestPlotWinsPValues            )
   ON_COMMAND(ID_TEST_SHOWENGINECONSOLE          , OnTestShowEngineConsole          )
   ON_COMMAND(ID_TEST_SHOWFEN                    , OnTestShowFEN                    )
   ON_MESSAGE(ID_MSG_CHESSPLAYERSTATE_CHANGED    , OnMsgChessPlayerStateChanged     )
@@ -3170,27 +3168,6 @@ void CChessDlg::OnTestSaveToExternEngine() {
   }
 #endif
   MessageBox(_T("Function not implemented"), _T("Error"));
-}
-
-void CChessDlg::makePlot(const PValuePlotParameters &param) {
-  MessageBox(_T("Function not active"), _T("Info"), MB_ICONINFORMATION);
-/*
-  clrControlFlag(CTRL_VERBOSEATGAMEEND | CTRL_AUTOUPDATETITLE);
-  m_plotThread = new PlotWinsPValuesThread(this, param);
-  m_plotThread->start();
-*/
-}
-
-void CChessDlg::OnTestPlotWinsPValues() {
-  stopAllBackgroundActivity(true);
-  if(m_plotThread) {
-    delete m_plotThread;
-    m_plotThread = NULL;
-  }
-  CPieceValueDlg dlg;
-  if(dlg.DoModal() == IDOK) {
-    makePlot(dlg.getParameters());
-  }
 }
 
 void CChessDlg::OnTestShowMessage() {

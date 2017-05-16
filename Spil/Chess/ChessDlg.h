@@ -8,7 +8,6 @@
 #include "StopWatch.h"
 #include "TraceDlgThread.h"
 #include <PropertyContainer.h>
-#include "PieceValueDlg.h"
 
 typedef enum {
   PLAYMODE
@@ -51,7 +50,6 @@ public:
   ~CChessDlg();
   void toggleEnableTestMenu();
   void handlePropertyChanged(const PropertyContainer *source, int id, const void *oldValue, const void *newValue);
-  friend class PlotWinsPValuesThread;
 private:
   static int              s_instanceCount;
   static CTraceDlgThread *s_traceThread;     // only one instance of this
@@ -74,7 +72,6 @@ private:
   ChessWatch              m_watch;
   String                  m_origEscapeMenuText;
   ChessPlayer            *m_chessPlayer[2];
-  PlotWinsPValuesThread  *m_plotThread;
 
   void   commonInit();
   void   attachPropertyContainers();
@@ -227,7 +224,6 @@ private:
   bool   isTraceWindowVisible() const;
   void   setTraceWindowVisible(bool visible);
   void   setLanguage(int index);
-  void   makePlot(const PValuePlotParameters &param);
 
   inline Player getComputerPlayer() const {
     return getOptions().getComputerPlayer();
@@ -443,7 +439,6 @@ protected:
   afx_msg void OnTestTransformEndGamePosition();
   afx_msg void OnTestNormalizeEndGamePosition();
   afx_msg void OnTestSaveToExternEngine();
-  afx_msg void OnTestPlotWinsPValues();
   afx_msg void OnTestShowEngineConsole();
   afx_msg void OnTestShowFEN();
   afx_msg LRESULT OnMsgChessPlayerStateChanged(     WPARAM wp, LPARAM lp);
