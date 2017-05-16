@@ -14,12 +14,14 @@ private:
   FILE        *m_input;
   Semaphore    m_killed;
 protected:
+  // default implementation sends exceptions to debugLog, if m_verbose is true
   virtual void vverbose(const TCHAR *format, va_list argptr);
   void          verbose(const TCHAR *format, ...);
 public:
   InputThread(FILE *input = stdin, bool verbose = false);
   virtual ~InputThread();
-  virtual String getLine(int timeoutInMilliseconds = INFINITE); // throws TimeoutException on timeout
+  // timeout in msec. throws TimeoutException on timeout
+  virtual String getLine(int timeout = INFINITE);
   void kill();
   inline bool isInputReady() const {
     return !m_inputQueue.isEmpty();

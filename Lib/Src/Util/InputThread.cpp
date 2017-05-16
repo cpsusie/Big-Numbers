@@ -3,7 +3,11 @@
 
 DEFINECLASSNAME(InputThread);
 
-InputThread::InputThread(FILE *input, bool verbose) : m_input(input), m_verbose(verbose), m_killed(0) {
+InputThread::InputThread(FILE *input, bool verbose)
+: m_input(input)
+, m_verbose(verbose)
+, m_killed(0)
+{
   setDeamon(true);
   m_eoi = false;
   resume();
@@ -40,8 +44,8 @@ UINT InputThread::run() {
         m_inputQueue.put(EMPTYSTRING);
         continue;
       case WAIT_OBJECT_0 + 1: // input file has something for us
-        { TCHAR line[4096];
-          if (FGETS(line, ARRAYSIZE(line), m_input)) {
+        { String line;
+          if(readLine(m_input, line)) {
             m_inputQueue.put(line);
           } else {
             m_eoi = true;
@@ -74,8 +78,8 @@ void InputThread::readTextFile(const String &fileName) {
   fclose(f);
 }
 
-String InputThread::getLine(int timeoutInMilliseconds) {
-  const String s = m_inputQueue.get(timeoutInMilliseconds);
+String InputThread::getLine(int timeout) {
+  const String s = m_inputQueue.get(timeout);
   if(m_eoi) {
     return EMPTYSTRING;
   }

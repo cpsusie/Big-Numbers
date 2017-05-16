@@ -11,9 +11,6 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{74179d8d-860e-4431-9c5c-c139888a9683}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\system">
-      <UniqueIdentifier>{55a6a7a8-bc3e-43cd-a337-44d1b5306212}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Collection">
       <UniqueIdentifier>{fe69dbdb-74b1-412d-9988-749c05324727}</UniqueIdentifier>
     </Filter>
@@ -47,79 +44,82 @@
     <Filter Include="Source Files\Asm Files">
       <UniqueIdentifier>{876a6a40-3ea2-48c5-8f99-ef68571b010f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\System">
+      <UniqueIdentifier>{55a6a7a8-bc3e-43cd-a337-44d1b5306212}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="access.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="chdir.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="chmod.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="dup.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="dup2.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fgets.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fopen.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fread.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fseek.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fwrite.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="getcwd.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="gets.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="isatty.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="mkfopen.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="pipe.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="rmdir.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Rename.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Stat.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="stat64.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Unlink.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="xfree.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="xmalloc.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="xrealloc.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="xstrdup.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="AbstractIterator.cpp">
       <Filter>Source Files\Collection</Filter>
@@ -257,19 +257,19 @@
       <Filter>Source Files\Collection</Filter>
     </ClCompile>
     <ClCompile Include="FileTreeWalker.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="FindDataComp.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="FindDataCompCommon.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="FileContent.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="GetPos.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="GetCommandline.cpp">
       <Filter>Source Files\Process</Filter>
@@ -305,10 +305,10 @@
       <Filter>Source Files\Process</Filter>
     </ClCompile>
     <ClCompile Include="CPUInfo.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Scandir.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="ListImpl.cpp">
       <Filter>Source Files\Collection</Filter>
@@ -413,7 +413,7 @@
       <Filter>Source Files\String</Filter>
     </ClCompile>
     <ClCompile Include="FileNameSplitter.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="HexDump.cpp">
       <Filter>Source Files\Debugging and Exceptions</Filter>
@@ -464,10 +464,10 @@
       <Filter>Source Files\String</Filter>
     </ClCompile>
     <ClCompile Include="Registry.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="SetFileMode.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="Tcp.cpp">
       <Filter>Source Files\TcpIp</Filter>
@@ -551,22 +551,22 @@
       <Filter>Source Files\Console</Filter>
     </ClCompile>
     <ClCompile Include="GetSize.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fstat64.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="fstat.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="GetUserName.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="safenew.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="searchenv.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="InputDouble.cpp">
       <Filter>Source Files\Misc</Filter>
@@ -638,7 +638,7 @@
       <Filter>Source Files\Process</Filter>
     </ClCompile>
     <ClCompile Include="GetHandle.cpp">
-      <Filter>Source Files\system</Filter>
+      <Filter>Source Files\System</Filter>
     </ClCompile>
     <ClCompile Include="FormatSize.cpp">
       <Filter>Source Files\String</Filter>
@@ -1013,6 +1013,8 @@
     <CustomBuild Include="BitSetx64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="CPUInfox64.asm" />
+    <CustomBuild Include="CPUInfox64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
