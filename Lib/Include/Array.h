@@ -57,6 +57,7 @@ public:
 
   void swap(size_t i1, size_t i2);
   void shuffle(size_t from, size_t count);
+  void reverse();
   bool equals(const ArrayImpl *rhs) const;
   void arraySort(size_t from, size_t count, int (*compare)(const void **e1, const void **e2));
   void arraySort(size_t from, size_t count, int (*compare)(const void  *e1, const void  *e2));
@@ -203,6 +204,11 @@ public:
 
   inline Array<T> &shuffle() {
     return shuffle(0, size());
+  }
+
+  inline Array<T> &reverse() {
+    ((ArrayImpl*)m_collection)->reverse();
+    return *this;
   }
 
   class PermutationHandler {

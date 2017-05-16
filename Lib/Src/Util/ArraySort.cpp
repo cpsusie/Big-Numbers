@@ -58,8 +58,17 @@ void ArrayImpl::shuffle(size_t from, size_t count) {
   }
   count = getSortCount(from, count);
   for(size_t i = from; i < count; i++ ) {
-    swap(i, from + randInt() % count);
+    std::swap(m_elem[i], m_elem[from + randSizet() % count]);
   }
+  m_updateCount++;
+}
+
+void ArrayImpl::reverse() {
+  if(size() < 2) return;
+  for(void **p1 = m_elem, **p2 = m_elem + m_size-1; p1 < p2; p1++, p2--) {
+    std::swap(*p1,*p2);
+  }
+  m_updateCount++;
 }
 
 void ArrayImpl::arraySort(size_t from, size_t count, int (*compare)(const void *e1, const void *e2)) {
@@ -82,6 +91,7 @@ void ArrayImpl::sort(size_t from, size_t count, AbstractComparator &comparator) 
   }
   count = getSortCount(from, count);
   ::quickSort(m_elem+from, count, sizeof(void**), comparator);
+  m_updateCount++;
 }
 
 /* --------------------------------------------------------- */

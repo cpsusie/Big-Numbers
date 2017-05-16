@@ -316,6 +316,19 @@ namespace TestArray {
       a.generateAllPermuations(permArray);
       verify(permArray.getPermutationCount() == 24);
     }
+
+    TEST_METHOD(ArrayReverse) {
+      IntArray a;
+      for(int i = 0; i < 100; i++) {
+        a.add(randInt());
+      }
+      IntArray b = a;
+      b.reverse();
+      verify(b.size() == a.size());
+      for(size_t i = 0, j = a.size()-1; i < a.size(); i++, j--) {
+        verify(a[i] == b[j]);
+      }
+    }
   };
 
 }

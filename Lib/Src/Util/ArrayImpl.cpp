@@ -156,7 +156,7 @@ void ArrayImpl::removeIndex(size_t i, size_t count) {
   if(count == 0) {
     return;
   }
-  size_t j = i + count;
+  const size_t j = i + count;
   if(j > m_size) {
     indexError(method,j);
   }
@@ -188,10 +188,9 @@ void ArrayImpl::swap(size_t i1, size_t i2) {
     indexError(method, i2);
   }
   if(i1 != i2) {
-    void *tmp  = m_elem[i1];
-    m_elem[i1] = m_elem[i2];
-    m_elem[i2] = tmp;
+    std::swap(m_elem[i1], m_elem[i2]);
   }
+  m_updateCount++;
 }
 
 bool ArrayImpl::contains(const void *e) const {
@@ -203,7 +202,7 @@ const void *ArrayImpl::select() const {
   if(m_size == 0) {
     selectError();
   }
-  return m_elem[randInt() % m_size];
+  return m_elem[randSizet() % m_size];
 }
 
 void *ArrayImpl::select() {
@@ -222,7 +221,12 @@ private:
   size_t              m_next;
   intptr_t            m_current;
   size_t              m_updateCount;
-  void checkUpdateCount() const;
+  inline void checkUpdateCount() const {
+    if(m_updateCount != m_a.m_updateCount) {
+      concurrentModificationError(s_className);
+    }
+  }
+
 public:
   AbstractIterator *clone();
   ArrayIterator(ArrayImpl &a);
@@ -264,12 +268,6 @@ void ArrayIterator::remove() {
   m_a.removeIndex(m_current,1);
   m_current     = -1;
   m_updateCount = m_a.m_updateCount;
-}
-
-void ArrayIterator::checkUpdateCount() const {
-  if(m_updateCount != m_a.m_updateCount) {
-    concurrentModificationError(s_className);
-  }
 }
 
 AbstractIterator *ArrayImpl::getIterator() {
