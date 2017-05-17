@@ -136,17 +136,9 @@ public:
 class ChessPlayerRequest {
 private:
   ChessPlayerRequestType m_type;
-  union {
-    FindMoveRequestParam    *m_findMoveParam;    // m_type = REQUEST_FINDMOVE
-    FetchMoveRequestParam   *m_fetchMoveParam;   // m_type = REQUEST_FETCHMOVE
-    GameChangedRequestParam *m_gameChangedParam; // m_type = REQUEST_GAMECHANGED
-    MoveDoneRequestParam    *m_moveDoneParam;    // m_type = REQUEST_MOVEDONE
-    ShowMessageRequestParam *m_showMessageParam; // m_type = REQUEST_SHOWMESSAGE
-    ConnectRequestParam     *m_connectParam;     // m_type = REQUEST_CONNECT
-  } m_data;
+  RefCountedObject      *m_param;
   void release();
   void addref();
-  void cleanData();
   inline void throwInvalidType(const TCHAR *method) const {
     throwException(_T("%s:Request type is %s"), method, getRequestName());
   }

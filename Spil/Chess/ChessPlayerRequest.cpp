@@ -6,38 +6,38 @@
 ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
 :m_type(REQUEST_FINDMOVE)
 {
-  m_data.m_findMoveParam = new FindMoveRequestParam(game, timeLimit, hint, verbose);
+  m_param = new FindMoveRequestParam(game, timeLimit, hint, verbose);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
 :m_type(REQUEST_FETCHMOVE)
 {
-  m_data.m_fetchMoveParam = new FetchMoveRequestParam(SearchMoveResult(move, hint));
+  m_param = new FetchMoveRequestParam(SearchMoveResult(move, hint));
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
-  m_data.m_gameChangedParam = new GameChangedRequestParam(game);
+  m_param = new GameChangedRequestParam(game);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const PrintableMove &move)
 : m_type(REQUEST_MOVEDONE)
 {
-  m_data.m_moveDoneParam = new MoveDoneRequestParam(move);
+  m_param = new MoveDoneRequestParam(move);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const String &msgText, bool error)
 :m_type(REQUEST_SHOWMESSAGE)
 {
-  m_data.m_showMessageParam = new ShowMessageRequestParam(msgText, error);
+  m_param = new ShowMessageRequestParam(msgText, error);
 }
 
   // REQUEST_CONNECT
 ChessPlayerRequest::ChessPlayerRequest(const SocketChannel &channel)
 :m_type(REQUEST_CONNECT)
 {
-  m_data.m_connectParam = new ConnectRequestParam(channel);
+  m_param = new ConnectRequestParam(channel);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
@@ -48,8 +48,8 @@ ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
   case REQUEST_RESET        :
   case REQUEST_DISCONNECT   :
   case REQUEST_KILL         :
-    m_type = type;
-    cleanData();
+    m_type  = type;
+    m_param = NULL;
     break;
   default                   :
     throwInvalidArgumentException(__TFUNCTION__,_T("type=%s"), getRequestName(type));
@@ -58,7 +58,7 @@ ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
 
 ChessPlayerRequest::ChessPlayerRequest(const ChessPlayerRequest &src) 
 : m_type(src.getType())
-, m_data(src.m_data)
+, m_param(src.m_param)
 {
   addref();
 }
@@ -68,90 +68,32 @@ ChessPlayerRequest::~ChessPlayerRequest() {
 }
 
 void ChessPlayerRequest::addref() {
-  int refCount = 0;
-  switch(m_type) {
-  case REQUEST_FINDMOVE   :
-    refCount = m_data.m_findMoveParam->addref();
-    break;
-  case REQUEST_FETCHMOVE  :
-    refCount = m_data.m_fetchMoveParam->addref();
-    break;
-  case REQUEST_GAMECHANGED:
-    refCount = m_data.m_gameChangedParam->addref();
-    break;
-  case REQUEST_MOVEDONE   :
-    refCount = m_data.m_moveDoneParam->addref();
-    break;
-  case REQUEST_SHOWMESSAGE:
-    refCount = m_data.m_showMessageParam->addref();
-    break;
-  case REQUEST_CONNECT    :
-    refCount = m_data.m_connectParam->addref();
-    break;
-
-  default                 :
-    break; // do nothing
-  }
+  if(m_param != NULL) {
+    const int refCount = m_param->addref();
 #ifdef TEST_REFCOUNT
-  if (refCount > 0) {
     verbose(_T("request(%s).addRef(). refCount=%d\n"), toString().cstr(), refCount);
-  }
 #endif
+  }
 }
 
 void ChessPlayerRequest::release() {
-  int refCount = 500;
-  switch(m_type) {
-  case REQUEST_FINDMOVE     :
-    if((refCount=m_data.m_findMoveParam->release()) == 0) {
-      delete m_data.m_findMoveParam;
+  if(m_param != NULL) {
+    const int refCount = m_param->release();
+    if(refCount == 0) {
+      delete m_param;
     }
-    break;
-  case REQUEST_FETCHMOVE    :
-    if((refCount = m_data.m_fetchMoveParam->release()) == 0) {
-      delete m_data.m_fetchMoveParam;
-    }
-    break;
-  case REQUEST_GAMECHANGED  :
-    if((refCount = m_data.m_gameChangedParam->release()) == 0) {
-      delete m_data.m_gameChangedParam;
-    }
-    break;
-  case REQUEST_MOVEDONE     :
-    if ((refCount = m_data.m_moveDoneParam->release()) == 0) {
-      delete m_data.m_moveDoneParam;
-    }
-    break;
-  case REQUEST_SHOWMESSAGE  :
-    if ((refCount = m_data.m_showMessageParam->release()) == 0) {
-      delete m_data.m_showMessageParam;
-    }
-    break;
-  case REQUEST_CONNECT      :
-    if((refCount = m_data.m_connectParam->release()) == 0) {
-      delete m_data.m_connectParam;
-    }
-    break;
-  default:
-    break; // do nothing
-  }
+    m_param = NULL;
 #ifdef TEST_REFCOUNT
-  if (refCount != 500) {
     verbose(_T("request(%s).release(). refCount=%d\n"), toString().cstr(), refCount);
-  }
 #endif
-  cleanData();
-}
-
-void ChessPlayerRequest::cleanData() {
-  memset(&m_data, 0, sizeof(m_data));
+  }
 }
 
 ChessPlayerRequest &ChessPlayerRequest::operator=(const ChessPlayerRequest &src) {
   if(&src != this) {
     release();
-    m_type = src.m_type;
-    m_data = src.m_data;
+    m_type  = src.m_type;
+    m_param = src.m_param;
     addref();
   }
   return *this;
@@ -159,32 +101,32 @@ ChessPlayerRequest &ChessPlayerRequest::operator=(const ChessPlayerRequest &src)
 
 const FindMoveRequestParam &ChessPlayerRequest::getFindMoveParam() const {
   checkType(__TFUNCTION__, REQUEST_FINDMOVE);
-  return *m_data.m_findMoveParam;
+  return *(FindMoveRequestParam*)m_param;
 }
 
 const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
   checkType(__TFUNCTION__, REQUEST_FETCHMOVE);
-  return *m_data.m_fetchMoveParam;
+  return *(FetchMoveRequestParam*)m_param;
 }
 
 const GameChangedRequestParam &ChessPlayerRequest::getGameChangedParam() const {
   checkType(__TFUNCTION__, REQUEST_GAMECHANGED);
-  return *m_data.m_gameChangedParam;
+  return *(GameChangedRequestParam*)m_param;
 }
 
 const MoveDoneRequestParam &ChessPlayerRequest::getMoveDoneParam() const {
   checkType(__TFUNCTION__, REQUEST_MOVEDONE);
-  return *m_data.m_moveDoneParam;
+  return *(MoveDoneRequestParam*)m_param;
 }
 
 const ShowMessageRequestParam &ChessPlayerRequest::getShowMessageParam() const {
   checkType(__TFUNCTION__, REQUEST_SHOWMESSAGE);
-  return *m_data.m_showMessageParam;
+  return *(ShowMessageRequestParam*)m_param;
 }
 
 const ConnectRequestParam &ChessPlayerRequest::getConnectParam() const {
   checkType(__TFUNCTION__, REQUEST_CONNECT);
-  return *m_data.m_connectParam;
+  return *(ConnectRequestParam*)m_param;
 }
 
 String ChessPlayerRequest::toString() const {
