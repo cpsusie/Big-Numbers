@@ -100,7 +100,7 @@ public:
   inline EngineInfoLine() {
     reset();
   }
-  EngineInfoLine &operator+=(const String &line);
+  EngineInfoLine &operator+=(Tokenizer &tok);
   String toString(const EngineVerboseFields &evf) const;
   void reset();
   inline bool isReady() const {

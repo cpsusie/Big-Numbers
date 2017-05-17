@@ -48,8 +48,8 @@ bool Game::pieceAttacksAnyPosition(const Piece *piece, const FieldSet &positions
     break;
   case Pawn:
     { PositionArray pa = (piece->getPlayer()==WHITEPLAYER)
-                       ? fieldInfo[piece->m_position].m_whitePawnAttacks
-                       : fieldInfo[piece->m_position].m_blackPawnAttacks;
+                       ? s_fieldInfo[piece->m_position].m_whitePawnAttacks
+                       : s_fieldInfo[piece->m_position].m_blackPawnAttacks;
       for(int count = *(pa++); count--;) {
         if(positions.contains(*(pa++))) {
           return true;
@@ -98,14 +98,14 @@ static FieldSet calculateFieldsBetween(int pos1, int pos2) {
   FieldSet result;
   switch(getMoveDirection(pos1, pos2)) {
   case MD_NONE      : return result;
-  case MD_LEFT      : return followPositions(result, Game::fieldInfo[pos1].m_rowLine.m_lower  , pos2);
-  case MD_RIGHT     : return followPositions(result, Game::fieldInfo[pos1].m_rowLine.m_upper  , pos2);
-  case MD_DOWN      : return followPositions(result, Game::fieldInfo[pos1].m_colLine.m_lower  , pos2);
-  case MD_UP        : return followPositions(result, Game::fieldInfo[pos1].m_colLine.m_upper  , pos2);
-  case MD_DOWNDIAG1 : return followPositions(result, Game::fieldInfo[pos1].m_diag1Line.m_lower, pos2);
-  case MD_UPDIAG1   : return followPositions(result, Game::fieldInfo[pos1].m_diag1Line.m_upper, pos2);
-  case MD_DOWNDIAG2 : return followPositions(result, Game::fieldInfo[pos1].m_diag2Line.m_lower, pos2);
-  case MD_UPDIAG2   : return followPositions(result, Game::fieldInfo[pos1].m_diag2Line.m_upper, pos2);
+  case MD_LEFT      : return followPositions(result, Game::s_fieldInfo[pos1].m_rowLine.m_lower  , pos2);
+  case MD_RIGHT     : return followPositions(result, Game::s_fieldInfo[pos1].m_rowLine.m_upper  , pos2);
+  case MD_DOWN      : return followPositions(result, Game::s_fieldInfo[pos1].m_colLine.m_lower  , pos2);
+  case MD_UP        : return followPositions(result, Game::s_fieldInfo[pos1].m_colLine.m_upper  , pos2);
+  case MD_DOWNDIAG1 : return followPositions(result, Game::s_fieldInfo[pos1].m_diag1Line.m_lower, pos2);
+  case MD_UPDIAG1   : return followPositions(result, Game::s_fieldInfo[pos1].m_diag1Line.m_upper, pos2);
+  case MD_DOWNDIAG2 : return followPositions(result, Game::s_fieldInfo[pos1].m_diag2Line.m_lower, pos2);
+  case MD_UPDIAG2   : return followPositions(result, Game::s_fieldInfo[pos1].m_diag2Line.m_upper, pos2);
   default           : throwInvalidArgumentException(__TFUNCTION__, _T("pos1=%s, pos2=%s"), getFieldName(pos1), getFieldName(pos2));
                       return result;
   }

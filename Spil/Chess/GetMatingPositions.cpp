@@ -12,7 +12,7 @@ FieldSet Game::getMatingPositions() const {
   } else {
     result.add(findAttackingPiece(winner, kingPos, &result)->getPosition());
   }
-  PositionArray pa = fieldInfo[kingPos].m_kingAttacks;
+  PositionArray pa = s_fieldInfo[kingPos].m_kingAttacks;
   for(int count = *(pa++); count--;) {
     const int    squareNextToKing = *(pa++);
     const Piece *p = m_board[squareNextToKing];

@@ -53,7 +53,7 @@ void Game::updateGameMovePawn(const Move &m) {
 #ifdef TABLEBASE_BUILDER
 void Game::updateGameBackMovePawn(const Move &m) {
   const Move m1 = m.makeBackMove();
-  const FieldInfo &fromInfo = fieldInfo[m1.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m1.m_from];
 
   updateKingDir(m1);
 
@@ -82,7 +82,7 @@ void Game::updateGameBackMovePawn(const Move &m) {
   }
   SET_EMPTYFIELD(m1.m_from);
 
-  const FieldInfo &toInfo = fieldInfo[m1.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m1.m_to];
 
   switch(m1.m_direction) {
   case MD_DOWN     : // white
@@ -119,8 +119,8 @@ void Game::updateGameCapturePawn(const Move &m) {
   const Piece *pawn  = m.m_capturedPiece;
 
   switch(pawn->getPlayer()) {
-  case WHITEPLAYER: UPDATE_WHITEPAWNATTACKS(fieldInfo[pawn->m_position], -1); break;
-  case BLACKPLAYER: UPDATE_BLACKPAWNATTACKS(fieldInfo[pawn->m_position], -1); break;
+  case WHITEPLAYER: UPDATE_WHITEPAWNATTACKS(s_fieldInfo[pawn->m_position], -1); break;
+  case BLACKPLAYER: UPDATE_BLACKPAWNATTACKS(s_fieldInfo[pawn->m_position], -1); break;
   }
 #ifndef TABLEBASE_BUILDER
   pawn->m_playerState.decrementPawnCount(GETCOL(pawn->m_position));
@@ -165,7 +165,7 @@ bool Game::hasEnemyPawnBeside(int to) const { // assume to is at 5. row (white t
 }
 
 void Game::pawnLeaveField(const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   updateKingDir(m);
 
@@ -228,7 +228,7 @@ void Game::pawnLeaveField(const Move &m) {
 }
 
 void Game::setPawn(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   switch(m.m_direction) {
   case MD_DOWN     : // black
@@ -484,9 +484,9 @@ void Game::blackPawnWalkBackward(const FieldInfo &toInfo, int from) {
 EnPassantMove::EnPassantMove(const Move &m)
 : m_move(m)
 , m_capturedPosition(m.m_capturedPiece->m_position)
-, m_fromInfo(Game::fieldInfo[m.m_from])
-, m_toInfo(  Game::fieldInfo[m.m_to  ])
-, m_capturedInfo(Game::fieldInfo[m.m_capturedPiece->m_position])
+, m_fromInfo(Game::s_fieldInfo[m.m_from])
+, m_toInfo(  Game::s_fieldInfo[m.m_to  ])
+, m_capturedInfo(Game::s_fieldInfo[m.m_capturedPiece->m_position])
 {
 }
 
@@ -738,7 +738,7 @@ void Game::updateGamePromotion(const Move &m) {
   state.m_totalMaterial -= pawn->m_materialValue;
 #endif
 
-  const PieceType promoteTo = legalPromotions[m.m_promoteIndex];
+  const PieceType promoteTo = s_legalPromotions[m.m_promoteIndex];
   switch(promoteTo) {
   case Queen :
   case Rook  :
@@ -883,7 +883,7 @@ void Game::pawnCaptureAndPromote(const Move &m) {
 }
 
 void Game::setNonCapturingPromotedLDA(const Move &m, PieceType type) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
   switch(type) {
   case Queen :
     LDAenterRC(   toInfo);
@@ -909,7 +909,7 @@ void Game::setNonCapturingPromotedLDA(const Move &m, PieceType type) {
 }
 
 void Game::setCapturingPromotedLDA(const Move &m, PieceType type) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
   switch(type) {
   case Queen :
     LDAenterRowCapture(toInfo);
@@ -932,7 +932,7 @@ void Game::setCapturingPromotedLDA(const Move &m, PieceType type) {
 }
 
 void Game::setNonCapturingPromotedKnight(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
   if(toInfo.m_innerCol) {
     blockRow(toInfo);
   }
@@ -942,6 +942,6 @@ void Game::setNonCapturingPromotedKnight(const Move &m) {
 }
 
 void Game::setCapturingPromotedKnight(const Move &m) {
-  UPDATE_KNIGHTATTACKS(PLAYERINTURN, fieldInfo[m.m_to], 1);
+  UPDATE_KNIGHTATTACKS(PLAYERINTURN, s_fieldInfo[m.m_to], 1);
   m.m_piece->m_playerState.m_checkingSDAPosition = m.m_to; // Dont care if we really check the king.
 }

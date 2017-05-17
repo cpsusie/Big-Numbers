@@ -359,7 +359,7 @@ void Game::updateKingDir(const Move &m) {
 // ----------------------------- updateKingDirMoving (not king moving)-------------------------------------------
 
 void Game::updateKingDirMovingLeft(      const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -389,7 +389,7 @@ void Game::updateKingDirMovingLeft(      const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -412,7 +412,7 @@ void Game::updateKingDirMovingLeft(      const Move &m) {
 
 
 void Game::updateKingDirMovingRight(     const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -442,7 +442,7 @@ void Game::updateKingDirMovingRight(     const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -465,7 +465,7 @@ void Game::updateKingDirMovingRight(     const Move &m) {
 
 
 void Game::updateKingDirMovingDown(      const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -495,7 +495,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -518,7 +518,7 @@ void Game::updateKingDirMovingDown(      const Move &m) {
 
 
 void Game::updateKingDirMovingUp(        const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -548,7 +548,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -571,7 +571,7 @@ void Game::updateKingDirMovingUp(        const Move &m) {
 
 
 void Game::updateKingDirMovingDownDiag1( const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -601,7 +601,7 @@ void Game::updateKingDirMovingDownDiag1( const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -624,7 +624,7 @@ void Game::updateKingDirMovingDownDiag1( const Move &m) {
 
 
 void Game::updateKingDirMovingUpDiag1(   const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -654,7 +654,7 @@ void Game::updateKingDirMovingUpDiag1(   const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -677,7 +677,7 @@ void Game::updateKingDirMovingUpDiag1(   const Move &m) {
 
 
 void Game::updateKingDirMovingDownDiag2( const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -707,7 +707,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -730,7 +730,7 @@ void Game::updateKingDirMovingDownDiag2( const Move &m) {
 
 
 void Game::updateKingDirMovingUpDiag2(   const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -760,7 +760,7 @@ void Game::updateKingDirMovingUpDiag2(   const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -783,7 +783,7 @@ void Game::updateKingDirMovingUpDiag2(   const Move &m) {
 
 
 void Game::updateKingDirMovingKnight(    const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
@@ -801,7 +801,7 @@ void Game::updateKingDirMovingKnight(    const Move &m) {
     }
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     forEachPlayer(p) {
       PlayerState &state = m_playerState[p];
       switch(KING_DIRECTION(state, m.m_to)) {
@@ -837,7 +837,7 @@ void Game::updateKingDirKingMove(const Move &m) {
 #define IF_NOCAPTURE_SET_NOKING_FROM(state,m) { if(m.m_capturedPiece == NULL) KING_DIRECTION(state, m.m_from) = MD_NONE; }
 
 void Game::updateKingDirKingMovingLeft(      const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -852,7 +852,7 @@ void Game::updateKingDirKingMovingLeft(      const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     :
     case MD_LEFT     :
@@ -890,7 +890,7 @@ void Game::updateKingDirKingMovingLeft(      const Move &m) {
 
 
 void Game::updateKingDirKingMovingRight(     const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -905,7 +905,7 @@ void Game::updateKingDirKingMovingRight(     const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     :
     case MD_LEFT     :
@@ -943,7 +943,7 @@ void Game::updateKingDirKingMovingRight(     const Move &m) {
 
 
 void Game::updateKingDirKingMovingDown(      const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -958,7 +958,7 @@ void Game::updateKingDirKingMovingDown(      const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
@@ -996,7 +996,7 @@ void Game::updateKingDirKingMovingDown(      const Move &m) {
 
 
 void Game::updateKingDirKingMovingUp(        const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -1011,7 +1011,7 @@ void Game::updateKingDirKingMovingUp(        const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
@@ -1049,7 +1049,7 @@ void Game::updateKingDirKingMovingUp(        const Move &m) {
 
 
 void Game::updateKingDirKingMovingDownDiag1( const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -1064,7 +1064,7 @@ void Game::updateKingDirKingMovingDownDiag1( const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
@@ -1102,7 +1102,7 @@ void Game::updateKingDirKingMovingDownDiag1( const Move &m) {
 
 
 void Game::updateKingDirKingMovingUpDiag1(   const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -1117,7 +1117,7 @@ void Game::updateKingDirKingMovingUpDiag1(   const Move &m) {
   case MD_UPDIAG2  : IF_BLOCKABLE_SET_KING_UPDIAG2(      state, fromInfo); break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
@@ -1155,7 +1155,7 @@ void Game::updateKingDirKingMovingUpDiag1(   const Move &m) {
 
 
 void Game::updateKingDirKingMovingDownDiag2( const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -1170,7 +1170,7 @@ void Game::updateKingDirKingMovingDownDiag2( const Move &m) {
   case MD_UPDIAG2  : KING_DIRECTION(state, m.m_to) = MD_UPDIAG2;           break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;
@@ -1208,7 +1208,7 @@ void Game::updateKingDirKingMovingDownDiag2( const Move &m) {
 
 
 void Game::updateKingDirKingMovingUpDiag2(   const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
   PlayerState     &state    = m_playerState[CURRENTENEMY];
 
   switch(KING_DIRECTION(state, m.m_from)) {
@@ -1223,7 +1223,7 @@ void Game::updateKingDirKingMovingUpDiag2(   const Move &m) {
   case MD_UPDIAG2  : IF_NOCAPTURE_SET_NOKING_FROM(state, m);               break;
   }
   if(m.m_capturedPiece == NULL) {
-    const FieldInfo &toInfo = fieldInfo[m.m_to];
+    const FieldInfo &toInfo = s_fieldInfo[m.m_to];
     switch(KING_DIRECTION(state, m.m_to)) {
     case MD_NONE     : break;
     case MD_LEFT     : IF_BLOCKABLE_SET_NOKING_LEFT(     state, toInfo);   break;

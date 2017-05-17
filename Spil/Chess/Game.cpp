@@ -225,14 +225,14 @@ const String Game::getDisplayName() const {
 const Piece *Game::findFirstPieceInDirection(int pos, MoveDirection dir) const {
   switch(dir) {
   case MD_NONE      : return NULL;
-  case MD_LEFT      : return findFirstPieceInDirection(fieldInfo[pos].m_rowLine.m_lower  );
-  case MD_RIGHT     : return findFirstPieceInDirection(fieldInfo[pos].m_rowLine.m_upper  );
-  case MD_DOWN      : return findFirstPieceInDirection(fieldInfo[pos].m_colLine.m_lower  );
-  case MD_UP        : return findFirstPieceInDirection(fieldInfo[pos].m_colLine.m_upper  );
-  case MD_DOWNDIAG1 : return findFirstPieceInDirection(fieldInfo[pos].m_diag1Line.m_lower);
-  case MD_UPDIAG1   : return findFirstPieceInDirection(fieldInfo[pos].m_diag1Line.m_upper);
-  case MD_DOWNDIAG2 : return findFirstPieceInDirection(fieldInfo[pos].m_diag2Line.m_lower);
-  case MD_UPDIAG2   : return findFirstPieceInDirection(fieldInfo[pos].m_diag2Line.m_upper);
+  case MD_LEFT      : return findFirstPieceInDirection(s_fieldInfo[pos].m_rowLine.m_lower  );
+  case MD_RIGHT     : return findFirstPieceInDirection(s_fieldInfo[pos].m_rowLine.m_upper  );
+  case MD_DOWN      : return findFirstPieceInDirection(s_fieldInfo[pos].m_colLine.m_lower  );
+  case MD_UP        : return findFirstPieceInDirection(s_fieldInfo[pos].m_colLine.m_upper  );
+  case MD_DOWNDIAG1 : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag1Line.m_lower);
+  case MD_UPDIAG1   : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag1Line.m_upper);
+  case MD_DOWNDIAG2 : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag2Line.m_lower);
+  case MD_UPDIAG2   : return findFirstPieceInDirection(s_fieldInfo[pos].m_diag2Line.m_upper);
   default           : throwInvalidArgumentException(__TFUNCTION__, _T("dir=%d"), dir);
                       return NULL;
   }

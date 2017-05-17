@@ -28,7 +28,7 @@ void Game::updateGameBackMoveKing(const Move &m) {
 }
 
 void Game::setKingBackMove(const Move &m) {
-  const FieldInfo &toInfo  = fieldInfo[m.m_to];
+  const FieldInfo &toInfo  = s_fieldInfo[m.m_to];
   PlayerState     &state   = m_playerState[PLAYERINTURN];
   AttackInfo      &oldKing = ATTINFO(state, m.m_from);
   AttackInfo      &newKing = ATTINFO(state, m.m_to);
@@ -188,7 +188,7 @@ void Game::updateGameNormalKingMove(const Move &m) {
 }
 
 void Game::kingLeaveField(const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   updateKingDirKingMove(m);
 
@@ -233,7 +233,7 @@ void Game::kingLeaveField(const Move &m) {
 }
 
 void Game::setNonCapturingKing(const Move &m) {
-  const FieldInfo &toInfo  = fieldInfo[m.m_to];
+  const FieldInfo &toInfo  = s_fieldInfo[m.m_to];
   PlayerState     &state   = m_playerState[PLAYERINTURN];
   AttackInfo      &oldKing = ATTINFO(state, m.m_from);
   AttackInfo      &newKing = ATTINFO(state, m.m_to);
@@ -312,7 +312,7 @@ void Game::setNonCapturingKing(const Move &m) {
 }
 
 void Game::setCapturingKing(const Move &m) {
-  const FieldInfo &toInfo  = fieldInfo[m.m_to];
+  const FieldInfo &toInfo  = s_fieldInfo[m.m_to];
   PlayerState     &state   = m_playerState[PLAYERINTURN];
   AttackInfo      &oldKing = ATTINFO(state, m.m_from);
   AttackInfo      &newKing = ATTINFO(state, m.m_to);
@@ -418,26 +418,26 @@ void Game::updateGameShortCastling() {
   switch(PLAYERINTURN) {
   case WHITEPLAYER:
     { PlayerState     &state  = m_playerState[WHITEPLAYER];
-      const FieldInfo &e1Info = fieldInfo[E1];
+      const FieldInfo &e1Info = s_fieldInfo[E1];
 
       kingLeaveColumn( e1Info);
       kingLeaveDiag12( e1Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, e1Info, -1);
       SET_NOKING_RIGHT(state, e1Info);
 
-      LDAleaveColumn(fieldInfo[H1]);
+      LDAleaveColumn(s_fieldInfo[H1]);
 
       MOVEPIECE_UPDATEKEY(E1, G1);
       MOVEPIECE_UPDATEKEY(H1, F1);
 
-      const FieldInfo &g1Info = fieldInfo[G1];
+      const FieldInfo &g1Info = s_fieldInfo[G1];
       kingEnterColumn( g1Info);
       kingEnterDiag12( g1Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, g1Info, 1);
       KING_DIRECTION(state, F1) = MD_RIGHT;
       KING_DIRECTION(state, G1) = MD_NONE;
 
-      LDAenterColumn(fieldInfo[F1]);
+      LDAenterColumn(s_fieldInfo[F1]);
 
       AttackInfo &oldKing  = ATTINFO(state, E1);
       AttackInfo &newKing  = ATTINFO(state, G1);
@@ -455,26 +455,26 @@ void Game::updateGameShortCastling() {
 
   case BLACKPLAYER:
     { PlayerState     &state  = m_playerState[BLACKPLAYER];
-      const FieldInfo &e8Info = fieldInfo[E8];
+      const FieldInfo &e8Info = s_fieldInfo[E8];
 
       kingLeaveColumn( e8Info);
       kingLeaveDiag12( e8Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, e8Info, -1);
       SET_NOKING_RIGHT(state, e8Info);
 
-      LDAleaveColumn(fieldInfo[H8]);
+      LDAleaveColumn(s_fieldInfo[H8]);
 
       MOVEPIECE_UPDATEKEY(E8, G8);
       MOVEPIECE_UPDATEKEY(H8, F8);
 
-      const FieldInfo &g8Info = fieldInfo[G8];
+      const FieldInfo &g8Info = s_fieldInfo[G8];
       kingEnterColumn( g8Info);
       kingEnterDiag12( g8Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, g8Info, 1);
       KING_DIRECTION(state, F8) = MD_RIGHT;
       KING_DIRECTION(state, G8) = MD_NONE;
 
-      LDAenterColumn(fieldInfo[F8]);
+      LDAenterColumn(s_fieldInfo[F8]);
 
       AttackInfo &oldKing  = ATTINFO(state, E8);
       AttackInfo &newKing  = ATTINFO(state, G8);
@@ -496,26 +496,26 @@ void Game::updateGameLongCastling() {
   switch(PLAYERINTURN) {
   case WHITEPLAYER:
     { PlayerState     &state  = m_playerState[WHITEPLAYER];
-      const FieldInfo &e1Info = fieldInfo[E1];
+      const FieldInfo &e1Info = s_fieldInfo[E1];
 
       kingLeaveColumn( e1Info);
       kingLeaveDiag12( e1Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, e1Info, -1);
       SET_NOKING_LEFT(state, e1Info);
 
-      LDAleaveColumn(fieldInfo[A1]);
+      LDAleaveColumn(s_fieldInfo[A1]);
 
       MOVEPIECE_UPDATEKEY(E1, C1);
       MOVEPIECE_UPDATEKEY(A1, D1);
 
-      const FieldInfo &c1Info = fieldInfo[C1];
+      const FieldInfo &c1Info = s_fieldInfo[C1];
       kingEnterColumn( c1Info);
       kingEnterDiag12( c1Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, c1Info, 1);
       KING_DIRECTION(state, D1) = MD_LEFT;
       KING_DIRECTION(state, C1) = MD_NONE;
 
-      LDAenterColumn(fieldInfo[D1]);
+      LDAenterColumn(s_fieldInfo[D1]);
 
       AttackInfo &oldKing  = ATTINFO(state, E1);
       AttackInfo &newKing  = ATTINFO(state, C1);
@@ -534,26 +534,26 @@ void Game::updateGameLongCastling() {
 
   case BLACKPLAYER:
     { PlayerState     &state  = m_playerState[BLACKPLAYER];
-      const FieldInfo &e8Info = fieldInfo[E8];
+      const FieldInfo &e8Info = s_fieldInfo[E8];
 
       kingLeaveColumn( e8Info);
       kingLeaveDiag12( e8Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, e8Info, -1);
       SET_NOKING_LEFT(state, e8Info);
 
-      LDAleaveColumn(fieldInfo[A8]);
+      LDAleaveColumn(s_fieldInfo[A8]);
 
       MOVEPIECE_UPDATEKEY(E8, C8);
       MOVEPIECE_UPDATEKEY(A8, D8);
 
-      const FieldInfo &c8Info = fieldInfo[C8];
+      const FieldInfo &c8Info = s_fieldInfo[C8];
       kingEnterColumn( c8Info);
       kingEnterDiag12( c8Info);
       UPDATE_KINGATTACKS(PLAYERINTURN, c8Info, 1);
       KING_DIRECTION(state, D8) = MD_LEFT;
       KING_DIRECTION(state, C8) = MD_NONE;
 
-      LDAenterColumn(fieldInfo[D8]);
+      LDAenterColumn(s_fieldInfo[D8]);
 
       AttackInfo &oldKing  = ATTINFO(state, E8);
       AttackInfo &newKing  = ATTINFO(state, C8);

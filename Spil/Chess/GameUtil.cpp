@@ -25,7 +25,7 @@ PrintableMove Game::generateMove(int from, int to, PieceType promoteTo, MoveAnno
   MoveGenerator &mg = getMoveGenerator();
   for(bool more = mg.firstMove(move); more; more = mg.nextMove(move)) {
     if(move.m_piece == piece && move.m_to == to
-      && (move.m_type != PROMOTION || legalPromotions[move.m_promoteIndex] == promoteTo)) {
+      && (move.m_type != PROMOTION || s_legalPromotions[move.m_promoteIndex] == promoteTo)) {
       move.setAnnotation(annotation);
       return PrintableMove(*this, move);
     }
@@ -133,7 +133,7 @@ Move Game::generateMove(const MoveBase &m) const {
     Move result;
     (MoveBase&)result      = m;
     result.m_piece         = m_board[result.m_from];
-    result.m_capturedPiece = (result.m_type == ENPASSANT) ? m_board[result.m_to^8] : m_board[result.m_to];
+    result.m_capturedPiece = (result.m_type == ENPASSANT) ? m_board[m.getCaptureEPSquare()] : m_board[result.m_to];
     return result;
   }
 }
@@ -710,14 +710,14 @@ const TCHAR *getFieldName(int row, int col) {
 #ifdef _DEBUG
   VALIDATEPOSITION(row, col);
 #endif
-  return Game::fieldInfo[MAKE_POSITION(row, col)].m_name;
+  return Game::s_fieldInfo[MAKE_POSITION(row, col)].m_name;
 }
 
 const TCHAR *getFieldName(int position) {
 #ifdef _DEBUG
   VALIDATEPOS(position);
 #endif
-  return Game::fieldInfo[position].m_name;
+  return Game::s_fieldInfo[position].m_name;
 }
 
 void validatePosition(const TCHAR *function, int pos) {

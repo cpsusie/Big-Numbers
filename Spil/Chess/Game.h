@@ -217,7 +217,7 @@ int pieceTypeCmp(const PieceType &p1, const PieceType &p2);
 
 #define IS_KING(player, piece)            (piece->m_pieceType == King && piece->m_player == player)
 
-#define getFieldColor(position) Game::fieldInfo[position].m_fieldColor
+#define getFieldColor(position) Game::s_fieldInfo[position].m_fieldColor
 
 int            getStartPieceCount(                PieceType               pieceType    ); // Number of pieces for 1 player of the given PieceType
                                                                                           // in the startconfiguration
@@ -259,6 +259,7 @@ bool           isValidLine(                      int line                       
 void           validatePosition(                 const TCHAR *function, int pos         ); // throws Exception if not valid.
 void           validatePosition(                 const TCHAR *function, int row, int col); // throws Exception if not valid.
 int            decodePosition(                   const String &s                        );
+int            decodePosition(                   const TCHAR  *str                      ); // assume str at least 2 characters
 MoveDirection  getOppositeDirection(             MoveDirection direction                );
 String         findShortestKnightRoute(          UINT from, UINT to);
 
@@ -653,7 +654,7 @@ public:
   int            m_to;
   int            m_dirIndex;
   int            m_moveIndex;
-  int            m_promoteIndex; // Pawns only. Index into Game::legalPromotions. [0..3]
+  int            m_promoteIndex; // Pawns only. Index into Game::s_legalPromotions. [0..3]
   MoveDirection  m_direction;
   MoveAnnotation m_annotation;
 
@@ -757,6 +758,7 @@ public:
     setNoMove();
   }
   PrintableMove(const Game &game, const MoveBase &m);
+//  PrintableMove(const Game &game, const String   &uciString);
   PrintableMove &setNoMove();
   String toString(MoveStringFormat mf = MOVE_SHORTFORMAT) const;
   Player getPlayer() const {
@@ -1340,9 +1342,9 @@ private:
 
   String getDefaultName() const;
 public:
-  static const PieceType officersStartConfiguration[8]; // = { Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook }
-  static const PieceType legalPromotions[4];            // = { Queen, Knight, Rook, Bishop }
-  static const FieldInfo fieldInfo[64];
+  static const PieceType s_officersStartConfiguration[8]; // = { Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook }
+  static const PieceType s_legalPromotions[4];            // = { Queen, Knight, Rook, Bishop }
+  static const FieldInfo s_fieldInfo[64];
 
   Game();
   Game(const Game &src);
@@ -1533,6 +1535,7 @@ public:
   void           executeMove(const MoveBase &m);
   MoveBase       unExecuteLastMove();
   bool           mustSelectPromotion(int from, int to) const;
+  static int     getPromoteIndex(PieceType pt);
   Move           generateMove(const MoveBase &m) const;
   PrintableMove  generateMove(int from, int to, PieceType promoteTo = NoPiece, MoveAnnotation annotation = NOANNOTATION) const;
   PrintableMove  generateMove(const String &s, MoveStringFormat mf = (MoveStringFormat)-1) const;
@@ -1571,7 +1574,7 @@ public:
   String getMoveString(const MoveBase &m, MoveStringFormat mf=MOVE_LONGFORMAT) const;
 
   static inline String getFieldInfoAsString(int pos) {
-    return fieldInfo[pos].toString();
+    return s_fieldInfo[pos].toString();
   }
 
   inline const GameStackElement *getGameStack() const {
@@ -1595,14 +1598,14 @@ String secondsToString(double msec, bool showMilliSeconds=true);
 
 #define POSADJACENT(wkPos,bkPos) (Game::getWalkDistance(wkPos,bkPos) <= 1)
 
-#define GETDIAG1(         pos)     Game::fieldInfo[pos].m_diag1
-#define GETDIAG2(         pos)     Game::fieldInfo[pos].m_diag2
-#define IS_INNERROW(      pos)     Game::fieldInfo[pos].m_innerRow
-#define IS_INNERCOL(      pos)     Game::fieldInfo[pos].m_innerCol
-#define IS_INNERFIELD(    pos)     Game::fieldInfo[pos].m_innerField
-#define IS_CORNERFIELD(   pos)     Game::fieldInfo[pos].m_cornerField
+#define GETDIAG1(         pos)     Game::s_fieldInfo[pos].m_diag1
+#define GETDIAG2(         pos)     Game::s_fieldInfo[pos].m_diag2
+#define IS_INNERROW(      pos)     Game::s_fieldInfo[pos].m_innerRow
+#define IS_INNERCOL(      pos)     Game::s_fieldInfo[pos].m_innerCol
+#define IS_INNERFIELD(    pos)     Game::s_fieldInfo[pos].m_innerField
+#define IS_CORNERFIELD(   pos)     Game::s_fieldInfo[pos].m_cornerField
 #define IS_EDGEFIELD(     pos)     (!IS_INNERFIELD(pos))
-#define GETSQUARE(pos)             Game::fieldInfo[pos].m_square
+#define GETSQUARE(pos)             Game::s_fieldInfo[pos].m_square
 
 #define IS_ONMAINDIAG1(   pos)     (((pos) % 9) == 0)
 #define IS_ONMAINDIAG2(   pos)     (GETDIAG2(pos) ==  _GETDIAGONAL2(H1))

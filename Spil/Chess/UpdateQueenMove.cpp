@@ -29,7 +29,7 @@ void Game::updateGameBackMoveQueen(const Move &m) {
 
 void Game::updateGameCaptureQueen(const Move &m) {
   PlayerState     &state  = m_playerState[CURRENTENEMY];
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   if(toInfo.m_rowLine.m_lower) {
     CLR_LDA_LEFT(     state, toInfo);
@@ -58,7 +58,7 @@ void Game::updateGameCaptureQueen(const Move &m) {
 }
 
 void Game::queenLeaveField(const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   updateKingDir(m);
 
@@ -95,7 +95,7 @@ void Game::queenLeaveField(const Move &m) {
 }
 
 void Game::setNonCapturingQueen(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   switch(m.m_direction) {
   case MD_LEFT     :
@@ -152,7 +152,7 @@ void Game::setNonCapturingQueen(const Move &m) {
 }
 
 void Game::setCapturingQueen(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   switch(m.m_direction) {
   case MD_LEFT     :

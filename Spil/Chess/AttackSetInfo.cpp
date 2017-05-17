@@ -49,7 +49,7 @@ AttackSetInfo AttackSetInfo::s_bitBoards[64];
 
 void AttackSetInfo::initArray() { // static
   for (int i = 0; i < 64; i++) {
-    AttackSetInfo::s_bitBoards[i] = AttackSetInfo(Game::fieldInfo[i]);
+    AttackSetInfo::s_bitBoards[i] = AttackSetInfo(Game::s_fieldInfo[i]);
 //    AttackSetInfo::s_bitBoards[i].dump();
   }
 }

@@ -15,7 +15,7 @@ MoveBase &MoveBase::setNoMove() {
 }
 
 PieceType MoveBase::getPromoteTo() const {
-  return (m_type == PROMOTION) ? Game::legalPromotions[m_promoteIndex] : NoPiece;
+  return (m_type == PROMOTION) ? Game::s_legalPromotions[m_promoteIndex] : NoPiece;
 }
 
 bool MoveBase::operator==(const MoveBase &m) const { // compare only from,to, not annotations
@@ -77,7 +77,7 @@ String MoveBase::toSimpleFormat(bool uciFormat) const {
                  ,getFieldName(m_from)
                  ,uciFormat?EMPTYSTRING:_T("-")
                  ,getFieldName(m_to)
-                 ,getPieceTypeShortNameEnglish(Game::legalPromotions[m_promoteIndex]));
+                 ,getPieceTypeShortNameEnglish(Game::s_legalPromotions[m_promoteIndex]));
 
   default:
     return format(_T("%s%s%s"), getFieldName(m_from), uciFormat?EMPTYSTRING:_T("-"), getFieldName(m_to));

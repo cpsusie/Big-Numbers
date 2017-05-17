@@ -30,7 +30,7 @@ void Game::updateGameBackMoveBishop(const Move &m) {
 
 void Game::updateGameCaptureBishop(const Move &m) {
   PlayerState     &state  = m_playerState[CURRENTENEMY];
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   if(toInfo.m_diag1Line.m_upper) {
     CLR_LDA_UPDIAG1(  state, toInfo);
@@ -53,7 +53,7 @@ void Game::updateGameCaptureBishop(const Move &m) {
 }
 
 void Game::bishopLeaveField(const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   updateKingDir(m);
 
@@ -85,7 +85,7 @@ void Game::bishopLeaveField(const Move &m) {
 }
 
 void Game::setNonCapturingBishop(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   if(toInfo.m_innerCol) {
     blockRow(toInfo);
@@ -121,7 +121,7 @@ void Game::setNonCapturingBishop(const Move &m) {
 }
 
 void Game::setCapturingBishop(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   switch(m.m_direction) {
   case MD_DOWNDIAG1:

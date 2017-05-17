@@ -432,7 +432,7 @@ UINT ExternEngine::run() {
         const String reply = tok.next();
         if(reply == _T("info")) {
           if(isVerbose()) {
-            infoLine += tok.getRemaining();
+            infoLine += tok;
             if(infoLine.isReady()) {
               verbose(_T("%s"), infoLine.toString(evf).cstr());
               if(evf.m_pv && (infoLine.m_pv.length() > 0)) {

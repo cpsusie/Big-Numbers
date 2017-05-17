@@ -115,6 +115,40 @@ MoveAnnotation parseAnnotation(const TCHAR *str) {
   return NOANNOTATION;
 }
 
+int decodePosition(const TCHAR *str) {
+  DEFINEMETHODNAME;
+  int row,col;
+  switch(str[0]) {
+  case 'a':
+  case 'b':
+  case 'c':
+  case 'd':
+  case 'e':
+  case 'f':
+  case 'g':
+  case 'h':
+    col = str[0] - 'a';
+    break;
+  default:
+    throwInvalidArgumentException(method, _T("str=\"%s\". Column must be ['a'..'h']"), str);
+  }
+  switch(str[1]) {
+  case '1':
+  case '2':
+  case '3':
+  case '4':
+  case '5':
+  case '6':
+  case '7':
+  case '8':
+    row = str[1] - '1';
+    break;
+  default:
+    throwInvalidArgumentException(method, _T("str=\"%s\". Row must be ['1'..'8']"), str);
+  }
+  return MAKE_POSITION(row,col);
+}
+
 int decodePosition(const String &s) {
   DEFINEMETHODNAME;
   String t = trim(s);
@@ -124,36 +158,7 @@ int decodePosition(const String &s) {
   if(t.length() == 3) {
     t = substr(t,1,2);
   }
-  int row,col;
-  switch(t[0]) {
-  case 'a':
-  case 'b':
-  case 'c':
-  case 'd':
-  case 'e':
-  case 'f':
-  case 'g':
-  case 'h':
-    col = t[0] - 'a';
-    break;
-  default:
-    throwInvalidArgumentException(method, _T("s=\"%s\". Column must be ['a'..'h']"), s.cstr());
-  }
-  switch(t[1]) {
-  case '1':
-  case '2':
-  case '3':
-  case '4':
-  case '5':
-  case '6':
-  case '7':
-  case '8':
-    row = t[1] - '1';
-    break;
-  default:
-    throwInvalidArgumentException(method, _T("s=\"%s\". Row must be ['1'..'8']"), s.cstr());
-  }
-  return MAKE_POSITION(row,col);
+  return decodePosition(t.cstr());
 }
 
 const TCHAR *getPlayerNameEnglish(Player player) {

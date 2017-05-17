@@ -171,7 +171,7 @@ bool BackMoveGenerator::fieldSetsInitialized = false;
 
 void BackMoveGenerator::initFieldSets() { // static
   for(int pos = 0; pos < 64; pos++) {
-    const FieldInfo &info = Game::fieldInfo[pos];
+    const FieldInfo &info = Game::s_fieldInfo[pos];
     PositionArray pa = info.m_knightAttacks;
     FieldSet &knightAttacks = m_knightAttacks[pos];
     for(int count = *(pa++); count--;) knightAttacks.add(*(pa++));
@@ -1485,7 +1485,7 @@ Piece *BackMoveGeneratorLDDoubleCheck::findMovedPiece(int &sourceField, MoveDire
   const PlayerState &enemyState  = m_game.m_playerState[CURRENTENEMY];
   const int         kingPos      = playerState.m_king->m_position;
   const AttackInfo  attInfo      = enemyState.m_attackTable[kingPos].m_attackInfo;
-  const FieldInfo  &kingInfo     = Game::fieldInfo[kingPos];
+  const FieldInfo  &kingInfo     = Game::s_fieldInfo[kingPos];
   PositionArray ppa, dpa;
   MoveDirection pDir, dDir;
 
@@ -1648,7 +1648,7 @@ FieldSet BackMoveGeneratorSDDoubleCheck::findPossibleSourceFields(int kingPos) c
   const PlayerState &playerState = m_game.m_playerState[PLAYERINTURN];
   const PlayerState &enemyState  = m_game.m_playerState[CURRENTENEMY];
   const AttackInfo   attInfo     = enemyState.m_attackTable[kingPos].m_attackInfo;
-  const FieldInfo   &finfo       = Game::fieldInfo[kingPos];
+  const FieldInfo   &finfo       = Game::s_fieldInfo[kingPos];
   PositionArray pa;
   switch(playerState.m_kingAttackState & ~KING_SD_ATTACKED) {
   case KING_LD_ATTACKED_FROM_ROW  :

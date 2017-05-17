@@ -6,7 +6,7 @@ bool Game::uncoversKingEP(const Piece *pawn, const int to) const {
   switch(pawn->m_pinnedState) {
   case NOT_PINNED:
     { const int        kingPos  = pawn->m_playerState.m_king->m_position;
-      const FieldInfo &fromInfo = fieldInfo[pawn->m_position];
+      const FieldInfo &fromInfo = s_fieldInfo[pawn->m_position];
 
       // No need to check, if the captured pawn will uncover any diagonal attacking pieces to the king by being captured.
       // This can not happen, because the last move was the pawn moving 2 steps forward, and if the king was not diagonal-attacked before
@@ -450,7 +450,7 @@ bool MoveGeneratorNoCheck::firstMove(Move &m) const {
 }
 
 bool MoveGeneratorNoCheck::nextMove(Move &m) const { // Assumes m is a valid move
-  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::legalPromotions)-1)) {
+  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::s_legalPromotions)-1)) {
     m.m_promoteIndex++;
     return true;
   }
@@ -739,7 +739,7 @@ bool MoveGeneratorLDCheck::firstMove(Move &m) const {
 }
 
 bool MoveGeneratorLDCheck::nextMove(Move &m) const { // Assumes m is a valid move
-  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::legalPromotions)-1)) {
+  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::s_legalPromotions)-1)) {
     m.m_promoteIndex++;
     return true;
   }
@@ -991,7 +991,7 @@ bool MoveGeneratorSDCheck::firstMove(Move &m) const {
 }
 
 bool MoveGeneratorSDCheck::nextMove(Move &m) const { // Assumes m is a valid move
-  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::legalPromotions)-1)) {
+  if(m.m_type == PROMOTION && (m.m_promoteIndex < ARRAYSIZE(Game::s_legalPromotions)-1)) {
     m.m_promoteIndex++;
     return true;
   }

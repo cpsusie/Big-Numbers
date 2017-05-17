@@ -43,20 +43,23 @@ InfoHashMap::InfoHashMap() {
 }
 
 void EngineInfoLine::reset() {
-  m_pv = m_score = m_string = EMPTYSTRING;
   m_depth    = 0;
   m_seldepth = 0;
+  m_score    = EMPTYSTRING;
   m_time     = 0;
   m_nodes    = 0;
   m_nodesps  = 0;
+  m_pv       = EMPTYSTRING;
+  m_string   = EMPTYSTRING;
   m_hashFull = 0;
+  m_multiPV  = 0;
   m_cpuLoad  = 0;
 }
 
-EngineInfoLine &EngineInfoLine::operator+=(const String &line) {
+EngineInfoLine &EngineInfoLine::operator+=(Tokenizer &tok) {
   static InfoHashMap keywords;
 
-  for(Tokenizer tok(line, _T(" ")); tok.hasNext();) {
+  while(tok.hasNext()) {
     EngineInfoField *field = keywords.get(tok.next().cstr());
     if(field == NULL) {
       continue;

@@ -12,7 +12,7 @@ void Game::updateGameMoveKnight(const Move &m) {
     capturePiece(m);
     knightLeaveField(m);
     SET_PIECE(m.m_to, piece);
-    UPDATE_KNIGHTATTACKS(piece->getPlayer(), fieldInfo[m.m_to], 1);
+    UPDATE_KNIGHTATTACKS(piece->getPlayer(), s_fieldInfo[m.m_to], 1);
   }
 
 #ifndef TABLEBASE_BUILDER
@@ -35,14 +35,14 @@ void Game::updateGameBackMoveKnight(const Move &m) {
 
 void Game::updateGameCaptureKnight(const Move &m) {
   const Piece *knight = m.m_capturedPiece;
-  UPDATE_KNIGHTATTACKS(knight->getPlayer(), fieldInfo[m.m_to], -1);
+  UPDATE_KNIGHTATTACKS(knight->getPlayer(), s_fieldInfo[m.m_to], -1);
 #ifndef TABLEBASE_BUILDER
   knight->m_playerState.m_positionalScore -= MoveTable::knightPositionScore[knight->getPlayer()][knight->m_position];
 #endif
 }
 
 void Game::knightLeaveField(const Move &m) {
-  const FieldInfo &fromInfo = fieldInfo[m.m_from];
+  const FieldInfo &fromInfo = s_fieldInfo[m.m_from];
 
   updateKingDir(m);
 
@@ -64,7 +64,7 @@ void Game::knightLeaveField(const Move &m) {
 }
 
 void Game::setNonCapturingKnight(const Move &m) {
-  const FieldInfo &toInfo = fieldInfo[m.m_to];
+  const FieldInfo &toInfo = s_fieldInfo[m.m_to];
 
   if(toInfo.m_innerCol) {
     blockRow(toInfo);

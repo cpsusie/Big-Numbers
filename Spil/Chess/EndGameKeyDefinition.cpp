@@ -427,7 +427,7 @@ TCHAR *EndGameKeyDefinition::createKeyString(TCHAR *dst, EndGameKey key, bool in
 
 static const TCHAR *shortNames[]    = { EMPTYSTRING,_T("K"),_T("Q"),_T("R"),_T("B"),_T("N"),EMPTYSTRING };
 static const TCHAR *playerShortName = _T("WB");
-#define GETFIELDNAME(pos) Game::fieldInfo[pos].m_name
+#define GETFIELDNAME(pos) Game::s_fieldInfo[pos].m_name
 
 TCHAR *EndGameKeyDefinition::createWhiteKeyString(TCHAR *dst, EndGameKey key) const {
   switch(getPieceCount(WHITEPLAYER)) {

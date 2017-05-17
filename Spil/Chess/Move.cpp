@@ -52,7 +52,7 @@ String Move::toStringLongFormat() const {
                             ,m_capturedPiece ? 'x' : '-'
                             ,getFieldName(m_to));
       if(m_type == PROMOTION) {
-        result += getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]);
+        result += getPieceTypeShortName(Game::s_legalPromotions[m_promoteIndex]);
       }
       return result;
     }
@@ -92,7 +92,7 @@ String Move::toStringDebugFormat() const {
                   ,getFieldName(m_from)
                   ,m_capturedPiece ? 'x' : '-'
                   ,format(_T("%s%s"),(m_capturedPiece?m_capturedPiece->getShortName().cstr():EMPTYSTRING),getFieldName(m_to)).cstr()
-                  ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex])
+                  ,getPieceTypeShortName(Game::s_legalPromotions[m_promoteIndex])
                   ,m_dirIndex
                   ,m_moveIndex
                   ,getMoveDirectionName(m_direction).cstr());

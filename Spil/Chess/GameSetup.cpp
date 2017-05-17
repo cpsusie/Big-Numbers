@@ -1,7 +1,18 @@
 #include "stdafx.h"
 
-const PieceType Game::officersStartConfiguration[8] = { Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook };
-const PieceType Game::legalPromotions[4]            = { Queen, Knight, Rook, Bishop };
+const PieceType Game::s_officersStartConfiguration[8] = { Rook, Knight, Bishop, Queen, King, Bishop, Knight, Rook };
+const PieceType Game::s_legalPromotions[4]            = { Queen, Knight, Rook, Bishop };
+
+int Game::getPromoteIndex(PieceType pt) { // static
+  switch (pt) {
+  case Queen : return 0;
+  case Knight: return 1;
+  case Rook  : return 2;
+  case Bishop: return 3;
+  default    : throwInvalidArgumentException(__TFUNCTION__, _T("pt=%d"), pt);
+               return 0;
+  }
+}
 
 Piece *Game::findUnusedPiece(PieceType pieceType, Player player) {
   return m_playerState[player].findUnusedPiece(pieceType);
@@ -186,7 +197,7 @@ Game &Game::setupStartPosition() {
       const int r = (player==WHITEPLAYER) ? 0 : 7;
       const int c = i;
       Piece *p = state.m_pieces[i];
-      p->setType(officersStartConfiguration[i]);
+      p->setType(s_officersStartConfiguration[i]);
       m_board[p->m_position = MAKE_POSITION(r, c)] = p;
       p->m_onBoard = true;
     }
@@ -228,7 +239,7 @@ void Game::initAttackCounters(bool validate) {
     state.m_checkingSDAPosition = -1;
 
     for(const Piece *piece = state.m_first; piece; piece = piece->m_next) {
-      const FieldInfo &posInfo = fieldInfo[piece->m_position];
+      const FieldInfo &posInfo = s_fieldInfo[piece->m_position];
 
       switch(piece->getType()) {
       // SDA-pieces
@@ -403,7 +414,7 @@ void Game::initKingDirections() {
   forEachPlayer(p) {
     PlayerState &state = m_playerState[p];
     if(state.m_king->m_onBoard) {
-      const FieldInfo &kingInfo = fieldInfo[state.m_king->m_position];
+      const FieldInfo &kingInfo = s_fieldInfo[state.m_king->m_position];
       if(kingInfo.m_rowLine.m_lower) {
         setKingRight(    state, kingInfo);
       }
@@ -438,7 +449,7 @@ int Game::getKingRowAttackedFrom(Player player) const {
     return -1;
   }
   const int         kingPos = state.m_king->getPosition();
-  const DoubleLine &row     = fieldInfo[kingPos].m_rowLine;
+  const DoubleLine &row     = s_fieldInfo[kingPos].m_rowLine;
   const Piece      *p1      = findFirstPieceInDirection(row.m_lower);
   const Piece      *p2      = findFirstPieceInDirection(row.m_upper);
   const Player      enemy   = GETENEMY(player);
@@ -457,7 +468,7 @@ int Game::getKingColAttackedFrom(Player player) const {
     return -1;
   }
   const int         kingPos = state.m_king->getPosition();
-  const DoubleLine &col     = fieldInfo[kingPos].m_colLine;
+  const DoubleLine &col     = s_fieldInfo[kingPos].m_colLine;
   const Piece      *p1      = findFirstPieceInDirection(col.m_lower);
   const Piece      *p2      = findFirstPieceInDirection(col.m_upper);
   const Player      enemy   = GETENEMY(player);
@@ -472,7 +483,7 @@ int Game::getKingColAttackedFrom(Player player) const {
 
 int Game::getKnightAttackCount(Player player, int pos) const {
   int result = 0;
-  PositionArray positions = fieldInfo[pos].m_knightAttacks;
+  PositionArray positions = s_fieldInfo[pos].m_knightAttacks;
   for(int count = *(positions++); count--;) {
     const Piece *p = m_board[*(positions++)];
     if(p && (p->getPlayer() == player) && (p->getType() == Knight)) {
@@ -542,7 +553,7 @@ int Game::getPawnAttack(Player player, int pos, int diagonal) const { // diagona
 
 const Piece *Game::findLDAttackingPiece(Player player, int pos, bool diagonalAttack) const {
   const FieldAttacks &attInfo = m_playerState[player].m_attackTable[pos];
-  const FieldInfo    &finfo   = fieldInfo[pos];
+  const FieldInfo    &finfo   = s_fieldInfo[pos];
   if(diagonalAttack) {
     if(attInfo.m_attackDirectionInfo1.m_diag1Attacked) {
       return findFirstPieceInDirection(attInfo.m_attackInfo.m_fromLowerDiag1 ? finfo.m_diag1Line.m_lower : finfo.m_diag1Line.m_upper);
@@ -560,7 +571,7 @@ const Piece *Game::findLDAttackingPiece(Player player, int pos, bool diagonalAtt
 }
 
 int Game::findAttackingKnightPosition(Player player, int pos) const {
-  PositionArray positions = fieldInfo[pos].m_knightAttacks;
+  PositionArray positions = s_fieldInfo[pos].m_knightAttacks;
   const PieceKey knightKey = MAKE_PIECEKEY(player, Knight);
   for(int count = *(positions++); count--;) {
     const int kpos = *(positions++);
@@ -573,7 +584,7 @@ int Game::findAttackingKnightPosition(Player player, int pos) const {
 }
 
 int Game::findAttackingPawnPosition(Player player, int pos) const {
-  PositionArray positions = (player==WHITEPLAYER) ? fieldInfo[pos].m_attackingWhitePawnPositions : fieldInfo[pos].m_attackingBlackPawnPositions;
+  PositionArray positions = (player==WHITEPLAYER) ? s_fieldInfo[pos].m_attackingWhitePawnPositions : s_fieldInfo[pos].m_attackingBlackPawnPositions;
   if(positions) {
     const PieceKey pawnKey = MAKE_PIECEKEY(player, Pawn);
     for(int count = *(positions++); count--;) {

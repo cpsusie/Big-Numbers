@@ -21,8 +21,8 @@ void PlayerState::allocatePieceTable(Player player, PlayerState &enemyState, con
   for(int i = 0; i < ARRAYSIZE(m_pieces); i++) {
     PieceType type;
     int row, col;
-    if(i < ARRAYSIZE(Game::officersStartConfiguration)) {
-      type = Game::officersStartConfiguration[i];
+    if(i < ARRAYSIZE(Game::s_officersStartConfiguration)) {
+      type = Game::s_officersStartConfiguration[i];
       row  = player == WHITEPLAYER ? 0 : 7;
       col  = i % 8;
     } else {

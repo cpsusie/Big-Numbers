@@ -811,7 +811,7 @@ static const int knight_H8[3]   = { 2,G6,F7 };
 static const int wpp_H8[2]      = { 1,G7 };
 static const FieldInfo fieldInfo_H8(H8,_T("h8"),lr_H8,NULL,lc_H8,NULL,ld1_H8,NULL,NULL,NULL,king_H8,knight_H8,NULL,NULL,wpp_H8,NULL);
 
-const FieldInfo Game::fieldInfo[64] = {
+const FieldInfo Game::s_fieldInfo[64] = {
   fieldInfo_A1 ,fieldInfo_B1 ,fieldInfo_C1 ,fieldInfo_D1 ,fieldInfo_E1 ,fieldInfo_F1 ,fieldInfo_G1 ,fieldInfo_H1
  ,fieldInfo_A2 ,fieldInfo_B2 ,fieldInfo_C2 ,fieldInfo_D2 ,fieldInfo_E2 ,fieldInfo_F2 ,fieldInfo_G2 ,fieldInfo_H2
  ,fieldInfo_A3 ,fieldInfo_B3 ,fieldInfo_C3 ,fieldInfo_D3 ,fieldInfo_E3 ,fieldInfo_F3 ,fieldInfo_G3 ,fieldInfo_H3

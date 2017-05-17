@@ -13,6 +13,66 @@ PrintableMove::PrintableMove(const Game &game, const MoveBase &m) : MoveBase(m) 
     findKingAttackState((Game&)game, tmpMove);
   }
 }
+/*
+PrintableMove::PrintableMove(const Game &game, const String &uciString) {
+  if (uciString == _T("0000") || uciString.length() == 0) {
+    setNoMove();
+    return;
+  }
+  try {
+    m_annotation = NOANNOTATION;
+    m_from       = decodePosition(uciString.cstr());
+    m_to         = decodePosition(uciString.cstr()+2);
+    m_player     = game.getPlayerInTurn();
+    m_pieceType  = game.getPieceAtPosition(m_from)->getType();
+    switch (m_pieceType) {
+    case King:
+      if(Game::getWalkDistance(m_from, m_to) == 2) {
+        m_type = (GETCOL(m_to) == 6) ? SHORTCASTLING : LONGCASTLING;
+      } else {
+        m_type = NORMALMOVE;
+      }
+      break;
+    case Pawn:
+      if(GETROW(m_to) == 0 || GETROW(m_to) == 7) {
+        m_type = PROMOTION;
+        switch (uciString[4]) {
+        case 'q': m_promoteIndex = Game::getPromoteIndex(Queen ); break;
+        case 'n': m_promoteIndex = Game::getPromoteIndex(Knight); break;
+        case 'r': m_promoteIndex = Game::getPromoteIndex(Rook  ); break;
+        case 'b': m_promoteIndex = Game::getPromoteIndex(Bishop); break;
+        default : throwException(_T("invalid promotion:\"%s\""), uciString.cstr());
+        }
+        if (GETCOL(m_to) == GETCOL(m_from)) {
+          m_capturedPieceType = NoPiece;
+        } else {
+          m_capturedPieceType = game.getPieceAtPosition(m_to)->getType();
+        }
+      } else if (GETCOL(m_to) == GETCOL(m_from)) {
+        m_type              = NORMALMOVE;
+        m_capturedPieceType = NoPiece;
+      } else {
+        const Piece *cp = game.getPieceAtPosition(m_to);
+        if (cp) {
+          m_type              = NORMALMOVE;
+          m_capturedPieceType = cp->getType();
+        } else {
+          m_type              = ENPASSANT;
+          m_capturedPieceType = Pawn;
+        }
+      }
+      break;
+    default:
+      m_type = NORMALMOVE;
+      const Piece *cp = game.getPieceAtPosition(m_to);
+      m_capturedPieceType = cp ? cp->getType() : NoPiece;
+      break;
+    }
+  } catch (Exception e) {
+    *this = game.generateMove(uciString, MOVE_UCIFORMAT);
+  }
+}
+*/
 
 PrintableMove &PrintableMove::setNoMove() {
   MoveBase::setNoMove();
@@ -32,12 +92,12 @@ void PrintableMove::findUniqueString(const Game &game) {
     break;
 
   default  :
-    { MoveGenerator &mg = game.getMoveGenerator();
-      Move move;
+    { Move move;
       UINT sameRowCount     = 0;
       UINT sameColCount     = 0;
       UINT alternativeCount = 0;
-      for(bool b = mg.firstMove(move); b; b = mg.nextMove(move)) {
+      MoveGenerator &mg = game.getMoveGenerator();
+        for(bool b = mg.firstMove(move); b; b = mg.nextMove(move)) {
         if(move.m_to   == m_to
         && move.m_from != m_from
         && move.m_piece->getType() == m_pieceType) {
@@ -194,7 +254,7 @@ String PrintableMove::toStringLongFormat() const {
                             ,(m_capturedPieceType != NoPiece) ? 'x' : '-'
                             ,getFieldName(m_to));
       if(m_type == PROMOTION) {
-        result += getPieceTypeShortName(Game::legalPromotions[m_promoteIndex]);
+        result += getPieceTypeShortName(Game::s_legalPromotions[m_promoteIndex]);
       }
       result += getCheckString();
       return result;
@@ -242,7 +302,7 @@ String PrintableMove::toStringDebugFormat() const {
                  ,(m_capturedPieceType != NoPiece) ? CAPTURE_DELIMITER_STRING : _T("-")
                  ,format(_T("%s%s"),((m_capturedPieceType != NoPiece)?getPieceTypeShortName(m_capturedPieceType):EMPTYSTRING)
                                    ,getFieldName(m_to)).cstr()
-                 ,getPieceTypeShortName(Game::legalPromotions[m_promoteIndex])
+                 ,getPieceTypeShortName(Game::s_legalPromotions[m_promoteIndex])
                  ,getCheckString()
                  ,m_dirIndex
                  ,m_moveIndex
