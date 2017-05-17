@@ -219,47 +219,77 @@ int pieceTypeCmp(const PieceType &p1, const PieceType &p2);
 
 #define getFieldColor(position) Game::s_fieldInfo[position].m_fieldColor
 
-int            getStartPieceCount(                PieceType               pieceType    ); // Number of pieces for 1 player of the given PieceType
-                                                                                          // in the startconfiguration
-const TCHAR   *getPieceTypeName(                  PieceType               pieceType, bool plur = false); // Language specific name of piece of the given PieceType.
-                                                                                                         // First letter uppercase.
-                                                                                          // plur=true gives pluralis form of the name
-const TCHAR   *getPieceTypeShortName(             PieceType               pieceType    ); // Language specific short name of the given PieceType
+// Number of pieces for 1 player of the given PieceType in the startconfiguration
+int            getStartPieceCount(                PieceType               pieceType    );
+
+// Language specific name of piece of the given PieceType. First letter uppercase.
+// plur=true gives pluralis form of the name
+const TCHAR   *getPieceTypeName(                  PieceType               pieceType, bool plur = false);
+
+// Language specific short name of the given PieceType
+const TCHAR   *getPieceTypeShortName(             PieceType               pieceType    );
 const TCHAR   *getPieceTypeNameEnglish(           PieceType               pieceType, bool plur = false);
-const TCHAR   *getPieceTypeShortNameEnglish(      PieceType               type         ); // English short name of the given PieceType.
-                                                                                          // King="K", Queen="Q", Rook="R" etc.
+ // English short name of the given PieceType. King="K", Queen="Q", Rook="R" etc.
+const TCHAR   *getPieceTypeShortNameEnglish(      PieceType               type         );
+
 void           reloadStrings();
-const TCHAR   *getPlayerName(                     Player                  player        ); // Language specific name of the given Player.       First letter uppercase.
-const TCHAR   *getPlayerShortName(                Player                  player        ); // Language specific short name of the given Player. Uppercase
-const TCHAR   *getPlayerNameEnglish(              Player                  player        ); // WHITEPLAYER="white", BLACKPLAYER="black".         Lowercase
-const TCHAR   *getPlayerShortNameEnglish(         Player                  player        ); // WHITEPLAYER="W", BLACKPLAYER="B".                 Uppercase
-String         getPieceNameEnglish(               PieceKey                key           ); // ex. white king, black pawn, empty...
-const TCHAR   *getFieldName(                      int                     position      ); // a1,a2,..,b1,b2,...,h1,h8
-const TCHAR   *getFieldName(                      int row, int col                      ); // = getFieldName(MAKE_POSITION(row,col))
-TCHAR          getColumnName(                     int                     position      ); // 'a'..'h'
-TCHAR          getRowName(                        int                     position      ); // '1'..'8'
-const TCHAR   *getFieldColorName(                 FieldColor              color         ); // {"white","black"}
-const TCHAR   *getFieldColorName(                 int                     position      ); // = getFieldColorName(getFieldColor(position))
-String         getBishopFlagsToString(            BishopFlags             bishopFlags   ); // Converts the bits in bishopFlags to String, "[W][B]". For debug
-String         getCastleString(                   MoveType                type          ); // "0-0" or "0-0-0". Assume type is SHORTCASTLING or LONGCASTLING
-String         getPinnedStateToString(            PinnedState             ps            ); // Returns a string representing ps. For debug
-String         getMoveTypeName(                   MoveType                moveType      ); // Returns a string representing moveType. For debug
+// Language specific name of the given Player.       First letter uppercase.
+const TCHAR   *getPlayerName(                     Player                  player        );
+// Language specific short name of the given Player. Uppercase
+const TCHAR   *getPlayerShortName(                Player                  player        );
+// WHITEPLAYER="white", BLACKPLAYER="black".         Lowercase
+const TCHAR   *getPlayerNameEnglish(              Player                  player        );
+// WHITEPLAYER="W", BLACKPLAYER="B".                 Uppercase
+const TCHAR   *getPlayerShortNameEnglish(         Player                  player        );
+// ex. white king, black pawn, empty...
+String         getPieceNameEnglish(               PieceKey                key           );
+// a1,a2,..,b1,b2,...,h1,h8
+const TCHAR   *getFieldName(                      int                     position      );
+// = getFieldName(MAKE_POSITION(row,col))
+const TCHAR   *getFieldName(                      int row, int col                      );
+// 'a'..'h'
+TCHAR          getColumnName(                     int                     position      );
+// '1'..'8'
+TCHAR          getRowName(                        int                     position      );
+// {"white","black"}
+const TCHAR   *getFieldColorName(                 FieldColor              color         );
+// = getFieldColorName(getFieldColor(position))
+const TCHAR   *getFieldColorName(                 int                     position      );
+// Converts the bits in bishopFlags to String, "[W][B]". For debug
+String         getBishopFlagsToString(            BishopFlags             bishopFlags   );
+// "0-0" or "0-0-0". Assume type is SHORTCASTLING or LONGCASTLING
+String         getCastleString(                   MoveType                type          );
+// Returns a string representing ps. For debug
+String         getPinnedStateToString(            PinnedState             ps            );
+// Returns a string representing moveType. For debug
+String         getMoveTypeName(                   MoveType                moveType      );
 MoveDirection  getMoveDirection(                  int from, int to);
-String         getMoveDirectionName(              MoveDirection           direction     ); // Returns a string representing MoveDirection. For debug
-String         getPositionArrayToString(          PositionArray           positions     ); // Returns a string specifying the fields in the array. For debug
-String         getKingAttackStateToString(        KingAttackState         attackState   ); // Converts the bits in attackState to String. For debug
-const TCHAR   *getAnnotationToString(             MoveAnnotation          annotation    ); // Returns a string representing the MoveAnnotation. {"","?","??","!","!!","?!","!?"}
+// Returns a string representing MoveDirection. For debug
+String         getMoveDirectionName(              MoveDirection           direction     );
+// Returns a string specifying the fields in the array. For debug
+String         getPositionArrayToString(          PositionArray           positions     );
+// Converts the bits in attackState to String. For debug
+String         getKingAttackStateToString(        KingAttackState         attackState   );
+// Returns a string representing the MoveAnnotation. {"","?","??","!","!!","?!","!?"}
+const TCHAR   *getAnnotationToString(             MoveAnnotation          annotation    );
 String         getGameResultToString(             GameResult              gameResult    );
 MoveAnnotation parseAnnotation(                   const TCHAR            *str           );
 String         getSymmetricTransformationToString(SymmetricTransformation st            );
-bool           isValidPosition(                  int                      position      ); // Returns true if position = [0..63]
-bool           isValidPosition(                  int row, int col                       ); // = isValidLine(row) && isValidLine(col)
-bool           isValidPawnPosition(              int                      position      ); // Return true if position can be occupied by a pawn
-bool           isValidLine(                      int line                               ); // Returns true if line = [0..7]
-void           validatePosition(                 const TCHAR *function, int pos         ); // throws Exception if not valid.
-void           validatePosition(                 const TCHAR *function, int row, int col); // throws Exception if not valid.
+// Returns true if position = [0..63]
+bool           isValidPosition(                  int                      position      );
+// = isValidLine(row) && isValidLine(col)
+bool           isValidPosition(                  int row, int col                       );
+// Return true if position can be occupied by a pawn
+bool           isValidPawnPosition(              int                      position      );
+// Returns true if line = [0..7]
+bool           isValidLine(                      int line                               );
+// throws Exception if not valid.
+void           validatePosition(                 const TCHAR *function, int pos         );
+// throws Exception if not valid.
+void           validatePosition(                 const TCHAR *function, int row, int col);
 int            decodePosition(                   const String &s                        );
-int            decodePosition(                   const TCHAR  *str                      ); // assume str at least 2 characters
+// assume str at least 2 characters
+int            decodePosition(                   const TCHAR  *str                      );
 MoveDirection  getOppositeDirection(             MoveDirection direction                );
 String         findShortestKnightRoute(          UINT from, UINT to);
 
@@ -278,13 +308,17 @@ const FieldSet &getFieldsBetween(                int pos1, int pos2             
 FieldSet        getFieldsBetween(                int pos1, int pos2                    );
 #endif
 
-void           invalidPlayerError(               const TCHAR *method, Player player   ); // throws an Exception
+// throws an Exception
+void           invalidPlayerError(               const TCHAR *method, Player player   );
 #define INVALIDPLAYERERROR(player) invalidPlayerError(__TFUNCTION__, player)
 
 void           setCurrentLanguage(LANGID langID);
-String         getResourceFileName(              const String &fileName                ); // Return a filename in the resourcedirectory
-String         getTempFileName(                  const String &fileName                ); // Return String c:\temp\fileName
-String         createTempFileName();                                                      // Return a temporary filename in c:\temp
+// Return a filename in the resourcedirectory
+String         getResourceFileName(              const String &fileName                );
+// Return String c:\temp\fileName
+String         getTempFileName(                  const String &fileName                );
+// Return a temporary filename in c:\temp
+String         createTempFileName();
 
 class VerboseReceiver {
 public:
@@ -296,19 +330,24 @@ public:
 extern VerboseReceiver *VERBOSENULL;
 
 void throwUserException(int id, ...);
-void verbose(            const TCHAR *format, ...);            // log to stderr and logfile if opened with setVerboseLogging
+// log to stderr and logfile if opened with setVerboseLogging
+void verbose(            const TCHAR *format, ...);
 void updateMessageField( const TCHAR *format, ...);
-void vverbose(           const TCHAR *format, va_list argptr); // same as verbose, Takes a va_list as argument.            Default writes to stderr
-void vupdateMessageField(const TCHAR *format, va_list argptr); // same as updateMessageField. Takes a va_list as argument. Default writes to stderr
+// same as verbose, Takes a va_list as argument.            Default writes to stderr
+void vverbose(           const TCHAR *format, va_list argptr);
+// same as updateMessageField. Takes a va_list as argument. Default writes to stderr
+void vupdateMessageField(const TCHAR *format, va_list argptr);
 void clearVerbose();
 
 void redirectVerbose(VerboseReceiver *receiver);
-void log(const TCHAR *format, ...);                            // log only to logfile if open
+// log only to logfile if open
+void log(const TCHAR *format, ...);
 void vlog(const TCHAR *format, va_list argptr);
-void setVerboseLogging(bool on);                               // If on is true, everything logged by verbose or log will go to logfile
-                                                               // which has an automatic generated, unique name
-                                                               // (template "c:\temp\chess<timestamp>.log")
-                                                               // If on is false, an open logfil will be closed
+// If on is true, everything logged by verbose or log will go to logfile
+// which has an automatic generated, unique name
+// (template "c:\temp\chess<timestamp>.log")
+// If on is false, an open logfil will be closed
+void setVerboseLogging(bool on);
 
 class Direction {
 public:
@@ -333,7 +372,6 @@ public:
   {
   }
 #endif
-
 };
 
 class DirectionArray {
@@ -587,10 +625,11 @@ private:
   GameUpdateFunction           m_doBackMove;
 #endif
 
-// Set when moved or captured
+  // Set when moved or captured
   UINT                         m_position;
   bool                         m_onBoard;
-  PinnedState                 &m_pinnedState; // Reference to m_playerState.m_pinnedState[m_index]
+  // Reference to m_playerState.m_pinnedState[m_index]
+  PinnedState                 &m_pinnedState;
 
 // Set by makeLinks
   Piece                       *m_next;
@@ -693,7 +732,8 @@ public:
   }
   bool isGoodMove() const;
   PieceType getPromoteTo() const;
-  MoveBase &setNoMove();                                        // Return *this
+  // Return *this
+  MoveBase &setNoMove();
 
 #ifdef TABLEBASE_BUILDER
   MoveBase &swapFromTo();
@@ -701,7 +741,8 @@ public:
 
   String toString() const; // FILEFORMAT
   static int getMaxStringLength(MoveStringFormat mf);
-  bool operator==(const MoveBase &m) const; // compare only from,to,promoteIndex , not annotations
+  // compare only from,to,promoteIndex, not annotations
+  bool operator==(const MoveBase &m) const;
   bool operator!=(const MoveBase &m) const; // do
 };
 
@@ -715,7 +756,8 @@ public:
   Piece *m_piece;
   Piece *m_capturedPiece;
   Move &setNoMove();                                            // Return *this
-  String toString(MoveStringFormat mf = MOVE_LONGFORMAT) const; // Do not accept SHORTFORMAT
+  // Do not accept SHORTFORMAT
+  String toString(MoveStringFormat mf = MOVE_LONGFORMAT) const;
   inline PieceType getPieceType() const {
     return m_piece ? m_piece->getType() : NoPiece;
   }
@@ -839,19 +881,29 @@ private:
   static GameKey startupPosition;
   CastleState findCastleState(Player player) const;
 
-  GameKey swapPlayers()   const;                              // Change black <-> white pieces, and mirror row numbers.
-  GameKey rotate180()     const;                              // Rotate positions for every piece 180 degrees around the middle
-  GameKey rotateRight()   const;                              // Rotate positions for every piece 90 degrees clockwise around middle
-  GameKey rotateLeft()    const;                              // Rotate positions for every piece 90 degrees counterclockwise around middle
-  GameKey mirrorRows()    const;                              // Mirror rows for ervery piece   (new row = 7 - oldrow)
-  GameKey mirrorColumns() const;                              // Mirror columns for every piece (new column = 7 - oldcolumn).
-  GameKey mirrorDiag1()   const;                              // Mirror positions for every piece in A1-H8-diagonal. Be careful if pawns on the board
-  GameKey mirrorDiag2()   const;                              // Mirror positions for every piece in H1-A8-diagonal. Be careful if pawns on the board
-  TCHAR *getFENBoardString( TCHAR *dst) const;                  // Return piece positions in FEN-format
+  // Change black <-> white pieces, and mirror row numbers.
+  GameKey swapPlayers()   const;
+  // Rotate positions for every piece 180 degrees around the middle
+  GameKey rotate180()     const;
+  // Rotate positions for every piece 90 degrees clockwise around middle
+  GameKey rotateRight()   const;
+  // Rotate positions for every piece 90 degrees counterclockwise around middle
+  GameKey rotateLeft()    const;
+  // Mirror rows for ervery piece   (new row = 7 - oldrow)
+  GameKey mirrorRows()    const;
+  // Mirror columns for every piece (new column = 7 - oldcolumn).
+  GameKey mirrorColumns() const;
+  // Mirror positions for every piece in A1-H8-diagonal. Be careful if pawns on the board
+  GameKey mirrorDiag1()   const;
+  // Mirror positions for every piece in H1-A8-diagonal. Be careful if pawns on the board
+  GameKey mirrorDiag2()   const;
+  // Return piece positions in FEN-format
+  TCHAR *getFENBoardString( TCHAR *dst) const;
   TCHAR *getFENCastleString(TCHAR *dst) const;
   TCHAR *getFENEpString(    TCHAR *dst) const;
 public:
-  static const char    castleScore[16];                       // Indexed by m_castleState
+  // Indexed by m_castleState
+  static const char    castleScore[16];
   static void validateSize();
 
   union {
@@ -881,12 +933,14 @@ public:
 
   ULONG hashCode() const;
 
-  GameKey transform(       SymmetricTransformation st) const; // Return key obtained by doing the specified transformations on this
+  // Return key obtained by doing the specified transformations on this
+  GameKey transform(       SymmetricTransformation st) const;
   static int transform(    int pos, SymmetricTransformation st);
   PositionSignature getPositionSignature() const;
 
   String toString() const;
-  String toFENString(int plyCountWithoutCaptureOrPawnMove=0, int moveNumber=1) const; // Forsyth-Edwards Notation
+  // Forsyth-Edwards Notation
+  String toFENString(int plyCountWithoutCaptureOrPawnMove=0, int moveNumber=1) const;
   static const GameKey &getStartUpPosition();
 };
 
