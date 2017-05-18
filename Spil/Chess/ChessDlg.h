@@ -2,6 +2,7 @@
 
 #include <Stack.h>
 #include <MFCUTIL/LayoutManager.h>
+#include <HashMap.h>
 #include "ChessGraphics.h"
 #include "GameEditHistory.h"
 #include "ChessPlayer.h"
@@ -70,7 +71,7 @@ private:
   GameEditHistory         m_editHistory;
   BitSet8                 m_timersRunning;
   ChessWatch              m_watch;
-  String                  m_origEscapeMenuText;
+  mutable IntHashMap<String> m_origMenuText;
   ChessPlayer            *m_chessPlayer[2];
 
   void   commonInit();
@@ -90,7 +91,13 @@ private:
   }
   void   setGameAfterPly(int ply);
   void   ajourMenuItemsEnableStatus();
+  // do nothing if original menutext already saved
+  String saveOrigMenuText(int id);
+  void   saveAndSetMenuText(int id, const String &s);
+  // put original menutext back to menu
+  void   resetMenuText(int id);
   void   enableRemoteGameItems();
+  void   updateLevelItemsText();
   void   enableLevelItems();
   void   enableUndoRedo();
   void   enableEditBoardMenuItems(     bool startEdit, bool editEnabled);
@@ -99,9 +106,9 @@ private:
   void   enableHintItems();
   void   enableTestMenu(               bool enabled);
   void   enableTestMenuItems();
+  void   updateEscapeMenuItem();
   void   setTestItemStates();
   void   setEscapeMenuText(int textId, bool enabled);
-  void   resetEscapeMenuText(          bool enabled);
   void   buildAndMarkLanguageMenu();
   void   buildEngineMenues();
   void   addEnginesToMenu(HMENU menu, int startId);

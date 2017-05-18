@@ -71,7 +71,7 @@ public:
   String m_name;
   String m_author;
 
-  EngineDescription(const String &path=_T("")) : m_path(path) {
+  EngineDescription(const String &path=EMPTYSTRING) : m_path(path) {
   }
   const String &getPath() const {
     return m_path;
@@ -83,7 +83,7 @@ public:
     return m_author;
   }
   void clear() {
-    m_path = m_name = m_author = _T("");
+    m_path = m_name = m_author = EMPTYSTRING;
   }
   bool operator==(const EngineDescription &desc) const;
   bool operator!=(const EngineDescription &desc) const {
@@ -156,7 +156,7 @@ private:
 public:
   LevelTimeout();
   void setDefault();
-  double getTimeout(int level) const; // in seconds
+  double getTimeout(int level) const; // in seconds. level = [1..LEVELCOUNT]
   void setTimeout(int level, double seconds);
   bool operator==(const LevelTimeout &rhs) const;
   bool operator!=(const LevelTimeout &rhs) const;

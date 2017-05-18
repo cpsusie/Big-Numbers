@@ -86,6 +86,7 @@ void CChessDlg::commonInit() {
     // redirect verbose to traceWindow
     s_traceThread = CTraceDlgThread::startThread();
   }
+
 }
 
 CChessDlg::~CChessDlg() {
@@ -375,7 +376,7 @@ BOOL CChessDlg::OnInitDialog() {
     }
     break;
   case ANALYZEMODE:
-    m_origEscapeMenuText = loadString(IDS_MOVETOSTART);
+    setMenuItemText(this, ID_ESCAPE, loadString(IDS_MOVETOSTART));
     removeSubMenuContainingId(this, ID_FILE_NEWGAME_YOUPLAYWHITE   );
     removeMenuItem(           this, ID_EDIT_PASTE_FEN              );
     removeMenuItem(           this, ID_EDIT_STARTSETUP             );
@@ -473,14 +474,12 @@ void CChessDlg::OnPaint() {
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
 
     // Center icon in client rectangle
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width() - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
 
-    // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     CDialog::OnPaint();
@@ -535,17 +534,14 @@ void CChessDlg::ajourMenuItemsEnableStatus() {
 
   case EDITMODE :
     enableEditBoardMenuItems(false,true);
-    resetEscapeMenuText(true);
     break;
 
   case DEBUGMODE:
     enableEditBoardMenuItems(true,false);
-    setEscapeMenuText(IDS_ENDDEBUG, true);
     break;
 
   case AUTOPLAYMODE:
     enableEditBoardMenuItems(false,false);
-    setEscapeMenuText(IDS_ENDAUTOPLAY, true);
     break;
 
   case ANALYZEMODE:
@@ -555,7 +551,6 @@ void CChessDlg::ajourMenuItemsEnableStatus() {
 
   case KNIGHTROUTEMODE:
     enableEditBoardMenuItems(false,false);
-    setEscapeMenuText(IDS_ENDDEBUG, true);
     break;
 
   default:
@@ -566,10 +561,12 @@ void CChessDlg::ajourMenuItemsEnableStatus() {
   enableRemoteGameItems();
   enableMenuItem(           this, ID_FILE_SHOWHISTORY         , (mode == PLAYMODE) || (mode == DEBUGMODE));
   enableMenuItem(           this, ID_FILE_RESIGN              , (mode == PLAYMODE) && (getPlyCount() > 0));
+  updateEscapeMenuItem();
   enableUndoRedo();
   enableStartThinking();
   enableMenuItem(           this, ID_TABLEBASE_SETTINGS       , isMenuItemChecked(this, ID_ENDGAMETABLEBASE_ENABLED));
   enableSubMenuContainingId(this, ID_AUTOPLAY_RESTART_AT_END  , mode == PLAYMODE);
+  updateLevelItemsText();
   enableLevelItems();
   enableHintItems();
   enableTestMenuItems();
@@ -633,6 +630,53 @@ void CChessDlg::enableStartThinking() {
   enableMenuItem(this, ID_SETTINGS_START_THINKING, thinkEnabled  );
 }
 
+typedef struct {
+  int m_level;
+  int m_menuId;
+} LevelMenuItem;
+
+void CChessDlg::updateLevelItemsText() {
+  const LevelMenuItem items[] = {
+    1, ID_AUTOPLAY_BOTH_LEVEL_1
+   ,2, ID_AUTOPLAY_BOTH_LEVEL_2
+   ,3, ID_AUTOPLAY_BOTH_LEVEL_3
+   ,4, ID_AUTOPLAY_BOTH_LEVEL_4
+   ,5, ID_AUTOPLAY_BOTH_LEVEL_5
+   ,6, ID_AUTOPLAY_BOTH_LEVEL_6
+   ,1, ID_AUTOPLAY_WHITE_LEVEL_1
+   ,2, ID_AUTOPLAY_WHITE_LEVEL_2
+   ,3, ID_AUTOPLAY_WHITE_LEVEL_3
+   ,4, ID_AUTOPLAY_WHITE_LEVEL_4
+   ,5, ID_AUTOPLAY_WHITE_LEVEL_5
+   ,6, ID_AUTOPLAY_WHITE_LEVEL_6
+   ,1, ID_AUTOPLAY_BLACK_LEVEL_1
+   ,2, ID_AUTOPLAY_BLACK_LEVEL_2
+   ,3, ID_AUTOPLAY_BLACK_LEVEL_3
+   ,4, ID_AUTOPLAY_BLACK_LEVEL_4
+   ,5, ID_AUTOPLAY_BLACK_LEVEL_5
+   ,6, ID_AUTOPLAY_BLACK_LEVEL_6
+   ,1, ID_LEVEL_1
+   ,2, ID_LEVEL_2
+   ,3, ID_LEVEL_3
+   ,4, ID_LEVEL_4
+   ,5, ID_LEVEL_5
+   ,6, ID_LEVEL_6
+  };
+  for(int i = 0; i < ARRAYSIZE(items); i++) {
+    const LevelMenuItem &item = items[i];
+    const double   timeout = getOptions().getLevelTimeout().getTimeout(item.m_level);
+    String         s       = saveOrigMenuText(item.m_menuId);
+    const intptr_t tabPos  = s.find('\t');
+    const String   secStr  = format(_T("%s%lg sec."), (tabPos < 0) ? _T("\t") : _T(" "), timeout);
+    if(tabPos >= 0) {
+      s.insert(tabPos, secStr);
+    } else {
+      s += secStr;
+    }
+    setMenuItemText(this, item.m_menuId, s);
+  }
+}
+
 void CChessDlg::enableLevelItems() {
   bool enabled = true;
   switch(m_initialMode) {
@@ -667,10 +711,8 @@ void CChessDlg::enableHintItems() {
   case ANALYZEMODE:
   case DEBUGMODE  :
     if(isThinking()) {
-      setEscapeMenuText(IDS_ENDSEARCH, true);
       hintEnabled = searchForeverEnabled = false;
     } else {
-      resetEscapeMenuText(getDialogMode() != PLAYMODE);
       hintEnabled = (getPlayerInTurn() == getHumanPlayer()) || (getDialogMode() == DEBUGMODE);
       searchForeverEnabled = true;
     }
@@ -698,19 +740,60 @@ void CChessDlg::enableTestMenuItems() {
 #endif
 }
 
-void CChessDlg::setEscapeMenuText(int textId, bool enabled) {
-  String tmp = setMenuItemText(this, ID_ESCAPE, loadString(textId));
-  if(m_origEscapeMenuText.length() == 0) {
-    m_origEscapeMenuText = tmp;
+void CChessDlg::updateEscapeMenuItem() {
+  switch(getDialogMode()) {
+  case PLAYMODE       :
+     if(isThinking()) {
+       setEscapeMenuText(IDS_ENDSEARCH, true);
+     } else {
+       resetMenuText(ID_ESCAPE);
+       enableMenuItem(this, ID_ESCAPE, false);
+     }
+     break;
+  case DEBUGMODE      :
+     if(isThinking()) {
+       setEscapeMenuText(IDS_ENDSEARCH, true);
+     } else {
+       setEscapeMenuText(IDS_ENDDEBUG, true);
+     }
+     break;
+  case EDITMODE       :
+    resetMenuText(ID_ESCAPE);
+    enableMenuItem(this, ID_ESCAPE, true);
+    break;
+  case AUTOPLAYMODE   :
+    setEscapeMenuText(IDS_ENDAUTOPLAY, true);
+    break;
+  case ANALYZEMODE    :
+  case KNIGHTROUTEMODE:
+    setEscapeMenuText(IDS_ENDDEBUG, true);
+    break;
   }
+}
+
+void CChessDlg::setEscapeMenuText(int textId, bool enabled) {
+  saveOrigMenuText(ID_ESCAPE);
+  setMenuItemText(this, ID_ESCAPE, loadString(textId));
   enableMenuItem(this, ID_ESCAPE, enabled);
 }
 
-void CChessDlg::resetEscapeMenuText(bool enabled) {
-  if(m_origEscapeMenuText.length() > 0) {
-    setMenuItemText(this,ID_ESCAPE, m_origEscapeMenuText);
-  }
-  enableMenuItem(this, ID_ESCAPE, enabled);
+// -------------------------------------------------------------------
+
+String CChessDlg::saveOrigMenuText(int id) {
+  const String *s = m_origMenuText.get(id);
+  if(s) return *s;
+  const String tmp = getMenuItemText(this, id);
+  m_origMenuText.put(id, tmp);
+  return tmp;
+}
+
+void CChessDlg::saveAndSetMenuText(int id, const String &s) {
+  saveOrigMenuText(id);
+  setMenuItemText(this,id, s);
+}
+
+void CChessDlg::resetMenuText(int id) {
+  setMenuItemText(this,id, saveOrigMenuText(id));
 }
 
 // ------------------------- Dialog mode ---------------------------
@@ -2480,11 +2563,6 @@ void CChessDlg::OnSettingsResetClock() {
   updateClock();
 }
 
-typedef struct {
-  int m_level;
-  int m_id;
-} LevelMenuItem;
-
 void CChessDlg::setLevel(int level) {
   static const LevelMenuItem itemArray[] = {
     LEVEL_SPEEDCHESS , ID_LEVEL_SPEEDCHESS
@@ -2506,7 +2584,7 @@ void CChessDlg::setLevel(int level) {
     }
 
     for(int i = 0; i < ARRAYSIZE(itemArray); i++) {
-      checkMenuItem(this, itemArray[i].m_id, i == (item - itemArray));
+      checkMenuItem(this, itemArray[i].m_menuId, i == (item - itemArray));
     }
     getOptions().setNormalPlayLevel(item->m_level);
     setVisibleClocks();

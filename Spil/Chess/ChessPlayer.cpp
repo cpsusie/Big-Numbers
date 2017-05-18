@@ -373,7 +373,10 @@ void ChessPlayer::dohandleFindMoveRequest(const FindMoveRequestParam &param) {
 void ChessPlayer::handleNullMoveRequest() {
   ENTER_LOCK();
   try {
-    CHECKSTATE(CPS_IDLE);
+    CHECKSTATE(CPS_IDLE, CPS_MOVEREADY);
+    if(getState() == CPS_MOVEREADY) {
+      setState(CPS_IDLE);
+    }
     m_searchResult.clear();
     setState(CPS_MOVEREADY);
     UNLOCK_LEAVE();

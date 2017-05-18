@@ -98,7 +98,7 @@ void CConnectDlg::makeHandshake() {
       CDialog::OnOK();
     } else {
       m_listener = tcpCreate(PORTNUMBER);
-      GetDlgItem(IDC_STATIC_WAITING      )->SetWindowText(loadString(IDS_MSG_WAIT_FOR_CONNECTION).cstr());
+      setWindowText(this, IDC_STATIC_WAITING, loadString(IDS_MSG_WAIT_FOR_CONNECTION));
       GetDlgItem(IDC_GROUP_CONNECTMETHOD )->EnableWindow(FALSE);
       GetDlgItem(IDC_RADIO_CONNECTTOGAME )->EnableWindow(FALSE);
       GetDlgItem(IDC_RADIO_CREATEGAME    )->EnableWindow(FALSE);
