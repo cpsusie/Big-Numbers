@@ -223,7 +223,7 @@ int WINAPI WinMain( HINSTANCE hInstance,
 
     UnregisterClass( "MY_WINDOWS_CLASS", winClass.hInstance );
 
-    return uMsg.wParam;
+    return (int)uMsg.wParam;
 }
 
 //-----------------------------------------------------------------------------

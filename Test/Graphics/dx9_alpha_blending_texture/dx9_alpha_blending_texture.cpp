@@ -61,42 +61,42 @@ struct Vertex
 
 Vertex g_cubeVertices[] =
 {
-	{-1.0f, 1.0f,-1.0f,  0.0f,0.0f },
-	{ 1.0f, 1.0f,-1.0f,  1.0f,0.0f },
-	{-1.0f,-1.0f,-1.0f,  0.0f,1.0f },
-	{ 1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-	
-	{-1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-	{-1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-	{ 1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-	{ 1.0f,-1.0f, 1.0f,  0.0f,1.0f },
-	
-	{-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-	{ 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-	{-1.0f, 1.0f,-1.0f,  0.0f,1.0f },
-	{ 1.0f, 1.0f,-1.0f,  1.0f,1.0f },
-	
-	{-1.0f,-1.0f, 1.0f,  0.0f,1.0f },
-	{-1.0f,-1.0f,-1.0f,  0.0f,0.0f },
-	{ 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-	{ 1.0f,-1.0f,-1.0f,  1.0f,0.0f },
+  {-1.0f, 1.0f,-1.0f,  0.0f,0.0f },
+  { 1.0f, 1.0f,-1.0f,  1.0f,0.0f },
+  {-1.0f,-1.0f,-1.0f,  0.0f,1.0f },
+  { 1.0f,-1.0f,-1.0f,  1.0f,1.0f },
+  
+  {-1.0f, 1.0f, 1.0f,  1.0f,0.0f },
+  {-1.0f,-1.0f, 1.0f,  1.0f,1.0f },
+  { 1.0f, 1.0f, 1.0f,  0.0f,0.0f },
+  { 1.0f,-1.0f, 1.0f,  0.0f,1.0f },
+  
+  {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
+  { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
+  {-1.0f, 1.0f,-1.0f,  0.0f,1.0f },
+  { 1.0f, 1.0f,-1.0f,  1.0f,1.0f },
+  
+  {-1.0f,-1.0f, 1.0f,  0.0f,1.0f },
+  {-1.0f,-1.0f,-1.0f,  0.0f,0.0f },
+  { 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
+  { 1.0f,-1.0f,-1.0f,  1.0f,0.0f },
 
-	{ 1.0f, 1.0f,-1.0f,  0.0f,0.0f },
-	{ 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
-	{ 1.0f,-1.0f,-1.0f,  0.0f,1.0f },
-	{ 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
-	
-	{-1.0f, 1.0f,-1.0f,  1.0f,0.0f },
-	{-1.0f,-1.0f,-1.0f,  1.0f,1.0f },
-	{-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
-	{-1.0f,-1.0f, 1.0f,  0.0f,1.0f }
+  { 1.0f, 1.0f,-1.0f,  0.0f,0.0f },
+  { 1.0f, 1.0f, 1.0f,  1.0f,0.0f },
+  { 1.0f,-1.0f,-1.0f,  0.0f,1.0f },
+  { 1.0f,-1.0f, 1.0f,  1.0f,1.0f },
+  
+  {-1.0f, 1.0f,-1.0f,  1.0f,0.0f },
+  {-1.0f,-1.0f,-1.0f,  1.0f,1.0f },
+  {-1.0f, 1.0f, 1.0f,  0.0f,0.0f },
+  {-1.0f,-1.0f, 1.0f,  0.0f,1.0f }
 };
 
 //-----------------------------------------------------------------------------
 // PROTOTYPES
 //-----------------------------------------------------------------------------
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
-				   LPSTR lpCmdLine, int nCmdShow);
+           LPSTR lpCmdLine, int nCmdShow);
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void loadTexture(void);
 void init(void);
@@ -108,60 +108,60 @@ void render(void);
 // Desc: The application's entry point
 //-----------------------------------------------------------------------------
 int WINAPI WinMain(	HINSTANCE hInstance,
-					HINSTANCE hPrevInstance,
-					LPSTR     lpCmdLine,
-					int       nCmdShow )
+              HINSTANCE hPrevInstance,
+          LPSTR     lpCmdLine,
+          int       nCmdShow )
 {
-	WNDCLASSEX winClass; 
-	MSG        uMsg;
+  WNDCLASSEX winClass; 
+  MSG        uMsg;
 
     memset(&uMsg,0,sizeof(uMsg));
     
-	winClass.lpszClassName = "MY_WINDOWS_CLASS";
-	winClass.cbSize        = sizeof(WNDCLASSEX);
-	winClass.style         = CS_HREDRAW | CS_VREDRAW;
-	winClass.lpfnWndProc   = WindowProc;
-	winClass.hInstance     = hInstance;
-	winClass.hIcon	       = LoadIcon(hInstance, (LPCTSTR)IDI_DIRECTX_ICON);
+  winClass.lpszClassName = "MY_WINDOWS_CLASS";
+  winClass.cbSize        = sizeof(WNDCLASSEX);
+  winClass.style         = CS_HREDRAW | CS_VREDRAW;
+  winClass.lpfnWndProc   = WindowProc;
+  winClass.hInstance     = hInstance;
+  winClass.hIcon	       = LoadIcon(hInstance, (LPCTSTR)IDI_DIRECTX_ICON);
     winClass.hIconSm	   = LoadIcon(hInstance, (LPCTSTR)IDI_DIRECTX_ICON);
-	winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
-	winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
-	winClass.lpszMenuName  = NULL;
-	winClass.cbClsExtra    = 0;
-	winClass.cbWndExtra    = 0;
+  winClass.hCursor       = LoadCursor(NULL, IDC_ARROW);
+  winClass.hbrBackground = (HBRUSH)GetStockObject(BLACK_BRUSH);
+  winClass.lpszMenuName  = NULL;
+  winClass.cbClsExtra    = 0;
+  winClass.cbWndExtra    = 0;
 
-	if( !RegisterClassEx(&winClass) )
-		return E_FAIL;
+  if( !RegisterClassEx(&winClass) )
+    return E_FAIL;
 
-	g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS", 
+  g_hWnd = CreateWindowEx( NULL, "MY_WINDOWS_CLASS", 
                              "Direct3D (DX9) - Texture Alpha Blending",
-						     WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-					         0, 0, 640, 480, NULL, NULL, hInstance, NULL );
+                 WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                   0, 0, 640, 480, NULL, NULL, hInstance, NULL );
 
-	if( g_hWnd == NULL )
-		return E_FAIL;
+  if( g_hWnd == NULL )
+    return E_FAIL;
 
     ShowWindow( g_hWnd, nCmdShow );
     UpdateWindow( g_hWnd );
 
-	init();
+  init();
 
-	while( uMsg.message != WM_QUIT )
-	{
-		if( PeekMessage( &uMsg, NULL, 0, 0, PM_REMOVE ) )
-		{ 
-			TranslateMessage( &uMsg );
-			DispatchMessage( &uMsg );
-		}
+  while( uMsg.message != WM_QUIT )
+  {
+    if( PeekMessage( &uMsg, NULL, 0, 0, PM_REMOVE ) )
+    { 
+      TranslateMessage( &uMsg );
+      DispatchMessage( &uMsg );
+    }
         else
             render();
-	}
+  }
 
-	shutDown();
+  shutDown();
 
-    UnregisterClass( "MY_WINDOWS_CLASS", winClass.hInstance );
+  UnregisterClass( "MY_WINDOWS_CLASS", winClass.hInstance );
 
-	return uMsg.wParam;
+  return (int)uMsg.wParam;
 }
 
 //-----------------------------------------------------------------------------
@@ -169,20 +169,20 @@ int WINAPI WinMain(	HINSTANCE hInstance,
 // Desc: The window's message handler
 //-----------------------------------------------------------------------------
 LRESULT CALLBACK WindowProc( HWND   hWnd, 
-							 UINT   msg, 
-							 WPARAM wParam, 
-							 LPARAM lParam )
+               UINT   msg, 
+               WPARAM wParam, 
+               LPARAM lParam )
 {
     static POINT ptLastMousePosit;
-	static POINT ptCurrentMousePosit;
-	static bool bMousing;
-	
+  static POINT ptCurrentMousePosit;
+  static bool bMousing;
+  
     switch( msg )
-	{	
+  {	
         case WM_CHAR:
-		{
-			switch( wParam )
-			{
+    {
+      switch( wParam )
+      {
                 case 'b':
                 case 'B':
                     g_bBlending = !g_bBlending;
@@ -197,12 +197,12 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
         break;
 
         case WM_KEYDOWN:
-		{
-			switch( wParam )
-			{
-				case VK_ESCAPE:
-					PostQuitMessage(0);
-					break;
+    {
+      switch( wParam )
+      {
+        case VK_ESCAPE:
+          PostQuitMessage(0);
+          break;
 
                 case 38: // Up Arrow Key
                     g_fDistance -= 0.1f;
@@ -211,60 +211,60 @@ LRESULT CALLBACK WindowProc( HWND   hWnd,
                 case 40: // Down Arrow Key
                     g_fDistance += 0.1f;
                     break;
-			}
-		}
+      }
+    }
         break;
 
         case WM_LBUTTONDOWN:
-		{
-			ptLastMousePosit.x = ptCurrentMousePosit.x = LOWORD (lParam);
+    {
+      ptLastMousePosit.x = ptCurrentMousePosit.x = LOWORD (lParam);
             ptLastMousePosit.y = ptCurrentMousePosit.y = HIWORD (lParam);
-			bMousing = true;
-		}
-		break;
+      bMousing = true;
+    }
+    break;
 
-		case WM_LBUTTONUP:
-		{
-			bMousing = false;
-		}
-		break;
+    case WM_LBUTTONUP:
+    {
+      bMousing = false;
+    }
+    break;
 
-		case WM_MOUSEMOVE:
-		{
-			ptCurrentMousePosit.x = LOWORD (lParam);
-			ptCurrentMousePosit.y = HIWORD (lParam);
+    case WM_MOUSEMOVE:
+    {
+      ptCurrentMousePosit.x = LOWORD (lParam);
+      ptCurrentMousePosit.y = HIWORD (lParam);
 
-			if( bMousing )
-			{
-				g_fSpinX -= (ptCurrentMousePosit.x - ptLastMousePosit.x);
-				g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y);
-			}
-			
-			ptLastMousePosit.x = ptCurrentMousePosit.x;
+      if( bMousing )
+      {
+        g_fSpinX -= (ptCurrentMousePosit.x - ptLastMousePosit.x);
+        g_fSpinY -= (ptCurrentMousePosit.y - ptLastMousePosit.y);
+      }
+      
+      ptLastMousePosit.x = ptCurrentMousePosit.x;
             ptLastMousePosit.y = ptCurrentMousePosit.y;
-		}
-		break;
+    }
+    break;
 
-		case WM_CLOSE:
-		{
-			PostQuitMessage(0);	
-		}
-		break;
-		
+    case WM_CLOSE:
+    {
+      PostQuitMessage(0);	
+    }
+    break;
+    
         case WM_DESTROY:
-		{
+    {
             PostQuitMessage(0);
-		}
+    }
         break;
 
-		default:
-		{
-			return DefWindowProc( hWnd, msg, wParam, lParam );
-		}
-		break;
-	}
+    default:
+    {
+      return DefWindowProc( hWnd, msg, wParam, lParam );
+    }
+    break;
+  }
 
-	return 0;
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -275,8 +275,8 @@ void loadTexture(void)
 {
     D3DXCreateTextureFromFile( g_pd3dDevice, "radiation_box.tga", &g_pTexture );
 
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
-	g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
+  g_pd3dDevice->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_LINEAR);
+  g_pd3dDevice->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_LINEAR);
 }
 
 //-----------------------------------------------------------------------------
@@ -305,17 +305,17 @@ void init( void )
                           D3DCREATE_SOFTWARE_VERTEXPROCESSING,
                           &d3dpp, &g_pd3dDevice );
 
-	loadTexture();
+  loadTexture();
 
-	g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex),0, Vertex::FVF_Flags,
+  g_pd3dDevice->CreateVertexBuffer( 24*sizeof(Vertex),0, Vertex::FVF_Flags,
                                       D3DPOOL_DEFAULT, &g_pVertexBuffer, NULL );
-	void *pVertices = NULL;
+  void *pVertices = NULL;
 
     g_pVertexBuffer->Lock( 0, sizeof(g_cubeVertices), (void**)&pVertices, 0 );
     memcpy( pVertices, g_cubeVertices, sizeof(g_cubeVertices) );
     g_pVertexBuffer->Unlock();
-	
-	g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
+  
+  g_pd3dDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
     g_pd3dDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 
     D3DXMATRIX matProj;
@@ -354,14 +354,14 @@ void render( void )
 
     D3DXMATRIX matWorld;
     D3DXMATRIX matTrans;
-	D3DXMATRIX matRot;
+  D3DXMATRIX matRot;
 
     D3DXMatrixTranslation( &matTrans, 0.0f, 0.0f, g_fDistance );
 
-	D3DXMatrixRotationYawPitchRoll( &matRot, 
-		                            D3DXToRadian(g_fSpinX), 
-		                            D3DXToRadian(g_fSpinY), 
-		                            0.0f );
+  D3DXMatrixRotationYawPitchRoll( &matRot, 
+                                D3DXToRadian(g_fSpinX), 
+                                D3DXToRadian(g_fSpinY), 
+                                0.0f );
     matWorld = matRot * matTrans;
     g_pd3dDevice->SetTransform( D3DTS_WORLD, &matWorld );
 
@@ -399,9 +399,9 @@ void render( void )
     //
     // http://www.opengl.org/resources/tutorials/sig99/advanced99/notes/node204.html
     //
-	
+  
     if( g_bBlending == true )
-	{
+  {
         //
         // Use the texture's alpha channel to blend it with whatever’s already 
         // in the frame-buffer.
@@ -416,7 +416,7 @@ void render( void )
         g_pd3dDevice->SetFVF( Vertex::FVF_Flags );
 
         if( g_bSortUsingCullModeTrick == true )
-	    {
+      {
             //
             // Use the cull-mode sorting trick for convex non-overlapping 
             // geometry.
@@ -467,15 +467,15 @@ void render( void )
             g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 16, 2 );
             g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 20, 2 );
         }
-	}
-	else
-	{
+  }
+  else
+  {
         //
         // Render the cube, but do no blending...
         //
 
-		g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
-		g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
+    g_pd3dDevice->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
+    g_pd3dDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 
         g_pd3dDevice->SetTexture( 0, g_pTexture );
         g_pd3dDevice->SetStreamSource( 0, g_pVertexBuffer, 0, sizeof(Vertex) );
@@ -487,7 +487,7 @@ void render( void )
         g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 12, 2 );
         g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 16, 2 );
         g_pd3dDevice->DrawPrimitive( D3DPT_TRIANGLESTRIP, 20, 2 );
-	}
+  }
 
     g_pd3dDevice->EndScene();
     g_pd3dDevice->Present( NULL, NULL, NULL, NULL );
