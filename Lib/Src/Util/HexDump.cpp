@@ -2,7 +2,7 @@
 
 #define LINESIZE 16
 
-#define LINESTRING()  spaceString(60, _T('-'))
+#define LINESTRING()  (spaceString(60, _T('-'))+_T("\n"))
 
 String hexdumpString(const void *data, int size) {
   String result = format(_T("hexdump(size=%u)\n"), size);
