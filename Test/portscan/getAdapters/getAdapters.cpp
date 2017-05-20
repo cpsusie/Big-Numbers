@@ -1,14 +1,11 @@
 #include "stdafx.h"
 
+#include <stdio.h>
+#include <tchar.h>
 #include <winsock2.h>
 #include <iphlpapi.h>
-/*
-//#include <winsock2.h>
-#include <IPTypes.h>
-#include <IPExport.h>
-//#include <lm.h>
-//#include <iphlpapi.h>
-*/
+
+#pragma comment(lib, "IPHLPAPI.lib")
 
 void listAdaptersInfo(PIP_ADAPTER_INFO pAdapterInfo) {
   PIP_ADAPTER_INFO pAdapter = pAdapterInfo;
