@@ -98,6 +98,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,6 +112,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -128,6 +130,7 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
       <FloatingPointModel>Fast</FloatingPointModel>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -147,6 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
       <FloatingPointModel>Precise</FloatingPointModel>
+      <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

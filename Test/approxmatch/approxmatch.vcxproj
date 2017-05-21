@@ -23,6 +23,7 @@
     <SccLocalPath />
     <ProjectGuid>{4C9D4F39-E8CD-4102-8161-AA13A902A92B}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>ApproxMatch</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">

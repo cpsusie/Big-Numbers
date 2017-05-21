@@ -1,0 +1,598 @@
+Søgemaskine Classic
+
+Søgemaskinen, der søger efter enkelt opgaver (SMC), består af 2 dele:
+•	Indlæsning fra databasen
+•	Kombinering af de indlæste tider
+
+Først indlæses udfra de angivne søgekriterier, de potentielle tider fra Ledigslot-tabellen.
+Søgekriterierne til SMC er angivet som et array bestående af følgende elementer:
+
+Class SoegeKrav {
+    int			kravnr;			// Hvilket kravnr.
+    int 			ressourceGruppeOId;	// Hvilken ressourcegruppe
+    RessourceTid[]	ressourcerTider;	// Hvilke ressourcer. Hvis tom så alle i 
+// gruppen
+    int 			aktivitetOId;		// Hvilken aktivitet
+    int 			offset;			// For planEnhed=MINUTTER:Offset i
+// minutter i forhold til  første krav
+	// For planEnhed=DAGE:Offset i
+		// dage i forhold til første krav
+    int 			varighed;		// For planEhned=MINUTTER:Varighed
+// i minutter.
+// For planEnhed=DAGE:Varighed i
+// dage
+    PlanEnhed		planEnhed;		// er ressourcen dags- eller minut-
+// planlagt
+}
+
+hvor
+
+Class RessourceTid {
+    int			ressourceOId;		// Hvilken ressource ønskes benyttet
+    Date			datoTid;		// Hvis angivet, tidspunktet hvor denne
+						// delopgave ønskes placeret
+}
+
+samt et datoInterval hvori opgaven skal ligge,
+og et array, ugedage, der angiver, på hvilke ugedage opgaven kan bookes
+
+Det første der sker, er at de enkelte soegekrav hørende til de 2 forskellige planEnhe-der (MINUTTER og DAGE) plukkes ud i hver sit array. De skal nemlig efterfølgende behandles helt forskelligt i SMC
+Kravnr benyttes ikke til andet end at de sættes på det enkelte slots i resultatet, så den kaldende funktion kan identificere hvilket krav et tidslot hører til, og desuden sorteres kravene i rækkefølge efter dette felt. Herefter refereres udelukkende til kravets index i arrayet.
+Der gælder for både minut- og dags-krav (dvs planEnhed er hhv. MINUTTER og DAGE), at arrayet ressourceTider kan være angivet eller ej. 
+Endvidere gælder for minut-krav, at hvis arrayet ressourcerTider er angivet, kan feltet datoTid i ressourcerTider være angivet eller ej. 
+
+For minutkravene giver dette anledning til følgende 3 varianter af queries til databa-sen:
+
+1.	Med angivelse af ressourcegruppeOID
+
+        SELECT
+           L.PLANSLOTOID
+          ,L.DATO
+          ,L.STARTMINUT
+          ,L.VARIGHED
+          ,L.RESSOURCEGRUPPEOID
+          ,L.PLANAKTIVITETOID
+          ,L.RESSOURCEOID
+          ,R.KORTNAVN
+        FROM
+          LEDIGSLOT L,
+          RESSOURCE R
+        WHERE L.RESSOURCEGRUPPEOID = soegeKrav.ressourceGruppeIOD
+          AND L.PLANAKTIVITETOID	 = soegeKrav.aktivitetOID
+          AND L.DATO 	BETWEEN 
+datoInterval.fra AND datoInterval.til
+          AND L.VARIGHED			 >= soegeKrav.varighed
+          AND R.RESSOURCEOID		 =  L.RESSOURCEOID
+
+2.	Med angivelse af ressourcegruppeOID,ressourceOID
+
+        SELECT
+           L.PLANSLOTOID
+          ,L.DATO
+          ,L.STARTMINUT
+          ,L.VARIGHED
+          ,L.RESSOURCEGRUPPEOID
+          ,L.PLANAKTIVITETOID
+          ,L.RESSOURCEOID
+          ,R.KORTNAVN
+        FROM
+          LEDIGSLOT	L, 
+          RESSOURCE	R
+        WHERE L.RESSOURCEGRUPPEOID= soegeKrav.ressourceGruppeOID
+          AND L.RESSOURCEOID		= 
+soegeKrav.ressourceTider[i].ressourceOID
+          AND L.PLANAKTIVITETOID	= soegeKrav.aktivitetOID
+          AND L.DATO 	BETWEEN 
+datoInterval.fra AND datoInterval.til
+          AND L.VARIGHED			>= soegeKrav.varighed
+          AND R.RESSOURCEOID		= L.RESSOURCEOID
+
+3.	Med angivelse af både ressourcegruppeOID,ressourceOID og Dato/Tid
+
+        SELECT
+           L.PLANSLOTOID
+          ,L.DATO
+          ,L.STARTMINUT
+          ,L.VARIGHED
+          ,L.RESSOURCEGRUPPEOID
+          ,L.PLANAKTIVITETOID
+          ,L.RESSOURCEOID
+          ,R.KORTNAVN
+        FROM
+        LEDIGSLOT	L,
+        RESSOURCE	R
+        WHERE L.RESSOURCEGRUPPEOID= soegeKrav.ressourceGruppeOID
+          AND L.RESSOURCEOID		= 
+soegeKrav.ressourceTider[i].ressourceOID
+          AND L.PLANAKTIVITETOID	= soegeKrav.aktivitetOID
+          AND L.DATO				= 
+			Dato(soegeKrav.ressourceTider[i].datoTid)
+          AND L.STARTMINUT		<=
+Tid(SoegeKrav.ressourceTider[i].datoTid)
+          AND L.STARTMINUT + L.VARIGHED	>=
+Tid(SoegeKrav.ressourceTider[i].datoTid)
++ soegeKrav.varighed
+          AND R.RESSOURCEOID			= L.RESSOURCEOID
+
+For (1) og (2) gælder at datoen for de udvalgte slots skal ligge i den angive søgeperio-de. Desuden er man kun interesseret i de ledigslots, hvor varigheden er >= den for sø-gekravet angivne varighed. For (3) er man endvidere kun interesseret i de ledigslots, der helt indeholder det tidsrum, der er angivet.
+
+
+For dagskravene er der kun 2 varianter, idet datoTid-komponenten ikke benyttes. I begge situationer er intervallet til betingelsen
+
+          L.DATO					BETWEEN :d1 AND :d2
+
+beregnet udfra følgende formel:
+        d1 = datoInterval.getFrom() 	+ dagSoegeKrav[ kravIndex ].getOffset()
+        d2 = datoInterval.getTo()     	+ dagSoegeKrav[ kravIndex ].getOffset()
++ dagSoegeKrav[ kravIndex ].getVarighed() - 1
+
+4.	Med angivelse af ressourcegruppeOID:
+
+        SELECT
+           L.PLANSLOTOID
+          ,L.DATO
+          ,L.RESSOURCEGRUPPEOID
+          ,L.PLANAKTIVITETOID
+          ,L.RESSOURCEOID
+          ,R.KORTNAVN
+        FROM
+          LEDIGSLOT	L
+          RESSOURCE	R
+        WHERE L.RESSOURCEGRUPPEOID = soegeKrav.ressourceGruppeOID
+          AND L.PLANAKTIVITETOID	 = soegeKrav.aktivitetOID
+          AND L.DATO				 BETWEEN :d1 AND :d2
+          AND R.RESSOURCEOID		 = L.RESSOURCEOID
+
+5.	Med angivelse af ressourcegruppeOID og RessourceOID:
+
+        SELECT
+           L.PLANSLOTOID
+          ,L.DATO
+          ,L.RESSOURCEGRUPPEOID
+          ,L.PLANAKTIVITETOID
+          ,L.RESSOURCEOID
+          ,R.KORTNAVN
+        FROM
+          LEDIGSLOT	L,
+          RESSOURCE	R
+        WHERE L.RESSOURCEGRUPPEOID = soegeKrav.ressourceGruppeOID
+          AND L.RESSOURCEOID		 = 
+soegeKrav.ressourceTider[i].ressourceOID
+          AND L.PLANAKTIVITETOID	 = soegeKrav.aktivitetOID
+          AND L.DATO				 BETWEEN :d1 AND :d2
+          AND R.RESSOURCEOID		 = L.RESSOURCEOID
+
+Alle disse data hentes ind i 2 matricer, en for minut-ressourcerne og en for dags-ressoucerne. Der indlæses også fra PLANLAAS tabellen på nøglen (ressourceoid, da-to), men dette er en detalje, som vi springer over her. Disse data benyttes ikke i selve søgningen, men returneres uændret til den kaldende funktion.
+Elementerne i matricerne er altså
+
+Class SoegeArraySlot {
+    int			ressourceOId;
+    String		ressourceKortNavn;
+    int			slotOId;
+    Date			dato;
+    int			startMSM;		// starttidspunkt i minutter siden midnat.
+    int			varighed;		// varighed i minutter.
+    Boolean		laast;
+}
+
+Rækkerne indiceres ved kravIndex (0..antal søgekrav-1), og har variabel længde; hver rækkes længde afgøres af, hvor mange hits der er i ovennævnte selects.
+For at få det endelige resultat tilbage i kronologisk orden, sorteres inden næste trin i søgningen de enkelte elementer i hver række kronologisk efter (dato,startMSM) for minutressourcerne, og efter (ressourceOID,dato) for dagsressourcerne
+Bemærk i øvrigt, at startMSM og varighed ikke benyttes for dagsressourcerne (men sættes alle til hhv. 0 og 24*60, hvilket angiver at dagsplanlagte ressourcer er ledige i hele døgn). 
+
+Kombinering af de indlæste tider.
+Herefter skal de potentielle tider som er indlæst nu kombineres. Her skelnes mellem 2 principielt forskellige situationer, afhængigt af, om der er angivet minut-søgekrav el-ler ej.
+Hvis der ikke er angivet nogen minut-søgekrav, er søgningen relativt simpel, idet man gennemløber datointervallet angivet i input-parameteren, og for hver dato søger efter en mulig sammensætning af de dagsressourcer man nu har læst op (dette gøres med funktionen FindDagsRessourcer). For hver dato hvor dette lykkes, tilføjes en Ledig-Tid ledigTid (SMC returnerer et array af disse som resultat), med kl 0 som starttids-punkt, og en varighed på 23 timer og 59 minutter, hvilket naturligvis betyder, at man har hele døgnet til rådighed, da der ikke skal bruges nogen minut-ressourcer.
+
+LedigTid ser iøvrigt ud som følger:
+
+Class LedigTidsSlot {
+    int				kravNr;
+    int				ressourceOId;
+    String			ressourceKortNavn;
+    int				slotOId;
+    boolean			laast;
+    int				varighed;
+}
+
+Class LedigDagsSlot extends LedigTidsSlot {
+    Date dato;
+}
+
+Class LedigDagsSlotPerKrav {
+    LedigDagsSlot		ledigSlots[];
+}
+
+Class LedigTid {
+    Date				dato;
+    TidsInterval			tidsInterval;
+    LedigTidsSlot		minutSlots[];
+    LedigDagsSlotPerKrav	dagSlotsPerKrav[];
+}
+
+Længden af arrayet minutSlots i LedigTid er altid antallet af minut-søgekrav i søgnin-gen, og længden af dagSlotsPerKrav er ligeledes antallet af dags-søgekrav. Længden af arrayet ledigSlots i LedigDagsSlotPerKrav afgøres af varigheden for dette dags-krav, idet en varighed på f.eks. 2 dage i et dags-søgekrav, giver anledning til 2 Le-digDagsSlot for dette krav.
+
+Funktionen der finder dagsressourcer 
+
+    private LedigDagsSlotPerKrav[] FindDagsRessourcer(Date dato)
+
+finder for hvert dags-søgekrav så vidt muligt en række LedigDagsSlot’s, der alle be-nytter den samme ressource (f.eks. den samme seng) for alle dagene. Kan dette ikke lade sig gøre, sammensætter den en række LedigDagsSlot’s med forskellige ressour-cer. Kan dette heller ikke lade sig gøre returnerer den null, og det er herefter ikke nødvendigt at søge videre efter minut-ressourcer (eller ressourcer for andre dags-søgekrav) på den givne dato, da vi har et eller flere dagskrav, der ikke kan opfyldes.
+
+Hvis der er angivet minut-søgekrav, gennemløbes som ovenfor alle datoer i søgeinter-vallet. Først findes en sammensætning af dagsressourcer for datoen som ovenfor, og hvis dette lykkes dannes der ved backtracking alle lovlige kombinationer af de for minut-søgekravene indlæste LedigTidsSlot. Rekursions-dybden bliver maximalt an-tallet af minut-søgekrav. Funktionen der gør arbejdet ser i store træk ud som følger:
+
+private void matchKrav(
+int	kravIndex,		// indekset på det krav vi skal matche
+// starter ved 1 og øges ved hvert
+// rekursivt kald med 1
+Date	dato,			// Den aktuelle dato
+int	startTidligstMSM,	// Tidligste starttidspunkt for opgaven
+// (Minutter Siden Midnat)
+int	startSenestMSM	// Seneste starttidspunkt for opgaven
+) throws MaxResultException
+{
+        if(startTidligstMSM > startSenestMSM) // Denne kombination duer ikke   (1)
+            return;
+        if(kravIndex == minutSoegeKrav.length) // Vi har nu en lovlig kombination
+            tilfoejLedigTid(dato,startTidligstMSM,startSenestMSM);
+        else {
+           SoegeArrayKrav soegeslots =
+minutSoegeArrayPerDag.getKravByIndex(kravIndex);
+// udvælg række(kravIndex) i vores matrix
+            int n = soegeslots.getAntalSlots();
+            for(int i = 0; i < n; i++) {   // gennemløb alle fundne slots for dette krav
+                SoegeArraySlot slot = soegeslots.getSlotByNr(i);
+
+// Beregn det indsnævrede tidsinterval, baseret på det hidtidige lovlige tidsinterval
+// og det tidsinterval der kan bruges, hvis vi skal bruge ’slot’ i vores kombination.
+// En analyse af situationen giver følgende beregning, som er helt central i
+// søgemaskinen.
+
+                int nyStartTidligstMSM = Math.max(
+startTidligstMSM,
+slot.getstartMSM()
+- minutSoegeKrav[kravIndex].getOffset()
+);
+                int nyStartSenestMSM   = Math.min(
+startSenestMSM,
+slot.getstartMSM()
++ slot.getvarighed()
+- (minutSoegeKrav[kravIndex].getOffset()
++ minutSoegeKrav[kravIndex].getVarighed())
+                				);
+                if(nyStartTidligstMSM > nyStartSenestMSM)				(2)
+                    continue; 		// Egentlig unødvendig, men gøres her, før næste kald,
+// af performancehensyn
+                if(RessourceDublikeret(kravIndex,slot)) 	// check at vi ikke allerede har 
+// brugt denne ressource
+                    continue;
+                slotStak[kravIndex] = slot;	// gem det slot vi har fundet på en stak,
+// så tilfoejLedigTid kan tage dem derfra.
+
+                matchKrav(kravIndex+1,dato,nyStartTidligstMSM,nyStartSenestMSM);
+
+            }
+        }
+}
+
+Funktionen tilfoejLedigTid opsamler de kombinationer der genereres. 
+Funktionen RessourceDublikeret checker for den detalje, at den samme ressource kan optræde i ledigslots hørende til 2 forskellige krav. Hvis man f.eks. beder om 2 øjen-læger med 15 min afstand, begge med en varighed på 30 min, så duer det ikke at ge-nerere slots med den samme læge for begge krav, fordi der er et overlap på 15 min, hvor han i så fald skulle optræde i begge roller.
+
+MatchKrav kaldes initielt med parametrene 
+
+        for(int j = 0; j < krav0slotsPerDag.length; j++) {
+matchKrav(
+1
+		,krav0slotsPerDag[j].getDato()
+,krav0slotsPerDag[j].getstartMSM() 
+	,krav0slotsPerDag[j].getstartMSM()
++ krav0slotsPerDag[j].getvarighed()
+- minutSoegeKrav[0].getVarighed()
+	);
+
+hvor krav0slotsPerDag indeholder de udvalgte slots for den aktuelle dato hørende til minutSoegeKrav[0], (første række i matricen).
+Når dette ikke giver anledning til en eksponentiel eksplosion i antallet af kombinatio-ner, der skal gennemtrævles, og dermed en uacceptabel svartid, som det så ofte er til-fældet med backtracking, hænger det sammen med, at vi relativt tidligt, dvs. inden rekursionsdybden er blevet for stor, kan opdage, at en kombination ikke duer.
+Dette sker i linierne (1) og (2) ((2) er egentlig unødvendig, men gøres før de relativt dyre kald til RessourceDublikeret og matchkrav(kravindex+1...)). Derfor kører funk-tionen med nogenlunde pæne svartider.
+
+Søgemaskinen til behandlingsforløb
+
+Søgemaskinen,  der søger efter behandlingsforløb (SMB) sammensætter en række op-gaver af den slags som SMC finder, med en indbyrdes afstand, der angives i søgekri-teriet som et interval [minOffset;maxOffset]. Afstanden kan være angivet i minutter eller dage.
+SMB tager som input et array af  følgende elementer:
+
+Class BFSoegeKrav {
+    Int			kravnr;
+    SoegeKrav		soegeKrav[];	// input-parameter til SMC
+    Ugedage		ugedage;	// hvilke ugedage må denne opgave placeres
+    Int			minOffset;	// mindste offset i minutter/dage 
+// i forhold til starttidpunktet for forrige
+// opgave
+    Int			maxOffset;	// største offset i minutter/dage i forhold til
+// starttidspunktet for forrige opgave
+    PlanEnhed		planEnhed;	// er minOffset/maxOffset i minutter eller dage
+};
+
+hvor arrayet soegeKrav er samme type, som input-arrayet til SMC.
+Herudover gives som input også et datoInterval indenfor hvilket den første opgave skal placeres, 
+Samme Ressource
+Brugeren har mulighed for at angive, at man ønsker at have den samme ressource, f.eks. den samme læge, igennem hele forløbet. Gruppen for hvilken dette ønskes an-gives i parameteren int sammeRessourceIGruppe. Faktisk er parameteren et array, men i nuværende og sandsynligvis i alle fremtidige versioner kan dette array højest indeholde 1 element.
+Lukke- og Ugedagskorrektion
+Desuden kan der angives om man ønsker lukkedagskorrektion eller ugedagskorrekti-on, hvilket betyder, at den indbyrdes afstand mellem opgaverne kan udvides ”lidt”. Hvis man f.eks. har angivet et forløb med 20 opgaver, hver med en indbyrdes afstand på 1 dag, og der altid er lukket i weekenden, så vil man ikke få noget resultat tilbage, fordi der aldrig kan sammensættes længere opgave-rækker end 5 dage. Med ugedags-korrektion tager SMB hensyn til dette og tillader, at den indbyrdes afstand mellem opgaven om fredagen og mandagen bliver lidt større. Tilsvarende med lukkedagskor-rektion, her er det blot de enkelte ressourcers planlagte aktiviteter, der afgør om en dag kan betragtes som ”weekend”. Dvs. hvis en ressource har en hel dag uden plan-lagte aktiviteter, så vil SMB ved lukkedagskorrektion tillade, at den indbyrdes afstand mellem opgaven umiddelbart før lukkedagen og opgaven umiddelbart efter, kan være 1 større end angivet.
+Blinde tider
+Da det kan være svært at få lavet et helt forløb, specielt lange forløb, uden at over-booke, kan søgemaskinen generere såkaldte blinde tider (blind dates), dvs. en aftale, der skal placeres ved at overbooke en eller flere ressourcer. Generelt vil SMB dog kun returnere blinde tider, hvis der overhovedet ikke findes nogen forløb bestående af re-elle tider.
+Blinde tider placeres kun på dage, hvor de ressourcegrupper der er involveret  alle har en eller anden form for aktivitet. Det betyder at hvis der er en periode, hvor man ikke har nogen planlagt aktivitet for en gruppe, vil man risikere at få en fejltekst som ene-ste resultat.
+Desuden placeres blinde tider fortrinsvis på de valgte ugedage. Er dette ikke nok til at generere et sammenhængende forløb tages også de fravalgte ugedage til hjælp.
+
+Disse 4 features, (fastholdelse af samme ressource, lukke- og ugedagskorrektion og blinde tider)  er i høj grad med til at komplicere programkoden for søgemaskinen.
+
+Vi starter med det simpleste: Uden fastholdelse af ressourcen og uden lukke- eller ugedagskorrektion.
+Søgningen foregår som i SMC i 2 adskilte faser: Først indlæses for hver opgave via SMC de ledige tider i et array, soegeResultat[Antal BFSoegekrav]. Herefter sammen-sættes de lovlige kombinationer af de indlæste tider, dvs. så den indbyrdes afstand mellem 2 på hinanden følgende opgaver er overholdt. Resultatet af disse kombinatio-ner danner et array af træer, hvor rod-knuderne er resultaterne hørende til første krav, child-knuderne er resultaterne hørende til andet krav, etc. Knuderne i træet har føl-gende definition:
+
+Class SoegeResultat {
+    LedigTid ledigeTider[];
+}
+
+Class BFSoegeResultat {
+    ArrayList		children;	// array af BFSoegeResultat
+    Int			kravNr;
+    Date			dato;		// datoen for alle ledigTid i soegeResultat	
+    SoegeResultat	soegeResultat;	// tiderne returneret fra SMC alle på samme dato
+};
+
+Træet bygges bottom-up, dvs. tiderne hørende til sidste og næstsidste krav kombine-res først, derefter tiderne hørende til 3.-sidste og næstsidste krav, etc. Dog bygges deltræerne hørende til minut-søgekrav top-down. Grunden til dette design vil blive forklaret om lidt.
+
+
+.
+
+krav[0]
+
+
+
+krav[1]
+
+
+
+krav[2]	
+
+
+
+Diagrammet viser træstrukturen som den vil se ud umiddelbart inden de 2 sidste søge-resultater hørende til krav[0] kobles på træet. Den øverste række indeholder søgere-sultaterne hørende til krav[0], 2. række dem til krav[1], etc. SMB grupperer for dags-offset-opgaverne de enkelte ledige tider på datoen, inden tiderne sammenbindes i træ-et, da de alle vil have de samme child-knuder. Som det fremgår af diagrammet, kan en knude godt have flere parents.
+
+Hoved-funktionen, der gør arbejdet ser i hovedtræk ud som følger:
+
+private BFSoegeResultat[] soegTiderSimpel()
+{
+SoegeResultat[] soegeResultat = new SoegeResultat[bfSoegeKrav.length]; 
+// alloker een for hvert bfSoegeKrav
+
+boolean	blindDates[]  = new boolean[bfSoegeKrav.length];
+// blindDates[i] angiver om SMC
+//  returnerer tomt resultat for bfkrav[i]
+
+DatoInterval[]	soegeInterval = new DatoInterval[bfSoegeKrav.length];
+					// soegeInterval[i] angiver det datointerval vi 
+// sender til SMC for Bfkrav[i]
+
+BlindDatesKraevet = false;	// global variabel i SMB. Angiver om vi i
+					// har indsat blinde tider i dette del-træ
+
+DatoInterval extendedDatoInterval = datoInterval;
+					// extended datointerval indeholder den periode,
+// der hører til de aktuelle BFSoegekrav
+// Initieres til soegeperioden angivet i input 
+
+// (A)
+// Først indlæses via SMC alle ledige tider for de enkelte delopgaver
+// (BFSoegekrav[i]).
+
+for(int i = 0; i < bfSoegeKrav.length; i++) {
+            BFSoegeKrav bfKrav = bfSoegeKrav[i];
+                
+            if(bfKrav.PlanEnhed == DAGE)
+extendedDatoInterval =
+extendDatoInterval(extendedDatoInterval,i);
+
+soegeInterval[i] = extendedDatoInterval;
+
+SoegeMaskine soegeMaskine = new SoegeMaskine(
+bfKrav.getSoegeKrav(),
+extendedDatoInterval,
+bfKrav.getSoegeFilter(),
+bfKrav.getUgedage()
+);
+soegeResultat[i] = soegeMaskine.soegTider();
+if(lukkedagsKorrektion)
+soegeResultat[i] = lukkedagsKorrigeretSoegeResultat(
+i,
+soegeResultat[i]
+);
+// udvælger de ledige Tider ud fra soegeResultat
+// der enten ligger inden for den oprindelige
+// periode, eller som indeholder ressourcer, der
+// har lukkedage i perioden, og derfor kan
+// medvirke til at strække perioden
+
+if(soegeResultat[i].getLedigeTider().length > 0)
+blindDates[i] = false;
+else {
+blindDatesKraevet = true;
+if(fuldtTraeFundet)	// vi har allerede fundet et 
+// fuldt træ uden blinde 
+// aftaler i et tidligere kald
+// til soegTiderSimpel.
+// Ingen grund til at
+// generere et træ med
+// blinde aftaler
+return new BFSoegeResultat[0];
+blindDates[i]     = true;
+soegeResultat[i] = danBlindDates(
+i,
+extendedDatoInterval
+);
+}
+}
+
+if(soegeResultat.length == 0) return new BFSoegeResultat[0];
+
+// (B)
+// Herefter kombineres søgeresultaterne bottom-up (top-down for minut-søgekrav)
+// tag sidste søgekrav først
+// Først skal vi have dannet de(t) nederste lag knuder i træet.
+
+int k = bfSoegeKrav.length - 1; // == soegeResultat.length - 1
+BFSoegeResultat[] bfLast = null;
+// bfLast angiver det nederste niveau i træet
+
+if(k > 0 && bfSoegeKrav[k].PlanEnhed == MINUTTER) {
+int f = findMinutKravSekvens(k);
+bfLast = soegMinutTider(soegeResultat,f,k,null,blindDates);
+// top-down bygning af soegeResultat[f..k]
+k = f - 1;
+}
+else {
+bfLast = BFSoegeResultat.SoegeResultatGroupByDate(
+bfSoegeKrav[k].getKravnr(),
+soegeResultat[k]
+);
+if(blindDates[k]) setBlind(bfLast,true);
+k--;
+}
+
+// Herefter vokser træet bottom-up dvs. fra bladene mod roden.
+
+for(int i = k; i >= 0;) {	
+BFSoegeResultat[] bfPrev; // Angiver niveauet 1 trin nærmere roden
+if(i > 0 && bfSoegeKrav[i].PlanEnhed == MINUTTER) {
+int f = findMinutKravSekvens(i);
+bfPrev = soegMinutTider(soegeResultat,f,i,bfLast,blindDates);
+				// top-down bygning af soegeResultat[f..i]
+i = f - 1;
+}
+else { // planenhed == DAGE
+bfPrev = BFSoegeResultat.SoegeResultatGroupByDate(
+bfSoegeKrav[i].getKravnr(),
+soegeResultat[i]
+);
+if(blindDates[i]) setBlind(bfPrev,true);
+int kombicounter = 0;	// tæller hvor mange gyldige
+// kombinationer der findes mellem
+// krav[i] og krav[i+1].
+while(kombicounter == 0) {
+for(int d1 = 0; d1 < bfPrev.length; d1++) {
+DatoInterval currentDatoInterval =
+danDatoInterval(
+bfPrev[d1].getDato(),
+i+1
+);
+for(int d2 = 0; d2 < bfLast.length; d2++) {
+if(currentDatoInterval.contains(
+            	    bfLast[d2].getDato())) {
+bfPrev[d1].addChild(bfLast[d2]);
+ // denne dag passer fint
+kombicounter++;
+		}
+else
+if(currentDatoInterval.To < 
+    bfLast[d2].Dato)
+// optimering - vi er forbi de tider,
+// der kan bruges, så der er ingen
+// grund til at fortsætte
+break;
+} // end (for d2...)
+} // end for(d1...)
+if(kombicounter == 0) {
+			blindDatesKraevet = true;
+if(fuldtTraeFundet)
+// vi har allerede fundet et fuldt træ i et
+// tidligere kald til soegTiderSimpel
+// uden blinde aftaler. Ingen grund 
+// til at generere et træ med blinde aftaler
+return new BFSoegeResultat[0];
+bfPrev= danBlindDates(
+i
+,soegeInterval[i],
+);
+// prøv igen med de fiktive datoer.
+} // end if(kombicounter...)
+} // end while(kombicounter...)
+i--;
+} // end else planenhed = DAGE
+
+bfLast = BFSoegeResultat.SelectWhereHasChildren(bfPrev);
+
+if(bfLast.length == 0) break; // ingen grund til at fortsætte
+
+} // end for(int i...)
+return bfLast;
+}
+
+Der benyttes et antal hjælpe-funktioner til denne hoved-funktion:
+
+DatoInterval extendDatoInterval(	DatoInterval 		datoInterval,
+int 			bfKravIndex)
+Udvider det foregående datointerval efter formlen
+Udvidet datointerval = [datoInterval.fra + krav[bfKravIndex].minOffset;
+			  datoInterval.til + krav[bfKravIndex].maxOffset]
+Dog, hvis der er valgt lukke- eller ugedagskorrektion så udvides der ekstra,
+idet der ses bort fra de ubrugelige dage. Se i øvrigt nedenfor.
+
+SoegeResultat lukkedagsKorrigeretSoegeResultat(int 	bfKravIndex,
+SoegeResultat 		soegeResultat);
+Udvælger de ledige Tider ud fra soegeResultat der enten ligger inden for den
+oprindelige periode, eller som indeholder ressourcer, der har lukkedage i peri-oden, og derfor kan medvirke til at strække perioden.
+
+SoegeResultat danBlindDates(	int 			bfKravIndex,
+DatoInterval 		datoInterval);
+
+Danner et SoegeResultat på hver dag i datoInterval,	som er markeret som brugbar i ugedagene for det angivne krav. Denne funktion kommer kun i an-vendelse hvis SMC returnerer et tomt soegeResultat
+
+BFSoegeResultat[] danBlindDates(	int 			kravIndex,
+DatoInterval		datoInterval,
+BFSoegeResultat[] 	children);
+
+Danner en liste af blinde tider, så alle får mindst en child fra children. Denne funktion kommer kun i anvendelse, hvis der ikke kan bygges videre på træet med de reele tider.
+
+int findMinutKravSekvens(		int 			last);
+Returnerer i, således at bfSoegeKrav[i].planEnhed == DAGE og bfSoe-geKrav[i+1..last].planEnhed = MINUTTER
+Antager at bfSoegeKrav[last].planEnhed = MINUTTER.
+Tiderne for krav[i..last] skal man nemlig gennemtrævles top-down med soeg-MinutTider
+
+BFSoegeResultat[] soegMinutTider(	SoegeResultat[] 	soegeResultat, 
+int 			fraKrav,
+int 			tilKrav, 
+BFSoegeResultat[] 	bottom, 
+boolean 		blindDates[]) 
+Se nedenfor.
+
+static BFSoegeResultat[] SoegeResultatGroupByDate(int 	kravNr,
+SoegeResultat 		soegeResultat);
+
+Omdanner SoegeResultat fra SMC til et array af BFSoegeResultat, idet tiderne grupperes på datoen
+
+
+		
+Funktionen soegMinutTider svarer på mange måder til det, der foregår i SMC, nemlig kald af en rekursiv funktion, der via backtracking genererer samtlige lovlige kombina-tioner af BFSoegeResultater. Denne funktion bruger som nævnt en topdown-strategi, og det skyldes at de tids-intervaller, der er fundet med SMC, ikke kan bruges som de er. Husk på, at SMC finder alle de opgavetider der findes på en dag. (Den kan ikke tage hensyn til, at man f.eks. gerne vil møde mellem 13.30 og 15.00)
+Datoen skal ikke ændres, men hvis man f.eks. har fået 2 ledigTider tilbage fra SMC,
+
+				Dato	Start Tidligst		Start Senest
+Tider til (dags)krav(1)		2.2	8.00			9.00
+Tider til (minut)krav(2)	2.2	8.00			17.00
+
+og offsettet til krav(2) er mellem 2 og 3 timer efter krav(1), så er en kombination mel-lem disse 2 kun lovlig, hvis man justerer tidsintervallet på krav(2)-tiden til
+startTidligst = 10.00 og startSenest = 12.00. Dette foregår løbende under topdown-genereringen af minut-offset-tiderne. Samtidig skal der holdes styr på dubletter i træ-et, hvilket er med til at komplicere denne funktion i forhold til det, der sker i SMC.
+Det gøres ved at der genereres deltræer i deres fulde længde, og uden forgreninger, dvs. en liste, med de korrekte tids-intervaller. Dette deltræ flettes herefter sammen med det deltræ, der hidtil er genereret, idet en knude genbruges, hvis den har samme tidsinterval OG samme tidsslots. Se i øvrigt funktionen addSubTreePath i koden for detaljerne.
+Hvis topdown træet i første omgang er tomt, så genereres der som før en stribe blinde tider, men her således, at alle datoerne i den aktuelle periode har hele døgnet dækket ind med enten reelle tider, eller blinde tider, og så prøves igen. Denne søgning skal helst give resultat (ellers kastes en exception !)
+
+Den næste feature, samme ressource i krav, er implementeret uden om den hidtil be-skrevne søgefunktion, idet søgekravene til SMC modificeres, så ressourceOID-erne hørende til den aktuelle ressourceGruppe er angivet. Dette medfører, at alle tider der returneres herfra vil benytte den samme ressource. Her er dog en detalje (som vist nok ikke benyttes), idet SMB kan håndtere den situation, at der ikke nødvendigvis skal angives nogen resosurceOID, for at kunne benytte denne feature. Hvis en Ressour-ceOID er angivet, er det ikke så svært at få SMB til at sætte den samme resosurceOID på alle søgningerne til SMC. Men hvis der ikke er angivet nogen RessourceOID’er, men kun en ressourceGruppeOID, skal SMB først have fundet de potentielle ressour-cer frem, som overhovedet kan komme på tale. Dette gøres ved at finde det først krav, hvor ressourceGruppen indgår. Der laves så en midlertidig søgning til SMC, og de ressourcer der returneres gennemløbes 1 efter 1 i ovenstående søgning. Alt i alt en temmelig tidskrævende proces, hvorfor det nok er godt, at GUI’en stiller som krav, at en RessourceOID skal angives, for at kunne benytte denne feature.
+
+Uge- og lukkedags-korrektion, der som nævnt tillader, at dags-intervallerne mellem de enkelte opgave strækkes, hvis en ugedag henv. lukkedag optræder i den aktuelle periode, er implementeret i extendDatoInterval (en af hjælpefunktionerne). Uden uge- eller lukkedagskorrektion bliver datoIntervallet hørende til dags-offset-opgaver be-regnet som
+
+DatoFra[i] = DatoFra[i-1] + krav[i].minOffset
+DatoTil[i] = DatoTil[i-1]  + krav[i].maxOffset
+
+Ved uge- eller lukkedagskorrektion bliver beregningen
+
+DatoFra[i] = DatoFra[i-1] + krav[i].minOffset
+DatoTil[i] = DatoTil[i-1]  + justeredekravOffset[i].maxOffset
+
+hvor arrayet justeredeKravOffset er beregnet på forhånd. For begge situationer bereg-nes justeretKravOffset.maxOffset således, at antallet af brugbare dage i intervallet er det samme som det antal dage, der er i det oprindelige datointerval, dog tilføjes der højest 2 ekstra åbne dage, hvis en udvidelse er nødvendig. Denne sidste begrænsning for at undgå for lang afstand mellem opgaverne i forhold til det oprindeligt planlagte. En udvidelse kan i princippet blive uendelig lang, hvis man f.eks. ikke har planlagt kalendertid for nogen ressourcer mere end 1 uge frem (ved lukkedagskorrektion). Derfor er der lagt en begrænsning ind, så man maksimalt kigger LA dage længere frem end den beregnede slutdato for det sidste krav, hvor LA hentes fra Sy-stem.properties.LUKKEDAG.LOOKAHEAD,  og er default 30.
+Uge- og lukkedagskorrektion adskiller sig på 1 væsentligt punkt: De brugbare dage for et krav kan ved ugedagskorrektion udelukkende findes ud fra det enkelte søge-krav, idet de brugbare dage er angivet i søge-kriteriet, hvorimod der ved lukkedags-korrektion skal tages hensyn til hvilke ressourcer der returneres fra SMC. Derfor in-deholder hovedløkken et kald til funktionen lukkedagsKorrigeretSoegeResultat, som filtrerer resultatet fra SMC, så det kun indeholder tider, der enten ligger i det oprinde-lige datointerval, ELLER som indeholder ressourcer, der kan bidrage til at strække intervallet, dvs. ressourcer, der indeholder lukkedage. En sådan filtrering er ikke nød-vendig ved ugedags-korrektion, idet datointervallerne allerede er fastlagt for det en-kelte krav. Der benyttes en intern hashmap til denne filterfunktion.
+For god ordens skyld skal det nævnes at hvis brugeren har valgt både uge- og lukke-dagskorrektion, er det lukkedagskorrektion der benyttes. Dette skyldes, at en ugedag der er valgt fra, f.eks. søndag, sandsynligvis også vil være en lukkedag, hvorimod det modsatte ikke nødvendigvis er tilfældet, f.eks. skærtorsdag. Lukkedagskorrektion vil dermed sandsynligvis automatisk tage hensyn til de fravalgte ugedage. Der kan dog godt tænkes situationer, hvor dette ikke gælder. Tiden vil vise, om dette bliver et pro-blem.
+

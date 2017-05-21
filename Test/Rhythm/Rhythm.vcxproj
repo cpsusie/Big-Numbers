@@ -21,36 +21,35 @@
   <PropertyGroup Label="Globals">
     <SccProjectName />
     <SccLocalPath />
-    <Keyword>MFCProj</Keyword>
-    <ProjectGuid>{69C2FBEE-5ACA-4A1A-B9E9-D11D942A897C}</ProjectGuid>
+    <ProjectGuid>{BCB7CD0A-0CC5-4185-A8F0-E2C05716D39A}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
-    <ProjectName>TestBin</ProjectName>
+    <ProjectName>Rhythm</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
-    <UseOfMfc>Dynamic</UseOfMfc>
+    <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -77,10 +76,16 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -88,10 +93,16 @@
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
     <OutDir>$(Platform)\$(Configuration)\</OutDir>
     <IncludePath>C:\mytools2015\Lib\Include;$(IncludePath)</IncludePath>
   </PropertyGroup>
@@ -99,13 +110,15 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <MinimalRebuild>false</MinimalRebuild>
+      <MinimalRebuild>true</MinimalRebuild>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -114,14 +127,9 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <StringPooling>true</StringPooling>
     </ClCompile>
     <Midl>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TypeLibraryName>.\Debug\testbin.tlb</TypeLibraryName>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Debug\Rhythm.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -134,8 +142,10 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
@@ -143,12 +153,14 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
@@ -157,13 +169,9 @@
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <StringPooling>true</StringPooling>
     </ClCompile>
     <Midl>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TypeLibraryName>.\Debug\testbin.tlb</TypeLibraryName>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TypeLibraryName>.\Debug\Rhythm.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -176,8 +184,10 @@
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>Default</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
@@ -190,22 +200,18 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Midl>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TypeLibraryName>.\Release\testbin.tlb</TypeLibraryName>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
-      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\Release\Rhythm.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -217,8 +223,10 @@
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
@@ -231,21 +239,18 @@
       <Optimization>MaxSpeed</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BrowseInformation>true</BrowseInformation>
       <PrecompiledHeaderOutputFile>$(IntDir)$(TargetName).pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ProgramDataBaseFileName>$(IntDir)$(ProjectName).pdb</ProgramDataBaseFileName>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Midl>
-      <SuppressStartupBanner>true</SuppressStartupBanner>
-      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <TypeLibraryName>.\Release\testbin.tlb</TypeLibraryName>
-      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TypeLibraryName>.\Release\Rhythm.tlb</TypeLibraryName>
     </Midl>
     <ResourceCompile>
       <Culture>0x0406</Culture>
@@ -257,12 +262,15 @@
     </Bscmake>
     <Link>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
+      <AdditionalDependencies>
+      </AdditionalDependencies>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Rhythm.cpp" />
     <ClCompile Include="StdAfx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -273,26 +281,9 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="testbin.cpp" />
-    <ClCompile Include="testbinDlg.cpp" />
-    <ClCompile Include="TimerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="testbin.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
-    <ClInclude Include="targetver.h" />
-    <ClInclude Include="testbin.h" />
-    <ClInclude Include="testbinDlg.h" />
-    <ClInclude Include="TimerDlg.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="res\testbin.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="res\testbin.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
