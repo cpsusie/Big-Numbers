@@ -22,10 +22,10 @@ String scramble(const String &s) {
 int _tmain(int argc, TCHAR **argv) {
   try {
     argv++;
-    FILE *input = *argv ? FOPEN(*argv,"r") : stdin;
+    FILE *input = *argv ? FOPEN(*argv,_T("r")) : stdin;
     String text;
-    char line[256];
-    while(fgets(line,sizeof(line),input)) {
+    TCHAR line[1024];
+    while(_fgetts(line,ARRAYSIZE(line),input)) {
       text += line;
     }
     Array<StringIndex> words;
@@ -34,8 +34,8 @@ int _tmain(int argc, TCHAR **argv) {
       words.add(tok.nextIndex());
     }
 
-    if(words.size() > 0 && words[0].getStart() > 0) {
-      String b = left(text,words[0].getStart());
+    if((words.size() > 0) && (words[0].getStart() > 0)) {
+      String b = left(text, words[0].getStart());
       _tprintf(_T("%s"), b.cstr());
     }
     for(size_t i = 0; i < words.size(); i++) {
@@ -44,7 +44,7 @@ int _tmain(int argc, TCHAR **argv) {
       _tprintf(_T("%s"), scramble(w).cstr());
       if(i < words.size() - 1) {
         const size_t bstart = index.getStart()+index.getLength();
-        const String b = substr(text,bstart,words[i+1].getStart()-bstart);
+        const String b      = substr(text,bstart,words[i+1].getStart()-bstart);
         _tprintf(_T("%s"), b.cstr());
       }
     }

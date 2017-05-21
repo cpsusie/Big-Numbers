@@ -72,12 +72,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestWebCam", "TestWebCam\Te
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spectrum", "..\Spectrum\Spectrum.vcxproj", "{21A09F27-ECB1-4739-B8C4-BAD9D2C379C1}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
+		{0D1324F1-16AC-4245-9A51-8BF3B09A6C5F} = {0D1324F1-16AC-4245-9A51-8BF3B09A6C5F}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dx9_rectDemo", "Graphics\dx9_rectDemo\dx9_rectDemo.vcxproj", "{0BFCF3FB-7EF0-4C8C-891F-AA41A6A57979}"
@@ -228,10 +230,19 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Rhythm", "Rhythm\Rhythm.vcxproj", "{BCB7CD0A-0CC5-4185-A8F0-E2C05716D39A}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMarginFile", "TestMarginFile\TestMarginFile.vcxproj", "{C0FB219E-21C6-42A9-82B4-ECE58C6187BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WordScramble", "WordScramble\wordscramble.vcxproj", "{4B861C7A-AB20-4B93-B251-A5E11EB1B66F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestFileTreeWalker", "TestFileTreeWalker\TestFileTreeWalker.vcxproj", "{75E91E97-5FF6-4960-9079-B5BB1E278FF7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
