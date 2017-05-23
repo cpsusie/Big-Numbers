@@ -1,7 +1,5 @@
 #pragma once
 
-#define ORIGIN CPoint(0,0)
-
 #include "Chess.h"
 
 typedef enum {

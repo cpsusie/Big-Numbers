@@ -5,11 +5,13 @@
 class HelperFieldSets {
 private:
   const FieldSet  m_rank1, m_rank8, m_fileA, m_fileH;
+  bool            m_initDone;
 public:
   FieldSet        m_knightAttacks[64], m_pawnAttacks[2][64];
   const FieldSet *m_promoteFieldSet;
   int             m_kingSourceField;
   HelperFieldSets();
+  void init();
   void setPromoteFieldSet(Player kingOwner, SymmetricTransformation transformation);
 };
 
@@ -18,7 +20,13 @@ HelperFieldSets::HelperFieldSets()
   , m_rank8(A8,B8,C8,D8,E8,F8,G8,H8,-1)
   , m_fileA(A1,A2,A3,A4,A5,A6,A7,A8,-1)
   , m_fileH(H1,H2,H3,H4,H5,H6,H7,H8,-1)
-{ for(int pos = 0; pos < 64; pos++) {
+  , m_initDone(false)
+{
+}
+
+void HelperFieldSets::init() {
+  if(m_initDone) return;
+  for(int pos = 0; pos < 64; pos++) {
     const FieldInfo &info = Game::s_fieldInfo[pos];
     PositionArray pa = info.m_knightAttacks;
     FieldSet &knightAttacks = m_knightAttacks[pos];
@@ -34,6 +42,7 @@ HelperFieldSets::HelperFieldSets()
       for(int count = *(pa++); count--;) bpAttacks.add(*(pa++));
     }
   }
+  m_initDone = true;
 }
 
 void HelperFieldSets::setPromoteFieldSet(Player kingOwner, SymmetricTransformation transformation) {
@@ -63,7 +72,10 @@ private:
   bool isCapturingPromotion(   int promotedPos, int uncoveredPos, const FieldSet &sourceFieldSet) const;
   bool isPromotePosition(int pos) const;
 protected:
-  BackMoveGenerator(const Game &game);
+  BackMoveGenerator(const Game &game) : MoveGenerator(game) {
+    s_hfs.init();
+  }
+
   static void invalidPawnPosition(bool firstMove, const Piece *piece);
   bool checksEnemyKing(int kingPos, const Piece *piece, int from, MoveDirection direction) const;
   bool isPossibleCheck(             const Piece *king , int pos) const;
@@ -208,9 +220,6 @@ void Game::setEndGameKeyDefinition(const EndGameKeyDefinition &keydef) {
 #define PLAYERINTURN m_game.m_gameKey.getPlayerInTurn()
 
 HelperFieldSets BackMoveGenerator::s_hfs;
-
-BackMoveGenerator::BackMoveGenerator(const Game &game) : MoveGenerator(game) {
-}
 
 static const PinnedState kingDirToPinnedState[9] = {
   NOT_PINNED
