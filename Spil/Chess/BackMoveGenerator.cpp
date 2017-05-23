@@ -2,30 +2,74 @@
 
 #ifdef TABLEBASE_BUILDER
 
+class HelperFieldSets {
+private:
+  const FieldSet  m_rank1, m_rank8, m_fileA, m_fileH;
+public:
+  FieldSet        m_knightAttacks[64], m_pawnAttacks[2][64];
+  const FieldSet *m_promoteFieldSet;
+  int             m_kingSourceField;
+  HelperFieldSets();
+  void setPromoteFieldSet(Player kingOwner, SymmetricTransformation transformation);
+};
+
+HelperFieldSets::HelperFieldSets()
+  : m_rank1(A1,B1,C1,D1,E1,F1,G1,H1,-1)
+  , m_rank8(A8,B8,C8,D8,E8,F8,G8,H8,-1)
+  , m_fileA(A1,A2,A3,A4,A5,A6,A7,A8,-1)
+  , m_fileH(H1,H2,H3,H4,H5,H6,H7,H8,-1)
+{ for(int pos = 0; pos < 64; pos++) {
+    const FieldInfo &info = Game::s_fieldInfo[pos];
+    PositionArray pa = info.m_knightAttacks;
+    FieldSet &knightAttacks = m_knightAttacks[pos];
+    for(int count = *(pa++); count--;) knightAttacks.add(*(pa++));
+    pa = info.m_whitePawnAttacks;
+    if(pa) {
+      FieldSet &wpAttacks = m_pawnAttacks[WHITEPLAYER][pos];
+      for(int count = *(pa++); count--;) wpAttacks.add(*(pa++));
+    }
+    pa = info.m_blackPawnAttacks;
+    if(pa) {
+      FieldSet &bpAttacks = m_pawnAttacks[BLACKPLAYER][pos];
+      for(int count = *(pa++); count--;) bpAttacks.add(*(pa++));
+    }
+  }
+}
+
+void HelperFieldSets::setPromoteFieldSet(Player kingOwner, SymmetricTransformation transformation) {
+  switch(transformation) {
+  case 0                     :
+  case TRANSFORM_MIRRORCOL   : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_rank1:&m_rank8; break;
+  case TRANSFORM_ROTATE180   :
+  case TRANSFORM_MIRRORROW   : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_rank8:&m_rank1; break;
+  case TRANSFORM_MIRRORDIAG2 :
+  case TRANSFORM_ROTATERIGHT : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_fileA:&m_fileH; break;
+  case TRANSFORM_MIRRORDIAG1 :
+  case TRANSFORM_ROTATELEFT  : m_promoteFieldSet = (kingOwner==WHITEPLAYER)?&m_fileH:&m_fileA; break;
+  default                    : throwException(_T("%s:Unexpected transformation:%s")
+                                             ,__TFUNCTION__
+                                             , getSymmetricTransformationToString(transformation).cstr());
+  }
+}
+
 class BackMoveGenerator : public MoveGenerator {
 private:
-  static FieldSet m_knightAttacks[64], m_pawnAttacks[2][64];
-  static const FieldSet rank1, rank8, fileA, fileH;
-  static bool fieldSetsInitialized;
-  static void initFieldSets();
+  static HelperFieldSets s_hfs;
 
-  static const FieldSet *promoteFieldSet;
-  static int             kingSourceField;
   void resetPromoteFieldSet(int kingFrom) const;
   void findPromoteFieldSet() const;
   bool isPossibleRowColCheck(  const FieldAttacks &attInfo, int pos) const;
-  bool isNonCapturingPromotion(int promotedPos, const FieldSet &sourceFieldSet) const;
+  bool isNonCapturingPromotion(int promotedPos,                   const FieldSet &sourceFieldSet) const;
   bool isCapturingPromotion(   int promotedPos, int uncoveredPos, const FieldSet &sourceFieldSet) const;
   bool isPromotePosition(int pos) const;
 protected:
   BackMoveGenerator(const Game &game);
   static void invalidPawnPosition(bool firstMove, const Piece *piece);
   bool checksEnemyKing(int kingPos, const Piece *piece, int from, MoveDirection direction) const;
-  bool isPossibleCheck(        const Piece *king, int pos) const;
+  bool isPossibleCheck(             const Piece *king , int pos) const;
 };
 
 class BackMoveGeneratorNoCheck : public BackMoveGenerator {
-private:
 public:
   BackMoveGeneratorNoCheck(const Game &game) : BackMoveGenerator(game) {
   }
@@ -44,7 +88,6 @@ public:
 };
 
 class BackMoveGeneratorSDCheck : public BackMoveGenerator {
-private:
 public:
   BackMoveGeneratorSDCheck(const Game &game) : BackMoveGenerator(game) {
   }
@@ -164,35 +207,9 @@ void Game::setEndGameKeyDefinition(const EndGameKeyDefinition &keydef) {
 #undef PLAYERINTURN
 #define PLAYERINTURN m_game.m_gameKey.getPlayerInTurn()
 
-FieldSet BackMoveGenerator::m_knightAttacks[64];
-FieldSet BackMoveGenerator::m_pawnAttacks[2][64];
-
-bool BackMoveGenerator::fieldSetsInitialized = false;
-
-void BackMoveGenerator::initFieldSets() { // static
-  for(int pos = 0; pos < 64; pos++) {
-    const FieldInfo &info = Game::s_fieldInfo[pos];
-    PositionArray pa = info.m_knightAttacks;
-    FieldSet &knightAttacks = m_knightAttacks[pos];
-    for(int count = *(pa++); count--;) knightAttacks.add(*(pa++));
-    pa = info.m_whitePawnAttacks;
-    if(pa) {
-      FieldSet &wpAttacks = m_pawnAttacks[WHITEPLAYER][pos];
-      for(int count = *(pa++); count--;) wpAttacks.add(*(pa++));
-    }
-    pa = info.m_blackPawnAttacks;
-    if(pa) {
-      FieldSet &bpAttacks = m_pawnAttacks[BLACKPLAYER][pos];
-      for(int count = *(pa++); count--;) bpAttacks.add(*(pa++));
-    }
-  }
-}
+HelperFieldSets BackMoveGenerator::s_hfs;
 
 BackMoveGenerator::BackMoveGenerator(const Game &game) : MoveGenerator(game) {
-  if(!fieldSetsInitialized) {
-    initFieldSets();
-    fieldSetsInitialized = true;
-  }
 }
 
 static const PinnedState kingDirToPinnedState[9] = {
@@ -273,10 +290,10 @@ bool BackMoveGenerator::checksEnemyKing(int kingPos, const Piece *piece, int fro
     }
 
   case Knight:
-    return m_knightAttacks[from].contains(kingPos);
+    return s_hfs.m_knightAttacks[from].contains(kingPos);
 
   case Pawn  :
-    return m_pawnAttacks[piece->getPlayer()][from].contains(kingPos);
+    return s_hfs.m_pawnAttacks[piece->getPlayer()][from].contains(kingPos);
 
   default    :
     return false;
@@ -346,14 +363,14 @@ bool BackMoveGenerator::isPossibleCheck(const Piece *king, int pos) const {
             const int       knightPos  = m_game.findAttackingKnightPosition(enemy, pos);
             const int       rcPiecePos = m_game.findLDAttackingPiece(enemy, pos, false)->m_position;
             const FieldSet &fieldsBetween = getFieldsBetween(pos, rcPiecePos);
-            return !(m_knightAttacks[knightPos] * fieldsBetween).isEmpty()
+            return !(s_hfs.m_knightAttacks[knightPos] * fieldsBetween).isEmpty()
                  || isNonCapturingPromotion(knightPos,      fieldsBetween)
                  || isCapturingPromotion(   knightPos, pos, fieldsBetween);
           }
         } else if(diagAttack) { // && !rcAttack => double-check by a knight + (queen or bishop)
           const int       knightPos     = m_game.findAttackingKnightPosition(enemy, pos);
           const FieldSet &fieldsBetween = getFieldsBetween(pos, m_game.findLDAttackingPiece(enemy, pos, true)->m_position);
-          return !(m_knightAttacks[knightPos] * fieldsBetween).isEmpty()
+          return !(s_hfs.m_knightAttacks[knightPos] * fieldsBetween).isEmpty()
                || isNonCapturingPromotion(knightPos, fieldsBetween);
         }
       }
@@ -511,32 +528,24 @@ bool BackMoveGenerator::isPromotePosition(int pos) const {
   if(m_game.m_keydef == NULL) { // No symmetric transformation or swapping of players
     result = GETROW(pos) == LASTROW;
   } else {
-    if(promoteFieldSet == NULL) { // lazy evaluering
+    if(s_hfs.m_promoteFieldSet == NULL) { // lazy evaluering
       findPromoteFieldSet();
     }
-    result = promoteFieldSet->contains(pos);
+    result = s_hfs.m_promoteFieldSet->contains(pos);
   }
   PRINTF((_T("result=%s\n"), boolToStr(result)));
   return result;
 }
 
-const FieldSet  BackMoveGenerator::rank1(A1,B1,C1,D1,E1,F1,G1,H1,-1);
-const FieldSet  BackMoveGenerator::rank8(A8,B8,C8,D8,E8,F8,G8,H8,-1);
-const FieldSet  BackMoveGenerator::fileA(A1,A2,A3,A4,A5,A6,A7,A8,-1);
-const FieldSet  BackMoveGenerator::fileH(H1,H2,H3,H4,H5,H6,H7,H8,-1);
-const FieldSet *BackMoveGenerator::promoteFieldSet;
-int             BackMoveGenerator::kingSourceField;
-
-
 void BackMoveGenerator::resetPromoteFieldSet(int kingFrom) const {
-  promoteFieldSet = NULL;
-  kingSourceField = kingFrom;
+  s_hfs.m_promoteFieldSet = NULL;
+  s_hfs.m_kingSourceField = kingFrom;
 }
 
 void BackMoveGenerator::findPromoteFieldSet() const {
   GameKey key = m_game.getKey();
   const EndGameKeyDefinition &keydef = *m_game.m_keydef;
-  String origKeyStr = key.toString();
+//  String origKeyStr = key.toString();
   EndGameKey egk;
   Player kingOwner = PLAYERINTURN;
   if(m_game.m_swapPlayers) {
@@ -547,30 +556,18 @@ void BackMoveGenerator::findPromoteFieldSet() const {
     egk = keydef.getEndGameKey(key);
   }
   if(kingOwner == WHITEPLAYER) {
-    egk.setWhiteKingPosition(kingSourceField);
+    egk.setWhiteKingPosition(s_hfs.m_kingSourceField);
   } else {
-    egk.setBlackKingPosition(kingSourceField);
+    egk.setBlackKingPosition(s_hfs.m_kingSourceField);
   }
   const SymmetricTransformation transformation = keydef.getSymTransformation(egk);
-  switch(transformation) {
-  case 0                     :
-  case TRANSFORM_MIRRORCOL   : promoteFieldSet = (kingOwner==WHITEPLAYER)?&rank1:&rank8; break;
-  case TRANSFORM_ROTATE180   :
-  case TRANSFORM_MIRRORROW   : promoteFieldSet = (kingOwner==WHITEPLAYER)?&rank8:&rank1; break;
-  case TRANSFORM_MIRRORDIAG2 :
-  case TRANSFORM_ROTATERIGHT : promoteFieldSet = (kingOwner==WHITEPLAYER)?&fileA:&fileH; break;
-  case TRANSFORM_MIRRORDIAG1 :
-  case TRANSFORM_ROTATELEFT  : promoteFieldSet = (kingOwner==WHITEPLAYER)?&fileH:&fileA; break;
-  default                    : throwException(_T("%s:Unexpected transformation:%s")
-                                             ,__TFUNCTION__
-                                             , getSymmetricTransformationToString(transformation).cstr());
-  }
+  s_hfs.setPromoteFieldSet(kingOwner, transformation);
   PRINTF((_T("Trans:%s\nKingowner:%s\nKing sourcefield:%s\nKey.tr:%s\nPromoteFields:%s\n")
         , getSymmetricTransformationToString(transformation).cstr()
         , getPlayerNameEnglish(kingOwner)
-        , getFieldName(kingSourceField)
+        , getFieldName(s_hfs.m_kingSourceField)
         , keydef.getTransformedKey(egk, transformation).toString(keydef).cstr()
-        , promoteFieldSet->toString().cstr()));
+        , s_hfs.m_promoteFieldSet->toString().cstr()));
 }
 
 void BackMoveGenerator::invalidPawnPosition(bool firstMove, const Piece *piece) { // static

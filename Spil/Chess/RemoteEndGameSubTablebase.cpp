@@ -106,7 +106,7 @@ void RemoteTablebaseLoadReply::read( SOCKET s) {
 
 // --------------------------------------------------------------------------------------------------------
 
-SOCKET RemoteEndGameSubTablebase::listenSocket = INVALID_SOCKET;
+SOCKET RemoteEndGameSubTablebase::s_listenSocket = INVALID_SOCKET;
 
 RemoteEndGameSubTablebase::RemoteEndGameSubTablebase(const EndGameKeyDefinition &keydef) : EndGameSubTablebase(keydef) {
   m_socket = INVALID_SOCKET;
@@ -130,12 +130,12 @@ String RemoteEndGameSubTablebase::load(bool packed) {
 
   static int portNumber = -1;
 
-  if(listenSocket == INVALID_SOCKET) {
+  if(s_listenSocket == INVALID_SOCKET) {
     if(portNumber < 0) {
       randomize();
       portNumber = randInt() % 10000 + 1000;
     }
-    listenSocket = tcpCreate(portNumber);
+    s_listenSocket = tcpCreate(portNumber);
   }
   const String programName = getModuleFileName();
   if(_tspawnlp(_P_NOWAITO, programName.cstr(), programName.cstr()
@@ -145,7 +145,7 @@ String RemoteEndGameSubTablebase::load(bool packed) {
               ,NULL) == -1) {
     throwErrNoOnSysCallException(_T("_tspawnlp"));
   }
-  m_socket = tcpAccept(listenSocket);
+  m_socket = tcpAccept(s_listenSocket);
   sendRequest(REQUEST_SETGLOBALS);
 
   log(_T("\nLoading %s..."), getName().cstr());

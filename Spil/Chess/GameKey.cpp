@@ -31,15 +31,15 @@ static int pieceCmp(const PieceWithPosition &p1, const PieceWithPosition &p2) {
   return (int)p1.m_position - (int)p2.m_position;
 }
 
-GameKey GameKey::startupPosition;
+GameKey GameKey::s_startupPosition;
 
 const GameKey &GameKey ::getStartUpPosition() {
   static int initDone = false;
   if(!initDone) {
-    startupPosition = Game().getKey();
+    s_startupPosition = Game().getKey();
     initDone = true;
   }
-  return startupPosition;
+  return s_startupPosition;
 }
 
 
@@ -318,7 +318,7 @@ int GameKey::transform(int pos, SymmetricTransformation st) { // static
 #define SHORTCASTLE_DONE             0x04
 #define LONGCASTLE_DONE              0x08
 
-const char GameKey::castleScore[16] = { // static
+const char GameKey::s_castleScore[16] = { // static
   -20 //  0 no castling done or allowed
  , -5 //  1 only short castle_allowed
  , -8 //  2 only long  castle_allowed

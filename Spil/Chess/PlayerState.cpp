@@ -238,7 +238,7 @@ ScoreEvaluator PlayerState::getScoreFunction() const {
 }
 
 int PlayerState::evaluateNormalPlay() const {
-  return m_totalMaterial + m_positionalScore + GameKey::castleScore[*m_castleState];
+  return m_totalMaterial + m_positionalScore + GameKey::s_castleScore[*m_castleState];
 }
 
 int PlayerState::evaluateNormalPlayWithoutCastleScore() const {

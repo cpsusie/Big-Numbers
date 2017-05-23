@@ -878,7 +878,7 @@ public:
 
 class GameKey {
 private:
-  static GameKey startupPosition;
+  static GameKey s_startupPosition;
   CastleState findCastleState(Player player) const;
 
   // Change black <-> white pieces, and mirror row numbers.
@@ -903,7 +903,7 @@ private:
   TCHAR *getFENEpString(    TCHAR *dst) const;
 public:
   // Indexed by m_castleState
-  static const char    castleScore[16];
+  static const char    s_castleScore[16];
   static void validateSize();
 
   union {

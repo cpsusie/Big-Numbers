@@ -59,7 +59,7 @@ typedef enum {
 class RemoteEndGameSubTablebase : public EndGameSubTablebase {
 private:
   // Clientside (mainprogram)
-  static SOCKET listenSocket;
+  static SOCKET s_listenSocket;
   SOCKET        m_socket;
   bool          m_loaded;
   void          sendRequest(RemoteTablebaseRequest requestCode);
