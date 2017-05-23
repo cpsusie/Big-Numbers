@@ -10,12 +10,8 @@ Time::Time() {
   m_factor = getFactor(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds);
 }
 
-Time::Time(time_t tt) {
-  m_factor = getFactor(tt);
-}
-
 bool Time::timeValidate(int hour, int minute, int second, int millisecond) { // static
-  return hour >= 0 && minute >= 0 && second >= 0 && millisecond >= 0 && hour < 24 && minute < 60 && second < 60 && millisecond < 1000;
+  return ((UINT)hour < 24) && ((UINT)minute < 60) && ((UINT)second < 60) && ((UINT)millisecond < 1000);
 }
 
 Time::Time(int hour, int minute, int second, int millisecond) {
@@ -25,27 +21,8 @@ Time::Time(int hour, int minute, int second, int millisecond) {
   m_factor = getFactor(hour, minute, second, millisecond);
 }
 
-Time::Time(double msec) {
-  m_factor = (int)msec;
-}
-
-Time::Time(const String &src) {
-  init(src.cstr());
-}
-
-Time::Time(const TCHAR *src) {
-  init(src);
-}
-
-Time::Time(int factor) {
-  checkFactor(factor);
-  m_factor = factor;
-}
-
-void Time::checkFactor(__int64 factor) {
-  if(factor < 0 || factor >= getMaxFactor()) {
-    throwException(_T("Time::Invalid factor:%I64d. Must be in the range [0..%d["), factor, getMaxFactor());
-  }
+void Time::throwInvalidFactor(INT64 factor) { // static 
+  throwException(_T("Time::Invalid factor:%I64d. Must be in the range [0..%d["), factor, getMaxFactor());
 }
 
 void Time::init(const TCHAR *src) {
@@ -78,18 +55,6 @@ Time Time::operator+(int seconds) const {
   return result;
 }
 
-Time Time::operator-(int seconds) const {
-  return *this + (-seconds);
-}
-
-Time &Time::operator+=(int seconds) {
-  return *this = *this + seconds;
-}
-
-Time &Time::operator-=(int seconds) {
-  return *this = *this - seconds;
-}
-
 Time Time::operator++(int) {
   const Time result = *this;
   *this += 1;
@@ -102,12 +67,8 @@ Time Time::operator--(int) {
   return result;
 }
 
-int Time::operator-(const Time &r) const {
-  return (m_factor - r.m_factor) / 1000;
-}
-
 static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
-  throwException(_T("Time::%s:Invalid TimeComponent (=%d)"), function, c);
+  throwException(_T("%s:Invalid TimeComponent (=%d)"), function, c);
 }
 
 Time &Time::add(TimeComponent c, int count) {
@@ -133,7 +94,7 @@ Time &Time::add(TimeComponent c, int count) {
     *this += 3600 * count;
     break;
   default          :
-    throwInvalidTimeComponent(_T("add"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
   }
   return *this;
 }
@@ -144,7 +105,7 @@ int Time::get(TimeComponent c) {
   case TSECOND     : return getSecond();
   case TMINUTE     : return getMinute();
   case THOUR       : return getHour();
-  default          : throwInvalidTimeComponent(_T("get"), c);
+  default          : throwInvalidTimeComponent(__TFUNCTION__, c);
                      return 0;
   }
 }
@@ -157,41 +118,9 @@ Time &Time::set(TimeComponent c, int value) {
   case TSECOND     : second      = value; break;
   case TMINUTE     : minute      = value; break;
   case THOUR       : hour        = value; break;
-  default          : throwInvalidTimeComponent(_T("set"), c);
+  default          : throwInvalidTimeComponent(__TFUNCTION__, c);
   }
   return *this = Time(hour, minute, second, millisecond);
-}
-
-bool operator==(const Time &l, const Time &r) {
-  return l.m_factor == r.m_factor;
-}
-
-bool operator!=(const Time &l, const Time &r) {
-  return l.m_factor != r.m_factor;
-}
-
-bool operator<(const Time &l, const Time &r) {
-  return l.m_factor <  r.m_factor;
-}
-
-bool operator<=(const Time &l, const Time &r) {
-  return l.m_factor <= r.m_factor;
-}
-
-bool operator>(const Time &l, const Time &r) {
-  return l.m_factor >  r.m_factor;
-}
-
-bool operator>=(const Time &l, const Time &r) {
-  return l.m_factor >= r.m_factor;
-}
-
-int timeCmp(const Time &l, const Time &r) {
-  return l.m_factor - r.m_factor;
-}
-
-int Time::getFactor(int hour, int minute, int second, int millisecond) { // static
-  return ((hour * 60 + minute) * 60 + second) * 1000 + millisecond;
 }
 
 int Time::getFactor(time_t tt) { // static
@@ -209,22 +138,6 @@ const Time &Time::getMaxTime() { // static
   return maxTime;
 }
 
-int Time::getHour() const {
-  return m_factor / (3600000);
-}
-
-int Time::getMinute() const {
-  return (m_factor / 60000) % 60;
-}
-
-int Time::getSecond() const {
-  return (m_factor / 1000) % 60;
-}
-
-int Time::getMilliSecond() const {
-  return m_factor % 1000;
-}
-
 void Time::getHMS(int &hour, int &minute, int &second, int &millisecond) const {
   hour        = getHour();
   minute      = getMinute();
@@ -239,7 +152,7 @@ void Time::getHMS(int &hour, int &minute, int &second, int &millisecond) const {
     scale *= 10;                                             \
   }                                                          \
   String tmp = ::format(_T("%0*d"), count, (comp) % scale);  \
-  _tcscpy(t, tmp.cstr());                                     \
+  _tcscpy(t, tmp.cstr());                                    \
   t += tmp.length();                                         \
 }                                                            \
 break
@@ -262,9 +175,4 @@ TCHAR *Time::tostr(TCHAR *dst, const String &format) const {
   }
   *t = 0;
   return dst;
-}
-
-String Time::toString(const String &format) const {
-  TCHAR tmp[1024];
-  return tostr(tmp, format);
 }

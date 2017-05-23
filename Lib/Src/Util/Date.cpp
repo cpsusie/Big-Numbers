@@ -2,7 +2,7 @@
 #include <Tokenizer.h>
 #include <Date.h>
 
-const TCHAR *Date::daynames[] = {
+const TCHAR *Date::s_daynames[] = {
   _T("Mon")
  ,_T("Tue")
  ,_T("Wed")
@@ -13,8 +13,8 @@ const TCHAR *Date::daynames[] = {
 };
 
 //                             31.1 28.2 31.3 30.4 31.5 30.6 31.7...
-const short Date::ydaynl[] = { 30  ,58  ,89  ,119 ,150 ,180 ,211 ,242 ,272 ,303 ,333 ,364 }; // nonleapyear
-const short Date::ydayl[]  = { 30  ,59  ,90  ,120 ,151 ,181 ,212 ,243 ,273 ,304 ,334 ,365 }; // leapYear
+const short Date::s_ydaynl[] = { 30  ,58  ,89  ,119 ,150 ,180 ,211 ,242 ,272 ,303 ,333 ,364 }; // nonleapyear
+const short Date::s_ydayl[]  = { 30  ,59  ,90  ,120 ,151 ,181 ,212 ,243 ,273 ,304 ,334 ,365 }; // leapYear
 
 const String ddMMyy            = _T("dd.MM.yy");
 const String ddMMyyyy          = _T("dd.MM.yyyy");
@@ -44,19 +44,10 @@ Date::Date(int day, int month, int year) {
   m_factor = getFactor(day, month, year);
 }
 
-Date::Date(const String &src) {
-  init(src.cstr());
-}
-
-Date::Date(const TCHAR *src) {
-  init(src);
-}
-
 Date::Date(int factor) {
   checkFactor(factor);
   m_factor = factor;
 }
-
 
 int Date::adjustYear100(int year) { // static
   static const int thisYear = Date().getYear();
@@ -85,24 +76,15 @@ void Date::init(const TCHAR *src) {
   *this = Date(d[0], d[1], adjustYear100(d[2]));
 }
 
-Date::Date(time_t tt) {
-  m_factor = getFactor(tt);
-}
-
 Date::Date(double d) {
   m_factor = (long)d + getDATE0Factor();
   checkFactor(m_factor);
-}
-
-double Date::getDATE() const {
-  return m_factor - getDATE0Factor();
 }
 
 int Date::getDATE0Factor() {
   static int DATE0Factor = Date::getFactor(30, 12, 1899); // 693959L
   return DATE0Factor;
 }
-
 
 int Date::getFactor(time_t tt) {
   struct tm *tm = localtime(&tt);
@@ -113,7 +95,7 @@ int Date::getFactor(int day, int month, int year) { // calculate factor from day
   if(month <= 2) {
     return 365*year + day + 31*(month-1) + (year-1)/4 - ((year-1)/100 + 1)*3/4;
   } else {
-    return 365*year + day + ydayl[month-2] + year/4 - (year/100 + 1)*3/4;
+    return 365*year + day + s_ydayl[month-2] + year/4 - (year/100 + 1)*3/4;
   }
 }
 
@@ -135,16 +117,7 @@ static void throwDateOverflow() {
   throwException(_T("Date becomes to big. Last date is %s"), Date::getMaxDate().toString().cstr());
 }
 
-void Date::checkFactor(int factor) {
-  if(factor < getMinFactor()) {
-    throwDateUnderflow();
-  }
-  if(factor > getMaxFactor()) {
-    throwDateOverflow();
-  }
-}
-
-void Date::checkFactor(__int64 factor) {
+void Date::checkFactor(INT64 factor) {
   if(factor < getMinFactor()) {
     throwDateUnderflow();
   }
@@ -162,7 +135,6 @@ const Date &Date::getMaxDate() {  // static
   static const Date maxDate(31, 12, 9999); // Our calender stops here !!
   return maxDate;
 }
-
 
 Date Date::operator+(int days) const {
   Date result(*this);
@@ -202,12 +174,8 @@ Date Date::operator--(int) {
   return result;
 }
 
-int Date::operator-(const Date &r) const {
-  return m_factor - r.m_factor;
-}
-
 static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
-  throwException(_T("Date::%s:Invalid timeComponent (=%d)."), function, c);
+  throwException(_T("%s:Invalid timeComponent (=%d)."), function, c);
 }
 
 Date &Date::add(TimeComponent c, int count) {
@@ -249,7 +217,7 @@ Date &Date::add(TimeComponent c, int count) {
       break;
     }
   default   :
-    throwInvalidTimeComponent(_T("add"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
   }
   return *this;
 }
@@ -261,7 +229,7 @@ int Date::get(TimeComponent c) {
   case TWEEK      : return getWeek();
   case TMONTH     : return getMonth();
   case TYEAR      : return getYear();
-  default         : throwInvalidTimeComponent(_T("get"), c);
+  default         : throwInvalidTimeComponent(__TFUNCTION__, c);
                     return 0;
   }
 }
@@ -302,37 +270,9 @@ Date &Date::set(TimeComponent c, int value) {
     }
 
   default    :
-    throwInvalidTimeComponent(_T("set"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
     return *this;
   }
-}
-
-bool operator==(const Date &l, const Date &r) {
-  return l.m_factor == r.m_factor;
-}
-
-bool operator!=(const Date &l, const Date &r) {
-  return l.m_factor != r.m_factor;
-}
-
-bool operator<(const Date &l, const Date &r) {
-  return l.m_factor <  r.m_factor;
-}
-
-bool operator<=(const Date &l, const Date &r) {
-  return l.m_factor <= r.m_factor;
-}
-
-bool operator>(const Date &l, const Date &r) { 
-  return l.m_factor >  r.m_factor;
-}
-
-bool operator>=(const Date &l, const Date &r) {
-  return l.m_factor >= r.m_factor;
-}
-
-int dateCmp(const Date &l, const Date &r) {
-  return l.m_factor - r.m_factor;
 }
 
 int Date::diff(const Date &from, const Date &to, TimeComponent c) {
@@ -355,7 +295,7 @@ int Date::diff(const Date &from, const Date &to, TimeComponent c) {
     return to.getYear() - from.getYear();
 
   default       :
-    throwInvalidTimeComponent(_T("diff"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
     return 0;
   }
 }
@@ -370,9 +310,9 @@ static int getYear(int factor, int &f11) { // return year (and factor of 1.1.yea
   return year;
 }
 
-static int getMonth(int factor, int &year, int &f11, const short *&yd) { // return month (and year and factor of 1.1.year, and ydaynl or ydayl) of factor
+static int getMonth(int factor, int &year, int &f11, const short *&yd) { // return month (and year and factor of 1.1.year, and s_ydaynl or s_ydayl) of factor
   year  = getYear(factor, f11);
-  yd = Date::isLeapYear(year) ? Date::ydayl : Date::ydaynl;
+  yd = Date::isLeapYear(year) ? Date::s_ydayl : Date::s_ydaynl;
   int d = factor - f11;
   for(int m = d/32;m<12;m++) {
     if(yd[m] >= d) {
@@ -384,7 +324,7 @@ static int getMonth(int factor, int &year, int &f11, const short *&yd) { // retu
 
 static int getDay(int factor, int &year, int &m) { // return day (and month, year) of factor
   int f11;         // datefactor of 1.1.year
-  const short *yd; // ydaynl/ydayl depending on leapYear(year)
+  const short *yd; // s_ydaynl/s_ydayl depending on leapYear(year)
   m = getMonth(factor, year, f11, yd);
   if(m == 1) {
     return factor - f11 + 1;
@@ -398,6 +338,10 @@ int Date::getYear() const {
   return ::getYear(m_factor, f11);
 }
 
+void Date::getDMY(int &day, int &month, int &year) const {
+  day = ::getDay(m_factor, year, month);
+}
+
 int Date::getMonth() const {
   int year, f11;   // not used
   const short *yd; // not used
@@ -407,14 +351,6 @@ int Date::getMonth() const {
 int Date::getDayOfMonth() const {
   int year, m; // not used
   return ::getDay(m_factor, year, m);
-}
-
-void Date::getDMY(int &day, int &month, int &year) const {
-  day = ::getDay(m_factor, year, month);
-}
-
-WeekDay Date::getWeekDay() const {
-  return (WeekDay)((m_factor - 2) % 7);
 }
 
 int Date::getDayOfYear() const {
@@ -451,19 +387,6 @@ int Date::getWeek() const {
   return result;
 }
 
-bool Date::isLeapYear(int year) { // static is year a leapYear
-  return ((year%4==0) && (year%100 != 0)) || (year%400 == 0);
-}
-
-bool Date::isLeapYear() const {
-  return isLeapYear(getYear());
-}
-
-// Number of days in year
-int Date::getDaysInYear(int year) { // static
-  return isLeapYear(year) ? 366 : 365;
-}
-
 // Number of weeks in year
 int Date::getWeeksInYear(int year) { // static
   Date lastDay = Date(31, 12, year);
@@ -477,7 +400,7 @@ int Date::getWeeksInYear(int year) { // static
   case SATURDAY :
   case SUNDAY   : return lastDay.getWeek();
   default:
-    throwException(_T("Date::getWeeksInYear(%d):Illegal weekDay (=%d) for %s"), year, lastDay.getWeekDay(), lastDay.toString().cstr());
+    throwException(_T("%s(%d):Illegal weekDay (=%d) for %s"), __TFUNCTION__, year, lastDay.getWeekDay(), lastDay.toString().cstr());
     return 30;
   }
 }
@@ -498,7 +421,7 @@ int Date::getDaysInMonth(int year, int month) { // static
   case 11: return 30;
   case  2: return isLeapYear(year) ? 29 : 28;
   default:
-    throwException(_T("Date::getDaysInMonth:Illegal month:%d. Must be [1..12]."), month);
+    throwException(_T("%s:Illegal month:%d. Must be [1..12]."), __TFUNCTION__, month);
     return 30;
   }
 }
@@ -553,7 +476,7 @@ Date Date::getEaster(int year) { // static
     scale *= 10;                                            \
   }                                                         \
   String tmp = ::format(_T("%0*d"), count, (comp) % scale); \
-  _tcscpy(t, tmp.cstr());                                    \
+  _tcscpy(t, tmp.cstr());                                   \
   t += tmp.length();                                        \
 }                                                           \
 break
@@ -577,9 +500,4 @@ TCHAR *Date::tostr(TCHAR *dst, const String &format) const {
   }
   *t = 0;
   return dst;
-}
-
-String Date::toString(const String &format) const {
-  TCHAR tmp[1024];
-  return tostr(tmp, format);
 }

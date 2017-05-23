@@ -45,78 +45,131 @@ private:
   int m_factor;
   void init(const TCHAR *src);
   Date(int factor);
-  static void checkFactor(__int64 factor);
+  static void checkFactor(INT64 factor);
   static int getDATE0Factor();
 public:
-  static const short ydaynl[];
-  static const short ydayl[];
-  static const TCHAR *daynames[];
-  static int  getFactor(int day, int month, int year);  // Calculate factor from day,month,year
+  static const short s_ydaynl[];
+  static const short s_ydayl[];
+  static const TCHAR *s_daynames[];
+  // Calculate factor from day,month,year
+  static int  getFactor(int day, int month, int year);
   static int  getFactor(time_t tt);
-  static void checkFactor(int factor);
-  static bool isLeapYear(    int year);                 // Is year a leapYear
-  static int  getDaysInMonth(int year, int month);      // Number of days of month in the given year 
-  static int  getDaysInYear( int year);                 // Number of days in year
-  static int  getWeeksInYear(int year);                 // Number of weeks in year
-  static Date getEaster(     int year);                 // Get the date of easter in the given year in the gregorian calender
+
+  // Is year a leapYear
+  static inline bool isLeapYear(int year) {
+    return ((year%4==0) && (year%100 != 0)) || (year%400 == 0);
+  }
+
+  // Number of days of month in the given year
+  static int  getDaysInMonth(int year, int month);
+  // Number of days in year
+  static inline int  getDaysInYear(int year) {
+    return isLeapYear(year) ? 366 : 365;
+  }
+  // Number of weeks in year
+  static int  getWeeksInYear(int year);
+  // Get the date of easter in the given year in the gregorian calender
+  static Date getEaster(     int year);
   static bool dateValidate(  int day, int month, int year);
-  static int  adjustYear100( int year);                 // return (year<currentyear%100+30)?(year+2000) : (year<100)?(year+1900):year;
+  // return (year<currentyear%100+30)?(year+2000) : (year<100)?(year+1900):year;
+  static int  adjustYear100( int year);
 
   Date();
   Date(int day, int month, int year);
-  explicit Date(const TCHAR *src);
-  explicit Date(const String &src);
-  explicit Date(time_t tt);
+  inline explicit Date(const TCHAR *src) {
+    init(src);
+  }
+  inline explicit Date(const String &src) {
+    init(src.cstr());
+  }
+  inline explicit Date(time_t tt) {
+    m_factor = getFactor(tt);
+  }
   explicit Date(double d);                              // ie type DATE
-  double   getDATE() const;
+  inline double getDATE() const {
+    return m_factor - getDATE0Factor();
+  }
   Date     operator+(int days) const;
   Date     operator-(int days) const;
-  Date    &operator+=(int days);                        // Add days to this
-  Date    &operator-=(int days);                        // Subtract days from this
-  Date    &operator++() { return operator+=(1); }       // Prefix form. Add 1 day
-  Date    &operator--() { return operator-=(1); }       // Prefix form. Subtract 1 day
-  Date     operator++(int);                             // Postfix form. Add 1 day
-  Date     operator--(int);                             // Postfix form. Subtract 1 day
-  int      operator-(const Date &r) const;              // Distance in days
+  // Add days to this
+  Date    &operator+=(int days);
+  // Subtract days from this
+  Date    &operator-=(int days);
+  // Prefix form. Add 1 day
+  Date    &operator++() { return operator+=(1); }
+  // Prefix form. Subtract 1 day
+  Date    &operator--() { return operator-=(1); }
+  // Postfix form. Add 1 day
+  Date     operator++(int);
+  // Postfix form. Subtract 1 day
+  Date     operator--(int);
+  // Distance in days
+  inline int operator-(const Date &r) const {
+    return m_factor - r.m_factor;
+  }
+
   Date &add(TimeComponent c, int count);
   int   get(TimeComponent c);
   Date &set(TimeComponent c, int value);
   static int diff(const Date &from, const Date &to, TimeComponent c = TDAYOFMONTH);
-  friend int dateCmp(    const Date &l, const Date &r);
-  friend bool operator==(const Date &l, const Date &r);
-  friend bool operator!=(const Date &l, const Date &r);
-  friend bool operator< (const Date &l, const Date &r);
-  friend bool operator<=(const Date &l, const Date &r);
-  friend bool operator> (const Date &l, const Date &r);
-  friend bool operator>=(const Date &l, const Date &r);
+  friend inline int dateCmp(const Date &l, const Date &r) {
+    return l.m_factor - r.m_factor;
+  }
+  inline bool operator==(const Date &r) const {
+    return m_factor == r.m_factor;
+  }
+  inline bool operator!=(const Date &r) const {
+    return m_factor != r.m_factor;
+  }
+  inline bool operator< (const Date &r) const {
+    return m_factor < r.m_factor;
+  }
+  inline bool operator<=(const Date &r) const {
+    return m_factor <= r.m_factor;
+  }
+  inline bool operator> (const Date &r) const {
+    return m_factor > r.m_factor;
+  }
+  inline bool operator>=(const Date &r) const {
+    return m_factor >= r.m_factor;
+  }
   void getDMY(int &day, int &month, int &year) const;
   int getYear()        const;
   int getMonth()       const;
   int getDayOfMonth()  const;
   int getDayOfYear()   const;
-  WeekDay getWeekDay() const;
+  inline WeekDay getWeekDay() const {
+    return (WeekDay)((m_factor - 2) % 7);
+  }
   int getWeek()        const;
-  bool isLeapYear()    const;
-  unsigned long hashCode() const {
+  inline bool isLeapYear()    const {
+    return isLeapYear(getYear());
+  }
+
+  inline int getFactor() const {
     return m_factor;
   }
-  int getFactor() const {
+
+  inline ULONG hashCode() const {
     return m_factor;
   }
 
   static const Date &getMinDate();
   static const Date &getMaxDate();
 
-  static __int64 getMinFactor() {
+  static inline INT64 getMinFactor() {
     return getMinDate().m_factor;
   }
 
-  static __int64 getMaxFactor() {
+  static inline INT64 getMaxFactor() {
     return getMaxDate().m_factor;
   }
 
   TCHAR *tostr(TCHAR *dst, const String &format = ddMMyyyy) const;
-  String toString(const String &format = ddMMyyyy) const;
+  inline String toString(const String &format = ddMMyyyy) const {
+    TCHAR tmp[1024];
+    return tostr(tmp, format);
+  }
   friend class Timestamp;
   friend Packer &operator<<(Packer &p, const Date &d);
   friend Packer &operator>>(Packer &p,       Date &d);
@@ -125,61 +178,118 @@ public:
 class Time {
 private:
   int m_factor;
-  explicit Time(double msec); // msec:milliseconds from midnight
+  // msec:milliseconds from midnight
+  inline explicit Time(double msec) {
+    m_factor = (int)msec;
+  }
   void init(const TCHAR *src);
   static int getFactor(time_t tt);
-  Time(int factor);
-  static void checkFactor(__int64 factor);
+  inline Time(int factor) {
+    checkFactor(factor);
+    m_factor = factor;
+  }
+  static void throwInvalidFactor(INT64 factor);
+  static inline void checkFactor(INT64 factor) {
+    if((UINT64)factor >= (UINT)getMaxFactor()) throwInvalidFactor(factor);
+  }
+
 public:
 
-  static int getFactor(int hour, int minute, int second, int millisecond);
+  static inline int getFactor(int hour, int minute, int second, int millisecond) {
+    return ((hour * 60 + minute) * 60 + second) * 1000 + millisecond;
+  }
   static bool timeValidate(int hour, int minute, int second, int millisecond=0);
 
   Time();
   Time(int hour, int minute, int second, int millisecond = 0);
-  explicit Time(const String &src);
-  explicit Time(const TCHAR *src);
-  explicit Time(time_t t);
+  inline explicit Time(const String &src) {
+    init(src.cstr());
+  }
+  inline explicit Time(const TCHAR *src) {
+    init(src);
+  }
+  inline explicit Time(time_t t) {
+    m_factor = getFactor(t);
+  }
   Time  operator+( int seconds) const;
-  Time  operator-( int seconds) const;
-  Time &operator+=(int seconds);
-  Time &operator-=(int seconds);
-  Time &operator++() { return operator+=(1); }       // Prefix form. Add 1 second
-  Time &operator--() { return operator-=(1); }       // Prefix form. Subtract 1 second
-  Time  operator++(int);                             // Postfix form. Add 1 second
-  Time  operator--(int);                             // Postfix form. Subtract 1 second
-  int   operator-(const Time &r) const;              // Distance in seconds
+  inline Time  operator-(int seconds) const {
+    return *this + (-seconds);
+  }
+  inline Time &operator+=(int seconds) {
+    return *this = *this + seconds;
+  }
+  inline Time &operator-=(int seconds) {
+    return *this = *this - seconds;
+  }
+  // Prefix form. Add 1 second
+  Time &operator++() { return operator+=(1); }
+  // Prefix form. Subtract 1 second
+  Time &operator--() { return operator-=(1); }
+  // Postfix form. Add 1 second
+  Time  operator++(int);
+  // Postfix form. Subtract 1 second
+  Time  operator--(int);
+  // Distance in seconds
+  inline int   operator-(const Time &r) const {
+    return (m_factor - r.m_factor) / 1000;
+  }
   Time &add(TimeComponent c, int count);
   int   get(TimeComponent c);
   Time &set(TimeComponent c, int value);
-  friend int timeCmp(    const Time &l, const Time &r);
-  friend bool operator==(const Time &l, const Time &r);
-  friend bool operator!=(const Time &l, const Time &r);
-  friend bool operator< (const Time &l, const Time &r);
-  friend bool operator<=(const Time &l, const Time &r);
-  friend bool operator> (const Time &l, const Time &r);
-  friend bool operator>=(const Time &l, const Time &r);
+  friend inline int timeCmp(const Time &l, const Time &r) {
+    return l.m_factor - r.m_factor;
+  }
+  inline bool operator==(const Time &r) const {
+    return m_factor == r.m_factor;
+  }
+  inline bool operator!=(const Time &r) const {
+    return m_factor != r.m_factor;
+  }
+  inline bool operator< (const Time &r) const {
+    return m_factor < r.m_factor;
+  }
+  inline bool operator<=(const Time &r) const {
+    return m_factor <= r.m_factor;
+  }
+  inline bool operator> (const Time &r) const {
+    return m_factor > r.m_factor;
+  }
+  inline bool operator>=(const Time &r) const {
+    return m_factor >= r.m_factor;
+  }
   void getHMS(int &hour, int &minute, int &second, int &millisecond) const;
-  int getHour() const;
-  int getMinute() const;
-  int getSecond() const;
-  int getMilliSecond() const;
-  unsigned long hashCode() const {
+  inline int getHour() const {
+    return m_factor / (3600000);
+  }
+  inline int getMinute() const {
+    return (m_factor / 60000) % 60;
+  }
+  inline int getSecond() const {
+    return (m_factor / 1000) % 60;
+  }
+  inline int getMilliSecond() const {
+    return m_factor % 1000;
+  }
+  inline ULONG hashCode() const {
     return m_factor;
   }
 
   static const Time &getMinTime();
   static const Time &getMaxTime();
 
-  static int getMinFactor() {
+  static inline int getMinFactor() {
     return 0;
   }
-  static int getMaxFactor() {
+
+  static inline int getMaxFactor() {
     return getMaxTime().m_factor + 1;
   }
 
   TCHAR *tostr(TCHAR *dst, const String &format = hhmm) const;
-  String toString(const String &format = hhmm) const;
+  inline String toString(const String &format = hhmm) const {
+    TCHAR tmp[1024];
+    return tostr(tmp, format);
+  }
   friend class Timestamp;
   friend Packer &operator<<(Packer &p, const Time &t);
   friend Packer &operator>>(Packer &p,       Time &t);
@@ -187,71 +297,155 @@ public:
 
 class Timestamp {
 private:
-  __int64 m_factor;
+  INT64 m_factor;
   void init(const TCHAR *src);
-  static void checkFactor(__int64 factor);
+  static void checkFactor(INT64 factor);
 public:
-  static __int64 getFactor(const Date &d, const Time &t);
+  static inline INT64 getFactor(const Date &d, const Time &t) {
+    return (__int64)d.m_factor * Time::getMaxFactor() + t.m_factor;
+  }
 
   Timestamp();
-  Timestamp(int day, int month, int year, int hour, int minute, int second = 0, int millisecond = 0);
-  Timestamp(const Date &d, const Time &t);
-  explicit Timestamp(const String &src);
-  explicit Timestamp(const TCHAR *src);
-  Timestamp(const Date &d);
+  inline Timestamp(int day, int month, int year, int hour, int minute, int second = 0, int millisecond = 0) {
+    m_factor = getFactor(Date(day, month, year), Time(hour, minute, second, millisecond));
+  }
+  inline Timestamp(const Date &d, const Time &t) {
+    m_factor = getFactor(d, t);
+  }
+  inline explicit Timestamp(const String &src) {
+    init(src.cstr());
+  }
+  inline explicit Timestamp(const TCHAR *src) {
+    init(src);
+  }
+  inline Timestamp(const Date &d) {
+    m_factor = (INT64)d.m_factor * Time::getMaxFactor();
+  }
   Timestamp(const SYSTEMTIME &st);
-  explicit Timestamp(time_t t);
+  inline explicit Timestamp(time_t t) {
+    m_factor = getFactor(Date(t), Time(t));
+  }
   explicit Timestamp(double d); // ie type DATE
   double getDATE() const;
-  Timestamp  operator+( int count) const;                 // Add count days
-  Timestamp  operator-( int count) const;                 // Subtract count days
-  Timestamp &operator+=(int count);                       // Add count days
-  Timestamp &operator-=(int count);                       // Subtract count days
-  Timestamp &operator++() { return operator+=(1); }       // Prefix form. Add 1 day
-  Timestamp &operator--() { return operator-=(1); }       // Prefix form. Subtract 1 day
-  Timestamp  operator++(int);                             // Postfix form. Add 1 day
-  Timestamp  operator--(int);                             // Postfix form. Subtract 1 day
-  double operator-(const Timestamp &r) const;             // Difference in days
+  // Add count days
+  Timestamp  operator+( int count) const;
+  // Subtract count days
+  Timestamp  operator-( int count) const;
+  // Add count days
+  inline Timestamp &operator+=(int count) {
+    return *this = *this + count;
+  }
+  // Subtract count days
+  inline Timestamp &operator-=(int count) {
+    return *this = *this - count;
+  }
+  // Prefix form. Add 1 day
+  inline Timestamp &operator++() {
+    return operator+=(1);
+  }
+  // Prefix form. Subtract 1 day
+  inline Timestamp &operator--() {
+    return operator-=(1);
+  }
+  // Postfix form. Add 1 day
+  Timestamp  operator++(int);
+  // Postfix form. Subtract 1 day
+  Timestamp  operator--(int);
+  // Difference in days
+  inline double operator-(const Timestamp &r) const {
+    return ((double)m_factor - r.m_factor) / Time::getMaxFactor();
+  }
   friend double diff(const Timestamp &from, const Timestamp &to, TimeComponent c = TDAYOFMONTH);
   Timestamp &add(TimeComponent c, int count);
   int        get(TimeComponent c);
   Timestamp &set(TimeComponent c, int value);
-  friend int timestampCmp(const Timestamp &l, const Timestamp &r);
-  friend bool operator==( const Timestamp &l, const Timestamp &r);
-  friend bool operator!=( const Timestamp &l, const Timestamp &r);
-  friend bool operator< ( const Timestamp &l, const Timestamp &r);
-  friend bool operator<=( const Timestamp &l, const Timestamp &r);
-  friend bool operator> ( const Timestamp &l, const Timestamp &r);
-  friend bool operator>=( const Timestamp &l, const Timestamp &r);
-  int getYear()        const;
-  int getMonth()       const;
-  int getWeek()        const;
-  int getDayOfMonth()  const;
-  int getHour()        const;
-  int getDayOfYear()   const;
-  int getMinute()      const;
-  int getSecond()      const;
-  int getMilliSecond() const;
-  WeekDay getWeekDay() const;
-  void getDMY(int &day, int &month, int &year) const;
-  void getHMS(int &hour, int &minute, int &second, int &millisecond) const;
-  Date getDate() const;
-  Time getTime() const;
-  operator SYSTEMTIME() const;
-  unsigned long hashCode() const;
+  friend inline int timestampCmp(const Timestamp &l, const Timestamp &r) {
+    return sign(l.m_factor - r.m_factor);
+  }
+  inline bool operator==(const Timestamp &r) const {
+    return m_factor == r.m_factor;
+  }
+  inline bool operator!=(const Timestamp &r) const {
+    return m_factor != r.m_factor;
+  }
+  inline bool operator< (const Timestamp &r) const {
+    return m_factor < r.m_factor;
+  }
+  inline bool operator<=(const Timestamp &r) const {
+    return m_factor <= r.m_factor;
+  }
+  inline bool operator> (const Timestamp &r) const {
+    return m_factor > r.m_factor;
+  }
+  inline bool operator>=(const Timestamp &r) const {
+    return m_factor >= r.m_factor;
+  }
+  inline int getYear() const {
+    return getDate().getYear();
+  }
+  inline int getMonth() const {
+    return getDate().getMonth();
+  }
+  inline int getWeek() const {
+    return getDate().getWeek();
+  }
+  inline int getDayOfMonth()  const {
+    return getDate().getDayOfMonth();
+  }
+  inline int getHour() const {
+    return getTime().getHour();
+  }
+  inline int getDayOfYear() const {
+    return getDate().getDayOfYear();
+  }
+  inline int getMinute() const {
+    return getTime().getMinute();
+  }
+  inline int getSecond() const {
+    return getTime().getSecond();
+  }
+  inline int getMilliSecond() const {
+    return getTime().getMilliSecond();
+  }
+  inline WeekDay getWeekDay() const {
+    return getDate().getWeekDay();
+  }
+  inline void getDMY(int &day, int &month, int &year) const {
+    getDate().getDMY(day, month, year);
+  }
+  inline void getHMS(int &hour, int &minute, int &second, int &millisecond) const {
+    getTime().getHMS(hour, minute, second, millisecond);
+  }
+  inline Date getDate() const {
+    return Date((int)(m_factor/Time::getMaxFactor()));
+  }
+  inline Time getTime() const {
+    return Time((int)(m_factor % Time::getMaxFactor()));
+  }
   time_t gettime_t() const;
-  TCHAR *tostr(TCHAR *dst, const String &DateFormat = ddMMyyyyhhmm) const;
-  String toString(const String &format = ddMMyyyyhhmm) const;
+
+  operator SYSTEMTIME() const;
+
+  inline ULONG hashCode() const {
+    return uint64Hash(m_factor);
+  }
 
   static const Timestamp &getMinTimestamp();
   static const Timestamp &getMaxTimestamp();
-  static __int64 getMinFactor() {
+
+  static inline INT64 getMinFactor() {
     return getMinTimestamp().m_factor;
   }
-  static __int64 getMaxFactor() {
+
+  static inline INT64 getMaxFactor() {
     return getMaxTimestamp().m_factor;
   }
 
+  TCHAR *tostr(TCHAR *dst, const String &DateFormat = ddMMyyyyhhmm) const;
+  inline String toString(const String &format = ddMMyyyyhhmm) const {
+    TCHAR tmp[1024];
+    return tostr(tmp, format);
+  }
   static String cctime(); // cctime(getSystemTime());
   static String cctime(time_t tt);
   static time_t getSystemTime();

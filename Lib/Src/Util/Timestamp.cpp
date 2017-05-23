@@ -11,18 +11,6 @@ Timestamp::Timestamp() {
   m_factor = getFactor(Date(st.wDay, st.wMonth, st.wYear), Time(st.wHour, st.wMinute, st.wSecond, st.wMilliseconds));
 }
 
-Timestamp::Timestamp(int day, int month, int year, int hour, int minute, int second, int millisecond) {
-  m_factor = getFactor(Date(day, month, year), Time(hour, minute, second, millisecond));
-}
-
-Timestamp::Timestamp(const String &src) {
-  init(src.cstr());
-}
-
-Timestamp::Timestamp(const TCHAR *src) {
-  init(src);
-}
-
 void Timestamp::init(const TCHAR *src) {
   Tokenizer tok(src, _T(" "));
   String dateStr;
@@ -35,24 +23,8 @@ void Timestamp::init(const TCHAR *src) {
   checkFactor(m_factor);
 }
 
-Timestamp::Timestamp(const Date &d, const Time &t) {
-  m_factor = getFactor(d, t);
-}
-
-Timestamp::Timestamp(time_t tt) {
-  m_factor = getFactor(Date(tt), Time(tt));
-}
-
-Timestamp::Timestamp(const Date &src) {
-  m_factor = (__int64)src.m_factor * Time::getMaxFactor();
-}
-
 Timestamp::Timestamp(double d) { // ie type DATE
   m_factor = getFactor(Date(d), Time(fraction(d) * Time::getMaxFactor()));
-}
-
-__int64 Timestamp::getFactor(const Date &d, const Time &t) { // static
-  return (__int64)d.m_factor * Time::getMaxFactor() + t.m_factor;
 }
 
 time_t Timestamp::gettime_t() const {
@@ -90,7 +62,7 @@ time_t Timestamp::getSystemTime() {  // static
 
 Timestamp Timestamp::operator+(int count) const {
   Timestamp result(*this);
-  result.m_factor += (__int64)count * Time::getMaxFactor();
+  result.m_factor += (INT64)count * Time::getMaxFactor();
   Timestamp::checkFactor(result.m_factor);
   return result;
 }
@@ -113,7 +85,7 @@ static void throwTimestampOverflow() {
   throwException(_T("Timestamp becomes to big. Last date is %s"), Date::getMaxDate().toString().cstr());
 }
 
-void Timestamp::checkFactor(__int64 factor) { // static 
+void Timestamp::checkFactor(INT64 factor) { // static
   if(factor < getMinFactor()) {
     throwTimestampUnderflow();
   }
@@ -124,17 +96,9 @@ void Timestamp::checkFactor(__int64 factor) { // static
 
 Timestamp Timestamp::operator-(int count) const {
   Timestamp result(*this);
-  result.m_factor -= (__int64)count * Time::getMaxFactor();
+  result.m_factor -= (INT64)count * Time::getMaxFactor();
   Timestamp::checkFactor(result.m_factor);
   return result;
-}
-
-Timestamp &Timestamp::operator+=(int count) {
-  return *this = *this + count;
-}
-
-Timestamp &Timestamp::operator-=(int count) {
-  return *this = *this - count;
 }
 
 Timestamp Timestamp::operator++(int) {
@@ -149,14 +113,10 @@ Timestamp Timestamp::operator--(int) {
   return result;
 }
 
-static const double dayesPerYear = 146097.0 / 400; // 365.2425
-
-double Timestamp::operator-(const Timestamp &r) const {
-  return ((double)m_factor - r.m_factor) / Time::getMaxFactor();
-}
+static const double daysPerYear = 146097.0 / 400; // 365.2425
 
 static void throwInvalidTimeComponent(const TCHAR *function, TimeComponent c) {
-  throwException(_T("Timestamp::%s:Invalid TimeComponent (=%d)."), function, c);
+  throwException(_T("%s:Invalid TimeComponent (=%d)."), function, c);
 }
 
 double diff(const Timestamp &from, const Timestamp &to, TimeComponent c) {
@@ -166,9 +126,9 @@ double diff(const Timestamp &from, const Timestamp &to, TimeComponent c) {
   case TMINUTE     : return (to.m_factor - from.m_factor) / 60 / 1000;
   case THOUR       : return (to.m_factor - from.m_factor) / 3600 / 1000;
   case TDAYOFYEAR  : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24;
-  case TMONTH      : return (to.m_factor - from.m_factor) / 3600 / 1000 / 2  / dayesPerYear;
-  case TYEAR       : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24 / dayesPerYear;
-  default          : throwInvalidTimeComponent(_T("diff"), c);
+  case TMONTH      : return (to.m_factor - from.m_factor) / 3600 / 1000 / 2  / daysPerYear;
+  case TYEAR       : return (to.m_factor - from.m_factor) / 3600 / 1000 / 24 / daysPerYear;
+  default          : throwInvalidTimeComponent(__TFUNCTION__, c);
                      return to.m_factor - from.m_factor;
   }
 }
@@ -217,7 +177,7 @@ Timestamp &Timestamp::add(TimeComponent c, int count) {
     }
 
   default          :
-    throwInvalidTimeComponent(_T("add"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
   }
   return *this;
 }
@@ -233,7 +193,7 @@ int Timestamp::get(TimeComponent c) {
   case TWEEK       : return getWeek();
   case TMONTH      : return getMonth();
   case TYEAR       : return getYear();
-  default          : throwInvalidTimeComponent(_T("get"), c);
+  default          : throwInvalidTimeComponent(__TFUNCTION__, c);
                      return 0;
   }
 }
@@ -257,93 +217,9 @@ Timestamp &Timestamp::set(TimeComponent c, int value) {
     d.set(c, value);
     break;
   default          :
-    throwInvalidTimeComponent(_T("set"), c);
+    throwInvalidTimeComponent(__TFUNCTION__, c);
   }
   return *this = Timestamp(d, t);
-}
-
-bool operator==(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor == r.m_factor;
-}
-
-bool operator!=(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor != r.m_factor;
-}
-
-bool operator<(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor < r.m_factor;
-}
-
-bool operator<=(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor <= r.m_factor;
-}
-
-bool operator>(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor > r.m_factor;
-}
-
-bool operator>=(const Timestamp &l, const Timestamp &r) {
-  return l.m_factor >= r.m_factor;
-}
-
-int timestampCmp(const Timestamp &l, const Timestamp &r) {
-  return sign(l.m_factor - r.m_factor);
-}
-
-int Timestamp::getHour() const {
-  return getTime().getHour();
-}
-
-int Timestamp::getMinute() const {
-  return getTime().getMinute();
-}
-
-int Timestamp::getSecond() const {
-  return getTime().getSecond();
-}
-
-int Timestamp::getMilliSecond() const {
-  return getTime().getMilliSecond();
-}
-
-int Timestamp::getYear() const {
-  return getDate().getYear();
-}
-
-int Timestamp::getMonth() const {
-  return getDate().getMonth();
-}
-
-int Timestamp::getWeek() const {
-  return getDate().getWeek();
-}
-
-int Timestamp::getDayOfMonth() const {
-  return getDate().getDayOfMonth();
-}
-
-int Timestamp::getDayOfYear() const {
-  return getDate().getDayOfYear();
-}
-
-WeekDay Timestamp::getWeekDay() const {
-  return getDate().getWeekDay();
-}
-
-void Timestamp::getDMY(int &day, int &month, int &year) const {
-  getDate().getDMY(day, month, year);
-}
-
-void Timestamp::getHMS(int &hour, int &minute, int &second, int &millisecond) const {
-  getTime().getHMS(hour, minute, second, millisecond);
-}
-
-Date Timestamp::getDate() const {
-  return Date((int)(m_factor/Time::getMaxFactor()));
-}
-
-Time Timestamp::getTime() const {
-  return Time((int)(m_factor % Time::getMaxFactor()));
 }
 
 double Timestamp::getDATE() const {
@@ -385,15 +261,6 @@ TCHAR *Timestamp::tostr(TCHAR *dst, const String &format) const {
   }
   *t = 0;
   return dst;
-}
-
-String Timestamp::toString(const String &format) const {
-  TCHAR tmp[1024];
-  return tostr(tmp, format);
-}
-
-unsigned long Timestamp::hashCode() const {
-  return uint64Hash(m_factor);
 }
 
 Timestamp::Timestamp(const SYSTEMTIME &st) {

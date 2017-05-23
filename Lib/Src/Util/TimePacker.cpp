@@ -9,6 +9,5 @@ Packer &operator<<(Packer &p, const Time &t) {
 Packer &operator>>(Packer &p, Time &t) {
   p >> t.m_factor;
   return p;
-
 }
 
