@@ -19,6 +19,6 @@ __int64 randInt64() {
   return _standardRandomGenerator.nextInt64();
 }
 
-__int64 randInt64(unsigned __int64 n) {
+__int64 randInt64(UINT64 n) {
   return _standardRandomGenerator.nextInt64(n);
 }

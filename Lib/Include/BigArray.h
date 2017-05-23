@@ -188,7 +188,7 @@ private:
     assert((index < m_freeFilePages.getCapacity()) && (!m_freeFilePages.contains(index)));
     assert(m_pageFile != NULL);
 
-    FSEEK(m_pageFile, (unsigned __int64)index * sizeof(ArrayPage));
+    FSEEK(m_pageFile, (UINT64)index * sizeof(ArrayPage));
     FREAD(a, sizeof(ArrayPage), 1, m_pageFile);
     m_freeFilePages.add(index);
   }

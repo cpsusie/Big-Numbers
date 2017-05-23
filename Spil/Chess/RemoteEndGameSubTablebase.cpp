@@ -133,7 +133,7 @@ String RemoteEndGameSubTablebase::load(bool packed) {
   if(s_listenSocket == INVALID_SOCKET) {
     if(portNumber < 0) {
       randomize();
-      portNumber = randInt() % 10000 + 1000;
+      portNumber = randInt(10000) + 1000;
     }
     s_listenSocket = tcpCreate(portNumber);
   }
