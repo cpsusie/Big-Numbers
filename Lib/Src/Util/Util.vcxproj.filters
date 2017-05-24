@@ -253,9 +253,6 @@
     <ClCompile Include="lucase.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
-    <ClCompile Include="CharBitSetToString.cpp">
-      <Filter>Source Files\Collection</Filter>
-    </ClCompile>
     <ClCompile Include="FileTreeWalker.cpp">
       <Filter>Source Files\System</Filter>
     </ClCompile>
@@ -717,6 +714,9 @@
       <Filter>Source Files\String</Filter>
     </ClCompile>
     <ClCompile Include="StrniHash.cpp">
+      <Filter>Source Files\String</Filter>
+    </ClCompile>
+    <ClCompile Include="CharacterFormaters.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
   </ItemGroup>

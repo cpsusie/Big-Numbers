@@ -17,12 +17,12 @@ String AcceptType::toString() const {
   }
 }
 
-int                     NFAState::stateCount = 0;
-CharacterFormater      *NFAState::formater   = CharacterFormater::hexEscapedExtendedAsciiFormater;
-CompactArray<NFAState*> NFAState::allocatedStates;
+int                     NFAState::s_stateCount = 0;
+CharacterFormater      *NFAState::s_formater   = CharacterFormater::hexEscapedExtendedAsciiFormater;
+CompactArray<NFAState*> NFAState::s_allocatedStates;
 
-#define incrCount() stateCount++
-#define decrCount() stateCount--
+#define incrCount() s_stateCount++
+#define decrCount() s_stateCount--
 
 #else
 
@@ -101,7 +101,7 @@ NFAState *NFAState::fetch(int edge) {  // static
 
 #ifdef _DEBUG
   s->m_patternCharIndex = -1;
-  allocatedStates.add(s);
+  s_allocatedStates.add(s);
 #endif
   return s;
 }
@@ -117,7 +117,7 @@ void NFAState::release(NFAState *s) {  // static
 
 void NFAState::releaseAll() {          // static
 #ifdef _DEBUG
-  allocatedStates.clear();
+  s_allocatedStates.clear();
 #endif
   stateManager.deleteAll();
 }
@@ -220,7 +220,7 @@ String NFAState::toString() const {
     result += _T(" on ");
     switch(m_edge) {
       case EDGE_CHCLASS :
-        result += charBitSetToString(*m_charClass, formater);
+        result += charBitSetToString(*m_charClass, s_formater);
         break;
       case EDGE_EPSILON :
         result += _T("EPSILON ");
@@ -229,7 +229,7 @@ String NFAState::toString() const {
         throwException(_T("NFAState::toString:m_edge==EDGE_UNUSED"));
         break;
       default           :
-        result += formater->formatChar(m_edge) + _T(" ");
+        result += s_formater->toString(m_edge) + _T(" ");
         break;
     }
   }
@@ -258,21 +258,21 @@ String NFAState::allAllocatedToString() { // static
 const CompactArray<NFAState*> &NFAState::getAllAllocated() { // static 
   int id = 0;
   CompactArray<NFAState*> tmp;
-  for(size_t i = 0; i < allocatedStates.size(); i++) {
-    allocatedStates[i]->m_id = -1;
+  for(size_t i = 0; i < s_allocatedStates.size(); i++) {
+    s_allocatedStates[i]->m_id = -1;
   }
-  for(size_t i = 0; i < allocatedStates.size(); i++) {
-    NFAState *p = allocatedStates[i];
+  for(size_t i = 0; i < s_allocatedStates.size(); i++) {
+    NFAState *p = s_allocatedStates[i];
     if(p->inUse() && (p->getID() == -1)) { // remove unused and dupletes
       p->m_id = id++;
       tmp.add(p);
     }
   }
-  if(tmp.size() != allocatedStates.size()) {
-    allocatedStates = tmp;
-    allocatedStates.sort(compareById);
+  if(tmp.size() != s_allocatedStates.size()) {
+    s_allocatedStates = tmp;
+    s_allocatedStates.sort(compareById);
   }
-  return allocatedStates;
+  return s_allocatedStates;
 }
 
 #endif

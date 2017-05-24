@@ -367,7 +367,7 @@ void NFAPainter::paintTransition(const NFAStatePoint *from, const NFAStatePoint 
     font = &getFont(false, v);
     break;
   default           :
-    text = NFAState::getFormater()->formatChar(sf.getEdge());
+    text = NFAState::getFormater()->toString(sf.getEdge());
     font = &getFont(false, v);
     break;
   }

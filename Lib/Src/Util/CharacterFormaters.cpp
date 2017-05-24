@@ -1,51 +1,16 @@
 #include "pch.h"
 
-#define FORMATCHAR(ch) charFormater->formatChar(ch)
-
-#define FLUSHRANGE()                                                                \
-{ if(delim) result += delim; else delim = _T(",");                                  \
-  if(first == last) {                                                               \
-    result += FORMATCHAR(first);                                                    \
-  } else {                                                                          \
-    const TCHAR *formatStr = (first + 1 == last) ? _T("%s%s") : _T("%s-%s");        \
-    result += format(formatStr, FORMATCHAR(first).cstr(), FORMATCHAR(last).cstr()); \
-  }                                                                                 \
-}
-
-String charBitSetToString(const BitSet &set, CharacterFormater *charFormater) {
-  String result = _T("[");
-  _TUCHAR first=1,last=0;
-  const TCHAR *delim = NULL;
-  for(Iterator<size_t> it = ((BitSet&)set).getIterator(); it.hasNext();) {
-    const _TUCHAR ch = (_TUCHAR)it.next();
-    if(first > last) {
-      first = last = ch;
-    } else if(ch == last+1) {
-      last = ch;
-    } else {
-      FLUSHRANGE();
-      first = last = ch;
-    }
-  }
-  if(first <= last) {
-    FLUSHRANGE();
-  }
-  result += _T("]");
-  return result;
-}
-
-
 class StdAsciiFormater : public CharacterFormater {
 public:
-  String formatChar(_TUCHAR ch) {
-    return format(_istprint(ch) ? _T("%c") : _T("\\x%02x"), ch);
+  String toString(const size_t &ch) {
+    return format(_istprint((_TUCHAR)ch) ? _T("%c") : _T("\\x%02x"), (_TUCHAR)ch);
   };
 };
 
 class ExtendedAsciiFormater : public CharacterFormater {
 public:
-  String formatChar(_TUCHAR ch) {
-    return format((ch < 256) ? _T("%c") : _T("\\x%04x"), ch);
+  String toString(const size_t &ch) {
+    return format((ch < 256) ? _T("%c") : _T("\\x%04x"), (_TUCHAR)ch);
   };
 };
 
@@ -54,7 +19,7 @@ private:
   const UINT m_maxPrintable;
   const bool m_useHex;
 public:
-  String formatChar(_TUCHAR ch);
+  String toString(const size_t &ch);
   EscapedAsciiFormater(UINT maxPrintable, bool useHex) : m_maxPrintable(maxPrintable), m_useHex(useHex) {
   }
 };
@@ -62,9 +27,9 @@ public:
 // Returns a String that represents c. This will be the character itself for normal characters,
 // and an escape sequence (\n, \t, \x00, ...), for most others. A ' is represented as \'.
 // If "useHex" is true, then \xDD escape sequences are used. Otherwise, octal sequences (\DDD) are used.
-String EscapedAsciiFormater::formatChar(_TUCHAR ch) {
+String EscapedAsciiFormater::toString(const size_t &_ch) {
   TCHAR result[10];
-  ch &= 0xff;
+  _TUCHAR ch = _ch & 0xff;
   if((_T(' ') < ch) && (ch <= m_maxPrintable) && (ch != _T('\'')) && (ch != _T('\\'))) {
     result[0] = ch;
     result[1] = 0;
@@ -91,10 +56,10 @@ String EscapedAsciiFormater::formatChar(_TUCHAR ch) {
 static StdAsciiFormater      _stdAsciiFormater;
 static ExtendedAsciiFormater _extendedAsciiFormater;
 static EscapedAsciiFormater  _octalEscapedAsciiFormater(      127, false);
-static EscapedAsciiFormater  _hexEscapedAsciiFormater(        127, true);
-static EscapedAsciiFormater  _hexEscapedExtendedAsciiFormater(255, true);
+static EscapedAsciiFormater  _hexEscapedAsciiFormater(        127, true );
+static EscapedAsciiFormater  _hexEscapedExtendedAsciiFormater(255, true );
 
-CharacterFormater *CharacterFormater::stdFormater                     = &_stdAsciiFormater;
+CharacterFormater *CharacterFormater::stdAsciiFormater                = &_stdAsciiFormater;
 CharacterFormater *CharacterFormater::extendedAsciiFormater           = &_extendedAsciiFormater;
 CharacterFormater *CharacterFormater::octalEscapedAsciiFormater       = &_octalEscapedAsciiFormater;
 CharacterFormater *CharacterFormater::hexEscapedAsciiFormater         = &_hexEscapedAsciiFormater;

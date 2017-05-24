@@ -272,17 +272,9 @@ public:
   }
 };
 
-class CharacterFormater {
-public:
-  virtual String formatChar(_TUCHAR ch) = NULL;
-  static CharacterFormater *stdFormater;
-  static CharacterFormater *extendedAsciiFormater;
-  static CharacterFormater *octalEscapedAsciiFormater;
-  static CharacterFormater *hexEscapedAsciiFormater;
-  static CharacterFormater *hexEscapedExtendedAsciiFormater;
-};
-
-String charBitSetToString(const BitSet &set, CharacterFormater *charFormater = CharacterFormater::stdFormater);
+inline String charBitSetToString(const BitSet &set, AbstractStringifier<size_t> *sf = CharacterFormater::stdAsciiFormater) {
+  return ((BitSet&)set).getIterator().rangesToString(*sf);
+}
 
 class FileBitSet {
 private:

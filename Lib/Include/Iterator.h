@@ -67,4 +67,40 @@ public:
     }
     return result;
   }
+
+  // T must be enumerable (e1 + 1 == e2 must be defined for T e1,e2)
+  String rangesToString(AbstractStringifier<T> &sf, const TCHAR *delimiter = _T(",")) {
+
+#define _FLUSHRANGE()                                                                     \
+    { if(delim) result += delim; else delim = delimiter;                                  \
+      if(first == last) {                                                                 \
+        result += sf.toString(first);                                                     \
+      } else {                                                                            \
+        const TCHAR *formatStr = (first + 1 == last) ? _T("%s%s") : _T("%s-%s");          \
+        result += format(formatStr, sf.toString(first).cstr(), sf.toString(last).cstr()); \
+      }                                                                                   \
+    }
+
+    String       result    = _T("[");
+    const TCHAR *delim     = NULL;
+    bool         firstTime = true;
+    T            first, last;
+    while(hasNext()) {
+      const T e = next();
+      if(firstTime) {
+        first = last = e;
+        firstTime = false;
+      } else if(e == last+1) {
+        last = e;
+      } else {
+        _FLUSHRANGE();
+        first = last = e;
+      }
+    }
+    if(!firstTime) {
+      _FLUSHRANGE();
+    }
+    result += _T("]");
+    return result;
+  }
 };

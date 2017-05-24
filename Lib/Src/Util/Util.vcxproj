@@ -421,7 +421,7 @@
     <ClCompile Include="ByteMemoryOutputStream.cpp" />
     <ClCompile Include="ByteOutputFile.cpp" />
     <ClCompile Include="CallCounter.cpp" />
-    <ClCompile Include="CharBitSetToString.cpp" />
+    <ClCompile Include="CharacterFormaters.cpp" />
     <ClCompile Include="chdir.cpp" />
     <ClCompile Include="chmod.cpp" />
     <ClCompile Include="ComboBox.cpp" />

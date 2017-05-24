@@ -66,9 +66,9 @@ public:
 class NFAState {
 private:
 #ifdef _DEBUG
-  static int                     stateCount;
-  static CharacterFormater      *formater;
-  static CompactArray<NFAState*> allocatedStates;
+  static int                     s_stateCount;
+  static CharacterFormater      *s_formater;
+  static CompactArray<NFAState*> s_allocatedStates;
 
 #endif
   friend class NFAStatePage;
@@ -131,13 +131,13 @@ public:
   static const CompactArray<NFAState*> &getAllAllocated();
 
   static void setFormater(CharacterFormater *formater) {
-    NFAState::formater = formater;
+    NFAState::s_formater = formater;
   }
   static CharacterFormater *getFormater() {
-    return formater;
+    return s_formater;
   }
   static int getAllocated() {
-    return stateCount;
+    return s_stateCount;
   }
 #endif
 };

@@ -313,6 +313,14 @@ public:
   String toString(const size_t &e);
 };
 
+class CharacterFormater : public AbstractStringifier<size_t> {
+public:
+  static CharacterFormater *stdAsciiFormater;
+  static CharacterFormater *extendedAsciiFormater;
+  static CharacterFormater *octalEscapedAsciiFormater;
+  static CharacterFormater *hexEscapedAsciiFormater;
+  static CharacterFormater *hexEscapedExtendedAsciiFormater;
+};
 
 TCHAR *strRemove(       TCHAR *s  , TCHAR ch);              // Remove any occurence of ch in s
 TCHAR *strReplace(      TCHAR *s  , TCHAR from, TCHAR to);  // Substitute every occurence of from in s with to, return s.

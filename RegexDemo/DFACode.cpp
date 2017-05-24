@@ -100,7 +100,7 @@ static String thinCharMapToString(const short *a) { // size = MAX_CHARS
   String result;
   for(int ch = 0; ch < MAX_CHARS; ch++,a++) {
     if(*a) {
-      result += format(_T("'%s' = %d\n"), NFAState::getFormater()->formatChar(ch).cstr(), *a);
+      result += format(_T("'%s' = %d\n"), NFAState::getFormater()->toString(ch).cstr(), *a);
     }
   }
   return result;
