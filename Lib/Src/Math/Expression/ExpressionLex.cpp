@@ -14,14 +14,14 @@ static int nameOrKeyWord(const _TUCHAR *lexeme);
 //   goto  1 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
 //   goto  2 on !
 //   goto  3 on %
-//   goto 27 on &
+//   goto 29 on &
 //   goto  4 on (
 //   goto  5 on )
 //   goto  6 on *
 //   goto  7 on +
 //   goto  8 on ,
 //   goto  9 on -
-//   goto 29 on .
+//   goto 31 on .
 //   goto 10 on /
 //   goto 11 on 0123456789
 //   goto 12 on ;
@@ -33,60 +33,64 @@ static int nameOrKeyWord(const _TUCHAR *lexeme);
 //   goto 18 on ]
 //   goto 19 on ^
 //   goto 16 on _abcdefghijklmnopqrstuvwxyz
-//   goto 31 on |
-// DFA State   1 [accepting, line  71 <;>]
+//   goto 33 on |
+// DFA State   1 [accepting, line  96 <;>]
 //   goto  1 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
-// DFA State   2 [accepting, line  59 <return NOT;>]
+// DFA State   2 [accepting, line  84 <return NOT;>]
 //   goto 20 on =
-// DFA State   3 [accepting, line  50 <return MOD;>]
-// DFA State   4 [accepting, line  53 <return LPAR;>]
-// DFA State   5 [accepting, line  54 <return RPAR;>]
-// DFA State   6 [accepting, line  48 <return PROD;>]
+// DFA State   3 [accepting, line  75 <return MOD;>]
+// DFA State   4 [accepting, line  78 <return LPAR;>]
+// DFA State   5 [accepting, line  79 <return RPAR;>]
+// DFA State   6 [accepting, line  73 <return PROD;>]
 //   goto 19 on *
-// DFA State   7 [accepting, line  46 <return PLUS;>]
-// DFA State   8 [accepting, line  52 <return COMMA;>]
-// DFA State   9 [accepting, line  47 <return MINUS;>]
-// DFA State  10 [accepting, line  49 <return QUOT;>]
+// DFA State   7 [accepting, line  71 <return PLUS;>]
+// DFA State   8 [accepting, line  77 <return COMMA;>]
+// DFA State   9 [accepting, line  72 <return MINUS;>]
+// DFA State  10 [accepting, line  74 <return QUOT;>]
+//   goto 22 on *
+//   goto 23 on /
 // DFA State  11 [accepting, line  44 <return NUMBER;>]
-//   goto 28 on .
+//   goto 30 on .
 //   goto 11 on 0123456789
-//   goto 32 on Ee
-// DFA State  12 [accepting, line  68 <return SEMI;>]
-// DFA State  13 [accepting, line  61 <return LT;>]
-//   goto 22 on =
-//   goto 23 on >
-// DFA State  14 [accepting, line  67 <return ASSIGN;>]
+//   goto 34 on Ee
+// DFA State  12 [accepting, line  93 <return SEMI;>]
+// DFA State  13 [accepting, line  86 <return LT;>]
 //   goto 24 on =
-// DFA State  15 [accepting, line  63 <return GT;>]
-//   goto 25 on =
-// DFA State  16 [accepting, line  70 <return nameOrKeyWord((_TUCHAR*)getText());>]
+//   goto 25 on >
+// DFA State  14 [accepting, line  92 <return ASSIGN;>]
+//   goto 26 on =
+// DFA State  15 [accepting, line  88 <return GT;>]
+//   goto 27 on =
+// DFA State  16 [accepting, line  95 <return nameOrKeyWord((_TUCHAR*)getText());>]
 //   goto 16 on 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
-// DFA State  17 [accepting, line  55 <return LB;>]
-// DFA State  18 [accepting, line  56 <return RB;>]
-// DFA State  19 [accepting, line  51 <return POW;>]
-// DFA State  20 [accepting, line  65 <return NE;>]
-// DFA State  21 [accepting, line  57 <return AND;>]
-// DFA State  22 [accepting, line  62 <return LE;>]
-// DFA State  23 [accepting, line  66 <return NE;>]
-// DFA State  24 [accepting, line  60 <return EQ;>]
-// DFA State  25 [accepting, line  64 <return GE;>]
-// DFA State  26 [accepting, line  58 <return OR;>]
-// DFA State  27 [nonAccepting]
-//   goto 21 on &
-// DFA State  28 [accepting, line  44 <return NUMBER;>]
-//   goto 28 on 0123456789
-//   goto 32 on Ee
+// DFA State  17 [accepting, line  80 <return LB;>]
+// DFA State  18 [accepting, line  81 <return RB;>]
+// DFA State  19 [accepting, line  76 <return POW;>]
+// DFA State  20 [accepting, line  90 <return NE;>]
+// DFA State  21 [accepting, line  82 <return AND;>]
+// DFA State  22 [accepting, line  46 <{ int i;                   const SourcePosition st>]
+// DFA State  23 [accepting, line  61 <{ int i;                   while(i = input()) {   >]
+// DFA State  24 [accepting, line  87 <return LE;>]
+// DFA State  25 [accepting, line  91 <return NE;>]
+// DFA State  26 [accepting, line  85 <return EQ;>]
+// DFA State  27 [accepting, line  89 <return GE;>]
+// DFA State  28 [accepting, line  83 <return OR;>]
 // DFA State  29 [nonAccepting]
-//   goto 28 on 0123456789
+//   goto 21 on &
 // DFA State  30 [accepting, line  44 <return NUMBER;>]
 //   goto 30 on 0123456789
+//   goto 34 on Ee
 // DFA State  31 [nonAccepting]
-//   goto 26 on |
-// DFA State  32 [nonAccepting]
-//   goto 33 on +-
 //   goto 30 on 0123456789
+// DFA State  32 [accepting, line  44 <return NUMBER;>]
+//   goto 32 on 0123456789
 // DFA State  33 [nonAccepting]
-//   goto 30 on 0123456789
+//   goto 28 on |
+// DFA State  34 [nonAccepting]
+//   goto 35 on +-
+//   goto 32 on 0123456789
+// DFA State  35 [nonAccepting]
+//   goto 32 on 0123456789
 
 // The lexCharMap[] and lexStateMap arrays are used as follows:
 // 
@@ -131,37 +135,38 @@ static unsigned char lexCharMap[256] = {
        1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1,   1
 };
 
-static const unsigned char lexStateMap[34] = {
+static const unsigned char lexStateMap[36] = {
     /*   0 */   0,   1,   2,   3,   3,   3,   4,   3,   3,   3,
-    /*  10 */   3,   5,   3,   6,   7,   8,   9,   3,   3,   3,
-    /*  20 */   3,   3,   3,   3,   3,   3,   3,  10,  11,  12,
-    /*  30 */  13,  14,  15,  13
+    /*  10 */   5,   6,   3,   7,   8,   9,  10,   3,   3,   3,
+    /*  20 */   3,   3,   3,   3,   3,   3,   3,   3,   3,  11,
+    /*  30 */  12,  13,  14,  15,  16,  14
 };
 
-static const char lexNext[16][24] = {
-    /*   0 */ { 1,-1, 2, 3,27, 4, 5, 6, 7, 8, 9,29,10,11,12,13,14,15,16,16,17,18,19,31},
+static const char lexNext[17][24] = {
+    /*   0 */ { 1,-1, 2, 3,29, 4, 5, 6, 7, 8, 9,31,10,11,12,13,14,15,16,16,17,18,19,33},
     /*   1 */ { 1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
     /*   2 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,20,-1,-1,-1,-1,-1,-1,-1},
     /*   3 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
     /*   4 */ {-1,-1,-1,-1,-1,-1,-1,19,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    /*   5 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,28,-1,11,-1,-1,-1,-1,-1,32,-1,-1,-1,-1},
-    /*   6 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,22,23,-1,-1,-1,-1,-1,-1},
-    /*   7 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,24,-1,-1,-1,-1,-1,-1,-1},
-    /*   8 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,25,-1,-1,-1,-1,-1,-1,-1},
-    /*   9 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,-1,-1,-1,16,16,-1,-1,-1,-1},
-    /*  10 */ {-1,-1,-1,-1,21,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    /*  11 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,28,-1,-1,-1,-1,-1,32,-1,-1,-1,-1},
-    /*  12 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,28,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    /*   5 */ {-1,-1,-1,-1,-1,-1,-1,22,-1,-1,-1,-1,23,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    /*   6 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,30,-1,11,-1,-1,-1,-1,-1,34,-1,-1,-1,-1},
+    /*   7 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,24,25,-1,-1,-1,-1,-1,-1},
+    /*   8 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,26,-1,-1,-1,-1,-1,-1,-1},
+    /*   9 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,27,-1,-1,-1,-1,-1,-1,-1},
+    /*  10 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,16,-1,-1,-1,-1,16,16,-1,-1,-1,-1},
+    /*  11 */ {-1,-1,-1,-1,21,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    /*  12 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,30,-1,-1,-1,-1,-1,34,-1,-1,-1,-1},
     /*  13 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,30,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
-    /*  14 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,26},
-    /*  15 */ {-1,-1,-1,-1,-1,-1,-1,-1,33,-1,33,-1,-1,30,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
+    /*  14 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,32,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
+    /*  15 */ {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,28},
+    /*  16 */ {-1,-1,-1,-1,-1,-1,-1,-1,35,-1,35,-1,-1,32,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}
 };
 
 static const char lexAccept[] = {
     /*   0 */  0,  4,  4,  4,  4,  4,  4,  4,  4,  4,
     /*  10 */  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,
-    /*  20 */  4,  4,  4,  4,  4,  4,  4,  0,  4,  0,
-    /*  30 */  4,  0,  0,  0 
+    /*  20 */  4,  4,  4,  4,  4,  4,  4,  4,  4,  0,
+    /*  30 */  4,  0,  4,  0,  0,  0 
 };
 
 #line 11 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
@@ -190,7 +195,7 @@ int ExpressionLex::getNextLexeme() {
 
     for(;;) {
       if(((int)(lookahead = look(1))) != EOF) {
-		assert(lookahead < 256);
+        assert(lookahead < 256);
         nextState = nextState(state, lookahead);
         break;
       } else if(lastAcceptState != 0) {   // still something to do
@@ -248,166 +253,199 @@ int ExpressionLex::getNextLexeme() {
 
       switch(lastAcceptState) {
       case 1:
-#line 71 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 96 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         ;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 2:
-#line 59 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 84 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return NOT;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 3:
-#line 50 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 75 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return MOD;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 4:
-#line 53 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 78 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return LPAR;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 5:
-#line 54 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 79 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return RPAR;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 6:
-#line 48 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 73 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return PROD;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 7:
-#line 46 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 71 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return PLUS;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 8:
-#line 52 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 77 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return COMMA;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 9:
-#line 47 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 72 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return MINUS;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 10:
-#line 49 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 74 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return QUOT;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 11:
-      case 28:
       case 30:
+      case 32:
 #line 44 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return NUMBER;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 12:
-#line 68 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 93 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return SEMI;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 13:
-#line 61 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 86 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return LT;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 14:
-#line 67 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 92 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return ASSIGN;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 15:
-#line 63 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 88 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return GT;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 16:
-#line 70 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 95 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return nameOrKeyWord((_TUCHAR*)getText());
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 17:
-#line 55 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 80 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return LB;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 18:
-#line 56 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 81 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return RB;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 19:
-#line 51 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 76 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return POW;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 20:
-#line 65 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 90 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return NE;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 21:
-#line 57 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 82 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return AND;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 22:
-#line 62 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return LE;
+#line 46 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        { int i;
+                          const SourcePosition startpos = getPos();
+                          while(i = input()) {
+                            if(i < 0) {
+                              flushBuf();  /* Discard lexeme.     */
+                            } else if(i == '*' && look(1) == '/') {
+                             input();
+                             break;        /* Recognized comment. */
+                            }
+                          }
+                          if(i == 0) {
+                            error(startpos,_T("End of file in comment\n") );
+                          }
+                        }
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 23:
-#line 66 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return NE;
+#line 61 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        { int i;
+                          while(i = input()) {
+                            if(i < 0) {
+                              flushBuf();  /* Discard lexeme. */
+                            } else if(i == '\n') {
+                              break;
+                            }
+                          }
+                        }
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 24:
-#line 60 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return EQ;
+#line 87 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        return LE;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 25:
-#line 64 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
-        return GE;
+#line 91 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        return NE;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 26:
-#line 58 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 85 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        return EQ;
+        
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
+        break;
+      case 27:
+#line 89 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+        return GE;
+        
+#line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
+        break;
+      case 28:
+#line 83 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
         return OR;
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
                   
       default:
-        throwException(_T("ExpressionLex::getNextLexeme:Unknown accept state:%d, text=<%s>"), lastAcceptState,getText());
+        throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;
       }
 
@@ -425,7 +463,7 @@ int ExpressionLex::getNextLexeme() {
   }
 }
 
-#line 74 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
+#line 99 "C:\\mytools2015\\Lib\\Src\\Math\\Expression\\Expression.lex"
 
   /* This part goes to the last part of exprlex.cpp */
 
