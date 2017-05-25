@@ -35,17 +35,15 @@ public:
       return m_breakPoints.contains(line);
     }
     int  getHighestBreakPointLine(int line) const; // return l so l = max(0..line) and m_possibleBreakPointLines.contains(l). -1 if none exist
-	public:
-	virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
-
 public:
-    virtual ~CDebugTextWindow();
+  virtual void MeasureItem(LPMEASUREITEMSTRUCT lpMeasureItemStruct);
+  virtual ~CDebugTextWindow();
 
 protected:
-	afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
-	afx_msg void OnSetfocus();
-	afx_msg void OnKillfocus();
+  afx_msg void DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct);
+  afx_msg void OnSetfocus();
+  afx_msg void OnKillfocus();
 
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
