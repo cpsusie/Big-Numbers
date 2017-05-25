@@ -61,16 +61,12 @@ const ListNode *ListImpl::findNode(size_t index) const {
   const ListNode *n;
   if(index <= size()/2) {
     size_t i = 0;
-    for(n = m_first; n && i++ < index; n = n->m_next);
-    return n;
+    for(n = m_first; i++ < index; n = n->m_next);
   } else {
-    if(size() == 0) {
-      return NULL;
-    }
     size_t i = size()-1;
-    for(n = m_last; n && i-- > index; n = n->m_prev);
-    return n;
+    for(n = m_last; i-- > index; n = n->m_prev);
   }
+  return n;
 }
 
 AbstractCollection *ListImpl::clone(bool cloneData) const {

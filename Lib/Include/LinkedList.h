@@ -50,6 +50,7 @@ private:
   void init(AbstractObjectManager &objectManager);
   ListNode *createNode(const void *e);
   void deleteNode(ListNode *n);
+  // assume index < size()
   const ListNode *findNode(size_t index) const;
   void removeNode(ListNode *n);
   void throwOutOfRangeException(const TCHAR *method, size_t index) const;
@@ -129,7 +130,7 @@ public:
   }
 
   bool operator==(const LinkedList<T> &rhs) const { // NB not virtual in Collection, because of ==
-    if(m_collection->size() != rhs.m_collection->size()) {
+    if(size() != rhs.size()) {
       return false;
     }
     Iterator<T> it1 = ((LinkedList<T>*)this)->getIterator();
@@ -188,7 +189,7 @@ public:
   }
 };
 
-class StrList : public LinkedList<const char*> {
+class StrList : public LinkedList<const TCHAR*> {
 };
 
 class StringList : public LinkedList<String> {

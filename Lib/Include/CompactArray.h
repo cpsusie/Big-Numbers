@@ -606,7 +606,7 @@ template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
   return in;
 }
 
-typedef CompactArray<char*>  CompactStrArray;
+typedef CompactArray<TCHAR*> CompactStrArray;
 typedef CompactArray<char>   CompactCharArray;
 typedef CompactArray<short>  CompactShortArray;
 typedef CompactArray<int>    CompactIntArray;

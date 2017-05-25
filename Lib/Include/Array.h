@@ -342,7 +342,7 @@ public:
   }
 };
 
-typedef Array<const char*> StrArray;
+typedef Array<const TCHAR*> StrArray;
 
 class StringArray : public Array<String> {
 public:
