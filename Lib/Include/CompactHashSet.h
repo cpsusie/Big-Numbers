@@ -20,7 +20,7 @@ public:
 
 template <class K> class CompactHashElementPage {
 public:
-  unsigned int               m_count;
+  UINT                       m_count;
   CompactHashElementPage<K> *m_next;
   CompactHashElement<K>      m_elements[20000];
 
@@ -159,7 +159,7 @@ public:
     for(CompactHashElementPage<K> *page = m_firstPage; page; page = page->m_next) {
       for(size_t i = 0; i < page->m_count; i++) {
         CompactHashElement<K> *n = page->m_elements+i;
-        const unsigned long index = n->m_key.hashCode() % m_capacity;
+        const ULONG index = n->m_key.hashCode() % m_capacity;
         n->m_next = m_buffer[index];
         m_buffer[index] = n;
       }
@@ -179,7 +179,7 @@ public:
   }
 
   bool add(const K &key) {
-    unsigned long index;
+    ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
       for(CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
@@ -202,7 +202,7 @@ public:
 
   bool contains(const K &key) const {
     if(m_capacity) {
-      const unsigned long index = key.hashCode() % m_capacity;
+      const ULONG index = key.hashCode() % m_capacity;
       for(const CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_key) {
           return true;
@@ -251,7 +251,7 @@ public:
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
-    for(unsigned long index = 0; index < capacity; index++) {
+    for(ULONG index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;

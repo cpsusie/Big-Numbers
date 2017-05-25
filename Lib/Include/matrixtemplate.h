@@ -212,7 +212,8 @@ public:
   inline const T &select() const {
     return m_a[randSizet(m_dim.getElementCount())];
   }
-  T &subDiagonal(size_t row) { // row must be [1..getRowCount()-1]
+  // row must be [1..getRowCount()-1]
+  T &subDiagonal(size_t row) {
     if(!isSquare()) {
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
@@ -220,7 +221,8 @@ public:
     return m_a[index(row,row-1)];
   }
 
-  const T &subDiagonal(size_t row) const { // row must be [1..getRowCount()-1]
+  // row must be [1..getRowCount()-1]
+  const T &subDiagonal(size_t row) const {
     if(!isSquare()) {
       throwIndexException(_T("subDiagonal:Matrix not square"));
     }
@@ -294,9 +296,7 @@ public:
       T *p1 = m_a + index(r1, 0);
       T *p2 = m_a + index(r2, 0);
       for(size_t c = 0; c < getColumnCount(); c++, p1++, p2++) {
-        const T tmp = *p1;
-        *p1         = *p2;
-        *p2         = tmp;
+        std::swap(*p1, *p2);
       }
     }
     return *this;

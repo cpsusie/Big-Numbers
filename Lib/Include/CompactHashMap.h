@@ -160,7 +160,7 @@ public:
     for(CompactHashNodePage<K, V> *page = m_firstPage; page; page = page->m_next) {
       for(int i = 0; i < (int)(page->m_count); i++) {
         CompactHashNode<K, V> *n = page->m_nodes+i;
-        const unsigned long index = n->m_key.hashCode() % m_capacity;
+        const ULONG index = n->m_key.hashCode() % m_capacity;
         n->m_next = m_buffer[index];
         m_buffer[index] = n;
       }
@@ -180,7 +180,7 @@ public:
   }
 
   bool put(const K &key, const V &value) {
-    unsigned long index;
+    ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
       for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
@@ -204,7 +204,7 @@ public:
 
   V *get(const K &key) {
     if(m_capacity) {
-      const unsigned long index = key.hashCode() % m_capacity;
+      const ULONG index = key.hashCode() % m_capacity;
       for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_key) {
           return &p->m_value;
@@ -216,7 +216,7 @@ public:
 
   const V *get(const K &key) const {
     if(m_capacity) {
-      const unsigned long index = key.hashCode() % m_capacity;
+      const ULONG index = key.hashCode() % m_capacity;
       for(const CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
         if(key == p->m_key) {
           return &p->m_value;

@@ -13,6 +13,9 @@ public:
   inline bool operator!=(const MatrixIndex &i) const {
     return (r != i.r) || (c != i.c);
   }
+  inline String toString() const {
+    return format(_T("(%s,%s)"), formatSize(r).cstr(), formatSize(c).cstr());
+  }
 };
 
 class MatrixDimension {
@@ -41,6 +44,6 @@ public:
     return rowCount * columnCount;
   }
   inline String toString() const {
-    return format(_T("(%s,%s)"), format1000(rowCount).cstr(), format1000(columnCount).cstr());
+    return format(_T("(%s,%s)"), formatSize(rowCount).cstr(), formatSize(columnCount).cstr());
   }
 };

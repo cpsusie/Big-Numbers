@@ -306,6 +306,6 @@ public:
   }
 
   inline String getDimensionString() const {
-    return format(_T("Dimension=%s"), format1000(m_dim).cstr());
+    return format(_T("Dimension=%s"), formatSize(m_dim).cstr());
   }
 };
