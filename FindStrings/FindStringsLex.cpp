@@ -36,8 +36,8 @@
 // DFA State   3 [accepting, line  40 <return OLDSTRING;>]
 //   goto 26 on \x00\x01\x02\x03\x04\x05\x06\x07\b\t\n\x0b\r\s
 //   goto 12 on "
-// DFA State   4 [accepting, line  52 <{ int i;           SourcePosition startpos = getPo>]
-// DFA State   5 [accepting, line  67 <{ int i;           while(i = input()) {           >]
+// DFA State   4 [accepting, line  52 <{ int i;                  const SourcePosition sta>]
+// DFA State   5 [accepting, line  67 <{ int i;                  while(i = input()) {    >]
 // DFA State   6 [accepting, line  42 <return OLDCHAR;>]
 // DFA State   7 [accepting, line  44 <return NEWSTRING;>]
 // DFA State   8 [accepting, line  50 <return DIRECTIVE;>]
@@ -325,7 +325,7 @@ int FindStringsLex::getNextLexeme() {
 
     for(;;) {
       if(((int)(lookahead = look(1))) != EOF) {
-		assert(lookahead < 256);
+        assert(lookahead < 256);
         nextState = nextState(state, lookahead);
         break;
       } else if(lastAcceptState != 0) {   // still something to do
@@ -409,33 +409,33 @@ int FindStringsLex::getNextLexeme() {
       case 4:
 #line 52 "C:\\mytools2015\\FindStrings\\FindStrings.lex"
         { int i;
-        							   SourcePosition startpos = getPos();
-        							   while(i = input()) {
-        							     if(i < 0) {
-        							       flushBuf();  /* Discard lexeme. */
-        							     } else if(i == '*' && look(1) == '/') {
-        							      input();
-        							      break;       /* Recognized comment.*/
-        							     }
-        							   }
-        							   if(i == 0) {
-        							     error( startpos,_T("End of file in comment\n") );
+                         const SourcePosition startpos = getPos();
+                         while(i = input()) {
+                           if(i < 0) {
+                             flushBuf();  /* Discard lexeme.    */
+                           } else if(i == '*' && look(1) == '/') {
+                            input();
+                            break;        /* Recognized comment.*/
+                           }
                          }
-        							 }
+                         if(i == 0) {
+                           error( startpos,_T("End of file in comment\n") );
+                         }
+                       }
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
       case 5:
 #line 67 "C:\\mytools2015\\FindStrings\\FindStrings.lex"
         { int i;
-        							   while(i = input()) {
-        							     if(i < 0) {
-        							       flushBuf();  /* Discard lexeme. */
-        							     } else if(i == '\n') {
-        							       break;
-        							     }
+                         while(i = input()) {
+                           if(i < 0) {
+                             flushBuf();  /* Discard lexeme. */
+                           } else if(i == '\n') {
+                             break;
+                           }
                          }
-        							 }
+                       }
         
 #line 93 "C:\\mytools2015\\parsergen\\lib\\lexgencpp.par"
         break;
@@ -477,7 +477,7 @@ int FindStringsLex::getNextLexeme() {
         break;
                   
       default:
-        throwException(_T("FindStringsLex::getNextLexeme:Unknown accept state:%d, text=<%s>"), lastAcceptState,getText());
+        throwException(_T("%s:Unknown accept state:%d, text=<%s>"), __TFUNCTION__, lastAcceptState,getText());
         break;
       }
 

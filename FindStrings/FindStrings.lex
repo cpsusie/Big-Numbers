@@ -50,29 +50,29 @@ _T\({white}*'([^'\\]|\\.)'{white}*\)        return NEWCHAR;
 extern                      return DIRECTIVE;
 
 "/*"           { int i;
-							   SourcePosition startpos = getPos();
-							   while(i = input()) {
-							     if(i < 0) {
-							       flushBuf();  /* Discard lexeme. */
-							     } else if(i == '*' && look(1) == '/') {
-							      input();
-							      break;       /* Recognized comment.*/
-							     }
-							   }
-							   if(i == 0) {
-							     error( startpos,_T("End of file in comment\n") );
+                 const SourcePosition startpos = getPos();
+                 while(i = input()) {
+                   if(i < 0) {
+                     flushBuf();  /* Discard lexeme.    */
+                   } else if(i == '*' && look(1) == '/') {
+                    input();
+                    break;        /* Recognized comment.*/
+                   }
                  }
-							 }
+                 if(i == 0) {
+                   error( startpos,_T("End of file in comment\n") );
+                 }
+               }
 
 "//"           { int i;
-							   while(i = input()) {
-							     if(i < 0) {
-							       flushBuf();  /* Discard lexeme. */
-							     } else if(i == '\n') {
-							       break;
-							     }
+                 while(i = input()) {
+                   if(i < 0) {
+                     flushBuf();  /* Discard lexeme. */
+                   } else if(i == '\n') {
+                     break;
+                   }
                  }
-							 }
+               }
 
 {white}+	;
 .         ;

@@ -70,7 +70,12 @@ void StringSearcher::scan(const String &name) {
 }
 
 static void usage() {
-  _ftprintf(stderr, _T("Usage:findStrings file\n"));
+  _ftprintf(stderr, _T("Usage:FindStrings [-rsvc] file\n"
+                       "     :-r :Recursive search in subdirectories\n"
+                       "     :-s :Show old ascii string literals\n"
+                       "     :-c :Show old ascii char literals\n"
+                       "     :-v :Verbose. Print filenames to stderr, while scanning\n")
+           );
   exit(-1);
 }
 
