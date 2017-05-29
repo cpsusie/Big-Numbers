@@ -24,15 +24,6 @@ typedef Real (*BuiltInFunction2)(Real x, Real y);
 
 #define FSTP_REAL_PTR_ESP  MEM_ADDR_ESP(FSTP_REAL)
 
-class MemoryReference {
-public:
-  int             m_byteIndex; // index of address in Machinecode
-  const BYTE     *m_memAddr;   // 4/8 byte absolute address (depending on x86/x64 mode)
-  inline MemoryReference() {
-  }
-  inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
-  }
-};
 #ifdef IS64BIT
 typedef enum {
   RESULT_IN_FPU
@@ -93,13 +84,37 @@ typedef int ExpressionDestination;
 
 #endif // IS64BIT
 
+class MemoryReference {
+public:
+  int             m_byteIndex; // index of address in Machinecode
+  const BYTE     *m_memAddr;   // 4/8 byte absolute address (depending on x86/x64 mode)
+  inline MemoryReference() {
+  }
+  inline MemoryReference(int byteIndex, const BYTE *memAddr) : m_byteIndex(byteIndex), m_memAddr(memAddr) {
+  }
+};
+
+class JumpFixup {
+public:
+  bool m_isShortJump;
+  int  m_addr;
+  int  m_jmpAddr;
+  JumpFixup() {
+  }
+  JumpFixup(int addr, int jmpAddr) : m_isShortJump(true), m_addr(addr), m_jmpAddr(jmpAddr) {
+  }
+};
+
 class MachineCode : public ExecutableByteArray {
 private:
   DECLARECLASSNAME;
   CompactArray<MemoryReference>   m_refenceArray;
+  CompactArray<JumpFixup>         m_jumpFixups;
 #ifdef IS64BIT
   BYTE                            m_stackTop;
 #endif // IS64BIT
+  void changeShortJumpToNearJump(int addr);
+  void adjustReferenceArray(int addr, int n);
 public:
   MachineCode();
   MachineCode(const MachineCode &src);
@@ -123,8 +138,11 @@ public:
   bool emitFLoad(       const ExpressionNode *n, const ExpressionDestination &dst);
 #endif
   int  emitShortJmp(const IntelInstruction &ins);  // return address of fixup address
-  void fixupShortJump(int addr, int jmpAddr);
+  inline void fixupShortJump(int addr, int jmpAddr) {
+    m_jumpFixups.add(JumpFixup(addr, jmpAddr));
+  }
   void fixupShortJumps(const CompactIntArray &jumps, int jmpAddr);
+  void fixupJumps();
   void fixupMemoryReference(const MemoryReference &ref);
   inline void emitTableOp(const IntelOpcode &op, const ExpressionNode *n) {
     emitTableOp(op, n->getValueIndex());

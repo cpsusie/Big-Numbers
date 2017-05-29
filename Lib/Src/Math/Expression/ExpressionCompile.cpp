@@ -15,6 +15,8 @@ MachineCode::~MachineCode() {
 
 void MachineCode::clear() {
   ExecutableByteArray::clear();
+  m_jumpFixups.clear();
+  m_refenceArray.clear();
 }
 
 MachineCode::MachineCode(const MachineCode &src) : ExecutableByteArray(src) {
@@ -164,20 +166,84 @@ int MachineCode::emitShortJmp(const IntelInstruction &ins) {
   return addBytes(&addr,1);
 }
 
-void MachineCode::fixupShortJump(int addr, int jmpAddr) {
-  const int v = jmpAddr - addr - 1;
-  if (!ISBYTE(v)) {
-    throwInvalidArgumentException(__TFUNCTION__
-      ,_T("shortJump from %d to %d too long. offset=%d (must be in range [-128,127]")
-      ,addr, jmpAddr, v);
-  }
-  const BYTE pcRelativAddr = (BYTE)v;
-  setBytes(addr,&pcRelativAddr,1);
-}
-
 void MachineCode::fixupShortJumps(const CompactIntArray &jumps, int jmpAddr) {
   for(size_t i = 0; i < jumps.size(); i++) {
     fixupShortJump(jumps[i],jmpAddr);
+  }
+}
+
+void MachineCode::fixupJumps() {
+  bool stable;
+  do {
+    stable = true;
+    for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+      JumpFixup &jf = m_jumpFixups[i];
+      if(jf.m_isShortJump) {
+        const int v = jf.m_jmpAddr - jf.m_addr - 1;
+        if (!ISBYTE(v)) {
+          changeShortJumpToNearJump(jf.m_addr);
+          jf.m_isShortJump = false;
+          stable           = false;
+        }
+      }
+    }
+  } while(!stable);
+
+  for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+    JumpFixup &jf = m_jumpFixups[i];
+    if(jf.m_isShortJump) {
+      const int v = jf.m_jmpAddr - jf.m_addr - 1;
+      assert(ISBYTE(v));
+      const BYTE pcRelativAddr = (BYTE)v;
+      setBytes(jf.m_addr,&pcRelativAddr,1);
+    } else {
+      const int pcRelativAddr = jf.m_jmpAddr - jf.m_addr - 4;
+      setBytes(jf.m_addr,&pcRelativAddr,4);
+    }
+  }
+}
+
+void MachineCode::changeShortJumpToNearJump(int addr) {
+  const int  opcodeAddr = addr-1;
+  const BYTE opcode     = (*this)[opcodeAddr];
+  int        bytesAdded;
+  switch (opcode) {
+  case 0xEB: // JMPSHORT
+    { const BYTE JmpNear = 0xE9;
+      setBytes(opcodeAddr, &JmpNear, 1);
+      bytesAdded = 3;
+      insertZeroes(addr, bytesAdded);
+      for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+        JumpFixup &jf = m_jumpFixups[i];
+        if(jf.m_addr    > addr) jf.m_addr    += bytesAdded;
+        if(jf.m_jmpAddr > addr) jf.m_jmpAddr += bytesAdded;
+      }
+    }
+    break;
+  default:
+    { assert((opcode >= 0x70) && (opcode <= 0x7F));
+      const IntelInstruction newOpcode = B2INS(0x0F80 | (opcode&0xf));
+      setBytes(opcodeAddr, &newOpcode, 2);
+      bytesAdded = 4;
+      insertZeroes(addr+1,bytesAdded);
+      for(size_t i = 0; i < m_jumpFixups.size(); i++) {
+        JumpFixup &jf = m_jumpFixups[i];
+        if(     jf.m_addr == addr) jf.m_addr++; // opcode of instruction being changed, goes from 1 to 2 bytes.
+        else if(jf.m_addr >  addr) jf.m_addr    += bytesAdded;
+        if(jf.m_jmpAddr > addr)    jf.m_jmpAddr += bytesAdded;
+      }
+    }
+    break;
+  }
+  adjustReferenceArray(addr, bytesAdded);
+}
+
+void MachineCode::adjustReferenceArray(int addr, int n) {
+  for (size_t i = 0; i < m_refenceArray.size(); i++) {
+    MemoryReference &mr = m_refenceArray[i];
+    if(mr.m_byteIndex > addr) {
+      mr.m_byteIndex += n;
+    }
   }
 }
 
@@ -348,13 +414,13 @@ void Expression::genCode() {
     throwException(_T("Treeform must be STANDARD to generate machinecode. Form=%s"), getTreeFormName().cstr());
   }
   m_code.clear();
-
 #ifdef TEST_MACHINECODE
   m_code.genTestSequence();
   m_machineCode = true;
 #else
   genProlog();
   genStatementList(getRoot());
+  m_code.fixupJumps();
   m_code.linkReferences();
   m_machineCode = true;
 #endif

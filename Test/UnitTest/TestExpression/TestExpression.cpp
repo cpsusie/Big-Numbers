@@ -1104,6 +1104,27 @@ namespace TestExpression {
     }
   };
 
+  class Test101 : public RealExpressionTest {
+  public:
+    String getExpr() const {
+      return _T("if(x==1,sum(i=1 to 10) sin(x)^2+cos(i*2+0.25)/e^(x+i+1)"
+                "       ,sum(i=1 to 10) (x+i+0.55)/(x+i+1)"
+                "  )"
+               );
+    }
+    Real fr(const Real &x) const {
+      Real sum = 0;
+      if(x==1) {
+        for (int i = 1; i <= 10; i++)
+          sum += sqr(sin(x)) + cos(i*2 + 0.25) / exp(x + i + 1);
+      } else {
+        for (int i = 1; i <= 10; i++)
+          sum += (x + i + 0.55) / (x + i + 1);
+      }
+      return sum;
+    }
+  };
+
   static Test00  test00;
   static Test01  test01;
   static Test02  test02;
@@ -1205,6 +1226,7 @@ namespace TestExpression {
   static Test98  test98;
   static Test99  test99;
   static Test100 test100;
+  static Test101 test101;
 
   static ExpressionTest *testCases[] = {
      (ExpressionTest*)&test00
@@ -1308,6 +1330,7 @@ namespace TestExpression {
     ,(ExpressionTest*)&test98
     ,(ExpressionTest*)&test99
     ,(ExpressionTest*)&test100
+    ,(ExpressionTest*)&test101
   };
 
 	TEST_CLASS(TestExpression) {
@@ -1347,7 +1370,7 @@ namespace TestExpression {
                   const bool interpreterDefined = !isNan(interpreterResult);
                   const bool compiledDefined    = !isNan(compiledResult);
 
-                  if ((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 1e-15)) {
+                  if ((compiledDefined != interpreterDefined) || (compiledDefined && fabs(compiledResult - interpreterResult) > 3e-15)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(Compiled   ):") << toString(compiledResult) << _T(".") << endl
@@ -1355,7 +1378,7 @@ namespace TestExpression {
                         << _T("Difference         :") << toString(compiledResult - interpreterResult) << _T(".") << endl;
                     verify(false);
                   }
-                  if ((cppDefined != interpreterDefined) || (cppDefined && fabs(cppResult - interpreterResult) > 1e-15)) {
+                  if ((cppDefined != interpreterDefined) || (cppDefined && fabs(cppResult - interpreterResult) > 3e-15)) {
                     LOG log;
                     log << _T("TestCase[") << i << _T("]:<") << expr << _T(">(x=") << toString(x) << _T(") failed.") << endl
                         << _T("Result(C++        ):") << toString(cppResult) << _T(".") << endl
