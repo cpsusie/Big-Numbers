@@ -11,7 +11,7 @@ private:
   SimpleLayoutManager       m_layoutManager;
   SynchronizedQueue<String> m_textQueue;
   CEdit                    *m_textBox;
-  CStatic                  *m_messageField;
+  CEdit                    *m_messageField;
   CTraceDlgThread          &m_thread;
   UINT                      m_caretPos; // index into text in m_textBox
   void scrollToBottom();

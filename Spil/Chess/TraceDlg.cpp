@@ -47,11 +47,11 @@ BOOL CTraceDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
   m_textBox      = (CEdit*)GetDlgItem(IDC_EDIT_TEXTBOX);
-  m_messageField = (CStatic*)GetDlgItem(IDC_STATIC_PV);
+  m_messageField = (CEdit*)GetDlgItem(IDC_EDIT_PV);
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_EDIT_TEXTBOX  , RELATIVE_SIZE         | RESIZE_FONT                 );
-  m_layoutManager.addControl(IDC_STATIC_PV     , RELATIVE_Y_POS        | RELATIVE_WIDTH | RESIZE_FONT);
+  m_layoutManager.addControl(IDC_EDIT_PV       , RELATIVE_Y_POS        | RELATIVE_WIDTH | RESIZE_FONT);
   m_layoutManager.addControl(IDC_BUTTON_HIDE   , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_BUTTON_CLEAR  , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_CHECK_KEEPTEXT, PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
@@ -114,7 +114,7 @@ LRESULT  CTraceDlg::OnUpdateMessageField(WPARAM wp, LPARAM lp) {
   if(m_textQueue.isEmpty()) {
     return 0;
   }
-  m_messageField->SetWindowText(m_textQueue.get().cstr());
+  setWindowText(m_messageField, m_textQueue.get());
   return 0;
 }
 
@@ -127,6 +127,8 @@ LRESULT  CTraceDlg::OnClearTrace(WPARAM wp, LPARAM lp) {
 }
 
 LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
+  putWindowBesideWindow(this, theApp.GetMainWnd());
+/*
   const CSize screenSize = getScreenSize();
   WINDOWPLACEMENT mainWinWpl, wpl;
   theApp.GetMainWnd()->GetWindowPlacement(&mainWinWpl);
@@ -143,6 +145,7 @@ LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
   wpl.rcNormalPosition.top    = mainWinWpl.rcNormalPosition.top;
   wpl.rcNormalPosition.bottom = wpl.rcNormalPosition.top + size.cy;
   SetWindowPlacement(&wpl);
+*/
   return 0;
 }
 

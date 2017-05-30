@@ -192,7 +192,7 @@
 #define IDC_BUTTON_HIDE                 1010
 #define IDC_BUTTON_CLEAR                1011
 #define IDC_CHECK_KEEPTEXT              1012
-#define IDC_STATIC_PV                   1013
+#define IDC_EDIT_PV                     1013
 #define IDC_EDIT_HISTORY                1020
 #define IDC_SCROLLBAR_HISTORY           1021
 #define IDC_TREE_OPENING                1030
@@ -527,9 +527,9 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        426
+#define _APS_NEXT_RESOURCE_VALUE        427
 #define _APS_NEXT_COMMAND_VALUE         33309
-#define _APS_NEXT_CONTROL_VALUE         1204
+#define _APS_NEXT_CONTROL_VALUE         1205
 #define _APS_NEXT_SYMED_VALUE           117
 #endif
 #endif
