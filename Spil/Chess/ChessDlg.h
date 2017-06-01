@@ -267,12 +267,13 @@ protected:
   afx_msg HCURSOR OnQueryDragIcon();
   afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
   virtual BOOL OnInitDialog();
+  afx_msg void OnMove(int x, int y);
   afx_msg void OnSizing(UINT fwSide, LPRECT pRect);
   afx_msg void OnPaint();
   afx_msg void OnClose();
   afx_msg void OnOK();
   afx_msg void OnCancel();
-  afx_msg void OnActivate(UINT nState, CWnd *pWndOther, BOOL bMinimized);
+  afx_msg void OnActivate(   UINT nState, CWnd *pWndOther, BOOL bMinimized);
   afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
   afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
   afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
@@ -455,6 +456,5 @@ protected:
   afx_msg LRESULT OnMsgShowSelectedHistoryMove(     WPARAM wp, LPARAM lp);
   afx_msg LRESULT OnMsgRemoteStateChanged(          WPARAM wp, LPARAM lp);
   DECLARE_MESSAGE_MAP()
-public:
 };
 

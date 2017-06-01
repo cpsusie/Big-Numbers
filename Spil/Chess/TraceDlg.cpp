@@ -11,6 +11,7 @@
 
 CTraceDlg::CTraceDlg(CTraceDlgThread &thread) : CDialog(CTraceDlg::IDD, NULL), m_thread(thread) {
   m_hIcon    = theApp.LoadIcon(IDR_MAINFRAME);
+  m_initDone = false;
   m_textBox  = NULL;
   m_caretPos = 0;
   m_keepText = FALSE;
@@ -22,6 +23,7 @@ void CTraceDlg::DoDataExchange(CDataExchange* pDX) {
 }
 
 BEGIN_MESSAGE_MAP(CTraceDlg, CDialog)
+    ON_WM_MOVE()
     ON_WM_SIZE()
     ON_MESSAGE(ID_MSG_PRINTTEXT             , OnPrintText          )
     ON_MESSAGE(ID_MSG_UPDATEMESSAGEFIELD    , OnUpdateMessageField )
@@ -42,7 +44,7 @@ BEGIN_MESSAGE_MAP(CTraceDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTraceDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
@@ -56,9 +58,12 @@ BOOL CTraceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_BUTTON_CLEAR  , PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
   m_layoutManager.addControl(IDC_CHECK_KEEPTEXT, PCT_RELATIVE_X_CENTER | RELATIVE_Y_POS              );
 
-  OnReposition(0,0);
+  setWindowPosition(this, getOptions().getTraceWindowPos());
+  setWindowSize(    this, getOptions().getTraceWindowSize());
 
   setFontSize(getOptions().getTraceFontSize(), false);
+
+  m_initDone = true;
 
   return TRUE;
 }
@@ -90,21 +95,19 @@ LRESULT CTraceDlg::OnPrintText(WPARAM wp, LPARAM lp) {
   }
   String text = m_textQueue.get();
   text.replace('\n', _T("\r\n"));
-  CString currentText;
-  m_textBox->GetWindowText(currentText);
-  UINT currentLength = currentText.GetLength();
-  if(m_caretPos < currentLength) {
-    currentText = currentText.Left(m_caretPos);
+  String currentText = getWindowText(m_textBox);
+  if(m_caretPos < currentText.length()) {
+    currentText = left(currentText, m_caretPos);
   }
   intptr_t bsIndex = text.find('\b');
   if(bsIndex >= 0) {  // dont incr caretPos
     text.cstr()[bsIndex] = '\0';
     currentText += text.cstr();
-    m_textBox->SetWindowText(currentText);
+    setWindowText(m_textBox,currentText);
   } else {
-    currentText += text.cstr();
-    m_textBox->SetWindowText(currentText);
-    m_caretPos = currentText.GetLength();
+    currentText += text;
+    setWindowText(m_textBox, currentText);
+    m_caretPos = (UINT)currentText.length();
   }
   scrollToBottom();
   return 0;
@@ -149,9 +152,19 @@ LRESULT CTraceDlg::OnReposition(WPARAM wp, LPARAM lp) {
   return 0;
 }
 
+void CTraceDlg::OnMove(int x, int y) {
+  __super::OnMove(x, y);
+  if(m_initDone) {
+    getOptions().setTraceWindowPos(getWindowPosition(this));
+  }
+}
+
 void CTraceDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
+  if(m_initDone) {
+    getOptions().setTraceWindowSize(getWindowSize(this));
+  }
 }
 
 void CTraceDlg::scrollToBottom() {
@@ -175,7 +188,7 @@ void CTraceDlg::OnClose() {
 }
 
 void CTraceDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CDialog::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
 
   if(bShow) {
     BringWindowToTop();

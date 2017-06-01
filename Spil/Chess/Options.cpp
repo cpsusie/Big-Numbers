@@ -50,6 +50,7 @@ DefaultOptions::DefaultOptions() {
 }
 
 void DefaultOptions::setDefault() {
+  const CSize ss = getScreenSize(false);
   m_showFieldNames                   = false;
   m_showLegalMoves                   = true;
   m_showPlayerInTurn                 = false;
@@ -63,6 +64,9 @@ void DefaultOptions::setDefault() {
   m_historyFontSize                  = 8;
   m_langID                           = Language::getBestSupportedLanguage(GetUserDefaultLangID()).m_langID;
   m_boardSize                        = CSize(875, 487);
+  m_boardWindowPos                   = CPoint((ss.cx-m_boardSize.cx)/2, (ss.cy-m_boardSize.cy)/2);
+  m_traceWindowPos                   = CPoint(m_boardWindowPos.x + m_boardSize.cx+10, m_boardWindowPos.y);
+  m_traceWindowSize                  = CSize(200, m_boardSize.cy);
   m_normalPlayLevel                  = 1;
   m_levelTimeout.setDefault();
   m_openingLibraryEnabled            = true;
@@ -273,14 +277,17 @@ static const TCHAR *ASKFORNEWGAME            = _T("AskForNewGame");
 static const TCHAR *COMPUTERPLAYER           = _T("ComputerPlayer");
 static const TCHAR *SHOWCOMPUTERTIME         = _T("ShowComputerTime");
 static const TCHAR *VALIDATE                 = _T("ValidateAfterEdit");
+static const TCHAR *TRACEWINDOW              = _T("TraceWindow");
 static const TCHAR *TRACEVISIBLE             = _T("TraceVisible");
 static const TCHAR *TRACEFONTSIZE            = _T("TraceFontSize");
 static const TCHAR *HISTORYFONTSIZE          = _T("HistoryFontSize");
 static const TCHAR *GAMEINITIALDIR           = _T("GameInitialDir");
 static const TCHAR *LANGUAGE                 = _T("Language");
-static const TCHAR *WIDTH                    = _T("Width");
-static const TCHAR *HEIGHT                   = _T("Height");
-static const TCHAR *BOARDSIZE                = _T("Boardsize");
+static const TCHAR *_X                       = _T("X");
+static const TCHAR *_Y                       = _T("Y");
+static const TCHAR *WIDTH                    = _T("W");
+static const TCHAR *HEIGHT                   = _T("H");
+static const TCHAR *BOARDWINDOW              = _T("BoardWindow");
 static const TCHAR *NORMALPLAYLEVEL          = _T("NormalPlayLevel");
 static const TCHAR *OPENINGLIBRARYENABLED    = _T("OpeningLibraryEnabled");
 static const TCHAR *ENDGAMETABLEBASEENABLED  = _T("EndGameTablebaseEnabled");
@@ -320,9 +327,26 @@ static const TCHAR *EVFHASHFULL              = _T("HashFull");
 static const TCHAR *EVFMULTIPV               = _T("MultiPV");
 static const TCHAR *EVFCPULOAD               = _T("CPULoad");
 
+static void savePos( RegistryKey key, const CPoint &p) {
+  key.setValue(_X , p.x);
+  key.setValue(_Y , p.y);
+}
+
 static void saveSize(RegistryKey key, const CSize &s) {
   key.setValue(WIDTH  , s.cx);
   key.setValue(HEIGHT , s.cy);
+}
+
+static void saveRect(RegistryKey key, const CRect &r) {
+  savePos( key, r.TopLeft());
+  saveSize(key, r.Size());
+}
+
+static CPoint loadPos( RegistryKey key, const CPoint &defaultValue) {
+  CPoint result;
+  result.x = key.getInt(_X, defaultValue.x);
+  result.y = key.getInt(_Y, defaultValue.y);
+  return result;
 }
 
 static CSize loadSize(RegistryKey key, const CSize &defaultValue) {
@@ -330,6 +354,12 @@ static CSize loadSize(RegistryKey key, const CSize &defaultValue) {
   result.cx = key.getInt(WIDTH , defaultValue.cx);
   result.cy = key.getInt(HEIGHT, defaultValue.cy);
   return result;
+}
+
+static CRect loadRect(RegistryKey key, const CRect &defaultValue) {
+  const CPoint tl = loadPos( key, defaultValue.TopLeft());
+  const CSize  sz = loadSize(key, defaultValue.Size());
+  return CRect(tl, sz);
 }
 
 static void saveLevelTimeout(RegistryKey key, const LevelTimeout &lt) {
@@ -439,13 +469,14 @@ void Options::save() {
     key.setValue(COMPUTERPLAYER          , m_computerPlayer         );
     key.setValue(SHOWCOMPUTERTIME        , m_showComputerTime       );
     key.setValue(VALIDATE                , m_validateAfterEdit      );
+    saveRect(getSubKey(TRACEWINDOW)      , CRect(m_traceWindowPos, m_traceWindowSize));
     key.setValue(TRACEVISIBLE            , m_traceWindowVisible     );
     key.setValue(TRACEFONTSIZE           , m_traceFontSize          );
     key.setValue(HISTORYFONTSIZE         , m_historyFontSize        );
     key.setValue(GAMEINITIALDIR          , m_gameInitialDir         );
     key.setValue(LANGUAGE                , m_langID                 );
 
-    saveSize(getSubKey(BOARDSIZE)        , m_boardSize              );
+    saveRect(getSubKey(BOARDWINDOW)      , CRect(m_boardWindowPos, m_boardSize));
     key.setValue(NORMALPLAYLEVEL         , m_normalPlayLevel        );
     saveLevelTimeout(getSubKey(TIMEOUT)  , m_levelTimeout           );
     key.setValue(OPENINGLIBRARYENABLED   , m_openingLibraryEnabled  );
@@ -509,12 +540,15 @@ void Options::load() {
                                : WHITEPLAYER;
     m_showComputerTime         = key.getBool(  SHOWCOMPUTERTIME        , defaultOptions.getShowComputerTime()       );
     m_validateAfterEdit        = key.getBool(  VALIDATE                , defaultOptions.getValidateAfterEdit()      );
+    m_traceWindowPos           = loadPos( getSubKey(TRACEWINDOW)       , defaultOptions.getTraceWindowPos()         );
+    m_traceWindowSize          = loadSize(getSubKey(TRACEWINDOW)       , defaultOptions.getTraceWindowSize()        );
     m_traceWindowVisible       = key.getBool(  TRACEVISIBLE            , defaultOptions.getTraceWindowVisible()     );
     m_traceFontSize            = key.getInt(   TRACEFONTSIZE           , defaultOptions.getTraceFontSize()          );
     m_historyFontSize          = key.getInt(   HISTORYFONTSIZE         , defaultOptions.getHistoryFontSize()        );
     m_gameInitialDir           = key.getString(GAMEINITIALDIR          , defaultOptions.getGameInitialDir()         );
     m_langID                   = key.getInt(   LANGUAGE                , defaultOptions.getLangID()                 );
-    m_boardSize                = loadSize(getSubKey(BOARDSIZE)         , defaultOptions.getBoardSize()              );
+    m_boardWindowPos           = loadPos( getSubKey(BOARDWINDOW)       , defaultOptions.getBoardWindowPos()         );
+    m_boardSize                = loadSize(getSubKey(BOARDWINDOW)       , defaultOptions.getBoardSize()              );
     m_normalPlayLevel          = key.getInt(   NORMALPLAYLEVEL         , defaultOptions.getNormalPlayLevel()        );
     m_levelTimeout             = loadLevelTimeout(getSubKey(TIMEOUT)   , defaultOptions.getLevelTimeout()           );
     m_openingLibraryEnabled    = key.getBool(  OPENINGLIBRARYENABLED   , defaultOptions.isOpeningLibraryEnabled()   );
@@ -680,6 +714,20 @@ void Options::setValidateAfterEdit(bool validate) {
   }
 }
 
+void Options::setTraceWindowPos(const CPoint &pos) {
+  if(pos != m_traceWindowPos) {
+    m_traceWindowPos = pos;
+    setDirty();
+  }
+}
+
+void Options::setTraceWindowSize(const CSize &size) {
+  if(size != m_traceWindowSize) {
+    m_traceWindowSize = size;
+    setDirty();
+  }
+}
+
 void Options::setTraceWindowVisible(bool visible) {
   if(visible != m_traceWindowVisible) {
     m_traceWindowVisible = visible;
@@ -733,6 +781,12 @@ int Options::getSelectedLanguageIndex() const {
   return -1;
 }
 
+void Options::setBoardWindowPos(const CPoint &pos) {
+  if(pos != m_boardWindowPos) {
+    m_boardWindowPos = pos;
+    setDirty();
+  }
+}
 
 void Options::setBoardSize(const CSize &size) {
   if(size != m_boardSize) {

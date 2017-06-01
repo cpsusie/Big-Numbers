@@ -93,8 +93,10 @@ public:
 
 class EngineRegister : public Array<EngineDescription> {
 public:
-  const String &getPathByName( const String &name) const; // throw Exception if not found
-  int           getIndexByName(const String &name) const; // return -1 if not found
+  // throw Exception if not found
+  const String &getPathByName( const String &name) const;
+  // return -1 if not found
+  int           getIndexByName(const String &name) const;
 };
 
 class EngineVerboseFields {
@@ -191,11 +193,14 @@ protected:
   Player                m_computerPlayer;
   bool                  m_showComputerTime;
   bool                  m_validateAfterEdit;
+  CPoint                m_traceWindowPos;
+  CSize                 m_traceWindowSize;           // size in pixels
   bool                  m_traceWindowVisible;
   int                   m_traceFontSize;
   int                   m_historyFontSize;
   String                m_gameInitialDir;
   LANGID                m_langID;
+  CPoint                m_boardWindowPos;
   CSize                 m_boardSize;                 // size in pixels
   int                   m_normalPlayLevel;           // for normal play
   LevelTimeout          m_levelTimeout;
@@ -225,11 +230,14 @@ public:
   Player                    getComputerPlayer()                   const { return m_computerPlayer;                               }
   bool                      getShowComputerTime()                 const { return m_showComputerTime;                             }
   bool                      getValidateAfterEdit()                const { return m_validateAfterEdit;                            }
+  const CPoint             &getTraceWindowPos()                   const { return m_traceWindowPos;                               }
+  const CSize              &getTraceWindowSize()                  const { return m_traceWindowSize;                              }
   bool                      getTraceWindowVisible()               const { return m_traceWindowVisible;                           }
   int                       getTraceFontSize()                    const { return m_traceFontSize;                                }
   int                       getHistoryFontSize()                  const { return m_historyFontSize;                              }
   const String             &getGameInitialDir()                   const { return m_gameInitialDir;                               }
   LANGID                    getLangID()                           const { return m_langID;                                       }
+  const CPoint             &getBoardWindowPos()                   const { return m_boardWindowPos;                               }
   const CSize              &getBoardSize()                        const { return m_boardSize;                                    }
   int                       getNormalPlayLevel()                  const { return m_normalPlayLevel;                              }
   const LevelTimeout       &getLevelTimeout()                     const { return m_levelTimeout;                                 }
@@ -281,11 +289,14 @@ public:
   void setComputerPlayer(        Player              computerPlayer                      );
   void setShowComputerTime(      bool                show                                );
   void setValidateAfterEdit(     bool                validate                            );
+  void setTraceWindowPos(        const CPoint       &pos                                 );
+  void setTraceWindowSize(       const CSize        &size                                );
   void setTraceWindowVisible(    bool                visible                             );
   void setTraceFontSize(         int                 size                                );
   void setHistoryFontSize(       int                 size                                );
   void setGameInitialDir(        const String       &dir                                 );
   bool setLangID(                LANGID              langID                              );
+  void setBoardWindowPos(        const CPoint       &pos                                 );
   void setBoardSize(             const CSize        &size                                );
   void setNormalPlayLevel(       int                 level                               );
   void setLevelTimeout(          const LevelTimeout &timeout                             );
@@ -293,8 +304,8 @@ public:
   void enableEndGameTablebase(   bool                enabled                             );
   void setEndGameTablebasePath(  const String       &path                                );
   void setEndGameTablebaseMetric(TablebaseMetric     metric                              );
-  void setEndGameDefendStrength( int                 defendStrength                      );    // 0-100% 0 = random defend, 100 = optimal
-  void setMaxMovesWithoutCaptureOrPawnMove(int       maxMoves                            )   ; // FIDE = 50
+  void setEndGameDefendStrength( int                 defendStrength                      ); // 0-100% 0 = random defend, 100 = optimal
+  void setMaxMovesWithoutCaptureOrPawnMove(int       maxMoves                            ); // FIDE = 50
   void setMoveFormat(            MoveStringFormat    moveFormat                          );
   void setDepthInPlies(          bool                plies                               );
   void setConnectedToServer(     bool                connected                           );

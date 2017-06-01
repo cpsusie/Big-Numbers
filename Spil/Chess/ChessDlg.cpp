@@ -102,12 +102,13 @@ CChessDlg::~CChessDlg() {
 }
 
 void CChessDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CChessDlg, CDialog)
   ON_WM_QUERYDRAGICON()
   ON_WM_SYSCOMMAND()
+  ON_WM_MOVE()
   ON_WM_SIZING()
   ON_WM_PAINT()
   ON_WM_CLOSE()
@@ -303,7 +304,7 @@ void CChessDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg(this).DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -312,7 +313,7 @@ void CChessDlg::OnOK()     {}
 void CChessDlg::OnCancel() {}
 
 void CChessDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
-  CDialog::OnActivate(nState, pWndOther, bMinimized);
+  __super::OnActivate(nState, pWndOther, bMinimized);
   switch(nState) {
   case WA_INACTIVE    :
     clrControlFlag(CTRL_APPACTIVE);
@@ -326,12 +327,12 @@ void CChessDlg::OnActivate(UINT nState, CWnd* pWndOther, BOOL bMinimized) {
 }
 
 BOOL CChessDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
 
-  CMenu* pSysMenu = GetSystemMenu(FALSE);
+  CMenu *pSysMenu = GetSystemMenu(FALSE);
   if(pSysMenu != NULL) {
     CString strAboutMenu;
     strAboutMenu.LoadString(IDS_ABOUTBOX);
@@ -360,7 +361,7 @@ BOOL CChessDlg::OnInitDialog() {
 
   activateOptions();
   setTestItemStates();
-  centerWindow(this);
+//  centerWindow(this);
 
   m_layoutManager.OnInitDialog(this, RETAIN_ASPECTRATIO);
   switch(getDialogMode()) {
@@ -457,9 +458,16 @@ void CChessDlg::errorMessage(const Exception &e) const {
   errorMessage(_T("%s"), e.what());
 }
 
+void CChessDlg::OnMove(int x, int y) {
+  __super::OnMove(x, y);
+  if(isInitDone()) {
+    getOptions().setBoardWindowPos(getWindowPosition(this));
+  }
+}
+
 void CChessDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   m_layoutManager.OnSizing(fwSide, pRect);
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
   BEGINPAINT();
   ENDPAINT();
   getOptions().setBoardSize(m_graphics->getBoardSize(true));
@@ -482,7 +490,7 @@ void CChessDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
 
     BEGINPAINT();
     if(!isControlFlagSet(CTRL_FIRSTPAINTDONE)) {
@@ -1069,7 +1077,7 @@ BOOL CChessDlg::PreTranslateMessage(MSG* pMsg) {
     break;
   }
 */
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 Game &CChessDlg::getCurrentGame1() {
@@ -1381,6 +1389,7 @@ void CChessDlg::activateOptions() {
   setBlackAutoPlayLevel(          options.getAutoPlayLevel(BLACKPLAYER)       );
   enableTestMenu(                 options.hasTestMenu()                       );
   setGameSettings();
+  setWindowPosition(this,         options.getBoardWindowPos()                 );
   setClientRectSize(this,         options.getBoardSize()                      );
   setTraceWindowVisible(          options.getTraceWindowVisible()             );
 }
@@ -1431,7 +1440,7 @@ void CChessDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   } catch(Exception e) {
     errorMessage(e);
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CChessDlg::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -1447,7 +1456,7 @@ void CChessDlg::OnLButtonUp(UINT nFlags, CPoint point) {
   } catch(Exception e) {
     errorMessage(e);
   }
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CChessDlg::OnMouseMove(UINT nFlags, CPoint point) {
@@ -1464,7 +1473,7 @@ void CChessDlg::OnMouseMove(UINT nFlags, CPoint point) {
     m_graphics->reopen();
     invalidate();
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 // ------------------------------ Mousehandlers Play Mode -----------------------------------------------
@@ -1554,7 +1563,7 @@ void CChessDlg::OnMouseMovePlayMode(UINT nFlags, CPoint point) {
 // --------------------------------------------------------------------------------------
 
 void CChessDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   switch(nIDEvent) {
   case SHOWWATCH_TIMER:
     updateClock();
