@@ -62,7 +62,6 @@ public:
     , m_map(map)
 #endif
   {
-
     __asm {
         mov esi, this
         mov ecx, startPos
@@ -88,7 +87,7 @@ public:
 //    TestBitNotZero:                   // most common case
         test edx, edx                   //
         jne SearchBit                   //    if(edx) goto SearchBit
-	    xor	ebx, 4                      //    index ^= 1
+	      xor ebx, 4                      //    index ^= 1
         mov edx, DWORD PTR [edi+ebx]    //    edx = m_set[index]
         test edx, edx                   //
         jne SearchBit                   //
@@ -104,7 +103,7 @@ public:
       TestBitZero:                      //
         test edx, edx                   //
         jne SearchBit                   // if(edx) goto SearchBit
-	    xor	ebx, 4                      // index ^= 1
+	      xor ebx, 4                      // index ^= 1
         mov edx, DWORD PTR [edi+ebx]    // edx = m_set[index]
         test edx, edx
         je EmptySet
@@ -166,7 +165,7 @@ public:
       TestBitZero:                      // if(bit == 0) dont waste time to check this element again as above
         test edx, edx                   //
         jne SearchBit                   // if(edx) goto SearchBit
-	    xor	ebx, 4                      // index ^= 1
+	      xor ebx, 4                      // index ^= 1
         mov edx, DWORD PTR [edi+ebx]    // edx = m_set[index]
         test edx, edx                   //
         je EndIteration                 //
@@ -191,4 +190,3 @@ public:
   void clear();
   String toString() const;
 };
-
