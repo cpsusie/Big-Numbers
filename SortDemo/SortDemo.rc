@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// Danish resources
+// Danish (Denmark) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_DAN)
-#ifdef _WIN32
 LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 #pragma code_page(1252)
-#endif //_WIN32
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -27,18 +25,18 @@ LANGUAGE LANG_DANISH, SUBLANG_DEFAULT
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
     "#define _AFX_NO_OLE_RESOURCES\r\n"
@@ -66,28 +64,27 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDR_MAINFRAME           ICON    DISCARDABLE     "res\\SortDemo.ico"
+IDR_MAINFRAME           ICON                    "res\\SortDemo.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG DISCARDABLE  0, 0, 235, 55
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_ABOUTBOX DIALOG 0, 0, 235, 55
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About SortDemo"
 FONT 8, "MS Sans Serif"
 BEGIN
     ICON            IDR_MAINFRAME,IDC_STATIC,11,17,20,20
-    LTEXT           "SortDemo Version 1.0",IDC_STATIC,40,10,119,8,
-                    SS_NOPREFIX
+    LTEXT           "SortDemo Version 1.0",IDC_STATIC,40,10,119,8,SS_NOPREFIX
     LTEXT           "Copyright (C) 2002",IDC_STATIC,40,25,119,8
     DEFPUSHBUTTON   "OK",IDOK,178,7,50,14,WS_GROUP
 END
 
 IDD_SORTDEMO_DIALOG DIALOGEX 0, 0, 638, 370
-STYLE WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | 
-    WS_SYSMENU | WS_THICKFRAME
+STYLE DS_SETFONT | WS_MINIMIZEBOX | WS_MAXIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 EXSTYLE WS_EX_APPWINDOW
 CAPTION "SortDemo"
 MENU IDR_MAINFRAME
@@ -95,52 +92,41 @@ FONT 6, "Small Fonts", 0, 0, 0x1
 BEGIN
 END
 
-IDD_PARAMETER_DIALOG DIALOG DISCARDABLE  0, 0, 325, 181
-STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+IDD_PARAMETER_DIALOG DIALOGEX 0, 0, 325, 181
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Initialization parameters"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     EDITTEXT        IDC_EDIT_ELEMENTCOUNT,110,23,47,15,ES_AUTOHSCROLL
-    COMBOBOX        IDC_COMBO_ELEMENTSIZE,110,43,47,86,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
-    CONTROL         "&Random",IDC_RADIO_RANDOM,"Button",BS_AUTORADIOBUTTON | 
-                    WS_GROUP | WS_TABSTOP,21,68,61,15
-    CONTROL         "&Sorted",IDC_RADIO_SORTED,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,21,87,61,15
-    CONTROL         "&Inverse sorted",IDC_RADIO_INVERSESORTED,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,21,106,61,15
-    CONTROL         "Sin&us",IDC_RADIO_SINUS,"Button",BS_AUTORADIOBUTTON | 
-                    WS_TABSTOP,21,125,61,15
-    CONTROL         "&File data",IDC_RADIO_FILEDATA,"Button",
-                    BS_AUTORADIOBUTTON | WS_TABSTOP,21,144,61,15
-    COMBOBOX        IDC_COMBO_RANDOMIZE,110,69,103,40,CBS_DROPDOWNLIST | 
-                    WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_ELEMENTSIZE,110,43,47,86,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "&Random",IDC_RADIO_RANDOM,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,21,68,61,15
+    CONTROL         "&Sorted",IDC_RADIO_SORTED,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,87,61,15
+    CONTROL         "&Inverse sorted",IDC_RADIO_INVERSESORTED,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,106,61,15
+    CONTROL         "Sin&us",IDC_RADIO_SINUS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,125,61,15
+    CONTROL         "&File data",IDC_RADIO_FILEDATA,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,21,144,61,15
+    COMBOBOX        IDC_COMBO_RANDOMIZE,110,69,103,40,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     EDITTEXT        IDC_EDIT_SEED,251,69,55,14,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_PERIODCOUNT,175,123,34,15,ES_AUTOHSCROLL
     EDITTEXT        IDC_EDIT_FILENAME,136,145,123,15,ES_AUTOHSCROLL
     PUSHBUTTON      "&Browse...",IDC_BUTTON_BROWSE,266,145,42,15
     DEFPUSHBUTTON   "OK",IDOK,268,7,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,268,24,50,14
-    LTEXT           "&Number of elements:",IDC_STATIC_ELEMENTCOUNT,21,26,81,
-                    12
-    LTEXT           "&Periods in sinuswave:",IDC_STATIC_PERIODCOUNT,98,127,
-                    71,10
+    LTEXT           "&Number of elements:",IDC_STATIC_ELEMENTCOUNT,21,26,81,12
+    LTEXT           "&Periods in sinuswave:",IDC_STATIC_PERIODCOUNT,98,127,71,10
     LTEXT           "Filen&ame:",IDC_STATIC_FILENAME,98,147,34,11
     LTEXT           "S&eed:",IDC_STATIC_SEED,226,71,21,16
-    LTEXT           "Si&ze of element (bytes):",IDC_STATIC_ELEMENTSIZE,21,44,
-                    81,12
+    LTEXT           "Si&ze of element (bytes):",IDC_STATIC_ELEMENTSIZE,21,44,81,12
 END
 
-IDD_LINEPRINTER_DIALOG DIALOG DISCARDABLE  0, 0, 477, 347
-STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+IDD_LINEPRINTER_DIALOG DIALOG 0, 0, 477, 347
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 CAPTION "Lineprinter"
 FONT 8, "Courier New"
 BEGIN
     PUSHBUTTON      "&Copy",IDC_BUTTON_COPY,427,7,42,14
     PUSHBUTTON      "&Save",IDC_BUTTON_SAVE,427,28,42,14
     DEFPUSHBUTTON   "C&lose",IDC_BUTTON_CLOSE,427,49,43,14
-    LISTBOX         IDC_LISTBOX_LINE,7,7,409,333,LBS_NOINTEGRALHEIGHT | 
-                    WS_VSCROLL | WS_TABSTOP
+    LISTBOX         IDC_LISTBOX_LINE,7,7,409,333,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
 END
 
 
@@ -150,7 +136,7 @@ END
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO DISCARDABLE 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_ABOUTBOX, DIALOG
     BEGIN
@@ -192,7 +178,7 @@ END
 // Menu
 //
 
-IDR_MAINFRAME MENU DISCARDABLE 
+IDR_MAINFRAME MENU
 BEGIN
     POPUP "&File"
     BEGIN
@@ -213,14 +199,13 @@ BEGIN
         MENUITEM "A&nimate\tCtrl+N",            ID_OPTIONS_ANIMATE, CHECKED
         POPUP "Spee&d"
         BEGIN
-            MENUITEM "&Slow\tCtrl+S",               ID_OPTIONS_SPEED_SLOW
-            , CHECKED
+            MENUITEM "&Slow\tCtrl+S",               ID_OPTIONS_SPEED_SLOW, CHECKED
             MENUITEM "&Fast\tCtrl+F",               ID_OPTIONS_SPEED_FAST
         END
     END
 END
 
-IDR_CONTEXTMENU MENU DISCARDABLE 
+IDR_CONTEXTMENU MENU
 BEGIN
     POPUP "contextmenu"
     BEGIN
@@ -235,7 +220,7 @@ END
 // Accelerator
 //
 
-IDR_MAINFRAME ACCELERATORS DISCARDABLE 
+IDR_MAINFRAME ACCELERATORS
 BEGIN
     "A",            ID_SELECT_ALLMETHODS,   VIRTKEY, CONTROL, NOINVERT
     "F",            ID_OPTIONS_SPEED_FAST,  VIRTKEY, CONTROL, NOINVERT
@@ -249,7 +234,7 @@ BEGIN
     VK_F6,          ID_FILE_ANALYZE,        VIRTKEY, NOINVERT
 END
 
-IDR_PARAMETER_ACCELERATOR ACCELERATORS DISCARDABLE 
+IDR_PARAMETER_ACCELERATOR ACCELERATORS
 BEGIN
     "A",            ID_GOTO_FILENAME,       VIRTKEY, ALT, NOINVERT
     "E",            ID_GOTO_SEED,           VIRTKEY, ALT, NOINVERT
@@ -259,7 +244,6 @@ BEGIN
 END
 
 
-#ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////
 //
 // Version
@@ -282,15 +266,13 @@ BEGIN
     BEGIN
         BLOCK "040904B0"
         BEGIN
-            VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "SortDemo\0"
-            VALUE "FileVersion", "1, 0, 0, 1\0"
-            VALUE "InternalName", "SortDemo\0"
-            VALUE "LegalCopyright", "Copyright (C) 2002\0"
-            VALUE "LegalTrademarks", "\0"
-            VALUE "OriginalFilename", "SortDemo.EXE\0"
-            VALUE "ProductName", "SortDemo Application\0"
-            VALUE "ProductVersion", "1, 0, 0, 1\0"
+            VALUE "FileDescription", "SortDemo"
+            VALUE "FileVersion", "1, 0, 0, 1"
+            VALUE "InternalName", "SortDemo"
+            VALUE "LegalCopyright", "Copyright (C) 2002"
+            VALUE "OriginalFilename", "SortDemo.EXE"
+            VALUE "ProductName", "SortDemo Application"
+            VALUE "ProductVersion", "1, 0, 0, 1"
         END
     END
     BLOCK "VarFileInfo"
@@ -298,8 +280,6 @@ BEGIN
         VALUE "Translation", 0x409, 1200
     END
 END
-
-#endif    // !_MAC
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -314,21 +294,59 @@ BEGIN
     IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
 0x0032, 
     IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
 0x0034, 
     IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
 0x0038, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3331, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3431, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3531, "\000" 
     IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
 0x3631, "\000" 
     IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
-0x3731, "\000" 
-    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
-0x3831, "\000" 
-    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
-0x3931, "\000" 
-    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
 0x3032, "\000" 
     IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3432, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3832, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3932, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3033, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3133, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
 0x3233, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3633, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3034, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3434, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3834, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 3, 0
+0x3436, "\000" 
+    IDC_COMBO_ELEMENTSIZE, 0x403, 4, 0
+0x3231, 0x0038, 
     IDC_COMBO_RANDOMIZE, 0x403, 11, 0
 0x6946, 0x6578, 0x2064, 0x6573, 0x6465, "\000" 
     IDC_COMBO_RANDOMIZE, 0x403, 25, 0
@@ -342,31 +360,43 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 //
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_PARAMETER_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
 // String Table
 //
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
     IDS_ABOUTBOX            "&About SortDemo..."
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
-    ID_SORT_QUICKSORTMS               "&Quicksort (Microsoft VC++)"
-    ID_SORT_QUICKSORT1                "Quicksort &1"
-    ID_SORT_QUICKSORT3                "Quicksort &3"
-    ID_SORT_QUICKSORT4OPTIMALPIVOT3   "Quicksort &4 (optimal, pivot = median 3)"
-    ID_SORT_QUICKSORT5OPTIMALPIVOT3   "Quicksort 5 (optimal, pivot = median 3)"
-    ID_SORT_QUICKSORT5OPTIMALPIVOT5   "Quicksort &5 (optimal, pivot = median 5)"
-    ID_SORT_QUICKSORT_EX              "Quicksort (lib - Experimental)"
-    ID_SORT_QSORT3NORECURSION         "Quicksort 3 (&No recursion)"
-    ID_SORT_QUICKSORTTEMPLATES        "Quicksort 3 from library (With &templates)"
-    ID_SORT_COMBSORT                  "&Combsort"
-    ID_SORT_COMBSORT11                "Combsort11"
+    ID_SORT_QUICKSORTMS     "&Quicksort (Microsoft VC++)"
+    ID_SORT_QUICKSORT1      "Quicksort &1"
+    ID_SORT_QUICKSORT3      "Quicksort &3"
+    ID_SORT_QUICKSORT4OPTIMALPIVOT3 "Quicksort &4 (optimal, pivot = median 3)"
+    ID_SORT_QUICKSORT5OPTIMALPIVOT3 "Quicksort 5 (optimal, pivot = median 3)"
+    ID_SORT_QUICKSORT5OPTIMALPIVOT5 "Quicksort &5 (optimal, pivot = median 5)"
+    ID_SORT_QUICKSORT_EX    "Quicksort (lib - Experimental)"
+    ID_SORT_MULTITHREADQUICKSORT "Multithread Quicksort"
+    ID_SORT_QSORT3NORECURSION "Quicksort 3 (&No recursion)"
+    ID_SORT_QUICKSORTTEMPLATES "Quicksort 3 from library (With &templates)"
 END
 
-STRINGTABLE DISCARDABLE 
+STRINGTABLE
 BEGIN
+    ID_SORT_COMBSORT        "&Combsort"
+    ID_SORT_COMBSORT11      "Combsort11"
     ID_SORT_HEAPSORT        "&Heapsort"
     ID_SORT_INSERTIONSORT   "&Insertionsort with binary search"
     ID_SORT_SHELLSORTSLOW   "Shellsort (Slo&w version)"
@@ -375,10 +405,9 @@ BEGIN
     ID_SORT_BUBBLESORT      "&Bubblesort"
     ID_SORT_SHORTSORTMS     "Sh&ortsort (Microsoft VC++)"
     ID_SORT_MERGESORT       "&MergeSort"
-    ID_SORT_MULTITHREADQUICKSORT "Multithread Quicksort"
 END
 
-#endif    // Danish resources
+#endif    // Danish (Denmark) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
