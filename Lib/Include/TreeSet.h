@@ -1,7 +1,7 @@
 #pragma once
 
 #include "MyUtil.h"
-#include "Stack.h"
+#include "CompactStack.h"
 #include "Set.h"
 
 class TreeSetNode : public AbstractKey {
@@ -102,28 +102,32 @@ public:
   TreeSetNode *m_node;
   char         m_state;
 
-  TreeSetIteratorStackElement(TreeSetNode *node, char state) {
+  inline TreeSetIteratorStackElement(TreeSetNode *node, char state) {
     m_node  = node;
     m_state = state;
   }
 
-  TreeSetIteratorStackElement() {
+  inline TreeSetIteratorStackElement() {
   }
 };
 
 class TreeSetIterator : public AbstractIterator {
 private:
   DECLARECLASSNAME;
-  TreeSetImpl                       &m_set;
-  Stack<TreeSetIteratorStackElement> m_stack;
-  TreeSetNode                       *m_next, *m_current;
-  size_t                             m_updateCount;
+  TreeSetImpl                              &m_set;
+  CompactStack<TreeSetIteratorStackElement> m_stack;
+  TreeSetNode                              *m_next, *m_current;
+  size_t                                    m_updateCount;
 
-  void push(TreeSetNode *node, char state);
-  void pop() {
+  inline void push(TreeSetNode *node, char state) {
+    m_stack.push(TreeSetIteratorStackElement(node,state));
+  }
+  inline void pop() {
     m_stack.pop();
   }
-  TreeSetIteratorStackElement *top();
+  inline TreeSetIteratorStackElement *top() {
+    return m_stack.isEmpty() ? NULL : &m_stack.top();
+  }
   TreeSetNode *findFirst();
   void findPath(const void *key);
   TreeSetNode *findNext();

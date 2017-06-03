@@ -14,14 +14,6 @@ enum IteratorState {
  ,RIGHT_DONE
 };
 
-void TreeSetIterator::push(TreeSetNode *node, char state) { 
-  m_stack.push(TreeSetIteratorStackElement(node,state));
-}
-
-TreeSetIteratorStackElement *TreeSetIterator::top() { 
-  return m_stack.isEmpty() ? NULL : &m_stack.top();
-}
-
 TreeSetIterator::TreeSetIterator(TreeSetImpl &set) : m_set(set) {
   m_updateCount = m_set.m_updateCount;
   m_next        = findFirst();
@@ -65,7 +57,7 @@ void TreeSetIterator::findPath(const void *key) {
       return;
     }
   }
-  throwException(_T("%s::findPath:Key not found"), s_className);
+  throwException(_T("%s:Key not found"), __TFUNCTION__);
 }
 
 TreeSetNode *TreeSetIterator::findNext() {

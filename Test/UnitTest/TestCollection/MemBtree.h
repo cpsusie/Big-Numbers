@@ -216,7 +216,7 @@ public:
   }
 
   AbstractSet *cloneSet(bool cloneData) {
-    throwException("cloneSet not supported in BTreeMapImpl");
+    throwUnsupportedOperationException(__TFUNCTION__);
     return NULL;
   }
 

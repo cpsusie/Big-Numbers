@@ -534,11 +534,14 @@ AbstractCollection *BTreeSetImpl::clone(bool cloneData) const {
 
 class BTreeIteratorStackElement {
 public:
+  DECLARECLASSNAME;
   const BTreePage *m_page;
   int              m_index;
   bool             m_childDone;
-  BTreeIteratorStackElement(const BTreePage *page, int index, bool childDone) : m_page(page) {
+  inline BTreeIteratorStackElement(const BTreePage *page, int index, bool childDone) : m_page(page) {
     m_index = index; m_childDone = childDone;
+  }
+  inline BTreeIteratorStackElement() {
   }
   String toString() const {
     return format(_T("%p:%d:%s"),m_page,m_index,boolToStr(m_childDone));
@@ -547,11 +550,11 @@ public:
 
 class BTreeSetIterator : public AbstractIterator {
 private:
-  BTreeSetImpl                    &m_tree;
-  Stack<BTreeIteratorStackElement> m_stack;
-  const BTreePageItem             *m_next, *m_current;
-  size_t                           m_updateCount;
-  static const TCHAR              *className;
+  DECLARECLASSNAME;
+  BTreeSetImpl                           &m_tree;
+  CompactStack<BTreeIteratorStackElement> m_stack;
+  const BTreePageItem                    *m_next, *m_current;
+  size_t                                  m_updateCount;
   void push(const BTreePage *page, int index, bool childDone);
   void pop() {
     m_stack.pop();
@@ -575,7 +578,7 @@ public:
   }
 };
 
-const TCHAR *BTreeSetIterator::className = _T("BTreeSetIterator");
+DEFINECLASSNAME(BTreeSetIterator);
 
 AbstractIterator *BTreeSetIterator::clone() {
   return new BTreeSetIterator(*this);
@@ -601,10 +604,10 @@ bool BTreeSetIterator::hasNext() const {
 
 const BTreePageItem *BTreeSetIterator::nextNode() {
   if(m_next == NULL) {
-    noNextElementError(className);
+    noNextElementError(s_className);
   }
   if(m_updateCount != m_tree.m_updateCount) {
-    concurrentModificationError(className);
+    concurrentModificationError(s_className);
   }
   m_current = m_next;
   m_next    = findNext();
@@ -664,13 +667,13 @@ BTreePageItem *BTreeSetIterator::findPath(void *key) {
     push(p,r,true);
     p = p->getChild(r); // item not on this page. Try child
   }
-  throwException(_T("%s::findPath:Key not found"), className);
+  throwException(_T("%s:Key not found"), __TFUNCTION__);
   return NULL;
 }
 
 void BTreeSetIterator::remove() {
   if(m_current == NULL) {
-    noCurrentElementError(className);
+    noCurrentElementError(s_className);
   }
   void *nextKey = NULL;
   if(m_next != NULL) {
@@ -700,16 +703,18 @@ int BTreeSetImpl::getHeight() const {
 }
 
 void BTreeSetImpl::checkPage(const BTreePage *p, int level, int height) const {
+  DEFINEMETHODNAME;
   if(level == height) {
     if(p != NULL) {
-      throwException(_T("checkPage::Page at max-level not NULL"));
+      throwException(_T("%s::Page at max-level not NULL"), method);
     }
   } else {
     if(p == NULL) {
-      throwException(_T("checkPage::Page at level < %d is NULL"),height);
+      throwException(_T("%s::Page at level < %d is NULL"),method, height);
     }
     if(p->getItemCount() < HALFSIZE) {
-      throwException(_T("checkPage::Invariant %d <= itemcount <= %d not satisfied. Itemcount=%d"),HALFSIZE,MAXITEMCOUNT, p->getItemCount());
+      throwException(_T("%s::Invariant %d <= itemcount <= %d not satisfied. Itemcount=%d")
+                    ,method, HALFSIZE,MAXITEMCOUNT, p->getItemCount());
     }
     for(int i = 0; i < p->getItemCount(); i++) {
       checkPage(p->getChild(i),level+1,height);
@@ -727,7 +732,7 @@ void BTreeSetImpl::checkTree() {
   }
 
   AbstractIterator *it = getIterator();
-  Array<void*> list;
+  CompactArray<void*> list;
   while(it->hasNext()) {
     list.add(it->next());
   }

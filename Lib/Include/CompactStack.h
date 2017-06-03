@@ -55,7 +55,7 @@ public:
 
   String toString() const {
     String result;
-    for(int i = 0; i < getHeight(); i++) {
+    for(UINT i = 0; i < getHeight(); i++) {
       result += top(i).toString() + _T("\n");
     }
     return result;
