@@ -26,6 +26,8 @@ void bubbleSort(             void *base, size_t nelem, size_t width, AbstractCom
 void shortSortMS(            void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 void mergeSort(              void *base, size_t nelem, size_t width, AbstractComparator &comparator);
 
+//#define OLDSWAP
+#ifdef OLDSWAP
 inline void swap(register char *p1, register char *p2, size_t w) {
 #define swapBasicType(if_or_while,type,w)   \
   if_or_while(w >= sizeof(type)) {          \
@@ -45,6 +47,13 @@ inline void swap(register char *p1, register char *p2, size_t w) {
   swapBasicType(if   ,short,w)   /* take 2 bytes at a time */
   swapBasicType(if   ,char ,w)   /* take the last (if any) */
 }
+
+#else
+#include <MemSwap.h>
+inline void swap(char *p1, char *p2, size_t w) {
+  memSwap(p1,p2,w);
+}
+#endif // OLDSWAP
 
 typedef struct {
   void  *m_base;

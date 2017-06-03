@@ -2,43 +2,6 @@
 
 #pragma check_stack(off)
 
-#ifdef _NEVER__
-static inline void SWAP(char *p1, char *p2, size_t w) {
-  __asm {
-    mov ecx, w
-    mov eax, p1
-    mov edi, p2
-LoopLong:
-	  mov	ebx, DWORD PTR [eax]
-	  mov	edx, DWORD PTR [edi]
-	  mov	DWORD PTR [edi], ebx
-	  mov	DWORD PTR [eax], edx
-	  add	eax, 4
-	  add	edi, 4
-    sub ecx, 4
-	  cmp ecx, 4
-    jge LoopLong
-    jcxz End
-	  mov	ebx, DWORD PTR [eax]
-	  mov	edx, DWORD PTR [edi]
-    cmp ecx, 2
-    jl SwapByte
-	  mov	WORD PTR [edi], bx
-	  mov	WORD PTR [eax], dx
-    sub ecx, 2
-    jcxz End
-	  add	eax, 2
-	  add	edi, 2
-	  shr ebx, 16
-	  shr edx, 16
-SwapByte:
-	  mov	BYTE PTR [edi], bl
-	  mov	BYTE PTR [eax], dl
-End:
-  }
-}
-#endif
-
 static void quickSortExAnyWidth(void *base, size_t nelem, size_t width, AbstractComparator &comparator, char *pivot) {
   DECLARE_STACK(stack, 80);
   PUSH(stack, base, nelem);
@@ -116,6 +79,10 @@ static void quickSortExNoRecursionAnyWidth(void *base, size_t nelem, size_t widt
 
 #undef EPTR
 
+#ifdef swap
+#undef swap
+#endif
+
 #define swap(p1,p2) { const T tmp = *p1; *p1 = *p2; *p2 = tmp; }
 
 template <class T> class QuicksortExClass {
@@ -187,28 +154,6 @@ tailrecurse:
         nelem = j+1;
         goto tailrecurse;
       }
-    }
-  }
-}
-
-#undef swap
-static void testSwap() {
-#define MAXSIZE 30
-  unsigned char b1[MAXSIZE], b2[MAXSIZE];
-  for(int size = 5; size <= MAXSIZE; size++) {
-    memset(b1, 0xff, MAXSIZE); memset(b2, 0xee, MAXSIZE);
-    int i;
-    for(i = 0; i < size; i++) {
-      b1[i] = 'a' + i; b2[i] = 'A'+i;
-    }
-    swap((char*)b1,(char*)b2, size);
-    for(i = 0; i < size; i++) {
-      verify(b1[i] == 'A'+i);
-      verify(b2[i] == 'a'+i);
-    }
-    for(;i < MAXSIZE; i++) {
-      verify(b1[i] == 0xff);
-      verify(b2[i] == 0xee);
     }
   }
 }
