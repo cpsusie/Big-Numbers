@@ -38,7 +38,7 @@ CEdit *CExprDialog::getExprField(int id) {
   return (CEdit*)GetDlgItem(id);
 }
 
-bool CExprDialog::validate(int id) {
+bool CExprDialog::validateExpr(int id) {
   ExpressionWrapper expr;
   expr.compile(getExprString(id), false);
   if(!expr.ok()) {
@@ -48,6 +48,20 @@ bool CExprDialog::validate(int id) {
   if(!expr.isReturnTypeReal()) {
     gotoExpr(id);
     Message(_T("Expression must return real value"));
+    return false;
+  }
+  return true;
+}
+
+bool CExprDialog::validateInterval(int fromId, int toId) {
+  const String fromStr = getWindowText(this,fromId);
+  const String toStr   = getWindowText(this,toId  );
+  double from,to;
+  _stscanf(fromStr.cstr(),_T("%le"), &from);
+  _stscanf(toStr.cstr()  ,_T("%le"), &to  );
+  if(from >= to) {
+    gotoEditBox(this, fromId);
+    Message(_T("Invalid interval"));
     return false;
   }
   return true;

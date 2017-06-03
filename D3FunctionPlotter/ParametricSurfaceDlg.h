@@ -3,16 +3,14 @@
 #include <D3DGraphics/ParametricSurface.h>
 #include "ExprDialog.h"
 
-class CParametricSurfaceDlg : public CExprDialog {
+class CParametricSurfaceDlg : public SaveLoadExprDialog<ParametricSurfaceParameters> {
 private:
-  HACCEL m_accelTable;
   int    m_selectedExprId;
   bool validate();
-  void saveAs(ParametricSurfaceParameters &param);
-  void save(const String &fileName, ParametricSurfaceParameters &param);
-  void enableTimeFields();
   void paramToWin(const ParametricSurfaceParameters &param);
-  void winToParam(ParametricSurfaceParameters &param) const;
+  void winToParam(      ParametricSurfaceParameters &param) const;
+
+  void enableTimeFields();
 
   void gotoExprX() {
     GetDlgItem(IDC_EDIT_EXPRX)->SetFocus();
@@ -25,15 +23,10 @@ private:
   }
 
 public:
-	CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd* pParent = NULL);
+	CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent = NULL);
 	virtual ~CParametricSurfaceDlg();
 
-#ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_PARAMETRICSURFACE_DIALOG };
-#endif
-
-  ParametricSurfaceParameters m_param;
-  CString                     m_name;
+	enum { IDD = IDR_PARAMETRICSURFACE };
 
 private:
   CString m_exprX;
@@ -53,14 +46,9 @@ private:
   BOOL    m_machineCode;
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
 	  virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    virtual void OnOK();
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExprX();
     afx_msg void OnGotoExprY();

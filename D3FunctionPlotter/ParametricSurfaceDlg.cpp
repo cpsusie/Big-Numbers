@@ -3,18 +3,18 @@
 #include "ParametricSurfaceDlg.h"
 #include "afxdialogex.h"
 
-CParametricSurfaceDlg::CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd* pParent /*=NULL*/)
-	: CExprDialog(IDD_PARAMETRICSURFACE_DIALOG, pParent), m_param(param)
-  , m_sStepCount(0)
-  , m_tStepCount(0)
+CParametricSurfaceDlg::CParametricSurfaceDlg(const ParametricSurfaceParameters &param, CWnd *pParent /*=NULL*/)
+: SaveLoadExprDialog<ParametricSurfaceParameters>(IDD, pParent, param,_T("Parametric Surface"), _T("par"))
+, m_sStepCount(0)
+, m_tStepCount(0)
 {
 }
 
 CParametricSurfaceDlg::~CParametricSurfaceDlg() {
 }
 
-void CParametricSurfaceDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CParametricSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_EXPRX, m_exprX);
   DDX_Text(pDX, IDC_EDIT_EXPRY, m_exprY);
   DDX_Text(pDX, IDC_EDIT_EXPRZ, m_exprZ);
@@ -60,7 +60,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CParametricSurfaceDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   createHelpButton(IDC_BUTTON_HELPX);
   createHelpButton(IDC_BUTTON_HELPY);
@@ -99,44 +99,33 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PARAMETRICSURFACE_ACCELERATOR));
   setExprFont(IDC_EDIT_EXPRX);
   setExprFont(IDC_EDIT_EXPRY);
   setExprFont(IDC_EDIT_EXPRZ);
 
-  paramToWin(m_param);
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 void CParametricSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
-}
-
-BOOL CParametricSurfaceDlg::PreTranslateMessage(MSG* pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
-  }
-  return CDialog::PreTranslateMessage(pMsg);
 }
 
 #define MAXPOINTCOUNT 200
 #define MAXFRAMECOUNT 300
 
 bool CParametricSurfaceDlg::validate() {
-  if(!CExprDialog::validate(IDC_EDIT_EXPRX)) {
+  if(!validateExpr(IDC_EDIT_EXPRX)) {
     return false;
   }
-  if(!CExprDialog::validate(IDC_EDIT_EXPRY)) {
+  if(!validateExpr(IDC_EDIT_EXPRY)) {
     return false;
   }
-  if(!CExprDialog::validate(IDC_EDIT_EXPRZ)) {
+  if(!validateExpr(IDC_EDIT_EXPRZ)) {
     return false;
   }
-  if(m_tfrom >= m_tto) {
-    gotoEditBox(this, IDC_EDIT_TFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_TFROM, IDC_EDIT_TTO)) {
     return false;
   }
   if(m_tStepCount == 0 || m_tStepCount > MAXPOINTCOUNT) {
@@ -144,9 +133,7 @@ bool CParametricSurfaceDlg::validate() {
     Message(_T("Number of t-steps must be between 0 and %d"), MAXPOINTCOUNT);
     return false;
   }
-  if(m_sfrom >= m_sto) {
-    gotoEditBox(this, IDC_EDIT_SFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_SFROM, IDC_EDIT_STO)) {
     return false;
   }
   if(m_sStepCount == 0 || m_sStepCount > MAXPOINTCOUNT) {
@@ -161,22 +148,11 @@ bool CParametricSurfaceDlg::validate() {
       Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
       return false;
     }
-    if(m_timeFrom >= m_timeTo) {
-      gotoEditBox(this, IDC_EDIT_TIMEFROM);
-      Message(_T("Invalid interval"));
+    if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {
       return false;
     }
   }
   return true;
-}
-
-void CParametricSurfaceDlg::OnOK() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  winToParam(m_param);
-  CDialog::OnOK();
 }
 
 void CParametricSurfaceDlg::OnCheckIncludeTime() {
@@ -193,71 +169,6 @@ void CParametricSurfaceDlg::enableTimeFields() {
   setWindowText(this, IDC_STATIC_FUNCTIONX, enable ? _T("&X(time,t,s) =") : _T("&X(t,s) ="));
   setWindowText(this, IDC_STATIC_FUNCTIONY, enable ? _T("&Y(time,t,s) =") : _T("&Y(t,s) ="));
   setWindowText(this, IDC_STATIC_FUNCTIONZ, enable ? _T("&Z(time,t,s) =") : _T("&Z(t,s) ="));
-}
-
-static const TCHAR *fileDialogExtensions = _T("Expression-files (*.par)\0*.par\0All files (*.*)\0*.*\0\0");
-
-void CParametricSurfaceDlg::OnFileOpen() {
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open Parametric Surface file");
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-
-  try {
-    ParametricSurfaceParameters param;
-    param.load(dlg.m_ofn.lpstrFile);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
-}
-
-void CParametricSurfaceDlg::OnFileSave() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  ParametricSurfaceParameters param;
-  winToParam(param);
-  if(param.hasDefaultName()) {
-    saveAs(param);
-  } else {
-    save(param.getName(), param);
-  }
-}
-
-void CParametricSurfaceDlg::OnFileSaveAs() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  ParametricSurfaceParameters param;
-  winToParam(param);
-  saveAs(param);
-}
-
-void CParametricSurfaceDlg::saveAs(ParametricSurfaceParameters &param) {
-  CString objname = param.getName().cstr();
-  CFileDialog dlg(FALSE, _T("*.par"), objname);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Save Parametric Surface");
-  if((dlg.DoModal() != IDOK) ||(_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-  save(dlg.m_ofn.lpstrFile, param);
-}
-
-void CParametricSurfaceDlg::save(const String &fileName, ParametricSurfaceParameters &param) {
-  try {
-    param.save(fileName);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
 }
 
 void CParametricSurfaceDlg::OnEditFindMatchingParentesis() {
@@ -322,19 +233,16 @@ void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param)
   m_tStepCount    = param.m_tStepCount;
   m_sStepCount    = param.m_sStepCount;
   m_frameCount    = param.m_frameCount;
-  m_name          = param.getName().cstr();
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
   m_includeTime   = param.m_includeTime ? TRUE : FALSE;
   m_doubleSided   = param.m_doubleSided ? TRUE : FALSE;
 
   UpdateData(false);
   enableTimeFields();
-
-  SetWindowText(format(_T("Draw Parametric Surface (%s)"), param.getDisplayName().cstr()).cstr());
+  __super::paramToWin(param);
 }
 
 void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const {
-  param.setName((LPCTSTR)m_name);
   param.m_exprX       = m_exprX;
   param.m_exprY       = m_exprY;
   param.m_exprZ       = m_exprZ;
@@ -350,4 +258,5 @@ void CParametricSurfaceDlg::winToParam(ParametricSurfaceParameters &param) const
   param.m_machineCode = m_machineCode ? true : false;
   param.m_includeTime = m_includeTime ? true : false;
   param.m_doubleSided = m_doubleSided ? true : false;
+  __super::winToParam(param);
 }

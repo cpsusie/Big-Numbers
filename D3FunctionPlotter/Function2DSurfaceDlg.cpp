@@ -5,11 +5,13 @@
 #define new DEBUG_NEW
 #endif
 
-CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd* pParent) : CExprDialog(CFunction2DSurfaceDlg::IDD, pParent), m_param(param) {
+CFunction2DSurfaceDlg::CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent)
+  : SaveLoadExprDialog<Function2DSurfaceParameters>(IDD, pParent, param, _T("expression"), _T("exp"))
+{
 }
 
 void CFunction2DSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX , IDC_EDIT_EXPR             , m_expr                      );
     DDX_Text(pDX , IDC_EDIT_XFROM            , m_xfrom                     );
     DDX_Text(pDX , IDC_EDIT_XTO              , m_xto                       );
@@ -43,7 +45,7 @@ BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CFunction2DSurfaceDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   createHelpButton();
 
@@ -72,31 +74,22 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_FUNC2DSURFACE_ACCELERATOR));
   setExprFont();
 
-  paramToWin(m_param);
-  GetDlgItem(IDC_EDIT_EXPR)->SetFocus();
+  gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
 void CFunction2DSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
-}
-
-BOOL CFunction2DSurfaceDlg::PreTranslateMessage(MSG* pMsg) {
-  if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
-    return true;
-  }
-  return CDialog::PreTranslateMessage(pMsg);
 }
 
 #define MAXPOINTCOUNT 200
 #define MAXFRAMECOUNT 300
 
 bool CFunction2DSurfaceDlg::validate() {
-  if(!CExprDialog::validate()) {
+  if(!validateExpr()) {
     return false;
   }
   if(m_pointCount <= 0 || m_pointCount > MAXPOINTCOUNT) {
@@ -104,14 +97,10 @@ bool CFunction2DSurfaceDlg::validate() {
     Message(_T("Number of points must be between 0 and %d"), MAXPOINTCOUNT);
     return false;
   }
-  if(m_xfrom >= m_xto) {
-    gotoEditBox(this, IDC_EDIT_XFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_XFROM, IDC_EDIT_XTO)) {
     return false;
   }
-  if(m_yfrom >= m_yto) {
-    gotoEditBox(this, IDC_EDIT_YFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_YFROM,IDC_EDIT_YTO)) {
     return false;
   }
 
@@ -121,23 +110,11 @@ bool CFunction2DSurfaceDlg::validate() {
       Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
       return false;
     }
-    if(m_timeFrom >= m_timeTo) {
-      gotoEditBox(this, IDC_EDIT_TIMEFROM);
-      Message(_T("Invalid interval"));
+    if(!validateInterval(IDC_EDIT_TIMEFROM,IDC_EDIT_TIMETO)) {
       return false;
     }
   }
   return true;
-}
-
-void CFunction2DSurfaceDlg::OnOK() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  winToParam(m_param);
-  CDialog::OnOK();
 }
 
 void CFunction2DSurfaceDlg::OnCheckIncludeTime() {
@@ -152,72 +129,6 @@ void CFunction2DSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&z = F(t,x,y) =") : _T("&z = F(x,y) ="));
-}
-
-static const TCHAR *fileDialogExtensions = _T("Expression-files (*.exp)\0*.exp\0All files (*.*)\0*.*\0\0");
-
-void CFunction2DSurfaceDlg::OnFileOpen() {
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open expression");
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-
-  try {
-    Function2DSurfaceParameters param;
-    param.load(dlg.m_ofn.lpstrFile);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
-}
-
-void CFunction2DSurfaceDlg::OnFileSave() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  Function2DSurfaceParameters param;
-  winToParam(param);
-
-  if(param.hasDefaultName()) {
-    saveAs(param);
-  } else {
-    save(param.getName(), param);
-  }
-}
-
-void CFunction2DSurfaceDlg::OnFileSaveAs() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  Function2DSurfaceParameters param;
-  winToParam(param);
-  saveAs(param);
-}
-
-void CFunction2DSurfaceDlg::saveAs(Function2DSurfaceParameters &param) {
-  CString objname = param.getName().cstr();
-  CFileDialog dlg(FALSE, _T("*.exp"), objname);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Save expression");
-  if((dlg.DoModal() != IDOK) ||(_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-  save(dlg.m_ofn.lpstrFile, param);
-}
-
-void CFunction2DSurfaceDlg::save(const String &fileName, Function2DSurfaceParameters &param) {
-  try {
-    param.save(fileName);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
 }
 
 void CFunction2DSurfaceDlg::OnEditFindMatchingParentesis() {
@@ -266,7 +177,6 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   m_timeTo        = param.getTimeInterval().getMax();
   m_pointCount    = param.m_pointCount;
   m_frameCount    = param.m_frameCount;
-  m_name          = param.getName().cstr();
   m_machineCode   = param.m_machineCode ? TRUE : FALSE;
   m_includeTime   = param.m_includeTime ? TRUE : FALSE;
   m_doubleSided   = param.m_doubleSided ? TRUE : FALSE;
@@ -274,11 +184,10 @@ void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param)
   UpdateData(false);
   enableTimeFields();
 
-  SetWindowText(format(_T("Plot function (%s)"), param.getDisplayName().cstr()).cstr());
+  __super::paramToWin(param);
 }
 
 void CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) const {
-  param.setName((LPCTSTR)m_name);
   param.m_expr        = m_expr;
   param.m_xInterval.setFrom(   m_xfrom);
   param.m_xInterval.setTo(     m_xto);
@@ -291,4 +200,5 @@ void CFunction2DSurfaceDlg::winToParam(Function2DSurfaceParameters &param) const
   param.m_machineCode = m_machineCode?true:false;
   param.m_includeTime = m_includeTime?true:false;
   param.m_doubleSided = m_doubleSided?true:false;
+  __super::winToParam(param);
 }

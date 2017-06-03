@@ -377,7 +377,7 @@ void CD3FunctionPlotterDlg::OnFileFunctionSurface() {
     if(dlg.DoModal() != IDOK) {
       return;
     }
-    m_function2DSurfaceParam = dlg.m_param;
+    m_function2DSurfaceParam = dlg.getData();
     setCalculatedObject(&m_function2DSurfaceParam);
     REPAINT();
   } catch(Exception e) {
@@ -391,7 +391,7 @@ void CD3FunctionPlotterDlg::OnFileParametricSurface() {
     if(dlg.DoModal() != IDOK) {
       return;
     }
-    m_parametricSurfaceParam = dlg.m_param;
+    m_parametricSurfaceParam = dlg.getData();
     setCalculatedObject(&m_parametricSurfaceParam);
     REPAINT();
   } catch(Exception e) {
@@ -405,7 +405,7 @@ void CD3FunctionPlotterDlg::OnFileIsoSurface() {
     if(dlg.DoModal() != IDOK) {
       return;
     }
-    m_isoSurfaceParam = dlg.m_param;
+    m_isoSurfaceParam = dlg.getData();
     setCalculatedObject(&m_isoSurfaceParam);
     REPAINT();
   } catch(Exception e) {

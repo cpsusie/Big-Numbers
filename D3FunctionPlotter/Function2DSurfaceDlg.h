@@ -3,20 +3,16 @@
 #include "ExprDialog.h"
 #include <D3DGraphics/Function2DSurface.h>
 
-class CFunction2DSurfaceDlg : public CExprDialog {
+class CFunction2DSurfaceDlg : public SaveLoadExprDialog<Function2DSurfaceParameters> {
 private:
-  HACCEL m_accelTable;
-
   bool validate();
-  void saveAs(Function2DSurfaceParameters &param);
-  void save(const String &fileName, Function2DSurfaceParameters &param);
-  void enableTimeFields();
   void paramToWin(const Function2DSurfaceParameters &param);
-  void winToParam(Function2DSurfaceParameters &param) const;
+  void winToParam(      Function2DSurfaceParameters &param) const;
+  void enableTimeFields();
 public:
-  CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd* pParent = NULL);
+  CFunction2DSurfaceDlg(const Function2DSurfaceParameters &param, CWnd *pParent = NULL);
 
-  enum { IDD = IDD_FUNC2DSURFACE_DIALOG };
+  enum { IDD = IDR_FUNC2DSURFACE };
     CString m_expr;
     double  m_xfrom;
     double  m_xto;
@@ -30,18 +26,10 @@ public:
     BOOL	  m_includeTime;
     BOOL	  m_doubleSided;
 
-    Function2DSurfaceParameters m_param;
-    CString                     m_name;
-
 protected:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    virtual void OnOK();
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();

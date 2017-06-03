@@ -24,11 +24,13 @@ static char *blob3      = "s1=1/max(sqr(x+1)+sqr(y  )+sqr(z  ),0.00001);"
 
 */
  
-CIsoSurfaceDlg::CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd* pParent /*=NULL*/) : CExprDialog(CIsoSurfaceDlg::IDD, pParent), m_param(param) {
+CIsoSurfaceDlg::CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent /*=NULL*/) 
+: SaveLoadExprDialog<IsoSurfaceParameters>(IDD, pParent, param, _T("implicit surface"), _T("imp"))
+{
 }
 
-void CIsoSurfaceDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CIsoSurfaceDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_EDIT_EXPR             , m_expr                      );
   DDX_Text( pDX, IDC_EDIT_CELLSIZE         , m_cellSize                  );
   DDX_Check(pDX, IDC_CHECK_TETRAHEDRAL     , m_tetrahedral               );
@@ -49,9 +51,8 @@ void CIsoSurfaceDlg::DoDataExchange(CDataExchange* pDX) {
 	DDX_Text( pDX, IDC_EDIT_ZTO              , m_zto                       );
 }
 
-
 BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
-	ON_WM_SIZE()
+	  ON_WM_SIZE()
     ON_COMMAND(ID_FILE_OPEN                  , OnFileOpen                  )
     ON_COMMAND(ID_FILE_SAVE                  , OnFileSave                  )
     ON_COMMAND(ID_FILE_SAVE_AS               , OnFileSaveAs                )
@@ -70,7 +71,7 @@ BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   createHelpButton();
 
@@ -108,31 +109,20 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION      );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION      );
-
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ISOSURFACE_ACCELERATOR));
   setExprFont();
-
-  paramToWin(m_param);
-  GetDlgItem(IDC_EDIT_EXPR)->SetFocus();
+  gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
 }
 
 void CIsoSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
-}
-
-BOOL CIsoSurfaceDlg::PreTranslateMessage(MSG* pMsg) {
-  if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
-    return true;
-  }
-  return CDialog::PreTranslateMessage(pMsg);
 }
 
 #define MAXFRAMECOUNT 300
 
 bool CIsoSurfaceDlg::validate() {
-  if(!CExprDialog::validate()) {
+  if(!validateExpr()) {
     return false;
   }
   if(m_cellSize <= 0) {
@@ -140,19 +130,13 @@ bool CIsoSurfaceDlg::validate() {
     Message(_T("Size must be > 0"));
     return false;
   }
-  if(m_xfrom >= m_xto) {
-    gotoEditBox(this, IDC_EDIT_XFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_XFROM, IDC_EDIT_XTO)) {
     return false;
   }
-  if(m_yfrom >= m_yto) {
-    gotoEditBox(this, IDC_EDIT_YFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_YFROM, IDC_EDIT_YTO)) {
     return false;
   }
-  if(m_zfrom >= m_zto) {
-    gotoEditBox(this, IDC_EDIT_ZFROM);
-    Message(_T("Invalid interval"));
+  if(!validateInterval(IDC_EDIT_ZFROM, IDC_EDIT_ZTO)) {
     return false;
   }
   if(m_includeTime) {
@@ -161,22 +145,11 @@ bool CIsoSurfaceDlg::validate() {
       Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
       return false;
     }
-    if(m_timeFrom >= m_timeTo) {
-      gotoEditBox(this, IDC_EDIT_TIMEFROM);
-      Message(_T("Invalid interval"));
+    if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {
       return false;
     }
   }
   return true;
-}
-
-void CIsoSurfaceDlg::OnOK() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  winToParam(m_param);
-  CDialog::OnOK();
 }
 
 void CIsoSurfaceDlg::OnCheckIncludeTime() {
@@ -191,71 +164,6 @@ void CIsoSurfaceDlg::enableTimeFields() {
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_FRAMECOUNT     )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
-}
-
-static const TCHAR *fileDialogExtensions = _T("Expression-files (*.imp)\0*.imp\0All files (*.*)\0*.*\0\0");
-
-void CIsoSurfaceDlg::OnFileOpen() {
-  CFileDialog dlg(TRUE);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Open implicit surface");
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-
-  try {
-    IsoSurfaceParameters param;
-    param.load(dlg.m_ofn.lpstrFile);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
-}
-
-void CIsoSurfaceDlg::OnFileSave() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  
-  IsoSurfaceParameters param;
-  winToParam(param);
-
-  if(param.hasDefaultName()) {
-    saveAs(param);
-  } else {
-    save(param.getName(), param);
-  }
-}
-
-void CIsoSurfaceDlg::OnFileSaveAs() {
-  UpdateData();
-  if(!validate()) {
-    return;
-  }
-  IsoSurfaceParameters param;
-  winToParam(param);
-  saveAs(param);
-}
-
-void CIsoSurfaceDlg::saveAs(IsoSurfaceParameters &param) {
-  CString objname = param.getName().cstr();
-  CFileDialog dlg(FALSE,_T("*.imp"),  objname);
-  dlg.m_ofn.lpstrFilter = fileDialogExtensions;
-  dlg.m_ofn.lpstrTitle  = _T("Save Isosurface parameters");
-  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
-    return;
-  }
-  save(dlg.m_ofn.lpstrFile, param);
-}
-
-void CIsoSurfaceDlg::save(const String &fileName, IsoSurfaceParameters &param) {
-  try {
-    param.save(fileName);
-    paramToWin(param);
-  } catch(Exception e) {
-    showException(e);
-  }
 }
 
 void CIsoSurfaceDlg::OnEditFindMatchingParentesis() {
@@ -301,7 +209,6 @@ void CIsoSurfaceDlg::OnExprHelp(UINT id) {
 void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   const Point3D &lbn = param.m_boundingBox.m_lbn;
   const Point3D &rtf = param.m_boundingBox.m_rtf;
-  m_name             = param.getName().cstr();
   m_expr             = param.m_expr.cstr();
   m_cellSize         = param.m_cellSize;
   m_xfrom            = lbn.x;
@@ -320,17 +227,16 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_timeFrom         = param.getTimeInterval().getMin();
   m_timeTo           = param.getTimeInterval().getMax();
 
-  SetWindowText(format(_T("Isosurface parameters (%s)"), param.getDisplayName().cstr()).cstr());
   UpdateData(false);
   enableCheckBox();
   enableTimeFields();
+  __super::paramToWin(param);
 }
 
-void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
+void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) const {
   Point3D &lbn = param.m_boundingBox.m_lbn;
   Point3D &rtf = param.m_boundingBox.m_rtf;
 
-  param.setName((LPCTSTR)m_name);
   param.m_expr             = m_expr;
   param.m_cellSize         = m_cellSize;
   lbn.x                    = m_xfrom;
@@ -348,5 +254,6 @@ void CIsoSurfaceDlg::winToParam(IsoSurfaceParameters &param) {
   param.m_frameCount       = m_frameCount;
   param.m_timeInterval.setFrom(m_timeFrom);
   param.m_timeInterval.setTo(  m_timeTo  );
+  __super::winToParam(param);
 }
 

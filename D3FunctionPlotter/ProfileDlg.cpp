@@ -101,7 +101,7 @@ static LOGFONT makeDefaultFont() {
 BOOL CProfileDlg::OnInitDialog() {
   CDialog::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PROFILE_ACCELERATOR));
+  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PROFILE));
   m_logFont  = makeDefaultFont();
   UpdateData(false);
   createWorkBitmap();

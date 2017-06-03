@@ -77,7 +77,7 @@ public:
   void paintPoints(Viewport2D &vp);
   void paintBox(Viewport2D &vp, const Point2D &point, CBrush &brush);
 
-  enum { IDD = IDD_PROFILE_DIALOG };
+  enum { IDD = IDR_PROFILE };
   double    m_degree;
   BOOL      m_normalSmooth;
   BOOL      m_rotateSmooth;

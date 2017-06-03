@@ -3,21 +3,17 @@
 #include <D3DGraphics/IsoSurface.h>
 #include "ExprDialog.h"
 
-class CIsoSurfaceDlg : public CExprDialog {
+class CIsoSurfaceDlg : public SaveLoadExprDialog<IsoSurfaceParameters> {
 private:
-    HACCEL m_accelTable;
-
     bool validate();
-    void saveAs(IsoSurfaceParameters &param);
-    void save(const String &fileName, IsoSurfaceParameters &param);
     void paramToWin(const IsoSurfaceParameters &param);
-    void winToParam(IsoSurfaceParameters &param);
+    void winToParam(      IsoSurfaceParameters &param) const;
     void enableCheckBox();
     void enableTimeFields();
 public:
     CIsoSurfaceDlg(const IsoSurfaceParameters &param, CWnd *pParent = NULL);
 
-  enum { IDD = IDD_ISOSURFACE_DIALOG };
+  enum { IDD = IDR_ISOSURFACE };
     CString m_expr;
     double  m_cellSize;
     UINT    m_bounds;
@@ -37,18 +33,10 @@ public:
     double	m_zfrom;
     double	m_zto;
 
-    IsoSurfaceParameters m_param;
-    CString              m_name;
-
 protected:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
     afx_msg void OnSize(UINT nType, int cx, int cy);
-    virtual void OnOK();
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoCellSize();
