@@ -366,6 +366,7 @@
     <ClInclude Include="..\..\Include\StreamParameters.h" />
     <ClInclude Include="..\..\Include\StringPool.h" />
     <ClInclude Include="..\..\Include\StrStream.h" />
+    <ClInclude Include="..\..\Include\MemSwap.h" />
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
     <ClInclude Include="..\..\Include\Tcp.h" />
     <ClInclude Include="..\..\Include\TeeOutputStream.h" />
@@ -662,6 +663,25 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)CPUInfox64.obj</Outputs>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="MemSwapx64.asm">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</DeploymentContent>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</DeploymentContent>
+      <FileType>Document</FileType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</DeploymentContent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">masm64 /nologo /Zi /c /Zf /Fo$(IntDir)MemSwapx64.obj MemSwapx64.asm</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)MemSwapx64.obj</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Assembler code for swapping arbitrary sized buffers</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">masm64 /nologo /c /Zf /Fo$(IntDir)MemSwapx64.obj MemSwapx64.asm</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Assembler code for swapping arbitrary sized buffers</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)MemSwapx64.obj</Outputs>
     </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1005,6 +1005,9 @@
     <ClInclude Include="..\..\Include\RefCountedObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Include\MemSwap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="NatvisFile.natvis" />
@@ -1014,6 +1017,9 @@
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
     <CustomBuild Include="CPUInfox64.asm">
+      <Filter>Source Files\Asm Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="MemSwapx64.asm">
       <Filter>Source Files\Asm Files</Filter>
     </CustomBuild>
   </ItemGroup>

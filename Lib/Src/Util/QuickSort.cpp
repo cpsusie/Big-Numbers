@@ -6,8 +6,8 @@
 
 #define _swap(p1,p2,T) { const T tmp=*(T*)p1; *(T*)p1=*(T*)p2; *(T*)p2=tmp; }
 
-//#define OLD_SWAP
-#ifdef OLD_SWAP
+//#define OLDSWAP
+#ifdef OLDSWAP
 
 static inline void swap(register char *p1, register char *p2, size_t w) {
 #define swapBasicType(if_or_while,type,w)   \
@@ -27,50 +27,11 @@ static inline void swap(register char *p1, register char *p2, size_t w) {
   swapBasicType(if   ,char ,w)   /* take the last (if any) */
 }
 
-#else // NEW_SWAP
+#else // !OLDSWAP
 
-static inline void swap(register char *p1, register char *p2, size_t w) {
-#define swapLoop(type,w)                    \
-  while(w >= sizeof(type)) {                \
-    _swap(p1,p2,type);                      \
-    p1 += sizeof(type); p2 += sizeof(type); \
-    w -= sizeof(type);                      \
-  }
-
-#ifdef IS32BIT
-  swapLoop(long,w)   /* take 4 bytes at a time */
-  switch(w) {
-  case 3: _swap(p1,p2,short); p1+=2; p2+=2;
-          // continue case
-  case 1: _swap(p1,p2,char );
-          return;
-  case 2: _swap(p1,p2,short);
-          return;
-  case 0:;
-  }
-#else
-  swapLoop(INT64,w)  /* take 8 bytes at a time */
-  __assume(0 <= w && w <= 7);
-  switch(w) {
-  case 7: _swap(p1,p2,long ); p1+=4; p2+=4;
-          // continue case
-  case 3: _swap(p1,p2,short); p1+=2; p2+=2;
-          // continue case
-  case 1: _swap(p1,p2,char );
-          return;
-  case 6: _swap(p1,p2,long ); p1+=4; p2+=4;
-          // continue case
-  case 2: _swap(p1,p2,short);
-          return;
-  case 5: _swap(p1,p2,char ); p1++; p2++;
-          // continue case
-  case 4: _swap(p1,p2,long );
-          return;
-  case 0: return;
-  }
-#endif // IS32BIT
-}
-#endif
+#include <MemSwap.h>
+#define swap(p1, p2,w) memSwap(p1,p2,w)
+#endif // OLDSWAP
 
 #define PUSH(base,size) { baseStack[stackTop] = base; sizeStack[stackTop++] = size; }
 #define POP(base,size)  { base = baseStack[--stackTop]; size = sizeStack[stackTop]; }
@@ -194,6 +155,9 @@ static void quicksortNoRecursionAnyWidth(void *base, size_t nelem, size_t width,
 #undef EPTR
 #endif
 #define EPTR(n)    base+(n)
+#ifdef swap
+#undef swap
+#endif
 #define swap(p1,p2) { const T tmp = *p1; *p1 = *p2; *p2 = tmp; }
 
 
