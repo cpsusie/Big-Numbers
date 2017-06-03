@@ -6,7 +6,7 @@
 
 #define _swap(p1,p2,T) { const T tmp=*(T*)p1; *(T*)p1=*(T*)p2; *(T*)p2=tmp; }
 
-//#define OLDSWAP
+#define OLDSWAP
 #ifdef OLDSWAP
 
 static inline void swap(register char *p1, register char *p2, size_t w) {
@@ -20,7 +20,7 @@ static inline void swap(register char *p1, register char *p2, size_t w) {
 #ifdef IS32BIT
   swapBasicType(while,long ,w)   /* take 4 bytes at a time */
 #else
-  swapBasicType(while,INT64,w)   /* take 4 bytes at a time */
+  swapBasicType(while,INT64,w)   /* take 8 bytes at a time */
   swapBasicType(if   ,long ,w)   /* take 4 bytes at a time */
 #endif
   swapBasicType(if   ,short,w)   /* take 2 bytes at a time */
