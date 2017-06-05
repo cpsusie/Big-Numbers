@@ -1,11 +1,10 @@
 #pragma once
 
+#include <MFCUtil/ExprDialog.h>
 #include <D3DGraphics/ParametricSurface.h>
-#include "ExprDialog.h"
 
 class CParametricSurfaceDlg : public SaveLoadExprDialog<ParametricSurfaceParameters> {
 private:
-  int    m_selectedExprId;
   bool validate();
   void paramToWin(const ParametricSurfaceParameters &param);
   void winToParam(      ParametricSurfaceParameters &param) const;
@@ -13,13 +12,13 @@ private:
   void enableTimeFields();
 
   void gotoExprX() {
-    GetDlgItem(IDC_EDIT_EXPRX)->SetFocus();
+    gotoExpr(IDC_EDIT_EXPRX);
   }
   void gotoExprY() {
-    GetDlgItem(IDC_EDIT_EXPRY)->SetFocus();
+    gotoExpr(IDC_EDIT_EXPRY);
   }
   void gotoExprZ() {
-    GetDlgItem(IDC_EDIT_EXPRZ)->SetFocus();
+    gotoExpr(IDC_EDIT_EXPRZ);
   }
 
 public:
@@ -63,6 +62,5 @@ protected:
     afx_msg void OnButtonHelpX();
     afx_msg void OnButtonHelpY();
     afx_msg void OnButtonHelpZ();
-    afx_msg void OnExprHelp(UINT id);
     DECLARE_MESSAGE_MAP()
 };

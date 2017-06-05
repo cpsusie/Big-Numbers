@@ -30,9 +30,6 @@
     <ClCompile Include="DrawTool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ExprDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Function2DSurfaceDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,9 +69,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DrawTool.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExprDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Function2DSurfaceDlg.h">

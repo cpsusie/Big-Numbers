@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ExprDialog.h"
+#include <MFCUtil/ExprDialog.h>
 #include <D3DGraphics/Function2DSurface.h>
 
 class CFunction2DSurfaceDlg : public SaveLoadExprDialog<Function2DSurfaceParameters> {
@@ -39,6 +39,5 @@ protected:
     afx_msg void OnGotoFrameCount();
     afx_msg void OnCheckIncludeTime();
     afx_msg void OnButtonHelp();
-    afx_msg void OnExprHelp(UINT id);
     DECLARE_MESSAGE_MAP()
 };

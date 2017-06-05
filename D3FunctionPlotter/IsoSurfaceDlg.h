@@ -1,7 +1,7 @@
 #pragma once
 
+#include <MFCUtil/ExprDialog.h>
 #include <D3DGraphics/IsoSurface.h>
-#include "ExprDialog.h"
 
 class CIsoSurfaceDlg : public SaveLoadExprDialog<IsoSurfaceParameters> {
 private:
@@ -48,7 +48,6 @@ protected:
     afx_msg void OnCheckDoubleSided();
     afx_msg void OnCheckIncludeTime();
     afx_msg void OnButtonHelp();
-    afx_msg void OnExprHelp(UINT id);
     DECLARE_MESSAGE_MAP()
 };
 

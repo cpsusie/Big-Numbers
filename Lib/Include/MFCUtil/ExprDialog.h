@@ -1,5 +1,6 @@
 #pragma once
 
+#include <HashMap.h>
 #include <MFCUtil/LayoutManager.h>
 #include <MFCUtil/OBMButton.h>
 
@@ -7,13 +8,17 @@
 
 class CExprDialog : public CDialog {
 private:
-  int       m_helpButtonCount;
-  OBMButton m_helpButton[MAXHELPBUTTONS];
-  CFont     m_exprFont;
-
+  int                    m_helpButtonCount;
+  OBMButton              m_helpButton[MAXHELPBUTTONS];
+  CFont                  m_exprFont;
+  IntHashMap<int>        m_helpButtonMap;
+  int                    m_selectedExprId;
   void createExprFont();
+  void setExprFont(int id);
   void createMenuExprHelp(CMenu &menu);
-  void showExprError(const String &msg, int id = IDC_EDIT_EXPR);
+  void showExprError(const String &msg, int id);
+  void showExprHelpMenu(int id);
+  void handleSelectedExprHelpId(int menuId, int ctrlId);
   String getExprSyntax(int index);
   void substituteSelectedText(int ctrlId, const String &s);
 
@@ -23,23 +28,22 @@ protected:
   CExprDialog(int resId, CWnd *pParent) : CDialog(resId, pParent) {
     m_helpButtonCount = 0;
   }
-  void createHelpButton(int id = IDC_BUTTON_HELP);
-  void setExprFont(int id = IDC_EDIT_EXPR);
-
-  void gotoExpr(int id = IDC_EDIT_EXPR) {
+  void createExprHelpButton(int buttonId, int exprEditId);
+  void handleExprHelpButtonClick(int buttonId);
+  void gotoExpr(int id) {
     GetDlgItem(id)->SetFocus();
   }
 
-  CEdit *getExprField( int id = IDC_EDIT_EXPR);
-  String getExprString(int id = IDC_EDIT_EXPR);
+  CEdit *getExprField( int id);
+  String getExprString(int id);
 
   void gotoMatchingParentesis();
 
-  bool validateExpr(int id = IDC_EDIT_EXPR);
+  bool validateAllExpr();
+  bool validateExpr(int id);
   bool validateInterval(int fromId, int toId);
   virtual bool validate() = 0;
-  void showExprHelpMenu(int id = IDC_BUTTON_HELP);
-  void handleSelectedExprHelpId(int menuId, int ctrlId = IDC_EDIT_EXPR);
+  BOOL PreTranslateMessage(MSG *pMsg);
 };
 
 template <class T> class SaveLoadExprDialog : public CExprDialog {
@@ -93,10 +97,7 @@ protected:
   }
 
   void OnOK() {
-    UpdateData();
-    if(!validate()) {
-      return;
-    }
+    if(!UpdateData() || !validate()) return;
     winToParam(m_param);
     __super::OnOK();
   }
@@ -120,10 +121,7 @@ protected:
   }
 
   void OnFileSave() {
-    UpdateData();
-    if(!validate()) {
-      return;
-    }
+    if(!UpdateData() || !validate()) return;
     T param;
     winToParam(param);
     if(param.hasDefaultName()) {
@@ -134,10 +132,7 @@ protected:
   }
 
   void OnFileSaveAs() {
-    UpdateData();
-    if(!validate()) {
-      return;
-    }
+    if(!UpdateData() || !validate()) return;
     T param;
     winToParam(param);
     saveAs(param);

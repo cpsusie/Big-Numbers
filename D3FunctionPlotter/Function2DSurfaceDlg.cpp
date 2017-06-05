@@ -38,8 +38,7 @@ BEGIN_MESSAGE_MAP(CFunction2DSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_YINTERVAL             , OnGotoYInterval                  )
     ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
     ON_COMMAND(ID_GOTO_POINTCOUNT            , OnGotoPointCount                 )
-    ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                  )
-    ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST  , ID_EXPRHELP_MENU_LAST, OnExprHelp)
+    ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
     ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                     )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime               )
 END_MESSAGE_MAP()
@@ -47,7 +46,7 @@ END_MESSAGE_MAP()
 BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  createHelpButton();
+  createExprHelpButton(IDC_BUTTON_HELP, IDC_EDIT_EXPR);
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_FUNCTION     , PCT_RELATIVE_Y_CENTER);
@@ -74,8 +73,6 @@ BOOL CFunction2DSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
-  setExprFont();
-
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -89,7 +86,7 @@ void CFunction2DSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
 #define MAXFRAMECOUNT 300
 
 bool CFunction2DSurfaceDlg::validate() {
-  if(!validateExpr()) {
+  if(!validateAllExpr()) {
     return false;
   }
   if(m_pointCount <= 0 || m_pointCount > MAXPOINTCOUNT) {
@@ -136,7 +133,7 @@ void CFunction2DSurfaceDlg::OnEditFindMatchingParentesis() {
 }
 
 void CFunction2DSurfaceDlg::OnGotoExpr() {
-  gotoExpr();
+  gotoExpr(IDC_EDIT_EXPR);
 }
 
 void CFunction2DSurfaceDlg::OnGotoXInterval() {
@@ -160,11 +157,7 @@ void CFunction2DSurfaceDlg::OnGotoFrameCount() {
 }
 
 void CFunction2DSurfaceDlg::OnButtonHelp() {
-  showExprHelpMenu();
-}
-
-void CFunction2DSurfaceDlg::OnExprHelp(UINT id) {
-  handleSelectedExprHelpId(id);
+  handleExprHelpButtonClick(IDC_BUTTON_HELP);
 }
 
 void CFunction2DSurfaceDlg::paramToWin(const Function2DSurfaceParameters &param) {

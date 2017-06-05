@@ -64,16 +64,15 @@ BEGIN_MESSAGE_MAP(CIsoSurfaceDlg, CDialog)
     ON_COMMAND(ID_GOTO_ZINTERVAL             , OnGotoZInterval             )
     ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval          )
     ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount            )
-    ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST, ID_EXPRHELP_MENU_LAST, OnExprHelp)
 	  ON_BN_CLICKED(IDC_BUTTON_HELP            , OnButtonHelp                )
-	  ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
+    ON_BN_CLICKED(IDC_CHECK_DOUBLESIDED      , OnCheckDoubleSided          )
     ON_BN_CLICKED(IDC_CHECK_INCLUDETIME      , OnCheckIncludeTime          )
 END_MESSAGE_MAP()
 
 BOOL CIsoSurfaceDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  createHelpButton();
+  createExprHelpButton(IDC_BUTTON_HELP, IDC_EDIT_EXPR);
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_EDIT_EXPR           , RELATIVE_SIZE          );
@@ -109,7 +108,6 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDC_EDIT_FRAMECOUNT     , RELATIVE_Y_POS         );
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION      );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION      );
-  setExprFont();
   gotoEditBox(this, IDC_EDIT_EXPR);
   return FALSE;
 }
@@ -122,7 +120,7 @@ void CIsoSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
 #define MAXFRAMECOUNT 300
 
 bool CIsoSurfaceDlg::validate() {
-  if(!validateExpr()) {
+  if(!validateAllExpr()) {
     return false;
   }
   if(m_cellSize <= 0) {
@@ -177,7 +175,7 @@ void CIsoSurfaceDlg::enableCheckBox() {
   GetDlgItem(IDC_CHECK_ORIGINOUTSIDE)->EnableWindow(!IsDlgButtonChecked(IDC_CHECK_DOUBLESIDED));
 }
 void CIsoSurfaceDlg::OnGotoExpr() {
-  gotoExpr();
+  gotoExpr(IDC_EDIT_EXPR);
 }
 void CIsoSurfaceDlg::OnGotoCellSize() {
   gotoEditBox(this, IDC_EDIT_CELLSIZE);
@@ -199,11 +197,7 @@ void CIsoSurfaceDlg::OnGotoFrameCount() {
 }
 
 void CIsoSurfaceDlg::OnButtonHelp() {
-  showExprHelpMenu();
-}
-
-void CIsoSurfaceDlg::OnExprHelp(UINT id) {
-  handleSelectedExprHelpId(id);
+  handleExprHelpButtonClick(IDC_BUTTON_HELP);
 }
 
 void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {

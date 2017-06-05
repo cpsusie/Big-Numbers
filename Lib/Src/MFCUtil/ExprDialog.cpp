@@ -1,8 +1,9 @@
-#include "stdafx.h"
+#include "pch.h"
 #include <Scanner.h>
 #include <Math/Expression/Expression.h>
 #include <Math/Expression/ExpressionWrapper.h>
-#include "ExprDialog.h"
+#include <MFCUtil/Resource.h>
+#include <MFCUtil/ExprDialog.h>
 
 void CExprDialog::createExprFont() {
   if(m_exprFont.m_hObject) return;
@@ -36,6 +37,15 @@ String CExprDialog::getExprString(int id) {
 
 CEdit *CExprDialog::getExprField(int id) {
   return (CEdit*)GetDlgItem(id);
+}
+
+bool CExprDialog::validateAllExpr() {
+  for (Iterator<int> it = m_helpButtonMap.values().getIterator(); it.hasNext();) {
+    if(!validateExpr(it.next())) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool CExprDialog::validateExpr(int id) {
@@ -88,17 +98,46 @@ void CExprDialog::showExprError(const String &msg, int id) {
   }
 }
 
-void CExprDialog::createHelpButton(int id) {
+void CExprDialog::createExprHelpButton(int buttonId, int exprEditId) {
   if (m_helpButtonCount >= MAXHELPBUTTONS) {
+    Message(_T("Too many expr-helpbuttons. Max=%d"), MAXHELPBUTTONS);
     return;
   }
-  if(GetDlgItem(id) == NULL) {
+  CButton *but  = (CButton*)GetDlgItem(buttonId  );
+  CEdit   *edit = (CEdit  *)GetDlgItem(exprEditId);
+  if(but == NULL) {
+    Message(_T("Button %d doesn't exist"), buttonId);
     return;
   }
-  const CPoint hp = getWindowPosition(this, id);
+  if(edit == NULL) {
+    Message(_T("EditBox %d doesn't exist"), exprEditId);
+    return;
+  }
+  const CPoint bp = getWindowPosition(this, buttonId);
   
-  GetDlgItem(id)->DestroyWindow();
-  m_helpButton[m_helpButtonCount++].Create(this, OBMIMAGE(RGARROW), hp, id);
+  but->DestroyWindow();
+  setExprFont(exprEditId);
+  m_helpButton[m_helpButtonCount++].Create(this, OBMIMAGE(RGARROW), bp, buttonId);
+  m_helpButtonMap.put(buttonId, exprEditId);
+}
+
+void CExprDialog::handleExprHelpButtonClick(int buttonId) {
+  const int *editId = m_helpButtonMap.get(buttonId);
+  if (editId) {
+    m_selectedExprId = *editId;
+    showExprHelpMenu(buttonId);
+  }
+}
+
+BOOL CExprDialog::PreTranslateMessage(MSG *pMsg) {
+  switch(pMsg->message) {
+  case WM_COMMAND:
+    if((pMsg->wParam >= _ID_EXPRHELP_MENU_FIRST) && (pMsg->wParam <= _ID_EXPRHELP_MENU_LAST)) {
+      handleSelectedExprHelpId((int)pMsg->wParam, m_selectedExprId);
+      return TRUE;
+    }
+  }
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CExprDialog::showExprHelpMenu(int id) {
@@ -114,7 +153,7 @@ void CExprDialog::showExprHelpMenu(int id) {
 }
 
 void CExprDialog::handleSelectedExprHelpId(int menuId, int ctrlId) {
-  substituteSelectedText(ctrlId, getExprSyntax(menuId - ID_EXPRHELP_MENU_FIRST));
+  substituteSelectedText(ctrlId, getExprSyntax(menuId - _ID_EXPRHELP_MENU_FIRST));
 }
 
 void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
@@ -142,19 +181,19 @@ void CExprDialog::substituteSelectedText(int ctrlId, const String &s) {
 void CExprDialog::createMenuExprHelp(CMenu &menu) {
   const ExpressionDescription *helpList = ExpressionDescription::getHelpList();
   const int count = ExpressionDescription::getHelpListSize();
-  int ret = menu.LoadMenu(IDR_EXPRHELP_MENU);
+  int ret = menu.LoadMenu(_IDR_EXPRHELP_MENU);
   if(!ret) {
-    throwException(_T("Loadmenu(%d) failed"), IDR_EXPRHELP_MENU);
+    throwException(_T("Loadmenu(%d) failed"), _IDR_EXPRHELP_MENU);
   }
 
   CMenu *m = menu.GetSubMenu(0);
   if(m == NULL) {
     throwException(_T("No submenu"));
   }
-  m->RemoveMenu(ID_EXPRHELP_MENU_LAST, MF_BYCOMMAND);
+  m->RemoveMenu(_ID_EXPRHELP_MENU_LAST, MF_BYCOMMAND);
   for(int i = 0; i < count; i++) {
     const ExpressionDescription &item = helpList[i];
-    m->AppendMenu(MF_STRING, ID_EXPRHELP_MENU_FIRST+i, format(_T("%s  \t%s"), item.getSyntax(), item.getDescription()).cstr());
+    m->AppendMenu(MF_STRING, _ID_EXPRHELP_MENU_FIRST+i, format(_T("%s  \t%s"), item.getSyntax(), item.getDescription()).cstr());
   }
 }
 

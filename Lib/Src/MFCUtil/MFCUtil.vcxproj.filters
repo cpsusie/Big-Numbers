@@ -304,6 +304,9 @@
     <ClCompile Include="AlphaBlend.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="ExprDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\MFCUtil\Viewport2D.h">
@@ -480,6 +483,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MFCUtil\2DXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MFCUtil\ExprDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

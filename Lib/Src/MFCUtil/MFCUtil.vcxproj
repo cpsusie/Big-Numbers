@@ -290,6 +290,7 @@
     <ClCompile Include="EditListStringCombo.cpp" />
     <ClCompile Include="EditListStringEditor.cpp" />
     <ClCompile Include="EditWithSpinButton.cpp" />
+    <ClCompile Include="ExprDialog.cpp" />
     <ClCompile Include="ExpressionGraphics.cpp" />
     <ClCompile Include="FileSink.cpp" />
     <ClCompile Include="FileSrc.cpp" />
@@ -386,6 +387,7 @@
     <ClInclude Include="..\..\Include\MFCUtil\EditListStringCombo.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditListStringEditor.h" />
     <ClInclude Include="..\..\Include\MFCUtil\EditWithSpinButton.h" />
+    <ClInclude Include="..\..\Include\MFCUtil\ExprDialog.h" />
     <ClInclude Include="..\..\Include\MFCUtil\ExpressionGraphics.h" />
     <ClInclude Include="..\..\Include\MFCUtil\FileSrc.h" />
     <ClInclude Include="..\..\Include\MFCUtil\GifCtrl.h" />

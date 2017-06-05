@@ -295,7 +295,6 @@
     <ClCompile Include="D3FunctionPlotter.cpp" />
     <ClCompile Include="D3FunctionPlotterDlg.cpp" />
     <ClCompile Include="DrawTool.cpp" />
-    <ClCompile Include="ExprDialog.cpp" />
     <ClCompile Include="Function2DSurfaceDlg.cpp" />
     <ClCompile Include="IsoSurfaceDlg.cpp" />
     <ClCompile Include="MemoryLogThread.cpp" />
@@ -323,7 +322,6 @@
     <ClInclude Include="D3FunctionPlotter.h" />
     <ClInclude Include="D3FunctionPlotterDlg.h" />
     <ClInclude Include="DrawTool.h" />
-    <ClInclude Include="ExprDialog.h" />
     <ClInclude Include="Function2DSurfaceDlg.h" />
     <ClInclude Include="IsoSurfaceDlg.h" />
     <ClInclude Include="MemoryLogThread.h" />

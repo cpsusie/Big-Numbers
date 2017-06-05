@@ -51,7 +51,6 @@ BEGIN_MESSAGE_MAP(CParametricSurfaceDlg, CDialog)
 
     ON_COMMAND(ID_GOTO_TIMEINTERVAL          , OnGotoTimeInterval               )
     ON_COMMAND(ID_GOTO_FRAMECOUNT            , OnGotoFrameCount                 )
-    ON_COMMAND_RANGE(ID_EXPRHELP_MENU_FIRST  , ID_EXPRHELP_MENU_LAST, OnExprHelp)
     ON_BN_CLICKED(IDC_BUTTON_HELPX           , OnButtonHelpX                    )
     ON_BN_CLICKED(IDC_BUTTON_HELPY           , OnButtonHelpY                    )
     ON_BN_CLICKED(IDC_BUTTON_HELPZ           , OnButtonHelpZ                    )
@@ -62,9 +61,9 @@ END_MESSAGE_MAP()
 BOOL CParametricSurfaceDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  createHelpButton(IDC_BUTTON_HELPX);
-  createHelpButton(IDC_BUTTON_HELPY);
-  createHelpButton(IDC_BUTTON_HELPZ);
+  createExprHelpButton(IDC_BUTTON_HELPX, IDC_EDIT_EXPRX);
+  createExprHelpButton(IDC_BUTTON_HELPY, IDC_EDIT_EXPRY);
+  createExprHelpButton(IDC_BUTTON_HELPZ, IDC_EDIT_EXPRZ);
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_FUNCTIONX    , PCT_RELATIVE_Y_CENTER);
@@ -99,10 +98,6 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK                    , RELATIVE_POSITION    );
   m_layoutManager.addControl(IDCANCEL                , RELATIVE_POSITION    );
 
-  setExprFont(IDC_EDIT_EXPRX);
-  setExprFont(IDC_EDIT_EXPRY);
-  setExprFont(IDC_EDIT_EXPRZ);
-
   gotoEditBox(this, IDC_EDIT_EXPRX);
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
@@ -116,13 +111,7 @@ void CParametricSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
 #define MAXFRAMECOUNT 300
 
 bool CParametricSurfaceDlg::validate() {
-  if(!validateExpr(IDC_EDIT_EXPRX)) {
-    return false;
-  }
-  if(!validateExpr(IDC_EDIT_EXPRY)) {
-    return false;
-  }
-  if(!validateExpr(IDC_EDIT_EXPRZ)) {
+  if(!validateAllExpr()) {
     return false;
   }
   if(!validateInterval(IDC_EDIT_TFROM, IDC_EDIT_TTO)) {
@@ -204,20 +193,15 @@ void CParametricSurfaceDlg::OnGotoFrameCount() {
 }
 
 void CParametricSurfaceDlg::OnButtonHelpX() {
-  m_selectedExprId = IDC_EDIT_EXPRX;
-  showExprHelpMenu(IDC_BUTTON_HELPX);
-}
-void CParametricSurfaceDlg::OnButtonHelpY() {
-  m_selectedExprId = IDC_EDIT_EXPRY;
-  showExprHelpMenu(IDC_BUTTON_HELPY);
-}
-void CParametricSurfaceDlg::OnButtonHelpZ() {
-  m_selectedExprId = IDC_EDIT_EXPRZ;
-  showExprHelpMenu(IDC_BUTTON_HELPZ);
+  handleExprHelpButtonClick(IDC_BUTTON_HELPX);
 }
 
-void CParametricSurfaceDlg::OnExprHelp(UINT id) {
-  handleSelectedExprHelpId(id, m_selectedExprId);
+void CParametricSurfaceDlg::OnButtonHelpY() {
+  handleExprHelpButtonClick(IDC_BUTTON_HELPY);
+}
+
+void CParametricSurfaceDlg::OnButtonHelpZ() {
+  handleExprHelpButtonClick(IDC_BUTTON_HELPZ);
 }
 
 void CParametricSurfaceDlg::paramToWin(const ParametricSurfaceParameters &param) {
