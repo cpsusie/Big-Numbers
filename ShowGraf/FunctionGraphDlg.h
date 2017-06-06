@@ -38,7 +38,7 @@ public:
     CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags = SHOW_INTERVAL|SHOW_STEP, CWnd* pParent = NULL);   // standard constructor
     FunctionGraphParameters &m_param;
 
-    enum { IDD = IDD_FUNCTIONGRAPH_DIALOG };
+    enum { IDD = IDR_FUNCTION };
 
 protected:
     virtual BOOL PreTranslateMessage(MSG *pMsg);

@@ -156,9 +156,7 @@ public:
     virtual ~CDiffEquationGraphDlg();
     DiffEquationGraphParameters &m_param;
 
-#ifdef AFX_DESIGN_TIME
-    enum { IDD = IDD_DIFFEQUATIONGRAPH_DIALOG };
-#endif
+    enum { IDD = IDR_DIFFEQUATION };
   CString   m_style;
   CString   m_name;
   double    m_maxError;

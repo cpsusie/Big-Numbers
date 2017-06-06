@@ -8,7 +8,7 @@ public:
     UINT    m_rollSize;
 
 protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
 

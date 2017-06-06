@@ -12,8 +12,8 @@ CIntervalDlg::CIntervalDlg(const RectangleTransformation &tr, CWnd* pParent) : m
     m_maxy = m_tr.getFromRectangle().getMaxY();
 }
 
-void CIntervalDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CIntervalDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITXFROM, m_minx);
     DDX_Text(pDX, IDC_EDITXTO  , m_maxx);
     DDX_Text(pDX, IDC_EDITYFROM, m_miny);
@@ -28,8 +28,8 @@ END_MESSAGE_MAP()
 BOOL CIntervalDlg::OnInitDialog() {
   UpdateData(FALSE);
 
-  CDialog::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_INTERVAL));
+  __super::OnInitDialog();
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_INTERVAL));
   OnGotoXInterval();
   return FALSE;
 }
@@ -49,7 +49,7 @@ void CIntervalDlg::OnOK() {
     RectangleTransformation tmp(m_tr);
     tmp.setFromRectangle(getDataRange());
     m_tr = tmp;
-    CDialog::OnOK();
+    __super::OnOK();
   } catch(Exception e) {
     MessageBox(e.what(), _T("Error"), MB_ICONEXCLAMATION);
   }
@@ -63,7 +63,7 @@ BOOL CIntervalDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CIntervalDlg::OnGotoXInterval() {

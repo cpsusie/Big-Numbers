@@ -11,7 +11,7 @@ IMPLEMENT_DYNAMIC(CDiffEquationGraphDlg, CDialog)
 
 CDiffEquationGraphDlg::CDiffEquationGraphDlg(DiffEquationGraphParameters &param, CWnd *pParent)
   : m_param(param)
-  , CDialog(IDD_DIFFEQUATIONGRAPH_DIALOG, pParent)
+  , CDialog(IDD, pParent)
 {
 }
 
@@ -20,17 +20,17 @@ CDiffEquationGraphDlg::~CDiffEquationGraphDlg() {
 
 void CDiffEquationGraphDlg::OnDestroy() {
   setEquationCount(0);
-  CDialog::OnDestroy();
+  __super::OnDestroy();
 }
 
 BOOL CDiffEquationGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
   BOOL ret = m_exprFont.CreateFontIndirect(&lf);
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_DIFFEQUATION));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_DIFFEQUATION));
   m_layoutManager.OnInitDialog(this);
 
   m_layoutManager.addControl(IDC_STATICINTERVAL, PCT_RELATIVE_BOTTOM | CONSTANT_HEIGHT);
@@ -55,7 +55,7 @@ BOOL CDiffEquationGraphDlg::OnInitDialog() {
 }
 
 void CDiffEquationGraphDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
   DDX_Text(pDX, IDC_EDITXTO, m_xTo);
@@ -233,7 +233,7 @@ void CDiffEquationGraphDlg::OnFileSaveAs() {
 }
 
 void CDiffEquationGraphDlg::addToRecent(const String &fileName) {
-  AfxGetApp()->AddToRecentFileList(fileName.cstr());
+  theApp.AddToRecentFileList(fileName.cstr());
 }
 
 void CDiffEquationGraphDlg::OnEditFindmatchingparentesis() {
@@ -471,11 +471,11 @@ BOOL CDiffEquationGraphDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CDiffEquationGraphDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
@@ -483,7 +483,7 @@ void CDiffEquationGraphDlg::OnSize(UINT nType, int cx, int cy) {
 void CDiffEquationGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CDiffEquationGraphDlg::OnBnClickedButtonaddeq() {

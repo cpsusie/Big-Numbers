@@ -5,19 +5,18 @@
 
 CParametricGraphDlg::CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent)
   : m_param(param)
-  , CDialog(CParametricGraphDlg::IDD, pParent)
+  , CDialog(IDD, pParent)
 {
   if(!m_param.hasName()) {
     m_param.setDefaultName();
   }
 }
 
-CParametricGraphDlg::~CParametricGraphDlg()
-{
+CParametricGraphDlg::~CParametricGraphDlg() {
 }
 
-void CParametricGraphDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CParametricGraphDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITEXPRX, m_exprX);
   DDX_Text(pDX, IDC_EDITEXPRY, m_exprY);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
@@ -48,12 +47,12 @@ BOOL CParametricGraphDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BOOL CParametricGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_PARAMETRIC));
+  __super::OnInitDialog();
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_PARAMETRICCURVE));
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
@@ -88,7 +87,7 @@ BOOL CParametricGraphDlg::OnInitDialog() {
 void CParametricGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 bool CParametricGraphDlg::validate() {
@@ -153,7 +152,7 @@ void CParametricGraphDlg::OnGotoStep() {
 
 void CParametricGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 void CParametricGraphDlg::OnFileNew() {
@@ -228,7 +227,7 @@ void CParametricGraphDlg::save(const String &fileName, ParametricGraphParameters
 }
 
 void CParametricGraphDlg::addToRecent(const String &fileName) {
-  AfxGetApp()->AddToRecentFileList(fileName.cstr());
+  theApp.AddToRecentFileList(fileName.cstr());
 }
 /*
 void CParametricGraphDlg::OnFindMatchingParanthes() {

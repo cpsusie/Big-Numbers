@@ -45,7 +45,7 @@ private:
 public:
     CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent = NULL);
 
-    enum { IDD = IDD_FITTHREAD_DIALOG };
+    enum { IDD = IDR_CUSTOMFIT };
 
     FunctionFitter           *m_functionFitter;
     FitThread                *m_worker;

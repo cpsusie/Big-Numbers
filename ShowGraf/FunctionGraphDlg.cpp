@@ -9,7 +9,7 @@
 
 CFunctionGraphDlg::CFunctionGraphDlg(FunctionGraphParameters &param, int showFlags, CWnd *pParent)
 : m_param(param)
-, CDialog(CFunctionGraphDlg::IDD, pParent)
+, CDialog(IDD, pParent)
 {
   if(!m_param.hasName()) {
     m_param.setDefaultName();
@@ -17,8 +17,8 @@ CFunctionGraphDlg::CFunctionGraphDlg(FunctionGraphParameters &param, int showFla
   m_showFlags = showFlags;
 }
 
-void CFunctionGraphDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CFunctionGraphDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITEXPR, m_expr);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
@@ -46,12 +46,12 @@ BOOL CFunctionGraphDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BOOL CFunctionGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_FUNCTION));
+  __super::OnInitDialog();
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_FUNCTION));
   if(!(m_showFlags & SHOW_INTERVAL)) {
     GetDlgItem(IDC_STATICINTERVAL)->ShowWindow(SW_HIDE);
     GetDlgItem(IDC_EDITXFROM     )->ShowWindow(SW_HIDE);
@@ -97,7 +97,7 @@ BOOL CFunctionGraphDlg::OnInitDialog() {
 void CFunctionGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 bool CFunctionGraphDlg::validate() {
@@ -150,7 +150,7 @@ void CFunctionGraphDlg::OnGotoStep() {
 
 void CFunctionGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 void CFunctionGraphDlg::OnFileNew() {
@@ -225,7 +225,7 @@ void CFunctionGraphDlg::save(const String &fileName, FunctionGraphParameters &pa
 }
 
 void CFunctionGraphDlg::addToRecent(const String &fileName) {
-  AfxGetApp()->AddToRecentFileList(fileName.cstr());
+  theApp.AddToRecentFileList(fileName.cstr());
 }
 /*
 void CFunctionGraphDlg::OnFindMatchingParanthes() {

@@ -37,7 +37,7 @@ public:
     CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent = NULL);
     IsoCurveGraphParameters &m_param;
 
-    enum { IDD = IDD_ISOCURVEGRAPH_DIALOG };
+    enum { IDD = IDR_ISOCURVE };
 
 protected:
     virtual BOOL PreTranslateMessage(MSG *pMsg);

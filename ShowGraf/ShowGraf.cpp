@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ShowGraf.h"
 #include <afxadv.h>
 #include "MainFrm.h"
 #include "ShowGrafDoc.h"
@@ -11,8 +10,8 @@
 
 BEGIN_MESSAGE_MAP(CShowGrafApp, CWinApp)
     ON_COMMAND(ID_APP_ABOUT, OnAppAbout)
-    ON_COMMAND(ID_FILE_NEW, CWinApp::OnFileNew)
-    ON_COMMAND(ID_FILE_OPEN, CWinApp::OnFileOpen)
+    ON_COMMAND(ID_FILE_NEW, __super::OnFileNew)
+    ON_COMMAND(ID_FILE_OPEN, __super::OnFileOpen)
 END_MESSAGE_MAP()
 
 CShowGrafApp::CShowGrafApp() {
@@ -28,7 +27,7 @@ BOOL CShowGrafApp::InitInstance() {
     InitCtrls.dwICC = ICC_WIN95_CLASSES;
     InitCommonControlsEx(&InitCtrls);
 
-    CWinApp::InitInstance();
+    __super::InitInstance();
 
 
     EnableTaskbarInteraction(FALSE);
@@ -68,22 +67,17 @@ String CShowGrafApp::getRecentFile(int index) {
 class CAboutDlg : public CDialog {
 public:
     CAboutDlg();
-
-
     enum { IDD = IDD_ABOUTBOX };
-
-    protected:
-    virtual void DoDataExchange(CDataExchange* pDX);
-
 protected:
+    virtual void DoDataExchange(CDataExchange *pDX);
     DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)

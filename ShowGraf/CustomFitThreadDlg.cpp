@@ -13,7 +13,7 @@
 CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, CWnd* pParent) 
 : m_pointArray(pointArray)
 , m_fp(fp)
-, CDialog(CCustomFitThreadDlg::IDD, pParent) {
+, CDialog(IDD, pParent) {
 
   m_expr  = expr;
   setXInterval(range);
@@ -22,8 +22,8 @@ CCustomFitThreadDlg::CCustomFitThreadDlg(const CString &expr, const DoubleInterv
   m_worker         = NULL;
 }
 
-void CCustomFitThreadDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CCustomFitThreadDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_DATALIST, m_dataList);
     DDX_Text(pDX, IDC_EDITEXPR , m_expr );
     DDX_Text(pDX, IDC_EDITXFROM, m_xFrom);
@@ -45,9 +45,9 @@ BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CCustomFitThreadDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_FITTING));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_CUSTOMFIT));
   m_running = false;
   showInfo();
   updateButtons();
@@ -72,7 +72,7 @@ BOOL CCustomFitThreadDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CCustomFitThreadDlg::updateButtons() {
@@ -208,7 +208,7 @@ void CCustomFitThreadDlg::OnTimer(UINT_PTR nIDEvent) {
     updateButtons();
     stopTimer();
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CCustomFitThreadDlg::OnOK() {
@@ -231,13 +231,13 @@ void CCustomFitThreadDlg::OnOK() {
 
   stopTimer();
   deallocateFunctionFitter();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CCustomFitThreadDlg::OnCancel() {
   stopTimer();
   deallocateFunctionFitter();
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CCustomFitThreadDlg::startWorker(int loopCounter) {

@@ -89,7 +89,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
     return -1;      // fail to create
   }
 
-  HBITMAP bitmap = ::LoadBitmap(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  HBITMAP bitmap = ::LoadBitmap(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_wndToolBar.SetBitmap(bitmap);
 //  m_wndToolBar.SetSizes(CSize(32, 32), getBitmapSize(bitmap));
 
@@ -101,7 +101,7 @@ int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   m_wndToolBar.EnableDocking(CBRS_ALIGN_ANY);
   EnableDocking(CBRS_ALIGN_ANY);
   DockControlBar(&m_wndToolBar);
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
   m_bAutoMenuEnable = FALSE;
   initMenuItems();
   theApp.m_device.attach(*this);
@@ -181,13 +181,13 @@ void CMainFrame::OnFileOpen() {
     return;
   }
   getView()->addGraphFromFile(dlg.m_ofn.lpstrFile);
-  AfxGetApp()->AddToRecentFileList(dlg.m_ofn.lpstrFile);
+  theApp.AddToRecentFileList(dlg.m_ofn.lpstrFile);
 
   Invalidate();
 }
 
 void CMainFrame::onFileMruFile(int index) {
-  String fname = ((CShowGrafApp*)AfxGetApp())->getRecentFile(index);
+  String fname = theApp.getRecentFile(index);
   getView()->addGraphFromFile(fname);
   Invalidate();
 }

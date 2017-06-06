@@ -18,8 +18,8 @@ CDegreeDlg::CDegreeDlg(const Point2DArray &pointArray, FunctionPlotter &fp, CWnd
   m_degree = 0;
 }
 
-void CDegreeDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CDegreeDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITDEGREE, m_degree);
     DDV_MinMaxUInt(pDX, m_degree, 0, 30);
 }
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CDegreeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CDegreeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   setDegree(1);
   gotoEditBox(this, IDC_EDITDEGREE);

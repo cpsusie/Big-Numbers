@@ -37,7 +37,7 @@ public:
 
   ParametricGraphParameters &m_param;
 
-  enum { IDD = IDD_PARAMETRICGRAPH_DIALOG };
+  enum { IDD = IDR_PARAMETRICCURVE };
 
 protected:
     virtual BOOL PreTranslateMessage(MSG *pMsg);

@@ -8,15 +8,15 @@
 
 CIsoCurveGraphDlg::CIsoCurveGraphDlg(IsoCurveGraphParameters &param, CWnd *pParent) 
 : m_param(param)
-, CDialog(CIsoCurveGraphDlg::IDD, pParent)
+, CDialog(IDD, pParent)
 {
   if(!m_param.hasName()) {
     m_param.setDefaultName();
   }
 }
 
-void CIsoCurveGraphDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CIsoCurveGraphDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
     DDX_Text(pDX, IDC_EDITEXPR    , m_expr    );
     DDX_Text(pDX, IDC_EDITNAME    , m_name    );
@@ -47,13 +47,13 @@ BOOL CIsoCurveGraphDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BOOL CIsoCurveGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_ISOCURVE));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ISOCURVE));
   LOGFONT lf;
   GetFont()->GetLogFont(&lf);
   _tcscpy(lf.lfFaceName, _T("courier new"));
@@ -77,7 +77,7 @@ BOOL CIsoCurveGraphDlg::OnInitDialog() {
 void CIsoCurveGraphDlg::OnOK() {
   if(!UpdateData() || !validate()) return;
   winToParam(m_param);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 bool CIsoCurveGraphDlg::validate() {
@@ -142,7 +142,7 @@ void CIsoCurveGraphDlg::OnGotoCellSize() {
 
 void CIsoCurveGraphDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType, cx, cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 void CIsoCurveGraphDlg::OnFileNew() {
@@ -218,7 +218,7 @@ void CIsoCurveGraphDlg::save(const String &fileName, IsoCurveGraphParameters &pa
 }
 
 void CIsoCurveGraphDlg::addToRecent(const String &fileName) {
-  AfxGetApp()->AddToRecentFileList(fileName.cstr());
+  theApp.AddToRecentFileList(fileName.cstr());
 }
 
 void CIsoCurveGraphDlg::OnEditFindmatchingparentesis() {

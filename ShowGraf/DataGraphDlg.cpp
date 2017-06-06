@@ -15,8 +15,8 @@ CDataGraphDlg::CDataGraphDlg(DataGraph &g, CWnd *pParent)
   m_style = EMPTYSTRING;
 }
 
-void CDataGraphDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CDataGraphDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_CBString(pDX, IDC_COMBOSTYLE, m_style);
 }
@@ -26,7 +26,7 @@ BEGIN_MESSAGE_MAP(CDataGraphDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CDataGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_list.substituteControl(this, IDC_DATALIST, m_model);
 
@@ -57,10 +57,10 @@ void CDataGraphDlg::OnOK() {
   m_graph.getParam().m_style = (GraphStyle)getStyleCombo()->GetCurSel();
   m_graph.getParam().m_color = getColorButton()->GetColor();
   m_graph.setDataPoints(m_model.getData());
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CDataGraphDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
