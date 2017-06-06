@@ -438,27 +438,30 @@ void CShowGrafView::OnSelectMenuEdit() {
     Graph &g = m_graphArray[m_graphArray.getCurrentSelection()].getGraph();
     switch(g.getType()) {
     case FUNCTIONGRAPH  :
-      { FunctionGraphParameters *param = (FunctionGraphParameters*)&g.getParam();
-        CFunctionGraphDlg dlg(*param);
+      { FunctionGraphParameters &param = (FunctionGraphParameters&)g.getParam();
+        CFunctionGraphDlg dlg(param);
         if(dlg.DoModal() == IDOK) {
+          param = dlg.getData();
           g.calculate();
         }
       }
       break;
 
     case PARAMETRICGRAPH:
-      { ParametricGraphParameters *param = (ParametricGraphParameters*)&g.getParam();
-        CParametricGraphDlg dlg(*param);
+      { ParametricGraphParameters &param = (ParametricGraphParameters&)g.getParam();
+        CParametricGraphDlg dlg(param);
         if(dlg.DoModal() == IDOK) {
+          param = dlg.getData();
           g.calculate();
         }
       }
       break;
 
     case ISOCURVEGRAPH    :
-      { IsoCurveGraphParameters *param = (IsoCurveGraphParameters*)&g.getParam();
-        CIsoCurveGraphDlg dlg(*param);
+      { IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)g.getParam();
+        CIsoCurveGraphDlg dlg(param);
         if(dlg.DoModal() == IDOK) {
+          param = dlg.getData();
           g.calculate();
         }
       }

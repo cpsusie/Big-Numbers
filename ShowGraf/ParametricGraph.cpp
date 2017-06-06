@@ -2,7 +2,7 @@
 #include <Math/Expression/Expression.h>
 #include "ParametricGraph.h"
 
-ParametricGraph::ParametricGraph(ParametricGraphParameters &param) : PointGraph(new ParametricGraphParameters(param)) {
+ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : PointGraph(new ParametricGraphParameters(param)) {
   calculate();
 }
 

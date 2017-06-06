@@ -29,7 +29,6 @@ public:
 protected:
     virtual void DoDataExchange(CDataExchange *pDX);
     afx_msg BOOL OnInitDialog();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
     afx_msg void OnEditFindMatchingParentesis();
     afx_msg void OnGotoExpr();
     afx_msg void OnGotoXInterval();

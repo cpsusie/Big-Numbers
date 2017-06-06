@@ -77,6 +77,18 @@ bool CExprDialog::validateInterval(int fromId, int toId) {
   return true;
 }
 
+bool CExprDialog::validateMinMax(int id, double min, double max) {
+  const String str = getWindowText(this,id);
+  double value;
+  _stscanf(str.cstr(),_T("%le"), &value);
+  if((value < min) || (value > max)) {
+    gotoEditBox(this, id);
+    Message(_T("Value must be in range [%lg..%lg]"), min, max);
+    return false;
+  }
+  return true;
+}
+
 void CExprDialog::showExprError(const String &msg, int id) {
   try {
     Tokenizer tok(msg, _T(":"));

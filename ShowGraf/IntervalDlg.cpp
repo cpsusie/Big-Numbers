@@ -38,10 +38,12 @@ void CIntervalDlg::OnOK() {
   UpdateData(TRUE);
 
   if(m_minx >= m_maxx) {
+    OnGotoXInterval();
     MessageBox(_T("Invalid X-interval"), _T("Error"), MB_ICONEXCLAMATION);
     return;
   }
   if(m_miny >= m_maxy) {
+    OnGotoYInterval();
     MessageBox(_T("Invalid Y-interval"), _T("Error"), MB_ICONEXCLAMATION);
     return;
   }
@@ -67,13 +69,9 @@ BOOL CIntervalDlg::PreTranslateMessage(MSG* pMsg) {
 }
 
 void CIntervalDlg::OnGotoXInterval() {
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITXFROM);
-  e->SetFocus();
-  e->SetSel(0,20);
+  gotoEditBox(this, IDC_EDITXFROM);
 }
 
 void CIntervalDlg::OnGotoYInterval() {
-  CEdit *e = (CEdit*)GetDlgItem(IDC_EDITYFROM);
-  e->SetFocus();
-  e->SetSel(0,20);
+  gotoEditBox(this, IDC_EDITYFROM);
 }

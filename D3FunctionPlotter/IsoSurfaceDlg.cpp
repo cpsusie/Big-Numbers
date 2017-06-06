@@ -112,11 +112,6 @@ BOOL CIsoSurfaceDlg::OnInitDialog() {
   return FALSE;
 }
 
-void CIsoSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
-}
-
 #define MAXFRAMECOUNT 300
 
 bool CIsoSurfaceDlg::validate() {
@@ -138,9 +133,7 @@ bool CIsoSurfaceDlg::validate() {
     return false;
   }
   if(m_includeTime) {
-    if(m_frameCount <= 0 || m_frameCount > MAXFRAMECOUNT) {
-      gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
-      Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
+    if(!validateMinMax(IDC_EDIT_FRAMECOUNT, 1, MAXFRAMECOUNT)) {
       return false;
     }
     if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {
@@ -156,11 +149,11 @@ void CIsoSurfaceDlg::OnCheckIncludeTime() {
 }
 
 void CIsoSurfaceDlg::enableTimeFields() {
-  BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
+  const BOOL enable = IsDlgButtonChecked(IDC_CHECK_INCLUDETIME);
   GetDlgItem(IDC_STATIC_TIMEINTERVAL)->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMEFROM      )->EnableWindow(enable);
   GetDlgItem(IDC_EDIT_TIMETO        )->EnableWindow(enable);
-  GetDlgItem(IDC_EDIT_FRAMECOUNT     )->EnableWindow(enable);
+  GetDlgItem(IDC_EDIT_FRAMECOUNT    )->EnableWindow(enable);
   setWindowText(this, IDC_STATIC_FUNCTION, enable ? _T("&S(t,x,y,z) =") : _T("&S(x,y,z) ="));
 }
 
@@ -221,7 +214,6 @@ void CIsoSurfaceDlg::paramToWin(const IsoSurfaceParameters &param) {
   m_timeFrom         = param.getTimeInterval().getMin();
   m_timeTo           = param.getTimeInterval().getMax();
 
-  UpdateData(false);
   enableCheckBox();
   enableTimeFields();
   __super::paramToWin(param);

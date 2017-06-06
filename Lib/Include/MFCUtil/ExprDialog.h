@@ -42,7 +42,16 @@ protected:
   bool validateAllExpr();
   bool validateExpr(int id);
   bool validateInterval(int fromId, int toId);
+  bool validateMinMax(int id, double min, double max);
   virtual bool validate() = 0;
+  virtual void addToRecent(const String &fileName) {
+  }
+
+  void OnSize(UINT nType, int cx, int cy) {
+    __super::OnSize(nType, cx, cy);
+    m_layoutManager.OnSize(nType, cx, cy);
+  }
+
   BOOL PreTranslateMessage(MSG *pMsg);
 };
 
@@ -56,7 +65,7 @@ private:
   CString      m_name;
 
   String getFileDialogFilter() const {
-    return format(_T("%s-files (*.%s%c*.%s%cAll files (*.*)%c*.*%c%c")
+    return format(_T("%s-files (*.%s)%c*.%s%cAll files (*.*)%c*.*%c%c")
                  ,m_paramTypeName.cstr()
                  ,m_extension.cstr(),0
                  ,m_extension.cstr(),0
@@ -64,9 +73,20 @@ private:
                  );
   }
 
+  inline bool updateAndValidate() {
+    return UpdateData() && validate();
+  }
+
+  inline bool nameEntered(CFileDialog &dlg) {
+    return (dlg.DoModal() == IDOK) && (_tcslen(dlg.m_ofn.lpstrFile) > 0);
+  }
+
+
 protected:
   virtual void paramToWin(const T &param) {
-    setWindowText(this, format(_T("%s (%s)"), m_paramTypeName.cstr(), param.getDisplayName().cstr()));
+    setWindowText(this, format(_T("%s (%s)")
+                      , firstLetterToUpperCase(m_paramTypeName).cstr()
+                      , param.getDisplayName().cstr()));
     m_name = param.getName().cstr();
   }
   virtual void winToParam(T &param) const {
@@ -86,6 +106,7 @@ protected:
     __super::OnInitDialog();
     m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(m_resId));
     paramToWin(m_param);
+    UpdateData(FALSE);
     return TRUE;
   }
 
@@ -97,9 +118,15 @@ protected:
   }
 
   void OnOK() {
-    if(!UpdateData() || !validate()) return;
+    if(!updateAndValidate()) return;
     winToParam(m_param);
     __super::OnOK();
+  }
+
+  void OnFileNew() {
+    T param;
+    paramToWin(param);
+    UpdateData(false);
   }
 
   void OnFileOpen() {
@@ -108,20 +135,23 @@ protected:
     const String dlgFilter = getFileDialogFilter();
     dlg.m_ofn.lpstrFilter = dlgFilter.cstr();
     dlg.m_ofn.lpstrTitle  = dlgTitle.cstr();
-    if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+    if(!nameEntered(dlg)) {
       return;
     }
     try {
       T param;
-      param.load(dlg.m_ofn.lpstrFile);
+      const String fileName = dlg.m_ofn.lpstrFile;
+      param.load(fileName);
       paramToWin(param);
+      addToRecent(fileName);
+      UpdateData(false);
     } catch(Exception e) {
       showException(e);
     }
   }
 
   void OnFileSave() {
-    if(!UpdateData() || !validate()) return;
+    if(!updateAndValidate()) return;
     T param;
     winToParam(param);
     if(param.hasDefaultName()) {
@@ -132,21 +162,21 @@ protected:
   }
 
   void OnFileSaveAs() {
-    if(!UpdateData() || !validate()) return;
+    if(!updateAndValidate()) return;
     T param;
     winToParam(param);
     saveAs(param);
   }
 
   void saveAs(T &param) {
-    CString objname = param.getName().cstr();
+    const String objname          = param.getName();
     const String dlgTitle         = format(_T("Save %s"), m_paramTypeName.cstr());
     const String defaultExtension = format(_T("*.%s"), m_extension.cstr());
     const String dlgFilter        = getFileDialogFilter();
-    CFileDialog dlg(FALSE, defaultExtension.cstr(), objname);
+    CFileDialog dlg(FALSE, defaultExtension.cstr(), objname.cstr());
     dlg.m_ofn.lpstrFilter = dlgFilter.cstr();
     dlg.m_ofn.lpstrTitle  = dlgTitle.cstr();
-    if((dlg.DoModal() != IDOK) ||(_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
+    if(!nameEntered(dlg)) {
       return;
     }
     save(dlg.m_ofn.lpstrFile, param);
@@ -156,6 +186,8 @@ protected:
     try {
       param.save(fileName);
       paramToWin(param);
+      UpdateData(FALSE);
+      addToRecent(fileName);
     } catch(Exception e) {
       showException(e);
     }

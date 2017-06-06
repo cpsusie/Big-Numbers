@@ -2,7 +2,7 @@
 #include <Math/Expression/Expression.h>
 #include "FunctionGraph.h"
 
-FunctionGraph::FunctionGraph(FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
+FunctionGraph::FunctionGraph(const FunctionGraphParameters &param) : PointGraph(new FunctionGraphParameters(param)) {
   calculate();
 }
 

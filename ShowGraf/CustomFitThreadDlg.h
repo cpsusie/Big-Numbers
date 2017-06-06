@@ -26,10 +26,10 @@ private:
     double                    m_xFrom;
     double                    m_xTo;
 
-    CMFCColorButton *getColorButton() {
+    CMFCColorButton *getColorButton() const {
       return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
     }
-    COLORREF getColor() {
+    COLORREF getColor() const {
       return getColorButton()->GetColor();
     }
     void setColor(COLORREF color) {
@@ -49,7 +49,7 @@ public:
 
     FunctionFitter           *m_functionFitter;
     FitThread                *m_worker;
-    Array<CStatic*>           m_infoField;
+    CompactArray<CStatic*>    m_infoField;
     const Point2DArray       &m_pointArray;
     FunctionPlotter          &m_fp;
     bool                      m_running;

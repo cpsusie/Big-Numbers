@@ -9,7 +9,7 @@ class ParametricGraph : public PointGraph {
 private:
 //  ExpressionImage m_image;
 public:
-  ParametricGraph(ParametricGraphParameters &param);
+  ParametricGraph(const ParametricGraphParameters &param);
   void calculate();
   void paint(CCoordinateSystem &cs);
   void setTrigonometricMode(TrigonometricMode mode);

@@ -1,16 +1,10 @@
 #pragma once
 
+#include <MFCUtil/ExprDialog.h>
 #include "ParametricGraph.h"
-#include <MFCUtil/LayoutManager.h>
 
-class CParametricGraphDlg : public CDialog {
+class CParametricGraphDlg : public SaveLoadExprDialog<ParametricGraphParameters> {
 private:
-    HACCEL              m_accelTable;
-    SimpleLayoutManager m_layoutManager;
-    CFont               m_exprFont;
-    String              m_fullName;
-
-    CString             m_name;
     CString             m_style;
     CString             m_exprX;
     CString             m_exprY;
@@ -18,43 +12,33 @@ private:
     double              m_tTo;
     UINT                m_steps;
 
-    CComboBox *getStyleCombo() {
+    CComboBox *getStyleCombo() const {
       return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
     }
-    CMFCColorButton *getColorButton() {
+    CMFCColorButton *getColorButton() const {
       return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
     }
     bool validate();
-    void paramToWin(            const ParametricGraphParameters &param);
-    void winToParam(                  ParametricGraphParameters &param);
-    void saveAs(                      ParametricGraphParameters &param);
-    void save(const String &fileName, ParametricGraphParameters &param);
+    void paramToWin(const ParametricGraphParameters &param);
+    void winToParam(      ParametricGraphParameters &param) const;
     void addToRecent(const String &fileName);
 
 public:
   CParametricGraphDlg(ParametricGraphParameters &param, CWnd *pParent = NULL);
   virtual ~CParametricGraphDlg();
 
-  ParametricGraphParameters &m_param;
-
   enum { IDD = IDR_PARAMETRICCURVE };
 
 protected:
-    virtual BOOL PreTranslateMessage(MSG *pMsg);
     virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
-    virtual void OnOK();
-    afx_msg void OnGotoName();
     afx_msg void OnGotoStyle();
     afx_msg void OnGotoExprX();
     afx_msg void OnGotoExprY();
     afx_msg void OnGotoTInterval();
     afx_msg void OnGotoStep();
-    afx_msg void OnSize(UINT nType, int cx, int cy);
-    afx_msg void OnFileNew();
-    afx_msg void OnFileOpen();
-    afx_msg void OnFileSave();
-    afx_msg void OnFileSaveAs();
     afx_msg void OnEditFindmatchingparentesis();
+    afx_msg void OnButtonHelpX();
+    afx_msg void OnButtonHelpY();
     DECLARE_MESSAGE_MAP()
 };

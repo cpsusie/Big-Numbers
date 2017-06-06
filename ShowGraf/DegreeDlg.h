@@ -11,7 +11,7 @@ private:
     FunctionPlotter          &m_fp;
     DataFit                   m_fit;
 
-    CMFCColorButton *getColorButton() {
+    CMFCColorButton *getColorButton() const {
       return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
     }
 

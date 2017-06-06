@@ -339,12 +339,7 @@ void CMainFrame::OnToolsPlotFunction() {
     param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
     CFunctionGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
-      Expression expr(param.m_trigonometricMode);
-      expr.compile(param.m_expr, true);
-      if(!expr.isOk()) {
-        MessageBox(expr.getErrors()[0].cstr(),_T("Error"),MB_ICONEXCLAMATION);
-        return;
-      }
+      param = dlg.getData();
       getView()->addFunctionGraph(param);
     }
   } catch(Exception e) {
@@ -360,6 +355,7 @@ void CMainFrame::OnToolsParametricCurve() {
     param.m_interval          = getView()->getCoordinateSystem().getDataRange().getXInterval();
     CParametricGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
+      param = dlg.getData();
       getView()->addParametricGraph(param);
     }
   } catch(Exception e) {
@@ -376,12 +372,7 @@ void CMainFrame::OnToolsImplicitDefinedCurve() {
     const DoubleInterval yInterval = getView()->getCoordinateSystem().getDataRange().getYInterval();
     CIsoCurveGraphDlg dlg(param);
     if(dlg.DoModal() == IDOK) {
-      Expression expr(param.m_trigonometricMode);
-      expr.compile(param.m_expr, true);
-      if(!expr.isOk()) {
-        MessageBox(expr.getErrors()[0].cstr(), _T("Error"), MB_ICONEXCLAMATION);
-        return;
-      }
+      param = dlg.getData();
       getView()->addIsoCurveGraph(param);
     }
   } catch(Exception e) {

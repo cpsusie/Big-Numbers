@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "D3FunctionPlotter.h"
 #include "ParametricSurfaceDlg.h"
 #include "afxdialogex.h"
 
@@ -102,11 +101,6 @@ BOOL CParametricSurfaceDlg::OnInitDialog() {
   return FALSE;  // return TRUE  unless you set the focus to a control
 }
 
-void CParametricSurfaceDlg::OnSize(UINT nType, int cx, int cy) {
-  __super::OnSize(nType, cx, cy);
-  m_layoutManager.OnSize(nType, cx, cy);
-}
-
 #define MAXPOINTCOUNT 200
 #define MAXFRAMECOUNT 300
 
@@ -117,24 +111,18 @@ bool CParametricSurfaceDlg::validate() {
   if(!validateInterval(IDC_EDIT_TFROM, IDC_EDIT_TTO)) {
     return false;
   }
-  if(m_tStepCount == 0 || m_tStepCount > MAXPOINTCOUNT) {
-    gotoEditBox(this, IDC_EDIT_TSTEPCOUNT);
-    Message(_T("Number of t-steps must be between 0 and %d"), MAXPOINTCOUNT);
+  if(!validateMinMax(IDC_EDIT_TSTEPCOUNT, 1, MAXPOINTCOUNT)) {
     return false;
   }
   if(!validateInterval(IDC_EDIT_SFROM, IDC_EDIT_STO)) {
     return false;
   }
-  if(m_sStepCount == 0 || m_sStepCount > MAXPOINTCOUNT) {
-    gotoEditBox(this, IDC_EDIT_SSTEPCOUNT);
-    Message(_T("Number of s-steps must be between 0 and %d"), MAXPOINTCOUNT);
+  if(!validateMinMax(IDC_EDIT_SSTEPCOUNT, 1, MAXPOINTCOUNT)) {
     return false;
   }
 
   if(m_includeTime) {
-    if(m_frameCount <= 0 || m_frameCount > MAXFRAMECOUNT) {
-      gotoEditBox(this, IDC_EDIT_FRAMECOUNT);
-      Message(_T("Number of frames must be between 1 and %d"), MAXFRAMECOUNT);
+    if(!validateMinMax(IDC_EDIT_FRAMECOUNT, 1, MAXFRAMECOUNT)) {
       return false;
     }
     if(!validateInterval(IDC_EDIT_TIMEFROM, IDC_EDIT_TIMETO)) {

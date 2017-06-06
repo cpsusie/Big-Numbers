@@ -57,10 +57,10 @@ private:
   CString             m_name;
   CString             m_style;
 
-  CComboBox *getStyleCombo() {
+  CComboBox *getStyleCombo() const {
     return (CComboBox*)GetDlgItem(IDC_COMBOSTYLE);
   }
-  CMFCColorButton *getColorButton() {
+  CMFCColorButton *getColorButton() const {
     return (CMFCColorButton*)GetDlgItem(IDC_BUTTONCOLOR);
   }
 public:

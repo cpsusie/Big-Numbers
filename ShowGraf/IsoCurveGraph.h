@@ -13,7 +13,7 @@ private:
   void clear();
   void findDataRange();
 public:
-  IsoCurveGraph(IsoCurveGraphParameters &param);
+  IsoCurveGraph(const IsoCurveGraphParameters &param);
   void             calculate();
   void             paint(CCoordinateSystem &cs);
   bool             isEmpty() const;

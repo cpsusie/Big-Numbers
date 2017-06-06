@@ -7,7 +7,7 @@ private:
   RectangleTransformation m_tr;
   HACCEL                  m_accelTable;
 public:
-  CIntervalDlg(const RectangleTransformation &tr, CWnd* pParent = NULL);
+  CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent = NULL);
   Rectangle2D getDataRange();
 
   enum { IDD = IDD_INTERVAL_DIALOG };
@@ -17,8 +17,8 @@ public:
     double  m_miny;
 
 public:
-    virtual BOOL PreTranslateMessage(MSG* pMsg);
-    virtual void DoDataExchange(CDataExchange* pDX);
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual void OnOK();
     virtual BOOL OnInitDialog();
     afx_msg void OnGotoXInterval();

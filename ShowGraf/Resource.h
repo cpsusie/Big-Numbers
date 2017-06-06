@@ -64,6 +64,9 @@
 #define IDC_STATICTINTERVAL             1100
 #define IDC_EDITTFROM                   1101
 #define IDC_EDITTTO                     1102
+#define IDC_BUTTON_HELP                 1110
+#define IDC_BUTTON_HELPX                1111
+#define IDC_BUTTON_HELPY                1112
 #define ID_FILE_SAVEAS                  32771
 #define ID_FILE_EXIT                    32772
 #define ID_VIEW_GRID                    32781

@@ -181,14 +181,14 @@ void CCustomFitThreadDlg::stopTimer() {
 void CCustomFitThreadDlg::printf(int field, const TCHAR *format, ...) {
   va_list argptr;
   va_start(argptr,format);
-  String tmp = vformat(format,argptr);
+  const String tmp = vformat(format,argptr);
   va_end(argptr);
-  m_infoField[field]->SetWindowText(tmp.cstr());
+  setWindowText(m_infoField[field], tmp);
 }
 
 void CCustomFitThreadDlg::showInfo() {
   if (m_functionFitter == NULL) {
-  return;
+    return;
   }
   int i;
   for(i = 0; i < m_functionFitter->getParamCount(); i++) {
@@ -291,13 +291,12 @@ void CCustomFitThreadDlg::OnGotoXInterval() {
   gotoEditBox(this, IDC_EDITXFROM);
 }
 
-
 FitThread::FitThread(CCustomFitThreadDlg *dlg, FunctionFitter &functionFitter) : m_dlg(*dlg), m_functionFitter(functionFitter) {
   setDeamon(true);
   m_killed = false;
 }
 
-unsigned int FitThread::run() {
+UINT FitThread::run() {
   while(!m_killed) {
     while(m_loopCount-- != 0 && !m_functionFitter.done() && !m_killed) {
       m_functionFitter.stepIteration();

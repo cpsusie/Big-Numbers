@@ -9,7 +9,7 @@ class FunctionGraph : public PointGraph {
 private:
 //  ExpressionImage m_image;
 public:
-  FunctionGraph(FunctionGraphParameters &param);
+  FunctionGraph(const FunctionGraphParameters &param);
   void calculate();
   void paint(CCoordinateSystem &cs);
   void setTrigonometricMode(TrigonometricMode mode);
