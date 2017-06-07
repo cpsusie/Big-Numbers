@@ -262,6 +262,7 @@
     <ClCompile Include="BitmapIO.cpp" />
     <ClCompile Include="BitmapToByteArray.cpp" />
     <ClCompile Include="BitmapTools.cpp" />
+    <ClCompile Include="CIEColorSpace.cpp" />
     <ClCompile Include="ClipboardBitmap.cpp" />
     <ClCompile Include="ClipboardDropFiles.cpp" />
     <ClCompile Include="ClipboardText.cpp" />
