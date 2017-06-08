@@ -571,9 +571,6 @@
     <ClCompile Include="KeepAlive.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
-    <ClCompile Include="KmpAutomate.cpp">
-      <Filter>Source Files\String</Filter>
-    </ClCompile>
     <ClCompile Include="Sleep.cpp">
       <Filter>Source Files\Process</Filter>
     </ClCompile>
@@ -1006,6 +1003,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\MemSwap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\StringSearchAlgorithm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

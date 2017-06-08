@@ -365,6 +365,7 @@
     <ClInclude Include="..\..\Include\Stack.h" />
     <ClInclude Include="..\..\Include\StreamParameters.h" />
     <ClInclude Include="..\..\Include\StringPool.h" />
+    <ClInclude Include="..\..\Include\StringSearchAlgorithm.h" />
     <ClInclude Include="..\..\Include\StrStream.h" />
     <ClInclude Include="..\..\Include\MemSwap.h" />
     <ClInclude Include="..\..\Include\SynchronizedQueue.h" />
@@ -497,7 +498,6 @@
     <ClCompile Include="isatty.cpp" />
     <ClCompile Include="KeepAlive.cpp" />
     <ClCompile Include="KeyPressed.cpp" />
-    <ClCompile Include="KmpAutomate.cpp" />
     <ClCompile Include="Language.cpp" />
     <ClCompile Include="LexFileStream.cpp" />
     <ClCompile Include="LexStringStream.cpp" />

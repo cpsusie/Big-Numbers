@@ -1,7 +1,9 @@
 #pragma once
 
+#include "StringSearchAlgorithm.h"
+
 // Boyer-Moore string search algorithm
-template<class Ctype> class BMAutomateTemplate {
+template<class Ctype> class BMAutomateTemplate : public StringSearchAlgorithm<Ctype> {
 private:
   typedef intptr_t (BMAutomateTemplate<Ctype>::*SearchFunction)(const Ctype *buf, size_t length) const;
 
@@ -12,7 +14,6 @@ private:
   UINT           m_delta1Size;
   int            m_plm1; // = m_patternLength-1
   bool           m_forwardSearch;
-  const Ctype   *m_translateTable;
   SearchFunction m_search;
 
 public:
@@ -30,7 +31,11 @@ public:
     copyFrom(src);
   }
 
-  virtual ~BMAutomateTemplate() {
+  StringSearchAlgorithm<Ctype> *clone() const {
+    return new BMAutomateTemplate<Ctype>(*this);
+  }
+
+  ~BMAutomateTemplate() {
     deallocate();
   }
 
@@ -68,22 +73,14 @@ public:
     }
   }
 
-  intptr_t search(const Ctype *buf, size_t length) const {
-    return (this->*m_search)(buf, length);
+  intptr_t search(const Ctype *text, size_t length) const {
+    return (this->*m_search)(text, length);
   }
 
 private:
   void compileForward() {
     makeDelta1();
     makeDelta2();
-  }
-
-  Ctype *reversebuf(Ctype *s, size_t size) {
-    Ctype tmp,*l = s, *r = s + size - 1;
-    while(l < r) {
-      tmp = *l; *(l++) = *r; *(r--) = tmp;
-    }
-    return s;
   }
 
   void compileBackward() {
@@ -118,17 +115,12 @@ private:
     return -1;
   }
 
-#define _BMTRANSLATE(  c)        m_translateTable[c] 
-#define _BMTRANSLATE1( c)       (m_translateTable ? _BMTRANSLATE(c) : (c))
-#define _BMSYMBOLSEQUAL( c1,c2) (_BMTRANSLATE(c1) == _BMTRANSLATE(c2))
-#define _BMSYMBOLSEQUAL1(c1,c2) (m_translateTable ? _BMSYMBOLSEQUAL(c1, c2) : ((c1) == (c2)))
-
   intptr_t searchForwardTranslate(const Ctype *buf, size_t length) const {
     int d1,d2,j;
     for(intptr_t i = m_plm1; i < (intptr_t)length; i += max(d1, d2)) {
-      for(j = m_plm1; (j >= 0) && _BMSYMBOLSEQUAL(buf[i], m_pattern[j]); i--, j--);
+      for(j = m_plm1; (j >= 0) && charsEqual(buf[i], m_pattern[j]); i--, j--);
       if(j < 0) return i + 1;
-      d1 = m_delta1[_BMTRANSLATE(buf[i])];
+      d1 = m_delta1[translate(buf[i])];
       d2 = m_delta2[j];
     }
     return -1;
@@ -137,9 +129,9 @@ private:
   intptr_t searchBackwardTranslate(const Ctype *buf, size_t length) const {
     int d1,d2,j;
     for(intptr_t i = length - m_patternLength; i >= 0; i -= max(d1, d2)) {
-      for(j = m_plm1; (j >= 0) && _BMSYMBOLSEQUAL(buf[i], m_pattern[j]); i++, j--);
+      for(j = m_plm1; (j >= 0) && charsEqual(buf[i], m_pattern[j]); i++, j--);
       if(j < 0) return i - m_patternLength;
-      d1 = m_delta1[_BMTRANSLATE(buf[i])];
+      d1 = m_delta1[translate(buf[i])];
       d2 = m_delta2[j];
     }
     return -1;
@@ -153,8 +145,8 @@ private:
     m_pattern = new Ctype[patternLength+1];
     int CtypeMaxValue;
     switch (sizeof(Ctype)) {
-    case 1: CtypeMaxValue = 0xff  ; break;
-    case 2: CtypeMaxValue = 0xffff; break;
+    case 1 : CtypeMaxValue = 0xff  ; break;
+    case 2 : CtypeMaxValue = 0xffff; break;
     default: throwException(_T("BMAutomateTemplate is valid for sizeof(Ctype) <= 2 only"));
     }
     m_delta1Size = CtypeMaxValue + 1;
@@ -200,7 +192,7 @@ private:
       m_delta1[i] = m_patternLength;
     }
     for(int i = 0; i < m_patternLength-1; i++) {
-      m_delta1[_BMTRANSLATE1(m_pattern[i])] = m_plm1 - i;
+      m_delta1[translateC(m_pattern[i])] = m_plm1 - i;
     }
   }
  
@@ -251,7 +243,7 @@ private:
 
     for(int p = 0; p < m_plm1; p++) {
       const int slen = getSuffixLength(m_pattern, m_patternLength, p);
-      if(!_BMSYMBOLSEQUAL1(m_pattern[p - slen], m_pattern[m_plm1 - slen])) {
+      if(!charsEqualC(m_pattern[p - slen], m_pattern[m_plm1 - slen])) {
         m_delta2[m_plm1 - slen] = m_plm1 - p + slen;
       }
     }
@@ -261,7 +253,7 @@ private:
   bool isPrefix(const Ctype *word, int wordLength, int pos) const {
     const int suffixLength = wordLength - pos;
     for(int i = 0; i < suffixLength; i++) {
-      if(!_BMSYMBOLSEQUAL1(word[i], word[pos+i])) {
+      if(!charsEqualC(word[i], word[pos+i])) {
         return false;
       }
     }
@@ -273,7 +265,7 @@ private:
   int getSuffixLength(const Ctype *word, int wordLength, int pos) const {
     // increment suffix length i to the first mismatch or beginning of the word
     int i;
-    for(i = 0; _BMSYMBOLSEQUAL1(word[pos-i], word[wordLength-1-i]) && (i < pos); i++);
+    for(i = 0; charsEqualC(word[pos-i], word[wordLength-1-i]) && (i < pos); i++);
     return i;
   }
 };
@@ -312,9 +304,9 @@ public:
   {
   }
   void compilePattern(const String &pattern, bool forwardSearch, const TCHAR *translateTable) {
-    BMAutomateTemplate<TCHAR>::compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
+    __super::compilePattern(pattern.cstr(), pattern.length(), forwardSearch, translateTable);
   }
   intptr_t search(const String &text) const {
-    return BMAutomateTemplate<TCHAR>::search(text.cstr(), text.length());
+    return __super::search(text.cstr(), text.length());
   }
 };
