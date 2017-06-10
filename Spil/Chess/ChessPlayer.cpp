@@ -387,11 +387,13 @@ void ChessPlayer::handleNullMoveRequest() {
 void ChessPlayer::handleStopSearchRequest() {
   ENTER_LOCK();
   try {
-    CHECKSTATE(CPS_STOPPENDING);
-    if(m_moveFinder) {
-      m_moveFinder->stopSearch();
+    CHECKSTATE(CPS_IDLE,CPS_STOPPENDING);
+    if(getState() == CPS_STOPPENDING) {
+      if(m_moveFinder) {
+        m_moveFinder->stopSearch();
+      }
+      setState(CPS_IDLE);
     }
-    setState(CPS_IDLE);
     UNLOCK_LEAVE();
   } CATCH_UNLOCK_RETHROW();
 }

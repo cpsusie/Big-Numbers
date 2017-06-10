@@ -16,7 +16,6 @@ private:
   ChessPlayerRequestQueue &m_msgQueue;
 protected:
   Game                     m_game;
-  TimeLimit                m_timeLimit;
   bool                     m_hint;
 
   void initSearch(const FindMoveRequestParam &param);

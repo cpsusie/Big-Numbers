@@ -3,10 +3,10 @@
 #include "TraceDlgThread.h"
 
 AbstractMoveFinder::AbstractMoveFinder(Player player, ChessPlayerRequestQueue &msgQueue)
-: m_player(player)
+: m_player(  player  )
 , m_msgQueue(msgQueue)
 {
-  m_verbose  = false;
+  m_verbose = false;
 }
 
 void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param) {
@@ -14,8 +14,7 @@ void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param) {
 #ifndef TABLEBASE_BUILDER
   m_game.setMaxPositionRepeat(1);
 #endif
-  m_timeLimit  = param.getTimeLimit();
-  m_hint       = param.isHint();
+  m_hint = param.isHint();
   setVerbose(param.isVerbose());
 }
 
@@ -35,7 +34,7 @@ PrintableMove AbstractMoveFinder::checkForSingleMove() {
   if(m_game.isSingleMovePosition()) { // dont waste time to think. just return the only possible move
     const PrintableMove result(m_game, m_game.getRandomMove());
     if(isVerbose()) {
-      verbose(format(_T("%s:%s\n"), loadString(IDS_MSG_ONLY_1_MOVE).cstr(), result.toString().cstr()).cstr());
+      verbose(_T("%s:%s\n"), loadString(IDS_MSG_ONLY_1_MOVE).cstr(), result.toString().cstr());
     }
     return result;
   }
