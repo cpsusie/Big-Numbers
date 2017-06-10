@@ -716,6 +716,9 @@
     <ClCompile Include="CharacterFormaters.cpp">
       <Filter>Source Files\String</Filter>
     </ClCompile>
+    <ClCompile Include="MP3Player.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Include\Array.h">
@@ -1006,6 +1009,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Include\StringSearchAlgorithm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Include\MP3Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

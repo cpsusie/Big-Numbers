@@ -337,6 +337,7 @@
     <ClInclude Include="..\..\Include\MatrixDimension.h" />
     <ClInclude Include="..\..\Include\MatrixTemplate.h" />
     <ClInclude Include="..\..\Include\md5.h" />
+    <ClInclude Include="..\..\Include\MP3Player.h" />
     <ClInclude Include="..\..\Include\MyAssert.h" />
     <ClInclude Include="..\..\Include\MyString.h" />
     <ClInclude Include="..\..\Include\MyUtil.h" />
@@ -515,6 +516,7 @@
     <ClCompile Include="MessageBox.cpp" />
     <ClCompile Include="MinMax.cpp" />
     <ClCompile Include="mkfopen.cpp" />
+    <ClCompile Include="MP3Player.cpp" />
     <ClCompile Include="MyAssert.cpp" />
     <ClCompile Include="MyString.cpp" />
     <ClCompile Include="MyStringA2W.cpp" />
