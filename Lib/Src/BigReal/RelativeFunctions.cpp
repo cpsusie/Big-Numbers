@@ -40,31 +40,38 @@ public:
   const ConstBigReal c2;
 
   rExpConstants()
-    :c1(0.434295) // 0.43429448 = 1/ln(10) round up
-    ,c2(0.434294) //              1/ln(10) round down
+    :c1(_T("0.43429448190325183")) // 0.434294481903251827 = 1/ln(10) round up
+    ,c2(_T("0.43429448190325182")) //                        1/ln(10) round down
   {
   }
 };
 
 static const rExpConstants REXPC;
 
+#ifdef IS32BIT
+#define CD_MAX INT_MAX
+#define CD_MIN INT_MIN
+#else
+#define CD_MAX LLONG_MAX
+#define CD_MIN LLONG_MIN
+#endif // IS32BIT
+
 BigReal rExp(const BigReal &x, size_t digits) {
   DEFINEMETHODNAME;
   DigitPool *pool = x.getDigitPool();
-  const BigReal c = x.isNegative() ? -PAPCprod(>,REXPC.c1,fabs(x),pool) : PAPCprod(<,REXPC.c2,x,pool);
+  const BigReal c = x.isNegative() ? -rProd(REXPC.c1,fabs(x),20, pool) : rProd(REXPC.c2,x,20,pool);
   double cd;
   if(compareAbs(x, pool->getHalf()) < 0) { // prevent underflow in getDouble
     cd = 0;
   } else {
     cd = getDouble(c);
-    if(cd > INT_MAX) {
+    if(cd > CD_MAX) {
       throwBigRealInvalidArgumentException(method, _T("Argument too big"));
-    } else if(cd < INT_MIN) {
+    } else if(cd < CD_MIN) {
       throwBigRealInvalidArgumentException(method, _T("Argument too small"));
     }
   }
-
-  return exp(x, e(_1, (int)cd - digits - 1));
+  return exp(x, e(_1, (intptr_t)cd - digits - 1));
 }
 
 static BigReal getLogError(const BigReal &x, intptr_t digits) {
