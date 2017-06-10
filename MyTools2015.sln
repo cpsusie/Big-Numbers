@@ -148,6 +148,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "kalender", "kalender\kalend
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cprgen", "cprgen\cprgen.vcxproj", "{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -796,6 +798,26 @@ Global
 		{EF91BF5A-8A88-40C1-A066-27E8537F6F35}.Release|x64.Build.0 = Release|x64
 		{EF91BF5A-8A88-40C1-A066-27E8537F6F35}.Release|x86.ActiveCfg = Release|Win32
 		{EF91BF5A-8A88-40C1-A066-27E8537F6F35}.Release|x86.Build.0 = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Debug|x64.ActiveCfg = Debug|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Debug|x64.Build.0 = Debug|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Debug|x86.ActiveCfg = Debug|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Debug|x86.Build.0 = Debug|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDDebug|x64.ActiveCfg = Debug|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDDebug|x64.Build.0 = Debug|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDDebug|x86.Build.0 = Debug|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDRelease|x64.ActiveCfg = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDRelease|x64.Build.0 = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDRelease|x86.ActiveCfg = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.LDRelease|x86.Build.0 = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Profilling|x64.ActiveCfg = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Profilling|x64.Build.0 = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Profilling|x86.ActiveCfg = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Profilling|x86.Build.0 = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x64.ActiveCfg = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x64.Build.0 = Release|x64
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x86.ActiveCfg = Release|Win32
+		{3AA876A4-4D54-4089-8EA9-4A7D7B52AE73}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
