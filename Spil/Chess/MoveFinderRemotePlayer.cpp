@@ -60,7 +60,7 @@ String MoveFinderRemotePlayer::receiveMove() {
   }
 }
 
-void MoveFinderRemotePlayer::findBestMove(const FindMoveRequestParam &param) {
+void MoveFinderRemotePlayer::findBestMove(const RequestParamFindMove &param) {
   initSearch(param);
   const String s = receiveMove();
   PrintableMove result;

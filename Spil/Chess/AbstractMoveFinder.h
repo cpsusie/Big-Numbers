@@ -18,7 +18,7 @@ protected:
   Game                     m_game;
   bool                     m_hint;
 
-  void initSearch(const FindMoveRequestParam &param);
+  void initSearch(const RequestParamFindMove &param);
   bool isVerbose() {
     return m_verbose;
   }
@@ -35,7 +35,7 @@ public:
   void putMove(const MoveBase &m);
   void putError(const TCHAR *fmt,...);
   // Should return immediately. dont wait for engine to finish search
-  virtual void           findBestMove(const FindMoveRequestParam &param) = 0;
+  virtual void           findBestMove(const RequestParamFindMove &param) = 0;
   virtual void           stopSearch()               = 0;
   virtual void           moveNow()                  = 0;
   virtual String         getName()            const = 0;

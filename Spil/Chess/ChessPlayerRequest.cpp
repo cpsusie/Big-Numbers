@@ -6,38 +6,38 @@
 ChessPlayerRequest::ChessPlayerRequest(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
 :m_type(REQUEST_FINDMOVE)
 {
-  m_param = new FindMoveRequestParam(game, timeLimit, hint, verbose);
+  m_param = new RequestParamFindMove(game, timeLimit, hint, verbose);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const MoveBase &move, bool hint)
 :m_type(REQUEST_FETCHMOVE)
 {
-  m_param = new FetchMoveRequestParam(SearchMoveResult(move, hint));
+  m_param = new RequestParamFetchMove(SearchMoveResult(move, hint));
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const Game &game)
 :m_type(REQUEST_GAMECHANGED)
 {
-  m_param = new GameChangedRequestParam(game);
+  m_param = new RequestParamGameChanged(game);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const PrintableMove &move)
 : m_type(REQUEST_MOVEDONE)
 {
-  m_param = new MoveDoneRequestParam(move);
+  m_param = new RequestParamMoveDone(move);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(const String &msgText, bool error)
 :m_type(REQUEST_SHOWMESSAGE)
 {
-  m_param = new ShowMessageRequestParam(msgText, error);
+  m_param = new RequestParamShowMessage(msgText, error);
 }
 
   // REQUEST_CONNECT
 ChessPlayerRequest::ChessPlayerRequest(const SocketChannel &channel)
 :m_type(REQUEST_CONNECT)
 {
-  m_param = new ConnectRequestParam(channel);
+  m_param = new RequestParamConnect(channel);
 }
 
 ChessPlayerRequest::ChessPlayerRequest(ChessPlayerRequestType type) {
@@ -99,34 +99,34 @@ ChessPlayerRequest &ChessPlayerRequest::operator=(const ChessPlayerRequest &src)
   return *this;
 }
 
-const FindMoveRequestParam &ChessPlayerRequest::getFindMoveParam() const {
+const RequestParamFindMove &ChessPlayerRequest::getParamFindMove() const {
   checkType(__TFUNCTION__, REQUEST_FINDMOVE);
-  return *(FindMoveRequestParam*)m_param;
+  return *(RequestParamFindMove*)m_param;
 }
 
-const FetchMoveRequestParam &ChessPlayerRequest::getFetchMoveParam() const {
+const RequestParamFetchMove &ChessPlayerRequest::getParamFetchMove() const {
   checkType(__TFUNCTION__, REQUEST_FETCHMOVE);
-  return *(FetchMoveRequestParam*)m_param;
+  return *(RequestParamFetchMove*)m_param;
 }
 
-const GameChangedRequestParam &ChessPlayerRequest::getGameChangedParam() const {
+const RequestParamGameChanged &ChessPlayerRequest::getParamGameChanged() const {
   checkType(__TFUNCTION__, REQUEST_GAMECHANGED);
-  return *(GameChangedRequestParam*)m_param;
+  return *(RequestParamGameChanged*)m_param;
 }
 
-const MoveDoneRequestParam &ChessPlayerRequest::getMoveDoneParam() const {
+const RequestParamMoveDone &ChessPlayerRequest::getParamMoveDone() const {
   checkType(__TFUNCTION__, REQUEST_MOVEDONE);
-  return *(MoveDoneRequestParam*)m_param;
+  return *(RequestParamMoveDone*)m_param;
 }
 
-const ShowMessageRequestParam &ChessPlayerRequest::getShowMessageParam() const {
+const RequestParamShowMessage &ChessPlayerRequest::getParamShowMessage() const {
   checkType(__TFUNCTION__, REQUEST_SHOWMESSAGE);
-  return *(ShowMessageRequestParam*)m_param;
+  return *(RequestParamShowMessage*)m_param;
 }
 
-const ConnectRequestParam &ChessPlayerRequest::getConnectParam() const {
+const RequestParamConnect &ChessPlayerRequest::getParamConnect() const {
   checkType(__TFUNCTION__, REQUEST_CONNECT);
-  return *(ConnectRequestParam*)m_param;
+  return *(RequestParamConnect*)m_param;
 }
 
 String ChessPlayerRequest::toString() const {

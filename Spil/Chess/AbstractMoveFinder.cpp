@@ -9,7 +9,7 @@ AbstractMoveFinder::AbstractMoveFinder(Player player, ChessPlayerRequestQueue &m
   m_verbose = false;
 }
 
-void AbstractMoveFinder::initSearch(const FindMoveRequestParam &param) {
+void AbstractMoveFinder::initSearch(const RequestParamFindMove &param) {
   m_game = param.getGame();
 #ifndef TABLEBASE_BUILDER
   m_game.setMaxPositionRepeat(1);

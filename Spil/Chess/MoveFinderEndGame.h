@@ -12,7 +12,7 @@ public:
   MoveFinderEndGame(Player player, ChessPlayerRequestQueue &msgQueue, EndGameTablebase *tablebase);
   ~MoveFinderEndGame();
 
-  void findBestMove(const FindMoveRequestParam &param);
+  void findBestMove(const RequestParamFindMove &param);
   void stopSearch() {
   }
   void moveNow() {

@@ -36,7 +36,7 @@ void MoveFinderExternEngine::handlePropertyChanged(const PropertyContainer *sour
   }
 }
 
-void MoveFinderExternEngine::findBestMove(const FindMoveRequestParam &param) {
+void MoveFinderExternEngine::findBestMove(const RequestParamFindMove &param) {
   initSearch(param);
   const PrintableMove m = checkForSingleMove();
   if(m.isMove()) {

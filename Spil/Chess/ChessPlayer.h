@@ -41,26 +41,26 @@ private:
   void putRequest(ChessPlayerRequest request) {
     m_inputQueue.put(request);
   }
-  bool isNewMoveFinderNeeded(      const FindMoveRequestParam &param) const;
-  bool isRightNormalPlayMoveFinder(const FindMoveRequestParam &param) const;
-  void allocateMoveFinder(         const FindMoveRequestParam &param);
+  bool isNewMoveFinderNeeded(      const RequestParamFindMove &param) const;
+  bool isRightNormalPlayMoveFinder(const RequestParamFindMove &param) const;
+  void allocateMoveFinder(         const RequestParamFindMove &param);
   void allocateRemoteMoveFinder();
-  AbstractMoveFinder *newMoveFinderNormalPlay(const FindMoveRequestParam &param);
+  AbstractMoveFinder *newMoveFinderNormalPlay(const RequestParamFindMove &param);
   bool isRightTablebaseMoveFinder(EndGameTablebase *tablebase) const;
   EndGameTablebase *findMatchingTablebase(const Game &g) const;
-  void handleFindMoveRequest(   const FindMoveRequestParam    &param);
-  void dohandleFindMoveRequest( const FindMoveRequestParam    &param);
-  void handleNullMoveRequest();
-  void handleStopSearchRequest();
-  void handleMoveNowRequest();
-  void handleGameChangedRequest(const GameChangedRequestParam &param);
-  void handleMoveDoneRequest(   const MoveDoneRequestParam    &param);
-  void handleShowMessageRequest(const ShowMessageRequestParam &param);
-  void handleFetchMoveRequest(  const FetchMoveRequestParam   &param);
-  void handleResetRequest();
-  void handleConnectRequest(    const ConnectRequestParam     &param);
-  void handleDisconnectRequest();
-  void handleKillRequest();
+  void handleRequestFindMove(   const RequestParamFindMove    &param);
+  void dohandleRequestFindMove( const RequestParamFindMove    &param);
+  void handleRequestNullMove();
+  void handleRequestStopSearch();
+  void handleRequestMoveNow();
+  void handleRequestGameChanged(const RequestParamGameChanged &param);
+  void handleRequestMoveDone(   const RequestParamMoveDone    &param);
+  void handleRequestShowMessage(const RequestParamShowMessage &param);
+  void handleRequestFetchMove(  const RequestParamFetchMove   &param);
+  void handleRequestReset();
+  void handleRequestConnect(    const RequestParamConnect     &param);
+  void handleRequestDisconnect();
+  void handleRequestKill();
   inline ChessPlayerState getState() const {
     return m_state;
   }

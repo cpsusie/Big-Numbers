@@ -12,10 +12,10 @@ typedef enum { // When put these request into the request-queue, caller never ha
  ,REQUEST_GAMECHANGED  // The game is changed, (new game, edit game, etc.)
  ,REQUEST_MOVEDONE     // A move has been executed
  ,REQUEST_SHOWMESSAGE  // Show a message. mostly used for errormessages from moveFinder. Show and if param.m_reset then reset
- ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state MFTS_IDLE
+ ,REQUEST_RESET        // Stop current search, if any, delete current moveFinder, if any, and goto state CPS_IDLE
  ,REQUEST_CONNECT      // Only valid if state == CPS_IDLE 
  ,REQUEST_DISCONNECT   // Only valid if connected. Disconnect remoteMoveFinder
- ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to MFTS_KILLED
+ ,REQUEST_KILL         // Stop current search, if any, delete current moveFinder, if any, and set sate to CPS_KILLED
 } ChessPlayerRequestType;
 
 class RequestParamGame : public RefCountedObject {
@@ -29,13 +29,13 @@ public:
   }
 };
 
-class FindMoveRequestParam : public RequestParamGame {
+class RequestParamFindMove : public RequestParamGame {
 private:
   const TimeLimit m_timeLimit;
   const bool      m_hint;
   const bool      m_verbose;
 public:
-  FindMoveRequestParam(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
+  RequestParamFindMove(const Game &game, const TimeLimit &timeLimit, bool hint, bool verbose)
     : RequestParamGame(game)
     , m_timeLimit(timeLimit)
     , m_hint(hint)
@@ -53,18 +53,18 @@ public:
   }
 };
 
-class GameChangedRequestParam : public RequestParamGame {
+class RequestParamGameChanged : public RequestParamGame {
 public:
-  GameChangedRequestParam(const Game &game) : RequestParamGame(game)
+  RequestParamGameChanged(const Game &game) : RequestParamGame(game)
   {
   }
 };
 
-class MoveDoneRequestParam : public RefCountedObject {
+class RequestParamMoveDone : public RefCountedObject {
 private:
   const PrintableMove m_move;
 public:
-  MoveDoneRequestParam(const PrintableMove &m) : m_move(m)
+  RequestParamMoveDone(const PrintableMove &m) : m_move(m)
   {
   }
   const PrintableMove &getMove() const {
@@ -72,11 +72,11 @@ public:
   }
 };
 
-class ConnectRequestParam : public RefCountedObject {
+class RequestParamConnect : public RefCountedObject {
 private:
   const SocketChannel m_channel;
 public:
-  ConnectRequestParam(const SocketChannel &channel)
+  RequestParamConnect(const SocketChannel &channel)
     : m_channel(channel)
   {
   }
@@ -85,12 +85,12 @@ public:
   }
 };
 
-class ShowMessageRequestParam : public RefCountedObject {
+class RequestParamShowMessage : public RefCountedObject {
 private:
   const String m_msg;
   const bool   m_error;
 public:
-  ShowMessageRequestParam(const String &msg, bool error)
+  RequestParamShowMessage(const String &msg, bool error)
     : m_msg(msg), m_error(error) {
   }
   inline const String &getMessage() const {
@@ -122,11 +122,11 @@ public:
   }
 };
 
-class FetchMoveRequestParam : public RefCountedObject {
+class RequestParamFetchMove : public RefCountedObject {
 private:
   const SearchMoveResult m_result;
 public:
-  FetchMoveRequestParam(const SearchMoveResult &result) : m_result(result) {
+  RequestParamFetchMove(const SearchMoveResult &result) : m_result(result) {
   }
   const SearchMoveResult &getSearchResult() const {
     return m_result;
@@ -165,12 +165,12 @@ public:
   inline ChessPlayerRequestType getType() const {
     return m_type;
   }
-  const FindMoveRequestParam     &getFindMoveParam()    const;
-  const GameChangedRequestParam  &getGameChangedParam() const;
-  const MoveDoneRequestParam     &getMoveDoneParam()    const;
-  const FetchMoveRequestParam    &getFetchMoveParam()   const;
-  const ShowMessageRequestParam  &getShowMessageParam() const;
-  const ConnectRequestParam      &getConnectParam()     const;
+  const RequestParamFindMove     &getParamFindMove()    const;
+  const RequestParamGameChanged  &getParamGameChanged() const;
+  const RequestParamMoveDone     &getParamMoveDone()    const;
+  const RequestParamFetchMove    &getParamFetchMove()   const;
+  const RequestParamShowMessage  &getParamShowMessage() const;
+  const RequestParamConnect      &getParamConnect()     const;
   inline const TCHAR             *getRequestName()      const {
     return getRequestName(m_type);
   }

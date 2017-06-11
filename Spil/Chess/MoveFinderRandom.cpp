@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "MoveFinderRandom.h"
 
-void MoveFinderRandomPlay::findBestMove(const FindMoveRequestParam &param) {
+void MoveFinderRandomPlay::findBestMove(const RequestParamFindMove &param) {
   initSearch(param);
   randomize();
   putMove(m_game.getRandomMove());

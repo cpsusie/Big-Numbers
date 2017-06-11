@@ -16,7 +16,7 @@ MoveFinderEndGame::~MoveFinderEndGame() {
   m_tablebase->unload();
 }
 
-void MoveFinderEndGame::findBestMove(const FindMoveRequestParam &param) {
+void MoveFinderEndGame::findBestMove(const RequestParamFindMove &param) {
   initSearch(param);
 
   if(!m_tablebase->isLoaded()

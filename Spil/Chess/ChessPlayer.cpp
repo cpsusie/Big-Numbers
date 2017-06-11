@@ -261,51 +261,51 @@ UINT ChessPlayer::run() {
 
     switch(request.getType()) {
     case REQUEST_FINDMOVE   :
-      handleFindMoveRequest(request.getFindMoveParam());
+      handleRequestFindMove(request.getParamFindMove());
       break;
 
     case REQUEST_NULLMOVE   :
-      handleNullMoveRequest();
+      handleRequestNullMove();
       break;
 
     case REQUEST_STOPSEARCH :
-      handleStopSearchRequest();
+      handleRequestStopSearch();
       break;
 
     case REQUEST_MOVENOW    :
-      handleMoveNowRequest();
+      handleRequestMoveNow();
       break;
 
     case REQUEST_FETCHMOVE  :
-      handleFetchMoveRequest(request.getFetchMoveParam());
+      handleRequestFetchMove(request.getParamFetchMove());
       break;
 
     case REQUEST_GAMECHANGED:
-      handleGameChangedRequest(request.getGameChangedParam());
+      handleRequestGameChanged(request.getParamGameChanged());
       break;
 
     case REQUEST_MOVEDONE   :
-      handleMoveDoneRequest(request.getMoveDoneParam());
+      handleRequestMoveDone(request.getParamMoveDone());
       break;
 
     case REQUEST_SHOWMESSAGE:
-      handleShowMessageRequest(request.getShowMessageParam());
+      handleRequestShowMessage(request.getParamShowMessage());
       break;
 
     case REQUEST_RESET      :
-      handleResetRequest();
+      handleRequestReset();
       break;
 
     case REQUEST_CONNECT    :
-      handleConnectRequest(request.getConnectParam());
+      handleRequestConnect(request.getParamConnect());
       break;
 
     case REQUEST_DISCONNECT :
-      handleDisconnectRequest();
+      handleRequestDisconnect();
       break;
 
     case REQUEST_KILL       :
-      handleKillRequest();
+      handleRequestKill();
       break;
 
     default                 :
@@ -317,14 +317,14 @@ UINT ChessPlayer::run() {
   return 0;
 }
 
-void ChessPlayer::handleFindMoveRequest(const FindMoveRequestParam &param) {
+void ChessPlayer::handleRequestFindMove(const RequestParamFindMove &param) {
   try {
-    dohandleFindMoveRequest(param);
+    dohandleRequestFindMove(param);
   } CATCH_ALL();
 }
 
 // private
-void ChessPlayer::dohandleFindMoveRequest(const FindMoveRequestParam &param) {
+void ChessPlayer::dohandleRequestFindMove(const RequestParamFindMove &param) {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
@@ -370,7 +370,7 @@ void ChessPlayer::dohandleFindMoveRequest(const FindMoveRequestParam &param) {
 }
 
 // private
-void ChessPlayer::handleNullMoveRequest() {
+void ChessPlayer::handleRequestNullMove() {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE, CPS_MOVEREADY);
@@ -384,7 +384,7 @@ void ChessPlayer::handleNullMoveRequest() {
 }
 
 // private
-void ChessPlayer::handleStopSearchRequest() {
+void ChessPlayer::handleRequestStopSearch() {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE,CPS_STOPPENDING);
@@ -399,7 +399,7 @@ void ChessPlayer::handleStopSearchRequest() {
 }
 
 // private
-void ChessPlayer::handleMoveNowRequest() {
+void ChessPlayer::handleRequestMoveNow() {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE, CPS_BUSY);
@@ -411,7 +411,7 @@ void ChessPlayer::handleMoveNowRequest() {
 }
 
 // private
-void ChessPlayer::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
+void ChessPlayer::handleRequestFetchMove(const RequestParamFetchMove &param) {
   ENTER_LOCK();
   try {
     switch(getState()) {
@@ -433,7 +433,7 @@ void ChessPlayer::handleFetchMoveRequest(const FetchMoveRequestParam &param) {
 }
 
 // private
-void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param) {
+void ChessPlayer::handleRequestGameChanged(const RequestParamGameChanged &param) {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE, CPS_MOVEREADY);
@@ -447,7 +447,7 @@ void ChessPlayer::handleGameChangedRequest(const GameChangedRequestParam &param)
 }
 
 // private
-void ChessPlayer::handleMoveDoneRequest(const MoveDoneRequestParam &param) {
+void ChessPlayer::handleRequestMoveDone(const RequestParamMoveDone &param) {
   ENTER_LOCK();
   try {
     CHECKSTATE(CPS_IDLE,CPS_MOVEREADY);
@@ -460,7 +460,7 @@ void ChessPlayer::handleMoveDoneRequest(const MoveDoneRequestParam &param) {
 }
 
 // private
-void ChessPlayer::handleShowMessageRequest(const ShowMessageRequestParam &param) {
+void ChessPlayer::handleRequestShowMessage(const RequestParamShowMessage &param) {
   setProperty(CPP_MESSAGETEXT, m_messageText, param.getMessage());
   if (param.isError()) {
     putRequest(REQUEST_RESET);
@@ -468,7 +468,7 @@ void ChessPlayer::handleShowMessageRequest(const ShowMessageRequestParam &param)
 }
 
 // private
-void ChessPlayer::handleResetRequest() {
+void ChessPlayer::handleRequestReset() {
   ENTERFUNC();
   setMoveFinder(NULL);
   setProperty(CPP_MESSAGETEXT, m_messageText, EMPTYSTRING);
@@ -477,14 +477,14 @@ void ChessPlayer::handleResetRequest() {
 }
 
 // private
-void ChessPlayer::handleConnectRequest(const ConnectRequestParam &param) {
+void ChessPlayer::handleRequestConnect(const RequestParamConnect &param) {
   ENTERFUNC();
   setRemote(param.getChannel());
   LEAVEFUNC();
 }
 
 // private
-void ChessPlayer::handleDisconnectRequest() {
+void ChessPlayer::handleRequestDisconnect() {
   ENTERFUNC();
   setRemote(SocketChannel());
   LEAVEFUNC();
@@ -510,7 +510,7 @@ void ChessPlayer::setRemote(const SocketChannel &channel) {
 }
 
 // private
-void ChessPlayer::handleKillRequest() {
+void ChessPlayer::handleRequestKill() {
   ENTER_LOCK();
   CHECKSTATE(CPS_IDLE);
   setState(CPS_KILLED);
@@ -547,7 +547,7 @@ const OpeningLibrary &ChessPlayer::getOpeningLibrary() { // static
 }
 
 // private
-bool ChessPlayer::isNewMoveFinderNeeded(const FindMoveRequestParam &param) const {
+bool ChessPlayer::isNewMoveFinderNeeded(const RequestParamFindMove &param) const {
   if(m_moveFinder == NULL) {
     return true;
   }
@@ -580,7 +580,7 @@ bool ChessPlayer::isNewMoveFinderNeeded(const FindMoveRequestParam &param) const
 }
 
 // private
-bool ChessPlayer::isRightNormalPlayMoveFinder(const FindMoveRequestParam &param) const {
+bool ChessPlayer::isRightNormalPlayMoveFinder(const RequestParamFindMove &param) const {
   if(m_moveFinder->getPositionType() != NORMAL_POSITION) {
     return false;
   }
@@ -620,7 +620,7 @@ void ChessPlayer::allocateRemoteMoveFinder() {
 }
 
 // private
-void ChessPlayer::allocateMoveFinder(const FindMoveRequestParam &param) {
+void ChessPlayer::allocateMoveFinder(const RequestParamFindMove &param) {
   assert(!isRemote());
   switch(param.getGame().getPositionType()) {
   case NORMAL_POSITION  :
@@ -641,7 +641,7 @@ void ChessPlayer::allocateMoveFinder(const FindMoveRequestParam &param) {
 }
 
 // private
-AbstractMoveFinder *ChessPlayer::newMoveFinderNormalPlay(const FindMoveRequestParam &param) {
+AbstractMoveFinder *ChessPlayer::newMoveFinderNormalPlay(const RequestParamFindMove &param) {
 #ifndef TABLEBASE_BUILDER
   if(param.getTimeLimit().m_timeout == 0) {
     return new MoveFinderRandomPlay(getPlayer(), m_inputQueue);
