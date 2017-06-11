@@ -1,10 +1,10 @@
 #pragma once
 
 #include <NumberInterval.h>
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 #include <Math/Rectangle2D.h>
 
-class IsoCurveParameters : public PersistentParameter {
+class IsoCurveParameters : public PersistentData {
 public:
   String         m_expr;
   double         m_cellSize;

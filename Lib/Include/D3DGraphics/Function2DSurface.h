@@ -1,8 +1,8 @@
 #pragma once
 
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 
-class Function2DSurfaceParameters : public PersistentParameter {
+class Function2DSurfaceParameters : public PersistentData {
 public:
   String         m_expr;
   DoubleInterval m_xInterval;

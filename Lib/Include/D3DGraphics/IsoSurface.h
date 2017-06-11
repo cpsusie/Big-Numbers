@@ -1,8 +1,8 @@
 #pragma once
 
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 
-class IsoSurfaceParameters : public PersistentParameter {
+class IsoSurfaceParameters : public PersistentData {
 public:
   String         m_expr;
   double         m_cellSize;

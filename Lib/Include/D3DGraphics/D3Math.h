@@ -1,7 +1,6 @@
 #pragma once
 
-#include <D3D9.h>
-#include <D3DX9.h>
+#include <MFCUtil/D3DeviceFactory.h>
 #include <Math/MathLib.h>
 #include <Math/Spherical.h>
 #include <Math/Point2D.h>
@@ -345,7 +344,7 @@ typedef enum {
  ,PP_PARAMETRICSURFACE
  ,PP_ISOSURFACE
  ,PP_ISOCURVE
-} PersistentParameterType;
+} PersistentDataType;
 
 
 #include "PragmaLib.h"

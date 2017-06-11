@@ -3,13 +3,13 @@
 #include <XmlDoc.h>
 #include <NumberInterval.h>
 
-class PersistentParameter {
+class PersistentData {
 private:
   String m_name;
 protected:
   static const TCHAR *s_defaultName;
 public:
-  PersistentParameter() : m_name(s_defaultName) {
+  PersistentData() : m_name(s_defaultName) {
   }
   void load(const String &fileName);
   void save(const String &fileName);

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 #include <MFCUtil/2DXML.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Point2D &p) {
@@ -9,7 +9,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Point2D &p
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, Point2D &p) {
-  XMLNodePtr n = PersistentParameter::getChild(doc, parent, tag);
+  XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
   doc.getValue(n, _T("x"), p.x);
   doc.getValue(n, _T("y"), p.y);
 }
@@ -23,7 +23,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const Rectangle2
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, Rectangle2D &r) {
-  XMLNodePtr n = PersistentParameter::getChild(doc, parent, tag);
+  XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
   doc.getValue(n, _T("x"), r.m_x);
   doc.getValue(n, _T("y"), r.m_y);
   doc.getValue(n, _T("w"), r.m_w);

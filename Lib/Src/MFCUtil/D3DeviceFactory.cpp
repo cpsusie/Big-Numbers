@@ -1,7 +1,7 @@
 #include "pch.h"
 #include <MFCUtil/D3DeviceFactory.h>
 
-LPDIRECT3D9EX D3DeviceFactory::s_direct3D = NULL;
+LPDIRECT3D D3DeviceFactory::s_direct3D = NULL;
 
 void D3DeviceFactory::initDirect3D() { // static
   Direct3DCreate9Ex( D3D_SDK_VERSION, &s_direct3D);

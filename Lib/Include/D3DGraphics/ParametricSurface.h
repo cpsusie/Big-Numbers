@@ -1,8 +1,8 @@
 #pragma once
 
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 
-class ParametricSurfaceParameters : public PersistentParameter {
+class ParametricSurfaceParameters : public PersistentData {
 public:
   String         m_exprX, m_exprY, m_exprZ;
   DoubleInterval m_tInterval;

@@ -476,7 +476,7 @@
     <ClInclude Include="..\..\Include\ObjectManager.h" />
     <ClInclude Include="..\..\Include\PackedArray.h" />
     <ClInclude Include="..\..\Include\Packer.h" />
-    <ClInclude Include="..\..\Include\PersistentParameter.h" />
+    <ClInclude Include="..\..\Include\PersistentData.h" />
     <ClInclude Include="..\..\Include\PragmaLib.h" />
     <ClInclude Include="..\..\Include\PriorityQueue.h" />
     <ClInclude Include="..\..\Include\ProcessTools.h" />
@@ -658,7 +658,7 @@
     <ClCompile Include="PackerStringArray.cpp" />
     <ClCompile Include="PackerWstr.cpp" />
     <ClCompile Include="Pause.cpp" />
-    <ClCompile Include="PersistentParameter.cpp" />
+    <ClCompile Include="PersistentData.cpp" />
     <ClCompile Include="pipe.cpp" />
     <ClCompile Include="PrimitiveStringifiers.cpp" />
     <ClCompile Include="PrimitiveToString.cpp" />

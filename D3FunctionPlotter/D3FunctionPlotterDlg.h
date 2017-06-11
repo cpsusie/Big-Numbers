@@ -38,7 +38,7 @@ private:
     D3SceneObject *createRotatedProfile();
     void createSaddle();
 
-    void setCalculatedObject(D3SceneObject *obj, PersistentParameter *param = NULL);
+    void setCalculatedObject(D3SceneObject *obj, PersistentData *param = NULL);
     void setCalculatedObject(Function2DSurfaceParameters *param);
     void setCalculatedObject(ParametricSurfaceParameters *param);
     void setCalculatedObject(IsoSurfaceParameters        *param);

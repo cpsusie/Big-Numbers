@@ -1,6 +1,6 @@
 #pragma once
 
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 #include <MFCUtil/Viewport2D.h>
 #include <Math/Expression/Expression.h>
 
@@ -43,7 +43,7 @@ void getValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode &trigoMode);
 void setValue(XMLDoc &doc, XMLNodePtr n, GraphStyle         style    );
 void getValue(XMLDoc &doc, XMLNodePtr n, GraphStyle        &style    );
 
-class GraphParameters : public PersistentParameter {
+class GraphParameters : public PersistentData {
 protected:
   void setStdValues(XMLDoc &doc, XMLNodePtr n);
   void getStdValues(XMLDoc &doc, XMLNodePtr n);

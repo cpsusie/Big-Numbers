@@ -325,7 +325,7 @@ void CD3FunctionPlotterDlg::setCalculatedObject(IsoSurfaceParameters *param) {
 //  }
 }
 
-void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentParameter *param) {
+void CD3FunctionPlotterDlg::setCalculatedObject(D3SceneObject *obj, PersistentData *param) {
   D3SceneObject *oldObj = getCalculatedObject();
   if(oldObj) {
     m_scene.removeSceneObject(oldObj);
@@ -535,7 +535,7 @@ void CD3FunctionPlotterDlg::OnResetPositions() {
 void CD3FunctionPlotterDlg::OnObjectEditFunction() {
   D3SceneObject *calcObj = getCalculatedObject();
   if(!calcObj) return;
-  PersistentParameter *param = (PersistentParameter*)calcObj->getUserData();
+  PersistentData *param = (PersistentData*)calcObj->getUserData();
   switch(param->getType()) {
   case PP_2DFUNCTION       :
     OnFileFunctionSurface();
@@ -547,7 +547,7 @@ void CD3FunctionPlotterDlg::OnObjectEditFunction() {
     OnFileIsoSurface();
     break;
   default:
-    AfxMessageBox(format(_T("Unknown PersistentParameterType:%d"), param->getType()).cstr());
+    AfxMessageBox(format(_T("Unknown PersistentDataType:%d"), param->getType()).cstr());
     break;
   }
 }

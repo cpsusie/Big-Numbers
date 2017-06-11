@@ -1,5 +1,5 @@
 #include "pch.h"
-#include <PersistentParameter.h>
+#include <PersistentData.h>
 #include <XmlUtil.h>
 
 void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const DoubleInterval &interval) {
@@ -9,7 +9,7 @@ void setValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, const DoubleInte
 }
 
 void getValue(XMLDoc &doc, XMLNodePtr parent, const TCHAR *tag, DoubleInterval &interval) {
-  XMLNodePtr n = PersistentParameter::getChild(doc, parent, tag);
+  XMLNodePtr n = PersistentData::getChild(doc, parent, tag);
   double from, to;
   doc.getValue(n, _T("from"), from);
   doc.getValue(n, _T("to")  , to  );

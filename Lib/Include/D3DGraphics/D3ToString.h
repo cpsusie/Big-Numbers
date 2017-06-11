@@ -1,7 +1,7 @@
 #pragma once
 
 #include <MyUtil.h>
-#include <D3D9.h>
+#include <MFCUtil/D3DeviceFactory.h>
 #include <MFCUtil/ColorSpace.h>
 #include "Light.h"
 #include "Material.h"

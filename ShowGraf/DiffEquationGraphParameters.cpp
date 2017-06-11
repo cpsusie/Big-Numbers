@@ -18,7 +18,7 @@ static void setValue(XMLDoc &doc, XMLNodePtr parent, const EquationAttributes &a
 }
 
 static void getValue(XMLDoc &doc, XMLNodePtr parent, EquationAttributes &attr) {
-  XMLNodePtr n = PersistentParameter::getChild(doc, parent, _T("attr"));
+  XMLNodePtr n = PersistentData::getChild(doc, parent, _T("attr"));
   doc.getValue(n, _T("start"  ), attr.m_startValue);
   String str;
   doc.getValue(n, _T("color"  ), str              );
