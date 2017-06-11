@@ -1,6 +1,6 @@
 #include "pch.h"
 
-// These Functions should be isolated to this function, så We'll no link DigitPoolo and a lot
+// These Functions should be isolated to this file, så we'll no link DigitPool and a lot
 // more unessecary datastructures/threads on NumberAddIn which only call (some) of these functions
 
 #define TENE0  1
@@ -24,86 +24,76 @@
 #define TENE18 1000000000000000000
 #define TENE19 10000000000000000000
 
-// Assume n = [0..1e8[
-int BigReal::getDecimalDigitCount32(unsigned long n) { // static
-  // kind of binary search
-  if(n < TENE4) {
-    if(n < TENE2) {
-      if(n < TENE1) {
-        return n ? 1 : 0;
-      } else { // 10 <= n < 1e2
-        return 2;
-      }
-    } else { // 1e2 <= n < 1e4
+// Assume n = [1..1e8[
+int BigReal::getDecimalDigitCount32(ULONG n) { // static
+  assert(n && (n < TENE8));
+  // Binary search
+  if(n < TENE4) {                           //        n < 1e4
+    if(n < TENE2) {                         //        n < 1e2
+      return (n < TENE1) ? 1 : 2;
+    } else {                                // 1e2 <= n < 1e4
       return (n < TENE3) ? 3 : 4;
     }
-  } else { // 1e4 <= n < 1e9
-    if(n < TENE6) {
+  } else {                                  // 1e4 <= n < 1e9
+    if(n < TENE6) {                         // 1e4 <= n < 1e6
       return (n < TENE5) ? 5 : 6;
-    } else { // 1e6 <= n < 1e9
+    } else {                                // 1e6 <= n < 1e9
       return (n < TENE7) ? 7 : 8;
     }
   }
 }
 
-// Assume n = [0..1e19]
-int BigReal::getDecimalDigitCount64(unsigned __int64 n) { // static
+// Assume n = [1..1e19[
+int BigReal::getDecimalDigitCount64(UINT64 n) { // static
+//  assert(n && (n < TENE19));
   // Binary search
-  if(n < TENE10) {                          // n < 1e10
-    if(n < TENE5) {                         // n < 1e5
-      if(n < TENE2) {                       // n < 1e2
-        if(n < TENE1) {                     //
-          return n ? 1 : 0;                 // n < 1e1
-        } else {                            // 1e1 <= n < 1e2
-          return 2;                         //
-        }                                   //
+  if(n < TENE10) {                          //        n < 1e10
+    if(n < TENE5) {                         //        n < 1e5
+      if(n < TENE2) {                       //        n < 1e2
+        return (n < TENE1) ? 1 : 2;
       } else {                              // 1e2 <= n < 1e5
-        if (n < TENE4) {                    // 1e2 <= n < 1e4
-          return (n < TENE3) ? 3 : 4;       // 1e2 <= n < 1e3
-        } else {                            // 1e3 <= n < 1e5
-          return 5;                         //
-        }                                   //
-      }                                     //
+        if(n < TENE4) {                     // 1e2 <= n < 1e4
+          return (n < TENE3) ? 3 : 4;
+        } else {                            // 1e4 <= n < 1e5
+          return 5;
+        }
+      }
     } else {                                // 1e5 <= n < 1e10
       if(n < TENE7) {                       // 1e5 <= n < 1e7
-        return (n < TENE6) ? 6 : 7;         //
+        return (n < TENE6) ? 6 : 7;
       } else {                              // 1e7 <= n < 1e10
-        if (n < TENE9) {                    // 1e7 <= n < 1e9
-          return (n < TENE8) ? 8 : 9;       //
+        if(n < TENE9) {                     // 1e7 <= n < 1e9
+          return (n < TENE8) ? 8 : 9;
         } else {                            // 1e9 <= n < 1e10
-          return 10;                        //
-        }                                   //
-      }                                     //
-    }                                       //
-  } else {                                  // 1e10 <= n <= 1e19
+          return 10;
+        }
+      }
+    }
+  } else {                                  // 1e10 <= n < 1e19
     if(n < TENE15) {                        // 1e10 <= n < 1e15
       if(n < TENE12) {                      // 1e10 <= n < 1e12
-        return (n < TENE11) ? 11 : 12;      // 1e10 <= n < 1e11
+        return (n < TENE11) ? 11 : 12;
       } else {                              // 1e12 <= n < 1e15
-        if (n < TENE14) {                   // 1e12 <= n < 1e13
+        if(n < TENE14) {                    // 1e12 <= n < 1e14
           return (n < TENE13) ? 13 : 14;    //
-        } else {                            // 1e13 <= n < 1e15
-          return 15;                        //
-        }                                   //
-      }                                     //
-    } else {                                // 1e15 <= n <= 1e19
-      if (n < TENE17) {                     // 1e15 <= n < 1e17
-        return (n < TENE16) ? 16 : 17;      //
+        } else {                            // 1e14 <= n < 1e15
+          return 15;
+        }
+      }
+    } else {                                // 1e15 <= n < 1e19
+      if(n < TENE17) {                      // 1e15 <= n < 1e17
+        return (n < TENE16) ? 16 : 17;
       } else {                              // 1e17 <= n <= 1e19
-        if (n < TENE19) {                   // 1e17 <= n < 1e19
-          return (n < TENE18) ? 18 : 19;    //
-        } else {                            // 1e18 <= n <= 1e19
-          return 29;                        //
-        }                                   //
-      }                                     //
-    }                                       //
-  }                                         //
-}                                           //
+        return (n < TENE18) ? 18 : 19;
+      }
+    }
+  }
+}
 
 #ifdef HAS_LOOP_DIGITCOUNT
-// Assume n = [0..1eMAXDIGITS_INT64]
-int BigReal::getDecimalDigitCount64Loop(unsigned __int64 n) { // static
-  static const unsigned __int64 pow10Table[] = {
+// Assume n = ]0..1eMAXDIGITS_INT64[
+int BigReal::getDecimalDigitCount64Loop(UINT64 n) { // static
+  static const UINT64 pow10Table[] = {
      TENE0    ,TENE1    ,TENE2    ,TENE3
     ,TENE4    ,TENE5    ,TENE6    ,TENE7
     ,TENE8    ,TENE9    ,TENE10   ,TENE11
@@ -112,8 +102,8 @@ int BigReal::getDecimalDigitCount64Loop(unsigned __int64 n) { // static
   };
   int l = 0, r = ARRAYSIZE(pow10Table);
   while(l < r) {
-    const int m = (l+r)/2;
-    const unsigned __int64 &p10 = pow10Table[m];
+    const int     m = (l+r)/2;
+    const UINT64 &p10 = pow10Table[m];
     if(p10 <= n) {
       l = m + 1;
     } else {

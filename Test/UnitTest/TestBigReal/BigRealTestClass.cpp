@@ -968,7 +968,7 @@ void BigRealTestClass::testGetDecimalDigitCount64() {
     _tprintf(_T("indtast tal mellem 1 og %I64u:"), 9999999999999999999ui64);
     TCHAR line[1000];
     GETS(line);
-    unsigned __int64 n;
+    UINT64 n;
     if(_stscanf(line,_T("%I64u"), &n) != 1) {
       _tprintf(_T("ikke et tal"));
     }
@@ -978,14 +978,14 @@ void BigRealTestClass::testGetDecimalDigitCount64() {
 }
 
 #ifdef HAS_LOOP_DIGITCOUNT
-typedef int (*DigitCounterFunction)(unsigned __int64);
+typedef int (*DigitCounterFunction)(UINT64);
 
 class MeasureGetDigitCount : public MeasurableFunction {
 private:
-  const CompactArray<unsigned __int64> &m_a;
+  const CompactArray<UINT64> &m_a;
   DigitCounterFunction m_counterFunction;
 public:
-  MeasureGetDigitCount(DigitCounterFunction counter, const CompactArray<unsigned __int64> &a) 
+  MeasureGetDigitCount(DigitCounterFunction counter, const CompactArray<UINT64> &a)
     : m_a(a), m_counterFunction(counter)
   {
   }
@@ -999,19 +999,21 @@ void MeasureGetDigitCount::f() {
 }
 
 void BigRealTestClass::measureGetDecimalDigitCount() {
-  CompactArray<unsigned __int64> testData;
-  for (unsigned __int64 x = 0; x < BIGREALBASE; x = (x + 1) * 3) {
-    testData.add(x);
+  for(int i = 0; i < 20; i++) {
+    CompactArray<UINT64> testData;
+    for (UINT64 x = 1; x < BIGREALBASE; x = (x + 1) * 7/6) {
+      testData.add(x);
+    }
+    testData.shuffle();
+    MeasureGetDigitCount measureFast(BigReal::getDecimalDigitCount64, testData);
+    MeasureGetDigitCount measureLoop(BigReal::getDecimalDigitCount64Loop, testData);
+
+    const double fastTime = measureTime(measureFast, MEASURE_THREADTIME);
+    const double loopTime = measureTime(measureLoop, MEASURE_THREADTIME);
+
+    _tprintf(_T("Time(getDecimalDigitCount64)  :%.4le\n"), fastTime);
+    _tprintf(_T("Time(getDecimalDigitCountLoop):%.4le\n"), loopTime);
   }
-
-  MeasureGetDigitCount measureFast(BigReal::getDecimalDigitCount64, testData);
-  MeasureGetDigitCount measureLoop(BigReal::getDecimalDigitCount64Loop, testData);
-
-  const double fastTime = measureTime(measureFast, MEASURE_THREADTIME);
-  const double loopTime = measureTime(measureLoop, MEASURE_THREADTIME);
-
-  _tprintf(_T("Time(getDecimalDigitCount64)  :%.4le\n"), fastTime);
-  _tprintf(_T("Time(getDecimalDigitCountLoop):%.4le\n"), loopTime);
 }
 #endif // HAS_LOOP_DIGITCOUNT
 

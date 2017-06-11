@@ -14,7 +14,7 @@ void testGetDecimalDigitCount(TestStatistic &stat) {
 
 #ifdef TESTTIME
   double startTime = getProcessTime();
-  for(i = 0; i < BIGREALBASE; i++) {
+  for(i = 1; i < BIGREALBASE; i++) {
     int ddc1 = myGetDecimalDigitCount(i);
   }
   double oldTime = getProcessTime() - startTime;
@@ -28,7 +28,7 @@ void testGetDecimalDigitCount(TestStatistic &stat) {
   _tprintf(_T("oldTime:%lf. newTime:%lf\n"),oldTime,newTime);
 #endif
 
-  for(i = 0; i < BIGREALBASE; i = (i+1) * 2) {
+  for(i = 1; i < BIGREALBASE; i = (i+1) * 2) {
     int ddc1 = myGetDecimalDigitCount(i);
     int ddc2 = BigReal::getDecimalDigitCount(i);
     if(ddc1 != ddc2) {

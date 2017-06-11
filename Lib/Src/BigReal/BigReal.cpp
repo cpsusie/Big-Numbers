@@ -35,7 +35,7 @@ void BigReal::insertDigit(BRDigitType n) {
 #include <CallCounter.h>
 
 #ifdef COUNT_CALLS
-#define DECLARE_CALLCOUNTER static CallCounter _callCounter(__TFUNCTION__);
+#define DECLARE_CALLCOUNTER static CallCounter _callCounter(__TFUNCTION__)
 #define COUNTKEYCALL(n)                        _callCounter.incr(n)
 #define COUNTCALL()                            _callCounter.incr()
 #else
