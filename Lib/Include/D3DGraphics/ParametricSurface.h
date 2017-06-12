@@ -1,6 +1,7 @@
 #pragma once
 
 #include <PersistentData.h>
+#include <NumberInterval.h>
 
 class ParametricSurfaceParameters : public PersistentData {
 public:

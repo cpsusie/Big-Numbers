@@ -1,7 +1,6 @@
 #pragma once
 
 #include <XmlDoc.h>
-#include <NumberInterval.h>
 
 class PersistentData {
 private:

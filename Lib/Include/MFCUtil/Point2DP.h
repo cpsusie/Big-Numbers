@@ -1,5 +1,6 @@
 #pragma once
 
+#include "WinTools.h"
 #include <Math/Rectangle2D.h>
 
 inline float fixedToFloat(const FIXED &x) {
