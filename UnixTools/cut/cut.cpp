@@ -95,8 +95,8 @@ int _tmain(int argc, TCHAR **argv) {
 
     format = linefeed ? _T("%s\n") : _T("%s");
 
-    TCHAR line[MAXLEN];
-    while(FGETS(line, ARRAYSIZE(line), f)) {
+    String line;
+    while(readLine(f, line)) {
       if(fieldSelection) {
         StringArray fieldArray;
         Tokenizer tok(line, delimiters);
@@ -125,7 +125,7 @@ int _tmain(int argc, TCHAR **argv) {
           }
         }
       } else {
-        const size_t n = _tcsclen(line);
+        const size_t n = line.length();
         for(size_t i = 0; i < intervalList.size();i++) {
           const Interval &interval = intervalList[i];
           if(interval.l >= n) {
@@ -134,7 +134,7 @@ int _tmain(int argc, TCHAR **argv) {
           TCHAR &ch = line[interval.r];
           TCHAR save = ch;
           ch = _T('\0');
-          _tprintf(format, line + interval.l);
+          _tprintf(format, line.cstr() + interval.l);
           ch = save;
         }
       }
