@@ -4,18 +4,16 @@
 
 class PrimeFactor {
 public:
-  unsigned __int64 m_prime;
-  UINT             m_multiplicity;
+  UINT64 m_prime;
+  UINT   m_multiplicity;
   inline PrimeFactor() : m_prime(0), m_multiplicity(0) {
   }
-  inline PrimeFactor(unsigned __int64 prime) : m_prime(prime), m_multiplicity(1) {
+  inline PrimeFactor(UINT64 prime) : m_prime(prime), m_multiplicity(1) {
   }
   inline String toString() const {
     return (m_multiplicity==1) ? format(_T("%I64u"), m_prime) : format(_T("%I64u^%lu"), m_prime, m_multiplicity);
   }
 };
-
-class PrimeFactorArray;
 
 class PrimeFactorSet : public BitSet {
 public:
@@ -27,9 +25,11 @@ class PrimeFactorArray : public CompactArray<PrimeFactor> {
 private:
   bool m_positive;
 public:
-  PrimeFactorArray(__int64 n);
+  PrimeFactorArray(INT64 n);
   PrimeFactorSet findFactorsWithMultiplicityAtLeast(UINT m) const;
-  __int64 getProduct() const;
+  // return list with all positive int-factors of n, ie. ignore sign
+  CompactInt64Array getAllFactors() const;
+  INT64 getProduct() const;
   bool isPositive() const {
     return m_positive;
   }

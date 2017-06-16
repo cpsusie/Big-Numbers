@@ -1,6 +1,6 @@
 #include "pch.h"
 #include <Math/Double80.h>
-#include <Math/Expression/PrimeFactors.h>
+#include <Math/PrimeFactors.h>
 
 class Primes {
 private:
@@ -8,8 +8,10 @@ private:
   BitSet         m_primes;
 
   Primes();
-  void removeNonPrimes(size_t start);     // remove all nonprimes from m_primes
-  void extendPrimeSet(UINT upperLimit); // extend m_primes to contain all primes from start..upperLimit (incl)
+  // remove all nonprimes from m_primes
+  void removeNonPrimes(size_t start);
+  // extend m_primes to contain all primes from start..upperLimit (incl)
+  void extendPrimeSet(UINT upperLimit);
   friend void deallocatePrimesInstance();
 public:
   Iterator<size_t> getIterator(UINT upperLimit);
@@ -20,7 +22,8 @@ Primes::Primes() : m_primes(3) {
   m_primes.add(2);
 }
 
-void Primes::extendPrimeSet(UINT upperLimit) { // extend m_primes to contain all primes [2..upperLimit]
+// extend m_primes to contain all primes [2..upperLimit]
+void Primes::extendPrimeSet(UINT upperLimit) {
   const size_t lastUpperLimit = m_primes.getCapacity() - 1;
   if(upperLimit > lastUpperLimit) {
     m_primes.setCapacity(upperLimit+1);
@@ -62,14 +65,14 @@ Primes &Primes::getInstance() { // static
   return *s_instance;
 }
 
-PrimeFactorArray::PrimeFactorArray(__int64 n) {
+PrimeFactorArray::PrimeFactorArray(INT64 n) {
   if(n >= 0) {
     m_positive = true;
   } else {
     n = -n;
     m_positive = false;
   }
-  const unsigned long upperLimit = getLong(sqrt(Double80(n))) + 1;
+  const ULONG upperLimit = getUlong(sqrt(Double80(n))) + 1;
   for(Iterator<size_t> it = Primes::getInstance().getIterator(upperLimit); it.hasNext();) {
     const size_t p = it.next();
     if(n % p == 0) {
@@ -99,8 +102,41 @@ PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(UINT m) cons
   return result;
 }
 
-__int64 PrimeFactorArray::getProduct() const {
-  __int64 result = m_positive ? 1 : -1;
+CompactInt64Array PrimeFactorArray::getAllFactors() const {
+  const PrimeFactorArray &pfa        = *this;
+  const UINT              digitCount = (UINT)pfa.size();
+  CompactIntArray         digit(digitCount);
+  CompactInt64Array       maxProd(digitCount);
+  UINT resultCapacity = 1;
+  for(UINT i = 0; i < digitCount; i++) {
+    const PrimeFactor &pf = pfa[i];
+    digit.add(0);
+    resultCapacity *= (pf.m_multiplicity + 1);
+    UINT64 pm = pf.m_prime;
+    for(UINT j = 1; j < pf.m_multiplicity; j++) {
+      pm *= pf.m_prime;
+    }
+    maxProd.add(pm);
+  }
+  CompactInt64Array result(resultCapacity);
+  INT64 prod = 1; // all digits are zero
+  while(result.size() < resultCapacity) {
+    result.add(prod);
+    for(UINT d = 0; d < digitCount;) {
+      if(++digit[d] <= pfa[d].m_multiplicity) {
+        prod *= pfa[d].m_prime;
+        break;
+      } else {
+        digit[d] = 0;
+        prod /= maxProd[d++];
+      }
+    }
+  }
+  return result;
+}
+
+INT64 PrimeFactorArray::getProduct() const {
+  INT64 result = m_positive ? 1 : -1;
   for(size_t i = 0; i < size(); i++) {
     const PrimeFactor &pf = (*this)[i];
     for(UINT j = 0; j < pf.m_multiplicity; j++) {

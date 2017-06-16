@@ -2,7 +2,7 @@
 #include <Math/Expression/Expression.h>
 #include <Math/Expression/SumElement.h>
 #include <Math/Expression/ExpressionFactor.h>
-#include <Math/Expression/PrimeFactors.h>
+#include <Math/PrimeFactors.h>
 
 class MainReducer : public ExpressionTransformer {
 private:
