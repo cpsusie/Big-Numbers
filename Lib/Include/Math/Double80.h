@@ -168,27 +168,27 @@ public:
   }
 
   inline Double80(UINT x) {
-    *this = (Double80)(unsigned long)(x);
+    *this = (Double80)(ULONG)(x);
   }
 
 #ifdef IS32BIT
   Double80(long             x);
-  Double80(unsigned long    x);
-  Double80(__int64          x);
-  Double80(unsigned __int64 x);
+  Double80(ULONG            x);
+  Double80(INT64            x);
+  Double80(UINT64           x);
   Double80(float            x);
   Double80(double           x);
 #else
   inline Double80(long x) {
     D80consLong(*this, x);
   }
-  inline Double80(unsigned long x) {
+  inline Double80(ULONG x) {
     D80consULong(*this, x);
   }
-  inline Double80(__int64 x) {
+  inline Double80(INT64 x) {
     D80consLongLong(*this, x);
   }
-  inline Double80(unsigned __int64 x) {
+  inline Double80(UINT64 x) {
     D80consULongLong(*this, x);
   }
   inline Double80(float x) {
@@ -245,19 +245,19 @@ public:
     return tmp;
   }
 
-  friend inline unsigned long getUlong(const Double80 &x) {
+  friend inline ULONG getUlong(const Double80 &x) {
     unsigned long tmp;
     D80ToULong(tmp, x);
     return tmp;
   }
 
-  friend inline __int64 getInt64(const Double80 &x) {
+  friend inline INT64 getInt64(const Double80 &x) {
     long long tmp;
     D80ToLongLong(tmp, x);
     return tmp;
   }
 
-  friend inline unsigned __int64 getUint64(const Double80 &x) {
+  friend inline UINT64 getUint64(const Double80 &x) {
     unsigned long long tmp;
     D80ToULongLong(tmp, x);
     return tmp;
@@ -340,7 +340,7 @@ public:
   bool isPositive() const { return (m_value[9] & 0x80) == 0; }
   bool isNegative() const { return (m_value[9] & 0x80) != 0; }
 
-  unsigned long hashCode() const;
+  ULONG hashCode() const;
 
   String toString() const;
 

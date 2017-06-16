@@ -337,7 +337,7 @@ Double80::Double80(long x) {
   }
 }
 
-Double80::Double80(unsigned long x) {
+Double80::Double80(ULONG x) {
   if(x > _I32_MAX) {
     static const long i32max = _I32_MAX;
     const long tmp = x & _I32_MAX;
@@ -359,7 +359,7 @@ Double80::Double80(unsigned long x) {
   }
 }
 
-Double80::Double80(__int64 x) {
+Double80::Double80(INT64 x) {
   __asm {
     fild x
     mov eax, this
@@ -367,10 +367,10 @@ Double80::Double80(__int64 x) {
   }
 }
 
-Double80::Double80(unsigned __int64 x) {
+Double80::Double80(UINT64 x) {
   if(x > _I64_MAX) {
-    static const __int64 i64max = _I64_MAX;
-    const __int64 tmp = x & _I64_MAX;
+    static const INT64 i64max = _I64_MAX;
+    const INT64 tmp = x & _I64_MAX;
     __asm {
       fild tmp
       fild i64max
