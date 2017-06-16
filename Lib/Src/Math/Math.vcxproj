@@ -462,6 +462,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AkimaSpline.cpp" />
+    <ClCompile Include="ChiSquaredDistribution.cpp" />
     <ClCompile Include="CommonSpline.cpp" />
     <ClCompile Include="Complex.cpp" />
     <ClCompile Include="ComplexMatrix.cpp" />
@@ -505,7 +506,6 @@
     <ClCompile Include="Expression\ParserTreeOpCommon.cpp" />
     <ClCompile Include="Expression\ParserTreeOpSForm.cpp" />
     <ClCompile Include="Expression\ParserTreeSymbolTable.cpp" />
-    <ClCompile Include="Expression\PrimeFactors.cpp" />
     <ClCompile Include="Expression\SNode.cpp" />
     <ClCompile Include="Expression\SumElement.cpp" />
     <ClCompile Include="Expression\TestMachineCode.cpp" />
@@ -541,6 +541,7 @@
     <ClCompile Include="Polar.cpp" />
     <ClCompile Include="Polygon2D.cpp" />
     <ClCompile Include="Polynomial.cpp" />
+    <ClCompile Include="PrimeFactors.cpp" />
     <ClCompile Include="QRMatrix.cpp" />
     <ClCompile Include="Rational.cpp" />
     <ClCompile Include="RationalIO.cpp" />
@@ -689,7 +690,6 @@
     <ClInclude Include="..\..\Include\Math\Expression\Number.h" />
     <ClInclude Include="..\..\Include\Math\Expression\OpCodes.h" />
     <ClInclude Include="..\..\Include\Math\Expression\ParserTree.h" />
-    <ClInclude Include="..\..\Include\Math\Expression\PrimeFactors.h" />
     <ClInclude Include="..\..\Include\Math\Expression\SumElement.h" />
     <ClInclude Include="..\..\Include\Math\fft.h" />
     <ClInclude Include="..\..\Include\Math\Int128.h" />
@@ -705,6 +705,7 @@
     <ClInclude Include="..\..\Include\Math\Polygon2D.h" />
     <ClInclude Include="..\..\Include\Math\Polynomial.h" />
     <ClInclude Include="..\..\Include\Math\PragmaLib.h" />
+    <ClInclude Include="..\..\Include\Math\PrimeFactors.h" />
     <ClInclude Include="..\..\Include\Math\Rational.h" />
     <ClInclude Include="..\..\Include\Math\Real.h" />
     <ClInclude Include="..\..\Include\Math\Rectangle2D.h" />

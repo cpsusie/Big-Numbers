@@ -59,6 +59,35 @@ Real gamma(const Real &x) {
   }
 }
 
+Real lnGamma(const Real &x) {
+  if(x < 0) {
+    return 1.0/(x-floor(x)); // undefined
+  }
+  if(x == floor(x)) {
+    Real res = 0;
+    for(Real p = x-1; p > 1; p -= 1) {
+      res += log(p);
+    }
+    return res;
+  }
+
+  if(x > 2) {
+    Real res = 0, p = x - 1;
+    for(; p > 2; p -= 1) {
+      res += log(p);
+    }
+    // p = ]1; 2[
+    return res + log(p) + log(gamma1_2R(getDouble(p)));
+  } else { // x = ]0; 2[
+    Real res = 0, p = x;
+    for(; p < 1; p += 1) {
+      res -= log(p);
+    }
+    // p = ]1; 2[
+    return res + log(gamma1_2R(getDouble(p)));
+  }
+}
+
 // Calculates x! = x*(x-1)*(x-2)*...*2*1, extended to real numbers by the gamma function x! = gamma(x+1)
 Real fac(const Real &x) {
   return gamma(x+1);

@@ -71,6 +71,7 @@ Real acsc(                const Real &x, TrigonometricMode mode);
 Real asec(                const Real &x, TrigonometricMode mode);
 
 Real gamma(               const Real &x);
+Real lnGamma(             const Real &x);
 Real gauss(               const Real &x);
 Real norm(                const Real &x);
 Real probitFunction(      const Real &x);
@@ -78,6 +79,10 @@ Real errorFunction(       const Real &x);
 Real inverseErrorFunction(const Real &x);
 Real fac(                 const Real &x);
 Real dsign(               const Real &x);
+
+// Assume x >= 0
+Real chiSquaredDensity(      UINT df, const Real &x);
+Real chiSquaredDistribution( UINT df, const Real &x);
 
 Real mypow(               const Real &x,      const Real &y    );
 Real binomial(            const Real &x,      const Real &y    );
