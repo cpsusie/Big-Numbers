@@ -24,7 +24,7 @@ namespace TestBitSet {
       return _ttoi(x.cstr());
     }
 
-    unsigned long hashCode() const {
+    ULONG hashCode() const {
       return x.hashCode();
     }
 
@@ -39,7 +39,7 @@ namespace TestBitSet {
     friend Packer &operator >> (Packer &p, Key &k);
   };
 
-  unsigned long keyHash(const Key &key) {
+  ULONG keyHash(const Key &key) {
     return key.hashCode();
   }
 
