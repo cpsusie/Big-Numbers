@@ -609,9 +609,13 @@ template<class S, class T> S &operator>>(S &in, CompactArray<T> &a) {
 typedef CompactArray<TCHAR*> CompactStrArray;
 typedef CompactArray<char>   CompactCharArray;
 typedef CompactArray<short>  CompactShortArray;
+typedef CompactArray<USHORT> CompactUshortArray;
 typedef CompactArray<int>    CompactIntArray;
+typedef CompactArray<UINT>   CompactUintArray;
 typedef CompactArray<long>   CompactLongArray;
+typedef CompactArray<ULONG>  CompactUlongArray;
 typedef CompactArray<INT64>  CompactInt64Array;
+typedef CompactArray<UINT64> CompactUint64Array;
 typedef CompactArray<float>  CompactFloatArray;
 typedef CompactArray<double> CompactDoubleArray;
 typedef CompactArray<size_t> CompactSizetArray;

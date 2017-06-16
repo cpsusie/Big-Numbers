@@ -213,7 +213,7 @@ public:
   }
 
   bool remove(const K &key) {
-    throwException(_T("CompactHashSet::remove:Unsuppported operation"));
+    throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
 
@@ -354,3 +354,10 @@ public:
     clear();
   }
 };
+
+typedef CompactHashSet<CompactShortKeyType > CompactShortHashSet;
+typedef CompactHashSet<CompactUShortKeyType> CompactUShortHashSet;
+typedef CompactHashSet<CompactIntKeyType   > CompactIntHashSet;
+typedef CompactHashSet<CompactUIntKeyType  > CompactUIntHashSet;
+typedef CompactHashSet<CompactFloatKeyType > CompactFloatHashSet;
+typedef CompactHashSet<CompactDoubleKeyType> CompactDoubleHashSet;

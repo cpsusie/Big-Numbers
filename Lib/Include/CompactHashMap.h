@@ -227,7 +227,7 @@ public:
   }
 
   bool remove(const K &key) {
-    throwException(_T("CompactHashMap::remove:Unsuppported operation"));
+    throwUnsupportedOperationException(__TFUNCTION__);
     return false;
   }
 
@@ -427,5 +427,75 @@ public:
 
   void unload() {
     clear();
+  }
+};
+
+template <class T> class CompactShortHashMap : public CompactHashMap<CompactShortKeyType, T> {
+public:
+  CompactShortHashMap() {
+  }
+  explicit CompactShortHashMap(size_t capacity)  : CompactHashMap<CompactShortKeyType, T>(capacity) {
+  }
+  CompactShortHashMap(const CompactShortHashMap<T> &src) : CompactHashMap<CompactShortKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactUShortHashMap : public CompactHashMap<CompactUShortKeyType, T> {
+public:
+  CompactUShortHashMap() {
+  }
+  explicit CompactUShortHashMap(size_t capacity)  : CompactHashMap<CompactUShortKeyType, T>(capacity) {
+  }
+  CompactUShortHashMap(const CompactUShortHashMap<T> &src) : CompactHashMap<CompactUShortKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactIntHashMap : public CompactHashMap<CompactIntKeyType, T> {
+public:
+  CompactIntHashMap() {
+  }
+  explicit CompactIntHashMap(size_t capacity)  : CompactHashMap<CompactIntKeyType, T>(capacity) {
+  }
+  CompactIntHashMap(const CompactIntHashMap<T> &src) : CompactHashMap<CompactIntKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactUIntHashMap : public CompactHashMap<CompactUIntKeyType, T> {
+public:
+  CompactUIntHashMap() {
+  }
+  explicit CompactUIntHashMap(size_t capacity)  : CompactHashMap<CompactUIntKeyType, T>(capacity) {
+  }
+  CompactUIntHashMap(const CompactUIntHashMap<T> &src) : CompactHashMap<CompactUIntKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactFloatHashMap : public CompactHashMap<CompactFloatKeyType, T> {
+public:
+  CompactFloatHashMap() {
+  }
+  explicit CompactFloatHashMap(size_t capacity)  : CompactHashMap<CompactFloatKeyType, T>(capacity) {
+  }
+  CompactFloatHashMap(const CompactFloatHashMap<T> &src) : CompactHashMap<CompactFloatKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactDoubleHashMap : public CompactHashMap<CompactDoubleKeyType, T> {
+public:
+  CompactDoubleHashMap() {
+  }
+  explicit CompactDoubleHashMap(size_t capacity)  : CompactHashMap<CompactDoubleKeyType, T>(capacity) {
+  }
+  CompactDoubleHashMap(const CompactDoubleHashMap<T> &src) : CompactHashMap<CompactDoubleKeyType, T>(src) {
+  }
+};
+
+template <class T> class CompactStrHashMap    : public CompactHashMap<CompactStrKeyType, T> {
+public:
+  CompactStrHashMap() {
+  }
+  explicit CompactStrHashMap(size_t capacity)  : CompactHashMap<CompactStrKeyType, T>(capacity) {
+  }
+  CompactStrHashMap(const CompactStrHashMap<T> &src) : CompactHashMap<CompactStrKeyType, T>(src) {
   }
 };

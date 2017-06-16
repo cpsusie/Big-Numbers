@@ -11,18 +11,17 @@ public:
 #pragma warning( push )
 #pragma warning(disable:4311 4302)
 
-  inline unsigned long hashCode() const {
-    if (sizeof(m_value) > sizeof(unsigned long)) {
-      unsigned long result = 0;
-      const unsigned long *start = (unsigned long*)&m_value;
-      const unsigned long *end   = start + sizeof(m_value) / sizeof(unsigned long);
-      for (const unsigned long *p = start; p < end; p++) {
-        result ^= *p;
+  inline ULONG hashCode() const {
+    if (sizeof(m_value) > sizeof(ULONG)) {
+      ULONG result = 0;
+      const ULONG *start = (ULONG*)&m_value;
+      const ULONG *end   = start + sizeof(m_value) / sizeof(ULONG);
+      for(const ULONG *p = start; p < end;) {
+        result ^= *(p++);
       }
       return result;
-    }
-    else {
-      return (unsigned long)m_value;
+    } else {
+      return (ULONG)m_value;
     }
   }
 #pragma warning( pop )
@@ -35,4 +34,33 @@ public:
   }
 };
 
-typedef CompactKeyType<int> CompactIntKeyType;
+class CompactStrKeyType {
+private:
+  const TCHAR *m_value;
+public:
+  CompactStrKeyType() : m_value(EMPTYSTRING) {
+  }
+  inline CompactStrKeyType(const TCHAR *value) : m_value(value) {
+  }
+#pragma warning( push )
+#pragma warning(disable:4311 4302)
+
+  inline ULONG hashCode() const {
+    return strHash(m_value);
+  }
+#pragma warning( pop )
+
+  inline bool operator==(const CompactStrKeyType &k) const {
+    return _tcscmp(m_value,k.m_value) == 0;
+  }
+  operator const TCHAR*() const {
+    return m_value;
+  }
+};
+
+typedef CompactKeyType<short > CompactShortKeyType;
+typedef CompactKeyType<USHORT> CompactUShortKeyType;
+typedef CompactKeyType<int   > CompactIntKeyType;
+typedef CompactKeyType<UINT  > CompactUIntKeyType;
+typedef CompactKeyType<float > CompactFloatKeyType;
+typedef CompactKeyType<double> CompactDoubleKeyType;
