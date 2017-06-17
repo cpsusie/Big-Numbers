@@ -2,19 +2,19 @@
 #include <Math.h>
 #include <Random.h>
 
-static const __int64 multiplier  = (__int64)0x5DEECE66D;
-static const __int64 addend      = 0xB;
-static const __int64 mask        = ((__int64)1 << 48) - 1;
+static const INT64 multiplier  = (INT64)0x5DEECE66D;
+static const INT64 addend      = 0xB;
+static const INT64 mask        = ((INT64)1 << 48) - 1;
 
 Random::Random() {
   setSeed(0);
 }
 
-Random::Random(__int64 seed) {
+Random::Random(INT64 seed) {
   setSeed(seed);
 }
 
-void Random::setSeed(__int64 seed) {
+void Random::setSeed(INT64 seed) {
   m_seed = (seed ^ multiplier) & mask;
 }
 
@@ -27,12 +27,15 @@ UINT Random::next(UINT bits) {
   return (UINT)(m_seed >> (48 - bits));
 }
 
-bool Random::nextBool() {
-  return next(1) != 0;
-}
-
-int Random::nextInt() {
-  return next(32);
+UINT64 Random::next64(UINT bits) {
+  const UINT n = min(bits,32);
+  UINT64 result = next(n);
+  bits -= n;
+  if(bits) {
+    result <<= bits;
+    result |= next(bits);
+  }
+  return result;
 }
 
 /* 
@@ -42,12 +45,12 @@ int Random::nextInt() {
  * n is the bound on the random number to be returned. Must be positive.
  */
 int Random::nextInt(int n) {
-  if(n<=0) {
+  if(n <= 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("n must be positive"));
   }
 
   if((n & -n) == n) { // i.e., n is a power of 2
-    return (int)(((__int64)n * (__int64)next(31)) >> 31);
+    return (int)(((INT64)n * (INT64)next(31)) >> 31);
   }
 
   int bits, val;
@@ -58,12 +61,21 @@ int Random::nextInt(int n) {
   return val;
 }
 
-__int64 Random::nextInt64() {
-  return ((__int64)(next(32)) << 31) + next(32);
-}
+INT64 Random::nextInt64(INT64 n) {
+  if(n <= 0) {
+    throwInvalidArgumentException(__TFUNCTION__, _T("n must be positive"));
+  }
 
-__int64 Random::nextInt64(__int64 n) {
-  return nextInt64() % n;
+  if((n & -n) == n) { // i.e., n is a power of 2
+    return next64(63) & (n-1);
+  }
+
+  INT64 bits, val;
+  do {
+    bits = next64(63);
+    val = bits % n;
+  } while(bits - val + (n-1) < 0);
+  return val;
 }
 
 float Random::nextFloat() {
@@ -75,8 +87,8 @@ float Random::nextFloat(float low, float high) {
 }
 
 double Random::nextDouble() {
-  __int64 l = (((unsigned __int64)next(26)) << 27) + next(27);
-  return l / (double)((__int64)1 << 53);
+  INT64 l = (((UINT64)next(26)) << 27) + next(27);
+  return l / (double)((INT64)1 << 53);
 }
 
 double Random::nextDouble(double low, double high) {
