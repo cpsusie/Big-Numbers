@@ -512,6 +512,7 @@
     <ClCompile Include="fft.cpp" />
     <ClCompile Include="FritschCarlsonSpline.cpp" />
     <ClCompile Include="gammaR.cpp" />
+    <ClCompile Include="GammaStirling.cpp" />
     <ClCompile Include="GaussDistribution.cpp" />
     <ClCompile Include="Gradient.cpp" />
     <ClCompile Include="Int128IO.cpp" />

@@ -105,7 +105,7 @@ PrimeFactorSet PrimeFactorArray::findFactorsWithMultiplicityAtLeast(UINT m) cons
 CompactInt64Array PrimeFactorArray::getAllFactors() const {
   const PrimeFactorArray &pfa        = *this;
   const UINT              digitCount = (UINT)pfa.size();
-  CompactIntArray         digit(digitCount);
+  CompactUintArray        digit(digitCount);
   CompactInt64Array       maxProd(digitCount);
   UINT resultCapacity = 1;
   for(UINT i = 0; i < digitCount; i++) {

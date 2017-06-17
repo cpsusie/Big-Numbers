@@ -72,6 +72,8 @@ Real asec(                const Real &x, TrigonometricMode mode);
 
 Real gamma(               const Real &x);
 Real lnGamma(             const Real &x);
+Real gammaStirling(       const Real &x);
+Real lnGammaStirling(     const Real &x);
 Real gauss(               const Real &x);
 Real norm(                const Real &x);
 Real probitFunction(      const Real &x);
@@ -91,13 +93,17 @@ Real dmin(                const Real &x1,     const Real &x2   );
 int  dmax(                int         x1,     int         x2   );
 int  dmin(                int         x1,     int         x2   );
 
-Real random(              const Real &lower,  const Real &upper); // use _standardRandomGenerator declared in Random.h
-Real randomGaussian(      const Real &mean,   const Real &s    ); // mean and standardDeviation. use _standardRandomGenerator
+// use _standardRandomGenerator declared in Random.h
+Real random(              const Real &lower,  const Real &upper);
+// mean and standardDeviation. use _standardRandomGenerator
+Real randomGaussian(      const Real &mean,   const Real &s    );
 
 void setToRandom(Real &x);
 
-Real poly( const Real &x, int degree, const Real *coef); // poly(x)  = a[n]x^n + a[n-1]x^(n-1)+...+a[1]x + a[0]; n = degree
-Real poly1(const Real &x, int degree, const Real *coef); // poly1(x) = a[0]x^n + a[1]x^(n-1)+...+a[n-1]x + a[n]; n = degree
+// poly(x)  = a[n]x^n + a[n-1]x^(n-1)+...+a[1]x + a[0]; n = degree
+Real poly( const Real &x, int degree, const Real *coef);
+// poly1(x) = a[0]x^n + a[1]x^(n-1)+...+a[n-1]x + a[n]; n = degree
+Real poly1(const Real &x, int degree, const Real *coef);
 
 Real ator(const char *str); 
 Real ttor(const TCHAR *str); 

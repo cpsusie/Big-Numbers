@@ -60,8 +60,8 @@ Real gamma(const Real &x) {
 }
 
 Real lnGamma(const Real &x) {
-  if(x < 0) {
-    return 1.0/(x-floor(x)); // undefined
+  if(x <= 0) {
+    throwInvalidArgumentException(__TFUNCTION__,_T("x=%s. must be > 0")); // undefined
   }
   if(x == floor(x)) {
     Real res = 0;

@@ -180,7 +180,7 @@ BigReal ln(const BigReal &x, const BigReal &f) {
 
   DigitPool *pool = x.getDigitPool();
   if(x == _1) {
-    return pool->get0();;
+    return pool->get0();
   }
 
   const BigReal g(PAPCprod(<,f, LNC.c1, pool));
