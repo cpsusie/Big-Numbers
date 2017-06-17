@@ -140,21 +140,14 @@ void CShwGraphDlg::OnSysCommand(UINT nID, LPARAM lParam) {
 void CShwGraphDlg::OnPaint() {
   if (IsIconic()) {
     CPaintDC dc(this);
-
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
-
-    // Center icon in client rectangle
-    int cxIcon = GetSystemMetrics(SM_CXICON);
-    int cyIcon = GetSystemMetrics(SM_CYICON);
-    CRect rect;
-    GetClientRect(&rect);
-    int x = (rect.Width() - cxIcon + 1) / 2;
-    int y = (rect.Height() - cyIcon + 1) / 2;
-
-    // Draw the icon
+    const int   cxIcon = GetSystemMetrics(SM_CXICON);
+    const int   cyIcon = GetSystemMetrics(SM_CYICON);
+    const CRect rect   = getClientRect(this);
+    const int   x      = (rect.Width()  - cxIcon + 1) / 2;
+    const int   y      = (rect.Height() - cyIcon + 1) / 2;
     dc.DrawIcon(x, y, m_hIcon);
-  }
-  else {
+  } else {
     CPaintDC dc(&m_cs);
     m_cs.paint(dc);
     m_cs.setDC(dc);
@@ -163,11 +156,8 @@ void CShwGraphDlg::OnPaint() {
     for(size_t i = 0; i < m_points.size(); i++) {
       vp.paintCross(m_points[i],BLACK);
     }
-
     solve();
-
     m_dataFit.setDegree(m_preferredDegree);
-
     try {
       if(showFunctionIsChecked()) drawDerived(vp,0);
       if(showD1IsChecked())       drawDerived(vp,1);
@@ -178,13 +168,12 @@ void CShwGraphDlg::OnPaint() {
       m_canDraw = false;
       showException(e);
     }
-
   }
   CDialog::OnPaint();
 }
 
 HCURSOR CShwGraphDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CShwGraphDlg::OnSize(UINT nType, int cx, int cy) {
@@ -252,26 +241,19 @@ void CShwGraphDlg::readData(FILE *f) {
   m_points.clear();
   while(FGETS(line,ARRAYSIZE(line),f)) {
     Point2D p;
-    if(_stscanf(line,_T("%le %le"), &p.x, &p.y) != 2)
+    if(_stscanf(line,_T("%le %le"), &p.x, &p.y) != 2) {
       continue;
+    }
     addPoint(p);
   }
 }
 
 void CShwGraphDlg::adjustTransform() {
-  double minx,maxx,miny,maxy;
   if(m_points.size()) {
-    minx = maxx = m_points[0].x;
-    miny = maxy = m_points[0].y;
-    for(unsigned int i = 1;i < m_points.size();i++) {
-      if(m_points[i].x < minx) minx = m_points[i].x;
-      if(m_points[i].x > maxx) maxx = m_points[i].x;
-      if(m_points[i].y < miny) miny = m_points[i].y;
-      if(m_points[i].y > maxy) maxy = m_points[i].y;
-    }
-    if(minx == maxx) { minx--; maxx++; }
-    if(miny == maxy) { miny--; maxy++; }
-    m_cs.setDataRange(Rectangle2DR(minx,maxx,miny,maxy), true);
+    Rectangle2D r = m_points.getBoundingBox();
+    if(r.getWidth()  == 0) { r.m_w = 10; }
+    if(r.getHeight() == 0) { r.m_h = 10; }
+    m_cs.setDataRange(r, true);
   }
 }
 

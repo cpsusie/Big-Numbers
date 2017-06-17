@@ -14,10 +14,10 @@ Rectangle2D Point2DArray::getBoundingBox() const {
     return Rectangle2D();
   }
 
-  const Point2D *p = &first();
-  double minX=p->x, maxX=minX, minY=p->y, maxY=minY;
-  p++;
-  for(size_t i = size(); --i; p++) {
+  const Point2D *p   = &first();
+  const Point2D *end = &last();
+  double minX = p->x, maxX = minX, minY = p->y, maxY = minY;
+  while(p++ < end) {
     if(p->x < minX) minX = p->x; else if(p->x > maxX) maxX = p->x;
     if(p->y < minY) minY = p->y; else if(p->y > maxY) maxY = p->y;
   }

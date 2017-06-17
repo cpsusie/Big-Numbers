@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include <Math/Polynomial.h>
-#include "ShowGraf.h"
 #include "MainFrm.h"
 #include "ShowGrafDoc.h"
 #include "ShowGrafView.h"

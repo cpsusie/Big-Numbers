@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "ShowGraf.h"
-
 #include "ShowGrafDoc.h"
 
 #ifdef _DEBUG

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "ShowGraf.h"
 #include "MainFrm.h"
 #include "DiffEquationGraphDlg.h"
 #include "FunctionGraphDlg.h"

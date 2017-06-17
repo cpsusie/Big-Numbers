@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "showgraf.h"
 #include "RollsizeDlg.h"
 
 #ifdef _DEBUG

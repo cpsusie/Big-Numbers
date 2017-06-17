@@ -88,12 +88,8 @@ public:
   enum { IDD = IDD_SHWGRAPH_DIALOG };
 
 public:
-  virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-
+    virtual BOOL PreTranslateMessage(MSG *pMsg);
+    virtual void DoDataExchange(CDataExchange *pDX);
     virtual BOOL OnInitDialog();
     afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
     afx_msg void OnPaint();
@@ -131,10 +127,6 @@ protected:
     afx_msg void OnToolsFont();
     afx_msg void OnToolsDisplaycoefficients() ;
     afx_msg void OnToolsGeneratecfunction();
-    afx_msg void OnToolsAutoDrawPolynomium();
-    afx_msg void OnToolsDisplaymap();
-    afx_msg void OnToolsFindworst();
-    afx_msg void OnToolsMakeplotfile();
     afx_msg void OnHelpAbout();
     DECLARE_MESSAGE_MAP()
 };
