@@ -74,6 +74,7 @@ public:
 
   inline Point2D(double _x, double _y) : x(_x), y(_y) {
   }
+  explicit Point2D(const String &s);
 //  Point2D(const POINTFX &p);
 
   inline Point2D operator-() const {

@@ -129,16 +129,15 @@ void CShwGraphDlg::showException(const Exception &e) {
 }
 
 void CShwGraphDlg::OnSysCommand(UINT nID, LPARAM lParam) {
-  if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+  if((nID & 0xFFF0) == IDM_ABOUTBOX) {
+    CAboutDlg().DoModal();
   } else {
     CDialog::OnSysCommand(nID, lParam);
   }
 }
 
 void CShwGraphDlg::OnPaint() {
-  if (IsIconic()) {
+  if(IsIconic()) {
     CPaintDC dc(this);
     SendMessage(WM_ICONERASEBKGND, (WPARAM) dc.GetSafeHdc(), 0);
     const int   cxIcon = GetSystemMetrics(SM_CXICON);
@@ -237,14 +236,19 @@ void CShwGraphDlg::movePoint(intptr_t index, const CPoint &point) {
 }
 
 void CShwGraphDlg::readData(FILE *f) {
-  TCHAR line[100];
+  String line, errMsg;
   m_points.clear();
-  while(FGETS(line,ARRAYSIZE(line),f)) {
-    Point2D p;
-    if(_stscanf(line,_T("%le %le"), &p.x, &p.y) != 2) {
-      continue;
+  while(readLine(f, line)) {
+    try {
+      addPoint(Point2D(line));
+    } catch(Exception e) {
+      if(errMsg.length() == 0) {
+        errMsg = e.what();
+      }
     }
-    addPoint(p);
+  }
+  if(errMsg.length() > 0) {
+    MessageBox(errMsg.cstr(), _T("Warning"), MB_ICONWARNING);
   }
 }
 
@@ -258,40 +262,42 @@ void CShwGraphDlg::adjustTransform() {
 }
 
 intptr_t CShwGraphDlg::findDataPoint(const CPoint &point) { /* returns the index of the nearest DataPoint. -1 if none */
-  double mindist = 100;
+  double minDist = 100;
   intptr_t found = -1;
   RectangleTransformation &tr = getTr();
   for(size_t i = 0; i < m_points.size();i++) {
-    Point2DP pp = tr.forwardTransform(m_points[i]);
-    if(abs(pp.x - point.x) > 5 || abs(pp.y - point.y) > 5)
+    const Point2DP pp = tr.forwardTransform(m_points[i]);
+    if(abs(pp.x - point.x) > 5 || abs(pp.y - point.y) > 5) {
       continue;
-    double dist = sqr(pp.x - point.x)+sqr(pp.y-point.y);
-    if(dist < 25 && dist < mindist) {
-      mindist = dist;
-      found = i;
+    }
+    const double dist = sqr(pp.x - point.x)+sqr(pp.y-point.y);
+    if(dist < 25 && dist < minDist) {
+      minDist = dist;
+      found   = i;
     }
   }
   return found;
 }
 
 void CShwGraphDlg::readTextFile(const String &fname) {
-  FILE *f = fopen(fname, _T("r"));
-  if(f) {
+  FILE *f = NULL;
+  try {
+    f = FOPEN(fname, _T("r"));
     readData(f);
-    fclose(f);
+    fclose(f); f = NULL;
     if(m_points.size()) {
       adjustTransform();
     }
     Invalidate(FALSE);
-  } else {
-    MessageBox(format(_T("Could not open %s"),fname.cstr()).cstr(), _T("Error"), MB_ICONWARNING);
+  } catch(Exception e) {
+    if(f) fclose(f);
+    MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
   }
 }
 
 void CShwGraphDlg::OnFileOpen() {
   CFileDialog dlg(TRUE);
-  if(dlg.DoModal() != IDOK) return;
-  if(_tcslen(dlg.m_ofn.lpstrFile) == 0) {
+  if((dlg.DoModal() != IDOK) || (_tcslen(dlg.m_ofn.lpstrFile) == 0)) {
     return;
   }
   readTextFile(dlg.m_ofn.lpstrFile);

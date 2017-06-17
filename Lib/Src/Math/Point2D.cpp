@@ -1,6 +1,42 @@
 #include "pch.h"
 #include <Math/Point2D.h>
 
+Point2D::Point2D(const String &s) {
+  DEFINEMETHODNAME;
+  const _TUCHAR *cp = (_TUCHAR*)s.cstr();
+  while(_istspace(*cp)) cp++;
+  bool gotParentes = false;
+  if(*cp == '(') {
+    cp++;
+    gotParentes = true;
+  }
+  const _TUCHAR *cpx = cp;
+  cp = parseReal(cp);
+  if(cp == NULL) {
+    throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
+  }
+  while(_istspace(*cp)) cp++;
+  switch(*cp) {
+  case _T(','):
+  case _T(';'):
+    cp++;
+    break;
+  }
+  const _TUCHAR *cpy = cp;
+  cp = parseReal(cp);
+  if(cp == NULL) {
+    throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
+  }
+  if(gotParentes) {
+    while(_istspace(*cp)) cp++;
+    if(*cp != _T(')')) {
+      throwInvalidArgumentException(method, _T("s=%s. missing ')'"), s.cstr());
+    }
+  }
+  x = _ttof(cpx);
+  y = _ttof(cpy);
+}
+
 double angle(const Point2D &p1, const Point2D &p2) {  // angle in radians between p1 and p2
   const double l1 = p1.length();
   const double l2 = p2.length();
