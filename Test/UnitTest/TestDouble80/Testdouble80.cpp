@@ -194,7 +194,7 @@ namespace TestDouble80 {
       s80 = toString(d80);
       verify(s64 == s80);
 
-      unsigned long ul = _UI32_MAX;
+      ULONG ul = _UI32_MAX;
       d64 = ul;
       d80 = ul;
 
@@ -202,7 +202,7 @@ namespace TestDouble80 {
       s80 = toString(d80);
       verify(s64 == s80);
 
-      __int64 i64 = _I64_MIN;
+      INT64 i64 = _I64_MIN;
       d80 = i64;
       s64 = toString(i64);
       s80 = toString(d80, 0, 0, ios::fixed);
@@ -214,13 +214,13 @@ namespace TestDouble80 {
       s80 = toString(d80, 0, 0, ios::fixed);
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
-      unsigned __int64 ui64 = _UI64_MAX;
+      UINT64 ui64 = _UI64_MAX;
       d80 = ui64;
       s64 = toString(ui64);
       s80 = toString(d80, 0, 0, ios::fixed);
       verify(substr(s64, 0, 17) == substr(s80, 0, 17));
 
-      ui64 = (unsigned __int64)_I64_MAX + 10;
+      ui64 = (UINT64)_I64_MAX + 10;
       d80 = ui64;
       s64 = toString(i64);
       s80 = toString(d80, 0, 0, ios::fixed);
@@ -274,6 +274,58 @@ namespace TestDouble80 {
       OUTPUT(_T("TimeMeasure on Double80::getExpo10(): count = %d, Time = %.3le msec"), count, timeUsage);
     }
 
+    void testAllCast(double d64) {
+      Double80 d80 = d64;
+      const long l1_32 = (long)d64;
+      const long l2_32 = getLong(d80);
+      verify(l2_32 == l1_32);
+
+      const ULONG ul1_32 = (ULONG)d64;
+      const ULONG ul2_32 = getUlong(d80);
+      verify(ul2_32 == ul1_32);
+
+      const INT64 l1_64 = (INT64)d64;
+      const INT64 l2_64 = getInt64(d80);
+      verify(l2_64 == l1_64);
+
+      const UINT64 ul1_64 = (UINT64)d64;
+      const UINT64 ul2_64 = getUint64(d80);
+      verify(ul2_64 == ul1_64);
+    }
+
+    TEST_METHOD(Double80TestCast) {
+      testAllCast( 0         );
+      testAllCast( 1         );
+      testAllCast(-1         );
+      testAllCast( 1.6       );
+      testAllCast(-1.6       );
+      testAllCast( 1.3       );
+      testAllCast(-1.3       );
+      testAllCast( INT_MAX   );
+      testAllCast( INT_MIN   );
+      testAllCast(-INT_MAX   );
+      testAllCast( UINT_MAX  );
+      testAllCast(-(double)UINT_MAX  );
+      testAllCast( (double)LLONG_MAX );
+      testAllCast( (double)LLONG_MIN );
+      testAllCast( (double)ULLONG_MAX);
+      testAllCast(-(double)ULLONG_MAX);
+
+      Double80 x(LLONG_MAX);
+      INT64    l64  = getInt64( x);
+      UINT64   ul64 = getUint64(x);
+      verify(l64  == LLONG_MAX);
+      verify(ul64 == LLONG_MAX);
+
+      x = LLONG_MIN;
+      l64  = getInt64( x);
+      verify(l64  == LLONG_MIN);
+
+      x = ULLONG_MAX;
+      ul64  = getUint64( x);
+      verify(ul64 == ULLONG_MAX);
+    }
+
     TEST_METHOD(Double80measureToString) {
 
       const double startTime = getProcessTime();
@@ -313,38 +365,38 @@ namespace TestDouble80 {
       OUTPUT(_T(" Max relative error:%.16le"), maxRelativeError);
     }
 
-    Double80 makeDouble80(unsigned __int64 significand, short exponent, bool positive) {
+    Double80 makeDouble80(UINT64 significand, short exponent, bool positive) {
       BYTE b[10];
-      (*(unsigned __int64*)b) = significand;
-      (*(unsigned short*)(&b[8])) = (unsigned short)(((exponent + 0x3fff) & 0x7fff));
+      (*(UINT64*)b) = significand;
+      (*(USHORT*)(&b[8])) = (USHORT)(((exponent + 0x3fff) & 0x7fff));
       if (!positive) {
         b[9] |= 0x80;
       }
       return Double80(b);
     }
 
-#define SIGNIFICAND(d) ((*((unsigned __int64*)(&(d)))) & 0xffffffffffffffffui64)
+#define SIGNIFICAND(d) ((*((UINT64*)(&(d)))) & 0xffffffffffffffffui64)
 
     TEST_METHOD(Double80FindEpsilon) {
       for (int i = 1; i < 1024; i *= 2) {
-        Double80         a = 10 * i;
-        unsigned __int64 aSignificand = SIGNIFICAND(a);
-        int              aExponent = Double80::getExpo2(a);
+        Double80 a            = 10 * i;
+        UINT64   aSignificand = SIGNIFICAND(a);
+        int      aExponent    = Double80::getExpo2(a);
 
-        Double80         b = makeDouble80(aSignificand, aExponent, true);
-        unsigned __int64 bSignificand = SIGNIFICAND(b);
-        short            bExponent = Double80::getExpo2(b);
+        Double80 b            = makeDouble80(aSignificand, aExponent, true);
+        UINT64   bSignificand = SIGNIFICAND(b);
+        short    bExponent    = Double80::getExpo2(b);
       }
 
-      const unsigned __int64 epsSignificand = 0x8000000000000001ui64;
-      Double80         epsP1 = makeDouble80(epsSignificand, 0, true);
-      unsigned __int64 epsP1Significand = SIGNIFICAND(epsP1);
-      int              epsP1Exponent = Double80::getExpo2(epsP1);
+      const UINT64 epsSignificand   = 0x8000000000000001ui64;
+      Double80     epsP1            = makeDouble80(epsSignificand, 0, true);
+      UINT64       epsP1Significand = SIGNIFICAND(epsP1);
+      int          epsP1Exponent    = Double80::getExpo2(epsP1);
 
-      Double80         eps = epsP1 - Double80::one;
-      unsigned __int64 testSignificand = SIGNIFICAND(eps);
-      int              testExponent = Double80::getExpo2(eps);
-      bool             epsPositive = eps.isPositive();
+      Double80     eps = epsP1 - Double80::one;
+      UINT64       testSignificand  = SIGNIFICAND(eps);
+      int          testExponent     = Double80::getExpo2(eps);
+      bool         epsPositive      = eps.isPositive();
 
       OUTPUT(_T("Eps:%s"), eps.toString().cstr());
 
@@ -403,7 +455,7 @@ namespace TestDouble80 {
     }
 
     TEST_METHOD(Double80TestSinCos) {
-      //  unsigned short cw = FPU::getControlWord();
+      //  USHORT cw = FPU::getControlWord();
       //  printf("FPU ctrlWord:%04x (%s)\n", cw, sprintbin(cw).cstr());
 
       for (double x = 0; x < 10; x += 0.1) {
@@ -442,22 +494,22 @@ namespace TestDouble80 {
 
       FPU::clearExceptions();
 
-      unsigned short cwSave = FPU::getControlWord();
+      USHORT cwSave = FPU::getControlWord();
 
       FPU::setPrecisionMode(FPU_HIGH_PRECISION);
       FPU::enableExceptions(true, FPU_INVALID_OPERATION_EXCEPTION
-        | FPU_DENORMALIZED_EXCEPTION
-        | FPU_DIVIDE_BY_ZERO_EXCEPTION
-        | FPU_OVERFLOW_EXCEPTION
-        | FPU_UNDERFLOW_EXCEPTION);
+                                | FPU_DENORMALIZED_EXCEPTION
+                                | FPU_DIVIDE_BY_ZERO_EXCEPTION
+                                | FPU_OVERFLOW_EXCEPTION
+                                | FPU_UNDERFLOW_EXCEPTION);
 
-      unsigned short cw1 = FPU::getStatusWord();
+      USHORT cw1 = FPU::getStatusWord();
 
       Double80 one = 1;
       Double80 onePlusEps = one + Double80::DBL80_EPSILON;
       Double80 diff = onePlusEps - one;
 
-      unsigned short cw2 = FPU::getStatusWord();
+      USHORT cw2 = FPU::getStatusWord();
 
       verify(diff != 0);
 
@@ -465,12 +517,12 @@ namespace TestDouble80 {
       diff = onePlusEps2 - one;
       verify(diff == 0);
 
-      Array<unsigned long> hashCodes;
+      Array<ULONG> hashCodes;
 
       long             i32max = _I32_MAX;
-      Double80         di32 = i32max;
-      long             ri32 = getLong(di32);
-      long             ri321 = getUlong(di32);
+      Double80         di32   = i32max;
+      long             ri32   = getLong(di32);
+      long             ri321  = getUlong(di32);
 
       verify(ri32 == i32max);
       verify(ri321 == i32max);
@@ -485,25 +537,25 @@ namespace TestDouble80 {
 
       hashCodes.add(di32.hashCode());
 
-      unsigned long    ul32max = _UI32_MAX;
-      Double80         dul32 = ul32max;
-      unsigned long    rul32 = getUlong(dul32);
-      unsigned int     rui32 = getUint(dul32);
+      ULONG    ul32max = _UI32_MAX;
+      Double80 dul32   = ul32max;
+      ULONG    rul32   = getUlong(dul32);
+      UINT     rui32   = getUint(dul32);
 
       verify(rul32 == ul32max);
       verify(rui32 == ul32max);
 
       hashCodes.add(dul32.hashCode());
 
-      __int64          i64max = _I64_MAX;
+      INT64          i64max = _I64_MAX;
       Double80         di64 = i64max;
-      __int64          ri64 = getInt64(di64);
+      INT64          ri64 = getInt64(di64);
 
       verify(ri64 == i64max);
 
       hashCodes.add(di64.hashCode());
 
-      __int64          i64min = _I64_MIN;
+      INT64          i64min = _I64_MIN;
       di64 = i64min;
       ri64 = getUint64(di64);
 
@@ -511,9 +563,9 @@ namespace TestDouble80 {
 
       hashCodes.add(di64.hashCode());
 
-      unsigned __int64 ui64max = _UI64_MAX;
+      UINT64 ui64max = _UI64_MAX;
       Double80         dui64 = ui64max;
-      unsigned __int64 rui64 = getUint64(dui64);
+      UINT64 rui64 = getUint64(dui64);
 
       verify(rui64 == ui64max);
 
@@ -660,7 +712,7 @@ namespace TestDouble80 {
       verify(!FPU::stackOverflow());
       verify(!FPU::stackUnderflow());
 #endif
-      unsigned short exp = FPU_INVALID_OPERATION_EXCEPTION
+      USHORT exp = FPU_INVALID_OPERATION_EXCEPTION
         | FPU_DENORMALIZED_EXCEPTION
         | FPU_DIVIDE_BY_ZERO_EXCEPTION
         | FPU_OVERFLOW_EXCEPTION
@@ -670,7 +722,7 @@ namespace TestDouble80 {
       cw1 = FPU::getControlWord();
       FPU::enableExceptions(false, exp);
       cw2 = FPU::getControlWord();
-      unsigned short cwDiff = cw1 ^ cw2;
+      USHORT cwDiff = cw1 ^ cw2;
       verify(cwDiff == exp);
 
       FPU::clearStatusWord();

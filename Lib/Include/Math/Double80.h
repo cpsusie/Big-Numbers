@@ -215,15 +215,15 @@ public:
   }
 
 #ifdef IS32BIT
-  friend          long    getLong(  const Double80 &x);
-  friend unsigned long    getUlong( const Double80 &x);
-  friend          __int64 getInt64( const Double80 &x);
-  friend unsigned __int64 getUint64(const Double80 &x);
-  friend float            getFloat( const Double80 &x);
-  friend double           getDouble(const Double80 &x);
+  friend long   getLong(  const Double80 &x);
+  friend ULONG  getUlong( const Double80 &x);
+  friend INT64  getInt64( const Double80 &x);
+  friend UINT64 getUint64(const Double80 &x);
+  friend float  getFloat( const Double80 &x);
+  friend double getDouble(const Double80 &x);
 
-  static int              getExpo2(const Double80 &x);
-  static int              getExpo10(const Double80 &x); // x == 0 ? 0 : floor(log10(|x|))
+  static int    getExpo2( const Double80 &x);
+  static int    getExpo10(const Double80 &x); // x == 0 ? 0 : floor(log10(|x|))
 
   Double80 &operator+=(const Double80 &x);
   Double80 &operator-=(const Double80 &x);
@@ -246,19 +246,19 @@ public:
   }
 
   friend inline ULONG getUlong(const Double80 &x) {
-    unsigned long tmp;
+    ULONG tmp;
     D80ToULong(tmp, x);
     return tmp;
   }
 
   friend inline INT64 getInt64(const Double80 &x) {
-    long long tmp;
+    INT64 tmp;
     D80ToLongLong(tmp, x);
     return tmp;
   }
 
   friend inline UINT64 getUint64(const Double80 &x) {
-    unsigned long long tmp;
+    UINT64 tmp;
     D80ToULongLong(tmp, x);
     return tmp;
   }

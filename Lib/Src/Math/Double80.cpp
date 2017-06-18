@@ -24,30 +24,30 @@ void FPU::init() { // static
   }
 }
 
-unsigned short FPU::getStatusWord() { // static
-  unsigned short sw;
+USHORT FPU::getStatusWord() { // static
+  USHORT sw;
   __asm {
     fstsw sw
   }
   return sw;
 }
 
-unsigned short FPU::getControlWord() { // static
-  unsigned short cw;
+USHORT FPU::getControlWord() { // static
+  USHORT cw;
   __asm {
     fnstcw cw 
   }
   return cw;
 }
 
-void FPU::setControlWord(unsigned short flags) { // static
+void FPU::setControlWord(USHORT flags) { // static
   __asm {
     fldcw flags
   }
 }
 
-unsigned short FPU::getTagsWord() { // static
-  unsigned short buffer[14];
+USHORT FPU::getTagsWord() { // static
+  USHORT buffer[14];
   __asm {
     fstenv buffer
   }
@@ -65,17 +65,17 @@ void FPU::clearExceptions() { // static
 #define SETBIT(n,bit)   ((n) |  (1<<(bit)))
 #define CLEARBIT(n,bit) ((n) & ~(1<<(bit)))
 
-unsigned short FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
-  const unsigned short cw = getControlWord();
+USHORT FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
+  const USHORT cw = getControlWord();
   switch(mode) {
   case FPU_LOW_PRECISION   : // set bit[8;9] of FPU control register to 0,0
-    setControlWord((unsigned short)CLEARBIT(CLEARBIT(cw,8),9));
+    setControlWord((USHORT)CLEARBIT(CLEARBIT(cw,8),9));
     break;
   case FPU_NORMAL_PRECISION: // set bit[8;9] of FPU control register to 0,1
-    setControlWord((unsigned short)SETBIT(CLEARBIT(cw,8),9));
+    setControlWord((USHORT)SETBIT(CLEARBIT(cw,8),9));
     break;
   case FPU_HIGH_PRECISION  : // set bit[8;9] of FPU control register to 1,1
-    setControlWord((unsigned short)SETBIT(SETBIT(cw,8),9));
+    setControlWord((USHORT)SETBIT(SETBIT(cw,8),9));
     break;
   default: throwInvalidArgumentException(__TFUNCTION__,_T("mode=%d"), mode);
   }
@@ -83,8 +83,8 @@ unsigned short FPU::setPrecisionMode(FPUPrecisionMode mode) { // static
 }
 
 FPUPrecisionMode FPU::getPrecisionMode() { // static
-  const unsigned short cw            = getControlWord();
-  const int            precisionMode = (cw >> 8) & 3;
+  const USHORT cw            = getControlWord();
+  const int    precisionMode = (cw >> 8) & 3;
   switch(precisionMode) {
   case 0 : return FPU_LOW_PRECISION;
   case 2 : return FPU_NORMAL_PRECISION;
@@ -96,20 +96,20 @@ FPUPrecisionMode FPU::getPrecisionMode() { // static
   }
 }
 
-unsigned short FPU::setRoundMode(FPURoundMode mode) { // static
-  const unsigned short cw = getControlWord();
+USHORT FPU::setRoundMode(FPURoundMode mode) { // static
+  const USHORT cw = getControlWord();
   switch(mode) {
   case FPU_ROUNDCONTROL_ROUND     : // set bit[10;11] of FPU control register to 0,0
-    setControlWord((unsigned short)CLEARBIT(CLEARBIT(cw,10),11));
+    setControlWord((USHORT)CLEARBIT(CLEARBIT(cw,10),11));
     break;
   case FPU_ROUNDCONTROL_ROUNDDOWN : // set bit[10;11] of FPU control register to 1,0
-    setControlWord((unsigned short)CLEARBIT(SETBIT(cw,10),11));
+    setControlWord((USHORT)CLEARBIT(SETBIT(cw,10),11));
     break;
   case FPU_ROUNDCONTROL_ROUNDUP   : // set bit[10;11] of FPU control register to 0,1
-    setControlWord((unsigned short)SETBIT(CLEARBIT(cw,10),11));
+    setControlWord((USHORT)SETBIT(CLEARBIT(cw,10),11));
     break;
   case FPU_ROUNDCONTROL_TRUNCATE  : // set bit[10;11] of FPU control register to 1,1
-    setControlWord((unsigned short)SETBIT(SETBIT(cw,10),11));
+    setControlWord((USHORT)SETBIT(SETBIT(cw,10),11));
     break;
   default:
     throwInvalidArgumentException(__TFUNCTION__, _T("mode=%d"), mode);
@@ -119,8 +119,8 @@ unsigned short FPU::setRoundMode(FPURoundMode mode) { // static
 }
 
 FPURoundMode FPU::getRoundMode() { // static
-  const unsigned short cw           = getControlWord();
-  const int            roundingMode = (cw >> 10) & 3;
+  const USHORT cw           = getControlWord();
+  const int    roundingMode = (cw >> 10) & 3;
   switch(roundingMode) {
   case 0 : return FPU_ROUNDCONTROL_ROUND;
   case 1 : return FPU_ROUNDCONTROL_ROUNDDOWN;
@@ -150,7 +150,7 @@ bool FPU::stackUnderflow() { // static
 }
 
 
-void FPU::enableExceptions(bool enable, unsigned short flags) { // static
+void FPU::enableExceptions(bool enable, USHORT flags) { // static
   flags &= 0x3f;  // We are only interested in the first 6 bits
   if(enable) {
     setControlWord(getControlWord() & ~flags); // 0-bit ENABLES the interrupt, a 1-bit DISABLES it
@@ -160,7 +160,7 @@ void FPU::enableExceptions(bool enable, unsigned short flags) { // static
 }
 
 void FPU::clearStatusWord() { // static
-  unsigned short cw = getControlWord();
+  USHORT cw = getControlWord();
   init();
   setControlWord(cw);
 }
@@ -209,7 +209,7 @@ static const Double80     digitLookupTable[10];
 
 static const Double80 maxi32P1 = Double80((UINT)_I32_MAX + 1);
 static const Double80 maxi64   = Double80(_I64_MAX);
-static const Double80 maxi64P1 = Double80((unsigned __int64)_I64_MAX + 1);
+static const Double80 maxi64P1 = Double80((UINT64)_I64_MAX + 1);
 
 
 void Double80::initClass() {
@@ -418,7 +418,7 @@ int Double80::getExpo2(const Double80 &x) { // static
 }
 
 int Double80::getExpo10(const Double80 &x) { // static
-  unsigned short cwSave,ctrlFlags;
+  USHORT cwSave,ctrlFlags;
   int result;
   __asm {
     mov eax, x
@@ -451,7 +451,7 @@ Exit:
 }
 
 long getLong(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
   long result;
   __asm {
     mov eax, x
@@ -462,32 +462,43 @@ long getLong(const Double80 &x) {
   return result;
 }
 
-unsigned long getUlong(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
-  unsigned long result;
+ULONG getUlong(const Double80 &x) {
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
+  ULONG result;
   if(x > maxi32) {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
       fld maxi32P1
       fsub
-      fistp result;
+      fistp result
     }
-    result += (unsigned long)_I32_MAX + 1;
+    result += (ULONG)_I32_MAX + 1;
+  } else if(x < -maxi32) {
+    __asm {
+      mov eax, x
+      fld TBYTE PTR [eax]
+      fchs
+      fld maxi32P1
+      fsub
+      fistp result
+    }
+    result = -(long)result;
+    result -= (UINT)_I32_MAX + 1;
   } else {
     __asm {
       mov eax, x
       fld TBYTE PTR [eax]
-      fistp result;
+      fistp result
     }
   }
   FPU::restoreControlWord(cwSave);
   return result;
 }
 
-__int64 getInt64(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
-  __int64 result;
+INT64 getInt64(const Double80 &x) {
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
+  INT64 result;
   __asm {
     mov eax, x
     fld TBYTE PTR [eax]
@@ -497,9 +508,9 @@ __int64 getInt64(const Double80 &x) {
   return result;
 }
 
-unsigned __int64 getUint64(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
-  unsigned __int64 result;
+UINT64 getUint64(const Double80 &x) {
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_TRUNCATE);
+  UINT64 result;
   if(x > maxi64) {
     __asm {
       mov eax, x
@@ -508,7 +519,9 @@ unsigned __int64 getUint64(const Double80 &x) {
       fsub
       fistp result;
     }
-    result += (unsigned __int64)_I64_MAX + 1;
+    if(result <= (UINT64)_I64_MAX) {
+      result += (UINT64)_I64_MAX + 1;
+    }
   } else {
     __asm {
       mov eax, x
@@ -954,7 +967,7 @@ void sincos(Double80 &c, Double80 &s) { // calculate both cos and sin. c:inout c
 }
 
 Double80 exp(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1025,7 +1038,7 @@ Double80 pow(const Double80 &x, const Double80 &y) {
     return y.isNegative() ? (Double80::one / Double80::zero) : Double80::zero;
   }
 
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR y
@@ -1053,7 +1066,7 @@ Double80 pow10(const Double80 &x) {
     return Double80::one;
   }
 
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1080,7 +1093,7 @@ Double80 pow2(const Double80 &x) {
     return Double80::one;
   }
 
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1101,7 +1114,7 @@ Double80 pow2(const Double80 &x) {
 }
 
 Double80 floor(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDDOWN);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1114,7 +1127,7 @@ Double80 floor(const Double80 &x) {
 }
 
 Double80 ceil(const Double80 &x) {
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUNDUP);
   Double80 result;
   __asm {
     mov eax, DWORD PTR x
@@ -1212,7 +1225,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
       return sx == 1 ? floor(half+x) : -floor(half-x);
     case 1 :
       { Double80 p = pow10(dec);
-        const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+        const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(half+x*p) : -floor(half-x*p);
         result /= p;
         FPU::restoreControlWord(cwSave);
@@ -1220,7 +1233,7 @@ Double80 round(const Double80 &x, int dec) { // 5-rounding
       }
     case -1:
       { Double80 p = pow10(-dec);
-        const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+        const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
         Double80 result = (sx == 1) ? floor(half+x/p) : -floor(half-x/p);
         result *= p;
         FPU::restoreControlWord(cwSave);
@@ -1247,8 +1260,8 @@ Double80 minMax(const Double80 &x, const Double80 &x1, const Double80 &x2) {
   return MINMAX(x, x1, x2);
 }
 
-#define SIGNIFICAND(d) ((*((unsigned __int64*)(&(d)))) & 0xffffffffffffffffui64)
-#define EXPONENT(d)    ((*(unsigned short*)(((char*)&(d)) + 8)) & 0x7fff)
+#define SIGNIFICAND(d) ((*((UINT64*)(&(d)))) & 0xffffffffffffffffui64)
+#define EXPONENT(d)    ((*(USHORT*)(((char*)&(d)) + 8)) & 0x7fff)
 
 bool isPInfinity(const Double80 &x) {
   return isInfinity(x) && x.isPositive();
@@ -1266,10 +1279,10 @@ bool isNan(const Double80 &x) {
   return EXPONENT(x) == 0x7fff;
 }
 
-unsigned long Double80::hashCode() const {
-  return *(unsigned long*)m_value 
-       ^ *(unsigned long*)(m_value+4)
-       ^ *(unsigned short*)(m_value+8);
+ULONG Double80::hashCode() const {
+  return *(ULONG*)m_value
+       ^ *(ULONG*)(m_value+4)
+       ^ *(USHORT*)(m_value+8);
 }
 
 String Double80::toString() const {
@@ -1312,7 +1325,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 
 #ifndef ASM_OPTIMIZED
 
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+  const USHORT cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   Double80 m = (expo10 == 0) ? x : (x / pow10(expo10));
   m = m * tenE18;
   while(fabs(m) >= tenE18M1) {
@@ -1336,13 +1349,13 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
 #else // ASM_OPTIMIZED
 
 #ifdef IS32BIT
-  const unsigned short cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
+  const USHORT          cwSave = FPU::setRoundMode(FPU_ROUNDCONTROL_ROUND);
   static const Double80 E18    = tenE18;
   static const Double80 E18M1  = tenE18M1;
   static const Double80 TEN    = ten;
   static const Double80 LOG2_5 = log2_5;
 
-  unsigned short cwSave1,ctrlFlags;
+  USHORT cwSave1,ctrlFlags;
 
   #ifndef SMART_VERSION
     _asm {
