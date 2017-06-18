@@ -184,7 +184,7 @@ namespace TestRandom {
     TEST_METHOD(TestRandInt64_0_n) {
       randomize();
       CompactDoubleArray allPValues;
-      for(INT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
+      for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
         CompactUint64Array samples;
         for(int i = 0; i < 100000; i++) {
           const UINT64 x = randInt64(n);
