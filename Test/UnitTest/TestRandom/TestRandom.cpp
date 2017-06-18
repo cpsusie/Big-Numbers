@@ -82,8 +82,9 @@ namespace TestRandom {
       }
       allPValues.add(P);
       if(P <= 0.05) {
-        OUTPUT(_T("P=%s, Q=%lf, Interval[%lld,%lld], len:%llu, buckets:%u, factors:%s")
-              ,toString(P).cstr(), Q, from,to,length,bucketCount
+        TCHAR tmpstr[100];
+        OUTPUT(_T("P=%s, Q=%lf, Interval[%lld,%lld], length:%s, buckets:%u, factors:%s")
+              ,toString(P).cstr(), Q, from,to,_i128tot(length,tmpstr,10),bucketCount
               ,allFactors.toStringBasicType().cstr()
               );
       }
@@ -91,13 +92,14 @@ namespace TestRandom {
     return allPValues;
   }
 
+#define SAMPLECOUNT 100000
   TEST_CLASS(TestRandom) {
   public:
     TEST_METHOD(TestNextInt32_INT_MIN_MAX) {
       Random rnd;
       rnd.randomize();
-      CompactIntArray samples;
-      for(int i = 0; i < 100000; i++) {
+      CompactIntArray samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
         const int x = rnd.nextInt();
         samples.add(x);
       }
@@ -107,8 +109,8 @@ namespace TestRandom {
     TEST_METHOD(TestNextInt64_LLONG_MIN_MAX) {
       Random rnd;
       rnd.randomize();
-      CompactInt64Array samples;
-      for(int i = 0; i < 100000; i++) {
+      CompactInt64Array samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
         const INT64 x = rnd.nextInt64();
         samples.add(x);
       }
@@ -120,8 +122,8 @@ namespace TestRandom {
       rnd.randomize();
       CompactDoubleArray allPValues;
       for(int n = 10; n > 0; n *= 3) {
-        CompactIntArray samples;
-        for(int i = 0; i < 100000; i++) {
+        CompactIntArray samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
           const int x = rnd.nextInt(n);
           verify((0 <= x) && (x < n));
           samples.add(x);
@@ -136,8 +138,8 @@ namespace TestRandom {
       rnd.randomize();
       CompactDoubleArray allPValues;
       for(INT64 n = 10; n > 0; n *= 3) {
-        CompactInt64Array samples;
-        for(int i = 0; i < 100000; i++) {
+        CompactInt64Array samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
           const INT64 x = rnd.nextInt64(n);
           verify((0 <= x) && (x < n));
           samples.add(x);
@@ -149,8 +151,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt32_0_UINT_MAX) {
       randomize();
-      CompactUintArray samples;
-      for(int i = 0; i < 100000; i++) {
+      CompactUintArray samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
         const UINT x = randInt();
         samples.add(x);
       }
@@ -159,8 +161,8 @@ namespace TestRandom {
 
     TEST_METHOD(TestRandInt64_0_UINT64_MAX) {
       randomize();
-      CompactUint64Array samples;
-      for(int i = 0; i < 100000; i++) {
+      CompactUint64Array samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
         const UINT64 x = randInt64();
         samples.add(x);
       }
@@ -171,8 +173,8 @@ namespace TestRandom {
       randomize();
       CompactDoubleArray allPValues;
       for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
-        CompactUintArray samples;
-        for(int i = 0; i < 100000; i++) {
+        CompactUintArray samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT x = randInt((UINT)n);
           samples.add(x);
         }
@@ -185,8 +187,8 @@ namespace TestRandom {
       randomize();
       CompactDoubleArray allPValues;
       for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
-        CompactUint64Array samples;
-        for(int i = 0; i < 100000; i++) {
+        CompactUint64Array samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
           const UINT64 x = randInt64(n);
           samples.add(x);
         }
@@ -200,8 +202,8 @@ namespace TestRandom {
       CompactDoubleArray allPValues;
       for(int from = 1; from < INT_MAX/3; from *= 3) {
         for(int to = from + 10; to > 0; to = to*3 + 1) {
-          CompactIntArray samples;
-          for(int i = 0; i < 100000; i++) {
+          CompactIntArray samples(SAMPLECOUNT);
+          for(int i = 0; i < SAMPLECOUNT; i++) {
             const int x = randInt(from, to);
             verify((from <= x) && (x <= to));
             samples.add(x);
@@ -217,8 +219,8 @@ namespace TestRandom {
       CompactDoubleArray allPValues;
       for(INT64 from = 1; from < LLONG_MAX/3; from *= 3) {
         for(INT64 to = from + 10; to > 0; to = to*3 + 1) {
-          CompactInt64Array samples;
-          for(int i = 0; i < 100000; i++) {
+          CompactInt64Array samples(SAMPLECOUNT);
+          for(int i = 0; i < SAMPLECOUNT; i++) {
             const INT64 x = randInt64(from, to);
             verify((from <= x) && (x <= to));
             samples.add(x);
