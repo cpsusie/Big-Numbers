@@ -139,7 +139,7 @@ Real chiSquaredDistribution(UINT df, const Real &x) {
 
 // Calculate ln(lower incomplete gamma function)
 static Real lnLowerIncGammaTaylor(const Real &a, const Real &x) {
-  if(x < 0) {
+  if(x <= 0) {
     throwInvalidArgumentException(__TFUNCTION__, _T("x=%s. Valid range:[0; inf["), toString(x).cstr());
   }
   Real sum = 0, ai = a, p = 1.0/ai++;
@@ -159,6 +159,9 @@ static Real lnLowerIncGammaTaylor(const Real &a, const Real &x) {
 }
 
 Real chiSquaredDistribution(UINT df, const Real &x) {
+  if (x <= 0) {
+    return 0;
+  }
   const Real df2    = (Real)df/2.0;
   const Real lnincG = lnLowerIncGammaTaylor(df2,x/2.0);
   if(isInfinity(lnincG)) {
@@ -166,5 +169,6 @@ Real chiSquaredDistribution(UINT df, const Real &x) {
   }
   const Real lnG    = lnGamma(df2);
   const Real diff   = lnincG - lnG;
-  return (diff < -400) ? 0 : exp(lnincG - lnG);
+  const Real result = (diff < -400) ? 0 : exp(diff);
+  return minMax(result, 0.0, 1.0);
 }
