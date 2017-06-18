@@ -8,17 +8,21 @@ UINT randInt() {
 }
 
 UINT randInt(UINT n) {
-  return _standardRandomGenerator.nextInt(n);
+  return randInt() % n;
 }
 
 int randInt(int from, int to) {
-  return randInt() % (to-from+1) + from;
+  return randInt(to-from+1) + from;
 }
 
-__int64 randInt64() {
+UINT64 randInt64() {
   return _standardRandomGenerator.nextInt64();
 }
 
-__int64 randInt64(UINT64 n) {
-  return _standardRandomGenerator.nextInt64(n);
+UINT64 randInt64(UINT64 n) {
+  return randInt64() % n;
+}
+
+INT64 randInt64(INT64 from, INT64 to) {
+  return randInt64(to-from+1) + from;
 }
