@@ -25,9 +25,10 @@ class PrimeFactorArray : public CompactArray<PrimeFactor> {
 private:
   bool m_positive;
 public:
-  PrimeFactorArray(INT64 n);
+  // Find all primefactors of n <= limit. if limit == 0 then n
+  PrimeFactorArray(INT64 n, UINT limit = 0);
   PrimeFactorSet findFactorsWithMultiplicityAtLeast(UINT m) const;
-  // return list with all positive int-factors of n, ie. ignore sign
+  // Return list of all positive combinations of primefactors in array, ie. ignore sign
   CompactInt64Array getAllFactors() const;
   INT64 getProduct() const;
   bool isPositive() const {

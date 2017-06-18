@@ -65,14 +65,17 @@ Primes &Primes::getInstance() { // static
   return *s_instance;
 }
 
-PrimeFactorArray::PrimeFactorArray(INT64 n) {
-  if(n >= 0) {
+PrimeFactorArray::PrimeFactorArray(INT64 n, UINT limit) {
+  if (n == 0) {
+    return;
+  }
+  if(n > 0) {
     m_positive = true;
   } else {
     n = -n;
     m_positive = false;
   }
-  const ULONG upperLimit = getUlong(sqrt(Double80(n))) + 1;
+  const ULONG upperLimit = limit ? limit : (getUlong(sqrt(Double80(n))) + 1);
   for(Iterator<size_t> it = Primes::getInstance().getIterator(upperLimit); it.hasNext();) {
     const size_t p = it.next();
     if(n % p == 0) {
@@ -86,7 +89,7 @@ PrimeFactorArray::PrimeFactorArray(INT64 n) {
       break;
     }
   }
-  if(n != 1) {
+  if((n != 1) && (limit == 0)) {
     add(PrimeFactor(n));
   }
 }
