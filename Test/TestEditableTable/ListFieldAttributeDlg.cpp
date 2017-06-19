@@ -6,7 +6,7 @@
 #define new DEBUG_NEW
 #endif
 
-CListFieldAttributeDlg::CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd* pParent /*=NULL*/) : CDialog(CListFieldAttributeDlg::IDD, pParent) {
+CListFieldAttributeDlg::CListFieldAttributeDlg(const ListFieldAttribute &attr, CWnd *pParent /*=NULL*/) : CDialog(CListFieldAttributeDlg::IDD, pParent) {
     m_attr = attr;
     const ListFieldType type = LF_GETTYPE(attr.m_flags);
 
@@ -26,8 +26,8 @@ CListFieldAttributeDlg::CListFieldAttributeDlg(const ListFieldAttribute &attr, C
 }
 
 
-void CListFieldAttributeDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CListFieldAttributeDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Text(   pDX, IDC_EDITHEADER              , m_header             );
     DDX_CBIndex(pDX, IDC_COMBOFIELDTYPE          , m_fieldType          );
     DDX_Check(  pDX, IDC_CHECKENABLED            , m_enabled            );
@@ -53,7 +53,7 @@ BEGIN_MESSAGE_MAP(CListFieldAttributeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CListFieldAttributeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_LISTFIELDATTRIBUTE));
 
@@ -66,7 +66,7 @@ BOOL CListFieldAttributeDlg::OnInitDialog() {
 void CListFieldAttributeDlg::OnOK() {
   UpdateData();
   paramFromWindow(m_attr);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CListFieldAttributeDlg::OnGotoHeader() {
@@ -244,9 +244,9 @@ String ListFieldAttribute::toString() const {
   return result;
 };
 
-BOOL CListFieldAttributeDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CListFieldAttributeDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

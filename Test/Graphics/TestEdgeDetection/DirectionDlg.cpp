@@ -10,7 +10,7 @@ CDirectionDlg::CDirectionDlg(Direction dir, CWnd *pParent /*=NULL*/) : m_dir(dir
 
 
 void CDirectionDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CDirectionDlg, CDialog)
@@ -21,7 +21,7 @@ BEGIN_MESSAGE_MAP(CDirectionDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CDirectionDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   int selectedButton = IDCANCEL;
 
   switch(m_dir) {
@@ -59,5 +59,5 @@ void CDirectionDlg::OnButtonW() {
 
 void CDirectionDlg::OnCancel() {
   m_dir = NODIR;
-  CDialog::OnCancel();
+  __super::OnCancel();
 }

@@ -156,7 +156,7 @@ BOOL CTestWinToolsDlg::PreTranslateMessage(MSG *pMsg) {
   if (TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestWinToolsDlg::OnFileExit() {

@@ -23,7 +23,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -36,7 +36,7 @@ CTestPictureDlg::CTestPictureDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestPicture
 }
 
 void CTestPictureDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestPictureDlg, CDialog)
@@ -68,7 +68,7 @@ BEGIN_MESSAGE_MAP(CTestPictureDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestPictureDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -125,7 +125,7 @@ void CTestPictureDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -133,11 +133,11 @@ BOOL CTestPictureDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestPictureDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
   Invalidate(FALSE);
 }
@@ -157,7 +157,7 @@ void CTestPictureDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     Image   &image    = getCurrentImage();
     HDC      wdc      = getWorkDC();
     CWnd    *imageWin = getImageWin();
@@ -300,7 +300,7 @@ void CTestPictureDlg::OnFileExit() {
 }
 
 void CTestPictureDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   Image &image = getCurrentImage();
   point = getImagePoint(point);
   if(image.getImageRect().PtInRect(point)) {
@@ -312,12 +312,12 @@ void CTestPictureDlg::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CTestPictureDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   setDragging(false);
 }
 
 void CTestPictureDlg::OnMouseMove(UINT nFlags, CPoint point) {
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
   if((nFlags & MK_LBUTTON) == 0) {
     setDragging(false);
     m_lastMouse = getImagePoint(point);
@@ -360,7 +360,7 @@ BOOL CTestPictureDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
       Invalidate(FALSE);
     }
   }
-  return CDialog::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 CPoint CTestPictureDlg::getImagePoint(const CPoint &p) const {
@@ -567,5 +567,5 @@ void CTestPictureDlg::OnDropFiles(HDROP hDropInfo) {
       MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
     }
   }
-  CDialog::OnDropFiles(hDropInfo);
+  __super::OnDropFiles(hDropInfo);
 }

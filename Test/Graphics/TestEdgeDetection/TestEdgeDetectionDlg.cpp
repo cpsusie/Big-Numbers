@@ -22,7 +22,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -40,7 +40,7 @@ CTestEdgeDetectionDlg::CTestEdgeDetectionDlg(CWnd *pParent /*=NULL*/) : CDialog(
 }
 
 void CTestEdgeDetectionDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestEdgeDetectionDlg, CDialog)
@@ -74,7 +74,7 @@ BEGIN_MESSAGE_MAP(CTestEdgeDetectionDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestEdgeDetectionDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -129,7 +129,7 @@ void CTestEdgeDetectionDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -137,7 +137,7 @@ BOOL CTestEdgeDetectionDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestEdgeDetectionDlg::OnPaint() {
@@ -155,20 +155,20 @@ void CTestEdgeDetectionDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
 void CTestEdgeDetectionDlg::OnSize(UINT nType, int cx, int cy) {
   if(isEdgeThreadActive()) return;
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
   adjustPixelMatrix();
 }
 
 void CTestEdgeDetectionDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   if(isEdgeThreadActive()) return;
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
 }
 
 void CTestEdgeDetectionDlg::adjustPixelMatrix() {
@@ -565,7 +565,7 @@ void CTestEdgeDetectionDlg::restorePixelMatrix() {
 
 static Direction currentArrowDir = N;
 void CTestEdgeDetectionDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 
   const CPoint p = getPixelPointFromMousePoint(point);
   if(!isPointInside(p)) return;
@@ -589,11 +589,11 @@ void CTestEdgeDetectionDlg::OnMouseMove(UINT nFlags, CPoint point) {
       m_lastMousePoint = p;
     }
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CTestEdgeDetectionDlg::OnRButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
   unmarkAllPixels(); flush();
   redirectDebugLog();
   point = getPixelPointFromMousePoint(point);
@@ -615,7 +615,7 @@ void CTestEdgeDetectionDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
   if(isBorderHit(nHitTest) && isEdgeThreadActive()) {
     return;
   }
-  CDialog::OnNcLButtonDown(nHitTest, point);
+  __super::OnNcLButtonDown(nHitTest, point);
 }
 
 

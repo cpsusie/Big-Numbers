@@ -15,7 +15,7 @@ CTestBlendDlg::CTestBlendDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestBlendDlg::I
 }
 
 void CTestBlendDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITSRCCONSTALPHA, m_srcConstAlpha);
     DDV_MinMaxUInt(pDX, m_srcConstAlpha, 0, 255);
     DDX_Text(pDX, IDC_EDITALPHA1, m_alpha1);
@@ -35,7 +35,7 @@ BEGIN_MESSAGE_MAP(CTestBlendDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestBlendDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     SetIcon(m_hIcon, TRUE);
     SetIcon(m_hIcon, FALSE);
@@ -61,7 +61,7 @@ void CTestBlendDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 

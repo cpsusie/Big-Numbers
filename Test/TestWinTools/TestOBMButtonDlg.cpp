@@ -11,7 +11,7 @@ CTestOBMButtonDlg::CTestOBMButtonDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestOBM
 }
 
 void CTestOBMButtonDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_ENABLEBUTTONS, m_buttonsEnabled);
 }
 
@@ -30,7 +30,7 @@ void CTestOBMButtonDlg::OnOK() {
 }
 
 BOOL CTestOBMButtonDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   CPoint p(20, 20);
 

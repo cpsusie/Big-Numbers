@@ -15,7 +15,7 @@ CTestSliderWithTransformationDlg::~CTestSliderWithTransformationDlg() {
 }
 
 void CTestSliderWithTransformationDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_TO, m_to);
   DDX_Text(pDX, IDC_EDIT_FROM, m_from);
 }
@@ -32,7 +32,7 @@ BEGIN_MESSAGE_MAP(CTestSliderWithTransformationDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestSliderWithTransformationDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_slider.substituteControl(this, IDC_TESTSLIDER, DoubleInterval(0,100));
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_TESTSLIDER_ACCELERATOR));
@@ -48,7 +48,7 @@ BOOL CTestSliderWithTransformationDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 DoubleInterval CTestSliderWithTransformationDlg::getRange() {
@@ -137,12 +137,12 @@ bool CTestSliderWithTransformationDlg::validateNormalDistRange() {
 
 void CTestSliderWithTransformationDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   showSliderValue();
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CTestSliderWithTransformationDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   showSliderValue();
-  CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
+  __super::OnVScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CTestSliderWithTransformationDlg::showSliderValue() {

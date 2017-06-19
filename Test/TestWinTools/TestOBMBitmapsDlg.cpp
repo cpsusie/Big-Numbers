@@ -9,7 +9,7 @@ CTestOBMBitmapsDlg::CTestOBMBitmapsDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestO
 }
 
 void CTestOBMBitmapsDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestOBMBitmapsDlg, CDialog)
@@ -18,7 +18,7 @@ END_MESSAGE_MAP()
 
 
 void CTestOBMBitmapsDlg::OnPaint()  {
-  CDialog::OnPaint();
+  __super::OnPaint();
   paintOBMBitmaps();
 }
 

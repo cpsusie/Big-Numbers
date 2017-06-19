@@ -11,7 +11,7 @@ CTestConfirmDlg::CTestConfirmDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestConfirm
 }
 
 void CTestConfirmDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_CONFIRMMESSAGE      , m_confirmMessage);
     DDX_Text(pDX, IDC_EDIT_CONFIRMCAPTION      , m_confirmCaption);
 }
@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CTestConfirmDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestConfirmDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
     initComboItems();
     getConfirmButtonCombo()->SetCurSel(0);
     getConfirmIconCombo()->SetCurSel(0);

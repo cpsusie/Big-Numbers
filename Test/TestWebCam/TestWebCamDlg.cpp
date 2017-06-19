@@ -13,7 +13,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -22,22 +22,22 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestWebCamDlg::CTestWebCamDlg(CWnd* pParent) : CDialog(CTestWebCamDlg::IDD, pParent) {
+CTestWebCamDlg::CTestWebCamDlg(CWnd *pParent) : CDialog(CTestWebCamDlg::IDD, pParent) {
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
   m_timerIsRunning  = false;
   m_edgeDetectionOn = false;
   m_lastImage       = 0;
 }
 
-void CTestWebCamDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CTestWebCamDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 void CTestWebCamDlg::OnSysCommand(UINT nID, LPARAM lParam) {
@@ -45,7 +45,7 @@ void CTestWebCamDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -71,7 +71,7 @@ BEGIN_MESSAGE_MAP(CTestWebCamDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestWebCamDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -214,7 +214,7 @@ void CTestWebCamDlg::stopTimer() {
 
 void CTestWebCamDlg::OnTimer(UINT_PTR nIDEvent) {
   log(_T("OnTimer called (id=%d) videoFrames:%4d audioSamples=%6d "),(UINT)nIDEvent,m_capture->getVideoFrameCount(),m_capture->getAudioSampleCount());
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CTestWebCamDlg::OnPaint() {
@@ -243,7 +243,7 @@ void CTestWebCamDlg::OnPaint() {
       }
       m_gate.signal();
     }
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -264,7 +264,7 @@ void CTestWebCamDlg::OnClose() {
 }
 
 void CTestWebCamDlg::OnMove(int x, int y) { 
-  CDialog::OnMove(x, y);
+  __super::OnMove(x, y);
 }
 
 void CTestWebCamDlg::OnBnClickedOk() {

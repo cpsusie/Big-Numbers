@@ -10,8 +10,8 @@ CEditModelSchemaDlg::CEditModelSchemaDlg(const ListCtrlModelSchema &schema, CWnd
   m_schema = schema;
 }
 
-void CEditModelSchemaDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CEditModelSchemaDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CEditModelSchemaDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CEditModelSchemaDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   m_model.setModelSchema(m_schema);
   m_list.substituteControl(this, IDC_LISTBASESCHEMA, m_model);
@@ -39,7 +39,7 @@ BOOL CEditModelSchemaDlg::OnInitDialog() {
 }
 
 void CEditModelSchemaDlg::OnOK() {
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CEditModelSchemaDlg::OnButtonUp() {
@@ -49,7 +49,7 @@ void CEditModelSchemaDlg::OnButtonDown() {
 }
 
 void CEditModelSchemaDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);    
 }
 

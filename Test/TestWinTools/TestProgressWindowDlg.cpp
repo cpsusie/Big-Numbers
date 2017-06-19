@@ -25,7 +25,7 @@ CTestProgressWindowDlg::CTestProgressWindowDlg(CWnd *pParent) : CDialog(CTestPro
 }
 
 void CTestProgressWindowDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECK_HASMESSAGEBOX, m_hasMessageBox);
   DDX_Check(pDX, IDC_CHECK_HASTIMEESTIMATE, m_hasTimeEstimate);
   DDX_Check(pDX, IDC_CHECK_AUTOCORRELATEESTIMATE, m_autoCorrelateEstimate);
@@ -48,7 +48,7 @@ BEGIN_MESSAGE_MAP(CTestProgressWindowDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestProgressWindowDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   return TRUE;
 }
 

@@ -16,17 +16,15 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 #endif
 
-  protected:
-  virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
-
 protected:
+  virtual void DoDataExchange(CDataExchange *pDX);    // DDX/DDV support
   DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialogEx(IDD_ABOUTBOX) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
   CDialogEx::DoDataExchange(pDX);
 }
 
@@ -34,14 +32,14 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-Cdx9_rectDemoDlg::Cdx9_rectDemoDlg(CWnd* pParent /*=NULL*/)
+Cdx9_rectDemoDlg::Cdx9_rectDemoDlg(CWnd *pParent /*=NULL*/)
   : CDialogEx(IDD_DX9_RECTDEMO_DIALOG, pParent)
 {
   m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
   m_device = NULL;
 }
 
-void Cdx9_rectDemoDlg::DoDataExchange(CDataExchange* pDX) {
+void Cdx9_rectDemoDlg::DoDataExchange(CDataExchange *pDX) {
   CDialogEx::DoDataExchange(pDX);
 }
 
@@ -306,7 +304,7 @@ void Cdx9_rectDemoDlg::initComboboxes() {
 }
 
 void Cdx9_rectDemoDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
-  CDialog::OnVScroll(nSBCode, nPos, pScrollBar);
+  __super::OnVScroll(nSBCode, nPos, pScrollBar);
   m_rotation = nPos;
   Invalidate(FALSE);
 }
@@ -361,12 +359,12 @@ void Cdx9_rectDemoDlg::OnSelchangeComboDstblend() {
 }
 
 void Cdx9_rectDemoDlg::OnSizing(UINT fwSide, LPRECT pRect) {
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
   Invalidate(FALSE);
 }
 
 void Cdx9_rectDemoDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   m_layoutManager.OnSize(nType, cx, cy);
 
@@ -794,8 +792,8 @@ void Cdx9_rectDemoDlg::render2d(const CSize &size) {
 
 }
 
-BOOL Cdx9_rectDemoDlg::PreTranslateMessage(MSG* pMsg) {
-  return CDialog::PreTranslateMessage(pMsg);
+BOOL Cdx9_rectDemoDlg::PreTranslateMessage(MSG *pMsg) {
+  return __super::PreTranslateMessage(pMsg);
 }
 
 String getD3DErrorMsg(HRESULT hr) {

@@ -21,7 +21,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -32,7 +32,7 @@ CTestDirect3DDlg::CTestDirect3DDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirec
 }
 
 void CTestDirect3DDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestDirect3DDlg, CDialog)
@@ -43,7 +43,7 @@ BEGIN_MESSAGE_MAP(CTestDirect3DDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestDirect3DDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -73,7 +73,7 @@ void CTestDirect3DDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -93,7 +93,7 @@ void CTestDirect3DDlg::OnPaint()  {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
 
     Image::beginScene();
 
@@ -113,6 +113,6 @@ HCURSOR CTestDirect3DDlg::OnQueryDragIcon() {
 }
 
 void CTestDirect3DDlg::OnSizing(UINT fwSide, LPRECT pRect) {
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
   Invalidate(FALSE);
 }

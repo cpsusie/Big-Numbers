@@ -20,7 +20,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -32,7 +32,7 @@ CTestExtractIconsDlg::CTestExtractIconsDlg(CWnd *pParent) : CDialog(CTestExtract
 }
 
 void CTestExtractIconsDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_SHOW_LARGE, m_showLargeIcons);
 }
 
@@ -46,7 +46,7 @@ BEGIN_MESSAGE_MAP(CTestExtractIconsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestExtractIconsDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -76,7 +76,7 @@ void CTestExtractIconsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -96,7 +96,7 @@ void CTestExtractIconsDlg::OnPaint()  {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     CWnd *frame = GetDlgItem(IDC_STATIC_ICONFRAME);
     CClientDC dc(frame);
     const CRect cl = getClientRect(frame);
@@ -201,7 +201,7 @@ void CTestExtractIconsDlg::destroyAllIcons() {
 }
 
 void CTestExtractIconsDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);    
 }
 

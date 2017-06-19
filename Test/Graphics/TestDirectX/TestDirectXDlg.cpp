@@ -20,7 +20,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -33,7 +33,7 @@ CTestDirectXDlg::CTestDirectXDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestDirectX
 }
 
 void CTestDirectXDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestDirectXDlg, CDialog)
@@ -47,7 +47,7 @@ END_MESSAGE_MAP()
 
 BOOL CTestDirectXDlg::OnInitDialog() {
 DEBUGTRACE;
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -81,7 +81,7 @@ void CTestDirectXDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -102,7 +102,7 @@ void CTestDirectXDlg::OnPaint() {
     dc.DrawIcon(x, y, m_hIcon);
   } else {
     try {
-      CDialog::OnPaint();
+      __super::OnPaint();
       CClientDC dc(this);
       CRect cr = getClientRect(this);
 DEBUGTRACE;
@@ -146,6 +146,6 @@ void CTestDirectXDlg::OnOK() { /* ignore */ }
 void CTestDirectXDlg::OnCancel() { /* ignore */ }
 
 void CTestDirectXDlg::OnSizing(UINT fwSide, LPRECT pRect) {
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
   Invalidate(false);
 }

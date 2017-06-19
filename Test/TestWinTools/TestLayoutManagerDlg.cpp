@@ -68,7 +68,7 @@ void CTestLayoutManagerDlg::setToDefault() {
   m_buttonConstantHeight        = TRUE;
 }
 void CTestLayoutManagerDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_WINDOW_RETAIN_ASPECTRATIO        , m_windowRetainAspectRatio     );
     DDX_Check(pDX, IDC_CHECK_WINDOW_RESIZE_FONT               , m_windowResizeFont            );
     DDX_Check(pDX, IDC_CHECK_WINDOW_FONT_RELATIVE_SIZE        , m_windowFontRelativeSize      ); 

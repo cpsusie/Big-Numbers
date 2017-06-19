@@ -18,7 +18,7 @@ CTestMouseDlg::~CTestMouseDlg() {
 }
 
 void CTestMouseDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestMouseDlg, CDialog)
@@ -47,7 +47,7 @@ BEGIN_MESSAGE_MAP(CTestMouseDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestMouseDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   // ------------- NB! NB! NB!   husk #define OEMRESOURCE i stdafx.h ----------------------
 
@@ -83,28 +83,28 @@ void CTestMouseDlg::showFlags(const TCHAR *function, UINT flags) {
 
 void CTestMouseDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   SHOWFLAGS();
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 //  setWindowCursor(this,AfxGetApp()->LoadCursor(IDC_CURSOR2));
 }
 
 void CTestMouseDlg::OnRButtonDown(UINT nFlags, CPoint point) {
   SHOWFLAGS();
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
 }
 
 void CTestMouseDlg::OnMouseMove(UINT nFlags, CPoint point) {
   SHOWFLAGS();
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CTestMouseDlg::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags) {
   MessageBox(_T("Hello"));
-  CDialog::OnChar(nChar, nRepCnt, nFlags);
+  __super::OnChar(nChar, nRepCnt, nFlags);
 }
 
 void CTestMouseDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags) {
   MessageBox(_T("KeyDown"));    
-  CDialog::OnKeyDown(nChar, nRepCnt, nFlags);
+  __super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 // ------------- NB! NB! NB!   husk #define OEMRESOURCE i stdafx.h ----------------------
@@ -142,7 +142,7 @@ void CTestMouseDlg::OnWaitCursor() {
 BOOL CTestMouseDlg::DestroyWindow() {
   // husk #define OEMRESOURCE i stdafx.h
   ::SetSystemCursor( CopyCursor(m_systemCursor), OCR_NORMAL);
-  return CDialog::DestroyWindow();
+  return __super::DestroyWindow();
 }
 
 void CTestMouseDlg::OnNormalControlCursor() {

@@ -22,7 +22,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -37,7 +37,7 @@ CTestAVIFileDlg::CTestAVIFileDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestAVIFile
 }
 
 void CTestAVIFileDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestAVIFileDlg, CDialog)
@@ -51,7 +51,7 @@ BEGIN_MESSAGE_MAP(CTestAVIFileDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestAVIFileDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -78,7 +78,7 @@ void CTestAVIFileDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -99,7 +99,7 @@ void CTestAVIFileDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -139,7 +139,7 @@ void CTestAVIFileDlg::stopTimer(unsigned int id) {
 }
 
 void CTestAVIFileDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   if(!m_movieThread->stillActive()) {
     stopMovieThread();
   }

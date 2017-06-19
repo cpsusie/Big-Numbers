@@ -19,7 +19,7 @@ CRunLayoutManagerDlg::CRunLayoutManagerDlg(int windowFlags, int list1Flags, int 
 }
 
 void CRunLayoutManagerDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CRunLayoutManagerDlg, CDialog)
@@ -38,7 +38,7 @@ BEGIN_MESSAGE_MAP(CRunLayoutManagerDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CRunLayoutManagerDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_RUNLAYOUTMANAGER_ACCELERATOR));
 
@@ -78,11 +78,11 @@ BOOL CRunLayoutManagerDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CRunLayoutManagerDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   const CSize cs = getClientRect(this).Size();
   m_layoutManager.OnSize(nType,cx,cy);
   showLayout();
@@ -90,7 +90,7 @@ void CRunLayoutManagerDlg::OnSize(UINT nType, int cx, int cy) {
 
 void CRunLayoutManagerDlg::OnSizing(UINT fwSide, LPRECT pRect) {
   m_layoutManager.OnSizing(fwSide, pRect);
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
 }
 
 void CRunLayoutManagerDlg::OnFontSize1() {

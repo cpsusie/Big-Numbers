@@ -15,7 +15,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
 protected:
   DECLARE_MESSAGE_MAP()
@@ -24,20 +24,20 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTestEditableTableDlg::CTestEditableTableDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestEditableTableDlg::IDD, pParent) {
+CTestEditableTableDlg::CTestEditableTableDlg(CWnd *pParent /*=NULL*/) : CDialog(CTestEditableTableDlg::IDD, pParent) {
     m_someText = "JESPER";
     m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CTestEditableTableDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+void CTestEditableTableDlg::DoDataExchange(CDataExchange *pDX) {
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LIST, m_list);
     DDX_Text(pDX, IDC_EDIT1, m_someText);
 }
@@ -63,7 +63,7 @@ BEGIN_MESSAGE_MAP(CTestEditableTableDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestEditableTableDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -108,7 +108,7 @@ void CTestEditableTableDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg dlgAbout;
     dlgAbout.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -128,7 +128,7 @@ void CTestEditableTableDlg::OnPaint()  {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -137,7 +137,7 @@ HCURSOR CTestEditableTableDlg::OnQueryDragIcon() {
 }
 
 void CTestEditableTableDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);    
 }
 
@@ -352,9 +352,9 @@ void CTestEditableTableDlg::OnOK() {
 }
 
 
-BOOL CTestEditableTableDlg::PreTranslateMessage(MSG* pMsg) {
+BOOL CTestEditableTableDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
