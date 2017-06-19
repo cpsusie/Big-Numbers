@@ -23,6 +23,7 @@
     <SccLocalPath />
     <ProjectGuid>{5816419A-A9A7-4170-AC72-6B2F49D15DFE}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>TestEventLogLib</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -275,10 +276,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="testeventloglib.cpp" />
+    <ClCompile Include="TestEventLogLib.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="testeventlog.rc" />
+    <ResourceCompile Include="TestEventLog.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\eventloglib\message.h" />

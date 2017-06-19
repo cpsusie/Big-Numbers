@@ -2,15 +2,15 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{4bdada9e-0af3-46db-9842-9a8aedbf6515}</UniqueIdentifier>
+      <UniqueIdentifier>{e14c19dc-47ff-4958-b6e6-a098ffe3ff75}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{ed26d659-3ce5-43aa-9587-2f4da8887e35}</UniqueIdentifier>
+      <UniqueIdentifier>{d2ba73a3-65df-4229-a611-74aded4ac3d7}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{39666891-befc-474a-b16a-8a7c19b89417}</UniqueIdentifier>
+      <UniqueIdentifier>{ad23d3a6-fea2-49e6-9d6d-2766e27681e2}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
   </ItemGroup>
@@ -18,15 +18,12 @@
     <ClCompile Include="StdAfx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TcpConnect.cpp">
+    <ClCompile Include="TestWCRegex.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="StdAfx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

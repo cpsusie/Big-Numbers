@@ -273,26 +273,26 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="testbin.cpp" />
-    <ClCompile Include="testbinDlg.cpp" />
+    <ClCompile Include="TestBin.cpp" />
+    <ClCompile Include="TestBinDlg.cpp" />
     <ClCompile Include="TimerDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="testbin.rc" />
+    <ResourceCompile Include="TestBin.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="testbin.h" />
-    <ClInclude Include="testbinDlg.h" />
+    <ClInclude Include="TestBin.h" />
+    <ClInclude Include="TestBinDlg.h" />
     <ClInclude Include="TimerDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\testbin.ico" />
+    <Image Include="res\TestBin.ico" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\testbin.rc2" />
+    <CustomBuild Include="res\TestBin.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

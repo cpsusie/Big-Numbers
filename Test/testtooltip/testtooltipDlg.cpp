@@ -12,7 +12,7 @@ public:
   enum { IDD = IDD_ABOUTBOX };
 
 protected:
-  virtual void DoDataExchange(CDataExchange* pDX);
+  virtual void DoDataExchange(CDataExchange *pDX);
 
   DECLARE_MESSAGE_MAP()
 };
@@ -20,19 +20,19 @@ protected:
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
-void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
-CTesttooltipDlg::CTesttooltipDlg(CWnd* pParent) : CDialog(CTesttooltipDlg::IDD, pParent) {
+CTesttooltipDlg::CTesttooltipDlg(CWnd *pParent) : CDialog(CTesttooltipDlg::IDD, pParent) {
   m_hIcon = theApp.LoadIcon(IDR_MAINFRAME);
 }
 
-void CTesttooltipDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+void CTesttooltipDlg::DoDataExchange(CDataExchange *pDX) {
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTesttooltipDlg, CDialog)
@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CTesttooltipDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTesttooltipDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -69,10 +69,9 @@ BOOL CTesttooltipDlg::OnInitDialog() {
 
 void CTesttooltipDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -93,12 +92,12 @@ void CTesttooltipDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
 HCURSOR CTesttooltipDlg::OnQueryDragIcon() {
-  return (HCURSOR) m_hIcon;
+  return (HCURSOR)m_hIcon;
 }
 
 void CTesttooltipDlg::OnButton1() {
@@ -107,7 +106,7 @@ void CTesttooltipDlg::OnButton1() {
 
 BOOL CTesttooltipDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) {
   TOOLTIPTEXT *pTTT = (TOOLTIPTEXT*)pNMHDR; // Get the tooltip structure.
-  UINT CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
+  UINT_PTR CtrlHandle = pNMHDR->idFrom; // Actually the idFrom holds Control's handle.
 
   // Check once again that the idFrom holds handle itself.
   if(pTTT->uFlags & TTF_IDISHWND) {
@@ -116,9 +115,9 @@ BOOL CTesttooltipDlg::OnToolTipNotify(UINT id, NMHDR *pNMHDR, LRESULT *pResult) 
 #if (_MFC_VER < 0x0700)
     _AFX_THREAD_STATE* pThreadState = AfxGetThreadState();
 #else
-     AFX_MODULE_THREAD_STATE* pThreadState = AfxGetModuleThreadState();
+     AFX_MODULE_THREAD_STATE *pThreadState = AfxGetModuleThreadState();
 #endif
-    CToolTipCtrl* pToolTip = pThreadState->m_pToolTip;
+    CToolTipCtrl *pToolTip = pThreadState->m_pToolTip;
     if(pToolTip) {
       pToolTip->SetMaxTipWidth(SHRT_MAX); // Do this to make \r\n work!
     }

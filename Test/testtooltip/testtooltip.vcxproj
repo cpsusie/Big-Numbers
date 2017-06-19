@@ -24,6 +24,7 @@
     <Keyword>MFCProj</Keyword>
     <ProjectGuid>{C7E1CD80-8DD4-4AD8-9651-A27783AD7FB3}</ProjectGuid>
     <WindowsTargetPlatformVersion>10.0.10586.0</WindowsTargetPlatformVersion>
+    <ProjectName>TestToolTip</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -268,24 +269,24 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">stdafx.h</PrecompiledHeaderFile>
     </ClCompile>
-    <ClCompile Include="testtooltip.cpp" />
-    <ClCompile Include="testtooltipDlg.cpp" />
+    <ClCompile Include="TestToolTip.cpp" />
+    <ClCompile Include="TestToolTipDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="testtooltip.rc" />
+    <ResourceCompile Include="TestToolTip.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Resource.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="testtooltip.h" />
-    <ClInclude Include="testtooltipDlg.h" />
+    <ClInclude Include="TestToolTip.h" />
+    <ClInclude Include="TestToolTipDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\testtooltip.ico" />
+    <Image Include="res\TestToolTip.ico" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="res\testtooltip.rc2" />
+    <CustomBuild Include="res\TestToolTip.rc2" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

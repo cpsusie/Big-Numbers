@@ -176,7 +176,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FindAlphaBlend", "FindAlpha
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libpng", "..\Lib\Src\PaintLib\win\libpng\libpng.vcxproj", "{586411D6-D7DE-4350-A407-43D2F23BFA2F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "common", "..\Lib\Src\PaintLib\common\common.vcxproj", "{6B52C566-6C03-476D-B214-F2CAA4734E16}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Common", "..\Lib\Src\PaintLib\common\common.vcxproj", "{6B52C566-6C03-476D-B214-F2CAA4734E16}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libjpeg", "..\Lib\Src\PaintLib\win\libjpeg\libjpeg.vcxproj", "{FEE75CD8-49B4-410F-8488-1108EBE5B4FE}"
 EndProject
@@ -187,7 +187,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ApproxMatch", "approxmatch\
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "filosoffer", "filosoffer\filosoffer.vcxproj", "{62091AB4-FE32-45BB-AE39-71BF3453A620}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Filosoffer", "filosoffer\filosoffer.vcxproj", "{62091AB4-FE32-45BB-AE39-71BF3453A620}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Queen8", "Queen8\queen8.vcxproj", "{D00D6990-38B5-4B13-A35C-1188DEB3D122}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -200,12 +200,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestDirection", "Graphics\T
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "getHandles", "getHandles\getHandles.vcxproj", "{ABE6AD33-5A9F-44FB-AA7B-2592546EF112}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GetHandles", "getHandles\getHandles.vcxproj", "{ABE6AD33-5A9F-44FB-AA7B-2592546EF112}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "getdevices", "getdevices\getdevices.vcxproj", "{C68502F4-FD0E-4332-8FE3-6C6D519F0575}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GetDevices", "getdevices\getdevices.vcxproj", "{C68502F4-FD0E-4332-8FE3-6C6D519F0575}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
@@ -221,7 +221,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestBin", "TestBin\testbin.
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testclipboard", "testclipboard\testclipboard.vcxproj", "{B36E241A-EC2A-45BB-877C-6E515567BC3B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestClipboard", "testclipboard\testclipboard.vcxproj", "{B36E241A-EC2A-45BB-877C-6E515567BC3B}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
@@ -256,22 +256,35 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "distinctrepr", "distinctrep
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testtcpclient", "testtcpclient\testtcpclient.vcxproj", "{A72F1540-2C07-478B-81FE-35266034654E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTcpClient", "testtcpclient\testtcpclient.vcxproj", "{A72F1540-2C07-478B-81FE-35266034654E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testtcpserver", "testtcpserver\testtcpserver.vcxproj", "{42BA1D43-1ECC-4B39-94BA-1D2A56D61793}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestTcpServer", "testtcpserver\testtcpserver.vcxproj", "{42BA1D43-1ECC-4B39-94BA-1D2A56D61793}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testtooltip", "testtooltip\testtooltip.vcxproj", "{C7E1CD80-8DD4-4AD8-9651-A27783AD7FB3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestToolTip", "testtooltip\testtooltip.vcxproj", "{C7E1CD80-8DD4-4AD8-9651-A27783AD7FB3}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "eventloglib", "eventloglib\eventloglib.vcxproj", "{C20F4911-4C18-444B-890A-C484DC6E3787}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EventLogLib", "eventloglib\eventloglib.vcxproj", "{C20F4911-4C18-444B-890A-C484DC6E3787}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testeventloglib", "testeventloglib\testeventloglib.vcxproj", "{5816419A-A9A7-4170-AC72-6B2F49D15DFE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestEventLogLib", "testeventloglib\testeventloglib.vcxproj", "{5816419A-A9A7-4170-AC72-6B2F49D15DFE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{C20F4911-4C18-444B-890A-C484DC6E3787} = {C20F4911-4C18-444B-890A-C484DC6E3787}
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestService", "TestService\testservice.vcxproj", "{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestZLib", "TestZLib\testzlib.vcxproj", "{A590003D-2511-4DF5-8726-7746AD384D92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D0280A64-5E92-45BB-95F9-561171595A26} = {D0280A64-5E92-45BB-95F9-561171595A26}
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestWCRegex", "TestWCRegex\TestWCRegex.vcxproj", "{C4389F04-67DC-4000-856B-A220AF6730C6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1453,7 +1466,6 @@ Global
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.LDRelease|x86.Build.0 = Release|Win32
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Profilling|x64.ActiveCfg = Release|x64
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Profilling|x86.ActiveCfg = Release|Win32
-		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Profilling|x86.Build.0 = Release|Win32
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Release|x64.ActiveCfg = Release|x64
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Release|x64.Build.0 = Release|x64
 		{5816419A-A9A7-4170-AC72-6B2F49D15DFE}.Release|x86.ActiveCfg = Release|Win32
@@ -1470,10 +1482,8 @@ Global
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.LDRelease|x64.Build.0 = Release|x64
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.LDRelease|x86.ActiveCfg = Release|Win32
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.LDRelease|x86.Build.0 = Release|Win32
-		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Profilling|x64.ActiveCfg = Release|Win32
-		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Profilling|x64.Build.0 = Release|Win32
+		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Profilling|x64.ActiveCfg = Release|x64
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Profilling|x86.ActiveCfg = Release|Win32
-		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Profilling|x86.Build.0 = Release|Win32
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Release|x64.ActiveCfg = Release|x64
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Release|x64.Build.0 = Release|x64
 		{FF93B11C-C3ED-421B-AC9F-A8C3ED0B0F9D}.Release|x86.ActiveCfg = Release|Win32
@@ -1490,14 +1500,30 @@ Global
 		{A590003D-2511-4DF5-8726-7746AD384D92}.LDRelease|x64.Build.0 = Release|x64
 		{A590003D-2511-4DF5-8726-7746AD384D92}.LDRelease|x86.ActiveCfg = Release|Win32
 		{A590003D-2511-4DF5-8726-7746AD384D92}.LDRelease|x86.Build.0 = Release|Win32
-		{A590003D-2511-4DF5-8726-7746AD384D92}.Profilling|x64.ActiveCfg = Release|Win32
-		{A590003D-2511-4DF5-8726-7746AD384D92}.Profilling|x64.Build.0 = Release|Win32
+		{A590003D-2511-4DF5-8726-7746AD384D92}.Profilling|x64.ActiveCfg = Release|x64
 		{A590003D-2511-4DF5-8726-7746AD384D92}.Profilling|x86.ActiveCfg = Release|Win32
-		{A590003D-2511-4DF5-8726-7746AD384D92}.Profilling|x86.Build.0 = Release|Win32
 		{A590003D-2511-4DF5-8726-7746AD384D92}.Release|x64.ActiveCfg = Release|x64
 		{A590003D-2511-4DF5-8726-7746AD384D92}.Release|x64.Build.0 = Release|x64
 		{A590003D-2511-4DF5-8726-7746AD384D92}.Release|x86.ActiveCfg = Release|Win32
 		{A590003D-2511-4DF5-8726-7746AD384D92}.Release|x86.Build.0 = Release|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Debug|x64.ActiveCfg = Debug|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Debug|x64.Build.0 = Debug|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Debug|x86.ActiveCfg = Debug|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Debug|x86.Build.0 = Debug|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDDebug|x64.ActiveCfg = Debug|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDDebug|x64.Build.0 = Debug|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDDebug|x86.Build.0 = Debug|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDRelease|x64.ActiveCfg = Release|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDRelease|x64.Build.0 = Release|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDRelease|x86.ActiveCfg = Release|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.LDRelease|x86.Build.0 = Release|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Profilling|x64.ActiveCfg = Release|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Profilling|x86.ActiveCfg = Release|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x64.ActiveCfg = Release|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x64.Build.0 = Release|x64
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x86.ActiveCfg = Release|Win32
+		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
