@@ -182,7 +182,7 @@ public:
       }
     }
     if(count != n) {
-      throwException(_T("%s:Iterators returned %d elements, size=%d")
+      throwException(_T("%s:Iterators returned %zd elements, size=%zd")
                     ,method, count, n);
     }
     if(it1.hasNext() || it2.hasNext()) {
