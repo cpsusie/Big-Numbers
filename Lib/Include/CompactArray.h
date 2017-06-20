@@ -325,7 +325,8 @@ public:
     return permuter(size(), handler);
   }
 
-  CompactArray<T> &clear(intptr_t capacity=0) { // if capacity < 0, it's left unchanged
+  // if capacity < 0, it's left unchanged
+  CompactArray<T> &clear(intptr_t capacity=0) {
     if(m_size != 0) {
       m_updateCount++;
     }
