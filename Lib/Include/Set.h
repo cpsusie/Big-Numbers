@@ -43,17 +43,18 @@ public:
     return *(Comparator<T>*)(((AbstractSet*)m_collection)->getComparator());
   }
 
-  Set<T> operator*(const Set<T> &s) const { // intersection
+  // Set intersection = set of elements that are in both sets.
+  Set<T> operator*(const Set<T> &set) const {
     Set<T> result((AbstractSet*)m_collection->clone(false));
-    if(size() < s.size()) {
+    if(size() < set.size()) {
       for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
         const T &e = it.next();
-        if(s.contains(e)) {
+        if(set.contains(e)) {
           result.add(e);
         }
       }
     } else {
-      for(Iterator<T> it = ((Set<T>&)s).getIterator(); it.hasNext();) {
+      for(Iterator<T> it = ((Set<T>&)set).getIterator(); it.hasNext();) {
         const T &e = it.next();
         if(contains(e)) {
           result.add(e);
@@ -63,27 +64,30 @@ public:
     return result;
   }
 
-  Set<T> operator+(const Set<T> &s) const { // union
+  // Set union = set of elements, that are in at least 1 of the sets.
+  Set<T> operator+(const Set<T> &set) const {
     Set<T> result(*this);
-    result.addAll(s);
+    result.addAll(set);
     return result;
   }
 
-  Set<T> operator-(const Set<T> &s) const { // difference
+  // Set difference = set of elements in *this and not in set.
+  Set<T> operator-(const Set<T> &set) const {
     Set<T> result(*this);
-    result.removeAll(s);
+    result.removeAll(set);
     return result;
   }
 
-  Set <T> operator^(const Set<T> &rhs) const { // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set containg elements that are in only one of the sets
+  // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
+  Set <T> operator^(const Set<T> &set) const {
     Set<T> result((AbstractSet*)m_collection->clone(false));
     for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
       const T &e = it.next();
-      if(!rhs.contains(e)) {
+      if(!set.contains(e)) {
         result.add(e);
       }
     }
-    for(Iterator<T> it = ((Set<T>&)rhs).getIterator(); it.hasNext();) {
+    for(Iterator<T> it = ((Set<T>&)set).getIterator(); it.hasNext();) {
       const T &e = it.next();
       if(!contains(e)) {
         result.add(e);
@@ -92,25 +96,26 @@ public:
     return result;
   }
 
-  bool operator<=(const Set<T> &rhs) const { // subset
+  // Subset. Return true if all elements in *this are in set
+  bool operator<=(const Set<T> &set) const {
     for(Iterator<T> it = ((Set<T>&)*this).getIterator(); it.hasNext();) {
-      if(!rhs.contains(it.next())) {
+      if(!set.contains(it.next())) {
         return false;
       }
     }
     return true;
   }
 
-  bool operator<(const Set<T> &rhs) const { // pure subset
-    return (size() < rhs.size()) && (*this <= rhs);
+  bool operator<(const Set<T> &set) const { // pure subset
+    return (size() < set.size()) && (*this <= set);
   }
 
-  bool operator>=(const Set<T> &rhs) const {
-    return rhs <= *this;
+  bool operator>=(const Set<T> &set) const {
+    return set <= *this;
   }
 
-  bool operator>(const Set<T> &rhs) const {
-    return rhs < *this;
+  bool operator>(const Set<T> &set) const {
+    return set < *this;
   }
 
   const T &getMin() const {
