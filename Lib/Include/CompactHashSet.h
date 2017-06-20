@@ -5,6 +5,7 @@
 #pragma pack(push,1)
 
 #include "CompactKeyType.h"
+#include "CompactElementPool.h"
 
 template <class K> class SetEntry {
 public:
@@ -18,78 +19,17 @@ public:
 
 #pragma pack(pop)
 
-template <class K> class CompactHashElementPage {
-public:
-  UINT                       m_count;
-  CompactHashElementPage<K> *m_next;
-  CompactHashElement<K>      m_elements[20000];
-
-  CompactHashElementPage() {
-    clear();
-  }
-
-  void clear() {
-    m_count = 0;
-  }
-
-  CompactHashElement<K> *fetchNode() {
-    return &m_elements[m_count++];
-  }
-  
-  bool isFull() const {
-    return m_count == ARRAYSIZE(m_elements);
-  }
-
-  bool isEmpty() const {
-    return m_count == 0;
-  }
-
-  void save(ByteOutputStream &s) const {
-    s.putBytes((BYTE*)&m_count,sizeof(m_count));
-    for(int i = 0; i < m_count;) {
-      SetEntry<K> buffer[1000];
-      const int n = min(m_count-i,ARRAYSIZE(buffer));
-      for(int j = 0; j < n;) {
-        buffer[j++] = m_elements[i++];
-      }
-      s.putBytes((BYTE*)buffer,sizeof(buffer[0])*j);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    s.getBytesForced((BYTE*)&m_count,sizeof(m_count));
-    for(int i = 0; i < m_count;) {
-      SetEntry<K> buffer[1000];
-      const int n = min(m_count-i,ARRAYSIZE(buffer));
-      s.getBytesForced((BYTE*)buffer,sizeof(buffer[0])*n);
-      for(int j = 0; j < n;) {
-        (SetEntry<K>&)m_elements[i++] = buffer[j++];
-      }
-    }
-  }
-};
-
+// Assume K has public member-function ULONG hashCode() const...
+// and bool operator==(const K &) defined
 template <class K> class CompactHashSet {
 private:
-  size_t                     m_size;
-  size_t                     m_capacity;
-  CompactHashElement<K>    **m_buffer;
-  CompactHashElementPage<K> *m_firstPage;
+  size_t                                     m_size;
+  size_t                                     m_capacity;
+  CompactHashElement<K>                    **m_buffer;
+  CompactElementPool<CompactHashElement<K> > m_elementPool;
+  UINT64                                     m_updateCount;
 
-  CompactHashElement<K> *fetchNode() {
-    if(m_firstPage == NULL || m_firstPage->isFull()) {
-      CompactHashElementPage<K> *p = new CompactHashElementPage<K>;
-      p->m_next   = m_firstPage;
-      m_firstPage = p;
-    }
-    return m_firstPage->fetchNode();
-  }
-
-  CompactHashElementPage<K> *getFirstPage() {
-    return m_firstPage;
-  }
-
-  CompactHashElement<K> **allocateBuffer(size_t capacity) {
+  CompactHashElement<K> **allocateBuffer(size_t capacity) const {
     CompactHashElement<K> **result = capacity ? new CompactHashElement<K>*[capacity] : NULL;
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
@@ -98,10 +38,10 @@ private:
   }
 
   void init(size_t capacity) {
-    m_size       = 0;
-    m_capacity   = capacity;
-    m_buffer     = allocateBuffer(capacity);
-    m_firstPage  = NULL;
+    m_size        = 0;
+    m_capacity    = capacity;
+    m_buffer      = allocateBuffer(capacity);
+    m_updateCount = 0;
   }
 
   int getChainLength(size_t index) const {
@@ -140,42 +80,47 @@ public:
     clear();
   }
 
+  inline bool hasOrder() const {
+    return false;
+  }
+
   void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
-/*
-    printf("\nHashMap:setCapacity(%d). old capacity=%d. size=%d\n",capacity,m_capacity,m_size);
-    fflush(stdout);
-*/
-    if(m_buffer) {
-      delete[] m_buffer;
-      m_buffer = NULL;
+    if(capacity == m_capacity) {
+      return;
     }
+    CompactHashElement<K> **oldBuffer   = m_buffer;
+    const size_t            oldCapacity = m_capacity;
 
     m_capacity = capacity;
     m_buffer   = allocateBuffer(capacity);
 
-    for(CompactHashElementPage<K> *page = m_firstPage; page; page = page->m_next) {
-      for(size_t i = 0; i < page->m_count; i++) {
-        CompactHashElement<K> *n = page->m_elements+i;
-        const ULONG index = n->m_key.hashCode() % m_capacity;
-        n->m_next = m_buffer[index];
-        m_buffer[index] = n;
+    if(!isEmpty()) {
+      for(size_t i = 0; i < oldCapacity; i++) {
+        CompactHashElement<K> *n = oldBuffer[i];
+        while(n) {
+          const ULONG index = n->m_key.hashCode() % m_capacity;
+          CompactHashElement<K> *&bp = m_buffer[index];
+          CompactHashElement<K> *next = n->m_next;
+          n->m_next = bp;
+          bp        = n;
+          n         = next;
+        }
       }
+    }
+    if(oldBuffer) {
+      delete[] oldBuffer;
     }
   }
 
-  size_t getCapacity() const {
+  inline size_t getCapacity() const {
     return m_capacity;
   }
 
-  int getPageCount() const {
-    int count = 0;
-    for(const CompactHashElementPage<K> *p = m_firstPage; p; p = p->m_next) {
-      count++;
-    }
-    return count;
+  inline int getPageCount() const {
+    return m_elementPool.getPageCount();
   }
 
   bool add(const K &key) {
@@ -192,12 +137,33 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    CompactHashElement<K> *p = fetchNode();
+    CompactHashElement<K> *p = m_elementPool.fetchElement();
     p->m_key                 = key;
     p->m_next                = m_buffer[index];
     m_buffer[index]          = p;
     m_size++;
+    m_updateCount++;
     return true;
+  }
+
+  bool remove(const K &key) {
+    if(m_capacity) {
+      const ULONG index = key.hashCode() % m_capacity;
+      for(CompactHashElement<K> *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+        if(key == p->m_key) {
+          if(last) {
+            last->m_next = p->m_next;
+          } else {
+            m_buffer[index] = p->m_next;
+          }
+          m_elementPool.releaseElement(p);
+          m_size--;
+          m_updateCount++;
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   bool contains(const K &key) const {
@@ -212,46 +178,39 @@ public:
     return false;
   }
 
-  bool remove(const K &key) {
-    throwUnsupportedOperationException(__TFUNCTION__);
-    return false;
-  }
-
   void clear() {
-    CompactHashElementPage<K> *p, *q;
-    for(p = m_firstPage; p; p = q) {
-      q = p->m_next;
-      delete p;
+    m_elementPool.releaseAll();
+    if(m_size) {
+      m_size = 0;
+      m_updateCount++;
     }
-    m_firstPage = NULL;
-    m_size      = 0;
     setCapacity(0);
   }
 
-  size_t size() const {
+  inline size_t size() const {
     return m_size;
   }
 
-  bool isEmpty() const {
+  inline bool isEmpty() const {
     return m_size == 0;
   }
 
   CompactIntArray getLength() const {
-    CompactIntArray result;
-    CompactIntArray tmp;
     const size_t capacity = getCapacity();
+    CompactIntArray tmp(capacity);
     int m = 0;
     for(size_t index = 0; index < capacity; index++) {
-      int l = getChainLength(index);
+      const int l = getChainLength(index);
       tmp.add(l);
       if(l > m) {
         m = l;
       }
     }
+    CompactIntArray result(m+1);
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
-    for(ULONG index = 0; index < capacity; index++) {
+    for(size_t index = 0; index < capacity; index++) {
       result[tmp[index]]++;
     }
     return result;
@@ -269,10 +228,51 @@ public:
     return m;
   }
 
+  // Adds every element in src to this. Return true if any elements were added.
   bool addAll(const CompactHashSet<K> &src) {
     bool changed = false;
     for(Iterator<K> it = src.getIterator(); it.hasNext(); ) {
       if(add(it.next())) {
+        changed = true;
+      }
+    }
+    if(changed) {
+      m_updateCount++;
+    }
+    return changed;
+  }
+
+  bool addAll(const CompactArray<K> &a) {
+    bool changed = false;
+    for(size_t i = 0; i < a.size(); i++) {
+      if(add(a[i])) changed = true;
+    }
+    return changed;
+  }
+
+  // Remove every element in set from this. Return true if any elements were removed.
+  bool removeAll(const CompactHashSet<K> &set) {
+    if(this == &set) {
+      if(isEmpty()) return false;
+      clear();
+      return true;
+    }
+    bool changed = false;
+    for(Iterator<K> it = set.getIterator(); it.hasNext();) {
+      if(remove(it.next())) {
+        changed = true;
+      }
+    }
+    return changed;
+  }
+
+  // Remove every element from this that is not contained in set. Return true if any elements were removed.
+  bool retainAll(const CompactHashSet<K> &set) {
+    if(this == &set) return false; // Don't change anything. every element in this is in c too => nothing needs to be removed
+    bool changed = false;
+    for(Iterator<K> it = getIterator(); it.hasNext();) {
+      if(!set.contains(it.next())) {
+        it.remove();
         changed = true;
       }
     }
@@ -281,13 +281,30 @@ public:
 
   class CompactSetIterator : public AbstractIterator {
   private:
-    CompactHashElementPage<K> *m_currentPage;
-    int                        m_currentIndex;
+    CompactHashSet<K>     &m_set;
+    CompactHashElement<K> *m_current, *m_next;
+    size_t                 m_currentIndex;
+    UINT64                 m_updateCount;
+
+    void first() {
+      m_current = NULL;
+      for(m_currentIndex = 0; m_currentIndex < m_set.m_capacity; m_currentIndex++) {
+        if(m_next = m_set.m_buffer[m_currentIndex]) {
+          return;
+        }
+      }
+      m_next = NULL;
+    }
+
+    inline void checkUpdateCount() const {
+      if(m_updateCount != m_set.m_updateCount) {
+        concurrentModificationError(_T("CompactSetIterator"));
+      }
+    }
 
   public:
-    CompactSetIterator(CompactHashElementPage<K> *firstPage) {
-      m_currentPage  = firstPage;
-      m_currentIndex = 0;
+    CompactSetIterator(CompactHashSet<K> *set) : m_set(*set), m_updateCount(set->m_updateCount) {
+      first();
     }
 
     AbstractIterator *clone() {
@@ -295,63 +312,183 @@ public:
     }
 
     bool hasNext() const {
-      return m_currentPage != NULL;
+      return m_next != NULL;
     }
 
     void *next() {
-      if(m_currentPage == NULL) {
+      if(m_next == NULL) {
         noNextElementError(_T("CompactSetIterator"));
       }
-      K *result = &m_currentPage->m_elements[m_currentIndex++].m_key;
-      if(m_currentIndex == m_currentPage->m_count) {
-        m_currentIndex = 0;
-        m_currentPage = m_currentPage->m_next;
+      checkUpdateCount();
+      m_current = m_next;
+      if((m_next = m_next->m_next) == NULL) {
+        CompactHashElement<K> **first = m_set.m_buffer, **end = first + m_set.getCapacity();
+        for(CompactHashElement<K> **p = first + m_currentIndex; ++p < end;) {
+          if(*p) {
+            m_next         = *p;
+            m_currentIndex = p - first;
+            break;
+          }
+        }
       }
-      return result;
+      return &(m_current->m_key);
     }
 
     void remove() {
-      unsupportedOperationError(__TFUNCTION__);
+      if(m_current == NULL) {
+        noCurrentElementError(_T("CompactSetIterator"));
+      }
+      checkUpdateCount();
+      m_set.remove(m_current->m_key);
+      m_current     = NULL;
+      m_updateCount = m_set.m_updateCount;
     }
   };
 
   Iterator<K> getIterator() const {
-    CompactHashSet<K> *tmp = (CompactHashSet<K>*)this;
-    return Iterator<K>(new CompactSetIterator(tmp->getFirstPage()));
+    return Iterator<K>(new CompactSetIterator((CompactHashSet<K>*)this));
+  }
+
+  // Set intersection = set of elements that are in both sets.
+  CompactHashSet<K> operator*(const CompactHashSet<K> &set) const {
+    CompactHashSet<K> result;
+    if(size() < set.size()) {
+      for(Iterator<K> it = getIterator(); it.hasNext();) {
+        const K &e = it.next();
+        if(set.contains(e)) {
+          result.add(e);
+        }
+      }
+    } else {
+      for(Iterator<K> it = set.getIterator(); it.hasNext();) {
+        const K &e = it.next();
+        if(contains(e)) {
+          result.add(e);
+        }
+      }
+    }
+    return result;
+  }
+
+  // Set union = set of elements, that are in at least 1 of the sets.
+  CompactHashSet<K> operator+(const CompactHashSet<K> &set) const {
+    CompactHashSet<K> result(*this);
+    result.addAll(set);
+    return result;
+  }
+
+  // Set difference = set of elements in *this and not in set.
+  CompactHashSet<K> operator-(const CompactHashSet<K> &set) const {
+    CompactHashSet<K> result(*this);
+    result.removeAll(set);
+    return result;
+  }
+
+  // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
+  CompactHashSet<K> operator^(const CompactHashSet<K> &set) const {
+    CompactHashSet<K> result;
+    for(Iterator<K> it = getIterator(); it.hasNext();) {
+      const K &e = it.next();
+      if(!set.contains(e)) {
+        result.add(e);
+      }
+    }
+    for(Iterator<K> it = set.getIterator(); it.hasNext();) {
+      const K &e = it.next();
+      if(!contains(e)) {
+        result.add(e);
+      }
+    }
+    return result;
+  }
+
+  bool operator==(const CompactHashSet<K> &set) const {
+    if(this == &set) return true;
+    if (set.size() != size()) {
+      return false;
+    }
+    for (Iterator<K> it = getIterator(); it.hasNext();) {
+      if (!set.contains(it.next())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool operator!=(const CompactHashSet<K> &set) const {
+    return !(*this == set);
+  }
+
+  // Subset. Return true if all elements in *this are in set
+  bool operator<=(const CompactHashSet<K> &set) const {
+    for(Iterator<K> it = getIterator(); it.hasNext();) {
+      if(!set.contains(it.next())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Pure subset. return true if (*this <= set) && (size() < set.size())
+  bool operator<(const CompactHashSet<K> &set) const {
+    return (size() < set.size()) && (*this <= set);
+  }
+
+  bool operator>=(const CompactHashSet<K> &set) const {
+    return set <= *this;
+  }
+
+  bool operator>(const CompactHashSet<K> &set) const {
+    return set < *this;
   }
 
   void save(ByteOutputStream &s) const {
-    const int pageCount = getPageCount();
-    const int kSize     = sizeof(K);
-    s.putBytes((BYTE*)&kSize    , sizeof(kSize));
-    s.putBytes((BYTE*)&pageCount, sizeof(pageCount));
-    for(const CompactHashElementPage<K> *p = m_firstPage; p; p = p->m_next) {
-      p->save(s);
+    const UINT  kSize = sizeof(K);
+    const UINT64 count = size();
+
+    s.putBytes((BYTE*)&kSize, sizeof(kSize));
+    s.putBytes((BYTE*)&count, sizeof(count));
+    CompactArray<K> a(1000);
+    UINT64 wCount = 0;
+    for(Iterator<K> it = getIterator(); it.hasNext();) {
+      a.add(it.next());
+      if(a.size() == 1000) {
+        s.putBytes((BYTE*)a.getBuffer(),sizeof(K)*a.size());
+        wCount += a.size();
+        a.clear(-1);
+      }
+    }
+    if(a.size() > 0) {
+      s.putBytes((BYTE*)a.getBuffer(),sizeof(K)*a.size());
+      wCount += a.size();
+    }
+    if (wCount != count) {
+      throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
+                    ,__TFUNCTION__, wCount, count);
     }
   }
 
   void load(ByteInputStream &s) {
-    clear();
-    int kSize;
+    UINT kSize;
     s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
     if(kSize != sizeof(K)) {
-      throwException(_T("sizeof(Key):%d. Size from stream=%d"), sizeof(K), kSize);
+      throwException(_T("sizeof(Key):%u. Size from stream=%u"), sizeof(K), kSize);
     }
-    int pageCount;
-    s.getBytesForced((BYTE*)&pageCount, sizeof(pageCount));
-    CompactHashElementPage<K> **pp = &m_firstPage;
-    for(int i = 0; i < pageCount; i++, pp = &(*pp)->m_next) { // append them, so we get them in the same order as they were when saved
-      CompactHashElementPage<K> *newPage = new CompactHashElementPage<K>;
-      newPage->load(s);
-      m_size += newPage->m_count;
-      *pp = newPage;
-    }
-    *pp = NULL;
-    setCapacity(m_size);
-  }
-
-  void unload() {
+    UINT64 size64;
+    s.getBytesForced((BYTE*)&size64,sizeof(size64));
+    CHECKUINT64ISVALIDSIZET(size64);
+    size_t count = (size_t)size64;
     clear();
+    setCapacity(count);
+    for(size_t i = 0; i < count;) {
+      K buffer[1000];
+      const size_t n = min(count-i,ARRAYSIZE(buffer));
+      s.getBytesForced((BYTE*)buffer, sizeof(buffer[0])*n);
+      for(const K *p = buffer, *end = buffer + n; p < end;) {
+        add(*(p++));
+      }
+      i += n;
+    }
   }
 };
 
