@@ -63,7 +63,7 @@ namespace TestRandom {
       for(UINT b = 0; b < bucketCount; b++) {
         Q += sqr(expected[b] - observed[b]) / e;
       }
-      const Real P = 1.0 - chiSquaredDistribution(bucketCount-1,Q);
+      const double P = 1.0 - getDouble(chiSquaredDistribution(bucketCount-1,Q));
       if(P < 1e-12) {
 #ifdef _DEBUG
         Real P1 = 1.0 - chiSquaredDistribution(bucketCount-1,Q);
@@ -77,14 +77,14 @@ namespace TestRandom {
         }
         TCHAR tmpstr[100];
         _ftprintf(f,_T("Length:%s, allFactors:%s\n"), _i128tot(length,tmpstr,10), allFactors.toStringBasicType().cstr());
-        _ftprintf(f,_T("Expected:%le, Q:%le, P:%le\n"),e,Q,getDouble(P));
+        _ftprintf(f,_T("Expected:%le, Q:%le, P:%le\n"),e,Q,P);
         fclose(f);
       }
       allPValues.add(P);
       if(P <= 0.05) {
         TCHAR tmpstr[100];
-        OUTPUT(_T("P=%s, Q=%lf, Interval[%lld,%lld], length:%s, buckets:%u, factors:%s")
-              ,toString(P).cstr(), Q, from,to,_i128tot(length,tmpstr,10),bucketCount
+        OUTPUT(_T("P=%11.5le, Q=%.3le, Interval[%+20lld,%+20lld], length:%19s, buckets:%3lu, factors:%s")
+              ,P, Q, from,to,_i128tot(length,tmpstr,10),bucketCount
               ,allFactors.toStringBasicType().cstr()
               );
       }
