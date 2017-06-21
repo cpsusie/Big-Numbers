@@ -80,7 +80,7 @@ namespace TestCompactHashSet {
       testCollectionStream(set);
       compareSetList(set, list);
       for(int i = 0; i < 250 && list.size() > 5; i++) {
-        const int index = randInt(list.size());
+        const size_t index = randSizet(list.size());
         KeyType &key = list[index];
         verify(set.remove(key));
         list.remove(index);

@@ -10,11 +10,9 @@
 template <class K> class SetEntry {
 public:
   K m_key;
-};
-
-template <class K> class CompactHashElement : public SetEntry<K> {
-public:
-  CompactHashElement<K> *m_next;
+  inline SetEntry() {}
+  inline SetEntry(const K &key) : m_key(key) {
+  }
 };
 
 #pragma pack(pop)
@@ -23,14 +21,14 @@ public:
 // and bool operator==(const K &) defined
 template <class K> class CompactHashSet {
 private:
-  size_t                                     m_size;
-  size_t                                     m_capacity;
-  CompactHashElement<K>                    **m_buffer;
-  CompactElementPool<CompactHashElement<K> > m_elementPool;
-  UINT64                                     m_updateCount;
+  size_t                                         m_size;
+  size_t                                         m_capacity;
+  LinkElement<SetEntry<K> >                    **m_buffer;
+  CompactElementPool<LinkElement<SetEntry<K> > > m_elementPool;
+  UINT64                                         m_updateCount;
 
-  CompactHashElement<K> **allocateBuffer(size_t capacity) const {
-    CompactHashElement<K> **result = capacity ? new CompactHashElement<K>*[capacity] : NULL;
+  LinkElement<SetEntry<K> > **allocateBuffer(size_t capacity) const {
+    LinkElement<SetEntry<K> > **result = capacity ? new LinkElement<SetEntry<K> >*[capacity] : NULL;
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -46,7 +44,7 @@ private:
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
+    for(LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -61,12 +59,12 @@ public:
     init(capacity);
   }
 
-  CompactHashSet(const CompactHashSet<K> &src) {
+  CompactHashSet(const CompactHashSet &src) {
     init(src.m_capacity);
     addAll(src);
   }
 
-  CompactHashSet<K> &operator=(const CompactHashSet<K> &src) {
+  CompactHashSet &operator=(const CompactHashSet &src) {
     if(this == &src) {
       return *this;
     }
@@ -91,19 +89,19 @@ public:
     if(capacity == m_capacity) {
       return;
     }
-    CompactHashElement<K> **oldBuffer   = m_buffer;
-    const size_t            oldCapacity = m_capacity;
+    LinkElement<SetEntry<K> > **oldBuffer   = m_buffer;
+    const size_t                oldCapacity = m_capacity;
 
     m_capacity = capacity;
     m_buffer   = allocateBuffer(capacity);
 
     if(!isEmpty()) {
       for(size_t i = 0; i < oldCapacity; i++) {
-        CompactHashElement<K> *n = oldBuffer[i];
+        LinkElement<SetEntry<K> > *n = oldBuffer[i];
         while(n) {
-          const ULONG index = n->m_key.hashCode() % m_capacity;
-          CompactHashElement<K> *&bp = m_buffer[index];
-          CompactHashElement<K> *next = n->m_next;
+          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
+          LinkElement<SetEntry<K> > *&bp = m_buffer[index];
+          LinkElement<SetEntry<K> > *next = n->m_next;
           n->m_next = bp;
           bp        = n;
           n         = next;
@@ -127,8 +125,8 @@ public:
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_key) {
+      for(LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
           return false;
         }
       }
@@ -137,10 +135,10 @@ public:
       setCapacity(m_size*5+5);
       index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    CompactHashElement<K> *p = m_elementPool.fetchElement();
-    p->m_key                 = key;
-    p->m_next                = m_buffer[index];
-    m_buffer[index]          = p;
+    LinkElement<SetEntry<K> > *p = m_elementPool.fetchElement();
+    p->m_e.m_key                 = key;
+    p->m_next                    = m_buffer[index];
+    m_buffer[index]              = p;
     m_size++;
     m_updateCount++;
     return true;
@@ -149,8 +147,8 @@ public:
   bool remove(const K &key) {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(CompactHashElement<K> *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
-        if(key == p->m_key) {
+      for(LinkElement<SetEntry<K> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+        if(key == p->m_e.m_key) {
           if(last) {
             last->m_next = p->m_next;
           } else {
@@ -169,8 +167,8 @@ public:
   bool contains(const K &key) const {
     if(m_capacity) {
       const ULONG index = key.hashCode() % m_capacity;
-      for(const CompactHashElement<K> *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_key) {
+      for(const LinkElement<SetEntry<K> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
           return true;
         }
       }
@@ -229,71 +227,83 @@ public:
   }
 
   // Adds every element in src to this. Return true if any elements were added.
-  bool addAll(const CompactHashSet<K> &src) {
-    bool changed = false;
-    for(Iterator<K> it = src.getIterator(); it.hasNext(); ) {
-      if(add(it.next())) {
-        changed = true;
-      }
+  bool addAll(const CompactHashSet &set) {
+    if(this == &set) {
+      return false;
     }
-    if(changed) {
-      m_updateCount++;
+    const size_t n = size();
+    for(Iterator<K> it = set.getIterator(); it.hasNext(); ) {
+      add(it.next());
     }
-    return changed;
-  }
-
-  bool addAll(const CompactArray<K> &a) {
-    bool changed = false;
-    for(size_t i = 0; i < a.size(); i++) {
-      if(add(a[i])) changed = true;
-    }
-    return changed;
+    return size() != n;
   }
 
   // Remove every element in set from this. Return true if any elements were removed.
-  bool removeAll(const CompactHashSet<K> &set) {
+  bool removeAll(const CompactHashSet &set) {
     if(this == &set) {
       if(isEmpty()) return false;
       clear();
       return true;
     }
-    bool changed = false;
+    const size_t n = size();
     for(Iterator<K> it = set.getIterator(); it.hasNext();) {
-      if(remove(it.next())) {
-        changed = true;
-      }
+      remove(it.next());
     }
-    return changed;
+    return size() != n;
+  }
+
+  bool addAll(const CompactArray<K> &a) {
+    const size_t n = size();
+    for(size_t i = 0; i < a.size(); i++) {
+      add(a[i]);
+    }
+    return size() != n;
+  }
+
+  bool removeAll(const CompactArray<K> &a) {
+    const size_t n = size();
+    for(size_t i = 0; i < a.size(); i++) {
+      remove(a[i]);
+    }
+    return size() != n;
   }
 
   // Remove every element from this that is not contained in set. Return true if any elements were removed.
-  bool retainAll(const CompactHashSet<K> &set) {
-    if(this == &set) return false; // Don't change anything. every element in this is in c too => nothing needs to be removed
-    bool changed = false;
+  bool retainAll(const CompactHashSet &set) {
+    if(this == &set) {
+      return false; // Don't change anything. every element in this is in set too => nothing needs to be removed
+    }
+    const size_t n = size();
     for(Iterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         it.remove();
-        changed = true;
       }
     }
-    return changed;
+    return size() != n;
   }
 
+  // Assume m_set.m_buffer doesn't change while iterator exist
+  // as there are pointers directy into the sets buffer-array
   class CompactSetIterator : public AbstractIterator {
   private:
-    CompactHashSet<K>     &m_set;
-    CompactHashElement<K> *m_current, *m_next;
-    size_t                 m_currentIndex;
-    UINT64                 m_updateCount;
+    CompactHashSet            &m_set;
+    LinkElement<SetEntry<K> > *m_current, *m_next, **m_bufp, **m_endBuf;
+    UINT64                     m_updateCount;
 
     void first() {
       m_current = NULL;
-      for(m_currentIndex = 0; m_currentIndex < m_set.m_capacity; m_currentIndex++) {
-        if(m_next = m_set.m_buffer[m_currentIndex]) {
-          return;
+      if(m_set.m_buffer) {
+        m_endBuf = m_set.m_buffer + m_set.getCapacity();
+        for(LinkElement<SetEntry<K> > **p = m_set.m_buffer; p < m_endBuf; p++) {
+          if(*p) {
+            m_bufp = p;
+            m_next = *p;
+            return;
+          }
         }
       }
-      m_next = NULL;
+      m_endBuf = m_bufp = NULL;
+      m_next   = NULL;
     }
 
     inline void checkUpdateCount() const {
@@ -303,7 +313,7 @@ public:
     }
 
   public:
-    CompactSetIterator(CompactHashSet<K> *set) : m_set(*set), m_updateCount(set->m_updateCount) {
+    CompactSetIterator(CompactHashSet *set) : m_set(*set), m_updateCount(set->m_updateCount) {
       first();
     }
 
@@ -322,16 +332,15 @@ public:
       checkUpdateCount();
       m_current = m_next;
       if((m_next = m_next->m_next) == NULL) {
-        CompactHashElement<K> **first = m_set.m_buffer, **end = first + m_set.getCapacity();
-        for(CompactHashElement<K> **p = first + m_currentIndex; ++p < end;) {
+        for(LinkElement<SetEntry<K> > **p = m_bufp; ++p < m_endBuf;) {
           if(*p) {
-            m_next         = *p;
-            m_currentIndex = p - first;
+            m_bufp = p;
+            m_next = *p;
             break;
           }
         }
       }
-      return &(m_current->m_key);
+      return &(m_current->m_e.m_key);
     }
 
     void remove() {
@@ -339,19 +348,19 @@ public:
         noCurrentElementError(_T("CompactSetIterator"));
       }
       checkUpdateCount();
-      m_set.remove(m_current->m_key);
+      m_set.remove(m_current->m_e.m_key);
       m_current     = NULL;
       m_updateCount = m_set.m_updateCount;
     }
   };
 
   Iterator<K> getIterator() const {
-    return Iterator<K>(new CompactSetIterator((CompactHashSet<K>*)this));
+    return Iterator<K>(new CompactSetIterator((CompactHashSet*)this));
   }
 
   // Set intersection = set of elements that are in both sets.
-  CompactHashSet<K> operator*(const CompactHashSet<K> &set) const {
-    CompactHashSet<K> result;
+  CompactHashSet operator*(const CompactHashSet &set) const {
+    CompactHashSet result;
     if(size() < set.size()) {
       for(Iterator<K> it = getIterator(); it.hasNext();) {
         const K &e = it.next();
@@ -371,22 +380,22 @@ public:
   }
 
   // Set union = set of elements, that are in at least 1 of the sets.
-  CompactHashSet<K> operator+(const CompactHashSet<K> &set) const {
-    CompactHashSet<K> result(*this);
+  CompactHashSet operator+(const CompactHashSet &set) const {
+    CompactHashSet result(*this);
     result.addAll(set);
     return result;
   }
 
   // Set difference = set of elements in *this and not in set.
-  CompactHashSet<K> operator-(const CompactHashSet<K> &set) const {
-    CompactHashSet<K> result(*this);
+  CompactHashSet operator-(const CompactHashSet &set) const {
+    CompactHashSet result(*this);
     result.removeAll(set);
     return result;
   }
 
   // s1^s2 = (s1-s2) + (s2-s1) (symmetric difference) = set of elements that are in only one of the sets
-  CompactHashSet<K> operator^(const CompactHashSet<K> &set) const {
-    CompactHashSet<K> result;
+  CompactHashSet operator^(const CompactHashSet &set) const {
+    CompactHashSet result;
     for(Iterator<K> it = getIterator(); it.hasNext();) {
       const K &e = it.next();
       if(!set.contains(e)) {
@@ -402,7 +411,7 @@ public:
     return result;
   }
 
-  bool operator==(const CompactHashSet<K> &set) const {
+  bool operator==(const CompactHashSet &set) const {
     if(this == &set) return true;
     if (set.size() != size()) {
       return false;
@@ -415,12 +424,12 @@ public:
     return true;
   }
 
-  bool operator!=(const CompactHashSet<K> &set) const {
+  bool operator!=(const CompactHashSet &set) const {
     return !(*this == set);
   }
 
   // Subset. Return true if all elements in *this are in set
-  bool operator<=(const CompactHashSet<K> &set) const {
+  bool operator<=(const CompactHashSet &set) const {
     for(Iterator<K> it = getIterator(); it.hasNext();) {
       if(!set.contains(it.next())) {
         return false;
@@ -430,15 +439,15 @@ public:
   }
 
   // Pure subset. return true if (*this <= set) && (size() < set.size())
-  bool operator<(const CompactHashSet<K> &set) const {
+  bool operator<(const CompactHashSet &set) const {
     return (size() < set.size()) && (*this <= set);
   }
 
-  bool operator>=(const CompactHashSet<K> &set) const {
+  bool operator>=(const CompactHashSet &set) const {
     return set <= *this;
   }
 
-  bool operator>(const CompactHashSet<K> &set) const {
+  bool operator>(const CompactHashSet &set) const {
     return set < *this;
   }
 

@@ -134,24 +134,23 @@ public:
   }
 
   bool addAll(const Map<K, V> &src) {
-    bool changed = false;
+    if (this == &src) {
+      return false;
+    }
+    const size_t n = size();
     for(Iterator<Entry<K, V> > it = ((Map<K, V>&)src).entrySet().getIterator(); it.hasNext();) {
       Entry<K, V> &entry = it.next();
-      if(put(entry.getKey(), entry.getValue())) {
-        changed = true;
-      }
+      put(entry.getKey(), entry.getValue());
     }
-    return changed;
+    return size() != n;
   }
 
   bool removeAll(const Collection<K> &src) {
-    bool changed = false;
+    const size_t n = size();
     for(Iterator<K> it = ((Collection<K>&)src).getIterator(); it.hasNext();) {
-      if(remove(it.next())) {
-        changed = true;
-      }
+      remove(it.next());
     }
-    return changed;
+    return size() != n;
   }
 
   friend Map<K, V> operator*(const Map<K, V> &m1, const Map<K, V> &m2) { // intersection

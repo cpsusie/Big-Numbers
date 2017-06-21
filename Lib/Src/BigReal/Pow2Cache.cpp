@@ -59,7 +59,7 @@ void Pow2Cache::clear() {
   for(Iterator<Entry<Pow2ArgumentKey, BigReal*> > it = getEntryIterator(); it.hasNext();) {
     delete it.next().getValue();
   }
-  CompactHashMap<Pow2ArgumentKey, BigReal*>::clear();
+  __super::clear();
   m_state = CACHE_EMPTY;
   m_updateCount++;
   m_gate.signal();
@@ -73,12 +73,11 @@ bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
       throwException(_T("%s:Not allowed when cache is loaded from file"), method);
     }
     m_state &= ~CACHE_EMPTY;
-    ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
-  }
-  else {
+    ret = __super::put(key, v);
+  } else {
     m_gate.wait();
     m_state &= ~CACHE_EMPTY;
-    ret = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->put(key, v);
+    ret = __super::put(key, v);
     m_gate.signal();
   }
   if(ret) m_updateCount++;
@@ -87,10 +86,10 @@ bool Pow2Cache::put(const Pow2ArgumentKey &key, BigReal * const &v) {
 
 BigReal **Pow2Cache::get(const Pow2ArgumentKey &key) {
   if (isLoaded()) {
-    return ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+    return __super::get(key);
   }
   m_gate.wait();
-  BigReal **result = ((CompactHashMap<Pow2ArgumentKey, BigReal*>*)this)->get(key);
+  BigReal **result = __super::get(key);
   m_gate.signal();
   return result;
 }
@@ -107,7 +106,7 @@ void Pow2Cache::save(ByteOutputStream &s) const {
   const UINT capacity = (UINT)getCapacity();
   const UINT n        = (UINT)size();
   debugLog(_T("Saving Pow2Cache to %s. size:%lu, capacity:%lu\n"), CACHEFILENAME, n, capacity);
-  const unsigned char signaturByte = BITPERBRDIGIT;
+  const BYTE signaturByte = BITPERBRDIGIT;
   s.putByte(signaturByte);
   s.putBytes((BYTE*)&capacity, sizeof(capacity));
   s.putBytes((BYTE*)&n       , sizeof(n));
@@ -124,7 +123,7 @@ void Pow2Cache::save(ByteOutputStream &s) const {
 void Pow2Cache::load(ByteInputStream &s) {
   UINT capacity;
   UINT n;
-  const unsigned char signaturByte = s.getByte();
+  const BYTE signaturByte = s.getByte();
   if (signaturByte != BITPERBRDIGIT) {
     throwException(_T("Wrong bits/Digit in cache-file. Expected %d, got %d bits"), BITPERBRDIGIT, signaturByte);
   }

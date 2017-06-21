@@ -81,3 +81,13 @@ public:
     return count;
   }
 };
+
+#pragma pack(push,1)
+
+template <class T> class LinkElement {
+public:
+  LinkElement *m_next;
+  T            m_e;
+};
+
+#pragma pack(pop)

@@ -4,94 +4,29 @@
 
 #pragma pack(push,1)
 
-#include "CompactKeyType.h"
+#include "CompactHashSet.h"
 
-template <class K, class V> class MapEntry {
+template <class K, class V> class MapEntry : public SetEntry<K> {
 public:
-  K m_key;
   V m_value;
-};
-
-template <class K, class V> class CompactHashNode : public MapEntry<K, V> {
-public:
-  CompactHashNode<K, V> *m_next;
+  inline MapEntry() {
+  }
+  inline MapEntry(const K &key, const V &value) : SetEntry(key), m_value(value) {
+  }
 };
 
 #pragma pack(pop)
 
-template <class K, class V> class CompactHashNodePage {
-public:
-  UINT                       m_count;
-  CompactHashNodePage<K, V> *m_next;
-  CompactHashNode<K, V>      m_nodes[20000];
-
-  CompactHashNodePage() {
-    clear();
-  }
-
-  void clear() {
-    m_count = 0;
-  }
-
-  CompactHashNode<K, V> *fetchNode() {
-    return &m_nodes[m_count++];
-  }
-  
-  bool isFull() const {
-    return m_count == ARRAYSIZE(m_nodes);
-  }
-
-  bool isEmpty() const {
-    return m_count == 0;
-  }
-
-  void save(ByteOutputStream &s) const {
-    s.putBytes((BYTE*)&m_count, sizeof(m_count));
-    for(int i = 0; i < m_count;) {
-      MapEntry<K, V> buffer[1000];
-      const int n = min(m_count-i, ARRAYSIZE(buffer));
-      for(int j = 0; j < n;) {
-        buffer[j++] = m_nodes[i++];
-      }
-      s.putBytes((BYTE*)buffer, sizeof(buffer[0])*j);
-    }
-  }
-
-  void load(ByteInputStream &s) {
-    s.getBytesForced((BYTE*)&m_count, sizeof(m_count));
-    for(int i = 0; i < m_count;) {
-      MapEntry<K, V> buffer[1000];
-      const int n = min(m_count-i, ARRAYSIZE(buffer));
-      s.getBytesForced((BYTE*)buffer, sizeof(buffer[0])*n);
-      for(int j = 0; j < n;) {
-        (MapEntry<K, V>&)m_nodes[i++] = buffer[j++];
-      }
-    }
-  }
-};
-
 template <class K, class V> class CompactHashMap {
 private:
-  size_t                     m_size;
-  size_t                     m_capacity;
-  CompactHashNode<K, V>    **m_buffer;
-  CompactHashNodePage<K, V> *m_firstPage;
+  size_t                                           m_size;
+  size_t                                           m_capacity;
+  LinkElement<MapEntry<K,V> >                    **m_buffer;
+  CompactElementPool<LinkElement<MapEntry<K,V> > > m_elementPool;
+  UINT64                                           m_updateCount;
 
-  CompactHashNode<K, V> *fetchNode() {
-    if(m_firstPage == NULL || m_firstPage->isFull()) {
-      CompactHashNodePage<K, V> *p = new CompactHashNodePage<K, V>;
-      p->m_next   = m_firstPage;
-      m_firstPage = p;
-    }
-    return m_firstPage->fetchNode();
-  }
-
-  CompactHashNodePage<K, V> *getFirstPage() {
-    return m_firstPage;
-  }
-
-  CompactHashNode<K, V> **allocateBuffer(size_t capacity) {
-    CompactHashNode<K, V> **result = capacity ? new CompactHashNode<K, V>*[capacity] : NULL;
+  LinkElement<MapEntry<K,V> > **allocateBuffer(size_t capacity) const {
+    LinkElement<MapEntry<K,V> > **result = capacity ? new LinkElement<MapEntry<K,V> >*[capacity] : NULL;
     if(capacity) {
       memset(result, 0, sizeof(result[0])*capacity);
     }
@@ -99,15 +34,15 @@ private:
   }
 
   void init(size_t capacity) {
-    m_size       = 0;
-    m_capacity   = capacity;
-    m_buffer     = allocateBuffer(capacity);
-    m_firstPage  = NULL;
+    m_size        = 0;
+    m_capacity    = capacity;
+    m_buffer      = allocateBuffer(capacity);
+    m_updateCount = 0;
   }
 
   int getChainLength(size_t index) const {
     int count = 0;
-    for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
+    for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
       count++;
     }
     return count;
@@ -122,17 +57,17 @@ public:
     init(capacity);
   }
 
-  CompactHashMap(const CompactHashMap<K, V> &src) {
+  CompactHashMap(const CompactHashMap &src) {
     init(src.m_capacity);
     addAll(src);
   }
 
-  CompactHashMap<K, V> &operator=(const CompactHashMap<K, V> &src) {
+  CompactHashMap &operator=(const CompactHashMap &src) {
     if(this == &src) {
       return *this;
     }
     clear();
-    init(src.m_capacity);
+    setCapacity(src.size());
     addAll(src);
     return *this;
   }
@@ -141,119 +76,125 @@ public:
     clear();
   }
 
+  inline bool hasOrder() const {
+    return false;
+  }
+
   void setCapacity(size_t capacity) {
     if(capacity < m_size) {
       capacity = m_size;
     }
-/*
-    printf("\nHashMap:setCapacity(%d). old capacity=%d. size=%d\n",capacity,m_capacity,m_size);
-    fflush(stdout);
-*/
-    if(m_buffer) {
-      delete[] m_buffer;
-      m_buffer = NULL;
+    if(capacity == m_capacity) {
+      return;
     }
+    LinkElement<MapEntry<K,V> > **oldBuffer   = m_buffer;
+    const size_t                  oldCapacity = m_capacity;
 
     m_capacity = capacity;
     m_buffer   = allocateBuffer(capacity);
 
-    for(CompactHashNodePage<K, V> *page = m_firstPage; page; page = page->m_next) {
-      for(int i = 0; i < (int)(page->m_count); i++) {
-        CompactHashNode<K, V> *n = page->m_nodes+i;
-        const ULONG index = n->m_key.hashCode() % m_capacity;
-        n->m_next = m_buffer[index];
-        m_buffer[index] = n;
+    if(!isEmpty()) {
+      for(size_t i = 0; i < oldCapacity; i++) {
+        LinkElement<MapEntry<K,V> > *n = oldBuffer[i];
+        while(n) {
+          const ULONG index = n->m_e.m_key.hashCode() % m_capacity;
+          LinkElement<MapEntry<K,V> > *&bp  = m_buffer[index];
+          LinkElement<MapEntry<K,V> > *next = n->m_next;
+          n->m_next = bp;
+          bp        = n;
+          n         = next;
+        }
       }
+    }
+    if(oldBuffer) {
+      delete[] oldBuffer;
     }
   }
 
-  size_t getCapacity() const {
+  inline size_t getCapacity() const {
     return m_capacity;
   }
 
-  int getPageCount() const {
-    int count = 0;
-    for(const CompactHashNodePage<K, V> *p = m_firstPage; p; p = p->m_next) {
-      count++;
-    }
-    return count;
+  inline int getPageCount() const {
+    return m_elementPool.getPageCount();
   }
 
   bool put(const K &key, const V &value) {
     ULONG index;
     if(m_capacity) {
       index = key.hashCode() % m_capacity;
-      for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_key) {
+      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
           return false;
         }
       }
     }
     if(m_size+1 > m_capacity*3) {
       setCapacity(m_size*5+5);
-      index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the map is empty
+      index = key.hashCode() % m_capacity; // no need to search key again. if m_capacity was 0, the set is empty
     }
-    CompactHashNode<K, V> *p = fetchNode();
-    p->m_key                 = key;
-    p->m_value               = value;
-    p->m_next                = m_buffer[index];
-    m_buffer[index]          = p;
+    LinkElement<MapEntry<K,V> > *p = m_elementPool.fetchElement();
+    p->m_e.m_key                   = key;
+    p->m_e.m_value                 = value;
+    p->m_next                      = m_buffer[index];
+    m_buffer[index]                = p;
     m_size++;
+    m_updateCount++;
     return true;
   }
 
-  V *get(const K &key) {
-    if(m_capacity) {
-      const ULONG index = key.hashCode() % m_capacity;
-      for(CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_key) {
-          return &p->m_value;
-        }
-      }
-    }
-    return NULL;
-  }
-
-  const V *get(const K &key) const {
-    if(m_capacity) {
-      const ULONG index = key.hashCode() % m_capacity;
-      for(const CompactHashNode<K, V> *p = m_buffer[index]; p; p = p->m_next) {
-        if(key == p->m_key) {
-          return &p->m_value;
-        }
-      }
-    }
-    return NULL;
-  }
-
   bool remove(const K &key) {
-    throwUnsupportedOperationException(__TFUNCTION__);
+    if(m_capacity) {
+      const ULONG index = key.hashCode() % m_capacity;
+      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index], *last = NULL; p; last = p, p = p->m_next) {
+        if(key == p->m_e.m_key) {
+          if(last) {
+            last->m_next = p->m_next;
+          } else {
+            m_buffer[index] = p->m_next;
+          }
+          m_elementPool.releaseElement(p);
+          m_size--;
+          m_updateCount++;
+          return true;
+        }
+      }
+    }
     return false;
   }
 
-  void clear() {
-    CompactHashNodePage<K, V> *p, *q;
-    for(p = m_firstPage; p; p = q) {
-      q = p->m_next;
-      delete p;
+  V *get(const K &key) const {
+    if(m_capacity) {
+      const ULONG index = key.hashCode() % m_capacity;
+      for(LinkElement<MapEntry<K,V> > *p = m_buffer[index]; p; p = p->m_next) {
+        if(key == p->m_e.m_key) {
+          return &(p->m_e.m_value);
+        }
+      }
     }
-    m_firstPage = NULL;
-    m_size      = 0;
+    return NULL;
+  }
+
+  void clear() {
+    m_elementPool.releaseAll();
+    if(m_size) {
+      m_size = 0;
+      m_updateCount++;
+    }
     setCapacity(0);
   }
 
-  size_t size() const {
+  inline size_t size() const {
     return m_size;
   }
 
-  bool isEmpty() const {
+  inline bool isEmpty() const {
     return m_size == 0;
   }
 
   CompactIntArray getLength() const {
-    CompactIntArray result;
-    CompactIntArray tmp;
     const size_t capacity = getCapacity();
+    CompactIntArray tmp(capacity);
     int m = 0;
     for(size_t index = 0; index < capacity; index++) {
       const int l = getChainLength(index);
@@ -262,6 +203,7 @@ public:
         m = l;
       }
     }
+    CompactIntArray result(m+1);
     for(int i = 0; i <= m; i++) {
       result.add(0);
     }
@@ -283,56 +225,47 @@ public:
     return m;
   }
 
-  class CompactMapKeyIterator : public AbstractIterator {
-  private:
-    CompactHashNodePage<K, V> *m_currentPage;
-    UINT                       m_currentIndex;
-
-  public:
-    CompactMapKeyIterator(CompactHashNodePage<K, V> *firstPage) {
-      m_currentPage  = firstPage;
-      m_currentIndex = 0;
+  // Adds every element in src to this. Return true if any elements were added.
+  bool addAll(const CompactHashMap &map) {
+    const size_t n = size();
+    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext(); ) {
+      const Entry<K,V> &e = it.next();
+      put(e.getKey(), e.getValue());
     }
+    return size() != n;
+  }
 
-    AbstractIterator *clone() {
-      return new CompactMapKeyIterator(*this);
+  // Remove every element in set from this. Return true if any elements were removed.
+  bool removeAll(const CompactHashMap &map) {
+    if(this == &map) {
+      if(isEmpty()) return false;
+      clear();
+      return true;
     }
-
-    bool hasNext() const {
-      return m_currentPage != NULL;
+    const size_t n = size();
+    for(Iterator<Entry<K,V> > it = map.getEntryIterator(); it.hasNext();) {
+      remove(it.next().getKey());
     }
+    return size() != n;
+  }
 
-    void *next() {
-      if(m_currentPage == NULL) {
-        throwException(_T("CompactMapKeyIterator:next:No such element"));
-      }
-      K *result = &m_currentPage->m_nodes[m_currentIndex++].m_key;
-      if(m_currentIndex == m_currentPage->m_count) {
-        m_currentIndex = 0;
-        m_currentPage = m_currentPage->m_next;
-      }
-      return result;
+  bool removeAll(const CompactArray<K> &a) {
+    const size_t n = size();
+    for(size_t i = 0; i < a.size(); i++) {
+      remove(a[i]);
     }
-
-    void remove() {
-      throwUnsupportedOperationException(__TFUNCTION__);
-    }
-  };
-
-  Iterator<K> getKeyIterator() const {
-    CompactHashMap<K, V> *tmp = (CompactHashMap<K, V>*)this;
-    return Iterator<K>(new CompactMapKeyIterator(tmp->getFirstPage()));
+    return size() != n;
   }
 
   class CompactMapIteratorEntry : public AbstractEntry {
   private:
-    MapEntry<K, V> *m_entry;
+     MapEntry<K,V> *m_entry;
   public:
     CompactMapIteratorEntry() {
       m_entry = NULL;
     }
 
-    CompactMapIteratorEntry &operator=(MapEntry<K, V> &entry) {
+    inline CompactMapIteratorEntry &operator=(MapEntry<K,V> &entry) {
       m_entry = &entry;
       return *this;
     }
@@ -344,7 +277,7 @@ public:
     void *value() { 
       return &m_entry->m_value;
     }
-
+ 
     const void *value() const {
       return &m_entry->m_value;
     }
@@ -352,81 +285,175 @@ public:
 
   class CompactMapEntryIterator : public AbstractIterator {
   private:
-    CompactHashNodePage<K, V> *m_currentPage;
-    UINT                       m_currentIndex;
-    CompactMapIteratorEntry    m_buffer;
+    CompactHashMap              &m_map;
+    LinkElement<MapEntry<K,V> > *m_current, *m_next, **m_bufp, **m_endBuf;
+    UINT64                       m_updateCount;
 
-  public:
-    CompactMapEntryIterator(CompactHashNodePage<K, V> *firstPage) {
-      m_currentPage  = firstPage;
-      m_currentIndex = 0;
+    void first() {
+      m_current = NULL;
+      if(m_map.m_buffer) {
+        m_endBuf = m_map.m_buffer + m_map.getCapacity();
+        for(LinkElement<MapEntry<K,V> > **p = m_map.m_buffer; p < m_endBuf; p++) {
+          if(*p) {
+            m_bufp = p;
+            m_next = *p;
+            return;
+          }
+        }
+      }
+      m_endBuf = m_bufp = NULL;
+      m_next   = NULL;
     }
 
+    inline void checkUpdateCount() const {
+      if (m_updateCount != m_map.m_updateCount) {
+        concurrentModificationError(_T("CompactMapEntryIterator"));
+      }
+    }
+
+  protected:
+    CompactMapIteratorEntry m_entry;
+
+  public:
+    CompactMapEntryIterator(CompactHashMap *map) : m_map(*map), m_updateCount(map->m_updateCount) {
+      first();
+    }
+ 
     AbstractIterator *clone() {
       return new CompactMapEntryIterator(*this);
     }
-
+ 
     bool hasNext() const {
-      return m_currentPage != NULL;
+      return m_next != NULL;
     }
-
+ 
     void *next() {
-      if(m_currentPage == NULL) {
+      if(m_next == NULL) {
         noNextElementError(_T("CompactMapEntryIterator"));
       }
-      m_buffer = m_currentPage->m_nodes[m_currentIndex++];
-      if(m_currentIndex == m_currentPage->m_count) {
-        m_currentIndex = 0;
-        m_currentPage = m_currentPage->m_next;
+      checkUpdateCount();
+      m_current = m_next;
+      if((m_next = m_next->m_next) == NULL) {
+        for(LinkElement<MapEntry<K,V> > **p = m_bufp; ++p < m_endBuf;) {
+          if(*p) {
+            m_bufp = p;
+            m_next = *p;
+            break;
+          }
+        }
       }
-      return &m_buffer;
+      m_entry = m_current->m_e;
+      return &m_entry;
+    }
+ 
+    void remove() {
+      if(m_current == NULL) {
+        noCurrentElementError(_T("CompactMapEntryIterator"));
+      }
+      checkUpdateCount();
+      m_map.remove(m_current->m_e.m_key);
+      m_current = NULL;
+      m_updateCount = m_map.m_updateCount;
+    }
+  };
+ 
+  Iterator<Entry<K,V> > getEntryIterator() const {
+    return Iterator<Entry<K,V> >(new CompactMapEntryIterator((CompactHashMap*)this));
+  }
+
+
+  class CompactMapKeyIterator : public CompactMapEntryIterator {
+  public:
+    CompactMapKeyIterator(CompactHashMap *map) : CompactMapEntryIterator(map) {
     }
 
-    void remove() {
-      unsupportedOperationError(__TFUNCTION__);
+    AbstractIterator *clone() {
+      return new CompactMapKeyIterator(*this);
+    }
+ 
+    void *next() {
+      __super::next();
+      return (void*)m_entry.key();
     }
   };
 
-  Iterator<Entry<K, V> > getEntryIterator() const {
-    CompactHashMap<K, V> *tmp = (CompactHashMap<K, V>*)this;
-    return Iterator<Entry<K, V> >(new CompactMapEntryIterator(tmp->getFirstPage()));
+  Iterator<K> getKeyIterator() const {
+    return Iterator<K>(new CompactMapKeyIterator((CompactHashMap*)this));
+  }
+
+  bool operator==(const CompactHashMap &map) const {
+    if (this == &map) return true;
+    if (map.size() != size()) {
+      return false;
+    }
+    for(Iterator<Entry<K,V> > it = getEntryIterator(); it.hasNext();) {
+      const Entry<K,V> &e = it.next();
+      const V *v = map.get(e.getKey());
+      if((v == NULL) || (*v != e.getValue())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  bool operator!=(const CompactHashMap &map) const {
+    return !(*this == map);
   }
 
   void save(ByteOutputStream &s) const {
-    const int pageCount = getPageCount();
-    const int kSize = sizeof(K);
-    const int vSize = sizeof(V);
+    const UINT   kSize = sizeof(K);
+    const UINT   vSize = sizeof(V);
+    const UINT64 count = size();
+
     s.putBytes((BYTE*)&kSize, sizeof(kSize));
     s.putBytes((BYTE*)&vSize, sizeof(vSize));
-    s.putBytes((BYTE*)&pageCount, sizeof(pageCount));
-    for(const CompactHashNodePage<K, V> *p = m_firstPage; p; p = p->m_next) {
-      p->save(s);
+    s.putBytes((BYTE*)&count, sizeof(count));
+    CompactArray<MapEntry<K,V> > a(1000);
+    UINT64 wCount = 0;
+    for(Iterator<Entry<K,V> > it = getEntryIterator(); it.hasNext();) {
+      const Entry<K,V> &e = it.next();
+      a.add(MapEntry<K,V>(e.getKey(), e.getValue()));
+      if(a.size() == 1000) {
+        s.putBytes((BYTE*)a.getBuffer(),sizeof(MapEntry<K,V>)*a.size());
+        wCount += a.size();
+        a.clear(-1);
+      }
+    }
+    if(a.size() > 0) {
+      s.putBytes((BYTE*)a.getBuffer(),sizeof(MapEntry<K,V>)*a.size());
+      wCount += a.size();
+    }
+    if (wCount != count) {
+      throwException(_T("%s:#written elements:%I64u. setSize:%I64u")
+                    ,__TFUNCTION__, wCount, count);
     }
   }
 
   void load(ByteInputStream &s) {
-    clear();
-    int kSize, vSize;
-    s.getBytesForced((BYTE*)&kSize,sizeof(kSize));
-    s.getBytesForced((BYTE*)&vSize,sizeof(vSize));
-    if((kSize != sizeof(K)) ||| (vSize != sizeof(V))) {
-      throwException(_T("sizeof(Key), sizeof(Value):(%d,%d). Sizes from stream:(%d,%d)"), sizeof(K), sizeof(V), kSize, vSize);
+    UINT kSize,vSize;
+    s.getBytesForced((BYTE*)&kSize, sizeof(kSize));
+    s.getBytesForced((BYTE*)&vSize, sizeof(vSize));
+    if(kSize != sizeof(K)) {
+      throwException(_T("sizeof(Key):%u. Size from stream=%u"), sizeof(K), kSize);
     }
-    int pageCount;
-    s.getBytesForced((BYTE*)&pageCount,sizeof(pageCount));
-    CompactHashNodePage<K, V> **pp = &m_firstPage;
-    for(int i = 0; i < pageCount; i++, pp = &(*pp)->m_next) { // append them, so we get them in the same order as they were when saved
-      CompactHashNodePage<K, V> *newPage = new CompactHashNodePage<K, V>;
-      newPage->load(s);
-      m_size += newPage->m_count;
-      *pp = newPage;
+    if(vSize != sizeof(V)) {
+      throwException(_T("sizeof(Value):%u. Size from stream=%u"), sizeof(V), vSize);
     }
-    *pp = NULL;
-    setCapacity(m_size);
-  }
-
-  void unload() {
+    UINT64 size64;
+    s.getBytesForced((BYTE*)&size64,sizeof(size64));
+    CHECKUINT64ISVALIDSIZET(size64);
+    size_t count = (size_t)size64;
     clear();
+    setCapacity(count);
+    for(size_t i = 0; i < count;) {
+      MapEntry<K,V> buffer[1000];
+      const size_t n = min(count-i,ARRAYSIZE(buffer));
+      s.getBytesForced((BYTE*)buffer, sizeof(buffer[0])*n);
+      for(const MapEntry<K,V> *p = buffer, *end = buffer + n; p < end; p++) {
+        put(p->m_key, p->m_value);
+      }
+      i += n;
+    }
   }
 };
 
