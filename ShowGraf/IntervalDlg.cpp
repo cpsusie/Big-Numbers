@@ -26,9 +26,13 @@ BEGIN_MESSAGE_MAP(CIntervalDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CIntervalDlg::OnInitDialog() {
-  UpdateData(FALSE);
-
   __super::OnInitDialog();
+  const TCHAR *fmt = _T("%.3lg");
+  setWindowText(this, IDC_EDITXFROM, format(fmt, m_minx));
+  setWindowText(this, IDC_EDITXTO  , format(fmt, m_maxx));
+  setWindowText(this, IDC_EDITYFROM, format(fmt, m_miny));
+  setWindowText(this, IDC_EDITYTO  , format(fmt, m_maxy));
+
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_INTERVAL));
   OnGotoXInterval();
   return FALSE;

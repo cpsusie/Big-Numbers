@@ -29,14 +29,13 @@ BOOL CShowGrafApp::InitInstance() {
 
     __super::InitInstance();
 
-
     EnableTaskbarInteraction(FALSE);
 
     SetRegistryKey(_T("JGMData"));
 
     LoadStdProfileSettings(16);
 
-    CSingleDocTemplate* pDocTemplate;
+    CSingleDocTemplate *pDocTemplate;
     pDocTemplate = new CSingleDocTemplate(
         IDR_MAINFRAME,
         RUNTIME_CLASS(CShowGrafDoc),
@@ -52,6 +51,13 @@ BOOL CShowGrafApp::InitInstance() {
     m_pMainWnd->ShowWindow(SW_SHOW);
     m_pMainWnd->UpdateWindow();
 
+    if (getMainWindow()->getDoc()->isOK()) {
+      getMainWindow()->activateInitialOptions();
+    } else {
+      const String msg = getMainWindow()->getDoc()->getErrorMessage();
+      Message(_T("%s"), msg.cstr());
+      PostMessage(*m_pMainWnd, WM_QUIT,0,0);
+    }
     return TRUE;
 }
 
@@ -66,11 +72,11 @@ String CShowGrafApp::getRecentFile(int index) {
 
 class CAboutDlg : public CDialog {
 public:
-    CAboutDlg();
-    enum { IDD = IDD_ABOUTBOX };
+  CAboutDlg();
+  enum { IDD = IDD_ABOUTBOX };
 protected:
-    virtual void DoDataExchange(CDataExchange *pDX);
-    DECLARE_MESSAGE_MAP()
+  virtual void DoDataExchange(CDataExchange *pDX);
+  DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
@@ -84,7 +90,5 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CShowGrafApp::OnAppAbout() {
-  CAboutDlg aboutDlg;
-  aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }
-

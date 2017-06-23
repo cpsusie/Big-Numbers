@@ -2,8 +2,8 @@
 #include <XMLUtil.h>
 #include "FunctionGraph.h"
 
-FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style, TrigonometricMode trigonomtetricMode) 
-: GraphParameters(name,color,rollSize,style) {
+FunctionGraphParameters::FunctionGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style, TrigonometricMode trigonomtetricMode) 
+: GraphParameters(name,color,rollAvgSize,style) {
 
   m_trigonometricMode = trigonomtetricMode;
   m_interval          = DoubleInterval(0,1);

@@ -4,10 +4,10 @@
 
 class GraphItem {
 private:
-  Graph *m_graph;
-  CRect  m_buttonRect;
+  Graph        *m_graph;
+  mutable CRect m_buttonRect;
 
-  void paintButton(CDC &dc, bool selected);
+  void paintButton(CDC &dc, bool selected) const;
 public:
   GraphItem(Graph *g);
   
@@ -23,13 +23,13 @@ public:
     return m_graph->getParam().getDisplayName();
   }
 
-  void paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected); // width in characters
+  void paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) const; // width in characters
   
   inline const CRect &getButtonRect() const {
     return m_buttonRect;
   }
   
-  inline void setButtonRect(const CRect &r) {
+  inline void setButtonRect(const CRect &r) const {
     m_buttonRect = r;
   }
 

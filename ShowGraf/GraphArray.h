@@ -4,11 +4,11 @@
 
 class GraphArray : public Array<GraphItem> {
 private:
-  intptr_t  m_selected;
-  String    m_error;
-  DataRange m_dataRange;
+  intptr_t       m_selected;
+  mutable String m_error;
+  DataRange      m_dataRange;
 
-  void findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect);
+  void findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) const;
   
   const GraphItem &getItem(size_t index) const {
     return (*this)[index];
@@ -36,10 +36,10 @@ public:
     return (m_selected >= 0) ? &(*this)[m_selected] : NULL;
   }
   
-  int  getMaxButtonWidth(CDC &dc, CFont &font);
-  int  getButtonHeight(CDC &dc, CFont &font);
+  int  getMaxButtonWidth(CDC &dc, CFont &font) const;
+  int  getButtonHeight(  CDC &dc, CFont &font) const;
 
-  const DataRange &getDataRange() {
+  const DataRange &getDataRange() const {
     return m_dataRange;
   }
 
@@ -47,9 +47,10 @@ public:
   double getSmallestPositiveY() const;
 
   bool OnLButtonDown(UINT nFlags, const CPoint &point, const RectangleTransformation &tr);
-  void paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect);
+  void paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const;
   void setStyle(GraphStyle style);
-  void setRollSize(int size);
+  void setRollAvgSize(int size);
+  void setTrigoMode(TrigonometricMode mode);
   
   bool ok() const { 
     return m_error.length() == 0;

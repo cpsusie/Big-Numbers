@@ -31,7 +31,7 @@ void FunctionGraph::calculate() {
   updateDataRange();
 }
 
-void FunctionGraph::setTrigonometricMode(TrigonometricMode mode) {
+void FunctionGraph::setTrigoMode(TrigonometricMode mode) {
   FunctionGraphParameters &param = *(FunctionGraphParameters*)m_param;
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;

@@ -19,15 +19,15 @@ const Point2DArray &PointGraph::getProcessedData() const {
     return m_processedData;
   }
 
-  if(getParam().m_rollSize == 0) {
+  if(getParam().m_rollAvgSize == 0) {
     m_processedData = m_pointArray;
   } else {
     m_processedData.clear();
     QueueList<double> queue;
     double sum = 0;
-    const int maxQueueSize = getParam().m_rollSize;
-    int n = (int)m_pointArray.size();
-    for(int i = 0; i < n; i++) {
+    const size_t maxQueueSize = getParam().m_rollAvgSize;
+    const size_t n            = m_pointArray.size();
+    for(size_t i = 0; i < n; i++) {
       if(queue.size() == maxQueueSize) {
         sum -= queue.get();
       }
@@ -58,13 +58,13 @@ void PointGraph::clear() {
 }
 
 double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
-  const Point2DP tmpp(p);
+  const Point2DP      tmpp(p);
   const Point2DArray &data = getProcessedData();
-  int n = (int)data.size();
+  const size_t        n    = data.size();
   switch(getParam().m_style) {
   case GSCURVE:
     { double minDist = -1;
-      for(int i = 1; i < n; i++) {
+      for(size_t i = 1; i < n; i++) {
         const double dist = distanceFromLineSegment(tr.forwardTransform(data[i-1]),tr.forwardTransform(data[i]),tmpp);
         if(minDist < 0 || dist < minDist) {
           minDist = dist;
@@ -75,7 +75,7 @@ double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) 
   case GSPOINT:
   case GSCROSS:
     { double minDist = -1;
-      for(int i = 0; i < n; i++) {
+      for(size_t i = 0; i < n; i++) {
         const double dist = ::distance(tr.forwardTransform(data[i]),tmpp);
         if(minDist < 0 || dist < minDist) {
           minDist = dist;
@@ -89,11 +89,11 @@ double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) 
   return 0;
 }
 
-void PointGraph::setRollSize(int size) {
-  if(size != getParam().m_rollSize) {
+void PointGraph::setRollAvgSize(int size) {
+  if(size != getParam().m_rollAvgSize) {
     m_dataProcessed = false;
   }
-  m_param->m_rollSize = size;
+  m_param->m_rollAvgSize = size;
 }
 
 void PointGraph::paint(CCoordinateSystem &cs) {

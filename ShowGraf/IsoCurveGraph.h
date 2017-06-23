@@ -21,7 +21,7 @@ public:
   double           distance(const CPoint &p, const RectangleTransformation &tr) const;
   double           getSmallestPositiveX() const;
   double           getSmallestPositiveY() const;
-  void             setTrigonometricMode(TrigonometricMode mode);
+  void             setTrigoMode(TrigonometricMode mode);
   GraphType        getType() const {
     return ISOCURVEGRAPH;
   }

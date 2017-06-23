@@ -1,12 +1,7 @@
 #pragma once
 
 #include <MFCUtil/Coordinatesystem/CoordinateSystem.h>
-#include "GraphArray.h"
-#include "FunctionGraph.h"
-#include "ParametricGraph.h"
-#include "IsoCurveGraph.h"
-#include "DiffEquationGraph.h"
-#include "CustomFitThread.h"
+#include "ShowGrafDoc.h"
 
 class CShowGrafView : public CFormView, public FunctionPlotter {
 private:
@@ -16,114 +11,78 @@ private:
     bool                        m_firstDraw;
     CFont                       m_axisFont;
     CFont                       m_buttonFont;
-    GraphArray                  m_graphArray;
-    GraphStyle                  m_grafStyle;
-    AxisType                    m_XAxisType,m_YAxisType;
-    DataReader                 *m_xReader, *m_yReader;
-    int                         m_rollSize;
-    COLORREF                    m_backgroundColor,m_axisColor;
-    bool                        m_onePerLine;
-    bool                        m_rangeSpecified;
     bool                        m_dragging;
     RectangleTransformation     m_mouseDownTransform;
     CPoint                      m_mouseDownPoint;
-    bool                        m_xRelativeToFirst, m_yRelativeToFirst;
-    DataRange                   m_explicitRange;
-    CCustomFitThread           *m_fitThread;
-    FunctionGraphParameters     m_functionParam;
-    ParametricGraphParameters   m_parametricCurveParam;
-    IsoCurveGraphParameters     m_isoCurveParam;
-    DiffEquationGraphParameters m_diffEqParam;
 
-    void checkMenuItem(int id, bool checked);
-    bool isMenuItemChecked(int id);
-    void enableMenuItem(int id, bool enabled);
-    void initScaleIfSingleGraph();
     void plotFunction(Function &f, const DoubleInterval &interval, COLORREF color);
     void plotFunction(Function &f, COLORREF color);
     bool paintAll(CDC &dc, const CRect &rect, CFont *axisFont, CFont *buttonFont);
-    void stopFitThread();
-
+    bool isMenuItemChecked(int id);
+    void enableMenuItem(int id, bool enabled);
+    void checkMenuItem( int id, bool checked);
+    CShowGrafDoc *getDoc();
     void startDragging(const CPoint &point);
     void stopDragging();
 protected: // create from serialization only
-    DECLARE_DYNCREATE(CShowGrafView)
+  DECLARE_DYNCREATE(CShowGrafView)
 
-    afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
-    afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
-    afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
-    afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
-    afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
-    afx_msg void OnSize(       UINT nType, int cx, int cy);
-    afx_msg void OnSelectMenuDelete();
-    afx_msg void OnSelectMenuEdit();
-    afx_msg void OnSelectMenuHide();
-    afx_msg void OnSelectMenuShow();
+  afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnLButtonUp(  UINT nFlags, CPoint point);
+  afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+  afx_msg void OnMouseMove(  UINT nFlags, CPoint point);
+  afx_msg BOOL OnMouseWheel( UINT nFlags, short zDelta, CPoint pt);
+  afx_msg void OnSize(       UINT nType, int cx, int cy);
   DECLARE_MESSAGE_MAP()
 
 public:
     CShowGrafView();
     virtual ~CShowGrafView();
-    void init();
     void initScale();
     void clear();
-    void addGraphFromFile(  const String &fileName);
-    void readDataFile(      const String &fileName);
-    void readFunctionFile(  const String &fileName);
-    void readParametricFile(const String &fileName);
-    void readIsoFile(       const String &fileName);
-    void readDiffEqFile(    const String &fileName);
-    void setGraphStyle(GraphStyle newStyle);
-    void setXAxisType(AxisType type);
-    void setYAxisType(AxisType type);
-    void setRollingAverage(bool on);
-    void setRetainAspectRatio(bool retain);
 
     CCoordinateSystem &getCoordinateSystem() {
       return m_coordinateSystem;
     }
-
-    int getRollSize() const {
-      return m_rollSize;
+    void setAxisColor(COLORREF color) {
+      getCoordinateSystem().setAxisColor(color);
     }
-
-    void setRollSize(int value);
-
-    FunctionGraphParameters &getFunctionParam() {
-      return m_functionParam;
+    void setBackgroundColor(COLORREF color) {
+      getCoordinateSystem().setBackGroundColor(color);
     }
-
-    ParametricGraphParameters &getParametricCurveParam() {
-      return m_parametricCurveParam;
+    void setRetainAspectRatio(bool retain) {
+      m_coordinateSystem.setRetainAspectRatio(retain);
     }
-
-    IsoCurveGraphParameters &getIsoCurveParam() {
-      return m_isoCurveParam;
+    RectangleTransformation &getTransformation() {
+      return getCoordinateSystem().getTransformation();
     }
-
-    DiffEquationGraphParameters &getDiffEquationParam() {
-      return m_diffEqParam;
+    DataRange getDataRange() {
+      return m_coordinateSystem.getDataRange();
     }
+    void setDataRange(const DataRange &dr, bool makeSpace) {
+      getCoordinateSystem().setDataRange(dr, makeSpace);
+    }
+    DoubleInterval getXInterval() {
+      return getDataRange().getXInterval();
+    }
+    DoubleInterval getYInterval() {
+      return getDataRange().getYInterval();
+    }
+    void setXAxisType(AxisType type) {
+      getCoordinateSystem().setXAxisType(type);
+    }
+    void setYAxisType(AxisType type) {
+      getCoordinateSystem().setYAxisType(type);
+    }
+    void addFunctionGraph(FunctionGraphParameters &param);
 
-    void addFunctionGraph(    FunctionGraphParameters     &param);
-    void addParametricGraph(  ParametricGraphParameters   &param);
-    void addIsoCurveGraph(    IsoCurveGraphParameters     &param);
-    void addDiffEquationGraph(DiffEquationGraphParameters &param);
-    void setTrigonometricMode(TrigonometricMode mode);
-    void startCustomFitThread();
-    void startPolynomialFitThread();
-    void makeExpoFit();
-    void makePotensFit();
-public:
-    virtual void OnDraw(CDC* pDC);  // overridden to draw this view
-protected:
-    virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
-    virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);
-    virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
+    virtual void OnDraw(CDC *pDC);  // overridden to draw this view
+    virtual BOOL OnPreparePrinting(          CPrintInfo *pInfo);
+    virtual void OnBeginPrinting(  CDC *pDC, CPrintInfo *pInfo);
+    virtual void OnEndPrinting(    CDC *pDC, CPrintInfo *pInfo);
 
 #ifdef _DEBUG
   virtual void AssertValid() const;
-  virtual void Dump(CDumpContext& dc) const;
+  virtual void Dump(CDumpContext &dc) const;
 #endif
-
 };

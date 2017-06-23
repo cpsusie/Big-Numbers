@@ -10,7 +10,7 @@ COLORREF getComplementColor(COLORREF color) {
   return RGB(255-GetRValue(color),255-GetGValue(color),255-GetBValue(color));
 }
 
-void GraphItem::paintButton(CDC &dc, bool selected) {
+void GraphItem::paintButton(CDC &dc, bool selected) const {
   const CString buttonText = m_graph->getParam().getDisplayName().cstr();
   dc.FillSolidRect(&m_buttonRect,m_graph->getParam().m_color);
   CRect tr = m_buttonRect;
@@ -31,7 +31,7 @@ void GraphItem::paintButton(CDC &dc, bool selected) {
   }
 }
 
-void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) {
+void GraphItem::paint(CCoordinateSystem &cs, CFont &buttonFont, bool selected) const {
   Viewport2D &vp = cs.getViewport();
   if(m_graph->isVisible()) {
     vp.setClipping(true);

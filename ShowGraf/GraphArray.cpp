@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GraphArray.h"
 
-void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) {
+void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &buttonPanelRect) const {
   Viewport2D &vp = cs.getViewport();
   findButtonPositions(*vp.getDC(),buttonFont,buttonPanelRect);
   m_error = EMPTYSTRING;
@@ -16,15 +16,24 @@ void GraphArray::paint(CCoordinateSystem &cs, CFont &buttonFont, const CRect &bu
   }
 }
 
+void GraphArray::setTrigoMode(TrigonometricMode mode) {
+  for(size_t i = 0; i < size(); i++) {
+    Graph &g = (*this)[i].getGraph();
+    if(g.getType() == FUNCTIONGRAPH) {
+      ((FunctionGraph&)g).setTrigoMode(mode);
+    }
+  }
+}
+
 void GraphArray::setStyle(GraphStyle style) {
   for(size_t i = 0; i < size(); i++) {
     getItem(i).getGraph().setStyle(style);
   }
 }
 
-void GraphArray::setRollSize(int rollAvgSize) {
+void GraphArray::setRollAvgSize(int rollAvgSize) {
   for(size_t i = 0; i < size(); i++) {
-    getItem(i).getGraph().setRollSize(rollAvgSize);
+    getItem(i).getGraph().setRollAvgSize(rollAvgSize);
   }
 }
 
@@ -64,7 +73,7 @@ bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point, const Rectangle
   return false;
 }
 
-int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) {
+int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) const {
   dc.SelectObject(font);
   int result = 0;
   for(size_t i = 0; i < size(); i++) {
@@ -76,17 +85,17 @@ int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) {
   return min(150, result + 8);
 }
 
-int GraphArray::getButtonHeight(CDC &dc, CFont &font) {
+int GraphArray::getButtonHeight(CDC &dc, CFont &font) const {
   dc.SelectObject(font);
   const CSize cs = dc.GetTextExtent(_T("T"),1);
   return cs.cy + 8;
 }
 
-void GraphArray::findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) {
+void GraphArray::findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) const {
   int buttonWidth  = getMaxButtonWidth(dc,font);
   int buttonHeight = getButtonHeight(dc,font);
   for(size_t i = 0; i < size(); i++) {
-    GraphItem &gi = getItem(i);
+    const GraphItem &gi = getItem(i);
     CRect buttonRect;
     buttonRect.left   = buttonPanelRect.left + (buttonPanelRect.Width() - buttonWidth)/2;
     buttonRect.right  = buttonRect.left + buttonWidth;

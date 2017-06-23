@@ -305,7 +305,7 @@
     <ClCompile Include="ParametricGraphDlg.cpp" />
     <ClCompile Include="ParametricGraphParameters.cpp" />
     <ClCompile Include="PointGraph.cpp" />
-    <ClCompile Include="RollsizeDlg.cpp" />
+    <ClCompile Include="RollAvgSizeDlg.cpp" />
     <ClCompile Include="ShowGraf.cpp" />
     <ClCompile Include="ShowGrafDoc.cpp" />
     <ClCompile Include="ShowGrafView.cpp" />
@@ -353,7 +353,7 @@
     <ClInclude Include="ParametricGraphDlg.h" />
     <ClInclude Include="ParametricGraphParameters.h" />
     <ClInclude Include="Resource.h" />
-    <ClInclude Include="RollsizeDlg.h" />
+    <ClInclude Include="RollAvgSizeDlg.h" />
     <ClInclude Include="ShowGraf.h" />
     <ClInclude Include="ShowGrafDoc.h" />
     <ClInclude Include="ShowGrafView.h" />

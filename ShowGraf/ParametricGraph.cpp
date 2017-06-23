@@ -35,7 +35,7 @@ void ParametricGraph::calculate() {
   updateDataRange();
 }
 
-void ParametricGraph::setTrigonometricMode(TrigonometricMode mode) {
+void ParametricGraph::setTrigoMode(TrigonometricMode mode) {
   ParametricGraphParameters &param = *(ParametricGraphParameters*)m_param;
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;

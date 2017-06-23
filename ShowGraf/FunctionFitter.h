@@ -6,15 +6,15 @@
 
 class FunctionFitter : public Expression, public Function {
 private:
-  const Point2DArray   m_data;
-  StringArray          m_parameterName;
-  Array<double*>       m_parameterValue;
-  double              *m_x;
-  double               m_SSD, m_lastSSD, m_SSDDescent;
-  int                  m_iteration;
-  bool                 m_done;
-  Vector               m_gradient;
-  double               m_stepSize;
+  const Point2DArray    m_data;
+  StringArray           m_parameterName;
+  CompactArray<double*> m_parameterValue;
+  double               *m_x;
+  double                m_SSD, m_lastSSD, m_SSDDescent;
+  int                   m_iteration;
+  bool                  m_done;
+  Vector                m_gradient;
+  double                m_stepSize;
 
   void   randomVarList();
   double computeSSD();

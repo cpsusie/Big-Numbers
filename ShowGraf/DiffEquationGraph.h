@@ -20,7 +20,7 @@ public:
   inline bool isEmpty() const {
     return m_pointGraphArray.isEmpty();
   }
-  void setTrigonometricMode(TrigonometricMode mode);
+  void setTrigoMode(TrigonometricMode mode);
   inline GraphType getType() const {
     return DIFFEQUATIONGRAPH;
   }

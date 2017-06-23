@@ -67,9 +67,16 @@ void DataGraph::readData(FILE *f) {
 DataGraph::DataGraph(DataGraphParameters &param) : PointGraph(new DataGraphParameters(param)) {
   FILE *f = (param.getFileName() == _T("stdin")) ? stdin : fopen(param.getFileName(),_T("r"));
   if(f != NULL) {
-    readData(f);
-    if(f != stdin) {
-      fclose(f);
+    try {
+      readData(f);
+      if(f != stdin) {
+        fclose(f);
+        f = NULL;
+      }
+    } catch(...) {
+      if(f && (f != stdin)) fclose(f);
+      clear();
+      throw;
     }
   }
 }

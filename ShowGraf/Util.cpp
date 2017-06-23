@@ -46,33 +46,32 @@ String getLegalColorNames() {
 }
 
 void usage() {
-  errorMessage(_T("%s\nLegal colors are:%s")
-              ,_T("Usage : Showgraf [options] file1 file2 ...\n"
-                  "Options :\n"
-                  "  -k : Paint data as crosses.\n"
-                  "  -p : Paint data as points.\n"
-                  "       (Default is connecting lines between data).\n"
-                  "  -g : Paint grid.\n"
-                  "  -c backgroundcolor axiscolor. (Default is WHITE and BLACK).\n"
-                  "  -i : Ignore errors in input.\n"
-                  "        (Illegal inputformat, Negative input on logaritmic scale,...).\n"
-                  "  -r[size] : Calculates rolling average.\n"
-                  "             Default rolling size = 10. Size = [1..10000].\n"
-                  "  -l x-label y-label: Specify lablenames on x- and y-axis.\n"
-                  "  -1 : Only 1 number on each inputline.\n"
-                  "       (Used as y-value). X-value incremented by 1 for each inputline.\n"
-                  "  -Iminx,maxx,miny,maxy : Explicit defined range on x- and y-axis.\n"
-                  "  -Lx or -Ly or -Lxy    : Logaritmic scale of x and/or y-axis.\n"
-                  "  -Dx or -Dy or -Dxy    : Date-time transformation of x and/or y-axis.\n"
-                  "                          Dateformat is [yy]yyMMdd.hhmm[ss].\n"
-                  "  -Nx or -Ny or -Nxy    : Use normal distribution scale on x-\n"
-                  "                          and/or y-axis.\n"
-                  "                          If no scale is specified, both axies are\n"
-                  "                          linear with normal decimal numbers.\n"
-                )
-                ,getLegalColorNames().cstr()
+  throwException(_T("%s\nLegal colors are:%s")
+                ,_T("Usage : Showgraf [options] file1 file2 ...\n"
+                    "Options :\n"
+                    "  -k : Paint data as crosses.\n"
+                    "  -p : Paint data as points.\n"
+                    "       (Default is connecting lines between data).\n"
+                    "  -g : Paint grid.\n"
+                    "  -c backgroundcolor axiscolor. (Default is WHITE and BLACK).\n"
+                    "  -i : Ignore errors in input.\n"
+                    "        (Illegal inputformat, Negative input on logaritmic scale,...).\n"
+                    "  -r[size] : Calculates rolling average.\n"
+                    "             Default rolling size = 10. Size = [1..10000].\n"
+                    "  -l x-label y-label: Specify lablenames on x- and y-axis.\n"
+                    "  -1 : Only 1 number on each inputline.\n"
+                    "       (Used as y-value). X-value incremented by 1 for each inputline.\n"
+                    "  -Iminx,maxx,miny,maxy : Explicit defined range on x- and y-axis.\n"
+                    "  -Lx or -Ly or -Lxy    : Logaritmic scale of x and/or y-axis.\n"
+                    "  -Dx or -Dy or -Dxy    : Date-time transformation of x and/or y-axis.\n"
+                    "                          Dateformat is [yy]yyMMdd.hhmm[ss].\n"
+                    "  -Nx or -Ny or -Nxy    : Use normal distribution scale on x-\n"
+                    "                          and/or y-axis.\n"
+                    "                          If no scale is specified, both axies are\n"
+                    "                          linear with normal decimal numbers.\n"
+                   )
+                  ,getLegalColorNames().cstr()
                 );
-  exit(-1);
 }
 
 void errorMessage(TCHAR *format,...) {

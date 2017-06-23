@@ -97,12 +97,12 @@ BEGIN
     CONTROL         "",IDC_BUTTONCOLOR,"MfcColorButton",WS_TABSTOP,104,15,30,12
 END
 
-IDD_ROLLSIZE_DIALOG DIALOGEX 0, 0, 250, 62
+IDD_ROLLAVGSIZE_DIALOG DIALOGEX 0, 0, 250, 62
 STYLE DS_SETFONT | DS_MODALFRAME | DS_NOIDLEMSG | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Rolling average queuesize"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    EDITTEXT        IDC_EDITROLLSIZE,116,16,52,14
+    EDITTEXT        IDC_EDITROLLAVGSIZE,116,16,52,14
     DEFPUSHBUTTON   "OK",IDOK,139,41,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,193,41,50,14
     LTEXT           "Rolling average queuesize::",IDC_STATIC,16,18,89,11
@@ -456,7 +456,7 @@ BEGIN
     0, 0, 0, 0
 END
 
-IDD_ROLLSIZE_DIALOG AFX_DIALOG_LAYOUT
+IDD_ROLLAVGSIZE_DIALOG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -508,7 +508,7 @@ BEGIN
         BOTTOMMARGIN, 62
     END
 
-    IDD_ROLLSIZE_DIALOG, DIALOG
+    IDD_ROLLAVGSIZE_DIALOG, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 243
@@ -736,8 +736,8 @@ BEGIN
         MENUITEM "&Interval...\tCtrl+I",        ID_VIEW_INTERVAL
         MENUITEM "Retain aspectratio",          ID_VIEW_RETAINASPECTRATIO
         MENUITEM SEPARATOR
-        MENUITEM "&Rolling average",            ID_VIEW_ROLLAVERAGE
-        MENUITEM "Set rollingsi&ze...",         ID_VIEW_SETROLLSIZE
+        MENUITEM "&Rolling average",            ID_VIEW_ROLLAVG
+        MENUITEM "Set rollingsi&ze...",         ID_VIEW_SETROLLAVGSIZE
         MENUITEM SEPARATOR
         MENUITEM "Refresh files\tCtrl+R",       ID_VIEW_REFRESHFILES
         MENUITEM SEPARATOR
@@ -1062,8 +1062,8 @@ END
 STRINGTABLE
 BEGIN
     ID_VIEW_GRID            "Paint grid in the coordinatesystem"
-    ID_VIEW_ROLLAVERAGE     "Show rolling average of the data"
-    ID_VIEW_SETROLLSIZE     "Set size of the rolling average buffer"
+    ID_VIEW_ROLLAVG         "Show rolling average of the data"
+    ID_VIEW_SETROLLAVGSIZE  "Set size of the rolling average buffer"
 END
 
 #endif    // English (United States) resources

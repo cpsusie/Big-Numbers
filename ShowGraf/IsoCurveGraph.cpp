@@ -79,7 +79,7 @@ void IsoCurveGraph::findDataRange() {
   }
 }
 
-void IsoCurveGraph::setTrigonometricMode(TrigonometricMode mode) {
+void IsoCurveGraph::setTrigoMode(TrigonometricMode mode) {
   IsoCurveGraphParameters &param = *(IsoCurveGraphParameters*)m_param;
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;

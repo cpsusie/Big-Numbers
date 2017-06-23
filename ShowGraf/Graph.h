@@ -42,7 +42,7 @@ public:
   virtual void    setStyle(GraphStyle style) {
     m_param->m_style = style;
   }
-  virtual void setRollSize(int size) {
+  virtual void setRollAvgSize(int size) {
   }
   virtual bool isPointGraph() const = 0;
   virtual void setVisible(bool visible) {
@@ -84,7 +84,7 @@ public:
     return m_pointArray;
   }
   void    setDataPoints(const Point2DArray &a);
-  void    setRollSize(int size);
+  void    setRollAvgSize(int size);
   double  distance(const CPoint &p, const RectangleTransformation &tr) const;
   double  getSmallestPositiveX() const;
   double  getSmallestPositiveY() const;

@@ -12,7 +12,7 @@ public:
   ParametricGraph(const ParametricGraphParameters &param);
   void calculate();
   void paint(CCoordinateSystem &cs);
-  void setTrigonometricMode(TrigonometricMode mode);
+  void setTrigoMode(TrigonometricMode mode);
   inline GraphType getType() const {
     return PARAMETRICGRAPH;
   }

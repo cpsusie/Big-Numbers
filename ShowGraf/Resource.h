@@ -18,7 +18,7 @@
 #define IDD_DEGREE_DIALOG               136
 #define IDR_CUSTOMFIT                   137
 #define IDD_INTERVAL_DIALOG             138
-#define IDD_ROLLSIZE_DIALOG             139
+#define IDD_ROLLAVGSIZE_DIALOG          139
 #define IDR_ACCELERATOR_INTERVAL        144
 #define IDR_MENUSELECTGRAF              150
 #define IDC_SYSTEMPANEL                 1001
@@ -32,7 +32,7 @@
 #define IDC_STATICYINTERVAL             1017
 #define IDC_STATICDASH2                 1018
 #define IDC_EDITSTEPS                   1019
-#define IDC_EDITROLLSIZE                1020
+#define IDC_EDITROLLAVGSIZE             1020
 #define IDC_EDITEXPR                    1021
 #define IDC_EDITXFROM                   1022
 #define IDC_EDITXTO                     1023
@@ -70,8 +70,8 @@
 #define ID_FILE_SAVEAS                  32771
 #define ID_FILE_EXIT                    32772
 #define ID_VIEW_GRID                    32781
-#define ID_VIEW_ROLLAVERAGE             32782
-#define ID_VIEW_SETROLLSIZE             32783
+#define ID_VIEW_ROLLAVG                 32782
+#define ID_VIEW_SETROLLAVGSIZE          32783
 #define ID_VIEW_SCALE_X_LINEAR          32790
 #define ID_VIEW_SCALE_X_LOGARITHMIC     32791
 #define ID_VIEW_SCALE_X_NORMALDIST      32792

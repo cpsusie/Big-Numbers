@@ -72,9 +72,6 @@
     <ClCompile Include="PointGraph.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RollsizeDlg.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShowGraf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -150,6 +147,9 @@
     <ClCompile Include="FunctionFitter.cpp">
       <Filter>Source Files\CustomFit</Filter>
     </ClCompile>
+    <ClCompile Include="RollAvgSizeDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DegreeDlg.h">
@@ -174,9 +174,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="RollsizeDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ShowGraf.h">
@@ -256,6 +253,9 @@
     </ClInclude>
     <ClInclude Include="FunctionFitter.h">
       <Filter>Source Files\CustomFit\Include</Filter>
+    </ClInclude>
+    <ClInclude Include="RollAvgSizeDlg.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

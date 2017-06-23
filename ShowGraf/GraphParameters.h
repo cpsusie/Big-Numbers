@@ -49,9 +49,9 @@ protected:
   void getStdValues(XMLDoc &doc, XMLNodePtr n);
 public:
   COLORREF   m_color;
-  int        m_rollSize;
+  int        m_rollAvgSize;
   GraphStyle m_style;
-  GraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style);
+  GraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style);
   
   static const TCHAR      *graphStyleToString(GraphStyle style);
   static GraphStyle        graphStyleFromString(const String &s);
@@ -61,8 +61,8 @@ public:
 
 class PointGraphParameters : public GraphParameters {
 public:
-  PointGraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style)
-    : GraphParameters(name, color, rollSize, style)
+  PointGraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style)
+    : GraphParameters(name, color, rollAvgSize, style)
   {
   }
   void putDataToDoc(XMLDoc &doc) {

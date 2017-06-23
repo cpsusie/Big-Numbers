@@ -81,7 +81,7 @@ void DiffEquationGraph::calculate() {
   updateDataRange();
 }
 
-void DiffEquationGraph::setTrigonometricMode(TrigonometricMode mode) {
+void DiffEquationGraph::setTrigoMode(TrigonometricMode mode) {
   DiffEquationGraphParameters &param = *(DiffEquationGraphParameters*)m_param;
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;

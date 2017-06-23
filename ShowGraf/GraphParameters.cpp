@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "GraphParameters.h"
 
-GraphParameters::GraphParameters(const String &name, COLORREF color, int rollSize, GraphStyle style) {
+GraphParameters::GraphParameters(const String &name, COLORREF color, int rollAvgSize, GraphStyle style) {
   setName(name);
-  m_color    = color;
-  m_rollSize = rollSize;
-  m_style    = style;
+  m_color       = color;
+  m_rollAvgSize = rollAvgSize;
+  m_style       = style;
 };
 
 void GraphParameters::setStdValues(XMLDoc &doc, XMLNodePtr n) {
   setValue(doc, n, m_style);
   doc.setValue( n, _T("color"      ), format(_T("%08x"), m_color));
-  doc.setValue( n, _T("rollsize"   ), m_rollSize   );
+  doc.setValue( n, _T("rollsize"   ), m_rollAvgSize   );
 }
 
 void GraphParameters::getStdValues(XMLDoc &doc, XMLNodePtr n) {
@@ -19,7 +19,7 @@ void GraphParameters::getStdValues(XMLDoc &doc, XMLNodePtr n) {
   String str;
   doc.getValue( n, _T("color"      ), str           );
   _stscanf(str.cstr(), _T("%x"), &m_color);
-  doc.getValue( n, _T("rollsize"   ), m_rollSize    );
+  doc.getValue( n, _T("rollsize"   ), m_rollAvgSize );
 }
 
 void setValue(XMLDoc &doc, XMLNodePtr n, TrigonometricMode trigoMode) {

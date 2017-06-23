@@ -33,7 +33,7 @@ void CCustomFitThreadDlg::DoDataExchange(CDataExchange *pDX) {
 
 
 BEGIN_MESSAGE_MAP(CCustomFitThreadDlg, CDialog)
-  ON_WM_TIMER()
+    ON_WM_TIMER()
     ON_BN_CLICKED(IDC_BUTTONSTEP   , OnButtonStep   )
     ON_BN_CLICKED(IDC_BUTTONSOLVE  , OnButtonSolve  )
     ON_BN_CLICKED(IDC_BUTTONSTOP   , OnButtonStop   )
@@ -214,8 +214,8 @@ void CCustomFitThreadDlg::OnTimer(UINT_PTR nIDEvent) {
 void CCustomFitThreadDlg::OnOK() {
   UpdateData();
   if(m_name.GetLength() == 0) {
+    gotoEditBox(this, IDC_EDITNAME);
     MessageBox(_T("Must specify name"));
-    GetDlgItem(IDC_EDITNAME)->SetFocus();
     return;
   }
   if(m_functionFitter == NULL) {
