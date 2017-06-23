@@ -88,7 +88,7 @@ public:
   }
   
   inline RectangleTransformation &getTransformation() {
-    return m_vp.getTransformation();;
+    return m_vp.getTransformation();
   }
 
   void setOccupiedPoint(          const Point2D      &p );

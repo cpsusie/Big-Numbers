@@ -117,7 +117,7 @@ DoubleInterval CCoordinateSystem::getDefaultInterval(AxisType type) { // static
       return DoubleInterval(now.getDATE(), (now+1).getDATE());
     }
   default:
-    throwException(_T("getDefaultInterval:Illegal axistype:%d"), type);
+    throwInvalidArgumentException(__TFUNCTION__,_T("axistype=%d"), type);
     return DoubleInterval(0,0);
   }
 }
