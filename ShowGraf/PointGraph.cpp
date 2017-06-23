@@ -93,7 +93,7 @@ void PointGraph::setRollAvgSize(int size) {
   if(size != getParam().m_rollAvgSize) {
     m_dataProcessed = false;
   }
-  m_param->m_rollAvgSize = size;
+  getParam().m_rollAvgSize = size;
 }
 
 void PointGraph::paint(CCoordinateSystem &cs) {

@@ -8,7 +8,7 @@ ParametricGraph::ParametricGraph(const ParametricGraphParameters &param) : Point
 
 void ParametricGraph::calculate() {
   clear();
-  const ParametricGraphParameters &param = *(ParametricGraphParameters*)m_param;
+  const ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
   Expression exprX(param.m_trigonometricMode);
   Expression exprY(param.m_trigonometricMode);
   exprX.compile(param.m_exprX, true);
@@ -36,7 +36,7 @@ void ParametricGraph::calculate() {
 }
 
 void ParametricGraph::setTrigoMode(TrigonometricMode mode) {
-  ParametricGraphParameters &param = *(ParametricGraphParameters*)m_param;
+  ParametricGraphParameters &param = (ParametricGraphParameters&)getParam();
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;
     calculate();
@@ -44,7 +44,7 @@ void ParametricGraph::setTrigoMode(TrigonometricMode mode) {
 }
 
 void ParametricGraph::paint(CCoordinateSystem &cs) {
-  PointGraph::paint(cs);
+  __super::paint(cs);
 /*
   if(m_image.isEmpty()) return;
   Viewport2D &vp = cs.getViewport();

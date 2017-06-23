@@ -69,9 +69,6 @@
     <ClCompile Include="MainFrm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PointGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ShowGraf.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -149,6 +146,9 @@
     </ClCompile>
     <ClCompile Include="RollAvgSizeDlg.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PointGraph.cpp">
+      <Filter>Source Files\DataGraph</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -113,7 +113,8 @@ void CShowGrafView::OnDraw(CDC *pDC) {
       enableMenuItem(ID_VIEW_SCALE_X_NORMALDIST        , maxNormInterval.contains(dr.getXInterval()));
       enableMenuItem(ID_VIEW_SCALE_Y_NORMALDIST        , maxNormInterval.contains(dr.getYInterval()));
       checkMenuItem( ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.isRetainingAspectRatio());
-      enableMenuItem(ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.canRetainAspectRatio());
+      enableMenuItem(ID_VIEW_RETAINASPECTRATIO         , m_coordinateSystem.canRetainAspectRatio()  );
+      checkMenuItem( ID_VIEW_ROLLAVG                   , getDoc()->getRollAvg()                     );
     }
   } catch(Exception e) {
     showException(e);
@@ -132,17 +133,17 @@ void CShowGrafView::OnEndPrinting(CDC *pDC, CPrintInfo *pInfo) {
 
 #ifdef _DEBUG
 void CShowGrafView::AssertValid() const {
-  CFormView::AssertValid();
+  __super::AssertValid();
 }
 
 void CShowGrafView::Dump(CDumpContext& dc) const {
-  CFormView::Dump(dc);
+  __super::Dump(dc);
 }
 
 #endif //_DEBUG
 
 void CShowGrafView::OnLButtonDown(UINT nFlags, CPoint point) {
-  CFormView::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   CRect cr = getClientRect(this, IDC_SYSTEMPANEL);
   if(cr.PtInRect(point)) {
     startDragging(point);
@@ -150,12 +151,12 @@ void CShowGrafView::OnLButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CShowGrafView::OnLButtonUp(UINT nFlags, CPoint point) {
-  CFormView::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   stopDragging();
 }
 
 void CShowGrafView::OnMouseMove(UINT nFlags, CPoint point) {
-  CFormView::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
   if(m_dragging) {
     if(nFlags && MK_LBUTTON) {
       Rectangle2D   fr         = m_mouseDownTransform.getFromRectangle();
@@ -201,7 +202,7 @@ void CShowGrafView::OnRButtonDown(UINT nFlags, CPoint point) {
     ClientToScreen(&point);
     menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON,point.x+10,point.y, theApp.getMainWindow());
   } else {
-    CFormView::OnRButtonDown(nFlags, point);
+    __super::OnRButtonDown(nFlags, point);
   }
 }
 
@@ -220,11 +221,11 @@ BOOL CShowGrafView::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   }
   m_coordinateSystem.getTransformation().zoom(tmppt,(zDelta < 0) ? -0.05 : 0.05,zoomFlags);
   Invalidate(FALSE);
-  return CFormView::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CShowGrafView::OnSize(UINT nType, int cx, int cy) {
-  CFormView::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   ShowScrollBar(SB_BOTH,FALSE);
 }
 

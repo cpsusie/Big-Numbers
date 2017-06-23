@@ -83,7 +83,7 @@ CMainFrame::~CMainFrame() {
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CFrameWnd::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
 
@@ -142,7 +142,7 @@ void CMainFrame::initMenuItems() {
 }
 
 BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs) {
-  if(!CFrameWnd::PreCreateWindow(cs)) {
+  if(!__super::PreCreateWindow(cs)) {
     return FALSE;
   }
   return TRUE;
@@ -152,7 +152,7 @@ BOOL CMainFrame::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CFrameWnd::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CMainFrame::showPositon(const CPoint &p) {
@@ -175,11 +175,11 @@ void CMainFrame::activateInitialOptions() {
 
 #ifdef _DEBUG
 void CMainFrame::AssertValid() const {
-  CFrameWnd::AssertValid();
+  __super::AssertValid();
 }
 
 void CMainFrame::Dump(CDumpContext& dc) const {
-  CFrameWnd::Dump(dc);
+  __super::Dump(dc);
 }
 #endif //_DEBUG
 
@@ -432,10 +432,6 @@ void CMainFrame::setRollAvg(bool on) {
   checkMenuItem(this, ID_VIEW_ROLLAVG, on);
 }
 
-bool CMainFrame::getRollAvg() const {
-  return isMenuItemChecked(this, ID_VIEW_ROLLAVG);
-}
-
 void CMainFrame::setGrid(bool grid) {
   checkMenuItem(this, ID_VIEW_GRID, grid);
 }
@@ -445,7 +441,7 @@ bool CMainFrame::hasGrid() const {
 }
 
 void CMainFrame::OnViewRollAvg() {
-  toggleMenuItem(this, ID_VIEW_ROLLAVG);
+  getDoc()->setRollAvg(toggleMenuItem(this, ID_VIEW_ROLLAVG));
   Invalidate(FALSE);
 }
 
@@ -453,12 +449,14 @@ void CMainFrame::OnViewSetRollAvgSize() {
   RollAvgSizeDlg dlg(getDoc()->getRollAvgSize());
   if(dlg.DoModal() == IDOK) {
     getDoc()->setRollAvgSize(dlg.m_rollAvgSize);
-    setRollAvg(true);
     Invalidate(FALSE);
   }
 }
 
 void CMainFrame::OnViewRefreshFiles() {
+  if(getDoc()->refreshFiles()) {
+    Invalidate(FALSE);
+  }
 }
 
 void CMainFrame::OnToolsFitPolynomial() {

@@ -17,7 +17,7 @@ CCustomFitThread::~CCustomFitThread() {
 }
 
 BOOL CCustomFitThread::InitInstance() {
-  CWinThread::InitInstance();
+  __super::InitInstance();
   m_bAutoDelete = true;
   switch(m_type) {
   case CUSTOM_FIT    :
@@ -40,12 +40,10 @@ BOOL CCustomFitThread::InitInstance() {
 }
 
 int CCustomFitThread::ExitInstance() {
-  return CWinThread::ExitInstance();
+  return __super::ExitInstance();
 }
 
 BEGIN_MESSAGE_MAP(CCustomFitThread, CWinThread)
-    //{{AFX_MSG_MAP(CCustomFitThread)
-    //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
 CCustomFitThread *startFitThread(FitThreadType type, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, const CString &expr) {

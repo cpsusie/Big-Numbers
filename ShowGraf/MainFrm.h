@@ -25,7 +25,6 @@ public:
   void showPositon(const CPoint &p);
   void activateInitialOptions();
   void              setRollAvg(bool on);  
-  bool              getRollAvg() const;
   void              setGrid(bool grid);
   bool              hasGrid() const;
   void              setXAxisType(  AxisType          type    );

@@ -87,7 +87,7 @@ int GraphArray::getMaxButtonWidth(CDC &dc, CFont &font) const {
 
 int GraphArray::getButtonHeight(CDC &dc, CFont &font) const {
   dc.SelectObject(font);
-  const CSize cs = dc.GetTextExtent(_T("T"),1);
+  const CSize cs = dc.GetTextExtent(_T("T"), 1);
   return cs.cy + 8;
 }
 
@@ -111,7 +111,7 @@ void GraphArray::add(Graph *g) {
   } else {
     m_dataRange += g->getDataRange();
   }
-  Array<GraphItem>::add(GraphItem(g));
+  __super::add(GraphItem(g));
 }
 
 void GraphArray::remove(size_t index) {
@@ -120,13 +120,8 @@ void GraphArray::remove(size_t index) {
   }
   GraphItem &item = getItem(index);
   delete item.m_graph;
-  Array<GraphItem>::removeIndex(index);
-  if(size() > 0) {
-    m_dataRange = getItem(0).m_graph->getDataRange();
-    for(size_t i = 1; i < size(); i++) {
-      m_dataRange += getItem(i).m_graph->getDataRange();
-    }
-  }
+  __super::removeIndex(index);
+  calculateDataRange();
 
   if(index < size()) {
     select(index);
@@ -135,17 +130,49 @@ void GraphArray::remove(size_t index) {
   }
 }
 
+void GraphArray::calculateDataRange() {
+  if(size() > 0) {
+    m_dataRange = getItem(0).m_graph->getDataRange();
+    for(size_t i = 1; i < size(); i++) {
+      m_dataRange += getItem(i).m_graph->getDataRange();
+    }
+  }
+}
+
 void GraphArray::clear() {
   for(size_t i = 0; i < size(); i++) {
     delete getItem(i).m_graph;
   }
-  Array<GraphItem>::clear();
+  __super::clear();
+}
+
+void GraphArray::refresh() {
+  for(size_t i = 0; i < size(); i++) {
+    GraphItem &item = getItem(i);
+    if(item.getGraph().needRefresh()) {
+      item.getGraph().refreshData();
+    }
+  }
+  calculateDataRange();
+}
+
+bool GraphArray::needRefresh() const {
+  for(size_t i = 0; i < size(); i++) {
+    if(getItem(i).m_graph->needRefresh()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 double GraphArray::getSmallestPositiveX() const {
-  if(isEmpty()) return 0;
+  if(isEmpty()) {
+    return 0;
+  }
   double result = getItem(0).getGraph().getSmallestPositiveX();
-  if(result < 0) result = 0;
+  if(result < 0) {
+    result = 0;
+  }
   for(size_t i = 1; i < size(); i++) {
     result = Graph::getMinPositive(getItem(i).getGraph().getSmallestPositiveX(), result);
   }
@@ -153,9 +180,13 @@ double GraphArray::getSmallestPositiveX() const {
 }
 
 double GraphArray::getSmallestPositiveY() const {
-  if(isEmpty()) return 0;
+  if(isEmpty()) {
+    return 0;
+  }
   double result = getItem(0).getGraph().getSmallestPositiveY();
-  if(result < 0) result = 0;
+  if(result < 0) {
+    result = 0;
+  }
   for(size_t i = 1; i < size(); i++) {
     result = Graph::getMinPositive(getItem(i).getGraph().getSmallestPositiveY(), result);
   }

@@ -7,12 +7,15 @@
 class DataGraph : public PointGraph {
 private:
   Point2D tr1(const TCHAR *sx, const TCHAR *sy);
-  bool    m_hasFirstDataPoint;
-  Point2D m_firstPoint;
+  __time64_t m_lastReadTime;
+  bool       m_hasFirstDataPoint;
+  Point2D    m_firstPoint;
+  void readData();
   void readData(FILE *f);
 public:
   DataGraph(DataGraphParameters &param);
-  
+  void refreshData();
+  bool needRefresh() const;
   GraphType getType() const {
     return DATAGRAPH;
   }

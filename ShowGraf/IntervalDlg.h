@@ -10,7 +10,7 @@ public:
   CIntervalDlg(const RectangleTransformation &tr, CWnd *pParent = NULL);
   Rectangle2D getDataRange();
 
-  enum { IDD = IDD_INTERVAL_DIALOG };
+  enum { IDD = IDR_INTERVAL };
     double  m_maxx;
     double  m_maxy;
     double  m_minx;

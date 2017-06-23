@@ -56,7 +56,7 @@ void DiffEquationHandler::handleData(const RungeKuttaFehlberg &deqSolver) {
 
 void DiffEquationGraph::calculate() {
   clear();
-  const DiffEquationGraphParameters &param = *(DiffEquationGraphParameters*)m_param;
+  const DiffEquationGraphParameters &param = (DiffEquationGraphParameters&)getParam();
   DiffEquationSystem  eq;
   CompilerErrorList   errorList;
   if(!eq.compile(param.m_equationsDescription, errorList)) errorList.throwFirstError();
@@ -82,7 +82,7 @@ void DiffEquationGraph::calculate() {
 }
 
 void DiffEquationGraph::setTrigoMode(TrigonometricMode mode) {
-  DiffEquationGraphParameters &param = *(DiffEquationGraphParameters*)m_param;
+  DiffEquationGraphParameters &param = (DiffEquationGraphParameters&)getParam();
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;
     calculate();

@@ -35,7 +35,7 @@ BOOL CDataGraphDlg::OnInitDialog() {
   m_layoutManager.addControl(IDOK        , RELATIVE_POSITION );
   m_layoutManager.addControl(IDCANCEL    , RELATIVE_POSITION );
 
-  const GraphParameters &param = m_graph.getParam();
+  const DataGraphParameters &param = (DataGraphParameters&)m_graph.getParam();
   getColorButton()->SetColor(param.m_color);
   m_fullName = param.getName();
   m_name     = param.getDisplayName().cstr();

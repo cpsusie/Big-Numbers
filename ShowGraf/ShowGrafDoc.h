@@ -68,10 +68,18 @@ public:
   const InitialOptions &getOptions() const {
     return m_options;
   }
-  void setTrigoMode(        TrigonometricMode mode);
+  void setTrigoMode(TrigonometricMode mode);
+  TrigonometricMode  getTrigoMode() const {
+    return m_options.m_trigoMode;
+  }
   void setRollAvg(bool on);
+  bool getRollAvg() const {
+    return m_options.m_rollAvg;
+  }
   void setRollAvgSize(int value);
-  int  getRollAvgSize() const;
+  int  getRollAvgSize() const {
+    return m_options.m_rollAvgSize;
+  };
 
   void addGraphFromFile(    const String &fileName);
   void readDataFile(        const String &fileName);
@@ -92,7 +100,8 @@ public:
   void clear() {
     m_graphArray.clear();
   }
-
+  // return true if any data-graphs were updated
+  bool refreshFiles();
   virtual BOOL OnNewDocument();
   virtual void Serialize(CArchive& ar);
   virtual ~CShowGrafDoc();

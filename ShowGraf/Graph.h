@@ -8,9 +8,11 @@
 
 class Graph : public CoordinateSystemObject {
 private:
-  bool m_visible;
-protected:
+  bool             m_visible;
   GraphParameters *m_param;
+  Graph(const Graph &src);            // Not implemented
+  Graph &operator=(const Graph &src); // Not implemented
+protected:
   Graph(GraphParameters *param) {
     m_param = param;
   }
@@ -19,8 +21,6 @@ protected:
   }
 
 public:
-  Graph(const Graph &src);            // Not implemented
-  Graph &operator=(const Graph &src); // Not implemented
   virtual ~Graph() {
     delete m_param;
   }
@@ -51,6 +51,12 @@ public:
   virtual bool isVisible() const {
     return m_visible;
   }
+  virtual void refreshData() {
+  }
+  virtual bool needRefresh() const {
+    return false;
+  }
+
 };
 
 class PointGraph : public Graph {

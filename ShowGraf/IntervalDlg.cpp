@@ -33,7 +33,7 @@ BOOL CIntervalDlg::OnInitDialog() {
   setWindowText(this, IDC_EDITYFROM, format(fmt, m_miny));
   setWindowText(this, IDC_EDITYTO  , format(fmt, m_maxy));
 
-  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_INTERVAL));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_INTERVAL));
   OnGotoXInterval();
   return FALSE;
 }

@@ -59,7 +59,7 @@ void IsoCurveGraph::calculate() {
   IsoCurveGraphEvaluator eval(this);
   IsoCurveFinder curveFinder(eval);
   eval.m_pointArray = &curveFinder.getPointArray();
-  const IsoCurveGraphParameters &param = *(IsoCurveGraphParameters*)m_param;
+  const IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)getParam();
   curveFinder.findCurve(param.m_cellSize, param.m_boundingBox);
   findDataRange();
 }
@@ -80,7 +80,7 @@ void IsoCurveGraph::findDataRange() {
 }
 
 void IsoCurveGraph::setTrigoMode(TrigonometricMode mode) {
-  IsoCurveGraphParameters &param = *(IsoCurveGraphParameters*)m_param;
+  IsoCurveGraphParameters &param = (IsoCurveGraphParameters&)getParam();
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;
     calculate();

@@ -8,7 +8,7 @@ FunctionGraph::FunctionGraph(const FunctionGraphParameters &param) : PointGraph(
 
 void FunctionGraph::calculate() {
   clear();
-  const FunctionGraphParameters &param = *(FunctionGraphParameters*)m_param;
+  const FunctionGraphParameters &param = (FunctionGraphParameters&)getParam();
   Expression expr(param.m_trigonometricMode);
   expr.compile(param.m_expr, true);
 //  m_image = expressionToImage(theApp.m_device, expr, 18);
@@ -32,7 +32,7 @@ void FunctionGraph::calculate() {
 }
 
 void FunctionGraph::setTrigoMode(TrigonometricMode mode) {
-  FunctionGraphParameters &param = *(FunctionGraphParameters*)m_param;
+  FunctionGraphParameters &param = (FunctionGraphParameters&)getParam();
   if(mode != param.m_trigonometricMode) {
     param.m_trigonometricMode = mode;
     calculate();
@@ -40,7 +40,7 @@ void FunctionGraph::setTrigoMode(TrigonometricMode mode) {
 }
 
 void FunctionGraph::paint(CCoordinateSystem &cs) {
-  PointGraph::paint(cs);
+  __super::paint(cs);
 /*
   if(m_image.isEmpty()) return;
   Viewport2D &vp = cs.getViewport();

@@ -17,9 +17,8 @@
 #define IDR_DIFFEQUATION                135
 #define IDD_DEGREE_DIALOG               136
 #define IDR_CUSTOMFIT                   137
-#define IDD_INTERVAL_DIALOG             138
+#define IDR_INTERVAL                    138
 #define IDD_ROLLAVGSIZE_DIALOG          139
-#define IDR_ACCELERATOR_INTERVAL        144
 #define IDR_MENUSELECTGRAF              150
 #define IDC_SYSTEMPANEL                 1001
 #define IDC_BUTTONPANEL                 1002
@@ -127,7 +126,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         32921
+#define _APS_NEXT_COMMAND_VALUE         32924
 #define _APS_NEXT_CONTROL_VALUE         1103
 #define _APS_NEXT_SYMED_VALUE           153
 #endif

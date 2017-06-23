@@ -19,6 +19,7 @@ CShowGrafDoc::CShowGrafDoc() {
 }
 
 void CShowGrafDoc::setTrigoMode(TrigonometricMode mode) {
+  m_options.m_trigoMode = mode;
   getGraphArray().setTrigoMode(mode);
 }
 
@@ -202,6 +203,14 @@ CShowGrafView *CShowGrafDoc::getView() {
 CShowGrafDoc::~CShowGrafDoc() {
 }
 
+bool CShowGrafDoc::refreshFiles() {
+  if(m_graphArray.needRefresh()) {
+    m_graphArray.refresh();
+    return true;
+  }
+  return false;
+}
+
 BOOL CShowGrafDoc::OnNewDocument() {
   if (!CDocument::OnNewDocument())
     return FALSE;
@@ -319,10 +328,6 @@ void CShowGrafDoc::setRollAvg(bool on) {
 void CShowGrafDoc::setRollAvgSize(int size) {
   m_options.m_rollAvgSize = size;
   setRollAvg(true);
-}
-
-int CShowGrafDoc::getRollAvgSize() const {
-  return m_options.m_rollAvgSize;
 }
 
 #ifdef _DEBUG

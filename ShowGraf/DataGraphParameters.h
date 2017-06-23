@@ -11,6 +11,9 @@ public:
   const String &getFileName() const {
     return m_fileName;
   }
+  bool inputIsDiscFile() const {
+    return m_fileName != _T("stdin");
+  }
   void putDataToDoc(XMLDoc &doc) {
     throwUnsupportedOperationException(__TFUNCTION__);
   }

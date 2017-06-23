@@ -9,7 +9,8 @@ private:
   DataRange      m_dataRange;
 
   void findButtonPositions(CDC &dc, CFont &font, const CRect &buttonPanelRect) const;
-  
+  void calculateDataRange();
+
   const GraphItem &getItem(size_t index) const {
     return (*this)[index];
   }
@@ -28,6 +29,8 @@ public:
   void add(Graph *g);
   void remove(size_t index);
   void clear();
+  void refresh();
+  bool needRefresh() const;
   
   intptr_t  getCurrentSelection() const {
     return m_selected;
