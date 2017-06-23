@@ -48,9 +48,6 @@
     <Image Include="res\alarm.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="res\icon1.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="res\newAlarmIcon.ico">
       <Filter>Resource Files</Filter>
     </Image>

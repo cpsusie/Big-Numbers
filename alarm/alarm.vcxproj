@@ -282,7 +282,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\alarm.ico" />
-    <Image Include="res\icon1.ico" />
     <Image Include="res\newAlarmIcon.ico" />
   </ItemGroup>
   <ItemGroup>
@@ -291,4 +290,9 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties RESOURCE_FILE="alarm.rc" />
+    </VisualStudio>
+  </ProjectExtensions>
 </Project>
