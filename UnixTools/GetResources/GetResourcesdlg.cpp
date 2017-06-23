@@ -200,6 +200,8 @@ bool ResourceName::isImage() const {
   return isBitmap() || isCursor() || isIcon();
 }
 
+#pragma warning(disable:4311 4302)
+
 String ResourceName::getString() const {
   UINT id = (UINT)decodeResourceString(m_resourceName);
   TCHAR buffer[16000];
