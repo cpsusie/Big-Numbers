@@ -31,8 +31,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="swapx64.asm">
+    <CustomBuild Include="swapx64.asm">
       <Filter>Source Files</Filter>
-    </None>
+    </CustomBuild>
   </ItemGroup>
 </Project>
