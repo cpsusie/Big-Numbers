@@ -122,17 +122,18 @@ void setToRandom(Real &r) {
 }
 
 Real poly(const Real &x, int degree, const Real *coef) {
-  Real result = 0;
-  for(int i = degree; i >= 0; i--) {
-    result = result * x + coef[i];
+  const Real *cp = coef + degree;
+  Real result = *(cp--);
+  while(cp >= coef) {
+    result = result * x + *(cp--);
   }
   return result;
 }
 
 Real poly1(const Real &x, int degree, const Real *coef) {
-  Real result = coef[0];
-  for(int i = 1; i <= degree;) {
-    result = result * x + coef[i++];
+  Real result = *coef;
+  for(const Real *last = coef + degree; coef++ < last;) {
+    result = result * x + *coef;
   }
   return result;
 }
