@@ -781,6 +781,12 @@ BEGIN
         MENUITEM "&Edit",                       ID_SELECTMENU_EDIT
         MENUITEM "Hide",                        ID_SELECTMENU_HIDE
         MENUITEM "Show",                        ID_SELECTMENU_SHOW
+        POPUP "Style"
+        BEGIN
+            MENUITEM "Curve",                   ID_SELECTMENU_STYLE_CURVE
+            MENUITEM "Point",                   ID_SELECTMENU_STYLE_POINT
+            MENUITEM "Cross",                   ID_SELECTMENU_STYLE_CROSS
+        END
     END
 END
 

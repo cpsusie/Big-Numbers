@@ -68,6 +68,9 @@ BEGIN_MESSAGE_MAP(CMainFrame, CFrameWnd)
   ON_COMMAND(ID_SELECTMENU_EDIT                , OnSelectMenuEdit              )
   ON_COMMAND(ID_SELECTMENU_HIDE                , OnSelectMenuHide              )
   ON_COMMAND(ID_SELECTMENU_SHOW                , OnSelectMenuShow              )
+  ON_COMMAND(ID_SELECTMENU_STYLE_CURVE         , OnSelectMenuStyleCurve        )
+  ON_COMMAND(ID_SELECTMENU_STYLE_POINT         , OnSelectMenuStylePoint        )
+  ON_COMMAND(ID_SELECTMENU_STYLE_CROSS         , OnSelectMenuStyleCross        )
 END_MESSAGE_MAP()
 
 static UINT indicators[] = {
@@ -772,6 +775,30 @@ void CMainFrame::OnSelectMenuShow() {
   GraphArray &ga = getDoc()->getGraphArray();
   if(ga.getCurrentSelection() >= 0) {
     ga.getSelectedItem()->getGraph().setVisible(true);
+    Invalidate();
+  }
+}
+
+void CMainFrame::OnSelectMenuStyleCurve() {
+  GraphArray &ga = getDoc()->getGraphArray();
+  if(ga.getCurrentSelection() >= 0) {
+    ga.getSelectedItem()->getGraph().setStyle(GSCURVE);
+    Invalidate();
+  }
+}
+
+void CMainFrame::OnSelectMenuStylePoint() {
+  GraphArray &ga = getDoc()->getGraphArray();
+  if(ga.getCurrentSelection() >= 0) {
+    ga.getSelectedItem()->getGraph().setStyle(GSPOINT);
+    Invalidate();
+  }
+}
+
+void CMainFrame::OnSelectMenuStyleCross() {
+  GraphArray &ga = getDoc()->getGraphArray();
+  if(ga.getCurrentSelection() >= 0) {
+    ga.getSelectedItem()->getGraph().setStyle(GSCROSS);
     Invalidate();
   }
 }

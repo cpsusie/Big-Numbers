@@ -53,15 +53,15 @@ bool GraphArray::OnLButtonDown(UINT nFlags, const CPoint &point, const Rectangle
       return true;
     }
   }
-  double minDistance = 1000;
-  intptr_t selected = -1;
+  double   minDistance = EMPTY_DISTANCE;
+  intptr_t selected    = -1;
   for(size_t i = 0; i < size(); i++) {
     const GraphItem &item = getItem(i);
     if(!item.getGraph().isVisible()) {
       continue;
     }
     const double distance = item.getGraph().distance(point,tr);
-    if(distance < 7 && distance < minDistance) {
+    if((distance < 7) && (distance < minDistance)) {
       selected    = i;
       minDistance = distance;
     }

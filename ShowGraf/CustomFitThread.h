@@ -19,23 +19,11 @@ public:
   Point2DArray         m_pointArray;
   FunctionPlotter     *m_fp;
 
-public:
+  virtual BOOL InitInstance();
+  virtual int ExitInstance();
+  virtual ~CCustomFitThread();
 
-    //{{AFX_VIRTUAL(CCustomFitThread)
-    public:
-    virtual BOOL InitInstance();
-    virtual int ExitInstance();
-    //}}AFX_VIRTUAL
-
-protected:
-    virtual ~CCustomFitThread();
-
-    //{{AFX_MSG(CCustomFitThread)
-    //}}AFX_MSG
-
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
-
-//{{AFX_INSERT_LOCATION}}
 
 CCustomFitThread *startFitThread(FitThreadType type, const DoubleInterval &range, const Point2DArray &pointArray, FunctionPlotter &fp, const CString &expr = _T(""));

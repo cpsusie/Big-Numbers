@@ -63,22 +63,30 @@ double PointGraph::distance(const CPoint &p, const RectangleTransformation &tr) 
   const size_t        n    = data.size();
   switch(getParam().m_style) {
   case GSCURVE:
-    { double minDist = -1;
+    { double minDist = EMPTY_DISTANCE;
       for(size_t i = 1; i < n; i++) {
-        const double dist = distanceFromLineSegment(tr.forwardTransform(data[i-1]),tr.forwardTransform(data[i]),tmpp);
-        if(minDist < 0 || dist < minDist) {
-          minDist = dist;
+        try {
+          const double dist = distanceFromLineSegment(tr.forwardTransform(data[i-1]),tr.forwardTransform(data[i]),tmpp);
+          if(dist < minDist) {
+            minDist = dist;
+          }
+        } catch (...) {
+          // ignore
         }
       }
       return minDist;
     }
   case GSPOINT:
   case GSCROSS:
-    { double minDist = -1;
+    { double minDist = EMPTY_DISTANCE;
       for(size_t i = 0; i < n; i++) {
-        const double dist = ::distance(tr.forwardTransform(data[i]),tmpp);
-        if(minDist < 0 || dist < minDist) {
-          minDist = dist;
+        try {
+          const double dist = ::distance(tr.forwardTransform(data[i]),tmpp);
+          if(dist < minDist) {
+            minDist = dist;
+          }
+        } catch(...) {
+          // ignore
         }
       }
       return minDist;

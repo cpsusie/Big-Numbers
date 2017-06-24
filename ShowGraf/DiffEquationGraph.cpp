@@ -49,7 +49,7 @@ public:
 void DiffEquationHandler::handleData(const RungeKuttaFehlberg &deqSolver) {
   const Vector &v = deqSolver.getvalue();
   Real x = v[0];
-  for (size_t i = 0; i < m_pointGraphArray.size(); i++) {
+  for(size_t i = 0; i < m_pointGraphArray.size(); i++) {
     m_pointGraphArray[i]->addPoint(Point2D(x, v[m_vgMap[i]]));
   }
 }
@@ -96,18 +96,24 @@ void DiffEquationGraph::paint(CCoordinateSystem &cs) {
 }
 
 double DiffEquationGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
-  if(isEmpty()) return EMPTY_DISTANCE;
+  if(isEmpty()) {
+    return EMPTY_DISTANCE;
+  }
   const size_t n    = m_pointGraphArray.size();
-  double       mind = m_pointGraphArray[0]->distance(p, tr);
-  for(size_t i = 1; (i < n) && (mind > 0); i++) {
+  double       mind = EMPTY_DISTANCE;
+  for(size_t i = 0; i < n; i++) {
     const double d = m_pointGraphArray[i]->distance(p, tr);
-    if(d < mind) mind = d;
+    if((d >= 0) && (d < mind)) {
+      mind = d;
+    }
   }
   return mind;
 }
 
 double DiffEquationGraph::getSmallestPositiveX() const {
-  if(isEmpty()) return 0;
+  if(isEmpty()) {
+    return 0;
+  }
   const size_t n      = m_pointGraphArray.size();
   double       result = m_pointGraphArray[0]->getSmallestPositiveX();
   for(size_t i = 1; i < n; i++) {
@@ -117,7 +123,9 @@ double DiffEquationGraph::getSmallestPositiveX() const {
 }
 
 double DiffEquationGraph::getSmallestPositiveY() const {
-  if(isEmpty()) return 0;
+  if(isEmpty()) {
+    return 0;
+  }
   const size_t n      = m_pointGraphArray.size();
   double       result = m_pointGraphArray[0]->getSmallestPositiveY();
   for(size_t i = 1; i < n; i++) {

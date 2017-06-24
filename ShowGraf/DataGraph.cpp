@@ -75,7 +75,11 @@ void DataGraph::readData(FILE *f) {
     }
   }
   updateDataRange();
-  m_lastReadTime = FSTAT(f).st_mtime;
+  try {
+    m_lastReadTime = FSTAT(f).st_mtime;
+  } catch (...) {
+    m_lastReadTime = 0;
+  }
 }
 
 Point2D DataGraph::tr1(const TCHAR *sx, const TCHAR *sy) {

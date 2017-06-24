@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LocalDebuggerCommandArguments>-i1 AllPValues_TestNextInt32_0_n.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>'</LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory>..\..\temp\TestRandom\32</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>-i1 AllPValues_TestNextInt32_0_n.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>'</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerWorkingDirectory>..\..\temp\TestRandom\32</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LocalDebuggerWorkingDirectory>..\..\temp\TestRandom\32</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-i1 AllPValues_TestNextInt32_0_n.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>'</LocalDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LocalDebuggerWorkingDirectory>..\..\temp\TestRandom\32</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerCommandArguments>-i1 AllPValues_TestNextInt32_0_n.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>'</LocalDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

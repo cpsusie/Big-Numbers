@@ -107,6 +107,9 @@
 #define ID_SELECTMENU_EDIT              32881
 #define ID_SELECTMENU_HIDE              32882
 #define ID_SELECTMENU_SHOW              32883
+#define ID_SELECTMENU_STYLE_CURVE       32884
+#define ID_SELECTMENU_STYLE_POINT       32885
+#define ID_SELECTMENU_STYLE_CROSS       32886
 #define ID_INDICATOR_POSITION           32890
 #define ID_GOTO_XINTERVAL               32900
 #define ID_GOTO_YINTERVAL               32901
@@ -126,7 +129,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_3D_CONTROLS                     1
 #define _APS_NEXT_RESOURCE_VALUE        125
-#define _APS_NEXT_COMMAND_VALUE         32924
+#define _APS_NEXT_COMMAND_VALUE         32928
 #define _APS_NEXT_CONTROL_VALUE         1103
 #define _APS_NEXT_SYMED_VALUE           153
 #endif

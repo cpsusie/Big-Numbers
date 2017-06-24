@@ -159,36 +159,50 @@ const DataRange &IsoCurveGraph::getDataRange() const {
 }
 
 double IsoCurveGraph::distance(const CPoint &p, const RectangleTransformation &tr) const {
-  if(isEmpty()) return EMPTY_DISTANCE;
+  if(isEmpty()) {
+    return EMPTY_DISTANCE;
+  }
   const size_t       n  = m_lineArray.size();
   const LineSegment *ls = &m_lineArray[0];
 
   switch(getParam().m_style) {
   case GSCURVE:
-    { double minDist = -1;
+    { double minDist = EMPTY_DISTANCE;
       for(size_t i = 0; i < n; i++, ls++) {
-        const Point2D &p1 = m_pointArray[ls->m_i1];
-        const Point2D &p2 = m_pointArray[ls->m_i2];
-        const double dist = distanceFromLineSegment(tr.forwardTransform((Point2DP)p1), tr.forwardTransform(p2), (Point2DP)p);
-        if(minDist < 0 || dist < minDist) {
-          minDist = dist;
+        try {
+          const Point2D &p1 = m_pointArray[ls->m_i1];
+          const Point2D &p2 = m_pointArray[ls->m_i2];
+          const double dist = distanceFromLineSegment(tr.forwardTransform((Point2DP)p1), tr.forwardTransform(p2), (Point2DP)p);
+          if(dist < minDist) {
+            minDist = dist;
+          }
+        } catch(...) {
+          // ignore
         }
       }
       return minDist;
     }
   case GSPOINT:
   case GSCROSS:
-    { double minDist = -1;
+    { double minDist = EMPTY_DISTANCE;
       for(size_t i = 0; i < n; i++, ls++) {
-        const Point2D &p1 = m_pointArray[ls->m_i1];
-        const Point2D &p2 = m_pointArray[ls->m_i2];
-        double dist = ::distance(tr.forwardTransform(p1), (Point2DP)p);
-        if(minDist < 0 || dist < minDist) {
-          minDist = dist;
+        try {
+          const Point2D &p1 = m_pointArray[ls->m_i1];
+          double dist = ::distance(tr.forwardTransform(p1), (Point2DP)p);
+          if(minDist < 0 || dist < minDist) {
+            minDist = dist;
+          }
+        } catch(...) {
+          // ignore
         }
-        dist = ::distance(tr.forwardTransform(p2), (Point2DP)p);
-        if(minDist < 0 || dist < minDist) {
-          minDist = dist;
+        try {
+          const Point2D &p2 = m_pointArray[ls->m_i2];
+          double dist = ::distance(tr.forwardTransform(p2), (Point2DP)p);
+          if(minDist < 0 || dist < minDist) {
+            minDist = dist;
+          }
+        } catch (...) {
+          // ignore
         }
       }
       return minDist;

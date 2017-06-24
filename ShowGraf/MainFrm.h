@@ -124,6 +124,9 @@ protected:
   afx_msg void OnSelectMenuEdit();
   afx_msg void OnSelectMenuHide();
   afx_msg void OnSelectMenuShow();
+  afx_msg void OnSelectMenuStyleCurve();
+  afx_msg void OnSelectMenuStylePoint();
+  afx_msg void OnSelectMenuStyleCross();
 
   DECLARE_MESSAGE_MAP()
 };
