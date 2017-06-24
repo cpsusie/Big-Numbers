@@ -26,15 +26,13 @@ BigRational::BigRational(const String  &s, DigitPool *digitPool) : m_numerator(d
   init(s);
 }
 
-BigRational::BigRational(const TCHAR   *s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
-  init(s);
-}
-
-#ifdef UNICODE
 BigRational::BigRational(const char    *s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
   init(s);
 }
-#endif
+
+BigRational::BigRational(const wchar_t *s, DigitPool *digitPool) : m_numerator(digitPool), m_denominator(digitPool) {
+  init(s);
+}
 
 void BigRational::init(const String &s) {
   DEFINEMETHODNAME;

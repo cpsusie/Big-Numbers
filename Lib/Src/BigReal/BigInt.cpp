@@ -31,15 +31,13 @@ BigInt::BigInt(const String &s, DigitPool *digitPool) : BigReal(digitPool) {
   init(s, false);
 }
 
-BigInt::BigInt(const TCHAR *s, DigitPool *digitPool) : BigReal(digitPool) {
-  init(s, false);
-}
-
-#ifdef UNICODE
 BigInt::BigInt(const char *s, DigitPool *digitPool) : BigReal(digitPool) {
   init(s, false);
 }
-#endif
+
+BigInt::BigInt(const wchar_t *s, DigitPool *digitPool) : BigReal(digitPool) {
+  init(s, false);
+}
 
 BigInt &BigInt::operator=(const BigReal &x) {
   BigReal::operator=((BigInt)x); 

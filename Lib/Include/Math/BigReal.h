@@ -14,7 +14,7 @@
 #include "Real.h"
 #include "Int128.h"
 
-// Define this to have 2 different version of getDecimalDigitCount64(unsigned __int64 n).
+// Define this to have 2 different version of getDecimalDigitCount64(UINT64 n).
 // Measures of time show that getDecimalDigitCount64 is 5 times faster that getDecimalDigitCount64Loop
 //#define HAS_LOOP_DIGITCOUNT
 
@@ -34,7 +34,7 @@
 #define BIGREAL_MAXEXPO    99999999
 #define BIGREAL_MINEXPO   -99999999
 
-typedef unsigned long BRDigitType;
+typedef ULONG BRDigitType;
 typedef long          BRExpoType;
 typedef long          BRDigitDiffType;
 
@@ -47,9 +47,9 @@ typedef long          BRDigitDiffType;
 #define BIGREAL_MAXEXPO    99999999999999999
 #define BIGREAL_MINEXPO   -99999999999999999
 
-typedef unsigned __int64 BRDigitType;
-typedef __int64          BRExpoType;
-typedef __int64          BRDigitDiffType;
+typedef UINT64         BRDigitType;
+typedef INT64          BRExpoType;
+typedef INT64          BRDigitDiffType;
 
 #endif // IS32BIT
 
@@ -179,7 +179,7 @@ public:
   inline Pow2ArgumentKey(ByteInputStream &s) {
     load(s);
   }
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
 #ifdef IS32BIT
     return m_n * 23 + m_digits;
 #else
@@ -454,12 +454,12 @@ private:
   void    baseb(const BigReal &x);
   void    baseb(const BigReal &x, int low);
   BigReal &baseB(const BigReal &x);                                                               // return this
-  void    addSubProduct(unsigned __int64 n);
+  void    addSubProduct(UINT64 n);
 
 #elif(SP_OPT_METHOD == SP_OPT_BY_FPU)
 
   void    addFPUReg0();
-  void    addSubProduct(unsigned __int64 n);
+  void    addSubProduct(UINT64 n);
 
 #elif((SP_OPT_METHOD == SP_OPT_BY_REG32) || (SP_OPT_METHOD == SP_OPT_BY_REG64) || (SP_OPT_METHOD == SP_OPT_BY_FPU2))
 
@@ -475,8 +475,8 @@ private:
   // One that works, and used for testing other versions of this important function
   BigReal &shortProductNoZeroCheckReference(const BigReal &x, const BigReal &y, int loopCount);   // return this
   friend void insertDigitAndIncrExpo(BigReal &v, BRDigitType n);
-  void    addSubProductReference1(unsigned __int64 &n);
-  void    addSubProductReference2(unsigned __int64 &n);
+  void    addSubProductReference1(UINT64 &n);
+  void    addSubProductReference2(UINT64 &n);
   static  bool s_useShortProdReferenceVersion;
   BigReal &shortProductNoZeroCheckDebug(    const BigReal &x, const BigReal &y, int loopCount);   // return this
 public:
@@ -511,8 +511,8 @@ private:
   static BigReal  reciprocal(const BigReal &x, DigitPool *digitPool = NULL);                      // approximately 1/x
   BigReal &approxQuot32(     const BigReal &x, const BigReal           &y           );            // approximately x/y
   BigReal &approxQuot64(     const BigReal &x, const BigReal           &y);                       // approximately x/y
-  BigReal &approxQuot32Abs(  const BigReal &x, unsigned long            y, BRExpoType scale);     // approximately x/e(y,scale)
-  BigReal &approxQuot64Abs(  const BigReal &x, const unsigned __int64  &y, BRExpoType scale);     // approximately x/e(y,scale)
+  BigReal &approxQuot32Abs(  const BigReal &x, ULONG                    y, BRExpoType scale);     // approximately x/e(y,scale)
+  BigReal &approxQuot64Abs(  const BigReal &x, const UINT64            &y, BRExpoType scale);     // approximately x/e(y,scale)
 #ifdef IS64BIT
   BigReal &approxQuot128(    const BigReal &x, const BigReal           &y);                       // approximately x/y
   BigReal &approxQuot128Abs( const BigReal &x, const _uint128          &y, BRExpoType scale);     // approximately x/e(y,scale)
@@ -571,19 +571,17 @@ public:
 
   BigReal(const BigReal   &x      , DigitPool *digitPool = NULL);
 
-  explicit inline BigReal(const String &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const String  &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(s, true);
   }
 
-  explicit inline BigReal(const TCHAR  *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const char    *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(s, true);
   }
 
-#ifdef UNICODE
-  explicit inline BigReal(const char   *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
+  explicit inline BigReal(const wchar_t *s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init(s, true);
   }
-#endif
 
   explicit inline BigReal(ByteInputStream &s, DigitPool *digitPool = NULL) : _SETDIGITPOOL() {
     init();
@@ -643,17 +641,17 @@ public:
 
   BigReal &operator=(const BigReal    &x);
 
-  friend          int     getInt(     const BigReal  &x);
-  friend UINT             getUint(    const BigReal  &x);
-  friend          long    getLong(    const BigReal  &x);
-  friend unsigned long    getUlong(   const BigReal  &x);
-  friend          __int64 getInt64(   const BigReal  &x);
-  friend unsigned __int64 getUint64(  const BigReal  &x);
-  friend          _int128 getInt128(  const BigReal  &x);
-  friend         _uint128 getUint128( const BigReal  &x);
-  friend float            getFloat(   const BigReal  &x);
-  friend double           getDouble(  const BigReal  &x);
-  friend Double80         getDouble80(const BigReal  &x);
+  friend int      getInt(     const BigReal  &x);
+  friend UINT     getUint(    const BigReal  &x);
+  friend long     getLong(    const BigReal  &x);
+  friend ULONG    getUlong(   const BigReal  &x);
+  friend INT64    getInt64(   const BigReal  &x);
+  friend UINT64   getUint64(  const BigReal  &x);
+  friend _int128  getInt128(  const BigReal  &x);
+  friend _uint128 getUint128( const BigReal  &x);
+  friend float    getFloat(   const BigReal  &x);
+  friend double   getDouble(  const BigReal  &x);
+  friend Double80 getDouble80(const BigReal  &x);
 
   // Result.digitPool = x.digitPool
   friend BigReal  operator+ (const BigReal &x, const BigReal &y);
@@ -932,13 +930,13 @@ public:
   inline ConstBigReal(long             x) : BigReal(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  inline ConstBigReal(unsigned long    x) : BigReal(x, REQUESTCONSTPOOL) {
+  inline ConstBigReal(ULONG            x) : BigReal(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  inline ConstBigReal(__int64          x) : BigReal(x, REQUESTCONSTPOOL) {
+  inline ConstBigReal(INT64            x) : BigReal(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  inline ConstBigReal(unsigned __int64 x) : BigReal(x, REQUESTCONSTPOOL) {
+  inline ConstBigReal(UINT64           x) : BigReal(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   inline ConstBigReal(const _int128   &x) : BigReal(x, REQUESTCONSTPOOL) {
@@ -960,21 +958,18 @@ public:
   ConstBigReal(const BigReal          &x) : BigReal(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  explicit inline ConstBigReal(const String &s) : BigReal(s, REQUESTCONSTPOOL) {
+  explicit inline ConstBigReal(const String  &s) : BigReal(s, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  explicit inline ConstBigReal(const TCHAR  *s) : BigReal(s, REQUESTCONSTPOOL) {
+  explicit inline ConstBigReal(const char    *s) : BigReal(s, REQUESTCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+  explicit inline ConstBigReal(const wchar_t *s) : BigReal(s, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   explicit inline ConstBigReal(ByteInputStream &s) : BigReal(s, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-
-#ifdef UNICODE
-  explicit inline ConstBigReal(const char   *s) : BigReal(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-#endif
 
   ~ConstBigReal() {
     REQUESTCONSTPOOL;
@@ -1075,22 +1070,20 @@ public:
   }
   BigInt(long                   x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(unsigned long          x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(ULONG                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(__int64                x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(INT64                  x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
-  BigInt(unsigned __int64       x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
+  BigInt(UINT64                 x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
   BigInt(const _int128         &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
   BigInt(const _uint128        &x, DigitPool *digitPool = NULL) : BigReal(x, digitPool) {
   }
 
-  explicit BigInt(const String &s, DigitPool *digitPool = NULL);
-  explicit BigInt(const TCHAR  *s, DigitPool *digitPool = NULL);
-#ifdef UNICODE
-  explicit BigInt(const char   *s, DigitPool *digitPool = NULL);
-#endif
+  explicit BigInt(const String  &s, DigitPool *digitPool = NULL);
+  explicit BigInt(const char    *s, DigitPool *digitPool = NULL);
+  explicit BigInt(const wchar_t *s, DigitPool *digitPool = NULL);
   BigInt &operator=( const BigReal &x);
   BigInt &operator/=(const BigInt  &x);
 
@@ -1125,22 +1118,22 @@ public:
   explicit ConstBigInt(const BigReal &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   };
-  ConstBigInt(int                    x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(int                     x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(UINT                   x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(UINT                    x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(long                   x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(long                    x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(unsigned long          x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(ULONG                   x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(__int64                x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(INT64                   x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  ConstBigInt(unsigned __int64       x) : BigInt(x, REQUESTCONSTPOOL) {
+  ConstBigInt(UINT64                  x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
   ConstBigInt(const _int128          &x) : BigInt(x, REQUESTCONSTPOOL) {
@@ -1149,18 +1142,16 @@ public:
   ConstBigInt(const _uint128         &x) : BigInt(x, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  explicit ConstBigInt(const String &s) : BigInt(s, REQUESTCONSTPOOL) {
+  explicit ConstBigInt(const String  &s) : BigInt(s, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
-  explicit ConstBigInt(const TCHAR  *s) : BigInt(s, REQUESTCONSTPOOL) {
+  explicit ConstBigInt(const char    *s) : BigInt(s, REQUESTCONSTPOOL) {
+    RELEASECONSTPOOL;
+  }
+  explicit ConstBigInt(const wchar_t *s) : BigInt(s, REQUESTCONSTPOOL) {
     RELEASECONSTPOOL;
   }
 
-#ifdef UNICODE
-  explicit ConstBigInt(const char   *s) : BigInt(s, REQUESTCONSTPOOL) {
-    RELEASECONSTPOOL;
-  }
-#endif // UNICODE
   ~ConstBigInt() {
     REQUESTCONSTPOOL;
     setToZero();
@@ -1183,11 +1174,9 @@ public:
   BigRational(const BigInt &numerator, const BigInt &denominator, DigitPool *digitPool = NULL);
   BigRational(const BigInt &n, DigitPool *digitPool = NULL);
   BigRational(int           n, DigitPool *digitPool = NULL);
-  explicit BigRational(const String &s, DigitPool *digitPool = NULL);
-  explicit BigRational(const TCHAR  *s, DigitPool *digitPool = NULL);
-#ifdef UNICODE
-  explicit BigRational(const char   *s, DigitPool *digitPool = NULL);
-#endif
+  explicit BigRational(const String  &s, DigitPool *digitPool = NULL);
+  explicit BigRational(const char    *s, DigitPool *digitPool = NULL);
+  explicit BigRational(const wchar_t *s, DigitPool *digitPool = NULL);
 
   friend BigRational operator+(const BigRational &l, const BigRational &r);
   friend BigRational operator-(const BigRational &l, const BigRational &r);
@@ -1236,10 +1225,10 @@ BigInt randomInteger(size_t digits, Random *rnd = NULL, DigitPool *digitPool = N
 class RandomBigReal : public Random {
 public:
   BigReal  nextBigReal( size_t digits, DigitPool *digitPool = NULL);   // Return uniform distributed random number between 0 (incl) and 1 (excl)
-                                                                    // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
+                                                                       // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
   BigReal  nextBigReal(const BigReal &low, const BigReal &high, size_t digits, DigitPool *digitPool = NULL);
-                                                                    // Return uniform distributed random number between low (incl) and high (excl)
-                                                                    // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
+                                                                       // Return uniform distributed random number between low (incl) and high (excl)
+                                                                       // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
   BigInt nextInteger(size_t digits, DigitPool *digitPool = NULL);      // Return uniform distributed random BigInt in range [0..10^digits[
 };
 
