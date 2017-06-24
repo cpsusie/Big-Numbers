@@ -201,6 +201,7 @@ CShowGrafView *CShowGrafDoc::getView() {
 }
 
 CShowGrafDoc::~CShowGrafDoc() {
+  clear();
 }
 
 bool CShowGrafDoc::refreshFiles() {
