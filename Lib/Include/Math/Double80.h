@@ -45,52 +45,52 @@ private:
   FPU() {} // Cannot be instatiated
 public:
 #ifdef IS32BIT
-  static void             init();
-  static unsigned short   getStatusWord();
-  static unsigned short   getControlWord();
-  static void             setControlWord(unsigned short flags);
-  static unsigned short   getTagsWord();
-  static void             clearExceptions();
+  static void     init();
+  static USHORT   getStatusWord();
+  static USHORT   getControlWord();
+  static void     setControlWord(USHORT flags);
+  static USHORT   getTagsWord();
+  static void     clearExceptions();
 #else
-  static inline void             init() {
+  static inline void    init() {
     FPUinit();
   }
-  static inline unsigned short   getStatusWord() {
+  static inline USHORT   getStatusWord() {
     WORD tmp;
     FPUgetStatusWord(tmp);
     return tmp;
   }
-  static inline unsigned short   getControlWord() {
+  static inline USHORT   getControlWord() {
     WORD tmp;
     FPUgetControlWord(tmp);
     return tmp;
   }
-  static inline void setControlWord(unsigned short flags) {
+  static inline void setControlWord(USHORT flags) {
     FPUsetControlWord(flags);
   }
-  static unsigned short          getTagsWord() {
+  static USHORT          getTagsWord() {
     WORD buffer[14];
     FPUgetTagsWord(buffer);
     return buffer[4];
   }
-  static inline void             clearExceptions() {
+  static inline void      clearExceptions() {
     FPUclearExceptions();
   }
 #endif // IS32BIT
 
   static void             clearStatusWord();
-  static unsigned short   setPrecisionMode(FPUPrecisionMode p); // returns currnet FPU controlwoed
+  static USHORT           setPrecisionMode(FPUPrecisionMode p); // returns currnet FPU controlwoed
   static FPUPrecisionMode getPrecisionMode();
-  static unsigned short   setRoundMode(FPURoundMode mode);      // returns current FPU controlword
+  static USHORT           setRoundMode(FPURoundMode mode);      // returns current FPU controlword
   static FPURoundMode     getRoundMode();
-  static inline void      restoreControlWord(unsigned short ctrlWord) {
+  static inline void      restoreControlWord(USHORT ctrlWord) {
     setControlWord(ctrlWord);
   }
   static int              getStackHeight();
   static bool             stackOverflow();
   static bool             stackUnderflow();
   static bool             stackFault();
-  static void             enableExceptions(bool enable, unsigned short flags);
+  static void             enableExceptions(bool enable, USHORT flags);
 
 };
 
@@ -98,56 +98,56 @@ class Double80;
 
 #ifdef IS64BIT
 extern "C" {
-void D80consLong(       Double80 &s, const long             &x);
-void D80consULong(      Double80 &s, const unsigned long     x);
-void D80consLongLong(   Double80 &s, const __int64          &x);
-void D80consULongLong(  Double80 &s, const unsigned __int64  x);
-void D80consFloat(      Double80 &s, float                  &x);
-void D80consDouble(     Double80 &s, const double           &x);
-void D80ToLong(      long               &dst, const Double80 &src);
-void D80ToULong(     unsigned long      &dst, const Double80 &src);
-void D80ToLongLong(  long long          &dst, const Double80 &src);
-void D80ToULongLong( unsigned long long &dst, const Double80 &src);
-void D80ToFloat(     float              &dst, const Double80 &src);
-void D80ToDouble(    double             &dst, const Double80 &src);
-void D80D80sum(      Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80dif(      Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80mul(      Double80 &dst, const Double80 &x, const Double80 &y);
-void D80D80div(      Double80 &dst, const Double80 &x, const Double80 &y);
-int  D80D80Compare(  const Double80 &x, const Double80 &y);
-int  D80isZero(      const Double80 &x);
-void D80assignAdd(   Double80 &dst, const Double80 &x);
-void D80assignSub(   Double80 &dst, const Double80 &x);
-void D80assignMul(   Double80 &dst, const Double80 &x);
-void D80assignDiv(   Double80 &dst, const Double80 &x);
-void D80neg(         Double80 &dst, const Double80 &x);
-void D80increment(   Double80 &dst);
-void D80decrement(   Double80 &dst);
-void D80getPi(       Double80 &dst);
-void D80getEps(      Double80 &dst);
-void D80getMin(      Double80 &dst);
-void D80getMax(      Double80 &dst);
-void D80getExpo2(    int &dst         , const Double80 &x);
-void D80getExpo10(   int &dst         , const Double80 &x);
-void D80fabs(        Double80 &dst, const Double80 &x);
-void D80sqr(         Double80 &dst, const Double80 &x);
-void D80sqrt(        Double80 &dst, const Double80 &x);
-void D80modulus(     Double80 &dst, const Double80 &x, const Double80 &y);
-void D80sin(         Double80 &dst, const Double80 &x);
-void D80cos(         Double80 &dst, const Double80 &x);
-void D80tan(         Double80 &dst, const Double80 &x);
-void D80atan(        Double80 &dst, const Double80 &x);
-void D80atan2(       Double80 &dst, const Double80 &y, const Double80 &x);
-void D80sincos(      Double80     &c  , Double80       &s);
-void D80exp(         Double80 &dst, const Double80 &x);
-void D80log(         Double80 &dst, const Double80 &x);
-void D80log10(       Double80 &dst, const Double80 &x);
-void D80log2(        Double80 &dst, const Double80 &x);
-void D80pow(         Double80 &dst, const Double80 &x, const Double80 &y);
-void D80pow10(       Double80 &dst, const Double80 &x);
-void D80pow2(        Double80 &dst, const Double80 &x);
-void D80floor(       Double80 &dst, const Double80 &x);
-void D80ceil(        Double80 &dst, const Double80 &x);
+void D80consLong(       Double80 &s, const long            &x);
+void D80consULong(      Double80 &s, const ULONG            x);
+void D80consLongLong(   Double80 &s, const INT64           &x);
+void D80consULongLong(  Double80 &s, const UINT64           x);
+void D80consFloat(      Double80 &s, float                 &x);
+void D80consDouble(     Double80 &s, const double          &x);
+void D80ToLong(         long     &dst, const Double80 &src);
+void D80ToULong(        ULONG    &dst, const Double80 &src);
+void D80ToLongLong(     INT64    &dst, const Double80 &src);
+void D80ToULongLong(    UINT64   &dst, const Double80 &src);
+void D80ToFloat(        float    &dst, const Double80 &src);
+void D80ToDouble(       double   &dst, const Double80 &src);
+void D80D80sum(         Double80 &dst, const Double80 &x, const Double80 &y);
+void D80D80dif(         Double80 &dst, const Double80 &x, const Double80 &y);
+void D80D80mul(         Double80 &dst, const Double80 &x, const Double80 &y);
+void D80D80div(         Double80 &dst, const Double80 &x, const Double80 &y);
+int  D80D80Compare(     const Double80 &x, const Double80 &y);
+int  D80isZero(         const Double80 &x);
+void D80assignAdd(      Double80 &dst, const Double80 &x);
+void D80assignSub(      Double80 &dst, const Double80 &x);
+void D80assignMul(      Double80 &dst, const Double80 &x);
+void D80assignDiv(      Double80 &dst, const Double80 &x);
+void D80neg(            Double80 &dst, const Double80 &x);
+void D80increment(      Double80 &dst);
+void D80decrement(      Double80 &dst);
+void D80getPi(          Double80 &dst);
+void D80getEps(         Double80 &dst);
+void D80getMin(         Double80 &dst);
+void D80getMax(         Double80 &dst);
+void D80getExpo2(       int      &dst, const Double80 &x);
+void D80getExpo10(      int      &dst, const Double80 &x);
+void D80fabs(           Double80 &dst, const Double80 &x);
+void D80sqr(            Double80 &dst, const Double80 &x);
+void D80sqrt(           Double80 &dst, const Double80 &x);
+void D80modulus(        Double80 &dst, const Double80 &x, const Double80 &y);
+void D80sin(            Double80 &dst, const Double80 &x);
+void D80cos(            Double80 &dst, const Double80 &x);
+void D80tan(            Double80 &dst, const Double80 &x);
+void D80atan(           Double80 &dst, const Double80 &x);
+void D80atan2(          Double80 &dst, const Double80 &y, const Double80 &x);
+void D80sincos(         Double80 &c  , Double80       &s);
+void D80exp(            Double80 &dst, const Double80 &x);
+void D80log(            Double80 &dst, const Double80 &x);
+void D80log10(          Double80 &dst, const Double80 &x);
+void D80log2(           Double80 &dst, const Double80 &x);
+void D80pow(            Double80 &dst, const Double80 &x, const Double80 &y);
+void D80pow10(          Double80 &dst, const Double80 &x);
+void D80pow2(           Double80 &dst, const Double80 &x);
+void D80floor(          Double80 &dst, const Double80 &x);
+void D80ceil(           Double80 &dst, const Double80 &x);
 void D80ToBCD(BYTE bcd[10], const Double80 &src);
 void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 }
@@ -199,12 +199,10 @@ public:
   }
 #endif // IS32BIT
 
-  explicit Double80(const String &s);
-  explicit Double80(const TCHAR  *s);
-  explicit Double80(const BYTE   *bytes);
-#ifdef UNICODE
-  explicit Double80(const char   *s);
-#endif // UNICODE
+  explicit Double80(const String  &s);
+  explicit Double80(const wchar_t *s);
+  explicit Double80(const char    *s);
+  explicit Double80(const BYTE    *bytes);
 
   inline friend int getInt(const Double80 &x) {
     return getLong(x);
@@ -335,8 +333,10 @@ public:
 
 #endif // IS32BIT
 
-  static TCHAR *d80tot(TCHAR *dst, const Double80 &x); // dst must point to memory with at least 26 free TCHAR
-  static char  *d80toa(char  *dst, const Double80 &x); // dst must point to memory with at least 26 free char
+  static TCHAR   *d80tot(TCHAR   *dst, const Double80 &x); // dst must point to memory with at least 26 free TCHAR
+  static char    *d80toa(char    *dst, const Double80 &x); // dst must point to memory with at least 26 free char
+  static wchar_t *d80tow(wchar_t *dst, const Double80 &x); // dst must point to memory with at least 26 free wchar_t
+
   bool isPositive() const { return (m_value[9] & 0x80) == 0; }
   bool isNegative() const { return (m_value[9] & 0x80) != 0; }
 

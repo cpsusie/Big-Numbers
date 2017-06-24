@@ -1,4 +1,6 @@
 #include "pch.h"
+#include <comdef.h>
+#include <atlconv.h>
 #include <StreamParameters.h>
 #include <Math/Complex.h>
 
@@ -29,6 +31,23 @@ void Complex::init(const _TUCHAR *s) {
     re = ttor((TCHAR*)reStr);
     im = ttor((TCHAR*)imStr);
   }
+}
+
+Complex::Complex(const char    *s) {
+#ifdef UNICODE
+  USES_CONVERSION;
+  init((_TUCHAR*)A2T(s));
+#else
+  init(s);
+#endif
+}
+Complex::Complex(const wchar_t *s) {
+#ifndef UNICODE
+  USES_CONVERSION;
+  init((_TUCHAR*)W2T(s));
+#else
+  init((_TUCHAR*)s);
+#endif
 }
 
 Complex operator+(const Complex &lts, const Complex &rhs) {

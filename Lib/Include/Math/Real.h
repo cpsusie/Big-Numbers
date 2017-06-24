@@ -11,6 +11,8 @@ typedef Double80 Real;
 typedef double Real;
 #endif
 
+typedef CompactArray<Real> CompactRealArray;
+
 inline double getDouble(double x) {
   return x;
 }
@@ -27,16 +29,16 @@ inline long getLong(double x) {
   return getInt(x);
 }
 
-inline unsigned long getUlong(double x) {
+inline ULONG getUlong(double x) {
   return getUint(x);
 }
 
-inline __int64 getInt64(double x) {
-  return (__int64)x;
+inline INT64 getInt64(double x) {
+  return (INT64)x;
 }
 
-inline unsigned __int64 getUint64(double x) {
-  return (unsigned __int64)x;
+inline UINT64 getUint64(double x) {
+  return (UINT64)x;
 }
 
 const _TUCHAR *parseReal(const _TUCHAR *s); // Return pointer to the character after parsing the string with the regular expression:

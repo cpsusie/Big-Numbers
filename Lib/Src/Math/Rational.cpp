@@ -10,11 +10,11 @@ DEFINECLASSNAME(Rational);
 Rational::Rational() : m_numerator(0), m_denominator(1) {
 }
 
-Rational::Rational(const __int64 &numerator, const __int64 &denominator) {
+Rational::Rational(const INT64 &numerator, const INT64 &denominator) {
   init(numerator, denominator);
 }
 
-Rational::Rational(const __int64 &numerator, int denominator) {
+Rational::Rational(const INT64 &numerator, int denominator) {
   init(numerator, denominator);
 }
 
@@ -22,11 +22,11 @@ Rational::Rational(int numerator, int denominator) {
   init(numerator, denominator);
 }
 
-Rational::Rational(int numerator, const __int64 &denominator) {
+Rational::Rational(int numerator, const INT64 &denominator) {
   init(numerator, denominator);
 }
 
-Rational::Rational(const __int64 &n) : m_numerator(n), m_denominator(1) {
+Rational::Rational(const INT64 &n) : m_numerator(n), m_denominator(1) {
 }
 
 Rational::Rational(int n) : m_numerator(n), m_denominator(1) {
@@ -58,17 +58,17 @@ Rational::Rational(double d, UINT maxND) {
     return;
   }
 
-  __int64 p0 = 1, q0 = 0;
-  __int64 p1 = (__int64)floor(da);
-  __int64 q1 = 1;
-  __int64 p2, q2;
+  INT64 p0 = 1, q0 = 0;
+  INT64 p1 = (INT64)floor(da);
+  INT64 q1 = 1;
+  INT64 p2, q2;
 
   double frac = da - p1;
   while(frac) {
     frac = 1.0 / frac;
     const double next = floor(frac);
-    p2 = (__int64)(next * p1 + p0);
-    q2 = (__int64)(next * q1 + q0);
+    p2 = (INT64)(next * p1 + p0);
+    q2 = (INT64)(next * q1 + q0);
 
     // Limit the numerator and denominator to be maxND or less
     if((p2 > maxND) || (q2 > maxND)) {
@@ -93,7 +93,7 @@ Rational::Rational(double d, UINT maxND) {
   m_denominator = q1;
 }
 
-Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
+Rational::Rational(const Double80 &d80, UINT64 maxND) {
   DEFINEMETHODNAME;
   static const TCHAR *invalidDoubleMsg = _T("Value %s cannot be contained in a Rational with maxND=%I64u");
 
@@ -111,10 +111,10 @@ Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
     return;
   }
 
-  unsigned __int64 p0 = 1, q0 = 0;
-  unsigned __int64 p1 = getInt64(floor(da));
-  unsigned __int64 q1 = 1;
-  unsigned __int64 p2, q2;
+  UINT64 p0 = 1, q0 = 0;
+  UINT64 p1 = getInt64(floor(da));
+  UINT64 q1 = 1;
+  UINT64 p2, q2;
 
   Double80 frac = da - p1;
   while(!frac.isZero()) {
@@ -142,7 +142,7 @@ Rational::Rational(const Double80 &d80, unsigned __int64 maxND) {
   assert(((Double80)p1 / q1 <= maxND) && ((Double80)q1 / p1 <= maxND));
   assert(findGCD(p1,q1) == 1);
 
-  m_numerator   = positive ? p1 : -(__int64)p1;
+  m_numerator   = positive ? p1 : -(INT64)p1;
   m_denominator = q1;
 }
 
@@ -150,15 +150,13 @@ Rational::Rational(const String &s) {
   init(s);
 }
 
-Rational::Rational(const TCHAR *s) {
+Rational::Rational(const wchar_t *s) {
   init(s);
 }
 
-#ifdef UNICODE
 Rational::Rational(const char *s) {
   init(s);
 }
-#endif
 
 void Rational::init(const String &s) {
   DEFINEMETHODNAME;
@@ -173,7 +171,7 @@ void Rational::init(const String &s) {
     }
     m_denominator = 1;
   } else {
-    __int64 n, d;
+    INT64 n, d;
     if((_stscanf(s.cstr()        , _T("%I64d"), &n) != 1)
     || (_stscanf(s.cstr()+slash+1, _T("%I64d"), &d) != 1)) {
       throwInvalidArgumentException(method, _T("s=%s"), s.cstr());
@@ -182,7 +180,7 @@ void Rational::init(const String &s) {
   }
 }
 
-void Rational::init(const __int64 &numerator, const __int64 &denominator) {
+void Rational::init(const INT64 &numerator, const INT64 &denominator) {
   DEFINEMETHODNAME;
   if(denominator == 0) {
     throwInvalidArgumentException(method, _T("Denominator is zero"));
@@ -196,7 +194,7 @@ void Rational::init(const __int64 &numerator, const __int64 &denominator) {
     m_numerator   = 0;
     m_denominator = 1;
   } else {
-    const __int64 gcd = findGCD(__int64(abs(numerator)),__int64(abs(denominator)));
+    const INT64 gcd = findGCD(INT64(abs(numerator)),INT64(abs(denominator)));
     m_numerator   = numerator   / gcd;
     m_denominator = denominator / gcd;
     if(denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
@@ -210,10 +208,10 @@ Rational operator+(const Rational &l, const Rational &r) {
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just add l.n and r.n
     return Rational(l.m_numerator + r.m_numerator, l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const __int64 n = l.m_denominator / r.m_denominator;
+    const INT64 n = l.m_denominator / r.m_denominator;
     return Rational(l.m_numerator + SAFEPROD(n,r.m_numerator), l.m_denominator);
   } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const __int64 n = r.m_denominator / l.m_denominator;
+    const INT64 n = r.m_denominator / l.m_denominator;
     return Rational(SAFEPROD(n,l.m_numerator) + r.m_numerator, r.m_denominator);
   } else {                                                                                     // Extend both and use l.d * r.d as denominator
     return Rational(SAFEPROD(l.m_numerator,r.m_denominator) + SAFEPROD(r.m_numerator,l.m_denominator), SAFEPROD(l.m_denominator,r.m_denominator));
@@ -224,10 +222,10 @@ Rational operator-(const Rational &l, const Rational &r) {
   if(l.m_denominator == r.m_denominator) {                                                     // l.d == r.d. just subtract r.n from l.n
     return Rational(l.m_numerator - r.m_numerator, l.m_denominator);
   } else if((l.m_denominator > r.m_denominator) && (l.m_denominator % r.m_denominator == 0)) { // l.d = n * r.d. extend r with n and use l.d as denominator
-    const __int64 n = l.m_denominator / r.m_denominator;
+    const INT64 n = l.m_denominator / r.m_denominator;
     return Rational(l.m_numerator - SAFEPROD(n,r.m_numerator), l.m_denominator);
   } else if((l.m_denominator < r.m_denominator) && (r.m_denominator % l.m_denominator == 0)) { // r.d = n * l.d. extend l with n and use r.d as denominator
-    const __int64 n = r.m_denominator / l.m_denominator;
+    const INT64 n = r.m_denominator / l.m_denominator;
     return Rational(SAFEPROD(n,l.m_numerator) - r.m_numerator, r.m_denominator);
   } else {                                                                                     // Extend both and use l.d * r.d as denominator
     return Rational(SAFEPROD(l.m_numerator,r.m_denominator) - SAFEPROD(r.m_numerator,l.m_denominator), SAFEPROD(l.m_denominator,r.m_denominator));
@@ -258,7 +256,7 @@ Rational operator%(const Rational &l, const Rational &r) {
     Rational::throwDivisionbyZeroException(_T("operator%"));
   }
   const Rational q = l / r;
-  const __int64  n = getInt64(q);
+  const INT64  n = getInt64(q);
   return l - r * n;
 }
 
@@ -289,8 +287,8 @@ Rational fabs(const Rational &r) {
 
 #define EVEN(n) (((n)&0x1) == 0)
 
-__int64 Rational::pow(__int64 n, int y) { // static assume y >= 0
-  __int64 p = 1;
+INT64 Rational::pow(INT64 n, int y) { // static assume y >= 0
+  INT64 p = 1;
   while(y > 0) {
     if(EVEN(y)) {
       n = SAFEPROD(n,n);
@@ -330,12 +328,12 @@ int rationalCmp(const Rational &r1, const Rational &r2) {
   if(c != 0) return c;
   if(abs(r1.m_numerator)                > (UINT)UINT_MAX
   || abs(r2.m_numerator)                > (UINT)UINT_MAX
-  || (unsigned __int64)r1.m_denominator > (UINT)UINT_MAX
-  || (unsigned __int64)r2.m_denominator > (UINT)UINT_MAX) {
+  || (UINT64)r1.m_denominator > (UINT)UINT_MAX
+  || (UINT64)r2.m_denominator > (UINT)UINT_MAX) {
     return sign(getDouble(r1) - getDouble(r2));
   } else {
-    const unsigned __int64 p1 = (unsigned __int64)abs(r1.m_numerator) * r2.m_denominator;
-    const unsigned __int64 p2 = (unsigned __int64)abs(r2.m_numerator) * r1.m_denominator;
+    const UINT64 p1 = (UINT64)abs(r1.m_numerator) * r2.m_denominator;
+    const UINT64 p2 = (UINT64)abs(r2.m_numerator) * r1.m_denominator;
     return (p1 > p2) ? sign1 : (p1 < p2) ? -sign1 : 0;
   }
 }
@@ -366,30 +364,30 @@ bool Rational::operator!=(const Rational &r) const {
 
 long getLong(const Rational &r) {
   DEFINEMETHODNAME;
-  const __int64 v = getInt64(r);
+  const INT64 v = getInt64(r);
   if((v < _I32_MIN) || (v > _I32_MAX)) {
     throwMethodException(Rational::s_className, method, _T("Value (=%I64d) out of range. Legal range is [%d..%d]"), v, _I32_MIN, _I32_MAX);
   }
   return (long)v;
 }
 
-unsigned long getUlong(const Rational &r) {
+ULONG getUlong(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
     throwMethodException(Rational::s_className, method, _T("Value is negative(=%s)"), r.toString().cstr());
   }
-  const unsigned __int64 v = getUint64(r);
+  const UINT64 v = getUint64(r);
   if(v > _UI32_MAX) {
     throwMethodException(Rational::s_className, method, _T("OverFlow. Rational=%I64u, _UI32_MAX=%lu"), v, _UI32_MAX);
   }
-  return (unsigned long)v;
+  return (ULONG)v;
 }
 
-__int64 getInt64(const Rational &r) {
+INT64 getInt64(const Rational &r) {
   return r.m_numerator / r.m_denominator;
 }
 
-unsigned __int64 getUint64(const Rational &r) {
+UINT64 getUint64(const Rational &r) {
   DEFINEMETHODNAME;
   if(r.isNegative()) {
     throwMethodException(Rational::s_className, method, _T("Value is negative (=%s)"), r.toString().cstr());
@@ -397,12 +395,12 @@ unsigned __int64 getUint64(const Rational &r) {
   return r.m_numerator / r.m_denominator;
 }
 
-__int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // static
+INT64 Rational::safeProd(const INT64 &a, const INT64 &b, int line) { // static
   DEFINEMETHODNAME;
   if(a == 0 || b == 0) return 0;
   const int sa = sign(a), sb = sign(b);
   const int expectedSign = sa * sb;
-  __int64 result = a * b;
+  INT64 result = a * b;
   const int sr = sign(result);
   if(sr != expectedSign) {
     throwException(method, _T("%s line %d: Product overflow. a=%I64d, b=%I64d"), thisFile, line, a, b);
@@ -410,14 +408,14 @@ __int64 Rational::safeProd(const __int64 &a, const __int64 &b, int line) { // st
   return result;
 }
 
-__int64 Rational::findGCD(const __int64 &a, const __int64 &b) { // static
+INT64 Rational::findGCD(const INT64 &a, const INT64 &b) { // static
   DEFINEMETHODNAME;
   if(a <= 0 || b <= 0) {
     throwInvalidArgumentException(method, _T("a=%I64d, b=%I64d"), a, b);
   }
-  __int64 g = 1;
-  __int64 u = a;
-  __int64 v(b);
+  INT64 g = 1;
+  INT64 u = a;
+  INT64 v(b);
 
   while(EVEN(u) && EVEN(v)) {
     u /= 2;

@@ -25,12 +25,11 @@ public:
   }
   Complex(const Real &_re, const Real &_im = 0) : re(_re), im(_im) {
   }
-  explicit inline Complex(const String &s) {
+  explicit inline Complex(const String  &s) {
     init((_TUCHAR*)(s.cstr()));
   }
-  explicit inline Complex(const TCHAR *s) {
-    init((_TUCHAR*)s);
-  }
+  explicit Complex(const char    *s);
+  explicit Complex(const wchar_t *s);
 
   Complex &operator-=(const Complex &rhs);
   Complex &operator+=(const Complex &rhs);

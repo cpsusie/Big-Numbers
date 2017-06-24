@@ -268,16 +268,23 @@ Double80::Double80(const String &s) {
   init((const _TUCHAR*)(s.cstr()));
 }
 
-Double80::Double80(const TCHAR *s) {
+Double80::Double80(const wchar_t *s) {
+#ifdef UNICODE
   init((const _TUCHAR*)s);
+#else
+  USES_CONVERSION;
+  init(W2T(s));
+#endif
 }
 
-#ifdef UNICODE
 Double80::Double80(const char *s) {
+#ifdef UNICODE
   USES_CONVERSION;
-  init(A2W(s));
+  init(A2T(s));
+#else
+  init((_TUCHAR*)s);
+#endif
 }
-#endif // UNICODE
 
 void Double80::init(const _TUCHAR *s) {
   bool isNegative = false;
@@ -1296,7 +1303,17 @@ char *Double80::d80toa(char *dst, const Double80 &x) {
 #else
   USES_CONVERSION;
   TCHAR tmp[30];
-  return strcpy(dst, W2A(d80tot(tmp, x)));
+  return strcpy(dst, T2A(d80tot(tmp, x)));
+#endif
+}
+
+wchar_t *Double80::d80tow(wchar_t *dst, const Double80 &x) {
+#ifdef UNICODE
+  return d80tot(dst, x);
+#else
+  USES_CONVERSION;
+  TCHAR tmp[30];
+  return wtrcpy(dst, T2W(d80tot(tmp, x)));
 #endif
 }
 

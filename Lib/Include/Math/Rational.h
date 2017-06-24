@@ -7,32 +7,30 @@
 class Rational {
 private:
   DECLARECLASSNAME;
-  __int64 m_numerator, m_denominator;
+  INT64 m_numerator, m_denominator;
 
-  static __int64 findGCD(const __int64 &a, const __int64 &b);
+  static INT64 findGCD(const INT64 &a, const INT64 &b);
 
-  void init(const __int64 &numerator, const __int64 &denominator);
+  void init(const INT64 &numerator, const INT64 &denominator);
   void init(const String &s);
   static void throwDivisionbyZeroException(const TCHAR *method);
-  static __int64 pow(__int64 n, int y); // assume y >= 0
+  static INT64 pow(INT64 n, int y); // assume y >= 0
 public:
   Rational();
-  Rational(const __int64 &numerator, const __int64 &denominator);
-  Rational(const __int64 &numerator, int            denominator);
-  Rational(int            numerator, int            denominator);
-  Rational(int            numerator, const __int64 &denominator);
-  Rational(const __int64           &n  );
+  Rational(const INT64 &numerator, const INT64 &denominator);
+  Rational(const INT64 &numerator, int          denominator);
+  Rational(int          numerator, int          denominator);
+  Rational(int          numerator, const INT64 &denominator);
+  Rational(const INT64           &n  );
   Rational(int                      n  );
   Rational(UINT                     n  );
-  explicit Rational(double          d  , UINT             maxND = _I32_MIN);
-  explicit Rational(const Double80 &d80, unsigned __int64 maxND = _I64_MAX);
+  explicit Rational(double          d  , UINT   maxND = _I32_MIN);
+  explicit Rational(const Double80 &d80, UINT64 maxND = _I64_MAX);
   explicit Rational(const String   &s  );
-  explicit Rational(const TCHAR    *s  );
-#ifdef UNICODE
+  explicit Rational(const wchar_t  *s  );
   explicit Rational(const char     *s  );
-#endif
 
-  static __int64 safeProd(const __int64 &a, const __int64 &b, int line);
+  static INT64 safeProd(const INT64 &a, const INT64 &b, int line);
 
   friend Rational operator+(const Rational &l, const Rational &r);
   friend Rational operator-(const Rational &l, const Rational &r);
@@ -72,10 +70,10 @@ public:
   inline friend UINT getUint( const Rational &r) {
     return getUlong(r);
   }
-  friend          long    getLong(    const Rational &r);
-  friend unsigned long    getUlong(   const Rational &r);
-  friend          __int64 getInt64(   const Rational &r);
-  friend unsigned __int64 getUint64(  const Rational &r);
+  friend long   getLong(    const Rational &r);
+  friend ULONG  getUlong(   const Rational &r);
+  friend INT64  getInt64(   const Rational &r);
+  friend UINT64 getUint64(  const Rational &r);
 
   friend float            getFloat(   const Rational &r) {
     return (float)((double)r.m_numerator/r.m_denominator);
@@ -118,17 +116,17 @@ public:
   inline bool isInt32() const {
     return isInteger() && (_I32_MIN <= m_numerator) && (m_numerator <= _I32_MAX);
   }
-  inline const __int64 &getNumerator() const {
+  inline const INT64 &getNumerator() const {
     return m_numerator;
   }
 
-  inline const __int64 &getDenominator() const {
+  inline const INT64 &getDenominator() const {
     return m_denominator;
   }
 
   static bool isRealRational(const Real &x, Rational *r);
 
-  inline unsigned long hashCode() const {
+  inline ULONG hashCode() const {
     return int64Hash(m_numerator) + 100999 * int64Hash(m_denominator);
   }
 
