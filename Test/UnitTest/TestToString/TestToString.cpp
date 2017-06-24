@@ -50,16 +50,16 @@ private:
   int            m_nextPrecision;
   int            m_nextWidth;
 
-  bool           m_hasNext;
-  double         m_currentValue;
-  long           m_currentFlags;
-  size_t         m_currentValueIndex,m_currentFlagIndex;
-  int            m_currentPrecision, m_currentWidth;
-  Array<double>  m_values;
-  Array<long>    m_flagCombinations;
-  Array<String>  m_flagString;
-  size_t         m_maxValueIndex;
-  size_t         m_maxFlagIndex;
+  bool               m_hasNext;
+  double             m_currentValue;
+  long               m_currentFlags;
+  size_t             m_currentValueIndex,m_currentFlagIndex;
+  int                m_currentPrecision, m_currentWidth;
+  CompactDoubleArray m_values;
+  CompactLongArray   m_flagCombinations;
+  StringArray        m_flagString;
+  size_t             m_maxValueIndex;
+  size_t             m_maxFlagIndex;
 
   void resetValueIndex()         { m_nextValueIndex = 0; }
   void resetFlagIndex()          { m_nextFlagIndex  = 0; }
@@ -77,12 +77,12 @@ private:
   bool hasNextWidth()      const { return m_nextWidth      < 25;              }
 
   void setValueAndFlags();
-  void init(const Array<double> &values);
+  void init(const CompactDoubleArray &values);
   void initFlagCombinations();
   String getFlagString(long flags) const;
 public:
   StringParametersIterator();
-  StringParametersIterator(const Array<double> &values);
+  StringParametersIterator(const CompactDoubleArray &values);
   void next();
 
   inline bool hasNext() const {
@@ -108,27 +108,27 @@ public:
 };
 
 StringParametersIterator::StringParametersIterator() {
-  Array<double> tmp;
+  CompactDoubleArray tmp;
   for(int i = 0; i < ARRAYSIZE(defaultTestValues); i++) {
     tmp.add(defaultTestValues[i]);
   }
   init(tmp);
 }
 
-StringParametersIterator::StringParametersIterator(const Array<double> &values) {
+StringParametersIterator::StringParametersIterator(const CompactDoubleArray &values) {
   init(values);
 }
 
-void StringParametersIterator::init(const Array<double> &values) {
+void StringParametersIterator::init(const CompactDoubleArray &values) {
   if(values.size() >= 256) {
     throwException(_T("Too many values (=%s). max is 255"), FSZ(values.size()));
   }
   m_values = values;
 
   for(size_t i = 0; i < values.size(); i++) {
-    double   d64 = values[i];
-    Double80 d80 = values[i];
-    BigReal  n   = values[i];
+    double   d64  = values[i];
+    Double80 d80  = values[i];
+    BigReal  n    = values[i];
     int d64expo10 = getExpo10(d64);
     int d80expo10 = Double80::getExpo10(d80);
     int nexpo10   = (int)BigReal::getExpo10(n);
@@ -339,8 +339,8 @@ void testToString() {
   StringParametersIterator it1;
   testToString(_T("c:\\temp\\toStringErrorsStd.log"), it1);
 
-  Array<double> values;
-  Random random;
+  CompactDoubleArray values;
+  Random             random;
   for(int i = 0; i < 32; i++) {
     const double e = pow(10,random.nextDouble(-200,200));
     const double t = random.nextDouble();
