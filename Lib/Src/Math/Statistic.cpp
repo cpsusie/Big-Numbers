@@ -3,7 +3,7 @@
 #include <HashMap.h>
 #include <Math/Statistic.h>
 
-DescriptiveStatistics::DescriptiveStatistics(const Array<Real> &data) {
+DescriptiveStatistics::DescriptiveStatistics(const CompactRealArray &data) {
   m_average           = 0;
   m_standardError     = 0;
   m_median            = 0;
@@ -39,7 +39,7 @@ DescriptiveStatistics::DescriptiveStatistics(const Array<Real> &data) {
   m_skewness          = findSkewness(data);
 }
 
-Real DescriptiveStatistics::findMomentAboutMean(const Array<Real> &data, int r) {
+Real DescriptiveStatistics::findMomentAboutMean(const CompactRealArray &data, int r) {
   Real sum = 0;
   for (int i = 0; i < m_count; i++) {
     sum += mypow(data[i] - m_average, r);
@@ -47,7 +47,7 @@ Real DescriptiveStatistics::findMomentAboutMean(const Array<Real> &data, int r) 
   return sum / m_count;
 }
 
-Real DescriptiveStatistics::findMoment(const Array<Real> &data, int r) {
+Real DescriptiveStatistics::findMoment(const CompactRealArray &data, int r) {
   Real sum = 0;
   for(int i = 0; i < m_count; i++) {
     sum += mypow(data[i],r);
@@ -55,21 +55,21 @@ Real DescriptiveStatistics::findMoment(const Array<Real> &data, int r) {
   return sum / m_count;
 }
 
-Real DescriptiveStatistics::findStandardDeviation(const Array<Real> &data) {
+Real DescriptiveStatistics::findStandardDeviation(const CompactRealArray &data) {
   if(m_count < 2) {
     return 0;
   }
   return sqrt(findMomentAboutMean(data,2) * m_count / (m_count-1));
 }
 
-Real DescriptiveStatistics::findStandardError(const Array<Real> &data) {
+Real DescriptiveStatistics::findStandardError(const CompactRealArray &data) {
   if(m_count < 2) {
     return 0;
   }
   return m_standardDeviation / sqrt(m_count);
 }
 
-Real DescriptiveStatistics::findSkewness(const Array<Real> &data) {
+Real DescriptiveStatistics::findSkewness(const CompactRealArray &data) {
   if(m_count < 3 || m_standardDeviation == 0) {
     return _Nan._Double;
   }
@@ -79,7 +79,7 @@ Real DescriptiveStatistics::findSkewness(const Array<Real> &data) {
   return factor * m3;
 }
 
-Real DescriptiveStatistics::findKurtosis(const Array<Real> &data) {
+Real DescriptiveStatistics::findKurtosis(const CompactRealArray &data) {
   if(m_count < 4 || m_standardDeviation == 0) {
     return _Nan._Double;
   }
@@ -94,15 +94,15 @@ static int realCmp(const Real &d1, const Real &d2) {
   return sign(d1-d2);
 }
 
-Real DescriptiveStatistics::findMedian(const Array<Real> &data) {
-  Array<Real> copy(data);
+Real DescriptiveStatistics::findMedian(const CompactRealArray &data) {
+  CompactRealArray copy(data);
   copy.sort(realCmp);
   return copy[copy.size()/2];
 }
 
 // find the element that occurs most often in the dataset
-Real DescriptiveStatistics::findMode(const Array<Real> &data) {
-  Array<Real> copy(data);
+Real DescriptiveStatistics::findMode(const CompactRealArray &data) {
+  CompactRealArray copy(data);
   copy.sort(realCmp);
   int currentMax = 0;
   Real last   = data[0];

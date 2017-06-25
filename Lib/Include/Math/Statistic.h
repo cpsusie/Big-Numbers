@@ -4,14 +4,14 @@
 
 class DescriptiveStatistics {
 private:
-  Real findMoment(           const Array<Real> &data, int r);
-  Real findMomentAboutMean(  const Array<Real> &data, int r);
-  Real findMode(             const Array<Real> &data);
-  Real findStandardDeviation(const Array<Real> &data);
-  Real findStandardError(    const Array<Real> &data);
-  Real findMedian(           const Array<Real> &data);
-  Real findSkewness(         const Array<Real> &data);
-  Real findKurtosis(         const Array<Real> &data);
+  Real findMoment(           const CompactRealArray &data, int r);
+  Real findMomentAboutMean(  const CompactRealArray &data, int r);
+  Real findMode(             const CompactRealArray &data);
+  Real findStandardDeviation(const CompactRealArray &data);
+  Real findStandardError(    const CompactRealArray &data);
+  Real findMedian(           const CompactRealArray &data);
+  Real findSkewness(         const CompactRealArray &data);
+  Real findKurtosis(         const CompactRealArray &data);
 public:
   Real m_average;
   Real m_standardError;
@@ -26,7 +26,7 @@ public:
   Real m_maximum;
   Real m_sum;
   int  m_count;
-  DescriptiveStatistics(const Array<Real> &data);
+  DescriptiveStatistics(const CompactRealArray &data);
   String toString(int prec = 6);
 };
 
