@@ -265,11 +265,11 @@ int getLastMantissaDigit(const char *s) {
 }
     
 static void testToString(const String &errorName, StringParametersIterator &it) {
-  unsigned int totalCounter  = 0;
-  int mismatchDouble80       = 0;
-  int mismatchBigReal        = 0;
-  int lengthMismatchDouble80 = 0;
-  int lengthMismatchBigReal  = 0;
+  UINT totalCounter           = 0;
+  UINT mismatchDouble80       = 0;
+  UINT mismatchBigReal        = 0;
+  UINT lengthMismatchDouble80 = 0;
+  UINT lengthMismatchBigReal  = 0;
 
   tofstream errorLog(errorName.cstr());
 
@@ -288,7 +288,6 @@ static void testToString(const String &errorName, StringParametersIterator &it) 
       tcout.flush();
     }
     const double d64 = it.getValue64();
-
     s64 << it << d64;
     s80 << it << it.getValue80();
     sN  << it << it.getValueBigReal();

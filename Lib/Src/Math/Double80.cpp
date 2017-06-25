@@ -1393,7 +1393,7 @@ TCHAR *Double80::d80tot(TCHAR *dst, const Double80 &x) {
       mov ax, cwSave1
       or  ax, 0x400               // Set   bit 10
       and ax, 0xf7ff              // Clear bit 11
-      mov ctrlFlags, ax
+      mov ctrlFlags, ax           // Round down mode
       fldcw ctrlFlags
       frndint                     // Round down
       fldcw cwSave1               // Restore control word

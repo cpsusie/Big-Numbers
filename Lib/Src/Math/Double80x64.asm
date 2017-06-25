@@ -579,13 +579,12 @@ D80sincos ENDP
 
 ;void D80exp(TenByteClass &dst, const Double80 &x);
 D80exp PROC
+    pushRoundMode ROUNDDOWN
     fld     tbyte ptr[rdx]
     fldl2e
     fmul
     fld     st(0)
-    pushRoundMode ROUNDDOWN
     frndint
-    popRoundMode
     fsub    st(1), st(0)
     fxch    st(1)
     f2xm1
@@ -594,6 +593,7 @@ D80exp PROC
     fscale
     fstp    st(1)
     fstp    tbyte ptr[rcx]
+    popRoundMode
     ret
 D80exp ENDP
 
@@ -640,9 +640,9 @@ D80pow PROC
     fcomip  st, st(1)
     je      ZeroBase
                             ; st(0)=x, st(1)=y
+    pushRoundMode ROUNDDOWN
     fyl2x
     fld     st(0)
-    pushRoundMode ROUNDDOWN
     frndint
     fsub    st(1), st(0)
     fxch    st(1)
@@ -682,10 +682,10 @@ D80pow10 PROC
     fcomip  st, st(1)
     je      ZeroExponent
 
+    pushRoundMode ROUNDDOWN
     fldl2t
     fmul
     fld     st(0)
-    pushRoundMode ROUNDDOWN
     frndint
     fsub    st(1), st(0)
     fxch    st(1)
@@ -740,8 +740,8 @@ D80floor PROC
     fld     tbyte ptr[rdx]
     pushRoundMode ROUNDDOWN
     frndint
-    popRoundMode
     fstp    tbyte ptr[rcx]
+    popRoundMode
     ret
 D80floor ENDP
 
@@ -750,8 +750,8 @@ D80ceil PROC
     fld     tbyte ptr[rdx]
     pushRoundMode ROUNDUP
     frndint
-    popRoundMode
     fstp    tbyte ptr[rcx]
+    popRoundMode
     ret
 D80ceil ENDP
 
@@ -766,6 +766,7 @@ D80ToBCD ENDP
 
 ;void D80ToBCDAutoScale(BYTE bcd[10], const Double80 &x, int &expo10);
 D80ToBCDAutoScale PROC
+    pushRoundMode ROUND         ;
     mov     eax, dword ptr[r8]  ;
     cmp     eax, 0              ;
     jne     scaleX              ;
@@ -810,6 +811,7 @@ ExitLoop:                            ;
     fstp    st(0)               ; Pop st(0)                             st0=m
     fbstp   tbyte ptr[rcx]      ; Pop m into bcd                        Assertion: 1 <= |st0| < 1e18-1 and x = st0 * 10^(eax-18)
     mov     dword ptr[r8], eax  ; Restore expo10
+    popRoundMode                ; Restore control word
     ret
 D80ToBCDAutoScale ENDP
 
