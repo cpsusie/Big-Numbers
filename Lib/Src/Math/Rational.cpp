@@ -317,7 +317,7 @@ Rational pow(const Rational &r, int e) {
 
 Rational reciprocal(const Rational &r) {
   if(r.isZero()) {
-    Rational::throwDivisionbyZeroException(_T("reciprocal"));
+    Rational::throwDivisionbyZeroException(__TFUNCTION__);
   }
   return Rational(r.m_denominator, r.m_numerator);
 }
