@@ -38,7 +38,7 @@ BOOL CWinDiffApp::InitInstance() {
 	InitCommonControlsEx(&InitCtrls);
 
 
-	CWinApp::InitInstance();
+	__super::InitInstance();
 
 	// Initialize OLE libraries
 	if (!AfxOleInit()) {

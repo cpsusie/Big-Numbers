@@ -40,8 +40,7 @@ BOOL CCaptureApp::InitInstance() {
 	CWinAppEx::InitInstance();
 
 	// Initialize OLE libraries
-	if (!AfxOleInit())
-  {
+	if (!AfxOleInit()) {
 		AfxMessageBox(IDP_OLE_INIT_FAILED);
 		return FALSE;
 	}
@@ -50,9 +49,9 @@ BOOL CCaptureApp::InitInstance() {
 
 	EnableTaskbarInteraction(FALSE);
 
-  SetRegistryKey(_T("JGMData"));
+    SetRegistryKey(_T("JGMData"));
 
-  LoadStdProfileSettings(16);  // Load standard INI file options (including MRU)
+    LoadStdProfileSettings(16);  // Load standard INI file options (including MRU)
 
     InitContextMenuManager();
 

@@ -26,7 +26,7 @@ BOOL CMakeGifApp::InitInstance() {
   InitCtrls.dwICC = ICC_WIN95_CLASSES;
   InitCommonControlsEx(&InitCtrls);
 
-  CWinApp::InitInstance();
+  __super::InitInstance();
 
   EnableTaskbarInteraction(FALSE);
 
@@ -61,10 +61,7 @@ public:
 
     enum { IDD = IDD_ABOUTBOX };
 
-protected:
     virtual void DoDataExchange(CDataExchange *pDX);
-
-protected:
     DECLARE_MESSAGE_MAP()
 };
 

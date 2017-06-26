@@ -27,7 +27,7 @@ BOOL CPrShowApp::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-	CWinApp::InitInstance();
+	__super::InitInstance();
 
 	// Initialize OLE libraries
 	if (!AfxOleInit()) {
