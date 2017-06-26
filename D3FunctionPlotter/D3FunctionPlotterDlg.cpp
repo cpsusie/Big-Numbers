@@ -16,18 +16,15 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-protected:
   virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
-    DECLARE_MESSAGE_MAP()
+  DECLARE_MESSAGE_MAP()
 };
 
 CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -39,7 +36,7 @@ CD3FunctionPlotterDlg::CD3FunctionPlotterDlg(CWnd *pParent) : CDialog(CD3Functio
 }
 
 void CD3FunctionPlotterDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CD3FunctionPlotterDlg, CDialog)
@@ -74,7 +71,7 @@ END_MESSAGE_MAP()
 #define REPAINT() Invalidate(FALSE)
 
 BOOL CD3FunctionPlotterDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -215,14 +212,14 @@ BOOL CD3FunctionPlotterDlg::PreTranslateMessage(MSG *pMsg) {
   if(m_editor.PreTranslateMessage(pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CD3FunctionPlotterDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -240,7 +237,7 @@ void CD3FunctionPlotterDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     render(RENDER_ALL);
   }
 }
@@ -249,7 +246,7 @@ void CD3FunctionPlotterDlg::OnSize(UINT nType, int cx, int cy) {
   if(cx < 200 || cy < 200) {
     return;
   }
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
   m_scene.OnSize();
 }

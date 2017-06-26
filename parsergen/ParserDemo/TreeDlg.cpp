@@ -10,7 +10,7 @@ TreeDlg::TreeDlg(SyntaxNodep tree, CWnd *pParent) : m_tree(tree), CDialog(TreeDl
 }
 
 void TreeDlg::DoDataExchange(CDataExchange *pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(TreeDlg, CDialog)
@@ -35,7 +35,7 @@ void TreeDlg::traverse(CTreeCtrl *ctrl, SyntaxNodep tree, HTREEITEM p) {
 }
 
 BOOL TreeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORTREE));
 
   CTreeCtrl *ctrl = (CTreeCtrl*)GetDlgItem(IDC_DERIVATIONTREE);
@@ -119,16 +119,16 @@ BOOL TreeDlg::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void TreeDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void TreeDlg::OnOK() {
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void TreeDlg::OnExpandOrCollapse() {

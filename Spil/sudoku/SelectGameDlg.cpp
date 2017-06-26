@@ -12,7 +12,7 @@ CSelectGameDlg::CSelectGameDlg(CWnd *pParent) : CDialog(CSelectGameDlg::IDD, pPa
 
 
 void CSelectGameDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITSEED, m_seed);
 }
 
@@ -22,11 +22,11 @@ END_MESSAGE_MAP()
 
 void CSelectGameDlg::OnOK() {
   UpdateData(); 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL CSelectGameDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   CEdit *e = (CEdit*)GetDlgItem(IDC_EDITSEED);
   e->SetSel(0,1);

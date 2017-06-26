@@ -20,7 +20,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -31,7 +31,7 @@ CFraktalsDlg::CFraktalsDlg(CWnd* pParent /*=NULL*/) : CDialog(CFraktalsDlg::IDD,
 }
 
 void CFraktalsDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CFraktalsDlg, CDialog)
@@ -55,7 +55,7 @@ BEGIN_MESSAGE_MAP(CFraktalsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CFraktalsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -81,10 +81,9 @@ BOOL CFraktalsDlg::OnInitDialog() {
 
 void CFraktalsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -104,7 +103,7 @@ void CFraktalsDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     drawfraktal();
   }
 }
@@ -445,12 +444,12 @@ void CFraktalsDlg::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
   default:
     break;
   }
-  CDialog::OnKeyDown(nChar, nRepCnt, nFlags);
+  __super::OnKeyDown(nChar, nRepCnt, nFlags);
 }
 
 void CFraktalsDlg::OnSize(UINT nType, int cx, int cy) 
 {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_turtle.OnSize(this);
   Invalidate(true);
 }

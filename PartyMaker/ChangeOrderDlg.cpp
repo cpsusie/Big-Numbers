@@ -10,7 +10,7 @@ CChangeOrderDlg::CChangeOrderDlg(MediaQueue &mediaQueue, CWnd *pParent) : CDialo
 }
 
 void CChangeOrderDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CChangeOrderDlg, CDialog)
@@ -30,7 +30,7 @@ BOOL CChangeOrderDlg::OnInitDialog() {
   }
   CListBox *lb = getListBox();
   lb->InsertString((int)m_mediaQueue.size(),EMPTYSTRING);
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   gotoToListBox();
   if(!m_mediaQueue.isEmpty()) {
@@ -52,7 +52,7 @@ void CChangeOrderDlg::OnOK() {
   for(size_t i = 0; i < m_editList.size(); i++) {
     m_mediaQueue.put(m_editList[i]);
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CChangeOrderDlg::getSelected(CompactIntArray &selected) {
@@ -134,7 +134,7 @@ BOOL CChangeOrderDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
     return true;
 
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CChangeOrderDlg::OnSelchangeEditlist() {

@@ -22,7 +22,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -33,7 +33,7 @@ CThinkDlg::CThinkDlg(CWnd *pParent) : CDialog(CThinkDlg::IDD, pParent) {
 }
 
 void CThinkDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CThinkDlg, CDialog)
@@ -46,7 +46,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CThinkDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -71,10 +71,9 @@ BOOL CThinkDlg::OnInitDialog() {
 
 void CThinkDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -175,7 +174,7 @@ void CThinkDlg::OnPaint()  {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     drawBoard();
   }
 }
@@ -203,7 +202,7 @@ void CThinkDlg::showWinner() {
 }
 
 void CThinkDlg::OnLButtonDown(UINT nFlags, CPoint point)  {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   int r, c;
   if(g.m_playerInTurn == YOU 
     && findField(point,r,c) 

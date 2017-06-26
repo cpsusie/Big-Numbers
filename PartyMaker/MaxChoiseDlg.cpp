@@ -12,13 +12,13 @@ MaxChoiseDlg::MaxChoiseDlg(int maxChoise, CWnd *pParent) : CDialog(MaxChoiseDlg:
 
 
 void MaxChoiseDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_MAXCHOISEEDIT, m_maxChoise);
   DDV_MinMaxUInt(pDX, m_maxChoise, 1, 50);
 }
 
 BOOL MaxChoiseDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CEdit *e = (CEdit*)GetDlgItem(IDC_MAXCHOISEEDIT);
   e->SetFocus();
   e->SetSel(0,2);

@@ -14,7 +14,7 @@ CInfoDlg::CInfoDlg(const MediaFile &mediaFile, CWnd *pParent)
 
 
 void CInfoDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -24,7 +24,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CInfoDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   const int maxNameLength = m_attributes.getMaxNameLength();
   const int maxValueLength = m_attributes.getMaxValueLength();
@@ -45,5 +45,5 @@ BOOL CInfoDlg::OnInitDialog() {
 
 void CInfoDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }

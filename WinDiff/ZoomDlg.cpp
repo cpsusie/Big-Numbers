@@ -12,7 +12,7 @@ CZoomDlg::CZoomDlg(const String &s1, const String &s2, CWnd *pParent) : m_s1(s1)
 }
 
 void CZoomDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECKIGNORECASE, m_ignorecase);
   DDX_Text( pDX, IDC_EDIT2LINES, m_lines);
 }
@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CZoomDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CZoomDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   try {
     m_diff.compareStrings(m_s1.cstr(), m_s2.cstr(), m_cmp);
@@ -48,7 +48,7 @@ BOOL CZoomDlg::OnInitDialog() {
 }
 
 void CZoomDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
@@ -69,7 +69,7 @@ BOOL CZoomDlg::PreTranslateMessage(MSG* pMsg) {
     break;
   }
 
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BOOL CZoomDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
@@ -87,7 +87,7 @@ BOOL CZoomDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   } else {
     zoomOut();
   }
-  return CDialog::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CZoomDlg::zoomIn() {

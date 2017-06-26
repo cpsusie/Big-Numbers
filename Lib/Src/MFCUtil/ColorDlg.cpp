@@ -14,7 +14,7 @@ CColorDlg::CColorDlg(const String &caption, int propertyId, D3DCOLOR color, CWnd
 }
 
 void CColorDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Control(pDX, _IDC_COLORMAP_COLOR, m_color);
 }
 
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CColorDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CColorDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setWindowText(this, m_caption);
   const D3DCOLOR color = getStartValue();
   setCurrentValue(color);

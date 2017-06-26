@@ -12,7 +12,7 @@ CLineSizeDlg::CLineSizeDlg(CWnd* pParent) : CDialog(CLineSizeDlg::IDD, pParent) 
 }
 
 void CLineSizeDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(      pDX, IDC_EDITLINESIZE, m_lineSize);
 	DDV_MinMaxUInt(pDX, m_lineSize, 1, 65536);
 	DDX_Check(     pDX, IDC_CHECKFITLINES, m_fitLines);
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CLineSizeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CLineSizeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORLINESIZE));
 
@@ -39,7 +39,7 @@ void CLineSizeDlg::OnOK() {
     Settings &settings = getSettings();
     settings.setLineSize(m_lineSize);
     settings.setFitLinesToWindow(m_fitLines?true:false);
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
@@ -64,5 +64,5 @@ BOOL CLineSizeDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return TRUE;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

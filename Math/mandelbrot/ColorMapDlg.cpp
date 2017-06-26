@@ -13,7 +13,7 @@ CColorMapDlg::CColorMapDlg(const ColorMapData &colorMapData, CWnd *pParent /*=NU
 }
 
 void CColorMapDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_MAXITERATION, m_maxIteration);
   DDV_MinMaxUInt(pDX, m_maxIteration, 10, 1000000);
 	DDX_Text(pDX, IDC_EDIT_SEED, m_seed);
@@ -28,7 +28,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CColorMapDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_COLORMAP_ACCELERATOR));
 
@@ -41,7 +41,7 @@ BOOL CColorMapDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CColorMapDlg::OnOK() {
@@ -49,7 +49,7 @@ void CColorMapDlg::OnOK() {
   m_colorMapData.m_maxIteration = m_maxIteration;
   m_colorMapData.m_randomSeed   = m_randomSeed;
   m_colorMapData.m_seed         = m_seed;
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CColorMapDlg::enableFields() {

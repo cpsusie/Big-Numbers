@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -43,7 +43,7 @@ CRegneTesterDlg::CRegneTesterDlg(CWnd *pParent /*=NULL*/) : CDialog(CRegneTester
 }
 
 void CRegneTesterDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITRESULT, m_result);
     DDV_MaxChars(pDX, m_result, 4);
 }
@@ -78,7 +78,7 @@ END_MESSAGE_MAP()
 //    ON_MESSAGE(ID_MSG_DRAWWATCH         , OnMsgDrawWatch         )
 
 BOOL CRegneTesterDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -116,7 +116,7 @@ void CRegneTesterDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -136,7 +136,7 @@ void CRegneTesterDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     if(m_timerIsRunning) {
       drawWatch(CPaintDC(GetDlgItem(IDC_STATEIMAGEWATCH)), m_watchTime);
     }
@@ -283,7 +283,7 @@ void CRegneTesterDlg::stopTimer() {
 
 void CRegneTesterDlg::OnTimer(UINT_PTR nIDEvent) {
   updateTime();
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CRegneTesterDlg::updateTime() {
@@ -363,7 +363,7 @@ BOOL CRegneTesterDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CRegneTesterDlg::OnTabel1tabel()  {  setTableNumber( 1); }

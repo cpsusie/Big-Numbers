@@ -21,7 +21,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -33,7 +33,7 @@ CTimtalkDlg::CTimtalkDlg(CWnd *pParent) : CDialog(CTimtalkDlg::IDD, pParent) {
 }
 
 void CTimtalkDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITTEXT, m_sentence);
 }
 
@@ -49,7 +49,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CTimtalkDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -79,7 +79,7 @@ void CTimtalkDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -98,7 +98,7 @@ void CTimtalkDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -107,7 +107,7 @@ HCURSOR CTimtalkDlg::OnQueryDragIcon() {
 }
 
 void CTimtalkDlg::OnCancel() {
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 class Text {

@@ -12,7 +12,7 @@ ErrorsDlg::ErrorsDlg(int maxErrorCount, int cascadeCount, CWnd *pParent) : CDial
 }
 
 void ErrorsDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITCASCADECOUNT , m_cascadeCount );
   DDX_Text(pDX, IDC_EDITMAXERRORCOUNT, m_maxErrorCount);
 }
@@ -24,11 +24,11 @@ END_MESSAGE_MAP()
 
 void ErrorsDlg::OnOK() {
   UpdateData();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL ErrorsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORERRORS));
   gotoEditBox(this, IDC_EDITMAXERRORCOUNT);
   return false;
@@ -46,5 +46,5 @@ BOOL ErrorsDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

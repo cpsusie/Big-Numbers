@@ -13,11 +13,7 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-  public:
-  protected:
   virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
@@ -25,7 +21,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -36,7 +32,7 @@ CAvlTreeWndDlg::CAvlTreeWndDlg(CWnd* pParent) : CDialog(CAvlTreeWndDlg::IDD, pPa
 }
 
 void CAvlTreeWndDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAvlTreeWndDlg, CDialog)
@@ -61,7 +57,7 @@ BEGIN_MESSAGE_MAP(CAvlTreeWndDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CAvlTreeWndDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   // Add "About..." menu item to system menu.
 
@@ -101,10 +97,9 @@ BOOL CAvlTreeWndDlg::OnInitDialog() {
 
 void CAvlTreeWndDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -129,7 +124,7 @@ void CAvlTreeWndDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     m_testTree.paint();
   }
 }
@@ -161,14 +156,14 @@ HCURSOR CAvlTreeWndDlg::OnQueryDragIcon() {
 
 void CAvlTreeWndDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 BOOL CAvlTreeWndDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CAvlTreeWndDlg::OnOK() {
@@ -254,8 +249,7 @@ void CAvlTreeWndDlg::OnEditFibonaccitreeType2() {
 }
 
 void CAvlTreeWndDlg::OnHelpAboutavtree() {
-  CAboutDlg dlg;
-  dlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CAvlTreeWndDlg::OnContextMenu(CWnd* pWnd, CPoint point) {

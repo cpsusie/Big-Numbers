@@ -28,7 +28,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -40,7 +40,7 @@ CShwGraphDlg::CShwGraphDlg(CWnd* pParent) : CDialog(CShwGraphDlg::IDD, pParent) 
 }
 
 void CShwGraphDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CShwGraphDlg, CDialog)
@@ -82,7 +82,7 @@ BEGIN_MESSAGE_MAP(CShwGraphDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CShwGraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -132,7 +132,7 @@ void CShwGraphDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -168,7 +168,7 @@ void CShwGraphDlg::OnPaint() {
       showException(e);
     }
   }
-  CDialog::OnPaint();
+  __super::OnPaint();
 }
 
 HCURSOR CShwGraphDlg::OnQueryDragIcon() {
@@ -176,7 +176,7 @@ HCURSOR CShwGraphDlg::OnQueryDragIcon() {
 }
 
 void CShwGraphDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layout.OnSize(nType, cx, cy);
   Invalidate(FALSE);
 }
@@ -187,7 +187,7 @@ void CShwGraphDlg::OnDropFiles(HDROP hDropInfo) {
 
   DragQueryFile(hDropInfo,0,fname,ARRAYSIZE(fname));
   readTextFile(fname);
-  CDialog::OnDropFiles(hDropInfo);
+  __super::OnDropFiles(hDropInfo);
 }
 
 void CShwGraphDlg::OnOK() {
@@ -449,7 +449,7 @@ void CShwGraphDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     }
     break;
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CShwGraphDlg::showMousePosition(const CPoint &p) {
@@ -494,7 +494,7 @@ void CShwGraphDlg::OnMouseMove(UINT nFlags, CPoint point) {
     break;
   }
   showMousePosition(point);
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CShwGraphDlg::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -526,7 +526,7 @@ void CShwGraphDlg::OnLButtonUp(UINT nFlags, CPoint point) {
     setState(STATE_IDLE);
     break;
   }
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CShwGraphDlg::OnRButtonDown(UINT nFlags, CPoint point) {
@@ -545,7 +545,7 @@ void CShwGraphDlg::OnRButtonDown(UINT nFlags, CPoint point) {
       break;
     }
   }
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
 }
 
 void CShwGraphDlg::pushZoom(CRect &rect) {
@@ -701,7 +701,7 @@ BOOL CShwGraphDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
   if(zoomFlags == 0)        zoomFlags = X_AXIS | Y_AXIS;
   getTr().zoom(Point2DP(pt), double(zDelta) / 1000.0,zoomFlags);
   Invalidate(FALSE);
-  return CDialog::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CShwGraphDlg::OnEditIncrdegree() {
@@ -728,7 +728,7 @@ BOOL CShwGraphDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CShwGraphDlg::setChecked(int id1, int id2) {

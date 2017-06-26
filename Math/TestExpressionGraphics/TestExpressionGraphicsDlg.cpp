@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -50,7 +50,7 @@ CTestExpressionGraphicsDlg::~CTestExpressionGraphicsDlg() {
 }
 
 void CTestExpressionGraphicsDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITEXPR  , m_exprText);
   DDX_Text(pDX, IDC_EDITX     , m_x       );
 }
@@ -106,7 +106,7 @@ END_MESSAGE_MAP()
 
 BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
 //    debugLog(_T("sizeof(ExpressionNode):%d\n"), sizeof(ExpressionNode));
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -164,10 +164,9 @@ BOOL CTestExpressionGraphicsDlg::OnInitDialog() {
 
 void CTestExpressionGraphicsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -196,7 +195,7 @@ void CTestExpressionGraphicsDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     paintExprImage();
     paintDerivedImage();
     ajourDialogItems();
@@ -211,7 +210,7 @@ BOOL CTestExpressionGraphicsDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestExpressionGraphicsDlg::OnFileExit() {
@@ -316,7 +315,7 @@ void CTestExpressionGraphicsDlg::OnClose() {
 }
 
 void CTestExpressionGraphicsDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
@@ -747,7 +746,7 @@ void CTestExpressionGraphicsDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     clearContextWindow();
     break;
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CTestExpressionGraphicsDlg::OnContextMenu(CWnd *pWnd, CPoint point) {

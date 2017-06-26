@@ -24,7 +24,7 @@ CSelectDirAndListNameDlg::CSelectDirAndListNameDlg(Options &options, CWnd *pPare
 
 
 void CSelectDirAndListNameDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_NAMEEDIT, m_listName);
     DDX_Text(pDX, IDC_DIREDIT, m_dir);
     DDX_CBString(pDX, IDC_DRIVECOMBO, m_drive);
@@ -43,7 +43,7 @@ BEGIN_MESSAGE_MAP(CSelectDirAndListNameDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectDirAndListNameDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   ULONG drives = _getdrives();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SELECTDIRANDLISTNAME_ACCELERATOR));
@@ -68,7 +68,7 @@ BOOL CSelectDirAndListNameDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CSelectDirAndListNameDlg::OnEditChangeDriveCombo() {
@@ -173,7 +173,7 @@ void CSelectDirAndListNameDlg::OnOK() {
         m_dir = path;
         UpdateData(false);
         if(validate()) {
-          CDialog::OnOK();
+          __super::OnOK();
         }
       } else {
         fillTree(path.GetBuffer(path.GetLength()));
@@ -184,7 +184,7 @@ void CSelectDirAndListNameDlg::OnOK() {
     break;
   default:
     if(validate()) {
-      CDialog::OnOK();
+      __super::OnOK();
     }
     break;
   }
@@ -247,5 +247,5 @@ void CSelectDirAndListNameDlg::OnDblclkDirTree(NMHDR *pNMHDR, LRESULT *pResult) 
 }
 
 void CSelectDirAndListNameDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }

@@ -13,7 +13,7 @@ CSelectBreakProductionsDlg::CSelectBreakProductionsDlg(const ParserTables &table
 }
 
 void CSelectBreakProductionsDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSelectBreakProductionsDlg, CDialog)
@@ -55,7 +55,7 @@ ProductionLineArray::ProductionLineArray(const ParserTables &tables, const BitSe
 }
 
 BOOL CSelectBreakProductionsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CListBox *lb = getListBox();
 
   for(size_t i = 0; i < m_productionLines.size(); i++) {
@@ -93,7 +93,7 @@ void CSelectBreakProductionsDlg::OnOK() {
     m_prodSet.add(m_productionLines[items[i]].m_production);
   }
   delete[] items;
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CSelectBreakProductionsDlg::OnButtonSelectAll() {
@@ -111,6 +111,6 @@ void CSelectBreakProductionsDlg::OnButtonClear() {
 }
 
 void CSelectBreakProductionsDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }

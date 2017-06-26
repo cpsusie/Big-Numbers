@@ -28,7 +28,7 @@ CAboutDlg::CAboutDlg(COneOrTwoDlg *mainDlg) : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -47,7 +47,7 @@ void CAboutDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
 //      }
     }
   }
-  CDialog::OnLButtonDblClk(nFlags, point);
+  __super::OnLButtonDblClk(nFlags, point);
 }
 
 COneOrTwoDlg::COneOrTwoDlg(CWnd *pParent) : CDialog(COneOrTwoDlg::IDD, pParent) {
@@ -58,7 +58,7 @@ COneOrTwoDlg::COneOrTwoDlg(CWnd *pParent) : CDialog(COneOrTwoDlg::IDD, pParent) 
 }
 
 void COneOrTwoDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(COneOrTwoDlg, CDialog)
@@ -84,7 +84,7 @@ BEGIN_MESSAGE_MAP(COneOrTwoDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL COneOrTwoDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -117,10 +117,9 @@ BOOL COneOrTwoDlg::OnInitDialog() {
 
 void COneOrTwoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout(this);
-    dlgAbout.DoModal();
+    CAboutDlg(this).DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -195,7 +194,7 @@ void COneOrTwoDlg::OnOK() {
 
 void COneOrTwoDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   Invalidate();
 }
 
@@ -207,7 +206,7 @@ void COneOrTwoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(pos >= 0) {
     changePositionMark(pos);
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 int COneOrTwoDlg::getMarkedCount() const {
@@ -276,7 +275,7 @@ BOOL COneOrTwoDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void COneOrTwoDlg::OnButtonRemove() {
@@ -316,7 +315,7 @@ void COneOrTwoDlg::OnTimer(UINT_PTR nIDEvent) {
   m_game->animateMove(CClientDC(this), m);
   m_game->executeMove(*m);
   Invalidate();
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   if(m_game->isGameOver()) {
     if(MessageBox(_T("Du vandt.\n\rVil du spille igen"), _T("Spillet er slut"), MB_ICONQUESTION | MB_YESNO) == IDYES) {
       newGame();

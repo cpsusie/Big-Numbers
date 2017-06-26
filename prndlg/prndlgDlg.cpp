@@ -21,7 +21,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -34,7 +34,7 @@ CPrndlgDlg::CPrndlgDlg(CWnd* pParent /*=NULL*/)
 }
 
 void CPrndlgDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CPrndlgDlg, CDialog)
@@ -46,7 +46,7 @@ BEGIN_MESSAGE_MAP(CPrndlgDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CPrndlgDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -71,11 +71,9 @@ BOOL CPrndlgDlg::OnInitDialog() {
 
 void CPrndlgDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
-  }
-  else {
-    CDialog::OnSysCommand(nID, lParam);
+    CAboutDlg().DoModal();
+  } else {
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -94,7 +92,7 @@ void CPrndlgDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 

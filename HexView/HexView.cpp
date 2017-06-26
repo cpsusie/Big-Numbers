@@ -30,7 +30,7 @@ BOOL CHexViewApp::InitInstance() {
 	InitCtrls.dwICC = ICC_WIN95_CLASSES;
 	InitCommonControlsEx(&InitCtrls);
 
-	CWinApp::InitInstance();
+	__super::InitInstance();
 
 	// Initialize OLE libraries
 	if (!AfxOleInit()) {
@@ -80,7 +80,7 @@ void CHexViewApp::addToRecentFileList(const String &name) {
   } catch (CException * e) {
     TCHAR strCause[1000];
     e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
-    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __FUNCTION__, strCause);
+    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);
     e->Delete();
   }
 }
@@ -108,11 +108,7 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-	public:
-	protected:
   virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
   DECLARE_MESSAGE_MAP()
 };
 
@@ -120,13 +116,12 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CHexViewApp::OnAppAbout() {
-  CAboutDlg aboutDlg;
-  aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }

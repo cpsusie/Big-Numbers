@@ -12,7 +12,7 @@ PrecisionDlg::PrecisionDlg(int prec, CWnd* pParent) : CDialog(PrecisionDlg::IDD,
 }
 
 void PrecisionDlg::DoDataExchange(CDataExchange* pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDITPRECISION, m_precision);
 }
 
@@ -21,7 +21,7 @@ BEGIN_MESSAGE_MAP(PrecisionDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL PrecisionDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTabel = LoadAccelerators(AfxGetApp()->m_hInstance, MAKEINTRESOURCE(IDR_ACCELERATORPRECISION));
   
@@ -39,7 +39,7 @@ void PrecisionDlg::OnOK() {
     OnGotoPrecision();
     return;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void PrecisionDlg::OnGotoPrecision() {
@@ -52,5 +52,5 @@ BOOL PrecisionDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

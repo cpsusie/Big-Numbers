@@ -40,7 +40,7 @@ void TimeParametersWithComboSelection::initSelectedComboItem() {
 }
 
 void CTimeSettingsDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_TAB_CLOCKTYPE, m_clockType);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES1, m_min1);
     DDX_Text(pDX, IDC_EDIT_TIMEOUTMINUTES2, m_min2);
@@ -104,7 +104,7 @@ BEGIN_MESSAGE_MAP(CTimeSettingsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTimeSettingsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   CTabCtrl &tab = m_clockType;
@@ -299,7 +299,7 @@ void CTimeSettingsDlg::OnOK() {
   getOptions().setSpeedTimeParameters(BLACKPLAYER, m_tm[1].m_tm[BLACKPLAYER]);
   getOptions().setLevelTimeout(m_lt);
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CTimeSettingsDlg::gotoSeconds(int index) {
@@ -535,7 +535,7 @@ BOOL CTimeSettingsDlg::PreTranslateMessage(MSG *pMsg) {
     }
 
     if(!result) {
-      result = CDialog::PreTranslateMessage(pMsg);
+      result = __super::PreTranslateMessage(pMsg);
     }
 
     const ClockTab newTab = getCurrentTab();

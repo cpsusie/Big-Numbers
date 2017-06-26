@@ -12,7 +12,7 @@ CEnginesDlg::CEnginesDlg(CWnd* pParent /*=NULL*/) : CDialog(CEnginesDlg::IDD, pP
 }
 
 void CEnginesDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LIST_ENGINES, m_listCtrl);
 }
 
@@ -27,7 +27,7 @@ BEGIN_MESSAGE_MAP(CEnginesDlg, CDialog)
 END_MESSAGE_MAP()
 
 int CEnginesDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CDialog::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
      return -1;
   }
 
@@ -37,7 +37,7 @@ int CEnginesDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 }
 
 BOOL CEnginesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   m_engineList = Options::getEngineRegister();
@@ -211,7 +211,7 @@ void CEnginesDlg::OnButtonCheck() {
 
 void CEnginesDlg::OnOK() {
   Options::saveEngineRegister(m_engineList);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CEnginesDlg::OnCancel() {
@@ -220,5 +220,5 @@ void CEnginesDlg::OnCancel() {
       return;
     }
   }
-  CDialog::OnCancel();
+  __super::OnCancel();
 }

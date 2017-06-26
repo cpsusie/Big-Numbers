@@ -13,7 +13,7 @@ CSelectOpeningDlg::CSelectOpeningDlg(const StringArray &names, CWnd* pParent)
 }
 
 void CSelectOpeningDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSelectOpeningDlg, CDialog)
@@ -21,7 +21,7 @@ BEGIN_MESSAGE_MAP(CSelectOpeningDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectOpeningDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   CListBox *list = (CListBox*)GetDlgItem(IDC_LIST_NAMES);
@@ -38,13 +38,13 @@ BOOL CSelectOpeningDlg::OnInitDialog() {
 void CSelectOpeningDlg::OnOK() {
   CListBox *list = (CListBox*)GetDlgItem(IDC_LIST_NAMES);
   m_selectedIndex = list->GetCurSel();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CSelectOpeningDlg::OnCancel() {
   m_selectedIndex = -1;
 
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 const TCHAR *CSelectOpeningDlg::getSelectedName() const {

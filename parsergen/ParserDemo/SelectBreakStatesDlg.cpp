@@ -14,7 +14,7 @@ CSelectBreakStatesDlg::CSelectBreakStatesDlg(const ParserTables &tables, BitSet 
 }
 
 void CSelectBreakStatesDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITSTATES, m_states);
 }
 
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CSelectBreakStatesDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectBreakStatesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   String s;
 
   TCHAR *delimiter = NULL;
@@ -61,6 +61,6 @@ void CSelectBreakStatesDlg::OnOK() {
   }
   if(ok) {
     m_stateSet = stateSet;
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }

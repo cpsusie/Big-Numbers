@@ -1591,7 +1591,7 @@ PinnedState Game::getPinnedState(int pos) {
   case MD_DOWNDIAG2: return GET_LDA_DOWNDIAG2(m_playerState[CURRENTENEMY], pos) ? PINNED_TO_DIAG2 : NOT_PINNED;
   case MD_UPDIAG2  : return GET_LDA_UPDIAG2(  m_playerState[CURRENTENEMY], pos) ? PINNED_TO_DIAG2 : NOT_PINNED;
   default          : throwException(_T("%s:Invalid kingdirection %d at position %s")
-                                    ,__FUNCTION__
+                                    ,__TFUNCTION__
                                     ,KING_DIRECTION(m_playerState[PLAYERINTURN], pos)
                                     ,getFieldName(pos));
                      return NOT_PINNED;

@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -49,7 +49,7 @@ CWhist3Dialog::CWhist3Dialog(CWnd* pParent) : CDialog(CWhist3Dialog::IDD, pParen
 }
 
 void CWhist3Dialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CWhist3Dialog, CDialog)
@@ -76,10 +76,9 @@ END_MESSAGE_MAP()
 
 void CWhist3Dialog::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -97,7 +96,7 @@ void CWhist3Dialog::fatalError(const TCHAR *format, ... ) {
 }
 
 BOOL CWhist3Dialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -132,7 +131,7 @@ BOOL CWhist3Dialog::PreTranslateMessage(MSG* pMsg) {
     return TRUE;
   }
     
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CWhist3Dialog::createWorkBitmap(const CSize &size) {
@@ -172,7 +171,7 @@ void CWhist3Dialog::OnPaint() {
 
     dc.BitBlt(0,0,m_workSize.cx,m_workSize.cy,&m_workDC,0,0,SRCCOPY);
 
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -520,7 +519,7 @@ void CWhist3Dialog::OnLButtonDown(UINT nFlags, CPoint point) {
     break;
   }
     
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CWhist3Dialog::markUnmarkCard(const CPoint &point) {
@@ -576,7 +575,7 @@ void CWhist3Dialog::OnGameExit() {
 
 // catch ENTER and ESC
 void CWhist3Dialog::OnOK() {
-//  CDialog::OnOK();
+//  __super::OnOK();
 }
 
 void CWhist3Dialog::OnCancel() {

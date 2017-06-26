@@ -16,9 +16,7 @@ public:
 
     enum { IDD = IDD_ABOUTBOX };
 
-protected:
     virtual void DoDataExchange(CDataExchange* pDX);
-
     DECLARE_MESSAGE_MAP()
 };
 
@@ -26,7 +24,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -39,7 +37,7 @@ CMakeAviDlg::CMakeAviDlg(CWnd* pParent /*=NULL*/) : CDialog(CMakeAviDlg::IDD, pP
 }
 
 void CMakeAviDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 	DDX_Control(pDX   , IDC_LISTNAMES      , m_nameList      );
 	DDX_Text(pDX      , IDC_EDITFRAMEPERSEC, m_framePerSecond);
 	DDV_MinMaxUInt(pDX, m_framePerSecond   , 1, 30           );
@@ -66,7 +64,7 @@ BEGIN_MESSAGE_MAP(CMakeAviDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CMakeAviDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -114,15 +112,14 @@ HCURSOR CMakeAviDlg::OnQueryDragIcon() {
 
 void CMakeAviDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
 void CMakeAviDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
   if((cx > 0) && (cy > 0)) {
     updatePreview();
@@ -145,7 +142,7 @@ void CMakeAviDlg::OnPaint()  {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     updateWindowState();
   }
 }
@@ -537,7 +534,7 @@ BOOL CMakeAviDlg::PreTranslateMessage(MSG* pMsg) {
     }
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CMakeAviDlg::scrollLines(int count) {

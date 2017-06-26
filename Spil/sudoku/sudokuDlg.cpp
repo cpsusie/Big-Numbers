@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -69,7 +69,7 @@ END_MESSAGE_MAP()
 
 
 int CSudokuDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CDialog::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
   m_editFieldArray.Create(this);
@@ -77,7 +77,7 @@ int CSudokuDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 }
 
 BOOL CSudokuDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -107,10 +107,9 @@ BOOL CSudokuDlg::OnInitDialog() {
 
 void CSudokuDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -136,7 +135,7 @@ void CSudokuDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     m_editFieldArray.OnPaint();
   }
 }
@@ -150,7 +149,7 @@ FieldMatrix CSudokuDlg::getMatrix() {
 }
 
 void CSudokuDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 
 }
 
@@ -214,7 +213,7 @@ BOOL CSudokuDlg::PreTranslateMessage(MSG *pMsg) {
     }
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CSudokuDlg::OnSolve() {
@@ -548,7 +547,7 @@ void CSudokuDlg::OnTimer(UINT_PTR nIDEvent) {
     showTime(now - m_startTime);
   }
     
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CSudokuDlg::OnGameShowTime() {
@@ -565,7 +564,7 @@ void CSudokuDlg::OnGameResetTimer() {
 }
 
 void CSudokuDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   if(cx == 0 && cy == 0) {
     OnGamePause();

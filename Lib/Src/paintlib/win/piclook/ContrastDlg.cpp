@@ -27,7 +27,7 @@ CContrastDlg::CContrastDlg(CWnd* pParent /*=NULL*/)
 
 void CContrastDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CContrastDlg)
 	DDX_Text(pDX, IDC_OFFSETEDIT, m_Offset);
 	DDX_Text(pDX, IDC_CONTRASTEDIT, m_Contrast);

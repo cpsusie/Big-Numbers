@@ -11,7 +11,7 @@ CFrequenceDlg::CFrequenceDlg(unsigned int frequence, CWnd* pParent)	: CDialog(CF
 }
 
 void CFrequenceDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITFREQUENCE, m_frequence);
   DDV_MinMaxUInt(pDX, m_frequence, 37, 0x7fff);
 }
@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CFrequenceDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CFrequenceDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   gotoEditBox(this, IDC_EDITFREQUENCE);
 

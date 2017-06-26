@@ -26,7 +26,7 @@ CLightnessDlg::CLightnessDlg(CWnd* pParent /*=NULL*/)
 
 void CLightnessDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CLightnessDlg)
 	DDX_Text(pDX, ID_LIGHTNESSEDIT, m_Lightness);
 	DDV_MinMaxInt(pDX, m_Lightness, 0, 100);

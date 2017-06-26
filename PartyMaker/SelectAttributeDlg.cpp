@@ -14,7 +14,7 @@ CSelectAttributeDlg::CSelectAttributeDlg(CWnd *pParent /*=NULL*/)
 
 void CSelectAttributeDlg::DoDataExchange(CDataExchange *pDX)
 {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 

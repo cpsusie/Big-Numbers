@@ -12,7 +12,7 @@ DegreeDlg::DegreeDlg(int degree, CWnd* pParent) : CDialog(DegreeDlg::IDD, pParen
 }
 
 void DegreeDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_DEGREE, m_degree);
 }
 
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(DegreeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL DegreeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   gotoEditBox(this,IDC_EDIT_DEGREE);
   return false;
@@ -36,7 +36,7 @@ void DegreeDlg::OnOK() {
       MessageBox(tmp,_T("Error"), MB_ICONEXCLAMATION);
       return;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void DegreeDlg::OnDeltaposSpin1(NMHDR* pNMHDR, LRESULT* pResult) {

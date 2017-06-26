@@ -24,7 +24,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -64,7 +64,7 @@ CFernDlg::CFernDlg(CWnd *pParent) : CDialog(CFernDlg::IDD, pParent) {
 }
 
 void CFernDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT00, m_x00);
   DDX_Text(pDX, IDC_EDIT01, m_x01);
   DDX_Text(pDX, IDC_EDIT02, m_x02);
@@ -259,7 +259,7 @@ void CFernDlg::fieldsToAfin() {
 }
 
 BOOL CFernDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -293,10 +293,9 @@ BOOL CFernDlg::OnInitDialog() {
 
 void CFernDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -316,7 +315,7 @@ void CFernDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -352,7 +351,7 @@ void CFernDlg::OnClose() {
 
 void CFernDlg::OnTimer(UINT_PTR nIDEvent) {
   setNewPoint();
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CFernDlg::OnSize(UINT nType, int cx, int cy) {
@@ -363,7 +362,7 @@ void CFernDlg::OnSize(UINT nType, int cx, int cy) {
 //  dc.SetBkColor(RGB(0,200,0));
 
   m_tr.setToRectangle(Rectangle2DR(getClientRect(this)));
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   Invalidate();
 }
 
@@ -372,8 +371,7 @@ void CFernDlg::OnFileExit() {
 }
 
 void CFernDlg::OnHelpAbout() {
-  CAboutDlg dlgAbout;
-  dlgAbout.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CFernDlg::OnUpdateEdit() {

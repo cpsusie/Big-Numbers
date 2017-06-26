@@ -18,7 +18,7 @@ CConnectDlg::CConnectDlg(Game &game, CWnd *pParent /*=NULL*/) : m_game(game), CD
 }
 
 void CConnectDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX , IDC_EDIT_COMPUTERNAME, m_serverComputerName);
   DDX_Radio(pDX, IDC_RADIO_CREATEGAME , m_connectedToServer );
 }
@@ -31,7 +31,7 @@ BEGIN_MESSAGE_MAP(CConnectDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CConnectDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   enableComputerName();
@@ -57,7 +57,7 @@ void CConnectDlg::OnOK() {
 
 void CConnectDlg::OnCancel() {
   CLOSESOCKET(m_listener);
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CConnectDlg::OnGotoComputerName() {
@@ -68,7 +68,7 @@ BOOL CConnectDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CConnectDlg::OnRadioCreateGame() {
@@ -95,7 +95,7 @@ void CConnectDlg::makeHandshake() {
       m_channel.read(m_remotePlayer);
       m_channel.read(m_game);
       m_remotePlayer = GETENEMY(m_remotePlayer);
-      CDialog::OnOK();
+      __super::OnOK();
     } else {
       m_listener = tcpCreate(PORTNUMBER);
       setWindowText(this, IDC_STATIC_WAITING, loadString(IDS_MSG_WAIT_FOR_CONNECTION));
@@ -118,9 +118,9 @@ void CConnectDlg::OnTimer(UINT_PTR nIDEvent) {
     m_remotePlayer = getOptions().getComputerPlayer();
     m_channel.write(m_remotePlayer);
     m_channel.write(m_game        );
-    CDialog::OnOK();
+    __super::OnOK();
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CConnectDlg::startTimer() {

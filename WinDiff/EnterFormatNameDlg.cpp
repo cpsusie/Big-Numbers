@@ -11,7 +11,7 @@ CGetFormatNameDlg::CGetFormatNameDlg(const String &name, CWnd *pParent) : CDialo
 }
 
 void CGetFormatNameDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
 }
 
@@ -20,11 +20,11 @@ END_MESSAGE_MAP()
 
 void CGetFormatNameDlg::OnOK() {
   UpdateData(); 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL CGetFormatNameDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   gotoEditBox(this, IDC_EDITNAME);
   return false;
 }

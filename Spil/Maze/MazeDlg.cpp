@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -48,7 +48,7 @@ CMazeDlg::CMazeDlg(CWnd *pParent) : CDialog(CMazeDlg::IDD, pParent) {
 }
 
 void CMazeDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CMazeDlg, CDialog)
@@ -104,7 +104,7 @@ void CMazeDlg::destroyDC() {
 }
 
 BOOL CMazeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -135,10 +135,9 @@ BOOL CMazeDlg::OnInitDialog() {
 
 void CMazeDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -163,7 +162,7 @@ void CMazeDlg::OnPaint() {
       m_pathFinder->suspend();
     }
 
-    CDialog::OnPaint();
+    __super::OnPaint();
     workToScreen();
 
     if(m_pathFinder != NULL) {
@@ -229,7 +228,7 @@ BOOL CMazeDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CMazeDlg::OnFileNewMaze() {
@@ -269,7 +268,7 @@ void CMazeDlg::OnSize(UINT nType, int cx, int cy) {
     newMaze();
   }
 
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   Invalidate();
 }

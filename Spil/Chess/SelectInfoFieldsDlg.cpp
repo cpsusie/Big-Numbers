@@ -13,7 +13,7 @@ CSelectInfoFieldsDlg::~CSelectInfoFieldsDlg() {
 }
 
 void CSelectInfoFieldsDlg::DoDataExchange(CDataExchange* pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_DEPTH    , m_depth           );
     DDX_Check(pDX, IDC_CHECK_SELDEPTH , m_seldepth        );
     DDX_Check(pDX, IDC_CHECK_SCORE    , m_score           );
@@ -31,7 +31,7 @@ BEGIN_MESSAGE_MAP(CSelectInfoFieldsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectInfoFieldsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
   UpdateData(FALSE);
   return TRUE;
@@ -43,7 +43,7 @@ void CSelectInfoFieldsDlg::OnOK() {
   windowToData(evf);
   getOptions().setEngineVerboseFields(evf);
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CSelectInfoFieldsDlg::windowToData(EngineVerboseFields &evf) {

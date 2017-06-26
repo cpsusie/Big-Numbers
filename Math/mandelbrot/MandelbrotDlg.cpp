@@ -30,7 +30,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -51,11 +51,11 @@ BOOL CMandelbrotDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CMandelbrotDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CMandelbrotDlg, CDialog)
@@ -106,10 +106,9 @@ END_MESSAGE_MAP()
 
 void CMandelbrotDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -118,7 +117,7 @@ HCURSOR CMandelbrotDlg::OnQueryDragIcon() {
 }
 
 BOOL CMandelbrotDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -432,7 +431,7 @@ CPoint CMandelbrotDlg::getImagePointFromMousePoint(const CPoint &p) const {
 }
 
 void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   if(!isCalculationActive()) {
     m_mouseDownPoint = getImagePointFromMousePoint(point);
 #ifdef SAVE_CALCULATORINFO
@@ -445,7 +444,7 @@ void CMandelbrotDlg::OnLButtonDown(UINT nFlags, CPoint point) {
         paintPointSet(info->getEdgeSet() , BLACK);
         paintPointSet(info->getInnerSet(), BLACK);
       }
-      CDialog::OnLButtonDown(nFlags, point);
+      __super::OnLButtonDown(nFlags, point);
       return;
     }
 #endif
@@ -463,7 +462,7 @@ void CMandelbrotDlg::paintPointSet(const PointSet &ps, COLORREF color) {
 }
 
 void CMandelbrotDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   if(getState() == STATE_DRAGGING) {
     setState(STATE_IDLE);
     if(getArea(m_dragRect) != 0) {
@@ -475,7 +474,7 @@ void CMandelbrotDlg::OnLButtonUp(UINT nFlags, CPoint point) {
 }
 
 void CMandelbrotDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDblClk(nFlags, point);
+  __super::OnLButtonDblClk(nFlags, point);
   m_mouseDownPoint = getImagePointFromMousePoint(point);
   const RealPoint2D p = m_transform.backwardTransform(m_mouseDownPoint);
   CJuliaDlg dlg(p);
@@ -483,7 +482,7 @@ void CMandelbrotDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
 }
 
 void CMandelbrotDlg::OnRButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
   if(!isCalculationActive()) {
     m_mouseDownPoint = getImagePointFromMousePoint(point);
     setState(STATE_MOVING);
@@ -491,7 +490,7 @@ void CMandelbrotDlg::OnRButtonDown(UINT nFlags, CPoint point) {
 }
 
 void CMandelbrotDlg::OnRButtonUp(UINT nFlags, CPoint point) {
-  CDialog::OnRButtonUp(nFlags, point);
+  __super::OnRButtonUp(nFlags, point);
   if(getState() == STATE_MOVING) {
     setState(STATE_IDLE);
     calculateMovedImage(getImagePointFromMousePoint(point) - m_mouseDownPoint);
@@ -499,7 +498,7 @@ void CMandelbrotDlg::OnRButtonUp(UINT nFlags, CPoint point) {
 }
 
 void CMandelbrotDlg::OnMouseMove(UINT nFlags, CPoint point) {
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
   const CPoint p = getImagePointFromMousePoint(point);
   switch(getState()) {
   case STATE_IDLE    :
@@ -541,7 +540,7 @@ BOOL CMandelbrotDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
       popImage();
     }
   }
-  return CDialog::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 // ----------------------------------- Message handlers ---------------------------------
@@ -613,7 +612,7 @@ void CMandelbrotDlg::OnPaint() {
         m_frameGenerator->notifyFrameReady();
       }
     }
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -1199,21 +1198,21 @@ void CMandelbrotDlg::OnNcLButtonDown(UINT nHitTest, CPoint point) {
     }
   }
   m_hasResized = false;
-  CDialog::OnNcLButtonDown(nHitTest, point);
+  __super::OnNcLButtonDown(nHitTest, point);
 }
 
 void CMandelbrotDlg::OnSizing(UINT fwSide, LPRECT pRect) {
-  CDialog::OnSizing(fwSide, pRect);
+  __super::OnSizing(fwSide, pRect);
   m_hasResized = true;
 }
 
 void CMandelbrotDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
 void CMandelbrotDlg::OnNcMouseMove(UINT nHitTest, CPoint point) {
-  CDialog::OnNcMouseMove(nHitTest, point);
+  __super::OnNcMouseMove(nHitTest, point);
   if(m_hasResized) {
     setWorkSize();
     if(isValidSize()) {
@@ -1261,7 +1260,7 @@ void CMandelbrotDlg::OnTimer(UINT_PTR nIDEvent) {
     showWindowState();
     break;
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 const RealRectangleTransformation &DialogMBContainer::getTransformation() const {

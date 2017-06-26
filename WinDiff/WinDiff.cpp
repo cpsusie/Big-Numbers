@@ -127,25 +127,24 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CWinDiffApp::OnAppAbout() {
-  CAboutDlg aboutDlg;
-  aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 void CWinDiffApp::addToRecentFileList(LPCTSTR lpszPathName) {
   try {
     // Call the base class
-    CWinApp::AddToRecentFileList(lpszPathName);
+    __super::AddToRecentFileList(lpszPathName);
   } catch (CException * e) {
     TCHAR strCause[1000];
     e->GetErrorMessage(strCause, ARRAYSIZE(strCause));
-    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __FUNCTION__, strCause);
+    debugLog(_T("Exception in %s: %s.  -- Ignoring\n"), __TFUNCTION__, strCause);
     e->Delete();
   }
 }
@@ -168,7 +167,7 @@ void CWinDiffApp::removeFromRecentFiles(int index) {
 }
 
 BOOL CAboutDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   GetDlgItem(IDC_STATICCOPYRIGHT)->SetWindowText(format(_T("Copyright %c 2007"),169).cstr());
   return TRUE;  // return TRUE unless you set the focus to a control

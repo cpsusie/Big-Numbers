@@ -20,7 +20,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -31,7 +31,7 @@ CGetcolorDlg::CGetcolorDlg(CWnd *pParent) : CDialog(CGetcolorDlg::IDD, pParent) 
 }
 
 void CGetcolorDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CGetcolorDlg, CDialog)
@@ -42,7 +42,7 @@ BEGIN_MESSAGE_MAP(CGetcolorDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CGetcolorDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -100,7 +100,7 @@ void CGetcolorDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -118,7 +118,7 @@ void CGetcolorDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     CClientDC dc(this);
     if(!BitBlt(dc.m_hDC,0,0, scrw, scrh, hdcCompatible, 0,0, SRCCOPY)) {
       DeleteDC(hdcScreen);
@@ -160,9 +160,9 @@ BOOL CGetcolorDlg::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CGetcolorDlg::OnCancelMode() {
-  CDialog::OnCancelMode();
+  __super::OnCancelMode();
 }

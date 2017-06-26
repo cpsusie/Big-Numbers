@@ -16,7 +16,7 @@ CTestRegexDlg::CTestRegexDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestRegexDlg::I
 
 
 void CTestRegexDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITOUTPUT, m_text);
 }
 
@@ -26,7 +26,7 @@ BEGIN_MESSAGE_MAP(CTestRegexDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestRegexDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_layoutManager.OnInitDialog(this);
 
@@ -62,6 +62,6 @@ BOOL CTestRegexDlg::OnInitDialog() {
 }
 
 void CTestRegexDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);    
 }

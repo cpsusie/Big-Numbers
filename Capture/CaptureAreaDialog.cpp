@@ -9,7 +9,7 @@ CCaptureAreaDialog::CCaptureAreaDialog(CWnd* pParent) : CDialog(CCaptureAreaDial
 }
 
 void CCaptureAreaDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CCaptureAreaDialog, CDialog)
@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(CCaptureAreaDialog, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CCaptureAreaDialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_screenSize = getScreenSize();
   SetWindowPos(NULL,0,0,m_screenSize.cx,m_screenSize.cy,SWP_NOZORDER|SWP_NOREDRAW|SWP_SHOWWINDOW);
   ::setWindowCursor(this, IDC_CROSS);
@@ -40,7 +40,7 @@ void CCaptureAreaDialog::OnLButtonDown(UINT nFlags, CPoint point) {
   m_rect.top   = m_rect.bottom = point.y;
   dc.DrawDragRect(&m_rect,ss,NULL,ss);
 
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CCaptureAreaDialog::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -49,7 +49,7 @@ void CCaptureAreaDialog::OnLButtonUp(UINT nFlags, CPoint point) {
   ss.cx = ss.cy = 0;
   oss.cx = 1; oss.cy = 1;
   dc.DrawDragRect(&m_rect,ss,&m_rect,oss);
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
   OnOK();
 }
 
@@ -67,7 +67,7 @@ void CCaptureAreaDialog::OnMouseMove(UINT nFlags, CPoint point) {
     dc.DrawDragRect(&newrect,ss,&m_rect,ss);
     m_rect = newrect;
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CCaptureAreaDialog::drawMarkLines(const CPoint &p) {

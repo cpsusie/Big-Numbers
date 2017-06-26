@@ -32,7 +32,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -53,7 +53,7 @@ CParserDemoDlg::CParserDemoDlg(CWnd *pParent) : CDialog(CParserDemoDlg::IDD, pPa
 }
 
 void CParserDemoDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_EDITINPUTSTRING       , m_input);
   DDX_Check(pDX, IDC_CHECKBREAKONPRODUCTION, m_breakOnProduction);
   DDX_Check(pDX, IDC_CHECKBREAKONERROR     , m_breakOnError);
@@ -243,7 +243,7 @@ void CParserDemoDlg::message(const TCHAR *format, ...) {
 }
 
 int CParserDemoDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if(CDialog::OnCreate(lpCreateStruct) == -1) {
+  if(__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
     
@@ -270,7 +270,7 @@ void CParserDemoDlg::OnMaxTextEditInputString() {
 }
 
 BOOL CParserDemoDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   // IDM_ABOUTBOX must be in the system command range.
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
@@ -341,10 +341,9 @@ BOOL CParserDemoDlg::OnInitDialog() {
 
 void CParserDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -404,7 +403,7 @@ void CParserDemoDlg::OnPaint() {
     }
 
 //    dc.SetBkColor(RGB(255, 255, 255));
-    CDialog::OnPaint();
+    __super::OnPaint();
     m_textBox.OnPaint();
   }
 }
@@ -619,7 +618,7 @@ BOOL CParserDemoDlg::PreTranslateMessage(MSG *pMsg) {
   }
     
   if(!result) {
-    result = CDialog::PreTranslateMessage(pMsg);
+    result = __super::PreTranslateMessage(pMsg);
   }
   if(getFocusCtrlId(this) == IDC_EDITINPUTSTRING) {
     const SourcePosition pos = getSourcePosition();
@@ -824,7 +823,7 @@ void CParserDemoDlg::OnHelpAboutParserDemo() {
 }
 
 void CParserDemoDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 
   if(IsWindowVisible()) {
@@ -840,7 +839,7 @@ void CParserDemoDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
     TreeDlg dlg(m_parser.getStackTop(m_parser.getStackHeight() - index - 1));
     dlg.DoModal();
   }
-  CDialog::OnLButtonDblClk(nFlags, point);
+  __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CParserDemoDlg::OnEditFindMatchingParanthes() {

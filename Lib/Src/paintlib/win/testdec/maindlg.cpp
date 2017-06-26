@@ -129,7 +129,7 @@ void CDibtestDlg::DoWork ()
 
 void CDibtestDlg::DoDataExchange(CDataExchange* pDX)
 {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   //{{AFX_DATA_MAP(CDibtestDlg)
   // NOTE: the ClassWizard will add DDX and DDV calls here
   //}}AFX_DATA_MAP
@@ -151,7 +151,7 @@ END_MESSAGE_MAP()
 
 BOOL CDibtestDlg::OnInitDialog()
 {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   // Set the icon for this dialog.
   SetIcon(m_hIcon, true);      // Set big icon
@@ -206,7 +206,7 @@ void CDibtestDlg::OnPaint()
   }
   else
   {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -217,7 +217,7 @@ HCURSOR CDibtestDlg::OnQueryDragIcon()
 
 int CDibtestDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
-  if (CDialog::OnCreate(lpCreateStruct) == -1)
+  if (__super::OnCreate(lpCreateStruct) == -1)
     return -1;
 
   m_pDIBWnd->Create (NULL, "DIBWnd", 0, CRect (0,0,10,10),
@@ -228,13 +228,13 @@ int CDibtestDlg::OnCreate(LPCREATESTRUCT lpCreateStruct)
 
 void CDibtestDlg::OnMove(int x, int y)
 {
-	CDialog::OnMove(x, y);
+	__super::OnMove(x, y);
 
 }
 
 void CDibtestDlg::OnSize(UINT nType, int cx, int cy)
 {
-	CDialog::OnSize(nType, cx, cy);
+	__super::OnSize(nType, cx, cy);
 
 	// Resize bitmap window so it fills the frame.
 	CWnd * pWnd = GetDlgItem(IDS_BMPFRAME);
@@ -424,7 +424,7 @@ void CDibtestDlg::doBmpTest (int Width, int Height, const PLPixelFormat& pf, int
 
 void CDibtestDlg::OnDestroy()
 {
-  CDialog::OnDestroy();
+  __super::OnDestroy();
 
   m_bStopDecoding = true;
 

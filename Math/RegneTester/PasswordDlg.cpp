@@ -15,7 +15,7 @@ CPasswordDlg::CPasswordDlg(const String &expectedPassword, CWnd *pParent /*=NULL
 
 
 void CPasswordDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITPASSWORD, m_password);
 }
 
@@ -29,12 +29,12 @@ void CPasswordDlg::OnOK() {
     MessageBox(_T("Forkert kodeord"), _T("Fejl"), MB_ICONEXCLAMATION);
     OnCancel();
   } else {
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
 BOOL CPasswordDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   gotoEditBox(this, IDC_EDITPASSWORD);
   return FALSE;
 }

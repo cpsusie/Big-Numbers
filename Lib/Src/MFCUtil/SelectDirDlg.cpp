@@ -16,7 +16,7 @@ CSelectDirDlg::CSelectDirDlg(const String &startDir, CWnd* pParent) : CDialog(CS
 }
 
 void CSelectDirDlg::DoDataExchange(CDataExchange* pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CSelectDirDlg)
 	DDX_Text(pDX    , _IDC_EDIT_DIR, m_dir);
 	DDX_CBString(pDX, _IDC_COMBO_DRIVE, m_drive);
@@ -34,7 +34,7 @@ BEGIN_MESSAGE_MAP(CSelectDirDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectDirDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   unsigned long drives = _getdrives();
 
   setControlText(IDD, this);
@@ -64,7 +64,7 @@ BOOL CSelectDirDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CSelectDirDlg::OnEditChangeDriveCombo() {
@@ -158,7 +158,7 @@ void CSelectDirDlg::OnOK() {
       if(getChildCount(ctrl, ctrl->GetSelectedItem()) > 0 || list.size() == 0) {
         m_dir = path;
         UpdateData(false);
-        CDialog::OnOK();
+        __super::OnOK();
       } else {
         fillTree((LPCTSTR)path);
       }
@@ -168,7 +168,7 @@ void CSelectDirDlg::OnOK() {
     break;
   default:
     UpdateData();
-    CDialog::OnOK();
+    __super::OnOK();
     break;
   }
 }

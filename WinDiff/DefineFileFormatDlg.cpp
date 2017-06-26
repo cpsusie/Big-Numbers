@@ -22,7 +22,7 @@ CDefineFileFormatDlg::CDefineFileFormatDlg(FileFormat &param, const String &samp
 }
 
 void CDefineFileFormatDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(    pDX, IDC_EDITFROM, m_columnFrom);
   DDX_Text(    pDX, IDC_EDITTO, m_columnTo);
   DDX_Text(    pDX, IDC_EDITFIELDDELIMITER, m_fieldDelimiter);
@@ -194,7 +194,7 @@ void CDefineFileFormatDlg::paramFromWindow(FileFormat &param) {
 }
 
 BOOL CDefineFileFormatDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   paramToWindow(m_param);
   m_lastCheckpoint = m_param;
@@ -212,7 +212,7 @@ BOOL CDefineFileFormatDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
   if(m_currentControl == IDC_EDITSAMPLE) {
     ajourFromTo();
   }
@@ -369,7 +369,7 @@ void CDefineFileFormatDlg::OnCancel() {
     return;
   }
     
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CDefineFileFormatDlg::OnOK() {
@@ -382,7 +382,7 @@ void CDefineFileFormatDlg::OnOK() {
   }
 
   paramFromWindow(m_param);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 int CDefineFileFormatDlg::getFrom() {
@@ -632,7 +632,7 @@ void CDefineFileFormatDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStr
   if(nIDCtl == IDC_BUTTONDELIMITERMENU) {
     drawTriangle(GetDlgItem(IDC_BUTTONDELIMITERMENU));
   }
-  CDialog::OnDrawItem(nIDCtl, lpDrawItemStruct);
+  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }
 
 void CDefineFileFormatDlg::OnCheckMultipleDelimiters() {

@@ -45,7 +45,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CAboutDlg)
 	//}}AFX_DATA_MAP
 }
@@ -73,7 +73,7 @@ CVCPaintXDemoDlg::CVCPaintXDemoDlg(CWnd* pParent /*=NULL*/)
 
 void CVCPaintXDemoDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CVCPaintXDemoDlg)
 	DDX_Control(pDX, IDC_IMAGE1, m_Image);
 	//}}AFX_DATA_MAP
@@ -94,7 +94,7 @@ END_MESSAGE_MAP()
 
 BOOL CVCPaintXDemoDlg::OnInitDialog()
 {
-	CDialog::OnInitDialog();
+	__super::OnInitDialog();
 
 	// Add "About..." menu item to system menu.
 
@@ -134,7 +134,7 @@ void CVCPaintXDemoDlg::OnSysCommand(UINT nID, LPARAM lParam)
 	}
 	else
 	{
-		CDialog::OnSysCommand(nID, lParam);
+		__super::OnSysCommand(nID, lParam);
 	}
 }
 
@@ -163,7 +163,7 @@ void CVCPaintXDemoDlg::OnPaint()
 	}
 	else
 	{
-		CDialog::OnPaint();
+		__super::OnPaint();
 	}
 }
 
@@ -177,7 +177,7 @@ HCURSOR CVCPaintXDemoDlg::OnQueryDragIcon()
 void CVCPaintXDemoDlg::OnClose() 
 {
 	// TODO: Add your control notification handler code here
-    CDialog::EndDialog(0);	
+    __super::EndDialog(0);	
 }
 
 void CVCPaintXDemoDlg::OnFileOpen() 

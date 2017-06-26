@@ -18,7 +18,7 @@ CParameterDlg::CParameterDlg(const InitializeParameters &parameters, CWnd* pPare
 }
 
 void CParameterDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_ELEMENTCOUNT, m_elementCount);
     DDV_MinMaxUInt(pDX, m_elementCount, 2, 1000);
     DDX_Text(pDX, IDC_EDIT_PERIODCOUNT, m_periodCount);
@@ -42,7 +42,7 @@ BEGIN_MESSAGE_MAP(CParameterDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CParameterDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PARAMETER_ACCELERATOR));
 
@@ -61,7 +61,7 @@ BOOL CParameterDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CParameterDlg::OnGotoElementCount() {
@@ -250,5 +250,5 @@ void CParameterDlg::OnOK() {
   }
 
   m_parameters.save();
-  CDialog::OnOK();
+  __super::OnOK();
 }

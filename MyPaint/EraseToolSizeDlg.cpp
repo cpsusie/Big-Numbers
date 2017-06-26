@@ -12,7 +12,7 @@ CEraseToolSizeDlg::CEraseToolSizeDlg(const CSize &size, CWnd *pParent) : CDialog
 
 
 void CEraseToolSizeDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITHEIGHT, m_height);
   DDV_MinMaxUInt(pDX, m_height, 1, 100);
   DDX_Text(pDX, IDC_EDITWIDTH, m_width);
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CEraseToolSizeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CEraseToolSizeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   gotoEditBox(this, IDC_EDITWIDTH);
   return FALSE;
 }

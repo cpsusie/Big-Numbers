@@ -19,7 +19,7 @@ CProgressDlg::CProgressDlg(CWnd* pParent, Thread &thread, InteractiveRunnable &j
 }
 
 void CProgressDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CProgressDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_newProgressCtrl.substituteControl(this, _IDC_PROGRESSBAR);
   m_newProgressCtrl.setShowPercent((m_supportedFeatures & IR_SHOWPERCENT) != 0);
@@ -217,7 +217,7 @@ BOOL CProgressDlg::PreTranslateMessage(MSG* pMsg) {
   if(m_accelTable && TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 CButton *CProgressDlg::getCancelButton() {
@@ -307,7 +307,7 @@ void CProgressDlg::OnTimer( UINT_PTR nIDEvent) {
     setWaitCursor(false);
     EndDialog(IDOK);
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 static void setControlCursor(CWnd *wnd, TCHAR *cursorId) {

@@ -28,7 +28,7 @@ CIntensityDlg::CIntensityDlg(CWnd* pParent /*=NULL*/)
 
 void CIntensityDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CIntensityDlg)
 	DDX_Text(pDX, IDC_EXPONENTEDIT, m_Exponent);
 	DDX_Text(pDX, IDC_INTENSITYEDIT, m_Intensity);

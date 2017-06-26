@@ -14,7 +14,7 @@ CLinePrinterDlg::CLinePrinterDlg(CLinePrinterThread &thread) : CDialog(CLinePrin
 }
 
 void CLinePrinterDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CLinePrinterDlg, CDialog)
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CLinePrinterDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CLinePrinterDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
@@ -74,12 +74,12 @@ LRESULT CLinePrinterDlg::OnReceiveLine(WPARAM wp, LPARAM lp) {
 }
 
 void CLinePrinterDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType,cx,cy);
 }
 
 void CLinePrinterDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CDialog::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   if(bShow) {
     BringWindowToTop();
   }

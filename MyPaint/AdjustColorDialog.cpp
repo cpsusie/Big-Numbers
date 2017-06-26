@@ -21,7 +21,7 @@ CAdjustColorDialog::~CAdjustColorDialog() {
 }
 
 void CAdjustColorDialog::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_COLORMAPCTRL, m_colorMap);
 }
 
@@ -33,7 +33,7 @@ BEGIN_EVENTSINK_MAP(CAdjustColorDialog, CDialog)
 END_EVENTSINK_MAP()
 
 BOOL CAdjustColorDialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CColormap *map = (CColormap*)GetDlgItem(IDC_COLORMAPCTRL);
   const D3DCOLOR avgColor = m_origImage->getAverageColor();
   map->SetColor(D3DCOLOR2COLORREF(avgColor));
@@ -70,11 +70,11 @@ void CAdjustColorDialog::OnColorChangedColorMapCtrl() {
 }
 
 void CAdjustColorDialog::OnOK() {
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CAdjustColorDialog::OnCancel() {
   m_container.getImage()->rop(ORIGIN, m_size, SRCCOPY, m_origImage, ORIGIN);
   m_container.repaint();
-  CDialog::OnCancel();
+  __super::OnCancel();
 }

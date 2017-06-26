@@ -20,7 +20,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -31,7 +31,7 @@ CGetresourcesDlg::CGetresourcesDlg(CWnd *pParent) : CDialog(CGetresourcesDlg::ID
 }
 
 void CGetresourcesDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CGetresourcesDlg, CDialog)
@@ -44,7 +44,7 @@ BEGIN_MESSAGE_MAP(CGetresourcesDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CGetresourcesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -69,10 +69,9 @@ BOOL CGetresourcesDlg::OnInitDialog() {
 
 void CGetresourcesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -91,7 +90,7 @@ void CGetresourcesDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -103,7 +102,7 @@ BOOL CGetresourcesDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CGetresourcesDlg::OnFileExit() {

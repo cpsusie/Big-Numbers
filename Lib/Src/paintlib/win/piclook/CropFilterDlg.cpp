@@ -29,7 +29,7 @@ CCropFilterDlg::CCropFilterDlg(CWnd* pParent /*=NULL*/)
 
 void CCropFilterDlg::DoDataExchange(CDataExchange* pDX)
 {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CCropFilterDlg)
     DDX_Text(pDX, IDC_XMAXEDIT, m_XMax);
     DDX_Text(pDX, IDC_XMINEDIT, m_XMin);
@@ -49,5 +49,5 @@ END_MESSAGE_MAP()
 
 void CCropFilterDlg::OnOK()
 {
-    CDialog::OnOK();
+    __super::OnOK();
 }

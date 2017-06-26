@@ -33,7 +33,7 @@ void SearchDlg::destroyWorkerThread() {
 }
 
 void SearchDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_SEARCHTEXT, m_searchText);
 }
 
@@ -50,7 +50,7 @@ BEGIN_MESSAGE_MAP(SearchDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL SearchDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_accelTable   = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SEARCH_ACCELERATOR));
   m_workerThread = new SearchThread(*this);
 
@@ -118,7 +118,7 @@ void SearchDlg::OnTimer(UINT_PTR nIDEvent) {
       m_lastSearchText = text;
     }
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void SearchDlg::OnOK() {
@@ -133,7 +133,7 @@ void SearchDlg::OnChoose() {
   if(findSelected(m_selected).size() > 0) {
     stopTimer();
     destroyWorkerThread();
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
@@ -141,7 +141,7 @@ void SearchDlg::OnCancel() {
   stopTimer();
   destroyWorkerThread();
   m_selected.clear();
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 MediaArray &SearchDlg::findSelected(MediaArray &selected) { // return selected
@@ -260,7 +260,7 @@ BOOL SearchDlg::PreTranslateMessage(MSG *pMsg) {
     break;
   }
 
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 SearchThread::SearchThread(SearchDlg &searchDlg) : m_searchDlg(searchDlg) {

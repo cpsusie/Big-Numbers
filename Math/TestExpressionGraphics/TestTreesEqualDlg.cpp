@@ -15,7 +15,7 @@ CTestTreesEqualDlg::CTestTreesEqualDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestT
 }
 
 void CTestTreesEqualDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 	DDX_CBString(pDX, IDC_EDITEXPR1, m_expr1);
 	DDX_CBString(pDX, IDC_EDITEXPR2, m_expr2);
 }
@@ -40,7 +40,7 @@ BEGIN_MESSAGE_MAP(CTestTreesEqualDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestTreesEqualDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTabel = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDD_TREESEQUAL_ACCELERATOR));
   
@@ -84,7 +84,7 @@ void CTestTreesEqualDlg::ajourButtons() {
 }
 
 void CTestTreesEqualDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);	
 }
 
@@ -92,7 +92,7 @@ BOOL CTestTreesEqualDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTabel, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTestTreesEqualDlg::OnTestTreesEqual() {

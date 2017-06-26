@@ -12,7 +12,7 @@ CProgressDlg::CProgressDlg(LoadableMediaArray *mediaArray, CWnd *pParent) : CDia
 }
 
 void CProgressDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CProgressDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CProgressDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
@@ -30,11 +30,11 @@ BOOL CProgressDlg::OnInitDialog() {
 
 void CProgressDlg::OnCancel() {
   m_mediaArray->cancelScan();
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CProgressDlg::OnTimer(UINT_PTR nIDEvent) {
   GetDlgItem(IDC_STATICDIRNAME)->SetWindowText(m_mediaArray->getCurrentFileName());
   GetDlgItem(IDC_STATICOUNT)->SetWindowText(format(_T("%lu"), m_mediaArray->size()).cstr());
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }

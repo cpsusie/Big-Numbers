@@ -34,7 +34,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -51,7 +51,7 @@ C4PaaStribeDlg::C4PaaStribeDlg(CWnd *pParent)
 }
 
 void C4PaaStribeDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(C4PaaStribeDlg, CDialog)
@@ -71,7 +71,7 @@ BEGIN_MESSAGE_MAP(C4PaaStribeDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL C4PaaStribeDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -101,10 +101,9 @@ BOOL C4PaaStribeDlg::OnInitDialog() {
 
 void C4PaaStribeDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -214,7 +213,7 @@ void C4PaaStribeDlg::OnPaint()  {
   } else {
     paintGame();
     paintMessage();
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -263,7 +262,7 @@ static TCHAR *looserstring[] = {
 
 
 void C4PaaStribeDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   paintGame();
 }
 
@@ -372,7 +371,7 @@ void C4PaaStribeDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       checkgameover(c);
     }
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void C4PaaStribeDlg::OnFileNytSpil() {

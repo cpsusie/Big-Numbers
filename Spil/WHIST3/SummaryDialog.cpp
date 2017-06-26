@@ -17,7 +17,7 @@ SummaryDialog::SummaryDialog(int myId, const PlayerList &players, const GameHist
 
 
 void SummaryDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
       // NOTE: the ClassWizard will add DDX and DDV calls here
 }
 
@@ -29,7 +29,7 @@ END_MESSAGE_MAP()
 // SummaryDialog message handlers
 
 BOOL SummaryDialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   CListBox *lb = (CListBox*)GetDlgItem(IDC_SUMMARY_LIST);
 

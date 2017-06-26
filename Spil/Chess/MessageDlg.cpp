@@ -16,7 +16,7 @@ CMessageDlg::CMessageDlg(int milliSeconds, const String &caption, const String &
 }
 
 void CMessageDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CMessageDlg, CDialog)
@@ -25,7 +25,7 @@ BEGIN_MESSAGE_MAP(CMessageDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CMessageDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MESSAGE_ACCELERATOR));
   CEdit *textBox = (CEdit*)GetDlgItem(IDC_EDIT_TEXTBOX);
@@ -83,7 +83,7 @@ void CMessageDlg::stopTimer() {
 }
 
 void CMessageDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   stopTimer();
   OnOK();
 }
@@ -96,5 +96,5 @@ BOOL CMessageDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

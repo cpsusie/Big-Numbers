@@ -16,7 +16,7 @@ CAfstandDlg::CAfstandDlg(CWnd* pParent /*=NULL*/)
 }
 
 void CAfstandDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   //{{AFX_DATA_MAP(CAfstandDlg)
   DDX_Text(pDX, IDC_EDITAFSTAND, m_afstand);
   DDX_Text(pDX, IDC_EDITDAG1, m_dag1);
@@ -76,7 +76,7 @@ void CAfstandDlg::OnResult() {
 }
 
 BOOL CAfstandDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   GetDlgItem(IDC_EDITDAG1)->SetFocus();
   CheckDlgButton(IDC_RADIOAFSTAND,BST_CHECKED);
   return false;

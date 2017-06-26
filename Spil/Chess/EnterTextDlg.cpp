@@ -12,7 +12,7 @@ CEnterTextDlg::CEnterTextDlg(const String &str, CWnd* pParent) : CDialog(CEnterT
 
 
 void CEnterTextDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_TEXTBOX, m_text);
 }
 
@@ -23,11 +23,11 @@ END_MESSAGE_MAP()
 
 void CEnterTextDlg::OnOK() {
   UpdateData();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL CEnterTextDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
   gotoEditBox(this, IDC_EDIT_TEXTBOX);
   return FALSE;

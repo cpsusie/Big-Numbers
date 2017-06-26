@@ -16,7 +16,7 @@ CFindDlg::CFindDlg(FindParameters &param, TextContainer *tc, CWnd *pParent) : CD
 }
 
 void CFindDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Check(   pDX, IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(   pDX, IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
   DDX_Check(   pDX, IDC_CHECKUSEREGEX      , m_useRegex      );
@@ -49,7 +49,7 @@ BEGIN_MESSAGE_MAP(CFindDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CFindDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_font.CreateFontIndirect(&getOptions().m_logFont);
 //  SetFont(&m_font);
@@ -100,11 +100,11 @@ void CFindDlg::OnFindNext() {
     showException(e);
     return;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CFindDlg::OnCancel() {
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CFindDlg::OnButtonRegSymbolsMenu() {
@@ -191,7 +191,7 @@ BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
     return true;
   }
     
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOFINDWHAT) {
     CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
@@ -233,7 +233,7 @@ void CFindDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
     drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
   }
 
-  CDialog::OnDrawItem(nIDCtl, lpDrawItemStruct);
+  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }
 
 void CFindDlg::OnCheckLimitDiff() {

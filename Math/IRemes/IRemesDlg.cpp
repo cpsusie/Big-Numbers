@@ -19,7 +19,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -49,7 +49,7 @@ CIRemesDlg::CIRemesDlg(CWnd *pParent /*=NULL*/) : CDialog(CIRemesDlg::IDD, pPare
 }
 
 void CIRemesDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDX_Text(pDX, IDC_EDITM, m_M);
   DDV_MinMaxUInt(pDX, m_M, 1, 100);
@@ -113,10 +113,9 @@ END_MESSAGE_MAP()
 
 void CIRemesDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -125,7 +124,7 @@ HCURSOR CIRemesDlg::OnQueryDragIcon() {
 }
 
 BOOL CIRemesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -185,7 +184,7 @@ void CIRemesDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     ajourDialogItems();
   }
 }
@@ -305,7 +304,7 @@ void CIRemesDlg::showSearchE(const String &s) {
 }
 
 void CIRemesDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 
@@ -313,7 +312,7 @@ BOOL CIRemesDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CIRemesDlg::enableFieldList(const int *ids, int n, bool enabled) {

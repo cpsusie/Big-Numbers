@@ -23,7 +23,7 @@ CHistoryDlg::CHistoryDlg(Game &game, CWnd* pParent)
 }
 
 void CHistoryDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_HISTORY, m_historyStr);
 }
 
@@ -52,7 +52,7 @@ BEGIN_MESSAGE_MAP(CHistoryDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CHistoryDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_HISTORY_ACCELERATOR));
 
@@ -161,7 +161,7 @@ BOOL CHistoryDlg::PreTranslateMessage(MSG* pMsg) {
   }
   switch(pMsg->message) {
   case WM_LBUTTONDBLCLK:
-    { int ret = CDialog::PreTranslateMessage(pMsg);
+    { int ret = __super::PreTranslateMessage(pMsg);
       if(getFocusCtrlId(this) == IDC_EDIT_HISTORY) {
         showSelectedMove();
       }
@@ -180,7 +180,7 @@ BOOL CHistoryDlg::PreTranslateMessage(MSG* pMsg) {
       break;
     }
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 bool CHistoryDlg::showContextMenu(CWnd* pWnd, CPoint point) {
@@ -239,7 +239,7 @@ void CHistoryDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   case SB_THUMBPOSITION:
   case SB_THUMBTRACK   : gotoPly(nPos);                         break;
   }
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 String CHistoryDlg::getHistoryString() {
@@ -354,7 +354,7 @@ void CHistoryDlg::OnCancel() {
       return;
     }
   }
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 bool CHistoryDlg::isChanged() const {
@@ -367,6 +367,6 @@ void CHistoryDlg::OnFileAnalyzePosition() {
 }
 
 void CHistoryDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }

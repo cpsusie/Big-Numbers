@@ -21,7 +21,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -32,7 +32,7 @@ CDraw3dDlg::CDraw3dDlg(CWnd *pParent) : CDialog(CDraw3dDlg::IDD, pParent) {
 }
 
 void CDraw3dDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CDraw3dDlg, CDialog)
@@ -113,7 +113,7 @@ void initobject(D3DObject &p) {
 }
 
 BOOL CDraw3dDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -155,10 +155,9 @@ void CDraw3dDlg::resetCamera() {
 
 void CDraw3dDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -179,7 +178,7 @@ void CDraw3dDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     m_scene.render(CPaintDC(GetDlgItem(IDC_STATIC3D)));
   }
 }
@@ -189,7 +188,7 @@ HCURSOR CDraw3dDlg::OnQueryDragIcon() {
 }
 
 void CDraw3dDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_scene.setRect(getClientRect(this, IDC_STATIC3D));
   Invalidate();
 }
@@ -198,16 +197,16 @@ BOOL CDraw3dDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CDraw3dDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   m_lastMouse = point;
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CDraw3dDlg::OnLButtonUp(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CDraw3dDlg::walkWithCamera(double dist, double angle) {
@@ -275,7 +274,7 @@ void CDraw3dDlg::OnMouseMove(UINT nFlags, CPoint point) {
     Invalidate();
     m_lastMouse = point;
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 
@@ -296,6 +295,5 @@ void CDraw3dDlg::OnFileResetcamera() {
 }
 
 void CDraw3dDlg::OnHelpAboutdraw3d() {
-  CAboutDlg dlgAbout;
-  dlgAbout.DoModal();
+  CAboutDlg().DoModal();
 }

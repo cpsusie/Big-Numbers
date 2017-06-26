@@ -25,7 +25,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -44,7 +44,7 @@ CPolygondistDlg::CPolygondistDlg(CWnd *pParent)
 }
 
 void CPolygondistDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CPolygondistDlg, CDialog)
@@ -67,7 +67,7 @@ BEGIN_MESSAGE_MAP(CPolygondistDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CPolygondistDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -92,10 +92,9 @@ BOOL CPolygondistDlg::OnInitDialog() {
 
 void CPolygondistDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -122,11 +121,11 @@ BOOL CPolygondistDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CPolygondistDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   clearMax();
   Invalidate();
 }
@@ -148,7 +147,7 @@ void CPolygondistDlg::OnPaint()  {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     CClientDC dc(GetDlgItem(IDC_STATICPANEL));
     switch(m_mode) {
     case POLYGONMODE         : 
@@ -202,7 +201,7 @@ void CPolygondistDlg::OnLButtonDown(UINT nFlags, CPoint point)  {
   case LINEINTERSECTIONMODE: OnLButtonDownLines(nFlags, point); break;
   }
   Invalidate();
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CPolygondistDlg::OnLButtonUp(UINT nFlags, CPoint point)  {
@@ -220,7 +219,7 @@ void CPolygondistDlg::OnRButtonDown(UINT nFlags, CPoint point)  {
   case LINEINTERSECTIONMODE: OnRButtonDownLines(nFlags, point); break;
   }
   Invalidate();
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
 }
 
 // ------------------------------- lines ----------------------------------
@@ -258,7 +257,7 @@ void CPolygondistDlg::OnMouseMove(UINT nFlags, CPoint point)  {
   point = dlgToPanel(point);
   const double k = m_poly.pointInside(point);
   showInfo(_T("(%3d,%3d):%lf      "),point.x,point.y, k);
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CPolygondistDlg::clearMax() {

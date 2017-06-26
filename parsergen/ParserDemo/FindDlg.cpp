@@ -15,7 +15,7 @@ FindDlg::FindDlg(FindParameter &param, TextContainer &tc, CWnd *pParent) : CDial
 }
 
 void FindDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Check(pDX, IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(pDX, IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
   DDX_Check(pDX, IDC_CHECKUSEREGEXP     , m_useRegExp     );
@@ -69,11 +69,11 @@ void FindDlg::OnFindnext() {
     return;
   }
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL FindDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CComboBox *combo = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
   combo->AddString(m_findWhat.GetBuffer(m_findWhat.GetLength()));
   for(size_t i = 0; i < m_history.size(); i++) {
@@ -144,7 +144,7 @@ BOOL FindDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg))
     return true;
     
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(getFocusCtrlId(this) == IDC_COMBOFINDWHAT) {
     CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOFINDWHAT);
@@ -185,5 +185,5 @@ void FindDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
   if(nIDCtl == IDC_BUTTONREGSYMBOLSMENU)
     drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
 
-  CDialog::OnDrawItem(nIDCtl, lpDrawItemStruct);
+  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }

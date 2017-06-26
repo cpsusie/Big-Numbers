@@ -18,7 +18,7 @@ CSortDemoDlg::CSortDemoDlg(CWnd* pParent /*=NULL*/) : CDialog(CSortDemoDlg::IDD,
 }
 
 void CSortDemoDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSortDemoDlg, CDialog)
@@ -53,7 +53,7 @@ void CSortDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
     CAboutDlg aboutDlg;
     aboutDlg.DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -62,7 +62,7 @@ HCURSOR CSortDemoDlg::OnQueryDragIcon() {
 }
 
 void CSortDemoDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   adjustLayout();
   Invalidate(false);    
 }
@@ -79,11 +79,11 @@ BOOL CSortDemoDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 BOOL CSortDemoDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -443,7 +443,7 @@ void CSortDemoDlg::OnRButtonDown(UINT nFlags, CPoint point) {
   CPoint scrPoint = point;
   ClientToScreen(&scrPoint);
   menu.GetSubMenu(0)->TrackPopupMenu(TPM_LEFTALIGN|TPM_RIGHTBUTTON, scrPoint.x,scrPoint.y, this);
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
 }
 
 SortPanelWnd *CSortDemoDlg::findPanelFromPoint(const CPoint &p) {
@@ -479,7 +479,7 @@ void CSortDemoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(isMoveingPanel()) {
     startDragRect(point);
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CSortDemoDlg::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -497,7 +497,7 @@ void CSortDemoDlg::OnLButtonUp(UINT nFlags, CPoint point) {
       m_panels.swap(panel1Index, panel2Index);
     }
   }
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CSortDemoDlg::OnMouseMove(UINT nFlags, CPoint point) {
@@ -508,7 +508,7 @@ void CSortDemoDlg::OnMouseMove(UINT nFlags, CPoint point) {
       endDragRect();
     }
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 void CSortDemoDlg::startDragRect(CPoint &p) {

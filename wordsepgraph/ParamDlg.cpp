@@ -26,7 +26,7 @@ ParamDlg::ParamDlg(ParamDlgParameters &params, CWnd *pParent /*=NULL*/)
 
 
 void ParamDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITLEARNINGRATE, m_learningrate);
   DDX_Text(pDX, IDC_EDITMOMENTUM, m_momentum);
   DDX_Radio(pDX, IDC_RADIO_UPDATE_ON_ERROR_ONLY, m_updatealways);
@@ -52,12 +52,12 @@ void ParamDlg::OnOK() {
     else if(m_threadpriority == _T("PRIORITY_ABOVE_NORMAL") ) m_params.m_priority = THREAD_PRIORITY_ABOVE_NORMAL;
     else if(m_threadpriority == _T("PRIORITY_HIGHEST")      ) m_params.m_priority = THREAD_PRIORITY_HIGHEST;
     else if(m_threadpriority == _T("PRIORITY_TIME_CRITICAL")) m_params.m_priority = THREAD_PRIORITY_TIME_CRITICAL;
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
 BOOL ParamDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   GetDlgItem(IDC_EDITLEARNINGRATE)->SetFocus();
   return false;
 }

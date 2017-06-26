@@ -33,7 +33,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -44,7 +44,7 @@ CPartyMakerDlg::CPartyMakerDlg(CWnd *pParent) : CDialog(CPartyMakerDlg::IDD, pPa
 }
 
 void CPartyMakerDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_ALLMEDIA, m_allMedia);
     DDX_Control(pDX, IDC_MEDIAPLAYER, m_player);
 }
@@ -118,7 +118,7 @@ void log(const MediaFile &mediaFile) {
 }
 
 BOOL CPartyMakerDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -198,10 +198,9 @@ BOOL CPartyMakerDlg::OnInitDialog() {
 
 void CPartyMakerDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -667,7 +666,7 @@ void CPartyMakerDlg::OnTimer(UINT_PTR nIDEvent) {
   case 1: onTimer1(); break;
   case 2: onTimer2(); break;
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CPartyMakerDlg::onTimer1() {
@@ -1088,7 +1087,7 @@ void CPartyMakerDlg::OnMove(int x, int y) {
   if(isPasswordProtected()) {
     return;
   }
-  CDialog::OnMove(x, y);
+  __super::OnMove(x, y);
 }
 
 int CPartyMakerDlg::searchPrefix(const String &prefix) const {
@@ -1206,7 +1205,7 @@ BOOL CPartyMakerDlg::PreTranslateMessage(MSG *pMsg) {
     setSelectedIndex(m_allMedia, -1);
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CPartyMakerDlg::OnButtonPause() {
@@ -1333,5 +1332,5 @@ bool CPartyMakerDlg::OnMouseMove(UINT nFlags, CPoint point) {
 
 void CPartyMakerDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   setVolume(getVolumeControl()->GetPos());
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }

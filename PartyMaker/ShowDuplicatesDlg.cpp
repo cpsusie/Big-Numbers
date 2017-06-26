@@ -29,7 +29,7 @@ CShowDuplicatesDlg::~CShowDuplicatesDlg() {
 }
 
 void CShowDuplicatesDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_DUPLICATELIST        , m_duplicateList   );
     DDX_Check(  pDX, IDC_CHECKFILTERBYSIZE    , m_filterBySize    );
     DDX_Check(  pDX, IDC_CHECKFILTERBYDURATION, m_filterByDuration);
@@ -46,7 +46,7 @@ BEGIN_MESSAGE_MAP(CShowDuplicatesDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CShowDuplicatesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_SHOWDUPLICATES_ACCELERATOR));
 
@@ -81,7 +81,7 @@ void CShowDuplicatesDlg::OnTimer(UINT_PTR nIDEvent) {
     stopTimer();
     showDuplicateList();
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 typedef bool (*MediaFilter)(const MediaFile &f1, const MediaFile &f2);
@@ -300,12 +300,12 @@ int CShowDuplicatesDlg::getSelectedIndex() {
 
 void CShowDuplicatesDlg::OnClose() {
   stopTimer();
-  CDialog::OnClose();
+  __super::OnClose();
 }
 
 void CShowDuplicatesDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 void CShowDuplicatesDlg::startTimer() {
@@ -325,5 +325,5 @@ BOOL CShowDuplicatesDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

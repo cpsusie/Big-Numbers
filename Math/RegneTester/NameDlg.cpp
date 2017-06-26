@@ -13,7 +13,7 @@ CNameDlg::CNameDlg(CWnd *pParent /*=NULL*/) : CDialog(CNameDlg::IDD, pParent) {
 
 
 void CNameDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITNAME, m_name);
   DDV_MaxChars(pDX, m_name, 49);
 }
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CNameDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CNameDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   const int resId = randInt() % (IDB_LAST_HIGHSCOREIMAGE - IDB_FIRST_HIGHSCOREIMAGE + 1) + IDB_FIRST_HIGHSCOREIMAGE;
   m_bitmap.LoadBitmap(resId);
   ((CStatic*)GetDlgItem(IDC_HIGHSCOREIMAGE))->SetBitmap(m_bitmap);
@@ -41,11 +41,11 @@ void CNameDlg::OnOK() {
     return;
   }
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CNameDlg::OnCancel() {
   if(MessageBox(_T("Er du sikker på, at du ikke vil gemme din tid"), _T("Annuller"), MB_ICONQUESTION | MB_YESNO) == IDYES) {
-    CDialog::OnCancel();
+    __super::OnCancel();
   }
 }

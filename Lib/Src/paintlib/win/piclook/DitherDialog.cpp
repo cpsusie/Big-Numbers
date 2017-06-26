@@ -18,7 +18,7 @@ CDitherDialog::CDitherDialog(CWnd* pParent /*=NULL*/)
 
 void CDitherDialog::DoDataExchange(CDataExchange* pDX)
 {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CCropFilterDlg)
 	DDX_Control(pDX, IDC_DITHERTYPE, m_DitherTypeBox);
 	DDX_Control(pDX, IDC_DITHERPALETTETYPE, m_DitherPaletteTypeBox);
@@ -57,6 +57,6 @@ void CDitherDialog::OnOK()
 		m_iDitherType = 0;
 	}
 
-    CDialog::OnOK();
+    __super::OnOK();
 }
 

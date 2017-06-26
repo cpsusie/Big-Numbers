@@ -13,7 +13,7 @@ CShowDirAndArgDlg::CShowDirAndArgDlg(CWnd *pParent) : CDialog(CShowDirAndArgDlg:
 }
 
 void CShowDirAndArgDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CShowDirAndArgDlg, CDialog)
@@ -27,7 +27,7 @@ HCURSOR CShowDirAndArgDlg::OnQueryDragIcon() {
 }
 
 BOOL CShowDirAndArgDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   SetIcon(m_hIcon, TRUE );
   SetIcon(m_hIcon, FALSE);
@@ -74,7 +74,7 @@ BOOL CShowDirAndArgDlg::OnInitDialog() {
 
 void CShowDirAndArgDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 void CShowDirAndArgDlg::OnPaint() {
@@ -91,6 +91,6 @@ void CShowDirAndArgDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }

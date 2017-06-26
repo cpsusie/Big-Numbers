@@ -13,7 +13,7 @@ CScaleDlg::CScaleDlg(const ScaleParameters &scale, CWnd *pParent) : CDialog(CSca
 }
 
 void CScaleDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Radio(pDX, IDC_RADIOPERCENT, m_toSize);
   DDX_Text(pDX, IDC_SCALEWIDTHEDIT, m_scaleWidth);
   DDX_Text(pDX, IDC_SCALEHEIGHTEDIT, m_scaleHeight);
@@ -27,7 +27,7 @@ BEGIN_MESSAGE_MAP(CScaleDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CScaleDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATOR_SCALEDIALOG));
   if(!m_toSize) {
@@ -81,7 +81,7 @@ void CScaleDlg::OnOK() {
     m_scale.m_scale.y /= 100;
   }
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CScaleDlg::setLabels() {
@@ -106,7 +106,7 @@ BOOL CScaleDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CScaleDlg::gotoField(int id) {

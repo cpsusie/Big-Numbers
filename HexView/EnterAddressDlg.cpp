@@ -18,7 +18,7 @@ CEnterAddressDlg::CEnterAddressDlg(unsigned __int64 docSize, CWnd* pParent)
 }
 
 void CEnterAddressDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITADDRESS, m_addressText);
 }
 
@@ -28,7 +28,7 @@ BEGIN_MESSAGE_MAP(CEnterAddressDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CEnterAddressDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_ACCELERATORENTERADDR));
   OnGotoEditAddress();
@@ -39,7 +39,7 @@ BOOL CEnterAddressDlg::OnInitDialog() {
 void CEnterAddressDlg::OnOK() {
   UpdateData();
   if(validateAddress()) {
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
@@ -140,5 +140,5 @@ BOOL CEnterAddressDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return TRUE;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

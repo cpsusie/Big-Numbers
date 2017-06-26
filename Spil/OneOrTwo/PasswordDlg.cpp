@@ -12,7 +12,7 @@ CPasswordDlg::CPasswordDlg(CWnd *pParent) : CDialog(CPasswordDlg::IDD, pParent) 
 }
 
 void CPasswordDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITPASSWORD, m_password);
 }
 
@@ -27,7 +27,7 @@ void CPasswordDlg::OnOK() {
   try {
     const String md5 = MD5Context().digest((LPCTSTR)m_password);
     if(md5 == md5Password) {
-      CDialog::OnOK();
+      __super::OnOK();
     } else {
       OnCancel();
     }

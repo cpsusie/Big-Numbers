@@ -21,7 +21,7 @@ CFindDlg::~CFindDlg() {
 }
 
 void CFindDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 	DDX_CBString(pDX, IDC_COMBOFINDWHAT, m_findWhat);
   if(!pDX->m_bSaveAndValidate) {
     OnEditChangeComboFindWhat();
@@ -92,7 +92,7 @@ UINT SearchThread::run() {
 }
 
 BOOL CFindDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   CComboBox *combo = getComboFindWhat();
   combo->AddString(m_findWhat.GetBuffer(m_findWhat.GetLength()));
@@ -159,7 +159,7 @@ void CFindDlg::OnFindNext() {
 }
 
 void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   if(m_searchMachine.isFinished()) {
     stopTimer();
     m_result = m_searchMachine.getResult();
@@ -170,7 +170,7 @@ void CFindDlg::OnTimer(UINT_PTR nIDEvent) {
       }
     } else {
       m_history.add(m_searchMachine.getFindWhat());
-      CDialog::OnOK();
+      __super::OnOK();
     }
   } else {
     CProgressCtrl *p = (CProgressCtrl*)GetDlgItem(IDC_PROGRESSFIND);
@@ -182,7 +182,7 @@ void CFindDlg::OnCancel() {
   if(m_timerIsRunning) {
     m_searchMachine.setInterrupted();
   } else {
-    CDialog::OnCancel();
+    __super::OnCancel();
   }
 }
 
@@ -191,7 +191,7 @@ BOOL CFindDlg::PreTranslateMessage(MSG* pMsg) {
     return TRUE;
   }
 
-  const BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  const BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOFINDWHAT) {
     DWORD w = getComboFindWhat()->GetEditSel();
@@ -293,7 +293,7 @@ void CFindDlg::OnSelendCancelComboFindWhat() {
 
 void CFindDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 #define TIMERUPDATERATE 200

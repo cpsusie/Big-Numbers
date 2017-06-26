@@ -23,7 +23,7 @@ DecideGameDialog::DecideGameDialog(int myId, const PlayerList &players, const Ga
 }
 
 void DecideGameDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Radio(pDX, IDC_SOL_RADIO          , m_gameType);
   DDX_Radio(pDX, IDC_KLOER_RADIO        , m_suit);
   DDX_Radio(pDX, IDC_1POINT_RADIO       , m_selectedPointButton);
@@ -55,7 +55,7 @@ void DecideGameDialog::setColourEnabled(BOOL s) {
 BOOL DecideGameDialog::OnInitDialog() {
   WINDOWPLACEMENT wp;
 
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   GetWindowPlacement( &wp );
   wp.ptMinPosition.y -= 10;
   wp.ptMaxPosition.y -= 10;

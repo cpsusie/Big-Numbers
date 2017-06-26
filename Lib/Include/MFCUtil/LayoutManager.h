@@ -192,7 +192,7 @@ public:
                                                                   // RESIZE_FONT, RESIZE_MENUFONT + (FONT_RELATIVE_SIZE or RETAIN_ASPECTRATIO)
   virtual void OnSize(UINT nType, int cx, int cy) {
   };
-  virtual void OnSizing(UINT fwSide, LPRECT pRect);               // should be called before CDialog::OnSizing
+  virtual void OnSizing(UINT fwSide, LPRECT pRect);               // should be called before __super::OnSizing
 
   static CFont *createScaledFont(const CFont &src, double scale); // returned font must be deleted after use
 

@@ -21,7 +21,7 @@ CJuliaDlg::~CJuliaDlg() {
 }
 
 void CJuliaDlg::DoDataExchange(CDataExchange* pDX){
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -29,7 +29,7 @@ BEGIN_MESSAGE_MAP(CJuliaDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CJuliaDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   const RealRectangle rr(-2,-2,4,4);
 

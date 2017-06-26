@@ -2,7 +2,7 @@
 #include <MFCUtil/PropertyDialog.h>
 
 void PropertyDialog::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CDialog::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   if(m_showWinActive) return;
   try {
     m_showWinActive = true;

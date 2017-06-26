@@ -13,7 +13,7 @@ CHighScoreDlg::CHighScoreDlg(int execiszeType, CWnd *pParent /*=NULL*/)
 }
 
 void CHighScoreDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_TABEXECISE, m_execiszeTab);
     DDX_Control(pDX, IDC_LISTBESTTIME, m_listBestTime);
 }
@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CHighScoreDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CHighScoreDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   CTabCtrl  &tab  = m_execiszeTab;
   tab.InsertItem(0,_T("+"));

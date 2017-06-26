@@ -8,7 +8,7 @@ CAboutDlg::CAboutDlg(CChessDlg *parent) : CDialog(CAboutDlg::IDD), m_parent(pare
 }
 
 BOOL CAboutDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
   const String fileName = getModuleFileName();
   const String name     = FileNameSplitter(fileName).getFileName();
@@ -24,7 +24,7 @@ BOOL CAboutDlg::OnInitDialog() {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -36,5 +36,5 @@ void CAboutDlg::OnLButtonDown(UINT nFlags, CPoint point) {
   if(iconRect.PtInRect(point) && (nFlags & MK_CONTROL)) {
     m_parent->toggleEnableTestMenu();
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }

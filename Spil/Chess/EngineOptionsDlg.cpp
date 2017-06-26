@@ -51,7 +51,7 @@ void CEngineOptionsDlg::commonInit() {
 }
 
 void CEngineOptionsDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 #define FIRST_USER_CTRLID   WM_USER
@@ -115,11 +115,11 @@ BOOL CEngineOptionsDlg::PreTranslateMessage(MSG *pMsg) {
     }
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 int CEngineOptionsDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if (CDialog::OnCreate(lpCreateStruct) == -1) {
+  if (__super::OnCreate(lpCreateStruct) == -1) {
      return -1;
   }
   for(size_t i = 0; i < m_optionArray.size(); i++) {
@@ -139,7 +139,7 @@ int CEngineOptionsDlg::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 #define SPACE_BETWEEN_BUTTONS         15
 
 BOOL CEngineOptionsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   setControlText(IDD, this);
 
@@ -246,7 +246,7 @@ EngineOptionValueArray CEngineOptionsDlg::getValuesFromWindow() const {
 }
 
 void CEngineOptionsDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CDialog::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   if(m_thread && bShow) {
     m_thread->setDialogRunning(true);
   }
@@ -257,7 +257,7 @@ void CEngineOptionsDlg::OnOK() {
     return;
   }
   Options::saveEngineOptionValues(m_player, m_optionArray.pruneDefaults(getValuesFromWindow()));
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CEngineOptionsDlg::OnCancel() {
@@ -266,14 +266,14 @@ void CEngineOptionsDlg::OnCancel() {
       return;
     }
   }
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CEngineOptionsDlg::OnClose() {
   if(m_thread) {
     m_thread->setDialogRunning(false);
   }
-  CDialog::OnClose();
+  __super::OnClose();
 }
 
 bool CEngineOptionsDlg::isChanged() const {

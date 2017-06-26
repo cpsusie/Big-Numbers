@@ -14,7 +14,7 @@ CShowColorMapDlg::CShowColorMapDlg(UINT maxIteration, const D3DCOLOR *colorMap, 
 }
 
 void CShowColorMapDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CShowColorMapDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CShowColorMapDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_STATIC_COLORMAPWINDOW, RELATIVE_SIZE    );
@@ -35,7 +35,7 @@ BOOL CShowColorMapDlg::OnInitDialog() {
 }
 
 void CShowColorMapDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 

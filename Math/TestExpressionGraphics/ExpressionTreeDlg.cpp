@@ -16,7 +16,7 @@ CExpressionTreeDlg::CExpressionTreeDlg(const ExpressionNode *n, CWnd* pParent) :
 }
 
 void CExpressionTreeDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -31,7 +31,7 @@ END_MESSAGE_MAP()
 
 
 BOOL CExpressionTreeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   m_layoutManager.OnInitDialog(this);
   m_layoutManager.addControl(IDC_TREE_EXPRESSION , RELATIVE_SIZE );
@@ -130,7 +130,7 @@ void CExpressionTreeDlg::expandAll(CTreeCtrl *ctrl, HTREEITEM p) {
   }
 }
 void CExpressionTreeDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 

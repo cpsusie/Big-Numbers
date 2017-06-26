@@ -24,7 +24,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -46,7 +46,7 @@ CRegexDemoDlg::~CRegexDemoDlg() {
 }
 
 void CRegexDemoDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 	DDX_CBString(pDX, IDC_COMBOPATTERN, m_pattern);
 	DDX_CBString(pDX, IDC_COMBOTARGET, m_target);
 }
@@ -91,7 +91,7 @@ BEGIN_MESSAGE_MAP(CRegexDemoDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CRegexDemoDlg::OnInitDialog() {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
     ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -159,10 +159,9 @@ BOOL CRegexDemoDlg::OnInitDialog() {
 
 void CRegexDemoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -174,7 +173,7 @@ BOOL CRegexDemoDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
   switch(getFocusCtrlId(this)) {
   case IDC_COMBOPATTERN:
   case IDC_COMBOTARGET :
@@ -202,7 +201,7 @@ void CRegexDemoDlg::OnClose() {
 }
 
 void CRegexDemoDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
   if(isGraphicsOn()) {
     PostMessage(WM_PAINT);
@@ -226,7 +225,7 @@ void CRegexDemoDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     if(isGraphicsOn()) {
       m_regex.paint(getGraphicsWindow(), false);
     }

@@ -102,12 +102,8 @@ public:
 
   enum { IDD = IDD_ABOUTBOX };
 
-public:
   virtual BOOL PreTranslateMessage(MSG* pMsg);
-protected:
   virtual void DoDataExchange(CDataExchange* pDX);
-
-protected:
   virtual BOOL OnInitDialog();
   DECLARE_MESSAGE_MAP()
 };
@@ -116,21 +112,20 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 BOOL CAboutDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   GetDlgItem(IDC_EDITHOMEPAGE)->SetWindowText(_T("http://www.mikkelsenware.dk"));
   return TRUE;
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
 END_MESSAGE_MAP()
 
 void CCaptureApp::OnAppAbout() {
-  CAboutDlg aboutDlg;
-  aboutDlg.DoModal();
+  CAboutDlg().DoModal();
 }
 
 // CMFCApplication2App customization load/save methods
@@ -181,5 +176,5 @@ BOOL CAboutDlg::PreTranslateMessage(MSG* pMsg) {
     break;
   }
 
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

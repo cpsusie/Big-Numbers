@@ -10,7 +10,7 @@ IdentifyDialog::IdentifyDialog(CWnd* pParent) : CDialog(IdentifyDialog::IDD, pPa
 }
 
 void IdentifyDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text( pDX, IDC_MYNAME_EDIT     , m_myName    );
   DDX_Text( pDX, IDC_DEALER_NAME_EDIT, m_dealerName);
   DDX_Radio(pDX, IDC_DEALER_RADIO    , m_connected );
@@ -26,7 +26,7 @@ BEGIN_MESSAGE_MAP(IdentifyDialog, CDialog)
 END_MESSAGE_MAP()
   
 BOOL IdentifyDialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_IDENTIFY_ACCELERATOR));
 
@@ -44,7 +44,7 @@ BOOL IdentifyDialog::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return TRUE;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void IdentifyDialog::OnDealerRadio() {
@@ -93,7 +93,7 @@ void IdentifyDialog::OnOK() {
   options.m_connected  = m_connected ? true : false;
   options.save();
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void IdentifyDialog::OnGotoName() {

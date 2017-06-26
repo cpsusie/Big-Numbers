@@ -23,7 +23,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -34,7 +34,7 @@ CTestQRGraphicsDlg::CTestQRGraphicsDlg(CWnd* pParent) : CDialog(CTestQRGraphicsD
 }
 
 void CTestQRGraphicsDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CTestQRGraphicsDlg, CDialog)
@@ -58,7 +58,7 @@ END_MESSAGE_MAP()
 #define RED   RGB(255,0,0)
 
 BOOL CTestQRGraphicsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -88,11 +88,10 @@ BOOL CTestQRGraphicsDlg::OnInitDialog() {
 
 void CTestQRGraphicsDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   }
   else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -186,7 +185,7 @@ void CTestQRGraphicsDlg::OnPaint() {
     catch (Exception e) {
       MessageBox(e.what(), _T("Error"), MB_ICONWARNING);
     }
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 

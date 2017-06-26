@@ -13,7 +13,7 @@ CSelectBreakSymbolsDlg::CSelectBreakSymbolsDlg(const ParserTables &tables, BitSe
 }
 
 void CSelectBreakSymbolsDlg::DoDataExchange(CDataExchange *pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSelectBreakSymbolsDlg, CDialog)
@@ -21,7 +21,7 @@ BEGIN_MESSAGE_MAP(CSelectBreakSymbolsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CSelectBreakSymbolsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CListBox *lb = (CListBox*)GetDlgItem(IDC_LISTSYMBOLS);
   UINT s;
   for(s = 0; s < m_tables.getTerminalCount(); s++) {
@@ -59,7 +59,7 @@ void CSelectBreakSymbolsDlg::OnOK() {
     m_symbolSet.add(*symbolMap.get(items[i]));
   }
   delete[] items;
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CSelectBreakSymbolsDlg::OnButtonclear() {

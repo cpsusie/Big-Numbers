@@ -14,7 +14,7 @@ CRegexDlg::CRegexDlg(RegexFilter &param, CWnd *pParent) : m_param(param), CDialo
 }
 
 void CRegexDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Check(pDX   , IDC_CHECKMATCHCASE     , m_matchCase     );
   DDX_Check(pDX   , IDC_CHECKMATCHWHOLEWORD, m_matchWholeWord);
   DDX_CBString(pDX, IDC_COMBOREGEX         , m_regex        );
@@ -40,7 +40,7 @@ BEGIN_MESSAGE_MAP(CRegexDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CRegexDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   m_regexCombo.substituteControl(this, IDC_COMBOREGEX, "RegexHistory");
 
@@ -65,7 +65,7 @@ void CRegexDlg::OnOK() {
   try {
     m_param.compile();
     m_regexCombo.updateList();
-    CDialog::OnOK();
+    __super::OnOK();
   } catch(Exception e) {
     GetDlgItem(IDC_COMBOREGEX)->SetFocus();
     showException(e);
@@ -87,7 +87,7 @@ BOOL CRegexDlg::PreTranslateMessage(MSG* pMsg) {
     return true;
   }
     
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
 
   if(m_currentControl == IDC_COMBOREGEX) {
     CComboBox *b = (CComboBox*)GetDlgItem(IDC_COMBOREGEX);
@@ -146,5 +146,5 @@ void CRegexDlg::OnDrawItem(int nIDCtl, LPDRAWITEMSTRUCT lpDrawItemStruct) {
     drawTriangle(GetDlgItem(IDC_BUTTONREGSYMBOLSMENU));
   }
 
-  CDialog::OnDrawItem(nIDCtl, lpDrawItemStruct);
+  __super::OnDrawItem(nIDCtl, lpDrawItemStruct);
 }

@@ -30,7 +30,7 @@ CProfileDlg::~CProfileDlg() {
 }
 
 void CProfileDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_DEGREES, m_degree);
     DDX_Check(pDX, IDC_CHECK_NORMALSMOOTH, m_normalSmooth);
     DDX_Check(pDX, IDC_CHECK_ROTATESMOOTH, m_rotateSmooth);
@@ -99,7 +99,7 @@ static LOGFONT makeDefaultFont() {
 }
 
 BOOL CProfileDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PROFILE));
   m_logFont  = makeDefaultFont();
@@ -178,7 +178,7 @@ void CProfileDlg::resetView() {
 }
 
 void CProfileDlg::OnPaint() {
-  CDialog::OnPaint();
+  __super::OnPaint();
   repaintScreen(); // refresh(CPaintDC(GetDlgItem(IDC_STATIC_PROFILEIMAGE2D)));
 }
 
@@ -414,7 +414,7 @@ BOOL CProfileDlg::PreTranslateMessage(MSG* pMsg) {
       break;
     }
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CProfileDlg::OnEditCut() {
@@ -589,7 +589,7 @@ void CProfileDlg::OnLButtonDown(UINT nFlags, CPoint point) {
     break;
   }
 
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CProfileDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
@@ -602,7 +602,7 @@ void CProfileDlg::OnLButtonDblClk(UINT nFlags, CPoint point) {
 //    m_d3.OnLButtonDblClk(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-  CDialog::OnLButtonDblClk(nFlags, point);
+  __super::OnLButtonDblClk(nFlags, point);
 }
 
 void CProfileDlg::OnLButtonUp(UINT nFlags, CPoint point) {
@@ -616,7 +616,7 @@ void CProfileDlg::OnLButtonUp(UINT nFlags, CPoint point) {
     break;
   }
 
-  CDialog::OnLButtonUp(nFlags, point);
+  __super::OnLButtonUp(nFlags, point);
 }
 
 void CProfileDlg::OnRButtonDown(UINT nFlags, CPoint point) {
@@ -629,7 +629,7 @@ void CProfileDlg::OnRButtonDown(UINT nFlags, CPoint point) {
 //    m_d3.OnRButtonDown(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-  CDialog::OnRButtonDown(nFlags, point);
+  __super::OnRButtonDown(nFlags, point);
 }
 
 void CProfileDlg::OnRButtonUp(UINT nFlags, CPoint point) {
@@ -642,7 +642,7 @@ void CProfileDlg::OnRButtonUp(UINT nFlags, CPoint point) {
 //    m_d3.OnRButtonUp(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-  CDialog::OnRButtonUp(nFlags, point);
+  __super::OnRButtonUp(nFlags, point);
 }
 
 void CProfileDlg::OnMouseMove(UINT nFlags, CPoint point) {
@@ -657,7 +657,7 @@ void CProfileDlg::OnMouseMove(UINT nFlags, CPoint point) {
 //    m_d3.OnMouseMove(nFlags,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,point));
     break;
   }
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }
 
 BOOL CProfileDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
@@ -669,7 +669,7 @@ BOOL CProfileDlg::OnMouseWheel(UINT nFlags, short zDelta, CPoint pt) {
 //    m_d3.OnMouseWheel(nFlags,zDelta,getRelativePoint(IDC_STATIC_PROFILEIMAGE3D,pt));
     break;
   }
-  return CDialog::OnMouseWheel(nFlags, zDelta, pt);
+  return __super::OnMouseWheel(nFlags, zDelta, pt);
 }
 
 void CProfileDlg::showMousePosition(const CPoint &p) {
@@ -679,12 +679,12 @@ void CProfileDlg::showMousePosition(const CPoint &p) {
 
 void CProfileDlg::OnCancel() {
   if(!dirtyCheck()) return;
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CProfileDlg::OnOK() {
   if(!dirtyCheck()) return;
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CProfileDlg::OnRadioRotatexaxis()  { updateAndRefresh(); }
@@ -732,7 +732,7 @@ int CProfileDlg::getControlAtPoint(const CPoint &point) {
 
 
 void CProfileDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 
 
   CSliderCtrl *slider = (CSliderCtrl*)GetDlgItem(IDC_SLIDER_DEGREE);

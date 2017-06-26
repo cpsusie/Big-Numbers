@@ -10,7 +10,7 @@ CFileFormatsDlg::CFileFormatsDlg(CWnd *pParent) : CDialog(CFileFormatsDlg::IDD, 
 }
 
 void CFileFormatsDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LISTFORMATNAMES, m_nameListCtrl);
 }
 
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CFileFormatsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CFileFormatsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
     
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
@@ -101,7 +101,7 @@ void CFileFormatsDlg::OnOK() {
   if(selected >= 0) {
     m_selected = m_nameList[selected].m_name;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CFileFormatsDlg::OnButtonRename() {

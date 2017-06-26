@@ -23,7 +23,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -34,7 +34,7 @@ CAsciiwDlg::CAsciiwDlg(CWnd* pParent /*=NULL*/) : CDialog(CAsciiwDlg::IDD, pPare
 }
 
 void CAsciiwDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAsciiwDlg, CDialog)
@@ -50,7 +50,7 @@ BEGIN_MESSAGE_MAP(CAsciiwDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CAsciiwDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   // Add "About..." menu item to system menu.
 
@@ -94,10 +94,9 @@ BOOL CAsciiwDlg::OnInitDialog() {
 
 void CAsciiwDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -208,7 +207,7 @@ void CAsciiwDlg::OnPaint() {
     } else {
       printAscii(dc, 10);
     }
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -287,11 +286,11 @@ BOOL CAsciiwDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
     return true;
     
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CAsciiwDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType,cx,cy);    
   if(!IsWindowVisible()) {
     Invalidate();

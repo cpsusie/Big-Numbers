@@ -19,7 +19,7 @@ CGetIntDlg::CGetIntDlg(const TCHAR *title, const TCHAR *prompt, const IntInterva
 
 
 void CGetIntDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITINT, m_int);
 }
 
@@ -28,7 +28,7 @@ BEGIN_MESSAGE_MAP(CGetIntDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CGetIntDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   SetWindowText(m_title);
   GetDlgItem(IDC_PROMPT)->SetWindowText(m_prompt);
@@ -46,5 +46,5 @@ void CGetIntDlg::OnOK() {
     MessageBox(format(_T("Please enter an integer in the interval [%d..%d]"),m_interval.getMin(),m_interval.getMax()).cstr(), _T("Invalid input"));
     return;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }

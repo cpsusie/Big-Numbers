@@ -18,7 +18,7 @@ COptionsDlg::COptionsDlg(Options &options, CWnd *pParent /*=NULL*/)
 
 
 void COptionsDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDITCONFIRMPASSWORD, m_confirmPassword);
     DDX_Text(pDX, IDC_EDITHIGSCOREPATH, m_highscorePath);
     DDX_Text(pDX, IDC_EDITOLDPASSWORD, m_oldPassword);
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(COptionsDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL COptionsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   gotoEditBox(this, IDC_EDITOLDPASSWORD);
   return FALSE;
@@ -56,7 +56,7 @@ void COptionsDlg::OnOK() {
       return;
     }
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void COptionsDlg::OnButtonFile() {

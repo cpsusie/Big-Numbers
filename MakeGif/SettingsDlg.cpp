@@ -12,7 +12,7 @@ CSettingsDlg::CSettingsDlg(const ImageSettings &settings, CWnd *pParent /*=NULL*
 
 
 void CSettingsDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDIT_SCALEFACTOR, m_scaleFactor);
   DDV_MinMaxUInt(pDX, m_scaleFactor, 1, 200);
 }
@@ -31,12 +31,12 @@ ImageSettings CSettingsDlg::getImageSettings() const {
 void CSettingsDlg::OnOK() {
   if(UpdateData()) {
     m_colorCount = getColorCount();
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
 BOOL CSettingsDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   setColorCount(m_colorCount);
   return TRUE;  // return TRUE unless you set the focus to a control

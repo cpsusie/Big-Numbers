@@ -19,7 +19,7 @@ CViewDlg::CViewDlg(CWnd* pParent /*=NULL*/) : CDialog(CViewDlg::IDD, pParent) {
 }
 
 void CViewDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, IDC_CHECK_ANIMATECHECKMATE    , m_animateCheckmate);
     DDX_Check(pDX, IDC_CHECK_ANIMATEMOVES        , m_animateMoves    );
     DDX_Check(pDX, IDC_CHECK_ASKFORNEWGAME       , m_askForNewGame   );
@@ -33,7 +33,7 @@ BEGIN_MESSAGE_MAP(CViewDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CViewDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   return TRUE;
@@ -51,5 +51,5 @@ void CViewDlg::OnOK() {
   options.setShowFieldNames(  m_showFieldNames  ?true:false);
   options.setShowLegalMoves(  m_showLegalMoves  ?true:false);
 
-  CDialog::OnOK();
+  __super::OnOK();
 }

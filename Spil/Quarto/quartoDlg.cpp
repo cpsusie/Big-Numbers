@@ -18,7 +18,7 @@ CQuartoDlg::CQuartoDlg(CWnd *pParent) : CDialog(CQuartoDlg::IDD, pParent) {
 }
 
 void CQuartoDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CQuartoDlg, CDialog)
@@ -52,12 +52,12 @@ void CQuartoDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX)    {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
 BOOL CQuartoDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT( IDM_ABOUTBOX < 0xF000);
@@ -106,7 +106,7 @@ void CQuartoDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
     render(RENDER_ALL);
   }
 }
@@ -131,7 +131,7 @@ BOOL CQuartoDlg::PreTranslateMessage(MSG *pMsg) {
   if(m_editor.PreTranslateMessage(pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CQuartoDlg::createScene() {
@@ -209,7 +209,7 @@ CPoint CQuartoDlg::get3DPanelPoint(CPoint point, bool screenRelative) const {
 }
 
 void CQuartoDlg::OnLButtonDown(UINT nFlags, CPoint point) {
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
   point = get3DPanelPoint(point, false);
   if(m_game.isGameOver() || (m_game.getPlayerInTurn() != HUMAN_PLAYER)) {
     return;
@@ -259,7 +259,7 @@ void CQuartoDlg::OnRButtonDblClk(UINT nFlags, CPoint point) {
     setEditMode(!m_editor.isEnabled());
     render(RENDER_3D);
   }
-  CDialog::OnRButtonDblClk(nFlags, point);
+  __super::OnRButtonDblClk(nFlags, point);
 }
 
 int CQuartoDlg::getBrickFromPoint(const CPoint &p) const {

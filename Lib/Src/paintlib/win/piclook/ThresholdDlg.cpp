@@ -27,7 +27,7 @@ CThresholdDlg::CThresholdDlg(CWnd* pParent /*=NULL*/)
 
 void CThresholdDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CThresholdDlg)
 	DDX_Text(pDX, IDC_THRESHOLD_MAX, m_threshold_max);
 	DDV_MinMaxInt(pDX, m_threshold_max, 0, 255);
@@ -81,7 +81,7 @@ void CThresholdDlg::OnOK()
 {
 	// TODO: Add extra validation here
 	
-	CDialog::OnOK();
+	__super::OnOK();
 }
 
 int CThresholdDlg::GetMaxThreshold()

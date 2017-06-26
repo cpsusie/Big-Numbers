@@ -25,7 +25,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -40,7 +40,7 @@ CWordsepgraphDlg::CWordsepgraphDlg(CWnd *pParent) : CDialog(CWordsepgraphDlg::ID
 }
 
 void CWordsepgraphDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITORD, m_ord);
   DDX_Text(pDX, IDC_DETAILS, m_details);
 }
@@ -67,7 +67,7 @@ BEGIN_MESSAGE_MAP(CWordsepgraphDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CWordsepgraphDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -104,10 +104,9 @@ BOOL CWordsepgraphDlg::OnInitDialog() {
 
 void CWordsepgraphDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -126,7 +125,7 @@ void CWordsepgraphDlg::OnPaint() {
 
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -432,7 +431,7 @@ void CWordsepgraphDlg::OnTimer(UINT_PTR nIDEvent) {
   if(m_trainerThread->isDone()) {
     stopTraining();
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 
@@ -440,11 +439,11 @@ BOOL CWordsepgraphDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CWordsepgraphDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 

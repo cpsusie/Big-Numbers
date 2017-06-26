@@ -10,7 +10,7 @@ CTabSizeDlg::CTabSizeDlg(int tabSize, CWnd *pParent) : CDialog(CTabSizeDlg::IDD,
 }
 
 void CTabSizeDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITTABSIZE, m_tabSize);
   DDV_MinMaxUInt(pDX, m_tabSize, 0, 20);
 }
@@ -21,11 +21,11 @@ END_MESSAGE_MAP()
 
 void CTabSizeDlg::OnOK() {
   UpdateData();
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 BOOL CTabSizeDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   gotoEditBox(this, IDC_EDITTABSIZE);
   return FALSE;
 }

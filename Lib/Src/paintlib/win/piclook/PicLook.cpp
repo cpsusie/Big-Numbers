@@ -143,25 +143,13 @@ class CAboutDlg : public CDialog
 public:
     CAboutDlg();
 
-    // Dialog Data
-    //{{AFX_DATA(CAboutDlg)
     enum { IDD = IDD_ABOUTBOX };
-    //}}AFX_DATA
-
-    // ClassWizard generated virtual function overrides
-    //{{AFX_VIRTUAL(CAboutDlg)
 protected:
     virtual void DoDataExchange(CDataExchange* pDX);  // DDX/DDV support
-    //}}AFX_VIRTUAL
-
-    // Implementation
-protected:
-    //{{AFX_MSG(CAboutDlg)
     virtual BOOL OnInitDialog();
     afx_msg void OnCredits();
     afx_msg BOOL OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message);
     afx_msg void OnUrl();
-    //}}AFX_MSG
     DECLARE_MESSAGE_MAP()
     bool m_bCreditsShown;
 };
@@ -175,7 +163,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD)
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(CAboutDlg)
     //}}AFX_DATA_MAP
 }
@@ -189,16 +177,12 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
     //}}AFX_MSG_MAP
 END_MESSAGE_MAP()
 
-// App command to run the dialog
-void CPaintLibViewerApp::OnAppAbout()
-{
-    CAboutDlg aboutDlg;
-    aboutDlg.DoModal();
+void CPaintLibViewerApp::OnAppAbout() {
+    CAboutDlg().DoModal();
 }
 
-BOOL CAboutDlg::OnInitDialog()
-{
-    CDialog::OnInitDialog();
+BOOL CAboutDlg::OnInitDialog() {
+    __super::OnInitDialog();
 
     // paintlib's url gets injected in a button field
     GetDlgItem( IDC_URL )->SetWindowText( paintlib_url );
@@ -234,7 +218,7 @@ BOOL CAboutDlg::OnSetCursor(CWnd* pWnd, UINT nHitTest, UINT message)
         SetCursor( thisApp.LoadCursor(IDC_CURSOR_HAND) );
         return true;
     }
-    return CDialog::OnSetCursor(pWnd, nHitTest, message);
+    return __super::OnSetCursor(pWnd, nHitTest, message);
 }
 
 void CAboutDlg::OnUrl()

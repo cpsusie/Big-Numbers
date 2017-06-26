@@ -12,7 +12,7 @@ CCheckFilesDlg::CCheckFilesDlg(CWnd *pParent) : CDialog(CCheckFilesDlg::IDD, pPa
 }
 
 void CCheckFilesDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CCheckFilesDlg, CDialog)
@@ -22,7 +22,7 @@ BEGIN_MESSAGE_MAP(CCheckFilesDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CCheckFilesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   SetIcon(m_hIcon, TRUE);
   SetIcon(m_hIcon, FALSE);
@@ -93,12 +93,12 @@ void CCheckFilesDlg::OnTimer(UINT nIDEvent) {
   const String tmp = format(_T("%d"),m_worker->m_errorCount);
   GetDlgItem(IDC_STATICERRORS)->SetWindowText(tmp);
   GetDlgItem(IDC_STATICMESSAGE)->SetWindowText(fname);
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CCheckFilesDlg::OnCancel() {
   m_worker->PostThreadMessage(WM_QUIT,0,0);
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 BOOL CCheckFilesDlg::PreTranslateMessage(MSG *pMsg) {
@@ -106,7 +106,7 @@ BOOL CCheckFilesDlg::PreTranslateMessage(MSG *pMsg) {
     return true;
   }
     
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CCheckFilesDlg::OnShowErrors() {

@@ -11,14 +11,14 @@ CLevelDlg::CLevelDlg(GameLevel level, CWnd *pParent) : CDialog(CLevelDlg::IDD, p
 }
 
 void CLevelDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CLevelDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CLevelDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   int buttonid;
   switch(m_level) {
   case VERY_EASY     : buttonid = IDC_RADIOVERY_EASY;      break;
@@ -46,5 +46,5 @@ void CLevelDlg::OnOK() {
   } else if(IsDlgButtonChecked(IDC_RADIOVERY_DIFFICULT)) {
     m_level = VERY_DIFFICULT;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }

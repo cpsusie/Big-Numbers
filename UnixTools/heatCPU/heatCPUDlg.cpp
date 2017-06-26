@@ -26,7 +26,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -38,7 +38,7 @@ CHeatCPUDlg::CHeatCPUDlg(CWnd* pParent) : CDialog(CHeatCPUDlg::IDD, pParent) {
 }
 
 void CHeatCPUDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CHeatCPUDlg, CDialog)
@@ -56,7 +56,7 @@ BEGIN_MESSAGE_MAP(CHeatCPUDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CHeatCPUDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -93,13 +93,12 @@ BOOL CHeatCPUDlg::OnInitDialog() {
 
 void CHeatCPUDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX)   {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
     if(nID == SC_MINIMIZE) {
       hideWindow();
     } else {
-      CDialog::OnSysCommand(nID, lParam);
+      __super::OnSysCommand(nID, lParam);
     }
   }
 }
@@ -124,7 +123,7 @@ void CHeatCPUDlg::OnPaint() {
     if(m_paintCount++ < 1) {
       hideWindow();
     } else {
-      CDialog::OnPaint();
+      __super::OnPaint();
     }
   }
 }
@@ -215,7 +214,7 @@ void CHeatCPUDlg::OnTimer(UINT_PTR nIDEvent) {
   if(diff(m_lastTimerEvent, now, TSECOND) > 10) {
     refreshAfterShutdown();
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
   m_lastTimerEvent = Timestamp();
 }
 
@@ -290,7 +289,7 @@ void CHeatCPUDlg::OnOptionsShowCounters() {
 }
 
 void CHeatCPUDlg::OnShowWindow(BOOL bShow, UINT nStatus) {
-  CDialog::OnShowWindow(bShow, nStatus);
+  __super::OnShowWindow(bShow, nStatus);
   showCounterWindows(bShow && m_options.m_showCounters);
 }
 
@@ -302,10 +301,10 @@ BOOL CHeatCPUDlg::PreTranslateMessage(MSG* pMsg) {
       return true;
     }
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CHeatCPUDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar* pScrollBar) {
   setCPULoad(getSliderCtrl()->GetPos());
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }

@@ -18,7 +18,7 @@ CTablebaseDlg::CTablebaseDlg(CWnd* pParent /*=NULL*/) : CDialog(CTablebaseDlg::I
 }
 
 void CTablebaseDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX , IDC_EDIT_MOVECOUNT     , m_moveCount      );
     DDX_Text(pDX , IDC_EDIT_DEFENDSTRENGTH, m_defendStrength );
     DDX_Radio(pDX, IDC_RADIO_METRIC_DTM   , m_tablebaseMetric);
@@ -37,7 +37,7 @@ BEGIN_MESSAGE_MAP(CTablebaseDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTablebaseDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(theApp.m_hInstance, MAKEINTRESOURCE(IDR_TABLEBASE_ACCELERATOR));
   setControlText(IDD, this);
@@ -49,7 +49,7 @@ BOOL CTablebaseDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CTablebaseDlg::OnOK() {
@@ -71,7 +71,7 @@ void CTablebaseDlg::OnOK() {
   options.setEndGameTablebaseMetric(IsDlgButtonChecked(IDC_RADIO_METRIC_DTM) ? DEPTH_TO_MATE : DEPTH_TO_CONVERSION);
   options.setDepthInPlies(IsDlgButtonChecked(IDC_RADIO_DEPTHINPLIES) ? true : false);
   options.setEndGameTablebasePath((LPCTSTR)m_tablebasePath);
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CTablebaseDlg::OnGotoMoveCount() {

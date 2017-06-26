@@ -33,7 +33,7 @@ void CEditTagDlg::initData() {
 }
 
 void CEditTagDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_ATTRIBUTELIST        , m_readWriteListCtrl);
     DDX_Control(pDX, IDC_READONLYATTRIBUTELIST, m_readOnlyListCtrl );
 }
@@ -79,7 +79,7 @@ void CEditTagDlg::initListControl(CListCtrl &ctrl, const AttributeArray &attribu
 }
 
 BOOL CEditTagDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_EDITTAG_ACCELERATOR));
 
   if(m_mediaArray.size() == 1) {
@@ -137,12 +137,12 @@ void CEditTagDlg::OnOK() {
 
     AfxGetApp()->EndWaitCursor();
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CEditTagDlg::OnSize(UINT nType, int cx, int cy) {
   m_layoutManager.OnSize(nType,cx,cy);
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 }
 
 int CEditTagDlg::getGenreIndex(const CString &genre) {
@@ -191,7 +191,7 @@ BOOL CEditTagDlg::PreTranslateMessage(MSG *pMsg) {
     fisk = 1;
     break;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 CComboBox *CEditTagDlg::getGenreCombo() {
@@ -322,7 +322,7 @@ BOOL CEditTagDlg::OnChildNotify(UINT message, WPARAM wParam, LPARAM lParam, LRES
       break;
     }
   }
-  return CDialog::OnChildNotify(message, wParam, lParam, pLResult);
+  return __super::OnChildNotify(message, wParam, lParam, pLResult);
 }
 
 BOOL CEditTagDlg::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) {
@@ -354,5 +354,5 @@ BOOL CEditTagDlg::OnNotify(WPARAM wParam, LPARAM lParam, LRESULT *pResult) {
     }
   }
 
-  return CDialog::OnNotify(wParam, lParam, pResult);
+  return __super::OnNotify(wParam, lParam, pResult);
 }

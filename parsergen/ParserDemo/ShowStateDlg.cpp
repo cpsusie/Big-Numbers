@@ -13,7 +13,7 @@ ShowStateDlg::ShowStateDlg(CDialog *mainDialog, CWnd *pParent): CDialog(ShowStat
 }
 
 void ShowStateDlg::DoDataExchange(CDataExchange *pDX) {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDITSTATE, m_data);
 }
 
@@ -34,7 +34,7 @@ LRESULT ShowStateDlg::OnShowStateUpdate(WPARAM wp, LPARAM lp) {
 }
 
 BOOL ShowStateDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   SetIcon(m_hIcon, TRUE);  // Set big icon
   SetIcon(m_hIcon, FALSE); // Set small icon
@@ -52,7 +52,7 @@ BOOL ShowStateDlg::OnInitDialog() {
 }
 
 void ShowStateDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
 
   m_layoutManager.OnSize(nType, cx, cy);
 }
@@ -63,5 +63,5 @@ BOOL ShowStateDlg::PreTranslateMessage(MSG *pMsg) {
 	return true;
   }
 
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

@@ -27,7 +27,7 @@ CPalViewDlg::CPalViewDlg(CWnd* pParent, PLPixel32 * pPal)
 
 void CPalViewDlg::DoDataExchange(CDataExchange* pDX)
 {
-	CDialog::DoDataExchange(pDX);
+	__super::DoDataExchange(pDX);
 	//{{AFX_DATA_MAP(CPalViewDlg)
 	DDX_Control(pDX, IDC_PALFRAME, m_PalFrameCtrl);
 	//}}AFX_DATA_MAP

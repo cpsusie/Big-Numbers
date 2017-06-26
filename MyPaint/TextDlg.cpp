@@ -12,7 +12,7 @@ CTextDlg::CTextDlg(FontParameters &fontParameters, String &text, CWnd *pParent) 
 }
 
 void CTextDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITTEXT, m_text);
   DDX_Text(pDX, IDC_EDITORIENTATION, m_degree);
 }
@@ -23,7 +23,7 @@ BEGIN_MESSAGE_MAP(CTextDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTextDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   gotoEditBox(this, IDC_EDITTEXT);
   return FALSE;
@@ -39,5 +39,5 @@ void CTextDlg::OnButtonfont() {
 void CTextDlg::OnOK() {
   UpdateData();
   m_fontParameters.m_orientation = m_degree;
-  CDialog::OnOK();
+  __super::OnOK();
 }

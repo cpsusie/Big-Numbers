@@ -15,7 +15,7 @@ DecideGameTrainingDialog::DecideGameTrainingDialog(CWnd* pParent) : CDialog(Deci
 }
 
 void DecideGameTrainingDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
     DDX_Radio(pDX, IDC_1POINT_RADIO, m_pointPerStik);
     DDX_Radio(pDX, IDC_SOL_RADIO, m_gameType);
 }
@@ -32,7 +32,7 @@ END_MESSAGE_MAP()
 
 
 BOOL DecideGameTrainingDialog::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   randomize();
 
@@ -231,7 +231,7 @@ void DecideGameTrainingDialog::OnTimer(UINT_PTR nIDEvent) {
     double errorSum = m_trainerThread->getErrorSum();
 
     GetDlgItem(IDC_TRAININGINFO)->SetWindowText(format(_T("Errorsum:%lf"),errorSum).cstr());
-    CDialog::OnTimer(nIDEvent);
+    __super::OnTimer(nIDEvent);
   }
 }
 

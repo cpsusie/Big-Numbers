@@ -20,7 +20,7 @@ CConfirmDlg::CConfirmDlg(const TCHAR *message, const TCHAR *caption, UINT nType,
 
 
 void CConfirmDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Check(pDX, _IDC_CHECKDONTSHOWAGAIN, m_dontShowAgain);
 }
 
@@ -42,7 +42,7 @@ END_MESSAGE_MAP()
 #define GAPBUTTON         10
 
 BOOL CConfirmDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   setControlText(IDD, this);
   CWnd *messageArea = GetDlgItem(_IDC_STATICMESSAGEAREA);
@@ -204,7 +204,7 @@ int confirmDialogBox(const String &message, const String &caption, bool &showAga
 }
 
 void CConfirmDlg::OnPaint() {
-  CDialog::OnPaint();
+  __super::OnPaint();
   CWnd       *whiteWindow = GetDlgItem(_IDC_STATICMESSAGEAREA);
   const CSize whiteSize   = getClientRect(whiteWindow).Size();
 
@@ -252,5 +252,5 @@ BOOL CConfirmDlg::PreTranslateMessage(MSG* pMsg) {
   if(m_accelTable && TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }

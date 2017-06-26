@@ -12,7 +12,7 @@ COpeningDlg::COpeningDlg(CWnd* pParent)	: CDialog(COpeningDlg::IDD, pParent) {
 }
 
 void COpeningDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(COpeningDlg, CDialog)
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(COpeningDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL COpeningDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   setControlText(IDD, this);
 
   m_dialogName = getWindowText(this);
@@ -53,7 +53,7 @@ BOOL COpeningDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd, m_accelTable, pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void COpeningDlg::traverse(CTreeCtrl *ctrl, HTREEITEM p, const LibraryState &state, Game &g) {
@@ -109,7 +109,7 @@ HTREEITEM getChildByIndex(CTreeCtrl *ctrl, HTREEITEM parent, int index) {
 }
 
 void COpeningDlg::OnSize(UINT nType, int cx, int cy) {
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   m_layoutManager.OnSize(nType, cx, cy);
 }
 

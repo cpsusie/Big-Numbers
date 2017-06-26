@@ -16,12 +16,12 @@ CChangePasswordDlg::CChangePasswordDlg(CWnd *pParent) : CDialog(CChangePasswordD
 
 BOOL CChangePasswordDlg::OnInitDialog() {
   GetDlgItem(IDC_OLDPASSWORDEDIT)->SetFocus();
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   return false;
 }
 
 void CChangePasswordDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_OLDPASSWORDEDIT , m_oldPassword );
     DDX_Text(pDX, IDC_NEWPASSWORDEDIT , m_newPassword );
     DDX_Text(pDX, IDC_NEWPASSWORDEDIT2, m_newPassword2);
@@ -38,7 +38,7 @@ void CChangePasswordDlg::OnOK() {
   } else {
     try {
       Options::setPassword((LPCTSTR)m_oldPassword,(LPCTSTR)m_newPassword);
-      CDialog::OnOK();
+      __super::OnOK();
     } catch(Exception e) {
       Message(e.what());
       m_tryCount++;

@@ -12,7 +12,7 @@ BacksideDialog::BacksideDialog(CWnd* pParent) : CDialog(BacksideDialog::IDD, pPa
 }
 
 void BacksideDialog::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 
@@ -29,7 +29,7 @@ void BacksideDialog::OnPaint() {
     m_buttons[i]->Draw();
   }
     
-  // Do not call CDialog::OnPaint() for painting messages
+  // Do not call __super::OnPaint() for painting messages
 }
 
 BOOL BacksideDialog::PreTranslateMessage(MSG* pMsg) {
@@ -47,12 +47,12 @@ BOOL BacksideDialog::PreTranslateMessage(MSG* pMsg) {
     }
   }
   default:
-    return CDialog::PreTranslateMessage(pMsg);
+    return __super::PreTranslateMessage(pMsg);
   }
 }
 
 int BacksideDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) {
-  if (CDialog::OnCreate(lpCreateStruct) == -1) {
+  if (__super::OnCreate(lpCreateStruct) == -1) {
     return -1;
   }
     
@@ -70,7 +70,7 @@ int BacksideDialog::OnCreate(LPCREATESTRUCT lpCreateStruct) {
 }
 
 void BacksideDialog::OnDestroy() {
-  CDialog::OnDestroy();
+  __super::OnDestroy();
   
   for(size_t i = 0; i < m_buttons.size(); i++) {
     CardButton *but = m_buttons[i];

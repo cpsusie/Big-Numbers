@@ -43,7 +43,7 @@ PLFilterDialog::PLFilterDialog(CWnd* pParent, PLBmp * pBmp,
 
 void PLFilterDialog::DoDataExchange(CDataExchange* pDX)
 {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     //{{AFX_DATA_MAP(PLFilterDialog)
     DDX_Control(pDX, IDC_CONSTRAINCHECK, m_ConstrainCheck);
     DDX_Control(pDX, IDC_RADIUSSTATIC, m_RadiusStatic);
@@ -73,7 +73,7 @@ END_MESSAGE_MAP()
 
 BOOL PLFilterDialog::OnInitDialog()
 {
-    CDialog::OnInitDialog();
+    __super::OnInitDialog();
 
     m_ConstrainCheck.SetCheck(true);
     m_NameStatic.SetWindowText (m_pszFilterName);
@@ -85,7 +85,7 @@ BOOL PLFilterDialog::OnInitDialog()
 
 void PLFilterDialog::OnOK()
 {
-    CDialog::OnOK();
+    __super::OnOK();
 }
 
 void PLFilterDialog::OnChangeHeightedit()

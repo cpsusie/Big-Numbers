@@ -15,7 +15,7 @@ IntervalDlg::IntervalDlg(CWnd* pParent /*=NULL*/) : CDialog(IntervalDlg::IDD, pP
 }
 
 void IntervalDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT_MAXX, m_maxxstr);
     DDX_Text(pDX, IDC_EDIT_MAXY, m_maxystr);
     DDX_Text(pDX, IDC_EDIT_MINX, m_minxstr);
@@ -42,7 +42,7 @@ BOOL IntervalDlg::OnInitDialog() {
   m_maxystr = tmp;
   UpdateData(FALSE);
     
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   return TRUE; 
 }
 
@@ -69,6 +69,6 @@ void IntervalDlg::OnOK() {
   m_minx = minx; m_maxx = maxx;
   m_miny = miny; m_maxy = maxy;
 
-  CDialog::OnOK();
+  __super::OnOK();
 }
 

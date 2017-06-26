@@ -18,7 +18,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -31,7 +31,7 @@ CTestLexStreamDlg::CTestLexStreamDlg(CWnd* pParent /*=NULL*/) : CDialog(CTestLex
 }
 
 void CTestLexStreamDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDITCOUNT, m_count);
 	DDV_MinMaxUInt(pDX, m_count, 0, 10000);
 	DDX_Text(pDX, IDC_EDITTEXT, m_text);
@@ -47,7 +47,7 @@ BEGIN_MESSAGE_MAP(CTestLexStreamDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CTestLexStreamDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -73,7 +73,7 @@ void CTestLexStreamDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
     CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -94,7 +94,7 @@ void CTestLexStreamDlg::OnPaint() {
     const BOOL enable = m_stream.ok() ? TRUE : FALSE;
     GetDlgItem(IDC_BUTTONREAD)->EnableWindow(enable);
     GetDlgItem(IDC_EDITCOUNT )->EnableWindow(enable);
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 

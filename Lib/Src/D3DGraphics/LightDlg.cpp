@@ -15,7 +15,7 @@ CLightDlg::CLightDlg(PropertyChangeListener *listener, CWnd *pParent)
 }
 
 void CLightDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Control(pDX, IDC_COLORMAP_AMBIENT , m_colormapAmbient );
   DDX_Control(pDX, IDC_COLORMAP_SPECULAR, m_colormapSpecular);
   DDX_Control(pDX, IDC_COLORMAP_DIFFUSE , m_colormapDiffuse );
@@ -30,7 +30,7 @@ BEGIN_MESSAGE_MAP(CLightDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CLightDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_origName = getWindowText(this);
 
   initSlider(IDC_SLIDER_RANGE               , 0.001 , 100, 200, LOGARITHMIC);
@@ -147,7 +147,7 @@ void CLightDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   }
   setCurrentValue(v);
 
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 BEGIN_EVENTSINK_MAP(CLightDlg, CDialog)

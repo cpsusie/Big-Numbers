@@ -22,7 +22,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -39,7 +39,7 @@ void CReversiDlg::OnHjlpAboutreversi() {
 
 
 void CReversiDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CReversiDlg, CDialog)
@@ -57,7 +57,7 @@ BEGIN_MESSAGE_MAP(CReversiDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CReversiDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -94,17 +94,16 @@ BOOL CReversiDlg::OnInitDialog() {
 
 void CReversiDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
 BOOL CReversiDlg::PreTranslateMessage(MSG* pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg))
     return true;
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 // If you add a minimize button to your dialog, you will need the code below
@@ -180,7 +179,7 @@ void CReversiDlg::OnPaint() {
 
   } else {
 
-    CDialog::OnPaint();
+    __super::OnPaint();
     CWnd *board = GetDlgItem(IDC_BOARDFRAME);
     CRect crect;
     board->GetClientRect(&crect);
@@ -309,12 +308,12 @@ void CReversiDlg::OnLButtonDown(UINT nFlags, CPoint point) {
       }
     }
   }
-  CDialog::OnLButtonDown(nFlags, point);
+  __super::OnLButtonDown(nFlags, point);
 }
 
 void CReversiDlg::OnTimer(UINT_PTR nIDEvent) {
   computerMove();   
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CReversiDlg::OnSize(UINT nType, int cx, int cy) {
@@ -353,5 +352,5 @@ void CReversiDlg::OnMouseMove(UINT nFlags, CPoint point) {
     m_currentIsSystemCursor = true;
   }
 
-  CDialog::OnMouseMove(nFlags, point);
+  __super::OnMouseMove(nFlags, point);
 }

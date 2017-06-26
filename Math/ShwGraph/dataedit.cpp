@@ -10,7 +10,7 @@ dataedit::dataedit(CWnd* pParent /*=NULL*/) : CDialog(dataedit::IDD, pParent) {
 }
 
 void dataedit::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 
@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(dataedit, CDialog)
 END_MESSAGE_MAP()
 
 BOOL dataedit::OnInitDialog() { 
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   CListBox *lb = (CListBox*)GetDlgItem(IDC_DATALIST);
 
   TCHAR tmp[50];

@@ -12,7 +12,7 @@ COptionsOrganizerDlg::COptionsOrganizerDlg(CWnd *pParent /*=NULL*/)
 }
 
 void COptionsOrganizerDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Control(pDX, IDC_LISTOPTIONNAMES, m_nameListCtrl);
 }
 
@@ -27,7 +27,7 @@ BEGIN_MESSAGE_MAP(COptionsOrganizerDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL COptionsOrganizerDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   
   m_nameListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT);
   m_nameListCtrl.InsertColumn( 0,EMPTYSTRING,LVCFMT_LEFT, 200);
@@ -94,12 +94,12 @@ void COptionsOrganizerDlg::OnOK() {
     return;
   }
   if(m_nameList.save()) {
-    CDialog::OnOK();
+    __super::OnOK();
   }
 }
 
 void COptionsOrganizerDlg::OnCancel() {
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void COptionsOrganizerDlg::OnButtonRename() {

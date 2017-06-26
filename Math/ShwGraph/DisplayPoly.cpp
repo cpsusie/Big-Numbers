@@ -15,7 +15,7 @@ DisplayPoly::DisplayPoly(CWnd* pParent /*=NULL*/) : CDialog(DisplayPoly::IDD, pP
 
 
 void DisplayPoly::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_EDIT1, m_fisk);
 }
 
@@ -32,5 +32,5 @@ void DisplayPoly::OnPaint() {
     _stprintf(tmp,_T("Hello %d   "),counter++);
     dc.TextOut(10,10,tmp);
     
-    // Do not call CDialog::OnPaint() for painting messages
+    // Do not call __super::OnPaint() for painting messages
 }

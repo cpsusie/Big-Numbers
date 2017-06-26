@@ -10,7 +10,7 @@ CApproximateFillDlg::CApproximateFillDlg(UINT tolerance, CWnd *pParent) : CDialo
 }
 
 void CApproximateFillDlg::DoDataExchange(CDataExchange *pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_EDITTOLERANCE, m_tolerance);
   DDV_MinMaxUInt(pDX, m_tolerance, 0, 255);
 }
@@ -19,7 +19,7 @@ BEGIN_MESSAGE_MAP(CApproximateFillDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CApproximateFillDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   gotoEditBox(this, IDC_EDITTOLERANCE);
   return FALSE;
 }

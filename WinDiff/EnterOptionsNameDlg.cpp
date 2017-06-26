@@ -12,7 +12,7 @@ CEnterOptionsNameDlg::CEnterOptionsNameDlg(const String &currentName, CWnd *pPar
 }
 
 void CEnterOptionsNameDlg::DoDataExchange(CDataExchange* pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_CBString(pDX, IDC_COMBOOPTIONSNAME, m_name);
 }
 
@@ -20,7 +20,7 @@ BEGIN_MESSAGE_MAP(CEnterOptionsNameDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CEnterOptionsNameDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   CComboBox *cb = getNameCombo();
   const StringArray names = Options::getExistingNames();
@@ -51,11 +51,11 @@ void CEnterOptionsNameDlg::OnOK() {
     getNameCombo()->SetFocus();
     return;
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CEnterOptionsNameDlg::OnCancel() {
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 CComboBox *CEnterOptionsNameDlg::getNameCombo() {

@@ -14,14 +14,14 @@ CEnterVariablesDlg::CEnterVariablesDlg(Expression &expr, CWnd* pParent /*=NULL*/
 }
 
 void CEnterVariablesDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CEnterVariablesDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CEnterVariablesDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_fieldArray.Create(this, m_expr);
   m_fieldArray.putValues(m_expr);
@@ -42,5 +42,5 @@ void CEnterVariablesDlg::OnOK() {
     const ExpressionVariableWithValue &v = values[i];
     m_expr.setValue(v.getName(), v.getValue());
   }
-  CDialog::OnOK();
+  __super::OnOK();
 }

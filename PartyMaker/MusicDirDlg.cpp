@@ -14,7 +14,7 @@ CMusicDirDlg::CMusicDirDlg(Options &options, CWnd *pParent)
 }
 
 void CMusicDirDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CMusicDirDlg, CDialog)
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CMusicDirDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CMusicDirDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MUSICDIR_ACCELERATOR));
   CListBox *lb = getListBox();
@@ -49,7 +49,7 @@ void CMusicDirDlg::OnOK() {
     tmp.add(MusicDir(active,(LPCTSTR)dir));
   }
   m_options.setDirList(tmp.toString());
-  CDialog::OnOK();
+  __super::OnOK();
 }
 
 void CMusicDirDlg::OnDblclkDirlist() {
@@ -87,7 +87,7 @@ BOOL CMusicDirDlg::PreTranslateMessage(MSG *pMsg) {
   if(TranslateAccelerator(m_hWnd,m_accelTable,pMsg)) {
     return true;
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 CListBox *CMusicDirDlg::getListBox() {

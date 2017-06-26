@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -38,7 +38,7 @@ CSpectrumDlg::CSpectrumDlg(CWnd* pParent) : CDialog(CSpectrumDlg::IDD, pParent) 
 }
 
 void CSpectrumDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CSpectrumDlg, CDialog)
@@ -58,7 +58,7 @@ END_MESSAGE_MAP()
 #define SAMPLECOUNT 1024 /* must be a power of 2 */
 
 BOOL CSpectrumDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -97,10 +97,9 @@ BOOL CSpectrumDlg::OnInitDialog() {
 
 void CSpectrumDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if((nID & 0xFFF0) == IDM_ABOUTBOX)  {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -121,7 +120,7 @@ BOOL CSpectrumDlg::PreTranslateMessage(MSG* pMsg) {
     m_sampleDone.signal();
   }
   debugLog(_T("Msg:%s\n"), getMessageName(pMsg->message).cstr());
-  BOOL ret = CDialog::PreTranslateMessage(pMsg);
+  BOOL ret = __super::PreTranslateMessage(pMsg);
   m_handlingEvent = false;
   return ret;
 }
@@ -147,7 +146,7 @@ void CSpectrumDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -162,7 +161,7 @@ void CSpectrumDlg::OnSize(UINT nType, int cx, int cy) {
     return;
   }
 
-  CDialog::OnSize(nType, cx, cy);
+  __super::OnSize(nType, cx, cy);
   CRect cr;
   GetClientRect(&cr);
 

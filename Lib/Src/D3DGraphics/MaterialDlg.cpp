@@ -15,7 +15,7 @@ CMaterialDlg::CMaterialDlg(PropertyChangeListener *listener, CWnd *pParent)
 }
 
 void CMaterialDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Control(pDX, IDC_COLORMAP_AMBIENT, m_colormapAmbient);
   DDX_Control(pDX, IDC_COLORMAP_DIFFUSE, m_colormapDiffuse);
   DDX_Control(pDX, IDC_COLORMAP_EMISSIVE, m_colormapEmissive);
@@ -32,7 +32,7 @@ BEGIN_MESSAGE_MAP(CMaterialDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CMaterialDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   m_origName = getWindowText(this);
   initSlider(IDC_SLIDER_POWER       , 0.1, 400, 200, LOGARITHMIC);
   initSlider(IDC_SLIDER_TRANSPARENCY, 1  ,   0, 200);
@@ -70,7 +70,7 @@ void CMaterialDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   v.Power    = getSliderPower();
   setCurrentValue(v);
   showPower(v.Power);
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CMaterialDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
@@ -78,7 +78,7 @@ void CMaterialDlg::OnVScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   v.Diffuse.a = getSliderTransparency();
   setCurrentValue(v);
   showTransparency(v.Diffuse.a);
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CMaterialDlg::setSliderPower(double v) {

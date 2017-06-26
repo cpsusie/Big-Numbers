@@ -27,7 +27,7 @@ CAboutDlg::CAboutDlg() : CDialog(CAboutDlg::IDD) {
 }
 
 void CAboutDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialog)
@@ -122,7 +122,7 @@ CCalculatorDlg::~CCalculatorDlg() {
 }
 
 void CCalculatorDlg::DoDataExchange(CDataExchange* pDX) {
-  CDialog::DoDataExchange(pDX);
+  __super::DoDataExchange(pDX);
   DDX_Text(pDX, IDC_DISPLAY, m_display);
 }
 
@@ -327,7 +327,7 @@ void MyButton::DrawItem(LPDRAWITEMSTRUCT lpDrawItemStruct) {
 }
 
 BOOL CCalculatorDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   ASSERT((IDM_ABOUTBOX & 0xFFF0) == IDM_ABOUTBOX);
   ASSERT(IDM_ABOUTBOX < 0xF000);
@@ -385,10 +385,9 @@ BOOL CCalculatorDlg::OnInitDialog() {
 
 void CCalculatorDlg::OnSysCommand(UINT nID, LPARAM lParam) {
   if ((nID & 0xFFF0) == IDM_ABOUTBOX) {
-    CAboutDlg dlgAbout;
-    dlgAbout.DoModal();
+    CAboutDlg().DoModal();
   } else {
-    CDialog::OnSysCommand(nID, lParam);
+    __super::OnSysCommand(nID, lParam);
   }
 }
 
@@ -409,7 +408,7 @@ void CCalculatorDlg::OnPaint() {
     // Draw the icon
     dc.DrawIcon(x, y, m_hIcon);
   } else {
-    CDialog::OnPaint();
+    __super::OnPaint();
   }
 }
 
@@ -742,7 +741,7 @@ void CCalculatorDlg::OnTimer(UINT_PTR nIDEvent) {
       startTimer(500);
     }
   }
-  CDialog::OnTimer(nIDEvent);
+  __super::OnTimer(nIDEvent);
 }
 
 void CCalculatorDlg::activateButton(int id) {
@@ -838,7 +837,7 @@ BOOL CCalculatorDlg::PreTranslateMessage(MSG* pMsg) {
 */
     }
   }
-  return CDialog::PreTranslateMessage(pMsg);
+  return __super::PreTranslateMessage(pMsg);
 }
 
 void CCalculatorDlg::OnContextMenu(CWnd* pWnd, CPoint point) {

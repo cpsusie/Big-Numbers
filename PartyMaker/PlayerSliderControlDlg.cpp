@@ -15,7 +15,7 @@ CPlayerSliderControlDlg::CPlayerSliderControlDlg(CWMPPlayer4 &player, PlayerCont
 }
 
 void CPlayerSliderControlDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
 }
 
 BEGIN_MESSAGE_MAP(CPlayerSliderControlDlg, CDialog)
@@ -24,7 +24,7 @@ BEGIN_MESSAGE_MAP(CPlayerSliderControlDlg, CDialog)
 END_MESSAGE_MAP()
 
 BOOL CPlayerSliderControlDlg::OnInitDialog() {
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
 
   switch(m_controlType) {
   case CONTROL_BALANCE:
@@ -45,13 +45,13 @@ BOOL CPlayerSliderControlDlg::OnInitDialog() {
 
 void CPlayerSliderControlDlg::OnCancel() {
   setPlayerValue(m_initialValue);
-  CDialog::OnCancel();
+  __super::OnCancel();
 }
 
 void CPlayerSliderControlDlg::OnHScroll(UINT nSBCode, UINT nPos, CScrollBar *pScrollBar) {
   setPlayerValue(m_sliderCtrl.getPos());
   showPlayerValue();
-  CDialog::OnHScroll(nSBCode, nPos, pScrollBar);
+  __super::OnHScroll(nSBCode, nPos, pScrollBar);
 }
 
 void CPlayerSliderControlDlg::OnDefaultSettingButton() {

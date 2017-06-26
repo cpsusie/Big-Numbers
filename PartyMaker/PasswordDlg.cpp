@@ -13,7 +13,7 @@ PasswordDlg::PasswordDlg(CWnd *pParent) : CDialog(PasswordDlg::IDD, pParent) {
 }
 
 void PasswordDlg::DoDataExchange(CDataExchange *pDX) {
-    CDialog::DoDataExchange(pDX);
+    __super::DoDataExchange(pDX);
     DDX_Text(pDX, IDC_PASSWORD, m_password);
 }
 
@@ -22,14 +22,14 @@ END_MESSAGE_MAP()
 
 BOOL PasswordDlg::OnInitDialog() {
   GetDlgItem(IDC_PASSWORD)->SetFocus();
-  CDialog::OnInitDialog();
+  __super::OnInitDialog();
   return false;
 }
 
 void PasswordDlg::OnOK() {
   UpdateData();
   if(Options::validatePassword((LPCTSTR)m_password)) {
-    CDialog::OnOK();
+    __super::OnOK();
   } else {
     Message(_T("Forkert password"));
     m_tryCount++;
