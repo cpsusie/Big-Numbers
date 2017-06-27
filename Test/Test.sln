@@ -244,14 +244,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestFileTreeWalker", "TestF
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShiftAnd", "shiftand\shiftand.vcxproj", "{A92990EF-A84C-487F-A7B5-A79DDE47B3D7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ShiftAnd", "ShiftAnd\shiftand.vcxproj", "{A92990EF-A84C-487F-A7B5-A79DDE47B3D7}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestSwap", "TestSwap\TestSwap.vcxproj", "{41A435C0-FA41-415A-BC59-7F103B13256F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "distinctrepr", "distinctrepr\distinctrepr.vcxproj", "{ADB4BDA7-BD74-406F-BA94-C336CF7D524F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DistinctRepr", "distinctrepr\distinctrepr.vcxproj", "{ADB4BDA7-BD74-406F-BA94-C336CF7D524F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
 	EndProjectSection
@@ -284,6 +284,12 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestWCRegex", "TestWCRegex\TestWCRegex.vcxproj", "{C4389F04-67DC-4000-856B-A220AF6730C6}"
 	ProjectSection(ProjectDependencies) = postProject
 		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMediaPlayer", "TestMediaPlayer\TestMediaPlayer.vcxproj", "{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}"
+	ProjectSection(ProjectDependencies) = postProject
+		{DA57B57F-CFF3-4620-87AE-69D3598B492D} = {DA57B57F-CFF3-4620-87AE-69D3598B492D}
+		{EC9661C7-AA70-418D-BC1C-4F9A87837BFD} = {EC9661C7-AA70-418D-BC1C-4F9A87837BFD}
 	EndProjectSection
 EndProject
 Global
@@ -1524,6 +1530,26 @@ Global
 		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x64.Build.0 = Release|x64
 		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x86.ActiveCfg = Release|Win32
 		{C4389F04-67DC-4000-856B-A220AF6730C6}.Release|x86.Build.0 = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Debug|x64.ActiveCfg = Debug|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Debug|x64.Build.0 = Debug|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Debug|x86.ActiveCfg = Debug|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Debug|x86.Build.0 = Debug|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDDebug|x64.ActiveCfg = Debug|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDDebug|x64.Build.0 = Debug|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDDebug|x86.ActiveCfg = Debug|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDDebug|x86.Build.0 = Debug|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDRelease|x64.ActiveCfg = Release|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDRelease|x64.Build.0 = Release|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDRelease|x86.ActiveCfg = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.LDRelease|x86.Build.0 = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Profilling|x64.ActiveCfg = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Profilling|x64.Build.0 = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Profilling|x86.ActiveCfg = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Profilling|x86.Build.0 = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Release|x64.ActiveCfg = Release|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Release|x64.Build.0 = Release|x64
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Release|x86.ActiveCfg = Release|Win32
+		{F9ED8F71-DB2E-4ED5-B5F2-F6FAF540EA61}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
