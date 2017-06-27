@@ -13,13 +13,13 @@ void registryLog(const TCHAR *format, ...);
 #endif
 
 class RegistryValue {
-private :
-  String         m_name;
-  unsigned long  m_type;
-  BYTE          *m_buffer;
-  unsigned long  m_bufSize;  // in bytes
+private:
+  String  m_name;
+  ULONG   m_type;
+  BYTE   *m_buffer;
+  ULONG   m_bufSize;  // in bytes
 
-  void init(const String &name, unsigned long type, unsigned long bufSize);
+  void init(const String &name, ULONG type, ULONG bufSize);
   void cleanup();
   void setBuffer(const void *src);
 public :
@@ -33,7 +33,7 @@ public :
     return m_name;
   }
 
-  inline unsigned long getType() const {
+  inline ULONG getType() const {
     return m_type;
   }
 
@@ -41,13 +41,13 @@ public :
     return typeAsString(m_type);
   }
 
-  operator unsigned int() const;     // type must be REG_DWORD, REG_DWORD_LITTLE_ENDIAN, REG_DWORD_BIG_ENDIAN
-  operator unsigned long() const;    // same as int
-  operator unsigned __int64() const; // type must be REG_QWORD
-  operator String() const;           // type must be REG_EXPAND_SZ, REG_SZ
-  operator StringArray() const;      // type must be REG_MULTI_SZ
+  operator UINT()        const; // type must be REG_DWORD, REG_DWORD_LITTLE_ENDIAN, REG_DWORD_BIG_ENDIAN
+  operator ULONG()       const; // same as int
+  operator UINT64()      const; // type must be REG_QWORD
+  operator String()      const; // type must be REG_EXPAND_SZ, REG_SZ
+  operator StringArray() const; // type must be REG_MULTI_SZ
 
-  inline unsigned long getBufSize() const {
+  inline ULONG getBufSize() const {
     return m_bufSize;
   }
 
@@ -55,18 +55,18 @@ public :
     return m_buffer;
   }
 
-  static String typeAsString(unsigned long type);
+  static String typeAsString(ULONG type);
 
   RegistryValue();
-  RegistryValue(const String &name, const BYTE      *bytes, unsigned long size, unsigned long type = REG_BINARY);
-  RegistryValue(const String &name, const String    &str  ,                     unsigned long type = REG_SZ    );
+  RegistryValue(const String &name, const BYTE      *bytes, ULONG size, ULONG type = REG_BINARY);
+  RegistryValue(const String &name, const String    &str  ,                     ULONG type = REG_SZ    );
 
-  RegistryValue(const String &name,          int     value,                     unsigned long type = REG_DWORD );
-  RegistryValue(const String &name, unsigned int     value,                     unsigned long type = REG_DWORD );
-  RegistryValue(const String &name,          long    value,                     unsigned long type = REG_DWORD );
-  RegistryValue(const String &name, unsigned long    value,                     unsigned long type = REG_DWORD );
-  RegistryValue(const String &name,          __int64 value,                     unsigned long type = REG_QWORD );
-  RegistryValue(const String &name, unsigned __int64 value,                     unsigned long type = REG_QWORD );
+  RegistryValue(const String &name, int    value, ULONG type = REG_DWORD );
+  RegistryValue(const String &name, UINT   value, ULONG type = REG_DWORD );
+  RegistryValue(const String &name, long   value, ULONG type = REG_DWORD );
+  RegistryValue(const String &name, ULONG  value, ULONG type = REG_DWORD );
+  RegistryValue(const String &name, INT64  value, ULONG type = REG_QWORD );
+  RegistryValue(const String &name, UINT64 value, ULONG type = REG_QWORD );
   RegistryValue(const String &name, const StringArray &strings); // type = REG_MULTI_SZ
   String toString() const;
 };
@@ -166,21 +166,21 @@ public:
 
   RegistryKey createKey(        const String         &subKey
                                ,const String         &keyClass           = _T("")
-                               ,unsigned long         options            = REG_OPTION_NON_VOLATILE
+                               ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
 
   RegistryKey createOrOpenKey(  const String         &subKey
-                               ,unsigned long        *disposition        = NULL
+                               ,ULONG                *disposition        = NULL
                                ,const String         &keyClass           = _T("")
-                               ,unsigned long         options            = REG_OPTION_NON_VOLATILE
+                               ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
 
   RegistryKey createOrOpenPath( const String         &path
-                               ,unsigned long        *disposition        = NULL
+                               ,ULONG                *disposition        = NULL
                                ,const String         &keyClass           = _T("")
-                               ,unsigned long         options            = REG_OPTION_NON_VOLATILE
+                               ,ULONG                 options            = REG_OPTION_NON_VOLATILE
                                ,REGSAM                samDesired         = KEY_ALL_ACCESS
                                ,SECURITY_ATTRIBUTES  *securityAttributes = NULL) const;
 
@@ -198,41 +198,40 @@ public:
   const String &getName() const;
   String getClass();
 
-  void setValue(const String &valueName, const String    &value , unsigned long type = REG_SZ   ) const;
-  void setValue(const String &valueName, unsigned __int64 value , unsigned long type = REG_QWORD) const;
-  void setValue(const String &valueName, __int64          value , unsigned long type = REG_QWORD) const;
-  void setValue(const String &valueName, unsigned long    value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, long             value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, unsigned int     value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, int              value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, unsigned short   value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, short            value , unsigned long type = REG_DWORD) const;
-  void setValue(const String &valueName, bool             value                                 ) const;
-  void setValue(const String &valueName, BYTE            *bytes , unsigned long size            ) const; // type = REG_BINARY
+  void setValue(const String &valueName, const String    &value , ULONG type = REG_SZ   ) const;
+  void setValue(const String &valueName, UINT64           value , ULONG type = REG_QWORD) const;
+  void setValue(const String &valueName, INT64            value , ULONG type = REG_QWORD) const;
+  void setValue(const String &valueName, ULONG            value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, long             value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, UINT             value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, int              value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, USHORT           value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, short            value , ULONG type = REG_DWORD) const;
+  void setValue(const String &valueName, bool             value                         ) const;
+  void setValue(const String &valueName, BYTE            *bytes , ULONG size            ) const; // type = REG_BINARY
   void setValue(const RegistryValue &value) const;
 
   void getValue(const String &valueName, String           &value) const;
-  void getValue(const String &valueName, unsigned __int64 &value) const;
-  void getValue(const String &valueName, __int64          &value) const;
-  void getValue(const String &valueName, unsigned long    &value) const;
+  void getValue(const String &valueName, UINT64           &value) const;
+  void getValue(const String &valueName, INT64            &value) const;
+  void getValue(const String &valueName, ULONG            &value) const;
   void getValue(const String &valueName, long             &value) const;
-  void getValue(const String &valueName, unsigned int     &value) const;
+  void getValue(const String &valueName, UINT             &value) const;
   void getValue(const String &valueName, int              &value) const;
-  void getValue(const String &valueName, unsigned short   &value) const;
+  void getValue(const String &valueName, USHORT           &value) const;
   void getValue(const String &valueName, short            &value) const;
   void getValue(const String &valueName, bool             &value) const;
   void getValue(const String &valueName, RegistryValue    &value) const;
 
-  String           getString(const String &name, const String    &defaultValue) const;
-  __int64          getInt64( const String &name, __int64          defaultValue) const;
-  unsigned __int64 getUint64(const String &name, unsigned __int64 defaultValue) const;
-  int              getInt(   const String &name, int              defaultValue) const;
-  unsigned int     getUint(  const String &name, unsigned int     defaultValue) const;
-  short            getShort( const String &name, short            defaultValue) const;
-  unsigned short   getUshort(const String &name, unsigned short   defaultValue) const;
-  bool             getBool(  const String &name, bool             defaultValue) const;
+  String  getString(const String &name, const String    &defaultValue) const;
+  INT64   getInt64( const String &name, INT64            defaultValue) const;
+  UINT64  getUint64(const String &name, UINT64           defaultValue) const;
+  int     getInt(   const String &name, int              defaultValue) const;
+  UINT    getUint(  const String &name, UINT             defaultValue) const;
+  short   getShort( const String &name, short            defaultValue) const;
+  USHORT  getUshort(const String &name, USHORT           defaultValue) const;
+  bool    getBool(  const String &name, bool             defaultValue) const;
 
   Iterator<String>        getSubKeyIterator() const;
   Iterator<RegistryValue> getValueIterator()  const;
 };
-
