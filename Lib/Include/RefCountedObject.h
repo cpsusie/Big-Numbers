@@ -2,7 +2,7 @@
 
 class RefCountedObject {
 private:
-  int m_refCount;
+  long m_refCount;
 #ifdef _DEBUG
   void logCreate();
   void logRefCount();
@@ -23,6 +23,6 @@ public:
   virtual ~RefCountedObject() {
     RCO_LOGDESTROY();
   }
-  inline int  addref()  { m_refCount++; RCO_LOGREFCOUNT(); return m_refCount; }
-  inline int  release() { m_refCount--; RCO_LOGREFCOUNT(); return m_refCount; }
+  inline int  addref()  { return InterlockedIncrement(&m_refCount); }
+  inline int  release() { return InterlockedDecrement(&m_refCount); }
 };
