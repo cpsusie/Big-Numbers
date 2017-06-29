@@ -9,8 +9,6 @@ private:
   DECLARECLASSNAME;
   INT64 m_numerator, m_denominator;
 
-  static INT64 findGCD(const INT64 &a, const INT64 &b);
-
   void init(const INT64 &numerator, const INT64 &denominator);
   void init(const String &s);
   static void throwDivisionbyZeroException(const TCHAR *method);
@@ -116,6 +114,8 @@ public:
   inline bool isInt32() const {
     return isInteger() && (_I32_MIN <= m_numerator) && (m_numerator <= _I32_MAX);
   }
+  static INT64 findGCD(const INT64 &a, const INT64 &b);
+
   inline const INT64 &getNumerator() const {
     return m_numerator;
   }
