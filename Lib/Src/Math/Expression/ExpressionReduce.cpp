@@ -225,6 +225,9 @@ SNode Expression::reduceRealExp(SNode n) {
   case ACOT           :
   case ACOSH          :
   case BINOMIAL       :
+  case CHI2DENS       :
+  case CHI2DIST       :
+  case LINCGAMMA      :
   case CEIL           :
   case FAC            :
   case FLOOR          :

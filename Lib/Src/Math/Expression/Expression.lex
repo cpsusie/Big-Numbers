@@ -118,6 +118,9 @@ static const KeyWord keywordtable[] = {
 ,_T("ATANH")     ,ATANH
 ,_T("BINOMIAL")  ,BINOMIAL
 ,_T("CEIL")      ,CEIL
+,_T("CHI2DENS")  ,CHI2DENS
+,_T("CHI2DIST")  ,CHI2DIST
+,_T("LINCGAMMA") ,LINCGAMMA
 ,_T("COS")       ,COS
 ,_T("COSH")      ,COSH
 ,_T("COT")       ,COT

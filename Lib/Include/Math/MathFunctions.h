@@ -83,8 +83,9 @@ Real fac(                 const Real &x);
 Real dsign(               const Real &x);
 
 // Assume x >= 0
-Real chiSquaredDensity(      UINT df, const Real &x);
-Real chiSquaredDistribution( UINT df, const Real &x);
+Real lowerIncGamma(          const Real &a,  const Real &x);
+Real chiSquaredDensity(      const Real &df, const Real &x);
+Real chiSquaredDistribution( const Real &df, const Real &x);
 
 Real mypow(               const Real &x,      const Real &y    );
 Real binomial(            const Real &x,      const Real &y    );

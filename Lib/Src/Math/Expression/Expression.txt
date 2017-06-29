@@ -81,11 +81,14 @@ State 0:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -123,6 +126,9 @@ State 0:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -242,11 +248,14 @@ State 3:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -284,6 +293,9 @@ State 3:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -296,10 +308,10 @@ State 3:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 68 on final_expr
+   goto 71 on final_expr
    goto 4 on expr
    goto 5 on boolExpr
-   goto 69 on assignStmt
+   goto 72 on assignStmt
    goto 7 on assign
    goto 8 on name
    goto 9 on unary
@@ -327,18 +339,18 @@ State 4:
  ( 73)K boolExpr        -> expr .GT expr
 
    reduce by 3 on EOI
-   shift to 76 on EQ
-   shift to 80 on GE
-   shift to 81 on GT
-   shift to 78 on LE
-   shift to 79 on LT
-   shift to 77 on NE
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 79 on EQ
+   shift to 83 on GE
+   shift to 84 on GT
+   shift to 81 on LE
+   shift to 82 on LT
+   shift to 80 on NE
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
 
 State 5:
  (  4)K final_expr      -> boolExpr .
@@ -346,8 +358,8 @@ State 5:
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
 
    reduce by 4 on EOI
-   shift to 83 on OR
-   shift to 82 on AND
+   shift to 86 on OR
+   shift to 85 on AND
 
 State 6:
  (  5)K assignStmtList  -> assignStmt .
@@ -391,6 +403,9 @@ State 6:
    reduce by 5 on LOG10
    reduce by 5 on NORM
    reduce by 5 on PROBIT
+   reduce by 5 on CHI2DIST
+   reduce by 5 on CHI2DENS
+   reduce by 5 on LINCGAMMA
    reduce by 5 on ROOT
    reduce by 5 on SIGN
    reduce by 5 on SQR
@@ -407,14 +422,14 @@ State 6:
 State 7:
  (  7)K assignStmt      -> assign .SEMI
 
-   shift to 84 on SEMI
+   shift to 87 on SEMI
 
 State 8:
  (  8)K assign          -> name .ASSIGN expr
  ( 17)K unary           -> name .
 
    reduce by 17 on EOI
-   shift to 85 on ASSIGN
+   shift to 88 on ASSIGN
    reduce by 17 on EQ
    reduce by 17 on GE
    reduce by 17 on GT
@@ -479,12 +494,12 @@ State 10:
 State 11:
  ( 18)K unary           -> function1 .LPAR expr RPAR
 
-   shift to 86 on LPAR
+   shift to 89 on LPAR
 
 State 12:
  ( 19)K unary           -> function2 .LPAR expr COMMA expr RPAR
 
-   shift to 87 on LPAR
+   shift to 90 on LPAR
 
 State 13:
  ( 20)K unary           -> LPAR .expr RPAR
@@ -562,11 +577,14 @@ State 13:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -604,6 +622,9 @@ State 13:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -616,9 +637,9 @@ State 13:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 88 on expr
-   goto 89 on boolExpr
-   goto 90 on name
+   goto 91 on expr
+   goto 92 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -693,11 +714,14 @@ State 14:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -734,6 +758,9 @@ State 14:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -744,10 +771,10 @@ State 14:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 91 on expr
-   goto 90 on name
+   goto 94 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -822,11 +849,14 @@ State 15:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -863,6 +893,9 @@ State 15:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -873,10 +906,10 @@ State 15:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 93 on expr
-   goto 90 on name
+   goto 96 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1057,11 +1090,14 @@ State 20:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -1099,6 +1135,9 @@ State 20:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -1111,9 +1150,9 @@ State 20:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 95 on expr
-   goto 94 on boolExpr
-   goto 90 on name
+   goto 98 on expr
+   goto 97 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1126,22 +1165,22 @@ State 20:
 State 21:
  ( 28)K conditionalExpr -> IIF .LPAR boolExpr COMMA expr COMMA expr RPAR
 
-   shift to 96 on LPAR
+   shift to 99 on LPAR
 
 State 22:
  ( 29)K sumExpr         -> INDEXEDSUM .LPAR assign TO expr RPAR expr
 
-   shift to 97 on LPAR
+   shift to 100 on LPAR
 
 State 23:
  ( 30)K productExpr     -> INDEXEDPRODUCT .LPAR assign TO expr RPAR expr
 
-   shift to 98 on LPAR
+   shift to 101 on LPAR
 
 State 24:
  ( 31)K polyExpr        -> POLY .LB exprList RB LPAR expr RPAR
 
-   shift to 99 on LB
+   shift to 102 on LB
 
 State 25:
  ( 34)K function1       -> ABS .
@@ -1388,11 +1427,14 @@ State 59:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -1430,6 +1472,9 @@ State 59:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -1442,9 +1487,9 @@ State 59:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 95 on expr
-   goto 100 on boolExpr
-   goto 90 on name
+   goto 98 on expr
+   goto 103 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1485,60 +1530,75 @@ State 65:
    reduce by 83 on LPAR
 
 State 66:
- ( 84)K name            -> NAME .
+ ( 84)K function2       -> CHI2DENS .
 
-   reduce by 84 on EOI
-   reduce by 84 on ASSIGN
-   reduce by 84 on SEMI
-   reduce by 84 on COMMA
-   reduce by 84 on TO
-   reduce by 84 on OR
-   reduce by 84 on AND
-   reduce by 84 on EQ
-   reduce by 84 on GE
-   reduce by 84 on GT
-   reduce by 84 on LE
-   reduce by 84 on LT
-   reduce by 84 on NE
-   reduce by 84 on PLUS
-   reduce by 84 on MINUS
-   reduce by 84 on PROD
-   reduce by 84 on QUOT
-   reduce by 84 on MOD
-   reduce by 84 on POW
-   reduce by 84 on RPAR
-   reduce by 84 on RB
+   reduce by 84 on LPAR
 
 State 67:
- ( 85)K number          -> NUMBER .
+ ( 85)K function2       -> CHI2DIST .
 
-   reduce by 85 on EOI
-   reduce by 85 on SEMI
-   reduce by 85 on COMMA
-   reduce by 85 on TO
-   reduce by 85 on OR
-   reduce by 85 on AND
-   reduce by 85 on EQ
-   reduce by 85 on GE
-   reduce by 85 on GT
-   reduce by 85 on LE
-   reduce by 85 on LT
-   reduce by 85 on NE
-   reduce by 85 on PLUS
-   reduce by 85 on MINUS
-   reduce by 85 on PROD
-   reduce by 85 on QUOT
-   reduce by 85 on MOD
-   reduce by 85 on POW
-   reduce by 85 on RPAR
-   reduce by 85 on RB
+   reduce by 85 on LPAR
 
 State 68:
+ ( 86)K function2       -> LINCGAMMA .
+
+   reduce by 86 on LPAR
+
+State 69:
+ ( 87)K name            -> NAME .
+
+   reduce by 87 on EOI
+   reduce by 87 on ASSIGN
+   reduce by 87 on SEMI
+   reduce by 87 on COMMA
+   reduce by 87 on TO
+   reduce by 87 on OR
+   reduce by 87 on AND
+   reduce by 87 on EQ
+   reduce by 87 on GE
+   reduce by 87 on GT
+   reduce by 87 on LE
+   reduce by 87 on LT
+   reduce by 87 on NE
+   reduce by 87 on PLUS
+   reduce by 87 on MINUS
+   reduce by 87 on PROD
+   reduce by 87 on QUOT
+   reduce by 87 on MOD
+   reduce by 87 on POW
+   reduce by 87 on RPAR
+   reduce by 87 on RB
+
+State 70:
+ ( 88)K number          -> NUMBER .
+
+   reduce by 88 on EOI
+   reduce by 88 on SEMI
+   reduce by 88 on COMMA
+   reduce by 88 on TO
+   reduce by 88 on OR
+   reduce by 88 on AND
+   reduce by 88 on EQ
+   reduce by 88 on GE
+   reduce by 88 on GT
+   reduce by 88 on LE
+   reduce by 88 on LT
+   reduce by 88 on NE
+   reduce by 88 on PLUS
+   reduce by 88 on MINUS
+   reduce by 88 on PROD
+   reduce by 88 on QUOT
+   reduce by 88 on MOD
+   reduce by 88 on POW
+   reduce by 88 on RPAR
+   reduce by 88 on RB
+
+State 71:
  (  2)K function        -> assignStmtList final_expr .
 
    reduce by 2 on EOI
 
-State 69:
+State 72:
  (  6)K assignStmtList  -> assignStmtList assignStmt .
 
    reduce by 6 on NUMBER
@@ -1580,6 +1640,9 @@ State 69:
    reduce by 6 on LOG10
    reduce by 6 on NORM
    reduce by 6 on PROBIT
+   reduce by 6 on CHI2DIST
+   reduce by 6 on CHI2DENS
+   reduce by 6 on LINCGAMMA
    reduce by 6 on ROOT
    reduce by 6 on SIGN
    reduce by 6 on SQR
@@ -1593,7 +1656,7 @@ State 69:
    reduce by 6 on LPAR
    reduce by 6 on LB
 
-State 70:
+State 73:
  (  9)K expr            -> expr PLUS .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -1658,11 +1721,14 @@ State 70:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -1699,6 +1765,9 @@ State 70:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -1709,10 +1778,10 @@ State 70:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 101 on expr
-   goto 90 on name
+   goto 104 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1722,7 +1791,7 @@ State 70:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 71:
+State 74:
  ( 10)K expr            -> expr MINUS .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -1787,11 +1856,14 @@ State 71:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -1828,6 +1900,9 @@ State 71:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -1838,10 +1913,10 @@ State 71:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 102 on expr
-   goto 90 on name
+   goto 105 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1851,7 +1926,7 @@ State 71:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 72:
+State 75:
  ( 11)K expr            -> expr PROD .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -1916,11 +1991,14 @@ State 72:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -1957,6 +2035,9 @@ State 72:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -1967,10 +2048,10 @@ State 72:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 103 on expr
-   goto 90 on name
+   goto 106 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -1980,7 +2061,7 @@ State 72:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 73:
+State 76:
  ( 12)K expr            -> expr QUOT .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2045,11 +2126,14 @@ State 73:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2086,6 +2170,9 @@ State 73:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2096,10 +2183,10 @@ State 73:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 104 on expr
-   goto 90 on name
+   goto 107 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2109,7 +2196,7 @@ State 73:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 74:
+State 77:
  ( 13)K expr            -> expr MOD .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2174,11 +2261,14 @@ State 74:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2215,6 +2305,9 @@ State 74:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2225,10 +2318,10 @@ State 74:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 105 on expr
-   goto 90 on name
+   goto 108 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2238,7 +2331,7 @@ State 74:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 75:
+State 78:
  ( 14)K expr            -> expr POW .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2303,11 +2396,14 @@ State 75:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2344,6 +2440,9 @@ State 75:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2354,10 +2453,10 @@ State 75:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 106 on expr
-   goto 90 on name
+   goto 109 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2367,7 +2466,7 @@ State 75:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 76:
+State 79:
  ( 68)K boolExpr        -> expr EQ .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2432,11 +2531,14 @@ State 76:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2473,6 +2575,9 @@ State 76:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2483,10 +2588,10 @@ State 76:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 107 on expr
-   goto 90 on name
+   goto 110 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2496,7 +2601,7 @@ State 76:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 77:
+State 80:
  ( 69)K boolExpr        -> expr NE .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2561,11 +2666,14 @@ State 77:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2602,6 +2710,9 @@ State 77:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2612,10 +2723,10 @@ State 77:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 108 on expr
-   goto 90 on name
+   goto 111 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2625,7 +2736,7 @@ State 77:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 78:
+State 81:
  ( 70)K boolExpr        -> expr LE .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2690,11 +2801,14 @@ State 78:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2731,6 +2845,9 @@ State 78:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2741,10 +2858,10 @@ State 78:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 109 on expr
-   goto 90 on name
+   goto 112 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2754,7 +2871,7 @@ State 78:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 79:
+State 82:
  ( 71)K boolExpr        -> expr LT .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2819,11 +2936,14 @@ State 79:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2860,6 +2980,9 @@ State 79:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2870,10 +2993,10 @@ State 79:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 110 on expr
-   goto 90 on name
+   goto 113 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -2883,7 +3006,7 @@ State 79:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 80:
+State 83:
  ( 72)K boolExpr        -> expr GE .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -2948,11 +3071,14 @@ State 80:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -2989,6 +3115,9 @@ State 80:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -2999,10 +3128,10 @@ State 80:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 111 on expr
-   goto 90 on name
+   goto 114 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3012,7 +3141,7 @@ State 80:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 81:
+State 84:
  ( 73)K boolExpr        -> expr GT .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3077,11 +3206,14 @@ State 81:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3118,6 +3250,9 @@ State 81:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3128,10 +3263,10 @@ State 81:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 112 on expr
-   goto 90 on name
+   goto 115 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3141,7 +3276,7 @@ State 81:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 82:
+State 85:
  ( 74)K boolExpr        -> boolExpr AND .boolExpr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3216,11 +3351,14 @@ State 82:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3258,6 +3396,9 @@ State 82:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3270,9 +3411,9 @@ State 82:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 95 on expr
-   goto 113 on boolExpr
-   goto 90 on name
+   goto 98 on expr
+   goto 116 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3282,7 +3423,7 @@ State 82:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 83:
+State 86:
  ( 75)K boolExpr        -> boolExpr OR .boolExpr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3357,11 +3498,14 @@ State 83:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3399,6 +3543,9 @@ State 83:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3411,9 +3558,9 @@ State 83:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 95 on expr
-   goto 114 on boolExpr
-   goto 90 on name
+   goto 98 on expr
+   goto 117 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3423,7 +3570,7 @@ State 83:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 84:
+State 87:
  (  7)K assignStmt      -> assign SEMI .
 
    reduce by 7 on NUMBER
@@ -3465,6 +3612,9 @@ State 84:
    reduce by 7 on LOG10
    reduce by 7 on NORM
    reduce by 7 on PROBIT
+   reduce by 7 on CHI2DIST
+   reduce by 7 on CHI2DENS
+   reduce by 7 on LINCGAMMA
    reduce by 7 on ROOT
    reduce by 7 on SIGN
    reduce by 7 on SQR
@@ -3478,7 +3628,7 @@ State 84:
    reduce by 7 on LPAR
    reduce by 7 on LB
 
-State 85:
+State 88:
  (  8)K assign          -> name ASSIGN .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3543,11 +3693,14 @@ State 85:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3584,6 +3737,9 @@ State 85:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3594,10 +3750,10 @@ State 85:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 115 on expr
-   goto 90 on name
+   goto 118 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3607,7 +3763,7 @@ State 85:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 86:
+State 89:
  ( 18)K unary           -> function1 LPAR .expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3672,11 +3828,14 @@ State 86:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3713,6 +3872,9 @@ State 86:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3723,10 +3885,10 @@ State 86:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 116 on expr
-   goto 90 on name
+   goto 119 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3736,7 +3898,7 @@ State 86:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 87:
+State 90:
  ( 19)K unary           -> function2 LPAR .expr COMMA expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -3801,11 +3963,14 @@ State 87:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -3842,6 +4007,9 @@ State 87:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -3852,10 +4020,10 @@ State 87:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 117 on expr
-   goto 90 on name
+   goto 120 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -3865,7 +4033,7 @@ State 87:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 88:
+State 91:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -3880,30 +4048,30 @@ State 88:
  ( 72)K boolExpr        -> expr .GE expr
  ( 73)K boolExpr        -> expr .GT expr
 
-   shift to 76 on EQ
-   shift to 80 on GE
-   shift to 81 on GT
-   shift to 78 on LE
-   shift to 79 on LT
-   shift to 77 on NE
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 118 on RPAR
+   shift to 79 on EQ
+   shift to 83 on GE
+   shift to 84 on GT
+   shift to 81 on LE
+   shift to 82 on LT
+   shift to 80 on NE
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 121 on RPAR
 
-State 89:
+State 92:
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
  ( 77)K boolExpr        -> LPAR boolExpr .RPAR
 
-   shift to 83 on OR
-   shift to 82 on AND
-   shift to 119 on RPAR
+   shift to 86 on OR
+   shift to 85 on AND
+   shift to 122 on RPAR
 
-State 90:
+State 93:
  ( 17)K unary           -> name .
 
    reduce by 17 on EOI
@@ -3927,7 +4095,7 @@ State 90:
    reduce by 17 on RPAR
    reduce by 17 on RB
 
-State 91:
+State 94:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -3950,10 +4118,10 @@ State 91:
    reduce by 21 on NE
    reduce by 21 on PLUS
    reduce by 21 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 21 on RPAR
    reduce by 21 on RB
 
@@ -3963,7 +4131,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 21 (prec=4).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 21 (prec=4).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 21 (prec=4).
-State 92:
+State 95:
  ( 20)K unary           -> LPAR .expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -4028,11 +4196,14 @@ State 92:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -4069,6 +4240,9 @@ State 92:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -4079,10 +4253,10 @@ State 92:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 120 on expr
-   goto 90 on name
+   goto 123 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -4092,7 +4266,7 @@ State 92:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 93:
+State 96:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4115,10 +4289,10 @@ State 93:
    reduce by 22 on NE
    reduce by 22 on PLUS
    reduce by 22 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 22 on RPAR
    reduce by 22 on RB
 
@@ -4128,16 +4302,16 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 22 (prec=4).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 22 (prec=4).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 22 (prec=4).
-State 94:
+State 97:
  ( 27)K unary           -> LB boolExpr .RB
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
 
-   shift to 83 on OR
-   shift to 82 on AND
-   shift to 121 on RB
+   shift to 86 on OR
+   shift to 85 on AND
+   shift to 124 on RB
 
-State 95:
+State 98:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4151,20 +4325,20 @@ State 95:
  ( 72)K boolExpr        -> expr .GE expr
  ( 73)K boolExpr        -> expr .GT expr
 
-   shift to 76 on EQ
-   shift to 80 on GE
-   shift to 81 on GT
-   shift to 78 on LE
-   shift to 79 on LT
-   shift to 77 on NE
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 79 on EQ
+   shift to 83 on GE
+   shift to 84 on GT
+   shift to 81 on LE
+   shift to 82 on LT
+   shift to 80 on NE
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
 
-State 96:
+State 99:
  ( 28)K conditionalExpr -> IIF LPAR .boolExpr COMMA expr COMMA expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -4239,11 +4413,14 @@ State 96:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -4281,6 +4458,9 @@ State 96:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -4293,9 +4473,9 @@ State 96:
    shift to 63 on RAND
    shift to 13 on LPAR
    shift to 20 on LB
-   goto 95 on expr
-   goto 122 on boolExpr
-   goto 90 on name
+   goto 98 on expr
+   goto 125 on boolExpr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -4305,25 +4485,25 @@ State 96:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 97:
+State 100:
  ( 29)K sumExpr         -> INDEXEDSUM LPAR .assign TO expr RPAR expr
  (  8)  assign          -> .name ASSIGN expr
- ( 84)  name            -> .NAME
+ ( 87)  name            -> .NAME
 
-   shift to 66 on NAME
-   goto 123 on assign
-   goto 124 on name
+   shift to 69 on NAME
+   goto 126 on assign
+   goto 127 on name
 
-State 98:
+State 101:
  ( 30)K productExpr     -> INDEXEDPRODUCT LPAR .assign TO expr RPAR expr
  (  8)  assign          -> .name ASSIGN expr
- ( 84)  name            -> .NAME
+ ( 87)  name            -> .NAME
 
-   shift to 66 on NAME
-   goto 125 on assign
-   goto 124 on name
+   shift to 69 on NAME
+   goto 128 on assign
+   goto 127 on name
 
-State 99:
+State 102:
  ( 31)K polyExpr        -> POLY LB .exprList RB LPAR expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -4390,11 +4570,14 @@ State 99:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -4431,6 +4614,9 @@ State 99:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -4441,10 +4627,10 @@ State 99:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 127 on expr
-   goto 90 on name
+   goto 130 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -4453,9 +4639,9 @@ State 99:
    goto 17 on sumExpr
    goto 18 on productExpr
    goto 19 on polyExpr
-   goto 126 on exprList
+   goto 129 on exprList
 
-State 100:
+State 103:
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
  ( 76)K boolExpr        -> NOT boolExpr .
@@ -4469,7 +4655,7 @@ State 100:
 
 warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose reduce by prod 76 (prec=3).
 warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 76 (prec=3).
-State 101:
+State 104:
  (  9)K expr            -> expr .PLUS expr
  (  9)K expr            -> expr PLUS expr .
  ( 10)K expr            -> expr .MINUS expr
@@ -4492,10 +4678,10 @@ State 101:
    reduce by 9 on NE
    reduce by 9 on PLUS
    reduce by 9 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 9 on RPAR
    reduce by 9 on RB
 
@@ -4505,7 +4691,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 9 (prec=4).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 9 (prec=4).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 9 (prec=4).
-State 102:
+State 105:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 10)K expr            -> expr MINUS expr .
@@ -4528,10 +4714,10 @@ State 102:
    reduce by 10 on NE
    reduce by 10 on PLUS
    reduce by 10 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 10 on RPAR
    reduce by 10 on RB
 
@@ -4541,7 +4727,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 10 (prec=4).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 10 (prec=4).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 10 (prec=4).
-State 103:
+State 106:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4567,7 +4753,7 @@ State 103:
    reduce by 11 on PROD
    reduce by 11 on QUOT
    reduce by 11 on MOD
-   shift to 75 on POW
+   shift to 78 on POW
    reduce by 11 on RPAR
    reduce by 11 on RB
 
@@ -4577,7 +4763,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose reduce by
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose reduce by prod 11 (prec=5).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose reduce by prod 11 (prec=5).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 11 (prec=5).
-State 104:
+State 107:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4603,7 +4789,7 @@ State 104:
    reduce by 12 on PROD
    reduce by 12 on QUOT
    reduce by 12 on MOD
-   shift to 75 on POW
+   shift to 78 on POW
    reduce by 12 on RPAR
    reduce by 12 on RB
 
@@ -4613,7 +4799,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose reduce by
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose reduce by prod 12 (prec=5).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose reduce by prod 12 (prec=5).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 12 (prec=5).
-State 105:
+State 108:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4639,7 +4825,7 @@ State 105:
    reduce by 13 on PROD
    reduce by 13 on QUOT
    reduce by 13 on MOD
-   shift to 75 on POW
+   shift to 78 on POW
    reduce by 13 on RPAR
    reduce by 13 on RB
 
@@ -4649,7 +4835,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose reduce by
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose reduce by prod 13 (prec=5).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose reduce by prod 13 (prec=5).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 13 (prec=5).
-State 106:
+State 109:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4685,7 +4871,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose reduce by
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose reduce by prod 14 (prec=6).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose reduce by prod 14 (prec=6).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose reduce by prod 14 (prec=6).
-State 107:
+State 110:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4698,16 +4884,16 @@ State 107:
    reduce by 68 on COMMA
    reduce by 68 on OR
    reduce by 68 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 68 on RPAR
    reduce by 68 on RB
 
-State 108:
+State 111:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4720,16 +4906,16 @@ State 108:
    reduce by 69 on COMMA
    reduce by 69 on OR
    reduce by 69 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 69 on RPAR
    reduce by 69 on RB
 
-State 109:
+State 112:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4742,16 +4928,16 @@ State 109:
    reduce by 70 on COMMA
    reduce by 70 on OR
    reduce by 70 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 70 on RPAR
    reduce by 70 on RB
 
-State 110:
+State 113:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4764,16 +4950,16 @@ State 110:
    reduce by 71 on COMMA
    reduce by 71 on OR
    reduce by 71 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 71 on RPAR
    reduce by 71 on RB
 
-State 111:
+State 114:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4786,16 +4972,16 @@ State 111:
    reduce by 72 on COMMA
    reduce by 72 on OR
    reduce by 72 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 72 on RPAR
    reduce by 72 on RB
 
-State 112:
+State 115:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4808,16 +4994,16 @@ State 112:
    reduce by 73 on COMMA
    reduce by 73 on OR
    reduce by 73 on AND
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 73 on RPAR
    reduce by 73 on RB
 
-State 113:
+State 116:
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 74)K boolExpr        -> boolExpr AND boolExpr .
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
@@ -4831,7 +5017,7 @@ State 113:
 
 warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose reduce by prod 74 (prec=3).
 warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 74 (prec=3).
-State 114:
+State 117:
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
  ( 75)K boolExpr        -> boolExpr OR boolExpr .
@@ -4839,13 +5025,13 @@ State 114:
    reduce by 75 on EOI
    reduce by 75 on COMMA
    reduce by 75 on OR
-   shift to 82 on AND
+   shift to 85 on AND
    reduce by 75 on RPAR
    reduce by 75 on RB
 
 warning --- Shift/reduce conflict on AND (prec=3, left assoc). Choose shift instead of reduce by prod 75 (prec=2).
 warning --- Shift/reduce conflict on OR (prec=2, left assoc). Choose reduce by prod 75 (prec=2).
-State 115:
+State 118:
  (  8)K assign          -> name ASSIGN expr .
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
@@ -4856,14 +5042,14 @@ State 115:
 
    reduce by 8 on SEMI
    reduce by 8 on TO
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
 
-State 116:
+State 119:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4872,15 +5058,15 @@ State 116:
  ( 14)K expr            -> expr .POW expr
  ( 18)K unary           -> function1 LPAR expr .RPAR
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 128 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 131 on RPAR
 
-State 117:
+State 120:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4889,15 +5075,15 @@ State 117:
  ( 14)K expr            -> expr .POW expr
  ( 19)K unary           -> function2 LPAR expr .COMMA expr RPAR
 
-   shift to 129 on COMMA
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 132 on COMMA
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
 
-State 118:
+State 121:
  ( 20)K unary           -> LPAR expr RPAR .
 
    reduce by 20 on EOI
@@ -4921,7 +5107,7 @@ State 118:
    reduce by 20 on RPAR
    reduce by 20 on RB
 
-State 119:
+State 122:
  ( 77)K boolExpr        -> LPAR boolExpr RPAR .
 
    reduce by 77 on EOI
@@ -4931,7 +5117,7 @@ State 119:
    reduce by 77 on RPAR
    reduce by 77 on RB
 
-State 120:
+State 123:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -4940,15 +5126,15 @@ State 120:
  ( 14)K expr            -> expr .POW expr
  ( 20)K unary           -> LPAR expr .RPAR
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 118 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 121 on RPAR
 
-State 121:
+State 124:
  ( 27)K unary           -> LB boolExpr RB .
 
    reduce by 27 on EOI
@@ -4972,38 +5158,38 @@ State 121:
    reduce by 27 on RPAR
    reduce by 27 on RB
 
-State 122:
+State 125:
  ( 28)K conditionalExpr -> IIF LPAR boolExpr .COMMA expr COMMA expr RPAR
  ( 74)K boolExpr        -> boolExpr .AND boolExpr
  ( 75)K boolExpr        -> boolExpr .OR boolExpr
 
-   shift to 130 on COMMA
-   shift to 83 on OR
-   shift to 82 on AND
-
-State 123:
- ( 29)K sumExpr         -> INDEXEDSUM LPAR assign .TO expr RPAR expr
-
-   shift to 131 on TO
-
-State 124:
- (  8)K assign          -> name .ASSIGN expr
-
-   shift to 85 on ASSIGN
-
-State 125:
- ( 30)K productExpr     -> INDEXEDPRODUCT LPAR assign .TO expr RPAR expr
-
-   shift to 132 on TO
+   shift to 133 on COMMA
+   shift to 86 on OR
+   shift to 85 on AND
 
 State 126:
+ ( 29)K sumExpr         -> INDEXEDSUM LPAR assign .TO expr RPAR expr
+
+   shift to 134 on TO
+
+State 127:
+ (  8)K assign          -> name .ASSIGN expr
+
+   shift to 88 on ASSIGN
+
+State 128:
+ ( 30)K productExpr     -> INDEXEDPRODUCT LPAR assign .TO expr RPAR expr
+
+   shift to 135 on TO
+
+State 129:
  ( 31)K polyExpr        -> POLY LB exprList .RB LPAR expr RPAR
  ( 32)K exprList        -> exprList .COMMA expr
 
-   shift to 134 on COMMA
-   shift to 133 on RB
+   shift to 137 on COMMA
+   shift to 136 on RB
 
-State 127:
+State 130:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5013,15 +5199,15 @@ State 127:
  ( 33)K exprList        -> expr .
 
    reduce by 33 on COMMA
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 33 on RB
 
-State 128:
+State 131:
  ( 18)K unary           -> function1 LPAR expr RPAR .
 
    reduce by 18 on EOI
@@ -5045,7 +5231,7 @@ State 128:
    reduce by 18 on RPAR
    reduce by 18 on RB
 
-State 129:
+State 132:
  ( 19)K unary           -> function2 LPAR expr COMMA .expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5110,11 +5296,14 @@ State 129:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5151,6 +5340,9 @@ State 129:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5161,10 +5353,10 @@ State 129:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 135 on expr
-   goto 90 on name
+   goto 138 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5174,7 +5366,7 @@ State 129:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 130:
+State 133:
  ( 28)K conditionalExpr -> IIF LPAR boolExpr COMMA .expr COMMA expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5239,11 +5431,14 @@ State 130:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5280,6 +5475,9 @@ State 130:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5290,10 +5488,10 @@ State 130:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 136 on expr
-   goto 90 on name
+   goto 139 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5303,7 +5501,7 @@ State 130:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 131:
+State 134:
  ( 29)K sumExpr         -> INDEXEDSUM LPAR assign TO .expr RPAR expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5368,11 +5566,14 @@ State 131:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5409,6 +5610,9 @@ State 131:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5419,10 +5623,10 @@ State 131:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 137 on expr
-   goto 90 on name
+   goto 140 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5432,7 +5636,7 @@ State 131:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 132:
+State 135:
  ( 30)K productExpr     -> INDEXEDPRODUCT LPAR assign TO .expr RPAR expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5497,11 +5701,14 @@ State 132:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5538,6 +5745,9 @@ State 132:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5548,10 +5758,10 @@ State 132:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 138 on expr
-   goto 90 on name
+   goto 141 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5561,12 +5771,12 @@ State 132:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 133:
+State 136:
  ( 31)K polyExpr        -> POLY LB exprList RB .LPAR expr RPAR
 
-   shift to 139 on LPAR
+   shift to 142 on LPAR
 
-State 134:
+State 137:
  ( 32)K exprList        -> exprList COMMA .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5631,11 +5841,14 @@ State 134:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5672,6 +5885,9 @@ State 134:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5682,10 +5898,10 @@ State 134:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 140 on expr
-   goto 90 on name
+   goto 143 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5695,7 +5911,7 @@ State 134:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 135:
+State 138:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5704,15 +5920,15 @@ State 135:
  ( 14)K expr            -> expr .POW expr
  ( 19)K unary           -> function2 LPAR expr COMMA expr .RPAR
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 141 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 144 on RPAR
 
-State 136:
+State 139:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5721,15 +5937,15 @@ State 136:
  ( 14)K expr            -> expr .POW expr
  ( 28)K conditionalExpr -> IIF LPAR boolExpr COMMA expr .COMMA expr RPAR
 
-   shift to 142 on COMMA
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 145 on COMMA
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
 
-State 137:
+State 140:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5738,15 +5954,15 @@ State 137:
  ( 14)K expr            -> expr .POW expr
  ( 29)K sumExpr         -> INDEXEDSUM LPAR assign TO expr .RPAR expr
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 143 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 146 on RPAR
 
-State 138:
+State 141:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5755,15 +5971,15 @@ State 138:
  ( 14)K expr            -> expr .POW expr
  ( 30)K productExpr     -> INDEXEDPRODUCT LPAR assign TO expr .RPAR expr
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 144 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 147 on RPAR
 
-State 139:
+State 142:
  ( 31)K polyExpr        -> POLY LB exprList RB LPAR .expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5828,11 +6044,14 @@ State 139:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -5869,6 +6088,9 @@ State 139:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -5879,10 +6101,10 @@ State 139:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 145 on expr
-   goto 90 on name
+   goto 148 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -5892,7 +6114,7 @@ State 139:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 140:
+State 143:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -5902,15 +6124,15 @@ State 140:
  ( 32)K exprList        -> exprList COMMA expr .
 
    reduce by 32 on COMMA
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 32 on RB
 
-State 141:
+State 144:
  ( 19)K unary           -> function2 LPAR expr COMMA expr RPAR .
 
    reduce by 19 on EOI
@@ -5934,7 +6156,7 @@ State 141:
    reduce by 19 on RPAR
    reduce by 19 on RB
 
-State 142:
+State 145:
  ( 28)K conditionalExpr -> IIF LPAR boolExpr COMMA expr COMMA .expr RPAR
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -5999,11 +6221,14 @@ State 142:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -6040,6 +6265,9 @@ State 142:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -6050,10 +6278,10 @@ State 142:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 146 on expr
-   goto 90 on name
+   goto 149 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -6063,7 +6291,7 @@ State 142:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 143:
+State 146:
  ( 29)K sumExpr         -> INDEXEDSUM LPAR assign TO expr RPAR .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -6128,11 +6356,14 @@ State 143:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -6169,6 +6400,9 @@ State 143:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -6179,10 +6413,10 @@ State 143:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 147 on expr
-   goto 90 on name
+   goto 150 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -6192,7 +6426,7 @@ State 143:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 144:
+State 147:
  ( 30)K productExpr     -> INDEXEDPRODUCT LPAR assign TO expr RPAR .expr
  (  9)  expr            -> .expr PLUS expr
  ( 10)  expr            -> .expr MINUS expr
@@ -6257,11 +6491,14 @@ State 144:
  ( 81)  function2       -> .RAND
  ( 82)  function2       -> .ROOT
  ( 83)  function2       -> .BINOMIAL
- ( 84)  name            -> .NAME
- ( 85)  number          -> .NUMBER
+ ( 84)  function2       -> .CHI2DENS
+ ( 85)  function2       -> .CHI2DIST
+ ( 86)  function2       -> .LINCGAMMA
+ ( 87)  name            -> .NAME
+ ( 88)  number          -> .NUMBER
 
-   shift to 67 on NUMBER
-   shift to 66 on NAME
+   shift to 70 on NUMBER
+   shift to 69 on NAME
    shift to 21 on IIF
    shift to 22 on INDEXEDSUM
    shift to 23 on INDEXEDPRODUCT
@@ -6298,6 +6535,9 @@ State 144:
    shift to 48 on LOG10
    shift to 49 on NORM
    shift to 50 on PROBIT
+   shift to 67 on CHI2DIST
+   shift to 66 on CHI2DENS
+   shift to 68 on LINCGAMMA
    shift to 64 on ROOT
    shift to 52 on SIGN
    shift to 55 on SQR
@@ -6308,10 +6548,10 @@ State 144:
    shift to 62 on NORMRAND
    shift to 24 on POLY
    shift to 63 on RAND
-   shift to 92 on LPAR
+   shift to 95 on LPAR
    shift to 20 on LB
-   goto 148 on expr
-   goto 90 on name
+   goto 151 on expr
+   goto 93 on name
    goto 9 on unary
    goto 10 on number
    goto 11 on function1
@@ -6321,7 +6561,7 @@ State 144:
    goto 18 on productExpr
    goto 19 on polyExpr
 
-State 145:
+State 148:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -6330,15 +6570,15 @@ State 145:
  ( 14)K expr            -> expr .POW expr
  ( 31)K polyExpr        -> POLY LB exprList RB LPAR expr .RPAR
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 149 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 152 on RPAR
 
-State 146:
+State 149:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -6347,15 +6587,15 @@ State 146:
  ( 14)K expr            -> expr .POW expr
  ( 28)K conditionalExpr -> IIF LPAR boolExpr COMMA expr COMMA expr .RPAR
 
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
-   shift to 150 on RPAR
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
+   shift to 153 on RPAR
 
-State 147:
+State 150:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -6376,12 +6616,12 @@ State 147:
    reduce by 29 on LE
    reduce by 29 on LT
    reduce by 29 on NE
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 29 on RPAR
    reduce by 29 on RB
 
@@ -6391,7 +6631,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 29 (prec=1).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 29 (prec=1).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 29 (prec=1).
-State 148:
+State 151:
  (  9)K expr            -> expr .PLUS expr
  ( 10)K expr            -> expr .MINUS expr
  ( 11)K expr            -> expr .PROD expr
@@ -6412,12 +6652,12 @@ State 148:
    reduce by 30 on LE
    reduce by 30 on LT
    reduce by 30 on NE
-   shift to 70 on PLUS
-   shift to 71 on MINUS
-   shift to 72 on PROD
-   shift to 73 on QUOT
-   shift to 74 on MOD
-   shift to 75 on POW
+   shift to 73 on PLUS
+   shift to 74 on MINUS
+   shift to 75 on PROD
+   shift to 76 on QUOT
+   shift to 77 on MOD
+   shift to 78 on POW
    reduce by 30 on RPAR
    reduce by 30 on RB
 
@@ -6427,7 +6667,7 @@ warning --- Shift/reduce conflict on PROD (prec=5, left assoc). Choose shift ins
 warning --- Shift/reduce conflict on QUOT (prec=5, left assoc). Choose shift instead of reduce by prod 30 (prec=1).
 warning --- Shift/reduce conflict on MOD (prec=5, left assoc). Choose shift instead of reduce by prod 30 (prec=1).
 warning --- Shift/reduce conflict on POW (prec=6, left assoc). Choose shift instead of reduce by prod 30 (prec=1).
-State 149:
+State 152:
  ( 31)K polyExpr        -> POLY LB exprList RB LPAR expr RPAR .
 
    reduce by 31 on EOI
@@ -6451,7 +6691,7 @@ State 149:
    reduce by 31 on RPAR
    reduce by 31 on RB
 
-State 150:
+State 153:
  ( 28)K conditionalExpr -> IIF LPAR boolExpr COMMA expr COMMA expr RPAR .
 
    reduce by 28 on EOI
@@ -6476,12 +6716,12 @@ State 150:
    reduce by 28 on RB
 
 
-  75	terminals
+  78	terminals
   18	nonterminals
-  86	productions
- 151	LALR(1) states
-2810	items
-8488	bytes required for parsertables
+  89	productions
+ 154	LALR(1) states
+2921	items
+8636	bytes required for parsertables
 
    0	shift/reduce  conflicts
    0	reduce/reduce conflicts

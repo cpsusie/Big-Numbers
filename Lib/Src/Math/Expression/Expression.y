@@ -33,7 +33,9 @@ private:
 %left PRODUCT PROD QUOT MOD      /*  * / %                        */
 %left POW                        /*  ^                            */
 %term ACOS ACOSH ACOT ACSC ASEC ASIN ASINH ATAN ATANH COS COSH COT CSC SEC SIN SINH TAN TANH
-%term ABS CEIL ERF EXP FAC FLOOR GAMMA GAUSS INVERF LN LOG10 NORM PROBIT ROOT SIGN SQR SQRT
+%term ABS CEIL ERF EXP FAC FLOOR GAMMA GAUSS INVERF LN LOG10 
+%term NORM PROBIT CHI2DIST CHI2DENS LINCGAMMA
+%term ROOT SIGN SQR SQRT
 %term BINOMIAL MAX MIN NORMRAND POLY RAND 
 %left LPAR RPAR LB RB            /*  ( ) [ ] (highest precedence) */
 
@@ -79,7 +81,7 @@ expr                : expr PLUS  expr                       { $$ = newNode( getP
                     | expr MOD   expr                       { $$ = newNode( getPos(2), MOD    , $1, $3, NULL);          }
                     | expr POW   expr                       { $$ = newNode( getPos(2), POW    , $1, $3, NULL);          }
                     | unary
-					;
+          ;
 
 unary               : number
                     | name
@@ -92,11 +94,11 @@ unary               : number
                     | sumExpr
                     | productExpr
                     | polyExpr
-					| LB boolExpr RB                        { $$ = newNode( getPos(1), IIF
-					                                                      , $2
-					                                                      , newNode(getPos(1), NUMBER  , ator("1"))
-					                                                      , newNode(getPos(1), NUMBER  , ator("0"))
-					                                                      , NULL);                                      }
+                    | LB boolExpr RB                        { $$ = newNode( getPos(1), IIF
+                                                                , $2
+                                                                , newNode(getPos(1), NUMBER  , ator("1"))
+                                                                , newNode(getPos(1), NUMBER  , ator("0"))
+                                                                , NULL);                                      }
                     ;
 
 conditionalExpr     : IIF LPAR boolExpr COMMA expr COMMA expr RPAR
@@ -166,12 +168,15 @@ boolExpr            : expr EQ expr                          { $$ = newNode( getP
                     | LPAR boolExpr RPAR                    { $$ = $2;                                                  }
                     ;
 
-function2           : MAX                                   { $$ = newNode( getPos(1), MAX     , NULL);                 }
-                    | MIN                                   { $$ = newNode( getPos(1), MIN     , NULL);                 }
-                    | NORMRAND                              { $$ = newNode( getPos(1), NORMRAND, NULL);                 }
-                    | RAND                                  { $$ = newNode( getPos(1), RAND    , NULL);                 }
-                    | ROOT                                  { $$ = newNode( getPos(1), ROOT    , NULL);                 }
-                    | BINOMIAL                              { $$ = newNode( getPos(1), BINOMIAL, NULL);                 }
+function2           : MAX                                   { $$ = newNode( getPos(1), MAX      , NULL);                }
+                    | MIN                                   { $$ = newNode( getPos(1), MIN      , NULL);                }
+                    | NORMRAND                              { $$ = newNode( getPos(1), NORMRAND , NULL);                }
+                    | RAND                                  { $$ = newNode( getPos(1), RAND     , NULL);                }
+                    | ROOT                                  { $$ = newNode( getPos(1), ROOT     , NULL);                }
+                    | BINOMIAL                              { $$ = newNode( getPos(1), BINOMIAL , NULL);                }
+                    | CHI2DENS                              { $$ = newNode( getPos(1), CHI2DENS , NULL);                }
+                    | CHI2DIST                              { $$ = newNode( getPos(1), CHI2DIST , NULL);                }
+                    | LINCGAMMA                             { $$ = newNode( getPos(1), LINCGAMMA, NULL);                }
                     ;
 
 name                : NAME                                  { $$ = newNode( getPos(1), NAME    , getText());            }

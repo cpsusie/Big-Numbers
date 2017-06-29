@@ -62,20 +62,23 @@
     ,LOG10           =  58
     ,NORM            =  59
     ,PROBIT          =  60
-    ,ROOT            =  61
-    ,SIGN            =  62
-    ,SQR             =  63
-    ,SQRT            =  64
-    ,BINOMIAL        =  65
-    ,MAX             =  66
-    ,MIN             =  67
-    ,NORMRAND        =  68
-    ,POLY            =  69
-    ,RAND            =  70
-    ,LPAR            =  71
-    ,RPAR            =  72
-    ,LB              =  73
-    ,RB              =  74
+    ,CHI2DIST        =  61
+    ,CHI2DENS        =  62
+    ,LINCGAMMA       =  63
+    ,ROOT            =  64
+    ,SIGN            =  65
+    ,SQR             =  66
+    ,SQRT            =  67
+    ,BINOMIAL        =  68
+    ,MAX             =  69
+    ,MIN             =  70
+    ,NORMRAND        =  71
+    ,POLY            =  72
+    ,RAND            =  73
+    ,LPAR            =  74
+    ,RPAR            =  75
+    ,LB              =  76
+    ,RB              =  77
   } ExpressionInputSymbol;
 	
   typedef enum {
