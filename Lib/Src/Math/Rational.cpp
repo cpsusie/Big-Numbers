@@ -194,7 +194,7 @@ void Rational::init(const INT64 &numerator, const INT64 &denominator) {
     m_numerator   = 0;
     m_denominator = 1;
   } else {
-    const INT64 gcd = findGCD(INT64(abs(numerator)),INT64(abs(denominator)));
+    const UINT64 gcd = findGCD(UINT64(abs(numerator)),UINT64(abs(denominator)));
     m_numerator   = numerator   / gcd;
     m_denominator = denominator / gcd;
     if(denominator < 0) { // Negative numbers are represented with negative numerator and positive denominator
@@ -326,8 +326,8 @@ int rationalCmp(const Rational &r1, const Rational &r2) {
   const int sign1 = sign(r1.m_numerator);
   const int c     = sign1 - sign(r2.m_numerator);
   if(c != 0) return c;
-  if(abs(r1.m_numerator)                > (UINT)UINT_MAX
-  || abs(r2.m_numerator)                > (UINT)UINT_MAX
+  if(abs(r1.m_numerator)      > (UINT)UINT_MAX
+  || abs(r2.m_numerator)      > (UINT)UINT_MAX
   || (UINT64)r1.m_denominator > (UINT)UINT_MAX
   || (UINT64)r2.m_denominator > (UINT)UINT_MAX) {
     return sign(getDouble(r1) - getDouble(r2));
@@ -408,14 +408,14 @@ INT64 Rational::safeProd(const INT64 &a, const INT64 &b, int line) { // static
   return result;
 }
 
-INT64 Rational::findGCD(const INT64 &a, const INT64 &b) { // static
+UINT64 Rational::findGCD(const UINT64 &a, const UINT64 &b) { // static
   DEFINEMETHODNAME;
-  if(a <= 0 || b <= 0) {
-    throwInvalidArgumentException(method, _T("a=%I64d, b=%I64d"), a, b);
+  if(a == 0 || b == 0) {
+    throwInvalidArgumentException(method, _T("a=%I64u, b=%I64u"), a, b);
   }
-  INT64 g = 1;
-  INT64 u = a;
-  INT64 v(b);
+  UINT64 g = 1;
+  UINT64 u = a;
+  UINT64 v(b);
 
   while(EVEN(u) && EVEN(v)) {
     u /= 2;

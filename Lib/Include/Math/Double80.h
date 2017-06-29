@@ -599,8 +599,8 @@ bool     isPInfinity(const Double80 &x);
 bool     isNInfinity(const Double80 &x);
 bool     isInfinity( const Double80 &x);
 
-Double80 randDouble80();
-Double80 randDouble80(const Double80 &low, const Double80 &high);
+Double80 randDouble80(Random *rnd = NULL);
+Double80 randDouble80(const Double80 &low, const Double80 &high, Random *rnd = NULL);
 
 String toString(      const Double80 &x, int precision=6, int width=0, int flags=0);
 

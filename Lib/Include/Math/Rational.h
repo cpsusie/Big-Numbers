@@ -114,7 +114,7 @@ public:
   inline bool isInt32() const {
     return isInteger() && (_I32_MIN <= m_numerator) && (m_numerator <= _I32_MAX);
   }
-  static INT64 findGCD(const INT64 &a, const INT64 &b);
+  static UINT64 findGCD(const UINT64 &a, const UINT64 &b);
 
   inline const INT64 &getNumerator() const {
     return m_numerator;
