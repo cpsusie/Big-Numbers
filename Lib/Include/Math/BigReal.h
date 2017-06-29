@@ -372,7 +372,6 @@ private:
   friend class MultiplierThread;
   friend class BigRealTestClass;
   friend class BigInt;
-  friend class RandomBigReal;
 
   // Construction helperfunctions
   inline void init() {
@@ -794,9 +793,6 @@ public:
     return x.getLow() >= 0;
   }
 
-  static BigReal random(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);   // 0 <= random < 1; with the specified number of decimal digits, 
-                                                                                            // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
-
   friend BigReal &copy(BigReal &to, const BigReal &from, const BigReal &f);                 // Set to = from so |to-from| <= f. Return to
   friend BigReal &copy(BigReal &to, const BigReal &from, size_t    length);                 // Set to = from so to.getlength() = min(length,from.getlength(). Return to
 
@@ -855,6 +851,16 @@ public:
   void assertIsValidBigReal() const; // checks that this is a consistent number with all the various invariants satisfied.
                                      // Throws an excpeption if not with a descripion of what is wrong. For debugging
 
+  // Digits generated with rnd. if rnd == NULL, _standardRandomGenerator is used
+  friend BigInt  randBigInt( size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+
+  // Return uniform distributed random number between 0 (incl) and 1 (excl)
+  // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
+  friend BigReal randBigReal(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
+
+  // Return uniform distributed random number between low (incl) and high (excl)
+  // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
+  friend BigReal  randBigReal(const BigReal &low, const BigReal &high, size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
 };
 
 class ConstDigitPool : private DigitPool {
@@ -1218,18 +1224,6 @@ class BigRealException : public Exception {
 public:
   BigRealException(const TCHAR *text) : Exception(text) {
   };
-};
-
-BigInt randomInteger(size_t digits, Random *rnd = NULL, DigitPool *digitPool = NULL);
-
-class RandomBigReal : public Random {
-public:
-  BigReal  nextBigReal( size_t digits, DigitPool *digitPool = NULL);   // Return uniform distributed random number between 0 (incl) and 1 (excl)
-                                                                       // with digits decimal digits. If digitPool == NULL, use DEFAULT_DIGITPOOL
-  BigReal  nextBigReal(const BigReal &low, const BigReal &high, size_t digits, DigitPool *digitPool = NULL);
-                                                                       // Return uniform distributed random number between low (incl) and high (excl)
-                                                                       // with digits decimal digits. If digitPool == NULL, use low.getDigitPool()
-  BigInt nextInteger(size_t digits, DigitPool *digitPool = NULL);      // Return uniform distributed random BigInt in range [0..10^digits[
 };
 
 inline BigReal  Max(const BigReal &x, const BigReal &y) {

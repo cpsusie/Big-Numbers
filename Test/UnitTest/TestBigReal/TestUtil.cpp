@@ -6,7 +6,7 @@
 BigReal getRandom(int length, int exponent, Random &rnd, DigitPool *pool, bool allowZero) {
   BigReal result(pool);
   do {
-    result = BigReal::random(length, &rnd, pool);
+    result = randBigReal(length, &rnd, pool);
   } while(!allowZero && result.isZero());
   return (exponent == 0) ? result : e(result, exponent);
 }

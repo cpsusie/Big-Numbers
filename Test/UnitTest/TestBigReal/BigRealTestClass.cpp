@@ -61,10 +61,10 @@ void BigRealTestClass::measureProduct(bool measureSplitProd, bool measureSplitPr
     const int p = (int)d;
     Array<BigReal> x, y;
     for(int i = 0; i < 11; i++) {
-      x.add(BigReal::random(maxProductLength));
+      x.add(randBigReal(maxProductLength));
     }
     for(int i = 0; i < 13; i++) {
-      y.add(BigReal::random(maxProductLength));
+      y.add(randBigReal(maxProductLength));
     }
     const BigReal f = e(1, -p);
     MeasureBinaryOperator mSplitProd(PROD,      x, y, f);
@@ -167,10 +167,10 @@ void BigRealTestClass::measureSplitLength() {
       for(BigReal::s_splitLength = 40; BigReal::s_splitLength <= BigReal::getMaxSplitLength(); BigReal::s_splitLength++) {
         Array<BigReal> x, y;
         for(int i = 0; i < 11; i++) {
-          x.add(BigReal::random(xLength));
+          x.add(randBigReal(xLength));
         }
         for(int i = 0; i < 13; i++) {
-          y.add(BigReal::random(yLength));
+          y.add(randBigReal(yLength));
         }
 
         MeasureBinaryOperator mProd(PROD,x,y,0);
@@ -538,8 +538,8 @@ void BigRealTestClass::testQuotRemainder() {
 }
 
 void BigRealTestClass::testMultiThreadedProduct() {
-  FullFormatBigReal x = BigReal::random(4000000);
-  FullFormatBigReal y = BigReal::random(4000000);
+  FullFormatBigReal x = randBigReal(4000000);
+  FullFormatBigReal y = randBigReal(4000000);
 
   AllTime startTime;
   FullFormatBigReal z = prod(x, y, 0);
@@ -588,7 +588,7 @@ void BigRealTestClass::testFullFormat() {
     for(int j = 0; j < 35; j++) {
       BigReal x;
       do {
-        x = e(BigReal::random(j),i);
+        x = e(randBigReal(j),i);
         if(j == 0)
           break;
       } while(BigReal::getExpo10(x) != i-1);
@@ -638,7 +638,7 @@ void BigRealTestClass::testGetDouble() {
 void BigRealTestClass::testBigRealStream() {
   Array<BigReal> a;
   for(int i = 0; i < 10; i++) {
-    a.add(BigReal::random(1000));
+    a.add(randBigReal(1000));
   }
   a.add(0);
 
@@ -652,7 +652,7 @@ void BigRealTestClass::testBigRealStream() {
 #ifdef __NEVER__
 void BigRealTestClass::testCopy() {
   for(int length = 1; length < 10; length++) {
-    FullFormatBigReal src = e(BigReal::random(10+4*length),length*2);
+    FullFormatBigReal src = e(randBigReal(10+4*length),length*2);
     FullFormatBigReal dst;
     copy(dst,src, length);
     dst.assertIsValidBigReal();
@@ -741,7 +741,7 @@ void BigRealTestClass::testTruncRound() {
 #else
   _tprintf(_T("%8s %6s %6s %40s %30s %30s\n"), _T("cutDigit"), _T("expo10"), _T("length"), _T("x"), REFTXT, RTXT);
 
-  Random rnd;
+  MersenneTwister64 rnd;
   rnd.randomize();
   int testCount = 0, exceptionCount = 0, mismatchCount = 0, okCount = 0;
   for(int cutDigits = 1; cutDigits < 35; cutDigits++) {
@@ -749,7 +749,7 @@ void BigRealTestClass::testTruncRound() {
       for(int expo10 = -10; expo10 < 20; expo10++) {
         BigReal x(pool);
         do {
-          x = e(BigReal::random(length, &rnd, pool), expo10);
+          x = e(randBigReal(length, &rnd, pool), expo10);
         } while(x.isZero());
 
         const BRExpoType decDigits = BigReal::getExpo10(x) + 1;
@@ -831,7 +831,7 @@ void BigRealTestClass::testCopyrTrunc() {
 #else
   _tprintf(_T("%8s %6s %6s %40s %30s %30s\n"), _T("cutDigit"), _T("expo10"), _T("length"), _T("x"), REFTXT, RTXT);
 
-  Random rnd;
+  MersenneTwister64 rnd;
   rnd.randomize();
   int testCount = 0, exceptionCount = 0, mismatchCount = 0, okCount = 0;
   for(int cutDigits = 1; cutDigits < 35; cutDigits++) {
@@ -839,7 +839,7 @@ void BigRealTestClass::testCopyrTrunc() {
       for(int expo10 = -10; expo10 < 20; expo10++) {
         FullFormatBigReal x(pool);
         do {
-          x = e(BigReal::random(length, &rnd, pool), expo10);
+          x = e(randBigReal(length, &rnd, pool), expo10);
         } while(x.isZero());
 
         const BRExpoType decDigits = BigReal::getExpo10(x) + 1;

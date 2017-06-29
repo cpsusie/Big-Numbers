@@ -1,127 +1,20 @@
 #pragma once
 
-// Common interface for all random number generators
-class RandomGenerator {
-public:
-  virtual void setSeed(UINT64 seed) = 0;
-  virtual UINT next(   UINT bits)   = 0;
-  virtual RandomGenerator *clone() const = 0;
-};
-
-// See https://en.wikipedia.org/wiki/Mersenne_Twister
-// MT19937 (32-bit RNG)
-class MersenneTwister32 : public RandomGenerator {
-private:
-  UINT  m_mt[624];
-  UINT  m_index;
-  void twist();
-public:
-  MersenneTwister32() {
-    setSeed(7);
-  }
-  void setSeed(UINT64 seed);
-  UINT next(   UINT   bits);
-  RandomGenerator *clone() const {
-    return new MersenneTwister32(*this);
-  }
-};
-
-// See https://en.wikipedia.org/wiki/Mersenne_Twister
-// MT19937-64 (32-bit RNG)
-class MersenneTwister64 : public RandomGenerator {
-private:
-  UINT64 m_mt[312];
-  UINT   m_index;
-  void twist();
-public:
-  MersenneTwister64() {
-    setSeed(7);
-  }
-  void setSeed(UINT64 seed);
-  UINT next(   UINT   bits);
-  RandomGenerator *clone() const {
-    return new MersenneTwister64(*this);
-  }
-};
-
-// By Donald E. Knuth
-class MMIXRandom : public RandomGenerator {
-private:
-  UINT64 m_seed;
-public:
-  MMIXRandom() {
-    setSeed(23);
-  }
-  void setSeed(UINT64 seed) {
-    m_seed = seed;
-  }
-  UINT next(UINT bits) {
-    m_seed = m_seed * 6364136223846793005i64 + 1442695040888963407i64;
-    return (UINT)(m_seed >> (64 - bits));
-  }
-  RandomGenerator *clone() const {
-    return new MMIXRandom(*this);
-  }
-};
- 
-class JavaRandom : public RandomGenerator {
-private:
-  INT64 m_seed;
-public:
-  JavaRandom() {
-    setSeed(0);
-  }
-  void setSeed(UINT64 seed);
-  UINT next(   UINT bits);
-  RandomGenerator *clone() const {
-    return new JavaRandom(*this);
-  }
-};
-
 class Random {
 private:
-  RandomGenerator *m_generator;
-  inline void setGenerator(RandomGenerator *g) {
-    m_generator = g ? g->clone() : new JavaRandom;
-  }
-  inline void releaseGenerator() {
-    delete m_generator;
-  }
 protected:
-  inline UINT next(UINT bits) {
-    return m_generator->next(bits);
-  }
-  UINT64 next64(UINT bits);
+  virtual UINT   next32(UINT bits) = 0;
+  // Default implementation of next64. Returns a concatenation of bits from 2 consequtive 32-bit int
+  virtual UINT64 next64(UINT bits);
 public:
-   // if parameter g == NULL, an instance of JavaRandom will be used
-   // Initialize with m_seed = 0
-  inline Random(     RandomGenerator *g = NULL) {
-    setGenerator(g);
-    setSeed(0);
-  }
-  inline Random(INT64 seed, RandomGenerator *g = NULL) {
-    setGenerator(g);
-    setSeed(seed);
-  }
-  inline Random(const Random &src) {
-    setGenerator(src.m_generator->clone());
-  }
-  inline Random &operator=(const Random &src) {
-    releaseGenerator();
-    setGenerator(src.m_generator->clone());
-  }
-  virtual ~Random() {
-    releaseGenerator();
-  }
-  inline void setSeed(INT64 seed) {
-    m_generator->setSeed(seed);
-  }
+  virtual void setSeed(INT64 seed) = 0;
+  virtual const TCHAR *getName() const = 0;
 
   inline bool nextBool() {
-    return next(1) != 0;
+    return next32(1) != 0;
   }
   inline int nextInt() {
-    return next(32);
+    return next32(32);
   }
   inline INT64 nextInt64() {
     return next64(64);
@@ -141,19 +34,128 @@ public:
   static INT64 getRandomSeed();                // gets a random seed to randomize. based upon next GUID
 };
 
+class JavaRandom : public Random {
+private:
+  INT64 m_seed;
+protected:
+  UINT next32( UINT   bits);
+public:
+  inline JavaRandom(INT64 seed = 0) {
+    setSeed(seed);
+  }
+  void setSeed(INT64 seed);
+  const TCHAR *getName() const {
+    return _T("Java");
+  }
+};
+
+// See https://en.wikipedia.org/wiki/Mersenne_Twister
+// MT19937 (32-bit RNG)
+class MersenneTwister32 : public Random {
+private:
+  UINT  m_mt[624];
+  UINT  m_index;
+  void twist();
+protected:
+  UINT next32( UINT   bits);
+public:
+  inline MersenneTwister32(INT64 seed = 0) {
+    setSeed(seed);
+  }
+  void setSeed(INT64 seed);
+  const TCHAR *getName() const {
+    return _T("MT19937-32");
+  }
+};
+
+// See https://en.wikipedia.org/wiki/Mersenne_Twister
+// MT19937-64 (32-bit RNG)
+class MersenneTwister64 : public Random {
+private:
+  UINT64 m_mt[312];
+  UINT   m_index;
+  void twist();
+protected:
+  UINT   next32(UINT bits);
+  UINT64 next64(UINT bits);
+public:
+  inline MersenneTwister64(INT64 seed = 0) {
+    setSeed(seed);
+  }
+  void setSeed(INT64 seed);
+  const TCHAR *getName() const {
+    return _T("MT19937-64");
+  }
+};
+
+// By Donald E. Knuth
+class MMIXRandom : public Random {
+private:
+  UINT64 m_seed;
+protected:
+  UINT next32(UINT bits) {
+    m_seed = m_seed * 6364136223846793005i64 + 1442695040888963407i64;
+    return (UINT)(m_seed >> (64 - bits));
+  }
+public:
+  inline MMIXRandom(INT64 seed = 0) {
+    setSeed(seed);
+  }
+  void setSeed(INT64 seed) {
+    m_seed = seed;
+  }
+  const TCHAR *getName() const {
+    return _T("MMIX");
+  }
+};
+ 
 void randomize();                              // randomize standard random-generator and _standardRandomGenerator (declared below)
 
-UINT         randInt();                        // use _standardRandomGenerator
-UINT         randInt(UINT         n);          // use _standardRandomGenerator. return random int in range [0..n-1]
-int          randInt(int from, int to);        // use _standardRandomGenerator. return random int in range [from..to]
-UINT64       randInt64();                      // use _standardRandomGenerator
-UINT64       randInt64(UINT64     n);
-INT64        randInt64(INT64 from, INT64 to);
+extern Random *_standardRandomGenerator;
+
+inline Random *setStdRandomGenerator(Random *rnd) {
+  assert(rnd != NULL);
+  Random *old = _standardRandomGenerator;
+  _standardRandomGenerator = rnd;
+  return old;
+}
+
+inline UINT   randInt() {                        // use _standardRandomGenerator
+  return _standardRandomGenerator->nextInt();
+}
+inline UINT   randInt(UINT         n) {          // use _standardRandomGenerator. return random int in range [0..n-1]
+  return randInt() % n;
+}
+inline int    randInt(int from, int to) {        // use _standardRandomGenerator. return random int in range [from..to]
+  return randInt(to-from+1) + from;
+}
+
+inline UINT64 randInt64() {                      // use _standardRandomGenerator
+  return _standardRandomGenerator->nextInt64();
+}
+inline UINT64 randInt64(UINT64     n) {
+  return randInt64() % n;
+}
+inline INT64  randInt64(INT64 from, INT64 to) {
+  return randInt64(to-from+1) + from;
+}
+
+inline float randFloat() {
+  return _standardRandomGenerator->nextFloat();
+}
+inline float randFloat(float from, float to) {
+  return _standardRandomGenerator->nextFloat(from, to);
+}
+
+inline double randDouble() {
+  return _standardRandomGenerator->nextDouble();
+}
+inline double randDouble(double from, double to) {
+  return _standardRandomGenerator->nextDouble(from, to);
+}
 
 #ifdef IS64BIT
 #define randSizet  randInt64
 #else
 #define randSizet  randInt
 #endif
-
-extern Random _standardRandomGenerator;

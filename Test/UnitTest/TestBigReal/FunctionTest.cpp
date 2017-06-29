@@ -554,7 +554,7 @@ void testReadWriteInteger(TestStatistic &stat) {
 
   for(i = 0; i < count; i++) {
     int xlen = rand() % 6000 + 500;
-    BigInt x(stat.getRandomGenerator().nextInteger(xlen, pool));
+    BigInt x(randBigInt(xlen, &stat.getRandomGenerator(), pool));
     out << x << NEWLINE;
     list.add(x);
   }

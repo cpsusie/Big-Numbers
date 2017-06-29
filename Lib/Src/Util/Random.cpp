@@ -3,11 +3,11 @@
 
 UINT64 Random::next64(UINT bits) {
   const UINT n = min(bits,32);
-  UINT64 result = next(n);
+  UINT64 result = next32(n);
   bits -= n;
   if(bits) {
     result <<= bits;
-    result |= next(bits);
+    result |= next32(bits);
   }
   return result;
 }
@@ -24,12 +24,12 @@ int Random::nextInt(int n) {
   }
 
   if((n & -n) == n) { // i.e., n is a power of 2
-    return (int)(((INT64)n * (INT64)next(31)) >> 31);
+    return (int)(((INT64)n * (INT64)next32(31)) >> 31);
   }
 
   int bits, val;
   do { 
-    bits = next(31);
+    bits = next32(31);
     val = bits % n;
   } while(bits - val + (n-1) < 0);
   return val;
@@ -53,7 +53,7 @@ INT64 Random::nextInt64(INT64 n) {
 }
 
 float Random::nextFloat() {
-  return next(24) / ((float)(1 << 24));
+  return next32(24) / ((float)(1 << 24));
 }
 
 float Random::nextFloat(float low, float high) {
@@ -61,7 +61,7 @@ float Random::nextFloat(float low, float high) {
 }
 
 double Random::nextDouble() {
-  INT64 l = (((UINT64)next(26)) << 27) + next(27);
+  INT64 l = (((UINT64)next32(26)) << 27) + next32(27);
   return l / (double)((INT64)1 << 53);
 }
 

@@ -110,15 +110,15 @@ int dmin(int x1, int x2) {
 }
 
 Real random(const Real &lower, const Real &upper) {
-  return _standardRandomGenerator.nextDouble() * (upper-lower) + lower;
+  return _standardRandomGenerator->nextDouble() * (upper-lower) + lower;
 }
 
 Real randomGaussian(const Real &mean, const Real &s) { 
-  return _standardRandomGenerator.nextGaussian(getDouble(mean),getDouble(s));
+  return _standardRandomGenerator->nextGaussian(getDouble(mean),getDouble(s));
 }
 
 void setToRandom(Real &r) {
-  r = _standardRandomGenerator.nextDouble();
+  r = _standardRandomGenerator->nextDouble();
 }
 
 Real poly(const Real &x, int degree, const Real *coef) {

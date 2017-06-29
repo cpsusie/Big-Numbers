@@ -425,9 +425,8 @@ namespace TestDouble80 {
       StreamParameters param(-1);
       size_t i;
       Array<Double80> list;
-      RandomD80 rnd;
       for (i = 0; i < count; i++) {
-        const Double80 x = rnd.nextDouble80(-1, 1);
+        const Double80 x = randDouble80(-1, 1);
         out << param << x << endl;
         list.add(x);
       }

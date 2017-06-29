@@ -32,14 +32,12 @@ namespace TestCompactHashMap {
   };
 
   class Int32Generator : public ValueGenerator<CompactIntKeyType> {
-  private:
-    Random rnd;
   public:
     Int32Generator() {
-      rnd.randomize();
+      randomize();
     }
     CompactIntKeyType getRandom() {
-      return rnd.nextInt();
+      return randInt();
     }
   };
 

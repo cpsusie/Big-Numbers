@@ -66,8 +66,8 @@ static void testShortProd() {
     int lengthY = randInt(4,500);
     int expoX   = randInt(-500,500);
     int expoY   = randInt(-500,500);
-    const FullFormatBigReal x(e(BigReal::random(lengthX, &rnd, &pool), expoX));
-    const FullFormatBigReal y(e(BigReal::random(lengthY, &rnd, &pool), expoY));
+    const FullFormatBigReal x(e(randBigReal(lengthX, &rnd, &pool), expoX));
+    const FullFormatBigReal y(e(randBigReal(lengthY, &rnd, &pool), expoY));
 
     FullFormatBigReal p1(&pool), p2(&pool);
 
@@ -135,7 +135,7 @@ static void testShortProd() {
 
 static void testRandomBigReal() {
   DigitPool pool(-5);
-  RandomBigReal rnd;
+  MersenneTwister64 rnd;
   for(;;) {
     int count  = inputInt(_T("Enter number of random numbers:"));
     int length = inputInt(_T("Enter length (decimal digits):"));
@@ -145,7 +145,7 @@ static void testRandomBigReal() {
     String fileName = format(_T("c:\\temp\\random%s-%s-length=%d.dat"), low.toString().cstr(), high.toString().cstr(), length);
     FILE *f = FOPEN(fileName, _T("w"));
     for(int i = 0; i < count; i++) {
-      FullFormatBigReal x = rnd.nextBigReal(low, high, length, &pool);
+      FullFormatBigReal x = randBigReal(low, high, length, &rnd, &pool);
       _ftprintf(f, _T("%s\n"), x.toString().cstr());
     }
     fclose(f);

@@ -38,7 +38,7 @@ private:
   String                 m_endMessage;
   bool                   m_endMessageAdded;
   DigitPool             *m_digitPool;
-  RandomBigReal          m_rnd;
+  MersenneTwister64      m_rnd;
   BigReal                m_maxTolerance;
   BigReal                m_error;
   BigReal                m_minQ, m_maxQ;
@@ -120,7 +120,7 @@ public:
   inline DigitPool *getDigitPool() {
     return m_digitPool;
   }
-  inline RandomBigReal &getRandomGenerator() {
+  inline Random &getRandomGenerator() {
     return m_rnd;
   }
   inline BigReal getRandomTolerance(int exponent) {

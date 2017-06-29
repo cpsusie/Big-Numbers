@@ -91,8 +91,8 @@ BigInt &BigInt::operator/=(const BigInt &x) {
   return *this = *this / x;
 }
 
-BigInt randomInteger(size_t length, Random *rnd, DigitPool *pool) {
-  return BigInt(e(BigReal::random(length, rnd, pool),length,pool),pool);
+BigInt randBigInt(size_t length, Random *rnd, DigitPool *pool) {
+  return BigInt(e(randBigReal(length, rnd, pool),length,pool),pool);
 }
 
 String BigInt::toString() const {

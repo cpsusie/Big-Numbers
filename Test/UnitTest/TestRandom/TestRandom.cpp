@@ -97,173 +97,202 @@ namespace TestRandom {
 
 #define SAMPLECOUNT 100000
 
-  template<class R> void _TestNextInt32_INT_MIN_MAX(const TCHAR *generatorName) {
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
-    R      generator;
-    Random rnd(&generator);
-    rnd.randomize();
+  void _TestNextInt32_INT_MIN_MAX(Random *rnd) {
+    rnd->randomize();
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactIntArray samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
-      const int x = rnd.nextInt();
+      const int x = rnd->nextInt();
       samples.add(x);
     }
-    dumpAllPValues(__TFUNCTION__, generatorName, false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
+    dumpAllPValues(__TFUNCTION__, rnd->getName(), false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
   }
 
-  template<class R> void _TestNextInt64_LLONG_MIN_MAX(const TCHAR *generatorName) {
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
-    R      generator;
-    Random rnd(&generator);
-    rnd.randomize();
+  void _TestNextInt64_LLONG_MIN_MAX(Random *rnd) {
+    rnd->randomize();
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactInt64Array samples(SAMPLECOUNT);
     for(int i = 0; i < SAMPLECOUNT; i++) {
-      const INT64 x = rnd.nextInt64();
+      const INT64 x = rnd->nextInt64();
       samples.add(x);
     }
-    dumpAllPValues(__TFUNCTION__, generatorName, true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
+    dumpAllPValues(__TFUNCTION__, rnd->getName(), true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
   }
 
-  template<class R> void _TestNextInt32_0_n(const TCHAR *generatorName) {
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
-    R      generator;
-    Random rnd(&generator);
-    rnd.randomize();
+  void _TestNextInt32_0_n(Random *rnd) {
+    rnd->randomize();
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     CompactDoubleArray allPValues;
     for(int n = 10; n > 0; n *= 3) {
       CompactIntArray samples(SAMPLECOUNT);
       for(int i = 0; i < SAMPLECOUNT; i++) {
-        const int x = rnd.nextInt(n);
+        const int x = rnd->nextInt(n);
         verify((0 <= x) && (x < n));
         samples.add(x);
       }
       allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
     }
-    dumpAllPValues(__TFUNCTION__, generatorName, false, allPValues);
+    dumpAllPValues(__TFUNCTION__, rnd->getName(), false, allPValues);
   }
 
-  template<class R> void _TestNextInt64_0_n(const TCHAR *generatorName) {
-    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
-    R      generator;
-    Random rnd(&generator);
+  void _TestNextInt64_0_n(Random *rnd) {
+    rnd->randomize();
     CompactDoubleArray allPValues;
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,rnd->getName());
     for(INT64 n = 10; n > 0; n *= 3) {
       CompactInt64Array samples(SAMPLECOUNT);
       for(int i = 0; i < SAMPLECOUNT; i++) {
-        const INT64 x = rnd.nextInt64(n);
+        const INT64 x = rnd->nextInt64(n);
         verify((0 <= x) && (x < n));
         samples.add(x);
       }
       allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
     }
-    dumpAllPValues(__TFUNCTION__, generatorName, true, allPValues);
+    dumpAllPValues(__TFUNCTION__, rnd->getName(), true, allPValues);
   }
+
+  static JavaRandom        javaRnd;
+  static MersenneTwister32 m32;
+  static MersenneTwister64 m64;
+
+  static Random *randomGenerators[] = {
+    &javaRnd
+   ,&m32
+   ,&m64
+  };
 
   TEST_CLASS(TestRandom) {
   public:
     TEST_METHOD(TestNextInt32_INT_MIN_MAX) {
-      _TestNextInt32_INT_MIN_MAX<JavaRandom>(       _T("java"));
-      _TestNextInt32_INT_MIN_MAX<MersenneTwister32>(_T("m32" ));
-      _TestNextInt32_INT_MIN_MAX<MersenneTwister64>(_T("m64" ));
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
+        _TestNextInt32_INT_MIN_MAX(randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt64_LLONG_MIN_MAX) {
-      _TestNextInt64_LLONG_MIN_MAX<JavaRandom>(       _T("java"));
-      _TestNextInt64_LLONG_MIN_MAX<MersenneTwister32>(_T("m32" ));
-      _TestNextInt64_LLONG_MIN_MAX<MersenneTwister64>(_T("m64" ));
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
+        _TestNextInt64_LLONG_MIN_MAX(randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt32_0_n) {
-      _TestNextInt32_0_n<JavaRandom>(       _T("java"));
-      _TestNextInt32_0_n<MersenneTwister32>(_T("m32" ));
-      _TestNextInt32_0_n<MersenneTwister64>(_T("m64" ));
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
+        _TestNextInt32_0_n(randomGenerators[i]);
     }
 
     TEST_METHOD(TestNextInt64_0_n) {
-      _TestNextInt64_0_n<JavaRandom>(       _T("java"));
-      _TestNextInt64_0_n<MersenneTwister32>(_T("m32" ));
-      _TestNextInt64_0_n<MersenneTwister64>(_T("m64" ));
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++)
+        _TestNextInt64_0_n(randomGenerators[i]);
     }
 
     TEST_METHOD(TestRandInt32_0_UINT_MAX) {
-      randomize();
-      CompactUintArray samples(SAMPLECOUNT);
-      for(int i = 0; i < SAMPLECOUNT; i++) {
-        const UINT x = randInt();
-        samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactUintArray samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
+          const UINT x = randInt();
+          samples.add(x);
+        }
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, checkIsUniformDist(samples, false, 0, UINT_MAX));
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), false, checkIsUniformDist(samples, false, 0, UINT_MAX));
     }
 
     TEST_METHOD(TestRandInt64_0_UINT64_MAX) {
-      randomize();
-      CompactUint64Array samples(SAMPLECOUNT);
-      for(int i = 0; i < SAMPLECOUNT; i++) {
-        const UINT64 x = randInt64();
-        samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactUint64Array samples(SAMPLECOUNT);
+        for(int i = 0; i < SAMPLECOUNT; i++) {
+          const UINT64 x = randInt64();
+          samples.add(x);
+        }
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, checkIsUniformDist(samples, true, 0, ULLONG_MAX));
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), true, checkIsUniformDist(samples, true, 0, ULLONG_MAX));
     }
 
     TEST_METHOD(TestRandInt32_0_n) {
-      randomize();
-      CompactDoubleArray allPValues;
-      for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
-        CompactUintArray samples(SAMPLECOUNT);
-        for(int i = 0; i < SAMPLECOUNT; i++) {
-          const UINT x = randInt((UINT)n);
-          samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactDoubleArray allPValues;
+        for(INT64 n = 10; n <= UINT_MAX; n = n * 3 + 1) {
+          CompactUintArray samples(SAMPLECOUNT);
+          for(int i = 0; i < SAMPLECOUNT; i++) {
+            const UINT x = randInt((UINT)n);
+            samples.add(x);
+          }
+          allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
         }
-        allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, allPValues);
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), false, allPValues);
     }
 
     TEST_METHOD(TestRandInt64_0_n) {
-      randomize();
-      CompactDoubleArray allPValues;
-      for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
-        CompactUint64Array samples(SAMPLECOUNT);
-        for(int i = 0; i < SAMPLECOUNT; i++) {
-          const UINT64 x = randInt64(n);
-          samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactDoubleArray allPValues;
+        for(UINT64 n = 10; n <= LLONG_MAX; n = n * 3 + 1) {
+          CompactUint64Array samples(SAMPLECOUNT);
+          for(int i = 0; i < SAMPLECOUNT; i++) {
+            const UINT64 x = randInt64(n);
+            samples.add(x);
+          }
+          allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
         }
-        allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, allPValues);
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), true, allPValues);
     }
 
     TEST_METHOD(TestRandInt32_from_to) {
-      randomize();
-      CompactDoubleArray allPValues;
-      for(int from = 1; from < INT_MAX/3; from *= 3) {
-        for(int to = from + 10; to > 0; to = to*3 + 1) {
-          CompactIntArray samples(SAMPLECOUNT);
-          for(int i = 0; i < SAMPLECOUNT; i++) {
-            const int x = randInt(from, to);
-            verify((from <= x) && (x <= to));
-            samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactDoubleArray allPValues;
+        for(int from = 1; from < INT_MAX/3; from *= 3) {
+          for(int to = from + 10; to > 0; to = to*3 + 1) {
+            CompactIntArray samples(SAMPLECOUNT);
+            for(int i = 0; i < SAMPLECOUNT; i++) {
+              const int x = randInt(from, to);
+              verify((from <= x) && (x <= to));
+              samples.add(x);
+            }
+            allPValues.addAll(checkIsUniformDist(samples, false, from, to));
           }
-          allPValues.addAll(checkIsUniformDist(samples, false, from, to));
         }
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), false, allPValues);
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), false, allPValues);
     }
 
     TEST_METHOD(TestRandInt64_from_to) {
-      randomize();
-      CompactDoubleArray allPValues;
-      for(INT64 from = 1; from < LLONG_MAX/3; from *= 3) {
-        for(INT64 to = from + 10; to > 0; to = to*3 + 1) {
-          CompactInt64Array samples(SAMPLECOUNT);
-          for(int i = 0; i < SAMPLECOUNT; i++) {
-            const INT64 x = randInt64(from, to);
-            verify((from <= x) && (x <= to));
-            samples.add(x);
+      for(int i = 0; i < ARRAYSIZE(randomGenerators); i++) {
+        Random *newRnd = randomGenerators[i];
+        Random *oldRnd = setStdRandomGenerator(newRnd);
+        randomize();
+        CompactDoubleArray allPValues;
+        for(INT64 from = 1; from < LLONG_MAX/3; from *= 3) {
+          for(INT64 to = from + 10; to > 0; to = to*3 + 1) {
+            CompactInt64Array samples(SAMPLECOUNT);
+            for(int i = 0; i < SAMPLECOUNT; i++) {
+              const INT64 x = randInt64(from, to);
+              verify((from <= x) && (x <= to));
+              samples.add(x);
+            }
+            allPValues.addAll(checkIsUniformDist(samples, true, from, to));
           }
-          allPValues.addAll(checkIsUniformDist(samples, true, from, to));
         }
+        dumpAllPValues(__TFUNCTION__, newRnd->getName(), true, allPValues);
+        setStdRandomGenerator(oldRnd);
       }
-      dumpAllPValues(__TFUNCTION__, _T("java"), true, allPValues);
     }
   };
 }

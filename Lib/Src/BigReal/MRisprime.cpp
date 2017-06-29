@@ -32,7 +32,8 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
     s++;
   }
 
-  Random rnd(Random::getRandomSeed());
+  MersenneTwister64 rnd;
+  rnd.randomize();
   for(int i = 1; i < 30; i++) {
     if(handler != NULL) {
       handler->handleData(MillerRabinCheck(threadId, n, 0, format(_T("MRTest %-2d"), i)));
@@ -40,7 +41,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
 
     BigInt a(pool);
     do {
-      a = e(BigReal::random(BigReal::getExpo10(nm1)+1, &rnd, pool), BigReal::getExpo10(nm1)+1, pool) % nm1;
+      a = e(randBigReal(BigReal::getExpo10(nm1)+1, &rnd, pool), BigReal::getExpo10(nm1)+1, pool) % nm1;
     } while(a < BIGREAL_2);
     BigInt y = powmod(a,r,n);
     if((y != BIGREAL_1) && (y != nm1)) {

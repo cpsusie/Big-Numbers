@@ -21,7 +21,7 @@
 #define MASK_LOWER 0x7FFFFFFF
 #define MASK_UPPER (~MASK_LOWER)
 
-void MersenneTwister64::setSeed(UINT64 seed) {
+void MersenneTwister64::setSeed(INT64 seed) {
   m_mt[0] = seed;
   for(int i = 1; i < N; ++i) {
     m_mt[i] = (F * (m_mt[i-1] ^ (m_mt[i-1] >> (W-2))) + i);
@@ -41,8 +41,8 @@ void MersenneTwister64::twist() {
   m_index = 0;
 }
 
-// Obtain a 32-bit random number, actually 64 bits
-UINT MersenneTwister64::next(UINT bits) {
+// Obtain a 64-bit random number
+UINT64 MersenneTwister64::next64(UINT bits) {
   if(m_index >= N) {
     twist();
   }
@@ -51,5 +51,9 @@ UINT MersenneTwister64::next(UINT bits) {
   y ^= (y << S) & B;
   y ^= (y << T) & C;
   y ^= (y >> L);
-  return (UINT)(y >> (64-bits));
+  return (bits == 64) ? y : (y>>(64-bits));
+}
+
+UINT MersenneTwister64::next32(UINT bits) {
+  return (UINT)next64(bits);
 }

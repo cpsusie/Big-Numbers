@@ -339,10 +339,9 @@ void testToString() {
   testToString(_T("c:\\temp\\toStringErrorsStd.log"), it1);
 
   CompactDoubleArray values;
-  Random             random;
   for(int i = 0; i < 32; i++) {
-    const double e = pow(10,random.nextDouble(-200,200));
-    const double t = random.nextDouble();
+    const double e = pow(10,randDouble(-200,200));
+    const double t = randDouble();
     values.add(t * e);
   }
 

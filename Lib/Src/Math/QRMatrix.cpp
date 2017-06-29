@@ -683,9 +683,7 @@ void QRMatrix::findEigenVectors() {
             if(arg(sum) > EPS) {
               throwException(_T("Cannot find eigenvector for eigenvalue = %s"), ::toString(lambda).cstr());
             } else {
-              Random rnd;
-              rnd.randomize();
-              y[j] = Complex(rnd.nextDouble(-1,1));
+              y[j] = Complex(randDouble(-1,1));
             }
           }
           j--;

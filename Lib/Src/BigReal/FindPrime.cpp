@@ -5,7 +5,7 @@
 #include <Math/MRisprime.h>
 
 static BigInt randomOddInteger(int digits, Random &rnd, DigitPool *pool) {
-  BigInt n = randomInteger(digits, &rnd, pool);
+  BigInt n = randBigInt(digits, &rnd, pool);
   if(even(n)) ++n;
   return n;
 }
@@ -85,7 +85,7 @@ private:
   const int           m_digitCount;
   PrimeQueue         &m_queue;
   DigitPool          *m_pool;
-  Random              m_rnd;
+  MersenneTwister64   m_rnd;
   MillerRabinHandler *m_handler;
   bool                m_deletePending;
 public:

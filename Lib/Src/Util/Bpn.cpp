@@ -13,8 +13,8 @@
 
 #pragma warning(disable : 4244)
 
-static float frandom(float from, float to) {
-  return _standardRandomGenerator.nextFloat(from, to);
+static inline float frandom(float from, float to) {
+  return randFloat(from, to);
 }
 
 static void randomVector(float *v, int size)  {

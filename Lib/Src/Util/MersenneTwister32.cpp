@@ -22,7 +22,7 @@
 #define    MASK_UPPER   (1ull << R)
 
 // Re-init with a given seed
-void MersenneTwister32::setSeed(UINT64 seed) {
+void MersenneTwister32::setSeed(INT64 seed) {
   m_mt[0] = (UINT)seed;
   for(int i = 1; i < N; i++) {
     m_mt[i] = (F * (m_mt[i-1] ^ (m_mt[i-1] >> 30)) + i);
@@ -43,7 +43,7 @@ void MersenneTwister32::twist() {
 }
 
 // Obtain a 32-bit random number
-UINT MersenneTwister32::next(UINT bits) {
+UINT MersenneTwister32::next32(UINT bits) {
   if(m_index >= N) {
     twist();
   }
