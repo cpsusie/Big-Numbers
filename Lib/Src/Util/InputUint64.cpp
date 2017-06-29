@@ -1,6 +1,6 @@
 #include "pch.h"
 
-INT64 inputInt64(const TCHAR *format,...) {
+UINT64 inputUint64(const TCHAR *format,...) {
   for(;;) {
     va_list argptr;
     va_start(argptr,format);
@@ -8,8 +8,8 @@ INT64 inputInt64(const TCHAR *format,...) {
     va_end(argptr);
     TCHAR line[100];
     GETS(line);
-    INT64 d;
-    if(_stscanf(line,_T("%lld"),&d) == 1) {
+    UINT64 d;
+    if(_stscanf(line,_T("%llu"),&d) == 1) {
       return d;
     }
   }

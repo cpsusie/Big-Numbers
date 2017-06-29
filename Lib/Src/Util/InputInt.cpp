@@ -1,6 +1,6 @@
 #include "pch.h"
 
-int inputInt(TCHAR *format,...) {
+int inputInt(const TCHAR *format,...) {
   for(;;) {
     va_list argptr;
     va_start(argptr, format);

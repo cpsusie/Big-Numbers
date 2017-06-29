@@ -120,11 +120,13 @@ bool shiftKeyPressed();
 bool ctrlKeyPressed();
 unsigned char toAscii(UINT virtualCode);
 
-String  inputString(  TCHAR *format, ...); // read String from stdin, terminate with enter. result string NOT containing '\n\r'
-String  inputPassword(TCHAR *format, ...); // read password from console
-int     inputInt(     TCHAR *format, ...); // read an integer from stdin
-INT64   inputInt64(   TCHAR *format, ...); // read an __int64 from stdin
-double  inputDouble(  TCHAR *format, ...); // read a  double  from stdin
+String  inputString(  const TCHAR *format, ...); // read String     from stdin, terminate with enter. result string NOT containing '\n\r'
+String  inputPassword(const TCHAR *format, ...); // read password   from console
+int     inputInt(     const TCHAR *format, ...); // read an integer from stdin
+UINT    inputUint(    const TCHAR *format, ...); // read an UINT    from stdin
+INT64   inputInt64(   const TCHAR *format, ...); // read an INT64   from stdin
+UINT64  inputUint64(  const TCHAR *format, ...); // read an UINT64  from stdin
+double  inputDouble(  const TCHAR *format, ...); // read a  double  from stdin
 
 TCHAR   *searchenv(  TCHAR *dst, const TCHAR *fileName, const TCHAR *envName);
 String   searchenv(  const String &fileName, const String &envName);
