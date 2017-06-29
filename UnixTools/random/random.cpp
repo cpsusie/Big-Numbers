@@ -162,7 +162,7 @@ int main(int argc, char **argv) {
         }
       case 's':
         if(sscanf(cp+1,"%I64u", &seed) != 1) {
-          seed = getRandomSeed();
+          seed = Random::getRandomSeed();
         }
         break;
       case 'i':

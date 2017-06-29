@@ -32,7 +32,7 @@ bool MRisprime(int threadId, const BigInt &n, MillerRabinHandler *handler) { // 
     s++;
   }
 
-  Random rnd(getRandomSeed());
+  Random rnd(Random::getRandomSeed());
   for(int i = 1; i < 30; i++) {
     if(handler != NULL) {
       handler->handleData(MillerRabinCheck(threadId, n, 0, format(_T("MRTest %-2d"), i)));
