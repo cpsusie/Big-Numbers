@@ -137,7 +137,7 @@ public:
   inline void randomize() {                    // randomize RandomNumber-generator, to start the sequence at a random number. 
     setSeed(getRandomSeed());
   }
-                                               // actually setSeed(/getRandomSeed()); see below
+                                               // actually setSeed(getRandomSeed()); see below
   static INT64 getRandomSeed();                // gets a random seed to randomize. based upon next GUID
 };
 
