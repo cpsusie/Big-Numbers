@@ -2,7 +2,7 @@
 #include <Math/MathFunctions.h>
 
 /* (6,4)-Minimax-approximation of gamma in [-5.000000e-001,5.000000e-001] with max error = 6.423750e-013 */
-static unsigned char coefdata[] = {
+static BYTE coefdata[] = {
    0x42,0xfa,0xb4,0x91,0xf8,0x5b,0xec,0x3f, /* 8.8622692545306614e-001 */
    0xa1,0xba,0x87,0xd9,0x8d,0xac,0xe2,0x3f, /* 5.8356373297086261e-001 */
    0x9e,0x74,0xaa,0x15,0xa2,0x08,0xd3,0x3f, /* 2.9740192523770215e-001 */
@@ -22,11 +22,12 @@ static double approximation(double x) {
   double sum2 = coef[10];
   int i;
   for( i = 5; i >= 0; i-- ) sum1 = sum1 * x + coef[i];
-  for( i = 9; i > 6; i-- ) sum2 = sum2 * x + coef[i];
+  for( i = 9; i >  6; i-- ) sum2 = sum2 * x + coef[i];
   return sum1 / (sum2 * x + 1.0);
 }
 
-static double gamma1_2R(double x) { // assumes 1 < x < 2 
+// assume 1 < x < 2 
+static inline double gamma1_2R(double x) {
   return approximation(x-1.5);
 }
 
@@ -61,7 +62,9 @@ Real gamma(const Real &x) {
 
 Real lnGamma(const Real &x) {
   if(x <= 0) {
-    throwInvalidArgumentException(__TFUNCTION__,_T("x=%s. must be > 0")); // undefined
+    throwInvalidArgumentException(__TFUNCTION__
+                                 ,_T("x=%s. Must be > 0")
+                                 , toString(x).cstr()); // undefined
   }
   if(x == floor(x)) {
     Real res = 0;
