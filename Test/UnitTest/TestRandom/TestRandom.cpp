@@ -17,10 +17,13 @@ namespace TestRandom {
     return format(_T("c:\\temp\\TestRandom\\%s"), is64Bit?_T("64"):_T("32"));
   }
 
-  static void dumpAllPValues(const TCHAR *method, bool is64Bit, const CompactDoubleArray &a) {
+  static void dumpAllPValues(const TCHAR *method, const TCHAR *generatorName, bool is64Bit, const CompactDoubleArray &a) {
     if(a.size() == 0) return;
     StringArray names(Tokenizer(method, _T(":")));
-    const String fileName = format(_T("%s\\AllPValues_%s.txt"), getDirName(is64Bit).cstr(), names.last().cstr());
+    const String fileName = format(_T("%s\\AllPValues_%s%s.txt")
+                                  ,getDirName(is64Bit).cstr()
+                                  ,generatorName
+                                  ,names.last().cstr());
     FILE *f = MKFOPEN(fileName, _T("w"));
     for (size_t i = 0; i < a.size(); i++) {
       _ftprintf(f, _T("%le\n"), a[i]);
@@ -40,7 +43,7 @@ namespace TestRandom {
 
   template<class T> CompactDoubleArray checkIsUniformDist(const T &a, bool is64Bit, INT64 from, INT64 to) {
     const _int128           length = (_int128)to - from + 1;
-    const CompactUintArray  allFactors = filterFactors(PrimeFactorArray((length > ULLONG_MAX)?256:length,227).getAllFactors().sort(int64HashCmp));
+    const CompactUintArray  allFactors = filterFactors(PrimeFactorArray((length > ULLONG_MAX)?((INT64)256):((INT64)length),227).getAllFactors().sort(int64HashCmp));
     CompactDoubleArray      allPValues;
     for(size_t i = 0; i < allFactors.size(); i++) {
       const UINT bucketCount = allFactors[i];
@@ -93,60 +96,92 @@ namespace TestRandom {
   }
 
 #define SAMPLECOUNT 100000
+
+  template<class R> void _TestNextInt32_INT_MIN_MAX(const TCHAR *generatorName) {
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
+    R      generator;
+    Random rnd(&generator);
+    rnd.randomize();
+    CompactIntArray samples(SAMPLECOUNT);
+    for(int i = 0; i < SAMPLECOUNT; i++) {
+      const int x = rnd.nextInt();
+      samples.add(x);
+    }
+    dumpAllPValues(__TFUNCTION__, generatorName, false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
+  }
+
+  template<class R> void _TestNextInt64_LLONG_MIN_MAX(const TCHAR *generatorName) {
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
+    R      generator;
+    Random rnd(&generator);
+    rnd.randomize();
+    CompactInt64Array samples(SAMPLECOUNT);
+    for(int i = 0; i < SAMPLECOUNT; i++) {
+      const INT64 x = rnd.nextInt64();
+      samples.add(x);
+    }
+    dumpAllPValues(__TFUNCTION__, generatorName, true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
+  }
+
+  template<class R> void _TestNextInt32_0_n(const TCHAR *generatorName) {
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
+    R      generator;
+    Random rnd(&generator);
+    rnd.randomize();
+    CompactDoubleArray allPValues;
+    for(int n = 10; n > 0; n *= 3) {
+      CompactIntArray samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
+        const int x = rnd.nextInt(n);
+        verify((0 <= x) && (x < n));
+        samples.add(x);
+      }
+      allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
+    }
+    dumpAllPValues(__TFUNCTION__, generatorName, false, allPValues);
+  }
+
+  template<class R> void _TestNextInt64_0_n(const TCHAR *generatorName) {
+    OUTPUT(_T("%s gen:%s"), __TFUNCTION__,generatorName);
+    R      generator;
+    Random rnd(&generator);
+    CompactDoubleArray allPValues;
+    for(INT64 n = 10; n > 0; n *= 3) {
+      CompactInt64Array samples(SAMPLECOUNT);
+      for(int i = 0; i < SAMPLECOUNT; i++) {
+        const INT64 x = rnd.nextInt64(n);
+        verify((0 <= x) && (x < n));
+        samples.add(x);
+      }
+      allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
+    }
+    dumpAllPValues(__TFUNCTION__, generatorName, true, allPValues);
+  }
+
   TEST_CLASS(TestRandom) {
   public:
     TEST_METHOD(TestNextInt32_INT_MIN_MAX) {
-      Random rnd;
-      rnd.randomize();
-      CompactIntArray samples(SAMPLECOUNT);
-      for(int i = 0; i < SAMPLECOUNT; i++) {
-        const int x = rnd.nextInt();
-        samples.add(x);
-      }
-      dumpAllPValues(__TFUNCTION__, false, checkIsUniformDist(samples, false, INT_MIN, INT_MAX));
+      _TestNextInt32_INT_MIN_MAX<JavaRandom>(       _T("java"));
+      _TestNextInt32_INT_MIN_MAX<MersenneTwister32>(_T("m32" ));
+      _TestNextInt32_INT_MIN_MAX<MersenneTwister64>(_T("m64" ));
     }
 
     TEST_METHOD(TestNextInt64_LLONG_MIN_MAX) {
-      Random rnd;
-      rnd.randomize();
-      CompactInt64Array samples(SAMPLECOUNT);
-      for(int i = 0; i < SAMPLECOUNT; i++) {
-        const INT64 x = rnd.nextInt64();
-        samples.add(x);
-      }
-      dumpAllPValues(__TFUNCTION__, true, checkIsUniformDist(samples, true, LLONG_MIN, LLONG_MAX));
+      _TestNextInt64_LLONG_MIN_MAX<JavaRandom>(       _T("java"));
+      _TestNextInt64_LLONG_MIN_MAX<MersenneTwister32>(_T("m32" ));
+      _TestNextInt64_LLONG_MIN_MAX<MersenneTwister64>(_T("m64" ));
     }
 
     TEST_METHOD(TestNextInt32_0_n) {
-      Random rnd;
-      rnd.randomize();
-      CompactDoubleArray allPValues;
-      for(int n = 10; n > 0; n *= 3) {
-        CompactIntArray samples(SAMPLECOUNT);
-        for(int i = 0; i < SAMPLECOUNT; i++) {
-          const int x = rnd.nextInt(n);
-          verify((0 <= x) && (x < n));
-          samples.add(x);
-        }
-        allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
-      }
-      dumpAllPValues(__TFUNCTION__, false, allPValues);
+      _TestNextInt32_0_n<JavaRandom>(       _T("java"));
+      _TestNextInt32_0_n<MersenneTwister32>(_T("m32" ));
+      _TestNextInt32_0_n<MersenneTwister64>(_T("m64" ));
     }
 
     TEST_METHOD(TestNextInt64_0_n) {
-      Random rnd;
-      rnd.randomize();
-      CompactDoubleArray allPValues;
-      for(INT64 n = 10; n > 0; n *= 3) {
-        CompactInt64Array samples(SAMPLECOUNT);
-        for(int i = 0; i < SAMPLECOUNT; i++) {
-          const INT64 x = rnd.nextInt64(n);
-          verify((0 <= x) && (x < n));
-          samples.add(x);
-        }
-        allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
-      }
-      dumpAllPValues(__TFUNCTION__, true, allPValues);
+      _TestNextInt64_0_n<JavaRandom>(       _T("java"));
+      _TestNextInt64_0_n<MersenneTwister32>(_T("m32" ));
+      _TestNextInt64_0_n<MersenneTwister64>(_T("m64" ));
     }
 
     TEST_METHOD(TestRandInt32_0_UINT_MAX) {
@@ -156,7 +191,7 @@ namespace TestRandom {
         const UINT x = randInt();
         samples.add(x);
       }
-      dumpAllPValues(__TFUNCTION__, false, checkIsUniformDist(samples, false, 0, UINT_MAX));
+      dumpAllPValues(__TFUNCTION__, _T("java"), false, checkIsUniformDist(samples, false, 0, UINT_MAX));
     }
 
     TEST_METHOD(TestRandInt64_0_UINT64_MAX) {
@@ -166,7 +201,7 @@ namespace TestRandom {
         const UINT64 x = randInt64();
         samples.add(x);
       }
-      dumpAllPValues(__TFUNCTION__, true, checkIsUniformDist(samples, true, 0, ULLONG_MAX));
+      dumpAllPValues(__TFUNCTION__, _T("java"), true, checkIsUniformDist(samples, true, 0, ULLONG_MAX));
     }
 
     TEST_METHOD(TestRandInt32_0_n) {
@@ -180,7 +215,7 @@ namespace TestRandom {
         }
         allPValues.addAll(checkIsUniformDist(samples, false, 0, n-1));
       }
-      dumpAllPValues(__TFUNCTION__, false, allPValues);
+      dumpAllPValues(__TFUNCTION__, _T("java"), false, allPValues);
     }
 
     TEST_METHOD(TestRandInt64_0_n) {
@@ -194,7 +229,7 @@ namespace TestRandom {
         }
         allPValues.addAll(checkIsUniformDist(samples, true, 0, n-1));
       }
-      dumpAllPValues(__TFUNCTION__, true, allPValues);
+      dumpAllPValues(__TFUNCTION__, _T("java"), true, allPValues);
     }
 
     TEST_METHOD(TestRandInt32_from_to) {
@@ -211,7 +246,7 @@ namespace TestRandom {
           allPValues.addAll(checkIsUniformDist(samples, false, from, to));
         }
       }
-      dumpAllPValues(__TFUNCTION__, false, allPValues);
+      dumpAllPValues(__TFUNCTION__, _T("java"), false, allPValues);
     }
 
     TEST_METHOD(TestRandInt64_from_to) {
@@ -228,7 +263,7 @@ namespace TestRandom {
           allPValues.addAll(checkIsUniformDist(samples, true, from, to));
         }
       }
-      dumpAllPValues(__TFUNCTION__, true, allPValues);
+      dumpAllPValues(__TFUNCTION__, _T("java"), true, allPValues);
     }
   };
 }

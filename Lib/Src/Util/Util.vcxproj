@@ -635,8 +635,11 @@
     <ClCompile Include="InputPassword.cpp" />
     <ClCompile Include="InputString.cpp" />
     <ClCompile Include="InputThread.cpp" />
+    <ClCompile Include="InputUint.cpp" />
+    <ClCompile Include="InputUint64.cpp" />
     <ClCompile Include="InterruptableRunnable.cpp" />
     <ClCompile Include="isatty.cpp" />
+    <ClCompile Include="JavaRandom.cpp" />
     <ClCompile Include="KeepAlive.cpp" />
     <ClCompile Include="KeyPressed.cpp" />
     <ClCompile Include="Language.cpp" />
@@ -653,6 +656,8 @@
     <ClCompile Include="MatchParanthes.cpp" />
     <ClCompile Include="md5c.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="MersenneTwister32.cpp" />
+    <ClCompile Include="MersenneTwister64.cpp" />
     <ClCompile Include="MessageBox.cpp" />
     <ClCompile Include="MinMax.cpp" />
     <ClCompile Include="mkfopen.cpp" />
@@ -681,6 +686,7 @@
     <ClCompile Include="RandInt.cpp" />
     <ClCompile Include="Random.cpp" />
     <ClCompile Include="Randomize.cpp" />
+    <ClCompile Include="ReadLine.cpp" />
     <ClCompile Include="ReadTextFile.cpp" />
     <ClCompile Include="RefCountedObject.cpp" />
     <ClCompile Include="Regex.cpp" />

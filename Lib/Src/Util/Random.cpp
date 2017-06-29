@@ -1,31 +1,5 @@
 #include "pch.h"
 #include <Math.h>
-#include <Random.h>
-
-static const INT64 multiplier  = (INT64)0x5DEECE66D;
-static const INT64 addend      = 0xB;
-static const INT64 mask        = ((INT64)1 << 48) - 1;
-
-Random::Random() {
-  setSeed(0);
-}
-
-Random::Random(INT64 seed) {
-  setSeed(seed);
-}
-
-void Random::setSeed(INT64 seed) {
-  m_seed = (seed ^ multiplier) & mask;
-}
-
-void Random::randomize() {
-  setSeed(getRandomSeed());
-}
-
-UINT Random::next(UINT bits) {
-  m_seed = (m_seed * multiplier + addend) & mask;
-  return (UINT)(m_seed >> (48 - bits));
-}
 
 UINT64 Random::next64(UINT bits) {
   const UINT n = min(bits,32);
@@ -96,7 +70,7 @@ double Random::nextDouble(double low, double high) {
 }
 
 double Random::nextGaussian(double mean, double s) { 
-  double u1 = nextDouble();
+  const double u1 = nextDouble();
   double u2;
   while((u2 = nextDouble()) == 0); // u2 != 0
   return mean + s * cos(2 * M_PI * u1) * sqrt(-2 * log(u2));

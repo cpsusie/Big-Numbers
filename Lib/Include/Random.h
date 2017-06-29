@@ -1,15 +1,122 @@
 #pragma once
 
-class Random {
+// Common interface for all random number generators
+class RandomGenerator {
+public:
+  virtual void setSeed(UINT64 seed) = 0;
+  virtual UINT next(   UINT bits)   = 0;
+  virtual RandomGenerator *clone() const = 0;
+};
+
+// See https://en.wikipedia.org/wiki/Mersenne_Twister
+// MT19937 (32-bit RNG)
+class MersenneTwister32 : public RandomGenerator {
+private:
+  UINT  m_mt[624];
+  UINT  m_index;
+  void twist();
+public:
+  MersenneTwister32() {
+    setSeed(7);
+  }
+  void setSeed(UINT64 seed);
+  UINT next(   UINT   bits);
+  RandomGenerator *clone() const {
+    return new MersenneTwister32(*this);
+  }
+};
+
+// See https://en.wikipedia.org/wiki/Mersenne_Twister
+// MT19937-64 (32-bit RNG)
+class MersenneTwister64 : public RandomGenerator {
+private:
+  UINT64 m_mt[312];
+  UINT   m_index;
+  void twist();
+public:
+  MersenneTwister64() {
+    setSeed(7);
+  }
+  void setSeed(UINT64 seed);
+  UINT next(   UINT   bits);
+  RandomGenerator *clone() const {
+    return new MersenneTwister64(*this);
+  }
+};
+
+// By Donald E. Knuth
+class MMIXRandom : public RandomGenerator {
+private:
+  UINT64 m_seed;
+public:
+  MMIXRandom() {
+    setSeed(23);
+  }
+  void setSeed(UINT64 seed) {
+    m_seed = seed;
+  }
+  UINT next(UINT bits) {
+    m_seed = m_seed * 6364136223846793005i64 + 1442695040888963407i64;
+    return (UINT)(m_seed >> (64 - bits));
+  }
+  RandomGenerator *clone() const {
+    return new MMIXRandom(*this);
+  }
+};
+ 
+class JavaRandom : public RandomGenerator {
 private:
   INT64 m_seed;
+public:
+  JavaRandom() {
+    setSeed(0);
+  }
+  void setSeed(UINT64 seed);
+  UINT next(   UINT bits);
+  RandomGenerator *clone() const {
+    return new JavaRandom(*this);
+  }
+};
 
+class Random {
+private:
+  RandomGenerator *m_generator;
+  inline void setGenerator(RandomGenerator *g) {
+    m_generator = g ? g->clone() : new JavaRandom;
+  }
+  inline void releaseGenerator() {
+    delete m_generator;
+  }
 protected:
-  UINT   next(  UINT bits);
+  inline UINT next(UINT bits) {
+    return m_generator->next(bits);
+  }
   UINT64 next64(UINT bits);
 public:
-  Random();                                    // Initialize with m_seed = 0
-  Random(INT64 seed);
+   // if parameter g == NULL, an instance of JavaRandom will be used
+   // Initialize with m_seed = 0
+  inline Random(     RandomGenerator *g = NULL) {
+    setGenerator(g);
+    setSeed(0);
+  }
+  inline Random(INT64 seed, RandomGenerator *g = NULL) {
+    setGenerator(g);
+    setSeed(seed);
+  }
+  inline Random(const Random &src) {
+    setGenerator(src.m_generator->clone());
+  }
+  inline Random &operator=(const Random &src) {
+    releaseGenerator();
+    setGenerator(src.m_generator->clone());
+  }
+  virtual ~Random() {
+    releaseGenerator();
+  }
+  inline void setSeed(INT64 seed) {
+    m_generator->setSeed(seed);
+  }
+
   inline bool nextBool() {
     return next(1) != 0;
   }
@@ -27,13 +134,14 @@ public:
   double  nextDouble(double low, double high); // return uniform distributed random double between low (inclusive) and high (exlucisve)
   double  nextGaussian(double mean, double s); // return normal distributed(mean, s) random number with average = mean, and std. deviation = s
 
-  void setSeed(__int64 seed);
-  void randomize();                            // randomize RandomNumber-generator, to start the sequence at a random number. 
+  inline void randomize() {                    // randomize RandomNumber-generator, to start the sequence at a random number. 
+    setSeed(getRandomSeed());
+  }
                                                // actually setSeed(/getRandomSeed()); see below
+  static INT64 getRandomSeed();                // gets a random seed to randomize. based upon next GUID
 };
 
 void randomize();                              // randomize standard random-generator and _standardRandomGenerator (declared below)
-INT64 getRandomSeed();                       // gets a random seed to randomize. based upon next GUID
 
 UINT         randInt();                        // use _standardRandomGenerator
 UINT         randInt(UINT         n);          // use _standardRandomGenerator. return random int in range [0..n-1]
