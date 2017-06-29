@@ -111,7 +111,7 @@ Image::Image(int resId, ImageType type, bool transparentWhite) {
     loadJPG(resId);
     break;
   default:
-    throwInvalidArgumentException(_T("Image::Image"), _T("type=%d, resId=%d"), type, resId);
+    throwInvalidArgumentException(__TFUNCTION__, _T("type=%d, resId=%d"), type, resId);
   }
   if(transparentWhite) {
     makeWhiteTransparent();
