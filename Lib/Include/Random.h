@@ -57,7 +57,7 @@ private:
   UINT  m_index;
   void twist();
 protected:
-  UINT next32( UINT   bits);
+  UINT next32(UINT bits);
 public:
   inline MersenneTwister32(INT64 seed = 0) {
     setSeed(seed);
@@ -123,7 +123,7 @@ inline Random *setStdRandomGenerator(Random *rnd) {
 inline UINT   randInt() {                        // use _standardRandomGenerator
   return _standardRandomGenerator->nextInt();
 }
-inline UINT   randInt(UINT         n) {          // use _standardRandomGenerator. return random int in range [0..n-1]
+inline UINT   randInt(UINT n) {                  // use _standardRandomGenerator. return random int in range [0..n-1]
   return randInt() % n;
 }
 inline int    randInt(int from, int to) {        // use _standardRandomGenerator. return random int in range [from..to]
