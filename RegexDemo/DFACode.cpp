@@ -78,7 +78,7 @@ template<class T> int countNonZeroes(const T *a, size_t size) {
   return count;
 }
 
-template<class T>  String arrayToString(const T *a, size_t size, size_t maxPerLine) {
+template<class T> String arrayToString(const T *a, size_t size, size_t maxPerLine) {
   String result;
   for(size_t i = 0, j = 1; i < size; i++,j++) {
     if((size > maxPerLine) && (j == 1)) {
@@ -97,7 +97,7 @@ template<class T>  String arrayToString(const T *a, size_t size, size_t maxPerLi
 }
 
 static String thinCharMapToString(const short *a) { // size = MAX_CHARS
-  String result;
+  String result = _T("EOI = 0\n");
   for(int ch = 0; ch < MAX_CHARS; ch++,a++) {
     if(*a) {
       result += format(_T("'%s' = %d\n"), NFAState::getFormater()->toString(ch).cstr(), *a);
@@ -128,7 +128,11 @@ String DFATables::toString() const {
     result = format(_T("Character map:\n%s\n"), arrayToString(m_charMap , MAX_CHARS, 40).cstr());
   }
   result += format(_T("State map:\n%s\n"), arrayToString(m_stateMap, m_stateCount, 10).cstr());
-  result += _T("TransitionMatrix:\n");
+  result += _T("TransitionMatrix:\n    ");
+  for(UINT c = 0; c < m_columnCount; c++) {
+    result += format(_T("%4u"),c);
+  }
+  result += _T("\n");
   for(size_t i = 0; i < m_rowCount; i++) {
     result += format(_T("(%2u) %s"), (UINT)i, arrayToString(&transition((UINT)i,0), m_columnCount, 50).cstr());
   }
@@ -149,7 +153,7 @@ void DFA::getDFATables(DFATables &tables) const {
   if(m_states.isEmpty()) {
     return;
   }
-  tables.allocate((unsigned short)m_states.size());
+  tables.allocate(m_states.size());
   BitSet  columnSave(MAX_CHARS);       // columns that will remain in table
   BitSet  rowSave(m_states.size());    // rows    that will remain in table
 
@@ -183,7 +187,7 @@ void DFA::reduce(DFATables &tables, BitSet &rowSave, BitSet &columnSave) const {
     tables.m_charMap[i] = -1;
   }
   for(int r_ncols = 0;;r_ncols++) {
-    for(i = r_ncols;  tables.m_charMap[i] != -1  && i < MAX_CHARS; i++ );
+    for(i = r_ncols; (i < MAX_CHARS) && (tables.m_charMap[i] != -1); i++);
     if(i >= MAX_CHARS) {
       break;
     }
@@ -200,8 +204,8 @@ void DFA::reduce(DFATables &tables, BitSet &rowSave, BitSet &columnSave) const {
   for(i = 0; i < stateCount; i++) {
     tables.m_stateMap[i] = -1;
   }
-  for(int r_nrows = 0 ;; r_nrows++ ) {
-    for(i = r_nrows; tables.m_stateMap[i] != -1  && i < stateCount; i++ );
+  for(int r_nrows = 0;; r_nrows++ ) {
+    for(i = r_nrows; (i < stateCount) && (tables.m_stateMap[i] != -1); i++);
     if(i >= stateCount) {
       break;
     }

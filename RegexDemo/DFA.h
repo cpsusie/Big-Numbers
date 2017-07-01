@@ -57,7 +57,6 @@ private:
   void        minimize();
   bool        columnsEqual(size_t col1, size_t col2) const;
   bool        rowsEqual(size_t row1, size_t row2) const;
-  void        minmaxElement(BitSet &rowSave, BitSet &columnSave, int &minElement, int &maxElement) const;
   void        reduce(DFATables &tables, BitSet &rowSave, BitSet &columnSave) const;
   void        getTransitionMatrix(DFATables &tables, const BitSet &rowSave, const BitSet &columnSave) const;
   void        getAcceptTable(DFATables &tables) const;

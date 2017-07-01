@@ -26,7 +26,7 @@ void DFA::construct() {
   DBG_callDFAStepHandler(format(_T("Minimized DFA table:\n%s\n"), toString().cstr()));
 }
 
-static unsigned long bitSetHashCode(BitSet * const &s) {
+static ULONG bitSetHashCode(BitSet * const &s) {
   return s->hashCode();
 }
 
@@ -34,10 +34,10 @@ static int bitSetCompare(BitSet * const &s1, BitSet * const &s2) {
   return bitSetCmp(*s1, *s2);
 }
 
+// Initially m_states contains a single, start state formed by
+// taking the epsilon closure of the NFA start state. m_states[0]
+// is the DFA start state.
 void DFA::makeTransitions() {
-  // Initially m_states contains a single, start state formed by
-  // taking the epsilon closure of the NFA start state. m_states[0]
-  // is the DFA start state.
   DBG_callDFAStepHandler(format(_T("%sConstructing unminimized DFA\n"), m_NFA.toString().cstr()));
   HashMap<BitSet*, int> bitsetMap(bitSetHashCode, bitSetCompare, 991);
 
@@ -84,7 +84,7 @@ void DFA::makeTransitions() {
       int nextDFAState = FAILURE;         // go to nextDFAState on char c
       BitSet *newSet = transition(transitionSet, current.m_NFAset, c);
       if(newSet != NULL) {
-        AcceptType accept;               // if current DFA state is an acceptstate, this is the AcceptAction
+        AcceptType accept;                // if current DFA state is an acceptstate, this is the AcceptAction
         epsClosure(*newSet, accept);
 
         const int *succ = bitsetMap.get(newSet);
@@ -102,37 +102,36 @@ void DFA::makeTransitions() {
   }
 }
 
+// NFAset   is the set of start states to examine. also used as output
+// *accept  is modified to point to the AcceptAction associated with an accepting
+//          state (or NULL if the state isn't an accepting state).
+//
+// Computes the epsilon closure set for the NFAset. This set
+// will contain all states that can be reached by making epsilon transitions
+// from all NFA states in the original set. Returns an empty set if the
+// set or the closure set is empty. Modifies *accept to point to the
+// accepting String with LOWEST lineno, if one of the NFA states in the output set is an
+// accepting state.
 void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
-  // NFAset   is the set of start states to examine. also used as output
-  // *accept  is modified to point to the AcceptAction associated with an accepting
-  //          state (or NULL if the state isn't an accepting state).
-  //
-  // Computes the epsilon closure set for the NFAset. This set
-  // will contain all states that can be reached by making epsilon transitions
-  // from all NFA states in the original set. Returns an empty set if the
-  // set or the closure set is empty. Modifies *accept to point to the
-  // accepting String with LOWEST lineno, if one of the NFA states in the output set is an
-  // accepting state.
-  // The algorithm is:
-  //
-  //     push all NFA-states in NFAset set onto stateStack
-  //     while(stateStack is not empty) {
-  //       pop the top element p
-  //       if(p is an accept state) {
-  //         accept = p.accept
-  //       }
-  //       if(there's an epsilon transition from p to q) {
-  //         if(q isn't in NFAset) {
-  //           add q to NFAset
-  //           push q onto stateStack
-  //         }
-  //       }
-  //     }
-
+// The algorithm is:
+//
+//     push all NFA-states in NFAset set onto stateStack
+//     while(stateStack is not empty) {
+//       pop the top element p
+//       if(p is an accept state) {
+//         accept = p.accept
+//       }
+//       if(there's an epsilon transition from p to q) {
+//         if(q isn't in NFAset) {
+//           add q to NFAset
+//           push q onto stateStack
+//         }
+//       }
+//     }
 
   CompactStack<int> stateStack; // stack of NFA-states remaining to be tested
 
-  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext(); ) {          // 1
+  for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext(); ) {                // 1
     stateStack.push((int)it.next());
   }
 
@@ -161,11 +160,10 @@ void DFA::epsClosure(BitSet &NFAset, AcceptType &accept) const {
   }
 }
 
+// Return a set that contains all NFA states that can be reached by making
+// transitions on "c" from any NFA state in NFAset. Returns NULL if no
+// such transition exist.
 BitSet *DFA::transition(BitSet &dst, BitSet &NFAset, int c) const {
-  // Return a set that contains all NFA states that can be reached by making
-  // transitions on "c" from any NFA state in NFAset. Returns NULL if no 
-  // such transition exist.
-
   BitSet *result = NULL;
 
   for(Iterator<size_t> it = NFAset.getIterator(); it.hasNext();) {
@@ -324,7 +322,7 @@ DFA::DFA(const DFATables &tables, const NFA &dummy) : m_NFA(dummy) {
     inverseStateMap[r].add((int)s);
   }
 
-  for(unsigned short s = 0; s < tables.m_stateCount; s++) {
+  for(UINT s = 0; s < tables.m_stateCount; s++) {
     AcceptType accept;
     const BYTE anchor = tables.m_acceptTable[s];
     if(anchor) {
@@ -333,11 +331,11 @@ DFA::DFA(const DFATables &tables, const NFA &dummy) : m_NFA(dummy) {
     m_states.add(DFAState(s, BitSet(8), accept));
   }
 
-  for(unsigned short r = 0; r < tables.m_rowCount; r++) {
+  for(UINT r = 0; r < tables.m_rowCount; r++) {
     DFAtrans transition;
     memset(transition, -1, sizeof(transition));
 
-    for(unsigned short c = 0; c < tables.m_columnCount; c++) {
+    for(UINT c = 0; c < tables.m_columnCount; c++) {
       const short tr = tables.transition(r, c);
       if(tr != FAILURE) {
         const CompactIntArray &ca = inverseCharMap[c];
