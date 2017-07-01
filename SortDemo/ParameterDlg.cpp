@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include <limits.h>
 #include <math.h>
-#include "SortDemo.h"
 #include "ParameterDlg.h"
 
 #ifdef _DEBUG
@@ -44,7 +43,7 @@ END_MESSAGE_MAP()
 BOOL CParameterDlg::OnInitDialog() {
   __super::OnInitDialog();
 
-  m_accelTable = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_PARAMETER_ACCELERATOR));
+  m_accelTable = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_PARAMETER_ACCELERATOR));
 
   CheckRadioButton(IDC_RADIO_RANDOM, IDC_RADIO_FILEDATA, m_parameters.m_initMethod);
   radioChecked(          m_parameters.m_initMethod);

@@ -17,16 +17,16 @@ private:
   void setDefault();
   static RegistryKey getKey();
 public:
-  int                 m_initMethod;
-  size_t              m_elementCount;
-  int                 m_elementSize;
-  UINT                m_periodCount;
-  RandomizationMethod m_randomizationMethod;
-  UINT                m_seed;
-  UINT                m_randomSeed;
-  mutable Random      m_random;
-  String              m_fileName;
-  CompactIntArray     m_fileData;
+  int                       m_initMethod;
+  size_t                    m_elementCount;
+  int                       m_elementSize;
+  UINT                      m_periodCount;
+  RandomizationMethod       m_randomizationMethod;
+  UINT                      m_seed;
+  UINT                      m_randomSeed;
+  mutable MersenneTwister32 m_random;
+  String                    m_fileName;
+  CompactIntArray           m_fileData;
 
   InitializeParameters();
   void readTextFile(const String &fileName);

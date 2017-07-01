@@ -8,10 +8,10 @@
 #endif
 
 #define foreachPanel(p)      if(m_panels.size()) for(SortPanelWnd **_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
-#define foreachconstPanel(p) if(m_panels.size()) for(const SortPanelWnd * const *_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
+#define foreachConstPanel(p) if(m_panels.size()) for(const SortPanelWnd * const *_##p = &m_panels[0], *p = *_##p; _##p <= &m_panels.last(); p = *(++_##p))
 
 CSortDemoDlg::CSortDemoDlg(CWnd* pParent /*=NULL*/) : CDialog(CSortDemoDlg::IDD, pParent) {
-  m_hIcon            = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon            = theApp.LoadIcon(IDR_MAINFRAME);
   m_ctrlId           = WM_USER;
   m_movingPanelIndex = -1;
   m_selectedPanel    = NULL;
@@ -102,7 +102,7 @@ BOOL CSortDemoDlg::OnInitDialog() {
   SetIcon(m_hIcon, TRUE);       // Set big icon
   SetIcon(m_hIcon, FALSE);      // Set small icon
 
-  m_accelTable      = LoadAccelerators(AfxGetApp()->m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
+  m_accelTable      = LoadAccelerators(theApp.m_hInstance,MAKEINTRESOURCE(IDR_MAINFRAME));
 
   buildSortMethodMenu();
 
@@ -144,7 +144,7 @@ void CSortDemoDlg::checkActiveMethodsItems() {
   for(int id = ID_SORT_FIRSTMETHOD; id <= ID_SORT_LASTMETHOD; id++) {
     checkMenuItem(this, id, false);
   }
-  foreachconstPanel(p) {
+  foreachConstPanel(p) {
     checkMenuItem(this, p->getMethodId().getId(), true);
   }
 }
@@ -157,17 +157,17 @@ void CSortDemoDlg::OnFileInitialize() {
 
 int CSortDemoDlg::getPanelCountByState(SortThreadState state) const {
   int count = 0;
-  foreachconstPanel(p) if(p->getThreadState() == state) count++;
+  foreachConstPanel(p) if(p->getThreadState() == state) count++;
   return count;
 }
 
 bool CSortDemoDlg::allPanelsInState(SortThreadState state) const {
-  foreachconstPanel(p) if(p->getThreadState() != state) return false;
+  foreachConstPanel(p) if(p->getThreadState() != state) return false;
   return true;
 }
 
 bool CSortDemoDlg::noPanelsInState(SortThreadState state) const {
-  foreachconstPanel(p) if(p->getThreadState() == state) return false;
+  foreachConstPanel(p) if(p->getThreadState() == state) return false;
   return true;
 }
 

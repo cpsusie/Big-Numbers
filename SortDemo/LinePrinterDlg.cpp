@@ -8,7 +8,7 @@
 #endif
 
 CLinePrinterDlg::CLinePrinterDlg(CLinePrinterThread &thread) : CDialog(CLinePrinterDlg::IDD, NULL), m_thread(thread) {
-  m_hIcon     = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
+  m_hIcon     = theApp.LoadIcon(IDR_MAINFRAME);
   m_lineList  = NULL;
   m_visible   = false;
 }

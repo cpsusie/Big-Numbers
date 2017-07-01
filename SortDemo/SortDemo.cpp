@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "SortDemo.h"
 #include "SortDemoDlg.h"
 
 #ifdef _DEBUG
@@ -14,7 +13,6 @@ CSortDemoApp::CSortDemoApp() {
 }
 
 CSortDemoApp theApp;
-
 
 BOOL CSortDemoApp::InitInstance() {
   AfxEnableControlContainer();

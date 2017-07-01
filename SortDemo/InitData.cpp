@@ -224,9 +224,8 @@ void InitializeParameters::setDefault() {
 }
 
 void InitializeParameters::nextRandomSeed() {
-  Random rnd;
-  rnd.randomize();
-  m_randomSeed = rnd.nextInt();
+  randomize();
+  m_randomSeed = randInt();
 }
 
 RegistryKey InitializeParameters::getKey() { // static
