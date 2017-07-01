@@ -10,6 +10,7 @@
 
 #include "pch.h"
 #include <Random.h>
+#include <TinyBitSet.h>
 #include <D3DGraphics/IsoSurfacePolygonizer.h>
 
 #define RES 10 // # converge iterations
@@ -336,15 +337,15 @@ IsoSurfaceTest IsoSurfacePolygonizer::findStartPoint(bool positive, const Point3
   double range = m_cellSize;
   result.m_ok = true;
   for(int i = 0; i < 10000; i++) {
-    result.m_point.x = p.x + _standardRandomGenerator.nextDouble(-range, range);
-    result.m_point.y = p.y + _standardRandomGenerator.nextDouble(-range, range);
-    result.m_point.z = p.z + _standardRandomGenerator.nextDouble(-range, range);
+    result.m_point.x = p.x + randDouble(-range, range);
+    result.m_point.y = p.y + randDouble(-range, range);
+    result.m_point.z = p.z + randDouble(-range, range);
     const double value = evaluate(result.m_point);
     result.m_positive = value > 0.0;
     if(result.m_positive == positive) {
       return result;
     }
-    range = range*1.0005; // slowly expand search outwards
+    range *= 1.0005; // slowly expand search outwards
   }
   result.m_ok = false;
   return result;
@@ -359,21 +360,19 @@ static CubeFace otherFace(CubeEdge edge, CubeFace face) {
 
 // makeCubeTable: Create the 256 entry table for cubical polygonization
 PolygonizerCubeArray::PolygonizerCubeArray(UINT index) : m_index((BYTE)index) {
-  USHORT done = 0;
+  BitSet16 done;
 
 #define OPPOSITE_SIGN(i,cep) ((((i)>>cep->corner1)&1) != (((i)>>cep->corner2)&1))
-#define ISDONE(e)            (done&(1<<(e)))
-#define SETDONE(e)           done |= (1<<(e))
 
   for(int e = 0; e < ARRAYSIZE(cubeEdgeTable); e++) {
     const CubeEdgeInfo *cep = &cubeEdgeTable[e];
-    if(!ISDONE(e) && OPPOSITE_SIGN(index,cep)) {
+    if(!done.contains(e) && OPPOSITE_SIGN(index,cep)) {
       CompactArray<char> vertexEdges;
       // get face that is to right of edge from pos to neg corner:
       CubeFace face = (index&(1<<cep->corner1)) ? cep->rightface : cep->leftface;
       for(;;) {
         const CubeEdge edge = cep->nextClockwiseEdge[face];
-        SETDONE(edge);
+        done.add(edge);
         cep = &cubeEdgeTable[edge];
         if(OPPOSITE_SIGN(index, cep)) {
           vertexEdges.add(edge);
