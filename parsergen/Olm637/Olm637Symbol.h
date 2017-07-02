@@ -8,7 +8,7 @@
     ,d     =   4
     ,f     =   5
   } Olm637InputSymbol;
-	
+
   typedef enum {
   } Olm637NonTerminal;
 

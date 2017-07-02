@@ -9,7 +9,7 @@
     ,z     =   5
     ,x     =   6
   } Olm641InputSymbol;
-	
+
   typedef enum {
   } Olm641NonTerminal;
 

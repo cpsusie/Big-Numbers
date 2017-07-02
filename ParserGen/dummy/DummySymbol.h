@@ -5,7 +5,7 @@
     ,a     =   1
     ,b     =   2
   } DummyInputSymbol;
-	
+
   typedef enum {
   } DummyNonTerminal;
 

@@ -107,7 +107,7 @@
     ,NUMBER                                = 103
     ,IDENTIFIER                            = 104
   } Java5InputSymbol;
-	
+
   typedef enum {
      Goal                                  = 105
     ,CompilationUnit                       = 106
